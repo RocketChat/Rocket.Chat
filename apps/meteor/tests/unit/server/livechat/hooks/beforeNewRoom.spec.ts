@@ -1,25 +1,30 @@
 import { expect } from 'chai';
-import { describe, it, beforeEach } from 'mocha';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, beforeEach, vi } from 'vitest';
 
-const findStub = sinon.stub();
-
-const { beforeNewRoomPatched } = proxyquire.noCallThru().load('../../../../../ee/app/livechat-enterprise/server/hooks/beforeNewRoom.ts', {
-	'meteor/meteor': {
-		Meteor: {
-			Error,
-		},
-	},
-	'@rocket.chat/models': {
-		OmnichannelServiceLevelAgreements: {
-			findOneByIdOrName: findStub,
-		},
-	},
-	'../../../../../app/livechat/server/lib/hooks': {
-		beforeNewRoom: { patch: sinon.stub() },
-	},
+const { findStub, patchStub } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
+		findStub: sinon.stub(),
+		patchStub: sinon.stub(),
+	};
 });
+
+vi.mock('meteor/meteor', () => ({
+	Meteor: {
+		Error,
+	},
+}));
+vi.mock('@rocket.chat/models', () => ({
+	OmnichannelServiceLevelAgreements: {
+		findOneByIdOrName: findStub,
+	},
+}));
+vi.mock('../../../../../app/livechat/server/lib/hooks', () => ({
+	beforeNewRoom: { patch: patchStub },
+}));
+
+const { beforeNewRoomPatched } = await import('../../../../../ee/app/livechat-enterprise/server/hooks/beforeNewRoom');
 
 describe('beforeRoom', () => {
 	beforeEach(() => findStub.withArgs('high').resolves({ _id: 'high' }).withArgs('invalid').resolves(null));

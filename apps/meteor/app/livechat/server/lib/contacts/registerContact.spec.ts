@@ -1,52 +1,56 @@
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { beforeEach, describe, it, vi } from 'vitest';
 
-const modelsMock = {
-	'Users': {
-		findOneAgentById: sinon.stub(),
-		findOneByUsername: sinon.stub(),
-	},
-	'LivechatContacts': {
-		findOneById: sinon.stub(),
-		insertOne: sinon.stub(),
-		upsertContact: sinon.stub(),
-		updateContact: sinon.stub(),
-		findContactMatchingVisitor: sinon.stub(),
-	},
-	'LivechatRooms': {
-		findNewestByVisitorIdOrToken: sinon.stub(),
-		setContactIdByVisitorIdOrToken: sinon.stub(),
-		findByVisitorId: sinon.stub(),
-	},
-	'LivechatVisitors': {
-		findOneById: sinon.stub(),
-		updateById: sinon.stub(),
-		updateOne: sinon.stub(),
-		getVisitorByToken: sinon.stub(),
-		findOneGuestByEmailAddress: sinon.stub(),
-	},
-	'LivechatCustomField': {
-		findByScope: sinon.stub(),
-	},
-	'@global': true,
-};
-
-const { registerContact } = proxyquire.noCallThru().load('./registerContact', {
-	'meteor/meteor': sinon.stub(),
-	'@rocket.chat/models': modelsMock,
-	'@rocket.chat/tools': { wrapExceptions: sinon.stub() },
-	'./Helper': { validateEmail: sinon.stub() },
+const { modelsMock, meteorMock, wrapExceptions, validateEmail, sandbox } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	const sandbox = sinon.createSandbox();
+	return {
+		sandbox,
+		meteorMock: sandbox.stub(),
+		wrapExceptions: sandbox.stub(),
+		validateEmail: sandbox.stub(),
+		modelsMock: {
+			Users: {
+				findOneAgentById: sandbox.stub(),
+				findOneByUsername: sandbox.stub(),
+			},
+			LivechatContacts: {
+				findOneById: sandbox.stub(),
+				insertOne: sandbox.stub(),
+				upsertContact: sandbox.stub(),
+				updateContact: sandbox.stub(),
+				findContactMatchingVisitor: sandbox.stub(),
+			},
+			LivechatRooms: {
+				findNewestByVisitorIdOrToken: sandbox.stub(),
+				setContactIdByVisitorIdOrToken: sandbox.stub(),
+				findByVisitorId: sandbox.stub(),
+			},
+			LivechatVisitors: {
+				findOneById: sandbox.stub(),
+				updateById: sandbox.stub(),
+				updateOne: sandbox.stub(),
+				getVisitorByToken: sandbox.stub(),
+				findOneGuestByEmailAddress: sandbox.stub(),
+			},
+			LivechatCustomField: {
+				findByScope: sandbox.stub(),
+			},
+		},
+	};
 });
+
+vi.mock('meteor/meteor', () => ({ default: meteorMock, ...meteorMock }));
+vi.mock('@rocket.chat/models', () => modelsMock);
+vi.mock('@rocket.chat/tools', () => ({ wrapExceptions }));
+vi.mock('./Helper', () => ({ validateEmail }));
+
+const { registerContact } = await import('./registerContact');
 
 describe('registerContact', () => {
 	beforeEach(() => {
-		modelsMock.Users.findOneByUsername.reset();
-		modelsMock.LivechatVisitors.getVisitorByToken.reset();
-		modelsMock.LivechatVisitors.updateOne.reset();
-		modelsMock.LivechatVisitors.findOneGuestByEmailAddress.reset();
-		modelsMock.LivechatCustomField.findByScope.reset();
-		modelsMock.LivechatRooms.findByVisitorId.reset();
+		sandbox.reset();
 	});
 
 	it(`should throw an error if there's no token`, async () => {

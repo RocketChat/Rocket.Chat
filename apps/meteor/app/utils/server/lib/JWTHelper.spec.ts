@@ -1,26 +1,34 @@
 import { expect } from 'chai';
-import { describe, it, beforeEach } from 'mocha';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, beforeEach, vi } from 'vitest';
 
-const jsrsasignStub = {
-	KJUR: {
-		jws: {
-			IntDate: {
-				get: sinon.stub(),
-			},
-			JWS: {
-				sign: sinon.stub(),
-				verify: sinon.stub(),
-				parse: sinon.stub(),
+// `vi.mock` is hoisted above imports, so its factory cannot close over module-scope variables.
+// `vi.hoisted` lets us build the (sinon-based) stub alongside it and reference it from both the
+// mock factory and the test body. sinon is require()d inside the hoisted block because the
+// top-level import has not executed yet at hoist time.
+const { jsrsasignStub } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
+		jsrsasignStub: {
+			KJUR: {
+				jws: {
+					IntDate: {
+						get: sinon.stub(),
+					},
+					JWS: {
+						sign: sinon.stub(),
+						verify: sinon.stub(),
+						parse: sinon.stub(),
+					},
+				},
 			},
 		},
-	},
-};
-
-const { generateJWT, validateAndDecodeJWT } = proxyquire.noCallThru().load('./JWTHelper', {
-	jsrsasign: jsrsasignStub,
+	};
 });
+
+vi.mock('jsrsasign', () => ({ default: jsrsasignStub, ...jsrsasignStub }));
+
+const { generateJWT, validateAndDecodeJWT } = await import('./JWTHelper');
 
 describe('JWTHelper', () => {
 	beforeEach(() => {

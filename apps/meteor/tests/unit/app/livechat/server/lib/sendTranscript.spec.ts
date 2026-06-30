@@ -1,77 +1,82 @@
 import { expect } from 'chai';
-import p from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, beforeEach, vi } from 'vitest';
 
-const modelsMock = {
-	LivechatRooms: {
-		findOneById: sinon.stub(),
-	},
-	Messages: {
-		findLivechatClosingMessage: sinon.stub(),
-		findVisibleByRoomIdNotContainingTypesBeforeTs: sinon.stub(),
-	},
-	Users: {
-		findOneById: sinon.stub(),
-	},
-};
+const { modelsMock, mockLogger, mockSettingValues, getTimezoneMock, mailerMock, tStub, checkMock, callbacksRunMock } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
 
-const checkMock = sinon.stub();
+	const mockLogger = class {
+		debug() {
+			return null;
+		}
 
-const mockLogger = class {
-	debug() {
-		return null;
-	}
+		error() {
+			return null;
+		}
 
-	error() {
-		return null;
-	}
+		warn() {
+			return null;
+		}
 
-	warn() {
-		return null;
-	}
+		info() {
+			return null;
+		}
+	};
 
-	info() {
-		return null;
-	}
-};
+	const mockSettingValues: Record<string, any> = {
+		Livechat_show_agent_info: true,
+		Language: 'en',
+		From_Email: 'test@rocket.chat',
+	};
 
-const mockSettingValues: Record<string, any> = {
-	Livechat_show_agent_info: true,
-	Language: 'en',
-	From_Email: 'test@rocket.chat',
-};
+	return {
+		modelsMock: {
+			LivechatRooms: {
+				findOneById: sinon.stub(),
+			},
+			Messages: {
+				findLivechatClosingMessage: sinon.stub(),
+				findVisibleByRoomIdNotContainingTypesBeforeTs: sinon.stub(),
+			},
+			Users: {
+				findOneById: sinon.stub(),
+			},
+		},
+		checkMock: sinon.stub(),
+		mockLogger,
+		mockSettingValues,
+		getTimezoneMock: sinon.stub(),
+		mailerMock: sinon.stub(),
+		tStub: sinon.stub(),
+		callbacksRunMock: sinon.stub(),
+	};
+});
 
 const settingsMock = function (key: string) {
 	return mockSettingValues[key] || null;
 };
 
-const getTimezoneMock = sinon.stub();
-
-const mailerMock = sinon.stub();
-
-const tStub = sinon.stub();
-
-const { sendTranscript } = p.noCallThru().load('../../../../../../app/livechat/server/lib/sendTranscript', {
-	'@rocket.chat/models': modelsMock,
-	'@rocket.chat/logger': { Logger: mockLogger },
-	'meteor/meteor': {
-		Meteor: {
-			Error: globalThis.Error,
-		},
+vi.mock('@rocket.chat/models', () => modelsMock);
+vi.mock('@rocket.chat/logger', () => ({ Logger: mockLogger }));
+vi.mock('meteor/meteor', () => ({
+	Meteor: {
+		Error: globalThis.Error,
 	},
-	'meteor/check': { check: checkMock },
-	'../../../../server/lib/callbacks': {
-		callbacks: {
-			run: sinon.stub(),
-		},
+}));
+vi.mock('meteor/check', () => ({ check: checkMock }));
+vi.mock('../../../../../../server/lib/callbacks', () => ({
+	callbacks: {
+		run: callbacksRunMock,
 	},
-	'../../../../server/lib/i18n': { i18n: { t: tStub } },
-	'../../../mailer/server/api': { send: mailerMock },
-	'../../../settings/server': { settings: { get: settingsMock } },
-	'../../../utils/server/lib/getTimezone': { getTimezone: getTimezoneMock },
-	// TODO: add tests for file handling on transcripts
-	'../../../file-upload/server': { FileUpload: {} },
-});
+}));
+vi.mock('../../../../../../server/lib/i18n', () => ({ i18n: { t: tStub } }));
+vi.mock('../../../../../../app/mailer/server/api', () => ({ send: mailerMock }));
+vi.mock('../../../../../../app/settings/server', () => ({ settings: { get: settingsMock } }));
+vi.mock('../../../../../../app/utils/server/lib/getTimezone', () => ({ getTimezone: getTimezoneMock }));
+// TODO: add tests for file handling on transcripts
+vi.mock('../../../../../../app/file-upload/server', () => ({ FileUpload: {} }));
+
+const { sendTranscript } = await import('../../../../../../app/livechat/server/lib/sendTranscript');
 
 describe('Send transcript', () => {
 	beforeEach(() => {

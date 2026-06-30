@@ -1,23 +1,25 @@
 import { expect } from 'chai';
-import { describe, it, beforeEach, after } from 'mocha';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, beforeEach, afterAll, vi } from 'vitest';
 
-const workOnPdfStub = sinon.stub();
-const queueWorkStub = sinon.stub();
+const { workOnPdfStub, queueWorkStub } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
+		workOnPdfStub: sinon.stub(),
+		queueWorkStub: sinon.stub(),
+	};
+});
 
-const { requestPdfTranscript } = proxyquire
-	.noCallThru()
-	.load('../../../../../ee/app/livechat-enterprise/server/lib/requestPdfTranscript.ts', {
-		'@rocket.chat/core-services': {
-			OmnichannelTranscript: {
-				workOnPdf: workOnPdfStub,
-			},
-			QueueWorker: {
-				queueWork: queueWorkStub,
-			},
-		},
-	});
+vi.mock('@rocket.chat/core-services', () => ({
+	OmnichannelTranscript: {
+		workOnPdf: workOnPdfStub,
+	},
+	QueueWorker: {
+		queueWork: queueWorkStub,
+	},
+}));
+
+const { requestPdfTranscript } = await import('../../../../../ee/app/livechat-enterprise/server/lib/requestPdfTranscript');
 
 describe('requestPdfTranscript', () => {
 	const currentTestModeValue = process.env.TEST_MODE;
@@ -27,7 +29,7 @@ describe('requestPdfTranscript', () => {
 		queueWorkStub.reset();
 	});
 
-	after(() => {
+	afterAll(() => {
 		process.env.TEST_MODE = currentTestModeValue;
 	});
 

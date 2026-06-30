@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config';
+import { configDefaults, defineConfig } from 'vitest/config';
 
 // Backend unit test configuration. Replaces the Mocha setups previously defined in
 // `.mocharc.js` (unit) and `.mocharc.definition.js` (type-guard definition tests).
@@ -8,11 +8,25 @@ const setupFiles = ['./tests/setup/vitestSetup.ts'];
 
 // Many specs use bare global `describe`/`it` (no import), as they did under Mocha, so globals
 // are enabled. Specs that previously imported from 'mocha' are codemodded to import from
-// 'vitest' and work alongside the globals. NOTE: `globals` is not inherited from the root
-// `test` config by projects — it must be set on each project.
+// 'vitest' and work alongside the globals. NOTE: `globals`/`exclude` are not inherited from the
+// root `test` config by projects — they must be set on each project.
 const globals = true;
 
+// Keep Vitest's default excludes (node_modules, dist, …) and add committed-empty placeholder specs
+// (abandoned stubs from old feature PRs) that Mocha silently ignored but Vitest errors on.
+const exclude = [
+	...configDefaults.exclude,
+	'tests/unit/app/livechat/server/outbound/outbound.spec.ts',
+	'tests/unit/server/services/room/hooks/FederationActions.tests.ts',
+];
+
 export default defineConfig({
+	// chai + its plugins add exports at runtime (e.g. chai-spies' `spy`). Vitest's dep pre-bundling
+	// snapshots only statically-detectable exports, dropping those — so exclude them from optimization
+	// to preserve `import { spy } from 'chai'` and friends.
+	optimizeDeps: {
+		exclude: ['chai', 'chai-spies', 'chai-as-promised', 'chai-datetime', 'chai-dom'],
+	},
 	test: {
 		projects: [
 			{
@@ -21,6 +35,7 @@ export default defineConfig({
 					environment: 'node',
 					globals,
 					setupFiles,
+					exclude,
 					include: [
 						'server/lib/callbacks.spec.ts',
 						'server/lib/cas/*.spec.ts',

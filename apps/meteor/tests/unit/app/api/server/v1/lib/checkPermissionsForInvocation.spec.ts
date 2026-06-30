@@ -1,34 +1,43 @@
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
-import mock from 'proxyquire';
-import Sinon from 'sinon';
+import { describe, it, vi } from 'vitest';
 
 import type { PermissionsPayload } from '../../../../../../../app/api/server/api.helpers';
 
-const userPermissions: { [k: string]: string[] } = {
-	'4r3fsadfasf': ['view-all', 'view-none'],
-	'4r3fsadfasf2': ['view-all', 'view-0'],
-	'4r3fsadfasf3': ['view-all', 'view-1'],
-	'4r3fsadfasf4': [],
-};
+const { hasPermission } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
 
-const mocks = {
-	'../../authorization/server/functions/hasPermission': {
-		hasAllPermissionAsync: (userId: string, permissions: string[]): boolean => {
-			return permissions.every((permission) => userPermissions[userId].includes(permission));
-		},
-		hasAtLeastOnePermissionAsync: (userId: string, permissions: string[]): boolean => {
-			return permissions.some((permission) => userPermissions[userId].includes(permission));
-		},
-	},
-	'../../lib/server/lib/deprecationWarningLogger': {
-		apiDeprecationLogger: {
-			endpoint: Sinon.stub(),
-		},
-	},
-};
+	const userPermissions: { [k: string]: string[] } = {
+		'4r3fsadfasf': ['view-all', 'view-none'],
+		'4r3fsadfasf2': ['view-all', 'view-0'],
+		'4r3fsadfasf3': ['view-all', 'view-1'],
+		'4r3fsadfasf4': [],
+	};
 
-const { checkPermissionsForInvocation } = mock.noCallThru().load('../../../../../../../app/api/server/api.helpers', mocks);
+	return {
+		hasPermission: {
+			hasAllPermissionAsync: (userId: string, permissions: string[]): boolean => {
+				return permissions.every((permission) => userPermissions[userId].includes(permission));
+			},
+			hasAtLeastOnePermissionAsync: (userId: string, permissions: string[]): boolean => {
+				return permissions.some((permission) => userPermissions[userId].includes(permission));
+			},
+			apiDeprecationLogger: {
+				endpoint: sinon.stub(),
+			},
+		},
+	};
+});
+
+vi.mock('../../../../../../../app/authorization/server/functions/hasPermission', () => ({
+	hasAllPermissionAsync: hasPermission.hasAllPermissionAsync,
+	hasAtLeastOnePermissionAsync: hasPermission.hasAtLeastOnePermissionAsync,
+}));
+vi.mock('../../../../../../../app/lib/server/lib/deprecationWarningLogger', () => ({
+	apiDeprecationLogger: hasPermission.apiDeprecationLogger,
+}));
+
+const { checkPermissionsForInvocation } = await import('../../../../../../../app/api/server/api.helpers');
 
 describe('checkPermissionsForInvocation', () => {
 	it('should return false when no permissions are provided', async () => {

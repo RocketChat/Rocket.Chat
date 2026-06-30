@@ -1,60 +1,80 @@
 import { expect } from 'chai';
-import { before, beforeEach, describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import { beforeAll, beforeEach, describe, it, vi } from 'vitest';
 
 import { createFakeMessageWithAttachment } from '../../../../tests/mocks/data';
 
-const fakeStorageModel = { findOneById: sinon.stub(), deleteFile: sinon.stub() };
-const settingsStub = { watch: sinon.stub(), get: sinon.stub() };
-const settingsGetMap = new Map();
-const messagesModelStub = {
-	find: sinon.stub(),
-};
-const usersModelStub = {
-	findOneByIdAndLoginToken: sinon.stub(),
-};
-const subscriptionsModelStub = {
-	findOneByRoomIdAndUserId: sinon.stub(),
-};
-const validateAndDecodeJWTStub = sinon.stub();
-const systemLoggerStub = {
-	error: sinon.stub(),
-};
-const roomCoordinatorStub = {
-	getRoomDirectives: sinon.stub(),
-};
-
-const { FileUpload, FileUploadClass } = proxyquire.noCallThru().load('./FileUpload', {
-	'@rocket.chat/models': {
-		Messages: messagesModelStub,
-		Users: usersModelStub,
-		Subscriptions: subscriptionsModelStub,
-	},
-	'meteor/check': sinon.stub(),
-	'meteor/meteor': sinon.stub(),
-	'meteor/ostrio:cookies': { Cookies: sinon.stub() },
-	'sharp': sinon.stub(),
-	'stream-buffers': sinon.stub(),
-	'@rocket.chat/tools': sinon.stub(),
-	'../../../../server/lib/i18n': sinon.stub(),
-	'../../../../server/lib/logger/system': { SystemLogger: systemLoggerStub },
-	'../../../../server/lib/rooms/roomCoordinator': { roomCoordinator: roomCoordinatorStub },
-	'../../../../server/ufs': sinon.stub(),
-	'../../../../server/ufs/ufs-methods': sinon.stub(),
-	'../../../settings/server': { settings: settingsStub },
-	'../../../utils/lib/mimeTypes': sinon.stub(),
-	'../../../utils/server/lib/JWTHelper': {
-		validateAndDecodeJWT: validateAndDecodeJWTStub,
-		generateJWT: sinon.stub(),
-	},
-	'../../../utils/server/restrictions': sinon.stub(),
-	'../../../api/server/lib/MultipartUploadHandler': sinon.stub(),
-	'@rocket.chat/account-utils': { hashLoginToken: sinon.stub().callsFake((token) => `hashed_${token}`) },
+const {
+	fakeStorageModel,
+	settingsStub,
+	messagesModelStub,
+	usersModelStub,
+	subscriptionsModelStub,
+	validateAndDecodeJWTStub,
+	systemLoggerStub,
+	roomCoordinatorStub,
+	emptyStub,
+	generateJWTStub,
+	hashLoginTokenStub,
+	cookiesStub,
+} = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
+		fakeStorageModel: { findOneById: sinon.stub(), deleteFile: sinon.stub() },
+		settingsStub: { watch: sinon.stub(), get: sinon.stub() },
+		messagesModelStub: { find: sinon.stub() },
+		usersModelStub: { findOneByIdAndLoginToken: sinon.stub() },
+		subscriptionsModelStub: { findOneByRoomIdAndUserId: sinon.stub() },
+		validateAndDecodeJWTStub: sinon.stub(),
+		systemLoggerStub: { error: sinon.stub() },
+		roomCoordinatorStub: { getRoomDirectives: sinon.stub() },
+		emptyStub: sinon.stub(),
+		generateJWTStub: sinon.stub(),
+		hashLoginTokenStub: sinon.stub().callsFake((token: string) => `hashed_${token}`),
+		cookiesStub: sinon.stub(),
+	};
 });
 
+const settingsGetMap = new Map();
+
+vi.mock('@rocket.chat/models', () => ({
+	Messages: messagesModelStub,
+	Users: usersModelStub,
+	Subscriptions: subscriptionsModelStub,
+	// The source destructures these too; the original mock left them undefined. Declared here so the
+	// strict vi.mock proxy doesn't throw on access (they are never exercised by the tests).
+	Avatars: undefined,
+	UserDataFiles: undefined,
+	Uploads: undefined,
+	Settings: undefined,
+	Rooms: undefined,
+}));
+vi.mock('meteor/check', () => ({ default: emptyStub }));
+vi.mock('meteor/meteor', () => ({ default: emptyStub }));
+vi.mock('meteor/ostrio:cookies', () => ({ Cookies: cookiesStub }));
+vi.mock('sharp', () => ({ default: emptyStub }));
+vi.mock('stream-buffers', () => ({ default: emptyStub }));
+vi.mock('@rocket.chat/tools', () => ({ default: emptyStub }));
+vi.mock('../../../../server/lib/i18n', () => ({ default: emptyStub }));
+vi.mock('../../../../server/lib/logger/system', () => ({ SystemLogger: systemLoggerStub }));
+vi.mock('../../../../server/lib/rooms/roomCoordinator', () => ({ roomCoordinator: roomCoordinatorStub }));
+vi.mock('../../../../server/ufs', () => ({ default: emptyStub }));
+vi.mock('../../../../server/ufs/ufs-methods', () => ({ default: emptyStub }));
+vi.mock('../../../settings/server', () => ({ settings: settingsStub }));
+vi.mock('../../../utils/lib/mimeTypes', () => ({ default: emptyStub }));
+vi.mock('../../../utils/server/lib/JWTHelper', () => ({
+	validateAndDecodeJWT: validateAndDecodeJWTStub,
+	generateJWT: generateJWTStub,
+}));
+vi.mock('../../../utils/server/restrictions', () => ({ default: emptyStub }));
+vi.mock('../../../api/server/lib/MultipartUploadHandler', () => ({ default: emptyStub }));
+vi.mock('@rocket.chat/account-utils', () => ({ hashLoginToken: hashLoginTokenStub }));
+
+const { FileUpload, FileUploadClass } = await import('./FileUpload');
+
 describe('FileUpload', () => {
-	before(() => {
+	beforeAll(() => {
 		new FileUploadClass({ name: 'fakeStorage:Uploads', model: fakeStorageModel, store: {} });
 		settingsGetMap.set('FileUpload_Storage_Type', 'fakeStorage');
 		settingsStub.get.callsFake((settingName) => settingsGetMap.get(settingName));

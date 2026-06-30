@@ -1,17 +1,42 @@
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import { beforeEach, afterEach, describe, it, vi } from 'vitest';
 
-class CookiesMock {
-	public get = (_key: any, value: any) => value;
-}
+const { mocks, sharpMock } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
+		mocks: {
+			settingsGet: sinon.stub(),
+			findOneByIdAndLoginToken: sinon.stub(),
+			fileUploadGet: sinon.spy(),
+		},
+		sharpMock: () => ({ toFormat: (format: any) => ({ pipe: (res: any) => res.write(format) }) }),
+	};
+});
 
-const mocks = {
-	settingsGet: sinon.stub(),
-	findOneByIdAndLoginToken: sinon.stub(),
-	fileUploadGet: sinon.spy(),
-};
+vi.mock('meteor/ostrio:cookies', () => {
+	class CookiesMock {
+		public get = (_key: any, value: any) => value;
+	}
+	return { Cookies: CookiesMock };
+});
+vi.mock('@rocket.chat/models', () => ({
+	Users: {
+		findOneByIdAndLoginToken: mocks.findOneByIdAndLoginToken,
+	},
+}));
+vi.mock('../../../app/file-upload/server', () => ({
+	FileUpload: {
+		get: mocks.fileUploadGet,
+	},
+}));
+vi.mock('../../../app/settings/server', () => ({
+	settings: {
+		get: mocks.settingsGet,
+	},
+}));
+vi.mock('sharp', () => ({ default: sharpMock, ...sharpMock }));
 
 const {
 	getAvatarSizeFromRequest,
@@ -23,30 +48,7 @@ const {
 	wasFallbackModified,
 	serveSvgAvatarInRequestedFormat,
 	serveAvatarFile,
-} = proxyquire.noCallThru().load('./utils', {
-	'meteor/ostrio:cookies': {
-		Cookies: CookiesMock,
-	},
-	'../../../../app/utils/server/getURL': {
-		getURL: () => '',
-	},
-	'@rocket.chat/models': {
-		Users: {
-			findOneByIdAndLoginToken: mocks.findOneByIdAndLoginToken,
-		},
-	},
-	'../../../app/file-upload/server': {
-		FileUpload: {
-			get: mocks.fileUploadGet,
-		},
-	},
-	'../../../app/settings/server': {
-		settings: {
-			get: mocks.settingsGet,
-		},
-	},
-	'sharp': () => ({ toFormat: (format: any) => ({ pipe: (res: any) => res.write(format) }) }),
-});
+} = await import('./utils');
 
 describe('#serveAvatarFile()', () => {
 	const file = { uploadedAt: new Date(0), type: 'image/png', size: 100 };

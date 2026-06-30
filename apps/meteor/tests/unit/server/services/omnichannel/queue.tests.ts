@@ -1,21 +1,63 @@
 import { expect } from 'chai';
-import { beforeEach, describe, after, it } from 'mocha';
-import p from 'proxyquire';
-import Sinon from 'sinon';
+import { beforeEach, describe, afterAll, afterEach, it, vi } from 'vitest';
 
-const dispatchAgentDelegated = Sinon.stub();
-const getConfig = Sinon.stub();
-const delegateInquiry = Sinon.stub();
-const libSettings = { getInquirySortMechanismSetting: Sinon.stub().returns('timestamp') };
-const settings = {
-	get: Sinon.stub(),
-};
-
-const queueLogger = {
-	info: Sinon.stub(),
-	debug: Sinon.stub(),
-	error: Sinon.stub(),
-};
+// Mock objects built in `vi.hoisted` so the hoisted `vi.mock` factories can reference them. We also
+// expose the hoisted sinon instance as `Sinon` and use it for the test-body stubs, so that every
+// stub shares a single call-id counter — `calledAfter`/`calledBefore` compare those counters and
+// would break across two different sinon module instances.
+const {
+	Sinon,
+	dispatchAgentDelegated,
+	getConfig,
+	delegateInquiry,
+	libSettings,
+	settings,
+	queueLogger,
+	models,
+	license,
+	metrics,
+	notifyOnLivechatInquiryChangedByRoom,
+} = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
+		Sinon: sinon,
+		dispatchAgentDelegated: sinon.stub(),
+		getConfig: sinon.stub(),
+		delegateInquiry: sinon.stub(),
+		libSettings: { getInquirySortMechanismSetting: sinon.stub().returns('timestamp') },
+		settings: { get: sinon.stub() },
+		queueLogger: {
+			info: sinon.stub(),
+			debug: sinon.stub(),
+			error: sinon.stub(),
+		},
+		models: {
+			LivechatInquiry: {
+				unlockAll: sinon.stub(),
+				findNextAndLock: sinon.stub(),
+				getDistinctQueuedDepartments: sinon.stub(),
+				unlock: sinon.stub(),
+				removeByRoomId: sinon.stub(),
+				takeInquiry: sinon.stub(),
+			},
+			LivechatRooms: {
+				findOneById: sinon.stub(),
+			},
+		},
+		license: { shouldPreventAction: sinon.stub() },
+		metrics: {
+			timeToQueueProcessingByQueue: { observe: sinon.stub() },
+			timeToQueueProcessingByQueueHistogram: { observe: sinon.stub() },
+			totalItemsProcessedByQueue: { inc: sinon.stub() },
+			totalItemsProcessedByReconciliationQueue: { inc: sinon.stub() },
+			totalItemsFailedByQueue: { inc: sinon.stub() },
+		},
+		// Side-effect-only dependency: the source fires `void notifyOnLivechatInquiryChangedByRoom(...)`.
+		// proxyquire left it real (and Mocha swallowed the rejections); stub it to silence noise.
+		notifyOnLivechatInquiryChangedByRoom: sinon.stub(),
+	};
+});
 
 const mockedInquiry = {
 	_id: 'inquiryId',
@@ -24,49 +66,17 @@ const mockedInquiry = {
 	ts: new Date(),
 };
 
-const models = {
-	LivechatInquiry: {
-		unlockAll: Sinon.stub(),
-		findNextAndLock: Sinon.stub(),
-		getDistinctQueuedDepartments: Sinon.stub(),
-		unlock: Sinon.stub(),
-		removeByRoomId: Sinon.stub(),
-		takeInquiry: Sinon.stub(),
-	},
-	LivechatRooms: {
-		findOneById: Sinon.stub(),
-	},
-};
+vi.mock('../../../../../app/livechat/server/lib/Helper', () => ({ dispatchAgentDelegated }));
+vi.mock('../../../../../app/livechat/server/lib/RoutingManager', () => ({ RoutingManager: { getConfig, delegateInquiry } }));
+vi.mock('../../../../../app/livechat/server/lib/settings', () => libSettings);
+vi.mock('../../../../../app/settings/server', () => ({ settings }));
+vi.mock('../../../../../server/services/omnichannel/logger', () => ({ queueLogger }));
+vi.mock('@rocket.chat/models', () => models);
+vi.mock('@rocket.chat/license', () => ({ License: license }));
+vi.mock('../../../../../app/metrics/server', () => ({ metrics }));
+vi.mock('../../../../../app/lib/server/lib/notifyListener', () => ({ notifyOnLivechatInquiryChangedByRoom }));
 
-const license = {
-	shouldPreventAction: Sinon.stub(),
-};
-
-const { OmnichannelQueue } = p.noCallThru().load('../../../../../server/services/omnichannel/queue', {
-	'../../../app/livechat/server/lib/Helper': {
-		dispatchAgentDelegated,
-	},
-	'../../../app/livechat/server/lib/RoutingManager': {
-		RoutingManager: {
-			getConfig,
-			delegateInquiry,
-		},
-	},
-	'../../../app/livechat/server/lib/settings': libSettings,
-	'../../../app/settings/server': { settings },
-	'./logger': { queueLogger },
-	'@rocket.chat/models': models,
-	'@rocket.chat/license': { License: license },
-	'../../../app/metrics/server': {
-		metrics: {
-			timeToQueueProcessingByQueue: { observe: Sinon.stub() },
-			timeToQueueProcessingByQueueHistogram: { observe: Sinon.stub() },
-			totalItemsProcessedByQueue: { inc: Sinon.stub() },
-			totalItemsProcessedByReconciliationQueue: { inc: Sinon.stub() },
-			totalItemsFailedByQueue: { inc: Sinon.stub() },
-		},
-	},
-});
+const { OmnichannelQueue } = await import('../../../../../server/services/omnichannel/queue');
 
 describe('Omnichannel Queue processor', () => {
 	describe('isRunning', () => {
@@ -81,7 +91,7 @@ describe('Omnichannel Queue processor', () => {
 		});
 	});
 	describe('delay', () => {
-		after(() => {
+		afterAll(() => {
 			settings.get.reset();
 		});
 		it('should return 5000 if setting is not set', () => {
@@ -98,7 +108,7 @@ describe('Omnichannel Queue processor', () => {
 		});
 	});
 	describe('getActiveQueues', () => {
-		after(() => {
+		afterAll(() => {
 			models.LivechatInquiry.getDistinctQueuedDepartments.reset();
 		});
 		it('should return empty array when there are no active queues', async () => {
@@ -133,7 +143,7 @@ describe('Omnichannel Queue processor', () => {
 		afterEach(() => {
 			clock.restore();
 		});
-		after(() => {
+		afterAll(() => {
 			models.LivechatInquiry.findNextAndLock.reset();
 			models.LivechatInquiry.takeInquiry.reset();
 			models.LivechatInquiry.unlock.reset();
@@ -197,7 +207,7 @@ describe('Omnichannel Queue processor', () => {
 			settings.get.resetHistory();
 			getConfig.resetHistory();
 		});
-		after(() => {
+		afterAll(() => {
 			settings.get.reset();
 			getConfig.reset();
 		});
@@ -278,7 +288,7 @@ describe('Omnichannel Queue processor', () => {
 		afterEach(() => {
 			clock.restore();
 		});
-		after(() => {
+		afterAll(() => {
 			models.LivechatRooms.findOneById.reset();
 			models.LivechatInquiry.takeInquiry.reset();
 			delegateInquiry.reset();
@@ -357,7 +367,7 @@ describe('Omnichannel Queue processor', () => {
 			queueLogger.debug.reset();
 		});
 
-		after(() => {
+		afterAll(() => {
 			license.shouldPreventAction.reset();
 			queueLogger.debug.reset();
 		});
@@ -392,7 +402,7 @@ describe('Omnichannel Queue processor', () => {
 			queueLogger.info.resetHistory();
 			queueLogger.debug.resetHistory();
 		});
-		after(() => {
+		afterAll(() => {
 			queueLogger.info.reset();
 			queueLogger.debug.reset();
 		});
@@ -423,7 +433,7 @@ describe('Omnichannel Queue processor', () => {
 			models.LivechatInquiry.unlockAll.reset();
 			queueLogger.info.resetHistory();
 		});
-		after(() => {
+		afterAll(() => {
 			models.LivechatInquiry.unlockAll.reset();
 			queueLogger.info.reset();
 		});

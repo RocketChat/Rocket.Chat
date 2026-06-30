@@ -1,54 +1,76 @@
 import { expect } from 'chai';
-import { beforeEach, describe, it } from 'mocha';
-import p from 'proxyquire';
-import sinon from 'sinon';
+import { beforeEach, describe, it, vi } from 'vitest';
 
-const meteorMethodsMock = sinon.stub();
-const emojiList: Record<string, any> = {};
-const modelsMock = {
-	EmojiCustom: {
-		countByNameOrAlias: sinon.stub(),
-	},
-	Users: {
-		findOneById: sinon.stub(),
-	},
-	Messages: {
-		findOneById: sinon.stub(),
-		setReactions: sinon.stub(),
-		unsetReactions: sinon.stub(),
-	},
-	Rooms: {
-		findOneById: sinon.stub(),
-		unsetReactionsInLastMessage: sinon.stub(),
-		setReactionsInLastMessage: sinon.stub(),
-	},
-};
-const canAccessRoomAsyncMock = sinon.stub();
-const isTheLastMessageMock = sinon.stub();
-const notifyOnMessageChangeMock = sinon.stub();
-const hasPermissionAsyncMock = sinon.stub();
-const i18nMock = { t: sinon.stub() };
-const callbacksRunMock = sinon.stub();
-const meteorErrorMock = class extends Error {
-	constructor(message: string) {
-		super(message);
-	}
-};
-
-const { removeUserReaction, executeSetReaction, setReaction } = p.noCallThru().load('../../../../../app/reactions/server/setReaction.ts', {
-	'@rocket.chat/models': modelsMock,
-	'@rocket.chat/core-services': { Message: { beforeReacted: sinon.stub() } },
-	'meteor/meteor': { Meteor: { methods: meteorMethodsMock, Error: meteorErrorMock } },
-	'../../../server/lib/callbacks': { callbacks: { run: callbacksRunMock } },
-	'../../../server/lib/i18n': { i18n: i18nMock },
-	'../../authorization/server': { canAccessRoomAsync: canAccessRoomAsyncMock },
-	'../../authorization/server/functions/hasPermission': { hasPermissionAsync: hasPermissionAsyncMock },
-	'../../emoji/server': { emoji: { list: emojiList } },
-	'../../lib/server/functions/isTheLastMessage': { isTheLastMessage: isTheLastMessageMock },
-	'../../lib/server/lib/notifyListener': {
-		notifyOnMessageChange: notifyOnMessageChangeMock,
-	},
+// Stubs are created in `vi.hoisted` so the (hoisted) `vi.mock` factories can reference them. Because
+// the spec asserts with `sinon.match(...)`, which IS cross-sinon-instance-sensitive, `match` is also
+// sourced from the hoisted sinon instance (see `match`).
+const {
+	match,
+	meteorMethodsMock,
+	emojiList,
+	modelsMock,
+	messageBeforeReactedMock,
+	canAccessRoomAsyncMock,
+	isTheLastMessageMock,
+	notifyOnMessageChangeMock,
+	hasPermissionAsyncMock,
+	i18nMock,
+	callbacksRunMock,
+	meteorErrorMock,
+} = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
+		match: sinon.match,
+		meteorMethodsMock: sinon.stub(),
+		emojiList: {} as Record<string, any>,
+		modelsMock: {
+			EmojiCustom: {
+				countByNameOrAlias: sinon.stub(),
+			},
+			Users: {
+				findOneById: sinon.stub(),
+			},
+			Messages: {
+				findOneById: sinon.stub(),
+				setReactions: sinon.stub(),
+				unsetReactions: sinon.stub(),
+			},
+			Rooms: {
+				findOneById: sinon.stub(),
+				unsetReactionsInLastMessage: sinon.stub(),
+				setReactionsInLastMessage: sinon.stub(),
+			},
+		},
+		messageBeforeReactedMock: sinon.stub(),
+		canAccessRoomAsyncMock: sinon.stub(),
+		isTheLastMessageMock: sinon.stub(),
+		notifyOnMessageChangeMock: sinon.stub(),
+		hasPermissionAsyncMock: sinon.stub(),
+		i18nMock: { t: sinon.stub() },
+		callbacksRunMock: sinon.stub(),
+		meteorErrorMock: class extends Error {
+			constructor(message: string) {
+				super(message);
+			}
+		},
+	};
 });
+
+vi.mock('@rocket.chat/models', () => modelsMock);
+vi.mock('@rocket.chat/core-services', () => ({ Message: { beforeReacted: messageBeforeReactedMock } }));
+vi.mock('meteor/meteor', () => ({ Meteor: { methods: meteorMethodsMock, Error: meteorErrorMock } }));
+vi.mock('../../../../../server/lib/callbacks', () => ({ callbacks: { run: callbacksRunMock } }));
+vi.mock('../../../../../server/lib/i18n', () => ({ i18n: i18nMock }));
+vi.mock('../../../../../app/authorization/server', () => ({ canAccessRoomAsync: canAccessRoomAsyncMock }));
+vi.mock('../../../../../app/authorization/server/functions/hasPermission', () => ({ hasPermissionAsync: hasPermissionAsyncMock }));
+vi.mock('../../../../../app/emoji/server', () => ({ emoji: { list: emojiList } }));
+vi.mock('../../../../../app/lib/server/functions/isTheLastMessage', () => ({ isTheLastMessage: isTheLastMessageMock }));
+vi.mock('../../../../../app/lib/server/lib/notifyListener', () => ({
+	notifyOnMessageChange: notifyOnMessageChangeMock,
+}));
+
+const { removeUserReaction, executeSetReaction, setReaction } = await import('../../../../../app/reactions/server/setReaction');
 
 describe('Reactions', () => {
 	describe('removeUserReaction', () => {
@@ -282,7 +304,7 @@ describe('Reactions', () => {
 			const reaction = ':test:';
 
 			await setReaction(room, user, message, reaction, true);
-			expect(modelsMock.Messages.setReactions.calledWith(message._id, sinon.match({ ':test2:': { usernames: ['test'] } }))).to.be.true;
+			expect(modelsMock.Messages.setReactions.calledWith(message._id, match({ ':test2:': { usernames: ['test'] } }))).to.be.true;
 		});
 		it('should call Rooms.setReactionsInLastMessage when userAlreadyReacted is true and reaction is not the last one on message', async () => {
 			const room = {
@@ -308,8 +330,8 @@ describe('Reactions', () => {
 			isTheLastMessageMock.resolves(true);
 
 			await setReaction(room, user, message, reaction, true);
-			expect(modelsMock.Messages.setReactions.calledWith(message._id, sinon.match({ ':test2:': { usernames: ['test'] } }))).to.be.true;
-			expect(modelsMock.Rooms.setReactionsInLastMessage.calledWith(room._id, sinon.match({ ':test2:': { usernames: ['test'] } }))).to.be
+			expect(modelsMock.Messages.setReactions.calledWith(message._id, match({ ':test2:': { usernames: ['test'] } }))).to.be.true;
+			expect(modelsMock.Rooms.setReactionsInLastMessage.calledWith(room._id, match({ ':test2:': { usernames: ['test'] } }))).to.be
 				.true;
 		});
 		it('should call afterUnsetReaction callback when userAlreadyReacted is true', async () => {
@@ -333,8 +355,8 @@ describe('Reactions', () => {
 			expect(
 				callbacksRunMock.calledWith(
 					'afterUnsetReaction',
-					sinon.match({ _id: 'test' }),
-					sinon.match({ user, reaction, shouldReact: false, oldMessage: message }),
+					match({ _id: 'test' }),
+					match({ user, reaction, shouldReact: false, oldMessage: message }),
 				),
 			).to.be.true;
 		});
@@ -350,7 +372,7 @@ describe('Reactions', () => {
 			};
 			const reaction = ':test:';
 			await setReaction(room, user, message, reaction, false);
-			expect(modelsMock.Messages.setReactions.calledWith(message._id, sinon.match({ ':test:': { usernames: ['test'] } }))).to.be.true;
+			expect(modelsMock.Messages.setReactions.calledWith(message._id, match({ ':test:': { usernames: ['test'] } }))).to.be.true;
 		});
 		it('should properly add username to the list of reactions when userAlreadyReacted is false', async () => {
 			const room = {
@@ -370,7 +392,7 @@ describe('Reactions', () => {
 			const reaction = ':test:';
 
 			await setReaction(room, user, message, reaction, false);
-			expect(modelsMock.Messages.setReactions.calledWith(message._id, sinon.match({ ':test:': { usernames: ['test', 'test2'] } }))).to.be
+			expect(modelsMock.Messages.setReactions.calledWith(message._id, match({ ':test:': { usernames: ['test', 'test2'] } }))).to.be
 				.true;
 		});
 		it('should call Rooms.setReactionInLastMessage when userAlreadyReacted is false', async () => {
@@ -389,8 +411,8 @@ describe('Reactions', () => {
 			isTheLastMessageMock.resolves(true);
 
 			await setReaction(room, user, message, reaction, false);
-			expect(modelsMock.Messages.setReactions.calledWith(message._id, sinon.match({ ':test:': { usernames: ['test'] } }))).to.be.true;
-			expect(modelsMock.Rooms.setReactionsInLastMessage.calledWith(room._id, sinon.match({ ':test:': { usernames: ['test'] } }))).to.be
+			expect(modelsMock.Messages.setReactions.calledWith(message._id, match({ ':test:': { usernames: ['test'] } }))).to.be.true;
+			expect(modelsMock.Rooms.setReactionsInLastMessage.calledWith(room._id, match({ ':test:': { usernames: ['test'] } }))).to.be
 				.true;
 		});
 		it('should call afterSetReaction callback when userAlreadyReacted is false', async () => {
@@ -407,7 +429,7 @@ describe('Reactions', () => {
 
 			await setReaction(room, user, message, reaction, false);
 			expect(
-				callbacksRunMock.calledWith('afterSetReaction', sinon.match({ _id: 'test' }), sinon.match({ user, reaction, shouldReact: true })),
+				callbacksRunMock.calledWith('afterSetReaction', match({ _id: 'test' }), match({ user, reaction, shouldReact: true })),
 			).to.be.true;
 		});
 		it('should return undefined on a successful reaction', async () => {

@@ -1,7 +1,5 @@
 import { expect } from 'chai';
-import { describe, it, beforeEach, afterEach } from 'mocha';
-import proxyquire from 'proxyquire';
-import Sinon from 'sinon';
+import { describe, it, beforeEach, afterEach, vi } from 'vitest';
 
 type RoomType = 'c' | 'p' | 'd' | 'l';
 
@@ -27,61 +25,64 @@ type GetRoomByNameOrIdWithOptionToJoinFn = (params: {
 	errorOnEmpty?: boolean;
 }) => Promise<IRoom | null>;
 
-const RoomsStub = {
-	findOneByIdOrName: Sinon.stub(),
-	findOneDirectRoomContainingAllUserIDs: Sinon.stub(),
-	findOneById: Sinon.stub(),
-};
-
-const SubscriptionsStub = {
-	findOneByRoomIdAndUserId: Sinon.stub(),
-};
-
-const UsersStub = {
-	findOneById: Sinon.stub(),
-	findOne: Sinon.stub(),
-};
-
-const RoomServiceStub = {
-	join: Sinon.stub().resolves(),
-};
-
-const MeteorStub = {
-	Meteor: {
-		Error: Sinon.stub().callsFake(function (this: any, code: string) {
-			this.error = code;
-			this.errorType = 'Meteor.Error';
-		} as any),
+const { Sinon, RoomsStub, SubscriptionsStub, UsersStub, RoomServiceStub, MeteorStub, createDirectMessageStub, isObjectMock } = vi.hoisted(
+	() => {
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		const Sinon = require('sinon');
+		return {
+			Sinon,
+			RoomsStub: {
+				findOneByIdOrName: Sinon.stub(),
+				findOneDirectRoomContainingAllUserIDs: Sinon.stub(),
+				findOneById: Sinon.stub(),
+			},
+			SubscriptionsStub: {
+				findOneByRoomIdAndUserId: Sinon.stub(),
+			},
+			UsersStub: {
+				findOneById: Sinon.stub(),
+				findOne: Sinon.stub(),
+			},
+			RoomServiceStub: {
+				join: Sinon.stub().resolves(),
+			},
+			MeteorStub: {
+				Meteor: {
+					Error: Sinon.stub().callsFake(function (this: any, code: string) {
+						this.error = code;
+						this.errorType = 'Meteor.Error';
+					} as any),
+				},
+			},
+			createDirectMessageStub: Sinon.stub().resolves({ rid: 'newDirectRoomId' }),
+			isObjectMock: {
+				isObject(obj: unknown) {
+					return obj !== null && typeof obj === 'object';
+				},
+			},
+		};
 	},
-};
+);
 
-const createDirectMessageStub = Sinon.stub().resolves({ rid: 'newDirectRoomId' });
-
-const isObjectMock = {
-	isObject(obj: unknown) {
-		return obj !== null && typeof obj === 'object';
-	},
-};
+vi.mock('@rocket.chat/models', () => ({
+	Rooms: RoomsStub,
+	Subscriptions: SubscriptionsStub,
+	Users: UsersStub,
+}));
+vi.mock('@rocket.chat/core-services', () => ({
+	Room: RoomServiceStub,
+}));
+vi.mock('../../../../../../lib/utils/isObject', () => isObjectMock);
+vi.mock('../../../../../../server/methods/createDirectMessage', () => ({
+	createDirectMessage: createDirectMessageStub,
+}));
+vi.mock('meteor/meteor', () => MeteorStub);
 
 const {
 	getRoomByNameOrIdWithOptionToJoin,
 }: {
 	getRoomByNameOrIdWithOptionToJoin: GetRoomByNameOrIdWithOptionToJoinFn;
-} = proxyquire.noCallThru().load('../../../../../../../meteor/app/lib/server/functions/getRoomByNameOrIdWithOptionToJoin.ts', {
-	'@rocket.chat/models': {
-		Rooms: RoomsStub,
-		Subscriptions: SubscriptionsStub,
-		Users: UsersStub,
-	},
-	'@rocket.chat/core-services': {
-		Room: RoomServiceStub,
-	},
-	'../../../../lib/utils/isObject': isObjectMock,
-	'../../../../server/methods/createDirectMessage': {
-		createDirectMessage: createDirectMessageStub,
-	},
-	'meteor/meteor': MeteorStub,
-}) as any;
+} = (await import('../../../../../../app/lib/server/functions/getRoomByNameOrIdWithOptionToJoin')) as any;
 
 describe('getRoomByNameOrIdWithOptionToJoin', () => {
 	const baseUser: IUser = {

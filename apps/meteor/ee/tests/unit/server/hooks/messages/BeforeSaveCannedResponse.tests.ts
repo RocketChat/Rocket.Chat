@@ -1,6 +1,6 @@
 import { registerModel, BaseRaw } from '@rocket.chat/models';
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { beforeAll, describe, it } from 'vitest';
 import sinon from 'sinon';
 
 import { BeforeSaveCannedResponse } from '../../../../../server/hooks/messages/BeforeSaveCannedResponse';
@@ -51,7 +51,7 @@ const db = {
 };
 
 describe('Omnichannel canned responses', () => {
-	before(() => {
+	beforeAll(() => {
 		registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsModel(db as unknown as any, 'visitor'));
 		registerModel('IUsersModel', () => new UsersModel(db as unknown as any, 'user'));
 	});

@@ -1,62 +1,54 @@
 import { expect } from 'chai';
-import { beforeEach, describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { beforeEach, describe, it, vi } from 'vitest';
 
-const Rooms = {
-	findDefaultRoomsForTeam: sinon.stub(),
-};
+// Stubs built in `vi.hoisted` so the hoisted `vi.mock` factories can reference them.
+const { Rooms, Users, addUserToRoom, saveRoomName, saveRoomType, checkUsernameAvailability, getSubscribedRoomsForUserWithDetails, removeUserFromRoom, notifyOnSubscriptionChangedByRoomIdAndUserId, notifyOnRoomChangedById, settingsGet } =
+	vi.hoisted(() => {
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		const sinon = require('sinon');
+		return {
+			Rooms: { findDefaultRoomsForTeam: sinon.stub() },
+			Users: { findActiveByIds: sinon.stub() },
+			addUserToRoom: sinon.stub(),
+			saveRoomName: sinon.stub(),
+			saveRoomType: sinon.stub(),
+			checkUsernameAvailability: sinon.stub(),
+			getSubscribedRoomsForUserWithDetails: sinon.stub(),
+			removeUserFromRoom: sinon.stub(),
+			notifyOnSubscriptionChangedByRoomIdAndUserId: sinon.stub(),
+			notifyOnRoomChangedById: sinon.stub(),
+			settingsGet: sinon.stub(),
+		};
+	});
 
-const Users = {
-	findActiveByIds: sinon.stub(),
-};
+vi.mock('@rocket.chat/core-services', () => ({
+	Room: {},
+	Authorization: {},
+	Message: {},
+	ServiceClassInternal: class {},
+	api: {},
+}));
+vi.mock('@rocket.chat/models', () => ({
+	Team: {},
+	Rooms,
+	Subscriptions: {},
+	Users,
+	TeamMember: {},
+}));
+vi.mock('@rocket.chat/string-helpers', () => ({ escapeRegExp: (value: string) => value }));
+vi.mock('../../../../../app/channel-settings/server', () => ({ saveRoomName }));
+vi.mock('../../../../../app/channel-settings/server/functions/saveRoomType', () => ({ saveRoomType }));
+vi.mock('../../../../../app/lib/server/functions/addUserToRoom', () => ({ addUserToRoom }));
+vi.mock('../../../../../app/lib/server/functions/checkUsernameAvailability', () => ({ checkUsernameAvailability }));
+vi.mock('../../../../../app/lib/server/functions/getRoomsWithSingleOwner', () => ({ getSubscribedRoomsForUserWithDetails }));
+vi.mock('../../../../../app/lib/server/functions/removeUserFromRoom', () => ({ removeUserFromRoom }));
+vi.mock('../../../../../app/lib/server/lib/notifyListener', () => ({
+	notifyOnSubscriptionChangedByRoomIdAndUserId,
+	notifyOnRoomChangedById,
+}));
+vi.mock('../../../../../app/settings/server', () => ({ settings: { get: settingsGet } }));
 
-const addUserToRoom = sinon.stub();
-
-const { TeamService } = proxyquire.noCallThru().load('../../../../../server/services/team/service', {
-	'@rocket.chat/core-services': {
-		Room: {},
-		Authorization: {},
-		Message: {},
-		ServiceClassInternal: class {},
-		api: {},
-	},
-	'@rocket.chat/models': {
-		Team: {},
-		Rooms,
-		Subscriptions: {},
-		Users,
-		TeamMember: {},
-	},
-	'@rocket.chat/string-helpers': {
-		escapeRegExp: (value: string) => value,
-	},
-	'../../../app/channel-settings/server': {
-		saveRoomName: sinon.stub(),
-	},
-	'../../../app/channel-settings/server/functions/saveRoomType': {
-		saveRoomType: sinon.stub(),
-	},
-	'../../../app/lib/server/functions/addUserToRoom': {
-		addUserToRoom,
-	},
-	'../../../app/lib/server/functions/checkUsernameAvailability': {
-		checkUsernameAvailability: sinon.stub(),
-	},
-	'../../../app/lib/server/functions/getRoomsWithSingleOwner': {
-		getSubscribedRoomsForUserWithDetails: sinon.stub(),
-	},
-	'../../../app/lib/server/functions/removeUserFromRoom': {
-		removeUserFromRoom: sinon.stub(),
-	},
-	'../../../app/lib/server/lib/notifyListener': {
-		notifyOnSubscriptionChangedByRoomIdAndUserId: sinon.stub(),
-		notifyOnRoomChangedById: sinon.stub(),
-	},
-	'../../../app/settings/server': {
-		settings: { get: sinon.stub() },
-	},
-});
+const { TeamService } = await import('../../../../../server/services/team/service');
 
 const service = new TeamService();
 
@@ -67,9 +59,7 @@ describe('Team service', () => {
 		Users.findActiveByIds.reset();
 	});
 
-	it('should wait for default room membership operations to finish', async function () {
-		this.timeout(15000);
-
+	it('should wait for default room membership operations to finish', async () => {
 		addUserToRoom.onFirstCall().resolves(true);
 		addUserToRoom.onSecondCall().returns(
 			new Promise<void>((resolve) => {
@@ -96,11 +86,9 @@ describe('Team service', () => {
 		]);
 
 		expect(addUserToRoom.callCount).to.equal(2);
-	});
+	}, 15000);
 
-	it('should propagate errors from default room membership operations', async function () {
-		this.timeout(15000);
-
+	it('should propagate errors from default room membership operations', async () => {
 		addUserToRoom.rejects(new Error('room-add-failed'));
 		Rooms.findDefaultRoomsForTeam.returns({
 			toArray: () => Promise.resolve([{ _id: 'default-room' }]),
@@ -114,5 +102,5 @@ describe('Team service', () => {
 		).to.be.rejectedWith('room-add-failed');
 
 		expect(addUserToRoom.callCount).to.equal(1);
-	});
+	}, 15000);
 });

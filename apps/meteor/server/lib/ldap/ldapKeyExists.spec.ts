@@ -1,6 +1,6 @@
 import type { ILDAPEntry } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
+import { describe, it } from 'vitest';
 
 import { ldapKeyExists } from './ldapKeyExists';
 

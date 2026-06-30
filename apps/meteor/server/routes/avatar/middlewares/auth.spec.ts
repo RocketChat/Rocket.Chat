@@ -1,18 +1,23 @@
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import { afterEach, describe, it, vi } from 'vitest';
 
-const mocks = {
-	utils: {
-		userCanAccessAvatar: sinon.stub(),
-		renderSVGLetters: sinon.stub(),
-	},
-};
-
-const { protectAvatarsWithFallback, protectAvatars } = proxyquire.noCallThru().load('./auth.ts', {
-	'../utils': mocks.utils,
+const { mocks } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
+		mocks: {
+			utils: {
+				userCanAccessAvatar: sinon.stub(),
+				renderSVGLetters: sinon.stub(),
+			},
+		},
+	};
 });
+
+vi.mock('../utils', () => mocks.utils);
+
+const { protectAvatarsWithFallback, protectAvatars } = await import('./auth');
 
 describe('#protectAvatarsWithFallback()', () => {
 	const response = {

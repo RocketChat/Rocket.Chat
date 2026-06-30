@@ -1,36 +1,23 @@
 import { expect } from 'chai';
-import { describe, it, before } from 'mocha';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, beforeEach, vi } from 'vitest';
 
-const hasAllPermissionAsyncMock = sinon.stub();
-const getCachedSupportedVersionsTokenMock = sinon.stub();
+const { hasAllPermissionAsyncMock, getCachedSupportedVersionsTokenMock } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return { hasAllPermissionAsyncMock: sinon.stub(), getCachedSupportedVersionsTokenMock: sinon.stub() };
+});
+
+vi.mock('../../../utils/rocketchat.info', () => ({ Info: { version: '3.0.1' } }));
+vi.mock('../../../authorization/server/functions/hasPermission', () => ({ hasPermissionAsync: hasAllPermissionAsyncMock }));
+vi.mock('../../../cloud/server/functions/supportedVersionsToken/supportedVersionsToken', () => ({
+	getCachedSupportedVersionsToken: getCachedSupportedVersionsTokenMock,
+}));
+vi.mock('../../../settings/server', () => ({ settings: new Map() }));
+
+const { getServerInfo } = await import('./getServerInfo');
 
 // #ToDo: Fix those tests in a separate PR
 describe.skip('#getServerInfo()', () => {
-	let getServerInfo: any;
-
-	before(() => {
-		const { getServerInfo: importedGetServerInfo } = proxyquire.noCallThru().load('./getServerInfo', {
-			'../../../utils/rocketchat.info': {
-				Info: {
-					version: '3.0.1',
-				},
-			},
-			'../../../authorization/server/functions/hasPermission': {
-				hasPermissionAsync: hasAllPermissionAsyncMock,
-			},
-			'../../../cloud/server/functions/supportedVersionsToken/supportedVersionsToken': {
-				getCachedSupportedVersionsToken: getCachedSupportedVersionsTokenMock,
-			},
-			'../../../settings/server': {
-				settings: new Map(),
-			},
-		});
-
-		getServerInfo = importedGetServerInfo;
-	});
-
 	beforeEach(() => {
 		hasAllPermissionAsyncMock.reset();
 		getCachedSupportedVersionsTokenMock.reset();

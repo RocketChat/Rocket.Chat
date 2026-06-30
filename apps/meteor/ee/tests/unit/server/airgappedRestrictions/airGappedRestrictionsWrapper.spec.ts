@@ -1,25 +1,25 @@
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import { describe, it, vi } from 'vitest';
 
 import { applyAirGappedRestrictionsValidation } from '../../../../../app/license/server/airGappedRestrictionsWrapper';
 
+// The patch module (imported below) installs its behaviour onto the real
+// `applyAirGappedRestrictionsValidation`. We only need to control `AirGappedRestriction.restricted`,
+// so we mock `@rocket.chat/license` with a getter backed by a mutable flag.
 let restrictionFlag = true;
 
-const airgappedModule = {
-	get restricted() {
-		return restrictionFlag;
+vi.mock('@rocket.chat/license', () => ({
+	AirGappedRestriction: {
+		get restricted() {
+			return restrictionFlag;
+		},
 	},
-};
+}));
 
-proxyquire.noCallThru().load('../../../../server/patches/airGappedRestrictionsWrapper.ts', {
-	'@rocket.chat/license': {
-		AirGappedRestriction: airgappedModule,
-	},
-	'../../../app/license/server/airGappedRestrictionsWrapper': {
-		applyAirGappedRestrictionsValidation,
-	},
-});
+// Loading the patch file applies the patch to `applyAirGappedRestrictionsValidation` (replaces the
+// old `proxyquire.load(...)` whose only purpose was to execute the patch with the license mock).
+await import('../../../../server/patches/airGappedRestrictionsWrapper');
 
 describe('#airGappedRestrictionsWrapper()', () => {
 	it('should throw an error when the workspace is restricted', async () => {

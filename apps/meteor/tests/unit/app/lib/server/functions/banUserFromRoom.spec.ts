@@ -1,48 +1,50 @@
 import { expect } from 'chai';
-import { beforeEach, describe, it } from 'mocha';
-import p from 'proxyquire';
-import sinon from 'sinon';
+import { beforeEach, describe, it, vi } from 'vitest';
 
-const modelsMock = {
-	Rooms: {
-		findOneById: sinon.stub(),
-		incUsersCountById: sinon.stub(),
-	},
-	Subscriptions: {
-		findOneByRoomIdAndUserId: sinon.stub(),
-		banByRoomIdAndUserId: sinon.stub(),
-	},
-	Users: {
-		removeRoomByUserId: sinon.stub(),
-	},
-};
+const { modelsMock, messageMock, removeUserFromRolesAsyncMock, notifyOnRoomChangedByIdMock, notifyOnSubscriptionChangedMock, afterBanFromRoomCallbackMock, meteorErrorMock } =
+	vi.hoisted(() => {
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		const sinon = require('sinon');
+		return {
+			modelsMock: {
+				Rooms: {
+					findOneById: sinon.stub(),
+					incUsersCountById: sinon.stub(),
+				},
+				Subscriptions: {
+					findOneByRoomIdAndUserId: sinon.stub(),
+					banByRoomIdAndUserId: sinon.stub(),
+				},
+				Users: {
+					removeRoomByUserId: sinon.stub(),
+				},
+			},
+			messageMock: {
+				saveSystemMessage: sinon.stub(),
+			},
+			removeUserFromRolesAsyncMock: sinon.stub(),
+			notifyOnRoomChangedByIdMock: sinon.stub(),
+			notifyOnSubscriptionChangedMock: sinon.stub(),
+			afterBanFromRoomCallbackMock: { run: sinon.stub() },
+			meteorErrorMock: class extends Error {
+				constructor(message: string) {
+					super(message);
+				}
+			},
+		};
+	});
 
-const messageMock = {
-	saveSystemMessage: sinon.stub(),
-};
+vi.mock('@rocket.chat/models', () => modelsMock);
+vi.mock('@rocket.chat/core-services', () => ({ Message: messageMock }));
+vi.mock('meteor/meteor', () => ({ Meteor: { Error: meteorErrorMock } }));
+vi.mock('../../../../../../server/lib/callbacks/afterBanFromRoomCallback', () => ({ afterBanFromRoomCallback: afterBanFromRoomCallbackMock }));
+vi.mock('../../../../../../server/lib/roles/removeUserFromRoles', () => ({ removeUserFromRolesAsync: removeUserFromRolesAsyncMock }));
+vi.mock('../../../../../../app/lib/server/lib/notifyListener', () => ({
+	notifyOnRoomChangedById: notifyOnRoomChangedByIdMock,
+	notifyOnSubscriptionChanged: notifyOnSubscriptionChangedMock,
+}));
 
-const removeUserFromRolesAsyncMock = sinon.stub();
-const notifyOnRoomChangedByIdMock = sinon.stub();
-const notifyOnSubscriptionChangedMock = sinon.stub();
-const afterBanFromRoomCallbackMock = { run: sinon.stub() };
-
-const meteorErrorMock = class extends Error {
-	constructor(message: string) {
-		super(message);
-	}
-};
-
-const { performUserBan, banUserFromRoom } = p.noCallThru().load('../../../../../../app/lib/server/functions/banUserFromRoom.ts', {
-	'@rocket.chat/models': modelsMock,
-	'@rocket.chat/core-services': { Message: messageMock },
-	'meteor/meteor': { Meteor: { Error: meteorErrorMock } },
-	'../../../../server/lib/callbacks/afterBanFromRoomCallback': { afterBanFromRoomCallback: afterBanFromRoomCallbackMock },
-	'../../../../server/lib/roles/removeUserFromRoles': { removeUserFromRolesAsync: removeUserFromRolesAsyncMock },
-	'../lib/notifyListener': {
-		notifyOnRoomChangedById: notifyOnRoomChangedByIdMock,
-		notifyOnSubscriptionChanged: notifyOnSubscriptionChangedMock,
-	},
-});
+const { performUserBan, banUserFromRoom } = await import('../../../../../../app/lib/server/functions/banUserFromRoom');
 
 describe('banUserFromRoom', () => {
 	const mockByUser = { _id: 'admin1', username: 'admin' };

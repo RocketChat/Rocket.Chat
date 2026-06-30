@@ -1,25 +1,34 @@
 import { expect } from 'chai';
-import { beforeEach, describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { beforeEach, describe, it, vi } from 'vitest';
 
-const settingGetMock = sinon.stub();
-const usersModelMock = {
-	getAgentInfo: sinon.stub(),
-};
+// Stubs are built in `vi.hoisted` so the hoisted `vi.mock` factories can reference them. sinon is
+// require()d inside the hoisted block because the top-level import has not executed at hoist time.
+// NOTE: relative `vi.mock` specifiers are resolved relative to THIS spec file (not the source).
+const { settingGetMock, usersModelMock, departmentsMock, meteorStartup, queueInactivityStop, inquirySortMechanism, omniChatSortQuery } =
+	vi.hoisted(() => {
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		const sinon = require('sinon');
+		return {
+			settingGetMock: sinon.stub(),
+			usersModelMock: { getAgentInfo: sinon.stub() },
+			departmentsMock: { findOneById: sinon.stub() },
+			meteorStartup: sinon.stub(),
+			queueInactivityStop: sinon.stub(),
+			inquirySortMechanism: sinon.stub(),
+			omniChatSortQuery: sinon.stub(),
+		};
+	});
 
-const departmentsMock = { findOneById: sinon.stub() };
+vi.mock('meteor/meteor', () => ({ Meteor: { startup: meteorStartup } }));
+vi.mock('../../../../../app/livechat-enterprise/server/lib/QueueInactivityMonitor', () => ({
+	OmnichannelQueueInactivityMonitor: { stop: queueInactivityStop },
+}));
+vi.mock('../../../../../../app/livechat/server/lib/settings', () => ({ getInquirySortMechanismSetting: inquirySortMechanism }));
+vi.mock('../../../../../../app/livechat/lib/inquiries', () => ({ getOmniChatSortQuery: omniChatSortQuery }));
+vi.mock('../../../../../../app/settings/server', () => ({ settings: { get: settingGetMock } }));
+vi.mock('@rocket.chat/models', () => ({ Users: usersModelMock, LivechatDepartment: departmentsMock }));
 
-const mocks = {
-	'meteor/meteor': { Meteor: { startup: sinon.stub() } },
-	'./QueueInactivityMonitor': { stop: sinon.stub() },
-	'../../../../../app/livechat/server/lib/settings': { getInquirySortMechanismSetting: sinon.stub() },
-	'../../../../../app/livechat/lib/inquiries': { getOmniChatSortQuery: sinon.stub() },
-	'../../../../../app/settings/server': { settings: { get: settingGetMock } },
-	'@rocket.chat/models': { Users: usersModelMock, LivechatDepartment: departmentsMock },
-};
-
-const { isAgentWithinChatLimits } = proxyquire.noCallThru().load('../../../../../app/livechat-enterprise/server/lib/Helper.ts', mocks);
+const { isAgentWithinChatLimits } = await import('../../../../../app/livechat-enterprise/server/lib/Helper');
 
 describe('isAgentWithinChatLimits', () => {
 	beforeEach(() => {

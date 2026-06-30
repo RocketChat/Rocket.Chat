@@ -1,51 +1,79 @@
-import { MeteorError } from '@rocket.chat/core-services';
 import { expect } from 'chai';
-import { beforeEach, describe, it } from 'mocha';
-import p from 'proxyquire';
-import sinon from 'sinon';
+import { beforeEach, describe, it, vi } from 'vitest';
 
-const checkMock = sinon.stub();
-const meteorUserIdMock = sinon.stub();
-const meteorMethodsMock = sinon.stub();
-const deleteMessageValidatingPermissionMock = sinon.stub();
-const canDeleteFileMock = sinon.stub();
-const deleteByIdMock = sinon.stub();
-const fileUploadGetStoreMock = sinon.stub().returns({ deleteById: deleteByIdMock });
+const {
+	MeteorError,
+	checkMock,
+	meteorUserIdMock,
+	meteorMethodsMock,
+	deleteMessageValidatingPermissionMock,
+	canDeleteFileMock,
+	deleteByIdMock,
+	fileUploadGetStoreMock,
+	modelsMock,
+} = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	const deleteByIdMock = sinon.stub();
+	class MeteorError extends Error {
+		public error: string;
 
-const modelsMock = {
-	Messages: {
-		getMessageByFileId: sinon.stub(),
-	},
-	Users: {
-		findOneById: sinon.stub(),
-	},
-	Uploads: {
-		findOneById: sinon.stub(),
-	},
-};
+		public reason: string | undefined;
 
-p.noCallThru().load('../../../../server/methods/deleteFileMessage', {
-	'meteor/meteor': {
-		Meteor: {
-			userId: meteorUserIdMock,
-			Error: MeteorError,
-			methods: meteorMethodsMock,
+		public details: any;
+
+		constructor(error: string, reason?: string, details?: any) {
+			super(reason);
+			this.error = error;
+			this.reason = reason;
+			this.details = details;
+		}
+	}
+	return {
+		MeteorError,
+		checkMock: sinon.stub(),
+		meteorUserIdMock: sinon.stub(),
+		meteorMethodsMock: sinon.stub(),
+		deleteMessageValidatingPermissionMock: sinon.stub(),
+		canDeleteFileMock: sinon.stub(),
+		deleteByIdMock,
+		fileUploadGetStoreMock: sinon.stub().returns({ deleteById: deleteByIdMock }),
+		modelsMock: {
+			Messages: {
+				getMessageByFileId: sinon.stub(),
+			},
+			Users: {
+				findOneById: sinon.stub(),
+			},
+			Uploads: {
+				findOneById: sinon.stub(),
+			},
 		},
-	},
-	'meteor/check': {
-		check: checkMock,
-	},
-	'@rocket.chat/models': modelsMock,
-	'@rocket.chat/core-services': {
-		Upload: { canDeleteFile: canDeleteFileMock },
-	},
-	'../../app/file-upload/server': {
-		FileUpload: { getStore: fileUploadGetStoreMock },
-	},
-	'../../app/lib/server/functions/deleteMessage': {
-		deleteMessageValidatingPermission: deleteMessageValidatingPermissionMock,
-	},
+	};
 });
+
+vi.mock('meteor/meteor', () => ({
+	Meteor: {
+		userId: meteorUserIdMock,
+		Error: MeteorError,
+		methods: meteorMethodsMock,
+	},
+}));
+vi.mock('meteor/check', () => ({
+	check: checkMock,
+}));
+vi.mock('@rocket.chat/models', () => modelsMock);
+vi.mock('@rocket.chat/core-services', () => ({
+	Upload: { canDeleteFile: canDeleteFileMock },
+}));
+vi.mock('../../../../app/file-upload/server', () => ({
+	FileUpload: { getStore: fileUploadGetStoreMock },
+}));
+vi.mock('../../../../app/lib/server/functions/deleteMessage', () => ({
+	deleteMessageValidatingPermission: deleteMessageValidatingPermissionMock,
+}));
+
+await import('../../../../server/methods/deleteFileMessage');
 
 const deleteFileMessageMethod = meteorMethodsMock.firstCall.args[0].deleteFileMessage;
 

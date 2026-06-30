@@ -1,44 +1,40 @@
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { beforeEach, describe, it, vi } from 'vitest';
 
-const modelsMock = {
-	LivechatContacts: {
-		findContactMatchingVisitor: sinon.stub(),
-	},
-	LivechatRooms: {
-		setContactByVisitorAssociation: sinon.stub(),
-		findNewestByContactVisitorAssociation: sinon.stub(),
-	},
-};
-
-const createContactFromVisitor = sinon.stub();
-const mergeVisitorIntoContact = sinon.stub();
-
-const { migrateVisitorToContactId } = proxyquire.noCallThru().load('./migrateVisitorToContactId', {
-	'./createContactFromVisitor': {
-		createContactFromVisitor,
-	},
-	'./ContactMerger': {
-		ContactMerger: {
-			mergeVisitorIntoContact,
+const { modelsMock, createContactFromVisitor, mergeVisitorIntoContact, loggerDebug, sandbox } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	const sandbox = sinon.createSandbox();
+	return {
+		sandbox,
+		createContactFromVisitor: sandbox.stub(),
+		mergeVisitorIntoContact: sandbox.stub(),
+		loggerDebug: sandbox.stub(),
+		modelsMock: {
+			LivechatContacts: {
+				findContactMatchingVisitor: sandbox.stub(),
+			},
+			LivechatRooms: {
+				setContactByVisitorAssociation: sandbox.stub(),
+				findNewestByContactVisitorAssociation: sandbox.stub(),
+			},
 		},
-	},
-	'@rocket.chat/models': modelsMock,
-	'../logger': {
-		livechatContactsLogger: {
-			debug: sinon.stub(),
-		},
-	},
+	};
 });
+
+vi.mock('./createContactFromVisitor', () => ({ createContactFromVisitor }));
+vi.mock('./ContactMerger', () => ({ ContactMerger: { mergeVisitorIntoContact } }));
+vi.mock('@rocket.chat/models', () => ({
+	LivechatContacts: modelsMock.LivechatContacts,
+	LivechatRooms: modelsMock.LivechatRooms,
+}));
+vi.mock('../logger', () => ({ livechatContactsLogger: { debug: loggerDebug } }));
+
+const { migrateVisitorToContactId } = await import('./migrateVisitorToContactId');
 
 describe('migrateVisitorToContactId', () => {
 	beforeEach(() => {
-		modelsMock.LivechatContacts.findContactMatchingVisitor.reset();
-		modelsMock.LivechatRooms.setContactByVisitorAssociation.reset();
-		modelsMock.LivechatRooms.findNewestByContactVisitorAssociation.reset();
-		createContactFromVisitor.reset();
-		mergeVisitorIntoContact.reset();
+		sandbox.reset();
 	});
 
 	it('should not create a contact if there is no source for the visitor', async () => {

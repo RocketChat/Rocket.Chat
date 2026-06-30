@@ -1,68 +1,51 @@
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import { vi } from 'vitest';
 
-const settingsStub = sinon.stub();
-const modelsMock = {
-	Users: {
-		findOneByEmailAddress: sinon.stub(),
-		findOneByUsernameIgnoringCase: sinon.stub(),
-		findOneById: sinon.stub(),
-	},
-};
-const addUserToDefaultChannels = sinon.stub();
-const generateUsernameSuggestion = sinon.stub();
-const insertUserDoc = sinon.stub();
-const callbacks = {
-	run: sinon.stub(),
-};
-const bcryptHash = sinon.stub();
-const sha = sinon.stub();
-const generateTempPassword = sinon.stub();
+const { settingsStub, modelsMock, addUserToDefaultChannels, generateUsernameSuggestion, insertUserDoc, callbacks, bcryptHash, sha, generateTempPassword, stubs } =
+	vi.hoisted(() => {
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		const sinon = require('sinon');
+		return {
+			settingsStub: sinon.stub(),
+			modelsMock: {
+				Users: {
+					findOneByEmailAddress: sinon.stub(),
+					findOneByUsernameIgnoringCase: sinon.stub(),
+					findOneById: sinon.stub(),
+				},
+			},
+			addUserToDefaultChannels: sinon.stub(),
+			generateUsernameSuggestion: sinon.stub(),
+			insertUserDoc: sinon.stub(),
+			callbacks: {
+				run: sinon.stub(),
+			},
+			bcryptHash: sinon.stub(),
+			sha: sinon.stub(),
+			generateTempPassword: sinon.stub(),
+			stubs: {
+				saveUserIdentity: sinon.stub(),
+				setUserActiveStatus: sinon.stub(),
+				notifyOnUserChange: sinon.stub(),
+			},
+		};
+	});
 
-const { UserConverter } = proxyquire.noCallThru().load('../../../../../app/importer/server/classes/converters/UserConverter', {
-	'../../../../../server/lib/callbacks': {
-		callbacks,
-	},
-	'../../../settings/server': {
-		settings: { get: settingsStub },
-	},
-	'../../../../lib/server/functions/addUserToDefaultChannels': {
-		addUserToDefaultChannels,
-	},
-	'../../../../lib/server/functions/getUsernameSuggestion': {
-		generateUsernameSuggestion,
-	},
-	'../../../../lib/server/functions/saveUserIdentity': {
-		saveUserIdentity: sinon.stub(),
-	},
-	'../../../../lib/server/functions/setUserActiveStatus': {
-		setUserActiveStatus: sinon.stub(),
-	},
-	'../../../../lib/server/lib/notifyListener': {
-		notifyOnUserChange: sinon.stub(),
-	},
-	'./generateTempPassword': {
-		generateTempPassword,
-		'@global': true,
-	},
-	'bcrypt': {
-		'hash': bcryptHash,
-		'@global': true,
-	},
-	'meteor/check': sinon.stub(),
-	'meteor/meteor': sinon.stub(),
-	'@rocket.chat/sha256': {
-		SHA256: sha,
-	},
-	'meteor/accounts-base': {
-		Accounts: {
-			insertUserDoc,
-			_bcryptRounds: () => 10,
-		},
-	},
-	'@rocket.chat/models': { ...modelsMock, '@global': true },
-});
+vi.mock('../../../../../server/lib/callbacks', () => ({ callbacks }));
+vi.mock('../../../../../app/settings/server', () => ({ settings: { get: settingsStub } }));
+vi.mock('../../../../../app/lib/server/functions/addUserToDefaultChannels', () => ({ addUserToDefaultChannels }));
+vi.mock('../../../../../app/lib/server/functions/getUsernameSuggestion', () => ({ generateUsernameSuggestion }));
+vi.mock('../../../../../app/lib/server/functions/saveUserIdentity', () => ({ saveUserIdentity: stubs.saveUserIdentity }));
+vi.mock('../../../../../app/lib/server/functions/setUserActiveStatus', () => ({ setUserActiveStatus: stubs.setUserActiveStatus }));
+vi.mock('../../../../../app/lib/server/lib/notifyListener', () => ({ notifyOnUserChange: stubs.notifyOnUserChange }));
+vi.mock('../../../../../app/importer/server/classes/converters/generateTempPassword', () => ({ generateTempPassword }));
+vi.mock('bcrypt', () => ({ hash: bcryptHash }));
+vi.mock('@rocket.chat/sha256', () => ({ SHA256: sha }));
+vi.mock('meteor/accounts-base', () => ({ Accounts: { insertUserDoc, _bcryptRounds: () => 10 } }));
+vi.mock('@rocket.chat/models', () => modelsMock);
+
+const { UserConverter } = await import('../../../../../app/importer/server/classes/converters/UserConverter');
 
 describe('User Converter', () => {
 	beforeEach(() => {

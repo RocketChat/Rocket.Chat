@@ -1,7 +1,6 @@
 import { expect } from 'chai';
-import { describe, it, afterEach } from 'mocha';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import { describe, it, afterEach, vi } from 'vitest';
 
 type FetchResponse = {
 	status: number;
@@ -13,7 +12,43 @@ const mkResponse = (status: number, text = ''): FetchResponse => ({
 	text: async () => text,
 });
 
-const MODULE_PATH = '../../../../../../app/livechat/server/lib/webhooks';
+// Previously each test re-`proxyquire`d the subject to inject fresh stubs/settings. With `vi.mock`
+// we mock the dependencies once (in `vi.hoisted`) and reconfigure the same sinon stubs per test via
+// `buildSubject`, which now resets + re-applies behaviours instead of reloading the module.
+const { sandbox, fetchStub, logger, metrics, settingsValuesRef, settings } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	const sandbox = sinon.createSandbox();
+
+	// Holds the active settings values; `buildSubject` swaps its contents per test.
+	const settingsValuesRef: { current: Record<string, any> } = { current: {} };
+
+	return {
+		sandbox,
+		settingsValuesRef,
+		fetchStub: sandbox.stub(),
+		logger: {
+			debug: sandbox.spy(),
+			error: sandbox.spy(),
+		},
+		metrics: {
+			totalLivechatWebhooksSuccess: { inc: sandbox.spy() },
+			totalLivechatWebhooksSuccessTotal: { inc: sandbox.spy() },
+			totalLivechatWebhooksFailures: { inc: sandbox.spy() },
+			totalLivechatWebhooksFailuresTotal: { inc: sandbox.spy() },
+		},
+		settings: {
+			get: sandbox.stub().callsFake((key: string) => settingsValuesRef.current[key]),
+		},
+	};
+});
+
+vi.mock('@rocket.chat/server-fetch', () => ({ serverFetch: fetchStub }));
+vi.mock('../../../../../../app/livechat/server/lib/logger', () => ({ webhooksLogger: logger }));
+vi.mock('../../../../../../app/metrics/server', () => ({ metrics }));
+vi.mock('../../../../../../app/settings/server', () => ({ settings }));
+
+const { sendRequest } = await import('../../../../../../app/livechat/server/lib/webhooks');
 
 function buildSubject(options?: {
 	fetchSequence?: Array<{ status: number; text?: string }>;
@@ -28,11 +63,11 @@ function buildSubject(options?: {
 
 	const settingsValues = { ...defaults, ...(options?.settings ?? {}) };
 
-	const settings = {
-		get: sinon.stub().callsFake((key: string) => settingsValues[key as keyof typeof settingsValues]),
-	};
+	// reset the shared stubs/spies and re-apply the per-test behaviour
+	sandbox.reset();
+	settingsValuesRef.current = settingsValues;
+	settings.get.callsFake((key: string) => settingsValues[key as keyof typeof settingsValues]);
 
-	const fetchStub = sinon.stub();
 	if (options?.fetchSequence && options.fetchSequence.length) {
 		options.fetchSequence.forEach((spec, i) => {
 			fetchStub.onCall(i).resolves(mkResponse(spec.status, spec.text));
@@ -42,25 +77,6 @@ function buildSubject(options?: {
 	} else {
 		fetchStub.resolves(mkResponse(200, 'ok'));
 	}
-
-	const logger = {
-		debug: sinon.spy(),
-		error: sinon.spy(),
-	};
-
-	const metrics = {
-		totalLivechatWebhooksSuccess: { inc: sinon.spy() },
-		totalLivechatWebhooksSuccessTotal: { inc: sinon.spy() },
-		totalLivechatWebhooksFailures: { inc: sinon.spy() },
-		totalLivechatWebhooksFailuresTotal: { inc: sinon.spy() },
-	};
-
-	const { sendRequest } = proxyquire.noCallThru().load(MODULE_PATH, {
-		'@rocket.chat/server-fetch': { serverFetch: fetchStub },
-		'./logger': { webhooksLogger: logger },
-		'../../../metrics/server': { metrics },
-		'../../../settings/server': { settings },
-	});
 
 	return {
 		sendRequest,
@@ -73,7 +89,7 @@ describe('livechat/server/lib/webhooks sendRequest', () => {
 	let clock: sinon.SinonFakeTimers;
 
 	afterEach(() => {
-		sinon.restore();
+		sandbox.reset();
 		if (clock) {
 			clock.restore();
 		}

@@ -1,8 +1,7 @@
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
+import { describe, it } from 'vitest';
 
-const { generateCronJobId } = proxyquire.noCallThru().load('../../../../../../server/services/calendar/statusEvents/generateCronJobId', {});
+const { generateCronJobId } = await import('../../../../../../server/services/calendar/statusEvents/generateCronJobId');
 
 describe('#generateCronJobId', () => {
 	const fakeEventId = 'eventId123';

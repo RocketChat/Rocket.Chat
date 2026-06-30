@@ -1,6 +1,5 @@
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { afterEach, describe, it, vi } from 'vitest';
 
 type RestrictQueryParams = {
 	originalQuery?: Record<string, any>;
@@ -8,10 +7,33 @@ type RestrictQueryParams = {
 	userId?: string;
 };
 
-describe('restrictQuery', () => {
-	const modulePath = '../../../../../app/livechat-enterprise/server/lib/restrictQuery';
+// Previously this file re-`proxyquire`d './restrictQuery' inside a `loadSut` helper for each test to
+// vary the injected stubs. With `vi.mock` + mutable sinon stubs we mock each dependency ONCE and
+// reconfigure the SAME stubs per test (no module reloading). Stubs are built in `vi.hoisted` so the
+// hoisted mock factories can reference them.
+const { sandbox, getUnitsFromUserStub, findStub, debugStub } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	const sandbox = sinon.createSandbox();
+	return {
+		sandbox,
+		getUnitsFromUserStub: sandbox.stub(),
+		findStub: sandbox.stub(),
+		debugStub: sandbox.stub(),
+	};
+});
 
-	// Helper to require the SUT with injected stubs
+vi.mock('@rocket.chat/models', () => ({ LivechatDepartment: { find: findStub } }));
+vi.mock('@rocket.chat/omni-core-ee', () => ({ getUnitsFromUser: getUnitsFromUserStub }));
+// NOTE: vi.mock resolves specifiers relative to THIS spec file (not the source-under-test). The
+// spec and source are NOT co-located here, so we use the spec-relative path to the same module the
+// source imports as './logger'.
+vi.mock('../../../../../app/livechat-enterprise/server/lib/logger', () => ({ cbLogger: { debug: debugStub } }));
+
+const { restrictQuery } = await import('../../../../../app/livechat-enterprise/server/lib/restrictQuery');
+
+describe('restrictQuery', () => {
+	// Helper to configure the stubs (mirrors the old proxyquire `loadSut`)
 	const loadSut = ({
 		getUnitsFromUserResult,
 		departmentsToReturn = [],
@@ -21,10 +43,12 @@ describe('restrictQuery', () => {
 		departmentsToReturn?: Array<{ _id: string }>;
 		captureFindArgs?: boolean;
 	}) => {
-		const getUnitsFromUserStub = sinon.stub().callsFake(async () => getUnitsFromUserResult);
+		sandbox.reset();
+
+		getUnitsFromUserStub.callsFake(async () => getUnitsFromUserResult);
 
 		const findArgs: any[] = [];
-		const findStub = sinon.stub().callsFake((query: any, projection: any) => {
+		findStub.callsFake((query: any, projection: any) => {
 			if (captureFindArgs) {
 				findArgs.push({ query, projection });
 			}
@@ -33,25 +57,11 @@ describe('restrictQuery', () => {
 			};
 		});
 
-		const debugStub = sinon.stub();
-
-		const { restrictQuery } = proxyquire.noCallThru().load(modulePath, {
-			'@rocket.chat/models': {
-				LivechatDepartment: { find: findStub },
-			},
-			'@rocket.chat/omni-core-ee': {
-				getUnitsFromUser: getUnitsFromUserStub,
-			},
-			'./logger': {
-				cbLogger: { debug: debugStub },
-			},
-		});
-
 		return { restrictQuery, getUnitsFromUserStub, findStub, debugStub, findArgs };
 	};
 
 	afterEach(() => {
-		sinon.restore();
+		sandbox.reset();
 	});
 
 	it('returns the original query untouched when user has no units and no unitsFilter is provided', async () => {

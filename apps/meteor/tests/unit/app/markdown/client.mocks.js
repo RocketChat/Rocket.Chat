@@ -1,24 +1,6 @@
-import proxyquire from 'proxyquire';
-
-const mocks = {
-	'meteor/meteor': {
-		'Meteor': {
-			absoluteUrl() {
-				return 'http://localhost:3000/';
-			},
-		},
-		'@global': true,
-	},
-	'@rocket.chat/random': {
-		'Random': {
-			id() {
-				return Math.random().toString().replace('0.', 'A');
-			},
-		},
-		'@global': true,
-	},
-};
-
-export const { Markdown } = proxyquire.noCallThru().load('../../../../app/markdown/lib/markdown', mocks);
-export const { original } = proxyquire.noCallThru().load('../../../../app/markdown/lib/parser/original/original', mocks);
-export const { filtered } = proxyquire.noCallThru().load('../../../../app/markdown/lib/parser/filtered/filtered', mocks);
+// The Meteor / Random dependencies these markdown modules pull in are mocked by the importing spec
+// (client.tests.js) via vi.mock — those mocks apply across the whole module graph, so here we just
+// re-export the real modules (previously loaded through proxyquire with @global mocks).
+export { Markdown } from '../../../../app/markdown/lib/markdown';
+export { original } from '../../../../app/markdown/lib/parser/original/original';
+export { filtered } from '../../../../app/markdown/lib/parser/filtered/filtered';

@@ -1,18 +1,17 @@
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
+import { describe, it, vi } from 'vitest';
 
 import { ltrim, rtrim } from '../../../../../lib/utils/stringUtils';
 
-const { _getURL } = proxyquire.noCallThru().load('../../../../../app/utils/lib/getURL', {
-	'meteor/meteor': {
-		'Meteor': {
-			absoluteUrl() {
-				return 'http://localhost:3000/';
-			},
+vi.mock('meteor/meteor', () => ({
+	Meteor: {
+		absoluteUrl() {
+			return 'http://localhost:3000/';
 		},
-		'@global': true,
 	},
-});
+}));
+
+const { _getURL } = await import('../../../../../app/utils/lib/getURL');
 
 const testPaths = (o, _processPath) => {
 	let processPath = _processPath;

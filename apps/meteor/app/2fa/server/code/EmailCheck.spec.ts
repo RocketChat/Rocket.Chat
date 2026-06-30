@@ -1,33 +1,19 @@
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, beforeEach, vi } from 'vitest';
 
-const settingsMock = sinon.stub();
-
-const { EmailCheck } = proxyquire.noCallThru().load('./EmailCheck', {
-	'@rocket.chat/models': {
-		Users: {},
-	},
-	'meteor/accounts-base': {
-		Accounts: {
-			_bcryptRounds: () => '123',
-		},
-	},
-	'../../../../server/lib/i18n': {
-		i18n: {
-			t: (key: string) => key,
-		},
-	},
-	'../../../mailer/server/api': {
-		send: () => undefined,
-	},
-	'../../../settings/server': {
-		settings: {
-			get: settingsMock,
-		},
-	},
+const { settingsMock } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return { settingsMock: sinon.stub() };
 });
+
+vi.mock('@rocket.chat/models', () => ({ Users: {} }));
+vi.mock('meteor/accounts-base', () => ({ Accounts: { _bcryptRounds: () => '123' } }));
+vi.mock('../../../../server/lib/i18n', () => ({ i18n: { t: (key: string) => key } }));
+vi.mock('../../../mailer/server/api', () => ({ send: () => undefined }));
+vi.mock('../../../settings/server', () => ({ settings: { get: settingsMock } }));
+
+const { EmailCheck } = await import('./EmailCheck');
 
 const normalUserMock = { services: { email2fa: { enabled: true } }, emails: [{ email: 'abc@gmail.com', verified: true }] };
 const normalUserWithUnverifiedEmailMock = {

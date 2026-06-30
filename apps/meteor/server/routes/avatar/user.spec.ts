@@ -1,45 +1,50 @@
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
 import { Headers } from 'node-fetch';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import { afterEach, describe, it, vi } from 'vitest';
 
-const mocks = {
-	settingsGet: sinon.stub(),
-	findOneByUsernameIgnoringCase: sinon.stub(),
-	findOneById: sinon.stub(),
-	utils: {
-		serveSvgAvatarInRequestedFormat: sinon.spy(),
-		wasFallbackModified: sinon.stub(),
-		setCacheAndDispositionHeaders: sinon.spy(),
-		serveAvatarFile: sinon.spy(),
-	},
-	serverFetch: sinon.stub(),
-	avatarFindOneByName: sinon.stub(),
-	avatarFindOneByUserId: sinon.stub(),
-};
-
-const { userAvatarById, userAvatarByUsername } = proxyquire.noCallThru().load('./user', {
-	'@rocket.chat/models': {
-		Users: {
-			findOneByUsernameIgnoringCase: mocks.findOneByUsernameIgnoringCase,
-			findOneById: mocks.findOneById,
+const { mocks } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
+		mocks: {
+			settingsGet: sinon.stub(),
+			findOneByUsernameIgnoringCase: sinon.stub(),
+			findOneById: sinon.stub(),
+			utils: {
+				serveSvgAvatarInRequestedFormat: sinon.spy(),
+				wasFallbackModified: sinon.stub(),
+				setCacheAndDispositionHeaders: sinon.spy(),
+				serveAvatarFile: sinon.spy(),
+			},
+			serverFetch: sinon.stub(),
+			avatarFindOneByName: sinon.stub(),
+			avatarFindOneByUserId: sinon.stub(),
 		},
-		Avatars: {
-			findOneByName: mocks.avatarFindOneByName,
-			findOneByUserId: mocks.avatarFindOneByUserId,
-		},
-	},
-	'../../../app/settings/server': {
-		settings: {
-			get: mocks.settingsGet,
-		},
-	},
-	'./utils': mocks.utils,
-	'@rocket.chat/server-fetch': {
-		serverFetch: mocks.serverFetch,
-	},
+	};
 });
+
+vi.mock('@rocket.chat/models', () => ({
+	Users: {
+		findOneByUsernameIgnoringCase: mocks.findOneByUsernameIgnoringCase,
+		findOneById: mocks.findOneById,
+	},
+	Avatars: {
+		findOneByName: mocks.avatarFindOneByName,
+		findOneByUserId: mocks.avatarFindOneByUserId,
+	},
+}));
+vi.mock('../../../app/settings/server', () => ({
+	settings: {
+		get: mocks.settingsGet,
+	},
+}));
+vi.mock('./utils', () => mocks.utils);
+vi.mock('@rocket.chat/server-fetch', () => ({
+	serverFetch: mocks.serverFetch,
+}));
+
+const { userAvatarById, userAvatarByUsername } = await import('./user');
 
 describe('#userAvatarById()', () => {
 	const response = {

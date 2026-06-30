@@ -1,25 +1,31 @@
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import { afterEach, beforeEach, describe, it, vi } from 'vitest';
 
-const modelsMock = {
-	LivechatContacts: {
-		findOneEnabledById: sinon.stub(),
-	},
-};
-
-const settingsMock = {
-	get: sinon.stub(),
-};
-
-const { runIsAgentAvailableToTakeContactInquiry } = proxyquire
-	.noCallThru()
-	.load('../../../../../../server/patches/isAgentAvailableToTakeContactInquiry', {
-		'@rocket.chat/models': modelsMock,
-		'../../../app/settings/server': {
-			settings: settingsMock,
+// Stubs are built in `vi.hoisted` so the hoisted `vi.mock` factories can reference them. sinon is
+// require()d inside the hoisted block because the top-level import has not executed at hoist time.
+// NOTE: relative `vi.mock` specifiers are resolved relative to THIS spec file (not the source).
+// `match` is exported from the hoisted sinon instance because matchers are instance-specific.
+const { modelsMock, settingsMock, match } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
+		modelsMock: {
+			LivechatContacts: {
+				findOneEnabledById: sinon.stub(),
+			},
 		},
-	});
+		settingsMock: {
+			get: sinon.stub(),
+		},
+		match: sinon.match,
+	};
+});
+
+vi.mock('@rocket.chat/models', () => modelsMock);
+vi.mock('../../../../../../../app/settings/server', () => ({ settings: settingsMock }));
+
+const { runIsAgentAvailableToTakeContactInquiry } = await import('../../../../../../server/patches/isAgentAvailableToTakeContactInquiry');
 
 describe('isAgentAvailableToTakeContactInquiry', () => {
 	beforeEach(() => {
@@ -38,7 +44,7 @@ describe('isAgentAvailableToTakeContactInquiry', () => {
 		expect(value).to.be.false;
 		expect(error).to.eq('error-invalid-contact');
 		expect(
-			modelsMock.LivechatContacts.findOneEnabledById.calledOnceWith('contactId', sinon.match({ projection: { unknown: 1, channels: 1 } })),
+			modelsMock.LivechatContacts.findOneEnabledById.calledOnceWith('contactId', match({ projection: { unknown: 1, channels: 1 } })),
 		);
 	});
 

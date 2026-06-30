@@ -1,40 +1,44 @@
 import { expect } from 'chai';
-import { it, describe } from 'mocha';
-import p from 'proxyquire';
-import sinon from 'sinon';
+import { it, describe, beforeEach, vi } from 'vitest';
 
-const settingsStub = sinon.stub();
-const models = {
-	LivechatDepartment: {
-		findOneById: sinon.stub(),
-	},
-	LivechatBusinessHours: {
-		findOneById: sinon.stub(),
-	},
-	Messages: {
-		findAgentLastMessageByVisitorLastMessageTs: sinon.stub(),
-	},
-	LivechatRooms: {
-		setVisitorInactivityInSecondsById: sinon.stub(),
-	},
-};
-
-const businessHourManagerMock = {
-	getBusinessHour: sinon.stub(),
-};
-
-const { getSecondsWhenOfficeHoursIsDisabled, parseDays, getSecondsSinceLastAgentResponse, onCloseRoom } = p
-	.noCallThru()
-	.load('../../../../../../app/livechat/server/hooks/processRoomAbandonment.ts', {
-		'@rocket.chat/models': models,
-		'../../../../server/lib/callbacks': {
-			callbacks: { add: sinon.stub(), priority: { HIGH: 'high' } },
+const { settingsStub, models, businessHourManagerMock, callbacksAddStub } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
+		settingsStub: sinon.stub(),
+		callbacksAddStub: sinon.stub(),
+		models: {
+			LivechatDepartment: {
+				findOneById: sinon.stub(),
+			},
+			LivechatBusinessHours: {
+				findOneById: sinon.stub(),
+			},
+			Messages: {
+				findAgentLastMessageByVisitorLastMessageTs: sinon.stub(),
+			},
+			LivechatRooms: {
+				setVisitorInactivityInSecondsById: sinon.stub(),
+			},
 		},
-		'../../../settings/server': {
-			settings: { get: settingsStub },
+		businessHourManagerMock: {
+			getBusinessHour: sinon.stub(),
 		},
-		'../business-hour': { businessHourManager: businessHourManagerMock },
-	});
+	};
+});
+
+vi.mock('@rocket.chat/models', () => models);
+vi.mock('../../../../../../server/lib/callbacks', () => ({
+	callbacks: { add: callbacksAddStub, priority: { HIGH: 'high' } },
+}));
+vi.mock('../../../../../../app/settings/server', () => ({
+	settings: { get: settingsStub },
+}));
+vi.mock('../../../../../../app/livechat/server/business-hour', () => ({ businessHourManager: businessHourManagerMock }));
+
+const { getSecondsWhenOfficeHoursIsDisabled, parseDays, getSecondsSinceLastAgentResponse, onCloseRoom } = await import(
+	'../../../../../../app/livechat/server/hooks/processRoomAbandonment'
+);
 
 describe('processRoomAbandonment', () => {
 	describe('getSecondsWhenOfficeHoursIsDisabled', () => {

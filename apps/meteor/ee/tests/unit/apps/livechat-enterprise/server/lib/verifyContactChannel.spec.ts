@@ -1,49 +1,64 @@
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import { afterEach, beforeEach, describe, it, vi } from 'vitest';
 
-const modelsMock = {
-	LivechatContacts: {
-		getUpdater: sinon.stub(),
-		setVerifiedUpdateQuery: sinon.stub(),
-		setFieldAndValueUpdateQuery: sinon.stub(),
-		updateFromUpdaterByAssociation: sinon.stub(),
+// Stubs are built in `vi.hoisted` so the hoisted `vi.mock` factories can reference them. sinon is
+// require()d inside the hoisted block because the top-level import has not executed at hoist time.
+// NOTE: relative `vi.mock` specifiers are resolved relative to THIS spec file (not the source).
+// `match` is exported from the hoisted sinon instance because matchers are instance-specific.
+const { modelsMock, sessionMock, clientMock, mergeContactsStub, verifyContactChannelPatch, queueManager, loggerStub, match } = vi.hoisted(
+	() => {
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		const sinon = require('sinon');
+		const sessionMock = {
+			startTransaction: sinon.stub(),
+			commitTransaction: sinon.stub(),
+			abortTransaction: sinon.stub(),
+			endSession: sinon.stub(),
+		};
+		return {
+			modelsMock: {
+				LivechatContacts: {
+					getUpdater: sinon.stub(),
+					setVerifiedUpdateQuery: sinon.stub(),
+					setFieldAndValueUpdateQuery: sinon.stub(),
+					updateFromUpdaterByAssociation: sinon.stub(),
+				},
+				LivechatRooms: {
+					update: sinon.stub(),
+					findOneById: sinon.stub(),
+				},
+				LivechatInquiry: {
+					findOneByRoomId: sinon.stub(),
+					saveQueueInquiry: sinon.stub(),
+				},
+			},
+			sessionMock,
+			clientMock: {
+				startSession: sinon.stub().returns(sessionMock),
+			},
+			mergeContactsStub: sinon.stub(),
+			verifyContactChannelPatch: sinon.stub(),
+			queueManager: {
+				processNewInquiry: sinon.stub(),
+				verifyInquiry: sinon.stub(),
+			},
+			loggerStub: { info: sinon.stub(), debug: sinon.stub() },
+			match: sinon.match,
+		};
 	},
-	LivechatRooms: {
-		update: sinon.stub(),
-		findOneById: sinon.stub(),
-	},
-	LivechatInquiry: {
-		findOneByRoomId: sinon.stub(),
-		saveQueueInquiry: sinon.stub(),
-	},
-};
+);
 
-const sessionMock = {
-	startTransaction: sinon.stub(),
-	commitTransaction: sinon.stub(),
-	abortTransaction: sinon.stub(),
-	endSession: sinon.stub(),
-};
+vi.mock('../../../../../../../app/livechat/server/lib/contacts/mergeContacts', () => ({ mergeContacts: mergeContactsStub }));
+vi.mock('../../../../../../../app/livechat/server/lib/contacts/verifyContactChannel', () => ({
+	verifyContactChannel: { patch: verifyContactChannelPatch },
+}));
+vi.mock('../../../../../../../app/livechat/server/lib/QueueManager', () => ({ QueueManager: queueManager }));
+vi.mock('../../../../../../../server/database/utils', () => ({ client: clientMock }));
+vi.mock('../../../../../../app/livechat-enterprise/server/lib/logger', () => ({ contactLogger: loggerStub }));
+vi.mock('@rocket.chat/models', () => modelsMock);
 
-const clientMock = {
-	startSession: sinon.stub().returns(sessionMock),
-};
-
-const mergeContactsStub = sinon.stub();
-const queueManager = {
-	processNewInquiry: sinon.stub(),
-	verifyInquiry: sinon.stub(),
-};
-
-const { runVerifyContactChannel } = proxyquire.noCallThru().load('../../../../../../server/patches/verifyContactChannel', {
-	'../../../app/livechat/server/lib/contacts/mergeContacts': { mergeContacts: mergeContactsStub },
-	'../../../app/livechat/server/lib/contacts/verifyContactChannel': { verifyContactChannel: { patch: sinon.stub() } },
-	'../../../app/livechat/server/lib/QueueManager': { QueueManager: queueManager },
-	'../../../server/database/utils': { client: clientMock },
-	'../../../app/livechat-enterprise/server/lib/logger': { logger: { info: sinon.stub(), debug: sinon.stub() } },
-	'@rocket.chat/models': modelsMock,
-});
+const { runVerifyContactChannel } = await import('../../../../../../server/patches/verifyContactChannel');
 
 describe('verifyContactChannel', () => {
 	beforeEach(() => {
@@ -86,9 +101,9 @@ describe('verifyContactChannel', () => {
 		expect(modelsMock.LivechatContacts.setFieldAndValueUpdateQuery.calledOnceWith('field', 'value', {})).to.be.true;
 		expect(
 			modelsMock.LivechatContacts.updateFromUpdaterByAssociation.calledOnceWith(
-				sinon.match({
+				match({
 					visitorId: 'visitorId',
-					source: sinon.match({
+					source: match({
 						type: 'sms',
 					}),
 				}),
@@ -99,9 +114,9 @@ describe('verifyContactChannel', () => {
 		expect(
 			mergeContactsStub.calledOnceWith(
 				'contactId',
-				sinon.match({
+				match({
 					visitorId: 'visitorId',
-					source: sinon.match({
+					source: match({
 						type: 'sms',
 					}),
 				}),
@@ -128,9 +143,9 @@ describe('verifyContactChannel', () => {
 		expect(modelsMock.LivechatContacts.setFieldAndValueUpdateQuery.calledOnceWith('field', 'value', {})).to.be.true;
 		expect(
 			modelsMock.LivechatContacts.updateFromUpdaterByAssociation.calledOnceWith(
-				sinon.match({
+				match({
 					visitorId: 'visitorId',
-					source: sinon.match({
+					source: match({
 						type: 'sms',
 					}),
 				}),
@@ -142,9 +157,9 @@ describe('verifyContactChannel', () => {
 		expect(
 			mergeContactsStub.calledOnceWith(
 				'contactId',
-				sinon.match({
+				match({
 					visitorId: 'visitorId',
-					source: sinon.match({
+					source: match({
 						type: 'sms',
 					}),
 				}),
@@ -196,9 +211,9 @@ describe('verifyContactChannel', () => {
 		expect(modelsMock.LivechatContacts.setFieldAndValueUpdateQuery.calledOnceWith('field', 'value', {})).to.be.true;
 		expect(
 			modelsMock.LivechatContacts.updateFromUpdaterByAssociation.calledOnceWith(
-				sinon.match({
+				match({
 					visitorId: 'visitorId',
-					source: sinon.match({
+					source: match({
 						type: 'sms',
 					}),
 				}),
@@ -210,9 +225,9 @@ describe('verifyContactChannel', () => {
 		expect(
 			mergeContactsStub.calledOnceWith(
 				'contactId',
-				sinon.match({
+				match({
 					visitorId: 'visitorId',
-					source: sinon.match({
+					source: match({
 						type: 'sms',
 					}),
 				}),

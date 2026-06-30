@@ -1,46 +1,45 @@
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import { vi } from 'vitest';
 
-const settingsStub = sinon.stub();
-const modelsMock = {
-	Rooms: {
-		archiveById: sinon.stub(),
-		updateOne: sinon.stub(),
-		findOneById: sinon.stub(),
-		findDirectRoomContainingAllUsernames: sinon.stub(),
-		findOneByNonValidatedName: sinon.stub(),
-	},
-	Subscriptions: {
-		archiveByRoomId: sinon.stub(),
-	},
-};
-const createDirectMessage = sinon.stub();
-const saveRoomSettings = sinon.stub();
-
-const { RoomConverter } = proxyquire.noCallThru().load('../../../../../app/importer/server/classes/converters/RoomConverter', {
-	'../../../settings/server': {
-		settings: { get: settingsStub },
-	},
-	'../../../../../server/methods/createDirectMessage': {
-		createDirectMessage,
-	},
-	'../../../../channel-settings/server/methods/saveRoomSettings': {
-		saveRoomSettings,
-	},
-	'../../../../lib/server/lib/notifyListener': {
-		notifyOnSubscriptionChangedByRoomId: sinon.stub(),
-	},
-	'../../../../lib/server/methods/createChannel': {
-		createChannelMethod: sinon.stub(),
-	},
-	'../../../../lib/server/methods/createPrivateGroup': {
-		createPrivateGroupMethod: sinon.stub(),
-	},
-	'meteor/check': sinon.stub(),
-	'meteor/meteor': sinon.stub(),
-	'@rocket.chat/models': { ...modelsMock, '@global': true },
+const { settingsStub, modelsMock, createDirectMessage, saveRoomSettings, stubs } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
+		settingsStub: sinon.stub(),
+		modelsMock: {
+			Rooms: {
+				archiveById: sinon.stub(),
+				updateOne: sinon.stub(),
+				findOneById: sinon.stub(),
+				findDirectRoomContainingAllUsernames: sinon.stub(),
+				findOneByNonValidatedName: sinon.stub(),
+			},
+			Subscriptions: {
+				archiveByRoomId: sinon.stub(),
+			},
+		},
+		createDirectMessage: sinon.stub(),
+		saveRoomSettings: sinon.stub(),
+		stubs: {
+			notifyOnSubscriptionChangedByRoomId: sinon.stub(),
+			createChannelMethod: sinon.stub(),
+			createPrivateGroupMethod: sinon.stub(),
+		},
+	};
 });
+
+vi.mock('../../../../../app/settings/server', () => ({ settings: { get: settingsStub } }));
+vi.mock('../../../../../server/methods/createDirectMessage', () => ({ createDirectMessage }));
+vi.mock('../../../../../app/channel-settings/server/methods/saveRoomSettings', () => ({ saveRoomSettings }));
+vi.mock('../../../../../app/lib/server/lib/notifyListener', () => ({
+	notifyOnSubscriptionChangedByRoomId: stubs.notifyOnSubscriptionChangedByRoomId,
+}));
+vi.mock('../../../../../app/lib/server/methods/createChannel', () => ({ createChannelMethod: stubs.createChannelMethod }));
+vi.mock('../../../../../app/lib/server/methods/createPrivateGroup', () => ({ createPrivateGroupMethod: stubs.createPrivateGroupMethod }));
+vi.mock('@rocket.chat/models', () => modelsMock);
+
+const { RoomConverter } = await import('../../../../../app/importer/server/classes/converters/RoomConverter');
 
 describe('Room Converter', () => {
 	beforeEach(() => {

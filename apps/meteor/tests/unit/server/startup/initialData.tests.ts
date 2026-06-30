@@ -1,53 +1,45 @@
 import { expect } from 'chai';
-import { beforeEach, it } from 'mocha';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { beforeEach, describe, it, vi } from 'vitest';
 
-const checkUsernameAvailability = sinon.stub();
-const validateEmail = sinon.stub();
-const addUserRolesAsync = sinon.stub();
-const models = {
-	Settings: {},
-	Rooms: {},
-	Users: {
-		create: sinon.stub(),
-		findOneByEmailAddress: sinon.stub(),
-	},
-	Roles: {
-		countUsersInRole: sinon.stub(),
-	},
-};
-const setPasswordAsync = sinon.stub();
-const settingsGet = sinon.stub();
+// Stubs built in `vi.hoisted` so the hoisted `vi.mock` factories can reference them. `sinon.match`
+// is cross-instance-sensitive, so we expose the hoisted sinon's `match` and use it in assertions.
+const { match, checkUsernameAvailability, validateEmail, addUserRolesAsync, models, setPasswordAsync, settingsGet, meteorStartup } =
+	vi.hoisted(() => {
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		const sinon = require('sinon');
+		return {
+			match: sinon.match,
+			checkUsernameAvailability: sinon.stub(),
+			validateEmail: sinon.stub(),
+			addUserRolesAsync: sinon.stub(),
+			models: {
+				Settings: {},
+				Rooms: {},
+				Users: {
+					create: sinon.stub(),
+					findOneByEmailAddress: sinon.stub(),
+				},
+				Roles: {
+					countUsersInRole: sinon.stub(),
+				},
+			},
+			setPasswordAsync: sinon.stub(),
+			settingsGet: sinon.stub(),
+			meteorStartup: sinon.stub(),
+		};
+	});
 
-const { insertAdminUserFromEnv } = proxyquire.noCallThru().load('../../../../server/startup/initialData.js', {
-	'meteor/accounts-base': {
-		Accounts: {
-			setPasswordAsync,
-		},
-	},
-	'meteor/meteor': {
-		Meteor: {
-			startup: sinon.stub(),
-		},
-	},
-	'../../app/file-upload/server': {},
-	'../../app/file/server': {},
-	'../../app/lib/server/functions/addUserToDefaultChannels': {},
-	'../../app/lib/server/functions/checkUsernameAvailability': {
-		checkUsernameAvailability,
-	},
-	'../../app/settings/server': {
-		settings: { get: settingsGet },
-	},
-	'@rocket.chat/tools': {
-		validateEmail,
-	},
-	'../lib/roles/addUserRoles': {
-		addUserRolesAsync,
-	},
-	'@rocket.chat/models': models,
-});
+vi.mock('meteor/accounts-base', () => ({ Accounts: { setPasswordAsync } }));
+vi.mock('meteor/meteor', () => ({ Meteor: { startup: meteorStartup } }));
+vi.mock('../../../../app/file-upload/server', () => ({}));
+vi.mock('../../../../app/lib/server/functions/addUserToDefaultChannels', () => ({}));
+vi.mock('../../../../app/lib/server/functions/checkUsernameAvailability', () => ({ checkUsernameAvailability }));
+vi.mock('../../../../app/settings/server', () => ({ settings: { get: settingsGet } }));
+vi.mock('@rocket.chat/tools', () => ({ validateEmail }));
+vi.mock('../../../../server/lib/roles/addUserRoles', () => ({ addUserRolesAsync }));
+vi.mock('@rocket.chat/models', () => models);
+
+const { insertAdminUserFromEnv } = await import('../../../../server/startup/initialData');
 
 describe('insertAdminUserFromEnv', () => {
 	beforeEach(() => {
@@ -101,7 +93,7 @@ describe('insertAdminUserFromEnv', () => {
 
 		expect(
 			models.Users.create.calledWith(
-				sinon.match({
+				match({
 					name: 'name',
 					username: 'admin',
 					status: 'offline',
@@ -172,7 +164,7 @@ describe('insertAdminUserFromEnv', () => {
 
 		await insertAdminUserFromEnv();
 
-		expect(models.Users.create.calledWith(sinon.match({ username: '1234' }))).to.be.true;
+		expect(models.Users.create.calledWith(match({ username: '1234' }))).to.be.true;
 	});
 	it('should ignore the username when it does not pass setting regexp validation', async () => {
 		process.env.ADMIN_USERNAME = '1234';
@@ -184,7 +176,7 @@ describe('insertAdminUserFromEnv', () => {
 
 		await insertAdminUserFromEnv();
 
-		expect(models.Users.create.calledWith(sinon.match({ username: 'admin' }))).to.be.true;
+		expect(models.Users.create.calledWith(match({ username: 'admin' }))).to.be.true;
 	});
 	it('should call addUserRolesAsync as the last step when all data is valid and all overrides are valid', async () => {
 		process.env.ADMIN_EMAIL = 'email';
@@ -203,7 +195,7 @@ describe('insertAdminUserFromEnv', () => {
 
 		expect(addUserRolesAsync.called).to.be.true;
 		expect(setPasswordAsync.called).to.be.true;
-		expect(models.Users.create.calledWith(sinon.match({ name: 'name', username: '1234', emails: [{ address: 'email', verified: true }] })))
+		expect(models.Users.create.calledWith(match({ name: 'name', username: '1234', emails: [{ address: 'email', verified: true }] })))
 			.to.be.true;
 	});
 	it('should use the default nameValidation regex when the regex on the setting is invalid', async () => {
@@ -217,7 +209,7 @@ describe('insertAdminUserFromEnv', () => {
 
 		await insertAdminUserFromEnv();
 
-		expect(models.Users.create.calledWith(sinon.match({ username: 'admin' })));
+		expect(models.Users.create.calledWith(match({ username: 'admin' })));
 	});
 	it('should ignore the username when is not available', async () => {
 		process.env.ADMIN_USERNAME = '1234';
@@ -228,6 +220,6 @@ describe('insertAdminUserFromEnv', () => {
 
 		await insertAdminUserFromEnv();
 
-		expect(models.Users.create.calledWith(sinon.match({ username: 'admin' }))).to.be.true;
+		expect(models.Users.create.calledWith(match({ username: 'admin' }))).to.be.true;
 	});
 });

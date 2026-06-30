@@ -1,5 +1,9 @@
-import { expect, spy } from 'chai';
-import { beforeEach, describe, it } from 'mocha';
+import chai, { expect } from 'chai';
+import { beforeEach, describe, it } from 'vitest';
+
+// chai-spies registers `spy` on the chai instance (see tests/setup/vitestSetup.ts); grab it from
+// there rather than as a named import, which Vitest does not expose for plugin-added exports.
+const { spy } = chai;
 
 import { CachedSettings } from '../../../../../../app/settings/server/CachedSettings';
 import { SettingsRegistry } from '../../../../../../app/settings/server/SettingsRegistry';

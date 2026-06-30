@@ -1,35 +1,52 @@
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
-import p from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, beforeEach, vi } from 'vitest';
 
-const modelsMock = {
-	'NpsVote': {},
-	'Nps': {
-		findOne: sinon.stub(),
-		save: sinon.stub(),
-	},
-	'@noCallThru': true,
-};
+// Stubs built in `vi.hoisted` so the hoisted `vi.mock` factories can reference them. `sinon.match`
+// is cross-instance-sensitive, so we expose the hoisted sinon's `match` and use it in assertions.
+const { modelsMock, servicesMock, getbannerforadminsMock, sendNpsResultsMock, systemLoggerErrorMock, notifyAdminsMock, match } =
+	vi.hoisted(() => {
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		const sinon = require('sinon');
+		return {
+			match: sinon.match,
+			modelsMock: {
+				NpsVote: {},
+				Nps: {
+					findOne: sinon.stub(),
+					save: sinon.stub(),
+				},
+			},
+			servicesMock: {
+				Banner: {
+					create: sinon.stub(),
+				},
+				Settings: {
+					get: sinon.stub(),
+				},
+			},
+			getbannerforadminsMock: sinon.stub(),
+			sendNpsResultsMock: sinon.stub(),
+			systemLoggerErrorMock: sinon.stub(),
+			notifyAdminsMock: sinon.stub(),
+		};
+	});
 
-const servicesMock = {
-	Banner: {
-		create: sinon.stub(),
-	},
-	Settings: {
-		get: sinon.stub(),
-	},
-};
-
-const getbannerforadminsMock = sinon.stub();
-
-const { NPSService } = p('../../../../../server/services/nps/service.ts', {
-	'@rocket.chat/models': modelsMock,
-	'@rocket.chat/core-services': servicesMock,
-	'./sendNpsResults': { 'sendNpsResults': sinon.stub(), '@noCallThru': true },
-	'../../lib/logger/system': { 'SystemLogger': { error: sinon.stub() }, '@noCallThru': true },
-	'./notification': { 'notifyAdmins': sinon.stub(), 'getBannerForAdmins': getbannerforadminsMock, '@noCallThru': true },
+// `@rocket.chat/models` was proxyquired with `@noCallThru`, so only the listed exports exist.
+vi.mock('@rocket.chat/models', () => ({ NpsVote: modelsMock.NpsVote, Nps: modelsMock.Nps }));
+// `@rocket.chat/core-services` had NO noCallThru — it fell through to the real module for everything
+// except Banner/Settings (so `ServiceClassInternal`, `NPS`, etc. remain real).
+vi.mock('@rocket.chat/core-services', async () => {
+	const actual = await vi.importActual<any>('@rocket.chat/core-services');
+	return { ...actual, Banner: servicesMock.Banner, Settings: servicesMock.Settings };
 });
+vi.mock('../../../../../server/services/nps/sendNpsResults', () => ({ sendNpsResults: sendNpsResultsMock }));
+vi.mock('../../../../../server/lib/logger/system', () => ({ SystemLogger: { error: systemLoggerErrorMock } }));
+vi.mock('../../../../../server/services/nps/notification', () => ({
+	notifyAdmins: notifyAdminsMock,
+	getBannerForAdmins: getbannerforadminsMock,
+}));
+
+const { NPSService } = await import('../../../../../server/services/nps/service');
 
 describe('NPS Service', () => {
 	it('should instantiate properly', () => {
@@ -83,7 +100,7 @@ describe('NPS Service', () => {
 			expect(modelsMock.Nps.save.called).to.be.true;
 			expect(
 				modelsMock.Nps.save.calledWith(
-					sinon.match({
+					match({
 						expireAt: tomorrow,
 						startAt: today,
 						status: 'open',

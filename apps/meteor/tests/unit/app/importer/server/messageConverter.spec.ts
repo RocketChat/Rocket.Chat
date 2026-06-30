@@ -1,26 +1,26 @@
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import { vi } from 'vitest';
 
-const settingsStub = sinon.stub();
-const modelsMock = {
-	Rooms: {
-		findOneByImportId: sinon.stub(),
-	},
-};
-const insertMessage = sinon.stub();
-
-const { MessageConverter } = proxyquire.noCallThru().load('../../../../../app/importer/server/classes/converters/MessageConverter', {
-	'../../../settings/server': {
-		settings: { get: settingsStub },
-	},
-	'../../../../lib/server/functions/insertMessage': {
-		insertMessage,
-	},
-	'meteor/check': sinon.stub(),
-	'meteor/meteor': sinon.stub(),
-	'@rocket.chat/models': { ...modelsMock, '@global': true },
+const { settingsStub, modelsMock, insertMessage } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
+		settingsStub: sinon.stub(),
+		modelsMock: {
+			Rooms: {
+				findOneByImportId: sinon.stub(),
+			},
+		},
+		insertMessage: sinon.stub(),
+	};
 });
+
+vi.mock('../../../../../app/settings/server', () => ({ settings: { get: settingsStub } }));
+vi.mock('../../../../../app/lib/server/functions/insertMessage', () => ({ insertMessage }));
+vi.mock('@rocket.chat/models', () => modelsMock);
+
+const { MessageConverter } = await import('../../../../../app/importer/server/classes/converters/MessageConverter');
 
 describe('Message Converter', () => {
 	beforeEach(() => {

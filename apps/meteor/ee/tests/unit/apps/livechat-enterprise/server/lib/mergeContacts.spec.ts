@@ -1,33 +1,44 @@
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import { afterEach, beforeEach, describe, it, vi } from 'vitest';
 
-const modelsMock = {
-	LivechatContacts: {
-		findOneEnabledById: sinon.stub(),
-		findSimilarVerifiedContacts: sinon.stub(),
-		deleteMany: sinon.stub(),
-	},
-	LivechatRooms: {
-		updateMergedContactIds: sinon.stub(),
-	},
-	Settings: {
-		incrementValueById: sinon.stub(),
-	},
-};
-
-const contactMergerStub = {
-	getAllFieldsFromContact: sinon.stub(),
-	mergeFieldsIntoContact: sinon.stub(),
-};
-
-const { runMergeContacts } = proxyquire.noCallThru().load('../../../../../../server/patches/mergeContacts', {
-	'../../../app/livechat/server/lib/contacts/mergeContacts': { mergeContacts: { patch: sinon.stub() } },
-	'../../../app/livechat/server/lib/contacts/ContactMerger': { ContactMerger: contactMergerStub },
-	'../../../app/livechat-enterprise/server/lib/logger': { logger: { info: sinon.stub(), debug: sinon.stub() } },
-	'../../../app/lib/server/lib/notifyListener': { notifyOnSettingChanged: sinon.stub() },
-	'@rocket.chat/models': modelsMock,
+// Stubs are built in `vi.hoisted` so the hoisted `vi.mock` factories can reference them. sinon is
+// require()d inside the hoisted block because the top-level import has not executed at hoist time.
+// NOTE: relative `vi.mock` specifiers are resolved relative to THIS spec file (not the source).
+const { modelsMock, contactMergerStub, mergeContactsPatch, loggerStub, notifyOnSettingChangedStub } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
+		modelsMock: {
+			LivechatContacts: {
+				findOneEnabledById: sinon.stub(),
+				findSimilarVerifiedContacts: sinon.stub(),
+				deleteMany: sinon.stub(),
+			},
+			LivechatRooms: {
+				updateMergedContactIds: sinon.stub(),
+			},
+			Settings: {
+				incrementValueById: sinon.stub(),
+			},
+		},
+		contactMergerStub: {
+			getAllFieldsFromContact: sinon.stub(),
+			mergeFieldsIntoContact: sinon.stub(),
+		},
+		mergeContactsPatch: sinon.stub(),
+		loggerStub: { info: sinon.stub(), debug: sinon.stub() },
+		notifyOnSettingChangedStub: sinon.stub(),
+	};
 });
+
+vi.mock('../../../../../../../app/livechat/server/lib/contacts/mergeContacts', () => ({ mergeContacts: { patch: mergeContactsPatch } }));
+vi.mock('../../../../../../../app/livechat/server/lib/contacts/ContactMerger', () => ({ ContactMerger: contactMergerStub }));
+vi.mock('../../../../../../app/livechat-enterprise/server/lib/logger', () => ({ contactLogger: loggerStub }));
+vi.mock('../../../../../../../app/lib/server/lib/notifyListener', () => ({ notifyOnSettingChanged: notifyOnSettingChangedStub }));
+vi.mock('@rocket.chat/models', () => modelsMock);
+
+const { runMergeContacts } = await import('../../../../../../server/patches/mergeContacts');
 
 describe('mergeContacts', () => {
 	const targetChannel = {

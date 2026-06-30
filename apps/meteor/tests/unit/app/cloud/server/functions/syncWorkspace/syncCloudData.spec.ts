@@ -1,34 +1,58 @@
 import { expect } from 'chai';
-import { describe, it, beforeEach } from 'mocha';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, beforeEach, vi } from 'vitest';
 
-const models = {
-	Settings: { updateValueById: sinon.stub() },
-};
-
-const mockedFetchWorkspaceSyncPayload = sinon.stub();
-
-const { syncCloudData } = proxyquire.noCallThru().load('../../../../../../../app/cloud/server/functions/syncWorkspace/syncCloudData.ts', {
-	'@rocket.chat/license': { DuplicatedLicenseError: sinon.stub() },
-	'@rocket.chat/models': models,
-	'../../../../../server/lib/callbacks': { callbacks: { run: sinon.stub() } },
-	'../../../../../lib/errors/CloudWorkspaceAccessError': { CloudWorkspaceAccessError: sinon.stub() },
-	'../../../../../lib/errors/CloudWorkspaceRegistrationError': { CloudWorkspaceRegistrationError: sinon.stub() },
-	'../../../../../server/lib/logger/system': { SystemLogger: { info: sinon.stub(), error: sinon.stub() } },
-	'../buildRegistrationData': { buildWorkspaceRegistrationData: sinon.stub().resolves({}) },
-	'../getWorkspaceAccessToken': {
-		getWorkspaceAccessToken: sinon.stub().resolves('token'),
-		CloudWorkspaceAccessTokenEmptyError: sinon.stub(),
-	},
-	'../retrieveRegistrationStatus': { retrieveRegistrationStatus: sinon.stub().resolves({ workspaceRegistered: true }) },
-	'./fetchWorkspaceSyncPayload': { fetchWorkspaceSyncPayload: mockedFetchWorkspaceSyncPayload },
+const { stubs, sandbox } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	const sandbox = sinon.createSandbox();
+	return {
+		sandbox,
+		stubs: {
+			Settings: { updateValueById: sandbox.stub() },
+			fetchWorkspaceSyncPayload: sandbox.stub(),
+			DuplicatedLicenseError: sandbox.stub(),
+			callbacks: { run: sandbox.stub() },
+			CloudWorkspaceAccessError: sandbox.stub(),
+			CloudWorkspaceRegistrationError: sandbox.stub(),
+			SystemLogger: { info: sandbox.stub(), error: sandbox.stub() },
+			buildWorkspaceRegistrationData: sandbox.stub().resolves({}),
+			getWorkspaceAccessToken: sandbox.stub().resolves('token'),
+			CloudWorkspaceAccessTokenEmptyError: sandbox.stub(),
+			retrieveRegistrationStatus: sandbox.stub().resolves({ workspaceRegistered: true }),
+		},
+	};
 });
+
+vi.mock('@rocket.chat/license', () => ({ DuplicatedLicenseError: stubs.DuplicatedLicenseError }));
+vi.mock('@rocket.chat/models', () => ({ Settings: stubs.Settings }));
+vi.mock('../../../../../../../server/lib/callbacks', () => ({ callbacks: stubs.callbacks }));
+vi.mock('../../../../../../../lib/errors/CloudWorkspaceAccessError', () => ({ CloudWorkspaceAccessError: stubs.CloudWorkspaceAccessError }));
+vi.mock('../../../../../../../lib/errors/CloudWorkspaceRegistrationError', () => ({
+	CloudWorkspaceRegistrationError: stubs.CloudWorkspaceRegistrationError,
+}));
+vi.mock('../../../../../../../server/lib/logger/system', () => ({ SystemLogger: stubs.SystemLogger }));
+vi.mock('../../../../../../../app/cloud/server/functions/buildRegistrationData', () => ({
+	buildWorkspaceRegistrationData: stubs.buildWorkspaceRegistrationData,
+}));
+vi.mock('../../../../../../../app/cloud/server/functions/getWorkspaceAccessToken', () => ({
+	getWorkspaceAccessToken: stubs.getWorkspaceAccessToken,
+	CloudWorkspaceAccessTokenEmptyError: stubs.CloudWorkspaceAccessTokenEmptyError,
+}));
+vi.mock('../../../../../../../app/cloud/server/functions/retrieveRegistrationStatus', () => ({
+	retrieveRegistrationStatus: stubs.retrieveRegistrationStatus,
+}));
+vi.mock('../../../../../../../app/cloud/server/functions/syncWorkspace/fetchWorkspaceSyncPayload', () => ({
+	fetchWorkspaceSyncPayload: stubs.fetchWorkspaceSyncPayload,
+}));
+
+const { syncCloudData } = await import('../../../../../../../app/cloud/server/functions/syncWorkspace/syncCloudData');
 
 describe('SyncCloudData', () => {
 	beforeEach(() => {
-		models.Settings.updateValueById.reset();
-		mockedFetchWorkspaceSyncPayload.reset();
+		sandbox.reset();
+		stubs.buildWorkspaceRegistrationData.resolves({});
+		stubs.getWorkspaceAccessToken.resolves('token');
+		stubs.retrieveRegistrationStatus.resolves({ workspaceRegistered: true });
 	});
 
 	it('should save cloudSyncAnnouncement payload on Cloud_Sync_Announcement_Payload setting when present', async () => {
@@ -66,14 +90,14 @@ describe('SyncCloudData', () => {
 			},
 		};
 
-		mockedFetchWorkspaceSyncPayload.resolves(workspaceSyncPayloadResponse);
+		stubs.fetchWorkspaceSyncPayload.resolves(workspaceSyncPayloadResponse);
 
 		await syncCloudData();
 
-		expect(mockedFetchWorkspaceSyncPayload.calledOnce).to.be.true;
+		expect(stubs.fetchWorkspaceSyncPayload.calledOnce).to.be.true;
 
 		expect(
-			models.Settings.updateValueById.calledOnceWith(
+			stubs.Settings.updateValueById.calledOnceWith(
 				'Cloud_Sync_Announcement_Payload',
 				JSON.stringify(workspaceSyncPayloadResponse.cloudSyncAnnouncement),
 			),
@@ -88,14 +112,14 @@ describe('SyncCloudData', () => {
 			removeLicense: false,
 		};
 
-		mockedFetchWorkspaceSyncPayload.resolves(workspaceSyncPayloadResponse);
+		stubs.fetchWorkspaceSyncPayload.resolves(workspaceSyncPayloadResponse);
 
 		await syncCloudData();
 
-		expect(mockedFetchWorkspaceSyncPayload.calledOnce).to.be.true;
+		expect(stubs.fetchWorkspaceSyncPayload.calledOnce).to.be.true;
 
-		expect(models.Settings.updateValueById.calledOnce).to.be.true;
+		expect(stubs.Settings.updateValueById.calledOnce).to.be.true;
 
-		expect(models.Settings.updateValueById.calledWith('Cloud_Sync_Announcement_Payload', 'null')).to.be.true;
+		expect(stubs.Settings.updateValueById.calledWith('Cloud_Sync_Announcement_Payload', 'null')).to.be.true;
 	});
 });

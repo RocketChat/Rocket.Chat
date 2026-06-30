@@ -1,27 +1,34 @@
 import { expect } from 'chai';
-import p from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, vi } from 'vitest';
 
-const resultObj = {
-	result: true,
-};
+const { resultObj, normalizeMessageFileUploadStub, getLivechatRoomGuestInfoStub } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
+		resultObj: {
+			result: true,
+		},
+		normalizeMessageFileUploadStub: sinon.stub().returnsArg(0),
+		getLivechatRoomGuestInfoStub: sinon.stub(),
+	};
+});
 
-const { sendMessageType, isOmnichannelNavigationMessage, isOmnichannelClosingMessage, getAdditionalFieldsByType } = p
-	.noCallThru()
-	.load('../../../../../../app/livechat/server/hooks/sendToCRM', {
-		'../../../settings/server': {
-			settings: {
-				get() {
-					return resultObj.result;
-				},
-			},
+vi.mock('../../../../../../app/settings/server', () => ({
+	settings: {
+		get() {
+			return resultObj.result;
 		},
-		'../../../utils/server/functions/normalizeMessageFileUpload': {
-			normalizeMessageFileUpload: sinon.stub().returnsArg(0),
-		},
-		'../lib/webhooks': {},
-		'../lib/guests': { getLivechatRoomGuestInfo: sinon.stub() },
-	});
+	},
+}));
+vi.mock('../../../../../../app/utils/server/functions/normalizeMessageFileUpload', () => ({
+	normalizeMessageFileUpload: normalizeMessageFileUploadStub,
+}));
+vi.mock('../../../../../../app/livechat/server/lib/webhooks', () => ({}));
+vi.mock('../../../../../../app/livechat/server/lib/guests', () => ({ getLivechatRoomGuestInfo: getLivechatRoomGuestInfoStub }));
+
+const { sendMessageType, isOmnichannelNavigationMessage, isOmnichannelClosingMessage, getAdditionalFieldsByType } = await import(
+	'../../../../../../app/livechat/server/hooks/sendToCRM'
+);
 
 describe('[OC] Send TO CRM', () => {
 	describe('isOmnichannelNavigationMessage', () => {

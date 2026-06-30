@@ -1,8 +1,7 @@
 import { MeteorError } from '@rocket.chat/core-services';
 import { expect } from 'chai';
-import { describe, it, beforeEach, afterEach } from 'mocha';
-import mock from 'proxyquire';
 import Sinon from 'sinon';
+import { describe, it, beforeEach, afterEach, vi } from 'vitest';
 
 type SendUserEmailFn = (subject: string, html: string, user: { email?: string; password?: string; name?: string }) => Promise<void>;
 type SendHelperFn = (user: { email?: string; password?: string; name?: string }) => Promise<void>;
@@ -13,60 +12,57 @@ const userData = {
 	name: 'Test User',
 };
 
-const makeStubs = () => {
-	const MailerStub = {
-		getTemplate: Sinon.stub(),
-		send: Sinon.stub(),
-	};
-
-	const SettingsStub = {
-		settings: {
-			get: Sinon.stub().callsFake((key: string) => {
-				if (key === 'From_Email') return 'no-reply@example.com';
-				if (key === 'Accounts_UserAddedEmail_Subject') return 'Welcome [name]!';
-				if (key === 'Password_Changed_Email_Subject') return 'Password Changed';
-				return '';
-			}),
+// proxyquire previously rebuilt fresh stubs and re-`load`ed the module each test. With vi.mock we
+// mock once, then in `beforeEach` reset the stubs through the hoisted sandbox and re-apply default
+// behaviours.
+const { sandbox, MailerStub, SettingsStub, MeteorStub } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	const sandbox = sinon.createSandbox();
+	return {
+		sandbox,
+		MailerStub: {
+			getTemplate: sandbox.stub(),
+			send: sandbox.stub(),
+		},
+		SettingsStub: {
+			settings: {
+				get: sandbox.stub(),
+			},
+		},
+		MeteorStub: {
+			Meteor: {
+				startup: sandbox.stub(),
+			},
 		},
 	};
+});
 
-	const MeteorStub = {
-		Meteor: {
-			startup: Sinon.stub(),
-		},
-	};
+vi.mock('../../../../../../app/mailer/server/api', () => MailerStub);
+vi.mock('../../../../../../app/settings/server', () => SettingsStub);
+vi.mock('meteor/meteor', () => MeteorStub);
 
-	return { MailerStub, SettingsStub, MeteorStub };
+const { sendUserEmail, sendWelcomeEmail, sendPasswordEmail } = (await import(
+	'../../../../../../app/lib/server/functions/saveUser/sendUserEmail'
+)) as {
+	sendUserEmail: SendUserEmailFn;
+	sendWelcomeEmail: SendHelperFn;
+	sendPasswordEmail: SendHelperFn;
 };
 
 describe('sendUserEmail (Mocha + TS)', () => {
-	let MailerStub: { getTemplate: Sinon.SinonStub; send: Sinon.SinonStub };
-	let SettingsStub: { settings: { get: Sinon.SinonStub } };
-	let MeteorStub: { Meteor: { startup: Sinon.SinonStub } };
-
-	let sendUserEmail: SendUserEmailFn;
-	let sendWelcomeEmail: SendHelperFn;
-	let sendPasswordEmail: SendHelperFn;
-
 	beforeEach(() => {
-		const stubs = makeStubs();
-		MailerStub = stubs.MailerStub as any;
-		SettingsStub = stubs.SettingsStub as any;
-		MeteorStub = stubs.MeteorStub as any;
-
-		const mod = mock.noCallThru().load('./../../../../../../../meteor/app/lib/server/functions/saveUser/sendUserEmail.ts', {
-			'../../../../mailer/server/api': MailerStub,
-			'../../../../settings/server': SettingsStub,
-			'meteor/meteor': MeteorStub,
-		}) as any;
-
-		sendUserEmail = mod.sendUserEmail as SendUserEmailFn;
-		sendWelcomeEmail = mod.sendWelcomeEmail as SendHelperFn;
-		sendPasswordEmail = mod.sendPasswordEmail as SendHelperFn;
+		sandbox.reset();
+		SettingsStub.settings.get.callsFake((key: string) => {
+			if (key === 'From_Email') return 'no-reply@example.com';
+			if (key === 'Accounts_UserAddedEmail_Subject') return 'Welcome [name]!';
+			if (key === 'Password_Changed_Email_Subject') return 'Password Changed';
+			return '';
+		});
 	});
 
 	afterEach(() => {
-		Sinon.restore();
+		sandbox.reset();
 	});
 
 	describe('sendUserEmail', () => {

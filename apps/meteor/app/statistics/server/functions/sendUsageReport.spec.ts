@@ -1,39 +1,44 @@
 import { expect } from 'chai';
-import { describe, it, beforeEach, afterEach } from 'mocha';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, beforeEach, afterEach, vi } from 'vitest';
 
-const sandbox = sinon.createSandbox();
-
-const mocks = {
-	Statistics: {
-		findLast: sandbox.stub(),
-		updateOne: sandbox.stub(),
-	},
-	statistics: {
-		save: sandbox.stub(),
-	},
-	serverFetch: sandbox.stub(),
-	getWorkspaceAccessToken: sandbox.stub().resolves('workspace-token'),
-	Meteor: {
-		absoluteUrl: sandbox.stub().returns('http://localhost:3000/'),
-	},
-	logger: {
-		error: sandbox.stub(),
-	},
-	Info: {
-		version: '3.0.1',
-	},
-};
-
-const { sendUsageReport } = proxyquire.noCallThru().load('./sendUsageReport', {
-	'@rocket.chat/models': { Statistics: mocks.Statistics },
-	'@rocket.chat/server-fetch': { serverFetch: mocks.serverFetch },
-	'..': { statistics: mocks.statistics },
-	'../../../cloud/server': { getWorkspaceAccessToken: mocks.getWorkspaceAccessToken },
-	'meteor/meteor': { Meteor: mocks.Meteor },
-	'../../../utils/rocketchat.info': { Info: mocks.Info },
+const { sandbox, mocks, sinonMatch } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	const sandbox = sinon.createSandbox();
+	return {
+		sandbox,
+		sinonMatch: sinon.match,
+		mocks: {
+			Statistics: {
+				findLast: sandbox.stub(),
+				updateOne: sandbox.stub(),
+			},
+			statistics: {
+				save: sandbox.stub(),
+			},
+			serverFetch: sandbox.stub(),
+			getWorkspaceAccessToken: sandbox.stub().resolves('workspace-token'),
+			Meteor: {
+				absoluteUrl: sandbox.stub().returns('http://localhost:3000/'),
+			},
+			logger: {
+				error: sandbox.stub(),
+			},
+			Info: {
+				version: '3.0.1',
+			},
+		},
+	};
 });
+
+vi.mock('@rocket.chat/models', () => ({ Statistics: mocks.Statistics }));
+vi.mock('@rocket.chat/server-fetch', () => ({ serverFetch: mocks.serverFetch }));
+vi.mock('..', () => ({ statistics: mocks.statistics }));
+vi.mock('../../../cloud/server', () => ({ getWorkspaceAccessToken: mocks.getWorkspaceAccessToken }));
+vi.mock('meteor/meteor', () => ({ Meteor: mocks.Meteor }));
+vi.mock('../../../utils/rocketchat.info', () => ({ Info: mocks.Info }));
+
+const { sendUsageReport } = await import('./sendUsageReport');
 
 describe('sendUsageReport', () => {
 	beforeEach(() => {
@@ -61,7 +66,7 @@ describe('sendUsageReport', () => {
 
 		expect(mocks.statistics.save.called).to.be.true;
 		expect(mocks.serverFetch.calledOnce).to.be.true;
-		expect(mocks.serverFetch.calledWith('https://collector.rocket.chat/', sinon.match({ method: 'POST' }))).to.be.true;
+		expect(mocks.serverFetch.calledWith('https://collector.rocket.chat/', sinonMatch({ method: 'POST' }))).to.be.true;
 		expect(result).to.be.undefined;
 	});
 

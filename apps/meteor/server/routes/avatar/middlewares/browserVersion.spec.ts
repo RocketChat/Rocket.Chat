@@ -1,20 +1,17 @@
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import { describe, it, vi } from 'vitest';
 
 // const getCookie = sinon.stub();
-class CookiesMock {
-	public get = (_key: any, value: any) => value;
-}
-const { handleBrowserVersionCheck, isIEOlderThan11 } = proxyquire.noCallThru().load('./browserVersion', {
-	'meteor/ostrio:cookies': {
-		Cookies: CookiesMock,
-	},
-	'../../../../app/utils/server/getURL': {
-		getURL: () => '',
-	},
+vi.mock('meteor/ostrio:cookies', () => {
+	class CookiesMock {
+		public get = (_key: any, value: any) => value;
+	}
+	return { Cookies: CookiesMock };
 });
+vi.mock('../../../../app/utils/server/getURL', () => ({ getURL: () => '' }));
+
+const { handleBrowserVersionCheck, isIEOlderThan11 } = await import('./browserVersion');
 
 describe('#isIEOlderThan11()', () => {
 	it('should return false if user agent is IE11', () => {

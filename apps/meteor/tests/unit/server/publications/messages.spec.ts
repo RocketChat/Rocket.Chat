@@ -1,25 +1,49 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
+import { describe, it, afterEach, vi } from 'vitest';
 import sinon from 'sinon';
 
-const mockMeteorError = class extends Error {
-	constructor(
-		public error: string,
-		public reason: string,
-		public details: any,
-	) {
-		super(reason);
-		this.name = 'Meteor.Error';
-	}
-};
+const { mockMeteorError, messagesMock, checkStub, getChannelHistoryStub, meteorMethodsStub } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	const mockMeteorError = class extends Error {
+		constructor(
+			public error: string,
+			public reason: string,
+			public details: any,
+		) {
+			super(reason);
+			this.name = 'Meteor.Error';
+		}
+	};
+	return {
+		mockMeteorError,
+		messagesMock: {
+			findForUpdates: sinon.stub(),
+			trashFindDeletedAfter: sinon.stub(),
+			trashFind: sinon.stub(),
+		},
+		checkStub: sinon.stub(),
+		getChannelHistoryStub: sinon.stub(),
+		meteorMethodsStub: sinon.stub(),
+	};
+});
 
-const messagesMock = {
-	findForUpdates: sinon.stub(),
-	trashFindDeletedAfter: sinon.stub(),
-	trashFind: sinon.stub(),
-};
+vi.mock('meteor/check', () => ({
+	check: checkStub,
+}));
+vi.mock('../../../../app/lib/server/methods/getChannelHistory', () => ({
+	getChannelHistory: getChannelHistoryStub,
+}));
+vi.mock('meteor/meteor', () => ({
+	Meteor: {
+		methods: meteorMethodsStub,
+		Error: mockMeteorError,
+	},
+}));
+vi.mock('@rocket.chat/models', () => ({
+	Messages: messagesMock,
+}));
 
 const {
 	extractTimestampFromCursor,
@@ -29,24 +53,7 @@ const {
 	mountPreviousCursor,
 	handleWithoutPagination,
 	handleCursorPagination,
-} = proxyquire.noCallThru().load('../../../../server/publications/messages', {
-	'meteor/check': {
-		check: sinon.stub(),
-	},
-	'../../app/lib/server/methods/getChannelHistory': {
-		getChannelHistory: sinon.stub(),
-	},
-	'meteor/meteor': {
-		'Meteor': {
-			methods: sinon.stub(),
-			Error: mockMeteorError,
-		},
-		'@global': true,
-	},
-	'@rocket.chat/models': {
-		Messages: messagesMock,
-	},
-});
+} = await import('../../../../server/publications/messages');
 
 describe('extractTimestampFromCursor', () => {
 	it('should return the correct timestamp', () => {

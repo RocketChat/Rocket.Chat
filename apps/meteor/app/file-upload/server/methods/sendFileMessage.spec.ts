@@ -1,44 +1,59 @@
 import { expect } from 'chai';
-import { describe, it, beforeEach } from 'mocha';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, beforeEach, vi } from 'vitest';
 
-const findOneByIdAndUserIdAndRoomId = sinon.stub();
-const updateFileMetadata = sinon.stub().resolves();
-const getPath = sinon.stub().returns('/path/to/file.txt');
-const isImagePreviewSupported = sinon.stub().returns(false);
-const getFileExtension = sinon.stub().returns('txt');
-
-const { parseFileIntoMessageAttachments } = proxyquire.noCallThru().load('./sendFileMessage', {
-	'@rocket.chat/models': {
-		Uploads: { findOneByIdAndUserIdAndRoomId, updateFileMetadata },
-		Rooms: { findOneById: sinon.stub() },
-		Users: { findOneById: sinon.stub() },
-	},
-	'meteor/check': {
-		check: sinon.stub(),
-		Match: {
-			Maybe: sinon.stub(),
-			Optional: sinon.stub(),
-			ObjectIncluding: sinon.stub(),
+const { stubs } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
+		stubs: {
+			findOneByIdAndUserIdAndRoomId: sinon.stub(),
+			updateFileMetadata: sinon.stub().resolves(),
+			getPath: sinon.stub().returns('/path/to/file.txt'),
+			isImagePreviewSupported: sinon.stub().returns(false),
+			getFileExtension: sinon.stub().returns('txt'),
+			roomsFindOneById: sinon.stub(),
+			usersFindOneById: sinon.stub(),
+			callbacksRunAsync: sinon.stub(),
+			systemLoggerError: sinon.stub(),
+			canAccessRoomAsync: sinon.stub().resolves(true),
+			executeSendMessage: sinon.stub().resolves({}),
+			checkStub: sinon.stub(),
+			meteorMethods: sinon.stub(),
 		},
-	},
-	'meteor/meteor': {
-		Meteor: {
-			Error: class Error extends global.Error {},
-			methods: sinon.stub(),
-		},
-	},
-	'../lib/FileUpload': {
-		FileUpload: { getPath },
-	},
-	'./isImagePreviewSupported': { isImagePreviewSupported },
-	'../../../../lib/utils/getFileExtension': { getFileExtension },
-	'../../../../server/lib/callbacks': { callbacks: { runAsync: sinon.stub() } },
-	'../../../../server/lib/logger/system': { SystemLogger: { error: sinon.stub() } },
-	'../../../authorization/server/functions/canAccessRoom': { canAccessRoomAsync: sinon.stub().resolves(true) },
-	'../../../lib/server/methods/sendMessage': { executeSendMessage: sinon.stub().resolves({}) },
+	};
 });
+
+const findOneByIdAndUserIdAndRoomId = stubs.findOneByIdAndUserIdAndRoomId;
+const updateFileMetadata = stubs.updateFileMetadata;
+
+vi.mock('@rocket.chat/models', () => ({
+	Uploads: { findOneByIdAndUserIdAndRoomId: stubs.findOneByIdAndUserIdAndRoomId, updateFileMetadata: stubs.updateFileMetadata },
+	Rooms: { findOneById: stubs.roomsFindOneById },
+	Users: { findOneById: stubs.usersFindOneById },
+}));
+vi.mock('meteor/check', () => ({
+	check: stubs.checkStub,
+	Match: {
+		Maybe: stubs.checkStub,
+		Optional: stubs.checkStub,
+		ObjectIncluding: stubs.checkStub,
+	},
+}));
+vi.mock('meteor/meteor', () => ({
+	Meteor: {
+		Error: class Error extends global.Error {},
+		methods: stubs.meteorMethods,
+	},
+}));
+vi.mock('../lib/FileUpload', () => ({ FileUpload: { getPath: stubs.getPath } }));
+vi.mock('./isImagePreviewSupported', () => ({ isImagePreviewSupported: stubs.isImagePreviewSupported }));
+vi.mock('../../../../lib/utils/getFileExtension', () => ({ getFileExtension: stubs.getFileExtension }));
+vi.mock('../../../../server/lib/callbacks', () => ({ callbacks: { runAsync: stubs.callbacksRunAsync } }));
+vi.mock('../../../../server/lib/logger/system', () => ({ SystemLogger: { error: stubs.systemLoggerError } }));
+vi.mock('../../../authorization/server/functions/canAccessRoom', () => ({ canAccessRoomAsync: stubs.canAccessRoomAsync }));
+vi.mock('../../../lib/server/methods/sendMessage', () => ({ executeSendMessage: stubs.executeSendMessage }));
+
+const { parseFileIntoMessageAttachments } = await import('./sendFileMessage');
 
 describe('sendFileMessage - Mass Assignment & Type Pollution Prevention', () => {
 	const mockUser = { _id: 'user123' };

@@ -1,12 +1,11 @@
 import type { BannerPlatform, IBanner, IBannerDismiss } from '@rocket.chat/core-typings';
 import { registerModel, BaseRaw } from '@rocket.chat/models';
 import { expect } from 'chai';
-import { afterEach, before, describe, it } from 'mocha';
+import { afterEach, beforeAll, describe, it } from 'vitest';
 import type { FindCursor, FindOptions } from 'mongodb';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-const { BannerService } = proxyquire.noCallThru().load('../../../../../server/services/banner/service', {});
+const { BannerService } = await import('../../../../../server/services/banner/service');
 
 class BannerModel extends BaseRaw<any> {
 	findActiveByRoleOrId(
@@ -42,7 +41,7 @@ const bannerDismissModel = new BannerDismissModel({ collection: () => ({}) } as 
 const userModel = new UserModel({ collection: () => ({}) } as unknown as any, 'user');
 
 describe('Banners service', () => {
-	before(() => {
+	beforeAll(() => {
 		registerModel('IBannersModel', bannersModel);
 		registerModel('IBannersDismissModel', bannerDismissModel);
 		registerModel('IUsersModel', userModel);

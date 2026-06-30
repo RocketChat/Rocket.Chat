@@ -1,24 +1,28 @@
 import { expect } from 'chai';
-import p from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, beforeEach, vi } from 'vitest';
 
-const modelsMock = {
-	Users: {
-		findOneById: sinon.stub(),
-	},
-	LivechatVisitors: {
-		findOneById: sinon.stub(),
-	},
-};
-
-const settingsGetMock = {
-	get: sinon.stub(),
-};
-
-const { parseTranscriptRequest } = p.noCallThru().load('../../../../../../app/livechat/server/lib/parseTranscriptRequest', {
-	'@rocket.chat/models': modelsMock,
-	'../../../settings/server': { settings: settingsGetMock },
+const { modelsMock, settingsGetMock } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
+		modelsMock: {
+			Users: {
+				findOneById: sinon.stub(),
+			},
+			LivechatVisitors: {
+				findOneById: sinon.stub(),
+			},
+		},
+		settingsGetMock: {
+			get: sinon.stub(),
+		},
+	};
 });
+
+vi.mock('@rocket.chat/models', () => modelsMock);
+vi.mock('../../../../../../app/settings/server', () => ({ settings: settingsGetMock }));
+
+const { parseTranscriptRequest } = await import('../../../../../../app/livechat/server/lib/parseTranscriptRequest');
 
 describe('parseTranscriptRequest', () => {
 	beforeEach(() => {

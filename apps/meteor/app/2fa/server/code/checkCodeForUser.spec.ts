@@ -1,10 +1,11 @@
 import { expect } from 'chai';
-import { before, after, beforeEach, describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { beforeAll, afterAll, beforeEach, describe, it, vi } from 'vitest';
 
-const settingsGet = sinon.stub();
-const totpEnabled = sinon.stub().returns(false);
+const { settingsGet, totpEnabled } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return { settingsGet: sinon.stub(), totpEnabled: sinon.stub().returns(false) };
+});
 
 class MeteorError extends Error {
 	error: string;
@@ -59,31 +60,21 @@ class PasswordCheckFallback {
 	}
 }
 
-const { checkCodeForUser, getFingerprintFromConnection } = proxyquire.noCallThru().load('./index', {
-	'@rocket.chat/models': {
-		Users: {
-			findOneById: async () => null,
-			setTwoFactorAuthorizationHashAndUntilForUserIdAndToken: async () => undefined,
-		},
+vi.mock('@rocket.chat/models', () => ({
+	Users: {
+		findOneById: async () => null,
+		setTwoFactorAuthorizationHashAndUntilForUserIdAndToken: async () => undefined,
 	},
-	'meteor/accounts-base': {
-		Accounts: {
-			_getLoginToken: () => 'token-hash',
-		},
-	},
-	'meteor/meteor': {
-		Meteor: { Error: MeteorError },
-	},
-	'./TOTPCheck': { TOTPCheck },
-	'./EmailCheck': { EmailCheck },
-	'./PasswordCheckFallback': { PasswordCheckFallback },
-	'../../../lib/server/functions/getModifiedHttpHeaders': {
-		normalizeHeaders: (headers: unknown) => headers,
-	},
-	'../../../settings/server': {
-		settings: { get: settingsGet },
-	},
-});
+}));
+vi.mock('meteor/accounts-base', () => ({ Accounts: { _getLoginToken: () => 'token-hash' } }));
+vi.mock('meteor/meteor', () => ({ Meteor: { Error: MeteorError } }));
+vi.mock('./TOTPCheck', () => ({ TOTPCheck }));
+vi.mock('./EmailCheck', () => ({ EmailCheck }));
+vi.mock('./PasswordCheckFallback', () => ({ PasswordCheckFallback }));
+vi.mock('../../../lib/server/functions/getModifiedHttpHeaders', () => ({ normalizeHeaders: (headers: unknown) => headers }));
+vi.mock('../../../settings/server', () => ({ settings: { get: settingsGet } }));
+
+const { checkCodeForUser, getFingerprintFromConnection } = await import('./index');
 
 const REMEMBER_FOR_SECONDS = 1800;
 
@@ -105,7 +96,7 @@ const connection = {
 describe('checkCodeForUser - post-registration grace window', () => {
 	let originalTestMode: string | undefined;
 
-	before(() => {
+	beforeAll(() => {
 		originalTestMode = process.env.TEST_MODE;
 		delete process.env.TEST_MODE;
 
@@ -123,7 +114,7 @@ describe('checkCodeForUser - post-registration grace window', () => {
 		});
 	});
 
-	after(() => {
+	afterAll(() => {
 		if (originalTestMode === undefined) {
 			delete process.env.TEST_MODE;
 		} else {

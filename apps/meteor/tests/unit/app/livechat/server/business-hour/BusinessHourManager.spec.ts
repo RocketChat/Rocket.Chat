@@ -1,44 +1,60 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, beforeEach, afterEach, vi } from 'vitest';
 
-const formatStub = sinon.stub().returns('00:00');
-const isSameStub = sinon.stub().returns(true);
-const isDSTStub = sinon.stub().returns(true);
+// `sinon` is taken from the hoisted block so the module-level stubs, the per-test `sinon.stub(manager,
+// ...)` instance stubs, `sinon.restore()`, and `sinon.match(...)` all share one sinon instance.
+const { sinon, momentStub, formatStub, isSameStub, isDSTStub, findActiveBusinessHoursStub, saveBusinessHourStub, loggerStub, LivechatBusinessHoursStub } =
+	vi.hoisted(() => {
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		const sinon = require('sinon');
 
-const momentStub = sinon.stub().returns({
-	utc: () => ({
-		tz: () => ({
-			format: formatStub,
-			isSame: isSameStub,
-			isDST: isDSTStub,
-		}),
-	}),
-});
+		const formatStub = sinon.stub().returns('00:00');
+		const isSameStub = sinon.stub().returns(true);
+		const isDSTStub = sinon.stub().returns(true);
 
-const findActiveBusinessHoursStub = sinon.stub().returns([]);
-const LivechatBusinessHoursStub = {
-	findActiveBusinessHours: findActiveBusinessHoursStub,
-};
-const saveBusinessHourStub = sinon.stub();
-const loggerStub = sinon.stub();
+		const momentStub = sinon.stub().returns({
+			utc: () => ({
+				tz: () => ({
+					format: formatStub,
+					isSame: isSameStub,
+					isDST: isDSTStub,
+				}),
+			}),
+		});
 
-const { BusinessHourManager } = proxyquire.noCallThru().load('../../../../../../app/livechat/server/business-hour/BusinessHourManager', {
-	'../../../settings/server': {},
-	'../../../../server/lib/callbacks': {},
-	'../../../../ee/app/livechat-enterprise/server/business-hour/Helper': {},
-	'./AbstractBusinessHour': {},
-	'moment-timezone': momentStub,
-	'@rocket.chat/models': {
-		LivechatBusinessHours: LivechatBusinessHoursStub,
+		const findActiveBusinessHoursStub = sinon.stub().returns([]);
+
+		return {
+			sinon,
+			formatStub,
+			isSameStub,
+			isDSTStub,
+			momentStub,
+			findActiveBusinessHoursStub,
+			LivechatBusinessHoursStub: {
+				findActiveBusinessHours: findActiveBusinessHoursStub,
+			},
+			saveBusinessHourStub: sinon.stub(),
+			loggerStub: sinon.stub(),
+		};
+	});
+
+vi.mock('../../../../../../app/settings/server', () => ({}));
+vi.mock('../../../../../../server/lib/callbacks', () => ({}));
+vi.mock('../../../../../../ee/app/livechat-enterprise/server/business-hour/Helper', () => ({}));
+vi.mock('../../../../../../app/livechat/server/business-hour/AbstractBusinessHour', () => ({}));
+vi.mock('moment-timezone', () => ({ default: momentStub }));
+vi.mock('@rocket.chat/models', () => ({
+	LivechatBusinessHours: LivechatBusinessHoursStub,
+}));
+vi.mock('../../../../../../app/livechat/server/lib/logger', () => ({
+	businessHourLogger: {
+		error: loggerStub,
 	},
-	'../lib/logger': {
-		businessHourLogger: {
-			error: loggerStub,
-		},
-	},
-});
+}));
+
+const { BusinessHourManager } = await import('../../../../../../app/livechat/server/business-hour/BusinessHourManager');
 
 const cronAddStub = sinon.stub();
 const cronRemoveStub = sinon.stub();

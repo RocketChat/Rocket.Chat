@@ -1,7 +1,5 @@
 import { expect } from 'chai';
-import { describe, it, beforeEach } from 'mocha';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, beforeEach, vi } from 'vitest';
 
 import { generateMultipleSubs } from '../../../../../mocks/data/subscriptions';
 
@@ -9,32 +7,40 @@ function addSecondsToDate(seconds: number, date = new Date()) {
 	return new Date(date.getTime() + seconds * 1000);
 }
 
-const models = {
-	Users: {
-		findOneById: sinon.stub(),
-	},
-	Rooms: {
-		findOneById: sinon.stub(),
-		resetRoomKeyAndSetE2EEQueueByRoomId: sinon.stub(),
-	},
-	Subscriptions: {
-		find: sinon.stub(),
-		col: {
-			bulkWrite: sinon.stub(),
+const { models, notifyListener } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
+		models: {
+			Users: {
+				findOneById: sinon.stub(),
+			},
+			Rooms: {
+				findOneById: sinon.stub(),
+				resetRoomKeyAndSetE2EEQueueByRoomId: sinon.stub(),
+			},
+			Subscriptions: {
+				find: sinon.stub(),
+				col: {
+					bulkWrite: sinon.stub(),
+				},
+				setE2EKeyByUserIdAndRoomId: sinon.stub(),
+			},
 		},
-		setE2EKeyByUserIdAndRoomId: sinon.stub(),
-	},
-};
-
-const { resetRoomKey, pushToLimit, replicateMongoSlice } = proxyquire
-	.noCallThru()
-	.load('../../../../../../app/e2e/server/functions/resetRoomKey', {
-		'@rocket.chat/models': models,
-		'../../../lib/server/lib/notifyListener': {
+		notifyListener: {
 			notifyOnRoomChanged: sinon.stub(),
 			notifyOnSubscriptionChanged: sinon.stub(),
 		},
-	});
+	};
+});
+
+vi.mock('@rocket.chat/models', () => models);
+vi.mock('../../../../../../app/lib/server/lib/notifyListener', () => ({
+	notifyOnRoomChanged: notifyListener.notifyOnRoomChanged,
+	notifyOnSubscriptionChanged: notifyListener.notifyOnSubscriptionChanged,
+}));
+
+const { resetRoomKey, pushToLimit, replicateMongoSlice } = await import('../../../../../../app/e2e/server/functions/resetRoomKey');
 
 describe('pushToLimit', () => {
 	it('should push up to a limit', () => {

@@ -1,53 +1,56 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
+import { describe, it, vi } from 'vitest';
 
-const mocks = {
-	'@rocket.chat/string-helpers': {
-		escapeHTML: (str: string) => str,
+// The second test previously re-`proxyquire`d the subject with a different `settings.get`. With
+// `vi.mock` the module loads once, so the settings stub reads a mutable flag we flip per test.
+const { settingsGetResult } = vi.hoisted(() => ({ settingsGetResult: { value: true } }));
+
+vi.mock('@rocket.chat/string-helpers', () => ({
+	escapeHTML: (str: string) => str,
+}));
+vi.mock('meteor/meteor', () => ({
+	Meteor: {
+		startup: () => {},
 	},
-	'meteor/meteor': {
-		Meteor: {
-			startup: () => {},
-		},
+}));
+vi.mock('../../../../server/lib/callbacks', () => ({
+	callbacks: {
+		run: () => {},
 	},
-	'../../../../../server/lib/callbacks': {
-		callbacks: {
-			run: () => {},
-		},
+}));
+vi.mock('../../../../server/lib/i18n', () => ({
+	i18n: {
+		t: (trans: string) => trans,
 	},
-	'../../../../../server/lib/i18n': {
-		i18n: {
-			t: (trans: string) => trans,
-		},
+}));
+vi.mock('../../../../server/lib/rooms/roomCoordinator', () => ({
+	roomCoordinator: {
+		getRoomDirectives: () => ({
+			isGroupChat: () => true,
+		}),
+		getRoomName: () => '',
 	},
-	'../../../../../server/lib/rooms/roomCoordinator': {
-		roomCoordinator: {
-			getRoomDirectives: () => ({
-				isGroupChat: () => true,
-			}),
-			getRoomName: () => '',
-		},
+}));
+vi.mock('../../../../app/mailer/server/api', () => ({
+	getTemplate: () => {},
+	send: () => {},
+	replace: () => {},
+}));
+vi.mock('../../../../app/settings/server', () => ({
+	settings: {
+		get: () => settingsGetResult.value,
+		watch: () => {},
 	},
-	'../../../../mailer/server/api': {
-		getTemplate: () => {},
-		send: () => {},
-		replace: () => {},
-	},
-	'../../../../settings/server': {
-		settings: {
-			get: () => true,
-			watch: () => {},
-		},
-	},
-	'../../../../metrics/server': {
-		metrics: {},
-	},
-	'../../../../utils/server/getURL': {
-		getURL: () => {},
-	},
-};
+}));
+vi.mock('../../../../app/metrics/server', () => ({
+	metrics: {},
+}));
+vi.mock('../../../../app/utils/server/getURL', () => ({
+	getURL: () => {},
+}));
+
+const { getEmailContent } = await import('../../../../app/lib/server/functions/notifications/email.js');
 
 const message = {
 	u: {
@@ -64,7 +67,7 @@ const room = {
 
 describe('getEmailContent', () => {
 	it('should return preview string for encrypted message', async () => {
-		const { getEmailContent } = proxyquire.noCallThru().load('../../../../app/lib/server/functions/notifications/email.js', mocks);
+		settingsGetResult.value = true;
 
 		const result = await getEmailContent({
 			message: { ...message, t: 'e2e' },
@@ -75,15 +78,7 @@ describe('getEmailContent', () => {
 	});
 
 	it('should return header for encrypted message if Email_notification_show_message is turned off', async () => {
-		const { getEmailContent } = proxyquire.noCallThru().load('../../../../app/lib/server/functions/notifications/email.js', {
-			...mocks,
-			'../../../../settings/server': {
-				settings: {
-					get: () => false,
-					watch: () => {},
-				},
-			},
-		});
+		settingsGetResult.value = false;
 
 		const result = await getEmailContent({
 			message: { ...message, t: 'e2e' },

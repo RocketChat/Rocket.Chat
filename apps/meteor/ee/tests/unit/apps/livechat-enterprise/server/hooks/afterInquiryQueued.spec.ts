@@ -1,31 +1,36 @@
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
+import { beforeEach, describe, it, vi } from 'vitest';
 import moment from 'moment';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
 
-const settingStub = {
-	watch: sinon.stub(),
-	get: sinon.stub(),
-};
+// Stubs are built in `vi.hoisted` so the hoisted `vi.mock` factories can reference them. sinon is
+// require()d inside the hoisted block because the top-level import has not executed at hoist time.
+// NOTE: relative `vi.mock` specifiers are resolved relative to THIS spec file (not the source).
+const { settingStub, queueMonitorStub, afterInquiryQueuedPatch } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
+		settingStub: {
+			watch: sinon.stub(),
+			get: sinon.stub(),
+		},
+		queueMonitorStub: {
+			scheduleInquiry: sinon.stub(),
+		},
+		afterInquiryQueuedPatch: sinon.stub(),
+	};
+});
 
-const queueMonitorStub = {
-	scheduleInquiry: sinon.stub(),
-};
+vi.mock('../../../../../../../app/settings/server', () => ({ settings: settingStub }));
+vi.mock('../../../../../../app/livechat-enterprise/server/lib/QueueInactivityMonitor', () => ({
+	OmnichannelQueueInactivityMonitor: queueMonitorStub,
+}));
+vi.mock('../../../../../../../app/livechat/server/lib/hooks', () => ({
+	afterInquiryQueued: { patch: afterInquiryQueuedPatch },
+}));
 
-const { afterInquiryQueuedFunc: afterInquiryQueued } = proxyquire
-	.noCallThru()
-	.load('../../../../../../app/livechat-enterprise/server/hooks/afterInquiryQueued.ts', {
-		'../../../../../app/settings/server': {
-			settings: settingStub,
-		},
-		'../lib/QueueInactivityMonitor': {
-			OmnichannelQueueInactivityMonitor: queueMonitorStub,
-		},
-		'../../../../../app/livechat/server/lib/hooks': {
-			afterInquiryQueued: { patch: sinon.stub() },
-		},
-	});
+const { afterInquiryQueuedFunc: afterInquiryQueued } = await import(
+	'../../../../../../app/livechat-enterprise/server/hooks/afterInquiryQueued'
+);
 
 describe('hooks/afterInquiryQueued', () => {
 	beforeEach(() => {

@@ -1,32 +1,29 @@
 import { expect } from 'chai';
-import { describe, it, beforeEach } from 'mocha';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, beforeEach, vi } from 'vitest';
 
-const sandbox = sinon.createSandbox();
-
-const mocks = {
-	logger: {
-		debug: sandbox.stub(),
-		warn: sandbox.stub(),
-		error: sandbox.stub(),
-	},
-	ApnProvider: sandbox.stub(),
-};
-
-const apnMock = {
-	'Provider': mocks.ApnProvider,
-	'Notification': sandbox.stub(),
-	'@noCallThru': true,
-};
-
-const { initAPN } = proxyquire.noCallThru().load('./apn', {
-	'@parse/node-apn': {
-		default: apnMock,
-		...apnMock,
-	},
-	'./logger': { logger: mocks.logger },
+const { sandbox, mocks, apnMock } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	const sandbox = sinon.createSandbox();
+	const mocks = {
+		logger: {
+			debug: sandbox.stub(),
+			warn: sandbox.stub(),
+			error: sandbox.stub(),
+		},
+		ApnProvider: sandbox.stub(),
+	};
+	const apnMock = {
+		Provider: mocks.ApnProvider,
+		Notification: sandbox.stub(),
+	};
+	return { sandbox, mocks, apnMock };
 });
+
+vi.mock('@parse/node-apn', () => ({ default: apnMock, ...apnMock }));
+vi.mock('./logger', () => ({ logger: mocks.logger }));
+
+const { initAPN } = await import('./apn');
 
 const baseOptions = {
 	apn: {

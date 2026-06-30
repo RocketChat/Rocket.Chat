@@ -1,89 +1,132 @@
 import chai, { expect } from 'chai';
 import chaiDateTime from 'chai-datetime';
-import { beforeEach, describe, it } from 'mocha';
+import { beforeEach, describe, it, vi } from 'vitest';
 import moment from 'moment';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 chai.use(chaiDateTime);
 
-const mockAgendaConstructor = sinon.stub();
-const mockAgendaStart = sinon.stub();
-const mockAgendaScheduler = sinon.stub();
-const mockAgendaCancel = sinon.stub();
-const mockAgendaDefine = sinon.stub();
-const returnRoomAsInquiryMock = sinon.stub();
-const mockMeteorStartup = sinon.stub();
-const mockLivechatRooms = {
-	findOneById: sinon.stub(),
-	setAutoTransferOngoingById: sinon.stub(),
-	unsetAutoTransferOngoingById: sinon.stub(),
-	setAutoTransferredAtById: sinon.stub(),
-};
-const mockUsers = {
-	findOneById: sinon.stub(),
-};
+// Stubs are built in `vi.hoisted` so the hoisted `vi.mock` factories can reference them. sinon is
+// require()d inside the hoisted block because the top-level import has not executed at hoist time.
+// NOTE: relative `vi.mock` specifiers are resolved relative to THIS spec file (not the source).
+const {
+	mockAgendaConstructor,
+	mockAgendaStart,
+	mockAgendaScheduler,
+	mockAgendaCancel,
+	mockAgendaDefine,
+	returnRoomAsInquiryMock,
+	mockMeteorStartup,
+	mockLivechatRooms,
+	mockUsers,
+	mockLogger,
+	forwardRoomToAgent,
+	settingsGet,
+	routingConfigMock,
+	getNextAgent,
+	MockAgendaClass,
+	// `match` is instance-specific: a matcher created by the top-level `import sinon` is NOT
+	// recognized by stubs built with the hoisted `require('sinon')` instance (different matcher
+	// symbol), so cross-instance `calledWith(match(...))` silently returns false. Export the
+	// hoisted instance's `match` and use it for assertions against these stubs.
+	match,
+} = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
 
-class MockAgendaClass {
-	constructor(opts: Record<string, any>) {
-		mockAgendaConstructor(opts);
+	const mockAgendaConstructor = sinon.stub();
+	const mockAgendaStart = sinon.stub();
+	const mockAgendaScheduler = sinon.stub();
+	const mockAgendaCancel = sinon.stub();
+	const mockAgendaDefine = sinon.stub();
+	const returnRoomAsInquiryMock = sinon.stub();
+	const mockMeteorStartup = sinon.stub();
+	const mockLivechatRooms = {
+		findOneById: sinon.stub(),
+		setAutoTransferOngoingById: sinon.stub(),
+		unsetAutoTransferOngoingById: sinon.stub(),
+		setAutoTransferredAtById: sinon.stub(),
+	};
+	const mockUsers = {
+		findOneById: sinon.stub(),
+	};
+
+	class MockAgendaClass {
+		constructor(opts: Record<string, any>) {
+			mockAgendaConstructor(opts);
+		}
+
+		async start() {
+			return mockAgendaStart();
+		}
+
+		async schedule(...args: any) {
+			return mockAgendaScheduler(...args);
+		}
+
+		async cancel(...args: any) {
+			return mockAgendaCancel(...args);
+		}
+
+		async define(...args: any) {
+			return mockAgendaDefine(...args);
+		}
 	}
 
-	async start() {
-		return mockAgendaStart();
-	}
+	const mockLogger = {
+		section: sinon.stub().returns({
+			info: sinon.stub(),
+			debug: sinon.stub(),
+			error: sinon.stub(),
+		}),
+	};
+	const forwardRoomToAgent = sinon.stub();
+	const settingsGet = sinon.stub();
+	const routingConfigMock = sinon.stub();
+	const getNextAgent = sinon.stub();
 
-	async schedule(...args: any) {
-		return mockAgendaScheduler(...args);
-	}
+	return {
+		mockAgendaConstructor,
+		mockAgendaStart,
+		mockAgendaScheduler,
+		mockAgendaCancel,
+		mockAgendaDefine,
+		returnRoomAsInquiryMock,
+		mockMeteorStartup,
+		mockLivechatRooms,
+		mockUsers,
+		mockLogger,
+		forwardRoomToAgent,
+		settingsGet,
+		routingConfigMock,
+		getNextAgent,
+		MockAgendaClass,
+		match: sinon.match,
+	};
+});
 
-	async cancel(...args: any) {
-		return mockAgendaCancel(...args);
-	}
-
-	async define(...args: any) {
-		return mockAgendaDefine(...args);
-	}
-}
-
-const mockLogger = {
-	section: sinon.stub().returns({
-		info: sinon.stub(),
-		debug: sinon.stub(),
-		error: sinon.stub(),
-	}),
-};
-const forwardRoomToAgent = sinon.stub();
-const settingsGet = sinon.stub();
-const routingConfigMock = sinon.stub();
-const getNextAgent = sinon.stub();
-
-const mocks = {
-	'@rocket.chat/agenda': { Agenda: MockAgendaClass },
-	'meteor/meteor': { Meteor: { startup: mockMeteorStartup } },
-	'meteor/mongo': {
-		MongoInternals: {
-			defaultRemoteCollectionDriver: () => {
-				return {
-					mongo: { client: { db: sinon.stub() } },
-				};
-			},
+vi.mock('@rocket.chat/agenda', () => ({ Agenda: MockAgendaClass }));
+vi.mock('meteor/meteor', () => ({ Meteor: { startup: mockMeteorStartup } }));
+vi.mock('meteor/mongo', () => ({
+	MongoInternals: {
+		defaultRemoteCollectionDriver: () => {
+			return {
+				// eslint-disable-next-line @typescript-eslint/no-var-requires
+				mongo: { client: { db: require('sinon').stub() } },
+			};
 		},
 	},
-	'../../../../../app/livechat/server/lib/RoutingManager': { RoutingManager: { getConfig: routingConfigMock, getNextAgent } },
-	'../../../../../app/livechat/server/lib/Helper': { forwardRoomToAgent },
-	'../../../../../app/livechat/server/lib/rooms': { returnRoomAsInquiry: returnRoomAsInquiryMock },
-	'../../../../../app/settings/server': { settings: { get: settingsGet } },
-	'./logger': { schedulerLogger: mockLogger },
-	'@rocket.chat/models': {
-		LivechatRooms: mockLivechatRooms,
-		Users: mockUsers,
-	},
-};
+}));
+vi.mock('../../../../../../app/livechat/server/lib/RoutingManager', () => ({
+	RoutingManager: { getConfig: routingConfigMock, getNextAgent },
+}));
+vi.mock('../../../../../../app/livechat/server/lib/Helper', () => ({ forwardRoomToAgent }));
+vi.mock('../../../../../../app/livechat/server/lib/rooms', () => ({ returnRoomAsInquiry: returnRoomAsInquiryMock }));
+vi.mock('../../../../../../app/settings/server', () => ({ settings: { get: settingsGet } }));
+vi.mock('../../../../../app/livechat-enterprise/server/lib/logger', () => ({ schedulerLogger: mockLogger }));
+vi.mock('@rocket.chat/models', () => ({ LivechatRooms: mockLivechatRooms, Users: mockUsers }));
 
-const { AutoTransferChatSchedulerClass } = proxyquire
-	.noCallThru()
-	.load('../../../../../app/livechat-enterprise/server/lib/AutoTransferChatScheduler', mocks);
+const { AutoTransferChatSchedulerClass } = await import('../../../../../app/livechat-enterprise/server/lib/AutoTransferChatScheduler');
 
 describe('AutoTransferChats', () => {
 	describe('getSchedulerUser', () => {
@@ -189,9 +232,9 @@ describe('AutoTransferChats', () => {
 
 			expect(
 				returnRoomAsInquiryMock.calledWith(
-					sinon.match({ _id: 1, open: true, servedBy: { _id: 2 } }),
+					match({ _id: 1, open: true, servedBy: { _id: 2 } }),
 					undefined,
-					sinon.match({ scope: 'autoTransferUnansweredChatsToQueue', comment: '5', transferredBy: { _id: 'rocket.cat' } }),
+					match({ scope: 'autoTransferUnansweredChatsToQueue', comment: '5', transferredBy: { _id: 'rocket.cat' } }),
 				),
 			).to.be.true;
 		});
@@ -243,8 +286,8 @@ describe('AutoTransferChats', () => {
 			expect(r).to.be.undefined;
 			expect(
 				forwardRoomToAgent.calledWith(
-					sinon.match({ _id: 1, open: true, servedBy: { _id: 2 }, departmentId: undefined }),
-					sinon.match({
+					match({ _id: 1, open: true, servedBy: { _id: 2 }, departmentId: undefined }),
+					match({
 						userId: 3,
 						transferredBy: { _id: 'rocket.cat', userType: 'user' },
 						transferredTo: { agentId: 3 },

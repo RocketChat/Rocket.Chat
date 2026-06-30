@@ -1,49 +1,53 @@
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import { afterEach, describe, it, vi } from 'vitest';
 
-const mocks = {
-	settingsGet: sinon.stub(),
-	findOneById: sinon.stub(),
-	utils: {
-		serveSvgAvatarInRequestedFormat: sinon.spy(),
-		wasFallbackModified: sinon.stub(),
-		setCacheAndDispositionHeaders: sinon.spy(),
-		serveAvatarFile: sinon.spy(),
-	},
-	avatarFindOneByRoomId: sinon.stub(),
-	getRoomName: sinon.stub(),
-};
-
-class CookiesMock {
-	public get = (_key: any, value: any) => value;
-}
-
-const { roomAvatar } = proxyquire.noCallThru().load('./room', {
-	'@rocket.chat/models': {
-		Rooms: {
-			findOneById: mocks.findOneById,
+const { mocks } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
+		mocks: {
+			settingsGet: sinon.stub(),
+			findOneById: sinon.stub(),
+			utils: {
+				serveSvgAvatarInRequestedFormat: sinon.spy(),
+				wasFallbackModified: sinon.stub(),
+				setCacheAndDispositionHeaders: sinon.spy(),
+				serveAvatarFile: sinon.spy(),
+			},
+			avatarFindOneByRoomId: sinon.stub(),
+			getRoomName: sinon.stub(),
 		},
-		Avatars: {
-			findOneByRoomId: mocks.avatarFindOneByRoomId,
-		},
-	},
-	'../../../app/settings/server': {
-		settings: {
-			get: mocks.settingsGet,
-		},
-	},
-	'./utils': mocks.utils,
-	'../../lib/rooms/roomCoordinator': {
-		roomCoordinator: {
-			getRoomName: mocks.getRoomName,
-		},
-	},
-	'meteor/ostrio:cookies': {
-		Cookies: CookiesMock,
-	},
+	};
 });
+
+vi.mock('@rocket.chat/models', () => ({
+	Rooms: {
+		findOneById: mocks.findOneById,
+	},
+	Avatars: {
+		findOneByRoomId: mocks.avatarFindOneByRoomId,
+	},
+}));
+vi.mock('../../../app/settings/server', () => ({
+	settings: {
+		get: mocks.settingsGet,
+	},
+}));
+vi.mock('./utils', () => mocks.utils);
+vi.mock('../../lib/rooms/roomCoordinator', () => ({
+	roomCoordinator: {
+		getRoomName: mocks.getRoomName,
+	},
+}));
+vi.mock('meteor/ostrio:cookies', () => {
+	class CookiesMock {
+		public get = (_key: any, value: any) => value;
+	}
+	return { Cookies: CookiesMock };
+});
+
+const { roomAvatar } = await import('./room');
 
 describe('#roomAvatar()', () => {
 	const response = {

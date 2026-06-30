@@ -1,69 +1,73 @@
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import { describe, it, beforeEach, afterEach, vi } from 'vitest';
+
+const { stubs } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
+		stubs: {
+			Users: {
+				findOneById: sinon.stub(),
+				setUsername: sinon.stub(),
+			},
+			Subscriptions: {
+				findUserFederatedRoomIds: sinon.stub(),
+			},
+			Accounts: {
+				sendEnrollmentEmail: sinon.stub(),
+			},
+			settings: {
+				get: sinon.stub(),
+			},
+			api: {
+				broadcast: sinon.stub(),
+			},
+			Invites: {
+				findOneById: sinon.stub(),
+			},
+			callbacks: {
+				run: sinon.stub(),
+			},
+			checkUsernameAvailability: sinon.stub(),
+			validateUsername: sinon.stub(),
+			saveUserIdentity: sinon.stub(),
+			joinDefaultChannels: sinon.stub(),
+			getAvatarSuggestionForUser: sinon.stub(),
+			setUserAvatar: sinon.stub(),
+			addUserToRoom: sinon.stub(),
+			notifyOnUserChange: sinon.stub(),
+			underscore: {
+				escape: sinon.stub(),
+			},
+			SystemLogger: sinon.stub(),
+		},
+	};
+});
+
+vi.mock('../../../../../../server/database/utils', () => ({ onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() }));
+vi.mock('meteor/meteor', () => ({ Meteor: { Error } }));
+vi.mock('@rocket.chat/core-services', () => ({ api: stubs.api }));
+vi.mock('@rocket.chat/models', () => ({ Users: stubs.Users, Invites: stubs.Invites, Subscriptions: stubs.Subscriptions }));
+vi.mock('meteor/accounts-base', () => ({ Accounts: stubs.Accounts }));
+vi.mock('underscore', () => ({ default: stubs.underscore, ...stubs.underscore }));
+vi.mock('../../../../../../app/settings/server', () => ({ settings: stubs.settings }));
+vi.mock('../../../../../../app/lib/server/lib', () => ({ notifyOnUserChange: stubs.notifyOnUserChange }));
+vi.mock('../../../../../../app/lib/server/functions/addUserToRoom', () => ({ addUserToRoom: stubs.addUserToRoom }));
+vi.mock('../../../../../../app/lib/server/functions/checkUsernameAvailability', () => ({ checkUsernameAvailability: stubs.checkUsernameAvailability }));
+vi.mock('../../../../../../app/lib/server/functions/getAvatarSuggestionForUser', () => ({ getAvatarSuggestionForUser: stubs.getAvatarSuggestionForUser }));
+vi.mock('../../../../../../app/lib/server/functions/joinDefaultChannels', () => ({ joinDefaultChannels: stubs.joinDefaultChannels }));
+vi.mock('../../../../../../app/lib/server/functions/saveUserIdentity', () => ({ saveUserIdentity: stubs.saveUserIdentity }));
+vi.mock('../../../../../../app/lib/server/functions/setUserAvatar', () => ({ setUserAvatar: stubs.setUserAvatar }));
+vi.mock('../../../../../../app/lib/server/functions/validateUsername', () => ({ validateUsername: stubs.validateUsername }));
+vi.mock('../../../../../../server/lib/callbacks', () => ({ callbacks: stubs.callbacks }));
+vi.mock('../../../../../../server/lib/logger/system', () => ({ SystemLogger: stubs.SystemLogger }));
+
+const { setUsernameWithValidation, _setUsername } = await import('../../../../../../app/lib/server/functions/setUsername');
 
 describe('setUsername', () => {
 	const userId = 'userId';
 	const username = 'validUsername';
-
-	const stubs = {
-		Users: {
-			findOneById: sinon.stub(),
-			setUsername: sinon.stub(),
-		},
-		Subscriptions: {
-			findUserFederatedRoomIds: sinon.stub(),
-		},
-		Accounts: {
-			sendEnrollmentEmail: sinon.stub(),
-		},
-		settings: {
-			get: sinon.stub(),
-		},
-		api: {
-			broadcast: sinon.stub(),
-		},
-		Invites: {
-			findOneById: sinon.stub(),
-		},
-		callbacks: {
-			run: sinon.stub(),
-		},
-		checkUsernameAvailability: sinon.stub(),
-		validateUsername: sinon.stub(),
-		saveUserIdentity: sinon.stub(),
-		joinDefaultChannels: sinon.stub(),
-		getAvatarSuggestionForUser: sinon.stub(),
-		setUserAvatar: sinon.stub(),
-		addUserToRoom: sinon.stub(),
-		notifyOnUserChange: sinon.stub(),
-		underscore: {
-			escape: sinon.stub(),
-		},
-		SystemLogger: sinon.stub(),
-	};
-
-	const { setUsernameWithValidation, _setUsername } = proxyquire
-		.noCallThru()
-		.load('../../../../../../app/lib/server/functions/setUsername', {
-			'../../../../server/database/utils': { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() },
-			'meteor/meteor': { Meteor: { Error } },
-			'@rocket.chat/core-services': { api: stubs.api },
-			'@rocket.chat/models': { Users: stubs.Users, Invites: stubs.Invites, Subscriptions: stubs.Subscriptions },
-			'meteor/accounts-base': { Accounts: stubs.Accounts },
-			'underscore': stubs.underscore,
-			'../../../settings/server': { settings: stubs.settings },
-			'../lib': { notifyOnUserChange: stubs.notifyOnUserChange },
-			'./addUserToRoom': { addUserToRoom: stubs.addUserToRoom },
-			'./checkUsernameAvailability': { checkUsernameAvailability: stubs.checkUsernameAvailability },
-			'./getAvatarSuggestionForUser': { getAvatarSuggestionForUser: stubs.getAvatarSuggestionForUser },
-			'./joinDefaultChannels': { joinDefaultChannels: stubs.joinDefaultChannels },
-			'./saveUserIdentity': { saveUserIdentity: stubs.saveUserIdentity },
-			'./setUserAvatar': { setUserAvatar: stubs.setUserAvatar },
-			'./validateUsername': { validateUsername: stubs.validateUsername },
-			'../../../../server/lib/callbacks': { callbacks: stubs.callbacks },
-			'../../../../server/lib/logger/system': { SystemLogger: stubs.SystemLogger },
-		});
 
 	beforeEach(() => {
 		stubs.Subscriptions.findUserFederatedRoomIds.returns({

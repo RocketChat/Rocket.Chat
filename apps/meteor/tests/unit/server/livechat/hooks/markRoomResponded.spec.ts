@@ -1,33 +1,35 @@
 import { expect } from 'chai';
-import { describe, it, beforeEach } from 'mocha';
-import proxyquire from 'proxyquire';
-import Sinon from 'sinon';
+import { describe, it, beforeEach, vi } from 'vitest';
 
 import { createFakeMessage, createFakeUser } from '../../../../mocks/data';
 
-const models = {
-	LivechatContacts: { isContactActiveOnPeriod: Sinon.stub(), markContactActiveForPeriod: Sinon.stub() },
-	LivechatInquiry: { markInquiryActiveForPeriod: Sinon.stub() },
-	LivechatRooms: {
-		getVisitorActiveForPeriodUpdateQuery: Sinon.stub(),
-		getAgentLastMessageTsUpdateQuery: Sinon.stub(),
-		getResponseByRoomIdUpdateQuery: Sinon.stub(),
-	},
-};
-
-const settingsGetMock = {
-	get: Sinon.stub(),
-};
-
-const isMessageFromBotMock = { isMessageFromBot: Sinon.stub() };
-
-const { markRoomResponded } = proxyquire.noCallThru().load('../../../../../app/livechat/server/hooks/markRoomResponded.ts', {
-	'../../../../server/lib/callbacks': { callbacks: { add: Sinon.stub(), priority: { HIGH: 'high' } } },
-	'../../../lib/server/lib/notifyListener': { notifyOnLivechatInquiryChanged: Sinon.stub() },
-	'@rocket.chat/models': models,
-	'../../../settings/server': { settings: settingsGetMock },
-	'../lib/isMessageFromBot': isMessageFromBotMock,
+const { models, settingsGetMock, isMessageFromBotMock, callbacksMock, notifyOnLivechatInquiryChangedMock } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const Sinon = require('sinon');
+	return {
+		models: {
+			LivechatContacts: { isContactActiveOnPeriod: Sinon.stub(), markContactActiveForPeriod: Sinon.stub() },
+			LivechatInquiry: { markInquiryActiveForPeriod: Sinon.stub() },
+			LivechatRooms: {
+				getVisitorActiveForPeriodUpdateQuery: Sinon.stub(),
+				getAgentLastMessageTsUpdateQuery: Sinon.stub(),
+				getResponseByRoomIdUpdateQuery: Sinon.stub(),
+			},
+		},
+		settingsGetMock: { get: Sinon.stub() },
+		isMessageFromBotMock: { isMessageFromBot: Sinon.stub() },
+		callbacksMock: { callbacks: { add: Sinon.stub(), priority: { HIGH: 'high' } } },
+		notifyOnLivechatInquiryChangedMock: { notifyOnLivechatInquiryChanged: Sinon.stub() },
+	};
 });
+
+vi.mock('../../../../../server/lib/callbacks', () => callbacksMock);
+vi.mock('../../../../../app/lib/server/lib/notifyListener', () => notifyOnLivechatInquiryChangedMock);
+vi.mock('@rocket.chat/models', () => models);
+vi.mock('../../../../../app/settings/server', () => ({ settings: settingsGetMock }));
+vi.mock('../../../../../app/livechat/server/lib/isMessageFromBot', () => isMessageFromBotMock);
+
+const { markRoomResponded } = await import('../../../../../app/livechat/server/hooks/markRoomResponded');
 
 describe('markRoomResponded', () => {
 	beforeEach(() => {

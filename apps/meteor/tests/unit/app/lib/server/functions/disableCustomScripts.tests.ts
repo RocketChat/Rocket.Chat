@@ -1,26 +1,32 @@
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, beforeEach, afterEach, vi } from 'vitest';
+
+const { sandbox, mockLicense } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	const sandbox = sinon.createSandbox();
+	return {
+		sandbox,
+		mockLicense: {
+			getLicense: sandbox.stub(),
+		},
+	};
+});
+
+vi.mock('@rocket.chat/license', () => ({ License: mockLicense }));
+
+const { disableCustomScripts } = await import('../../../../../../app/lib/server/functions/disableCustomScripts');
 
 describe('disableCustomScripts', () => {
-	let mockLicense: sinon.SinonStubbedInstance<any>;
-	let disableCustomScripts: () => boolean;
 	let disableCustomScriptsVar: any;
 
 	beforeEach(() => {
 		disableCustomScriptsVar = process.env.DISABLE_CUSTOM_SCRIPTS;
-		mockLicense = {
-			getLicense: sinon.stub(),
-		};
-
-		disableCustomScripts = proxyquire('../../../../../../app/lib/server/functions/disableCustomScripts.ts', {
-			'@rocket.chat/license': { License: mockLicense },
-		}).disableCustomScripts;
+		sandbox.reset();
 	});
 
 	afterEach(() => {
 		process.env.DISABLE_CUSTOM_SCRIPTS = disableCustomScriptsVar;
-		sinon.restore();
 	});
 
 	it('should return false when license is missing', () => {

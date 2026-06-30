@@ -1,7 +1,7 @@
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
+import { describe, it } from 'vitest';
 
-const { isVerifiedChannelInSource } = proxyquire.noCallThru().load('./isVerifiedChannelInSource', {});
+const { isVerifiedChannelInSource } = await import('./isVerifiedChannelInSource');
 
 describe('isVerifiedChannelInSource', () => {
 	it('should return false if channel is not verified', () => {

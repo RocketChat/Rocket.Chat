@@ -1,55 +1,64 @@
-import { api } from '@rocket.chat/core-services';
 import { expect } from 'chai';
-import { describe, it, beforeEach, afterEach } from 'mocha';
+import { describe, it, beforeEach, afterEach, vi } from 'vitest';
 import type { DeleteResult, UpdateResult } from 'mongodb';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { testPrivateMethod, createFreshServiceInstance } from '../utils';
 import { MockedCronJobs } from './mocks/cronJobs';
 
-const settingsMock = new Map<string, any>();
-const cronJobsMock = new MockedCronJobs();
+const { api, settingsMock, cronHolder, CalendarEventMock, UsersMock, statusEventManagerMock, getUserPreferenceMock } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const { api } = require('@rocket.chat/core-services');
+	return {
+		api,
+		settingsMock: new Map<string, any>(),
+		// cronJobsMock is built from MockedCronJobs (a relative .ts module that cannot be require()d
+		// at hoist time); it is assigned to this holder after the top-level import, before the dynamic
+		// `await import` that triggers the mock factory below.
+		cronHolder: { cronJobsMock: undefined as any },
+		CalendarEventMock: {
+			insertOne: sinon.stub(),
+			findOne: sinon.stub(),
+			findByUserIdAndDate: sinon.stub(),
+			updateEvent: sinon.stub(),
+			deleteOne: sinon.stub(),
+			findNextNotificationDate: sinon.stub(),
+			findEventsToNotify: sinon.stub(),
+			flagNotificationSent: sinon.stub(),
+			findOneByExternalIdAndUserId: sinon.stub(),
+			findEventsToScheduleNow: sinon.stub(),
+			findNextFutureEvent: sinon.stub(),
+			findInProgressEvents: sinon.stub(),
+		},
+		UsersMock: {
+			findOne: sinon.stub(),
+		},
+		statusEventManagerMock: {
+			removeCronJobs: sinon.stub().resolves(),
+			cancelUpcomingStatusChanges: sinon.stub().resolves(),
+			applyStatusChange: sinon.stub().resolves(),
+		},
+		getUserPreferenceMock: sinon.stub(),
+	};
+});
 
-const CalendarEventMock = {
-	insertOne: sinon.stub(),
-	findOne: sinon.stub(),
-	findByUserIdAndDate: sinon.stub(),
-	updateEvent: sinon.stub(),
-	deleteOne: sinon.stub(),
-	findNextNotificationDate: sinon.stub(),
-	findEventsToNotify: sinon.stub(),
-	flagNotificationSent: sinon.stub(),
-	findOneByExternalIdAndUserId: sinon.stub(),
-	findEventsToScheduleNow: sinon.stub(),
-	findNextFutureEvent: sinon.stub(),
-	findInProgressEvents: sinon.stub(),
-};
+vi.mock('../../../../../server/services/calendar/statusEvents/cancelUpcomingStatusChanges', () => ({
+	cancelUpcomingStatusChanges: statusEventManagerMock.cancelUpcomingStatusChanges,
+}));
+vi.mock('../../../../../server/services/calendar/statusEvents/removeCronJobs', () => ({ removeCronJobs: statusEventManagerMock.removeCronJobs }));
+vi.mock('../../../../../server/services/calendar/statusEvents/applyStatusChange', () => ({ applyStatusChange: statusEventManagerMock.applyStatusChange }));
+vi.mock('../../../../../app/settings/server', () => ({ settings: settingsMock }));
+vi.mock('@rocket.chat/core-services', () => ({ api, ServiceClassInternal: class {} }));
+vi.mock('@rocket.chat/cron', () => ({ cronJobs: cronHolder.cronJobsMock }));
+vi.mock('@rocket.chat/models', () => ({ CalendarEvent: CalendarEventMock, Users: UsersMock }));
+vi.mock('../../../../../app/utils/server/lib/getUserPreference', () => ({ getUserPreference: getUserPreferenceMock }));
 
-const UsersMock = {
-	findOne: sinon.stub(),
-};
+cronHolder.cronJobsMock = new MockedCronJobs();
+const cronJobsMock = cronHolder.cronJobsMock;
 
-const statusEventManagerMock = {
-	removeCronJobs: sinon.stub().resolves(),
-	cancelUpcomingStatusChanges: sinon.stub().resolves(),
-	applyStatusChange: sinon.stub().resolves(),
-};
-
-const getUserPreferenceMock = sinon.stub();
-
-const serviceMocks = {
-	'./statusEvents/cancelUpcomingStatusChanges': { cancelUpcomingStatusChanges: statusEventManagerMock.cancelUpcomingStatusChanges },
-	'./statusEvents/removeCronJobs': { removeCronJobs: statusEventManagerMock.removeCronJobs },
-	'./statusEvents/applyStatusChange': { applyStatusChange: statusEventManagerMock.applyStatusChange },
-	'../../../app/settings/server': { settings: settingsMock },
-	'@rocket.chat/core-services': { api, ServiceClassInternal: class {} },
-	'@rocket.chat/cron': { cronJobs: cronJobsMock },
-	'@rocket.chat/models': { CalendarEvent: CalendarEventMock, Users: UsersMock },
-	'../../../app/utils/server/lib/getUserPreference': { getUserPreference: getUserPreferenceMock },
-};
-
-const { CalendarService } = proxyquire.noCallThru().load('../../../../../server/services/calendar/service', serviceMocks);
+const { CalendarService } = await import('../../../../../server/services/calendar/service');
 
 describe('CalendarService', () => {
 	let sandbox: sinon.SinonSandbox;
@@ -271,7 +280,12 @@ describe('CalendarService', () => {
 
 	describe('#setupNextNotification', () => {
 		it('should call doSetupNextNotification internally', async () => {
-			const serviceExports = proxyquire.noCallThru().load('../../../../../server/services/calendar/service', serviceMocks);
+			// Originally this test re-loaded the module (via the old mocking loader) to obtain a CalendarService class whose
+			// prototype is NOT stubbed by the shared `beforeEach` (which stubs the prototype's
+			// doSetupNextNotification). With vi.mock we get the same effect by resetting the module
+			// registry and re-importing a fresh module copy (the mocks persist across resetModules).
+			vi.resetModules();
+			const serviceExports = await import('../../../../../server/services/calendar/service');
 
 			const testService = createFreshServiceInstance<InstanceType<typeof CalendarService>>(serviceExports);
 

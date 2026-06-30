@@ -1,24 +1,26 @@
 import crypto from 'crypto';
 
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, beforeEach, vi } from 'vitest';
 
-const settingsStub = {
-	get: sinon.stub(),
-};
-
-const twilioStub = {
-	validateRequest: sinon.stub(),
-	isRequestFromTwilio: sinon.stub(),
-};
-
-const { Twilio } = proxyquire.noCallThru().load('../../../../../../server/services/omnichannel-integrations/providers/twilio.ts', {
-	'../../../../app/settings/server': { settings: settingsStub },
-	'../../../../app/utils/server/restrictions': { fileUploadIsValidContentType: sinon.stub() },
-	'../../../lib/i18n': { i18n: sinon.stub() },
-	'../../../lib/logger/system': { SystemLogger: { error: sinon.stub() } },
+// Stubs built in `vi.hoisted` so the hoisted `vi.mock` factories can reference them.
+const { settingsStub, fileUploadIsValidContentTypeStub, i18nStub, systemLoggerErrorStub } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
+		settingsStub: { get: sinon.stub() },
+		fileUploadIsValidContentTypeStub: sinon.stub(),
+		i18nStub: sinon.stub(),
+		systemLoggerErrorStub: sinon.stub(),
+	};
 });
+
+vi.mock('../../../../../../app/settings/server', () => ({ settings: settingsStub }));
+vi.mock('../../../../../../app/utils/server/restrictions', () => ({ fileUploadIsValidContentType: fileUploadIsValidContentTypeStub }));
+vi.mock('../../../../../../server/lib/i18n', () => ({ i18n: i18nStub }));
+vi.mock('../../../../../../server/lib/logger/system', () => ({ SystemLogger: { error: systemLoggerErrorStub } }));
+
+const { Twilio } = await import('../../../../../../server/services/omnichannel-integrations/providers/twilio');
 
 /**
  * Get a valid Twilio signature for a request
@@ -49,8 +51,6 @@ function getSignature(authToken: string, url: string, params: Record<string, any
 describe('Twilio Request Validation', () => {
 	beforeEach(() => {
 		settingsStub.get.reset();
-		twilioStub.validateRequest.reset();
-		twilioStub.isRequestFromTwilio.reset();
 	});
 
 	it('should not validate a request when process.env.TEST_MODE is true', async () => {
