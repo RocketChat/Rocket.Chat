@@ -34,7 +34,12 @@ const NOTO_SANS_FONTS: { name: string; fontSrc: string }[] = [
 const EMOJI_RENDER_SIZE = 72;
 
 const renderEmojiToDataURL = (codePoints: string): string => {
-	const emoji = String.fromCodePoint(...codePoints.split('-').map((codePoint) => parseInt(codePoint, 16)));
+	const points = codePoints.split('-').map((codePoint) => parseInt(codePoint, 16));
+	if (points.some((point) => !Number.isInteger(point) || point < 0 || point > 0x10ffff)) {
+		return '';
+	}
+
+	const emoji = String.fromCodePoint(...points);
 
 	const canvas = document.createElement('canvas');
 	canvas.width = EMOJI_RENDER_SIZE;
