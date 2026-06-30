@@ -32,24 +32,37 @@ export type PersistentAudioTrack = {
 	resolveUrl?: () => string | undefined;
 };
 
+/** Snapshot handed between the in-message audio element and the persistent player. */
+export type AudioHandoffState = {
+	currentTime: number;
+	playing: boolean;
+};
+
 export type MediaPlayerContextValue = {
+	/** Track currently owned by the persistent (detached) player; null when idle or playing in-room. */
 	track: PersistentAudioTrack | null;
 	playing: boolean;
 	currentTime: number;
 	duration: number;
 	playbackRate: number;
-	/** Loads (if needed) and plays the given track in the shared audio element. */
-	play: (track: PersistentAudioTrack) => void;
-	/** Toggles play/pause for the active track. No-op when no track is active. */
+
+	// --- Controls used by the persistent player UI (operate on the shared element).
+	/** Toggles play/pause for the detached track. */
 	toggle: () => void;
-	/** Seeks the active track to `time` seconds. */
+	/** Seeks the detached track to `time` seconds. */
 	seek: (time: number) => void;
 	/** Cycles the playback rate 1x → 1.5x → 2x → 1x. */
 	cyclePlaybackRate: () => void;
 	/** Stops playback and clears the active track. */
 	close: () => void;
-	/** Whether the given track id is the one currently owned by the player. */
-	isActive: (id: string) => boolean;
+
+	// --- Hand-off between an in-message audio element and the persistent player.
+	/** Adopts a track that was playing in a message which is being unmounted, continuing playback. */
+	adoptFromMessage: (track: PersistentAudioTrack, currentTime: number, wasPlaying: boolean) => void;
+	/** If the persistent player owns `id`, stops it and returns its state so the message element can resume. */
+	claimFromPersistent: (id: string) => AudioHandoffState | null;
+	/** Stops the persistent player (e.g. when an in-message element takes over playback). */
+	stopPersistent: () => void;
 };
 
 const noop = () => undefined;
@@ -60,12 +73,13 @@ export const MediaPlayerContext = createContext<MediaPlayerContextValue>({
 	currentTime: 0,
 	duration: 0,
 	playbackRate: 1,
-	play: noop,
 	toggle: noop,
 	seek: noop,
 	cyclePlaybackRate: noop,
 	close: noop,
-	isActive: () => false,
+	adoptFromMessage: noop,
+	claimFromPersistent: () => null,
+	stopPersistent: noop,
 });
 
 export const useMediaPlayer = (): MediaPlayerContextValue => useContext(MediaPlayerContext);

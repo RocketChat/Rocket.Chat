@@ -1,10 +1,12 @@
 import type { AudioAttachmentProps } from '@rocket.chat/core-typings';
+import { AudioPlayer } from '@rocket.chat/fuselage';
+import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { useMediaPlayer } from '../../../../../providers/MediaPlayerProvider';
+import { usePersistentAudio } from './hooks/usePersistentAudio';
+import { useReloadOnError } from './hooks/useReloadOnError';
 import type { PersistentAudioTrack } from '../../../../../providers/MediaPlayerProvider';
-import AudioPlayerControls from '../../../../AudioPlayer/AudioPlayerControls';
 import MarkdownText from '../../../../MarkdownText';
 import MessageCollapsible from '../../../MessageCollapsible';
 import MessageContentBody from '../../../MessageContentBody';
@@ -31,8 +33,7 @@ const AudioAttachment = ({
 }: AudioAttachmentProps & { source?: AudioAttachmentSource }) => {
 	const getURL = useMediaUrl();
 	const src = useMemo(() => getURL(url), [getURL, url]);
-
-	const { play, toggle, seek, cyclePlaybackRate, isActive, playing, currentTime, duration, playbackRate } = useMediaPlayer();
+	const { mediaRef } = useReloadOnError(src, 'audio');
 
 	const track = useMemo<PersistentAudioTrack>(
 		() => ({
@@ -50,21 +51,14 @@ const AudioAttachment = ({
 		[source?.mid, source?.rid, source?.username, source?.name, url, src, type, title, size, getURL],
 	);
 
-	const active = isActive(track.id);
+	const persistentRef = usePersistentAudio(track);
+	const ref = useMergedRefs(mediaRef, persistentRef);
 
 	return (
 		<>
 			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
 			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed}>
-				<AudioPlayerControls
-					playing={active && playing}
-					currentTime={active ? currentTime : 0}
-					duration={active ? duration : 0}
-					playbackRate={playbackRate}
-					onToggle={() => (active ? toggle() : play(track))}
-					onSeek={(time) => (active ? seek(time) : play(track))}
-					onCyclePlaybackRate={cyclePlaybackRate}
-				/>
+				<AudioPlayer src={src} type={type} ref={ref} />
 			</MessageCollapsible>
 		</>
 	);

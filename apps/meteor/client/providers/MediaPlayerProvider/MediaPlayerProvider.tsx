@@ -2,7 +2,7 @@ import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode } from 'react';
 import { useCallback, useMemo, useRef, useState } from 'react';
 
-import type { MediaPlayerContextValue, PersistentAudioTrack } from './MediaPlayerContext';
+import type { AudioHandoffState, MediaPlayerContextValue, PersistentAudioTrack } from './MediaPlayerContext';
 import { MediaPlayerContext } from './MediaPlayerContext';
 
 const PLAYBACK_RATES = [1, 1.5, 2] as const;
@@ -37,10 +37,11 @@ type MediaPlayerProviderProps = {
 };
 
 /**
- * Owns the single, app-wide `<audio>` element used to play message audio
- * attachments. Because the element lives above the room layout it survives
- * room navigation and unmounting message lists, so playback continues while the
- * persistent player UI re-attaches to it.
+ * Owns a single, app-wide "detached" `<audio>` element. In-message audio keeps
+ * using its own native player; when the user navigates away while it is playing,
+ * the message hands the track off here so playback continues, and the persistent
+ * player UI (sidebar card) attaches to this element. Returning to the room hands
+ * the track back to the in-message element.
  */
 const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 	const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -73,15 +74,9 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 		isRecoveringRef.current = true;
 
 		try {
-			if (firstRecoveryAttemptedRef.current) {
-				if (!expiresAtRef.current) {
-					return;
-				}
-			} else if (event.type === 'play') {
-				// First playback: the URL may still be valid, wait for stalled/error.
+			if (!expiresAtRef.current && firstRecoveryAttemptedRef.current) {
 				return;
 			}
-
 			firstRecoveryAttemptedRef.current = true;
 
 			if (expiresAtRef.current && Date.now() < expiresAtRef.current) {
@@ -126,27 +121,62 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 		audioRef.current = node;
 	}, []);
 
-	const play = useStableCallback((next: PersistentAudioTrack) => {
+	const resetRecovery = () => {
+		expiresAtRef.current = null;
+		firstRecoveryAttemptedRef.current = false;
+		isRecoveringRef.current = false;
+	};
+
+	const clear = useStableCallback(() => {
+		const audio = audioRef.current;
+		if (audio) {
+			audio.pause();
+			audio.removeAttribute('src');
+			audio.load();
+		}
+		setTrack(null);
+		setPlaying(false);
+		setCurrentTime(0);
+		setDuration(0);
+	});
+
+	const adoptFromMessage = useStableCallback((next: PersistentAudioTrack, time: number, wasPlaying: boolean) => {
 		const audio = audioRef.current;
 		if (!audio) {
 			return;
 		}
-
-		const isSameTrack = trackRef.current?.id === next.id;
-
-		if (!isSameTrack) {
-			expiresAtRef.current = null;
-			firstRecoveryAttemptedRef.current = false;
-			isRecoveringRef.current = false;
-			setTrack(next);
-			setCurrentTime(0);
-			setDuration(0);
-			audio.src = next.url;
-			audio.load();
-		}
-
+		resetRecovery();
+		setTrack(next);
+		setCurrentTime(time);
+		setDuration(0);
+		audio.src = next.url;
 		audio.playbackRate = playbackRate;
-		audio.play().catch((err) => console.warn('Failed to start audio playback:', err));
+
+		const onLoaded = () => {
+			audio.removeEventListener('loadedmetadata', onLoaded);
+			audio.currentTime = time;
+			if (wasPlaying) {
+				audio.play().catch((err) => console.warn('Failed to continue playback in persistent player:', err));
+			}
+		};
+		audio.addEventListener('loadedmetadata', onLoaded, { once: true });
+		audio.load();
+	});
+
+	const claimFromPersistent = useStableCallback((id: string): AudioHandoffState | null => {
+		const audio = audioRef.current;
+		if (!audio || trackRef.current?.id !== id) {
+			return null;
+		}
+		const state: AudioHandoffState = { currentTime: audio.currentTime, playing: !audio.paused };
+		clear();
+		return state;
+	});
+
+	const stopPersistent = useStableCallback(() => {
+		if (trackRef.current) {
+			clear();
+		}
 	});
 
 	const toggle = useStableCallback(() => {
@@ -180,24 +210,35 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 		});
 	});
 
-	const close = useStableCallback(() => {
-		const audio = audioRef.current;
-		if (audio) {
-			audio.pause();
-			audio.removeAttribute('src');
-			audio.load();
-		}
-		setTrack(null);
-		setPlaying(false);
-		setCurrentTime(0);
-		setDuration(0);
-	});
-
-	const isActive = useCallback((id: string) => trackRef.current?.id === id, []);
-
 	const value = useMemo<MediaPlayerContextValue>(
-		() => ({ track, playing, currentTime, duration, playbackRate, play, toggle, seek, cyclePlaybackRate, close, isActive }),
-		[track, playing, currentTime, duration, playbackRate, play, toggle, seek, cyclePlaybackRate, close, isActive],
+		() => ({
+			track,
+			playing,
+			currentTime,
+			duration,
+			playbackRate,
+			toggle,
+			seek,
+			cyclePlaybackRate,
+			close: clear,
+			adoptFromMessage,
+			claimFromPersistent,
+			stopPersistent,
+		}),
+		[
+			track,
+			playing,
+			currentTime,
+			duration,
+			playbackRate,
+			toggle,
+			seek,
+			cyclePlaybackRate,
+			clear,
+			adoptFromMessage,
+			claimFromPersistent,
+			stopPersistent,
+		],
 	);
 
 	return (
