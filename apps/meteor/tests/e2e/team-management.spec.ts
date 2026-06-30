@@ -254,6 +254,7 @@ test.describe.serial('teams-management', () => {
 	test('should access team channel through targetTeam header', async ({ page }) => {
 		await poHomeTeam.navbar.openChat(targetChannel);
 		await page.getByRole('button', { name: targetChannel }).first().focus();
+		await expect(page.getByRole('button', { name: targetChannel }).first()).toBeFocused();
 		await page.keyboard.press('Shift+Tab');
 		await page.keyboard.press('Space');
 
