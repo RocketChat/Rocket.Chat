@@ -1275,7 +1275,7 @@ export default class SlackAdapter {
 
 			const file = await fileStore.insert(details, stream);
 
-			const url = file.url.replace(Meteor.absoluteUrl(), '/');
+			const url = FileUpload.getPath(`${file._id}/${encodeURIComponent(file.name || '')}`);
 			const attachment = {
 				title: file.name,
 				title_link: url,
