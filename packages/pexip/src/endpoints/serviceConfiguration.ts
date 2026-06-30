@@ -82,34 +82,38 @@ export class ServerConfigurationEndpoint extends PexipEndpoint {
 			return false;
 		}
 
-		logger.debug({
-			msg: 'Pexip Participant joined via SIP',
-			sipAlias: conference.sipAlias,
-			conferenceId: conference._id,
-			participantSipExtension,
-		});
+		try {
+			logger.debug({
+				msg: 'Pexip Participant joined via SIP',
+				sipAlias: conference.sipAlias,
+				conferenceId: conference._id,
+				participantSipExtension,
+			});
 
-		const mediaCallIds = await MediaCalls.findAllNotOverByOppositeSipExtension(participantSipExtension, { projection: { _id: 1 } })
-			.map(({ _id }) => _id)
-			.toArray();
+			const mediaCallIds = await MediaCalls.findAllNotOverByOppositeSipExtension(participantSipExtension, { projection: { _id: 1 } })
+				.map(({ _id }) => _id)
+				.toArray();
 
-		if (mediaCallIds.length !== 1) {
-			// Check if the user is already linked to the conference
-			if (linkedMediaCallIds?.length) {
-				if (await MediaCalls.isUserSipExtensionInCallIds(participantSipExtension, linkedMediaCallIds)) {
-					return true;
+			if (mediaCallIds.length !== 1) {
+				// Check if the user is already linked to the conference
+				if (linkedMediaCallIds?.length) {
+					if (await MediaCalls.isUserSipExtensionInCallIds(participantSipExtension, linkedMediaCallIds)) {
+						return true;
+					}
 				}
+
+				logger.debug({ msg: 'Could not identify the media call that the SIP Participant is connecting from', calls: mediaCallIds });
+				return mediaCallIds.length > 0;
 			}
 
-			logger.debug({ msg: 'Could not identify the media call that the SIP Participant is connecting from', calls: mediaCallIds });
-			return mediaCallIds.length > 0;
-		}
+			const [mediaCallId] = mediaCallIds;
 
-		const [mediaCallId] = mediaCallIds;
-
-		const updateResult = await VideoConferenceModel.addMediaCallIdByConferenceId(conference._id, mediaCallId);
-		if (updateResult.modifiedCount) {
-			await MediaCall.flagAsRemotelyEscalatedByCallId(mediaCallId);
+			const updateResult = await VideoConferenceModel.addMediaCallIdByConferenceId(conference._id, mediaCallId);
+			if (updateResult.modifiedCount) {
+				await MediaCall.flagAsRemotelyEscalatedByCallId(mediaCallId);
+			}
+		} catch (err) {
+			logger.error({ msg: 'Unexpected error handling Pexip Voice to Video Escalation', err });
 		}
 
 		return true;

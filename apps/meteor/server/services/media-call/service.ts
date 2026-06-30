@@ -12,7 +12,7 @@ import type {
 	IRegisterUser,
 } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
-import { callServer, type IMediaCallServerSettings, getSignalsForExistingCall } from '@rocket.chat/media-calls';
+import { callServer, type IMediaCallServerSettings, getSignalsForExistingCall, ESCALATED_CALL_FEATURES } from '@rocket.chat/media-calls';
 import type {
 	CallFeature,
 	ClientMediaSignal,
@@ -623,24 +623,28 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			return;
 		}
 
-		await this.notifyEscalatedCall(call);
+		await this.notifyEscalatedCall(call, Boolean(call.escalatedByPeerAt));
 		api.broadcast('media-call.updated', {
 			callId: call._id,
 		});
 	}
 
-	private async notifyEscalatedCall(call: AtLeast<IMediaCall, '_id' | 'uids'>): Promise<void> {
+	private async notifyEscalatedCall(call: AtLeast<IMediaCall, '_id' | 'uids' | 'features'>, escalatedByPeer = false): Promise<void> {
 		for (const uid of call.uids) {
 			await this.sendSignal(uid, {
 				callId: call._id,
 				type: 'notification',
 				notification: 'escalated',
+				...(escalatedByPeer &&
+					call.features && {
+						features: call.features.filter((feature: any): feature is CallFeature => ESCALATED_CALL_FEATURES.includes(feature)),
+					}),
 			});
 		}
 	}
 
 	public async flagAsRemotelyEscalatedByCallId(callId: string): Promise<void> {
-		const call = await MediaCalls.findOneById(callId, { projection: { _id: 1, escalatedByPeerAt: 1, uids: 1 } });
+		const call = await MediaCalls.findOneById(callId, { projection: { _id: 1, escalatedByPeerAt: 1, uids: 1, features: 1 } });
 		if (!call || call.escalatedByPeerAt) {
 			return;
 		}
@@ -651,7 +655,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		}
 
 		if (!call.escalatedAt) {
-			await this.notifyEscalatedCall(call);
+			await this.notifyEscalatedCall(call, true);
 		}
 
 		// TODO: maybe hangup if escalatedAt is already set?
