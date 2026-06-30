@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import AudioPlayerControls from '../../components/AudioPlayer/AudioPlayerControls';
 import { useOpenedRoom } from '../../lib/RoomManager';
+import { setMessageJumpQueryStringParameter } from '../../lib/utils/setMessageJumpQueryStringParameter';
 import { useMediaPlayer } from '../../providers/MediaPlayerProvider';
 import { useGoToRoom } from '../../views/room/hooks/useGoToRoom';
 
@@ -23,9 +24,13 @@ const NowPlayingSection = () => {
 		return null;
 	}
 
-	const openConversation = () => {
-		if (track.rid) {
-			void goToRoom(track.rid);
+	const openConversation = async () => {
+		if (!track.rid) {
+			return;
+		}
+		await goToRoom(track.rid);
+		if (track.mid) {
+			void setMessageJumpQueryStringParameter(track.mid);
 		}
 	};
 
@@ -41,7 +46,12 @@ const NowPlayingSection = () => {
 
 			<Box display='flex' alignItems='center' mbe={10} style={{ gap: 8 }}>
 				{track.username && <UserAvatar username={track.username} size='x24' />}
-				<Box minWidth={0} onClick={openConversation} title={t('Jump_to_message')} style={{ cursor: track.rid ? 'pointer' : 'default' }}>
+				<Box
+					minWidth={0}
+					onClick={() => void openConversation()}
+					title={t('Jump_to_message')}
+					style={{ cursor: track.rid ? 'pointer' : 'default' }}
+				>
 					<Box fontScale='p2b' color='default' withTruncatedText>
 						{track.name || track.username || t('Audio')}
 					</Box>
