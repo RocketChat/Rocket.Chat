@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/apps",
-	"version": "0.7.0",
+	"version": "0.7.1-rc.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
@@ -38,7 +38,6 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/tsconfig": "workspace:*",
-		"@seald-io/nedb": "^4.1.2",
 		"@types/adm-zip": "^0.5.7",
 		"@types/debug": "^4.1.12",
 		"@types/lodash.clonedeep": "^4.5.9",

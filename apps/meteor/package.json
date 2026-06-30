@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/meteor",
-	"version": "8.6.0-develop",
+	"version": "8.7.0-develop",
 	"private": true,
 	"description": "The Ultimate Open Source WebChat Platform",
 	"keywords": [
@@ -107,7 +107,7 @@
 		"@rocket.chat/favicon": "workspace:^",
 		"@rocket.chat/federation-matrix": "workspace:^",
 		"@rocket.chat/federation-sdk": "0.6.3",
-		"@rocket.chat/fuselage": "^0.79.0",
+		"@rocket.chat/fuselage": "^0.79.1",
 		"@rocket.chat/fuselage-forms": "^1.3.0",
 		"@rocket.chat/fuselage-hooks": "^0.41.0",
 		"@rocket.chat/fuselage-toastbar": "^0.35.2",
@@ -166,7 +166,7 @@
 		"@types/meteor": "^2.9.11",
 		"@xmldom/xmldom": "~0.8.13",
 		"adm-zip": "0.5.17",
-		"ajv": "^8.17.1",
+		"ajv": "^8.20.0",
 		"ajv-formats": "~3.0.1",
 		"archiver": "^7.0.1",
 		"asterisk-manager": "^0.2.0",

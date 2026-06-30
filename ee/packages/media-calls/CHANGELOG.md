@@ -1,5 +1,16 @@
 # @rocket.chat/media-calls
 
+## 0.5.1-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [73e12e1707baea845395e0582892f65456598672, ebc9c17b6ba63ee754320eadfba20c024c53c18f, 7380c44c751eff9ee624d80bf26370411ffed78b, 6bd9182ae1d914a55e70866db43e8d2038f7be28, f63b965f82b0ddc590c633706f7c31c8c5251b53]:</summary>
+
+  - @rocket.chat/models@2.3.1-rc.0
+  - @rocket.chat/media-signaling@1.1.0-rc.0
+  - @rocket.chat/core-typings@8.6.0-rc.0
+  </details>
+
 ## 0.5.0
 
 ### Minor Changes

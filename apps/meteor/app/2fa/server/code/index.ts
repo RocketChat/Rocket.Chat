@@ -54,7 +54,7 @@ export async function getUserForCheck(userId: string): Promise<IUser | null> {
 	});
 }
 
-function getFingerprintFromConnection(connection: IMethodConnection): string {
+export function getFingerprintFromConnection(connection: IMethodConnection): string {
 	const data = JSON.stringify({
 		userAgent: connection.httpHeaders['user-agent'],
 		clientAddress: connection.clientAddress,
@@ -77,7 +77,11 @@ function getRememberDate(from: Date = new Date()): Date | undefined {
 }
 
 function isAuthorizedForToken(connection: IMethodConnection, user: IUser, options: ITwoFactorOptions): boolean {
-	const currentToken = Accounts._getLoginToken(connection.id);
+	// Resolve the current login token from both transports:
+	// - DDP: the login flow registers it in `Accounts._accountData`, read via `_getLoginToken`.
+	// - REST: it is not registered in account data, so it is carried on `connection.token`.
+	// Both are needed; REST is the fallback that fixes `bypassTwoFactor` PATs (SUP-1064).
+	const currentToken = Accounts._getLoginToken(connection.id) || connection.token;
 	const tokenObject = user.services?.resume?.loginTokens?.find((i) => i.hashedToken === currentToken);
 
 	if (!tokenObject) {
@@ -93,14 +97,18 @@ function isAuthorizedForToken(connection: IMethodConnection, user: IUser, option
 		return true;
 	}
 
-	if (options.disableRememberMe === true) {
-		return false;
+	// Skip 2FA for a freshly registered user who has not set up any 2FA method yet,
+	// until the grace period that starts at registration expires.
+	// (e.g. the Setup Wizard saving settings between steps before any 2FA is configured)
+	const rememberPeriodEnd = user.createdAt && getRememberDate(user.createdAt);
+	const isWithinRememberPeriod = rememberPeriodEnd && rememberPeriodEnd >= new Date();
+	const hasNoTwoFactorMethod = getAvailableMethodNames(user).length === 0;
+	if (isWithinRememberPeriod && hasNoTwoFactorMethod) {
+		return true;
 	}
 
-	// remember user right after their registration
-	const rememberAfterRegistration = user.createdAt && getRememberDate(user.createdAt);
-	if (rememberAfterRegistration && rememberAfterRegistration >= new Date()) {
-		return true;
+	if (options.disableRememberMe === true) {
+		return false;
 	}
 
 	if (!tokenObject.twoFactorAuthorizedUntil || !tokenObject.twoFactorAuthorizedHash) {
@@ -119,7 +127,9 @@ function isAuthorizedForToken(connection: IMethodConnection, user: IUser, option
 }
 
 async function rememberAuthorization(connection: IMethodConnection, user: IUser): Promise<void> {
-	const currentToken = Accounts._getLoginToken(connection.id);
+	// Same dual-transport resolution as `isAuthorizedForToken`: DDP reads from `Accounts._accountData`
+	// via `_getLoginToken`, REST falls back to the token carried on `connection.token`.
+	const currentToken = Accounts._getLoginToken(connection.id) || connection.token;
 
 	const expires = getRememberDate();
 	if (!expires) {

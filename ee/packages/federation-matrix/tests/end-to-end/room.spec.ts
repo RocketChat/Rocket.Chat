@@ -9,6 +9,7 @@ import {
 	getGroupHistory,
 	findRoomMember,
 	addUserToRoom,
+	addUserToRoomViaMethod,
 	addUserToRoomSlashCommand,
 	acceptRoomInvite,
 	rejectRoomInvite,
@@ -227,20 +228,20 @@ import { SynapseClient } from '../helper/synapse-client';
 
 			describe('Go to the members list and try to add a federated user', () => {
 				it('should not allow and show an error message', async () => {
-					// RC view: Attempt to add a federated user to the non-federated room
-					const response = await addUserToRoom({
+					// RC view: Attempt to add a federated user to the non-federated room via the REST invite endpoint
+					const [response] = await addUserToRoom({
 						usernames: [federationConfig.hs1.adminMatrixUserId],
 						rid: nonFederatedChannel._id,
+						type: 'p',
 						config: rc1AdminRequestConfig,
 					});
 
+					// The REST endpoint rejects the invite with the federation-specific error: the federated
+					// user already exists locally (a federated DM was created earlier), so it resolves and the
+					// federation guard rejects adding it to a non-federated room.
+					expect(response.status).toBe(400);
 					expect(response.body).toHaveProperty('success', false);
-					expect(response.body).toHaveProperty('message');
-
-					// Parse the error message from the DDP response
-					const messageData = JSON.parse(response.body.message);
-					expect(messageData).toHaveProperty('error');
-					expect(messageData.error).toHaveProperty('error', 'error-federated-users-in-non-federated-rooms');
+					expect(response.body).toHaveProperty('errorType', 'error-federated-users-in-non-federated-rooms');
 
 					// RC view: Verify the federated user was NOT added to the room's member list
 					const federatedUserInRoom = await findRoomMember(
@@ -845,10 +846,11 @@ import { SynapseClient } from '../helper/synapse-client';
 						// This ensures the room.federation.mrid field is properly set before adding users
 						await new Promise((resolve) => setTimeout(resolve, 2000));
 
-						// Add federated user to the room
-						const addUserResponse = await addUserToRoom({
+						// Add federated user to the room via the REST invite endpoint
+						const [addUserResponse] = await addUserToRoom({
 							usernames: [federationConfig.hs1.adminMatrixUserId],
 							rid: federatedChannel._id,
+							type: 'p',
 							config: rc1AdminRequestConfig,
 						});
 
@@ -948,14 +950,15 @@ import { SynapseClient } from '../helper/synapse-client';
 						// This ensures the room.federation.mrid field is properly set before adding users
 						await new Promise((resolve) => setTimeout(resolve, 2000));
 
-						// Add both federated users to the room
+						// Add both federated users to the room via the REST invite endpoint
 						const addUserResponse = await addUserToRoom({
 							usernames: [federationConfig.hs1.adminMatrixUserId, federationConfig.hs1.additionalUser1.matrixUserId],
 							rid: federatedChannel._id,
+							type: 'p',
 							config: rc1AdminRequestConfig,
 						});
 
-						expect(addUserResponse.body).toHaveProperty('success', true);
+						addUserResponse.forEach((response) => expect(response.body).toHaveProperty('success', true));
 
 						// Accept invitations for both users
 						const acceptedRoomId1 = await hs1AdminApp.acceptInvitationForRoomName(channelName);
@@ -1084,14 +1087,15 @@ import { SynapseClient } from '../helper/synapse-client';
 						// This ensures the room.federation.mrid field is properly set before adding users
 						await new Promise((resolve) => setTimeout(resolve, 2000));
 
-						// Add 1 federated user and 1 local user to the room
+						// Add 1 federated user and 1 local user to the room via the REST invite endpoint
 						const addUserResponse = await addUserToRoom({
 							usernames: [federationConfig.hs1.adminMatrixUserId, federationConfig.rc1.additionalUser1.username],
 							rid: federatedChannel._id,
+							type: 'p',
 							config: rc1AdminRequestConfig,
 						});
 
-						expect(addUserResponse.body).toHaveProperty('success', true);
+						addUserResponse.forEach((response) => expect(response.body).toHaveProperty('success', true));
 
 						// Accept invitation for the federated user
 						const acceptedRoomId = await hs1AdminApp.acceptInvitationForRoomName(channelName);
@@ -1256,7 +1260,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						// This ensures the room.federation.mrid field is properly set before adding users
 						await new Promise((resolve) => setTimeout(resolve, 2000));
 
-						// Add federated user to the room using slash command
+						// Add federated user to the room via the /invite slash command
 						const addUserResponse = await addUserToRoomSlashCommand({
 							usernames: [federationConfig.hs1.adminMatrixUserId],
 							rid: federatedChannel._id,
@@ -1359,7 +1363,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						// This ensures the room.federation.mrid field is properly set before adding users
 						await new Promise((resolve) => setTimeout(resolve, 2000));
 
-						// Add both federated users to the room using slash command
+						// Add both federated users to the room via the /invite slash command
 						const addUserResponse = await addUserToRoomSlashCommand({
 							usernames: [federationConfig.hs1.adminMatrixUserId, federationConfig.hs1.additionalUser1.matrixUserId],
 							rid: federatedChannel._id,
@@ -1494,7 +1498,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						// This ensures the room.federation.mrid field is properly set before adding users
 						await new Promise((resolve) => setTimeout(resolve, 2000));
 
-						// Add 1 federated user and 1 local user to the room using slash command
+						// Add 1 federated user and 1 local user to the room via the /invite slash command
 						const addUserResponse = await addUserToRoomSlashCommand({
 							usernames: [federationConfig.hs1.adminMatrixUserId, federationConfig.rc1.additionalUser1.username],
 							rid: federatedChannel._id,
@@ -1631,6 +1635,94 @@ import { SynapseClient } from '../helper/synapse-client';
 
 						expect(federatedUserJoinedMessageUser1).toBeDefined();
 						expect(federatedUserJoinedMessageUser1?.msg).toContain(federationConfig.hs1.adminMatrixUserId);
+					});
+				});
+			});
+
+			describe('Use the deprecated addUsersToRoom DDP method to', () => {
+				describe('Add a federated user', () => {
+					let channelName: string;
+					let federatedChannel: any;
+
+					beforeAll(async () => {
+						channelName = `federated-channel-ddp-single-${Date.now()}`;
+
+						// Create empty federated room without members
+						const createResponse = await createRoom({
+							type: 'p',
+							name: channelName,
+							members: [],
+							extraData: {
+								federated: true,
+							},
+							config: rc1AdminRequestConfig,
+						});
+
+						federatedChannel = createResponse.body.group;
+
+						expect(federatedChannel).toHaveProperty('_id');
+						expect(federatedChannel).toHaveProperty('name', channelName);
+						expect(federatedChannel).toHaveProperty('t', 'p');
+						expect(federatedChannel).toHaveProperty('federated', true);
+						expect(federatedChannel).toHaveProperty('federation');
+						expect((federatedChannel as any).federation).toHaveProperty('version', 1);
+
+						// Wait for federation setup to complete (Matrix room creation and mrid assignment)
+						// This ensures the room.federation.mrid field is properly set before adding users
+						await new Promise((resolve) => setTimeout(resolve, 2000));
+
+						// Add federated user to the room via the deprecated addUsersToRoom DDP method
+						const addUserResponse = await addUserToRoomViaMethod({
+							usernames: [federationConfig.hs1.adminMatrixUserId],
+							rid: federatedChannel._id,
+							config: rc1AdminRequestConfig,
+						});
+
+						expect(addUserResponse.body).toHaveProperty('success', true);
+
+						// Accept invitation for the federated user
+						const acceptedRoomId = await hs1AdminApp.acceptInvitationForRoomName(channelName);
+						expect(acceptedRoomId).not.toBe('');
+					}, 15000);
+
+					it('should show the new user in the members list', async () => {
+						// RC view: Check in RC that both users are in the members list
+						const rc1AdminUserInRC = await findRoomMember(
+							federatedChannel._id,
+							federationConfig.rc1.adminUser,
+							{ initialDelay: 0 },
+							rc1AdminRequestConfig,
+						);
+						const hs1AdminUserInRC = await findRoomMember(
+							federatedChannel._id,
+							federationConfig.hs1.adminMatrixUserId,
+							{ initialDelay: 0 },
+							rc1AdminRequestConfig,
+						);
+
+						expect(rc1AdminUserInRC).not.toBeNull();
+						expect(hs1AdminUserInRC).not.toBeNull();
+						expect(hs1AdminUserInRC?.federated).toBe(true);
+
+						// Synapse view: Check in Element (Matrix) that both users are in the members list
+						const hs1AdminUserInSynapse = await hs1AdminApp.findRoomMember(channelName, federationConfig.hs1.adminMatrixUserId, {
+							delay: 2000,
+						});
+						expect(hs1AdminUserInSynapse).not.toBeNull();
+					});
+
+					it('should show the system message that the user joined', async () => {
+						// RC view: Get the room history to find the system messages
+						const historyResponse = await getGroupHistory(federatedChannel._id, rc1AdminRequestConfig);
+						expect(Array.isArray(historyResponse.messages)).toBe(true);
+
+						// Look for 'uj' (user joined) system message after accepting the invite
+						const joinedMessage = historyResponse.messages.find(
+							(message: IMessage) => message.t === 'uj' && message.msg && message.msg.includes(federationConfig.hs1.adminMatrixUserId),
+						);
+
+						expect(joinedMessage).toBeDefined();
+						expect(joinedMessage?.msg).toContain(federationConfig.hs1.adminMatrixUserId);
 					});
 				});
 			});

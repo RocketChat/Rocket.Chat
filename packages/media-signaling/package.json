@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/media-signaling",
 	"description": "Rocket.Chat signaling client for media calls",
-	"version": "1.0.0",
+	"version": "1.1.0-rc.1",
 	"license": "MIT",
 	"homepage": "https://github.com/RocketChat/Rocket.Chat/#readme",
 	"repository": {
@@ -30,7 +30,7 @@
 	},
 	"dependencies": {
 		"@rocket.chat/emitter": "^0.32.0",
-		"ajv": "^8.17.1"
+		"ajv": "^8.20.0"
 	},
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
