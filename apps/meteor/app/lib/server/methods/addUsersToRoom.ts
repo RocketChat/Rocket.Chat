@@ -9,6 +9,7 @@ import { beforeAddUsersToRoom } from '../../../../server/lib/callbacks/beforeAdd
 import { i18n } from '../../../../server/lib/i18n';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../functions/addUserToRoom';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -96,7 +97,12 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 			}
 
 			const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
-			if (!subscription || isBannedSubscription(subscription)) {
+			if (subscription && isBannedSubscription(subscription)) {
+				throw new Meteor.Error('error-user-is-banned', 'User is banned from this room', {
+					method: 'addUsersToRoom',
+				});
+			}
+			if (!subscription) {
 				return addUserToRoom(data.rid, newUser, user);
 			}
 			if (!newUser.username) {
@@ -117,6 +123,7 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 
 Meteor.methods<ServerMethods>({
 	async addUsersToRoom(data) {
+		methodDeprecationLogger.method('addUsersToRoom', '9.0.0', ['/v1/channels.invite', '/v1/groups.invite']);
 		const uid = Meteor.userId();
 		// Validate user and room
 		if (!uid) {

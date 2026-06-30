@@ -23,9 +23,14 @@ const getDefaultAgent = async ({ username, id }: { username?: string; id?: strin
 	}
 
 	if (id) {
-		const agent = await Users.findOneOnlineAgentById(id, settings.get<boolean>('Livechat_enabled_when_agent_idle'), {
-			projection: { _id: 1, username: 1 },
-		});
+		const agent = await Users.findOneOnlineAgentById(
+			id,
+			settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+			settings.get<boolean>('Livechat_accept_chats_with_no_agents'),
+			{
+				projection: { _id: 1, username: 1 },
+			},
+		);
 		if (agent) {
 			return normalizeDefaultAgent(agent);
 		}
@@ -43,6 +48,7 @@ const getDefaultAgent = async ({ username, id }: { username?: string; id?: strin
 			username || [],
 			{ projection: { _id: 1, username: 1 } },
 			settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+			settings.get<boolean>('Livechat_accept_chats_with_no_agents'),
 		),
 	);
 };
@@ -131,6 +137,7 @@ checkDefaultAgentOnNewRoom.patch(async (_next, defaultAgent, { visitorId, source
 			usernameByRoom,
 			{ projection: { _id: 1, username: 1 } },
 			settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+			settings.get<boolean>('Livechat_accept_chats_with_no_agents'),
 		),
 	);
 	return lastRoomAgent;

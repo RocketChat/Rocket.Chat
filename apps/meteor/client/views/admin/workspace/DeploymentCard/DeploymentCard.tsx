@@ -1,9 +1,8 @@
 import type { IWorkspaceInfo, IStats } from '@rocket.chat/core-typings';
 import { Button, Card, CardBody, CardControls, Margins } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { IInstance } from '@rocket.chat/rest-typings';
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -18,14 +17,18 @@ type DeploymentCardProps = {
 	statistics: IStats;
 };
 
-const DeploymentCard = ({ serverInfo: { info, cloudWorkspaceId }, statistics, instances }: DeploymentCardProps): ReactElement => {
+const DeploymentCard = ({
+	serverInfo: { info, cloudWorkspaceId, workspaceUrl, hashedWorkspaceUrl },
+	statistics,
+	instances,
+}: DeploymentCardProps) => {
 	const { t } = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 	const setModal = useSetModal();
 
 	const { commit = {}, marketplaceApiVersion: appsEngineVersion } = info || {};
 
-	const handleInstancesModal = useEffectEvent(() => {
+	const handleInstancesModal = useStableCallback(() => {
 		setModal(<InstancesModal instances={instances} onClose={(): void => setModal()} />);
 	});
 
@@ -40,6 +43,18 @@ const DeploymentCard = ({ serverInfo: { info, cloudWorkspaceId }, statistics, in
 						<WorkspaceCardSectionTitle title={t('Version')} />
 						{statistics.version}
 					</WorkspaceCardSection>
+					{workspaceUrl && (
+						<WorkspaceCardSection>
+							<WorkspaceCardSectionTitle title={t('Site_Url')} />
+							{workspaceUrl}
+						</WorkspaceCardSection>
+					)}
+					{hashedWorkspaceUrl && (
+						<WorkspaceCardSection>
+							<WorkspaceCardSectionTitle title={t('Hashed_Site_Url')} />
+							<span style={{ lineBreak: 'anywhere' }}>{hashedWorkspaceUrl}</span>
+						</WorkspaceCardSection>
+					)}
 					<WorkspaceCardSection>
 						<WorkspaceCardSectionTitle title={t('Deployment_ID')} />
 						{statistics.uniqueId}
@@ -68,9 +83,7 @@ const DeploymentCard = ({ serverInfo: { info, cloudWorkspaceId }, statistics, in
 					</WorkspaceCardSection>
 					<WorkspaceCardSection>
 						<WorkspaceCardSectionTitle title={t('MongoDB')} />
-						{`${statistics.mongoVersion} / ${statistics.mongoStorageEngine} ${
-							!statistics.msEnabled ? `(oplog ${statistics.oplogEnabled ? t('Enabled') : t('Disabled')})` : ''
-						}`}
+						{`${statistics.mongoVersion} / ${statistics.mongoStorageEngine}`}
 					</WorkspaceCardSection>
 					<WorkspaceCardSection>
 						<WorkspaceCardSectionTitle title={t('Commit_details')} />

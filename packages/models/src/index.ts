@@ -80,6 +80,7 @@ import type {
 	IMediaCallNegotiationsModel,
 	ICallHistoryModel,
 	IAbacAttributesModel,
+	ISamlUsedAssertionsModel,
 } from '@rocket.chat/model-typings';
 import type { Collection, Db } from 'mongodb';
 
@@ -106,6 +107,7 @@ import {
 	UsersSessionsRaw,
 	AbacAttributesRaw,
 	ServerEventsRaw,
+	SamlUsedAssertionsRaw,
 } from './modelClasses';
 import { proxify, registerModel } from './proxify';
 
@@ -122,6 +124,7 @@ export * from './helpers';
 
 export { registerModel } from './proxify';
 export { type Updater, UpdaterImpl } from './updater';
+export { readSecondaryPreferred } from './readSecondaryPreferred';
 
 export const Apps = proxify<IAppsModel>('IAppsModel');
 export const AppsPersistence = proxify<IAppsPersistenceModel>('IAppsPersistenceModel');
@@ -177,6 +180,7 @@ export const OEmbedCache = proxify<IOEmbedCacheModel>('IOEmbedCacheModel');
 export const PushToken = proxify<IPushTokenModel>('IPushTokenModel');
 export const Permissions = proxify<IPermissionsModel>('IPermissionsModel');
 export const ReadReceipts = proxify<IReadReceiptsModel>('IReadReceiptsModel');
+export const ReadReceiptsArchive = proxify<IReadReceiptsModel>('IReadReceiptsArchiveModel');
 export const MessageReads = proxify<IMessageReadsModel>('IMessageReadsModel');
 export const Reports = proxify<IReportsModel>('IReportsModel');
 export const Roles = proxify<IRolesModel>('IRolesModel');
@@ -205,6 +209,7 @@ export const Migrations = proxify<IMigrationsModel>('IMigrationsModel');
 export const ModerationReports = proxify<IModerationReportsModel>('IModerationReportsModel');
 export const WorkspaceCredentials = proxify<IWorkspaceCredentialsModel>('IWorkspaceCredentialsModel');
 export const AbacAttributes = proxify<IAbacAttributesModel>('IAbacAttributesModel');
+export const SamlUsedAssertions = proxify<ISamlUsedAssertionsModel>('ISamlUsedAssertionsModel');
 
 export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecordDeleted<any>>): void {
 	registerModel('IUsersSessionsModel', () => new UsersSessionsRaw(db));
@@ -239,4 +244,5 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsRaw(db));
 	registerModel('IAbacAttributesModel', () => new AbacAttributesRaw(db));
 	registerModel('IServerEventsModel', () => new ServerEventsRaw(db));
+	registerModel('ISamlUsedAssertionsModel', () => new SamlUsedAssertionsRaw(db));
 }

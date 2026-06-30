@@ -1,8 +1,8 @@
-import { Box, TextInput, Field, FieldGroup, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
-import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { Box } from '@rocket.chat/fuselage';
+import { FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
-import type { ReactElement, ChangeEvent, SyntheticEvent } from 'react';
-import { useId, useState } from 'react';
+import { useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import type { OnConfirm } from './TwoFactorModal';
@@ -15,43 +15,83 @@ type TwoFactorTotpModalProps = {
 	invalidAttempt?: boolean;
 };
 
-const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss, invalidAttempt }: TwoFactorTotpModalProps): ReactElement => {
+type TwoFactorTotpFormData = {
+	code: string;
+};
+
+const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss, invalidAttempt }: TwoFactorTotpModalProps) => {
 	const { t } = useTranslation();
-	const [code, setCode] = useState<string>('');
-	const ref = useAutoFocus<HTMLInputElement>();
 
-	const onConfirmTotpCode = (e: SyntheticEvent): void => {
-		e.preventDefault();
-		onConfirm(code, Method.TOTP);
-	};
+	const {
+		control,
+		handleSubmit,
+		setError,
+		setValue,
+		clearErrors,
+		formState: { errors, isSubmitting },
+	} = useForm<TwoFactorTotpFormData>({
+		defaultValues: { code: '' },
+	});
 
-	const onChange = ({ currentTarget }: ChangeEvent<HTMLInputElement>): void => {
-		setCode(currentTarget.value);
-	};
+	useEffect(() => {
+		if (invalidAttempt) {
+			setError('code', {
+				type: 'manual',
+				message: t('Invalid_two_factor_code'),
+			});
+		}
+	}, [invalidAttempt, setError, t]);
 
-	const id = useId();
+	const onSubmit = handleSubmit(async ({ code }) => {
+		try {
+			await onConfirm(code, Method.TOTP);
+		} catch (error) {
+			setError('code', {
+				type: 'manual',
+				message: t('Invalid_two_factor_code'),
+			});
+			setValue('code', '');
+		}
+	});
+
 	return (
 		<GenericModal
-			wrapperFunction={(props) => <Box is='form' onSubmit={onConfirmTotpCode} {...props} />}
+			wrapperFunction={(props) => <Box is='form' onSubmit={onSubmit} {...props} />}
 			onCancel={onClose}
 			confirmText={t('Verify')}
 			title={t('Enter_TOTP_password')}
 			onClose={onClose}
 			onDismiss={onDismiss}
 			variant='warning'
-			confirmDisabled={!code}
+			confirmDisabled={isSubmitting}
 			tagline={t('Two-factor_authentication')}
 			icon={null}
 		>
 			<FieldGroup>
 				<Field>
-					<FieldLabel alignSelf='stretch' htmlFor={id}>
-						{t('Enter_the_code_provided_by_your_authentication_app_to_continue')}
-					</FieldLabel>
+					<FieldLabel alignSelf='stretch'>{t('Enter_the_code_provided_by_your_authentication_app_to_continue')}</FieldLabel>
 					<FieldRow>
-						<TextInput id={id} ref={ref} value={code} onChange={onChange} placeholder={t('Enter_code_here')}></TextInput>
+						<Controller
+							name='code'
+							control={control}
+							rules={{ required: t('Required_field', { field: t('Code') }) }}
+							render={({ field: { onChange, ...fieldProps } }) => (
+								<TextInput
+									{...fieldProps}
+									onChange={(e) => {
+										clearErrors('code');
+										onChange(e);
+									}}
+									placeholder={t('Enter_code_here')}
+									autoComplete='one-time-code'
+									inputMode='numeric'
+									disabled={isSubmitting}
+									error={errors.code?.message}
+								/>
+							)}
+						/>
 					</FieldRow>
-					{invalidAttempt && <FieldError>{t('Invalid_password')}</FieldError>}
+					{errors.code && <FieldError>{errors.code.message}</FieldError>}
 				</Field>
 			</FieldGroup>
 		</GenericModal>

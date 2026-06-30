@@ -10,8 +10,9 @@ import {
 	IconButton,
 } from '@rocket.chat/fuselage';
 import type { HTMLAttributes, ReactNode } from 'react';
-import { memo, useState } from 'react';
+import { memo } from 'react';
 
+import { useDeferredMenuMount } from './useDeferredMenuMount';
 import { useShortTimeAgo } from '../../hooks/useTimeAgo';
 
 type ExtendedProps = {
@@ -49,13 +50,10 @@ const Extended = ({
 	...props
 }: ExtendedProps) => {
 	const formatDate = useShortTimeAgo();
-	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
-
-	const handleFocus = () => setMenuVisibility(true);
-	const handlePointerEnter = () => setMenuVisibility(true);
+	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 
 	return (
-		<SidebarV2Item title={title} href={href} selected={selected} {...props} onFocus={handleFocus} onPointerEnter={handlePointerEnter}>
+		<SidebarV2Item title={title} href={href} selected={selected} {...props} onFocus={mountNow} onPointerEnter={requestMount}>
 			{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
 			<SidebarV2ItemCol>
 				<SidebarV2ItemRow>
@@ -69,7 +67,11 @@ const Extended = ({
 					{actions}
 					{menu && (
 						<SidebarV2ItemMenu>
-							{menuVisibility ? menu() : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-v2-item__menu icon='kebab' />}
+							{menuVisibility ? (
+								menu()
+							) : (
+								<IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-v2-item__menu icon='kebab' onPointerDown={mountNow} />
+							)}
 						</SidebarV2ItemMenu>
 					)}
 				</SidebarV2ItemRow>

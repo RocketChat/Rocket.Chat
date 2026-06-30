@@ -21,6 +21,10 @@ const loadMissedMessages = async (rid: IRoom['_id']): Promise<void> => {
 	}
 
 	try {
+		// TODO(ddp-removal): this should move to `/v1/chat.syncMessages` so reconnect
+		// also reconciles edits/deletions made while offline, but that endpoint queries
+		// by `_updatedAt` (+ trash collection) and is currently too slow for this path.
+		// Evaluate/optimize the query before migrating; for now keep the DDP method.
 		const result = await callWithErrorHandling('loadMissedMessages', rid, lastMessage.ts);
 		if (result) {
 			const subscription = Subscriptions.state.find((record) => record.rid === rid);

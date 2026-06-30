@@ -1,5 +1,4 @@
 import { FieldLabel, FieldHint, FieldRow, Field } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 import CodeMirror from './CodeMirror';
@@ -27,7 +26,7 @@ function CodeSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}: CodeSettingInputProps): ReactElement {
+}: CodeSettingInputProps) {
 	const handleChange = (value: string): void => {
 		onChangeValue(value);
 	};

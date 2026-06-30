@@ -3,7 +3,7 @@ import { Box, Pagination, States, StatesAction, StatesActions, StatesIcon, State
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { GenericTable, GenericTableHeader, GenericTableBody, GenericTableLoadingTable } from '@rocket.chat/ui-client';
 import type { UseQueryResult } from '@tanstack/react-query';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import GenericNoResults from '../../GenericNoResults/GenericNoResults';
@@ -11,8 +11,8 @@ import GenericNoResults from '../../GenericNoResults/GenericNoResults';
 // FIXME: this tight coupling with the query result is not ideal; it indicates visual components should not be tightly
 // coupled with data fetching logic.
 type DeviceManagementTableProps<T> = UseQueryResult<PaginatedResult<{ sessions: Serialized<T>[] }>> & {
-	headers: (ReactElement | false)[];
-	renderRow: (data: Serialized<T>) => ReactElement;
+	headers: ReactNode[];
+	renderRow: (data: Serialized<T>) => ReactNode;
 	current?: ComponentProps<typeof Pagination>['current'];
 	itemsPerPage?: ComponentProps<typeof Pagination>['itemsPerPage'];
 	setCurrent?: ComponentProps<typeof Pagination>['onSetCurrent'];
@@ -35,7 +35,7 @@ const DeviceManagementTable = <T extends DeviceManagementSession | DeviceManagem
 	setCurrent,
 	setItemsPerPage,
 	paginationProps,
-}: DeviceManagementTableProps<T>): ReactElement => {
+}: DeviceManagementTableProps<T>) => {
 	const { t } = useTranslation();
 
 	if (isError) {

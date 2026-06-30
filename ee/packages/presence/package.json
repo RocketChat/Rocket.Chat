@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/presence",
-	"version": "0.2.53-rc.1",
+	"version": "0.3.0-rc.0",
 	"private": true,
 	"main": "./dist/Presence.js",
 	"typings": "./dist/Presence.d.ts",
@@ -18,14 +18,15 @@
 	"dependencies": {
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/logger": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"mongodb": "6.16.0"
 	},
 	"devDependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"@types/node": "~22.16.5",
-		"eslint": "~9.39.3",
+		"@types/node": "~22.19.17",
+		"eslint": "~9.39.4",
 		"jest": "~30.2.0",
 		"typescript": "~5.9.3"
 	},

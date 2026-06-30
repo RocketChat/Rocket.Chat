@@ -12,7 +12,7 @@ import {
 } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement, MutableRefObject } from 'react';
+import type { MutableRefObject } from 'react';
 import { useRef, useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -27,7 +27,7 @@ type RoomFilters = {
 
 const DEFAULT_TYPES = ['d', 'p', 'c', 'l', 'discussions', 'teams'];
 
-const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): ReactElement => {
+const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	const { t } = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
@@ -49,7 +49,14 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				count: itemsPerPage,
 				offset: searchText === prevRoomFilterText.current ? current : 0,
-				types: roomFilters.types.length ? [...roomFilters.types.map((roomType) => roomType.id)] : DEFAULT_TYPES,
+				types: (roomFilters.types.length ? [...roomFilters.types.map((roomType) => roomType.id)] : DEFAULT_TYPES) as unknown as (
+					| 'c'
+					| 'd'
+					| 'p'
+					| 'l'
+					| 'discussions'
+					| 'teams'
+				)[],
 			};
 		}, [searchText, sortBy, sortDirection, itemsPerPage, current, roomFilters.types, setCurrent]),
 		500,

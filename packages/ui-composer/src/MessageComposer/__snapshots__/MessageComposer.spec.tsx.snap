@@ -609,28 +609,43 @@ exports[`renders WithFiles without crashing 1`] = `
         style="white-space: nowrap;"
       >
         <div
-          aria-label="file.png"
-          class="rcx-box rcx-box--full rcx-input-box__wrapper rcx-css-1pkbwz2 rcx-css-11v39ac"
+          aria-label="antique-pocket-clock-500x500.zip"
+          class="rcx-box rcx-box--full rcx-input-box__wrapper rcx-css-1pkbwz2 rcx-css-fx6ct2"
           role="group"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-rr1a1d"
+            class="rcx-box rcx-box--full rcx-css-1tbfj7e"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-attachment-file rcx-icon rcx-css-1p0mbvu"
+            >
+              
+            </i>
+            <div
+              class="rcx-box rcx-box--full rcx-css-1yhaxf2"
+            >
+              zip
+            </div>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-po95ue"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-sjenmr"
               role="button"
               tabindex="0"
             >
-              file.png
+              antique-pocket-clock-500x500.zip
             </div>
             <div
               class="rcx-box rcx-box--full rcx-css-21m2e8"
             >
-              2 MB
+              58.33 KB - application/zip
             </div>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-1iv41yt"
+            class="rcx-box rcx-box--full rcx-css-wojmyi"
           >
             <button
               aria-label="Close"
@@ -648,11 +663,26 @@ exports[`renders WithFiles without crashing 1`] = `
         </div>
         <div
           aria-label="file.png"
-          class="rcx-box rcx-box--full rcx-css-1racx6p rcx-css-11v39ac"
+          class="rcx-box rcx-box--full rcx-css-1racx6p rcx-css-fx6ct2"
           role="group"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-rr1a1d"
+            class="rcx-box rcx-box--full rcx-css-1tbfj7e"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-attachment-file rcx-icon rcx-css-1p0mbvu"
+            >
+              
+            </i>
+            <div
+              class="rcx-box rcx-box--full rcx-css-1yhaxf2"
+            >
+              png
+            </div>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-po95ue"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1d8xvrj"
@@ -670,13 +700,28 @@ exports[`renders WithFiles without crashing 1`] = `
         </div>
         <div
           aria-label="file.png"
-          class="rcx-box rcx-box--full rcx-css-1racx6p rcx-css-3mzx0u"
+          class="rcx-box rcx-box--full rcx-css-1racx6p rcx-css-1ccd3jg"
           readonly=""
           role="group"
           title="Something went wrong"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-rr1a1d"
+            class="rcx-box rcx-box--full rcx-css-1tbfj7e"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-attachment-file rcx-icon rcx-css-1p0mbvu"
+            >
+              
+            </i>
+            <div
+              class="rcx-box rcx-box--full rcx-css-1yhaxf2"
+            >
+              png
+            </div>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-po95ue"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-sjenmr"
@@ -692,7 +737,7 @@ exports[`renders WithFiles without crashing 1`] = `
             </div>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-1iv41yt"
+            class="rcx-box rcx-box--full rcx-css-wojmyi"
           >
             <button
               aria-label="Close"

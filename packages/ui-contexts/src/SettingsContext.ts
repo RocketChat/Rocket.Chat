@@ -18,7 +18,7 @@ export type SettingsContextValue = {
 	readonly querySettings: (
 		query: SettingsContextQuery,
 	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ISetting[]];
-	readonly dispatch: (changes: Partial<ISetting>[]) => Promise<void>;
+	readonly dispatch: (changes: Partial<ISetting>[], onSaved?: () => void) => Promise<void>;
 };
 
 export const SettingsContext = createContext<SettingsContextValue>({

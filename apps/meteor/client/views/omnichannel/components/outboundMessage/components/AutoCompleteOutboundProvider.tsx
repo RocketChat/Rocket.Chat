@@ -1,6 +1,6 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Option, OptionDescription, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -17,14 +17,7 @@ type AutoCompleteOutboundProviderProps = Omit<
 	onChange: (value: string) => void;
 };
 
-const AutoCompleteOutboundProvider = ({
-	contact,
-	disabled,
-	value,
-	placeholder,
-	onChange,
-	...props
-}: AutoCompleteOutboundProviderProps): ReactElement => {
+const AutoCompleteOutboundProvider = ({ contact, disabled, value, placeholder, onChange, ...props }: AutoCompleteOutboundProviderProps) => {
 	const [channelsFilter, setChannelsFilter] = useState<string>('');
 	const { t } = useTranslation();
 	const getTimeFromNow = useTimeFromNow(true);

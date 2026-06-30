@@ -1,8 +1,8 @@
+import type { AriaDialogProps } from '@react-aria/dialog';
+import { useDialog } from '@react-aria/dialog';
 import { Box } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import { useRef } from 'react';
-import type { AriaDialogProps } from 'react-aria';
-import { useDialog } from 'react-aria';
 
 type UserCardDialogProps = AriaDialogProps & ComponentProps<typeof Box>;
 

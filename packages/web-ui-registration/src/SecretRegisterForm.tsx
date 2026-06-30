@@ -1,5 +1,4 @@
 import { useRouteParameter } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 
 import RegisterForm from './RegisterForm';
 import SecretRegisterInvalidForm from './SecretRegisterInvalidForm';
@@ -8,7 +7,7 @@ import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import FormSkeleton from './template/FormSkeleton';
 import HorizontalTemplate from './template/HorizontalTemplate';
 
-const SecretRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
+const SecretRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }) => {
 	const hash = useRouteParameter('hash');
 
 	const { data: valid, isSuccess } = useCheckRegistrationSecret(hash);

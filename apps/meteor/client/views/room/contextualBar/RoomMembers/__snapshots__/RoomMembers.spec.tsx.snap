@@ -46,7 +46,7 @@ exports[`renders Default without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
             >
               <input
-                aria-controls=":r0:"
+                aria-controls="_r_0_"
                 aria-label="Search_by_username"
                 class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
                 placeholder="Search_by_username"
@@ -68,12 +68,8 @@ exports[`renders Default without crashing 1`] = `
             <div
               class="rcx-box rcx-box--full rcx-css-l1qvi5"
             >
-              <button
-                aria-expanded="false"
-                aria-haspopup="listbox"
-                aria-labelledby="react-aria-:r9:"
-                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
-                type="button"
+              <div
+                class="rcx-box rcx-box--full rcx-css-1mbgoc8"
               >
                 <div
                   aria-hidden="true"
@@ -100,9 +96,17 @@ exports[`renders Default without crashing 1`] = `
                     </select>
                   </label>
                 </div>
+              </div>
+              <button
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-labelledby="react-aria-_r_9_"
+                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                type="button"
+              >
                 <span
                   class="rcx-box rcx-box--full rcx-css-e3nij6"
-                  id="react-aria-:r9:"
+                  id="react-aria-_r_9_"
                 >
                   Online
                 </span>
@@ -135,7 +139,7 @@ exports[`renders Default without crashing 1`] = `
             </div>
             <div
               class="rcx-box rcx-box--full rcx-css-4k230l"
-              id=":r0:"
+              id="_r_0_"
             >
               <div
                 class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
@@ -147,7 +151,7 @@ exports[`renders Default without crashing 1`] = `
                   tabindex="-1"
                 >
                   <div
-                    style="width: 100%; position: -webkit-sticky; top: 0px; z-index: 1; margin-top: 0px;"
+                    style="position: -webkit-sticky; top: 0px; width: 100%; z-index: 1; margin-top: 0px;"
                   >
                     <div
                       data-testid="virtuoso-top-item-list"
@@ -155,11 +159,11 @@ exports[`renders Default without crashing 1`] = `
                   </div>
                   <div
                     data-viewport-type="element"
-                    style="width: 100%; height: 100%; position: absolute; top: 0px;"
+                    style="height: 100%; position: absolute; top: 0px; width: 100%;"
                   >
                     <div
                       data-testid="virtuoso-item-list"
-                      style="box-sizing: border-box; margin-top: 0px; padding-top: 0px; padding-bottom: 0px;"
+                      style="box-sizing: border-box; margin-top: 0px; padding-bottom: 0px; padding-top: 0px;"
                     />
                     <div>
                       <div
@@ -174,19 +178,15 @@ exports[`renders Default without crashing 1`] = `
         </div>
         <div>
           <div
-            class=""
             style="position: absolute; user-select: none; width: 100%; height: 10px; top: -5px; left: 0px; cursor: row-resize;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 10px; height: 100%; top: 0px; cursor: col-resize; right: -5px;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 100%; height: 10px; left: 0px; cursor: row-resize; bottom: -5px;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
           >
             <div
@@ -194,20 +194,16 @@ exports[`renders Default without crashing 1`] = `
             />
           </div>
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; top: -10px; cursor: ne-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; right: -10px; top: -10px; cursor: ne-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; bottom: -10px; cursor: se-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; right: -10px; bottom: -10px; cursor: se-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; bottom: -10px; cursor: sw-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; left: -10px; bottom: -10px; cursor: sw-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; top: -10px; cursor: nw-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; left: -10px; top: -10px; cursor: nw-resize;"
           />
         </div>
       </div>
@@ -266,7 +262,7 @@ exports[`renders Empty without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
             >
               <input
-                aria-controls=":ra:"
+                aria-controls="_r_a_"
                 aria-label="Search_by_username"
                 class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
                 placeholder="Search_by_username"
@@ -288,12 +284,8 @@ exports[`renders Empty without crashing 1`] = `
             <div
               class="rcx-box rcx-box--full rcx-css-l1qvi5"
             >
-              <button
-                aria-expanded="false"
-                aria-haspopup="listbox"
-                aria-labelledby="react-aria-:rj:"
-                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
-                type="button"
+              <div
+                class="rcx-box rcx-box--full rcx-css-1mbgoc8"
               >
                 <div
                   aria-hidden="true"
@@ -320,9 +312,17 @@ exports[`renders Empty without crashing 1`] = `
                     </select>
                   </label>
                 </div>
+              </div>
+              <button
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-labelledby="react-aria-_r_j_"
+                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                type="button"
+              >
                 <span
                   class="rcx-box rcx-box--full rcx-css-e3nij6"
-                  id="react-aria-:rj:"
+                  id="react-aria-_r_j_"
                 >
                   Online
                 </span>
@@ -346,7 +346,7 @@ exports[`renders Empty without crashing 1`] = `
             </div>
             <div
               class="rcx-box rcx-box--full rcx-css-4k230l"
-              id=":ra:"
+              id="_r_a_"
             >
               <div
                 class="rcx-box rcx-box--full rcx-vertical-bar__content rcx-css-r8c38r"
@@ -372,19 +372,15 @@ exports[`renders Empty without crashing 1`] = `
         </div>
         <div>
           <div
-            class=""
             style="position: absolute; user-select: none; width: 100%; height: 10px; top: -5px; left: 0px; cursor: row-resize;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 10px; height: 100%; top: 0px; cursor: col-resize; right: -5px;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 100%; height: 10px; left: 0px; cursor: row-resize; bottom: -5px;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
           >
             <div
@@ -392,20 +388,16 @@ exports[`renders Empty without crashing 1`] = `
             />
           </div>
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; top: -10px; cursor: ne-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; right: -10px; top: -10px; cursor: ne-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; bottom: -10px; cursor: se-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; right: -10px; bottom: -10px; cursor: se-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; bottom: -10px; cursor: sw-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; left: -10px; bottom: -10px; cursor: sw-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; top: -10px; cursor: nw-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; left: -10px; top: -10px; cursor: nw-resize;"
           />
         </div>
       </div>
@@ -485,12 +477,8 @@ exports[`renders Loading without crashing 1`] = `
             <div
               class="rcx-box rcx-box--full rcx-css-l1qvi5"
             >
-              <button
-                aria-expanded="false"
-                aria-haspopup="listbox"
-                aria-labelledby="react-aria-:rt:"
-                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
-                type="button"
+              <div
+                class="rcx-box rcx-box--full rcx-css-1mbgoc8"
               >
                 <div
                   aria-hidden="true"
@@ -517,9 +505,17 @@ exports[`renders Loading without crashing 1`] = `
                     </select>
                   </label>
                 </div>
+              </div>
+              <button
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-labelledby="react-aria-_r_t_"
+                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                type="button"
+              >
                 <span
                   class="rcx-box rcx-box--full rcx-css-e3nij6"
-                  id="react-aria-:rt:"
+                  id="react-aria-_r_t_"
                 >
                   Online
                 </span>
@@ -560,19 +556,15 @@ exports[`renders Loading without crashing 1`] = `
         </div>
         <div>
           <div
-            class=""
             style="position: absolute; user-select: none; width: 100%; height: 10px; top: -5px; left: 0px; cursor: row-resize;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 10px; height: 100%; top: 0px; cursor: col-resize; right: -5px;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 100%; height: 10px; left: 0px; cursor: row-resize; bottom: -5px;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
           >
             <div
@@ -580,20 +572,16 @@ exports[`renders Loading without crashing 1`] = `
             />
           </div>
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; top: -10px; cursor: ne-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; right: -10px; top: -10px; cursor: ne-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; bottom: -10px; cursor: se-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; right: -10px; bottom: -10px; cursor: se-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; bottom: -10px; cursor: sw-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; left: -10px; bottom: -10px; cursor: sw-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; top: -10px; cursor: nw-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; left: -10px; top: -10px; cursor: nw-resize;"
           />
         </div>
       </div>
@@ -652,7 +640,7 @@ exports[`renders WithABACRoom without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
             >
               <input
-                aria-controls=":ru:"
+                aria-controls="_r_u_"
                 aria-label="Search_by_username"
                 class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
                 placeholder="Search_by_username"
@@ -674,12 +662,8 @@ exports[`renders WithABACRoom without crashing 1`] = `
             <div
               class="rcx-box rcx-box--full rcx-css-l1qvi5"
             >
-              <button
-                aria-expanded="false"
-                aria-haspopup="listbox"
-                aria-labelledby="react-aria-:r17:"
-                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
-                type="button"
+              <div
+                class="rcx-box rcx-box--full rcx-css-1mbgoc8"
               >
                 <div
                   aria-hidden="true"
@@ -706,9 +690,17 @@ exports[`renders WithABACRoom without crashing 1`] = `
                     </select>
                   </label>
                 </div>
+              </div>
+              <button
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-labelledby="react-aria-_r_17_"
+                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                type="button"
+              >
                 <span
                   class="rcx-box rcx-box--full rcx-css-e3nij6"
-                  id="react-aria-:r17:"
+                  id="react-aria-_r_17_"
                 >
                   Online
                 </span>
@@ -741,7 +733,7 @@ exports[`renders WithABACRoom without crashing 1`] = `
             </div>
             <div
               class="rcx-box rcx-box--full rcx-css-4k230l"
-              id=":ru:"
+              id="_r_u_"
             >
               <div
                 class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
@@ -753,7 +745,7 @@ exports[`renders WithABACRoom without crashing 1`] = `
                   tabindex="-1"
                 >
                   <div
-                    style="width: 100%; position: -webkit-sticky; top: 0px; z-index: 1; margin-top: 0px;"
+                    style="position: -webkit-sticky; top: 0px; width: 100%; z-index: 1; margin-top: 0px;"
                   >
                     <div
                       data-testid="virtuoso-top-item-list"
@@ -761,11 +753,11 @@ exports[`renders WithABACRoom without crashing 1`] = `
                   </div>
                   <div
                     data-viewport-type="element"
-                    style="width: 100%; height: 100%; position: absolute; top: 0px;"
+                    style="height: 100%; position: absolute; top: 0px; width: 100%;"
                   >
                     <div
                       data-testid="virtuoso-item-list"
-                      style="box-sizing: border-box; margin-top: 0px; padding-top: 0px; padding-bottom: 0px;"
+                      style="box-sizing: border-box; margin-top: 0px; padding-bottom: 0px; padding-top: 0px;"
                     />
                     <div>
                       <div
@@ -780,19 +772,15 @@ exports[`renders WithABACRoom without crashing 1`] = `
         </div>
         <div>
           <div
-            class=""
             style="position: absolute; user-select: none; width: 100%; height: 10px; top: -5px; left: 0px; cursor: row-resize;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 10px; height: 100%; top: 0px; cursor: col-resize; right: -5px;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 100%; height: 10px; left: 0px; cursor: row-resize; bottom: -5px;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
           >
             <div
@@ -800,20 +788,16 @@ exports[`renders WithABACRoom without crashing 1`] = `
             />
           </div>
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; top: -10px; cursor: ne-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; right: -10px; top: -10px; cursor: ne-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; bottom: -10px; cursor: se-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; right: -10px; bottom: -10px; cursor: se-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; bottom: -10px; cursor: sw-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; left: -10px; bottom: -10px; cursor: sw-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; top: -10px; cursor: nw-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; left: -10px; top: -10px; cursor: nw-resize;"
           />
         </div>
       </div>
@@ -872,7 +856,7 @@ exports[`renders WithInvitedMember without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
             >
               <input
-                aria-controls=":r18:"
+                aria-controls="_r_18_"
                 aria-label="Search_by_username"
                 class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
                 placeholder="Search_by_username"
@@ -894,12 +878,8 @@ exports[`renders WithInvitedMember without crashing 1`] = `
             <div
               class="rcx-box rcx-box--full rcx-css-l1qvi5"
             >
-              <button
-                aria-expanded="false"
-                aria-haspopup="listbox"
-                aria-labelledby="react-aria-:r1h:"
-                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
-                type="button"
+              <div
+                class="rcx-box rcx-box--full rcx-css-1mbgoc8"
               >
                 <div
                   aria-hidden="true"
@@ -926,9 +906,17 @@ exports[`renders WithInvitedMember without crashing 1`] = `
                     </select>
                   </label>
                 </div>
+              </div>
+              <button
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-labelledby="react-aria-_r_1h_"
+                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                type="button"
+              >
                 <span
                   class="rcx-box rcx-box--full rcx-css-e3nij6"
-                  id="react-aria-:r1h:"
+                  id="react-aria-_r_1h_"
                 >
                   Online
                 </span>
@@ -961,7 +949,7 @@ exports[`renders WithInvitedMember without crashing 1`] = `
             </div>
             <div
               class="rcx-box rcx-box--full rcx-css-4k230l"
-              id=":r18:"
+              id="_r_18_"
             >
               <div
                 class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
@@ -973,7 +961,7 @@ exports[`renders WithInvitedMember without crashing 1`] = `
                   tabindex="-1"
                 >
                   <div
-                    style="width: 100%; position: -webkit-sticky; top: 0px; z-index: 1; margin-top: 0px;"
+                    style="position: -webkit-sticky; top: 0px; width: 100%; z-index: 1; margin-top: 0px;"
                   >
                     <div
                       data-testid="virtuoso-top-item-list"
@@ -981,11 +969,11 @@ exports[`renders WithInvitedMember without crashing 1`] = `
                   </div>
                   <div
                     data-viewport-type="element"
-                    style="width: 100%; height: 100%; position: absolute; top: 0px;"
+                    style="height: 100%; position: absolute; top: 0px; width: 100%;"
                   >
                     <div
                       data-testid="virtuoso-item-list"
-                      style="box-sizing: border-box; margin-top: 0px; padding-top: 0px; padding-bottom: 0px;"
+                      style="box-sizing: border-box; margin-top: 0px; padding-bottom: 0px; padding-top: 0px;"
                     />
                     <div>
                       <div
@@ -1000,19 +988,15 @@ exports[`renders WithInvitedMember without crashing 1`] = `
         </div>
         <div>
           <div
-            class=""
             style="position: absolute; user-select: none; width: 100%; height: 10px; top: -5px; left: 0px; cursor: row-resize;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 10px; height: 100%; top: 0px; cursor: col-resize; right: -5px;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 100%; height: 10px; left: 0px; cursor: row-resize; bottom: -5px;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
           >
             <div
@@ -1020,20 +1004,16 @@ exports[`renders WithInvitedMember without crashing 1`] = `
             />
           </div>
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; top: -10px; cursor: ne-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; right: -10px; top: -10px; cursor: ne-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; bottom: -10px; cursor: se-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; right: -10px; bottom: -10px; cursor: se-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; bottom: -10px; cursor: sw-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; left: -10px; bottom: -10px; cursor: sw-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; top: -10px; cursor: nw-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; left: -10px; top: -10px; cursor: nw-resize;"
           />
         </div>
       </div>

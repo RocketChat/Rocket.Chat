@@ -1,4 +1,4 @@
-import type { IncomingMessage, ServerResponse } from 'http';
+import type { IncomingMessage, ServerResponse } from 'node:http';
 
 import { hashLoginToken } from '@rocket.chat/account-utils';
 import type { IIncomingMessage, IUser, IUserDataFile } from '@rocket.chat/core-typings';

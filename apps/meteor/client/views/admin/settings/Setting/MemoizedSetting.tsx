@@ -1,6 +1,6 @@
 import type { ISettingBase, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
 import { Box, Callout, Field, Margins } from '@rocket.chat/fuselage';
-import type { ElementType, ReactElement, ReactNode } from 'react';
+import type { ElementType, ReactNode } from 'react';
 import { memo } from 'react';
 
 import ActionSettingInput from './inputs/ActionSettingInput';
@@ -82,7 +82,7 @@ const MemoizedSetting = ({
 	className = undefined,
 	invisible = undefined,
 	...inputProps
-}: MemoizedSettingProps): ReactElement | null => {
+}: MemoizedSettingProps) => {
 	if (invisible) {
 		return null;
 	}

@@ -3,11 +3,11 @@ import type {
 	RoomType,
 	IUser,
 	IMessage,
-	IReadReceipt,
 	ValueOf,
 	AtLeast,
 	ISubscription,
 	IOmnichannelRoom,
+	IUpload,
 } from '@rocket.chat/core-typings';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { IRouterPaths, RouteName } from '@rocket.chat/ui-contexts';
@@ -98,7 +98,7 @@ export interface IRoomTypeServerDirectives {
 	canBeDeleted: (hasPermission: (permissionId: string, rid?: string) => Promise<boolean> | boolean, room: IRoom) => Promise<boolean>;
 	preventRenaming: () => boolean;
 	getDiscussionType: (room?: AtLeast<IRoom, 'teamId'>) => Promise<RoomType>;
-	canAccessUploadedFile: (params: { rc_uid: string; rc_rid: string; rc_token: string }) => Promise<boolean>;
+	canAccessUploadedFile: (params: { rc_uid: string; rc_rid: string; rc_token: string }, file?: IUpload) => Promise<boolean>;
 	getNotificationDetails: (
 		room: IRoom,
 		sender: AtLeast<IUser, '_id' | 'name' | 'username'>,
@@ -107,7 +107,6 @@ export interface IRoomTypeServerDirectives {
 	) => Promise<{ title: string | undefined; text: string; name: string | undefined }>;
 	getMsgSender: (message: IMessage) => Promise<IUser | null>;
 	includeInRoomSearch: () => boolean;
-	getReadReceiptsExtraData: (message: IMessage) => Partial<IReadReceipt>;
 	includeInDashboard: () => boolean;
 	roomFind?: (rid: string) => Promise<IRoom | undefined> | Promise<IOmnichannelRoom | null> | IRoom | undefined;
 }

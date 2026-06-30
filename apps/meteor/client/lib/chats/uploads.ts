@@ -63,6 +63,24 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 		}
 	};
 
+	editUploadAltText = (uploadId: Upload['id'], altText: string) => {
+		this.set(
+			this.uploads.map((upload) => {
+				if (upload.id !== uploadId) {
+					return upload;
+				}
+
+				return {
+					...upload,
+					altText,
+					...(isEncryptedUpload(upload) && {
+						metadataForEncryption: { ...upload.metadataForEncryption, altText },
+					}),
+				};
+			}),
+		);
+	};
+
 	editUploadFileName = (uploadId: Upload['id'], fileName: Upload['file']['name']) => {
 		try {
 			this.set(

@@ -14,6 +14,8 @@ export interface IServiceProviderOptions {
 	defaultUserRole: string;
 	allowedClockDrift: number;
 	signatureValidationType: string;
+	validateLogoutRequestSignature: boolean;
+	validateLogoutResponseSignature: boolean;
 	identifierFormat: string;
 	nameIDPolicyTemplate: string;
 	authnContextTemplate: string;

@@ -1,5 +1,5 @@
 import { ActionManagerContext, useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactNode, ReactElement } from 'react';
+import type { ReactNode } from 'react';
 
 import { ActionManager } from '../../app/ui-message/client/ActionManager';
 import { useAppActionButtons } from '../hooks/useAppActionButtons';
@@ -12,7 +12,7 @@ type ActionManagerProviderProps = {
 	children?: ReactNode;
 };
 
-const ActionManagerProvider = ({ children }: ActionManagerProviderProps): ReactElement => {
+const ActionManagerProvider = ({ children }: ActionManagerProviderProps) => {
 	const router = useRouter();
 	const actionManager = useInstance(() => [new ActionManager(router)], [router]);
 	useTranslationsForApps();

@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 
 import { serverFetch as fetch, Response } from '@rocket.chat/server-fetch';
 import ivm, { type Context } from 'isolated-vm';
@@ -119,8 +119,9 @@ export const buildSandbox = (context: Context) => {
 
 	jail.setSync(
 		'serverFetch',
-		new ivm.Reference(async (url: string, ...args: any[]) => {
-			const result = await fetch(url, ...args);
+		new ivm.Reference(async (url: string, options?: any, allowSelfSignedCerts?: boolean) => {
+			// SECURITY: Integrations can only be configured by users with enough privileges. It's ok to disable this check here.
+			const result = await fetch(url, { ...(options ?? {}), ignoreSsrfValidation: true }, allowSelfSignedCerts);
 			return makeTransferable(result);
 		}),
 	);

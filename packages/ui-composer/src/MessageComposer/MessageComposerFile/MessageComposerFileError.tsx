@@ -1,12 +1,13 @@
-import type { AllHTMLAttributes, ReactElement } from 'react';
+import type { AllHTMLAttributes, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MessageComposerFile from './MessageComposerFile';
 
 type MessageComposerFileErrorProps = {
 	fileTitle: string;
+	fileFormat: string;
 	error: Error;
-	actionIcon: ReactElement;
+	actionIcon: ReactNode;
 	onClick: () => void;
 } & AllHTMLAttributes<HTMLButtonElement>;
 

@@ -1,12 +1,11 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Bubble } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { withErrorBoundary } from '../../../components/withErrorBoundary';
 import { usePruneWarningMessage } from '../../../hooks/usePruneWarningMessage';
 
-const RetentionPolicyWarning = ({ room }: { room: IRoom }): ReactElement => {
+const RetentionPolicyWarning = ({ room }: { room: IRoom }) => {
 	const { t } = useTranslation();
 
 	const message = usePruneWarningMessage(room);

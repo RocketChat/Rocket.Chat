@@ -1,3 +1,5 @@
+import type { IAbacAttributeDefinition } from '../abac/AbacAttributes';
+import type { FederationLookup } from '../federation';
 import type { IUser } from '../users';
 import type { RoomType } from './RoomType';
 
@@ -25,4 +27,8 @@ export interface IRoom {
 	customFields?: { [key: string]: any };
 	parentRoom?: IRoom;
 	livechatData?: { [key: string]: any };
+	isFederated?: boolean;
+	federation?: FederationLookup;
+
+	abacAttributes?: IAbacAttributeDefinition[];
 }

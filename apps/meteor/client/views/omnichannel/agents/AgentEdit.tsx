@@ -1,7 +1,7 @@
 import type { ILivechatAgent, ILivechatAgentStatus, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldGroup, FieldRow, TextInput, Button, Box, Icon, Select, ButtonGroup } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarTitle,
 	ContextualbarClose,
@@ -79,7 +79,7 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 	const saveAgentInfo = useEndpoint('POST', '/v1/livechat/agents.saveInfo');
 	const saveAgentStatus = useEndpoint('POST', '/v1/livechat/agent.status');
 
-	const handleSave = useEffectEvent(async ({ status, departments, ...data }: AgentEditFormData) => {
+	const handleSave = useStableCallback(async ({ status, departments, ...data }: AgentEditFormData) => {
 		try {
 			await saveAgentStatus({ agentId: agentData._id, status });
 			await saveAgentInfo({

@@ -1,3 +1,4 @@
+import type { FederationLookup } from '../federation';
 import type { IUserEmail } from './IUserEmail';
 import type { IUserSettings } from './IUserSettings';
 import type { UserStatusConnection } from './UserStatusConnection';
@@ -15,11 +16,17 @@ export interface IUser {
 	status: string;
 	statusConnection: UserStatusConnection;
 	statusText?: string;
+	statusDefault?: string;
+	statusSource?: 'internal' | 'external' | 'manual';
+	statusExpiresAt?: Date;
 	utcOffset: number;
 	createdAt: Date;
 	updatedAt: Date;
 	lastLoginAt: Date;
 	settings?: IUserSettings;
 	appId?: string;
+	sipExtension?: string;
+	isFederated?: boolean;
+	federation?: FederationLookup;
 	customFields?: { [key: string]: any };
 }

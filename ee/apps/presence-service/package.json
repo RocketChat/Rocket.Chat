@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/presence-service",
-	"version": "0.4.53-rc.1",
+	"version": "0.5.0-rc.0",
 	"private": true,
 	"description": "Rocket.Chat Presence service",
 	"keywords": [
@@ -29,7 +29,7 @@
 		"@rocket.chat/presence": "workspace:^",
 		"@rocket.chat/string-helpers": "~0.32.0",
 		"@rocket.chat/tracing": "workspace:^",
-		"@types/node": "~22.16.5",
+		"@types/node": "~22.19.17",
 		"ejson": "^2.2.3",
 		"eventemitter3": "^5.0.4",
 		"mem": "^8.1.1",
@@ -45,7 +45,7 @@
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/polka": "^0.5.8",
 		"@types/prometheus-gc-stats": "^0.6.4",
-		"eslint": "~9.39.3",
+		"eslint": "~9.39.4",
 		"ts-node": "^10.9.2",
 		"typescript": "~5.9.3"
 	},

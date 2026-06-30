@@ -1,3 +1,5 @@
+import type { BrowserContext } from '@playwright/test';
+
 import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
@@ -17,6 +19,7 @@ test.describe('OC - Livechat - Queue Management', () => {
 
 	let poHomeOmnichannel: HomeOmnichannel;
 	let poLiveChat: OmnichannelLiveChat;
+	let liveChatContext: BrowserContext;
 
 	const waitingQueueMessage = 'This is a message from Waiting Queue';
 
@@ -37,8 +40,8 @@ test.describe('OC - Livechat - Queue Management', () => {
 	});
 
 	test.beforeEach(async ({ browser, api }) => {
-		const context = await browser.newContext();
-		const page2 = await context.newPage();
+		liveChatContext = await browser.newContext();
+		const page2 = await liveChatContext.newPage();
 
 		poLiveChat = new OmnichannelLiveChat(page2, api);
 		await poLiveChat.page.goto('/livechat');
@@ -56,19 +59,20 @@ test.describe('OC - Livechat - Queue Management', () => {
 
 	test.describe('OC - Queue Management - Auto Selection', () => {
 		let poLiveChat2: OmnichannelLiveChat;
+		let liveChat2Context: BrowserContext;
 
 		test.beforeEach(async ({ browser, api }) => {
-			const context = await browser.newContext();
-			const page = await context.newPage();
+			liveChat2Context = await browser.newContext();
+			const page = await liveChat2Context.newPage();
 			poLiveChat2 = new OmnichannelLiveChat(page, api);
 			await poLiveChat2.page.goto('/livechat');
 		});
 
 		test.afterEach(async () => {
 			await poLiveChat2.closeChat();
-			await poLiveChat2.page.close();
+			await liveChat2Context.close();
 			await poLiveChat.closeChat();
-			await poLiveChat.page.close();
+			await liveChatContext.close();
 		});
 
 		test('Update user position on Queue', async () => {

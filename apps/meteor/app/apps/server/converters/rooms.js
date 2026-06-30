@@ -1,3 +1,4 @@
+import { secureFieldsMapper } from '@rocket.chat/apps/dist/lib/SecureFields';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { LivechatVisitors, Rooms, LivechatDepartment, Users, LivechatContacts } from '@rocket.chat/models';
 
@@ -58,6 +59,8 @@ export class AppRoomsConverter {
 			contactId: 'contactId',
 			departmentId: 'departmentId',
 			parentRoomId: 'prid',
+			isFederated: 'federated',
+			federation: 'federation',
 			visitor: (data) => {
 				const { v } = data;
 				if (!v) {
@@ -260,6 +263,8 @@ export class AppRoomsConverter {
 			...(room.lastModifiedAt && { lm: room.lastModifiedAt }),
 			...(room.customFields && { customFields: room.customFields }),
 			...(room.livechatData && { livechatData: room.livechatData }),
+			...(typeof room.isFederated !== 'undefined' && { federated: room.isFederated }),
+			...(typeof room.federation !== 'undefined' && { federation: room.federation }),
 			...(typeof room.parentRoom !== 'undefined' && { prid: room.parentRoom.id }),
 			...(contactId && { contactId }),
 			...(room._USERNAMES && { _USERNAMES: room._USERNAMES }),
@@ -303,6 +308,8 @@ export class AppRoomsConverter {
 			closer: 'closer',
 			teamId: 'teamId',
 			isTeamMain: 'teamMain',
+			isFederated: 'federated',
+			federation: 'federation',
 			isDefault: (room) => {
 				const result = !!room.default;
 				delete room.default;
@@ -435,6 +442,22 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('rooms').convertById(prid);
 			},
+			...secureFieldsMapper((room) => {
+				if (!room.abacAttributes) {
+					return undefined;
+				}
+
+				const value = [
+					{
+						permission: 'abac.read',
+						name: 'abacAttributes',
+						value: room.abacAttributes,
+					},
+				];
+
+				delete room.abacAttributes;
+				return value;
+			}),
 		};
 
 		return transformMappedData(originalRoom, map);

@@ -190,6 +190,7 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-css-vtu42x"
                         >
                           <svg
+                            aria-hidden="true"
                             class="rcx-status-bullet rcx-status-bullet--online undefined "
                             height="24"
                             viewBox="0 0 24 24"
@@ -229,7 +230,7 @@ exports[`renders Default without crashing 1`] = `
                         aria-haspopup="true"
                         aria-label="More_actions"
                         class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                        id="react-aria-:r0:"
+                        id="react-aria-_r_0_"
                         title="More_actions"
                         type="button"
                       >
@@ -274,6 +275,7 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-css-vtu42x"
                         >
                           <svg
+                            aria-hidden="true"
                             class="rcx-status-bullet rcx-status-bullet--offline undefined "
                             fill="none"
                             height="12"
@@ -318,7 +320,7 @@ exports[`renders Default without crashing 1`] = `
                         aria-haspopup="true"
                         aria-label="More_actions"
                         class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                        id="react-aria-:r2:"
+                        id="react-aria-_r_2_"
                         title="More_actions"
                         type="button"
                       >
@@ -363,6 +365,7 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-css-vtu42x"
                         >
                           <svg
+                            aria-hidden="true"
                             class="rcx-status-bullet rcx-status-bullet--away undefined "
                             height="10"
                             viewBox="0 0 10 10"
@@ -404,7 +407,7 @@ exports[`renders Default without crashing 1`] = `
                         aria-haspopup="true"
                         aria-label="More_actions"
                         class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                        id="react-aria-:r4:"
+                        id="react-aria-_r_4_"
                         title="More_actions"
                         type="button"
                       >
@@ -449,6 +452,7 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-css-vtu42x"
                         >
                           <svg
+                            aria-hidden="true"
                             class="rcx-status-bullet rcx-status-bullet--busy undefined "
                             height="10"
                             viewBox="0 0 10 10"
@@ -490,7 +494,7 @@ exports[`renders Default without crashing 1`] = `
                         aria-haspopup="true"
                         aria-label="More_actions"
                         class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                        id="react-aria-:r6:"
+                        id="react-aria-_r_6_"
                         title="More_actions"
                         type="button"
                       >
@@ -535,6 +539,7 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-css-vtu42x"
                         >
                           <svg
+                            aria-hidden="true"
                             class="rcx-status-bullet rcx-status-bullet--online undefined "
                             height="24"
                             viewBox="0 0 24 24"
@@ -574,7 +579,7 @@ exports[`renders Default without crashing 1`] = `
                         aria-haspopup="true"
                         aria-label="More_actions"
                         class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                        id="react-aria-:r8:"
+                        id="react-aria-_r_8_"
                         title="More_actions"
                         type="button"
                       >
@@ -619,23 +624,27 @@ exports[`renders Default without crashing 1`] = `
       </div>
     </div>
     <nav
-      class="rcx-box rcx-box--full rcx-pagination--divider rcx-pagination"
+      aria-label="Pagination Navigation"
+      class="rcx-box rcx-box--full rcx-pagination rcx-pagination--divider"
     >
       <div
-        class="rcx-box rcx-box--full rcx-pagination__left"
+        class="rcx-pagination__left"
       >
         <span
-          class="rcx-box rcx-box--full rcx-pagination__label"
+          class="rcx-pagination__label"
+          id="_r_b_"
         >
           Items per page:
         </span>
         <ol
+          aria-labelledby="_r_b_"
           class="rcx-box rcx-box--full rcx-pagination__list"
         >
           <li
-            class="rcx-box rcx-box--full rcx-pagination__list-item"
+            class="rcx-pagination__list-item"
           >
             <button
+              aria-label="Show 25 items per page"
               class="rcx-box rcx-box--full rcx-pagination__link"
               disabled=""
               tabindex="-1"
@@ -644,9 +653,10 @@ exports[`renders Default without crashing 1`] = `
             </button>
           </li>
           <li
-            class="rcx-box rcx-box--full rcx-pagination__list-item"
+            class="rcx-pagination__list-item"
           >
             <button
+              aria-label="Show 50 items per page"
               class="rcx-box rcx-box--full rcx-pagination__link"
               tabindex="0"
             >
@@ -654,9 +664,10 @@ exports[`renders Default without crashing 1`] = `
             </button>
           </li>
           <li
-            class="rcx-box rcx-box--full rcx-pagination__list-item"
+            class="rcx-pagination__list-item"
           >
             <button
+              aria-label="Show 100 items per page"
               class="rcx-box rcx-box--full rcx-pagination__link"
               tabindex="0"
             >
@@ -666,20 +677,23 @@ exports[`renders Default without crashing 1`] = `
         </ol>
       </div>
       <div
-        class="rcx-box rcx-box--full rcx-pagination__right"
+        class="rcx-pagination__right"
       >
         <span
-          class="rcx-box rcx-box--full rcx-pagination__label"
+          class="rcx-pagination__label"
+          id="_r_a_"
         >
           Showing results 1 - 5 of 5
         </span>
         <ol
+          aria-labelledby="_r_a_"
           class="rcx-box rcx-box--full rcx-pagination__list"
         >
           <li
-            class="rcx-box rcx-box--full rcx-pagination__list-item"
+            class="rcx-pagination__list-item"
           >
             <button
+              aria-label="Previous page"
               class="rcx-box rcx-box--full rcx-pagination__back"
               disabled=""
             >
@@ -696,9 +710,10 @@ exports[`renders Default without crashing 1`] = `
             </button>
           </li>
           <li
-            class="rcx-box rcx-box--full rcx-pagination__list-item"
+            class="rcx-pagination__list-item"
           >
             <button
+              aria-label="Page 1"
               class="rcx-box rcx-box--full rcx-pagination__link"
               disabled=""
             >
@@ -706,9 +721,10 @@ exports[`renders Default without crashing 1`] = `
             </button>
           </li>
           <li
-            class="rcx-box rcx-box--full rcx-pagination__list-item"
+            class="rcx-pagination__list-item"
           >
             <button
+              aria-label="Next page"
               class="rcx-box rcx-box--full rcx-pagination__forward"
               disabled=""
             >

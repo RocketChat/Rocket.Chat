@@ -18,11 +18,13 @@ import { useCodeHighlight } from './hooks/useCodeHighlight';
 import { useCorsSSLConfig } from './hooks/useCorsSSLConfig';
 import { useDesktopFavicon } from './hooks/useDesktopFavicon';
 import { useDesktopTitle } from './hooks/useDesktopTitle';
+import { useDesktopUserRoles } from './hooks/useDesktopUserRoles';
 import { useEmojiOne } from './hooks/useEmojiOne';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useIframeCommands } from './hooks/useIframeCommands';
 import { useIframeLoginListener } from './hooks/useIframeLoginListener';
+import { useKeyboardShortcutsHotkey } from './hooks/useKeyboardShortcutsHotkey';
 import { useLivechatEnterprise } from './hooks/useLivechatEnterprise';
 import { useLoadMissedMessages } from './hooks/useLoadMissedMessages';
 import { useLoadRoomForAllowedAnonymousRead } from './hooks/useLoadRoomForAllowedAnonymousRead';
@@ -48,6 +50,7 @@ const AppLayout = () => {
 	useGoogleTagManager();
 	useAnalytics();
 	useEscapeKeyStroke();
+	useKeyboardShortcutsHotkey();
 	useAnalyticsEventTracking();
 	useLoadRoomForAllowedAnonymousRead();
 	useNotificationPermission();
@@ -71,6 +74,7 @@ const AppLayout = () => {
 	useLoadMissedMessages();
 	useDesktopFavicon();
 	useDesktopTitle();
+	useDesktopUserRoles();
 	useStartupEvent();
 	useIframeCommands();
 

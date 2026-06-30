@@ -1,6 +1,5 @@
 import { Box, Select, Tabs } from '@rocket.chat/fuselage';
 import { PageScrollableContent, Page, PageHeader } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -13,7 +12,7 @@ type EngagementDashboardPageProps = {
 	onSelectTab?: (tab: 'users' | 'messages' | 'channels') => void;
 };
 
-const EngagementDashboardPage = ({ tab = 'users', onSelectTab }: EngagementDashboardPageProps): ReactElement => {
+const EngagementDashboardPage = ({ tab = 'users', onSelectTab }: EngagementDashboardPageProps) => {
 	const { t } = useTranslation();
 
 	const timezoneOptions = useMemo<[timezone: 'utc' | 'local', label: string][]>(

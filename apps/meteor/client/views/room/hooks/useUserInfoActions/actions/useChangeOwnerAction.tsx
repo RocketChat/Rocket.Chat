@@ -1,6 +1,6 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { GenericModal } from '@rocket.chat/ui-client';
 import {
@@ -14,7 +14,6 @@ import {
 	useEndpoint,
 } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useCallback, useMemo } from 'react';
 
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
@@ -28,7 +27,7 @@ const getWarningModalForFederatedRooms = (
 	title: string,
 	confirmText: string,
 	bodyText: string,
-): ReactElement => (
+) => (
 	<GenericModal
 		variant='warning'
 		onClose={closeModalFn}
@@ -129,7 +128,7 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 		toggleOwnerMutation.mutateAsync({ roomId: rid, userId: uid });
 	}, [room, loggedUserId, loggedUserIsOwner, toggleOwnerMutation, rid, uid, t, setModal]);
 
-	const changeOwnerAction = useEffectEvent(async () => handleChangeOwner());
+	const changeOwnerAction = useStableCallback(async () => handleChangeOwner());
 
 	const roomIsFederated = isRoomFederated(room);
 	const isFederationBlocked = room && !isRoomNativeFederated(room);

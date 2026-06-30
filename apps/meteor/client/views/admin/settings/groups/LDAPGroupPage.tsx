@@ -1,14 +1,15 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { Button, Box, TextInput, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { FormEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import BaseGroupPage from './BaseGroupPage';
 import { useExternalLink } from '../../../../hooks/useExternalLink';
+import { useLdapSync } from '../../../../hooks/useLdapSync';
 import { links } from '../../../../lib/links';
 import { useEditableSettings } from '../../EditableSettingsContext';
 
@@ -20,11 +21,11 @@ function LDAPGroupPage({ _id, i18nLabel, onClickBack, ...group }: LDAPGroupPageP
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const testConnection = useEndpoint('POST', '/v1/ldap.testConnection');
-	const syncNow = useEndpoint('POST', '/v1/ldap.syncNow');
 	const testSearch = useEndpoint('POST', '/v1/ldap.testSearch');
 	const ldapEnabled = useSetting('LDAP_Enable');
 	const setModal = useSetModal();
-	const closeModal = useEffectEvent(() => setModal());
+	const closeModal = useStableCallback(() => setModal());
+	const handleSyncNow = useLdapSync();
 
 	const handleLinkClick = useExternalLink();
 
@@ -48,42 +49,11 @@ function LDAPGroupPage({ _id, i18nLabel, onClickBack, ...group }: LDAPGroupPageP
 		}
 	};
 
-	const handleSyncNowButtonClick = async (): Promise<void> => {
-		try {
-			await testConnection();
-			const confirmSync = async (): Promise<void> => {
-				closeModal();
-
-				try {
-					const { message } = await syncNow();
-					dispatchToastMessage({ type: 'success', message: t(message as Parameters<typeof t>[0]) });
-				} catch (error) {
-					error instanceof Error && dispatchToastMessage({ type: 'error', message: error });
-				}
-			};
-
-			setModal(
-				<GenericModal
-					variant='info'
-					confirmText={t('Sync')}
-					cancelText={t('Cancel')}
-					title={t('Execute_Synchronization_Now')}
-					onConfirm={confirmSync}
-					onClose={closeModal}
-				>
-					{t('LDAP_Sync_Now_Description')}
-				</GenericModal>,
-			);
-		} catch (error) {
-			error instanceof Error && dispatchToastMessage({ type: 'error', message: error });
-		}
-	};
-
 	const handleSearchTestButtonClick = async (): Promise<void> => {
 		try {
 			await testConnection();
 			let username = '';
-			const handleChangeUsername = (event: FormEvent<HTMLInputElement>): void => {
+			const handleChangeUsername = (event: ChangeEvent<HTMLInputElement>): void => {
 				username = event.currentTarget.value;
 			};
 
@@ -101,7 +71,7 @@ function LDAPGroupPage({ _id, i18nLabel, onClickBack, ...group }: LDAPGroupPageP
 					wrapperFunction={(props) => (
 						<Box
 							is='form'
-							onSubmit={(e: FormEvent) => {
+							onSubmit={(e) => {
 								e.preventDefault();
 								confirmSearch();
 							}}
@@ -144,7 +114,7 @@ function LDAPGroupPage({ _id, i18nLabel, onClickBack, ...group }: LDAPGroupPageP
 					<Button disabled={!ldapEnabled || changed} onClick={handleSearchTestButtonClick}>
 						{t('Test_LDAP_Search')}
 					</Button>
-					<Button disabled={!ldapEnabled || changed} onClick={handleSyncNowButtonClick}>
+					<Button disabled={!ldapEnabled || changed} onClick={handleSyncNow}>
 						{t('LDAP_Sync_Now')}
 					</Button>
 					<Button role='link' onClick={() => handleLinkClick(links.go.ldapDocs)}>

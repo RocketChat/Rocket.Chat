@@ -4,6 +4,7 @@ import { Subscriptions } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../app/lib/server/lib/notifyListener';
 
 declare module '@rocket.chat/ddp-client' {
@@ -30,6 +31,7 @@ export const toggleFavoriteMethod = async (userId: string, rid: IRoom['_id'], fa
 
 Meteor.methods<ServerMethods>({
 	async toggleFavorite(rid, favorite) {
+		methodDeprecationLogger.method('toggleFavorite', '9.0.0', '/v1/rooms.favorite');
 		check(rid, String);
 		check(favorite, Match.Optional(Boolean));
 		const userId = Meteor.userId();

@@ -1,4 +1,4 @@
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { memo } from 'react';
 
 import SettingsGroupPage from '../SettingsGroupPage';
@@ -15,16 +15,7 @@ type GenericGroupPageProps = {
 	onClickBack?: () => void;
 };
 
-function GenericGroupPage({
-	_id,
-	i18nLabel,
-	sections,
-	tabs,
-	currentTab,
-	hasReset,
-	onClickBack,
-	...props
-}: GenericGroupPageProps): ReactElement {
+function GenericGroupPage({ _id, i18nLabel, sections, tabs, currentTab, hasReset, onClickBack, ...props }: GenericGroupPageProps) {
 	const solo = sections.length === 1;
 
 	return (

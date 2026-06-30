@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -14,6 +15,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	'e2e.resetOwnE2EKey': twoFactorRequired(async () => {
+		methodDeprecationLogger.method('e2e.resetOwnE2EKey', '9.0.0', '/v1/users.resetE2EKey');
 		const userId = Meteor.userId();
 
 		if (!userId) {

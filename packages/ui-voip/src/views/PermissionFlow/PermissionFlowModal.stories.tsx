@@ -1,13 +1,11 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
-import type { ReactElement } from 'react';
 
 import PermissionFlowModal from './PermissionFlowModal';
 
 const noop = () => undefined;
 
 const meta = {
-	title: 'Components/Permission Flow',
 	component: PermissionFlowModal,
 	decorators: [
 		mockAppRoot()
@@ -21,7 +19,7 @@ const meta = {
 					'Your web browser stopped {{workspaceUrl}} from using your microphone and/or speaker.\n\nAllow speaker and microphone access in your browser settings to prevent seeing this message again.',
 			})
 			.buildStoryDecorator(),
-		(Story): ReactElement => <Story />,
+		(Story) => <Story />,
 	],
 } satisfies Meta<typeof PermissionFlowModal>;
 

@@ -1,5 +1,5 @@
 import { getUserDisplayName } from '@rocket.chat/core-typings';
-import type { IRoom, RoomType, IUser, IMessage, IReadReceipt, ValueOf, AtLeast } from '@rocket.chat/core-typings';
+import type { IRoom, RoomType, IUser, IMessage, ValueOf, AtLeast, IUpload } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../../app/settings/server';
@@ -33,7 +33,7 @@ class RoomCoordinatorServer extends RoomCoordinator {
 			async getDiscussionType(): Promise<RoomType> {
 				return 'p';
 			},
-			async canAccessUploadedFile(_params: { rc_uid: string; rc_rid: string; rc_token: string }): Promise<boolean> {
+			async canAccessUploadedFile(_params: { rc_uid: string; rc_rid: string; rc_token: string }, _file?: IUpload): Promise<boolean> {
 				return false;
 			},
 			async getNotificationDetails(
@@ -55,9 +55,6 @@ class RoomCoordinatorServer extends RoomCoordinator {
 			},
 			includeInRoomSearch(): boolean {
 				return false;
-			},
-			getReadReceiptsExtraData(_message: IMessage): Partial<IReadReceipt> {
-				return {};
 			},
 			includeInDashboard(): boolean {
 				return false;

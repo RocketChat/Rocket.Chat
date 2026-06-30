@@ -1,5 +1,337 @@
 # @rocket.chat/rest-typings
 
+## 8.6.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [6fa5378a940cbc809800b3c7d7c0639810bb0ab8]:</summary>
+
+  - @rocket.chat/core-typings@8.6.0-rc.1
+  </details>
+
+## 8.6.0-rc.0
+
+### Minor Changes
+
+- ([#40532](https://github.com/RocketChat/Rocket.Chat/pull/40532)) Adds custom-sounds.delete API endpoint.
+
+- ([#40711](https://github.com/RocketChat/Rocket.Chat/pull/40711)) `POST /v1/chat.delete` now accepts `{ fileId, asUser? }` as an alternative to `{ msgId, roomId, asUser? }`. When `fileId` is provided the server resolves the owning message via `Messages.getMessageByFileId` before running the existing permission and deletion flow.
+
+- ([#40724](https://github.com/RocketChat/Rocket.Chat/pull/40724)) Added `POST /v1/e2e.requestSubscriptionKeys` (replaces the deprecated `e2e.requestSubscriptionKeys` DDP method). Auth-gated, no body. Broadcasts `notify.e2e.keyRequest` for every encrypted room the caller is subscribed to without an E2E key, matching the DDP method's behavior. The legacy DDP method remains registered until 9.0.0 with a deprecation log pointing at the new route.
+
+- ([#40724](https://github.com/RocketChat/Rocket.Chat/pull/40724)) Added `POST /v1/im.blockUser` (replaces the deprecated `blockUser` / `unblockUser` DDP methods). Body is `{ roomId, block: boolean }` — `block: true` blocks the other DM participant, `block: false` unblocks. Auth-gated and per-room via the `RoomMemberActions.BLOCK` directive (DM-only). Both legacy DDP methods remain registered until 9.0.0 with deprecation logs pointing at the new route.
+
+- ([#40724](https://github.com/RocketChat/Rocket.Chat/pull/40724)) Added `POST /v1/settings` for batched admin setting updates (replaces the deprecated `saveSettings` DDP method). Body is `{ settings: { _id, value }[] }`. The endpoint requires authentication, enforces 2FA (`twoFactorRequired: true`), and runs the same per-setting permission chain (`edit-privileged-setting` OR `manage-selected-settings` + per-id permission) and audit/notify side effects the DDP method already performed. The legacy DDP method remains registered until 9.0.0 with a deprecation log pointing at the new route.
+
+- ([#40711](https://github.com/RocketChat/Rocket.Chat/pull/40711)) `GET /v1/spotlight` now mirrors the DDP `spotlight` method:
+
+  - accepts optional `usernames` (comma-separated string), `type` (JSON-encoded `{ users?, mentions?, rooms?, includeFederatedRooms? }`) and `rid` query params;
+  - response items expose `nickname` / `outside` (users) and `uids` / `usernames` / `fname` (rooms);
+  - `status` on each user is now optional — outside/federated users were already being returned without one and the previous required-field schema rejected them as `Response validation failed`;
+  - the endpoint is no longer auth-gated, allowing anonymous-read flows (e.g. `Accounts_AllowAnonymousRead`) to keep finding public channels through the navbar search.
+
+- ([#40711](https://github.com/RocketChat/Rocket.Chat/pull/40711)) `POST /v1/users.setPreferences` now accepts an optional `data.utcOffset` (number) field. The value is stored at the user-document root via `Users.setUtcOffset` (not under `settings.preferences`), matching what the legacy `userSetUtcOffset` DDP method did.
+
+- ([#40996](https://github.com/RocketChat/Rocket.Chat/pull/40996)) Added a new `rooms.join` REST endpoint that lets a user join any room type, replicating the behavior of the deprecated `joinRoom` DDP method. Unlike `channels.join`, it resolves all room types through the shared `Room.join` service (access checks, join codes, federation and omnichannel rules). The client now uses `rooms.join` instead of `channels.join`.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [7380c44c751eff9ee624d80bf26370411ffed78b, 6bd9182ae1d914a55e70866db43e8d2038f7be28, f63b965f82b0ddc590c633706f7c31c8c5251b53]:</summary>
+
+  - @rocket.chat/core-typings@8.6.0-rc.0
+  </details>
+
+## 8.5.0
+
+### Minor Changes
+
+- ([#39617](https://github.com/RocketChat/Rocket.Chat/pull/39617)) Adds new API endpoints `custom-sounds.create` and `custom-sounds.update` to manage custom sounds with strict file validation for size and specific MIME types to ensure system compatibility.
+
+- ([#40612](https://github.com/RocketChat/Rocket.Chat/pull/40612)) Adds `freeSwitchExtension` as a query parameter for `api/v1/users.info`
+
+### Patch Changes
+
+- ([#40513](https://github.com/RocketChat/Rocket.Chat/pull/40513)) Fixes the `users.presence` endpoint returning an empty array when called with multiple comma-separated IDs, caused by `ajvQuery` coercing the string into a single-element array after the OpenAPI migration
+
+- <details><summary>Updated dependencies [90f15e32ae843ed146ccf711ee3201408d1e8731, 12897e25d0dc25b7373f5264d38f38a5a7444257, 90f15e32ae843ed146ccf711ee3201408d1e8731]:</summary>
+
+  - @rocket.chat/ui-kit@1.1.0
+  - @rocket.chat/core-typings@8.5.0
+  </details>
+
+## 8.5.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.5.0-rc.6
+  </details>
+
+## 8.5.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.5.0-rc.5
+  </details>
+
+## 8.5.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+- @rocket.chat/core-typings@8.5.0-rc.4
+  </details>
+
+## 8.5.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.5.0-rc.3
+  </details>
+
+## 8.5.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.5.0-rc.2
+  </details>
+
+## 8.5.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.5.0-rc.1
+  </details>
+
+## 8.5.0-rc.0
+
+### Minor Changes
+
+- ([#39760](https://github.com/RocketChat/Rocket.Chat/pull/39760)) ## Phishing-Resistant Multi-Factor Authentication
+
+  Introduces a more secure and reliable server-side OAuth authentication flow.
+
+  ### What’s New
+
+  - **Improved OAuth login security**
+    OAuth authentication now happens fully on the server, reducing the risk of token theft, phishing attacks, and client-side credential interception.
+  - **Built-in CSRF, state validation, and PKCE protection**
+    OAuth logins now include stronger protection against CSRF attacks, request tampering, and authorization code interception through secure state validation and PKCE support.
+  - **Improved two-step verification with OAuth logins**
+    Users with email or TOTP two-factor authentication enabled will now be asked to complete 2FA even when signing in with providers like Google, GitHub, GitLab, and others.
+  - **Improved mobile & desktop app login**
+    Mobile and desktop apps now support a smoother and more secure deep-link OAuth login flow.
+
+- ([#39617](https://github.com/RocketChat/Rocket.Chat/pull/39617)) Adds new API endpoints `custom-sounds.create` and `custom-sounds.update` to manage custom sounds with strict file validation for size and specific MIME types to ensure system compatibility.
+
+- ([#40612](https://github.com/RocketChat/Rocket.Chat/pull/40612)) Adds `freeSwitchExtension` as a query parameter for `api/v1/users.info`
+
+### Patch Changes
+
+- ([#40513](https://github.com/RocketChat/Rocket.Chat/pull/40513)) Fixes the `users.presence` endpoint returning an empty array when called with multiple comma-separated IDs, caused by `ajvQuery` coercing the string into a single-element array after the OpenAPI migration
+
+- <details><summary>Updated dependencies [90f15e32ae843ed146ccf711ee3201408d1e8731, ae9f740d6af20557eac61b4af902c868b4132b49, 12897e25d0dc25b7373f5264d38f38a5a7444257, 90f15e32ae843ed146ccf711ee3201408d1e8731]:</summary>
+
+  - @rocket.chat/ui-kit@1.1.0-rc.0
+  - @rocket.chat/core-typings@8.5.0-rc.0
+  </details>
+
+## 8.4.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.4.3
+  </details>
+
+## 8.4.2
+
+### Patch Changes
+
+- ([#40527](https://github.com/RocketChat/Rocket.Chat/pull/40527) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes the `users.presence` endpoint returning an empty array when called with multiple comma-separated IDs, caused by `ajvQuery` coercing the string into a single-element array after the OpenAPI migration
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.4.2
+  </details>
+
+## 8.4.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [5b291c38600757482aaf261a02487abdf5f14007]:</summary>
+
+  - @rocket.chat/core-typings@8.4.1
+  </details>
+
+## 8.4.0
+
+### Minor Changes
+
+- ([#40160](https://github.com/RocketChat/Rocket.Chat/pull/40160)) Adds a `skipTranspile` flag (default `false`) to webhook integrations. When set to `true`, the integration script is stored as-is without Babel transpilation — matching the 9.0.0 default where Babel is removed entirely. Admins can flip the flag per-integration to validate strict-mode compatibility before upgrading. The field is deprecated and will be removed in 9.0.0.
+
+- ([#39989](https://github.com/RocketChat/Rocket.Chat/pull/39989)) Adds email search filter to `users.list` and `users.info` endpoints.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [53e32c7df1bf40598d65d170fd50c55f752f2951, 53e32c7df1bf40598d65d170fd50c55f752f2951, 278b84f78360e53792a2e5d7620615039a0e15e9, 24b3671fe61b8b09c6a1b5dc6401b503b3fb92a0, 53e32c7df1bf40598d65d170fd50c55f752f2951, 53e32c7df1bf40598d65d170fd50c55f752f2951, 8c0e16ca29b393cfa50b425520db48ba5a74f678]:</summary>
+
+  - @rocket.chat/message-parser@0.31.36
+  - @rocket.chat/core-typings@8.4.0
+  </details>
+
+## 8.4.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.4.0-rc.2
+  </details>
+
+## 8.4.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.4.0-rc.1
+  </details>
+
+## 8.3.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.3.2
+  </details>
+
+## 8.3.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.3.1
+  </details>
+
+## 8.4.0-rc.0
+
+### Minor Changes
+
+- ([#40160](https://github.com/RocketChat/Rocket.Chat/pull/40160)) Adds a `skipTranspile` flag (default `false`) to webhook integrations. When set to `true`, the integration script is stored as-is without Babel transpilation — matching the 9.0.0 default where Babel is removed entirely. Admins can flip the flag per-integration to validate strict-mode compatibility before upgrading. The field is deprecated and will be removed in 9.0.0.
+
+- ([#39989](https://github.com/RocketChat/Rocket.Chat/pull/39989)) Adds email search filter to `users.list` and `users.info` endpoints.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [53e32c7df1bf40598d65d170fd50c55f752f2951, 53e32c7df1bf40598d65d170fd50c55f752f2951, 278b84f78360e53792a2e5d7620615039a0e15e9, 24b3671fe61b8b09c6a1b5dc6401b503b3fb92a0, 53e32c7df1bf40598d65d170fd50c55f752f2951, 53e32c7df1bf40598d65d170fd50c55f752f2951, 8c0e16ca29b393cfa50b425520db48ba5a74f678]:</summary>
+
+  - @rocket.chat/message-parser@0.31.36-rc.0
+  - @rocket.chat/core-typings@8.4.0-rc.0
+  </details>
+
+## 8.3.0
+
+### Minor Changes
+
+- ([#38978](https://github.com/RocketChat/Rocket.Chat/pull/38978) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat autotranslate translateMessage API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation
+
+- ([#39225](https://github.com/RocketChat/Rocket.Chat/pull/39225) by [@sezallagwal](https://github.com/sezallagwal)) Add OpenAPI support for the chat.followMessage and chat.unfollowMessage API endpoints by migrating to a modern chained route definition syntax and utilizing AJV schemas for body and response validation.
+
+- ([#39227](https://github.com/RocketChat/Rocket.Chat/pull/39227) by [@sezallagwal](https://github.com/sezallagwal)) Add OpenAPI support for the chat.starMessage and chat.unStarMessage API endpoints by migrating to a modern chained route definition syntax and utilizing AJV schemas for body and response validation.
+
+- ([#38957](https://github.com/RocketChat/Rocket.Chat/pull/38957) by [@Verifieddanny](https://github.com/Verifieddanny)) Migrated rooms.leave endpoint to new OpenAPI pattern with AJV validation
+
+- ([#38549](https://github.com/RocketChat/Rocket.Chat/pull/38549) by [@Rohitgiri02](https://github.com/Rohitgiri02)) migrated rooms.delete endpoint to new OpenAPI pattern with AJV validation
+
+- ([#39094](https://github.com/RocketChat/Rocket.Chat/pull/39094) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Adds OpenAPI support for the Rocket.Chat e2e.updateGroupKey endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36402](https://github.com/RocketChat/Rocket.Chat/pull/36402) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat users.getAvatarSuggestion API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36779](https://github.com/RocketChat/Rocket.Chat/pull/36779) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat e2e.fetchMyKeys endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#39425](https://github.com/RocketChat/Rocket.Chat/pull/39425)) Adds support for multiple files in message composer, improving file upload experience
+
+- ([#39559](https://github.com/RocketChat/Rocket.Chat/pull/39559) by [@copilot-swe-agent](https://github.com/copilot-swe-agent)) Splits the single AJV validator instance into two: `ajv` (coerceTypes: false) for request **body** validation and `ajvQuery` (coerceTypes: true) for **query parameter** validation.
+
+  **Why this matters:** Previously, a single AJV instance with `coerceTypes: true` was used everywhere. This silently accepted values with wrong types — for example, sending `{ "rid": 12345 }` (number) where a string was expected would pass validation because `12345` was coerced to `"12345"`. With this change, body validation is now strict: the server will reject payloads with incorrect types instead of silently coercing them.
+
+  **What may break for API consumers:**
+
+  - **Numeric values sent as strings in POST/PUT/PATCH bodies** (e.g., `{ "count": "10" }` instead of `{ "count": 10 }`) will now be rejected. Ensure JSON bodies use proper types.
+  - **Boolean values sent as strings in bodies** (e.g., `{ "readThreads": "true" }` instead of `{ "readThreads": true }`) will now be rejected.
+  - **`null` values where a string is expected** (e.g., `{ "name": null }` for a `type: 'string'` field without `nullable: true`) will no longer be coerced to `""`.
+
+  **No change for query parameters:** GET query params (e.g., `?count=10&offset=0`) continue to be coerced via `ajvQuery`, since HTTP query strings are always strings.
+
+- ([#36916](https://github.com/RocketChat/Rocket.Chat/pull/36916) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat custom-user-status.list API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation
+
+- ([#39219](https://github.com/RocketChat/Rocket.Chat/pull/39219) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat e2e endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#38610](https://github.com/RocketChat/Rocket.Chat/pull/38610)) Adds new `custom-sounds.getOne` REST endpoint to retrieve a single custom sound by `_id` and updates client to consume it.
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- ([#36786](https://github.com/RocketChat/Rocket.Chat/pull/36786) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat e2e.getUsersOfRoomWithoutKey endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36882](https://github.com/RocketChat/Rocket.Chat/pull/36882) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat push.test API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#35995](https://github.com/RocketChat/Rocket.Chat/pull/35995) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat rooms.favorite APIs endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36523](https://github.com/RocketChat/Rocket.Chat/pull/36523) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat emoji-custom.create API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36953](https://github.com/RocketChat/Rocket.Chat/pull/36953) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat commands.get API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#38974](https://github.com/RocketChat/Rocket.Chat/pull/38974) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat dm.close/im.close API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- <details><summary>Updated dependencies [d1bf2cc675e80403659d388a1fbbdc6f73889dad, 02b1e6e6a184850d21e335077ca30382a1c7a66b, 9a70095296dbf516b0113a9a65e09f25137b2eaf, 87f9262af4a543d52642a54e1ef546d509a79e23, 539659af22bc19880eda047dfc0b152472ccb65c, b1b1d6ccd81c90d231a7e594f834965c6e5f4fae, 78e37dc3deae4ff05f5e33f9134c7094fd6c1330, d83a1a9753464ee916845b3c88757bbcf76884a5, 722df6f60bc86c51b204e28a39acb3dc8710bdeb, c117492ad90d291a361eedc929506f557495caf7]:</summary>
+
+  - @rocket.chat/message-parser@0.31.35
+  - @rocket.chat/ui-kit@1.0.0
+  - @rocket.chat/core-typings@8.3.0
+  </details>
+
+## 8.3.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.3.0-rc.4
+  </details>
+
+## 8.3.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.3.0-rc.3
+  </details>
+
+## 8.3.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.3.0-rc.2
+  </details>
+
 ## 8.3.0-rc.1
 
 ### Patch Changes

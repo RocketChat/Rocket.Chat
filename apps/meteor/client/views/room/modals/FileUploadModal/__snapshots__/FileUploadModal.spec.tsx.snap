@@ -4,14 +4,14 @@ exports[`renders Default without crashing 1`] = `
 <body>
   <div>
     <dialog
-      aria-labelledby=":r0:-title"
+      aria-labelledby="_r_0_-title"
       aria-modal="true"
       class="rcx-box rcx-box--full rcx-modal"
       open=""
     >
       <form
         class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
-        id=":r0:"
+        id="_r_0_"
       >
         <div
           class="rcx-box rcx-box--full rcx-css-ogq2n4"
@@ -24,13 +24,14 @@ exports[`renders Default without crashing 1`] = `
             >
               <h2
                 class="rcx-box rcx-box--full rcx-modal__title rcx-css-trljwa rcx-css-lma364"
-                id=":r0:-title"
+                id="_r_0_-title"
               >
                 FileUpload
               </h2>
               <button
                 aria-label="Close"
                 class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-trljwa rcx-css-lma364"
+                tabindex="-1"
                 type="button"
               >
                 <i
@@ -72,7 +73,7 @@ exports[`renders Default without crashing 1`] = `
                 >
                   <label
                     class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                    for=":r1:"
+                    for="react-aria-_r_1_-label"
                   >
                     Upload_file_name
                   </label>
@@ -80,14 +81,15 @@ exports[`renders Default without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-field__row"
                   >
                     <input
-                      aria-describedby=":r1:-error"
+                      aria-describedby=""
                       aria-invalid="false"
                       aria-required="true"
                       class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
-                      id=":r1:"
+                      id="react-aria-_r_1_-label"
                       name="name"
                       size="1"
                       type="text"
+                      value="test.txt"
                     />
                   </span>
                 </div>
@@ -113,6 +115,7 @@ exports[`renders Default without crashing 1`] = `
               </button>
               <button
                 class="rcx-box rcx-box--full rcx-button--primary rcx-button"
+                disabled=""
                 type="submit"
               >
                 <span

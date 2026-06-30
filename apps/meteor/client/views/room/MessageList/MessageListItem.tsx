@@ -1,13 +1,14 @@
 import { isThreadMessage, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
+import { css } from '@rocket.chat/css-in-js';
 import { Box, Bubble, MessageDivider } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
+import { isMessageNewDay } from './lib/isMessageNewDay';
+import { useMessageListFormatDate } from '../../../components/message/list/MessageListContext';
 import RoomMessage from '../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../components/message/variants/SystemMessage';
 import ThreadMessagePreview from '../../../components/message/variants/ThreadMessagePreview';
 import { useDateRef } from '../providers/DateListProvider';
-import { isMessageNewDay } from './lib/isMessageNewDay';
-import { useMessageListFormatDate } from '../../../components/message/list/MessageListContext';
 
 type MessageListItemProps = {
 	message: IMessage;
@@ -50,6 +51,9 @@ export const MessageListItem = ({
 					ref={ref}
 					data-id={message.ts}
 					role='listitem'
+					className={css`
+						transition: opacity 0.2s ease-out;
+					`}
 					{...(newDay && {
 						'data-time': new Date(message.ts)
 							.toISOString()
@@ -78,7 +82,7 @@ export const MessageListItem = ({
 				/>
 			)}
 			{isThreadMessage(message) && (
-				<li>
+				<div role='listitem'>
 					<ThreadMessagePreview
 						data-mid={message._id}
 						data-tmid={message.tmid}
@@ -88,7 +92,7 @@ export const MessageListItem = ({
 						message={message}
 						showUserAvatar={showUserAvatar}
 					/>
-				</li>
+				</div>
 			)}
 			{system && <SystemMessage showUserAvatar={showUserAvatar} message={message} />}
 		</>

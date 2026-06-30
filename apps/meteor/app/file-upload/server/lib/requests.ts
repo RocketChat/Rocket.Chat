@@ -1,4 +1,4 @@
-import type { IncomingMessage } from 'http';
+import type { IncomingMessage } from 'node:http';
 
 import { Uploads } from '@rocket.chat/models';
 import { WebApp } from 'meteor/webapp';

@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { trim } from '../../../../lib/utils/stringUtils';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 type InsertOrUpdateUserStatus = {
 	_id?: string;
@@ -104,6 +105,7 @@ export const insertOrUpdateUserStatus = async (userId: string, userStatusData: I
 
 Meteor.methods<ServerMethods>({
 	async insertOrUpdateUserStatus(userStatusData) {
+		methodDeprecationLogger.method('insertOrUpdateUserStatus', '9.0.0', ['/v1/custom-user-status.create', '/v1/custom-user-status.update']);
 		if (!this.userId) {
 			throw new Meteor.Error('not_authorized');
 		}

@@ -1,12 +1,13 @@
 import type { IOmnichannelRoomWithDepartment } from '@rocket.chat/core-typings';
 import { Tag, Box } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import RemoveChatButton from './RemoveChatButton';
 import { OmnichannelRoomIcon } from '../../../../../components/RoomIcon/OmnichannelRoomIcon';
+import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import { useTimeFromNow } from '../../../../../hooks/useTimeFromNow';
 import OmnichannelVerificationTag from '../../../components/OmnichannelVerificationTag';
 import RoomActivityIcon from '../../../components/RoomActivityIcon';
@@ -20,6 +21,7 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 	const { _id, fname, tags, servedBy, ts, department, open, priorityWeight, lm, onHold, source, verified } = room;
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
 	const getTimeFromNow = useTimeFromNow(true);
+	const formatDate = useFormatDate();
 	const { getSourceLabel } = useOmnichannelSource();
 
 	const canRemoveClosedChats = usePermission('remove-closed-livechat-room');
@@ -37,7 +39,7 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 		return onHold ? t('On_Hold_Chats') : t('Room_Status_Open');
 	};
 
-	const onRowClick = useEffectEvent((id: string) =>
+	const onRowClick = useStableCallback((id: string) =>
 		omnichannelDirectoryRouter.navigate({
 			tab: 'chats',
 			context: 'info',
@@ -81,8 +83,12 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 				</Box>
 			</GenericTableCell>
 			<GenericTableCell withTruncatedText>{department?.name}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{getTimeFromNow(ts)}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{getTimeFromNow(lm)}</GenericTableCell>
+			<GenericTableCell withTruncatedText title={getTimeFromNow(ts)}>
+				{formatDate(ts)}
+			</GenericTableCell>
+			<GenericTableCell withTruncatedText title={lm ? getTimeFromNow(lm) : undefined}>
+				{lm ? formatDate(lm) : undefined}
+			</GenericTableCell>
 			<GenericTableCell withTruncatedText>
 				<RoomActivityIcon room={room} />
 				{getStatusText(open, onHold)}

@@ -1,4 +1,4 @@
-import type { UrlWithStringQuery } from 'url';
+import type { UrlWithStringQuery } from 'node:url';
 
 import type Icons from '@rocket.chat/icons';
 import type { Root } from '@rocket.chat/message-parser';
@@ -239,6 +239,9 @@ export interface IMessage extends IRocketChatRecord {
 	customFields?: Record<string, any>;
 
 	content?: EncryptedContent;
+
+	// Read receipts migration flag
+	receiptsArchived?: boolean;
 }
 
 export type EncryptedMessageContent = Required<Pick<IMessage, 'content'>>;

@@ -32,15 +32,15 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	get allTeamCollabFilter(): Locator {
-		return this.teamCollabFilters.getByRole('button', { name: 'All' });
+		return this.teamCollabFilters.getByRole('tab', { name: 'All' });
 	}
 
 	get favoritesTeamCollabFilter(): Locator {
-		return this.teamCollabFilters.getByRole('button', { name: 'Favorites' });
+		return this.teamCollabFilters.getByRole('tab', { name: 'Favorites' });
 	}
 
 	get discussionsTeamCollabFilter(): Locator {
-		return this.teamCollabFilters.getByRole('button', { name: 'Discussions' });
+		return this.teamCollabFilters.getByRole('tab', { name: 'Discussions' });
 	}
 
 	// TODO: fix this filter, workaround due to virtuoso
@@ -94,7 +94,7 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	getCollapseGroupByName(name: string): Locator {
-		return this.channelsList.getByRole('button').filter({ has: this.page.getByRole('heading', { name, exact: true }) });
+		return this.root.getByRole('button').filter({ has: this.page.getByRole('heading', { name, exact: true }) });
 	}
 
 	getItemUnreadBadge(item: Locator): Locator {

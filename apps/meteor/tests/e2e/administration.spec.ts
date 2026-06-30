@@ -223,6 +223,7 @@ test.describe.parallel('administration', () => {
 			await poAdminRooms.getRoomRow(targetChannel).click();
 			await poAdminRooms.editRoom.archivedLabel.click();
 			await poAdminRooms.editRoom.btnSave.click();
+			await poAdminRooms.editRoom.waitForDismissal();
 
 			await poAdminRooms.getRoomRow(targetChannel).click();
 			await expect(poAdminRooms.editRoom.archivedInput).toBeChecked();
@@ -441,7 +442,7 @@ test.describe.parallel('administration', () => {
 			await poAdminIntegrations.btnNew.click();
 			await poAdminIntegrations.inputName.fill(incomingIntegrationName);
 			await poAdminIntegrations.inputPostToChannel.fill('#general');
-			await poAdminIntegrations.inputPostAs.fill(Users.admin.data.username);
+			await poAdminIntegrations.inputPostAs.fill('rocket.cat');
 			await poAdminIntegrations.btnSave.click();
 
 			await expect(poAdminIntegrations.inputWebhookUrl).not.toHaveValue('Will be available here after saving.');

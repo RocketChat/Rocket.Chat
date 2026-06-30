@@ -3,7 +3,7 @@ import type { IMessage, IRoom, ISubscription, ITranslatedMessage } from '@rocket
 import { isThreadMessage, isRoomFederated, isVideoConfMessage } from '@rocket.chat/core-typings';
 import { MessageToolbar as FuselageMessageToolbar } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ElementType, ReactElement } from 'react';
+import type { ComponentProps, ElementType } from 'react';
 import { memo, useRef } from 'react';
 
 import MessageToolbarActionMenu from './MessageToolbarActionMenu';
@@ -66,14 +66,7 @@ type MessageToolbarProps = {
 	onChangeMenuVisibility: (visible: boolean) => void;
 } & ComponentProps<typeof FuselageMessageToolbar>;
 
-const MessageToolbar = ({
-	message,
-	messageContext,
-	room,
-	subscription,
-	onChangeMenuVisibility,
-	...props
-}: MessageToolbarProps): ReactElement | null => {
+const MessageToolbar = ({ message, messageContext, room, subscription, onChangeMenuVisibility, ...props }: MessageToolbarProps) => {
 	const t = useTranslation();
 
 	const toolbarRef = useRef(null);

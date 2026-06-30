@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/account-service",
-	"version": "0.4.53-rc.1",
+	"version": "0.4.58-rc.0",
 	"private": true,
 	"description": "Rocket.Chat Account service",
 	"keywords": [
@@ -30,8 +30,8 @@
 		"@rocket.chat/string-helpers": "~0.32.0",
 		"@rocket.chat/tools": "workspace:^",
 		"@rocket.chat/tracing": "workspace:^",
-		"@types/node": "~22.16.5",
-		"bcrypt": "^5.1.1",
+		"@types/node": "~22.19.17",
+		"bcrypt": "^6.0.0",
 		"ejson": "^2.2.3",
 		"eventemitter3": "^5.0.4",
 		"mem": "^8.1.1",
@@ -45,10 +45,10 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/tsconfig": "workspace:*",
-		"@types/bcrypt": "^5.0.2",
+		"@types/bcrypt": "^6.0.0",
 		"@types/polka": "^0.5.8",
 		"@types/prometheus-gc-stats": "^0.6.4",
-		"eslint": "~9.39.3",
+		"eslint": "~9.39.4",
 		"ts-node": "^10.9.2",
 		"typescript": "~5.9.3"
 	},

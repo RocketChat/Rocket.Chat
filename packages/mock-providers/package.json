@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/mock-providers",
-	"version": "0.4.13-rc.1",
+	"version": "0.4.18-rc.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -11,13 +11,14 @@
 		"build": "rm -rf dist && tsc -p tsconfig.json",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
 		"lint": "eslint .",
-		"lint:fix": "eslint --fix ."
+		"lint:fix": "eslint --fix .",
+		"test": "jest",
+		"testunit": "jest"
 	},
 	"dependencies": {
 		"@rocket.chat/emitter": "^0.32.0",
 		"@rocket.chat/i18n": "workspace:~",
 		"@rocket.chat/ui-contexts": "workspace:^",
-		"@storybook/react": "^8.6.17",
 		"i18next": "~23.4.9",
 		"react-i18next": "~13.2.2"
 	},
@@ -27,20 +28,22 @@
 		"@rocket.chat/mongo-adapter": "workspace:~",
 		"@rocket.chat/tools": "workspace:~",
 		"@rocket.chat/ui-video-conf": "workspace:*",
+		"@storybook/react": "^9.1.13",
 		"@tanstack/react-query": "~5.65.1",
 		"@testing-library/dom": "~10.4.1",
 		"@testing-library/jest-dom": "~6.8.0",
 		"@testing-library/react": "~16.3.2",
-		"@types/react": "~18.3.27",
-		"@types/react-dom": "~18.3.7",
-		"eslint": "~9.39.3",
+		"@types/react": "~19.2.17",
+		"@types/react-dom": "~19.2.3",
+		"eslint": "~9.39.4",
 		"jest": "~30.2.0",
-		"react": "~18.3.1",
-		"react-dom": "~18.3.1",
-		"storybook": "^8.6.17",
+		"react": "~19.2.7",
+		"react-dom": "~19.2.7",
+		"storybook": "^9.1.13",
 		"typescript": "~5.9.3"
 	},
 	"peerDependencies": {
+		"@storybook/react": "*",
 		"@tanstack/react-query": "*",
 		"react": "*"
 	},

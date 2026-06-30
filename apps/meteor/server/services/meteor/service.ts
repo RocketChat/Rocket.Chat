@@ -20,6 +20,7 @@ import { getURL } from '../../../app/utils/server/getURL';
 import { configureEmailInboxes } from '../../features/EmailInbox/EmailInbox';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { ListenersModule } from '../../modules/listeners/listeners.module';
+import { invalidate as invalidatePublicationUserCache } from '../../modules/streamer/publication-user-cache';
 
 const disableMsgRoundtripTracking = ['yes', 'true'].includes(String(process.env.DISABLE_MESSAGE_ROUNDTRIP_TRACKING).toLowerCase());
 
@@ -78,6 +79,8 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		});
 
 		this.onEvent('watch.users', async (data) => {
+			invalidatePublicationUserCache(data.id);
+
 			if (data.clientAction === 'updated' && data.diff) {
 				processOnChange(data.diff, data.id);
 			}
@@ -140,7 +143,9 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		if (!disableMsgRoundtripTracking) {
 			this.onEvent('watch.messages', async ({ message }) => {
 				if (message?._updatedAt instanceof Date) {
-					metrics.messageRoundtripTime.observe(Date.now() - message._updatedAt.getTime());
+					const elapsedMs = Date.now() - message._updatedAt.getTime();
+					metrics.messageRoundtripTime.observe(elapsedMs);
+					metrics.messageRoundtripTimeSeconds.observe(elapsedMs / 1000);
 				}
 			});
 		}

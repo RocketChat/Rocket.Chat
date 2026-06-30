@@ -1,4 +1,4 @@
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -6,7 +6,7 @@ import ContextualbarAction from './ContextualbarAction';
 
 type ContextualbarCloseProps = Partial<ComponentProps<typeof ContextualbarAction>>;
 
-const ContextualbarClose = (props: ContextualbarCloseProps): ReactElement => {
+const ContextualbarClose = (props: ContextualbarCloseProps) => {
 	const { t } = useTranslation();
 	return <ContextualbarAction data-qa='ContextualbarActionClose' {...props} aria-label={t('Close')} name='cross' />;
 };

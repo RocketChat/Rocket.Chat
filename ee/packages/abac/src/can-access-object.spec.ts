@@ -33,6 +33,8 @@ jest.mock('@rocket.chat/core-services', () => ({
 	Settings: {
 		get: (...args: any[]) => mockSettingsGetValueById(...args),
 	},
+	MeteorError: class extends Error {},
+	isMeteorError: () => false,
 }));
 
 describe('AbacService.canAccessObject (unit)', () => {
@@ -54,6 +56,7 @@ describe('AbacService.canAccessObject (unit)', () => {
 
 	beforeEach(() => {
 		service = new AbacService();
+		service.setPdpStrategy('local');
 		jest.clearAllMocks();
 		// Default behaviors
 		mockSettingsGetValueById.mockResolvedValue(300); // 5 minute cache
@@ -258,6 +261,52 @@ describe('AbacService.canAccessObject (unit)', () => {
 			expect(query.$and).toHaveLength(1);
 			expect(query.$and[0].abacAttributes.$elemMatch.key).toBe('dept');
 			expect(query.$and[0].abacAttributes.$elemMatch.values.$all).toEqual(['eng']);
+		});
+	});
+
+	describe('PDP unavailable (fail-closed)', () => {
+		const usePdp = (over: Record<string, jest.Mock> = {}) => {
+			const pdp = {
+				isAvailable: jest.fn().mockResolvedValue(true),
+				canAccessObject: jest.fn(),
+				...over,
+			} as any;
+			(service as any).pdp = pdp;
+			return pdp;
+		};
+
+		beforeEach(() => {
+			mockSubscriptionsFindOneByRoomIdAndUserId.mockResolvedValue({ _id: 'SUB' });
+		});
+
+		it('returns false (does not grant) when the PDP decision call throws', async () => {
+			const pdp = usePdp({ canAccessObject: jest.fn().mockRejectedValue(new Error('virtru down')) });
+
+			const result = await service.canAccessObject(baseRoom as any, baseUser as any, AbacAccessOperation.READ, AbacObjectType.ROOM);
+
+			expect(result).toBe(false);
+			expect(pdp.canAccessObject).toHaveBeenCalled();
+			expect(mockRoomRemoveUserFromRoom).not.toHaveBeenCalled();
+			expect(mockSubscriptionsSetAbacLastTimeCheckedByUserIdAndRoomId).not.toHaveBeenCalled();
+		});
+
+		it('returns false without calling the PDP when it reports unavailable', async () => {
+			const pdp = usePdp({ isAvailable: jest.fn().mockResolvedValue(false) });
+
+			const result = await service.canAccessObject(baseRoom as any, baseUser as any, AbacAccessOperation.READ, AbacObjectType.ROOM);
+
+			expect(result).toBe(false);
+			expect(pdp.canAccessObject).not.toHaveBeenCalled();
+			expect(mockSubscriptionsSetAbacLastTimeCheckedByUserIdAndRoomId).not.toHaveBeenCalled();
+		});
+
+		it('returns false without any DB lookup when no PDP is configured', async () => {
+			(service as any).pdp = undefined;
+
+			const result = await service.canAccessObject(baseRoom as any, baseUser as any, AbacAccessOperation.READ, AbacObjectType.ROOM);
+
+			expect(result).toBe(false);
+			expect(mockSubscriptionsFindOneByRoomIdAndUserId).not.toHaveBeenCalled();
 		});
 	});
 });

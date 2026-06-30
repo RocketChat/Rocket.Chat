@@ -3,9 +3,9 @@ import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } fro
 import type { Method, OperationParams, OperationResult, PathFor, PathPattern } from '@rocket.chat/rest-typings';
 import type { UploadResult } from '@rocket.chat/ui-contexts';
 import { ServerContext } from '@rocket.chat/ui-contexts';
-import { action } from '@storybook/addon-actions';
-import type { ContextType, ReactElement, ReactNode } from 'react';
+import type { ContextType, ReactNode } from 'react';
 import { useContext, useMemo } from 'react';
+import { action } from 'storybook/actions';
 
 const logAction = action('ServerContext');
 
@@ -66,13 +66,7 @@ type ServerContextMockProps = Omit<Partial<ContextType<typeof ServerContext>>, '
 	};
 };
 
-const ServerContextMock = ({
-	children,
-	baseURL,
-	callEndpoint = {},
-	callMethod = {},
-	...overrides
-}: ServerContextMockProps): ReactElement => {
+const ServerContextMock = ({ children, baseURL, callEndpoint = {}, callMethod = {}, ...overrides }: ServerContextMockProps) => {
 	const parent = useContext(ServerContext);
 
 	const value = useMemo((): ContextType<typeof ServerContext> => {
@@ -177,6 +171,7 @@ const ServerContextMock = ({
 			callMethod: _callMethod,
 			uploadToEndpoint,
 			getStream,
+			getStreamAll: () => () => () => undefined,
 			...overrides,
 		};
 	}, [baseURL, callEndpoint, callMethod, overrides, parent]);

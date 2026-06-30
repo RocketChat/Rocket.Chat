@@ -48,6 +48,10 @@ export const saveRoomType = async function (
 		return result;
 	}
 
+	if (roomType === 'c' && room.abacAttributes?.length) {
+		await Rooms.unsetAbacAttributesById(rid);
+	}
+
 	if (result[1]?.modifiedCount) {
 		void notifyOnSubscriptionChangedByRoomId(rid);
 	}

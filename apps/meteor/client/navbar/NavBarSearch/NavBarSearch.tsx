@@ -1,10 +1,11 @@
-import { Box, Icon, TextInput } from '@rocket.chat/fuselage';
-import { useEffectEvent, useMergedRefs } from '@rocket.chat/fuselage-hooks';
+import { useFocusManager } from '@react-aria/focus';
+import { useOverlayTrigger } from '@react-aria/overlays';
+import { useOverlayTriggerState } from '@react-stately/overlays';
+import { Box, Icon, IconButton, TextInput } from '@rocket.chat/fuselage';
+import { useStableCallback, useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useCallback, useEffect, useRef } from 'react';
-import { useFocusManager, useOverlayTrigger } from 'react-aria';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { useOverlayTriggerState } from 'react-stately';
 import tinykeys from 'tinykeys';
 
 import NavBarSearchListBox from './NavBarSearchListbox';
@@ -46,7 +47,7 @@ const NavBarSearch = () => {
 		state.close();
 	}, [resetField, state]);
 
-	const handleClearText = useEffectEvent(() => {
+	const handleClearText = useStableCallback(() => {
 		resetField('filterText');
 		setFocus('filterText');
 	});
@@ -74,7 +75,7 @@ const NavBarSearch = () => {
 
 	return (
 		<FormProvider {...methods}>
-			<Box width='100%' maxWidth='x622' role='search' mi={8} position='relative'>
+			<Box width='100%' maxWidth='x622' role='search' aria-label={t('Search_rooms')} mi={8} position='relative'>
 				<TextInput
 					{...rest}
 					{...triggerProps}
@@ -85,8 +86,16 @@ const NavBarSearch = () => {
 					placeholder={placeholder}
 					ref={mergedRefs}
 					role='combobox'
+					aria-autocomplete='list'
+					aria-keyshortcuts='Control+K Meta+K Control+P Meta+P'
 					small
-					addon={<Icon name={isDirty ? 'cross' : 'magnifier'} size='x20' onClick={handleClearText} />}
+					addon={
+						isDirty ? (
+							<IconButton mini icon='cross' aria-label={t('Clear')} onClick={handleClearText} />
+						) : (
+							<Icon name='magnifier' size='x20' aria-label={t('Search')} />
+						)
+					}
 				/>
 				{state.isOpen && <NavBarSearchListBox state={state} overlayProps={overlayProps} />}
 			</Box>

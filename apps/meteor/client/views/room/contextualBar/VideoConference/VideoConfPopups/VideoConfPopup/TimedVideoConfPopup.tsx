@@ -1,3 +1,4 @@
+import { useFocusManager } from '@react-aria/focus';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useUserRoom } from '@rocket.chat/ui-contexts';
 import {
@@ -8,9 +9,7 @@ import {
 	useVideoConfStartCall,
 	useVideoConfDismissOutgoing,
 } from '@rocket.chat/ui-video-conf';
-import type { ReactElement } from 'react';
 import { useEffect, useState } from 'react';
-import { useFocusManager } from 'react-aria';
 
 import IncomingPopup from './IncomingPopup';
 import OutgoingPopup from './OutgoingPopup';
@@ -25,13 +24,7 @@ type TimedVideoConfPopupProps = {
 	onClose?: (id: string) => void;
 };
 
-const TimedVideoConfPopup = ({
-	id,
-	rid,
-	isReceiving = false,
-	isCalling = false,
-	position,
-}: TimedVideoConfPopupProps): ReactElement | null => {
+const TimedVideoConfPopup = ({ id, rid, isReceiving = false, isCalling = false, position }: TimedVideoConfPopupProps) => {
 	const [starting, setStarting] = useState(false);
 	const acceptCall = useVideoConfAcceptCall();
 	const abortCall = useVideoConfAbortCall();
