@@ -7,7 +7,8 @@ import type { Filter, FindOptions, RootFilterOperators } from 'mongodb';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 
-type UserAutoComplete = Required<Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag'>>;
+type UserAutoComplete = Required<Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag'>> &
+	Pick<IUser, 'freeSwitchExtension'>;
 
 export async function findUsersToAutocomplete({
 	uid,
