@@ -3,6 +3,6 @@ import type { ComponentPropsWithoutRef } from 'react';
 
 type AttachmentAuthorNameProps = ComponentPropsWithoutRef<typeof Box>;
 
-const AttachmentAuthorName = (props: AttachmentAuthorNameProps) => <Box withTruncatedText fontScale='p2m' mis={8} {...props} />;
+const AttachmentAuthorName = (props: AttachmentAuthorNameProps) => <Box withTruncatedText fontScale='p2m' mi={8} {...props} />;
 
 export default AttachmentAuthorName;
