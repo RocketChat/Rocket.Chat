@@ -17,7 +17,11 @@ const PermissionsTableFilter = ({ onChange }: { onChange: (debouncedFilter: stri
 		setFilter(value);
 	});
 
-	return <TextInput value={filter} onChange={handleFilter} placeholder={t('Search')} addon={<Icon name='magnifier' size='x20' />} />;
+	return (
+		<div>
+			<TextInput value={filter} onChange={handleFilter} placeholder={t('Search')} addon={<Icon name='magnifier' size='x20' />} />
+		</div>
+	);
 };
 
 export default PermissionsTableFilter;
