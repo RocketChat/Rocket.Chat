@@ -9,30 +9,32 @@ const SidebarRailCallPanel = () => {
 	const {
 		sessionState: { state },
 	} = useMediaCallView();
-	const { toggleWidget } = useWidgetExternalControls();
+	const { openDialer, closeDialer } = useWidgetExternalControls();
 
 	const stateRef = useRef(state);
 	stateRef.current = state;
 
 	// The call panel hosts the dialer: while it is mounted and the session is idle
 	// (initial open, or right after a call ends) show the dialer instead of an empty
-	// panel. This is what "resets the bar" when a call finishes on the telephony screen.
+	// panel. `openDialer` is idempotent (only acts on the "closed" state), so React
+	// StrictMode double-invoking this layout effect on mount is harmless.
 	useLayoutEffect(() => {
 		if (state === 'closed') {
-			toggleWidget();
+			openDialer();
 		}
-	}, [state, toggleWidget]);
+	}, [state, openDialer]);
 
 	// Leaving the telephony screen with only the idle dialer open must drop it, so it
-	// does not pop out as a floating widget. Running the teardown in the layout phase
-	// keeps it in sync with the slot unmount and avoids a one-frame flicker.
+	// does not pop out as a floating widget. The `state === 'new'` guard scopes this to
+	// the idle dialer (never an ongoing call) and skips StrictMode's fake unmount, where
+	// the just-issued open has not re-rendered yet.
 	useLayoutEffect(
 		() => () => {
 			if (stateRef.current === 'new') {
-				toggleWidget();
+				closeDialer();
 			}
 		},
-		[toggleWidget],
+		[closeDialer],
 	);
 
 	return (
