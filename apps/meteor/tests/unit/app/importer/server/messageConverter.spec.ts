@@ -43,7 +43,7 @@ describe('Message Converter', () => {
 	describe('[insertMessage]', () => {
 		it('function should be called by the converter', async () => {
 			const converter = new MessageConverter({ workInMemory: true });
-			converter._cache.addRoom('general', 'general');
+			converter['_cache'].addRoom('general', 'general');
 
 			const insertMessageStub = sinon.stub(converter, 'insertMessage' as keyof MessageConverterClass);
 			sinon.stub(converter, 'resetLastMessages' as keyof MessageConverterClass);
@@ -58,9 +58,9 @@ describe('Message Converter', () => {
 
 		it('should call insertMessage lib function to save the message', async () => {
 			const converter = new MessageConverter({ workInMemory: true });
-			converter._cache.addRoom('general', 'main');
+			converter['_cache'].addRoom('general', 'main');
 
-			await converter.insertMessage(messageToImport as unknown as IImportMessage);
+			await converter['insertMessage'](messageToImport as unknown as IImportMessage);
 
 			expect(insertMessage.getCalls()).to.be.an('array').with.lengthOf(1);
 			expect(insertMessage.getCall(0).args).to.be.an('array').with.lengthOf(4);
@@ -80,7 +80,7 @@ describe('Message Converter', () => {
 		it('should have the basic info', async () => {
 			const converter = new MessageConverter({ workInMemory: true });
 
-			const converted = await converter.buildMessageObject(messageToImport as unknown as IImportMessage, 'general', {
+			const converted = await converter['buildMessageObject'](messageToImport as unknown as IImportMessage, 'general', {
 				_id: 'rocket.cat',
 				username: 'rocket.cat',
 			});
@@ -100,7 +100,7 @@ describe('Message Converter', () => {
 		it('should not have properties with undefined values', async () => {
 			const converter = new MessageConverter({ workInMemory: true });
 
-			const converted = await converter.buildMessageObject(messageToImport as unknown as IImportMessage, 'general', {
+			const converted = await converter['buildMessageObject'](messageToImport as unknown as IImportMessage, 'general', {
 				_id: 'rocket.cat',
 				username: 'rocket.cat',
 			});
@@ -117,7 +117,7 @@ describe('Message Converter', () => {
 		it('beforeImportFn should be triggered', async () => {
 			const beforeImportFn = sinon.stub();
 			const converter = new MessageConverter({ workInMemory: true });
-			converter._cache.addRoom('general', 'general');
+			converter['_cache'].addRoom('general', 'general');
 
 			sinon.stub(converter, 'insertMessage' as keyof MessageConverterClass);
 			sinon.stub(converter, 'resetLastMessages' as keyof MessageConverterClass);
@@ -133,7 +133,7 @@ describe('Message Converter', () => {
 		it('afterImportFn should be triggered', async () => {
 			const afterImportFn = sinon.stub();
 			const converter = new MessageConverter({ workInMemory: true });
-			converter._cache.addRoom('general', 'general');
+			converter['_cache'].addRoom('general', 'general');
 
 			const insertMessageStub = sinon.stub(converter, 'insertMessage' as keyof MessageConverterClass);
 			sinon.stub(converter, 'resetLastMessages' as keyof MessageConverterClass);
@@ -158,7 +158,7 @@ describe('Message Converter', () => {
 			});
 
 			const converter = new MessageConverter({ workInMemory: true });
-			converter._cache.addRoom('general', 'general');
+			converter['_cache'].addRoom('general', 'general');
 
 			const insertMessageStub = sinon.stub(converter, 'insertMessage' as keyof MessageConverterClass);
 			sinon.stub(converter, 'resetLastMessages' as keyof MessageConverterClass);
@@ -184,7 +184,7 @@ describe('Message Converter', () => {
 			beforeImportFn.callsFake(() => true);
 
 			const converter = new MessageConverter({ workInMemory: true });
-			converter._cache.addRoom('general', 'general');
+			converter['_cache'].addRoom('general', 'general');
 
 			const insertMessageStub = sinon.stub(converter, 'insertMessage' as keyof MessageConverterClass);
 			sinon.stub(converter, 'resetLastMessages' as keyof MessageConverterClass);
@@ -204,7 +204,7 @@ describe('Message Converter', () => {
 
 		it('onErrorFn should be triggered if mandatory attributes are missing', async () => {
 			const converter = new MessageConverter({ workInMemory: true });
-			converter._cache.addRoom('general', 'general');
+			converter['_cache'].addRoom('general', 'general');
 			sinon.stub(converter, 'resetLastMessages' as keyof MessageConverterClass);
 
 			const onErrorFn = sinon.stub();

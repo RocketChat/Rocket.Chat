@@ -129,7 +129,7 @@ describe('AutoTransferChats', () => {
 		it('should return rocket.cat user', async () => {
 			const scheduler = new AutoTransferChatSchedulerClass();
 			mockUsers.findOneById.resolves({ _id: 'rocket.cat' });
-			const user = await scheduler.getSchedulerUser();
+			const user = await scheduler['getSchedulerUser']();
 			expect(user).to.be.deep.equal({ _id: 'rocket.cat', userType: 'user' });
 			expect(mockUsers.findOneById.calledWith('rocket.cat')).to.be.true;
 		});
@@ -172,9 +172,9 @@ describe('AutoTransferChats', () => {
 			await scheduler.init();
 
 			const transferRoomStub = sinon.stub();
-			scheduler.transferRoom = transferRoomStub;
+			scheduler['transferRoom'] = transferRoomStub;
 
-			await scheduler.executeJob({ attrs: { data: { roomId: 'roomId' } } });
+			await scheduler['executeJob']({ attrs: { data: { roomId: 'roomId' } } });
 
 			expect(transferRoomStub.getCall(0).firstArg).to.be.equal('roomId');
 			expect(mockLivechatRooms.setAutoTransferredAtById.getCall(0).firstArg).to.be.equal('roomId');
@@ -183,9 +183,9 @@ describe('AutoTransferChats', () => {
 			const scheduler = new AutoTransferChatSchedulerClass();
 			await scheduler.init();
 
-			scheduler.transferRoom = sinon.stub().throws('dummy error');
+			scheduler['transferRoom'] = sinon.stub().throws('dummy error');
 
-			const r = await scheduler.executeJob({ attrs: { data: { roomId: 'roomId' } } });
+			const r = await scheduler['executeJob']({ attrs: { data: { roomId: 'roomId' } } });
 
 			expect(r).to.be.undefined;
 		});
@@ -203,21 +203,21 @@ describe('AutoTransferChats', () => {
 			const scheduler = new AutoTransferChatSchedulerClass();
 			await scheduler.init();
 
-			await expect(scheduler.transferRoom('roomId')).to.be.rejectedWith('Room is not open or is not being served by an agent');
+			await expect(scheduler['transferRoom']('roomId')).to.be.rejectedWith('Room is not open or is not being served by an agent');
 		});
 		it('should not transfer closed rooms', async () => {
 			mockLivechatRooms.findOneById.resolves({ _id: 1 });
 			const scheduler = new AutoTransferChatSchedulerClass();
 			await scheduler.init();
 
-			await expect(scheduler.transferRoom('roomId')).to.be.rejectedWith('Room is not open or is not being served by an agent');
+			await expect(scheduler['transferRoom']('roomId')).to.be.rejectedWith('Room is not open or is not being served by an agent');
 		});
 		it('should not transfer unserved rooms', async () => {
 			mockLivechatRooms.findOneById.resolves({ _id: 1, open: true });
 			const scheduler = new AutoTransferChatSchedulerClass();
 			await scheduler.init();
 
-			await expect(scheduler.transferRoom('roomId')).to.be.rejectedWith('Room is not open or is not being served by an agent');
+			await expect(scheduler['transferRoom']('roomId')).to.be.rejectedWith('Room is not open or is not being served by an agent');
 		});
 		it('should return a room as inquiry when the routing method is not automatic', async () => {
 			mockLivechatRooms.findOneById.resolves({ _id: 1, open: true, servedBy: { _id: 2 }, departmentId: undefined });
@@ -226,7 +226,7 @@ describe('AutoTransferChats', () => {
 			const scheduler = new AutoTransferChatSchedulerClass();
 			await scheduler.init();
 
-			await scheduler.transferRoom('roomId');
+			await scheduler['transferRoom']('roomId');
 
 			expect(
 				returnRoomAsInquiryMock.calledWith(
@@ -246,7 +246,7 @@ describe('AutoTransferChats', () => {
 			const scheduler = new AutoTransferChatSchedulerClass();
 			await scheduler.init();
 
-			const r = await scheduler.transferRoom('roomId');
+			const r = await scheduler['transferRoom']('roomId');
 
 			expect(getNextAgent.calledWith(undefined, 2)).to.be.true;
 			expect(r).to.be.undefined;
@@ -262,7 +262,7 @@ describe('AutoTransferChats', () => {
 			const scheduler = new AutoTransferChatSchedulerClass();
 			await scheduler.init();
 
-			await expect(scheduler.transferRoom('roomId')).to.be.rejectedWith('error-no-cat');
+			await expect(scheduler['transferRoom']('roomId')).to.be.rejectedWith('error-no-cat');
 
 			expect(getNextAgent.calledWith(undefined, 2)).to.be.true;
 			expect(mockUsers.findOneById.called).to.be.true;
@@ -278,7 +278,7 @@ describe('AutoTransferChats', () => {
 			const scheduler = new AutoTransferChatSchedulerClass();
 			await scheduler.init();
 
-			const r = await scheduler.transferRoom('roomId');
+			const r = await scheduler['transferRoom']('roomId');
 
 			expect(getNextAgent.calledWith(undefined, 2)).to.be.true;
 			expect(r).to.be.undefined;

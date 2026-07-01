@@ -87,7 +87,7 @@ describe('Omnichannel Queue processor', () => {
 		});
 		it('should return the running status', () => {
 			const queue = new OmnichannelQueue();
-			queue.running = true;
+			queue['running'] = true;
 			expect(queue.isRunning()).to.be.true;
 		});
 	});
@@ -99,13 +99,13 @@ describe('Omnichannel Queue processor', () => {
 			settings.get.returns(undefined);
 
 			const queue = new OmnichannelQueue();
-			expect(queue.delay()).to.be.equal(5000);
+			expect(queue['delay']()).to.be.equal(5000);
 		});
 		it('should return the right value if setting has a value above 1', () => {
 			settings.get.returns(10);
 
 			const queue = new OmnichannelQueue();
-			expect(queue.delay()).to.be.equal(10000);
+			expect(queue['delay']()).to.be.equal(10000);
 		});
 	});
 	describe('getActiveQueues', () => {
@@ -116,19 +116,19 @@ describe('Omnichannel Queue processor', () => {
 			models.LivechatInquiry.getDistinctQueuedDepartments.resolves([]);
 
 			const queue = new OmnichannelQueue();
-			expect(await queue.getActiveQueues()).to.be.eql([]);
+			expect(await queue['getActiveQueues']()).to.be.eql([]);
 		});
 		it('should return [department1] when department1 is an active queue', async () => {
 			models.LivechatInquiry.getDistinctQueuedDepartments.resolves([{ _id: 'department1' }]);
 
 			const queue = new OmnichannelQueue();
-			expect(await queue.getActiveQueues()).to.be.eql(['department1']);
+			expect(await queue['getActiveQueues']()).to.be.eql(['department1']);
 		});
 		it('should return [null, department1] when department1 is an active queue and there are elements on public queue', async () => {
 			models.LivechatInquiry.getDistinctQueuedDepartments.resolves([{ _id: 'department1' }, { _id: null }]);
 
 			const queue = new OmnichannelQueue();
-			expect(await queue.getActiveQueues()).to.be.eql(['department1', null]);
+			expect(await queue['getActiveQueues']()).to.be.eql(['department1', null]);
 		});
 	});
 	describe('checkQueue', () => {
@@ -157,48 +157,48 @@ describe('Omnichannel Queue processor', () => {
 			models.LivechatInquiry.findNextAndLock.returns(null);
 
 			const queue = new OmnichannelQueue();
-			queue.execute = Sinon.stub();
-			expect(await queue.checkQueue(null)).to.be.undefined;
+			queue['execute'] = Sinon.stub();
+			expect(await queue['checkQueue'](null)).to.be.undefined;
 		});
 		it('should try to process the inquiry when there is one', async () => {
 			models.LivechatInquiry.findNextAndLock.returns(mockedInquiry);
 
 			const queue = new OmnichannelQueue();
-			queue.processWaitingQueue = Sinon.stub().throws('error');
-			queue.execute = Sinon.stub();
-			await queue.checkQueue(null);
+			queue['processWaitingQueue'] = Sinon.stub().throws('error');
+			queue['execute'] = Sinon.stub();
+			await queue['checkQueue'](null);
 
 			expect(models.LivechatInquiry.findNextAndLock.calledOnce).to.be.true;
-			expect((queue.processWaitingQueue as unknown as SinonStub).calledOnce).to.be.true;
+			expect((queue['processWaitingQueue'] as unknown as SinonStub).calledOnce).to.be.true;
 		});
 		it('should call unlock when the inquiry could not be processed', async () => {
 			models.LivechatInquiry.findNextAndLock.returns(mockedInquiry);
 
 			const queue = new OmnichannelQueue();
-			queue.processWaitingQueue = Sinon.stub().returns(false);
-			queue.execute = Sinon.stub();
-			await queue.checkQueue(null);
+			queue['processWaitingQueue'] = Sinon.stub().returns(false);
+			queue['execute'] = Sinon.stub();
+			await queue['checkQueue'](null);
 
-			expect((queue.processWaitingQueue as unknown as SinonStub).calledOnce).to.be.true;
+			expect((queue['processWaitingQueue'] as unknown as SinonStub).calledOnce).to.be.true;
 			expect(models.LivechatInquiry.unlock.calledOnce).to.be.true;
 		});
 		it('should unlock the inquiry when it was processed succesfully', async () => {
 			models.LivechatInquiry.findNextAndLock.returns(mockedInquiry);
 
 			const queue = new OmnichannelQueue();
-			queue.processWaitingQueue = Sinon.stub().returns(true);
-			queue.execute = Sinon.stub();
-			await queue.checkQueue(null);
+			queue['processWaitingQueue'] = Sinon.stub().returns(true);
+			queue['execute'] = Sinon.stub();
+			await queue['checkQueue'](null);
 
-			expect((queue.processWaitingQueue as unknown as SinonStub).calledOnce).to.be.true;
+			expect((queue['processWaitingQueue'] as unknown as SinonStub).calledOnce).to.be.true;
 			expect(models.LivechatInquiry.unlock.calledOnce).to.be.true;
 		});
 		it('should print a log when there was an error processing inquiry', async () => {
 			models.LivechatInquiry.findNextAndLock.throws('error');
 
 			const queue = new OmnichannelQueue();
-			queue.execute = Sinon.stub();
-			await queue.checkQueue(null);
+			queue['execute'] = Sinon.stub();
+			await queue['checkQueue'](null);
 
 			expect(queueLogger.error.calledOnce).to.be.true;
 		});
@@ -253,25 +253,25 @@ describe('Omnichannel Queue processor', () => {
 
 		it('should remove inquiries from rooms that do not exist', async () => {
 			const queue = new OmnichannelQueue();
-			await queue.reconciliation('missing', { roomId: 'rid', inquiryId: 'inquiryId' });
+			await queue['reconciliation']('missing', { roomId: 'rid', inquiryId: 'inquiryId' });
 
 			expect(models.LivechatInquiry.removeByRoomId.calledOnce).to.be.true;
 		});
 		it('should take an inquiry if the room was taken', async () => {
 			const queue = new OmnichannelQueue();
-			await queue.reconciliation('taken', { roomId: 'rid', inquiryId: 'inquiryId' });
+			await queue['reconciliation']('taken', { roomId: 'rid', inquiryId: 'inquiryId' });
 
 			expect(models.LivechatInquiry.takeInquiry.calledOnce).to.be.true;
 		});
 		it('should remove inquiries from rooms that were closed', async () => {
 			const queue = new OmnichannelQueue();
-			await queue.reconciliation('closed', { roomId: 'rid', inquiryId: 'inquiryId' });
+			await queue['reconciliation']('closed', { roomId: 'rid', inquiryId: 'inquiryId' });
 
 			expect(models.LivechatInquiry.removeByRoomId.calledOnce).to.be.true;
 		});
 		it('should return true for any other case', async () => {
 			const queue = new OmnichannelQueue();
-			expect(await queue.reconciliation('random' as unknown as 'closed' | 'taken' | 'missing', { roomId: 'rid', inquiryId: 'inquiryId' }))
+			expect(await queue['reconciliation']('random' as unknown as 'closed' | 'taken' | 'missing', { roomId: 'rid', inquiryId: 'inquiryId' }))
 				.to.be.true;
 			expect(models.LivechatInquiry.removeByRoomId.notCalled).to.be.true;
 			expect(models.LivechatInquiry.takeInquiry.notCalled).to.be.true;
@@ -301,7 +301,7 @@ describe('Omnichannel Queue processor', () => {
 		it('should process the public queue when department is undefined', async () => {
 			const queue = new OmnichannelQueue();
 
-			expect(await queue.processWaitingQueue(undefined as unknown as null, mockedInquiry)).to.be.true;
+			expect(await queue['processWaitingQueue'](undefined as unknown as null, mockedInquiry)).to.be.true;
 			expect(queueLogger.debug.calledWith('Processing inquiry inquiryId from queue Public'));
 			expect(models.LivechatRooms.findOneById.calledOnce).to.be.true;
 		});
@@ -309,7 +309,7 @@ describe('Omnichannel Queue processor', () => {
 			models.LivechatRooms.findOneById.returns(null);
 
 			const queue = new OmnichannelQueue();
-			expect(await queue.processWaitingQueue('department1', mockedInquiry)).to.be.true;
+			expect(await queue['processWaitingQueue']('department1', mockedInquiry)).to.be.true;
 			expect(
 				queueLogger.debug.calledWith({
 					msg: 'Room from inquiry missing. Removing inquiry',
@@ -324,24 +324,24 @@ describe('Omnichannel Queue processor', () => {
 			models.LivechatRooms.findOneById.returns({ _id: 'rid', servedBy: { some: 'thing' } });
 
 			const queue = new OmnichannelQueue();
-			queue.reconciliation = Sinon.stub().returns(true);
-			expect(await queue.processWaitingQueue('department1', mockedInquiry)).to.be.true;
-			expect((queue.reconciliation as unknown as SinonStub).calledOnce).to.be.true;
+			queue['reconciliation'] = Sinon.stub().returns(true);
+			expect(await queue['processWaitingQueue']('department1', mockedInquiry)).to.be.true;
+			expect((queue['reconciliation'] as unknown as SinonStub).calledOnce).to.be.true;
 		});
 		it('should call removeInquiry when findOneById returns a room that was closed', async () => {
 			models.LivechatRooms.findOneById.returns({ _id: 'rid', closedAt: new Date() });
 
 			const queue = new OmnichannelQueue();
-			queue.reconciliation = Sinon.stub().returns(true);
-			expect(await queue.processWaitingQueue('department1', mockedInquiry)).to.be.true;
-			expect((queue.reconciliation as unknown as SinonStub).calledOnce).to.be.true;
+			queue['reconciliation'] = Sinon.stub().returns(true);
+			expect(await queue['processWaitingQueue']('department1', mockedInquiry)).to.be.true;
+			expect((queue['reconciliation'] as unknown as SinonStub).calledOnce).to.be.true;
 		});
 		it('should call delegateInquiry when prechecks are met and return false if inquiry was not served', async () => {
 			models.LivechatRooms.findOneById.returns({ _id: 'rid' });
 			delegateInquiry.returns({});
 
 			const queue = new OmnichannelQueue();
-			expect(await queue.processWaitingQueue('department1', mockedInquiry)).to.be.false;
+			expect(await queue['processWaitingQueue']('department1', mockedInquiry)).to.be.false;
 			expect(delegateInquiry.calledOnce).to.be.true;
 		});
 		it('should call delegateInquiry and return true if inquiry was served', async () => {
@@ -349,7 +349,7 @@ describe('Omnichannel Queue processor', () => {
 			delegateInquiry.returns({ _id: 'rid', servedBy: { _id: 'agentId' } });
 
 			const queue = new OmnichannelQueue();
-			expect(await queue.processWaitingQueue('department1', mockedInquiry)).to.be.true;
+			expect(await queue['processWaitingQueue']('department1', mockedInquiry)).to.be.true;
 			expect(delegateInquiry.calledOnce).to.be.true;
 		});
 		it('should call dispatchAgentDelegated if inquiry was served (after 1s)', async () => {
@@ -357,7 +357,7 @@ describe('Omnichannel Queue processor', () => {
 			delegateInquiry.returns({ _id: 'rid', servedBy: { _id: 'agentId' } });
 
 			const queue = new OmnichannelQueue();
-			expect(await queue.processWaitingQueue('department1', mockedInquiry)).to.be.true;
+			expect(await queue['processWaitingQueue']('department1', mockedInquiry)).to.be.true;
 			expect(delegateInquiry.calledOnce).to.be.true;
 			clock.tick(1000);
 			expect(dispatchAgentDelegated.calledOnce).to.be.true;
@@ -376,27 +376,27 @@ describe('Omnichannel Queue processor', () => {
 
 		it('should return undefined if service is not running', async () => {
 			const queue = new OmnichannelQueue();
-			queue.running = false;
-			expect(await queue.execute()).to.be.undefined;
+			queue['running'] = false;
+			expect(await queue['execute']()).to.be.undefined;
 		});
 		it('should return undefined if license is over mac limits', async () => {
 			license.shouldPreventAction.returns(true);
 
 			const queue = new OmnichannelQueue();
-			queue.running = true;
-			expect(await queue.execute()).to.be.undefined;
+			queue['running'] = true;
+			expect(await queue['execute']()).to.be.undefined;
 			expect(license.shouldPreventAction.calledOnce).to.be.true;
-			expect(queue.running).to.be.false;
+			expect(queue['running']).to.be.false;
 		});
 		it('should try to process a queue if license is not over mac limits', async () => {
 			license.shouldPreventAction.returns(false);
 
 			const queue = new OmnichannelQueue();
-			queue.running = true;
-			queue.getActiveQueues = Sinon.stub().resolves([null]);
-			await queue.execute();
+			queue['running'] = true;
+			queue['getActiveQueues'] = Sinon.stub().resolves([null]);
+			await queue['execute']();
 
-			expect((queue.getActiveQueues as unknown as SinonStub).calledOnce).to.be.true;
+			expect((queue['getActiveQueues'] as unknown as SinonStub).calledOnce).to.be.true;
 		});
 	});
 	describe('start', () => {
@@ -410,24 +410,24 @@ describe('Omnichannel Queue processor', () => {
 		});
 		it('should do nothing if queue is already running', async () => {
 			const queue = new OmnichannelQueue();
-			queue.running = true;
-			queue.execute = Sinon.stub();
+			queue['running'] = true;
+			queue['execute'] = Sinon.stub();
 			await queue.start();
 
-			expect((queue.execute as unknown as SinonStub).notCalled).to.be.true;
+			expect((queue['execute'] as unknown as SinonStub).notCalled).to.be.true;
 		});
 		it('should fetch active queues and set running to true', async () => {
 			const queue = new OmnichannelQueue();
-			queue.running = false;
-			queue.getActiveQueues = Sinon.stub().returns(['department1']);
-			queue.execute = Sinon.stub();
+			queue['running'] = false;
+			queue['getActiveQueues'] = Sinon.stub().returns(['department1']);
+			queue['execute'] = Sinon.stub();
 			await queue.start();
 
-			expect(queue.running).to.be.true;
-			expect((queue.getActiveQueues as unknown as SinonStub).calledOnce).to.be.true;
+			expect(queue['running']).to.be.true;
+			expect((queue['getActiveQueues'] as unknown as SinonStub).calledOnce).to.be.true;
 			expect(queueLogger.info.calledOnce).to.be.true;
 			expect(queueLogger.info.calledWith('Service started')).to.be.true;
-			expect((queue.execute as unknown as SinonStub).calledOnce).to.be.true;
+			expect((queue['execute'] as unknown as SinonStub).calledOnce).to.be.true;
 		});
 	});
 	describe('stop', () => {
@@ -441,10 +441,10 @@ describe('Omnichannel Queue processor', () => {
 		});
 		it('should unlock all inquiries and set running to false', async () => {
 			const queue = new OmnichannelQueue();
-			queue.running = true;
+			queue['running'] = true;
 			await queue.stop();
 
-			expect(queue.running).to.be.false;
+			expect(queue['running']).to.be.false;
 			expect(models.LivechatInquiry.unlockAll.calledOnce).to.be.true;
 			expect(queueLogger.info.calledOnce).to.be.true;
 			expect(queueLogger.info.calledWith('Service stopped')).to.be.true;

@@ -99,8 +99,8 @@ describe('Room Converter', () => {
 
 		it('should search DMs by usernames', async () => {
 			const converter = new RoomConverter({ workInMemory: true });
-			converter._cache.addUser('importId1', 'userId1', 'username1');
-			converter._cache.addUser('importId2', 'userId2', 'username2');
+			converter['_cache'].addUser('importId1', 'userId1', 'username1');
+			converter['_cache'].addUser('importId2', 'userId2', 'username2');
 
 			await converter.findExistingRoom({
 				t: 'd',
@@ -157,8 +157,8 @@ describe('Room Converter', () => {
 				};
 			});
 
-			converter._cache.addUser('importId1', 'userId1', 'username1');
-			converter._cache.addUser('importId2', 'userId2', 'username2');
+			converter['_cache'].addUser('importId1', 'userId1', 'username1');
+			converter['_cache'].addUser('importId2', 'userId2', 'username2');
 
 			await (converter as any).insertRoom(
 				{
