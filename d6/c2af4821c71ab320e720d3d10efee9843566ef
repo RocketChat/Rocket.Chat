@@ -1,0 +1,14 @@
+packages/i18n/src/locales/en.i18n.json
+  h_4c386397e672f4 2326
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.8",
+  "base_commit_sha": "d6c2af4821c71ab320e720d3d10efee9843566ef",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
