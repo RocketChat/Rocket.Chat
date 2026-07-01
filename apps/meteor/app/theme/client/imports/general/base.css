@@ -8,6 +8,18 @@ html {
 	overflow-y: auto;
 	height: 100%;
 
+	/*
+	 * Paint the root canvas so mobile browsers fill the overscroll/safe-area regions
+	 * (and tint their toolbars) with the theme background instead of falling back to white.
+	 * Once the palette is injected this follows the active theme; the media query is only
+	 * the pre-hydration fallback, matching the .page-loading screen.
+	 */
+	background-color: var(--rcx-color-surface-tint, #f7f8fa);
+
+	@media (prefers-color-scheme: dark) {
+		background-color: var(--rcx-color-surface-tint, #1f2329);
+	}
+
 	&.noscroll {
 		overflow: hidden;
 	}
@@ -109,4 +121,32 @@ button {
 .gallery-item {
 	max-width: 100%;
 	cursor: pointer;
+}
+
+/*
+ * Login / registration page — mobile: shrink the oversized "Welcome to <workspace>"
+ * heading (48px/64px by default), which comes from the @rocket.chat/layout package.
+ */
+@media (max-width: 767px) {
+	h1:has(> #welcomeTitle) {
+		padding-block-end: 16px;
+		font-size: 1.5rem;
+		line-height: 2rem;
+	}
+}
+
+/*
+ * Prevent iOS Safari from auto-zooming when a field gains focus: it zooms whenever the
+ * focused control's font-size is below 16px. Enforce a 16px minimum on text-entry controls
+ * on small screens — this preserves pinch-to-zoom, unlike disabling user-scalable in the
+ * viewport meta. `!important` is required to override the design-system default
+ * (.rcx-input-box is 0.875rem and fuselage.css is imported after this file).
+ */
+@media (max-width: 767px) {
+	input,
+	textarea,
+	select,
+	[contenteditable]:not([contenteditable='false']) {
+		font-size: 16px !important;
+	}
 }
