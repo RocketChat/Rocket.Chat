@@ -1,8 +1,7 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { Box, Icon, TextInput, Select, Callout, Throbber } from '@rocket.chat/fuselage';
-import { useResizeObserver, useAutoFocus, useLocalStorage, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useAutoFocus, useLocalStorage, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import {
-	VirtualizedScrollbars,
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarHeader,
@@ -15,10 +14,10 @@ import {
 import { useTranslation, useUserId, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { useMemo, useState, useCallback, useId } from 'react';
-import { Virtuoso } from 'react-virtuoso';
 
 import ThreadListItem from './components/ThreadListItem';
 import { useThreadsList } from './hooks/useThreadsList';
+import { PaginatedVirtualList } from '../../../../components/PaginatedVirtualList';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import { getErrorMessage } from '../../../../lib/errorHandling';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
@@ -36,10 +35,6 @@ const ThreadList = () => {
 	const handleTabBarCloseButtonClick = useCallback(() => {
 		closeTab();
 	}, [closeTab]);
-
-	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver<HTMLElement>({
-		debounceDelay: 200,
-	});
 
 	const autoFocusRef = useAutoFocus<HTMLInputElement>(true);
 
@@ -145,7 +140,7 @@ const ThreadList = () => {
 					/>
 				</Box>
 			</ContextualbarSection>
-			<ContextualbarContent paddingInline={0} ref={ref}>
+			<ContextualbarContent paddingInline={0}>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
 				{isPending && (
 					<Box pi={24} pb={12}>
@@ -161,17 +156,13 @@ const ThreadList = () => {
 					<Box id={threadListId} w='full' h='full' overflow='hidden' flexShrink={1}>
 						{items.length === 0 && <ContextualbarEmptyContent title={t('No_Threads')} />}
 						{items.length > 0 && (
-							<VirtualizedScrollbars>
-								<Virtuoso
-									style={{
-										height: blockSize,
-										width: inlineSize,
-									}}
+							<Box h='full' w='full' style={{ minHeight: 0 }}>
+								<PaginatedVirtualList
+									items={items}
 									totalCount={itemCount}
-									endReached={() => fetchNextPage()}
 									overscan={25}
-									data={items}
-									itemContent={(_index, data: IThreadMainMessage) => (
+									onEndReached={isPending ? undefined : fetchNextPage}
+									renderItem={(data: IThreadMainMessage) => (
 										<ThreadListItem
 											thread={data}
 											unread={subscription?.tunread ?? []}
@@ -181,7 +172,7 @@ const ThreadList = () => {
 										/>
 									)}
 								/>
-							</VirtualizedScrollbars>
+							</Box>
 						)}
 					</Box>
 				)}
