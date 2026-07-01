@@ -10,7 +10,7 @@ export const RegisterTitle = () => {
 	}
 
 	return (
-		<span id='welcomeTitle'>
+		<span id='welcome-title'>
 			<Trans i18nKey='registration.component.welcome'>Welcome to {siteName} workspace</Trans>
 		</span>
 	);

@@ -128,8 +128,7 @@ button {
  * heading (48px/64px by default), which comes from the @rocket.chat/layout package.
  */
 @media (width <= 767px) {
-	/* stylelint-disable-next-line selector-id-pattern -- #welcomeTitle is an existing id from @rocket.chat/web-ui-registration */
-	h1:has(> #welcomeTitle) {
+	h1:has(> #welcome-title) {
 		padding-block-end: 16px;
 		font-size: 1.5rem;
 		line-height: 2rem;

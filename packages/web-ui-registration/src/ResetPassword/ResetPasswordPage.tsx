@@ -83,7 +83,7 @@ const ResetPasswordPage = () => {
 				tabIndex={-1}
 				ref={resetPasswordFormRef}
 				aria-labelledby={formLabelId}
-				aria-describedby='welcomeTitle'
+				aria-describedby='welcome-title'
 				onSubmit={handleSubmit(handleResetPassword)}
 			>
 				<FormHeader>
