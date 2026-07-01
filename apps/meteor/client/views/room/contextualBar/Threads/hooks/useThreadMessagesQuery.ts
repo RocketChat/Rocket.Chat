@@ -117,6 +117,12 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 		async (messageId: string) => {
 			const currentQueryKey = roomsQueryKeys.threadMessages(roomId, tmid);
 
+			await queryClient.cancelQueries({ queryKey: currentQueryKey });
+			queryClient.setQueryData<ThreadMessagesInfiniteData>(currentQueryKey, {
+				pages: [],
+				pageParams: [],
+			});
+
 			const { messages, total, offset } = await getThreadMessages({
 				tmid,
 				aroundId: messageId,
@@ -177,7 +183,11 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 			return lastPageParam > 0 ? Math.max(0, lastPageParam - count) : undefined;
 		},
 		getPreviousPageParam: (firstPage, _allPages, firstPageParam) => {
-			const next = firstPageParam + count;
+			const pageSize = Math.min(firstPage.items.length, count);
+			if (pageSize <= 0) {
+				return undefined;
+			}
+			const next = firstPageParam + pageSize;
 			return next < firstPage.itemCount ? next : undefined;
 		},
 		select: ({ pages }) => {

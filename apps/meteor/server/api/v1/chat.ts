@@ -1159,7 +1159,7 @@ const chatEndpoints = API.v1
 				} else {
 					const target = await Messages.findOneById(aroundId, { projection: { ts: 1, tmid: 1 } });
 					if (target?.tmid === tmid && target.ts) {
-						const before = await Messages.countDocuments({ tmid, ts: { $lt: target.ts } });
+						const before = await Messages.countDocuments({ ...query, tmid, ts: { $lt: target.ts } });
 						resolvedOffset = Math.max(0, before - Math.floor(count / 2));
 					}
 				}
