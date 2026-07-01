@@ -39,7 +39,7 @@ export const ResetPasswordForm = ({ setLoginRoute }: ResetPasswordFormProps) => 
 			ref={forgotPasswordFormRef}
 			tabIndex={-1}
 			aria-labelledby={formLabelId}
-			aria-describedby='welcome-title'
+			aria-describedby='welcomeTitle'
 			onSubmit={handleSubmit((data) => {
 				void mutateAsync({ email: data.email });
 			})}
