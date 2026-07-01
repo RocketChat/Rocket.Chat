@@ -127,7 +127,8 @@ button {
  * Login / registration page — mobile: shrink the oversized "Welcome to <workspace>"
  * heading (48px/64px by default), which comes from the @rocket.chat/layout package.
  */
-@media (max-width: 767px) {
+@media (width <= 767px) {
+	/* stylelint-disable-next-line selector-id-pattern -- #welcomeTitle is an existing id from @rocket.chat/web-ui-registration */
 	h1:has(> #welcomeTitle) {
 		padding-block-end: 16px;
 		font-size: 1.5rem;
@@ -142,7 +143,7 @@ button {
  * viewport meta. `!important` is required to override the design-system default
  * (.rcx-input-box is 0.875rem and fuselage.css is imported after this file).
  */
-@media (max-width: 767px) {
+@media (width <= 767px) {
 	input,
 	textarea,
 	select,
