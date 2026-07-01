@@ -11,6 +11,7 @@ apps/meteor/tests/unit/app/meteor-accounts-saml/server.tests.ts
   s_f6765bcfa1a328::t_ac7e7024733fd0 5
   s_f6765bcfa1a328::t_8509704eb3310e 44-47,49-52
   s_f6765bcfa1a328::t_9ec3da6b06923b 142-148
+  h_4c386397e672f4 163-164,173-174,183-184,194-195,237-238,249-250,259-260,269-270,285-286,296-297
 apps/meteor/tests/unit/app/livechat/server/lib/webhooks.spec.ts
   s_f6765bcfa1a328::t_b26e712207c768 3,15-51,66-69,92
 apps/meteor/ee/tests/unit/server/airgappedRestrictions/airGappedRestrictionsWrapper.spec.ts
@@ -340,6 +341,11 @@ apps/meteor/app/file-upload/server/methods/sendFileMessage.spec.ts
   "git_ai_version": "1.6.5",
   "base_commit_sha": "24478a427d3a9ade0bf8b36ce805549a611f357b",
   "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
   "sessions": {
     "s_46a839512bb0f2": {
       "agent_id": {
