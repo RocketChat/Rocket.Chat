@@ -140,7 +140,7 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 				enterprise: true,
 				modules: ['federation'],
 				invalidValue: '',
-				enableQuery: { _id: 'Federation_Service_Enabled', value: true },
+				enableQuery: { _id: 'Federation_XMPP_Enabled', value: true },
 			});
 
 			await this.add('Federation_XMPP_Bridge_AS_Token', '', {
@@ -148,7 +148,7 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 				enterprise: true,
 				modules: ['federation'],
 				invalidValue: '',
-				enableQuery: { _id: 'Federation_Service_Enabled', value: true },
+				enableQuery: { _id: 'Federation_XMPP_Enabled', value: true },
 			});
 		});
 	});
