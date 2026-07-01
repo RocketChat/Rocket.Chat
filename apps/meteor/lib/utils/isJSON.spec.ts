@@ -1,7 +1,7 @@
 import { isJSON } from './isJSON';
 
 describe('isJSON', () => {
-	it('returns true for parseable, truthy JSON', () => {
+	it('returns true for any successfully parsed JSON', () => {
 		expect(isJSON('{"a":1}')).toBe(true);
 		expect(isJSON('{}')).toBe(true);
 		expect(isJSON('[1,2]')).toBe(true);
@@ -10,16 +10,16 @@ describe('isJSON', () => {
 		expect(isJSON('42')).toBe(true);
 	});
 
+	it('returns true for valid but falsy JSON values', () => {
+		expect(isJSON('false')).toBe(true);
+		expect(isJSON('null')).toBe(true);
+		expect(isJSON('0')).toBe(true);
+		expect(isJSON('""')).toBe(true);
+	});
+
 	it('returns false for malformed JSON', () => {
 		expect(isJSON('{ not json }')).toBe(false);
 		expect(isJSON('{"a":')).toBe(false);
 		expect(isJSON('')).toBe(false);
-	});
-
-	it('returns false for parseable but falsy JSON (checks truthiness of the parsed value)', () => {
-		expect(isJSON('false')).toBe(false);
-		expect(isJSON('null')).toBe(false);
-		expect(isJSON('0')).toBe(false);
-		expect(isJSON('""')).toBe(false);
 	});
 });

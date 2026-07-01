@@ -9,6 +9,12 @@ describe('getCodeSettingError', () => {
 		expect(getCodeSettingError('application/json', '{}')).toBe(undefined);
 	});
 
+	it('treats valid but falsy JSON values as valid', () => {
+		expect(getCodeSettingError('application/json', 'false')).toBe(undefined);
+		expect(getCodeSettingError('application/json', 'null')).toBe(undefined);
+		expect(getCodeSettingError('application/json', '0')).toBe(undefined);
+	});
+
 	it('treats an empty string as valid', () => {
 		expect(getCodeSettingError('application/json', '')).toBe(undefined);
 	});
