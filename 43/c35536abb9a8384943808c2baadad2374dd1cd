@@ -1,0 +1,23 @@
+apps/meteor/MIGRATION_PLAN.md
+  s_5088f849e79ed3::t_4912ff21ec625a 22-46
+  s_5088f849e79ed3::t_7ad54f2c40f436 635-674
+  s_5088f849e79ed3::t_4c0d220f7879e1 725
+  s_5088f849e79ed3::t_087f6e0d3db0ea 609-610
+  s_5088f849e79ed3::t_8cb358e020ca44 187-188
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.5",
+  "base_commit_sha": "43c35536abb9a8384943808c2baadad2374dd1cd",
+  "prompts": {},
+  "sessions": {
+    "s_5088f849e79ed3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b97ad97d-f0ce-4acc-b5a5-6ccece9e6c15",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

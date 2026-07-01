@@ -1,0 +1,42 @@
+apps/meteor/jest.config.ts
+  s_4f0a491a9a83f0::t_0376af0fadceb7 52-54
+apps/meteor/.mocharc.js
+  s_4f0a491a9a83f0::t_51a4e28d82e4b7 12-14
+  s_4f0a491a9a83f0::t_5908bb79295640 34
+apps/meteor/server/api/lib/eraseTeam.spec.ts
+  s_4f0a491a9a83f0::t_7c19b202deb49a 79,148,169,206,229,259
+  s_4f0a491a9a83f0::t_d5d4561ff487de 78,147,168,205,228,258
+  s_4f0a491a9a83f0::t_2fcba79bb5e320 32,80,149,170,207,230,239,260
+apps/meteor/tests/unit/app/api/server/v1/lib/checkPermissionsForInvocation.spec.ts
+  s_4f0a491a9a83f0::t_794ee8436cc892 16
+  s_4f0a491a9a83f0::t_5240d93adf4582 24
+apps/meteor/MIGRATION_PLAN.md
+  s_4f0a491a9a83f0::t_90f12402cafd55 714-732
+  s_4f0a491a9a83f0::t_6ede672aa31ade 745
+  s_4f0a491a9a83f0::t_f37a5eb30e7c1b 286,288
+apps/meteor/tests/unit/app/api/server/v1/lib/checkPermissions.spec.ts
+  s_4f0a491a9a83f0::t_9d25ccbce01634 9
+apps/meteor/server/api/lib/getUserInfo.spec.ts
+  s_4f0a491a9a83f0::t_fc479b8c69ad2f 6
+  s_4f0a491a9a83f0::t_1689dababafbd0 26
+apps/meteor/server/api/lib/getServerInfo.spec.ts
+  s_4f0a491a9a83f0::t_1e714a9d3ff52c 15,20,23,26
+apps/meteor/app/file-upload/server/lib/FileUpload.spec.ts
+  s_4f0a491a9a83f0::t_d53e86b90cf6e1 52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.5",
+  "base_commit_sha": "7aa0b354c4a354b19cba546f6b48d56b30518b45",
+  "prompts": {},
+  "sessions": {
+    "s_4f0a491a9a83f0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "15fd2221-4a87-41c4-a8e9-6170d3c21df4",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
