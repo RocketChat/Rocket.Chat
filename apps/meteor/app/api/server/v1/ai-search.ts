@@ -201,6 +201,10 @@ const parseQueryBoolean = (value: unknown, defaultValue = false): boolean => {
 
 const parseQueryDate = (value: string | undefined): Date | undefined => (value ? new Date(value) : undefined);
 
+const getErrorLogContext = (error: unknown): { errorType: string } => ({
+	errorType: error instanceof Error ? error.name : typeof error,
+});
+
 const getRoomMap = async (roomIds: string[]): Promise<Map<string, Pick<IRoom, '_id' | 't' | 'name' | 'fname'>>> => {
 	if (!roomIds.length) {
 		return new Map();
@@ -314,7 +318,7 @@ API.v1.get(
 
 		if (!includeSpotlight && !includeMessages && !includeIntelligent) {
 			const aiSearchStatus = await AISearch.status().catch((error) => {
-				this.logger.warn({ msg: 'AI search status unavailable', err: error });
+				this.logger.warn({ msg: 'AI search status unavailable', ...getErrorLogContext(error) });
 
 				return {
 					hasIntelligentSearchLicense: false,
@@ -359,7 +363,7 @@ API.v1.get(
 						type: { users: true, rooms: true, includeFederatedRooms: true },
 					}),
 			AISearch.status().catch((error) => {
-				this.logger.warn({ msg: 'AI search status unavailable', err: error });
+				this.logger.warn({ msg: 'AI search status unavailable', ...getErrorLogContext(error) });
 
 				return {
 					hasIntelligentSearchLicense: false,
@@ -408,7 +412,7 @@ API.v1.get(
 					limit: intelligentLimit,
 				});
 			} catch (error) {
-				this.logger.warn({ msg: 'AI search request failed', err: error });
+				this.logger.warn({ msg: 'AI search request failed', ...getErrorLogContext(error) });
 				intelligentResults = [];
 			}
 		}
