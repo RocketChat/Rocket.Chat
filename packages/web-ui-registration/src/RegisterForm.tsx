@@ -136,7 +136,7 @@ export const RegisterForm = ({ setLoginRoute }: RegisterFormProps) => {
 			tabIndex={-1}
 			ref={registerFormRef}
 			aria-labelledby={formLabelId}
-			aria-describedby='welcomeTitle'
+			aria-describedby='welcome-title'
 			onSubmit={handleSubmit(handleRegister)}
 		>
 			<FormHeader>
