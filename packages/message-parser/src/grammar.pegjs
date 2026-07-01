@@ -14,6 +14,7 @@
     image,
     inlineCode,
     inlineKatex,
+    horizontalRule,
     italic,
     katex,
     lineBreak,
@@ -57,6 +58,7 @@ Blocks
   = Blockquote
   / BlockSpoiler
   / Code
+  / HorizontalRule
   / Heading
   / Tasks
   / OrderedList
@@ -238,6 +240,23 @@ KatexInlineEnd
  *
 */
 LineBreak = Space* EndOfLine { return lineBreak(); }
+
+/**
+ *
+ * Horizontal Rule (thematic break)
+ * e.g: ---, ----------
+ *
+ * A line made up of 3+ contiguous dashes, with nothing else on the line
+ * (leading/trailing spaces allowed). Only `-` is accepted: CommonMark also
+ * allows `*` and `_`, but those collide with emphasis and with censored words
+ * (bad-words masks a term as a run of `*`), so a bare `***` / `_______` line
+ * stays as text/emphasis instead of turning into a divider.
+ *
+*/
+HorizontalRule = [ \t]* loc:HorizontalRuleMarkers [ \t]* (EndOfLine / !.) { return horizontalRule(loc); }
+
+HorizontalRuleMarkers
+  = "-" |3..| { return [range().start, range().end]; }
 
 /**
  *

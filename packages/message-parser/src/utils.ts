@@ -18,6 +18,7 @@ import type {
 	Link,
 	Timestamp,
 	SourceRange,
+	HorizontalRule,
 } from './definitions';
 
 const generate =
@@ -268,6 +269,12 @@ export const reducePlainTexts = (values: Paragraph['value']): Paragraph['value']
 export const lineBreak = (): LineBreak => ({
 	type: 'LINE_BREAK',
 	value: undefined,
+});
+
+export const horizontalRule = (fallback?: SourceRange): HorizontalRule => ({
+	type: 'HORIZONTAL_RULE',
+	value: undefined,
+	...(fallback !== undefined && { fallback }),
 });
 
 export const katex = (content: string): KaTeX => ({

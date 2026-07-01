@@ -128,6 +128,14 @@ export type LineBreak = {
 	value: undefined;
 };
 
+export type HorizontalRule = {
+	type: 'HORIZONTAL_RULE';
+	value: undefined;
+	// New form is a `[start, end]` offset span; the `Plain` form is kept in the
+	// type only to tolerate previously-persisted data at runtime.
+	fallback?: SourceRange | Plain;
+};
+
 export type KaTeX = {
 	type: 'KATEX';
 	value: string;
@@ -205,6 +213,7 @@ export type Types = {
 	LIST_ITEM: ListItem;
 	IMAGE: Image;
 	LINE_BREAK: LineBreak;
+	HORIZONTAL_RULE: HorizontalRule;
 	KATEX: KaTeX;
 	INLINE_KATEX: InlineKaTeX;
 	TIMESTAMP: Timestamp;
@@ -230,7 +239,8 @@ export type ASTNode =
 	| ChannelMention
 	| Emoji
 	| Color
-	| Tasks;
+	| Tasks
+	| HorizontalRule;
 
 export type TypesKeys = keyof Types;
 
@@ -250,6 +260,17 @@ export type Inlines =
 	| Color
 	| InlineKaTeX;
 
-export type Blocks = Code | Heading | Quote | SpoilerBlock | ListItem | Tasks | OrderedList | UnorderedList | LineBreak | KaTeX;
+export type Blocks =
+	| Code
+	| Heading
+	| Quote
+	| SpoilerBlock
+	| ListItem
+	| Tasks
+	| OrderedList
+	| UnorderedList
+	| LineBreak
+	| KaTeX
+	| HorizontalRule;
 
 export type Root = Array<Paragraph | Blocks> | [BigEmoji];

@@ -258,6 +258,12 @@ export const LineBreak: StoryObj<typeof Markup> = {
 	},
 };
 
+export const HorizontalRule: StoryObj<typeof Markup> = {
+	args: {
+		tokens: parse('above\n---\nbelow'),
+	},
+};
+
 export const Example: StoryObj<{ msg: string }> = {
 	render: ({ msg }) => {
 		const parseOptions: Options = { katex: { dollarSyntax: true, parenthesisSyntax: true }, colors: true, emoticons: true };
@@ -286,6 +292,8 @@ export const Example: StoryObj<{ msg: string }> = {
 		- [x] Chores
 		- [ ] Dishes
 		- [x] Laundry
+
+		---
 
 		> Cogito ergo sum.
 		> Sit amet, consectetur adipiscing elit.
