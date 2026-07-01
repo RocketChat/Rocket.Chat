@@ -1,11 +1,9 @@
 import { parse } from '../src';
 import { bold, horizontalRule, paragraph, plain } from './helpers';
 
-// `fallback` is the [start, end] offset span of the marker run in the source
+// Only dashes form a horizontal rule; `fallback` is the [start, end] offset span of the run.
 test.each([
 	['---', [0, 3] as [number, number]],
-	['***', [0, 3] as [number, number]],
-	['___', [0, 3] as [number, number]],
 	['----------', [0, 10] as [number, number]],
 	['   ---   ', [3, 6] as [number, number]],
 ])('parses %p as a horizontal rule', (input, range) => {
@@ -16,6 +14,14 @@ test.each([
 
 test('parses a horizontal rule between paragraphs', () => {
 	expect(parse('above\n---\nbelow')).toEqual([paragraph([plain('above')]), horizontalRule([6, 9]), paragraph([plain('below')])]);
+});
+
+// `*` and `_` are NOT horizontal rules: they collide with emphasis and with censored
+// words (bad-words masks a term as a run of `*`), so a bare `***` / `_______` / `*******`
+// line must stay text/emphasis rather than becoming a divider.
+test.each(['***', '___', '*******', '_______'])('does not treat %p as a horizontal rule', (input) => {
+	const [node] = parse(input);
+	expect(node.type).not.toBe('HORIZONTAL_RULE');
 });
 
 test.each([

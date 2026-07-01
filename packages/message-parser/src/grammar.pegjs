@@ -244,18 +244,19 @@ LineBreak = Space* EndOfLine { return lineBreak(); }
 /**
  *
  * Horizontal Rule (thematic break)
- * e.g: ---, ***, ___
+ * e.g: ---, ----------
  *
- * A line made up of 3+ contiguous copies of the same marker (-, * or _), with
- * nothing else on the line (leading/trailing spaces allowed). Spaced variants
- * (e.g. `* * *`) are intentionally not matched, to preserve the existing
- * whitespace-emphasis behavior of `** **` / `__ __`.
+ * A line made up of 3+ contiguous dashes, with nothing else on the line
+ * (leading/trailing spaces allowed). Only `-` is accepted: CommonMark also
+ * allows `*` and `_`, but those collide with emphasis and with censored words
+ * (bad-words masks a term as a run of `*`), so a bare `***` / `_______` line
+ * stays as text/emphasis instead of turning into a divider.
  *
 */
 HorizontalRule = [ \t]* loc:HorizontalRuleMarkers [ \t]* (EndOfLine / !.) { return horizontalRule(loc); }
 
 HorizontalRuleMarkers
-  = ("-" |3..| / "*" |3..| / "_" |3..|) { return [range().start, range().end]; }
+  = "-" |3..| { return [range().start, range().end]; }
 
 /**
  *
