@@ -42,7 +42,10 @@ const dryRun = args.includes('--dry-run');
 // EE code is protected by the Enterprise license *only* because it lives under an
 // `ee/` path. A move that crosses the boundary in either direction would silently
 // relicense the file, so we refuse it loudly before touching anything.
-const hasEESegment = (p) => p.split('/').includes('ee');
+// Normalize (resolve + relativize against ROOT) before checking, so `..` segments
+// can't sneak a boundary-crossing path past a raw string match (e.g. `ee/../server`
+// contains the literal `ee` segment but actually resolves into the community tree).
+const hasEESegment = (p) => path.relative(ROOT, path.resolve(ROOT, p)).split(path.sep).includes('ee');
 if (hasEESegment(fromRel) !== hasEESegment(toRel)) {
 	console.error('License-boundary violation: a move must keep `ee/` sources under `ee/` and community sources outside `ee/`.');
 	console.error(`  from: ${fromRel} (ee: ${hasEESegment(fromRel)})`);
