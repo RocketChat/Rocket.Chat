@@ -6,26 +6,24 @@ import { useTranslation } from 'react-i18next';
 import SidebarCard from './SidebarCard';
 import AudioPlayerControls from '../../components/AudioPlayer/AudioPlayerControls';
 import { useFormatMemorySize } from '../../hooks/useFormatMemorySize';
-import { useOpenedRoom } from '../../lib/RoomManager';
 import { setMessageJumpQueryStringParameter } from '../../lib/utils/setMessageJumpQueryStringParameter';
 import { useMediaPlayer } from '../../providers/MediaPlayerProvider';
 import { useGoToRoom } from '../../views/room/hooks/useGoToRoom';
 
 /**
  * Persistent audio card pinned to the bottom of the sidebar (design 1c).
- * It drives the shared audio element, so playback survives switching or closing
- * the room where the audio was sent. Hidden while the source room is open (the
- * in-message player is visible there).
+ * It drives the shared audio element, so it stays available while a track is
+ * loaded — including after switching or closing the room, or closing the thread
+ * the audio was played from.
  */
 const NowPlayingSection = () => {
 	const { t } = useTranslation();
 	const { track, playing, currentTime, duration, playbackRate, toggle, seek, cyclePlaybackRate, close } = useMediaPlayer();
 	const goToRoom = useGoToRoom();
-	const openedRoom = useOpenedRoom();
 	const formatMemorySize = useFormatMemorySize();
 	const displayName = useUserDisplayName({ name: track?.name, username: track?.username });
 
-	if (!track || (track.rid && track.rid === openedRoom)) {
+	if (!track) {
 		return null;
 	}
 
