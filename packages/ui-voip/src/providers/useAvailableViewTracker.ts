@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useSyncExternalStore } from 'react';
+import { useCallback, useMemo, useRef, useSyncExternalStore } from "react";
 
 import type { AvailableViews } from '../context/MediaCallInstanceContext';
 
@@ -13,14 +13,13 @@ const filter = (view: AvailableViews, _index: number, array: AvailableViews[]) =
 	}
 };
 
-const FLUSH_DELAY = 100;
 
 const useAvailableViewTracker = () => {
 	const viewsRef = useRef<Set<AvailableViews>>(new Set<AvailableViews>());
 	const filteredViewsRef = useRef<AvailableViews[]>([]);
 
 	const [registerView, unregisterView, subscribeToViews] = useMemo(() => {
-		let timeout: NodeJS.Timeout | undefined;
+		
 
 		let sub: (() => void) | undefined = undefined;
 		const subscribeToViews = (onStoreChange: () => void) => {
@@ -34,20 +33,16 @@ const useAvailableViewTracker = () => {
 		// It is used to prevent an useEffect from unregistering the view too early
 		// Specially when the view will be re-registered when the effect runs again
 		// meaning it should not have unregistered at all
-		const flushDebounced = () => {
-			if (timeout) {
-				clearTimeout(timeout);
-				timeout = undefined;
+		const flush = () => {
+			const viewsArray = [...viewsRef.current].filter(filter);
+			
+			
+			if (viewsArray.length === filteredViewsRef.current.length && viewsArray.every((view) => filteredViewsRef.current.includes(view))) {
+				return;
 			}
-
-			timeout = setTimeout(() => {
-				const viewsArray = [...viewsRef.current].filter(filter);
-				if (viewsArray.length === filteredViewsRef.current.length && viewsArray.every((view) => filteredViewsRef.current.includes(view))) {
-					return;
-				}
-				filteredViewsRef.current = viewsArray;
-				return sub?.();
-			}, FLUSH_DELAY);
+			
+			filteredViewsRef.current = viewsArray;
+			return sub?.();
 		};
 
 		const unregisterView = (view: AvailableViews) => {
@@ -55,7 +50,7 @@ const useAvailableViewTracker = () => {
 				return;
 			}
 			viewsRef.current.delete(view);
-			flushDebounced();
+			flush();
 		};
 
 		const registerView = (view: AvailableViews) => {
@@ -63,7 +58,7 @@ const useAvailableViewTracker = () => {
 				return;
 			}
 			viewsRef.current.add(view);
-			flushDebounced();
+			flush();
 		};
 
 		return [registerView, unregisterView, subscribeToViews];
