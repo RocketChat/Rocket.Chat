@@ -17,6 +17,7 @@ import ChannelsSelectElement from '../elements/ChannelsSelectElement/ChannelsSel
 import MultiChannelsSelectElement from '../elements/ChannelsSelectElement/MultiChannelsSelectElement';
 import CheckboxElement from '../elements/CheckboxElement';
 import DatePickerElement from '../elements/DatePickerElement';
+import DateTimePickerElement from '../elements/DateTimePickerElement';
 import IconButtonElement from '../elements/IconButtonElement';
 import IconElement from '../elements/IconElement';
 import ImageElement from '../elements/ImageElement';
@@ -196,6 +197,18 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 		return (
 			<AppIdProvider key={block.actionId || index} appId={block.appId}>
 				<DatePickerElement block={block} context={context} index={index} surfaceRenderer={this} />
+			</AppIdProvider>
+		);
+	}
+
+	datetimepicker(block: UiKit.DateTimePickerElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
+
+		return (
+			<AppIdProvider key={block.actionId || index} appId={block.appId}>
+				<DateTimePickerElement block={block} context={context} index={index} surfaceRenderer={this} />
 			</AppIdProvider>
 		);
 	}

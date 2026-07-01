@@ -144,6 +144,8 @@ export const InputWithLinearScale = createStory(payloads.inputWithLinearScale, {
 	'input-0': 'Error',
 });
 
+export const InputWithDateTimePicker = createStory(payloads.inputWithDateTimePicker);
+
 export const InputWithNumberInput = createStory(payloads.inputWithNumberInput);
 
 export const InputWithEmailInput = createStory(payloads.inputWithEmailInput);
