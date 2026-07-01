@@ -1,0 +1,59 @@
+apps/meteor/app/file-upload/server/methods/sendFileMessage.spec.ts
+  s_1f71abf9de6ecc::t_59c2b9f9399f89 25-26
+apps/meteor/tests/unit/server/services/team/service.tests.ts
+  s_1f71abf9de6ecc::t_59c2b9f9399f89 5-32
+apps/meteor/tests/unit/server/lib/OutboundMessageProvider.spec.ts
+  s_1f71abf9de6ecc::t_59c2b9f9399f89 7
+apps/meteor/tests/unit/server/services/apps-engine/service.tests.ts
+  s_1f71abf9de6ecc::t_59c2b9f9399f89 4
+apps/meteor/ee/tests/unit/apps/livechat-enterprise/lib/AutoTransferChatsScheduler.tests.ts
+  s_1f71abf9de6ecc::t_15ba53ff39e1d8 132,175,177,186,188,206,213,220,229,249,265,281
+apps/meteor/tests/unit/app/importer/server/recordConverter.spec.ts
+  s_1f71abf9de6ecc::t_15ba53ff39e1d8 64,107,116
+apps/meteor/tests/unit/server/methods/banUserFromRoom.spec.ts
+  s_1f71abf9de6ecc::t_59c2b9f9399f89 3,5-25,27-29,31-32,34-42
+apps/meteor/tests/unit/server/startup/initialData.tests.ts
+  s_1f71abf9de6ecc::t_59c2b9f9399f89 197-198
+apps/meteor/tests/unit/server/services/calendar/statusEvents/cancelUpcomingStatusChanges.tests.ts
+  s_1f71abf9de6ecc::t_59c2b9f9399f89 3,34
+apps/meteor/tests/unit/app/cloud/server/functions/syncWorkspace/syncCloudData.spec.ts
+  s_1f71abf9de6ecc::t_59c2b9f9399f89 28-30
+apps/meteor/tests/unit/app/importer/server/messageConverter.spec.ts
+  s_1f71abf9de6ecc::t_15ba53ff39e1d8 46,61,63,83,103,120,136,161,187,207
+apps/meteor/ee/tests/unit/server/hooks/messages/BeforeSaveCannedResponse.tests.ts
+  s_1f71abf9de6ecc::t_59c2b9f9399f89 4
+apps/meteor/ee/tests/unit/apps/livechat-enterprise/server/lib/QueueInactivityMonitor.spec.ts
+  s_1f71abf9de6ecc::t_15ba53ff39e1d8 88
+apps/meteor/tests/unit/app/apps/server/messages.tests.js
+  s_1f71abf9de6ecc::t_fbe774a40189c3 2
+apps/meteor/ee/tests/unit/apps/livechat-enterprise/lib/AutoCloseOnHold.tests.ts
+  s_1f71abf9de6ecc::t_59c2b9f9399f89 5
+  s_1f71abf9de6ecc::t_15ba53ff39e1d8 215,230,242,257,268,279
+apps/meteor/tests/unit/server/services/omnichannel/queue.tests.ts
+  s_1f71abf9de6ecc::t_15ba53ff39e1d8 90,102,108,119,125,131,160-161,167-169,172,178-180,182,189-191,193,200-201,256,262,268,308,316,331-333,339-341,348,356,364,383-384,390-391,393,399-401,403,417-418,421,425-427,430-431,434,448,451
+  s_1f71abf9de6ecc::t_59c2b9f9399f89 274-279
+apps/meteor/tests/unit/app/importer/server/roomConverter.spec.ts
+  s_1f71abf9de6ecc::t_15ba53ff39e1d8 102-103,160-161
+apps/meteor/tests/unit/server/services/calendar/statusEvents/removeCronJobs.tests.ts
+  s_1f71abf9de6ecc::t_59c2b9f9399f89 16
+apps/meteor/tests/unit/app/lib/server/apps/disableAppsWithAddonsCallback.spec.ts
+  s_1f71abf9de6ecc::t_59c2b9f9399f89 4-5
+apps/meteor/tests/unit/app/meteor-accounts-saml/loginHandler.spec.ts
+  s_1f71abf9de6ecc::t_59c2b9f9399f89 39-40
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.8",
+  "base_commit_sha": "2a7b2406c0e869cefd3a3f2a31612692ab7c42ae",
+  "prompts": {},
+  "sessions": {
+    "s_1f71abf9de6ecc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "51b20a49-303d-4c1d-bfd2-982b908094fe",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
