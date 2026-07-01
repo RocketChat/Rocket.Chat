@@ -12,18 +12,18 @@ describe.skip('#getServerInfo()', () => {
 
 	before(() => {
 		const { getServerInfo: importedGetServerInfo } = proxyquire.noCallThru().load('./getServerInfo', {
-			'../../../utils/rocketchat.info': {
+			'../../../app/utils/rocketchat.info': {
 				Info: {
 					version: '3.0.1',
 				},
 			},
-			'../../../authorization/server/functions/hasPermission': {
+			'../../../app/authorization/server/functions/hasPermission': {
 				hasPermissionAsync: hasAllPermissionAsyncMock,
 			},
-			'../../../cloud/server/functions/supportedVersionsToken/supportedVersionsToken': {
+			'../../../app/cloud/server/functions/supportedVersionsToken/supportedVersionsToken': {
 				getCachedSupportedVersionsToken: getCachedSupportedVersionsTokenMock,
 			},
-			'../../../settings/server': {
+			'../../../app/settings/server': {
 				settings: new Map(),
 			},
 		});

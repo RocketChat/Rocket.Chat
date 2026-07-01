@@ -29,7 +29,7 @@ describe('eraseTeam (TypeScript) module', () => {
 			},
 			'eraseRoomStub': sandbox.stub().resolves(true),
 			'deleteRoomStub': sandbox.stub().resolves(),
-			'../../../../server/lib/logger/system': {
+			'../../lib/logger/system': {
 				SystemLogger: {
 					error: sandbox.stub(),
 				},
@@ -75,9 +75,9 @@ describe('eraseTeam (TypeScript) module', () => {
 		subject = proxyquire('./eraseTeam', {
 			'@rocket.chat/apps': stubs['@rocket.chat/apps'],
 			'@rocket.chat/models': stubs['@rocket.chat/models'],
-			'../../../../server/lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
-			'../../../lib/server/functions/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
-			'../../../../server/lib/logger/system': stubs['../../../../server/lib/logger/system'],
+			'../../lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
+			'../../../app/lib/server/functions/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
+			'../../lib/logger/system': stubs['../../lib/logger/system'],
 			'@rocket.chat/core-services': {
 				MeteorError: stubs['@rocket.chat/core-services'].MeteorError,
 				Team: stubs.Team,
@@ -144,9 +144,9 @@ describe('eraseTeam (TypeScript) module', () => {
 			const base = proxyquire('./eraseTeam', {
 				'@rocket.chat/apps': stubs['@rocket.chat/apps'],
 				'@rocket.chat/models': stubs['@rocket.chat/models'],
-				'../../../../server/lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
-				'../../../lib/server/functions/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
-				'../../../../server/lib/logger/system': stubs['../../../../server/lib/logger/system'],
+				'../../lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
+				'../../../app/lib/server/functions/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
+				'../../lib/logger/system': stubs['../../lib/logger/system'],
 				'@rocket.chat/core-services': {
 					MeteorError: stubs['@rocket.chat/core-services'].MeteorError,
 					Team: stubs.Team,
@@ -165,9 +165,9 @@ describe('eraseTeam (TypeScript) module', () => {
 			baseModule = proxyquire('./eraseTeam', {
 				'@rocket.chat/apps': stubs['@rocket.chat/apps'],
 				'@rocket.chat/models': stubs['@rocket.chat/models'],
-				'../../../../server/lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
-				'../../../lib/server/functions/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
-				'../../../../server/lib/logger/system': stubs['../../../../server/lib/logger/system'],
+				'../../lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
+				'../../../app/lib/server/functions/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
+				'../../lib/logger/system': stubs['../../lib/logger/system'],
 				'@rocket.chat/core-services': {
 					MeteorError: stubs['@rocket.chat/core-services'].MeteorError,
 					Team: stubs.Team,
@@ -202,9 +202,9 @@ describe('eraseTeam (TypeScript) module', () => {
 			const m = proxyquire('./eraseTeam', {
 				'@rocket.chat/apps': AppsStub,
 				'@rocket.chat/models': stubs['@rocket.chat/models'],
-				'../../../../server/lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
-				'../../../lib/server/functions/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
-				'../../../../server/lib/logger/system': stubs['../../../../server/lib/logger/system'],
+				'../../lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
+				'../../../app/lib/server/functions/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
+				'../../lib/logger/system': stubs['../../lib/logger/system'],
 				'@rocket.chat/core-services': {
 					MeteorError: stubs['@rocket.chat/core-services'].MeteorError,
 					Team: stubs.Team,
@@ -225,9 +225,9 @@ describe('eraseTeam (TypeScript) module', () => {
 			const m = proxyquire('./eraseTeam', {
 				'@rocket.chat/apps': stubs['@rocket.chat/apps'],
 				'@rocket.chat/models': stubs['@rocket.chat/models'],
-				'../../../../server/lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
-				'../../../lib/server/functions/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
-				'../../../../server/lib/logger/system': stubs['../../../../server/lib/logger/system'],
+				'../../lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
+				'../../../app/lib/server/functions/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
+				'../../lib/logger/system': stubs['../../lib/logger/system'],
 				'@rocket.chat/core-services': {
 					MeteorError: stubs['@rocket.chat/core-services'].MeteorError,
 					Team: stubs.Team,
@@ -236,7 +236,7 @@ describe('eraseTeam (TypeScript) module', () => {
 
 			const res = await m.eraseRoomLooseValidation('r');
 			expect(res).to.be.false;
-			sinon.assert.calledOnce(stubs['../../../../server/lib/logger/system'].SystemLogger.error);
+			sinon.assert.calledOnce(stubs['../../lib/logger/system'].SystemLogger.error);
 		});
 
 		it('calls post-deleted event and returns true on success', async () => {
@@ -255,9 +255,9 @@ describe('eraseTeam (TypeScript) module', () => {
 			const m = proxyquire('./eraseTeam', {
 				'@rocket.chat/apps': AppsStub,
 				'@rocket.chat/models': stubs['@rocket.chat/models'],
-				'../../../../server/lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
-				'../../../lib/server/functions/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
-				'../../../../server/lib/logger/system': stubs['../../../../server/lib/logger/system'],
+				'../../lib/eraseRoom': { __esModule: true, eraseRoom: stubs.eraseRoomStub },
+				'../../../app/lib/server/functions/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
+				'../../lib/logger/system': stubs['../../lib/logger/system'],
 				'@rocket.chat/core-services': {
 					MeteorError: stubs['@rocket.chat/core-services'].MeteorError,
 					Team: stubs.Team,

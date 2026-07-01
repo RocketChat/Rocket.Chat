@@ -3,7 +3,7 @@ import type { CachedSettings } from '../../../app/settings/server/CachedSettings
 
 const mockInfoVersion = jest.fn(() => '7.5.0');
 
-jest.mock('../../../utils/rocketchat.info', () => ({
+jest.mock('../../../app/utils/rocketchat.info', () => ({
 	Info: {
 		get version() {
 			return mockInfoVersion();
@@ -23,7 +23,7 @@ jest.mock('@rocket.chat/models', () => ({
 
 const settings = new Map<string, unknown>();
 
-jest.mock('../../../settings/server', () => ({
+jest.mock('../../../app/settings/server', () => ({
 	settings: {
 		getByRegexp(_id) {
 			return [...settings].filter(([key]) => key.match(_id)) as any;

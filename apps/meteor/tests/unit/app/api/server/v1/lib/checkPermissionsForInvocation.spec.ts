@@ -13,7 +13,7 @@ const userPermissions: { [k: string]: string[] } = {
 };
 
 const mocks = {
-	'../../authorization/server/functions/hasPermission': {
+	'../../app/authorization/server/functions/hasPermission': {
 		hasAllPermissionAsync: (userId: string, permissions: string[]): boolean => {
 			return permissions.every((permission) => userPermissions[userId].includes(permission));
 		},
@@ -21,7 +21,7 @@ const mocks = {
 			return permissions.some((permission) => userPermissions[userId].includes(permission));
 		},
 	},
-	'../../lib/server/lib/deprecationWarningLogger': {
+	'../../app/lib/server/lib/deprecationWarningLogger': {
 		apiDeprecationLogger: {
 			endpoint: Sinon.stub(),
 		},

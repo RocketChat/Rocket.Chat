@@ -6,7 +6,7 @@ import Sinon from 'sinon';
 import type { PermissionsPayload } from '../../../../../../../server/api/api.helpers';
 
 const mocks = {
-	'../../lib/server/lib/deprecationWarningLogger': {
+	'../../app/lib/server/lib/deprecationWarningLogger': {
 		apiDeprecationLogger: {
 			endpoint: Sinon.stub(),
 		},
