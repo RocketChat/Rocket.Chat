@@ -259,6 +259,7 @@ export function addSettings(): Promise<void> {
 					await this.add('LDAP_Groups_To_Rocket_Chat_Teams', '{}', {
 						type: 'code',
 						code: 'application/json',
+						multiline: true,
 						enableQuery: enableQueryTeams,
 						invalidValue: '{}',
 					});

@@ -78,9 +78,12 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 	const onChangeValue = useCallback(
 		(value: SettingValue) => {
 			setValue(value);
+			if (isJSONCodeSetting) {
+				dispatch([{ _id: persistedSetting._id, invalid: isInvalidJSONValue(value) }]);
+			}
 			update({ value });
 		},
-		[update],
+		[update, dispatch, isJSONCodeSetting, persistedSetting._id],
 	);
 
 	const onChangeEditor = useCallback(
