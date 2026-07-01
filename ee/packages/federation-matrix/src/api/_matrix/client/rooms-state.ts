@@ -186,6 +186,10 @@ export const addRoomsStateRoutes = (router: ClientRouter) => {
 		)
 
 		// GET /_matrix/client/v3/rooms/:roomId/state/:eventType/
+		// The optional-param route below (`:stateKey?`) matches `/state/:eventType` and
+		// `/state/:eventType/:stateKey`, but NOT the trailing-slash form `/state/:eventType/`
+		// (an empty final segment). Bridges request that trailing-slash URL for the
+		// default (empty) state key, so this explicit route handles it with stateKey=''.
 		.get(
 			'/v3/rooms/:roomId/state/:eventType/',
 			{
