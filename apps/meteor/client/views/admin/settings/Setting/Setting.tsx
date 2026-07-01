@@ -9,9 +9,9 @@ import { Trans, useTranslation } from 'react-i18next';
 import MemoizedSetting from './MemoizedSetting';
 import MarkdownText from '../../../../components/MarkdownText';
 import { links } from '../../../../lib/links';
+import { isInvalidJSONValue } from '../../../../lib/utils/isInvalidJSONValue';
 import { useEditableSetting, useEditableSettingsDispatch, useEditableSettingVisibilityQuery } from '../../EditableSettingsContext';
 import { useHasSettingModule } from '../hooks/useHasSettingModule';
-import { isInvalidJSONValue } from '../lib/isInvalidJSONValue';
 
 const PRICING_URL = links.go.pricing;
 
@@ -111,11 +111,6 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 
 	const labelText = (i18n.exists(i18nLabel) && t(i18nLabel)) || (i18n.exists(_id) && t(_id)) || i18nLabel || _id;
 
-	const error = useMemo(
-		() => (isJSONCodeSetting && isInvalidJSONValue(value) ? t('Invalid_JSON') : undefined),
-		[isJSONCodeSetting, value, t],
-	);
-
 	const hint = useMemo(
 		() => (i18nDescription && i18n.exists(i18nDescription) ? <MarkdownText variant='inline' content={t(i18nDescription)} /> : undefined),
 		[i18n, i18nDescription, t],
@@ -188,7 +183,6 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 			disabled={disabled || shouldDisableEnterprise}
 			value={value}
 			editor={editor}
-			error={error}
 			hasResetButton={hasResetButton}
 			onChangeValue={onChangeValue}
 			onChangeEditor={onChangeEditor}

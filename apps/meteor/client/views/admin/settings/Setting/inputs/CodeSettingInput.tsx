@@ -1,5 +1,7 @@
 import { FieldLabel, FieldHint, FieldRow, Field, FieldError } from '@rocket.chat/fuselage';
+import { useTranslation } from 'react-i18next';
 
+import { isInvalidJSONValue } from '../../../../../lib/utils/isInvalidJSONValue';
 import ResetSettingButton from '../ResetSettingButton';
 import CodeMirror from './CodeMirror';
 import CodeMirrorBox from './CodeMirror/CodeMirrorBox';
@@ -16,7 +18,6 @@ function CodeSettingInput({
 	_id,
 	label,
 	hint,
-	error,
 	value = '',
 	code,
 	placeholder,
@@ -28,6 +29,9 @@ function CodeSettingInput({
 	onChangeValue,
 	onResetButtonClick,
 }: CodeSettingInputProps) {
+	const { t } = useTranslation();
+	const invalid = code === 'application/json' && isInvalidJSONValue(value);
+
 	const handleChange = (value: string): void => {
 		onChangeValue(value);
 	};
@@ -53,7 +57,7 @@ function CodeSettingInput({
 					onChange={handleChange}
 				/>
 			</CodeMirrorBox>
-			{error && <FieldError>{error}</FieldError>}
+			{invalid && <FieldError>{t('Invalid_JSON')}</FieldError>}
 		</Field>
 	);
 }
