@@ -37,7 +37,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 
 	const { instance, audioElement, openRoomId, registerView, unregisterView } = useMediaCallInstance();
 
-	const { sessionState, toggleWidget, selectPeer } = useMediaSession(instance);
+	const { sessionState, toggleWidget, openDialer, closeDialer, selectPeer } = useMediaSession(instance);
 	const controls = useMediaSessionControls(instance);
 
 	useDesktopNotifications(sessionState);
@@ -226,6 +226,23 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 			},
 			[toggleWidget],
 		),
+	);
+
+	useWidgetExternalControlSignalListener(
+		'openDialer',
+		useCallback(
+			({ peerInfo }) => {
+				openDialer(peerInfo);
+			},
+			[openDialer],
+		),
+	);
+
+	useWidgetExternalControlSignalListener(
+		'closeDialer',
+		useCallback(() => {
+			closeDialer();
+		}, [closeDialer]),
 	);
 
 	const { onChangePosition, getRestorePosition } = useWidgetPositionTracker();

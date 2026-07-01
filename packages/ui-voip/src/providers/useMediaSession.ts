@@ -59,6 +59,13 @@ const reducer = (
 				payload: { peerInfo?: PeerInfo };
 		  }
 		| {
+				type: 'openDialer';
+				payload: { peerInfo?: PeerInfo };
+		  }
+		| {
+				type: 'closeDialer';
+		  }
+		| {
 				type: 'instance_updated';
 				payload: SessionState;
 		  }
@@ -81,6 +88,29 @@ const reducer = (
 			}
 			return { ...reducerState, state: 'closed' };
 		}
+	}
+
+	// Idempotent intents (open/close the idle dialer). Unlike `toggleWidget`, calling
+	// them repeatedly is safe, so callers can express "ensure open/closed" without
+	// tracking the current state (e.g. StrictMode double-invoked effects).
+	if (action.type === 'openDialer') {
+		if (reducerState.state === 'closed') {
+			return { ...reducerState, state: 'new', peerInfo: action.payload?.peerInfo };
+		}
+
+		if (reducerState.state === 'new' && action.payload?.peerInfo) {
+			return { ...reducerState, peerInfo: action.payload.peerInfo };
+		}
+
+		return reducerState;
+	}
+
+	if (action.type === 'closeDialer') {
+		if (reducerState.state === 'new') {
+			return { ...reducerState, state: 'closed' };
+		}
+
+		return reducerState;
 	}
 
 	if (action.type === 'instance_updated') {
@@ -109,6 +139,8 @@ const reducer = (
 export type MediaSessionStateWithWidgetControls = {
 	sessionState: SessionState;
 	toggleWidget: (peerInfo?: PeerInfo) => void;
+	openDialer: (peerInfo?: PeerInfo) => void;
+	closeDialer: () => void;
 	selectPeer: (peerInfo: PeerInfo) => void;
 };
 
@@ -247,6 +279,14 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 		dispatch({ type: 'toggleWidget', payload: { peerInfo } });
 	}, []);
 
+	const openDialer = useCallback((peerInfo?: PeerInfo) => {
+		dispatch({ type: 'openDialer', payload: { peerInfo } });
+	}, []);
+
+	const closeDialer = useCallback(() => {
+		dispatch({ type: 'closeDialer' });
+	}, []);
+
 	const selectPeer = useCallback((peerInfo: PeerInfo) => {
 		dispatch({ type: 'selectPeer', payload: { peerInfo } });
 	}, []);
@@ -262,6 +302,8 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 	return {
 		sessionState: mediaSession,
 		toggleWidget,
+		openDialer,
+		closeDialer,
 		selectPeer,
 	};
 };
