@@ -7,6 +7,7 @@ import type { ImageBlock } from '../../blocks/layout/ImageBlock';
 import type { InfoCardBlock } from '../../blocks/layout/InfoCardBlock';
 import type { PreviewBlock } from '../../blocks/layout/PreviewBlock';
 import type { SectionBlock } from '../../blocks/layout/SectionBlock';
+import type { VideoBlock } from '../../blocks/layout/VideoBlock';
 import type { VideoConferenceBlock } from '../../blocks/layout/VideoConferenceBlock';
 import { SurfaceRenderer } from '../../rendering/SurfaceRenderer';
 
@@ -17,6 +18,7 @@ type MessageSurfaceLayoutBlock =
 	| HeaderBlock
 	| ImageBlock
 	| SectionBlock
+	| VideoBlock
 	| VideoConferenceBlock
 	| PreviewBlock
 	| CalloutBlock
@@ -24,7 +26,7 @@ type MessageSurfaceLayoutBlock =
 
 export abstract class UiKitParserMessage<OutputElement> extends SurfaceRenderer<OutputElement, MessageSurfaceLayoutBlock> {
 	public constructor() {
-		super(['actions', 'context', 'divider', 'header', 'image', 'section', 'preview', 'video_conf', 'callout']);
+		super(['actions', 'context', 'divider', 'header', 'image', 'section', 'preview', 'video', 'video_conf', 'callout']);
 	}
 }
 

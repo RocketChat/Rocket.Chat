@@ -44,6 +44,7 @@ export type { HeaderBlock } from './blocks/layout/HeaderBlock';
 export type { ImageBlock } from './blocks/layout/ImageBlock';
 export type { InputBlock } from './blocks/layout/InputBlock';
 export type { SectionBlock } from './blocks/layout/SectionBlock';
+export type { VideoBlock } from './blocks/layout/VideoBlock';
 export type { VideoConferenceBlock } from './blocks/layout/VideoConferenceBlock';
 export type { LayoutBlock } from './blocks/LayoutBlock';
 export type { CalloutBlock } from './blocks/layout/CalloutBlock';

@@ -10,6 +10,7 @@ import type { InfoCardBlock } from './layout/InfoCardBlock';
 import type { InputBlock } from './layout/InputBlock';
 import type { PreviewBlock } from './layout/PreviewBlock';
 import type { SectionBlock } from './layout/SectionBlock';
+import type { VideoBlock } from './layout/VideoBlock';
 import type { VideoConferenceBlock } from './layout/VideoConferenceBlock';
 
 export type LayoutBlock =
@@ -22,6 +23,7 @@ export type LayoutBlock =
 	| ImageBlock
 	| InputBlock
 	| SectionBlock
+	| VideoBlock
 	| VideoConferenceBlock
 	| CalloutBlock
 	| ExperimentalTabNavigationBlock

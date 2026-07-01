@@ -6,6 +6,7 @@ import type { HeaderBlock } from '../../blocks/layout/HeaderBlock';
 import type { ImageBlock } from '../../blocks/layout/ImageBlock';
 import type { InputBlock } from '../../blocks/layout/InputBlock';
 import type { SectionBlock } from '../../blocks/layout/SectionBlock';
+import type { VideoBlock } from '../../blocks/layout/VideoBlock';
 import { SurfaceRenderer } from '../../rendering/SurfaceRenderer';
 
 type ModalSurfaceLayoutBlock =
@@ -16,11 +17,12 @@ type ModalSurfaceLayoutBlock =
 	| ImageBlock
 	| InputBlock
 	| SectionBlock
+	| VideoBlock
 	| CalloutBlock;
 
 export abstract class UiKitParserModal<OutputElement> extends SurfaceRenderer<OutputElement, ModalSurfaceLayoutBlock> {
 	public constructor() {
-		super(['actions', 'context', 'divider', 'header', 'image', 'input', 'section', 'callout']);
+		super(['actions', 'context', 'divider', 'header', 'image', 'input', 'section', 'video', 'callout']);
 	}
 }
 
