@@ -6,10 +6,12 @@ import type {
 	IRoom,
 	RocketChatRecordDeleted,
 	IVoIPVideoConference,
+	VideoConferenceWithDiscussion,
 } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import type { FindPaginated, InsertionModel, IVideoConferenceModel } from '@rocket.chat/model-typings';
 import type {
+	AggregationCursor,
 	FindCursor,
 	UpdateOptions,
 	UpdateFilter,
@@ -18,6 +20,8 @@ import type {
 	Collection,
 	Db,
 	CountDocumentsOptions,
+	FindOptions,
+	WithId,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -32,24 +36,48 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			{ key: { rid: 1, createdAt: 1 }, unique: false },
 			{ key: { type: 1, status: 1 }, unique: false },
 			{ key: { discussionRid: 1 }, unique: false },
+			{ key: { mediaCallIds: 1 }, unique: true, sparse: true },
+			{ key: { providerName: 1, sipAlias: 1 }, unique: true, partialFilterExpression: { sipAlias: { $exists: true } } },
 		];
 	}
 
 	public findPaginatedByRoomId(
 		rid: IRoom['_id'],
 		{ offset, count }: { offset?: number; count?: number } = {},
-	): FindPaginated<FindCursor<VideoConference>> {
-		return this.findPaginated(
-			{ rid },
+	): FindPaginated<AggregationCursor<VideoConferenceWithDiscussion>> {
+		// Match conferences started in this room (`rid`) and those whose discussion is this room
+		// (`discussionRid`), so a discussion room resolves the conference it belongs to — its members
+		// may not have access to the parent room the conference originated in.
+		const matchFilter = { $or: [{ rid }, { discussionRid: rid }] };
+		const pipeline: object[] = [
+			{ $match: matchFilter },
+			{ $sort: { createdAt: -1 } },
+			...(offset ? [{ $skip: offset }] : []),
+			...(count ? [{ $limit: count }] : []),
 			{
-				sort: { createdAt: -1 },
-				skip: offset,
-				limit: count,
-				projection: {
-					providerData: 0,
+				$lookup: {
+					from: 'rocketchat_room',
+					localField: 'discussionRid',
+					foreignField: '_id',
+					as: 'discussionRoom',
+					pipeline: [{ $project: { fname: 1, name: 1, lastMessage: 1 } }],
 				},
 			},
-		);
+			{
+				$addFields: {
+					discussionTitle: {
+						$ifNull: [{ $first: '$discussionRoom.fname' }, { $first: '$discussionRoom.name' }],
+					},
+					discussionLastMessage: { $first: '$discussionRoom.lastMessage' },
+				},
+			},
+			{ $project: { providerData: 0, discussionRoom: 0 } },
+		];
+
+		return {
+			cursor: this.col.aggregate<VideoConferenceWithDiscussion>(pipeline),
+			totalCount: this.col.countDocuments(matchFilter),
+		};
 	}
 
 	public async findAllLongRunning(minDate: Date): Promise<FindCursor<Pick<VideoConference, '_id'>>> {
@@ -104,8 +132,12 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 
 	public async createGroup({
 		providerName,
+		mediaCallIds,
+		sipAlias,
+		discussionRid,
 		...callDetails
-	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName' | 'ringing'>>): Promise<string> {
+	}: Required<Pick<IGroupVideoConference, 'rid' | 'title' | 'createdBy' | 'providerName'>> &
+		Pick<IGroupVideoConference, 'mediaCallIds' | 'sipAlias' | 'discussionRid'>): Promise<string> {
 		const call: InsertionModel<IGroupVideoConference> = {
 			type: 'videoconference',
 			users: [],
@@ -114,6 +146,9 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			anonymousUsers: 0,
 			createdAt: new Date(),
 			providerName: providerName.toLowerCase(),
+			...(mediaCallIds?.length && { mediaCallIds }),
+			...(sipAlias && { sipAlias }),
+			...(discussionRid && { discussionRid }),
 			...callDetails,
 		};
 
@@ -158,12 +193,20 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 				endedBy,
 				endedAt: endedAt || new Date(),
 			},
+			$unset: {
+				sipAlias: true,
+			},
 		});
 	}
 
-	public async setDataById(callId: string, data: Partial<Omit<VideoConference, '_id'>>): Promise<void> {
+	public async setDataById(callId: string, data: Partial<Omit<VideoConference, '_id' | 'sipAlias'>>): Promise<void> {
+		const isOver =
+			data.status !== undefined &&
+			[VideoConferenceStatus.EXPIRED, VideoConferenceStatus.ENDED, VideoConferenceStatus.DECLINED].includes(data.status);
+
 		await this.updateOneById(callId, {
 			$set: data,
+			...(isOver && { $unset: { sipAlias: true } }),
 		});
 	}
 
@@ -176,10 +219,15 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 	}
 
 	public async setStatusById(callId: string, status: VideoConference['status']): Promise<void> {
+		const isOver = [VideoConferenceStatus.EXPIRED, VideoConferenceStatus.ENDED, VideoConferenceStatus.DECLINED].includes(status);
+
 		await this.updateOneById(callId, {
 			$set: {
 				status,
 			},
+			...(isOver && {
+				$unset: { sipAlias: true },
+			}),
 		});
 	}
 
@@ -300,6 +348,68 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 					discussionRid: 1,
 				},
 			},
+		);
+	}
+
+	public async findOneByMediaCallId<T extends VideoConference>(callId: string, options?: FindOptions<T>): Promise<T | null> {
+		return this.findOne<T>(
+			{
+				mediaCallIds: callId,
+			},
+			options || {},
+		);
+	}
+
+	public async addMediaCallIdByProviderNameAndSipAlias(
+		providerName: string,
+		sipAlias: string,
+		mediaCallId: string,
+	): Promise<WithId<VideoConference> | null> {
+		return this.findOneAndUpdate(
+			{
+				providerName,
+				sipAlias,
+				status: VideoConferenceStatus.STARTED,
+				mediaCallIds: { $not: { $eq: mediaCallId } },
+			},
+			{
+				$addToSet: {
+					mediaCallIds: mediaCallId,
+				},
+			},
+			{
+				returnDocument: 'after',
+			},
+		);
+	}
+
+	public async addMediaCallIdByConferenceId(conferenceId: string, mediaCallId: string): Promise<UpdateResult> {
+		return this.updateOneById(conferenceId, {
+			$addToSet: {
+				mediaCallIds: mediaCallId,
+			},
+		});
+	}
+
+	public async setSipAliasById(callId: string, sipAlias: string): Promise<void> {
+		await this.updateOne({ _id: callId }, { $set: { sipAlias } });
+	}
+
+	public async unsetSipAliasById(callId: string): Promise<void> {
+		await this.updateOne({ _id: callId }, { $unset: { sipAlias: true } });
+	}
+
+	public async findOneByProviderNameAndSipAlias<T extends VideoConference>(
+		providerName: string,
+		sipAlias: string,
+		options?: FindOptions<T>,
+	): Promise<T | null> {
+		return this.findOne<T>(
+			{
+				providerName,
+				sipAlias,
+			},
+			options || {},
 		);
 	}
 }

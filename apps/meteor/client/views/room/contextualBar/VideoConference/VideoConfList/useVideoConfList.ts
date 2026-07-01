@@ -1,4 +1,4 @@
-import type { IRoom, VideoConference } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
@@ -19,18 +19,16 @@ export const useVideoConfList = ({ roomId }: { roomId: IRoom['_id'] }) => {
 			});
 
 			return {
-				items: data.map(
-					(videoConf): VideoConference => ({
-						...videoConf,
-						_updatedAt: new Date(videoConf._updatedAt),
-						createdAt: new Date(videoConf.createdAt),
-						endedAt: videoConf.endedAt ? new Date(videoConf.endedAt) : undefined,
-						users: videoConf.users.map((user) => ({
-							...user,
-							ts: new Date(user.ts),
-						})),
-					}),
-				),
+				items: data.map((videoConf) => ({
+					...videoConf,
+					_updatedAt: new Date(videoConf._updatedAt),
+					createdAt: new Date(videoConf.createdAt),
+					endedAt: videoConf.endedAt ? new Date(videoConf.endedAt) : undefined,
+					users: videoConf.users.map((user) => ({
+						...user,
+						ts: new Date(user.ts),
+					})),
+				})),
 				itemCount: total,
 			};
 		},

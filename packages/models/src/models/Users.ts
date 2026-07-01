@@ -69,6 +69,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			{ key: { openBusinessHours: 1 }, sparse: true },
 			{ key: { statusLivechat: 1 }, sparse: true },
 			{ key: { freeSwitchExtension: 1 }, sparse: true, unique: true },
+			{ key: { 'phones.number': 1 }, sparse: true },
 			{ key: { language: 1 }, sparse: true },
 			{ key: { 'active': 1, 'services.email2fa.enabled': 1 }, sparse: true }, // used by statistics
 			{ key: { 'active': 1, 'services.totp.enabled': 1 }, sparse: true }, // used by statistics
@@ -2808,6 +2809,15 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
+	findByPhone<T extends Document = IUser>(phoneNumber: string, options: FindOptions<IUser> = {}): FindCursor<T> {
+		return this.find<T>(
+			{
+				'phones.number': phoneNumber,
+			} as Filter<IUser>,
+			options,
+		);
+	}
+
 	// UPDATE
 	addImportIds(_id: IUser['_id'], importIds: string[]) {
 		importIds = ([] as string[]).concat(importIds);
@@ -3094,6 +3104,11 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 						},
 					}),
 		};
+		return this.updateOne({ _id }, update);
+	}
+
+	setPhones(_id: IUser['_id'], phones: IUser['phones']) {
+		const update: UpdateFilter<IUser> = phones?.length ? { $set: { phones } } : { $unset: { phones: 1 } };
 		return this.updateOne({ _id }, update);
 	}
 

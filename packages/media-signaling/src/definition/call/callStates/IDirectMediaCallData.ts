@@ -11,6 +11,7 @@ export interface IDirectMediaCallData {
 	readonly features: readonly CallFeature[];
 	readonly state: CallState;
 	readonly hidden: boolean;
+	readonly escalated: boolean;
 
 	readonly transferredBy: CallContact | null;
 

@@ -3,6 +3,7 @@ import { Box, Icon, Palette } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 
 import { useDraggableWidget } from './WidgetDraggableContext';
+import { useMediaCallWidgetSlot } from '../../context/MediaCallWidgetSlotContext';
 
 const dragHandle = css`
 	cursor: grab;
@@ -21,6 +22,12 @@ const dragHandle = css`
 
 const WidgetHandle = (props: ComponentProps<typeof Box>) => {
 	const { handleRef } = useDraggableWidget();
+	const { inline } = useMediaCallWidgetSlot();
+
+	if (inline) {
+		return null;
+	}
+
 	return (
 		<Box height={20} display='flex' flexDirection='row' justifyContent='center' className={dragHandle} ref={handleRef} {...props}>
 			<Icon name='stacked-meatballs' size='x20' />

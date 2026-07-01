@@ -25,6 +25,19 @@ export const getExternalContact = (item: ExternalCallEndpointData['item']): Call
 		};
 	}
 
+	if (item.contactNumber) {
+		return {
+			number: item.contactNumber,
+			name: item.contactName,
+		};
+	}
+
+	if (item.contactName) {
+		return {
+			name: item.contactName,
+		};
+	}
+
 	return { unknown: true };
 };
 
@@ -48,6 +61,9 @@ const MediaCallHistoryExternal = ({ data, onClose }: MediaCallHistoryExternalPro
 
 	const actions = useMemo(() => {
 		if (state !== 'available') {
+			return {};
+		}
+		if (!('number' in contact) || !contact.number) {
 			return {};
 		}
 		return {

@@ -1,5 +1,5 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { useUserAvatarPath, useUserId } from '@rocket.chat/ui-contexts';
+import { useSetting, useUserAvatarPath, useUserId } from '@rocket.chat/ui-contexts';
 import type { TranslationKey, RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import type { PeerInfo } from '@rocket.chat/ui-voip';
 import { useMediaCallAction } from '@rocket.chat/ui-voip';
@@ -36,6 +36,12 @@ export const useMediaCallRoomAction = () => {
 
 	const { data } = useUserInfoQuery({ userId: peerId as string }, { enabled: !!peerId });
 
+	// When internal calls are routed through SIP, the callee is only reachable if they
+	// have a phone extension assigned. Without SIP routing the call is peer-to-peer and
+	// no extension is required.
+	const routeInternalCallsViaSip = useSetting('VoIP_TeamCollab_SIP_Integration_For_Internal_Calls', false);
+	const peerHasExtension = Boolean(data?.user?.freeSwitchExtension);
+
 	const peerInfo = useMemo<PeerInfo | undefined>(() => {
 		if (!data?.user?._id) {
 			return undefined;
@@ -59,6 +65,10 @@ export const useMediaCallRoomAction = () => {
 			return undefined;
 		}
 
+		if (routeInternalCallsViaSip && !peerHasExtension) {
+			return undefined;
+		}
+
 		const { action, title, icon } = callAction;
 
 		return {
@@ -69,5 +79,5 @@ export const useMediaCallRoomAction = () => {
 			action: () => action(),
 			groups: ['direct'] as const,
 		};
-	}, [peerId, callAction, blocked, federated]);
+	}, [peerId, callAction, blocked, federated, routeInternalCallsViaSip, peerHasExtension]);
 };

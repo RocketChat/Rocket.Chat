@@ -20,6 +20,7 @@ const defaultSessionInfo: SessionState = {
 	startedAt: undefined,
 	hidden: false,
 	supportedFeatures: ['audio', 'transfer', 'hold'],
+	escalated: false,
 };
 
 export const getExtensionFromInstanceContact = (contact: CallContact): string | undefined => {
@@ -51,6 +52,9 @@ const reducer = (
 				type: 'reset';
 		  }
 		| {
+				type: 'call_cleared';
+		  }
+		| {
 				type: 'selectPeer';
 				payload: { peerInfo?: PeerInfo };
 		  }
@@ -73,6 +77,12 @@ const reducer = (
 		}
 
 		if (reducerState.state === 'new') {
+			// If a peer is supplied while the dialer is already open, replace the
+			// peer instead of toggling closed — keeps "Call rodrigo" working when
+			// the dialer is already mounted (e.g. inside the sidebar rail panel).
+			if (action.payload?.peerInfo) {
+				return { ...reducerState, peerInfo: action.payload.peerInfo };
+			}
 			return { ...reducerState, state: 'closed' };
 		}
 	}
@@ -90,6 +100,17 @@ const reducer = (
 	}
 
 	if (action.type === 'reset') {
+		return defaultSessionInfo;
+	}
+
+	// No active call on the instance. Tear down call-derived state, but preserve a user-driven
+	// idle compose widget ('new') — e.g. a dial pad pre-filled from a desktop telephony deeplink —
+	// which the instance's autoSync emit would otherwise clobber right after it initializes.
+	if (action.type === 'call_cleared') {
+		if (reducerState.state === 'new') {
+			return reducerState;
+		}
+
 		return defaultSessionInfo;
 	}
 
@@ -120,7 +141,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 		const updateSessionState = () => {
 			const instanceState = instance.getState();
 			if (!instanceState) {
-				dispatch({ type: 'reset' });
+				dispatch({ type: 'call_cleared' });
 				return;
 			}
 
@@ -131,7 +152,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 			const state = deriveWidgetStateFromCallState(callState, role);
 
 			if (!state) {
-				dispatch({ type: 'reset' });
+				dispatch({ type: 'call_cleared' });
 				return;
 			}
 
@@ -158,6 +179,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 						callId: instanceState.tempCallId,
 						startedAt: undefined,
 						supportedFeatures: [],
+						escalated: false,
 					},
 				});
 				return;
@@ -169,16 +191,32 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 				activeTimestamp: startedAt,
 				features: supportedFeatures,
 				transferredBy: callTransferredBy,
+				escalated,
 				remoteParticipant: { muted: remoteMuted, held: remoteHeld, contact },
 			} = instanceState;
 
 			const transferredBy = callTransferredBy?.displayName || callTransferredBy?.username || undefined;
 
+			const avatarUrl = (() => {
+				if (contact.username) {
+					return getAvatarUrl({ username: contact.username });
+				}
+
+				if (contact.type === 'user' && contact.id) {
+					return getAvatarUrl({ userId: contact.id });
+				}
+
+				return undefined;
+			})();
+
 			if (contact.type === 'sip') {
 				dispatch({
 					type: 'instance_updated',
 					payload: {
-						peerInfo: derivePeerInfoFromInstanceContact(contact),
+						peerInfo: {
+							...derivePeerInfoFromInstanceContact(contact),
+							avatarUrl,
+						},
 						transferredBy,
 						state,
 						muted,
@@ -190,24 +228,16 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 						callId,
 						startedAt,
 						supportedFeatures,
+						escalated,
 					},
 				});
 				return;
 			}
 
-			const avatarUrl = (() => {
-				if (contact.username) {
-					return getAvatarUrl({ username: contact.username });
-				}
-
-				if (contact.id) {
-					return getAvatarUrl({ userId: contact.id });
-				}
-
-				return undefined;
-			})();
-
-			const peerInfo = { ...derivePeerInfoFromInstanceContact(contact), avatarUrl };
+			const peerInfo = {
+				...derivePeerInfoFromInstanceContact(contact),
+				avatarUrl,
+			};
 
 			dispatch({
 				type: 'instance_updated',
@@ -224,6 +254,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 					callId,
 					startedAt,
 					supportedFeatures,
+					escalated,
 				},
 			});
 		};

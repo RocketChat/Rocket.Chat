@@ -1,5 +1,3 @@
-import type { UIActionButtonContext } from './UIActionButtonContext';
-
 export enum RoomTypeFilter {
 	PUBLIC_CHANNEL = 'public_channel',
 	PRIVATE_CHANNEL = 'private_channel',
@@ -20,22 +18,52 @@ export enum MessageActionContext {
 }
 
 export interface IUActionButtonWhen {
-	roomTypes?: Array<RoomTypeFilter>;
-	messageActionContext?: Array<MessageActionContext>;
 	hasOnePermission?: Array<string>;
 	hasAllPermissions?: Array<string>;
 	hasOneRole?: Array<string>;
 	hasAllRoles?: Array<string>;
 }
 
-export interface IUIActionButtonDescriptor {
+export type IUIActionButtonDescriptorBase = {
 	actionId: string;
-	context: UIActionButtonContext;
 	labelI18n: string;
 	variant?: 'danger';
-	when?: IUActionButtonWhen;
 	category?: 'default' | 'ai';
+};
+
+export type IUIActionButtonDescriptorDefault<K extends string> = IUIActionButtonDescriptorBase & {
+	context: K;
+	when?: IUActionButtonWhen;
+};
+
+export type MessageBoxActionButton = IUIActionButtonDescriptorDefault<'messageBoxAction'>;
+
+export type UserDropdownActionButton = IUIActionButtonDescriptorDefault<'userDropdownAction'>;
+
+export type RoomSideBarActionButton = IUIActionButtonDescriptorDefault<'roomSideBarAction'>;
+
+export type MessageActionButton = IUIActionButtonDescriptorBase & {
+	context: 'messageAction';
+	when?: IUActionButtonWhen & { messageActionContext?: MessageActionContext[] };
+};
+
+export type RoomActionButton = IUIActionButtonDescriptorBase & {
+	context: 'roomAction';
+	when?: IUActionButtonWhen & { roomTypes?: RoomTypeFilter[] };
+};
+
+export interface IUIActionButtonDescriptorMap {
+	messageBoxAction: MessageBoxActionButton;
+	userDropdownAction: UserDropdownActionButton;
+	roomSideBarAction: RoomSideBarActionButton;
+	messageAction: MessageActionButton;
+	roomAction: RoomActionButton;
 }
-export interface IUIActionButton extends IUIActionButtonDescriptor {
-	appId: string;
-}
+
+export type IUIActionButtonDescriptor = {
+	[K in keyof IUIActionButtonDescriptorMap]: IUIActionButtonDescriptorMap[K];
+}[keyof IUIActionButtonDescriptorMap];
+
+export type UIActionButtonAvailableContexts = `${IUIActionButtonDescriptorMap[keyof IUIActionButtonDescriptorMap]['context']}`;
+
+export type IUIActionButton = IUIActionButtonDescriptor & { appId: string };

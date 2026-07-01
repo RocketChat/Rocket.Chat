@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useCallSounds } from './useCallSounds';
 import { useDesktopNotifications } from './useDesktopNotifications';
+import { useDesktopTelephonyListener } from './useDesktopTelephonyListener';
 import { useMediaSession } from './useMediaSession';
 import { useMediaSessionControls } from './useMediaSessionControls';
 import { useScreenShareStreams } from './useScreenShareStreams';
@@ -23,6 +24,7 @@ import MediaCallViewContext from '../context/MediaCallViewContext';
 import type { PeerInfo } from '../context/definitions';
 import { stopTracks, useDevicePermissionPrompt2, PermissionRequestCancelledCallRejectedError } from '../hooks/useDevicePermissionPrompt';
 import { isValidTone, useTonePlayer } from '../hooks/useTonePlayer';
+import { useVoiceToVideoEscalation } from '../hooks/useVoiceToVideoEscalation';
 import TransferModal from '../views/TransferModal';
 
 type MediaCallViewProviderProps = {
@@ -40,7 +42,11 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 	const { sessionState, toggleWidget, selectPeer } = useMediaSession(instance);
 	const controls = useMediaSessionControls(instance);
 
+	const { onRequestVideoCall, isRequestingVideoCall } = useVoiceToVideoEscalation(sessionState);
+
 	useDesktopNotifications(sessionState);
+
+	useDesktopTelephonyListener({ sessionState, toggleWidget, selectPeer });
 
 	const setOutputMediaDevice = useSetOutputMediaDevice();
 	const setInputMediaDevice = useSetInputMediaDevice();
@@ -67,14 +73,14 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 				if (!instance) {
 					return;
 				}
-				return instance.on('endedCall', () => {
-					if (sessionState.hidden) {
+				return instance.on('endedCall', ({ call, wasHidden }) => {
+					if (wasHidden || call.shouldSkipSoundEffects()) {
 						return;
 					}
 					callback();
 				});
 			},
-			[instance, sessionState.hidden],
+			[instance],
 		),
 	);
 
@@ -90,6 +96,12 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		const { peerInfo } = sessionState;
 
 		if (!peerInfo) {
+			return;
+		}
+
+		// A number peer can be emptied by clearing the dial-pad input; don't request media or
+		// attempt a SIP call with no destination.
+		if ('number' in peerInfo && peerInfo.number.trim() === '') {
 			return;
 		}
 
@@ -236,8 +248,33 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		});
 	}, [instance, onChangePosition]);
 
+	useEffect(() => {
+		if (!sessionState.escalated) {
+			return;
+		}
+
+		const state = instance?.getState();
+
+		if (!state?.confirmed) {
+			return;
+		}
+
+		if (!state?.call.hasScreenVideoTrack()) {
+			return;
+		}
+
+		try {
+			state.call.requestScreenShare(false);
+			dispatchToastMessage({ type: 'info', message: t('Screen_sharing_stopped_video_escalation') });
+		} catch (error) {
+			console.error('Error stopping screen share', error);
+		}
+	}, [sessionState.escalated, dispatchToastMessage, t, instance]);
+
 	const contextValue = {
 		sessionState,
+		isRequestingVideoCall,
+		onRequestVideoCall,
 		onClickDirectMessage,
 		onMute,
 		onHold,

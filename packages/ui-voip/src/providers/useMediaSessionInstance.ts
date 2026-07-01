@@ -46,6 +46,10 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 
 	private popoutWindow: Window | undefined;
 
+	public get callExternalWindow(): Window | undefined {
+		return this.popoutWindow;
+	}
+
 	constructor() {
 		super();
 	}
@@ -154,7 +158,7 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 			randomStringFactory,
 			oldSessionId: this.getOldSessionId(userId),
 			logger: this.logger,
-			features: ['audio', 'screen-share', 'transfer', 'hold'],
+			features: ['audio', 'screen-share', 'transfer', 'hold', 'conference-escalation'],
 			autoSync: true,
 		});
 
@@ -215,6 +219,10 @@ export const useSetPopoutWindow = (popoutWindow?: Window) => {
 		mediaSession.setPopoutWindow(popoutWindow);
 		return () => mediaSession.setPopoutWindow(undefined);
 	});
+};
+
+export const useActiveCallWindow = () => {
+	return mediaSession.callExternalWindow || window;
 };
 
 export const useMediaSessionInstance = (userId?: string) => {

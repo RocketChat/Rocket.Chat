@@ -64,18 +64,24 @@ const emptyArr: any[] = [];
 
 const getWrapperSettings = ({
 	sidebarGroupByType = false,
+	sidebarGroupTeamsAndChannels = false,
+	sidebarGroupUnlistedInConversations = false,
 	sidebarShowFavorites = false,
 	isDiscussionEnabled = false,
 	sidebarShowUnread = false,
+	sidebarSectionsOrder = undefined,
 	fakeRoom = undefined,
 }: {
 	sidebarGroupByType?: boolean;
+	sidebarGroupTeamsAndChannels?: boolean;
+	sidebarGroupUnlistedInConversations?: boolean;
 	sidebarShowFavorites?: boolean;
 	isDiscussionEnabled?: boolean;
 	sidebarShowUnread?: boolean;
+	sidebarSectionsOrder?: string[];
 	fakeRoom?: SubscriptionWithRoom;
-}) =>
-	mockAppRoot()
+}) => {
+	let root = mockAppRoot()
 		.wrap((children) => (
 			<VideoConfContext.Provider
 				value={
@@ -90,9 +96,18 @@ const getWrapperSettings = ({
 		.withUser(user)
 		.withSubscriptions([...fakeRooms, fakeRoom && fakeRoom].filter(Boolean) as unknown as SubscriptionWithRoom[])
 		.withUserPreference('sidebarGroupByType', sidebarGroupByType)
+		.withUserPreference('sidebarGroupTeamsAndChannels', sidebarGroupTeamsAndChannels)
+		.withUserPreference('sidebarGroupUnlistedInConversations', sidebarGroupUnlistedInConversations)
 		.withUserPreference('sidebarShowFavorites', sidebarShowFavorites)
 		.withUserPreference('sidebarShowUnread', sidebarShowUnread)
 		.withSetting('Discussion_enabled', isDiscussionEnabled);
+
+	if (sidebarSectionsOrder) {
+		root = root.withUserPreference('sidebarSectionsOrder', sidebarSectionsOrder);
+	}
+
+	return root;
+};
 
 it('should return roomList, groupsCount and groupsList', async () => {
 	const {
@@ -159,6 +174,92 @@ it('should return groupsList with "Teams" if sidebarGroupByType is enabled and r
 	const teamsIndex = groupsList.indexOf('Teams');
 	expect(groupsList).toContain('Teams');
 	expect(groupsCount[teamsIndex]).toEqual(teams.length);
+});
+
+it('should merge teams and channels into "Teams_and_channels" when sidebarGroupTeamsAndChannels is enabled', async () => {
+	const {
+		result: {
+			current: { groupsList, groupsCount },
+		},
+	} = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+		wrapper: getWrapperSettings({ sidebarGroupByType: true, sidebarGroupTeamsAndChannels: true }).build(),
+	});
+
+	expect(groupsList).toContain('Teams_and_channels');
+	expect(groupsList).not.toContain('Teams');
+	expect(groupsList).not.toContain('Channels');
+
+	const mergedIndex = groupsList.indexOf('Teams_and_channels');
+	// merged group holds every team plus every channel, so it is strictly larger than teams alone
+	expect(groupsCount[mergedIndex]).toBeGreaterThan(teams.length);
+	expect(groupsCount.reduce((a, b) => a + b, 0)).toBe(fakeRooms.length);
+});
+
+it('should keep "Teams" and "Channels" separate when sidebarGroupTeamsAndChannels is disabled', async () => {
+	const {
+		result: {
+			current: { groupsList },
+		},
+	} = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+		wrapper: getWrapperSettings({ sidebarGroupByType: true, sidebarGroupTeamsAndChannels: false }).build(),
+	});
+
+	expect(groupsList).toContain('Teams');
+	expect(groupsList).toContain('Channels');
+	expect(groupsList).not.toContain('Teams_and_channels');
+});
+
+it('should render the merged group even when the saved sidebarSectionsOrder predates it', async () => {
+	const legacyOrder = ['Unread', 'Favorites', 'Teams', 'Discussions', 'Channels', 'Direct_Messages', 'Conversations'];
+	const {
+		result: {
+			current: { groupsList },
+		},
+	} = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+		wrapper: getWrapperSettings({ sidebarGroupByType: true, sidebarGroupTeamsAndChannels: true })
+			.withUserPreference('sidebarSectionsOrder', legacyOrder)
+			.build(),
+	});
+
+	expect(groupsList).toContain('Teams_and_channels');
+});
+
+it('should drop rooms whose group is not in the visible sections (default behavior)', async () => {
+	// section order without "Direct_Messages": direct messages have nowhere to render
+	const orderWithoutDM = ['Unread', 'Drafts', 'Favorites', 'Teams', 'Discussions', 'Channels', 'Teams_and_channels', 'Conversations'];
+	const {
+		result: {
+			current: { roomList, groupsList },
+		},
+	} = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+		wrapper: getWrapperSettings({ sidebarGroupByType: true, sidebarSectionsOrder: orderWithoutDM }).build(),
+	});
+
+	expect(groupsList).not.toContain('Direct_Messages');
+	expect(groupsList).not.toContain('Conversations');
+	expect(roomList).not.toContain(directRooms[0]);
+});
+
+it('should route rooms of an unlisted group into "Conversations" when sidebarGroupUnlistedInConversations is enabled', async () => {
+	const orderWithoutDM = ['Unread', 'Drafts', 'Favorites', 'Teams', 'Discussions', 'Channels', 'Teams_and_channels', 'Conversations'];
+	const {
+		result: {
+			current: { roomList, groupsList, groupsCount },
+		},
+	} = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+		wrapper: getWrapperSettings({
+			sidebarGroupByType: true,
+			sidebarGroupUnlistedInConversations: true,
+			sidebarSectionsOrder: orderWithoutDM,
+		}).build(),
+	});
+
+	expect(groupsList).toContain('Conversations');
+	expect(groupsList).not.toContain('Direct_Messages');
+	expect(roomList).toContain(directRooms[0]);
+
+	const conversationsIndex = groupsList.indexOf('Conversations');
+	expect(groupsCount[conversationsIndex]).toBeGreaterThanOrEqual(directRooms.length);
 });
 
 it('should return groupsList with "Favorites" if sidebarShowFavorites is enabled', async () => {

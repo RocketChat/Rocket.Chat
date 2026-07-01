@@ -1,11 +1,12 @@
-import type { IVisitor } from '../../livechat';
-import type { IMessage } from '../../messages';
-import type { IRoom } from '../../rooms';
-import type { UIKitIncomingInteractionType } from '../IUIKitIncomingInteraction';
+import type { IVisitor } from '@rocket.chat/apps-engine/definition/livechat';
+import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import type {
 	IUIKitIncomingInteractionMessageContainer,
 	IUIKitIncomingInteractionModalContainer,
-} from '../UIKitIncomingInteractionContainer';
+} from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
+
+import type { UIKitIncomingInteractionType } from '../IUIKitIncomingInteraction';
 
 export interface IUIKitLivechatIncomingInteraction {
 	type: UIKitIncomingInteractionType;

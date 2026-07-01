@@ -1,6 +1,6 @@
 import type { IMediaCall, MediaCallSignedContact } from '@rocket.chat/core-typings';
-import { isBusyState } from '@rocket.chat/media-signaling';
-import type { ClientMediaSignal, ServerMediaSignal, CallFeature } from '@rocket.chat/media-signaling';
+import { isBusyState, isCallHangupReason } from '@rocket.chat/media-signaling';
+import type { ClientMediaSignal, ServerMediaSignal, CallFeature, CallHangupReason } from '@rocket.chat/media-signaling';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
 import { UserActorSignalProcessor } from './CallSignalProcessor';
@@ -56,7 +56,33 @@ export class UserActorAgent extends BaseMediaCallAgent {
 			callId,
 			type: 'notification',
 			notification: 'hangup',
+			hangupReason: await this.getCallHangupReasonForClient(callId),
 		});
+	}
+
+	private async getCallHangupReasonForClient(callId: string): Promise<CallHangupReason> {
+		const call = await MediaCalls.findOneById<Pick<IMediaCall, '_id' | 'endedBy' | 'hangupReason' | 'escalatedAt'>>(callId, {
+			projection: { endedBy: 1, hangupReason: 1, escalatedAt: 1 },
+		});
+		if (!call) {
+			return 'remote';
+		}
+
+		const { endedBy, hangupReason, escalatedAt } = call;
+		// If we requested an escalation, treat the hangup as normal
+		if (escalatedAt) {
+			return 'normal';
+		}
+
+		if (endedBy?.type !== this.actorType || endedBy?.id !== this.actorId) {
+			return 'remote';
+		}
+
+		if (hangupReason && isCallHangupReason(hangupReason)) {
+			return hangupReason;
+		}
+
+		return 'remote';
 	}
 
 	public async onCallActive(callId: string): Promise<void> {
@@ -156,6 +182,23 @@ export class UserActorAgent extends BaseMediaCallAgent {
 			requestedService: call.service,
 			requestedBy: call.transferredBy,
 			parentCallId: call._id,
+			features: call.features as CallFeature[],
+		});
+	}
+
+	public async onCallUpdated(callId: string): Promise<void> {
+		const call = await MediaCalls.findOneById(callId);
+
+		if (!call?.acceptedAt || call.ended) {
+			return;
+		}
+
+		const contact = this.getOtherCallActor(call);
+
+		await this.sendSignal({
+			type: 'update',
+			callId: call._id,
+			contact,
 			features: call.features as CallFeature[],
 		});
 	}

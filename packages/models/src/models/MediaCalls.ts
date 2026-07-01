@@ -89,10 +89,10 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 
 	public async acceptCallById(
 		callId: string,
-		data: { calleeContractId: string; supportedFeatures: string[] },
+		data: { calleeContractId: string; supportedFeatures: string[]; sipCallId?: string },
 		expiresAt: Date,
 	): Promise<UpdateResult> {
-		const { calleeContractId } = data;
+		const { calleeContractId, sipCallId } = data;
 
 		return this.updateOne(
 			{
@@ -105,6 +105,7 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 					'callee.contractId': calleeContractId,
 					'acceptedAt': new Date(),
 					expiresAt,
+					...(sipCallId && { sipCallId }),
 				},
 				$pull: {
 					features: {
@@ -146,6 +147,36 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 					endedAt: new Date(),
 					...(endedBy && { endedBy }),
 					...(reason && { hangupReason: reason }),
+				},
+			},
+		);
+	}
+
+	public async flagAsEscalatedByCallId(callId: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{
+				_id: callId,
+				ended: false,
+				escalatedAt: { $exists: false },
+			},
+			{
+				$set: {
+					escalatedAt: new Date(),
+				},
+			},
+		);
+	}
+
+	public async flagAsRemotelyEscalatedByCallId(callId: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{
+				_id: callId,
+				ended: false,
+				escalatedByPeerAt: { $exists: false },
+			},
+			{
+				$set: {
+					escalatedByPeerAt: new Date(),
 				},
 			},
 		);
@@ -209,6 +240,25 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
+	public findAllNotOverByOppositeSipExtension<T extends Document = IMediaCall>(
+		sipExtension: string,
+		options?: FindOptions<T>,
+	): FindCursor<T> {
+		return this.find(
+			{
+				ended: false,
+				expiresAt: {
+					$gt: new Date(),
+				},
+				$or: [
+					{ 'caller.type': 'user', 'caller.sipExtension': sipExtension, 'callee.type': 'sip' },
+					{ 'callee.type': 'user', 'callee.sipExtension': sipExtension, 'caller.type': 'sip' },
+				],
+			},
+			options,
+		);
+	}
+
 	public async hasUnfinishedCalls(): Promise<boolean> {
 		const count = await this.countDocuments({ ended: false }, { limit: 1 });
 		return count > 0;
@@ -224,5 +274,48 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 			{ limit: 1 },
 		);
 		return count > 0;
+	}
+
+	public async isUserInCallIds(uid: IUser['_id'], callIds: string[]): Promise<boolean> {
+		const count = await this.countDocuments(
+			{
+				uids: uid,
+				_id: { $in: callIds },
+			},
+			{ limit: 1 },
+		);
+		return count > 0;
+	}
+
+	public async isUserSipExtensionInCallIds(sipExtension: string, callIds: string[]): Promise<boolean> {
+		const count = await this.countDocuments(
+			{
+				_id: { $in: callIds },
+				$or: [
+					{ 'caller.type': 'user', 'caller.sipExtension': sipExtension },
+					{ 'callee.type': 'user', 'callee.sipExtension': sipExtension },
+				],
+			},
+			{ limit: 1 },
+		);
+		return count > 0;
+	}
+
+	public async updateParticipantsById(
+		callId: string,
+		participants: { caller?: MediaCallSignedContact; callee?: MediaCallSignedContact },
+	): Promise<UpdateResult> {
+		const { caller, callee } = participants;
+
+		if (!caller && !callee) {
+			throw new Error('participant-not-specified');
+		}
+
+		return this.updateOneById(callId, {
+			$set: {
+				...(caller && { caller }),
+				...(callee && { callee }),
+			},
+		});
 	}
 }

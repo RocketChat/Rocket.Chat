@@ -12,6 +12,8 @@ export type InternalPeerInfo = {
 
 export type ExternalPeerInfo = {
 	number: string;
+	displayName?: string;
+	avatarUrl?: string;
 };
 
 export type ConnectionState = 'CONNECTED' | 'CONNECTING' | 'RECONNECTING';
@@ -31,6 +33,7 @@ interface IBaseSession {
 	remoteHeld: boolean;
 	startedAt?: Date;
 	hidden: boolean;
+	escalated?: boolean;
 	supportedFeatures: readonly CallFeature[];
 }
 
