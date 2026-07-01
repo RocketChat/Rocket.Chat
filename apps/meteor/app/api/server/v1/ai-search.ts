@@ -245,7 +245,7 @@ const getSearchAnswerMessagesForUser = async (userId: string, messages: SearchAn
 		docs.map((message) => message.rid),
 	);
 	const subscribedDocs = docs.filter((message) => subscribedRoomIds.has(message.rid));
-	if (subscribedDocs.length !== docs.length) {
+	if (docs.length !== messageIds.length || subscribedDocs.length !== docs.length) {
 		throw new Meteor.Error('error-invalid-search-answer-sources');
 	}
 
