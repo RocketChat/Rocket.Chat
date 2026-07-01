@@ -9,6 +9,7 @@ import HeaderBlock from '../blocks/HeaderBlock';
 import ImageBlock from '../blocks/ImageBlock';
 import InfoCard from '../blocks/InfoCard';
 import InputBlock from '../blocks/InputBlock';
+import MarkdownBlock from '../blocks/MarkdownBlock';
 import PreviewBlock from '../blocks/PreviewBlock';
 import SectionBlock from '../blocks/SectionBlock';
 import VideoBlock from '../blocks/VideoBlock';
@@ -397,6 +398,18 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 	multi_channels_select(block: UiKit.MultiChannelsSelectElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
 		if (context === UiKit.BlockContext.FORM) {
 			return <MultiChannelsSelectElement block={block} context={context} index={index} surfaceRenderer={this} />;
+		}
+
+		return null;
+	}
+
+	markdown(block: UiKit.MarkdownBlock, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return (
+				<AppIdProvider key={index} appId={block.appId}>
+					<MarkdownBlock block={block} context={context} index={index} surfaceRenderer={this} />
+				</AppIdProvider>
+			);
 		}
 
 		return null;

@@ -2,7 +2,7 @@ import { FuselageSurfaceRenderer, renderTextObject } from './FuselageSurfaceRend
 
 export class ModalSurfaceRenderer extends FuselageSurfaceRenderer {
 	public constructor() {
-		super(['actions', 'context', 'divider', 'header', 'image', 'input', 'section', 'preview', 'video', 'callout']);
+		super(['actions', 'context', 'divider', 'header', 'image', 'input', 'markdown', 'section', 'preview', 'video', 'callout']);
 	}
 
 	override plain_text = renderTextObject;
