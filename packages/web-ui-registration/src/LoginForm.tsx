@@ -163,7 +163,7 @@ export const LoginForm = ({ setLoginRoute }: LoginFormProps) => {
 			tabIndex={-1}
 			ref={loginFormRef}
 			aria-labelledby={formLabelId}
-			aria-describedby='welcome-title'
+			aria-describedby='welcomeTitle'
 			onSubmit={handleSubmit(async (data) => loginMutation.mutate(data))}
 		>
 			<FormHeader>
