@@ -11089,7 +11089,7 @@ __metadata:
     react: "npm:~19.2.7"
     react-dom: "npm:~19.2.7"
     react-router-dom: "npm:^6.30.4"
-    react-split-pane: "npm:^0.1.92"
+    react-split-pane: "npm:^3.2.0"
     react-virtuoso: "npm:~4.18.10"
     reactflow: "npm:^11.11.4"
     typescript: "npm:~5.9.3"
@@ -31139,7 +31139,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.5.4, prop-types@npm:^15.6.0, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
+"prop-types@npm:^15.6.0, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -31828,13 +31828,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-lifecycles-compat@npm:^3.0.4":
-  version: 3.0.4
-  resolution: "react-lifecycles-compat@npm:3.0.4"
-  checksum: 10/c66b9c98c15cd6b0d0a4402df5f665e8cc7562fb7033c34508865bea51fd7b623f7139b5b7e708515d3cd665f264a6a9403e1fa7e6d61a05759066f5e9f07783
-  languageName: node
-  linkType: hard
-
 "react-redux@npm:^9.1.2":
   version: 9.2.0
   resolution: "react-redux@npm:9.2.0"
@@ -31878,17 +31871,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-split-pane@npm:^0.1.92":
-  version: 0.1.92
-  resolution: "react-split-pane@npm:0.1.92"
-  dependencies:
-    prop-types: "npm:^15.7.2"
-    react-lifecycles-compat: "npm:^3.0.4"
-    react-style-proptype: "npm:^3.2.2"
+"react-split-pane@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "react-split-pane@npm:3.2.0"
   peerDependencies:
-    react: ^16.0.0-0
-    react-dom: ^16.0.0-0
-  checksum: 10/d19e841dd494f44b814a1b47832dc7acac0a6d99eb127779209ff2c153a5db4e3fad8cb306284c7db96831b5e482cf11d791fac7e68bf0fd1e35bd567eadcd6a
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10/aa28526f50606470aff6a25ef777be70207a02ee8eec327ede1bc7c91daf4e4aa149240a6801c898092a73b595548cf96bdb2f31229cbf055b94722ddc97b6bd
   languageName: node
   linkType: hard
 
@@ -31967,15 +31956,6 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
   checksum: 10/0c34b5ca78d7a6407518a78f6b526d261661ab47ca204aea867d4e84e5e3f501316b3b234c7a2ad91e98f193d1df2babf92ec5bfca3ef8f2a18a627f0708631d
-  languageName: node
-  linkType: hard
-
-"react-style-proptype@npm:^3.2.2":
-  version: 3.2.2
-  resolution: "react-style-proptype@npm:3.2.2"
-  dependencies:
-    prop-types: "npm:^15.5.4"
-  checksum: 10/c068f10a639f743b311b3a6dd8bdd1b87436ab8d30a10ff4f30840a89decdd2e2eea33a2cefb504274ff58b624680d27f29daefece0f7435cfc8efae070d4e8d
   languageName: node
   linkType: hard
 
