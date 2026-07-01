@@ -1,10 +1,12 @@
-import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, FieldError } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
-const CodeMirrorBox = ({ label, children }: { label: ReactNode; children: ReactNode }) => {
+const errorBorderProps = { borderWidth: 2, borderStyle: 'solid', borderColor: 'error', borderRadius: 4 } as const;
+
+const CodeMirrorBox = ({ label, children, error }: { label: ReactNode; children: ReactNode; error?: string }) => {
 	const { t } = useTranslation();
 	const [fullScreen, toggleFullScreen] = useToggle(false);
 
@@ -25,9 +27,17 @@ const CodeMirrorBox = ({ label, children }: { label: ReactNode; children: ReactN
 				<Box fontScale='p1' mbe={4}>
 					{label}
 				</Box>
-				<Box display='flex' flexDirection='column' height='100%' role='code' aria-label={typeof label === 'string' ? label : undefined}>
+				<Box
+					display='flex'
+					flexDirection='column'
+					height='100%'
+					role='code'
+					aria-label={typeof label === 'string' ? label : undefined}
+					{...(error && errorBorderProps)}
+				>
 					{children}
 				</Box>
+				{error && <FieldError mbs={4}>{error}</FieldError>}
 				<Box mbs={8}>
 					<ButtonGroup>
 						<Button primary onClick={(): void => toggleFullScreen()}>
@@ -42,9 +52,17 @@ const CodeMirrorBox = ({ label, children }: { label: ReactNode; children: ReactN
 
 	return (
 		<Box className='code-mirror-box'>
-			<Box display='flex' flexDirection='column' height='100%' role='code' aria-label={typeof label === 'string' ? label : undefined}>
+			<Box
+				display='flex'
+				flexDirection='column'
+				height='100%'
+				role='code'
+				aria-label={typeof label === 'string' ? label : undefined}
+				{...(error && errorBorderProps)}
+			>
 				{children}
 			</Box>
+			{error && <FieldError mbs={4}>{error}</FieldError>}
 			<Box mbs={8}>
 				<ButtonGroup>
 					<Button primary onClick={(): void => toggleFullScreen()}>

@@ -1,4 +1,4 @@
-import { FieldLabel, FieldHint, FieldRow, Field, FieldError } from '@rocket.chat/fuselage';
+import { FieldLabel, FieldHint, FieldRow, Field } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import { isInvalidJSONValue } from '../../../../../lib/utils/isInvalidJSONValue';
@@ -45,7 +45,7 @@ function CodeSettingInput({
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
 			{hint && <FieldHint>{hint}</FieldHint>}
-			<CodeMirrorBox label={label}>
+			<CodeMirrorBox label={label} error={invalid ? t('Invalid_JSON') : undefined}>
 				<CodeMirror
 					id={_id}
 					mode={code}
@@ -57,7 +57,6 @@ function CodeSettingInput({
 					onChange={handleChange}
 				/>
 			</CodeMirrorBox>
-			{invalid && <FieldError>{t('Invalid_JSON')}</FieldError>}
 		</Field>
 	);
 }
