@@ -46,4 +46,16 @@ export class TestsUserBridge extends UserBridge {
 	protected deactivate(userId: IUser['id'], confirmRelinquish: boolean, appId: string): Promise<boolean> {
 		throw new Error('Method not implemented.');
 	}
+
+	protected setActiveState(
+		userId: IUser['id'],
+		state: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt'>,
+		appId: string,
+	): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+
+	protected endActiveState(userId: IUser['id'], appId: string): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
 }

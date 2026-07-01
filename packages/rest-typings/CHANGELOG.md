@@ -1,5 +1,179 @@
 # @rocket.chat/rest-typings
 
+## 8.6.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [6fa5378a940cbc809800b3c7d7c0639810bb0ab8]:</summary>
+
+  - @rocket.chat/core-typings@8.6.0-rc.1
+  </details>
+
+## 8.6.0-rc.0
+
+### Minor Changes
+
+- ([#40532](https://github.com/RocketChat/Rocket.Chat/pull/40532)) Adds custom-sounds.delete API endpoint.
+
+- ([#40711](https://github.com/RocketChat/Rocket.Chat/pull/40711)) `POST /v1/chat.delete` now accepts `{ fileId, asUser? }` as an alternative to `{ msgId, roomId, asUser? }`. When `fileId` is provided the server resolves the owning message via `Messages.getMessageByFileId` before running the existing permission and deletion flow.
+
+- ([#40724](https://github.com/RocketChat/Rocket.Chat/pull/40724)) Added `POST /v1/e2e.requestSubscriptionKeys` (replaces the deprecated `e2e.requestSubscriptionKeys` DDP method). Auth-gated, no body. Broadcasts `notify.e2e.keyRequest` for every encrypted room the caller is subscribed to without an E2E key, matching the DDP method's behavior. The legacy DDP method remains registered until 9.0.0 with a deprecation log pointing at the new route.
+
+- ([#40724](https://github.com/RocketChat/Rocket.Chat/pull/40724)) Added `POST /v1/im.blockUser` (replaces the deprecated `blockUser` / `unblockUser` DDP methods). Body is `{ roomId, block: boolean }` — `block: true` blocks the other DM participant, `block: false` unblocks. Auth-gated and per-room via the `RoomMemberActions.BLOCK` directive (DM-only). Both legacy DDP methods remain registered until 9.0.0 with deprecation logs pointing at the new route.
+
+- ([#40724](https://github.com/RocketChat/Rocket.Chat/pull/40724)) Added `POST /v1/settings` for batched admin setting updates (replaces the deprecated `saveSettings` DDP method). Body is `{ settings: { _id, value }[] }`. The endpoint requires authentication, enforces 2FA (`twoFactorRequired: true`), and runs the same per-setting permission chain (`edit-privileged-setting` OR `manage-selected-settings` + per-id permission) and audit/notify side effects the DDP method already performed. The legacy DDP method remains registered until 9.0.0 with a deprecation log pointing at the new route.
+
+- ([#40711](https://github.com/RocketChat/Rocket.Chat/pull/40711)) `GET /v1/spotlight` now mirrors the DDP `spotlight` method:
+
+  - accepts optional `usernames` (comma-separated string), `type` (JSON-encoded `{ users?, mentions?, rooms?, includeFederatedRooms? }`) and `rid` query params;
+  - response items expose `nickname` / `outside` (users) and `uids` / `usernames` / `fname` (rooms);
+  - `status` on each user is now optional — outside/federated users were already being returned without one and the previous required-field schema rejected them as `Response validation failed`;
+  - the endpoint is no longer auth-gated, allowing anonymous-read flows (e.g. `Accounts_AllowAnonymousRead`) to keep finding public channels through the navbar search.
+
+- ([#40711](https://github.com/RocketChat/Rocket.Chat/pull/40711)) `POST /v1/users.setPreferences` now accepts an optional `data.utcOffset` (number) field. The value is stored at the user-document root via `Users.setUtcOffset` (not under `settings.preferences`), matching what the legacy `userSetUtcOffset` DDP method did.
+
+- ([#40996](https://github.com/RocketChat/Rocket.Chat/pull/40996)) Added a new `rooms.join` REST endpoint that lets a user join any room type, replicating the behavior of the deprecated `joinRoom` DDP method. Unlike `channels.join`, it resolves all room types through the shared `Room.join` service (access checks, join codes, federation and omnichannel rules). The client now uses `rooms.join` instead of `channels.join`.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [7380c44c751eff9ee624d80bf26370411ffed78b, 6bd9182ae1d914a55e70866db43e8d2038f7be28, f63b965f82b0ddc590c633706f7c31c8c5251b53]:</summary>
+
+  - @rocket.chat/core-typings@8.6.0-rc.0
+  </details>
+
+## 8.5.0
+
+### Minor Changes
+
+- ([#39617](https://github.com/RocketChat/Rocket.Chat/pull/39617)) Adds new API endpoints `custom-sounds.create` and `custom-sounds.update` to manage custom sounds with strict file validation for size and specific MIME types to ensure system compatibility.
+
+- ([#40612](https://github.com/RocketChat/Rocket.Chat/pull/40612)) Adds `freeSwitchExtension` as a query parameter for `api/v1/users.info`
+
+### Patch Changes
+
+- ([#40513](https://github.com/RocketChat/Rocket.Chat/pull/40513)) Fixes the `users.presence` endpoint returning an empty array when called with multiple comma-separated IDs, caused by `ajvQuery` coercing the string into a single-element array after the OpenAPI migration
+
+- <details><summary>Updated dependencies [90f15e32ae843ed146ccf711ee3201408d1e8731, 12897e25d0dc25b7373f5264d38f38a5a7444257, 90f15e32ae843ed146ccf711ee3201408d1e8731]:</summary>
+
+  - @rocket.chat/ui-kit@1.1.0
+  - @rocket.chat/core-typings@8.5.0
+  </details>
+
+## 8.5.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.5.0-rc.6
+  </details>
+
+## 8.5.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.5.0-rc.5
+  </details>
+
+## 8.5.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+- @rocket.chat/core-typings@8.5.0-rc.4
+  </details>
+
+## 8.5.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.5.0-rc.3
+  </details>
+
+## 8.5.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.5.0-rc.2
+  </details>
+
+## 8.5.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.5.0-rc.1
+  </details>
+
+## 8.5.0-rc.0
+
+### Minor Changes
+
+- ([#39760](https://github.com/RocketChat/Rocket.Chat/pull/39760)) ## Phishing-Resistant Multi-Factor Authentication
+
+  Introduces a more secure and reliable server-side OAuth authentication flow.
+
+  ### What’s New
+
+  - **Improved OAuth login security**
+    OAuth authentication now happens fully on the server, reducing the risk of token theft, phishing attacks, and client-side credential interception.
+  - **Built-in CSRF, state validation, and PKCE protection**
+    OAuth logins now include stronger protection against CSRF attacks, request tampering, and authorization code interception through secure state validation and PKCE support.
+  - **Improved two-step verification with OAuth logins**
+    Users with email or TOTP two-factor authentication enabled will now be asked to complete 2FA even when signing in with providers like Google, GitHub, GitLab, and others.
+  - **Improved mobile & desktop app login**
+    Mobile and desktop apps now support a smoother and more secure deep-link OAuth login flow.
+
+- ([#39617](https://github.com/RocketChat/Rocket.Chat/pull/39617)) Adds new API endpoints `custom-sounds.create` and `custom-sounds.update` to manage custom sounds with strict file validation for size and specific MIME types to ensure system compatibility.
+
+- ([#40612](https://github.com/RocketChat/Rocket.Chat/pull/40612)) Adds `freeSwitchExtension` as a query parameter for `api/v1/users.info`
+
+### Patch Changes
+
+- ([#40513](https://github.com/RocketChat/Rocket.Chat/pull/40513)) Fixes the `users.presence` endpoint returning an empty array when called with multiple comma-separated IDs, caused by `ajvQuery` coercing the string into a single-element array after the OpenAPI migration
+
+- <details><summary>Updated dependencies [90f15e32ae843ed146ccf711ee3201408d1e8731, ae9f740d6af20557eac61b4af902c868b4132b49, 12897e25d0dc25b7373f5264d38f38a5a7444257, 90f15e32ae843ed146ccf711ee3201408d1e8731]:</summary>
+
+  - @rocket.chat/ui-kit@1.1.0-rc.0
+  - @rocket.chat/core-typings@8.5.0-rc.0
+  </details>
+
+## 8.4.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.4.3
+  </details>
+
+## 8.4.2
+
+### Patch Changes
+
+- ([#40527](https://github.com/RocketChat/Rocket.Chat/pull/40527) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes the `users.presence` endpoint returning an empty array when called with multiple comma-separated IDs, caused by `ajvQuery` coercing the string into a single-element array after the OpenAPI migration
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.4.2
+  </details>
+
+## 8.4.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [5b291c38600757482aaf261a02487abdf5f14007]:</summary>
+
+  - @rocket.chat/core-typings@8.4.1
+  </details>
+
 ## 8.4.0
 
 ### Minor Changes

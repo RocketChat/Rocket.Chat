@@ -109,7 +109,7 @@ ISO8601Date = year:$(Digit |4|) "-" month:$(Digit |2|) "-" day:$(Digit |2|) "T" 
 ISO8601DateWithoutMilliseconds = year:$(Digit |4|) "-" month:$(Digit |2|) "-" day:$(Digit |2|) "T" hours:$(Digit |2|) ":" minutes:$(Digit |2|) ":" seconds:$(Digit |2|) tz:Timezone? { return timestampFromIsoTime({ year, month, day, hours, minutes, seconds, timezone: tz }); }
 
 
-TimestampRules = "<t:" date:(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ":" format:TimestampType ">" { return timestamp(date, format); } / "<t:" date:(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ">" { return timestamp(date); }
+TimestampRules = "<t:" date:(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ":" format:TimestampType ">" { return timestamp(date, format, [range().start, range().end]); } / "<t:" date:(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ">" { return timestamp(date, undefined, [range().start, range().end]); }
 
 /**
  *

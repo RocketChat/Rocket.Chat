@@ -1,4 +1,4 @@
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta } from '@storybook/react';
 
 import { UserCard, UserCardRole, UserCardAction } from '.';
 
@@ -32,73 +32,79 @@ export default {
 	},
 } satisfies Meta<typeof UserCard>;
 
-const Template: StoryFn<typeof UserCard> = (args) => <UserCard {...args} />;
+export const Example = {};
 
-export const Example = Template.bind({});
+export const Nickname = {
+	args: {
+		user: {
+			...user,
+			nickname: 'nicknamenickname',
+		},
+	} as any,
+};
 
-export const Nickname = Template.bind({});
-Nickname.args = {
-	user: {
-		...user,
-		nickname: 'nicknamenickname',
-	},
-} as any;
+export const LargeName = {
+	args: {
+		user: {
+			...user,
+			customStatus: '🛴 currently working on User Card  on User Card  on User Card  on User Card  on User Card ',
+			name: 'guilherme.gazzo.guilherme.gazzo.guilherme.gazzo.guilherme.gazzo.guilherme.gazzo.guilherme.gazzo.guilherme.gazzo.guilherme.gazzo.',
+		},
+	} as any,
+};
 
-export const LargeName = Template.bind({});
-LargeName.args = {
-	user: {
-		...user,
-		customStatus: '🛴 currently working on User Card  on User Card  on User Card  on User Card  on User Card ',
-		name: 'guilherme.gazzo.guilherme.gazzo.guilherme.gazzo.guilherme.gazzo.guilherme.gazzo.guilherme.gazzo.guilherme.gazzo.guilherme.gazzo.',
-	},
-} as any;
+export const NoRoles = {
+	args: {
+		user: {
+			...user,
+			roles: undefined,
+		},
+	} as any,
+};
 
-export const NoRoles = Template.bind({});
-NoRoles.args = {
-	user: {
-		...user,
-		roles: undefined,
-	},
-} as any;
+export const NoActions = {
+	args: {
+		actions: undefined,
+	} as any,
+};
 
-export const NoActions = Template.bind({});
-NoActions.args = {
-	actions: undefined,
-} as any;
+export const NoLocalTime = {
+	args: {
+		user: {
+			...user,
+			localTime: undefined,
+		},
+	} as any,
+};
 
-export const NoLocalTime = Template.bind({});
-NoLocalTime.args = {
-	user: {
-		...user,
-		localTime: undefined,
-	},
-} as any;
+export const NoBio = {
+	args: {
+		user: {
+			...user,
+			bio: undefined,
+		},
+	} as any,
+};
 
-export const NoBio = Template.bind({});
-NoBio.args = {
-	user: {
-		...user,
-		bio: undefined,
-	},
-} as any;
+export const NoBioAndNoLocalTime = {
+	args: {
+		user: {
+			...user,
+			bio: undefined,
+			localTime: undefined,
+		},
+	} as any,
+};
 
-export const NoBioAndNoLocalTime = Template.bind({});
-NoBioAndNoLocalTime.args = {
-	user: {
-		...user,
-		bio: undefined,
-		localTime: undefined,
-	},
-} as any;
-
-export const NoBioNoLocalTimeNoRoles = Template.bind({});
-NoBioNoLocalTimeNoRoles.args = {
-	user: {
-		...user,
-		bio: undefined,
-		localTime: undefined,
-		roles: undefined,
-	},
-} as any;
+export const NoBioNoLocalTimeNoRoles = {
+	args: {
+		user: {
+			...user,
+			bio: undefined,
+			localTime: undefined,
+			roles: undefined,
+		},
+	} as any,
+};
 
 export const Loading = () => <UserCard />;

@@ -1,5 +1,5 @@
 import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useState } from 'react';
 import type { MouseEvent } from 'react';
@@ -18,9 +18,9 @@ const GameCenter = () => {
 
 	const result = useExternalComponentsQuery();
 
-	const handleClose = useEffectEvent(() => closeTab());
+	const handleClose = useStableCallback(() => closeTab());
 
-	const handleBack = useEffectEvent((e: MouseEvent) => {
+	const handleBack = useStableCallback((e: MouseEvent) => {
 		setOpenedGame(undefined);
 		preventSyntheticEvent(e);
 	});

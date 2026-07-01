@@ -7,4 +7,5 @@ export const roomAccessAttributes = {
 	t: 1,
 	teamId: 1,
 	prid: 1,
+	abacAttributes: 1,
 };

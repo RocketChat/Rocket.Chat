@@ -1,11 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { memo, useSyncExternalStore } from 'react';
 
 import MessageBoxReply from './MessageBoxReply';
 import { useChat } from '../../contexts/ChatContext';
 
-const MessageBoxReplies = (): ReactElement | null => {
+const MessageBoxReplies = () => {
 	const chat = useChat();
 
 	if (!chat?.composer?.quotedMessages) {

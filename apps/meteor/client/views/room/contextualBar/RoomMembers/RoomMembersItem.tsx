@@ -12,7 +12,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import type { ReactElement, MouseEvent } from 'react';
+import type { MouseEvent } from 'react';
 import { useState } from 'react';
 
 import UserActions from './RoomMembersActions';
@@ -40,7 +40,7 @@ const RoomMembersItem = ({
 	subscription,
 	reload,
 	useRealName,
-}: RoomMembersItemProps): ReactElement => {
+}: RoomMembersItemProps) => {
 	const [showButton, setShowButton] = useState();
 	const isReduceMotionEnabled = usePrefersReducedMotion();
 	const isInvited = subscription?.status === 'INVITED';

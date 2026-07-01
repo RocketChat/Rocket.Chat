@@ -13,3 +13,10 @@ export enum AbacObjectType {
 export const isAbacPdpType = (value: unknown): value is AbacPdpType => value === 'local' || value === 'virtru';
 
 export const isAbacAttributeStoreType = (value: unknown): value is AbacAttributeStoreType => value === 'local' || value === 'virtru';
+
+export type AbacUserIdentifiers = {
+	usernames?: string[];
+	ids?: string[];
+	emails?: string[];
+	ldapIds?: string[];
+};

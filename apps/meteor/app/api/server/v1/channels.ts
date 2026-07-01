@@ -1,5 +1,13 @@
 import { Team, Room } from '@rocket.chat/core-services';
-import { TeamType, type IRoom, type ISubscription, type IUser, type RoomType, type UserStatus } from '@rocket.chat/core-typings';
+import {
+	TeamType,
+	isRoomNativeFederated,
+	type IRoom,
+	type ISubscription,
+	type IUser,
+	type RoomType,
+	type UserStatus,
+} from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import {
 	isChannelsAddAllProps,
@@ -55,7 +63,7 @@ import { API } from '../api';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
-import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';
+import { getUserFromParams, getUserListFromParams, getUsernameListFromParams } from '../helpers/getUserFromParams';
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 async function findChannelByIdOrName({
@@ -944,6 +952,18 @@ API.v1.addRoute(
 	{
 		async post() {
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
+
+			// Federated rooms invite by raw username: the federated user record is created
+			// lazily inside addUsersToRoomMethod, so we must not require it to exist locally yet.
+			if (isRoomNativeFederated(findResult)) {
+				const users = await getUsernameListFromParams(this.bodyParams);
+
+				await addUsersToRoomMethod(this.userId, { rid: findResult._id, users }, this.user);
+
+				return API.v1.success({
+					channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
+				});
+			}
 
 			const users = await getUserListFromParams(this.bodyParams);
 

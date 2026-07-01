@@ -3,7 +3,6 @@ import { Box, Button, Chevron, Skeleton, Tooltip } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { format } from 'date-fns';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -16,7 +15,7 @@ type ContentForHoursProps = {
 	timezone: 'utc' | 'local';
 };
 
-const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick, timezone }: ContentForHoursProps): ReactElement => {
+const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick, timezone }: ContentForHoursProps) => {
 	const utc = timezone === 'utc';
 	const { data } = useHourlyChatActivity({ displacement, utc });
 

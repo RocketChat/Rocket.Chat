@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { StoryObj, Meta } from '@storybook/react';
 
 import InviteUsers from './InviteUsers';
 import InviteUsersEdit from './InviteUsersEdit';
@@ -28,17 +28,23 @@ export default {
 	],
 } satisfies Meta<typeof InviteUsers>;
 
-export const Default: StoryFn<typeof InviteUsers> = (args) => <InviteUsers {...args} />;
-Default.storyName = 'Invite Link';
-Default.args = {
-	linkText: links.go.invite,
-	captionText: 'Expire on February 4, 2020 4:45 PM.',
+export const Default: StoryObj<typeof InviteUsers> = {
+	name: 'Invite Link',
+
+	args: {
+		linkText: links.go.invite,
+		captionText: 'Expire on February 4, 2020 4:45 PM.',
+	},
 };
 
-export const InviteEdit: StoryFn<typeof InviteUsersEdit> = (args) => (
-	<InviteUsersEdit {...args} daysAndMaxUses={{ days: '1', maxUses: '5' }} />
-);
+export const InviteEdit: StoryObj<typeof InviteUsersEdit> = {
+	render: (args) => <InviteUsersEdit {...args} daysAndMaxUses={{ days: '1', maxUses: '5' }} />,
+};
 
-export const InviteLoading: StoryFn<typeof InviteUsersLoading> = (args) => <InviteUsersLoading {...args} />;
+export const InviteLoading: StoryObj<typeof InviteUsersLoading> = {
+	render: (args) => <InviteUsersLoading {...args} />,
+};
 
-export const InviteError: StoryFn<typeof InviteUsersError> = (args) => <InviteUsersError {...args} error={new Error('Error message')} />;
+export const InviteError: StoryObj<typeof InviteUsersError> = {
+	render: (args) => <InviteUsersError {...args} error={new Error('Error message')} />,
+};

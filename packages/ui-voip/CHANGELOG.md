@@ -1,5 +1,71 @@
 # @rocket.chat/ui-voip
 
+## 22.0.0-rc.1
+
+### Patch Changes
+
+- ([#41060](https://github.com/RocketChat/Rocket.Chat/pull/41060)) Fixes voice call UI not reflecting active call state when a new view mounted while a call was already active (e.g. opening the popout window)
+
+- <details><summary>Updated dependencies [5d5edd8520ddb424bd336e3ec802c1f4a4e7d1ce]:</summary>
+
+  - @rocket.chat/media-signaling@1.1.0-rc.1
+  </details>
+
+## 22.0.0-rc.0
+
+### Minor Changes
+
+- ([#40202](https://github.com/RocketChat/Rocket.Chat/pull/40202)) Introduces popout functionality for voice calls
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ebc9c17b6ba63ee754320eadfba20c024c53c18f]:</summary>
+
+  - @rocket.chat/media-signaling@1.1.0-rc.0
+  - @rocket.chat/ui-contexts@32.0.0-rc.0
+  - @rocket.chat/ui-client@32.0.0-rc.0
+  - @rocket.chat/fuselage-ui-kit@32.0.0-rc.0
+  - @rocket.chat/ui-avatar@28.0.0-rc.0
+  </details>
+
+## 21.0.0
+
+### Minor Changes
+
+- ([#40331](https://github.com/RocketChat/Rocket.Chat/pull/40331)) Adds "Open in room" button to shared screen card on voice call widget
+
+### Patch Changes
+
+- ([#40330](https://github.com/RocketChat/Rocket.Chat/pull/40330)) Fixes an issue where intentionally cancelling a screen share request would show an error toast by identifying error types and counting consecutive failures.
+
+- <details><summary>Updated dependencies [fac64728505b312d5da786e92d3134450ce4a7c1]:</summary>
+
+  - @rocket.chat/ui-client@31.0.0
+  - @rocket.chat/desktop-api@1.2.0
+  - @rocket.chat/fuselage-ui-kit@31.0.0
+  - @rocket.chat/ui-avatar@27.0.0
+  - @rocket.chat/ui-contexts@31.0.0
+  </details>
+
+## 21.0.0-rc.0
+
+### Minor Changes
+
+- ([#40331](https://github.com/RocketChat/Rocket.Chat/pull/40331)) Adds "Open in room" button to shared screen card on voice call widget
+
+### Patch Changes
+
+- ([#40330](https://github.com/RocketChat/Rocket.Chat/pull/40330)) Fixes an issue where intentionally cancelling a screen share request would show an error toast by identifying error types and counting consecutive failures.
+
+- <details><summary>Updated dependencies [ae9f740d6af20557eac61b4af902c868b4132b49, fac64728505b312d5da786e92d3134450ce4a7c1]:</summary>
+
+  - @rocket.chat/desktop-api@1.2.0-rc.0
+  - @rocket.chat/ui-client@31.0.0-rc.0
+  - @rocket.chat/fuselage-ui-kit@31.0.0-rc.0
+  - @rocket.chat/ui-contexts@31.0.0-rc.0
+  - @rocket.chat/ui-avatar@27.0.0-rc.0
+  </details>
+
 ## 20.0.0
 
 ### Minor Changes

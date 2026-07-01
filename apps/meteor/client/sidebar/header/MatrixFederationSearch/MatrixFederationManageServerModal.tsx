@@ -18,7 +18,7 @@ import {
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetModal, useTranslation, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { FormEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { useState } from 'react';
 
 import MatrixFederationRemoveServerList from './MatrixFederationRemoveServerList';
@@ -90,7 +90,7 @@ const MatrixFederationAddServerModal = ({ onClickClose }: MatrixFederationAddSer
 						<TextInput
 							disabled={isPending}
 							value={serverName}
-							onChange={(e: FormEvent<HTMLInputElement>) => {
+							onChange={(e: ChangeEvent<HTMLInputElement>) => {
 								setServerName(e.currentTarget.value);
 								if (errorKey) {
 									setErrorKey(undefined);

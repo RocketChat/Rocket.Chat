@@ -1,6 +1,5 @@
 import { Tabs } from '@rocket.chat/fuselage';
 import { usePermission, useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { ISettings } from '../../../apps/@types/IOrchestrator';
@@ -21,7 +20,7 @@ const AppDetailsPageTabs = ({
 	settings,
 	tab,
 	hasCluster = false,
-}: AppDetailsPageTabsProps): ReactElement => {
+}: AppDetailsPageTabsProps) => {
 	const { t } = useTranslation();
 	const isAdminUser = usePermission('manage-apps');
 

@@ -17,6 +17,7 @@ import { loggerMiddleware } from '../../../api/server/middlewares/logger';
 import { metricsMiddleware } from '../../../api/server/middlewares/metrics';
 import { tracerSpanMiddleware } from '../../../api/server/middlewares/tracer';
 import type { APIActionContext } from '../../../api/server/router';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import type { WebhookResponseItem } from '../../../lib/server/functions/processWebhookMessage';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { metrics } from '../../../metrics/server';
@@ -166,6 +167,15 @@ async function executeIntegrationRest(
 
 	if (this.request.integration.enabled !== true) {
 		return API.v1.unavailable('Service Unavailable');
+	}
+
+	if (!(await hasPermissionAsync(this.user._id, 'message-impersonate'))) {
+		incomingLogger.error({
+			msg: 'Error trying to execute integration',
+			integration: this.request.integration.name,
+			error: 'The assigned user from the integration must have the message-impersonate permission.',
+		});
+		return API.v1.failure('error-user-lacks-message-impersonate-permission');
 	}
 
 	const defaultValues = {

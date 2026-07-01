@@ -17,6 +17,7 @@ import type {
 	InlineKaTeX,
 	Link,
 	Timestamp,
+	SourceRange,
 } from './definitions';
 
 const generate =
@@ -287,14 +288,14 @@ export const phoneChecker = (text: string, number: string) => {
 	return link(`tel:${number}`, [plain(text)]);
 };
 
-export const timestamp = (value: string, type?: 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R'): Timestamp => {
+export const timestamp = (value: string, type?: 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R', fallback?: SourceRange): Timestamp => {
 	return {
 		type: 'TIMESTAMP',
 		value: {
 			timestamp: value,
 			format: type || 't',
 		},
-		fallback: plain(`<t:${value}:${type || 't'}>`),
+		...(fallback !== undefined && { fallback }),
 	};
 };
 

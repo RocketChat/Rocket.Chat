@@ -2900,7 +2900,7 @@
   "LDAP_Sync_Now_Description": "Vil utføre **Background Sync** nå i stedet for å vente **Sync Interval** selv om **Bakgrunnssynkronisering** er False.  \n Denne handlingen er asynkron, se loggene for mer informasjon om prosess",
   "LDAP_Sync_User_Active_State": "Synkroniser brukerens aktiv tilstand",
   "LDAP_Sync_User_Active_State_Both": "Aktiver og deaktiver brukere",
-  "LDAP_Sync_User_Active_State_Description": "Bestem om brukere skal aktiveres eller deaktiveres på Rocket.Chat basert på LDAP-statusen. 'pwdAccountLockedTime'-attributtet vil bli brukt til å avgjøre om brukeren er deaktivert.",
+  "LDAP_Sync_User_Active_State_Description": "Bestem om brukere skal aktiveres eller deaktiveres på Rocket.Chat basert på LDAP-statusen.",
   "LDAP_Sync_User_Active_State_Disable": "Deaktiver brukere",
   "LDAP_Sync_User_Active_State_Enable": "Aktiver brukere",
   "LDAP_Sync_User_Active_State_Nothing": "Ikke gjør noe",

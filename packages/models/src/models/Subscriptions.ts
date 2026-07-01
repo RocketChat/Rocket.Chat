@@ -707,8 +707,8 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			};
 		} else {
 			update = {
-				$unset: {
-					autoTranslate: 1,
+				$set: {
+					autoTranslate: false,
 				},
 			};
 		}
@@ -723,19 +723,21 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.findOneAndUpdate(query, update, { returnDocument: 'after' });
 	}
 
-	updateAllAutoTranslateLanguagesByUserId(userId: IUser['_id'], language: string): Promise<UpdateResult | Document> {
-		const query = {
-			'u._id': userId,
-			'autoTranslate': true,
-		};
+	setAutoTranslateByUserId(userId: IUser['_id'], language: string | null): Promise<UpdateResult | Document> {
+		if (language) {
+			return Promise.all([
+				this.updateMany({ 'u._id': userId, 'autoTranslate': true }, { $set: { autoTranslateLanguage: language } }),
+				this.updateMany(
+					{ 'u._id': userId, 'autoTranslate': { $exists: false } },
+					{ $set: { autoTranslate: true, autoTranslateLanguage: language } },
+				),
+			]).then(([updateResult, enableResult]) => ({
+				...updateResult,
+				modifiedCount: updateResult.modifiedCount + enableResult.modifiedCount,
+			}));
+		}
 
-		const update: UpdateFilter<ISubscription> = {
-			$set: {
-				autoTranslateLanguage: language,
-			},
-		};
-
-		return this.updateMany(query, update);
+		return this.updateMany({ 'u._id': userId, 'autoTranslate': true }, { $unset: { autoTranslate: 1, autoTranslateLanguage: 1 } });
 	}
 
 	findByAutoTranslateAndUserId(

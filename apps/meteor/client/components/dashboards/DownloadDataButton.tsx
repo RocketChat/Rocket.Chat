@@ -1,7 +1,7 @@
 import type { Box } from '@rocket.chat/fuselage';
 import { IconButton } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { downloadCsvAs } from '../../lib/download';
@@ -23,7 +23,7 @@ const DownloadDataButton = <H extends readonly string[]>({
 	dataAvailable,
 	dataExtractor,
 	...props
-}: DownloadDataButtonProps<H>): ReactElement => {
+}: DownloadDataButtonProps<H>) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 

@@ -16,9 +16,11 @@ const KatexBlock = lazy(() => import('./katex/KatexBlock'));
 
 type MarkupProps = {
 	tokens: MessageParser.Root;
+	/** Original message source, used to render the `fallback` of blocks without a dedicated renderer. */
+	source?: string;
 };
 
-const Markup = ({ tokens }: MarkupProps) => (
+const Markup = ({ tokens, source }: MarkupProps) => (
 	<>
 		{tokens.map((block, index) => {
 			switch (block.type) {
@@ -63,8 +65,17 @@ const Markup = ({ tokens }: MarkupProps) => (
 				case 'LINE_BREAK':
 					return <br key={index} />;
 
-				default:
+				default: {
+					// Graceful degradation: blocks may carry a `fallback`. The current form is a
+					// `[start, end]` offset span into the source (sliced to render the raw markup);
+					// the union keeps the original form too, which we intentionally ignore.
+					const { fallback } = block as { fallback?: [number, number] | MessageParser.Plain };
+					if (Array.isArray(fallback) && source !== undefined) {
+						const inlines: MessageParser.Inlines[] = [{ type: 'PLAIN_TEXT', value: source.slice(fallback[0], fallback[1]) }];
+						return <ParagraphBlock key={index}>{inlines}</ParagraphBlock>;
+					}
 					return null;
+				}
 			}
 		})}
 	</>

@@ -33,28 +33,39 @@ const defaultArgs = {
 
 const Template: StoryFn<typeof UserInfo> = (args) => <UserInfo {...defaultArgs} {...args} />;
 
-export const Default = Template.bind({});
-
-export const WithVoiceCallExtension = Template.bind({});
-WithVoiceCallExtension.args = {
-	freeSwitchExtension: '1234567890',
+export const Default = {
+	render: Template,
 };
 
-export const WithABACAttributes = Template.bind({});
-WithABACAttributes.args = {
-	abacAttributes: [
-		{
-			key: 'Classified',
-			values: ['Top Secret', 'Confidential'],
-		},
-		{
-			key: 'Security_Clearance',
-			values: ['Top Secret', 'Confidential'],
-		},
-	],
+export const WithVoiceCallExtension = {
+	render: Template,
+
+	args: {
+		freeSwitchExtension: '1234567890',
+	},
 };
 
-export const InvitedUser = Template.bind({});
-InvitedUser.args = {
-	invitationDate: '2025-01-01T12:00:00Z',
+export const WithABACAttributes = {
+	render: Template,
+
+	args: {
+		abacAttributes: [
+			{
+				key: 'Classified',
+				values: ['Top Secret', 'Confidential'],
+			},
+			{
+				key: 'Security_Clearance',
+				values: ['Top Secret', 'Confidential'],
+			},
+		],
+	},
+};
+
+export const InvitedUser = {
+	render: Template,
+
+	args: {
+		invitationDate: '2025-01-01T12:00:00Z',
+	},
 };

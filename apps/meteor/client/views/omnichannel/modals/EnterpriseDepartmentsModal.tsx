@@ -14,7 +14,6 @@ import {
 } from '@rocket.chat/fuselage';
 import { useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -23,7 +22,7 @@ import { useCheckoutUrl } from '../../admin/subscription/hooks/useCheckoutUrl';
 
 // TODO: use `GenericModal` instead of creating a new modal from scratch
 // This seems a upSell modal for enterprise feature
-const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }): ReactElement => {
+const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const ref = useRef<HTMLDivElement>(null);

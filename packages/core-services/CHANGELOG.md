@@ -1,5 +1,45 @@
 # @rocket.chat/core-services
 
+## 0.14.2-rc.0
+
+### Patch Changes
+
+- ([#41009](https://github.com/RocketChat/Rocket.Chat/pull/41009)) Fixes an issue where updating an app in quick succession could crash the server.
+
+- ([#40274](https://github.com/RocketChat/Rocket.Chat/pull/40274)) Adds the backend foundation for a unified presence engine with a priority-based claim system (internal > manual > external), status expiration, and previous state restore.
+
+- <details><summary>Updated dependencies [73e12e1707baea845395e0582892f65456598672, ebc9c17b6ba63ee754320eadfba20c024c53c18f, 7380c44c751eff9ee624d80bf26370411ffed78b, f4f361234f00bd44efe348df4355e9d3cf80efe0, 9a36221f1fbf5ca417325204637c9f32fe760443, f57901d91feaccedd00dee65b78775b20235825b, f57901d91feaccedd00dee65b78775b20235825b, f57901d91feaccedd00dee65b78775b20235825b, 9a36221f1fbf5ca417325204637c9f32fe760443, 9a36221f1fbf5ca417325204637c9f32fe760443, fa685d0ddfdf1167705a58b5d846a993144e3734, 6bd9182ae1d914a55e70866db43e8d2038f7be28, f63b965f82b0ddc590c633706f7c31c8c5251b53]:</summary>
+
+  - @rocket.chat/models@2.3.1-rc.0
+  - @rocket.chat/media-signaling@1.1.0-rc.0
+  - @rocket.chat/core-typings@8.6.0-rc.0
+  - @rocket.chat/rest-typings@8.6.0-rc.0
+  </details>
+
+## 0.14.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [90f15e32ae843ed146ccf711ee3201408d1e8731, f7d47dd3517ec14ca2ec5c3c95fcdf9e1e2fb8b0, 4c3984593017d59edd631bf8ae4f35f9d3c3db36, b6b04aadfcc8558f888b334e37c46a77e5816237, 4704bf81ca370f120af32185a7c55407a26f8514, 12897e25d0dc25b7373f5264d38f38a5a7444257, e45585b70a3a7b75434c88e4b2ea9af0a0764a76, b1c2668b74bfb49ebaefe2f581b2f8be5d4d1dd6, 90f15e32ae843ed146ccf711ee3201408d1e8731]:</summary>
+
+  - @rocket.chat/ui-kit@1.1.0
+  - @rocket.chat/models@2.3.0
+  - @rocket.chat/rest-typings@8.5.0
+  - @rocket.chat/core-typings@8.5.0
+  </details>
+
+## 0.14.1-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [90f15e32ae843ed146ccf711ee3201408d1e8731, f7d47dd3517ec14ca2ec5c3c95fcdf9e1e2fb8b0, 4c3984593017d59edd631bf8ae4f35f9d3c3db36, ae9f740d6af20557eac61b4af902c868b4132b49, b6b04aadfcc8558f888b334e37c46a77e5816237, 4704bf81ca370f120af32185a7c55407a26f8514, 12897e25d0dc25b7373f5264d38f38a5a7444257, e45585b70a3a7b75434c88e4b2ea9af0a0764a76, b1c2668b74bfb49ebaefe2f581b2f8be5d4d1dd6, 90f15e32ae843ed146ccf711ee3201408d1e8731]:</summary>
+
+  - @rocket.chat/ui-kit@1.1.0-rc.0
+  - @rocket.chat/models@2.3.0-rc.0
+  - @rocket.chat/rest-typings@8.5.0-rc.0
+  - @rocket.chat/core-typings@8.5.0-rc.0
+  </details>
+
 ## 0.14.0
 
 ### Minor Changes

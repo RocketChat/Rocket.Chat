@@ -1,5 +1,35 @@
 # @rocket.chat/cron
 
+## 0.1.58-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [73e12e1707baea845395e0582892f65456598672, 7380c44c751eff9ee624d80bf26370411ffed78b, 6bd9182ae1d914a55e70866db43e8d2038f7be28, f63b965f82b0ddc590c633706f7c31c8c5251b53]:</summary>
+
+  - @rocket.chat/models@2.3.1-rc.0
+  - @rocket.chat/core-typings@8.6.0-rc.0
+  </details>
+
+## 0.1.57
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [f7d47dd3517ec14ca2ec5c3c95fcdf9e1e2fb8b0, b6b04aadfcc8558f888b334e37c46a77e5816237, 4704bf81ca370f120af32185a7c55407a26f8514, 12897e25d0dc25b7373f5264d38f38a5a7444257, e45585b70a3a7b75434c88e4b2ea9af0a0764a76]:</summary>
+
+  - @rocket.chat/models@2.3.0
+  - @rocket.chat/core-typings@8.5.0
+  </details>
+
+## 0.1.57-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [f7d47dd3517ec14ca2ec5c3c95fcdf9e1e2fb8b0, ae9f740d6af20557eac61b4af902c868b4132b49, b6b04aadfcc8558f888b334e37c46a77e5816237, 4704bf81ca370f120af32185a7c55407a26f8514, 12897e25d0dc25b7373f5264d38f38a5a7444257, e45585b70a3a7b75434c88e4b2ea9af0a0764a76]:</summary>
+
+  - @rocket.chat/models@2.3.0-rc.0
+  - @rocket.chat/core-typings@8.5.0-rc.0
+  </details>
+
 ## 0.1.56
 
 ### Patch Changes

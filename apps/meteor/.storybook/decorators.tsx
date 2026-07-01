@@ -8,33 +8,18 @@ import TranslationContextMock from '../client/stories/contexts/TranslationContex
 
 const MockedAppRoot = mockAppRoot().build();
 
-export const rocketChatDecorator: Decorator = (fn, { parameters }) => {
-	const linkElement = document.getElementById('theme-styles') || document.createElement('link');
-	if (linkElement.id !== 'theme-styles') {
-		require('../app/theme/client/main.css');
-		require('../app/theme/client/rocketchat.font.css');
-		linkElement.setAttribute('id', 'theme-styles');
-		linkElement.setAttribute('rel', 'stylesheet');
-		linkElement.setAttribute('href', 'https://open.rocket.chat/theme.css');
-		document.head.appendChild(linkElement);
-	}
-
-	return (
-		<MockedAppRoot>
-			<ServerContextMock {...parameters.serverContext}>
-				<TranslationContextMock {...parameters.translationContext}>
-					<ModalContextMock {...parameters.modalContext}>
-						<RouterContextMock {...parameters.routerContext}>
-							<style>{`
-								body {
-									background-color: white;
-								}
-							`}</style>
-							<div className='color-primary-font-color'>{fn()}</div>
-						</RouterContextMock>
-					</ModalContextMock>
-				</TranslationContextMock>
-			</ServerContextMock>
-		</MockedAppRoot>
-	);
-};
+export const RocketChatDecorator: Decorator = (Story, { parameters }) => (
+	<MockedAppRoot>
+		<ServerContextMock {...parameters.serverContext}>
+			<TranslationContextMock {...parameters.translationContext}>
+				<ModalContextMock {...parameters.modalContext}>
+					<RouterContextMock {...parameters.routerContext}>
+						<div className='color-primary-font-color rcx-content--main'>
+							<Story />
+						</div>
+					</RouterContextMock>
+				</ModalContextMock>
+			</TranslationContextMock>
+		</ServerContextMock>
+	</MockedAppRoot>
+);
