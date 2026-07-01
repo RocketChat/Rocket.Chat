@@ -6,6 +6,7 @@ export const BlockElementType = {
 	CHECKBOX: 'checkbox',
 	CONVERSATIONS_SELECT: 'conversations_select',
 	DATEPICKER: 'datepicker',
+	DATETIMEPICKER: 'datetimepicker',
 	ICON: 'icon',
 	ICON_BUTTON: 'icon_button',
 	IMAGE: 'image',

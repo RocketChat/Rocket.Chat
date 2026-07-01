@@ -128,6 +128,29 @@ export const inputWithDatePicker: readonly UiKit.LayoutBlock[] = [
 	},
 ] as const;
 
+export const inputWithDateTimePicker: readonly UiKit.LayoutBlock[] = [
+	{
+		type: 'input',
+		element: {
+			appId: 'dummy-app-id',
+			blockId: 'dummy-block-id',
+			type: 'datetimepicker',
+			initialDateTime: '1990-04-28T09:30',
+			placeholder: {
+				type: 'plain_text',
+				text: 'Select date and time',
+				emoji: true,
+			},
+			actionId: 'input-0',
+		},
+		label: {
+			type: 'plain_text',
+			text: 'Label',
+			emoji: true,
+		},
+	},
+] as const;
+
 export const inputWithNumberInput: readonly UiKit.LayoutBlock[] = [
 	{
 		type: 'input',

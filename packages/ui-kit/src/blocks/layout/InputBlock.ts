@@ -3,6 +3,7 @@ import type { ChannelsSelectElement } from '../elements/ChannelsSelectElement';
 import type { CheckboxElement } from '../elements/CheckboxElement';
 import type { ConversationsSelectElement } from '../elements/ConversationsSelectElement';
 import type { DatePickerElement } from '../elements/DatePickerElement';
+import type { DateTimePickerElement } from '../elements/DateTimePickerElement';
 import type { EmailInputElement } from '../elements/EmailInputElement';
 import type { LinearScaleElement } from '../elements/LinearScaleElement';
 import type { MultiChannelsSelectElement } from '../elements/MultiChannelsSelectElement';
@@ -26,6 +27,7 @@ export type InputBlock = LayoutBlockish<{
 		| ChannelsSelectElement
 		| ConversationsSelectElement
 		| DatePickerElement
+		| DateTimePickerElement
 		| LinearScaleElement
 		| MultiChannelsSelectElement
 		| MultiConversationsSelectElement

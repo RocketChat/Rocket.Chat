@@ -3,6 +3,7 @@ import type { ChannelsSelectElement } from './elements/ChannelsSelectElement';
 import type { CheckboxElement } from './elements/CheckboxElement';
 import type { ConversationsSelectElement } from './elements/ConversationsSelectElement';
 import type { DatePickerElement } from './elements/DatePickerElement';
+import type { DateTimePickerElement } from './elements/DateTimePickerElement';
 import type { EmailInputElement } from './elements/EmailInputElement';
 import type { ExperimentalTabElement } from './elements/ExperimentalTabElement';
 import type { IconButtonElement } from './elements/IconButtonElement';
@@ -28,6 +29,7 @@ export type BlockElement =
 	| ChannelsSelectElement
 	| ConversationsSelectElement
 	| DatePickerElement
+	| DateTimePickerElement
 	| ImageElement
 	| LinearScaleElement
 	| MultiChannelsSelectElement
