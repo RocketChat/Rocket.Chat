@@ -5,6 +5,12 @@ describe('isInvalidJSONValue', () => {
 		expect(isInvalidJSONValue('{"a":1}')).toBe(false);
 	});
 
+	it('treats valid non-object JSON (array, string, boolean) as valid', () => {
+		expect(isInvalidJSONValue('[1,2]')).toBe(false);
+		expect(isInvalidJSONValue('"hello"')).toBe(false);
+		expect(isInvalidJSONValue('true')).toBe(false);
+	});
+
 	it('treats empty string as valid', () => {
 		expect(isInvalidJSONValue('')).toBe(false);
 	});
