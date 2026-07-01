@@ -3,6 +3,11 @@ import { useTranslation } from 'react-i18next';
 
 import { formatPlaybackTime } from './formatPlaybackTime';
 
+// TODO: this is a local copy of the controlled controls being upstreamed to
+// fuselage (RocketChat/fuselage#2052). Once that ships in @rocket.chat/fuselage,
+// delete this component (and formatPlaybackTime) and import AudioPlayerControls
+// from '@rocket.chat/fuselage' instead.
+
 type AudioPlayerControlsProps = {
 	playing: boolean;
 	currentTime: number;
