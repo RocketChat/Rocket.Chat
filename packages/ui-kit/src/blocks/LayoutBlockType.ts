@@ -3,6 +3,7 @@ import type { LayoutBlock } from './LayoutBlock';
 export const LayoutBlockType = {
 	SECTION: 'section',
 	DIVIDER: 'divider',
+	HEADER: 'header',
 	IMAGE: 'image',
 	ACTIONS: 'actions',
 	CONTEXT: 'context',
