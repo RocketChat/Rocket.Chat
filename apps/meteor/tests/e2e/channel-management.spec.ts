@@ -3,6 +3,7 @@ import type { Page } from '@playwright/test';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
+import { CreateNewDiscussionModal } from './page-objects/fragments';
 import { createTargetChannel } from './utils';
 import { test, expect } from './utils/test';
 
@@ -148,8 +149,9 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.composer.btnMenuMoreActions.click();
 		await page.getByRole('menuitem', { name: 'Discussion' }).click();
-		await poHomeChannel.content.inputDiscussionName.fill(discussionName);
-		await poHomeChannel.content.btnCreateDiscussionModal.click();
+		const createDiscussionModal = new CreateNewDiscussionModal(page);
+		await createDiscussionModal.inputName.fill(discussionName);
+		await createDiscussionModal.create();
 
 		await expect(page.getByRole('heading', { name: discussionName })).toBeVisible();
 	});

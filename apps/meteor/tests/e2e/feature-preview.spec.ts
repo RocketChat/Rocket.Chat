@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
 import { AdminInfo, HomeChannel, HomeDiscussion, HomeTeam } from './page-objects';
-import { CreateNewChannelModal } from './page-objects/fragments/modals';
+import { CreateNewChannelModal, CreateNewDiscussionModal } from './page-objects/fragments/modals';
 import {
 	createTargetChannel,
 	createTargetTeam,
@@ -246,8 +246,9 @@ test.describe.serial('feature preview', () => {
 
 			await poHomeChannel.composer.btnMenuMoreActions.click();
 			await page.getByRole('menuitem', { name: 'Discussion' }).click();
-			await poHomeChannel.content.inputDiscussionName.fill(discussionName);
-			await poHomeChannel.content.btnCreateDiscussionModal.click();
+			const createDiscussionModal = new CreateNewDiscussionModal(page);
+			await createDiscussionModal.inputName.fill(discussionName);
+			await createDiscussionModal.create();
 			await expect(page.getByRole('heading', { name: discussionName })).toBeVisible();
 
 			await poHomeDiscussion.sidebar.discussionsTeamCollabFilter.click();
@@ -570,8 +571,9 @@ test.describe.serial('feature preview', () => {
 			await test.step('create discussion in DM', async () => {
 				await poHomeChannel.composer.btnMenuMoreActions.click();
 				await page.getByRole('menuitem', { name: 'Discussion' }).click();
-				await poHomeChannel.content.inputDiscussionName.fill(discussionName);
-				await poHomeChannel.content.btnCreateDiscussionModal.click();
+				const createDiscussionModal = new CreateNewDiscussionModal(page);
+				await createDiscussionModal.inputName.fill(discussionName);
+				await createDiscussionModal.create();
 				await poHomeChannel.content.waitForChannel();
 				await poHomeChannel.content.sendMessage('hello');
 
