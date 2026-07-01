@@ -74,6 +74,7 @@ jobs:
   test:
     runs-on: ubuntu-24.04
     permissions:
+      actions: read
       contents: read
 
     env:
