@@ -16,6 +16,23 @@ export const internalError = (msg: string, err?: unknown, context?: Record<strin
 	};
 };
 
+// The federation SDK throws an Error with name 'UnknownRoomError' (message `Room <id> does not exist`)
+// when a room isn't known to this homeserver. The class isn't exported for `instanceof`, so we match on
+// `.name` — the same check the SDK uses internally.
+export const isUnknownRoomError = (err: unknown): err is Error => err instanceof Error && err.name === 'UnknownRoomError';
+
+// Matrix response for a room this homeserver doesn't know about. Mirrors Synapse: it must be a 4xx (never
+// 5xx) so bridges like matrix-bifrost treat it as terminal and stop retrying, instead of hammering the
+// endpoint every 100ms as if it were a transient server fault.
+export const roomNotFound = () =>
+	({
+		statusCode: 403 as const,
+		body: {
+			errcode: 'M_FORBIDDEN',
+			error: "You aren't a member of the room and weren't previously a member of the room.",
+		},
+	}) as const;
+
 // Logs a warning and returns the matching Matrix 501 response. Use for endpoints/branches
 // that are deliberately not implemented yet, so hits on those paths stay visible in the logs.
 export const notImplemented = (msg: string, context?: Record<string, unknown>) => {

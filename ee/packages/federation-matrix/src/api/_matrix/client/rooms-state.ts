@@ -6,7 +6,9 @@ import type { ClientRouter } from './_shared';
 import {
 	MATRIX_ROOM_ID_PATTERN,
 	internalError,
+	isUnknownRoomError,
 	notImplemented,
+	roomNotFound,
 	isImpersonationQueryProps,
 	isMatrixErrorProps,
 	isRoomIdParamsProps,
@@ -105,6 +107,9 @@ const getRoomStateEvent = async (roomId: RoomID, eventType: string, stateKey = '
 			body: pe.getContent(),
 		};
 	} catch (error) {
+		if (isUnknownRoomError(error)) {
+			return roomNotFound();
+		}
 		return internalError('Failed to fetch state event', error);
 	}
 };
@@ -119,7 +124,7 @@ export const addRoomsStateRoutes = (router: ClientRouter) => {
 				response: {
 					200: isJoinedMembersResponseProps,
 					401: isMatrixErrorProps,
-					404: isMatrixErrorProps,
+					403: isMatrixErrorProps,
 					500: isMatrixErrorProps,
 				},
 				tags,
@@ -128,6 +133,7 @@ export const addRoomsStateRoutes = (router: ClientRouter) => {
 			isAppServiceAuthenticatedMiddleware(),
 			async (c) => {
 				const roomId = c.req.param('roomId') as RoomID;
+
 				try {
 					const state = await federationSDK.getLatestRoomState(roomId);
 					const joined: Record<string, { display_name?: string; avatar_url?: string }> = {};
@@ -147,6 +153,9 @@ export const addRoomsStateRoutes = (router: ClientRouter) => {
 						body: { joined },
 					};
 				} catch (error) {
+					if (isUnknownRoomError(error)) {
+						return roomNotFound();
+					}
 					return internalError('Failed to fetch joined members', error, { roomId });
 				}
 			},
@@ -160,7 +169,7 @@ export const addRoomsStateRoutes = (router: ClientRouter) => {
 				response: {
 					200: isStateArrayResponseProps,
 					401: isMatrixErrorProps,
-					404: isMatrixErrorProps,
+					403: isMatrixErrorProps,
 					500: isMatrixErrorProps,
 				},
 				tags,
@@ -180,6 +189,9 @@ export const addRoomsStateRoutes = (router: ClientRouter) => {
 						body: events,
 					};
 				} catch (error) {
+					if (isUnknownRoomError(error)) {
+						return roomNotFound();
+					}
 					return internalError('Failed to fetch room state', error, { roomId });
 				}
 			},
@@ -197,6 +209,7 @@ export const addRoomsStateRoutes = (router: ClientRouter) => {
 				response: {
 					200: isStateContentResponseProps,
 					401: isMatrixErrorProps,
+					403: isMatrixErrorProps,
 					404: isMatrixErrorProps,
 					500: isMatrixErrorProps,
 				},
@@ -220,6 +233,7 @@ export const addRoomsStateRoutes = (router: ClientRouter) => {
 				response: {
 					200: isStateContentResponseProps,
 					401: isMatrixErrorProps,
+					403: isMatrixErrorProps,
 					404: isMatrixErrorProps,
 					500: isMatrixErrorProps,
 				},
