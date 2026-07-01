@@ -20,6 +20,7 @@ const defaultSessionInfo: SessionState = {
 	startedAt: undefined,
 	hidden: false,
 	supportedFeatures: ['audio', 'transfer', 'hold'],
+	docked: false,
 };
 
 export const getExtensionFromInstanceContact = (contact: CallContact): string | undefined => {
@@ -51,6 +52,9 @@ const reducer = (
 				type: 'reset';
 		  }
 		| {
+				type: 'call_cleared';
+		  }
+		| {
 				type: 'selectPeer';
 				payload: { peerInfo?: PeerInfo };
 		  }
@@ -76,7 +80,8 @@ const reducer = (
 ): SessionState => {
 	if (action.type === 'toggleWidget') {
 		if (reducerState.state === 'closed') {
-			return { ...reducerState, state: 'new', peerInfo: action.payload?.peerInfo };
+			// Opened via a user action (room/user "call") — a free-floating composer, not docked.
+			return { ...reducerState, state: 'new', peerInfo: action.payload?.peerInfo, docked: false };
 		}
 
 		if (reducerState.state === 'new') {
@@ -84,7 +89,7 @@ const reducer = (
 			// peer instead of toggling closed — keeps "Call rodrigo" working when
 			// the dialer is already mounted (e.g. inside the sidebar rail panel).
 			if (action.payload?.peerInfo) {
-				return { ...reducerState, peerInfo: action.payload.peerInfo };
+				return { ...reducerState, peerInfo: action.payload.peerInfo, docked: false };
 			}
 			return { ...reducerState, state: 'closed' };
 		}
@@ -95,7 +100,9 @@ const reducer = (
 	// tracking the current state (e.g. StrictMode double-invoked effects).
 	if (action.type === 'openDialer') {
 		if (reducerState.state === 'closed') {
-			return { ...reducerState, state: 'new', peerInfo: action.payload?.peerInfo };
+			// Only the sidebar call panel uses openDialer; mark the dialer docked so it renders
+			// inside the panel slot and never floats once the panel unmounts.
+			return { ...reducerState, state: 'new', peerInfo: action.payload?.peerInfo, docked: true };
 		}
 
 		if (reducerState.state === 'new' && action.payload?.peerInfo) {
@@ -129,6 +136,18 @@ const reducer = (
 		return defaultSessionInfo;
 	}
 
+	// No active call on the instance. Tear down call-derived state, but preserve a user-driven
+	// idle compose widget ('new') — e.g. the sidebar call panel dialer, or a dial pad pre-filled
+	// from a desktop telephony deeplink — which the instance's autoSync emit would otherwise
+	// clobber right after it initializes (leaving the panel empty after a call ends).
+	if (action.type === 'call_cleared') {
+		if (reducerState.state === 'new') {
+			return reducerState;
+		}
+
+		return defaultSessionInfo;
+	}
+
 	if (action.type === 'status_updated' && reducerState.peerInfo && 'userId' in reducerState.peerInfo) {
 		return { ...reducerState, peerInfo: { ...reducerState.peerInfo, status: action.payload?.status } };
 	}
@@ -158,7 +177,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 		const updateSessionState = () => {
 			const instanceState = instance.getState();
 			if (!instanceState) {
-				dispatch({ type: 'reset' });
+				dispatch({ type: 'call_cleared' });
 				return;
 			}
 
@@ -169,7 +188,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 			const state = deriveWidgetStateFromCallState(callState, role);
 
 			if (!state) {
-				dispatch({ type: 'reset' });
+				dispatch({ type: 'call_cleared' });
 				return;
 			}
 
