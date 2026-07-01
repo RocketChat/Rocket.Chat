@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import { describe, it, beforeEach, vi } from 'vitest';
 
 const { retrieveCredential, removeById, samlUtilsMock, handler } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 	return {
 		retrieveCredential: sinon.stub().resolves(null),
@@ -37,8 +36,8 @@ vi.mock('../../../../app/meteor-accounts-saml/server/lib/SAML', () => ({
 vi.mock('../../../../app/meteor-accounts-saml/server/lib/Utils', () => ({
 	SAMLUtils: samlUtilsMock,
 }));
-vi.mock('../../../../server/lib/i18n', () => ({ i18n: { t: (() => '') } }));
-vi.mock('../../../../server/lib/logger/system', () => ({ SystemLogger: { error: (() => undefined) } }));
+vi.mock('../../../../server/lib/i18n', () => ({ i18n: { t: () => '' } }));
+vi.mock('../../../../server/lib/logger/system', () => ({ SystemLogger: { error: () => undefined } }));
 
 await import('../../../../app/meteor-accounts-saml/server/loginHandler');
 

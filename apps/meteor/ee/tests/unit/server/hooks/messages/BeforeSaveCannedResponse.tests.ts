@@ -1,7 +1,7 @@
 import { registerModel, BaseRaw } from '@rocket.chat/models';
 import { expect } from 'chai';
-import { beforeAll, describe, it } from 'vitest';
 import sinon from 'sinon';
+import { beforeAll, describe, it } from 'vitest';
 
 import { BeforeSaveCannedResponse } from '../../../../../server/hooks/messages/BeforeSaveCannedResponse';
 

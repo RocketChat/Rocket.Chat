@@ -61,7 +61,7 @@ describe('Record Converter', () => {
 				const converter = new TestConverter(false);
 				await converter.addObject(userToImport);
 
-				await converter['getDataToImport']();
+				await (converter as any).getDataToImport();
 
 				expect(modelsMock.ImportData.find.getCall(0)).to.not.be.null;
 			});
@@ -104,7 +104,7 @@ describe('Record Converter', () => {
 				const converter = new TestConverter(true);
 				await converter.addObject(userToImport);
 
-				await converter['getDataToImport']();
+				await (converter as any).getDataToImport();
 
 				expect(modelsMock.ImportData.find.getCall(0)).to.be.null;
 			});
@@ -113,7 +113,7 @@ describe('Record Converter', () => {
 				const converter = new TestConverter(true);
 
 				await converter.addObject(userToImport);
-				const dataToImport = await converter['getDataToImport']();
+				const dataToImport = await (converter as any).getDataToImport();
 
 				expect(dataToImport.length).to.be.equal(1);
 				expect(dataToImport[0].data).to.be.equal(userToImport);

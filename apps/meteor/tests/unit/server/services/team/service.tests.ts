@@ -2,24 +2,34 @@ import { expect } from 'chai';
 import { beforeEach, describe, it, vi } from 'vitest';
 
 // Stubs built in `vi.hoisted` so the hoisted `vi.mock` factories can reference them.
-const { Rooms, Users, addUserToRoom, saveRoomName, saveRoomType, checkUsernameAvailability, getSubscribedRoomsForUserWithDetails, removeUserFromRoom, notifyOnSubscriptionChangedByRoomIdAndUserId, notifyOnRoomChangedById, settingsGet } =
-	vi.hoisted(() => {
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
-		const sinon = require('sinon');
-		return {
-			Rooms: { findDefaultRoomsForTeam: sinon.stub() },
-			Users: { findActiveByIds: sinon.stub() },
-			addUserToRoom: sinon.stub(),
-			saveRoomName: sinon.stub(),
-			saveRoomType: sinon.stub(),
-			checkUsernameAvailability: sinon.stub(),
-			getSubscribedRoomsForUserWithDetails: sinon.stub(),
-			removeUserFromRoom: sinon.stub(),
-			notifyOnSubscriptionChangedByRoomIdAndUserId: sinon.stub(),
-			notifyOnRoomChangedById: sinon.stub(),
-			settingsGet: sinon.stub(),
-		};
-	});
+const {
+	Rooms,
+	Users,
+	addUserToRoom,
+	saveRoomName,
+	saveRoomType,
+	checkUsernameAvailability,
+	getSubscribedRoomsForUserWithDetails,
+	removeUserFromRoom,
+	notifyOnSubscriptionChangedByRoomIdAndUserId,
+	notifyOnRoomChangedById,
+	settingsGet,
+} = vi.hoisted(() => {
+	const sinon = require('sinon');
+	return {
+		Rooms: { findDefaultRoomsForTeam: sinon.stub() },
+		Users: { findActiveByIds: sinon.stub() },
+		addUserToRoom: sinon.stub(),
+		saveRoomName: sinon.stub(),
+		saveRoomType: sinon.stub(),
+		checkUsernameAvailability: sinon.stub(),
+		getSubscribedRoomsForUserWithDetails: sinon.stub(),
+		removeUserFromRoom: sinon.stub(),
+		notifyOnSubscriptionChangedByRoomIdAndUserId: sinon.stub(),
+		notifyOnRoomChangedById: sinon.stub(),
+		settingsGet: sinon.stub(),
+	};
+});
 
 vi.mock('@rocket.chat/core-services', () => ({
 	Room: {},

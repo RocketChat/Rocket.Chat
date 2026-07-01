@@ -13,7 +13,7 @@ vi.mock('@rocket.chat/cron', async () => {
 });
 
 const { removeCronJobs } = await import('../../../../../../server/services/calendar/statusEvents/removeCronJobs');
-const cronJobsMock = holder.cronJobsMock;
+const { cronJobsMock } = holder;
 
 describe('Calendar.StatusEvents', () => {
 	const fakeEventId = 'eventId123';

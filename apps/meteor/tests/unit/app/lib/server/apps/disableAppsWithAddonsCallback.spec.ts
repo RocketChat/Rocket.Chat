@@ -1,12 +1,12 @@
 import chai, { expect } from 'chai';
 import { vi } from 'vitest';
 
+import type { AppServerOrchestrator } from '../../../../../../ee/server/apps/orchestrator';
+
 // chai-spies' `spy` is attached to the chai default export by `chai.use(chaiSpies)` in the test
 // setup. The named `import { spy } from 'chai'` export is not preserved under Vitest's ESM interop,
 // so we use `chai.spy` (the same test-double mechanism, identical behaviour).
 const { spy } = chai as typeof chai & { spy: any };
-
-import type { AppServerOrchestrator } from '../../../../../../ee/server/apps/orchestrator';
 
 vi.mock('../../../../../../ee/server/apps', () => ({}));
 vi.mock('../../../../../../server/lib/sendMessagesToAdmins', () => ({ sendMessagesToAdmins: () => undefined }));

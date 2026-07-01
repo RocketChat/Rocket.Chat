@@ -85,7 +85,7 @@ describe('OmnichannelQueueInactivityMonitorClass', () => {
 	describe('getRocketChatUser', () => {
 		it('should return rocket.cat user', async () => {
 			const qclass = new OmnichannelQueueInactivityMonitorClass();
-			await qclass['getRocketCatUser']();
+			await (qclass as any).getRocketCatUser();
 
 			expect(modelsMock.Users.findOneById.calledWith('rocket.cat')).to.be.true;
 		});

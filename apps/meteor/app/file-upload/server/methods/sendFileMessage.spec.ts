@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import { describe, it, beforeEach, vi } from 'vitest';
 
 const { stubs } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 	return {
 		stubs: {
@@ -23,8 +22,8 @@ const { stubs } = vi.hoisted(() => {
 	};
 });
 
-const findOneByIdAndUserIdAndRoomId = stubs.findOneByIdAndUserIdAndRoomId;
-const updateFileMetadata = stubs.updateFileMetadata;
+const { findOneByIdAndUserIdAndRoomId } = stubs;
+const { updateFileMetadata } = stubs;
 
 vi.mock('@rocket.chat/models', () => ({
 	Uploads: { findOneByIdAndUserIdAndRoomId: stubs.findOneByIdAndUserIdAndRoomId, updateFileMetadata: stubs.updateFileMetadata },

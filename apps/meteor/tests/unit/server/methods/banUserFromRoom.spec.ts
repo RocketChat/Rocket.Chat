@@ -1,39 +1,45 @@
 import { expect } from 'chai';
-import { beforeEach, describe, it, vi } from 'vitest';
 import sinon from 'sinon';
+import { beforeEach, describe, it, vi } from 'vitest';
 
-const { hasPermissionAsyncMock, hasRoleAsyncMock, banUserFromRoomMock, canAccessRoomAsyncMock, modelsMock, roomCoordinatorMock, RoomMemberActions } =
-	vi.hoisted(() => {
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
-		const sinon = require('sinon');
-		return {
-			hasPermissionAsyncMock: sinon.stub(),
-			hasRoleAsyncMock: sinon.stub(),
-			banUserFromRoomMock: sinon.stub(),
-			canAccessRoomAsyncMock: sinon.stub(),
-			modelsMock: {
-				Rooms: {
-					findOneById: sinon.stub(),
-				},
-				Subscriptions: {
-					findOneByRoomIdAndUserId: sinon.stub(),
-				},
-				Users: {
-					findOneById: sinon.stub(),
-					findOneByUsernameIgnoringCase: sinon.stub(),
-				},
-				Roles: {
-					countUsersInRole: sinon.stub(),
-				},
+const {
+	hasPermissionAsyncMock,
+	hasRoleAsyncMock,
+	banUserFromRoomMock,
+	canAccessRoomAsyncMock,
+	modelsMock,
+	roomCoordinatorMock,
+	RoomMemberActions,
+} = vi.hoisted(() => {
+	const sinon = require('sinon');
+	return {
+		hasPermissionAsyncMock: sinon.stub(),
+		hasRoleAsyncMock: sinon.stub(),
+		banUserFromRoomMock: sinon.stub(),
+		canAccessRoomAsyncMock: sinon.stub(),
+		modelsMock: {
+			Rooms: {
+				findOneById: sinon.stub(),
 			},
-			roomCoordinatorMock: {
-				getRoomDirectives: sinon.stub(),
+			Subscriptions: {
+				findOneByRoomIdAndUserId: sinon.stub(),
 			},
-			RoomMemberActions: {
-				BAN: 'ban',
+			Users: {
+				findOneById: sinon.stub(),
+				findOneByUsernameIgnoringCase: sinon.stub(),
 			},
-		};
-	});
+			Roles: {
+				countUsersInRole: sinon.stub(),
+			},
+		},
+		roomCoordinatorMock: {
+			getRoomDirectives: sinon.stub(),
+		},
+		RoomMemberActions: {
+			BAN: 'ban',
+		},
+	};
+});
 
 vi.mock('@rocket.chat/core-typings', () => ({
 	isBannedSubscription: (sub: { status?: string } | null) => sub?.status === 'BANNED',

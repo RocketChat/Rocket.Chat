@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import { describe, it, beforeEach, vi } from 'vitest';
 
 const { stubs, sandbox } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 	const sandbox = sinon.createSandbox();
 	return {
@@ -26,7 +25,9 @@ const { stubs, sandbox } = vi.hoisted(() => {
 vi.mock('@rocket.chat/license', () => ({ DuplicatedLicenseError: stubs.DuplicatedLicenseError }));
 vi.mock('@rocket.chat/models', () => ({ Settings: stubs.Settings }));
 vi.mock('../../../../../../../server/lib/callbacks', () => ({ callbacks: stubs.callbacks }));
-vi.mock('../../../../../../../lib/errors/CloudWorkspaceAccessError', () => ({ CloudWorkspaceAccessError: stubs.CloudWorkspaceAccessError }));
+vi.mock('../../../../../../../lib/errors/CloudWorkspaceAccessError', () => ({
+	CloudWorkspaceAccessError: stubs.CloudWorkspaceAccessError,
+}));
 vi.mock('../../../../../../../lib/errors/CloudWorkspaceRegistrationError', () => ({
 	CloudWorkspaceRegistrationError: stubs.CloudWorkspaceRegistrationError,
 }));

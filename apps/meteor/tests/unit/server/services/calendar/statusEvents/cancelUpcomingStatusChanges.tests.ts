@@ -1,13 +1,12 @@
 import { expect } from 'chai';
-import { describe, it, vi } from 'vitest';
 import sinon from 'sinon';
+import { describe, it, vi } from 'vitest';
 
 import { MockedCronJobs } from '../mocks/cronJobs';
 
 const fakeUserId = 'userId456';
 
 const { settingsMock, cronHolder, CalendarEventMock } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 	const fakeUserId = 'userId456';
 	return {
@@ -32,7 +31,7 @@ vi.mock('@rocket.chat/models', () => ({
 }));
 
 cronHolder.cronJobsMock = new MockedCronJobs();
-const cronJobsMock = cronHolder.cronJobsMock;
+const { cronJobsMock } = cronHolder;
 
 const { cancelUpcomingStatusChanges } = await import('../../../../../../server/services/calendar/statusEvents/cancelUpcomingStatusChanges');
 

@@ -1,10 +1,9 @@
 import type { IAppsEngineService } from '@rocket.chat/core-services';
 import { expect } from 'chai';
-import { afterEach, beforeEach, describe, it, vi } from 'vitest';
 import sinon from 'sinon';
+import { afterEach, beforeEach, describe, it, vi } from 'vitest';
 
 const { AppsMock, apiMock, isRunningMsMock, ServiceClassInternalMock, SystemLoggerMock } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 	return {
 		AppsMock: {

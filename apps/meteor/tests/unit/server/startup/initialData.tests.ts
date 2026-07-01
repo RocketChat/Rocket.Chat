@@ -5,7 +5,6 @@ import { beforeEach, describe, it, vi } from 'vitest';
 // is cross-instance-sensitive, so we expose the hoisted sinon's `match` and use it in assertions.
 const { match, checkUsernameAvailability, validateEmail, addUserRolesAsync, models, setPasswordAsync, settingsGet, meteorStartup } =
 	vi.hoisted(() => {
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
 		const sinon = require('sinon');
 		return {
 			match: sinon.match,
@@ -195,8 +194,8 @@ describe('insertAdminUserFromEnv', () => {
 
 		expect(addUserRolesAsync.called).to.be.true;
 		expect(setPasswordAsync.called).to.be.true;
-		expect(models.Users.create.calledWith(match({ name: 'name', username: '1234', emails: [{ address: 'email', verified: true }] })))
-			.to.be.true;
+		expect(models.Users.create.calledWith(match({ name: 'name', username: '1234', emails: [{ address: 'email', verified: true }] }))).to.be
+			.true;
 	});
 	it('should use the default nameValidation regex when the regex on the setting is invalid', async () => {
 		process.env.ADMIN_NAME = 'name';

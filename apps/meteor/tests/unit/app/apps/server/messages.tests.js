@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { vi } from 'vitest';
+import { beforeAll, vi } from 'vitest';
 
 import { appMessageMock, appMessageInvalidRoomMock, appPartialMessageMock } from './mocks/data/messages.data';
 import { MessagesMock } from './mocks/models/Messages.mock';
