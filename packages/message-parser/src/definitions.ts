@@ -118,6 +118,11 @@ export type Plain = {
 	value: string;
 };
 
+// [start, end] offsets into the original parsed source. Consumers that don't
+// implement a renderer for a node can slice the source to show the raw markup,
+// without duplicating the text into the AST.
+export type SourceRange = [number, number];
+
 export type LineBreak = {
 	type: 'LINE_BREAK';
 	value: undefined;
@@ -170,7 +175,9 @@ export type Timestamp = {
 		timestamp: string;
 		format: 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R';
 	};
-	fallback?: Plain;
+	// New form is a `[start, end]` offset span; the `Plain` form is kept in the
+	// type only to tolerate previously-persisted data at runtime.
+	fallback?: SourceRange | Plain;
 };
 
 export type Types = {
