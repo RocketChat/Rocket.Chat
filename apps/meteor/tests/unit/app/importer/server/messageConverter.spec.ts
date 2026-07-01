@@ -1,9 +1,11 @@
+import type { IImportMessage } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { vi } from 'vitest';
 
+import type { MessageConverter as MessageConverterClass } from '../../../../../app/importer/server/classes/converters/MessageConverter';
+
 const { settingsStub, modelsMock, insertMessage } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 	return {
 		settingsStub: sinon.stub(),
@@ -43,22 +45,22 @@ describe('Message Converter', () => {
 			const converter = new MessageConverter({ workInMemory: true });
 			converter._cache.addRoom('general', 'general');
 
-			sinon.stub(converter, 'insertMessage');
-			sinon.stub(converter, 'resetLastMessages');
+			const insertMessageStub = sinon.stub(converter, 'insertMessage' as keyof MessageConverterClass);
+			sinon.stub(converter, 'resetLastMessages' as keyof MessageConverterClass);
 
-			await converter.addObject(messageToImport);
+			await converter.addObject(messageToImport as unknown as IImportMessage);
 			await converter.convertData();
 
-			expect(converter.insertMessage.getCalls()).to.be.an('array').with.lengthOf(1);
-			expect(converter.insertMessage.getCall(0).args).to.be.an('array').that.is.not.empty;
-			expect(converter.insertMessage.getCall(0).args[0]).to.be.deep.equal(messageToImport);
+			expect(insertMessageStub.getCalls()).to.be.an('array').with.lengthOf(1);
+			expect(insertMessageStub.getCall(0).args).to.be.an('array').that.is.not.empty;
+			expect(insertMessageStub.getCall(0).args[0]).to.be.deep.equal(messageToImport);
 		});
 
 		it('should call insertMessage lib function to save the message', async () => {
 			const converter = new MessageConverter({ workInMemory: true });
 			converter._cache.addRoom('general', 'main');
 
-			await (converter as any).insertMessage(messageToImport);
+			await converter.insertMessage(messageToImport as unknown as IImportMessage);
 
 			expect(insertMessage.getCalls()).to.be.an('array').with.lengthOf(1);
 			expect(insertMessage.getCall(0).args).to.be.an('array').with.lengthOf(4);
@@ -78,7 +80,10 @@ describe('Message Converter', () => {
 		it('should have the basic info', async () => {
 			const converter = new MessageConverter({ workInMemory: true });
 
-			const converted = await converter.buildMessageObject(messageToImport, 'general', { _id: 'rocket.cat', username: 'rocket.cat' });
+			const converted = await converter.buildMessageObject(messageToImport as unknown as IImportMessage, 'general', {
+				_id: 'rocket.cat',
+				username: 'rocket.cat',
+			});
 
 			expect(converted)
 				.to.be.an('object')
@@ -95,7 +100,10 @@ describe('Message Converter', () => {
 		it('should not have properties with undefined values', async () => {
 			const converter = new MessageConverter({ workInMemory: true });
 
-			const converted = await converter.buildMessageObject(messageToImport, 'general', { _id: 'rocket.cat', username: 'rocket.cat' });
+			const converted = await converter.buildMessageObject(messageToImport as unknown as IImportMessage, 'general', {
+				_id: 'rocket.cat',
+				username: 'rocket.cat',
+			});
 
 			Object.entries(converted).forEach(([key, value]) => {
 				expect(value, `Property "${key}" should not be undefined`).to.not.be.undefined;
@@ -111,10 +119,10 @@ describe('Message Converter', () => {
 			const converter = new MessageConverter({ workInMemory: true });
 			converter._cache.addRoom('general', 'general');
 
-			sinon.stub(converter, 'insertMessage');
-			sinon.stub(converter, 'resetLastMessages');
+			sinon.stub(converter, 'insertMessage' as keyof MessageConverterClass);
+			sinon.stub(converter, 'resetLastMessages' as keyof MessageConverterClass);
 
-			await converter.addObject(messageToImport);
+			await converter.addObject(messageToImport as unknown as IImportMessage);
 			await converter.convertData({
 				beforeImportFn,
 			});
@@ -127,15 +135,15 @@ describe('Message Converter', () => {
 			const converter = new MessageConverter({ workInMemory: true });
 			converter._cache.addRoom('general', 'general');
 
-			sinon.stub(converter, 'insertMessage');
-			sinon.stub(converter, 'resetLastMessages');
+			const insertMessageStub = sinon.stub(converter, 'insertMessage' as keyof MessageConverterClass);
+			sinon.stub(converter, 'resetLastMessages' as keyof MessageConverterClass);
 
-			await converter.addObject(messageToImport);
+			await converter.addObject(messageToImport as unknown as IImportMessage);
 			await converter.convertData({
 				afterImportFn,
 			});
 
-			expect(converter.insertMessage.getCalls()).to.be.an('array').with.lengthOf(1);
+			expect(insertMessageStub.getCalls()).to.be.an('array').with.lengthOf(1);
 			expect(afterImportFn.getCalls()).to.be.an('array').with.lengthOf(1);
 		});
 
@@ -152,11 +160,11 @@ describe('Message Converter', () => {
 			const converter = new MessageConverter({ workInMemory: true });
 			converter._cache.addRoom('general', 'general');
 
-			sinon.stub(converter, 'insertMessage');
-			sinon.stub(converter, 'resetLastMessages');
-			sinon.stub(converter, 'skipRecord');
+			const insertMessageStub = sinon.stub(converter, 'insertMessage' as keyof MessageConverterClass);
+			sinon.stub(converter, 'resetLastMessages' as keyof MessageConverterClass);
+			const skipRecordStub = sinon.stub(converter, 'skipRecord' as keyof MessageConverterClass);
 
-			await converter.addObject(messageToImport);
+			await converter.addObject(messageToImport as unknown as IImportMessage);
 			await converter.convertData({
 				beforeImportFn,
 				afterImportFn,
@@ -164,9 +172,9 @@ describe('Message Converter', () => {
 
 			expect(beforeImportFn.getCalls()).to.be.an('array').with.lengthOf(1);
 			expect(afterImportFn.getCalls()).to.be.an('array').with.lengthOf(0);
-			expect(converter.skipRecord.getCalls()).to.be.an('array').with.lengthOf(1);
-			expect(converter.skipRecord.getCall(0).args).to.be.an('array').that.is.deep.equal([recordId]);
-			expect(converter.insertMessage.getCalls()).to.be.an('array').with.lengthOf(0);
+			expect(skipRecordStub.getCalls()).to.be.an('array').with.lengthOf(1);
+			expect(skipRecordStub.getCall(0).args).to.be.an('array').that.is.deep.equal([recordId]);
+			expect(insertMessageStub.getCalls()).to.be.an('array').with.lengthOf(0);
 		});
 
 		it('should not skip record if beforeImportFn returns true', async () => {
@@ -178,36 +186,36 @@ describe('Message Converter', () => {
 			const converter = new MessageConverter({ workInMemory: true });
 			converter._cache.addRoom('general', 'general');
 
-			sinon.stub(converter, 'insertMessage');
-			sinon.stub(converter, 'resetLastMessages');
-			sinon.stub(converter, 'skipRecord');
+			const insertMessageStub = sinon.stub(converter, 'insertMessage' as keyof MessageConverterClass);
+			sinon.stub(converter, 'resetLastMessages' as keyof MessageConverterClass);
+			const skipRecordStub = sinon.stub(converter, 'skipRecord' as keyof MessageConverterClass);
 
-			await converter.addObject(messageToImport);
+			await converter.addObject(messageToImport as unknown as IImportMessage);
 			await converter.convertData({
 				beforeImportFn,
 				afterImportFn,
 			});
 
 			expect(beforeImportFn.getCalls()).to.be.an('array').with.lengthOf(1);
-			expect(converter.skipRecord.getCalls()).to.be.an('array').with.lengthOf(0);
-			expect(converter.insertMessage.getCalls()).to.be.an('array').with.lengthOf(1);
+			expect(skipRecordStub.getCalls()).to.be.an('array').with.lengthOf(0);
+			expect(insertMessageStub.getCalls()).to.be.an('array').with.lengthOf(1);
 			expect(afterImportFn.getCalls()).to.be.an('array').with.lengthOf(1);
 		});
 
 		it('onErrorFn should be triggered if mandatory attributes are missing', async () => {
 			const converter = new MessageConverter({ workInMemory: true });
 			converter._cache.addRoom('general', 'general');
-			sinon.stub(converter, 'resetLastMessages');
+			sinon.stub(converter, 'resetLastMessages' as keyof MessageConverterClass);
 
 			const onErrorFn = sinon.stub();
 
-			sinon.stub(converter, 'saveError');
+			const saveErrorStub = sinon.stub(converter, 'saveError' as keyof MessageConverterClass);
 
-			await converter.addObject({});
+			await converter.addObject({} as unknown as IImportMessage);
 			await converter.convertData({ onErrorFn });
 
 			expect(onErrorFn.getCall(0)).to.not.be.null;
-			expect(converter.saveError.getCall(0)).to.not.be.null;
+			expect(saveErrorStub.getCall(0)).to.not.be.null;
 		});
 	});
 });

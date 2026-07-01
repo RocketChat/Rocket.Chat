@@ -1,8 +1,10 @@
+import type { RequiredField } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { describe, it, beforeEach, vi } from 'vitest';
 
+import type { PushOptions } from './definition';
+
 const { sandbox, mocks, apnMock } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 	const sandbox = sinon.createSandbox();
 	const mocks = {
@@ -34,14 +36,15 @@ const baseOptions = {
 	production: false,
 };
 
-const buildOptions = (overrides: Record<string, unknown> = {}, apnOverrides: Record<string, unknown> = {}) => ({
-	...baseOptions,
-	...overrides,
-	apn: {
-		...baseOptions.apn,
-		...apnOverrides,
-	},
-});
+const buildOptions = (overrides: Record<string, unknown> = {}, apnOverrides: Record<string, unknown> = {}) =>
+	({
+		...baseOptions,
+		...overrides,
+		apn: {
+			...baseOptions.apn,
+			...apnOverrides,
+		},
+	}) as unknown as RequiredField<PushOptions, 'apn'>;
 
 describe('initAPN', () => {
 	beforeEach(() => {

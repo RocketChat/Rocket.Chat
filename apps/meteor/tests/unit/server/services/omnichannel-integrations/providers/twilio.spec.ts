@@ -5,7 +5,6 @@ import { describe, it, beforeEach, vi } from 'vitest';
 
 // Stubs built in `vi.hoisted` so the hoisted `vi.mock` factories can reference them.
 const { settingsStub, fileUploadIsValidContentTypeStub, i18nStub, systemLoggerErrorStub } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 	return {
 		settingsStub: { get: sinon.stub() },
@@ -61,9 +60,9 @@ describe('Twilio Request Validation', () => {
 			headers: {
 				'x-twilio-signature': 'test',
 			},
-		};
+		} as unknown as Request;
 
-		expect(await twilio.validateRequest(request)).to.be.true;
+		expect(await twilio.validateRequest(request, {})).to.be.true;
 	});
 
 	it('should validate a request when process.env.TEST_MODE is false', async () => {
@@ -89,7 +88,7 @@ describe('Twilio Request Validation', () => {
 					return headers[param];
 				},
 			},
-		};
+		} as unknown as Request;
 
 		expect(await twilio.validateRequest(request, requestBody)).to.be.true;
 	});
@@ -118,7 +117,7 @@ describe('Twilio Request Validation', () => {
 					return headers[param];
 				},
 			},
-		};
+		} as unknown as Request;
 
 		expect(await twilio.validateRequest(request, requestBody)).to.be.true;
 	});
@@ -144,7 +143,7 @@ describe('Twilio Request Validation', () => {
 					return headers[param];
 				},
 			},
-		};
+		} as unknown as Request;
 
 		expect(await twilio.validateRequest(request, requestBody)).to.be.false;
 	});
@@ -164,7 +163,7 @@ describe('Twilio Request Validation', () => {
 			headers: {
 				get: () => null,
 			},
-		};
+		} as unknown as Request;
 
 		expect(await twilio.validateRequest(request, requestBody)).to.be.false;
 	});
@@ -190,7 +189,7 @@ describe('Twilio Request Validation', () => {
 					return headers[param];
 				},
 			},
-		};
+		} as unknown as Request;
 
 		expect(await twilio.validateRequest(request, requestBody)).to.be.false;
 	});
@@ -218,7 +217,7 @@ describe('Twilio Request Validation', () => {
 					return headers[param];
 				},
 			},
-		};
+		} as unknown as Request;
 
 		expect(await twilio.validateRequest(request, requestBody)).to.be.false;
 	});
@@ -246,7 +245,7 @@ describe('Twilio Request Validation', () => {
 					return headers[param];
 				},
 			},
-		};
+		} as unknown as Request;
 
 		expect(await twilio.validateRequest(request, requestBody)).to.be.false;
 	});
@@ -276,7 +275,7 @@ describe('Twilio Request Validation', () => {
 					return headers[param];
 				},
 			},
-		};
+		} as unknown as Request;
 
 		expect(await twilio.validateRequest(request, requestBody)).to.be.true;
 	});

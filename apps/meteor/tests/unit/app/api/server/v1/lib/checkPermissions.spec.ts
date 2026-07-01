@@ -4,7 +4,6 @@ import { describe, it, vi } from 'vitest';
 import type { PermissionsPayload } from '../../../../../../../app/api/server/api.helpers';
 
 const { stubs } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 	return {
 		stubs: {
@@ -29,7 +28,7 @@ describe('checkPermissions', () => {
 	it('should return false when options.permissionsRequired is of an invalid format', () => {
 		const options = {
 			permissionsRequired: 'invalid',
-		};
+		} as unknown as { permissionsRequired?: PermissionsPayload };
 		expect(checkPermissions(options)).to.be.false;
 	});
 	it('should return true and modify options.permissionsRequired when permissionsRequired key is an array (of permissions)', () => {

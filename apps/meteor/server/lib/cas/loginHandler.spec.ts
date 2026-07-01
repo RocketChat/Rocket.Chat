@@ -1,8 +1,7 @@
 import { expect } from 'chai';
 import { describe, it, beforeEach, vi } from 'vitest';
 
-const { stubs, sandbox } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { stubs } = vi.hoisted(() => {
 	const sinon = require('sinon');
 	const sandbox = sinon.createSandbox();
 	return {

@@ -1,3 +1,4 @@
+import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { beforeEach, describe, it, vi } from 'vitest';
 
@@ -18,7 +19,6 @@ const {
 	callbacksRunMock,
 	meteorErrorMock,
 } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 	return {
 		match: sinon.match,
@@ -90,8 +90,8 @@ describe('Reactions', () => {
 			};
 
 			const result = removeUserReaction(message as any, 'test', 'test');
-			expect(result.reactions.test.usernames).to.not.include('test');
-			expect(result.reactions.test.usernames).to.include('test2');
+			expect(result.reactions!.test.usernames).to.not.include('test');
+			expect(result.reactions!.test.usernames).to.include('test2');
 		});
 		it('should remove the reaction from a message when the user is the last one on the array', () => {
 			const message = {
@@ -103,7 +103,7 @@ describe('Reactions', () => {
 			};
 
 			const result = removeUserReaction(message as any, 'test', 'test');
-			expect(result.reactions.test).to.be.undefined;
+			expect(result.reactions!.test).to.be.undefined;
 		});
 		it('should remove username only from the reaction thats passed in', () => {
 			const message = {
@@ -118,10 +118,10 @@ describe('Reactions', () => {
 			};
 
 			const result = removeUserReaction(message as any, 'test', 'test');
-			expect(result.reactions.test.usernames).to.not.include('test');
-			expect(result.reactions.test.usernames).to.include('test2');
-			expect(result.reactions.other.usernames).to.include('test');
-			expect(result.reactions.other.usernames).to.include('test2');
+			expect(result.reactions!.test.usernames).to.not.include('test');
+			expect(result.reactions!.test.usernames).to.include('test2');
+			expect(result.reactions!.other.usernames).to.include('test');
+			expect(result.reactions!.other.usernames).to.include('test2');
 		});
 		it('should do nothing if username is not in the reaction', () => {
 			const message = {
@@ -133,9 +133,9 @@ describe('Reactions', () => {
 			};
 
 			const result = removeUserReaction(message as any, 'test', 'test3');
-			expect(result.reactions.test.usernames).to.not.include('test3');
-			expect(result.reactions.test.usernames).to.include('test');
-			expect(result.reactions.test.usernames).to.include('test2');
+			expect(result.reactions!.test.usernames).to.not.include('test3');
+			expect(result.reactions!.test.usernames).to.include('test');
+			expect(result.reactions!.test.usernames).to.include('test2');
 		});
 	});
 	describe('executeSetReaction', () => {
@@ -198,7 +198,7 @@ describe('Reactions', () => {
 			modelsMock.Rooms.findOneById.resolves({ t: 'c' });
 			canAccessRoomAsyncMock.resolves(true);
 
-			await executeSetReaction('test', 'test', { reactions: { ':test:': { usernames: ['test'] } } });
+			await executeSetReaction('test', 'test', { reactions: { ':test:': { usernames: ['test'] } } } as unknown as IMessage);
 			expect(modelsMock.Messages.findOneById.calledOnce).to.be.false;
 		});
 	});
@@ -223,7 +223,9 @@ describe('Reactions', () => {
 			const message = {
 				_id: 'test',
 			};
-			await expect(setReaction(room, user, message, ':test:')).to.be.rejectedWith('error-not-allowed');
+			await expect(
+				setReaction(room as unknown as IRoom, user as unknown as IUser, message as unknown as IMessage, ':test:'),
+			).to.be.rejectedWith('error-not-allowed');
 		});
 		it('should throw an error if room is readonly and cannot be reacted when readonly and user trying doesnt have permissions and user is not unmuted from room', async () => {
 			const room = {
@@ -237,7 +239,9 @@ describe('Reactions', () => {
 				_id: 'test',
 			};
 			canAccessRoomAsyncMock.resolves(false);
-			await expect(setReaction(room, user, message, ':test:')).to.be.rejectedWith("You can't send messages because the room is readonly.");
+			await expect(
+				setReaction(room as unknown as IRoom, user as unknown as IUser, message as unknown as IMessage, ':test:'),
+			).to.be.rejectedWith("You can't send messages because the room is readonly.");
 		});
 		it('should remove the user reaction if userAlreadyReacted is true and call unsetReaction if reaction is the last one on message', async () => {
 			const room = {
@@ -256,7 +260,7 @@ describe('Reactions', () => {
 			};
 			const reaction = ':test:';
 
-			await setReaction(room, user, message, reaction, true);
+			await setReaction(room as unknown as IRoom, user as unknown as IUser, message as unknown as IMessage, reaction, true);
 			expect(modelsMock.Messages.unsetReactions.calledWith(message._id)).to.be.true;
 		});
 		it('should call Rooms.unsetReactionsInLastMessage when userAlreadyReacted is true and reaction is the last one on message', async () => {
@@ -279,7 +283,7 @@ describe('Reactions', () => {
 
 			isTheLastMessageMock.resolves(true);
 
-			await setReaction(room, user, message, reaction, true);
+			await setReaction(room as unknown as IRoom, user as unknown as IUser, message as unknown as IMessage, reaction, true);
 			expect(modelsMock.Messages.unsetReactions.calledWith(message._id)).to.be.true;
 			expect(modelsMock.Rooms.unsetReactionsInLastMessage.calledWith(room._id)).to.be.true;
 		});
@@ -303,7 +307,7 @@ describe('Reactions', () => {
 			};
 			const reaction = ':test:';
 
-			await setReaction(room, user, message, reaction, true);
+			await setReaction(room as unknown as IRoom, user as unknown as IUser, message as unknown as IMessage, reaction, true);
 			expect(modelsMock.Messages.setReactions.calledWith(message._id, match({ ':test2:': { usernames: ['test'] } }))).to.be.true;
 		});
 		it('should call Rooms.setReactionsInLastMessage when userAlreadyReacted is true and reaction is not the last one on message', async () => {
@@ -329,10 +333,9 @@ describe('Reactions', () => {
 
 			isTheLastMessageMock.resolves(true);
 
-			await setReaction(room, user, message, reaction, true);
+			await setReaction(room as unknown as IRoom, user as unknown as IUser, message as unknown as IMessage, reaction, true);
 			expect(modelsMock.Messages.setReactions.calledWith(message._id, match({ ':test2:': { usernames: ['test'] } }))).to.be.true;
-			expect(modelsMock.Rooms.setReactionsInLastMessage.calledWith(room._id, match({ ':test2:': { usernames: ['test'] } }))).to.be
-				.true;
+			expect(modelsMock.Rooms.setReactionsInLastMessage.calledWith(room._id, match({ ':test2:': { usernames: ['test'] } }))).to.be.true;
 		});
 		it('should call afterUnsetReaction callback when userAlreadyReacted is true', async () => {
 			const room = {
@@ -351,7 +354,7 @@ describe('Reactions', () => {
 			};
 			const reaction = ':test:';
 
-			await setReaction(room, user, message, reaction, true);
+			await setReaction(room as unknown as IRoom, user as unknown as IUser, message as unknown as IMessage, reaction, true);
 			expect(
 				callbacksRunMock.calledWith(
 					'afterUnsetReaction',
@@ -371,7 +374,7 @@ describe('Reactions', () => {
 				_id: 'test',
 			};
 			const reaction = ':test:';
-			await setReaction(room, user, message, reaction, false);
+			await setReaction(room as unknown as IRoom, user as unknown as IUser, message as unknown as IMessage, reaction, false);
 			expect(modelsMock.Messages.setReactions.calledWith(message._id, match({ ':test:': { usernames: ['test'] } }))).to.be.true;
 		});
 		it('should properly add username to the list of reactions when userAlreadyReacted is false', async () => {
@@ -391,9 +394,8 @@ describe('Reactions', () => {
 			};
 			const reaction = ':test:';
 
-			await setReaction(room, user, message, reaction, false);
-			expect(modelsMock.Messages.setReactions.calledWith(message._id, match({ ':test:': { usernames: ['test', 'test2'] } }))).to.be
-				.true;
+			await setReaction(room as unknown as IRoom, user as unknown as IUser, message as unknown as IMessage, reaction, false);
+			expect(modelsMock.Messages.setReactions.calledWith(message._id, match({ ':test:': { usernames: ['test', 'test2'] } }))).to.be.true;
 		});
 		it('should call Rooms.setReactionInLastMessage when userAlreadyReacted is false', async () => {
 			const room = {
@@ -410,10 +412,9 @@ describe('Reactions', () => {
 
 			isTheLastMessageMock.resolves(true);
 
-			await setReaction(room, user, message, reaction, false);
+			await setReaction(room as unknown as IRoom, user as unknown as IUser, message as unknown as IMessage, reaction, false);
 			expect(modelsMock.Messages.setReactions.calledWith(message._id, match({ ':test:': { usernames: ['test'] } }))).to.be.true;
-			expect(modelsMock.Rooms.setReactionsInLastMessage.calledWith(room._id, match({ ':test:': { usernames: ['test'] } }))).to.be
-				.true;
+			expect(modelsMock.Rooms.setReactionsInLastMessage.calledWith(room._id, match({ ':test:': { usernames: ['test'] } }))).to.be.true;
 		});
 		it('should call afterSetReaction callback when userAlreadyReacted is false', async () => {
 			const room = {
@@ -427,10 +428,9 @@ describe('Reactions', () => {
 			};
 			const reaction = ':test:';
 
-			await setReaction(room, user, message, reaction, false);
-			expect(
-				callbacksRunMock.calledWith('afterSetReaction', match({ _id: 'test' }), match({ user, reaction, shouldReact: true })),
-			).to.be.true;
+			await setReaction(room as unknown as IRoom, user as unknown as IUser, message as unknown as IMessage, reaction, false);
+			expect(callbacksRunMock.calledWith('afterSetReaction', match({ _id: 'test' }), match({ user, reaction, shouldReact: true }))).to.be
+				.true;
 		});
 		it('should return undefined on a successful reaction', async () => {
 			const room = {
@@ -444,7 +444,8 @@ describe('Reactions', () => {
 			};
 			const reaction = ':test:';
 
-			expect(await setReaction(room, user, message, reaction, false)).to.be.undefined;
+			expect(await setReaction(room as unknown as IRoom, user as unknown as IUser, message as unknown as IMessage, reaction, false)).to.be
+				.undefined;
 		});
 	});
 });

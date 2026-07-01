@@ -1,9 +1,9 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { describe, it, beforeEach, afterEach, vi } from 'vitest';
 
 const { stubs } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 	return {
 		stubs: {
@@ -54,8 +54,12 @@ vi.mock('underscore', () => ({ default: stubs.underscore, ...stubs.underscore })
 vi.mock('../../../../../../app/settings/server', () => ({ settings: stubs.settings }));
 vi.mock('../../../../../../app/lib/server/lib', () => ({ notifyOnUserChange: stubs.notifyOnUserChange }));
 vi.mock('../../../../../../app/lib/server/functions/addUserToRoom', () => ({ addUserToRoom: stubs.addUserToRoom }));
-vi.mock('../../../../../../app/lib/server/functions/checkUsernameAvailability', () => ({ checkUsernameAvailability: stubs.checkUsernameAvailability }));
-vi.mock('../../../../../../app/lib/server/functions/getAvatarSuggestionForUser', () => ({ getAvatarSuggestionForUser: stubs.getAvatarSuggestionForUser }));
+vi.mock('../../../../../../app/lib/server/functions/checkUsernameAvailability', () => ({
+	checkUsernameAvailability: stubs.checkUsernameAvailability,
+}));
+vi.mock('../../../../../../app/lib/server/functions/getAvatarSuggestionForUser', () => ({
+	getAvatarSuggestionForUser: stubs.getAvatarSuggestionForUser,
+}));
 vi.mock('../../../../../../app/lib/server/functions/joinDefaultChannels', () => ({ joinDefaultChannels: stubs.joinDefaultChannels }));
 vi.mock('../../../../../../app/lib/server/functions/saveUserIdentity', () => ({ saveUserIdentity: stubs.saveUserIdentity }));
 vi.mock('../../../../../../app/lib/server/functions/setUserAvatar', () => ({ setUserAvatar: stubs.setUserAvatar }));
@@ -205,27 +209,27 @@ describe('setUsername', () => {
 
 	describe('_setUsername', () => {
 		it('should return false if userId or username is missing', async () => {
-			const result = await _setUsername(null, '', {});
+			const result = await _setUsername(null as unknown as string, '', {} as unknown as IUser);
 			expect(result).to.be.false;
 		});
 
 		it('should return false if username is invalid', async () => {
 			stubs.validateUsername.returns(false);
 
-			const result = await _setUsername(userId, 'invalid-username', {});
+			const result = await _setUsername(userId, 'invalid-username', {} as unknown as IUser);
 			expect(result).to.be.false;
 		});
 
 		it('should return user if username is already set', async () => {
 			stubs.validateUsername.returns(true);
-			const mockUser = { username };
+			const mockUser = { username } as unknown as IUser;
 
 			const result = await _setUsername(userId, username, mockUser);
 			expect(result).to.equal(mockUser);
 		});
 
 		it('should set username when user has no previous username', async () => {
-			const mockUser = { _id: userId, emails: [{ address: 'test@example.com' }] };
+			const mockUser = { _id: userId, emails: [{ address: 'test@example.com' }] } as unknown as IUser;
 			stubs.validateUsername.returns(true);
 			stubs.Users.findOneById.resolves(mockUser);
 			stubs.checkUsernameAvailability.resolves(true);
@@ -238,7 +242,7 @@ describe('setUsername', () => {
 		});
 
 		it('should set username when user has and old that is different from new', async () => {
-			const mockUser = { _id: userId, username: 'oldUsername', emails: [{ address: 'test@example.com' }] };
+			const mockUser = { _id: userId, username: 'oldUsername', emails: [{ address: 'test@example.com' }] } as unknown as IUser;
 			stubs.validateUsername.returns(true);
 			stubs.Users.findOneById.resolves(mockUser);
 			stubs.checkUsernameAvailability.resolves(true);
@@ -251,7 +255,7 @@ describe('setUsername', () => {
 		});
 
 		it('should set username when user has and old that is different from new', async () => {
-			const mockUser = { _id: userId, username: 'oldUsername', emails: [{ address: 'test@example.com' }] };
+			const mockUser = { _id: userId, username: 'oldUsername', emails: [{ address: 'test@example.com' }] } as unknown as IUser;
 			stubs.validateUsername.returns(true);
 			stubs.Users.findOneById.resolves(mockUser);
 			stubs.checkUsernameAvailability.resolves(true);
@@ -264,7 +268,7 @@ describe('setUsername', () => {
 		});
 
 		it('should set avatar if Accounts_SetDefaultAvatar is enabled', async () => {
-			const mockUser = { _id: userId, username: null };
+			const mockUser = { _id: userId, username: null } as unknown as IUser;
 			stubs.validateUsername.returns(true);
 			stubs.Users.findOneById.resolves(mockUser);
 			stubs.checkUsernameAvailability.resolves(true);
@@ -277,7 +281,7 @@ describe('setUsername', () => {
 		});
 
 		it('should not set avatar if Accounts_SetDefaultAvatar is disabled', async () => {
-			const mockUser = { _id: userId, username: null };
+			const mockUser = { _id: userId, username: null } as unknown as IUser;
 			stubs.validateUsername.returns(true);
 			stubs.Users.findOneById.resolves(mockUser);
 			stubs.checkUsernameAvailability.resolves(true);
@@ -289,7 +293,7 @@ describe('setUsername', () => {
 		});
 
 		it('should not set avatar if no avatar suggestions are available', async () => {
-			const mockUser = { _id: userId, username: null };
+			const mockUser = { _id: userId, username: null } as unknown as IUser;
 			stubs.validateUsername.returns(true);
 			stubs.Users.findOneById.resolves(mockUser);
 			stubs.checkUsernameAvailability.resolves(true);
@@ -302,7 +306,7 @@ describe('setUsername', () => {
 		});
 
 		it('should add user to room if inviteToken is present', async () => {
-			const mockUser = { _id: userId, username: null, inviteToken: 'invite token' };
+			const mockUser = { _id: userId, username: null, inviteToken: 'invite token' } as unknown as IUser;
 			stubs.validateUsername.returns(true);
 			stubs.Users.findOneById.resolves(mockUser);
 			stubs.checkUsernameAvailability.resolves(true);

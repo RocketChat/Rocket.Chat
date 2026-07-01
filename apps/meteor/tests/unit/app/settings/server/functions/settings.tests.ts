@@ -1,14 +1,14 @@
 import chai, { expect } from 'chai';
 import { beforeEach, describe, it } from 'vitest';
 
-// chai-spies registers `spy` on the chai instance (see tests/setup/vitestSetup.ts); grab it from
-// there rather than as a named import, which Vitest does not expose for plugin-added exports.
-const { spy } = chai;
-
 import { CachedSettings } from '../../../../../../app/settings/server/CachedSettings';
 import { SettingsRegistry } from '../../../../../../app/settings/server/SettingsRegistry';
 import { getSettingDefaults } from '../../../../../../app/settings/server/functions/getSettingDefaults';
 import { Settings } from '../../../../../../app/settings/server/functions/settings.mocks';
+
+// chai-spies registers `spy` on the chai instance (see tests/setup/vitestSetup.ts); grab it from
+// there rather than as a named import, which Vitest does not expose for plugin-added exports.
+const { spy } = chai;
 
 const testSetting = getSettingDefaults({
 	_id: 'my_dummy_setting',
@@ -570,7 +570,7 @@ describe('Settings', () => {
 	});
 
 	it('should call `settings.get` callback on setting added', async () => {
-		return new Promise(async (resolve) => {
+		return new Promise<void>(async (resolve) => {
 			const settings = new CachedSettings();
 			Settings.settings = settings;
 			settings.initialized();
@@ -604,7 +604,7 @@ describe('Settings', () => {
 	});
 
 	it('should call `settings.watch` callback on setting changed registering before initialized', async () => {
-		return new Promise(async (resolve) => {
+		return new Promise<void>(async (resolve) => {
 			const spiedCallback1 = spy();
 			const spiedCallback2 = spy();
 			const settings = new CachedSettings();

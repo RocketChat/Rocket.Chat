@@ -1,9 +1,10 @@
-import type { BannerPlatform, IBanner, IBannerDismiss } from '@rocket.chat/core-typings';
+import type { IBanner, IBannerDismiss } from '@rocket.chat/core-typings';
+import { BannerPlatform } from '@rocket.chat/core-typings';
 import { registerModel, BaseRaw } from '@rocket.chat/models';
 import { expect } from 'chai';
-import { afterEach, beforeAll, describe, it } from 'vitest';
 import type { FindCursor, FindOptions } from 'mongodb';
 import sinon from 'sinon';
+import { afterEach, beforeAll, describe, it } from 'vitest';
 
 const { BannerService } = await import('../../../../../server/services/banner/service');
 
@@ -84,7 +85,7 @@ describe('Banners service', () => {
 			);
 
 			sinon.replace(userModel, 'findOneById', sinon.fake.returns(Promise.resolve({})));
-			const banners = await service.getBannersForUser('a-fake-id', 'web');
+			const banners = await service.getBannersForUser('a-fake-id', BannerPlatform.Web);
 
 			expect(findActiveByRoleOrIdMock.callCount).to.be.equal(1);
 			expect(findByUserIdAndBannerIdMock.callCount).to.be.equal(1);
@@ -110,7 +111,7 @@ describe('Banners service', () => {
 
 			sinon.replace(userModel, 'findOneById', sinon.fake.returns(Promise.resolve({})));
 
-			const banners = await service.getBannersForUser('a-fake-id', 'web');
+			const banners = await service.getBannersForUser('a-fake-id', BannerPlatform.Web);
 
 			expect(findActiveByRoleOrIdMock.callCount).to.be.equal(1);
 			expect(findByUserIdAndBannerIdMock.callCount).to.be.equal(1);
@@ -134,7 +135,7 @@ describe('Banners service', () => {
 
 			sinon.replace(userModel, 'findOneById', sinon.fake.returns(Promise.resolve({})));
 
-			const banners = await service.getBannersForUser('a-fake-id', 'web');
+			const banners = await service.getBannersForUser('a-fake-id', BannerPlatform.Web);
 
 			expect(findActiveByRoleOrIdMock.callCount).to.be.equal(1);
 			expect(findByUserIdAndBannerIdMock.callCount).to.be.equal(1);

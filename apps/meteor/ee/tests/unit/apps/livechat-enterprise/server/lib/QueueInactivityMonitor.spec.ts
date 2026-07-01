@@ -19,7 +19,6 @@ const {
 	i18nMock,
 	match,
 } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 
 	const AgendaJobStub = {

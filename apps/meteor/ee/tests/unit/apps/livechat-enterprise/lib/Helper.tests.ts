@@ -6,7 +6,6 @@ import { beforeEach, describe, it, vi } from 'vitest';
 // NOTE: relative `vi.mock` specifiers are resolved relative to THIS spec file (not the source).
 const { settingGetMock, usersModelMock, departmentsMock, meteorStartup, queueInactivityStop, inquirySortMechanism, omniChatSortQuery } =
 	vi.hoisted(() => {
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
 		const sinon = require('sinon');
 		return {
 			settingGetMock: sinon.stub(),
@@ -37,30 +36,40 @@ describe('isAgentWithinChatLimits', () => {
 		settingGetMock.reset();
 	});
 	it('should return true if no limit is set', async () => {
-		const res = await isAgentWithinChatLimits({ agentId: 'kevs', totalChats: 10 });
+		const res = await isAgentWithinChatLimits({ agentId: 'kevs', totalChats: 10 } as unknown as Parameters<
+			typeof isAgentWithinChatLimits
+		>[0]);
 		expect(res).to.be.true;
 	});
 	it('should return true when agent is under the agent limit', async () => {
 		usersModelMock.getAgentInfo.resolves({ livechat: { maxNumberSimultaneousChat: 15 } });
-		const res = await isAgentWithinChatLimits({ agentId: 'kevs', totalChats: 10 });
+		const res = await isAgentWithinChatLimits({ agentId: 'kevs', totalChats: 10 } as unknown as Parameters<
+			typeof isAgentWithinChatLimits
+		>[0]);
 		expect(res).to.be.true;
 	});
 	it('should honor agent limit over global limit', async () => {
 		usersModelMock.getAgentInfo.resolves({ livechat: { maxNumberSimultaneousChat: 15 } });
 		settingGetMock.returns(5);
-		const res = await isAgentWithinChatLimits({ agentId: 'kevs', totalChats: 10 });
+		const res = await isAgentWithinChatLimits({ agentId: 'kevs', totalChats: 10 } as unknown as Parameters<
+			typeof isAgentWithinChatLimits
+		>[0]);
 		expect(res).to.be.true;
 	});
 	it('should use global limit if agent limit is not set', async () => {
 		usersModelMock.getAgentInfo.resolves({ livechat: { maxNumberSimultaneousChat: undefined } });
 		settingGetMock.returns(5);
-		const res = await isAgentWithinChatLimits({ agentId: 'kevs', totalChats: 10 });
+		const res = await isAgentWithinChatLimits({ agentId: 'kevs', totalChats: 10 } as unknown as Parameters<
+			typeof isAgentWithinChatLimits
+		>[0]);
 		expect(res).to.be.false;
 	});
 	it('should consider a user with the same number of chats as the limit as over the limit', async () => {
 		usersModelMock.getAgentInfo.resolves({ livechat: { maxNumberSimultaneousChat: 15 } });
 		settingGetMock.returns(5);
-		const res = await isAgentWithinChatLimits({ agentId: 'kevs', totalChats: 15 });
+		const res = await isAgentWithinChatLimits({ agentId: 'kevs', totalChats: 15 } as unknown as Parameters<
+			typeof isAgentWithinChatLimits
+		>[0]);
 		expect(res).to.be.false;
 	});
 	it('should honor both department and agent limit when departmentId is passed', async () => {
@@ -109,7 +118,9 @@ describe('isAgentWithinChatLimits', () => {
 	});
 	it('should ignore agent limit if its not a valid number (or cast to number)', async () => {
 		usersModelMock.getAgentInfo.resolves({ livechat: { maxNumberSimultaneousChat: 'invalid' } });
-		const res = await isAgentWithinChatLimits({ agentId: 'kevs', totalChats: 11 });
+		const res = await isAgentWithinChatLimits({ agentId: 'kevs', totalChats: 11 } as unknown as Parameters<
+			typeof isAgentWithinChatLimits
+		>[0]);
 		expect(res).to.be.true;
 	});
 	it('should ignore the department limit if it is not a valid number (or cast to number)', async () => {

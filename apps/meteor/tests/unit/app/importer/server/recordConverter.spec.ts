@@ -3,7 +3,6 @@ import { expect } from 'chai';
 import { vi } from 'vitest';
 
 const { settingsStub, modelsMock } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 	return {
 		settingsStub: sinon.stub(),
@@ -29,7 +28,7 @@ class TestConverter extends RecordConverter<IImportRecord> {
 		super({ workInMemory });
 	}
 
-	protected getDataType(): IImportRecordType {
+	protected override getDataType(): IImportRecordType {
 		return 'user';
 	}
 }

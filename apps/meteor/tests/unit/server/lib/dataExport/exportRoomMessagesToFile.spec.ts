@@ -7,7 +7,6 @@ import { exportMessagesMock } from '../../../app/apps/server/mocks/data/messages
 
 // Stubs are built in `vi.hoisted` so the hoisted `vi.mock` factories can reference them.
 const { stubs } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 	return {
 		stubs: {
@@ -49,7 +48,7 @@ describe('Export - exportMessageObject', () => {
 	const translationPlaceholder = 'translation-placeholder';
 	beforeAll(() => {
 		stubs.translateKey.returns(translationPlaceholder);
-		messagesData = exportMessagesMock.map((message) => getMessageData(message, false));
+		messagesData = exportMessagesMock.map((message) => getMessageData(message, false, undefined, {}));
 	});
 
 	it('should only stringify message object when exporting message as json', async () => {
@@ -91,7 +90,7 @@ describe('Export - exportMessageObject', () => {
 	});
 
 	it('should correctly reference file when exporting a message object with an attachment as html', async () => {
-		const result = await exportMessageObject('html', messagesData[1], [exportMessagesMock[1].file]);
+		const result = await exportMessageObject('html', messagesData[1], [exportMessagesMock[1].file!]);
 
 		expect(result).to.be.a.string;
 		expect(result).to.equal(
@@ -104,7 +103,7 @@ describe('Export - exportMessageObject', () => {
 	});
 
 	it('should use fallback attachment description when no title is provided on message object export as html', async () => {
-		const result = await exportMessageObject('html', messagesData[2], [exportMessagesMock[2].file]);
+		const result = await exportMessageObject('html', messagesData[2], [exportMessagesMock[2].file!]);
 
 		expect(stubs.translateKey.calledWith('Message_Attachments')).to.be.true;
 		expect(result).to.be.a.string;

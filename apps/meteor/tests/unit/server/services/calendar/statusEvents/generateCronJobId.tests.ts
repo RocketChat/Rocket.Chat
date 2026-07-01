@@ -18,13 +18,13 @@ describe('#generateCronJobId', () => {
 	});
 
 	it('should throw an error if some required parameters are missing', () => {
-		expect(() => generateCronJobId(undefined, fakeUserId, 'status')).to.throw(
+		expect(() => generateCronJobId(undefined as unknown as string, fakeUserId, 'status')).to.throw(
 			'Missing required parameters. Please provide eventId, uid and eventType (status or reminder)',
 		);
-		expect(() => generateCronJobId(fakeEventId, undefined, 'status')).to.throw(
+		expect(() => generateCronJobId(fakeEventId, undefined as unknown as string, 'status')).to.throw(
 			'Missing required parameters. Please provide eventId, uid and eventType (status or reminder)',
 		);
-		expect(() => generateCronJobId(fakeEventId, fakeUserId)).to.throw(
+		expect(() => generateCronJobId(fakeEventId, fakeUserId, undefined as unknown as 'status' | 'reminder')).to.throw(
 			'Missing required parameters. Please provide eventId, uid and eventType (status or reminder)',
 		);
 	});

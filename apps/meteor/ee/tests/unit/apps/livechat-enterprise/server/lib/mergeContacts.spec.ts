@@ -1,3 +1,4 @@
+import type { ILivechatContactVisitorAssociation } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { afterEach, beforeEach, describe, it, vi } from 'vitest';
@@ -6,7 +7,6 @@ import { afterEach, beforeEach, describe, it, vi } from 'vitest';
 // require()d inside the hoisted block because the top-level import has not executed at hoist time.
 // NOTE: relative `vi.mock` specifiers are resolved relative to THIS spec file (not the source).
 const { modelsMock, contactMergerStub, mergeContactsPatch, loggerStub, notifyOnSettingChangedStub } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 	return {
 		modelsMock: {
@@ -73,9 +73,12 @@ describe('mergeContacts', () => {
 	it('should throw an error if contact does not exist', async () => {
 		modelsMock.LivechatContacts.findOneEnabledById.resolves(undefined);
 
-		await expect(runMergeContacts(() => undefined, 'invalidId', { visitorId: 'visitorId', source: { type: 'sms' } })).to.be.rejectedWith(
-			'error-invalid-contact',
-		);
+		await expect(
+			runMergeContacts(() => undefined, 'invalidId', {
+				visitorId: 'visitorId',
+				source: { type: 'sms' },
+			} as unknown as ILivechatContactVisitorAssociation),
+		).to.be.rejectedWith('error-invalid-contact');
 	});
 
 	it('should throw an error if contact channel does not exist', async () => {
@@ -85,7 +88,10 @@ describe('mergeContacts', () => {
 		});
 
 		await expect(
-			runMergeContacts(() => undefined, 'contactId', { visitorId: 'invalidVisitorId', source: { type: 'sms' } }),
+			runMergeContacts(() => undefined, 'contactId', {
+				visitorId: 'invalidVisitorId',
+				source: { type: 'sms' },
+			} as unknown as ILivechatContactVisitorAssociation),
 		).to.be.rejectedWith('error-invalid-channel');
 	});
 
@@ -93,7 +99,10 @@ describe('mergeContacts', () => {
 		modelsMock.LivechatContacts.findOneEnabledById.resolves({ _id: 'contactId', channels: [targetChannel] });
 		modelsMock.LivechatContacts.findSimilarVerifiedContacts.resolves([]);
 
-		await runMergeContacts(() => undefined, 'contactId', { visitorId: 'visitorId', source: { type: 'sms' } });
+		await runMergeContacts(() => undefined, 'contactId', {
+			visitorId: 'visitorId',
+			source: { type: 'sms' },
+		} as unknown as ILivechatContactVisitorAssociation);
 
 		expect(modelsMock.LivechatContacts.findOneEnabledById.calledOnceWith('contactId')).to.be.true;
 		expect(modelsMock.LivechatContacts.findSimilarVerifiedContacts.calledOnceWith(targetChannel, 'contactId')).to.be.true;
@@ -120,7 +129,10 @@ describe('mergeContacts', () => {
 		modelsMock.LivechatContacts.findSimilarVerifiedContacts.resolves([similarContact]);
 		modelsMock.Settings.incrementValueById.resolves({ value: undefined });
 
-		await runMergeContacts(() => undefined, 'contactId', { visitorId: 'visitorId', source: { type: 'sms' } });
+		await runMergeContacts(() => undefined, 'contactId', {
+			visitorId: 'visitorId',
+			source: { type: 'sms' },
+		} as unknown as ILivechatContactVisitorAssociation);
 
 		expect(modelsMock.LivechatContacts.findOneEnabledById.calledTwice).to.be.true;
 		expect(modelsMock.LivechatContacts.findOneEnabledById.calledWith('contactId')).to.be.true;

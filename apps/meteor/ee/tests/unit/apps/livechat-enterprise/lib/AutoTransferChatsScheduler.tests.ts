@@ -1,8 +1,8 @@
 import chai, { expect } from 'chai';
 import chaiDateTime from 'chai-datetime';
-import { beforeEach, describe, it, vi } from 'vitest';
 import moment from 'moment';
 import sinon from 'sinon';
+import { beforeEach, describe, it, vi } from 'vitest';
 
 chai.use(chaiDateTime);
 
@@ -10,8 +10,6 @@ chai.use(chaiDateTime);
 // require()d inside the hoisted block because the top-level import has not executed at hoist time.
 // NOTE: relative `vi.mock` specifiers are resolved relative to THIS spec file (not the source).
 const {
-	mockAgendaConstructor,
-	mockAgendaStart,
 	mockAgendaScheduler,
 	mockAgendaCancel,
 	mockAgendaDefine,
@@ -31,7 +29,6 @@ const {
 	// hoisted instance's `match` and use it for assertions against these stubs.
 	match,
 } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 
 	const mockAgendaConstructor = sinon.stub();
@@ -111,7 +108,6 @@ vi.mock('meteor/mongo', () => ({
 	MongoInternals: {
 		defaultRemoteCollectionDriver: () => {
 			return {
-				// eslint-disable-next-line @typescript-eslint/no-var-requires
 				mongo: { client: { db: require('sinon').stub() } },
 			};
 		},
@@ -143,12 +139,13 @@ describe('AutoTransferChats', () => {
 		it('should schedule a room', async () => {
 			const scheduler = new AutoTransferChatSchedulerClass();
 			await scheduler.init();
-			scheduler.unscheduleRoom = sinon.stub();
+			const unscheduleRoomStub = sinon.stub();
+			scheduler.unscheduleRoom = unscheduleRoomStub;
 
 			const myScheduleTime = moment(new Date()).add(10, 's').toDate();
 			await scheduler.scheduleRoom('roomId', 10);
 
-			expect(scheduler.unscheduleRoom.calledWith('roomId')).to.be.true;
+			expect(unscheduleRoomStub.calledWith('roomId')).to.be.true;
 			expect(mockAgendaDefine.getCall(0).firstArg).to.be.equal('omnichannel_scheduler-roomId');
 			const funcScheduleTime = mockAgendaScheduler.getCall(0).firstArg;
 
@@ -174,11 +171,12 @@ describe('AutoTransferChats', () => {
 			const scheduler = new AutoTransferChatSchedulerClass();
 			await scheduler.init();
 
-			scheduler.transferRoom = sinon.stub();
+			const transferRoomStub = sinon.stub();
+			scheduler.transferRoom = transferRoomStub;
 
 			await scheduler.executeJob({ attrs: { data: { roomId: 'roomId' } } });
 
-			expect(scheduler.transferRoom.getCall(0).firstArg).to.be.equal('roomId');
+			expect(transferRoomStub.getCall(0).firstArg).to.be.equal('roomId');
 			expect(mockLivechatRooms.setAutoTransferredAtById.getCall(0).firstArg).to.be.equal('roomId');
 		});
 		it('shouldnt fail even if job fails', async () => {

@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import { beforeEach, describe, it, vi } from 'vitest';
 
 const { modelsMock, meteorMock, wrapExceptions, validateEmail, sandbox } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 	const sandbox = sinon.createSandbox();
 	return {
@@ -57,14 +56,17 @@ describe('registerContact', () => {
 		modelsMock.Users.findOneByUsername.returns(undefined);
 
 		await expect(
-			registerContact({
-				email: 'test@test.com',
-				username: 'username',
-				name: 'Name',
-				contactManager: {
-					username: 'unknown',
-				},
-			}),
+			registerContact(
+				{
+					email: 'test@test.com',
+					username: 'username',
+					name: 'Name',
+					contactManager: {
+						username: 'unknown',
+					},
+				} as unknown as Parameters<typeof registerContact>[0],
+				'userId',
+			),
 		).to.eventually.be.rejectedWith('error-invalid-contact-data');
 	});
 
@@ -72,15 +74,18 @@ describe('registerContact', () => {
 		modelsMock.Users.findOneByUsername.returns(undefined);
 
 		await expect(
-			registerContact({
-				token: 15,
-				email: 'test@test.com',
-				username: 'username',
-				name: 'Name',
-				contactManager: {
-					username: 'unknown',
+			registerContact(
+				{
+					token: 15 as unknown as string,
+					email: 'test@test.com',
+					username: 'username',
+					name: 'Name',
+					contactManager: {
+						username: 'unknown',
+					},
 				},
-			}),
+				'userId',
+			),
 		).to.eventually.be.rejectedWith('error-invalid-contact-data');
 	});
 
@@ -88,15 +93,18 @@ describe('registerContact', () => {
 		modelsMock.Users.findOneByUsername.returns(undefined);
 
 		await expect(
-			registerContact({
-				token: 'token',
-				email: 'test@test.com',
-				username: 'username',
-				name: 'Name',
-				contactManager: {
-					username: 'unknown',
+			registerContact(
+				{
+					token: 'token',
+					email: 'test@test.com',
+					username: 'username',
+					name: 'Name',
+					contactManager: {
+						username: 'unknown',
+					},
 				},
-			}),
+				'userId',
+			),
 		).to.eventually.be.rejectedWith('error-contact-manager-not-found');
 	});
 
@@ -104,15 +112,18 @@ describe('registerContact', () => {
 		modelsMock.Users.findOneByUsername.returns({ roles: ['user'] });
 
 		await expect(
-			registerContact({
-				token: 'token',
-				email: 'test@test.com',
-				username: 'username',
-				name: 'Name',
-				contactManager: {
+			registerContact(
+				{
+					token: 'token',
+					email: 'test@test.com',
 					username: 'username',
+					name: 'Name',
+					contactManager: {
+						username: 'username',
+					},
 				},
-			}),
+				'userId',
+			),
 		).to.eventually.be.rejectedWith('error-invalid-contact-manager');
 	});
 
@@ -123,12 +134,15 @@ describe('registerContact', () => {
 		modelsMock.LivechatVisitors.updateOne.returns(undefined);
 
 		await expect(
-			registerContact({
-				token: 'token',
-				email: 'test@test.com',
-				username: 'username',
-				name: 'Name',
-			}),
+			registerContact(
+				{
+					token: 'token',
+					email: 'test@test.com',
+					username: 'username',
+					name: 'Name',
+				},
+				'userId',
+			),
 		).to.eventually.be.equal('visitor1');
 	});
 });

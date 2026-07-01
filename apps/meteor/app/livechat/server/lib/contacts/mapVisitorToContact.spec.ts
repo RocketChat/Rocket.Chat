@@ -5,7 +5,6 @@ import { beforeEach, describe, it, vi } from 'vitest';
 import type { CreateContactParams } from './createContact';
 
 const { getContactManagerIdByUsername, getAllowedCustomFields, sandbox } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 	const sandbox = sinon.createSandbox();
 	return {
@@ -201,7 +200,7 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 describe('mapVisitorToContact', () => {
 	beforeEach(() => {
 		sandbox.reset();
-		getContactManagerIdByUsername.callsFake((username) => {
+		getContactManagerIdByUsername.callsFake((username: any) => {
 			if (username === 'user1') {
 				return 'manager1';
 			}
@@ -213,7 +212,7 @@ describe('mapVisitorToContact', () => {
 
 	dataMap.forEach(([visitor, source, contact], index) => {
 		it(`should map an ILivechatVisitor + IOmnichannelSource to an ILivechatContact [${index}]`, async () => {
-			expect(await mapVisitorToContact(visitor, source)).to.be.deep.equal(contact);
+			expect(await mapVisitorToContact(visitor as ILivechatVisitor, source)).to.be.deep.equal(contact);
 		});
 	});
 });

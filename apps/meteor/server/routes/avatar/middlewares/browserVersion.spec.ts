@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
+import type { IResult } from 'ua-parser-js';
 import { describe, it, vi } from 'vitest';
 
 // const getCookie = sinon.stub();
@@ -21,7 +22,7 @@ describe('#isIEOlderThan11()', () => {
 				version: '11.0',
 			},
 		};
-		expect(isIEOlderThan11(userAgent)).to.be.false;
+		expect(isIEOlderThan11(userAgent as unknown as IResult)).to.be.false;
 	});
 
 	it('should return true if user agent is IE < 11', () => {
@@ -31,7 +32,7 @@ describe('#isIEOlderThan11()', () => {
 				version: '10.0',
 			},
 		};
-		expect(isIEOlderThan11(userAgent)).to.be.true;
+		expect(isIEOlderThan11(userAgent as unknown as IResult)).to.be.true;
 	});
 });
 

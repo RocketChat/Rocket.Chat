@@ -1,8 +1,8 @@
+import type { IBusinessHourWorkHour, IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { it, describe, beforeEach, vi } from 'vitest';
 
 const { settingsStub, models, businessHourManagerMock, callbacksAddStub } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 	return {
 		settingsStub: sinon.stub(),
@@ -49,7 +49,7 @@ describe('processRoomAbandonment', () => {
 			const agentLastMessage = {
 				ts: new Date('2024-01-01T12:00:00Z'),
 			};
-			const result = getSecondsWhenOfficeHoursIsDisabled(room, agentLastMessage);
+			const result = getSecondsWhenOfficeHoursIsDisabled(room as unknown as IOmnichannelRoom, agentLastMessage as unknown as IMessage);
 			expect(result).to.be.equal(10);
 		});
 		it('should return the seconds since agents last message till now when room.closedAt is undefined', () => {
@@ -59,7 +59,7 @@ describe('processRoomAbandonment', () => {
 			const agentLastMessage = {
 				ts: new Date(new Date().getTime() - 10000),
 			};
-			const result = getSecondsWhenOfficeHoursIsDisabled(room, agentLastMessage);
+			const result = getSecondsWhenOfficeHoursIsDisabled(room as unknown as IOmnichannelRoom, agentLastMessage as unknown as IMessage);
 			expect(result).to.be.equal(10);
 		});
 	});
@@ -86,7 +86,7 @@ describe('processRoomAbandonment', () => {
 				},
 			];
 
-			const result = days.reduce(parseDays, {});
+			const result = (days as unknown as IBusinessHourWorkHour[]).reduce(parseDays, {});
 			expect(result).to.be.deep.equal({
 				Monday: {
 					start: { day: 'Monday', time: '10:00' },
@@ -127,7 +127,7 @@ describe('processRoomAbandonment', () => {
 				},
 			];
 
-			const result = days.reduce(parseDays, {});
+			const result = (days as unknown as IBusinessHourWorkHour[]).reduce(parseDays, {});
 			expect(result).to.be.deep.equal({
 				Monday: {
 					start: { day: 'Monday', time: '10:00' },
@@ -162,7 +162,7 @@ describe('processRoomAbandonment', () => {
 			const agentLastMessage = {
 				ts: new Date(new Date().getTime() - 10000),
 			};
-			const result = await getSecondsSinceLastAgentResponse(room, agentLastMessage);
+			const result = await getSecondsSinceLastAgentResponse(room as unknown as IOmnichannelRoom, agentLastMessage as unknown as IMessage);
 			expect(result).to.be.equal(10);
 		});
 		it('should return the seconds since last agent message when room has a department but department has an invalid business hour attached', async () => {
@@ -178,7 +178,7 @@ describe('processRoomAbandonment', () => {
 			const agentLastMessage = {
 				ts: new Date(new Date().getTime() - 10000),
 			};
-			const result = await getSecondsSinceLastAgentResponse(room, agentLastMessage);
+			const result = await getSecondsSinceLastAgentResponse(room as unknown as IOmnichannelRoom, agentLastMessage as unknown as IMessage);
 			expect(models.LivechatDepartment.findOneById.calledWith(room.departmentId)).to.be.true;
 			expect(result).to.be.equal(10);
 		});
@@ -198,7 +198,7 @@ describe('processRoomAbandonment', () => {
 			const agentLastMessage = {
 				ts: new Date(new Date().getTime() - 10000),
 			};
-			const result = await getSecondsSinceLastAgentResponse(room, agentLastMessage);
+			const result = await getSecondsSinceLastAgentResponse(room as unknown as IOmnichannelRoom, agentLastMessage as unknown as IMessage);
 			expect(result).to.be.equal(10);
 		});
 		it('should return the seconds since last agent message when department has a valid business hour but business hour workhours is empty', async () => {
@@ -219,7 +219,7 @@ describe('processRoomAbandonment', () => {
 			const agentLastMessage = {
 				ts: new Date(new Date().getTime() - 10000),
 			};
-			const result = await getSecondsSinceLastAgentResponse(room, agentLastMessage);
+			const result = await getSecondsSinceLastAgentResponse(room as unknown as IOmnichannelRoom, agentLastMessage as unknown as IMessage);
 			expect(result).to.be.equal(10);
 		});
 		it('should get the data from the default business hour when room has no department attached and return the seconds since last agent message when default bh has no workhours', async () => {
@@ -233,7 +233,7 @@ describe('processRoomAbandonment', () => {
 			const agentLastMessage = {
 				ts: new Date(new Date().getTime() - 10000),
 			};
-			const result = await getSecondsSinceLastAgentResponse(room, agentLastMessage);
+			const result = await getSecondsSinceLastAgentResponse(room as unknown as IOmnichannelRoom, agentLastMessage as unknown as IMessage);
 			expect(models.LivechatDepartment.findOneById.called).to.be.false;
 			expect(models.LivechatBusinessHours.findOneById.called).to.be.false;
 			expect(businessHourManagerMock.getBusinessHour.called).to.be.true;
@@ -271,7 +271,7 @@ describe('processRoomAbandonment', () => {
 					},
 				],
 			});
-			const result = await getSecondsSinceLastAgentResponse(room, agentLastMessage);
+			const result = await getSecondsSinceLastAgentResponse(room as unknown as IOmnichannelRoom, agentLastMessage as unknown as IMessage);
 			expect(result).to.be.equal(3600);
 		});
 		it('should return the proper number of seconds the room was inactive considering business hours (inactive same day)', async () => {
@@ -305,7 +305,7 @@ describe('processRoomAbandonment', () => {
 				],
 			});
 
-			const result = await getSecondsSinceLastAgentResponse(room, agentLastMessage);
+			const result = await getSecondsSinceLastAgentResponse(room as unknown as IOmnichannelRoom, agentLastMessage as unknown as IMessage);
 			expect(result).to.be.equal(7200);
 		});
 		it('should return 0 if a room happened to be inactive on a day outside of business hours', async () => {
@@ -333,7 +333,7 @@ describe('processRoomAbandonment', () => {
 				],
 			});
 
-			const result = await getSecondsSinceLastAgentResponse(room, agentLastMessage);
+			const result = await getSecondsSinceLastAgentResponse(room as unknown as IOmnichannelRoom, agentLastMessage as unknown as IMessage);
 			expect(result).to.be.equal(0);
 		});
 		it('should return the proper number of seconds when a room was inactive for more than 1 day', async () => {
@@ -361,7 +361,7 @@ describe('processRoomAbandonment', () => {
 				],
 			});
 
-			const result = await getSecondsSinceLastAgentResponse(room, agentLastMessage);
+			const result = await getSecondsSinceLastAgentResponse(room as unknown as IOmnichannelRoom, agentLastMessage as unknown as IMessage);
 			expect(result).to.be.equal(7200);
 		});
 		it('should return the proper number of seconds when a room was inactive for more than 1 day, and one of those days was a closed day', async () => {
@@ -395,7 +395,7 @@ describe('processRoomAbandonment', () => {
 				],
 			});
 
-			const result = await getSecondsSinceLastAgentResponse(room, agentLastMessage);
+			const result = await getSecondsSinceLastAgentResponse(room as unknown as IOmnichannelRoom, agentLastMessage as unknown as IMessage);
 			expect(result).to.be.equal(7200);
 		});
 		it('should return the proper number of seconds when a room was inactive for more than 1 day and one of those days is not in configuration', async () => {
@@ -423,7 +423,7 @@ describe('processRoomAbandonment', () => {
 				],
 			});
 
-			const result = await getSecondsSinceLastAgentResponse(room, agentLastMessage);
+			const result = await getSecondsSinceLastAgentResponse(room as unknown as IOmnichannelRoom, agentLastMessage as unknown as IMessage);
 			expect(result).to.be.equal(7200);
 		});
 		it('should return the proper number of seconds when a room has been inactive for more than a week', async () => {
@@ -475,7 +475,7 @@ describe('processRoomAbandonment', () => {
 				],
 			});
 
-			const result = await getSecondsSinceLastAgentResponse(room, agentLastMessage);
+			const result = await getSecondsSinceLastAgentResponse(room as unknown as IOmnichannelRoom, agentLastMessage as unknown as IMessage);
 			expect(result).to.be.equal(28800);
 		});
 		it('should return 0 when room was inactive in the same day but the configuration for bh on that day is invalid', async () => {
@@ -503,7 +503,7 @@ describe('processRoomAbandonment', () => {
 				],
 			});
 
-			const result = await getSecondsSinceLastAgentResponse(room, agentLastMessage);
+			const result = await getSecondsSinceLastAgentResponse(room as unknown as IOmnichannelRoom, agentLastMessage as unknown as IMessage);
 			expect(result).to.be.equal(0);
 		});
 		it('should return the proper number of seconds when a room has been inactive for more than a day but the inactivity started after BH started', async () => {
@@ -531,7 +531,7 @@ describe('processRoomAbandonment', () => {
 				],
 			});
 
-			const result = await getSecondsSinceLastAgentResponse(room, agentLastMessage);
+			const result = await getSecondsSinceLastAgentResponse(room as unknown as IOmnichannelRoom, agentLastMessage as unknown as IMessage);
 			expect(result).to.be.equal(6300);
 		});
 		it('should return the proper number of seconds when a room was inactive between a BH start and end', async () => {
@@ -559,7 +559,7 @@ describe('processRoomAbandonment', () => {
 				],
 			});
 
-			const result = await getSecondsSinceLastAgentResponse(room, agentLastMessage);
+			const result = await getSecondsSinceLastAgentResponse(room as unknown as IOmnichannelRoom, agentLastMessage as unknown as IMessage);
 			expect(result).to.be.equal(2100);
 		});
 	});
@@ -569,21 +569,21 @@ describe('processRoomAbandonment', () => {
 		});
 		it('should skip the hook if room is not an omnichannel room', async () => {
 			const param = { room: { t: 'd' } };
-			const r = await onCloseRoom(param);
+			const r = await onCloseRoom(param as unknown as Parameters<typeof onCloseRoom>[0]);
 
 			expect(models.Messages.findAgentLastMessageByVisitorLastMessageTs.called).to.be.false;
 			expect(r).to.be.equal(param);
 		});
 		it('should skip if room was not closed by agent', async () => {
 			const param = { room: { t: 'l' }, closer: 'visitor' };
-			const r = await onCloseRoom(param);
+			const r = await onCloseRoom(param as unknown as Parameters<typeof onCloseRoom>[0]);
 
 			expect(models.Messages.findAgentLastMessageByVisitorLastMessageTs.called).to.be.false;
 			expect(r).to.be.equal(param);
 		});
 		it('should skip if the last message on room was not from an agent', async () => {
 			const param = { room: { t: 'l' }, closer: 'user', lastMessage: { token: 'xxxx' } };
-			const r = await onCloseRoom(param);
+			const r = await onCloseRoom(param as unknown as Parameters<typeof onCloseRoom>[0]);
 
 			expect(models.Messages.findAgentLastMessageByVisitorLastMessageTs.called).to.be.false;
 			expect(r).to.be.equal(param);
@@ -591,7 +591,7 @@ describe('processRoomAbandonment', () => {
 		it('should skip if the last message is not on db', async () => {
 			models.Messages.findAgentLastMessageByVisitorLastMessageTs.resolves(null);
 			const param = { room: { _id: 'xyz', t: 'l', v: { lastMessageTs: new Date() }, closer: 'user', lastMessage: { msg: 'test' } } };
-			const r = await onCloseRoom(param);
+			const r = await onCloseRoom(param as unknown as Parameters<typeof onCloseRoom>[0]);
 
 			expect(models.Messages.findAgentLastMessageByVisitorLastMessageTs.calledWith('xyz', param.room.v.lastMessageTs)).to.be.true;
 			expect(r).to.be.equal(param);
@@ -599,7 +599,7 @@ describe('processRoomAbandonment', () => {
 		it('should skip if the visitor has not send any messages', async () => {
 			models.Messages.findAgentLastMessageByVisitorLastMessageTs.resolves({ ts: undefined });
 			const param = { room: { _id: 'xyz', t: 'l', v: { token: 'xfasfdsa' }, closer: 'user', lastMessage: { msg: 'test' } } };
-			const r = await onCloseRoom(param);
+			const r = await onCloseRoom(param as unknown as Parameters<typeof onCloseRoom>[0]);
 
 			expect(models.Messages.findAgentLastMessageByVisitorLastMessageTs.called).to.be.false;
 			expect(r).to.be.equal(param);
@@ -617,7 +617,7 @@ describe('processRoomAbandonment', () => {
 					lastMessage: { msg: 'test' },
 				},
 			};
-			const r = await onCloseRoom(param);
+			const r = await onCloseRoom(param as unknown as Parameters<typeof onCloseRoom>[0]);
 
 			expect(models.Messages.findAgentLastMessageByVisitorLastMessageTs.calledWith('xyz', param.room.v.lastMessageTs)).to.be.true;
 			expect(models.LivechatRooms.setVisitorInactivityInSecondsById.calledWith('xyz', 2100)).to.be.true;

@@ -6,7 +6,6 @@ import { describe, it, beforeEach, vi } from 'vitest';
 // mock factory and the test body. sinon is require()d inside the hoisted block because the
 // top-level import has not executed yet at hoist time.
 const { jsrsasignStub } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 	return {
 		jsrsasignStub: {
@@ -44,7 +43,7 @@ describe('JWTHelper', () => {
 			const expiryDuration = 3600; // 1 hour in seconds
 			const expiryTime = now + expiryDuration;
 
-			jsrsasignStub.KJUR.jws.IntDate.get.callsFake((timeStr) => {
+			jsrsasignStub.KJUR.jws.IntDate.get.callsFake((timeStr: any) => {
 				if (timeStr === 'now') return now;
 				if (timeStr === 'now + 1hour') return expiryTime;
 				return now;

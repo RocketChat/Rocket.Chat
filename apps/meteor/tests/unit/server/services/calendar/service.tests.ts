@@ -1,15 +1,14 @@
 import { expect } from 'chai';
-import { describe, it, beforeEach, afterEach, vi } from 'vitest';
 import type { DeleteResult, UpdateResult } from 'mongodb';
 import sinon from 'sinon';
+import { describe, it, beforeEach, afterEach, vi } from 'vitest';
 
 import { testPrivateMethod, createFreshServiceInstance } from '../utils';
 import { MockedCronJobs } from './mocks/cronJobs';
 
 const { api, settingsMock, cronHolder, CalendarEventMock, UsersMock, statusEventManagerMock, getUserPreferenceMock } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
+
 	const { api } = require('@rocket.chat/core-services');
 	return {
 		api,
@@ -47,8 +46,12 @@ const { api, settingsMock, cronHolder, CalendarEventMock, UsersMock, statusEvent
 vi.mock('../../../../../server/services/calendar/statusEvents/cancelUpcomingStatusChanges', () => ({
 	cancelUpcomingStatusChanges: statusEventManagerMock.cancelUpcomingStatusChanges,
 }));
-vi.mock('../../../../../server/services/calendar/statusEvents/removeCronJobs', () => ({ removeCronJobs: statusEventManagerMock.removeCronJobs }));
-vi.mock('../../../../../server/services/calendar/statusEvents/applyStatusChange', () => ({ applyStatusChange: statusEventManagerMock.applyStatusChange }));
+vi.mock('../../../../../server/services/calendar/statusEvents/removeCronJobs', () => ({
+	removeCronJobs: statusEventManagerMock.removeCronJobs,
+}));
+vi.mock('../../../../../server/services/calendar/statusEvents/applyStatusChange', () => ({
+	applyStatusChange: statusEventManagerMock.applyStatusChange,
+}));
 vi.mock('../../../../../app/settings/server', () => ({ settings: settingsMock }));
 vi.mock('@rocket.chat/core-services', () => ({ api, ServiceClassInternal: class {} }));
 vi.mock('@rocket.chat/cron', () => ({ cronJobs: cronHolder.cronJobsMock }));
@@ -56,13 +59,14 @@ vi.mock('@rocket.chat/models', () => ({ CalendarEvent: CalendarEventMock, Users:
 vi.mock('../../../../../app/utils/server/lib/getUserPreference', () => ({ getUserPreference: getUserPreferenceMock }));
 
 cronHolder.cronJobsMock = new MockedCronJobs();
-const cronJobsMock = cronHolder.cronJobsMock;
+const { cronJobsMock } = cronHolder;
 
 const { CalendarService } = await import('../../../../../server/services/calendar/service');
 
 describe('CalendarService', () => {
 	let sandbox: sinon.SinonSandbox;
 	let service: InstanceType<typeof CalendarService>;
+	let setupNextStatusChangeStub: sinon.SinonStub;
 	const fakeUserId = 'user123';
 	const fakeEventId = 'event456';
 	const fakeExternalId = 'external789';
@@ -93,7 +97,7 @@ describe('CalendarService', () => {
 		sandbox.stub(proto, 'doSetupNextStatusChange').resolves();
 
 		sandbox.stub(service, 'setupNextNotification').resolves();
-		sandbox.stub(service, 'setupNextStatusChange').resolves();
+		setupNextStatusChangeStub = sandbox.stub(service, 'setupNextStatusChange').resolves();
 	}
 
 	function setupCalendarEventMocks() {
@@ -172,7 +176,7 @@ describe('CalendarService', () => {
 				reminderMinutesBeforeStart: 5,
 				notificationSent: false,
 			});
-			sinon.assert.calledOnce(service.setupNextStatusChange);
+			sinon.assert.calledOnce(setupNextStatusChangeStub);
 		});
 	});
 
@@ -188,7 +192,7 @@ describe('CalendarService', () => {
 			await service.import(eventData);
 
 			sinon.assert.calledOnce(CalendarEventMock.insertOne);
-			sinon.assert.calledOnce(service.setupNextStatusChange);
+			sinon.assert.calledOnce(setupNextStatusChangeStub);
 		});
 
 		it('should update existing event if found by externalId', async () => {
@@ -256,7 +260,7 @@ describe('CalendarService', () => {
 			});
 
 			sinon.assert.calledOnce(statusEventManagerMock.removeCronJobs);
-			sinon.assert.calledOnce(service.setupNextStatusChange);
+			sinon.assert.calledOnce(setupNextStatusChangeStub);
 		});
 	});
 
@@ -452,7 +456,9 @@ describe('CalendarService', () => {
 					sinon.assert.calledWith(addAtTimestampStub, 'calendar-next-status-change', endOfNextMinute, sinon.match.func);
 
 					const callback = addAtTimestampStub.firstCall.args[2];
-					const doSetupNextStatusChangeStub = sinon.stub(service, 'doSetupNextStatusChange').resolves();
+					const doSetupNextStatusChangeStub = sinon
+						.stub(service as unknown as { doSetupNextStatusChange: () => Promise<void> }, 'doSetupNextStatusChange')
+						.resolves();
 					await callback();
 
 					sinon.assert.calledOnce(doSetupNextStatusChangeStub);

@@ -1,44 +1,55 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
+import type { AgendaCronJobs } from '@rocket.chat/cron';
 import { expect } from 'chai';
-import { describe, it, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, afterEach, vi } from 'vitest';
+
+import type { IBusinessHourBehavior } from '../../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
 
 // `sinon` is taken from the hoisted block so the module-level stubs, the per-test `sinon.stub(manager,
 // ...)` instance stubs, `sinon.restore()`, and `sinon.match(...)` all share one sinon instance.
-const { sinon, momentStub, formatStub, isSameStub, isDSTStub, findActiveBusinessHoursStub, saveBusinessHourStub, loggerStub, LivechatBusinessHoursStub } =
-	vi.hoisted(() => {
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
-		const sinon = require('sinon');
+const {
+	sinon,
+	momentStub,
+	formatStub,
+	isSameStub,
+	isDSTStub,
+	findActiveBusinessHoursStub,
+	saveBusinessHourStub,
+	loggerStub,
+	LivechatBusinessHoursStub,
+} = vi.hoisted(() => {
+	const sinon = require('sinon');
 
-		const formatStub = sinon.stub().returns('00:00');
-		const isSameStub = sinon.stub().returns(true);
-		const isDSTStub = sinon.stub().returns(true);
+	const formatStub = sinon.stub().returns('00:00');
+	const isSameStub = sinon.stub().returns(true);
+	const isDSTStub = sinon.stub().returns(true);
 
-		const momentStub = sinon.stub().returns({
-			utc: () => ({
-				tz: () => ({
-					format: formatStub,
-					isSame: isSameStub,
-					isDST: isDSTStub,
-				}),
+	const momentStub = sinon.stub().returns({
+		utc: () => ({
+			tz: () => ({
+				format: formatStub,
+				isSame: isSameStub,
+				isDST: isDSTStub,
 			}),
-		});
-
-		const findActiveBusinessHoursStub = sinon.stub().returns([]);
-
-		return {
-			sinon,
-			formatStub,
-			isSameStub,
-			isDSTStub,
-			momentStub,
-			findActiveBusinessHoursStub,
-			LivechatBusinessHoursStub: {
-				findActiveBusinessHours: findActiveBusinessHoursStub,
-			},
-			saveBusinessHourStub: sinon.stub(),
-			loggerStub: sinon.stub(),
-		};
+		}),
 	});
+
+	const findActiveBusinessHoursStub = sinon.stub().returns([]);
+
+	return {
+		sinon,
+		formatStub,
+		isSameStub,
+		isDSTStub,
+		momentStub,
+		findActiveBusinessHoursStub,
+		LivechatBusinessHoursStub: {
+			findActiveBusinessHours: findActiveBusinessHoursStub,
+		},
+		saveBusinessHourStub: sinon.stub(),
+		loggerStub: sinon.stub(),
+	};
+});
 
 vi.mock('../../../../../../app/settings/server', () => ({}));
 vi.mock('../../../../../../server/lib/callbacks', () => ({}));
@@ -103,11 +114,11 @@ describe('[OC] BusinessHourManager', () => {
 			add: cronAddStub,
 			remove: cronRemoveStub,
 		};
-		const manager = new BusinessHourManager(cronStub);
+		const manager = new BusinessHourManager(cronStub as unknown as AgendaCronJobs);
 		manager.registerBusinessHourBehavior({
 			onStartBusinessHours: () => {},
 			onDisableBusinessHours: () => {},
-		});
+		} as unknown as IBusinessHourBehavior);
 
 		afterEach(() => {
 			sinon.restore();
@@ -118,9 +129,9 @@ describe('[OC] BusinessHourManager', () => {
 			sinon.stub(manager, 'createCronJobsForWorkHours');
 			sinon.stub(manager, 'setupCallbacks');
 			sinon.stub(manager, 'cleanupDisabledDepartmentReferences');
-			sinon.stub(manager, 'startDaylightSavingTimeVerifier');
+			const startDaylightSavingTimeVerifierStub = sinon.stub(manager, 'startDaylightSavingTimeVerifier');
 			await manager.startManager();
-			expect(manager.startDaylightSavingTimeVerifier.called).to.be.true;
+			expect(startDaylightSavingTimeVerifierStub.called).to.be.true;
 		});
 
 		it('should register the cron job for the DST verifier when the manager starts', async () => {
@@ -171,7 +182,7 @@ describe('[OC] BusinessHourManager', () => {
 
 		it('should save business hours AND recreate the cron jobs for the work hours when there is a timezone with DST changes', async () => {
 			sinon.stub(manager, 'getBusinessHourType').returns({ saveBusinessHour: saveBusinessHourStub });
-			sinon.stub(manager, 'createCronJobsForWorkHours');
+			const createCronJobsForWorkHoursStub = sinon.stub(manager, 'createCronJobsForWorkHours');
 			sinon.stub(manager, 'hasDaylightSavingTimeChanged').returns(true);
 			findActiveBusinessHoursStub.resolves([
 				{ timezone: { name: 'timezoneName' }, workHours: [{ start: { time: 'startTime' }, finish: { time: 'finishTime' } }] },
@@ -184,12 +195,12 @@ describe('[OC] BusinessHourManager', () => {
 					workHours: [{ start: 'startTime', finish: 'finishTime' }],
 				}),
 			).to.be.true;
-			expect(manager.createCronJobsForWorkHours.called).to.be.true;
+			expect(createCronJobsForWorkHoursStub.called).to.be.true;
 		});
 
 		it('should log any error on the updating process', async () => {
 			sinon.stub(manager, 'getBusinessHourType').returns({ saveBusinessHour: saveBusinessHourStub });
-			sinon.stub(manager, 'createCronJobsForWorkHours');
+			const createCronJobsForWorkHoursStub = sinon.stub(manager, 'createCronJobsForWorkHours');
 			sinon.stub(manager, 'hasDaylightSavingTimeChanged').returns(true);
 			findActiveBusinessHoursStub.resolves([
 				{ timezone: { name: 'timezoneName' }, workHours: [{ start: { time: 'startTime' }, finish: { time: 'finishTime' } }] },
@@ -199,7 +210,7 @@ describe('[OC] BusinessHourManager', () => {
 			saveBusinessHourStub.onSecondCall().rejects(error);
 			await manager.startDaylightSavingTimeVerifier();
 			expect(loggerStub.calledWith(sinon.match({ msg: 'Failed to update business hours with new timezone' }))).to.be.true;
-			expect(manager.createCronJobsForWorkHours.called).to.be.true;
+			expect(createCronJobsForWorkHoursStub.called).to.be.true;
 		});
 
 		it('should NOT throw any error even if the business hour has an invalid type', async () => {

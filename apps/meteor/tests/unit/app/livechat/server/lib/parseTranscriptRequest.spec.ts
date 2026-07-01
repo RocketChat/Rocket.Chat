@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import { describe, it, beforeEach, vi } from 'vitest';
 
 const { modelsMock, settingsGetMock } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 	return {
 		modelsMock: {
@@ -23,6 +22,18 @@ vi.mock('@rocket.chat/models', () => modelsMock);
 vi.mock('../../../../../../app/settings/server', () => ({ settings: settingsGetMock }));
 
 const { parseTranscriptRequest } = await import('../../../../../../app/livechat/server/lib/parseTranscriptRequest');
+
+type ParsedOptions = Awaited<ReturnType<typeof parseTranscriptRequest>>;
+
+// The tests below exercise the branch where an email transcript request is attached, so
+// `options` and its `emailTranscript` (with `requestData`) are guaranteed to be present.
+const requestDataOf = (options: ParsedOptions) => {
+	const emailTranscript = options!.emailTranscript!;
+	if (!('requestData' in emailTranscript)) {
+		throw new Error('expected emailTranscript.requestData to be present');
+	}
+	return emailTranscript.requestData;
+};
 
 describe('parseTranscriptRequest', () => {
 	beforeEach(() => {
@@ -90,9 +101,9 @@ describe('parseTranscriptRequest', () => {
 
 		expect(modelsMock.LivechatVisitors.findOneById.getCall(0).firstArg).to.be.equal('123');
 		expect(options).to.have.property('emailTranscript').that.is.an('object');
-		expect(options.emailTranscript.requestData).to.have.property('email', 'abc@rocket.chat');
-		expect(options.emailTranscript.requestData).to.have.property('subject', '');
-		expect(options.emailTranscript.requestData.requestedBy).to.be.deep.equal({ _id: '123' });
+		expect(requestDataOf(options)).to.have.property('email', 'abc@rocket.chat');
+		expect(requestDataOf(options)).to.have.property('subject', '');
+		expect(requestDataOf(options).requestedBy).to.be.deep.equal({ _id: '123' });
 	});
 
 	it('should return `options` param with `transcriptRequest` key attached when no user is passed, but theres an agent serving the room', async () => {
@@ -105,9 +116,9 @@ describe('parseTranscriptRequest', () => {
 
 		expect(modelsMock.Users.findOneById.getCall(0).firstArg).to.be.equal('123');
 		expect(options).to.have.property('emailTranscript').that.is.an('object');
-		expect(options.emailTranscript.requestData).to.have.property('email', 'abc@rocket.chat');
-		expect(options.emailTranscript.requestData).to.have.property('subject', '');
-		expect(options.emailTranscript.requestData.requestedBy).to.be.deep.equal({ _id: '123', username: 'kevsxxx', name: 'Kev' });
+		expect(requestDataOf(options)).to.have.property('email', 'abc@rocket.chat');
+		expect(requestDataOf(options)).to.have.property('subject', '');
+		expect(requestDataOf(options).requestedBy).to.be.deep.equal({ _id: '123', username: 'kevsxxx', name: 'Kev' });
 	});
 
 	it('should return `options` param with `transcriptRequest` key attached when no user is passed, no agent is serving but rocket.cat is present', async () => {
@@ -120,9 +131,9 @@ describe('parseTranscriptRequest', () => {
 
 		expect(modelsMock.Users.findOneById.getCall(0).firstArg).to.be.equal('rocket.cat');
 		expect(options).to.have.property('emailTranscript').that.is.an('object');
-		expect(options.emailTranscript.requestData).to.have.property('email', 'abc@rocket.chat');
-		expect(options.emailTranscript.requestData).to.have.property('subject', '');
-		expect(options.emailTranscript.requestData.requestedBy).to.be.deep.equal({
+		expect(requestDataOf(options)).to.have.property('email', 'abc@rocket.chat');
+		expect(requestDataOf(options)).to.have.property('subject', '');
+		expect(requestDataOf(options).requestedBy).to.be.deep.equal({
 			_id: 'rocket.cat',
 			username: 'rocket.cat',
 			name: 'Rocket Cat',

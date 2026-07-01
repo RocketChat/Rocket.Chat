@@ -8,7 +8,6 @@ import { describe, it, beforeEach, afterEach, vi } from 'vitest';
 // reconfigure per test. `mem` is stubbed to return the function as-is (no caching) so the wrapped
 // `getMessageToBroadcast` always reads the current stub behaviour.
 const { getSettingValueByIdStub, usersFindOneStub, messagesFindOneStub, broadcastStub, memStub } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 	return {
 		getSettingValueByIdStub: sinon.stub(),
@@ -218,7 +217,7 @@ describe('Message Broadcast Tests', () => {
 				messagesFindOneStub.resolves(message);
 				getSettingValueByIdStub.resolves([]);
 
-				await notifyOnMessageChange({ id: '123', data: message });
+				await notifyOnMessageChange({ id: '123', data: message ?? undefined });
 
 				if (expectBroadcast) {
 					expect(broadcastStub.calledOnce).to.be.true;

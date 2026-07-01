@@ -83,7 +83,7 @@ describe('eraseTeam (TypeScript) module', () => {
 	describe('eraseTeamShared', () => {
 		it('throws when user is undefined', async () => {
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
-			await expect(eraseTeamShared(undefined as any, { _id: 'team1', roomId: 'teamRoom' } as any, [], () => {})).to.be.rejected;
+			await expect(eraseTeamShared(undefined as any, { _id: 'team1', roomId: 'teamRoom' } as any, [], async () => {})).to.be.rejected;
 		});
 
 		it('erases provided rooms (excluding team.roomId) and cleans up team', async () => {

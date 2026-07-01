@@ -3,7 +3,6 @@ import { beforeEach, describe, it, vi } from 'vitest';
 
 // Stubs built in `vi.hoisted` so the hoisted `vi.mock` factories can reference them.
 const { stubs, updateGroupDMsName, onceTransactionCommitedSuccessfully, notifyListener } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 	return {
 		stubs: {
@@ -66,7 +65,7 @@ describe('Users - saveUserIdentity', () => {
 	});
 
 	it('should return false if _id is not provided', async () => {
-		const result = await saveUserIdentity({ _id: undefined });
+		const result = await saveUserIdentity({ _id: undefined as unknown as string });
 
 		expect(stubs.findOneUserById.called).to.be.false;
 		expect(result).to.be.false;

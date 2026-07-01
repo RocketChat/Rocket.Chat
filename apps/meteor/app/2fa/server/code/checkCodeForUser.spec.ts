@@ -1,8 +1,8 @@
+import type { IMethodConnection, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { beforeAll, afterAll, beforeEach, describe, it, vi } from 'vitest';
 
 const { settingsGet, totpEnabled } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 	return { settingsGet: sinon.stub(), totpEnabled: sinon.stub().returns(false) };
 });
@@ -91,7 +91,7 @@ const connection = {
 	id: 'connection-id',
 	httpHeaders: { 'user-agent': 'agent' },
 	clientAddress: '127.0.0.1',
-};
+} as unknown as IMethodConnection;
 
 describe('checkCodeForUser - post-registration grace window', () => {
 	let originalTestMode: string | undefined;
@@ -131,7 +131,7 @@ describe('checkCodeForUser - post-registration grace window', () => {
 		const user = buildUser(new Date());
 
 		const result = await checkCodeForUser({
-			user,
+			user: user as unknown as IUser,
 			options: { disableRememberMe: true },
 			connection,
 		});
@@ -145,7 +145,7 @@ describe('checkCodeForUser - post-registration grace window', () => {
 
 		await expect(
 			checkCodeForUser({
-				user,
+				user: user as unknown as IUser,
 				options: { disableRememberMe: true },
 				connection,
 			}),
@@ -157,7 +157,7 @@ describe('checkCodeForUser - post-registration grace window', () => {
 
 		await expect(
 			checkCodeForUser({
-				user,
+				user: user as unknown as IUser,
 				options: { disableRememberMe: true },
 				connection,
 			}),
@@ -175,7 +175,7 @@ describe('checkCodeForUser - post-registration grace window', () => {
 
 		await expect(
 			checkCodeForUser({
-				user,
+				user: user as unknown as IUser,
 				options: { disableRememberMe: true },
 				connection,
 			}),

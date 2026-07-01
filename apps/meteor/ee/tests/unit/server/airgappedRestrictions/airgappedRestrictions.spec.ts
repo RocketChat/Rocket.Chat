@@ -7,9 +7,8 @@ import { afterEach, describe, it, vi } from 'vitest';
 // sinon and the Emitter base class are require()d inside the hoisted block because the top-level
 // imports have not executed at hoist time.
 const { airgappedRestrictionObj, licenseMock, mocks, getPromises, resetPromises } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
+
 	const { Emitter } = require('@rocket.chat/emitter');
 
 	let promises: Array<Promise<any>> = [];
@@ -19,7 +18,7 @@ const { airgappedRestrictionObj, licenseMock, mocks, getPromises, resetPromises 
 
 		isWarningPeriod = sinon.stub();
 
-		override on(type: any, cb: any): any {
+		on(type: any, cb: any): any {
 			const newCb = (...args: any) => {
 				promises.push(cb(...args));
 			};

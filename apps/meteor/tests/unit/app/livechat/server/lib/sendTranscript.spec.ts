@@ -1,8 +1,8 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { describe, it, beforeEach, vi } from 'vitest';
 
 const { modelsMock, mockLogger, mockSettingValues, getTimezoneMock, mailerMock, tStub, checkMock, callbacksRunMock } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 
 	const mockLogger = class {
@@ -90,10 +90,12 @@ describe('Send transcript', () => {
 	});
 	it('should throw error when rid or email are invalid params', async () => {
 		checkMock.throws(new Error('Invalid params'));
-		await expect(sendTranscript({})).to.be.rejectedWith(Error);
+		await expect(sendTranscript({} as unknown as Parameters<typeof sendTranscript>[0])).to.be.rejectedWith(Error);
 	});
 	it('should throw error when visitor not found', async () => {
-		await expect(sendTranscript({ rid: 'rid', email: 'email', logger: mockLogger })).to.be.rejectedWith(Error);
+		await expect(
+			sendTranscript({ rid: 'rid', email: 'email', logger: mockLogger } as unknown as Parameters<typeof sendTranscript>[0]),
+		).to.be.rejectedWith(Error);
 	});
 	it('should attempt to send an email when params are valid using default subject', async () => {
 		modelsMock.LivechatRooms.findOneById.resolves({ t: 'l', v: { token: 'token' } });
@@ -104,7 +106,7 @@ describe('Send transcript', () => {
 			rid: 'rid',
 			token: 'token',
 			email: 'email',
-			user: { _id: 'x', name: 'x', utcOffset: '-6', username: 'x' },
+			user: { _id: 'x', name: 'x', utcOffset: '-6', username: 'x' } as unknown as Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'>,
 		});
 
 		expect(getTimezoneMock.calledWith({ _id: 'x', name: 'x', utcOffset: '-6', username: 'x' })).to.be.true;
@@ -129,7 +131,7 @@ describe('Send transcript', () => {
 			token: 'token',
 			email: 'email',
 			subject: 'A custom subject',
-			user: { _id: 'x', name: 'x', utcOffset: '-6', username: 'x' },
+			user: { _id: 'x', name: 'x', utcOffset: '-6', username: 'x' } as unknown as Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'>,
 		});
 
 		expect(getTimezoneMock.calledWith({ _id: 'x', name: 'x', utcOffset: '-6', username: 'x' })).to.be.true;
@@ -154,7 +156,7 @@ describe('Send transcript', () => {
 			rid: 'rid',
 			token: 'token',
 			email: 'email',
-			user: { _id: 'x', name: 'x', utcOffset: '-6', username: 'x' },
+			user: { _id: 'x', name: 'x', utcOffset: '-6', username: 'x' } as unknown as Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'>,
 		});
 
 		expect(getTimezoneMock.calledWith({ _id: 'x', name: 'x', utcOffset: '-6', username: 'x' })).to.be.true;
@@ -173,25 +175,33 @@ describe('Send transcript', () => {
 	it('should fail if room provided is invalid', async () => {
 		modelsMock.LivechatRooms.findOneById.resolves(null);
 
-		await expect(sendTranscript({ rid: 'rid', email: 'email', logger: mockLogger })).to.be.rejectedWith(Error);
+		await expect(
+			sendTranscript({ rid: 'rid', email: 'email', logger: mockLogger } as unknown as Parameters<typeof sendTranscript>[0]),
+		).to.be.rejectedWith(Error);
 	});
 
 	it('should fail if room provided is of different type', async () => {
 		modelsMock.LivechatRooms.findOneById.resolves({ t: 'c' });
 
-		await expect(sendTranscript({ rid: 'rid', email: 'email' })).to.be.rejectedWith(Error);
+		await expect(sendTranscript({ rid: 'rid', email: 'email' } as unknown as Parameters<typeof sendTranscript>[0])).to.be.rejectedWith(
+			Error,
+		);
 	});
 
 	it('should fail if room is of valid type, but doesnt doesnt have `v` property', async () => {
 		modelsMock.LivechatRooms.findOneById.resolves({ t: 'l' });
 
-		await expect(sendTranscript({ rid: 'rid', email: 'email' })).to.be.rejectedWith(Error);
+		await expect(sendTranscript({ rid: 'rid', email: 'email' } as unknown as Parameters<typeof sendTranscript>[0])).to.be.rejectedWith(
+			Error,
+		);
 	});
 
 	it('should fail if room is of valid type, has `v` prop, but it doesnt contain `token`', async () => {
 		modelsMock.LivechatRooms.findOneById.resolves({ t: 'l', v: { otherProp: 'xxx' } });
 
-		await expect(sendTranscript({ rid: 'rid', email: 'email' })).to.be.rejectedWith(Error);
+		await expect(sendTranscript({ rid: 'rid', email: 'email' } as unknown as Parameters<typeof sendTranscript>[0])).to.be.rejectedWith(
+			Error,
+		);
 	});
 
 	it('should fail if room is of valid type, has `v.token`, but its different from the one on param (room from another visitor)', async () => {
@@ -215,7 +225,7 @@ describe('Send transcript', () => {
 			rid: 'rid',
 			token: 'token-123',
 			email: 'email',
-			user: { _id: 'x', name: 'x', utcOffset: '-6', username: 'x' },
+			user: { _id: 'x', name: 'x', utcOffset: '-6', username: 'x' } as unknown as Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'>,
 		});
 
 		expect(getTimezoneMock.calledWith({ _id: 'x', name: 'x', utcOffset: '-6', username: 'x' })).to.be.true;

@@ -5,7 +5,6 @@ import { beforeAll, describe, it, vi } from 'vitest';
 // `sinon.match` matchers are instance-specific, so we use the matcher from the SAME sinon
 // instance that created the stubs (the hoisted one) when asserting `calledWith(sinon.match(...))`.
 const { stubs, sinon } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 	return {
 		sinon,
@@ -57,7 +56,7 @@ describe('Export - uploadZipFile', () => {
 		stubs.stat.returns({ size: fileStat });
 		stubs.randomId.returns(randomId);
 		stubs.getStore.returns({ insert: stubs.insertFileStub });
-		stubs.insertFileStub.callsFake((details) => ({ _id: details._id, name: details.name }));
+		stubs.insertFileStub.callsFake((details: any) => ({ _id: details._id, name: details.name }));
 	});
 
 	it('should correctly build file name for json exports', async () => {

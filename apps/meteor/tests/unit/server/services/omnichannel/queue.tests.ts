@@ -1,4 +1,6 @@
+import type { InquiryWithAgentInfo } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
+import type { SinonStub } from 'sinon';
 import { beforeEach, describe, afterAll, afterEach, it, vi } from 'vitest';
 
 // Mock objects built in `vi.hoisted` so the hoisted `vi.mock` factories can reference them. We also
@@ -18,7 +20,6 @@ const {
 	metrics,
 	notifyOnLivechatInquiryChangedByRoom,
 } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 	return {
 		Sinon: sinon,
@@ -64,7 +65,7 @@ const mockedInquiry = {
 	rid: 'rid',
 	department: 'department1',
 	ts: new Date(),
-};
+} as unknown as InquiryWithAgentInfo;
 
 vi.mock('../../../../../app/livechat/server/lib/Helper', () => ({ dispatchAgentDelegated }));
 vi.mock('../../../../../app/livechat/server/lib/RoutingManager', () => ({ RoutingManager: { getConfig, delegateInquiry } }));
@@ -157,7 +158,7 @@ describe('Omnichannel Queue processor', () => {
 
 			const queue = new OmnichannelQueue();
 			queue.execute = Sinon.stub();
-			expect(await queue.checkQueue()).to.be.undefined;
+			expect(await queue.checkQueue(null)).to.be.undefined;
 		});
 		it('should try to process the inquiry when there is one', async () => {
 			models.LivechatInquiry.findNextAndLock.returns(mockedInquiry);
@@ -165,10 +166,10 @@ describe('Omnichannel Queue processor', () => {
 			const queue = new OmnichannelQueue();
 			queue.processWaitingQueue = Sinon.stub().throws('error');
 			queue.execute = Sinon.stub();
-			await queue.checkQueue();
+			await queue.checkQueue(null);
 
 			expect(models.LivechatInquiry.findNextAndLock.calledOnce).to.be.true;
-			expect(queue.processWaitingQueue.calledOnce).to.be.true;
+			expect((queue.processWaitingQueue as unknown as SinonStub).calledOnce).to.be.true;
 		});
 		it('should call unlock when the inquiry could not be processed', async () => {
 			models.LivechatInquiry.findNextAndLock.returns(mockedInquiry);
@@ -176,9 +177,9 @@ describe('Omnichannel Queue processor', () => {
 			const queue = new OmnichannelQueue();
 			queue.processWaitingQueue = Sinon.stub().returns(false);
 			queue.execute = Sinon.stub();
-			await queue.checkQueue();
+			await queue.checkQueue(null);
 
-			expect(queue.processWaitingQueue.calledOnce).to.be.true;
+			expect((queue.processWaitingQueue as unknown as SinonStub).calledOnce).to.be.true;
 			expect(models.LivechatInquiry.unlock.calledOnce).to.be.true;
 		});
 		it('should unlock the inquiry when it was processed succesfully', async () => {
@@ -187,9 +188,9 @@ describe('Omnichannel Queue processor', () => {
 			const queue = new OmnichannelQueue();
 			queue.processWaitingQueue = Sinon.stub().returns(true);
 			queue.execute = Sinon.stub();
-			await queue.checkQueue();
+			await queue.checkQueue(null);
 
-			expect(queue.processWaitingQueue.calledOnce).to.be.true;
+			expect((queue.processWaitingQueue as unknown as SinonStub).calledOnce).to.be.true;
 			expect(models.LivechatInquiry.unlock.calledOnce).to.be.true;
 		});
 		it('should print a log when there was an error processing inquiry', async () => {
@@ -197,7 +198,7 @@ describe('Omnichannel Queue processor', () => {
 
 			const queue = new OmnichannelQueue();
 			queue.execute = Sinon.stub();
-			await queue.checkQueue();
+			await queue.checkQueue(null);
 
 			expect(queueLogger.error.calledOnce).to.be.true;
 		});
@@ -219,7 +220,7 @@ describe('Omnichannel Queue processor', () => {
 			queue.stop = Sinon.stub();
 			await queue.shouldStart();
 
-			expect(queue.stop.calledOnce).to.be.true;
+			expect((queue.stop as unknown as SinonStub).calledOnce).to.be.true;
 		});
 		it('should call start if routing algorithm supports auto assignment', async () => {
 			settings.get.returns(true);
@@ -229,8 +230,8 @@ describe('Omnichannel Queue processor', () => {
 			queue.start = Sinon.stub();
 			await queue.shouldStart();
 
-			expect(queue.start.calledOnce).to.be.true;
-			expect(queue.start.calledAfter(getConfig)).to.be.true;
+			expect((queue.start as unknown as SinonStub).calledOnce).to.be.true;
+			expect((queue.start as unknown as SinonStub).calledAfter(getConfig)).to.be.true;
 		});
 		it('should call stop if routing algorithm does not support auto assignment', async () => {
 			settings.get.returns(true);
@@ -240,8 +241,8 @@ describe('Omnichannel Queue processor', () => {
 			queue.stop = Sinon.stub();
 			await queue.shouldStart();
 
-			expect(queue.stop.calledOnce).to.be.true;
-			expect(queue.stop.calledAfter(getConfig)).to.be.true;
+			expect((queue.stop as unknown as SinonStub).calledOnce).to.be.true;
+			expect((queue.stop as unknown as SinonStub).calledAfter(getConfig)).to.be.true;
 		});
 	});
 	describe('reconciliation', () => {
@@ -270,7 +271,8 @@ describe('Omnichannel Queue processor', () => {
 		});
 		it('should return true for any other case', async () => {
 			const queue = new OmnichannelQueue();
-			expect(await queue.reconciliation('random', { roomId: 'rid', inquiryId: 'inquiryId' })).to.be.true;
+			expect(await queue.reconciliation('random' as unknown as 'closed' | 'taken' | 'missing', { roomId: 'rid', inquiryId: 'inquiryId' }))
+				.to.be.true;
 			expect(models.LivechatInquiry.removeByRoomId.notCalled).to.be.true;
 			expect(models.LivechatInquiry.takeInquiry.notCalled).to.be.true;
 		});
@@ -299,7 +301,7 @@ describe('Omnichannel Queue processor', () => {
 		it('should process the public queue when department is undefined', async () => {
 			const queue = new OmnichannelQueue();
 
-			expect(await queue.processWaitingQueue(undefined, mockedInquiry)).to.be.true;
+			expect(await queue.processWaitingQueue(undefined as unknown as null, mockedInquiry)).to.be.true;
 			expect(queueLogger.debug.calledWith('Processing inquiry inquiryId from queue Public'));
 			expect(models.LivechatRooms.findOneById.calledOnce).to.be.true;
 		});
@@ -324,7 +326,7 @@ describe('Omnichannel Queue processor', () => {
 			const queue = new OmnichannelQueue();
 			queue.reconciliation = Sinon.stub().returns(true);
 			expect(await queue.processWaitingQueue('department1', mockedInquiry)).to.be.true;
-			expect(queue.reconciliation.calledOnce).to.be.true;
+			expect((queue.reconciliation as unknown as SinonStub).calledOnce).to.be.true;
 		});
 		it('should call removeInquiry when findOneById returns a room that was closed', async () => {
 			models.LivechatRooms.findOneById.returns({ _id: 'rid', closedAt: new Date() });
@@ -332,7 +334,7 @@ describe('Omnichannel Queue processor', () => {
 			const queue = new OmnichannelQueue();
 			queue.reconciliation = Sinon.stub().returns(true);
 			expect(await queue.processWaitingQueue('department1', mockedInquiry)).to.be.true;
-			expect(queue.reconciliation.calledOnce).to.be.true;
+			expect((queue.reconciliation as unknown as SinonStub).calledOnce).to.be.true;
 		});
 		it('should call delegateInquiry when prechecks are met and return false if inquiry was not served', async () => {
 			models.LivechatRooms.findOneById.returns({ _id: 'rid' });
@@ -394,7 +396,7 @@ describe('Omnichannel Queue processor', () => {
 			queue.getActiveQueues = Sinon.stub().resolves([null]);
 			await queue.execute();
 
-			expect(queue.getActiveQueues.calledOnce).to.be.true;
+			expect((queue.getActiveQueues as unknown as SinonStub).calledOnce).to.be.true;
 		});
 	});
 	describe('start', () => {
@@ -412,7 +414,7 @@ describe('Omnichannel Queue processor', () => {
 			queue.execute = Sinon.stub();
 			await queue.start();
 
-			expect(queue.execute.notCalled).to.be.true;
+			expect((queue.execute as unknown as SinonStub).notCalled).to.be.true;
 		});
 		it('should fetch active queues and set running to true', async () => {
 			const queue = new OmnichannelQueue();
@@ -422,10 +424,10 @@ describe('Omnichannel Queue processor', () => {
 			await queue.start();
 
 			expect(queue.running).to.be.true;
-			expect(queue.getActiveQueues.calledOnce).to.be.true;
+			expect((queue.getActiveQueues as unknown as SinonStub).calledOnce).to.be.true;
 			expect(queueLogger.info.calledOnce).to.be.true;
 			expect(queueLogger.info.calledWith('Service started')).to.be.true;
-			expect(queue.execute.calledOnce).to.be.true;
+			expect((queue.execute as unknown as SinonStub).calledOnce).to.be.true;
 		});
 	});
 	describe('stop', () => {

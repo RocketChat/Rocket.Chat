@@ -3,7 +3,6 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { beforeAll, describe, it, vi } from 'vitest';
 
-import { MessagesMock } from './mocks/models/Messages.mock';
 import { RoomsMock } from './mocks/models/Rooms.mock';
 import { UsersMock } from './mocks/models/Users.mock';
 import { AppServerOrchestratorMock } from './mocks/orchestrator.mock';
@@ -47,7 +46,7 @@ describe('The AppMessagesConverter instance', () => {
 			return {};
 		};
 
-		roomConverter = new AppRoomsConverter(orchestrator);
+		roomConverter = new AppRoomsConverter(orchestrator) as unknown as IAppRoomsConverter;
 		roomsMock = new RoomsMock();
 	});
 

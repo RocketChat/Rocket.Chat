@@ -1,11 +1,11 @@
+import type { NPSCreatePayload } from '@rocket.chat/core-services';
 import { expect } from 'chai';
 import { describe, it, beforeEach, vi } from 'vitest';
 
 // Stubs built in `vi.hoisted` so the hoisted `vi.mock` factories can reference them. `sinon.match`
 // is cross-instance-sensitive, so we expose the hoisted sinon's `match` and use it in assertions.
-const { modelsMock, servicesMock, getbannerforadminsMock, sendNpsResultsMock, systemLoggerErrorMock, notifyAdminsMock, match } =
-	vi.hoisted(() => {
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { modelsMock, servicesMock, getbannerforadminsMock, sendNpsResultsMock, systemLoggerErrorMock, notifyAdminsMock, match } = vi.hoisted(
+	() => {
 		const sinon = require('sinon');
 		return {
 			match: sinon.match,
@@ -29,7 +29,8 @@ const { modelsMock, servicesMock, getbannerforadminsMock, sendNpsResultsMock, sy
 			systemLoggerErrorMock: sinon.stub(),
 			notifyAdminsMock: sinon.stub(),
 		};
-	});
+	},
+);
 
 // `@rocket.chat/models` was proxyquired with `@noCallThru`, so only the listed exports exist.
 vi.mock('@rocket.chat/models', () => ({ NpsVote: modelsMock.NpsVote, Nps: modelsMock.Nps }));
@@ -64,23 +65,23 @@ describe('NPS Service', () => {
 		it('should fail when user opted out of nps', async () => {
 			servicesMock.Settings.get.withArgs('NPS_survey_enabled').resolves(false);
 
-			await expect(new NPSService().create({})).to.be.rejectedWith('Server opted-out for NPS surveys');
+			await expect(new NPSService().create({} as unknown as NPSCreatePayload)).to.be.rejectedWith('Server opted-out for NPS surveys');
 		});
 		it('should fail when nps expireDate is less than nps startAt', async () => {
 			servicesMock.Settings.get.withArgs('NPS_survey_enabled').resolves(true);
 			modelsMock.Nps.findOne.resolves(null);
 
-			await expect(new NPSService().create({ expireAt: new Date('2020-01-01'), startAt: new Date('2020-01-02') })).to.be.rejectedWith(
-				'NPS already expired',
-			);
+			await expect(
+				new NPSService().create({ expireAt: new Date('2020-01-01'), startAt: new Date('2020-01-02') } as unknown as NPSCreatePayload),
+			).to.be.rejectedWith('NPS already expired');
 		});
 		it('should fail when expireDate is less than current date', async () => {
 			servicesMock.Settings.get.withArgs('NPS_survey_enabled').resolves(true);
 			modelsMock.Nps.findOne.resolves(null);
 
-			await expect(new NPSService().create({ expireAt: new Date('2020-01-02'), startAt: new Date('2020-01-01') })).to.be.rejectedWith(
-				'NPS already expired',
-			);
+			await expect(
+				new NPSService().create({ expireAt: new Date('2020-01-02'), startAt: new Date('2020-01-01') } as unknown as NPSCreatePayload),
+			).to.be.rejectedWith('NPS already expired');
 		});
 		it('should try to create a banner when theres no nps saved', async () => {
 			servicesMock.Settings.get.withArgs('NPS_survey_enabled').resolves(true);
@@ -114,7 +115,7 @@ describe('NPS Service', () => {
 			servicesMock.Settings.get.withArgs('NPS_survey_enabled').resolves(true);
 			modelsMock.Nps.findOne.resolves({ _id: 'test' });
 			modelsMock.Nps.save.rejects();
-			await expect(new NPSService().create({})).to.be.rejectedWith('Error creating NPS');
+			await expect(new NPSService().create({} as unknown as NPSCreatePayload)).to.be.rejectedWith('Error creating NPS');
 		});
 	});
 });

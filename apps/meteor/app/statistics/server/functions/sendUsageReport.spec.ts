@@ -1,8 +1,8 @@
+import type { Logger } from '@rocket.chat/logger';
 import { expect } from 'chai';
 import { describe, it, beforeEach, afterEach, vi } from 'vitest';
 
 const { sandbox, mocks, sinonMatch } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 	const sandbox = sinon.createSandbox();
 	return {
@@ -52,7 +52,7 @@ describe('sendUsageReport', () => {
 	it('should save statistics locally and not send to collector when RC_DISABLE_STATISTICS_REPORTING is true', async () => {
 		process.env.RC_DISABLE_STATISTICS_REPORTING = 'true';
 
-		const result = await sendUsageReport(mocks.logger);
+		const result = await sendUsageReport(mocks.logger as unknown as Logger);
 
 		expect(mocks.statistics.save.called).to.be.true;
 		expect(mocks.serverFetch.called).to.be.false;
@@ -62,7 +62,7 @@ describe('sendUsageReport', () => {
 	it('should save statistics locally and send to collector when RC_DISABLE_STATISTICS_REPORTING is false', async () => {
 		process.env.RC_DISABLE_STATISTICS_REPORTING = 'false';
 
-		const result = await sendUsageReport(mocks.logger);
+		const result = await sendUsageReport(mocks.logger as unknown as Logger);
 
 		expect(mocks.statistics.save.called).to.be.true;
 		expect(mocks.serverFetch.calledOnce).to.be.true;
@@ -79,7 +79,7 @@ describe('sendUsageReport', () => {
 
 		mocks.statistics.save.resolves({ _id: 'new-stats-id' });
 
-		const result = await sendUsageReport(mocks.logger);
+		const result = await sendUsageReport(mocks.logger as unknown as Logger);
 
 		expect(mocks.statistics.save.calledOnce).to.be.true;
 		expect(result).to.be.undefined;
@@ -93,7 +93,7 @@ describe('sendUsageReport', () => {
 			statsToken: 'token',
 		});
 
-		const result = await sendUsageReport(mocks.logger);
+		const result = await sendUsageReport(mocks.logger as unknown as Logger);
 
 		expect(mocks.statistics.save.called).to.be.false;
 		expect(result).to.equal('token');
@@ -103,7 +103,7 @@ describe('sendUsageReport', () => {
 		mocks.Statistics.findLast.resolves(undefined);
 		mocks.statistics.save.resolves({ _id: 'new-stats-id' });
 
-		await sendUsageReport(mocks.logger);
+		await sendUsageReport(mocks.logger as unknown as Logger);
 
 		expect(mocks.statistics.save.calledOnce).to.be.true;
 	});

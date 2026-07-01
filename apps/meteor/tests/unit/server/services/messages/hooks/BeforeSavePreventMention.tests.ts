@@ -1,3 +1,4 @@
+import type { IMessage } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { describe, it, vi } from 'vitest';
 
@@ -24,7 +25,7 @@ describe('Prevent mention on messages', () => {
 
 		return expect(
 			preventMention.preventMention({
-				message: { rid: 'GENERAL', msg: 'hey', u: { _id: 'random' } },
+				message: { rid: 'GENERAL', msg: 'hey', u: { _id: 'random' } } as unknown as IMessage,
 				user: { _id: 'userId', language: 'en' },
 				mention: 'all',
 				permission: 'mention-all',
@@ -37,7 +38,7 @@ describe('Prevent mention on messages', () => {
 
 		return expect(
 			preventMention.preventMention({
-				message: { rid: 'GENERAL', msg: 'hey', mentions: [{ _id: 'here' }], u: { _id: 'random' } },
+				message: { rid: 'GENERAL', msg: 'hey', mentions: [{ _id: 'here' }], u: { _id: 'random' } } as unknown as IMessage,
 				user: { _id: 'userId', language: 'en' },
 				mention: 'all',
 				permission: 'mention-all',
@@ -50,7 +51,7 @@ describe('Prevent mention on messages', () => {
 
 		return expect(
 			preventMention.preventMention({
-				message: { rid: 'GENERAL', msg: 'hey', mentions: [{ _id: 'all' }], u: { _id: 'random' } },
+				message: { rid: 'GENERAL', msg: 'hey', mentions: [{ _id: 'all' }], u: { _id: 'random' } } as unknown as IMessage,
 				user: { _id: 'userId', language: 'en' },
 				mention: 'all',
 				permission: 'mention-here',
@@ -65,7 +66,7 @@ describe('Prevent mention on messages', () => {
 
 		return expect(
 			preventMention.preventMention({
-				message: { rid: 'GENERAL', msg: 'hey', mentions: [{ _id: 'all' }], u: { _id: 'random' } },
+				message: { rid: 'GENERAL', msg: 'hey', mentions: [{ _id: 'all' }], u: { _id: 'random' } } as unknown as IMessage,
 				user: { _id: 'userId', language: 'en' },
 				mention: 'all',
 				permission: 'mention-all',
@@ -86,7 +87,7 @@ describe('Prevent mention on messages', () => {
 
 		return expect(
 			preventMention.preventMention({
-				message: { rid: 'GENERAL', msg: 'hey', mentions: [{ _id: 'all' }], u: { _id: 'random' } },
+				message: { rid: 'GENERAL', msg: 'hey', mentions: [{ _id: 'all' }], u: { _id: 'random' } } as unknown as IMessage,
 				user: { _id: 'userId', language: 'en' },
 				mention: 'all',
 				permission: 'mention-all',
@@ -101,7 +102,7 @@ describe('Prevent mention on messages', () => {
 
 		return expect(
 			preventMention.preventMention({
-				message: { rid: 'GENERAL', msg: 'hey', mentions: [{ _id: 'all' }], u: { _id: 'random' } },
+				message: { rid: 'GENERAL', msg: 'hey', mentions: [{ _id: 'all' }], u: { _id: 'random' } } as unknown as IMessage,
 				user: { _id: 'userId', language: 'en' },
 				mention: 'all',
 				permission: 'mention-all',

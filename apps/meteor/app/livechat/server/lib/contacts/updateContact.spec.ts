@@ -1,8 +1,9 @@
 import { expect } from 'chai';
 import { beforeEach, describe, it, vi } from 'vitest';
 
+import type { UpdateContactParams } from './updateContact';
+
 const { modelsMock, getAllowedCustomFields, validateContactManager, validateCustomFields, sandbox } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 	const sandbox = sinon.createSandbox();
 	return {
@@ -50,7 +51,7 @@ describe('updateContact', () => {
 
 	it('should throw an error if the contact does not exist', async () => {
 		modelsMock.LivechatContacts.findOneEnabledById.resolves(undefined);
-		await expect(updateContact('any_id')).to.be.rejectedWith('error-contact-not-found');
+		await expect(updateContact('any_id' as unknown as UpdateContactParams)).to.be.rejectedWith('error-contact-not-found');
 		expect(modelsMock.LivechatContacts.patchContact.getCall(0)).to.be.null;
 	});
 

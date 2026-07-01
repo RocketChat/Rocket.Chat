@@ -4,7 +4,6 @@ import { describe, it, vi } from 'vitest';
 import type { PermissionsPayload } from '../../../../../../../app/api/server/api.helpers';
 
 const { hasPermission } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 
 	const userPermissions: { [k: string]: string[] } = {
@@ -48,7 +47,7 @@ describe('checkPermissionsForInvocation', () => {
 	});
 
 	it('should return false when no config is provided for that specific method', async () => {
-		const options = {
+		const options: { permissionsRequired: PermissionsPayload } = {
 			permissionsRequired: {
 				GET: {
 					operation: 'hasAll',
@@ -60,7 +59,7 @@ describe('checkPermissionsForInvocation', () => {
 	});
 
 	it('should return true path is configured with empty permissions array', async () => {
-		const options = {
+		const options: { permissionsRequired: PermissionsPayload } = {
 			permissionsRequired: {
 				GET: { permissions: [], operation: 'hasAll' },
 			},

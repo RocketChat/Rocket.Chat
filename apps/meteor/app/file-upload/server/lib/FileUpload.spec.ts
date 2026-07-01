@@ -18,7 +18,6 @@ const {
 	hashLoginTokenStub,
 	cookiesStub,
 } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 	return {
 		fakeStorageModel: { findOneById: sinon.stub(), deleteFile: sinon.stub() },
@@ -75,9 +74,11 @@ const { FileUpload, FileUploadClass } = await import('./FileUpload');
 
 describe('FileUpload', () => {
 	beforeAll(() => {
-		new FileUploadClass({ name: 'fakeStorage:Uploads', model: fakeStorageModel, store: {} });
+		new FileUploadClass({ name: 'fakeStorage:Uploads', model: fakeStorageModel, store: {} } as unknown as ConstructorParameters<
+			typeof FileUploadClass
+		>[0]);
 		settingsGetMap.set('FileUpload_Storage_Type', 'fakeStorage');
-		settingsStub.get.callsFake((settingName) => settingsGetMap.get(settingName));
+		settingsStub.get.callsFake((settingName: any) => settingsGetMap.get(settingName));
 	});
 
 	beforeEach(() => {
@@ -94,7 +95,7 @@ describe('FileUpload', () => {
 	});
 
 	it('should not remove any file if no room id is provided', async () => {
-		expect(await FileUpload.removeFilesByRoomId()).to.be.undefined;
+		expect(await FileUpload.removeFilesByRoomId(undefined as unknown as string)).to.be.undefined;
 
 		expect(messagesModelStub.find.called).to.be.false;
 		expect(fakeStorageModel.findOneById.called).to.be.false;
@@ -128,7 +129,7 @@ describe('FileUpload', () => {
 	});
 
 	it('should delete multiple files from storage if message contains many files (e.g. image and thumbnail)', async () => {
-		fakeStorageModel.findOneById.callsFake((_id) => ({ _id, store: 'fakeStorage:Uploads' }));
+		fakeStorageModel.findOneById.callsFake((_id: any) => ({ _id, store: 'fakeStorage:Uploads' }));
 
 		const fakeMessage = createFakeMessageWithAttachment({
 			files: [
@@ -450,7 +451,7 @@ describe('FileUpload', () => {
 			const file = { _id: 'file-id', userId: 'owner-1', name: 'export.zip' } as any;
 			const request = { headers: {}, url: '/ufs/UserDataFiles/file-id' } as any;
 
-			const result = await getOnRead()('file-id', file, request, res);
+			const result = await getOnRead()!('file-id', file, request, res);
 			expect(result).to.be.false;
 			expect(res.writeHead.calledOnceWith(403)).to.be.true;
 			expect(res.setHeader.called).to.be.false;
@@ -466,7 +467,7 @@ describe('FileUpload', () => {
 				url: '/ufs/UserDataFiles/file-id',
 			} as any;
 
-			const result = await getOnRead()('file-id', file, request, res);
+			const result = await getOnRead()!('file-id', file, request, res);
 			expect(result).to.be.false;
 			expect(res.writeHead.calledOnceWith(403)).to.be.true;
 			expect(res.setHeader.called).to.be.false;
@@ -482,7 +483,7 @@ describe('FileUpload', () => {
 				url: '/ufs/UserDataFiles/file-id',
 			} as any;
 
-			const result = await getOnRead()('file-id', file, request, res);
+			const result = await getOnRead()!('file-id', file, request, res);
 			expect(result).to.be.true;
 			expect(res.writeHead.called).to.be.false;
 			expect(res.setHeader.calledOnceWith('content-disposition', 'attachment; filename="export.zip"')).to.be.true;

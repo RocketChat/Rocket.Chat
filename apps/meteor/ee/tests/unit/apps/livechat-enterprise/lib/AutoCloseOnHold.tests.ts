@@ -1,3 +1,4 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import chai, { expect } from 'chai';
 import chaiDateTime from 'chai-datetime';
 import { beforeEach, describe, it, vi } from 'vitest';
@@ -10,7 +11,6 @@ chai.use(chaiDateTime);
 // NOTE: relative `vi.mock` specifiers are resolved relative to THIS spec file (not the source), so
 // they differ from the specifiers used inside the source module.
 const {
-	mockAgendaConstructor,
 	mockAgendaStart,
 	mockAgendaScheduler,
 	mockAgendaCancel,
@@ -21,7 +21,6 @@ const {
 	mockUsers,
 	mockLogger,
 	infoStub,
-	debugStub,
 	MockAgendaClass,
 } = vi.hoisted(() => {
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -215,7 +214,7 @@ describe('AutoCloseOnHoldScheduler', () => {
 			mockUsers.findOneById.returns({ _id: 'rocket.cat' });
 
 			try {
-				await scheduler.executeJob({ attrs: { data: { roomId: 'roomId', comment: 'comment' } } });
+				await scheduler['executeJob']({ attrs: { data: { roomId: 'roomId', comment: 'comment' } } });
 			} catch (e: any) {
 				expect(e.message).to.be.equal(
 					'Unable to process AutoCloseOnHoldScheduler job because room or user not found for roomId: roomId and userId: rocket.cat',
@@ -230,7 +229,7 @@ describe('AutoCloseOnHoldScheduler', () => {
 			mockUsers.findOneById.returns(null);
 
 			try {
-				await scheduler.executeJob({ attrs: { data: { roomId: 'roomId', comment: 'comment' } } });
+				await scheduler['executeJob']({ attrs: { data: { roomId: 'roomId', comment: 'comment' } } });
 			} catch (e: any) {
 				expect(e.message).to.be.equal('Scheduler user not found');
 			}
@@ -242,7 +241,7 @@ describe('AutoCloseOnHoldScheduler', () => {
 			mockLivechatRooms.findOneById.returns({ _id: 'me' });
 			mockUsers.findOneById.returns({ _id: 'rocket.cat' });
 
-			await scheduler.executeJob({ attrs: { data: { roomId: 'roomId', comment: 'comment' } } });
+			await scheduler['executeJob']({ attrs: { data: { roomId: 'roomId', comment: 'comment' } } });
 
 			expect(mockLivechatCloseRoom.calledWithMatch({ room: { _id: 'me' }, user: { _id: 'rocket.cat' }, comment: 'comment' }));
 		});
@@ -255,9 +254,9 @@ describe('AutoCloseOnHoldScheduler', () => {
 
 		it('should do nothing when schedulerUser is already set', async () => {
 			const scheduler = new AutoCloseOnHoldSchedulerClass();
-			scheduler.schedulerUser = { _id: 'me' };
+			scheduler.schedulerUser = { _id: 'me' } as unknown as IUser;
 
-			const user = await scheduler.getSchedulerUser();
+			const user = await scheduler['getSchedulerUser']();
 
 			expect(user).to.be.equal(scheduler.schedulerUser);
 		});
@@ -268,7 +267,7 @@ describe('AutoCloseOnHoldScheduler', () => {
 			mockUsers.findOneById.returns(null);
 
 			try {
-				await scheduler.getSchedulerUser();
+				await scheduler['getSchedulerUser']();
 			} catch (e: any) {
 				expect(e.message).to.be.equal('Scheduler user not found');
 			}
@@ -279,7 +278,7 @@ describe('AutoCloseOnHoldScheduler', () => {
 
 			mockUsers.findOneById.returns({ _id: 'rocket.cat' });
 
-			const u = await scheduler.getSchedulerUser();
+			const u = await scheduler['getSchedulerUser']();
 
 			expect(u).to.be.an('object').with.property('_id', 'rocket.cat');
 		});

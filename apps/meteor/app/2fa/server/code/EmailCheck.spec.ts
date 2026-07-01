@@ -1,8 +1,8 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { describe, it, beforeEach, vi } from 'vitest';
 
 const { settingsMock } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 	return { settingsMock: sinon.stub() };
 });
@@ -15,15 +15,18 @@ vi.mock('../../../settings/server', () => ({ settings: { get: settingsMock } }))
 
 const { EmailCheck } = await import('./EmailCheck');
 
-const normalUserMock = { services: { email2fa: { enabled: true } }, emails: [{ email: 'abc@gmail.com', verified: true }] };
+const normalUserMock = {
+	services: { email2fa: { enabled: true } },
+	emails: [{ email: 'abc@gmail.com', verified: true }],
+} as unknown as IUser;
 const normalUserWithUnverifiedEmailMock = {
 	services: { email2fa: { enabled: true } },
 	emails: [{ email: 'abc@gmail.com', verified: false }],
-};
-const OAuthUserMock = { services: { google: {} }, emails: [{ email: 'abc@gmail.com', verified: true }] };
+} as unknown as IUser;
+const OAuthUserMock = { services: { google: {} }, emails: [{ email: 'abc@gmail.com', verified: true }] } as unknown as IUser;
 
 describe('EmailCheck', () => {
-	let emailCheck: typeof EmailCheck;
+	let emailCheck: InstanceType<typeof EmailCheck>;
 	beforeEach(() => {
 		settingsMock.reset();
 

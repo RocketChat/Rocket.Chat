@@ -5,7 +5,6 @@ import { beforeEach, describe, it, vi } from 'vitest';
 // require()d inside the hoisted block because the top-level import has not executed at hoist time.
 // NOTE: relative `vi.mock` specifiers are resolved relative to THIS spec file (not the source).
 const { livechatDepartmentStub, livechatUnitStub, hasAnyRoleStub, getUnitsFromUserStub } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
 	return {
 		livechatDepartmentStub: {
@@ -106,7 +105,11 @@ describe('hooks/manageDepartmentUnit', () => {
 		hasAnyRoleStub.resolves(true);
 		getUnitsFromUserStub.resolves(undefined);
 
-		await manageDepartmentUnit({ userId: 'user-id', departmentId: 'department-id', unitId: undefined });
+		await manageDepartmentUnit({ userId: 'user-id', departmentId: 'department-id', unitId: undefined } as unknown as {
+			userId: string;
+			departmentId: string;
+			unitId: string;
+		});
 		expect(livechatDepartmentStub.addDepartmentToUnit.notCalled).to.be.true;
 		expect(livechatUnitStub.incrementDepartmentsCount.notCalled).to.be.true;
 		expect(livechatDepartmentStub.removeDepartmentFromUnit.calledOnceWith('department-id')).to.be.true;
@@ -144,7 +147,11 @@ describe('hooks/manageDepartmentUnit', () => {
 		hasAnyRoleStub.resolves(false);
 		getUnitsFromUserStub.resolves(['unit-id']);
 
-		await manageDepartmentUnit({ userId: 'user-id', departmentId: 'department-id', unitId: undefined });
+		await manageDepartmentUnit({ userId: 'user-id', departmentId: 'department-id', unitId: undefined } as unknown as {
+			userId: string;
+			departmentId: string;
+			unitId: string;
+		});
 		expect(livechatDepartmentStub.addDepartmentToUnit.notCalled).to.be.true;
 		expect(livechatUnitStub.incrementDepartmentsCount.notCalled).to.be.true;
 		expect(livechatDepartmentStub.removeDepartmentFromUnit.calledOnceWith('department-id')).to.be.true;

@@ -4,9 +4,8 @@ import sinon from 'sinon';
 import { describe, it, beforeEach, afterEach, vi } from 'vitest';
 
 const { loggerStub, settingsStub, checkMock, matchMock, meteorMock, pick, truncateString } = vi.hoisted(() => {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const sinon = require('sinon');
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
+
 	const { pick, truncateString } = require('@rocket.chat/tools');
 	return {
 		pick,
@@ -47,7 +46,9 @@ describe('Push Notifications [PushClass]', () => {
 	describe('send()', () => {
 		let sendNotificationStub: sinon.SinonStub;
 		beforeEach(() => {
-			sendNotificationStub = sinon.stub(Push, 'sendNotification').resolves({ apn: [], gcm: [] });
+			sendNotificationStub = sinon
+				.stub(Push as unknown as { sendNotification: () => Promise<{ apn: string[]; gcm: string[] }> }, 'sendNotification')
+				.resolves({ apn: [], gcm: [] });
 		});
 
 		it('should call sendNotification with required fields', async () => {
@@ -114,7 +115,7 @@ describe('Push Notifications [PushClass]', () => {
 				text: 'body',
 				apn: { category: 'MESSAGE' },
 				gcm: { style: 'inbox', image: 'url' },
-			};
+			} as unknown as IPushNotificationConfig;
 
 			await expect(Push.send(options)).to.be.rejectedWith('No userId found');
 
