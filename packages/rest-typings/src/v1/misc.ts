@@ -134,37 +134,34 @@ const UnifiedSearchSchema = {
 		},
 		rid: {
 			type: 'string',
-			minLength: 1,
 			maxLength: 256,
 		},
 		rids: {
 			type: 'string',
-			minLength: 1,
 			maxLength: 4096,
 		},
 		roomNames: {
 			type: 'string',
-			minLength: 1,
 			maxLength: 4096,
 		},
 		fromUsername: {
 			type: 'string',
-			minLength: 1,
 			maxLength: 256,
 		},
 		fromUsernames: {
 			type: 'string',
-			minLength: 1,
 			maxLength: 4096,
 		},
 		startDate: {
 			anyOf: [
+				{ type: 'string', maxLength: 0 },
 				{ type: 'string', format: 'date' },
 				{ type: 'string', format: 'date-time' },
 			],
 		},
 		endDate: {
 			anyOf: [
+				{ type: 'string', maxLength: 0 },
 				{ type: 'string', format: 'date' },
 				{ type: 'string', format: 'date-time' },
 			],
