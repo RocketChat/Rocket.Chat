@@ -1,4 +1,5 @@
 import type { AudioAttachmentProps } from '@rocket.chat/core-typings';
+import { Box } from '@rocket.chat/fuselage';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
@@ -56,15 +57,28 @@ const AudioAttachment = ({
 		<>
 			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
 			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed}>
-				<AudioPlayerControls
-					playing={active && playing}
-					currentTime={active ? currentTime : 0}
-					duration={active ? duration : 0}
-					playbackRate={playbackRate}
-					onToggle={() => (active ? toggle() : play(track))}
-					onSeek={(time) => (active ? seek(time) : play(track))}
-					onCyclePlaybackRate={cyclePlaybackRate}
-				/>
+				<Box
+					borderWidth='default'
+					borderStyle='solid'
+					borderColor='extra-light'
+					bg='tint'
+					pb={12}
+					pie={8}
+					pis={16}
+					borderRadius='x4'
+					w='100%'
+					maxWidth='x300'
+				>
+					<AudioPlayerControls
+						playing={active && playing}
+						currentTime={active ? currentTime : 0}
+						duration={active ? duration : 0}
+						playbackRate={playbackRate}
+						onToggle={() => (active ? toggle() : play(track))}
+						onSeek={(time) => (active ? seek(time) : play(track))}
+						onCyclePlaybackRate={cyclePlaybackRate}
+					/>
+				</Box>
 			</MessageCollapsible>
 		</>
 	);

@@ -63,7 +63,6 @@ const NowPlayingSection = () => {
 			</Box>
 
 			<AudioPlayerControls
-				compact
 				playing={playing}
 				currentTime={currentTime}
 				duration={duration}
