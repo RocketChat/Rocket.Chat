@@ -20,6 +20,9 @@ export type { MultiConversationsSelectElement } from './blocks/elements/MultiCon
 export type { MultiUsersSelectElement } from './blocks/elements/MultiUsersSelectElement';
 export type { OverflowElement } from './blocks/elements/OverflowElement';
 export type { PlainTextInputElement } from './blocks/elements/PlainTextInputElement';
+export type { NumberInputElement } from './blocks/elements/NumberInputElement';
+export type { EmailInputElement } from './blocks/elements/EmailInputElement';
+export type { UrlInputElement } from './blocks/elements/UrlInputElement';
 export type { StaticSelectElement } from './blocks/elements/StaticSelectElement';
 export type { UsersSelectElement } from './blocks/elements/UsersSelectElement';
 export type { ToggleSwitchElement } from './blocks/elements/ToggleSwitchElement';
