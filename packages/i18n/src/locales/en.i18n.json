@@ -2331,7 +2331,7 @@
   "Federation_Service_Allow_List_Description": "Restrict federation to the given allow list of domains.",
   "Federation_Service_Validate_User_Domain": "Users email restrictions",
   "Federation_Service_Validate_User_Domain_Description": "Restrict access to verified email addresses that match your Federated Domain.",
-  "Federation_XMPP_Join_Channel_Required": "Please provide a channel to join. Usage: `/xmpp #channel`",
+  "Federation_XMPP_Join_Channel_Required": "Please provide a channel to join. Usage: `/xmpp-join #channel`",
   "Federation_XMPP_Join_Channel_Success": "You joined the XMPP channel.",
   "Federation_XMPP_Join_Channel_Failed": "Could not join the XMPP channel. Please try again later.",
   "Field": "Field",
