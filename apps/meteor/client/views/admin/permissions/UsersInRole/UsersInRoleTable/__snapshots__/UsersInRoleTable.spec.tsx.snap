@@ -417,12 +417,12 @@ exports[`renders Default without crashing 1`] = `
         >
           <span
             class="rcx-pagination__label"
-            id=":r1:"
+            id="_r_1_"
           >
             Items per page:
           </span>
           <ol
-            aria-labelledby=":r1:"
+            aria-labelledby="_r_1_"
             class="rcx-box rcx-box--full rcx-pagination__list"
           >
             <li
@@ -466,12 +466,12 @@ exports[`renders Default without crashing 1`] = `
         >
           <span
             class="rcx-pagination__label"
-            id=":r0:"
+            id="_r_0_"
           >
             Showing results 1 - 5 of 30
           </span>
           <ol
-            aria-labelledby=":r0:"
+            aria-labelledby="_r_0_"
             class="rcx-box rcx-box--full rcx-pagination__list"
           >
             <li

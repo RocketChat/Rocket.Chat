@@ -4,7 +4,7 @@ import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useSettingsDispatch, useSettings } from '@rocket.chat/ui-contexts';
-import type { ReactNode, MouseEvent, FormEvent } from 'react';
+import type { ReactNode, MouseEvent, SubmitEvent } from 'react';
 import { useMemo, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -113,7 +113,7 @@ const SettingsGroupPage = ({
 		dispatchToEditing(settingsToDispatch as Partial<EditableSetting>[]);
 	});
 
-	const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
+	const handleSubmit = (event: SubmitEvent<HTMLFormElement>): void => {
 		event.preventDefault();
 		save();
 	};

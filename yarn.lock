@@ -5697,6 +5697,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@noble/ciphers@npm:^1.0.0":
+  version: 1.3.0
+  resolution: "@noble/ciphers@npm:1.3.0"
+  checksum: 10/051660051e3e9e2ca5fb9dece2885532b56b7e62946f89afa7284a0fb8bc02e2bd1c06554dba68162ff42d295b54026456084198610f63c296873b2f1cd7a586
+  languageName: node
+  linkType: hard
+
 "@noble/ed25519@npm:^3.0.0":
   version: 3.0.0
   resolution: "@noble/ed25519@npm:3.0.0"
@@ -5711,7 +5718,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@noble/hashes@npm:^1.1.5":
+"@noble/hashes@npm:^1.1.5, @noble/hashes@npm:^1.6.0":
   version: 1.8.0
   resolution: "@noble/hashes@npm:1.8.0"
   checksum: 10/474b7f56bc6fb2d5b3a42132561e221b0ea4f91e590f4655312ca13667840896b34195e2b53b7f097ec080a1fdd3b58d902c2a8d0fbdf51d2e238b53808a177e
@@ -7663,183 +7670,92 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-pdf/fns@npm:2.2.1":
-  version: 2.2.1
-  resolution: "@react-pdf/fns@npm:2.2.1"
-  dependencies:
-    "@babel/runtime": "npm:^7.20.13"
-  checksum: 10/e8da79803ceb74114260ac349ae51fdd40a308dd8a1023fb86b111e86bee79a4539c700fc0c5797c363f977f1acf5171c302bf621da8ec5fc0e0d3c684dfe5b9
+"@react-pdf/fns@npm:3.1.3":
+  version: 3.1.3
+  resolution: "@react-pdf/fns@npm:3.1.3"
+  checksum: 10/74bd3149fbee053b9023d322823d4620c904fd4a24d4a57a1f5d5a6cd1fb094494efb923982a953c8bac38e4080cb4a1a1a44aa269ee3eaf6fb667e8e681215b
   languageName: node
   linkType: hard
 
-"@react-pdf/fns@npm:3.1.2":
-  version: 3.1.2
-  resolution: "@react-pdf/fns@npm:3.1.2"
-  checksum: 10/b4b48167ae454587e2513b07166f44a21d908817b5e59dd72693f762c647038ecf6b4f18eecb468566613338ad1d5b4e16ade68d39ae852c9ef91ab54820224b
-  languageName: node
-  linkType: hard
-
-"@react-pdf/font@npm:^2.5.2":
-  version: 2.5.2
-  resolution: "@react-pdf/font@npm:2.5.2"
+"@react-pdf/font@npm:^4.0.8":
+  version: 4.0.8
+  resolution: "@react-pdf/font@npm:4.0.8"
   dependencies:
-    "@babel/runtime": "npm:^7.20.13"
-    "@react-pdf/types": "npm:^2.6.0"
-    cross-fetch: "npm:^3.1.5"
+    "@react-pdf/pdfkit": "npm:^5.1.1"
+    "@react-pdf/types": "npm:^2.11.1"
     fontkit: "npm:^2.0.2"
     is-url: "npm:^1.2.4"
-  checksum: 10/090497049faa1683dd167c3a543788f01fe5234ec712bbbda12589b79440427a841a4ceb146e4886681163cce29cca0d3d6e24ff26bfc749100e7862b6040cd6
+  checksum: 10/9f81bc5c2d48d290a59019a0de3b4d7fc30efcc3331816e463f39a81398adb0ba91413d0c5e73007384c30ffd9e34a4380cadc2944cafa0a187dcc2201974326
   languageName: node
   linkType: hard
 
-"@react-pdf/font@npm:^4.0.4":
-  version: 4.0.4
-  resolution: "@react-pdf/font@npm:4.0.4"
+"@react-pdf/image@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@react-pdf/image@npm:3.1.0"
   dependencies:
-    "@react-pdf/pdfkit": "npm:^4.1.0"
-    "@react-pdf/types": "npm:^2.9.2"
-    fontkit: "npm:^2.0.2"
-    is-url: "npm:^1.2.4"
-  checksum: 10/9a753df9b2473eadb0e3660bae738a1a493651d9bc9428a1471ad8216897134970ce95595ed07db5366d3c3fc351836015d43119c2e52d4c1f7a0017d70e78ce
-  languageName: node
-  linkType: hard
-
-"@react-pdf/image@npm:^2.3.6":
-  version: 2.3.6
-  resolution: "@react-pdf/image@npm:2.3.6"
-  dependencies:
-    "@babel/runtime": "npm:^7.20.13"
-    "@react-pdf/png-js": "npm:^2.3.1"
-    cross-fetch: "npm:^3.1.5"
-    jay-peg: "npm:^1.0.2"
-  checksum: 10/3b1a686072bffda143cf22e0b536f3c7cda0972341897aa80dadce8254f2c35911e52a8202386d17282594b84cecf31622317606acec77aa7aca71d8634b6d6f
-  languageName: node
-  linkType: hard
-
-"@react-pdf/image@npm:^3.0.4":
-  version: 3.0.4
-  resolution: "@react-pdf/image@npm:3.0.4"
-  dependencies:
-    "@react-pdf/png-js": "npm:^3.0.0"
+    "@react-pdf/svg": "npm:^1.1.0"
     jay-peg: "npm:^1.1.1"
-  checksum: 10/ab48ad5e118a567b2749ea2a7a8934d36968000782fa00885ec5ecfff218a383b0bb0ff7803a67a788e18579d4af88bde20a5510990875a68b525fbcf022bf17
+    png-js: "npm:^2.0.0"
+  checksum: 10/a0b1ac6a86b248e0e683abadf4b96735a838c24f8cc0f5b8cab8a2de6c9ad94777b8ce2f1e9144a3aa25e0e7db3e77b7c385219cc70e1266f74611a5bbb6cc3c
   languageName: node
   linkType: hard
 
-"@react-pdf/layout@npm:4.4.2":
-  version: 4.4.2
-  resolution: "@react-pdf/layout@npm:4.4.2"
+"@react-pdf/layout@npm:4.6.1":
+  version: 4.6.1
+  resolution: "@react-pdf/layout@npm:4.6.1"
   dependencies:
-    "@react-pdf/fns": "npm:3.1.2"
-    "@react-pdf/image": "npm:^3.0.4"
-    "@react-pdf/primitives": "npm:^4.1.1"
-    "@react-pdf/stylesheet": "npm:^6.1.2"
-    "@react-pdf/textkit": "npm:^6.1.0"
-    "@react-pdf/types": "npm:^2.9.2"
+    "@react-pdf/fns": "npm:3.1.3"
+    "@react-pdf/image": "npm:^3.1.0"
+    "@react-pdf/primitives": "npm:^4.3.0"
+    "@react-pdf/stylesheet": "npm:^6.2.1"
+    "@react-pdf/textkit": "npm:^6.3.0"
+    "@react-pdf/types": "npm:^2.11.1"
     emoji-regex-xs: "npm:^1.0.0"
     queue: "npm:^6.0.1"
     yoga-layout: "npm:^3.2.1"
-  checksum: 10/778a3a648f585950e1a15a21252cf7da0ca133dddb4de746c66362a6ceeb827367e52d77c2cf14660459a8c29e5e4a3bc626b87507dd103e26e4cf32a946fdb5
+  checksum: 10/32b7ed4cfb4483e9609cb9b8f7ad4a6a221b7db8a21aef501591fc1658580ccec0aba35a26734a52f200526a0acaa7ac941fd271d3df8fb98f4193fc638893fe
   languageName: node
   linkType: hard
 
-"@react-pdf/layout@npm:^3.13.0":
-  version: 3.13.0
-  resolution: "@react-pdf/layout@npm:3.13.0"
+"@react-pdf/layout@patch:@react-pdf/layout@npm%3A4.6.1#~/.yarn/patches/@react-pdf-layout-npm-4.6.1-b12fdb71f4.patch":
+  version: 4.6.1
+  resolution: "@react-pdf/layout@patch:@react-pdf/layout@npm%3A4.6.1#~/.yarn/patches/@react-pdf-layout-npm-4.6.1-b12fdb71f4.patch::version=4.6.1&hash=2d4f47"
   dependencies:
-    "@babel/runtime": "npm:^7.20.13"
-    "@react-pdf/fns": "npm:2.2.1"
-    "@react-pdf/image": "npm:^2.3.6"
-    "@react-pdf/pdfkit": "npm:^3.2.0"
-    "@react-pdf/primitives": "npm:^3.1.1"
-    "@react-pdf/stylesheet": "npm:^4.3.0"
-    "@react-pdf/textkit": "npm:^4.4.1"
-    "@react-pdf/types": "npm:^2.6.0"
-    cross-fetch: "npm:^3.1.5"
-    emoji-regex: "npm:^10.3.0"
-    queue: "npm:^6.0.1"
-    yoga-layout: "npm:^2.0.1"
-  checksum: 10/4d497c5cf92b945d49a56d3db1afb5f1c07bcbc11d617a96c64e008e6dfdbfa956d885ef7a5be98ac7e900768cfd88d8c5950cee6f2c80eb2bc7723d54a97d06
-  languageName: node
-  linkType: hard
-
-"@react-pdf/layout@patch:@react-pdf/layout@npm%3A4.4.2#~/.yarn/patches/@react-pdf-layout-npm-4.4.2-6c2e3312fa.patch":
-  version: 4.4.2
-  resolution: "@react-pdf/layout@patch:@react-pdf/layout@npm%3A4.4.2#~/.yarn/patches/@react-pdf-layout-npm-4.4.2-6c2e3312fa.patch::version=4.4.2&hash=9b0b74"
-  dependencies:
-    "@react-pdf/fns": "npm:3.1.2"
-    "@react-pdf/image": "npm:^3.0.4"
-    "@react-pdf/primitives": "npm:^4.1.1"
-    "@react-pdf/stylesheet": "npm:^6.1.2"
-    "@react-pdf/textkit": "npm:^6.1.0"
-    "@react-pdf/types": "npm:^2.9.2"
+    "@react-pdf/fns": "npm:3.1.3"
+    "@react-pdf/image": "npm:^3.1.0"
+    "@react-pdf/primitives": "npm:^4.3.0"
+    "@react-pdf/stylesheet": "npm:^6.2.1"
+    "@react-pdf/textkit": "npm:^6.3.0"
+    "@react-pdf/types": "npm:^2.11.1"
     emoji-regex-xs: "npm:^1.0.0"
     queue: "npm:^6.0.1"
     yoga-layout: "npm:^3.2.1"
-  checksum: 10/6d74ee049858de5cc04a7ef31d32e0ec9259173adbd35479480994495fa5f1031da7ef4637267d10e8be4101ba78f0cb3587289f67130bee45eff7129b35fb45
+  checksum: 10/acbdd82dd5b25ba44676604825c773df43f91e06bcba481524928a535f86f78016ed365e627472347c0db1b5e3ba6d81c52ec9a4324d178a09854441c7496b90
   languageName: node
   linkType: hard
 
-"@react-pdf/pdfkit@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "@react-pdf/pdfkit@npm:3.2.0"
+"@react-pdf/pdfkit@npm:^5.1.1":
+  version: 5.1.1
+  resolution: "@react-pdf/pdfkit@npm:5.1.1"
   dependencies:
     "@babel/runtime": "npm:^7.20.13"
-    "@react-pdf/png-js": "npm:^2.3.1"
+    "@noble/ciphers": "npm:^1.0.0"
+    "@noble/hashes": "npm:^1.6.0"
     browserify-zlib: "npm:^0.2.0"
-    crypto-js: "npm:^4.2.0"
-    fontkit: "npm:^2.0.2"
-    jay-peg: "npm:^1.0.2"
-    vite-compatible-readable-stream: "npm:^3.6.1"
-  checksum: 10/5fa01f1365b5df119e5bd63f3fbbae99c67926fec1595376907551ce2c16a6cad0231492bf9c21b2b57ce4a0bc5f52fafae0fee008419fdfc4e6d91932479259
-  languageName: node
-  linkType: hard
-
-"@react-pdf/pdfkit@npm:^4.1.0":
-  version: 4.1.0
-  resolution: "@react-pdf/pdfkit@npm:4.1.0"
-  dependencies:
-    "@babel/runtime": "npm:^7.20.13"
-    "@react-pdf/png-js": "npm:^3.0.0"
-    browserify-zlib: "npm:^0.2.0"
-    crypto-js: "npm:^4.2.0"
     fontkit: "npm:^2.0.2"
     jay-peg: "npm:^1.1.1"
+    js-md5: "npm:^0.8.3"
     linebreak: "npm:^1.1.0"
+    png-js: "npm:^2.0.0"
     vite-compatible-readable-stream: "npm:^3.6.1"
-  checksum: 10/7dae027f3e124f50a2800c3672efa80d599e79cae445c6046dd2a33511254eb6069dfbd9a6083f1e4578fe8d1f20c68aec23f2e2f82b534f2eb355f897d920e2
+  checksum: 10/52ff3e9a33d8048bda696200811e1f38a75c440d61b6558dd5af66f7df1677839b328d500cf848f3fde0f203d7ab0cfc4331b495568532fcc95ea32d72feee8e
   languageName: node
   linkType: hard
 
-"@react-pdf/png-js@npm:^2.3.1":
-  version: 2.3.1
-  resolution: "@react-pdf/png-js@npm:2.3.1"
-  dependencies:
-    browserify-zlib: "npm:^0.2.0"
-  checksum: 10/0f4de5c1654ac8d12a44b36d2316fd9c54b1a7647a00953b268610848778a83437dce0e5d0c21902b63a2e2e8d4b4503d689f765316ad1dd679d8c92c6c228f2
-  languageName: node
-  linkType: hard
-
-"@react-pdf/png-js@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "@react-pdf/png-js@npm:3.0.0"
-  dependencies:
-    browserify-zlib: "npm:^0.2.0"
-  checksum: 10/5e972302a5d93f67d3dc1438bb4cb8ee708802fb6d513b651aa0857909a185f06e5288b59e82cffa9fe5587289c97de7f5c5401101f50faebc32bef50f398ee5
-  languageName: node
-  linkType: hard
-
-"@react-pdf/primitives@npm:^3.1.1":
-  version: 3.1.1
-  resolution: "@react-pdf/primitives@npm:3.1.1"
-  checksum: 10/a52c0cfff74d29d36e2e4c1c2b8935faf2f13bbe3800901e93354ea044385d8716166e45f3a49bb729e6d9944d7a8239056f5af80b345cb2984e245b2e719c1d
-  languageName: node
-  linkType: hard
-
-"@react-pdf/primitives@npm:^4.1.1":
-  version: 4.1.1
-  resolution: "@react-pdf/primitives@npm:4.1.1"
-  checksum: 10/adadff1996daeca693aa59844ab613e597fdb674fce9f2c03f52573b593982ef49ff47d861290235861d02462ffbc87b7ed3da0d71af0d61c9226ce61b94ada8
+"@react-pdf/primitives@npm:^4.3.0":
+  version: 4.3.0
+  resolution: "@react-pdf/primitives@npm:4.3.0"
+  checksum: 10/391f48e09a9b13eb72f763398a792b59484637023afe1e19fba7b4bafde339af87b0d9142d50c0dcf980a81851f92f772fd27ce678af08c16552524da79e4f1b
   languageName: node
   linkType: hard
 
@@ -7855,149 +7771,90 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-pdf/render@npm:^3.5.0":
-  version: 3.5.0
-  resolution: "@react-pdf/render@npm:3.5.0"
+"@react-pdf/render@npm:^4.5.1":
+  version: 4.5.1
+  resolution: "@react-pdf/render@npm:4.5.1"
   dependencies:
     "@babel/runtime": "npm:^7.20.13"
-    "@react-pdf/fns": "npm:2.2.1"
-    "@react-pdf/primitives": "npm:^3.1.1"
-    "@react-pdf/textkit": "npm:^4.4.1"
-    "@react-pdf/types": "npm:^2.6.0"
+    "@react-pdf/fns": "npm:3.1.3"
+    "@react-pdf/primitives": "npm:^4.3.0"
+    "@react-pdf/textkit": "npm:^6.3.0"
+    "@react-pdf/types": "npm:^2.11.1"
     abs-svg-path: "npm:^0.1.1"
-    color-string: "npm:^1.9.1"
+    color-string: "npm:^2.1.4"
     normalize-svg-path: "npm:^1.1.0"
     parse-svg-path: "npm:^0.1.2"
     svg-arc-to-cubic-bezier: "npm:^3.2.0"
-  checksum: 10/0fa434449e69fa5f64dfa6677bd1f14e11e20940640a6847b7435db17698cd4ef1bc8a49e71f221cd6a217032535190c9895a9bdbf10dda16d9a114dcd1f84f2
+  checksum: 10/90498cf5e6fcf094050855ceb881a052d5caf6b774effcf4e824ef9bd5d7c45c0add339b4a6225c6eb0d489d16b994a95acfbc3ce2dcd79a051c1ff80fb75651
   languageName: node
   linkType: hard
 
-"@react-pdf/render@npm:^4.3.2":
-  version: 4.3.2
-  resolution: "@react-pdf/render@npm:4.3.2"
+"@react-pdf/renderer@npm:~4.5.1":
+  version: 4.5.1
+  resolution: "@react-pdf/renderer@npm:4.5.1"
   dependencies:
     "@babel/runtime": "npm:^7.20.13"
-    "@react-pdf/fns": "npm:3.1.2"
-    "@react-pdf/primitives": "npm:^4.1.1"
-    "@react-pdf/textkit": "npm:^6.1.0"
-    "@react-pdf/types": "npm:^2.9.2"
-    abs-svg-path: "npm:^0.1.1"
-    color-string: "npm:^1.9.1"
-    normalize-svg-path: "npm:^1.1.0"
-    parse-svg-path: "npm:^0.1.2"
-    svg-arc-to-cubic-bezier: "npm:^3.2.0"
-  checksum: 10/2b4f36b7dfa8cef232bf13add469516b12f366fa2681b50486af69655511693e4201601d8a6cf9943fdd1d3597f71f75dfb9d4954fa80d629f45e38954820fbd
-  languageName: node
-  linkType: hard
-
-"@react-pdf/renderer@npm:^3.4.5":
-  version: 3.4.5
-  resolution: "@react-pdf/renderer@npm:3.4.5"
-  dependencies:
-    "@babel/runtime": "npm:^7.20.13"
-    "@react-pdf/font": "npm:^2.5.2"
-    "@react-pdf/layout": "npm:^3.13.0"
-    "@react-pdf/pdfkit": "npm:^3.2.0"
-    "@react-pdf/primitives": "npm:^3.1.1"
-    "@react-pdf/render": "npm:^3.5.0"
-    "@react-pdf/types": "npm:^2.6.0"
-    events: "npm:^3.3.0"
-    object-assign: "npm:^4.1.1"
-    prop-types: "npm:^15.6.2"
-    queue: "npm:^6.0.1"
-    scheduler: "npm:^0.17.0"
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 10/eb940e2d05dd986fad827f4cde956a556d4c60a9ab9e182b993c13cab9962e1959804c2cd247832d335bab27b2bb7db3d9e253a7f6f18c526c1422b5b44b09c3
-  languageName: node
-  linkType: hard
-
-"@react-pdf/renderer@npm:^4.3.2":
-  version: 4.3.2
-  resolution: "@react-pdf/renderer@npm:4.3.2"
-  dependencies:
-    "@babel/runtime": "npm:^7.20.13"
-    "@react-pdf/fns": "npm:3.1.2"
-    "@react-pdf/font": "npm:^4.0.4"
-    "@react-pdf/layout": "npm:^4.4.2"
-    "@react-pdf/pdfkit": "npm:^4.1.0"
-    "@react-pdf/primitives": "npm:^4.1.1"
+    "@react-pdf/fns": "npm:3.1.3"
+    "@react-pdf/font": "npm:^4.0.8"
+    "@react-pdf/layout": "npm:^4.6.1"
+    "@react-pdf/pdfkit": "npm:^5.1.1"
+    "@react-pdf/primitives": "npm:^4.3.0"
     "@react-pdf/reconciler": "npm:^2.0.0"
-    "@react-pdf/render": "npm:^4.3.2"
-    "@react-pdf/types": "npm:^2.9.2"
+    "@react-pdf/render": "npm:^4.5.1"
+    "@react-pdf/types": "npm:^2.11.1"
     events: "npm:^3.3.0"
     object-assign: "npm:^4.1.1"
     prop-types: "npm:^15.6.2"
     queue: "npm:^6.0.1"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10/8b4013d84e44c8606c1c5298da01e987b4781bfc0f05c38a42cd5d361d189eb93c4b5fb3d6e011dc8d7f5e7b5b4c4def0b00449e6b3dc6aaad59bdf5e9d299e1
+  checksum: 10/a8ee9d95be6c06ac5db70d99135829094379aee92f515cf37415ffcf291c50aa7f2af16ddb5880d09c908669a2d00225f75127a3a32b7cc48489c311efa1d23c
   languageName: node
   linkType: hard
 
-"@react-pdf/stylesheet@npm:^4.3.0":
-  version: 4.3.0
-  resolution: "@react-pdf/stylesheet@npm:4.3.0"
+"@react-pdf/stylesheet@npm:^6.2.1":
+  version: 6.2.1
+  resolution: "@react-pdf/stylesheet@npm:6.2.1"
   dependencies:
-    "@babel/runtime": "npm:^7.20.13"
-    "@react-pdf/fns": "npm:2.2.1"
-    "@react-pdf/types": "npm:^2.6.0"
-    color-string: "npm:^1.9.1"
+    "@react-pdf/fns": "npm:3.1.3"
+    "@react-pdf/types": "npm:^2.11.1"
+    color-string: "npm:^2.1.4"
     hsl-to-hex: "npm:^1.0.0"
     media-engine: "npm:^1.0.3"
     postcss-value-parser: "npm:^4.1.0"
-  checksum: 10/ca012d7f63676a85e11df00da814a75fd50d0b731b7bc10896e64cc5740df02080c40d21ea903ad9fd071a431987ce53ee2779f22b26ae36e72bbde283f41a37
+  checksum: 10/d54187ead9718eea92ca88f192613db4946cd144e6c4eb27b879ddb283082b8a6f477e73f89d774acc1b442a3ac96d5d9e16269dc17facafeae19887348a24d8
   languageName: node
   linkType: hard
 
-"@react-pdf/stylesheet@npm:^6.1.2":
-  version: 6.1.2
-  resolution: "@react-pdf/stylesheet@npm:6.1.2"
+"@react-pdf/svg@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@react-pdf/svg@npm:1.1.0"
   dependencies:
-    "@react-pdf/fns": "npm:3.1.2"
-    "@react-pdf/types": "npm:^2.9.2"
-    color-string: "npm:^1.9.1"
-    hsl-to-hex: "npm:^1.0.0"
-    media-engine: "npm:^1.0.3"
-    postcss-value-parser: "npm:^4.1.0"
-  checksum: 10/ca0a12e121fa646faf7bad6355545b34ca2e2638ffb60ef04b5779fede18e7ea442afa2886d3a3a0333770ea013f0796b1287eba846312427745a7e755a40ed5
+    "@react-pdf/primitives": "npm:^4.3.0"
+  checksum: 10/6447f76c309ba95c2d2d46410e5bedbba2fa4a8d2b53071ce099a32165395885e44bc96c9717fb0dd71f858cd53f895a6463322f9c3cd39732be32c530af7bbf
   languageName: node
   linkType: hard
 
-"@react-pdf/textkit@npm:^4.4.1":
-  version: 4.4.1
-  resolution: "@react-pdf/textkit@npm:4.4.1"
+"@react-pdf/textkit@npm:^6.3.0":
+  version: 6.3.0
+  resolution: "@react-pdf/textkit@npm:6.3.0"
   dependencies:
-    "@babel/runtime": "npm:^7.20.13"
-    "@react-pdf/fns": "npm:2.2.1"
+    "@react-pdf/fns": "npm:3.1.3"
     bidi-js: "npm:^1.0.2"
     hyphen: "npm:^1.6.4"
     unicode-properties: "npm:^1.4.1"
-  checksum: 10/36c30514034367398382d822c2422fb64ea26f2350230073e9ff461c2a27d237d279b9264140d8399d3d92a5c3167bfd258f91eca475fa45a67999006ccc3139
+  checksum: 10/48e6fac758e0061dd055c65c06721dc5c0b503695b09780767356c01c55ee242a0d19f75a53d129e90c422742def9292d960aef7f31d189c82987f1580e712b7
   languageName: node
   linkType: hard
 
-"@react-pdf/textkit@npm:^6.1.0":
-  version: 6.1.0
-  resolution: "@react-pdf/textkit@npm:6.1.0"
+"@react-pdf/types@npm:^2.11.1":
+  version: 2.11.1
+  resolution: "@react-pdf/types@npm:2.11.1"
   dependencies:
-    "@react-pdf/fns": "npm:3.1.2"
-    bidi-js: "npm:^1.0.2"
-    hyphen: "npm:^1.6.4"
-    unicode-properties: "npm:^1.4.1"
-  checksum: 10/4f7333cb4dbb5eb057c6241376d4155675104eb6bda19ac5e756d9d5330bf1c4bdeb0fa9ba4eeb2b449f04616b3e7c41db74dba2d17f60a0405a4d76fefc418d
-  languageName: node
-  linkType: hard
-
-"@react-pdf/types@npm:^2.6.0, @react-pdf/types@npm:^2.9.2":
-  version: 2.9.2
-  resolution: "@react-pdf/types@npm:2.9.2"
-  dependencies:
-    "@react-pdf/font": "npm:^4.0.4"
-    "@react-pdf/primitives": "npm:^4.1.1"
-    "@react-pdf/stylesheet": "npm:^6.1.2"
-  checksum: 10/c3a6184d806e6b8f8f51bf6c31cec95a668fbf092329fef0043dbe6879162fe09451da7fb5bed71f6fef839c700c0d4aef9f12ae07ecadf8792c9e07d62eb28f
+    "@react-pdf/font": "npm:^4.0.8"
+    "@react-pdf/primitives": "npm:^4.3.0"
+    "@react-pdf/stylesheet": "npm:^6.2.1"
+  checksum: 10/06ee8962012751c0ba48d89cf5c8fba7ad55875d1b27fd098f1bed2fe0f38a77bfed2ae5f9ee9a05cecb492e6e1ce23672fde2152fe3ab023bdf42ac8773f742
   languageName: node
   linkType: hard
 
@@ -9012,7 +8869,6 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
-    "@seald-io/nedb": "npm:^4.1.2"
     "@types/adm-zip": "npm:^0.5.7"
     "@types/debug": "npm:^4.1.12"
     "@types/lodash.clonedeep": "npm:^4.5.9"
@@ -9361,9 +9217,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-forms@npm:^1.3.0":
-  version: 1.3.0
-  resolution: "@rocket.chat/fuselage-forms@npm:1.3.0"
+"@rocket.chat/fuselage-forms@npm:~1.4.0":
+  version: 1.4.0
+  resolution: "@rocket.chat/fuselage-forms@npm:1.4.0"
   dependencies:
     "@rocket.chat/emitter": "npm:^0.32.0"
     react-aria: "npm:~3.37.0"
@@ -9372,24 +9228,24 @@ __metadata:
     "@rocket.chat/fuselage-hooks": "*"
     react: "*"
     react-dom: "*"
-  checksum: 10/a6337c7b4e6d41da529f15b0a1892b6ce10ff6b48e459893561f35b28ac23140a646d1e4126e4d2c02d03a8ea1451d50baa653256e4c988a2a66942db1fea07b
+  checksum: 10/b2b3407653ddfbf1d67fe68268ed2a00ea8af8e0f09a83d75a687a5f017b0b3919e58a672ea61adf3ed6db8e1c99439139317299844b1e625f83368b98db1252
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-hooks@npm:^0.41.0":
-  version: 0.41.0
-  resolution: "@rocket.chat/fuselage-hooks@npm:0.41.0"
+"@rocket.chat/fuselage-hooks@npm:~0.42.0":
+  version: 0.42.0
+  resolution: "@rocket.chat/fuselage-hooks@npm:0.42.0"
   peerDependencies:
     "@rocket.chat/emitter": "*"
     "@rocket.chat/fuselage-tokens": "*"
     react: "*"
-  checksum: 10/eb38c4baaa4a62333beadfcb867c734113edd07918565da65338ed538a5f8991f01be55e5c36567e562771862e85cca3d833715a614ed109a1a44e67847c6078
+  checksum: 10/ccda7dfc29f1930e9d62017ceeb6f04545f0941b14124857c24725564698d251604c21910fa4f6075db50aa9e8f49652eb304c144dd8aee0c589342717ddadae
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-toastbar@npm:^0.35.2":
-  version: 0.35.2
-  resolution: "@rocket.chat/fuselage-toastbar@npm:0.35.2"
+"@rocket.chat/fuselage-toastbar@npm:~0.36.0":
+  version: 0.36.0
+  resolution: "@rocket.chat/fuselage-toastbar@npm:0.36.0"
   dependencies:
     react-timing-hooks: "npm:~4.0.2"
   peerDependencies:
@@ -9398,7 +9254,7 @@ __metadata:
     "@rocket.chat/styled": "*"
     react: "*"
     react-dom: "*"
-  checksum: 10/bfd28f73ea016ffa87845369ff82fbedc4344b03337fb4d890dde4a16d2b1cd3f88b34ea71f58a47493c3792f6759690f755a54d3a0723aa618396e9bfad2ed0
+  checksum: 10/e4edb78ca3d26f9153cfc49d88aac8d6a297958d0f1980dea83c7484637633ea39a74b20e37c64c7b862835b1aa088b77bdc5d8c6a3bde921868903c21834332
   languageName: node
   linkType: hard
 
@@ -9416,15 +9272,15 @@ __metadata:
     "@rocket.chat/apps-engine": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": "npm:^0.32.0"
-    "@rocket.chat/fuselage": "npm:^0.79.1"
-    "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
+    "@rocket.chat/fuselage": "npm:~0.80.0"
+    "@rocket.chat/fuselage-hooks": "npm:~0.42.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/gazzodown": "workspace:^"
     "@rocket.chat/icons": "npm:^0.48.0"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/mock-providers": "workspace:^"
     "@rocket.chat/storybook-config": "workspace:~"
-    "@rocket.chat/styled": "npm:^0.33.0"
+    "@rocket.chat/styled": "npm:~0.34.0"
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-avatar": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
@@ -9436,8 +9292,8 @@ __metadata:
     "@testing-library/dom": "npm:~10.4.1"
     "@testing-library/react": "npm:~16.3.2"
     "@testing-library/user-event": "npm:~14.6.1"
-    "@types/react": "npm:~18.3.28"
-    "@types/react-dom": "npm:~18.3.7"
+    "@types/react": "npm:~19.2.17"
+    "@types/react-dom": "npm:~19.2.3"
     cross-env: "npm:^7.0.3"
     eslint: "npm:~9.39.4"
     i18next: "npm:~23.4.9"
@@ -9445,10 +9301,10 @@ __metadata:
     normalize.css: "npm:^8.0.1"
     npm-run-all: "npm:^4.1.5"
     prettier: "npm:~3.3.3"
-    react: "npm:~18.3.1"
-    react-dom: "npm:~18.3.1"
+    react: "npm:~19.2.7"
+    react-dom: "npm:~19.2.7"
     react-i18next: "npm:~13.2.2"
-    react-virtuoso: "npm:~4.12.8"
+    react-virtuoso: "npm:~4.18.10"
     rimraf: "npm:^6.0.1"
     storybook: "npm:^9.1.13"
     typescript: "npm:~5.9.3"
@@ -9471,9 +9327,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/fuselage@npm:^0.79.1":
-  version: 0.79.1
-  resolution: "@rocket.chat/fuselage@npm:0.79.1"
+"@rocket.chat/fuselage@npm:~0.80.0":
+  version: 0.80.0
+  resolution: "@rocket.chat/fuselage@npm:0.80.0"
   dependencies:
     "@rocket.chat/css-in-js": "npm:^0.32.0"
     "@rocket.chat/css-supports": "npm:^0.31.25"
@@ -9481,7 +9337,8 @@ __metadata:
     "@rocket.chat/memo": "npm:^0.31.25"
     invariant: "npm:^2.2.4"
     react-aria: "npm:~3.37.0"
-    react-keyed-flatten-children: "npm:^1.3.0"
+    react-is: "npm:~19.2.7"
+    react-keyed-flatten-children: "npm:~5.1.2"
     react-stately: "npm:~3.35.0"
   peerDependencies:
     "@rocket.chat/fuselage-hooks": "*"
@@ -9489,7 +9346,7 @@ __metadata:
     react: "*"
     react-dom: "*"
     react-virtuoso: "*"
-  checksum: 10/112bf6eb1a9b30214fca24c23bff3ae9082adfd21f8d3cefe728ca7f96844d0d203c1bcb1bd3f5dae524290a81aa33a9855102615e922b036fa89a9703c4338f
+  checksum: 10/1026ad667a843fa018ba4cd01055bad8070cfb7ca8c86eff551a0364c0c0d4343f2b1b40326660202d0364033b9d26e0f2d5fc27eca7730b4d7a7d5a7ff057de
   languageName: node
   linkType: hard
 
@@ -9500,14 +9357,14 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": "npm:^0.32.0"
     "@rocket.chat/emitter": "npm:^0.32.0"
-    "@rocket.chat/fuselage": "npm:^0.79.1"
-    "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
+    "@rocket.chat/fuselage": "npm:~0.80.0"
+    "@rocket.chat/fuselage-hooks": "npm:~0.42.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/icons": "npm:^0.48.0"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/message-parser": "workspace:^"
     "@rocket.chat/storybook-config": "workspace:~"
-    "@rocket.chat/styled": "npm:^0.33.0"
+    "@rocket.chat/styled": "npm:~0.34.0"
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
@@ -9518,8 +9375,8 @@ __metadata:
     "@testing-library/react": "npm:~16.3.2"
     "@types/jest": "npm:~30.0.0"
     "@types/katex": "npm:~0.16.8"
-    "@types/react": "npm:~18.3.28"
-    "@types/react-dom": "npm:~18.3.7"
+    "@types/react": "npm:~19.2.17"
+    "@types/react-dom": "npm:~19.2.3"
     date-fns: "npm:~4.1.0"
     dompurify: "npm:~3.4.7"
     eslint: "npm:~9.39.4"
@@ -9529,13 +9386,13 @@ __metadata:
     jest: "npm:~30.2.0"
     katex: "npm:~0.16.45"
     outdent: "npm:^0.8.0"
-    react: "npm:~18.3.1"
+    react: "npm:~19.2.7"
     react-aria: "npm:~3.37.0"
-    react-dom: "npm:~18.3.1"
-    react-error-boundary: "npm:^3.1.4"
+    react-dom: "npm:~19.2.7"
+    react-error-boundary: "npm:~6.1.2"
     react-i18next: "npm:~13.2.2"
     react-stately: "npm:~3.17.0"
-    react-virtuoso: "npm:~4.12.8"
+    react-virtuoso: "npm:~4.18.10"
     storybook: "npm:^9.1.13"
     typescript: "npm:~5.9.3"
     webpack: "npm:~5.104.1"
@@ -9651,16 +9508,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/layout@npm:^0.34.3":
-  version: 0.34.3
-  resolution: "@rocket.chat/layout@npm:0.34.3"
+"@rocket.chat/layout@npm:~0.35.0":
+  version: 0.35.0
+  resolution: "@rocket.chat/layout@npm:0.35.0"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/logo": "*"
     react: "*"
     react-dom: "*"
     react-i18next: "*"
-  checksum: 10/d751437cf83780d544b897e7971098e14f43e4395745df85f220a95472c7227dd1b1ebf509604650adf2fef32fc96e6247a7cc797907dbd200a70c75e0c3837f
+  checksum: 10/6978a3de811d481ce772c78464fe42879e8b8f7fd41ff55bc34adcac84c69e55e0072d3f121b2811b423ec949d64022878b7383fc88aff70222620989c721769
   languageName: node
   linkType: hard
 
@@ -9695,10 +9552,10 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/ddp-client": "workspace:^"
     "@rocket.chat/emitter": "npm:^0.32.0"
-    "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
+    "@rocket.chat/fuselage-hooks": "npm:~0.42.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/gazzodown": "workspace:^"
-    "@rocket.chat/logo": "npm:^0.32.5"
+    "@rocket.chat/logo": "npm:~0.33.0"
     "@rocket.chat/message-parser": "workspace:^"
     "@rocket.chat/random": "workspace:~"
     "@rocket.chat/ui-contexts": "workspace:^"
@@ -9710,7 +9567,7 @@ __metadata:
     "@storybook/preact-webpack5": "npm:9.0.0-alpha.11"
     "@types/crypto-js": "npm:~4.2.2"
     "@types/mini-css-extract-plugin": "npm:~2.5.1"
-    "@types/react": "npm:~18.3.28"
+    "@types/react": "npm:~19.2.17"
     "@types/webpack-env": "npm:~1.18.8"
     "@types/whatwg-fetch": "npm:~0.0.33"
     ajv: "npm:^8.20.0"
@@ -9747,9 +9604,9 @@ __metadata:
     preact: "npm:~10.25.4"
     preact-router: "npm:^4.1.2"
     query-string: "npm:^7.1.3"
-    react: "npm:~18.3.1"
-    react-dom: "npm:~18.3.1"
-    react-hook-form: "npm:~7.45.4"
+    react: "npm:~19.2.7"
+    react-dom: "npm:~19.2.7"
+    react-hook-form: "npm:~7.54.2"
     react-i18next: "npm:~13.2.2"
     resolve-url-loader: "npm:~5.0.0"
     rimraf: "npm:^6.0.1"
@@ -9798,15 +9655,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/logo@npm:^0.32.5":
-  version: 0.32.5
-  resolution: "@rocket.chat/logo@npm:0.32.5"
+"@rocket.chat/logo@npm:~0.33.0":
+  version: 0.33.0
+  resolution: "@rocket.chat/logo@npm:0.33.0"
   dependencies:
-    "@rocket.chat/styled": "npm:^0.33.0"
+    "@rocket.chat/styled": "npm:^0.34.0"
   peerDependencies:
     react: "*"
     react-dom: "*"
-  checksum: 10/c46e8711ec112b439f582ac84713e57b0c692419f609809e97a9798dbde35dd6575269442264e654453c66c75df92a30911b73a9c219a0a5ca3b8338e2366148
+  checksum: 10/1aba42d497c796f0642f943872f6cac29a9359fb0cb5bd8041bf820802c9fe34ea1298075df9a34b80ab458a1ec4923c137a9e605b6e3158dc63ea7a2ad3443c
   languageName: node
   linkType: hard
 
@@ -9926,7 +9783,7 @@ __metadata:
     "@parse/node-apn": "npm:^8.1.0"
     "@playwright/test": "npm:~1.52.0"
     "@react-aria/toolbar": "npm:^3.0.0-nightly.5042"
-    "@react-pdf/renderer": "npm:^4.3.2"
+    "@react-pdf/renderer": "npm:~4.5.1"
     "@rocket.chat/abac": "workspace:^"
     "@rocket.chat/account-utils": "workspace:^"
     "@rocket.chat/agenda": "workspace:^"
@@ -9946,10 +9803,10 @@ __metadata:
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/federation-matrix": "workspace:^"
     "@rocket.chat/federation-sdk": "npm:0.6.3"
-    "@rocket.chat/fuselage": "npm:^0.79.1"
-    "@rocket.chat/fuselage-forms": "npm:^1.3.0"
-    "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
-    "@rocket.chat/fuselage-toastbar": "npm:^0.35.2"
+    "@rocket.chat/fuselage": "npm:~0.80.0"
+    "@rocket.chat/fuselage-forms": "npm:~1.4.0"
+    "@rocket.chat/fuselage-hooks": "npm:~0.42.0"
+    "@rocket.chat/fuselage-toastbar": "npm:~0.36.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/fuselage-ui-kit": "workspace:^"
     "@rocket.chat/gazzodown": "workspace:^"
@@ -9959,12 +9816,12 @@ __metadata:
     "@rocket.chat/instance-status": "workspace:^"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/jwt": "workspace:^"
-    "@rocket.chat/layout": "npm:^0.34.3"
+    "@rocket.chat/layout": "npm:~0.35.0"
     "@rocket.chat/license": "workspace:^"
     "@rocket.chat/livechat": "workspace:^"
     "@rocket.chat/log-format": "workspace:^"
     "@rocket.chat/logger": "workspace:^"
-    "@rocket.chat/logo": "npm:^0.32.5"
+    "@rocket.chat/logo": "npm:~0.33.0"
     "@rocket.chat/media-calls": "workspace:^"
     "@rocket.chat/media-signaling": "workspace:^"
     "@rocket.chat/memo": "npm:~0.31.25"
@@ -9979,7 +9836,7 @@ __metadata:
     "@rocket.chat/omni-core": "workspace:^"
     "@rocket.chat/omni-core-ee": "workspace:^"
     "@rocket.chat/omnichannel-services": "workspace:^"
-    "@rocket.chat/onboarding-ui": "npm:^0.36.2"
+    "@rocket.chat/onboarding-ui": "npm:~0.37.0"
     "@rocket.chat/password-policies": "workspace:^"
     "@rocket.chat/patch-injection": "workspace:^"
     "@rocket.chat/pdf-worker": "workspace:^"
@@ -9992,7 +9849,7 @@ __metadata:
     "@rocket.chat/sha256": "workspace:^"
     "@rocket.chat/storybook-config": "workspace:~"
     "@rocket.chat/string-helpers": "npm:~0.32.0"
-    "@rocket.chat/styled": "npm:^0.33.0"
+    "@rocket.chat/styled": "npm:~0.34.0"
     "@rocket.chat/tools": "workspace:^"
     "@rocket.chat/tracing": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
@@ -10059,7 +9916,7 @@ __metadata:
     "@types/mocha": "github:whitecolor/mocha-types"
     "@types/node": "npm:~22.19.17"
     "@types/node-rsa": "npm:^1.1.4"
-    "@types/nodemailer": "npm:^8.0.0"
+    "@types/nodemailer": "npm:^8.0.1"
     "@types/oauth2-server": "npm:^3.0.18"
     "@types/object-path": "npm:^0.11.4"
     "@types/parseurl": "npm:^1.3.3"
@@ -10068,8 +9925,9 @@ __metadata:
     "@types/proxyquire": "npm:^1.3.31"
     "@types/psl": "npm:^1.1.3"
     "@types/qs": "npm:^6.14.0"
-    "@types/react": "npm:~18.3.28"
-    "@types/react-dom": "npm:~18.3.7"
+    "@types/react": "npm:~19.2.17"
+    "@types/react-dom": "npm:~19.2.3"
+    "@types/react-is": "npm:^19"
     "@types/sanitize-html": "npm:~2.16.1"
     "@types/semver": "npm:^7.5.8"
     "@types/sharp": "npm:^0.32.0"
@@ -10178,7 +10036,7 @@ __metadata:
     lodash.debounce: "npm:^4.0.8"
     lodash.escape: "npm:^4.0.1"
     lodash.get: "npm:^4.4.2"
-    mailparser: "npm:~3.9.10"
+    mailparser: "npm:~3.9.11"
     marked: "npm:^4.3.0"
     mem: "npm:^8.1.1"
     meteor-node-stubs: "npm:~1.2.27"
@@ -10195,7 +10053,7 @@ __metadata:
     node-dogstatsd: "npm:^0.0.7"
     node-fetch: "npm:2.7.0"
     node-rsa: "npm:^1.1.1"
-    nodemailer: "npm:^8.0.8"
+    nodemailer: "npm:^9.0.1"
     nyc: "npm:^17.1.0"
     object-path: "npm:^0.11.8"
     outdent: "npm:~0.8.0"
@@ -10227,16 +10085,17 @@ __metadata:
     queue-fifo: "npm:^0.2.6"
     raw-loader: "npm:~4.0.2"
     re-resizable: "npm:^6.10.4"
-    react: "npm:~18.3.1"
+    react: "npm:~19.2.7"
     react-aria: "npm:~3.37.0"
     react-docgen-typescript-plugin: "npm:^1.0.8"
-    react-dom: "npm:~18.3.1"
-    react-error-boundary: "npm:^3.1.4"
-    react-hook-form: "npm:~7.45.4"
+    react-dom: "npm:~19.2.7"
+    react-error-boundary: "npm:~6.1.2"
+    react-hook-form: "npm:~7.54.2"
     react-i18next: "npm:~13.2.2"
-    react-keyed-flatten-children: "npm:^3.0.2"
+    react-is: "npm:~19.2.7"
+    react-keyed-flatten-children: "npm:~5.1.2"
     react-stately: "npm:~3.17.0"
-    react-virtuoso: "npm:~4.12.8"
+    react-virtuoso: "npm:~4.18.10"
     reflect-metadata: "npm:^0.2.2"
     sanitize-html: "npm:~2.17.4"
     semver: "npm:^7.6.3"
@@ -10303,13 +10162,13 @@ __metadata:
     "@testing-library/dom": "npm:~10.4.1"
     "@testing-library/jest-dom": "npm:~6.8.0"
     "@testing-library/react": "npm:~16.3.2"
-    "@types/react": "npm:~18.3.28"
-    "@types/react-dom": "npm:~18.3.7"
+    "@types/react": "npm:~19.2.17"
+    "@types/react-dom": "npm:~19.2.3"
     eslint: "npm:~9.39.4"
     i18next: "npm:~23.4.9"
     jest: "npm:~30.2.0"
-    react: "npm:~18.3.1"
-    react-dom: "npm:~18.3.1"
+    react: "npm:~19.2.7"
+    react-dom: "npm:~19.2.7"
     react-i18next: "npm:~13.2.2"
     storybook: "npm:^9.1.13"
     typescript: "npm:~5.9.3"
@@ -10473,7 +10332,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/omnichannel-transcript@workspace:ee/apps/omnichannel-transcript"
   dependencies:
-    "@react-pdf/renderer": "npm:^3.4.5"
+    "@react-pdf/renderer": "npm:~4.5.1"
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": "npm:^0.32.0"
@@ -10491,7 +10350,7 @@ __metadata:
     "@types/node": "npm:~22.19.17"
     "@types/polka": "npm:^0.5.8"
     "@types/prometheus-gc-stats": "npm:^0.6.4"
-    "@types/react": "npm:~18.3.28"
+    "@types/react": "npm:~19.2.17"
     ejson: "npm:^2.2.3"
     emoji-toolkit: "npm:^7.0.1"
     eslint: "npm:~9.39.4"
@@ -10508,15 +10367,15 @@ __metadata:
     polka: "npm:^0.5.2"
     prom-client: "npm:^14.2.0"
     prometheus-gc-stats: "npm:^1.1.0"
-    react: "npm:~18.3.1"
+    react: "npm:~19.2.7"
     ts-node: "npm:^10.9.2"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/onboarding-ui@npm:^0.36.2, @rocket.chat/onboarding-ui@npm:~0.36.2":
-  version: 0.36.2
-  resolution: "@rocket.chat/onboarding-ui@npm:0.36.2"
+"@rocket.chat/onboarding-ui@npm:~0.37.0":
+  version: 0.37.0
+  resolution: "@rocket.chat/onboarding-ui@npm:0.37.0"
   dependencies:
     i18next: "npm:~23.4.9"
     react-hook-form: "npm:~7.54.2"
@@ -10530,7 +10389,7 @@ __metadata:
     react: "*"
     react-dom: "*"
     react-i18next: "*"
-  checksum: 10/2201758c345332158bb1dc0b3627cc15f220c600731348b78bc187f8cc93c232b4efdbaed63603ea554170613ba04e734d3bc616546ad618913a07721e913d0d
+  checksum: 10/c11af2e98c631c36fa37351c2a52028ba9caa109f3d8c655e6f9cf8ad200dd508abe991e6c630732b82c4acc206c8e19e3222307e1970de00bc1fb8e713e2faf
   languageName: node
   linkType: hard
 
@@ -10564,7 +10423,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/pdf-worker@workspace:ee/packages/pdf-worker"
   dependencies:
-    "@react-pdf/renderer": "npm:^3.4.5"
+    "@react-pdf/renderer": "npm:~4.5.1"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/jest-presets": "workspace:~"
@@ -10577,8 +10436,8 @@ __metadata:
     "@testing-library/react": "npm:~16.3.2"
     "@types/emojione": "npm:^2.2.9"
     "@types/jest": "npm:~30.0.0"
-    "@types/react": "npm:~18.3.28"
-    "@types/react-dom": "npm:~18.3.7"
+    "@types/react": "npm:~19.2.17"
+    "@types/react-dom": "npm:~19.2.3"
     buffer: "npm:~6.0.3"
     emoji-toolkit: "npm:^7.0.1"
     eslint: "npm:~9.39.4"
@@ -10587,8 +10446,8 @@ __metadata:
     moment: "npm:^2.30.1"
     moment-timezone: "npm:^0.5.48"
     path-browserify: "npm:^1.0.1"
-    react: "npm:~18.3.1"
-    react-dom: "npm:~18.3.1"
+    react: "npm:~19.2.7"
+    react-dom: "npm:~19.2.7"
     react-i18next: "npm:~13.2.2"
     storybook: "npm:^9.1.13"
     typescript: "npm:~5.9.3"
@@ -10663,6 +10522,7 @@ __metadata:
     "@rocket.chat/apps-engine": "workspace:^"
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/logger": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
     "@types/node": "npm:~22.19.17"
@@ -10829,8 +10689,8 @@ __metadata:
   resolution: "@rocket.chat/storybook-config@workspace:packages/storybook-config"
   dependencies:
     "@rocket.chat/emitter": "npm:^0.32.0"
-    "@rocket.chat/fuselage": "npm:^0.79.1"
-    "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
+    "@rocket.chat/fuselage": "npm:~0.80.0"
+    "@rocket.chat/fuselage-hooks": "npm:~0.42.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/icons": "npm:^0.48.0"
     "@rocket.chat/tsconfig": "workspace:*"
@@ -10841,9 +10701,9 @@ __metadata:
     "@storybook/react": "npm:^9.1.13"
     "@storybook/react-webpack5": "npm:^9.1.13"
     eslint: "npm:~9.39.4"
-    react: "npm:~18.3.1"
-    react-dom: "npm:~18.3.1"
-    react-virtuoso: "npm:~4.12.8"
+    react: "npm:~19.2.7"
+    react-dom: "npm:~19.2.7"
+    react-virtuoso: "npm:~4.18.10"
     storybook: "npm:^9.1.13"
     storybook-dark-mode: "npm:^5.0.0"
     typescript: "npm:~5.9.3"
@@ -10863,12 +10723,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/styled@npm:^0.33.0":
-  version: 0.33.0
-  resolution: "@rocket.chat/styled@npm:0.33.0"
+"@rocket.chat/styled@npm:^0.34.0, @rocket.chat/styled@npm:~0.34.0":
+  version: 0.34.0
+  resolution: "@rocket.chat/styled@npm:0.34.0"
   dependencies:
     "@rocket.chat/css-in-js": "npm:^0.32.0"
-  checksum: 10/d9514e67f0c7af55b6975d28e0afcd750b71439d9174874a67836f65bf221b64d537fcfdc2a258f407e8e0bf93fd7bd5cd09a9102d192eb4b35becbe5e00642b
+  checksum: 10/8eee631d5eb24c525b4da56afab79015af1424dbe42495494d2223e472abf39460abb5beffd9e6d12f69e2b873df9b0be7885dc1cdef072e00879a34a72a7691
   languageName: node
   linkType: hard
 
@@ -10924,17 +10784,17 @@ __metadata:
   dependencies:
     "@rocket.chat/core-typings": "workspace:~"
     "@rocket.chat/emitter": "npm:^0.32.0"
-    "@rocket.chat/fuselage": "npm:^0.79.1"
-    "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
+    "@rocket.chat/fuselage": "npm:~0.80.0"
+    "@rocket.chat/fuselage-hooks": "npm:~0.42.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/icons": "npm:^0.48.0"
     "@rocket.chat/ui-contexts": "workspace:^"
-    "@types/react": "npm:~18.3.28"
-    "@types/react-dom": "npm:~18.3.7"
+    "@types/react": "npm:~19.2.17"
+    "@types/react-dom": "npm:~19.2.3"
     eslint: "npm:~9.39.4"
-    react: "npm:~18.3.1"
-    react-dom: "npm:~18.3.1"
-    react-virtuoso: "npm:~4.12.8"
+    react: "npm:~19.2.7"
+    react-dom: "npm:~19.2.7"
+    react-virtuoso: "npm:~4.18.10"
     typescript: "npm:~5.9.3"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
@@ -10951,18 +10811,18 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:~"
     "@rocket.chat/css-in-js": "npm:^0.32.0"
     "@rocket.chat/emitter": "npm:^0.32.0"
-    "@rocket.chat/fuselage": "npm:^0.79.1"
-    "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
+    "@rocket.chat/fuselage": "npm:~0.80.0"
+    "@rocket.chat/fuselage-hooks": "npm:~0.42.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/icons": "npm:^0.48.0"
     "@rocket.chat/jest-presets": "workspace:~"
-    "@rocket.chat/layout": "npm:^0.34.3"
-    "@rocket.chat/logo": "npm:^0.32.5"
+    "@rocket.chat/layout": "npm:~0.35.0"
+    "@rocket.chat/logo": "npm:~0.33.0"
     "@rocket.chat/mock-providers": "workspace:^"
     "@rocket.chat/models": "workspace:~"
-    "@rocket.chat/onboarding-ui": "npm:~0.36.2"
+    "@rocket.chat/onboarding-ui": "npm:~0.37.0"
     "@rocket.chat/storybook-config": "workspace:~"
-    "@rocket.chat/styled": "npm:^0.33.0"
+    "@rocket.chat/styled": "npm:~0.34.0"
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-avatar": "workspace:~"
     "@rocket.chat/ui-contexts": "workspace:~"
@@ -10970,8 +10830,8 @@ __metadata:
     "@testing-library/dom": "npm:~10.4.1"
     "@testing-library/react": "npm:~16.3.2"
     "@types/jest": "npm:~30.0.0"
-    "@types/react": "npm:~18.3.28"
-    "@types/react-dom": "npm:~18.3.7"
+    "@types/react": "npm:~19.2.17"
+    "@types/react-dom": "npm:~19.2.3"
     dompurify: "npm:~3.4.7"
     eslint: "npm:~9.39.4"
     i18next: "npm:~23.4.9"
@@ -10979,11 +10839,11 @@ __metadata:
     overlayscrollbars: "npm:~2.11.5"
     overlayscrollbars-react: "npm:^0.5.6"
     re-resizable: "npm:^6.10.4"
-    react: "npm:~18.3.1"
-    react-dom: "npm:~18.3.1"
-    react-hook-form: "npm:~7.45.4"
+    react: "npm:~19.2.7"
+    react-dom: "npm:~19.2.7"
+    react-hook-form: "npm:~7.54.2"
     react-i18next: "npm:~13.2.2"
-    react-virtuoso: "npm:~4.12.8"
+    react-virtuoso: "npm:~4.18.10"
     storybook: "npm:^9.1.13"
     typescript: "npm:~5.9.3"
   peerDependencies:
@@ -11008,8 +10868,8 @@ __metadata:
   dependencies:
     "@react-aria/toolbar": "npm:^3.0.0-nightly.5042"
     "@rocket.chat/emitter": "npm:^0.32.0"
-    "@rocket.chat/fuselage": "npm:^0.79.1"
-    "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
+    "@rocket.chat/fuselage": "npm:~0.80.0"
+    "@rocket.chat/fuselage-hooks": "npm:~0.42.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/icons": "npm:^0.48.0"
     "@rocket.chat/jest-presets": "workspace:~"
@@ -11021,13 +10881,13 @@ __metadata:
     "@testing-library/react": "npm:~16.3.2"
     "@testing-library/user-event": "npm:~14.6.1"
     "@types/jest": "npm:~30.0.0"
-    "@types/react": "npm:~18.3.28"
-    "@types/react-dom": "npm:~18.3.7"
+    "@types/react": "npm:~19.2.17"
+    "@types/react-dom": "npm:~19.2.3"
     eslint: "npm:~9.39.4"
     jest: "npm:~30.2.0"
-    react: "npm:~18.3.1"
-    react-dom: "npm:~18.3.1"
-    react-virtuoso: "npm:~4.12.8"
+    react: "npm:~19.2.7"
+    react-dom: "npm:~19.2.7"
+    react-virtuoso: "npm:~4.18.10"
     storybook: "npm:^9.1.13"
     typescript: "npm:~5.9.3"
     webpack: "npm:~5.104.1"
@@ -11048,8 +10908,8 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/ddp-client": "workspace:~"
     "@rocket.chat/emitter": "npm:^0.32.0"
-    "@rocket.chat/fuselage": "npm:^0.79.1"
-    "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
+    "@rocket.chat/fuselage": "npm:~0.80.0"
+    "@rocket.chat/fuselage-hooks": "npm:~0.42.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/i18n": "workspace:~"
     "@rocket.chat/icons": "npm:^0.48.0"
@@ -11058,15 +10918,15 @@ __metadata:
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/tools": "workspace:~"
     "@types/jest": "npm:~30.0.0"
-    "@types/react": "npm:~18.3.28"
-    "@types/react-dom": "npm:~18.3.7"
+    "@types/react": "npm:~19.2.17"
+    "@types/react-dom": "npm:~19.2.3"
     eslint: "npm:~9.39.4"
     i18next: "npm:~23.4.9"
     jest: "npm:~30.2.0"
     mongodb: "npm:6.16.0"
-    react: "npm:~18.3.1"
-    react-dom: "npm:~18.3.1"
-    react-virtuoso: "npm:~4.12.8"
+    react: "npm:~19.2.7"
+    react-dom: "npm:~19.2.7"
+    react-virtuoso: "npm:~4.18.10"
     typescript: "npm:~5.9.3"
   peerDependencies:
     "@rocket.chat/core-typings": "workspace:^"
@@ -11107,27 +10967,27 @@ __metadata:
   dependencies:
     "@rocket.chat/css-in-js": "npm:^0.32.0"
     "@rocket.chat/emitter": "npm:^0.32.0"
-    "@rocket.chat/fuselage": "npm:^0.79.1"
-    "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
+    "@rocket.chat/fuselage": "npm:~0.80.0"
+    "@rocket.chat/fuselage-hooks": "npm:~0.42.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/icons": "npm:^0.48.0"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/storybook-config": "workspace:~"
-    "@rocket.chat/styled": "npm:^0.33.0"
+    "@rocket.chat/styled": "npm:~0.34.0"
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-avatar": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
     "@storybook/react": "npm:^9.1.13"
     "@types/jest": "npm:~30.0.0"
     "@types/jest-axe": "npm:~3.5.9"
-    "@types/react": "npm:~18.3.28"
-    "@types/react-dom": "npm:~18.3.7"
+    "@types/react": "npm:~19.2.17"
+    "@types/react-dom": "npm:~19.2.3"
     eslint: "npm:~9.39.4"
     jest: "npm:~30.2.0"
     jest-axe: "npm:~10.0.0"
-    react: "npm:~18.3.1"
-    react-dom: "npm:~18.3.1"
-    react-virtuoso: "npm:~4.12.8"
+    react: "npm:~19.2.7"
+    react-dom: "npm:~19.2.7"
+    react-virtuoso: "npm:~4.18.10"
     storybook: "npm:^9.1.13"
     typescript: "npm:~5.9.3"
     webpack: "npm:~5.104.1"
@@ -11154,8 +11014,8 @@ __metadata:
     "@rocket.chat/css-in-js": "npm:^0.32.0"
     "@rocket.chat/desktop-api": "workspace:^"
     "@rocket.chat/emitter": "npm:^0.32.0"
-    "@rocket.chat/fuselage": "npm:^0.79.1"
-    "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
+    "@rocket.chat/fuselage": "npm:~0.80.0"
+    "@rocket.chat/fuselage-hooks": "npm:~0.42.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/fuselage-ui-kit": "workspace:^"
     "@rocket.chat/icons": "npm:^0.48.0"
@@ -11163,7 +11023,7 @@ __metadata:
     "@rocket.chat/media-signaling": "workspace:~"
     "@rocket.chat/mock-providers": "workspace:~"
     "@rocket.chat/storybook-config": "workspace:~"
-    "@rocket.chat/styled": "npm:^0.33.0"
+    "@rocket.chat/styled": "npm:~0.34.0"
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-avatar": "workspace:^"
     "@rocket.chat/ui-client": "workspace:^"
@@ -11178,18 +11038,18 @@ __metadata:
     "@types/jest": "npm:~30.0.0"
     "@types/jest-axe": "npm:~3.5.9"
     "@types/node": "npm:~22.19.17"
-    "@types/react": "npm:~18.3.28"
-    "@types/react-dom": "npm:~18.3.7"
+    "@types/react": "npm:~19.2.17"
+    "@types/react-dom": "npm:~19.2.3"
     date-fns: "npm:~4.1.0"
     eslint: "npm:~9.39.4"
     i18next: "npm:~23.4.9"
     jest: "npm:~30.2.0"
     jest-axe: "npm:~10.0.0"
     jsdom: "npm:^26.1.0"
-    react: "npm:~18.3.1"
-    react-dom: "npm:~18.3.1"
+    react: "npm:~19.2.7"
+    react-dom: "npm:~19.2.7"
     react-i18next: "npm:~13.2.2"
-    react-virtuoso: "npm:~4.12.8"
+    react-virtuoso: "npm:~4.18.10"
     storybook: "npm:^9.1.13"
     typescript: "npm:~5.9.3"
   peerDependencies:
@@ -11220,31 +11080,31 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": "npm:^0.32.0"
     "@rocket.chat/emitter": "npm:^0.32.0"
-    "@rocket.chat/fuselage": "npm:^0.79.1"
-    "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
-    "@rocket.chat/fuselage-toastbar": "npm:^0.35.2"
+    "@rocket.chat/fuselage": "npm:~0.80.0"
+    "@rocket.chat/fuselage-hooks": "npm:~0.42.0"
+    "@rocket.chat/fuselage-toastbar": "npm:~0.36.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/fuselage-ui-kit": "workspace:~"
     "@rocket.chat/icons": "npm:^0.48.0"
-    "@rocket.chat/logo": "npm:^0.32.5"
-    "@rocket.chat/styled": "npm:^0.33.0"
+    "@rocket.chat/logo": "npm:~0.33.0"
+    "@rocket.chat/styled": "npm:~0.34.0"
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-avatar": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:~"
     "@types/lodash": "npm:~4.17.24"
-    "@types/react": "npm:~18.3.28"
-    "@types/react-dom": "npm:~18.3.7"
+    "@types/react": "npm:~19.2.17"
+    "@types/react-dom": "npm:~19.2.3"
     "@vitejs/plugin-react": "npm:~6.0.1"
     codemirror: "npm:^6.0.2"
     eslint: "npm:~9.39.4"
     eslint4b-prebuilt: "npm:^6.7.2"
     prettier: "npm:~3.3.3"
     rc-scrollbars: "npm:^1.1.6"
-    react: "npm:~18.3.1"
-    react-dom: "npm:~18.3.1"
+    react: "npm:~19.2.7"
+    react-dom: "npm:~19.2.7"
     react-router-dom: "npm:^6.30.4"
-    react-split-pane: "npm:^0.1.92"
-    react-virtuoso: "npm:~4.12.8"
+    react-split-pane: "npm:^3.2.0"
+    react-virtuoso: "npm:~4.18.10"
     reactflow: "npm:^11.11.4"
     typescript: "npm:~5.9.3"
     vite: "npm:^8.0.16"
@@ -11258,12 +11118,12 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:~"
     "@rocket.chat/css-in-js": "npm:^0.32.0"
     "@rocket.chat/emitter": "npm:^0.32.0"
-    "@rocket.chat/fuselage": "npm:^0.79.1"
-    "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
+    "@rocket.chat/fuselage": "npm:~0.80.0"
+    "@rocket.chat/fuselage-hooks": "npm:~0.42.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/i18n": "workspace:~"
     "@rocket.chat/icons": "npm:^0.48.0"
-    "@rocket.chat/layout": "npm:^0.34.3"
+    "@rocket.chat/layout": "npm:~0.35.0"
     "@rocket.chat/mock-providers": "workspace:~"
     "@rocket.chat/rest-typings": "workspace:~"
     "@rocket.chat/storybook-config": "workspace:~"
@@ -11274,16 +11134,16 @@ __metadata:
     "@tanstack/react-query": "npm:~5.65.1"
     "@testing-library/dom": "npm:~10.4.1"
     "@testing-library/react": "npm:~16.3.2"
-    "@types/react": "npm:~18.3.28"
-    "@types/react-dom": "npm:~18.3.7"
+    "@types/react": "npm:~19.2.17"
+    "@types/react-dom": "npm:~19.2.3"
     dompurify: "npm:~3.4.7"
     eslint: "npm:~9.39.4"
     i18next: "npm:~23.4.9"
-    react: "npm:~18.3.1"
-    react-dom: "npm:~18.3.1"
-    react-hook-form: "npm:~7.45.4"
+    react: "npm:~19.2.7"
+    react-dom: "npm:~19.2.7"
+    react-hook-form: "npm:~7.54.2"
     react-i18next: "npm:~13.2.2"
-    react-virtuoso: "npm:~4.12.8"
+    react-virtuoso: "npm:~4.18.10"
     storybook: "npm:^9.1.13"
     typescript: "npm:~5.9.3"
   peerDependencies:
@@ -11438,24 +11298,6 @@ __metadata:
   version: 1.4.0
   resolution: "@scarf/scarf@npm:1.4.0"
   checksum: 10/1b39a18fa29e91cfbc134c588e20c5f01a1b21ec4473614123801155b48378e9c3bf72adaca8c67e433ae951ab653268e9502cc5733230d8927532f74a6b89c9
-  languageName: node
-  linkType: hard
-
-"@seald-io/binary-search-tree@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "@seald-io/binary-search-tree@npm:1.0.3"
-  checksum: 10/0eecd682f56b93557e0cbe4a5b55f48e31f217cae350a5000d397b3ea17a67da62e48dba665f1a9e28345a0d1eb92d287511c1af1dc9e32725157fd181ce7f19
-  languageName: node
-  linkType: hard
-
-"@seald-io/nedb@npm:^4.1.2":
-  version: 4.1.2
-  resolution: "@seald-io/nedb@npm:4.1.2"
-  dependencies:
-    "@seald-io/binary-search-tree": "npm:^1.0.3"
-    localforage: "npm:^1.10.0"
-    util: "npm:^0.12.5"
-  checksum: 10/9d78476bb2af52b18fb781e385a48dd3d4e8f6c40846e47ec499c6ff9e0c7db2f597fd4fcb1bf0e2f6d6096a8c6153fb84106109de01cfcfa583eb77f2bc1e74
   languageName: node
   linkType: hard
 
@@ -14614,12 +14456,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/nodemailer@npm:^8.0.0":
-  version: 8.0.0
-  resolution: "@types/nodemailer@npm:8.0.0"
+"@types/nodemailer@npm:^8.0.1":
+  version: 8.0.1
+  resolution: "@types/nodemailer@npm:8.0.1"
   dependencies:
     "@types/node": "npm:*"
-  checksum: 10/d1178b557e8c547018e708459af06fdf2e9cfd6d65fed109517cddfe6b5add6201d941882a2e4eeede529de08ae71a68fb2a1d8f1c41cb3761d3a6c2458025fe
+  checksum: 10/ec2d9783387a0b24de0cfa76a8da6beab7342e97329fe1e2cf7a26d05e57b241f8dd45276385f1ee5bd089000f35b60beb8f31a9e2e7deaec5486ff1c640e641
   languageName: node
   linkType: hard
 
@@ -14739,12 +14581,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:~18.3.7":
-  version: 18.3.7
-  resolution: "@types/react-dom@npm:18.3.7"
+"@types/react-dom@npm:~19.2.3":
+  version: 19.2.3
+  resolution: "@types/react-dom@npm:19.2.3"
   peerDependencies:
-    "@types/react": ^18.0.0
-  checksum: 10/317569219366d487a3103ba1e5e47154e95a002915fdcf73a44162c48fe49c3a57fcf7f57fc6979e70d447112681e6b13c6c3c1df289db8b544df4aab2d318f3
+    "@types/react": ^19.2.0
+  checksum: 10/616c4a8aee250ea05fb1e7b98e7e00475dd3a6c1c30d7be18b4b93caba832f4203106b3a496a6b147e5acc2da14575eca47bce234c633bca1f8430ef8ffb234a
+  languageName: node
+  linkType: hard
+
+"@types/react-is@npm:^19":
+  version: 19.2.0
+  resolution: "@types/react-is@npm:19.2.0"
+  dependencies:
+    "@types/react": "npm:*"
+  checksum: 10/cf684b259dd0c60bb07df38e1b51a57728101b8cdde9d06209388e9a22daa64a6e36a8c7945f8d029a588c4a0d6540857ccbf52b7ec98ef083b4cee6ca4a3ee4
   languageName: node
   linkType: hard
 
@@ -14758,13 +14609,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:~18.3.28":
-  version: 18.3.28
-  resolution: "@types/react@npm:18.3.28"
+"@types/react@npm:~19.2.17":
+  version: 19.2.17
+  resolution: "@types/react@npm:19.2.17"
   dependencies:
-    "@types/prop-types": "npm:*"
     csstype: "npm:^3.2.2"
-  checksum: 10/6db7bb7f19957ee9f530baa7d143527f8befedad1585b064eb80777be0d84621157de75aba4f499ff429b10c5ef0c7d13e89be6bca3296ef71c80472894ff0eb
+  checksum: 10/8debb092bd0bb9c99176a31824c7587c27c775a6526b60060e7b9e8dc2af53aee2ffadc7a1e3845953792437db5699d34a9054e198c9d4e54a74728ff47c6725
   languageName: node
   linkType: hard
 
@@ -18489,13 +18339,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"color-string@npm:^1.9.0, color-string@npm:^1.9.1":
+"color-name@npm:^2.0.0":
+  version: 2.1.0
+  resolution: "color-name@npm:2.1.0"
+  checksum: 10/eb014f71d87408e318e95d3f554f188370d354ba8e0ffa4341d0fd19de391bfe2bc96e563d4f6614644d676bc24f475560dffee3fe310c2d6865d007410a9a2b
+  languageName: node
+  linkType: hard
+
+"color-string@npm:^1.9.0":
   version: 1.9.1
   resolution: "color-string@npm:1.9.1"
   dependencies:
     color-name: "npm:^1.0.0"
     simple-swizzle: "npm:^0.2.2"
   checksum: 10/72aa0b81ee71b3f4fb1ac9cd839cdbd7a011a7d318ef58e6cb13b3708dca75c7e45029697260488709f1b1c7ac4e35489a87e528156c1e365917d1c4ccb9b9cd
+  languageName: node
+  linkType: hard
+
+"color-string@npm:^2.1.4":
+  version: 2.1.4
+  resolution: "color-string@npm:2.1.4"
+  dependencies:
+    color-name: "npm:^2.0.0"
+  checksum: 10/689a8688ac3cd55247792c83a9db9bfe675343c7412fedba1eb748ac6a8867dd2bb3d406e309ebfe90336809ee5067c7f2cccfbd10133c5cc9ef1dba5aad58f2
   languageName: node
   linkType: hard
 
@@ -19038,15 +18904,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-fetch@npm:^3.1.5":
-  version: 3.2.0
-  resolution: "cross-fetch@npm:3.2.0"
-  dependencies:
-    node-fetch: "npm:^2.7.0"
-  checksum: 10/e4ab1d390a5b6ca8bb0605f028af2ffc1127d2e407b954654949f506d04873c4863ece264662c074865d7874060e35f938cec74fe7b5736d46d545e2685f6aec
-  languageName: node
-  linkType: hard
-
 "cross-spawn@npm:7.0.6":
   version: 7.0.6
   resolution: "cross-spawn@npm:7.0.6"
@@ -19062,13 +18919,6 @@ __metadata:
   version: 0.0.2
   resolution: "crypt@npm:0.0.2"
   checksum: 10/2c72768de3d28278c7c9ffd81a298b26f87ecdfe94415084f339e6632f089b43fe039f2c93f612bcb5ffe447238373d93b2e8c90894cba6cfb0ac7a74616f8b9
-  languageName: node
-  linkType: hard
-
-"crypto-js@npm:^4.2.0":
-  version: 4.2.0
-  resolution: "crypto-js@npm:4.2.0"
-  checksum: 10/c7bcc56a6e01c3c397e95aa4a74e4241321f04677f9a618a8f48a63b5781617248afb9adb0629824792e7ec20ca0d4241a49b6b2938ae6f973ec4efc5c53c924
   languageName: node
   linkType: hard
 
@@ -20584,13 +20434,6 @@ __metadata:
   version: 1.0.0
   resolution: "emoji-regex-xs@npm:1.0.0"
   checksum: 10/e216ec4270f765e1097cefc1b9518a7166b872b4424c60a85d79765f318d989cd458e036c76c13e9ce2ed1fe1bb5935a7fd5c1fab7600668bc8e92a789045b3c
-  languageName: node
-  linkType: hard
-
-"emoji-regex@npm:^10.3.0":
-  version: 10.6.0
-  resolution: "emoji-regex@npm:10.6.0"
-  checksum: 10/98cc0b0e1daed1ed25afbf69dcb921fee00f712f51aab93aa1547e4e4e8171725cc4f0098aaa645b4f611a19da11ec9f4623eb6ff2b72314b39a8f2ae7c12bf2
   languageName: node
   linkType: hard
 
@@ -25134,7 +24977,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jay-peg@npm:^1.0.2, jay-peg@npm:^1.1.1":
+"jay-peg@npm:^1.1.1":
   version: 1.1.1
   resolution: "jay-peg@npm:1.1.1"
   dependencies:
@@ -26272,6 +26115,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"js-md5@npm:^0.8.3":
+  version: 0.8.3
+  resolution: "js-md5@npm:0.8.3"
+  checksum: 10/2f74961bb21293cc4e023685985b531748da88c5e57fd4ef96d1d292e0918c09a4b192c425520c0aea6988190e9694c2e38ed34f7907a908614e6b133095f882
+  languageName: node
+  linkType: hard
+
 "js-tokens@npm:^3.0.0 || ^4.0.0, js-tokens@npm:^4.0.0":
   version: 4.0.0
   resolution: "js-tokens@npm:4.0.0"
@@ -27015,21 +26865,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"linkify-it@npm:5.0.1":
+"linkify-it@npm:5.0.1, linkify-it@npm:^5.0.1":
   version: 5.0.1
   resolution: "linkify-it@npm:5.0.1"
   dependencies:
     uc.micro: "npm:^2.0.0"
   checksum: 10/47933d11cda495fd31e3bb3c086358305362f4413ffa289500d1e48164acb221b3be6bde6404b86dba93b7fe701c95f318bee285f7613092cd7f28a9e97261e7
-  languageName: node
-  linkType: hard
-
-"linkify-it@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "linkify-it@npm:5.0.0"
-  dependencies:
-    uc.micro: "npm:^2.0.0"
-  checksum: 10/ef3b7609dda6ec0c0be8a7b879cea195f0d36387b0011660cd6711bba0ad82137f59b458b7e703ec74f11d88e7c1328e2ad9b855a8500c0ded67461a8c4519e6
   languageName: node
   linkType: hard
 
@@ -27308,7 +27149,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loose-envify@npm:^1.0.0, loose-envify@npm:^1.1.0, loose-envify@npm:^1.4.0":
+"loose-envify@npm:^1.0.0, loose-envify@npm:^1.4.0":
   version: 1.4.0
   resolution: "loose-envify@npm:1.4.0"
   dependencies:
@@ -27428,9 +27269,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mailparser@npm:~3.9.10":
-  version: 3.9.10
-  resolution: "mailparser@npm:3.9.10"
+"mailparser@npm:~3.9.11":
+  version: 3.9.11
+  resolution: "mailparser@npm:3.9.11"
   dependencies:
     "@zone-eu/mailsplit": "npm:5.4.12"
     encoding-japanese: "npm:2.2.0"
@@ -27439,10 +27280,10 @@ __metadata:
     iconv-lite: "npm:0.7.2"
     libmime: "npm:5.3.8"
     linkify-it: "npm:5.0.1"
-    nodemailer: "npm:9.0.0"
+    nodemailer: "npm:9.0.1"
     punycode.js: "npm:2.3.1"
     tlds: "npm:1.261.0"
-  checksum: 10/427aefc17df534eeac22cb6ab6c87442115fbb000b173eea51e9286e00694c2b2e48e7b2920f8d312c59faf3c1d0babcb06f2e1c2552e207777991d31444649e
+  checksum: 10/b740f0ce62ada65c634ac5879bf9a71562b5656d4d805b0496b2e2f5aed3defa116f6adeba9120f76658da6288511c25e1e232a68e4e426c3ed8e9881e9c45bc
   languageName: node
   linkType: hard
 
@@ -27546,19 +27387,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"markdown-it@npm:^14.1.1":
-  version: 14.1.1
-  resolution: "markdown-it@npm:14.1.1"
+"markdown-it@npm:^14.2.0":
+  version: 14.2.0
+  resolution: "markdown-it@npm:14.2.0"
   dependencies:
     argparse: "npm:^2.0.1"
     entities: "npm:^4.4.0"
-    linkify-it: "npm:^5.0.0"
+    linkify-it: "npm:^5.0.1"
     mdurl: "npm:^2.0.0"
     punycode.js: "npm:^2.3.1"
     uc.micro: "npm:^2.1.0"
   bin:
     markdown-it: bin/markdown-it.mjs
-  checksum: 10/088822c8aa9346ba4af6a205f6ee0f4baae55e3314f040dc5c28c897d57d0f979840c71872b3582a6a6e572d8c851c54e323c82f4559011dfa2e96224fc20fc2
+  checksum: 10/f5cdb7ca9c8115114137201590b2697ee6ca69d2d4701a0313696629d5de4022525eedcad31800263c70f04dfba0a8eae835b6aa84b65e94ae32d63d04e66211
   languageName: node
   linkType: hard
 
@@ -28915,17 +28756,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemailer@npm:8.0.8":
-  version: 8.0.8
-  resolution: "nodemailer@npm:8.0.8"
-  checksum: 10/b4d2d095355751ab4baa7047c35845a05a42eec734218e69fb36d16e9efaa0804d41741e39bbe0e22dfd416a9be835b09b82df624fd5da2b5d7aa8ca5a449e55
-  languageName: node
-  linkType: hard
-
-"nodemailer@npm:9.0.0":
-  version: 9.0.0
-  resolution: "nodemailer@npm:9.0.0"
-  checksum: 10/c72598e599c13e5c7d1c49e46eb6a448e615ea5abe4ba6a1c7fae1c42941689adecbdcd5b19dd6ff2d36758274832895086b0414cc6031f50a69d9e612895597
+"nodemailer@npm:9.0.1":
+  version: 9.0.1
+  resolution: "nodemailer@npm:9.0.1"
+  checksum: 10/cc7782962def1575102039270ff3356535c614e6db420dda85dffe672e77e66b410198c284a508b3bc8193b9c34c8e7b4cf8c697e0de2cc978c5e02f9c708fed
   languageName: node
   linkType: hard
 
@@ -30297,6 +30131,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"png-js@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "png-js@npm:2.0.0"
+  dependencies:
+    fflate: "npm:^0.8.2"
+  checksum: 10/33f19a521cdd9362fd5d46d0f7477e683dc4f50f8c0d030b3998fa4d1b67dfbb34c8f64e92e6f3cf68d542eeffb14bd1e3d225b5731e906e1981c4e52be63ffb
+  languageName: node
+  linkType: hard
+
 "polka@npm:^0.5.2":
   version: 0.5.2
   resolution: "polka@npm:0.5.2"
@@ -31310,7 +31153,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.5.4, prop-types@npm:^15.6.0, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
+"prop-types@npm:^15.6.0, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -31914,35 +31757,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:~18.3.1":
-  version: 18.3.1
-  resolution: "react-dom@npm:18.3.1"
+"react-dom@npm:~19.2.7":
+  version: 19.2.7
+  resolution: "react-dom@npm:19.2.7"
   dependencies:
-    loose-envify: "npm:^1.1.0"
-    scheduler: "npm:^0.23.2"
+    scheduler: "npm:^0.27.0"
   peerDependencies:
-    react: ^18.3.1
-  checksum: 10/3f4b73a3aa083091173b29812b10394dd06f4ac06aff410b74702cfb3aa29d7b0ced208aab92d5272919b612e5cda21aeb1d54191848cf6e46e9e354f3541f81
+    react: ^19.2.7
+  checksum: 10/9564f4b83843ca5518ed5f807c93cb1663706559cde52f3ef814b41e60b63b16e684d849926458f0ba436745d7eabf822cba1c528be370e7b2f35a4c91e35941
   languageName: node
   linkType: hard
 
-"react-error-boundary@npm:^3.1.4":
-  version: 3.1.4
-  resolution: "react-error-boundary@npm:3.1.4"
-  dependencies:
-    "@babel/runtime": "npm:^7.12.5"
+"react-error-boundary@npm:~6.1.2":
+  version: 6.1.2
+  resolution: "react-error-boundary@npm:6.1.2"
   peerDependencies:
-    react: ">=16.13.1"
-  checksum: 10/7418637bf352b88f35ff3798e6faa094ee046df9d422fc08f54c017892c3c0738dac661ba3d64d97209464e7a60e7fbbeffdbeaee5edc38f3aaf5f1f4a8bf610
-  languageName: node
-  linkType: hard
-
-"react-hook-form@npm:~7.45.4":
-  version: 7.45.4
-  resolution: "react-hook-form@npm:7.45.4"
-  peerDependencies:
-    react: ^16.8.0 || ^17 || ^18
-  checksum: 10/499d51c758161081fab0d22e7720e33e45d678fc2c8af2ff939434a61fab7043624c35afdfa27fa93fdc17d50a9683deb8b39bf308643f71b32126e561270641
+    react: ^18.0.0 || ^19.0.0
+  checksum: 10/b500bb59dfef0971552befe5f4613fa67ce84337c1228d1125a1a2ba7a0f41a6f69c436245b56d0821b286201268de2da9ab1765c4eb19b544d88cc9f1848ab1
   languageName: node
   linkType: hard
 
@@ -31973,7 +31804,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-is@npm:^16.13.1, react-is@npm:^16.8.6":
+"react-is@npm:^16.13.1":
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
   checksum: 10/5aa564a1cde7d391ac980bedee21202fc90bdea3b399952117f54fb71a932af1e5902020144fb354b4690b2414a0c7aafe798eb617b76a3d441d956db7726fdf
@@ -31987,39 +31818,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-is@npm:^18.0.0, react-is@npm:^18.2.0, react-is@npm:^18.3.1":
+"react-is@npm:^18.0.0, react-is@npm:^18.3.1":
   version: 18.3.1
   resolution: "react-is@npm:18.3.1"
   checksum: 10/d5f60c87d285af24b1e1e7eaeb123ec256c3c8bdea7061ab3932e3e14685708221bf234ec50b21e10dd07f008f1b966a2730a0ce4ff67905b3872ff2042aec22
   languageName: node
   linkType: hard
 
-"react-keyed-flatten-children@npm:^1.3.0":
-  version: 1.3.0
-  resolution: "react-keyed-flatten-children@npm:1.3.0"
-  dependencies:
-    react-is: "npm:^16.8.6"
-  peerDependencies:
-    react: ">=15.0.0"
-  checksum: 10/3bb042bb7cd48909491a5f92b8e7b2fb0417d69ad24bf04dbe1ed7a308cc7dfe6e3c9b5550e7b9016ee6bef61829b92e7f3a355ed1b867affd251bd518bcdd90
+"react-is@npm:~19.2.7":
+  version: 19.2.7
+  resolution: "react-is@npm:19.2.7"
+  checksum: 10/ae0d3ae7638aa2fa2a82a78a817daf2806e57fa0aef357d07e1e8d1e9a301902e5967168e9334b5816db0df8fa980a725cd57569ba5a9e6e76a71e117b18be04
   languageName: node
   linkType: hard
 
-"react-keyed-flatten-children@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "react-keyed-flatten-children@npm:3.0.2"
-  dependencies:
-    react-is: "npm:^18.2.0"
+"react-keyed-flatten-children@npm:~5.1.2":
+  version: 5.1.2
+  resolution: "react-keyed-flatten-children@npm:5.1.2"
   peerDependencies:
-    react: ">=15.0.0"
-  checksum: 10/58b53ccc707543b3b2f3615a6efe890b1302bf38d68df9239cb4d1ca4e8d8d9c05d670039c08e77befd27b1210c61290d6308a2f8439363e6699fecb94b69ebd
-  languageName: node
-  linkType: hard
-
-"react-lifecycles-compat@npm:^3.0.4":
-  version: 3.0.4
-  resolution: "react-lifecycles-compat@npm:3.0.4"
-  checksum: 10/c66b9c98c15cd6b0d0a4402df5f665e8cc7562fb7033c34508865bea51fd7b623f7139b5b7e708515d3cd665f264a6a9403e1fa7e6d61a05759066f5e9f07783
+    react: ">=18.0.0"
+    react-is: ">=18.0.0"
+  checksum: 10/b8aa894d87d129fc2cfec5fec490d1f21b8c7800149b7e91c004df7b31ce9e2c24370acc42f970a24a251e892fecbf231ec9da8fd1a5c2b54b27326d9fa5f9c4
   languageName: node
   linkType: hard
 
@@ -32066,17 +31885,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-split-pane@npm:^0.1.92":
-  version: 0.1.92
-  resolution: "react-split-pane@npm:0.1.92"
-  dependencies:
-    prop-types: "npm:^15.7.2"
-    react-lifecycles-compat: "npm:^3.0.4"
-    react-style-proptype: "npm:^3.2.2"
+"react-split-pane@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "react-split-pane@npm:3.2.0"
   peerDependencies:
-    react: ^16.0.0-0
-    react-dom: ^16.0.0-0
-  checksum: 10/d19e841dd494f44b814a1b47832dc7acac0a6d99eb127779209ff2c153a5db4e3fad8cb306284c7db96831b5e482cf11d791fac7e68bf0fd1e35bd567eadcd6a
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10/aa28526f50606470aff6a25ef777be70207a02ee8eec327ede1bc7c91daf4e4aa149240a6801c898092a73b595548cf96bdb2f31229cbf055b94722ddc97b6bd
   languageName: node
   linkType: hard
 
@@ -32158,15 +31973,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-style-proptype@npm:^3.2.2":
-  version: 3.2.2
-  resolution: "react-style-proptype@npm:3.2.2"
-  dependencies:
-    prop-types: "npm:^15.5.4"
-  checksum: 10/c068f10a639f743b311b3a6dd8bdd1b87436ab8d30a10ff4f30840a89decdd2e2eea33a2cefb504274ff58b624680d27f29daefece0f7435cfc8efae070d4e8d
-  languageName: node
-  linkType: hard
-
 "react-timing-hooks@npm:~4.0.2":
   version: 4.0.2
   resolution: "react-timing-hooks@npm:4.0.2"
@@ -32176,13 +31982,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-virtuoso@npm:~4.12.8":
-  version: 4.12.8
-  resolution: "react-virtuoso@npm:4.12.8"
+"react-virtuoso@npm:~4.18.10":
+  version: 4.18.10
+  resolution: "react-virtuoso@npm:4.18.10"
   peerDependencies:
     react: ">=16 || >=17 || >= 18 || >= 19"
     react-dom: ">=16 || >=17 || >= 18 || >=19"
-  checksum: 10/3d37ff207423d1860f99c5999f083b71b27254da45ce770fa392fa77e3d47fc670157bb372ccdff657353077a036264dc0cf3308ca5efb6f8cfc5792597ae441
+  checksum: 10/b4e9c074ef7e3e0c27f532e6d6bf1c590c1cc4b4df991fdae9ed5b8c21805a3f0baf6695a810eb0458f53de5a8869ce6ac93f602f67a65a9571f5b87b3588f75
   languageName: node
   linkType: hard
 
@@ -32193,12 +31999,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:~18.3.1":
-  version: 18.3.1
-  resolution: "react@npm:18.3.1"
-  dependencies:
-    loose-envify: "npm:^1.1.0"
-  checksum: 10/261137d3f3993eaa2368a83110466fc0e558bc2c7f7ae7ca52d94f03aac945f45146bd85e5f481044db1758a1dbb57879e2fcdd33924e2dde1bdc550ce73f7bf
+"react@npm:~19.2.7":
+  version: 19.2.7
+  resolution: "react@npm:19.2.7"
+  checksum: 10/2939997e87d7f0ee0d9d2bb556866b616b999dfb7916283647034eda867a045a39c4f7a736c8ea6beffffcd78397fc30f63a7a3aaf8425b683c3060670859560
   languageName: node
   linkType: hard
 
@@ -33320,29 +33124,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"scheduler@npm:^0.17.0":
-  version: 0.17.0
-  resolution: "scheduler@npm:0.17.0"
-  dependencies:
-    loose-envify: "npm:^1.1.0"
-    object-assign: "npm:^4.1.1"
-  checksum: 10/7fcf855eb30307cd0a04dc1feee313e1a68ac272497c4a82265d9139ebdeb7a00319c82d57f73f275fe55993a12b0683ab0d20735949580008da5a0e222c547d
-  languageName: node
-  linkType: hard
-
-"scheduler@npm:^0.23.2":
-  version: 0.23.2
-  resolution: "scheduler@npm:0.23.2"
-  dependencies:
-    loose-envify: "npm:^1.1.0"
-  checksum: 10/e8d68b89d18d5b028223edf090092846868a765a591944760942b77ea1f69b17235f7e956696efbb62c8130ab90af7e0949bfb8eba7896335507317236966bc9
-  languageName: node
-  linkType: hard
-
 "scheduler@npm:^0.25.0":
   version: 0.25.0
   resolution: "scheduler@npm:0.25.0"
   checksum: 10/e661e38503ab29a153429a99203fefa764f28b35c079719eb5efdd2c1c1086522f6653d8ffce388209682c23891a6d1d32fa6badf53c35fb5b9cd0c55ace42de
+  languageName: node
+  linkType: hard
+
+"scheduler@npm:^0.27.0":
+  version: 0.27.0
+  resolution: "scheduler@npm:0.27.0"
+  checksum: 10/eab3c3a8373195173e59c147224fc30dabe6dd453f248f5e610e8458512a5a2ee3a06465dc400ebfe6d35c9f5b7f3bb6b2e41c88c86fd177c25a73e7286a1e06
   languageName: node
   linkType: hard
 
@@ -36216,10 +36008,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici@npm:^6.23.0, undici@npm:^6.24.0":
-  version: 6.25.0
-  resolution: "undici@npm:6.25.0"
-  checksum: 10/a475e45da3e1d1073283bb70531666f09a432eabff2b857bd7063d469a1ee1486192ff61dc0dadbb526673ce1120fee14d66a59b6b17d1e0bd3a4d5f0a52d0a6
+"undici@npm:^6.27.0":
+  version: 6.27.0
+  resolution: "undici@npm:6.27.0"
+  checksum: 10/30c18cdb235edf4dd36f8aa3ace1ffaf44060289a7d62ad44c33180d2d74a224015d25574812f62ce9c625b5beb1b0b766495b650fedf356aca11eed7ce2c816
   languageName: node
   linkType: hard
 
@@ -37863,13 +37655,6 @@ __metadata:
   version: 3.2.1
   resolution: "yoga-layout@npm:3.2.1"
   checksum: 10/60fdd6cbcf7abf0ed9ed5a2391543eabcdf9054ee2f2212a79d624564d3545710b1f2a2acde092d7270dd35b6230a5bd1596521c0a270d995fec9542a7fb6737
-  languageName: node
-  linkType: hard
-
-"yoga-layout@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "yoga-layout@npm:2.0.1"
-  checksum: 10/f8f6bb2219b6225105f57d88001eeb0909b7e205a6f8e6acae79ef09f1233da4210bc5185c0997f2f0ab42bc21d9fb723c90d2b0b05d078ba542a3a2f0ae6e92
   languageName: node
   linkType: hard
 

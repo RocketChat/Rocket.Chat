@@ -38,8 +38,8 @@ jobs:
       meteor-rc-cache-key: ${{ steps.ci-cache-keys.outputs.meteor-rc-cache-key }}
       github-actions-changed: ${{ steps.diff.outputs.actions-changed }}
       # this is 100% intentional, secrets are not available for forks, so ee-tests will always fail
-      # to avoid this, we are using a dummy license, expiring at 2026-07-01
-      enterprise-license: Uo7Jcr6WW0XYA8ydHd+Sk6pZ9/0V6dIASnyTwvUrNym/zJg2Ma3eYNKkC8osXLCc72y1ahohnWY7/+7IYkvono3GYXQR+IGvYbbrVgNR6OjMahd9P/odHZL1GFTm2qHrEL5Hh/XEOG+YluFeRdWPzCizQlp4zGGOi0+PkQo096TR9NVCLrsErVl2MW1WM6ZM1W5EUJG9pKly4BQnaOTUAlor1im6i8qPTDCKrISZfLiZEWuQKaPW/GE3mRKjQNjDh0CabX1N2S880pRRGoozBYAnp2NmFfrQW0+5ihKisBTIeMbMZ7K5NE5PkYU1nhQDcc+rpDHtwG9Ceg5X0J+oea3UfrPTmDON2aSI0iO22kvL6G7QI3fyrEIvJrMbxcNKxAFeQYgnjisw/b06+chWSG4jG686Fx58XrVS87dFhWL9WoGltsk1dJCntUQvI1sX6zOfpvyg1iWRnHfYDOrwoWlX57XMm29fWineEoqnOOTOVnA/uP+DKEhercQ9Xuo7Cr6zJxpQpwd03e7ODVjiEbTDqlkZE687rmxRCD4Wmu8L86WIl2xSEIajKLX301Ww5mz/FdLqk+Mg32lkW66W3azQKvJ1440NBrYxhpJ+dl9vSFMb3s1+xnz1cYUbjUcq9mARvORcgy5mLwKulmqT6Sq0Uvbv10YCO0TW0beXYW8=
+      # to avoid this, we are using a dummy license, expiring at 2027-07-01
+      enterprise-license: MK+bpK5NveUuNlWGaQXGoy+8b74Luet82M3ZGcBB8b5P9Y+m67NEtpW64dc1d5lEWi6d0nFjCjtCMneVD7bKxodz/Cml8URKEo5P7cQb/9wmeT0MzAhYNaRFZlIGkZ3ITF59pDV2u4HZuosEDJikVRwnaJ5ZoU/pOsHSPUPhTyGNIqLeKynODtUpfwDdIKEmHxpf2yVkKjgRiIJmbWjM6A4k+MNNYXWVXHzye7GggqWVg/ZcT7nKU1CCadpLhTJiIrgrrPzil1G5DQ4xnLs3Q2tu2dILSDiW5OYw/ywu2yCMicTjMq4MLL5SXDQJj6WoJzZ54HosbvsDzOXvsdC9gI1CjhPL2uRuvC8XLrzn3vL2UgXnifzD1VrLTtdZ+aSADveqtlzYlRWtqoUFBbNw8o+YVHdhbZGR0beMoAyRbHi5EMpxpad3L+NyztUIT/Uh/IjQ/C2SQZ6jB0GKPBOPxFLN56FNhTGrffLFR++TVoBu0Iquc7kajWkNit3bVbZvbx+oFcVW2PcjQ/+i2jpJjbgtUFUKrTKxGMAXTWoDzIQQ35zNzGAy268IM4Ymp5JmsVEnBOEUkbF9yx6fzkO6xZhpsHf0muklnW0kA+Tlore/TUrBWh1/RwWlQeZlxM5NyWoRM5onQmr/k/4BmObtL1Hpmbk8oMG29z89xtE9y/4=
     steps:
       - name: Github Info
         run: |
