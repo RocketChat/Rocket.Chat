@@ -96,8 +96,8 @@ export const startFederationService = async (): Promise<void> => {
 	);
 
 	slashCommands.add({
-		command: 'xmpp',
-		callback: async ({ params, message, userId }: SlashCommandCallbackParams<'xmpp'>): Promise<void> => {
+		command: 'xmpp-join',
+		callback: async ({ params, message, userId }: SlashCommandCallbackParams<'xmpp-join'>): Promise<void> => {
 			// the helper advertises `#channel`, so accept the leading # and strip it before joining
 			const channel = params.trim().replace(/^#/, '');
 			if (!channel) {

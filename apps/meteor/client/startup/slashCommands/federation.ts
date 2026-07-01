@@ -20,7 +20,7 @@ slashCommands.add({
 });
 
 slashCommands.add({
-	command: 'xmpp',
+	command: 'xmpp-join',
 	options: {
 		description: 'Join xmpp rooms',
 		params: '#channel',
