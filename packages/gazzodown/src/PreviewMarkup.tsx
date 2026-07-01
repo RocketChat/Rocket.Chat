@@ -87,8 +87,10 @@ const PreviewMarkup = ({ tokens, source }: PreviewMarkupProps) => {
 			);
 
 		default: {
-			const { fallback } = firstBlock as { fallback?: [number, number] };
-			if (fallback && source !== undefined) {
+			// Only the `[start, end]` offset form is rendered (sliced from source); the union
+			// keeps the original fallback form too, which we intentionally ignore.
+			const { fallback } = firstBlock as { fallback?: [number, number] | MessageParser.Plain };
+			if (Array.isArray(fallback) && source !== undefined) {
 				const inlines: MessageParser.Inlines[] = [{ type: 'PLAIN_TEXT', value: source.slice(fallback[0], fallback[1]) }];
 				return <PreviewInlineElements>{inlines}</PreviewInlineElements>;
 			}
