@@ -313,12 +313,16 @@ API.v1.get(
 		const globalMessagesEnabled = settings.get('Search.defaultProvider.GlobalSearchEnabled') === true;
 
 		if (!includeSpotlight && !includeMessages && !includeIntelligent) {
-			const aiSearchStatus = await AISearch.status().catch(() => ({
-				hasIntelligentSearchLicense: false,
-				intelligentSearchEnabled: false,
-				intelligentSearchConfigured: false,
-				answerGenerationConfigured: false,
-			}));
+			const aiSearchStatus = await AISearch.status().catch((error) => {
+				this.logger.warn({ msg: 'AI search status unavailable', err: error });
+
+				return {
+					hasIntelligentSearchLicense: false,
+					intelligentSearchEnabled: false,
+					intelligentSearchConfigured: false,
+					answerGenerationConfigured: false,
+				};
+			});
 
 			return API.v1.success({
 				users: [],
@@ -354,12 +358,16 @@ API.v1.get(
 						userId: this.userId,
 						type: { users: true, rooms: true, includeFederatedRooms: true },
 					}),
-			AISearch.status().catch(() => ({
-				hasIntelligentSearchLicense: false,
-				intelligentSearchEnabled: false,
-				intelligentSearchConfigured: false,
-				answerGenerationConfigured: false,
-			})),
+			AISearch.status().catch((error) => {
+				this.logger.warn({ msg: 'AI search status unavailable', err: error });
+
+				return {
+					hasIntelligentSearchLicense: false,
+					intelligentSearchEnabled: false,
+					intelligentSearchConfigured: false,
+					answerGenerationConfigured: false,
+				};
+			}),
 		]);
 
 		let messages: UnifiedSearchMessageResult[] = [];
@@ -399,7 +407,8 @@ API.v1.get(
 					},
 					limit: intelligentLimit,
 				});
-			} catch {
+			} catch (error) {
+				this.logger.warn({ msg: 'AI search request failed', err: error });
 				intelligentResults = [];
 			}
 		}

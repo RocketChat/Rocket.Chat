@@ -158,12 +158,16 @@ const UnifiedSearchSchema = {
 			maxLength: 4096,
 		},
 		startDate: {
-			type: 'string',
-			format: 'date',
+			anyOf: [
+				{ type: 'string', format: 'date' },
+				{ type: 'string', format: 'date-time' },
+			],
 		},
 		endDate: {
-			type: 'string',
-			format: 'date',
+			anyOf: [
+				{ type: 'string', format: 'date' },
+				{ type: 'string', format: 'date-time' },
+			],
 		},
 		count: {
 			type: 'number',
