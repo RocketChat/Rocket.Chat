@@ -1,6 +1,6 @@
 import { Box, Button, ButtonGroup, FieldError } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
-import type { ReactNode } from 'react';
+import { useId, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -10,6 +10,7 @@ const editorBorderProps = { borderWidth: 2, borderStyle: 'solid', borderRadius: 
 const CodeMirrorBox = ({ label, children, error }: { label: ReactNode; children: ReactNode; error?: string }) => {
 	const { t } = useTranslation();
 	const [fullScreen, toggleFullScreen] = useToggle(false);
+	const errorId = useId();
 
 	if (fullScreen) {
 		return createPortal(
@@ -34,12 +35,17 @@ const CodeMirrorBox = ({ label, children, error }: { label: ReactNode; children:
 					height='100%'
 					role='code'
 					aria-label={typeof label === 'string' ? label : undefined}
+					aria-describedby={error ? errorId : undefined}
 					{...editorBorderProps}
 					borderColor={error ? 'error' : 'transparent'}
 				>
 					{children}
 				</Box>
-				{error && <FieldError mbs={4}>{error}</FieldError>}
+				{error && (
+					<FieldError id={errorId} role='alert' mbs={4}>
+						{error}
+					</FieldError>
+				)}
 				<Box mbs={8}>
 					<ButtonGroup>
 						<Button primary onClick={(): void => toggleFullScreen()}>
@@ -60,12 +66,17 @@ const CodeMirrorBox = ({ label, children, error }: { label: ReactNode; children:
 				height='100%'
 				role='code'
 				aria-label={typeof label === 'string' ? label : undefined}
+				aria-describedby={error ? errorId : undefined}
 				{...editorBorderProps}
 				borderColor={error ? 'error' : 'transparent'}
 			>
 				{children}
 			</Box>
-			{error && <FieldError mbs={4}>{error}</FieldError>}
+			{error && (
+				<FieldError id={errorId} role='alert' mbs={4}>
+					{error}
+				</FieldError>
+			)}
 			<Box mbs={8}>
 				<ButtonGroup>
 					<Button primary onClick={(): void => toggleFullScreen()}>
