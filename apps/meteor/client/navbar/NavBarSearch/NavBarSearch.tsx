@@ -67,11 +67,13 @@ const NavBarSearch = () => {
 	const { triggerProps, overlayProps } = useOverlayTrigger({ type: 'listbox' }, state, triggerRef);
 	delete triggerProps.onPress;
 
+	// Observe the (always-rendered) chip container once so the input's leading padding tracks the
+	// real chip width whenever chips are added or removed — including when they appear by toggling
+	// AI mode on over already-typed filters, not just while typing with AI mode already on.
 	useLayoutEffect(() => {
 		const element = chipContainerRef.current;
-		if (!element || appliedFilterChips.length === 0) {
-			setChipContainerWidth(0);
-			return;
+		if (!element) {
+			return undefined;
 		}
 
 		const updateWidth = (): void => setChipContainerWidth(Math.ceil(element.getBoundingClientRect().width));
@@ -81,7 +83,7 @@ const NavBarSearch = () => {
 		resizeObserver.observe(element);
 
 		return (): void => resizeObserver.disconnect();
-	}, [appliedFilterChips]);
+	}, []);
 
 	const handleKeyDown = useSearchInputNavigation(state);
 	const handleFocus = useSearchFocus(state);
@@ -173,33 +175,38 @@ const NavBarSearch = () => {
 	return (
 		<FormProvider {...methods}>
 			<Box width='100%' maxWidth='x622' role='search' aria-label={searchLabel} mi={8} position='relative'>
-				{appliedFilterChips.length > 0 && (
-					<Box
-						ref={chipContainerRef}
-						position='absolute'
-						display='flex'
-						alignItems='center'
-						zIndex={1}
-						insetBlockStart='50%'
-						insetInlineStart={8}
-						style={{
-							gap: 4,
-							transform: 'translateY(-50%)',
-							maxWidth: 'min(55%, 360px)',
-							height: 24,
-							overflow: 'hidden',
-							pointerEvents: 'auto',
-						}}
-					>
-						{appliedFilterChips.map((filter) => (
-							<Chip key={filter.key} height='x20' value={filter.label} onClick={() => handleRemoveFilter(filter.key)} title={filter.label}>
-								<Box is='span' style={{ maxWidth: 132, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-									{filter.label}
-								</Box>
-							</Chip>
-						))}
-					</Box>
-				)}
+				<Box
+					ref={chipContainerRef}
+					position='absolute'
+					display='flex'
+					alignItems='center'
+					zIndex={1}
+					insetBlockStart='50%'
+					insetInlineStart={8}
+					style={{
+						gap: 4,
+						transform: 'translateY(-50%)',
+						maxWidth: 'min(55%, 360px)',
+						height: 20,
+						overflow: 'hidden',
+						pointerEvents: appliedFilterChips.length > 0 ? 'auto' : 'none',
+					}}
+				>
+					{appliedFilterChips.map((filter) => (
+						<Chip
+							key={filter.key}
+							height='x20'
+							value={filter.label}
+							onClick={() => handleRemoveFilter(filter.key)}
+							title={filter.label}
+							style={{ minHeight: 20 }}
+						>
+							<Box is='span' style={{ maxWidth: 132, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+								{filter.label}
+							</Box>
+						</Chip>
+					))}
+				</Box>
 				<TextInput
 					{...rest}
 					{...triggerProps}
@@ -217,7 +224,7 @@ const NavBarSearch = () => {
 					addon={
 						<Box display='flex' alignItems='center' style={{ gap: 6 }}>
 							{isDirty ? (
-								<IconButton tiny icon='cross' aria-label={t('Clear')} onClick={handleClearText} />
+								<IconButton mini icon='cross' aria-label={t('Clear')} onClick={handleClearText} />
 							) : (
 								<Icon name='magnifier' size='x20' aria-label={t('Search')} />
 							)}

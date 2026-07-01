@@ -22,7 +22,7 @@ const NavBarSearchAIButton = forwardRef(function NavBarSearchAIButton(
 	const buttonClassName = css`
 		display: inline-flex;
 		align-items: center;
-		height: 24px;
+		height: 20px;
 		border: none;
 		border-radius: 20px;
 		cursor: pointer;
