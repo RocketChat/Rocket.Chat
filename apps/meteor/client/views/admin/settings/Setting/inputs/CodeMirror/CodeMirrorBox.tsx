@@ -4,7 +4,8 @@ import type { ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
-const errorBorderProps = { borderWidth: 2, borderStyle: 'solid', borderColor: 'error', borderRadius: 4 } as const;
+// A constant 2px border is always reserved so toggling the error state only changes the color, avoiding a layout reflow.
+const editorBorderProps = { borderWidth: 2, borderStyle: 'solid', borderRadius: 4 } as const;
 
 const CodeMirrorBox = ({ label, children, error }: { label: ReactNode; children: ReactNode; error?: string }) => {
 	const { t } = useTranslation();
@@ -33,7 +34,8 @@ const CodeMirrorBox = ({ label, children, error }: { label: ReactNode; children:
 					height='100%'
 					role='code'
 					aria-label={typeof label === 'string' ? label : undefined}
-					{...(error && errorBorderProps)}
+					{...editorBorderProps}
+					borderColor={error ? 'error' : 'transparent'}
 				>
 					{children}
 				</Box>
@@ -58,7 +60,8 @@ const CodeMirrorBox = ({ label, children, error }: { label: ReactNode; children:
 				height='100%'
 				role='code'
 				aria-label={typeof label === 'string' ? label : undefined}
-				{...(error && errorBorderProps)}
+				{...editorBorderProps}
+				borderColor={error ? 'error' : 'transparent'}
 			>
 				{children}
 			</Box>
