@@ -1,21 +1,14 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentPropsWithoutRef, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
-type SidebarCardProps = ComponentPropsWithoutRef<typeof Box> & { children: ReactNode };
+type SidebarCardProps = { children: ReactNode };
 
 /**
  * Reusable elevated surface for sidebar sections: a padded, rounded, subtly
- * bordered container in the sidebar tint. Spread extra Box props to tweak it.
+ * bordered container in the sidebar tint.
  */
-const SidebarCard = ({ children, ...props }: SidebarCardProps) => (
-	<Box
-		m={8}
-		p={10}
-		borderRadius={8}
-		backgroundColor='surface-tint'
-		style={{ border: '1px solid var(--rcx-color-stroke-light)' }}
-		{...props}
-	>
+const SidebarCard = ({ children }: SidebarCardProps) => (
+	<Box m={8} p={10} borderRadius={8} backgroundColor='surface-tint' style={{ border: '1px solid var(--rcx-color-stroke-light)' }}>
 		{children}
 	</Box>
 );
