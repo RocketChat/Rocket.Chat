@@ -1,0 +1,29 @@
+apps/meteor/tests/unit/app/importer/server/roomConverter.spec.ts
+  s_1f71abf9de6ecc::t_9960368b50a856 102-103,160-161
+apps/meteor/tests/unit/server/services/omnichannel/queue.tests.ts
+  s_1f71abf9de6ecc::t_85ddc43b6bac96 90,102,108,119,125,131,160-161,167-169,172,178-180,182,189-191,193,200-201,256,262,268,274,304,312,327-329,335-337,344,352,360,379-380,386-387,389,395-397,399,413-414,417,421-423,426-427,430,444,447
+apps/meteor/tests/unit/app/importer/server/messageConverter.spec.ts
+  s_1f71abf9de6ecc::t_9960368b50a856 46,61,63,83,103,120,136,161,187,207
+apps/meteor/ee/tests/unit/apps/livechat-enterprise/server/lib/QueueInactivityMonitor.spec.ts
+  s_1f71abf9de6ecc::t_5a9280b5891356 88
+apps/meteor/tests/unit/app/importer/server/recordConverter.spec.ts
+  s_1f71abf9de6ecc::t_9960368b50a856 64,107,116
+apps/meteor/ee/tests/unit/apps/livechat-enterprise/lib/AutoTransferChatsScheduler.tests.ts
+  s_1f71abf9de6ecc::t_5a9280b5891356 132,175,177,186,188,206,213,220,229,249,265,281
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.8",
+  "base_commit_sha": "46e1373e102d7b152dc0271159c27aa889683073",
+  "prompts": {},
+  "sessions": {
+    "s_1f71abf9de6ecc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "51b20a49-303d-4c1d-bfd2-982b908094fe",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
