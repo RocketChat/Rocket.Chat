@@ -6,6 +6,8 @@ import { emoji, emojiEmitter } from './lib';
 
 export const CUSTOM_CATEGORY = 'rocket';
 
+const MIXED_TONE_SUFFIX = /_tone([1-5])-[1-5]$/;
+
 type RowItem = Array<EmojiItem & { category: string }>;
 type RowDivider = { category: string; i18n: TranslationKey };
 type LoadMoreItem = { loadMore: true };
@@ -165,13 +167,19 @@ export const getEmojisBySearchTerm = (
 				tone = `_tone${actualTone}`;
 			}
 
+			const mixedTones = current.match(MIXED_TONE_SUFFIX);
+			const categoryName = current.replace(MIXED_TONE_SUFFIX, '');
+			if (mixedTones && !(actualTone > 0 && Number(mixedTones[1]) === actualTone)) {
+				continue;
+			}
+
 			let emojiFound = false;
 
 			for (const key in emoji.packages[emojiPackage].emojisByCategory) {
 				if (emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(key)) {
 					const contents = emoji.packages[emojiPackage].emojisByCategory[key];
 					const searchValArray = alias !== undefined ? alias.replace(/:/g, '').split('_') : alias;
-					if (contents.indexOf(current) !== -1 || searchValArray?.includes(searchTerm)) {
+					if (contents.indexOf(categoryName) !== -1 || searchValArray?.includes(searchTerm)) {
 						emojiFound = true;
 						break;
 					}
