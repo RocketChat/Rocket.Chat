@@ -128,6 +128,74 @@ export const inputWithDatePicker: readonly UiKit.LayoutBlock[] = [
 	},
 ] as const;
 
+export const inputWithNumberInput: readonly UiKit.LayoutBlock[] = [
+	{
+		type: 'input',
+		element: {
+			appId: 'dummy-app-id',
+			blockId: 'dummy-block-id',
+			type: 'number_input',
+			minValue: '0',
+			maxValue: '100',
+			placeholder: {
+				type: 'plain_text',
+				text: 'Enter a number',
+				emoji: true,
+			},
+			actionId: 'input-0',
+		},
+		label: {
+			type: 'plain_text',
+			text: 'Label',
+			emoji: true,
+		},
+	},
+] as const;
+
+export const inputWithEmailInput: readonly UiKit.LayoutBlock[] = [
+	{
+		type: 'input',
+		element: {
+			appId: 'dummy-app-id',
+			blockId: 'dummy-block-id',
+			type: 'email_text_input',
+			placeholder: {
+				type: 'plain_text',
+				text: 'name@example.com',
+				emoji: true,
+			},
+			actionId: 'input-0',
+		},
+		label: {
+			type: 'plain_text',
+			text: 'Label',
+			emoji: true,
+		},
+	},
+] as const;
+
+export const inputWithUrlInput: readonly UiKit.LayoutBlock[] = [
+	{
+		type: 'input',
+		element: {
+			appId: 'dummy-app-id',
+			blockId: 'dummy-block-id',
+			type: 'url_text_input',
+			placeholder: {
+				type: 'plain_text',
+				text: 'https://example.com',
+				emoji: true,
+			},
+			actionId: 'input-0',
+		},
+		label: {
+			type: 'plain_text',
+			text: 'Label',
+			emoji: true,
+		},
+	},
+] as const;
+
 export const inputWithLinearScale: readonly UiKit.LayoutBlock[] = [
 	{
 		type: 'input',

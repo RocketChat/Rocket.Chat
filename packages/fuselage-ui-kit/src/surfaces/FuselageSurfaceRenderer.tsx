@@ -28,6 +28,7 @@ import PlainTextElement from '../elements/PlainTextElement';
 import PlainTextInputElement from '../elements/PlainTextInputElement';
 import RadioButtonElement from '../elements/RadioButtonElement';
 import StaticSelectElement from '../elements/StaticSelectElement';
+import TextInputElement from '../elements/TextInputElement';
 import TimePickerElement from '../elements/TimePickerElement';
 import ToggleSwitchElement from '../elements/ToggleSwitchElement';
 import MultiUsersSelectElement from '../elements/UsersSelectElement/MultiUsersSelectElement';
@@ -243,6 +244,42 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 		return (
 			<AppIdProvider key={block.actionId || index} appId={block.appId}>
 				<PlainTextInputElement block={block} context={context} index={index} surfaceRenderer={this} />
+			</AppIdProvider>
+		);
+	}
+
+	number_input(block: UiKit.NumberInputElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
+
+		return (
+			<AppIdProvider key={block.actionId || index} appId={block.appId}>
+				<TextInputElement block={block} context={context} index={index} surfaceRenderer={this} />
+			</AppIdProvider>
+		);
+	}
+
+	email_text_input(block: UiKit.EmailInputElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
+
+		return (
+			<AppIdProvider key={block.actionId || index} appId={block.appId}>
+				<TextInputElement block={block} context={context} index={index} surfaceRenderer={this} />
+			</AppIdProvider>
+		);
+	}
+
+	url_text_input(block: UiKit.UrlInputElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
+
+		return (
+			<AppIdProvider key={block.actionId || index} appId={block.appId}>
+				<TextInputElement block={block} context={context} index={index} surfaceRenderer={this} />
 			</AppIdProvider>
 		);
 	}

@@ -9,6 +9,9 @@ export const isInputBlockElement = (block: BlockElement): block is InputBlock['e
 		case BlockElementType.DATEPICKER:
 		case BlockElementType.LINEAR_SCALE:
 		case BlockElementType.MULTI_STATIC_SELECT:
+		case BlockElementType.NUMBER_INPUT:
+		case BlockElementType.EMAIL_TEXT_INPUT:
+		case BlockElementType.URL_TEXT_INPUT:
 		case BlockElementType.PLAIN_TEXT_INPUT:
 		case BlockElementType.STATIC_SELECT:
 		case BlockElementType.USERS_SELECT:

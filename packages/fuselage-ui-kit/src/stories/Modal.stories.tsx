@@ -144,6 +144,12 @@ export const InputWithLinearScale = createStory(payloads.inputWithLinearScale, {
 	'input-0': 'Error',
 });
 
+export const InputWithNumberInput = createStory(payloads.inputWithNumberInput);
+
+export const InputWithEmailInput = createStory(payloads.inputWithEmailInput);
+
+export const InputWithUrlInput = createStory(payloads.inputWithUrlInput);
+
 export const Conditional = createStory(payloads.conditional);
 
 export const Callout = createStory(payloads.callout);
