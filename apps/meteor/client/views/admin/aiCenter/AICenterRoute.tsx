@@ -54,15 +54,12 @@ const AICenterOverview = (): ReactElement => {
 	const router = useRouter();
 	const { data: hasAILicense } = useHasLicenseModule(AI_LICENSE_MODULE);
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
-	const isLicenseLoaded = typeof hasAILicense === 'boolean';
 
-	let premiumStatus = <Tag>{t('Loading')}</Tag>;
-	if (hasAILicense === false) {
+	let premiumStatus = <Tag>{t('Disabled')}</Tag>;
+	if (!hasAILicense) {
 		premiumStatus = <Tag variant='danger'>{t('Locked')}</Tag>;
 	} else if (hasAILicense && intelligentSearchEnabled) {
 		premiumStatus = <Tag variant='primary'>{t('Enabled')}</Tag>;
-	} else if (hasAILicense) {
-		premiumStatus = <Tag>{t('Disabled')}</Tag>;
 	}
 
 	return (
@@ -70,7 +67,7 @@ const AICenterOverview = (): ReactElement => {
 			<PageHeader title={t('AI_Center')} />
 			<PageScrollableContentWithShadow p={24}>
 				<Box marginInline='auto' width='full'>
-					{isLicenseLoaded && !hasAILicense && (
+					{hasAILicense === false && (
 						<Callout type='info' icon='stars' title={t('AI_Center_license_required_title')} mbe={16}>
 							<Box display='flex' alignItems='center' justifyContent='space-between'>
 								<Box mie={16}>{t('AI_Center_license_required_description')}</Box>

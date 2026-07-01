@@ -4,11 +4,9 @@ import {
 	buildIntelligentSearchPipelineFilters,
 	generateOpenAICompatibleSearchAnswer,
 	listOpenAICompatibleModels,
-	MAX_PIPELINE_ROOM_FILTER_VALUES,
 	MAX_SEARCH_ANSWER_MESSAGES,
 	MAX_SEARCH_ANSWER_TEXT_LENGTH,
 	MAX_SEARCH_FILTER_VALUES,
-	MAX_UNSCOPED_PIPELINE_RESULTS,
 	normalizeIntelligentSearchCandidates,
 	searchIntelligentPipeline,
 	type IntelligentSearchFilters,
@@ -24,15 +22,16 @@ import type {
 	AISearchStatus,
 	IAISearchService,
 } from '@rocket.chat/core-services';
-import { License, ServiceClass, Settings } from '@rocket.chat/core-services';
-import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import { License, ServiceClass } from '@rocket.chat/core-services';
+import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import type { UnifiedSearchIntelligentResult } from '@rocket.chat/rest-typings';
 import { serverFetch, type ExtendedFetchOptions } from '@rocket.chat/server-fetch';
 
-import { SystemLogger } from '../../lib/logger/system';
+import { settings } from '../../../app/settings/server';
 
-const PIPELINE_ROOM_PREFETCH_LIMIT = MAX_PIPELINE_ROOM_FILTER_VALUES + 1;
+const logger = new Logger('AISearchService');
 
 const DEFAULT_ANSWER_SYSTEM_PROMPT = [
 	"Given below user's query and the search results, provide a concise and accurate answer to the query based on the search results. Make sure to include relevant caveats and context. Add references to the search results in the format [N] after the relevant information. If you are unsure about the answer, say that you are not sure instead of making something up.",
@@ -81,15 +80,13 @@ type OpenAICompatibleProviderSettings = Pick<OpenAICompatibleProviderConfig, 'ba
 export class AISearchService extends ServiceClass implements IAISearchService {
 	protected name = 'ai-search';
 
-	private async getPipelineConfig(): Promise<IntelligentSearchPipelineConfig | undefined> {
-		const [baseUrl, pipelineId, apiKey, apiKeySecret, queryTemplate, minimumSimilarityPercent] = await Promise.all([
-			Settings.get<string>('AI_Intelligent_Search_Pipeline_Base_URL'),
-			Settings.get<string>('AI_Intelligent_Search_Pipeline_ID'),
-			Settings.get<string>('AI_Intelligent_Search_API_Key'),
-			Settings.get<string>('AI_Intelligent_Search_API_Key_Secret'),
-			Settings.get<string>('AI_Intelligent_Search_Query_Template'),
-			Settings.get<number>('AI_Intelligent_Search_Min_Similarity_Percent'),
-		]);
+	private getPipelineConfig(): IntelligentSearchPipelineConfig | undefined {
+		const baseUrl = settings.get<string>('AI_Intelligent_Search_Pipeline_Base_URL');
+		const pipelineId = settings.get<string>('AI_Intelligent_Search_Pipeline_ID');
+		const apiKey = settings.get<string>('AI_Intelligent_Search_API_Key');
+		const apiKeySecret = settings.get<string>('AI_Intelligent_Search_API_Key_Secret');
+		const queryTemplate = settings.get<string>('AI_Intelligent_Search_Query_Template');
+		const minimumSimilarityPercent = settings.get<number>('AI_Intelligent_Search_Min_Similarity_Percent');
 
 		const normalizedBaseUrl = asString(baseUrl);
 		const normalizedPipelineId = asString(pipelineId);
@@ -110,12 +107,10 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		};
 	}
 
-	private async getAnswerProviderSettings(): Promise<OpenAICompatibleProviderSettings | undefined> {
-		const [baseUrl, apiKey, model] = await Promise.all([
-			Settings.get<string>('AI_LLM_OpenAI_Base_URL'),
-			Settings.get<string>('AI_LLM_OpenAI_API_Key'),
-			Settings.get<string>('AI_LLM_OpenAI_Model'),
-		]);
+	private getAnswerProviderSettings(): OpenAICompatibleProviderSettings | undefined {
+		const baseUrl = settings.get<string>('AI_LLM_OpenAI_Base_URL');
+		const apiKey = settings.get<string>('AI_LLM_OpenAI_API_Key');
+		const model = settings.get<string>('AI_LLM_OpenAI_Model');
 
 		const normalizedBaseUrl = asString(baseUrl);
 		const normalizedApiKey = asString(apiKey);
@@ -132,8 +127,8 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		};
 	}
 
-	private async getAnswerProviderConfig(): Promise<OpenAICompatibleProviderConfig | undefined> {
-		const provider = await this.getAnswerProviderSettings();
+	private getAnswerProviderConfig(): OpenAICompatibleProviderConfig | undefined {
+		const provider = this.getAnswerProviderSettings();
 		if (!provider?.model) {
 			return undefined;
 		}
@@ -147,14 +142,11 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 	}
 
 	async status(): Promise<AISearchStatus> {
-		const [hasIntelligentSearchLicense, intelligentSearchEnabled, answerGenerationEnabled, pipelineConfig, answerProviderConfig] =
-			await Promise.all([
-				License.hasModule(AI_LICENSE_MODULE),
-				Settings.get<boolean>('AI_Intelligent_Search_Enabled'),
-				Settings.get<boolean>('AI_Intelligent_Search_Answer_Enabled'),
-				this.getPipelineConfig(),
-				this.getAnswerProviderConfig(),
-			]);
+		const hasIntelligentSearchLicense = await License.hasModule(AI_LICENSE_MODULE);
+		const intelligentSearchEnabled = settings.get<boolean>('AI_Intelligent_Search_Enabled');
+		const answerGenerationEnabled = settings.get<boolean>('AI_Intelligent_Search_Answer_Enabled');
+		const pipelineConfig = this.getPipelineConfig();
+		const answerProviderConfig = this.getAnswerProviderConfig();
 
 		return {
 			hasIntelligentSearchLicense,
@@ -176,29 +168,27 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		return new Map(rooms.map((room) => [room._id, room]));
 	}
 
-	private async getUserRoomIdsForPipeline(userId: string): Promise<{ roomIds: string[]; isComplete: boolean }> {
-		const subscriptions = await Subscriptions.findByUserId(userId, {
+	private async getUserSubscribedRoomIdsForPipeline(userId: string): Promise<string[]> {
+		return Subscriptions.findByUserId(userId, {
 			projection: { rid: 1 },
-			limit: PIPELINE_ROOM_PREFETCH_LIMIT,
-		}).toArray();
-
-		return {
-			roomIds: subscriptions.map(({ rid }: Pick<ISubscription, 'rid'>) => rid),
-			isComplete: subscriptions.length < PIPELINE_ROOM_PREFETCH_LIMIT,
-		};
+		})
+			.map(({ rid }) => rid)
+			.toArray();
 	}
 
-	private async getAccessibleRoomIdSet(userId: string, roomIds: string[]): Promise<Set<string>> {
+	private async getSubscribedRoomIdSet(userId: string, roomIds: string[]): Promise<Set<string>> {
 		const uniqueRoomIds = [...new Set(roomIds)].filter(Boolean);
 		if (!uniqueRoomIds.length) {
 			return new Set();
 		}
 
-		const subscriptions = await Subscriptions.findByUserIdAndRoomIds(userId, uniqueRoomIds, {
+		const subscribedRoomIds = await Subscriptions.findByUserIdAndRoomIds(userId, uniqueRoomIds, {
 			projection: { rid: 1 },
-		}).toArray();
+		})
+			.map(({ rid }) => rid)
+			.toArray();
 
-		return new Set(subscriptions.map(({ rid }) => rid));
+		return new Set(subscribedRoomIds);
 	}
 
 	private async normalizeIntelligentResults(
@@ -208,7 +198,7 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		limit = AI_SEARCH_PAGE_SIZE,
 		candidateLimit = limit,
 	): Promise<UnifiedSearchIntelligentResult[]> {
-		const candidates = normalizeIntelligentSearchCandidates(rawSearchResults, prefilterRoomIds, candidateLimit, SystemLogger);
+		const candidates = normalizeIntelligentSearchCandidates(rawSearchResults, prefilterRoomIds, candidateLimit, logger);
 		const msgIds = candidates.map(({ msgId }) => msgId).filter((msgId): msgId is string => Boolean(msgId));
 		const messageMap = new Map<string, IMessage>();
 
@@ -219,14 +209,14 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			for (const message of msgs) {
 				messageMap.set(String(message._id), message);
 			}
-			SystemLogger.debug({ msg: 'AI search messages fetched from DB', requested: msgIds.length, found: messageMap.size });
+			logger.debug({ msg: 'AI search messages fetched from DB', requested: msgIds.length, found: messageMap.size });
 		}
 
 		const rooms = await this.getRoomMap([
 			...candidates.map(({ rid }) => rid).filter((rid): rid is string => Boolean(rid)),
 			...Array.from(messageMap.values()).map(({ rid }) => rid),
 		]);
-		const accessibleRoomIds = await this.getAccessibleRoomIdSet(userId, [
+		const subscribedRoomIds = await this.getSubscribedRoomIdSet(userId, [
 			...candidates.map(({ rid }) => rid).filter((rid): rid is string => Boolean(rid)),
 			...Array.from(messageMap.values()).map(({ rid }) => rid),
 		]);
@@ -235,12 +225,12 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			.flatMap((result) => {
 				const dbMessage = result.msgId ? messageMap.get(result.msgId) : undefined;
 				if (result.msgId && !dbMessage) {
-					SystemLogger.debug({ msg: 'AI search result filtered: message not visible', msgId: result.msgId });
+					logger.debug({ msg: 'AI search result filtered: message not visible', msgId: result.msgId });
 					return [];
 				}
 
 				const rid = dbMessage?.rid || result.rid;
-				if (!rid || !accessibleRoomIds.has(rid)) {
+				if (!rid || !subscribedRoomIds.has(rid)) {
 					return [];
 				}
 
@@ -265,11 +255,11 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		return Array.from(new Set(['user', ...(user?.roles || [])]));
 	}
 
-	private async getAccessibleRoomIds(userId: string, roomIds: string[]): Promise<string[]> {
-		return [...(await this.getAccessibleRoomIdSet(userId, roomIds))];
+	private async getSubscribedRoomIds(userId: string, roomIds: string[]): Promise<string[]> {
+		return [...(await this.getSubscribedRoomIdSet(userId, roomIds))];
 	}
 
-	private async getAccessibleRoomIdsByName(userId: string, roomNames: string[] = []): Promise<string[]> {
+	private async getSubscribedRoomIdsByName(userId: string, roomNames: string[] = []): Promise<string[]> {
 		if (!roomNames.length) {
 			return [];
 		}
@@ -278,10 +268,15 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			Array.from(new Set(roomNames)).map((roomName) => Rooms.findOneByNameOrFname(roomName, { projection: { _id: 1 } })),
 		);
 
-		return this.getAccessibleRoomIds(
-			userId,
-			rooms.map((room) => room?._id).filter((roomId): roomId is string => Boolean(roomId)),
-		);
+		const roomIds = rooms.reduce<string[]>((roomIds, room) => {
+			if (typeof room?._id === 'string') {
+				roomIds.push(room._id);
+			}
+
+			return roomIds;
+		}, []);
+
+		return this.getSubscribedRoomIds(userId, roomIds);
 	}
 
 	async search({
@@ -295,14 +290,12 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		filters?: AISearchFilters;
 		limit?: number;
 	}): Promise<UnifiedSearchIntelligentResult[]> {
-		const [hasIntelligentSearchLicense, intelligentSearchEnabled, config] = await Promise.all([
-			License.hasModule(AI_LICENSE_MODULE),
-			Settings.get<boolean>('AI_Intelligent_Search_Enabled'),
-			this.getPipelineConfig(),
-		]);
+		const hasIntelligentSearchLicense = await License.hasModule(AI_LICENSE_MODULE);
+		const intelligentSearchEnabled = settings.get<boolean>('AI_Intelligent_Search_Enabled');
+		const config = this.getPipelineConfig();
 
 		if (!hasIntelligentSearchLicense || intelligentSearchEnabled !== true || !config) {
-			SystemLogger.debug({
+			logger.debug({
 				msg: 'AI search skipped: unavailable',
 				hasIntelligentSearchLicense,
 				intelligentSearchEnabled: intelligentSearchEnabled === true,
@@ -313,70 +306,47 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 
 		const filters = normalizeFilters(rawFilters);
 		const requestedRoomIds = [...new Set([...(filters.rids || []), ...(filters.rid ? [filters.rid] : [])])];
-		const roomNameIds = await this.getAccessibleRoomIdsByName(userId, filters.roomNames);
+		const roomNameIds = await this.getSubscribedRoomIdsByName(userId, filters.roomNames);
 		const scopedRoomIds = [...new Set([...requestedRoomIds, ...roomNameIds])];
-		const accessibleScopedRoomIds = scopedRoomIds.length ? await this.getAccessibleRoomIds(userId, scopedRoomIds) : [];
-		const pipelineRoomScope = scopedRoomIds.length
-			? { roomIds: accessibleScopedRoomIds, isComplete: true }
-			: await this.getUserRoomIdsForPipeline(userId);
+		const subscribedScopedRoomIds = scopedRoomIds.length ? await this.getSubscribedRoomIds(userId, scopedRoomIds) : [];
+		const pipelineRoomIds = scopedRoomIds.length ? subscribedScopedRoomIds : await this.getUserSubscribedRoomIdsForPipeline(userId);
 
-		if (!pipelineRoomScope.roomIds.length) {
-			SystemLogger.debug({ msg: 'AI search skipped: user has no room subscriptions' });
+		if (!pipelineRoomIds.length) {
+			logger.debug({ msg: 'AI search skipped: user has no room subscriptions' });
 			return [];
 		}
 
-		if (!pipelineRoomScope.isComplete) {
-			// The user is subscribed to more rooms than the pipeline filter can carry, so the query
-			// runs unscoped against the vector index and access is enforced by the mandatory
-			// post-filter in normalizeIntelligentResults. Relevance is degraded; log so it is visible.
-			SystemLogger.warn({
-				msg: 'AI search running unscoped pipeline query for high-room-count user; relying on subscription post-filtering',
-				userId,
-				roomFilterLimit: MAX_PIPELINE_ROOM_FILTER_VALUES,
-			});
-		}
-
-		const pipelineFilters = buildIntelligentSearchPipelineFilters(pipelineRoomScope.roomIds, {
+		const pipelineFilters = buildIntelligentSearchPipelineFilters(pipelineRoomIds, {
 			...filters,
 			rids: [...(filters.rids || []), ...roomNameIds],
 		});
 
 		if (!pipelineFilters) {
-			SystemLogger.debug({ msg: 'AI search skipped: no accessible rooms for filters', rid: filters.rid });
+			logger.debug({ msg: 'AI search skipped: no subscribed rooms for filters', rid: filters.rid });
 			return [];
 		}
 
 		const classifications = await this.getUserClassifications(userId);
-		const pipelineLimit = pipelineRoomScope.isComplete ? limit : Math.min(Math.max(limit * 10, 50), MAX_UNSCOPED_PIPELINE_RESULTS);
 		const json = await searchIntelligentPipeline({
 			query,
 			config,
 			classifications,
 			pipelineFilters,
-			limit: pipelineLimit,
+			limit,
 			fetch: fetchWithSsrfValidation,
-			logger: SystemLogger,
+			logger,
 		});
 
-		return this.normalizeIntelligentResults(
-			json,
-			userId,
-			pipelineRoomScope.isComplete ? pipelineRoomScope.roomIds : [],
-			limit,
-			pipelineLimit,
-		);
+		return this.normalizeIntelligentResults(json, userId, pipelineRoomIds, limit, limit);
 	}
 
 	async answer({ query, messages }: { query: string; messages: AISearchAnswerMessage[] }): Promise<AISearchAnswerResult> {
-		const [hasIntelligentSearchLicense, intelligentSearchEnabled, answerGenerationEnabled, pipelineConfig, provider, systemPromptSetting] =
-			await Promise.all([
-				License.hasModule(AI_LICENSE_MODULE),
-				Settings.get<boolean>('AI_Intelligent_Search_Enabled'),
-				Settings.get<boolean>('AI_Intelligent_Search_Answer_Enabled'),
-				this.getPipelineConfig(),
-				this.getAnswerProviderConfig(),
-				Settings.get<string>('AI_Intelligent_Search_Answer_System_Prompt'),
-			]);
+		const hasIntelligentSearchLicense = await License.hasModule(AI_LICENSE_MODULE);
+		const intelligentSearchEnabled = settings.get<boolean>('AI_Intelligent_Search_Enabled');
+		const answerGenerationEnabled = settings.get<boolean>('AI_Intelligent_Search_Answer_Enabled');
+		const pipelineConfig = this.getPipelineConfig();
+		const provider = this.getAnswerProviderConfig();
+		const systemPromptSetting = settings.get<string>('AI_Intelligent_Search_Answer_System_Prompt');
 
 		if (!hasIntelligentSearchLicense || intelligentSearchEnabled !== true || answerGenerationEnabled !== true || !pipelineConfig) {
 			throw new Error('error-ai-not-enabled');
@@ -402,20 +372,21 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			provider,
 			systemPrompt,
 			fetch: fetchWithSsrfValidation,
-			logger: SystemLogger,
+			logger,
 			maxMessages: MAX_SEARCH_ANSWER_MESSAGES,
 			maxTextLength: MAX_SEARCH_ANSWER_TEXT_LENGTH,
 		});
 	}
 
 	async models(): Promise<AISearchModelOption[]> {
-		const [provider, selectedModel] = await Promise.all([this.getAnswerProviderSettings(), Settings.get<string>('AI_LLM_OpenAI_Model')]);
+		const provider = this.getAnswerProviderSettings();
+		const selectedModel = settings.get<string>('AI_LLM_OpenAI_Model');
 
 		return listOpenAICompatibleModels({
 			provider,
 			selectedModel: asString(selectedModel),
 			fetch: fetchWithSsrfValidation,
-			logger: SystemLogger,
+			logger,
 		});
 	}
 }

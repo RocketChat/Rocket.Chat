@@ -50,7 +50,7 @@ describe('AI Search intelligent search helpers', () => {
 			]);
 		});
 
-		it('filters by accessible room ids only when a prefilter is provided', () => {
+		it('filters by subscribed room ids only when a prefilter is provided', () => {
 			const rawResults = [
 				{ metadata: { room_id: 'allowed', msg_id: 'm1' }, text: 'allowed' },
 				{ metadata: { room_id: 'blocked', msg_id: 'm2' }, text: 'blocked' },
@@ -74,7 +74,7 @@ describe('AI Search intelligent search helpers', () => {
 	});
 
 	describe('buildIntelligentSearchPipelineFilters', () => {
-		it('returns undefined when no accessible room ids are available', () => {
+		it('returns undefined when no subscribed room ids are available', () => {
 			expect(buildIntelligentSearchPipelineFilters([], {})).toBe(undefined);
 		});
 
@@ -97,14 +97,15 @@ describe('AI Search intelligent search helpers', () => {
 			});
 		});
 
-		it('rejects explicit room filters that are not accessible', () => {
+		it('rejects explicit room filters that are not subscribed', () => {
 			expect(buildIntelligentSearchPipelineFilters(['r1'], { rid: 'r2' })).toBe(undefined);
 		});
 
-		it('omits broad room filters when the accessible room list is too large', () => {
+		it('passes broad subscribed room filters to the pipeline', () => {
 			const roomIds = Array.from({ length: 1001 }, (_, index) => `r${index}`);
 
 			expect(buildIntelligentSearchPipelineFilters(roomIds, { fromUsername: 'alice' })).toEqual({
+				room_id: { $in: roomIds },
 				username: { $eq: 'alice' },
 			});
 		});

@@ -1,4 +1,3 @@
-import { MAX_PIPELINE_ROOM_FILTER_VALUES } from './constants';
 import type {
 	AIServiceFetch,
 	AIServiceLogger,
@@ -169,16 +168,14 @@ export const buildIntelligentSearchPipelineFilters = (
 	}
 
 	const requestedRoomIds = [...new Set([...(rids || []), ...(rid ? [rid] : [])])];
-	const accessibleRoomIds = requestedRoomIds.length ? requestedRoomIds.filter((roomId) => userRoomIds.includes(roomId)) : userRoomIds;
+	const subscribedRoomIds = requestedRoomIds.length ? requestedRoomIds.filter((roomId) => userRoomIds.includes(roomId)) : userRoomIds;
 	const filters: IntelligentSearchPipelineFilters = {};
 
-	if (requestedRoomIds.length && !accessibleRoomIds.length) {
+	if (requestedRoomIds.length && !subscribedRoomIds.length) {
 		return undefined;
 	}
 
-	if (requestedRoomIds.length || accessibleRoomIds.length <= MAX_PIPELINE_ROOM_FILTER_VALUES) {
-		filters.room_id = accessibleRoomIds.length === 1 ? { $eq: accessibleRoomIds[0] } : { $in: accessibleRoomIds };
-	}
+	filters.room_id = subscribedRoomIds.length === 1 ? { $eq: subscribedRoomIds[0] } : { $in: subscribedRoomIds };
 
 	const usernames = [
 		...new Set([...(fromUsernames || []), ...(fromUsername ? [fromUsername] : [])].map((username) => username.replace(/^@/, ''))),

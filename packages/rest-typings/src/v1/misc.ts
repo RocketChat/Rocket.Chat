@@ -117,68 +117,62 @@ const UnifiedSearchSchema = {
 		query: {
 			type: 'string',
 			minLength: 1,
+			pattern: '\\S',
 			maxLength: 500,
 		},
 		includeMessages: {
 			type: 'boolean',
-			nullable: true,
 		},
 		includeIntelligent: {
 			type: 'boolean',
-			nullable: true,
 		},
 		includeSpotlight: {
 			type: 'boolean',
-			nullable: true,
 		},
 		intelligentCount: {
 			type: 'number',
-			nullable: true,
 		},
 		rid: {
 			type: 'string',
+			minLength: 1,
 			maxLength: 256,
-			nullable: true,
 		},
 		rids: {
 			type: 'string',
+			minLength: 1,
 			maxLength: 4096,
-			nullable: true,
 		},
 		roomNames: {
 			type: 'string',
+			minLength: 1,
 			maxLength: 4096,
-			nullable: true,
 		},
 		fromUsername: {
 			type: 'string',
+			minLength: 1,
 			maxLength: 256,
-			nullable: true,
 		},
 		fromUsernames: {
 			type: 'string',
+			minLength: 1,
 			maxLength: 4096,
-			nullable: true,
 		},
 		startDate: {
 			type: 'string',
-			nullable: true,
+			format: 'date',
 		},
 		endDate: {
 			type: 'string',
-			nullable: true,
+			format: 'date',
 		},
 		count: {
 			type: 'number',
-			nullable: true,
 		},
 		offset: {
 			type: 'number',
-			nullable: true,
 		},
 		sort: {
 			type: 'string',
-			nullable: true,
 		},
 	},
 	required: ['query'],
@@ -205,6 +199,7 @@ const SearchAnswerSchema = {
 		query: {
 			type: 'string',
 			minLength: 1,
+			pattern: '\\S',
 			maxLength: 500,
 		},
 		messages: {
@@ -216,10 +211,10 @@ const SearchAnswerSchema = {
 				properties: {
 					_id: { type: 'string' },
 					text: { type: 'string', maxLength: 4000 },
-					username: { type: 'string', nullable: true },
-					roomName: { type: 'string', nullable: true },
-					ts: { type: 'string', nullable: true },
-					score: { type: 'number', nullable: true },
+					username: { type: 'string' },
+					roomName: { type: 'string' },
+					ts: { type: 'string' },
+					score: { type: 'number' },
 				},
 				required: ['_id'],
 				additionalProperties: false,

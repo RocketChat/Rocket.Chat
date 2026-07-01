@@ -1,4 +1,3 @@
-import type { ISubscription } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Logger } from '@rocket.chat/logger';
 import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
@@ -65,7 +64,13 @@ const getRoomIdsByNames = async (roomNames: string[]): Promise<string[] | undefi
 
 	const rooms = await Promise.all(normalizedRoomNames.map((roomName) => Rooms.findOneByNameOrFname(roomName, { projection: { _id: 1 } })));
 
-	return rooms.map((room) => room?._id).filter((roomId): roomId is string => Boolean(roomId));
+	return rooms.reduce<string[]>((roomIds, room) => {
+		if (typeof room?._id === 'string') {
+			roomIds.push(room._id);
+		}
+
+		return roomIds;
+	}, []);
 };
 
 const mergeDateFilter = (current: unknown, startDate?: Date, endDate?: Date): Record<string, Date> => {
@@ -83,7 +88,9 @@ const getRoomSearchScope = async (userId: string | undefined, filters?: MessageS
 	const hasRoomFilter = Boolean(filters?.rids?.length || roomNameIds);
 	const filterRoomIds = [...new Set([...(filters?.rids || []), ...(roomNameIds || [])].filter(Boolean))];
 	const subscribedRoomIds = userId
-		? (await Subscriptions.findByUserId(userId).toArray()).map((subscription: ISubscription) => subscription.rid)
+		? await Subscriptions.findByUserId(userId, { projection: { rid: 1 } })
+				.map(({ rid }) => rid)
+				.toArray()
 		: [];
 
 	return hasRoomFilter ? subscribedRoomIds.filter((roomId) => filterRoomIds.includes(roomId)) : subscribedRoomIds;
@@ -163,14 +170,15 @@ export const messageSearch = async function (
 		...(filters?.fromUsernames || []),
 		...(filters?.fromUsername ? [filters.fromUsername] : []),
 	]);
-	if (filterUserIds) {
-		if (!filterUserIds.length) {
-			return {
-				message: {
-					docs: [],
-				},
-			};
-		}
+	if (filterUserIds?.length === 0) {
+		return {
+			message: {
+				docs: [],
+			},
+		};
+	}
+
+	if (filterUserIds?.length) {
 		query['u._id'] = filterUserIds.length === 1 ? filterUserIds[0] : { $in: filterUserIds };
 	}
 

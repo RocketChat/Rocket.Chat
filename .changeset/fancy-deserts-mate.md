@@ -7,4 +7,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-Adds native Intelligent Search to the Rocket.Chat core — a semantic, vector-based search experience powered by an external AI pipeline and an optional LLM answer layer, accessible from the NavBar.
+Adds native Intelligent Search to Rocket.Chat.

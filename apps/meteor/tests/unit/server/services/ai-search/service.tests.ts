@@ -7,7 +7,7 @@ const License = {
 	hasModule: sinon.stub(),
 };
 
-const Settings = {
+const cachedSettings = {
 	get: sinon.stub(),
 };
 
@@ -37,7 +37,16 @@ const { AISearchService } = proxyquire.noCallThru().load('../../../../../server/
 		ServiceClass: class {
 			protected name = '';
 		},
-		Settings,
+	},
+	'../../../app/settings/server': {
+		settings: cachedSettings,
+	},
+	'@rocket.chat/logger': {
+		Logger: class {
+			debug = sinon.stub();
+
+			warn = sinon.stub();
+		},
 	},
 	'@rocket.chat/models': {
 		Messages,
@@ -48,20 +57,16 @@ const { AISearchService } = proxyquire.noCallThru().load('../../../../../server/
 	'@rocket.chat/server-fetch': {
 		serverFetch,
 	},
-	'../../lib/logger/system': {
-		SystemLogger: {
-			debug: sinon.stub(),
-			warn: sinon.stub(),
-		},
-	},
 });
 
 type CursorResult<T> = {
 	toArray(): Promise<T[]>;
+	map<U>(callback: (item: T) => U): CursorResult<U>;
 };
 
 const cursor = <T>(items: T[]): CursorResult<T> => ({
 	toArray: async () => items,
+	map: (callback) => cursor(items.map(callback)),
 });
 
 const settings: Record<string, unknown> = {
@@ -84,7 +89,7 @@ const createService = (): InstanceType<typeof AISearchService> => new AISearchSe
 describe('AISearchService', () => {
 	beforeEach(() => {
 		License.hasModule.reset();
-		Settings.get.reset();
+		cachedSettings.get.reset();
 		Messages.findVisibleByIds.reset();
 		Rooms.findByIds.reset();
 		Rooms.findOneByNameOrFname.reset();
@@ -94,7 +99,7 @@ describe('AISearchService', () => {
 		serverFetch.reset();
 
 		License.hasModule.resolves(true);
-		Settings.get.callsFake(async (key: string) => settings[key]);
+		cachedSettings.get.callsFake((key: string) => settings[key]);
 		Users.findOneById.resolves({ roles: ['admin'] });
 		Rooms.findByIds.callsFake((roomIds: string[]) =>
 			cursor(
@@ -133,7 +138,7 @@ describe('AISearchService', () => {
 		});
 
 		it('marks answer generation unavailable when the answer setting is off', async () => {
-			Settings.get.callsFake(async (key: string) => (key === 'AI_Intelligent_Search_Answer_Enabled' ? false : settings[key]));
+			cachedSettings.get.callsFake((key: string) => (key === 'AI_Intelligent_Search_Answer_Enabled' ? false : settings[key]));
 
 			expect(await createService().status()).to.include({
 				answerGenerationConfigured: false,
@@ -149,8 +154,9 @@ describe('AISearchService', () => {
 			expect(serverFetch.called).to.be.false;
 		});
 
-		it('uses bounded overfetch and post-filters accessible rooms for broad searches', async () => {
-			Subscriptions.findByUserId.returns(cursor(Array.from({ length: 1001 }, (_, index) => ({ rid: `room-${index}` }))));
+		it('sends subscribed room scope to the pipeline for broad searches', async () => {
+			const subscribedRoomIds = [...Array.from({ length: 1001 }, (_, index) => `room-${index}`), 'allowed'];
+			Subscriptions.findByUserId.returns(cursor(subscribedRoomIds.map((rid) => ({ rid }))));
 			serverFetch.resolves({
 				ok: true,
 				status: 200,
@@ -180,21 +186,16 @@ describe('AISearchService', () => {
 
 			const [, options] = serverFetch.firstCall.args;
 			const body = JSON.parse(options.body);
-			expect(body.params.k).to.equal(50);
-			expect(body.filters).to.deep.equal({});
+			expect(body.params.k).to.equal(5);
+			expect(body.filters).to.deep.equal({
+				room_id: { $in: subscribedRoomIds },
+			});
 			expect(
 				Subscriptions.findByUserId.calledWith('user-id', {
 					projection: { rid: 1 },
-					limit: 1001,
 				}),
 			).to.be.true;
-			expect(
-				Subscriptions.findByUserIdAndRoomIds.calledWith(
-					'user-id',
-					sinon.match((roomIds: string[]) => roomIds.includes('blocked') && roomIds.includes('allowed')),
-					{ projection: { rid: 1 } },
-				),
-			).to.be.true;
+			expect(Subscriptions.findByUserIdAndRoomIds.calledWith('user-id', ['allowed'], { projection: { rid: 1 } })).to.be.true;
 		});
 
 		it('resolves room-name filters before querying the pipeline', async () => {
@@ -273,7 +274,7 @@ describe('AISearchService', () => {
 
 	describe('answer', () => {
 		it('rejects answer generation when AI Search or answer generation is unavailable', async () => {
-			Settings.get.callsFake(async (key: string) => (key === 'AI_Intelligent_Search_Answer_Enabled' ? false : settings[key]));
+			cachedSettings.get.callsFake((key: string) => (key === 'AI_Intelligent_Search_Answer_Enabled' ? false : settings[key]));
 
 			try {
 				await createService().answer({ query: 'fruit', messages: [{ text: 'oranges are green' }] });

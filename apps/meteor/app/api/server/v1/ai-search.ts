@@ -17,7 +17,6 @@ import {
 import type { SearchAnswer, UnifiedSearchIntelligentResult, UnifiedSearchMessageResult } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { SystemLogger } from '../../../../server/lib/logger/system';
 import { messageSearch } from '../../../../server/methods/messageSearch';
 import { spotlightMethod } from '../../../../server/publications/spotlight';
 import { settings } from '../../../settings/server';
@@ -81,16 +80,15 @@ const unifiedSearchResponseSchema = ajv.compile<{
 				properties: {
 					_id: { type: 'string' },
 					rid: { type: 'string' },
-					msg: { type: 'string', nullable: true },
-					u: { type: 'object', nullable: true },
+					msg: { type: 'string' },
+					u: { type: 'object' },
 					room: {
 						type: 'object',
-						nullable: true,
 						properties: {
 							_id: { type: 'string' },
 							t: { type: 'string' },
-							name: { type: 'string', nullable: true },
-							fname: { type: 'string', nullable: true },
+							name: { type: 'string' },
+							fname: { type: 'string' },
 						},
 						required: ['_id', 't'],
 						additionalProperties: true,
@@ -106,18 +104,17 @@ const unifiedSearchResponseSchema = ajv.compile<{
 				type: 'object',
 				properties: {
 					_id: { type: 'string' },
-					rid: { type: 'string', nullable: true },
-					msgId: { type: 'string', nullable: true },
+					rid: { type: 'string' },
+					msgId: { type: 'string' },
 					text: { type: 'string' },
-					score: { type: 'number', nullable: true },
+					score: { type: 'number' },
 					room: {
 						type: 'object',
-						nullable: true,
 						properties: {
 							_id: { type: 'string' },
 							t: { type: 'string' },
-							name: { type: 'string', nullable: true },
-							fname: { type: 'string', nullable: true },
+							name: { type: 'string' },
+							fname: { type: 'string' },
 						},
 						required: ['_id', 't'],
 						additionalProperties: true,
@@ -202,27 +199,8 @@ const parseQueryBoolean = (value: unknown, defaultValue = false): boolean => {
 	return value === true || value === 'true';
 };
 
-const parseQueryDate = (value: string | undefined): Date | undefined => {
-	if (!value) {
-		return undefined;
-	}
+const parseQueryDate = (value: string | undefined): Date | undefined => (value ? new Date(value) : undefined);
 
-	const date = new Date(value);
-	return Number.isNaN(date.getTime()) ? undefined : date;
-};
-
-const requireNonEmptyQuery = (value: string): string => {
-	const query = value.trim();
-	if (!query) {
-		throw new Meteor.Error('error-invalid-query', 'Query cannot be empty');
-	}
-
-	return query;
-};
-
-// These helpers intentionally mirror the ones in AISearchService: the REST layer hydrates
-// rooms/access for the standard message search and the answer-source check, while the service
-// keeps its own copies so it stays self-contained when run as a standalone microservice.
 const getRoomMap = async (roomIds: string[]): Promise<Map<string, Pick<IRoom, '_id' | 't' | 'name' | 'fname'>>> => {
 	if (!roomIds.length) {
 		return new Map();
@@ -235,23 +213,25 @@ const getRoomMap = async (roomIds: string[]): Promise<Map<string, Pick<IRoom, '_
 	return new Map(rooms.map((room) => [room._id, room]));
 };
 
-const getAccessibleRoomIds = async (userId: string, roomIds: string[]): Promise<Set<string>> => {
+const getSubscribedRoomIds = async (userId: string, roomIds: string[]): Promise<Set<string>> => {
 	const uniqueRoomIds = [...new Set(roomIds)].filter(Boolean);
 	if (!uniqueRoomIds.length) {
 		return new Set();
 	}
 
-	const subscriptions = await Subscriptions.findByUserIdAndRoomIds(userId, uniqueRoomIds, {
+	const subscribedRoomIds = await Subscriptions.findByUserIdAndRoomIds(userId, uniqueRoomIds, {
 		projection: { rid: 1 },
-	}).toArray();
+	})
+		.map(({ rid }) => rid)
+		.toArray();
 
-	return new Set(subscriptions.map(({ rid }) => rid));
+	return new Set(subscribedRoomIds);
 };
 
 const getSearchAnswerMessagesForUser = async (userId: string, messages: SearchAnswer['messages']) => {
 	const messageIds = [...new Set(messages.map(({ _id }) => _id).filter(Boolean))];
 	if (!messageIds.length) {
-		throw new Meteor.Error('error-invalid-search-answer-sources', 'Search answer sources are not available');
+		throw new Meteor.Error('error-invalid-search-answer-sources');
 	}
 
 	const clampScore = (score: number | undefined): number | undefined =>
@@ -260,12 +240,16 @@ const getSearchAnswerMessagesForUser = async (userId: string, messages: SearchAn
 	const docs = await Messages.findVisibleByIds(messageIds, {
 		projection: { _id: 1, rid: 1, msg: 1, ts: 1, u: 1 },
 	}).toArray();
-	const accessibleRoomIds = await getAccessibleRoomIds(
+	const subscribedRoomIds = await getSubscribedRoomIds(
 		userId,
 		docs.map((message) => message.rid),
 	);
-	const accessibleDocs = docs.filter((message) => accessibleRoomIds.has(message.rid));
-	const normalizedDocs = await normalizeMessagesForUser(accessibleDocs, userId);
+	const subscribedDocs = docs.filter((message) => subscribedRoomIds.has(message.rid));
+	if (subscribedDocs.length !== docs.length) {
+		throw new Meteor.Error('error-invalid-search-answer-sources');
+	}
+
+	const normalizedDocs = await normalizeMessagesForUser(subscribedDocs, userId);
 	const docsById = new Map(normalizedDocs.map((message: IMessage) => [message._id, message]));
 	const rooms = await getRoomMap(normalizedDocs.map((message: IMessage) => message.rid));
 
@@ -286,7 +270,7 @@ const getSearchAnswerMessagesForUser = async (userId: string, messages: SearchAn
 		});
 
 	if (!answerMessages.length) {
-		throw new Meteor.Error('error-invalid-search-answer-sources', 'Search answer sources are not available');
+		throw new Meteor.Error('error-invalid-search-answer-sources');
 	}
 
 	return answerMessages;
@@ -308,7 +292,7 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		const query = requireNonEmptyQuery(this.queryParams.query);
+		const query = this.queryParams.query.trim();
 		const { count } = await getPaginationItems(this.queryParams);
 		const limit = Math.min(count || MAX_UNIFIED_SEARCH_RESULTS, MAX_UNIFIED_SEARCH_RESULTS);
 		const requestedIntelligentCount = Number(this.queryParams.intelligentCount || AI_SEARCH_PAGE_SIZE);
@@ -326,6 +310,29 @@ API.v1.get(
 		const includeSpotlight = parseQueryBoolean(this.queryParams.includeSpotlight, true);
 		const includeMessages = parseQueryBoolean(this.queryParams.includeMessages);
 		const includeIntelligent = parseQueryBoolean(this.queryParams.includeIntelligent);
+		const globalMessagesEnabled = settings.get('Search.defaultProvider.GlobalSearchEnabled') === true;
+
+		if (!includeSpotlight && !includeMessages && !includeIntelligent) {
+			const aiSearchStatus = await AISearch.status().catch(() => ({
+				hasIntelligentSearchLicense: false,
+				intelligentSearchEnabled: false,
+				intelligentSearchConfigured: false,
+				answerGenerationConfigured: false,
+			}));
+
+			return API.v1.success({
+				users: [],
+				rooms: [],
+				messages: [],
+				intelligent: [],
+				meta: {
+					globalMessagesEnabled,
+					intelligentSearchEnabled: aiSearchStatus.intelligentSearchEnabled,
+					intelligentSearchConfigured: aiSearchStatus.intelligentSearchConfigured,
+					answerGenerationConfigured: aiSearchStatus.answerGenerationConfigured,
+				},
+			});
+		}
 
 		const hasFilters = Boolean(rid || rids.length || roomNames.length || fromUsername || fromUsernames.length || startDate || endDate);
 		const filters = hasFilters
@@ -347,18 +354,13 @@ API.v1.get(
 						userId: this.userId,
 						type: { users: true, rooms: true, includeFederatedRooms: true },
 					}),
-			AISearch.status().catch((error) => {
-				SystemLogger.warn({ msg: 'AI search status unavailable', err: error });
-				return {
-					hasIntelligentSearchLicense: false,
-					intelligentSearchEnabled: false,
-					intelligentSearchConfigured: false,
-					answerGenerationConfigured: false,
-				};
-			}),
+			AISearch.status().catch(() => ({
+				hasIntelligentSearchLicense: false,
+				intelligentSearchEnabled: false,
+				intelligentSearchConfigured: false,
+				answerGenerationConfigured: false,
+			})),
 		]);
-
-		const globalMessagesEnabled = settings.get('Search.defaultProvider.GlobalSearchEnabled') === true;
 
 		let messages: UnifiedSearchMessageResult[] = [];
 		if (includeMessages && (rid || globalMessagesEnabled)) {
@@ -375,7 +377,7 @@ API.v1.get(
 			}));
 		}
 
-		let intelligent: UnifiedSearchIntelligentResult[] = [];
+		let intelligentResults: UnifiedSearchIntelligentResult[] = [];
 		if (
 			includeIntelligent &&
 			aiSearchStatus.hasIntelligentSearchLicense &&
@@ -383,7 +385,7 @@ API.v1.get(
 			aiSearchStatus.intelligentSearchConfigured
 		) {
 			try {
-				intelligent = await AISearch.search({
+				intelligentResults = await AISearch.search({
 					query,
 					userId: this.userId,
 					filters: {
@@ -397,24 +399,16 @@ API.v1.get(
 					},
 					limit: intelligentLimit,
 				});
-			} catch (error) {
-				SystemLogger.warn({ msg: 'AI search request failed', err: error });
+			} catch {
+				intelligentResults = [];
 			}
-		} else {
-			SystemLogger.debug({
-				msg: 'AI search skipped at endpoint',
-				includeIntelligent,
-				hasIntelligentSearchLicense: aiSearchStatus.hasIntelligentSearchLicense,
-				intelligentSearchEnabled: aiSearchStatus.intelligentSearchEnabled,
-				intelligentSearchConfigured: aiSearchStatus.intelligentSearchConfigured,
-			});
 		}
 
 		return API.v1.success({
 			users: spotlight.users,
 			rooms: spotlight.rooms,
 			messages,
-			intelligent,
+			intelligent: intelligentResults,
 			meta: {
 				globalMessagesEnabled,
 				intelligentSearchEnabled: aiSearchStatus.intelligentSearchEnabled,
@@ -472,7 +466,7 @@ API.v1.post(
 			!aiSearchStatus.intelligentSearchEnabled ||
 			!aiSearchStatus.answerGenerationConfigured
 		) {
-			throw new Meteor.Error('error-ai-not-enabled', 'AI Search is not enabled');
+			throw new Meteor.Error('error-ai-not-enabled');
 		}
 
 		const answerMessages = await getSearchAnswerMessagesForUser(this.userId, messages);
@@ -485,15 +479,15 @@ API.v1.post(
 		} catch (error) {
 			const message = error instanceof Error ? error.message : '';
 			if (message.includes('error-ai-not-enabled')) {
-				throw new Meteor.Error('error-ai-not-enabled', 'AI Search is not enabled');
+				throw new Meteor.Error('error-ai-not-enabled');
 			}
 			if (message.includes('error-ai-provider-not-configured')) {
-				throw new Meteor.Error('error-ai-provider-not-configured', 'AI answer provider is not configured');
+				throw new Meteor.Error('error-ai-provider-not-configured');
 			}
 			if (message.includes('error-ai-provider-empty-response')) {
-				throw new Meteor.Error('error-ai-provider-empty-response', 'AI answer provider returned an empty response');
+				throw new Meteor.Error('error-ai-provider-empty-response');
 			}
-			throw new Meteor.Error('error-ai-provider-request-failed', 'AI answer provider request failed');
+			throw new Meteor.Error('error-ai-provider-request-failed');
 		}
 
 		return API.v1.success(answer);

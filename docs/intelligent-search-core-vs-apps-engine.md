@@ -111,17 +111,16 @@ The REST handler keeps HTTP concerns and the legacy search surfaces in `misc.ts`
 
 Inside `AISearchService.search()`:
 
-1. `License.hasModule('chat.rocket.rc-ai')`, `Settings.get('AI_Intelligent_Search_Enabled')`,
-   `getPipelineConfig()`, and `getUserRoomIds(userId)` run in parallel.
-2. `getUserRoomIds(userId)` queries `Subscriptions.findByUserId()` for the user's rooms; this is
-   the Rocket.Chat-side security boundary.
+1. `License.hasModule('chat.rocket.rc-ai')`, the cached `AI_Intelligent_Search_Enabled` setting,
+   and `getPipelineConfig()` are checked before calling the pipeline.
+2. `getUserSubscribedRoomIdsForPipeline(userId)` queries `Subscriptions.findByUserId()` for the
+   user's subscribed rooms; this is the Rocket.Chat-side security boundary.
 3. Room-name filters are resolved via `Rooms.findOneByNameOrFname()` for each unique room name and
    intersected with the user's subscription room IDs.
 4. `buildIntelligentSearchPipelineFilters()` constructs the pipeline filter object
    (`room_id`, `username`, `timestamp`). Explicit room filters are always intersected with the
-   user's subscriptions. Broad searches include the room-id filter only while the caller's room set is
-   below the bounded payload limit; larger broad searches rely on mandatory post-filtering after the
-   pipeline response.
+   user's subscriptions. Broad searches send the user's subscribed room IDs to the pipeline and still
+   apply mandatory post-filtering after the pipeline response.
 5. `getUserClassifications(userId)` returns `['user', ...roles]`; these classifications are sent
    to the pipeline for role-based access policies.
 6. `searchIntelligentPipeline()` posts to `{baseUrl}/pipelines/{id}/search` with the query
@@ -160,7 +159,7 @@ sequenceDiagram
         C->>H: GET /v1/search.unified?query=…&filters=…
         H->>P: AISearch.status()
         P->>S: ai-search.status  [LocalBroker or Moleculer]
-        S->>S: License.hasModule + Settings.get()
+        S->>S: License.hasModule + cached settings
         S-->>P: AISearchStatus
         P-->>H: status
         par optional standard search
@@ -168,7 +167,7 @@ sequenceDiagram
         and optional AI Search
             H->>P: AISearch.search({ query, userId, filters, limit })
             P->>S: ai-search.search  [LocalBroker or Moleculer]
-            S->>S: License.hasModule + Settings.get()
+            S->>S: License.hasModule + cached settings
             S->>DB: Subscriptions.findByUserId(userId)
             opt roomNames filter present
                 S->>DB: Rooms.findOneByNameOrFname() × N
@@ -189,7 +188,7 @@ sequenceDiagram
         C->>H: POST /v1/search.answer  { query, messages[] }
         H->>P: AISearch.answer({ query, messages })
         P->>S: ai-search.answer  [LocalBroker or Moleculer]
-        S->>S: License.hasModule + Settings.get() × 5
+        S->>S: License.hasModule + cached settings
         S->>LM: POST /chat/completions  (OpenAI-compatible)
         LM-->>S: generated answer text
         S-->>P: AISearchAnswerResult
@@ -585,8 +584,7 @@ distributed deployment. The dedicated `AISearchService` now provides:
 
 Service-level queueing, per-provider concurrency caps, and circuit breakers are planned operational
 enhancements layered on top of this boundary (see the list below); they are deliberately out of
-scope for this PR. The degraded high-room-count path (unscoped pipeline query relying on
-subscription post-filtering) is now logged so operators have visibility into when it occurs.
+scope for this PR.
 
 ### The LLM is the real ceiling — queuing is not optional
 

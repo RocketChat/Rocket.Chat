@@ -1,4 +1,3 @@
-import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Icon, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
 import type { UnifiedSearchIntelligentResult, UnifiedSearchMessageResult } from '@rocket.chat/rest-typings';
 import type { ReactElement } from 'react';
@@ -17,10 +16,6 @@ type NavBarSearchMessageRowProps = {
 const getMessageId = (item: UnifiedSearchMessageResult | UnifiedSearchIntelligentResult): string | undefined =>
 	'msgId' in item ? item.msgId : item._id;
 
-const getRoom = (
-	item: UnifiedSearchMessageResult | UnifiedSearchIntelligentResult,
-): Pick<IRoom, '_id' | 't' | 'name' | 'fname'> | undefined => item.room;
-
 const getText = (item: UnifiedSearchMessageResult | UnifiedSearchIntelligentResult): string => {
 	if ('text' in item) {
 		return item.text;
@@ -30,7 +25,7 @@ const getText = (item: UnifiedSearchMessageResult | UnifiedSearchIntelligentResu
 };
 
 const getHref = (item: UnifiedSearchMessageResult | UnifiedSearchIntelligentResult): string | undefined => {
-	const room = getRoom(item);
+	const { room } = item;
 	const rid = 'rid' in item ? item.rid : undefined;
 	const msgId = getMessageId(item);
 
@@ -52,7 +47,7 @@ const getHref = (item: UnifiedSearchMessageResult | UnifiedSearchIntelligentResu
 
 const NavBarSearchMessageRow = ({ item, onClick, type }: NavBarSearchMessageRowProps): ReactElement => {
 	const { t } = useTranslation();
-	const room = getRoom(item);
+	const { room } = item;
 	const text = getText(item);
 	const title = text.trim() || t(type === 'intelligent' ? 'Intelligent_Search_Result' : 'Message');
 	const roomLabel = room?.fname || room?.name;
