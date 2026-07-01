@@ -75,15 +75,19 @@ test.describe.serial('Sidebar', () => {
 	});
 
 	test.describe('Display menu keyboard accessibility', () => {
+		const defaultPreferences = {
+			sidebarViewMode: 'extended',
+			sidebarDisplayAvatar: true,
+			sidebarSortby: 'activity',
+			sidebarShowUnread: false,
+		};
+
+		test.beforeEach(async ({ api }) => {
+			await api.post('/users.setPreferences', { data: defaultPreferences });
+		});
+
 		test.afterEach(async ({ api }) => {
-			await api.post('/users.setPreferences', {
-				data: {
-					sidebarViewMode: 'extended',
-					sidebarDisplayAvatar: true,
-					sidebarSortby: 'activity',
-					sidebarShowUnread: false,
-				},
-			});
+			await api.post('/users.setPreferences', { data: defaultPreferences });
 		});
 
 		test('should change view mode using keyboard', async ({ page }) => {
