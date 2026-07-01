@@ -200,9 +200,9 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 					title: t('Emoji'),
 					triggerLength: 2,
 					getItemsFromLocal: async (filter: string) => {
-						const exactFinalTone = new RegExp('^tone[1-5]:*$');
-						const colorBlind = new RegExp('tone[1-5]:*$');
-						const seeColor = new RegExp('_t(?:o|$)(?:n|$)(?:e|$)(?:[1-5]|$)(?::|$)$');
+						const exactFinalTone = new RegExp('^tone[1-5](?:-[1-5])?:*$');
+						const colorBlind = new RegExp('tone[1-5](?:-[1-5])?:*$');
+						const seeColor = new RegExp('_t(?:o(?:n(?:e(?:[1-5](?:-[1-5]?)?)?)?)?)?:?$');
 
 						const emojiSort = (recents: string[]) => (a: { _id: string }, b: { _id: string }) => {
 							const aExact = a._id === key ? 2 : 0;
@@ -263,9 +263,9 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 				suffix: ' ',
 				triggerAnywhere: false,
 				getItemsFromLocal: async (filter: string) => {
-					const exactFinalTone = new RegExp('^tone[1-5]:*$');
-					const colorBlind = new RegExp('tone[1-5]:*$');
-					const seeColor = new RegExp('_t(?:o|$)(?:n|$)(?:e|$)(?:[1-5]|$)(?::|$)$');
+					const exactFinalTone = new RegExp('^tone[1-5](?:-[1-5])?:*$');
+					const colorBlind = new RegExp('tone[1-5](?:-[1-5])?:*$');
+					const seeColor = new RegExp('_t(?:o(?:n(?:e(?:[1-5](?:-[1-5]?)?)?)?)?)?:?$');
 
 					const emojiSort = (recents: string[]) => (a: { _id: string }, b: { _id: string }) => {
 						let idA = a._id;
