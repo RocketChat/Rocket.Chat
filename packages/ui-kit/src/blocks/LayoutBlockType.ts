@@ -10,6 +10,7 @@ export const LayoutBlockType = {
 	INPUT: 'input',
 	CONDITIONAL: 'conditional',
 	PREVIEW: 'preview',
+	VIDEO: 'video',
 	VIDEO_CONF: 'video_conf',
 	CALLOUT: 'callout',
 	TAB_NAVIGATION: 'tab_navigation',
