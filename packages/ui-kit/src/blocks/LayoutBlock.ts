@@ -8,6 +8,7 @@ import type { HeaderBlock } from './layout/HeaderBlock';
 import type { ImageBlock } from './layout/ImageBlock';
 import type { InfoCardBlock } from './layout/InfoCardBlock';
 import type { InputBlock } from './layout/InputBlock';
+import type { MarkdownBlock } from './layout/MarkdownBlock';
 import type { PreviewBlock } from './layout/PreviewBlock';
 import type { SectionBlock } from './layout/SectionBlock';
 import type { VideoBlock } from './layout/VideoBlock';
@@ -22,6 +23,7 @@ export type LayoutBlock =
 	| HeaderBlock
 	| ImageBlock
 	| InputBlock
+	| MarkdownBlock
 	| SectionBlock
 	| VideoBlock
 	| VideoConferenceBlock

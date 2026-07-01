@@ -4,6 +4,7 @@ export const LayoutBlockType = {
 	SECTION: 'section',
 	DIVIDER: 'divider',
 	HEADER: 'header',
+	MARKDOWN: 'markdown',
 	IMAGE: 'image',
 	ACTIONS: 'actions',
 	CONTEXT: 'context',
