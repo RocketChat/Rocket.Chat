@@ -3,6 +3,7 @@ import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
+import SidebarCard from './SidebarCard';
 import AudioPlayerControls from '../../components/AudioPlayer/AudioPlayerControls';
 import { useFormatMemorySize } from '../../hooks/useFormatMemorySize';
 import { useOpenedRoom } from '../../lib/RoomManager';
@@ -39,7 +40,7 @@ const NowPlayingSection = () => {
 	};
 
 	return (
-		<Box m={8} p={10} borderRadius={8} backgroundColor='surface-tint' style={{ border: '1px solid var(--rcx-color-stroke-light)' }}>
+		<SidebarCard>
 			<Box display='flex' alignItems='center' justifyContent='space-between' mbe={10} style={{ gap: 8 }}>
 				<Box
 					display='flex'
@@ -73,7 +74,7 @@ const NowPlayingSection = () => {
 				onSeek={seek}
 				onCyclePlaybackRate={cyclePlaybackRate}
 			/>
-		</Box>
+		</SidebarCard>
 	);
 };
 
