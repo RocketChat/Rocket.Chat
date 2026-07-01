@@ -185,7 +185,7 @@ export const addRoomsStateRoutes = (router: ClientRouter) => {
 			},
 		)
 
-		// GET /_matrix/client/v3/rooms/:roomId/state/:eventType/:stateKey
+		// GET /_matrix/client/v3/rooms/:roomId/state/:eventType/
 		.get(
 			'/v3/rooms/:roomId/state/:eventType/',
 			{
@@ -208,6 +208,7 @@ export const addRoomsStateRoutes = (router: ClientRouter) => {
 			},
 		)
 
+		// GET /_matrix/client/v3/rooms/:roomId/state/:eventType/:stateKey?
 		.get(
 			'/v3/rooms/:roomId/state/:eventType/:stateKey?',
 			{

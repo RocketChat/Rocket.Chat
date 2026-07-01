@@ -32,16 +32,6 @@ export async function handleMediaMessage(
 		userId: user._id,
 	});
 
-	let fileExtension = '';
-	if (fileName?.includes('.')) {
-		fileExtension = fileName.split('.').pop()?.toLowerCase() || '';
-	} else if (mimeType?.includes('/')) {
-		fileExtension = mimeType.split('/')[1] || '';
-		if (fileExtension === 'jpeg') {
-			fileExtension = 'jpg';
-		}
-	}
-
 	const fileUrl = `/file-upload/${fileRefId}/${encodeURIComponent(fileName)}`;
 
 	let attachment: FileAttachmentProps = {
