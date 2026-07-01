@@ -47,6 +47,7 @@ const SettingsGroupPage = ({
 	);
 
 	const hasInvalidSetting = changedEditableSettings.some((setting) => setting.invalid);
+	const isSaveDisabled = changedEditableSettings.length === 0 || hasInvalidSetting;
 
 	const originalSettings = useSettings(
 		useMemo(
@@ -75,7 +76,7 @@ const SettingsGroupPage = ({
 			};
 		});
 
-		if (changes.length === 0 || hasInvalidSetting) {
+		if (isSaveDisabled) {
 			return;
 		}
 
@@ -164,13 +165,7 @@ const SettingsGroupPage = ({
 							{t('Cancel')}
 						</Button>
 					)}
-					<Button
-						className='save'
-						disabled={changedEditableSettings.length === 0 || hasInvalidSetting}
-						primary
-						type='submit'
-						onClick={handleSaveClick}
-					>
+					<Button className='save' disabled={isSaveDisabled} primary type='submit' onClick={handleSaveClick}>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>

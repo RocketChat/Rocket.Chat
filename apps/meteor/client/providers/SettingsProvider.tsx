@@ -12,7 +12,7 @@ import { PublicSettingsCachedStore, PrivateSettingsCachedStore } from '../cached
 import { useShowSettingAlerts } from '../hooks/useShowSettingAlerts';
 import { PrivateCachedStore } from '../lib/cachedStores/CachedStore';
 import { applyQueryOptions } from '../lib/cachedStores/applyQueryOptions';
-import { isInvalidJSONValue } from '../lib/utils/isInvalidJSONValue';
+import { getCodeSettingError } from '../lib/utils/getCodeSettingError';
 
 const settingsManagementPermissions = ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings'];
 
@@ -116,15 +116,15 @@ const SettingsProvider = ({ children }: SettingsProviderProps) => {
 				}
 			});
 
-			const hasInvalidJSON = changes.some((change) => {
+			const hasInvalidCodeSetting = changes.some((change) => {
 				if (!change._id || change.value === undefined) {
 					return false;
 				}
 				const setting = cachedCollection.store.getState().get(change._id);
-				return setting !== undefined && isSettingCode(setting) && setting.code === 'application/json' && isInvalidJSONValue(change.value);
+				return setting !== undefined && isSettingCode(setting) && getCodeSettingError(setting.code, change.value) !== undefined;
 			});
 
-			if (hasInvalidJSON) {
+			if (hasInvalidCodeSetting) {
 				return;
 			}
 

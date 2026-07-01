@@ -9,7 +9,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import MemoizedSetting from './MemoizedSetting';
 import MarkdownText from '../../../../components/MarkdownText';
 import { links } from '../../../../lib/links';
-import { isInvalidJSONValue } from '../../../../lib/utils/isInvalidJSONValue';
+import { getCodeSettingError } from '../../../../lib/utils/getCodeSettingError';
 import { useEditableSetting, useEditableSettingsDispatch, useEditableSettingVisibilityQuery } from '../../EditableSettingsContext';
 import { useHasSettingModule } from '../hooks/useHasSettingModule';
 
@@ -37,7 +37,7 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 
 	const dispatch = useEditableSettingsDispatch();
 
-	const isJSONCodeSetting = isSettingCode(persistedSetting) && persistedSetting.code === 'application/json';
+	const settingCode = isSettingCode(persistedSetting) ? persistedSetting.code : undefined;
 
 	const update = useDebouncedCallback(
 		({ value, editor }: { value?: SettingValue; editor?: SettingEditor }) => {
@@ -53,12 +53,12 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 					changed:
 						JSON.stringify(persistedSetting.value) !== JSON.stringify(value) ||
 						(isSettingColor(persistedSetting) && JSON.stringify(persistedSetting.editor) !== JSON.stringify(editor)),
-					...(value !== undefined && { invalid: isJSONCodeSetting && isInvalidJSONValue(value) }),
+					...(value !== undefined && { invalid: getCodeSettingError(settingCode, value) !== undefined }),
 				},
 			]);
 		},
 		230,
-		[persistedSetting, dispatch, isJSONCodeSetting],
+		[persistedSetting, dispatch, settingCode],
 	);
 
 	const { t, i18n } = useTranslation();
@@ -78,12 +78,12 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 	const onChangeValue = useCallback(
 		(value: SettingValue) => {
 			setValue(value);
-			if (isJSONCodeSetting) {
-				dispatch([{ _id: persistedSetting._id, invalid: isInvalidJSONValue(value) }]);
+			if (settingCode !== undefined) {
+				dispatch([{ _id: persistedSetting._id, invalid: getCodeSettingError(settingCode, value) !== undefined }]);
 			}
 			update({ value });
 		},
-		[update, dispatch, isJSONCodeSetting, persistedSetting._id],
+		[update, dispatch, settingCode, persistedSetting._id],
 	);
 
 	const onChangeEditor = useCallback(
