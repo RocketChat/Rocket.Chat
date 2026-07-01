@@ -1,8 +1,6 @@
 import { isTruthy } from '@rocket.chat/tools';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
-import { describe, it, vi } from 'vitest';
+import { describe, it, beforeEach, vi } from 'vitest';
 
 import {
 	serviceProviderOptions,
@@ -43,9 +41,8 @@ import { ResponseParser } from '../../../../app/meteor-accounts-saml/server/lib/
 
 vi.mock('meteor/meteor', () => ({
 	Meteor: {
-		absoluteUrl() {
-			return 'http://localhost:3000/';
-		},
+		absoluteUrl: (path = '') => `http://localhost:3000/${path}`,
+		Error,
 	},
 }));
 
@@ -1072,8 +1069,8 @@ describe('SAML', () => {
 	});
 
 	describe('[SAML.processRequest] validate action - assertion replay protection', () => {
-		const markUsed = sinon.stub();
-		const credentialCreate = sinon.stub().resolves();
+		const markUsed = vi.fn();
+		const credentialCreate = vi.fn();
 
 		// `pending` captures the promise returned by the (async) validateResponse callback,
 		// because processValidateAction does not await it. Awaiting it in the test guarantees
@@ -1096,78 +1093,86 @@ describe('SAML', () => {
 			end: () => undefined,
 		};
 
-		const loadSAML = () =>
-			proxyquire.noCallThru().load('../../../../app/meteor-accounts-saml/server/lib/SAML', {
-				'@rocket.chat/models': {
-					SamlUsedAssertions: { markUsed },
-					CredentialTokens: { create: credentialCreate },
-					Users: {},
-					Rooms: {},
-					Roles: {},
+		// SAML.ts imports its dependencies statically, so we mock them with `vi.doMock` (non-hoisted)
+		// and re-import the module through `vi.resetModules()`. This keeps the injection scoped to this
+		// block, leaving the real `SAMLUtils`/parsers/generators used by the rest of the file untouched.
+		// `meteor/meteor` is already mocked globally at the top of the file (path-aware `absoluteUrl` + `Error`).
+		const loadSAML = async () => {
+			vi.resetModules();
+			vi.doMock('@rocket.chat/models', () => ({
+				SamlUsedAssertions: { markUsed },
+				CredentialTokens: { create: credentialCreate },
+				Users: {},
+				Rooms: {},
+				Roles: {},
+			}));
+			vi.doMock('@rocket.chat/random', () => ({ Random: { id: () => '__credentialToken__' } }));
+			vi.doMock('@rocket.chat/string-helpers', () => ({ escapeRegExp: (s: string) => s, escapeHTML: (s: string) => s }));
+			vi.doMock('meteor/accounts-base', () => ({ Accounts: { _generateStampedLoginToken: () => ({ token: 't' }) } }));
+			vi.doMock('../../../../app/meteor-accounts-saml/server/lib/ServiceProvider', () => ({
+				SAMLServiceProvider: class {
+					validateResponse(_envelope: unknown, cb: (err: Error | null, profile: any) => Promise<void>) {
+						pending = cb(null, replayProfile);
+					}
 				},
-				'@rocket.chat/random': { Random: { id: () => '__credentialToken__' } },
-				'@rocket.chat/string-helpers': { escapeRegExp: (s: string) => s, escapeHTML: (s: string) => s },
-				'meteor/accounts-base': { Accounts: { _generateStampedLoginToken: () => ({ token: 't' }) } },
-				'meteor/meteor': { Meteor: { absoluteUrl: (path = '') => `http://localhost:3000/${path}`, Error } },
-				'./ServiceProvider': {
-					SAMLServiceProvider: class {
-						validateResponse(_envelope: unknown, cb: (err: Error | null, profile: any) => Promise<void>) {
-							pending = cb(null, replayProfile);
-						}
-					},
+			}));
+			vi.doMock('../../../../app/meteor-accounts-saml/server/lib/Utils', () => ({
+				SAMLUtils: {
+					relayState: null,
+					error: vi.fn(),
+					warn: vi.fn(),
+					log: vi.fn(),
+					getValidationActionRedirectPath: (token: string) => `_saml/validate/${token}`,
 				},
-				'./Utils': {
-					SAMLUtils: {
-						relayState: null,
-						error: sinon.stub(),
-						warn: sinon.stub(),
-						log: sinon.stub(),
-						getValidationActionRedirectPath: (token: string) => `_saml/validate/${token}`,
-					},
-				},
-				'./getSAMLEnvelope': { getSAMLEnvelope: async () => ({ relayState: null }) },
-				'../../../../lib/utils/arrayUtils': { ensureArray: (v: any) => v },
-				'../../../../server/lib/logger/system': { SystemLogger: { error: sinon.stub(), warn: sinon.stub() } },
-				'../../../lib/server/functions/addUserToRoom': { addUserToRoom: sinon.stub() },
-				'../../../lib/server/functions/createRoom': { createRoom: sinon.stub() },
-				'../../../lib/server/functions/getUsernameSuggestion': { generateUsernameSuggestion: sinon.stub() },
-				'../../../lib/server/functions/saveUserIdentity': { saveUserIdentity: sinon.stub() },
-				'../../../settings/server': { settings: { get: sinon.stub() } },
-				'../../../utils/lib/i18n': { i18n: { t: (s: string) => s, languages: [] } },
-			}).SAML;
+			}));
+			vi.doMock('../../../../app/meteor-accounts-saml/server/lib/getSAMLEnvelope', () => ({
+				getSAMLEnvelope: async () => ({ relayState: null }),
+			}));
+			vi.doMock('../../../../lib/utils/arrayUtils', () => ({ ensureArray: (v: any) => v }));
+			vi.doMock('../../../../server/lib/logger/system', () => ({ SystemLogger: { error: vi.fn(), warn: vi.fn() } }));
+			vi.doMock('../../../../app/lib/server/functions/addUserToRoom', () => ({ addUserToRoom: vi.fn() }));
+			vi.doMock('../../../../app/lib/server/functions/createRoom', () => ({ createRoom: vi.fn() }));
+			vi.doMock('../../../../app/lib/server/functions/getUsernameSuggestion', () => ({ generateUsernameSuggestion: vi.fn() }));
+			vi.doMock('../../../../app/lib/server/functions/saveUserIdentity', () => ({ saveUserIdentity: vi.fn() }));
+			vi.doMock('../../../../app/settings/server', () => ({ settings: { get: vi.fn() } }));
+			vi.doMock('../../../../app/utils/lib/i18n', () => ({ i18n: { t: (s: string) => s, languages: [] } }));
+
+			const { SAML } = await import('../../../../app/meteor-accounts-saml/server/lib/SAML');
+			return SAML;
+		};
 
 		const service = { ...serviceProviderOptions } as any;
 		const samlObject = { actionName: 'validate', serviceName: 'test-sp', credentialToken: '' } as any;
 
 		beforeEach(() => {
-			markUsed.reset();
-			credentialCreate.reset();
-			credentialCreate.resolves();
+			markUsed.mockReset();
+			credentialCreate.mockReset();
+			credentialCreate.mockResolvedValue(undefined);
 			pending = undefined;
 			lastRedirect = undefined;
 		});
 
 		it('should mark the assertion as used and store the credential for a fresh assertion', async () => {
-			markUsed.resolves(true);
-			const SAML = loadSAML();
+			markUsed.mockResolvedValue(true);
+			const SAML = await loadSAML();
 
 			await SAML.processRequest({} as any, res as any, service, samlObject);
 			await pending;
 
-			expect(markUsed.calledOnceWithExactly(replayProfile.assertionId, replayProfile.issuer, replayProfile.expireAt)).to.be.true;
-			expect(credentialCreate.calledOnce).to.be.true;
+			expect(markUsed.mock.calls).to.deep.equal([[replayProfile.assertionId, replayProfile.issuer, replayProfile.expireAt]]);
+			expect(credentialCreate.mock.calls.length).to.equal(1);
 			expect(lastRedirect).to.equal('http://localhost:3000/_saml/validate/__credentialToken__');
 		});
 
 		it('should reject a replayed assertion: no credential stored and redirect to the base url', async () => {
-			markUsed.resolves(false);
-			const SAML = loadSAML();
+			markUsed.mockResolvedValue(false);
+			const SAML = await loadSAML();
 
 			await SAML.processRequest({} as any, res as any, service, samlObject);
 			await pending;
 
-			expect(markUsed.calledOnce).to.be.true;
-			expect(credentialCreate.called).to.be.false;
+			expect(markUsed.mock.calls.length).to.equal(1);
+			expect(credentialCreate.mock.calls.length).to.equal(0);
 			expect(lastRedirect).to.equal('http://localhost:3000/');
 		});
 	});
