@@ -1,8 +1,28 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import type { Editor, EditorFromTextArea } from 'codemirror';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import type { Editor, EditorConfiguration, EditorFromTextArea } from 'codemirror';
+import { useEffect, useRef, useState } from 'react';
 
 const defaultGutters = ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'];
+
+type CodeMirrorModule = typeof import('codemirror');
+
+let codeMirrorPromise: Promise<CodeMirrorModule> | undefined;
+
+const loadCodeMirror = (): Promise<CodeMirrorModule> => {
+	if (!codeMirrorPromise) {
+		codeMirrorPromise = Promise.all([
+			import('codemirror'),
+			import('../../../../../../../app/ui/client/lib/codeMirror/codeMirror'),
+			import('codemirror/addon/edit/matchbrackets'),
+			import('codemirror/addon/edit/closebrackets'),
+			import('codemirror/addon/edit/matchtags'),
+			import('codemirror/addon/edit/trailingspace'),
+			import('codemirror/addon/search/match-highlighter'),
+			import('codemirror/lib/codemirror.css'),
+		]).then(([cm]) => (cm as unknown as { default: CodeMirrorModule }).default ?? cm);
+	}
+	return codeMirrorPromise;
+};
 
 type CodeMirrorProps = {
 	id: string;
@@ -37,91 +57,105 @@ function CodeMirror({
 	showTrailingSpace = true,
 	highlightSelectionMatches = true,
 	readOnly,
-	value: valueProp,
+	value,
 	defaultValue,
 	onChange,
 	...props
 }: CodeMirrorProps) {
-	const [value, setValue] = useState(valueProp || defaultValue);
 	const handleChange = useStableCallback(onChange);
 
+	const [textArea, setTextArea] = useState<HTMLTextAreaElement | null>(null);
+	const [codeMirror, setCodeMirror] = useState<CodeMirrorModule | null>(null);
 	const editorRef = useRef<EditorFromTextArea | null>(null);
-	const textAreaRef = useCallback(
-		async (node: HTMLTextAreaElement | null) => {
-			if (!node) return;
 
-			try {
-				const { default: CodeMirror } = await import('codemirror');
-				await Promise.all([
-					import('../../../../../../../app/ui/client/lib/codeMirror/codeMirror'),
-					import('codemirror/addon/edit/matchbrackets'),
-					import('codemirror/addon/edit/closebrackets'),
-					import('codemirror/addon/edit/matchtags'),
-					import('codemirror/addon/edit/trailingspace'),
-					import('codemirror/addon/search/match-highlighter'),
-					import('codemirror/lib/codemirror.css'),
-				]);
+	// Latest-prop refs read by the init effect without forcing it to re-run.
+	const initialValueRef = useRef(value ?? defaultValue ?? '');
+	const optionsRef = useRef<EditorConfiguration>({});
+	optionsRef.current = {
+		lineNumbers,
+		lineWrapping,
+		mode,
+		gutters,
+		foldGutter,
+		matchBrackets,
+		autoCloseBrackets,
+		matchTags,
+		showTrailingSpace,
+		highlightSelectionMatches,
+		readOnly,
+	};
 
-				editorRef.current = CodeMirror.fromTextArea(node, {
-					lineNumbers,
-					lineWrapping,
-					mode,
-					gutters,
-					foldGutter,
-					matchBrackets,
-					autoCloseBrackets,
-					matchTags,
-					showTrailingSpace,
-					highlightSelectionMatches,
-					readOnly,
-				});
-
-				editorRef.current.on('change', (doc: Editor) => {
-					const newValue = doc.getValue();
-					setValue(newValue);
-					handleChange(newValue);
-				});
-
-				return () => {
-					if (node.parentNode) {
-						editorRef.current?.toTextArea();
-					}
-				};
-			} catch (error) {
+	useEffect(() => {
+		let cancelled = false;
+		loadCodeMirror()
+			.then((mod) => {
+				if (!cancelled) setCodeMirror(() => mod);
+			})
+			.catch((error) => {
 				console.error('CodeMirror initialization failed:', error);
-			}
-		},
-		[
-			autoCloseBrackets,
-			foldGutter,
-			gutters,
-			highlightSelectionMatches,
-			lineNumbers,
-			lineWrapping,
-			matchBrackets,
-			matchTags,
-			mode,
-			handleChange,
-			readOnly,
-			showTrailingSpace,
-		],
-	);
+			});
+		return () => {
+			cancelled = true;
+		};
+	}, []);
 
 	useEffect(() => {
-		setValue(valueProp);
-	}, [valueProp]);
+		if (!textArea || !codeMirror) return;
+
+		const editor = codeMirror.fromTextArea(textArea, optionsRef.current);
+		editor.setValue(initialValueRef.current);
+		editorRef.current = editor;
+
+		const handleEditorChange = (doc: Editor) => {
+			handleChange(doc.getValue());
+		};
+		editor.on('change', handleEditorChange);
+
+		return () => {
+			editor.off('change', handleEditorChange);
+			editor.toTextArea();
+			editorRef.current = null;
+		};
+	}, [textArea, codeMirror, handleChange]);
 
 	useEffect(() => {
-		if (!editorRef.current) {
-			return;
-		}
+		const editor = editorRef.current;
+		if (!editor) return;
+		editor.setOption('lineNumbers', lineNumbers);
+		editor.setOption('lineWrapping', lineWrapping);
+		editor.setOption('mode', mode);
+		editor.setOption('gutters', gutters);
+		editor.setOption('foldGutter', foldGutter);
+		editor.setOption('matchBrackets', matchBrackets);
+		editor.setOption('autoCloseBrackets', autoCloseBrackets);
+		editor.setOption('matchTags', matchTags);
+		editor.setOption('showTrailingSpace', showTrailingSpace);
+		editor.setOption('highlightSelectionMatches', highlightSelectionMatches);
+		editor.setOption('readOnly', readOnly);
+	}, [
+		lineNumbers,
+		lineWrapping,
+		mode,
+		gutters,
+		foldGutter,
+		matchBrackets,
+		autoCloseBrackets,
+		matchTags,
+		showTrailingSpace,
+		highlightSelectionMatches,
+		readOnly,
+	]);
 
-		if (value !== editorRef.current.getValue()) {
-			editorRef.current.setValue(value ?? '');
+	useEffect(() => {
+		const editor = editorRef.current;
+		if (!editor) return;
+		const next = value ?? '';
+		if (editor.getValue() !== next) {
+			editor.setValue(next);
 		}
-	}, [textAreaRef, value]);
+	}, [value]);
 
-	return <textarea readOnly ref={textAreaRef} style={{ display: 'none' }} value={value} {...props} />;
+	return <textarea readOnly ref={setTextArea} style={{ display: 'none' }} {...props} />;
 }
 
 export default CodeMirror;

@@ -3154,7 +3154,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		before(async function () {
 			this.timeout(15000);
 
-			user = await createUser();
+			user = await createUser({ verified: true });
 			userCreds = await login(user.username, password);
 
 			room = (await createRoom({ type: 'p', name: `extpdp-permit-${Date.now()}` })).body.group;
@@ -3167,10 +3167,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 			await mockServerReset();
 			await seedDefaultMocks();
-			await seedGetDecisionBulk([
-				{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
-				{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
-			]);
+			await seedBulkDecisionByEntity([], 'DECISION_PERMIT');
 
 			await request
 				.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
@@ -3222,7 +3219,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		before(async function () {
 			this.timeout(15000);
 
-			user = await createUser();
+			user = await createUser({ verified: true });
 			userCreds = await login(user.username, password);
 
 			room = (await createRoom({ type: 'p', name: `extpdp-access-${Date.now()}` })).body.group;
@@ -3287,8 +3284,8 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		before(async function () {
 			this.timeout(10000);
 
-			permitUser = await createUser();
-			denyUser = await createUser();
+			permitUser = await createUser({ verified: true });
+			denyUser = await createUser({ verified: true });
 
 			room = (await createRoom({ type: 'p', name: `extpdp-invite-${Date.now()}` })).body.group;
 			await mockServerReset();
@@ -3370,7 +3367,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		before(async function () {
 			this.timeout(10000);
 
-			user = await createUser();
+			user = await createUser({ verified: true });
 			userCredentials = await login(user.username, password);
 
 			room = (await createRoom({ type: 'p', name: `extpdp-failclose-${Date.now()}` })).body.group;
@@ -3418,7 +3415,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await mockServerReset();
 			await mockServerSet('GET', '/healthz', { status: 'NOT_SERVING' });
 
-			const newUser = await createUser();
+			const newUser = await createUser({ verified: true });
 
 			await request
 				.post('/api/v1/groups.invite')
@@ -3455,7 +3452,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		before(async function () {
 			this.timeout(15000);
 
-			user = await createUser();
+			user = await createUser({ verified: true });
 			room = (await createRoom({ type: 'p', name: `extpdp-selective-${Date.now()}` })).body.group;
 			await request
 				.post('/api/v1/groups.invite')
@@ -3498,7 +3495,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		before(async function () {
 			this.timeout(15000);
 
-			user = await createUser();
+			user = await createUser({ verified: true });
 			room = (await createRoom({ type: 'p', name: `extpdp-tighten-${Date.now()}` })).body.group;
 			await request
 				.post('/api/v1/groups.invite')
@@ -3558,7 +3555,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			before(async function () {
 				this.timeout(15000);
 
-				user = await createUser({ username, email });
+				user = await createUser({ username, email, verified: true });
 				room = (await createRoom({ type: 'p', name: `extpdp-sync-deny-${Date.now()}` })).body.group;
 				await request
 					.post(api('groups.invite'))
@@ -3619,7 +3616,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			before(async function () {
 				this.timeout(15000);
 
-				user = await createUser({ username, email });
+				user = await createUser({ username, email, verified: true });
 				room = (await createRoom({ type: 'p', name: `extpdp-sync-permit-${Date.now()}` })).body.group;
 				await request
 					.post(api('groups.invite'))
@@ -3726,7 +3723,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		let userWithAttrs: IUser;
 
 		before(async () => {
-			userWithAttrs = await createUser();
+			userWithAttrs = await createUser({ verified: true });
 			await addAbacAttributesToUserDirectly(userWithAttrs._id, [{ key: attrKey, values: ['alpha'] }]);
 		});
 
@@ -3752,7 +3749,11 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		let storeConnection: MongoClient;
 
 		const makeAdmin = async (slug: string) => {
-			const u = await createUser({ roles: ['admin'], username: `vstore-${slug}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}` });
+			const u = await createUser({
+				roles: ['admin'],
+				username: `vstore-${slug}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+				verified: true,
+			});
 			const creds = await login(u.username, password);
 			return { user: u, creds };
 		};
@@ -4275,7 +4276,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				wipeRoom1 = (await createRoom({ type: 'p', name: `vstore-wipe-1-${Date.now()}` })).body.group;
 				wipeRoom2 = (await createRoom({ type: 'p', name: `vstore-wipe-2-${Date.now()}` })).body.group;
 
-				memberUser = await createUser();
+				memberUser = await createUser({ verified: true });
 				await request
 					.post(`${v1}/groups.invite`)
 					.set(credentials)

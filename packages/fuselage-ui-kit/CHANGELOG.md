@@ -1,5 +1,19 @@
 # Change Log
 
+## 32.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [7380c44c751eff9ee624d80bf26370411ffed78b, 6bd9182ae1d914a55e70866db43e8d2038f7be28, f63b965f82b0ddc590c633706f7c31c8c5251b53, 9ab1cf6e088cc099f4fc2ba9460ce5dd41bd1dc2]:</summary>
+
+  - @rocket.chat/core-typings@8.6.0-rc.0
+  - @rocket.chat/apps-engine@1.64.0-rc.0
+  - @rocket.chat/ui-contexts@32.0.0-rc.0
+  - @rocket.chat/gazzodown@32.0.0-rc.0
+  - @rocket.chat/ui-avatar@28.0.0-rc.0
+  - @rocket.chat/ui-video-conf@32.0.0-rc.0
+  </details>
+
 ## 31.0.0
 
 ### Patch Changes

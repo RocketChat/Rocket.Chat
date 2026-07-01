@@ -45,6 +45,12 @@ export async function deleteChannel(api: BaseTest['api'], roomName: string): Pro
 	await api.post('/channels.delete', { roomName });
 }
 
+export async function isChannelMember(api: BaseTest['api'], roomName: string, username: string): Promise<boolean> {
+	const response = await api.get(`/channels.members?roomName=${roomName}`);
+	const { members }: { members: { username: string }[] } = await response.json();
+	return members.some((member) => member.username === username);
+}
+
 export async function deleteRoom(api: BaseTest['api'], roomId: string): Promise<void> {
 	await api.post('/rooms.delete', { roomId });
 }

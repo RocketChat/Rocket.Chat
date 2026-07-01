@@ -4,7 +4,7 @@ exports[`renders Default without crashing 1`] = `
 <body>
   <div>
     <dialog
-      aria-labelledby=":r0:-title"
+      aria-labelledby="_r_0_-title"
       aria-modal="true"
       class="rcx-box rcx-box--full rcx-modal rcx-css-9ju0e2"
       open=""
@@ -23,7 +23,7 @@ exports[`renders Default without crashing 1`] = `
             >
               <h2
                 class="rcx-box rcx-box--full rcx-modal__title"
-                id=":r0:-title"
+                id="_r_0_-title"
               >
                 Setting_change
               </h2>
@@ -140,7 +140,7 @@ exports[`renders app without crashing 1`] = `
 <body>
   <div>
     <dialog
-      aria-labelledby=":r1:-title"
+      aria-labelledby="_r_1_-title"
       aria-modal="true"
       class="rcx-box rcx-box--full rcx-modal rcx-css-9ju0e2"
       open=""
@@ -159,7 +159,7 @@ exports[`renders app without crashing 1`] = `
             >
               <h2
                 class="rcx-box rcx-box--full rcx-modal__title"
-                id=":r1:-title"
+                id="_r_1_-title"
               >
                 Setting_change
               </h2>
@@ -279,7 +279,7 @@ exports[`renders system without crashing 1`] = `
 <body>
   <div>
     <dialog
-      aria-labelledby=":r2:-title"
+      aria-labelledby="_r_2_-title"
       aria-modal="true"
       class="rcx-box rcx-box--full rcx-modal rcx-css-9ju0e2"
       open=""
@@ -298,7 +298,7 @@ exports[`renders system without crashing 1`] = `
             >
               <h2
                 class="rcx-box rcx-box--full rcx-modal__title"
-                id=":r2:-title"
+                id="_r_2_-title"
               >
                 Setting_change
               </h2>

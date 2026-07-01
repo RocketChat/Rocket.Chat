@@ -16,20 +16,19 @@ import {
 	Avatar,
 } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
-import { action } from '@storybook/addon-actions';
+import type { Meta, StoryObj } from '@storybook/react';
+import { action } from 'storybook/actions';
 
 import { UiKitContext, UiKitMessage } from '..';
 import * as payloads from './payloads';
 
+type StoryArgs = { blocks: readonly UiKit.LayoutBlock[]; errors: Record<string, string> };
+
 export default {
-	title: 'Surfaces/Message',
 	argTypes: {
 		blocks: { control: 'object' },
 	},
-};
-
-const createStory = (blocks: readonly UiKit.LayoutBlock[]) => {
-	const story = ({ blocks, errors }: { blocks: readonly UiKit.LayoutBlock[]; errors: Record<string, string> }) => (
+	render: ({ blocks, errors }) => (
 		<Message clickable>
 			<MessageLeftContainer>
 				<Avatar
@@ -79,13 +78,15 @@ const createStory = (blocks: readonly UiKit.LayoutBlock[]) => {
 				</MessageToolbar>
 			</MessageToolbarWrapper>
 		</Message>
-	);
-	story.args = {
-		blocks,
-	};
+	),
+} satisfies Meta<StoryArgs>;
 
-	return story;
-};
+const createStory = (blocks: readonly UiKit.LayoutBlock[]): StoryObj<StoryArgs> => ({
+	args: {
+		blocks,
+		errors: {},
+	},
+});
 
 export const Divider = createStory(payloads.divider);
 

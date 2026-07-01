@@ -1,4 +1,4 @@
-import { FederationMatrix, MeteorError, Team } from '@rocket.chat/core-services';
+import { FederationMatrix, MeteorError, Room, Team } from '@rocket.chat/core-services';
 import {
 	type IRoom,
 	type IRoomAbacRedaction,
@@ -24,6 +24,7 @@ import {
 	isRoomsIsMemberProps,
 	isRoomsCleanHistoryProps,
 	isRoomsOpenProps,
+	isRoomsJoinProps,
 	isRoomsMembersOrderedByRoleProps,
 	isRoomsChangeArchivationStateProps,
 	isRoomsHideProps,
@@ -1248,6 +1249,37 @@ API.v1.post(
 		await openRoom(this.userId, roomId);
 
 		return API.v1.success();
+	},
+);
+
+API.v1.post(
+	'rooms.join',
+	{
+		authRequired: true,
+		body: isRoomsJoinProps,
+		response: {
+			200: ajv.compile<{ room: IRoom }>({
+				type: 'object',
+				properties: {
+					room: { type: 'object' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['room', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { joinCode, ...params } = this.bodyParams;
+		const room = await findRoomByIdOrName({ params });
+
+		await Room.join({ room, user: this.user, joinCode });
+
+		return API.v1.success({
+			room: await findRoomByIdOrName({ params }),
+		});
 	},
 );
 

@@ -1,4 +1,4 @@
-import type { Meta, StoryFn } from '@storybook/react';
+import type { StoryObj, Meta } from '@storybook/react';
 
 import ViewLogsPage from './ViewLogsPage';
 
@@ -11,5 +11,7 @@ export default {
 	decorators: [(fn) => <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>{fn()}</div>],
 } satisfies Meta<typeof ViewLogsPage>;
 
-export const Default: StoryFn<typeof ViewLogsPage> = () => <ViewLogsPage />;
-Default.storyName = 'ViewLogsPage';
+export const Default: StoryObj<typeof ViewLogsPage> = {
+	render: () => <ViewLogsPage />,
+	name: 'ViewLogsPage',
+};
