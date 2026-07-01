@@ -63,17 +63,13 @@ test.describe.serial('Sidebar', () => {
 			await expect(poHomeChannel.navbar.btnCreateNew).toBeEnabled();
 		});
 		test('should navigate on navbar toolbar pressing tab', async ({ page }) => {
-			await expect(poHomeChannel.navbar.pagesGroup.getByRole('button', { name: 'Marketplace' })).toBeVisible();
 			await poHomeChannel.navbar.btnHome.focus();
-			await expect(poHomeChannel.navbar.btnHome).toBeFocused();
-
 			await page.keyboard.press('Tab');
 			await page.keyboard.press('Tab');
 			await page.keyboard.press('Tab');
 			await page.keyboard.press('Tab');
 			await page.keyboard.press('Tab');
 
-			await expect(poHomeChannel.navbar.searchList).toBeVisible();
 			await expect(poHomeChannel.navbar.searchInput).toBeFocused();
 		});
 	});

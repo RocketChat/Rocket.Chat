@@ -66,9 +66,10 @@ test.describe.serial('message-actions', () => {
 			await expect(poHomeChannel.content.lastUserThreadMessage).toHaveText('this is a reply message');
 		});
 
-		// close thread before testing because the behavior changes
-		await poHomeChannel.btnContextualbarClose.click();
-		await expect(poHomeChannel.content.threadMessageList).toBeHidden();
+		await test.step('close thread before testing closed-thread behavior', async () => {
+			await poHomeChannel.btnContextualbarClose.click();
+			await expect(poHomeChannel.btnContextualbarClose).toBeHidden();
+		});
 
 		await test.step('unfollow thread', async () => {
 			const unFollowButton = poHomeChannel.content.lastUserMessage.getByRole('button', { name: 'Following' });
