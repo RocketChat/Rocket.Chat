@@ -1,13 +1,5 @@
 import process from 'node:process';
 
-if (!process.argv.includes('--subprocess')) {
-	process.stderr.write(`
-            This is a Deno wrapper for Rocket.Chat Apps. It is not meant to be executed stand-alone;
-            It is instead meant to be executed as a subprocess by the Apps-Engine framework.
-       `);
-	process.exit(1001);
-}
-
 import { JsonRpcError, type SuccessObject } from 'jsonrpc-lite';
 
 import * as Messenger from './lib/messenger';
@@ -24,6 +16,14 @@ import registerErrorListeners from './error-handlers';
 import { sendMetrics } from './lib/metricsCollector';
 import outboundMessageHandler from './handlers/outboundcomms-handler';
 import { RequestContext } from './lib/requestContext';
+
+if (!process.argv.includes('--subprocess')) {
+	process.stderr.write(`
+            This is a Deno wrapper for Rocket.Chat Apps. It is not meant to be executed stand-alone;
+            It is instead meant to be executed as a subprocess by the Apps-Engine framework.
+       `);
+	process.exit(1001);
+}
 
 type Handlers = {
 	app: typeof handleApp;
