@@ -10,7 +10,18 @@ import { useTranslation } from 'react-i18next';
 
 import type { EditableSetting } from '../../EditableSettingsContext';
 import { useEditableSettingsDispatch, useEditableSettings } from '../../EditableSettingsContext';
+const isValidRegex = (value: unknown): boolean => {
+	if (typeof value !== 'string' || value.trim() === '') {
+		return false;
+	}
 
+	try {
+		new RegExp(`^${value}$`);
+		return true;
+	} catch {
+		return false;
+	}
+};
 type SettingsGroupPageProps = {
 	children: ReactNode;
 	headerButtons?: ReactNode;
@@ -72,10 +83,19 @@ const SettingsGroupPage = ({
 				value: setting.value,
 			};
 		});
-
 		if (changes.length === 0) {
 			return;
 		}
+		const invalidRegexSetting = changes.find(
+			(setting) => setting._id === 'UTF8_Channel_Names_Validation' && !isValidRegex(setting.value),
+		);
+
+		if (invalidRegexSetting) {
+			dispatchToastMessage({ type: 'error', message: 'Invalid regular expression' });
+			return;
+		}
+
+
 
 		try {
 			await dispatch(changes);
