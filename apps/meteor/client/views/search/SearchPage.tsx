@@ -301,7 +301,7 @@ const SearchPage = (): ReactElement => {
 			}),
 		[answerMessages, debouncedQuery],
 	);
-	const answerAbortRef = useRef<AbortController>();
+	const answerAbortRef = useRef<AbortController | undefined>(undefined);
 	const abortPendingAnswer = useCallback((): void => answerAbortRef.current?.abort(), []);
 	const answerMutation = useMutation({
 		mutationFn: () => {
