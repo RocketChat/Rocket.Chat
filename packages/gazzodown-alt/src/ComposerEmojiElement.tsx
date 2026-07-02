@@ -4,11 +4,9 @@ import { memo, useContext, useMemo } from 'react';
 
 import { ComposerMarkupContext } from './ComposerMarkupContext';
 
-type ComposerEmojiElementProps = MessageParser.Emoji & {
-	big?: boolean;
-};
+type ComposerEmojiElementProps = MessageParser.Emoji;
 
-const ComposerEmojiElement = ({ big = false, ...emoji }: ComposerEmojiElementProps): ReactElement => {
+const ComposerEmojiElement = (emoji: ComposerEmojiElementProps): ReactElement => {
 	const { convertAsciiToEmoji, useEmoji, detectEmoji } = useContext(ComposerMarkupContext);
 
 	const asciiEmoji = useMemo(
@@ -40,7 +38,7 @@ const ComposerEmojiElement = ({ big = false, ...emoji }: ComposerEmojiElementPro
 	}
 
 	return (
-		<span role='img' aria-label={fallback} style={big ? { fontSize: '2em' } : undefined}>
+		<span role='img' aria-label={fallback}>
 			{fallback}
 		</span>
 	);
