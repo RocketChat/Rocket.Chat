@@ -43,7 +43,7 @@ describe('setUsername', () => {
 		SystemLogger: sinon.stub(),
 	};
 
-	const { setUsernameWithValidation, _setUsername } = proxyquire.noCallThru().load('../../../../../../server/lib/users/setUsername', {
+	const { setUsernameWithValidation, _setUsername } = proxyquire.noCallThru().load('../../../../../server/lib/users/setUsername', {
 		'../../database/utils': { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() },
 		'meteor/meteor': { Meteor: { Error } },
 		'@rocket.chat/core-services': { api: stubs.api },

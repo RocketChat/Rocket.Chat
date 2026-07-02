@@ -67,7 +67,7 @@ const {
 	getRoomByNameOrIdWithOptionToJoin,
 }: {
 	getRoomByNameOrIdWithOptionToJoin: GetRoomByNameOrIdWithOptionToJoinFn;
-} = proxyquire.noCallThru().load('../../../../../../../meteor/server/lib/rooms/getRoomByNameOrIdWithOptionToJoin.ts', {
+} = proxyquire.noCallThru().load('../../../../../server/lib/rooms/getRoomByNameOrIdWithOptionToJoin.ts', {
 	'@rocket.chat/models': {
 		Rooms: RoomsStub,
 		Subscriptions: SubscriptionsStub,

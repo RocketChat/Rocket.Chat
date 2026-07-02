@@ -1,0 +1,17 @@
+# Phase 4 follow-up: relocate tests/unit mirrors of modules moved in Phases 3-4
+# so the tests/unit tree keeps mirroring the source tree.
+# Format: old-path<TAB>new-path (relative to apps/meteor/)
+tests/unit/app/api/server/v1/lib/checkPermissions.spec.ts	tests/unit/server/api/checkPermissions.spec.ts
+tests/unit/app/api/server/v1/lib/checkPermissionsForInvocation.spec.ts	tests/unit/server/api/checkPermissionsForInvocation.spec.ts
+tests/unit/app/api/server/v1/lib/isValidQuery.spec.ts	tests/unit/server/api/lib/isValidQuery.spec.ts
+tests/unit/app/cloud/server/functions/syncWorkspace/syncCloudData.spec.ts	tests/unit/server/lib/cloud/syncWorkspace/syncCloudData.spec.ts
+tests/unit/app/lib/server/functions/banUserFromRoom.spec.ts	tests/unit/server/lib/rooms/banUserFromRoom.spec.ts
+tests/unit/app/lib/server/functions/getRoomByNameOrIdWithOptionToJoin.spec.ts	tests/unit/server/lib/rooms/getRoomByNameOrIdWithOptionToJoin.spec.ts
+tests/unit/app/lib/server/functions/closeLivechatRoom.tests.ts	tests/unit/server/lib/omnichannel/closeLivechatRoom.tests.ts
+tests/unit/app/lib/server/functions/extractMentionsFromMessageAST.spec.ts	tests/unit/server/lib/messages/extractMentionsFromMessageAST.spec.ts
+tests/unit/app/lib/server/functions/disableCustomScripts.tests.ts	tests/unit/server/lib/shared/disableCustomScripts.tests.ts
+tests/unit/app/lib/server/functions/getModifiedHttpHeaders.tests.ts	tests/unit/server/lib/shared/getModifiedHttpHeaders.tests.ts
+tests/unit/app/lib/server/lib/validateNameChars.tests.ts	tests/unit/server/lib/shared/validateNameChars.tests.ts
+tests/unit/app/lib/server/functions/setUsername.spec.ts	tests/unit/server/lib/users/setUsername.spec.ts
+tests/unit/app/lib/server/functions/validateUsername.spec.ts	tests/unit/server/lib/users/validateUsername.spec.ts
+tests/unit/app/lib/server/functions/sendUserEmail.spec.ts	tests/unit/server/lib/users/saveUser/sendUserEmail.spec.ts

@@ -13,7 +13,7 @@ describe('disableCustomScripts', () => {
 			getLicense: sinon.stub(),
 		};
 
-		disableCustomScripts = proxyquire('../../../../../../server/lib/shared/disableCustomScripts.ts', {
+		disableCustomScripts = proxyquire('../../../../../server/lib/shared/disableCustomScripts.ts', {
 			'@rocket.chat/license': { License: mockLicense },
 		}).disableCustomScripts;
 	});

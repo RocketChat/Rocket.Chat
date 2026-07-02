@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { validateNameChars } from '../../../../../../server/lib/shared/validateNameChars';
+import { validateNameChars } from '../../../../../server/lib/shared/validateNameChars';
 
 describe('validateNameChars', () => {
 	it('should return false for undefined input', () => {

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { getModifiedHttpHeaders } from '../../../../../../server/lib/shared/getModifiedHttpHeaders';
+import { getModifiedHttpHeaders } from '../../../../../server/lib/shared/getModifiedHttpHeaders';
 
 const inputVariants = [
 	{

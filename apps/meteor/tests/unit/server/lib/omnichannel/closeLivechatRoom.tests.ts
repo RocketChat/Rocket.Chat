@@ -3,7 +3,7 @@ import { describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-import { createFakeRoom, createFakeSubscription, createFakeUser } from '../../../../../mocks/data';
+import { createFakeRoom, createFakeSubscription, createFakeUser } from '../../../../mocks/data';
 
 const subscriptionsStub = {
 	findOneByRoomIdAndUserId: sinon.stub(),
@@ -21,7 +21,7 @@ const livechatStub = {
 
 const hasPermissionStub = sinon.stub();
 
-const { closeLivechatRoom } = proxyquire.noCallThru().load('../../../../../../server/lib/omnichannel/closeLivechatRoom.ts', {
+const { closeLivechatRoom } = proxyquire.noCallThru().load('../../../../../server/lib/omnichannel/closeLivechatRoom.ts', {
 	'../../../app/livechat/server/lib/closeRoom': livechatStub,
 	'../authorization/hasPermission': {
 		hasPermissionAsync: hasPermissionStub,

@@ -32,7 +32,7 @@ const meteorErrorMock = class extends Error {
 	}
 };
 
-const { performUserBan, banUserFromRoom } = p.noCallThru().load('../../../../../../server/lib/rooms/banUserFromRoom.ts', {
+const { performUserBan, banUserFromRoom } = p.noCallThru().load('../../../../../server/lib/rooms/banUserFromRoom.ts', {
 	'@rocket.chat/models': modelsMock,
 	'@rocket.chat/core-services': { Message: messageMock },
 	'meteor/meteor': { Meteor: { Error: meteorErrorMock } },

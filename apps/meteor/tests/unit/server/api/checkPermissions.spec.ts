@@ -3,7 +3,7 @@ import { describe, it } from 'mocha';
 import mock from 'proxyquire';
 import Sinon from 'sinon';
 
-import type { PermissionsPayload } from '../../../../../../../server/api/api.helpers';
+import type { PermissionsPayload } from '../../../../server/api/api.helpers';
 
 const mocks = {
 	'../../app/lib/server/lib/deprecationWarningLogger': {
@@ -12,7 +12,7 @@ const mocks = {
 		},
 	},
 };
-const { checkPermissions } = mock.noCallThru().load('../../../../../../../server/api/api.helpers', mocks);
+const { checkPermissions } = mock.noCallThru().load('../../../../server/api/api.helpers', mocks);
 
 describe('checkPermissions', () => {
 	it('should return false when no options.permissionsRequired key is present', () => {

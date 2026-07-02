@@ -711,6 +711,18 @@ These files don't fit neatly into `lib/<domain>/` because they're hooks, utiliti
 
 This file is the main import aggregator for the app/lib module. As files move out, update this file to remove the corresponding imports. Once all files are moved, delete `app/lib/server/index.ts` entirely.
 
+### Mirrored Test Trees (`tests/unit/**`) — move the specs with their sources
+
+Not every spec is co-located with its source: `tests/unit/` (and `ee/tests/unit/`) is a **mirror of the source tree** (`tests/unit/app/lib/server/functions/setUsername.spec.ts` tests `app/lib/server/functions/setUsername.ts`). Moving a source file without moving its mirrored spec leaves the spec **orphaned in a stale mirror** — it keeps running (the `tests/unit/**` globs still match it), so nothing fails, but the tree layout silently rots and the next person can't find the test for a module.
+
+**Procedure for every module move:**
+
+1. Move the mirrored spec so it mirrors the **new** source location: source `app/lib/server/functions/X.ts` → `server/lib/users/X.ts` means spec `tests/unit/app/lib/server/functions/X.spec.ts` → `tests/unit/server/lib/users/X.spec.ts`.
+2. Recompute the spec's relative `import`s **and its proxyquire target path** (`proxyquire(...)` / `.load(...)` — string literals the move script does not rewrite) for the new depth. Mock **keys** are unaffected by moving the spec (they match the loaded module's own specifiers, not the spec's location).
+3. Check runner globs both ways: the new location must be matched by an existing glob (`tests/unit/server/**/*.{spec,tests}.ts` already covers the server mirror), and the old glob must not be left matching nothing.
+
+**Orphan detector** (run after each phase): for every `*.spec.ts`/`*.tests.ts` under `tests/unit/app/**`, resolve its relative imports and proxyquire targets; any spec resolving into `server/**` (or `ee/server/**`) belongs in the corresponding mirror under `tests/unit/server/**` (or `ee/tests/unit/**`). Phases 3 and 4 left 15 such orphans (fixed in the Phase 4 follow-up); phases 1–2 had no unit-test mirrors.
+
 ### Test Mocks and Runner Globs (proxyquire / jest.mock) — lint & tsc do NOT catch these
 
 Moving a module silently breaks two things that `yarn lint --quiet` and `tsc --noEmit` **cannot** see, because both are driven by **string literals**, not statically-resolved imports:
@@ -725,6 +737,7 @@ Moving a module silently breaks two things that `yarn lint --quiet` and `tsc --n
 
 **Procedure after every module move (do this in the same PR):**
 
+- **Relocate mirrored specs.** Move the module's specs under `tests/unit/**` to mirror the new source location — see [Mirrored Test Trees](#mirrored-test-trees-testsunit--move-the-specs-with-their-sources).
 - **Re-wire discovery globs.** For each moved `*.spec.ts`, update `jest.config.ts` `testMatch` (jest specs) or `.mocharc.js` `spec` (mocha specs) to its new location; remove the now-empty old glob (it prints a `Cannot find any files matching pattern` warning).
 - **Find dependent specs.** Grep for specs that mock the moved module **or any module the moved module transitively imports**: `grep -rlE "proxyquire|jest\.mock" --include='*.spec.ts'`, then check each mock/`jest.mock` key against the moved module's new import specifiers. A quick detector: for every relative mock key, resolve it against the loaded module's directory and flag the ones that no longer resolve.
 - **Rewrite stale keys** to exactly match the moved module's new relative import specifiers (update the reused property-key strings too).

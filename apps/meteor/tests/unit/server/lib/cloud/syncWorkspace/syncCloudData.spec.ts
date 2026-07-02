@@ -9,7 +9,7 @@ const models = {
 
 const mockedFetchWorkspaceSyncPayload = sinon.stub();
 
-const { syncCloudData } = proxyquire.noCallThru().load('../../../../../../../server/lib/cloud/syncWorkspace/syncCloudData.ts', {
+const { syncCloudData } = proxyquire.noCallThru().load('../../../../../../server/lib/cloud/syncWorkspace/syncCloudData.ts', {
 	'@rocket.chat/license': { DuplicatedLicenseError: sinon.stub() },
 	'@rocket.chat/models': models,
 	'../../callbacks': { callbacks: { run: sinon.stub() } },
