@@ -17,7 +17,7 @@ import { stdoutTransport } from './lib/transports/stdoutTransport';
 
 if (!process.argv.includes('--subprocess')) {
 	console.error(`
-            This is a Deno wrapper for Rocket.Chat Apps. It is not meant to be executed stand-alone;
+            This is the Deno wrapper for the Rocket.Chat Apps runtime. It is not meant to be executed stand-alone;
             It is instead meant to be executed as a subprocess by the Apps-Engine framework.
 	`);
 

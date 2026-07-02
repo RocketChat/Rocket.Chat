@@ -7,14 +7,16 @@
 	"files": [
 		"dist/",
 		"base-runtime/",
+		"node-runtime/",
 		"deno-runtime/",
 		".deno-cache/"
 	],
 	"scripts": {
-		"build": "run-s build:clean build:default build:base-runtime build:deno-cache",
+		"build": "run-s build:clean build:default build:base-runtime build:node-runtime build:deno-cache",
 		"build:clean": "rimraf dist base-runtime/dist",
 		"build:default": "tsc -p tsconfig.json",
 		"build:base-runtime": "tsc -p base-runtime/tsconfig.json",
+		"build:node-runtime": "tsc -p node-runtime/tsconfig.json",
 		"build:deno-cache": "node scripts/deno-cache.js",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
 		"lint": "eslint .",
