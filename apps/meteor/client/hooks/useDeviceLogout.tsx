@@ -1,13 +1,5 @@
 import { GenericModal } from '@rocket.chat/ui-client';
-import {
-	useSetModal,
-	useToastMessageDispatch,
-	useRoute,
-	useRouteParameter,
-	useEndpoint,
-	useSessionDispatch,
-	UserContext,
-} from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useRoute, useRouteParameter, useEndpoint, UserContext } from '@rocket.chat/ui-contexts';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { useCallback, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,7 +16,6 @@ export const useDeviceLogout = (
 	const dispatchToastMessage = useToastMessageDispatch();
 	const deviceManagementRouter = useRoute('device-management');
 	const routeId = useRouteParameter('id');
-	const setForceLogout = useSessionDispatch('forceLogout');
 	const { logout } = useContext(UserContext);
 
 	const queryClient = useQueryClient();
@@ -64,15 +55,12 @@ export const useDeviceLogout = (
 				variant='danger'
 				confirmText={t('Logout_Device')}
 				cancelText={t('Cancel')}
-				onConfirm={() => {
-					setForceLogout(true);
-					handleLogoutDevice();
-				}}
+				onConfirm={handleLogoutDevice}
 				onCancel={closeModal}
 				onClose={closeModal}
 			>
 				{t('Device_Logout_Text')}
 			</GenericModal>,
 		);
-	}, [setModal, t, logoutDevice, sessionId, setForceLogout]);
+	}, [setModal, t, logoutDevice, sessionId]);
 };
