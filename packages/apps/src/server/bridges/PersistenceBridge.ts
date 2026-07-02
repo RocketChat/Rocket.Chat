@@ -66,14 +66,14 @@ export abstract class PersistenceBridge extends BaseBridge {
 	}
 
 	/**
-	 * Purges the App's persistant storage data from the persistent storage.
+	 * Purges the App's persistent storage data from the persistent storage.
 	 *
 	 * @argument appId the id of the app's data to remove
 	 */
 	protected abstract purge(appId: string): Promise<void>;
 
 	/**
-	 * Creates a new persistant record with the provided data attached.
+	 * Creates a new persistent record with the provided data attached.
 	 *
 	 * @argument data the data to store in persistent storage
 	 * @argument appId the id of the app which is storing the data
