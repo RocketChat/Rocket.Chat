@@ -57,8 +57,8 @@ const ComposerInlineElements = ({ children }: ComposerInlineElementsProps): Reac
 					return <ComposerEmojiElement key={index} {...child} />;
 
 				default: {
-					if ('fallback' in child) {
-						return <ComposerInlineElements key={index}>{[child.fallback]}</ComposerInlineElements>;
+					if (child.type === undefined) {
+						return <ComposerPlainSpan key={index} text={child.fallback.value} />;
 					}
 					return null;
 				}
