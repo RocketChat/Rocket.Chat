@@ -43,27 +43,25 @@ describe('setUsername', () => {
 		SystemLogger: sinon.stub(),
 	};
 
-	const { setUsernameWithValidation, _setUsername } = proxyquire
-		.noCallThru()
-		.load('../../../../../../server/lib/users/setUsername', {
-			'../../database/utils': { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() },
-			'meteor/meteor': { Meteor: { Error } },
-			'@rocket.chat/core-services': { api: stubs.api },
-			'@rocket.chat/models': { Users: stubs.Users, Invites: stubs.Invites, Subscriptions: stubs.Subscriptions },
-			'meteor/accounts-base': { Accounts: stubs.Accounts },
-			'underscore': stubs.underscore,
-			'../../../app/settings/server': { settings: stubs.settings },
-			'../../../app/lib/server/lib/notifyListener': { notifyOnUserChange: stubs.notifyOnUserChange },
-			'../rooms/addUserToRoom': { addUserToRoom: stubs.addUserToRoom },
-			'./checkUsernameAvailability': { checkUsernameAvailability: stubs.checkUsernameAvailability },
-			'./getAvatarSuggestionForUser': { getAvatarSuggestionForUser: stubs.getAvatarSuggestionForUser },
-			'../rooms/joinDefaultChannels': { joinDefaultChannels: stubs.joinDefaultChannels },
-			'./saveUserIdentity': { saveUserIdentity: stubs.saveUserIdentity },
-			'./setUserAvatar': { setUserAvatar: stubs.setUserAvatar },
-			'./validateUsername': { validateUsername: stubs.validateUsername },
-			'../callbacks': { callbacks: stubs.callbacks },
-			'../logger/system': { SystemLogger: stubs.SystemLogger },
-		});
+	const { setUsernameWithValidation, _setUsername } = proxyquire.noCallThru().load('../../../../../../server/lib/users/setUsername', {
+		'../../database/utils': { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() },
+		'meteor/meteor': { Meteor: { Error } },
+		'@rocket.chat/core-services': { api: stubs.api },
+		'@rocket.chat/models': { Users: stubs.Users, Invites: stubs.Invites, Subscriptions: stubs.Subscriptions },
+		'meteor/accounts-base': { Accounts: stubs.Accounts },
+		'underscore': stubs.underscore,
+		'../../../app/settings/server': { settings: stubs.settings },
+		'../../../app/lib/server/lib/notifyListener': { notifyOnUserChange: stubs.notifyOnUserChange },
+		'../rooms/addUserToRoom': { addUserToRoom: stubs.addUserToRoom },
+		'./checkUsernameAvailability': { checkUsernameAvailability: stubs.checkUsernameAvailability },
+		'./getAvatarSuggestionForUser': { getAvatarSuggestionForUser: stubs.getAvatarSuggestionForUser },
+		'../rooms/joinDefaultChannels': { joinDefaultChannels: stubs.joinDefaultChannels },
+		'./saveUserIdentity': { saveUserIdentity: stubs.saveUserIdentity },
+		'./setUserAvatar': { setUserAvatar: stubs.setUserAvatar },
+		'./validateUsername': { validateUsername: stubs.validateUsername },
+		'../callbacks': { callbacks: stubs.callbacks },
+		'../logger/system': { SystemLogger: stubs.SystemLogger },
+	});
 
 	beforeEach(() => {
 		stubs.Subscriptions.findUserFederatedRoomIds.returns({
