@@ -29,6 +29,8 @@ interface IBaseSession {
 	held: boolean;
 	remoteMuted: boolean;
 	remoteHeld: boolean;
+	screenSharing: boolean;
+	remoteScreenSharing: boolean;
 	startedAt?: Date;
 	hidden: boolean;
 	supportedFeatures: readonly CallFeature[];
