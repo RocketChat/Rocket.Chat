@@ -91,6 +91,12 @@ export const lineBreak = () => ({
 	value: undefined,
 });
 
+export const horizontalRule = (fallback?: [number, number]) => ({
+	type: 'HORIZONTAL_RULE' as const,
+	value: undefined,
+	...(fallback !== undefined ? { fallback } : {}),
+});
+
 export const katex = (value: string) => ({
 	type: 'KATEX' as const,
 	value,

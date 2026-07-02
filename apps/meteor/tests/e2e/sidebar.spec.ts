@@ -21,7 +21,7 @@ test.describe.serial('Sidebar', () => {
 		poHomeChannel = new HomeChannel(page);
 
 		await page.goto('/home');
-		await page.waitForSelector('main');
+		await poHomeChannel.waitForHome();
 	});
 
 	test.describe('global header', async () => {
@@ -64,13 +64,32 @@ test.describe.serial('Sidebar', () => {
 		});
 		test('should navigate on navbar toolbar pressing tab', async ({ page }) => {
 			await poHomeChannel.navbar.btnHome.focus();
-			await page.keyboard.press('Tab');
-			await page.keyboard.press('Tab');
-			await page.keyboard.press('Tab');
-			await page.keyboard.press('Tab');
-			await page.keyboard.press('Tab');
+			await expect(poHomeChannel.navbar.btnHome).toBeFocused();
 
-			await expect(poHomeChannel.navbar.searchInput).toBeFocused();
+			await test.step('move focus to directory button', async () => {
+				await page.keyboard.press('Tab');
+				await expect(poHomeChannel.navbar.btnDirectory).toBeFocused();
+			});
+
+			await test.step('move focus to marketplace button', async () => {
+				await page.keyboard.press('Tab');
+				await expect(poHomeChannel.navbar.btnMarketplace).toBeFocused();
+			});
+
+			await test.step('move focus to display button', async () => {
+				await page.keyboard.press('Tab');
+				await expect(poHomeChannel.navbar.btnDisplay).toBeFocused();
+			});
+
+			await test.step('move focus to create new button', async () => {
+				await page.keyboard.press('Tab');
+				await expect(poHomeChannel.navbar.btnCreateNew).toBeFocused();
+			});
+
+			await test.step('move focus to search input', async () => {
+				await page.keyboard.press('Tab');
+				await expect(poHomeChannel.navbar.searchInput).toBeFocused();
+			});
 		});
 	});
 
@@ -117,6 +136,7 @@ test.describe.serial('Sidebar', () => {
 
 			await expect(async () => {
 				await collapser.focus();
+				await expect(collapser).toBeFocused();
 				await page.keyboard.press('Space');
 				const isExpanded = (await collapser.getAttribute('aria-expanded')) === 'true';
 				expect(isExpanded).toBeTruthy();
@@ -152,7 +172,7 @@ test.describe.serial('Sidebar', () => {
 	test.describe('embedded layout', async () => {
 		test.beforeEach(async ({ page }) => {
 			await page.goto('/home');
-			await page.waitForSelector('main');
+			await poHomeChannel.waitForHome();
 		});
 
 		test('should not show Navbar', async ({ page }) => {
