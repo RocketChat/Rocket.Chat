@@ -27,6 +27,7 @@ const RegisterResponseSchema = {
 		home_server: { type: 'string' },
 		access_token: { type: 'string' },
 	},
+	required: ['user_id'],
 };
 
 const isRegisterResponseProps = ajv.compile(RegisterResponseSchema);
@@ -89,7 +90,11 @@ export const addAccountRoutes = (router: ClientRouter) => {
 				const decoded = decodeXmppUserId(body.username);
 
 				if (!isFullXmppUserId(decoded)) {
-					if (isReservedByAnotherAppService(body.username)) {
+					// The spec defines `username` as the desired localpart; normalize either form to the
+					// fully-qualified MXID, which is what gets stored and what `user_id` must carry.
+					const userId = body.username.startsWith('@') ? body.username : `@${body.username}:${serverName}`;
+
+					if (isReservedByAnotherAppService(userId)) {
 						return {
 							statusCode: 400,
 							body: {
@@ -100,14 +105,14 @@ export const addAccountRoutes = (router: ClientRouter) => {
 					}
 
 					await createOrUpdateFederatedUser({
-						username: body.username,
+						username: userId,
 						origin: serverName,
 					});
 
 					return {
 						statusCode: 200,
 						body: {
-							user_id: body.username,
+							user_id: userId,
 						},
 					};
 				}
