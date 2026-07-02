@@ -7,14 +7,16 @@
 	"files": [
 		"dist/",
 		"base-runtime/",
+		"node-runtime/",
 		"deno-runtime/",
 		".deno-cache/"
 	],
 	"scripts": {
-		"build": "run-s build:clean build:default build:base-runtime build:deno-cache",
-		"build:clean": "rimraf dist base-runtime/dist",
+		"build": "run-s build:clean build:default build:base-runtime build:node-runtime build:deno-cache",
+		"build:clean": "rimraf dist base-runtime/dist node-runtime/dist",
 		"build:default": "tsc -p tsconfig.json",
 		"build:base-runtime": "tsc -p base-runtime/tsconfig.json",
+		"build:node-runtime": "tsc -p node-runtime/tsconfig.json",
 		"build:deno-cache": "node scripts/deno-cache.js",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
 		"lint": "eslint .",
@@ -24,7 +26,8 @@
 		"testunit": "run-s test:node test:deno test:base-runtime",
 		"typecheck:default": "tsc -p tsconfig.json --noEmit",
 		"typecheck:base-runtime": "tsc -p base-runtime/tsconfig.json --noEmit",
-		"typecheck": "run-s typecheck:default typecheck:base-runtime"
+		"typecheck:node-runtime": "tsc -p node-runtime/tsconfig.json --noEmit",
+		"typecheck": "run-s typecheck:default typecheck:base-runtime typecheck:node-runtime"
 	},
 	"dependencies": {
 		"@msgpack/msgpack": "3.0.0-beta2",
