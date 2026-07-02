@@ -153,9 +153,7 @@ export class Presence extends ServiceClass implements IPresence {
 			return;
 		}
 
-		await cronJobs.addAtTimestamp(STATUS_EXPIRATION_JOB, next.statusExpiresAt, () =>
-			this.handleExpirationJob().catch((err) => logger.error({ msg: 'Error handling status expiration', err })),
-		);
+		await cronJobs.addAtTimestamp(STATUS_EXPIRATION_JOB, next.statusExpiresAt, () => this.handleExpirationJob());
 	}
 
 	private async handleExpirationJob(): Promise<void> {
