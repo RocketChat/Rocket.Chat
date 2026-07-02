@@ -1,0 +1,54 @@
+apps/meteor/tests/unit/server/lib/shared/getModifiedHttpHeaders.tests.ts
+  s_171d92f682d971::t_4a2dafc00a634f 1-74
+apps/meteor/tests/unit/server/lib/users/validateUsername.spec.ts
+  s_171d92f682d971::t_4309c87489140b 1-94
+apps/meteor/tests/unit/server/lib/rooms/banUserFromRoom.spec.ts
+  s_171d92f682d971::t_4309c87489140b 1-264
+apps/meteor/tests/unit/server/api/checkPermissions.spec.ts
+  s_171d92f682d971::t_4a2dafc00a634f 1-14,16-107
+  s_171d92f682d971::t_4309c87489140b 15
+apps/meteor/tests/unit/server/api/lib/isValidQuery.spec.ts
+  s_171d92f682d971::t_4a2dafc00a634f 1-226
+apps/meteor/tests/unit/server/lib/rooms/getRoomByNameOrIdWithOptionToJoin.spec.ts
+  s_171d92f682d971::t_4309c87489140b 1-69,71-518
+  s_171d92f682d971::t_58c39609f260d8 70
+apps/meteor/tests/unit/server/lib/messages/extractMentionsFromMessageAST.spec.ts
+  s_171d92f682d971::t_4a2dafc00a634f 1-396
+apps/meteor/MIGRATION_PLAN.md
+  s_171d92f682d971::t_651115f20f07b9 714-725
+  s_171d92f682d971::t_405091b93b65e5 740
+apps/meteor/tests/unit/server/api/checkPermissionsForInvocation.spec.ts
+  s_171d92f682d971::t_4309c87489140b 31
+  s_171d92f682d971::t_4a2dafc00a634f 1-30,32-126
+apps/meteor/tests/unit/server/lib/shared/validateNameChars.tests.ts
+  s_171d92f682d971::t_4a2dafc00a634f 1-56
+apps/meteor/tests/unit/server/lib/omnichannel/closeLivechatRoom.tests.ts
+  s_171d92f682d971::t_4309c87489140b 24
+  s_171d92f682d971::t_4a2dafc00a634f 1-23,25-123
+apps/meteor/tests/unit/server/lib/users/saveUser/sendUserEmail.spec.ts
+  s_171d92f682d971::t_4309c87489140b 1-154
+apps/meteor/tests/unit/server/lib/cloud/syncWorkspace/syncCloudData.spec.ts
+  s_171d92f682d971::t_4309c87489140b 1-101
+apps/meteor/scripts/migration/phase4-test-mirrors.tsv
+  s_171d92f682d971::t_f1357db64dc73e 1-17
+apps/meteor/tests/unit/server/lib/shared/disableCustomScripts.tests.ts
+  s_171d92f682d971::t_4309c87489140b 1-69
+apps/meteor/tests/unit/server/lib/users/setUsername.spec.ts
+  s_171d92f682d971::t_4309c87489140b 1-312
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "04c0851dba267ca07fedb54e108c5ef02a03544e",
+  "prompts": {},
+  "sessions": {
+    "s_171d92f682d971": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d6f4ca7b-b96a-44e4-bec3-ea4829111e31",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
