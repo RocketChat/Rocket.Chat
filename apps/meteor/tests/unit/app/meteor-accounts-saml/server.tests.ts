@@ -40,17 +40,21 @@ import { LogoutRequestParser } from '../../../../app/meteor-accounts-saml/server
 import { LogoutResponseParser } from '../../../../app/meteor-accounts-saml/server/lib/parsers/LogoutResponse';
 import { ResponseParser } from '../../../../app/meteor-accounts-saml/server/lib/parsers/Response';
 
-const { ServiceProviderMetadata } = proxyquire
-	.noCallThru()
-	.load('../../../../app/meteor-accounts-saml/server/lib/generators/ServiceProviderMetadata', {
-		'meteor/meteor': {
-			Meteor: {
-				absoluteUrl() {
-					return 'http://localhost:3000/';
-				},
+const meteorStub = {
+	'meteor/meteor': {
+		Meteor: {
+			absoluteUrl() {
+				return 'http://localhost:3000/';
 			},
 		},
-	});
+	},
+};
+
+const { ServiceProviderMetadata } = proxyquire
+	.noCallThru()
+	.load('../../../../app/meteor-accounts-saml/server/lib/generators/ServiceProviderMetadata', meteorStub);
+
+const { SAMLServiceProvider } = proxyquire.noCallThru().load('../../../../app/meteor-accounts-saml/server/lib/ServiceProvider', meteorStub);
 
 describe('SAML', () => {
 	describe('[AuthorizeRequest]', () => {
@@ -269,6 +273,46 @@ describe('SAML', () => {
 					expect(err).to.be.equal('Error. Logout not confirmed by IDP');
 					expect(inResponseTo).to.be.null;
 				});
+			});
+		});
+
+		describe('logoutResponseToUrl', () => {
+			const serviceProvider = new SAMLServiceProvider(serviceProviderOptions);
+
+			const generateUrl = (relayState: string | undefined): Promise<string> =>
+				new Promise((resolve, reject) => {
+					serviceProvider.logoutResponseToUrl('logout-response', relayState, (err: unknown, url?: string) => {
+						if (err || !url) {
+							return reject(err ?? new Error('No URL returned'));
+						}
+						resolve(url);
+					});
+				});
+
+			it('should echo back the exact RelayState received on the request', async () => {
+				const relayState = 'idp-shared-session-relay-state';
+				const url = await generateUrl(relayState);
+				const params = new URLSearchParams(url.split('?')[1]);
+
+				expect(url).to.match(/^\[idpSLORedirectURL\]\?/);
+				expect(params.get('SAMLResponse')).to.be.a('string').that.is.not.empty;
+				expect(params.get('RelayState')).to.be.equal(relayState);
+			});
+
+			it('should preserve a RelayState that requires URL encoding', async () => {
+				const relayState = 'https://sp.example.com/return?foo=bar baz&x=1';
+				const url = await generateUrl(relayState);
+				const params = new URLSearchParams(url.split('?')[1]);
+
+				expect(params.get('RelayState')).to.be.equal(relayState);
+			});
+
+			it('should omit RelayState entirely when none was received on the request', async () => {
+				const url = await generateUrl(undefined);
+				const params = new URLSearchParams(url.split('?')[1]);
+
+				expect(params.has('RelayState')).to.be.false;
+				expect(params.get('SAMLResponse')).to.be.a('string').that.is.not.empty;
 			});
 		});
 	});
