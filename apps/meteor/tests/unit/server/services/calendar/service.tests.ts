@@ -165,6 +165,23 @@ describe('CalendarService', () => {
 			});
 			sinon.assert.calledOnce(service.setupNextStatusChange);
 		});
+
+		it('should handle reminderMinutesBeforeStart = 0', async () => {
+			const eventData = {
+				uid: fakeUserId,
+				startTime: fakeStartTime,
+				endTime: fakeEndTime,
+				subject: fakeSubject,
+				description: fakeDescription,
+				reminderMinutesBeforeStart: 0,
+			};
+
+			await service.create(eventData);
+
+			const insertedData = CalendarEventMock.insertOne.firstCall.args[0];
+			expect(insertedData.reminderMinutesBeforeStart).to.equal(0);
+			expect(insertedData.reminderTime).to.deep.equal(fakeStartTime);
+		});
 	});
 
 	describe('#import', () => {
@@ -180,6 +197,25 @@ describe('CalendarService', () => {
 
 			sinon.assert.calledOnce(CalendarEventMock.insertOne);
 			sinon.assert.calledOnce(service.setupNextStatusChange);
+		});
+
+		it('should handle reminderMinutesBeforeStart = 0 on import', async () => {
+			const eventData = {
+				uid: fakeUserId,
+				startTime: fakeStartTime,
+				subject: fakeSubject,
+				description: fakeDescription,
+				externalId: fakeExternalId,
+				reminderMinutesBeforeStart: 0,
+			};
+
+			CalendarEventMock.findOneByExternalIdAndUserId.resolves(null);
+
+			await service.import(eventData);
+
+			const insertedData = CalendarEventMock.insertOne.firstCall.args[0];
+			expect(insertedData.reminderMinutesBeforeStart).to.equal(0);
+			expect(insertedData.reminderTime).to.deep.equal(fakeStartTime);
 		});
 
 		it('should update existing event if found by externalId', async () => {
@@ -225,6 +261,94 @@ describe('CalendarService', () => {
 			await service.update(fakeEventId, updateData);
 
 			sinon.assert.calledWith(CalendarEventMock.updateEvent, fakeEventId, sinon.match.has('subject', 'Updated Subject'));
+		});
+
+		it('should handle reminderMinutesBeforeStart = 0 on update', async () => {
+			const fakeEvent = {
+				_id: fakeEventId,
+				uid: fakeUserId,
+				startTime: fakeStartTime,
+				endTime: fakeEndTime,
+				subject: fakeSubject,
+				reminderMinutesBeforeStart: 5,
+			};
+
+			CalendarEventMock.findOne.resolves(fakeEvent);
+
+			await service.update(fakeEventId, {
+				startTime: fakeStartTime,
+				reminderMinutesBeforeStart: 0,
+			});
+
+			const updateArgs = CalendarEventMock.updateEvent.firstCall.args[1];
+			expect(updateArgs.reminderMinutesBeforeStart).to.equal(0);
+			expect(updateArgs.reminderTime).to.deep.equal(fakeStartTime);
+		});
+
+		it('should recalculate reminderTime using existing startTime when only reminderMinutesBeforeStart is updated', async () => {
+			const fakeEvent = {
+				_id: fakeEventId,
+				uid: fakeUserId,
+				startTime: fakeStartTime,
+				endTime: fakeEndTime,
+				subject: fakeSubject,
+				reminderMinutesBeforeStart: 5,
+			};
+
+			CalendarEventMock.findOne.resolves(fakeEvent);
+
+			await service.update(fakeEventId, {
+				reminderMinutesBeforeStart: 10,
+			});
+
+			const updateArgs = CalendarEventMock.updateEvent.firstCall.args[1];
+			expect(updateArgs.reminderMinutesBeforeStart).to.equal(10);
+			const expectedReminderTime = new Date('2025-01-01T09:50:00Z');
+			expect(updateArgs.reminderTime).to.deep.equal(expectedReminderTime);
+		});
+
+		it('should handle reminderMinutesBeforeStart = 0 without startTime in patch', async () => {
+			const fakeEvent = {
+				_id: fakeEventId,
+				uid: fakeUserId,
+				startTime: fakeStartTime,
+				endTime: fakeEndTime,
+				subject: fakeSubject,
+				reminderMinutesBeforeStart: 5,
+			};
+
+			CalendarEventMock.findOne.resolves(fakeEvent);
+
+			await service.update(fakeEventId, {
+				reminderMinutesBeforeStart: 0,
+			});
+
+			const updateArgs = CalendarEventMock.updateEvent.firstCall.args[1];
+			expect(updateArgs.reminderMinutesBeforeStart).to.equal(0);
+			expect(updateArgs.reminderTime).to.deep.equal(fakeStartTime);
+		});
+
+		it('should recalculate reminderTime when only startTime is updated', async () => {
+			const fakeEvent = {
+				_id: fakeEventId,
+				uid: fakeUserId,
+				startTime: fakeStartTime,
+				endTime: fakeEndTime,
+				subject: fakeSubject,
+				reminderMinutesBeforeStart: 10,
+			};
+
+			CalendarEventMock.findOne.resolves(fakeEvent);
+
+			const newStartTime = new Date('2025-01-02T14:00:00Z');
+			const expectedReminderTime = new Date('2025-01-02T13:50:00Z');
+
+			await service.update(fakeEventId, {
+				startTime: newStartTime,
+			});
+
+			const updateArgs = CalendarEventMock.updateEvent.firstCall.args[1];
+			expect(updateArgs.reminderTime).to.deep.equal(expectedReminderTime);
 		});
 
 		it('should update cron jobs when start/end times change', async () => {

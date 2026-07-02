@@ -71,7 +71,7 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 					...(startTime ? { startTime } : {}),
 					...(endTime && { endTime }),
 					...(meetingUrl !== undefined ? { meetingUrl } : {}),
-					...(reminderMinutesBeforeStart ? { reminderMinutesBeforeStart } : {}),
+					...(reminderMinutesBeforeStart != null ? { reminderMinutesBeforeStart } : {}),
 					...(reminderTime ? { reminderTime } : {}),
 					...(previousStatus ? { previousStatus } : {}),
 					...(typeof busy === 'boolean' && { busy }),
