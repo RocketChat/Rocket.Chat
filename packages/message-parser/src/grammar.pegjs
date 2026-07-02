@@ -31,6 +31,7 @@
     spoiler,
     spoilerBlock,
     strike,
+    table,
     task,
     tasks,
     unorderedList,
@@ -59,6 +60,7 @@ Blocks
   / BlockSpoiler
   / Code
   / HorizontalRule
+  / Table
   / Heading
   / Tasks
   / OrderedList
@@ -87,6 +89,37 @@ BlockquoteLine
  * ||
  */
 BlockSpoiler = "||" EndOfLine first:(&(! "||") @Paragraph) rest:(&(! "||") @Paragraph)* EndOfLine? "||" { return spoilerBlock([first, ...rest]); }
+
+/**
+ *
+ * Table (GFM)
+ * e.g:
+ * | Header 1 | Header 2 |
+ * | -------- | :------: |
+ * | Cell 1   | Cell 2   |
+ *
+ * v1 requires a leading and trailing pipe on every row. Alignment comes from
+ * the delimiter row: `:---` left, `:--:` center, `---:` right, `---` none.
+ * A literal pipe inside a cell must be escaped as `\|`.
+ */
+Table = header:TableRowLine aligns:TableDelimiterRow body:TableRowLine* { return table(header, aligns, body, [range().start, range().end]); }
+
+TableRowLine = "|" cells:(@TableCell "|")+ EndOfLine? { return cells; }
+
+TableCell = items:TableCellItem* { return reducePlainTexts(items); }
+
+TableCellItem
+  = "\\|" { return plain('|'); }
+  / !"|" !EndOfLine @(InlineItemPattern / Any)
+
+TableDelimiterRow = "|" aligns:(@TableDelimiterCell "|")+ EndOfLine? { return aligns; }
+
+TableDelimiterCell = [ \t]* left:":"? "-"+ right:":"? [ \t]* {
+    if (left && right) { return 'center'; }
+    if (right) { return 'right'; }
+    if (left) { return 'left'; }
+    return undefined;
+  }
 
 // <t:1630360800:?{format}>
 // <t:2025-07-22T10:00:00.000Z?:?{format}>

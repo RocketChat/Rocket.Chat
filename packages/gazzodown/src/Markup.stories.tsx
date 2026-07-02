@@ -264,6 +264,18 @@ export const HorizontalRule: StoryObj<typeof Markup> = {
 	},
 };
 
+export const Table: StoryObj<typeof Markup> = {
+	args: {
+		tokens: parse(outdent`
+		| Name | Status | Score |
+		| :--- | :----: | ----: |
+		| Alice | **done** | 9.5 |
+		| Bob | :smile: | 7 |
+		| Carol | [profile](https://rocket.chat) | 12 |
+	`),
+	},
+};
+
 export const Example: StoryObj<{ msg: string }> = {
 	render: ({ msg }) => {
 		const parseOptions: Options = { katex: { dollarSyntax: true, parenthesisSyntax: true }, colors: true, emoticons: true };
@@ -298,6 +310,11 @@ export const Example: StoryObj<{ msg: string }> = {
 		> Cogito ergo sum.
 		> Sit amet, consectetur adipiscing elit.
 		> Donec eget ex euismod, euismod nisi euismod, vulputate nisi.
+
+		| Name | Status | Score |
+		| :--- | :----: | ----: |
+		| Alice | **done** | 9.5 |
+		| Bob | :smile: | 7 |
 
 		\`\`\`
 		const x = 1;
