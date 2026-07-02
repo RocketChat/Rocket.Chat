@@ -345,24 +345,27 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 	 * It is meant to power a preview of whether a license would be accepted before committing
 	 * to it from the admin UI.
 	 *
-	 * Returns the behaviors that would make the license invalid — an empty array means it would
-	 * be accepted. Mirrors the apply path: throws `NotReadyForValidation` if the workspace can't
-	 * validate yet and `InvalidLicenseError` if the string is not a well-formed license.
+	 * Returns whether the license would be accepted and, when not, the behaviors that reject it.
+	 * A malformed string is reported as invalid with no reasons rather than thrown, so callers can
+	 * treat every rejected license uniformly. Mirrors the apply path in throwing
+	 * `NotReadyForValidation` while the workspace can't validate yet.
 	 */
-	public async validateLicenseForPreview(encryptedLicense: string): Promise<BehaviorWithContext[]> {
+	public async validateLicenseForPreview(
+		encryptedLicense: string,
+	): Promise<{ valid: true } | { valid: false; reasons: BehaviorWithContext[] }> {
 		if (!isReadyForValidation.call(this)) {
 			throw new NotReadyForValidation();
 		}
 
-		await validateFormat(encryptedLicense);
-
 		let license: ILicenseV3;
 		try {
+			await validateFormat(encryptedLicense);
+
 			const decrypted = JSON.parse(await decrypt(encryptedLicense));
 			license = encryptedLicense.startsWith('RCV3_') ? decrypted : convertToV3(decrypted);
 		} catch (err) {
 			logger.error({ msg: 'Invalid raw license provided for validation preview', err });
-			throw new InvalidLicenseError();
+			return { valid: false, reasons: [] };
 		}
 
 		const validationResult = await runValidation.call(this, license, {
@@ -371,7 +374,9 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 			suppressLog: true,
 		});
 
-		return filterBehaviorsResult(validationResult, ['invalidate_license', 'prevent_installation']);
+		const reasons = filterBehaviorsResult(validationResult, ['invalidate_license', 'prevent_installation']);
+
+		return reasons.length ? { valid: false, reasons } : { valid: true };
 	}
 
 	public async setLicense(encryptedLicense: string, isNewLicense = true): Promise<boolean> {
