@@ -10,6 +10,7 @@ import { useMemo } from 'react';
 import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useCustomCategories } from '../../views/navigation/hooks/useCustomCategories';
+import { useKeepUnreadsOnTopGroups } from '../../views/navigation/hooks/useKeepUnreadsOnTopGroups';
 import { useShowUnreadsGroups } from '../../views/navigation/hooks/useShowUnreadsGroups';
 import { useSystemGroupsOrder } from '../../views/navigation/hooks/useSystemGroupsOrder';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
@@ -48,7 +49,7 @@ const SYSTEM_GROUP_ICONS: Record<string, IconName> = {
 	Teams: 'team',
 	Discussions: 'balloons',
 	Channels: 'hashtag',
-	Direct_Messages: 'at',
+	Direct_Messages: 'user',
 	Conversations: 'chat',
 };
 
@@ -70,6 +71,8 @@ export type SidebarRoomListGroup = {
 	icon: IconName;
 	category?: ISidebarCustomCategory;
 	showUnreads: boolean;
+	/** When opened, whether unread rooms are sorted to the top of the category. */
+	keepUnreadsOnTop: boolean;
 	collapsed: boolean;
 	/** Rooms to render — already filtered for collapse + "Show unreads". */
 	rooms: SubscriptionWithRoom[];
@@ -115,6 +118,7 @@ export const useRoomList = ({
 
 	const { categories: customCategories } = useCustomCategories();
 	const { isShowUnreads } = useShowUnreadsGroups();
+	const { isKeepUnreadsOnTop } = useKeepUnreadsOnTopGroups();
 	const { sortGroups } = useSystemGroupsOrder();
 
 	const openedRoom = useOpenedRoom();
@@ -245,15 +249,17 @@ export const useRoomList = ({
 
 			sidebarDrafts && drafts.size && groups.set('Drafts', drafts);
 
-			showCustom && favorite.size && groups.set('Favorites', favorite);
+			// Favorites (part of the Custom toggle) also stays visible when empty.
+			showCustom && groups.set('Favorites', favorite);
 
-			sidebarGroupByType && team.size && groups.set('Teams', team);
+			// System type categories always render (even when empty) so a room can be dragged back to them.
+			sidebarGroupByType && groups.set('Teams', team);
 
-			sidebarGroupByType && isDiscussionEnabled && discussion.size && groups.set('Discussions', discussion);
+			sidebarGroupByType && isDiscussionEnabled && groups.set('Discussions', discussion);
 
-			sidebarGroupByType && channels.size && groups.set('Channels', channels);
+			sidebarGroupByType && groups.set('Channels', channels);
 
-			sidebarGroupByType && direct.size && groups.set('Direct_Messages', direct);
+			sidebarGroupByType && groups.set('Direct_Messages', direct);
 
 			!sidebarGroupByType && groups.set('Conversations', conversation);
 
@@ -283,6 +289,7 @@ export const useRoomList = ({
 				// While filtering, categories are force-expanded so their matching rooms are visible.
 				const collapsed = isFiltering ? false : isCollapsed(key);
 				const showUnreads = category ? category.showUnreads !== false : isShowUnreads(key);
+				const keepUnreadsOnTop = category ? Boolean(category.keepUnreadsOnTop) : isKeepUnreadsOnTop(key);
 				const allRooms = [...set];
 				// When collapsed, keep unread rooms (if enabled) plus the currently-open room always visible.
 				const collapsedRooms = allRooms.filter((room) => (showUnreads && isUnreadRoom(room)) || room.rid === openedRoom);
@@ -295,6 +302,12 @@ export const useRoomList = ({
 					displayRooms = allRooms;
 				}
 
+				// "Keep unreads on top": stable-partition so unread rooms come first, each partition keeping the
+				// configured sort (activity / a-z) it already has from the subscription query.
+				if (keepUnreadsOnTop) {
+					displayRooms = [...displayRooms.filter(isUnreadRoom), ...displayRooms.filter((room) => !isUnreadRoom(room))];
+				}
+
 				return {
 					key,
 					title,
@@ -302,6 +315,7 @@ export const useRoomList = ({
 					icon: category ? 'folder' : (SYSTEM_GROUP_ICONS[key] ?? 'hashtag'),
 					category,
 					showUnreads,
+					keepUnreadsOnTop,
 					collapsed,
 					rooms: displayRooms,
 					// The header total badge is only useful when the unread rooms are hidden — i.e. collapsed AND
@@ -374,6 +388,7 @@ export const useRoomList = ({
 			incomingCalls,
 			customCategories,
 			isShowUnreads,
+			isKeepUnreadsOnTop,
 			sortGroups,
 			openedRoom,
 		]),

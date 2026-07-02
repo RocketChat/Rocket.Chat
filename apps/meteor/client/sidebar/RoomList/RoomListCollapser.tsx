@@ -43,9 +43,13 @@ type RoomListCollapserProps = {
 
 const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown, ...props }: RoomListCollapserProps) => {
 	const { t } = useTranslation();
-	const { isDragOver, isFadedOut, dropProps } = useGroupDrop(group.key, Boolean(group.category));
+	const { isDragOver, isFadedOut, accepts, dropProps } = useGroupDrop(group.key, Boolean(group.category));
 
 	const { unreadTitle, unreadVariant, showUnread, unreadCount } = useUnreadDisplay(group.unreadInfo);
+
+	// Empty categories are dimmed while closed, so the (always-visible) empty system categories don't clutter.
+	// The dim lifts while dragging when this category is a valid drop target, so it reads as an inviting drop zone.
+	const dimmed = isFadedOut || (group.empty && group.collapsed && !accepts);
 
 	const title = group.translateTitle ? t(group.title as TranslationKey) : group.title;
 	// `title` (string) drives the accessible name; the collapser renders this node as the visible label, with
@@ -65,7 +69,7 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 		// Outer wrapper adds transparent space ABOVE every category (separating it from the previous category's
 		// items, and the first one from the sidebar header). It must be padding, not margin — virtuoso measures
 		// the rendered height, and a top margin would collapse out and let the header overlap its items.
-		<Box {...dropProps} style={{ paddingBlockStart: '0.5rem', opacity: isFadedOut ? 0.4 : undefined }}>
+		<Box {...dropProps} style={{ paddingBlockStart: '0.5rem', opacity: dimmed ? 0.4 : undefined }}>
 			<Box
 				position='relative'
 				className={barStylingClass}
@@ -99,6 +103,7 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 							category={group.category}
 							groupKey={group.key}
 							showUnreads={group.showUnreads}
+							keepUnreadsOnTop={group.keepUnreadsOnTop}
 							canMoveUp={canMoveUp}
 							canMoveDown={canMoveDown}
 							onMoveUp={onMoveUp}

@@ -7325,6 +7325,8 @@
   "Move_down": "Move down",
   "Move_to": "Move to",
   "When_closed": "When closed",
+  "When_opened": "When opened",
+  "Keep_unreads_on_top": "Keep unreads on top",
   "Show_unreads": "Show unreads",
   "Rename": "Rename",
   "Drag_rooms_here": "Drag rooms here",

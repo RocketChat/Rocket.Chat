@@ -123,6 +123,16 @@ export const useCustomCategories = () => {
 		[categories, persist],
 	);
 
+	const toggleKeepUnreadsOnTop = useCallback(
+		(categoryId: string) =>
+			persist(
+				categories.map((category) =>
+					category._id === categoryId ? { ...category, keepUnreadsOnTop: !category.keepUnreadsOnTop } : category,
+				),
+			),
+		[categories, persist],
+	);
+
 	/** Move a room into a custom category (by id) or to Favorites. Assignment is exclusive. */
 	const moveRoom = useCallback(
 		async (room: MovableRoom, target: string) => {
@@ -214,6 +224,7 @@ export const useCustomCategories = () => {
 			deleteCategory,
 			reorderCategory,
 			toggleShowUnreads,
+			toggleKeepUnreadsOnTop,
 			moveRoom,
 			createCategoryAndMoveRoom,
 			removeRoom,
@@ -227,6 +238,7 @@ export const useCustomCategories = () => {
 			deleteCategory,
 			reorderCategory,
 			toggleShowUnreads,
+			toggleKeepUnreadsOnTop,
 			moveRoom,
 			createCategoryAndMoveRoom,
 			removeRoom,

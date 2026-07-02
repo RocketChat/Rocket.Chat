@@ -7,6 +7,7 @@ import { useCategoryModals } from './useCategoryModals';
 import CreateChannelModal from '../../../../navbar/NavBarPagesGroup/actions/CreateChannelModal';
 import { useCreateRoomModal } from '../../../../navbar/NavBarPagesGroup/hooks/useCreateRoomModal';
 import { useCustomCategories } from '../../hooks/useCustomCategories';
+import { useKeepUnreadsOnTopGroups } from '../../hooks/useKeepUnreadsOnTopGroups';
 import { useShowUnreadsGroups } from '../../hooks/useShowUnreadsGroups';
 
 type CategoryMenuProps = {
@@ -15,6 +16,7 @@ type CategoryMenuProps = {
 	/** Collapse/show-unreads identity (category id for custom, translation key for system). */
 	groupKey: string;
 	showUnreads: boolean;
+	keepUnreadsOnTop: boolean;
 	canMoveUp: boolean;
 	canMoveDown: boolean;
 	onMoveUp: () => void;
@@ -33,6 +35,7 @@ const CategoryMenu = ({
 	category,
 	groupKey,
 	showUnreads,
+	keepUnreadsOnTop,
 	canMoveUp,
 	canMoveDown,
 	onMoveUp,
@@ -42,8 +45,9 @@ const CategoryMenu = ({
 	const { t } = useTranslation();
 
 	const { openCreate, openRename, openDelete } = useCategoryModals();
-	const { toggleShowUnreads: toggleCustomShowUnreads } = useCustomCategories();
+	const { toggleShowUnreads: toggleCustomShowUnreads, toggleKeepUnreadsOnTop: toggleCustomKeepUnreadsOnTop } = useCustomCategories();
 	const { toggleShowUnreads: toggleSystemShowUnreads } = useShowUnreadsGroups();
+	const { toggleKeepUnreadsOnTop: toggleSystemKeepUnreadsOnTop } = useKeepUnreadsOnTopGroups();
 	const createChannel = useCreateRoomModal(CreateChannelModal);
 
 	const triggerRef = useRef<HTMLButtonElement>(null);
@@ -74,6 +78,8 @@ const CategoryMenu = ({
 	}, [open, close]);
 
 	const handleToggleShowUnreads = () => (category ? toggleCustomShowUnreads(category._id) : toggleSystemShowUnreads(groupKey));
+	const handleToggleKeepUnreadsOnTop = () =>
+		category ? toggleCustomKeepUnreadsOnTop(category._id) : toggleSystemKeepUnreadsOnTop(groupKey);
 
 	// Run a menu action and close the menu (closing on reorder avoids the popover pointing at a
 	// different category once this one changes position).
@@ -107,6 +113,20 @@ const CategoryMenu = ({
 							<OptionInput>
 								<Box onClick={(e) => e.stopPropagation()}>
 									<ToggleSwitch checked={showUnreads} onChange={handleToggleShowUnreads} />
+								</Box>
+							</OptionInput>
+						</Option>
+						<OptionTitle>{t('When_opened')}</OptionTitle>
+						<Option
+							role='menuitemcheckbox'
+							aria-checked={keepUnreadsOnTop}
+							icon='sort-amount-down'
+							label={t('Keep_unreads_on_top')}
+							onClick={handleToggleKeepUnreadsOnTop}
+						>
+							<OptionInput>
+								<Box onClick={(e) => e.stopPropagation()}>
+									<ToggleSwitch checked={keepUnreadsOnTop} onChange={handleToggleKeepUnreadsOnTop} />
 								</Box>
 							</OptionInput>
 						</Option>

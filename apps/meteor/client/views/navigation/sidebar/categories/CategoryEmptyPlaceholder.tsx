@@ -9,10 +9,13 @@ import { useGroupDrop } from './CategoryDnDContext';
 // the room rows' leading icon/avatar.
 const ITEM_HEIGHT = { extended: 44, medium: 36, condensed: 28 } as const;
 
-/** Placeholder + drop target shown inside an empty custom category — the whole row is the drop zone. */
-const CategoryEmptyPlaceholder = ({ categoryId }: { categoryId: string }) => {
+/**
+ * Placeholder + drop target shown inside an empty category — the whole row is the drop zone. Custom categories
+ * accept any dragged room; empty system categories accept only rooms whose native category matches (drag-back).
+ */
+const CategoryEmptyPlaceholder = ({ categoryId, isCustom = true }: { categoryId: string; isCustom?: boolean }) => {
 	const { t } = useTranslation();
-	const { isDragOver, dropProps } = useGroupDrop(categoryId, true);
+	const { isDragOver, dropProps } = useGroupDrop(categoryId, isCustom);
 
 	const viewMode = useUserPreference<'extended' | 'medium' | 'condensed'>('sidebarViewMode') ?? 'extended';
 

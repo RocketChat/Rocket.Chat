@@ -87,12 +87,14 @@ const getWrapperSettings = ({
 	isDiscussionEnabled = false,
 	sidebarDynamicCategory = 'none',
 	fakeRoom = undefined,
+	rooms = fakeRooms as unknown as SubscriptionWithRoom[],
 }: {
 	sidebarGroupByType?: boolean;
 	sidebarShowCustomCategories?: boolean;
 	isDiscussionEnabled?: boolean;
 	sidebarDynamicCategory?: 'none' | 'mention' | 'unreads';
 	fakeRoom?: SubscriptionWithRoom;
+	rooms?: SubscriptionWithRoom[];
 }) =>
 	mockAppRoot()
 		.wrap((children) => (
@@ -107,7 +109,7 @@ const getWrapperSettings = ({
 			</VideoConfContext.Provider>
 		))
 		.withUser(user)
-		.withSubscriptions([...fakeRooms, fakeRoom && fakeRoom].filter(Boolean) as unknown as SubscriptionWithRoom[])
+		.withSubscriptions([...rooms, fakeRoom && fakeRoom].filter(Boolean) as unknown as SubscriptionWithRoom[])
 		.withUserPreference('sidebarGroupByType', sidebarGroupByType)
 		.withUserPreference('sidebarShowCustomCategories', sidebarShowCustomCategories)
 		.withUserPreference('sidebarDynamicCategory', sidebarDynamicCategory)
@@ -272,6 +274,33 @@ it('should not render a Favorites group when custom categories are hidden', asyn
 		wrapper: getWrapperSettings({ sidebarShowCustomCategories: false, sidebarGroupByType: true }).build(),
 	});
 	expect(groupsListOf(result.current.groups)).not.toContain('Favorites');
+});
+
+it('should keep empty system categories visible so rooms can be dragged back', async () => {
+	// Only a single DM exists, so with group-by-type on "Channels"/"Teams" have no rooms — but must still render.
+	const onlyDirect = [
+		{ ...createFakeSubscription({ t: 'd', ...emptyUnread }), ...createFakeRoom({ t: 'd' }) },
+	] as unknown as SubscriptionWithRoom[];
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+		wrapper: getWrapperSettings({ rooms: onlyDirect, sidebarGroupByType: true }).build(),
+	});
+	const groupsList = groupsListOf(result.current.groups);
+	expect(groupsList).toContain('Channels');
+	expect(groupsList).toContain('Direct_Messages');
+	expect(result.current.groups[groupsList.indexOf('Channels')].empty).toBe(true);
+	expect(result.current.groups[groupsList.indexOf('Direct_Messages')].empty).toBe(false);
+});
+
+it('should keep the Favorites category visible when it is empty', async () => {
+	const onlyDirect = [
+		{ ...createFakeSubscription({ t: 'd', ...emptyUnread }), ...createFakeRoom({ t: 'd' }) },
+	] as unknown as SubscriptionWithRoom[];
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+		wrapper: getWrapperSettings({ rooms: onlyDirect, sidebarGroupByType: true, sidebarShowCustomCategories: true }).build(),
+	});
+	const groupsList = groupsListOf(result.current.groups);
+	expect(groupsList).toContain('Favorites');
+	expect(result.current.groups[groupsList.indexOf('Favorites')].empty).toBe(true);
 });
 
 it('should not include unread room in unread group if hideUnreadStatus is enabled', async () => {

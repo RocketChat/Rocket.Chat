@@ -98,7 +98,7 @@ const RoomListInner = () => {
 								const group = groups[groupIndex];
 
 								if (group.empty) {
-									return <CategoryEmptyPlaceholder categoryId={group.key} />;
+									return <CategoryEmptyPlaceholder categoryId={group.key} isCustom={Boolean(group.category)} />;
 								}
 
 								const correctedIndex = index - groupsCount.slice(0, groupIndex).reduce((acc, count) => acc + count, 0);

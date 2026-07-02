@@ -97,6 +97,7 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 							category={group.category}
 							groupKey={group.key}
 							showUnreads={group.showUnreads}
+							keepUnreadsOnTop={group.keepUnreadsOnTop}
 							canMoveUp={canMoveUp}
 							canMoveDown={canMoveDown}
 							onMoveUp={onMoveUp}

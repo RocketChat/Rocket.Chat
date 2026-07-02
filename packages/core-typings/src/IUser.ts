@@ -177,6 +177,8 @@ export interface ISidebarCustomCategory {
 	icon?: string;
 	/** When collapsed, whether unread rooms in this category stay visible. Defaults to `true`. */
 	showUnreads?: boolean;
+	/** When opened, whether unread rooms are sorted to the top of this category. Defaults to `false`. */
+	keepUnreadsOnTop?: boolean;
 	/** Room ids (`rid`) assigned to this category. A room belongs to at most one custom category. */
 	rooms?: string[];
 }

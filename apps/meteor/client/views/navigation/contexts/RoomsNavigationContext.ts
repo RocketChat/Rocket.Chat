@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useOpenedRoom } from '../../../lib/RoomManager';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
+import { useKeepUnreadsOnTopGroups } from '../hooks/useKeepUnreadsOnTopGroups';
 import { useShowUnreadsGroups } from '../hooks/useShowUnreadsGroups';
 import { useSystemGroupsOrder } from '../hooks/useSystemGroupsOrder';
 
@@ -156,6 +157,8 @@ export type SideBarRoomListItem = {
 	unreadInfo: GroupedUnreadInfoData;
 	collapsed: boolean;
 	showUnreads: boolean;
+	/** When opened, whether unread rooms are sorted to the top of the category. */
+	keepUnreadsOnTop: boolean;
 	/** True for a custom category that currently has no rooms (renders the "drag rooms here" placeholder). */
 	empty: boolean;
 	category?: ISidebarCustomCategory;
@@ -166,12 +169,14 @@ const getDisplayRooms = (
 	collapsed: boolean,
 	showUnreads: boolean,
 	openedRoom: string | undefined,
+	keepUnreadsOnTop = false,
 ): SubscriptionWithRoom[] => {
-	if (!collapsed) {
-		return rooms;
-	}
 	// When collapsed, keep unread rooms (if enabled) plus the currently-open room always visible.
-	return rooms.filter((room) => (showUnreads && isUnreadSubscription(room)) || room.rid === openedRoom);
+	const visible = collapsed ? rooms.filter((room) => (showUnreads && isUnreadSubscription(room)) || room.rid === openedRoom) : rooms;
+	if (keepUnreadsOnTop) {
+		return [...visible.filter(isUnreadSubscription), ...visible.filter((room) => !isUnreadSubscription(room))];
+	}
+	return visible;
 };
 
 export const useSideBarRoomsList = (): {
@@ -182,6 +187,7 @@ export const useSideBarRoomsList = (): {
 	const { t } = useTranslation();
 	const { collapsedGroups, handleClick, handleKeyDown } = useCollapsedGroups();
 	const { isShowUnreads } = useShowUnreadsGroups();
+	const { isKeepUnreadsOnTop } = useKeepUnreadsOnTopGroups();
 	const { sortGroups } = useSystemGroupsOrder();
 	const { groups, unreadGroupData, customCategories, customGroups, customUnreadData } = useRoomsListContext();
 
@@ -193,18 +199,20 @@ export const useSideBarRoomsList = (): {
 		const rooms = roomSet ? Array.from(roomSet) : [];
 		const collapsed = collapsedGroups.includes(category._id);
 		const showUnreads = category.showUnreads !== false;
+		const keepUnreadsOnTop = Boolean(category.keepUnreadsOnTop);
 
 		return {
 			key: category._id,
 			title: category.name,
 			icon: 'folder',
-			rooms: getDisplayRooms(rooms, collapsed, showUnreads, openedRoom),
+			rooms: getDisplayRooms(rooms, collapsed, showUnreads, openedRoom, keepUnreadsOnTop),
 			// The header total badge is only useful when the unread rooms are hidden — i.e. collapsed AND
 			// "Show unreads" off. With "Show unreads" on, the unread rooms stay visible (with their own
 			// counters) even collapsed, so the header acts as when open and shows no badge.
 			unreadInfo: collapsed && !showUnreads ? customUnreadData.get(category._id) || getEmptyUnreadInfo() : getEmptyUnreadInfo(),
 			collapsed,
 			showUnreads,
+			keepUnreadsOnTop,
 			empty: rooms.length === 0,
 			category,
 		};
@@ -221,15 +229,17 @@ export const useSideBarRoomsList = (): {
 
 			const collapsed = collapsedGroups.includes(group);
 			const showUnreads = isShowUnreads(group);
+			const keepUnreadsOnTop = isKeepUnreadsOnTop(group);
 
 			return {
 				key: group,
 				title: t(sidePanelFiltersConfig[group].title),
 				icon: sidePanelFiltersConfig[group].icon,
-				rooms: getDisplayRooms(rooms, collapsed, showUnreads, openedRoom),
+				rooms: getDisplayRooms(rooms, collapsed, showUnreads, openedRoom, keepUnreadsOnTop),
 				unreadInfo: collapsed && !showUnreads ? unreadGroupData.get(group) || getEmptyUnreadInfo() : getEmptyUnreadInfo(),
 				collapsed,
 				showUnreads,
+				keepUnreadsOnTop,
 				empty: false,
 			};
 		})

@@ -2,7 +2,11 @@ import type { DragEvent, ReactNode } from 'react';
 import { createContext, useContext, useMemo, useRef, useState } from 'react';
 
 import type { MovableRoom } from '../../hooks/useCustomCategories';
-import { useCustomCategories } from '../../hooks/useCustomCategories';
+import { FAVORITES_TARGET, useCustomCategories } from '../../hooks/useCustomCategories';
+
+// The Favorites system group behaves like a custom category for drag-and-drop: dropping a room there favorites
+// it, and dragging one out unfavorites it. (Its key is the translation key used by `useRoomList`.)
+const FAVORITES_GROUP_KEY = 'Favorites';
 
 type DraggingRoom = MovableRoom & {
 	/** The room's current group (custom category id or system key). */
@@ -59,7 +63,10 @@ export const CategoryDnDProvider = ({ children }: { children: ReactNode }) => {
 				cancelClear();
 				if (draggingRoom && draggingRoom.fromGroup !== groupKey) {
 					const room = { rid: draggingRoom.rid, name: draggingRoom.name, isFavorite: draggingRoom.isFavorite };
-					if (isCustom) {
+					if (groupKey === FAVORITES_GROUP_KEY) {
+						// Dropping on Favorites favorites the room (and removes it from any custom category).
+						void moveRoom(room, FAVORITES_TARGET);
+					} else if (isCustom) {
 						void moveRoom(room, groupKey);
 					} else if (draggingRoom.nativeKey === groupKey) {
 						// Dropping on the room's native system category removes it from its custom category.
@@ -182,19 +189,21 @@ export const useGroupDrop = (groupKey: string | undefined, isCustom: boolean) =>
 		if (!dragging || !groupKey || dragging.fromGroup === groupKey) {
 			return false;
 		}
-		return isCustom || dragging.nativeKey === groupKey;
+		// Favorites accepts any room (like a custom category); system groups accept only their native rooms.
+		return isCustom || groupKey === FAVORITES_GROUP_KEY || dragging.nativeKey === groupKey;
 	})();
 
 	const isDragOver = accepts && dnd?.dragOverGroup === groupKey;
 	const isFadedOut = Boolean(dragging) && !isCustom && Boolean(groupKey) && !accepts;
 
 	if (!dnd || !accepts || !groupKey) {
-		return { isDragOver: false, isFadedOut, dropProps: {} };
+		return { isDragOver: false, isFadedOut, accepts: false, dropProps: {} };
 	}
 
 	return {
 		isDragOver,
 		isFadedOut,
+		accepts,
 		dropProps: {
 			onDragEnter: (event: DragEvent) => {
 				event.preventDefault();
