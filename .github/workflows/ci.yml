@@ -24,6 +24,7 @@ env:
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
   release-versions:
