@@ -3,7 +3,6 @@ import type { ReactElement } from 'react';
 
 import ComposerBoldSpan from './ComposerBoldSpan';
 import ComposerCodeElement from './ComposerCodeElement';
-import ComposerColorElement from './ComposerColorElement';
 import ComposerEmojiElement from './ComposerEmojiElement';
 import ComposerItalicSpan from './ComposerItalicSpan';
 import ComposerLinkSpan from './ComposerLinkSpan';
@@ -56,9 +55,6 @@ const ComposerInlineElements = ({ children }: ComposerInlineElementsProps): Reac
 
 				case 'EMOJI':
 					return <ComposerEmojiElement key={index} {...child} />;
-
-				case 'COLOR':
-					return <ComposerColorElement key={index} {...child.value} />;
 
 				default: {
 					if ('fallback' in child) {
