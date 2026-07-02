@@ -1,3 +1,4 @@
+import type { Table } from '../src';
 import { parse } from '../src';
 import { bold, link, plain, table, tableCell, tableRow } from './helpers';
 
@@ -70,12 +71,12 @@ test.each([
 
 test('normalizes ragged body rows to the header column count', () => {
 	const input = ['| a | b |', '| - | - |', '| 1 |', '| 1 | 2 | 3 |'].join('\n');
-	const [node] = parse(input) as [ReturnType<typeof table>];
+	const [node] = parse(input) as [Table];
 
 	// every row has exactly 2 cells (header count): short row padded, long row truncated
 	expect(node.value.rows.map((row) => row.value.length)).toEqual([2, 2]);
 	expect(node.value.rows[0].value[1].value).toEqual([]); // padded empty cell
-	expect(node.value.rows[1].value.map((c) => c.value)).toEqual([[plain('1')], [plain('2')]]); // extra 3rd cell dropped
+	expect(node.value.rows[1].value.map((cell) => cell.value)).toEqual([[plain('1')], [plain('2')]]); // extra 3rd cell dropped
 });
 
 test('exposes the source offsets as fallback for renderers without table support', () => {
