@@ -1,10 +1,9 @@
-import { Box, IconButton } from '@rocket.chat/fuselage';
+import { AudioPlayerControls, Box, IconButton } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import SidebarCard from './SidebarCard';
-import AudioPlayerControls from '../../components/AudioPlayer/AudioPlayerControls';
 import { useFormatMemorySize } from '../../hooks/useFormatMemorySize';
 import { setMessageJumpQueryStringParameter } from '../../lib/utils/setMessageJumpQueryStringParameter';
 import { useMediaPlayer } from '../../providers/MediaPlayerProvider';
@@ -71,13 +70,13 @@ const NowPlayingSection = () => {
 			</Box>
 
 			<AudioPlayerControls
-				playing={playing}
+				isPlaying={playing}
 				currentTime={currentTime}
-				duration={duration}
-				playbackRate={playbackRate}
-				onToggle={toggle}
+				durationTime={duration}
+				playbackSpeed={playbackRate}
+				onTogglePlay={toggle}
 				onSeek={seek}
-				onCyclePlaybackRate={cyclePlaybackRate}
+				onChangePlaybackSpeed={cyclePlaybackRate}
 			/>
 		</SidebarCard>
 	);

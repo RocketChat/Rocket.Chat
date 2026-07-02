@@ -1,11 +1,10 @@
 import type { AudioAttachmentProps } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
+import { AudioPlayerControls, Box } from '@rocket.chat/fuselage';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import { useMediaPlayer } from '../../../../../providers/MediaPlayerProvider';
 import type { PersistentAudioTrack } from '../../../../../providers/MediaPlayerProvider';
-import AudioPlayerControls from '../../../../AudioPlayer/AudioPlayerControls';
 import MarkdownText from '../../../../MarkdownText';
 import MessageCollapsible from '../../../MessageCollapsible';
 import MessageContentBody from '../../../MessageContentBody';
@@ -70,13 +69,13 @@ const AudioAttachment = ({
 					maxWidth='x300'
 				>
 					<AudioPlayerControls
-						playing={active && playing}
+						isPlaying={active && playing}
 						currentTime={active ? currentTime : 0}
-						duration={active ? duration : 0}
-						playbackRate={playbackRate}
-						onToggle={() => (active ? toggle() : play(track))}
+						durationTime={active ? duration : 0}
+						playbackSpeed={playbackRate}
+						onTogglePlay={() => (active ? toggle() : play(track))}
 						onSeek={(time) => (active ? seek(time) : play(track))}
-						onCyclePlaybackRate={cyclePlaybackRate}
+						onChangePlaybackSpeed={cyclePlaybackRate}
 					/>
 				</Box>
 			</MessageCollapsible>
