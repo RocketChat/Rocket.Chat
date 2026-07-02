@@ -3,7 +3,6 @@ import type { ReactElement } from 'react';
 import { memo } from 'react';
 
 import ComposerCodeBlock from './ComposerCodeBlock';
-import ComposerEmojiElement from './ComposerEmojiElement';
 import ComposerInlineElements from './ComposerInlineElements';
 import ComposerPlainSpan from './ComposerPlainSpan';
 
@@ -27,16 +26,6 @@ const ComposerMarkup = ({ tokens }: ComposerMarkupProps): ReactElement => (
 	<>
 		{tokens.map((block, index) => {
 			switch (block.type) {
-				case 'BIG_EMOJI':
-					return (
-						<span key={index}>
-							{block.value.map((emoji, eidx) => (
-								<ComposerEmojiElement key={eidx} big {...emoji} />
-							))}
-							{'\n'}
-						</span>
-					);
-
 				case 'PARAGRAPH':
 					return (
 						<span key={index}>
@@ -53,45 +42,6 @@ const ComposerMarkup = ({ tokens }: ComposerMarkupProps): ReactElement => (
 								<ComposerPlainSpan key={pidx} text={typeof plain.value === 'string' ? plain.value : ''} />
 							))}
 							{'\n'}
-						</span>
-					);
-
-				case 'UNORDERED_LIST':
-					return (
-						<span key={index}>
-							{block.value.map((item, iidx) => (
-								<span key={iidx}>
-									{'- '}
-									<ComposerInlineElements>{item.value}</ComposerInlineElements>
-									{'\n'}
-								</span>
-							))}
-						</span>
-					);
-
-				case 'ORDERED_LIST':
-					return (
-						<span key={index}>
-							{block.value.map((item, iidx) => (
-								<span key={iidx}>
-									{`${item.number ?? iidx + 1}. `}
-									<ComposerInlineElements>{item.value}</ComposerInlineElements>
-									{'\n'}
-								</span>
-							))}
-						</span>
-					);
-
-				case 'TASKS':
-					return (
-						<span key={index}>
-							{block.value.map((task, tidx) => (
-								<span key={tidx}>
-									{task.status ? '- [x] ' : '- [ ] '}
-									<ComposerInlineElements>{task.value}</ComposerInlineElements>
-									{'\n'}
-								</span>
-							))}
 						</span>
 					);
 
