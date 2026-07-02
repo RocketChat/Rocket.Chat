@@ -93,6 +93,16 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
+	countVisibleByMentionAndRoomId(username: IUser['username'], rid: IRoom['_id']): Promise<number> {
+		const query: Filter<IMessage> = {
+			'_hidden': { $ne: true },
+			'mentions.username': username,
+			rid,
+		};
+
+		return this.countDocuments(query);
+	}
+
 	findPaginatedVisibleByMentionAndRoomId(
 		username: IUser['username'],
 		rid: IRoom['_id'],
