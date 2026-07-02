@@ -3,10 +3,15 @@ import { Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { buildWorkspaceRegistrationData } from './buildRegistrationData';
+import { hasOfflineLicense } from './offlineLicense';
 import { settings } from '../../settings';
 import { SystemLogger } from '../logger/system';
 
 export async function registerPreIntentWorkspaceWizard(): Promise<boolean> {
+	if (hasOfflineLicense()) {
+		return false;
+	}
+
 	const firstUser = (await Users.getOldest({ projection: { name: 1, emails: 1 } })) as IUser | undefined;
 	const email = firstUser?.emails?.find((address) => address)?.address;
 

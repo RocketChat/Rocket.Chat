@@ -1,4 +1,5 @@
 import type { IStats } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import type { Logger } from '@rocket.chat/logger';
 import { Statistics } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
@@ -40,7 +41,7 @@ async function sendStats(logger: Logger, cronStatistics: IStats): Promise<string
 export async function sendUsageReport(logger: Logger): Promise<string | undefined> {
 	// Even when disabled, we still generate statistics locally to avoid breaking
 	// internal processes, such as restriction checks for air-gapped workspaces.
-	const shouldSendToCollector = shouldReportStatistics();
+	const shouldSendToCollector = shouldReportStatistics() && !License.hasOfflineLicense();
 
 	return tracerSpan('generateStatistics', {}, async () => {
 		const last = await Statistics.findLast();

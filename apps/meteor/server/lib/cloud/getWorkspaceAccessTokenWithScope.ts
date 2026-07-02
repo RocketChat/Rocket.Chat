@@ -3,6 +3,7 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { getRedirectUri } from './getRedirectUri';
 import { CloudWorkspaceAccessTokenError } from './getWorkspaceAccessToken';
 import { workspaceScopes } from './oauthScopes';
+import { hasOfflineLicense } from './offlineLicense';
 import { removeWorkspaceRegistrationInfo } from './removeWorkspaceRegistrationInfo';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { settings } from '../../settings';
@@ -28,6 +29,10 @@ export async function getWorkspaceAccessTokenWithScope({
 	const tokenResponse = { token: '', expiresAt: new Date(), scope: '' };
 
 	if (!workspaceRegistered) {
+		return tokenResponse;
+	}
+
+	if (hasOfflineLicense()) {
 		return tokenResponse;
 	}
 
