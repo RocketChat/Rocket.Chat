@@ -3,7 +3,6 @@ export type * from './groups';
 export * from './GroupsArchiveProps';
 export * from './GroupsCloseProps';
 export * from './GroupsConvertToTeamProps';
-export * from './GroupsCreateProps';
 export * from './GroupsCountersProps';
 export * from './GroupsDeleteProps';
 export * from './GroupsFilesProps';
