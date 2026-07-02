@@ -505,7 +505,7 @@ const ChatGetMessageReadReceiptsSchema = {
 export const isChatGetMessageReadReceiptsProps = ajv.compile<ChatGetMessageReadReceipts>(ChatGetMessageReadReceiptsSchema);
 
 type GetStarredMessages = {
-	roomId: IRoom['_id'];
+	roomId?: IRoom['_id'];
 	count?: number;
 	offset?: number;
 	sort?: string;
@@ -531,7 +531,7 @@ const GetStarredMessagesSchema = {
 			nullable: true,
 		},
 	},
-	required: ['roomId'],
+	required: [],
 	additionalProperties: false,
 };
 
@@ -571,7 +571,7 @@ const GetPinnedMessagesSchema = {
 export const isChatGetPinnedMessagesProps = ajvQuery.compile<GetPinnedMessages>(GetPinnedMessagesSchema);
 
 type GetMentionedMessages = {
-	roomId: IRoom['_id'];
+	roomId?: IRoom['_id'];
 	count?: number;
 	offset?: number;
 	sort?: string;
@@ -597,7 +597,7 @@ const GetMentionedMessagesSchema = {
 			nullable: true,
 		},
 	},
-	required: ['roomId'],
+	required: [],
 	additionalProperties: false,
 };
 
