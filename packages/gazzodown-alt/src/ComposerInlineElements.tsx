@@ -12,7 +12,6 @@ import ComposerMentionUser from './ComposerMentionUser';
 import ComposerPlainSpan from './ComposerPlainSpan';
 import ComposerSpoilerSpan from './ComposerSpoilerSpan';
 import ComposerStrikeSpan from './ComposerStrikeSpan';
-import ComposerTimestamp from './ComposerTimestamp';
 
 type ComposerInlineElementsProps = {
 	children: (MessageParser.Inlines | { fallback: MessageParser.Plain; type: undefined })[];
@@ -60,12 +59,6 @@ const ComposerInlineElements = ({ children }: ComposerInlineElementsProps): Reac
 
 				case 'COLOR':
 					return <ComposerColorElement key={index} {...child.value} />;
-
-				case 'INLINE_KATEX':
-					return <span key={index}>{child.value}</span>;
-
-				case 'TIMESTAMP':
-					return <ComposerTimestamp key={index}>{child}</ComposerTimestamp>;
 
 				default: {
 					if ('fallback' in child) {
