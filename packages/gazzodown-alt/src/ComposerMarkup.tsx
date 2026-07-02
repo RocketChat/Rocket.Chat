@@ -123,9 +123,6 @@ const ComposerMarkup = ({ tokens }: ComposerMarkupProps): ReactElement => (
 				case 'CODE':
 					return <ComposerCodeBlock key={index} language={block.language} lines={block.value} />;
 
-				case 'KATEX':
-					return <span key={index}>{block.value}</span>;
-
 				case 'LINE_BREAK':
 					return <span key={index}>{'\n'}</span>;
 
