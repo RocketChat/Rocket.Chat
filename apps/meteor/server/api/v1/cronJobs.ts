@@ -4,7 +4,7 @@ import { ajv, ajvQuery, validateUnauthorizedErrorResponse, validateBadRequestErr
 
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
-import { getPaginationItems } from '../helpers/getPaginationItems';
+import { getPaginationItems } from '../lib/getPaginationItems';
 
 const isCronJobsListParams = ajvQuery.compile<{
 	offset?: number;
