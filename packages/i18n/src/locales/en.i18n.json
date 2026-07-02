@@ -5761,7 +5761,7 @@
   "User_must_exist_and_have_permission": "The user must exist and have the {{permission}} permission.",
   "User_muted": "User Muted",
   "User_muted_by": "User {{user_muted}} muted by {{user_by}}.",
-  "User_not_found": "User not found",
+  "User_not_found": "Incorrect login or password",
   "User_not_found_or_incorrect_password": "User not found or incorrect password",
   "User_or_channel_name": "User or channel name",
   "User_removed": "User removed",
@@ -7268,6 +7268,8 @@
   "timestamps.longDateDescription": "12/31/2020, 12:00 AM",
   "timestamps.fullDateTimeDescription": "Thursday, December 31, 2020 12:00 AM",
   "timestamps.fullDateTimeLongDescription": "Thursday, December 31, 2020 12:00:00 AM",
+  "timestamps.relativeTimeDescription": "1 year ago"
+}
   "__username__profile_picture": "{{username}}'s profile picture",
   "User_card": "User card",
   "timestamps.relativeTimeDescription": "1 year ago",
