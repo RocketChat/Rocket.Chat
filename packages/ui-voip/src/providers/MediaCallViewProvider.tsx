@@ -82,7 +82,8 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 	const onHold = () => controls.toggleHold();
 
 	const onCall = async () => {
-		if (sessionState.state !== 'new') {
+		// TODO: This is a workaround for the docked widget, which doesn't have a "closed" state.
+		if (sessionState.state !== 'new' && sessionState.state !== 'closed') {
 			console.error('Cannot start call in state', sessionState.state);
 			return;
 		}

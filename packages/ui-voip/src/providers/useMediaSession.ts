@@ -125,7 +125,8 @@ const reducer = (
 	}
 
 	if (action.type === 'selectPeer') {
-		if (reducerState.state !== 'new') {
+		// TODO: This is a workaround for the docked widget, which doesn't have a "closed" state.
+		if (reducerState.state !== 'closed' && reducerState.state !== 'new') {
 			return reducerState;
 		}
 

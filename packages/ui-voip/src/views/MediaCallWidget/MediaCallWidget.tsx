@@ -1,7 +1,7 @@
 import { OngoingCall, NewCall, IncomingCall, OutgoingCall, IncomingCallTransfer, OutgoingCallTransfer } from '..';
 import OngoingCallWithScreen from './OngoingCallWithScreen';
-import { useMediaCallWidgetSlot } from '../../context/MediaCallWidgetSlotContext';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
+import { useMediaCallWidgetSlot } from '../../context/MediaCallWidgetSlotContext';
 import useRegisterView from '../../context/useRegisterView';
 
 const MediaCallWidget = () => {
@@ -40,6 +40,9 @@ const MediaCallWidget = () => {
 			return <OutgoingCall />;
 		case 'closed':
 		default:
+			if (inline) {
+				return <NewCall />;
+			}
 			return null;
 	}
 };
