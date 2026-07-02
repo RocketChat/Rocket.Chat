@@ -13,16 +13,18 @@ import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
+import type { BackgroundJobsTab } from './BackgroundJobsPage';
 import { statusVariant } from './helpers';
 import { FormSkeleton } from '../../../components/Skeleton';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
 type BackgroundJobInfoContextualBarProps = {
 	jobName: string;
+	tab: BackgroundJobsTab;
 	onClose: () => void;
 };
 
-const BackgroundJobInfoContextualBar = ({ jobName, onClose }: BackgroundJobInfoContextualBarProps) => {
+const BackgroundJobInfoContextualBar = ({ jobName, tab, onClose }: BackgroundJobInfoContextualBarProps) => {
 	const { t } = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 	const queryClient = useQueryClient();
@@ -146,7 +148,9 @@ const BackgroundJobInfoContextualBar = ({ jobName, onClose }: BackgroundJobInfoC
 									<GenericTableCell withTruncatedText>{entry.startedAt ? formatDateAndTime(entry.startedAt) : '—'}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{entry.finishedAt ? formatDateAndTime(entry.finishedAt) : '—'}</GenericTableCell>
 									<GenericTableCell>
-										{entry.error ? <Tag variant='danger'>{t('Failed')}</Tag> : <Tag variant='featured'>{t('Success')}</Tag>}
+										<Box display='flex'>
+											<Tag variant={statusVariant(entry.error ? 'failed' : 'completed')}>{entry.error ? t('Failed') : t('Completed')}</Tag>
+										</Box>
 									</GenericTableCell>
 								</GenericTableRow>
 							))}
@@ -154,22 +158,24 @@ const BackgroundJobInfoContextualBar = ({ jobName, onClose }: BackgroundJobInfoC
 					</GenericTable>
 				)}
 			</ContextualbarScrollableContent>
-			<ContextualbarFooter>
-				<ButtonGroup stretch>
-					<Button disabled={isPending} onClick={() => triggerMutation.mutate()}>
-						{t('Run_now')}
-					</Button>
-					{isDisabled ? (
-						<Button primary disabled={isPending} onClick={() => enableMutation.mutate()}>
-							{t('Enable')}
+			{tab === 'system' && (
+				<ContextualbarFooter>
+					<ButtonGroup stretch>
+						<Button disabled={isPending} onClick={() => triggerMutation.mutate()}>
+							{t('Run_now')}
 						</Button>
-					) : (
-						<Button danger disabled={isPending} onClick={() => disableMutation.mutate()}>
-							{t('Disable')}
-						</Button>
-					)}
-				</ButtonGroup>
-			</ContextualbarFooter>
+						{isDisabled ? (
+							<Button primary disabled={isPending} onClick={() => enableMutation.mutate()}>
+								{t('Enable')}
+							</Button>
+						) : (
+							<Button danger disabled={isPending} onClick={() => disableMutation.mutate()}>
+								{t('Disable')}
+							</Button>
+						)}
+					</ButtonGroup>
+				</ContextualbarFooter>
+			)}
 		</>
 	);
 };

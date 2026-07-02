@@ -57,7 +57,7 @@ const BackgroundJobsPage = () => {
 						<ContextualbarTitle>{t('Job_Info')}</ContextualbarTitle>
 						<ContextualbarClose onClick={handleClose} />
 					</ContextualbarHeader>
-					{context === 'info' && id && <BackgroundJobInfoContextualBar jobName={id} onClose={handleClose} />}
+					{context === 'info' && id && <BackgroundJobInfoContextualBar jobName={id} tab={tab} onClose={handleClose} />}
 				</ContextualbarDialog>
 			)}
 		</Page>
