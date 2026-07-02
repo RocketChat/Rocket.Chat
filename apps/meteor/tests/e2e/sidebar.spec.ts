@@ -64,6 +64,7 @@ test.describe.serial('Sidebar', () => {
 		});
 		test('should navigate on navbar toolbar pressing tab', async ({ page }) => {
 			await poHomeChannel.navbar.btnHome.focus();
+			await expect(poHomeChannel.navbar.btnHome).toBeFocused();
 
 			await test.step('move focus to directory button', async () => {
 				await page.keyboard.press('Tab');
@@ -135,6 +136,7 @@ test.describe.serial('Sidebar', () => {
 
 			await expect(async () => {
 				await collapser.focus();
+				await expect(collapser).toBeFocused();
 				await page.keyboard.press('Space');
 				const isExpanded = (await collapser.getAttribute('aria-expanded')) === 'true';
 				expect(isExpanded).toBeTruthy();

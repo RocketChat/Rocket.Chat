@@ -142,6 +142,7 @@ test.describe('Messaging', () => {
 
 		test('should focus the latest message when moving the focus on the list and theres no previous focus', async ({ page }) => {
 			await page.getByRole('button', { name: targetChannel }).first().focus();
+			await expect(page.getByRole('button', { name: targetChannel }).first()).toBeFocused();
 
 			await test.step('move focus to the list', async () => {
 				await page.keyboard.press('Tab');
@@ -152,6 +153,7 @@ test.describe('Messaging', () => {
 
 			await test.step('move focus to the list again', async () => {
 				await page.getByRole('button', { name: targetChannel }).first().focus();
+				await expect(page.getByRole('button', { name: targetChannel }).first()).toBeFocused();
 				await page.keyboard.press('Tab');
 				await page.keyboard.press('Tab');
 				await page.keyboard.press('Tab');
@@ -165,9 +167,10 @@ test.describe('Messaging', () => {
 			await channelPage.navbar.openChat(targetChannel);
 
 			await test.step('focus on the second message', async () => {
+				await expect(channelPage.composer.inputMessage).toBeFocused();
 				await page.keyboard.press('ArrowUp');
 
-				expect(await channelPage.composer.inputMessage.inputValue()).toBe('msg2');
+				await expect(channelPage.composer.inputMessage).toHaveValue('msg2');
 			});
 
 			await test.step('send edited message', async () => {
@@ -187,6 +190,7 @@ test.describe('Messaging', () => {
 				);
 
 				for (const element of ['edited msg2 a', 'edited msg2 b', 'edited msg2 c', 'edited msg2 d', 'edited msg2 e']) {
+					await expect(channelPage.composer.inputMessage).toBeFocused();
 					await page.keyboard.press('ArrowUp');
 
 					await channelPage.content.sendMessage(element, false);
