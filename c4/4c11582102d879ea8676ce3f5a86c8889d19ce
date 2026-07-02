@@ -1,0 +1,44 @@
+ee/packages/federation-matrix/src/helpers/isUsernameReservedByExclusiveBridge.ts
+  s_e7444c88948ae9::t_f588d18aa1afa7 1-30
+apps/meteor/ee/server/hooks/federation/index.ts
+  s_e7444c88948ae9::t_61d672e5a11fb6 15
+  s_e7444c88948ae9::t_61372ee5cc4b4b 382-387,392-396
+  s_e7444c88948ae9::t_562dd5f338b676 388-391
+  s_e7444c88948ae9::t_4088cfecf48080 4
+apps/meteor/app/lib/server/functions/checkUsernameAvailability.ts
+  s_e7444c88948ae9::t_aa360d0ee76e03 66,68
+  s_e7444c88948ae9::t_3c4db0adfb10fe 8
+  s_e7444c88948ae9::t_1b6b2a69277bb1 67
+  h_4c386397e672f4 65,69-71
+ee/packages/federation-matrix/src/index.ts
+  s_e7444c88948ae9::t_1eb895c76b0b0a 5-6
+ee/packages/federation-matrix/src/api/_matrix/client/account.ts
+  s_e7444c88948ae9::t_59bc68946a6b32 79-81,83-88,92-101,129-137
+  h_4c386397e672f4 82
+  s_e7444c88948ae9::t_a50f1d758133b4 138
+ee/packages/federation-matrix/src/helpers/isUsernameReservedByExclusiveBridge.spec.ts
+  s_e7444c88948ae9::t_60cb0001d28765 1-57
+apps/meteor/server/lib/callbacks/checkUsernameAvailabilityCallback.ts
+  s_e7444c88948ae9::t_47f0f0c060a2e7 1-9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.9",
+  "base_commit_sha": "c44c11582102d879ea8676ce3f5a86c8889d19ce",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_e7444c88948ae9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "14017c91-a029-4378-aabc-349405f54abd",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
