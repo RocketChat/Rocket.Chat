@@ -3,6 +3,7 @@
 		"@msgpack/msgpack": "npm:@msgpack/msgpack@3.0.0-beta2",
 		"@rocket.chat/ui-kit": "npm:@rocket.chat/ui-kit@^0.31.22",
 		"@rocket.chat/apps-engine/": "../../../packages/apps-engine/",
+		"@rocket.chat/apps/base-runtime/": "../base-runtime/src/",
 		"@rocket.chat/apps/": "../",
 		"@std/io": "jsr:@std/io@^0.225.3",
 		"acorn": "npm:acorn@8.17.0",

@@ -7,13 +7,13 @@ import process from 'node:process';
 // `@rocket.chat/apps/*` resolve to allowed paths. Importing the compiled `dist`
 // instead would run the base as CommonJS, whose `require()` bypasses the import
 // map and falls back to node_modules — outside the subprocess read allowlist.
-import { stdoutTransport } from './lib/transports/stdoutTransport';
-import { setTransport } from './lib/messenger';
+import { setSandboxGlobals, setSandboxRequire } from '@rocket.chat/apps/base-runtime/handlers/app/construct';
+import { setTransport } from '@rocket.chat/apps/base-runtime/lib/messenger';
+import { startMainLoop } from '@rocket.chat/apps/base-runtime/mainLoop';
 
-import { setSandboxGlobals, setSandboxRequire } from './handlers/app/construct';
 import registerErrorListeners from './error-handlers';
 import { require } from './lib/require';
-import { startMainLoop } from './mainLoop';
+import { stdoutTransport } from './lib/transports/stdoutTransport';
 
 if (!process.argv.includes('--subprocess')) {
 	console.error(`
@@ -46,9 +46,9 @@ setTransport(stdoutTransport);
 setSandboxRequire(require);
 setSandboxGlobals({ Buffer, Deno: undefined });
 
-registerErrorListeners();
-
 // Process-global side effect; doing it once at startup is cleaner than inside construct
 prepareEnvironment();
+
+registerErrorListeners();
 
 startMainLoop();

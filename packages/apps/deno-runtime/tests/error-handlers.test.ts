@@ -2,7 +2,7 @@ import { assertEquals } from 'https://deno.land/std@0.203.0/assert/mod.ts';
 import { describe, it } from 'https://deno.land/std@0.203.0/testing/bdd.ts';
 import { spy } from 'https://deno.land/std@0.203.0/testing/mock.ts';
 
-import * as Messenger from '../lib/messenger';
+import * as Messenger from '@rocket.chat/apps/base-runtime/lib/messenger';
 
 import { unhandledExceptionListener, unhandledRejectionListener } from '../error-handlers';
 
