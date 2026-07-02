@@ -1,7 +1,6 @@
 import type { IParseAppPackageResult } from '@rocket.chat/apps/dist/server/compiler/IParseAppPackageResult';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry';
-import { require } from '../../lib/require';
 import { sanitizeDeprecatedUsage } from '../../lib/sanitizeDeprecatedUsage';
 import { AppAccessorsInstance } from '../../lib/accessors/mod';
 import { RequestContext } from '../../lib/requestContext';
@@ -52,23 +51,23 @@ function buildRequire(): (module: string) => unknown {
         const normalized = module.replace('node:', '');
 
         if (ALLOWED_NATIVE_MODULES.includes(normalized)) {
-            return require(`node:${normalized}`);
+            return sandboxRequire(`node:${normalized}`);
         }
 
         if (ALLOWED_EXTERNAL_MODULES.includes(module)) {
-            return require(`npm:${module}`);
+            return sandboxRequire(`npm:${module}`);
         }
 
         if (module.startsWith('@rocket.chat/apps-engine')) {
             // Our `require` function knows how to handle these
-            return require(module);
+            return sandboxRequire(module);
         }
 
         throw new Error(`Module ${module} is not allowed`);
     };
 }
 
-function wrapAppCode(code: string): (require: SandboxRequire) => unknown) => Promise<Record<string, unknown>> {
+function wrapAppCode(code: string): (require: SandboxRequire) => Promise<Record<string, unknown>> {
 	const globals = sandboxGlobals;
 	// The common globals are bound by name; any platform-specific extras are
 	// spread in by name from the injected `sandboxGlobals`, so the shell
