@@ -40,7 +40,9 @@ const SYSTEM_GROUP_ICONS: Record<string, IconName> = {
 	Incoming_Livechats: 'burger-arrow-left',
 	Open_Livechats: 'user-arrow-right',
 	On_Hold_Chats: 'pause-unfilled',
+	Mentions: 'at',
 	Unread: 'flag',
+	Unreads: 'flag',
 	Drafts: 'pencil',
 	Favorites: 'star',
 	Teams: 'team',
@@ -85,14 +87,22 @@ type useRoomListReturnType = {
 const isUnreadRoom = (room: SubscriptionWithRoom): boolean =>
 	!room.hideUnreadStatus && Boolean(room.alert || room.unread || room.tunread?.length);
 
+// A room with a direct user mention (@you), including thread mentions — for the "Mentions" dynamic category.
+// Group mentions (@all/@here) do not count; only rooms where the user is personally mentioned move here.
+const isMentionRoom = (room: SubscriptionWithRoom): boolean =>
+	!room.hideUnreadStatus && Boolean(room.userMentions || room.tunreadUser?.length);
+
 export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] }): useRoomListReturnType => {
 	const showOmnichannel = useOmnichannelEnabled();
+	// "System" categories toggle: on = Teams/Channels/Discussions/DMs; off = everything in "Conversations".
 	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
-	const favoritesEnabled = useUserPreference('sidebarShowFavorites');
+	// "Custom" categories toggle (includes Favorites); default on.
+	const showCustom = useUserPreference<boolean>('sidebarShowCustomCategories', true);
+	// "Dynamic" category shown first: 'none' | 'mention' (rooms with mentions) | 'unreads' (all unread rooms).
+	const sidebarDynamicCategory = useUserPreference<'none' | 'mention' | 'unreads'>('sidebarDynamicCategory', 'none');
 	const sidebarDrafts = useFeaturePreview('sidebarDrafts');
 	const sidebarOrder = useUserPreference<typeof order>('sidebarSectionsOrder') ?? order;
 	const isDiscussionEnabled = useSetting('Discussion_enabled');
-	const sidebarShowUnread = useUserPreference('sidebarShowUnread');
 
 	const { categories: customCategories } = useCustomCategories();
 	const { isShowUnreads } = useShowUnreadsGroups();
@@ -120,6 +130,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			const team = new Set<SubscriptionWithRoom>();
 			const omnichannel = new Set<SubscriptionWithRoom>();
 			const unread = new Set<SubscriptionWithRoom>();
+			const mentions = new Set<SubscriptionWithRoom>();
 			const channels = new Set<SubscriptionWithRoom>();
 			const direct = new Set<SubscriptionWithRoom>();
 			const discussion = new Set<SubscriptionWithRoom>();
@@ -143,22 +154,30 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 					return incomingCall.add(room);
 				}
 
-				// A room in a custom category is shown only there (exclusive with Favorites and system groups).
-				const categoryId = roomToCategory.get(room.rid);
-				if (categoryId && customSets.has(categoryId)) {
-					customSets.get(categoryId)?.add(room);
-					return;
+				// The dynamic category takes precedence over every other grouping: it MOVES matching rooms to the
+				// top category, pulling them out of their custom/favorite/system category. "unreads" = all unread
+				// rooms; "mention" = only rooms with a direct user mention.
+				if (sidebarDynamicCategory === 'unreads' && isUnreadRoom(room)) {
+					return unread.add(room);
+				}
+				if (sidebarDynamicCategory === 'mention' && isMentionRoom(room)) {
+					return mentions.add(room);
 				}
 
-				if (sidebarShowUnread && isUnreadRoom(room)) {
-					return unread.add(room);
+				// A room in a custom category is shown only there (exclusive with Favorites and system groups).
+				// When custom categories are hidden, the room falls through to its system grouping instead.
+				const categoryId = roomToCategory.get(room.rid);
+				if (showCustom && categoryId && customSets.has(categoryId)) {
+					customSets.get(categoryId)?.add(room);
+					return;
 				}
 
 				if (sidebarDrafts && room.draft) {
 					return drafts.add(room);
 				}
 
-				if (favoritesEnabled && room.f) {
+				// Favorites are part of the "Custom" categories toggle.
+				if (showCustom && room.f) {
 					return favorite.add(room);
 				}
 
@@ -199,11 +218,9 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			showOmnichannel && omnichannel.size && groups.set('Open_Livechats', omnichannel);
 			showOmnichannel && onHold.size && groups.set('On_Hold_Chats', onHold);
 
-			sidebarShowUnread && unread.size && groups.set('Unread', unread);
-
 			sidebarDrafts && drafts.size && groups.set('Drafts', drafts);
 
-			favoritesEnabled && favorite.size && groups.set('Favorites', favorite);
+			showCustom && favorite.size && groups.set('Favorites', favorite);
 
 			sidebarGroupByType && team.size && groups.set('Teams', team);
 
@@ -262,10 +279,12 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 				};
 			};
 
-			// Custom categories render first (above the system groups) and persist even when empty.
-			const customGroups = customCategories.map((category) =>
-				makeGroup(category._id, category.name, false, customSets.get(category._id) ?? new Set<SubscriptionWithRoom>(), category),
-			);
+			// Custom categories render above the system groups and persist even when empty — unless hidden.
+			const customGroups = showCustom
+				? customCategories.map((category) =>
+						makeGroup(category._id, category.name, false, customSets.get(category._id) ?? new Set<SubscriptionWithRoom>(), category),
+					)
+				: [];
 
 			const systemGroups = sortGroups(
 				sidebarOrder.reduce<SidebarRoomListGroup[]>((acc, key) => {
@@ -277,7 +296,18 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 				}, []),
 			);
 
-			const allGroups = [...customGroups, ...systemGroups];
+			// The dynamic category ("Mentions" or "Unread") renders first — its default position, above everything.
+			const buildDynamicGroups = (): SidebarRoomListGroup[] => {
+				if (sidebarDynamicCategory === 'mention' && mentions.size) {
+					return [makeGroup('Mentions', 'Mentions', true, mentions)];
+				}
+				if (sidebarDynamicCategory === 'unreads' && unread.size) {
+					return [makeGroup('Unreads', 'Unreads', true, unread)];
+				}
+				return [];
+			};
+
+			const allGroups = [...buildDynamicGroups(), ...customGroups, ...systemGroups];
 
 			const groupsCount = allGroups.map((group) => {
 				// An expanded empty custom category reserves a single row for the "drag rooms here" placeholder.
@@ -298,8 +328,8 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			inquiries.enabled,
 			sidebarDrafts,
 			queue,
-			sidebarShowUnread,
-			favoritesEnabled,
+			sidebarDynamicCategory,
+			showCustom,
 			sidebarGroupByType,
 			isDiscussionEnabled,
 			sidebarOrder,

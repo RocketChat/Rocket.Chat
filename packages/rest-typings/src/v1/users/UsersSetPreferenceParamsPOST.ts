@@ -39,6 +39,8 @@ export type UsersSetPreferencesParamsPOST = {
 		sidebarViewMode?: string;
 		sidebarDisplayAvatar?: boolean;
 		sidebarGroupByType?: boolean;
+		sidebarShowCustomCategories?: boolean;
+		sidebarDynamicCategory?: 'none' | 'mention' | 'unreads';
 		sidebarCustomCategories?: ISidebarCustomCategory[];
 		muteFocusedConversations?: boolean;
 		dontAskAgainList?: Array<{ action: string; label: string }>;
@@ -198,6 +200,15 @@ const UsersSetPreferencesParamsPostSchema = {
 				},
 				sidebarGroupByType: {
 					type: 'boolean',
+					nullable: true,
+				},
+				sidebarShowCustomCategories: {
+					type: 'boolean',
+					nullable: true,
+				},
+				sidebarDynamicCategory: {
+					type: 'string',
+					enum: ['none', 'mention', 'unreads'],
 					nullable: true,
 				},
 				sidebarCustomCategories: {

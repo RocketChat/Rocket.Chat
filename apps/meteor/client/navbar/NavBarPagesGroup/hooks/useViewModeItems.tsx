@@ -15,8 +15,9 @@ export const useViewModeItems = (): GenericMenuItemProps[] => {
 	const sidebarViewMode = useUserPreference<'medium' | 'extended' | 'condensed'>('sidebarViewMode', 'extended');
 	const sidebarDisplayAvatar = useUserPreference('sidebarDisplayAvatar', false);
 
+	// Only two view modes are offered: "Detailed" (extended) and "Compact" (condensed). The underlying
+	// preference values are unchanged; "medium" is no longer selectable from the menu.
 	const setToExtended = useHandleChange('extended');
-	const setToMedium = useHandleChange('medium');
 	const setToCondensed = useHandleChange('condensed');
 
 	const handleChangeSidebarDisplayAvatar = useCallback(
@@ -27,21 +28,14 @@ export const useViewModeItems = (): GenericMenuItemProps[] => {
 	return [
 		{
 			id: 'extended',
-			content: t('Extended'),
+			content: t('Detailed'),
 			icon: 'extended-view',
 			onClick: setToExtended,
 			addon: <RadioButton checked={sidebarViewMode === 'extended'} onChange={() => undefined} />,
 		},
 		{
-			id: 'medium',
-			content: t('Medium'),
-			icon: 'medium-view',
-			onClick: setToMedium,
-			addon: <RadioButton checked={sidebarViewMode === 'medium'} onChange={() => undefined} />,
-		},
-		{
 			id: 'condensed',
-			content: t('Condensed'),
+			content: t('Compact'),
 			icon: 'condensed-view',
 			onClick: setToCondensed,
 			addon: <RadioButton checked={sidebarViewMode === 'condensed'} onChange={() => undefined} />,

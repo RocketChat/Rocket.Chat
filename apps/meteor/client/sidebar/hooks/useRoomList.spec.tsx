@@ -83,15 +83,15 @@ const emptyArr: any[] = [];
 
 const getWrapperSettings = ({
 	sidebarGroupByType = false,
-	sidebarShowFavorites = false,
+	sidebarShowCustomCategories = true,
 	isDiscussionEnabled = false,
-	sidebarShowUnread = false,
+	sidebarDynamicCategory = 'none',
 	fakeRoom = undefined,
 }: {
 	sidebarGroupByType?: boolean;
-	sidebarShowFavorites?: boolean;
+	sidebarShowCustomCategories?: boolean;
 	isDiscussionEnabled?: boolean;
-	sidebarShowUnread?: boolean;
+	sidebarDynamicCategory?: 'none' | 'mention' | 'unreads';
 	fakeRoom?: SubscriptionWithRoom;
 }) =>
 	mockAppRoot()
@@ -109,8 +109,8 @@ const getWrapperSettings = ({
 		.withUser(user)
 		.withSubscriptions([...fakeRooms, fakeRoom && fakeRoom].filter(Boolean) as unknown as SubscriptionWithRoom[])
 		.withUserPreference('sidebarGroupByType', sidebarGroupByType)
-		.withUserPreference('sidebarShowFavorites', sidebarShowFavorites)
-		.withUserPreference('sidebarShowUnread', sidebarShowUnread)
+		.withUserPreference('sidebarShowCustomCategories', sidebarShowCustomCategories)
+		.withUserPreference('sidebarDynamicCategory', sidebarDynamicCategory)
 		.withSetting('Discussion_enabled', isDiscussionEnabled);
 
 // System groups default to "Show unreads" ON; off-path tests override this per test.
@@ -130,7 +130,8 @@ it('should return roomList, groupsCount and groupsList', async () => {
 
 it('should return groupsCount with the correct count', async () => {
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
-		wrapper: getWrapperSettings({}).build(),
+		// Hide custom categories (incl. Favorites) so every room folds into a single "Conversations" group.
+		wrapper: getWrapperSettings({ sidebarShowCustomCategories: false }).build(),
 	});
 
 	const { groupsCount } = result.current;
@@ -154,7 +155,8 @@ it('should return roomList with the subscribed rooms and the correct length', as
 
 it('should return groupsList with "Conversations" if preference sidebarGroupByType is not enabled', async () => {
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
-		wrapper: getWrapperSettings({}).build(),
+		// Hide custom categories (incl. Favorites) so the only group is "Conversations".
+		wrapper: getWrapperSettings({ sidebarShowCustomCategories: false }).build(),
 	});
 
 	const groupsList = groupsListOf(result.current.groups);
@@ -173,9 +175,9 @@ it('should return groupsList with "Teams" if sidebarGroupByType is enabled and r
 	expect(result.current.groupsCount[teamsIndex]).toEqual(teams.length);
 });
 
-it('should return groupsList with "Favorites" if sidebarShowFavorites is enabled', async () => {
+it('should return groupsList with "Favorites" when custom categories are shown (favorites are part of Custom)', async () => {
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
-		wrapper: getWrapperSettings({ sidebarShowFavorites: true, sidebarGroupByType: true }).build(),
+		wrapper: getWrapperSettings({ sidebarShowCustomCategories: true, sidebarGroupByType: true }).build(),
 	});
 
 	const groupsList = groupsListOf(result.current.groups);
@@ -235,20 +237,47 @@ it('should always return groupsCount and groupsList with the same length', async
 	expect(result.current.groupsCount.length).toEqual(groupsListOf(result.current.groups).length);
 });
 
-it('should return "Unread" group with the correct items if sidebarShowUnread is enabled', async () => {
+it('should return "Unreads" group with the correct items when the dynamic category is "unreads"', async () => {
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
-		wrapper: getWrapperSettings({ sidebarShowUnread: true, sidebarGroupByType: true }).build(),
+		wrapper: getWrapperSettings({ sidebarDynamicCategory: 'unreads', sidebarGroupByType: true }).build(),
 	});
 	const groupsList = groupsListOf(result.current.groups);
-	const unreadIndex = groupsList.indexOf('Unread');
-	expect(groupsList).toContain('Unread');
+	const unreadIndex = groupsList.indexOf('Unreads');
+	expect(groupsList).toContain('Unreads');
 	expect(result.current.groupsCount[unreadIndex]).toEqual(unreadChannels.length);
+});
+
+it('should render the dynamic category first (its default position)', async () => {
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+		wrapper: getWrapperSettings({ sidebarDynamicCategory: 'unreads', sidebarGroupByType: true }).build(),
+	});
+	expect(groupsListOf(result.current.groups)[0]).toEqual('Unreads');
+});
+
+it('should return "Mentions" group with only user-mentioned rooms when the dynamic category is "mention"', async () => {
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+		wrapper: getWrapperSettings({ sidebarDynamicCategory: 'mention', sidebarGroupByType: true }).build(),
+	});
+	const groupsList = groupsListOf(result.current.groups);
+	const mentionsIndex = groupsList.indexOf('Mentions');
+	// Only rooms with a direct/thread user mention move here — group mentions (@all/@here) do not count.
+	const expected = fakeRooms.filter((room) => !room.hideUnreadStatus && Boolean(room.userMentions || room.tunreadUser?.length)).length;
+	expect(expected).toBeGreaterThan(0);
+	expect(groupsList).toContain('Mentions');
+	expect(result.current.groupsCount[mentionsIndex]).toEqual(expected);
+});
+
+it('should not render a Favorites group when custom categories are hidden', async () => {
+	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+		wrapper: getWrapperSettings({ sidebarShowCustomCategories: false, sidebarGroupByType: true }).build(),
+	});
+	expect(groupsListOf(result.current.groups)).not.toContain('Favorites');
 });
 
 it('should not include unread room in unread group if hideUnreadStatus is enabled', async () => {
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
 		wrapper: getWrapperSettings({
-			sidebarShowUnread: true,
+			sidebarDynamicCategory: 'unreads',
 			sidebarGroupByType: true,
 			fakeRoom: {
 				...createFakeSubscription({ t: 'c', unread: 1, hideUnreadStatus: true }),
@@ -257,7 +286,7 @@ it('should not include unread room in unread group if hideUnreadStatus is enable
 		}).build(),
 	});
 	const groupsList = groupsListOf(result.current.groups);
-	const unreadIndex = groupsList.indexOf('Unread');
+	const unreadIndex = groupsList.indexOf('Unreads');
 	const roomListUnread = roomListOf(result.current.groups).filter((room) => room.unread);
 
 	expect(result.current.groupsCount[unreadIndex]).toEqual(unreadChannels.length);
@@ -290,7 +319,7 @@ it('should add to unread group when has thread unread, even if alert is false', 
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
 		wrapper: getWrapperSettings({
 			sidebarGroupByType: true,
-			sidebarShowUnread: true,
+			sidebarDynamicCategory: 'unreads',
 			fakeRoom,
 		}).build(),
 	});
@@ -308,7 +337,7 @@ it('should not add room to unread group if thread unread is an empty array', asy
 	const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
 		wrapper: getWrapperSettings({
 			sidebarGroupByType: true,
-			sidebarShowUnread: true,
+			sidebarDynamicCategory: 'unreads',
 			fakeRoom,
 		}).build(),
 	});
