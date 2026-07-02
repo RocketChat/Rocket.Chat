@@ -72,6 +72,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			const discussion = new Set();
 			const conversation = new Set();
 			const onHold = new Set();
+			const dmFolders = new Map<string, Set<any>>();
 
 			rooms.forEach((room) => {
 				if (room.archived) {
@@ -115,7 +116,14 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 				}
 
 				if (room.t === 'd') {
-					direct.add(room);
+					if (room.dmFolder) {
+						if (!dmFolders.has(room.dmFolder)) {
+							dmFolders.set(room.dmFolder, new Set());
+						}
+						dmFolders.get(room.dmFolder)!.add(room);
+					} else {
+						direct.add(room);
+					}
 				}
 
 				conversation.add(room);
@@ -142,9 +150,28 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 			sidebarGroupByType && direct.size && groups.set('Direct_Messages', direct);
 
+			if (sidebarGroupByType && dmFolders.size) {
+				for (const [folderName, folderSet] of dmFolders.entries()) {
+					groups.set(`dm_folder_${folderName}`, folderSet);
+				}
+			}
+
 			!sidebarGroupByType && groups.set('Conversations', conversation);
 
-			const { groupsCount, groupsList, roomList, groupedUnreadInfo } = sidebarOrder.reduce(
+			const finalOrder: string[] = [];
+			sidebarOrder.forEach((key) => {
+				if (key === 'Direct_Messages') {
+					if (dmFolders.size) {
+						const sortedFolders = Array.from(dmFolders.keys()).sort();
+						sortedFolders.forEach((folderName) => {
+							finalOrder.push(`dm_folder_${folderName}`);
+						});
+					}
+				}
+				finalOrder.push(key);
+			});
+
+			const { groupsCount, groupsList, roomList, groupedUnreadInfo } = finalOrder.reduce(
 				(acc, key) => {
 					const value = groups.get(key);
 

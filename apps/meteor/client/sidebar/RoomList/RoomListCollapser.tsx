@@ -17,9 +17,13 @@ const RoomListCollapser = ({ groupTitle, unreadCount: unreadGroupCount, collapse
 
 	const { unreadTitle, unreadVariant, showUnread, unreadCount } = useUnreadDisplay(unreadGroupCount);
 
+	const titleText = groupTitle.startsWith('dm_folder_')
+		? groupTitle.substring('dm_folder_'.length)
+		: t(groupTitle);
+
 	return (
 		<SidebarV2CollapseGroup
-			title={t(groupTitle)}
+			title={titleText}
 			expanded={!collapsedGroups.includes(groupTitle)}
 			badge={
 				showUnread ? (
@@ -29,7 +33,7 @@ const RoomListCollapser = ({ groupTitle, unreadCount: unreadGroupCount, collapse
 				) : undefined
 			}
 			aria-label={
-				!collapsedGroups.includes(groupTitle) ? t('Collapse_group', { group: t(groupTitle) }) : t('Expand_group', { group: t(groupTitle) })
+				!collapsedGroups.includes(groupTitle) ? t('Collapse_group', { group: titleText }) : t('Expand_group', { group: titleText })
 			}
 			{...props}
 		/>
