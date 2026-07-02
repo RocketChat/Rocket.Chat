@@ -7,6 +7,7 @@ import SidebarRailCreateNew from './SidebarRailCreateNew';
 import SidebarRailDivider from './SidebarRailDivider';
 import SidebarRailLoginPage from './SidebarRailLoginPage';
 import SidebarRailPhone from './SidebarRailPhone';
+import SidebarRailSort from './SidebarRailSort';
 import NavBarItemDirectoryPage from '../../navbar/NavBarPagesGroup/NavBarItemDirectoryPage';
 import NavBarItemHomePage from '../../navbar/NavBarPagesGroup/NavBarItemHomePage';
 import NavBarItemMarketPlaceMenu from '../../navbar/NavBarPagesGroup/NavBarItemMarketPlaceMenu';
@@ -33,8 +34,9 @@ const SidebarRail = () => {
 		>
 			<Box flexGrow={1} minHeight={0} overflow='hidden auto' p={8}>
 				<NavBarGroup vertical aria-label={t('Pages_and_actions')}>
-					<SidebarRailCreateNew />
 					<NavBarItemHomePage title={t('Home')} />
+					<SidebarRailSort />
+					<SidebarRailCreateNew />
 				</NavBarGroup>
 				<SidebarRailDivider />
 				<NavBarGroup vertical aria-label={t('Voice_Call')}>
