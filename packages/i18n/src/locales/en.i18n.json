@@ -5999,6 +5999,7 @@
   "Workspace_and_user_preferences": "Workspace and user preferences",
   "Workspace_exceeded_MAC_limit_disclaimer": "The workspace has exceeded the monthly limit of active contacts. Talk to your workspace admin to address this issue.",
   "Workspace_instance": "Workspace instance",
+  "Workspace_license_is_now_managed_from_the_subscription_page": "Workspace license is now managed from the <a>subscription page</a>",
   "Workspace_not_connected": "Workspace not connected",
   "Workspace_not_registered": "Workspace not registered",
   "Workspace_now_using_device_management": "Workspace now using device management",
