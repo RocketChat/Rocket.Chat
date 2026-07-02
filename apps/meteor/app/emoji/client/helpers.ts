@@ -69,11 +69,11 @@ export const createEmojiList = (
 	setRecentEmojis: (emojis: string[]) => void,
 ): (RowItem | LoadMoreItem)[] => {
 	const items: RowItem = [];
-	const emojiPackages = Object.values(emoji.packages);
+	const emojiPackages = Object.entries(emoji.packages);
 	let count = 0;
 	let limited = false;
 
-	emojiPackages.forEach((emojiPackage) => {
+	emojiPackages.forEach(([packageName, emojiPackage]) => {
 		if (!emojiPackage.emojisByCategory?.[category]) {
 			return;
 		}
@@ -89,6 +89,11 @@ export const createEmojiList = (
 			if (!emoji.list[emojiToRender]) {
 				removeFromRecent(emojiToRender, recentEmojis, setRecentEmojis);
 				return;
+			}
+
+			// A custom emoji with the same name overrides the native one (including its tones), so skip the native duplicate
+			if (packageName === 'native' && emoji.list[`:${current}:`]?.emojiPackage === 'emojiCustom') {
+				continue;
 			}
 
 			const image = emojiPackage.renderPicker(emojiToRender);
