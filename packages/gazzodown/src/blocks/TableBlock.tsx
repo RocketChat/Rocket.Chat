@@ -8,13 +8,20 @@ type TableBlockProps = {
 	rows: MessageParser.TableRow[];
 };
 
-const alignMap = {
-	left: 'start',
-	center: 'center',
-	right: 'end',
-} as const;
-
-const toAlign = (align: MessageParser.TableCell['align']) => (align ? alignMap[align] : undefined);
+// Explicit mapping (not an object lookup) so a crafted AST align like `__proto__`
+// or `toString` can never resolve to an inherited value.
+const toAlign = (align: MessageParser.TableCell['align']): 'start' | 'center' | 'end' | undefined => {
+	switch (align) {
+		case 'left':
+			return 'start';
+		case 'center':
+			return 'center';
+		case 'right':
+			return 'end';
+		default:
+			return undefined;
+	}
+};
 
 const TableBlock = ({ header, rows }: TableBlockProps) => (
 	<Table striped fixed={false}>

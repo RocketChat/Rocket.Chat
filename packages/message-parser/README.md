@@ -52,7 +52,7 @@ Alignment is taken from the delimiter row:
 | `---:` | right     |
 | `---`  | none      |
 
-```
+```md
 | Header 1 | Header 2 |
 | -------- | :------: |
 | Cell 1   | Cell 2   |

@@ -182,7 +182,9 @@ export const table = (header: Inlines[][], aligns: Array<TableCell['align']>, ro
 		rows: rows.map(
 			(cells): TableRow => ({
 				type: 'TABLE_ROW',
-				value: cells.map((cell, index) => tableCell(cell, aligns[index])),
+				// Normalize each row to the header's column count: pad missing cells and
+				// drop extras, so ragged GFM rows stay aligned with the header/delimiter.
+				value: header.map((_, index) => tableCell(cells[index] ?? [], aligns[index])),
 			}),
 		),
 	},
