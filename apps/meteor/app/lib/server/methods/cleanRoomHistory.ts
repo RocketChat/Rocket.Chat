@@ -3,9 +3,9 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { findRoomByIdOrName } from '../../../../server/api/v1/rooms';
+import { cleanRoomHistory } from '../../../../server/lib/rooms/cleanRoomHistory';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { cleanRoomHistory } from '../functions/cleanRoomHistory';
 
 type CleanRoomHistoryParams = {
 	roomId: string;

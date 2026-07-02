@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
 
-import type { SubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
+import type { SubscribedRoomsForUserWithDetails } from '../rooms/getRoomsWithSingleOwner';
 
 export const getUserSingleOwnedRooms = async function (subscribedRooms: SubscribedRoomsForUserWithDetails[]) {
 	const roomsThatWillChangeOwner = subscribedRooms

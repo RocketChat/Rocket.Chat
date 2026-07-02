@@ -29,11 +29,11 @@ import type { Document, FindOptions, Filter } from 'mongodb';
 
 import { saveRoomName } from '../../../app/channel-settings/server';
 import { saveRoomType } from '../../../app/channel-settings/server/functions/saveRoomType';
-import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
-import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
-import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
 import { notifyOnSubscriptionChangedByRoomIdAndUserId, notifyOnRoomChangedById } from '../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../app/settings/server';
+import { addUserToRoom } from '../../lib/rooms/addUserToRoom';
+import { getSubscribedRoomsForUserWithDetails } from '../../lib/rooms/getRoomsWithSingleOwner';
+import { removeUserFromRoom } from '../../lib/rooms/removeUserFromRoom';
 import { checkUsernameAvailability } from '../../lib/users/checkUsernameAvailability';
 
 export class TeamService extends ServiceClassInternal implements ITeamService {

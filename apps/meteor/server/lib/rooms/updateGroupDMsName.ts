@@ -3,7 +3,7 @@ import { isNotUndefined } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import type { ClientSession } from 'mongodb';
 
-import { notifyOnSubscriptionChangedByRoomId } from '../lib/notifyListener';
+import { notifyOnSubscriptionChangedByRoomId } from '../../../app/lib/server/lib/notifyListener';
 
 const getFname = (members: IUser[]): string => members.map(({ name, username }) => name || username).join(', ');
 const getName = (members: IUser[]): string => members.map(({ username }) => username).join(',');

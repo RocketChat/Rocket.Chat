@@ -2,10 +2,10 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Subscriptions, ReadReceipts, ReadReceiptsArchive, Team } from '@rocket.chat/models';
 
 import type { SubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
-import { eraseRoomLooseValidation, eraseTeamOnRelinquishRoomOwnerships } from '../../../../server/api/lib/eraseTeam';
-import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
-import { FileUpload } from '../../../file-upload/server';
-import { notifyOnSubscriptionChanged } from '../lib/notifyListener';
+import { FileUpload } from '../../../app/file-upload/server';
+import { notifyOnSubscriptionChanged } from '../../../app/lib/server/lib/notifyListener';
+import { eraseRoomLooseValidation, eraseTeamOnRelinquishRoomOwnerships } from '../../api/lib/eraseTeam';
+import { addUserRolesAsync } from '../roles/addUserRoles';
 
 const bulkTeamCleanup = async (rids: IRoom['_id'][]) => {
 	const rooms = (await Rooms.findByIds(rids, { projection: { teamId: 1, teamMain: 1 } }).toArray()) as Pick<

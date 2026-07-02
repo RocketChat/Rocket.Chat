@@ -37,16 +37,16 @@ const { TeamService } = proxyquire.noCallThru().load('../../../../../server/serv
 	'../../../app/channel-settings/server/functions/saveRoomType': {
 		saveRoomType: sinon.stub(),
 	},
-	'../../../app/lib/server/functions/addUserToRoom': {
+	'../../lib/rooms/addUserToRoom': {
 		addUserToRoom,
 	},
 	'../../lib/users/checkUsernameAvailability': {
 		checkUsernameAvailability: sinon.stub(),
 	},
-	'../../../app/lib/server/functions/getRoomsWithSingleOwner': {
+	'../../lib/rooms/getRoomsWithSingleOwner': {
 		getSubscribedRoomsForUserWithDetails: sinon.stub(),
 	},
-	'../../../app/lib/server/functions/removeUserFromRoom': {
+	'../../lib/rooms/removeUserFromRoom': {
 		removeUserFromRoom: sinon.stub(),
 	},
 	'../../../app/lib/server/lib/notifyListener': {

@@ -4,8 +4,8 @@ import { Meteor } from 'meteor/meteor';
 
 import { validateInviteToken } from './validateInviteToken';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
+import { addUserToRoom } from '../../../../server/lib/rooms/addUserToRoom';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
-import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 
 export const useInviteToken = async (userId: string, token: string) => {
 	if (!userId) {

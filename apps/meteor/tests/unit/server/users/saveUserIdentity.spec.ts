@@ -52,7 +52,7 @@ const { saveUserIdentity } = proxyquire.noCallThru().load('../../../../server/li
 	'./setRealName': {
 		setRealName: stubs.setRealName,
 	},
-	'../../../app/lib/server/functions/updateGroupDMsName': {
+	'../rooms/updateGroupDMsName': {
 		updateGroupDMsName: sinon.stub(),
 	},
 	'../../../app/lib/server/functions/validateName': {

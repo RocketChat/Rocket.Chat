@@ -3,11 +3,11 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
 
 import { getDefaultChannels } from './getDefaultChannels';
-import { callbacks } from '../../../../server/lib/callbacks';
-import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
-import { settings } from '../../../settings/server';
-import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
-import { notifyOnSubscriptionChangedById } from '../lib/notifyListener';
+import { notifyOnSubscriptionChangedById } from '../../../app/lib/server/lib/notifyListener';
+import { settings } from '../../../app/settings/server';
+import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
+import { callbacks } from '../callbacks';
+import { getSubscriptionAutotranslateDefaultConfig } from '../getSubscriptionAutotranslateDefaultConfig';
 
 export const addUserToDefaultChannels = async function (user: IUser, silenced?: boolean): Promise<void> {
 	await callbacks.run('beforeJoinDefaultChannels', user);

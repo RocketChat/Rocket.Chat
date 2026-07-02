@@ -7,8 +7,8 @@ import { Meteor } from 'meteor/meteor';
 
 import { beforeAddUsersToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
 import { i18n } from '../../../../server/lib/i18n';
+import { addUserToRoom } from '../../../../server/lib/rooms/addUserToRoom';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { addUserToRoom } from '../functions/addUserToRoom';
 import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {

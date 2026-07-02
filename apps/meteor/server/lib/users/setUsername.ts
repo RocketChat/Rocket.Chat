@@ -13,13 +13,13 @@ import { getAvatarSuggestionForUser } from './getAvatarSuggestionForUser';
 import { saveUserIdentity } from './saveUserIdentity';
 import { setUserAvatar } from './setUserAvatar';
 import { validateUsername } from './validateUsername';
-import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
-import { joinDefaultChannels } from '../../../app/lib/server/functions/joinDefaultChannels';
 import { notifyOnUserChange } from '../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../app/settings/server';
 import { onceTransactionCommitedSuccessfully } from '../../database/utils';
 import { callbacks } from '../callbacks';
 import { SystemLogger } from '../logger/system';
+import { addUserToRoom } from '../rooms/addUserToRoom';
+import { joinDefaultChannels } from '../rooms/joinDefaultChannels';
 
 const isUserInFederatedRooms = async (userId: string): Promise<boolean> => {
 	const cursor = Subscriptions.findUserFederatedRoomIds(userId);

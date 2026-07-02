@@ -3,10 +3,10 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Subscriptions, ReadReceipts, ReadReceiptsArchive } from '@rocket.chat/models';
 
 import { deleteRoom } from './deleteRoom';
-import { NOTIFICATION_ATTACHMENT_COLOR } from '../../../../lib/constants';
-import { i18n } from '../../../../server/lib/i18n';
-import { FileUpload } from '../../../file-upload/server';
-import { notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../lib/notifyListener';
+import { FileUpload } from '../../../app/file-upload/server';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../../../app/lib/server/lib/notifyListener';
+import { NOTIFICATION_ATTACHMENT_COLOR } from '../../../lib/constants';
+import { i18n } from '../i18n';
 
 const FILE_CLEANUP_BATCH_SIZE = 1000;
 

@@ -3,9 +3,9 @@ import { isBannedSubscription } from '@rocket.chat/core-typings';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
-import { afterBanFromRoomCallback } from '../../../../server/lib/callbacks/afterBanFromRoomCallback';
-import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
-import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../../../app/lib/server/lib/notifyListener';
+import { afterBanFromRoomCallback } from '../callbacks/afterBanFromRoomCallback';
+import { removeUserFromRolesAsync } from '../roles/removeUserFromRoles';
 
 /**
  * Bans a user from a room when triggered by federation or other external events.

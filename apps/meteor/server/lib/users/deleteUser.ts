@@ -18,9 +18,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { FileUpload } from '../../../app/file-upload/server';
-import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
-import { relinquishRoomOwnerships } from '../../../app/lib/server/functions/relinquishRoomOwnerships';
-import { updateGroupDMsName } from '../../../app/lib/server/functions/updateGroupDMsName';
 import {
 	notifyOnRoomChangedById,
 	notifyOnIntegrationChangedByUserId,
@@ -30,6 +27,9 @@ import {
 import { settings } from '../../../app/settings/server';
 import { callbacks } from '../callbacks';
 import { i18n } from '../i18n';
+import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from '../rooms/getRoomsWithSingleOwner';
+import { relinquishRoomOwnerships } from '../rooms/relinquishRoomOwnerships';
+import { updateGroupDMsName } from '../rooms/updateGroupDMsName';
 
 export async function deleteUser(userId: string, confirmRelinquish = false, deletedBy?: IUser['_id']): Promise<{ deletedRooms: string[] }> {
 	if (userId === 'rocket.cat') {

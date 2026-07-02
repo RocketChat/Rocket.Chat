@@ -8,10 +8,10 @@ import { Accounts } from 'meteor/accounts-base';
 import { RecordConverter, type RecordConverterOptions } from './RecordConverter';
 import { generateTempPassword } from './generateTempPassword';
 import { callbacks as systemCallbacks } from '../../../../../server/lib/callbacks';
+import { addUserToDefaultChannels } from '../../../../../server/lib/rooms/addUserToDefaultChannels';
 import { generateUsernameSuggestion } from '../../../../../server/lib/users/getUsernameSuggestion';
 import { saveUserIdentity } from '../../../../../server/lib/users/saveUserIdentity';
 import { setUserActiveStatus } from '../../../../../server/lib/users/setUserActiveStatus';
-import { addUserToDefaultChannels } from '../../../../lib/server/functions/addUserToDefaultChannels';
 import { notifyOnUserChange } from '../../../../lib/server/lib/notifyListener';
 import type { IConversionCallbacks } from '../../definitions/IConversionCallbacks';
 

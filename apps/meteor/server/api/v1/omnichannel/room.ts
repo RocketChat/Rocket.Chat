@@ -34,7 +34,6 @@ import { API } from '../..';
 import { findGuest, findRoom, settings, findAgent, onCheckRoomParams } from './lib/livechat';
 import { canAccessRoomAsync } from '../../../../app/authorization/server';
 import { hasPermissionAsync } from '../../../../app/authorization/server/functions/hasPermission';
-import { addUserToRoom } from '../../../../app/lib/server/functions/addUserToRoom';
 import { closeLivechatRoom } from '../../../../app/lib/server/functions/closeLivechatRoom';
 import { normalizeTransferredByData } from '../../../../app/livechat/server/lib/Helper';
 import { closeRoom } from '../../../../app/livechat/server/lib/closeRoom';
@@ -46,6 +45,7 @@ import { transfer } from '../../../../app/livechat/server/lib/transfer';
 import { settings as rcSettings } from '../../../../app/settings/server';
 import { callbacks } from '../../../lib/callbacks';
 import { i18n } from '../../../lib/i18n';
+import { addUserToRoom } from '../../../lib/rooms/addUserToRoom';
 import type { ExtractRoutesFromAPI } from '../../ApiClass';
 import { isWidget } from '../../lib/isWidget';
 

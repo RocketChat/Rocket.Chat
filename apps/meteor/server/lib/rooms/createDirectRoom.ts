@@ -8,11 +8,11 @@ import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 import type { MatchKeysAndValues } from 'mongodb';
 
-import { callbacks } from '../../../../server/lib/callbacks';
-import { getNameForDMs } from '../../../../server/services/room/getNameForDMs';
-import { settings } from '../../../settings/server';
-import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
-import { notifyOnRoomChangedById, notifyOnSubscriptionChangedByRoomIdAndUserId } from '../lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../app/lib/server/lib/notifyListener';
+import { settings } from '../../../app/settings/server';
+import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
+import { getNameForDMs } from '../../services/room/getNameForDMs';
+import { callbacks } from '../callbacks';
 
 const generateSubscription = (
 	fname: string,

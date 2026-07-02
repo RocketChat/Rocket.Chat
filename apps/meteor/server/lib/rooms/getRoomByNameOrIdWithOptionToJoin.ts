@@ -3,8 +3,8 @@ import type { IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { isObject } from '../../../../lib/utils/isObject';
-import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
+import { isObject } from '../../../lib/utils/isObject';
+import { createDirectMessage } from '../../methods/createDirectMessage';
 
 export const getRoomByNameOrIdWithOptionToJoin = async ({
 	user,

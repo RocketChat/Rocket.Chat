@@ -3,7 +3,7 @@ import { cronJobs } from '@rocket.chat/cron';
 import { Rooms } from '@rocket.chat/models';
 
 import { getCronAdvancedTimerFromPrecisionSetting } from '../../../lib/getCronAdvancedTimerFromPrecisionSetting';
-import { cleanRoomHistory } from '../../lib/server/functions/cleanRoomHistory';
+import { cleanRoomHistory } from '../../../server/lib/rooms/cleanRoomHistory';
 import { settings } from '../../settings/server';
 
 type RetentionRoomTypes = 'c' | 'p' | 'd';

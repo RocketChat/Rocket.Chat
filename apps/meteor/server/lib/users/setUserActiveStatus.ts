@@ -7,8 +7,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { closeOmnichannelConversations } from '../../../app/lib/server/functions/closeOmnichannelConversations';
-import { shouldRemoveOrChangeOwner, getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
-import { relinquishRoomOwnerships } from '../../../app/lib/server/functions/relinquishRoomOwnerships';
 import {
 	notifyOnRoomChangedById,
 	notifyOnRoomChangedByUserDM,
@@ -18,6 +16,8 @@ import {
 import * as Mailer from '../../../app/mailer/server/api';
 import { settings } from '../../../app/settings/server';
 import { callbacks } from '../callbacks';
+import { shouldRemoveOrChangeOwner, getSubscribedRoomsForUserWithDetails } from '../rooms/getRoomsWithSingleOwner';
+import { relinquishRoomOwnerships } from '../rooms/relinquishRoomOwnerships';
 
 async function reactivateDirectConversations(userId: string) {
 	// since both users can be deactivated at the same time, we should just reactivate rooms if both users are active

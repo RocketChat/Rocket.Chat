@@ -67,7 +67,7 @@ const {
 	getRoomByNameOrIdWithOptionToJoin,
 }: {
 	getRoomByNameOrIdWithOptionToJoin: GetRoomByNameOrIdWithOptionToJoinFn;
-} = proxyquire.noCallThru().load('../../../../../../../meteor/app/lib/server/functions/getRoomByNameOrIdWithOptionToJoin.ts', {
+} = proxyquire.noCallThru().load('../../../../../../../meteor/server/lib/rooms/getRoomByNameOrIdWithOptionToJoin.ts', {
 	'@rocket.chat/models': {
 		Rooms: RoomsStub,
 		Subscriptions: SubscriptionsStub,
@@ -76,8 +76,8 @@ const {
 	'@rocket.chat/core-services': {
 		Room: RoomServiceStub,
 	},
-	'../../../../lib/utils/isObject': isObjectMock,
-	'../../../../server/methods/createDirectMessage': {
+	'../../../lib/utils/isObject': isObjectMock,
+	'../../methods/createDirectMessage': {
 		createDirectMessage: createDirectMessageStub,
 	},
 	'meteor/meteor': MeteorStub,

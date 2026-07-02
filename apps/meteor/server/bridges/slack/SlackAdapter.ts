@@ -18,16 +18,16 @@ import { SlackAPI } from './SlackAPI';
 import { slackLogger } from './logger';
 import { saveRoomName, saveRoomTopic } from '../../../app/channel-settings/server';
 import { FileUpload } from '../../../app/file-upload/server';
-import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
-import { archiveRoom } from '../../../app/lib/server/functions/archiveRoom';
 import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
-import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
-import { unarchiveRoom } from '../../../app/lib/server/functions/unarchiveRoom';
 import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
 import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 import { settings } from '../../../app/settings/server';
 import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
+import { addUserToRoom } from '../../lib/rooms/addUserToRoom';
+import { archiveRoom } from '../../lib/rooms/archiveRoom';
+import { removeUserFromRoom } from '../../lib/rooms/removeUserFromRoom';
+import { unarchiveRoom } from '../../lib/rooms/unarchiveRoom';
 
 export default class SlackAdapter {
 	constructor(slackBridge) {

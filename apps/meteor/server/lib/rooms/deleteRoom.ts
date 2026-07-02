@@ -1,8 +1,8 @@
 import { Messages, Rooms, Subscriptions } from '@rocket.chat/models';
 
-import { callbacks } from '../../../../server/lib/callbacks';
-import { FileUpload } from '../../../file-upload/server';
-import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../lib/notifyListener';
+import { FileUpload } from '../../../app/file-upload/server';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../../../app/lib/server/lib/notifyListener';
+import { callbacks } from '../callbacks';
 
 export const deleteRoom = async function (rid: string): Promise<void> {
 	await FileUpload.removeFilesByRoomId(rid);

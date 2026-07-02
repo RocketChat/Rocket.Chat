@@ -5,13 +5,13 @@ import { isBannedSubscription, isRoomNativeFederated, type IUser } from '@rocket
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
-import { callbacks } from '../../../../server/lib/callbacks';
-import { beforeAddUserToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
-import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
-import { settings } from '../../../settings/server';
-import { beforeAddUserToRoom as beforeAddUserToRoomPatch } from '../lib/beforeAddUserToRoom';
-import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../lib/notifyListener';
+import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
+import { callbacks } from '../callbacks';
+import { roomCoordinator } from './roomCoordinator';
+import { beforeAddUserToRoom as beforeAddUserToRoomPatch } from '../../../app/lib/server/lib/beforeAddUserToRoom';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../../../app/lib/server/lib/notifyListener';
+import { settings } from '../../../app/settings/server';
+import { beforeAddUserToRoom } from '../callbacks/beforeAddUserToRoom';
 
 /**
  * This function adds user to the given room.

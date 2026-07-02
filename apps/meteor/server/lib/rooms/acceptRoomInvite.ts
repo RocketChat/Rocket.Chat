@@ -5,8 +5,8 @@ import type { IUser, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../server/lib/callbacks';
-import { notifyOnSubscriptionChangedById } from '../lib/notifyListener';
+import { notifyOnSubscriptionChangedById } from '../../../app/lib/server/lib/notifyListener';
+import { callbacks } from '../callbacks';
 
 /**
  * Accepts a room invite when triggered by internal events such as federation

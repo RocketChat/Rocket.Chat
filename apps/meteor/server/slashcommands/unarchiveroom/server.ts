@@ -5,12 +5,12 @@ import { Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
-import { unarchiveRoom } from '../../../app/lib/server/functions/unarchiveRoom';
 import { settings } from '../../../app/settings/server';
 import { slashCommands } from '../../../app/utils/server/slashCommand';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { i18n } from '../../lib/i18n';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import { unarchiveRoom } from '../../lib/rooms/unarchiveRoom';
 
 slashCommands.add({
 	command: 'unarchive',

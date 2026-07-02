@@ -32,13 +32,13 @@ const meteorErrorMock = class extends Error {
 	}
 };
 
-const { performUserBan, banUserFromRoom } = p.noCallThru().load('../../../../../../app/lib/server/functions/banUserFromRoom.ts', {
+const { performUserBan, banUserFromRoom } = p.noCallThru().load('../../../../../../server/lib/rooms/banUserFromRoom.ts', {
 	'@rocket.chat/models': modelsMock,
 	'@rocket.chat/core-services': { Message: messageMock },
 	'meteor/meteor': { Meteor: { Error: meteorErrorMock } },
-	'../../../../server/lib/callbacks/afterBanFromRoomCallback': { afterBanFromRoomCallback: afterBanFromRoomCallbackMock },
-	'../../../../server/lib/roles/removeUserFromRoles': { removeUserFromRolesAsync: removeUserFromRolesAsyncMock },
-	'../lib/notifyListener': {
+	'../callbacks/afterBanFromRoomCallback': { afterBanFromRoomCallback: afterBanFromRoomCallbackMock },
+	'../roles/removeUserFromRoles': { removeUserFromRolesAsync: removeUserFromRolesAsyncMock },
+	'../../../app/lib/server/lib/notifyListener': {
 		notifyOnRoomChangedById: notifyOnRoomChangedByIdMock,
 		notifyOnSubscriptionChanged: notifyOnSubscriptionChangedMock,
 	},

@@ -27,7 +27,7 @@ const { UserConverter } = proxyquire.noCallThru().load('../../../../../app/impor
 	'../../../settings/server': {
 		settings: { get: settingsStub },
 	},
-	'../../../../lib/server/functions/addUserToDefaultChannels': {
+	'../../../../../server/lib/rooms/addUserToDefaultChannels': {
 		addUserToDefaultChannels,
 	},
 	'../../../../../server/lib/users/getUsernameSuggestion': {

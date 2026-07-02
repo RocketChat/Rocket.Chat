@@ -3,11 +3,11 @@ import { removeEmpty } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { getRoomByNameOrIdWithOptionToJoin } from './getRoomByNameOrIdWithOptionToJoin';
 import { sendMessage, validateMessage } from './sendMessage';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { getRoomByNameOrIdWithOptionToJoin } from '../../../../server/lib/rooms/getRoomByNameOrIdWithOptionToJoin';
 import { validateRoomMessagePermissionsAsync } from '../../../authorization/server/functions/canSendMessage';
 import { settings } from '../../../settings/server';
 

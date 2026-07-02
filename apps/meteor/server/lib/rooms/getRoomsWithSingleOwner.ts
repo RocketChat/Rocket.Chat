@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 
-import { subscriptionHasRole } from '../../../authorization/server';
+import { subscriptionHasRole } from '../../../app/authorization/server';
 
 export type SubscribedRoomsForUserWithDetails = {
 	rid: string;

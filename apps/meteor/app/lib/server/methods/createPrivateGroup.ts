@@ -4,8 +4,8 @@ import { Users, Team } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { createRoom } from '../../../../server/lib/rooms/createRoom';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { createRoom } from '../functions/createRoom';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
