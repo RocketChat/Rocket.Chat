@@ -7,10 +7,10 @@ import * as Messenger from './lib/messenger';
 import { stdoutTransport } from './lib/transports/stdoutTransport';
 import { decoder } from './lib/codec';
 import { Logger } from './lib/logger';
-
 import slashcommandHandler from './handlers/slashcommand-handler';
 import videoConferenceHandler from './handlers/videoconference-handler';
 import apiHandler from './handlers/api-handler';
+import { setSandboxGlobals, setSandboxRequire } from './handlers/app/construct';
 import handleApp from './handlers/app/handler';
 import handleScheduler from './handlers/scheduler-handler';
 import registerErrorListeners from './error-handlers';
@@ -143,6 +143,12 @@ function prepareEnvironment() {
 
 // This runtime communicates with the Apps-Engine host through stdout
 Messenger.setTransport(stdoutTransport);
+
+// Deno's sandbox `require` is a createRequire shim that resolves compiled
+// apps-engine paths; the eval shell additionally needs a `Buffer` and a
+// shadowed `Deno` (→ undefined) bound by name.
+setSandboxRequire(require);
+setSandboxGlobals({ Buffer, Deno: undefined });
 
 registerErrorListeners();
 

@@ -9,6 +9,39 @@ import { RequestContext } from '../../lib/requestContext';
 const ALLOWED_NATIVE_MODULES = ['path', 'url', 'crypto', 'buffer', 'stream', 'net', 'http', 'https', 'zlib', 'util', 'punycode', 'os', 'querystring', 'fs'];
 const ALLOWED_EXTERNAL_MODULES = ['uuid'];
 
+/**
+ * A platform-dependent `require` used to resolve the modules an app is allowed
+ * to load (native `node:` modules, a small allow-list of npm packages, and
+ * apps-engine files). Each runtime injects its own via {@link setSandboxRequire}
+ * — Node hands over its global `require`, Deno hands over its `createRequire`
+ * shim that knows how to resolve compiled apps-engine paths.
+ */
+type SandboxRequire = (module: string) => unknown;
+
+function defaultSandboxRequire(): never {
+	throw new Error('No sandbox require has been injected; the runtime adapter must call setSandboxRequire() during bootstrap');
+}
+
+let sandboxRequire: SandboxRequire = defaultSandboxRequire;
+
+export function setSandboxRequire(newRequire: SandboxRequire): void {
+	sandboxRequire = newRequire;
+}
+
+/**
+ * Extra globals bound into the app's eval shell on top of the common ones
+ * (`exports`, `module`, `require`, `console`, `globalThis`). Node needs none;
+ * Deno injects a `Buffer` and shadows `Deno` with `undefined`. Injecting them
+ * as data keeps the eval-shell skeleton single-source.
+ */
+type SandboxGlobals = Record<string, unknown>;
+
+let sandboxGlobals: SandboxGlobals = {};
+
+export function setSandboxGlobals(globals: SandboxGlobals): void {
+	sandboxGlobals = globals;
+}
+
 // As the apps are bundled, the only times they will call require are
 // 1. To require native modules
 // 2. To require external npm packages we may provide
@@ -35,11 +68,20 @@ function buildRequire(): (module: string) => unknown {
     };
 }
 
-function wrapAppCode(code: string): (require: (module: string) => unknown) => Promise<Record<string, unknown>> {
-	return new Function(
+function wrapAppCode(code: string): (require: SandboxRequire) => unknown) => Promise<Record<string, unknown>> {
+	const globals = sandboxGlobals;
+	// The common globals are bound by name; any platform-specific extras are
+	// spread in by name from the injected `sandboxGlobals`, so the shell
+	// skeleton stays identical across runtimes.
+	const extraNames = Object.keys(globals);
+	const extraParams = extraNames.length ? `,${extraNames.join(',')}` : '';
+	const extraArgs = extraNames.map((name) => `,__globals[${JSON.stringify(name)}]`).join('');
+
+	// eslint-disable-next-line @typescript-eslint/no-implied-eval -- This is the reason we run in a separate process
+	const fn = new Function(
 		'require',
+		'__globals',
 		`
-        const { Buffer } = require('buffer');
         const exports = {};
         const module = { exports };
         const _error = console.error.bind(console);
@@ -51,12 +93,14 @@ function wrapAppCode(code: string): (require: (module: string) => unknown) => Pr
             warn: _error,
         };
 
-        const result = (async (exports,module,require,Buffer,console,globalThis,Deno) => {
+        const result = (async (exports,module,require,console,globalThis${extraParams}) => {
             ${code};
-        })(exports,module,require,Buffer,_console,undefined,undefined);
+        })(exports,module,require,_console,undefined${extraArgs});
 
         return result.then(() => module.exports);`,
-	) as (require: (module: string) => unknown) => Promise<Record<string, unknown>>;
+	) as (require: SandboxRequire, globals: SandboxGlobals) => Promise<Record<string, unknown>>;
+
+	return (require: SandboxRequire) => fn(require, globals);
 }
 
 export default async function handleConstructApp(request: RequestContext): Promise<boolean> {
