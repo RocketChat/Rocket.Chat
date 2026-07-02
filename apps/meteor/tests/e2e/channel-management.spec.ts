@@ -28,6 +28,7 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage('hello composer');
 		await poHomeChannel.roomHeaderFavoriteBtn.focus();
+		await expect(poHomeChannel.roomHeaderFavoriteBtn).toBeFocused();
 
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
@@ -40,6 +41,7 @@ test.describe.serial('channel-management', () => {
 	test('should move the focus away from toolbar using tab key', async ({ page }) => {
 		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.roomHeaderFavoriteBtn.focus();
+		await expect(poHomeChannel.roomHeaderFavoriteBtn).toBeFocused();
 
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
@@ -137,6 +139,7 @@ test.describe.serial('channel-management', () => {
 	test('should open room info when clicking on roomName', async ({ page }) => {
 		await poHomeChannel.navbar.openChat(targetChannel);
 		await page.getByRole('button', { name: targetChannel }).first().focus();
+		await expect(page.getByRole('button', { name: targetChannel }).first()).toBeFocused();
 		await page.keyboard.press('Space');
 		await page.getByRole('dialog').waitFor();
 
@@ -159,6 +162,7 @@ test.describe.serial('channel-management', () => {
 		await page.getByRole('listitem', { name: discussionName }).getByRole('button', { name: 'Reply' }).click();
 
 		await page.getByRole('button', { name: `Back to ${targetChannel} channel`, exact: true }).focus();
+		await expect(page.getByRole('button', { name: `Back to ${targetChannel} channel`, exact: true })).toBeFocused();
 		await page.keyboard.press('Space');
 
 		await expect(page).toHaveURL(`/channel/${targetChannel}`);
