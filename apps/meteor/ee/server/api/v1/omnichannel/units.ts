@@ -2,9 +2,9 @@ import type { ILivechatUnitMonitor, IOmnichannelBusinessUnit, OmnichannelBusines
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
 
 import { findUnits, findUnitById, findUnitMonitors, findUnitsOfUser } from './lib/units';
-import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
 import { API } from '../../../../../server/api';
 import { getPaginationItems } from '../../../../../server/api/lib/getPaginationItems';
+import { hasPermissionAsync } from '../../../../../server/lib/authorization/hasPermission';
 import { findAllDepartmentsAvailable, findAllDepartmentsByUnit } from '../../../../app/livechat-enterprise/server/lib/Department';
 import { LivechatEnterprise } from '../../../../app/livechat-enterprise/server/lib/LivechatEnterprise';
 

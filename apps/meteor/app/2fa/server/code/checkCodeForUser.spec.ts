@@ -77,7 +77,7 @@ const { checkCodeForUser, getFingerprintFromConnection } = proxyquire.noCallThru
 	'./TOTPCheck': { TOTPCheck },
 	'./EmailCheck': { EmailCheck },
 	'./PasswordCheckFallback': { PasswordCheckFallback },
-	'../../../lib/server/functions/getModifiedHttpHeaders': {
+	'../../../../server/lib/shared/getModifiedHttpHeaders': {
 		normalizeHeaders: (headers: unknown) => headers,
 	},
 	'../../../settings/server': {

@@ -5,10 +5,10 @@ import escape from 'lodash.escape';
 
 import type { SaveUserData } from './saveUser';
 import { isUpdateUserData } from './saveUser';
-import { getRoleIds } from '../../../../app/authorization/server/functions/getRoles';
-import { hasPermissionAsync } from '../../../../app/authorization/server/functions/hasPermission';
 import { settings } from '../../../../app/settings/server';
 import { trim } from '../../../../lib/utils/stringUtils';
+import { getRoleIds } from '../../authorization/getRoles';
+import { hasPermissionAsync } from '../../authorization/hasPermission';
 import { checkEmailAvailability } from '../checkEmailAvailability';
 import { checkUsernameAvailability } from '../checkUsernameAvailability';
 

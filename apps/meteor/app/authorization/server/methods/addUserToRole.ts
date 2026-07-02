@@ -3,9 +3,9 @@ import type { IRole, IUser } from '@rocket.chat/core-typings';
 import { Roles, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { settings } from '../../../settings/server';
-import { hasPermissionAsync } from '../functions/hasPermission';
 
 export const addUserToRole = async (userId: string, roleId: string, username: IUser['username'], scope?: string): Promise<boolean> => {
 	if (!(await hasPermissionAsync(userId, 'access-permissions'))) {

@@ -4,10 +4,10 @@ import { Settings } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { disableCustomScripts } from './disableCustomScripts';
+import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
+import { disableCustomScripts } from '../../../../server/lib/shared/disableCustomScripts';
 import { updateAuditedByUser } from '../../../../server/settings/lib/auditedSettingUpdates';
 import { getSettingPermissionId } from '../../../authorization/lib';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import { checkSettingValueBounds } from '../lib/checkSettingValueBonds';
 import { notifyOnSettingChangedById } from '../lib/notifyListener';

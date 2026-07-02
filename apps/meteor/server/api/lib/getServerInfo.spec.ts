@@ -17,10 +17,10 @@ describe.skip('#getServerInfo()', () => {
 					version: '3.0.1',
 				},
 			},
-			'../../../app/authorization/server/functions/hasPermission': {
+			'../../lib/authorization/hasPermission': {
 				hasPermissionAsync: hasAllPermissionAsyncMock,
 			},
-			'../../../app/cloud/server/functions/supportedVersionsToken/supportedVersionsToken': {
+			'../../lib/cloud/supportedVersionsToken/supportedVersionsToken': {
 				getCachedSupportedVersionsToken: getCachedSupportedVersionsTokenMock,
 			},
 			'../../../app/settings/server': {

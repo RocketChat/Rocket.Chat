@@ -3,10 +3,10 @@ import { Settings, Users } from '@rocket.chat/models';
 import { isLicensesInfoProps } from '@rocket.chat/rest-typings';
 import { check } from 'meteor/check';
 
-import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
 import { notifyOnSettingChangedById } from '../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../app/settings/server';
 import { API } from '../../../server/api/api';
+import { hasPermissionAsync } from '../../../server/lib/authorization/hasPermission';
 import { updateAuditedByUser } from '../../../server/settings/lib/auditedSettingUpdates';
 
 API.v1.addRoute(

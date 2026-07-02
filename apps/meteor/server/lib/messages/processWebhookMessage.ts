@@ -4,10 +4,10 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { sendMessage, validateMessage } from './sendMessage';
-import { validateRoomMessagePermissionsAsync } from '../../../app/authorization/server/functions/canSendMessage';
 import { settings } from '../../../app/settings/server';
 import { ensureArray } from '../../../lib/utils/arrayUtils';
 import { trim } from '../../../lib/utils/stringUtils';
+import { validateRoomMessagePermissionsAsync } from '../authorization/canSendMessage';
 import { SystemLogger } from '../logger/system';
 import { getRoomByNameOrIdWithOptionToJoin } from '../rooms/getRoomByNameOrIdWithOptionToJoin';
 

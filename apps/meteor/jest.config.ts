@@ -40,7 +40,7 @@ export default {
 				'<rootDir>/ee/app/license/server/**/*.spec.ts',
 				'<rootDir>/ee/server/patches/**/*.spec.ts',
 				'<rootDir>/ee/server/cron/**/*.spec.ts',
-				'<rootDir>/app/cloud/server/functions/supportedVersionsToken/**.spec.ts',
+				'<rootDir>/server/lib/cloud/supportedVersionsToken/**.spec.ts',
 				'<rootDir>/app/utils/lib/**.spec.ts',
 				'<rootDir>/server/lib/auditServerEvents/**.spec.ts',
 				'<rootDir>/server/services/import/**/*.spec.ts',

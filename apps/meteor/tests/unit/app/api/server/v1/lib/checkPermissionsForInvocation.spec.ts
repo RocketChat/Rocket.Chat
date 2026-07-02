@@ -13,7 +13,7 @@ const userPermissions: { [k: string]: string[] } = {
 };
 
 const mocks = {
-	'../../app/authorization/server/functions/hasPermission': {
+	'../lib/authorization/hasPermission': {
 		hasAllPermissionAsync: (userId: string, permissions: string[]): boolean => {
 			return permissions.every((permission) => userPermissions[userId].includes(permission));
 		},

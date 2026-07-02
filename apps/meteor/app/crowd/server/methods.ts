@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { CROWD } from './crowd';
 import { logger } from './logger';
-import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../../server/lib/authorization/hasPermission';
 import { settings } from '../../settings/server';
 
 declare module '@rocket.chat/ddp-client' {

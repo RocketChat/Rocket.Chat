@@ -15,7 +15,6 @@ import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
 import { canAccessRoomAsync, roomAccessAttributes } from '../../../app/authorization/server';
-import { hasAllPermissionAsync, hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
 import { saveRoomSettings } from '../../../app/channel-settings/server/methods/saveRoomSettings';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../app/integrations/server/lib/mountQueriesBasedOnPermission';
 import { addUsersToRoomMethod } from '../../../app/lib/server/methods/addUsersToRoom';
@@ -26,6 +25,7 @@ import { executeGetRoomRoles } from '../../../app/lib/server/methods/getRoomRole
 import { leaveRoomMethod } from '../../../app/lib/server/methods/leaveRoom';
 import { executeUnarchiveRoom } from '../../../app/lib/server/methods/unarchiveRoom';
 import { normalizeMessagesForUser } from '../../../app/utils/server/lib/normalizeMessagesForUser';
+import { hasAllPermissionAsync, hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { eraseRoom } from '../../lib/eraseRoom';
 import { findUsersOfRoom } from '../../lib/findUsersOfRoom';
 import { openRoom } from '../../lib/openRoom';

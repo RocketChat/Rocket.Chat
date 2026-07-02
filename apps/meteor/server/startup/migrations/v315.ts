@@ -1,7 +1,7 @@
 import type { IPermission } from '@rocket.chat/core-typings';
 import { Permissions } from '@rocket.chat/models';
 
-import { upsertPermissions } from '../../../app/authorization/server/functions/upsertPermissions';
+import { upsertPermissions } from '../../lib/authorization/upsertPermissions';
 import { addMigration } from '../../lib/migrations';
 
 addMigration({

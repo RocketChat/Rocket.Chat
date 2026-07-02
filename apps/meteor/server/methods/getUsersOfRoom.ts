@@ -6,7 +6,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
-import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../lib/authorization/hasPermission';
 import { findUsersOfRoom } from '../lib/findUsersOfRoom';
 
 declare module '@rocket.chat/ddp-client' {

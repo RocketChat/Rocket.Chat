@@ -6,7 +6,7 @@ import { CustomUserStatus } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { trim } from '../../../../lib/utils/stringUtils';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 type InsertOrUpdateUserStatus = {

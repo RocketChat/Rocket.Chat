@@ -11,12 +11,12 @@ import { Uploads, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import sharp from 'sharp';
 
-import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
-import { canDeleteMessageAsync } from '../../../app/authorization/server/functions/canDeleteMessage';
 import { FileUpload } from '../../../app/file-upload/server';
 import { parseFileIntoMessageAttachments, sendFileMessage } from '../../../app/file-upload/server/methods/sendFileMessage';
 import { sendFileLivechatMessage } from '../../../app/livechat/server/methods/sendFileLivechatMessage';
 import { NOTIFICATION_ATTACHMENT_COLOR } from '../../../lib/constants';
+import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
+import { canDeleteMessageAsync } from '../../lib/authorization/canDeleteMessage';
 import { i18n } from '../../lib/i18n';
 import { updateMessage } from '../../lib/messages/updateMessage';
 import { setUserAvatar } from '../../lib/users/setUserAvatar';

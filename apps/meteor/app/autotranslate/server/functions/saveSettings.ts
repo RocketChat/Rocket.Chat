@@ -2,7 +2,7 @@ import { Subscriptions, Rooms } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 import { notifyOnSubscriptionChangedById } from '../../../lib/server/lib/notifyListener';
 
 export const saveAutoTranslateSettings = async (

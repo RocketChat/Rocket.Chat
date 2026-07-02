@@ -3,9 +3,9 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { notifyOnRoomChangedById } from '../../app/lib/server/lib/notifyListener';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
+import { hasPermissionAsync } from '../lib/authorization/hasPermission';
 import { callbacks } from '../lib/callbacks';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 

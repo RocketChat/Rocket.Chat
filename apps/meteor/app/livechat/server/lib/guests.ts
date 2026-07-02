@@ -18,8 +18,8 @@ import { parseAgentCustomFields } from './Helper';
 import type { ICRMData } from './localTypes';
 import { livechatLogger } from './logger';
 import { trim } from '../../../../lib/utils/stringUtils';
+import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 import { i18n } from '../../../../server/lib/i18n';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { FileUpload } from '../../../file-upload/server';
 import {
 	notifyOnSubscriptionChanged,

@@ -5,9 +5,9 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
+import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 import { archiveRoom } from '../../../../server/lib/rooms/archiveRoom';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {

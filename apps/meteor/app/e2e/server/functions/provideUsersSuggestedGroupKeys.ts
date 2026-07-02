@@ -1,7 +1,7 @@
 import type { IRoom, IUser, ISubscription } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
 
-import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { canAccessRoomIdAsync } from '../../../../server/lib/authorization/canAccessRoom';
 import { notifyOnSubscriptionChanged, notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
 
 export const provideUsersSuggestedGroupKeys = async (

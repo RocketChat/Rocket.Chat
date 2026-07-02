@@ -3,8 +3,8 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { PushToken } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { hasPermissionAsync } from './authorization/hasPermission';
 import { i18n } from './i18n';
-import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { RateLimiter } from '../../app/lib/server/lib';
 import { Push } from '../../app/push/server';
 import { settings } from '../../app/settings/server';

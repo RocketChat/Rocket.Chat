@@ -5,9 +5,9 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
+import { canSendMessageAsync } from '../../../../server/lib/authorization/canSendMessage';
+import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 import { updateMessage } from '../../../../server/lib/messages/updateMessage';
-import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
 import { settings } from '../../../settings/server';
 

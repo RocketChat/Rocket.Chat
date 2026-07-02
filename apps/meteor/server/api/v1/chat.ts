@@ -31,8 +31,6 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
 import { roomAccessAttributes } from '../../../app/authorization/server';
-import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
-import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
 import { getSingleMessage } from '../../../app/lib/server/methods/getSingleMessage';
 import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
 import { executeUpdateMessage } from '../../../app/lib/server/methods/updateMessage';
@@ -44,6 +42,8 @@ import { settings } from '../../../app/settings/server';
 import { followMessage } from '../../../app/threads/server/methods/followMessage';
 import { unfollowMessage } from '../../../app/threads/server/methods/unfollowMessage';
 import { normalizeMessagesForUser } from '../../../app/utils/server/lib/normalizeMessagesForUser';
+import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
+import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { deleteMessageValidatingPermission } from '../../lib/messages/deleteMessage';
 import { processWebhookMessage } from '../../lib/messages/processWebhookMessage';
 import { reportMessage } from '../../lib/moderation/reportMessage';

@@ -3,9 +3,9 @@ import { Messages, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import type { ParsedMail } from 'mailparser';
 import moment from 'moment';
 
+import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 import { sendMessage } from '../../../../server/lib/messages/sendMessage';
 import { canAccessRoomAsync } from '../../../authorization/server';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 

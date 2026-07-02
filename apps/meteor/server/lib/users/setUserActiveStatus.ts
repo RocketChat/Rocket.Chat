@@ -6,7 +6,6 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
-import { closeOmnichannelConversations } from '../../../app/lib/server/functions/closeOmnichannelConversations';
 import {
 	notifyOnRoomChangedById,
 	notifyOnRoomChangedByUserDM,
@@ -16,6 +15,7 @@ import {
 import * as Mailer from '../../../app/mailer/server/api';
 import { settings } from '../../../app/settings/server';
 import { callbacks } from '../callbacks';
+import { closeOmnichannelConversations } from '../omnichannel/closeOmnichannelConversations';
 import { shouldRemoveOrChangeOwner, getSubscribedRoomsForUserWithDetails } from '../rooms/getRoomsWithSingleOwner';
 import { relinquishRoomOwnerships } from '../rooms/relinquishRoomOwnerships';
 

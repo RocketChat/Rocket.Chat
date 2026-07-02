@@ -41,7 +41,6 @@ import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 
 import { RocketChatAssets } from '../../../app/assets/server';
-import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
 import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
 import { metrics } from '../../../app/metrics/server/lib/metrics';
 import { Push } from '../../../app/push/server/push';
@@ -52,6 +51,7 @@ import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
 import { getUserPreference } from '../../../app/utils/server/lib/getUserPreference';
 import { availabilityErrors } from '../../../lib/videoConference/constants';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { callbacks } from '../../lib/callbacks';
 import { i18n } from '../../lib/i18n';
 import { isRoomCompatibleWithVideoConfRinging } from '../../lib/isRoomCompatibleWithVideoConfRinging';

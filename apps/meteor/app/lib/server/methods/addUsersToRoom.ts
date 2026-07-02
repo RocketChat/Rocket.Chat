@@ -5,10 +5,10 @@ import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 import { beforeAddUsersToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
 import { i18n } from '../../../../server/lib/i18n';
 import { addUserToRoom } from '../../../../server/lib/rooms/addUserToRoom';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {

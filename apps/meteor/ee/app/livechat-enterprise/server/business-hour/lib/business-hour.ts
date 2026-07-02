@@ -2,7 +2,7 @@ import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatBusinessHours, LivechatDepartment } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../../../../../server/lib/authorization/hasPermission';
 import type { IPaginatedResponse, IPagination } from '../../../../../server/api/v1/omnichannel/lib/definition';
 
 interface IResponse extends IPaginatedResponse {

@@ -55,7 +55,7 @@ const { saveUserIdentity } = proxyquire.noCallThru().load('../../../../server/li
 	'../rooms/updateGroupDMsName': {
 		updateGroupDMsName: sinon.stub(),
 	},
-	'../../../app/lib/server/functions/validateName': {
+	'../shared/validateName': {
 		validateName: stubs.validateName,
 	},
 });

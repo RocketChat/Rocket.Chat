@@ -5,7 +5,7 @@ import { Messages } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { canAccessRoomIdAsync } from '../../../../server/lib/authorization/canAccessRoom';
 import { RateLimiter } from '../../../lib/server';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnMessageChange } from '../../../lib/server/lib/notifyListener';

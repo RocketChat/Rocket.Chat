@@ -17,7 +17,6 @@ import {
 	findDepartmentAgents,
 	findArchivedDepartments,
 } from './lib/departments';
-import { hasPermissionAsync } from '../../../../app/authorization/server/functions/hasPermission';
 import {
 	saveDepartment,
 	archiveDepartment,
@@ -26,6 +25,7 @@ import {
 	removeDepartment,
 } from '../../../../app/livechat/server/lib/departmentsLib';
 import { settings } from '../../../../app/settings/server';
+import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
 import { getPaginationItems } from '../../lib/getPaginationItems';
 
 API.v1.addRoute(

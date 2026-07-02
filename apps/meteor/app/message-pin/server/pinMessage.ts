@@ -8,9 +8,9 @@ import { isTruthy } from '@rocket.chat/tools';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { hasPermissionAsync } from '../../../server/lib/authorization/hasPermission';
 import { isTheLastMessage } from '../../../server/lib/messages/isTheLastMessage';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
-import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { methodDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../lib/server/lib/notifyListener';
 import { settings } from '../../settings/server';

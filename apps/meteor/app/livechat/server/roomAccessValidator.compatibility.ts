@@ -2,8 +2,8 @@ import type { IUser, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatDepartmentAgents, LivechatInquiry, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 
 import { RoutingManager } from './lib/RoutingManager';
-import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
-import { hasRoleAsync } from '../../authorization/server/functions/hasRole';
+import { hasPermissionAsync } from '../../../server/lib/authorization/hasPermission';
+import { hasRoleAsync } from '../../../server/lib/authorization/hasRole';
 
 type OmnichannelRoomAccessValidator = (
 	room: IOmnichannelRoom,

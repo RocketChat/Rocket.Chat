@@ -3,9 +3,9 @@ import { Meteor } from 'meteor/meteor';
 
 import { clean } from './cleanQuery';
 import { isValidQuery } from './isValidQuery';
-import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
 import { apiDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
 import { isPlainObject } from '../../../lib/utils/isPlainObject';
+import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { API } from '../api';
 import type { GenericRouteExecutionContext } from '../definition';
 

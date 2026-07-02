@@ -9,11 +9,11 @@ import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
+import { canSendMessageAsync } from '../../../../server/lib/authorization/canSendMessage';
+import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { sendMessage } from '../../../../server/lib/messages/sendMessage';
-import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';

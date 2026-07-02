@@ -4,7 +4,7 @@ import limax from 'limax';
 import { Meteor } from 'meteor/meteor';
 
 import { trim } from '../../../../lib/utils/stringUtils';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
 
 export type EmojiData = {

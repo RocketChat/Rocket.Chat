@@ -10,8 +10,6 @@ import {
 } from '@rocket.chat/rest-typings';
 import ExpiryMap from 'expiry-map';
 
-import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
-import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
 import { handleSuggestedGroupKey } from '../../../app/e2e/server/functions/handleSuggestedGroupKey';
 import { provideUsersSuggestedGroupKeys } from '../../../app/e2e/server/functions/provideUsersSuggestedGroupKeys';
 import { resetRoomKey } from '../../../app/e2e/server/functions/resetRoomKey';
@@ -21,6 +19,8 @@ import { setRoomKeyIDMethod } from '../../../app/e2e/server/methods/setRoomKeyID
 import { setUserPublicAndPrivateKeysMethod } from '../../../app/e2e/server/methods/setUserPublicAndPrivateKeys';
 import { updateGroupKey } from '../../../app/e2e/server/methods/updateGroupKey';
 import { settings } from '../../../app/settings/server';
+import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
+import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 

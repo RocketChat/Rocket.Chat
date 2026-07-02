@@ -1,6 +1,6 @@
 import { Users } from '@rocket.chat/models';
 
-import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
+import { hasRoleAsync } from '../../../../server/lib/authorization/hasRole';
 import { settings } from '../../../settings/server';
 
 type LockResult = {

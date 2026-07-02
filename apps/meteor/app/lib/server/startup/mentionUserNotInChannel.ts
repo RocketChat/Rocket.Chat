@@ -6,9 +6,9 @@ import { isTruthy } from '@rocket.chat/tools';
 import type { ActionsBlock } from '@rocket.chat/ui-kit';
 import moment from 'moment';
 
+import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 
 const APP_ID = 'mention-core';

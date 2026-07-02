@@ -7,9 +7,9 @@ import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
+import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { setRoomAvatar } from '../../../../server/lib/rooms/setRoomAvatar';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { isABACManagedRoom } from '../../../authorization/server/lib/isABACManagedRoom';
 import { notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';

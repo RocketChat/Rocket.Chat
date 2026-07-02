@@ -42,7 +42,7 @@ const { removeUserReaction, executeSetReaction, setReaction } = p.noCallThru().l
 	'../../../server/lib/callbacks': { callbacks: { run: callbacksRunMock } },
 	'../../../server/lib/i18n': { i18n: i18nMock },
 	'../../authorization/server': { canAccessRoomAsync: canAccessRoomAsyncMock },
-	'../../authorization/server/functions/hasPermission': { hasPermissionAsync: hasPermissionAsyncMock },
+	'../../../server/lib/authorization/hasPermission': { hasPermissionAsync: hasPermissionAsyncMock },
 	'../../emoji/server': { emoji: { list: emojiList } },
 	'../../../server/lib/messages/isTheLastMessage': { isTheLastMessage: isTheLastMessageMock },
 	'../../lib/server/lib/notifyListener': {

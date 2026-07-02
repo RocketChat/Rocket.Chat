@@ -4,11 +4,11 @@ import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Messages, EmojiCustom, Rooms, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { hasPermissionAsync } from '../../../server/lib/authorization/hasPermission';
 import { callbacks } from '../../../server/lib/callbacks';
 import { i18n } from '../../../server/lib/i18n';
 import { isTheLastMessage } from '../../../server/lib/messages/isTheLastMessage';
 import { canAccessRoomAsync } from '../../authorization/server';
-import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { emoji } from '../../emoji/server';
 import { notifyOnMessageChange } from '../../lib/server/lib/notifyListener';
 

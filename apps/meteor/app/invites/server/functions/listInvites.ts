@@ -1,7 +1,7 @@
 import { Invites } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 
 export const listInvites = async (userId: string) => {
 	if (!userId) {

@@ -37,8 +37,6 @@ import type { Filter } from 'mongodb';
 
 import { getUserForCheck, emailCheck } from '../../../app/2fa/server/code';
 import { resetTOTP } from '../../../app/2fa/server/functions/resetTOTP';
-import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
-import { validateNameChars } from '../../../app/lib/server/functions/validateNameChars';
 import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../../app/lib/server/lib/notifyListener';
 import { generateAccessToken } from '../../../app/lib/server/methods/createToken';
 import { deleteUserOwnAccount } from '../../../app/lib/server/methods/deleteUserOwnAccount';
@@ -49,9 +47,11 @@ import { generatePersonalAccessTokenOfUser } from '../../../imports/personal-acc
 import { regeneratePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/regenerateToken';
 import { removePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/removeToken';
 import { UserChangedAuditStore } from '../../lib/auditServerEvents/userChanged';
+import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { i18n } from '../../lib/i18n';
 import { SystemLogger } from '../../lib/logger/system';
 import { resetUserE2EEncriptionKey } from '../../lib/resetUserE2EKey';
+import { validateNameChars } from '../../lib/shared/validateNameChars';
 import { checkEmailAvailability } from '../../lib/users/checkEmailAvailability';
 import { checkUsernameAvailability, checkUsernameAvailabilityWithValidation } from '../../lib/users/checkUsernameAvailability';
 import { deleteUser } from '../../lib/users/deleteUser';

@@ -9,13 +9,13 @@ const models = {
 
 const mockedFetchWorkspaceSyncPayload = sinon.stub();
 
-const { syncCloudData } = proxyquire.noCallThru().load('../../../../../../../app/cloud/server/functions/syncWorkspace/syncCloudData.ts', {
+const { syncCloudData } = proxyquire.noCallThru().load('../../../../../../../server/lib/cloud/syncWorkspace/syncCloudData.ts', {
 	'@rocket.chat/license': { DuplicatedLicenseError: sinon.stub() },
 	'@rocket.chat/models': models,
-	'../../../../../server/lib/callbacks': { callbacks: { run: sinon.stub() } },
-	'../../../../../lib/errors/CloudWorkspaceAccessError': { CloudWorkspaceAccessError: sinon.stub() },
-	'../../../../../lib/errors/CloudWorkspaceRegistrationError': { CloudWorkspaceRegistrationError: sinon.stub() },
-	'../../../../../server/lib/logger/system': { SystemLogger: { info: sinon.stub(), error: sinon.stub() } },
+	'../../callbacks': { callbacks: { run: sinon.stub() } },
+	'../../../../lib/errors/CloudWorkspaceAccessError': { CloudWorkspaceAccessError: sinon.stub() },
+	'../../../../lib/errors/CloudWorkspaceRegistrationError': { CloudWorkspaceRegistrationError: sinon.stub() },
+	'../../logger/system': { SystemLogger: { info: sinon.stub(), error: sinon.stub() } },
 	'../buildRegistrationData': { buildWorkspaceRegistrationData: sinon.stub().resolves({}) },
 	'../getWorkspaceAccessToken': {
 		getWorkspaceAccessToken: sinon.stub().resolves('token'),

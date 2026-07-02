@@ -26,13 +26,13 @@ import type { WritableStreamBuffer } from 'stream-buffers';
 import streamBuffers from 'stream-buffers';
 
 import { MultipartUploadHandler } from '../../../../server/api/lib/MultipartUploadHandler';
+import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../../server/lib/authorization/canAccessRoom';
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { UploadFS } from '../../../../server/ufs';
 import { ufsComplete } from '../../../../server/ufs/ufs-methods';
 import type { Store, StoreOptions } from '../../../../server/ufs/ufs-store';
-import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { settings } from '../../../settings/server';
 import { mime } from '../../../utils/lib/mimeTypes';
 import { validateAndDecodeJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';

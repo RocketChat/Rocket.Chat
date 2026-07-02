@@ -11,10 +11,10 @@ import {
 } from '@rocket.chat/rest-typings';
 import objectPath from 'object-path';
 
-import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
 import { executeSlashCommandPreview } from '../../../app/lib/server/methods/executeSlashCommandPreview';
 import { getSlashCommandPreviews } from '../../../app/lib/server/methods/getSlashCommandPreviews';
 import { slashCommands } from '../../../app/utils/server/slashCommand';
+import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';

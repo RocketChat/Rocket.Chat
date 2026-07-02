@@ -2,7 +2,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations, IntegrationHistory } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../../../../server/lib/authorization/hasPermission';
 import { methodDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnIntegrationChangedById } from '../../../../lib/server/lib/notifyListener';
 

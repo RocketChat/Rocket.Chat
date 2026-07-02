@@ -1,0 +1,11 @@
+# Phase 4d: Other domain functions migration
+# Format: old-path<TAB>new-path (relative to apps/meteor/)
+app/lib/server/functions/closeLivechatRoom.ts	server/lib/omnichannel/closeLivechatRoom.ts
+app/lib/server/functions/closeOmnichannelConversations.ts	server/lib/omnichannel/closeOmnichannelConversations.ts
+app/lib/server/functions/syncRolePrioritiesForRoomIfRequired.ts	server/lib/rooms/syncRolePrioritiesForRoomIfRequired.ts
+app/lib/server/functions/validateName.ts	server/lib/shared/validateName.ts
+app/lib/server/functions/validateNameChars.ts	server/lib/shared/validateNameChars.ts
+app/lib/server/functions/getModifiedHttpHeaders.ts	server/lib/shared/getModifiedHttpHeaders.ts
+app/lib/server/functions/disableCustomScripts.ts	server/lib/shared/disableCustomScripts.ts
+app/authorization/server/functions	server/lib/authorization
+app/cloud/server/functions	server/lib/cloud

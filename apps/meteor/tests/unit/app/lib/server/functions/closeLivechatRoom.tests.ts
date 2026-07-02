@@ -21,9 +21,9 @@ const livechatStub = {
 
 const hasPermissionStub = sinon.stub();
 
-const { closeLivechatRoom } = proxyquire.noCallThru().load('../../../../../../app/lib/server/functions/closeLivechatRoom.ts', {
-	'../../../livechat/server/lib/closeRoom': livechatStub,
-	'../../../authorization/server/functions/hasPermission': {
+const { closeLivechatRoom } = proxyquire.noCallThru().load('../../../../../../server/lib/omnichannel/closeLivechatRoom.ts', {
+	'../../../app/livechat/server/lib/closeRoom': livechatStub,
+	'../authorization/hasPermission': {
 		hasPermissionAsync: hasPermissionStub,
 	},
 	'@rocket.chat/models': {

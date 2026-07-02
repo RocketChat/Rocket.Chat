@@ -3,7 +3,7 @@ import { isGETLivechatRoomsParams } from '@rocket.chat/rest-typings';
 
 import { API } from '../..';
 import { findRooms } from './lib/rooms';
-import { hasPermissionAsync } from '../../../../app/authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
 import { getPaginationItems } from '../../lib/getPaginationItems';
 
 const validateDateParams = (property: string, date?: string) => {

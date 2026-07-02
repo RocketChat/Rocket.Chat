@@ -4,7 +4,6 @@ import { isThreadMessage, type AtLeast, type IMessage, type IRoom, type IThreadM
 import { Messages, Rooms, Uploads, Users, ReadReceipts, ReadReceiptsArchive, Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { canDeleteMessageAsync } from '../../../app/authorization/server/functions/canDeleteMessage';
 import { FileUpload } from '../../../app/file-upload/server';
 import {
 	notifyOnRoomChangedById,
@@ -12,6 +11,7 @@ import {
 	notifyOnSubscriptionChangedByRoomIdAndUserIds,
 } from '../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../app/settings/server';
+import { canDeleteMessageAsync } from '../authorization/canDeleteMessage';
 import { callbacks } from '../callbacks';
 
 export const deleteMessageValidatingPermission = async (message: AtLeast<IMessage, '_id'>, userId: IUser['_id']): Promise<void> => {

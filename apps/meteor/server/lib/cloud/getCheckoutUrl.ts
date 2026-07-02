@@ -1,0 +1,56 @@
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+
+import { getWorkspaceAccessTokenOrThrow } from './getWorkspaceAccessToken';
+import { syncWorkspace } from './syncWorkspace';
+import { settings } from '../../../app/settings/server';
+import { getURL } from '../../../app/utils/server/getURL';
+import { SystemLogger } from '../logger/system';
+
+export const fallback = 'https://go.rocket.chat/i/contact-sales';
+
+export const getCheckoutUrl = async (): Promise<{
+	url: string;
+}> => {
+	try {
+		await syncWorkspace();
+
+		const token = await getWorkspaceAccessTokenOrThrow(true, 'workspace:billing', false);
+
+		const subscriptionURL = getURL('admin/subscription', {
+			full: true,
+		});
+
+		const body = {
+			okCallback: `${subscriptionURL}?subscriptionSuccess=true`,
+			cancelCallback: subscriptionURL,
+		};
+
+		const billingUrl = settings.get<string>('Cloud_Billing_Url');
+
+		const response = await fetch(`${billingUrl}/api/v2/checkout`, {
+			method: 'POST',
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+			body,
+			// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
+			ignoreSsrfValidation: true,
+		});
+
+		if (!response.ok) {
+			throw new Error(await response.json());
+		}
+
+		return response.json();
+	} catch (err: any) {
+		SystemLogger.error({
+			msg: 'Failed to get Checkout URL with Rocket.Chat Billing Service',
+			url: '/api/v2/checkout',
+			err,
+		});
+
+		return {
+			url: fallback,
+		};
+	}
+};
