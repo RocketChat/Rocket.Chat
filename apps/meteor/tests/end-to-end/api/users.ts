@@ -1211,9 +1211,7 @@ describe('[Users]', () => {
 					.expect(400)
 					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
-						// TODO: assert error-user-registration-custom-field directly after users.register formats this Meteor.Error correctly
-						expect(res.body).to.have.property('errorType', 'error-invalid-body');
-						expect(res.body).to.have.nested.property('body.error', 'error-user-registration-custom-field');
+						expect(res.body).to.have.property('errorType', 'error-user-registration-custom-field');
 					});
 
 				const user = await getUserByUsername(username);
