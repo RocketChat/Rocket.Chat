@@ -1,7 +1,7 @@
 import type { ChildProcess } from 'node:child_process';
 import { EventEmitter } from 'node:stream';
 
-import type { DenoRuntimeSubprocessController } from './AppsEngineDenoRuntime';
+import type { BaseRuntimeSubprocessController } from './BaseRuntimeSubprocessController';
 import type { ProcessMessenger } from './ProcessMessenger';
 
 export const COMMAND_PING = '_zPING';
@@ -15,11 +15,11 @@ const defaultOptions: LivenessManager['options'] = {
 };
 
 /**
- * Responsible for pinging the Deno subprocess and for restarting it
+ * Responsible for pinging the subprocess and for restarting it
  * if something doesn't look right
  */
 export class LivenessManager {
-	private readonly controller: DenoRuntimeSubprocessController;
+	private readonly controller: BaseRuntimeSubprocessController;
 
 	private readonly messenger: ProcessMessenger;
 
@@ -62,7 +62,7 @@ export class LivenessManager {
 
 	constructor(
 		deps: {
-			controller: DenoRuntimeSubprocessController;
+			controller: BaseRuntimeSubprocessController;
 			messenger: ProcessMessenger;
 			debug: debug.Debugger;
 		},
@@ -98,8 +98,8 @@ export class LivenessManager {
 		};
 	}
 
-	public attach(deno: ChildProcess) {
-		this.subprocess = deno;
+	public attach(subprocess: ChildProcess) {
+		this.subprocess = subprocess;
 
 		this.pingTimeoutConsecutiveCount = 0;
 

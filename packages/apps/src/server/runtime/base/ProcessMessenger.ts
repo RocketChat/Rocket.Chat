@@ -9,7 +9,7 @@ import { newEncoder } from './codec';
 type Message = JsonRpc | typeof COMMAND_PING;
 
 export class ProcessMessenger {
-	private deno: ChildProcess | undefined;
+	private process: ChildProcess | undefined;
 
 	private encoder: Encoder | undefined;
 
@@ -23,21 +23,21 @@ export class ProcessMessenger {
 		this._sendStrategy(message);
 	}
 
-	public setReceiver(deno: ChildProcess) {
-		this.deno = deno;
+	public setReceiver(process: ChildProcess) {
+		this.process = process;
 
 		this.switchStrategy();
 	}
 
 	public clearReceiver() {
-		delete this.deno;
+		delete this.process;
 		delete this.encoder;
 
 		this.switchStrategy();
 	}
 
 	private switchStrategy() {
-		if (this.deno?.stdin?.writable) {
+		if (this.process?.stdin?.writable) {
 			this._sendStrategy = this.strategySend.bind(this);
 
 			// Get a clean encoder
@@ -52,6 +52,6 @@ export class ProcessMessenger {
 	}
 
 	private strategySend(message: Message) {
-		this.deno.stdin.write(this.encoder.encode(message));
+		this.process.stdin.write(this.encoder.encode(message));
 	}
 }
