@@ -11,7 +11,6 @@ import ComposerMentionUser from './ComposerMentionUser';
 import ComposerPlainSpan from './ComposerPlainSpan';
 
 type MessageBlock =
-	| MessageParser.Timestamp
 	| MessageParser.Emoji
 	| MessageParser.ChannelMention
 	| MessageParser.UserMention
