@@ -1,0 +1,26 @@
+# Phase 4a: User functions migration
+# Format: old-path<TAB>new-path (relative to apps/meteor/)
+app/lib/server/functions/setRealName.ts	server/lib/users/setRealName.ts
+app/lib/server/functions/setUsername.ts	server/lib/users/setUsername.ts
+app/lib/server/functions/setEmail.ts	server/lib/users/setEmail.ts
+app/lib/server/functions/saveUserIdentity.ts	server/lib/users/saveUserIdentity.ts
+app/lib/server/functions/setUserAvatar.ts	server/lib/users/setUserAvatar.ts
+app/lib/server/functions/setUserActiveStatus.ts	server/lib/users/setUserActiveStatus.ts
+app/lib/server/functions/setStatusText.ts	server/lib/users/setStatusText.ts
+app/lib/server/functions/getStatusText.ts	server/lib/users/getStatusText.ts
+app/lib/server/functions/deleteUser.ts	server/lib/users/deleteUser.ts
+app/lib/server/functions/getFullUserData.ts	server/lib/users/getFullUserData.ts
+app/lib/server/functions/getUsernameSuggestion.ts	server/lib/users/getUsernameSuggestion.ts
+app/lib/server/functions/getUserCreatedByApp.ts	server/lib/users/getUserCreatedByApp.ts
+app/lib/server/functions/getUserSingleOwnedRooms.ts	server/lib/users/getUserSingleOwnedRooms.ts
+app/lib/server/functions/getAvatarSuggestionForUser.ts	server/lib/users/getAvatarSuggestionForUser.ts
+app/lib/server/functions/checkEmailAvailability.ts	server/lib/users/checkEmailAvailability.ts
+app/lib/server/functions/checkUsernameAvailability.ts	server/lib/users/checkUsernameAvailability.ts
+app/lib/server/functions/validateUsername.ts	server/lib/users/validateUsername.ts
+app/lib/server/functions/saveCustomFields.ts	server/lib/users/saveCustomFields.ts
+app/lib/server/functions/saveCustomFieldsWithoutValidation.ts	server/lib/users/saveCustomFieldsWithoutValidation.ts
+app/lib/server/functions/validateCustomFields.js	server/lib/users/validateCustomFields.js
+app/lib/server/functions/blockUser.ts	server/lib/users/blockUser.ts
+app/lib/server/functions/unblockUser.ts	server/lib/users/unblockUser.ts
+app/lib/server/functions/unarchiveUserSubscriptions.ts	server/lib/users/unarchiveUserSubscriptions.ts
+app/lib/server/functions/saveUser	server/lib/users/saveUser

@@ -2,7 +2,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import limax from 'limax';
 
-import { settings } from '../../../settings/server';
+import { settings } from '../../../app/settings/server';
 
 function slug(text: string): string {
 	return limax(text, { replacement: '.' }).replace(/[^0-9a-z-_.]/g, '');

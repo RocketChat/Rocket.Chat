@@ -17,7 +17,7 @@ const stubs = {
 	FileUpload: sinon.stub(),
 };
 
-const { saveUserIdentity } = proxyquire.noCallThru().load('../../../../app/lib/server/functions/saveUserIdentity', {
+const { saveUserIdentity } = proxyquire.noCallThru().load('../../../../server/lib/users/saveUserIdentity', {
 	'@rocket.chat/models': {
 		Users: {
 			findOneById: stubs.findOneUserById,
@@ -41,21 +41,21 @@ const { saveUserIdentity } = proxyquire.noCallThru().load('../../../../app/lib/s
 		'Meteor': sinon.stub(),
 		'@global': true,
 	},
-	'../../../../server/database/utils': { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() },
-	'../../../../app/file-upload/server': {
+	'../../database/utils': { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() },
+	'../../../app/file-upload/server': {
 		FileUpload: stubs.FileUpload,
 	},
-	'../../../../app/lib/server/functions/setUsername': {
+	'./setUsername': {
 		_setUsername: stubs.setUsername,
 		_setUsernameWithSession: () => stubs.setUsername,
 	},
-	'../../../../app/lib/server/functions/setRealName': {
+	'./setRealName': {
 		setRealName: stubs.setRealName,
 	},
-	'../../../../app/lib/server/functions/updateGroupDMsName': {
+	'../../../app/lib/server/functions/updateGroupDMsName': {
 		updateGroupDMsName: sinon.stub(),
 	},
-	'../../../../app/lib/server/functions/validateName': {
+	'../../../app/lib/server/functions/validateName': {
 		validateName: stubs.validateName,
 	},
 });

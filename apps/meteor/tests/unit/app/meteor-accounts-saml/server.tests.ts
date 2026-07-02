@@ -1104,8 +1104,8 @@ describe('SAML', () => {
 				'../../../../server/lib/logger/system': { SystemLogger: { error: sinon.stub(), warn: sinon.stub() } },
 				'../../../lib/server/functions/addUserToRoom': { addUserToRoom: sinon.stub() },
 				'../../../lib/server/functions/createRoom': { createRoom: sinon.stub() },
-				'../../../lib/server/functions/getUsernameSuggestion': { generateUsernameSuggestion: sinon.stub() },
-				'../../../lib/server/functions/saveUserIdentity': { saveUserIdentity: sinon.stub() },
+				'../../../../server/lib/users/getUsernameSuggestion': { generateUsernameSuggestion: sinon.stub() },
+				'../../../../server/lib/users/saveUserIdentity': { saveUserIdentity: sinon.stub() },
 				'../../../settings/server': { settings: { get: sinon.stub() } },
 				'../../../utils/lib/i18n': { i18n: { t: (s: string) => s, languages: [] } },
 			}).SAML;

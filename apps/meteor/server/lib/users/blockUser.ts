@@ -1,9 +1,9 @@
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
-import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
-import { notifyOnSubscriptionChangedByRoomIdAndUserIds } from '../lib/notifyListener';
+import { notifyOnSubscriptionChangedByRoomIdAndUserIds } from '../../../app/lib/server/lib/notifyListener';
+import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
+import { roomCoordinator } from '../rooms/roomCoordinator';
 
 export const blockUserMethod = async (userId: string, { rid, blocked }: { rid: string; blocked: string }): Promise<void> => {
 	const room = await Rooms.findOne({ _id: rid });

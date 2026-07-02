@@ -210,7 +210,9 @@ function updateExternalImports(externalFile, oldRef, newRef) {
 	// When the moved file is a directory's `index`, importers may reference the
 	// directory itself (e.g. `import '../api/server'`). Post-`git mv` the index
 	// is gone, so resolution falls back to the bare directory path — match that too.
-	const oldIsIndex = /(^|\/)index\.(ts|tsx|js|jsx)$/.test(oldRef);
+	// Use path.basename so this is separator-safe (a directory-index move on
+	// Windows resolves oldRef with `\` separators, which a hardcoded `/` misses).
+	const oldIsIndex = /^index\.(ts|tsx|js|jsx)$/.test(path.basename(oldRef));
 	const oldRefDir = path.dirname(oldRef);
 
 	let content = fs.readFileSync(externalFile, 'utf8');

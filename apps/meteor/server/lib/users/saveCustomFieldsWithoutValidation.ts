@@ -4,10 +4,10 @@ import { Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 
-import { trim } from '../../../../lib/utils/stringUtils';
-import { onceTransactionCommitedSuccessfully } from '../../../../server/database/utils';
-import { settings } from '../../../settings/server';
-import { notifyOnSubscriptionChangedByUserIdAndRoomType } from '../lib/notifyListener';
+import { notifyOnSubscriptionChangedByUserIdAndRoomType } from '../../../app/lib/server/lib/notifyListener';
+import { settings } from '../../../app/settings/server';
+import { trim } from '../../../lib/utils/stringUtils';
+import { onceTransactionCommitedSuccessfully } from '../../database/utils';
 
 const getCustomFieldsMeta = function (customFieldsMeta: string) {
 	try {

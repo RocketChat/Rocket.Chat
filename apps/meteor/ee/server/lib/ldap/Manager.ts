@@ -5,6 +5,7 @@ import { Users, Roles, Subscriptions as SubscriptionsRaw, Rooms } from '@rocket.
 import type ldapjs from 'ldapjs';
 import type { FindCursor } from 'mongodb';
 
+import { copyCustomFieldsLDAP } from './copyCustomFieldsLDAP';
 import type {
 	ImporterAfterImportCallback,
 	ImporterBeforeImportCallback,
@@ -12,7 +13,6 @@ import type {
 import { addUserToRoom } from '../../../../app/lib/server/functions/addUserToRoom';
 import { createRoom } from '../../../../app/lib/server/functions/createRoom';
 import { removeUserFromRoom } from '../../../../app/lib/server/functions/removeUserFromRoom';
-import { setUserActiveStatus } from '../../../../app/lib/server/functions/setUserActiveStatus';
 import { settings } from '../../../../app/settings/server';
 import { getValidRoomName } from '../../../../app/utils/server/lib/getValidRoomName';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
@@ -20,8 +20,8 @@ import { LDAPConnection } from '../../../../server/lib/ldap/Connection';
 import { logger, searchLogger, mapLogger } from '../../../../server/lib/ldap/Logger';
 import { LDAPManager } from '../../../../server/lib/ldap/Manager';
 import { LDAPUserConverter } from '../../../../server/lib/ldap/UserConverter';
+import { setUserActiveStatus } from '../../../../server/lib/users/setUserActiveStatus';
 import { syncUserRoles } from '../syncUserRoles';
-import { copyCustomFieldsLDAP } from './copyCustomFieldsLDAP';
 
 export class LDAPEEManager extends LDAPManager {
 	public static async sync(): Promise<void> {

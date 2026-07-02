@@ -4,7 +4,7 @@ import type { Updater } from '@rocket.chat/models';
 import { Users } from '@rocket.chat/models';
 import type { ClientSession } from 'mongodb';
 
-import { onceTransactionCommitedSuccessfully } from '../../../../server/database/utils';
+import { onceTransactionCommitedSuccessfully } from '../../database/utils';
 
 export async function setStatusText(
 	user: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'statusText'>,

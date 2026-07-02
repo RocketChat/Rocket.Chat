@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
-import { trim } from '../../../../lib/utils/stringUtils';
-import { settings } from '../../../settings/server';
+import { settings } from '../../../app/settings/server';
+import { trim } from '../../../lib/utils/stringUtils';
 
 export const validateCustomFields = function (fields) {
 	// Special Case:

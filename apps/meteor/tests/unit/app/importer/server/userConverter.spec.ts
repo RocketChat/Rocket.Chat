@@ -30,13 +30,13 @@ const { UserConverter } = proxyquire.noCallThru().load('../../../../../app/impor
 	'../../../../lib/server/functions/addUserToDefaultChannels': {
 		addUserToDefaultChannels,
 	},
-	'../../../../lib/server/functions/getUsernameSuggestion': {
+	'../../../../../server/lib/users/getUsernameSuggestion': {
 		generateUsernameSuggestion,
 	},
-	'../../../../lib/server/functions/saveUserIdentity': {
+	'../../../../../server/lib/users/saveUserIdentity': {
 		saveUserIdentity: sinon.stub(),
 	},
-	'../../../../lib/server/functions/setUserActiveStatus': {
+	'../../../../../server/lib/users/setUserActiveStatus': {
 		setUserActiveStatus: sinon.stub(),
 	},
 	'../../../../lib/server/lib/notifyListener': {

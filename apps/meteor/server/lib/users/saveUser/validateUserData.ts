@@ -3,14 +3,14 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { makeFunction } from '@rocket.chat/patch-injection';
 import escape from 'lodash.escape';
 
-import { trim } from '../../../../../lib/utils/stringUtils';
-import { getRoleIds } from '../../../../authorization/server/functions/getRoles';
-import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { settings } from '../../../../settings/server';
-import { checkEmailAvailability } from '../checkEmailAvailability';
-import { checkUsernameAvailability } from '../checkUsernameAvailability';
 import type { SaveUserData } from './saveUser';
 import { isUpdateUserData } from './saveUser';
+import { getRoleIds } from '../../../../app/authorization/server/functions/getRoles';
+import { hasPermissionAsync } from '../../../../app/authorization/server/functions/hasPermission';
+import { settings } from '../../../../app/settings/server';
+import { trim } from '../../../../lib/utils/stringUtils';
+import { checkEmailAvailability } from '../checkEmailAvailability';
+import { checkUsernameAvailability } from '../checkUsernameAvailability';
 
 export const validateUserData = makeFunction(async (userId: IUser['_id'], userData: SaveUserData): Promise<void> => {
 	const existingRoles = await getRoleIds();

@@ -4,8 +4,8 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { validateName } from './validateName';
-import { settings } from '../../../settings/server';
+import { validateName } from '../../../app/lib/server/functions/validateName';
+import { settings } from '../../../app/settings/server';
 
 let usernameBlackList: RegExp[] = [];
 

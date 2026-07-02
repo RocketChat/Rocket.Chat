@@ -40,7 +40,7 @@ const { TeamService } = proxyquire.noCallThru().load('../../../../../server/serv
 	'../../../app/lib/server/functions/addUserToRoom': {
 		addUserToRoom,
 	},
-	'../../../app/lib/server/functions/checkUsernameAvailability': {
+	'../../lib/users/checkUsernameAvailability': {
 		checkUsernameAvailability: sinon.stub(),
 	},
 	'../../../app/lib/server/functions/getRoomsWithSingleOwner': {

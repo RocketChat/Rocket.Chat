@@ -1,7 +1,7 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
-import { generateUsernameSuggestion } from '../functions/getUsernameSuggestion';
+import { generateUsernameSuggestion } from '../../../../server/lib/users/getUsernameSuggestion';
 import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {

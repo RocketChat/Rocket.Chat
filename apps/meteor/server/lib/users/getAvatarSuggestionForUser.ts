@@ -4,7 +4,7 @@ import Gravatar from 'gravatar';
 import { check } from 'meteor/check';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import { settings } from '../../../settings/server';
+import { settings } from '../../../app/settings/server';
 
 const avatarProviders = {
 	facebook(user: IUser) {

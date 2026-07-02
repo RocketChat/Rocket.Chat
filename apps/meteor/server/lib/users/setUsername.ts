@@ -8,18 +8,18 @@ import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 import _ from 'underscore';
 
-import { addUserToRoom } from './addUserToRoom';
 import { checkUsernameAvailability } from './checkUsernameAvailability';
 import { getAvatarSuggestionForUser } from './getAvatarSuggestionForUser';
-import { joinDefaultChannels } from './joinDefaultChannels';
 import { saveUserIdentity } from './saveUserIdentity';
 import { setUserAvatar } from './setUserAvatar';
 import { validateUsername } from './validateUsername';
-import { onceTransactionCommitedSuccessfully } from '../../../../server/database/utils';
-import { callbacks } from '../../../../server/lib/callbacks';
-import { SystemLogger } from '../../../../server/lib/logger/system';
-import { settings } from '../../../settings/server';
-import { notifyOnUserChange } from '../lib/notifyListener';
+import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
+import { joinDefaultChannels } from '../../../app/lib/server/functions/joinDefaultChannels';
+import { notifyOnUserChange } from '../../../app/lib/server/lib/notifyListener';
+import { settings } from '../../../app/settings/server';
+import { onceTransactionCommitedSuccessfully } from '../../database/utils';
+import { callbacks } from '../callbacks';
+import { SystemLogger } from '../logger/system';
 
 const isUserInFederatedRooms = async (userId: string): Promise<boolean> => {
 	const cursor = Subscriptions.findUserFederatedRoomIds(userId);

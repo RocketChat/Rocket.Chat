@@ -34,7 +34,7 @@ const { insertAdminUserFromEnv } = proxyquire.noCallThru().load('../../../../ser
 	'../../app/file-upload/server': {},
 	'../../app/file/server': {},
 	'../../app/lib/server/functions/addUserToDefaultChannels': {},
-	'../../app/lib/server/functions/checkUsernameAvailability': {
+	'../lib/users/checkUsernameAvailability': {
 		checkUsernameAvailability,
 	},
 	'../../app/settings/server': {

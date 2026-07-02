@@ -45,24 +45,24 @@ describe('setUsername', () => {
 
 	const { setUsernameWithValidation, _setUsername } = proxyquire
 		.noCallThru()
-		.load('../../../../../../app/lib/server/functions/setUsername', {
-			'../../../../server/database/utils': { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() },
+		.load('../../../../../../server/lib/users/setUsername', {
+			'../../database/utils': { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() },
 			'meteor/meteor': { Meteor: { Error } },
 			'@rocket.chat/core-services': { api: stubs.api },
 			'@rocket.chat/models': { Users: stubs.Users, Invites: stubs.Invites, Subscriptions: stubs.Subscriptions },
 			'meteor/accounts-base': { Accounts: stubs.Accounts },
 			'underscore': stubs.underscore,
-			'../../../settings/server': { settings: stubs.settings },
-			'../lib': { notifyOnUserChange: stubs.notifyOnUserChange },
-			'./addUserToRoom': { addUserToRoom: stubs.addUserToRoom },
+			'../../../app/settings/server': { settings: stubs.settings },
+			'../../../app/lib/server/lib/notifyListener': { notifyOnUserChange: stubs.notifyOnUserChange },
+			'../../../app/lib/server/functions/addUserToRoom': { addUserToRoom: stubs.addUserToRoom },
 			'./checkUsernameAvailability': { checkUsernameAvailability: stubs.checkUsernameAvailability },
 			'./getAvatarSuggestionForUser': { getAvatarSuggestionForUser: stubs.getAvatarSuggestionForUser },
-			'./joinDefaultChannels': { joinDefaultChannels: stubs.joinDefaultChannels },
+			'../../../app/lib/server/functions/joinDefaultChannels': { joinDefaultChannels: stubs.joinDefaultChannels },
 			'./saveUserIdentity': { saveUserIdentity: stubs.saveUserIdentity },
 			'./setUserAvatar': { setUserAvatar: stubs.setUserAvatar },
 			'./validateUsername': { validateUsername: stubs.validateUsername },
-			'../../../../server/lib/callbacks': { callbacks: stubs.callbacks },
-			'../../../../server/lib/logger/system': { SystemLogger: stubs.SystemLogger },
+			'../callbacks': { callbacks: stubs.callbacks },
+			'../logger/system': { SystemLogger: stubs.SystemLogger },
 		});
 
 	beforeEach(() => {

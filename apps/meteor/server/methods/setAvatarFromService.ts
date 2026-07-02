@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
-import { setAvatarFromServiceWithValidation } from '../../app/lib/server/functions/setUserAvatar';
+import { setAvatarFromServiceWithValidation } from '../lib/users/setUserAvatar';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

@@ -2,8 +2,8 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { setRealName } from '../../../../server/lib/users/setRealName';
 import { settings } from '../../../settings/server';
-import { setRealName } from '../functions/setRealName';
 import { RateLimiter } from '../lib';
 import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 

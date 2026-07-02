@@ -7,10 +7,10 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import { logger } from './logger';
+import { deleteUser } from '../../../server/lib/users/deleteUser';
+import { setRealName } from '../../../server/lib/users/setRealName';
+import { setUserActiveStatus } from '../../../server/lib/users/setUserActiveStatus';
 import { crowdIntervalValuesToCronMap } from '../../../server/settings/crowd';
-import { deleteUser } from '../../lib/server/functions/deleteUser';
-import { setRealName } from '../../lib/server/functions/setRealName';
-import { setUserActiveStatus } from '../../lib/server/functions/setUserActiveStatus';
 import { notifyOnUserChange, notifyOnUserChangeById, notifyOnUserChangeAsync } from '../../lib/server/lib/notifyListener';
 import { settings } from '../../settings/server';
 

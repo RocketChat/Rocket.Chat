@@ -3,7 +3,7 @@ import { Subscriptions } from '@rocket.chat/models';
 
 import { notifyOnSubscriptionChangedByUserId } from './notifyListener';
 import { callbacks } from '../../../../server/lib/callbacks';
-import { unarchiveUserSubscriptions } from '../functions/unarchiveUserSubscriptions';
+import { unarchiveUserSubscriptions } from '../../../../server/lib/users/unarchiveUserSubscriptions';
 
 const handleDeactivateUser = async (user: IUser): Promise<void> => {
 	const { modifiedCount } = await Subscriptions.setArchivedByUserId(user._id, true);

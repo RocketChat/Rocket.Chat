@@ -14,10 +14,10 @@ import _ from 'underscore';
 import { rocketLogger } from './logger';
 import { createRoom } from '../../../app/lib/server/functions/createRoom';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
-import { setUserAvatar } from '../../../app/lib/server/functions/setUserAvatar';
 import { settings } from '../../../app/settings/server';
 import { sleep } from '../../../lib/utils/sleep';
 import { callbacks } from '../../lib/callbacks';
+import { setUserAvatar } from '../../lib/users/setUserAvatar';
 
 export default class RocketAdapter {
 	constructor(slackBridge) {

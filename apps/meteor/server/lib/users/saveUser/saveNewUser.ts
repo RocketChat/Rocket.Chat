@@ -3,15 +3,15 @@ import { Users } from '@rocket.chat/models';
 import Gravatar from 'gravatar';
 import { Accounts } from 'meteor/accounts-base';
 
-import { getNewUserRoles } from '../../../../../server/services/user/lib/getNewUserRoles';
-import { settings } from '../../../../settings/server';
-import { notifyOnUserChangeById } from '../../lib/notifyListener';
-import { validateEmailDomain } from '../../lib/validateEmailDomain';
+import { notifyOnUserChangeById } from '../../../../app/lib/server/lib/notifyListener';
+import { validateEmailDomain } from '../../../../app/lib/server/lib/validateEmailDomain';
 import { setUserAvatar } from '../setUserAvatar';
 import { handleBio } from './handleBio';
 import { handleNickname } from './handleNickname';
 import type { SaveUserData } from './saveUser';
 import { sendPasswordEmail, sendWelcomeEmail } from './sendUserEmail';
+import { settings } from '../../../../app/settings/server';
+import { getNewUserRoles } from '../../../services/user/lib/getNewUserRoles';
 
 export const saveNewUser = async function (userData: SaveUserData, sendPassword: boolean, performedBy: IUser) {
 	await validateEmailDomain(userData.email);

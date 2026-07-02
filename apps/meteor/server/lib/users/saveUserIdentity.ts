@@ -5,16 +5,16 @@ import type { ClientSession } from 'mongodb';
 
 import { setRealName } from './setRealName';
 import { _setUsername } from './setUsername';
-import { updateGroupDMsName } from './updateGroupDMsName';
-import { validateName } from './validateName';
-import { onceTransactionCommitedSuccessfully } from '../../../../server/database/utils';
-import { SystemLogger } from '../../../../server/lib/logger/system';
-import { FileUpload } from '../../../file-upload/server';
+import { FileUpload } from '../../../app/file-upload/server';
+import { updateGroupDMsName } from '../../../app/lib/server/functions/updateGroupDMsName';
+import { validateName } from '../../../app/lib/server/functions/validateName';
 import {
 	notifyOnRoomChangedByUsernamesOrUids,
 	notifyOnSubscriptionChangedByUserId,
 	notifyOnSubscriptionChangedByNameAndRoomType,
-} from '../lib/notifyListener';
+} from '../../../app/lib/server/lib/notifyListener';
+import { onceTransactionCommitedSuccessfully } from '../../database/utils';
+import { SystemLogger } from '../logger/system';
 
 /**
  *

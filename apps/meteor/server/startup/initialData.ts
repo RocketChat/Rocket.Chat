@@ -8,10 +8,10 @@ import { Meteor } from 'meteor/meteor';
 import { addCallHistoryTestData } from './callHistoryTestData';
 import { FileUpload } from '../../app/file-upload/server';
 import { addUserToDefaultChannels } from '../../app/lib/server/functions/addUserToDefaultChannels';
-import { checkUsernameAvailability } from '../../app/lib/server/functions/checkUsernameAvailability';
 import { notifyOnSettingChangedById } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
 import { addUserRolesAsync } from '../lib/roles/addUserRoles';
+import { checkUsernameAvailability } from '../lib/users/checkUsernameAvailability';
 
 export async function insertAdminUserFromEnv() {
 	if (process.env.ADMIN_PASS) {

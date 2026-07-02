@@ -5,19 +5,19 @@ import { Accounts } from 'meteor/accounts-base';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { closeOmnichannelConversations } from './closeOmnichannelConversations';
-import { shouldRemoveOrChangeOwner, getSubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
-import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
-import { callbacks } from '../../../../server/lib/callbacks';
-import * as Mailer from '../../../mailer/server/api';
-import { settings } from '../../../settings/server';
+import { closeOmnichannelConversations } from '../../../app/lib/server/functions/closeOmnichannelConversations';
+import { shouldRemoveOrChangeOwner, getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
+import { relinquishRoomOwnerships } from '../../../app/lib/server/functions/relinquishRoomOwnerships';
 import {
 	notifyOnRoomChangedById,
 	notifyOnRoomChangedByUserDM,
 	notifyOnSubscriptionChangedByNameAndRoomType,
 	notifyOnUserChange,
-} from '../lib/notifyListener';
+} from '../../../app/lib/server/lib/notifyListener';
+import * as Mailer from '../../../app/mailer/server/api';
+import { settings } from '../../../app/settings/server';
+import { callbacks } from '../callbacks';
 
 async function reactivateDirectConversations(userId: string) {
 	// since both users can be deactivated at the same time, we should just reactivate rooms if both users are active

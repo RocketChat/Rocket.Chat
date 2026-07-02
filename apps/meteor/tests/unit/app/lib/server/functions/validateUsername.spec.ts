@@ -11,8 +11,8 @@ describe('validateUsername', () => {
 		},
 	};
 
-	const { validateUsername } = proxyquire.noCallThru().load('../../../../../../app/lib/server/functions/validateUsername', {
-		'../../../settings/server': proxySettings,
+	const { validateUsername } = proxyquire.noCallThru().load('../../../../../../server/lib/users/validateUsername', {
+		'../../../app/settings/server': proxySettings,
 	});
 
 	beforeEach(() => {

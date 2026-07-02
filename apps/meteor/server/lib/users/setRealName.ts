@@ -4,8 +4,8 @@ import type { Updater } from '@rocket.chat/models';
 import { Users } from '@rocket.chat/models';
 import type { ClientSession } from 'mongodb';
 
-import { onceTransactionCommitedSuccessfully } from '../../../../server/database/utils';
-import { settings } from '../../../settings/server';
+import { settings } from '../../../app/settings/server';
+import { onceTransactionCommitedSuccessfully } from '../../database/utils';
 
 export const setRealName = async function (
 	userId: string,

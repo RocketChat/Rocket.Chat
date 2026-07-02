@@ -16,20 +16,20 @@ import {
 } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
-import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
-import { updateGroupDMsName } from './updateGroupDMsName';
-import { callbacks } from '../../../../server/lib/callbacks';
-import { i18n } from '../../../../server/lib/i18n';
-import { FileUpload } from '../../../file-upload/server';
-import { settings } from '../../../settings/server';
+import { FileUpload } from '../../../app/file-upload/server';
+import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
+import { relinquishRoomOwnerships } from '../../../app/lib/server/functions/relinquishRoomOwnerships';
+import { updateGroupDMsName } from '../../../app/lib/server/functions/updateGroupDMsName';
 import {
 	notifyOnRoomChangedById,
 	notifyOnIntegrationChangedByUserId,
 	notifyOnLivechatDepartmentAgentChanged,
 	notifyOnUserChange,
-} from '../lib/notifyListener';
+} from '../../../app/lib/server/lib/notifyListener';
+import { settings } from '../../../app/settings/server';
+import { callbacks } from '../callbacks';
+import { i18n } from '../i18n';
 
 export async function deleteUser(userId: string, confirmRelinquish = false, deletedBy?: IUser['_id']): Promise<{ deletedRooms: string[] }> {
 	if (userId === 'rocket.cat') {

@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { setUserActiveStatus } from '../../app/lib/server/functions/setUserActiveStatus';
+import { setUserActiveStatus } from '../lib/users/setUserActiveStatus';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

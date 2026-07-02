@@ -4,8 +4,8 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import type { UpdateUserData } from './saveUser';
-import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { settings } from '../../../../settings/server';
+import { hasPermissionAsync } from '../../../../app/authorization/server/functions/hasPermission';
+import { settings } from '../../../../app/settings/server';
 
 const isEditingUserRoles = (previousRoles: IUser['roles'], newRoles?: IUser['roles']) =>
 	newRoles !== undefined &&

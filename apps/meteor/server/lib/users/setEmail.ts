@@ -5,12 +5,12 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 
-import { onceTransactionCommitedSuccessfully } from '../../../../server/database/utils';
-import * as Mailer from '../../../mailer/server/api';
-import { settings } from '../../../settings/server';
-import { validateEmailDomain } from '../lib';
 import { checkEmailAvailability } from './checkEmailAvailability';
-import { sendConfirmationEmail } from '../../../../server/methods/sendConfirmationEmail';
+import { validateEmailDomain } from '../../../app/lib/server/lib';
+import * as Mailer from '../../../app/mailer/server/api';
+import { settings } from '../../../app/settings/server';
+import { onceTransactionCommitedSuccessfully } from '../../database/utils';
+import { sendConfirmationEmail } from '../../methods/sendConfirmationEmail';
 
 let html = '';
 Meteor.startup(() => {

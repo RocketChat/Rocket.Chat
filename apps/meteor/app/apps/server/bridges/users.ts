@@ -6,12 +6,12 @@ import type { PresenceSource, UserStatus } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
-import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
-import { deleteUser } from '../../../lib/server/functions/deleteUser';
-import { getUserCreatedByApp } from '../../../lib/server/functions/getUserCreatedByApp';
-import { setStatusText } from '../../../lib/server/functions/setStatusText';
-import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
-import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
+import { checkUsernameAvailability } from '../../../../server/lib/users/checkUsernameAvailability';
+import { deleteUser } from '../../../../server/lib/users/deleteUser';
+import { getUserCreatedByApp } from '../../../../server/lib/users/getUserCreatedByApp';
+import { setStatusText } from '../../../../server/lib/users/setStatusText';
+import { setUserActiveStatus } from '../../../../server/lib/users/setUserActiveStatus';
+import { setUserAvatar } from '../../../../server/lib/users/setUserAvatar';
 import { notifyOnUserChange, notifyOnUserChangeById } from '../../../lib/server/lib/notifyListener';
 
 export class AppUserBridge extends UserBridge {
