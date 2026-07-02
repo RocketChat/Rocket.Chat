@@ -5,8 +5,10 @@ import { FilePreviewIcon, GenericModal } from '@rocket.chat/ui-client';
 import { useSettingSetValue, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, DragEvent } from 'react';
 import { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import LicenseStatus from './LicenseStatus';
+import { getLicenseInvalidMessage } from './getLicenseInvalidMessage';
 import { getFileExtension } from '../../../../../../../lib/utils/getFileExtension';
 import { formatBytes } from '../../../../../../lib/utils/formatBytes';
 import { isPlausibleLicense, useValidateLicense } from '../../../hooks/useValidateLicense';
@@ -34,6 +36,7 @@ type ManageLicenseModalProps = {
 };
 
 const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalProps) => {
+	const { t } = useTranslation();
 	const setEnterpriseLicense = useSettingSetValue('Enterprise_License');
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -48,7 +51,7 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 
 	const trimmedLicense = license.trim();
 	const debouncedLicense = useDebouncedValue(trimmedLicense, 500);
-	const { data: validation, isPending, isError } = useValidateLicense(debouncedLicense);
+	const { data: reasons, isPending, isError } = useValidateLicense(debouncedLicense);
 
 	const isEmpty = trimmedLicense === '';
 	// Too short to be a complete license — treat as still-being-entered, don't validate or report.
@@ -59,21 +62,9 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 	// The entered license is already the applied one — allow removal but not re-applying.
 	const isCurrentLicense = !isEmpty && trimmedLicense === enterpriseLicense.trim();
 
-	const isFormatValid = validation?.isFormatValid ?? false;
-	const isLicenseValid = validation?.isValid ?? false;
+	const isLicenseValid = !isError && reasons?.length === 0;
 
-	const invalidMessage = (() => {
-		if (fileError) {
-			return fileError;
-		}
-		if (isError) {
-			return 'Could not validate the license. Please try again.';
-		}
-		if (!isFormatValid) {
-			return 'This license could not be decoded.';
-		}
-		return 'This license is not accepted by this workspace.';
-	})();
+	const invalidMessage = fileError ?? t(getLicenseInvalidMessage(reasons ?? []));
 
 	// Show the result once the input is a plausible license to validate (or a file error to surface).
 	const showStatus = isPlausible || Boolean(fileError);
