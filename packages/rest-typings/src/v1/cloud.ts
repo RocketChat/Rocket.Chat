@@ -1,64 +1,24 @@
-import type { CloudRegistrationIntentData, CloudConfirmationPollData, CloudRegistrationStatus } from '@rocket.chat/core-typings';
-
-import { ajv, ajvQuery } from './Ajv';
+import type { CloudRegistrationIntentData, CloudConfirmationPollData } from '@rocket.chat/core-typings';
 
 type CloudManualRegister = {
 	cloudBlob: string;
 };
 
-const CloudManualRegisterSchema = {
-	type: 'object',
-	properties: {
-		cloudBlob: {
-			type: 'string',
-		},
-	},
-	required: ['cloudBlob'],
-	additionalProperties: false,
-};
-
-export const isCloudManualRegisterProps = ajv.compile<CloudManualRegister>(CloudManualRegisterSchema);
 
 type CloudCreateRegistrationIntent = {
 	resend: boolean;
 	email: string;
 };
 
-const CloudCreateRegistrationIntentSchema = {
-	type: 'object',
-	properties: {
-		resend: {
-			type: 'boolean',
-		},
-		email: {
-			type: 'string',
-		},
-	},
-	required: ['resend', 'email'],
-	additionalProperties: false,
-};
-
-export const isCloudCreateRegistrationIntentProps = ajv.compile<CloudCreateRegistrationIntent>(CloudCreateRegistrationIntentSchema);
 
 type CloudConfirmationPoll = {
 	deviceCode: string;
 	resend?: string;
 };
 
-const CloudConfirmationPollSchema = {
-	type: 'object',
-	properties: {
-		deviceCode: {
-			type: 'string',
-			minLength: 1,
-		},
-	},
-	required: ['deviceCode'],
-	additionalProperties: false,
-};
 
-export const isCloudConfirmationPollProps = ajvQuery.compile<CloudConfirmationPoll>(CloudConfirmationPollSchema);
-
+// These endpoints are still used by ui-client, so they remain here for now.
+// Remove them from the typings once ui-client no longer depends on them.
 export type CloudEndpoints = {
 	'/v1/cloud.manualRegister': {
 		POST: (params: CloudManualRegister) => void;
@@ -77,14 +37,5 @@ export type CloudEndpoints = {
 		GET: (params: CloudConfirmationPoll) => {
 			pollData: CloudConfirmationPollData;
 		};
-	};
-	'/v1/cloud.registrationStatus': {
-		GET: () => { registrationStatus: CloudRegistrationStatus };
-	};
-	'/v1/cloud.syncWorkspace': {
-		POST: () => { success: boolean };
-	};
-	'/v1/cloud.removeLicense': {
-		POST: () => { success: boolean };
 	};
 };

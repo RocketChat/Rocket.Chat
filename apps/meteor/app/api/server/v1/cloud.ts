@@ -1,8 +1,5 @@
 import type { CloudRegistrationIntentData, CloudConfirmationPollData, CloudRegistrationStatus } from '@rocket.chat/core-typings';
 import {
-	isCloudConfirmationPollProps,
-	isCloudCreateRegistrationIntentProps,
-	isCloudManualRegisterProps,
 	ajv,
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
@@ -23,7 +20,51 @@ import { retrieveRegistrationStatus } from '../../../cloud/server/functions/retr
 import { saveRegistrationData, saveRegistrationDataManual } from '../../../cloud/server/functions/saveRegistrationData';
 import { startRegisterWorkspaceSetupWizard } from '../../../cloud/server/functions/startRegisterWorkspaceSetupWizard';
 import { syncWorkspace } from '../../../cloud/server/functions/syncWorkspace';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
+
+type CloudManualRegister = {
+	cloudBlob: string;
+};
+
+type CloudCreateRegistrationIntent = {
+	resend: boolean;
+	email: string;
+};
+
+type CloudConfirmationPoll = {
+	deviceCode: string;
+	resend?: string;
+};
+
+const CloudConfirmationPollSchema = {
+	type: 'object',
+	properties: {
+		deviceCode: { type: 'string' },
+		resend: { type: 'string' },
+	},
+	required: ['deviceCode'],
+	additionalProperties: false,
+};
+
+const CloudCreateRegistrationIntentSchema = {
+	type: 'object',
+	properties: {
+		resend: { type: 'boolean' },
+		email: { type: 'string' },
+	},
+	required: ['resend', 'email'],
+	additionalProperties: false,
+};
+
+const CloudManualRegisterSchema = {
+	type: 'object',
+	properties: {
+		cloudBlob: { type: 'string' },
+	},
+	required: ['cloudBlob'],
+	additionalProperties: false,
+};
 
 const successResponseSchema = ajv.compile<void>({
 	type: 'object',
@@ -31,6 +72,12 @@ const successResponseSchema = ajv.compile<void>({
 	required: ['success'],
 	additionalProperties: false,
 });
+
+const isCloudConfirmationPollProps = ajv.compile<CloudConfirmationPoll>(CloudConfirmationPollSchema);
+
+const isCloudCreateRegistrationIntentProps = ajv.compile<CloudCreateRegistrationIntent>(CloudCreateRegistrationIntentSchema);
+
+const isCloudManualRegisterProps = ajv.compile<CloudManualRegister>(CloudManualRegisterSchema);
 
 const manualRegisterResponseSchema = ajv.compile<void>({
 	type: 'object',
@@ -94,218 +141,214 @@ const checkoutUrlResponseSchema = ajv.compile<{ url: string }>({
 	additionalProperties: false,
 });
 
-API.v1.post(
-	'cloud.manualRegister',
-	{
-		authRequired: true,
-		permissionsRequired: ['register-on-cloud'],
-		body: isCloudManualRegisterProps,
-		response: {
-			200: manualRegisterResponseSchema,
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-			403: validateForbiddenErrorResponse,
+const cloudEndpoints = API.v1
+	.post(
+		'cloud.manualRegister',
+		{
+			authRequired: true,
+			permissionsRequired: ['register-on-cloud'],
+			body: isCloudManualRegisterProps,
+			response: {
+				200: manualRegisterResponseSchema,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
 		},
-	},
-	async function action() {
-		const registrationInfo = await retrieveRegistrationStatus();
+		async function action() {
+			const registrationInfo = await retrieveRegistrationStatus();
 
-		if (registrationInfo.workspaceRegistered) {
-			return API.v1.failure('Workspace is already registered');
-		}
-
-		const settingsData = JSON.parse(Buffer.from(this.bodyParams.cloudBlob, 'base64').toString());
-
-		await saveRegistrationDataManual(settingsData);
-
-		return API.v1.success();
-	},
-);
-
-API.v1.post(
-	'cloud.createRegistrationIntent',
-	{
-		authRequired: true,
-		permissionsRequired: ['manage-cloud'],
-		body: isCloudCreateRegistrationIntentProps,
-		response: {
-			200: createRegistrationIntentResponseSchema,
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-			403: validateForbiddenErrorResponse,
-		},
-	},
-	async function action() {
-		const intentData = await startRegisterWorkspaceSetupWizard(this.bodyParams.resend, this.bodyParams.email);
-
-		if (intentData) {
-			return API.v1.success({ intentData });
-		}
-
-		return API.v1.failure('Invalid query');
-	},
-);
-
-API.v1.post(
-	'cloud.registerPreIntent',
-	{
-		authRequired: true,
-		permissionsRequired: ['manage-cloud'],
-		response: {
-			200: registerPreIntentResponseSchema,
-			401: validateUnauthorizedErrorResponse,
-			403: validateForbiddenErrorResponse,
-		},
-	},
-	async function action() {
-		return API.v1.success({ offline: !(await registerPreIntentWorkspaceWizard()) });
-	},
-);
-
-API.v1.get(
-	'cloud.confirmationPoll',
-	{
-		authRequired: true,
-		permissionsRequired: ['manage-cloud'],
-		query: isCloudConfirmationPollProps,
-		response: {
-			200: confirmationPollResponseSchema,
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-			403: validateForbiddenErrorResponse,
-		},
-	},
-	async function action() {
-		const { deviceCode } = this.queryParams;
-
-		const pollData = await getConfirmationPoll(deviceCode);
-		if (pollData) {
-			if ('successful' in pollData && pollData.successful) {
-				await saveRegistrationData(pollData.payload);
+			if (registrationInfo.workspaceRegistered) {
+				return API.v1.failure('Workspace is already registered');
 			}
-			return API.v1.success({ pollData });
-		}
 
-		return API.v1.failure('Invalid query');
-	},
-);
+			const settingsData = JSON.parse(Buffer.from(this.bodyParams.cloudBlob, 'base64').toString());
 
-API.v1.get(
-	'cloud.registrationStatus',
-	{
-		authRequired: true,
-		permissionsRequired: ['manage-cloud'],
-		response: {
-			200: registrationStatusResponseSchema,
-			401: validateUnauthorizedErrorResponse,
-			403: validateForbiddenErrorResponse,
-		},
-	},
-	async function action() {
-		const registrationStatus = await retrieveRegistrationStatus();
-
-		return API.v1.success({ registrationStatus });
-	},
-);
-
-API.v1.post(
-	'cloud.syncWorkspace',
-	{
-		authRequired: true,
-		permissionsRequired: ['manage-cloud'],
-		rateLimiterOptions: { numRequestsAllowed: 2, intervalTimeInMS: 60000 },
-		response: {
-			200: successResponseSchema,
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-			403: validateForbiddenErrorResponse,
-		},
-	},
-	async function action() {
-		try {
-			await syncWorkspace();
+			await saveRegistrationDataManual(settingsData);
 
 			return API.v1.success();
-		} catch (error) {
-			return API.v1.failure('Error during workspace sync');
-		}
-	},
-);
-
-API.v1.post(
-	'cloud.removeLicense',
-	{
-		authRequired: true,
-		permissionsRequired: ['manage-cloud'],
-		rateLimiterOptions: { numRequestsAllowed: 2, intervalTimeInMS: 60000 },
-		response: {
-			200: successResponseSchema,
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-			403: validateForbiddenErrorResponse,
 		},
-	},
-	async function action() {
-		try {
-			await removeLicense();
-			return API.v1.success();
-		} catch (error) {
-			switch (true) {
-				case error instanceof CloudWorkspaceRegistrationError:
-				case error instanceof CloudWorkspaceAccessTokenEmptyError:
-				case error instanceof CloudWorkspaceAccessTokenError: {
-					SystemLogger.info({
-						msg: 'Manual license removal failed',
-						endpoint: 'cloud.removeLicense',
-						error,
-					});
-					break;
-				}
-				default: {
-					SystemLogger.error({
-						msg: 'Manual license removal failed',
-						endpoint: 'cloud.removeLicense',
-						error,
-					});
-					break;
-				}
+	)
+	.post(
+		'cloud.createRegistrationIntent',
+		{
+			authRequired: true,
+			permissionsRequired: ['manage-cloud'],
+			body: isCloudCreateRegistrationIntentProps,
+			response: {
+				200: createRegistrationIntentResponseSchema,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
+			const intentData = await startRegisterWorkspaceSetupWizard(this.bodyParams.resend, this.bodyParams.email);
+
+			if (intentData) {
+				return API.v1.success({ intentData });
 			}
-			return API.v1.failure('License removal failed');
-		}
-	},
-);
+
+			return API.v1.failure('Invalid query');
+		},
+	)
+	.post(
+		'cloud.registerPreIntent',
+		{
+			authRequired: true,
+			permissionsRequired: ['manage-cloud'],
+			response: {
+				200: registerPreIntentResponseSchema,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
+			return API.v1.success({ offline: !(await registerPreIntentWorkspaceWizard()) });
+		},
+	)
+	.get(
+		'cloud.confirmationPoll',
+		{
+			authRequired: true,
+			permissionsRequired: ['manage-cloud'],
+			query: isCloudConfirmationPollProps,
+			response: {
+				200: confirmationPollResponseSchema,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
+			const { deviceCode } = this.queryParams;
+
+			const pollData = await getConfirmationPoll(deviceCode);
+			if (pollData) {
+				if ('successful' in pollData && pollData.successful) {
+					await saveRegistrationData(pollData.payload);
+				}
+				return API.v1.success({ pollData });
+			}
+
+			return API.v1.failure('Invalid query');
+		},
+	)
+	.get(
+		'cloud.registrationStatus',
+		{
+			authRequired: true,
+			permissionsRequired: ['manage-cloud'],
+			response: {
+				200: registrationStatusResponseSchema,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
+			const registrationStatus = await retrieveRegistrationStatus();
+
+			return API.v1.success({ registrationStatus });
+		},
+	)
+	.post(
+		'cloud.syncWorkspace',
+		{
+			authRequired: true,
+			permissionsRequired: ['manage-cloud'],
+			rateLimiterOptions: { numRequestsAllowed: 2, intervalTimeInMS: 60000 },
+			response: {
+				200: successResponseSchema,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
+			try {
+				await syncWorkspace();
+
+				return API.v1.success();
+			} catch (error) {
+				return API.v1.failure('Error during workspace sync');
+			}
+		},
+	)
+	.post(
+		'cloud.removeLicense',
+		{
+			authRequired: true,
+			permissionsRequired: ['manage-cloud'],
+			rateLimiterOptions: { numRequestsAllowed: 2, intervalTimeInMS: 60000 },
+			response: {
+				200: successResponseSchema,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
+			try {
+				await removeLicense();
+				return API.v1.success();
+			} catch (error) {
+				switch (true) {
+					case error instanceof CloudWorkspaceRegistrationError:
+					case error instanceof CloudWorkspaceAccessTokenEmptyError:
+					case error instanceof CloudWorkspaceAccessTokenError: {
+						SystemLogger.info({
+							msg: 'Manual license removal failed',
+							endpoint: 'cloud.removeLicense',
+							error,
+						});
+						break;
+					}
+					default: {
+						SystemLogger.error({
+							msg: 'Manual license removal failed',
+							endpoint: 'cloud.removeLicense',
+							error,
+						});
+						break;
+					}
+				}
+				return API.v1.failure('License removal failed');
+			}
+		},
+	)
+	.get(
+		'cloud.checkoutUrl',
+		{
+			authRequired: true,
+			permissionsRequired: ['manage-cloud'],
+			response: {
+				200: checkoutUrlResponseSchema,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
+			const checkoutUrl = await getCheckoutUrl();
+
+			if (!checkoutUrl.url) {
+				return API.v1.failure();
+			}
+
+			return API.v1.success({ url: checkoutUrl.url });
+		},
+	);
+
+type CloudEndpoints = ExtractRoutesFromAPI<typeof cloudEndpoints>;
 
 /**
  * Declaring endpoint here because we don't want this available to the sdk client
  */
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface Endpoints {
+	interface Endpoints extends CloudEndpoints {
 		'/v1/cloud.checkoutUrl': {
 			GET: () => { url: string };
 		};
 	}
 }
-
-API.v1.get(
-	'cloud.checkoutUrl',
-	{
-		authRequired: true,
-		permissionsRequired: ['manage-cloud'],
-		response: {
-			200: checkoutUrlResponseSchema,
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-			403: validateForbiddenErrorResponse,
-		},
-	},
-	async function action() {
-		const checkoutUrl = await getCheckoutUrl();
-
-		if (!checkoutUrl.url) {
-			return API.v1.failure();
-		}
-
-		return API.v1.success({ url: checkoutUrl.url });
-	},
-);
