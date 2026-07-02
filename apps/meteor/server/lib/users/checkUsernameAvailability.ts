@@ -5,6 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { settings } from '../../settings';
+import { checkUsernameAvailabilityCallback } from '../callbacks/checkUsernameAvailabilityCallback';
 import { validateName } from '../shared/validateName';
 
 let usernameBlackList: RegExp[] = [];
@@ -61,5 +62,11 @@ export const checkUsernameAvailability = async function (username: string): Prom
 		return false;
 	}
 
-	return true;
+	try {
+		await checkUsernameAvailabilityCallback.run(username);
+
+		return true;
+	} catch (error) {
+		return false;
+	}
 };

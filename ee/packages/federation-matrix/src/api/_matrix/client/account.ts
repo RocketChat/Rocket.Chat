@@ -76,9 +76,29 @@ export const addAccountRoutes = (router: ClientRouter) => {
 
 				const serverName = federationSDK.getConfig('serverName');
 
+				// An application service may only register users that no *other* bridge exclusively claims.
+				// Registering within its own exclusive namespace is fine; another bridge's is M_EXCLUSIVE.
+				const appService = c.get('appService') as ReturnType<typeof federationSDK.getRegistrationByAsToken>;
+
+				const isReservedByAnotherAppService = (candidate: string): boolean => {
+					const mxid = candidate.startsWith('@') ? candidate : `@${candidate}:${serverName}`;
+					const owner = federationSDK.isExclusiveNamespace('users', mxid);
+					return Boolean(owner && owner.registration._id !== appService?.registration._id);
+				};
+
 				const decoded = decodeXmppUserId(body.username);
 
 				if (!isFullXmppUserId(decoded)) {
+					if (isReservedByAnotherAppService(body.username)) {
+						return {
+							statusCode: 400,
+							body: {
+								errcode: 'M_EXCLUSIVE',
+								error: 'Username is in an exclusive namespace of another application service',
+							},
+						};
+					}
+
 					await createOrUpdateFederatedUser({
 						username: body.username,
 						origin: serverName,
@@ -105,6 +125,16 @@ export const addAccountRoutes = (router: ClientRouter) => {
 				}
 
 				const username = `@${decodedUsername.resource}:${serverName}`;
+
+				if (isReservedByAnotherAppService(username)) {
+					return {
+						statusCode: 400,
+						body: {
+							errcode: 'M_EXCLUSIVE',
+							error: 'Username is in an exclusive namespace of another application service',
+						},
+					};
+				}
 
 				await createOrUpdateFederatedUser({
 					username,

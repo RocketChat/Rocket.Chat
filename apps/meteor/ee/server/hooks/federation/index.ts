@@ -1,7 +1,7 @@
 import { FederationMatrix, Message, MeteorError, Room } from '@rocket.chat/core-services';
 import { isEditedMessage, isRoomNativeFederated, isUserNativeFederated, isBannedSubscription } from '@rocket.chat/core-typings';
 import type { IRoomNativeFederated, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
-import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
+import { isUsernameReservedByExclusiveBridge, validateFederatedUsername } from '@rocket.chat/federation-matrix';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../server/lib/callbacks';
@@ -11,6 +11,7 @@ import { afterRemoveFromRoomCallback } from '../../../../server/lib/callbacks/af
 import { afterUnbanFromRoomCallback } from '../../../../server/lib/callbacks/afterUnbanFromRoomCallback';
 import { beforeAddUsersToRoom, beforeAddUserToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
 import { beforeChangeRoomRole } from '../../../../server/lib/callbacks/beforeChangeRoomRole';
+import { checkUsernameAvailabilityCallback } from '../../../../server/lib/callbacks/checkUsernameAvailabilityCallback';
 import { prepareCreateRoomCallback } from '../../../../server/lib/callbacks/beforeCreateRoomCallback';
 import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../../../../server/lib/notifyListener';
 import { FederationActions } from '../../../../server/services/room/hooks/BeforeFederationActions';
@@ -378,3 +379,18 @@ callbacks.add('afterSaveUser', async ({ user: userUpdated, oldUser: oldUserData 
 		void FederationMatrix.updateUserName(userUpdated);
 	}
 });
+
+// Reserve usernames that fall within a bridge's exclusive user namespace, so a regular user
+// cannot register or rename into a localpart only the bridge is allowed to own. Inert when
+// federation is disabled (the helper matches against loaded appservice registrations, of which
+// there are none). Every username assignment path — creation, SSO/LDAP assignment and renames —
+// funnels through `checkUsernameAvailability`.
+checkUsernameAvailabilityCallback.add(
+	(username) => {
+		if (isUsernameReservedByExclusiveBridge(username)) {
+			throw new MeteorError('error-username-reserved-by-bridge', 'Username is reserved by a federation bridge');
+		}
+	},
+	callbacks.priority.HIGH,
+	'federation-bridge-namespace',
+);
