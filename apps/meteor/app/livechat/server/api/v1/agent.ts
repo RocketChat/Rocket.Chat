@@ -2,6 +2,7 @@ import type { ILivechatAgent } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import {
+	ajv,
 	isGETAgentNextToken,
 	isPOSTLivechatAgentSaveInfoParams,
 	isPOSTLivechatAgentStatusProps,
@@ -21,8 +22,47 @@ import { saveAgentInfo } from '../../lib/omni-users';
 import { setUserStatusLivechat, allowAgentChangeServiceStatus } from '../../lib/utils';
 import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
 
-API.v1.addRoute('livechat/agent.info/:rid/:token', {
-	async get() {
+const GETAgentInfoSuccessResponse = ajv.compile<{ agent: ILivechatAgent | { hiddenInfo: true }; success: boolean }>({
+	type: 'object',
+	properties: {
+		agent: {
+			type: 'object',
+		},
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	required: ['agent', 'success'],
+	additionalProperties: false,
+});
+
+const GETAgentNextSuccessResponse = ajv.compile<
+	{ agent?: ILivechatAgent | { hiddenInfo: true }; success: boolean } | { success: boolean }
+>({
+	type: 'object',
+	properties: {
+		agent: {
+			type: 'object',
+		},
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	required: ['success'],
+	additionalProperties: false,
+});
+
+const livechatAgentInfoEndpoint = API.v1.get(
+	'livechat/agent.info/:rid/:token',
+	{
+		response: {
+			200: GETAgentInfoSuccessResponse,
+			400: validateBadRequestErrorResponse,
+		},
+	},
+	async function action() {
 		const visitor = await findGuest(this.urlParams.token);
 		if (!visitor) {
 			throw new Error('invalid-token');
@@ -40,39 +80,43 @@ API.v1.addRoute('livechat/agent.info/:rid/:token', {
 
 		return API.v1.success({ agent });
 	},
-});
+);
 
-API.v1.addRoute(
+const livechatAgentNextEndpoint = API.v1.get(
 	'livechat/agent.next/:token',
-	{ validateParams: isGETAgentNextToken },
 	{
-		async get() {
-			const { token } = this.urlParams;
-			const room = await findOpenRoom(token, undefined, this.userId);
-			if (room) {
-				return API.v1.success();
-			}
-
-			let { department } = this.queryParams;
-			if (!department) {
-				const requireDepartment = await getRequiredDepartment();
-				if (requireDepartment) {
-					department = requireDepartment._id;
-				}
-			}
-
-			const agentData = await RoutingManager.getNextAgent(department);
-			if (!agentData) {
-				throw new Error('agent-not-found');
-			}
-
-			const agent = await findAgent(agentData.agentId);
-			if (!agent) {
-				throw new Error('invalid-agent');
-			}
-
-			return API.v1.success({ agent });
+		query: isGETAgentNextToken,
+		response: {
+			200: GETAgentNextSuccessResponse,
+			400: validateBadRequestErrorResponse,
 		},
+	},
+	async function action() {
+		const { token } = this.urlParams;
+		const room = await findOpenRoom(token, undefined, this.userId);
+		if (room) {
+			return API.v1.success();
+		}
+
+		let { department } = this.queryParams;
+		if (!department) {
+			const requireDepartment = await getRequiredDepartment();
+			if (requireDepartment) {
+				department = requireDepartment._id;
+			}
+		}
+
+		const agentData = await RoutingManager.getNextAgent(department);
+		if (!agentData) {
+			throw new Error('agent-not-found');
+		}
+
+		const agent = await findAgent(agentData.agentId);
+		if (!agent) {
+			throw new Error('invalid-agent');
+		}
+
+		return API.v1.success({ agent });
 	},
 );
 
@@ -162,9 +206,11 @@ const livechatAgentsEndpoints = API.v1.post(
 	},
 );
 
+type LivechatAgentInfoEndpoints = ExtractRoutesFromAPI<typeof livechatAgentInfoEndpoint>;
+type LivechatAgentNextEndpoints = ExtractRoutesFromAPI<typeof livechatAgentNextEndpoint>;
 type LivechatAgentsEndpoints = ExtractRoutesFromAPI<typeof livechatAgentsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends LivechatAgentsEndpoints {}
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface Endpoints extends LivechatAgentInfoEndpoints, LivechatAgentNextEndpoints, LivechatAgentsEndpoints {}
 }
