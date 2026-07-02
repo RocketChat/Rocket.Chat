@@ -5,6 +5,7 @@ import { makeFunction } from '@rocket.chat/patch-injection';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../../server/lib/callbacks';
+import { settings as rcSettings } from '../../../../settings/server';
 import { normalizeAgent } from '../../lib/Helper';
 import { getInitSettings } from '../../lib/settings';
 
@@ -33,19 +34,33 @@ export const checkUnitsFromUser = makeFunction(async (_params: CheckUnitsFromUse
 async function findDepartments(
 	businessUnit?: string,
 	userId?: string,
-): Promise<Pick<ILivechatDepartment, '_id' | 'name' | 'showOnRegistration' | 'showOnOfflineForm' | 'departmentsAllowedToForward'>[]> {
+): Promise<
+	(Pick<ILivechatDepartment, '_id' | 'name' | 'showOnRegistration' | 'showOnOfflineForm' | 'departmentsAllowedToForward'> & {
+		hasEmail: boolean;
+	})[]
+> {
 	// TODO: check this function usage
 	await checkUnitsFromUser({ userId, businessUnit });
 
-	return LivechatDepartment.findEnabledWithAgentsAndBusinessUnit<
-		Pick<ILivechatDepartment, '_id' | 'name' | 'showOnRegistration' | 'showOnOfflineForm' | 'departmentsAllowedToForward'>
+	const departments = await LivechatDepartment.findEnabledWithAgentsAndBusinessUnit<
+		Pick<ILivechatDepartment, '_id' | 'name' | 'showOnRegistration' | 'showOnOfflineForm' | 'departmentsAllowedToForward' | 'email'>
 	>(businessUnit, {
 		_id: 1,
 		name: 1,
 		showOnRegistration: 1,
 		showOnOfflineForm: 1,
 		departmentsAllowedToForward: 1,
+		email: 1,
 	}).toArray();
+
+	return departments.map((d) => ({
+		_id: d._id,
+		name: d.name,
+		showOnRegistration: d.showOnRegistration,
+		showOnOfflineForm: d.showOnOfflineForm,
+		departmentsAllowedToForward: d.departmentsAllowedToForward,
+		hasEmail: !!d.email,
+	}));
 }
 
 export function findGuest(token: string): Promise<ILivechatVisitor | null> {
@@ -119,7 +134,8 @@ export async function settings({ businessUnit = '', userId }: { businessUnit?: s
 			allowSwitchingDepartments: initSettings.Livechat_allow_switching_departments,
 			nameFieldRegistrationForm: initSettings.Livechat_name_field_registration_form,
 			emailFieldRegistrationForm: initSettings.Livechat_email_field_registration_form,
-			displayOfflineForm: initSettings.Livechat_display_offline_form,
+			displayOfflineForm: !!initSettings.Livechat_display_offline_form,
+			isOfflineEmailSetup: !!rcSettings.get('Livechat_offline_email'),
 			videoCall: initSettings.Omnichannel_call_provider === 'default-provider',
 			fileUpload: initSettings.Livechat_fileupload_enabled && initSettings.FileUpload_Enabled,
 			language: initSettings.Language,
