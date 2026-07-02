@@ -72,7 +72,7 @@ const RoomsPage = () => {
 			<Margins block={24}>
 				<Box display='flex'>
 					<TextInput
-						addon={<Icon name='magnifier' size='x20' />}
+						endAddon={<Icon name='magnifier' size='x20' />}
 						placeholder={t('ABAC_Search_rooms')}
 						value={text}
 						onChange={(e) => setText((e.target as HTMLInputElement).value)}

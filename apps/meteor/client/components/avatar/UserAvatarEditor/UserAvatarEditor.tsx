@@ -126,7 +126,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 						<FieldRow>
 							<TextInput
 								placeholder={t('Use_url_for_avatar')}
-								addon={
+								endAddon={
 									<IconButton
 										icon='permalink'
 										secondary

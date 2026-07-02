@@ -195,7 +195,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 						ref={mergedTextInputRef}
 						value={searchTerm}
 						onChange={handleSearch}
-						addon={<Icon name='magnifier' size='x20' />}
+						endAddon={<Icon name='magnifier' size='x20' />}
 						placeholder={t('Search')}
 						aria-label={t('Search')}
 					/>

@@ -234,7 +234,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 										{...field}
 										aria-required={true}
 										disabled={!canChangeUsername}
-										addon={<Icon name='at' size='x20' />}
+										endAddon={<Icon name='at' size='x20' />}
 										error={errors.username?.message}
 									/>
 								)}
@@ -345,7 +345,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 						<Controller
 							control={control}
 							name='nickname'
-							render={({ field }) => <TextInput {...field} flexGrow={1} addon={<Icon name='edit' size='x20' alignSelf='center' />} />}
+							render={({ field }) => <TextInput {...field} flexGrow={1} endAddon={<Icon name='edit' size='x20' alignSelf='center' />} />}
 						/>
 					</FieldRow>
 				</Field>
@@ -364,7 +364,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 									rows={3}
 									flexGrow={1}
 									error={errors.bio?.message}
-									addon={<Icon name='edit' size='x20' alignSelf='center' />}
+									endAddon={<Icon name='edit' size='x20' alignSelf='center' />}
 								/>
 							)}
 						/>
@@ -395,7 +395,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 									aria-required={true}
 									flexGrow={1}
 									disabled={!allowEmailChange}
-									addon={<Icon name={isUserVerified ? 'circle-check' : 'mail'} size='x20' />}
+									endAddon={<Icon name={isUserVerified ? 'circle-check' : 'mail'} size='x20' />}
 									error={errors.email?.message}
 								/>
 							)}

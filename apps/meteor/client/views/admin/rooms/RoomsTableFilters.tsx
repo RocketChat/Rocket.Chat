@@ -88,7 +88,7 @@ const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction
 					name='search-rooms'
 					alignItems='center'
 					placeholder={t('Search_rooms')}
-					addon={<Icon name='magnifier' size='x20' />}
+					endAddon={<Icon name='magnifier' size='x20' />}
 					onChange={handleSearchTextChange}
 					value={text}
 				/>

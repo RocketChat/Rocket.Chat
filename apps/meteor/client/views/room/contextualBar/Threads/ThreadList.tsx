@@ -131,7 +131,7 @@ const ThreadList = () => {
 					aria-label={t('Search_Messages')}
 					aria-controls={isSuccess ? threadListId : undefined}
 					placeholder={t('Search_Messages')}
-					addon={<Icon name='magnifier' size='x20' />}
+					endAddon={<Icon name='magnifier' size='x20' />}
 					ref={autoFocusRef}
 					value={searchText}
 					onChange={handleSearchTextChange}

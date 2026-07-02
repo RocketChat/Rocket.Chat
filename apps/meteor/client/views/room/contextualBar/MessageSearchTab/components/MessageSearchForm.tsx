@@ -54,7 +54,7 @@ const MessageSearchForm = ({ provider, onSearch, searchListId, isSuccess }: Mess
 		<Box is='form' onSubmit={submitHandler} w='full'>
 			<Field>
 				<TextInput
-					addon={<Icon name='magnifier' size='x20' />}
+					endAddon={<Icon name='magnifier' size='x20' />}
 					placeholder={t('Search_Messages')}
 					aria-label={t('Search_Messages')}
 					aria-controls={isSuccess ? searchListId : undefined}

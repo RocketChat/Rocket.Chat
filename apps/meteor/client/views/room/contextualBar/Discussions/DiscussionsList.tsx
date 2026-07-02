@@ -76,7 +76,7 @@ function DiscussionsList({
 					value={text}
 					onChange={onChangeFilter}
 					ref={inputRef as RefObject<HTMLInputElement>}
-					addon={<Icon name='magnifier' size='x20' />}
+					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
 			</ContextualbarSection>
 			<ContextualbarContent paddingInline={0}>
