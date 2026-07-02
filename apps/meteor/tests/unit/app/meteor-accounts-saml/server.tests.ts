@@ -42,7 +42,8 @@ import { ResponseParser } from '../../../../app/meteor-accounts-saml/server/lib/
 
 const meteorStub = {
 	'meteor/meteor': {
-		Meteor: {
+		'@global': true,
+		'Meteor': {
 			absoluteUrl() {
 				return 'http://localhost:3000/';
 			},
