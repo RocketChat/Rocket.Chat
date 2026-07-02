@@ -1,3 +1,5 @@
+import { performance } from 'universal-perf-hooks';
+
 import { createAccountSettings } from './accounts';
 import { createAnalyticsSettings } from './analytics';
 import { createAssetsSettings } from './assets';
@@ -34,48 +36,63 @@ import { createTroubleshootSettings } from './troubleshoot';
 import { createUserDataSettings } from './userDataDownload';
 import { createVConfSettings } from './video-conference';
 import { createWebDavSettings } from './webdav';
+import { settingsRegistry } from '../../app/settings/server';
+import { sinceBoot } from '../lib/logger/bootStart';
+import { SystemLogger } from '../lib/logger/system';
 import { addMatrixBridgeFederationSettings } from '../services/federation/Settings';
 
-await Promise.all([
-	createFederationServiceSettings(),
-	createAccountSettings(),
-	createAnalyticsSettings(),
-	createAssetsSettings(),
-	createBotsSettings(),
-	createCasSettings(),
-	createCrowdSettings(),
-	createEmojiSettings(),
-	createSoundsSettings(),
-	createDiscussionsSettings(),
-	createEmailSettings(),
-	createE2ESettings(),
-	createFileUploadSettings(),
-	createGeneralSettings(),
-	createIRCSettings(),
-	createLdapSettings(),
-	createLogSettings(),
-	createLayoutSettings(),
-	createMessageSettings(),
-	createMetaSettings(),
-	createMiscSettings(),
-	createMobileSettings(),
-	createOauthSettings(),
-	createOmniSettings(),
-	createPushSettings(),
-	createRateLimitSettings(),
-	createRetentionSettings(),
-	createSetupWSettings(),
-	createSlackBridgeSettings(),
-	createSmarshSettings(),
-	createThreadSettings(),
-	createTroubleshootSettings(),
-	createVConfSettings(),
-	createUserDataSettings(),
-	createWebDavSettings(),
-]);
+SystemLogger.startup({ msg: 'Initializing settings (registration)', sinceBootMs: sinceBoot() });
+const settingsRegistrationStart = performance.now();
 
-// Run after all the other settings are created since it depends on some of them
-await Promise.all([
-	createFederationSettings(), // Deprecated and not used anymore. Kept for admin UI information purposes. Remove on 8.0
-	addMatrixBridgeFederationSettings(), // Deprecated and not used anymore. Kept for admin UI information purposes. Remove on 8.0
-]);
+const { opCount } = await settingsRegistry.batch(async () => {
+	await Promise.all([
+		createFederationServiceSettings(),
+		createAccountSettings(),
+		createAnalyticsSettings(),
+		createAssetsSettings(),
+		createBotsSettings(),
+		createCasSettings(),
+		createCrowdSettings(),
+		createEmojiSettings(),
+		createSoundsSettings(),
+		createDiscussionsSettings(),
+		createEmailSettings(),
+		createE2ESettings(),
+		createFileUploadSettings(),
+		createGeneralSettings(),
+		createIRCSettings(),
+		createLdapSettings(),
+		createLogSettings(),
+		createLayoutSettings(),
+		createMessageSettings(),
+		createMetaSettings(),
+		createMiscSettings(),
+		createMobileSettings(),
+		createOauthSettings(),
+		createOmniSettings(),
+		createPushSettings(),
+		createRateLimitSettings(),
+		createRetentionSettings(),
+		createSetupWSettings(),
+		createSlackBridgeSettings(),
+		createSmarshSettings(),
+		createThreadSettings(),
+		createTroubleshootSettings(),
+		createVConfSettings(),
+		createUserDataSettings(),
+		createWebDavSettings(),
+	]);
+
+	// Run after all the other settings are created since it depends on some of them
+	await Promise.all([
+		createFederationSettings(), // Deprecated and not used anymore. Kept for admin UI information purposes. Remove on 8.0
+		addMatrixBridgeFederationSettings(), // Deprecated and not used anymore. Kept for admin UI information purposes. Remove on 8.0
+	]);
+});
+
+SystemLogger.startup({
+	msg: 'Settings registration done',
+	elapsedMs: Math.round(performance.now() - settingsRegistrationStart),
+	opCount,
+	sinceBootMs: sinceBoot(),
+});

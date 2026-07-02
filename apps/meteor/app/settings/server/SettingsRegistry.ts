@@ -2,6 +2,7 @@ import type { ISetting, ISettingGroup, Optional, SettingValue } from '@rocket.ch
 import { isSettingEnterprise } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type { ISettingsModel } from '@rocket.chat/model-typings';
+import type { AnyBulkWriteOperation } from 'mongodb';
 import { isEqual } from 'underscore';
 
 import type { ICachedSettings } from './CachedSettings';
@@ -90,9 +91,58 @@ export class SettingsRegistry {
 
 	private _sorter: { [key: string]: number } = {};
 
+	// Holds bulk ops while a `batch()` is in flight. `undefined` means writes go straight to Mongo.
+	private buffer?: AnyBulkWriteOperation<ISetting>[];
+
 	constructor({ store, model }: { store: ICachedSettings; model: ISettingsModel }) {
 		this.store = store;
 		this.model = model;
+	}
+
+	/**
+	 * Run `work` with DB writes from add()/addGroup() coalesced into a single bulkWrite at the end.
+	 * Cache updates still apply immediately so concurrent add() calls see consistent state.
+	 */
+	async batch<T>(work: () => Promise<T>): Promise<{ result: T; opCount: number }> {
+		if (this.buffer) {
+			throw new Error('SettingsRegistry.batch() cannot be nested');
+		}
+		this.buffer = [];
+		try {
+			const result = await work();
+			const opCount = this.buffer.length;
+			if (opCount > 0) {
+				await this.model.col.bulkWrite(this.buffer, { ordered: false });
+			}
+			return { result, opCount };
+		} finally {
+			this.buffer = undefined;
+		}
+	}
+
+	private async persistInsert(setting: ISetting): Promise<void> {
+		if (this.buffer) {
+			this.buffer.push({ insertOne: { document: { ...setting, _updatedAt: new Date() } } });
+			return;
+		}
+		await this.model.insertOne(setting);
+	}
+
+	private async persistUpdate(_id: string, settingProps: Omit<Optional<ISetting, 'value'>, '_id'>, removedKeys?: string[]): Promise<void> {
+		if (this.buffer) {
+			const $unset: Record<string, 1> | undefined = removedKeys?.length
+				? Object.fromEntries(removedKeys.map((key) => [key, 1 as const]))
+				: undefined;
+			this.buffer.push({
+				updateOne: {
+					filter: { _id },
+					update: { $set: { ...settingProps, _updatedAt: new Date() }, ...($unset && { $unset }) },
+					upsert: true,
+				},
+			});
+			return;
+		}
+		await this.saveUpdatedSetting(_id, settingProps, removedKeys);
 	}
 
 	/*
@@ -166,7 +216,7 @@ export class SettingsRegistry {
 				};
 			})();
 
-			await this.saveUpdatedSetting(_id, updatedProps, removedKeys);
+			await this.persistUpdate(_id, updatedProps, removedKeys);
 			if ('value' in updatedProps) {
 				this.store.set(updatedProps as ISetting);
 			}
@@ -179,7 +229,7 @@ export class SettingsRegistry {
 				const overwrittenKeys = Object.keys(settingFromCodeOverwritten);
 				const removedKeys = Object.keys(settingStored).filter((key) => !['_updatedAt'].includes(key) && !overwrittenKeys.includes(key));
 
-				await this.saveUpdatedSetting(_id, settingProps, removedKeys);
+				await this.persistUpdate(_id, settingProps, removedKeys);
 				this.store.set(settingFromCodeOverwritten);
 			}
 			return;
@@ -198,7 +248,7 @@ export class SettingsRegistry {
 
 		const setting = isOverwritten ? settingFromCodeOverwritten : settingOverwrittenDefault;
 
-		await this.model.insertOne(setting); // no need to emit unless we remove the oplog
+		await this.persistInsert(setting); // no need to emit unless we remove the oplog
 
 		this.store.set(setting);
 	}
@@ -224,7 +274,7 @@ export class SettingsRegistry {
 		if (!this.store.has(_id)) {
 			options.ts = new Date();
 			this.store.set(options as ISetting);
-			await this.model.insertOne(options as ISetting);
+			await this.persistInsert(options as ISetting);
 		}
 
 		if (!callback) {
