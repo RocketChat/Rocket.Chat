@@ -114,6 +114,30 @@ const getRoomStateEvent = async (roomId: RoomID, eventType: string, stateKey = '
 	}
 };
 
+const putRoomStateEvent = async (roomId: RoomID, eventType: string, senderUsername: UserID, body: Record<string, unknown>) => {
+	try {
+		if (eventType === 'm.room.name' && typeof body.name === 'string') {
+			const event = await federationSDK.updateRoomName(roomId, body.name, senderUsername);
+			return {
+				statusCode: 200 as const,
+				body: { event_id: event.eventId },
+			};
+		}
+		if (eventType === 'm.room.topic' && typeof body.topic === 'string') {
+			await federationSDK.setRoomTopic(roomId, senderUsername, body.topic);
+			return {
+				statusCode: 200 as const,
+				body: { event_id: '' },
+			};
+		}
+
+		// TODO: extend SDK to send arbitrary state events
+		return notImplemented(`State event type ${eventType} not yet implemented`, { roomId, eventType, senderUsername });
+	} catch (error) {
+		return internalError('Failed to send state event', error, { roomId, eventType, senderUsername });
+	}
+};
+
 export const addRoomsStateRoutes = (router: ClientRouter) => {
 	router
 		// GET /_matrix/client/v3/rooms/:roomId/joined_members
@@ -250,9 +274,11 @@ export const addRoomsStateRoutes = (router: ClientRouter) => {
 			},
 		)
 
-		// PUT /_matrix/client/v3/rooms/:roomId/state/:eventType/:stateKey
+		// PUT /_matrix/client/v3/rooms/:roomId/state/:eventType/
+		// Same trailing-slash note as the GET above: the optional-param route (`:stateKey?`)
+		// doesn't match an empty final segment, so this explicit route handles it with stateKey=''.
 		.put(
-			'/v3/rooms/:roomId/state/:eventType/:stateKey',
+			'/v3/rooms/:roomId/state/:eventType/',
 			{
 				params: isStateEventParamsProps,
 				query: isImpersonationQueryProps,
@@ -270,31 +296,40 @@ export const addRoomsStateRoutes = (router: ClientRouter) => {
 			isAppServiceAuthenticatedMiddleware(),
 			async (c) => {
 				const roomId = c.req.param('roomId') as RoomID;
-				const eventType = c.req.param('eventType');
+				const eventType = c.req.param('eventType') as string;
 				const senderUsername = c.get('impersonatedUserId') as UserID;
 				const body = await c.req.json();
 
-				try {
-					if (eventType === 'm.room.name' && typeof body.name === 'string') {
-						const event = await federationSDK.updateRoomName(roomId, body.name, senderUsername);
-						return {
-							statusCode: 200,
-							body: { event_id: event.eventId },
-						};
-					}
-					if (eventType === 'm.room.topic' && typeof body.topic === 'string') {
-						await federationSDK.setRoomTopic(roomId, senderUsername, body.topic);
-						return {
-							statusCode: 200,
-							body: { event_id: '' },
-						};
-					}
+				return putRoomStateEvent(roomId, eventType, senderUsername, body);
+			},
+		)
 
-					// TODO: extend SDK to send arbitrary state events
-					return notImplemented(`State event type ${eventType} not yet implemented`, { roomId, eventType, senderUsername });
-				} catch (error) {
-					return internalError('Failed to send state event', error, { roomId, eventType, senderUsername });
-				}
+		// PUT /_matrix/client/v3/rooms/:roomId/state/:eventType/:stateKey?
+		// The state key is optional per spec: `PUT /state/:eventType` targets the empty state key.
+		.put(
+			'/v3/rooms/:roomId/state/:eventType/:stateKey?',
+			{
+				params: isStateEventParamsProps,
+				query: isImpersonationQueryProps,
+				body: isPutStateBodyProps,
+				response: {
+					200: isPutStateResponseProps,
+					401: isMatrixErrorProps,
+					403: isMatrixErrorProps,
+					500: isMatrixErrorProps,
+					501: isMatrixErrorProps,
+				},
+				tags,
+				license,
+			},
+			isAppServiceAuthenticatedMiddleware(),
+			async (c) => {
+				const roomId = c.req.param('roomId') as RoomID;
+				const eventType = c.req.param('eventType') as string;
+				const senderUsername = c.get('impersonatedUserId') as UserID;
+				const body = await c.req.json();
+
+				return putRoomStateEvent(roomId, eventType, senderUsername, body);
 			},
 		);
 };
