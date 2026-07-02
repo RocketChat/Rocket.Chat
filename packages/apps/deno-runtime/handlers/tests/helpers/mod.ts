@@ -1,8 +1,8 @@
 import type { App } from '@rocket.chat/apps-engine/definition/App';
 
-import { Logger } from '../../../lib/logger.ts';
-import { RequestDescriptor } from '../../../lib/messenger.ts';
-import { RequestContext } from '../../../lib/requestContext.ts';
+import { Logger } from '../../../lib/logger';
+import { RequestDescriptor } from '../../../lib/messenger';
+import { RequestContext } from '../../../lib/requestContext';
 
 export function createMockRequest({ method, params }: RequestDescriptor): RequestContext {
 	return {

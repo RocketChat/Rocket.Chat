@@ -1,16 +1,10 @@
 import type { IRoomExtender } from '@rocket.chat/apps-engine/definition/accessors/IRoomExtender';
-import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
+import { RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
 
-import { require } from '../../../lib/require.ts';
-
-const { RocketChatAssociationModel } = require('@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.js') as {
-	RocketChatAssociationModel: typeof _RocketChatAssociationModel;
-};
-
 export class RoomExtender implements IRoomExtender {
-	public kind: _RocketChatAssociationModel.ROOM;
+	public kind: RocketChatAssociationModel.ROOM;
 
 	private members: Array<IUser>;
 

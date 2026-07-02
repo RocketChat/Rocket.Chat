@@ -2,9 +2,9 @@ import type { IHttp, IHttpExtend, IHttpRequest, IHttpResponse } from '@rocket.ch
 import type { IPersistence } from '@rocket.chat/apps-engine/definition/accessors/IPersistence';
 import type { IRead } from '@rocket.chat/apps-engine/definition/accessors/IRead';
 
-import * as Messenger from '../messenger.ts';
-import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
-import { formatErrorResponse } from './formatResponseErrorHandler.ts';
+import * as Messenger from '../messenger';
+import { AppObjectRegistry } from '../../AppObjectRegistry';
+import { formatErrorResponse } from './formatResponseErrorHandler';
 
 type RequestMethod = 'get' | 'post' | 'put' | 'head' | 'delete' | 'patch';
 

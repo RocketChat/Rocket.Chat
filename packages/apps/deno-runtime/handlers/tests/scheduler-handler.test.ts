@@ -1,10 +1,10 @@
 import { assertEquals } from 'https://deno.land/std@0.203.0/assert/mod.ts';
 import { afterAll, beforeEach, describe, it } from 'https://deno.land/std@0.203.0/testing/bdd.ts';
 
-import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
-import { AppAccessors } from '../../lib/accessors/mod.ts';
-import handleScheduler from '../scheduler-handler.ts';
-import { createMockApp, createMockRequest } from './helpers/mod.ts';
+import { AppObjectRegistry } from '../../AppObjectRegistry';
+import { AppAccessors } from '../../lib/accessors/mod';
+import handleScheduler from '../scheduler-handler';
+import { createMockApp, createMockRequest } from './helpers/mod';
 
 describe('handlers > scheduler', () => {
 	const mockAppAccessors = new AppAccessors(() =>

@@ -2,8 +2,8 @@ import { writeAll } from '@std/io';
 
 import * as jsonrpc from 'jsonrpc-lite';
 
-import { encoder } from './codec.ts';
-import { RequestContext } from './requestContext.ts';
+import { encoder } from './codec';
+import { RequestContext } from './requestContext';
 
 export type RequestDescriptor = Pick<jsonrpc.RequestObject, 'method' | 'params'>;
 

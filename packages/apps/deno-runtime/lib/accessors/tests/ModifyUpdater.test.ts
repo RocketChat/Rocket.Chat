@@ -3,9 +3,9 @@ import { afterAll, beforeEach, describe, it } from 'https://deno.land/std@0.203.
 import { assertSpyCall, spy, stub } from 'https://deno.land/std@0.203.0/testing/mock.ts';
 import { assertEquals, assertRejects } from 'https://deno.land/std@0.203.0/assert/mod.ts';
 
-import { AppObjectRegistry } from '../../../AppObjectRegistry.ts';
-import { ModifyUpdater } from '../modify/ModifyUpdater.ts';
-import { RoomBuilder } from '../builders/RoomBuilder.ts';
+import { AppObjectRegistry } from '../../../AppObjectRegistry';
+import { ModifyUpdater } from '../modify/ModifyUpdater';
+import { RoomBuilder } from '../builders/RoomBuilder';
 import jsonrpc from 'jsonrpc-lite';
 
 describe('ModifyUpdater', () => {
