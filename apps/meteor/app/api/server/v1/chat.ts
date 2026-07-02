@@ -846,6 +846,22 @@ const chatEndpoints = API.v1
 				throw new Error("Cannot send system messages using 'chat.sendMessage'");
 			}
 
+			// Checks for control characters in the message and removes them
+			if (this.bodyParams.message) {
+				const msg = typeof this.bodyParams.message.msg === 'string' ? this.bodyParams.message.msg : '';
+				// eslint-disable-next-line no-control-regex
+				const controlCharsRegex = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F]/g;
+
+				this.bodyParams.message.msg = msg.replace(controlCharsRegex, '');
+
+				const hasText = this.bodyParams.message.msg.trim() !== '';
+				const attachmentCount = this.bodyParams.message.attachments ? this.bodyParams.message.attachments.length : 0;
+				const blockCount = this.bodyParams.message.blocks ? this.bodyParams.message.blocks.length : 0;
+				if (!hasText && attachmentCount === 0 && blockCount === 0) {
+					return API.v1.failure('The message text cannot be empty.');
+				}
+			}
+
 			const sent = await applyAirGappedRestrictionsValidation(() =>
 				executeSendMessage(this.user, this.bodyParams.message as Pick<IMessage, 'rid'>, { previewUrls: this.bodyParams.previewUrls }),
 			);
