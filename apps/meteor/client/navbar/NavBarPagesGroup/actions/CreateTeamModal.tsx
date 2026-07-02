@@ -46,6 +46,7 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 	const t = useTranslation();
 	const e2eEnabled = useSetting('E2E_Enable');
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms') && e2eEnabled;
+	const e2eEnforcedForPrivate = Boolean(useSetting('E2E_Force_Encryption_For_Private_Rooms')) && Boolean(e2eEnabled);
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
@@ -93,7 +94,7 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 			topic: '',
 			isPrivate: canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : true,
 			readOnly: false,
-			encrypted: (e2eEnabledForPrivateByDefault as boolean) ?? false,
+			encrypted: Boolean(e2eEnforcedForPrivate || e2eEnabledForPrivateByDefault),
 			broadcast: false,
 			members: [],
 		},
@@ -104,13 +105,16 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 	useEffect(() => {
 		if (!isPrivate) {
 			setValue('encrypted', false);
+		} else if (e2eEnforcedForPrivate) {
+			// Workspace policy forces encryption on for private rooms; keep the toggle on.
+			setValue('encrypted', true);
 		}
 
 		setValue('readOnly', broadcast);
-	}, [watch, setValue, broadcast, isPrivate]);
+	}, [watch, setValue, broadcast, isPrivate, e2eEnforcedForPrivate]);
 
 	const readOnlyDisabled = broadcast || !canSetReadOnly;
-	const canChangeEncrypted = isPrivate && e2eEnabled;
+	const canChangeEncrypted = isPrivate && e2eEnabled && !e2eEnforcedForPrivate;
 	const getEncryptedHint = useEncryptedRoomDescription('team');
 
 	const goToRoom = useGoToRoom();
