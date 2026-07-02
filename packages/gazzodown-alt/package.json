@@ -17,9 +17,9 @@
 	"devDependencies": {
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/tsconfig": "workspace:*",
-		"@types/react": "~18.3.27",
+		"@types/react": "~19.2.17",
 		"eslint": "~9.39.3",
-		"react": "~18.3.1",
+		"react": "~19.2.7",
 		"typescript": "~5.9.3"
 	},
 	"peerDependencies": {
