@@ -5,6 +5,7 @@ import type { EmojiCategory, EmojiItem } from '.';
 import { emoji, emojiEmitter } from './lib';
 
 export const CUSTOM_CATEGORY = 'rocket';
+export const CUSTOM_CATEGORY_CLASSNAME = 'emojipicker--custom';
 
 const MIXED_TONE_SUFFIX = /_tone([1-5])-[1-5]$/;
 
