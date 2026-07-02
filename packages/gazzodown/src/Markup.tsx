@@ -1,5 +1,5 @@
+import { Divider } from '@rocket.chat/fuselage';
 import type * as MessageParser from '@rocket.chat/message-parser';
-import type { ReactElement } from 'react';
 import { lazy, memo } from 'react';
 
 import HeadingBlock from './blocks/HeadingBlock';
@@ -17,9 +17,11 @@ const KatexBlock = lazy(() => import('./katex/KatexBlock'));
 
 type MarkupProps = {
 	tokens: MessageParser.Root;
+	/** Original message source, used to render the `fallback` of blocks without a dedicated renderer. */
+	source?: string;
 };
 
-const Markup = ({ tokens }: MarkupProps): ReactElement => (
+const Markup = ({ tokens, source }: MarkupProps) => (
 	<>
 		{tokens.map((block, index) => {
 			switch (block.type) {
@@ -64,8 +66,20 @@ const Markup = ({ tokens }: MarkupProps): ReactElement => (
 				case 'LINE_BREAK':
 					return <br key={index} />;
 
-				default:
+				case 'HORIZONTAL_RULE':
+					return <Divider key={index} />;
+
+				default: {
+					// Graceful degradation: blocks may carry a `fallback`. The current form is a
+					// `[start, end]` offset span into the source (sliced to render the raw markup);
+					// the union keeps the original form too, which we intentionally ignore.
+					const { fallback } = block as { fallback?: [number, number] | MessageParser.Plain };
+					if (Array.isArray(fallback) && source !== undefined) {
+						const inlines: MessageParser.Inlines[] = [{ type: 'PLAIN_TEXT', value: source.slice(fallback[0], fallback[1]) }];
+						return <ParagraphBlock key={index}>{inlines}</ParagraphBlock>;
+					}
 					return null;
+				}
 			}
 		})}
 	</>

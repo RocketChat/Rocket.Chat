@@ -18,6 +18,7 @@ import { useCodeHighlight } from './hooks/useCodeHighlight';
 import { useCorsSSLConfig } from './hooks/useCorsSSLConfig';
 import { useDesktopFavicon } from './hooks/useDesktopFavicon';
 import { useDesktopTitle } from './hooks/useDesktopTitle';
+import { useDesktopUserRoles } from './hooks/useDesktopUserRoles';
 import { useEmojiOne } from './hooks/useEmojiOne';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
@@ -27,13 +28,11 @@ import { useKeyboardShortcutsHotkey } from './hooks/useKeyboardShortcutsHotkey';
 import { useLivechatEnterprise } from './hooks/useLivechatEnterprise';
 import { useLoadMissedMessages } from './hooks/useLoadMissedMessages';
 import { useLoadRoomForAllowedAnonymousRead } from './hooks/useLoadRoomForAllowedAnonymousRead';
-import { useLoginOtherClients } from './hooks/useLoginOtherClients';
 import { useLoginViaQuery } from './hooks/useLoginViaQuery';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
 import { useNotificationPermission } from './hooks/useNotificationPermission';
 import { useRedirectToSetupWizard } from './hooks/useRedirectToSetupWizard';
 import { useSettingsOnLoadSiteUrl } from './hooks/useSettingsOnLoadSiteUrl';
-import { useShareSessionWithOtherClients } from './hooks/useShareSessionWithOtherClients';
 import { useStartupEvent } from './hooks/useStartupEvent';
 import { appLayout } from '../../lib/appLayout';
 
@@ -72,11 +71,10 @@ const AppLayout = () => {
 	useAutoupdate();
 	useCodeHighlight();
 	useLoginViaQuery();
-	useLoginOtherClients();
-	useShareSessionWithOtherClients();
 	useLoadMissedMessages();
 	useDesktopFavicon();
 	useDesktopTitle();
+	useDesktopUserRoles();
 	useStartupEvent();
 	useIframeCommands();
 

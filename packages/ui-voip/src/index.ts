@@ -12,7 +12,8 @@ export type { PeerInfo } from './context';
 export { useMediaCallAction, useMediaCallOpenRoomTracker } from './hooks';
 
 export { CallHistoryContextualBar, MediaCallRoomActivity } from './views';
-export type { InternalCallHistoryContact, ExternalCallHistoryContact, CallHistoryData } from './views';
+export type { CallHistoryData } from './views';
+export * from './definitions/callHistoryContacts';
 
 export { getHistoryMessagePayload } from './ui-kit/getHistoryMessagePayload';
 

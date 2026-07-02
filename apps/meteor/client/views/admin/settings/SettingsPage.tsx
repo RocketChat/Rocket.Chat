@@ -2,7 +2,7 @@ import { Icon, SearchInput, CardGrid } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageBlockWithBorder } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, ReactElement } from 'react';
+import type { ChangeEvent } from 'react';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -10,7 +10,7 @@ import SettingsGroupCard from './SettingsGroupCard';
 import { useSettingsGroups } from './hooks/useSettingsGroups';
 import GenericNoResults from '../../../components/GenericNoResults';
 
-const SettingsPage = (): ReactElement => {
+const SettingsPage = () => {
 	const { t } = useTranslation();
 	const [filter, setFilter] = useState('');
 	const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => setFilter(e.currentTarget.value), []);

@@ -7,7 +7,6 @@ import { configureCORS } from './configureCORS';
 import { configureDirectReply } from './configureDirectReply';
 import { configureIRC } from './configureIRC';
 import { configureLogLevel } from './configureLogLevel';
-import { configurePassport } from './configurePassport';
 import { configureSMTP } from './configureSMTP';
 import { configureLDAP } from './ldap';
 import { configureOAuth } from './oauth';
@@ -29,6 +28,5 @@ export async function configureServer(settings: ICachedSettings) {
 		configureDirectReply(settings),
 		configureSMTP(settings),
 		configureIRC(settings),
-		configurePassport(settings),
 	]);
 }

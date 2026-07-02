@@ -1,5 +1,5 @@
 import { Grid, GridItem } from '@rocket.chat/fuselage';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import Counter from './Counter';
 
@@ -11,7 +11,7 @@ type CounterSetProps = {
 	}[];
 };
 
-const CounterSet = ({ counters = [] }: CounterSetProps): ReactElement => (
+const CounterSet = ({ counters = [] }: CounterSetProps) => (
 	<Grid>
 		{counters.map(({ count, variation, description }, i) => (
 			<GridItem key={i}>

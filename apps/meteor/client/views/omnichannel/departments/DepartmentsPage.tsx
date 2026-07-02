@@ -1,5 +1,5 @@
 import { Tabs, Button } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRoute, useTranslation, useRouteParameter } from '@rocket.chat/ui-contexts';
 
@@ -14,7 +14,7 @@ const DepartmentsPage = () => {
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 
-	const handleTabClick = useEffectEvent((tab: undefined | 'archived') =>
+	const handleTabClick = useStableCallback((tab: undefined | 'archived') =>
 		departmentsRoute.push(
 			tab
 				? {
@@ -24,7 +24,7 @@ const DepartmentsPage = () => {
 		),
 	);
 
-	const onAddNew = useEffectEvent(() =>
+	const onAddNew = useStableCallback(() =>
 		departmentsRoute.push({
 			context: 'new',
 		}),

@@ -14,7 +14,6 @@ import {
 	TableBody,
 	TableCell,
 } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -31,7 +30,7 @@ const colors = {
 	success: Palette.statusColor['status-font-on-success'].toString(),
 	info: Palette.statusColor['status-font-on-info'].toString(),
 };
-const MessagesPerChannelSection = (): ReactElement => {
+const MessagesPerChannelSection = () => {
 	const [period, periodSelectorProps] = usePeriodSelectorState('last 7 days', 'last 30 days', 'last 90 days');
 
 	const { t } = useTranslation();

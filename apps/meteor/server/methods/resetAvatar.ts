@@ -6,6 +6,7 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../app/settings/server';
 
 declare module '@rocket.chat/ddp-client' {
@@ -49,6 +50,7 @@ export const resetAvatar = async (fromUserId: IUser['_id'], userId: IUser['_id']
 
 Meteor.methods<ServerMethods>({
 	async resetAvatar(userId) {
+		methodDeprecationLogger.method('resetAvatar', '9.0.0', '/v1/users.resetAvatar');
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

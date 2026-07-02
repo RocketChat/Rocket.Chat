@@ -1,5 +1,6 @@
 import { Box, Skeleton, Tile, Option } from '@rocket.chat/fuselage';
-import { useMethod } from '@rocket.chat/ui-contexts';
+import { Random } from '@rocket.chat/random';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ForwardedRef, ReactNode } from 'react';
 import { forwardRef, useEffect, useId, useImperativeHandle } from 'react';
 
@@ -27,7 +28,7 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 ) {
 	const id = useId();
 	const chat = useChat();
-	const executeSlashCommandPreviewMethod = useMethod('executeSlashCommandPreview');
+	const executeSlashCommandPreviewEndpoint = useEndpoint('POST', '/v1/commands.preview');
 
 	useImperativeHandle(
 		ref,
@@ -63,13 +64,19 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 					const cmd = matches[1].replace('/', '').trim().toLowerCase();
 
 					const params = matches[2];
-					// TODO: Fix this solve the typing issue
-					void executeSlashCommandPreviewMethod({ cmd, params, msg: { rid, tmid } }, { id: item._id, type: item.type, value: item.value });
+					void executeSlashCommandPreviewEndpoint({
+						command: cmd,
+						params,
+						roomId: rid,
+						...(tmid && { tmid }),
+						triggerId: Random.id(),
+						previewItem: { id: item._id, type: item.type, value: item.value },
+					});
 					chat?.composer?.setText('');
 				},
 			}),
 		}),
-		[chat?.composer, executeSlashCommandPreviewMethod, rid, tmid, suspended],
+		[chat?.composer, executeSlashCommandPreviewEndpoint, rid, tmid, suspended],
 	);
 
 	const itemsFlat = items

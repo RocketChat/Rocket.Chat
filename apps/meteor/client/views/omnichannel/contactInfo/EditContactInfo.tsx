@@ -15,7 +15,6 @@ import {
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { Fragment, useId } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -70,7 +69,7 @@ const getInitialValues = (data: ContactNewEditProps['contactData']): ContactForm
 
 const validateMultipleFields = (fieldsLength: number, hasLicense: boolean) => fieldsLength >= 1 && !hasLicense;
 
-const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps): ReactElement => {
+const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 

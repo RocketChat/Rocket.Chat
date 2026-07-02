@@ -180,18 +180,6 @@ export class HomeContent {
 		return this.page.getByRole('dialog', { name: 'File Upload' });
 	}
 
-	get createDiscussionModal(): Locator {
-		return this.page.getByRole('dialog', { name: 'Create discussion' });
-	}
-
-	get inputDiscussionName(): Locator {
-		return this.createDiscussionModal.getByRole('textbox', { name: 'Name' });
-	}
-
-	get btnCreateDiscussionModal(): Locator {
-		return this.createDiscussionModal.getByRole('button', { name: 'Create' });
-	}
-
 	get btnModalConfirm(): Locator {
 		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--primary');
 	}
@@ -542,6 +530,14 @@ export class HomeContent {
 
 	getMessageByText(text: string): Locator {
 		return this.page.locator('[role="listitem"][aria-roledescription="message"]', { hasText: text });
+	}
+
+	getLastMessageActionButton(name: string): Locator {
+		return this.lastUserMessage.getByRole('button', { name, exact: true });
+	}
+
+	getLastThreadMessageActionButton(name: string): Locator {
+		return this.lastUserThreadMessage.getByRole('button', { name, exact: true });
 	}
 
 	getMessageById(id: string): Locator {

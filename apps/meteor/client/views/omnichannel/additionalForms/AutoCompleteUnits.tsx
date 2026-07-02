@@ -1,6 +1,6 @@
 import { PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -11,7 +11,7 @@ type AutoCompleteUnitsProps = Omit<
 	'filter' | 'setFilter' | 'options' | 'endReached' | 'renderItem'
 >;
 
-const AutoCompleteUnits = ({ value, placeholder, onChange, ...props }: AutoCompleteUnitsProps): ReactElement => {
+const AutoCompleteUnits = ({ value, placeholder, onChange, ...props }: AutoCompleteUnitsProps) => {
 	const { t } = useTranslation();
 	const [unitsFilter, setUnitsFilter] = useState<string>('');
 	const debouncedUnitFilter = useDebouncedValue(unitsFilter, 500);

@@ -17,6 +17,8 @@ import type {
 	InlineKaTeX,
 	Link,
 	Timestamp,
+	SourceRange,
+	HorizontalRule,
 } from './definitions';
 
 const generate =
@@ -269,6 +271,12 @@ export const lineBreak = (): LineBreak => ({
 	value: undefined,
 });
 
+export const horizontalRule = (fallback?: SourceRange): HorizontalRule => ({
+	type: 'HORIZONTAL_RULE',
+	value: undefined,
+	...(fallback !== undefined && { fallback }),
+});
+
 export const katex = (content: string): KaTeX => ({
 	type: 'KATEX',
 	value: content,
@@ -287,14 +295,14 @@ export const phoneChecker = (text: string, number: string) => {
 	return link(`tel:${number}`, [plain(text)]);
 };
 
-export const timestamp = (value: string, type?: 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R'): Timestamp => {
+export const timestamp = (value: string, type?: 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R', fallback?: SourceRange): Timestamp => {
 	return {
 		type: 'TIMESTAMP',
 		value: {
 			timestamp: value,
 			format: type || 't',
 		},
-		fallback: plain(`<t:${value}:${type || 't'}>`),
+		...(fallback !== undefined && { fallback }),
 	};
 };
 

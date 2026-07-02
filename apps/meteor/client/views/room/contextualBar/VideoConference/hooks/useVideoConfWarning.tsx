@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useRoute, useRole } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
@@ -8,9 +8,9 @@ export const useVideoConfWarning = (): ((error: unknown) => void) => {
 	const setModal = useSetModal();
 	const isAdmin = useRole('admin');
 	const videoConfSettingsRoute = useRoute('admin-settings');
-	const handleClose = useEffectEvent(() => setModal(null));
+	const handleClose = useStableCallback(() => setModal(null));
 
-	const handleRedirectToConfiguration = useEffectEvent(() => {
+	const handleRedirectToConfiguration = useStableCallback(() => {
 		handleClose();
 		videoConfSettingsRoute.push({
 			group: 'Video_Conference',

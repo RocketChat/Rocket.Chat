@@ -62,6 +62,10 @@ export class Navbar {
 		return this.pagesGroup.getByRole('button', { name: 'Directory' });
 	}
 
+	get btnMarketplace(): Locator {
+		return this.pagesGroup.getByRole('button', { name: 'Marketplace' });
+	}
+
 	get btnMenuPages(): Locator {
 		return this.pagesGroup.getByRole('button', { name: 'Pages' });
 	}

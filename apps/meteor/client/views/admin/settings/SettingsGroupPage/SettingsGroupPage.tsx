@@ -1,10 +1,10 @@
 import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
 import { Accordion, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useSettingsDispatch, useSettings } from '@rocket.chat/ui-contexts';
-import type { ReactNode, FormEvent, MouseEvent } from 'react';
+import type { ReactNode, MouseEvent, SubmitEvent } from 'react';
 import { useMemo, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -57,7 +57,7 @@ const SettingsGroupPage = ({
 
 	const isColorSetting = (setting: ISetting): setting is ISettingColor => setting.type === 'color';
 
-	const save = useEffectEvent(async () => {
+	const save = useStableCallback(async () => {
 		const changes = changedEditableSettings.map((setting) => {
 			if (isColorSetting(setting)) {
 				return {
@@ -78,8 +78,7 @@ const SettingsGroupPage = ({
 		}
 
 		try {
-			await dispatch(changes);
-			dispatchToastMessage({ type: 'success', message: t('Settings_updated') });
+			await dispatch(changes, () => dispatchToastMessage({ type: 'success', message: t('Settings_updated') }));
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -87,7 +86,7 @@ const SettingsGroupPage = ({
 
 	const dispatchToEditing = useEditableSettingsDispatch();
 
-	const cancel = useEffectEvent(() => {
+	const cancel = useStableCallback(() => {
 		const settingsToDispatch = changedEditableSettings
 			.map(({ _id }) => originalSettings.find((setting) => setting._id === _id))
 			.map((setting) => {
@@ -114,7 +113,7 @@ const SettingsGroupPage = ({
 		dispatchToEditing(settingsToDispatch as Partial<EditableSetting>[]);
 	});
 
-	const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
+	const handleSubmit = (event: SubmitEvent<HTMLFormElement>): void => {
 		event.preventDefault();
 		save();
 	};

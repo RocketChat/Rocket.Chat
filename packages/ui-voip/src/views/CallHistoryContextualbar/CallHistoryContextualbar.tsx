@@ -17,20 +17,10 @@ import { useTranslation } from 'react-i18next';
 import type { HistoryActionCallbacks } from './CallHistoryActions';
 import CallHistoryActions from './CallHistoryActions';
 import { useFullStartDate } from './useFullStartDate';
-import { CallHistoryExternalUser, CallHistoryInternalUser } from '../../components';
+import CallHistoryUser from '../../components/CallHistoryUser';
 import { usePeekMediaSessionState } from '../../context/usePeekMediaSessionState';
+import { isCallHistoryInternalContact, type CallHistoryContact } from '../../definitions';
 import { getHistoryMessagePayload } from '../../ui-kit/getHistoryMessagePayload';
-
-export type InternalCallHistoryContact = {
-	_id: string;
-	name?: string;
-	username: string;
-	voiceCallExtension?: string;
-};
-
-export type ExternalCallHistoryContact = {
-	number: string;
-};
 
 export type CallHistoryData = {
 	callId: string;
@@ -44,14 +34,8 @@ export type CallHistoryData = {
 type CallHistoryContextualBarProps = {
 	onClose: () => void;
 	actions: HistoryActionCallbacks;
-	contact: InternalCallHistoryContact | ExternalCallHistoryContact;
+	contact: CallHistoryContact;
 	data: CallHistoryData;
-};
-
-const isInternalCallHistoryContact = (
-	contact: InternalCallHistoryContact | ExternalCallHistoryContact,
-): contact is InternalCallHistoryContact => {
-	return '_id' in contact;
 };
 
 const contextValue = {
@@ -78,11 +62,7 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 			<ContextualbarScrollableContent>
 				<InfoPanel>
 					<InfoPanelSection fontScale='p1b'>
-						{isInternalCallHistoryContact(contact) ? (
-							<CallHistoryInternalUser username={contact.username} name={contact.name} _id={contact._id} />
-						) : (
-							<CallHistoryExternalUser number={contact.number} />
-						)}
+						<CallHistoryUser contact={contact} />
 					</InfoPanelSection>
 					<InfoPanelSection>
 						<Box display='flex' flexDirection='row' alignItems='center' fontScale='p1b'>
@@ -102,7 +82,7 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 						<InfoPanelLabel>{t('Call_ID')}</InfoPanelLabel>
 						<InfoPanelText>{callId}</InfoPanelText>
 					</InfoPanelSection>
-					{isInternalCallHistoryContact(contact) && contact.voiceCallExtension && (
+					{isCallHistoryInternalContact(contact) && contact.voiceCallExtension && (
 						<InfoPanelSection>
 							<InfoPanelLabel>{t('Voice_call_extension')}</InfoPanelLabel>
 							<InfoPanelText>{contact.voiceCallExtension}</InfoPanelText>
@@ -112,7 +92,7 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					{isInternalCallHistoryContact(contact) && directMessage && (
+					{isCallHistoryInternalContact(contact) && directMessage && (
 						<Button onClick={directMessage}>
 							<Icon name='balloon' size='x20' mie='x4' />
 							{t('Direct_message')}

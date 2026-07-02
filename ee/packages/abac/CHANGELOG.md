@@ -1,5 +1,56 @@
 # @rocket.chat/abac
 
+## 0.3.0-rc.0
+
+### Minor Changes
+
+- ([#40634](https://github.com/RocketChat/Rocket.Chat/pull/40634)) Allows using Virtru as the attribute store for ABAC decisions.
+
+  ### Important
+
+  - When using virtru as the store, the internal attribute store is disabled.
+  - On switch, existing ABAC attributes from rooms will be removed. Rooms will continue to be private & no users will be removed until you add attributes again.
+  - Users are only allowed to see & edit rooms they have access to. Access decision is evaluated on Virtru
+  - A user/app with the `bypass-abac-store-validation` permission can assign any attributes to rooms, even if the user doesn't have them assigned on Virtru.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [73e12e1707baea845395e0582892f65456598672, a7279cebc73edfa4b991eb593730c08e8f5e9001, 7380c44c751eff9ee624d80bf26370411ffed78b, 6bd9182ae1d914a55e70866db43e8d2038f7be28, f63b965f82b0ddc590c633706f7c31c8c5251b53]:</summary>
+
+  - @rocket.chat/models@2.3.1-rc.0
+  - @rocket.chat/core-services@0.14.2-rc.0
+  - @rocket.chat/core-typings@8.6.0-rc.0
+  - @rocket.chat/server-fetch@0.2.2-rc.0
+  </details>
+
+## 0.2.1
+
+### Patch Changes
+
+- ([#40499](https://github.com/RocketChat/Rocket.Chat/pull/40499)) Fixes an issue where some actions made by the abac service were not broadcasting to clients, which affected reactivity
+
+- <details><summary>Updated dependencies [f7d47dd3517ec14ca2ec5c3c95fcdf9e1e2fb8b0, b6b04aadfcc8558f888b334e37c46a77e5816237, 4704bf81ca370f120af32185a7c55407a26f8514, 12897e25d0dc25b7373f5264d38f38a5a7444257, e45585b70a3a7b75434c88e4b2ea9af0a0764a76]:</summary>
+
+  - @rocket.chat/models@2.3.0
+  - @rocket.chat/core-typings@8.5.0
+  - @rocket.chat/core-services@0.14.1
+  - @rocket.chat/server-fetch@0.2.1
+  </details>
+
+## 0.2.1-rc.0
+
+### Patch Changes
+
+- ([#40499](https://github.com/RocketChat/Rocket.Chat/pull/40499)) Fixes an issue where some actions made by the abac service were not broadcasting to clients, which affected reactivity
+
+- <details><summary>Updated dependencies [f7d47dd3517ec14ca2ec5c3c95fcdf9e1e2fb8b0, ae9f740d6af20557eac61b4af902c868b4132b49, b6b04aadfcc8558f888b334e37c46a77e5816237, 4704bf81ca370f120af32185a7c55407a26f8514, 12897e25d0dc25b7373f5264d38f38a5a7444257, e45585b70a3a7b75434c88e4b2ea9af0a0764a76]:</summary>
+
+  - @rocket.chat/models@2.3.0-rc.0
+  - @rocket.chat/core-typings@8.5.0-rc.0
+  - @rocket.chat/core-services@0.14.1-rc.0
+  - @rocket.chat/server-fetch@0.2.1-rc.0
+  </details>
+
 ## 0.2.0
 
 ### Minor Changes

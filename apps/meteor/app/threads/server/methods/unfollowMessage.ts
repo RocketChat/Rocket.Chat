@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { RateLimiter } from '../../../lib/server';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnMessageChange } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { unfollow } from '../functions';
@@ -50,6 +51,7 @@ export const unfollowMessage = async (user: IUser, { mid }: { mid: IMessage['_id
 
 Meteor.methods<ServerMethods>({
 	async unfollowMessage({ mid }) {
+		methodDeprecationLogger.method('unfollowMessage', '9.0.0', '/v1/chat.unfollowMessage');
 		check(mid, String);
 
 		const user = (await Meteor.userAsync()) as IUser;

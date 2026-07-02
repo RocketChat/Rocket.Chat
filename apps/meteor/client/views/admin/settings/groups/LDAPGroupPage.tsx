@@ -1,9 +1,9 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { Button, Box, TextInput, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { FormEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -24,7 +24,7 @@ function LDAPGroupPage({ _id, i18nLabel, onClickBack, ...group }: LDAPGroupPageP
 	const testSearch = useEndpoint('POST', '/v1/ldap.testSearch');
 	const ldapEnabled = useSetting('LDAP_Enable');
 	const setModal = useSetModal();
-	const closeModal = useEffectEvent(() => setModal());
+	const closeModal = useStableCallback(() => setModal());
 	const handleSyncNow = useLdapSync();
 
 	const handleLinkClick = useExternalLink();
@@ -53,7 +53,7 @@ function LDAPGroupPage({ _id, i18nLabel, onClickBack, ...group }: LDAPGroupPageP
 		try {
 			await testConnection();
 			let username = '';
-			const handleChangeUsername = (event: FormEvent<HTMLInputElement>): void => {
+			const handleChangeUsername = (event: ChangeEvent<HTMLInputElement>): void => {
 				username = event.currentTarget.value;
 			};
 
@@ -71,7 +71,7 @@ function LDAPGroupPage({ _id, i18nLabel, onClickBack, ...group }: LDAPGroupPageP
 					wrapperFunction={(props) => (
 						<Box
 							is='form'
-							onSubmit={(e: FormEvent) => {
+							onSubmit={(e) => {
 								e.preventDefault();
 								confirmSearch();
 							}}

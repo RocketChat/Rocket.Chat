@@ -23,6 +23,8 @@ type MediaCallViewContextValue = {
 	onAccept: () => Promise<void>;
 	onSelectPeer: (peerInfo: PeerInfo) => void;
 	onToggleScreenSharing: () => void;
+	onOpenPopout: () => void;
+	onClosePopout: () => void;
 	streams: MediaCallStreams;
 	widgetPositionTracker?: {
 		onChangePosition: (position: LastKnownPosition | null) => void;
@@ -56,6 +58,8 @@ export const defaultMediaCallContextValue: MediaCallViewContextValue = {
 	onAccept: () => Promise.resolve(undefined),
 	onSelectPeer: () => undefined,
 	onToggleScreenSharing: () => undefined,
+	onOpenPopout: () => undefined,
+	onClosePopout: () => undefined,
 	streams: {},
 };
 

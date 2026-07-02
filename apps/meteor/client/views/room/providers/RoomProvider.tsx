@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import type { ReactNode, ContextType, ReactElement } from 'react';
+import type { ReactNode, ContextType } from 'react';
 import { useMemo, memo, useEffect } from 'react';
 
 import ComposerPopupProvider from './ComposerPopupProvider';
@@ -8,9 +8,10 @@ import UserCardProvider from './UserCardProvider';
 import { useRedirectOnSettingsChanged } from './hooks/useRedirectOnSettingsChanged';
 import { useUsersNameChanged } from './hooks/useUsersNameChanged';
 import { UserAction } from '../../../../app/ui/client/lib/UserAction';
-import { useRoomHistoryState } from '../../../../app/ui-utils/client/lib/RoomHistoryManager';
+import { RoomHistoryManager, useRoomHistoryState } from '../../../../app/ui-utils/client/lib/RoomHistoryManager';
 import { omit } from '../../../../lib/utils/omit';
 import { useFireGlobalEvent } from '../../../hooks/useFireGlobalEvent';
+import { useRoomRolesQuery } from '../../../hooks/useRoomRolesQuery';
 import { RoomManager } from '../../../lib/RoomManager';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import ImageGalleryProvider from '../../../providers/ImageGalleryProvider';
@@ -25,7 +26,7 @@ type RoomProviderProps = {
 	rid: IRoom['_id'];
 };
 
-const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
+const RoomProvider = ({ rid, children }: RoomProviderProps) => {
 	const room = Rooms.use((state) => state.get(rid));
 
 	const subscritionFromLocal = Subscriptions.use((state) => state.find((record) => record.rid === rid));
@@ -81,6 +82,21 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		};
 	}, [rid]);
 
+	// Prefetch first batch of history in parallel with room metadata fetches, instead of waiting
+	// for RoomBody's scroll/resize observer in useGetMore to fire.
+	useEffect(() => {
+		if (!room) {
+			return;
+		}
+		if (RoomHistoryManager.isLoaded(rid) || RoomHistoryManager.isLoading(rid)) {
+			return;
+		}
+		void RoomHistoryManager.getMore(rid);
+	}, [rid, room]);
+
+	// Prefetch room roles alongside history so message rendering doesn't trigger a late fetch.
+	useRoomRolesQuery(rid, { enabled: !!room });
+
 	const subscribed = !!subscritionFromLocal;
 
 	useEffect(() => {
@@ -92,7 +108,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	}, [rid, subscribed]);
 
 	if (!pseudoRoom) {
-		return !room ? <RoomNotFound /> : <RoomSkeleton />;
+		return !room && !subscritionFromLocal ? <RoomNotFound /> : <RoomSkeleton />;
 	}
 
 	return (

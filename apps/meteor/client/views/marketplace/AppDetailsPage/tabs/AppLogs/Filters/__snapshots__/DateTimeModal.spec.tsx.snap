@@ -67,7 +67,6 @@ exports[`renders AppLogsItem without crashing 1`] = `
                       name="startDate"
                       size="1"
                       type="date"
-                      value=""
                     />
                     <span
                       class="rcx-box rcx-box--full rcx-input-box__addon"
@@ -89,7 +88,6 @@ exports[`renders AppLogsItem without crashing 1`] = `
                       name="startTime"
                       size="1"
                       type="time"
-                      value=""
                     />
                     <span
                       class="rcx-box rcx-box--full rcx-input-box__addon"
@@ -125,7 +123,6 @@ exports[`renders AppLogsItem without crashing 1`] = `
                       name="endDate"
                       size="1"
                       type="date"
-                      value=""
                     />
                     <span
                       class="rcx-box rcx-box--full rcx-input-box__addon"
@@ -147,7 +144,6 @@ exports[`renders AppLogsItem without crashing 1`] = `
                       name="endTime"
                       size="1"
                       type="time"
-                      value=""
                     />
                     <span
                       class="rcx-box rcx-box--full rcx-input-box__addon"

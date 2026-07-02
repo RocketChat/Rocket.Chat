@@ -2,7 +2,6 @@ import { ResponsiveBar } from '@nivo/bar';
 import { Box, Flex, IconButton, Margins, Skeleton } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { format, subDays } from 'date-fns';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 
 import { useWeeklyChatActivity } from './useWeeklyChatActivity';
@@ -15,7 +14,7 @@ type ContentForDaysProps = {
 	timezone: 'utc' | 'local';
 };
 
-const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, timezone }: ContentForDaysProps): ReactElement => {
+const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, timezone }: ContentForDaysProps) => {
 	const utc = timezone === 'utc';
 	const { data } = useWeeklyChatActivity({ displacement, utc });
 

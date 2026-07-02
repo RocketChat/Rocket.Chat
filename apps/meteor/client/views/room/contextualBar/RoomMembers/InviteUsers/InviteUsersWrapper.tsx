@@ -6,16 +6,16 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type InviteUsersWrapperProps = {
-	children: ReactElement;
+	children: ReactNode;
 	onClickBack: (() => void) | undefined;
 	onClose: () => void;
 };
 
-const InviteUsersWrapper = ({ children, onClickBack, onClose }: InviteUsersWrapperProps): ReactElement => {
+const InviteUsersWrapper = ({ children, onClickBack, onClose }: InviteUsersWrapperProps) => {
 	const { t } = useTranslation();
 
 	return (

@@ -5,6 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import { settings } from '../../../settings/server';
 import { setRealName } from '../functions/setRealName';
 import { RateLimiter } from '../lib';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -15,6 +16,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async setRealName(name) {
+		methodDeprecationLogger.method('setRealName', '9.0.0', '/v1/users.updateOwnBasicInfo');
 		check(name, String);
 		const userId = Meteor.userId();
 		if (!userId) {

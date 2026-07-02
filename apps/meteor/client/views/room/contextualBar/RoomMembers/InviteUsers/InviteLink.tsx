@@ -1,5 +1,5 @@
 import { Box, Field, FieldLabel, FieldRow, UrlInput, Icon, Button, InputBoxSkeleton } from '@rocket.chat/fuselage';
-import { useId, type ReactElement } from 'react';
+import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import useClipboardWithToast from '../../../../../hooks/useClipboardWithToast';
@@ -10,7 +10,7 @@ type InviteLinkProps = {
 	onClickEdit: () => void;
 };
 
-const InviteLink = ({ linkText, captionText, onClickEdit }: InviteLinkProps): ReactElement => {
+const InviteLink = ({ linkText, captionText, onClickEdit }: InviteLinkProps) => {
 	const { t } = useTranslation();
 	const { copy } = useClipboardWithToast(linkText);
 	const inviteLinkId = useId();

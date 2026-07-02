@@ -1,5 +1,4 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 
 import PreviewCodeBlock from './code/PreviewCodeBlock';
@@ -13,9 +12,11 @@ const isOnlyBigEmojiBlock = (tokens: MessageParser.Root): tokens is [MessagePars
 
 type PreviewMarkupProps = {
 	tokens: MessageParser.Root;
+	/** Original message source, used to render the `fallback` of blocks without a dedicated renderer. */
+	source?: string;
 };
 
-const PreviewMarkup = ({ tokens }: PreviewMarkupProps): ReactElement | null => {
+const PreviewMarkup = ({ tokens, source }: PreviewMarkupProps) => {
 	if (isOnlyBigEmojiBlock(tokens)) {
 		return <PreviewBigEmojiBlock emoji={tokens[0].value} />;
 	}
@@ -85,8 +86,16 @@ const PreviewMarkup = ({ tokens }: PreviewMarkupProps): ReactElement | null => {
 				</KatexErrorBoundary>
 			);
 
-		default:
+		default: {
+			// Only the `[start, end]` offset form is rendered (sliced from source); the union
+			// keeps the original fallback form too, which we intentionally ignore.
+			const { fallback } = firstBlock as { fallback?: [number, number] | MessageParser.Plain };
+			if (Array.isArray(fallback) && source !== undefined) {
+				const inlines: MessageParser.Inlines[] = [{ type: 'PLAIN_TEXT', value: source.slice(fallback[0], fallback[1]) }];
+				return <PreviewInlineElements>{inlines}</PreviewInlineElements>;
+			}
 			return null;
+		}
 	}
 };
 

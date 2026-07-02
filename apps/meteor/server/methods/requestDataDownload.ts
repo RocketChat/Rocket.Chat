@@ -7,6 +7,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { ExportOperations, UserDataFiles } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../app/settings/server';
 import * as dataExport from '../lib/dataExport';
 
@@ -110,6 +111,7 @@ export const requestDataDownload = async ({
 
 Meteor.methods<ServerMethods>({
 	async requestDataDownload({ fullExport = false }) {
+		methodDeprecationLogger.method('requestDataDownload', '9.0.0', '/v1/users.requestDataDownload');
 		const currentUserData = await Meteor.userAsync();
 
 		if (!currentUserData) {

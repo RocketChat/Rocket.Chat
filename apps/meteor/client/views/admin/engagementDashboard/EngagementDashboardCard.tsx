@@ -1,5 +1,5 @@
 import { Box, Card, CardTitle, CardBody } from '@rocket.chat/fuselage';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import EngagementDashboardCardErrorBoundary from './EngagementDashboardCardErrorBoundary';
 
@@ -8,7 +8,7 @@ type EngagementDashboardCardProps = {
 	title?: string;
 };
 
-const EngagementDashboardCard = ({ children, title = undefined }: EngagementDashboardCardProps): ReactElement => (
+const EngagementDashboardCard = ({ children, title = undefined }: EngagementDashboardCardProps) => (
 	<Box mb={16}>
 		<Card>
 			{title && <CardTitle>{title}</CardTitle>}

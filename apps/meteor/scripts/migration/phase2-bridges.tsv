@@ -1,0 +1,7 @@
+# Phase 2: External bridges migration
+# Format: old-path<TAB>new-path (relative to apps/meteor/)
+app/irc/server	server/bridges/irc
+app/slackbridge/server	server/bridges/slack
+app/smarsh-connector/server	server/bridges/smarsh
+app/webdav/server	server/bridges/webdav
+app/nextcloud/server	server/bridges/nextcloud

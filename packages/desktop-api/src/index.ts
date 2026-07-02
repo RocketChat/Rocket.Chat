@@ -38,6 +38,7 @@ export interface IRocketChatDesktop {
 	setSidebarCustomTheme: (customTheme: string) => void;
 	setTitle: (title: string) => void;
 	setUserLoggedIn: (userLoggedIn: boolean) => void;
+	setUserRoles: (roles: string[]) => void;
 	setUserPresenceDetection: (options: {
 		isAutoAwayEnabled: boolean;
 		idleThreshold: number | null;
@@ -63,5 +64,6 @@ export interface IRocketChatDesktop {
 	setUserToken: (token: string, userId: string) => void;
 	openDocumentViewer: (url: string, format: string, options: any) => void;
 	reloadServer: () => void;
+	getE2ePdfPreviewSizeLimit: () => number;
 	openInBrowser: (url: string) => void;
 }

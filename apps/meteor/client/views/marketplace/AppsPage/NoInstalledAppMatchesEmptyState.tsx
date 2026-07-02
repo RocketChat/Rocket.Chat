@@ -9,7 +9,6 @@ import {
 	StatesActions,
 	StatesAction,
 } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type NoInstalledAppMatchesEmptyStateProps = {
@@ -18,11 +17,7 @@ type NoInstalledAppMatchesEmptyStateProps = {
 	onButtonClick: () => void;
 };
 
-const NoInstalledAppMatchesEmptyState = ({
-	shouldShowSearchText,
-	text,
-	onButtonClick,
-}: NoInstalledAppMatchesEmptyStateProps): ReactElement => {
+const NoInstalledAppMatchesEmptyState = ({ shouldShowSearchText, text, onButtonClick }: NoInstalledAppMatchesEmptyStateProps) => {
 	const { t } = useTranslation();
 
 	return (
