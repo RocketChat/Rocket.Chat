@@ -15,7 +15,7 @@ export type HistoryItemProps = { data: Serialized<IIntegrationHistory> };
 const HistoryItem = ({ data }: HistoryItemProps) => {
 	const { t } = useTranslation();
 
-	const replayOutgoingIntegration = useEndpoint('POST', '/v1/integrations.outgoing.replay');
+	const replayOutgoingIntegration = useEndpoint('POST', '/v1/integrations.replayOutgoing');
 
 	const {
 		_id,

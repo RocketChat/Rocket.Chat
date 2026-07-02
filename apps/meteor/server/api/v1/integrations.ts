@@ -378,7 +378,7 @@ const voidIntegrationsResponse = ajv.compile<void>({
 });
 
 API.v1.post(
-	'integrations.history.clear',
+	'integrations.clearHistory',
 	{
 		authRequired: true,
 		body: isIntegrationsClearHistoryProps,
@@ -396,7 +396,7 @@ API.v1.post(
 );
 
 API.v1.post(
-	'integrations.outgoing.replay',
+	'integrations.replayOutgoing',
 	{
 		authRequired: true,
 		body: isIntegrationsReplayProps,

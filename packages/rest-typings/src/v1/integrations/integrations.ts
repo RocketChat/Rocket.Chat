@@ -43,11 +43,11 @@ export type IntegrationsEndpoints = {
 		PUT: (params: IntegrationsUpdateProps) => { integration: IIntegration | null };
 	};
 
-	'/v1/integrations.history.clear': {
+	'/v1/integrations.clearHistory': {
 		POST: (params: IntegrationsClearHistoryProps) => void;
 	};
 
-	'/v1/integrations.outgoing.replay': {
+	'/v1/integrations.replayOutgoing': {
 		POST: (params: IntegrationsReplayProps) => void;
 	};
 };

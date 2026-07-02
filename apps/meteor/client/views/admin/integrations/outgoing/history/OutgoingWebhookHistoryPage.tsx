@@ -18,7 +18,7 @@ const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
 	const [mounted, setMounted] = useState(false);
 	const [total, setTotal] = useState(0);
 
-	const clearIntegrationHistory = useEndpoint('POST', '/v1/integrations.history.clear');
+	const clearIntegrationHistory = useEndpoint('POST', '/v1/integrations.clearHistory');
 
 	const id = useRouteParameter('id') as string;
 
