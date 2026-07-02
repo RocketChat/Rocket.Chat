@@ -112,9 +112,15 @@ export async function parseJsonQuery(api: GenericRouteExecutionContext): Promise
 	let query: Record<string, any> = {};
 	if (typeof params?.query === 'string' && isUnsafeQueryParamsAllowed) {
 		apiDeprecationLogger.parameter(route, 'query', '9.0.0', response, messageGenerator);
-		try {
-			query = ejson.parse(params.query);
-			query = clean(query, pathAllowConf.def);
+
+		const queryParam = params.query.trim();
+	
+		if (queryParam === '') {
+			query = {};
+		} else {
+			try {
+				query = ejson.parse(queryParam);
+				query = clean(query, pathAllowConf.def);
 		} catch (e) {
 			logger.warn({
 				msg: 'Invalid query parameter provided',
@@ -124,6 +130,7 @@ export async function parseJsonQuery(api: GenericRouteExecutionContext): Promise
 			throw new Meteor.Error('error-invalid-query', `Invalid query parameter provided: \"${params.query}\"`, {
 				helperMethod: 'parseJsonQuery',
 			});
+		}	
 		}
 	}
 
