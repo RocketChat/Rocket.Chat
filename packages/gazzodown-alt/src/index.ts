@@ -14,5 +14,4 @@ export { default as ComposerMentionUser } from './ComposerMentionUser';
 export { default as ComposerMentionChannel } from './ComposerMentionChannel';
 export { default as ComposerSpoilerSpan } from './ComposerSpoilerSpan';
 export { default as ComposerColorElement } from './ComposerColorElement';
-export { default as ComposerImageElement } from './ComposerImageElement';
 export { default as ComposerTimestamp } from './ComposerTimestamp';
