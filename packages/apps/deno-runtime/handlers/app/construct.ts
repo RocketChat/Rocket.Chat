@@ -1,5 +1,3 @@
-import { Socket } from 'node:net';
-
 import type { IParseAppPackageResult } from '@rocket.chat/apps/dist/server/compiler/IParseAppPackageResult';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry';
@@ -10,19 +8,6 @@ import { RequestContext } from '../../lib/requestContext';
 
 const ALLOWED_NATIVE_MODULES = ['path', 'url', 'crypto', 'buffer', 'stream', 'net', 'http', 'https', 'zlib', 'util', 'punycode', 'os', 'querystring', 'fs'];
 const ALLOWED_EXTERNAL_MODULES = ['uuid'];
-
-function prepareEnvironment() {
-	// Deno does not behave equally to Node when it comes to piping content to a socket
-	// So we intervene here
-	const originalFinal = Socket.prototype._final;
-	// deno-lint-ignore no-explicit-any
-	Socket.prototype._final = function _final(cb: any) {
-		// Deno closes the readable stream in the Socket earlier than Node
-		// The exact reason for that is yet unknown, so we'll need to simply delay the execution
-		// which allows data to be read in a response
-		setTimeout(() => originalFinal.call(this, cb), 1);
-	};
-}
 
 // As the apps are bundled, the only times they will call require are
 // 1. To require native modules
@@ -86,8 +71,6 @@ export default async function handleConstructApp(request: RequestContext): Promi
 	if (!appPackage?.info?.id || !appPackage?.info?.classFile || !appPackage?.files) {
 		throw new Error('Invalid params', { cause: 'invalid_param_type' });
 	}
-
-	prepareEnvironment();
 
 	AppObjectRegistry.set('id', appPackage.info.id);
 	const source = sanitizeDeprecatedUsage(appPackage.files[appPackage.info.classFile]);

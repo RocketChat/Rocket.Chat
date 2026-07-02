@@ -1,3 +1,4 @@
+import { Socket } from 'node:net';
 import process from 'node:process';
 
 import { JsonRpcError, type SuccessObject } from 'jsonrpc-lite';
@@ -127,9 +128,25 @@ async function main() {
 	}
 }
 
+function prepareEnvironment() {
+	// Deno does not behave equally to Node when it comes to piping content to a socket
+	// So we intervene here
+	const originalFinal = Socket.prototype._final;
+	// deno-lint-ignore no-explicit-any
+	Socket.prototype._final = function _final(cb: any) {
+		// Deno closes the readable stream in the Socket earlier than Node
+		// The exact reason for that is yet unknown, so we'll need to simply delay the execution
+		// which allows data to be read in a response
+		setTimeout(() => originalFinal.call(this, cb), 1);
+	};
+}
+
 // This runtime communicates with the Apps-Engine host through stdout
 Messenger.setTransport(stdoutTransport);
 
 registerErrorListeners();
+
+// Process-global side effect; doing it once at startup is cleaner than inside construct
+prepareEnvironment();
 
 main();
