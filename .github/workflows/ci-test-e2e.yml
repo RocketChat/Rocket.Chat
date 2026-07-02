@@ -68,9 +68,14 @@ env:
   LOWERCASE_REPOSITORY: ${{ inputs.lowercase-repo }}
   DOCKER_TAG: ${{ inputs.gh-docker-tag }}-amd64
 
+permissions: {}
+
 jobs:
   test:
     runs-on: ubuntu-24.04
+    permissions:
+      actions: read
+      contents: read
 
     env:
       # if building for production on develop branch or release, add suffix for coverage images

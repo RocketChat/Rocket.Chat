@@ -22,10 +22,16 @@ concurrency:
 env:
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
 
+permissions:
+  contents: read
+
 jobs:
   release-versions:
     name: ⚙️ Variables Setup
     runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+      pull-requests: read
     outputs:
       release: ${{ steps.by-tag.outputs.release }}
       latest-release: ${{ steps.latest.outputs.latest-release }}
