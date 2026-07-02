@@ -35,7 +35,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async auditGetOmnichannelMessages(params) {
-		methodDeprecationLogger.method('auditGetOmnichannelMessages', '9.0.0', '/v1/audit.omnichannel.messages');
+		methodDeprecationLogger.method('auditGetOmnichannelMessages', '9.0.0', '/v1/audit.omnichannelMessages');
 		check(params.startDate, Date);
 		check(params.endDate, Date);
 		return auditGetOmnichannelMessagesMethod(Meteor.userId(), params);

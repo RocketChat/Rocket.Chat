@@ -124,7 +124,7 @@ declare module '@rocket.chat/rest-typings' {
 			POST: (params: AuditMessagesPayload) => { messages: IMessage[] };
 		};
 
-		'/v1/audit.omnichannel.messages': {
+		'/v1/audit.omnichannelMessages': {
 			POST: (params: AuditOmnichannelMessagesPayload) => { messages: IMessage[] };
 		};
 	}
@@ -409,7 +409,7 @@ API.v1.post(
 );
 
 API.v1.post(
-	'audit.omnichannel.messages',
+	'audit.omnichannelMessages',
 	{
 		authRequired: true,
 		permissionsRequired: ['can-audit'],

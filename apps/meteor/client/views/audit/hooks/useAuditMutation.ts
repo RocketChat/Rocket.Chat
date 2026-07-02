@@ -7,7 +7,7 @@ import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
 
 export const useAuditMutation = (type: IAuditLog['fields']['type']) => {
 	const getAuditMessages = useEndpoint('POST', '/v1/audit.messages');
-	const getOmnichannelAuditMessages = useEndpoint('POST', '/v1/audit.omnichannel.messages');
+	const getOmnichannelAuditMessages = useEndpoint('POST', '/v1/audit.omnichannelMessages');
 
 	return useMutation({
 		mutationKey: ['audit'] as const,
