@@ -1,3 +1,5 @@
+import zlib from 'node:zlib';
+
 import { isTruthy } from '@rocket.chat/tools';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
@@ -314,6 +316,19 @@ describe('SAML', () => {
 
 				expect(params.has('RelayState')).to.be.false;
 				expect(params.get('SAMLResponse')).to.be.a('string').that.is.not.empty;
+			});
+
+			it('should target the IdP SLO endpoint with the deflated response and the relay state', async () => {
+				const url = await generateUrl('relay-123');
+				const [target, query] = url.split('?');
+				const params = new URLSearchParams(query);
+
+				expect(target).to.be.equal('[idpSLORedirectURL]');
+				expect([...params.keys()]).to.be.deep.equal(['SAMLResponse', 'RelayState']);
+				expect(params.get('RelayState')).to.be.equal('relay-123');
+
+				const inflated = zlib.inflateRawSync(Buffer.from(params.get('SAMLResponse') ?? '', 'base64')).toString();
+				expect(inflated).to.be.equal('logout-response');
 			});
 		});
 	});
