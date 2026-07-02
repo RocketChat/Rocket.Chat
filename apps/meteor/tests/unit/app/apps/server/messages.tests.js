@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
+import { beforeAll, vi } from 'vitest';
 
 import { appMessageMock, appMessageInvalidRoomMock, appPartialMessageMock } from './mocks/data/messages.data';
 import { MessagesMock } from './mocks/models/Messages.mock';
@@ -7,27 +7,26 @@ import { RoomsMock } from './mocks/models/Rooms.mock';
 import { UsersMock } from './mocks/models/Users.mock';
 import { AppServerOrchestratorMock } from './mocks/orchestrator.mock';
 
-const { AppMessagesConverter } = proxyquire.noCallThru().load('../../../../../app/apps/server/converters/messages', {
-	'@rocket.chat/random': {
-		Random: {
-			id: () => 1,
-		},
-	},
-	'@rocket.chat/models': {
+vi.mock('@rocket.chat/random', () => ({ Random: { id: () => 1 } }));
+vi.mock('@rocket.chat/models', async () => {
+	const { RoomsMock } = await import('./mocks/models/Rooms.mock');
+	const { MessagesMock } = await import('./mocks/models/Messages.mock');
+	const { UsersMock } = await import('./mocks/models/Users.mock');
+	return {
 		Rooms: new RoomsMock(),
 		Messages: new MessagesMock(),
 		Users: new UsersMock(),
-	},
-	'@rocket.chat/core-typings': {
-		isMessageFromVisitor: (message) => 'token' in message,
-	},
+	};
 });
+vi.mock('@rocket.chat/core-typings', () => ({ isMessageFromVisitor: (message) => 'token' in message }));
+
+const { AppMessagesConverter } = await import('../../../../../app/apps/server/converters/messages');
 
 describe('The AppMessagesConverter instance', () => {
 	let messagesConverter;
 	let messagesMock;
 
-	before(() => {
+	beforeAll(() => {
 		const orchestrator = new AppServerOrchestratorMock();
 
 		const usersConverter = orchestrator.getConverters().get('users');

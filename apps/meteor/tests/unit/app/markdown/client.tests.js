@@ -1,7 +1,14 @@
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { expect } from 'chai';
+import { vi } from 'vitest';
 
 import { Markdown, original, filtered } from './client.mocks';
+
+// Global mocks for the markdown modules' Meteor/Random deps (previously proxyquire @global mocks in
+// client.mocks.js). vi.mock is hoisted above all imports and applies across the whole module graph,
+// including the modules re-exported by ./client.mocks.
+vi.mock('meteor/meteor', () => ({ Meteor: { absoluteUrl: () => 'http://localhost:3000/' } }));
+vi.mock('@rocket.chat/random', () => ({ Random: { id: () => Math.random().toString().replace('0.', 'A') } }));
 
 const wrapper = (text, tag) => `<span class="copyonly">${tag}</span>${text}<span class="copyonly">${tag}</span>`;
 const boldWrapper = (text) => wrapper(`<strong>${text}</strong>`, '*');

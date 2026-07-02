@@ -1,31 +1,42 @@
 import type { IPushNotificationConfig } from '@rocket.chat/core-typings/src/IPushNotificationConfig';
-import { pick, truncateString } from '@rocket.chat/tools';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import { describe, it, beforeEach, afterEach, vi } from 'vitest';
 
-const loggerStub = { debug: sinon.stub(), warn: sinon.stub(), error: sinon.stub(), info: sinon.stub(), log: sinon.stub() };
-const settingsStub = { get: sinon.stub().returns('') };
+const { loggerStub, settingsStub, checkMock, matchMock, meteorMock, pick, truncateString } = vi.hoisted(() => {
+	const sinon = require('sinon');
 
-const { Push } = proxyquire.noCallThru().load('../../../../app/push/server/push', {
-	'./logger': { logger: loggerStub },
-	'../../settings/server': { settings: settingsStub },
-	'@rocket.chat/tools': { pick, truncateString },
-	'meteor/check': {
-		check: sinon.stub(),
-		Match: {
+	const { pick, truncateString } = require('@rocket.chat/tools');
+	return {
+		pick,
+		truncateString,
+		loggerStub: { debug: sinon.stub(), warn: sinon.stub(), error: sinon.stub(), info: sinon.stub(), log: sinon.stub() },
+		settingsStub: { get: sinon.stub().returns('') },
+		checkMock: sinon.stub(),
+		matchMock: {
 			Optional: () => sinon.stub(),
 			Integer: Number,
 			OneOf: () => sinon.stub(),
 			test: sinon.stub().returns(true),
 		},
-	},
-	'meteor/meteor': {
-		Meteor: {
+		meteorMock: {
 			absoluteUrl: sinon.stub().returns('http://localhost'),
 		},
-	},
+	};
 });
+
+vi.mock('../../../../app/push/server/logger', () => ({ logger: loggerStub }));
+vi.mock('../../../../app/settings/server', () => ({ settings: settingsStub }));
+vi.mock('@rocket.chat/tools', () => ({ pick, truncateString }));
+vi.mock('meteor/check', () => ({
+	check: checkMock,
+	Match: matchMock,
+}));
+vi.mock('meteor/meteor', () => ({
+	Meteor: meteorMock,
+}));
+
+const { Push } = await import('../../../../app/push/server/push');
 
 describe('Push Notifications [PushClass]', () => {
 	afterEach(() => {
@@ -35,7 +46,9 @@ describe('Push Notifications [PushClass]', () => {
 	describe('send()', () => {
 		let sendNotificationStub: sinon.SinonStub;
 		beforeEach(() => {
-			sendNotificationStub = sinon.stub(Push, 'sendNotification').resolves({ apn: [], gcm: [] });
+			sendNotificationStub = sinon
+				.stub(Push as unknown as { sendNotification: () => Promise<{ apn: string[]; gcm: string[] }> }, 'sendNotification')
+				.resolves({ apn: [], gcm: [] });
 		});
 
 		it('should call sendNotification with required fields', async () => {
@@ -102,7 +115,7 @@ describe('Push Notifications [PushClass]', () => {
 				text: 'body',
 				apn: { category: 'MESSAGE' },
 				gcm: { style: 'inbox', image: 'url' },
-			};
+			} as unknown as IPushNotificationConfig;
 
 			await expect(Push.send(options)).to.be.rejectedWith('No userId found');
 

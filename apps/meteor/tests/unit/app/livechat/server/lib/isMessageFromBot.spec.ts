@@ -1,18 +1,23 @@
 import { expect } from 'chai';
-import p from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, beforeEach, vi } from 'vitest';
 
 import { createFakeMessage } from '../../../../../mocks/data';
 
-const modelsMock = {
-	Users: {
-		isUserInRole: sinon.stub(),
-	},
-};
-
-const { isMessageFromBot } = p.noCallThru().load('../../../../../../app/livechat/server/lib/isMessageFromBot', {
-	'@rocket.chat/models': modelsMock,
+const { modelsMock } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
+		modelsMock: {
+			Users: {
+				isUserInRole: sinon.stub(),
+			},
+		},
+	};
 });
+
+vi.mock('@rocket.chat/models', () => modelsMock);
+
+const { isMessageFromBot } = await import('../../../../../../app/livechat/server/lib/isMessageFromBot');
 
 describe('isMessageFromBot', () => {
 	const mockMessage = createFakeMessage();

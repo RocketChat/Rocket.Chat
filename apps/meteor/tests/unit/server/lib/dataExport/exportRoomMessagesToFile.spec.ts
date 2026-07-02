@@ -1,51 +1,54 @@
 import { faker } from '@faker-js/faker';
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { beforeAll, describe, it, vi } from 'vitest';
 
 import type { MessageData } from '../../../../../server/lib/dataExport/exportRoomMessagesToFile';
 import { exportMessagesMock } from '../../../app/apps/server/mocks/data/messages.data';
 
-// Create stubs for dependencies
-const stubs = {
-	findPaginatedMessages: sinon.stub(),
-	mkdir: sinon.stub(),
-	writeFile: sinon.stub(),
-	findPaginatedMessagesCursor: sinon.stub(),
-	findPaginatedMessagesTotal: sinon.stub(),
-	translateKey: sinon.stub(),
-	settings: sinon.stub(),
-};
+// Stubs are built in `vi.hoisted` so the hoisted `vi.mock` factories can reference them.
+const { stubs } = vi.hoisted(() => {
+	const sinon = require('sinon');
+	return {
+		stubs: {
+			findPaginatedMessages: sinon.stub(),
+			mkdir: sinon.stub(),
+			writeFile: sinon.stub(),
+			findPaginatedMessagesCursor: sinon.stub(),
+			findPaginatedMessagesTotal: sinon.stub(),
+			translateKey: sinon.stub(),
+			settings: sinon.stub(),
+		},
+	};
+});
 
-const { getMessageData, exportRoomMessages, exportMessageObject } = proxyquire
-	.noCallThru()
-	.load('../../../../../server/lib/dataExport/exportRoomMessagesToFile.ts', {
-		'@rocket.chat/models': {
-			Messages: {
-				findPaginated: stubs.findPaginatedMessages,
-			},
-		},
-		'fs/promises': {
-			mkdir: stubs.mkdir,
-			writeFile: stubs.writeFile,
-		},
-		'../i18n': {
-			i18n: {
-				t: stubs.translateKey,
-			},
-		},
-		'../../../app/settings/server': {
-			settings: stubs.settings,
-		},
-	});
+vi.mock('@rocket.chat/models', () => ({
+	Messages: {
+		findPaginated: stubs.findPaginatedMessages,
+	},
+}));
+vi.mock('node:fs/promises', () => ({
+	mkdir: stubs.mkdir,
+	writeFile: stubs.writeFile,
+}));
+vi.mock('../../../../../server/lib/i18n', () => ({
+	i18n: {
+		t: stubs.translateKey,
+	},
+}));
+vi.mock('../../../../../app/settings/server', () => ({
+	settings: stubs.settings,
+}));
+
+const { getMessageData, exportRoomMessages, exportMessageObject } = await import(
+	'../../../../../server/lib/dataExport/exportRoomMessagesToFile'
+);
 
 describe('Export - exportMessageObject', () => {
 	let messagesData: MessageData[];
 	const translationPlaceholder = 'translation-placeholder';
-	before(() => {
+	beforeAll(() => {
 		stubs.translateKey.returns(translationPlaceholder);
-		messagesData = exportMessagesMock.map((message) => getMessageData(message, false));
+		messagesData = exportMessagesMock.map((message) => getMessageData(message, false, undefined, {}));
 	});
 
 	it('should only stringify message object when exporting message as json', async () => {
@@ -87,7 +90,7 @@ describe('Export - exportMessageObject', () => {
 	});
 
 	it('should correctly reference file when exporting a message object with an attachment as html', async () => {
-		const result = await exportMessageObject('html', messagesData[1], [exportMessagesMock[1].file]);
+		const result = await exportMessageObject('html', messagesData[1], [exportMessagesMock[1].file!]);
 
 		expect(result).to.be.a.string;
 		expect(result).to.equal(
@@ -100,7 +103,7 @@ describe('Export - exportMessageObject', () => {
 	});
 
 	it('should use fallback attachment description when no title is provided on message object export as html', async () => {
-		const result = await exportMessageObject('html', messagesData[2], [exportMessagesMock[2].file]);
+		const result = await exportMessageObject('html', messagesData[2], [exportMessagesMock[2].file!]);
 
 		expect(stubs.translateKey.calledWith('Message_Attachments')).to.be.true;
 		expect(result).to.be.a.string;
@@ -191,7 +194,7 @@ describe('Export - exportRoomMessages', () => {
 		username: faker.internet.userName(),
 	};
 
-	before(() => {
+	beforeAll(() => {
 		stubs.findPaginatedMessagesCursor.resolves(exportMessagesMock);
 		stubs.findPaginatedMessagesTotal.resolves(totalMessages);
 		stubs.findPaginatedMessages.returns({

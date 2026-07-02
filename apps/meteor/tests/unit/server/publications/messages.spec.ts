@@ -1,25 +1,48 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import { describe, it, afterEach, vi } from 'vitest';
 
-const mockMeteorError = class extends Error {
-	constructor(
-		public error: string,
-		public reason: string,
-		public details: any,
-	) {
-		super(reason);
-		this.name = 'Meteor.Error';
-	}
-};
+const { mockMeteorError, messagesMock, checkStub, getChannelHistoryStub, meteorMethodsStub } = vi.hoisted(() => {
+	const sinon = require('sinon');
+	const mockMeteorError = class extends Error {
+		constructor(
+			public error: string,
+			public reason: string,
+			public details: any,
+		) {
+			super(reason);
+			this.name = 'Meteor.Error';
+		}
+	};
+	return {
+		mockMeteorError,
+		messagesMock: {
+			findForUpdates: sinon.stub(),
+			trashFindDeletedAfter: sinon.stub(),
+			trashFind: sinon.stub(),
+		},
+		checkStub: sinon.stub(),
+		getChannelHistoryStub: sinon.stub(),
+		meteorMethodsStub: sinon.stub(),
+	};
+});
 
-const messagesMock = {
-	findForUpdates: sinon.stub(),
-	trashFindDeletedAfter: sinon.stub(),
-	trashFind: sinon.stub(),
-};
+vi.mock('meteor/check', () => ({
+	check: checkStub,
+}));
+vi.mock('../../../../app/lib/server/methods/getChannelHistory', () => ({
+	getChannelHistory: getChannelHistoryStub,
+}));
+vi.mock('meteor/meteor', () => ({
+	Meteor: {
+		methods: meteorMethodsStub,
+		Error: mockMeteorError,
+	},
+}));
+vi.mock('@rocket.chat/models', () => ({
+	Messages: messagesMock,
+}));
 
 const {
 	extractTimestampFromCursor,
@@ -29,24 +52,7 @@ const {
 	mountPreviousCursor,
 	handleWithoutPagination,
 	handleCursorPagination,
-} = proxyquire.noCallThru().load('../../../../server/publications/messages', {
-	'meteor/check': {
-		check: sinon.stub(),
-	},
-	'../../app/lib/server/methods/getChannelHistory': {
-		getChannelHistory: sinon.stub(),
-	},
-	'meteor/meteor': {
-		'Meteor': {
-			methods: sinon.stub(),
-			Error: mockMeteorError,
-		},
-		'@global': true,
-	},
-	'@rocket.chat/models': {
-		Messages: messagesMock,
-	},
-});
+} = await import('../../../../server/publications/messages');
 
 describe('extractTimestampFromCursor', () => {
 	it('should return the correct timestamp', () => {
@@ -65,12 +71,16 @@ describe('mountCursorQuery', () => {
 	const mockDate = new Date('2024-01-01T00:00:00.000Z').getTime();
 
 	it('should return a query with $gt when next is provided', () => {
-		const result = mountCursorQuery({ next: mockDate.toString() });
+		const result = mountCursorQuery({ next: mockDate.toString() } as unknown as { next?: string; previous?: string; count: number });
 		expect(result.query).to.deep.equal({ $gt: new Date(mockDate) });
 	});
 
 	it('should return a query with $lt when previous is provided', () => {
-		const result = mountCursorQuery({ previous: mockDate.toString() });
+		const result = mountCursorQuery({ previous: mockDate.toString() } as unknown as {
+			next?: string;
+			previous?: string;
+			count: number;
+		});
 		expect(result.query).to.deep.equal({ $lt: new Date(mockDate) });
 	});
 
@@ -99,7 +109,7 @@ describe('mountCursorFromMessage', () => {
 			_updatedAt: new Date('2024-01-01T00:00:00Z'),
 		};
 
-		const result = mountCursorFromMessage(message, 'UPDATED');
+		const result = mountCursorFromMessage(message as unknown as IMessage & { _deletedAt?: Date }, 'UPDATED');
 		expect(result).to.equal(`${message._updatedAt.getTime()}`);
 	});
 
@@ -108,7 +118,7 @@ describe('mountCursorFromMessage', () => {
 			_deletedAt: new Date('2024-01-01T00:00:00Z'),
 		};
 
-		const result = mountCursorFromMessage(message, 'DELETED');
+		const result = mountCursorFromMessage(message as unknown as IMessage & { _deletedAt?: Date }, 'DELETED');
 		expect(result).to.equal(`${message._deletedAt.getTime()}`);
 	});
 
@@ -117,16 +127,20 @@ describe('mountCursorFromMessage', () => {
 			_updatedAt: new Date('2024-01-01T00:00:00Z'),
 		};
 
-		expect(() => mountCursorFromMessage(message, 'DELETED')).to.throw(mockMeteorError, 'Cursor not found');
+		expect(() => mountCursorFromMessage(message as unknown as IMessage & { _deletedAt?: Date }, 'DELETED')).to.throw(
+			mockMeteorError,
+			'Cursor not found',
+		);
 	});
 });
 
 describe('mountNextCursor', () => {
-	const mockMessage = (timestamp: number): Pick<IMessage, '_id' | 'ts' | '_updatedAt'> => ({
-		_id: '1',
-		ts: new Date(timestamp),
-		_updatedAt: new Date(timestamp),
-	});
+	const mockMessage = (timestamp: number): IMessage =>
+		({
+			_id: '1',
+			ts: new Date(timestamp),
+			_updatedAt: new Date(timestamp),
+		}) as unknown as IMessage;
 
 	it('should return null if messages array is empty', () => {
 		expect(mountNextCursor([], 10, 'UPDATED')).to.be.null;
@@ -154,11 +168,12 @@ describe('mountNextCursor', () => {
 });
 
 describe('mountPreviousCursor', () => {
-	const mockMessage = (timestamp: number): Pick<IMessage, '_id' | 'ts' | '_updatedAt'> => ({
-		_id: '1',
-		ts: new Date(timestamp),
-		_updatedAt: new Date(timestamp),
-	});
+	const mockMessage = (timestamp: number): IMessage =>
+		({
+			_id: '1',
+			ts: new Date(timestamp),
+			_updatedAt: new Date(timestamp),
+		}) as unknown as IMessage;
 
 	it('should return null if messages array is empty', () => {
 		expect(mountPreviousCursor([], 10, 'UPDATED')).to.be.null;

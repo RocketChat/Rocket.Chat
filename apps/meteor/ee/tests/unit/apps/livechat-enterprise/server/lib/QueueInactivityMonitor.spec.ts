@@ -1,50 +1,82 @@
 import { expect } from 'chai';
-import { describe, afterEach, before } from 'mocha';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { describe, afterEach, beforeAll, beforeEach, it, vi } from 'vitest';
 
-const AgendaJobStub = {
-	schedule: sinon.stub(),
-	unique: sinon.stub(),
-	save: sinon.stub(),
-};
-const AgendaStub = {
-	start: sinon.stub(),
-	define: sinon.stub(),
-	cancel: sinon.stub(),
-	create: sinon.stub().returns(AgendaJobStub),
-};
+// Stubs are built in `vi.hoisted` so the hoisted `vi.mock` factories can reference them. sinon is
+// require()d inside the hoisted block because the top-level import has not executed at hoist time.
+// NOTE: relative `vi.mock` specifiers are resolved relative to THIS spec file (not the source).
+// `match` is exported from the hoisted sinon instance because matchers are instance-specific and a
+// matcher from the top-level `import sinon` is not recognized by the hoisted stubs.
+const {
+	AgendaJobStub,
+	AgendaStub,
+	AgendaCtor,
+	modelsMock,
+	meteorMock,
+	createIndexStub,
+	mongoMock,
+	livechatMock,
+	settingsMock,
+	i18nMock,
+	match,
+} = vi.hoisted(() => {
+	const sinon = require('sinon');
 
-const modelsMock = {
-	LivechatRooms: { findOneById: sinon.stub() },
-	LivechatInquiry: { findOneById: sinon.stub() },
-	Users: { findOneById: sinon.stub() },
-};
-const meteorMock = { Meteor: { startup: sinon.stub() } };
-const createIndexStub = sinon.stub();
-const mongoMock = {
-	MongoInternals: {
-		defaultRemoteCollectionDriver: sinon.stub().returns({
-			mongo: { db: { collection: sinon.stub().returns({ createIndex: createIndexStub }) }, client: { db: sinon.stub() } },
-		}),
-	},
-};
-const livechatMock = { closeRoom: sinon.stub() };
-const settingsMock = { settings: { get: sinon.stub() } };
+	const AgendaJobStub = {
+		schedule: sinon.stub(),
+		unique: sinon.stub(),
+		save: sinon.stub(),
+	};
+	const AgendaStub = {
+		start: sinon.stub(),
+		define: sinon.stub(),
+		cancel: sinon.stub(),
+		create: sinon.stub().returns(AgendaJobStub),
+	};
 
-const { OmnichannelQueueInactivityMonitorClass } = proxyquire
-	.noCallThru()
-	.load('../../../../../../app/livechat-enterprise/server/lib/QueueInactivityMonitor', {
-		'@rocket.chat/agenda': {
-			Agenda: sinon.stub().returns(AgendaStub),
+	const modelsMock = {
+		LivechatRooms: { findOneById: sinon.stub() },
+		LivechatInquiry: { findOneById: sinon.stub() },
+		Users: { findOneById: sinon.stub() },
+	};
+	const meteorMock = { Meteor: { startup: sinon.stub() } };
+	const createIndexStub = sinon.stub();
+	const mongoMock = {
+		MongoInternals: {
+			defaultRemoteCollectionDriver: sinon.stub().returns({
+				mongo: { db: { collection: sinon.stub().returns({ createIndex: createIndexStub }) }, client: { db: sinon.stub() } },
+			}),
 		},
-		'@rocket.chat/models': modelsMock,
-		'meteor/meteor': meteorMock,
-		'meteor/mongo': mongoMock,
-		'../../../../../app/livechat/server/lib/closeRoom': livechatMock,
-		'../../../../../app/settings/server': settingsMock,
-		'../../../../../server/lib/i18n': { i18n: { t: sinon.stub().returns('Closed automatically') } },
-	});
+	};
+	const livechatMock = { closeRoom: sinon.stub() };
+	const settingsMock = { settings: { get: sinon.stub() } };
+	const i18nMock = { i18n: { t: sinon.stub().returns('Closed automatically') } };
+
+	return {
+		AgendaJobStub,
+		AgendaStub,
+		AgendaCtor: sinon.stub().returns(AgendaStub),
+		modelsMock,
+		meteorMock,
+		createIndexStub,
+		mongoMock,
+		livechatMock,
+		settingsMock,
+		i18nMock,
+		match: sinon.match,
+	};
+});
+
+vi.mock('@rocket.chat/agenda', () => ({ Agenda: AgendaCtor }));
+vi.mock('@rocket.chat/models', () => modelsMock);
+vi.mock('meteor/meteor', () => meteorMock);
+vi.mock('meteor/mongo', () => mongoMock);
+vi.mock('../../../../../../../app/livechat/server/lib/closeRoom', () => livechatMock);
+vi.mock('../../../../../../../app/settings/server', () => settingsMock);
+vi.mock('../../../../../../../server/lib/i18n', () => i18nMock);
+
+const { OmnichannelQueueInactivityMonitorClass } = await import(
+	'../../../../../../app/livechat-enterprise/server/lib/QueueInactivityMonitor'
+);
 
 describe('OmnichannelQueueInactivityMonitorClass', () => {
 	afterEach(() => {
@@ -53,7 +85,7 @@ describe('OmnichannelQueueInactivityMonitorClass', () => {
 	describe('getRocketChatUser', () => {
 		it('should return rocket.cat user', async () => {
 			const qclass = new OmnichannelQueueInactivityMonitorClass();
-			await qclass.getRocketCatUser();
+			await (qclass as any).getRocketCatUser();
 
 			expect(modelsMock.Users.findOneById.calledWith('rocket.cat')).to.be.true;
 		});
@@ -68,18 +100,18 @@ describe('OmnichannelQueueInactivityMonitorClass', () => {
 	});
 
 	describe('createIndex', () => {
-		before(() => {
+		beforeAll(() => {
 			createIndexStub.reset();
 		});
 		it('should create index', () => {
 			const qclass = new OmnichannelQueueInactivityMonitorClass();
 			qclass.createIndex();
-			expect(createIndexStub.calledWith(sinon.match({ 'data.inquiryId': 1 }), sinon.match({ unique: true }))).to.be.true;
+			expect(createIndexStub.calledWith(match({ 'data.inquiryId': 1 }), match({ unique: true }))).to.be.true;
 		});
 	});
 
 	describe('start', () => {
-		before(() => {
+		beforeAll(() => {
 			AgendaStub.start.reset();
 		});
 		it('should do nothing if its already running', async () => {
@@ -109,7 +141,7 @@ describe('OmnichannelQueueInactivityMonitorClass', () => {
 			expect(AgendaStub.cancel.calledBefore(AgendaStub.define)).to.be.true;
 			expect(AgendaStub.define.calledOnce).to.be.true;
 			expect(AgendaJobStub.schedule.calledOnceWith(now)).to.be.true;
-			expect(AgendaJobStub.unique.calledOnceWith(sinon.match({ 'data.inquiryId': 'inquiryId' }))).to.be.true;
+			expect(AgendaJobStub.unique.calledOnceWith(match({ 'data.inquiryId': 'inquiryId' }))).to.be.true;
 		});
 	});
 
@@ -186,7 +218,7 @@ describe('OmnichannelQueueInactivityMonitorClass', () => {
 			expect(modelsMock.LivechatRooms.findOneById.calledWith('roomId')).to.be.true;
 			expect(
 				livechatMock.closeRoom.calledWith(
-					sinon.match({
+					match({
 						comment: 'Closed automatically',
 						room: { _id: 'roomId' },
 						user: { _id: 'rocket.cat' },

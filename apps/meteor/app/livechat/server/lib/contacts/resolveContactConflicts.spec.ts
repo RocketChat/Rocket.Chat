@@ -1,40 +1,42 @@
 import type { ILivechatContact } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { beforeEach, describe, it, vi } from 'vitest';
 
-const modelsMock = {
-	LivechatContacts: {
-		findOneEnabledById: sinon.stub(),
-		patchContact: sinon.stub(),
-	},
-	Settings: {
-		incrementValueById: sinon.stub(),
-	},
-};
-
-const validateContactManagerMock = sinon.stub();
-
-const { patchContact } = proxyquire.noCallThru().load('./patchContact.ts', {
-	'@rocket.chat/models': modelsMock,
+const { modelsMock, validateContactManagerMock, sandbox } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	const sandbox = sinon.createSandbox();
+	return {
+		sandbox,
+		validateContactManagerMock: sandbox.stub(),
+		modelsMock: {
+			LivechatContacts: {
+				findOneEnabledById: sandbox.stub(),
+				patchContact: sandbox.stub(),
+			},
+			Settings: {
+				incrementValueById: sandbox.stub(),
+			},
+		},
+	};
 });
 
-const { resolveContactConflicts } = proxyquire.noCallThru().load('./resolveContactConflicts', {
-	'@rocket.chat/models': modelsMock,
-	'./validateContactManager': {
-		validateContactManager: validateContactManagerMock,
-	},
-	'./patchContact': {
-		patchContact,
-	},
-});
+vi.mock('@rocket.chat/models', () => ({
+	LivechatContacts: modelsMock.LivechatContacts,
+	Settings: modelsMock.Settings,
+}));
+vi.mock('./validateContactManager', () => ({ validateContactManager: validateContactManagerMock }));
+// notifyListener side effects are fire-and-forget (`void`) and never asserted on; stub them so the
+// real broadcast (which needs a broker) doesn't surface as an unhandled rejection.
+vi.mock('../../../../lib/server/lib/notifyListener', () => ({ notifyOnSettingChanged: sandbox.stub() }));
+
+// patchContact is intentionally NOT mocked: the real implementation runs against the mocked
+// `@rocket.chat/models`, matching the original test which loaded the real patchContact.
+const { resolveContactConflicts } = await import('./resolveContactConflicts');
 
 describe('resolveContactConflicts', () => {
 	beforeEach(() => {
-		modelsMock.LivechatContacts.findOneEnabledById.reset();
-		modelsMock.Settings.incrementValueById.reset();
-		modelsMock.LivechatContacts.patchContact.reset();
-		validateContactManagerMock.reset();
+		sandbox.reset();
 	});
 
 	it('should update the contact with the resolved custom field', async () => {

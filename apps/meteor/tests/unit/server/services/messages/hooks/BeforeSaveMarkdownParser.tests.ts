@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { beforeEach } from 'mocha';
+import { beforeEach } from 'vitest';
 
 import { BeforeSaveMarkdownParser } from '../../../../../../server/services/messages/hooks/BeforeSaveMarkdownParser';
 

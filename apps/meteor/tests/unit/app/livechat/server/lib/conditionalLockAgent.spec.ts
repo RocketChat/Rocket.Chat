@@ -1,23 +1,26 @@
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, beforeEach, vi } from 'vitest';
 
-const mockUsers = {
-	acquireAgentLock: sinon.stub(),
-	releaseAgentLock: sinon.stub(),
-};
-
-const mockSettings = {
-	get: sinon.stub(),
-};
-
-const mockHasRoleAsync = sinon.stub();
-
-const { conditionalLockAgent } = proxyquire.noCallThru().load('../../../../../../app/livechat/server/lib/conditionalLockAgent', {
-	'@rocket.chat/models': { Users: mockUsers },
-	'../../../authorization/server/functions/hasRole': { hasRoleAsync: mockHasRoleAsync },
-	'../../../settings/server': { settings: mockSettings },
+const { mockUsers, mockSettings, mockHasRoleAsync } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
+		mockUsers: {
+			acquireAgentLock: sinon.stub(),
+			releaseAgentLock: sinon.stub(),
+		},
+		mockSettings: {
+			get: sinon.stub(),
+		},
+		mockHasRoleAsync: sinon.stub(),
+	};
 });
+
+vi.mock('@rocket.chat/models', () => ({ Users: mockUsers }));
+vi.mock('../../../../../../app/authorization/server/functions/hasRole', () => ({ hasRoleAsync: mockHasRoleAsync }));
+vi.mock('../../../../../../app/settings/server', () => ({ settings: mockSettings }));
+
+const { conditionalLockAgent } = await import('../../../../../../app/livechat/server/lib/conditionalLockAgent');
 
 describe('conditionalLockAgent', () => {
 	beforeEach(() => {

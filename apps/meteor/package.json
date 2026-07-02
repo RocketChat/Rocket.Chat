@@ -23,12 +23,10 @@
 	},
 	"type": "commonjs",
 	"scripts": {
-		".testunit:definition": "mocha --config ./.mocharc.definition.js",
 		".testunit:jest": "TZ=UTC TS_NODE_COMPILER_OPTIONS='{\"allowJs\": false}' jest",
-		".testunit:server": "mocha --config ./.mocharc.js",
-		".testunit:server:cov": "nyc -r text -r lcov mocha --config ./.mocharc.js",
+		".testunit:vitest": "TZ=UTC vitest run --coverage",
 		"build:ci": "METEOR_DEBUG_BUILD=1 METEOR_DISABLE_OPTIMISTIC_CACHING=1 meteor build --verbose --server-only --directory /tmp/dist",
-		"coverage": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' nyc -r html mocha --config ./.mocharc.js",
+		"coverage": "TZ=UTC vitest run --coverage --coverage.reporter=html",
 		"debug": "meteor run --inspect",
 		"debug-brk": "meteor run --inspect-brk",
 		"dev": "NODE_OPTIONS=\"--trace-warnings\" meteor --exclude-archs \"web.browser.legacy, web.cordova\"",
@@ -56,8 +54,8 @@
 		"test:e2e:nyc": "nyc report --reporter=lcovonly",
 		"testapi": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.api.js",
 		"testapi:livechat": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.api.livechat.js",
-		"testunit": "yarn .testunit:definition && yarn .testunit:jest && yarn .testunit:server:cov",
-		"testunit-watch": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --watch --config ./.mocharc.js",
+		"testunit": "yarn .testunit:jest && yarn .testunit:vitest",
+		"testunit-watch": "TZ=UTC vitest",
 		"typecheck": "meteor lint && cross-env NODE_OPTIONS=\"--max-old-space-size=8192\" tsc --noEmit --skipLibCheck",
 		"version": "node .scripts/version.js"
 	},
@@ -405,6 +403,7 @@
 		"@types/underscore": "^1.13.0",
 		"@types/xml-crypto": "~1.4.6",
 		"@types/xml-encryption": "~1.2.4",
+		"@vitest/coverage-v8": "~3.2.6",
 		"autoprefixer": "^9.8.8",
 		"babel-loader": "~10.0.0",
 		"babel-plugin-array-includes": "^2.0.3",
@@ -453,6 +452,7 @@
 		"ts-node": "^10.9.2",
 		"tsx": "~4.22.4",
 		"typescript": "~5.9.3",
+		"vitest": "~3.2.6",
 		"webpack": "~5.104.1"
 	},
 	"volta": {

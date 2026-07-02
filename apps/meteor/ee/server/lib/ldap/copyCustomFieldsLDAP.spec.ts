@@ -1,8 +1,12 @@
 import type { IImportUser, ILDAPEntry } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
-import { expect, spy } from 'chai';
+import chai, { expect } from 'chai';
 
 import { copyCustomFieldsLDAP } from './copyCustomFieldsLDAP';
+
+// chai-spies registers `spy` on the chai instance (see tests/setup/vitestSetup.ts); grab it from
+// there rather than as a named import, which Vitest does not expose for plugin-added exports.
+const { spy } = chai;
 
 describe('LDAP copyCustomFieldsLDAP', () => {
 	it('should copy custom fields from ldapUser to rcUser', () => {

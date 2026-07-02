@@ -1,42 +1,42 @@
 import type { IAppsEngineService } from '@rocket.chat/core-services';
 import { expect } from 'chai';
-import { afterEach, beforeEach, describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import { afterEach, beforeEach, describe, it, vi } from 'vitest';
 
-const AppsMock = {
-	self: {
-		isInitialized: sinon.stub(),
-		getManager: sinon.stub(),
-		getStorage: sinon.stub(),
-		getAppSourceStorage: sinon.stub(),
-		getRocketChatLogger: sinon.stub(),
-		triggerEvent: sinon.stub(),
-	},
-};
-
-const apiMock = {
-	call: sinon.stub(),
-	nodeList: sinon.stub(),
-};
-
-const isRunningMsMock = sinon.stub();
-
-const serviceMocks = {
-	'@rocket.chat/apps': { Apps: AppsMock },
-	'@rocket.chat/core-services': {
-		api: apiMock,
-		ServiceClassInternal: class {
+const { AppsMock, apiMock, isRunningMsMock, ServiceClassInternalMock, SystemLoggerMock } = vi.hoisted(() => {
+	const sinon = require('sinon');
+	return {
+		AppsMock: {
+			self: {
+				isInitialized: sinon.stub(),
+				getManager: sinon.stub(),
+				getStorage: sinon.stub(),
+				getAppSourceStorage: sinon.stub(),
+				getRocketChatLogger: sinon.stub(),
+				triggerEvent: sinon.stub(),
+			},
+		},
+		apiMock: {
+			call: sinon.stub(),
+			nodeList: sinon.stub(),
+		},
+		isRunningMsMock: sinon.stub(),
+		ServiceClassInternalMock: class {
 			onEvent = sinon.stub();
 		},
-	},
-	'../../lib/isRunningMs': { isRunningMs: isRunningMsMock },
-	'../../lib/logger/system': { SystemLogger: { error: sinon.stub() } },
-};
+		SystemLoggerMock: { error: sinon.stub() },
+	};
+});
 
-const { AppsEngineService, AppsEngineNoNodesFoundError } = proxyquire
-	.noCallThru()
-	.load('../../../../../server/services/apps-engine/service', serviceMocks);
+vi.mock('@rocket.chat/apps', () => ({ Apps: AppsMock }));
+vi.mock('@rocket.chat/core-services', () => ({
+	api: apiMock,
+	ServiceClassInternal: ServiceClassInternalMock,
+}));
+vi.mock('../../../../../server/lib/isRunningMs', () => ({ isRunningMs: isRunningMsMock }));
+vi.mock('../../../../../server/lib/logger/system', () => ({ SystemLogger: SystemLoggerMock }));
+
+const { AppsEngineService, AppsEngineNoNodesFoundError } = await import('../../../../../server/services/apps-engine/service');
 
 describe('AppsEngineService', () => {
 	let service: IAppsEngineService;

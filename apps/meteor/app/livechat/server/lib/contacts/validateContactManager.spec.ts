@@ -1,20 +1,27 @@
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { beforeEach, describe, it, vi } from 'vitest';
 
-const modelsMock = {
-	Users: {
-		findOneAgentById: sinon.stub(),
-	},
-};
-
-const { validateContactManager } = proxyquire.noCallThru().load('./validateContactManager', {
-	'@rocket.chat/models': modelsMock,
+const { modelsMock, sandbox } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	const sandbox = sinon.createSandbox();
+	return {
+		sandbox,
+		modelsMock: {
+			Users: {
+				findOneAgentById: sandbox.stub(),
+			},
+		},
+	};
 });
+
+vi.mock('@rocket.chat/models', () => ({ Users: modelsMock.Users }));
+
+const { validateContactManager } = await import('./validateContactManager');
 
 describe('validateContactManager', () => {
 	beforeEach(() => {
-		modelsMock.Users.findOneAgentById.reset();
+		sandbox.reset();
 	});
 
 	it('should throw an error if the user does not exist', async () => {

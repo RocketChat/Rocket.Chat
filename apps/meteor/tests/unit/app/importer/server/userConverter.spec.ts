@@ -1,68 +1,61 @@
+import type { IImportUser, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import { vi } from 'vitest';
 
-const settingsStub = sinon.stub();
-const modelsMock = {
-	Users: {
-		findOneByEmailAddress: sinon.stub(),
-		findOneByUsernameIgnoringCase: sinon.stub(),
-		findOneById: sinon.stub(),
-	},
-};
-const addUserToDefaultChannels = sinon.stub();
-const generateUsernameSuggestion = sinon.stub();
-const insertUserDoc = sinon.stub();
-const callbacks = {
-	run: sinon.stub(),
-};
-const bcryptHash = sinon.stub();
-const sha = sinon.stub();
-const generateTempPassword = sinon.stub();
-
-const { UserConverter } = proxyquire.noCallThru().load('../../../../../app/importer/server/classes/converters/UserConverter', {
-	'../../../../../server/lib/callbacks': {
-		callbacks,
-	},
-	'../../../settings/server': {
-		settings: { get: settingsStub },
-	},
-	'../../../../lib/server/functions/addUserToDefaultChannels': {
-		addUserToDefaultChannels,
-	},
-	'../../../../lib/server/functions/getUsernameSuggestion': {
-		generateUsernameSuggestion,
-	},
-	'../../../../lib/server/functions/saveUserIdentity': {
-		saveUserIdentity: sinon.stub(),
-	},
-	'../../../../lib/server/functions/setUserActiveStatus': {
-		setUserActiveStatus: sinon.stub(),
-	},
-	'../../../../lib/server/lib/notifyListener': {
-		notifyOnUserChange: sinon.stub(),
-	},
-	'./generateTempPassword': {
-		generateTempPassword,
-		'@global': true,
-	},
-	'bcrypt': {
-		'hash': bcryptHash,
-		'@global': true,
-	},
-	'meteor/check': sinon.stub(),
-	'meteor/meteor': sinon.stub(),
-	'@rocket.chat/sha256': {
-		SHA256: sha,
-	},
-	'meteor/accounts-base': {
-		Accounts: {
-			insertUserDoc,
-			_bcryptRounds: () => 10,
+const {
+	settingsStub,
+	modelsMock,
+	addUserToDefaultChannels,
+	generateUsernameSuggestion,
+	insertUserDoc,
+	callbacks,
+	bcryptHash,
+	sha,
+	generateTempPassword,
+	stubs,
+} = vi.hoisted(() => {
+	const sinon = require('sinon');
+	return {
+		settingsStub: sinon.stub(),
+		modelsMock: {
+			Users: {
+				findOneByEmailAddress: sinon.stub(),
+				findOneByUsernameIgnoringCase: sinon.stub(),
+				findOneById: sinon.stub(),
+			},
 		},
-	},
-	'@rocket.chat/models': { ...modelsMock, '@global': true },
+		addUserToDefaultChannels: sinon.stub(),
+		generateUsernameSuggestion: sinon.stub(),
+		insertUserDoc: sinon.stub(),
+		callbacks: {
+			run: sinon.stub(),
+		},
+		bcryptHash: sinon.stub(),
+		sha: sinon.stub(),
+		generateTempPassword: sinon.stub(),
+		stubs: {
+			saveUserIdentity: sinon.stub(),
+			setUserActiveStatus: sinon.stub(),
+			notifyOnUserChange: sinon.stub(),
+		},
+	};
 });
+
+vi.mock('../../../../../server/lib/callbacks', () => ({ callbacks }));
+vi.mock('../../../../../app/settings/server', () => ({ settings: { get: settingsStub } }));
+vi.mock('../../../../../app/lib/server/functions/addUserToDefaultChannels', () => ({ addUserToDefaultChannels }));
+vi.mock('../../../../../app/lib/server/functions/getUsernameSuggestion', () => ({ generateUsernameSuggestion }));
+vi.mock('../../../../../app/lib/server/functions/saveUserIdentity', () => ({ saveUserIdentity: stubs.saveUserIdentity }));
+vi.mock('../../../../../app/lib/server/functions/setUserActiveStatus', () => ({ setUserActiveStatus: stubs.setUserActiveStatus }));
+vi.mock('../../../../../app/lib/server/lib/notifyListener', () => ({ notifyOnUserChange: stubs.notifyOnUserChange }));
+vi.mock('../../../../../app/importer/server/classes/converters/generateTempPassword', () => ({ generateTempPassword }));
+vi.mock('bcrypt', () => ({ hash: bcryptHash }));
+vi.mock('@rocket.chat/sha256', () => ({ SHA256: sha }));
+vi.mock('meteor/accounts-base', () => ({ Accounts: { insertUserDoc, _bcryptRounds: () => 10 } }));
+vi.mock('@rocket.chat/models', () => modelsMock);
+
+const { UserConverter } = await import('../../../../../app/importer/server/classes/converters/UserConverter');
 
 describe('User Converter', () => {
 	beforeEach(() => {
@@ -81,7 +74,7 @@ describe('User Converter', () => {
 		emails: ['user1@domain.com'],
 		importIds: ['importId1'],
 		username: 'username1',
-	};
+	} as unknown as IImportUser;
 
 	describe('[findExistingUser]', () => {
 		it('function should be called by the converter', async () => {
@@ -148,7 +141,7 @@ describe('User Converter', () => {
 				await converter.buildNewUserObject({
 					emails: [],
 					importIds: [],
-				}),
+				} as unknown as IImportUser),
 			).to.be.deep.equal(mappedUser({}));
 		});
 
@@ -159,7 +152,7 @@ describe('User Converter', () => {
 					importIds: [],
 					name: 'name1',
 					username: 'username1',
-				}),
+				} as unknown as IImportUser),
 			).to.be.deep.equal(
 				mappedUser({
 					username: 'username1',
@@ -177,7 +170,7 @@ describe('User Converter', () => {
 					bio: 'bio1',
 					avatarUrl: 'avatarUrl',
 					utcOffset: 3,
-				}),
+				} as unknown as IImportUser),
 			).to.be.deep.equal(
 				mappedUser({
 					statusText: 'statusText1',
@@ -214,7 +207,7 @@ describe('User Converter', () => {
 					emails: [],
 					importIds: [],
 					roles: ['role1'],
-				}),
+				} as unknown as IImportUser),
 			).to.be.deep.equal(mappedUser({}));
 		});
 
@@ -225,7 +218,7 @@ describe('User Converter', () => {
 					emails: ['user1@domain.com'],
 					importIds: ['importId1'],
 					username: 'username1',
-				}),
+				} as unknown as IImportUser),
 			).to.be.deep.equal(
 				mappedUser({
 					username: 'username1',
@@ -242,7 +235,7 @@ describe('User Converter', () => {
 					emails: [],
 					importIds: [],
 					password: 'batata',
-				}),
+				} as unknown as IImportUser),
 			).to.be.deep.equal(
 				mappedUser({
 					services: {
@@ -264,7 +257,7 @@ describe('User Converter', () => {
 							id: 'id',
 						},
 					},
-				}),
+				} as unknown as IImportUser),
 			).to.be.deep.equal(
 				mappedUser({
 					services: {
@@ -283,7 +276,7 @@ describe('User Converter', () => {
 					emails: [],
 					importIds: [],
 					deleted: true,
-				}),
+				} as unknown as IImportUser),
 			).to.be.deep.equal(
 				mappedUser({
 					active: false,
@@ -297,7 +290,7 @@ describe('User Converter', () => {
 					emails: [],
 					importIds: [],
 					deleted: false,
-				}),
+				} as unknown as IImportUser),
 			).to.be.deep.equal(
 				mappedUser({
 					active: true,
@@ -342,16 +335,16 @@ describe('User Converter', () => {
 			modelsMock.Users.findOneByEmailAddress.resolves(null);
 			modelsMock.Users.findOneByUsernameIgnoringCase.resolves(null);
 
-			sinon.stub(converter, 'insertUser');
-			sinon.stub(converter, 'updateUser');
+			const insertUser = sinon.stub(converter, 'insertUser');
+			const updateUser = sinon.stub(converter, 'updateUser');
 
 			await converter.addObject(userToImport);
 			await converter.convertData();
 
-			expect(converter.updateUser.getCalls()).to.be.an('array').with.lengthOf(0);
-			expect(converter.insertUser.getCalls()).to.be.an('array').with.lengthOf(1);
-			expect(converter.insertUser.getCall(0).args).to.be.an('array').that.is.not.empty;
-			expect(converter.insertUser.getCall(0).args[0]).to.be.deep.equal(userToImport);
+			expect(updateUser.getCalls()).to.be.an('array').with.lengthOf(0);
+			expect(insertUser.getCalls()).to.be.an('array').with.lengthOf(1);
+			expect(insertUser.getCall(0).args).to.be.an('array').that.is.not.empty;
+			expect(insertUser.getCall(0).args[0]).to.be.deep.equal(userToImport);
 			expect(addUserToDefaultChannels.getCalls()).to.be.an('array').with.lengthOf(0);
 		});
 
@@ -359,15 +352,15 @@ describe('User Converter', () => {
 			const converter = new UserConverter({ workInMemory: true, skipNewUsers: true });
 
 			sinon.stub(converter, 'findExistingUser');
-			sinon.stub(converter, 'insertUser');
+			const insertUser = sinon.stub(converter, 'insertUser');
 			sinon.stub(converter, 'updateUser');
-			sinon.stub(converter, 'skipMemoryRecord');
+			const skipMemoryRecord = sinon.stub(converter as unknown as { skipMemoryRecord: (id: string) => void }, 'skipMemoryRecord');
 
 			await converter.addObject(userToImport);
 			await converter.convertData();
 
-			expect(converter.insertUser.getCall(0)).to.be.null;
-			expect(converter.skipMemoryRecord.getCall(0)).to.not.be.null;
+			expect(insertUser.getCall(0)).to.be.null;
+			expect(skipMemoryRecord.getCall(0)).to.not.be.null;
 			expect(callbacks.run.getCall(0)).to.not.be.null;
 			expect(callbacks.run.getCall(0).args).to.be.deep.equal(['afterUserImport', { inserted: [], updated: [], skipped: 1, failed: 0 }]);
 		});
@@ -375,15 +368,15 @@ describe('User Converter', () => {
 		it('function should not be called for existing users', async () => {
 			const converter = new UserConverter({ workInMemory: true });
 
-			sinon.stub(converter, 'findExistingUser');
-			converter.findExistingUser.returns({ _id: 'oldId' });
-			sinon.stub(converter, 'insertUser');
+			const findExistingUser = sinon.stub(converter, 'findExistingUser');
+			findExistingUser.resolves({ _id: 'oldId' } as unknown as IUser);
+			const insertUser = sinon.stub(converter, 'insertUser');
 			sinon.stub(converter, 'updateUser');
 
 			await converter.addObject(userToImport);
 			await converter.convertData();
 
-			expect(converter.insertUser.getCall(0)).to.be.null;
+			expect(insertUser.getCall(0)).to.be.null;
 			expect(callbacks.run.getCall(0)).to.not.be.null;
 			expect(callbacks.run.getCall(0).args).to.be.deep.equal([
 				'afterUserImport',
@@ -398,16 +391,16 @@ describe('User Converter', () => {
 			modelsMock.Users.findOneByUsernameIgnoringCase.resolves(null);
 			modelsMock.Users.findOneById.withArgs('newId').returns({ newUser: true });
 
-			sinon.stub(converter, 'insertUser');
+			const insertUser = sinon.stub(converter, 'insertUser');
 
-			converter.insertUser.callsFake(() => 'newId');
+			insertUser.callsFake((() => 'newId') as unknown as InstanceType<typeof UserConverter>['insertUser']);
 
 			await converter.addObject(userToImport);
 			await converter.convertData();
 
-			expect(converter.insertUser.getCalls()).to.be.an('array').with.lengthOf(1);
-			expect(converter.insertUser.getCall(0).args).to.be.an('array').that.is.not.empty;
-			expect(converter.insertUser.getCall(0).args[0]).to.be.deep.equal(userToImport);
+			expect(insertUser.getCalls()).to.be.an('array').with.lengthOf(1);
+			expect(insertUser.getCall(0).args).to.be.an('array').that.is.not.empty;
+			expect(insertUser.getCall(0).args[0]).to.be.deep.equal(userToImport);
 			expect(addUserToDefaultChannels.getCalls()).to.be.an('array').with.lengthOf(1);
 			expect(addUserToDefaultChannels.getCall(0).args).to.be.an('array').that.deep.contains({ newUser: true });
 		});
@@ -416,7 +409,7 @@ describe('User Converter', () => {
 			const converter = new UserConverter({ workInMemory: true });
 			let insertedUser = null;
 
-			insertUserDoc.callsFake((_options, data) => {
+			insertUserDoc.callsFake((_options: any, data: any) => {
 				insertedUser = {
 					...data,
 					_id: 'Id1',
@@ -447,34 +440,34 @@ describe('User Converter', () => {
 		it('function should be called by the converter', async () => {
 			const converter = new UserConverter({ workInMemory: true });
 
-			sinon.stub(converter, 'findExistingUser');
-			converter.findExistingUser.returns({ _id: 'oldId' });
-			sinon.stub(converter, 'insertUser');
-			sinon.stub(converter, 'updateUser');
+			const findExistingUser = sinon.stub(converter, 'findExistingUser');
+			findExistingUser.resolves({ _id: 'oldId' } as unknown as IUser);
+			const insertUser = sinon.stub(converter, 'insertUser');
+			const updateUser = sinon.stub(converter, 'updateUser');
 
 			await converter.addObject(userToImport);
 			await converter.convertData();
 
-			expect(converter.insertUser.getCalls()).to.be.an('array').with.lengthOf(0);
-			expect(converter.updateUser.getCalls()).to.be.an('array').with.lengthOf(1);
-			expect(converter.updateUser.getCall(0).args).to.be.an('array').that.is.not.empty;
-			expect(converter.updateUser.getCall(0).args[1]).to.be.deep.equal(userToImport);
+			expect(insertUser.getCalls()).to.be.an('array').with.lengthOf(0);
+			expect(updateUser.getCalls()).to.be.an('array').with.lengthOf(1);
+			expect(updateUser.getCall(0).args).to.be.an('array').that.is.not.empty;
+			expect(updateUser.getCall(0).args[1]).to.be.deep.equal(userToImport);
 		});
 
 		it('function should not be called when skipExistingUsers = true', async () => {
 			const converter = new UserConverter({ workInMemory: true, skipExistingUsers: true });
 
-			sinon.stub(converter, 'findExistingUser');
-			converter.findExistingUser.returns({ _id: 'oldId' });
+			const findExistingUser = sinon.stub(converter, 'findExistingUser');
+			findExistingUser.resolves({ _id: 'oldId' } as unknown as IUser);
 			sinon.stub(converter, 'insertUser');
-			sinon.stub(converter, 'updateUser');
-			sinon.stub(converter, 'skipMemoryRecord');
+			const updateUser = sinon.stub(converter, 'updateUser');
+			const skipMemoryRecord = sinon.stub(converter as unknown as { skipMemoryRecord: (id: string) => void }, 'skipMemoryRecord');
 
 			await converter.addObject(userToImport);
 			await converter.convertData();
 
-			expect(converter.updateUser.getCall(0)).to.be.null;
-			expect(converter.skipMemoryRecord.getCall(0)).to.not.be.null;
+			expect(updateUser.getCall(0)).to.be.null;
+			expect(skipMemoryRecord.getCall(0)).to.not.be.null;
 			expect(callbacks.run.getCall(0)).to.not.be.null;
 			expect(callbacks.run.getCall(0).args).to.be.deep.equal(['afterUserImport', { inserted: [], updated: [], skipped: 1, failed: 0 }]);
 		});
@@ -484,12 +477,12 @@ describe('User Converter', () => {
 
 			sinon.stub(converter, 'findExistingUser');
 			sinon.stub(converter, 'insertUser');
-			sinon.stub(converter, 'updateUser');
+			const updateUser = sinon.stub(converter, 'updateUser');
 
 			await converter.addObject(userToImport);
 			await converter.convertData();
 
-			expect(converter.updateUser.getCall(0)).to.be.null;
+			expect(updateUser.getCall(0)).to.be.null;
 		});
 	});
 
@@ -504,7 +497,7 @@ describe('User Converter', () => {
 			const converter = new UserConverter({ workInMemory: true, skipDefaultChannels: true });
 
 			sinon.stub(converter, 'findExistingUser');
-			sinon.stub(converter, 'insertUser');
+			const insertUser = sinon.stub(converter, 'insertUser');
 			sinon.stub(converter, 'updateUser');
 
 			await converter.addObject(userToImport);
@@ -513,7 +506,7 @@ describe('User Converter', () => {
 			});
 
 			expect(beforeImportFn.getCalls()).to.be.an('array').with.lengthOf(1);
-			expect(converter.insertUser.getCalls()).to.be.an('array').with.lengthOf(1);
+			expect(insertUser.getCalls()).to.be.an('array').with.lengthOf(1);
 		});
 
 		it('afterImportFn should be triggered', async () => {
@@ -521,7 +514,7 @@ describe('User Converter', () => {
 			const converter = new UserConverter({ workInMemory: true, skipDefaultChannels: true });
 
 			sinon.stub(converter, 'findExistingUser');
-			sinon.stub(converter, 'insertUser');
+			const insertUser = sinon.stub(converter, 'insertUser');
 			sinon.stub(converter, 'updateUser');
 
 			await converter.addObject(userToImport);
@@ -529,7 +522,7 @@ describe('User Converter', () => {
 				afterImportFn,
 			});
 
-			expect(converter.insertUser.getCalls()).to.be.an('array').with.lengthOf(1);
+			expect(insertUser.getCalls()).to.be.an('array').with.lengthOf(1);
 			expect(afterImportFn.getCalls()).to.be.an('array').with.lengthOf(1);
 		});
 
@@ -548,7 +541,7 @@ describe('User Converter', () => {
 			sinon.stub(converter, 'findExistingUser');
 			sinon.stub(converter, 'insertUser');
 			sinon.stub(converter, 'updateUser');
-			sinon.stub(converter, 'skipMemoryRecord');
+			const skipMemoryRecord = sinon.stub(converter as unknown as { skipMemoryRecord: (id: string) => void }, 'skipMemoryRecord');
 
 			await converter.addObject(userToImport);
 			await converter.convertData({
@@ -557,9 +550,9 @@ describe('User Converter', () => {
 			});
 
 			expect(beforeImportFn.getCalls()).to.be.an('array').with.lengthOf(1);
-			expect(converter.skipMemoryRecord.getCalls()).to.be.an('array').with.lengthOf(1);
+			expect(skipMemoryRecord.getCalls()).to.be.an('array').with.lengthOf(1);
 			expect(afterImportFn.getCalls()).to.be.an('array').with.lengthOf(0);
-			expect(converter.skipMemoryRecord.getCall(0).args).to.be.an('array').that.is.deep.equal([recordId]);
+			expect(skipMemoryRecord.getCall(0).args).to.be.an('array').that.is.deep.equal([recordId]);
 
 			expect(callbacks.run.getCall(0)).to.not.be.null;
 			expect(callbacks.run.getCall(0).args).to.be.deep.equal(['afterUserImport', { inserted: [], updated: [], skipped: 1, failed: 0 }]);
@@ -579,7 +572,7 @@ describe('User Converter', () => {
 			const converter = new UserConverter({ workInMemory: true, skipDefaultChannels: true });
 
 			sinon.stub(converter, 'findExistingUser');
-			sinon.stub(converter, 'insertUser');
+			const insertUser = sinon.stub(converter, 'insertUser');
 			sinon.stub(converter, 'updateUser');
 
 			await converter.addObject(userToImport);
@@ -589,7 +582,7 @@ describe('User Converter', () => {
 			});
 
 			expect(beforeImportFn.getCalls()).to.be.an('array').with.lengthOf(1);
-			expect(converter.insertUser.getCalls()).to.be.an('array').with.lengthOf(1);
+			expect(insertUser.getCalls()).to.be.an('array').with.lengthOf(1);
 			expect(afterImportFn.getCalls()).to.be.an('array').with.lengthOf(1);
 
 			expect(callbacks.run.getCall(0)).to.not.be.null;
@@ -605,22 +598,22 @@ describe('User Converter', () => {
 			const onErrorFn = sinon.stub();
 
 			sinon.stub(converter, 'findExistingUser');
-			sinon.stub(converter, 'insertUser');
+			const insertUser = sinon.stub(converter, 'insertUser');
 			sinon.stub(converter, 'updateUser');
-			sinon.stub(converter, 'saveError');
+			const saveError = sinon.stub(converter as unknown as { saveError: (importId: string, error: Error) => Promise<void> }, 'saveError');
 
 			await converter.addObject({
 				name: 'user1',
 				emails: [],
 				importIds: [],
-			});
+			} as unknown as IImportUser);
 			await converter.convertData({ onErrorFn });
 
-			expect(converter.insertUser.getCall(0)).to.be.null;
+			expect(insertUser.getCall(0)).to.be.null;
 			expect(callbacks.run.getCall(0)).to.not.be.null;
 			expect(callbacks.run.getCall(0).args).to.be.deep.equal(['afterUserImport', { inserted: [], updated: [], skipped: 0, failed: 1 }]);
 			expect(onErrorFn.getCall(0)).to.not.be.null;
-			expect(converter.saveError.getCall(0)).to.not.be.null;
+			expect(saveError.getCall(0)).to.not.be.null;
 		});
 
 		// #TODO: Validate afterBatchFn

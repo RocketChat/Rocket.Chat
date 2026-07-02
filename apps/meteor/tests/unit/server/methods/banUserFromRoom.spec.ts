@@ -1,49 +1,58 @@
 import { expect } from 'chai';
-import { beforeEach, describe, it } from 'mocha';
-import p from 'proxyquire';
 import sinon from 'sinon';
+import { beforeEach, describe, it, vi } from 'vitest';
 
-const hasPermissionAsyncMock = sinon.stub();
-const hasRoleAsyncMock = sinon.stub();
-const banUserFromRoomMock = sinon.stub();
-const canAccessRoomAsyncMock = sinon.stub();
-
-const modelsMock = {
-	Rooms: {
-		findOneById: sinon.stub(),
-	},
-	Subscriptions: {
-		findOneByRoomIdAndUserId: sinon.stub(),
-	},
-	Users: {
-		findOneById: sinon.stub(),
-		findOneByUsernameIgnoringCase: sinon.stub(),
-	},
-	Roles: {
-		countUsersInRole: sinon.stub(),
-	},
-};
-
-const roomCoordinatorMock = {
-	getRoomDirectives: sinon.stub(),
-};
-
-const RoomMemberActions = {
-	BAN: 'ban',
-};
-
-const { banUserFromRoomMethod } = p.noCallThru().load('../../../../server/lib/banUserFromRoom.ts', {
-	'@rocket.chat/core-typings': {
-		isBannedSubscription: (sub: { status?: string } | null) => sub?.status === 'BANNED',
-	},
-	'@rocket.chat/models': modelsMock,
-	'../../app/authorization/server': { canAccessRoomAsync: canAccessRoomAsyncMock },
-	'../../app/authorization/server/functions/hasPermission': { hasPermissionAsync: hasPermissionAsyncMock },
-	'../../app/authorization/server/functions/hasRole': { hasRoleAsync: hasRoleAsyncMock },
-	'../../app/lib/server/functions/banUserFromRoom': { banUserFromRoom: banUserFromRoomMock },
-	'../../definition/IRoomTypeConfig': { RoomMemberActions },
-	'../lib/rooms/roomCoordinator': { roomCoordinator: roomCoordinatorMock },
+const {
+	hasPermissionAsyncMock,
+	hasRoleAsyncMock,
+	banUserFromRoomMock,
+	canAccessRoomAsyncMock,
+	modelsMock,
+	roomCoordinatorMock,
+	RoomMemberActions,
+} = vi.hoisted(() => {
+	const sinon = require('sinon');
+	return {
+		hasPermissionAsyncMock: sinon.stub(),
+		hasRoleAsyncMock: sinon.stub(),
+		banUserFromRoomMock: sinon.stub(),
+		canAccessRoomAsyncMock: sinon.stub(),
+		modelsMock: {
+			Rooms: {
+				findOneById: sinon.stub(),
+			},
+			Subscriptions: {
+				findOneByRoomIdAndUserId: sinon.stub(),
+			},
+			Users: {
+				findOneById: sinon.stub(),
+				findOneByUsernameIgnoringCase: sinon.stub(),
+			},
+			Roles: {
+				countUsersInRole: sinon.stub(),
+			},
+		},
+		roomCoordinatorMock: {
+			getRoomDirectives: sinon.stub(),
+		},
+		RoomMemberActions: {
+			BAN: 'ban',
+		},
+	};
 });
+
+vi.mock('@rocket.chat/core-typings', () => ({
+	isBannedSubscription: (sub: { status?: string } | null) => sub?.status === 'BANNED',
+}));
+vi.mock('@rocket.chat/models', () => modelsMock);
+vi.mock('../../../../app/authorization/server', () => ({ canAccessRoomAsync: canAccessRoomAsyncMock }));
+vi.mock('../../../../app/authorization/server/functions/hasPermission', () => ({ hasPermissionAsync: hasPermissionAsyncMock }));
+vi.mock('../../../../app/authorization/server/functions/hasRole', () => ({ hasRoleAsync: hasRoleAsyncMock }));
+vi.mock('../../../../app/lib/server/functions/banUserFromRoom', () => ({ banUserFromRoom: banUserFromRoomMock }));
+vi.mock('../../../../definition/IRoomTypeConfig', () => ({ RoomMemberActions }));
+vi.mock('../../../../server/lib/rooms/roomCoordinator', () => ({ roomCoordinator: roomCoordinatorMock }));
+
+const { banUserFromRoomMethod } = await import('../../../../server/lib/banUserFromRoom');
 
 describe('banUserFromRoomMethod', () => {
 	beforeEach(() => {

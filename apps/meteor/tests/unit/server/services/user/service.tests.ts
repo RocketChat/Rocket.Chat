@@ -1,16 +1,19 @@
 import { registerModel, BaseRaw } from '@rocket.chat/models';
 import { expect } from 'chai';
-import { afterEach, before, describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import { afterEach, beforeAll, describe, it, vi } from 'vitest';
 
-const maxTokens = {
-	getMaxLoginTokens: () => 2,
-};
+// `getMaxLoginTokens` is the only stubbed dependency; built in `vi.hoisted` so the hoisted
+// `vi.mock` factory can reference it. `@rocket.chat/models` is intentionally left real.
+const { maxTokens } = vi.hoisted(() => ({
+	maxTokens: {
+		getMaxLoginTokens: () => 2,
+	},
+}));
 
-const { UserService } = proxyquire.noCallThru().load('../../../../../server/services/user/service', {
-	'../../lib/getMaxLoginTokens': maxTokens,
-});
+vi.mock('../../../../../server/lib/getMaxLoginTokens', () => maxTokens);
+
+const { UserService } = await import('../../../../../server/services/user/service');
 
 class UsersModel extends BaseRaw<any> {
 	async findAllResumeTokensByUserId(): Promise<Array<{ tokens: Array<{ when: Date }> }>> {
@@ -25,7 +28,7 @@ class UsersModel extends BaseRaw<any> {
 const usersModel = new UsersModel({ collection: () => ({}) } as unknown as any, 'user');
 
 describe('User service', () => {
-	before(() => {
+	beforeAll(() => {
 		registerModel('IUsersModel', usersModel);
 	});
 

@@ -1,17 +1,18 @@
-import { expect, spy } from 'chai';
-import proxyquire from 'proxyquire';
+import chai, { expect } from 'chai';
+import { vi } from 'vitest';
 
 import type { AppServerOrchestrator } from '../../../../../../ee/server/apps/orchestrator';
 
-const { _disableAppsWithAddonsCallback } = proxyquire
-	.noCallThru()
-	.load('../../../../../../ee/server/lib/apps/disableAppsWithAddonsCallback', {
-		'../../apps': {},
-		'../../../../server/lib/sendMessagesToAdmins': { sendMessagesToAdmins: () => undefined },
-		'../../../../server/lib/i18n': {
-			i18n: { t: () => undefined },
-		},
-	});
+// chai-spies' `spy` is attached to the chai default export by `chai.use(chaiSpies)` in the test
+// setup. The named `import { spy } from 'chai'` export is not preserved under Vitest's ESM interop,
+// so we use `chai.spy` (the same test-double mechanism, identical behaviour).
+const { spy } = chai as typeof chai & { spy: any };
+
+vi.mock('../../../../../../ee/server/apps', () => ({}));
+vi.mock('../../../../../../server/lib/sendMessagesToAdmins', () => ({ sendMessagesToAdmins: () => undefined }));
+vi.mock('../../../../../../server/lib/i18n', () => ({ i18n: { t: () => undefined } }));
+
+const { _disableAppsWithAddonsCallback } = await import('../../../../../../ee/server/lib/apps/disableAppsWithAddonsCallback');
 
 /**
  * I've used named "empty" functions to spy on as it is easier to

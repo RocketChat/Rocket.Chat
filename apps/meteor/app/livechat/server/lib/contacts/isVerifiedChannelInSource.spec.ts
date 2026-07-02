@@ -1,7 +1,8 @@
+import type { ILivechatContactChannel, IOmnichannelSource } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
+import { describe, it } from 'vitest';
 
-const { isVerifiedChannelInSource } = proxyquire.noCallThru().load('./isVerifiedChannelInSource', {});
+const { isVerifiedChannelInSource } = await import('./isVerifiedChannelInSource');
 
 describe('isVerifiedChannelInSource', () => {
 	it('should return false if channel is not verified', () => {
@@ -13,7 +14,8 @@ describe('isVerifiedChannelInSource', () => {
 			type: 'widget',
 		};
 
-		expect(isVerifiedChannelInSource(channel, visitorId, source)).to.be.false;
+		expect(isVerifiedChannelInSource(channel as unknown as ILivechatContactChannel, visitorId, source as unknown as IOmnichannelSource)).to
+			.be.false;
 	});
 
 	it('should return false if channel visitorId is different from visitorId', () => {
@@ -28,7 +30,8 @@ describe('isVerifiedChannelInSource', () => {
 			type: 'widget',
 		};
 
-		expect(isVerifiedChannelInSource(channel, visitorId, source)).to.be.false;
+		expect(isVerifiedChannelInSource(channel as unknown as ILivechatContactChannel, visitorId, source as unknown as IOmnichannelSource)).to
+			.be.false;
 	});
 
 	it('should return false if channel visitor source type is different from source type', () => {
@@ -46,7 +49,8 @@ describe('isVerifiedChannelInSource', () => {
 			type: 'widget',
 		};
 
-		expect(isVerifiedChannelInSource(channel, visitorId, source)).to.be.false;
+		expect(isVerifiedChannelInSource(channel as unknown as ILivechatContactChannel, visitorId, source as unknown as IOmnichannelSource)).to
+			.be.false;
 	});
 
 	it('should return false if channel visitor source id is different from source id', () => {
@@ -66,7 +70,8 @@ describe('isVerifiedChannelInSource', () => {
 			id: 'source2',
 		};
 
-		expect(isVerifiedChannelInSource(channel, visitorId, source)).to.be.false;
+		expect(isVerifiedChannelInSource(channel as unknown as ILivechatContactChannel, visitorId, source as unknown as IOmnichannelSource)).to
+			.be.false;
 	});
 
 	it('should return false if source id is not defined and channel visitor source id is defined', () => {
@@ -85,7 +90,8 @@ describe('isVerifiedChannelInSource', () => {
 			type: 'widget',
 		};
 
-		expect(isVerifiedChannelInSource(channel, visitorId, source)).to.be.false;
+		expect(isVerifiedChannelInSource(channel as unknown as ILivechatContactChannel, visitorId, source as unknown as IOmnichannelSource)).to
+			.be.false;
 	});
 
 	it('should return true if all conditions are met', () => {
@@ -105,6 +111,7 @@ describe('isVerifiedChannelInSource', () => {
 			id: 'source1',
 		};
 
-		expect(isVerifiedChannelInSource(channel, visitorId, source)).to.be.true;
+		expect(isVerifiedChannelInSource(channel as unknown as ILivechatContactChannel, visitorId, source as unknown as IOmnichannelSource)).to
+			.be.true;
 	});
 });

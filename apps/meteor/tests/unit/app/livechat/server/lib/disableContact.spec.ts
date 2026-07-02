@@ -1,28 +1,31 @@
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, beforeEach, vi } from 'vitest';
 
-const modelsMock = {
-	LivechatContacts: {
-		findOneEnabledById: sinon.stub(),
-		disableByContactId: sinon.stub(),
-	},
-	LivechatRooms: {
-		checkContactOpenRooms: sinon.stub(),
-	},
-};
-
-const settingsMock = {
-	get: sinon.stub(),
-};
-
-const removeGuestMock = { removeGuest: sinon.stub() };
-
-const { disableContactById } = proxyquire.noCallThru().load('../../../../../../app/livechat/server/lib/contacts/disableContact.ts', {
-	'@rocket.chat/models': modelsMock,
-	'../guests': removeGuestMock,
-	'../../../../settings/server': { settings: settingsMock },
+const { modelsMock, settingsMock, removeGuestMock } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
+		modelsMock: {
+			LivechatContacts: {
+				findOneEnabledById: sinon.stub(),
+				disableByContactId: sinon.stub(),
+			},
+			LivechatRooms: {
+				checkContactOpenRooms: sinon.stub(),
+			},
+		},
+		settingsMock: {
+			get: sinon.stub(),
+		},
+		removeGuestMock: { removeGuest: sinon.stub() },
+	};
 });
+
+vi.mock('@rocket.chat/models', () => modelsMock);
+vi.mock('../../../../../../app/livechat/server/lib/guests', () => removeGuestMock);
+vi.mock('../../../../../../app/settings/server', () => ({ settings: settingsMock }));
+
+const { disableContactById } = await import('../../../../../../app/livechat/server/lib/contacts/disableContact');
 
 describe('disableContact', () => {
 	const contact = {

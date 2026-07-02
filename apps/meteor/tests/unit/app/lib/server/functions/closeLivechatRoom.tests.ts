@@ -1,36 +1,40 @@
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, beforeEach, vi } from 'vitest';
 
 import { createFakeRoom, createFakeSubscription, createFakeUser } from '../../../../../mocks/data';
 
-const subscriptionsStub = {
-	findOneByRoomIdAndUserId: sinon.stub(),
-	removeByRoomId: sinon.stub(),
-	countByRoomId: sinon.stub(),
-};
-
-const livechatRoomsStub = {
-	findOneById: sinon.stub(),
-};
-
-const livechatStub = {
-	closeRoom: sinon.stub(),
-};
-
-const hasPermissionStub = sinon.stub();
-
-const { closeLivechatRoom } = proxyquire.noCallThru().load('../../../../../../app/lib/server/functions/closeLivechatRoom.ts', {
-	'../../../livechat/server/lib/closeRoom': livechatStub,
-	'../../../authorization/server/functions/hasPermission': {
-		hasPermissionAsync: hasPermissionStub,
-	},
-	'@rocket.chat/models': {
-		Subscriptions: subscriptionsStub,
-		LivechatRooms: livechatRoomsStub,
-	},
+// `sinon` is sourced from the hoisted block (the same instance the stubs were created with) so that
+// `sinon.match(...)` produces matchers the stubs' `calledOnceWith` can recognize.
+const { sinon, subscriptionsStub, livechatRoomsStub, livechatStub, hasPermissionStub } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
+		sinon,
+		subscriptionsStub: {
+			findOneByRoomIdAndUserId: sinon.stub(),
+			removeByRoomId: sinon.stub(),
+			countByRoomId: sinon.stub(),
+		},
+		livechatRoomsStub: {
+			findOneById: sinon.stub(),
+		},
+		livechatStub: {
+			closeRoom: sinon.stub(),
+		},
+		hasPermissionStub: sinon.stub(),
+	};
 });
+
+vi.mock('../../../../../../app/livechat/server/lib/closeRoom', () => livechatStub);
+vi.mock('../../../../../../app/authorization/server/functions/hasPermission', () => ({
+	hasPermissionAsync: hasPermissionStub,
+}));
+vi.mock('@rocket.chat/models', () => ({
+	Subscriptions: subscriptionsStub,
+	LivechatRooms: livechatRoomsStub,
+}));
+
+const { closeLivechatRoom } = await import('../../../../../../app/lib/server/functions/closeLivechatRoom');
 
 describe('closeLivechatRoom', () => {
 	const user = createFakeUser();

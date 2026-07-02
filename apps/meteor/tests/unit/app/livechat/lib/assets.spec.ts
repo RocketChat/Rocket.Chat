@@ -1,13 +1,13 @@
 import { expect } from 'chai';
-import { describe, it, before, after } from 'mocha';
+import { describe, it, beforeAll, afterAll } from 'vitest';
 
 import { addServerUrlToIndex } from '../../../../../app/livechat/lib/Assets';
 
 describe('addServerUrlToIndex', () => {
-	before(() => {
+	beforeAll(() => {
 		(global as any).__meteor_runtime_config__ = { ROOT_URL: 'http://localhost:3000' };
 	});
-	after(() => {
+	afterAll(() => {
 		delete (global as any).__meteor_runtime_config__;
 	});
 

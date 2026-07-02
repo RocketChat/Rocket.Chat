@@ -1,33 +1,36 @@
 import { expect } from 'chai';
-import { beforeEach, describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { beforeEach, describe, it, vi } from 'vitest';
 
-const models = {
-	Subscriptions: {
-		findOneByRoomIdAndUserId: sinon.stub(),
-		setGroupE2EKey: sinon.stub(),
-		setGroupE2ESuggestedKey: sinon.stub(),
-	},
-	Rooms: {
-		removeUsersFromE2EEQueueByRoomId: sinon.stub(),
-	},
-};
-
-const { updateGroupKey } = proxyquire.noCallThru().load('../../../../../../app/e2e/server/methods/updateGroupKey.ts', {
-	'../../../lib/server/lib/notifyListener': {
-		notifyOnSubscriptionChanged: sinon.stub(),
-		notifyOnRoomChangedById: sinon.stub(),
-		notifyOnSubscriptionChangedById: sinon.stub(),
-	},
-	'../../../lib/server/lib/deprecationWarningLogger': {
-		methodDeprecationLogger: {
-			method: sinon.stub(),
+const { models, notifyListener } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
+		models: {
+			Subscriptions: {
+				findOneByRoomIdAndUserId: sinon.stub(),
+				setGroupE2EKey: sinon.stub(),
+				setGroupE2ESuggestedKey: sinon.stub(),
+			},
+			Rooms: {
+				removeUsersFromE2EEQueueByRoomId: sinon.stub(),
+			},
 		},
-	},
-	'@rocket.chat/models': models,
-	'meteor/meteor': { Meteor: { methods: sinon.stub() } },
+		notifyListener: {
+			notifyOnSubscriptionChanged: sinon.stub(),
+			notifyOnRoomChangedById: sinon.stub(),
+			notifyOnSubscriptionChangedById: sinon.stub(),
+		},
+	};
 });
+
+vi.mock('@rocket.chat/models', () => models);
+vi.mock('../../../../../../app/lib/server/lib/notifyListener', () => ({
+	notifyOnSubscriptionChanged: notifyListener.notifyOnSubscriptionChanged,
+	notifyOnRoomChangedById: notifyListener.notifyOnRoomChangedById,
+	notifyOnSubscriptionChangedById: notifyListener.notifyOnSubscriptionChangedById,
+}));
+
+const { updateGroupKey } = await import('../../../../../../app/e2e/server/methods/updateGroupKey');
 
 describe('updateGroupKey', () => {
 	beforeEach(() => {

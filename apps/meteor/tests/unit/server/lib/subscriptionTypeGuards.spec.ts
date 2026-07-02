@@ -1,7 +1,7 @@
 import type { ISubscription } from '@rocket.chat/core-typings';
 import { isBannedSubscription, isInviteSubscription } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
+import { describe, it } from 'vitest';
 
 describe('ISubscription type guards', () => {
 	describe('isBannedSubscription', () => {

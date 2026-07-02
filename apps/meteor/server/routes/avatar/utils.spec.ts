@@ -1,17 +1,44 @@
+import type { ServerResponse } from 'node:http';
+
+import type { IIncomingMessage, IUpload } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import { beforeEach, afterEach, describe, it, vi } from 'vitest';
 
-class CookiesMock {
-	public get = (_key: any, value: any) => value;
-}
+const { mocks, sharpMock } = vi.hoisted(() => {
+	const sinon = require('sinon');
+	return {
+		mocks: {
+			settingsGet: sinon.stub(),
+			findOneByIdAndLoginToken: sinon.stub(),
+			fileUploadGet: sinon.spy(),
+		},
+		sharpMock: () => ({ toFormat: (format: any) => ({ pipe: (res: any) => res.write(format) }) }),
+	};
+});
 
-const mocks = {
-	settingsGet: sinon.stub(),
-	findOneByIdAndLoginToken: sinon.stub(),
-	fileUploadGet: sinon.spy(),
-};
+vi.mock('meteor/ostrio:cookies', () => {
+	class CookiesMock {
+		public get = (_key: any, value: any) => value;
+	}
+	return { Cookies: CookiesMock };
+});
+vi.mock('@rocket.chat/models', () => ({
+	Users: {
+		findOneByIdAndLoginToken: mocks.findOneByIdAndLoginToken,
+	},
+}));
+vi.mock('../../../app/file-upload/server', () => ({
+	FileUpload: {
+		get: mocks.fileUploadGet,
+	},
+}));
+vi.mock('../../../app/settings/server', () => ({
+	settings: {
+		get: mocks.settingsGet,
+	},
+}));
+vi.mock('sharp', () => ({ default: sharpMock, ...sharpMock }));
 
 const {
 	getAvatarSizeFromRequest,
@@ -23,33 +50,10 @@ const {
 	wasFallbackModified,
 	serveSvgAvatarInRequestedFormat,
 	serveAvatarFile,
-} = proxyquire.noCallThru().load('./utils', {
-	'meteor/ostrio:cookies': {
-		Cookies: CookiesMock,
-	},
-	'../../../../app/utils/server/getURL': {
-		getURL: () => '',
-	},
-	'@rocket.chat/models': {
-		Users: {
-			findOneByIdAndLoginToken: mocks.findOneByIdAndLoginToken,
-		},
-	},
-	'../../../app/file-upload/server': {
-		FileUpload: {
-			get: mocks.fileUploadGet,
-		},
-	},
-	'../../../app/settings/server': {
-		settings: {
-			get: mocks.settingsGet,
-		},
-	},
-	'sharp': () => ({ toFormat: (format: any) => ({ pipe: (res: any) => res.write(format) }) }),
-});
+} = await import('./utils');
 
 describe('#serveAvatarFile()', () => {
-	const file = { uploadedAt: new Date(0), type: 'image/png', size: 100 };
+	const file = { uploadedAt: new Date(0), type: 'image/png', size: 100 } as unknown as IUpload;
 	const response = {
 		setHeader: sinon.spy(),
 		writeHead: sinon.spy(),
@@ -65,7 +69,12 @@ describe('#serveAvatarFile()', () => {
 	});
 
 	it(`should return code 304 if avatar was not modified`, () => {
-		serveAvatarFile(file, { headers: { 'if-modified-since': new Date(0).toUTCString() } }, response, next);
+		serveAvatarFile(
+			file,
+			{ headers: { 'if-modified-since': new Date(0).toUTCString() } } as unknown as IIncomingMessage,
+			response as unknown as ServerResponse,
+			next,
+		);
 		expect(response.setHeader.getCall(0).calledWith('Content-Security-Policy', "default-src 'none'")).to.be.true;
 		expect(response.setHeader.getCall(1).calledWith('Last-Modified', new Date(0).toUTCString())).to.be.true;
 		expect(response.writeHead.calledWith(304)).to.be.true;
@@ -73,8 +82,8 @@ describe('#serveAvatarFile()', () => {
 	});
 
 	it('should serve avatar', () => {
-		const request = { headers: { 'if-modified-since': new Date(200000).toUTCString() } };
-		serveAvatarFile(file, request, response, next);
+		const request = { headers: { 'if-modified-since': new Date(200000).toUTCString() } } as unknown as IIncomingMessage;
+		serveAvatarFile(file, request, response as unknown as ServerResponse, next);
 		expect(response.setHeader.getCall(0).calledWith('Content-Security-Policy', "default-src 'none'")).to.be.true;
 		expect(response.setHeader.getCall(1).calledWith('Last-Modified', new Date(0).toUTCString())).to.be.true;
 		expect(response.setHeader.getCall(2).calledWith('Content-Type', file.type)).to.be.true;
@@ -91,7 +100,11 @@ describe('#serveSvgAvatarInRequestedFormat()', () => {
 				write: sinon.spy(),
 				end: sinon.spy(),
 			};
-			serveSvgAvatarInRequestedFormat({ req: { query: { format, size: 100 } }, res: response, nameOrUsername: 'name' });
+			serveSvgAvatarInRequestedFormat({
+				req: { query: { format, size: 100 } } as unknown as IIncomingMessage,
+				res: response as unknown as ServerResponse,
+				nameOrUsername: 'name',
+			});
 
 			expect(response.setHeader.getCall(0).calledWith('Last-Modified', 'Thu, 01 Jan 2015 00:00:00 GMT')).to.be.true;
 			expect(response.setHeader.getCall(1).calledWith('Content-Type', `image/${format}`)).to.be.true;
@@ -104,7 +117,11 @@ describe('#serveSvgAvatarInRequestedFormat()', () => {
 			write: sinon.spy(),
 			end: sinon.spy(),
 		};
-		serveSvgAvatarInRequestedFormat({ req: { query: { format: 'anythingElse', size: 100 } }, res: response, nameOrUsername: 'name' });
+		serveSvgAvatarInRequestedFormat({
+			req: { query: { format: 'anythingElse', size: 100 } } as unknown as IIncomingMessage,
+			res: response as unknown as ServerResponse,
+			nameOrUsername: 'name',
+		});
 
 		expect(response.setHeader.getCall(0).calledWith('Last-Modified', 'Thu, 01 Jan 2015 00:00:00 GMT')).to.be.true;
 		expect(response.setHeader.getCall(1).calledWith('Content-Type', 'image/svg+xml')).to.be.true;
@@ -117,7 +134,11 @@ describe('#serveSvgAvatarInRequestedFormat()', () => {
 			write: sinon.spy(),
 			end: sinon.spy(),
 		};
-		serveSvgAvatarInRequestedFormat({ req: { query: {} }, res: response, nameOrUsername: 'name' });
+		serveSvgAvatarInRequestedFormat({
+			req: { query: {} } as unknown as IIncomingMessage,
+			res: response as unknown as ServerResponse,
+			nameOrUsername: 'name',
+		});
 
 		expect(response.setHeader.getCall(0).calledWith('Last-Modified', 'Thu, 01 Jan 2015 00:00:00 GMT')).to.be.true;
 		expect(response.setHeader.getCall(1).calledWith('Content-Type', 'image/svg+xml')).to.be.true;
@@ -129,16 +150,16 @@ describe('#serveSvgAvatarInRequestedFormat()', () => {
 
 describe('#getAvatarSizeFromRequest()', () => {
 	it('should return undefined if size is not provided', () => {
-		expect(getAvatarSizeFromRequest({ query: {} })).to.equal(undefined);
+		expect(getAvatarSizeFromRequest({ query: {} } as unknown as IIncomingMessage)).to.equal(undefined);
 	});
 	it('should return value passed in the request if it falls in the range limit', () => {
-		expect(getAvatarSizeFromRequest({ query: { size: 100 } })).to.equal(100);
+		expect(getAvatarSizeFromRequest({ query: { size: 100 } } as unknown as IIncomingMessage)).to.equal(100);
 	});
 	it(`should return ${MIN_SVG_AVATAR_SIZE} if requested size is smaller than the limit`, () => {
-		expect(getAvatarSizeFromRequest({ query: { size: 2 } })).to.equal(16);
+		expect(getAvatarSizeFromRequest({ query: { size: 2 } } as unknown as IIncomingMessage)).to.equal(16);
 	});
 	it(`should return ${MAX_SVG_AVATAR_SIZE} if requested size is bigger than the limit`, () => {
-		expect(getAvatarSizeFromRequest({ query: { size: 2000 } })).to.equal(1024);
+		expect(getAvatarSizeFromRequest({ query: { size: 2000 } } as unknown as IIncomingMessage)).to.equal(1024);
 	});
 });
 
@@ -229,27 +250,35 @@ describe('#userCanAccessAvatar()', async () => {
 		mocks.settingsGet.reset();
 	});
 	it('should return true if setting is set to not block avatars', async () => {
-		await expect(userCanAccessAvatar({})).to.eventually.equal(true);
+		await expect(userCanAccessAvatar({} as unknown as IIncomingMessage)).to.eventually.equal(true);
 	});
 	it('should return true if user is authenticated', async () => {
 		mocks.settingsGet.returns(true);
 		mocks.findOneByIdAndLoginToken.returns({ _id: 'id' });
 
-		await expect(userCanAccessAvatar({ query: { rc_token: 'token', rc_uid: 'id' } })).to.eventually.equal(true);
-		await expect(userCanAccessAvatar({ headers: { cookie: 'rc_token=token; rc_uid=id' } })).to.eventually.equal(true);
+		await expect(userCanAccessAvatar({ query: { rc_token: 'token', rc_uid: 'id' } } as unknown as IIncomingMessage)).to.eventually.equal(
+			true,
+		);
+		await expect(
+			userCanAccessAvatar({ headers: { cookie: 'rc_token=token; rc_uid=id' } } as unknown as IIncomingMessage),
+		).to.eventually.equal(true);
 	});
 	it('should return false and warn if user is unauthenticated', async () => {
 		console.warn = sinon.spy();
 		mocks.findOneByIdAndLoginToken.returns(undefined);
 		mocks.settingsGet.returns(true);
 
-		await expect(userCanAccessAvatar({})).to.eventually.equal(false);
+		await expect(userCanAccessAvatar({} as unknown as IIncomingMessage)).to.eventually.equal(false);
 		expect((console.warn as sinon.SinonSpy).calledWith(sinon.match('unauthenticated'))).to.be.true;
 
-		await expect(userCanAccessAvatar({ headers: { cookie: 'rc_token=token; rc_uid=id' } })).to.eventually.equal(false);
+		await expect(
+			userCanAccessAvatar({ headers: { cookie: 'rc_token=token; rc_uid=id' } } as unknown as IIncomingMessage),
+		).to.eventually.equal(false);
 		expect((console.warn as sinon.SinonSpy).calledWith(sinon.match('unauthenticated'))).to.be.true;
 
-		await expect(userCanAccessAvatar({ query: { rc_token: 'token', rc_uid: 'id' } })).to.eventually.equal(false);
+		await expect(userCanAccessAvatar({ query: { rc_token: 'token', rc_uid: 'id' } } as unknown as IIncomingMessage)).to.eventually.equal(
+			false,
+		);
 		expect((console.warn as sinon.SinonSpy).calledWith(sinon.match('unauthenticated'))).to.be.true;
 	});
 });

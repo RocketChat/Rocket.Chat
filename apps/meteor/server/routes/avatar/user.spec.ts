@@ -1,45 +1,51 @@
+import type { IncomingMessage, ServerResponse } from 'node:http';
+
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
 import { Headers } from 'node-fetch';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import { afterEach, describe, it, vi } from 'vitest';
 
-const mocks = {
-	settingsGet: sinon.stub(),
-	findOneByUsernameIgnoringCase: sinon.stub(),
-	findOneById: sinon.stub(),
-	utils: {
-		serveSvgAvatarInRequestedFormat: sinon.spy(),
-		wasFallbackModified: sinon.stub(),
-		setCacheAndDispositionHeaders: sinon.spy(),
-		serveAvatarFile: sinon.spy(),
-	},
-	serverFetch: sinon.stub(),
-	avatarFindOneByName: sinon.stub(),
-	avatarFindOneByUserId: sinon.stub(),
-};
-
-const { userAvatarById, userAvatarByUsername } = proxyquire.noCallThru().load('./user', {
-	'@rocket.chat/models': {
-		Users: {
-			findOneByUsernameIgnoringCase: mocks.findOneByUsernameIgnoringCase,
-			findOneById: mocks.findOneById,
+const { mocks } = vi.hoisted(() => {
+	const sinon = require('sinon');
+	return {
+		mocks: {
+			settingsGet: sinon.stub(),
+			findOneByUsernameIgnoringCase: sinon.stub(),
+			findOneById: sinon.stub(),
+			utils: {
+				serveSvgAvatarInRequestedFormat: sinon.spy(),
+				wasFallbackModified: sinon.stub(),
+				setCacheAndDispositionHeaders: sinon.spy(),
+				serveAvatarFile: sinon.spy(),
+			},
+			serverFetch: sinon.stub(),
+			avatarFindOneByName: sinon.stub(),
+			avatarFindOneByUserId: sinon.stub(),
 		},
-		Avatars: {
-			findOneByName: mocks.avatarFindOneByName,
-			findOneByUserId: mocks.avatarFindOneByUserId,
-		},
-	},
-	'../../../app/settings/server': {
-		settings: {
-			get: mocks.settingsGet,
-		},
-	},
-	'./utils': mocks.utils,
-	'@rocket.chat/server-fetch': {
-		serverFetch: mocks.serverFetch,
-	},
+	};
 });
+
+vi.mock('@rocket.chat/models', () => ({
+	Users: {
+		findOneByUsernameIgnoringCase: mocks.findOneByUsernameIgnoringCase,
+		findOneById: mocks.findOneById,
+	},
+	Avatars: {
+		findOneByName: mocks.avatarFindOneByName,
+		findOneByUserId: mocks.avatarFindOneByUserId,
+	},
+}));
+vi.mock('../../../app/settings/server', () => ({
+	settings: {
+		get: mocks.settingsGet,
+	},
+}));
+vi.mock('./utils', () => mocks.utils);
+vi.mock('@rocket.chat/server-fetch', () => ({
+	serverFetch: mocks.serverFetch,
+}));
+
+const { userAvatarById, userAvatarByUsername } = await import('./user');
 
 describe('#userAvatarById()', () => {
 	const response = {
@@ -62,7 +68,7 @@ describe('#userAvatarById()', () => {
 	});
 
 	it(`should do nothing if url is not in request object`, async () => {
-		await userAvatarById({}, response, next);
+		await userAvatarById({} as unknown as IncomingMessage, response as unknown as ServerResponse, next);
 		expect(next.called).to.be.false;
 		expect(response.setHeader.called).to.be.false;
 		expect(response.writeHead.called).to.be.false;
@@ -70,7 +76,7 @@ describe('#userAvatarById()', () => {
 	});
 
 	it(`should write 404 if Id is not provided`, async () => {
-		await userAvatarById({ url: '/' }, response, next);
+		await userAvatarById({ url: '/' } as unknown as IncomingMessage, response as unknown as ServerResponse, next);
 		expect(next.called).to.be.false;
 		expect(response.setHeader.called).to.be.false;
 		expect(response.writeHead.calledWith(404)).to.be.true;
@@ -79,7 +85,7 @@ describe('#userAvatarById()', () => {
 
 	it(`should call external provider`, async () => {
 		const userId = 'xvf5Tr34';
-		const request = { url: `/${userId}` };
+		const request = { url: `/${userId}` } as unknown as IncomingMessage;
 
 		const pipe = sinon.spy();
 		const mockResponseHeaders = new Headers();
@@ -95,7 +101,7 @@ describe('#userAvatarById()', () => {
 
 		mocks.findOneById.returns({ username: 'jon' });
 
-		await userAvatarById(request, response, next);
+		await userAvatarById(request, response as unknown as ServerResponse, next);
 
 		expect(mocks.utils.setCacheAndDispositionHeaders.calledWith(request, response)).to.be.true;
 		expect(mocks.findOneById.calledWith(userId)).to.be.true;
@@ -107,23 +113,23 @@ describe('#userAvatarById()', () => {
 	});
 
 	it(`should serve avatar file if found`, async () => {
-		const request = { url: '/jon' };
+		const request = { url: '/jon' } as unknown as IncomingMessage;
 
 		const file = { uploadedAt: new Date(0), type: 'image/png', size: 100 };
 		mocks.avatarFindOneByUserId.returns(file);
 
-		await userAvatarById(request, response, next);
+		await userAvatarById(request, response as unknown as ServerResponse, next);
 
 		expect(mocks.utils.setCacheAndDispositionHeaders.calledWith(request, response)).to.be.true;
-		expect(mocks.utils.serveAvatarFile.calledWith(file, request, response, next)).to.be.true;
+		expect(mocks.utils.serveAvatarFile.calledWith(file, request, response as unknown as ServerResponse, next)).to.be.true;
 	});
 
 	it(`should write 304 to head if content is not modified`, async () => {
-		const request = { url: '/xyzabc', headers: {} };
+		const request = { url: '/xyzabc', headers: {} } as unknown as IncomingMessage;
 
 		mocks.utils.wasFallbackModified.returns(false);
 
-		await userAvatarById(request, response, next);
+		await userAvatarById(request, response as unknown as ServerResponse, next);
 
 		expect(mocks.utils.setCacheAndDispositionHeaders.calledWith(request, response)).to.be.true;
 		expect(response.writeHead.calledWith(304)).to.be.true;
@@ -135,9 +141,9 @@ describe('#userAvatarById()', () => {
 		mocks.findOneById.returns(null);
 
 		const userId = 'awdasdaw';
-		const request = { url: `/${userId}`, headers: {} };
+		const request = { url: `/${userId}`, headers: {} } as unknown as IncomingMessage;
 
-		await userAvatarById(request, response, next);
+		await userAvatarById(request, response as unknown as ServerResponse, next);
 		expect(mocks.utils.setCacheAndDispositionHeaders.calledWith(request, response)).to.be.true;
 
 		expect(response.writeHead.calledWith(404)).to.be.true;
@@ -146,12 +152,12 @@ describe('#userAvatarById()', () => {
 
 	it(`should fallback to SVG if no avatar found`, async () => {
 		const userId = '2apso9283';
-		const request = { url: `/${userId}`, headers: {} };
+		const request = { url: `/${userId}`, headers: {} } as unknown as IncomingMessage;
 
 		mocks.findOneById.returns({ username: 'jon' });
 		mocks.utils.wasFallbackModified.returns(true);
 
-		await userAvatarById(request, response, next);
+		await userAvatarById(request, response as unknown as ServerResponse, next);
 
 		expect(mocks.findOneById.calledWith(userId)).to.be.true;
 		expect(mocks.utils.setCacheAndDispositionHeaders.calledWith(request, response)).to.be.true;
@@ -160,13 +166,13 @@ describe('#userAvatarById()', () => {
 
 	it(`should fallback to SVG with user name if UI_Use_Name_Avatar is true`, async () => {
 		const userId = '2apso9283';
-		const request = { url: `/${userId}`, headers: {} };
+		const request = { url: `/${userId}`, headers: {} } as unknown as IncomingMessage;
 
 		mocks.findOneById.returns({ username: 'jon', name: 'Doe' });
 		mocks.utils.wasFallbackModified.returns(true);
 		mocks.settingsGet.withArgs('UI_Use_Name_Avatar').returns(true);
 
-		await userAvatarById(request, response, next);
+		await userAvatarById(request, response as unknown as ServerResponse, next);
 
 		expect(mocks.utils.setCacheAndDispositionHeaders.calledWith(request, response)).to.be.true;
 		expect(
@@ -196,7 +202,7 @@ describe('#userAvatarByUsername()', () => {
 	});
 
 	it(`should do nothing if url is not in request object`, async () => {
-		await userAvatarByUsername({}, response, next);
+		await userAvatarByUsername({} as unknown as IncomingMessage, response as unknown as ServerResponse, next);
 		expect(next.called).to.be.false;
 		expect(response.setHeader.called).to.be.false;
 		expect(response.writeHead.called).to.be.false;
@@ -204,7 +210,7 @@ describe('#userAvatarByUsername()', () => {
 	});
 
 	it(`should write 404 if username is not provided`, async () => {
-		await userAvatarByUsername({ url: '/' }, response, next);
+		await userAvatarByUsername({ url: '/' } as unknown as IncomingMessage, response as unknown as ServerResponse, next);
 		expect(next.called).to.be.false;
 		expect(response.setHeader.called).to.be.false;
 		expect(response.writeHead.calledWith(404)).to.be.true;
@@ -212,7 +218,7 @@ describe('#userAvatarByUsername()', () => {
 	});
 
 	it(`should call external provider`, async () => {
-		const request = { url: '/jon' };
+		const request = { url: '/jon' } as unknown as IncomingMessage;
 
 		const pipe = sinon.spy();
 		const mockResponseHeaders = new Headers();
@@ -226,7 +232,7 @@ describe('#userAvatarByUsername()', () => {
 
 		mocks.settingsGet.returns('test123/{username}');
 
-		await userAvatarByUsername(request, response, next);
+		await userAvatarByUsername(request, response as unknown as ServerResponse, next);
 
 		expect(mocks.serverFetch.calledWith('test123/jon')).to.be.true;
 		expect(mocks.utils.setCacheAndDispositionHeaders.calledWith(request, response)).to.be.true;
@@ -238,11 +244,11 @@ describe('#userAvatarByUsername()', () => {
 
 	describe('should serve svg if requestUsername starts with @', () => {
 		it('should serve SVG and useAllInitials should be false', async () => {
-			const request = { url: '/@jon' };
+			const request = { url: '/@jon' } as unknown as IncomingMessage;
 
 			mocks.settingsGet.returns(false);
 
-			await userAvatarByUsername(request, response, next);
+			await userAvatarByUsername(request, response as unknown as ServerResponse, next);
 
 			expect(mocks.utils.setCacheAndDispositionHeaders.calledWith(request, response)).to.be.true;
 			expect(
@@ -256,11 +262,11 @@ describe('#userAvatarByUsername()', () => {
 		});
 
 		it('should serve SVG and useAllInitials should be true', async () => {
-			const request = { url: '/@baba yaga' };
+			const request = { url: '/@baba yaga' } as unknown as IncomingMessage;
 
 			mocks.settingsGet.withArgs('UI_Use_Name_Avatar').returns(true);
 
-			await userAvatarByUsername(request, response, next);
+			await userAvatarByUsername(request, response as unknown as ServerResponse, next);
 
 			expect(mocks.utils.setCacheAndDispositionHeaders.calledWith(request, response)).to.be.true;
 			expect(
@@ -275,22 +281,22 @@ describe('#userAvatarByUsername()', () => {
 	});
 
 	it(`should serve avatar file if found`, async () => {
-		const request = { url: '/jon' };
+		const request = { url: '/jon' } as unknown as IncomingMessage;
 
 		const file = { uploadedAt: new Date(0), type: 'image/png', size: 100 };
 		mocks.avatarFindOneByName.returns(file);
 
-		await userAvatarByUsername(request, response, next);
+		await userAvatarByUsername(request, response as unknown as ServerResponse, next);
 
 		expect(mocks.utils.setCacheAndDispositionHeaders.calledWith(request, response)).to.be.true;
-		expect(mocks.utils.serveAvatarFile.calledWith(file, request, response, next)).to.be.true;
+		expect(mocks.utils.serveAvatarFile.calledWith(file, request, response as unknown as ServerResponse, next)).to.be.true;
 	});
 
 	it(`should write 304 to head if content is not modified`, async () => {
-		const request = { url: '/jon', headers: {} };
+		const request = { url: '/jon', headers: {} } as unknown as IncomingMessage;
 
 		mocks.utils.wasFallbackModified.returns(false);
-		await userAvatarByUsername(request, response, next);
+		await userAvatarByUsername(request, response as unknown as ServerResponse, next);
 
 		expect(mocks.utils.setCacheAndDispositionHeaders.calledWith(request, response)).to.be.true;
 		expect(response.writeHead.calledWith(304)).to.be.true;
@@ -298,23 +304,23 @@ describe('#userAvatarByUsername()', () => {
 	});
 
 	it(`should fallback to SVG if no avatar found`, async () => {
-		const request = { url: '/jon', headers: {} };
+		const request = { url: '/jon', headers: {} } as unknown as IncomingMessage;
 
 		mocks.utils.wasFallbackModified.returns(true);
-		await userAvatarByUsername(request, response, next);
+		await userAvatarByUsername(request, response as unknown as ServerResponse, next);
 
 		expect(mocks.utils.setCacheAndDispositionHeaders.calledWith(request, response)).to.be.true;
 		expect(mocks.utils.serveSvgAvatarInRequestedFormat.calledWith({ nameOrUsername: 'jon', req: request, res: response })).to.be.true;
 	});
 
 	it(`should fallback to SVG with user name if UI_Use_Name_Avatar is true`, async () => {
-		const request = { url: '/jon', headers: {} };
+		const request = { url: '/jon', headers: {} } as unknown as IncomingMessage;
 
 		mocks.utils.wasFallbackModified.returns(true);
 		mocks.settingsGet.withArgs('UI_Use_Name_Avatar').returns(true);
 		mocks.findOneByUsernameIgnoringCase.returns({ name: 'Doe' });
 
-		await userAvatarByUsername(request, response, next);
+		await userAvatarByUsername(request, response as unknown as ServerResponse, next);
 
 		expect(mocks.utils.setCacheAndDispositionHeaders.calledWith(request, response)).to.be.true;
 		expect(

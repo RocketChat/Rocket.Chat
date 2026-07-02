@@ -1,25 +1,31 @@
+import type { IOmnichannelSource } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import { afterEach, beforeEach, describe, it, vi } from 'vitest';
 
-const modelsMock = {
-	LivechatContacts: {
-		findOneEnabledById: sinon.stub(),
-	},
-};
-
-const settingsMock = {
-	get: sinon.stub(),
-};
-
-const { runIsAgentAvailableToTakeContactInquiry } = proxyquire
-	.noCallThru()
-	.load('../../../../../../server/patches/isAgentAvailableToTakeContactInquiry', {
-		'@rocket.chat/models': modelsMock,
-		'../../../app/settings/server': {
-			settings: settingsMock,
+// Stubs are built in `vi.hoisted` so the hoisted `vi.mock` factories can reference them. sinon is
+// require()d inside the hoisted block because the top-level import has not executed at hoist time.
+// NOTE: relative `vi.mock` specifiers are resolved relative to THIS spec file (not the source).
+// `match` is exported from the hoisted sinon instance because matchers are instance-specific.
+const { modelsMock, settingsMock, match } = vi.hoisted(() => {
+	const sinon = require('sinon');
+	return {
+		modelsMock: {
+			LivechatContacts: {
+				findOneEnabledById: sinon.stub(),
+			},
 		},
-	});
+		settingsMock: {
+			get: sinon.stub(),
+		},
+		match: sinon.match,
+	};
+});
+
+vi.mock('@rocket.chat/models', () => modelsMock);
+vi.mock('../../../../../../../app/settings/server', () => ({ settings: settingsMock }));
+
+const { runIsAgentAvailableToTakeContactInquiry } = await import('../../../../../../server/patches/isAgentAvailableToTakeContactInquiry');
 
 describe('isAgentAvailableToTakeContactInquiry', () => {
 	beforeEach(() => {
@@ -33,19 +39,27 @@ describe('isAgentAvailableToTakeContactInquiry', () => {
 
 	it('should return false if the contact is not found', async () => {
 		modelsMock.LivechatContacts.findOneEnabledById.resolves(undefined);
-		const { value, error } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, 'visitorId', {}, 'rid');
+		const { value, error } = (await runIsAgentAvailableToTakeContactInquiry(
+			() => undefined,
+			'visitorId',
+			{} as unknown as IOmnichannelSource,
+			'rid',
+		)) as { error: string; value: false };
 
 		expect(value).to.be.false;
 		expect(error).to.eq('error-invalid-contact');
-		expect(
-			modelsMock.LivechatContacts.findOneEnabledById.calledOnceWith('contactId', sinon.match({ projection: { unknown: 1, channels: 1 } })),
-		);
+		expect(modelsMock.LivechatContacts.findOneEnabledById.calledOnceWith('contactId', match({ projection: { unknown: 1, channels: 1 } })));
 	});
 
 	it('should return false if the contact is unknown and Livechat_Block_Unknown_Contacts is true', async () => {
 		modelsMock.LivechatContacts.findOneEnabledById.resolves({ unknown: true });
 		settingsMock.get.withArgs('Livechat_Block_Unknown_Contacts').returns(true);
-		const { value, error } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, 'visitorId', {}, 'rid');
+		const { value, error } = (await runIsAgentAvailableToTakeContactInquiry(
+			() => undefined,
+			'visitorId',
+			{} as unknown as IOmnichannelSource,
+			'rid',
+		)) as { error: string; value: false };
 		expect(value).to.be.false;
 		expect(error).to.eq('error-unknown-contact');
 	});
@@ -60,7 +74,12 @@ describe('isAgentAvailableToTakeContactInquiry', () => {
 		});
 		settingsMock.get.withArgs('Livechat_Block_Unknown_Contacts').returns(true);
 		settingsMock.get.withArgs('Livechat_Block_Unverified_Contacts').returns(true);
-		const { value, error } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, 'visitorId', { type: 'channelName' }, 'rid');
+		const { value, error } = (await runIsAgentAvailableToTakeContactInquiry(
+			() => undefined,
+			'visitorId',
+			{ type: 'channelName' } as unknown as IOmnichannelSource,
+			'rid',
+		)) as { error: string; value: false };
 		expect(value).to.be.false;
 		expect(error).to.eq('error-unverified-contact');
 	});
@@ -75,7 +94,12 @@ describe('isAgentAvailableToTakeContactInquiry', () => {
 		});
 		settingsMock.get.withArgs('Livechat_Block_Unknown_Contacts').returns(true);
 		settingsMock.get.withArgs('Livechat_Block_Unverified_Contacts').returns(true);
-		const { value } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, 'visitorId', { type: 'channelName' }, 'rid');
+		const { value } = await runIsAgentAvailableToTakeContactInquiry(
+			() => undefined,
+			'visitorId',
+			{ type: 'channelName' } as unknown as IOmnichannelSource,
+			'rid',
+		);
 		expect(value).to.be.true;
 	});
 
@@ -89,7 +113,12 @@ describe('isAgentAvailableToTakeContactInquiry', () => {
 		});
 		settingsMock.get.withArgs('Livechat_Block_Unknown_Contacts').returns(false);
 		settingsMock.get.withArgs('Livechat_Block_Unverified_Contacts').returns(true);
-		const { value } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, 'visitorId', { type: 'channelName' }, 'rid');
+		const { value } = await runIsAgentAvailableToTakeContactInquiry(
+			() => undefined,
+			'visitorId',
+			{ type: 'channelName' } as unknown as IOmnichannelSource,
+			'rid',
+		);
 		expect(value).to.be.true;
 	});
 
@@ -103,7 +132,12 @@ describe('isAgentAvailableToTakeContactInquiry', () => {
 		});
 		settingsMock.get.withArgs('Livechat_Block_Unknown_Contacts').returns(true);
 		settingsMock.get.withArgs('Livechat_Block_Unverified_Contacts').returns(false);
-		const { value } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, 'visitorId', { type: 'channelName' }, 'rid');
+		const { value } = await runIsAgentAvailableToTakeContactInquiry(
+			() => undefined,
+			'visitorId',
+			{ type: 'channelName' } as unknown as IOmnichannelSource,
+			'rid',
+		);
 		expect(value).to.be.true;
 	});
 
@@ -114,7 +148,12 @@ describe('isAgentAvailableToTakeContactInquiry', () => {
 		});
 		settingsMock.get.withArgs('Livechat_Block_Unknown_Contacts').returns(false);
 		settingsMock.get.withArgs('Livechat_Block_Unverified_Contacts').returns(false);
-		const { value } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, 'visitorId', { type: 'channelName' }, 'rid');
+		const { value } = await runIsAgentAvailableToTakeContactInquiry(
+			() => undefined,
+			'visitorId',
+			{ type: 'channelName' } as unknown as IOmnichannelSource,
+			'rid',
+		);
 		expect(value).to.be.true;
 	});
 });

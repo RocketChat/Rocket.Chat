@@ -1,37 +1,32 @@
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { beforeEach, describe, it, vi } from 'vitest';
 
-const livechatDepartmentStub = {
-	findOneById: sinon.stub(),
-	addDepartmentToUnit: sinon.stub(),
-	removeDepartmentFromUnit: sinon.stub(),
-};
-
-const livechatUnitStub = {
-	findOneById: sinon.stub(),
-	decrementDepartmentsCount: sinon.stub(),
-	incrementDepartmentsCount: sinon.stub(),
-};
-
-const hasAnyRoleStub = sinon.stub();
-const getUnitsFromUserStub = sinon.stub();
-
-const { manageDepartmentUnit } = proxyquire
-	.noCallThru()
-	.load('../../../../../../app/livechat-enterprise/server/hooks/manageDepartmentUnit.ts', {
-		'@rocket.chat/omni-core-ee': {
-			getUnitsFromUser: getUnitsFromUserStub,
+// Stubs are built in `vi.hoisted` so the hoisted `vi.mock` factories can reference them. sinon is
+// require()d inside the hoisted block because the top-level import has not executed at hoist time.
+// NOTE: relative `vi.mock` specifiers are resolved relative to THIS spec file (not the source).
+const { livechatDepartmentStub, livechatUnitStub, hasAnyRoleStub, getUnitsFromUserStub } = vi.hoisted(() => {
+	const sinon = require('sinon');
+	return {
+		livechatDepartmentStub: {
+			findOneById: sinon.stub(),
+			addDepartmentToUnit: sinon.stub(),
+			removeDepartmentFromUnit: sinon.stub(),
 		},
-		'../../../../../app/authorization/server/functions/hasRole': {
-			hasAnyRoleAsync: hasAnyRoleStub,
+		livechatUnitStub: {
+			findOneById: sinon.stub(),
+			decrementDepartmentsCount: sinon.stub(),
+			incrementDepartmentsCount: sinon.stub(),
 		},
-		'@rocket.chat/models': {
-			LivechatDepartment: livechatDepartmentStub,
-			LivechatUnit: livechatUnitStub,
-		},
-	});
+		hasAnyRoleStub: sinon.stub(),
+		getUnitsFromUserStub: sinon.stub(),
+	};
+});
+
+vi.mock('@rocket.chat/omni-core-ee', () => ({ getUnitsFromUser: getUnitsFromUserStub }));
+vi.mock('../../../../../../../app/authorization/server/functions/hasRole', () => ({ hasAnyRoleAsync: hasAnyRoleStub }));
+vi.mock('@rocket.chat/models', () => ({ LivechatDepartment: livechatDepartmentStub, LivechatUnit: livechatUnitStub }));
+
+const { manageDepartmentUnit } = await import('../../../../../../app/livechat-enterprise/server/hooks/manageDepartmentUnit');
 
 describe('hooks/manageDepartmentUnit', () => {
 	beforeEach(() => {
@@ -110,7 +105,11 @@ describe('hooks/manageDepartmentUnit', () => {
 		hasAnyRoleStub.resolves(true);
 		getUnitsFromUserStub.resolves(undefined);
 
-		await manageDepartmentUnit({ userId: 'user-id', departmentId: 'department-id', unitId: undefined });
+		await manageDepartmentUnit({ userId: 'user-id', departmentId: 'department-id', unitId: undefined } as unknown as {
+			userId: string;
+			departmentId: string;
+			unitId: string;
+		});
 		expect(livechatDepartmentStub.addDepartmentToUnit.notCalled).to.be.true;
 		expect(livechatUnitStub.incrementDepartmentsCount.notCalled).to.be.true;
 		expect(livechatDepartmentStub.removeDepartmentFromUnit.calledOnceWith('department-id')).to.be.true;
@@ -148,7 +147,11 @@ describe('hooks/manageDepartmentUnit', () => {
 		hasAnyRoleStub.resolves(false);
 		getUnitsFromUserStub.resolves(['unit-id']);
 
-		await manageDepartmentUnit({ userId: 'user-id', departmentId: 'department-id', unitId: undefined });
+		await manageDepartmentUnit({ userId: 'user-id', departmentId: 'department-id', unitId: undefined } as unknown as {
+			userId: string;
+			departmentId: string;
+			unitId: string;
+		});
 		expect(livechatDepartmentStub.addDepartmentToUnit.notCalled).to.be.true;
 		expect(livechatUnitStub.incrementDepartmentsCount.notCalled).to.be.true;
 		expect(livechatDepartmentStub.removeDepartmentFromUnit.calledOnceWith('department-id')).to.be.true;

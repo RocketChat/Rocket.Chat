@@ -1,46 +1,55 @@
+import type { IImportChannel } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import { vi } from 'vitest';
 
-const settingsStub = sinon.stub();
-const modelsMock = {
-	Rooms: {
-		archiveById: sinon.stub(),
-		updateOne: sinon.stub(),
-		findOneById: sinon.stub(),
-		findDirectRoomContainingAllUsernames: sinon.stub(),
-		findOneByNonValidatedName: sinon.stub(),
-	},
-	Subscriptions: {
-		archiveByRoomId: sinon.stub(),
-	},
-};
-const createDirectMessage = sinon.stub();
-const saveRoomSettings = sinon.stub();
-
-const { RoomConverter } = proxyquire.noCallThru().load('../../../../../app/importer/server/classes/converters/RoomConverter', {
-	'../../../settings/server': {
-		settings: { get: settingsStub },
-	},
-	'../../../../../server/methods/createDirectMessage': {
-		createDirectMessage,
-	},
-	'../../../../channel-settings/server/methods/saveRoomSettings': {
-		saveRoomSettings,
-	},
-	'../../../../lib/server/lib/notifyListener': {
-		notifyOnSubscriptionChangedByRoomId: sinon.stub(),
-	},
-	'../../../../lib/server/methods/createChannel': {
-		createChannelMethod: sinon.stub(),
-	},
-	'../../../../lib/server/methods/createPrivateGroup': {
-		createPrivateGroupMethod: sinon.stub(),
-	},
-	'meteor/check': sinon.stub(),
-	'meteor/meteor': sinon.stub(),
-	'@rocket.chat/models': { ...modelsMock, '@global': true },
+const { settingsStub, modelsMock, createDirectMessage, saveRoomSettings, stubs } = vi.hoisted(() => {
+	const sinon = require('sinon');
+	return {
+		settingsStub: sinon.stub(),
+		modelsMock: {
+			Rooms: {
+				archiveById: sinon.stub(),
+				updateOne: sinon.stub(),
+				findOneById: sinon.stub(),
+				findDirectRoomContainingAllUsernames: sinon.stub(),
+				findOneByNonValidatedName: sinon.stub(),
+			},
+			Subscriptions: {
+				archiveByRoomId: sinon.stub(),
+			},
+		},
+		createDirectMessage: sinon.stub(),
+		saveRoomSettings: sinon.stub(),
+		stubs: {
+			notifyOnSubscriptionChangedByRoomId: sinon.stub(),
+			createChannelMethod: sinon.stub(),
+			createPrivateGroupMethod: sinon.stub(),
+		},
+	};
 });
+
+vi.mock('../../../../../app/settings/server', () => ({ settings: { get: settingsStub } }));
+vi.mock('../../../../../server/methods/createDirectMessage', () => ({ createDirectMessage }));
+vi.mock('../../../../../app/channel-settings/server/methods/saveRoomSettings', () => ({ saveRoomSettings }));
+vi.mock('../../../../../app/lib/server/lib/notifyListener', () => ({
+	notifyOnSubscriptionChangedByRoomId: stubs.notifyOnSubscriptionChangedByRoomId,
+}));
+vi.mock('../../../../../app/lib/server/methods/createChannel', () => ({ createChannelMethod: stubs.createChannelMethod }));
+vi.mock('../../../../../app/lib/server/methods/createPrivateGroup', () => ({ createPrivateGroupMethod: stubs.createPrivateGroupMethod }));
+vi.mock('@rocket.chat/models', () => modelsMock);
+
+const { RoomConverter } = await import('../../../../../app/importer/server/classes/converters/RoomConverter');
+
+type RoomConverterInstance = InstanceType<typeof RoomConverter>;
+
+// Test-only view that exposes the protected members the tests need to stub/assert on.
+type RoomConverterWithProtected = RoomConverterInstance & {
+	skipRecord: (_id: string) => Promise<void>;
+	saveError: (importId: string, error: Error) => Promise<void>;
+};
+
+const withProtected = (converter: RoomConverterInstance): RoomConverterWithProtected => converter as RoomConverterWithProtected;
 
 describe('Room Converter', () => {
 	beforeEach(() => {
@@ -58,19 +67,19 @@ describe('Room Converter', () => {
 	const roomToImport = {
 		name: 'room1',
 		importIds: ['importIdRoom1'],
-	};
+	} as unknown as IImportChannel;
 
 	describe('[findExistingRoom]', () => {
 		it('function should be called by the converter', async () => {
 			const converter = new RoomConverter({ workInMemory: true });
 
-			sinon.stub(converter, 'findExistingRoom');
+			const findExistingRoomStub = sinon.stub(converter, 'findExistingRoom');
 			sinon.stub(converter, 'insertOrUpdateRoom');
 
 			await converter.addObject(roomToImport);
 			await converter.convertChannels('startedByUserId');
 
-			expect(converter.findExistingRoom.getCall(0)).to.not.be.null;
+			expect(findExistingRoomStub.getCall(0)).to.not.be.null;
 		});
 
 		it('should search by name', async () => {
@@ -84,14 +93,14 @@ describe('Room Converter', () => {
 		it('should not search by name if there is none', async () => {
 			const converter = new RoomConverter({ workInMemory: true });
 
-			await converter.findExistingRoom({});
+			await converter.findExistingRoom({} as unknown as IImportChannel);
 			expect(modelsMock.Rooms.findOneByNonValidatedName.getCalls()).to.be.an('array').with.lengthOf(0);
 		});
 
 		it('should search DMs by usernames', async () => {
 			const converter = new RoomConverter({ workInMemory: true });
-			converter._cache.addUser('importId1', 'userId1', 'username1');
-			converter._cache.addUser('importId2', 'userId2', 'username2');
+			(converter as any)._cache.addUser('importId1', 'userId1', 'username1');
+			(converter as any)._cache.addUser('importId2', 'userId2', 'username2');
 
 			await converter.findExistingRoom({
 				t: 'd',
@@ -111,45 +120,45 @@ describe('Room Converter', () => {
 			const converter = new RoomConverter({ workInMemory: true });
 
 			sinon.stub(converter, 'findExistingRoom');
-			sinon.stub(converter, 'insertRoom');
-			sinon.stub(converter, 'updateRoom');
+			const insertRoomStub = sinon.stub(converter, 'insertRoom');
+			const updateRoomStub = sinon.stub(converter, 'updateRoom');
 
 			await converter.addObject(roomToImport);
 			await converter.convertChannels('startedByUserId');
 
-			expect(converter.updateRoom.getCalls()).to.be.an('array').with.lengthOf(0);
-			expect(converter.insertRoom.getCalls()).to.be.an('array').with.lengthOf(1);
-			expect(converter.insertRoom.getCall(0).args).to.be.an('array').that.is.not.empty;
-			expect(converter.insertRoom.getCall(0).args[0]).to.be.deep.equal(roomToImport);
+			expect(updateRoomStub.getCalls()).to.be.an('array').with.lengthOf(0);
+			expect(insertRoomStub.getCalls()).to.be.an('array').with.lengthOf(1);
+			expect(insertRoomStub.getCall(0).args).to.be.an('array').that.is.not.empty;
+			expect(insertRoomStub.getCall(0).args[0]).to.be.deep.equal(roomToImport);
 		});
 
 		it('function should not be called for existing rooms', async () => {
 			const converter = new RoomConverter({ workInMemory: true });
 
-			sinon.stub(converter, 'findExistingRoom');
-			converter.findExistingRoom.returns({ _id: 'oldId' });
-			sinon.stub(converter, 'insertRoom');
+			const findExistingRoomStub = sinon.stub(converter, 'findExistingRoom');
+			findExistingRoomStub.returns({ _id: 'oldId' } as unknown as ReturnType<typeof converter.findExistingRoom>);
+			const insertRoomStub = sinon.stub(converter, 'insertRoom');
 			sinon.stub(converter, 'updateRoom');
 
 			await converter.addObject(roomToImport);
 			await converter.convertChannels('startedByUserId');
 
-			expect(converter.insertRoom.getCall(0)).to.be.null;
+			expect(insertRoomStub.getCall(0)).to.be.null;
 		});
 
 		it('should call createDirectMessage to create DM rooms', async () => {
 			const converter = new RoomConverter({ workInMemory: true });
 			sinon.stub(converter, 'updateRoomId');
 
-			createDirectMessage.callsFake((_options, data) => {
+			createDirectMessage.callsFake((_options: any, data: any) => {
 				return {
 					...data,
 					_id: 'Id1',
 				};
 			});
 
-			converter._cache.addUser('importId1', 'userId1', 'username1');
-			converter._cache.addUser('importId2', 'userId2', 'username2');
+			(converter as any)._cache.addUser('importId1', 'userId1', 'username1');
+			(converter as any)._cache.addUser('importId2', 'userId2', 'username2');
 
 			await (converter as any).insertRoom(
 				{
@@ -188,14 +197,14 @@ describe('Room Converter', () => {
 			const converter = new RoomConverter({ workInMemory: true });
 
 			sinon.stub(converter, 'findExistingRoom');
-			sinon.stub(converter, 'insertOrUpdateRoom');
+			const insertOrUpdateRoomStub = sinon.stub(converter, 'insertOrUpdateRoom');
 
 			await converter.addObject(roomToImport);
 			await converter.convertChannels('startedByUserId', {
 				afterImportFn,
 			});
 
-			expect(converter.insertOrUpdateRoom.getCalls()).to.be.an('array').with.lengthOf(1);
+			expect(insertOrUpdateRoomStub.getCalls()).to.be.an('array').with.lengthOf(1);
 			expect(afterImportFn.getCalls()).to.be.an('array').with.lengthOf(1);
 		});
 
@@ -212,8 +221,8 @@ describe('Room Converter', () => {
 			const converter = new RoomConverter({ workInMemory: true });
 
 			sinon.stub(converter, 'findExistingRoom');
-			sinon.stub(converter, 'insertOrUpdateRoom');
-			sinon.stub(converter, 'skipRecord');
+			const insertOrUpdateRoomStub = sinon.stub(converter, 'insertOrUpdateRoom');
+			const skipRecordStub = sinon.stub(withProtected(converter), 'skipRecord');
 
 			await converter.addObject(roomToImport);
 			await converter.convertChannels('startedByUserId', {
@@ -223,9 +232,9 @@ describe('Room Converter', () => {
 
 			expect(beforeImportFn.getCalls()).to.be.an('array').with.lengthOf(1);
 			expect(afterImportFn.getCalls()).to.be.an('array').with.lengthOf(0);
-			expect(converter.skipRecord.getCalls()).to.be.an('array').with.lengthOf(1);
-			expect(converter.skipRecord.getCall(0).args).to.be.an('array').that.is.deep.equal([recordId]);
-			expect(converter.insertOrUpdateRoom.getCalls()).to.be.an('array').with.lengthOf(0);
+			expect(skipRecordStub.getCalls()).to.be.an('array').with.lengthOf(1);
+			expect(skipRecordStub.getCall(0).args).to.be.an('array').that.is.deep.equal([recordId]);
+			expect(insertOrUpdateRoomStub.getCalls()).to.be.an('array').with.lengthOf(0);
 		});
 
 		it('should not skip record if beforeImportFn returns true', async () => {
@@ -237,8 +246,8 @@ describe('Room Converter', () => {
 			const converter = new RoomConverter({ workInMemory: true });
 
 			sinon.stub(converter, 'findExistingRoom');
-			sinon.stub(converter, 'insertOrUpdateRoom');
-			sinon.stub(converter, 'skipRecord');
+			const insertOrUpdateRoomStub = sinon.stub(converter, 'insertOrUpdateRoom');
+			const skipRecordStub = sinon.stub(withProtected(converter), 'skipRecord');
 
 			await converter.addObject(roomToImport);
 			await converter.convertChannels('startedByUserId', {
@@ -247,8 +256,8 @@ describe('Room Converter', () => {
 			});
 
 			expect(beforeImportFn.getCalls()).to.be.an('array').with.lengthOf(1);
-			expect(converter.skipRecord.getCalls()).to.be.an('array').with.lengthOf(0);
-			expect(converter.insertOrUpdateRoom.getCalls()).to.be.an('array').with.lengthOf(1);
+			expect(skipRecordStub.getCalls()).to.be.an('array').with.lengthOf(0);
+			expect(insertOrUpdateRoomStub.getCalls()).to.be.an('array').with.lengthOf(1);
 			expect(afterImportFn.getCalls()).to.be.an('array').with.lengthOf(1);
 		});
 
@@ -258,15 +267,15 @@ describe('Room Converter', () => {
 			const onErrorFn = sinon.stub();
 
 			sinon.stub(converter, 'findExistingRoom');
-			sinon.stub(converter, 'insertOrUpdateRoom');
-			sinon.stub(converter, 'saveError');
+			const insertOrUpdateRoomStub = sinon.stub(converter, 'insertOrUpdateRoom');
+			const saveErrorStub = sinon.stub(withProtected(converter), 'saveError');
 
-			await converter.addObject({});
+			await converter.addObject({} as unknown as IImportChannel);
 			await converter.convertChannels('startedByUserId', { onErrorFn });
 
-			expect(converter.insertOrUpdateRoom.getCall(0)).to.be.null;
+			expect(insertOrUpdateRoomStub.getCall(0)).to.be.null;
 			expect(onErrorFn.getCall(0)).to.not.be.null;
-			expect(converter.saveError.getCall(0)).to.not.be.null;
+			expect(saveErrorStub.getCall(0)).to.not.be.null;
 		});
 	});
 });

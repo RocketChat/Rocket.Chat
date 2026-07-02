@@ -1,64 +1,62 @@
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { beforeEach, describe, it, vi } from 'vitest';
 
-// Create stubs for dependencies
-const stubs = {
-	findOneUserById: sinon.stub(),
-	updateUsernameAndMessageOfMentionByIdAndOldUsername: sinon.stub(),
-	updateUsernameOfEditByUserId: sinon.stub(),
-	updateAllUsernamesByUserId: sinon.stub(),
-	updateDirectNameAndFnameByName: sinon.stub(),
-	updateUserReferences: sinon.stub(),
-	updateHistoryReferences: sinon.stub(),
-	setUsername: sinon.stub(),
-	setRealName: sinon.stub(),
-	validateName: sinon.stub(),
-	FileUpload: sinon.stub(),
-};
-
-const { saveUserIdentity } = proxyquire.noCallThru().load('../../../../app/lib/server/functions/saveUserIdentity', {
-	'@rocket.chat/models': {
-		Users: {
-			findOneById: stubs.findOneUserById,
+// Stubs built in `vi.hoisted` so the hoisted `vi.mock` factories can reference them.
+const { stubs, updateGroupDMsName, onceTransactionCommitedSuccessfully, notifyListener } = vi.hoisted(() => {
+	const sinon = require('sinon');
+	return {
+		stubs: {
+			findOneUserById: sinon.stub(),
+			updateUsernameAndMessageOfMentionByIdAndOldUsername: sinon.stub(),
+			updateUsernameOfEditByUserId: sinon.stub(),
+			updateAllUsernamesByUserId: sinon.stub(),
+			updateDirectNameAndFnameByName: sinon.stub(),
+			updateUserReferences: sinon.stub(),
+			updateHistoryReferences: sinon.stub(),
+			setUsername: sinon.stub(),
+			setRealName: sinon.stub(),
+			validateName: sinon.stub(),
+			FileUpload: sinon.stub(),
 		},
-		Messages: {
-			updateUsernameAndMessageOfMentionByIdAndOldUsername: stubs.updateUsernameAndMessageOfMentionByIdAndOldUsername,
-			updateUsernameOfEditByUserId: stubs.updateUsernameOfEditByUserId,
-			updateAllUsernamesByUserId: stubs.updateAllUsernamesByUserId,
-		},
-		Subscriptions: {
-			updateDirectNameAndFnameByName: stubs.updateDirectNameAndFnameByName,
-		},
-		VideoConference: {
-			updateUserReferences: stubs.updateUserReferences,
-		},
-		CallHistory: {
-			updateUserReferences: stubs.updateHistoryReferences,
-		},
-	},
-	'meteor/meteor': {
-		'Meteor': sinon.stub(),
-		'@global': true,
-	},
-	'../../../../server/database/utils': { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() },
-	'../../../../app/file-upload/server': {
-		FileUpload: stubs.FileUpload,
-	},
-	'../../../../app/lib/server/functions/setUsername': {
-		_setUsername: stubs.setUsername,
-		_setUsernameWithSession: () => stubs.setUsername,
-	},
-	'../../../../app/lib/server/functions/setRealName': {
-		setRealName: stubs.setRealName,
-	},
-	'../../../../app/lib/server/functions/updateGroupDMsName': {
 		updateGroupDMsName: sinon.stub(),
-	},
-	'../../../../app/lib/server/functions/validateName': {
-		validateName: stubs.validateName,
-	},
+		onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb(),
+		// Side-effect-only dependency; stubbed to silence noise (never asserted on).
+		notifyListener: {
+			notifyOnRoomChangedByUsernamesOrUids: sinon.stub(),
+			notifyOnSubscriptionChangedByUserId: sinon.stub(),
+			notifyOnSubscriptionChangedByNameAndRoomType: sinon.stub(),
+		},
+	};
 });
+
+vi.mock('@rocket.chat/models', () => ({
+	Users: {
+		findOneById: stubs.findOneUserById,
+	},
+	Messages: {
+		updateUsernameAndMessageOfMentionByIdAndOldUsername: stubs.updateUsernameAndMessageOfMentionByIdAndOldUsername,
+		updateUsernameOfEditByUserId: stubs.updateUsernameOfEditByUserId,
+		updateAllUsernamesByUserId: stubs.updateAllUsernamesByUserId,
+	},
+	Subscriptions: {
+		updateDirectNameAndFnameByName: stubs.updateDirectNameAndFnameByName,
+	},
+	VideoConference: {
+		updateUserReferences: stubs.updateUserReferences,
+	},
+	CallHistory: {
+		updateUserReferences: stubs.updateHistoryReferences,
+	},
+}));
+vi.mock('../../../../server/database/utils', () => ({ onceTransactionCommitedSuccessfully }));
+vi.mock('../../../../app/file-upload/server', () => ({ FileUpload: stubs.FileUpload }));
+vi.mock('../../../../app/lib/server/functions/setUsername', () => ({ _setUsername: stubs.setUsername }));
+vi.mock('../../../../app/lib/server/functions/setRealName', () => ({ setRealName: stubs.setRealName }));
+vi.mock('../../../../app/lib/server/functions/updateGroupDMsName', () => ({ updateGroupDMsName }));
+vi.mock('../../../../app/lib/server/functions/validateName', () => ({ validateName: stubs.validateName }));
+vi.mock('../../../../app/lib/server/lib/notifyListener', () => notifyListener);
+
+const { saveUserIdentity } = await import('../../../../app/lib/server/functions/saveUserIdentity');
 
 describe('Users - saveUserIdentity', () => {
 	beforeEach(() => {
@@ -67,7 +65,7 @@ describe('Users - saveUserIdentity', () => {
 	});
 
 	it('should return false if _id is not provided', async () => {
-		const result = await saveUserIdentity({ _id: undefined });
+		const result = await saveUserIdentity({ _id: undefined as unknown as string });
 
 		expect(stubs.findOneUserById.called).to.be.false;
 		expect(result).to.be.false;

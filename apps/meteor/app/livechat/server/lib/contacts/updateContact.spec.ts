@@ -1,49 +1,57 @@
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { beforeEach, describe, it, vi } from 'vitest';
 
-const modelsMock = {
-	LivechatContacts: {
-		findOneEnabledById: sinon.stub(),
-		patchContact: sinon.stub(),
-	},
-	LivechatRooms: {
-		updateContactDataByContactId: sinon.stub(),
-	},
-};
+import type { UpdateContactParams } from './updateContact';
 
-const { patchContact } = proxyquire.noCallThru().load('./patchContact.ts', {
-	'@rocket.chat/models': modelsMock,
+const { modelsMock, getAllowedCustomFields, validateContactManager, validateCustomFields, sandbox } = vi.hoisted(() => {
+	const sinon = require('sinon');
+	const sandbox = sinon.createSandbox();
+	return {
+		sandbox,
+		getAllowedCustomFields: sandbox.stub().resolves([]),
+		validateContactManager: sandbox.stub(),
+		validateCustomFields: sandbox.stub(),
+		modelsMock: {
+			LivechatContacts: {
+				findOneEnabledById: sandbox.stub(),
+				patchContact: sandbox.stub(),
+			},
+			LivechatRooms: {
+				updateContactDataByContactId: sandbox.stub(),
+			},
+		},
+	};
 });
 
-const { updateContact } = proxyquire.noCallThru().load('./updateContact', {
-	'./getAllowedCustomFields': {
-		getAllowedCustomFields: sinon.stub().resolves([]),
-	},
-	'./validateContactManager': {
-		validateContactManager: sinon.stub(),
-	},
-	'./validateCustomFields': {
-		validateCustomFields: sinon.stub(),
-	},
+vi.mock('@rocket.chat/models', () => ({
+	LivechatContacts: modelsMock.LivechatContacts,
+	LivechatRooms: modelsMock.LivechatRooms,
+}));
+vi.mock('./getAllowedCustomFields', () => ({ getAllowedCustomFields }));
+vi.mock('./validateContactManager', () => ({ validateContactManager }));
+vi.mock('./validateCustomFields', () => ({ validateCustomFields }));
+// notifyListener side effects are fire-and-forget (`void`) and never asserted on; stub them so the
+// real implementations (which need broker/model methods) don't surface as unhandled rejections.
+vi.mock('../../../../lib/server/lib/notifyListener', () => ({
+	notifyOnSubscriptionChangedByVisitorIds: sandbox.stub(),
+	notifyOnRoomChangedByContactId: sandbox.stub(),
+	notifyOnLivechatInquiryChangedByVisitorIds: sandbox.stub(),
+	notifyOnSettingChanged: sandbox.stub(),
+}));
 
-	'@rocket.chat/models': modelsMock,
-
-	'./patchContact': {
-		patchContact,
-	},
-});
+// patchContact is intentionally NOT mocked: the real implementation runs against the mocked
+// `@rocket.chat/models`, matching the original test which loaded the real patchContact.
+const { updateContact } = await import('./updateContact');
 
 describe('updateContact', () => {
 	beforeEach(() => {
-		modelsMock.LivechatContacts.findOneEnabledById.reset();
-		modelsMock.LivechatContacts.patchContact.reset();
-		modelsMock.LivechatRooms.updateContactDataByContactId.reset();
+		sandbox.reset();
+		getAllowedCustomFields.resolves([]);
 	});
 
 	it('should throw an error if the contact does not exist', async () => {
 		modelsMock.LivechatContacts.findOneEnabledById.resolves(undefined);
-		await expect(updateContact('any_id')).to.be.rejectedWith('error-contact-not-found');
+		await expect(updateContact('any_id' as unknown as UpdateContactParams)).to.be.rejectedWith('error-contact-not-found');
 		expect(modelsMock.LivechatContacts.patchContact.getCall(0)).to.be.null;
 	});
 

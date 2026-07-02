@@ -1,19 +1,23 @@
 import { OmnichannelSourceType, type ILivechatVisitor, type IOmnichannelSource } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { beforeEach, describe, it, vi } from 'vitest';
 
 import type { CreateContactParams } from './createContact';
 
-const getContactManagerIdByUsername = sinon.stub();
-const getAllowedCustomFields = sinon.stub();
-
-const { mapVisitorToContact } = proxyquire.noCallThru().load('./mapVisitorToContact', {
-	'./getContactManagerIdByUsername': {
-		getContactManagerIdByUsername,
-	},
-	'./getAllowedCustomFields': { getAllowedCustomFields },
+const { getContactManagerIdByUsername, getAllowedCustomFields, sandbox } = vi.hoisted(() => {
+	const sinon = require('sinon');
+	const sandbox = sinon.createSandbox();
+	return {
+		sandbox,
+		getContactManagerIdByUsername: sandbox.stub(),
+		getAllowedCustomFields: sandbox.stub(),
+	};
 });
+
+vi.mock('./getContactManagerIdByUsername', () => ({ getContactManagerIdByUsername }));
+vi.mock('./getAllowedCustomFields', () => ({ getAllowedCustomFields }));
+
+const { mapVisitorToContact } = await import('./mapVisitorToContact');
 
 const testDate = new Date();
 const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactParams][] = [
@@ -195,8 +199,8 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 
 describe('mapVisitorToContact', () => {
 	beforeEach(() => {
-		getContactManagerIdByUsername.reset();
-		getContactManagerIdByUsername.callsFake((username) => {
+		sandbox.reset();
+		getContactManagerIdByUsername.callsFake((username: any) => {
 			if (username === 'user1') {
 				return 'manager1';
 			}
@@ -208,7 +212,7 @@ describe('mapVisitorToContact', () => {
 
 	dataMap.forEach(([visitor, source, contact], index) => {
 		it(`should map an ILivechatVisitor + IOmnichannelSource to an ILivechatContact [${index}]`, async () => {
-			expect(await mapVisitorToContact(visitor, source)).to.be.deep.equal(contact);
+			expect(await mapVisitorToContact(visitor as ILivechatVisitor, source)).to.be.deep.equal(contact);
 		});
 	});
 });

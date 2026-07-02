@@ -1,51 +1,62 @@
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { beforeEach, describe, it } from 'mocha';
-import p from 'proxyquire';
-import sinon from 'sinon';
+import { beforeEach, describe, it, vi } from 'vitest';
 
-const modelsMock = {
-	Rooms: {
-		findOneById: sinon.stub(),
-		incUsersCountById: sinon.stub(),
-	},
-	Subscriptions: {
-		findOneByRoomIdAndUserId: sinon.stub(),
-		banByRoomIdAndUserId: sinon.stub(),
-	},
-	Users: {
-		removeRoomByUserId: sinon.stub(),
-	},
-};
-
-const messageMock = {
-	saveSystemMessage: sinon.stub(),
-};
-
-const removeUserFromRolesAsyncMock = sinon.stub();
-const notifyOnRoomChangedByIdMock = sinon.stub();
-const notifyOnSubscriptionChangedMock = sinon.stub();
-const afterBanFromRoomCallbackMock = { run: sinon.stub() };
-
-const meteorErrorMock = class extends Error {
-	constructor(message: string) {
-		super(message);
-	}
-};
-
-const { performUserBan, banUserFromRoom } = p.noCallThru().load('../../../../../../app/lib/server/functions/banUserFromRoom.ts', {
-	'@rocket.chat/models': modelsMock,
-	'@rocket.chat/core-services': { Message: messageMock },
-	'meteor/meteor': { Meteor: { Error: meteorErrorMock } },
-	'../../../../server/lib/callbacks/afterBanFromRoomCallback': { afterBanFromRoomCallback: afterBanFromRoomCallbackMock },
-	'../../../../server/lib/roles/removeUserFromRoles': { removeUserFromRolesAsync: removeUserFromRolesAsyncMock },
-	'../lib/notifyListener': {
-		notifyOnRoomChangedById: notifyOnRoomChangedByIdMock,
-		notifyOnSubscriptionChanged: notifyOnSubscriptionChangedMock,
-	},
+const {
+	modelsMock,
+	messageMock,
+	removeUserFromRolesAsyncMock,
+	notifyOnRoomChangedByIdMock,
+	notifyOnSubscriptionChangedMock,
+	afterBanFromRoomCallbackMock,
+	meteorErrorMock,
+} = vi.hoisted(() => {
+	const sinon = require('sinon');
+	return {
+		modelsMock: {
+			Rooms: {
+				findOneById: sinon.stub(),
+				incUsersCountById: sinon.stub(),
+			},
+			Subscriptions: {
+				findOneByRoomIdAndUserId: sinon.stub(),
+				banByRoomIdAndUserId: sinon.stub(),
+			},
+			Users: {
+				removeRoomByUserId: sinon.stub(),
+			},
+		},
+		messageMock: {
+			saveSystemMessage: sinon.stub(),
+		},
+		removeUserFromRolesAsyncMock: sinon.stub(),
+		notifyOnRoomChangedByIdMock: sinon.stub(),
+		notifyOnSubscriptionChangedMock: sinon.stub(),
+		afterBanFromRoomCallbackMock: { run: sinon.stub() },
+		meteorErrorMock: class extends Error {
+			constructor(message: string) {
+				super(message);
+			}
+		},
+	};
 });
 
+vi.mock('@rocket.chat/models', () => modelsMock);
+vi.mock('@rocket.chat/core-services', () => ({ Message: messageMock }));
+vi.mock('meteor/meteor', () => ({ Meteor: { Error: meteorErrorMock } }));
+vi.mock('../../../../../../server/lib/callbacks/afterBanFromRoomCallback', () => ({
+	afterBanFromRoomCallback: afterBanFromRoomCallbackMock,
+}));
+vi.mock('../../../../../../server/lib/roles/removeUserFromRoles', () => ({ removeUserFromRolesAsync: removeUserFromRolesAsyncMock }));
+vi.mock('../../../../../../app/lib/server/lib/notifyListener', () => ({
+	notifyOnRoomChangedById: notifyOnRoomChangedByIdMock,
+	notifyOnSubscriptionChanged: notifyOnSubscriptionChangedMock,
+}));
+
+const { performUserBan, banUserFromRoom } = await import('../../../../../../app/lib/server/functions/banUserFromRoom');
+
 describe('banUserFromRoom', () => {
-	const mockByUser = { _id: 'admin1', username: 'admin' };
+	const mockByUser = { _id: 'admin1', username: 'admin' } as unknown as IUser;
 
 	beforeEach(() => {
 		modelsMock.Rooms.findOneById.reset();
@@ -64,8 +75,8 @@ describe('banUserFromRoom', () => {
 		it('should return early if no subscription exists', async () => {
 			modelsMock.Subscriptions.findOneByRoomIdAndUserId.resolves(null);
 
-			const room = { _id: 'room1', t: 'c' };
-			const user = { _id: 'user1', username: 'testuser' };
+			const room = { _id: 'room1', t: 'c' } as unknown as IRoom;
+			const user = { _id: 'user1', username: 'testuser' } as unknown as IUser;
 
 			await performUserBan(room, user, mockByUser);
 
@@ -76,8 +87,8 @@ describe('banUserFromRoom', () => {
 		it('should throw if user has no username', async () => {
 			modelsMock.Subscriptions.findOneByRoomIdAndUserId.resolves({ _id: 'sub1' });
 
-			const room = { _id: 'room1', t: 'c' };
-			const user = { _id: 'user1' }; // no username
+			const room = { _id: 'room1', t: 'c' } as unknown as IRoom;
+			const user = { _id: 'user1' } as unknown as IUser; // no username
 
 			await expect(performUserBan(room, user, mockByUser)).to.be.rejectedWith('User must have a username to be banned from the room');
 		});
@@ -85,8 +96,8 @@ describe('banUserFromRoom', () => {
 		it('should return early if subscription is already BANNED', async () => {
 			modelsMock.Subscriptions.findOneByRoomIdAndUserId.resolves({ _id: 'sub1', status: 'BANNED' });
 
-			const room = { _id: 'room1', t: 'c' };
-			const user = { _id: 'user1', username: 'testuser' };
+			const room = { _id: 'room1', t: 'c' } as unknown as IRoom;
+			const user = { _id: 'user1', username: 'testuser' } as unknown as IUser;
 
 			await performUserBan(room, user, mockByUser);
 
@@ -101,8 +112,8 @@ describe('banUserFromRoom', () => {
 			removeUserFromRolesAsyncMock.resolves();
 			messageMock.saveSystemMessage.resolves();
 
-			const room = { _id: 'room1', t: 'c' };
-			const user = { _id: 'user1', username: 'testuser' };
+			const room = { _id: 'room1', t: 'c' } as unknown as IRoom;
+			const user = { _id: 'user1', username: 'testuser' } as unknown as IUser;
 
 			await performUserBan(room, user, mockByUser);
 
@@ -117,8 +128,8 @@ describe('banUserFromRoom', () => {
 			removeUserFromRolesAsyncMock.resolves();
 			messageMock.saveSystemMessage.resolves();
 
-			const room = { _id: 'room1', t: 'c' };
-			const user = { _id: 'user1', username: 'testuser' };
+			const room = { _id: 'room1', t: 'c' } as unknown as IRoom;
+			const user = { _id: 'user1', username: 'testuser' } as unknown as IUser;
 
 			await performUserBan(room, user, mockByUser);
 
@@ -133,8 +144,8 @@ describe('banUserFromRoom', () => {
 			removeUserFromRolesAsyncMock.resolves();
 			messageMock.saveSystemMessage.resolves();
 
-			const room = { _id: 'room1', t: 'c' };
-			const user = { _id: 'user1', username: 'testuser' };
+			const room = { _id: 'room1', t: 'c' } as unknown as IRoom;
+			const user = { _id: 'user1', username: 'testuser' } as unknown as IUser;
 
 			await performUserBan(room, user, mockByUser);
 
@@ -149,8 +160,8 @@ describe('banUserFromRoom', () => {
 			removeUserFromRolesAsyncMock.resolves();
 			messageMock.saveSystemMessage.resolves();
 
-			const room = { _id: 'room1', t: 'c' };
-			const user = { _id: 'user1', username: 'testuser' };
+			const room = { _id: 'room1', t: 'c' } as unknown as IRoom;
+			const user = { _id: 'user1', username: 'testuser' } as unknown as IUser;
 
 			await performUserBan(room, user, mockByUser);
 
@@ -165,8 +176,8 @@ describe('banUserFromRoom', () => {
 			removeUserFromRolesAsyncMock.resolves();
 			messageMock.saveSystemMessage.resolves();
 
-			const room = { _id: 'room1', t: 'p' };
-			const user = { _id: 'user1', username: 'testuser' };
+			const room = { _id: 'room1', t: 'p' } as unknown as IRoom;
+			const user = { _id: 'user1', username: 'testuser' } as unknown as IUser;
 
 			await performUserBan(room, user, mockByUser);
 
@@ -180,8 +191,8 @@ describe('banUserFromRoom', () => {
 			modelsMock.Rooms.incUsersCountById.resolves();
 			messageMock.saveSystemMessage.resolves();
 
-			const room = { _id: 'room1', t: 'd' };
-			const user = { _id: 'user1', username: 'testuser' };
+			const room = { _id: 'room1', t: 'd' } as unknown as IRoom;
+			const user = { _id: 'user1', username: 'testuser' } as unknown as IUser;
 
 			await performUserBan(room, user, mockByUser);
 
@@ -196,9 +207,9 @@ describe('banUserFromRoom', () => {
 			removeUserFromRolesAsyncMock.resolves();
 			messageMock.saveSystemMessage.resolves();
 
-			const room = { _id: 'room1', t: 'c' };
-			const user = { _id: 'user1', username: 'testuser' };
-			const byUser = { _id: 'moderator2', username: 'mod' };
+			const room = { _id: 'room1', t: 'c' } as unknown as IRoom;
+			const user = { _id: 'user1', username: 'testuser' } as unknown as IUser;
+			const byUser = { _id: 'moderator2', username: 'mod' } as unknown as IUser;
 
 			await performUserBan(room, user, byUser);
 
@@ -219,8 +230,8 @@ describe('banUserFromRoom', () => {
 			removeUserFromRolesAsyncMock.resolves();
 			messageMock.saveSystemMessage.resolves();
 
-			const room = { _id: 'room1', t: 'c' };
-			const user = { _id: 'user1', username: 'testuser' };
+			const room = { _id: 'room1', t: 'c' } as unknown as IRoom;
+			const user = { _id: 'user1', username: 'testuser' } as unknown as IUser;
 
 			await performUserBan(room, user, mockByUser);
 
@@ -233,13 +244,13 @@ describe('banUserFromRoom', () => {
 		it('should throw if room does not exist', async () => {
 			modelsMock.Rooms.findOneById.resolves(null);
 
-			const user = { _id: 'user1', username: 'testuser' };
+			const user = { _id: 'user1', username: 'testuser' } as unknown as IUser;
 
 			await expect(banUserFromRoom('room1', user, mockByUser)).to.be.rejectedWith('error-invalid-room');
 		});
 
 		it('should call performUserBan with correct arguments', async () => {
-			const room = { _id: 'room1', t: 'c' };
+			const room = { _id: 'room1', t: 'c' } as unknown as IRoom;
 			modelsMock.Rooms.findOneById.resolves(room);
 			modelsMock.Subscriptions.findOneByRoomIdAndUserId.resolves({ _id: 'sub1' });
 			modelsMock.Subscriptions.banByRoomIdAndUserId.resolves();
@@ -248,7 +259,7 @@ describe('banUserFromRoom', () => {
 			removeUserFromRolesAsyncMock.resolves();
 			messageMock.saveSystemMessage.resolves();
 
-			const user = { _id: 'user1', username: 'testuser' };
+			const user = { _id: 'user1', username: 'testuser' } as unknown as IUser;
 
 			await banUserFromRoom('room1', user, mockByUser);
 

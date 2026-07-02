@@ -1,32 +1,31 @@
 import type { IAppRoomsConverter, IAppsRoom } from '@rocket.chat/apps';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
+import { beforeAll, describe, it, vi } from 'vitest';
 
-import { MessagesMock } from './mocks/models/Messages.mock';
 import { RoomsMock } from './mocks/models/Rooms.mock';
 import { UsersMock } from './mocks/models/Users.mock';
 import { AppServerOrchestratorMock } from './mocks/orchestrator.mock';
 
-const { AppRoomsConverter } = proxyquire.noCallThru().load('../../../../../app/apps/server/converters/rooms', {
-	'@rocket.chat/random': {
-		Random: {
-			id: () => 1,
-		},
-	},
-	'@rocket.chat/models': {
+vi.mock('@rocket.chat/random', () => ({ Random: { id: () => 1 } }));
+vi.mock('@rocket.chat/models', async () => {
+	const { RoomsMock } = await import('./mocks/models/Rooms.mock');
+	const { MessagesMock } = await import('./mocks/models/Messages.mock');
+	const { UsersMock } = await import('./mocks/models/Users.mock');
+	return {
 		Rooms: new RoomsMock(),
 		Messages: new MessagesMock(),
 		Users: new UsersMock(),
-	},
+	};
 });
+
+const { AppRoomsConverter } = await import('../../../../../app/apps/server/converters/rooms');
 
 describe('The AppMessagesConverter instance', () => {
 	let roomConverter: IAppRoomsConverter;
 	let roomsMock: RoomsMock;
 
-	before(() => {
+	beforeAll(() => {
 		const orchestrator = new AppServerOrchestratorMock();
 
 		const usersConverter = orchestrator.getConverters().get('users');
@@ -47,7 +46,7 @@ describe('The AppMessagesConverter instance', () => {
 			return {};
 		};
 
-		roomConverter = new AppRoomsConverter(orchestrator);
+		roomConverter = new AppRoomsConverter(orchestrator) as unknown as IAppRoomsConverter;
 		roomsMock = new RoomsMock();
 	});
 

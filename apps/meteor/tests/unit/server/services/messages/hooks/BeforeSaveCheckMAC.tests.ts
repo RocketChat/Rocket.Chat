@@ -1,6 +1,6 @@
 import { api, MeteorError } from '@rocket.chat/core-services';
 import { expect } from 'chai';
-import { before, describe } from 'mocha';
+import { beforeAll, describe } from 'vitest';
 
 import { BeforeSaveCheckMAC } from '../../../../../../server/services/messages/hooks/BeforeSaveCheckMAC';
 import { BrokerMocked } from '../../../../../mocks/server/BrokerMocked';
@@ -35,7 +35,7 @@ const createRoom = (extra: any = {}): any => ({
 const broker = new BrokerMocked();
 
 describe('Check MAC', () => {
-	before(() => {
+	beforeAll(() => {
 		api.setBroker(broker as any);
 	});
 

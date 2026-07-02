@@ -1,77 +1,82 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import p from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, beforeEach, vi } from 'vitest';
 
-const modelsMock = {
-	LivechatRooms: {
-		findOneById: sinon.stub(),
-	},
-	Messages: {
-		findLivechatClosingMessage: sinon.stub(),
-		findVisibleByRoomIdNotContainingTypesBeforeTs: sinon.stub(),
-	},
-	Users: {
-		findOneById: sinon.stub(),
-	},
-};
+const { modelsMock, mockLogger, mockSettingValues, getTimezoneMock, mailerMock, tStub, checkMock, callbacksRunMock } = vi.hoisted(() => {
+	const sinon = require('sinon');
 
-const checkMock = sinon.stub();
+	const mockLogger = class {
+		debug() {
+			return null;
+		}
 
-const mockLogger = class {
-	debug() {
-		return null;
-	}
+		error() {
+			return null;
+		}
 
-	error() {
-		return null;
-	}
+		warn() {
+			return null;
+		}
 
-	warn() {
-		return null;
-	}
+		info() {
+			return null;
+		}
+	};
 
-	info() {
-		return null;
-	}
-};
+	const mockSettingValues: Record<string, any> = {
+		Livechat_show_agent_info: true,
+		Language: 'en',
+		From_Email: 'test@rocket.chat',
+	};
 
-const mockSettingValues: Record<string, any> = {
-	Livechat_show_agent_info: true,
-	Language: 'en',
-	From_Email: 'test@rocket.chat',
-};
+	return {
+		modelsMock: {
+			LivechatRooms: {
+				findOneById: sinon.stub(),
+			},
+			Messages: {
+				findLivechatClosingMessage: sinon.stub(),
+				findVisibleByRoomIdNotContainingTypesBeforeTs: sinon.stub(),
+			},
+			Users: {
+				findOneById: sinon.stub(),
+			},
+		},
+		checkMock: sinon.stub(),
+		mockLogger,
+		mockSettingValues,
+		getTimezoneMock: sinon.stub(),
+		mailerMock: sinon.stub(),
+		tStub: sinon.stub(),
+		callbacksRunMock: sinon.stub(),
+	};
+});
 
 const settingsMock = function (key: string) {
 	return mockSettingValues[key] || null;
 };
 
-const getTimezoneMock = sinon.stub();
-
-const mailerMock = sinon.stub();
-
-const tStub = sinon.stub();
-
-const { sendTranscript } = p.noCallThru().load('../../../../../../app/livechat/server/lib/sendTranscript', {
-	'@rocket.chat/models': modelsMock,
-	'@rocket.chat/logger': { Logger: mockLogger },
-	'meteor/meteor': {
-		Meteor: {
-			Error: globalThis.Error,
-		},
+vi.mock('@rocket.chat/models', () => modelsMock);
+vi.mock('@rocket.chat/logger', () => ({ Logger: mockLogger }));
+vi.mock('meteor/meteor', () => ({
+	Meteor: {
+		Error: globalThis.Error,
 	},
-	'meteor/check': { check: checkMock },
-	'../../../../server/lib/callbacks': {
-		callbacks: {
-			run: sinon.stub(),
-		},
+}));
+vi.mock('meteor/check', () => ({ check: checkMock }));
+vi.mock('../../../../../../server/lib/callbacks', () => ({
+	callbacks: {
+		run: callbacksRunMock,
 	},
-	'../../../../server/lib/i18n': { i18n: { t: tStub } },
-	'../../../mailer/server/api': { send: mailerMock },
-	'../../../settings/server': { settings: { get: settingsMock } },
-	'../../../utils/server/lib/getTimezone': { getTimezone: getTimezoneMock },
-	// TODO: add tests for file handling on transcripts
-	'../../../file-upload/server': { FileUpload: {} },
-});
+}));
+vi.mock('../../../../../../server/lib/i18n', () => ({ i18n: { t: tStub } }));
+vi.mock('../../../../../../app/mailer/server/api', () => ({ send: mailerMock }));
+vi.mock('../../../../../../app/settings/server', () => ({ settings: { get: settingsMock } }));
+vi.mock('../../../../../../app/utils/server/lib/getTimezone', () => ({ getTimezone: getTimezoneMock }));
+// TODO: add tests for file handling on transcripts
+vi.mock('../../../../../../app/file-upload/server', () => ({ FileUpload: {} }));
+
+const { sendTranscript } = await import('../../../../../../app/livechat/server/lib/sendTranscript');
 
 describe('Send transcript', () => {
 	beforeEach(() => {
@@ -85,10 +90,12 @@ describe('Send transcript', () => {
 	});
 	it('should throw error when rid or email are invalid params', async () => {
 		checkMock.throws(new Error('Invalid params'));
-		await expect(sendTranscript({})).to.be.rejectedWith(Error);
+		await expect(sendTranscript({} as unknown as Parameters<typeof sendTranscript>[0])).to.be.rejectedWith(Error);
 	});
 	it('should throw error when visitor not found', async () => {
-		await expect(sendTranscript({ rid: 'rid', email: 'email', logger: mockLogger })).to.be.rejectedWith(Error);
+		await expect(
+			sendTranscript({ rid: 'rid', email: 'email', logger: mockLogger } as unknown as Parameters<typeof sendTranscript>[0]),
+		).to.be.rejectedWith(Error);
 	});
 	it('should attempt to send an email when params are valid using default subject', async () => {
 		modelsMock.LivechatRooms.findOneById.resolves({ t: 'l', v: { token: 'token' } });
@@ -99,7 +106,7 @@ describe('Send transcript', () => {
 			rid: 'rid',
 			token: 'token',
 			email: 'email',
-			user: { _id: 'x', name: 'x', utcOffset: '-6', username: 'x' },
+			user: { _id: 'x', name: 'x', utcOffset: '-6', username: 'x' } as unknown as Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'>,
 		});
 
 		expect(getTimezoneMock.calledWith({ _id: 'x', name: 'x', utcOffset: '-6', username: 'x' })).to.be.true;
@@ -124,7 +131,7 @@ describe('Send transcript', () => {
 			token: 'token',
 			email: 'email',
 			subject: 'A custom subject',
-			user: { _id: 'x', name: 'x', utcOffset: '-6', username: 'x' },
+			user: { _id: 'x', name: 'x', utcOffset: '-6', username: 'x' } as unknown as Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'>,
 		});
 
 		expect(getTimezoneMock.calledWith({ _id: 'x', name: 'x', utcOffset: '-6', username: 'x' })).to.be.true;
@@ -149,7 +156,7 @@ describe('Send transcript', () => {
 			rid: 'rid',
 			token: 'token',
 			email: 'email',
-			user: { _id: 'x', name: 'x', utcOffset: '-6', username: 'x' },
+			user: { _id: 'x', name: 'x', utcOffset: '-6', username: 'x' } as unknown as Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'>,
 		});
 
 		expect(getTimezoneMock.calledWith({ _id: 'x', name: 'x', utcOffset: '-6', username: 'x' })).to.be.true;
@@ -168,25 +175,33 @@ describe('Send transcript', () => {
 	it('should fail if room provided is invalid', async () => {
 		modelsMock.LivechatRooms.findOneById.resolves(null);
 
-		await expect(sendTranscript({ rid: 'rid', email: 'email', logger: mockLogger })).to.be.rejectedWith(Error);
+		await expect(
+			sendTranscript({ rid: 'rid', email: 'email', logger: mockLogger } as unknown as Parameters<typeof sendTranscript>[0]),
+		).to.be.rejectedWith(Error);
 	});
 
 	it('should fail if room provided is of different type', async () => {
 		modelsMock.LivechatRooms.findOneById.resolves({ t: 'c' });
 
-		await expect(sendTranscript({ rid: 'rid', email: 'email' })).to.be.rejectedWith(Error);
+		await expect(sendTranscript({ rid: 'rid', email: 'email' } as unknown as Parameters<typeof sendTranscript>[0])).to.be.rejectedWith(
+			Error,
+		);
 	});
 
 	it('should fail if room is of valid type, but doesnt doesnt have `v` property', async () => {
 		modelsMock.LivechatRooms.findOneById.resolves({ t: 'l' });
 
-		await expect(sendTranscript({ rid: 'rid', email: 'email' })).to.be.rejectedWith(Error);
+		await expect(sendTranscript({ rid: 'rid', email: 'email' } as unknown as Parameters<typeof sendTranscript>[0])).to.be.rejectedWith(
+			Error,
+		);
 	});
 
 	it('should fail if room is of valid type, has `v` prop, but it doesnt contain `token`', async () => {
 		modelsMock.LivechatRooms.findOneById.resolves({ t: 'l', v: { otherProp: 'xxx' } });
 
-		await expect(sendTranscript({ rid: 'rid', email: 'email' })).to.be.rejectedWith(Error);
+		await expect(sendTranscript({ rid: 'rid', email: 'email' } as unknown as Parameters<typeof sendTranscript>[0])).to.be.rejectedWith(
+			Error,
+		);
 	});
 
 	it('should fail if room is of valid type, has `v.token`, but its different from the one on param (room from another visitor)', async () => {
@@ -210,7 +225,7 @@ describe('Send transcript', () => {
 			rid: 'rid',
 			token: 'token-123',
 			email: 'email',
-			user: { _id: 'x', name: 'x', utcOffset: '-6', username: 'x' },
+			user: { _id: 'x', name: 'x', utcOffset: '-6', username: 'x' } as unknown as Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'>,
 		});
 
 		expect(getTimezoneMock.calledWith({ _id: 'x', name: 'x', utcOffset: '-6', username: 'x' })).to.be.true;

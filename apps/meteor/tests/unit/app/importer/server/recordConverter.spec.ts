@@ -1,34 +1,34 @@
 import type { IImportRecord, IImportRecordType } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { vi } from 'vitest';
 
-const settingsStub = sinon.stub();
-const modelsMock = {
-	ImportData: {
-		find: sinon.stub(),
-		updateOne: sinon.stub(),
-		col: {
-			insertOne: sinon.stub(),
+const { settingsStub, modelsMock } = vi.hoisted(() => {
+	const sinon = require('sinon');
+	return {
+		settingsStub: sinon.stub(),
+		modelsMock: {
+			ImportData: {
+				find: sinon.stub(),
+				updateOne: sinon.stub(),
+				col: {
+					insertOne: sinon.stub(),
+				},
+			},
 		},
-	},
-};
-
-const { RecordConverter } = proxyquire.noCallThru().load('../../../../../app/importer/server/classes/converters/RecordConverter', {
-	'../../../settings/server': {
-		settings: { get: settingsStub },
-	},
-	'meteor/check': sinon.stub(),
-	'meteor/meteor': sinon.stub(),
-	'@rocket.chat/models': { ...modelsMock, '@global': true },
+	};
 });
+
+vi.mock('../../../../../app/settings/server', () => ({ settings: { get: settingsStub } }));
+vi.mock('@rocket.chat/models', () => modelsMock);
+
+const { RecordConverter } = await import('../../../../../app/importer/server/classes/converters/RecordConverter');
 
 class TestConverter extends RecordConverter<IImportRecord> {
 	constructor(workInMemory = true) {
 		super({ workInMemory });
 	}
 
-	protected getDataType(): IImportRecordType {
+	protected override getDataType(): IImportRecordType {
 		return 'user';
 	}
 }
@@ -61,7 +61,7 @@ describe('Record Converter', () => {
 				const converter = new TestConverter(false);
 				await converter.addObject(userToImport);
 
-				await converter.getDataToImport();
+				await (converter as any).getDataToImport();
 
 				expect(modelsMock.ImportData.find.getCall(0)).to.not.be.null;
 			});
@@ -104,7 +104,7 @@ describe('Record Converter', () => {
 				const converter = new TestConverter(true);
 				await converter.addObject(userToImport);
 
-				await converter.getDataToImport();
+				await (converter as any).getDataToImport();
 
 				expect(modelsMock.ImportData.find.getCall(0)).to.be.null;
 			});
@@ -113,7 +113,7 @@ describe('Record Converter', () => {
 				const converter = new TestConverter(true);
 
 				await converter.addObject(userToImport);
-				const dataToImport = await converter.getDataToImport();
+				const dataToImport = await (converter as any).getDataToImport();
 
 				expect(dataToImport.length).to.be.equal(1);
 				expect(dataToImport[0].data).to.be.equal(userToImport);

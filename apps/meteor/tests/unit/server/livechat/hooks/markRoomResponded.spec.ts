@@ -1,33 +1,36 @@
+import type { IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { Updater } from '@rocket.chat/models';
 import { expect } from 'chai';
-import { describe, it, beforeEach } from 'mocha';
-import proxyquire from 'proxyquire';
-import Sinon from 'sinon';
+import { describe, it, beforeEach, vi } from 'vitest';
 
 import { createFakeMessage, createFakeUser } from '../../../../mocks/data';
 
-const models = {
-	LivechatContacts: { isContactActiveOnPeriod: Sinon.stub(), markContactActiveForPeriod: Sinon.stub() },
-	LivechatInquiry: { markInquiryActiveForPeriod: Sinon.stub() },
-	LivechatRooms: {
-		getVisitorActiveForPeriodUpdateQuery: Sinon.stub(),
-		getAgentLastMessageTsUpdateQuery: Sinon.stub(),
-		getResponseByRoomIdUpdateQuery: Sinon.stub(),
-	},
-};
-
-const settingsGetMock = {
-	get: Sinon.stub(),
-};
-
-const isMessageFromBotMock = { isMessageFromBot: Sinon.stub() };
-
-const { markRoomResponded } = proxyquire.noCallThru().load('../../../../../app/livechat/server/hooks/markRoomResponded.ts', {
-	'../../../../server/lib/callbacks': { callbacks: { add: Sinon.stub(), priority: { HIGH: 'high' } } },
-	'../../../lib/server/lib/notifyListener': { notifyOnLivechatInquiryChanged: Sinon.stub() },
-	'@rocket.chat/models': models,
-	'../../../settings/server': { settings: settingsGetMock },
-	'../lib/isMessageFromBot': isMessageFromBotMock,
+const { models, settingsGetMock, isMessageFromBotMock, callbacksMock, notifyOnLivechatInquiryChangedMock } = vi.hoisted(() => {
+	const Sinon = require('sinon');
+	return {
+		models: {
+			LivechatContacts: { isContactActiveOnPeriod: Sinon.stub(), markContactActiveForPeriod: Sinon.stub() },
+			LivechatInquiry: { markInquiryActiveForPeriod: Sinon.stub() },
+			LivechatRooms: {
+				getVisitorActiveForPeriodUpdateQuery: Sinon.stub(),
+				getAgentLastMessageTsUpdateQuery: Sinon.stub(),
+				getResponseByRoomIdUpdateQuery: Sinon.stub(),
+			},
+		},
+		settingsGetMock: { get: Sinon.stub() },
+		isMessageFromBotMock: { isMessageFromBot: Sinon.stub() },
+		callbacksMock: { callbacks: { add: Sinon.stub(), priority: { HIGH: 'high' } } },
+		notifyOnLivechatInquiryChangedMock: { notifyOnLivechatInquiryChanged: Sinon.stub() },
+	};
 });
+
+vi.mock('../../../../../server/lib/callbacks', () => callbacksMock);
+vi.mock('../../../../../app/lib/server/lib/notifyListener', () => notifyOnLivechatInquiryChangedMock);
+vi.mock('@rocket.chat/models', () => models);
+vi.mock('../../../../../app/settings/server', () => ({ settings: settingsGetMock }));
+vi.mock('../../../../../app/livechat/server/lib/isMessageFromBot', () => isMessageFromBotMock);
+
+const { markRoomResponded } = await import('../../../../../app/livechat/server/hooks/markRoomResponded');
 
 describe('markRoomResponded', () => {
 	beforeEach(() => {
@@ -44,11 +47,11 @@ describe('markRoomResponded', () => {
 	it('should return void if message is system message', async () => {
 		const message = {
 			t: 'livechat-started',
-		};
+		} as unknown as IMessage;
 
-		const room = {};
+		const room = {} as unknown as IOmnichannelRoom;
 
-		const res = await markRoomResponded(message, room, {});
+		const res = await markRoomResponded(message, room, {} as unknown as Updater<IOmnichannelRoom>);
 
 		expect(res).to.be.undefined;
 	});
@@ -57,11 +60,11 @@ describe('markRoomResponded', () => {
 		const message = {
 			editedAt: new Date(),
 			editedBy: { _id: '123' },
-		};
+		} as unknown as IMessage;
 
-		const room = {};
+		const room = {} as unknown as IOmnichannelRoom;
 
-		const res = await markRoomResponded(message, room, {});
+		const res = await markRoomResponded(message, room, {} as unknown as Updater<IOmnichannelRoom>);
 
 		expect(res).to.be.undefined;
 	});
@@ -69,11 +72,11 @@ describe('markRoomResponded', () => {
 	it('should return void if message is from visitor', async () => {
 		const message = {
 			token: 'token',
-		};
+		} as unknown as IMessage;
 
-		const room = {};
+		const room = {} as unknown as IOmnichannelRoom;
 
-		const res = await markRoomResponded(message, room, {});
+		const res = await markRoomResponded(message, room, {} as unknown as Updater<IOmnichannelRoom>);
 
 		expect(res).to.be.undefined;
 	});
@@ -86,58 +89,58 @@ describe('markRoomResponded', () => {
 		isMessageFromBotMock.isMessageFromBot.resolves(user);
 
 		const message = createFakeMessage();
-		const room = {};
+		const room = {} as unknown as IOmnichannelRoom;
 
-		const res = await markRoomResponded(message, room, user);
+		const res = await markRoomResponded(message, room, user as unknown as Updater<IOmnichannelRoom>);
 
 		expect(res).to.be.undefined;
 	});
 
 	it('should try to mark visitor as active for current period', async () => {
-		const message = {};
-		const room = { v: { _id: '1234' } };
+		const message = {} as unknown as IMessage;
+		const room = { v: { _id: '1234' } } as unknown as IOmnichannelRoom;
 
-		await markRoomResponded(message, room, {});
+		await markRoomResponded(message, room, {} as unknown as Updater<IOmnichannelRoom>);
 
 		expect(models.LivechatContacts.markContactActiveForPeriod.calledOnce).to.be.true;
 	});
 
 	it('should try to mark inquiry as active for current period when room.v.activity doesnt include current period', async () => {
-		const message = {};
-		const room = { v: { activity: [] } };
+		const message = {} as unknown as IMessage;
+		const room = { v: { activity: [] } } as unknown as IOmnichannelRoom;
 
 		models.LivechatInquiry.markInquiryActiveForPeriod.resolves({});
 
-		await markRoomResponded(message, room, {});
+		await markRoomResponded(message, room, {} as unknown as Updater<IOmnichannelRoom>);
 
 		expect(models.LivechatInquiry.markInquiryActiveForPeriod.calledOnce).to.be.true;
 	});
 
 	it('should return room.responseBy when room is not waiting for response', async () => {
-		const message = {};
-		const room = { v: { _id: '1234' }, waitingResponse: false, responseBy: { _id: '1234' } };
+		const message = {} as unknown as IMessage;
+		const room = { v: { _id: '1234' }, waitingResponse: false, responseBy: { _id: '1234' } } as unknown as IOmnichannelRoom;
 
-		const res = await markRoomResponded(message, room, {});
+		const res = await markRoomResponded(message, room, {} as unknown as Updater<IOmnichannelRoom>);
 
 		expect(res).to.be.equal(room.responseBy);
 		expect(models.LivechatRooms.getAgentLastMessageTsUpdateQuery.calledOnce).to.be.true;
 	});
 
 	it('should try to update the lastMessageTs property when a room was already answered by an agent', async () => {
-		const message = { u: { _id: '1234', username: 'username' }, ts: new Date() };
-		const room = { responseBy: { _id: '1234' }, v: { _id: '1234' } };
+		const message = { u: { _id: '1234', username: 'username' }, ts: new Date() } as unknown as IMessage;
+		const room = { responseBy: { _id: '1234' }, v: { _id: '1234' } } as unknown as IOmnichannelRoom;
 
-		const res = await markRoomResponded(message, room, {});
+		const res = await markRoomResponded(message, room, {} as unknown as Updater<IOmnichannelRoom>);
 
 		expect(res).to.be.deep.equal(room.responseBy);
 		expect(models.LivechatRooms.getAgentLastMessageTsUpdateQuery.calledOnce).to.be.true;
 	});
 
 	it('should add a new responseBy object when room is waiting for response', async () => {
-		const message = { u: { _id: '1234', username: 'username' }, ts: new Date() };
-		const room = { waitingResponse: true, v: { _id: '1234' } };
+		const message = { u: { _id: '1234', username: 'username' }, ts: new Date() } as unknown as IMessage;
+		const room = { waitingResponse: true, v: { _id: '1234' } } as unknown as IOmnichannelRoom;
 
-		const res = await markRoomResponded(message, room, {});
+		const res = await markRoomResponded(message, room, {} as unknown as Updater<IOmnichannelRoom>);
 
 		expect(res).to.be.deep.equal({ _id: '1234', username: 'username', firstResponseTs: message.ts, lastMessageTs: message.ts });
 		expect(models.LivechatRooms.getResponseByRoomIdUpdateQuery.calledOnce).to.be.true;
@@ -151,19 +154,19 @@ describe('markRoomResponded', () => {
 
 	// This should never happpen on the wild, checking because of a data inconsistency bug found
 	it('should update only the lastMessageTs property when a room has both waitingResponse and responseBy properties', async () => {
-		const message = { u: { _id: '1234', username: 'username' }, ts: new Date() };
+		const message = { u: { _id: '1234', username: 'username' }, ts: new Date() } as unknown as IMessage;
 		const room = {
 			waitingResponse: true,
 			responseBy: { _id: '1234', username: 'username', firstResponseTs: new Date() },
 			v: { _id: '1234' },
-		};
+		} as unknown as IOmnichannelRoom;
 
-		const res = await markRoomResponded(message, room, {});
+		const res = await markRoomResponded(message, room, {} as unknown as Updater<IOmnichannelRoom>);
 
 		expect(res).to.be.deep.equal({
 			_id: '1234',
 			username: 'username',
-			firstResponseTs: room.responseBy.firstResponseTs,
+			firstResponseTs: room.responseBy!.firstResponseTs,
 			lastMessageTs: message.ts,
 		});
 	});

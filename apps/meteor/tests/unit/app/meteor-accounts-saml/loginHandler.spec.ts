@@ -1,42 +1,45 @@
 import { expect } from 'chai';
-import { describe, it, beforeEach } from 'mocha';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, beforeEach, vi } from 'vitest';
 
-const retrieveCredential = sinon.stub().resolves(null);
-const removeById = sinon.stub().resolves();
-const samlUtilsMock = {
-	serviceProviders: [{ provider: 'test-saml' }] as any[],
-	log: sinon.stub(),
-	mapProfileToUserObject: sinon.stub(),
-	events: { emit: sinon.stub() },
-};
+const { retrieveCredential, removeById, samlUtilsMock, handler } = vi.hoisted(() => {
+	const sinon = require('sinon');
+	return {
+		retrieveCredential: sinon.stub().resolves(null),
+		removeById: sinon.stub().resolves(),
+		samlUtilsMock: {
+			serviceProviders: [{ provider: 'test-saml' }] as any[],
+			log: sinon.stub(),
+			mapProfileToUserObject: sinon.stub(),
+			events: { emit: sinon.stub() },
+		},
+		handler: sinon.stub(),
+	};
+});
 
-const handler = sinon.stub();
-proxyquire.noCallThru().load('../../../../app/meteor-accounts-saml/server/loginHandler', {
-	'@rocket.chat/models': {
-		CredentialTokens: { removeById },
-	},
-	'meteor/accounts-base': {
-		Accounts: {
-			LoginCancelledError: { numericError: 403 },
-			registerLoginHandler: (_name: string, fn: any) => {
-				handler.callsFake(fn);
-			},
+vi.mock('@rocket.chat/models', () => ({
+	CredentialTokens: { removeById },
+}));
+vi.mock('meteor/accounts-base', () => ({
+	Accounts: {
+		LoginCancelledError: { numericError: 403 },
+		registerLoginHandler: (_name: string, fn: any) => {
+			handler.callsFake(fn);
 		},
 	},
-	'meteor/meteor': {
-		Meteor: { Error },
-	},
-	'./lib/SAML': {
-		SAML: { retrieveCredential },
-	},
-	'./lib/Utils': {
-		SAMLUtils: samlUtilsMock,
-	},
-	'../../../server/lib/i18n': { i18n: { t: sinon.stub().returns('') } },
-	'../../../server/lib/logger/system': { SystemLogger: { error: sinon.stub() } },
-});
+}));
+vi.mock('meteor/meteor', () => ({
+	Meteor: { Error },
+}));
+vi.mock('../../../../app/meteor-accounts-saml/server/lib/SAML', () => ({
+	SAML: { retrieveCredential },
+}));
+vi.mock('../../../../app/meteor-accounts-saml/server/lib/Utils', () => ({
+	SAMLUtils: samlUtilsMock,
+}));
+vi.mock('../../../../server/lib/i18n', () => ({ i18n: { t: () => '' } }));
+vi.mock('../../../../server/lib/logger/system', () => ({ SystemLogger: { error: () => undefined } }));
+
+await import('../../../../app/meteor-accounts-saml/server/loginHandler');
 
 describe('SAML loginHandler', () => {
 	beforeEach(() => {

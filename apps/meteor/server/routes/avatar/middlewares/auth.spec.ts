@@ -1,18 +1,25 @@
+import type { IncomingMessage, ServerResponse } from 'node:http';
+
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
+import type { NextFunction } from 'connect';
 import sinon from 'sinon';
+import { afterEach, describe, it, vi } from 'vitest';
 
-const mocks = {
-	utils: {
-		userCanAccessAvatar: sinon.stub(),
-		renderSVGLetters: sinon.stub(),
-	},
-};
-
-const { protectAvatarsWithFallback, protectAvatars } = proxyquire.noCallThru().load('./auth.ts', {
-	'../utils': mocks.utils,
+const { mocks } = vi.hoisted(() => {
+	const sinon = require('sinon');
+	return {
+		mocks: {
+			utils: {
+				userCanAccessAvatar: sinon.stub(),
+				renderSVGLetters: sinon.stub(),
+			},
+		},
+	};
 });
+
+vi.mock('../utils', () => mocks.utils);
+
+const { protectAvatarsWithFallback, protectAvatars } = await import('./auth');
 
 describe('#protectAvatarsWithFallback()', () => {
 	const response = {
@@ -33,7 +40,11 @@ describe('#protectAvatarsWithFallback()', () => {
 	});
 
 	it(`should write 404 to head if no url provided`, async () => {
-		await protectAvatarsWithFallback({}, response, next);
+		await protectAvatarsWithFallback(
+			{} as unknown as IncomingMessage,
+			response as unknown as ServerResponse,
+			next as unknown as NextFunction,
+		);
 		expect(next.called).to.be.false;
 		expect(response.setHeader.called).to.be.false;
 		expect(response.writeHead.calledWith(404)).to.be.true;
@@ -43,7 +54,11 @@ describe('#protectAvatarsWithFallback()', () => {
 	it(`should write 200 to head and write fallback to body (user avatar)`, async () => {
 		mocks.utils.renderSVGLetters.returns('fallback');
 
-		await protectAvatarsWithFallback({ url: '/jon' }, response, next);
+		await protectAvatarsWithFallback(
+			{ url: '/jon' } as unknown as IncomingMessage,
+			response as unknown as ServerResponse,
+			next as unknown as NextFunction,
+		);
 		expect(next.called).to.be.false;
 		expect(response.setHeader.called).to.be.false;
 
@@ -57,7 +72,11 @@ describe('#protectAvatarsWithFallback()', () => {
 	it(`should write 200 to head and write fallback to body (room avatar)`, async () => {
 		mocks.utils.renderSVGLetters.returns('fallback');
 
-		await protectAvatarsWithFallback({ url: '/room/jon' }, response, next);
+		await protectAvatarsWithFallback(
+			{ url: '/room/jon' } as unknown as IncomingMessage,
+			response as unknown as ServerResponse,
+			next as unknown as NextFunction,
+		);
 		expect(next.called).to.be.false;
 		expect(response.setHeader.called).to.be.false;
 		expect(response.writeHead.calledWith(200, { 'Content-Type': 'image/svg+xml' })).to.be.true;
@@ -67,9 +86,9 @@ describe('#protectAvatarsWithFallback()', () => {
 
 	it(`should call next if user can access avatar`, async () => {
 		mocks.utils.userCanAccessAvatar.returns(true);
-		const request = { url: '/jon' };
+		const request = { url: '/jon' } as unknown as IncomingMessage;
 
-		await protectAvatarsWithFallback(request, response, next);
+		await protectAvatarsWithFallback(request, response as unknown as ServerResponse, next as unknown as NextFunction);
 		expect(mocks.utils.userCanAccessAvatar.calledWith(request)).to.be.true;
 		expect(next.called).to.be.true;
 	});
@@ -94,7 +113,7 @@ describe('#protectAvatars()', () => {
 	});
 
 	it(`should write 404 to head if no url provided`, async () => {
-		await protectAvatars({}, response, next);
+		await protectAvatars({} as unknown as IncomingMessage, response as unknown as ServerResponse, next as unknown as NextFunction);
 
 		expect(next.called).to.be.false;
 		expect(response.setHeader.called).to.be.false;
@@ -105,7 +124,11 @@ describe('#protectAvatars()', () => {
 	it(`should write 404 to head if access is denied`, async () => {
 		mocks.utils.userCanAccessAvatar.returns(false);
 
-		await protectAvatars({ url: '/room/jon' }, response, next);
+		await protectAvatars(
+			{ url: '/room/jon' } as unknown as IncomingMessage,
+			response as unknown as ServerResponse,
+			next as unknown as NextFunction,
+		);
 
 		expect(next.called).to.be.false;
 		expect(response.setHeader.called).to.be.false;
@@ -115,9 +138,9 @@ describe('#protectAvatars()', () => {
 
 	it(`should call next if user can access avatar`, async () => {
 		mocks.utils.userCanAccessAvatar.returns(true);
-		const request = { url: '/jon' };
+		const request = { url: '/jon' } as unknown as IncomingMessage;
 
-		await protectAvatars(request, response, next);
+		await protectAvatars(request, response as unknown as ServerResponse, next as unknown as NextFunction);
 		expect(mocks.utils.userCanAccessAvatar.calledWith(request)).to.be.true;
 		expect(next.called).to.be.true;
 	});

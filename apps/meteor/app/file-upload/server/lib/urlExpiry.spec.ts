@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
+import { describe, it } from 'vitest';
 
 import { MIN_URL_EXPIRY_TIME_SPAN_SECONDS, URL_EXPIRY_FALLBACK_SECONDS, getUrlExpiryTimeSpanWithFallback } from './urlExpiry';
 

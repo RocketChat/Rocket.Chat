@@ -1,55 +1,63 @@
+import type { ISubscription, IRoom } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { describe, it, beforeEach } from 'mocha';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, beforeEach, vi } from 'vitest';
 
 import { generateMultipleSubs } from '../../../../../mocks/data/subscriptions';
+
+type UsersWaitingForE2EKey = NonNullable<IRoom['usersWaitingForE2EKeys']>[number];
 
 function addSecondsToDate(seconds: number, date = new Date()) {
 	return new Date(date.getTime() + seconds * 1000);
 }
 
-const models = {
-	Users: {
-		findOneById: sinon.stub(),
-	},
-	Rooms: {
-		findOneById: sinon.stub(),
-		resetRoomKeyAndSetE2EEQueueByRoomId: sinon.stub(),
-	},
-	Subscriptions: {
-		find: sinon.stub(),
-		col: {
-			bulkWrite: sinon.stub(),
+const { models, notifyListener } = vi.hoisted(() => {
+	const sinon = require('sinon');
+	return {
+		models: {
+			Users: {
+				findOneById: sinon.stub(),
+			},
+			Rooms: {
+				findOneById: sinon.stub(),
+				resetRoomKeyAndSetE2EEQueueByRoomId: sinon.stub(),
+			},
+			Subscriptions: {
+				find: sinon.stub(),
+				col: {
+					bulkWrite: sinon.stub(),
+				},
+				setE2EKeyByUserIdAndRoomId: sinon.stub(),
+			},
 		},
-		setE2EKeyByUserIdAndRoomId: sinon.stub(),
-	},
-};
-
-const { resetRoomKey, pushToLimit, replicateMongoSlice } = proxyquire
-	.noCallThru()
-	.load('../../../../../../app/e2e/server/functions/resetRoomKey', {
-		'@rocket.chat/models': models,
-		'../../../lib/server/lib/notifyListener': {
+		notifyListener: {
 			notifyOnRoomChanged: sinon.stub(),
 			notifyOnSubscriptionChanged: sinon.stub(),
 		},
-	});
+	};
+});
+
+vi.mock('@rocket.chat/models', () => models);
+vi.mock('../../../../../../app/lib/server/lib/notifyListener', () => ({
+	notifyOnRoomChanged: notifyListener.notifyOnRoomChanged,
+	notifyOnSubscriptionChanged: notifyListener.notifyOnSubscriptionChanged,
+}));
+
+const { resetRoomKey, pushToLimit, replicateMongoSlice } = await import('../../../../../../app/e2e/server/functions/resetRoomKey');
 
 describe('pushToLimit', () => {
 	it('should push up to a limit', () => {
-		const arr: any[] = [];
-		pushToLimit(arr, { foo: 'bar' }, 2);
+		const arr: UsersWaitingForE2EKey[] = [];
+		pushToLimit(arr, { foo: 'bar' } as unknown as UsersWaitingForE2EKey, 2);
 
 		expect(arr).to.have.lengthOf(1);
 		expect(arr[0]).to.deep.equal({ foo: 'bar' });
 
-		pushToLimit(arr, { foo: 'bar' }, 2);
+		pushToLimit(arr, { foo: 'bar' } as unknown as UsersWaitingForE2EKey, 2);
 		expect(arr).to.have.lengthOf(2);
 		expect(arr[0]).to.deep.equal({ foo: 'bar' });
 		expect(arr[1]).to.deep.equal({ foo: 'bar' });
 
-		pushToLimit(arr, { foo: 'bzz' }, 2);
+		pushToLimit(arr, { foo: 'bzz' } as unknown as UsersWaitingForE2EKey, 2);
 		expect(arr).to.have.lengthOf(2);
 		expect(arr[0]).to.deep.equal({ foo: 'bar' });
 		expect(arr[1]).to.deep.equal({ foo: 'bar' });
@@ -59,13 +67,15 @@ describe('pushToLimit', () => {
 
 describe('replicateMongoSlice', () => {
 	it('should do nothing if sub has no E2EKey', () => {
-		expect(replicateMongoSlice('1', { oldRoomKeys: [] })).to.be.undefined;
+		expect(replicateMongoSlice('1', { oldRoomKeys: [] } as unknown as ISubscription)).to.be.undefined;
 	});
 	it('should return an array with the new E2EKey as an old key when there is no oldkeys', () => {
-		expect(replicateMongoSlice('1', { E2EKey: '1' })[0].E2EKey).to.equal('1');
+		expect(replicateMongoSlice('1', { E2EKey: '1' } as unknown as ISubscription)![0].E2EKey).to.equal('1');
 	});
 	it('should unshift a new key if sub has E2EKey and oldRoomKeys', () => {
-		expect(replicateMongoSlice('1', { oldRoomKeys: [{ E2EKey: '1', ts: new Date() }], E2EKey: '2' })[0].E2EKey).to.equal('2');
+		expect(
+			replicateMongoSlice('1', { oldRoomKeys: [{ E2EKey: '1', ts: new Date() }], E2EKey: '2' } as unknown as ISubscription)![0].E2EKey,
+		).to.equal('2');
 	});
 	it('should unshift a new key, and eliminate the 10th key if array has 10 items', () => {
 		const result = replicateMongoSlice('1', {
@@ -82,10 +92,10 @@ describe('replicateMongoSlice', () => {
 				{ E2EKey: '10', ts: addSecondsToDate(-90) },
 			],
 			E2EKey: '11',
-		});
+		} as unknown as ISubscription);
 
-		expect(result[0].E2EKey).to.equal('11');
-		expect(result[9].E2EKey).to.equal('9');
+		expect(result![0].E2EKey).to.equal('11');
+		expect(result![9].E2EKey).to.equal('9');
 		expect(result).to.have.lengthOf(10);
 	});
 });

@@ -1,64 +1,63 @@
+import type { ILivechatVisitor, IOmnichannelSource } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { beforeEach, describe, it, vi } from 'vitest';
 
-const modelsMock = {
-	LivechatContacts: {
-		findContactMatchingVisitor: sinon.stub(),
-	},
-	LivechatRooms: {
-		setContactByVisitorAssociation: sinon.stub(),
-		findNewestByContactVisitorAssociation: sinon.stub(),
-	},
-};
-
-const createContactFromVisitor = sinon.stub();
-const mergeVisitorIntoContact = sinon.stub();
-
-const { migrateVisitorToContactId } = proxyquire.noCallThru().load('./migrateVisitorToContactId', {
-	'./createContactFromVisitor': {
-		createContactFromVisitor,
-	},
-	'./ContactMerger': {
-		ContactMerger: {
-			mergeVisitorIntoContact,
+const { modelsMock, createContactFromVisitor, mergeVisitorIntoContact, loggerDebug, sandbox } = vi.hoisted(() => {
+	const sinon = require('sinon');
+	const sandbox = sinon.createSandbox();
+	return {
+		sandbox,
+		createContactFromVisitor: sandbox.stub(),
+		mergeVisitorIntoContact: sandbox.stub(),
+		loggerDebug: sandbox.stub(),
+		modelsMock: {
+			LivechatContacts: {
+				findContactMatchingVisitor: sandbox.stub(),
+			},
+			LivechatRooms: {
+				setContactByVisitorAssociation: sandbox.stub(),
+				findNewestByContactVisitorAssociation: sandbox.stub(),
+			},
 		},
-	},
-	'@rocket.chat/models': modelsMock,
-	'../logger': {
-		livechatContactsLogger: {
-			debug: sinon.stub(),
-		},
-	},
+	};
 });
+
+vi.mock('./createContactFromVisitor', () => ({ createContactFromVisitor }));
+vi.mock('./ContactMerger', () => ({ ContactMerger: { mergeVisitorIntoContact } }));
+vi.mock('@rocket.chat/models', () => ({
+	LivechatContacts: modelsMock.LivechatContacts,
+	LivechatRooms: modelsMock.LivechatRooms,
+}));
+vi.mock('../logger', () => ({ livechatContactsLogger: { debug: loggerDebug } }));
+
+const { migrateVisitorToContactId } = await import('./migrateVisitorToContactId');
 
 describe('migrateVisitorToContactId', () => {
 	beforeEach(() => {
-		modelsMock.LivechatContacts.findContactMatchingVisitor.reset();
-		modelsMock.LivechatRooms.setContactByVisitorAssociation.reset();
-		modelsMock.LivechatRooms.findNewestByContactVisitorAssociation.reset();
-		createContactFromVisitor.reset();
-		mergeVisitorIntoContact.reset();
+		sandbox.reset();
 	});
 
 	it('should not create a contact if there is no source for the visitor', async () => {
-		expect(await migrateVisitorToContactId({ visitor: { _id: 'visitor1' } })).to.be.null;
+		expect(await migrateVisitorToContactId({ visitor: { _id: 'visitor1' } } as unknown as Parameters<typeof migrateVisitorToContactId>[0]))
+			.to.be.null;
 	});
 
 	it('should attempt to create a new contact if there is no free existing contact matching the visitor data', async () => {
 		modelsMock.LivechatContacts.findContactMatchingVisitor.resolves(undefined);
 		const visitor = { _id: 'visitor1' };
-		const source = { type: 'other' };
+		const source = { type: 'other' } as unknown as IOmnichannelSource;
 		modelsMock.LivechatRooms.findNewestByContactVisitorAssociation.resolves({ _id: 'room1', v: { _id: visitor._id }, source });
 		createContactFromVisitor.resolves('contactCreated');
 
-		expect(await migrateVisitorToContactId({ visitor: { _id: 'visitor1' }, source })).to.be.equal('contactCreated');
+		expect(await migrateVisitorToContactId({ visitor: { _id: 'visitor1' } as unknown as ILivechatVisitor, source })).to.be.equal(
+			'contactCreated',
+		);
 	});
 
 	it('should not attempt to create a new contact if one is found for the visitor', async () => {
-		const visitor = { _id: 'visitor1' };
+		const visitor = { _id: 'visitor1' } as unknown as ILivechatVisitor;
 		const contact = { _id: 'contact1' };
-		const source = { type: 'sms' };
+		const source = { type: 'sms' } as unknown as IOmnichannelSource;
 		modelsMock.LivechatRooms.findNewestByContactVisitorAssociation.resolves({ _id: 'room1', v: { _id: visitor._id }, source });
 		modelsMock.LivechatContacts.findContactMatchingVisitor.resolves(contact);
 		createContactFromVisitor.resolves('contactCreated');

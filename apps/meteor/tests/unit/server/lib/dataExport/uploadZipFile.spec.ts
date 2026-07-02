@@ -1,41 +1,47 @@
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { beforeAll, describe, it, vi } from 'vitest';
 
-// Create stubs for dependencies
-const stubs = {
-	findOneUserById: sinon.stub(),
-	randomId: sinon.stub(),
-	stat: sinon.stub(),
-	getStore: sinon.stub(),
-	insertFileStub: sinon.stub(),
-	createReadStream: sinon.stub(),
-};
-
-const { uploadZipFile } = proxyquire.noCallThru().load('../../../../../server/lib/dataExport/uploadZipFile.ts', {
-	'@rocket.chat/models': {
-		Users: {
-			findOneById: stubs.findOneUserById,
+// Stubs are built in `vi.hoisted` so the hoisted `vi.mock` factories can reference them.
+// `sinon.match` matchers are instance-specific, so we use the matcher from the SAME sinon
+// instance that created the stubs (the hoisted one) when asserting `calledWith(sinon.match(...))`.
+const { stubs, sinon } = vi.hoisted(() => {
+	const sinon = require('sinon');
+	return {
+		sinon,
+		stubs: {
+			findOneUserById: sinon.stub(),
+			randomId: sinon.stub(),
+			stat: sinon.stub(),
+			getStore: sinon.stub(),
+			insertFileStub: sinon.stub(),
+			createReadStream: sinon.stub(),
 		},
-	},
-	'@rocket.chat/random': {
-		Random: {
-			id: stubs.randomId,
-		},
-	},
-	'node:fs/promises': {
-		stat: stubs.stat,
-	},
-	'node:fs': {
-		createReadStream: stubs.createReadStream,
-	},
-	'../../../app/file-upload/server': {
-		FileUpload: {
-			getStore: stubs.getStore,
-		},
-	},
+	};
 });
+
+vi.mock('@rocket.chat/models', () => ({
+	Users: {
+		findOneById: stubs.findOneUserById,
+	},
+}));
+vi.mock('@rocket.chat/random', () => ({
+	Random: {
+		id: stubs.randomId,
+	},
+}));
+vi.mock('node:fs/promises', () => ({
+	stat: stubs.stat,
+}));
+vi.mock('node:fs', () => ({
+	createReadStream: stubs.createReadStream,
+}));
+vi.mock('../../../../../app/file-upload/server', () => ({
+	FileUpload: {
+		getStore: stubs.getStore,
+	},
+}));
+
+const { uploadZipFile } = await import('../../../../../server/lib/dataExport/uploadZipFile');
 
 describe('Export - uploadZipFile', () => {
 	const randomId = 'random-id';
@@ -45,12 +51,12 @@ describe('Export - uploadZipFile', () => {
 	const userId = 'user-id';
 	const filePath = 'random-path';
 
-	before(() => {
+	beforeAll(() => {
 		stubs.findOneUserById.returns({ name: userName });
 		stubs.stat.returns({ size: fileStat });
 		stubs.randomId.returns(randomId);
 		stubs.getStore.returns({ insert: stubs.insertFileStub });
-		stubs.insertFileStub.callsFake((details) => ({ _id: details._id, name: details.name }));
+		stubs.insertFileStub.callsFake((details: any) => ({ _id: details._id, name: details.name }));
 	});
 
 	it('should correctly build file name for json exports', async () => {

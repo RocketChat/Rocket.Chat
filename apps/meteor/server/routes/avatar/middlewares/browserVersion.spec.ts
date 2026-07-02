@@ -1,20 +1,18 @@
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import type { IResult } from 'ua-parser-js';
+import { describe, it, vi } from 'vitest';
 
 // const getCookie = sinon.stub();
-class CookiesMock {
-	public get = (_key: any, value: any) => value;
-}
-const { handleBrowserVersionCheck, isIEOlderThan11 } = proxyquire.noCallThru().load('./browserVersion', {
-	'meteor/ostrio:cookies': {
-		Cookies: CookiesMock,
-	},
-	'../../../../app/utils/server/getURL': {
-		getURL: () => '',
-	},
+vi.mock('meteor/ostrio:cookies', () => {
+	class CookiesMock {
+		public get = (_key: any, value: any) => value;
+	}
+	return { Cookies: CookiesMock };
 });
+vi.mock('../../../../app/utils/server/getURL', () => ({ getURL: () => '' }));
+
+const { handleBrowserVersionCheck, isIEOlderThan11 } = await import('./browserVersion');
 
 describe('#isIEOlderThan11()', () => {
 	it('should return false if user agent is IE11', () => {
@@ -24,7 +22,7 @@ describe('#isIEOlderThan11()', () => {
 				version: '11.0',
 			},
 		};
-		expect(isIEOlderThan11(userAgent)).to.be.false;
+		expect(isIEOlderThan11(userAgent as unknown as IResult)).to.be.false;
 	});
 
 	it('should return true if user agent is IE < 11', () => {
@@ -34,7 +32,7 @@ describe('#isIEOlderThan11()', () => {
 				version: '10.0',
 			},
 		};
-		expect(isIEOlderThan11(userAgent)).to.be.true;
+		expect(isIEOlderThan11(userAgent as unknown as IResult)).to.be.true;
 	});
 });
 

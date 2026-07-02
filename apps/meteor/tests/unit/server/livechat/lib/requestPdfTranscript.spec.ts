@@ -1,23 +1,27 @@
+import type { AtLeast, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { describe, it, beforeEach, after } from 'mocha';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, beforeEach, afterAll, vi } from 'vitest';
 
-const workOnPdfStub = sinon.stub();
-const queueWorkStub = sinon.stub();
+type RoomArg = AtLeast<IOmnichannelRoom, '_id' | 'open' | 'v' | 'pdfTranscriptFileId'>;
 
-const { requestPdfTranscript } = proxyquire
-	.noCallThru()
-	.load('../../../../../ee/app/livechat-enterprise/server/lib/requestPdfTranscript.ts', {
-		'@rocket.chat/core-services': {
-			OmnichannelTranscript: {
-				workOnPdf: workOnPdfStub,
-			},
-			QueueWorker: {
-				queueWork: queueWorkStub,
-			},
-		},
-	});
+const { workOnPdfStub, queueWorkStub } = vi.hoisted(() => {
+	const sinon = require('sinon');
+	return {
+		workOnPdfStub: sinon.stub(),
+		queueWorkStub: sinon.stub(),
+	};
+});
+
+vi.mock('@rocket.chat/core-services', () => ({
+	OmnichannelTranscript: {
+		workOnPdf: workOnPdfStub,
+	},
+	QueueWorker: {
+		queueWork: queueWorkStub,
+	},
+}));
+
+const { requestPdfTranscript } = await import('../../../../../ee/app/livechat-enterprise/server/lib/requestPdfTranscript');
 
 describe('requestPdfTranscript', () => {
 	const currentTestModeValue = process.env.TEST_MODE;
@@ -27,33 +31,36 @@ describe('requestPdfTranscript', () => {
 		queueWorkStub.reset();
 	});
 
-	after(() => {
+	afterAll(() => {
 		process.env.TEST_MODE = currentTestModeValue;
 	});
 
 	it('should throw an error if room is still open', async () => {
-		await expect(requestPdfTranscript({ open: true }, 'userId')).to.be.rejectedWith('room-still-open');
+		await expect(requestPdfTranscript({ open: true } as unknown as RoomArg, 'userId')).to.be.rejectedWith('room-still-open');
 	});
 	it('should throw an error if room doesnt have a v property', async () => {
-		await expect(requestPdfTranscript({}, 'userId')).to.be.rejectedWith('improper-room-state');
+		await expect(requestPdfTranscript({} as unknown as RoomArg, 'userId')).to.be.rejectedWith('improper-room-state');
 	});
 	it('should not allow to request a transcript if it already exists', async () => {
-		const result = await requestPdfTranscript({ _id: 'roomIdxx', v: 1, pdfTranscriptFileId: 'afsdafadsfs' }, 'userId');
+		const result = await requestPdfTranscript(
+			{ _id: 'roomIdxx', v: 1, pdfTranscriptFileId: 'afsdafadsfs' } as unknown as RoomArg,
+			'userId',
+		);
 		expect(result).to.be.undefined;
 	});
 	it('should not allow to request a transcript if it was already requested during the previous 15 seconds', async () => {
-		await requestPdfTranscript({ _id: 'roomId', v: 1 }, 'userId');
+		await requestPdfTranscript({ _id: 'roomId', v: 1 } as unknown as RoomArg, 'userId');
 		expect(workOnPdfStub.callCount).to.equal(0);
 		expect(queueWorkStub.callCount).to.equal(1);
 
-		const result = await requestPdfTranscript({ _id: 'roomId', v: 1 }, 'userId');
+		const result = await requestPdfTranscript({ _id: 'roomId', v: 1 } as unknown as RoomArg, 'userId');
 		expect(workOnPdfStub.callCount).to.equal(0);
 		expect(queueWorkStub.callCount).to.equal(1);
 		expect(result).to.be.undefined;
 	});
 	it('should call workOnPdf if TEST_MODE is true', async () => {
 		process.env.TEST_MODE = 'true';
-		await requestPdfTranscript({ _id: 'roomId-fasdafsdas', v: {} }, 'userId');
+		await requestPdfTranscript({ _id: 'roomId-fasdafsdas', v: {} } as unknown as RoomArg, 'userId');
 		expect(
 			workOnPdfStub
 				.getCall(0)
@@ -63,7 +70,7 @@ describe('requestPdfTranscript', () => {
 	});
 	it('should queue work if TEST_MODE is not set', async () => {
 		delete process.env.TEST_MODE;
-		await requestPdfTranscript({ _id: 'roomId-afsdfaefzv', v: {} }, 'userId');
+		await requestPdfTranscript({ _id: 'roomId-afsdfaefzv', v: {} } as unknown as RoomArg, 'userId');
 		expect(workOnPdfStub.calledOnce).to.be.false;
 		expect(
 			queueWorkStub.getCall(0).calledWithExactly('work', 'omnichannel-transcript.workOnPdf', {

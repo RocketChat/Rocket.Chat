@@ -1,16 +1,21 @@
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, beforeEach, vi } from 'vitest';
 
-const modelsMock = {
-	LivechatContacts: {
-		updateById: sinon.stub(),
-	},
-};
-
-const { updateContactsCustomFields } = proxyquire.noCallThru().load('../../../../../../app/livechat/server/lib/custom-fields.ts', {
-	'@rocket.chat/models': modelsMock,
+const { modelsMock } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
+		modelsMock: {
+			LivechatContacts: {
+				updateById: sinon.stub(),
+			},
+		},
+	};
 });
+
+vi.mock('@rocket.chat/models', () => modelsMock);
+
+const { updateContactsCustomFields } = await import('../../../../../../app/livechat/server/lib/custom-fields');
 
 describe('[Custom Fields] updateContactsCustomFields', () => {
 	beforeEach(() => {

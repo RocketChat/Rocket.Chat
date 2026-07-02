@@ -1,40 +1,52 @@
 import { expect } from 'chai';
-import { describe, it, beforeEach } from 'mocha';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, beforeEach, vi } from 'vitest';
 
-const findOneNotExpiredById = sinon.stub().resolves(null);
-const removeById = sinon.stub().resolves();
-const findExistingCASUser = sinon.stub().resolves(null);
-const settingsGet = sinon.stub().returns(true);
-
-const { loginHandlerCAS: handler } = proxyquire.noCallThru().load('./loginHandler', {
-	'@rocket.chat/models': {
-		CredentialTokens: { findOneNotExpiredById, removeById },
-		Users: { updateOne: sinon.stub().resolves() },
-	},
-	'meteor/accounts-base': {
-		Accounts: {
-			LoginCancelledError: { numericError: 403 },
+const { stubs } = vi.hoisted(() => {
+	const sinon = require('sinon');
+	const sandbox = sinon.createSandbox();
+	return {
+		sandbox,
+		stubs: {
+			findOneNotExpiredById: sandbox.stub().resolves(null),
+			removeById: sandbox.stub().resolves(),
+			usersUpdateOne: sandbox.stub().resolves(),
+			findExistingCASUser: sandbox.stub().resolves(null),
+			settingsGet: sandbox.stub().returns(true),
+			createNewUser: sandbox.stub().resolves({ _id: 'newUserId' }),
+			setRealName: sandbox.stub().resolves(),
+			loggerDebug: sandbox.stub(),
+			loggerError: sandbox.stub(),
 		},
-	},
-	'meteor/meteor': {
-		Meteor: { Error },
-	},
-	'./createNewUser': { createNewUser: sinon.stub().resolves({ _id: 'newUserId' }) },
-	'./findExistingCASUser': { findExistingCASUser },
-	'./logger': { logger: { debug: sinon.stub(), error: sinon.stub() } },
-	'../../../app/lib/server/functions/setRealName': { setRealName: sinon.stub().resolves() },
-	'../../../app/settings/server': { settings: { get: settingsGet } },
+	};
 });
+
+vi.mock('@rocket.chat/models', () => ({
+	CredentialTokens: { findOneNotExpiredById: stubs.findOneNotExpiredById, removeById: stubs.removeById },
+	Users: { updateOne: stubs.usersUpdateOne },
+}));
+vi.mock('meteor/accounts-base', () => ({
+	Accounts: {
+		LoginCancelledError: { numericError: 403 },
+	},
+}));
+vi.mock('meteor/meteor', () => ({
+	Meteor: { Error },
+}));
+vi.mock('./createNewUser', () => ({ createNewUser: stubs.createNewUser }));
+vi.mock('./findExistingCASUser', () => ({ findExistingCASUser: stubs.findExistingCASUser }));
+vi.mock('./logger', () => ({ logger: { debug: stubs.loggerDebug, error: stubs.loggerError } }));
+vi.mock('../../../app/lib/server/functions/setRealName', () => ({ setRealName: stubs.setRealName }));
+vi.mock('../../../app/settings/server', () => ({ settings: { get: stubs.settingsGet } }));
+
+const { loginHandlerCAS: handler } = await import('./loginHandler');
 
 describe('loginHandlerCAS', () => {
 	beforeEach(() => {
-		findOneNotExpiredById.reset();
-		removeById.reset();
-		findExistingCASUser.reset();
-		settingsGet.reset();
-		settingsGet.returns(true);
+		stubs.findOneNotExpiredById.reset();
+		stubs.removeById.reset();
+		stubs.findExistingCASUser.reset();
+		stubs.settingsGet.reset();
+		stubs.settingsGet.returns(true);
 	});
 
 	it('should reject non-string credentialToken and never query the database (NoSQL injection prevention)', async () => {
@@ -44,13 +56,13 @@ describe('loginHandlerCAS', () => {
 		expect(await handler({ cas: { credentialToken: ['a'] } })).to.be.undefined;
 		expect(await handler({ cas: { credentialToken: null } })).to.be.undefined;
 
-		expect(findOneNotExpiredById.called).to.be.false;
+		expect(stubs.findOneNotExpiredById.called).to.be.false;
 	});
 
 	it('should return undefined when CAS is disabled', async () => {
-		settingsGet.returns(false);
+		stubs.settingsGet.returns(false);
 
 		expect(await handler({ cas: { credentialToken: 'valid-token' } })).to.be.undefined;
-		expect(findOneNotExpiredById.called).to.be.false;
+		expect(stubs.findOneNotExpiredById.called).to.be.false;
 	});
 });

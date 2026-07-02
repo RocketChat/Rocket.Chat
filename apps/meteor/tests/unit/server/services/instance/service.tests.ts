@@ -1,39 +1,45 @@
 import { expect } from 'chai';
-import { describe, it, beforeEach, afterEach } from 'mocha';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, beforeEach, afterEach, vi } from 'vitest';
 
 import type { IInstanceService } from '../../../../../ee/server/sdk/types/IInstanceService';
 
-const ServiceBrokerMock = {
-	call: sinon.stub(),
-};
-
-const AppsMock = {
-	getAppsStatusLocal: sinon.stub(),
-};
-
-const serviceMocks = {
-	'@rocket.chat/core-services': {
-		ServiceClassInternal: class {
-			onEvent = sinon.stub();
-
-			onSettingChanged = sinon.stub();
+// Stubs are built in `vi.hoisted` so the hoisted `vi.mock` factories can reference them.
+const { ServiceBrokerMock, AppsMock } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
+		ServiceBrokerMock: {
+			call: sinon.stub(),
 		},
-		Apps: AppsMock,
+		AppsMock: {
+			getAppsStatusLocal: sinon.stub(),
+		},
+	};
+});
+
+vi.mock('@rocket.chat/core-services', () => ({
+	ServiceClassInternal: class {
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		onEvent = require('sinon').stub();
+
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		onSettingChanged = require('sinon').stub();
 	},
-	'moleculer': {
+	Apps: AppsMock,
+}));
+
+vi.mock('moleculer', () => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return {
 		ServiceBroker: sinon.stub().returns(ServiceBrokerMock),
 		Serializers: {
 			Base: class {},
 		},
-	},
-};
+	};
+});
 
-const { InstanceService } = proxyquire
-	.noPreserveCache()
-	.noCallThru()
-	.load('../../../../../ee/server/local-services/instance/service', serviceMocks);
+const { InstanceService } = await import('../../../../../ee/server/local-services/instance/service');
 
 describe('InstanceService', () => {
 	let service: IInstanceService;

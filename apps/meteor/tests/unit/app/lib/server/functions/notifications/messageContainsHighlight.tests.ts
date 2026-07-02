@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
+import { describe, it } from 'vitest';
 
 import { messageContainsHighlight } from '../../../../../../../app/lib/server/functions/notifications/messageContainsHighlight';
 

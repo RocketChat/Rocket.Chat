@@ -1,10 +1,11 @@
 import { expect } from 'chai';
-import { afterEach, beforeEach, describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { afterEach, beforeEach, describe, it, vi } from 'vitest';
 
-const settingsMock = sinon.stub();
-const getLoginTokenStub = sinon.stub();
+const { settingsMock, getLoginTokenStub } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return { settingsMock: sinon.stub(), getLoginTokenStub: sinon.stub() };
+});
 
 class TOTPCheckMock {
 	name = 'totp';
@@ -46,21 +47,21 @@ class MeteorErrorMock extends Error {
 	}
 }
 
-const { checkCodeForUser } = proxyquire.noCallThru().load('./index', {
-	'./TOTPCheck': { TOTPCheck: TOTPCheckMock },
-	'./EmailCheck': { EmailCheck: DisabledCheckMock },
-	'./PasswordCheckFallback': { PasswordCheckFallback: class extends DisabledCheckMock {} },
-	'../../../lib/server/functions/getModifiedHttpHeaders': { normalizeHeaders: (headers: unknown) => headers },
-	'../../../settings/server': { settings: { get: settingsMock } },
-	'@rocket.chat/models': {
-		Users: {
-			findOneById: async () => null,
-			setTwoFactorAuthorizationHashAndUntilForUserIdAndToken: async () => undefined,
-		},
+vi.mock('./TOTPCheck', () => ({ TOTPCheck: TOTPCheckMock }));
+vi.mock('./EmailCheck', () => ({ EmailCheck: DisabledCheckMock }));
+vi.mock('./PasswordCheckFallback', () => ({ PasswordCheckFallback: class extends DisabledCheckMock {} }));
+vi.mock('../../../lib/server/functions/getModifiedHttpHeaders', () => ({ normalizeHeaders: (headers: unknown) => headers }));
+vi.mock('../../../settings/server', () => ({ settings: { get: settingsMock } }));
+vi.mock('@rocket.chat/models', () => ({
+	Users: {
+		findOneById: async () => null,
+		setTwoFactorAuthorizationHashAndUntilForUserIdAndToken: async () => undefined,
 	},
-	'meteor/accounts-base': { Accounts: { _getLoginToken: getLoginTokenStub } },
-	'meteor/meteor': { Meteor: { Error: MeteorErrorMock } },
-});
+}));
+vi.mock('meteor/accounts-base', () => ({ Accounts: { _getLoginToken: getLoginTokenStub } }));
+vi.mock('meteor/meteor', () => ({ Meteor: { Error: MeteorErrorMock } }));
+
+const { checkCodeForUser } = await import('./index');
 
 const HASHED_TOKEN = 'hashed-login-token';
 

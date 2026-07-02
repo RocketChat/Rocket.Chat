@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { describe, it, beforeEach } from 'mocha';
+import { describe, it, beforeEach } from 'vitest';
 
 import { updateRecent, removeFromRecent, replaceEmojiInRecent } from '../../../../app/emoji/client/helpers';
 import { emoji } from '../../../../app/emoji/client/lib';

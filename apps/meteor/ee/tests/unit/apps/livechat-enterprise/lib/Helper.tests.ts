@@ -1,25 +1,33 @@
 import { expect } from 'chai';
-import { beforeEach, describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { beforeEach, describe, it, vi } from 'vitest';
 
-const settingGetMock = sinon.stub();
-const usersModelMock = {
-	getAgentInfo: sinon.stub(),
-};
+// Stubs are built in `vi.hoisted` so the hoisted `vi.mock` factories can reference them. sinon is
+// require()d inside the hoisted block because the top-level import has not executed at hoist time.
+// NOTE: relative `vi.mock` specifiers are resolved relative to THIS spec file (not the source).
+const { settingGetMock, usersModelMock, departmentsMock, meteorStartup, queueInactivityStop, inquirySortMechanism, omniChatSortQuery } =
+	vi.hoisted(() => {
+		const sinon = require('sinon');
+		return {
+			settingGetMock: sinon.stub(),
+			usersModelMock: { getAgentInfo: sinon.stub() },
+			departmentsMock: { findOneById: sinon.stub() },
+			meteorStartup: sinon.stub(),
+			queueInactivityStop: sinon.stub(),
+			inquirySortMechanism: sinon.stub(),
+			omniChatSortQuery: sinon.stub(),
+		};
+	});
 
-const departmentsMock = { findOneById: sinon.stub() };
+vi.mock('meteor/meteor', () => ({ Meteor: { startup: meteorStartup } }));
+vi.mock('../../../../../app/livechat-enterprise/server/lib/QueueInactivityMonitor', () => ({
+	OmnichannelQueueInactivityMonitor: { stop: queueInactivityStop },
+}));
+vi.mock('../../../../../../app/livechat/server/lib/settings', () => ({ getInquirySortMechanismSetting: inquirySortMechanism }));
+vi.mock('../../../../../../app/livechat/lib/inquiries', () => ({ getOmniChatSortQuery: omniChatSortQuery }));
+vi.mock('../../../../../../app/settings/server', () => ({ settings: { get: settingGetMock } }));
+vi.mock('@rocket.chat/models', () => ({ Users: usersModelMock, LivechatDepartment: departmentsMock }));
 
-const mocks = {
-	'meteor/meteor': { Meteor: { startup: sinon.stub() } },
-	'./QueueInactivityMonitor': { stop: sinon.stub() },
-	'../../../../../app/livechat/server/lib/settings': { getInquirySortMechanismSetting: sinon.stub() },
-	'../../../../../app/livechat/lib/inquiries': { getOmniChatSortQuery: sinon.stub() },
-	'../../../../../app/settings/server': { settings: { get: settingGetMock } },
-	'@rocket.chat/models': { Users: usersModelMock, LivechatDepartment: departmentsMock },
-};
-
-const { isAgentWithinChatLimits } = proxyquire.noCallThru().load('../../../../../app/livechat-enterprise/server/lib/Helper.ts', mocks);
+const { isAgentWithinChatLimits } = await import('../../../../../app/livechat-enterprise/server/lib/Helper');
 
 describe('isAgentWithinChatLimits', () => {
 	beforeEach(() => {
@@ -28,30 +36,40 @@ describe('isAgentWithinChatLimits', () => {
 		settingGetMock.reset();
 	});
 	it('should return true if no limit is set', async () => {
-		const res = await isAgentWithinChatLimits({ agentId: 'kevs', totalChats: 10 });
+		const res = await isAgentWithinChatLimits({ agentId: 'kevs', totalChats: 10 } as unknown as Parameters<
+			typeof isAgentWithinChatLimits
+		>[0]);
 		expect(res).to.be.true;
 	});
 	it('should return true when agent is under the agent limit', async () => {
 		usersModelMock.getAgentInfo.resolves({ livechat: { maxNumberSimultaneousChat: 15 } });
-		const res = await isAgentWithinChatLimits({ agentId: 'kevs', totalChats: 10 });
+		const res = await isAgentWithinChatLimits({ agentId: 'kevs', totalChats: 10 } as unknown as Parameters<
+			typeof isAgentWithinChatLimits
+		>[0]);
 		expect(res).to.be.true;
 	});
 	it('should honor agent limit over global limit', async () => {
 		usersModelMock.getAgentInfo.resolves({ livechat: { maxNumberSimultaneousChat: 15 } });
 		settingGetMock.returns(5);
-		const res = await isAgentWithinChatLimits({ agentId: 'kevs', totalChats: 10 });
+		const res = await isAgentWithinChatLimits({ agentId: 'kevs', totalChats: 10 } as unknown as Parameters<
+			typeof isAgentWithinChatLimits
+		>[0]);
 		expect(res).to.be.true;
 	});
 	it('should use global limit if agent limit is not set', async () => {
 		usersModelMock.getAgentInfo.resolves({ livechat: { maxNumberSimultaneousChat: undefined } });
 		settingGetMock.returns(5);
-		const res = await isAgentWithinChatLimits({ agentId: 'kevs', totalChats: 10 });
+		const res = await isAgentWithinChatLimits({ agentId: 'kevs', totalChats: 10 } as unknown as Parameters<
+			typeof isAgentWithinChatLimits
+		>[0]);
 		expect(res).to.be.false;
 	});
 	it('should consider a user with the same number of chats as the limit as over the limit', async () => {
 		usersModelMock.getAgentInfo.resolves({ livechat: { maxNumberSimultaneousChat: 15 } });
 		settingGetMock.returns(5);
-		const res = await isAgentWithinChatLimits({ agentId: 'kevs', totalChats: 15 });
+		const res = await isAgentWithinChatLimits({ agentId: 'kevs', totalChats: 15 } as unknown as Parameters<
+			typeof isAgentWithinChatLimits
+		>[0]);
 		expect(res).to.be.false;
 	});
 	it('should honor both department and agent limit when departmentId is passed', async () => {
@@ -100,7 +118,9 @@ describe('isAgentWithinChatLimits', () => {
 	});
 	it('should ignore agent limit if its not a valid number (or cast to number)', async () => {
 		usersModelMock.getAgentInfo.resolves({ livechat: { maxNumberSimultaneousChat: 'invalid' } });
-		const res = await isAgentWithinChatLimits({ agentId: 'kevs', totalChats: 11 });
+		const res = await isAgentWithinChatLimits({ agentId: 'kevs', totalChats: 11 } as unknown as Parameters<
+			typeof isAgentWithinChatLimits
+		>[0]);
 		expect(res).to.be.true;
 	});
 	it('should ignore the department limit if it is not a valid number (or cast to number)', async () => {

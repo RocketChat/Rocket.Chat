@@ -1,17 +1,44 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
 import sinon from 'sinon';
+import { describe, it, beforeEach, afterEach, vi } from 'vitest';
+
+// proxyquire previously rebuilt the stubs and re-`load`ed the module every test (via
+// noPreserveCache). With vi.mock the module is loaded once against stable stubs that we reset and
+// reconfigure per test. `mem` is stubbed to return the function as-is (no caching) so the wrapped
+// `getMessageToBroadcast` always reads the current stub behaviour.
+const { getSettingValueByIdStub, usersFindOneStub, messagesFindOneStub, broadcastStub, memStub } = vi.hoisted(() => {
+	const sinon = require('sinon');
+	return {
+		getSettingValueByIdStub: sinon.stub(),
+		usersFindOneStub: sinon.stub(),
+		messagesFindOneStub: sinon.stub(),
+		broadcastStub: sinon.stub(),
+		memStub: sinon.stub().callsFake((fn: any) => fn),
+	};
+});
+
+vi.mock('@rocket.chat/models', () => ({
+	Messages: {
+		findOneById: messagesFindOneStub,
+	},
+	Users: {
+		findOne: usersFindOneStub,
+	},
+	Settings: {
+		getValueById: getSettingValueByIdStub,
+	},
+}));
+vi.mock('@rocket.chat/core-services', () => ({
+	api: {
+		broadcast: broadcastStub,
+	},
+}));
+vi.mock('mem', () => ({ default: memStub }));
+
+const { getMessageToBroadcast, notifyOnMessageChange } = await import('../../../../../../app/lib/server/lib/notifyListener');
 
 describe('Message Broadcast Tests', () => {
-	let getSettingValueByIdStub: sinon.SinonStub;
-	let usersFindOneStub: sinon.SinonStub;
-	let messagesFindOneStub: sinon.SinonStub;
-	let broadcastStub: sinon.SinonStub;
-	let getMessageToBroadcast: any;
-	let notifyOnMessageChange: any;
-	let memStub: sinon.SinonStub;
-
 	const sampleMessage: IMessage = {
 		_id: '123',
 		rid: 'room1',
@@ -23,39 +50,11 @@ describe('Message Broadcast Tests', () => {
 		_updatedAt: new Date(),
 	};
 
-	const modelsStubs = () => ({
-		Messages: {
-			findOneById: messagesFindOneStub,
-		},
-		Users: {
-			findOne: usersFindOneStub,
-		},
-		Settings: {
-			getValueById: getSettingValueByIdStub,
-		},
-	});
-
-	const coreStubs = () => ({
-		api: {
-			broadcast: broadcastStub,
-		},
-	});
-
 	beforeEach(() => {
-		getSettingValueByIdStub = sinon.stub();
-		usersFindOneStub = sinon.stub();
-		messagesFindOneStub = sinon.stub();
-		broadcastStub = sinon.stub();
-		memStub = sinon.stub().callsFake((fn: any) => fn);
-
-		const proxyMock = proxyquire.noPreserveCache().load('../../../../../../app/lib/server/lib/notifyListener', {
-			'@rocket.chat/models': modelsStubs(),
-			'@rocket.chat/core-services': coreStubs(),
-			'mem': memStub,
-		});
-
-		getMessageToBroadcast = proxyMock.getMessageToBroadcast;
-		notifyOnMessageChange = proxyMock.notifyOnMessageChange;
+		getSettingValueByIdStub.reset();
+		usersFindOneStub.reset();
+		messagesFindOneStub.reset();
+		broadcastStub.reset();
 	});
 
 	describe('getMessageToBroadcast', () => {
@@ -200,15 +199,6 @@ describe('Message Broadcast Tests', () => {
 	});
 
 	describe('notifyOnMessageChange', () => {
-		const setupProxyMock = () => {
-			const proxyMock = proxyquire.noCallThru().load('../../../../../../app/lib/server/lib/notifyListener', {
-				'@rocket.chat/models': modelsStubs(),
-				'@rocket.chat/core-services': coreStubs(),
-				'mem': memStub,
-			});
-			notifyOnMessageChange = proxyMock.notifyOnMessageChange;
-		};
-
 		const testCases = [
 			{
 				description: 'should broadcast the message if there is data attributes',
@@ -224,11 +214,10 @@ describe('Message Broadcast Tests', () => {
 
 		testCases.forEach(({ description, expectBroadcast, message }) => {
 			it(description, async () => {
-				setupProxyMock();
 				messagesFindOneStub.resolves(message);
 				getSettingValueByIdStub.resolves([]);
 
-				await notifyOnMessageChange({ id: '123', data: message });
+				await notifyOnMessageChange({ id: '123', data: message ?? undefined });
 
 				if (expectBroadcast) {
 					expect(broadcastStub.calledOnce).to.be.true;

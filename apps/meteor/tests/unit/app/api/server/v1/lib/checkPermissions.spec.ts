@@ -1,18 +1,24 @@
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
-import mock from 'proxyquire';
-import Sinon from 'sinon';
+import { describe, it, vi } from 'vitest';
 
 import type { PermissionsPayload } from '../../../../../../../app/api/server/api.helpers';
 
-const mocks = {
-	'../../lib/server/lib/deprecationWarningLogger': {
-		apiDeprecationLogger: {
-			endpoint: Sinon.stub(),
+const { stubs } = vi.hoisted(() => {
+	const sinon = require('sinon');
+	return {
+		stubs: {
+			apiDeprecationLogger: {
+				endpoint: sinon.stub(),
+			},
 		},
-	},
-};
-const { checkPermissions } = mock.noCallThru().load('../../../../../../../app/api/server/api.helpers', mocks);
+	};
+});
+
+vi.mock('../../../../../../../app/lib/server/lib/deprecationWarningLogger', () => ({
+	apiDeprecationLogger: stubs.apiDeprecationLogger,
+}));
+
+const { checkPermissions } = await import('../../../../../../../app/api/server/api.helpers');
 
 describe('checkPermissions', () => {
 	it('should return false when no options.permissionsRequired key is present', () => {
@@ -22,7 +28,7 @@ describe('checkPermissions', () => {
 	it('should return false when options.permissionsRequired is of an invalid format', () => {
 		const options = {
 			permissionsRequired: 'invalid',
-		};
+		} as unknown as { permissionsRequired?: PermissionsPayload };
 		expect(checkPermissions(options)).to.be.false;
 	});
 	it('should return true and modify options.permissionsRequired when permissionsRequired key is an array (of permissions)', () => {

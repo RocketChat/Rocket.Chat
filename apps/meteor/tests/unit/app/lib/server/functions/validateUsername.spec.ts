@@ -1,26 +1,27 @@
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, beforeEach, afterEach, vi } from 'vitest';
+
+const { getStub } = vi.hoisted(() => {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const sinon = require('sinon');
+	return { getStub: sinon.stub() };
+});
+
+vi.mock('../../../../../../app/settings/server', () => ({
+	settings: {
+		get: getStub,
+	},
+}));
+
+const { validateUsername } = await import('../../../../../../app/lib/server/functions/validateUsername');
 
 describe('validateUsername', () => {
-	const getStub = sinon.stub();
-
-	const proxySettings = {
-		settings: {
-			get: getStub,
-		},
-	};
-
-	const { validateUsername } = proxyquire.noCallThru().load('../../../../../../app/lib/server/functions/validateUsername', {
-		'../../../settings/server': proxySettings,
-	});
-
 	beforeEach(() => {
 		getStub.reset();
 	});
 
 	afterEach(() => {
-		sinon.restore();
+		getStub.reset();
 	});
 
 	describe('with default settings', () => {

@@ -1,43 +1,32 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { describe, it, beforeEach, vi } from 'vitest';
 
-const settingsMock = sinon.stub();
-
-const { EmailCheck } = proxyquire.noCallThru().load('./EmailCheck', {
-	'@rocket.chat/models': {
-		Users: {},
-	},
-	'meteor/accounts-base': {
-		Accounts: {
-			_bcryptRounds: () => '123',
-		},
-	},
-	'../../../../server/lib/i18n': {
-		i18n: {
-			t: (key: string) => key,
-		},
-	},
-	'../../../mailer/server/api': {
-		send: () => undefined,
-	},
-	'../../../settings/server': {
-		settings: {
-			get: settingsMock,
-		},
-	},
+const { settingsMock } = vi.hoisted(() => {
+	const sinon = require('sinon');
+	return { settingsMock: sinon.stub() };
 });
 
-const normalUserMock = { services: { email2fa: { enabled: true } }, emails: [{ email: 'abc@gmail.com', verified: true }] };
+vi.mock('@rocket.chat/models', () => ({ Users: {} }));
+vi.mock('meteor/accounts-base', () => ({ Accounts: { _bcryptRounds: () => '123' } }));
+vi.mock('../../../../server/lib/i18n', () => ({ i18n: { t: (key: string) => key } }));
+vi.mock('../../../mailer/server/api', () => ({ send: () => undefined }));
+vi.mock('../../../settings/server', () => ({ settings: { get: settingsMock } }));
+
+const { EmailCheck } = await import('./EmailCheck');
+
+const normalUserMock = {
+	services: { email2fa: { enabled: true } },
+	emails: [{ email: 'abc@gmail.com', verified: true }],
+} as unknown as IUser;
 const normalUserWithUnverifiedEmailMock = {
 	services: { email2fa: { enabled: true } },
 	emails: [{ email: 'abc@gmail.com', verified: false }],
-};
-const OAuthUserMock = { services: { google: {} }, emails: [{ email: 'abc@gmail.com', verified: true }] };
+} as unknown as IUser;
+const OAuthUserMock = { services: { google: {} }, emails: [{ email: 'abc@gmail.com', verified: true }] } as unknown as IUser;
 
 describe('EmailCheck', () => {
-	let emailCheck: typeof EmailCheck;
+	let emailCheck: InstanceType<typeof EmailCheck>;
 	beforeEach(() => {
 		settingsMock.reset();
 

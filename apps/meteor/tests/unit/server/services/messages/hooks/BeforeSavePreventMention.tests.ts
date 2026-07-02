@@ -1,25 +1,23 @@
+import type { IMessage } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
+import { describe, it, vi } from 'vitest';
 
-const Authorization = {
-	hasPermission: async (_uid: string, _permission: string, _room?: string): Promise<boolean> => true,
-};
-
-class MeteorError extends Error {}
-
-const { BeforeSavePreventMention } = proxyquire
-	.noCallThru()
-	.load('../../../../../../server/services/messages/hooks/BeforeSavePreventMention', {
-		'@rocket.chat/core-services': {
-			Authorization,
-			MeteorError,
+// The mutable `Authorization` object and the `MeteorError` class are built in `vi.hoisted` so the
+// hoisted `vi.mock` factories can reference them; tests reconfigure `Authorization.hasPermission`.
+const { Authorization, MeteorError } = vi.hoisted(() => {
+	class MeteorError extends Error {}
+	return {
+		MeteorError,
+		Authorization: {
+			hasPermission: async (_uid: string, _permission: string, _room?: string): Promise<boolean> => true,
 		},
-		'../../../lib/i18n': {
-			i18n: {
-				t: (s: any) => s,
-			},
-		},
-	});
+	};
+});
+
+vi.mock('@rocket.chat/core-services', () => ({ Authorization, MeteorError }));
+vi.mock('../../../../../../server/lib/i18n', () => ({ i18n: { t: (s: any) => s } }));
+
+const { BeforeSavePreventMention } = await import('../../../../../../server/services/messages/hooks/BeforeSavePreventMention');
 
 describe('Prevent mention on messages', () => {
 	it('should return void if message has no mentions', async () => {
@@ -27,7 +25,7 @@ describe('Prevent mention on messages', () => {
 
 		return expect(
 			preventMention.preventMention({
-				message: { rid: 'GENERAL', msg: 'hey', u: { _id: 'random' } },
+				message: { rid: 'GENERAL', msg: 'hey', u: { _id: 'random' } } as unknown as IMessage,
 				user: { _id: 'userId', language: 'en' },
 				mention: 'all',
 				permission: 'mention-all',
@@ -40,7 +38,7 @@ describe('Prevent mention on messages', () => {
 
 		return expect(
 			preventMention.preventMention({
-				message: { rid: 'GENERAL', msg: 'hey', mentions: [{ _id: 'here' }], u: { _id: 'random' } },
+				message: { rid: 'GENERAL', msg: 'hey', mentions: [{ _id: 'here' }], u: { _id: 'random' } } as unknown as IMessage,
 				user: { _id: 'userId', language: 'en' },
 				mention: 'all',
 				permission: 'mention-all',
@@ -53,7 +51,7 @@ describe('Prevent mention on messages', () => {
 
 		return expect(
 			preventMention.preventMention({
-				message: { rid: 'GENERAL', msg: 'hey', mentions: [{ _id: 'all' }], u: { _id: 'random' } },
+				message: { rid: 'GENERAL', msg: 'hey', mentions: [{ _id: 'all' }], u: { _id: 'random' } } as unknown as IMessage,
 				user: { _id: 'userId', language: 'en' },
 				mention: 'all',
 				permission: 'mention-here',
@@ -68,7 +66,7 @@ describe('Prevent mention on messages', () => {
 
 		return expect(
 			preventMention.preventMention({
-				message: { rid: 'GENERAL', msg: 'hey', mentions: [{ _id: 'all' }], u: { _id: 'random' } },
+				message: { rid: 'GENERAL', msg: 'hey', mentions: [{ _id: 'all' }], u: { _id: 'random' } } as unknown as IMessage,
 				user: { _id: 'userId', language: 'en' },
 				mention: 'all',
 				permission: 'mention-all',
@@ -89,7 +87,7 @@ describe('Prevent mention on messages', () => {
 
 		return expect(
 			preventMention.preventMention({
-				message: { rid: 'GENERAL', msg: 'hey', mentions: [{ _id: 'all' }], u: { _id: 'random' } },
+				message: { rid: 'GENERAL', msg: 'hey', mentions: [{ _id: 'all' }], u: { _id: 'random' } } as unknown as IMessage,
 				user: { _id: 'userId', language: 'en' },
 				mention: 'all',
 				permission: 'mention-all',
@@ -104,7 +102,7 @@ describe('Prevent mention on messages', () => {
 
 		return expect(
 			preventMention.preventMention({
-				message: { rid: 'GENERAL', msg: 'hey', mentions: [{ _id: 'all' }], u: { _id: 'random' } },
+				message: { rid: 'GENERAL', msg: 'hey', mentions: [{ _id: 'all' }], u: { _id: 'random' } } as unknown as IMessage,
 				user: { _id: 'userId', language: 'en' },
 				mention: 'all',
 				permission: 'mention-all',

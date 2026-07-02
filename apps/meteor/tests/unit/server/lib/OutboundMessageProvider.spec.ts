@@ -3,8 +3,8 @@ import type {
 	IOutboundPhoneMessageProvider,
 } from '@rocket.chat/apps-engine/definition/outboundCommunication';
 import { expect } from 'chai';
-import { describe, it, beforeEach } from 'mocha';
 import sinon from 'sinon';
+import { describe, it, beforeEach } from 'vitest';
 
 import { OutboundMessageProvider } from '../../../../server/lib/OutboundMessageProvider';
 

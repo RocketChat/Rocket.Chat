@@ -1,80 +1,108 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import chai, { expect } from 'chai';
 import chaiDateTime from 'chai-datetime';
-import { beforeEach, describe, it } from 'mocha';
 import moment from 'moment';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+import { beforeEach, describe, it, vi } from 'vitest';
 
 chai.use(chaiDateTime);
 
-const mockAgendaConstructor = sinon.stub();
-const mockAgendaStart = sinon.stub();
-const mockAgendaScheduler = sinon.stub();
-const mockAgendaCancel = sinon.stub();
-const mockAgendaDefine = sinon.stub();
-const mockLivechatCloseRoom = sinon.stub();
-const mockMeteorStartup = sinon.stub();
-const mockLivechatRooms = {
-	findOneById: sinon.stub(),
-};
-const mockUsers = {
-	findOneById: sinon.stub(),
-};
+// Stubs are built in `vi.hoisted` so the hoisted `vi.mock` factories can reference them. sinon is
+// require()d inside the hoisted block because the top-level import has not executed at hoist time.
+// NOTE: relative `vi.mock` specifiers are resolved relative to THIS spec file (not the source), so
+// they differ from the specifiers used inside the source module.
+const {
+	mockAgendaStart,
+	mockAgendaScheduler,
+	mockAgendaCancel,
+	mockAgendaDefine,
+	mockLivechatCloseRoom,
+	mockMeteorStartup,
+	mockLivechatRooms,
+	mockUsers,
+	mockLogger,
+	infoStub,
+	MockAgendaClass,
+} = vi.hoisted(() => {
+	const sinon = require('sinon');
 
-class MockAgendaClass {
-	constructor(opts: Record<string, any>) {
-		mockAgendaConstructor(opts);
+	const mockAgendaConstructor = sinon.stub();
+	const mockAgendaStart = sinon.stub();
+	const mockAgendaScheduler = sinon.stub();
+	const mockAgendaCancel = sinon.stub();
+	const mockAgendaDefine = sinon.stub();
+	const mockLivechatCloseRoom = sinon.stub();
+	const mockMeteorStartup = sinon.stub();
+	const mockLivechatRooms = {
+		findOneById: sinon.stub(),
+	};
+	const mockUsers = {
+		findOneById: sinon.stub(),
+	};
+
+	class MockAgendaClass {
+		constructor(opts: Record<string, any>) {
+			mockAgendaConstructor(opts);
+		}
+
+		async start() {
+			return mockAgendaStart();
+		}
+
+		async schedule(...args: any) {
+			return mockAgendaScheduler(...args);
+		}
+
+		async cancel(...args: any) {
+			return mockAgendaCancel(...args);
+		}
+
+		async define(...args: any) {
+			return mockAgendaDefine(...args);
+		}
 	}
 
-	async start() {
-		return mockAgendaStart();
-	}
+	const infoStub = sinon.stub();
+	const debugStub = sinon.stub();
+	const mockLogger = {
+		section: sinon.stub().returns({
+			info: infoStub,
+			debug: debugStub,
+		}),
+	};
 
-	async schedule(...args: any) {
-		return mockAgendaScheduler(...args);
-	}
+	return {
+		mockAgendaConstructor,
+		mockAgendaStart,
+		mockAgendaScheduler,
+		mockAgendaCancel,
+		mockAgendaDefine,
+		mockLivechatCloseRoom,
+		mockMeteorStartup,
+		mockLivechatRooms,
+		mockUsers,
+		mockLogger,
+		infoStub,
+		debugStub,
+		MockAgendaClass,
+	};
+});
 
-	async cancel(...args: any) {
-		return mockAgendaCancel(...args);
-	}
-
-	async define(...args: any) {
-		return mockAgendaDefine(...args);
-	}
-}
-
-const infoStub = sinon.stub();
-const debugStub = sinon.stub();
-const mockLogger = {
-	section: sinon.stub().returns({
-		info: infoStub,
-		debug: debugStub,
-	}),
-};
-
-const mocks = {
-	'@rocket.chat/agenda': { Agenda: MockAgendaClass },
-	'meteor/meteor': { Meteor: { startup: mockMeteorStartup } },
-	'meteor/mongo': {
-		MongoInternals: {
-			defaultRemoteCollectionDriver: () => {
-				return {
-					mongo: { client: { db: sinon.stub() } },
-				};
-			},
+vi.mock('@rocket.chat/agenda', () => ({ Agenda: MockAgendaClass }));
+vi.mock('meteor/meteor', () => ({ Meteor: { startup: mockMeteorStartup } }));
+vi.mock('meteor/mongo', () => ({
+	MongoInternals: {
+		defaultRemoteCollectionDriver: () => {
+			return {
+				mongo: { client: { db: require('sinon').stub() } },
+			};
 		},
 	},
-	'../../../../../app/livechat/server/lib/closeRoom': { closeRoom: mockLivechatCloseRoom },
-	'./logger': { schedulerLogger: mockLogger },
-	'@rocket.chat/models': {
-		LivechatRooms: mockLivechatRooms,
-		Users: mockUsers,
-	},
-};
+}));
+vi.mock('../../../../../../app/livechat/server/lib/closeRoom', () => ({ closeRoom: mockLivechatCloseRoom }));
+vi.mock('../../../../../app/livechat-enterprise/server/lib/logger', () => ({ schedulerLogger: mockLogger }));
+vi.mock('@rocket.chat/models', () => ({ LivechatRooms: mockLivechatRooms, Users: mockUsers }));
 
-const { AutoCloseOnHoldSchedulerClass } = proxyquire
-	.noCallThru()
-	.load('../../../../../app/livechat-enterprise/server/lib/AutoCloseOnHoldScheduler', mocks);
+const { AutoCloseOnHoldSchedulerClass } = await import('../../../../../app/livechat-enterprise/server/lib/AutoCloseOnHoldScheduler');
 
 describe('AutoCloseOnHoldScheduler', () => {
 	beforeEach(() => {
@@ -184,7 +212,7 @@ describe('AutoCloseOnHoldScheduler', () => {
 			mockUsers.findOneById.returns({ _id: 'rocket.cat' });
 
 			try {
-				await scheduler.executeJob({ attrs: { data: { roomId: 'roomId', comment: 'comment' } } });
+				await (scheduler as any).executeJob({ attrs: { data: { roomId: 'roomId', comment: 'comment' } } });
 			} catch (e: any) {
 				expect(e.message).to.be.equal(
 					'Unable to process AutoCloseOnHoldScheduler job because room or user not found for roomId: roomId and userId: rocket.cat',
@@ -199,7 +227,7 @@ describe('AutoCloseOnHoldScheduler', () => {
 			mockUsers.findOneById.returns(null);
 
 			try {
-				await scheduler.executeJob({ attrs: { data: { roomId: 'roomId', comment: 'comment' } } });
+				await (scheduler as any).executeJob({ attrs: { data: { roomId: 'roomId', comment: 'comment' } } });
 			} catch (e: any) {
 				expect(e.message).to.be.equal('Scheduler user not found');
 			}
@@ -211,7 +239,7 @@ describe('AutoCloseOnHoldScheduler', () => {
 			mockLivechatRooms.findOneById.returns({ _id: 'me' });
 			mockUsers.findOneById.returns({ _id: 'rocket.cat' });
 
-			await scheduler.executeJob({ attrs: { data: { roomId: 'roomId', comment: 'comment' } } });
+			await (scheduler as any).executeJob({ attrs: { data: { roomId: 'roomId', comment: 'comment' } } });
 
 			expect(mockLivechatCloseRoom.calledWithMatch({ room: { _id: 'me' }, user: { _id: 'rocket.cat' }, comment: 'comment' }));
 		});
@@ -224,9 +252,9 @@ describe('AutoCloseOnHoldScheduler', () => {
 
 		it('should do nothing when schedulerUser is already set', async () => {
 			const scheduler = new AutoCloseOnHoldSchedulerClass();
-			scheduler.schedulerUser = { _id: 'me' };
+			scheduler.schedulerUser = { _id: 'me' } as unknown as IUser;
 
-			const user = await scheduler.getSchedulerUser();
+			const user = await (scheduler as any).getSchedulerUser();
 
 			expect(user).to.be.equal(scheduler.schedulerUser);
 		});
@@ -237,7 +265,7 @@ describe('AutoCloseOnHoldScheduler', () => {
 			mockUsers.findOneById.returns(null);
 
 			try {
-				await scheduler.getSchedulerUser();
+				await (scheduler as any).getSchedulerUser();
 			} catch (e: any) {
 				expect(e.message).to.be.equal('Scheduler user not found');
 			}
@@ -248,7 +276,7 @@ describe('AutoCloseOnHoldScheduler', () => {
 
 			mockUsers.findOneById.returns({ _id: 'rocket.cat' });
 
-			const u = await scheduler.getSchedulerUser();
+			const u = await (scheduler as any).getSchedulerUser();
 
 			expect(u).to.be.an('object').with.property('_id', 'rocket.cat');
 		});

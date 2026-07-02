@@ -1,14 +1,19 @@
 import { expect } from 'chai';
-import { describe, it, beforeEach } from 'mocha';
-import proxyquire from 'proxyquire';
+import { describe, it, beforeEach, vi } from 'vitest';
 
-import { MockedCronJobs } from '../mocks/cronJobs';
+// The mock helper (`MockedCronJobs`) is an ESM module and cannot be `require()`d inside `vi.hoisted`,
+// so we build the cron-jobs mock lazily inside an async `vi.mock` factory and expose the instance
+// through a hoisted holder that the test body can read.
+const holder = vi.hoisted(() => ({ cronJobsMock: undefined as any }));
 
-const cronJobsMock = new MockedCronJobs();
-
-const { removeCronJobs } = proxyquire.noCallThru().load('../../../../../../server/services/calendar/statusEvents/removeCronJobs', {
-	'@rocket.chat/cron': { cronJobs: cronJobsMock },
+vi.mock('@rocket.chat/cron', async () => {
+	const { MockedCronJobs } = await import('../mocks/cronJobs');
+	holder.cronJobsMock = new MockedCronJobs();
+	return { cronJobs: holder.cronJobsMock };
 });
+
+const { removeCronJobs } = await import('../../../../../../server/services/calendar/statusEvents/removeCronJobs');
+const { cronJobsMock } = holder;
 
 describe('Calendar.StatusEvents', () => {
 	const fakeEventId = 'eventId123';

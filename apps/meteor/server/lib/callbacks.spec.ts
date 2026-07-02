@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
+import { describe, it } from 'vitest';
 
 import { callbacks } from './callbacks';
 import { Callbacks } from './callbacks/callbacksBase';
