@@ -4374,6 +4374,8 @@
   "VideoConf_Enable_DMs": "Aktivieren in Direktnachrichten",
   "VideoConf_Enable_Groups": "Aktivieren in privaten Kanälen",
   "VideoConf_Enable_Teams": "Aktivieren in Teams",
+  "Video_escalation_modal_description": "Bitte informieren Sie Ihren Gesprächspartner, dass er diesem zustimmt und dies ebenfalls akzeptieren muss.",
+  "Video_escalation_modal_title": "Möchten Sie dieses Gespräch zu einem Video Gespräch erweitern?",
   "Video_Chat_Window": "Video-Chat",
   "Video_Conference": "Videokonferenz",
   "Video_Conference_Description": "Konfigurieren Sie Telefonkonferenzen für Ihren Arbeitsbereich.",

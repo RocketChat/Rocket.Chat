@@ -11,7 +11,7 @@ const meta = {
 	decorators: [
 		mockAppRoot()
 			.withTranslations('en', 'core', {
-				Video_escalation_modal_title: 'Start a video call?',
+				Video_escalation_modal_title: 'Are you sure you want to extend this to a Video Call?',
 				Video_escalation_modal_description:
 					'This will escalate the current voice call to a video call. The other participant will be notified.',
 				Start_video_call: 'Start video call',
