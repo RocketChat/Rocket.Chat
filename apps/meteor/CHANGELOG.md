@@ -1,11 +1,9 @@
 # @rocket.chat/meteor
 
 ## 8.6.0-rc.2
-
 ### Patch Changes
 
 - Bump @rocket.chat/meteor version.
-
 - <details><summary>Updated dependencies []:</summary>
 
   - @rocket.chat/core-typings@8.6.0-rc.2
@@ -187,6 +185,27 @@
   - @rocket.chat/gazzodown@32.0.0-rc.0
   - @rocket.chat/ui-avatar@28.0.0-rc.0
   - @rocket.chat/ui-video-conf@32.0.0-rc.0
+  </details>
+## 8.5.1
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+
+- ([#40917](https://github.com/RocketChat/Rocket.Chat/pull/40917) by [@dionisio-bot](https://github.com/dionisio-bot)) Escapes HTML tags in exported data
+
+- ([#40891](https://github.com/RocketChat/Rocket.Chat/pull/40891) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#40904](https://github.com/RocketChat/Rocket.Chat/pull/40904) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes missing permission check on the `POST /api/v1/fingerprint` endpoint
+
+- ([#40938](https://github.com/RocketChat/Rocket.Chat/pull/40938) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue where `description` was incorrectly being used as alternative text for image attachments
+
+- <details><summary>Updated dependencies [01a184640f635866bf4c1c612696acc4eed62311]:</summary>
+
+  - @rocket.chat/federation-matrix@0.1.5
+  - @rocket.chat/core-typings@8.5.1
+  - @rocket.chat/rest-typings@8.5.1
+
   </details>
 
 ## 8.5.0

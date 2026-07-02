@@ -1,6 +1,6 @@
 # @rocket.chat/federation-matrix
 
-## 0.1.5-rc.1
+## 0.1.6-rc.1
 
 ### Patch Changes
 
@@ -14,7 +14,7 @@
   - @rocket.chat/rest-typings@8.6.0-rc.1
   </details>
 
-## 0.1.5-rc.0
+## 0.1.6-rc.0
 
 ### Patch Changes
 
@@ -27,6 +27,17 @@
   - @rocket.chat/core-typings@8.6.0-rc.0
   - @rocket.chat/rest-typings@8.6.0-rc.0
   - @rocket.chat/network-broker@0.2.37-rc.0
+  </details>
+## 0.1.5
+
+### Patch Changes
+
+- ([#40938](https://github.com/RocketChat/Rocket.Chat/pull/40938) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue where `description` was incorrectly being used as alternative text for image attachments
+
+- <details><summary>Updated dependencies [01a184640f635866bf4c1c612696acc4eed62311]:</summary>
+
+  - @rocket.chat/core-typings@8.5.1
+  - @rocket.chat/rest-typings@8.5.1
   </details>
 
 ## 0.1.4

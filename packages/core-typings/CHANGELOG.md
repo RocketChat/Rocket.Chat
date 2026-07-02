@@ -17,6 +17,11 @@
 - ([#40839](https://github.com/RocketChat/Rocket.Chat/pull/40839)) Fixes an issue where `description` was incorrectly being used as alternative text for image attachments
 
 - ([#39273](https://github.com/RocketChat/Rocket.Chat/pull/39273) by [@metaloozee](https://github.com/metaloozee)) Fixes an issue where ui crashes when message attachment fields contains non-string `value` field
+## 8.5.1
+
+### Patch Changes
+
+- ([#40938](https://github.com/RocketChat/Rocket.Chat/pull/40938) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue where `description` was incorrectly being used as alternative text for image attachments
 
 ## 8.5.0
 
