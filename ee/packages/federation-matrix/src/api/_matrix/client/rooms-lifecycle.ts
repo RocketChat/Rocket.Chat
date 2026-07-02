@@ -15,6 +15,7 @@ import {
 	isMatrixErrorProps,
 	isRoomIdParamsProps,
 	license,
+	notImplemented,
 	tags,
 } from './_shared';
 import { getFederatedRoomName } from '../../../helpers/getFederatedRoomName';
@@ -77,6 +78,7 @@ const JoinResponseSchema = {
 	properties: {
 		room_id: { type: 'string' },
 	},
+	required: ['room_id'],
 };
 
 const isJoinResponseProps = ajv.compile(JoinResponseSchema);
@@ -231,11 +233,22 @@ export const addRoomsLifecycleRoutes = (router: ClientRouter) => {
 			},
 			isAppServiceAuthenticatedMiddleware(),
 			async (c) => {
-				await federationSDK.joinUser(c.req.param('roomIdOrAlias'), c.get('impersonatedUserId'));
+				const roomIdOrAlias = c.req.param('roomIdOrAlias') as string;
+
+				// TODO(federation-sdk): expose alias resolution so this endpoint can also accept room aliases
+				if (!roomIdOrAlias.startsWith('!')) {
+					return notImplemented('Joining a room by alias is not yet implemented', { roomIdOrAlias });
+				}
+
+				const roomId = roomIdOrAlias as RoomID;
+
+				await federationSDK.joinUser(roomId, c.get('impersonatedUserId'));
 
 				return {
 					statusCode: 200,
-					body: {},
+					body: {
+						room_id: roomId,
+					},
 				};
 			},
 		)
