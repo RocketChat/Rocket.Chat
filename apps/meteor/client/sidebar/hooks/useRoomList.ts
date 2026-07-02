@@ -84,15 +84,24 @@ type useRoomListReturnType = {
 	totalCount: number;
 };
 
-const isUnreadRoom = (room: SubscriptionWithRoom): boolean =>
+export const isUnreadRoom = (room: SubscriptionWithRoom): boolean =>
 	!room.hideUnreadStatus && Boolean(room.alert || room.unread || room.tunread?.length);
 
 // A room with a direct user mention (@you), including thread mentions — for the "Mentions" dynamic category.
 // Group mentions (@all/@here) do not count; only rooms where the user is personally mentioned move here.
-const isMentionRoom = (room: SubscriptionWithRoom): boolean =>
+export const isMentionRoom = (room: SubscriptionWithRoom): boolean =>
 	!room.hideUnreadStatus && Boolean(room.userMentions || room.tunreadUser?.length);
 
-export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] }): useRoomListReturnType => {
+/** Ephemeral top-of-sidebar tag filter (not persisted). 'all' shows everything. */
+export type SidebarRoomListFilter = 'all' | 'unreads' | 'mentions' | 'drafts';
+
+export const useRoomList = ({
+	collapsedGroups,
+	filter = 'all',
+}: {
+	collapsedGroups?: string[];
+	filter?: SidebarRoomListFilter;
+}): useRoomListReturnType => {
 	const showOmnichannel = useOmnichannelEnabled();
 	// "System" categories toggle: on = Teams/Channels/Discussions/DMs; off = everything in "Conversations".
 	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
@@ -123,6 +132,22 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 	return useDebouncedValue(
 		useMemo(() => {
 			const isCollapsed = (key: string) => collapsedGroups?.includes(key) ?? false;
+
+			// Ephemeral tag filter: when active, only matching rooms are shown, empty categories are hidden and
+			// every remaining category is expanded momentarily (without touching the user's collapse state).
+			const isFiltering = filter !== 'all';
+			const matchesFilter = (room: SubscriptionWithRoom): boolean => {
+				switch (filter) {
+					case 'unreads':
+						return isUnreadRoom(room);
+					case 'mentions':
+						return isMentionRoom(room);
+					case 'drafts':
+						return Boolean(room.draft);
+					default:
+						return true;
+				}
+			};
 
 			const drafts = new Set<SubscriptionWithRoom>();
 			const incomingCall = new Set<SubscriptionWithRoom>();
@@ -255,12 +280,20 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 				set: Set<SubscriptionWithRoom>,
 				category?: ISidebarCustomCategory,
 			): SidebarRoomListGroup => {
-				const collapsed = isCollapsed(key);
+				// While filtering, categories are force-expanded so their matching rooms are visible.
+				const collapsed = isFiltering ? false : isCollapsed(key);
 				const showUnreads = category ? category.showUnreads !== false : isShowUnreads(key);
 				const allRooms = [...set];
 				// When collapsed, keep unread rooms (if enabled) plus the currently-open room always visible.
 				const collapsedRooms = allRooms.filter((room) => (showUnreads && isUnreadRoom(room)) || room.rid === openedRoom);
-				const displayRooms = collapsed ? collapsedRooms : allRooms;
+				let displayRooms: SubscriptionWithRoom[];
+				if (isFiltering) {
+					displayRooms = allRooms.filter(matchesFilter);
+				} else if (collapsed) {
+					displayRooms = collapsedRooms;
+				} else {
+					displayRooms = allRooms;
+				}
 
 				return {
 					key,
@@ -275,7 +308,8 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 					// "Show unreads" off. With "Show unreads" on, the unread rooms stay visible (with their own
 					// counters) even collapsed, so the header acts as when open and shows no badge.
 					unreadInfo: collapsed && !showUnreads ? buildUnreadInfo(set) : emptyUnreadInfo(),
-					empty: allRooms.length === 0,
+					// While filtering, a category with no matching rooms is hidden entirely (no placeholder).
+					empty: isFiltering ? displayRooms.length === 0 : allRooms.length === 0,
 				};
 			};
 
@@ -308,8 +342,10 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			};
 
 			const allGroups = [...buildDynamicGroups(), ...customGroups, ...systemGroups];
+			// While filtering, drop categories that ended up with no matching rooms.
+			const visibleGroups = isFiltering ? allGroups.filter((group) => !group.empty) : allGroups;
 
-			const groupsCount = allGroups.map((group) => {
+			const groupsCount = visibleGroups.map((group) => {
 				// An expanded empty custom category reserves a single row for the "drag rooms here" placeholder.
 				if (group.empty) {
 					return group.collapsed ? 0 : 1;
@@ -318,7 +354,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			});
 
 			return {
-				groups: allGroups,
+				groups: visibleGroups,
 				groupsCount,
 				totalCount: groupsCount.reduce((acc, count) => acc + count, 0),
 			};
@@ -328,6 +364,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			inquiries.enabled,
 			sidebarDrafts,
 			queue,
+			filter,
 			sidebarDynamicCategory,
 			showCustom,
 			sidebarGroupByType,
