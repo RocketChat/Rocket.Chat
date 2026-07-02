@@ -43,7 +43,7 @@ function getAllFiles(dir, exts = ['.ts', '.js', '.tsx', '.jsx']) {
 // Matches static imports/re-exports, bare imports, dynamic import(), and require().
 const IMPORT_RE = /(?:from\s+|import\s+|(?:import|require)\s*\(\s*)(['"])([^'"]+)\1/g;
 
-const searchDirs = [path.join(ROOT, 'app'), path.join(ROOT, 'server'), path.join(ROOT, 'ee'), path.join(ROOT, 'lib')];
+const searchDirs = ['app', 'server', 'ee', 'lib', 'tests', 'imports', 'client', 'definition', 'packages'].map((d) => path.join(ROOT, d));
 
 let violations = 0;
 

@@ -287,13 +287,9 @@ if (isFileMove) {
 console.log('  Scanning for external files that import from the moved module...');
 // `tests` is included so unit/e2e tests that import the moved module (or mirror
 // its path) get their specifiers rewritten too — otherwise `tsc` later fails.
-const searchDirs = [
-	path.join(ROOT, 'app'),
-	path.join(ROOT, 'server'),
-	path.join(ROOT, 'ee'),
-	path.join(ROOT, 'lib'),
-	path.join(ROOT, 'tests'),
-];
+// `imports` (personal-access-tokens et al.) also imports server code — missing it
+// left stale specifiers that only `tsc` caught (found during Phase 4).
+const searchDirs = ['app', 'server', 'ee', 'lib', 'tests', 'imports', 'client', 'definition', 'packages'].map((d) => path.join(ROOT, d));
 const externalFiles = [];
 for (const dir of searchDirs) {
 	if (fs.existsSync(dir)) {

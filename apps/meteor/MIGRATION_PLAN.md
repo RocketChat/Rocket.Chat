@@ -190,6 +190,8 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 
 **Primary validation command**: `yarn lint --quiet` is the authoritative check for broken imports after a move. The `--quiet` flag suppresses warnings so unresolved-import errors stand out. Run it from the repo root after every batch. `tsc --noEmit` may additionally be used to catch type regressions, but lint is the first line of defense for import integrity.
 
+**Lint has a blind spot — run `yarn typecheck` per phase too.** ESLint ignores some directories that DO import server code (notably `apps/meteor/imports/`), so a moved module can leave broken specifiers there that lint never reports — Phase 4 left three such imports in `imports/personal-access-tokens/` that only `tsc` caught. The migration scripts' search dirs must include every code directory (`app`, `server`, `ee`, `lib`, `tests`, `imports`, `client`, `definition`, `packages`), and each phase's verification must include a full `yarn typecheck` (from `apps/meteor/`), not just lint.
+
 **Deliverable**: Scripts written and tested on a small dry-run (e.g., move one slash command file, verify, revert).
 
 ---
