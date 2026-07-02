@@ -2,9 +2,9 @@ import type { IMessage, IRoom, MessageTypesValues } from '@rocket.chat/core-typi
 import { Messages, Rooms } from '@rocket.chat/models';
 import type { FindOptions } from 'mongodb';
 
-import { settings } from '../../../settings/server/cached';
-import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
-import { getHiddenSystemMessages } from '../lib/getHiddenSystemMessages';
+import { getHiddenSystemMessages } from '../../../app/lib/server/lib/getHiddenSystemMessages';
+import { settings } from '../../../app/settings/server/cached';
+import { normalizeMessagesForUser } from '../../../app/utils/server/lib/normalizeMessagesForUser';
 
 export async function loadMessageHistory({
 	userId,

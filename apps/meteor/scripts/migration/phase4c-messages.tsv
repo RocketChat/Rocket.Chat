@@ -1,0 +1,14 @@
+# Phase 4c: Message functions migration
+# Format: old-path<TAB>new-path (relative to apps/meteor/)
+app/lib/server/functions/sendMessage.ts	server/lib/messages/sendMessage.ts
+app/lib/server/functions/insertMessage.ts	server/lib/messages/insertMessage.ts
+app/lib/server/functions/deleteMessage.ts	server/lib/messages/deleteMessage.ts
+app/lib/server/functions/updateMessage.ts	server/lib/messages/updateMessage.ts
+app/lib/server/functions/loadMessageHistory.ts	server/lib/messages/loadMessageHistory.ts
+app/lib/server/functions/processWebhookMessage.ts	server/lib/messages/processWebhookMessage.ts
+app/lib/server/functions/parseUrlsInMessage.ts	server/lib/messages/parseUrlsInMessage.ts
+app/lib/server/functions/attachMessage.ts	server/lib/messages/attachMessage.ts
+app/lib/server/functions/isTheLastMessage.ts	server/lib/messages/isTheLastMessage.ts
+app/lib/server/functions/extractUrlsFromMessageAST.ts	server/lib/messages/extractUrlsFromMessageAST.ts
+app/lib/server/functions/extractUrlsFromMessageAST.spec.ts	server/lib/messages/extractUrlsFromMessageAST.spec.ts
+app/lib/server/functions/extractMentionsFromMessageAST.ts	server/lib/messages/extractMentionsFromMessageAST.ts

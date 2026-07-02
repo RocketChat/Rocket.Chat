@@ -3,11 +3,11 @@ import { Messages, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import type { ParsedMail } from 'mailparser';
 import moment from 'moment';
 
+import { sendMessage } from '../../../../server/lib/messages/sendMessage';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
-import { sendMessage } from '../functions/sendMessage';
 
 const isParsedEmail = (email: ParsedMail): email is Required<ParsedMail> => 'date' in email && 'html' in email;
 

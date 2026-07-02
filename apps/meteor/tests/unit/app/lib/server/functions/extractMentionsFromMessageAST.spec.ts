@@ -1,7 +1,7 @@
 import type { Root } from '@rocket.chat/message-parser';
 import { expect } from 'chai';
 
-import { extractMentionsFromMessageAST } from '../../../../../../app/lib/server/functions/extractMentionsFromMessageAST';
+import { extractMentionsFromMessageAST } from '../../../../../../server/lib/messages/extractMentionsFromMessageAST';
 
 describe('extractMentionsFromMessageAST', () => {
 	it('should return empty arrays when AST has no mentions', () => {

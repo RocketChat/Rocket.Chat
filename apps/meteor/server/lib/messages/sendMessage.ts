@@ -5,13 +5,13 @@ import { Messages } from '@rocket.chat/models';
 import { isAbsoluteURL } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 
-import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { FileUpload } from '../../../file-upload/server';
-import { settings } from '../../../settings/server';
-import { afterSaveMessage } from '../lib/afterSaveMessage';
-import { notifyOnRoomChangedById } from '../lib/notifyListener';
-import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
+import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
+import { FileUpload } from '../../../app/file-upload/server';
+import { afterSaveMessage } from '../../../app/lib/server/lib/afterSaveMessage';
+import { notifyOnRoomChangedById } from '../../../app/lib/server/lib/notifyListener';
+import { validateCustomMessageFields } from '../../../app/lib/server/lib/validateCustomMessageFields';
+import { settings } from '../../../app/settings/server';
+import { isRelativeURL } from '../../../lib/utils/isRelativeURL';
 
 export type SendMessageOptions = {
 	upsert?: boolean;

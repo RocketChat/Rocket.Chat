@@ -4,7 +4,7 @@ import { Messages } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../server/lib/callbacks';
-import type { SendMessageOptions } from '../../../lib/server/functions/sendMessage';
+import type { SendMessageOptions } from '../../../../server/lib/messages/sendMessage';
 import { notifyOnMessageChange } from '../../../lib/server/lib/notifyListener';
 import { updateThreadUsersSubscriptions, getMentions } from '../../../lib/server/lib/notifyUsersOnMessage';
 import { sendMessageNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';

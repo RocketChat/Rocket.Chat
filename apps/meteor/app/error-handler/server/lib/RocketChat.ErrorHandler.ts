@@ -2,7 +2,7 @@ import { Settings, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { throttledCounter } from '../../../../lib/utils/throttledCounter';
-import { sendMessage } from '../../../lib/server/functions/sendMessage';
+import { sendMessage } from '../../../../server/lib/messages/sendMessage';
 import { settings } from '../../../settings/server';
 
 const incException = throttledCounter((counter) => {

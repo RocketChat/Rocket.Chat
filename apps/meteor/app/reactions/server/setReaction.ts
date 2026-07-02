@@ -6,10 +6,10 @@ import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../server/lib/callbacks';
 import { i18n } from '../../../server/lib/i18n';
+import { isTheLastMessage } from '../../../server/lib/messages/isTheLastMessage';
 import { canAccessRoomAsync } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { emoji } from '../../emoji/server';
-import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
 import { notifyOnMessageChange } from '../../lib/server/lib/notifyListener';
 
 export const removeUserReaction = (message: IMessage, reaction: string, username: string) => {

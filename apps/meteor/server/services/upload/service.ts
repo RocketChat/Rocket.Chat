@@ -15,10 +15,10 @@ import { canAccessRoomIdAsync } from '../../../app/authorization/server/function
 import { canDeleteMessageAsync } from '../../../app/authorization/server/functions/canDeleteMessage';
 import { FileUpload } from '../../../app/file-upload/server';
 import { parseFileIntoMessageAttachments, sendFileMessage } from '../../../app/file-upload/server/methods/sendFileMessage';
-import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
 import { sendFileLivechatMessage } from '../../../app/livechat/server/methods/sendFileLivechatMessage';
 import { NOTIFICATION_ATTACHMENT_COLOR } from '../../../lib/constants';
 import { i18n } from '../../lib/i18n';
+import { updateMessage } from '../../lib/messages/updateMessage';
 import { setUserAvatar } from '../../lib/users/setUserAvatar';
 import { UploadFS } from '../../ufs';
 

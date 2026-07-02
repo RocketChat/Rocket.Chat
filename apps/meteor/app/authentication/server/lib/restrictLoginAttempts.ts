@@ -5,7 +5,7 @@ import { Rooms, ServerEvents, Users } from '@rocket.chat/models';
 
 import { addMinutesToADate } from '../../../../lib/utils/addMinutesToADate';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
-import { sendMessage } from '../../../lib/server/functions/sendMessage';
+import { sendMessage } from '../../../../server/lib/messages/sendMessage';
 import { settings } from '../../../settings/server';
 import type { ILoginAttempt } from '../ILoginAttempt';
 

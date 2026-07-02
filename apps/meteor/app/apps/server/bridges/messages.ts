@@ -7,8 +7,8 @@ import { api } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Users, Subscriptions } from '@rocket.chat/models';
 
-import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
-import { updateMessage } from '../../../lib/server/functions/updateMessage';
+import { deleteMessage } from '../../../../server/lib/messages/deleteMessage';
+import { updateMessage } from '../../../../server/lib/messages/updateMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import notifications from '../../../notifications/server/lib/Notifications';
 import { executeSetReaction } from '../../../reactions/server/setReaction';

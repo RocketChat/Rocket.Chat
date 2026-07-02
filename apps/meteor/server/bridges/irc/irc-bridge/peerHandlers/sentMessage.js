@@ -1,6 +1,6 @@
 import { Users, Rooms } from '@rocket.chat/models';
 
-import { sendMessage } from '../../../../../app/lib/server/functions/sendMessage';
+import { sendMessage } from '../../../../lib/messages/sendMessage';
 import { createDirectRoom } from '../../../../lib/rooms/createDirectRoom';
 
 /*

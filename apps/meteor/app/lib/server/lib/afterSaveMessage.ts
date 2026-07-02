@@ -4,7 +4,7 @@ import type { Updater } from '@rocket.chat/models';
 import { Rooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../server/lib/callbacks';
-import type { SendMessageOptions } from '../functions/sendMessage';
+import type { SendMessageOptions } from '../../../../server/lib/messages/sendMessage';
 
 export async function afterSaveMessage(
 	message: IMessage,

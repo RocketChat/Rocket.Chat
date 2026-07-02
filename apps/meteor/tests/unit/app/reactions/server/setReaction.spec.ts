@@ -44,7 +44,7 @@ const { removeUserReaction, executeSetReaction, setReaction } = p.noCallThru().l
 	'../../authorization/server': { canAccessRoomAsync: canAccessRoomAsyncMock },
 	'../../authorization/server/functions/hasPermission': { hasPermissionAsync: hasPermissionAsyncMock },
 	'../../emoji/server': { emoji: { list: emojiList } },
-	'../../lib/server/functions/isTheLastMessage': { isTheLastMessage: isTheLastMessageMock },
+	'../../../server/lib/messages/isTheLastMessage': { isTheLastMessage: isTheLastMessageMock },
 	'../../lib/server/lib/notifyListener': {
 		notifyOnMessageChange: notifyOnMessageChangeMock,
 	},

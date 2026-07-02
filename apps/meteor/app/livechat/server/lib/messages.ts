@@ -8,9 +8,9 @@ import type { ILivechatMessage } from './localTypes';
 import { getRoom } from './rooms';
 import { showConnecting } from './utils';
 import { callbacks } from '../../../../server/lib/callbacks';
-import { deleteMessage as deleteMessageFunc } from '../../../lib/server/functions/deleteMessage';
-import { sendMessage as sendMessageFunc } from '../../../lib/server/functions/sendMessage';
-import { updateMessage as updateMessageFunc } from '../../../lib/server/functions/updateMessage';
+import { deleteMessage as deleteMessageFunc } from '../../../../server/lib/messages/deleteMessage';
+import { sendMessage as sendMessageFunc } from '../../../../server/lib/messages/sendMessage';
+import { updateMessage as updateMessageFunc } from '../../../../server/lib/messages/updateMessage';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 

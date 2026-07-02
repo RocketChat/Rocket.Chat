@@ -7,13 +7,13 @@ import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { i18n } from '../../../../server/lib/i18n';
+import { attachMessage } from '../../../../server/lib/messages/attachMessage';
+import { sendMessage } from '../../../../server/lib/messages/sendMessage';
 import { addUserToRoom } from '../../../../server/lib/rooms/addUserToRoom';
 import { createRoom } from '../../../../server/lib/rooms/createRoom';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { attachMessage } from '../../../lib/server/functions/attachMessage';
-import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { afterSaveMessageAsync } from '../../../lib/server/lib/afterSaveMessage';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../../settings/server';

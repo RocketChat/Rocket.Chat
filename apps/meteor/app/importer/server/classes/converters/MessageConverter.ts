@@ -5,7 +5,7 @@ import limax from 'limax';
 
 import type { UserIdentification, MentionedChannel } from './ConverterCache';
 import { RecordConverter } from './RecordConverter';
-import { insertMessage } from '../../../../lib/server/functions/insertMessage';
+import { insertMessage } from '../../../../../server/lib/messages/insertMessage';
 import type { IConversionCallbacks } from '../../definitions/IConversionCallbacks';
 
 export type MessageConversionCallbacks = IConversionCallbacks & { afterImportAllMessagesFn?: (roomIds: string[]) => Promise<void> };
