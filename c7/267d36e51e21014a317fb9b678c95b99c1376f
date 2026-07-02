@@ -1,0 +1,19 @@
+.github/workflows/develop-sync.yml
+  s_5cd43904610e1e::t_88a8f28c42621e 16-17,23-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.5",
+  "base_commit_sha": "c7267d36e51e21014a317fb9b678c95b99c1376f",
+  "prompts": {},
+  "sessions": {
+    "s_5cd43904610e1e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8443cc9f-ae46-4f3d-bd60-18be1014c580",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
