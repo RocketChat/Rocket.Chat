@@ -1,19 +1,65 @@
 import { Users } from '@rocket.chat/models';
-import { isLivechatAnalyticsAgentOverviewProps, isLivechatAnalyticsOverviewProps } from '@rocket.chat/rest-typings';
+import {
+	ajv,
+	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
+	isLivechatAnalyticsAgentOverviewProps,
+	isLivechatAnalyticsOverviewProps,
+} from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
+import type { ExtractRoutesFromAPI } from '../../../../api/server/ApiClass';
 import { settings } from '../../../../settings/server';
 import { getAgentOverviewDataCached, getAnalyticsOverviewDataCached } from '../../lib/AnalyticsTyped';
 
-API.v1.addRoute(
-	'livechat/analytics/agent-overview',
-	{
-		authRequired: true,
-		permissionsRequired: ['view-livechat-manager'],
-		validateParams: isLivechatAnalyticsAgentOverviewProps,
-	},
-	{
-		async get() {
+const livechatAnalyticsEndpoints = API.v1
+	.get(
+		'livechat/analytics/agent-overview',
+		{
+			authRequired: true,
+			permissionsRequired: ['view-livechat-manager'],
+			query: isLivechatAnalyticsAgentOverviewProps,
+			response: {
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+				200: ajv.compile<{
+					head: { name: string }[];
+					data: { name: string; value: number }[];
+					success: boolean;
+				}>({
+					type: 'object',
+					properties: {
+						head: {
+							type: 'array',
+							items: {
+								type: 'object',
+								properties: {
+									name: { type: 'string' },
+								},
+								required: ['name'],
+								additionalProperties: false,
+							},
+						},
+						data: {
+							type: 'array',
+							items: {
+								type: 'object',
+								properties: {
+									name: { type: 'string' },
+									value: { type: 'number' },
+								},
+								required: ['name', 'value'],
+								additionalProperties: false,
+							},
+						},
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['head', 'data', 'success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
 			const { name, departmentId, from, to } = this.queryParams;
 
 			if (!name) {
@@ -31,18 +77,36 @@ API.v1.addRoute(
 				}),
 			);
 		},
-	},
-);
-
-API.v1.addRoute(
-	'livechat/analytics/overview',
-	{
-		authRequired: true,
-		permissionsRequired: ['view-livechat-manager'],
-		validateParams: isLivechatAnalyticsOverviewProps,
-	},
-	{
-		async get() {
+	)
+	.get(
+		'livechat/analytics/overview',
+		{
+			authRequired: true,
+			permissionsRequired: ['view-livechat-manager'],
+			query: isLivechatAnalyticsOverviewProps,
+			response: {
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+				200: ajv.compile<
+					{
+						title: string;
+						value: string | number;
+					}[]
+				>({
+					type: 'array',
+					items: {
+						type: 'object',
+						properties: {
+							title: { type: 'string' },
+							value: { anyOf: [{ type: 'string' }, { type: 'number' }] },
+						},
+						required: ['title', 'value'],
+						additionalProperties: false,
+					},
+				}),
+			},
+		},
+		async function action() {
 			const { name, departmentId, from, to } = this.queryParams;
 
 			if (!name) {
@@ -63,5 +127,11 @@ API.v1.addRoute(
 				}),
 			);
 		},
-	},
-);
+	);
+
+type LivechatAnalyticsEndpoints = ExtractRoutesFromAPI<typeof livechatAnalyticsEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface, @typescript-eslint/no-empty-object-type
+	interface Endpoints extends LivechatAnalyticsEndpoints {}
+}

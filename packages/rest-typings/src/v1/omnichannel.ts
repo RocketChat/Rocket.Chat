@@ -2847,14 +2847,14 @@ type POSTLivechatRoomCloseByUserParams = {
 	generateTranscriptPdf?: boolean;
 	forceClose?: boolean;
 	transcriptEmail?:
-		| {
-				// Note: if sendToVisitor is false, then any previously requested transcripts (like via livechat:requestTranscript) will be also cancelled
-				sendToVisitor: false;
-		  }
-		| {
-				sendToVisitor: true;
-				requestData: Pick<NonNullable<IOmnichannelRoom['transcriptRequest']>, 'email' | 'subject'>;
-		  };
+	| {
+		// Note: if sendToVisitor is false, then any previously requested transcripts (like via livechat:requestTranscript) will be also cancelled
+		sendToVisitor: false;
+	}
+	| {
+		sendToVisitor: true;
+		requestData: Pick<NonNullable<IOmnichannelRoom['transcriptRequest']>, 'email' | 'subject'>;
+	};
 };
 
 const POSTLivechatRoomCloseByUserParamsSchema = {
@@ -4359,8 +4359,8 @@ export const isLivechatTriggerWebhookCallParams = ajv.compile<LivechatTriggerWeb
 
 type POSTLivechatRoomsCloseAll =
 	| {
-			departmentIds?: string[];
-	  }
+		departmentIds?: string[];
+	}
 	| undefined;
 
 const POSTLivechatRoomsCloseAllSchema = {
@@ -5063,18 +5063,6 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/rooms/filters': {
 		GET: () => { filters: IOmnichannelRoom['source'][] };
-	};
-	'/v1/livechat/analytics/agent-overview': {
-		GET: (params: LivechatAnalyticsAgentOverviewProps) => {
-			head: { name: string }[];
-			data: { name: string; value: number }[];
-		};
-	};
-	'/v1/livechat/analytics/overview': {
-		GET: (params: LivechatAnalyticsOverviewProps) => {
-			title: string;
-			value: string | number;
-		}[];
 	};
 	'/v1/livechat/sms-incoming/:service': {
 		POST: (params: unknown) => SMSProviderResponse;
