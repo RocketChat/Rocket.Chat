@@ -71,22 +71,28 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 		if (isRecoveringRef.current) {
 			return;
 		}
+
+		// Decide whether recovery is warranted *before* marking as busy, so these
+		// early exits never leave the flag stuck (which would block all future recovery).
+		if (!expiresAtRef.current && firstRecoveryAttemptedRef.current) {
+			return;
+		}
+		firstRecoveryAttemptedRef.current = true;
+		if (expiresAtRef.current && Date.now() < expiresAtRef.current) {
+			return;
+		}
+
 		isRecoveringRef.current = true;
+		const wasPlaying = !node.paused;
+		const { currentTime: time } = node;
 
 		try {
-			if (!expiresAtRef.current && firstRecoveryAttemptedRef.current) {
-				return;
-			}
-			firstRecoveryAttemptedRef.current = true;
-
-			if (expiresAtRef.current && Date.now() < expiresAtRef.current) {
-				return;
-			}
-
-			const wasPlaying = !node.paused;
-			const { currentTime: time } = node;
-
 			const { redirectUrl: newUrl, expires } = await getRedirectURLInfo(current.resolveUrl?.() || current.url);
+			// The active track may have been switched/closed while the request was in flight.
+			if (trackRef.current?.id !== current.id) {
+				isRecoveringRef.current = false;
+				return;
+			}
 			expiresAtRef.current = expires;
 			node.src = newUrl || current.url;
 

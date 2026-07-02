@@ -45,7 +45,15 @@ const NowPlayingSection = () => {
 					alignItems='center'
 					minWidth={0}
 					flexGrow={1}
+					role='button'
+					tabIndex={0}
 					onClick={() => void openConversation()}
+					onKeyDown={(e) => {
+						if (e.key === 'Enter' || e.key === ' ') {
+							e.preventDefault();
+							void openConversation();
+						}
+					}}
 					title={t('Jump_to_message')}
 					style={{ gap: 8, cursor: track.rid ? 'pointer' : 'default' }}
 				>
