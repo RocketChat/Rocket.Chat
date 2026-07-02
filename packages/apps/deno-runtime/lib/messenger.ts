@@ -1,5 +1,3 @@
-import { writeAll } from '@std/io';
-
 import * as jsonrpc from 'jsonrpc-lite';
 
 import { encoder } from './codec.ts';
@@ -63,6 +61,14 @@ export const Queue = new (class Queue {
 		return this.queue.length;
 	}
 })();
+
+async function writeAll(writer: Deno.Writer, data: Uint8Array): Promise<void> {
+	let written = 0;
+
+	while (written < data.length) {
+		written += await writer.write(data.subarray(written));
+	}
+}
 
 export const Transport = new (class Transporter {
 	private selectedTransport: Transporter['stdoutTransport'] | Transporter['noopTransport'];
