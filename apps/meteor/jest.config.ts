@@ -36,7 +36,7 @@ export default {
 			testMatch: [
 				'<rootDir>/app/livechat/server/business-hour/**/*.spec.ts?(x)',
 				'<rootDir>/app/livechat/server/api/**/*.spec.ts',
-				'<rootDir>/ee/app/authorization/server/validateUserRoles.spec.ts',
+				'<rootDir>/ee/server/lib/authorization/validateUserRoles.spec.ts',
 				'<rootDir>/ee/app/license/server/**/*.spec.ts',
 				'<rootDir>/ee/server/patches/**/*.spec.ts',
 				'<rootDir>/ee/server/cron/**/*.spec.ts',

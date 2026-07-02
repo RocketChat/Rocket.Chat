@@ -1,0 +1,6 @@
+# Phase 4 EE mirror: EE authorization functions migration (stays inside ee/)
+# callback.ts (hook, Phase 6b) and index.ts (aggregator) stay behind for later phases.
+# Format: old-path<TAB>new-path (relative to apps/meteor/)
+ee/app/authorization/server/validateUserRoles.ts	ee/server/lib/authorization/validateUserRoles.ts
+ee/app/authorization/server/validateUserRoles.spec.ts	ee/server/lib/authorization/validateUserRoles.spec.ts
+ee/app/authorization/server/resetEnterprisePermissions.ts	ee/server/lib/authorization/resetEnterprisePermissions.ts

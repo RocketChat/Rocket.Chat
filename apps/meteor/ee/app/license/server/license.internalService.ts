@@ -3,8 +3,8 @@ import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 import type { LicenseModule } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 
+import { resetEnterprisePermissions } from '../../../server/lib/authorization/resetEnterprisePermissions';
 import { guestPermissions } from '../../authorization/lib/guestPermissions';
-import { resetEnterprisePermissions } from '../../authorization/server/resetEnterprisePermissions';
 
 export class LicenseService extends ServiceClassInternal implements ILicense {
 	protected name = 'license';
