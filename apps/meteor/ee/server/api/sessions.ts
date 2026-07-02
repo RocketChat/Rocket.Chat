@@ -6,8 +6,8 @@ import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typing
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { API } from '../../../app/api/server/api';
-import { getPaginationItems } from '../../../app/api/server/helpers/getPaginationItems';
+import { API } from '../../../server/api/api';
+import { getPaginationItems } from '../../../server/api/lib/getPaginationItems';
 
 type SessionsProps = {
 	sessionId: string;

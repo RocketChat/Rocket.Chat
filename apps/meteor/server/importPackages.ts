@@ -1,6 +1,6 @@
 import '../app/cors/server';
 import '../app/2fa/server';
-import '../app/api/server';
+import './api';
 import '../app/apple/server';
 import '../app/assets/server';
 import '../app/authorization/server';
