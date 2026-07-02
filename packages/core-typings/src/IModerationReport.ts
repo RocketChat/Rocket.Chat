@@ -8,7 +8,7 @@ export interface IModerationReport extends IRocketChatRecord {
 	room?: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'federated' | 'prid'>;
 	reportedUser?: Pick<IUser, '_id' | 'username' | 'name' | 'emails' | 'createdAt'>;
 	description: string;
-	ts: Date | string;
+	ts: Date;
 	reportedBy: Pick<IUser, '_id' | 'username' | 'name' | 'createdAt'>;
 	/**
 	 * Right now we're assuming neither Room Info or User Info changes.

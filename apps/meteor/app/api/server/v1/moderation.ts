@@ -21,12 +21,6 @@ import { getPaginationItems } from '../helpers/getPaginationItems';
 
 type ReportMessage = Pick<IModerationReport, '_id' | 'message' | 'ts' | 'room'>;
 
-// TODO: IModerationAudit defines `ts` as `Date | string` which generates a oneOf in JSON Schema.
-// When the aggregation returns `ts` as an ISO date string, it matches both `Date` (format: "date-time")
-// and `string` schemas simultaneously, causing AJV oneOf validation to fail with "passingSchemas: 0,1".
-// Until the core-typings type is revised (either narrowing `ts` to `string` to match what MongoDB
-// aggregation actually returns, or adjusting the AJV schema generation for union types), we use a
-// relaxed inline schema here that accepts `ts` as a string.
 const paginatedReportsResponseSchema = ajv.compile<{ reports: IModerationAudit[]; count: number; offset: number; total: number }>({
 	type: 'object',
 	properties: {
@@ -59,12 +53,6 @@ const paginatedReportsResponseSchema = ajv.compile<{ reports: IModerationAudit[]
 	additionalProperties: false,
 });
 
-// TODO: IModerationAudit defines `ts` as `Date | string` which generates a oneOf in JSON Schema.
-// When the aggregation returns `ts` as an ISO date string, it matches both `Date` (format: "date-time")
-// and `string` schemas simultaneously, causing AJV oneOf validation to fail with "passingSchemas: 0,1".
-// Until the core-typings type is revised (either narrowing `ts` to `string` to match what MongoDB
-// aggregation actually returns, or adjusting the AJV schema generation for union types), we use a
-// relaxed inline schema here that accepts `ts` as a string.
 const paginatedUserReportsResponseSchema = ajv.compile<{
 	reports: (Pick<UserReport, '_id' | 'reportedUser' | 'ts'> & { count: number })[];
 	count: number;
@@ -129,12 +117,6 @@ const reportedMessagesResponseSchema = ajv.compile<{
 	additionalProperties: false,
 });
 
-// TODO: IModerationAudit defines `ts` as `Date | string` which generates a oneOf in JSON Schema.
-// When the aggregation returns `ts` as an ISO date string, it matches both `Date` (format: "date-time")
-// and `string` schemas simultaneously, causing AJV oneOf validation to fail with "passingSchemas: 0,1".
-// Until the core-typings type is revised (either narrowing `ts` to `string` to match what MongoDB
-// aggregation actually returns, or adjusting the AJV schema generation for union types), we use a
-// relaxed inline schema here that accepts `ts` as a string.
 const reportsByUserIdResponseSchema = ajv.compile<{
 	user: Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag' | 'active' | 'roles' | 'emails' | 'createdAt'> | null;
 	reports: IModerationReport[];
@@ -181,12 +163,6 @@ const successResponseSchema = ajv.compile<void>({
 	additionalProperties: false,
 });
 
-// TODO: IModerationAudit defines `ts` as `Date | string` which generates a oneOf in JSON Schema.
-// When the aggregation returns `ts` as an ISO date string, it matches both `Date` (format: "date-time")
-// and `string` schemas simultaneously, causing AJV oneOf validation to fail with "passingSchemas: 0,1".
-// Until the core-typings type is revised (either narrowing `ts` to `string` to match what MongoDB
-// aggregation actually returns, or adjusting the AJV schema generation for union types), we use a
-// relaxed inline schema here that accepts `ts` as a string.
 const reportInfoResponseSchema = ajv.compile<{ report: IModerationReport | null }>({
 	type: 'object',
 	properties: {
@@ -536,12 +512,6 @@ API.v1.post(
 	},
 );
 
-// TODO: IModerationAudit defines `ts` as `Date | string` which generates a oneOf in JSON Schema.
-// When the aggregation returns `ts` as an ISO date string, it matches both `Date` (format: "date-time")
-// and `string` schemas simultaneously, causing AJV oneOf validation to fail with "passingSchemas: 0,1".
-// Until the core-typings type is revised (either narrowing `ts` to `string` to match what MongoDB
-// aggregation actually returns, or adjusting the AJV schema generation for union types), we use a
-// relaxed inline schema here that accepts `ts` as a string.
 const reportsByMsgIdResponseSchema = ajv.compile<{
 	reports: Pick<IModerationReport, '_id' | 'description' | 'reportedBy' | 'ts' | 'room'>[];
 	count: number;
