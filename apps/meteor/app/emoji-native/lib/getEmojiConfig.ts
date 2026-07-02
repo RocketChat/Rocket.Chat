@@ -2,6 +2,7 @@ import type { EmojiEntry } from './generateEmojiData';
 import { getEmojiData } from './generateEmojiData';
 import { legacyEmojioneMap } from './legacyEmojioneMap';
 import { shortnameToUnicode } from './shortnameToUnicode';
+import type { EmojiPackages } from '../../emoji/lib/rocketchat';
 
 const emojiCategories = [
 	{ key: 'people', i18n: 'Smileys_and_People' },
@@ -45,7 +46,7 @@ function getEmojiRegex(): RegExp {
 	return emojiRegex;
 }
 
-function renderEmoji(text: string): string {
+function renderEmoji(text: string, emojiPackages: EmojiPackages): string {
 	const { emojiList } = getEmojiData();
 	const unicodeMap = getUnicodeToShortcodeMap();
 	const pattern = getEmojiRegex();
@@ -53,6 +54,9 @@ function renderEmoji(text: string): string {
 	return text.replace(pattern, (match, shortcodeGroup, shortcodeName, unicodeGroup) => {
 		// If it's a shortcode pattern (:emoji:)
 		if (shortcodeGroup) {
+			if (emojiPackages.list[`:${shortcodeName}:`]?.emojiPackage === 'emojiCustom') {
+				return match; // Don't render custom emojis as native
+			}
 			const key = `:${shortcodeName}:`;
 			const emoji = emojiList[key] as EmojiEntry | undefined;
 			if (emoji?.unicode) {
@@ -88,7 +92,7 @@ function renderPicker(emojiToRender: string): string | undefined {
 	return `<span class="emoji" title="${emojiToRender}">${emoji.unicode}</span>`;
 }
 
-export const getEmojiConfig = () => {
+export const getEmojiConfig = (emojiPackages: EmojiPackages) => {
 	const { emojiList, emojisByCategory, toneList } = getEmojiData();
 
 	return {
@@ -96,7 +100,7 @@ export const getEmojiConfig = () => {
 		emojisByCategory,
 		emojiCategories,
 		toneList,
-		render: renderEmoji,
+		render: (text: string) => renderEmoji(text, emojiPackages),
 		renderPicker,
 		sprites: false,
 		shortnameToUnicode,

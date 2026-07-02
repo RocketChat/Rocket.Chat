@@ -4,7 +4,7 @@ import { emoji } from '../../../../app/emoji/client';
 import { getEmojiConfig } from '../../../../app/emoji-native/lib/getEmojiConfig';
 import { legacyEmojioneMap } from '../../../../app/emoji-native/lib/legacyEmojioneMap';
 
-const config = getEmojiConfig();
+const config = getEmojiConfig(emoji);
 
 export const useNativeEmoji = () => {
 	useLayoutEffect(() => {

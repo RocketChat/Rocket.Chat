@@ -2,7 +2,7 @@ import { emoji } from '../../emoji/server';
 import { getEmojiConfig } from '../lib/getEmojiConfig';
 import { legacyEmojioneMap } from '../lib/legacyEmojioneMap';
 
-const config = getEmojiConfig();
+const config = getEmojiConfig(emoji);
 
 emoji.packages.native = {
 	emojiCategories: config.emojiCategories as typeof emoji.packages.native.emojiCategories,
