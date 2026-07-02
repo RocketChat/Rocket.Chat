@@ -18,7 +18,6 @@ import type { GroupsInviteProps } from './GroupsInviteProps';
 import type { GroupsKickProps } from './GroupsKickProps';
 import type { GroupsLeaveProps } from './GroupsLeaveProps';
 import type { GroupsListProps } from './GroupsListProps';
-import type { GroupsMembersProps } from './GroupsMembersProps';
 import type { GroupsMessagesProps } from './GroupsMessagesProps';
 import type { GroupsModeratorsProps } from './GroupsModeratorsProps';
 import type { GroupsOnlineProps } from './GroupsOnlineProps';
@@ -45,14 +44,6 @@ export type GroupsEndpoints = {
 		GET: (params: GroupsFilesProps) => PaginatedResult<{
 			files: IUploadWithUser[];
 		}>;
-	};
-	'/v1/groups.members': {
-		GET: (params: GroupsMembersProps) => {
-			count: number;
-			offset: number;
-			members: IUser[];
-			total: number;
-		};
 	};
 	'/v1/groups.history': {
 		GET: (params: GroupsHistoryProps) => PaginatedResult<{

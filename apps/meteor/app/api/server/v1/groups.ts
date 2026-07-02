@@ -8,7 +8,17 @@ import {
 	type UserStatus,
 } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
-import { isGroupsOnlineProps, isGroupsMessagesProps, isGroupsFilesProps } from '@rocket.chat/rest-typings';
+import {
+	isGroupsOnlineProps,
+	isGroupsMessagesProps,
+	isGroupsFilesProps,
+	ajv,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
+	withGroupBaseProperties,
+} from '@rocket.chat/rest-typings';
+import type { PaginatedRequest, GroupsBaseProps } from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -38,11 +48,111 @@ import { executeGetRoomRoles } from '../../../lib/server/methods/getRoomRoles';
 import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
 import { executeUnarchiveRoom } from '../../../lib/server/methods/unarchiveRoom';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams, getUserListFromParams, getUsernameListFromParams } from '../helpers/getUserFromParams';
+
+type GroupsMembersProps = PaginatedRequest<GroupsBaseProps & { filter?: string; status?: string[] }>;
+
+const GroupsMembersPropsSchema = withGroupBaseProperties({
+	offset: {
+		type: 'string',
+	},
+	count: {
+		type: 'string',
+	},
+	filter: {
+		type: 'string',
+	},
+	query: {
+		type: 'string',
+		nullable: true,
+	},
+	sort: {
+		type: 'string',
+		nullable: true,
+	},
+	status: {
+		type: 'array',
+		items: { type: 'string' },
+	},
+});
+
+const isGroupsMembersProps = ajv.compile<GroupsMembersProps>(GroupsMembersPropsSchema);
+
+const isGroupsMembersResponse = ajv.compile({
+	type: 'object',
+	properties: {
+		members: {
+			type: 'array',
+			items: { $ref: '#/components/schemas/IUser' },
+		},
+		count: { type: 'integer' },
+		offset: { type: 'integer' },
+		total: { type: 'integer' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['members', 'success','count','offset','total'],
+	additionalProperties: false,
+});
+
+const groupsEndPoints = API.v1.get(
+	'groups.members',
+	{
+		authRequired: true,
+		query: isGroupsMembersProps,
+		response: {
+			200: isGroupsMembersResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.queryParams,
+			userId: this.userId,
+		});
+
+		if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult.rid))) {
+			return API.v1.forbidden('User does not have the permissions required for this action');
+		}
+
+		const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
+		const { sort = {} } = await this.parseJsonQuery();
+
+		check(
+			this.queryParams,
+			Match.ObjectIncluding({
+				status: Match.Maybe([String]),
+				filter: Match.Maybe(String),
+			}),
+		);
+
+		const { status, filter } = this.queryParams;
+
+		const { cursor, totalCount } = await findUsersOfRoom({
+			rid: findResult.rid,
+			...(status && { status: { $in: status as UserStatus[] } }),
+			skip,
+			limit,
+			filter,
+			...(sort?.username && { sort: { username: sort.username } }),
+		});
+
+		const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return API.v1.success({
+			members,
+			count: members.length,
+			offset: skip,
+			total,
+		});
+	},
+);
 
 async function getRoomFromParams(params: { roomId?: string } | { roomName?: string }): Promise<IRoom> {
 	if (
@@ -735,54 +845,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'groups.members',
-	{ authRequired: true },
-	{
-		async get() {
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.queryParams,
-				userId: this.userId,
-			});
-
-			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult.rid))) {
-				return API.v1.forbidden();
-			}
-
-			const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
-			const { sort = {} } = await this.parseJsonQuery();
-
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					status: Match.Maybe([String]),
-					filter: Match.Maybe(String),
-				}),
-			);
-
-			const { status, filter } = this.queryParams;
-
-			const { cursor, totalCount } = await findUsersOfRoom({
-				rid: findResult.rid,
-				...(status && { status: { $in: status as UserStatus[] } }),
-				skip,
-				limit,
-				filter,
-				...(sort?.username && { sort: { username: sort.username } }),
-			});
-
-			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				members,
-				count: members.length,
-				offset: skip,
-				total,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
 	'groups.messages',
 	{ authRequired: true, validateParams: isGroupsMessagesProps },
 	{
@@ -1316,3 +1378,10 @@ API.v1.addRoute(
 		},
 	},
 );
+
+export type GroupsHistoryEndpoints = ExtractRoutesFromAPI<typeof groupsEndPoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends GroupsHistoryEndpoints {}
+}

@@ -1,5 +1,6 @@
 export type * from './groups';
 
+export * from './BaseProps';
 export * from './GroupsArchiveProps';
 export * from './GroupsCloseProps';
 export * from './GroupsConvertToTeamProps';
@@ -9,7 +10,6 @@ export * from './GroupsDeleteProps';
 export * from './GroupsFilesProps';
 export * from './GroupsKickProps';
 export * from './GroupsLeaveProps';
-export * from './GroupsMembersProps';
 export * from './GroupsMessagesProps';
 export * from './GroupsRolesProps';
 export * from './GroupsUnarchiveProps';
