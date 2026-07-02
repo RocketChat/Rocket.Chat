@@ -78,9 +78,15 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 			try {
 				roomData = await getRoomByTypeAndName(type, reference);
 			} catch (error) {
-				const isDefinitivelyNotFound = error && typeof error === 'object' && 'error' in error && error.error === 'error-invalid-room';
+				const errorCode = error && typeof error === 'object' && 'error' in error ? error.error : undefined;
 
-				if (!isDefinitivelyNotFound) {
+				// "No permission" means the room exists but the user can't see it — surface the
+				// not-found/no-access screen rather than retrying it as a transient failure.
+				if (errorCode === 'error-no-permission') {
+					throw new RoomNotFoundError(undefined, { type, reference });
+				}
+
+				if (errorCode !== 'error-invalid-room') {
 					throw error;
 				}
 
