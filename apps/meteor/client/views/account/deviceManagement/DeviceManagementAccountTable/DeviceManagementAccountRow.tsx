@@ -28,7 +28,12 @@ const DeviceManagementAccountRow = ({ _id, deviceName, deviceType = 'browser', d
 			<GenericTableCell>
 				<Box display='flex' alignItems='center'>
 					<DeviceIcon deviceType={deviceType} />
-					{deviceName && <Box withTruncatedText>{deviceName}</Box>}
+					{deviceName && (
+						<Box withTruncatedText>
+							{deviceName}
+							{current && ` (${t('current')})`}
+						</Box>
+					)}
 				</Box>
 			</GenericTableCell>
 			<GenericTableCell>{deviceOSName || ''}</GenericTableCell>
