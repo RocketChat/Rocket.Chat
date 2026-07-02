@@ -10,6 +10,24 @@ import { notifyOnSettingChangedById } from '../../../../app/lib/server/lib/notif
 import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { syncWorkspace } from '../../../../server/lib/cloud/syncWorkspace';
+import { SystemLogger } from '../../../../server/lib/logger/system';
+
+const logOfflineLicense = (() => {
+	let logged = false;
+	return () => {
+		if (!License.hasOfflineLicense()) {
+			logged = false;
+			return;
+		}
+
+		if (!logged) {
+			SystemLogger.info(
+				'Offline license detected: outbound connections to Rocket.Chat Cloud services and the Rocket.Chat Push Gateway are disabled',
+			);
+			logged = true;
+		}
+	};
+})();
 
 export const startLicense = async () => {
 	settings.watch<string>('Site_Url', (value) => {
@@ -124,6 +142,9 @@ export const startLicense = async () => {
 					await applyLicense(process.env.ROCKETCHAT_LICENSE, true);
 				}
 			}
+
+			logOfflineLicense();
+			License.onValidateLicense(logOfflineLicense);
 
 			// After the current license is already loaded, watch the setting value to react to new licenses being applied.
 			settings.change<string>('Enterprise_License', (license) => applyLicenseOrRemove(license, true));

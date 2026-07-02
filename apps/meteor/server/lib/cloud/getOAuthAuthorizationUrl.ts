@@ -3,11 +3,14 @@ import { Random } from '@rocket.chat/random';
 
 import { getRedirectUri } from './getRedirectUri';
 import { userScopes } from './oauthScopes';
+import { assertNotOfflineLicense } from './offlineLicense';
 import { notifyOnSettingChangedById } from '../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../app/settings/server';
 import { updateAuditedBySystem } from '../../settings/lib/auditedSettingUpdates';
 
 export async function getOAuthAuthorizationUrl() {
+	assertNotOfflineLicense();
+
 	const state = Random.id();
 
 	await updateAuditedBySystem({

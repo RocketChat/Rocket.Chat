@@ -16,6 +16,7 @@ import { CloudWorkspaceConnectionError } from '../../../lib/errors/CloudWorkspac
 import { InvalidCloudAnnouncementInteractionError } from '../../../lib/errors/InvalidCloudAnnouncementInteractionError';
 import { InvalidCoreAppInteractionError } from '../../../lib/errors/InvalidCoreAppInteractionError';
 import { getWorkspaceAccessToken } from '../../lib/cloud';
+import { assertNotOfflineLicense } from '../../lib/cloud/offlineLicense';
 import { syncWorkspace } from '../../lib/cloud/syncWorkspace';
 import { SystemLogger } from '../../lib/logger/system';
 
@@ -255,6 +256,8 @@ export class CloudAnnouncementsModule implements IUiKitCoreApp {
 		interactant: CloudAnnouncementInteractant,
 		userInteraction: UiKit.UserInteraction,
 	): Promise<UiKit.ServerInteraction> {
+		assertNotOfflineLicense();
+
 		const token = await this.getWorkspaceAccessToken();
 
 		const request: CloudAnnouncementInteractionRequest = {

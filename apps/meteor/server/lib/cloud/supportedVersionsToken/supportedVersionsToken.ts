@@ -141,7 +141,10 @@ const getSupportedVersionsToken = async (retry = 0) => {
 	 * Gets the latest version
 	 * return the token
 	 */
-	const [versionsFromLicense, cloudResponse] = await Promise.all([License.getLicense(), getSupportedVersionsFromCloud()]);
+	const [versionsFromLicense, cloudResponse] = await Promise.all([
+		License.getLicense(),
+		License.hasOfflineLicense() ? ({ success: true, result: undefined } as const) : getSupportedVersionsFromCloud(),
+	]);
 
 	const supportedVersions = await supportedVersionsChooseLatest(
 		supportedVersionsFromBuild,

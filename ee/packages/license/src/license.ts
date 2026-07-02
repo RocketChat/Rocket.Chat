@@ -453,6 +453,10 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 		return undefined;
 	}
 
+	public hasOfflineLicense(): boolean {
+		return this.getLicense()?.information.offline ?? false;
+	}
+
 	public syncShouldPreventActionResults(actions: Record<LicenseLimitKind, boolean>): void {
 		for (const [action, shouldPreventAction] of Object.entries(actions)) {
 			this.shouldPreventActionResults.set(action as LicenseLimitKind, shouldPreventAction);

@@ -1,6 +1,7 @@
 import { Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
+import { hasOfflineLicense } from './offlineLicense';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { userLoggedOut } from './userLoggedOut';
 import { settings } from '../../../app/settings/server';
@@ -9,7 +10,7 @@ import { SystemLogger } from '../logger/system';
 export async function userLogout(userId: string): Promise<string | boolean> {
 	const { workspaceRegistered } = await retrieveRegistrationStatus();
 
-	if (!workspaceRegistered) {
+	if (!workspaceRegistered || hasOfflineLicense()) {
 		return '';
 	}
 
