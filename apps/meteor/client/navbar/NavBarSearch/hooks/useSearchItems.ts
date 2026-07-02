@@ -138,7 +138,8 @@ export const useSearchItems = (filterText: string): { items: SubscriptionWithRoo
 				const sameRoom = [room.rid, room._id].includes(item._id);
 				const sameGroupDM = item.t === 'd' && !!item.uids && item.uids.length > 1 && item.uids.includes(room._id);
 				const sameDirectDM = item.t === 'd' && room.t === 'd' && !!room.uids && room.uids.length === 2 && room.uids.includes(item._id);
-				return sameRoom || sameGroupDM || sameDirectDM;
+				const sameUserDM = item.t === 'd' && room.t === 'd' && item.name === room.name;
+				return sameRoom || sameGroupDM || sameDirectDM || sameUserDM;
 			});
 
 		// When local subscriptions already fill the limit the server query is disabled, but React Query
