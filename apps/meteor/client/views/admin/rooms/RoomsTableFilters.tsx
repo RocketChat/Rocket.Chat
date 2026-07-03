@@ -43,7 +43,9 @@ const initialRoomTypeFilterStructure = [
 	},
 ] as OptionProp[];
 
-const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction<any>> }) => {
+export type RoomsTableFiltersProps = { setFilters: Dispatch<SetStateAction<any>> };
+
+const RoomsTableFilters = ({ setFilters }: RoomsTableFiltersProps) => {
 	const { t } = useTranslation();
 	const [text, setText] = useState('');
 
