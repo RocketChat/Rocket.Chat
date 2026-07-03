@@ -7,11 +7,12 @@ import { isAppServiceAuthenticatedMiddleware } from '../../middlewares/isAppServ
 const PresenceResponseSchema = {
 	type: 'object',
 	properties: {
-		presence: { type: 'string' },
+		presence: { type: 'string', enum: ['online', 'offline', 'unavailable'] },
 		last_active_ago: { type: 'number' },
 		status_msg: { type: 'string' },
 		currently_active: { type: 'boolean' },
 	},
+	required: ['presence'],
 	additionalProperties: true,
 };
 
