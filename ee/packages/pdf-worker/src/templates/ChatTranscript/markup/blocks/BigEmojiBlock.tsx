@@ -2,7 +2,7 @@ import { Text } from '@react-pdf/renderer';
 import type * as MessageParser from '@rocket.chat/message-parser';
 import emojione from 'emoji-toolkit';
 
-type BigEmojiBlockProps = {
+export type BigEmojiBlockProps = {
 	emoji: MessageParser.Emoji[];
 };
 
