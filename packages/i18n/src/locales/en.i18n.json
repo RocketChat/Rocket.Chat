@@ -7281,5 +7281,6 @@
   "No_changes_to_save": "No changes to save",
   "Avatar_preview_updated": "Avatar preview updated",
   "Select_message_from_user": "Select message from {{username}}",
-  "Select_message_from_user_with_preview": "Select message from {{username}}: {{message}}"
+  "Select_message_from_user_with_preview": "Select message from {{username}}: {{message}}",
+  "current": "current"
 }
