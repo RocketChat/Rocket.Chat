@@ -16,7 +16,7 @@ import { getMessagePreview } from '../../../../lib/utils/normalizeMessagePreview
 import { useOmnichannelPriorities } from '../../../omnichannel/hooks/useOmnichannelPriorities';
 import { useUnreadDisplay } from '../../sidebar/hooks/useUnreadDisplay';
 
-type RoomSidePanelItemProps = {
+export type RoomSidePanelItemProps = {
 	room: SubscriptionWithRoom;
 	openedRoom?: string;
 	isRoomFilter?: boolean;
