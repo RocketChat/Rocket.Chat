@@ -117,7 +117,20 @@ export const addAccountRoutes = (router: ClientRouter) => {
 					};
 				}
 
-				const decodedUsername = parseXmppUserId(decoded);
+				let decodedUsername;
+				try {
+					decodedUsername = parseXmppUserId(decoded);
+				} catch (error) {
+					logger.warn({ msg: 'Malformed XMPP user id during AS registration', username: body.username, err: error });
+					return {
+						statusCode: 400,
+						body: {
+							errcode: 'M_INVALID_USERNAME',
+							error: 'Could not derive a username from the provided XMPP user id',
+						},
+					};
+				}
+
 				if (!decodedUsername.resource) {
 					logger.warn({ msg: 'Could not derive resource from full XMPP user id during AS registration', username: body.username });
 					return {

@@ -62,7 +62,9 @@ export const isFullXmppUserId = (decoded: string): boolean => decoded.includes('
  * or `@` inside the resource is preserved.
  *
  * @param decoded - decoded user id, e.g. `prince/mychannel@conference.xmpp.host`
- * @throws if the value has no `@` separating local from domain
+ * @throws if the value has no `@` separating local from domain, if `local` or
+ * `domain` is empty, or if a resource separator (`/`) is present but the
+ * resource is empty
  *
  * @example
  * parseXmppUserId('prince/mychannel@conference.xmpp.host');
@@ -81,6 +83,15 @@ export const parseXmppUserId = (decoded: string): ParsedXmppUserId => {
 	const slashIndex = beforeDomain.lastIndexOf('/');
 	const resource = slashIndex === -1 ? undefined : beforeDomain.substring(0, slashIndex);
 	const local = slashIndex === -1 ? beforeDomain : beforeDomain.substring(slashIndex + 1);
+
+	if (!local || !domain) {
+		throw new Error(`Invalid XMPP user id, empty local or domain: ${decoded}`);
+	}
+
+	// A `/` with nothing before it is a malformed resource, not a bare JID.
+	if (slashIndex !== -1 && !resource) {
+		throw new Error(`Invalid XMPP user id, empty resource: ${decoded}`);
+	}
 
 	return {
 		local,

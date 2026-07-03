@@ -64,4 +64,20 @@ describe('parseXmppUserId', () => {
 	it('should throw when there is no domain separator', () => {
 		expect(() => parseXmppUserId('justaname')).toThrow('missing domain separator');
 	});
+
+	it('should throw when the local part is empty', () => {
+		expect(() => parseXmppUserId('prince/@conference.xmpp.host')).toThrow('empty local or domain');
+	});
+
+	it('should throw when the domain is empty', () => {
+		expect(() => parseXmppUserId('prince/mychannel@')).toThrow('empty local or domain');
+	});
+
+	it('should throw when both local and domain are empty', () => {
+		expect(() => parseXmppUserId('@')).toThrow('empty local or domain');
+	});
+
+	it('should throw when a resource separator is present but the resource is empty', () => {
+		expect(() => parseXmppUserId('/mychannel@conference.xmpp.host')).toThrow('empty resource');
+	});
 });
