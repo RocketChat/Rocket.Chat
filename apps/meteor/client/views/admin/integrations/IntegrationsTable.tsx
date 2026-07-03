@@ -18,7 +18,9 @@ import IntegrationRow from './IntegrationRow';
 import FilterByText from '../../../components/FilterByText';
 import GenericNoResults from '../../../components/GenericNoResults';
 
-const IntegrationsTable = ({ type }: { type?: string }) => {
+export type IntegrationsTableProps = { type?: string };
+
+const IntegrationsTable = ({ type }: IntegrationsTableProps) => {
 	const t = useTranslation();
 	const { isMobile } = useLayout();
 
