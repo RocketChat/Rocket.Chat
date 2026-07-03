@@ -7,7 +7,7 @@ import { Screen, ScreenContent, ScreenFooter } from '../../components/Screen';
 import { createClassName } from '../../helpers/createClassName';
 import Triggers from '../../lib/triggers';
 
-type ChatFinishedProps = {
+export type ChatFinishedProps = {
 	title: string;
 	greeting?: string;
 	message?: string;
