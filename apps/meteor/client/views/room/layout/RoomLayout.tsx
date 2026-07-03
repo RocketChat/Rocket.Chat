@@ -65,7 +65,17 @@ const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps):
 						</Box>
 						{footer && <Suspense fallback={null}>{footer}</Suspense>}
 					</Box>
-					{aside && <Suspense fallback={null}>{aside}</Suspense>}
+					{aside && (
+						<Suspense fallback={null}>
+							{contextualbarPosition === 'absolute' ? (
+								<Box position='absolute' insetBlock={0} insetInlineEnd={0} width={contextualbarSize} zIndex={100}>
+									{aside}
+								</Box>
+							) : (
+								aside
+							)}
+						</Suspense>
+					)}
 				</Box>
 			</Box>
 		</LayoutContext.Provider>
