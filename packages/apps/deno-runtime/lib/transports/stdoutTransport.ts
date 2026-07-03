@@ -1,6 +1,6 @@
 import { writeAll } from '@std/io';
 
-import type { Transport } from '../messenger';
+import type { Transport } from '@rocket.chat/apps/base-runtime/lib/messenger';
 
 /**
  * Transport that writes messages to the process' standard output.
