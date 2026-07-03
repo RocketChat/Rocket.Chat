@@ -57,6 +57,10 @@ export class BaseDummy<
 		return null;
 	}
 
+	async findOneAndDeleteById(_id: T['_id']): Promise<WithId<T> | null> {
+		return null;
+	}
+
 	async findOneAndUpdate(): Promise<WithId<T> | null> {
 		return null;
 	}

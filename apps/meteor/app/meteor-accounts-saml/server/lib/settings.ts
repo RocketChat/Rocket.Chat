@@ -150,17 +150,10 @@ export const loadSamlServiceProviders = async function (): Promise<void> {
 					SAMLUtils.logger?.warn({ msg: 'SAML Provider not loaded due to invalid configuration', key });
 				}
 
-				const service = await LoginServiceConfiguration.findOneByService(serviceName, { projection: { _id: 1 } });
-				if (!service?._id) {
-					return false;
+				const service = await LoginServiceConfiguration.removeByService(serviceName);
+				if (service) {
+					void notifyOnLoginServiceConfigurationChanged({ _id: service._id }, 'removed');
 				}
-
-				const { deletedCount } = await LoginServiceConfiguration.removeService(service._id);
-				if (!deletedCount) {
-					return false;
-				}
-
-				void notifyOnLoginServiceConfigurationChanged({ _id: service._id }, 'removed');
 
 				return false;
 			}),

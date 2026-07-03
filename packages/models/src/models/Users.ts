@@ -148,6 +148,12 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.find({ active: true, __rooms: { $in: roomIds } }, options);
 	}
 
+	setCasExternalIdByUsername(username: string): Promise<IUser | null> {
+		// #TODO: Remove regex based search
+		const regex = new RegExp(`^${escapeRegExp(username)}$`, 'i');
+		return this.findOneAndUpdate({ username: regex }, { $set: { 'services.cas.external_id': username } }, { returnDocument: 'after' });
+	}
+
 	/**
 	 * @param {string} uid
 	 * @param {IRole['_id'][]} roles list of role ids

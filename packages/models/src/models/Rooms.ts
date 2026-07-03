@@ -1229,6 +1229,21 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update, options);
 	}
 
+	setE2eKeyIdIfNotSet(_id: IRoom['_id'], e2eKeyId: IRoom['e2eKeyId']): Promise<UpdateResult> {
+		const query: Filter<IRoom> = {
+			_id,
+			e2eKeyId: { $exists: false },
+		};
+
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				e2eKeyId,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
 	findOneByImportId(_id: IRoom['_id'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
 		const query: Filter<IRoom> = { importIds: _id };
 

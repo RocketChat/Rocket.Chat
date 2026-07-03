@@ -11,5 +11,9 @@ export interface IOAuthApps extends IRocketChatRecord {
 		_id: string;
 		username: string;
 	};
+	_updatedBy?: {
+		_id: string;
+		username?: string;
+	} | null;
 	appId?: string;
 }

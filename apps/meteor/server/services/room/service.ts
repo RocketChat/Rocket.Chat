@@ -153,12 +153,11 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	}
 
 	async revokeInvite(room: IRoom, user: IUser): Promise<void> {
-		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
-		if (subscription?.status !== 'INVITED') {
+		const subscription = await Subscriptions.removeInvitedByRoomIdAndUserId(room._id, user._id);
+		if (!subscription) {
 			return;
 		}
 
-		await Subscriptions.removeById(subscription._id);
 		void notifyOnSubscriptionChanged(subscription, 'removed');
 	}
 

@@ -1984,6 +1984,16 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return doc;
 	}
 
+	removeInvitedByRoomIdAndUserId(roomId: string, userId: string): Promise<ISubscription | null> {
+		const query = {
+			'rid': roomId,
+			'u._id': userId,
+			'status': 'INVITED' as const,
+		};
+
+		return this.findOneAndDelete(query);
+	}
+
 	async removeByRoomIds(rids: string[], options?: { onTrash: (doc: ISubscription) => void }): Promise<DeleteResult> {
 		const result = await this.deleteMany({ rid: { $in: rids } }, options);
 

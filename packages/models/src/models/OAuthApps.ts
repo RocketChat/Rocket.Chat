@@ -40,6 +40,13 @@ export class OAuthAppsRaw extends BaseRaw<IOAuthApps> implements IOAuthAppsModel
 		);
 	}
 
+	updateById(
+		_id: IOAuthApps['_id'],
+		data: Partial<Pick<IOAuthApps, 'name' | 'active' | 'redirectUri' | '_updatedBy'>>,
+	): Promise<IOAuthApps | null> {
+		return this.findOneAndUpdate({ _id }, { $set: data }, { returnDocument: 'after' });
+	}
+
 	findOneActiveByClientIdAndClientSecret(
 		clientId: string,
 		clientSecret: string,

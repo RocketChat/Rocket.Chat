@@ -18,12 +18,11 @@ export const deleteCustomUserStatus = async (userId: string, userStatusID: strin
 		throw new Meteor.Error('not_authorized');
 	}
 
-	const userStatus = await CustomUserStatus.findOneById(userStatusID);
+	const userStatus = await CustomUserStatus.findOneAndDeleteById(userStatusID);
 	if (userStatus == null) {
 		throw new Meteor.Error('Custom_User_Status_Error_Invalid_User_Status', 'Invalid user status', { method: 'deleteCustomUserStatus' });
 	}
 
-	await CustomUserStatus.removeById(userStatusID);
 	void api.broadcast('user.deleteCustomStatus', userStatus);
 
 	return true;

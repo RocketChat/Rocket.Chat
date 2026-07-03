@@ -119,12 +119,9 @@ export async function updateOAuthServices(): Promise<void> {
 			await LoginServiceConfiguration.createOrUpdateService(serviceKey, data);
 			void notifyOnLoginServiceConfigurationChangedByService(serviceKey);
 		} else {
-			const service = await LoginServiceConfiguration.findOneByService(serviceName, { projection: { _id: 1 } });
-			if (service?._id) {
-				const { deletedCount } = await LoginServiceConfiguration.removeService(service._id);
-				if (deletedCount > 0) {
-					void notifyOnLoginServiceConfigurationChanged({ _id: service._id }, 'removed');
-				}
+			const service = await LoginServiceConfiguration.removeByService(serviceName);
+			if (service) {
+				void notifyOnLoginServiceConfigurationChanged({ _id: service._id }, 'removed');
 			}
 		}
 	}

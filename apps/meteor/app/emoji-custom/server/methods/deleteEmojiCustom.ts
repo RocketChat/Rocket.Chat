@@ -20,7 +20,7 @@ export const deleteEmojiCustom = async (userId: string, emojiID: ICustomEmojiDes
 		throw new Meteor.Error('not_authorized');
 	}
 
-	const emoji = await EmojiCustom.findOneById(emojiID);
+	const emoji = await EmojiCustom.findOneAndDeleteById(emojiID);
 	if (emoji == null) {
 		throw new Meteor.Error('Custom_Emoji_Error_Invalid_Emoji', 'Invalid emoji', {
 			method: 'deleteEmojiCustom',
@@ -28,7 +28,6 @@ export const deleteEmojiCustom = async (userId: string, emojiID: ICustomEmojiDes
 	}
 
 	await RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emoji.name}.${emoji.extension}`));
-	await EmojiCustom.removeById(emojiID);
 	void api.broadcast('emoji.deleteCustom', emoji);
 
 	return true;
