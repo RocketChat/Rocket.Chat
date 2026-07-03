@@ -4,7 +4,9 @@ import { useTranslation } from 'react-i18next';
 import AirGappedRestrictionWarning from './AirGappedRestrictionWarning';
 import { links } from '../../../lib/links';
 
-const AirGappedRestrictionSection = ({ isRestricted, remainingDays }: { isRestricted: boolean; remainingDays: number }) => {
+export type AirGappedRestrictionSectionProps = { isRestricted: boolean; remainingDays: number };
+
+const AirGappedRestrictionSection = ({ isRestricted, remainingDays }: AirGappedRestrictionSectionProps) => {
 	const { t } = useTranslation();
 
 	return (
