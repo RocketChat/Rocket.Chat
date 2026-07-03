@@ -30,7 +30,7 @@ const quoteStyles = css`
 	}
 `;
 
-type QuoteAttachmentProps = {
+export type QuoteAttachmentProps = {
 	attachment: MessageQuoteAttachment;
 };
 
