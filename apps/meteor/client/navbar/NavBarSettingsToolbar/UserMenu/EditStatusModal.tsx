@@ -14,7 +14,7 @@ import { USER_STATUS_TEXT_MAX_LENGTH } from '../../../lib/constants';
 import { getUserStatusInitialValues } from '../../../lib/getUserInitialStatus';
 import { STATUS_DURATION_OPTIONS, validateStatusExpiration } from '../../../lib/statusDurations';
 
-type EditStatusModalProps = {
+export type EditStatusModalProps = {
 	onClose: () => void;
 };
 
