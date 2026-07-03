@@ -13,7 +13,7 @@ import { bhLogger } from '../lib/logger';
 
 type IBusinessHoursExtraProperties = {
 	timezoneName: string;
-	departmentsToApplyBusinessHour: string;
+	departmentsToApplyBusinessHour?: string;
 };
 
 class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHourType {
@@ -48,27 +48,33 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 			name: timezoneName,
 			utc: this.getUTCFromTimezone(timezoneName),
 		};
-		const departments = departmentsToApplyBusinessHour?.split(',').filter(Boolean) || [];
 		const businessHourToReturn = { ...businessHourData, departmentsToApplyBusinessHour };
 		delete businessHourData.departments;
 
 		const businessHourId = await this.baseSaveBusinessHour(businessHourData);
-		const currentDepartments = (
-			await LivechatDepartment.findByBusinessHourId(businessHourId, {
-				projection: { _id: 1 },
-			}).toArray()
-		).map((dept) => dept._id);
-		const toRemove = [...currentDepartments.filter((dept) => !departments.includes(dept))];
-		const toAdd = [...departments.filter((dept: string) => !currentDepartments.includes(dept))];
 
-		await this.removeBusinessHourFromDepartmentsIfNeeded(businessHourId, toRemove);
+		// Internal callers (e.g. the DST verifier) re-save business hours without the
+		// departments field; only reconcile department links when it is provided,
+		// otherwise an internal re-save would unlink every department.
+		if (departmentsToApplyBusinessHour !== undefined) {
+			const departments = departmentsToApplyBusinessHour.split(',').filter(Boolean);
+			const currentDepartments = (
+				await LivechatDepartment.findByBusinessHourId(businessHourId, {
+					projection: { _id: 1 },
+				}).toArray()
+			).map((dept) => dept._id);
+			const toRemove = [...currentDepartments.filter((dept) => !departments.includes(dept))];
+			const toAdd = [...departments.filter((dept: string) => !currentDepartments.includes(dept))];
 
-		// Now will check if the department which we're currently adding to BH is not
-		// associated with any other BH. If it is, then it will remove the old BH from all user's
-		// cache. It will not add the new BH right now as it will be done in afterSaveBusinessHour.
-		await this.removeBHFromPreviouslyConnectedDepartmentAgentsIfRequired(toAdd);
+			await this.removeBusinessHourFromDepartmentsIfNeeded(businessHourId, toRemove);
 
-		await this.addBusinessHourToDepartmentsIfNeeded(businessHourId, toAdd);
+			// Now will check if the department which we're currently adding to BH is not
+			// associated with any other BH. If it is, then it will remove the old BH from all user's
+			// cache. It will not add the new BH right now as it will be done in afterSaveBusinessHour.
+			await this.removeBHFromPreviouslyConnectedDepartmentAgentsIfRequired(toAdd);
+
+			await this.addBusinessHourToDepartmentsIfNeeded(businessHourId, toAdd);
+		}
 
 		businessHourToReturn._id = businessHourId;
 		return businessHourToReturn;
