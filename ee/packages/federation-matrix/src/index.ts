@@ -2,7 +2,7 @@ import 'reflect-metadata';
 
 export { validateFederatedUsername } from './helpers/validateFederatedUsername';
 
-export { isUsernameReservedByExclusiveBridge } from './helpers/isUsernameReservedByExclusiveBridge';
+export { isReservedByExclusiveBridge } from './helpers/isReservedByExclusiveBridge';
 
 export { FederationMatrix } from './FederationMatrix';
 
