@@ -2,7 +2,7 @@ import type * as MessageParser from '@rocket.chat/message-parser';
 
 import ParagraphBlock from './ParagraphBlock';
 
-type QuoteBlockProps = {
+export type QuoteBlockProps = {
 	children: MessageParser.Paragraph[];
 };
 
