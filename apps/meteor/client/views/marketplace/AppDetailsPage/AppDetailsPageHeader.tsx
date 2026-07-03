@@ -15,7 +15,9 @@ const versioni18nKey = (app: App): string => {
 	return installed ? version : marketplaceVersion;
 };
 
-const AppDetailsPageHeader = ({ app }: { app: App }) => {
+export type AppDetailsPageHeaderProps = { app: App };
+
+const AppDetailsPageHeader = ({ app }: AppDetailsPageHeaderProps) => {
 	const { t } = useTranslation();
 	const {
 		iconFileData,
