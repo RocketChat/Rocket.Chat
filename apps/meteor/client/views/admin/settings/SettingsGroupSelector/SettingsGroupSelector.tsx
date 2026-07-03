@@ -7,7 +7,7 @@ import EnterpriseGroupPage from '../groups/EnterpriseGroupPage';
 import LDAPGroupPage from '../groups/LDAPGroupPage';
 import OAuthGroupPage from '../groups/OAuthGroupPage';
 
-type SettingsGroupSelectorProps = {
+export type SettingsGroupSelectorProps = {
 	groupId: ISetting['_id'];
 	onClickBack?: () => void;
 };
