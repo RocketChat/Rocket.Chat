@@ -1,5 +1,5 @@
 import { NavBarItem } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import { useCurrentRoutePath, useLayout, useRouter, useSetting } from '@rocket.chat/ui-contexts';
@@ -15,7 +15,7 @@ const NavBarPagesStackMenu = (props: NavBarPagesStackMenuProps) => {
 	const { sidebar } = useLayout();
 	const router = useRouter();
 
-	const handleGoToHome = useEffectEvent(() => {
+	const handleGoToHome = useStableCallback(() => {
 		sidebar.toggle();
 		router.navigate('/home');
 	});

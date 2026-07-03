@@ -1,5 +1,5 @@
 import stackTrace from 'stack-trace';
-import { AppObjectRegistry } from '../AppObjectRegistry.ts';
+import { AppObjectRegistry } from '../AppObjectRegistry';
 
 export interface StackFrame {
 	getTypeName(): string;

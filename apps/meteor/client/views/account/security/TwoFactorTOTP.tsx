@@ -1,7 +1,7 @@
 import { Box, Button, TextInput, Margins, Field, FieldRow, FieldLabel, ToggleSwitch } from '@rocket.chat/fuselage';
-import { useEffectEvent, useSafely } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useUser, useMethod } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ComponentPropsWithoutRef, FormEvent } from 'react';
+import type { ComponentPropsWithoutRef, ChangeEvent } from 'react';
 import { useState, useCallback, useEffect, useId } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -17,7 +17,7 @@ type TwoFactorTOTPFormData = {
 
 type TwoFactorTOTPProps = ComponentPropsWithoutRef<typeof Box>;
 
-const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
+const TwoFactorTOTP = (props: TwoFactorTOTPProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const user = useUser();
@@ -51,7 +51,7 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 		updateCodesRemaining();
 	}, [checkCodesRemainingFn, setCodesRemaining, totpEnabled]);
 
-	const enableTotp = useEffectEvent(async () => {
+	const enableTotp = useStableCallback(async () => {
 		try {
 			const result = await enableTotpFn();
 
@@ -64,7 +64,7 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 		}
 	});
 
-	const disableTotp = useEffectEvent(async () => {
+	const disableTotp = useStableCallback(async () => {
 		if (!totpEnabled) {
 			setRegisteringTotp(false);
 
@@ -92,7 +92,7 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 		setModal(<TwoFactorTotpModal onConfirm={onDisable} onClose={closeModal} />);
 	});
 
-	const handleToggleTotp = useEffectEvent(async (e: FormEvent<HTMLInputElement>) => {
+	const handleToggleTotp = useStableCallback(async (e: ChangeEvent<HTMLInputElement>) => {
 		if (e.currentTarget?.checked) {
 			void enableTotp();
 		} else {

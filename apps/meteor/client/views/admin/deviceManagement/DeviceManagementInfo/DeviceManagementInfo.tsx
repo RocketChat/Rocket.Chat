@@ -13,7 +13,6 @@ import {
 	InfoPanelText,
 } from '@rocket.chat/ui-client';
 import { useRoute, useUserPresence } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -22,7 +21,7 @@ import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 
 type DeviceManagementInfoProps = DeviceManagementPopulatedSession;
 
-const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user }: DeviceManagementInfoProps): ReactElement => {
+const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user }: DeviceManagementInfoProps) => {
 	const { t } = useTranslation();
 	const deviceManagementRouter = useRoute('device-management');
 	const formatDateAndTime = useFormatDateAndTime();

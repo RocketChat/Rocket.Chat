@@ -1,6 +1,5 @@
-import { Box, Select, Tabs } from '@rocket.chat/fuselage';
+import { Box, Select, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { PageScrollableContent, Page, PageHeader } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -13,7 +12,7 @@ type EngagementDashboardPageProps = {
 	onSelectTab?: (tab: 'users' | 'messages' | 'channels') => void;
 };
 
-const EngagementDashboardPage = ({ tab = 'users', onSelectTab }: EngagementDashboardPageProps): ReactElement => {
+const EngagementDashboardPage = ({ tab = 'users', onSelectTab }: EngagementDashboardPageProps) => {
 	const { t } = useTranslation();
 
 	const timezoneOptions = useMemo<[timezone: 'utc' | 'local', label: string][]>(
@@ -43,15 +42,15 @@ const EngagementDashboardPage = ({ tab = 'users', onSelectTab }: EngagementDashb
 				/>
 			</PageHeader>
 			<Tabs>
-				<Tabs.Item selected={tab === 'users'} onClick={handleTabClick('users')}>
+				<TabsItem selected={tab === 'users'} onClick={handleTabClick('users')}>
 					{t('Users')}
-				</Tabs.Item>
-				<Tabs.Item selected={tab === 'messages'} onClick={handleTabClick('messages')}>
+				</TabsItem>
+				<TabsItem selected={tab === 'messages'} onClick={handleTabClick('messages')}>
 					{t('Messages')}
-				</Tabs.Item>
-				<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>
+				</TabsItem>
+				<TabsItem selected={tab === 'channels'} onClick={handleTabClick('channels')}>
 					{t('Channels')}
-				</Tabs.Item>
+				</TabsItem>
 			</Tabs>
 			<PageScrollableContent padding={0}>
 				<Box m={24}>

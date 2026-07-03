@@ -457,7 +457,12 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 							let: {
 								rid: '$_id',
 							},
-							pipeline: [{ $match: { '$expr': { $eq: ['$rid', '$$rid'] }, 'u._id': { $ne: userId } } }],
+							// Only `u._id` is read downstream (next $group); projecting it away keeps the
+							// $unwind/$group volume tiny instead of carrying full subscription documents.
+							pipeline: [
+								{ $match: { '$expr': { $eq: ['$rid', '$$rid'] }, 'u._id': { $ne: userId } } },
+								{ $project: { '_id': 0, 'u._id': 1 } },
+							],
 						},
 					},
 					// Unwind the subscription so we have a separate document for each
@@ -494,6 +499,8 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 										...(searchTerm && orStatement.length > 0 && { $or: orStatement }),
 									},
 								},
+								// Only these fields are read by the final $group; avoid hauling full user documents.
+								{ $project: { name: 1, username: 1, nickname: 1, status: 1, statusText: 1, avatarETag: 1 } },
 							],
 						},
 					},
@@ -707,8 +714,8 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			};
 		} else {
 			update = {
-				$unset: {
-					autoTranslate: 1,
+				$set: {
+					autoTranslate: false,
 				},
 			};
 		}
@@ -723,19 +730,21 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.findOneAndUpdate(query, update, { returnDocument: 'after' });
 	}
 
-	updateAllAutoTranslateLanguagesByUserId(userId: IUser['_id'], language: string): Promise<UpdateResult | Document> {
-		const query = {
-			'u._id': userId,
-			'autoTranslate': true,
-		};
+	setAutoTranslateByUserId(userId: IUser['_id'], language: string | null): Promise<UpdateResult | Document> {
+		if (language) {
+			return Promise.all([
+				this.updateMany({ 'u._id': userId, 'autoTranslate': true }, { $set: { autoTranslateLanguage: language } }),
+				this.updateMany(
+					{ 'u._id': userId, 'autoTranslate': { $exists: false } },
+					{ $set: { autoTranslate: true, autoTranslateLanguage: language } },
+				),
+			]).then(([updateResult, enableResult]) => ({
+				...updateResult,
+				modifiedCount: updateResult.modifiedCount + enableResult.modifiedCount,
+			}));
+		}
 
-		const update: UpdateFilter<ISubscription> = {
-			$set: {
-				autoTranslateLanguage: language,
-			},
-		};
-
-		return this.updateMany(query, update);
+		return this.updateMany({ 'u._id': userId, 'autoTranslate': true }, { $unset: { autoTranslate: 1, autoTranslateLanguage: 1 } });
 	}
 
 	findByAutoTranslateAndUserId(

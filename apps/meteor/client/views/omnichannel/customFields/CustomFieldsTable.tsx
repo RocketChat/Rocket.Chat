@@ -1,5 +1,5 @@
 import { IconButton, Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
 	GenericTableHeader,
@@ -29,8 +29,8 @@ const CustomFieldsTable = () => {
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'_id' | 'label' | 'scope' | 'visibility'>('_id');
 
-	const handleAddNew = useEffectEvent(() => router.navigate('/omnichannel/customfields/new'));
-	const onRowClick = useEffectEvent((id: string) => () => router.navigate(`/omnichannel/customfields/edit/${id}`));
+	const handleAddNew = useStableCallback(() => router.navigate('/omnichannel/customfields/new'));
+	const onRowClick = useStableCallback((id: string) => () => router.navigate(`/omnichannel/customfields/edit/${id}`));
 
 	const handleDelete = useRemoveCustomField();
 

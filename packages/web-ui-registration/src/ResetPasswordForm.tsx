@@ -1,7 +1,6 @@
 import { FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
-import { Form, ActionLink } from '@rocket.chat/layout';
+import { Form, FormContainer, FormFooter, FormHeader, FormTitle, ActionLink } from '@rocket.chat/layout';
 import { useDocumentTitle } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useEffect, useId, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import { useSendForgotPassword } from './hooks/useSendForgotPassword';
 
-export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
+export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }) => {
 	const { t } = useTranslation();
 	const emailId = useId();
 	const formLabelId = useId();
@@ -43,10 +42,10 @@ export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 				void mutateAsync({ email: data.email });
 			})}
 		>
-			<Form.Header>
-				<Form.Title id={formLabelId}>{t('registration.component.resetPassword')}</Form.Title>
-			</Form.Header>
-			<Form.Container>
+			<FormHeader>
+				<FormTitle id={formLabelId}>{t('registration.component.resetPassword')}</FormTitle>
+			</FormHeader>
+			<FormContainer>
 				<FieldGroup>
 					<Field>
 						<FieldLabel required htmlFor={emailId}>
@@ -83,8 +82,8 @@ export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 						</Callout>
 					</FieldGroup>
 				)}
-			</Form.Container>
-			<Form.Footer>
+			</FormContainer>
+			<FormFooter>
 				<ButtonGroup>
 					<Button type='submit' loading={isSubmitting} primary>
 						{t('registration.page.resetPassword.sendInstructions')}
@@ -97,7 +96,7 @@ export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 				>
 					{t('registration.page.register.back')}
 				</ActionLink>
-			</Form.Footer>
+			</FormFooter>
 		</Form>
 	);
 };

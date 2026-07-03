@@ -1,10 +1,13 @@
 import { usePermission } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 
 import UsersTable from './UsersTable';
 import NotAuthorizedPage from '../../../notAuthorized/NotAuthorizedPage';
 
-const UsersTab = (props: { workspace?: 'external' | 'local' }): ReactElement => {
+type UsersTabProps = {
+	workspace?: 'external' | 'local';
+};
+
+const UsersTab = (props: UsersTabProps) => {
 	const canViewOutsideRoom = usePermission('view-outside-room');
 	const canViewDM = usePermission('view-d-room');
 

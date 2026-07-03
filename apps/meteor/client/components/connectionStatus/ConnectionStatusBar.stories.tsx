@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { ServerContextValue } from '@rocket.chat/ui-contexts';
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
+import { action } from 'storybook/actions';
 
 import ConnectionStatusBar from './ConnectionStatusBar';
 
@@ -23,47 +23,62 @@ const stateDecorator = (value: Partial<ServerContextValue>) =>
 
 const Template: StoryFn<typeof ConnectionStatusBar> = () => <ConnectionStatusBar />;
 
-export const Connected = Template.bind({});
-Connected.decorators = [
-	stateDecorator({
-		connected: true,
-		status: 'connected',
-		retryTime: undefined,
-	}),
-];
+export const Connected = {
+	render: Template,
 
-export const Connecting = Template.bind({});
-Connecting.decorators = [
-	stateDecorator({
-		connected: false,
-		status: 'connecting',
-		retryTime: undefined,
-	}),
-];
+	decorators: [
+		stateDecorator({
+			connected: true,
+			status: 'connected',
+			retryTime: undefined,
+		}),
+	],
+};
 
-export const Failed = Template.bind({});
-Failed.decorators = [
-	stateDecorator({
-		connected: false,
-		status: 'failed',
-		retryTime: undefined,
-	}),
-];
+export const Connecting = {
+	render: Template,
 
-export const Waiting = Template.bind({});
-Waiting.decorators = [
-	stateDecorator({
-		connected: false,
-		status: 'waiting',
-		retryTime: Date.now() + 300000,
-	}),
-];
+	decorators: [
+		stateDecorator({
+			connected: false,
+			status: 'connecting',
+			retryTime: undefined,
+		}),
+	],
+};
 
-export const Offline = Template.bind({});
-Offline.decorators = [
-	stateDecorator({
-		connected: false,
-		status: 'offline',
-		retryTime: undefined,
-	}),
-];
+export const Failed = {
+	render: Template,
+
+	decorators: [
+		stateDecorator({
+			connected: false,
+			status: 'failed',
+			retryTime: undefined,
+		}),
+	],
+};
+
+export const Waiting = {
+	render: Template,
+
+	decorators: [
+		stateDecorator({
+			connected: false,
+			status: 'waiting',
+			retryTime: Date.now() + 300000,
+		}),
+	],
+};
+
+export const Offline = {
+	render: Template,
+
+	decorators: [
+		stateDecorator({
+			connected: false,
+			status: 'offline',
+			retryTime: undefined,
+		}),
+	],
+};

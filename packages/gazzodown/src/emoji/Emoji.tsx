@@ -1,5 +1,4 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import type { ReactElement } from 'react';
 import { useMemo, useContext, memo } from 'react';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
@@ -11,7 +10,7 @@ type EmojiProps = MessageParser.Emoji & {
 	preview?: boolean;
 };
 
-const Emoji = ({ big = false, preview = false, ...emoji }: EmojiProps): ReactElement => {
+const Emoji = ({ big = false, preview = false, ...emoji }: EmojiProps) => {
 	const { convertAsciiToEmoji, useEmoji } = useContext(MarkupInteractionContext);
 
 	const asciiEmoji = useMemo(

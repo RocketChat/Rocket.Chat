@@ -208,7 +208,9 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 								/>
 							</FieldRow>
 							<FieldHint id={`${usernameField}-hint-1`}>{t('Choose_the_username_that_this_integration_will_post_as')}</FieldHint>
-							<FieldHint id={`${usernameField}-hint-2`}>{t('Should_exists_a_user_with_this_username')}</FieldHint>
+							<FieldHint id={`${usernameField}-hint-2`}>
+								{t('User_must_exist_and_have_permission', { permission: 'message-impersonate' })}
+							</FieldHint>
 							{errors?.username && (
 								<FieldError aria-live='assertive' id={`${usernameField}-error`}>
 									{errors.username.message}

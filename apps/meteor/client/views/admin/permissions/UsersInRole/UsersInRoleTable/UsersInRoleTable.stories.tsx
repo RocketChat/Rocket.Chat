@@ -1,6 +1,6 @@
 import { Margins } from '@rocket.chat/fuselage';
 import { PageContent } from '@rocket.chat/ui-client';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta } from '@storybook/react';
 
 import UsersInRoleTable from './UsersInRoleTable';
 import { createMockedPagination } from '../../../../../../tests/mocks/data';
@@ -33,52 +33,54 @@ const mockedUsers = generateMockedUsers(5);
 
 const paginationData = createMockedPagination(mockedUsers.length, 30);
 
-const Template: StoryFn<typeof UsersInRoleTable> = (args) => <UsersInRoleTable {...args} />;
-
-export const Default = Template.bind({});
-Default.args = {
-	total: 30,
-	isLoading: false,
-	isError: false,
-	isSuccess: true,
-	users: mockedUsers,
-	onRemove: () => undefined,
-	refetch: () => undefined,
-	paginationData,
+export const Default = {
+	args: {
+		total: 30,
+		isLoading: false,
+		isError: false,
+		isSuccess: true,
+		users: mockedUsers,
+		onRemove: () => undefined,
+		refetch: () => undefined,
+		paginationData,
+	},
 };
 
-export const withLoading = Template.bind({});
-withLoading.args = {
-	total: 0,
-	isLoading: true,
-	isError: false,
-	isSuccess: false,
-	users: [],
-	onRemove: () => undefined,
-	refetch: () => undefined,
-	paginationData,
+export const withLoading = {
+	args: {
+		total: 0,
+		isLoading: true,
+		isError: false,
+		isSuccess: false,
+		users: [],
+		onRemove: () => undefined,
+		refetch: () => undefined,
+		paginationData,
+	},
 };
 
-export const withNoResults = Template.bind({});
-withNoResults.args = {
-	total: 0,
-	isLoading: false,
-	isError: false,
-	isSuccess: true,
-	users: [],
-	onRemove: () => undefined,
-	refetch: () => undefined,
-	paginationData,
+export const withNoResults = {
+	args: {
+		total: 0,
+		isLoading: false,
+		isError: false,
+		isSuccess: true,
+		users: [],
+		onRemove: () => undefined,
+		refetch: () => undefined,
+		paginationData,
+	},
 };
 
-export const withError = Template.bind({});
-withError.args = {
-	total: 0,
-	isLoading: false,
-	isError: true,
-	isSuccess: false,
-	users: [],
-	onRemove: () => undefined,
-	refetch: () => undefined,
-	paginationData,
+export const withError = {
+	args: {
+		total: 0,
+		isLoading: false,
+		isError: true,
+		isSuccess: false,
+		users: [],
+		onRemove: () => undefined,
+		refetch: () => undefined,
+		paginationData,
+	},
 };

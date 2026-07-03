@@ -1,12 +1,16 @@
-import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, FieldError } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
-import type { ReactElement, ReactNode } from 'react';
+import { useId, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
-const CodeMirrorBox = ({ label, children }: { label: ReactNode; children: ReactElement }) => {
+// A constant 2px border is always reserved so toggling the error state only changes the color, avoiding a layout reflow.
+const editorBorderProps = { borderWidth: 2, borderStyle: 'solid', borderRadius: 4 } as const;
+
+const CodeMirrorBox = ({ label, children, error }: { label: ReactNode; children: ReactNode; error?: string }) => {
 	const { t } = useTranslation();
 	const [fullScreen, toggleFullScreen] = useToggle(false);
+	const errorId = useId();
 
 	if (fullScreen) {
 		return createPortal(
@@ -25,9 +29,23 @@ const CodeMirrorBox = ({ label, children }: { label: ReactNode; children: ReactE
 				<Box fontScale='p1' mbe={4}>
 					{label}
 				</Box>
-				<Box display='flex' flexDirection='column' height='100%' role='code' aria-label={typeof label === 'string' ? label : undefined}>
+				<Box
+					display='flex'
+					flexDirection='column'
+					height='100%'
+					role='code'
+					aria-label={typeof label === 'string' ? label : undefined}
+					aria-describedby={error ? errorId : undefined}
+					{...editorBorderProps}
+					borderColor={error ? 'error' : 'transparent'}
+				>
 					{children}
 				</Box>
+				{error && (
+					<FieldError id={errorId} role='alert' mbs={4}>
+						{error}
+					</FieldError>
+				)}
 				<Box mbs={8}>
 					<ButtonGroup>
 						<Button primary onClick={(): void => toggleFullScreen()}>
@@ -42,9 +60,23 @@ const CodeMirrorBox = ({ label, children }: { label: ReactNode; children: ReactE
 
 	return (
 		<Box className='code-mirror-box'>
-			<Box display='flex' flexDirection='column' height='100%' role='code' aria-label={typeof label === 'string' ? label : undefined}>
+			<Box
+				display='flex'
+				flexDirection='column'
+				height='100%'
+				role='code'
+				aria-label={typeof label === 'string' ? label : undefined}
+				aria-describedby={error ? errorId : undefined}
+				{...editorBorderProps}
+				borderColor={error ? 'error' : 'transparent'}
+			>
 				{children}
 			</Box>
+			{error && (
+				<FieldError id={errorId} role='alert' mbs={4}>
+					{error}
+				</FieldError>
+			)}
 			<Box mbs={8}>
 				<ButtonGroup>
 					<Button primary onClick={(): void => toggleFullScreen()}>

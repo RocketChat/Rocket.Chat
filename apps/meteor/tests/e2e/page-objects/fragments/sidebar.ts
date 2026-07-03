@@ -94,7 +94,7 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	getCollapseGroupByName(name: string): Locator {
-		return this.channelsList.getByRole('button').filter({ has: this.page.getByRole('heading', { name, exact: true }) });
+		return this.root.getByRole('button').filter({ has: this.page.getByRole('heading', { name, exact: true }) });
 	}
 
 	getItemUnreadBadge(item: Locator): Locator {

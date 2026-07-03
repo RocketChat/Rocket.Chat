@@ -1,5 +1,5 @@
-import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
-import type { RoomType as _RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType';
+import { RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
+import { RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType';
 
 import type { ILivechatMessageBuilder } from '@rocket.chat/apps-engine/definition/accessors/ILivechatMessageBuilder';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage';
@@ -10,19 +10,12 @@ import type { ILivechatMessage as EngineLivechatMessage } from '@rocket.chat/app
 import type { IVisitor } from '@rocket.chat/apps-engine/definition/livechat/IVisitor';
 import type { IMessageBuilder } from '@rocket.chat/apps-engine/definition/accessors/IMessageBuilder';
 
-import { MessageBuilder } from './MessageBuilder.ts';
-import { require } from '../../../lib/require.ts';
-
-const { RocketChatAssociationModel } = require('@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.js') as {
-	RocketChatAssociationModel: typeof _RocketChatAssociationModel;
-};
-
-const { RoomType } = require('@rocket.chat/apps-engine/definition/rooms/RoomType.js') as { RoomType: typeof _RoomType };
+import { MessageBuilder } from './MessageBuilder';
 
 export interface ILivechatMessage extends EngineLivechatMessage, IMessage {}
 
 export class LivechatMessageBuilder implements ILivechatMessageBuilder {
-	public kind: _RocketChatAssociationModel.LIVECHAT_MESSAGE;
+	public kind: RocketChatAssociationModel.LIVECHAT_MESSAGE;
 
 	private msg: ILivechatMessage;
 
@@ -145,7 +138,7 @@ export class LivechatMessageBuilder implements ILivechatMessageBuilder {
 	}
 
 	public getEditor(): IUser {
-		return this.msg.editor;
+		return this.msg.editor!;
 	}
 
 	public setGroupable(groupable: boolean): ILivechatMessageBuilder {
@@ -177,13 +170,15 @@ export class LivechatMessageBuilder implements ILivechatMessageBuilder {
 
 	public setVisitor(visitor: IVisitor): ILivechatMessageBuilder {
 		this.msg.visitor = visitor;
+
+		// @ts-expect-error - solidified behavior, we can't change
 		delete this.msg.sender;
 
 		return this;
 	}
 
 	public getVisitor(): IVisitor {
-		return this.msg.visitor;
+		return this.msg.visitor!;
 	}
 
 	public getMessage(): ILivechatMessage {

@@ -39,6 +39,7 @@ export class Spotlight {
 			sort: {
 				name: 1,
 			},
+			readPreference: readSecondaryPreferred(Rooms.col.s.db),
 		};
 
 		if (userId == null) {
@@ -55,12 +56,15 @@ export class Spotlight {
 
 		const searchableRoomTypeIds = roomCoordinator.searchableRoomTypes();
 
-		const roomIds = (
-			await SubscriptionsRaw.findByUserIdAndTypes(userId, searchableRoomTypeIds, {
+		const [subscriptions, exactRoom] = await Promise.all([
+			SubscriptionsRaw.findByUserIdAndTypes(userId, searchableRoomTypeIds, {
 				projection: { rid: 1 },
-			}).toArray()
-		).map((s) => s.rid);
-		const exactRoom = await Rooms.findOneByNameAndType(text, searchableRoomTypeIds, roomOptions, includeFederatedRooms);
+				readPreference: roomOptions.readPreference,
+			}).toArray(),
+			Rooms.findOneByNameAndType(text, searchableRoomTypeIds, roomOptions, includeFederatedRooms),
+		]);
+
+		const roomIds = subscriptions.map((s) => s.rid);
 		if (exactRoom) {
 			roomIds.push(exactRoom.rid);
 		}
@@ -226,6 +230,10 @@ export class Spotlight {
 		};
 
 		// Exact match for username only
+		// TODO: these exact-match branches push the user without filtering against `usernames`
+		// (the exclusion list), so an exact username query bypasses the exclusion that the
+		// findByActiveUsersExcept paths below honor. Evaluate filtering exactMatch against
+		// `usernames` here so the exclusion applies uniformly.
 		if (rid && canListInsiders) {
 			const exactMatch = await Users.findOneByUsernameAndRoomIgnoringCase(text, rid, {
 				projection: options.projection,

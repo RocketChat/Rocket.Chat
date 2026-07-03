@@ -1,5 +1,4 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { memo, useMemo } from 'react';
 
 const availablePercentualWidths = [47, 68, 75, 82];
@@ -8,7 +7,7 @@ type ListSkeletonProps = {
 	listCount?: number;
 };
 
-const ListSkeleton = ({ listCount = 2 }: ListSkeletonProps): ReactElement => {
+const ListSkeleton = ({ listCount = 2 }: ListSkeletonProps) => {
 	const widths = useMemo(
 		() => Array.from({ length: listCount }, (_, index) => `${availablePercentualWidths[index % availablePercentualWidths.length]}%`),
 		[listCount],

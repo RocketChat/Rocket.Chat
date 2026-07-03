@@ -1,5 +1,5 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import type { KeyboardEvent, ReactElement } from 'react';
+import type { KeyboardEvent } from 'react';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -35,7 +35,7 @@ const srOnlyStyle = {
 	width: 1,
 } as const;
 
-const SpoilerBlock = ({ children }: SpoilerBlockProps): ReactElement => {
+const SpoilerBlock = ({ children }: SpoilerBlockProps) => {
 	const { t } = useTranslation();
 	const [revealed, setRevealed] = useState(false);
 

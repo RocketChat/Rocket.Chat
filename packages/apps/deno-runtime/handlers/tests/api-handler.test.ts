@@ -6,9 +6,9 @@ import { spy } from 'https://deno.land/std@0.203.0/testing/mock.ts';
 import { assertInstanceOf } from 'https://deno.land/std@0.203.0/assert/assert_instance_of.ts';
 import { JsonRpcError } from 'jsonrpc-lite';
 
-import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
-import apiHandler from '../api-handler.ts';
-import { createMockRequest } from './helpers/mod.ts';
+import { AppObjectRegistry } from '../../AppObjectRegistry';
+import apiHandler from '../api-handler';
+import { createMockRequest } from './helpers/mod';
 
 describe('handlers > api', () => {
 	const mockEndpoint: IApiEndpoint = {

@@ -1,14 +1,13 @@
-import { Button, ButtonGroup, Tabs } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import IntegrationsTable from './IntegrationsTable';
 import NewBot from './NewBot';
 import NewZapier from './NewZapier';
 
-const IntegrationsPage = (): ReactElement => {
+const IntegrationsPage = () => {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const context = useRouteParameter('context');
@@ -28,21 +27,21 @@ const IntegrationsPage = (): ReactElement => {
 				</ButtonGroup>
 			</PageHeader>
 			<Tabs>
-				<Tabs.Item selected={!context} onClick={() => router.navigate('/admin/integrations')}>
+				<TabsItem selected={!context} onClick={() => router.navigate('/admin/integrations')}>
 					{t('All')}
-				</Tabs.Item>
-				<Tabs.Item selected={context === 'webhook-incoming'} onClick={() => router.navigate('/admin/integrations/webhook-incoming')}>
+				</TabsItem>
+				<TabsItem selected={context === 'webhook-incoming'} onClick={() => router.navigate('/admin/integrations/webhook-incoming')}>
 					{t('Incoming')}
-				</Tabs.Item>
-				<Tabs.Item selected={context === 'webhook-outgoing'} onClick={() => router.navigate('/admin/integrations/webhook-outgoing')}>
+				</TabsItem>
+				<TabsItem selected={context === 'webhook-outgoing'} onClick={() => router.navigate('/admin/integrations/webhook-outgoing')}>
 					{t('Outgoing')}
-				</Tabs.Item>
-				<Tabs.Item selected={context === 'zapier'} onClick={() => router.navigate('/admin/integrations/zapier')}>
+				</TabsItem>
+				<TabsItem selected={context === 'zapier'} onClick={() => router.navigate('/admin/integrations/zapier')}>
 					{t('Zapier')}
-				</Tabs.Item>
-				<Tabs.Item selected={context === 'bots'} onClick={() => router.navigate('/admin/integrations/bots')}>
+				</TabsItem>
+				<TabsItem selected={context === 'bots'} onClick={() => router.navigate('/admin/integrations/bots')}>
 					{t('Bots')}
-				</Tabs.Item>
+				</TabsItem>
 			</Tabs>
 			<PageContent>
 				{context === 'zapier' && <NewZapier />}

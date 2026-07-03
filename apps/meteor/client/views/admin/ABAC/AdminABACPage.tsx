@@ -1,5 +1,5 @@
 import { Box, Button, ButtonGroup, Callout } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { ContextualbarDialog, Page, PageContent, PageHeader } from '@rocket.chat/ui-client';
 import { useSetting, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { Trans, useTranslation } from 'react-i18next';
@@ -37,7 +37,7 @@ const AdminABACPage = ({ shouldShowWarning }: AdminABACPageProps) => {
 	const isSyncDisabled = !ldapEnabled || !abacEnabled;
 	const tabPermissions = useABACTabPermissions();
 
-	const handleCloseContextualbar = useEffectEvent((): void => {
+	const handleCloseContextualbar = useStableCallback((): void => {
 		if (!context) {
 			return;
 		}

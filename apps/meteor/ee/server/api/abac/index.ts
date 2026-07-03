@@ -2,7 +2,7 @@ import { AbacAttributeStoreExternalError, getPdpHealthErrorCode } from '@rocket.
 import { Abac } from '@rocket.chat/core-services';
 import type { AbacActor } from '@rocket.chat/core-services';
 import type { IServerEvents, IUser } from '@rocket.chat/core-typings';
-import { ServerEvents, Users } from '@rocket.chat/models';
+import { ServerEvents } from '@rocket.chat/models';
 import { validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
 
@@ -26,11 +26,10 @@ import {
 	GETAbacPdpHealthResponseSchema,
 	GETAbacPdpHealthErrorResponseSchema,
 } from './schemas';
-import { API } from '../../../../app/api/server';
-import type { ExtractRoutesFromAPI } from '../../../../app/api/server/ApiClass';
-import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
 import { settings } from '../../../../app/settings/server';
-import { LDAPEE } from '../../sdk';
+import { API } from '../../../../server/api';
+import type { ExtractRoutesFromAPI } from '../../../../server/api/ApiClass';
+import { getPaginationItems } from '../../../../server/api/lib/getPaginationItems';
 
 const getActorFromUser = (user?: IUser | null): AbacActor | undefined =>
 	user?._id
@@ -210,7 +209,7 @@ const abacEndpoints = API.v1
 		{
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-room-attributes'],
-			license: ['abac', 'ldap-enterprise'],
+			license: ['abac'],
 			body: POSTAbacUsersSyncBodySchema,
 			response: {
 				200: GenericSuccessSchema,
@@ -226,7 +225,7 @@ const abacEndpoints = API.v1
 
 			const { usernames, ids, emails, ldapIds } = this.bodyParams;
 
-			await LDAPEE.syncUsersAbacAttributes(Users.findUsersByIdentifiers({ usernames, ids, emails, ldapIds }));
+			await Abac.reevaluateUsers({ usernames, ids, emails, ldapIds });
 
 			return API.v1.success();
 		},

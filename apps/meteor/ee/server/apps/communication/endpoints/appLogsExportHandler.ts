@@ -6,8 +6,8 @@ import { json2csv } from 'json-2-csv';
 
 import type { AppsRestApi } from '../rest';
 import { makeAppLogsQuery } from './lib/makeAppLogsQuery';
-import { APIClass } from '../../../../../app/api/server/ApiClass';
-import type { APIActionContext } from '../../../../../app/api/server/router';
+import { APIClass } from '../../../../../server/api/ApiClass';
+import type { APIActionContext } from '../../../../../server/api/router';
 
 const isErrorResponse = ajv.compile<{
 	success: false;

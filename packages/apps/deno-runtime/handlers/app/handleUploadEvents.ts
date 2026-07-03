@@ -7,11 +7,11 @@ import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads
 import { toArrayBuffer } from '@std/streams';
 import { Defined, JsonRpcError } from 'jsonrpc-lite';
 
-import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
-import { assertAppAvailable, assertHandlerFunction, isPlainObject } from '../lib/assertions.ts';
-import { AppAccessorsInstance } from '../../lib/accessors/mod.ts';
-import { RequestContext } from '../../lib/requestContext.ts';
-import { wrapAppForRequest } from '../../lib/wrapAppForRequest.ts';
+import { AppObjectRegistry } from '../../AppObjectRegistry';
+import { assertAppAvailable, assertHandlerFunction, isPlainObject } from '../lib/assertions';
+import { AppAccessorsInstance } from '../../lib/accessors/mod';
+import { RequestContext } from '../../lib/requestContext';
+import { wrapAppForRequest } from '../../lib/wrapAppForRequest';
 
 export const uploadEvents = ['executePreFileUpload'] as const;
 
