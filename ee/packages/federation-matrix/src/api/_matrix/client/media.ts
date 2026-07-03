@@ -1,3 +1,5 @@
+import { Readable } from 'node:stream';
+
 import { Upload } from '@rocket.chat/core-services';
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
@@ -175,12 +177,6 @@ export const addClientMediaRoutes = (router: ClientRouter) => {
 
 					const stream = await Upload.streamUploadedFile({ file, imageResizeOpts: { width, height } });
 
-					const chunks: Buffer[] = [];
-					for await (const chunk of stream) {
-						chunks.push(chunk as Buffer);
-					}
-					const buffer = Buffer.concat(chunks);
-
 					const mimeType = file.type || 'image/jpeg';
 					const fileName = file.name || mediaId;
 
@@ -189,10 +185,9 @@ export const addClientMediaRoutes = (router: ClientRouter) => {
 						headers: {
 							...SECURITY_HEADERS,
 							'content-type': mimeType,
-							'content-length': String(buffer.length),
 							'content-disposition': contentDispositionHeader('inline', fileName),
 						},
-						body: buffer,
+						body: Readable.toWeb(stream),
 					};
 				} catch (error) {
 					return internalError('Failed to generate media thumbnail', error);
