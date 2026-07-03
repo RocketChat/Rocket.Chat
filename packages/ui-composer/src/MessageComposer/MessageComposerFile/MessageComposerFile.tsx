@@ -5,7 +5,7 @@ import { FilePreviewIcon } from '@rocket.chat/ui-client';
 import type { ReactNode, KeyboardEvent, MouseEvent, AllHTMLAttributes } from 'react';
 import { useMemo } from 'react';
 
-type MessageComposerFileProps = {
+export type MessageComposerFileProps = {
 	fileTitle: string;
 	fileSubtitle: string;
 	fileFormat: string;
