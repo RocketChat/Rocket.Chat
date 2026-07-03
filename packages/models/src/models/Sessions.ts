@@ -1125,7 +1125,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 			.aggregate<{
 				hour: number;
 				users: number;
-			}>([match, rangeProject, unwind, groups.listGroup, groups.countGroup, presentationProject, sort], { allowDiskUse: true })
+			}>([match, rangeProject, unwind, groups.listGroup, groups.countGroup, presentationProject, sort])
 			.toArray();
 	}
 
@@ -1234,7 +1234,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 				month: number;
 				year: number;
 				users: number;
-			}>([match, rangeProject, unwind, groups.listGroup, groups.countGroup, presentationProject, sort], { allowDiskUse: true })
+			}>([match, rangeProject, unwind, groups.listGroup, groups.countGroup, presentationProject, sort])
 			.toArray();
 	}
 

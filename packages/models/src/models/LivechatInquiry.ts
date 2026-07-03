@@ -285,7 +285,6 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.col
 			.aggregate<Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number }>(filter, {
 				readPreference: readSecondaryPreferred(),
-				allowDiskUse: true,
 			})
 			.toArray();
 	}
