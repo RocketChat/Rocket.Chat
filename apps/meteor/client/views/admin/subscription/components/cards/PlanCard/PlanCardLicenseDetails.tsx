@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import ManageLicenseModal from './ManageLicenseModal';
 import { useServerInfo } from '../../../../../../hooks/useWorkspaceInfo';
 
-const PlanCardControls = () => {
+const PlanCardLicenseDetails = () => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const siteURL = useSetting('Site_Url', '');
@@ -69,4 +69,4 @@ const PlanCardControls = () => {
 	);
 };
 
-export default PlanCardControls;
+export default PlanCardLicenseDetails;

@@ -5,6 +5,7 @@ import { differenceInDays } from 'date-fns';
 import { Trans, useTranslation } from 'react-i18next';
 
 import PlanCardHeader from './PlanCardHeader';
+import PlanCardLicenseDetails from './PlanCardLicenseDetails';
 import { DOWNGRADE_LINK, TRIAL_LINK } from '../../../utils/links';
 import UpgradeButton from '../../UpgradeButton';
 
@@ -31,7 +32,6 @@ const PlanCardTrial = ({ licenseInformation }: PlanCardProps) => {
 						<Tag>{t('n_days_left', { n: differenceInDays(new Date(visualExpiration), new Date()) })}</Tag>
 					</CardRow>
 				)}
-
 				<CardRow>
 					<span>
 						{isSalesAssisted ? (
@@ -46,14 +46,13 @@ const PlanCardTrial = ({ licenseInformation }: PlanCardProps) => {
 						)}
 					</span>
 				</CardRow>
-
 				<CardRow>
 					<Trans i18nKey='Why_has_a_trial_been_applied_to_this_workspace'>
 						<ExternalLink to={TRIAL_LINK}>Why has a trial been applied to this workspace?</ExternalLink>
 					</Trans>
 				</CardRow>
+				<PlanCardLicenseDetails />
 			</CardBody>
-
 			<CardControls>
 				<UpgradeButton target='plan_card_trial' action={isSalesAssisted ? 'finish_purchase' : 'contact_sales'} primary mbs='auto' w='full'>
 					{isSalesAssisted ? t('Finish_purchase') : t('Contact_sales')}
