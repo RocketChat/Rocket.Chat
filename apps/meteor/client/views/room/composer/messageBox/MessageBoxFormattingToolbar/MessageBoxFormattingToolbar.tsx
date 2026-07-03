@@ -7,7 +7,7 @@ import type { FormattingButton } from '../../../../../../app/ui-message/client/m
 import { isPromptButton } from '../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import type { ComposerAPI } from '../../../../../lib/chats/ChatAPI';
 
-type MessageBoxFormattingToolbarProps = {
+export type MessageBoxFormattingToolbarProps = {
 	composer: ComposerAPI;
 	variant?: 'small' | 'large';
 	items: FormattingButton[];
