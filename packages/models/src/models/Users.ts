@@ -272,20 +272,21 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 				},
 			},
 			{
-				$project: {
-					username: 1,
-					status: 1,
-					statusLivechat: 1,
-					name: 1,
-					emails: 1,
-					livechat: 1,
-					departments: {
-						$map: {
-							input: '$departments',
-							as: 'department',
-							in: '$$department.departmentId',
-						},
-					},
+				$unwind: {
+					path: '$departments',
+					preserveNullAndEmptyArrays: true,
+				},
+			},
+			{
+				$group: {
+					_id: '$_id',
+					username: { $first: '$username' },
+					status: { $first: '$status' },
+					statusLivechat: { $first: '$statusLivechat' },
+					name: { $first: '$name' },
+					emails: { $first: '$emails' },
+					livechat: { $first: '$livechat' },
+					departments: { $push: '$departments.departmentId' },
 				},
 			},
 			{
@@ -1039,6 +1040,12 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 						$concat: [{ $substr: ['$createdAt', 0, 4] }, { $substr: ['$createdAt', 5, 2] }, { $substr: ['$createdAt', 8, 2] }],
 					},
 					users: { $sum: 1 },
+				},
+			},
+			{
+				$group: {
+					_id: '$_id',
+					users: { $sum: '$users' },
 				},
 			},
 			{
