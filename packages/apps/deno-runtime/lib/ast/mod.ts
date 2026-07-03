@@ -1,13 +1,12 @@
-import { generate } from 'astring';
-// @deno-types="../../acorn.d.ts"
-import { parse, Program } from 'acorn';
-// @deno-types="../../acorn-walk.d.ts"
+import type { AnyNode, Node } from 'acorn';
+import { parse } from 'acorn';
 import { fullAncestor } from 'acorn-walk';
+import { generate } from 'astring';
 
 import * as operations from './operations';
 import type { WalkerState } from './operations';
 
-function fixAst(ast: Program): boolean {
+function fixAst(ast: Node): boolean {
 	const pendingOperations = [
 		operations.fixLivechatIsOnlineCalls,
 		operations.checkReassignmentOfModifiedIdentifiers,
@@ -27,7 +26,7 @@ function fixAst(ast: Program): boolean {
 		fullAncestor(
 			ast,
 			(node, state, ancestors, type) => {
-				ops.forEach((operation) => operation(node, state, ancestors, type));
+				ops.forEach((operation) => operation(node as AnyNode, state as WalkerState, ancestors as AnyNode[], type));
 			},
 			undefined,
 			state,
@@ -51,7 +50,7 @@ function fixAst(ast: Program): boolean {
 export function fixBrokenSynchronousAPICalls(appSource: string): string {
 	const astRootNode = parse(appSource, {
 		// Latest ecma version supported by this version of acorn.
-		ecmaVersion: "latest",
+		ecmaVersion: 'latest',
 		// Allow everything, we don't want to complain if code is badly written
 		// Also, since the code itself has been transpiled, the chance of getting
 		// shenanigans is lower

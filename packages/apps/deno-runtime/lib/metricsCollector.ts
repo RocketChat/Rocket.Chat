@@ -1,9 +1,10 @@
-import { writeAll } from '@std/io';
+import process from 'node:process';
+
 import { Queue } from './messenger';
 
 export function collectMetrics() {
 	return {
-		pid: Deno.pid,
+		pid: process.pid,
 		queueSize: Queue.getCurrentSize(),
 	};
 }
@@ -16,5 +17,7 @@ const encoder = new TextEncoder();
 export async function sendMetrics() {
 	const metrics = collectMetrics();
 
-	await writeAll(Deno.stderr, encoder.encode(JSON.stringify(metrics)));
+	await new Promise<void>((resolve, reject) => {
+		process.stderr.write(encoder.encode(JSON.stringify(metrics)), (error) => (error ? reject(error) : resolve()));
+	});
 }

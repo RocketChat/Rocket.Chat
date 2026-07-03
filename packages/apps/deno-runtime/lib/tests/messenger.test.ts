@@ -3,6 +3,7 @@ import { afterAll, beforeEach, describe, it } from 'https://deno.land/std@0.203.
 import { spy } from 'https://deno.land/std@0.203.0/testing/mock.ts';
 
 import * as Messenger from '../messenger';
+import { stdoutTransport } from '../transports/stdoutTransport';
 import { AppObjectRegistry } from '../../AppObjectRegistry';
 import { createMockRequest } from '../../handlers/tests/helpers/mod';
 import { RequestContext } from '../requestContext';
@@ -14,14 +15,14 @@ describe('Messenger', () => {
 	beforeEach(() => {
 		AppObjectRegistry.clear();
 		AppObjectRegistry.set('id', 'test');
-		Messenger.Transport.selectTransport('noop');
+		Messenger.setTransport(Messenger.noopTransport);
 
 		context = createMockRequest({ method: 'test', params: [] });
 	});
 
 	afterAll(() => {
 		AppObjectRegistry.clear();
-		Messenger.Transport.selectTransport('stdout');
+		Messenger.setTransport(stdoutTransport);
 	});
 
 	it('should add logs to success responses', async () => {

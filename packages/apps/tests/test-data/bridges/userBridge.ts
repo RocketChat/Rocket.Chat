@@ -49,13 +49,13 @@ export class TestsUserBridge extends UserBridge {
 
 	protected setActiveState(
 		userId: IUser['id'],
-		state: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt'>,
+		state: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt' | 'statusId'>,
 		appId: string,
 	): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
 
-	protected endActiveState(userId: IUser['id'], appId: string): Promise<void> {
+	protected endActiveState(userId: IUser['id'], appId: string, statusId?: string): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
 }

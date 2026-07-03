@@ -1,5 +1,8 @@
 // deno-lint-ignore-file no-explicit-any
 import { Buffer } from 'node:buffer';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 import type { App } from '@rocket.chat/apps-engine/definition/App';
 import type { IPreFileUpload } from '@rocket.chat/apps-engine/definition/uploads/IPreFileUpload';
@@ -16,13 +19,15 @@ import { AppObjectRegistry } from '../../AppObjectRegistry';
 
 describe('handlers > upload', () => {
 	let app: App & IPreFileUpload;
+	let tempDir: string;
 	let path: string;
 	let file: IUploadDetails;
 
 	beforeEach(async () => {
 		AppObjectRegistry.clear();
 
-		path = await Deno.makeTempFile();
+		tempDir = await mkdtemp(join(tmpdir(), 'rc-apps-upload-'));
+		path = join(tempDir, 'tempfile');
 
 		app = {
 			extendConfiguration: () => {},
@@ -33,7 +38,7 @@ describe('handlers > upload', () => {
 
 		const content = 'Temp file for testing';
 
-		await Deno.writeTextFile(path, content);
+		await writeFile(path, content);
 
 		file = {
 			name: 'TempFile.txt',
@@ -45,7 +50,7 @@ describe('handlers > upload', () => {
 	});
 
 	afterEach(async () => {
-		await Deno.remove(path).catch((e) => e?.code !== 'ENOENT' && console.warn(`Failed to remove temp file at ${path}`, e));
+		await rm(tempDir, { recursive: true, force: true }).catch((e) => console.warn(`Failed to remove temp dir at ${tempDir}`, e));
 	});
 
 	it('correctly handles valid parameters', async () => {
@@ -97,7 +102,7 @@ describe('handlers > upload', () => {
 	});
 
 	it('fails when "path" is not a readable file path', async () => {
-		await Deno.remove(path);
+		await rm(path);
 
 		const result = await handleUploadEvents(createMockRequest({ method: 'app:executePreFileUpload', params: [{ file, path }] }));
 
