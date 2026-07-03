@@ -403,6 +403,7 @@ test.describe('OC - Chat transfers [Manager role]', () => {
 			await poOmnichannel.content.forwardChatModal.inputComment.type('any_comment');
 			await expect(poOmnichannel.content.forwardChatModal.btnForward).toBeEnabled();
 			await poOmnichannel.content.forwardChatModal.btnForward.click();
+			await poOmnichannel.content.forwardChatModal.waitForDismissal();
 			// await expect(agentA.poHomeOmnichannel.toastSuccess).toBeVisible();
 		});
 
