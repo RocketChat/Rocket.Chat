@@ -8,7 +8,7 @@ import AutoCompleteAgent from '../../components/AutoCompleteAgent';
 
 type SharingValues = '' | 'user' | 'global' | 'department';
 
-type CannedResponsesFilterProps = {
+export type CannedResponsesFilterProps = {
 	createdBy: string;
 	setCreatedBy: (value: string) => void;
 	sharing: SharingValues;
