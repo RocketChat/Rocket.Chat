@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import ChannelDesertionTable from '../../../../ChannelDesertionTable';
 
-type FirstStepProps = {
+export type FirstStepProps = {
 	onClose: () => void;
 	onCancel: () => void;
 	onConfirm: () => void;
