@@ -191,6 +191,7 @@ export const addProfileRoutes = (router: ClientRouter) => {
 					200: isEmptyObjectResponseProps,
 					401: isMatrixErrorProps,
 					403: isMatrixErrorProps,
+					404: isMatrixErrorProps,
 					501: isMatrixErrorProps,
 				},
 				tags,

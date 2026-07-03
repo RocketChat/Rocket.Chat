@@ -48,6 +48,7 @@ export const addUserRoutes = (router: ClientRouter) => {
 				200: isEmptyObjectResponseProps,
 				401: isMatrixErrorProps,
 				403: isMatrixErrorProps,
+				404: isMatrixErrorProps,
 				500: isMatrixErrorProps,
 			},
 			tags,

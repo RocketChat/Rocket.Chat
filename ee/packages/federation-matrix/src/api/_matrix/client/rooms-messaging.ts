@@ -289,6 +289,7 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 					400: isMatrixErrorProps,
 					401: isMatrixErrorProps,
 					403: isMatrixErrorProps,
+					404: isMatrixErrorProps,
 					500: isMatrixErrorProps,
 				},
 				tags,
