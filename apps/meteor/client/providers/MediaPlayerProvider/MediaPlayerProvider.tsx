@@ -1,36 +1,12 @@
-import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useMergedRefs, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode } from 'react';
 import { useCallback, useMemo, useRef, useState } from 'react';
 
 import type { MediaPlayerContextValue, PersistentAudioTrack } from './MediaPlayerContext';
 import { MediaPlayerContext } from './MediaPlayerContext';
+import { useReloadOnError } from '../../components/message/content/attachments/file/hooks/useReloadOnError';
 
 const PLAYBACK_RATES = [1, 1.5, 2] as const;
-
-function toURL(urlString: string): URL {
-	try {
-		return new URL(urlString);
-	} catch {
-		return new URL(urlString, window.location.href);
-	}
-}
-
-const getRedirectURLInfo = async (url: string): Promise<{ redirectUrl: string | false; expires: number | null }> => {
-	const _url = toURL(url);
-	_url.searchParams.set('replyWithRedirectUrl', 'true');
-	const response = await fetch(_url, { credentials: 'same-origin' });
-
-	if (!response.ok) {
-		throw new Error(`Failed to fetch URL info: ${response.statusText}`);
-	}
-
-	const data = await response.json();
-
-	return {
-		redirectUrl: data.redirectUrl,
-		expires: data.expires ? new Date(data.expires).getTime() : null,
-	};
-};
 
 type MediaPlayerProviderProps = {
 	children?: ReactNode;
@@ -52,80 +28,15 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 	const [duration, setDuration] = useState(0);
 	const [playbackRate, setPlaybackRate] = useState<number>(1);
 
-	// Keep the live track in a ref so the (stable) recovery handler can read it.
 	const trackRef = useRef<PersistentAudioTrack | null>(null);
 	trackRef.current = track;
 
-	// --- Signed-URL recovery, mirroring useReloadOnError for the shared element.
-	const expiresAtRef = useRef<number | null>(null);
-	const isRecoveringRef = useRef(false);
-	const firstRecoveryAttemptedRef = useRef(false);
-
-	const handleMediaURLRecovery = useStableCallback(async (event: Event) => {
-		const node = event.target as HTMLMediaElement | null;
-		const { current } = trackRef;
-		if (!node || !current) {
-			return;
-		}
-
-		if (isRecoveringRef.current) {
-			return;
-		}
-
-		// Decide whether recovery is warranted *before* marking as busy, so these
-		// early exits never leave the flag stuck (which would block all future recovery).
-		if (!expiresAtRef.current && firstRecoveryAttemptedRef.current) {
-			return;
-		}
-		firstRecoveryAttemptedRef.current = true;
-		if (expiresAtRef.current && Date.now() < expiresAtRef.current) {
-			return;
-		}
-
-		isRecoveringRef.current = true;
-		const wasPlaying = !node.paused;
-		const { currentTime: time } = node;
-
-		try {
-			const { redirectUrl: newUrl, expires } = await getRedirectURLInfo(current.resolveUrl?.() || current.url);
-			// The active track may have been switched/closed while the request was in flight.
-			if (trackRef.current?.id !== current.id) {
-				isRecoveringRef.current = false;
-				return;
-			}
-			expiresAtRef.current = expires;
-			node.src = newUrl || current.url;
-
-			const onCanPlay = async () => {
-				node.removeEventListener('canplay', onCanPlay);
-				node.currentTime = time;
-				if (wasPlaying) {
-					try {
-						await node.play();
-					} catch (playError) {
-						console.warn('Failed to resume playback after URL recovery:', playError);
-					}
-				}
-			};
-
-			node.addEventListener('canplay', onCanPlay, { once: true });
-			node.addEventListener(
-				'loadedmetadata',
-				() => {
-					isRecoveringRef.current = false;
-				},
-				{ once: true },
-			);
-			node.load();
-		} catch (err) {
-			console.error('Error during media URL recovery:', err);
-			isRecoveringRef.current = false;
-		}
-	});
-
+	// Reuse the message player's signed-URL recovery on the shared element.
+	const { mediaRef } = useReloadOnError(track?.url ?? '', 'audio');
 	const audioCallback = useCallback((node: HTMLAudioElement | null) => {
 		audioRef.current = node;
 	}, []);
+	const setAudioRef = useMergedRefs(audioCallback, mediaRef);
 
 	const play = useStableCallback((next: PersistentAudioTrack) => {
 		const audio = audioRef.current;
@@ -134,9 +45,6 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 		}
 
 		if (trackRef.current?.id !== next.id) {
-			expiresAtRef.current = null;
-			firstRecoveryAttemptedRef.current = false;
-			isRecoveringRef.current = false;
 			setTrack(next);
 			setCurrentTime(0);
 			setDuration(0);
@@ -203,7 +111,7 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 		<MediaPlayerContext.Provider value={value}>
 			{children}
 			<audio
-				ref={audioCallback}
+				ref={setAudioRef}
 				hidden
 				preload='metadata'
 				onPlay={() => setPlaying(true)}
@@ -213,8 +121,6 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 				onLoadedMetadata={(e) => setDuration(e.currentTarget.duration || 0)}
 				onDurationChange={(e) => setDuration(e.currentTarget.duration || 0)}
 				onRateChange={(e) => setPlaybackRate(e.currentTarget.playbackRate)}
-				onError={(e) => handleMediaURLRecovery(e.nativeEvent)}
-				onStalled={(e) => handleMediaURLRecovery(e.nativeEvent)}
 			>
 				<track kind='captions' />
 			</audio>

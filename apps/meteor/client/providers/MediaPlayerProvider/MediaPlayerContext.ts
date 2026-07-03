@@ -25,11 +25,6 @@ export type PersistentAudioTrack = {
 	username?: string;
 	/** Display name of the sender. */
 	name?: string;
-	/**
-	 * Re-resolves a fresh media URL. Used to recover from signed-URL expiry while
-	 * the track keeps playing. Returns `undefined` to fall back to {@link PersistentAudioTrack.url}.
-	 */
-	resolveUrl?: () => string | undefined;
 };
 
 export type MediaPlayerContextValue = {

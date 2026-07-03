@@ -17,6 +17,10 @@ export type AudioAttachmentSource = {
 	name?: string;
 };
 
+type AudioAttachmentComponentProps = AudioAttachmentProps & {
+	source?: AudioAttachmentSource;
+};
+
 const AudioAttachment = ({
 	title,
 	audio_url: url,
@@ -28,7 +32,7 @@ const AudioAttachment = ({
 	title_link_download: hasDownload,
 	collapsed,
 	source,
-}: AudioAttachmentProps & { source?: AudioAttachmentSource }) => {
+}: AudioAttachmentComponentProps) => {
 	const getURL = useMediaUrl();
 	const src = useMemo(() => getURL(url), [getURL, url]);
 
@@ -45,9 +49,8 @@ const AudioAttachment = ({
 			mid: source?.mid,
 			username: source?.username,
 			name: source?.name,
-			resolveUrl: () => getURL(url),
 		}),
-		[source?.mid, source?.rid, source?.username, source?.name, url, src, type, title, size, getURL],
+		[source?.mid, source?.rid, source?.username, source?.name, url, src, type, title, size],
 	);
 
 	const active = isActive(track.id);
