@@ -1,5 +1,7 @@
 # @rocket.chat/core-typings
 
+## 8.6.0-rc.3
+
 ## 8.6.0-rc.2
 
 ## 8.6.0-rc.1
@@ -17,6 +19,7 @@
 - ([#40839](https://github.com/RocketChat/Rocket.Chat/pull/40839)) Fixes an issue where `description` was incorrectly being used as alternative text for image attachments
 
 - ([#39273](https://github.com/RocketChat/Rocket.Chat/pull/39273) by [@metaloozee](https://github.com/metaloozee)) Fixes an issue where ui crashes when message attachment fields contains non-string `value` field
+
 ## 8.5.1
 
 ### Patch Changes
