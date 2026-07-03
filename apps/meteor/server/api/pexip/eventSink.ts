@@ -1,7 +1,7 @@
 import { isEventSinkRequestProps, Pexip } from '@rocket.chat/pexip';
 import { ajv, validateNotFoundErrorResponse, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
 
-import { getPexipSettings } from '../../../../server/settings/pexip';
+import { getPexipSettings } from '../../settings/pexip';
 import { API } from '../api';
 
 const successResponseSchema = ajv.compile<void>({

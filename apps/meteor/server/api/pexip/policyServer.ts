@@ -1,7 +1,7 @@
 import { isServiceConfigurationRequestProps, isPolicyServerResponse, Pexip } from '@rocket.chat/pexip';
 import { validateNotFoundErrorResponse, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
 
-import { getPexipSettings } from '../../../../server/settings/pexip';
+import { getPexipSettings } from '../../settings/pexip';
 import { API } from '../api';
 
 API.pexip.get(
