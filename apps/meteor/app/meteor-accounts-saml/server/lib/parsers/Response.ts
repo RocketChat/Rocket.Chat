@@ -89,7 +89,7 @@ export class ResponseParser {
 		}
 		SAMLUtils.log('Status ok');
 
-		let assertion: XmlParent;
+		let assertion: Element;
 		let assertionData: ISAMLAssertion;
 		let issuer;
 
@@ -116,6 +116,18 @@ export class ResponseParser {
 
 		if (issuer) {
 			profile.issuer = issuer.textContent;
+		}
+
+		if (assertion.hasAttribute('ID')) {
+			profile.assertionId = assertion.getAttribute('ID');
+		}
+
+		const conditions = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Conditions')[0];
+		if (conditions?.hasAttribute('NotOnOrAfter')) {
+			const notOnOrAfter = conditions.getAttribute('NotOnOrAfter');
+			if (notOnOrAfter) {
+				profile.expireAt = new Date(notOnOrAfter);
+			}
 		}
 
 		const subject = this.getSubject(assertion);
@@ -205,7 +217,7 @@ export class ResponseParser {
 			throw new Error('Too many SAML assertions');
 		}
 
-		let assertion: XmlParent = allAssertions[0];
+		let assertion: Element = allAssertions[0];
 		const encAssertion = allEncrypedAssertions[0];
 		let newXml = null;
 
@@ -295,11 +307,11 @@ export class ResponseParser {
 		return this.validateSignatureChildren(xml, cert, response);
 	}
 
-	private validateAssertionSignature(xml: string, cert: string, assertion: XmlParent): boolean {
+	private validateAssertionSignature(xml: string, cert: string, assertion: Element): boolean {
 		return this.validateSignatureChildren(xml, cert, assertion);
 	}
 
-	private validateSignatureChildren(xml: string, cert: string, parent: XmlParent): boolean {
+	private validateSignatureChildren(xml: string, cert: string, parent: Element): boolean {
 		const xpathSigQuery = ".//*[local-name(.)='Signature' and namespace-uri(.)='http://www.w3.org/2000/09/xmldsig#']";
 		const signatures = xmlCrypto.xpath(parent, xpathSigQuery) as Array<Element>;
 		let signature = null;
@@ -344,7 +356,7 @@ export class ResponseParser {
 		return result;
 	}
 
-	private getIssuer(assertion: XmlParent): any {
+	private getIssuer(assertion: Element): any {
 		const issuers = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Issuer');
 		if (issuers.length > 1) {
 			throw new Error('Too many Issuers');
@@ -353,7 +365,7 @@ export class ResponseParser {
 		return issuers[0];
 	}
 
-	private getSubject(assertion: XmlParent): XmlParent {
+	private getSubject(assertion: Element): XmlParent {
 		let subject: XmlParent = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Subject')[0];
 		const encSubject = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'EncryptedID')[0];
 
@@ -418,7 +430,7 @@ export class ResponseParser {
 		return true;
 	}
 
-	private validateAssertionConditions(assertion: XmlParent): void {
+	private validateAssertionConditions(assertion: Element): void {
 		const conditions = assertion.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:assertion', 'Conditions')[0];
 		if (conditions && !this.validateNotBeforeNotOnOrAfterAssertions(conditions)) {
 			throw new Error('NotBefore / NotOnOrAfter assertion failed');

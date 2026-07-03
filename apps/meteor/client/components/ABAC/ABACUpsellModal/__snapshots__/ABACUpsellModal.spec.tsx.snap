@@ -4,7 +4,7 @@ exports[`ABACUpsellModal should render the modal with correct content 1`] = `
 <body>
   <div>
     <dialog
-      aria-labelledby=":r0:-title"
+      aria-labelledby="_r_0_-title"
       aria-modal="true"
       class="rcx-box rcx-box--full rcx-modal"
       open=""
@@ -28,7 +28,7 @@ exports[`ABACUpsellModal should render the modal with correct content 1`] = `
               </div>
               <h2
                 class="rcx-box rcx-box--full rcx-modal__title"
-                id=":r0:-title"
+                id="_r_0_-title"
               >
                 Attribute-Based Access Control
               </h2>

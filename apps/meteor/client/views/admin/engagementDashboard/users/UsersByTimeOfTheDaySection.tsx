@@ -1,9 +1,8 @@
 import type { ComputedCell, DefaultHeatMapDatum } from '@nivo/heatmap';
 import { ResponsiveHeatMapCanvas } from '@nivo/heatmap';
-import { Box, Flex, Skeleton, Tooltip } from '@rocket.chat/fuselage';
+import { Box, FlexItem, Skeleton, Tooltip } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { differenceInDays, addDays, endOfDay, format, isSameDay } from 'date-fns';
-import type { ReactElement } from 'react';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -21,7 +20,7 @@ function endOfDayUTC(d: Date): Date {
 	return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 23, 59, 59, 999));
 }
 
-const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProps): ReactElement => {
+const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProps) => {
 	const [period, periodSelectorProps] = usePeriodSelectorState('last 7 days', 'last 30 days', 'last 90 days');
 
 	const utc = timezone === 'utc';
@@ -111,7 +110,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 
 			{!isPending && values && dates ? (
 				<Box display='flex' style={{ height: 696 }}>
-					<Flex.Item align='stretch' grow={1} shrink={0}>
+					<FlexItem align='stretch' grow={1} shrink={0}>
 						<Box style={{ position: 'relative' }}>
 							<Box
 								style={{
@@ -191,7 +190,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 								/>
 							</Box>
 						</Box>
-					</Flex.Item>
+					</FlexItem>
 				</Box>
 			) : (
 				<Skeleton variant='rect' height={696} />

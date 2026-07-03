@@ -118,6 +118,10 @@ export abstract class Composer {
 	get typingIndicator(): Locator {
 		return this.root.getByRole('status').getByText(/typing/i);
 	}
+
+	get addLinkModal(): Locator {
+		return this.root.page().getByRole('dialog', { name: 'Add link' });
+	}
 }
 
 export class RoomComposer extends Composer {

@@ -1,27 +1,26 @@
 import { Callout } from '@rocket.chat/fuselage';
-import { Form, ActionLink } from '@rocket.chat/layout';
+import { Form, FormContainer, FormFooter, FormHeader, FormTitle, ActionLink } from '@rocket.chat/layout';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 
-export const RegisterFormDisabled = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
+export const RegisterFormDisabled = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }) => {
 	const linkReplacementText = useSetting('Accounts_RegistrationForm_LinkReplacementText', '');
 
 	const { t } = useTranslation();
 
 	return (
 		<Form>
-			<Form.Header>
-				<Form.Title>{t('registration.component.form.register')}</Form.Title>
-			</Form.Header>
-			<Form.Container>
+			<FormHeader>
+				<FormTitle>{t('registration.component.form.register')}</FormTitle>
+			</FormHeader>
+			<FormContainer>
 				<Callout role='status' type='warning'>
 					{linkReplacementText}
 				</Callout>
-			</Form.Container>
-			<Form.Footer>
+			</FormContainer>
+			<FormFooter>
 				<ActionLink
 					onClick={(): void => {
 						setLoginRoute('login');
@@ -29,7 +28,7 @@ export const RegisterFormDisabled = ({ setLoginRoute }: { setLoginRoute: Dispatc
 				>
 					<Trans i18nKey='registration.page.register.back'>Back to Login</Trans>
 				</ActionLink>
-			</Form.Footer>
+			</FormFooter>
 		</Form>
 	);
 };

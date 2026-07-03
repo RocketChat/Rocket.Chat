@@ -6,19 +6,14 @@ import type { IVideoConferenceExtender } from '@rocket.chat/apps-engine/definiti
 import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
 import type { VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences/IVideoConference';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
-import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
+import { RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
 
-import * as Messenger from '../../messenger.ts';
-import { AppObjectRegistry } from '../../../AppObjectRegistry.ts';
-import { MessageExtender } from '../extenders/MessageExtender.ts';
-import { RoomExtender } from '../extenders/RoomExtender.ts';
-import { VideoConferenceExtender } from '../extenders/VideoConferenceExtend.ts';
-import { require } from '../../../lib/require.ts';
-import { formatErrorResponse } from '../formatResponseErrorHandler.ts';
-
-const { RocketChatAssociationModel } = require('@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.js') as {
-	RocketChatAssociationModel: typeof _RocketChatAssociationModel;
-};
+import * as Messenger from '../../messenger';
+import { AppObjectRegistry } from '../../../AppObjectRegistry';
+import { MessageExtender } from '../extenders/MessageExtender';
+import { RoomExtender } from '../extenders/RoomExtender';
+import { VideoConferenceExtender } from '../extenders/VideoConferenceExtend';
+import { formatErrorResponse } from '../formatResponseErrorHandler';
 
 export class ModifyExtender implements IModifyExtender {
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}

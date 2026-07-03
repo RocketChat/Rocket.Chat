@@ -3,11 +3,11 @@ import type { ISlashCommand } from '@rocket.chat/apps-engine/definition/slashcom
 import { SlashCommandContext  } from '@rocket.chat/apps-engine/definition/slashcommands/SlashCommandContext';
 import { Defined, JsonRpcError } from 'jsonrpc-lite';
 
-import { AppObjectRegistry } from '../AppObjectRegistry.ts';
-import { AppAccessors, AppAccessorsInstance } from '../lib/accessors/mod.ts';
-import createRoom from '../lib/roomFactory.ts';
-import { RequestContext } from '../lib/requestContext.ts';
-import { wrapComposedApp } from '../lib/wrapAppForRequest.ts';
+import { AppObjectRegistry } from '../AppObjectRegistry';
+import { AppAccessors, AppAccessorsInstance } from '../lib/accessors/mod';
+import createRoom from '../lib/roomFactory';
+import { RequestContext } from '../lib/requestContext';
+import { wrapComposedApp } from '../lib/wrapAppForRequest';
 
 export default async function slashCommandHandler(request: RequestContext): Promise<JsonRpcError | Defined> {
 	const { method: call, params } = request;

@@ -39,7 +39,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const room = await Rooms.findOneById(rid, { projection: { ...roomAccessAttributes, t: 1 } });
+		const room = await Rooms.findOneById(rid, { projection: { ...roomAccessAttributes, t: 1, sysMes: 1 } });
 		if (!room) {
 			return false;
 		}
@@ -51,7 +51,7 @@ Meteor.methods<ServerMethods>({
 
 		// if fromId is undefined and it passed the previous check, the user is reading anonymously
 		if (!fromUser) {
-			return loadMessageHistory({ rid, end, limit, ls, showThreadMessages });
+			return loadMessageHistory({ rid, end, limit, ls, showThreadMessages, room });
 		}
 
 		const canPreview = await hasPermissionAsync(fromUser._id, 'preview-c-room');
@@ -60,6 +60,6 @@ Meteor.methods<ServerMethods>({
 			return false;
 		}
 
-		return loadMessageHistory({ userId: fromUser._id, rid, end, limit, ls, showThreadMessages });
+		return loadMessageHistory({ userId: fromUser._id, rid, end, limit, ls, showThreadMessages, room });
 	},
 });

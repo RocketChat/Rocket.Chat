@@ -1,12 +1,11 @@
 import { FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
-import { Form, ActionLink } from '@rocket.chat/layout';
-import type { ReactElement } from 'react';
+import { Form, FormContainer, FormFooter, FormHeader, FormSubtitle, FormTitle, ActionLink } from '@rocket.chat/layout';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useLoginSendEmailConfirmation } from './hooks/useLoginSendEmailConfirmation';
 
-export const EmailConfirmationForm = ({ email, onBackToLogin }: { email?: string; onBackToLogin: () => void }): ReactElement => {
+export const EmailConfirmationForm = ({ email, onBackToLogin }: { email?: string; onBackToLogin: () => void }) => {
 	const { t } = useTranslation();
 
 	const basicEmailRegex = /^[^@]+@[^@]+$/;
@@ -35,11 +34,11 @@ export const EmailConfirmationForm = ({ email, onBackToLogin }: { email?: string
 				sendEmail.mutate({ email: data.email });
 			})}
 		>
-			<Form.Header>
-				<Form.Title>{t('registration.component.form.confirmation')}</Form.Title>
-				<Form.Subtitle>{t('registration.page.emailVerification.subTitle')}</Form.Subtitle>
-			</Form.Header>
-			<Form.Container>
+			<FormHeader>
+				<FormTitle>{t('registration.component.form.confirmation')}</FormTitle>
+				<FormSubtitle>{t('registration.page.emailVerification.subTitle')}</FormSubtitle>
+			</FormHeader>
+			<FormContainer>
 				<FieldGroup disabled={sendEmail.isPending || sendEmail.isSuccess}>
 					<Field>
 						<FieldLabel htmlFor='email'>{t('registration.component.form.email')}*</FieldLabel>
@@ -62,8 +61,8 @@ export const EmailConfirmationForm = ({ email, onBackToLogin }: { email?: string
 						<Callout type='success'>{t('registration.page.emailVerification.sent')}</Callout>
 					</FieldGroup>
 				)}
-			</Form.Container>
-			<Form.Footer>
+			</FormContainer>
+			<FormFooter>
 				<ButtonGroup>
 					<Button loading={sendEmail.isPending} type='submit' primary>
 						{t('registration.component.form.sendConfirmationEmail')}
@@ -77,7 +76,7 @@ export const EmailConfirmationForm = ({ email, onBackToLogin }: { email?: string
 				>
 					{t('registration.page.register.back')}
 				</ActionLink>
-			</Form.Footer>
+			</FormFooter>
 		</Form>
 	);
 };

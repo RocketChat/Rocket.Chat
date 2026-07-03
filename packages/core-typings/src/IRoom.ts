@@ -381,12 +381,17 @@ export type RoomAdminFieldsType =
 	| 'teamMain'
 	| 'announcement'
 	| 'description'
+	| 'customFields'
 	| 'broadcast'
 	| 'uids'
 	| 'avatarETag'
 	| 'abacAttributes';
 
 export type IRoomAdmin = Pick<IRoom, RoomAdminFieldsType>;
+
+export type IRoomAbacRedaction = { abacAttributesRedacted?: boolean };
+
+export type IRoomAdminWithAbacRedaction = IRoomAdmin & IRoomAbacRedaction;
 
 export interface IRoomWithRetentionPolicy extends IRoom {
 	retention: {

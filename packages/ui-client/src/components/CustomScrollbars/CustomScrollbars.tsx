@@ -1,12 +1,12 @@
 import { useOverlayScrollbars } from 'overlayscrollbars-react';
-import type { HTMLAttributes, ReactElement } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
 import { useEffect, useRef, forwardRef, memo } from 'react';
 
 import type { OverlayScrollbars } from '.';
 import BaseScrollbars, { getScrollbarsOptions } from './BaseScrollbars';
 
 type CustomScrollbarsProps = {
-	children: ReactElement;
+	children: ReactNode;
 	overflowX?: boolean;
 	onScroll?: (args: OverlayScrollbars) => void;
 } & Omit<HTMLAttributes<HTMLDivElement>, 'is' | 'onScroll'>;

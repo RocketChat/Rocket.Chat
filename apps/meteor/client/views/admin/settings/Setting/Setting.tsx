@@ -1,15 +1,15 @@
 import type { ISettingColor, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
-import { isSettingColor, isSetting } from '@rocket.chat/core-typings';
+import { isSettingColor, isSetting, isSettingCode } from '@rocket.chat/core-typings';
 import { Box, Button, Tag } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useSettingStructure } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import MemoizedSetting from './MemoizedSetting';
 import MarkdownText from '../../../../components/MarkdownText';
 import { links } from '../../../../lib/links';
+import { getCodeSettingError } from '../../../../lib/utils/getCodeSettingError';
 import { useEditableSetting, useEditableSettingsDispatch, useEditableSettingVisibilityQuery } from '../../EditableSettingsContext';
 import { useHasSettingModule } from '../hooks/useHasSettingModule';
 
@@ -21,7 +21,7 @@ type SettingProps = {
 	sectionChanged?: boolean;
 };
 
-function Setting({ className = undefined, settingId, sectionChanged }: SettingProps): ReactElement {
+function Setting({ className = undefined, settingId, sectionChanged }: SettingProps) {
 	const setting = useEditableSetting(settingId);
 	const persistedSetting = useSettingStructure(settingId);
 	const hasSettingModule = useHasSettingModule(setting);
@@ -37,6 +37,8 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 
 	const dispatch = useEditableSettingsDispatch();
 
+	const settingCode = isSettingCode(persistedSetting) ? persistedSetting.code : undefined;
+
 	const update = useDebouncedCallback(
 		({ value, editor }: { value?: SettingValue; editor?: SettingEditor }) => {
 			if (!persistedSetting) {
@@ -51,11 +53,12 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 					changed:
 						JSON.stringify(persistedSetting.value) !== JSON.stringify(value) ||
 						(isSettingColor(persistedSetting) && JSON.stringify(persistedSetting.editor) !== JSON.stringify(editor)),
+					...(value !== undefined && { invalid: getCodeSettingError(settingCode, value) !== undefined }),
 				},
 			]);
 		},
 		230,
-		[persistedSetting, dispatch],
+		[persistedSetting, dispatch, settingCode],
 	);
 
 	const { t, i18n } = useTranslation();
@@ -75,9 +78,12 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 	const onChangeValue = useCallback(
 		(value: SettingValue) => {
 			setValue(value);
+			if (settingCode !== undefined) {
+				dispatch([{ _id: persistedSetting._id, invalid: getCodeSettingError(settingCode, value) !== undefined }]);
+			}
 			update({ value });
 		},
-		[update],
+		[update, dispatch, settingCode, persistedSetting._id],
 	);
 
 	const onChangeEditor = useCallback(

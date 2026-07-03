@@ -1,6 +1,6 @@
 import { assertEquals } from 'https://deno.land/std@0.203.0/assert/mod.ts';
 import { describe, it } from 'https://deno.land/std@0.203.0/testing/bdd.ts';
-import { Logger } from '../logger.ts';
+import { Logger } from '../logger';
 
 describe('Logger', () => {
 	it('getLogs should return an array of entries', () => {

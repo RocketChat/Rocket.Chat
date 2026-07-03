@@ -5,7 +5,7 @@ import type { AllHTMLAttributes } from 'react';
 import { useChat } from '../views/room/contexts/ChatContext';
 
 export const useFileInput = (props: AllHTMLAttributes<HTMLInputElement>) => {
-	const fileInputRef = useRef<HTMLInputElement>();
+	const fileInputRef = useRef<HTMLInputElement>(undefined);
 	const chatContext = useChat();
 
 	const setupFileInput = useSafeRefCallback(

@@ -2,8 +2,8 @@
 import { assertRejects } from 'https://deno.land/std@0.203.0/assert/mod.ts';
 import { beforeEach, describe, it, afterAll } from 'https://deno.land/std@0.203.0/testing/bdd.ts';
 
-import { Http } from '../http.ts';
-import { AppObjectRegistry } from '../../../AppObjectRegistry.ts';
+import { Http } from '../http';
+import { AppObjectRegistry } from '../../../AppObjectRegistry';
 import { stub } from 'https://deno.land/std@0.203.0/testing/mock.ts';
 
 describe('Http accessor error handling integration', () => {

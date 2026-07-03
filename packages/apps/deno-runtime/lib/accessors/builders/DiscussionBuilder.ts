@@ -1,24 +1,14 @@
-import type { IDiscussionBuilder as _IDiscussionBuilder } from '@rocket.chat/apps-engine/definition/accessors/IDiscussionBuilder';
+import type { IDiscussionBuilder } from '@rocket.chat/apps-engine/definition/accessors/IDiscussionBuilder';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
-import type { IRoomBuilder } from '@rocket.chat/apps-engine/definition/accessors/IRoomBuilder';
 
-import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
-import type { RoomType as _RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType';
+import { RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
+import { RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType';
 
-import { RoomBuilder } from './RoomBuilder.ts';
-import { require } from '../../../lib/require.ts';
-
-const { RocketChatAssociationModel } = require('@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.js') as {
-	RocketChatAssociationModel: typeof _RocketChatAssociationModel;
-};
-
-const { RoomType } = require('@rocket.chat/apps-engine/definition/rooms/RoomType.js') as { RoomType: typeof _RoomType };
-
-export interface IDiscussionBuilder extends _IDiscussionBuilder, IRoomBuilder {}
+import { RoomBuilder } from './RoomBuilder';
 
 export class DiscussionBuilder extends RoomBuilder implements IDiscussionBuilder {
-	public kind: _RocketChatAssociationModel.DISCUSSION;
+	public override kind: RocketChatAssociationModel.DISCUSSION;
 
 	private reply?: string;
 

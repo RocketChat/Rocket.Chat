@@ -1,5 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 
 import NewCall from './NewCall';
 import MockedMediaCallProvider from '../../providers/MockedMediaCallProvider';
@@ -13,7 +13,6 @@ const mockedContexts = mockAppRoot()
 	.buildStoryDecorator();
 
 export default {
-	title: 'V2/Views/NewCall',
 	component: NewCall,
 	decorators: [
 		mockedContexts,
@@ -25,6 +24,4 @@ export default {
 	],
 } satisfies Meta<typeof NewCall>;
 
-export const NewCallStory: StoryFn<typeof NewCall> = () => {
-	return <NewCall />;
-};
+export const NewCallStory: StoryObj<typeof NewCall> = {};

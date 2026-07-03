@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Skeleton } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import {
 	useVideoConfSetPreferences,
@@ -16,7 +16,6 @@ import {
 	VideoConfPopupHeader,
 } from '@rocket.chat/ui-video-conf';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
@@ -31,7 +30,7 @@ type IncomingPopupProps = {
 	onConfirm: () => void;
 };
 
-const IncomingPopup = ({ id, room, position, onClose, onMute, onConfirm }: IncomingPopupProps): ReactElement => {
+const IncomingPopup = ({ id, room, position, onClose, onMute, onConfirm }: IncomingPopupProps) => {
 	const { t } = useTranslation();
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
 	const setPreferences = useVideoConfSetPreferences();
@@ -46,7 +45,7 @@ const IncomingPopup = ({ id, room, position, onClose, onMute, onConfirm }: Incom
 	const showMic = Boolean(data?.capabilities?.mic);
 	const showCam = Boolean(data?.capabilities?.cam);
 
-	const handleJoinCall = useEffectEvent(() => {
+	const handleJoinCall = useStableCallback(() => {
 		setPreferences(controllersConfig);
 		onConfirm();
 	});

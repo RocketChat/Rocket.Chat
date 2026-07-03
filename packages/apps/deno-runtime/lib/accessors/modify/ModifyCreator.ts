@@ -9,33 +9,28 @@ import type { ILivechatCreator } from '@rocket.chat/apps-engine/definition/acces
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
 import type { IBotUser } from '@rocket.chat/apps-engine/definition/users/IBotUser';
-import type { UserType as _UserType } from '@rocket.chat/apps-engine/definition/users/UserType';
-import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
+import { UserType } from '@rocket.chat/apps-engine/definition/users/UserType';
+import { RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
 import type { IMessageBuilder } from '@rocket.chat/apps-engine/definition/accessors/IMessageBuilder';
 import type { IRoomBuilder } from '@rocket.chat/apps-engine/definition/accessors/IRoomBuilder';
 import type { IUserBuilder } from '@rocket.chat/apps-engine/definition/accessors/IUserBuilder';
 import type { IVideoConferenceBuilder } from '@rocket.chat/apps-engine/definition/accessors/IVideoConferenceBuilder';
-import type { RoomType as _RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType';
+import { RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType';
 import type { ILivechatMessageBuilder } from '@rocket.chat/apps-engine/definition/accessors/ILivechatMessageBuilder';
+import type { IDiscussionBuilder } from '@rocket.chat/apps-engine/definition/accessors/IDiscussionBuilder';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
 
-import * as Messenger from '../../messenger.ts';
+import * as Messenger from '../../messenger';
 
-import { BlockBuilder } from '../builders/BlockBuilder.ts';
-import { MessageBuilder } from '../builders/MessageBuilder.ts';
-import { DiscussionBuilder, IDiscussionBuilder } from '../builders/DiscussionBuilder.ts';
-import { ILivechatMessage, LivechatMessageBuilder } from '../builders/LivechatMessageBuilder.ts';
-import { RoomBuilder } from '../builders/RoomBuilder.ts';
-import { UserBuilder } from '../builders/UserBuilder.ts';
-import { AppVideoConference, VideoConferenceBuilder } from '../builders/VideoConferenceBuilder.ts';
-import { AppObjectRegistry } from '../../../AppObjectRegistry.ts';
-import { require } from '../../../lib/require.ts';
-import { formatErrorResponse } from '../formatResponseErrorHandler.ts';
-
-const { RoomType } = require('@rocket.chat/apps-engine/definition/rooms/RoomType.js') as { RoomType: typeof _RoomType };
-const { UserType } = require('@rocket.chat/apps-engine/definition/users/UserType.js') as { UserType: typeof _UserType };
-const { RocketChatAssociationModel } = require('@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.js') as {
-	RocketChatAssociationModel: typeof _RocketChatAssociationModel;
-};
+import { BlockBuilder } from '../builders/BlockBuilder';
+import { MessageBuilder } from '../builders/MessageBuilder';
+import { DiscussionBuilder } from '../builders/DiscussionBuilder';
+import { ILivechatMessage, LivechatMessageBuilder } from '../builders/LivechatMessageBuilder';
+import { RoomBuilder } from '../builders/RoomBuilder';
+import { UserBuilder } from '../builders/UserBuilder';
+import { AppVideoConference, VideoConferenceBuilder } from '../builders/VideoConferenceBuilder';
+import { AppObjectRegistry } from '../../../AppObjectRegistry';
+import { formatErrorResponse } from '../formatResponseErrorHandler';
 
 export class ModifyCreator implements IModifyCreator {
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}
@@ -207,7 +202,7 @@ export class ModifyCreator implements IModifyCreator {
 			case RocketChatAssociationModel.ROOM:
 				return this._finishRoom(builder as IRoomBuilder);
 			case RocketChatAssociationModel.DISCUSSION:
-				return this._finishDiscussion(builder as IDiscussionBuilder);
+				return this._finishDiscussion(builder as DiscussionBuilder);
 			case RocketChatAssociationModel.VIDEO_CONFERENCE:
 				return this._finishVideoConference(builder as IVideoConferenceBuilder);
 			case RocketChatAssociationModel.USER:
@@ -235,7 +230,7 @@ export class ModifyCreator implements IModifyCreator {
 				throw new Error('Invalid sender assigned to the message.');
 			}
 
-			result.sender = appUser;
+			result.sender = appUser as IUser;
 		}
 
 		if (result.blocks?.length) {
@@ -279,6 +274,7 @@ export class ModifyCreator implements IModifyCreator {
 
 	private async _finishRoom(builder: IRoomBuilder): Promise<string> {
 		const result = builder.getRoom();
+		// @ts-expect-error - can't conciliate
 		delete result.id;
 
 		if (!result.type) {
@@ -313,8 +309,10 @@ export class ModifyCreator implements IModifyCreator {
 		return String(response.result);
 	}
 
-	private async _finishDiscussion(builder: IDiscussionBuilder): Promise<string> {
+	private async _finishDiscussion(builder: DiscussionBuilder): Promise<string> {
 		const room = builder.getRoom();
+
+		// @ts-expect-error - can't conciliate
 		delete room.id;
 
 		if (!room.creator || !room.creator.id) {

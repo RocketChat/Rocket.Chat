@@ -3,14 +3,14 @@ import { assertInstanceOf } from 'https://deno.land/std@0.203.0/assert/mod.ts';
 import { afterAll, beforeEach, describe, it } from 'https://deno.land/std@0.203.0/testing/bdd.ts';
 import jsonrpc from 'jsonrpc-lite';
 
-import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
+import { AppObjectRegistry } from '../../AppObjectRegistry';
 import handleUIKitInteraction, {
 	UIKitActionButtonInteractionContext,
 	UIKitBlockInteractionContext,
 	UIKitLivechatBlockInteractionContext,
 	UIKitViewCloseInteractionContext,
 	UIKitViewSubmitInteractionContext,
-} from '../uikit/handler.ts';
+} from '../uikit/handler';
 
 describe('handlers > uikit', () => {
 	const mockApp = {

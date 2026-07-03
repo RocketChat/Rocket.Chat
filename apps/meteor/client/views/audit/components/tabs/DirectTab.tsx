@@ -1,5 +1,4 @@
 import { Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 import { useController } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -11,7 +10,7 @@ type DirectTabProps = {
 	form: UseFormReturn<AuditFields>;
 };
 
-const DirectTab = ({ form: { control } }: DirectTabProps): ReactElement => {
+const DirectTab = ({ form: { control } }: DirectTabProps) => {
 	const { t } = useTranslation();
 
 	const { field: usersField, fieldState: usersFieldState } = useController({

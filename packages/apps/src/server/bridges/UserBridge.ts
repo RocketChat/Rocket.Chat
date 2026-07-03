@@ -70,6 +70,22 @@ export abstract class UserBridge extends BaseBridge {
 		}
 	}
 
+	public async doSetActiveState(
+		userId: IUser['id'],
+		state: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt'>,
+		appId: string,
+	): Promise<void> {
+		if (this.hasWritePermission(appId)) {
+			await this.setActiveState(userId, state, appId);
+		}
+	}
+
+	public async doEndActiveState(userId: IUser['id'], appId: string): Promise<void> {
+		if (this.hasWritePermission(appId)) {
+			await this.endActiveState(userId, appId);
+		}
+	}
+
 	protected abstract getById(id: string, appId: string): Promise<IUser>;
 
 	protected abstract getByUsername(username: string, appId: string): Promise<IUser>;
@@ -133,6 +149,14 @@ export abstract class UserBridge extends BaseBridge {
 	 * @throws {Error} if the user is the last owner, if confirmRelinquish is false.
 	 */
 	protected abstract deactivate(userId: IUser['id'], confirmRelinquish: boolean, appId: string): Promise<boolean>;
+
+	protected abstract setActiveState(
+		userId: IUser['id'],
+		state: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt'>,
+		appId: string,
+	): Promise<void>;
+
+	protected abstract endActiveState(userId: IUser['id'], appId: string): Promise<void>;
 
 	private hasReadPermission(appId: string): boolean {
 		if (AppPermissionManager.hasPermission(appId, AppPermissions.user.read)) {

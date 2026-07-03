@@ -1,5 +1,5 @@
-import { Box, Field, FieldLabel, FieldRow, FieldError, ButtonGroup, Button, ContextualbarFooter } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { Box, Callout, Field, FieldLabel, FieldRow, FieldError, ButtonGroup, Button, ContextualbarFooter } from '@rocket.chat/fuselage';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal, ContextualbarScrollableContent } from '@rocket.chat/ui-client';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import type { Dispatch, SetStateAction } from 'react';
@@ -16,6 +16,7 @@ type RoomFormProps = {
 	onSave: (data: RoomFormData) => void;
 	roomInfo?: { rid: string; name: string };
 	setSelectedRoomLabel: Dispatch<SetStateAction<string>>;
+	redacted?: boolean;
 };
 
 export type RoomFormData = {
@@ -23,7 +24,7 @@ export type RoomFormData = {
 	attributes: { key: string; values: string[] }[];
 };
 
-const RoomForm = ({ onClose, onSave, roomInfo, setSelectedRoomLabel }: RoomFormProps) => {
+const RoomForm = ({ onClose, onSave, roomInfo, setSelectedRoomLabel, redacted = false }: RoomFormProps) => {
 	const {
 		control,
 		handleSubmit,
@@ -41,7 +42,7 @@ const RoomForm = ({ onClose, onSave, roomInfo, setSelectedRoomLabel }: RoomFormP
 
 	const setModal = useSetModal();
 
-	const updateAction = useEffectEvent(async (action: () => void) => {
+	const updateAction = useStableCallback(async (action: () => void) => {
 		setModal(
 			<GenericModal
 				variant='info'
@@ -64,7 +65,7 @@ const RoomForm = ({ onClose, onSave, roomInfo, setSelectedRoomLabel }: RoomFormP
 		);
 	});
 
-	const handleSave = useEffectEvent(() => {
+	const handleSave = useStableCallback(() => {
 		if (roomInfo) {
 			updateAction(handleSubmit(onSave));
 		} else {
@@ -110,10 +111,17 @@ const RoomForm = ({ onClose, onSave, roomInfo, setSelectedRoomLabel }: RoomFormP
 						</FieldError>
 					)}
 				</Field>
-				<RoomFormAttributeFields fields={fields} remove={remove} />
+				{redacted && (
+					<Box mbe={16}>
+						<Callout type='warning' title={t('ABAC_Attributes_Redacted')}>
+							{t('ABAC_Attributes_Redacted_Description')}
+						</Callout>
+					</Box>
+				)}
+				<RoomFormAttributeFields fields={fields} remove={remove} disabled={redacted} />
 				<Button
 					w='full'
-					disabled={fields.length >= 10}
+					disabled={redacted || fields.length >= 10}
 					onClick={() => {
 						append({ key: '', values: [] });
 					}}
@@ -124,7 +132,7 @@ const RoomForm = ({ onClose, onSave, roomInfo, setSelectedRoomLabel }: RoomFormP
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button type='submit' form={formId} disabled={!isValid || !isDirty} primary>
+					<Button type='submit' form={formId} disabled={redacted || !isValid || !isDirty} primary>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

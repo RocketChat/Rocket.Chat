@@ -1,7 +1,7 @@
 import { kSecureFields, WithSecureFields } from '@rocket.chat/apps/dist/lib/SecureFields';
 import type { App } from '@rocket.chat/apps-engine/definition/App';
 
-import { AppObjectRegistry } from '../AppObjectRegistry.ts';
+import { AppObjectRegistry } from '../AppObjectRegistry';
 
 export type { WithSecureFields } from '@rocket.chat/apps/dist/lib/SecureFields';
 

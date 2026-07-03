@@ -1,5 +1,5 @@
-import { Box, Flex, Margins } from '@rocket.chat/fuselage';
-import type { ReactElement, ReactNode } from 'react';
+import { Box, FlexContainer, Margins } from '@rocket.chat/fuselage';
+import type { ReactNode } from 'react';
 
 import Growth from './Growth';
 
@@ -9,9 +9,9 @@ type CounterProps = {
 	description?: ReactNode;
 };
 
-const Counter = ({ count, variation = 0, description }: CounterProps): ReactElement => (
+const Counter = ({ count, variation = 0, description }: CounterProps) => (
 	<>
-		<Flex.Container alignItems='end'>
+		<FlexContainer alignItems='end'>
 			<Box>
 				<Box
 					is='span'
@@ -26,13 +26,13 @@ const Counter = ({ count, variation = 0, description }: CounterProps): ReactElem
 				</Box>
 				<Growth fontScale='h4'>{variation}</Growth>
 			</Box>
-		</Flex.Container>
+		</FlexContainer>
 		<Margins block={12}>
-			<Flex.Container alignItems='center'>
+			<FlexContainer alignItems='center'>
 				<Box fontScale='p2' color='hint'>
 					{description}
 				</Box>
-			</Flex.Container>
+			</FlexContainer>
 		</Margins>
 	</>
 );

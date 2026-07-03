@@ -1,7 +1,7 @@
 import { RegisterServerPage, RegisterOfflinePage } from '@rocket.chat/onboarding-ui';
 import { useEndpoint, useMethod, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import type { ReactElement, ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
 import { useState } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 
@@ -14,7 +14,7 @@ const SERVER_OPTIONS = {
 	OFFLINE: 'OFFLINE',
 };
 
-const RegisterServerStep = (): ReactElement => {
+const RegisterServerStep = () => {
 	const { t, i18n } = useTranslation();
 	const { currentStep, goToNextStep, setSetupWizardData, registerServer, maxSteps, completeSetupWizard, saveAgreementData } =
 		useSetupWizardContext();

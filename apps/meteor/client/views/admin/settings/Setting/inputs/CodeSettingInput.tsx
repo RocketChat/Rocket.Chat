@@ -1,6 +1,7 @@
 import { FieldLabel, FieldHint, FieldRow, Field } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import { getCodeSettingError } from '../../../../../lib/utils/getCodeSettingError';
 import ResetSettingButton from '../ResetSettingButton';
 import CodeMirror from './CodeMirror';
 import CodeMirrorBox from './CodeMirror/CodeMirrorBox';
@@ -27,7 +28,10 @@ function CodeSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}: CodeSettingInputProps): ReactElement {
+}: CodeSettingInputProps) {
+	const { t } = useTranslation();
+	const errorKey = getCodeSettingError(code, value);
+
 	const handleChange = (value: string): void => {
 		onChangeValue(value);
 	};
@@ -41,7 +45,7 @@ function CodeSettingInput({
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
 			{hint && <FieldHint>{hint}</FieldHint>}
-			<CodeMirrorBox label={label}>
+			<CodeMirrorBox label={label} error={errorKey ? t(errorKey) : undefined}>
 				<CodeMirror
 					id={_id}
 					mode={code}

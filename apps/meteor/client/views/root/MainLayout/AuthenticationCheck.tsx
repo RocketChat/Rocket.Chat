@@ -1,6 +1,6 @@
 import { useSession, useUser, useSetting } from '@rocket.chat/ui-contexts';
 import RegistrationRoute from '@rocket.chat/web-ui-registration';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import LoggedInArea from './LoggedInArea';
 import LoginPage from './LoginPage';
@@ -15,7 +15,7 @@ import UsernameCheck from './UsernameCheck';
  * Guest is only for certain locations, it shows a form asking if the user wants to stay as guest and if so
  * renders the page, without creating an user (not even an anonymous user)
  */
-const AuthenticationCheck = ({ children, guest }: { children: ReactNode; guest?: boolean }): ReactElement => {
+const AuthenticationCheck = ({ children, guest }: { children: ReactNode; guest?: boolean }) => {
 	const user = useUser();
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 	const forceLogin = useSession('forceLogin');

@@ -27,7 +27,21 @@ export function addSettings(): Promise<void> {
 						{ key: 'local', i18nLabel: 'ABAC_PDP_Type_Local' },
 						{ key: 'virtru', i18nLabel: 'ABAC_PDP_Type_Virtru' },
 					],
+					alert: 'ABAC_PDP_Type_Switch_Alert',
 					enableQuery: abacEnabledQuery,
+				});
+				await this.add('ABAC_Attribute_Store', 'local', {
+					type: 'select',
+					public: true,
+					section: 'ABAC_Virtru_PDP_Configuration',
+					invalidValue: 'local',
+					values: [
+						{ key: 'local', i18nLabel: 'ABAC_Attribute_Store_Local' },
+						{ key: 'virtru', i18nLabel: 'ABAC_Attribute_Store_Virtru' },
+					],
+					i18nDescription: 'ABAC_Attribute_Store_Description',
+					alert: 'ABAC_Attribute_Store_Switch_Alert',
+					enableQuery: virtruPdpQuery,
 				});
 				await this.add('ABAC_ShowAttributesInRooms', false, {
 					type: 'boolean',

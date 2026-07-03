@@ -12,10 +12,9 @@ import {
 	TextAreaInput,
 	Callout,
 } from '@rocket.chat/fuselage';
-import { Form, ActionLink } from '@rocket.chat/layout';
+import { Form, FormContainer, FormFooter, FormHeader, FormTitle, ActionLink } from '@rocket.chat/layout';
 import { CustomFieldsForm, PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
 import { useAccountsCustomFields, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useEffect, useId, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
@@ -33,7 +32,7 @@ type LoginRegisterPayload = {
 	reason: string;
 };
 
-export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
+export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }) => {
 	const { t } = useTranslation();
 
 	const requireNameForRegister = useSetting('Accounts_RequireNameForSignUp', true);
@@ -138,10 +137,10 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 			aria-describedby='welcomeTitle'
 			onSubmit={handleSubmit(handleRegister)}
 		>
-			<Form.Header>
-				<Form.Title id={formLabelId}>{t('registration.component.form.createAnAccount')}</Form.Title>
-			</Form.Header>
-			<Form.Container>
+			<FormHeader>
+				<FormTitle id={formLabelId}>{t('registration.component.form.createAnAccount')}</FormTitle>
+			</FormHeader>
+			<FormContainer>
 				<FieldGroup>
 					<Field>
 						<FieldLabel required={requireNameForRegister} htmlFor={nameId}>
@@ -296,8 +295,8 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 					<CustomFieldsForm formName='customFields' formControl={control} metadata={customFields} />
 					{serverError && <Callout type='danger'>{serverError}</Callout>}
 				</FieldGroup>
-			</Form.Container>
-			<Form.Footer>
+			</FormContainer>
+			<FormFooter>
 				<ButtonGroup>
 					<Button type='submit' loading={registerUser.isPending} primary>
 						{t('registration.component.form.joinYourTeam')}
@@ -310,7 +309,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 				>
 					<Trans i18nKey='registration.page.register.back'>Back to Login</Trans>
 				</ActionLink>
-			</Form.Footer>
+			</FormFooter>
 		</Form>
 	);
 };

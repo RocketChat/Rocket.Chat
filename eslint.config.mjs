@@ -432,14 +432,6 @@ export default [
 			],
 		},
 	},
-	// FIXME: React 19 useEffectEvent conflicts with fuselage-hooks
-	{
-		files: ['**/*.@(ts|tsx)'],
-		rules: {
-			'react-hooks/exhaustive-deps': 'warn',
-			'react-hooks/rules-of-hooks': 'warn',
-		},
-	},
 	// FIXME: these rules require type information and the files are not included in the main tsconfig.json
 	{
 		files: [

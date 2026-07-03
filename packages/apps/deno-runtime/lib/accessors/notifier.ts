@@ -1,18 +1,13 @@
 import type { IMessageBuilder, INotifier } from '@rocket.chat/apps-engine/definition/accessors';
 import type { ITypingOptions } from '@rocket.chat/apps-engine/definition/accessors/INotifier';
-import type { _TypingScope } from '@rocket.chat/apps-engine/definition/accessors/INotifier';
+import { TypingScope } from '@rocket.chat/apps-engine/definition/accessors/INotifier';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
-import { MessageBuilder } from './builders/MessageBuilder.ts';
-import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
-import * as Messenger from '../messenger.ts';
-import { require } from '../require.ts';
-import { formatErrorResponse } from './formatResponseErrorHandler.ts';
-
-const { TypingScope } = require('@rocket.chat/apps-engine/definition/accessors/INotifier.js') as {
-	TypingScope: typeof _TypingScope;
-};
+import { MessageBuilder } from './builders/MessageBuilder';
+import { AppObjectRegistry } from '../../AppObjectRegistry';
+import * as Messenger from '../messenger';
+import { formatErrorResponse } from './formatResponseErrorHandler';
 
 export class Notifier implements INotifier {
 	private senderFn: typeof Messenger.sendRequest;
@@ -25,7 +20,7 @@ export class Notifier implements INotifier {
 		if (!message.sender || !message.sender.id) {
 			const appUser = await this.getAppUser();
 
-			message.sender = appUser;
+			message.sender = appUser!;
 		}
 
 		await this.callMessageBridge('doNotifyUser', [user, message, AppObjectRegistry.get<string>('id')]);
@@ -35,7 +30,7 @@ export class Notifier implements INotifier {
 		if (!message.sender || !message.sender.id) {
 			const appUser = await this.getAppUser();
 
-			message.sender = appUser;
+			message.sender = appUser!;
 		}
 
 		await this.callMessageBridge('doNotifyRoom', [room, message, AppObjectRegistry.get<string>('id')]);
@@ -79,6 +74,6 @@ export class Notifier implements INotifier {
 			throw formatErrorResponse(err);
 		});
 
-		return response.result;
+		return response.result as IUser | undefined;
 	}
 }

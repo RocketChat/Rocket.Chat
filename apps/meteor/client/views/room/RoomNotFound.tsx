@@ -1,11 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoomLayout from './layout/RoomLayout';
 import NotFoundState from '../../components/NotFoundState';
 
-const RoomNotFound = (): ReactElement => {
+const RoomNotFound = () => {
 	const { t } = useTranslation();
 
 	return (

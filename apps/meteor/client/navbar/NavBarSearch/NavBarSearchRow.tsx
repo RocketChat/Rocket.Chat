@@ -1,6 +1,5 @@
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 
 import NavBarSearchItemWithData from './NavBarSearchItemWithData';
@@ -11,7 +10,7 @@ type NavBarSearchRowProps = {
 	onClick: () => void;
 };
 
-const NavBarSearchRow = ({ room, onClick }: NavBarSearchRowProps): ReactElement => {
+const NavBarSearchRow = ({ room, onClick }: NavBarSearchRowProps) => {
 	const Avatar = <RoomAvatar size='x20' room={{ ...room, _id: room.rid || room._id, type: room.t }} />;
 
 	if (room.t === 'd' && !room.u) {

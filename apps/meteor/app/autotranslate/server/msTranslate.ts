@@ -192,7 +192,7 @@ class MsAutoTranslate extends AutoTranslate {
 			return this._translate(
 				[
 					{
-						Text: attachment.text || '',
+						Text: attachment.description || attachment.text || '',
 					},
 				],
 				targetLanguages,

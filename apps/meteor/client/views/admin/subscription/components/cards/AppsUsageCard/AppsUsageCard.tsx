@@ -1,6 +1,5 @@
 import { Skeleton } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import AppsUsageCardSection from './AppsUsageCardSection';
@@ -20,7 +19,7 @@ type AppsUsageCardProps = {
 	marketplaceAppsLimit?: { value?: number; max: number };
 };
 
-const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCardProps): ReactElement => {
+const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCardProps) => {
 	const { t } = useTranslation();
 
 	if (!privateAppsLimit || !marketplaceAppsLimit) {

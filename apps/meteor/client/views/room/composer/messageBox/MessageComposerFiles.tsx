@@ -11,10 +11,10 @@ const MessageComposerFiles = () => {
 	const { uploads, uploadsStore, isProcessingUploads, hasUploads } = useFileUpload();
 
 	const handleEdit = useCallback(
-		(id: Upload['id'], fileName: string, description?: string) => {
+		(id: Upload['id'], fileName: string, altText?: string) => {
 			uploadsStore?.editUploadFileName(id, fileName);
-			if (description !== undefined) {
-				uploadsStore?.editUploadDescription(id, description);
+			if (altText !== undefined) {
+				uploadsStore?.editUploadAltText(id, altText);
 			}
 		},
 		[uploadsStore],

@@ -1,5 +1,4 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import type { ReactElement } from 'react';
 
 import InlineElements from '../elements/InlineElements';
 
@@ -8,7 +7,7 @@ type HeadingBlockProps = {
 	level?: 1 | 2 | 3 | 4;
 };
 
-const HeadingBlock = ({ children = [], level = 1 }: HeadingBlockProps): ReactElement => {
+const HeadingBlock = ({ children = [], level = 1 }: HeadingBlockProps) => {
 	const HeadingTag = `h${level}` as const;
 
 	return (

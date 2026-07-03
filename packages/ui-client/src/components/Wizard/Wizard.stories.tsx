@@ -1,5 +1,5 @@
 import { Box, Button, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 
 import Wizard from './Wizard';
 import WizardActions from './WizardActions';
@@ -10,7 +10,6 @@ import WizardTabs from './WizardTabs';
 import { useWizard } from './useWizard';
 
 export default {
-	title: 'Components/Wizard',
 	component: Wizard,
 	subcomponents: {
 		WizardActions,
@@ -87,6 +86,6 @@ const WizardExample = ({ ordered = false }: { ordered?: boolean }) => {
 	);
 };
 
-export const BasicWizard: StoryFn<typeof Wizard> = () => <WizardExample />;
+export const BasicWizard: StoryObj<typeof Wizard> = { render: () => <WizardExample /> };
 
-export const OrderedTabsWizard: StoryFn<typeof Wizard> = () => <WizardExample ordered />;
+export const OrderedTabsWizard: StoryObj<typeof Wizard> = { render: () => <WizardExample ordered /> };

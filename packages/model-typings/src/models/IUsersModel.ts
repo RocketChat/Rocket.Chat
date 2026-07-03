@@ -172,6 +172,31 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	updateStatusText(_id: IUser['_id'], statusText: string, options?: UpdateOptions): Promise<UpdateResult>;
 
+	findExpiredStatuses(): FindCursor<
+		Pick<
+			IUser,
+			| '_id'
+			| 'username'
+			| 'roles'
+			| 'status'
+			| 'statusDefault'
+			| 'statusSource'
+			| 'statusText'
+			| 'statusExpiresAt'
+			| 'statusConnection'
+			| 'previousState'
+		>
+	>;
+
+	findNextStatusExpiration(): Promise<Pick<IUser, '_id' | 'statusExpiresAt'> | null>;
+
+	updatePresenceAndStatus(
+		userId: IUser['_id'],
+		values: Record<string, unknown>,
+		clear?: string[],
+		extraFilter?: Filter<IUser>,
+	): Promise<IUser | null>;
+
 	updateStatusByAppId(appId: string, status: UserStatus): Promise<UpdateResult | Document>;
 
 	openAgentsBusinessHoursByBusinessHourId(businessHourIds: string[]): Promise<Document | UpdateResult>;

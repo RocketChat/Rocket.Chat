@@ -1,4 +1,4 @@
-import type { IMessage, MessageTypesValues } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, MessageTypesValues } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 import type { FindOptions } from 'mongodb';
 
@@ -14,6 +14,7 @@ export async function loadMessageHistory({
 	ls,
 	showThreadMessages = true,
 	offset = 0,
+	room: providedRoom,
 }: {
 	// userId is undefined if user is reading anonymously
 	userId?: string;
@@ -23,8 +24,9 @@ export async function loadMessageHistory({
 	ls?: string | Date;
 	showThreadMessages?: boolean;
 	offset?: number;
+	room?: IRoom;
 }) {
-	const room = await Rooms.findOneById(rid, { projection: { sysMes: 1 } });
+	const room = providedRoom ?? (await Rooms.findOneById(rid, { projection: { sysMes: 1 } }));
 
 	if (!room) {
 		throw new Error('error-invalid-room');
@@ -51,46 +53,42 @@ export async function loadMessageHistory({
 				showThreadMessages,
 			).toArray()
 		: await Messages.findVisibleByRoomIdNotContainingTypes(rid, hiddenMessageTypes, options, showThreadMessages).toArray();
-	const messages = await normalizeMessagesForUser(records, userId);
-	let unreadNotLoaded = 0;
-	let firstUnread;
 
-	if (ls) {
-		const firstMessage = messages[messages.length - 1];
+	const firstMessage = records[records.length - 1];
+	const lastSeen = ls ? new Date(ls) : undefined;
+	const hasValidLastSeen = lastSeen !== undefined && !Number.isNaN(lastSeen.getTime());
 
-		const lastSeen = new Date(ls);
-
-		if (firstMessage && new Date(firstMessage.ts) > lastSeen) {
-			const unreadMessages = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
-				rid,
-				lastSeen,
-				firstMessage.ts,
-				hiddenMessageTypes,
-				{
-					limit: 1,
-					sort: {
-						ts: 1,
-					},
-				},
-				showThreadMessages,
-			);
-
-			const totalCursor = await Messages.countVisibleByRoomIdBetweenTimestampsNotContainingTypes(
-				rid,
-				lastSeen,
-				firstMessage.ts,
-				hiddenMessageTypes,
-				showThreadMessages,
-			);
-
-			firstUnread = (await unreadMessages.toArray())[0];
-			unreadNotLoaded = totalCursor;
+	const computeUnread = async (): Promise<{ firstUnread: IMessage | undefined; unreadNotLoaded: number }> => {
+		if (!hasValidLastSeen || !lastSeen || !firstMessage || !(new Date(firstMessage.ts) > lastSeen)) {
+			return { firstUnread: undefined, unreadNotLoaded: 0 };
 		}
-	}
+
+		const [firstUnreadRecords, unreadNotLoaded] = await Promise.all([
+			Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+				rid,
+				lastSeen,
+				firstMessage.ts,
+				hiddenMessageTypes,
+				{ limit: 1, sort: { ts: 1 } },
+				showThreadMessages,
+			).toArray(),
+			Messages.countVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+				rid,
+				lastSeen,
+				firstMessage.ts,
+				hiddenMessageTypes,
+				showThreadMessages,
+			),
+		]);
+
+		return { firstUnread: firstUnreadRecords[0], unreadNotLoaded };
+	};
+
+	const [messages, unread] = await Promise.all([normalizeMessagesForUser(records, userId), computeUnread()]);
 
 	return {
 		messages,
-		firstUnread,
-		unreadNotLoaded,
+		firstUnread: unread.firstUnread,
+		unreadNotLoaded: unread.unreadNotLoaded,
 	};
 }
