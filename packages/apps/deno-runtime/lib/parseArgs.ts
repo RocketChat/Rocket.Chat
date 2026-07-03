@@ -20,6 +20,9 @@ export function parseArgs(args: string[]): ParsedArgs {
 	return {
 		subprocess: (values.subprocess as string) ?? '',
 		spawnId: Number(values.spawnId ?? 0),
-		metricsReportFrequencyInMs: values.metricsReportFrequencyInMs !== undefined ? Number(values.metricsReportFrequencyInMs) : undefined,
+		metricsReportFrequencyInMs:
+			typeof values.metricsReportFrequencyInMs === 'string' && Number.isFinite(values.metricsReportFrequencyInMs)
+				? Number(values.metricsReportFrequencyInMs)
+				: undefined,
 	};
 }
