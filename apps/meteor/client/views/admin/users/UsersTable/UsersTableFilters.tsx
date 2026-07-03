@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { UsersFilters } from '../AdminUsersPage';
 
-type UsersTableFiltersProps = {
+export type UsersTableFiltersProps = {
 	setUsersFilters: Dispatch<SetStateAction<UsersFilters>>;
 	roleData: { roles: Serialized<IRole>[] } | undefined;
 };
