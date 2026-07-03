@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useUserInfoActions } from '../../hooks/useUserInfoActions';
 
-type RoomMembersActionsProps = Pick<IUser, '_id' | 'name' | 'username' | 'freeSwitchExtension'> & {
+export type RoomMembersActionsProps = Pick<IUser, '_id' | 'name' | 'username' | 'freeSwitchExtension'> & {
 	rid: IRoom['_id'];
 	isInvited?: boolean;
 	reload: () => void;
