@@ -103,7 +103,10 @@ type UsersPresencePayload = {
 };
 
 export type UserPresence = Readonly<
-	Partial<Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag' | 'roles' | 'username'>> & Required<Pick<IUser, '_id'>>
+	Partial<
+		Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'avatarETag' | 'roles' | 'username'>
+	> &
+		Required<Pick<IUser, '_id'>>
 >;
 
 export type UserPersonalTokens = Pick<IPersonalAccessToken, 'name' | 'lastTokenPart' | 'bypassTwoFactor'> & { createdAt: string };
@@ -179,6 +182,8 @@ export type UsersEndpoints = {
 		GET: (params: { fullExport?: 'true' | 'false' }) => {
 			requested: boolean;
 			exportOperation: IExportOperation;
+			url: string | null;
+			pendingOperationsBeforeMyRequest: number;
 		};
 	};
 
@@ -196,6 +201,7 @@ export type UsersEndpoints = {
 	'/v1/users.resetE2EKey': {
 		POST: (
 			params:
+				| Record<string, never>
 				| {
 						userId: string;
 				  }
@@ -315,15 +321,23 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.setStatus': {
-		POST: (params: { message?: string; status?: UserStatus; userId?: string; username?: string; user?: string }) => void;
+		POST: (params: {
+			message?: string;
+			status?: UserStatus;
+			expiresAt?: string;
+			userId?: string;
+			username?: string;
+			user?: string;
+		}) => void;
 	};
 
 	'/v1/users.getStatus': {
 		GET: () => {
+			_id: string;
 			status: 'online' | 'offline' | 'away' | 'busy';
-			message?: string;
-			_id?: string;
 			connectionStatus?: 'online' | 'offline' | 'away' | 'busy';
+			statusSource?: IUser['statusSource'];
+			statusExpiresAt?: IUser['statusExpiresAt'];
 		};
 	};
 

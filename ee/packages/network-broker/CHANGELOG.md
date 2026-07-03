@@ -1,5 +1,14 @@
 # @rocket.chat/network-broker
 
+## 0.2.37-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [a7279cebc73edfa4b991eb593730c08e8f5e9001, 7380c44c751eff9ee624d80bf26370411ffed78b]:</summary>
+
+  - @rocket.chat/core-services@0.14.2-rc.0
+  </details>
+
 ## 0.2.36
 
 ### Patch Changes

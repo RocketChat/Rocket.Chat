@@ -32,17 +32,13 @@ async function createCustomSound(fileName: string, filePath: string): Promise<st
 
 async function deleteCustomSound(_id: string) {
 	await request
-		.post(api('method.call/deleteCustomSound'))
+		.post(api('custom-sounds.delete'))
 		.set(credentials)
-		.send({
-			message: JSON.stringify({
-				msg: 'method',
-				id: '1',
-				method: 'deleteCustomSound',
-				params: [_id],
-			}),
-		})
-		.expect(200);
+		.send({ _id })
+		.expect(200)
+		.expect((res) => {
+			expect(res.body).to.have.property('success', true);
+		});
 }
 
 describe('[CustomSounds]', () => {
@@ -471,6 +467,78 @@ describe('[CustomSounds]', () => {
 		});
 	});
 
+	describe('[/custom-sounds.delete]', () => {
+		let soundToDeleteId: string;
+		let soundDeleted: boolean = false;
+
+		before(async () => {
+			soundToDeleteId = await createCustomSound(`sound-to-delete-${randomUUID()}`, mockWavAudioPath);
+		});
+
+		after(async () => {
+			if (soundToDeleteId && !soundDeleted) {
+				await deleteCustomSound(soundToDeleteId);
+			}
+		});
+
+		it('should return unauthorized if the user is not authenticated', async () => {
+			await request.post(api('custom-sounds.delete')).send({ _id: soundToDeleteId }).expect(401);
+		});
+
+		it('should return a 400 if attempting to delete a sound that does not exist', async () => {
+			await request
+				.post(api('custom-sounds.delete'))
+				.set(credentials)
+				.send({ _id: 'invalid-non-existent-id' })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.equal('Custom_Sound_Error_Invalid_Sound');
+				});
+		});
+
+		it('should reject requests with invalid parameter types', async () => {
+			await request
+				.post(api('custom-sounds.delete'))
+				.set(credentials)
+				.send({ _id: { $ne: null } })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+
+		describe('without manage-sounds permission', async () => {
+			let unauthorizedUser: IUser;
+			let unauthorizedUserCredentials: Credentials;
+
+			before(async () => {
+				unauthorizedUser = await createUser();
+				unauthorizedUserCredentials = await login(unauthorizedUser.username, password);
+			});
+
+			after(async () => {
+				await deleteUser(unauthorizedUser);
+			});
+
+			it('should return forbidden if user does not have the manage-sounds permission', async () => {
+				await request.post(api('custom-sounds.delete')).set(unauthorizedUserCredentials).send({ _id: soundToDeleteId }).expect(403);
+			});
+		});
+
+		it('should successfully delete a custom sound when providing a valid _id', async () => {
+			await request
+				.post(api('custom-sounds.delete'))
+				.set(credentials)
+				.send({ _id: soundToDeleteId })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+			soundDeleted = true;
+		});
+	});
+
 	describe('Accessing custom sounds', () => {
 		it('should return forbidden if the there is no fileId on the url', (done) => {
 			void request
@@ -524,6 +592,60 @@ describe('[CustomSounds]', () => {
 					expect(res.headers).not.to.have.property('expires');
 				})
 				.end(done);
+		});
+	});
+
+	describe('[/custom-sounds.delete]', () => {
+		let toDeleteFileId: string;
+
+		before(async () => {
+			toDeleteFileId = await createCustomSound(`${fileName}-delete-${randomUUID()}`, mockWavAudioPath);
+		});
+
+		it('should return unauthorized if not authenticated', async () => {
+			await request.post(api('custom-sounds.delete')).send({ _id: toDeleteFileId }).expect(401);
+		});
+
+		it('should return bad request when _id is missing', async () => {
+			await request.post(api('custom-sounds.delete')).set(credentials).send({}).expect(400);
+		});
+
+		it('should return bad request when _id is an empty string', async () => {
+			await request.post(api('custom-sounds.delete')).set(credentials).send({ _id: '' }).expect(400);
+		});
+
+		it('should fail when the user does not have manage-sounds permission', async () => {
+			const testUser = await createUser();
+			const testUserCredentials = await login(testUser.username, password);
+			try {
+				await request.post(api('custom-sounds.delete')).set(testUserCredentials).send({ _id: toDeleteFileId }).expect(403);
+			} finally {
+				await deleteUser(testUser);
+			}
+		});
+
+		it('should delete the sound successfully and remove it from the list', async () => {
+			await request
+				.post(api('custom-sounds.delete'))
+				.set(credentials)
+				.send({ _id: toDeleteFileId })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request.get(api('custom-sounds.getOne')).set(credentials).query({ _id: toDeleteFileId }).expect(404);
+		});
+
+		it('should fail when the sound id does not exist', async () => {
+			await request
+				.post(api('custom-sounds.delete'))
+				.set(credentials)
+				.send({ _id: 'non-existent-sound-id' })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
 		});
 	});
 

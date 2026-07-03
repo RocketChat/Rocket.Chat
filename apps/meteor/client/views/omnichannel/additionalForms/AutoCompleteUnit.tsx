@@ -1,5 +1,5 @@
 import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps } from 'react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -34,7 +34,7 @@ const AutoCompleteUnit = ({
 
 	const { data: unitsList, fetchNextPage } = useUnitsList({ filter: debouncedUnitFilter, haveNone });
 
-	const handleLoadItems = useEffectEvent(onLoadItems);
+	const handleLoadItems = useStableCallback(onLoadItems);
 
 	useEffect(() => {
 		handleLoadItems(unitsList);

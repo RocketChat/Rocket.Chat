@@ -3,7 +3,7 @@ import { faker } from '@faker-js/faker';
 import { Users } from './fixtures/userStates';
 import { HomeTeam } from './page-objects';
 import { CreateNewTeamModal, CreateNewChannelModal } from './page-objects/fragments/modals';
-import { createTargetChannel } from './utils';
+import { createTargetChannel, deleteTeam, isChannelMember } from './utils';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -458,5 +458,63 @@ test.describe.serial('teams-management', () => {
 
 		// TODO: improve this locator and check the action reactivity
 		await expect(poHomeTeam.content.getSystemMessageByText(`converted #${targetTeam} to channel`)).toBeVisible();
+	});
+});
+
+test.describe('teams-management-remove-member-channel-selection', () => {
+	let poHomeTeam: HomeTeam;
+
+	const targetTeamWithChannels = faker.string.uuid();
+	let selectedChannel: string;
+	let unselectedChannel: string;
+
+	test.beforeAll(async ({ api }) => {
+		const teamResponse = await api.post('/teams.create', { name: targetTeamWithChannels, type: 1, members: ['user1'] });
+		await expect(teamResponse).toBeOK();
+		const { team } = await teamResponse.json();
+
+		[selectedChannel, unselectedChannel] = await Promise.all([
+			createTargetChannel(api, { members: ['user1'], extraData: { teamId: team._id } }),
+			createTargetChannel(api, { members: ['user1'], extraData: { teamId: team._id } }),
+		]);
+	});
+
+	test.afterAll(async ({ api }) => {
+		await deleteTeam(api, targetTeamWithChannels);
+	});
+
+	test.beforeEach(async ({ page }) => {
+		poHomeTeam = new HomeTeam(page);
+
+		await page.goto('/home');
+		await poHomeTeam.waitForHome();
+	});
+
+	test('should load the channel selection modal when removing a member that belongs to team channels', async ({ api }) => {
+		expect(await isChannelMember(api, selectedChannel, 'user1')).toBe(true);
+		expect(await isChannelMember(api, unselectedChannel, 'user1')).toBe(true);
+
+		await poHomeTeam.navbar.openChat(targetTeamWithChannels);
+		await poHomeTeam.headerToolbar.openMoreOptions();
+		await poHomeTeam.headerToolbar.openTeamMembers();
+		await poHomeTeam.tabs.members.showAllUsers();
+		await poHomeTeam.tabs.members.openMemberOptionMoreActions('user1');
+		await poHomeTeam.tabs.members.getMenuItemAction('Remove from team').click();
+
+		await poHomeTeam.tabs.members.removeTeamMemberModal.waitForDisplay();
+		await expect(poHomeTeam.tabs.members.removeTeamMemberModal.description).toBeVisible();
+		await expect(poHomeTeam.tabs.members.removeTeamMemberModal.channel(selectedChannel)).toBeVisible();
+		await expect(poHomeTeam.tabs.members.removeTeamMemberModal.channel(unselectedChannel)).toBeVisible();
+
+		await poHomeTeam.tabs.members.removeTeamMemberModal.selectChannel(selectedChannel);
+		await expect(poHomeTeam.tabs.members.removeTeamMemberModal.channelCheckbox(selectedChannel)).toBeChecked();
+		await expect(poHomeTeam.tabs.members.removeTeamMemberModal.channelCheckbox(unselectedChannel)).not.toBeChecked();
+
+		await poHomeTeam.tabs.members.removeTeamMemberModal.continue();
+		await poHomeTeam.tabs.members.confirmRemoveUser();
+
+		await expect(poHomeTeam.tabs.members.memberOption('user1')).not.toBeVisible();
+		await expect.poll(() => isChannelMember(api, selectedChannel, 'user1')).toBe(false);
+		expect(await isChannelMember(api, unselectedChannel, 'user1')).toBe(true);
 	});
 });

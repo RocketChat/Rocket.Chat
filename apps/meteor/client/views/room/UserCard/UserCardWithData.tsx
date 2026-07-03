@@ -1,15 +1,15 @@
 import { getUserDisplayName } from '@rocket.chat/core-typings';
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import { useSetting, useRolesDescription } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import LocalTime from '../../../components/LocalTime';
 import { UserCard, UserCardAction, UserCardRole, UserCardSkeleton } from '../../../components/UserCard';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
+import { ReactiveUserStatusText } from '../../../components/UserStatusText';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
 import { useMemberExists } from '../../hooks/useMemberExists';
 import { useUserInfoActions } from '../hooks/useUserInfoActions';
@@ -45,7 +45,6 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			_id,
 			name,
 			roles = defaultValue,
-			statusText = defaultValue,
 			bio = defaultValue,
 			utcOffset = defaultValue,
 			nickname,
@@ -62,13 +61,13 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			etag: avatarETag,
 			localTime: utcOffset && Number.isInteger(utcOffset) && <LocalTime utcOffset={utcOffset} />,
 			status: _id && <ReactiveUserStatus uid={_id} />,
-			customStatus: statusText,
+			customStatus: _id && <ReactiveUserStatusText uid={_id} />,
 			nickname,
 			freeSwitchExtension,
 		};
 	}, [data, username, showRealNames, isLoading, getRoles]);
 
-	const handleOpenUserInfo = useEffectEvent(() => {
+	const handleOpenUserInfo = useStableCallback(() => {
 		onOpenUserInfo();
 		onClose();
 	});
@@ -90,7 +89,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	}, [menuOptions, onClose, t]);
 
 	const actions = useMemo(() => {
-		const mapAction = ([key, { content, title, icon, onClick, disabled }]: [string, UserInfoAction]): ReactElement => (
+		const mapAction = ([key, { content, title, icon, onClick, disabled }]: [string, UserInfoAction]) => (
 			<UserCardAction key={key} label={content || title} aria-label={content || title} onClick={onClick} icon={icon!} disabled={disabled} />
 		);
 

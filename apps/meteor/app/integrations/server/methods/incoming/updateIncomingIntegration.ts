@@ -4,8 +4,8 @@ import { Integrations, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
-import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnIntegrationChanged } from '../../../../lib/server/lib/notifyListener';
 import { compileIntegrationScript } from '../../lib/compileIntegrationScript';
 import { isScriptEngineFrozen, validateScriptEngine } from '../../lib/validateScriptEngine';
@@ -143,15 +143,23 @@ export const updateIncomingIntegration = async (
 	}
 
 	const username = 'username' in integration ? integration.username : currentIntegration.username;
-	const user = await Users.findOne({ username });
+	const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
 
-	if (!user?._id) {
+	if (!user) {
 		throw new Meteor.Error('error-invalid-post-as-user', 'Invalid Post As User', {
 			method: 'updateIncomingIntegration',
 		});
 	}
 
-	await addUserRolesAsync(user._id, ['bot']);
+	if (!(await hasPermissionAsync(user._id, 'message-impersonate'))) {
+		throw new Meteor.Error(
+			'error-user-lacks-message-impersonate-permission',
+			"User selected for the incoming integration lacks the 'message-impersonate' permission.",
+			{
+				method: 'updateIncomingIntegration',
+			},
+		);
+	}
 
 	const updatedIntegration = await Integrations.findOneAndUpdate(
 		{ _id: integrationId },
@@ -191,6 +199,7 @@ export const updateIncomingIntegration = async (
 
 Meteor.methods<ServerMethods>({
 	async updateIncomingIntegration(integrationId, integration) {
+		methodDeprecationLogger.method('updateIncomingIntegration', '9.0.0', '/v1/integrations.update');
 		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'updateOutgoingIntegration',

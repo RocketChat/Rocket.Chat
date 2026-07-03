@@ -6,7 +6,6 @@ import {
 	GenericTableBody,
 	GenericTableLoadingTable,
 } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import PrioritiesTableRow from './PrioritiesTableRow';
@@ -18,7 +17,7 @@ type PrioritiesTableProps = {
 	isLoading: boolean;
 };
 
-export const PrioritiesTable = ({ priorities, onRowClick, isLoading }: PrioritiesTableProps): ReactElement => {
+export const PrioritiesTable = ({ priorities, onRowClick, isLoading }: PrioritiesTableProps) => {
 	const { t } = useTranslation();
 
 	const headers = (

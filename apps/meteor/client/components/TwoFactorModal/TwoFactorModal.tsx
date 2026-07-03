@@ -1,5 +1,3 @@
-import type { ReactElement } from 'react';
-
 import TwoFactorEmail from './TwoFactorEmailModal';
 import TwoFactorPassword from './TwoFactorPasswordModal';
 import TwoFactorTotp from './TwoFactorTotpModal';
@@ -26,7 +24,7 @@ type TwoFactorModalProps = {
 	  }
 );
 
-const TwoFactorModal = ({ onConfirm, onClose, invalidAttempt, ...props }: TwoFactorModalProps): ReactElement => {
+const TwoFactorModal = ({ onConfirm, onClose, invalidAttempt, ...props }: TwoFactorModalProps) => {
 	if (props.method === Method.TOTP) {
 		return <TwoFactorTotp onConfirm={onConfirm} onClose={onClose} invalidAttempt={invalidAttempt} />;
 	}

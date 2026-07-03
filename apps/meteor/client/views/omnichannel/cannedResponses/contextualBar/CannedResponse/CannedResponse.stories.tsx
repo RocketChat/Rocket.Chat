@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { StoryObj, Meta } from '@storybook/react';
 
 import CannedResponse from './CannedResponse';
 
@@ -12,23 +12,25 @@ export default {
 	},
 } satisfies Meta<typeof CannedResponse>;
 
-export const Default: StoryFn<typeof CannedResponse> = (args) => <CannedResponse {...args} />;
-Default.storyName = 'CannedResponse';
-Default.args = {
-	allowEdit: true,
-	data: {
-		shortcut: 'test3 long long long long long long long long long',
-		text: 'simple canned response test3 long long long long long long long long long long long long long long long longlong long long long long long longlong long long long long long longlong long long long long long longlong long long long long long longlong long long long long long longlong long long long long long long',
-		scope: 'Customer Support long long long long long long long long long long',
-		tags: ['sales', 'support', 'long', 'long', 'long', 'long', 'long', 'long', 'long', 'long'],
-		departmentName: '',
-	},
-};
+export const Default: StoryObj<typeof CannedResponse> = {
+	name: 'CannedResponse',
 
-Default.decorators = [
-	(fn) => (
-		<Box h='600px' w='330px'>
-			{fn()}
-		</Box>
-	),
-];
+	args: {
+		allowEdit: true,
+		data: {
+			shortcut: 'test3 long long long long long long long long long',
+			text: 'simple canned response test3 long long long long long long long long long long long long long long long longlong long long long long long longlong long long long long long longlong long long long long long longlong long long long long long longlong long long long long long longlong long long long long long long',
+			scope: 'Customer Support long long long long long long long long long long',
+			tags: ['sales', 'support', 'long', 'long', 'long', 'long', 'long', 'long', 'long', 'long'],
+			departmentName: '',
+		},
+	},
+
+	decorators: [
+		(fn) => (
+			<Box h='600px' w='330px'>
+				{fn()}
+			</Box>
+		),
+	],
+};

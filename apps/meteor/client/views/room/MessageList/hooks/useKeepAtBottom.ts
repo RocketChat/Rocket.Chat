@@ -15,13 +15,14 @@ export const useKeepAtBottom = (isAtBottom: MutableRefObject<boolean | null>) =>
 	const keepAtBottomRef = useSafeRefCallback(
 		useCallback(
 			(node: HTMLDivElement) => {
+				const sendToBottom = () => {
+					if (isAtBottom.current && handleRef.current) {
+						handleRef.current();
+					}
+				};
 				const listWrapper = node.firstChild;
 				const observer = new ResizeObserver(() => {
-					if (isAtBottom.current) {
-						if (handleRef.current) {
-							handleRef.current();
-						}
-					}
+					sendToBottom();
 				});
 
 				observer.observe(node);
@@ -29,8 +30,20 @@ export const useKeepAtBottom = (isAtBottom: MutableRefObject<boolean | null>) =>
 					observer.observe(listWrapper);
 				}
 
+				const sendToBottomEvent = (e: Event) => {
+					if (!(e.target instanceof HTMLElement)) return;
+					if (!e.target.closest('.rc-message-box')) return;
+					sendToBottom();
+				};
+
+				// Workaround for height hack in useAutoGrow
+				// node.style.height = '0';
+				// node.style.height = `${node.scrollHeight}px`;
+				window.addEventListener('input', sendToBottomEvent);
+
 				return () => {
 					observer.disconnect();
+					window.removeEventListener('input', sendToBottomEvent);
 				};
 			},
 			[isAtBottom],

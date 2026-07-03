@@ -1,10 +1,9 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 
 import CustomHomePage from './CustomHomePage';
 import DefaultHomePage from './DefaultHomePage';
 
-const HomePage = (): ReactElement => {
+const HomePage = () => {
 	const customOnly = useSetting('Layout_Custom_Body_Only');
 
 	if (customOnly) {

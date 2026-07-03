@@ -1,8 +1,8 @@
 import { Button } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { LocationPathname } from '@rocket.chat/ui-contexts';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { memo } from 'react';
 
 type VersionCardActionButtonProps =
@@ -15,10 +15,10 @@ type VersionCardActionButtonProps =
 			label: ReactNode;
 	  };
 
-const VersionCardActionButton = (item: VersionCardActionButtonProps): ReactElement => {
+const VersionCardActionButton = (item: VersionCardActionButtonProps) => {
 	const router = useRouter();
 
-	const handleActionButton = useEffectEvent(() => {
+	const handleActionButton = useStableCallback(() => {
 		if ('action' in item) {
 			return item.action();
 		}

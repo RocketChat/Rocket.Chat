@@ -1,4 +1,3 @@
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import EngagementDashboardCard from '../EngagementDashboardCard';
@@ -9,7 +8,7 @@ type MessagesTabProps = {
 	timezone: 'utc' | 'local';
 };
 
-const MessagesTab = ({ timezone }: MessagesTabProps): ReactElement => {
+const MessagesTab = ({ timezone }: MessagesTabProps) => {
 	const { t } = useTranslation();
 
 	return (

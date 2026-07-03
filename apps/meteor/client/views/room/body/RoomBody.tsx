@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { isTruthy } from '@rocket.chat/tools';
 import { CustomVirtuaScrollbars, useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
-import type { MouseEvent, ReactElement } from 'react';
+import type { MouseEvent } from 'react';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
 
 import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
@@ -33,7 +33,7 @@ import { useHandleUnread } from './hooks/useUnreadMessages';
 import { useKeepAtBottom } from '../MessageList/hooks/useKeepAtBottom';
 import useTryToJumpToThreadMessage from '../MessageList/hooks/useTryToJumpToThreadMessage';
 
-const RoomBody = (): ReactElement => {
+const RoomBody = () => {
 	const chat = useChat();
 	if (!chat) {
 		throw new Error('No ChatContext provided');

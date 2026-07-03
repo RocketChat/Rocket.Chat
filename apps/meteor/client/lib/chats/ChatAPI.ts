@@ -68,7 +68,7 @@ export type ComposerAPI = {
 
 	readonly formatters: Subscribable<FormattingButton[]>;
 
-	readonly composerRef: RefObject<HTMLElement>;
+	readonly composerRef: RefObject<HTMLElement | null>;
 
 	readonly uploads: UploadsAPI;
 };

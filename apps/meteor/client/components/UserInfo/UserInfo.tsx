@@ -13,7 +13,7 @@ import {
 	InfoPanelTitle,
 } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { memo, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -37,7 +37,6 @@ type UserInfoDataProps = Serialized<
 		| 'utcOffset'
 		| 'phone'
 		| 'createdAt'
-		| 'statusText'
 		| 'canViewAllInfo'
 		| 'customFields'
 		| 'freeSwitchExtension'
@@ -47,10 +46,11 @@ type UserInfoDataProps = Serialized<
 
 type UserInfoProps = UserInfoDataProps & {
 	status: ReactNode;
+	customStatus?: ReactNode;
 	email?: string;
 	verified?: boolean;
-	actions: ReactElement;
-	roles: ReactElement[];
+	actions: ReactNode;
+	roles: ReactNode[];
 	reason?: string;
 	invitationDate?: string;
 };
@@ -69,7 +69,7 @@ const UserInfo = ({
 	verified,
 	createdAt,
 	status,
-	statusText,
+	customStatus,
 	customFields,
 	canViewAllInfo,
 	actions,
@@ -78,7 +78,7 @@ const UserInfo = ({
 	abacAttributes,
 	invitationDate,
 	...props
-}: UserInfoProps): ReactElement => {
+}: UserInfoProps) => {
 	const { t } = useTranslation();
 	const timeAgo = useTimeAgo();
 	const userDisplayName = useUserDisplayName({ name, username });
@@ -100,11 +100,7 @@ const UserInfo = ({
 				<InfoPanelSection>
 					{userDisplayName && <InfoPanelTitle icon={status} title={userDisplayName} />}
 
-					{statusText && (
-						<InfoPanelText>
-							<MarkdownText content={statusText} parseEmoji={true} variant='inline' />
-						</InfoPanelText>
-					)}
+					{customStatus && <InfoPanelText>{customStatus}</InfoPanelText>}
 				</InfoPanelSection>
 
 				<InfoPanelSection>

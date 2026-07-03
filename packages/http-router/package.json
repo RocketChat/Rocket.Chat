@@ -22,8 +22,8 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"ajv": "^8.17.1",
 		"express": "^4.21.2",
-		"hono": "4.12.23",
-		"qs": "^6.14.2"
+		"hono": "4.12.25",
+		"qs": "^6.15.2"
 	},
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:^",

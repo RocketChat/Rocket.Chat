@@ -2,7 +2,7 @@ import { useToolbar } from '@react-aria/toolbar';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { MessageReactions, MessageReactionAction } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
-import type { HTMLAttributes, ReactElement } from 'react';
+import type { HTMLAttributes } from 'react';
 import { useContext, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -14,7 +14,7 @@ type ReactionsProps = {
 	message: IMessage;
 } & HTMLAttributes<HTMLDivElement>;
 
-const Reactions = ({ message, ...props }: ReactionsProps): ReactElement => {
+const Reactions = ({ message, ...props }: ReactionsProps) => {
 	const { t } = useTranslation();
 	const ref = useRef(null);
 	const hasReacted = useUserHasReacted(message);

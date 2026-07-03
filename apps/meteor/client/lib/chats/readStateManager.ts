@@ -148,7 +148,7 @@ export class ReadStateManager extends Emitter {
 
 	// this will always mark as read.
 	public async markAsRead() {
-		if (!this.rid) {
+		if (!this.rid || !this.subscription?.rid) {
 			return;
 		}
 

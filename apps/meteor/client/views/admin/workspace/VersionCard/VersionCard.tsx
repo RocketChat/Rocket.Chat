@@ -5,7 +5,7 @@ import type { SupportedVersions } from '@rocket.chat/server-cloud-communication'
 import { ExternalLink, useLicense, useLicenseName } from '@rocket.chat/ui-client';
 import type { LocationPathname } from '@rocket.chat/ui-contexts';
 import { useSetModal, useMediaUrl } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -28,7 +28,7 @@ type VersionCardProps = {
 	serverInfo: IWorkspaceInfo;
 };
 
-const VersionCard = ({ serverInfo }: VersionCardProps): ReactElement => {
+const VersionCard = ({ serverInfo }: VersionCardProps) => {
 	const breakpoints = useBreakpoints();
 	const isExtraLargeOrBigger = breakpoints.includes('xl');
 

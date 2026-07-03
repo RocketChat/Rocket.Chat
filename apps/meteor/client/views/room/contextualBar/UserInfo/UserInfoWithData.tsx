@@ -11,7 +11,6 @@ import {
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRolesDescription } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -21,6 +20,7 @@ import { FormSkeleton } from '../../../../components/Skeleton';
 import { UserCardRole } from '../../../../components/UserCard';
 import { UserInfo } from '../../../../components/UserInfo';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
+import { ReactiveUserStatusText } from '../../../../components/UserStatusText';
 import { usersQueryKeys } from '../../../../lib/queryKeys';
 import { getUserEmailVerified } from '../../../../lib/utils/getUserEmailVerified';
 
@@ -33,7 +33,7 @@ type UserInfoWithDataProps = {
 	onClickBack?: () => void;
 };
 
-const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClickBack }: UserInfoWithDataProps): ReactElement => {
+const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClickBack }: UserInfoWithDataProps) => {
 	const { t } = useTranslation();
 	const getRoles = useRolesDescription();
 
@@ -57,7 +57,6 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			name,
 			username,
 			roles = [],
-			statusText,
 			bio,
 			utcOffset,
 			lastLogin,
@@ -87,7 +86,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			utcOffset,
 			createdAt,
 			status: <ReactiveUserStatus uid={_id} />,
-			statusText,
+			customStatus: <ReactiveUserStatusText uid={_id} />,
 			nickname,
 			freeSwitchExtension,
 		};

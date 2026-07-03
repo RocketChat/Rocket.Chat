@@ -51,7 +51,7 @@ type QuotesProps = {
 };
 
 export const Quotes = ({ quotes }: QuotesProps) =>
-	quotes.reduceRight<JSX.Element | null>(
+	quotes.reduceRight<ReactNode>(
 		(lastQuote, quote, index) => (
 			<Quote quote={quote} index={index}>
 				{lastQuote}

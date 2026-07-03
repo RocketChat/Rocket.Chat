@@ -3,9 +3,18 @@ import type { IUser, IRoom, IAuditServerEventType, IAbacAttributeDefinition, ISe
 export type MinimalUser = Pick<IUser, 'username'> & Optional<Pick<IUser, '_id'>, '_id'>;
 export type MinimalRoom = Pick<IRoom, '_id' | 'name'>;
 
-export type AbacAuditReason = 'ldap-sync' | 'room-attributes-change' | 'system' | 'api' | 'realtime-policy-eval' | 'virtru-pdp-sync';
+export type AbacAuditReason =
+	| 'ldap-sync'
+	| 'room-attributes-change'
+	| 'system'
+	| 'api'
+	| 'realtime-policy-eval'
+	| 'virtru-pdp-sync'
+	| 'attribute-store-switch';
 
 export type AbacPdpType = 'local' | 'virtru';
+
+export type AbacAttributeStoreType = 'local' | 'virtru';
 
 export type AbacActionPerformed = 'revoked-object-access' | 'granted-object-access';
 
@@ -70,6 +79,16 @@ export interface IServerEventAbacObjectAttributesRemoved
 		| { key: 'change'; value: AbacAttributeDefinitionChangeType }
 	> {
 	t: 'abac.object.attributes.removed';
+}
+
+export interface IServerEventAbacAttributeStoreSwitched
+	extends IAuditServerEventType<
+		| { key: 'from'; value: AbacAttributeStoreType }
+		| { key: 'to'; value: AbacAttributeStoreType }
+		| { key: 'reason'; value: AbacAuditReason }
+		| { key: 'roomsAffected'; value: number }
+	> {
+	t: 'abac.attribute.store.switched';
 }
 
 // Utility type to extract all ABAC-related server event names

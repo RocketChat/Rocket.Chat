@@ -1,5 +1,5 @@
 import { Box, Icon, IconButton, Tag } from '@rocket.chat/fuselage';
-import type { ReactElement, MouseEvent } from 'react';
+import type { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type FilePickerBreadcrumbsProps = {
@@ -8,7 +8,7 @@ type FilePickerBreadcrumbsProps = {
 	handleBack: () => void;
 };
 
-const FilePickerBreadcrumbs = ({ parentFolders, handleBreadcrumb, handleBack }: FilePickerBreadcrumbsProps): ReactElement => {
+const FilePickerBreadcrumbs = ({ parentFolders, handleBreadcrumb, handleBack }: FilePickerBreadcrumbsProps) => {
 	const { t } = useTranslation();
 
 	return (

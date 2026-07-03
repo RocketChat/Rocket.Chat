@@ -70,49 +70,53 @@ exports[`renders Default without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-l1qvi5"
             >
               <div
-                aria-hidden="true"
-                data-a11y-ignore="aria-hidden-focus"
-                data-react-aria-prevent-focus="true"
-                data-testid="hidden-select-container"
-                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                class="rcx-box rcx-box--full rcx-css-1mbgoc8"
               >
-                <label>
-                  <select
-                    tabindex="-1"
-                  >
-                    <option />
-                    <option
-                      value="all"
+                <div
+                  aria-hidden="true"
+                  data-a11y-ignore="aria-hidden-focus"
+                  data-react-aria-prevent-focus="true"
+                  data-testid="hidden-select-container"
+                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                >
+                  <label>
+                    <select
+                      tabindex="-1"
                     >
-                      all
-                    </option>
-                    <option
-                      value="image"
-                    >
-                      image
-                    </option>
-                    <option
-                      value="video"
-                    >
-                      video
-                    </option>
-                    <option
-                      value="audio"
-                    >
-                      audio
-                    </option>
-                    <option
-                      value="text"
-                    >
-                      text
-                    </option>
-                    <option
-                      value="application"
-                    >
-                      application
-                    </option>
-                  </select>
-                </label>
+                      <option />
+                      <option
+                        value="all"
+                      >
+                        all
+                      </option>
+                      <option
+                        value="image"
+                      >
+                        image
+                      </option>
+                      <option
+                        value="video"
+                      >
+                        video
+                      </option>
+                      <option
+                        value="audio"
+                      >
+                        audio
+                      </option>
+                      <option
+                        value="text"
+                      >
+                        text
+                      </option>
+                      <option
+                        value="application"
+                      >
+                        application
+                      </option>
+                    </select>
+                  </label>
+                </div>
               </div>
               <button
                 aria-expanded="false"
@@ -284,49 +288,53 @@ exports[`renders Empty without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-l1qvi5"
             >
               <div
-                aria-hidden="true"
-                data-a11y-ignore="aria-hidden-focus"
-                data-react-aria-prevent-focus="true"
-                data-testid="hidden-select-container"
-                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                class="rcx-box rcx-box--full rcx-css-1mbgoc8"
               >
-                <label>
-                  <select
-                    tabindex="-1"
-                  >
-                    <option />
-                    <option
-                      value="all"
+                <div
+                  aria-hidden="true"
+                  data-a11y-ignore="aria-hidden-focus"
+                  data-react-aria-prevent-focus="true"
+                  data-testid="hidden-select-container"
+                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                >
+                  <label>
+                    <select
+                      tabindex="-1"
                     >
-                      all
-                    </option>
-                    <option
-                      value="image"
-                    >
-                      image
-                    </option>
-                    <option
-                      value="video"
-                    >
-                      video
-                    </option>
-                    <option
-                      value="audio"
-                    >
-                      audio
-                    </option>
-                    <option
-                      value="text"
-                    >
-                      text
-                    </option>
-                    <option
-                      value="application"
-                    >
-                      application
-                    </option>
-                  </select>
-                </label>
+                      <option />
+                      <option
+                        value="all"
+                      >
+                        all
+                      </option>
+                      <option
+                        value="image"
+                      >
+                        image
+                      </option>
+                      <option
+                        value="video"
+                      >
+                        video
+                      </option>
+                      <option
+                        value="audio"
+                      >
+                        audio
+                      </option>
+                      <option
+                        value="text"
+                      >
+                        text
+                      </option>
+                      <option
+                        value="application"
+                      >
+                        application
+                      </option>
+                    </select>
+                  </label>
+                </div>
               </div>
               <button
                 aria-expanded="false"
@@ -494,49 +502,53 @@ exports[`renders Loading without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-l1qvi5"
             >
               <div
-                aria-hidden="true"
-                data-a11y-ignore="aria-hidden-focus"
-                data-react-aria-prevent-focus="true"
-                data-testid="hidden-select-container"
-                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                class="rcx-box rcx-box--full rcx-css-1mbgoc8"
               >
-                <label>
-                  <select
-                    tabindex="-1"
-                  >
-                    <option />
-                    <option
-                      value="all"
+                <div
+                  aria-hidden="true"
+                  data-a11y-ignore="aria-hidden-focus"
+                  data-react-aria-prevent-focus="true"
+                  data-testid="hidden-select-container"
+                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                >
+                  <label>
+                    <select
+                      tabindex="-1"
                     >
-                      all
-                    </option>
-                    <option
-                      value="image"
-                    >
-                      image
-                    </option>
-                    <option
-                      value="video"
-                    >
-                      video
-                    </option>
-                    <option
-                      value="audio"
-                    >
-                      audio
-                    </option>
-                    <option
-                      value="text"
-                    >
-                      text
-                    </option>
-                    <option
-                      value="application"
-                    >
-                      application
-                    </option>
-                  </select>
-                </label>
+                      <option />
+                      <option
+                        value="all"
+                      >
+                        all
+                      </option>
+                      <option
+                        value="image"
+                      >
+                        image
+                      </option>
+                      <option
+                        value="video"
+                      >
+                        video
+                      </option>
+                      <option
+                        value="audio"
+                      >
+                        audio
+                      </option>
+                      <option
+                        value="text"
+                      >
+                        text
+                      </option>
+                      <option
+                        value="application"
+                      >
+                        application
+                      </option>
+                    </select>
+                  </label>
+                </div>
               </div>
               <button
                 aria-expanded="false"

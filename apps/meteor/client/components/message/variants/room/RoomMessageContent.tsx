@@ -3,7 +3,6 @@ import { isDiscussionMessage, isThreadMainMessage, isE2EEMessage, isQuoteAttachm
 import { MessageBody } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserId, useUserPresence } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -32,7 +31,7 @@ type RoomMessageContentProps = {
 	searchText?: string;
 };
 
-const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomMessageContentProps): ReactElement => {
+const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomMessageContentProps) => {
 	const encrypted = isE2EEMessage(message);
 	const { enabled: oembedEnabled } = useOembedLayout();
 	const subscription = useSubscriptionFromMessageQuery(message).data ?? undefined;

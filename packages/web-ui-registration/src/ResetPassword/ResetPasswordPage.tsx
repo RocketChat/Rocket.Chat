@@ -13,7 +13,6 @@ import {
 	useLoginWithToken,
 	useEndpoint,
 } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useEffect, useId, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -24,7 +23,7 @@ const getChangePasswordReason = ({
 	requirePasswordChangeReason = requirePasswordChange ? 'You_need_to_change_your_password' : 'Please_enter_your_new_password_below',
 }: Pick<IUser, 'requirePasswordChange' | 'requirePasswordChangeReason'> = {}) => requirePasswordChangeReason as TranslationKey;
 
-const ResetPasswordPage = (): ReactElement => {
+const ResetPasswordPage = () => {
 	const user = useUser();
 	const t = useTranslation();
 	const setBasicInfo = useEndpoint('POST', '/v1/users.updateOwnBasicInfo');

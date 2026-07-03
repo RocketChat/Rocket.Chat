@@ -59,6 +59,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			{ key: { status: 1 } },
 			{ key: { statusText: 1 } },
 			{ key: { statusConnection: 1 }, sparse: true },
+			{ key: { statusExpiresAt: 1 }, partialFilterExpression: { statusExpiresAt: { $exists: true } } },
 			{ key: { appId: 1 }, sparse: true },
 			{ key: { type: 1 } },
 			{ key: { federated: 1 }, sparse: true },
@@ -1096,25 +1097,71 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne({ _id }, update, { session: options?.session });
 	}
 
-	updateStatus(_id: IUser['_id'], status: UserStatus) {
-		const update = {
-			$set: {
-				status,
+	findExpiredStatuses() {
+		return this.find<
+			Pick<
+				IUser,
+				| '_id'
+				| 'username'
+				| 'type'
+				| 'roles'
+				| 'status'
+				| 'statusDefault'
+				| 'statusSource'
+				| 'statusText'
+				| 'statusExpiresAt'
+				| 'statusConnection'
+				| 'statusId'
+				| 'previousState'
+			>
+		>(
+			{ statusExpiresAt: { $lt: new Date() } },
+			{
+				projection: {
+					username: 1,
+					type: 1,
+					roles: 1,
+					status: 1,
+					statusDefault: 1,
+					statusSource: 1,
+					statusText: 1,
+					statusExpiresAt: 1,
+					statusConnection: 1,
+					statusId: 1,
+					previousState: 1,
+				},
+				sort: { statusExpiresAt: 1 },
 			},
-		};
+		);
+	}
 
-		return this.updateOne({ _id }, update);
+	findNextStatusExpiration() {
+		return this.findOne<Pick<IUser, '_id' | 'statusExpiresAt'>>(
+			{ statusExpiresAt: { $exists: true } },
+			{ projection: { _id: 1, statusExpiresAt: 1 }, sort: { statusExpiresAt: 1 } },
+		);
+	}
+
+	updatePresenceAndStatus(userId: IUser['_id'], values: Record<string, unknown>, clear?: string[], extraFilter?: Filter<IUser>) {
+		const $unset = clear?.length ? Object.fromEntries(clear.map((field) => [field, '' as const])) : undefined;
+
+		return this.findOneAndUpdate(
+			{
+				...extraFilter,
+				_id: userId,
+			},
+			{
+				$set: values,
+				...($unset && { $unset }),
+			},
+			{
+				returnDocument: 'after',
+			},
+		);
 	}
 
 	updateStatusAndStatusDefault(_id: IUser['_id'], status: UserStatus, statusDefault: UserStatus) {
-		const update = {
-			$set: {
-				status,
-				statusDefault,
-			},
-		};
-
-		return this.updateOne({ _id }, update);
+		return this.updateOne({ _id }, { $set: { status, statusDefault } });
 	}
 
 	updateStatusByAppId(appId: string, status: UserStatus) {
@@ -2441,12 +2488,14 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne<T>(query, options);
 	}
 
-	findNotOfflineByIds(users?: IUser['_id'][], options?: FindOptions<IUser>) {
+	findPresenceUsersByIds(users: IUser['_id'][], options?: FindOptions<IUser>) {
 		const query = {
 			_id: { $in: users },
-			status: {
-				$in: [UserStatus.ONLINE, UserStatus.AWAY, UserStatus.BUSY],
-			},
+			$or: [
+				{ status: { $in: [UserStatus.ONLINE, UserStatus.AWAY, UserStatus.BUSY] } },
+				{ statusText: { $exists: true, $ne: '' } },
+				{ statusExpiresAt: { $exists: true } },
+			],
 		};
 		return this.find(query, options);
 	}

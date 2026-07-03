@@ -8,7 +8,7 @@ import {
 	ContextualbarContent,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import type { ReactElement, ChangeEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useRoom } from '../../contexts/RoomContext';
@@ -22,14 +22,7 @@ type AutoTranslateProps = {
 	handleClose?: () => void;
 };
 
-const AutoTranslate = ({
-	language,
-	languages,
-	handleSwitch,
-	translateEnable,
-	handleChangeLanguage,
-	handleClose,
-}: AutoTranslateProps): ReactElement => {
+const AutoTranslate = ({ language, languages, handleSwitch, translateEnable, handleChangeLanguage, handleClose }: AutoTranslateProps) => {
 	const { t } = useTranslation();
 	const room = useRoom();
 

@@ -1,13 +1,12 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRouteParameter, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 
 import EditOauthAppWithData from './EditOauthAppWithData';
 import OAuthAddApp from './OAuthAddApp';
 import OAuthAppsTable from './OAuthAppsTable';
 
-const OAuthAppsPage = (): ReactElement => {
+const OAuthAppsPage = () => {
 	const t = useTranslation();
 	const router = useRouter();
 

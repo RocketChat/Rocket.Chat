@@ -6,8 +6,8 @@ import { removeEmpty } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnIntegrationChanged } from '../../../../lib/server/lib/notifyListener';
 import { compileIntegrationScript } from '../../lib/compileIntegrationScript';
 import { validateScriptEngine, isScriptEngineFrozen } from '../../lib/validateScriptEngine';
@@ -82,12 +82,22 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 		validateScriptEngine(integration.scriptEngine ?? 'isolated-vm');
 	}
 
-	const user = await Users.findOne({ username: integration.username });
+	const user = await Users.findOneByUsername(integration.username, { projection: { _id: 1 } });
 
 	if (!user) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			method: 'addIncomingIntegration',
 		});
+	}
+
+	if (!(await hasPermissionAsync(user._id, 'message-impersonate'))) {
+		throw new Meteor.Error(
+			'error-user-lacks-message-impersonate-permission',
+			"User selected for the incoming integration lacks the 'message-impersonate' permission.",
+			{
+				method: 'addIncomingIntegration',
+			},
+		);
 	}
 
 	// Default to transpiling with Babel for backwards compatibility; integrations
@@ -157,8 +167,6 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 		}
 	}
 
-	await addUserRolesAsync(user._id, ['bot']);
-
 	const strippedIntegrationData = removeEmpty(integrationData);
 
 	const { insertedId } = await Integrations.insertOne(strippedIntegrationData);
@@ -175,6 +183,7 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 
 Meteor.methods<ServerMethods>({
 	async addIncomingIntegration(integration: INewIncomingIntegration): Promise<IIncomingIntegration> {
+		methodDeprecationLogger.method('addIncomingIntegration', '9.0.0', '/v1/integrations.create');
 		const { userId } = this;
 
 		if (!userId) {

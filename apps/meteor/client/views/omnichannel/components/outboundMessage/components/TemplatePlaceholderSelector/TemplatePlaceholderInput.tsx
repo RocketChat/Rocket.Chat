@@ -1,6 +1,6 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Box, Icon, TextInput } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRef, type ComponentProps, type FormEvent, type FormEventHandler } from 'react';
 
 import PlaceholderSelector from './TemplatePlaceholderSelector';
@@ -22,7 +22,7 @@ const TemplatePlaceholderInput = ({ contact, value = '', type, onChange, ...prop
 
 	const addon = type === 'media' ? <Icon name='link' /> : undefined;
 
-	const handleOpenToggle = useEffectEvent((isOpen: boolean) => {
+	const handleOpenToggle = useStableCallback((isOpen: boolean) => {
 		if (!isOpen) inputRef.current?.focus();
 	});
 

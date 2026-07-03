@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-avatar",
-	"version": "27.0.0",
+	"version": "28.0.0-rc.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -17,10 +17,10 @@
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:~",
 		"@rocket.chat/emitter": "^0.32.0",
-		"@rocket.chat/fuselage": "^0.78.0",
+		"@rocket.chat/fuselage": "^0.79.1",
 		"@rocket.chat/fuselage-hooks": "^0.41.0",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
-		"@rocket.chat/icons": "~0.47.0",
+		"@rocket.chat/icons": "^0.48.0",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@types/react": "~18.3.28",
 		"@types/react-dom": "~18.3.7",

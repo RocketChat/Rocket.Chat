@@ -1,7 +1,7 @@
 import { Margins } from '@rocket.chat/fuselage';
 import { createSurfaceRenderer, Surface, FuselageSurfaceRenderer, renderTextObject } from '@rocket.chat/fuselage-ui-kit';
 import type { CalloutBlock, ContextBlock, DividerBlock, ImageBlock, SectionBlock } from '@rocket.chat/ui-kit';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 type SubscriptionLicenseSurfaceProps = {
 	children?: ReactNode;
@@ -11,7 +11,7 @@ type SubscriptionLicenseLayoutBlock = ContextBlock | DividerBlock | ImageBlock |
 
 export type SubscriptionLicenseLayout = SubscriptionLicenseLayoutBlock[];
 
-const SubscriptionLicenseSurface = ({ children }: SubscriptionLicenseSurfaceProps): ReactElement => (
+const SubscriptionLicenseSurface = ({ children }: SubscriptionLicenseSurfaceProps) => (
 	<Surface type='custom'>
 		<Margins blockEnd={16}>{children}</Margins>
 	</Surface>

@@ -43,7 +43,7 @@ const ContextMessage = ({
 	deleted: boolean;
 	onRedirect: (id: IMessage['_id']) => void;
 	onChange: () => void;
-}): JSX.Element => {
+}) => {
 	const { t } = useTranslation();
 
 	const isEncryptedMessage = isE2EEMessage(message);

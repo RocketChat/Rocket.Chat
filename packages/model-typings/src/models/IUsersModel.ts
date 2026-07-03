@@ -172,6 +172,33 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	updateStatusText(_id: IUser['_id'], statusText: string, options?: UpdateOptions): Promise<UpdateResult>;
 
+	findExpiredStatuses(): FindCursor<
+		Pick<
+			IUser,
+			| '_id'
+			| 'username'
+			| 'type'
+			| 'roles'
+			| 'status'
+			| 'statusDefault'
+			| 'statusSource'
+			| 'statusText'
+			| 'statusExpiresAt'
+			| 'statusConnection'
+			| 'statusId'
+			| 'previousState'
+		>
+	>;
+
+	findNextStatusExpiration(): Promise<Pick<IUser, '_id' | 'statusExpiresAt'> | null>;
+
+	updatePresenceAndStatus(
+		userId: IUser['_id'],
+		values: Record<string, unknown>,
+		clear?: string[],
+		extraFilter?: Filter<IUser>,
+	): Promise<IUser | null>;
+
 	updateStatusByAppId(appId: string, status: UserStatus): Promise<UpdateResult | Document>;
 
 	openAgentsBusinessHoursByBusinessHourId(businessHourIds: string[]): Promise<Document | UpdateResult>;
@@ -354,7 +381,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findOneActiveById(userId: string, options?: FindOptions<IUser>): Promise<IUser | null>;
 	findOneByIdOrUsername(userId: string, options?: FindOptions<IUser>): Promise<IUser | null>;
 	findOneByRolesAndType<T extends Document = IUser>(roles: IRole['_id'][], type: string, options?: FindOptions<IUser>): Promise<T | null>;
-	findNotOfflineByIds(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
+	findPresenceUsersByIds(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
 	findUsersNotOffline(options?: FindOptions<IUser>): FindCursor<IUser>;
 	countUsersNotOffline(options?: FindOptions<IUser>): Promise<number>;
 	findNotIdUpdatedFrom(userId: string, updatedFrom: Date, options?: FindOptions<IUser>): FindCursor<IUser>;
