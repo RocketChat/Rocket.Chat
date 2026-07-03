@@ -60,9 +60,10 @@ const MatrixErrorSchema = {
 
 export const isMatrixErrorProps = ajv.compile(MatrixErrorSchema);
 
+// Matches only the literal `{}` these endpoints return per spec.
 const EmptyObjectResponseSchema = {
 	type: 'object',
-	additionalProperties: true,
+	additionalProperties: false,
 };
 
 export const isEmptyObjectResponseProps = ajv.compile(EmptyObjectResponseSchema);
