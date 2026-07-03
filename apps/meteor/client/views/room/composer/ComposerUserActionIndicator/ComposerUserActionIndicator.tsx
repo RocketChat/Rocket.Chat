@@ -13,7 +13,9 @@ const ACTION_PRIORITY: Record<string, number> = {
 	[USER_ACTIVITIES.USER_PLAYING]: 3,
 };
 
-const ComposerUserActionIndicator = ({ rid, tmid }: { rid: string; tmid?: string }) => {
+export type ComposerUserActionIndicatorProps = { rid: string; tmid?: string };
+
+const ComposerUserActionIndicator = ({ rid, tmid }: ComposerUserActionIndicatorProps) => {
 	const { t } = useTranslation();
 	const roomAction = useSyncExternalStore(
 		UserAction.subscribe,
