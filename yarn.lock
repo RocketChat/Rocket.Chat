@@ -8895,7 +8895,7 @@ __metadata:
   dependencies:
     "@rocket.chat/apps": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.7.0-beta.0"
+    "@rocket.chat/federation-sdk": "npm:0.7.0-beta.1"
     "@rocket.chat/http-router": "workspace:^"
     "@rocket.chat/icons": "npm:^0.48.0"
     "@rocket.chat/jest-presets": "workspace:~"
@@ -9115,7 +9115,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/ddp-client": "workspace:^"
     "@rocket.chat/emitter": "npm:^0.33.0"
-    "@rocket.chat/federation-sdk": "npm:0.7.0-beta.0"
+    "@rocket.chat/federation-sdk": "npm:0.7.0-beta.1"
     "@rocket.chat/http-router": "workspace:^"
     "@rocket.chat/license": "workspace:^"
     "@rocket.chat/models": "workspace:^"
@@ -9144,9 +9144,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/federation-sdk@npm:0.7.0-beta.0":
-  version: 0.7.0-beta.0
-  resolution: "@rocket.chat/federation-sdk@npm:0.7.0-beta.0"
+"@rocket.chat/federation-sdk@npm:0.7.0-beta.1":
+  version: 0.7.0-beta.1
+  resolution: "@rocket.chat/federation-sdk@npm:0.7.0-beta.1"
   dependencies:
     "@datastructures-js/priority-queue": "npm:^6.3.5"
     "@noble/ed25519": "npm:^3.0.0"
@@ -9156,10 +9156,11 @@ __metadata:
     reflect-metadata: "npm:^0.2.2"
     tsyringe: "npm:^4.10.0"
     tweetnacl: "npm:^1.0.3"
+    yaml: "npm:^2.7.1"
     zod: "npm:~4.3.6"
   peerDependencies:
     typescript: ~5.9.2
-  checksum: 10/b996da42970ee9af49ac7a432807ecc1d2fd7b2d47c7a260841458df6308ddee3779afd6d53fd8896a5f642be4a34b74e9811c336c0c961346d494902be33018
+  checksum: 10/63026f98940b4b58e4b26408abc65e98105e244b09d80d9a0160ccd4328cb8eba82e542fbf9140cf206b4dbe80f26d0d432c6938308c775841c93d6cae27e282
   languageName: node
   linkType: hard
 
@@ -9747,7 +9748,7 @@ __metadata:
     "@rocket.chat/emitter": "npm:^0.33.0"
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/federation-matrix": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.7.0-beta.0"
+    "@rocket.chat/federation-sdk": "npm:0.7.0-beta.1"
     "@rocket.chat/fuselage": "npm:^0.82.0"
     "@rocket.chat/fuselage-forms": "npm:~1.5.0"
     "@rocket.chat/fuselage-hooks": "npm:~0.43.0"
@@ -37835,6 +37836,15 @@ __metadata:
   bin:
     yaml: bin.mjs
   checksum: 10/1ccf5d9692c6521141515c2df24c30dd3f633fdb96b548ccc744094893cc58868ad0b3220e040b914a6308c52d258dc2d228a0330343e544a13c871569b92305
+  languageName: node
+  linkType: hard
+
+"yaml@npm:^2.7.1":
+  version: 2.9.0
+  resolution: "yaml@npm:2.9.0"
+  bin:
+    yaml: bin.mjs
+  checksum: 10/9a95e8e08651c3d292ab6a5befeb5f57b76801caa097c75bb45c9a70ce19c1b11f57e87a6ef84a579ea070ed2c2c8ac541c88c0ae684d544d5f42c7e77d11b7b
   languageName: node
   linkType: hard
 
