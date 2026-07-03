@@ -17,7 +17,7 @@ import { getNodeIconType } from './lib/getNodeIconType';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import { timeAgo } from '../../../../lib/utils/timeAgo';
 
-type WebdavFilePickerTableProps = {
+export type WebdavFilePickerTableProps = {
 	webdavNodes: IWebdavNode[];
 	sortBy: string;
 	sortDirection: 'asc' | 'desc';
