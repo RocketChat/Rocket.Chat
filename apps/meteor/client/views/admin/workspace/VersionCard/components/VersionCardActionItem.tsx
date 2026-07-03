@@ -8,7 +8,7 @@ export type VersionActionItem = {
 	label: ReactNode;
 };
 
-type VersionCardActionItemProps = VersionActionItem;
+export type VersionCardActionItemProps = VersionActionItem;
 
 const VersionCardActionItem = ({ icon, label, danger }: VersionCardActionItemProps) => {
 	return (
