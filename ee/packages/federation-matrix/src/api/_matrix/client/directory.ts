@@ -1,10 +1,8 @@
-import { federationSDK } from '@rocket.chat/federation-sdk';
 import { ajv } from '@rocket.chat/rest-typings';
 
 import type { ClientRouter } from './_shared';
 import {
 	MATRIX_ROOM_ID_PATTERN,
-	internalError,
 	notImplemented,
 	isEmptyObjectResponseProps,
 	isImpersonationQueryProps,
@@ -45,20 +43,6 @@ const DirectoryPutBodySchema = {
 };
 
 const isDirectoryPutBodyProps = ajv.compile(DirectoryPutBodySchema);
-
-const PublicRoomsResponseSchema = {
-	type: 'object',
-	properties: {
-		chunk: {
-			type: 'array',
-			items: { type: 'object', additionalProperties: true },
-		},
-		total_room_count_estimate: { type: 'number' },
-	},
-	required: ['chunk'],
-};
-
-const isPublicRoomsResponseProps = ajv.compile(PublicRoomsResponseSchema);
 
 export const addDirectoryRoutes = (router: ClientRouter) => {
 	router
@@ -103,41 +87,6 @@ export const addDirectoryRoutes = (router: ClientRouter) => {
 			async () => {
 				// TODO(federation-sdk): createAlias(alias, roomId, sender)
 				return notImplemented('Room alias creation not yet implemented');
-			},
-		)
-
-		// GET /_matrix/client/v3/publicRooms
-		.get(
-			'/v3/publicRooms',
-			{
-				response: {
-					200: isPublicRoomsResponseProps,
-					401: isMatrixErrorProps,
-					500: isMatrixErrorProps,
-				},
-				tags,
-				license,
-			},
-			isAppServiceAuthenticatedMiddleware(),
-			async () => {
-				try {
-					const rooms = await federationSDK.getAllPublicRoomIdsAndNames();
-					return {
-						statusCode: 200,
-						body: {
-							chunk: rooms.map((r) => ({
-								room_id: r.room_id,
-								name: r.name,
-								num_joined_members: 0,
-								world_readable: false,
-								guest_can_join: false,
-							})),
-							total_room_count_estimate: rooms.length,
-						},
-					};
-				} catch (error) {
-					return internalError('Failed to list public rooms', error);
-				}
 			},
 		);
 };
