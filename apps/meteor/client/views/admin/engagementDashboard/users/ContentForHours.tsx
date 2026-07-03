@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useHourlyChatActivity } from './useHourlyChatActivity';
 
-type ContentForHoursProps = {
+export type ContentForHoursProps = {
 	displacement: number;
 	onPreviousDateClick: () => void;
 	onNextDateClick: () => void;
