@@ -1,0 +1,22 @@
+ee/packages/federation-matrix/src/helpers/parseXmppUserId.spec.ts
+  s_86ff749a31dd8c::t_9ec8b2ac95bdd6 67-82
+ee/packages/federation-matrix/src/helpers/parseXmppUserId.ts
+  s_86ff749a31dd8c::t_a395aadfa693da 65-67,87-94
+  s_86ff749a31dd8c::t_fcf71105974093 95
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "abb2a0806fcce7598828527027778abf7b790e3d",
+  "prompts": {},
+  "sessions": {
+    "s_86ff749a31dd8c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "17ee2e31-9da8-4f61-8aab-56f9a4e54ee7",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
