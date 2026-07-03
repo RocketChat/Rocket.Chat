@@ -2,7 +2,7 @@ import styled from '@rocket.chat/styled';
 
 import { getEmojiClassNameAndDataTitle } from '../lib/utils/renderEmoji';
 
-type EmojiProps = {
+export type EmojiProps = {
 	emojiHandle: string; // :emoji:
 	className?: string;
 	fillContainer?: boolean;
