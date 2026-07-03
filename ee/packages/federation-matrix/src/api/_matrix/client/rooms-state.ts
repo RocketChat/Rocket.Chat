@@ -124,10 +124,11 @@ const putRoomStateEvent = async (roomId: RoomID, eventType: string, senderUserna
 			};
 		}
 		if (eventType === 'm.room.topic' && typeof body.topic === 'string') {
-			await federationSDK.setRoomTopic(roomId, senderUsername, body.topic);
+			const event = await federationSDK.setRoomTopic(roomId, senderUsername, body.topic);
+
 			return {
 				statusCode: 200 as const,
-				body: { event_id: '' },
+				body: { event_id: event.eventId },
 			};
 		}
 

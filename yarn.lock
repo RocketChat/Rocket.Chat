@@ -8895,7 +8895,7 @@ __metadata:
   dependencies:
     "@rocket.chat/apps": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.7.0-beta.4"
+    "@rocket.chat/federation-sdk": "npm:0.7.0-beta.5"
     "@rocket.chat/http-router": "workspace:^"
     "@rocket.chat/icons": "npm:^0.48.0"
     "@rocket.chat/jest-presets": "workspace:~"
@@ -9115,7 +9115,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/ddp-client": "workspace:^"
     "@rocket.chat/emitter": "npm:^0.33.0"
-    "@rocket.chat/federation-sdk": "npm:0.7.0-beta.4"
+    "@rocket.chat/federation-sdk": "npm:0.7.0-beta.5"
     "@rocket.chat/http-router": "workspace:^"
     "@rocket.chat/license": "workspace:^"
     "@rocket.chat/models": "workspace:^"
@@ -9144,9 +9144,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/federation-sdk@npm:0.7.0-beta.4":
-  version: 0.7.0-beta.4
-  resolution: "@rocket.chat/federation-sdk@npm:0.7.0-beta.4"
+"@rocket.chat/federation-sdk@npm:0.7.0-beta.5":
+  version: 0.7.0-beta.5
+  resolution: "@rocket.chat/federation-sdk@npm:0.7.0-beta.5"
   dependencies:
     "@datastructures-js/priority-queue": "npm:^6.3.5"
     "@noble/ed25519": "npm:^3.0.0"
@@ -9160,7 +9160,7 @@ __metadata:
     zod: "npm:~4.3.6"
   peerDependencies:
     typescript: ~5.9.2
-  checksum: 10/ce59b495003812375d5eef0ca5701044599697f0f8bb809027829f97026cac66aeb0c17bf16c78037543c98704680ace7b7232b85467d144e72de01ffcdd8d70
+  checksum: 10/c68ef296e68bfed1efe179f1c4450a7ff16470538366b3288eeee45f0130e596909009de64421a0dbac52f31eee46507f8dccb1f1e330a589baa148deacb98eb
   languageName: node
   linkType: hard
 
@@ -9748,7 +9748,7 @@ __metadata:
     "@rocket.chat/emitter": "npm:^0.33.0"
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/federation-matrix": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.7.0-beta.4"
+    "@rocket.chat/federation-sdk": "npm:0.7.0-beta.5"
     "@rocket.chat/fuselage": "npm:^0.82.0"
     "@rocket.chat/fuselage-forms": "npm:~1.5.0"
     "@rocket.chat/fuselage-hooks": "npm:~0.43.0"
