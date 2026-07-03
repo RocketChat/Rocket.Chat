@@ -2,10 +2,10 @@ import { assertEquals, assertObjectMatch } from 'https://deno.land/std@0.203.0/a
 import { afterAll, beforeEach, describe, it } from 'https://deno.land/std@0.203.0/testing/bdd.ts';
 import { spy } from 'https://deno.land/std@0.203.0/testing/mock.ts';
 
-import * as Messenger from '../messenger.ts';
-import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
-import { createMockRequest } from '../../handlers/tests/helpers/mod.ts';
-import { RequestContext } from '../requestContext.ts';
+import * as Messenger from '../messenger';
+import { AppObjectRegistry } from '../../AppObjectRegistry';
+import { createMockRequest } from '../../handlers/tests/helpers/mod';
+import { RequestContext } from '../requestContext';
 import { JsonRpc } from 'jsonrpc-lite';
 
 describe('Messenger', () => {

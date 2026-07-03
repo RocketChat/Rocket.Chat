@@ -97,6 +97,25 @@ export const horizontalRule = (fallback?: [number, number]) => ({
 	...(fallback !== undefined ? { fallback } : {}),
 });
 
+type Align = 'left' | 'center' | 'right' | undefined;
+
+export const tableCell = (value: unknown[], align: Align = undefined) => ({
+	type: 'TABLE_CELL' as const,
+	align,
+	value,
+});
+
+export const tableRow = (value: unknown[]) => ({
+	type: 'TABLE_ROW' as const,
+	value,
+});
+
+export const table = (header: unknown[], rows: unknown[], fallback?: [number, number]) => ({
+	type: 'TABLE' as const,
+	value: { header, rows },
+	...(fallback !== undefined ? { fallback } : {}),
+});
+
 export const katex = (value: string) => ({
 	type: 'KATEX' as const,
 	value,

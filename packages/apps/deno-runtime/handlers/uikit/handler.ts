@@ -1,12 +1,25 @@
 import type { App } from '@rocket.chat/apps-engine/definition/App';
+import {
+	UIKitBlockInteractionContext,
+	UIKitViewSubmitInteractionContext,
+	UIKitViewCloseInteractionContext,
+	UIKitActionButtonInteractionContext,
+} from '@rocket.chat/apps-engine/definition/uikit/UIKitInteractionContext';
+import {
+	IUIKitActionButtonIncomingInteraction,
+	IUIKitBlockIncomingInteraction,
+	IUIKitViewCloseIncomingInteraction,
+	IUIKitViewSubmitIncomingInteraction
+} from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionTypes';
+import { IUIKitLivechatBlockIncomingInteraction } from '@rocket.chat/apps-engine/definition/uikit/livechat/UIKitLivechatIncomingInteractionType';
+import { UIKitLivechatBlockInteractionContext } from '@rocket.chat/apps-engine/definition/uikit/livechat/UIKitLivechatInteractionContext';
 import { Defined, JsonRpcError } from 'jsonrpc-lite';
 
-import { require } from '../../lib/require.ts';
-import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
-import { AppAccessorsInstance } from '../../lib/accessors/mod.ts';
-import { RequestContext } from '../../lib/requestContext.ts';
-import { isOneOf } from '../lib/assertions.ts';
-import { wrapAppForRequest } from '../../lib/wrapAppForRequest.ts';
+import { AppObjectRegistry } from '../../AppObjectRegistry';
+import { AppAccessorsInstance } from '../../lib/accessors/mod';
+import { RequestContext } from '../../lib/requestContext';
+import { isOneOf } from '../lib/assertions';
+import { wrapAppForRequest } from '../../lib/wrapAppForRequest';
 
 export const uikitInteractions = [
 	'executeBlockActionHandler',
@@ -16,14 +29,13 @@ export const uikitInteractions = [
 	'executeLivechatBlockActionHandler',
 ] as const;
 
-export const {
+export {
 	UIKitBlockInteractionContext,
 	UIKitViewSubmitInteractionContext,
 	UIKitViewCloseInteractionContext,
 	UIKitActionButtonInteractionContext,
-} = require('@rocket.chat/apps-engine/definition/uikit/UIKitInteractionContext.js');
-
-export const { UIKitLivechatBlockInteractionContext } = require('@rocket.chat/apps-engine/definition/uikit/livechat/UIKitLivechatInteractionContext.js');
+	UIKitLivechatBlockInteractionContext,
+};
 
 export default async function handleUIKitInteraction(request: RequestContext): Promise<Defined | JsonRpcError> {
 	const { method: reqMethod, params } = request;
@@ -57,19 +69,19 @@ export default async function handleUIKitInteraction(request: RequestContext): P
 
 	switch (method) {
 		case 'executeBlockActionHandler':
-			context = new UIKitBlockInteractionContext(payload);
+			context = new UIKitBlockInteractionContext(payload as unknown as IUIKitBlockIncomingInteraction);
 			break;
 		case 'executeViewSubmitHandler':
-			context = new UIKitViewSubmitInteractionContext(payload);
+			context = new UIKitViewSubmitInteractionContext(payload as unknown as IUIKitViewSubmitIncomingInteraction);
 			break;
 		case 'executeViewClosedHandler':
-			context = new UIKitViewCloseInteractionContext(payload);
+			context = new UIKitViewCloseInteractionContext(payload as unknown as IUIKitViewCloseIncomingInteraction);
 			break;
 		case 'executeActionButtonHandler':
-			context = new UIKitActionButtonInteractionContext(payload);
+			context = new UIKitActionButtonInteractionContext(payload as unknown as IUIKitActionButtonIncomingInteraction);
 			break;
 		case 'executeLivechatBlockActionHandler':
-			context = new UIKitLivechatBlockInteractionContext(payload);
+			context = new UIKitLivechatBlockInteractionContext(payload as unknown as IUIKitLivechatBlockIncomingInteraction);
 			break;
 	}
 
@@ -83,6 +95,6 @@ export default async function handleUIKitInteraction(request: RequestContext): P
 			AppAccessorsInstance.getModifier(),
 		);
 	} catch (e) {
-		return JsonRpcError.internalError({ message: e.message });
+		return JsonRpcError.internalError({ message: (e as { message?: string }).message });
 	}
 }

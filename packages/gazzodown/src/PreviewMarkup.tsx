@@ -86,6 +86,18 @@ const PreviewMarkup = ({ tokens, source }: PreviewMarkupProps) => {
 				</KatexErrorBoundary>
 			);
 
+		case 'TABLE':
+			return (
+				<>
+					{firstBlock.value.header.map((cell, index) => (
+						<span key={index}>
+							{index > 0 ? ' | ' : null}
+							<PreviewInlineElements>{cell.value}</PreviewInlineElements>
+						</span>
+					))}
+				</>
+			);
+
 		default: {
 			// Only the `[start, end]` offset form is rendered (sliced from source); the union
 			// keeps the original fallback form too, which we intentionally ignore.

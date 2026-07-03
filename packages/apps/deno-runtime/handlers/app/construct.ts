@@ -2,11 +2,11 @@ import { Socket } from 'node:net';
 
 import type { IParseAppPackageResult } from '@rocket.chat/apps/dist/server/compiler/IParseAppPackageResult';
 
-import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
-import { require } from '../../lib/require.ts';
-import { sanitizeDeprecatedUsage } from '../../lib/sanitizeDeprecatedUsage.ts';
-import { AppAccessorsInstance } from '../../lib/accessors/mod.ts';
-import { RequestContext } from '../../lib/requestContext.ts';
+import { AppObjectRegistry } from '../../AppObjectRegistry';
+import { require } from '../../lib/require';
+import { sanitizeDeprecatedUsage } from '../../lib/sanitizeDeprecatedUsage';
+import { AppAccessorsInstance } from '../../lib/accessors/mod';
+import { RequestContext } from '../../lib/requestContext';
 
 const ALLOWED_NATIVE_MODULES = ['path', 'url', 'crypto', 'buffer', 'stream', 'net', 'http', 'https', 'zlib', 'util', 'punycode', 'os', 'querystring', 'fs'];
 const ALLOWED_EXTERNAL_MODULES = ['uuid'];

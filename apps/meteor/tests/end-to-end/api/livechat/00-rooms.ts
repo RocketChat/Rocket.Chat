@@ -18,7 +18,7 @@ import { expect } from 'chai';
 import { after, afterEach, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
-import type { SuccessResult } from '../../../../app/api/server/definition';
+import type { SuccessResult } from '../../../../server/api/definition';
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { apps, APP_URL } from '../../../data/apps/apps-data';
 import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';

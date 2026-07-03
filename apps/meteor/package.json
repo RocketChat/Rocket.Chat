@@ -108,7 +108,7 @@
 		"@rocket.chat/favicon": "workspace:^",
 		"@rocket.chat/federation-matrix": "workspace:^",
 		"@rocket.chat/federation-sdk": "0.6.3",
-		"@rocket.chat/fuselage": "~0.80.0",
+		"@rocket.chat/fuselage": "^0.81.0",
 		"@rocket.chat/fuselage-forms": "~1.4.0",
 		"@rocket.chat/fuselage-hooks": "~0.42.0",
 		"@rocket.chat/fuselage-toastbar": "~0.36.0",

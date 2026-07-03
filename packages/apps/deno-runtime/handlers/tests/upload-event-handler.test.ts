@@ -9,10 +9,10 @@ import { afterEach, beforeEach, describe, it } from 'https://deno.land/std@0.203
 import { assertSpyCalls, spy } from 'https://deno.land/std@0.203.0/testing/mock.ts';
 import { JsonRpcError } from 'jsonrpc-lite';
 
-import { createMockRequest } from './helpers/mod.ts';
-import handleUploadEvents from '../app/handleUploadEvents.ts';
-import { Errors } from '../lib/assertions.ts';
-import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
+import { createMockRequest } from './helpers/mod';
+import handleUploadEvents from '../app/handleUploadEvents';
+import { Errors } from '../lib/assertions';
+import { AppObjectRegistry } from '../../AppObjectRegistry';
 
 describe('handlers > upload', () => {
 	let app: App & IPreFileUpload;

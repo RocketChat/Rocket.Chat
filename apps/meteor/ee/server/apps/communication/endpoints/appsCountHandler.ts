@@ -1,8 +1,8 @@
 import type { AppManager } from '@rocket.chat/apps/dist/server/AppManager';
 import { License } from '@rocket.chat/license';
 
-import { API } from '../../../../../app/api/server';
 import { getInstallationSourceFromAppStorageItem } from '../../../../../lib/apps/getInstallationSourceFromAppStorageItem';
+import { API } from '../../../../../server/api';
 import type { AppsRestApi } from '../rest';
 
 export const registerAppsCountHandler = ({ api, _manager }: AppsRestApi) =>

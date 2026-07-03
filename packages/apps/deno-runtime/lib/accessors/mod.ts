@@ -18,15 +18,15 @@ import type {
 	IOutboundEmailMessageProvider,
 } from '@rocket.chat/apps-engine/definition/outboundCommunication/IOutboundCommsProvider';
 
-import { Http } from './http.ts';
-import { HttpExtend } from './extenders/HttpExtender.ts';
-import * as Messenger from '../messenger.ts';
-import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
-import { ModifyCreator } from './modify/ModifyCreator.ts';
-import { ModifyUpdater } from './modify/ModifyUpdater.ts';
-import { ModifyExtender } from './modify/ModifyExtender.ts';
-import { Notifier } from './notifier.ts';
-import { formatErrorResponse } from './formatResponseErrorHandler.ts';
+import { Http } from './http';
+import { HttpExtend } from './extenders/HttpExtender';
+import * as Messenger from '../messenger';
+import { AppObjectRegistry } from '../../AppObjectRegistry';
+import { ModifyCreator } from './modify/ModifyCreator';
+import { ModifyUpdater } from './modify/ModifyUpdater';
+import { ModifyExtender } from './modify/ModifyExtender';
+import { Notifier } from './notifier';
+import { formatErrorResponse } from './formatResponseErrorHandler';
 
 const httpMethods = ['get', 'post', 'put', 'delete', 'head', 'options', 'patch'] as const;
 
