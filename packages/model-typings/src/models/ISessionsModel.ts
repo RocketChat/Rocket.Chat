@@ -51,7 +51,6 @@ export interface ISessionsModel extends IBaseModel<ISession> {
 		count?: number;
 	}): Promise<{ sessions: Array<DeviceManagementSession>; count: number; offset: number; total: number }>;
 
-	getActiveUsersBetweenDates({ start, end }: DestructuredRange): Promise<ISession[]>;
 	findLastLoginByIp(ip: string): Promise<ISession | null>;
 	findOneBySessionId(sessionId: string): Promise<ISession | null>;
 	findOneBySessionIdAndUserId(sessionId: string, userId: string): Promise<ISession | null>;

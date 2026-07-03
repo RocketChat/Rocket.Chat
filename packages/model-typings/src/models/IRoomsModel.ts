@@ -123,15 +123,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	setTeamDefaultById(rid: IRoom['_id'], teamDefault: NonNullable<IRoom['teamDefault']>, options?: UpdateOptions): Promise<UpdateResult>;
 
-	findChannelsByTypesWithNumberOfMessagesBetweenDate(params: {
-		types: Array<IRoom['t']>;
-		start: number;
-		end: number;
-		startOfLastWeek: number;
-		endOfLastWeek: number;
-		options?: any;
-	}): AggregationCursor<IChannelsWithNumberOfMessagesBetweenDate>;
-
 	findOneByName(name: NonNullable<IRoom['name']>, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
 	findDefaultRoomsForTeam(teamId: any): FindCursor<IRoom>;

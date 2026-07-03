@@ -592,135 +592,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
-	findAllNumberOfTransferredRooms({
-		start,
-		end,
-		departmentId,
-		options = {},
-	}: {
-		start: Date;
-		end: Date;
-		departmentId?: string;
-		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
-	}) {
-		const match: Document = {
-			$match: {
-				t: 'l',
-				ts: { $gte: new Date(start), $lte: new Date(end) },
-			},
-		};
-		const departmentsLookup = {
-			$lookup: {
-				from: 'rocketchat_livechat_department',
-				localField: 'departmentId',
-				foreignField: '_id',
-				as: 'departments',
-			},
-		};
-		const departmentsUnwind = {
-			$unwind: {
-				path: '$departments',
-				preserveNullAndEmptyArrays: true,
-			},
-		};
-		const departmentsGroup = {
-			$group: {
-				_id: {
-					_id: null,
-					departmentId: '$departments._id',
-					name: '$departments.name',
-				},
-				rooms: { $push: '$$ROOT' },
-			},
-		};
-		const departmentsProject = {
-			$project: {
-				_id: '$_id.departmentId',
-				name: '$_id.name',
-				rooms: 1,
-			},
-		};
-		const roomsUnwind = {
-			$unwind: {
-				path: '$rooms',
-				preserveNullAndEmptyArrays: true,
-			},
-		};
-		const messagesLookup = {
-			$lookup: {
-				from: 'rocketchat_message',
-				localField: 'rooms._id',
-				foreignField: 'rid',
-				as: 'messages',
-			},
-		};
-		const messagesProject = {
-			$project: {
-				_id: 1,
-				name: 1,
-				messages: {
-					$filter: {
-						input: '$messages',
-						as: 'message',
-						cond: {
-							$and: [{ $eq: ['$$message.t', 'livechat_transfer_history'] }],
-						},
-					},
-				},
-			},
-		};
-		const transferProject = {
-			$project: {
-				name: 1,
-				transfers: { $size: { $ifNull: ['$messages', []] } },
-			},
-		};
-		const transferGroup = {
-			$group: {
-				_id: {
-					departmentId: '$_id',
-					name: '$name',
-				},
-				numberOfTransferredRooms: { $sum: '$transfers' },
-			},
-		};
-		const presentationProject = {
-			$project: {
-				_id: { $ifNull: ['$_id.departmentId', null] },
-				name: { $ifNull: ['$_id.name', null] },
-				numberOfTransferredRooms: 1,
-			},
-		};
-		const firstParams: Document[] = [match, departmentsLookup, departmentsUnwind];
-		if (departmentId && departmentId !== 'undefined') {
-			firstParams.push({
-				$match: {
-					'departments._id': departmentId,
-				},
-			});
-		}
-		const sort = { $sort: options.sort || { name: 1 } };
-		const params: Document[] = [
-			...firstParams,
-			departmentsGroup,
-			departmentsProject,
-			roomsUnwind,
-			messagesLookup,
-			messagesProject,
-			transferProject,
-			transferGroup,
-			presentationProject,
-			sort,
-		];
-		if (options.offset) {
-			params.push({ $skip: options.offset });
-		}
-		if (options.count) {
-			params.push({ $limit: options.count });
-		}
-		return this.col.aggregate(params, { allowDiskUse: true, readPreference: readSecondaryPreferred() }).toArray();
-	}
-
 	countAllOpenChatsBetweenDate({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
 		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
@@ -2167,12 +2038,11 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 						...extraMatchers,
 					},
 				},
-				{ $addFields: { roomId: '$_id' } },
 				{
 					$lookup: {
 						from: 'rocketchat_message',
 						// mongo doesn't like _id as variable name here :(
-						let: { roomId: '$roomId' },
+						let: { roomId: '$_id' },
 						pipeline: [
 							{
 								$match: {
@@ -2190,40 +2060,21 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 									},
 								},
 							},
+							{ $count: 'total' },
 						],
 						as: 'messages',
 					},
 				},
 				{
-					$unwind: {
-						path: '$messages',
-						preserveNullAndEmptyArrays: true,
-					},
-				},
-				{
-					$group: {
-						_id: {
-							_id: '$_id',
-							ts: '$ts',
-							departmentId: '$departmentId',
-							open: '$open',
-							servedBy: '$servedBy',
-							metrics: '$metrics',
-						},
-						messagesCount: {
-							$sum: 1,
-						},
-					},
-				},
-				{
 					$project: {
-						_id: '$_id._id',
-						ts: '$_id.ts',
-						departmentId: '$_id.departmentId',
-						open: '$_id.open',
-						servedBy: '$_id.servedBy',
-						metrics: '$_id.metrics',
-						msgs: '$messagesCount',
+						_id: 1,
+						ts: 1,
+						departmentId: 1,
+						open: 1,
+						servedBy: 1,
+						metrics: 1,
+						// rooms without matching messages have always reported msgs: 1 (the room doc itself survived the old $unwind+$group count)
+						msgs: { $ifNull: [{ $arrayElemAt: ['$messages.total', 0] }, 1] },
 					},
 				},
 			],
@@ -2244,12 +2095,11 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 						...(departmentId && departmentId !== 'undefined' && { departmentId }),
 					},
 				},
-				{ $addFields: { roomId: '$_id' } },
 				{
 					$lookup: {
 						from: 'rocketchat_message',
 						// mongo doesn't like _id as variable name here :(
-						let: { roomId: '$roomId' },
+						let: { roomId: '$_id' },
 						pipeline: [
 							{
 								$match: {
@@ -2266,42 +2116,22 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 									},
 								},
 							},
+							{ $count: 'total' },
 						],
 						as: 'messages',
 					},
 				},
 				{
-					$unwind: {
-						path: '$messages',
-						preserveNullAndEmptyArrays: true,
-					},
-				},
-				{
-					$group: {
-						_id: {
-							_id: '$_id',
-							ts: '$ts',
-							departmentId: '$departmentId',
-							open: '$open',
-							servedBy: '$servedBy',
-							metrics: '$metrics',
-							onHold: '$onHold',
-						},
-						messagesCount: {
-							$sum: 1,
-						},
-					},
-				},
-				{
 					$project: {
-						_id: '$_id._id',
-						ts: '$_id.ts',
-						departmentId: '$_id.departmentId',
-						open: '$_id.open',
-						servedBy: '$_id.servedBy',
-						metrics: '$_id.metrics',
-						msgs: '$messagesCount',
-						onHold: '$_id.onHold',
+						_id: 1,
+						ts: 1,
+						departmentId: 1,
+						open: 1,
+						servedBy: 1,
+						metrics: 1,
+						onHold: 1,
+						// rooms without matching messages have always reported msgs: 1 (the room doc itself survived the old $unwind+$group count)
+						msgs: { $ifNull: [{ $arrayElemAt: ['$messages.total', 0] }, 1] },
 					},
 				},
 			],

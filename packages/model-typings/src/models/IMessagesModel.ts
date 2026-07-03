@@ -90,8 +90,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	unsetFederationReactionEventId(federationEventId: string, _id: string, reaction: string): Promise<void>;
 
-	findOneByFederationIdAndUsernameOnReactions(federationEventId: string, username: string): Promise<IMessage | null>;
-
 	findOneByFederationId(federationEventId: string): Promise<IMessage | null>;
 
 	findLatestFederationThreadMessageByTmid(tmid: string, messageId: IMessage['_id']): Promise<IMessage | null>;

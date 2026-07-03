@@ -192,27 +192,28 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				ts: { $gte: new Date(start), $lte: new Date(end) },
 			},
 		};
+		const groupByRoom = {
+			$group: {
+				_id: '$rid',
+				transfers: { $sum: 1 },
+			},
+		};
 		const lookup = {
 			$lookup: {
 				from: 'rocketchat_room',
-				localField: 'rid',
+				localField: '_id',
 				foreignField: '_id',
+				pipeline: [...(departmentId ? [{ $match: { departmentId } }] : []), { $project: { departmentId: 1 } }],
 				as: 'room',
-			},
-		};
-		const unwind = {
-			$unwind: {
-				path: '$room',
-				preserveNullAndEmptyArrays: true,
 			},
 		};
 		const group = {
 			$group: {
 				_id: {
 					_id: null,
-					departmentId: '$room.departmentId',
+					departmentId: { $arrayElemAt: ['$room.departmentId', 0] },
 				},
-				numberOfTransferredRooms: { $sum: 1 },
+				numberOfTransferredRooms: { $sum: '$transfers' },
 			},
 		};
 		const project = {
@@ -221,11 +222,12 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				numberOfTransferredRooms: 1,
 			},
 		};
-		const firstParams: Exclude<Parameters<Collection<IMessage>['aggregate']>[0], undefined> = [match, lookup, unwind];
+		const firstParams: Exclude<Parameters<Collection<IMessage>['aggregate']>[0], undefined> = [match, groupByRoom, lookup];
 		if (departmentId) {
+			// rooms outside the department produce an empty lookup, same as the old post-$unwind department $match
 			firstParams.push({
 				$match: {
-					'room.departmentId': departmentId,
+					'room.0': { $exists: true },
 				},
 			});
 		}
@@ -557,43 +559,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				},
 			},
 		);
-	}
-
-	async findOneByFederationIdAndUsernameOnReactions(federationEventId: string, username: string): Promise<IMessage | null> {
-		return (
-			await this.col
-				.aggregate(
-					[
-						{
-							$match: {
-								t: { $ne: 'rm' },
-							},
-						},
-						{
-							$project: {
-								document: '$$ROOT',
-								reactions: { $objectToArray: '$reactions' },
-							},
-						},
-						{
-							$unwind: {
-								path: '$reactions',
-							},
-						},
-						{
-							$match: {
-								$and: [
-									{ 'reactions.v.usernames': { $in: [username] } },
-									{ [`reactions.v.federationReactionEventIds.${federationEventId}`]: username },
-								],
-							},
-						},
-						{ $replaceRoot: { newRoot: '$document' } },
-					],
-					{ readPreference: readSecondaryPreferred() },
-				)
-				.toArray()
-		)[0] as IMessage;
 	}
 
 	removeByRoomId(roomId: string): Promise<DeleteResult> {

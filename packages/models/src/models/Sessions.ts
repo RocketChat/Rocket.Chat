@@ -987,29 +987,11 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 			{ key: { sessionId: 1, instanceId: 1, year: 1, month: 1, day: 1 } },
 			{ key: { _computedAt: 1 }, expireAfterSeconds: 60 * 60 * 24 * 45 },
 			{
-				key: { 'loginToken': 1, 'logoutAt': 1, 'userId': 1, 'device.name': 1, 'device.os.name': 1, 'logintAt': -1 },
+				key: { 'loginToken': 1, 'logoutAt': 1, 'userId': 1, 'device.name': 1, 'device.os.name': 1, 'loginAt': -1 },
 				partialFilterExpression: { loginToken: { $exists: true } },
 				background: true,
 			},
 		];
-	}
-
-	async getActiveUsersBetweenDates({ start, end }: DestructuredRange): Promise<ISession[]> {
-		return this.col
-			.aggregate<ISession>([
-				{
-					$match: {
-						...matchBasedOnDate(start, end),
-						type: 'user_daily',
-					},
-				},
-				{
-					$group: {
-						_id: '$userId',
-					},
-				},
-			])
-			.toArray();
 	}
 
 	async findLastLoginByIp(ip: string): Promise<ISession | null> {
@@ -1120,7 +1102,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 				range: {
 					$range: [0, 24, groupSize],
 				},
-				session: '$$ROOT',
+				session: { loginAt: '$loginAt', closedAt: '$closedAt', userId: '$userId' },
 			},
 		};
 		const unwind = {
@@ -1143,7 +1125,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 			.aggregate<{
 				hour: number;
 				users: number;
-			}>([match, rangeProject, unwind, groups.listGroup, groups.countGroup, presentationProject, sort])
+			}>([match, rangeProject, unwind, groups.listGroup, groups.countGroup, presentationProject, sort], { allowDiskUse: true })
 			.toArray();
 	}
 
@@ -1211,7 +1193,14 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 				range: {
 					$range: [{ $hour: '$loginAt' }, { $sum: [{ $ifNull: [{ $hour: '$closedAt' }, 23] }, 1] }],
 				},
-				session: '$$ROOT',
+				session: {
+					loginAt: '$loginAt',
+					closedAt: '$closedAt',
+					userId: '$userId',
+					day: '$day',
+					month: '$month',
+					year: '$year',
+				},
 			},
 		};
 		const unwind = {
@@ -1245,7 +1234,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 				month: number;
 				year: number;
 				users: number;
-			}>([match, rangeProject, unwind, groups.listGroup, groups.countGroup, presentationProject, sort])
+			}>([match, rangeProject, unwind, groups.listGroup, groups.countGroup, presentationProject, sort], { allowDiskUse: true })
 			.toArray();
 	}
 
