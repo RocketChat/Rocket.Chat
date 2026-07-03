@@ -1,4 +1,5 @@
 import type { ISetting } from '@rocket.chat/core-typings';
+import { isSettingCode } from '@rocket.chat/core-typings';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import { isTruthy } from '@rocket.chat/tools';
 import type { SettingsContextQuery, SettingsContextValue } from '@rocket.chat/ui-contexts';
@@ -11,6 +12,7 @@ import { PublicSettingsCachedStore, PrivateSettingsCachedStore } from '../cached
 import { useShowSettingAlerts } from '../hooks/useShowSettingAlerts';
 import { PrivateCachedStore } from '../lib/cachedStores/CachedStore';
 import { applyQueryOptions } from '../lib/cachedStores/applyQueryOptions';
+import { getCodeSettingError } from '../lib/utils/getCodeSettingError';
 
 const settingsManagementPermissions = ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings'];
 
@@ -113,6 +115,18 @@ const SettingsProvider = ({ children }: SettingsProviderProps) => {
 					queryClient.invalidateQueries({ queryKey: ['licenses'] });
 				}
 			});
+
+			const hasInvalidCodeSetting = changes.some((change) => {
+				if (!change._id || change.value === undefined) {
+					return false;
+				}
+				const setting = cachedCollection.store.getState().get(change._id);
+				return setting !== undefined && isSettingCode(setting) && getCodeSettingError(setting.code, change.value) !== undefined;
+			});
+
+			if (hasInvalidCodeSetting) {
+				return;
+			}
 
 			if (alerts.length) {
 				const accepted = await showAlerts(alerts);

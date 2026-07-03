@@ -138,6 +138,7 @@ export function addSettings(): Promise<void> {
 
 					await this.add('LDAP_CustomFieldMap', '{}', {
 						type: 'code',
+						code: 'application/json',
 						multiline: true,
 						enableQuery: [enableQuery, { _id: 'LDAP_Sync_Custom_Fields', value: true }],
 						invalidValue: '{}',
@@ -257,6 +258,8 @@ export function addSettings(): Promise<void> {
 
 					await this.add('LDAP_Groups_To_Rocket_Chat_Teams', '{}', {
 						type: 'code',
+						code: 'application/json',
+						multiline: true,
 						enableQuery: enableQueryTeams,
 						invalidValue: '{}',
 					});
@@ -300,6 +303,7 @@ export function addSettings(): Promise<void> {
 
 					await this.add('LDAP_ABAC_AttributeMap', '{}', {
 						type: 'code',
+						code: 'application/json',
 						multiline: true,
 						enableQuery: [enableQuery, { _id: 'LDAP_Background_Sync_ABAC_Attributes', value: true }],
 						invalidValue: '{}',
