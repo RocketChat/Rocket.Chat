@@ -2,113 +2,116 @@ import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-const registerBusinessHourTypeStub = sinon.stub();
+const cursor = (docs: unknown[]) => ({ toArray: async () => docs });
 
-const businessHourRepoStub = {
+const LivechatBusinessHoursStub = {
 	findOne: sinon.stub().resolves(null),
-	findOneById: sinon.stub().resolves(null),
-	findOneDefaultBusinessHour: sinon.stub().resolves(null),
+	updateOne: sinon.stub().resolves({}),
+	insertOne: sinon.stub().resolves({ insertedId: 'new-bh-id' }),
+	findOneDefaultBusinessHour: sinon.stub().resolves({ _id: 'default-bh', active: false, type: 'default', workHours: [] }),
 };
 
-const baseSaveStub = sinon.stub().resolves('bh-id');
-
-class AbstractBusinessHourTypeStub {
-	protected BusinessHourRepository = businessHourRepoStub;
-
-	protected UsersRepository = {};
-
-	protected baseSaveBusinessHour(businessHourData: unknown): Promise<string> {
-		return baseSaveStub(businessHourData);
-	}
-
-	protected getUTCFromTimezone(): string {
-		return '+00:00';
-	}
-}
-
-const linkedDepartmentsStub = sinon.stub().resolves([]);
-const removeBusinessHourFromDepartmentsStub = sinon.stub().resolves(undefined);
-const addBusinessHourToDepartmentsStub = sinon.stub().resolves(undefined);
-const findInIdsToArrayStub = sinon.stub().resolves([]);
-
 const LivechatDepartmentStub = {
-	findByBusinessHourId: sinon.stub().returns({ toArray: linkedDepartmentsStub }),
-	removeBusinessHourFromDepartmentsByIdsAndBusinessHourId: removeBusinessHourFromDepartmentsStub,
-	addBusinessHourToDepartmentsByIds: addBusinessHourToDepartmentsStub,
-	findInIds: sinon.stub().returns({ toArray: findInIdsToArrayStub }),
+	findByBusinessHourId: sinon.stub().returns(cursor([])),
+	findInIds: sinon.stub().returns(cursor([])),
+	removeBusinessHourFromDepartmentsByIdsAndBusinessHourId: sinon.stub().resolves(undefined),
+	addBusinessHourToDepartmentsByIds: sinon.stub().resolves(undefined),
+};
+
+const LivechatDepartmentAgentsStub = {
+	findByDepartmentIds: sinon.stub().returns(cursor([])),
 };
 
 const UsersStub = {
+	findAgentsAvailableWithoutBusinessHours: sinon.stub().returns(cursor([])),
+	updateLivechatStatusByAgentIds: sinon.stub().resolves({ modifiedCount: 0 }),
 	closeAgentsBusinessHoursByBusinessHourIds: sinon.stub().resolves(undefined),
 	removeBusinessHourByAgentIds: sinon.stub().resolves(undefined),
 };
 
+const registerBusinessHourTypeStub = sinon.stub();
+
+// Only the DB layer and the meteor-heavy imports are stubbed; Custom.ts,
+// AbstractBusinessHour (real convertWorkHours/baseSaveBusinessHour) and
+// Helper run for real.
 proxyquire.noCallThru().load('../../../../../../ee/app/livechat-enterprise/server/business-hour/Custom', {
-	'@rocket.chat/models': {
-		LivechatDepartment: LivechatDepartmentStub,
-		LivechatDepartmentAgents: {},
-		Users: UsersStub,
-	},
 	'../../../../../app/livechat/server/business-hour': {
 		businessHourManager: { registerBusinessHourType: registerBusinessHourTypeStub },
 	},
-	'../../../../../app/livechat/server/business-hour/AbstractBusinessHour': {
-		AbstractBusinessHourType: AbstractBusinessHourTypeStub,
+	'@rocket.chat/models': {
+		'@global': true,
+		'LivechatBusinessHours': LivechatBusinessHoursStub,
+		'LivechatDepartment': LivechatDepartmentStub,
+		'LivechatDepartmentAgents': LivechatDepartmentAgentsStub,
+		'Users': UsersStub,
 	},
-	'../../../../../app/livechat/server/business-hour/Helper': {
-		filterBusinessHoursThatMustBeOpened: sinon.stub().resolves([]),
-		makeAgentsUnavailableBasedOnBusinessHour: sinon.stub().resolves(undefined),
-	},
-	'../lib/logger': {
-		bhLogger: { error: sinon.stub(), debug: sinon.stub() },
+	'../../../lib/server/lib/notifyListener': {
+		'@global': true,
+		'notifyOnUserChange': sinon.stub(),
+		'notifyOnUserChangeAsync': sinon.stub(),
 	},
 });
 
 const customBusinessHour = registerBusinessHourTypeStub.firstCall.args[0];
 
 const baseBusinessHour = {
+	_id: 'bh-id',
 	name: 'test-bh',
 	active: true,
 	type: 'custom',
-	timezoneName: 'America/New_York',
-	workHours: [],
+	timezoneName: 'America/Noronha',
+	workHours: [{ day: 'Monday', start: '07:00', finish: '18:00', open: true }],
 };
 
 describe('[OC] CustomBusinessHour', () => {
 	describe('saveBusinessHour()', () => {
 		beforeEach(() => {
-			baseSaveStub.resetHistory();
-			removeBusinessHourFromDepartmentsStub.resetHistory();
-			addBusinessHourToDepartmentsStub.resetHistory();
-			LivechatDepartmentStub.findByBusinessHourId.resetHistory();
+			LivechatBusinessHoursStub.updateOne.resetHistory();
+			LivechatDepartmentStub.removeBusinessHourFromDepartmentsByIdsAndBusinessHourId.resetHistory();
+			LivechatDepartmentStub.addBusinessHourToDepartmentsByIds.resetHistory();
+			LivechatDepartmentStub.findByBusinessHourId.reset();
+			LivechatDepartmentStub.findByBusinessHourId.returns(cursor([{ _id: 'dept1' }, { _id: 'dept2' }]));
 		});
 
 		it('should not touch department links when departmentsToApplyBusinessHour is not provided (internal re-save, e.g. DST verifier)', async () => {
-			linkedDepartmentsStub.resolves([{ _id: 'dept1' }, { _id: 'dept2' }]);
+			await customBusinessHour.saveBusinessHour({ ...baseBusinessHour, workHours: structuredClone(baseBusinessHour.workHours) });
 
-			await customBusinessHour.saveBusinessHour({ ...baseBusinessHour, _id: 'bh-id' });
+			expect(LivechatDepartmentStub.removeBusinessHourFromDepartmentsByIdsAndBusinessHourId.called).to.be.false;
+			expect(LivechatDepartmentStub.addBusinessHourToDepartmentsByIds.called).to.be.false;
+			expect(LivechatBusinessHoursStub.updateOne.calledOnce).to.be.true;
+		});
 
-			expect(baseSaveStub.calledOnce).to.be.true;
-			expect(removeBusinessHourFromDepartmentsStub.called).to.be.false;
-			expect(addBusinessHourToDepartmentsStub.called).to.be.false;
+		it('should still recompute the UTC work hours from the business hour timezone on an internal re-save', async () => {
+			await customBusinessHour.saveBusinessHour({ ...baseBusinessHour, workHours: structuredClone(baseBusinessHour.workHours) });
+
+			const { $set } = LivechatBusinessHoursStub.updateOne.firstCall.args[1];
+			// 07:00 in America/Noronha (UTC-2, no DST) is 09:00 UTC
+			expect($set.workHours[0].start.utc).to.deep.include({ dayOfWeek: 'Monday', time: '09:00' });
+			expect($set.workHours[0].finish.utc).to.deep.include({ dayOfWeek: 'Monday', time: '20:00' });
+			expect($set.timezone).to.deep.equal({ name: 'America/Noronha', utc: '-02:00' });
 		});
 
 		it('should unlink all departments when departmentsToApplyBusinessHour is an empty string', async () => {
-			linkedDepartmentsStub.resolves([{ _id: 'dept1' }, { _id: 'dept2' }]);
+			await customBusinessHour.saveBusinessHour({
+				...baseBusinessHour,
+				workHours: structuredClone(baseBusinessHour.workHours),
+				departmentsToApplyBusinessHour: '',
+			});
 
-			await customBusinessHour.saveBusinessHour({ ...baseBusinessHour, _id: 'bh-id', departmentsToApplyBusinessHour: '' });
-
-			expect(removeBusinessHourFromDepartmentsStub.calledOnceWith(['dept1', 'dept2'], 'bh-id')).to.be.true;
-			expect(addBusinessHourToDepartmentsStub.called).to.be.false;
+			expect(LivechatDepartmentStub.removeBusinessHourFromDepartmentsByIdsAndBusinessHourId.calledOnceWith(['dept1', 'dept2'], 'bh-id')).to
+				.be.true;
+			expect(LivechatDepartmentStub.addBusinessHourToDepartmentsByIds.called).to.be.false;
 		});
 
 		it('should reconcile department links when departmentsToApplyBusinessHour is provided', async () => {
-			linkedDepartmentsStub.resolves([{ _id: 'dept1' }, { _id: 'dept2' }]);
+			await customBusinessHour.saveBusinessHour({
+				...baseBusinessHour,
+				workHours: structuredClone(baseBusinessHour.workHours),
+				departmentsToApplyBusinessHour: 'dept1,dept3',
+			});
 
-			await customBusinessHour.saveBusinessHour({ ...baseBusinessHour, _id: 'bh-id', departmentsToApplyBusinessHour: 'dept1,dept3' });
-
-			expect(removeBusinessHourFromDepartmentsStub.calledOnceWith(['dept2'], 'bh-id')).to.be.true;
-			expect(addBusinessHourToDepartmentsStub.calledOnceWith(['dept3'], 'bh-id')).to.be.true;
+			expect(LivechatDepartmentStub.removeBusinessHourFromDepartmentsByIdsAndBusinessHourId.calledOnceWith(['dept2'], 'bh-id')).to.be.true;
+			expect(LivechatDepartmentStub.addBusinessHourToDepartmentsByIds.calledOnceWith(['dept3'], 'bh-id')).to.be.true;
 		});
 	});
 });
