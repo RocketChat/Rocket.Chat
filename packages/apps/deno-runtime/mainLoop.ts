@@ -1,6 +1,6 @@
 import process from 'node:process';
 
-import { JsonRpcError, type SuccessObject } from 'jsonrpc-lite';
+import jsonrpc, { JsonRpcError, type SuccessObject } from 'jsonrpc-lite';
 
 import apiHandler from './handlers/api-handler';
 import handleApp from './handlers/app/handler';
@@ -21,7 +21,7 @@ type Handlers = {
 	videoconference: typeof videoConferenceHandler;
 	outboundCommunication: typeof outboundMessageHandler;
 	scheduler: typeof handleScheduler;
-	ping: (request: RequestContext) => 'pong';
+	ping: (request: RequestContext) => Promise<'pong'>;
 };
 
 const COMMAND_PING = '_zPING';
@@ -34,7 +34,7 @@ async function requestRouter({ type, payload }: Messenger.JsonRpcRequest): Promi
 		videoconference: videoConferenceHandler,
 		outboundCommunication: outboundMessageHandler,
 		scheduler: handleScheduler,
-		ping: (_request) => 'pong',
+		ping: (_request) => Promise.resolve('pong'),
 	};
 
 	// We're not handling notifications at the moment
@@ -63,7 +63,9 @@ async function requestRouter({ type, payload }: Messenger.JsonRpcRequest): Promi
 		);
 	}
 
-	const result = await handler(context);
+	const result = await handler(context).catch((reason) =>
+		JsonRpcError.internalError({ cause: reason instanceof Error ? reason.toString() : reason }),
+	);
 
 	if (result instanceof JsonRpcError) {
 		return Messenger.errorResponse({ id, error: result }, context);
