@@ -27,6 +27,8 @@ import {
 	samlResponseAssertionId,
 	samlResponseValidSignatures,
 	samlResponseValidAssertionSignature,
+	samlResponseNestedInWrapper,
+	samlResponseSignatureReferenceMismatch,
 	encryptedResponse,
 	profile,
 	certificate,
@@ -750,6 +752,32 @@ describe('SAML', () => {
 					expect(profile).to.be.null;
 				});
 			});
+
+			for (const signatureValidationType of ['None', 'Response', 'Assertion', 'Either', 'All']) {
+				it(`should reject a response that is not the document root (${signatureValidationType})`, () => {
+					const providerOptions = { ...serviceProviderOptions, signatureValidationType, cert: certificate };
+
+					const parser = new ResponseParser(providerOptions);
+					parser.validate(makeLoginResponseEnvelope(samlResponseNestedInWrapper), (err, profile, loggedOut) => {
+						expect(err).to.be.an('error').that.has.property('message').that.is.equal('SAML Response must be the document root');
+						expect(profile).to.not.exist;
+						expect(loggedOut).to.be.false;
+					});
+				});
+			}
+
+			for (const signatureValidationType of ['Response', 'All']) {
+				it(`should reject a response whose signature does not cover the validated element (${signatureValidationType})`, () => {
+					const providerOptions = { ...serviceProviderOptions, signatureValidationType, cert: certificate };
+
+					const parser = new ResponseParser(providerOptions);
+					parser.validate(makeLoginResponseEnvelope(samlResponseSignatureReferenceMismatch), (err, profile, loggedOut) => {
+						expect(err).to.be.an('error').that.has.property('message').that.is.equal('Invalid Signature');
+						expect(profile).to.not.exist;
+						expect(loggedOut).to.be.false;
+					});
+				});
+			}
 		});
 	});
 
