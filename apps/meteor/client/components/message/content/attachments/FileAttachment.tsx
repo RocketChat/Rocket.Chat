@@ -6,7 +6,11 @@ import GenericFileAttachment from './file/GenericFileAttachment';
 import ImageAttachment from './file/ImageAttachment';
 import VideoAttachment from './file/VideoAttachment';
 
-const FileAttachment = ({ source, ...attachment }: FileAttachmentProps & { source?: AudioAttachmentSource }) => {
+type FileAttachmentComponentProps = FileAttachmentProps & {
+	source?: AudioAttachmentSource;
+};
+
+const FileAttachment = ({ source, ...attachment }: FileAttachmentComponentProps) => {
 	if (isFileImageAttachment(attachment)) {
 		return <ImageAttachment {...attachment} />;
 	}
