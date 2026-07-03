@@ -5,33 +5,37 @@ import { useSetModal, useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import ManageLicenseModal from './ManageLicenseModal';
+import { useServerInfo } from '../../../../../../hooks/useWorkspaceInfo';
 
 const PlanCardControls = () => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
+	const siteURL = useSetting('Site_Url', '');
 	const enterpriseLicense = useSetting('Enterprise_License', '');
-	const { copy: copyRootURL, hasCopied: hasCopiedRootURL } = useClipboard('https://your-rocketchat-url.com');
-	const { copy: copyHashed, hasCopied: hasCopiedHashed } = useClipboard('738cb578f75b195353fa57f6ff547b64af77cf24572e10...');
+	const { data: serverInfo } = useServerInfo();
+	const hashedSiteURL = serverInfo?.hashedWorkspaceUrl ?? '';
+	const { copy: copySiteURL, hasCopied: hasCopiedSiteURL } = useClipboard(siteURL);
+	const { copy: copyHashed, hasCopied: hasCopiedHashed } = useClipboard(hashedSiteURL);
 
 	return (
 		<>
 			<Divider />
 			<Box>
 				<Box display='flex'>
-					<Box mie={4}>Root URL</Box>
-					{hasCopiedRootURL ? (
+					<Box mie={4}>{t('Site_Url')}</Box>
+					{hasCopiedSiteURL ? (
 						<IconButton success icon='check' mini />
 					) : (
-						<IconButton title={t('Copy')} icon='clipboard' mini onClick={() => copyRootURL()} />
+						<IconButton title={t('Copy')} icon='clipboard' mini onClick={() => copySiteURL()} />
 					)}
 				</Box>
 				<Box withTruncatedText fontScale='p2'>
-					https://your-rocketchat-url.com
+					{siteURL}
 				</Box>
 			</Box>
 			<Box>
 				<Box display='flex'>
-					<Box mie={4}>Hashed root URL</Box>
+					<Box mie={4}>{t('Hashed_Site_Url')}</Box>
 					{hasCopiedHashed ? (
 						<IconButton success icon='check' mini />
 					) : (
@@ -39,16 +43,15 @@ const PlanCardControls = () => {
 					)}
 				</Box>
 				<Box withTruncatedText fontScale='p2'>
-					738cb578f75b195353fa57f6ff547b64af77cf24572e10...
+					{hashedSiteURL}
 				</Box>
 			</Box>
-
 			<Box>
 				<Box display='flex'>
-					<Box mie={4}>License key</Box>
+					<Box mie={4}>{t('License_key')}</Box>
 					{enterpriseLicense && (
 						<IconButton
-							title='Manage license'
+							title={t('Manage_license')}
 							icon='cog'
 							mini
 							onClick={() => setModal(<ManageLicenseModal enterpriseLicense={enterpriseLicense} onCancel={() => setModal(null)} />)}
@@ -63,7 +66,7 @@ const PlanCardControls = () => {
 					<ActionLink
 						onClick={() => setModal(<ManageLicenseModal enterpriseLicense={enterpriseLicense} onCancel={() => setModal(null)} />)}
 					>
-						Add license
+						{t('Add_license')}
 					</ActionLink>
 				)}
 			</Box>
