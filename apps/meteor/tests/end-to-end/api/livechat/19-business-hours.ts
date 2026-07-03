@@ -25,7 +25,7 @@ import {
 	deleteDepartment,
 } from '../../../data/livechat/department';
 import { createAgent, createManager, makeAgentAvailable } from '../../../data/livechat/rooms';
-import { removeAgent } from '../../../data/livechat/users';
+import { createAnOnlineAgent, removeAgent } from '../../../data/livechat/users';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updateSetting, updateEESetting } from '../../../data/permissions.helper';
 import { password } from '../../../data/user';
 import type { TestUser } from '../../../data/users.helper';
@@ -803,17 +803,41 @@ describe('LIVECHAT - business hours', () => {
 				true,
 			);
 
+			// control agent: belongs only to the first department and is removed in the same request as the
+			// overlapping agent, so both are processed by the same recomputation callback. Observing the control
+			// agent fall back to the default business hour proves that callback ran — only then is asserting the
+			// overlapping agent's unchanged state meaningful (it equals the pre-removal state, so it can't
+			// distinguish "correctly kept" from "callback never ran" on its own)
+			const controlAgent = await createAnOnlineAgent();
 			await addOrRemoveAgentFromDepartment(
 				deptLinkedToCustomBH._id,
 				{
-					agentId: agentLinkedToDept.user._id,
-					username: agentLinkedToDept.user.username || '',
+					agentId: controlAgent.user._id,
+					username: controlAgent.user.username || '',
 				},
-				false,
+				true,
 			);
 
-			// state must not change; give the async callback time to run before asserting
-			await sleep(2000);
+			const overlappingBefore = await waitForAgentBusinessHours(agentLinkedToDept.credentials, [customBusinessHour._id]);
+			expect(overlappingBefore).to.be.an('array').of.length(1);
+			const controlBefore = await waitForAgentBusinessHours(controlAgent.credentials, [customBusinessHour._id]);
+			expect(controlBefore).to.be.an('array').of.length(1);
+
+			await request
+				.post(api(`livechat/department/${deptLinkedToCustomBH._id}/agents`))
+				.set(credentials)
+				.send({
+					upsert: [],
+					remove: [
+						{ agentId: agentLinkedToDept.user._id, username: agentLinkedToDept.user.username || '' },
+						{ agentId: controlAgent.user._id, username: controlAgent.user.username || '' },
+					],
+				})
+				.expect(200);
+
+			const controlOpenBusinessHours = await waitForAgentBusinessHours(controlAgent.credentials, [defaultBusinessHour._id]);
+			expect(controlOpenBusinessHours).to.be.an('array').of.length(1);
+			expect(controlOpenBusinessHours?.[0]).to.be.equal(defaultBusinessHour._id);
 
 			const latestAgent: ILivechatAgent = await getMe(agentLinkedToDept.credentials);
 			expect(latestAgent.openBusinessHours).to.be.an('array').of.length(1);
@@ -821,6 +845,7 @@ describe('LIVECHAT - business hours', () => {
 
 			await deleteDepartment(department._id);
 			await deleteUser(agent.user);
+			await deleteUser(controlAgent.user);
 		});
 
 		afterEach(async () => {
