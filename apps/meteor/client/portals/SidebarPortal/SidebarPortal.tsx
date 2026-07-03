@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { memo } from 'react';
 import { createPortal } from 'react-dom';
 
-type SidebarPortalProps = {
+export type SidebarPortalProps = {
 	children?: ReactNode;
 };
 
