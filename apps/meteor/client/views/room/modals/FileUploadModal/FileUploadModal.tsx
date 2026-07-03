@@ -28,7 +28,7 @@ import FilePreview from './FilePreview';
 import { fileUploadIsValidContentType } from '../../../../../app/utils/client/restrictions';
 import { getMimeTypeFromFileName } from '../../../../../app/utils/lib/mimeTypes';
 
-type FileUploadModalProps = {
+export type FileUploadModalProps = {
 	onClose: () => void;
 	onSubmit: (name: string, altText?: string) => void;
 	file: File;
