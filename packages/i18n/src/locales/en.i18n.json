@@ -2467,7 +2467,7 @@
   "For_your_security_you_must_enter_your_current_password_to_continue": "For your security, you must enter your current password to continue",
   "Force_Disable_OpLog_For_Cache": "Force Disable OpLog for Cache",
   "Force_Disable_OpLog_For_Cache_Description": "Will not use OpLog to sync cache even when it's available",
-  "Force_Encryption_For_Private_Rooms": "Force End-to-End Encryption (E2EE) on Private Rooms",
+  "Force_Encryption_For_Private_Rooms": "Force end-to-end encryption on private rooms",
   "Force_Encryption_For_Private_Rooms_Description": "When enabled, all newly created private rooms will be encrypted by default, and users will not be able to disable encryption for them.",
   "Force_SSL": "Force SSL",
   "Force_SSL_Description": "*Caution!* _Force SSL_ should never be used with reverse proxy. If you have a reverse proxy, you should do the redirect THERE. This option exists for deployments like Heroku, that does not allow the redirect configuration at the reverse proxy.",
