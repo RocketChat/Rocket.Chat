@@ -21,7 +21,7 @@ import RoomFilesListWrapper from './RoomFilesListWrapper';
 import FileItem from './components/FileItem';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 
-type RoomFilesProps = {
+export type RoomFilesProps = {
 	rid: IRoom['_id'];
 	isPending: boolean;
 	isSuccess: boolean;
