@@ -3,7 +3,7 @@ import { faker } from '@faker-js/faker';
 import { Users } from './fixtures/userStates';
 import { HomeTeam } from './page-objects';
 import { CreateNewTeamModal, CreateNewChannelModal } from './page-objects/fragments/modals';
-import { createTargetChannel, deleteTeam, isChannelMember } from './utils';
+import { createTargetChannel, deleteTeam, isChannelMember, updatePermissions } from './utils';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -18,16 +18,14 @@ test.describe('teams-management-permissions', () => {
 	});
 
 	test.afterEach(async ({ api }) => {
-		await api.post('/permissions.update', {
-			permissions: [
-				{ _id: 'create-p', roles: ['admin', 'owner', 'moderator'] },
-				{ _id: 'create-c', roles: ['admin', 'owner', 'moderator'] },
-			],
-		});
+		await updatePermissions(api, [
+			{ _id: 'create-p', roles: ['admin', 'owner', 'moderator'] },
+			{ _id: 'create-c', roles: ['admin', 'owner', 'moderator'] },
+		]);
 	});
 
 	test('should not allow to create public team if user does not have the create-c permission', async ({ page, api }) => {
-		await expect(await api.post('/permissions.update', { permissions: [{ _id: 'create-c', roles: [] }] })).toBeOK();
+		await updatePermissions(api, [{ _id: 'create-c', roles: [] }]);
 		await page.goto('/home');
 		await poHomeTeam.waitForHome();
 
@@ -38,7 +36,7 @@ test.describe('teams-management-permissions', () => {
 	});
 
 	test('should not allow to create private team if user does not have the create-p permission', async ({ page, api }) => {
-		await expect(await api.post('/permissions.update', { permissions: [{ _id: 'create-p', roles: [] }] })).toBeOK();
+		await updatePermissions(api, [{ _id: 'create-p', roles: [] }]);
 		await page.goto('/home');
 		await poHomeTeam.waitForHome();
 
@@ -49,14 +47,10 @@ test.describe('teams-management-permissions', () => {
 	});
 
 	test('should not allow to create team if user does not have both create-p and create-c permissions', async ({ page, api }) => {
-		await expect(
-			await api.post('/permissions.update', {
-				permissions: [
-					{ _id: 'create-p', roles: [] },
-					{ _id: 'create-c', roles: [] },
-				],
-			}),
-		).toBeOK();
+		await updatePermissions(api, [
+			{ _id: 'create-p', roles: [] },
+			{ _id: 'create-c', roles: [] },
+		]);
 		await page.goto('/home');
 		await poHomeTeam.waitForHome();
 
@@ -83,17 +77,16 @@ test.describe.serial('teams-management', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await api.post('/permissions.update', {
-			permissions: [
-				{ _id: 'move-room-to-team', roles: ['admin', 'owner', 'moderator'] },
-				{ _id: 'create-team-channel', roles: ['admin', 'owner', 'moderator'] },
-				{ _id: 'create-team-group', roles: ['admin', 'owner', 'moderator'] },
-				{ _id: 'create-c', roles: ['admin', 'owner', 'moderator'] },
-				{ _id: 'create-p', roles: ['admin', 'owner', 'moderator'] },
-				{ _id: 'delete-team-channel', roles: ['admin', 'owner', 'moderator'] },
-				{ _id: 'delete-team-group', roles: ['admin', 'owner', 'moderator'] },
-			],
-		});
+		await updatePermissions(api, [
+			{ _id: 'move-room-to-team', roles: ['admin', 'owner', 'moderator'] },
+			{ _id: 'create-team-channel', roles: ['admin', 'owner', 'moderator'] },
+			{ _id: 'create-team-group', roles: ['admin', 'owner', 'moderator'] },
+			{ _id: 'create-c', roles: ['admin', 'owner', 'moderator'] },
+			{ _id: 'create-p', roles: ['admin', 'owner', 'moderator'] },
+			{ _id: 'remove-team-channel', roles: ['admin', 'owner', 'moderator'] },
+			{ _id: 'delete-team-channel', roles: ['admin', 'owner', 'moderator'] },
+			{ _id: 'delete-team-group', roles: ['admin', 'owner', 'moderator'] },
+		]);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -157,98 +150,92 @@ test.describe.serial('teams-management', () => {
 		await expect(poHomeTeam.content.getSystemMessageByText('set room to read only')).toBeVisible();
 	});
 
-	test('should not allow moving room to team if move-room-to-team permission has not been granted', async ({ api }) => {
-		expect((await api.post('/permissions.update', { permissions: [{ _id: 'move-room-to-team', roles: ['moderator'] }] })).status()).toBe(
-			200,
-		);
+	test.describe('without move-room-to-team permission', () => {
+		test.beforeAll(async ({ api }) => {
+			await updatePermissions(api, [{ _id: 'move-room-to-team', roles: ['moderator'] }]);
+		});
 
-		await poHomeTeam.navbar.openChat(targetTeam);
-		await poHomeTeam.headerToolbar.openTeamChannels();
-		await expect(poHomeTeam.tabs.channels.btnAddExisting).not.toBeVisible();
+		test('should not allow moving room to team if move-room-to-team permission has not been granted', async () => {
+			await poHomeTeam.navbar.openChat(targetTeam);
+			await poHomeTeam.headerToolbar.openTeamChannels();
+			await expect(poHomeTeam.tabs.channels.btnAddExisting).not.toBeVisible();
+		});
 	});
 
-	test('should not allow creating a room in a team if both create-team-channel and create-team-group permissions have not been granted', async ({
-		api,
-	}) => {
-		expect(
-			(
-				await api.post('/permissions.update', {
-					permissions: [
-						{ _id: 'create-team-channel', roles: ['moderator'] },
-						{ _id: 'create-team-group', roles: ['moderator'] },
-					],
-				})
-			).status(),
-		).toBe(200);
+	test.describe('without create-team-channel and create-team-group permissions', () => {
+		test.beforeAll(async ({ api }) => {
+			await updatePermissions(api, [
+				{ _id: 'create-team-channel', roles: ['moderator'] },
+				{ _id: 'create-team-group', roles: ['moderator'] },
+			]);
+		});
 
-		await poHomeTeam.navbar.openChat(targetTeam);
-		await poHomeTeam.headerToolbar.openTeamChannels();
-		await expect(poHomeTeam.tabs.channels.btnCreateNew).not.toBeVisible();
+		test('should not allow creating a room in a team if both create-team-channel and create-team-group permissions have not been granted', async () => {
+			await poHomeTeam.navbar.openChat(targetTeam);
+			await poHomeTeam.headerToolbar.openTeamChannels();
+			await expect(poHomeTeam.tabs.channels.btnCreateNew).not.toBeVisible();
+		});
 	});
 
-	test('should allow creating a channel in a team if user has the create-team-channel permission, but not the create-team-group permission', async ({
-		api,
-	}) => {
-		expect(
-			(
-				await api.post('/permissions.update', {
-					permissions: [
-						{ _id: 'create-team-channel', roles: ['admin'] },
-						{ _id: 'create-team-group', roles: ['moderator'] },
-					],
-				})
-			).status(),
-		).toBe(200);
+	test.describe('with create-team-channel permission only', () => {
+		test.beforeAll(async ({ api }) => {
+			await updatePermissions(api, [
+				{ _id: 'create-team-channel', roles: ['admin'] },
+				{ _id: 'create-team-group', roles: ['moderator'] },
+			]);
+		});
 
-		await poHomeTeam.navbar.openChat(targetTeam);
-		await poHomeTeam.headerToolbar.openTeamChannels();
-		await expect(poHomeTeam.tabs.channels.btnCreateNew).toBeVisible();
-		await poHomeTeam.tabs.channels.btnCreateNew.click();
+		test('should allow creating a channel in a team if user has the create-team-channel permission, but not the create-team-group permission', async () => {
+			await poHomeTeam.navbar.openChat(targetTeam);
+			await poHomeTeam.headerToolbar.openTeamChannels();
+			await expect(poHomeTeam.tabs.channels.btnCreateNew).toBeVisible();
+			await poHomeTeam.tabs.channels.btnCreateNew.click();
 
-		await newChannelModal.inputName.fill(targetChannelNameInTeam);
-		await expect(newChannelModal.checkboxPrivate).not.toBeChecked();
-		await expect(newChannelModal.checkboxPrivate).toBeDisabled();
-		await newChannelModal.btnCreate.click();
+			await newChannelModal.inputName.fill(targetChannelNameInTeam);
+			await expect(newChannelModal.checkboxPrivate).not.toBeChecked();
+			await expect(newChannelModal.checkboxPrivate).toBeDisabled();
+			await newChannelModal.btnCreate.click();
 
-		await expect(poHomeTeam.tabs.channels.channelsList).toContainText(targetChannelNameInTeam);
+			await expect(poHomeTeam.tabs.channels.channelsList).toContainText(targetChannelNameInTeam);
+		});
 	});
 
-	test('should allow creating a group in a team if user has the create-team-group permission, but not the create-team-channel permission', async ({
-		api,
-	}) => {
-		expect(
-			(
-				await api.post('/permissions.update', {
-					permissions: [
-						{ _id: 'create-team-group', roles: ['admin'] },
-						{ _id: 'create-team-channel', roles: ['moderator'] },
-					],
-				})
-			).status(),
-		).toBe(200);
+	test.describe('with create-team-group permission only', () => {
+		test.beforeAll(async ({ api }) => {
+			await updatePermissions(api, [
+				{ _id: 'create-team-group', roles: ['admin'] },
+				{ _id: 'create-team-channel', roles: ['moderator'] },
+			]);
+		});
 
-		await poHomeTeam.navbar.openChat(targetTeam);
-		await poHomeTeam.headerToolbar.openTeamChannels();
-		await expect(poHomeTeam.tabs.channels.btnCreateNew).toBeVisible();
-		await poHomeTeam.tabs.channels.btnCreateNew.click();
+		test('should allow creating a group in a team if user has the create-team-group permission, but not the create-team-channel permission', async () => {
+			await poHomeTeam.navbar.openChat(targetTeam);
+			await poHomeTeam.headerToolbar.openTeamChannels();
+			await expect(poHomeTeam.tabs.channels.btnCreateNew).toBeVisible();
+			await poHomeTeam.tabs.channels.btnCreateNew.click();
 
-		await newChannelModal.inputName.fill(targetGroupNameInTeam);
-		const { checkboxPrivate } = newChannelModal;
-		await expect(checkboxPrivate).toBeChecked();
-		await expect(checkboxPrivate).toBeDisabled();
-		await newChannelModal.btnCreate.click();
+			await newChannelModal.inputName.fill(targetGroupNameInTeam);
+			const { checkboxPrivate } = newChannelModal;
+			await expect(checkboxPrivate).toBeChecked();
+			await expect(checkboxPrivate).toBeDisabled();
+			await newChannelModal.btnCreate.click();
 
-		await expect(poHomeTeam.tabs.channels.channelsList).toContainText(targetGroupNameInTeam);
+			await expect(poHomeTeam.tabs.channels.channelsList).toContainText(targetGroupNameInTeam);
+		});
 	});
 
-	test('should move targetChannel to targetTeam', async ({ api }) => {
-		expect((await api.post('/permissions.update', { permissions: [{ _id: 'move-room-to-team', roles: ['owner'] }] })).status()).toBe(200);
+	test.describe('with move-room-to-team permission', () => {
+		test.beforeAll(async ({ api }) => {
+			await updatePermissions(api, [{ _id: 'move-room-to-team', roles: ['owner'] }]);
+		});
 
-		await poHomeTeam.navbar.openChat(targetTeam);
-		await poHomeTeam.headerToolbar.openTeamChannels();
-		await poHomeTeam.tabs.channels.addExistingChannel(targetChannel);
+		test('should move targetChannel to targetTeam', async () => {
+			await poHomeTeam.navbar.openChat(targetTeam);
+			await poHomeTeam.headerToolbar.openTeamChannels();
+			await poHomeTeam.tabs.channels.addExistingChannel(targetChannel);
 
-		await expect(poHomeTeam.tabs.channels.channelsList).toContainText(targetChannel);
+			await expect(poHomeTeam.tabs.channels.channelsList).toContainText(targetChannel);
+		});
 	});
 
 	test('should access team channel through targetTeam header', async ({ page }) => {
@@ -261,158 +248,172 @@ test.describe.serial('teams-management', () => {
 		await expect(page).toHaveURL(`/group/${targetTeam}`);
 	});
 
-	test('should not allow removing a targetGroup from targetTeam if user does not have the remove-team-channel permission', async ({
-		page,
-		api,
-	}) => {
-		expect((await api.post('/permissions.update', { permissions: [{ _id: 'remove-team-channel', roles: ['moderator'] }] })).status()).toBe(
-			200,
-		);
+	test.describe('without remove-team-channel permission for groups', () => {
+		test.beforeAll(async ({ api }) => {
+			await updatePermissions(api, [{ _id: 'remove-team-channel', roles: ['moderator'] }]);
+		});
 
-		await poHomeTeam.navbar.openChat(targetTeam);
-		await poHomeTeam.headerToolbar.openTeamChannels();
-		await poHomeTeam.tabs.channels.openChannelOptionMoreActions(targetGroupNameInTeam);
-		await expect(page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Remove from team' })).not.toBeVisible();
+		test('should not allow removing a targetGroup from targetTeam if user does not have the remove-team-channel permission', async ({
+			page,
+		}) => {
+			await poHomeTeam.navbar.openChat(targetTeam);
+			await poHomeTeam.headerToolbar.openTeamChannels();
+			await poHomeTeam.tabs.channels.openChannelOptionMoreActions(targetGroupNameInTeam);
+			await expect(page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Remove from team' })).not.toBeVisible();
+		});
 	});
 
-	test('should allow removing a targetGroup from targetTeam if user has the remove-team-channel permission', async ({ page, api }) => {
-		expect((await api.post('/permissions.update', { permissions: [{ _id: 'remove-team-channel', roles: ['owner'] }] })).status()).toBe(200);
+	test.describe('with remove-team-channel permission for groups', () => {
+		test.beforeAll(async ({ api }) => {
+			await updatePermissions(api, [{ _id: 'remove-team-channel', roles: ['owner'] }]);
+		});
 
-		await poHomeTeam.navbar.openChat(targetTeam);
-		await poHomeTeam.headerToolbar.openTeamChannels();
-		await poHomeTeam.tabs.channels.openChannelOptionMoreActions(targetGroupNameInTeam);
-		await expect(page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Remove from team' })).toBeVisible();
-		await page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Remove from team' }).click();
-		await poHomeTeam.tabs.channels.confirmRemoveChannel();
+		test('should allow removing a targetGroup from targetTeam if user has the remove-team-channel permission', async ({ page }) => {
+			await poHomeTeam.navbar.openChat(targetTeam);
+			await poHomeTeam.headerToolbar.openTeamChannels();
+			await poHomeTeam.tabs.channels.openChannelOptionMoreActions(targetGroupNameInTeam);
+			await expect(page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Remove from team' })).toBeVisible();
+			await page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Remove from team' }).click();
+			await poHomeTeam.tabs.channels.confirmRemoveChannel();
 
-		await expect(poHomeTeam.tabs.channels.channelsList).not.toContainText(targetGroupNameInTeam);
+			await expect(poHomeTeam.tabs.channels.channelsList).not.toContainText(targetGroupNameInTeam);
+		});
 	});
 
-	test('should not allow deleting a targetGroup from targetTeam if the group owner does not have the delete-team-group permission', async ({
-		page,
-		api,
-	}) => {
-		expect(
-			(
-				await api.post('/permissions.update', {
-					permissions: [
-						{ _id: 'delete-team-group', roles: ['moderator'] },
-						{ _id: 'move-room-to-team', roles: ['owner'] },
-					],
-				})
-			).status(),
-		).toBe(200);
+	test.describe('without delete-team-group permission', () => {
+		test.beforeAll(async ({ api }) => {
+			await updatePermissions(api, [
+				{ _id: 'delete-team-group', roles: ['moderator'] },
+				{ _id: 'move-room-to-team', roles: ['owner'] },
+			]);
+		});
 
-		// re-add channel to team
-		await poHomeTeam.navbar.openChat(targetTeam);
-		await poHomeTeam.headerToolbar.openTeamChannels();
-		await poHomeTeam.tabs.channels.addExistingChannel(targetGroupNameInTeam);
-		await expect(poHomeTeam.tabs.channels.channelsList).toContainText(targetGroupNameInTeam);
+		test('should not allow deleting a targetGroup from targetTeam if the group owner does not have the delete-team-group permission', async ({
+			page,
+		}) => {
+			// re-add channel to team
+			await poHomeTeam.navbar.openChat(targetTeam);
+			await poHomeTeam.headerToolbar.openTeamChannels();
+			await poHomeTeam.tabs.channels.addExistingChannel(targetGroupNameInTeam);
+			await expect(poHomeTeam.tabs.channels.channelsList).toContainText(targetGroupNameInTeam);
 
-		// try to delete group in team
-		await poHomeTeam.tabs.channels.openChannelOptionMoreActions(targetGroupNameInTeam);
-		await expect(page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Delete' })).not.toBeVisible();
+			// try to delete group in team
+			await poHomeTeam.tabs.channels.openChannelOptionMoreActions(targetGroupNameInTeam);
+			await expect(page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Delete' })).not.toBeVisible();
+		});
 	});
 
-	test('should allow deleting a targetGroup from targetTeam if the group owner also has the delete-team-group permission', async ({
-		page,
-		api,
-	}) => {
-		expect((await api.post('/permissions.update', { permissions: [{ _id: 'delete-team-group', roles: ['owner'] }] })).status()).toBe(200);
+	test.describe('with delete-team-group permission', () => {
+		test.beforeAll(async ({ api }) => {
+			await updatePermissions(api, [{ _id: 'delete-team-group', roles: ['owner'] }]);
+		});
 
-		await poHomeTeam.navbar.openChat(targetTeam);
-		await poHomeTeam.headerToolbar.openTeamChannels();
-		await poHomeTeam.tabs.channels.openChannelOptionMoreActions(targetGroupNameInTeam);
-		await expect(page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Delete' })).toBeVisible();
-		await page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Delete' }).click();
-		await poHomeTeam.tabs.channels.confirmDeleteRoom();
+		test('should allow deleting a targetGroup from targetTeam if the group owner also has the delete-team-group permission', async ({
+			page,
+		}) => {
+			await poHomeTeam.navbar.openChat(targetTeam);
+			await poHomeTeam.headerToolbar.openTeamChannels();
+			await poHomeTeam.tabs.channels.openChannelOptionMoreActions(targetGroupNameInTeam);
+			await expect(page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Delete' })).toBeVisible();
+			await page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Delete' }).click();
+			await poHomeTeam.tabs.channels.confirmDeleteRoom();
 
-		await poHomeTeam.navbar.openChat(targetTeam);
-		await poHomeTeam.headerToolbar.openTeamChannels();
-		await expect(poHomeTeam.tabs.channels.channelsList).not.toContainText(targetGroupNameInTeam);
+			await poHomeTeam.navbar.openChat(targetTeam);
+			await poHomeTeam.headerToolbar.openTeamChannels();
+			await expect(poHomeTeam.tabs.channels.channelsList).not.toContainText(targetGroupNameInTeam);
+		});
 	});
 
-	test('should not allow removing a targetChannel from targetTeam if user does not have the remove-team-channel permission', async ({
-		page,
-		api,
-	}) => {
-		expect((await api.post('/permissions.update', { permissions: [{ _id: 'remove-team-channel', roles: ['moderator'] }] })).status()).toBe(
-			200,
-		);
+	test.describe('without remove-team-channel permission for channels', () => {
+		test.beforeAll(async ({ api }) => {
+			await updatePermissions(api, [{ _id: 'remove-team-channel', roles: ['moderator'] }]);
+		});
 
-		await poHomeTeam.navbar.openChat(targetTeam);
-		await poHomeTeam.headerToolbar.openTeamChannels();
-		await poHomeTeam.tabs.channels.openChannelOptionMoreActions(targetChannelNameInTeam);
-		await expect(page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Remove from team' })).not.toBeVisible();
+		test('should not allow removing a targetChannel from targetTeam if user does not have the remove-team-channel permission', async ({
+			page,
+		}) => {
+			await poHomeTeam.navbar.openChat(targetTeam);
+			await poHomeTeam.headerToolbar.openTeamChannels();
+			await poHomeTeam.tabs.channels.openChannelOptionMoreActions(targetChannelNameInTeam);
+			await expect(page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Remove from team' })).not.toBeVisible();
+		});
 	});
 
-	test('should allow removing a targetChannel from targetTeam if user has the remove-team-channel permission', async ({ page, api }) => {
-		expect((await api.post('/permissions.update', { permissions: [{ _id: 'remove-team-channel', roles: ['owner'] }] })).status()).toBe(200);
+	test.describe('with remove-team-channel permission for channels', () => {
+		test.beforeAll(async ({ api }) => {
+			await updatePermissions(api, [{ _id: 'remove-team-channel', roles: ['owner'] }]);
+		});
 
-		await poHomeTeam.navbar.openChat(targetTeam);
-		await poHomeTeam.headerToolbar.openTeamChannels();
-		await poHomeTeam.tabs.channels.openChannelOptionMoreActions(targetChannelNameInTeam);
-		await expect(page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Remove from team' })).toBeVisible();
-		await page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Remove from team' }).click();
-		await poHomeTeam.tabs.channels.confirmRemoveChannel();
+		test('should allow removing a targetChannel from targetTeam if user has the remove-team-channel permission', async ({ page }) => {
+			await poHomeTeam.navbar.openChat(targetTeam);
+			await poHomeTeam.headerToolbar.openTeamChannels();
+			await poHomeTeam.tabs.channels.openChannelOptionMoreActions(targetChannelNameInTeam);
+			await expect(page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Remove from team' })).toBeVisible();
+			await page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Remove from team' }).click();
+			await poHomeTeam.tabs.channels.confirmRemoveChannel();
 
-		await expect(poHomeTeam.tabs.channels.channelsList).not.toContainText(targetChannelNameInTeam);
+			await expect(poHomeTeam.tabs.channels.channelsList).not.toContainText(targetChannelNameInTeam);
+		});
 	});
 
-	test('should not allow deleting a targetChannel from targetTeam if the channel owner does not have the delete-team-channel permission', async ({
-		page,
-		api,
-	}) => {
-		expect(
-			(
-				await api.post('/permissions.update', {
-					permissions: [
-						{ _id: 'delete-team-channel', roles: ['moderator'] },
-						{ _id: 'move-room-to-team', roles: ['owner'] },
-					],
-				})
-			).status(),
-		).toBe(200);
+	test.describe('without delete-team-channel permission', () => {
+		test.beforeAll(async ({ api }) => {
+			await updatePermissions(api, [
+				{ _id: 'delete-team-channel', roles: ['moderator'] },
+				{ _id: 'move-room-to-team', roles: ['owner'] },
+			]);
+		});
 
-		// re-add channel to team
-		await poHomeTeam.navbar.openChat(targetTeam);
-		await poHomeTeam.headerToolbar.openTeamChannels();
-		await poHomeTeam.tabs.channels.addExistingChannel(targetChannelNameInTeam);
-		await expect(poHomeTeam.tabs.channels.channelsList).toContainText(targetChannelNameInTeam);
+		test('should not allow deleting a targetChannel from targetTeam if the channel owner does not have the delete-team-channel permission', async ({
+			page,
+		}) => {
+			// re-add channel to team
+			await poHomeTeam.navbar.openChat(targetTeam);
+			await poHomeTeam.headerToolbar.openTeamChannels();
+			await poHomeTeam.tabs.channels.addExistingChannel(targetChannelNameInTeam);
+			await expect(poHomeTeam.tabs.channels.channelsList).toContainText(targetChannelNameInTeam);
 
-		// try to delete channel in team
-		await poHomeTeam.tabs.channels.openChannelOptionMoreActions(targetChannelNameInTeam);
-		await expect(page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Delete' })).not.toBeVisible();
+			// try to delete channel in team
+			await poHomeTeam.tabs.channels.openChannelOptionMoreActions(targetChannelNameInTeam);
+			await expect(page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Delete' })).not.toBeVisible();
+		});
 	});
 
-	test('should allow deleting a targetChannel from targetTeam if the channel owner also has the delete-team-channel permission', async ({
-		page,
-		api,
-	}) => {
-		expect((await api.post('/permissions.update', { permissions: [{ _id: 'delete-team-channel', roles: ['owner'] }] })).status()).toBe(200);
+	test.describe('with delete-team-channel permission', () => {
+		test.beforeAll(async ({ api }) => {
+			await updatePermissions(api, [{ _id: 'delete-team-channel', roles: ['owner'] }]);
+		});
 
-		await poHomeTeam.navbar.openChat(targetTeam);
-		await poHomeTeam.headerToolbar.openTeamChannels();
-		await poHomeTeam.tabs.channels.openChannelOptionMoreActions(targetChannelNameInTeam);
-		await expect(page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Delete' })).toBeVisible();
-		await page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Delete' }).click();
-		await poHomeTeam.tabs.channels.confirmDeleteRoom();
+		test('should allow deleting a targetChannel from targetTeam if the channel owner also has the delete-team-channel permission', async ({
+			page,
+		}) => {
+			await poHomeTeam.navbar.openChat(targetTeam);
+			await poHomeTeam.headerToolbar.openTeamChannels();
+			await poHomeTeam.tabs.channels.openChannelOptionMoreActions(targetChannelNameInTeam);
+			await expect(page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Delete' })).toBeVisible();
+			await page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Delete' }).click();
+			await poHomeTeam.tabs.channels.confirmDeleteRoom();
 
-		await poHomeTeam.navbar.openChat(targetTeam);
-		await poHomeTeam.headerToolbar.openTeamChannels();
-		await expect(poHomeTeam.tabs.channels.channelsList).not.toContainText(targetChannelNameInTeam);
+			await poHomeTeam.navbar.openChat(targetTeam);
+			await poHomeTeam.headerToolbar.openTeamChannels();
+			await expect(poHomeTeam.tabs.channels.channelsList).not.toContainText(targetChannelNameInTeam);
+		});
 	});
 
-	test('should remove targetChannel from targetTeam', async ({ page, api }) => {
-		expect((await api.post('/permissions.update', { permissions: [{ _id: 'remove-team-channel', roles: ['owner'] }] })).status()).toBe(200);
+	test.describe('with remove-team-channel permission for cleanup', () => {
+		test.beforeAll(async ({ api }) => {
+			await updatePermissions(api, [{ _id: 'remove-team-channel', roles: ['owner'] }]);
+		});
 
-		await poHomeTeam.navbar.openChat(targetTeam);
-		await poHomeTeam.headerToolbar.openTeamChannels();
-		await poHomeTeam.tabs.channels.openChannelOptionMoreActions(targetChannel);
-		await page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Remove from team' }).click();
-		await poHomeTeam.tabs.channels.confirmRemoveChannel();
+		test('should remove targetChannel from targetTeam', async ({ page }) => {
+			await poHomeTeam.navbar.openChat(targetTeam);
+			await poHomeTeam.headerToolbar.openTeamChannels();
+			await poHomeTeam.tabs.channels.openChannelOptionMoreActions(targetChannel);
+			await page.getByRole('menu', { exact: true }).getByRole('menuitem', { name: 'Remove from team' }).click();
+			await poHomeTeam.tabs.channels.confirmRemoveChannel();
 
-		await expect(poHomeTeam.tabs.channels.channelsList).not.toBeVisible();
+			await expect(poHomeTeam.tabs.channels.channelsList).not.toBeVisible();
+		});
 	});
 
 	test('should remove user1 from targetTeamNonPrivate', async () => {
