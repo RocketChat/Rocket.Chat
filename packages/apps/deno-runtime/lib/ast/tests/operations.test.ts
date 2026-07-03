@@ -33,7 +33,7 @@ import {
 	MethodDefinition,
 	ReturnStatement,
 	VariableDeclaration,
-} from '../../../acorn.d';
+} from 'acorn';
 import { assertNotEquals } from 'https://deno.land/std@0.203.0/assert/assert_not_equals.ts';
 
 describe('getFunctionIdentifier', () => {

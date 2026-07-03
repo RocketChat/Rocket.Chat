@@ -1,7 +1,11 @@
+import type { ILogEntry } from '@rocket.chat/apps-engine/definition/accessors/ILogEntry';
+import type { ILogger } from '@rocket.chat/apps-engine/definition/accessors/ILogger';
+import type { AppMethod } from '@rocket.chat/apps-engine/definition/metadata/AppMethod';
 import stackTrace from 'stack-trace';
+
 import { AppObjectRegistry } from '../AppObjectRegistry';
 
-export interface StackFrame {
+export interface IStackFrame {
 	getTypeName(): string;
 	getFunctionName(): string;
 	getMethodName(): string;
@@ -39,13 +43,15 @@ interface ILoggerStorageEntry {
 	_createdAt: Date;
 }
 
-export class Logger {
+export class Logger implements ILogger {
+	public method: `${AppMethod}`;
+
 	private entries: Array<Entry>;
+
 	private start: Date;
-	private method: string;
 
 	constructor(method: string) {
-		this.method = method;
+		this.method = method as `${AppMethod}`;
 		this.entries = [];
 		this.start = new Date();
 	}
@@ -98,7 +104,7 @@ export class Logger {
 		});
 	}
 
-	private getStack(stack: Array<StackFrame>): string {
+	private getStack(stack: Array<IStackFrame>): string {
 		let func = 'anonymous';
 
 		if (stack.length === 1) {
@@ -120,8 +126,24 @@ export class Logger {
 		return func;
 	}
 
-	private getTotalTime(): number {
+	public getTotalTime(): number {
 		return new Date().getTime() - this.start.getTime();
+	}
+
+	public getEntries(): Array<ILogEntry> {
+		return this.entries as Array<ILogEntry>;
+	}
+
+	public getMethod(): `${AppMethod}` {
+		return this.method;
+	}
+
+	public getStartTime(): Date {
+		return this.start;
+	}
+
+	public getEndTime(): Date {
+		return new Date();
 	}
 
 	public hasEntries(): boolean {

@@ -1,135 +1,54 @@
-if (!Deno.args.includes('--subprocess')) {
-	Deno.stderr.writeSync(
-		new TextEncoder().encode(`
+import { Buffer } from 'node:buffer';
+import { Socket } from 'node:net';
+import process from 'node:process';
+
+// Deno consumes the base as TypeScript source through the import map: ESM
+// imports honor the map (`@rocket.chat/apps/` → `../`), so bare specifiers and
+// `@rocket.chat/apps/*` resolve to allowed paths. Importing the compiled `dist`
+// instead would run the base as CommonJS, whose `require()` bypasses the import
+// map and falls back to node_modules — outside the subprocess read allowlist.
+import { stdoutTransport } from './lib/transports/stdoutTransport';
+import { setTransport } from './lib/messenger';
+
+import { setSandboxGlobals, setSandboxRequire } from './handlers/app/construct';
+import registerErrorListeners from './error-handlers';
+import { require } from './lib/require';
+import { startMainLoop } from './mainLoop';
+
+if (!process.argv.includes('--subprocess')) {
+	console.error(`
             This is a Deno wrapper for Rocket.Chat Apps. It is not meant to be executed stand-alone;
             It is instead meant to be executed as a subprocess by the Apps-Engine framework.
-       `),
-	);
-	Deno.exit(1001);
+	`);
+
+	process.exit(1);
 }
 
-import { JsonRpcError } from 'jsonrpc-lite';
-
-import * as Messenger from './lib/messenger';
-import { decoder } from './lib/codec';
-import { Logger } from './lib/logger';
-
-import slashcommandHandler from './handlers/slashcommand-handler';
-import videoConferenceHandler from './handlers/videoconference-handler';
-import apiHandler from './handlers/api-handler';
-import handleApp from './handlers/app/handler';
-import handleScheduler from './handlers/scheduler-handler';
-import registerErrorListeners from './error-handlers';
-import { sendMetrics } from './lib/metricsCollector';
-import outboundMessageHandler from './handlers/outboundcomms-handler';
-import { RequestContext } from './lib/requestContext';
-
-type Handlers = {
-	app: typeof handleApp;
-	api: typeof apiHandler;
-	slashcommand: typeof slashcommandHandler;
-	videoconference: typeof videoConferenceHandler;
-	outboundCommunication: typeof outboundMessageHandler;
-	scheduler: typeof handleScheduler;
-	ping: (request: RequestContext) => 'pong';
-};
-
-const COMMAND_PING = '_zPING';
-
-async function requestRouter({ type, payload }: Messenger.JsonRpcRequest): Promise<void> {
-	const methodHandlers: Handlers = {
-		app: handleApp,
-		api: apiHandler,
-		slashcommand: slashcommandHandler,
-		videoconference: videoConferenceHandler,
-		outboundCommunication: outboundMessageHandler,
-		scheduler: handleScheduler,
-		ping: (_request) => 'pong',
+function prepareEnvironment() {
+	// Deno does not behave equally to Node when it comes to piping content to a socket
+	// So we intervene here
+	const originalFinal = Socket.prototype._final;
+	// deno-lint-ignore no-explicit-any
+	Socket.prototype._final = function _final(cb: any) {
+		// Deno closes the readable stream in the Socket earlier than Node
+		// The exact reason for that is yet unknown, so we'll need to simply delay the execution
+		// which allows data to be read in a response
+		setTimeout(() => originalFinal.call(this, cb), 1);
 	};
-
-	// We're not handling notifications at the moment
-	if (type === 'notification') {
-		return Messenger.sendInvalidRequestError();
-	}
-
-	const { id, method } = payload;
-
-	const logger = new Logger(method);
-
-	const context: RequestContext = Object.assign(payload, {
-		context: { logger },
-	});
-
-	const [methodPrefix] = method.split(':') as [keyof Handlers];
-	const handler = methodHandlers[methodPrefix];
-
-	if (!handler) {
-		return Messenger.errorResponse(
-			{
-				error: { message: 'Method not found', code: -32601 },
-				id,
-			},
-			context,
-		);
-	}
-
-	const result = await handler(context);
-
-	if (result instanceof JsonRpcError) {
-		return Messenger.errorResponse({ id, error: result }, context);
-	}
-
-	return Messenger.successResponse({ id, result }, context);
 }
 
-function handleResponse(response: Messenger.JsonRpcResponse): void {
-	let event: Event;
+// This runtime communicates with the Apps-Engine host through stdout
+setTransport(stdoutTransport);
 
-	if (response.type === 'error') {
-		event = new ErrorEvent(`response:${response.payload.id}`, {
-			error: response.payload,
-		});
-	} else {
-		event = new CustomEvent(`response:${response.payload.id}`, {
-			detail: response.payload,
-		});
-	}
-
-	Messenger.RPCResponseObserver.dispatchEvent(event);
-}
-
-async function main() {
-	Messenger.sendNotification({ method: 'ready' });
-
-	for await (const message of decoder.decodeStream(Deno.stdin.readable)) {
-		try {
-			// Process PING command first as it is not JSON RPC
-			if (message === COMMAND_PING) {
-				void Messenger.pongResponse();
-				void sendMetrics();
-				continue;
-			}
-
-			const JSONRPCMessage = Messenger.parseMessage(message as Record<string, unknown>);
-
-			if (Messenger.isRequest(JSONRPCMessage)) {
-				void requestRouter(JSONRPCMessage);
-				continue;
-			}
-
-			if (Messenger.isResponse(JSONRPCMessage)) {
-				handleResponse(JSONRPCMessage);
-			}
-		} catch (error) {
-			if (Messenger.isErrorResponse(error)) {
-				await Messenger.errorResponse(error);
-			} else {
-				await Messenger.sendParseError();
-			}
-		}
-	}
-}
+// Deno's sandbox `require` is a createRequire shim that resolves compiled
+// apps-engine paths; the eval shell additionally needs a `Buffer` and a
+// shadowed `Deno` (→ undefined) bound by name.
+setSandboxRequire(require);
+setSandboxGlobals({ Buffer, Deno: undefined });
 
 registerErrorListeners();
 
-main();
+// Process-global side effect; doing it once at startup is cleaner than inside construct
+prepareEnvironment();
+
+startMainLoop();

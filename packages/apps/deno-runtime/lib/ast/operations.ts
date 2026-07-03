@@ -1,7 +1,5 @@
-// @deno-types="../../acorn.d.ts"
-import { AnyNode, AssignmentExpression, AwaitExpression, Expression, Function, Identifier, MethodDefinition, Property } from 'acorn';
-// @deno-types="../../acorn-walk.d.ts"
-import { FullAncestorWalkerCallback } from 'acorn-walk';
+import type { AnyNode, AssignmentExpression, AwaitExpression, Expression, Function, Identifier, MethodDefinition, Property } from 'acorn';
+import type { FullAncestorWalkerCallback } from 'acorn-walk';
 
 export type WalkerState = {
 	isModified: boolean;
@@ -104,10 +102,8 @@ export function buildFixModifiedFunctionsOperation(functionIdentifiers: Set<stri
 	return function _fixModifiedFunctionsOperation(node, state, ancestors) {
 		if (node.type !== 'CallExpression') return;
 
-		let isWrappable = false;
-
 		// This node is a simple call to a function, like `fn()`
-		isWrappable = node.callee.type === 'Identifier' && functionIdentifiers.has(node.callee.name);
+		let isWrappable = node.callee.type === 'Identifier' && functionIdentifiers.has(node.callee.name);
 
 		// This node is a call to an object property or instance method, like `obj.fn()`, but not computed like `obj[fn]()`
 		isWrappable ||= node.callee.type === 'MemberExpression' &&
@@ -139,7 +135,11 @@ export function buildFixModifiedFunctionsOperation(functionIdentifiers: Set<stri
 	};
 }
 
-export const checkReassignmentOfModifiedIdentifiers: FullAncestorWalkerCallback<WalkerState> = (node, { functionIdentifiers }, _ancestors) => {
+export const checkReassignmentOfModifiedIdentifiers: FullAncestorWalkerCallback<WalkerState> = (
+	node,
+	{ functionIdentifiers },
+	_ancestors,
+) => {
 	if (node.type === 'AssignmentExpression') {
 		if (node.operator !== '=') return;
 
@@ -176,8 +176,6 @@ export const checkReassignmentOfModifiedIdentifiers: FullAncestorWalkerCallback<
 		if (node.value?.type !== 'Identifier' || !functionIdentifiers.has(node.value.name)) return;
 
 		functionIdentifiers.add(node.key.name);
-
-		return;
 	}
 };
 

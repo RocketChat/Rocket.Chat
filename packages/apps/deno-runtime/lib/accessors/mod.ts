@@ -1,32 +1,41 @@
+import type { IApiExtend } from '@rocket.chat/apps-engine/definition/accessors/IApiExtend';
 import type { IAppAccessors } from '@rocket.chat/apps-engine/definition/accessors/IAppAccessors';
-import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api/IApiEndpointMetadata';
-import type { IEnvironmentWrite } from '@rocket.chat/apps-engine/definition/accessors/IEnvironmentWrite';
-import type { IEnvironmentRead } from '@rocket.chat/apps-engine/definition/accessors/IEnvironmentRead';
+import type { IConfigurationExtend } from '@rocket.chat/apps-engine/definition/accessors/IConfigurationExtend';
 import type { IConfigurationModify } from '@rocket.chat/apps-engine/definition/accessors/IConfigurationModify';
-import type { IRead } from '@rocket.chat/apps-engine/definition/accessors/IRead';
+import type { IEnvironmentRead } from '@rocket.chat/apps-engine/definition/accessors/IEnvironmentRead';
+import type { IEnvironmentWrite } from '@rocket.chat/apps-engine/definition/accessors/IEnvironmentWrite';
+import type { IHttp, IHttpExtend } from '@rocket.chat/apps-engine/definition/accessors/IHttp';
 import type { IModify } from '@rocket.chat/apps-engine/definition/accessors/IModify';
 import type { INotifier } from '@rocket.chat/apps-engine/definition/accessors/INotifier';
+import type { IOutboundCommunicationProviderExtend } from '@rocket.chat/apps-engine/definition/accessors/IOutboundCommunicationProviderExtend';
 import type { IPersistence } from '@rocket.chat/apps-engine/definition/accessors/IPersistence';
-import type { IHttp, IHttpExtend } from '@rocket.chat/apps-engine/definition/accessors/IHttp';
-import type { IConfigurationExtend } from '@rocket.chat/apps-engine/definition/accessors/IConfigurationExtend';
-import type { ISlashCommand } from '@rocket.chat/apps-engine/definition/slashcommands/ISlashCommand';
-import type { IProcessor } from '@rocket.chat/apps-engine/definition/scheduler/IProcessor';
+import type { IRead } from '@rocket.chat/apps-engine/definition/accessors/IRead';
+import type { ISchedulerExtend } from '@rocket.chat/apps-engine/definition/accessors/ISchedulerExtend';
+import type { ISlashCommandsExtend } from '@rocket.chat/apps-engine/definition/accessors/ISlashCommandsExtend';
+import type { ISlashCommandsModify } from '@rocket.chat/apps-engine/definition/accessors/ISlashCommandsModify';
+import type { IVideoConfProvidersExtend } from '@rocket.chat/apps-engine/definition/accessors/IVideoConfProvidersExtend';
 import type { IApi } from '@rocket.chat/apps-engine/definition/api/IApi';
-import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders/IVideoConfProvider';
+import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api/IApiEndpointMetadata';
 import type {
-	IOutboundPhoneMessageProvider,
 	IOutboundEmailMessageProvider,
+	IOutboundPhoneMessageProvider,
 } from '@rocket.chat/apps-engine/definition/outboundCommunication/IOutboundCommsProvider';
+import type { IProcessor } from '@rocket.chat/apps-engine/definition/scheduler/IProcessor';
+import type { ISlashCommand } from '@rocket.chat/apps-engine/definition/slashcommands/ISlashCommand';
+import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders/IVideoConfProvider';
 
-import { Http } from './http';
 import { HttpExtend } from './extenders/HttpExtender';
-import * as Messenger from '../messenger';
-import { AppObjectRegistry } from '../../AppObjectRegistry';
-import { ModifyCreator } from './modify/ModifyCreator';
-import { ModifyUpdater } from './modify/ModifyUpdater';
-import { ModifyExtender } from './modify/ModifyExtender';
-import { Notifier } from './notifier';
 import { formatErrorResponse } from './formatResponseErrorHandler';
+import { Http } from './http';
+import { AppObjectRegistry } from '../../AppObjectRegistry';
+import * as Messenger from '../messenger';
+import { ModifyCreator } from './modify/ModifyCreator';
+import { ModifyExtender } from './modify/ModifyExtender';
+import { ModifyUpdater } from './modify/ModifyUpdater';
+import { Notifier } from './notifier';
+
+/** Helper: extends T with an internal _proxy property used for delegation. */
+type WithProxy<T> = T & { _proxy: T };
 
 const httpMethods = ['get', 'post', 'put', 'delete', 'head', 'options', 'patch'] as const;
 
@@ -37,18 +46,31 @@ if (!AppObjectRegistry.has('apiEndpoints')) {
 
 export class AppAccessors {
 	private defaultAppAccessors?: IAppAccessors;
+
 	private environmentRead?: IEnvironmentRead;
+
 	private environmentWriter?: IEnvironmentWrite;
+
 	private configModifier?: IConfigurationModify;
+
 	private configExtender?: IConfigurationExtend;
+
 	private reader?: IRead;
+
 	private modifier?: IModify;
+
 	private persistence?: IPersistence;
+
 	private creator?: ModifyCreator;
+
 	private updater?: ModifyUpdater;
+
 	private extender?: ModifyExtender;
+
 	private httpExtend: IHttpExtend = new HttpExtend();
+
 	private http?: IHttp;
+
 	private notifier?: INotifier;
 
 	private proxify: <T>(namespace: string, overrides?: Record<string, (...args: unknown[]) => unknown>) => T;
@@ -58,28 +80,26 @@ export class AppAccessors {
 			new Proxy(
 				{ __kind: `accessor:${namespace}` },
 				{
-					get:
-						(_target: unknown, prop: string) =>
-						(...params: unknown[]) => {
-							// We don't want to send a request for this prop
-							if (prop === 'toJSON') {
-								return {};
-							}
+					get: (_target: unknown, prop: string) => (...params: unknown[]) => {
+						// We don't want to send a request for this prop
+						if (prop === 'toJSON') {
+							return {};
+						}
 
-							// If the prop is inteded to be overriden by the caller
-							if (prop in overrides) {
-								return overrides[prop].apply(undefined, params);
-							}
+						// If the prop is inteded to be overriden by the caller
+						if (prop in overrides) {
+							return overrides[prop].apply(undefined, params);
+						}
 
-							return senderFn({
-								method: `accessor:${namespace}:${prop}`,
-								params,
-							})
-								.then((response) => response.result)
-								.catch((err) => {
-									throw formatErrorResponse(err);
-								});
-						},
+						return senderFn({
+							method: `accessor:${namespace}:${prop}`,
+							params,
+						})
+							.then((response) => response.result)
+							.catch((err) => {
+								throw formatErrorResponse(err);
+							});
+					},
 				},
 			) as T;
 
@@ -116,23 +136,25 @@ export class AppAccessors {
 
 	public getConfigurationModify() {
 		if (!this.configModifier) {
+			const slashCommandsModify: WithProxy<ISlashCommandsModify> = {
+				_proxy: this.proxify('getConfigurationModify:slashCommands'),
+				modifySlashCommand(slashcommand: ISlashCommand) {
+					// Store the slashcommand instance to use when the Apps-Engine calls the slashcommand
+					AppObjectRegistry.set(`slashcommand:${slashcommand.command}`, slashcommand);
+
+					return this._proxy.modifySlashCommand(slashcommand);
+				},
+				disableSlashCommand(command: string) {
+					return this._proxy.disableSlashCommand(command);
+				},
+				enableSlashCommand(command: string) {
+					return this._proxy.enableSlashCommand(command);
+				},
+			};
+
 			this.configModifier = {
 				scheduler: this.proxify('getConfigurationModify:scheduler'),
-				slashCommands: {
-					_proxy: this.proxify('getConfigurationModify:slashCommands'),
-					modifySlashCommand(slashcommand: ISlashCommand) {
-						// Store the slashcommand instance to use when the Apps-Engine calls the slashcommand
-						AppObjectRegistry.set(`slashcommand:${slashcommand.command}`, slashcommand);
-
-						return this._proxy.modifySlashCommand(slashcommand);
-					},
-					disableSlashCommand(command: string) {
-						return this._proxy.disableSlashCommand(command);
-					},
-					enableSlashCommand(command: string) {
-						return this._proxy.enableSlashCommand(command);
-					},
-				},
+				slashCommands: slashCommandsModify,
 				serverSettings: this.proxify('getConfigurationModify:serverSettings'),
 			};
 		}
@@ -142,76 +164,86 @@ export class AppAccessors {
 
 	public getConfigurationExtend() {
 		if (!this.configExtender) {
-			const senderFn = this.senderFn;
+			const { senderFn } = this;
+
+			const apiExtend: WithProxy<IApiExtend> = {
+				_proxy: this.proxify('getConfigurationExtend:api'),
+				async provideApi(api: IApi) {
+					const apiEndpoints = AppObjectRegistry.get<IApiEndpointMetadata[]>('apiEndpoints')!;
+
+					api.endpoints.forEach((endpoint) => {
+						endpoint._availableMethods = httpMethods.filter((method) => typeof endpoint[method] === 'function');
+
+						// We need to keep a reference to the endpoint around for us to call the executor later
+						AppObjectRegistry.set(`api:${endpoint.path}`, endpoint);
+					});
+
+					const result = await this._proxy.provideApi(api);
+
+					// Let's call the listApis method to cache the info from the endpoints
+					// Also, since this is a side-effect, we do it async so we can return to the caller
+					senderFn({ method: 'accessor:api:listApis' })
+						.then((response) => apiEndpoints.push(...(response.result as IApiEndpointMetadata[])))
+						.catch((err) => err.error);
+
+					return result;
+				},
+			};
+
+			const schedulerExtend: WithProxy<ISchedulerExtend> = {
+				_proxy: this.proxify('getConfigurationExtend:scheduler'),
+				registerProcessors(processors: IProcessor[]) {
+					// Store the processor instance to use when the Apps-Engine calls the processor
+					processors.forEach((processor) => {
+						AppObjectRegistry.set(`scheduler:${processor.id}`, processor);
+					});
+
+					return this._proxy.registerProcessors(processors);
+				},
+			};
+
+			const videoConfProviders: WithProxy<IVideoConfProvidersExtend> = {
+				_proxy: this.proxify('getConfigurationExtend:videoConfProviders'),
+				provideVideoConfProvider(provider: IVideoConfProvider) {
+					// Store the videoConfProvider instance to use when the Apps-Engine calls the videoConfProvider
+					AppObjectRegistry.set(`videoConfProvider:${provider.name}`, provider);
+
+					return this._proxy.provideVideoConfProvider(provider);
+				},
+			};
+
+			const outboundCommunication: WithProxy<IOutboundCommunicationProviderExtend> = {
+				_proxy: this.proxify('getConfigurationExtend:outboundCommunication'),
+				registerEmailProvider(provider: IOutboundEmailMessageProvider) {
+					AppObjectRegistry.set(`outboundCommunication:${provider.name}-${provider.type}`, provider);
+					return this._proxy.registerEmailProvider(provider);
+				},
+				registerPhoneProvider(provider: IOutboundPhoneMessageProvider) {
+					AppObjectRegistry.set(`outboundCommunication:${provider.name}-${provider.type}`, provider);
+					return this._proxy.registerPhoneProvider(provider);
+				},
+			};
+
+			const slashCommandsExtend: WithProxy<ISlashCommandsExtend> = {
+				_proxy: this.proxify('getConfigurationExtend:slashCommands'),
+				provideSlashCommand(slashcommand: ISlashCommand) {
+					// Store the slashcommand instance to use when the Apps-Engine calls the slashcommand
+					AppObjectRegistry.set(`slashcommand:${slashcommand.command}`, slashcommand);
+
+					return this._proxy.provideSlashCommand(slashcommand);
+				},
+			};
 
 			this.configExtender = {
 				ui: this.proxify('getConfigurationExtend:ui'),
 				http: this.httpExtend,
 				settings: this.proxify('getConfigurationExtend:settings'),
 				externalComponents: this.proxify('getConfigurationExtend:externalComponents'),
-				api: {
-					_proxy: this.proxify('getConfigurationExtend:api'),
-					async provideApi(api: IApi) {
-						const apiEndpoints = AppObjectRegistry.get<IApiEndpointMetadata[]>('apiEndpoints')!;
-
-						api.endpoints.forEach((endpoint) => {
-							endpoint._availableMethods = httpMethods.filter((method) => typeof endpoint[method] === 'function');
-
-							// We need to keep a reference to the endpoint around for us to call the executor later
-							AppObjectRegistry.set(`api:${endpoint.path}`, endpoint);
-						});
-
-						const result = await this._proxy.provideApi(api);
-
-						// Let's call the listApis method to cache the info from the endpoints
-						// Also, since this is a side-effect, we do it async so we can return to the caller
-						senderFn({ method: 'accessor:api:listApis' })
-							.then((response) => apiEndpoints.push(...(response.result as IApiEndpointMetadata[])))
-							.catch((err) => err.error);
-
-						return result;
-					},
-				},
-				scheduler: {
-					_proxy: this.proxify('getConfigurationExtend:scheduler'),
-					registerProcessors(processors: IProcessor[]) {
-						// Store the processor instance to use when the Apps-Engine calls the processor
-						processors.forEach((processor) => {
-							AppObjectRegistry.set(`scheduler:${processor.id}`, processor);
-						});
-
-						return this._proxy.registerProcessors(processors);
-					},
-				},
-				videoConfProviders: {
-					_proxy: this.proxify('getConfigurationExtend:videoConfProviders'),
-					provideVideoConfProvider(provider: IVideoConfProvider) {
-						// Store the videoConfProvider instance to use when the Apps-Engine calls the videoConfProvider
-						AppObjectRegistry.set(`videoConfProvider:${provider.name}`, provider);
-
-						return this._proxy.provideVideoConfProvider(provider);
-					},
-				},
-				outboundCommunication: {
-					_proxy: this.proxify('getConfigurationExtend:outboundCommunication'),
-					registerEmailProvider(provider: IOutboundEmailMessageProvider) {
-						AppObjectRegistry.set(`outboundCommunication:${provider.name}-${provider.type}`, provider);
-						return this._proxy.registerEmailProvider(provider);
-					},
-					registerPhoneProvider(provider: IOutboundPhoneMessageProvider) {
-						AppObjectRegistry.set(`outboundCommunication:${provider.name}-${provider.type}`, provider);
-						return this._proxy.registerPhoneProvider(provider);
-					},
-				},
-				slashCommands: {
-					_proxy: this.proxify('getConfigurationExtend:slashCommands'),
-					provideSlashCommand(slashcommand: ISlashCommand) {
-						// Store the slashcommand instance to use when the Apps-Engine calls the slashcommand
-						AppObjectRegistry.set(`slashcommand:${slashcommand.command}`, slashcommand);
-
-						return this._proxy.provideSlashCommand(slashcommand);
-					},
-				},
+				api: apiExtend,
+				scheduler: schedulerExtend,
+				videoConfProviders,
+				outboundCommunication,
+				slashCommands: slashCommandsExtend,
 			};
 		}
 
