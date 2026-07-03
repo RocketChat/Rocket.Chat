@@ -33,7 +33,7 @@ type CreateDiscussionFormValues = {
 	topic: string;
 };
 
-type CreateDiscussionProps = {
+export type CreateDiscussionProps = {
 	parentMessageId?: IMessage['_id'];
 	encryptedParentRoom?: boolean;
 	onClose: () => void;
