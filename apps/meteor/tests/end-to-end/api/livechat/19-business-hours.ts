@@ -306,6 +306,62 @@ describe('LIVECHAT - business hours', () => {
 		});
 	});
 
+	// Scenario: A BH is linked to departments and gets re-saved with a smaller (or empty) department list
+	// Expected result: the removed departments lose the link (and their agents lose the BH),
+	// while the remaining departments stay linked
+	(IS_EE ? describe : describe.skip)('[EE][BH] On Business Hour departments removed via save', () => {
+		before(async () => {
+			await updateSetting('Livechat_business_hour_type', LivechatBusinessHourBehaviors.MULTIPLE);
+			// wait for the callbacks to be registered
+			await sleep(1000);
+		});
+
+		beforeEach(async () => {
+			await removeAllCustomBusinessHours();
+			await openOrCloseBusinessHour(await getDefaultBusinessHour(), false);
+		});
+
+		const resaveWithDepartments = async (businessHour: ILivechatBusinessHour, departmentsToApplyBusinessHour: string) => {
+			const { _updatedAt, ts, departments, ...cleanedBusinessHour } = businessHour;
+			await saveBusinessHour({
+				...cleanedBusinessHour,
+				timezoneName: businessHour.timezone.name,
+				timezone: businessHour.timezone.name,
+				workHours: getWorkHours(true),
+				daysOpen: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+				departmentsToApplyBusinessHour,
+			} as any);
+		};
+
+		it('should unlink only the removed departments when re-saving with a smaller department list', async () => {
+			const { department: keptDepartment, agent: keptAgent } = await createDepartmentWithAnOnlineAgent();
+			const { department: removedDepartment } = await createDepartmentWithAnOnlineAgent();
+			const customBusinessHour = await createCustomBusinessHour([keptDepartment._id, removedDepartment._id]);
+			await openOrCloseBusinessHour(customBusinessHour, true);
+
+			await resaveWithDepartments(customBusinessHour, keptDepartment._id);
+
+			const latestKeptDepartment = await getDepartmentById(keptDepartment._id);
+			expect(latestKeptDepartment.businessHourId).to.be.equal(customBusinessHour._id);
+			const latestRemovedDepartment = await getDepartmentById(removedDepartment._id);
+			expect(latestRemovedDepartment.businessHourId).to.be.undefined;
+
+			const latestKeptAgent = await getMe<ILivechatAgent>(keptAgent.credentials);
+			expect(latestKeptAgent.openBusinessHours).to.be.an('array').that.includes(customBusinessHour._id);
+		});
+
+		it('should unlink all departments when re-saving with an empty department list', async () => {
+			const { department } = await createDepartmentWithAnOnlineAgent();
+			const customBusinessHour = await createCustomBusinessHour([department._id]);
+			await openOrCloseBusinessHour(customBusinessHour, true);
+
+			await resaveWithDepartments(customBusinessHour, '');
+
+			const latestDepartment = await getDepartmentById(department._id);
+			expect(latestDepartment.businessHourId).to.be.undefined;
+		});
+	});
+
 	// Scenario: Assume we have a BH linked to a department, and we archive the department
 	// Expected result:
 	// 1) If BH is open and only linked to that department, it should be closed
