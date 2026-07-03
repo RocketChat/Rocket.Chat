@@ -2795,6 +2795,7 @@
   "Invalid_confirm_pass": "The password confirmation does not match password",
   "Invalid_email": "The email entered is invalid",
   "Invalid_field": "The field must not be empty",
+  "Invalid_JSON": "Invalid JSON",
   "Invalid_name": "The name must not be empty",
   "Invalid_URL": "Invalid URL",
   "Invalid_notification_setting_s": "Invalid notification setting: %s",
@@ -7281,5 +7282,6 @@
   "No_changes_to_save": "No changes to save",
   "Avatar_preview_updated": "Avatar preview updated",
   "Select_message_from_user": "Select message from {{username}}",
-  "Select_message_from_user_with_preview": "Select message from {{username}}: {{message}}"
+  "Select_message_from_user_with_preview": "Select message from {{username}}: {{message}}",
+  "current": "current"
 }

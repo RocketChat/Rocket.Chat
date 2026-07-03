@@ -4,8 +4,8 @@ import { parse, Program } from 'acorn';
 // @deno-types="../../acorn-walk.d.ts"
 import { fullAncestor } from 'acorn-walk';
 
-import * as operations from './operations.ts';
-import type { WalkerState } from './operations.ts';
+import * as operations from './operations';
+import type { WalkerState } from './operations';
 
 function fixAst(ast: Program): boolean {
 	const pendingOperations = [

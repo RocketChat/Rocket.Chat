@@ -62,6 +62,10 @@ export class Navbar {
 		return this.pagesGroup.getByRole('button', { name: 'Directory' });
 	}
 
+	get btnMarketplace(): Locator {
+		return this.pagesGroup.getByRole('button', { name: 'Marketplace' });
+	}
+
 	get btnMenuPages(): Locator {
 		return this.pagesGroup.getByRole('button', { name: 'Pages' });
 	}
@@ -72,6 +76,30 @@ export class Navbar {
 
 	get menuDisplay(): Locator {
 		return this.root.getByRole('menu', { name: 'Display' });
+	}
+
+	get groupDisplay(): Locator {
+		return this.menuDisplay.getByRole('group', { name: 'Display' });
+	}
+
+	getDisplayMenuItem(mode: 'Extended' | 'Medium' | 'Condensed' | 'Avatars'): Locator {
+		return this.groupDisplay.getByRole('menuitemcheckbox', { name: mode });
+	}
+
+	get groupSortBy(): Locator {
+		return this.menuDisplay.getByRole('group', { name: 'Sort by' });
+	}
+
+	getSortMenuItem(mode: 'Activity' | 'Name'): Locator {
+		return this.groupSortBy.getByRole('menuitemcheckbox', { name: mode });
+	}
+
+	get groupGroupBy(): Locator {
+		return this.menuDisplay.getByRole('group', { name: 'Group by' });
+	}
+
+	getGroupByMenuItem(mode: 'Unread' | 'Favorites' | 'Types'): Locator {
+		return this.groupGroupBy.getByRole('menuitemcheckbox', { name: mode });
 	}
 
 	get btnCreateNew(): Locator {

@@ -49,6 +49,7 @@ test.describe('video conference', () => {
 		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage('hello video conference');
 		await poHomeChannel.roomHeaderFavoriteBtn.focus();
+		await expect(poHomeChannel.roomHeaderFavoriteBtn).toBeFocused();
 
 		await test.step('opens video conference popup', async () => {
 			await page.keyboard.press('Tab');

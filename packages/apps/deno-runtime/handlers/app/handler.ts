@@ -1,21 +1,21 @@
 import { Defined, JsonRpcError } from 'jsonrpc-lite';
 
-import handleConstructApp from './construct.ts';
-import handleInitialize from './handleInitialize.ts';
-import handleGetStatus from './handleGetStatus.ts';
-import handleSetStatus from './handleSetStatus.ts';
-import handleOnEnable from './handleOnEnable.ts';
-import handleOnInstall from './handleOnInstall.ts';
-import handleOnDisable from './handleOnDisable.ts';
-import handleOnUninstall from './handleOnUninstall.ts';
-import handleOnPreSettingUpdate from './handleOnPreSettingUpdate.ts';
-import handleOnSettingUpdated from './handleOnSettingUpdated.ts';
-import handleOnUpdate from './handleOnUpdate.ts';
-import handleUploadEvents, { uploadEvents } from './handleUploadEvents.ts';
-import { isOneOf } from '../lib/assertions.ts';
-import handleListener from '../listener/handler.ts';
-import handleUIKitInteraction, { uikitInteractions } from '../uikit/handler.ts';
-import { RequestContext } from '../../lib/requestContext.ts';
+import handleConstructApp from './construct';
+import handleInitialize from './handleInitialize';
+import handleGetStatus from './handleGetStatus';
+import handleSetStatus from './handleSetStatus';
+import handleOnEnable from './handleOnEnable';
+import handleOnInstall from './handleOnInstall';
+import handleOnDisable from './handleOnDisable';
+import handleOnUninstall from './handleOnUninstall';
+import handleOnPreSettingUpdate from './handleOnPreSettingUpdate';
+import handleOnSettingUpdated from './handleOnSettingUpdated';
+import handleOnUpdate from './handleOnUpdate';
+import handleUploadEvents, { uploadEvents } from './handleUploadEvents';
+import { isOneOf } from '../lib/assertions';
+import handleListener from '../listener/handler';
+import handleUIKitInteraction, { uikitInteractions } from '../uikit/handler';
+import { RequestContext } from '../../lib/requestContext';
 
 export default async function handleApp(request: RequestContext): Promise<Defined | JsonRpcError> {
 	const { method } = request;

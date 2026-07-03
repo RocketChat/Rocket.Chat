@@ -1,4 +1,4 @@
-import { Tabs } from '@rocket.chat/fuselage';
+import { Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
@@ -38,38 +38,38 @@ const AppDetailsPageTabs = ({
 
 	return (
 		<Tabs>
-			<Tabs.Item onClick={() => handleTabClick('details')} selected={!tab || tab === 'details'}>
+			<TabsItem onClick={() => handleTabClick('details')} selected={!tab || tab === 'details'}>
 				{t('Details')}
-			</Tabs.Item>
+			</TabsItem>
 			{isAdminUser && context !== 'private' && (
-				<Tabs.Item onClick={() => handleTabClick('requests')} selected={tab === 'requests'}>
+				<TabsItem onClick={() => handleTabClick('requests')} selected={tab === 'requests'}>
 					{t('Requests')}
-				</Tabs.Item>
+				</TabsItem>
 			)}
 			{isSecurityVisible && (
-				<Tabs.Item onClick={() => handleTabClick('security')} selected={tab === 'security'}>
+				<TabsItem onClick={() => handleTabClick('security')} selected={tab === 'security'}>
 					{t('Security')}
-				</Tabs.Item>
+				</TabsItem>
 			)}
 			{context !== 'private' && (
-				<Tabs.Item onClick={() => handleTabClick('releases')} selected={tab === 'releases'}>
+				<TabsItem onClick={() => handleTabClick('releases')} selected={tab === 'releases'}>
 					{t('Releases')}
-				</Tabs.Item>
+				</TabsItem>
 			)}
 			{installed && Boolean(settings && Object.values(settings).length) && isAdminUser && (
-				<Tabs.Item onClick={() => handleTabClick('settings')} selected={tab === 'settings'}>
+				<TabsItem onClick={() => handleTabClick('settings')} selected={tab === 'settings'}>
 					{t('Settings')}
-				</Tabs.Item>
+				</TabsItem>
 			)}
 			{installed && isAdminUser && (
-				<Tabs.Item onClick={() => handleTabClick('logs')} selected={tab === 'logs'}>
+				<TabsItem onClick={() => handleTabClick('logs')} selected={tab === 'logs'}>
 					{t('Logs')}
-				</Tabs.Item>
+				</TabsItem>
 			)}
 			{hasCluster && installed && isAdminUser && (
-				<Tabs.Item onClick={() => handleTabClick('instances')} selected={tab === 'instances'}>
+				<TabsItem onClick={() => handleTabClick('instances')} selected={tab === 'instances'}>
 					{t('Instances')}
-				</Tabs.Item>
+				</TabsItem>
 			)}
 		</Tabs>
 	);

@@ -1,5 +1,5 @@
 import { writeAll } from '@std/io';
-import { Queue } from './messenger.ts';
+import { Queue } from './messenger';
 
 export function collectMetrics() {
 	return {

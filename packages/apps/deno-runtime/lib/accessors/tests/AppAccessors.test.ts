@@ -1,8 +1,8 @@
 import { afterAll, beforeEach, describe, it } from 'https://deno.land/std@0.203.0/testing/bdd.ts';
 import { assertEquals } from 'https://deno.land/std@0.203.0/assert/assert_equals.ts';
 
-import { AppAccessors } from '../mod.ts';
-import { AppObjectRegistry } from '../../../AppObjectRegistry.ts';
+import { AppAccessors } from '../mod';
+import { AppObjectRegistry } from '../../../AppObjectRegistry';
 
 describe('AppAccessors', () => {
 	let appAccessors: AppAccessors;

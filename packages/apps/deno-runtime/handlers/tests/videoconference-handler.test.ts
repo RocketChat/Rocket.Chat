@@ -4,9 +4,9 @@ import { beforeEach, describe, it } from 'https://deno.land/std@0.203.0/testing/
 import { spy } from 'https://deno.land/std@0.203.0/testing/mock.ts';
 import { JsonRpcError } from 'jsonrpc-lite';
 
-import { createMockRequest } from './helpers/mod.ts';
-import videoconfHandler from '../videoconference-handler.ts';
-import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
+import { createMockRequest } from './helpers/mod';
+import videoconfHandler from '../videoconference-handler';
+import { AppObjectRegistry } from '../../AppObjectRegistry';
 
 describe('handlers > videoconference', () => {
 	// deno-lint-ignore no-unused-vars

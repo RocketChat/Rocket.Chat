@@ -3,8 +3,8 @@ import { afterAll, beforeEach, describe, it } from 'https://deno.land/std@0.203.
 import { assertSpyCall, spy } from 'https://deno.land/std@0.203.0/testing/mock.ts';
 import { assert, assertEquals, assertNotInstanceOf, assertRejects } from 'https://deno.land/std@0.203.0/assert/mod.ts';
 
-import { AppObjectRegistry } from '../../../AppObjectRegistry.ts';
-import { ModifyCreator } from '../modify/ModifyCreator.ts';
+import { AppObjectRegistry } from '../../../AppObjectRegistry';
+import { ModifyCreator } from '../modify/ModifyCreator';
 
 describe('ModifyCreator', () => {
 	const senderFn = (r: any) =>

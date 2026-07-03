@@ -3,11 +3,11 @@ import { assertEquals, assertInstanceOf } from 'https://deno.land/std@0.203.0/as
 import { beforeEach, describe, it } from 'https://deno.land/std@0.203.0/testing/bdd.ts';
 import { spy } from 'https://deno.land/std@0.203.0/testing/mock.ts';
 
-import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
-import { AppAccessors } from '../../lib/accessors/mod.ts';
-import { handleExecutor, handlePreviewItem } from '../slashcommand-handler.ts';
-import { Room } from '../../lib/room.ts';
-import { createMockRequest } from './helpers/mod.ts';
+import { AppObjectRegistry } from '../../AppObjectRegistry';
+import { AppAccessors } from '../../lib/accessors/mod';
+import { handleExecutor, handlePreviewItem } from '../slashcommand-handler';
+import { Room } from '../../lib/room';
+import { createMockRequest } from './helpers/mod';
 
 describe('handlers > slashcommand', () => {
 	const mockAppAccessors = {
