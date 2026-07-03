@@ -2514,6 +2514,18 @@ describe('[Rooms]', () => {
 				})
 				.end(done);
 		});
+		it('should return the customFields of a private room', async () => {
+			const roomCustomFields = { department: 'engineering', priority: 'high' };
+
+			await request.post(api('rooms.saveRoomSettings')).set(credentials).send({ rid: testGroup._id, roomCustomFields }).expect(200);
+
+			const res = await request.get(api('rooms.adminRooms')).set(credentials).query({ filter: nameRoom }).expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.rooms).to.have.lengthOf(1);
+			expect(res.body.rooms[0]._id).to.equal(testGroup._id);
+			expect(res.body.rooms[0]).to.have.property('customFields').that.deep.equals(roomCustomFields);
+		});
 	});
 
 	describe('/rooms.adminRooms.privateRooms', () => {
@@ -2617,6 +2629,56 @@ describe('[Rooms]', () => {
 
 				expect(res.body).to.have.property('success', false);
 			});
+		});
+	});
+
+	describe('/rooms.adminRooms.getRoom', () => {
+		let roomOwner: TestUser<IUser>;
+		let ownerCredentials: Credentials;
+		let privateRoom: IRoom;
+		const roomCustomFields = { department: 'engineering', priority: 'high' };
+
+		before(async () => {
+			await updatePermission('view-room-administration', ['admin']);
+
+			roomOwner = await createUser();
+			ownerCredentials = await login(roomOwner.username, password);
+			privateRoom = (await createRoom({ type: 'p', name: `admin-getroom-${Date.now()}`, credentials: ownerCredentials })).body.group;
+
+			await request.post(api('rooms.saveRoomSettings')).set(credentials).send({ rid: privateRoom._id, roomCustomFields }).expect(200);
+		});
+
+		after(() =>
+			Promise.all([
+				deleteRoom({ type: 'p', roomId: privateRoom._id }),
+				deleteUser(roomOwner),
+				updatePermission('view-room-administration', ['admin']),
+			]),
+		);
+
+		it('should not expose the private room through groups.info to an admin that is not a member', async () => {
+			const res = await request.get(api('groups.info')).set(credentials).query({ roomId: privateRoom._id });
+
+			expect(res.body).to.have.property('success', false);
+		});
+
+		it('should return the private room customFields for an admin that is not a member', async () => {
+			const res = await request.get(api('rooms.adminRooms.getRoom')).set(credentials).query({ rid: privateRoom._id }).expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('_id', privateRoom._id);
+			expect(res.body).to.have.property('t', 'p');
+			expect(res.body).to.have.property('customFields').that.deep.equals(roomCustomFields);
+		});
+
+		it('should return an error for users without view-room-administration permission', async () => {
+			await updatePermission('view-room-administration', []);
+
+			const res = await request.get(api('rooms.adminRooms.getRoom')).set(credentials).query({ rid: privateRoom._id }).expect(400);
+
+			expect(res.body).to.have.property('success', false);
+
+			await updatePermission('view-room-administration', ['admin']);
 		});
 	});
 

@@ -228,6 +228,7 @@ export const createLdapSettings = () =>
 
 				await this.add('LDAP_DataSync_VariableMap', '{}', {
 					type: 'code',
+					code: 'application/json',
 					multiline: true,
 					enableQuery: [enableQuery, { _id: 'LDAP_DataSync_UseVariables', value: true }],
 					invalidValue: '{}',

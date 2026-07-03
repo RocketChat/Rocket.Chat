@@ -2,16 +2,10 @@ import type { IUserBuilder } from '@rocket.chat/apps-engine/definition/accessors
 import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
 import type { IUserSettings } from '@rocket.chat/apps-engine/definition/users/IUserSettings';
 import type { IUserEmail } from '@rocket.chat/apps-engine/definition/users/IUserEmail';
-import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
-
-import { require } from '../../../lib/require.ts';
-
-const { RocketChatAssociationModel } = require('@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.js') as {
-	RocketChatAssociationModel: typeof _RocketChatAssociationModel;
-};
+import { RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
 
 export class UserBuilder implements IUserBuilder {
-	public kind: _RocketChatAssociationModel.USER;
+	public kind: RocketChatAssociationModel.USER;
 
 	private user: Partial<IUser>;
 
@@ -64,7 +58,7 @@ export class UserBuilder implements IUserBuilder {
 	}
 
 	public getSettings(): Partial<IUserSettings> {
-		return this.user.settings;
+		return this.user.settings!;
 	}
 
 	public getUser(): Partial<IUser> {

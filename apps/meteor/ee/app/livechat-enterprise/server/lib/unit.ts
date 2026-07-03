@@ -2,8 +2,8 @@ import { LivechatUnit } from '@rocket.chat/models';
 import { getUnitsFromUser } from '@rocket.chat/omni-core-ee';
 import { Meteor } from 'meteor/meteor';
 
-import type { CheckUnitsFromUser } from '../../../../../app/livechat/server/api/lib/livechat';
-import { checkUnitsFromUser } from '../../../../../app/livechat/server/api/lib/livechat';
+import type { CheckUnitsFromUser } from '../../../../../server/api/v1/omnichannel/lib/livechat';
+import { checkUnitsFromUser } from '../../../../../server/api/v1/omnichannel/lib/livechat';
 
 checkUnitsFromUser.patch(async (_next, { businessUnit, userId }: CheckUnitsFromUser) => {
 	if (!businessUnit) {

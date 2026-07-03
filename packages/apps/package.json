@@ -17,7 +17,7 @@
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
 		"lint": "eslint .",
 		"test:deno": "deno task --config=deno-runtime/deno.jsonc test",
-		"test:node": "NODE_ENV=test node --require ts-node/register/transpile-only --test-reporter spec --test \"tests/**/*.test.ts\"",
+		"test:node": "NODE_ENV=test node --require ts-node/register/transpile-only --test-reporter spec --test-concurrency=1 --test \"tests/**/*.test.ts\"",
 		"testunit": "yarn test:node && yarn test:deno",
 		"typecheck": "tsc -p tsconfig.json --noEmit"
 	},
@@ -38,7 +38,6 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/tsconfig": "workspace:*",
-		"@seald-io/nedb": "^4.1.2",
 		"@types/adm-zip": "^0.5.7",
 		"@types/debug": "^4.1.12",
 		"@types/lodash.clonedeep": "^4.5.9",

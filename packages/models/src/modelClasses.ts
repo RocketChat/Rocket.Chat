@@ -48,6 +48,7 @@ export * from './models/PushToken';
 export * from './models/Reports';
 export * from './models/Roles';
 export * from './models/Rooms';
+export * from './models/SamlUsedAssertions';
 export * from './models/ServerEvents';
 export * from './models/Sessions';
 export * from './models/Settings';

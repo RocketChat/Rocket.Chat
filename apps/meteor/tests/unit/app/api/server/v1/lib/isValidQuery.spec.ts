@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 
-import { isValidQuery } from '../../../../../../../app/api/server/lib/isValidQuery';
+import { isValidQuery } from '../../../../../../../server/api/lib/isValidQuery';
 
 describe('isValidQuery', () => {
 	describe('shallow keys', () => {

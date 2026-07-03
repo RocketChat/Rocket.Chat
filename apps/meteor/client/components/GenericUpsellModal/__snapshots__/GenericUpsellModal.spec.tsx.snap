@@ -4,7 +4,7 @@ exports[`GenericUpsellModal renders Default without crashing 1`] = `
 <body>
   <div>
     <dialog
-      aria-labelledby=":r0:-title"
+      aria-labelledby="_r_0_-title"
       aria-modal="true"
       class="rcx-box rcx-box--full rcx-modal"
       open=""
@@ -28,7 +28,7 @@ exports[`GenericUpsellModal renders Default without crashing 1`] = `
               </div>
               <h2
                 class="rcx-box rcx-box--full rcx-modal__title"
-                id=":r0:-title"
+                id="_r_0_-title"
               >
                 This is the title
               </h2>
@@ -115,7 +115,7 @@ exports[`GenericUpsellModal renders WithAnnotation without crashing 1`] = `
 <body>
   <div>
     <dialog
-      aria-labelledby=":r1:-title"
+      aria-labelledby="_r_1_-title"
       aria-modal="true"
       class="rcx-box rcx-box--full rcx-modal"
       open=""
@@ -139,7 +139,7 @@ exports[`GenericUpsellModal renders WithAnnotation without crashing 1`] = `
               </div>
               <h2
                 class="rcx-box rcx-box--full rcx-modal__title"
-                id=":r1:-title"
+                id="_r_1_-title"
               >
                 This is the title
               </h2>
@@ -231,7 +231,7 @@ exports[`GenericUpsellModal renders WithCustomButtons without crashing 1`] = `
 <body>
   <div>
     <dialog
-      aria-labelledby=":r2:-title"
+      aria-labelledby="_r_2_-title"
       aria-modal="true"
       class="rcx-box rcx-box--full rcx-modal"
       open=""
@@ -255,7 +255,7 @@ exports[`GenericUpsellModal renders WithCustomButtons without crashing 1`] = `
               </div>
               <h2
                 class="rcx-box rcx-box--full rcx-modal__title"
-                id=":r2:-title"
+                id="_r_2_-title"
               >
                 This is the title
               </h2>
@@ -342,7 +342,7 @@ exports[`GenericUpsellModal renders WithCustomTagLine without crashing 1`] = `
 <body>
   <div>
     <dialog
-      aria-labelledby=":r3:-title"
+      aria-labelledby="_r_3_-title"
       aria-modal="true"
       class="rcx-box rcx-box--full rcx-modal"
       open=""
@@ -366,7 +366,7 @@ exports[`GenericUpsellModal renders WithCustomTagLine without crashing 1`] = `
               </div>
               <h2
                 class="rcx-box rcx-box--full rcx-modal__title"
-                id=":r3:-title"
+                id="_r_3_-title"
               >
                 This is the title
               </h2>
@@ -453,7 +453,7 @@ exports[`GenericUpsellModal renders WithFixedWidthAndHeight without crashing 1`]
 <body>
   <div>
     <dialog
-      aria-labelledby=":r4:-title"
+      aria-labelledby="_r_4_-title"
       aria-modal="true"
       class="rcx-box rcx-box--full rcx-modal"
       open=""
@@ -477,7 +477,7 @@ exports[`GenericUpsellModal renders WithFixedWidthAndHeight without crashing 1`]
               </div>
               <h2
                 class="rcx-box rcx-box--full rcx-modal__title"
-                id=":r4:-title"
+                id="_r_4_-title"
               >
                 This is the title
               </h2>

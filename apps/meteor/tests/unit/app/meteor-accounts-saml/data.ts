@@ -128,6 +128,32 @@ export const simpleSamlResponse = `${samlResponseHeader}
 	${samlResponseAssertion}
 ${samlResponseFooter}`;
 
+export const samlResponseAssertionId = '_assertionwithconditions00000000000000001';
+
+const samlResponseAssertionWithConditions = `<saml:Assertion ID="${samlResponseAssertionId}" IssueInstant="2020-05-28T21:39:37Z" Version="2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<saml:Issuer>[ISSUER]</saml:Issuer>
+		<saml:Subject>
+			<saml:NameID Format="urn:oasis:names:tc:SAML:2.0:nameid-format:transient" SPNameQualifier="http://localhost:3000/_saml/metadata/test-sp">[NAMEID]</saml:NameID>
+		</saml:Subject>
+		<saml:Conditions NotBefore="[NOTBEFORE]" NotOnOrAfter="[NOTONORAFTER]"></saml:Conditions>
+		<saml:AuthnStatement AuthnInstant="2020-05-28T21:39:37Z" SessionIndex="[SESSIONINDEX]" SessionNotOnOrAfter="2020-05-29T05:39:37Z">
+			<saml:AuthnContext>
+				<saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:Password</saml:AuthnContextClassRef>
+			</saml:AuthnContext>
+		</saml:AuthnStatement>
+		<saml:AttributeStatement>
+			<saml:Attribute Name="uid" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
+				<saml:AttributeValue xsi:type="xs:string">1</saml:AttributeValue>
+			</saml:Attribute>
+		</saml:AttributeStatement>
+	</saml:Assertion>`;
+
+export const samlResponseWithConditions = `${samlResponseHeader}
+	${samlResponseIssuer}
+	${samlResponseStatus}
+	${samlResponseAssertionWithConditions}
+${samlResponseFooter}`;
+
 export const samlResponseMissingStatus = `${samlResponseHeader}
 	${samlResponseIssuer}
 	${samlResponseAssertion}

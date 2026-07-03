@@ -1,0 +1,20 @@
+# Phase 1: Slash commands migration
+# Format: old-path<TAB>new-path (relative to apps/meteor/)
+app/slashcommand-asciiarts/server	server/slashcommands/asciiarts
+app/slashcommands-archiveroom/server	server/slashcommands/archiveroom
+app/slashcommands-ban/server	server/slashcommands/ban
+app/slashcommands-create/server	server/slashcommands/create
+app/slashcommands-help/server	server/slashcommands/help
+app/slashcommands-hide/server	server/slashcommands/hide
+app/slashcommands-invite/server	server/slashcommands/invite
+app/slashcommands-inviteall/server	server/slashcommands/inviteall
+app/slashcommands-join/server	server/slashcommands/join
+app/slashcommands-kick/server	server/slashcommands/kick
+app/slashcommands-leave/server	server/slashcommands/leave
+app/slashcommands-me/server	server/slashcommands/me
+app/slashcommands-msg/server	server/slashcommands/msg
+app/slashcommands-mute/server	server/slashcommands/mute
+app/slashcommands-status/server	server/slashcommands/status
+app/slashcommands-topic/server	server/slashcommands/topic
+app/slashcommands-unarchiveroom/server	server/slashcommands/unarchiveroom
+app/bot-helpers/server	server/lib/bot-helpers

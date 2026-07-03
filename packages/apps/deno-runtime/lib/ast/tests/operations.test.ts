@@ -8,7 +8,7 @@ import {
 	getFunctionIdentifier,
 	WalkerState,
 	wrapWithAwait,
-} from '../operations.ts';
+} from '../operations';
 import {
 	ArrowFunctionDerefCallExpression,
 	AssignmentExpressionOfArrowFunctionToFooIdentifier,
@@ -23,7 +23,7 @@ import {
 	MethodDefinitionOfFooInClassBar,
 	SimpleCallExpressionOfFoo,
 	SyncFunctionDeclarationWithAsyncCallExpression,
-} from './data/ast_blocks.ts';
+} from './data/ast_blocks';
 import {
 	AnyNode,
 	ArrowFunctionExpression,
@@ -33,7 +33,7 @@ import {
 	MethodDefinition,
 	ReturnStatement,
 	VariableDeclaration,
-} from '../../../acorn.d.ts';
+} from '../../../acorn.d';
 import { assertNotEquals } from 'https://deno.land/std@0.203.0/assert/assert_not_equals.ts';
 
 describe('getFunctionIdentifier', () => {

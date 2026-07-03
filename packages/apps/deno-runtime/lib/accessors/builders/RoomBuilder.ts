@@ -3,16 +3,10 @@ import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
 
 import type { RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType';
-import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
-
-import { require } from '../../../lib/require.ts';
-
-const { RocketChatAssociationModel } = require('@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.js') as {
-	RocketChatAssociationModel: typeof _RocketChatAssociationModel;
-};
+import { RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
 
 export class RoomBuilder implements IRoomBuilder {
-	public kind: _RocketChatAssociationModel.ROOM | _RocketChatAssociationModel.DISCUSSION;
+	public kind: RocketChatAssociationModel.ROOM | RocketChatAssociationModel.DISCUSSION;
 
 	protected room: IRoom;
 

@@ -59,7 +59,7 @@ exports[`renders Default with stable structure 1`] = `
               class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
             >
               <input
-                aria-controls=":r6:"
+                aria-controls="_r_6_"
                 aria-label="Search_Messages"
                 class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
                 placeholder="Search_Messages"
@@ -90,7 +90,7 @@ exports[`renders Default with stable structure 1`] = `
             </div>
             <div
               class="rcx-box rcx-box--full rcx-css-4k230l"
-              id=":r6:"
+              id="_r_6_"
             >
               <div
                 class="rcx-box rcx-box--full rcx-css-1cb6i7s"
@@ -1186,7 +1186,7 @@ exports[`renders Empty with stable structure 1`] = `
               class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
             >
               <input
-                aria-controls=":r8:"
+                aria-controls="_r_8_"
                 aria-label="Search_Messages"
                 class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
                 placeholder="Search_Messages"
@@ -1217,7 +1217,7 @@ exports[`renders Empty with stable structure 1`] = `
             </div>
             <div
               class="rcx-box rcx-box--full rcx-css-4k230l"
-              id=":r8:"
+              id="_r_8_"
             >
               <div
                 class="rcx-box rcx-box--full rcx-vertical-bar__content rcx-css-r8c38r"

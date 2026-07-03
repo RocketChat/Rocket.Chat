@@ -1,24 +1,19 @@
 import type { App } from '@rocket.chat/apps-engine/definition/App';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
-import type { AppsEngineException as _AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions/AppsEngineException';
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions/AppsEngineException';
 import { Defined, JsonRpcError } from 'jsonrpc-lite';
 
-import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
-import { MessageExtender } from '../../lib/accessors/extenders/MessageExtender.ts';
-import { RoomExtender } from '../../lib/accessors/extenders/RoomExtender.ts';
-import { MessageBuilder } from '../../lib/accessors/builders/MessageBuilder.ts';
-import { RoomBuilder } from '../../lib/accessors/builders/RoomBuilder.ts';
-import { AppAccessors, AppAccessorsInstance } from '../../lib/accessors/mod.ts';
-import { require } from '../../lib/require.ts';
-import createRoom from '../../lib/roomFactory.ts';
-import { Room } from '../../lib/room.ts';
-import { RequestContext } from '../../lib/requestContext.ts';
-import { wrapAppForRequest } from '../../lib/wrapAppForRequest.ts';
-
-const { AppsEngineException } = require('@rocket.chat/apps-engine/definition/exceptions/AppsEngineException.js') as {
-	AppsEngineException: typeof _AppsEngineException;
-};
+import { AppObjectRegistry } from '../../AppObjectRegistry';
+import { MessageExtender } from '../../lib/accessors/extenders/MessageExtender';
+import { RoomExtender } from '../../lib/accessors/extenders/RoomExtender';
+import { MessageBuilder } from '../../lib/accessors/builders/MessageBuilder';
+import { RoomBuilder } from '../../lib/accessors/builders/RoomBuilder';
+import { AppAccessors, AppAccessorsInstance } from '../../lib/accessors/mod';
+import createRoom from '../../lib/roomFactory';
+import { Room } from '../../lib/room';
+import { RequestContext } from '../../lib/requestContext';
+import { wrapAppForRequest } from '../../lib/wrapAppForRequest';
 
 export default async function handleListener(request: RequestContext): Promise<Defined | JsonRpcError> {
 	const { method, params } = request;
@@ -49,7 +44,7 @@ export default async function handleListener(request: RequestContext): Promise<D
 			return new JsonRpcError(e.message, AppsEngineException.JSONRPC_ERROR_CODE, { name: e.name });
 		}
 
-		return JsonRpcError.internalError({ message: e.message });
+		return JsonRpcError.internalError({ message: (e as { message?: string }).message });
 	}
 }
 

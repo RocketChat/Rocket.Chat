@@ -1,6 +1,7 @@
 export const isJSON = (value: string): boolean => {
 	try {
-		return !!JSON.parse(value);
+		JSON.parse(value);
+		return true;
 	} catch {
 		return false;
 	}

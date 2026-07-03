@@ -79,6 +79,7 @@
   "changesets": [
     "add-tagalog-language",
     "all-readers-reply",
+    "bump-patch-1782440081682",
     "bumpy-coats-reply",
     "chubby-garlics-decide",
     "crisp-corners-itch",
@@ -90,6 +91,7 @@
     "early-deer-fry",
     "easy-laws-talk",
     "eight-areas-see",
+    "eight-dingos-press",
     "eighty-onions-deny",
     "famous-birds-join",
     "fast-apes-know",
@@ -104,6 +106,7 @@
     "loose-knives-retire",
     "metal-regions-yell",
     "neat-planets-hope",
+    "nice-baboons-flash",
     "old-cities-enjoy",
     "pretty-rocks-retire",
     "rest-chat-delete-by-fileid",
@@ -118,11 +121,14 @@
     "short-mice-cover",
     "silent-coats-open",
     "slick-hats-arrive",
+    "sup-1064-pat-bypass-two-factor",
     "swift-rooms-load",
     "tasty-deserts-doubt",
     "thick-fans-leave",
+    "tricky-comics-wink",
     "true-cooks-lick",
     "upset-rats-work",
-    "wise-regions-sip"
+    "wise-regions-sip",
+    "wise-years-shout"
   ]
 }

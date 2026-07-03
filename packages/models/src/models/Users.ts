@@ -1133,7 +1133,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 
 	findNextStatusExpiration() {
 		return this.findOne<Pick<IUser, '_id' | 'statusExpiresAt'>>(
-			{ statusExpiresAt: { $gte: new Date() } },
+			{ statusExpiresAt: { $exists: true } },
 			{ projection: { _id: 1, statusExpiresAt: 1 }, sort: { statusExpiresAt: 1 } },
 		);
 	}

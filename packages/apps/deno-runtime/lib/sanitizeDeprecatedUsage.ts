@@ -1,4 +1,4 @@
-import { fixBrokenSynchronousAPICalls } from './ast/mod.ts';
+import { fixBrokenSynchronousAPICalls } from './ast/mod';
 
 function hasPotentialDeprecatedUsage(source: string) {
 	return (

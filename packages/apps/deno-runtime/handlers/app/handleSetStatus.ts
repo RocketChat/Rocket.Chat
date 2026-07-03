@@ -1,14 +1,9 @@
 import type { App } from '@rocket.chat/apps-engine/definition/App';
-import type { AppStatus as _AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 
-import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
-import { require } from '../../lib/require.ts';
-import { RequestContext } from '../../lib/requestContext.ts';
-import { wrapAppForRequest } from '../../lib/wrapAppForRequest.ts';
-
-const { AppStatus } = require('@rocket.chat/apps-engine/definition/AppStatus.js') as {
-	AppStatus: typeof _AppStatus;
-};
+import { AppObjectRegistry } from '../../AppObjectRegistry';
+import { RequestContext } from '../../lib/requestContext';
+import { wrapAppForRequest } from '../../lib/wrapAppForRequest';
 
 export default async function handleSetStatus(request: RequestContext): Promise<null> {
 	const { params } = request;
@@ -17,7 +12,7 @@ export default async function handleSetStatus(request: RequestContext): Promise<
 		throw new Error('Invalid params', { cause: 'invalid_param_type' });
 	}
 
-	const [status] = params as [typeof AppStatus];
+	const [status] = params as [AppStatus];
 
 	const app = AppObjectRegistry.get<App>('app');
 
