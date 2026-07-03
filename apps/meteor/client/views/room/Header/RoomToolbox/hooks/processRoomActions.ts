@@ -24,7 +24,7 @@ export const processRoomActions = (actionsBase: RoomToolboxBaseAction[], config:
 	const appActions = actionsBase.filter((a) => a.type === 'apps');
 	const nonAppActions = actionsBase.filter((a) => a.type !== 'apps');
 
-	if (!config?.items || config.items.length === 0) {
+	if (!config) {
 		const hiddenActions: RoomToolboxHiddenSection[] = [];
 		if (appActions.length > 0) {
 			hiddenActions.push({ id: 'apps', items: appActions });
@@ -36,7 +36,7 @@ export const processRoomActions = (actionsBase: RoomToolboxBaseAction[], config:
 		};
 	}
 
-	const itemMap = new Map(config.items.map((item) => [item.id, item]));
+	const itemMap = new Map((config.items || []).map((item) => [item.id, item]));
 
 	const [featuredWithOrder, normalWithOrder] = nonAppActions.reduce<
 		[{ action: RoomToolboxBaseAction; order: number }[], { action: RoomToolboxBaseAction; order: number }[]]
