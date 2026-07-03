@@ -36,7 +36,7 @@ describe('RoomMembersItem', () => {
 	describe('keyboard navigation', () => {
 		it('should be focusable via keyboard', () => {
 			render(<RoomMembersItem {...defaultProps} />);
-			expect(screen.getByRole('listitem')).toHaveAttribute('tabindex', '0');
+			expect(screen.getByRole('button', { name: 'johndoe' })).toHaveAttribute('tabindex', '0');
 		});
 
 		it('should call onClickView when Enter is pressed while focused', async () => {
@@ -78,7 +78,7 @@ describe('RoomMembersItem', () => {
 
 			await user.tab();
 
-			expect(screen.getByRole('listitem')).toHaveClass('rcx-option--focus');
+			expect(screen.getByRole('button', { name: /johndoe/ })).toHaveClass('rcx-option--focus');
 		});
 	});
 });

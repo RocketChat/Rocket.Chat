@@ -69,6 +69,7 @@ const RoomMembersItem = ({
 	return (
 		<Option
 			{...focusProps}
+			role='button'
 			onFocus={(e) => {
 				focusProps.onFocus?.(e);
 				setShowButton(true);
