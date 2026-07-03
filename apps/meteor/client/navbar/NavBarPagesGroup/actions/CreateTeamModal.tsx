@@ -40,7 +40,7 @@ type CreateTeamModalInputs = {
 	members?: string[];
 };
 
-type CreateTeamModalProps = { onClose: () => void };
+export type CreateTeamModalProps = { onClose: () => void };
 
 const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 	const t = useTranslation();
