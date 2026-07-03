@@ -1,5 +1,4 @@
 import { Box } from '@rocket.chat/fuselage';
-// import { ActionLink } from '@rocket.chat/layout';
 import { PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
