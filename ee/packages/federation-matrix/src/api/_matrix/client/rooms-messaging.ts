@@ -252,7 +252,7 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 				const limit = limitParam ? Number(limitParam) || 10 : 10;
 
 				try {
-					if (!fromParam) {
+					if (!fromParam || limit <= 0) {
 						return {
 							statusCode: 200,
 							body: {
