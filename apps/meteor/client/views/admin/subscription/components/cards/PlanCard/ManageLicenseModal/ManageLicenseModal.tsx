@@ -1,7 +1,7 @@
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { FieldLabel, Field, FieldRow, TextAreaInput } from '@rocket.chat/fuselage-forms';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { GenericModal } from '@rocket.chat/ui-client';
+import { GenericModal, useInvalidateLicense } from '@rocket.chat/ui-client';
 import { useSettingSetValue, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { useRef, useState } from 'react';
@@ -24,6 +24,7 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setEnterpriseLicense = useSettingSetValue('Enterprise_License');
+	const invalidateLicense = useInvalidateLicense();
 
 	const [isConfirmingRemoval, setIsConfirmingRemoval] = useState(false);
 
@@ -69,6 +70,7 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 	const handleApply = async () => {
 		try {
 			await setEnterpriseLicense(license);
+			invalidateLicense(100);
 			onCancel();
 			dispatchToastMessage({ type: 'success', message: t('Cloud_License_applied_successfully') });
 		} catch (err) {
@@ -79,6 +81,7 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 	const handleRemove = async () => {
 		try {
 			await setEnterpriseLicense('');
+			invalidateLicense(100);
 			onCancel();
 			dispatchToastMessage({ type: 'success', message: t('License_removed_successfully') });
 		} catch (err) {
