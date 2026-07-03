@@ -471,7 +471,8 @@ export class LDAPEEManager extends LDAPManager {
 				const name = await getValidRoomName(userChannelName.trim(), undefined, { allowDuplicates: true });
 				const room = (await Rooms.findOneByNonValidatedName(name)) || (await this.createRoomForSync(userChannelName));
 				if (!room) {
-					return;
+					logger.debug({ msg: 'Unable to resolve mapped channel for sync', userChannelName, username });
+					continue;
 				}
 
 				if (settings.get('ABAC_Enabled') && room?.abacAttributes?.length) {
@@ -501,7 +502,8 @@ export class LDAPEEManager extends LDAPManager {
 				const name = await getValidRoomName(roomName.trim(), undefined, { allowDuplicates: true });
 				const room = await Rooms.findOneByNonValidatedName(name);
 				if (!room || room.teamMain || channelsToAdd.has(room._id)) {
-					return;
+					logger.debug({ msg: 'Skipping channel on removal sync', roomName, username });
+					continue;
 				}
 
 				const subscription = await SubscriptionsRaw.findOneByRoomIdAndUserId(room._id, user._id);
