@@ -199,7 +199,6 @@ const validateEmailDomain = (user) => {
 	domainWhiteList = domainWhiteList.split(',').map((domain) => domain.trim().toLowerCase());
 
 	if (user.emails && user.emails.length > 0) {
-		// Email domains are case-insensitive (RFC 1035/5321); compare against the allowed-domains list case-insensitively.
 		const email = user.emails[0].address.toLowerCase();
 		const inWhiteList = domainWhiteList.some((domain) => email.match(`@${escapeRegExp(domain)}$`));
 

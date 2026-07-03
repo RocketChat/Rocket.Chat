@@ -85,6 +85,11 @@ describe('validateEmailDomain', () => {
 			await expectRejectedWith('user@SPAM.com', 'error-email-domain-blacklisted');
 		});
 
+		it('should block when the configured blocked-domain entry is mixed-case', async () => {
+			setBlockedDomains('SPAM.COM');
+			await expectRejectedWith('user@spam.com', 'error-email-domain-blacklisted');
+		});
+
 		it('should block against the default blocked domains list case-insensitively', async () => {
 			getStub.withArgs('Accounts_UseDefaultBlockedDomainsList').returns(true);
 			// A non-empty custom blocked list is required for the default list to be consulted.
