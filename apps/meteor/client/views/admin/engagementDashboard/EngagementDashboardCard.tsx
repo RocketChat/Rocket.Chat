@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 
 import EngagementDashboardCardErrorBoundary from './EngagementDashboardCardErrorBoundary';
 
-type EngagementDashboardCardProps = {
+export type EngagementDashboardCardProps = {
 	children?: ReactNode;
 	title?: string;
 };
