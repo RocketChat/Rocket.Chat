@@ -6,7 +6,9 @@ import { useTranslation } from 'react-i18next';
 import type { LoginErrorState } from './LoginForm';
 import LoginServicesButton from './LoginServicesButton';
 
-const LoginServices = ({ disabled, setError }: { disabled?: boolean; setError: Dispatch<SetStateAction<LoginErrorState>> }) => {
+export type LoginServicesProps = { disabled?: boolean; setError: Dispatch<SetStateAction<LoginErrorState>> };
+
+const LoginServices = ({ disabled, setError }: LoginServicesProps) => {
 	const { t } = useTranslation();
 	const services = useLoginServices();
 	const showFormLogin = useSetting('Accounts_ShowFormLogin');

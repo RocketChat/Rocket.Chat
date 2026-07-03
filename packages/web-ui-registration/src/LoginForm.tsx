@@ -54,7 +54,9 @@ export type LoginErrors = keyof typeof LOGIN_SUBMIT_ERRORS | 'totp-canceled' | s
 
 export type LoginErrorState = [error: LoginErrors, message?: string] | undefined;
 
-export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }) => {
+export type LoginFormProps = { setLoginRoute: DispatchLoginRouter };
+
+export const LoginForm = ({ setLoginRoute }: LoginFormProps) => {
 	const {
 		register,
 		handleSubmit,

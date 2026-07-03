@@ -4,7 +4,7 @@ import { useSetting, useTranslation, useAssetWithDarkModePath } from '@rocket.ch
 
 import { LoginPoweredBy } from './components/LoginPoweredBy';
 
-type CMSPageProps = {
+export type CMSPageProps = {
 	page: 'Layout_Terms_of_Service' | 'Layout_Privacy_Policy' | 'Layout_Legal_Notice';
 };
 
