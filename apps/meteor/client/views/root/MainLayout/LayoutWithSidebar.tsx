@@ -15,7 +15,9 @@ import RoomsNavigationProvider from '../../navigation/providers/RoomsNavigationP
 
 const INVALID_ROOM_NAME_PREFIXES = ['#', '?'] as const;
 
-const LayoutWithSidebar = ({ children }: { children: ReactNode }) => {
+export type LayoutWithSidebarProps = { children: ReactNode };
+
+const LayoutWithSidebar = ({ children }: LayoutWithSidebarProps) => {
 	const { isEmbedded: embeddedLayout } = useLayout();
 
 	const currentRoutePath = useCurrentRoutePath();
