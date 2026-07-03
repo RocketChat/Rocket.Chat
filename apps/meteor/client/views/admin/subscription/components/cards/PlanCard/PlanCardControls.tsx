@@ -2,6 +2,7 @@ import { IconButton, Divider, Box } from '@rocket.chat/fuselage';
 import { useClipboard } from '@rocket.chat/fuselage-hooks';
 import { ActionLink } from '@rocket.chat/layout';
 import { useSetModal, useSetting } from '@rocket.chat/ui-contexts';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ManageLicenseModal from './ManageLicenseModal';
@@ -16,6 +17,11 @@ const PlanCardControls = () => {
 	const hashedSiteURL = serverInfo?.hashedWorkspaceUrl ?? '';
 	const { copy: copySiteURL, hasCopied: hasCopiedSiteURL } = useClipboard(siteURL);
 	const { copy: copyHashed, hasCopied: hasCopiedHashed } = useClipboard(hashedSiteURL);
+
+	const handleOpenModal = useCallback(
+		() => setModal(<ManageLicenseModal enterpriseLicense={enterpriseLicense} onCancel={() => setModal(null)} />),
+		[enterpriseLicense, setModal],
+	);
 
 	return (
 		<>
@@ -49,25 +55,14 @@ const PlanCardControls = () => {
 			<Box>
 				<Box display='flex'>
 					<Box mie={4}>{t('License_key')}</Box>
-					{enterpriseLicense && (
-						<IconButton
-							title={t('Manage_license')}
-							icon='cog'
-							mini
-							onClick={() => setModal(<ManageLicenseModal enterpriseLicense={enterpriseLicense} onCancel={() => setModal(null)} />)}
-						/>
-					)}
+					{enterpriseLicense && <IconButton title={t('Manage_license')} icon='cog' mini onClick={handleOpenModal} />}
 				</Box>
 				{enterpriseLicense ? (
 					<Box withTruncatedText fontScale='p2'>
 						{enterpriseLicense}
 					</Box>
 				) : (
-					<ActionLink
-						onClick={() => setModal(<ManageLicenseModal enterpriseLicense={enterpriseLicense} onCancel={() => setModal(null)} />)}
-					>
-						{t('Add_license')}
-					</ActionLink>
+					<ActionLink onClick={handleOpenModal}>{t('Add_license')}</ActionLink>
 				)}
 			</Box>
 		</>
