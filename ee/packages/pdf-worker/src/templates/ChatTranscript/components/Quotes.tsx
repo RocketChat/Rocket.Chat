@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
 	},
 });
 
-type QuoteProps = {
+export type QuoteProps = {
 	quote: PDFQuote;
 	children: ReactNode;
 	index: number;
@@ -46,7 +46,7 @@ const Quote = ({ quote, children, index }: QuoteProps) => (
 	</View>
 );
 
-type QuotesProps = {
+export type QuotesProps = {
 	quotes: PDFQuote[];
 };
 

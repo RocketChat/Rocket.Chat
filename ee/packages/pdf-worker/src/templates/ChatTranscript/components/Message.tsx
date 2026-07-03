@@ -51,7 +51,9 @@ const processMessage = (message: PDFMessage) => {
 	);
 };
 
-const Message = ({ message, invalidFileMessage }: { message: PDFMessage; invalidFileMessage: string }) => (
+export type MessageProps = { message: PDFMessage; invalidFileMessage: string };
+
+const Message = ({ message, invalidFileMessage }: MessageProps) => (
 	<View style={styles.wrapper} wrap={!!message.quotes || messageLongerThanPage(message.msg) || (message.files && message.files.length > 0)}>
 		{message.divider && <Divider divider={message.divider} />}
 		<MessageHeader name={message.u.name || message.u.username} time={message.ts} />
