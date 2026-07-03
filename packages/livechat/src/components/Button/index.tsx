@@ -9,7 +9,7 @@ import { createClassName } from '../../helpers/createClassName';
 const handleMouseUp: JSXInternal.EventHandler<JSXInternal.TargetedMouseEvent<HTMLButtonElement>> = ({ target }) =>
 	(target as HTMLButtonElement)?.blur();
 
-type ButtonProps = {
+export type ButtonProps = {
 	children?: ComponentChildren;
 	submit?: boolean;
 	form?: string;
