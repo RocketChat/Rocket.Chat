@@ -25,7 +25,7 @@ import type { EmojiItem } from '../../../../app/emoji/client';
 import { usePreviewEmoji, useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
 import { useIsVisible } from '../../room/hooks/useIsVisible';
 
-type EmojiPickerProps = {
+export type EmojiPickerProps = {
 	reference: Element;
 	onClose: () => void;
 	onPickEmoji: (emoji: string) => void;
