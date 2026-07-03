@@ -10,7 +10,7 @@ import { UserAction, USER_ACTIVITIES } from '../../../../app/ui/client/lib/UserA
 import { VideoRecorder, useVideoRecorderCameraStarted } from '../../../../app/ui/client/lib/recorderjs/videoRecorder';
 import { useChat } from '../../room/contexts/ChatContext';
 
-type VideoMessageRecorderProps = {
+export type VideoMessageRecorderProps = {
 	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
 	reference: RefObject<HTMLElement | null>;
