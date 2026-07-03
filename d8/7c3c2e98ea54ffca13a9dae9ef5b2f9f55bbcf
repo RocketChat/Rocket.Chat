@@ -1,0 +1,14 @@
+apps/meteor/package.json
+  h_4c386397e672f4 109-110
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "d87c3c2e98ea54ffca13a9dae9ef5b2f9f55bbcf",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
