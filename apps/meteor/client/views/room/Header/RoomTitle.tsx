@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import HeaderIconWithRoom from './HeaderIconWithRoom';
 
-type RoomTitleProps = { room: IRoom };
+export type RoomTitleProps = { room: IRoom };
 
 const RoomTitle = ({ room }: RoomTitleProps) => {
 	const { t } = useTranslation();
