@@ -25,13 +25,13 @@ export const setRoomKeyIDMethod = async (userId: string, rid: IRoom['_id'], keyI
 		throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'e2e.setRoomKeyID' });
 	}
 
-	if (room.e2eKeyId) {
+	const { modifiedCount } = await Rooms.setE2eKeyId(room._id, keyID);
+
+	if (modifiedCount === 0) {
 		throw new Meteor.Error('error-room-e2e-key-already-exists', 'E2E Key ID already exists', {
 			method: 'e2e.setRoomKeyID',
 		});
 	}
-
-	await Rooms.setE2eKeyId(room._id, keyID);
 
 	void notifyOnRoomChangedById(room._id);
 };

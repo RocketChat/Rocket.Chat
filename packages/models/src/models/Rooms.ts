@@ -1016,6 +1016,9 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	setE2eKeyId(_id: IRoom['_id'], e2eKeyId: IRoom['e2eKeyId'], options: UpdateOptions = {}): Promise<UpdateResult> {
 		const query: Filter<IRoom> = {
 			_id,
+			e2eKeyId: {
+				$exists: false,
+			},
 		};
 
 		const update: UpdateFilter<IRoom> = {
