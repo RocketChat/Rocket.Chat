@@ -1102,7 +1102,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 				range: {
 					$range: [0, 24, groupSize],
 				},
-				session: { loginAt: '$loginAt', closedAt: '$closedAt', userId: '$userId' },
+				session: '$$ROOT',
 			},
 		};
 		const unwind = {
@@ -1193,14 +1193,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 				range: {
 					$range: [{ $hour: '$loginAt' }, { $sum: [{ $ifNull: [{ $hour: '$closedAt' }, 23] }, 1] }],
 				},
-				session: {
-					loginAt: '$loginAt',
-					closedAt: '$closedAt',
-					userId: '$userId',
-					day: '$day',
-					month: '$month',
-					year: '$year',
-				},
+				session: '$$ROOT',
 			},
 		};
 		const unwind = {
