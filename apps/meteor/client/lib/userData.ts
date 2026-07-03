@@ -18,6 +18,7 @@ type RawUserData = Serialized<
 		| 'status'
 		| 'statusDefault'
 		| 'statusText'
+		| 'statusExpiresAt'
 		| 'statusConnection'
 		| 'avatarOrigin'
 		| 'utcOffset'
@@ -157,6 +158,9 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 			}),
 			...(lastLogin && {
 				lastLogin: new Date(lastLogin),
+			}),
+			...(meFields.statusExpiresAt && {
+				statusExpiresAt: new Date(meFields.statusExpiresAt),
 			}),
 			ldap: Boolean(ldap),
 			createdAt: meFields.createdAt != null ? new Date(meFields.createdAt) : (existingUser?.createdAt ?? new Date()),

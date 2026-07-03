@@ -84,10 +84,20 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 
 	const user = await Users.findOneByUsername(integration.username, { projection: { _id: 1 } });
 
-	if (!user || !(await hasPermissionAsync(user._id, 'message-impersonate'))) {
+	if (!user) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			method: 'addIncomingIntegration',
 		});
+	}
+
+	if (!(await hasPermissionAsync(user._id, 'message-impersonate'))) {
+		throw new Meteor.Error(
+			'error-user-lacks-message-impersonate-permission',
+			"User selected for the incoming integration lacks the 'message-impersonate' permission.",
+			{
+				method: 'addIncomingIntegration',
+			},
+		);
 	}
 
 	// Default to transpiling with Babel for backwards compatibility; integrations

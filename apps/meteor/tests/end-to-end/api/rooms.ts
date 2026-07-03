@@ -1477,6 +1477,61 @@ describe('[Rooms]', () => {
 					});
 			});
 		});
+
+		describe('with archived rooms', () => {
+			let publicArchivedChannel: IRoom;
+			let privateArchivedGroup: IRoom;
+			let nonMember: TestUser<IUser>;
+			let nonMemberCredentials: Credentials;
+
+			before(async () => {
+				publicArchivedChannel = (await createRoom({ type: 'c', name: `rooms.info.archived.c.${Date.now()}-${Math.random()}` })).body
+					.channel;
+				privateArchivedGroup = (await createRoom({ type: 'p', name: `rooms.info.archived.p.${Date.now()}-${Math.random()}` })).body.group;
+
+				await request.post(api('channels.archive')).set(credentials).send({ roomId: publicArchivedChannel._id }).expect(200);
+				await request.post(api('groups.archive')).set(credentials).send({ roomId: privateArchivedGroup._id }).expect(200);
+
+				nonMember = await createUser({ joinDefaultChannels: false });
+				nonMemberCredentials = await login(nonMember.username, password);
+			});
+
+			after(() =>
+				Promise.all([
+					deleteRoom({ type: 'c', roomId: publicArchivedChannel._id }),
+					deleteRoom({ type: 'p', roomId: privateArchivedGroup._id }),
+					deleteUser(nonMember),
+				]),
+			);
+
+			it('should return an accessible archived public channel to a non-member (reached via link/mention)', async () => {
+				await request
+					.get(api('rooms.info'))
+					.set(nonMemberCredentials)
+					.query({ roomId: publicArchivedChannel._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('room').and.to.be.an('object');
+						expect(res.body.room).to.have.property('_id', publicArchivedChannel._id);
+						expect(res.body.room).to.have.property('archived', true);
+					});
+			});
+
+			it('should still reject an archived room the user cannot access (private group, non-member)', async () => {
+				await request
+					.get(api('rooms.info'))
+					.set(nonMemberCredentials)
+					.query({ roomId: privateArchivedGroup._id })
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'not-allowed');
+					});
+			});
+		});
 	});
 	describe('[/rooms.leave]', () => {
 		let testChannel: IRoom;

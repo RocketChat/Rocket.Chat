@@ -1,4 +1,4 @@
-import { api, ServiceClassInternal, type IMediaCallService, Authorization } from '@rocket.chat/core-services';
+import { api, Presence, ServiceClassInternal, type IMediaCallService, Authorization } from '@rocket.chat/core-services';
 import type {
 	IMediaCall,
 	IUser,
@@ -7,6 +7,7 @@ import type {
 	CallHistoryItemState,
 	IExternalMediaCallHistoryItem,
 } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import { callServer, type IMediaCallServerSettings, getSignalsForExistingCall } from '@rocket.chat/media-calls';
 import type {
 	CallFeature,
@@ -34,6 +35,8 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		super();
 		callServer.emitter.on('signalRequest', ({ toUid, signal }) => this.sendSignal(toUid, signal));
 		callServer.emitter.on('callUpdated', (params) => api.broadcast('media-call.updated', params));
+		callServer.emitter.on('callActivated', ({ callId, uids }) => this.setPresenceForUsers(uids, callId));
+		callServer.emitter.on('callEnded', ({ callId, uids }) => this.clearPresenceForUsers(uids, callId));
 		callServer.emitter.on('historyUpdate', ({ callId }) => setImmediate(() => this.saveCallToHistory(callId)));
 		callServer.emitter.on('pushNotificationRequest', ({ callId, event }) => sendVoipPushNotification(callId, event));
 		this.onEvent('media-call.updated', (params) => callServer.receiveCallUpdate(params));
@@ -258,8 +261,8 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		}
 	}
 
-	private getLanguageForUser(user: IUser): string {
-		return user.language || settings.get('Language') || 'en';
+	private getLanguageForUser(language?: string): string {
+		return language || settings.get('Language') || 'en';
 	}
 
 	private async sendHistoryMessage(call: IMediaCall, room: IRoom): Promise<void> {
@@ -274,7 +277,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		const skipNotifications = state !== 'not-answered' || call.hangupReason === 'rejected';
 		const i18nKey = callStateToTranslationKey(state).i18n?.key;
 
-		const msg = i18nKey ? i18n.t(i18nKey, { lng: this.getLanguageForUser(user) }) : '';
+		const msg = i18nKey ? i18n.t(i18nKey, { lng: this.getLanguageForUser(user.language) }) : '';
 		const duration = this.getCallDuration(call);
 
 		const record = getHistoryMessagePayload(state, duration, call._id, msg);
@@ -364,6 +367,37 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			...newRoom,
 			_id: newRoom.rid,
 		};
+	}
+
+	private async setPresenceForUsers(uids: IUser['_id'][], callId: IMediaCall['_id']): Promise<void> {
+		const users = await Users.findByIds<Pick<IUser, '_id' | 'language'>>(uids, { projection: { language: 1 } }).toArray();
+		const languageByUid = new Map(users.map((user) => [user._id, user.language]));
+
+		await Promise.all(
+			uids.map(async (uid) => {
+				try {
+					await Presence.setActiveState(uid, {
+						statusDefault: UserStatus.BUSY,
+						statusText: i18n.t('Presence_status_on_a_call', { lng: this.getLanguageForUser(languageByUid.get(uid)) }),
+						statusSource: 'internal',
+						statusId: callId,
+					});
+				} catch (err) {
+					logger.error({ msg: 'Failed to set presence for user on call', uid, err });
+				}
+			}),
+		);
+	}
+
+	private async clearPresenceForUsers(uids: IUser['_id'][], callId: IMediaCall['_id']): Promise<void> {
+		// pass callId so only this call's claim is cleared, never another claim that took over
+		await Promise.all(
+			uids.map((uid) =>
+				Presence.endActiveState(uid, callId).catch((err) =>
+					logger.error({ msg: 'Failed to clear presence for user after call', uid, err }),
+				),
+			),
+		);
 	}
 
 	private async sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): Promise<void> {
