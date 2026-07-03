@@ -4,6 +4,10 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 export const getLicenseInvalidMessage = (reasons: BehaviorWithContext[]): TranslationKey => {
 	const hasErrorReason = (behavior: LicenseBehavior, reason: string) => reasons.some((r) => r.behavior === behavior && r.reason === reason);
 
+	if (reasons.length === 0) {
+		return 'License_error_format_invalid';
+	}
+
 	if (hasErrorReason('invalidate_license', 'url')) {
 		return 'License_error_url_mismatch';
 	}

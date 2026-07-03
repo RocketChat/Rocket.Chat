@@ -17,12 +17,13 @@ export const useValidateLicense = (license: string) => {
 
 	return useQuery({
 		queryKey: ['licenses.validate', trimmedLicense] as const,
-		queryFn: async (): Promise<BehaviorWithContext[] | undefined> => {
+		queryFn: async (): Promise<{ valid: boolean; reasons: BehaviorWithContext[] }> => {
 			try {
 				await validateLicense({ license: trimmedLicense });
+				return { valid: true, reasons: [] };
 			} catch (error) {
 				if (isValidationFailure(error)) {
-					return error.reasons;
+					return { valid: false, reasons: error.reasons };
 				}
 				throw error;
 			}
