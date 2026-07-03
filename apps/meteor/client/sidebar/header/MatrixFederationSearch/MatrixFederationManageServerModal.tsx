@@ -25,7 +25,7 @@ import MatrixFederationRemoveServerList from './MatrixFederationRemoveServerList
 import MatrixFederationSearch from './MatrixFederationSearch';
 import { useMatrixServerList } from './useMatrixServerList';
 
-type MatrixFederationAddServerModalProps = {
+export type MatrixFederationAddServerModalProps = {
 	onClickClose: () => void;
 };
 
