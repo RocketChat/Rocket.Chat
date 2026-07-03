@@ -5,7 +5,17 @@ import { license, tags } from './_shared';
 
 const VersionsResponseSchema = {
 	type: 'object',
-	properties: {},
+	properties: {
+		versions: {
+			type: 'array',
+			items: { type: 'string' },
+		},
+		unstable_features: {
+			type: 'object',
+			additionalProperties: { type: 'boolean' },
+		},
+	},
+	required: ['versions'],
 };
 
 const isVersionsResponseProps = ajv.compile(VersionsResponseSchema);
