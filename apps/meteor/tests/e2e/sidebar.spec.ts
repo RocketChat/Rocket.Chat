@@ -93,6 +93,75 @@ test.describe.serial('Sidebar', () => {
 		});
 	});
 
+	test.describe('Display menu keyboard accessibility', () => {
+		const defaultPreferences = {
+			sidebarViewMode: 'extended',
+			sidebarDisplayAvatar: true,
+			sidebarSortby: 'activity',
+			sidebarShowUnread: false,
+		};
+
+		test.beforeEach(async ({ api }) => {
+			await api.post('/users.setPreferences', { data: defaultPreferences });
+		});
+
+		test.afterEach(async ({ api }) => {
+			await api.post('/users.setPreferences', { data: defaultPreferences });
+		});
+
+		test('should change view mode using keyboard', async ({ page }) => {
+			await poHomeChannel.navbar.btnDisplay.focus();
+			await page.keyboard.press('Enter');
+			await expect(poHomeChannel.navbar.menuDisplay).toBeVisible();
+
+			await poHomeChannel.navbar.getDisplayMenuItem('Medium').focus();
+
+			await page.keyboard.press('Space');
+
+			await expect(poHomeChannel.navbar.getDisplayMenuItem('Medium').getByRole('radio')).toBeChecked();
+			await page.keyboard.press('Escape');
+		});
+
+		test('should toggle Avatars using keyboard', async ({ page }) => {
+			await poHomeChannel.navbar.btnDisplay.click();
+			const avatarsItem = poHomeChannel.navbar.getDisplayMenuItem('Avatars');
+
+			await avatarsItem.focus();
+			await page.keyboard.press('Space');
+
+			const newAvatarsItem = poHomeChannel.navbar.getDisplayMenuItem('Avatars');
+			await expect(newAvatarsItem.getByRole('checkbox')).not.toBeChecked();
+			await page.keyboard.press('Escape');
+		});
+
+		test('should change sort mode using keyboard', async ({ page }) => {
+			await poHomeChannel.navbar.btnDisplay.focus();
+			await page.keyboard.press('Enter');
+			await expect(poHomeChannel.navbar.menuDisplay).toBeVisible();
+			await poHomeChannel.navbar.getSortMenuItem('Activity').focus();
+			await page.keyboard.press('ArrowDown');
+			await expect(poHomeChannel.navbar.getSortMenuItem('Name')).toBeFocused();
+			await page.keyboard.press('Space');
+
+			await expect(poHomeChannel.navbar.getSortMenuItem('Name').getByRole('radio')).toBeChecked();
+			await page.keyboard.press('Escape');
+		});
+
+		test('should toggle grouping using keyboard', async ({ page }) => {
+			await poHomeChannel.navbar.btnDisplay.focus();
+			await page.keyboard.press('Enter');
+
+			const unreadItem = poHomeChannel.navbar.getGroupByMenuItem('Unread');
+			await expect(unreadItem.getByRole('checkbox')).not.toBeChecked();
+
+			await unreadItem.focus();
+			await page.keyboard.press('Space');
+
+			await expect(poHomeChannel.navbar.getGroupByMenuItem('Unread').getByRole('checkbox')).toBeChecked();
+			await page.keyboard.press('Escape');
+		});
+	});
+
 	test.describe('sidebar', async () => {
 		test('should navigate on sidebar items using arrow keys and restore focus', async ({ page }) => {
 			// focus should be on the next item
