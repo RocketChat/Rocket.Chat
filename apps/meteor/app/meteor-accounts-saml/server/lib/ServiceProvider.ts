@@ -81,7 +81,11 @@ export class SAMLServiceProvider {
 	/*
 		This method will generate the response URL with all the query string params and pass it to the callback
 	*/
-	public logoutResponseToUrl(response: string, callback: (err: string | object | null, url?: string) => void): void {
+	public logoutResponseToUrl(
+		response: string,
+		relayState: string | undefined,
+		callback: (err: string | object | null, url?: string) => void,
+	): void {
 		zlib.deflateRaw(response, (err, buffer) => {
 			if (err) {
 				return callback(err);
@@ -97,12 +101,10 @@ export class SAMLServiceProvider {
 					target += '?';
 				}
 
-				// TBD. We should really include a proper RelayState here
-				const relayState = Meteor.absoluteUrl();
-
+				// The SAML spec requires the response RelayState to exactly match the value received on the request.
 				const samlResponse = this.maybeSignRequest({
 					SAMLResponse: base64,
-					RelayState: relayState,
+					...(relayState !== undefined && { RelayState: relayState }),
 				});
 
 				target += querystring.stringify(samlResponse);
