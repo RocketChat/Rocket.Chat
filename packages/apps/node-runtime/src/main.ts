@@ -9,12 +9,10 @@ import { sandboxRequire } from './lib/require';
 import { stdoutTransport } from './lib/transports/stdoutTransport';
 
 if (!process.argv.includes('--subprocess')) {
-	console.error(
-		new TextEncoder().encode(`
+	console.error(`
             This is the Node wrapper for the Rocket.Chat Apps runtime. It is not meant to be executed stand-alone;
             It is instead meant to be executed as a subprocess by the Apps-Engine framework.
-       `),
-	);
+       `);
 
 	process.exit(1);
 }
