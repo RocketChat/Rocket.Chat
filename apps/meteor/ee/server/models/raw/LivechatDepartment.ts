@@ -105,32 +105,30 @@ export class LivechatDepartmentEE extends LivechatDepartmentRaw implements ILive
 
 	override findAgentsByBusinessHourId(businessHourId: string): AggregationCursor<{ agentIds: string[] }> {
 		return this.col.aggregate<{ agentIds: string[] }>([
-			[
-				{
-					$match: {
-						businessHourId,
+			{
+				$match: {
+					businessHourId,
+				},
+			},
+			{
+				$lookup: {
+					from: 'rocketchat_livechat_department_agents',
+					localField: '_id',
+					foreignField: 'departmentId',
+					as: 'agents',
+				},
+			},
+			{
+				$unwind: '$agents',
+			},
+			{
+				$group: {
+					_id: null,
+					agentIds: {
+						$addToSet: '$agents.agentId',
 					},
 				},
-				{
-					$lookup: {
-						from: 'rocketchat_livechat_department_agents',
-						localField: '_id',
-						foreignField: 'departmentId',
-						as: 'agents',
-					},
-				},
-				{
-					$unwind: '$agents',
-				},
-				{
-					$group: {
-						_id: null,
-						agentIds: {
-							$addToSet: '$agents.agentId',
-						},
-					},
-				},
-			],
+			},
 		]);
 	}
 }
