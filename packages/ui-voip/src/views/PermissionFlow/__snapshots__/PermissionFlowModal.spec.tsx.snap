@@ -4,7 +4,7 @@ exports[`renders PermissionFlowModalDenied without crashing 1`] = `
 <body>
   <div>
     <dialog
-      aria-labelledby=":r0:"
+      aria-labelledby="_r_0_"
       aria-modal="true"
       class="rcx-box rcx-box--full rcx-modal"
       open=""
@@ -20,7 +20,7 @@ exports[`renders PermissionFlowModalDenied without crashing 1`] = `
           >
             <h2
               class="rcx-box rcx-box--full rcx-modal__title rcx-css-trljwa rcx-css-lma364"
-              id=":r0:"
+              id="_r_0_"
             >
               Mic/speaker access required
             </h2>
@@ -82,7 +82,7 @@ exports[`renders PermissionFlowModalDeviceChangePrompt without crashing 1`] = `
 <body>
   <div>
     <dialog
-      aria-labelledby=":r1:"
+      aria-labelledby="_r_1_"
       aria-modal="true"
       class="rcx-box rcx-box--full rcx-modal"
       open=""
@@ -98,7 +98,7 @@ exports[`renders PermissionFlowModalDeviceChangePrompt without crashing 1`] = `
           >
             <h2
               class="rcx-box rcx-box--full rcx-modal__title rcx-css-trljwa rcx-css-lma364"
-              id=":r1:"
+              id="_r_1_"
             >
               Mic/speaker access required
             </h2>
@@ -170,7 +170,7 @@ exports[`renders PermissionFlowModalIncomingPrompt without crashing 1`] = `
 <body>
   <div>
     <dialog
-      aria-labelledby=":r2:"
+      aria-labelledby="_r_2_"
       aria-modal="true"
       class="rcx-box rcx-box--full rcx-modal"
       open=""
@@ -186,7 +186,7 @@ exports[`renders PermissionFlowModalIncomingPrompt without crashing 1`] = `
           >
             <h2
               class="rcx-box rcx-box--full rcx-modal__title rcx-css-trljwa rcx-css-lma364"
-              id=":r2:"
+              id="_r_2_"
             >
               Mic/speaker access required
             </h2>
@@ -270,7 +270,7 @@ exports[`renders PermissionFlowModalOutgoingPrompt without crashing 1`] = `
 <body>
   <div>
     <dialog
-      aria-labelledby=":r3:"
+      aria-labelledby="_r_3_"
       aria-modal="true"
       class="rcx-box rcx-box--full rcx-modal"
       open=""
@@ -286,7 +286,7 @@ exports[`renders PermissionFlowModalOutgoingPrompt without crashing 1`] = `
           >
             <h2
               class="rcx-box rcx-box--full rcx-modal__title rcx-css-trljwa rcx-css-lma364"
-              id=":r3:"
+              id="_r_3_"
             >
               Mic/speaker access required
             </h2>

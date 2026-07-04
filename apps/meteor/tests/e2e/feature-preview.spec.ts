@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
 import { AdminInfo, HomeChannel, HomeDiscussion, HomeTeam } from './page-objects';
-import { CreateNewChannelModal } from './page-objects/fragments/modals';
+import { CreateNewChannelModal, CreateNewDiscussionModal } from './page-objects/fragments/modals';
 import {
 	createTargetChannel,
 	createTargetTeam,
@@ -106,8 +106,7 @@ test.describe.serial('feature preview', () => {
 		test('should display new channel from team on the sidepanel', async ({ page, api }) => {
 			newChannelModal = new CreateNewChannelModal(page);
 
-			await page.goto(`/group/${sidepanelTeam}`);
-			await poHomeTeam.content.waitForChannel();
+			await poHomeTeam.gotoGroup(sidepanelTeam);
 
 			await poHomeTeam.headerToolbar.openTeamChannels();
 			await poHomeTeam.tabs.channels.btnCreateNew.click();
@@ -143,8 +142,8 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.sidepanel.getItemByName(sidepanelTeam)).not.toHaveText(parsedWrong);
 		});
 
-		test('should show channel in sidepanel after adding existing one', async ({ page }) => {
-			await page.goto(`/group/${sidepanelTeam}`);
+		test('should show channel in sidepanel after adding existing one', async () => {
+			await poHomeTeam.gotoGroup(sidepanelTeam);
 
 			await poHomeTeam.headerToolbar.openTeamChannels();
 			await poHomeTeam.tabs.channels.addExistingChannel(targetChannel);
@@ -156,7 +155,7 @@ test.describe.serial('feature preview', () => {
 			const user1Page = await browser.newPage({ storageState: Users.user1.state });
 			const user1Channel = new HomeChannel(user1Page);
 
-			await page.goto(`/group/${sidepanelTeam}`);
+			await poHomeTeam.gotoGroup(sidepanelTeam);
 
 			await poHomeTeam.headerToolbar.openTeamChannels();
 			await poHomeTeam.tabs.channels.addExistingChannel(targetChannel);
@@ -225,9 +224,8 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.sidebar.discussionsTeamCollabFilter).toBeVisible();
 		});
 
-		test('should show favorite team on the sidepanel', async ({ page }) => {
-			await page.goto(`/group/${sidepanelTeam}`);
-			await poHomeChannel.content.waitForChannel();
+		test('should show favorite team on the sidepanel', async () => {
+			await poHomeChannel.gotoGroup(sidepanelTeam);
 			await poHomeChannel.sidebar.favoritesTeamCollabFilter.click();
 
 			await expect(poHomeChannel.sidepanel.getTeamItemByName(sidepanelTeam)).not.toBeVisible();
@@ -239,15 +237,15 @@ test.describe.serial('feature preview', () => {
 
 		test('should show discussion in discussions and all sidepanel filter, should remove after deleting discussion', async ({ page }) => {
 			const poHomeDiscussion = new HomeDiscussion(page);
-			await page.goto(`/group/${sidepanelTeam}`);
-			await poHomeChannel.content.waitForChannel();
+			await poHomeChannel.gotoGroup(sidepanelTeam);
 
 			const discussionName = faker.string.uuid();
 
 			await poHomeChannel.composer.btnMenuMoreActions.click();
 			await page.getByRole('menuitem', { name: 'Discussion' }).click();
-			await poHomeChannel.content.inputDiscussionName.fill(discussionName);
-			await poHomeChannel.content.btnCreateDiscussionModal.click();
+			const createDiscussionModal = new CreateNewDiscussionModal(page);
+			await createDiscussionModal.inputName.fill(discussionName);
+			await createDiscussionModal.create();
 			await expect(page.getByRole('heading', { name: discussionName })).toBeVisible();
 
 			await poHomeDiscussion.sidebar.discussionsTeamCollabFilter.click();
@@ -570,8 +568,9 @@ test.describe.serial('feature preview', () => {
 			await test.step('create discussion in DM', async () => {
 				await poHomeChannel.composer.btnMenuMoreActions.click();
 				await page.getByRole('menuitem', { name: 'Discussion' }).click();
-				await poHomeChannel.content.inputDiscussionName.fill(discussionName);
-				await poHomeChannel.content.btnCreateDiscussionModal.click();
+				const createDiscussionModal = new CreateNewDiscussionModal(page);
+				await createDiscussionModal.inputName.fill(discussionName);
+				await createDiscussionModal.create();
 				await poHomeChannel.content.waitForChannel();
 				await poHomeChannel.content.sendMessage('hello');
 

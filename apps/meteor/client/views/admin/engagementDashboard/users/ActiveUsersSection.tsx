@@ -1,5 +1,5 @@
 import { ResponsiveLine } from '@nivo/line';
-import { Box, Flex, Skeleton, Tile } from '@rocket.chat/fuselage';
+import { Box, FlexContainer, FlexItem, Skeleton, Tile } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { addDays, startOfDay, differenceInDays, endOfDay, subDays, format } from 'date-fns';
 import { useMemo } from 'react';
@@ -153,10 +153,10 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps) => {
 					},
 				]}
 			/>
-			<Flex.Container>
+			<FlexContainer>
 				{data ? (
 					<Box style={{ height: 240 }}>
-						<Flex.Item align='stretch' grow={1} shrink={0}>
+						<FlexItem align='stretch' grow={1} shrink={0}>
 							<Box style={{ position: 'relative' }}>
 								<Box
 									style={{
@@ -267,12 +267,12 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps) => {
 									/>
 								</Box>
 							</Box>
-						</Flex.Item>
+						</FlexItem>
 					</Box>
 				) : (
 					<Skeleton variant='rect' height={240} />
 				)}
-			</Flex.Container>
+			</FlexContainer>
 		</>
 	);
 };

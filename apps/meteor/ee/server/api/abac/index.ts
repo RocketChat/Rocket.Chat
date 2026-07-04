@@ -26,10 +26,10 @@ import {
 	GETAbacPdpHealthResponseSchema,
 	GETAbacPdpHealthErrorResponseSchema,
 } from './schemas';
-import { API } from '../../../../app/api/server';
-import type { ExtractRoutesFromAPI } from '../../../../app/api/server/ApiClass';
-import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
 import { settings } from '../../../../app/settings/server';
+import { API } from '../../../../server/api';
+import type { ExtractRoutesFromAPI } from '../../../../server/api/ApiClass';
+import { getPaginationItems } from '../../../../server/api/lib/getPaginationItems';
 
 const getActorFromUser = (user?: IUser | null): AbacActor | undefined =>
 	user?._id

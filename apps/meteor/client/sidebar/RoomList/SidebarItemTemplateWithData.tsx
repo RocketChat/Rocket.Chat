@@ -7,7 +7,9 @@ import type { AllHTMLAttributes, ComponentType, ReactNode } from 'react';
 import { memo, useMemo } from 'react';
 
 import { RoomIcon } from '../../components/RoomIcon';
+import { useUserStatusTooltip } from '../../hooks/useUserStatusTooltip';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import { getUidDirectMessage } from '../../lib/utils/getUidDirectMessage';
 import { isIOsDevice } from '../../lib/utils/isIOsDevice';
 import { getMessagePreview } from '../../lib/utils/normalizeMessagePreview/getMessagePreview';
 import { useOmnichannelPriorities } from '../../views/omnichannel/hooks/useOmnichannelPriorities';
@@ -42,6 +44,7 @@ type RoomListRowProps = {
 	openedRoom?: string;
 	// sidebarViewMode: 'extended';
 	isAnonymous?: boolean;
+	userId?: string;
 
 	room: SubscriptionWithRoom;
 	id?: string;
@@ -67,11 +70,15 @@ const SidebarItemTemplateWithData = ({
 	t,
 	isAnonymous,
 	videoConfActions,
+	userId,
 }: RoomListRowProps) => {
 	const { sidebar } = useLayout();
 
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
+
+	const dmUserId = getUidDirectMessage(room, userId);
+	const dmStatusTooltipHandlers = useUserStatusTooltip(dmUserId, title);
 
 	const { unreadTitle, showUnread, unreadCount, highlightUnread: highlighted } = useUnreadDisplay(room);
 
@@ -139,6 +146,7 @@ const SidebarItemTemplateWithData = ({
 						)
 					: undefined
 			}
+			{...dmStatusTooltipHandlers}
 		/>
 	);
 };

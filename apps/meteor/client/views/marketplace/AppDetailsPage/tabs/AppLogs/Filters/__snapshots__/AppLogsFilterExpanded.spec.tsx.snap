@@ -102,14 +102,14 @@ exports[`renders AppLogsItem without crashing 1`] = `
           <button
             aria-expanded="false"
             aria-haspopup="listbox"
-            aria-labelledby="react-aria-:r7: timeFilterLabel"
+            aria-labelledby="react-aria-_r_7_ timeFilterLabel"
             class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
             id="timeFilter"
             type="button"
           >
             <span
               class="rcx-box rcx-box--full rcx-css-e3nij6"
-              id="react-aria-:r7:"
+              id="react-aria-_r_7_"
             >
               All_time
             </span>
@@ -193,14 +193,14 @@ exports[`renders AppLogsItem without crashing 1`] = `
             aria-expanded="false"
             aria-haspopup="listbox"
             aria-label="Severity"
-            aria-labelledby="react-aria-:rf: react-aria-:ra:"
+            aria-labelledby="react-aria-_r_f_ react-aria-_r_a_"
             class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
             id="severityFilter"
             type="button"
           >
             <span
               class="rcx-box rcx-box--full rcx-css-e3nij6"
-              id="react-aria-:rf:"
+              id="react-aria-_r_f_"
             >
               All
             </span>
@@ -243,7 +243,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
           aria-haspopup="true"
           aria-label="Options"
           class="rcx-box rcx-box--full rcx-button--large-square rcx-button--square rcx-button--icon rcx-button"
-          id="react-aria-:rg:"
+          id="react-aria-_r_g_"
           title="Options"
           type="button"
         >

@@ -470,7 +470,12 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 							let: {
 								rid: '$_id',
 							},
-							pipeline: [{ $match: { '$expr': { $eq: ['$rid', '$$rid'] }, 'u._id': { $ne: userId } } }],
+							// Only `u._id` is read downstream (next $group); projecting it away keeps the
+							// $unwind/$group volume tiny instead of carrying full subscription documents.
+							pipeline: [
+								{ $match: { '$expr': { $eq: ['$rid', '$$rid'] }, 'u._id': { $ne: userId } } },
+								{ $project: { '_id': 0, 'u._id': 1 } },
+							],
 						},
 					},
 					// Unwind the subscription so we have a separate document for each
@@ -507,6 +512,8 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 										...(searchTerm && orStatement.length > 0 && { $or: orStatement }),
 									},
 								},
+								// Only these fields are read by the final $group; avoid hauling full user documents.
+								{ $project: { name: 1, username: 1, nickname: 1, status: 1, statusText: 1, avatarETag: 1 } },
 							],
 						},
 					},

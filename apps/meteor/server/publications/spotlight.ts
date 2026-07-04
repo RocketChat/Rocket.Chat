@@ -61,10 +61,12 @@ export const spotlightMethod = async ({
 		text = text.slice(1);
 	}
 
-	return {
-		users: type.users ? await spotlight.searchUsers({ userId, rid, text, usernames, mentions }) : [],
-		rooms: type.rooms ? await spotlight.searchRooms({ userId, text, includeFederatedRooms }) : [],
-	};
+	const [users, rooms] = await Promise.all([
+		type.users ? spotlight.searchUsers({ userId, rid, text, usernames, mentions }) : [],
+		type.rooms ? spotlight.searchRooms({ userId, text, includeFederatedRooms }) : [],
+	]);
+
+	return { users, rooms };
 };
 
 Meteor.methods<ServerMethods>({

@@ -14,6 +14,7 @@
     image,
     inlineCode,
     inlineKatex,
+    horizontalRule,
     italic,
     katex,
     lineBreak,
@@ -30,6 +31,7 @@
     spoiler,
     spoilerBlock,
     strike,
+    table,
     task,
     tasks,
     unorderedList,
@@ -57,6 +59,8 @@ Blocks
   = Blockquote
   / BlockSpoiler
   / Code
+  / HorizontalRule
+  / Table
   / Heading
   / Tasks
   / OrderedList
@@ -86,6 +90,37 @@ BlockquoteLine
  */
 BlockSpoiler = "||" EndOfLine first:(&(! "||") @Paragraph) rest:(&(! "||") @Paragraph)* EndOfLine? "||" { return spoilerBlock([first, ...rest]); }
 
+/**
+ *
+ * Table (GFM)
+ * e.g:
+ * | Header 1 | Header 2 |
+ * | -------- | :------: |
+ * | Cell 1   | Cell 2   |
+ *
+ * v1 requires a leading and trailing pipe on every row. Alignment comes from
+ * the delimiter row: `:---` left, `:--:` center, `---:` right, `---` none.
+ * A literal pipe inside a cell must be escaped as `\|`.
+ */
+Table = header:TableRowLine aligns:TableDelimiterRow body:TableRowLine* { return table(header, aligns, body, [range().start, range().end]); }
+
+TableRowLine = "|" cells:(@TableCell "|")+ EndOfLine? { return cells; }
+
+TableCell = items:TableCellItem* { return reducePlainTexts(items); }
+
+TableCellItem
+  = "\\|" { return plain('|'); }
+  / !"|" !EndOfLine @(InlineItemPattern / Any)
+
+TableDelimiterRow = "|" aligns:(@TableDelimiterCell "|")+ EndOfLine? { return aligns; }
+
+TableDelimiterCell = [ \t]* left:":"? "-"+ right:":"? [ \t]* {
+    if (left && right) { return 'center'; }
+    if (right) { return 'right'; }
+    if (left) { return 'left'; }
+    return undefined;
+  }
+
 // <t:1630360800:?{format}>
 // <t:2025-07-22T10:00:00.000Z?:?{format}>
 // <t:2025-07-22T10:00:00:?{format}>
@@ -109,7 +144,7 @@ ISO8601Date = year:$(Digit |4|) "-" month:$(Digit |2|) "-" day:$(Digit |2|) "T" 
 ISO8601DateWithoutMilliseconds = year:$(Digit |4|) "-" month:$(Digit |2|) "-" day:$(Digit |2|) "T" hours:$(Digit |2|) ":" minutes:$(Digit |2|) ":" seconds:$(Digit |2|) tz:Timezone? { return timestampFromIsoTime({ year, month, day, hours, minutes, seconds, timezone: tz }); }
 
 
-TimestampRules = "<t:" date:(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ":" format:TimestampType ">" { return timestamp(date, format); } / "<t:" date:(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ">" { return timestamp(date); }
+TimestampRules = "<t:" date:(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ":" format:TimestampType ">" { return timestamp(date, format, [range().start, range().end]); } / "<t:" date:(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ">" { return timestamp(date, undefined, [range().start, range().end]); }
 
 /**
  *
@@ -238,6 +273,23 @@ KatexInlineEnd
  *
 */
 LineBreak = Space* EndOfLine { return lineBreak(); }
+
+/**
+ *
+ * Horizontal Rule (thematic break)
+ * e.g: ---, ----------
+ *
+ * A line made up of 3+ contiguous dashes, with nothing else on the line
+ * (leading/trailing spaces allowed). Only `-` is accepted: CommonMark also
+ * allows `*` and `_`, but those collide with emphasis and with censored words
+ * (bad-words masks a term as a run of `*`), so a bare `***` / `_______` line
+ * stays as text/emphasis instead of turning into a divider.
+ *
+*/
+HorizontalRule = [ \t]* loc:HorizontalRuleMarkers [ \t]* (EndOfLine / !.) { return horizontalRule(loc); }
+
+HorizontalRuleMarkers
+  = "-" |3..| { return [range().start, range().end]; }
 
 /**
  *

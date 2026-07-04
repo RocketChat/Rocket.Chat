@@ -4,10 +4,10 @@ import type { IUpload } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { check } from 'meteor/check';
 
+import { WebdavClientAdapter } from '../../../../server/bridges/webdav/lib/webdavClientAdapter';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { UploadFS } from '../../../../server/ufs';
 import type { StoreOptions } from '../../../../server/ufs/ufs-store';
-import { WebdavClientAdapter } from '../../../webdav/server/lib/webdavClientAdapter';
 
 type WebdavOptions = StoreOptions & {
 	connection: {

@@ -444,7 +444,7 @@ exports[`renders NewCall without crashing 1`] = `
               >
                 <input
                   aria-invalid="false"
-                  aria-labelledby=":r0:"
+                  aria-labelledby="_r_0_"
                   class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-trljwa rcx-css-rcil7k"
                   value=""
                 />
@@ -463,7 +463,7 @@ exports[`renders NewCall without crashing 1`] = `
           </span>
           <span
             class="rcx-box rcx-box--full rcx-field__description"
-            id=":r0:"
+            id="_r_0_"
           >
             Enter username or number
           </span>
