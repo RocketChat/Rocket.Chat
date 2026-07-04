@@ -223,5 +223,26 @@ export const createLayoutSettings = () =>
 				public: true,
 				i18nDescription: 'Room_Toolbox_Layout_description',
 			});
+			await this.add('Room_Toolbox_Layout_Public', '', {
+				type: 'code',
+				code: 'application/json',
+				multiline: true,
+				public: true,
+				i18nDescription: 'Room_Toolbox_Layout_Public_description',
+			});
+			await this.add('Room_Toolbox_Layout_Private', '', {
+				type: 'code',
+				code: 'application/json',
+				multiline: true,
+				public: true,
+				i18nDescription: 'Room_Toolbox_Layout_Private_description',
+			});
+			await this.add('Room_Toolbox_Layout_Direct', '', {
+				type: 'code',
+				code: 'application/json',
+				multiline: true,
+				public: true,
+				i18nDescription: 'Room_Toolbox_Layout_Direct_description',
+			});
 		});
 	});
