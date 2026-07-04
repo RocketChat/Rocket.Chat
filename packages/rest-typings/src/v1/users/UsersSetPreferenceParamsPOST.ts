@@ -40,6 +40,7 @@ export type UsersSetPreferencesParamsPOST = {
 		sidebarDisplayAvatar?: boolean;
 		sidebarGroupByType?: boolean;
 		sidebarShowCustomCategories?: boolean;
+		sidebarShowCategoryIcons?: boolean;
 		sidebarDynamicCategory?: 'none' | 'mention' | 'unreads';
 		sidebarCustomCategories?: ISidebarCustomCategory[];
 		muteFocusedConversations?: boolean;
@@ -203,6 +204,10 @@ const UsersSetPreferencesParamsPostSchema = {
 					nullable: true,
 				},
 				sidebarShowCustomCategories: {
+					type: 'boolean',
+					nullable: true,
+				},
+				sidebarShowCategoryIcons: {
 					type: 'boolean',
 					nullable: true,
 				},

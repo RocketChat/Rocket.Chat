@@ -7317,6 +7317,7 @@
   "Select_message_from_user_with_preview": "Select message from {{username}}: {{message}}",
   "current": "current",
   "Category": "Category",
+  "Category_icons": "Category icons",
   "Create_category": "Create category",
   "Categories_are_private_custom_groupings_of_rooms": "Categories are private custom groupings of rooms.",
   "You_can_add_rooms_after": "You can add rooms after",

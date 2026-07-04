@@ -14,6 +14,7 @@ export const useViewModeItems = (): GenericMenuItemProps[] => {
 
 	const sidebarViewMode = useUserPreference<'medium' | 'extended' | 'condensed'>('sidebarViewMode', 'extended');
 	const sidebarDisplayAvatar = useUserPreference('sidebarDisplayAvatar', false);
+	const sidebarShowCategoryIcons = useUserPreference('sidebarShowCategoryIcons', true);
 
 	// Only two view modes are offered: "Detailed" (extended) and "Compact" (condensed). The underlying
 	// preference values are unchanged; "medium" is no longer selectable from the menu.
@@ -23,6 +24,11 @@ export const useViewModeItems = (): GenericMenuItemProps[] => {
 	const handleChangeSidebarDisplayAvatar = useCallback(
 		() => saveUserPreferences({ data: { sidebarDisplayAvatar: !sidebarDisplayAvatar } }),
 		[saveUserPreferences, sidebarDisplayAvatar],
+	);
+
+	const handleChangeSidebarShowCategoryIcons = useCallback(
+		() => saveUserPreferences({ data: { sidebarShowCategoryIcons: !sidebarShowCategoryIcons } }),
+		[saveUserPreferences, sidebarShowCategoryIcons],
 	);
 
 	return [
@@ -46,6 +52,13 @@ export const useViewModeItems = (): GenericMenuItemProps[] => {
 			icon: 'user-rounded',
 			onClick: handleChangeSidebarDisplayAvatar,
 			addon: <ToggleSwitch checked={sidebarDisplayAvatar} onChange={() => undefined} />,
+		},
+		{
+			id: 'category-icons',
+			content: t('Category_icons'),
+			icon: 'emoji',
+			onClick: handleChangeSidebarShowCategoryIcons,
+			addon: <ToggleSwitch checked={sidebarShowCategoryIcons} onChange={() => undefined} />,
 		},
 	];
 };

@@ -46,6 +46,7 @@ type UserPreferences = {
 	sidebarDisplayAvatar: boolean;
 	sidebarGroupByType: boolean;
 	sidebarShowCustomCategories: boolean;
+	sidebarShowCategoryIcons: boolean;
 	sidebarDynamicCategory: 'none' | 'mention' | 'unreads';
 	sidebarCustomCategories: ISidebarCustomCategory[];
 	muteFocusedConversations: boolean;
@@ -124,6 +125,7 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		sidebarDisplayAvatar: Match.Optional(Boolean),
 		sidebarGroupByType: Match.Optional(Boolean),
 		sidebarShowCustomCategories: Match.Optional(Boolean),
+		sidebarShowCategoryIcons: Match.Optional(Boolean),
 		sidebarDynamicCategory: Match.Optional(String),
 		sidebarCustomCategories: Match.Optional([Match.ObjectIncluding({ _id: String, name: String })]),
 		muteFocusedConversations: Match.Optional(Boolean),

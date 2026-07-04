@@ -93,7 +93,7 @@ const CategoryMenu = ({
 			<IconButton ref={triggerRef} mini icon='kebab' pressed={open} title={t('Options')} onClick={() => setOpen(!open)} />
 			{open && (
 				<Position anchor={triggerRef} placement='bottom-end'>
-					<Tile role='menu' elevation='2' pb={8} pi={0} width='x224' onKeyDown={(e) => e.key === 'Escape' && close()}>
+					<Tile role='menu' elevation='2' pb={8} pi={0} width='x256' onKeyDown={(e) => e.key === 'Escape' && close()}>
 						<Option role='menuitem' icon='arrow-up' label={t('Move_up')} disabled={!canMoveUp} onClick={run(onMoveUp)} />
 						<Option role='menuitem' icon='arrow-down' label={t('Move_down')} disabled={!canMoveDown} onClick={run(onMoveDown)} />
 						{category && <Option role='menuitem' icon='hash' label={t('New_channel')} onClick={run(createChannel)} />}

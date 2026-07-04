@@ -23,10 +23,10 @@ const pillClass = css`
 	color: var(--rcx-color-button-font-on-secondary, #e4e7ea);
 	background-color: var(--rcx-color-button-background-secondary-default, #2f343d);
 	transition:
-		background-color 160ms ease,
-		color 160ms ease,
-		flex-grow 160ms ease,
-		opacity 160ms ease;
+		background-color 160ms cubic-bezier(0.69, 0.02, 0.22, 0.98),
+		color 160ms cubic-bezier(0.69, 0.02, 0.22, 0.98),
+		flex-grow 160ms cubic-bezier(0.69, 0.02, 0.22, 0.98),
+		opacity 160ms cubic-bezier(0.69, 0.02, 0.22, 0.98);
 
 	&:hover {
 		background-color: var(--rcx-color-button-background-secondary-hover, #383c44);
@@ -41,21 +41,25 @@ const pillClass = css`
 	.rcx-filter-pill__label {
 		display: grid;
 		grid-template-columns: 0fr;
-		transition: grid-template-columns 160ms ease;
+		min-inline-size: 0; /* Let the label shrink so it can truncate on a narrow sidebar. */
+		transition: grid-template-columns 160ms cubic-bezier(0.69, 0.02, 0.22, 0.98);
 	}
 
 	.rcx-filter-pill__label > span {
 		overflow: hidden;
 		white-space: nowrap;
+		text-overflow: ellipsis;
 	}
 
 	.rcx-filter-pill__count {
+		flex-shrink: 0; /* The count is never truncated; only the label absorbs the shrink. */
 		margin-inline-start: 0.25rem;
 	}
 
-	/* Selected pills grow to fill the row, with the content centered. */
+	/* Selected pills grow to fill the row (and shrink when it's too narrow), with content centered. */
 	&[data-selected='true'] {
 		flex-grow: 1;
+		flex-shrink: 1;
 		justify-content: center;
 	}
 
