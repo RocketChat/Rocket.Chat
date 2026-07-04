@@ -10,6 +10,7 @@ import RoomListCollapser from './RoomListCollapser';
 import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
+import SidebarFilterEmptyState from './SidebarFilterEmptyState';
 import SidebarFilterTags from './SidebarFilterTags';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useCustomCategories } from '../../views/navigation/hooks/useCustomCategories';
@@ -69,46 +70,52 @@ const RoomListInner = () => {
 			   behind the rows but above the sidebar surface. `minHeight: 0` lets this flex child scroll. */}
 			<Box position='relative' overflow='hidden' flexGrow={1} flexShrink={1} ref={ref} style={{ isolation: 'isolate', minHeight: 0 }}>
 				<CategoryDropHighlight containerRef={ref} />
-				<VirtualizedScrollbars>
-					<GroupedVirtuoso
-						groupCounts={groupsCount}
-						groupContent={(index) => {
-							const group = groups[index];
-							const isCustom = Boolean(group.category);
-							const positionInSegment = isCustom ? index : index - customCount;
-							const segmentLength = isCustom ? customCount : systemKeys.length;
+				{filter !== 'all' && totalCount === 0 ? (
+					<SidebarFilterEmptyState filter={filter} />
+				) : (
+					<VirtualizedScrollbars>
+						<GroupedVirtuoso
+							groupCounts={groupsCount}
+							groupContent={(index) => {
+								const group = groups[index];
+								const isCustom = Boolean(group.category);
+								const positionInSegment = isCustom ? index : index - customCount;
+								const segmentLength = isCustom ? customCount : systemKeys.length;
 
-							const onMoveUp = () => (isCustom ? reorderCategory(group.key, 'up') : moveSystemGroup(systemKeys, group.key, 'up'));
-							const onMoveDown = () => (isCustom ? reorderCategory(group.key, 'down') : moveSystemGroup(systemKeys, group.key, 'down'));
+								const onMoveUp = () => (isCustom ? reorderCategory(group.key, 'up') : moveSystemGroup(systemKeys, group.key, 'up'));
+								const onMoveDown = () => (isCustom ? reorderCategory(group.key, 'down') : moveSystemGroup(systemKeys, group.key, 'down'));
 
-							return (
-								<RoomListCollapser
-									group={group}
-									canMoveUp={positionInSegment > 0}
-									canMoveDown={positionInSegment < segmentLength - 1}
-									onMoveUp={onMoveUp}
-									onMoveDown={onMoveDown}
-									onClick={() => handleClick(group.key)}
-									onKeyDown={(e) => handleKeyDown(e, group.key)}
-								/>
-							);
-						}}
-						{...(totalCount > 0 && {
-							itemContent: (index, groupIndex) => {
-								const group = groups[groupIndex];
+								return (
+									<RoomListCollapser
+										group={group}
+										canMoveUp={positionInSegment > 0}
+										canMoveDown={positionInSegment < segmentLength - 1}
+										onMoveUp={onMoveUp}
+										onMoveDown={onMoveDown}
+										onClick={() => handleClick(group.key)}
+										onKeyDown={(e) => handleKeyDown(e, group.key)}
+									/>
+								);
+							}}
+							{...(totalCount > 0 && {
+								itemContent: (index, groupIndex) => {
+									const group = groups[groupIndex];
 
-								if (group.empty) {
-									return <CategoryEmptyPlaceholder categoryId={group.key} isCustom={Boolean(group.category)} />;
-								}
+									if (group.empty) {
+										return <CategoryEmptyPlaceholder categoryId={group.key} isCustom={Boolean(group.category)} />;
+									}
 
-								const correctedIndex = index - groupsCount.slice(0, groupIndex).reduce((acc, count) => acc + count, 0);
-								const item = group.rooms[correctedIndex];
-								return item && <RoomListRow data={itemData} item={item} groupKey={group.key} isCustomCategory={Boolean(group.category)} />;
-							},
-						})}
-						components={{ Item: RoomListRowWrapper, List: RoomListWrapper }}
-					/>
-				</VirtualizedScrollbars>
+									const correctedIndex = index - groupsCount.slice(0, groupIndex).reduce((acc, count) => acc + count, 0);
+									const item = group.rooms[correctedIndex];
+									return (
+										item && <RoomListRow data={itemData} item={item} groupKey={group.key} isCustomCategory={Boolean(group.category)} />
+									);
+								},
+							})}
+							components={{ Item: RoomListRowWrapper, List: RoomListWrapper }}
+						/>
+					</VirtualizedScrollbars>
+				)}
 			</Box>
 		</Box>
 	);

@@ -1,16 +1,20 @@
-import { Box, Tag } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
+import type { Keys as IconName } from '@rocket.chat/icons';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
-import type { ReactNode } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import SidebarConfigMenu from './SidebarConfigMenu';
+import SidebarFilterPill from './SidebarFilterPill';
 import { useRoomListFilter } from '../contexts/RoomListFilterContext';
 import type { SidebarRoomListFilter } from '../hooks/useRoomList';
 import { useSidebarFilterCounts } from '../hooks/useSidebarFilterCounts';
 
 /**
- * Single-select filter tags at the top of the sidebar. "All" clears the filter; the others narrow the list to
- * their matching rooms (see `useRoomList`). "Unreads"/"Mentions" are hidden when their dynamic category is the
- * active grouping (it would be redundant), and every count-bearing tag is only shown when it has items.
+ * Single-select filter pills at the top of the sidebar (Apple-Mail-style): each pill shows only its icon when
+ * unselected and expands (filling the row) to icon + label + count when selected, with a per-filter accent
+ * color. All filters stay visible even at 0 items; "Unreads"/"Mentions" are only hidden when their dynamic
+ * category is the active grouping (the pill would be redundant). The config menu shares the row on the right.
  */
 const SidebarFilterTags = () => {
 	const { t } = useTranslation();
@@ -18,19 +22,43 @@ const SidebarFilterTags = () => {
 	const { drafts, unreads, mentions } = useSidebarFilterCounts();
 	const dynamicCategory = useUserPreference<'none' | 'mention' | 'unreads'>('sidebarDynamicCategory', 'none');
 
-	// Clicking the active tag returns to "All".
-	const renderTag = (key: SidebarRoomListFilter, label: ReactNode) => (
-		<Tag medium variant={filter === key ? 'primary' : 'secondary'} onClick={() => setFilter(filter === key ? 'all' : key)}>
-			{label}
-		</Tag>
+	const showUnreads = dynamicCategory !== 'unreads';
+	const showMentions = dynamicCategory !== 'mention';
+
+	// If the active filter's pill was hidden (its dynamic category became the active grouping), fall back to "All".
+	useEffect(() => {
+		if ((filter === 'unreads' && !showUnreads) || (filter === 'mentions' && !showMentions)) {
+			setFilter('all');
+		}
+	}, [filter, showUnreads, showMentions, setFilter]);
+
+	// Clicking the active pill returns to "All". Each filter gets its own selected accent color.
+	const renderPill = (
+		key: SidebarRoomListFilter,
+		icon: IconName,
+		label: string,
+		color: 'neutral' | 'primary' | 'danger' | 'light',
+		count?: number,
+	) => (
+		<SidebarFilterPill
+			icon={icon}
+			label={label}
+			count={count}
+			color={color}
+			selected={filter === key}
+			onClick={() => setFilter(filter === key ? 'all' : key)}
+		/>
 	);
 
 	return (
-		<Box is='nav' aria-label={t('Filter')} display='flex' flexWrap='wrap' pi={12} pbs={12} pbe={8} style={{ gap: '0.5rem' }}>
-			{renderTag('all', t('All'))}
-			{dynamicCategory !== 'unreads' && unreads > 0 && renderTag('unreads', `${t('Unreads')} (${unreads})`)}
-			{dynamicCategory !== 'mention' && mentions > 0 && renderTag('mentions', `${t('Mentions')} (${mentions})`)}
-			{drafts > 0 && renderTag('drafts', `${t('Drafts')} (${drafts})`)}
+		<Box display='flex' alignItems='flex-start' pi={12} pbs={12} pbe={8} style={{ gap: '0.5rem' }}>
+			<Box is='nav' aria-label={t('Filter')} display='flex' flexWrap='wrap' flexGrow={1} style={{ gap: '0.5rem' }}>
+				{renderPill('all', 'inbox', t('All'), 'neutral')}
+				{showUnreads && renderPill('unreads', 'flag', t('Unreads'), 'primary', unreads)}
+				{showMentions && renderPill('mentions', 'at', t('Mentions'), 'danger', mentions)}
+				{renderPill('drafts', 'pencil', t('Drafts'), 'light', drafts)}
+			</Box>
+			<SidebarConfigMenu />
 		</Box>
 	);
 };

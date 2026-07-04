@@ -1,4 +1,5 @@
 import { NavBarGroup } from '@rocket.chat/fuselage';
+import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useLayout, usePermission } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
@@ -12,6 +13,9 @@ import NavBarPagesStackMenu from './NavBarPagesStackMenu';
 const NavBarPagesGroup = () => {
 	const { t } = useTranslation();
 	const { isTablet, isMobile } = useLayout();
+	// The classic sidebar renders its own config menu inside the sidebar (in the filter row); keep the navbar
+	// entry only for the navigation (feature-preview) sidebar.
+	const secondSidebarEnabled = useFeaturePreview('secondarySidebar');
 
 	const hasManageAppsPermission = usePermission('manage-apps');
 	const hasAccessMarketplacePermission = usePermission('access-marketplace');
@@ -27,7 +31,7 @@ const NavBarPagesGroup = () => {
 				</>
 			)}
 			{showMarketplace && !isMobile && <NavBarItemMarketPlaceMenu />}
-			{!isMobile && <NavBarItemSort />}
+			{!isMobile && secondSidebarEnabled && <NavBarItemSort />}
 			<NavBarItemCreateNew />
 		</NavBarGroup>
 	);
