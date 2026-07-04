@@ -4,6 +4,8 @@ import { useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ComponentType } from 'react';
 import { useMemo } from 'react';
 
+import { normalizeSidebarViewMode } from '../lib/normalizeSidebarViewMode';
+
 export const useAvatarTemplate = (
 	sidebarViewMode?: 'extended' | 'medium' | 'condensed',
 	sidebarDisplayAvatar?: boolean,
@@ -11,19 +13,17 @@ export const useAvatarTemplate = (
 	const sidebarViewModeFromSettings = useUserPreference<'extended' | 'medium' | 'condensed'>('sidebarViewMode');
 	const sidebarDisplayAvatarFromSettings = useUserPreference('sidebarDisplayAvatar');
 
-	const viewMode = sidebarViewMode ?? sidebarViewModeFromSettings;
+	const viewMode = normalizeSidebarViewMode(sidebarViewMode ?? sidebarViewModeFromSettings);
 	const displayAvatar = sidebarDisplayAvatar ?? sidebarDisplayAvatarFromSettings;
 	return useMemo(() => {
 		if (!displayAvatar) {
 			return null;
 		}
 
-		const size = ((): 'x36' | 'x28' | 'x20' => {
+		const size = ((): 'x36' | 'x20' => {
 			switch (viewMode) {
 				case 'extended':
 					return 'x36';
-				case 'medium':
-					return 'x28';
 				case 'condensed':
 				default:
 					return 'x20';

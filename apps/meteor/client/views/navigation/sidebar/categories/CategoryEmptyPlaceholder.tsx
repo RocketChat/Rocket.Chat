@@ -3,11 +3,12 @@ import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import { useGroupDrop } from './CategoryDnDContext';
+import { normalizeSidebarViewMode } from '../../../../sidebar/lib/normalizeSidebarViewMode';
 
 // The placeholder mimics an empty room row so the drop target reads as a ghost menu item rather than a
 // centered banner: it follows the active view mode's height and left-aligns the hint at the same indent as
 // the room rows' leading icon/avatar.
-const ITEM_HEIGHT = { extended: 44, medium: 36, condensed: 28 } as const;
+const ITEM_HEIGHT = { extended: 44, condensed: 28 } as const;
 
 /**
  * Placeholder + drop target shown inside an empty category — the whole row is the drop zone. Custom categories
@@ -17,7 +18,7 @@ const CategoryEmptyPlaceholder = ({ categoryId, isCustom = true }: { categoryId:
 	const { t } = useTranslation();
 	const { isDragOver, dropProps } = useGroupDrop(categoryId, isCustom);
 
-	const viewMode = useUserPreference<'extended' | 'medium' | 'condensed'>('sidebarViewMode') ?? 'extended';
+	const viewMode = normalizeSidebarViewMode(useUserPreference<'extended' | 'medium' | 'condensed'>('sidebarViewMode')) ?? 'extended';
 
 	return (
 		<Box

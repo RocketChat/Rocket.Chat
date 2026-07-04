@@ -25,6 +25,7 @@ import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
+import { normalizeSidebarViewMode } from '../lib/normalizeSidebarViewMode';
 
 const RoomListInner = () => {
 	const { t } = useTranslation();
@@ -40,7 +41,7 @@ const RoomListInner = () => {
 	const sideBarItemTemplate = useTemplateByViewMode();
 	const { ref } = useResizeObserver<HTMLElement>({ debounceDelay: 100 });
 	const openedRoom = useOpenedRoom() ?? '';
-	const sidebarViewMode = useUserPreference<'extended' | 'medium' | 'condensed'>('sidebarViewMode') || 'extended';
+	const sidebarViewMode = normalizeSidebarViewMode(useUserPreference<'extended' | 'medium' | 'condensed'>('sidebarViewMode')) || 'extended';
 
 	const extended = sidebarViewMode === 'extended';
 	const itemData = useMemo(

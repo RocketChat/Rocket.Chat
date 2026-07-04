@@ -5,12 +5,13 @@ import { useTranslation } from 'react-i18next';
 
 import SidebarRoomList from './RoomList';
 import SidebarFooter from './footer';
+import { normalizeSidebarViewMode } from './lib/normalizeSidebarViewMode';
 import BannerSection from './sections/BannerSection';
 import NowPlayingSection from './sections/NowPlayingSection';
 
 const Sidebar = () => {
 	const { t } = useTranslation();
-	const sidebarViewMode = useUserPreference('sidebarViewMode');
+	const sidebarViewMode = normalizeSidebarViewMode(useUserPreference('sidebarViewMode'));
 	const sidebarHideAvatar = !useUserPreference('sidebarDisplayAvatar');
 
 	return (

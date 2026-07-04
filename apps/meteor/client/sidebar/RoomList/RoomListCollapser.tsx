@@ -66,10 +66,20 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 	const showActions = hovered || menuOpen;
 
 	return (
-		// Outer wrapper adds transparent space ABOVE every category (separating it from the previous category's
-		// items, and the first one from the sidebar header). It must be padding, not margin — virtuoso measures
-		// the rendered height, and a top margin would collapse out and let the header overlap its items.
-		<Box {...dropProps} style={{ paddingBlockStart: '0.5rem', opacity: dimmed ? 0.4 : undefined }}>
+		// Outer wrapper adds space ABOVE every category (separating it from the previous category's items, and
+		// the first one from the sidebar header). It must be padding, not margin — virtuoso measures the rendered
+		// height, and a top margin would collapse out and let the header overlap its items. The sidebar-colored
+		// background makes the whole header footprint opaque so it cleanly covers the rooms behind it while
+		// virtuoso keeps it stuck at the top (over the sidebar it's identical to the transparent gap).
+		<Box
+			{...dropProps}
+			style={{
+				paddingBlockStart: '0.5rem',
+				backgroundColor:
+					'var(--rcx-sidebar-color-surface-default, var(--rcx-color-surface-sidebar, var(--rcx-color-neutral-400, #e4e7ea)))',
+				opacity: dimmed ? 0.4 : undefined,
+			}}
+		>
 			<Box
 				position='relative'
 				className={barStylingClass}
