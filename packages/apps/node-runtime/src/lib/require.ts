@@ -24,10 +24,17 @@ const ALLOWED_MODULES = [
 // 3. To require apps-engine files
 export const sandboxRequire = (module: string) => {
 	// Normalize Node built-in specifiers: accept both 'crypto' and 'node:crypto'
-	const normalized = module.replace('node:', '');
+	const normalized = module.replace(/^node:/, '');
 
-	// We allow variants like 'fs', 'node:fs' or 'node:fs/promises', or even '@rocket.chat/apps-engine/**'
-	if (!ALLOWED_MODULES.some((mod) => normalized.startsWith(mod))) {
+	// A specifier is allowed only when it is exactly an allowed module or a subpath
+	// of one (e.g. 'fs/promises', '@rocket.chat/apps-engine/**'). We must not use a
+	// bare `startsWith(mod)`: it would let lookalike packages like 'fsevents' (starts
+	// with 'fs') through. We also reject any '..' segment so a subpath cannot escape
+	// an allowed module's directory (e.g. 'uuid/../../../some/file').
+	const hasTraversal = normalized.split('/').includes('..');
+	const isAllowed = !hasTraversal && ALLOWED_MODULES.some((mod) => normalized === mod || normalized.startsWith(`${mod}/`));
+
+	if (!isAllowed) {
 		throw new Error(`Module ${module} is not allowed`);
 	}
 
