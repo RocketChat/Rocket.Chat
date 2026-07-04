@@ -1,5 +1,6 @@
 import type { CronJobStatus } from '@rocket.chat/core-typings';
 import type { Tag } from '@rocket.chat/fuselage';
+import cronstrue from 'cronstrue';
 import type { ComponentProps } from 'react';
 
 export const statusVariant = (status?: CronJobStatus): ComponentProps<typeof Tag>['variant'] => {
@@ -16,5 +17,19 @@ export const statusVariant = (status?: CronJobStatus): ComponentProps<typeof Tag
 			return 'warning';
 		default:
 			return undefined;
+	}
+};
+
+export const translateInterval = (interval: string | number | undefined): string => {
+	if (interval === undefined) {
+		return '';
+	}
+	if (typeof interval === 'number') {
+		return interval.toString();
+	}
+	try {
+		return cronstrue.toString(interval);
+	} catch {
+		return interval;
 	}
 };

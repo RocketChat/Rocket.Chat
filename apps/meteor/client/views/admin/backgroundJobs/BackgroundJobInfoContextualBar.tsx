@@ -140,13 +140,13 @@ const BackgroundJobInfoContextualBar = ({ jobName, tab, onClose }: BackgroundJob
 						<GenericTableHeader>
 							<GenericTableHeaderCell>{t('Started')}</GenericTableHeaderCell>
 							<GenericTableHeaderCell>{t('Finished')}</GenericTableHeaderCell>
-							<GenericTableHeaderCell>{t('Result')}</GenericTableHeaderCell>
+							<GenericTableHeaderCell w='x100'>{t('Result')}</GenericTableHeaderCell>
 						</GenericTableHeader>
 						<GenericTableBody>
 							{history.map((entry) => (
 								<GenericTableRow key={entry._id}>
-									<GenericTableCell withTruncatedText>{entry.startedAt ? formatDateAndTime(entry.startedAt) : '—'}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{entry.finishedAt ? formatDateAndTime(entry.finishedAt) : '—'}</GenericTableCell>
+									<GenericTableCell>{entry.startedAt ? formatDateAndTime(entry.startedAt) : ''}</GenericTableCell>
+									<GenericTableCell>{entry.finishedAt ? formatDateAndTime(entry.finishedAt) : ''}</GenericTableCell>
 									<GenericTableCell>
 										<Box display='flex'>
 											<Tag variant={statusVariant(entry.error ? 'failed' : 'completed')}>{entry.error ? t('Failed') : t('Completed')}</Tag>
