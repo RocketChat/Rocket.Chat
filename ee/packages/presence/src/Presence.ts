@@ -4,11 +4,14 @@ import type { IPresence, IBrokerNode } from '@rocket.chat/core-services';
 import { License, ServiceClass, Settings } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Users, UsersSessions } from '@rocket.chat/models';
 
 import { PresenceReaper } from './lib/PresenceReaper';
 import { normalizeStatusText } from './lib/normalizeStatusText';
 import { type ClaimUpdate, processPresence } from './lib/presenceEngine';
+
+const logger = new Logger('Presence');
 
 const MAX_CONNECTIONS = 200;
 const MAX_TIMEOUT_DELAY_MS = 2 ** 31 - 1;
@@ -17,6 +20,7 @@ type PresenceUser = Pick<
 	IUser,
 	| '_id'
 	| 'username'
+	| 'type'
 	| 'roles'
 	| 'status'
 	| 'statusDefault'
@@ -24,6 +28,7 @@ type PresenceUser = Pick<
 	| 'statusText'
 	| 'statusExpiresAt'
 	| 'statusConnection'
+	| 'statusId'
 	| 'previousState'
 >;
 
@@ -47,6 +52,8 @@ export class Presence extends ServiceClass implements IPresence {
 	private reaper: PresenceReaper;
 
 	private expirationTimeout?: NodeJS.Timeout;
+
+	private expirationScheduleToken?: symbol;
 
 	constructor() {
 		super();
@@ -131,10 +138,19 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	private async setupNextExpiration(): Promise<void> {
+		const token = Symbol();
+		this.expirationScheduleToken = token;
+
+		const next = await Users.findNextStatusExpiration();
+
+		// A newer reschedule replaced our token while we awaited the lookup; let it arm the timer.
+		if (this.expirationScheduleToken !== token) {
+			return;
+		}
+
 		clearTimeout(this.expirationTimeout);
 		this.expirationTimeout = undefined;
 
-		const next = await Users.findNextStatusExpiration();
 		if (!next?.statusExpiresAt) {
 			return;
 		}
@@ -146,7 +162,7 @@ export class Presence extends ServiceClass implements IPresence {
 		const delay = Math.min(Math.max(next.statusExpiresAt.getTime() - Date.now(), 0), MAX_TIMEOUT_DELAY_MS);
 		this.expirationTimeout = setTimeout(() => {
 			this.expirationTimeout = undefined;
-			this.handleExpirationJob().catch((err) => console.error('[Presence] Error handling status expiration:', err));
+			this.handleExpirationJob().catch((err) => logger.error({ msg: 'Error handling status expiration', err }));
 		}, delay);
 	}
 
@@ -161,20 +177,23 @@ export class Presence extends ServiceClass implements IPresence {
 		const rejected = results.filter((result) => result.status === 'rejected');
 
 		if (fulfilled.length > 0) {
-			console.debug(`[PresenceReaper] Successfully updated presence for ${fulfilled.length} users.`);
+			logger.debug({ msg: 'Successfully updated presence for users', count: fulfilled.length });
 		}
 
 		if (rejected.length > 0) {
-			console.error(
-				`[PresenceReaper] Failed to update presence for ${rejected.length} users:`,
-				rejected.map(({ reason }) => reason),
-			);
+			logger.error({
+				msg: 'Failed to update presence for users',
+				count: rejected.length,
+				reasons: rejected.map(({ reason }): unknown => reason),
+			});
 		}
 	}
 
 	override async stopped(): Promise<void> {
 		this.reaper.stop();
+		this.expirationScheduleToken = undefined;
 		clearTimeout(this.expirationTimeout);
+		this.expirationTimeout = undefined;
 		clearTimeout(this.lostConTimeout);
 	}
 
@@ -314,7 +333,7 @@ export class Presence extends ServiceClass implements IPresence {
 	 */
 	async setActiveState(
 		userId: string,
-		newState: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt'>,
+		newState: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt' | 'statusId'>,
 	): Promise<boolean> {
 		if (newState.statusExpiresAt) {
 			const expiresAt = new Date(newState.statusExpiresAt).getTime();
@@ -333,11 +352,11 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	/**
-	 * Ends the current active claim. Restores previous if valid, otherwise
-	 * falls back to system-managed.
+	 * Ends a presence claim. With `statusId`, only that claim is affected (so concurrent voice/video
+	 * claims end in either order); without it, the displaced claim is restored.
 	 */
-	async endActiveState(userId: string): Promise<boolean> {
-		return this.updatePresenceAndReschedule(userId, { type: 'endActive' });
+	async endActiveState(userId: string, statusId?: string): Promise<boolean> {
+		return this.updatePresenceAndReschedule(userId, { type: 'endActive', ...(statusId && { statusId }) });
 	}
 
 	/**
@@ -365,6 +384,7 @@ export class Presence extends ServiceClass implements IPresence {
 				? await Users.findOneById<PresenceUser>(uidOrUser, {
 						projection: {
 							username: 1,
+							type: 1,
 							roles: 1,
 							status: 1,
 							statusDefault: 1,
@@ -372,6 +392,7 @@ export class Presence extends ServiceClass implements IPresence {
 							statusText: 1,
 							statusExpiresAt: 1,
 							statusConnection: 1,
+							statusId: 1,
 							previousState: 1,
 						},
 					})

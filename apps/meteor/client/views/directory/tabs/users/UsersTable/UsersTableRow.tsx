@@ -1,5 +1,5 @@
 import type { IDirectoryUserResult, IUser, Serialized } from '@rocket.chat/core-typings';
-import { Box, Flex } from '@rocket.chat/fuselage';
+import { Box, FlexContainer, FlexItem } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
 import type { KeyboardEvent, MouseEvent } from 'react';
@@ -27,9 +27,9 @@ const UsersTableRow = ({
 	return (
 		<GenericTableRow key={_id} onKeyDown={onClick(username)} onClick={onClick(username)} tabIndex={0} role='link' action>
 			<GenericTableCell>
-				<Flex.Container>
+				<FlexContainer>
 					<Box>
-						<Flex.Item>{username && <UserAvatar size='x40' title={username} username={username} etag={avatarETag} />}</Flex.Item>
+						<FlexItem>{username && <UserAvatar size='x40' title={username} username={username} etag={avatarETag} />}</FlexItem>
 						<Box withTruncatedText mi={8}>
 							<Box display='flex'>
 								<Box fontScale='p2m' withTruncatedText>
@@ -44,7 +44,7 @@ const UsersTableRow = ({
 							<MarkdownText variant='inline' fontScale='p2' color='hint' content={bio} />
 						</Box>
 					</Box>
-				</Flex.Container>
+				</FlexContainer>
 			</GenericTableCell>
 			{mediaQuery && canViewFullOtherUserInfo && (
 				<GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>

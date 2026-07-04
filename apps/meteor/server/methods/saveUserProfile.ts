@@ -7,7 +7,6 @@ import { Meteor } from 'meteor/meteor';
 import type { UpdateFilter } from 'mongodb';
 
 import { type AuthenticatedContext, twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
-import { getUserInfo } from '../../app/api/server/helpers/getUserInfo';
 import { saveCustomFields } from '../../app/lib/server/functions/saveCustomFields';
 import { validateUserEditing } from '../../app/lib/server/functions/saveUser';
 import { saveUserIdentity } from '../../app/lib/server/functions/saveUserIdentity';
@@ -16,6 +15,7 @@ import { passwordPolicy } from '../../app/lib/server/lib/passwordPolicy';
 import { setEmailFunction } from '../../app/lib/server/methods/setEmail';
 import { settings as rcSettings } from '../../app/settings/server';
 import { setUserStatusMethod } from '../../app/user-status/server/methods/setUserStatus';
+import { getUserInfo } from '../api/lib/getUserInfo';
 import { callbacks } from '../lib/callbacks';
 import { compareUserPassword } from '../lib/compareUserPassword';
 import { compareUserPasswordHistory } from '../lib/compareUserPasswordHistory';

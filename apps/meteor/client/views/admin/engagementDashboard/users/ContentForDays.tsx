@@ -1,5 +1,5 @@
 import { ResponsiveBar } from '@nivo/bar';
-import { Box, Flex, IconButton, Margins, Skeleton } from '@rocket.chat/fuselage';
+import { Box, FlexContainer, FlexItem, IconButton, Margins, Skeleton } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { format, subDays } from 'date-fns';
 import { useMemo } from 'react';
@@ -43,23 +43,23 @@ const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, ti
 
 	return (
 		<>
-			<Flex.Container alignItems='center' justifyContent='center'>
+			<FlexContainer alignItems='center' justifyContent='center'>
 				<Box>
 					<IconButton icon='chevron-down' verticalAlign='middle' small onClick={onPreviousDateClick} />
-					<Flex.Item basis='50%'>
+					<FlexItem basis='50%'>
 						<Margins inline={8}>
 							<Box is='span' textAlign='center'>
 								{formattedCurrentDate}
 							</Box>
 						</Margins>
-					</Flex.Item>
+					</FlexItem>
 					<IconButton icon='chevron-down' small disabled={displacement === 0} onClick={onNextDateClick} />
 				</Box>
-			</Flex.Container>
-			<Flex.Container>
+			</FlexContainer>
+			<FlexContainer>
 				{data ? (
 					<Box height={196}>
-						<Flex.Item align='stretch' grow={1} shrink={0}>
+						<FlexItem align='stretch' grow={1} shrink={0}>
 							<Box position='relative'>
 								<Box position='absolute' width='full' height='full'>
 									<ResponsiveBar
@@ -106,12 +106,12 @@ const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, ti
 									/>
 								</Box>
 							</Box>
-						</Flex.Item>
+						</FlexItem>
 					</Box>
 				) : (
 					<Skeleton variant='rect' height={196} />
 				)}
-			</Flex.Container>
+			</FlexContainer>
 		</>
 	);
 };

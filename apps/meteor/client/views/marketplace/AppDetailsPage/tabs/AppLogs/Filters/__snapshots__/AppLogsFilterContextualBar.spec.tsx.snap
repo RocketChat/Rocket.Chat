@@ -144,14 +144,14 @@ exports[`renders AppLogsItem without crashing 1`] = `
                     <button
                       aria-expanded="false"
                       aria-haspopup="listbox"
-                      aria-labelledby="react-aria-:r8: timeFilterLabel"
+                      aria-labelledby="react-aria-_r_8_ timeFilterLabel"
                       class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
                       id="timeFilter"
                       type="button"
                     >
                       <span
                         class="rcx-box rcx-box--full rcx-css-11g6st8"
-                        id="react-aria-:r8:"
+                        id="react-aria-_r_8_"
                       />
                       <i
                         aria-hidden="true"
@@ -351,14 +351,14 @@ exports[`renders AppLogsItem without crashing 1`] = `
                       aria-expanded="false"
                       aria-haspopup="listbox"
                       aria-label="Severity"
-                      aria-labelledby="react-aria-:rg: react-aria-:rb: severityFilterLabel"
+                      aria-labelledby="react-aria-_r_g_ react-aria-_r_b_ severityFilterLabel"
                       class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
                       id="severityFilter"
                       type="button"
                     >
                       <span
                         class="rcx-box rcx-box--full rcx-css-e3nij6"
-                        id="react-aria-:rg:"
+                        id="react-aria-_r_g_"
                       >
                         All
                       </span>

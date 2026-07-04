@@ -1,7 +1,8 @@
 import { ResponsivePie } from '@nivo/pie';
 import {
 	Box,
-	Flex,
+	FlexContainer,
+	FlexItem,
 	Icon,
 	Margins,
 	Skeleton,
@@ -68,16 +69,16 @@ const MessagesPerChannelSection = () => {
 				/>
 			</EngagementDashboardCardFilter>
 
-			<Flex.Container>
+			<FlexContainer>
 				<Margins inline='neg-x12'>
 					<Box>
 						<Margins inline={12}>
-							<Flex.Item grow={1} shrink={0} basis='0'>
+							<FlexItem grow={1} shrink={0} basis='0'>
 								<Box>
-									<Flex.Container alignItems='center' wrap='no-wrap'>
+									<FlexContainer alignItems='center' wrap='no-wrap'>
 										{pie ? (
 											<Box>
-												<Flex.Item grow={1} shrink={1}>
+												<FlexItem grow={1} shrink={1}>
 													<Margins inline={24}>
 														<Box
 															style={{
@@ -139,8 +140,8 @@ const MessagesPerChannelSection = () => {
 															</Box>
 														</Box>
 													</Margins>
-												</Flex.Item>
-												<Flex.Item basis='auto'>
+												</FlexItem>
+												<FlexItem basis='auto'>
 													<Margins block='neg-x4'>
 														<Box>
 															<Margins block={4}>
@@ -159,15 +160,15 @@ const MessagesPerChannelSection = () => {
 															</Margins>
 														</Box>
 													</Margins>
-												</Flex.Item>
+												</FlexItem>
 											</Box>
 										) : (
 											<Skeleton variant='rect' height={300} />
 										)}
-									</Flex.Container>
+									</FlexContainer>
 								</Box>
-							</Flex.Item>
-							<Flex.Item grow={1} shrink={0} basis='0'>
+							</FlexItem>
+							<FlexItem grow={1} shrink={0} basis='0'>
 								<Box>
 									<Margins blockEnd={16}>
 										{table ? <Box fontScale='p1'>{t('Most_popular_channels_top_5')}</Box> : <Skeleton width='50%' />}
@@ -219,11 +220,11 @@ const MessagesPerChannelSection = () => {
 										</Table>
 									)}
 								</Box>
-							</Flex.Item>
+							</FlexItem>
 						</Margins>
 					</Box>
 				</Margins>
-			</Flex.Container>
+			</FlexContainer>
 		</>
 	);
 };

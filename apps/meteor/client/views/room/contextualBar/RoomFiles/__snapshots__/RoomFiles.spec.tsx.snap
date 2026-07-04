@@ -46,7 +46,7 @@ exports[`renders Default without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
             >
               <input
-                aria-controls=":r0:"
+                aria-controls="_r_0_"
                 aria-label="Search_Files"
                 class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
                 data-qa-files-search="true"
@@ -121,13 +121,13 @@ exports[`renders Default without crashing 1`] = `
               <button
                 aria-expanded="false"
                 aria-haspopup="listbox"
-                aria-labelledby="react-aria-:r9:"
+                aria-labelledby="react-aria-_r_9_"
                 class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
                 type="button"
               >
                 <span
                   class="rcx-box rcx-box--full rcx-css-e3nij6"
-                  id="react-aria-:r9:"
+                  id="react-aria-_r_9_"
                 >
                   All
                 </span>
@@ -151,7 +151,7 @@ exports[`renders Default without crashing 1`] = `
             </div>
             <div
               class="rcx-box rcx-box--full rcx-css-kotrsu"
-              id=":r0:"
+              id="_r_0_"
             >
               <div
                 class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
@@ -264,7 +264,7 @@ exports[`renders Empty without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
             >
               <input
-                aria-controls=":ra:"
+                aria-controls="_r_a_"
                 aria-label="Search_Files"
                 class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
                 data-qa-files-search="true"
@@ -339,13 +339,13 @@ exports[`renders Empty without crashing 1`] = `
               <button
                 aria-expanded="false"
                 aria-haspopup="listbox"
-                aria-labelledby="react-aria-:rj:"
+                aria-labelledby="react-aria-_r_j_"
                 class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
                 type="button"
               >
                 <span
                   class="rcx-box rcx-box--full rcx-css-e3nij6"
-                  id="react-aria-:rj:"
+                  id="react-aria-_r_j_"
                 >
                   All
                 </span>
@@ -369,7 +369,7 @@ exports[`renders Empty without crashing 1`] = `
             </div>
             <div
               class="rcx-box rcx-box--full rcx-css-kotrsu"
-              id=":ra:"
+              id="_r_a_"
             >
               <div
                 class="rcx-box rcx-box--full rcx-vertical-bar__content rcx-css-r8c38r"
@@ -553,13 +553,13 @@ exports[`renders Loading without crashing 1`] = `
               <button
                 aria-expanded="false"
                 aria-haspopup="listbox"
-                aria-labelledby="react-aria-:rt:"
+                aria-labelledby="react-aria-_r_t_"
                 class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
                 type="button"
               >
                 <span
                   class="rcx-box rcx-box--full rcx-css-e3nij6"
-                  id="react-aria-:rt:"
+                  id="react-aria-_r_t_"
                 >
                   All
                 </span>

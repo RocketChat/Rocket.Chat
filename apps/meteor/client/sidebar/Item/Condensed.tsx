@@ -23,7 +23,7 @@ const Condensed = ({ icon, title, avatar, actions, unread, menu, badges, ...prop
 	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 
 	return (
-		<SidebarV2Item title={title} {...props} onFocus={mountNow} onPointerEnter={requestMount}>
+		<SidebarV2Item {...props} onFocus={mountNow} onPointerEnter={requestMount}>
 			{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
 			{icon}
 			<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>

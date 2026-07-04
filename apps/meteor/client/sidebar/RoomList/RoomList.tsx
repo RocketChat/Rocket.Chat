@@ -20,7 +20,8 @@ import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 
 const RoomList = () => {
 	const { t } = useTranslation();
-	const isAnonymous = !useUserId();
+	const userId = useUserId();
+	const isAnonymous = !userId;
 
 	const { collapsedGroups, handleClick, handleKeyDown } = useCollapsedGroups();
 	const { groupsCount, groupsList, roomList, groupedUnreadInfo } = useRoomList({ collapsedGroups });
@@ -40,8 +41,9 @@ const RoomList = () => {
 			openedRoom,
 			sidebarViewMode,
 			isAnonymous,
+			userId,
 		}),
-		[avatarTemplate, extended, isAnonymous, openedRoom, sideBarItemTemplate, sidebarViewMode, t],
+		[avatarTemplate, extended, isAnonymous, openedRoom, sideBarItemTemplate, sidebarViewMode, t, userId],
 	);
 
 	usePreventDefault(ref);

@@ -1,5 +1,27 @@
 # @rocket.chat/core-typings
 
+## 8.6.0
+
+### Patch Changes
+
+- ([#40274](https://github.com/RocketChat/Rocket.Chat/pull/40274)) Adds the backend foundation for a unified presence engine with a priority-based claim system (internal > manual > external), status expiration, and previous state restore.
+
+- ([#40839](https://github.com/RocketChat/Rocket.Chat/pull/40839)) Fixes an issue where `description` was incorrectly being used as alternative text for image attachments
+
+- ([#41065](https://github.com/RocketChat/Rocket.Chat/pull/41065)) Fixes REST API endpoints that require two-factor authentication (such as `users.update`) rejecting requests authenticated with a Personal Access Token created with "Ignore Two Factor Authentication", returning `totp-required` even though the token was meant to bypass the check. The two-factor authorization check now resolves the login token from the REST connection, so `bypassTwoFactor` tokens are honored again.
+
+- ([#39273](https://github.com/RocketChat/Rocket.Chat/pull/39273) by [@metaloozee](https://github.com/metaloozee)) Fixes an issue where ui crashes when message attachment fields contains non-string `value` field
+
+## 8.6.0-rc.3
+
+## 8.6.0-rc.2
+
+## 8.6.0-rc.1
+
+### Patch Changes
+
+- ([#41065](https://github.com/RocketChat/Rocket.Chat/pull/41065)) Fixes REST API endpoints that require two-factor authentication (such as `users.update`) rejecting requests authenticated with a Personal Access Token created with "Ignore Two Factor Authentication", returning `totp-required` even though the token was meant to bypass the check. The two-factor authorization check now resolves the login token from the REST connection, so `bypassTwoFactor` tokens are honored again.
+
 ## 8.6.0-rc.0
 
 ### Patch Changes
@@ -9,6 +31,12 @@
 - ([#40839](https://github.com/RocketChat/Rocket.Chat/pull/40839)) Fixes an issue where `description` was incorrectly being used as alternative text for image attachments
 
 - ([#39273](https://github.com/RocketChat/Rocket.Chat/pull/39273) by [@metaloozee](https://github.com/metaloozee)) Fixes an issue where ui crashes when message attachment fields contains non-string `value` field
+
+## 8.5.1
+
+### Patch Changes
+
+- ([#40938](https://github.com/RocketChat/Rocket.Chat/pull/40938) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue where `description` was incorrectly being used as alternative text for image attachments
 
 ## 8.5.0
 
