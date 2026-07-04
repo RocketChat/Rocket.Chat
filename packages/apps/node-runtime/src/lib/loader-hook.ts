@@ -12,6 +12,14 @@ registerHooks({
 		if (specifier === PACKAGE_PREFIX || specifier.startsWith(`${PACKAGE_PREFIX}/`)) {
 			const subpath = specifier.slice(PACKAGE_PREFIX.length).replace(/^\//, '');
 			const localPath = subpath ? path.join(appsPackageDir, subpath) : appsPackageDir;
+
+			// Prevent a crafted specifier (e.g. '@rocket.chat/apps/../../../etc') from
+			// resolving to a path outside the apps package directory.
+			const relative = path.relative(appsPackageDir, localPath);
+			if (relative.startsWith('..') || path.isAbsolute(relative)) {
+				throw new Error(`Cannot resolve "${specifier}" outside of the apps package`);
+			}
+
 			return nextResolve(localPath, context);
 		}
 		return nextResolve(specifier, context);
