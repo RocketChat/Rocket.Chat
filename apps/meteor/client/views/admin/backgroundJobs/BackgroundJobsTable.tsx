@@ -1,4 +1,5 @@
 import { Tag, Box, Pagination } from '@rocket.chat/fuselage';
+import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
 	GenericTableBody,
@@ -16,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { BackgroundJobsTab } from './BackgroundJobsPage';
 import BackgroundJobsTableFilters from './BackgroundJobsTableFilters';
-import { statusVariant } from './helpers';
+import { statusVariant, translateInterval } from './helpers';
 import GenericNoResults from '../../../components/GenericNoResults';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
@@ -31,6 +32,7 @@ const BackgroundJobsTable = ({ tab }: BackgroundJobsTableProps) => {
 	const [, setSearchTerm] = useState('');
 	const formatDateAndTime = useFormatDateAndTime();
 	const timeAgo = useTimeAgo();
+	const isDesktopOrLarger = useMediaQuery('(min-width: 1024px)');
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 
 	const handleClick = (jobName: string): void => {
@@ -86,13 +88,17 @@ const BackgroundJobsTable = ({ tab }: BackgroundJobsTableProps) => {
 				<GenericTable>
 					<GenericTableHeader>
 						<GenericTableHeaderCell>{t('Name')}</GenericTableHeaderCell>
-						<GenericTableHeaderCell>{t('Status')}</GenericTableHeaderCell>
+						<GenericTableHeaderCell w='x120'>{t('Status')}</GenericTableHeaderCell>
+						{isDesktopOrLarger && (
+							<>
+								<GenericTableHeaderCell>{t('Last_Run')}</GenericTableHeaderCell>
+								<GenericTableHeaderCell>{t('Next_Run')}</GenericTableHeaderCell>
+							</>
+						)}
 						<GenericTableHeaderCell>{t('Interval')}</GenericTableHeaderCell>
-						<GenericTableHeaderCell>{t('Last_Run')}</GenericTableHeaderCell>
-						<GenericTableHeaderCell>{t('Next_Run')}</GenericTableHeaderCell>
 					</GenericTableHeader>
 					<GenericTableBody>
-						<GenericTableLoadingTable headerCells={5} />
+						<GenericTableLoadingTable headerCells={isDesktopOrLarger ? 5 : 3} />
 					</GenericTableBody>
 				</GenericTable>
 			)}
@@ -101,10 +107,14 @@ const BackgroundJobsTable = ({ tab }: BackgroundJobsTableProps) => {
 					<GenericTable>
 						<GenericTableHeader>
 							<GenericTableHeaderCell>{t('Name')}</GenericTableHeaderCell>
-							<GenericTableHeaderCell>{t('Status')}</GenericTableHeaderCell>
+							<GenericTableHeaderCell w='x120'>{t('Status')}</GenericTableHeaderCell>
+							{isDesktopOrLarger && (
+								<>
+									<GenericTableHeaderCell>{t('Last_Run')}</GenericTableHeaderCell>
+									<GenericTableHeaderCell>{t('Next_Run')}</GenericTableHeaderCell>
+								</>
+							)}
 							<GenericTableHeaderCell>{t('Interval')}</GenericTableHeaderCell>
-							<GenericTableHeaderCell>{t('Last_Run')}</GenericTableHeaderCell>
-							<GenericTableHeaderCell>{t('Next_Run')}</GenericTableHeaderCell>
 						</GenericTableHeader>
 						<GenericTableBody>
 							{jobs.map((job) => (
@@ -119,9 +129,13 @@ const BackgroundJobsTable = ({ tab }: BackgroundJobsTableProps) => {
 											</Tag>
 										</Box>
 									</GenericTableCell>
-									<GenericTableCell withTruncatedText>{job.repeatInterval || '—'}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{job.lastRunAt ? timeAgo(job.lastRunAt) : '—'}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{job.nextRunAt ? formatDateAndTime(job.nextRunAt) : '—'}</GenericTableCell>
+									{isDesktopOrLarger && (
+										<>
+											<GenericTableCell withTruncatedText>{job.lastRunAt ? timeAgo(job.lastRunAt) : ''}</GenericTableCell>
+											<GenericTableCell withTruncatedText>{job.nextRunAt ? formatDateAndTime(job.nextRunAt) : ''}</GenericTableCell>
+										</>
+									)}
+									<GenericTableCell withTruncatedText>{translateInterval(job.repeatInterval) || ''}</GenericTableCell>
 								</GenericTableRow>
 							))}
 						</GenericTableBody>
