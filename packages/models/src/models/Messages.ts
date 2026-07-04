@@ -7,6 +7,7 @@ import type {
 	RocketChatRecordDeleted,
 	MessageAttachment,
 	IMessageWithPendingFileImport,
+	DeepWritable,
 } from '@rocket.chat/core-typings';
 import type { FindPaginated, IMessagesModel } from '@rocket.chat/model-typings';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
@@ -31,12 +32,6 @@ import type {
 
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
-
-type DeepWritable<T> = T extends (...args: any) => any
-	? T
-	: {
-			-readonly [P in keyof T]: DeepWritable<T[P]>;
-		};
 
 export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IMessage>>) {
