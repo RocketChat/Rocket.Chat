@@ -46,6 +46,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { rid: 1, ts: 1, _updatedAt: 1 } },
+			// `findForUpdates` (chat.syncMessages) filters by `rid` + `_updatedAt` range only;
+			// the index above cannot bound that scan because `ts` sits between them
+			{ key: { rid: 1, _updatedAt: 1 } },
 			{ key: { ts: 1 } },
 			{ key: { 'u._id': 1 } },
 			{ key: { editedAt: 1 }, sparse: true },
