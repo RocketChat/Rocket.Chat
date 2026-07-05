@@ -28,6 +28,7 @@ export type EditRoomInfoFormData = {
 	showChannels: boolean;
 	showDiscussions: boolean;
 	joinCode: string;
+	linksEmbed: boolean;
 	systemMessages: MessageTypesValues[];
 };
 
@@ -52,6 +53,7 @@ export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy): Partia
 			joinCodeRequired: !!joinCodeRequired,
 			systemMessages: Array.isArray(sysMes) ? sysMes : [],
 			hideSysMes: Array.isArray(sysMes) ? !!sysMes?.length : !!sysMes,
+			linksEmbed: room.linksEmbed !== false,
 			encrypted,
 			...(canEditRoomRetentionPolicy &&
 				retentionPolicy?.enabled && {

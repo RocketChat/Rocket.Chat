@@ -45,6 +45,7 @@ type RoomSettings = {
 	retentionIgnoreThreads: boolean;
 	retentionOverrideGlobal: boolean;
 	encrypted: boolean;
+	linksEmbed: boolean;
 	favorite: {
 		favorite: boolean;
 		defaultValue: boolean;
@@ -286,6 +287,10 @@ const settingSavers: RoomSettingsSavers = {
 			await saveRoomTopic(rid, value, user);
 		}
 	},
+	async linksEmbed({ value, rid }) {
+		// This saves the value directly to the room document in MongoDB
+		await Rooms.updateOne({ _id: rid }, { $set: { linksEmbed: value } });
+	},
 	async roomAnnouncement({ value, room, rid, user }) {
 		if (!value && !room.announcement) {
 			return;
@@ -407,6 +412,8 @@ const fields: (keyof RoomSettings)[] = [
 	'retentionIgnoreThreads',
 	'retentionOverrideGlobal',
 	'encrypted',
+
+	'linksEmbed',
 	'favorite',
 ];
 
