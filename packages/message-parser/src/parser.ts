@@ -15,6 +15,7 @@ import type {
 	UnorderedList,
 	OrderedList,
 	KaTeX,
+	LineBreak,
 } from './definitions';
 import type { Options } from './index';
 import {
@@ -49,6 +50,7 @@ import {
 	bigEmoji,
 	emoji,
 	emoticon,
+	emojiUnicode,
 } from './utils';
 import { Scanner } from './scanner';
 import { isNewline, isPlainChar, isSpace, isAlpha, isAlphaNum, isDigit, EMOTICON_KEYS, EMOTICONS } from './chars';
@@ -56,6 +58,7 @@ import { isNewline, isPlainChar, isSpace, isAlpha, isAlphaNum, isDigit, EMOTICON
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const ESCAPABLE = new Set(['*', '_', '~', '`', '#', '.']);
+const UNICODE_EMOJI = new RegExp('^\\p{RGI_Emoji}\\uFE0F?', 'v');
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -105,66 +108,57 @@ export function parse(input: string, options: Options = {}): Root {
 	const scanner = new Scanner(input);
 
 	while (!scanner.isEnd()) {
-		const start = scanner.position();
-		while (!scanner.isEnd() && !isNewline(scanner.char())) {
-			scanner.consume();
+		const lineBreakNode: LineBreak | null = tryLineBreak(scanner);
+		if (lineBreakNode !== null) {
+			root.push(lineBreakNode);
+			continue;
 		}
-		const text = scanner.sliceFrom(start);
-		const isLastPosition = scanner.isEnd();
 
-		if (text === '') {
-			if (!isLastPosition) {
-				root.push(lineBreak());
-			}
-		} else {
-			scanner.backtrack(start);
+		const katexBlockNode: KaTeX | null = tryKatexBlock(scanner, options);
+		if (katexBlockNode !== null) {
+			root.push(katexBlockNode);
+			continue;
+		}
 
-			const katexBlockNode: KaTeX | null = tryKatexBlock(scanner, options);
-			if (katexBlockNode !== null) {
-				root.push(katexBlockNode);
-				continue;
-			}
+		const codeFenceNode: Code | null = tryCodeFence(scanner);
+		if (codeFenceNode !== null) {
+			root.push(codeFenceNode);
+			continue;
+		}
 
-			const codeFenceNode: Code | null = tryCodeFence(scanner);
-			if (codeFenceNode !== null) {
-				root.push(codeFenceNode);
-				continue;
-			}
+		const blockSpoilerNode: SpoilerBlock | null = tryBlockSpoiler(scanner, options);
+		if (blockSpoilerNode !== null) {
+			root.push(blockSpoilerNode);
+			continue;
+		}
 
-			const blockSpoilerNode: SpoilerBlock | null = tryBlockSpoiler(scanner, options);
-			if (blockSpoilerNode !== null) {
-				root.push(blockSpoilerNode);
-				continue;
-			}
+		const blockquoteNode: Quote | null = tryBlockquote(scanner, options);
+		if (blockquoteNode !== null) {
+			root.push(blockquoteNode);
+			continue;
+		}
 
-			const blockquoteNode: Quote | null = tryBlockquote(scanner, options);
-			if (blockquoteNode !== null) {
-				root.push(blockquoteNode);
-				continue;
-			}
+		const unorderedListNode: UnorderedList | null = tryUnorderedList(scanner, options);
+		if (unorderedListNode !== null) {
+			root.push(unorderedListNode);
+			continue;
+		}
 
-			const unorderedListNode: UnorderedList | null = tryUnorderedList(scanner, options);
-			if (unorderedListNode !== null) {
-				root.push(unorderedListNode);
-				continue;
-			}
+		const orderedListNode: OrderedList | null = tryOrderedList(scanner, options);
+		if (orderedListNode !== null) {
+			root.push(orderedListNode);
+			continue;
+		}
 
-			const orderedListNode: OrderedList | null = tryOrderedList(scanner, options);
-			if (orderedListNode !== null) {
-				root.push(orderedListNode);
-				continue;
-			}
+		const headingNode: Heading | null = tryHeading(scanner, options);
+		if (headingNode !== null) {
+			root.push(headingNode);
+			continue;
+		}
 
-			const headingNode: Heading | null = tryHeading(scanner, options);
-			if (headingNode !== null) {
-				root.push(headingNode);
-				continue;
-			}
-
-			const inlines = parseInline(scanner, options);
-			if (inlines.length > 0) {
-				root.push(paragraph(inlines));
-			}
+		const inlines = parseInline(scanner, options);
+		if (inlines.length > 0) {
+			root.push(paragraph(inlines));
 		}
 
 		consumeEndOfLine(scanner); // Skip newline character(s)
@@ -330,6 +324,16 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 		// Phone (+number) — only at a word boundary
 		if (ch === '+' && (prevChar === '' || isSpace(prevChar))) {
 			const result = tryPhone(scanner);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = '';
+				continue;
+			}
+		}
+
+		// Unicode emoji (raw 😀 / ❤️ / ZWJ sequences) — before email/plain so it isn't eaten as text
+		if (ch.charCodeAt(0) > 0x7f) {
+			const result = tryUnicodeEmoji(scanner);
 			if (result !== null) {
 				nodes.push(result);
 				prevChar = '';
@@ -555,6 +559,16 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			}
 		}
 
+		// Unicode emoji (raw 😀 / ❤️ / ZWJ sequences) — before email/plain so it isn't eaten as text
+		if (ch.charCodeAt(0) > 0x7f) {
+			const result = tryUnicodeEmoji(scanner);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = '';
+				continue;
+			}
+		}
+
 		// Email (local@domain)
 		if (isAlpha(ch) || isDigit(ch) || ch.charCodeAt(0) > 127) {
 			const result = tryEmail(scanner);
@@ -610,6 +624,12 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 }
 
 // ─── Inline methods ──────────────────────────────────────────────────────────────
+
+function tryLineBreak(scanner: Scanner): LineBreak | null {
+	if (!isNewline(scanner.char())) return null;
+	consumeEndOfLine(scanner); // consume the blank line's newline so the caller can `continue`
+	return lineBreak();
+}
 
 function tryBold(scanner: Scanner, options: Options): Inlines | null {
 	if (skipBold) return null;
@@ -740,9 +760,10 @@ function tryInlineCode(scanner: Scanner): Inlines | null {
 
 function tryEmail(scanner: Scanner): Inlines | null {
 	const start = scanner.position();
+	const mailChar = 'mailto:';
 
-	if (scanner.matches('mailto:')) {
-		scanner.consume(7);
+	if (scanner.matches(mailChar)) {
+		scanner.consume(mailChar.length);
 	}
 
 	const localStart = scanner.position();
@@ -1425,6 +1446,21 @@ function tryEmojiShortCode(scanner: Scanner): Inlines | null {
 	return emoji(name);
 }
 
+function tryUnicodeEmoji(scanner: Scanner): Inlines | null {
+	const ch = scanner.char();
+	if (ch === '' || ch.charCodeAt(0) <= 0x7f) return null; // fast-reject ASCII
+	let window = '';
+	for (let i = 0; i < 32; i++) {
+		const c = scanner.charAt(i);
+		if (c === '') break;
+		window += c;
+	}
+	const m = UNICODE_EMOJI.exec(window);
+	if (m === null) return null;
+	scanner.consume(m[0].length);
+	return emojiUnicode(m[0]);
+}
+
 // ─── Block methods ──────────────────────────────────────────────────────────────
 
 function tryCodeFence(scanner: Scanner): Code | null {
@@ -1693,6 +1729,9 @@ function tryBigEmoji(input: string, options: Options): [BigEmoji] | null {
 		let node: Inlines | null = null;
 		if (scanner.char() === ':') {
 			node = tryEmojiShortCode(scanner);
+		}
+		if (node === null) {
+			node = tryUnicodeEmoji(scanner);
 		}
 		if (node === null && options.emoticons) {
 			node = matchEmoticon(scanner);
