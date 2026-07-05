@@ -38,10 +38,30 @@ const toAbs = path.resolve(ROOT, toRel);
 
 const dryRun = args.includes('--dry-run');
 
-if (!fs.existsSync(fromAbs)) {
-	console.error(`Source directory does not exist: ${fromAbs}`);
+// ── License-boundary guard (mandatory) ─────────────────────────────────────────
+// EE code is protected by the Enterprise license *only* because it lives under an
+// `ee/` path. A move that crosses the boundary in either direction would silently
+// relicense the file, so we refuse it loudly before touching anything.
+// Normalize (resolve + relativize against ROOT) before checking, so `..` segments
+// can't sneak a boundary-crossing path past a raw string match (e.g. `ee/../server`
+// contains the literal `ee` segment but actually resolves into the community tree).
+const hasEESegment = (p) => path.relative(ROOT, path.resolve(ROOT, p)).split(path.sep).includes('ee');
+if (hasEESegment(fromRel) !== hasEESegment(toRel)) {
+	console.error('License-boundary violation: a move must keep `ee/` sources under `ee/` and community sources outside `ee/`.');
+	console.error(`  from: ${fromRel} (ee: ${hasEESegment(fromRel)})`);
+	console.error(`  to:   ${toRel} (ee: ${hasEESegment(toRel)})`);
 	process.exit(1);
 }
+
+if (!fs.existsSync(fromAbs)) {
+	console.error(`Source does not exist: ${fromAbs}`);
+	process.exit(1);
+}
+
+// A move can target either a directory (move all files within it) or a single
+// file. For a single file, `--to` may be the full destination file path or a
+// destination directory.
+const isFileMove = fs.statSync(fromAbs).isFile();
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -176,9 +196,23 @@ function findImportsFrom(filePath, targetDirAbs) {
 }
 
 /**
- * Update imports in external files that reference the moved directory.
+ * Update imports in external files that reference the moved module.
+ * `oldRef`/`newRef` are the old and new absolute paths — a directory for a dir
+ * move, or a file path for a single-file move.
+ *
+ * This runs AFTER `git mv`, so the source no longer exists on disk and
+ * `resolveImportSpecifier` returns an extensionless fallback path. We therefore
+ * compare with extensions stripped rather than relying on the exact resolved path.
  */
-function updateExternalImports(externalFile, oldDirAbs, newDirAbs) {
+function updateExternalImports(externalFile, oldRef, newRef) {
+	const stripExt = (p) => p.replace(/\.(ts|tsx|js|jsx)$/, '');
+	const oldRefNoExt = stripExt(oldRef);
+	// When the moved file is a directory's `index`, importers may reference the
+	// directory itself (e.g. `import '../api/server'`). Post-`git mv` the index
+	// is gone, so resolution falls back to the bare directory path — match that too.
+	const oldIsIndex = /(^|\/)index\.(ts|tsx|js|jsx)$/.test(oldRef);
+	const oldRefDir = path.dirname(oldRef);
+
 	let content = fs.readFileSync(externalFile, 'utf8');
 	let changed = false;
 
@@ -187,12 +221,18 @@ function updateExternalImports(externalFile, oldDirAbs, newDirAbs) {
 
 		const resolved = resolveImportSpecifier(externalFile, specifier);
 		if (!resolved) return match;
-		const insideOldDir = resolved === oldDirAbs || resolved.startsWith(oldDirAbs + path.sep);
-		if (!insideOldDir) return match;
 
-		// Map the old absolute path to the new absolute path
-		const relativeToDirOld = path.relative(oldDirAbs, resolved);
-		const newAbsolute = path.join(newDirAbs, relativeToDirOld);
+		let newAbsolute;
+		if (stripExt(resolved) === oldRefNoExt || (oldIsIndex && resolved === oldRefDir)) {
+			// Exact match: the moved file/dir-root itself, or the directory whose
+			// index file was moved.
+			newAbsolute = newRef;
+		} else if (resolved.startsWith(oldRef + path.sep)) {
+			// A file inside the moved directory — preserve its relative offset.
+			newAbsolute = path.join(newRef, path.relative(oldRef, resolved));
+		} else {
+			return match;
+		}
 
 		const newSpecifier = computeRelativeSpecifier(externalFile, newAbsolute);
 		if (newSpecifier !== specifier) {
@@ -212,25 +252,46 @@ function updateExternalImports(externalFile, oldDirAbs, newDirAbs) {
 
 console.log(`Moving: ${fromRel} → ${toRel}`);
 
-// 1. Collect files to move
-const filesToMove = getAllFiles(fromAbs);
-if (filesToMove.length === 0) {
-	console.error('No .ts/.js files found in source directory');
-	process.exit(1);
-}
-console.log(`  Found ${filesToMove.length} files to move`);
-
-// 2. Build the old→new path mapping
+// 1. Collect files to move and build the old→new path mapping.
+// `oldRef`/`newRef` are the absolute path prefixes used to match external
+// imports — the directory itself for a dir move, or the file path for a single
+// file (in which case only an exact match counts).
 const pathMap = new Map(); // oldAbsPath → newAbsPath
-for (const oldFile of filesToMove) {
-	const relToFrom = path.relative(fromAbs, oldFile);
-	const newFile = path.join(toAbs, relToFrom);
-	pathMap.set(oldFile, newFile);
+const oldRef = fromAbs;
+let newRef = toAbs;
+
+if (isFileMove) {
+	// `--to` is a file path if it carries a known extension, otherwise a dir.
+	const toLooksLikeFile = /\.(ts|tsx|js|jsx)$/.test(toRel);
+	const newFile = toLooksLikeFile ? toAbs : path.join(toAbs, path.basename(fromAbs));
+	pathMap.set(fromAbs, newFile);
+	newRef = newFile;
+	console.log('  Single-file move');
+} else {
+	const filesToMove = getAllFiles(fromAbs);
+	if (filesToMove.length === 0) {
+		console.error('No .ts/.js files found in source directory');
+		process.exit(1);
+	}
+	console.log(`  Found ${filesToMove.length} files to move`);
+	for (const oldFile of filesToMove) {
+		const relToFrom = path.relative(fromAbs, oldFile);
+		const newFile = path.join(toAbs, relToFrom);
+		pathMap.set(oldFile, newFile);
+	}
 }
 
-// 3. Find external files that import from the old directory
+// 3. Find external files that import from the old location
 console.log('  Scanning for external files that import from the moved module...');
-const searchDirs = [path.join(ROOT, 'app'), path.join(ROOT, 'server'), path.join(ROOT, 'ee'), path.join(ROOT, 'lib')];
+// `tests` is included so unit/e2e tests that import the moved module (or mirror
+// its path) get their specifiers rewritten too — otherwise `tsc` later fails.
+const searchDirs = [
+	path.join(ROOT, 'app'),
+	path.join(ROOT, 'server'),
+	path.join(ROOT, 'ee'),
+	path.join(ROOT, 'lib'),
+	path.join(ROOT, 'tests'),
+];
 const externalFiles = [];
 for (const dir of searchDirs) {
 	if (fs.existsSync(dir)) {
@@ -240,8 +301,8 @@ for (const dir of searchDirs) {
 
 const affectedExternalFiles = [];
 for (const ext of externalFiles) {
-	if (ext.startsWith(fromAbs)) continue; // skip files being moved
-	const imports = findImportsFrom(ext, fromAbs);
+	if (pathMap.has(ext)) continue; // skip files being moved
+	const imports = findImportsFrom(ext, oldRef);
 	if (imports.length > 0) {
 		affectedExternalFiles.push(ext);
 	}
@@ -252,9 +313,7 @@ if (affectedExternalFiles.length > 0) {
 
 // 4. Move files with git mv
 if (!dryRun) {
-	fs.mkdirSync(toAbs, { recursive: true });
-
-	// Create subdirectories
+	// Create destination directories
 	for (const [, newFile] of pathMap) {
 		fs.mkdirSync(path.dirname(newFile), { recursive: true });
 	}
@@ -285,7 +344,7 @@ if (!dryRun) {
 if (!dryRun) {
 	let updatedExternal = 0;
 	for (const ext of affectedExternalFiles) {
-		if (updateExternalImports(ext, fromAbs, toAbs)) {
+		if (updateExternalImports(ext, oldRef, newRef)) {
 			updatedExternal++;
 		}
 	}
@@ -294,8 +353,8 @@ if (!dryRun) {
 	}
 }
 
-// 7. Clean up empty source directory
-if (!dryRun) {
+// 7. Clean up empty source directory (directory moves only)
+if (!dryRun && !isFileMove) {
 	// Remove the now-empty source directory (if it's truly empty after git mv)
 	try {
 		const remaining = fs.readdirSync(fromAbs);

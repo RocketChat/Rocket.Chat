@@ -1,8 +1,8 @@
 import type { IDirectMessageRoom, IRoom } from '@rocket.chat/core-typings';
 import { check, Match } from 'meteor/check';
 
-import { API } from '../../../../app/api/server';
-import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
+import { API } from '../../../../server/api';
+import { getPaginationItems } from '../../../../server/api/lib/getPaginationItems';
 import { findChannelsWithNumberOfMessages } from '../../lib/engagementDashboard/channels';
 import { isDateISOString, mapDateForAPI } from '../../lib/engagementDashboard/date';
 

@@ -4,8 +4,8 @@ import { isServerEventsAuditSettingsProps, ajv, ajvQuery } from '@rocket.chat/re
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
 import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
 
-import { API } from '../../../app/api/server/api';
-import { getPaginationItems } from '../../../app/api/server/helpers/getPaginationItems';
+import { API } from '../../../server/api/api';
+import { getPaginationItems } from '../../../server/api/lib/getPaginationItems';
 import { findUsersOfRoom } from '../../../server/lib/findUsersOfRoom';
 
 type AuditRoomMembersParams = PaginatedRequest<{

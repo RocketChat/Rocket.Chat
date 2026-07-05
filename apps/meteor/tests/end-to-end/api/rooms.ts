@@ -1477,6 +1477,61 @@ describe('[Rooms]', () => {
 					});
 			});
 		});
+
+		describe('with archived rooms', () => {
+			let publicArchivedChannel: IRoom;
+			let privateArchivedGroup: IRoom;
+			let nonMember: TestUser<IUser>;
+			let nonMemberCredentials: Credentials;
+
+			before(async () => {
+				publicArchivedChannel = (await createRoom({ type: 'c', name: `rooms.info.archived.c.${Date.now()}-${Math.random()}` })).body
+					.channel;
+				privateArchivedGroup = (await createRoom({ type: 'p', name: `rooms.info.archived.p.${Date.now()}-${Math.random()}` })).body.group;
+
+				await request.post(api('channels.archive')).set(credentials).send({ roomId: publicArchivedChannel._id }).expect(200);
+				await request.post(api('groups.archive')).set(credentials).send({ roomId: privateArchivedGroup._id }).expect(200);
+
+				nonMember = await createUser({ joinDefaultChannels: false });
+				nonMemberCredentials = await login(nonMember.username, password);
+			});
+
+			after(() =>
+				Promise.all([
+					deleteRoom({ type: 'c', roomId: publicArchivedChannel._id }),
+					deleteRoom({ type: 'p', roomId: privateArchivedGroup._id }),
+					deleteUser(nonMember),
+				]),
+			);
+
+			it('should return an accessible archived public channel to a non-member (reached via link/mention)', async () => {
+				await request
+					.get(api('rooms.info'))
+					.set(nonMemberCredentials)
+					.query({ roomId: publicArchivedChannel._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('room').and.to.be.an('object');
+						expect(res.body.room).to.have.property('_id', publicArchivedChannel._id);
+						expect(res.body.room).to.have.property('archived', true);
+					});
+			});
+
+			it('should still reject an archived room the user cannot access (private group, non-member)', async () => {
+				await request
+					.get(api('rooms.info'))
+					.set(nonMemberCredentials)
+					.query({ roomId: privateArchivedGroup._id })
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'not-allowed');
+					});
+			});
+		});
 	});
 	describe('[/rooms.leave]', () => {
 		let testChannel: IRoom;
@@ -2514,6 +2569,18 @@ describe('[Rooms]', () => {
 				})
 				.end(done);
 		});
+		it('should return the customFields of a private room', async () => {
+			const roomCustomFields = { department: 'engineering', priority: 'high' };
+
+			await request.post(api('rooms.saveRoomSettings')).set(credentials).send({ rid: testGroup._id, roomCustomFields }).expect(200);
+
+			const res = await request.get(api('rooms.adminRooms')).set(credentials).query({ filter: nameRoom }).expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.rooms).to.have.lengthOf(1);
+			expect(res.body.rooms[0]._id).to.equal(testGroup._id);
+			expect(res.body.rooms[0]).to.have.property('customFields').that.deep.equals(roomCustomFields);
+		});
 	});
 
 	describe('/rooms.adminRooms.privateRooms', () => {
@@ -2617,6 +2684,56 @@ describe('[Rooms]', () => {
 
 				expect(res.body).to.have.property('success', false);
 			});
+		});
+	});
+
+	describe('/rooms.adminRooms.getRoom', () => {
+		let roomOwner: TestUser<IUser>;
+		let ownerCredentials: Credentials;
+		let privateRoom: IRoom;
+		const roomCustomFields = { department: 'engineering', priority: 'high' };
+
+		before(async () => {
+			await updatePermission('view-room-administration', ['admin']);
+
+			roomOwner = await createUser();
+			ownerCredentials = await login(roomOwner.username, password);
+			privateRoom = (await createRoom({ type: 'p', name: `admin-getroom-${Date.now()}`, credentials: ownerCredentials })).body.group;
+
+			await request.post(api('rooms.saveRoomSettings')).set(credentials).send({ rid: privateRoom._id, roomCustomFields }).expect(200);
+		});
+
+		after(() =>
+			Promise.all([
+				deleteRoom({ type: 'p', roomId: privateRoom._id }),
+				deleteUser(roomOwner),
+				updatePermission('view-room-administration', ['admin']),
+			]),
+		);
+
+		it('should not expose the private room through groups.info to an admin that is not a member', async () => {
+			const res = await request.get(api('groups.info')).set(credentials).query({ roomId: privateRoom._id });
+
+			expect(res.body).to.have.property('success', false);
+		});
+
+		it('should return the private room customFields for an admin that is not a member', async () => {
+			const res = await request.get(api('rooms.adminRooms.getRoom')).set(credentials).query({ rid: privateRoom._id }).expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('_id', privateRoom._id);
+			expect(res.body).to.have.property('t', 'p');
+			expect(res.body).to.have.property('customFields').that.deep.equals(roomCustomFields);
+		});
+
+		it('should return an error for users without view-room-administration permission', async () => {
+			await updatePermission('view-room-administration', []);
+
+			const res = await request.get(api('rooms.adminRooms.getRoom')).set(credentials).query({ rid: privateRoom._id }).expect(400);
+
+			expect(res.body).to.have.property('success', false);
+
+			await updatePermission('view-room-administration', ['admin']);
 		});
 	});
 

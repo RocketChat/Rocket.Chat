@@ -18,7 +18,10 @@ type WithRequiredProperty<Type, Key extends keyof Type> = Omit<Type, Key> & {
 };
 
 export type MessageWithMdEnforced<TMessage extends IMessage & Partial<ITranslatedMessage> = IMessage & Partial<ITranslatedMessage>> =
-	WithRequiredProperty<TMessage, 'md'>;
+	WithRequiredProperty<TMessage, 'md'> & {
+		/** The exact source text `md` was parsed from (translation-aware), so its `fallback` offsets can be sliced. */
+		mdSource?: string;
+	};
 /**
  * Removes null values for known properties values.
  * Adds a property `md` to the message with the parsed message if is not provided.
@@ -46,6 +49,9 @@ export const parseMessageTextToAstMarkdown = <
 	return {
 		...msg,
 		md: isE2EEMessage(message) || translated ? textToMessageToken(text, parseOptions) : (msg.md ?? textToMessageToken(text, parseOptions)),
+		// `text` is the exact string `md` was parsed from (translation/E2EE-aware, and equal to
+		// `msg.msg` otherwise), so block `fallback` offsets slice against the right source.
+		mdSource: text,
 		...(msg.attachments && {
 			attachments: parseMessageAttachments(msg.attachments, parseOptions, { autoTranslateLanguage, translated }),
 		}),

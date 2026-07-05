@@ -1,6 +1,6 @@
 import './models/startup';
 import '../app/license/server';
-import '../app/api-enterprise/server/index';
+import './api/v1/canned-responses';
 import '../app/authorization/server/index';
 import '../app/canned-responses/server/index';
 import '../app/livechat-enterprise/server/index';
