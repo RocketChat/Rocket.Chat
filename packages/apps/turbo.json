@@ -4,7 +4,7 @@
         "build": {
             "dependsOn": ["^build"],
             "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/.tool-versions"],
-            "outputs": ["deno-runtime/**", "scripts/**", ".deno-cache/**", "dist/**"]
+            "outputs": ["base-runtime/**", "deno-runtime/**", "scripts/**", ".deno-cache/**", "dist/**"]
         }
     }
 }

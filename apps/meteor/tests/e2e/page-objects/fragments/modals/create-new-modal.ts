@@ -45,6 +45,11 @@ export abstract class CreateNewModal extends Modal {
 		await this.listbox.selectOption(memberName);
 		await this.inputAddMembers.click();
 	}
+
+	async create() {
+		await this.btnCreate.click();
+		await this.waitForDismissal();
+	}
 }
 
 export class CreateNewChannelModal extends CreateNewModal {

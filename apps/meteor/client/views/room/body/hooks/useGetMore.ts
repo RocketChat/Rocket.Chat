@@ -105,8 +105,10 @@ export const useGetMore = (rid: string, isJumpingToMessage: boolean) => {
 					checkPositionAndGetMore();
 				};
 
+				const parent = element.parentElement;
+
+				parent?.addEventListener('pointerdown', markInteracted);
 				element.addEventListener('wheel', markInteracted, { passive: true });
-				element.addEventListener('touchmove', markInteracted, { passive: true });
 				element.addEventListener('keydown', handleKeydown);
 				element.addEventListener('scroll', handleScroll, { passive: true });
 
@@ -114,8 +116,8 @@ export const useGetMore = (rid: string, isJumpingToMessage: boolean) => {
 					observer.disconnect();
 					mutationObserver.disconnect();
 					checkPositionAndGetMore.cancel();
+					parent?.removeEventListener('pointerdown', markInteracted);
 					element.removeEventListener('wheel', markInteracted);
-					element.removeEventListener('touchmove', markInteracted);
 					element.removeEventListener('keydown', handleKeydown);
 					element.removeEventListener('scroll', handleScroll);
 				};

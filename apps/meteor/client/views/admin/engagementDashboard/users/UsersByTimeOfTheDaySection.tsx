@@ -1,6 +1,6 @@
 import type { ComputedCell, DefaultHeatMapDatum } from '@nivo/heatmap';
 import { ResponsiveHeatMapCanvas } from '@nivo/heatmap';
-import { Box, Flex, Skeleton, Tooltip } from '@rocket.chat/fuselage';
+import { Box, FlexItem, Skeleton, Tooltip } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { differenceInDays, addDays, endOfDay, format, isSameDay } from 'date-fns';
 import { useCallback, useMemo } from 'react';
@@ -110,7 +110,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 
 			{!isPending && values && dates ? (
 				<Box display='flex' style={{ height: 696 }}>
-					<Flex.Item align='stretch' grow={1} shrink={0}>
+					<FlexItem align='stretch' grow={1} shrink={0}>
 						<Box style={{ position: 'relative' }}>
 							<Box
 								style={{
@@ -190,7 +190,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 								/>
 							</Box>
 						</Box>
-					</Flex.Item>
+					</FlexItem>
 				</Box>
 			) : (
 				<Skeleton variant='rect' height={696} />

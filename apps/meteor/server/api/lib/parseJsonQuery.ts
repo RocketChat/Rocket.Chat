@@ -1,0 +1,159 @@
+import ejson from 'ejson';
+import { Meteor } from 'meteor/meteor';
+
+import { clean } from './cleanQuery';
+import { isValidQuery } from './isValidQuery';
+import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
+import { apiDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
+import { isPlainObject } from '../../../lib/utils/isPlainObject';
+import { API } from '../api';
+import type { GenericRouteExecutionContext } from '../definition';
+
+const pathAllowConf = {
+	'/api/v1/users.list': ['$or', '$regex', '$and'],
+	'def': ['$or', '$and', '$regex'],
+};
+
+export async function parseJsonQuery(api: GenericRouteExecutionContext): Promise<{
+	sort: Record<string, 1 | -1>;
+	/**
+	 * @deprecated To access "fields" parameter, use ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS environment variable.
+	 */
+	fields: Record<string, 0 | 1>;
+	/**
+	 * @deprecated To access "query" parameter, use ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS environment variable.
+	 */
+	query: Record<string, unknown>;
+}> {
+	const { userId = '', response, route, logger } = api;
+	const isUsersRoute = route.includes('/v1/users.');
+	const canViewFullOtherUserInfo = isUsersRoute && (await hasPermissionAsync(userId, 'view-full-other-user-info'));
+	const params = isPlainObject(api.queryParams) ? api.queryParams : {};
+	const queryFields = Array.isArray(api.queryFields) ? (api.queryFields as string[]) : [];
+	const queryOperations = Array.isArray(api.queryOperations) ? (api.queryOperations as string[]) : [];
+
+	let sort;
+	if (typeof params?.sort === 'string') {
+		try {
+			sort = JSON.parse(params.sort);
+			Object.entries(sort).forEach(([key, value]) => {
+				if (value !== 1 && value !== -1) {
+					throw new Meteor.Error('error-invalid-sort-parameter', `Invalid sort parameter: ${key}`, {
+						helperMethod: 'parseJsonQuery',
+					});
+				}
+			});
+		} catch (e) {
+			logger.warn({
+				msg: 'Invalid sort parameter provided',
+				sort: params.sort,
+				err: e,
+			});
+			throw new Meteor.Error('error-invalid-sort', `Invalid sort parameter provided: \"${params.sort}\"`, {
+				helperMethod: 'parseJsonQuery',
+			});
+		}
+	}
+
+	const isUnsafeQueryParamsAllowed = process.env.ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS?.toUpperCase() === 'TRUE';
+	const messageGenerator = ({ endpoint, version, parameter }: { endpoint: string; version: string; parameter: string }): string =>
+		`The usage of the "${parameter}" parameter in endpoint "${endpoint}" breaks the security of the API and can lead to data exposure. It has been deprecated and will be removed in the version ${version}.`;
+
+	let fields: Record<string, 0 | 1> | undefined;
+	if (typeof params?.fields === 'string' && isUnsafeQueryParamsAllowed) {
+		try {
+			apiDeprecationLogger.parameter(route, 'fields', '9.0.0', response, messageGenerator);
+			fields = JSON.parse(params.fields) as Record<string, 0 | 1>;
+			Object.entries(fields).forEach(([key, value]) => {
+				if (value !== 1 && value !== 0) {
+					throw new Meteor.Error('error-invalid-sort-parameter', `Invalid fields parameter: ${key}`, {
+						helperMethod: 'parseJsonQuery',
+					});
+				}
+			});
+		} catch (e) {
+			logger.warn({
+				msg: 'Invalid fields parameter provided',
+				fields: params.fields,
+				err: e,
+			});
+			throw new Meteor.Error('error-invalid-fields', `Invalid fields parameter provided: \"${params.fields}\"`, {
+				helperMethod: 'parseJsonQuery',
+			});
+		}
+	}
+
+	// Verify the user's selected fields only contains ones which their role allows
+	if (typeof fields === 'object') {
+		let nonSelectableFields = Object.keys(API.v1.defaultFieldsToExclude);
+		if (isUsersRoute) {
+			nonSelectableFields = nonSelectableFields.concat(
+				Object.keys(canViewFullOtherUserInfo ? API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser : API.v1.limitedUserFieldsToExclude),
+			);
+		}
+
+		Object.keys(fields).forEach((k) => {
+			if (nonSelectableFields.includes(k) || nonSelectableFields.includes(k.split(API.v1.fieldSeparator)[0])) {
+				fields && delete fields[k as keyof typeof fields];
+			}
+		});
+	}
+
+	// Limit the fields by default
+	fields = Object.assign({}, fields, API.v1.defaultFieldsToExclude);
+	if (isUsersRoute) {
+		if (canViewFullOtherUserInfo) {
+			fields = Object.assign(fields, API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser);
+		} else {
+			fields = Object.assign(fields, API.v1.limitedUserFieldsToExclude);
+		}
+	}
+
+	let query: Record<string, any> = {};
+	if (typeof params?.query === 'string' && isUnsafeQueryParamsAllowed) {
+		apiDeprecationLogger.parameter(route, 'query', '9.0.0', response, messageGenerator);
+		try {
+			query = ejson.parse(params.query);
+			query = clean(query, pathAllowConf.def);
+		} catch (e) {
+			logger.warn({
+				msg: 'Invalid query parameter provided',
+				query: params.query,
+				err: e,
+			});
+			throw new Meteor.Error('error-invalid-query', `Invalid query parameter provided: \"${params.query}\"`, {
+				helperMethod: 'parseJsonQuery',
+			});
+		}
+	}
+
+	// Verify the user has permission to query the fields they are
+	if (typeof query === 'object') {
+		let nonQueryableFields = Object.keys(API.v1.defaultFieldsToExclude);
+
+		if (isUsersRoute) {
+			if (canViewFullOtherUserInfo) {
+				nonQueryableFields = nonQueryableFields.concat(Object.keys(API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser));
+			} else {
+				nonQueryableFields = nonQueryableFields.concat(Object.keys(API.v1.limitedUserFieldsToExclude));
+			}
+		}
+
+		const containsQueryFields = queryFields.length > 0;
+		if (containsQueryFields && !isValidQuery(query, queryFields, queryOperations ?? pathAllowConf.def)) {
+			throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
+		}
+
+		Object.keys(query).forEach((k) => {
+			if (nonQueryableFields.includes(k) || nonQueryableFields.includes(k.split(API.v1.fieldSeparator)[0])) {
+				query && delete query[k];
+			}
+		});
+	}
+
+	return {
+		sort,
+		fields,
+		query,
+	};
+}

@@ -23,5 +23,4 @@ import './lib/routing/ManualSelection';
 import './lib/routing/AutoSelection';
 import './lib/stream/agentStatus';
 import './sendMessageBySMS';
-import './api';
-import './api/rest';
+import '../../../server/api/v1/omnichannel';
