@@ -1,8 +1,19 @@
 import { VisuallyHidden } from '@react-aria/visually-hidden';
-import type { IUser } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Button, Icon } from '@rocket.chat/fuselage';
-import { Field, FieldGroup, FieldLabel, FieldRow, FieldError, FieldHint, TextInput, TextAreaInput } from '@rocket.chat/fuselage-forms';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Box, Button, Divider, Icon, InputBox, Margins } from '@rocket.chat/fuselage';
+import {
+	Field,
+	FieldGroup,
+	FieldLabel,
+	FieldRow,
+	FieldError,
+	FieldHint,
+	TextInput,
+	TextAreaInput,
+	Select,
+} from '@rocket.chat/fuselage-forms';
 import { validateEmail } from '@rocket.chat/tools';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import {
@@ -14,8 +25,8 @@ import {
 	useLayout,
 } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { AllHTMLAttributes } from 'react';
-import { useCallback } from 'react';
+import type { AllHTMLAttributes, ChangeEvent } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import type { AccountProfileFormValues } from './getProfileInitialValues';
@@ -25,6 +36,7 @@ import UserStatusMenu from '../../../components/UserStatusMenu';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
+import { STATUS_DURATION_OPTIONS, validateStatusExpiration } from '../../../lib/statusDurations';
 
 const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 	const t = useTranslation();
@@ -52,10 +64,24 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 		watch,
 		handleSubmit,
 		reset,
-		formState: { errors },
+		setValue,
+		formState: { errors, dirtyFields },
 	} = useFormContext<AccountProfileFormValues>();
 
-	const { email, avatar, username, name: userFullName } = watch();
+	const { email, avatar, username, name: userFullName, statusDuration, statusType, statusText } = watch();
+
+	const isExpirationDisabled = statusType === UserStatus.ONLINE && !statusText?.trim();
+
+	useEffect(() => {
+		if (isExpirationDisabled) {
+			setValue('statusDuration', '', { shouldValidate: true });
+		}
+	}, [isExpirationDisabled, setValue]);
+
+	const statusDurationOptions: SelectOption[] = useMemo(
+		() => STATUS_DURATION_OPTIONS.map(({ value, labelKey }) => [value, t(labelKey)]),
+		[t],
+	);
 
 	const previousEmail = user ? getUserEmailAddress(user) : '';
 	const previousUsername = user?.username || '';
@@ -95,30 +121,63 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 	};
 
 	const updateOwnBasicInfo = useEndpoint('POST', '/v1/users.updateOwnBasicInfo');
+	const setUserStatus = useEndpoint('POST', '/v1/users.setStatus');
 
 	const updateAvatar = useUpdateAvatar(avatar, user?._id || '');
 
-	const handleSave = async ({ email, name, username, statusType, statusText, nickname, bio, customFields }: AccountProfileFormValues) => {
+	const handleSave = async (values: AccountProfileFormValues) => {
+		const {
+			email,
+			name,
+			username,
+			statusType,
+			statusText,
+			statusDuration,
+			statusCustomDate,
+			statusCustomTime,
+			nickname,
+			bio,
+			customFields,
+		} = values;
+
+		const expiresAt = STATUS_DURATION_OPTIONS.find((o) => o.value === statusDuration)?.getExpiresAt?.({
+			now: new Date(),
+			customDate: statusCustomDate,
+			customTime: statusCustomTime,
+		});
+
+		const statusDirty =
+			dirtyFields.statusText ||
+			dirtyFields.statusType ||
+			dirtyFields.statusDuration ||
+			dirtyFields.statusCustomDate ||
+			dirtyFields.statusCustomTime;
+
 		try {
 			await updateOwnBasicInfo({
 				data: {
 					name,
 					...(user ? getUserEmailAddress(user) !== email && { email } : {}),
 					username,
-					statusText,
-					statusType,
 					nickname,
 					bio,
 				},
 				customFields,
 			});
 
+			if (statusDirty) {
+				await setUserStatus({
+					status: statusType,
+					...(allowUserStatusMessageChange && { message: statusText }),
+					...(allowUserStatusMessageChange && expiresAt && { expiresAt: expiresAt.toISOString() }),
+				});
+			}
+
 			await updateAvatar();
 			dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
+			reset(values);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
-		} finally {
-			reset({ email, name, username, statusType, statusText, nickname, bio, customFields });
 		}
 	};
 
@@ -185,8 +244,9 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 						{!canChangeUsername && <FieldHint>{t('Username_Change_Disabled')}</FieldHint>}
 					</Field>
 				</Box>
+				<Divider mbs={24} mbe={0} />
 				<Field>
-					<FieldLabel>{t('StatusMessage')}</FieldLabel>
+					<FieldLabel>{t('Status')}</FieldLabel>
 					<FieldRow>
 						<Controller
 							control={control}
@@ -204,13 +264,11 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 									disabled={!allowUserStatusMessageChange}
 									flexGrow={1}
 									error={errors.statusText?.message}
-									addon={
+									startAddon={
 										<Controller
 											control={control}
 											name='statusType'
-											render={({ field: { value, onChange } }) => (
-												<UserStatusMenu margin='neg-x2' onChange={onChange} initialStatus={value as IUser['status']} />
-											)}
+											render={({ field: { value, onChange } }) => <UserStatusMenu onChange={onChange} initialStatus={value} />}
 										/>
 									}
 								/>
@@ -219,7 +277,68 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 					</FieldRow>
 					{errors.statusText && <FieldError>{errors.statusText.message}</FieldError>}
 					{!allowUserStatusMessageChange && <FieldHint>{t('StatusMessage_Change_Disabled')}</FieldHint>}
+					{allowUserStatusMessageChange && <FieldHint>{t('Status_you_can_use_emoji')}</FieldHint>}
 				</Field>
+				<Field>
+					<FieldLabel>{t('Status_clear_after')}</FieldLabel>
+					<FieldRow>
+						<Controller
+							control={control}
+							name='statusDuration'
+							rules={{
+								deps: ['statusCustomDate', 'statusCustomTime'],
+								validate: (value, { statusCustomDate, statusCustomTime }) =>
+									validateStatusExpiration(value, { statusCustomDate, statusCustomTime }, t),
+							}}
+							render={({ field: { value, onChange } }) => (
+								<Select
+									value={value}
+									options={statusDurationOptions}
+									disabled={!allowUserStatusMessageChange || isExpirationDisabled}
+									onChange={(next) => onChange(String(next))}
+								/>
+							)}
+						/>
+					</FieldRow>
+					{statusDuration === 'custom' && (
+						<Box display='flex' mi='neg-x4' mbs={8}>
+							<Margins inline={4}>
+								<Controller
+									control={control}
+									name='statusCustomDate'
+									render={({ field: { value, onChange } }) => (
+										<InputBox
+											aria-label={t('Status_expiration_date')}
+											type='date'
+											disabled={!allowUserStatusMessageChange}
+											flexGrow={1}
+											value={value}
+											onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.currentTarget.value)}
+											min={new Date().toLocaleDateString('en-CA')}
+										/>
+									)}
+								/>
+								<Controller
+									control={control}
+									name='statusCustomTime'
+									render={({ field: { value, onChange } }) => (
+										<InputBox
+											aria-label={t('Status_expiration_time')}
+											type='time'
+											disabled={!allowUserStatusMessageChange}
+											flexGrow={1}
+											value={value}
+											onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.currentTarget.value)}
+										/>
+									)}
+								/>
+							</Margins>
+						</Box>
+					)}
+					{errors.statusDuration && <FieldError>{errors.statusDuration.message}</FieldError>}
+					<FieldHint>{t('Status_new_status_warning')}</FieldHint>
+				</Field>
+				<Divider mbs={24} mbe={0} />
 				<Field>
 					<FieldLabel>{t('Nickname')}</FieldLabel>
 					<FieldRow>

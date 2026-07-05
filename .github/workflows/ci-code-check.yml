@@ -13,9 +13,13 @@ on:
 env:
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
 
+permissions: {}
+
 jobs:
   code-check:
     runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
 
     name: ${{ matrix.check == 'ts' && 'TypeScript' || 'Code Lint' }}
 

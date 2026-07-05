@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/uikit-playground",
-	"version": "0.7.14-rc.0",
+	"version": "0.7.14",
 	"private": true,
 	"type": "module",
 	"scripts": {
@@ -18,7 +18,7 @@
 		"@lezer/highlight": "^1.2.3",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/css-in-js": "^0.32.0",
-		"@rocket.chat/fuselage": "~0.80.0",
+		"@rocket.chat/fuselage": "^0.81.0",
 		"@rocket.chat/fuselage-hooks": "~0.42.0",
 		"@rocket.chat/fuselage-toastbar": "~0.36.0",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
@@ -35,7 +35,7 @@
 		"react": "~19.2.7",
 		"react-dom": "~19.2.7",
 		"react-router-dom": "^6.30.4",
-		"react-split-pane": "^0.1.92",
+		"react-split-pane": "^3.2.0",
 		"react-virtuoso": "~4.18.10",
 		"reactflow": "^11.11.4"
 	},

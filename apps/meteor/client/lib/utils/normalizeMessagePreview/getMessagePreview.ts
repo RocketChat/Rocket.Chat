@@ -1,5 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom, isE2EEMessage, isMultipleDirectMessageRoom, isVideoConfMessage } from '@rocket.chat/core-typings';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 
@@ -30,5 +31,5 @@ export const getMessagePreview = (room: SubscriptionWithRoom, lastMessage: IMess
 	if (isDirectMessageRoom(room) && !isMultipleDirectMessageRoom(room)) {
 		return normalizedMessage;
 	}
-	return `${lastMessage.u.name || lastMessage.u.username}: ${normalizedMessage}`;
+	return `${escapeHTML(lastMessage.u.name || lastMessage.u.username)}: ${normalizedMessage}`;
 };

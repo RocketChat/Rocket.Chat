@@ -55,6 +55,7 @@ class MediaCallDirector {
 
 		logger.info({ msg: 'Call was flagged as active', callId: call._id });
 		this.scheduleExpirationCheckByCallId(call._id);
+		getMediaCallServer().emitter.emit('callActivated', { callId: call._id, uids: call.uids });
 		return actorAgent.oppositeAgent?.onCallActive(call._id);
 	}
 
@@ -400,6 +401,10 @@ class MediaCallDirector {
 		if (ended) {
 			logger.info({ msg: 'Call was flagged as ended', callId, reason: params?.reason });
 			getMediaCallServer().updateCallHistory({ callId });
+			const call = await MediaCalls.findOneById<Pick<IMediaCall, '_id' | 'uids'>>(callId, { projection: { uids: 1 } });
+			if (call) {
+				getMediaCallServer().emitter.emit('callEnded', { callId, uids: call.uids });
+			}
 		}
 
 		return ended;

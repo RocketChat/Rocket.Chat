@@ -63,6 +63,7 @@ describe('useDecryptedMessage', () => {
 			expect(result.current).toBe('Attachment description');
 		});
 
+		expect(result.current).toBe('Attachment description');
 		expect(e2e.decryptMessage).toHaveBeenCalledWith(message);
 	});
 

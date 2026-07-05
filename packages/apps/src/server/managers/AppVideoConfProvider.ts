@@ -11,7 +11,7 @@ import type { IVideoConferenceUser } from '@rocket.chat/apps-engine/definition/v
 
 import type { ProxiedApp } from '../ProxiedApp';
 import type { AppAccessorManager } from './AppAccessorManager';
-import { JSONRPC_METHOD_NOT_FOUND } from '../runtime/deno/AppsEngineDenoRuntime';
+import { JSONRPC_METHOD_NOT_FOUND } from '../runtime/base/BaseRuntimeSubprocessController';
 import type { AppLogStorage } from '../storage';
 
 export class AppVideoConfProvider {

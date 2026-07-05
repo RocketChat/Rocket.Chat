@@ -17,6 +17,11 @@ import type {
 	InlineKaTeX,
 	Link,
 	Timestamp,
+	SourceRange,
+	HorizontalRule,
+	Table,
+	TableRow,
+	TableCell,
 } from './definitions';
 
 const generate =
@@ -135,6 +140,55 @@ export const listItem = (text: Inlines[], number?: number): ListItem => ({
 	type: 'LIST_ITEM',
 	value: text,
 	...(number !== undefined && { number }),
+});
+
+// GFM trims leading/trailing whitespace of each table cell's content
+const trimCellContent = (value: Inlines[]): Inlines[] => {
+	const result = value.slice();
+
+	const first = result[0];
+	if (first?.type === 'PLAIN_TEXT') {
+		const trimmed = first.value.replace(/^\s+/, '');
+		if (trimmed === '') {
+			result.shift();
+		} else {
+			result[0] = { type: 'PLAIN_TEXT', value: trimmed };
+		}
+	}
+
+	const last = result[result.length - 1];
+	if (last?.type === 'PLAIN_TEXT') {
+		const trimmed = last.value.replace(/\s+$/, '');
+		if (trimmed === '') {
+			result.pop();
+		} else {
+			result[result.length - 1] = { type: 'PLAIN_TEXT', value: trimmed };
+		}
+	}
+
+	return result;
+};
+
+const tableCell = (value: Inlines[], align: TableCell['align']): TableCell => ({
+	type: 'TABLE_CELL',
+	align,
+	value: trimCellContent(value),
+});
+
+export const table = (header: Inlines[][], aligns: Array<TableCell['align']>, rows: Inlines[][][], fallback?: SourceRange): Table => ({
+	type: 'TABLE',
+	value: {
+		header: header.map((cell, index) => tableCell(cell, aligns[index])),
+		rows: rows.map(
+			(cells): TableRow => ({
+				type: 'TABLE_ROW',
+				// Normalize each row to the header's column count: pad missing cells and
+				// drop extras, so ragged GFM rows stay aligned with the header/delimiter.
+				value: header.map((_, index) => tableCell(cells[index] ?? [], aligns[index])),
+			}),
+		),
+	},
+	...(fallback !== undefined && { fallback }),
 });
 
 export const mentionUser = (() => {
@@ -269,6 +323,12 @@ export const lineBreak = (): LineBreak => ({
 	value: undefined,
 });
 
+export const horizontalRule = (fallback?: SourceRange): HorizontalRule => ({
+	type: 'HORIZONTAL_RULE',
+	value: undefined,
+	...(fallback !== undefined && { fallback }),
+});
+
 export const katex = (content: string): KaTeX => ({
 	type: 'KATEX',
 	value: content,
@@ -287,14 +347,14 @@ export const phoneChecker = (text: string, number: string) => {
 	return link(`tel:${number}`, [plain(text)]);
 };
 
-export const timestamp = (value: string, type?: 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R'): Timestamp => {
+export const timestamp = (value: string, type?: 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R', fallback?: SourceRange): Timestamp => {
 	return {
 		type: 'TIMESTAMP',
 		value: {
 			timestamp: value,
 			format: type || 't',
 		},
-		fallback: plain(`<t:${value}:${type || 't'}>`),
+		...(fallback !== undefined && { fallback }),
 	};
 };
 

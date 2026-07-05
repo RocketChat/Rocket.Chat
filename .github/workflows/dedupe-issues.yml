@@ -10,6 +10,8 @@ on:
         required: true
         type: string
 
+permissions: {}
+
 jobs:
   dedupe-issues:
     runs-on: ubuntu-latest

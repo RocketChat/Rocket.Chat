@@ -345,7 +345,7 @@ export class SAML {
 					inResponseToId: result.id || '',
 				});
 
-				serviceProvider.logoutResponseToUrl(response, (err, url) => {
+				serviceProvider.logoutResponseToUrl(response, envelope.relayState, (err, url) => {
 					if (err) {
 						SystemLogger.error({ err });
 						return redirect();

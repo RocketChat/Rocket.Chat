@@ -37,7 +37,6 @@ type UserInfoDataProps = Serialized<
 		| 'utcOffset'
 		| 'phone'
 		| 'createdAt'
-		| 'statusText'
 		| 'canViewAllInfo'
 		| 'customFields'
 		| 'freeSwitchExtension'
@@ -47,6 +46,7 @@ type UserInfoDataProps = Serialized<
 
 type UserInfoProps = UserInfoDataProps & {
 	status: ReactNode;
+	customStatus?: ReactNode;
 	email?: string;
 	verified?: boolean;
 	actions: ReactNode;
@@ -69,7 +69,7 @@ const UserInfo = ({
 	verified,
 	createdAt,
 	status,
-	statusText,
+	customStatus,
 	customFields,
 	canViewAllInfo,
 	actions,
@@ -100,11 +100,7 @@ const UserInfo = ({
 				<InfoPanelSection>
 					{userDisplayName && <InfoPanelTitle icon={status} title={userDisplayName} />}
 
-					{statusText && (
-						<InfoPanelText>
-							<MarkdownText content={statusText} parseEmoji={true} variant='inline' />
-						</InfoPanelText>
-					)}
+					{customStatus && <InfoPanelText>{customStatus}</InfoPanelText>}
 				</InfoPanelSection>
 
 				<InfoPanelSection>
