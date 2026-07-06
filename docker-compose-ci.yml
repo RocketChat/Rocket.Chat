@@ -10,8 +10,6 @@ services:
         platforms:
           - linux/amd64
           - linux/arm64
-      args:
-        DENO_VERSION: ${DENO_VERSION:-}
     image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}${DOCKER_TAG_SUFFIX_ROCKETCHAT:-}
     environment:
       - 'TEST_MODE=${TEST_MODE:-true}'
