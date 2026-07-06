@@ -181,7 +181,7 @@ export class AppUserBridge extends UserBridge {
 
 	protected async setActiveState(
 		userId: IUser['id'],
-		state: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt'>,
+		state: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt' | 'statusId'>,
 		appId: string,
 	): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is setting active state for user ${userId}`);
@@ -191,13 +191,14 @@ export class AppUserBridge extends UserBridge {
 			statusText: state.statusText,
 			statusSource: state.statusSource as PresenceSource,
 			...(state.statusExpiresAt && { statusExpiresAt: state.statusExpiresAt }),
+			...(state.statusId && { statusId: state.statusId }),
 		});
 	}
 
-	protected async endActiveState(userId: IUser['id'], appId: string): Promise<void> {
+	protected async endActiveState(userId: IUser['id'], appId: string, statusId?: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is ending active state for user ${userId}`);
 
-		await Presence.endActiveState(userId);
+		await Presence.endActiveState(userId, statusId);
 	}
 
 	protected async getActiveUserCount(): Promise<number> {

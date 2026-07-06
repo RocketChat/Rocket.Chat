@@ -13,7 +13,7 @@ import {
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { FormEvent, MouseEvent, ClipboardEvent } from 'react';
+import type { MouseEvent, ClipboardEvent, ChangeEvent } from 'react';
 import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'react';
 
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
@@ -49,7 +49,7 @@ import { useDraft } from './hooks/useDraft';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 
-const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
+const reducer = (_: unknown, event: ChangeEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
 
 	return Boolean(target.value.trim());

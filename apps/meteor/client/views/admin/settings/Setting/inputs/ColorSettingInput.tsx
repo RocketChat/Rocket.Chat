@@ -1,5 +1,5 @@
 import type { SettingEditor } from '@rocket.chat/core-typings';
-import { FieldLabel, FieldRow, FieldHint, Flex, InputBox, Margins, TextInput, Select, Field } from '@rocket.chat/fuselage';
+import { FieldLabel, FieldRow, FieldHint, FlexItem, InputBox, Margins, TextInput, Select, Field } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, Key } from 'react';
 import { useCallback } from 'react';
@@ -58,7 +58,7 @@ function ColorSettingInput({
 			<Margins inline={4}>
 				<FieldRow>
 					<Margins inline={4}>
-						<Flex.Item grow={2}>
+						<FlexItem grow={2}>
 							{editor === 'color' && (
 								<InputBox
 									type='color'
@@ -82,7 +82,7 @@ function ColorSettingInput({
 									onChange={handleChange}
 								/>
 							)}
-						</Flex.Item>
+						</FlexItem>
 						<Select
 							type='color'
 							id={`${_id}_editor`}

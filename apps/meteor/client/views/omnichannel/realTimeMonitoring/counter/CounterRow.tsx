@@ -11,7 +11,7 @@ const CounterRow = ({ children, ...props }: CounterRowProps) => (
 	<Box pb={28} pi={20} display='flex' flexDirection='row' justifyContent='space-around' alignItems='center' flexGrow={1} {...props}>
 		{children &&
 			flattenChildren(children).reduce(
-				(acc, child, i) =>
+				(acc: ReactNode[], child, i) =>
 					children.length - 1 !== i
 						? [
 								...acc,
@@ -19,7 +19,7 @@ const CounterRow = ({ children, ...props }: CounterRowProps) => (
 								<Divider key={(i + 1) * children.length} width='x2' m='none' alignSelf='stretch' />,
 							]
 						: [...acc, child],
-				[] as ReactNode[],
+				[],
 			)}
 	</Box>
 );

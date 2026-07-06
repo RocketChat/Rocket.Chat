@@ -1103,6 +1103,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 				IUser,
 				| '_id'
 				| 'username'
+				| 'type'
 				| 'roles'
 				| 'status'
 				| 'statusDefault'
@@ -1110,6 +1111,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 				| 'statusText'
 				| 'statusExpiresAt'
 				| 'statusConnection'
+				| 'statusId'
 				| 'previousState'
 			>
 		>(
@@ -1117,6 +1119,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			{
 				projection: {
 					username: 1,
+					type: 1,
 					roles: 1,
 					status: 1,
 					statusDefault: 1,
@@ -1124,6 +1127,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 					statusText: 1,
 					statusExpiresAt: 1,
 					statusConnection: 1,
+					statusId: 1,
 					previousState: 1,
 				},
 				sort: { statusExpiresAt: 1 },
@@ -1133,7 +1137,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 
 	findNextStatusExpiration() {
 		return this.findOne<Pick<IUser, '_id' | 'statusExpiresAt'>>(
-			{ statusExpiresAt: { $gte: new Date() } },
+			{ statusExpiresAt: { $exists: true } },
 			{ projection: { _id: 1, statusExpiresAt: 1 }, sort: { statusExpiresAt: 1 } },
 		);
 	}
@@ -2484,12 +2488,14 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne<T>(query, options);
 	}
 
-	findNotOfflineByIds(users?: IUser['_id'][], options?: FindOptions<IUser>) {
+	findPresenceUsersByIds(users: IUser['_id'][], options?: FindOptions<IUser>) {
 		const query = {
 			_id: { $in: users },
-			status: {
-				$in: [UserStatus.ONLINE, UserStatus.AWAY, UserStatus.BUSY],
-			},
+			$or: [
+				{ status: { $in: [UserStatus.ONLINE, UserStatus.AWAY, UserStatus.BUSY] } },
+				{ statusText: { $exists: true, $ne: '' } },
+				{ statusExpiresAt: { $exists: true } },
+			],
 		};
 		return this.find(query, options);
 	}

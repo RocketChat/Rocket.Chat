@@ -4,9 +4,9 @@ import { Roles } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { API } from '../../../app/api/server/api';
 import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
 import { settings } from '../../../app/settings/server/index';
+import { API } from '../../../server/api/api';
 import { insertRoleAsync } from '../lib/roles/insertRole';
 import { updateRole } from '../lib/roles/updateRole';
 

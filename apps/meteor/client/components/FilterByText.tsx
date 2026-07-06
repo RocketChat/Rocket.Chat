@@ -1,6 +1,6 @@
 import { Box, Icon, TextInput, Margins } from '@rocket.chat/fuselage';
 import { useAutoFocus, useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import type { ChangeEvent, ComponentPropsWithoutRef, FormEvent } from 'react';
+import type { ChangeEvent, ComponentPropsWithoutRef, SubmitEvent } from 'react';
 import { forwardRef, memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -18,7 +18,7 @@ const FilterByText = forwardRef<HTMLInputElement, FilterByTextProps>(function Fi
 	const autoFocusRef = useAutoFocus(shouldAutoFocus);
 	const mergedRefs = useMergedRefs(ref, autoFocusRef);
 
-	const handleFormSubmit = useCallback((event: FormEvent<HTMLFormElement>) => {
+	const handleFormSubmit = useCallback((event: SubmitEvent<HTMLFormElement>) => {
 		event.preventDefault();
 	}, []);
 

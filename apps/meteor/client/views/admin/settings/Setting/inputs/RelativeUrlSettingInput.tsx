@@ -35,15 +35,17 @@ function RelativeUrlSettingInput({
 				</FieldLabel>
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
-			<UrlInput
-				id={_id}
-				value={getAbsoluteUrl(value || '')}
-				placeholder={placeholder}
-				disabled={disabled}
-				readOnly={readonly}
-				autoComplete={autocomplete === false ? 'off' : undefined}
-				onChange={handleChange}
-			/>
+			<FieldRow>
+				<UrlInput
+					id={_id}
+					value={getAbsoluteUrl(value || '')}
+					placeholder={placeholder}
+					disabled={disabled}
+					readOnly={readonly}
+					autoComplete={autocomplete === false ? 'off' : undefined}
+					onChange={handleChange}
+				/>
+			</FieldRow>
 			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);

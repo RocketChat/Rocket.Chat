@@ -3,16 +3,16 @@ import { describe, it } from 'mocha';
 import mock from 'proxyquire';
 import Sinon from 'sinon';
 
-import type { PermissionsPayload } from '../../../../../../../app/api/server/api.helpers';
+import type { PermissionsPayload } from '../../../../../../../server/api/api.helpers';
 
 const mocks = {
-	'../../lib/server/lib/deprecationWarningLogger': {
+	'../../app/lib/server/lib/deprecationWarningLogger': {
 		apiDeprecationLogger: {
 			endpoint: Sinon.stub(),
 		},
 	},
 };
-const { checkPermissions } = mock.noCallThru().load('../../../../../../../app/api/server/api.helpers', mocks);
+const { checkPermissions } = mock.noCallThru().load('../../../../../../../server/api/api.helpers', mocks);
 
 describe('checkPermissions', () => {
 	it('should return false when no options.permissionsRequired key is present', () => {

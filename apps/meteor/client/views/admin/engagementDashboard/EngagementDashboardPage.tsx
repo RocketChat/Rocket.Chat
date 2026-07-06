@@ -1,4 +1,4 @@
-import { Box, Select, Tabs } from '@rocket.chat/fuselage';
+import { Box, Select, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { PageScrollableContent, Page, PageHeader } from '@rocket.chat/ui-client';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -42,15 +42,15 @@ const EngagementDashboardPage = ({ tab = 'users', onSelectTab }: EngagementDashb
 				/>
 			</PageHeader>
 			<Tabs>
-				<Tabs.Item selected={tab === 'users'} onClick={handleTabClick('users')}>
+				<TabsItem selected={tab === 'users'} onClick={handleTabClick('users')}>
 					{t('Users')}
-				</Tabs.Item>
-				<Tabs.Item selected={tab === 'messages'} onClick={handleTabClick('messages')}>
+				</TabsItem>
+				<TabsItem selected={tab === 'messages'} onClick={handleTabClick('messages')}>
 					{t('Messages')}
-				</Tabs.Item>
-				<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>
+				</TabsItem>
+				<TabsItem selected={tab === 'channels'} onClick={handleTabClick('channels')}>
 					{t('Channels')}
-				</Tabs.Item>
+				</TabsItem>
 			</Tabs>
 			<PageScrollableContent padding={0}>
 				<Box m={24}>

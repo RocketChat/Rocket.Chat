@@ -1,6 +1,9 @@
+import zlib from 'node:zlib';
+
 import { isTruthy } from '@rocket.chat/tools';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
+import sinon from 'sinon';
 
 import {
 	serviceProviderOptions,
@@ -20,6 +23,8 @@ import {
 	samlResponseMultipleAssertions,
 	samlResponseMissingAssertion,
 	samlResponseMultipleIssuers,
+	samlResponseWithConditions,
+	samlResponseAssertionId,
 	samlResponseValidSignatures,
 	samlResponseValidAssertionSignature,
 	encryptedResponse,
@@ -37,17 +42,22 @@ import { LogoutRequestParser } from '../../../../app/meteor-accounts-saml/server
 import { LogoutResponseParser } from '../../../../app/meteor-accounts-saml/server/lib/parsers/LogoutResponse';
 import { ResponseParser } from '../../../../app/meteor-accounts-saml/server/lib/parsers/Response';
 
-const { ServiceProviderMetadata } = proxyquire
-	.noCallThru()
-	.load('../../../../app/meteor-accounts-saml/server/lib/generators/ServiceProviderMetadata', {
-		'meteor/meteor': {
-			Meteor: {
-				absoluteUrl() {
-					return 'http://localhost:3000/';
-				},
+const meteorStub = {
+	'meteor/meteor': {
+		'@global': true,
+		'Meteor': {
+			absoluteUrl() {
+				return 'http://localhost:3000/';
 			},
 		},
-	});
+	},
+};
+
+const { ServiceProviderMetadata } = proxyquire
+	.noCallThru()
+	.load('../../../../app/meteor-accounts-saml/server/lib/generators/ServiceProviderMetadata', meteorStub);
+
+const { SAMLServiceProvider } = proxyquire.noCallThru().load('../../../../app/meteor-accounts-saml/server/lib/ServiceProvider', meteorStub);
 
 describe('SAML', () => {
 	describe('[AuthorizeRequest]', () => {
@@ -268,6 +278,59 @@ describe('SAML', () => {
 				});
 			});
 		});
+
+		describe('logoutResponseToUrl', () => {
+			const serviceProvider = new SAMLServiceProvider(serviceProviderOptions);
+
+			const generateUrl = (relayState: string | undefined): Promise<string> =>
+				new Promise((resolve, reject) => {
+					serviceProvider.logoutResponseToUrl('logout-response', relayState, (err: unknown, url?: string) => {
+						if (err || !url) {
+							return reject(err ?? new Error('No URL returned'));
+						}
+						resolve(url);
+					});
+				});
+
+			it('should echo back the exact RelayState received on the request', async () => {
+				const relayState = 'idp-shared-session-relay-state';
+				const url = await generateUrl(relayState);
+				const params = new URLSearchParams(url.split('?')[1]);
+
+				expect(url).to.match(/^\[idpSLORedirectURL\]\?/);
+				expect(params.get('SAMLResponse')).to.be.a('string').that.is.not.empty;
+				expect(params.get('RelayState')).to.be.equal(relayState);
+			});
+
+			it('should preserve a RelayState that requires URL encoding', async () => {
+				const relayState = 'https://sp.example.com/return?foo=bar baz&x=1';
+				const url = await generateUrl(relayState);
+				const params = new URLSearchParams(url.split('?')[1]);
+
+				expect(params.get('RelayState')).to.be.equal(relayState);
+			});
+
+			it('should omit RelayState entirely when none was received on the request', async () => {
+				const url = await generateUrl(undefined);
+				const params = new URLSearchParams(url.split('?')[1]);
+
+				expect(params.has('RelayState')).to.be.false;
+				expect(params.get('SAMLResponse')).to.be.a('string').that.is.not.empty;
+			});
+
+			it('should target the IdP SLO endpoint with the deflated response and the relay state', async () => {
+				const url = await generateUrl('relay-123');
+				const [target, query] = url.split('?');
+				const params = new URLSearchParams(query);
+
+				expect(target).to.be.equal('[idpSLORedirectURL]');
+				expect([...params.keys()]).to.be.deep.equal(['SAMLResponse', 'RelayState']);
+				expect(params.get('RelayState')).to.be.equal('relay-123');
+
+				const inflated = zlib.inflateRawSync(Buffer.from(params.get('SAMLResponse') ?? '', 'base64')).toString();
+				expect(inflated).to.be.equal('logout-response');
+			});
+		});
 	});
 
 	describe('[Metadata]', () => {
@@ -315,6 +378,29 @@ describe('SAML', () => {
 					expect(profile).to.have.property('eduPersonAffiliation').equal('group1');
 					expect(profile).to.have.property('email').equal('user1@example.com');
 					expect(profile).to.have.property('channels').that.is.an('array').that.is.deep.equal(['channel1', 'pets', 'random']);
+					expect(loggedOut).to.be.false;
+				});
+			});
+
+			it('should contain properties to avoid assertions replay in the profile object from the response', () => {
+				const notBefore = new Date();
+				notBefore.setMinutes(notBefore.getMinutes() - 3);
+
+				const notOnOrAfter = new Date();
+				notOnOrAfter.setMinutes(notOnOrAfter.getMinutes() + 3);
+
+				const response = samlResponseWithConditions
+					.replace('[NOTBEFORE]', notBefore.toISOString())
+					.replace('[NOTONORAFTER]', notOnOrAfter.toISOString());
+
+				const parser = new ResponseParser(serviceProviderOptions);
+				parser.validate(makeLoginResponseEnvelope(response), (err, profile, loggedOut) => {
+					expect(err).to.be.null;
+					expect(profile).to.be.an('object');
+					expect(profile).to.have.property('assertionId').equal(samlResponseAssertionId);
+					expect(profile).to.have.property('expireAt');
+					// `expireAt` mirrors the assertion's NotOnOrAfter condition.
+					expect(new Date((profile as any).expireAt).toISOString()).to.equal(notOnOrAfter.toISOString());
 					expect(loggedOut).to.be.false;
 				});
 			});
@@ -1016,6 +1102,107 @@ describe('SAML', () => {
 			expect(SAMLUtils.getValidationActionRedirectPath(credentialToken)).to.be.equal(
 				`saml/${credentialToken}?saml_idp_credentialToken=${credentialToken}`,
 			);
+		});
+	});
+
+	describe('[SAML.processRequest] validate action - assertion replay protection', () => {
+		const markUsed = sinon.stub();
+		const credentialCreate = sinon.stub().resolves();
+
+		// `pending` captures the promise returned by the (async) validateResponse callback,
+		// because processValidateAction does not await it. Awaiting it in the test guarantees
+		// markUsed / storeCredential / redirect have already run before we assert.
+		let pending: Promise<unknown> | undefined;
+		let lastRedirect: string | undefined;
+
+		// A profile as produced by ResponseParser, carrying the replay-guard fields.
+		const replayProfile = {
+			assertionId: samlResponseAssertionId,
+			issuer: '[ISSUER]',
+			expireAt: new Date(Date.now() + 5 * 60 * 1000),
+		};
+
+		const res = {
+			writeHead: (_code: number, headers?: Record<string, string>) => {
+				lastRedirect = headers?.Location;
+			},
+			write: () => undefined,
+			end: () => undefined,
+		};
+
+		const loadSAML = () =>
+			proxyquire.noCallThru().load('../../../../app/meteor-accounts-saml/server/lib/SAML', {
+				'@rocket.chat/models': {
+					SamlUsedAssertions: { markUsed },
+					CredentialTokens: { create: credentialCreate },
+					Users: {},
+					Rooms: {},
+					Roles: {},
+				},
+				'@rocket.chat/random': { Random: { id: () => '__credentialToken__' } },
+				'@rocket.chat/string-helpers': { escapeRegExp: (s: string) => s, escapeHTML: (s: string) => s },
+				'meteor/accounts-base': { Accounts: { _generateStampedLoginToken: () => ({ token: 't' }) } },
+				'meteor/meteor': { Meteor: { absoluteUrl: (path = '') => `http://localhost:3000/${path}`, Error } },
+				'./ServiceProvider': {
+					SAMLServiceProvider: class {
+						validateResponse(_envelope: unknown, cb: (err: Error | null, profile: any) => Promise<void>) {
+							pending = cb(null, replayProfile);
+						}
+					},
+				},
+				'./Utils': {
+					SAMLUtils: {
+						relayState: null,
+						error: sinon.stub(),
+						warn: sinon.stub(),
+						log: sinon.stub(),
+						getValidationActionRedirectPath: (token: string) => `_saml/validate/${token}`,
+					},
+				},
+				'./getSAMLEnvelope': { getSAMLEnvelope: async () => ({ relayState: null }) },
+				'../../../../lib/utils/arrayUtils': { ensureArray: (v: any) => v },
+				'../../../../server/lib/logger/system': { SystemLogger: { error: sinon.stub(), warn: sinon.stub() } },
+				'../../../lib/server/functions/addUserToRoom': { addUserToRoom: sinon.stub() },
+				'../../../lib/server/functions/createRoom': { createRoom: sinon.stub() },
+				'../../../lib/server/functions/getUsernameSuggestion': { generateUsernameSuggestion: sinon.stub() },
+				'../../../lib/server/functions/saveUserIdentity': { saveUserIdentity: sinon.stub() },
+				'../../../settings/server': { settings: { get: sinon.stub() } },
+				'../../../utils/lib/i18n': { i18n: { t: (s: string) => s, languages: [] } },
+			}).SAML;
+
+		const service = { ...serviceProviderOptions } as any;
+		const samlObject = { actionName: 'validate', serviceName: 'test-sp', credentialToken: '' } as any;
+
+		beforeEach(() => {
+			markUsed.reset();
+			credentialCreate.reset();
+			credentialCreate.resolves();
+			pending = undefined;
+			lastRedirect = undefined;
+		});
+
+		it('should mark the assertion as used and store the credential for a fresh assertion', async () => {
+			markUsed.resolves(true);
+			const SAML = loadSAML();
+
+			await SAML.processRequest({} as any, res as any, service, samlObject);
+			await pending;
+
+			expect(markUsed.calledOnceWithExactly(replayProfile.assertionId, replayProfile.issuer, replayProfile.expireAt)).to.be.true;
+			expect(credentialCreate.calledOnce).to.be.true;
+			expect(lastRedirect).to.equal('http://localhost:3000/_saml/validate/__credentialToken__');
+		});
+
+		it('should reject a replayed assertion: no credential stored and redirect to the base url', async () => {
+			markUsed.resolves(false);
+			const SAML = loadSAML();
+
+			await SAML.processRequest({} as any, res as any, service, samlObject);
+			await pending;
+
+			expect(markUsed.calledOnce).to.be.true;
+			expect(credentialCreate.called).to.be.false;
+			expect(lastRedirect).to.equal('http://localhost:3000/');
 		});
 	});
 });

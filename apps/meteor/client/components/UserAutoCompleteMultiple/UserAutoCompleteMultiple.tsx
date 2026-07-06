@@ -101,7 +101,7 @@ const UserAutoCompleteMultiple = forwardRef<HTMLInputElement, UserAutoCompleteMu
 					onChange={handleOnChange}
 					filter={filter}
 					setFilter={setFilter}
-					renderSelected={({ value: username, onMouseDown }: { value: string; onMouseDown: () => void }) => {
+					renderSelected={({ value: username, onMouseDown }) => {
 						const currentCachedOption = selectedCache[username] || {};
 
 						return (

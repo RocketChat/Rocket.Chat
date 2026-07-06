@@ -43,12 +43,14 @@ export interface ISessionsModel extends IBaseModel<ISession> {
 		search,
 		offset,
 		count,
+		currentLoginToken,
 	}: {
 		uid: string;
 		sort?: Record<CustomSortOp, 1 | -1>;
 		search?: string | null;
 		offset?: number;
 		count?: number;
+		currentLoginToken?: string;
 	}): Promise<{ sessions: Array<DeviceManagementSession>; count: number; offset: number; total: number }>;
 
 	getActiveUsersBetweenDates({ start, end }: DestructuredRange): Promise<ISession[]>;

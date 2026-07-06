@@ -2,8 +2,8 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Subscriptions, ReadReceipts, ReadReceiptsArchive, Team } from '@rocket.chat/models';
 
 import type { SubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
+import { eraseRoomLooseValidation, eraseTeamOnRelinquishRoomOwnerships } from '../../../../server/api/lib/eraseTeam';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
-import { eraseRoomLooseValidation, eraseTeamOnRelinquishRoomOwnerships } from '../../../api/server/lib/eraseTeam';
 import { FileUpload } from '../../../file-upload/server';
 import { notifyOnSubscriptionChanged } from '../lib/notifyListener';
 

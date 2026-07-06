@@ -4,7 +4,7 @@ import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
 
 import { parseUriList } from './parseUriList';
-import type { OauthAppsAddParams } from '../../../../api/server/v1/oauthapps';
+import type { OauthAppsAddParams } from '../../../../../server/api/v1/oauthapps';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 
 export async function addOAuthApp(applicationParams: OauthAppsAddParams, uid: IUser['_id'] | undefined): Promise<IOAuthApps> {

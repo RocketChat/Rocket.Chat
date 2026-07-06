@@ -32,12 +32,12 @@ export class UserUpdater implements IUserUpdater {
 
 	public async setActiveState(
 		userId: IUser['id'],
-		state: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt'>,
+		state: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt' | 'statusId'>,
 	) {
 		return this.bridges.getUserBridge().doSetActiveState(userId, state, this.appId);
 	}
 
-	public async endActiveState(userId: IUser['id']) {
-		return this.bridges.getUserBridge().doEndActiveState(userId, this.appId);
+	public async endActiveState(userId: IUser['id'], statusId?: string) {
+		return this.bridges.getUserBridge().doEndActiveState(userId, this.appId, statusId);
 	}
 }

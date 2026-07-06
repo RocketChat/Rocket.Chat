@@ -2,7 +2,7 @@ import type { IMessage, IReadReceiptWithUser } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Meteor } from 'meteor/meteor';
 
-import { API } from '../../../app/api/server/api';
+import { API } from '../../../server/api/api';
 import { getReadReceiptsFunction } from '../methods/getReadReceipts';
 
 type GetMessageReadReceiptsProps = {

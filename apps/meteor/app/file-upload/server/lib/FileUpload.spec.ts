@@ -49,7 +49,7 @@ const { FileUpload, FileUploadClass } = proxyquire.noCallThru().load('./FileUplo
 		generateJWT: sinon.stub(),
 	},
 	'../../../utils/server/restrictions': sinon.stub(),
-	'../../../api/server/lib/MultipartUploadHandler': sinon.stub(),
+	'../../../../server/api/lib/MultipartUploadHandler': sinon.stub(),
 	'@rocket.chat/account-utils': { hashLoginToken: sinon.stub().callsFake((token) => `hashed_${token}`) },
 });
 

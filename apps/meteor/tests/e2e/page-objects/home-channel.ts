@@ -101,6 +101,11 @@ export class HomeChannel {
 		await this.content.waitForChannel();
 	}
 
+	async gotoGroup(name: string) {
+		await this.page.goto(`/group/${name}`);
+		await this.content.waitForChannel();
+	}
+
 	get btnContextualbarClose(): Locator {
 		return this.page.locator('[data-qa="ContextualbarActionClose"]');
 	}

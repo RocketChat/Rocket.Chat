@@ -1,6 +1,6 @@
 import type { IOAuthApps, IUser } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { Form } from '@rocket.chat/layout';
+import { Form, FormContainer, FormFooter, FormHeader, FormTitle } from '@rocket.chat/layout';
 import { useLoginToken, useLogout, useRoute } from '@rocket.chat/ui-contexts';
 import { useEffect, useId, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -49,10 +49,10 @@ const AuthorizationFormPage = ({ oauthApp, redirectUri, user }: AuthorizationFor
 	return (
 		<Layout>
 			<Form method='post' action='' aria-labelledby={formLabelId}>
-				<Form.Header>
-					<Form.Title id={formLabelId}>{t('core.Authorize_access_to_your_account')}</Form.Title>
-				</Form.Header>
-				<Form.Container>
+				<FormHeader>
+					<FormTitle id={formLabelId}>{t('core.Authorize_access_to_your_account')}</FormTitle>
+				</FormHeader>
+				<FormContainer>
 					<Box withRichContent>
 						<CurrentUserDisplay user={user} />
 
@@ -66,8 +66,8 @@ const AuthorizationFormPage = ({ oauthApp, redirectUri, user }: AuthorizationFor
 					<input type='hidden' name='client_id' value={oauthApp.clientId} />
 					<input type='hidden' name='redirect_uri' value={redirectUri} />
 					<input type='hidden' name='response_type' value='code' />
-				</Form.Container>
-				<Form.Footer>
+				</FormContainer>
+				<FormFooter>
 					<ButtonGroup stretch>
 						<Button ref={submitRef} type='submit' primary name='allow' value='yes'>
 							{t('core.Authorize')}
@@ -77,7 +77,7 @@ const AuthorizationFormPage = ({ oauthApp, redirectUri, user }: AuthorizationFor
 							{t('core.Logout')}
 						</Button>
 					</ButtonGroup>
-				</Form.Footer>
+				</FormFooter>
 			</Form>
 		</Layout>
 	);

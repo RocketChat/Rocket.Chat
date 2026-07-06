@@ -2,7 +2,7 @@ import { Box, Icon, TextInput, Select } from '@rocket.chat/fuselage';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import { MultiSelectCustom } from '@rocket.chat/ui-client';
 import { useCallback, useMemo, useState } from 'react';
-import type { ChangeEvent, Key, FormEvent } from 'react';
+import type { ChangeEvent, Key, SubmitEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type StatesFilter = Array<'ended' | 'transferred' | 'not-answered' | 'failed'>;
@@ -79,7 +79,7 @@ const CallHistoryPageFilters = ({ onChangeText, onChangeType, onChangeStates, se
 	return (
 		<Box
 			is='form'
-			onSubmit={useCallback((e: FormEvent<HTMLFormElement>) => e.preventDefault(), [])}
+			onSubmit={useCallback((e: SubmitEvent<HTMLFormElement>) => e.preventDefault(), [])}
 			mb='x8'
 			display='flex'
 			flexWrap='wrap'
