@@ -2,6 +2,8 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
+import { Navbar } from './page-objects/fragments';
+import { LoginPage } from './page-objects/login';
 import { createTargetChannel } from './utils';
 import { expect, test } from './utils/test';
 
@@ -189,6 +191,38 @@ test.describe.serial('message-composer', () => {
 			await page.waitForTimeout(1000);
 			await poHomeChannel.audioRecorder.getByRole('button', { name: 'Finish Recording', exact: true }).click();
 			await expect(poHomeChannel.composer.getFileByName('Audio record.mp3')).toBeVisible();
+		});
+	});
+
+	test.describe('disabled actions', () => {
+		let loginPage: LoginPage;
+		let navbar: Navbar;
+
+		test.beforeEach(({ page }) => {
+			loginPage = new LoginPage(page);
+			navbar = new Navbar(page);
+		});
+
+		test('should disable all toolbar actions when user is not part of room', async ({ page }) => {
+			await navbar.logout();
+			await loginPage.loginByUserState(Users.user2);
+
+			await page.goto(`/channel/${targetChannel}`);
+
+			await poHomeChannel.content.waitForChannel();
+			await expect(poHomeChannel.composer.btnJoinRoom).toBeVisible();
+
+			const actions = await poHomeChannel.composer.allPrimaryActions.locator(':not(:last-child)').all();
+			await Promise.all(
+				actions.map(async (action) => {
+					await expect(action).toBeDisabled();
+				}),
+			);
+
+			await expect(poHomeChannel.composer.btnMenuMoreActions).toBeEnabled();
+			await poHomeChannel.composer.btnMenuMoreActions.click();
+			await expect(poHomeChannel.composer.discussionMenuItem).toBeDisabled();
+			await expect(poHomeChannel.composer.shareLocationMenuItem).toBeDisabled();
 		});
 	});
 });

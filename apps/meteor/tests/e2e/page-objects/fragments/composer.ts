@@ -122,6 +122,14 @@ export abstract class Composer {
 	get addLinkModal(): Locator {
 		return this.root.page().getByRole('dialog', { name: 'Add link' });
 	}
+
+	get discussionMenuItem(): Locator {
+		return this.root.page().getByRole('menuitem', { name: 'Discussion' });
+	}
+
+	get shareLocationMenuItem(): Locator {
+		return this.root.page().getByRole('menuitem', { name: 'Location' });
+	}
 }
 
 export class RoomComposer extends Composer {
