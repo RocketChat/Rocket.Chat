@@ -53,11 +53,13 @@ export const useUpdateAvatar = (avatarObj: AvatarObject, userId: IUser['_id']) =
 		}
 
 		if (isServiceObject(avatarObj)) {
-			const { blob, service } = avatarObj;
+			const { blob, contentType, service } = avatarObj;
 			const formData = new FormData();
 			formData.append('userId', userId);
 			formData.append('service', service);
-			formData.append('image', blob);
+			// `blob` holds the provider's data URI (see UserAvatarSuggestion); wrap it in a Blob so it is sent as a
+			// file part the REST endpoint can read back as the data URI string
+			formData.append('image', new Blob([blob], { type: contentType }), 'avatar');
 			await saveAvatarAction(formData);
 			return;
 		}

@@ -27,6 +27,7 @@ import {
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
+	validateNotFoundErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { getLoginExpirationInMs } from '@rocket.chat/tools';
@@ -46,6 +47,7 @@ import { getURL } from '../../../app/utils/server/getURL';
 import { generatePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/generateToken';
 import { regeneratePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/regenerateToken';
 import { removePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/removeToken';
+import { runUserLogoutCleanUp } from '../../hooks/userLogoutCleanUp';
 import { UserChangedAuditStore } from '../../lib/auditServerEvents/userChanged';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { i18n } from '../../lib/i18n';
@@ -342,9 +344,15 @@ API.v1
 				}
 			}
 
-			const service = typeof fields.service === 'string' && fields.service.length > 0 ? fields.service : 'rest';
+			// an avatar coming from an OAuth service suggestion carries the provider data URI (a string) in the
+			// image field; setUserAvatar parses it and records the provider name as the avatar origin. A regular
+			// upload has no service and is stored from the binary buffer.
+			if (typeof fields.service === 'string' && fields.service.length > 0) {
+				await setUserAvatar(user, fileBuffer.toString('utf8'), mimetype, fields.service);
+				return API.v1.success();
+			}
 
-			await setUserAvatar(user, fileBuffer, mimetype, service as 'rest');
+			await setUserAvatar(user, fileBuffer, mimetype, 'rest');
 
 			return API.v1.success();
 		},
@@ -2098,18 +2106,22 @@ API.v1.post(
 		response: {
 			200: voidSuccessResponse,
 			400: validateBadRequestErrorResponse,
+			404: validateNotFoundErrorResponse,
 		},
 	},
 	async function action() {
 		const { token } = this.bodyParams;
 
+		// the token is looked up before verifyEmail runs because the method consumes (removes) it on success
 		const user = await Users.findOne<Pick<IUser, '_id'>>({ 'services.email.verificationTokens.token': token }, { projection: { _id: 1 } });
+
+		if (!user) {
+			return API.v1.notFound();
+		}
 
 		await Meteor.callAsync('verifyEmail', token);
 
-		if (user) {
-			await runAfterVerifyEmail(user._id);
-		}
+		await runAfterVerifyEmail(user._id);
 
 		return API.v1.success();
 	},

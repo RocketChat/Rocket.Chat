@@ -210,6 +210,7 @@ const permissionsEndpoints = API.v1
 		'permissions.addRole',
 		{
 			authRequired: true,
+			permissionsRequired: ['access-permissions'],
 			body: isPermissionRolePayload,
 			response: {
 				200: voidPermissionResponse,
@@ -228,6 +229,7 @@ const permissionsEndpoints = API.v1
 		'permissions.removeRole',
 		{
 			authRequired: true,
+			permissionsRequired: ['access-permissions'],
 			body: isPermissionRolePayload,
 			response: {
 				200: voidPermissionResponse,

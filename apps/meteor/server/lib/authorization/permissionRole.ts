@@ -1,5 +1,5 @@
 import { License } from '@rocket.chat/core-services';
-import { Permissions } from '@rocket.chat/models';
+import { Permissions, Roles } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from './hasPermission';
@@ -22,6 +22,13 @@ export const addPermissionToRoleMethod = async (uid: string | null, permissionId
 
 	if (!permission) {
 		throw new Meteor.Error('error-invalid-permission', 'Permission does not exist', {
+			method: 'authorization:addPermissionToRole',
+			action: 'Adding_permission',
+		});
+	}
+
+	if (!(await Roles.findOneById(role, { projection: { _id: 1 } }))) {
+		throw new Meteor.Error('error-invalid-role', 'Role does not exist', {
 			method: 'authorization:addPermissionToRole',
 			action: 'Adding_permission',
 		});

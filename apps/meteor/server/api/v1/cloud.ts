@@ -300,7 +300,10 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		await connectWorkspace(this.bodyParams.token);
+		const connected = await connectWorkspace(this.bodyParams.token);
+		if (!connected) {
+			return API.v1.failure('Failed to connect the workspace with Rocket.Chat Cloud');
+		}
 		return API.v1.success();
 	},
 );
