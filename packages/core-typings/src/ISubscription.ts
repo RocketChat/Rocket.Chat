@@ -13,6 +13,7 @@ export interface ISubscription extends IRocketChatRecord {
 	v?: Pick<IUser, '_id' | 'username' | 'name' | 'status'> & { token?: string };
 	rid: IRoom['_id'];
 	open: boolean;
+	snoozedUntil?: Date;
 	ts: Date;
 
 	name: string;

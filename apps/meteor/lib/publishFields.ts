@@ -10,6 +10,7 @@ export const subscriptionFields = {
 	f: 1,
 	u: 1,
 	open: 1,
+	snoozedUntil: 1,
 	alert: 1,
 	roles: 1,
 	unread: 1,

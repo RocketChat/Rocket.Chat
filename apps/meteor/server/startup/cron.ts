@@ -7,10 +7,19 @@ import { temporaryUploadCleanupCron } from '../cron/temporaryUploadsCleanup';
 import { usageReportCron } from '../cron/usageReport';
 import { userDataDownloadsCron } from '../cron/userDataDownloads';
 import { videoConferencesCron } from '../cron/videoConferences';
+import { snoozeChannelsCron } from '../cron/snoozeChannels';
 
 const logger = new Logger('SyncedCron');
 
 export const startCronJobs = async (): Promise<void> => {
-	await Promise.all([startCron(), oembedCron(), usageReportCron(logger), npsCron(), temporaryUploadCleanupCron(), videoConferencesCron()]);
+	await Promise.all([
+		startCron(),
+		oembedCron(),
+		usageReportCron(logger),
+		npsCron(),
+		temporaryUploadCleanupCron(),
+		videoConferencesCron(),
+		snoozeChannelsCron(),
+	]);
 	userDataDownloadsCron();
 };

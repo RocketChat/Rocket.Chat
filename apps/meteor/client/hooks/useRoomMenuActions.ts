@@ -8,6 +8,7 @@ import { useLeaveRoomAction } from './menuActions/useLeaveRoom';
 import { useToggleFavoriteAction } from './menuActions/useToggleFavoriteAction';
 import { useToggleReadAction } from './menuActions/useToggleReadAction';
 import { useHideRoomAction } from './useHideRoomAction';
+import { useSnoozeRoomAction } from './useSnoozeRoomAction';
 import { useOmnichannelPrioritiesMenu } from '../views/omnichannel/hooks/useOmnichannelPrioritiesMenu';
 
 type RoomMenuActionsProps = {
@@ -54,36 +55,37 @@ export const useRoomMenuActions = ({
 
 	const isOmnichannelRoom = type === 'l';
 	const prioritiesMenu = useOmnichannelPrioritiesMenu(rid);
+	const snoozeOptions = useSnoozeRoomAction({ rid });
 
 	const menuOptions = useMemo(
 		() =>
 			!hideDefaultOptions
 				? ([
-						!isOmnichannelRoom && {
-							id: 'hideRoom',
-							icon: 'eye-off',
-							content: t('Hide'),
-							onClick: handleHide,
-						},
-						{
-							id: 'toggleRead',
-							icon: 'flag',
-							content: isUnread ? t('Mark_read') : t('Mark_unread'),
-							onClick: handleToggleRead,
-						},
-						canFavorite && {
-							id: 'toggleFavorite',
-							icon: isFavorite ? 'star-filled' : 'star',
-							content: isFavorite ? t('Unfavorite') : t('Favorite'),
-							onClick: handleToggleFavorite,
-						},
-						canLeave && {
-							id: 'leaveRoom',
-							icon: 'sign-out',
-							content: t('Leave_room'),
-							onClick: handleLeave,
-						},
-					].filter(Boolean) as GenericMenuItemProps[])
+					!isOmnichannelRoom && {
+						id: 'hideRoom',
+						icon: 'eye-off',
+						content: t('Hide'),
+						onClick: handleHide,
+					},
+					{
+						id: 'toggleRead',
+						icon: 'flag',
+						content: isUnread ? t('Mark_read') : t('Mark_unread'),
+						onClick: handleToggleRead,
+					},
+					canFavorite && {
+						id: 'toggleFavorite',
+						icon: isFavorite ? 'star-filled' : 'star',
+						content: isFavorite ? t('Unfavorite') : t('Favorite'),
+						onClick: handleToggleFavorite,
+					},
+					canLeave && {
+						id: 'leaveRoom',
+						icon: 'sign-out',
+						content: t('Leave_room'),
+						onClick: handleLeave,
+					},
+				].filter(Boolean) as GenericMenuItemProps[])
 				: [],
 		[
 			hideDefaultOptions,
@@ -107,5 +109,8 @@ export const useRoomMenuActions = ({
 		];
 	}
 
-	return menuOptions.length > 0 ? [{ title: '', items: menuOptions }] : [];
+	return [
+		...(menuOptions.length > 0 ? [{ title: '', items: menuOptions }] : []),
+		...(snoozeOptions.length > 0 ? [{ title: t('Snooze'), items: snoozeOptions }] : []),
+	];
 };
