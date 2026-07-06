@@ -14,11 +14,11 @@ declare module '@rocket.chat/ddp-client' {
 }
 
 export const deleteIncomingIntegration = async (integrationId: string, userId: string): Promise<void> => {
-	let canManageAllIntegrations = false;
+	const canManageAllIntegrations = !!userId && (await hasPermissionAsync(userId, 'manage-incoming-integrations'));
+	const canManageOwnIntegrations =
+		!canManageAllIntegrations && !!userId && (await hasPermissionAsync(userId, 'manage-own-incoming-integrations'));
 
-	if (userId && (await hasPermissionAsync(userId, 'manage-incoming-integrations'))) {
-		canManageAllIntegrations = true;
-	} else if (!userId || !(await hasPermissionAsync(userId, 'manage-own-incoming-integrations'))) {
+	if (!canManageAllIntegrations && !canManageOwnIntegrations) {
 		throw new Meteor.Error('not_authorized', 'Unauthorized', {
 			method: 'deleteIncomingIntegration',
 		});
@@ -26,7 +26,7 @@ export const deleteIncomingIntegration = async (integrationId: string, userId: s
 
 	const integration = await Integrations.removeByIdAndCreatedByIfExists({
 		_id: integrationId,
-		...(!canManageAllIntegrations && { createdBy: userId }),
+		...(canManageOwnIntegrations && { createdBy: userId }),
 	});
 
 	if (!integration) {

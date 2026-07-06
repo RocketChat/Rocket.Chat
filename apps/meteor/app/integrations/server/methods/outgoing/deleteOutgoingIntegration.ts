@@ -20,11 +20,10 @@ export const deleteOutgoingIntegration = async (integrationId: string, userId: s
 		});
 	}
 
-	let canManageAllIntegrations = false;
+	const canManageAllIntegrations = await hasPermissionAsync(userId, 'manage-outgoing-integrations');
+	const canManageOwnIntegrations = !canManageAllIntegrations && (await hasPermissionAsync(userId, 'manage-own-outgoing-integrations'));
 
-	if (await hasPermissionAsync(userId, 'manage-outgoing-integrations')) {
-		canManageAllIntegrations = true;
-	} else if (!(await hasPermissionAsync(userId, 'manage-own-outgoing-integrations'))) {
+	if (!canManageAllIntegrations && !canManageOwnIntegrations) {
 		throw new Meteor.Error('not_authorized', 'Unauthorized', {
 			method: 'deleteOutgoingIntegration',
 		});
@@ -32,7 +31,7 @@ export const deleteOutgoingIntegration = async (integrationId: string, userId: s
 
 	const integration = await Integrations.removeByIdAndCreatedByIfExists({
 		_id: integrationId,
-		...(!canManageAllIntegrations && { createdBy: userId }),
+		...(canManageOwnIntegrations && { createdBy: userId }),
 	});
 
 	if (!integration) {

@@ -151,9 +151,11 @@ export const loadSamlServiceProviders = async function (): Promise<void> {
 				}
 
 				const service = await LoginServiceConfiguration.removeByService(serviceName);
-				if (service) {
-					void notifyOnLoginServiceConfigurationChanged({ _id: service._id }, 'removed');
+				if (!service) {
+					return false;
 				}
+
+				void notifyOnLoginServiceConfigurationChanged({ _id: service._id }, 'removed');
 
 				return false;
 			}),
