@@ -149,14 +149,9 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	}
 
 	setCasExternalIdByUsername(username: string): Promise<IUser | null> {
-		return this.findOneAndUpdate(
-			{ username },
-			{ $set: { 'services.cas.external_id': username } },
-			{
-				collation: { locale: 'en', strength: 2 }, // Case insensitive
-				returnDocument: 'after',
-			},
-		);
+		// #TODO: Remove regex based search
+		const regex = new RegExp(`^${username}$`, 'i');
+		return this.findOneAndUpdate({ username: regex }, { $set: { 'services.cas.external_id': username } }, { returnDocument: 'after' });
 	}
 
 	/**
