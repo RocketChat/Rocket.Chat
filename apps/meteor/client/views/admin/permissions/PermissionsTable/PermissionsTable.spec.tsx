@@ -115,8 +115,13 @@ test('should reset pagination to the first page when the filter changes', async 
 		},
 	);
 
+	// The mount effect applies the initial empty filter and resets the page once; clear those
+	// calls so the assertions below only see what the filter change itself triggers.
+	setFilter.mockClear();
+	setCurrent.mockClear();
+
 	await userEvent.type(screen.getByRole('textbox', { name: 'Search' }), 'admin');
 
 	await waitFor(() => expect(setFilter).toHaveBeenCalledWith('admin'));
-	expect(setCurrent).toHaveBeenLastCalledWith(0);
+	expect(setCurrent).toHaveBeenCalledWith(0);
 });
