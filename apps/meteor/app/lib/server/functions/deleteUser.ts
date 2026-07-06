@@ -112,7 +112,8 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 
 		const rids = subscribedRooms.map((room) => room.rid);
 		void notifyOnRoomChangedById(rids);
-
+        // Remove deleted user's username from all message reactions
+       await Messages.removeReactionsByUsername(user.username);
 		await Subscriptions.removeByUserId(userId);
 
 		// Remove user as livechat agent
