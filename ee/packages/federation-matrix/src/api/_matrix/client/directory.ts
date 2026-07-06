@@ -22,17 +22,6 @@ const RoomAliasParamsSchema = {
 
 const isRoomAliasParamsProps = ajv.compile(RoomAliasParamsSchema);
 
-const DirectoryResponseSchema = {
-	type: 'object',
-	properties: {
-		room_id: { type: 'string' },
-		servers: { type: 'array', items: { type: 'string' } },
-	},
-	required: ['room_id'],
-};
-
-const isDirectoryResponseProps = ajv.compile(DirectoryResponseSchema);
-
 const DirectoryPutBodySchema = {
 	type: 'object',
 	properties: {
@@ -46,27 +35,6 @@ const isDirectoryPutBodyProps = ajv.compile(DirectoryPutBodySchema);
 
 export const addDirectoryRoutes = (router: ClientRouter) => {
 	router
-		// GET /_matrix/client/v3/directory/room/:roomAlias
-		.get(
-			'/v3/directory/room/:roomAlias',
-			{
-				params: isRoomAliasParamsProps,
-				response: {
-					200: isDirectoryResponseProps,
-					401: isMatrixErrorProps,
-					404: isMatrixErrorProps,
-					501: isMatrixErrorProps,
-				},
-				tags,
-				license,
-			},
-			isAppServiceAuthenticatedMiddleware(),
-			async () => {
-				// TODO(federation-sdk): resolveAlias(roomAlias) → {roomId, servers}
-				return notImplemented('Room alias resolution not yet implemented');
-			},
-		)
-
 		// PUT /_matrix/client/v3/directory/room/:roomAlias
 		.put(
 			'/v3/directory/room/:roomAlias',
