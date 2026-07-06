@@ -24,15 +24,37 @@ import type { IProcessor } from '@rocket.chat/apps-engine/definition/scheduler/I
 import type { ISlashCommand } from '@rocket.chat/apps-engine/definition/slashcommands/ISlashCommand';
 import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders/IVideoConfProvider';
 
+import { Persistence } from './Persistence';
 import { HttpExtend } from './extenders/HttpExtender';
 import { formatErrorResponse } from './formatResponseErrorHandler';
 import { Http } from './http';
 import { AppObjectRegistry } from '../../AppObjectRegistry';
+import { RemoteBridges } from '../bridges/RemoteBridges';
 import * as Messenger from '../messenger';
+import { EnvironmentRead } from './environment/EnvironmentRead';
+import { EnvironmentWrite } from './environment/EnvironmentWrite';
+import { EnvironmentalVariableRead } from './environment/EnvironmentalVariableRead';
+import { ServerSettingRead } from './environment/ServerSettingRead';
+import { ServerSettingUpdater } from './environment/ServerSettingUpdater';
+import { ServerSettingsModify } from './environment/ServerSettingsModify';
 import { ModifyCreator } from './modify/ModifyCreator';
 import { ModifyExtender } from './modify/ModifyExtender';
 import { ModifyUpdater } from './modify/ModifyUpdater';
 import { Notifier } from './notifier';
+import { CloudWorkspaceRead } from './read/CloudWorkspaceRead';
+import { ContactRead } from './read/ContactRead';
+import { ExperimentalRead } from './read/ExperimentalRead';
+import { LivechatRead } from './read/LivechatRead';
+import { MessageRead } from './read/MessageRead';
+import { OAuthAppsReader } from './read/OAuthAppsReader';
+import { PersistenceRead } from './read/PersistenceRead';
+import { Reader } from './read/Reader';
+import { RoleRead } from './read/RoleRead';
+import { RoomRead } from './read/RoomRead';
+import { ThreadRead } from './read/ThreadRead';
+import { UploadRead } from './read/UploadRead';
+import { UserRead } from './read/UserRead';
+import { VideoConferenceRead } from './read/VideoConferenceRead';
 
 /** Helper: extends T with an internal _proxy property used for delegation. */
 type WithProxy<T> = T & { _proxy: T };
@@ -73,9 +95,13 @@ export class AppAccessors {
 
 	private notifier?: INotifier;
 
+	private readonly bridges: RemoteBridges;
+
 	private proxify: <T>(namespace: string, overrides?: Record<string, (...args: unknown[]) => unknown>) => T;
 
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {
+		this.bridges = new RemoteBridges(senderFn);
+
 		this.proxify = <T>(namespace: string, overrides: Record<string, (...args: unknown[]) => unknown> = {}): T =>
 			new Proxy(
 				{ __kind: `accessor:${namespace}` },
@@ -115,11 +141,14 @@ export class AppAccessors {
 
 	public getEnvironmentRead(): IEnvironmentRead {
 		if (!this.environmentRead) {
-			this.environmentRead = {
-				getSettings: () => this.proxify('getEnvironmentRead:getSettings'),
-				getServerSettings: () => this.proxify('getEnvironmentRead:getServerSettings'),
-				getEnvironmentVariables: () => this.proxify('getEnvironmentRead:getEnvironmentVariables'),
-			};
+			// App settings (`getSettings`) remain proxied to the host until Phase 3 (they are
+			// backed by the host ProxiedApp storage item); server settings and environment
+			// variables now run locally against their bridges.
+			this.environmentRead = new EnvironmentRead(
+				this.proxify('getEnvironmentRead:getSettings'),
+				new ServerSettingRead(this.bridges),
+				new EnvironmentalVariableRead(this.bridges),
+			);
 		}
 
 		return this.environmentRead;
@@ -127,10 +156,11 @@ export class AppAccessors {
 
 	public getEnvironmentWrite() {
 		if (!this.environmentWriter) {
-			this.environmentWriter = {
-				getSettings: () => this.proxify('getEnvironmentWrite:getSettings'),
-				getServerSettings: () => this.proxify('getEnvironmentWrite:getServerSettings'),
-			};
+			// App-settings updates (`getSettings`) remain proxied to the host until Phase 3.
+			this.environmentWriter = new EnvironmentWrite(
+				this.proxify('getEnvironmentWrite:getSettings'),
+				new ServerSettingUpdater(this.bridges),
+			);
 		}
 
 		return this.environmentWriter;
@@ -157,7 +187,7 @@ export class AppAccessors {
 			this.configModifier = {
 				scheduler: this.proxify('getConfigurationModify:scheduler'),
 				slashCommands: slashCommandsModify,
-				serverSettings: this.proxify('getConfigurationModify:serverSettings'),
+				serverSettings: new ServerSettingsModify(this.bridges),
 			};
 		}
 
@@ -268,27 +298,32 @@ export class AppAccessors {
 
 	public getReader() {
 		if (!this.reader) {
-			this.reader = {
-				getEnvironmentReader: () => ({
-					getSettings: () => this.proxify('getReader:getEnvironmentReader:getSettings'),
-					getServerSettings: () => this.proxify('getReader:getEnvironmentReader:getServerSettings'),
-					getEnvironmentVariables: () => this.proxify('getReader:getEnvironmentReader:getEnvironmentVariables'),
-				}),
-				getMessageReader: () => this.proxify('getReader:getMessageReader'),
-				getPersistenceReader: () => this.proxify('getReader:getPersistenceReader'),
-				getRoomReader: () => this.proxify('getReader:getRoomReader'),
-				getUserReader: () => this.proxify('getReader:getUserReader'),
-				getNotifier: () => this.getNotifier(),
-				getLivechatReader: () => this.proxify('getReader:getLivechatReader'),
-				getUploadReader: () => this.proxify('getReader:getUploadReader'),
-				getCloudWorkspaceReader: () => this.proxify('getReader:getCloudWorkspaceReader'),
-				getVideoConferenceReader: () => this.proxify('getReader:getVideoConferenceReader'),
-				getOAuthAppsReader: () => this.proxify('getReader:getOAuthAppsReader'),
-				getThreadReader: () => this.proxify('getReader:getThreadReader'),
-				getRoleReader: () => this.proxify('getReader:getRoleReader'),
-				getContactReader: () => this.proxify('getReader:getContactReader'),
-				getExperimentalReader: () => this.proxify('getReader:getExperimentalReader'),
-			};
+			// The environment sub-reader keeps its own `getSettings` proxy namespace
+			// (`getReader:getEnvironmentReader:getSettings`) so the app-settings path stays
+			// byte-for-byte until Phase 3; server settings and env vars run locally.
+			const environmentReader = new EnvironmentRead(
+				this.proxify('getReader:getEnvironmentReader:getSettings'),
+				new ServerSettingRead(this.bridges),
+				new EnvironmentalVariableRead(this.bridges),
+			);
+
+			this.reader = new Reader(
+				environmentReader,
+				new MessageRead(this.bridges),
+				new PersistenceRead(this.bridges),
+				new RoomRead(this.bridges),
+				new UserRead(this.bridges),
+				this.getNotifier(),
+				new LivechatRead(this.bridges),
+				new UploadRead(this.bridges),
+				new CloudWorkspaceRead(this.bridges),
+				new VideoConferenceRead(this.bridges),
+				new ContactRead(this.bridges),
+				new OAuthAppsReader(this.bridges),
+				new ThreadRead(this.bridges),
+				new RoleRead(this.bridges),
+				new ExperimentalRead(this.bridges),
+			);
 		}
 
 		return this.reader;
@@ -314,7 +349,7 @@ export class AppAccessors {
 
 	public getPersistence() {
 		if (!this.persistence) {
-			this.persistence = this.proxify('getPersistence');
+			this.persistence = new Persistence(this.bridges);
 		}
 
 		return this.persistence;

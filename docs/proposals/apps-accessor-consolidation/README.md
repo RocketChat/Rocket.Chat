@@ -540,21 +540,37 @@ tests are deleted in that same PR — gated, for MOVE accessors, on the parity c
    Phase 0 is an internal, behavior-preserving refactor, so no changeset is added — this document and
    `base-runtime-app-id-exceptions.md` are the recorded contract.
 
-### Phase 1 — Reader family + Persistence + Environment (server-side settings)
+### Phase 1 — Reader family + Persistence + Environment (server-side settings) — ✅ runtime port landed
 
-*Landed as one PR per accessor (or tight group); each PR ports the accessor, flips its `mod.ts`
-proxy entry to local, passes the §6 parity check, then deletes the host class + its tests.*
-
-1. Port to base-runtime: `MessageRead`, `RoomRead`, `UserRead`, `PersistenceRead`, `LivechatRead`,
-   `UploadRead`, `CloudWorkspaceRead`, `VideoConferenceRead`, `OAuthAppsReader`, `ContactRead`,
-   `ThreadRead`, `RoleRead`, `ExperimentalRead`, `ServerSettingRead`, `EnvironmentalVariableRead`,
+1. ✅ Ported to base-runtime (`accessors/read/*`, `accessors/environment/*`, `accessors/Persistence.ts`):
+   `MessageRead`, `RoomRead`, `UserRead`, `PersistenceRead`, `LivechatRead`, `UploadRead`,
+   `CloudWorkspaceRead`, `VideoConferenceRead`, `OAuthAppsReader`, `ContactRead`, `ThreadRead`,
+   `RoleRead`, `ExperimentalRead`, `ServerSettingRead`, `EnvironmentalVariableRead`,
    `ServerSettingUpdater`, `ServerSettingsModify`, `Persistence`, and the `Reader` /
-   `EnvironmentRead` / `EnvironmentWrite` facades (except the app-settings members, which stay
-   proxied until Phase 3).
-2. Replace the corresponding `proxify(...)` entries in `mod.ts` (`getReader`, `getPersistence`,
+   `EnvironmentRead` / `EnvironmentWrite` facades. App-settings members (`getSettings` on
+   `EnvironmentRead`/`EnvironmentWrite`) stay proxied until Phase 3. Each class takes a `RemoteBridges`
+   and sends `bridges:*` with the `'APP_ID'` sentinel; all portable validation/defaulting logic
+   (limit/sort caps, option defaults, arg-array wrapping, `getValueById` fallback, the `getAppUser`
+   argument-appId exception) moved verbatim. Tests: `read/tests/readers.test.ts`,
+   `environment/tests/environment.test.ts`, `accessors/tests/Persistence.test.ts`, and the updated
+   `AppAccessors.test.ts`.
+2. ✅ Flipped the corresponding `mod.ts` entries to local (`getReader`, `getPersistence`,
    `getEnvironmentRead`/`getEnvironmentWrite` server-settings/env-var members,
-   `getConfigurationModify:serverSettings`).
-3. Delete the host classes + prune `AppAccessorManager` construction accordingly; port tests.
+   `getConfigurationModify:serverSettings`). No `accessor:*` traffic remains for these paths.
+3. **Host-class deletion + `AppAccessorManager` pruning deferred to Phase 4 teardown** (deviation from
+   the original per-PR plan, taken deliberately). `AppAccessorManager.getReader()` constructs the
+   whole Reader family and is still called on the host by `AppListenerManager.executePostMessageSent`
+   (the `getAppUser` bot gate) and to build not-yet-migrated sub-accessors; deleting e.g. `RoomRead`
+   now would require pulling the Phase-4 `AppListenerManager` refactor and manager surgery forward
+   mid-phase. Keeping the host classes in place (dead for subprocess apps, still unit-tested and
+   green) keeps this step small and reviewable. The two implementations coexist transiently, which is
+   exactly what the §6 parity harness guards against — the runtime port's emitted bridge traffic is
+   pinned by tests against the documented host bridge calls.
+
+**One RPC-boundary adaptation (documented drift):** `ServerSettingRead.getValueById` checked
+`typeof set === 'undefined'` on the host; across the RPC boundary an absent host return arrives as
+`null`, so the runtime treats `null` and `undefined` alike as "not found". Behaviorally identical for
+apps (the host bridge only ever returns a setting or nothing).
 
 ### Phase 2 — Modify family completion
 
