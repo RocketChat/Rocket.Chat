@@ -35,6 +35,10 @@ describe('E2ERoom.createGroupKey', () => {
 		(Aes.exportJwk as jest.Mock).mockResolvedValue({ k: 'jwk' });
 	});
 
+	afterEach(() => {
+		jest.restoreAllMocks();
+	});
+
 	it('should discard the local key and not distribute it when it loses the race', async () => {
 		(sdk.rest.post as jest.Mock).mockRejectedValueOnce(
 			new (global as any).Response({ success: false, errorType: 'error-room-e2e-key-already-exists' }),
@@ -47,18 +51,31 @@ describe('E2ERoom.createGroupKey', () => {
 		expect(e2eRoom.groupSessionKey).toBeNull();
 		expect(e2eRoom.keyID).toBeUndefined();
 		expect(sdk.rest.post).toHaveBeenCalledTimes(1); // only setRoomKeyID was called
-		expect(sdk.rest.post).toHaveBeenCalledWith('/v1/e2e.setRoomKeyID', { rid: e2eRoom.roomId, keyID: expect.anything() });
+		expect(sdk.rest.post).toHaveBeenCalledWith('/v1/e2e.setRoomKeyID', { rid: e2eRoom.roomId, keyID: expect.any(String) });
 	});
 
 	it('should return true and distribute the key when it wins the race', async () => {
-		(sdk.rest.post as jest.Mock).mockResolvedValue({}); // setRoomKeyID + updateGroupKey OK
+		(sdk.rest.post as jest.Mock).mockResolvedValue({});
 		jest.spyOn(E2ERoom.prototype as any, 'encryptGroupKeyForParticipant').mockResolvedValue('mykey');
-		jest.spyOn(E2ERoom.prototype as any, 'encryptKeyForOtherParticipants').mockResolvedValue(undefined);
+		const encryptForOthersSpy = jest.spyOn(E2ERoom.prototype as any, 'encryptKeyForOtherParticipants').mockResolvedValue(undefined);
 
 		const e2eRoom = makeRoom();
 		const result = await e2eRoom.createGroupKey();
 
 		expect(result).toBe(true);
 		expect(e2eRoom.groupSessionKey).not.toBeNull();
+
+		expect(sdk.rest.post).toHaveBeenCalledWith('/v1/e2e.setRoomKeyID', {
+			rid: e2eRoom.roomId,
+			keyID: expect.any(String),
+		});
+		expect(sdk.rest.post).toHaveBeenCalledWith('/v1/e2e.updateGroupKey', {
+			rid: e2eRoom.roomId,
+			uid: e2eRoom.userId,
+			key: 'mykey',
+		});
+
+		expect(encryptForOthersSpy).toHaveBeenCalledTimes(1);
+		expect(sdk.rest.post).toHaveBeenCalledTimes(2); // both setRoomKeyID and updateGroupKey are called
 	});
 });
