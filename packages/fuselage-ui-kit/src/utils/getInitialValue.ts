@@ -17,10 +17,21 @@ const hasInitialOption = (element: UiKit.ActionableElement): element is UiKit.Ac
 const hasInitialOptions = (element: UiKit.ActionableElement): element is UiKit.ActionableElement & { initialOptions: UiKit.Option[] } =>
 	'initialOptions' in element;
 
-export const getInitialValue = (element: UiKit.ActionableElement) =>
-	(hasInitialValue(element) && element.initialValue) ||
-	(hasInitialTime(element) && element.initialTime) ||
-	(hasInitialDate(element) && element.initialDate) ||
-	(hasInitialOption(element) && element.initialOption.value) ||
-	(hasInitialOptions(element) && element.initialOptions.map((option) => option.value)) ||
-	undefined;
+export const getInitialValue = (element: UiKit.ActionableElement) => {
+	if (hasInitialValue(element)) {
+		return element.initialValue;
+	}
+	if (hasInitialTime(element)) {
+		return element.initialTime;
+	}
+	if (hasInitialDate(element)) {
+		return element.initialDate;
+	}
+	if (hasInitialOption(element)) {
+		return element.initialOption.value;
+	}
+	if (hasInitialOptions(element)) {
+		return element.initialOptions.map((option) => option.value);
+	}
+	return undefined;
+};

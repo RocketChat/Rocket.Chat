@@ -1,6 +1,7 @@
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
 import { memo, useMemo } from 'react';
+import type { MouseEventHandler } from 'react';
 
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
@@ -16,6 +17,10 @@ const LinearScaleElement = ({ className, block, context, surfaceRenderer }: Line
 		() => Array.from({ length: Math.max(maxValue - minValue + 1, 1) }, (_, i) => String(minValue + i)),
 		[maxValue, minValue],
 	);
+
+	const handleClick: MouseEventHandler<HTMLButtonElement> = (e) => {
+		void action({ target: e.currentTarget });
+	};
 
 	return (
 		<Box display='flex' flexDirection='row' flexWrap='nowrap' alignItems='center'>
@@ -37,7 +42,7 @@ const LinearScaleElement = ({ className, block, context, surfaceRenderer }: Line
 							value={point}
 							marginInline={2}
 							flexShrink={1}
-							onClick={action}
+							onClick={handleClick}
 						>
 							{surfaceRenderer.renderTextObject(
 								{
