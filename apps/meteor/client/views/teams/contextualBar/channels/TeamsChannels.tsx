@@ -102,7 +102,7 @@ const TeamsChannels = ({
 									items={channels}
 									totalCount={total}
 									overscan={25}
-									onEndReached={loading ? undefined : loadMoreItems}
+									onEndReached={loadMoreItems}
 									renderItem={(data) => <TeamsChannelItem onClickView={onClickView} room={data} mainRoom={mainRoom} reload={reload} />}
 								/>
 							</Box>
