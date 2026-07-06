@@ -31,6 +31,14 @@ export type ISetting = ISettingBase | ISettingEnterprise | ISettingColor | ISett
 
 type EnableQuery = string | { _id: string; value: any } | { _id: string; value: any }[];
 
+export type SettingValidationRule = {
+	query: Record<string, unknown>;
+	appliesWhen?: { _id: string; value: unknown } | { _id: string; value: unknown }[];
+	errorKey: string;
+};
+
+type SettingValidation = SettingValidationRule[] | string;
+
 export interface ISettingBase extends IRocketChatRecord {
 	type:
 		| 'boolean'
@@ -65,6 +73,7 @@ export interface ISettingBase extends IRocketChatRecord {
 	blocked: boolean;
 	enableQuery?: EnableQuery;
 	displayQuery?: EnableQuery;
+	validation?: SettingValidation;
 	sorter: number;
 	properties?: unknown;
 	enterprise?: boolean;

@@ -9,6 +9,7 @@ import { twoFactorRequired } from '../../lib/2fa/twoFactorRequired';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../lib/authorization/hasPermission';
 import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { notifyOnSettingChanged } from '../../lib/notifyListener';
+import { validateSettingRules } from '../../lib/settingValidationRules';
 import { disableCustomScripts } from '../../lib/shared/disableCustomScripts';
 import { updateAuditedByUser } from '../../settings/lib/auditedSettingUpdates';
 
@@ -67,6 +68,13 @@ Meteor.methods<ServerMethods>({
 			default:
 				check(value, String);
 				break;
+		}
+
+		try {
+			validateSettingRules([{ _id, value }]);
+		} catch (error) {
+			// rethrow as Meteor.Error so the i18n key reaches the client (plain errors are masked as internal server errors)
+			throw new Meteor.Error('error-setting-validation-failed', error instanceof Error ? error.message : String(error));
 		}
 
 		const auditSettingOperation = updateAuditedByUser({

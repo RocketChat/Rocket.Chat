@@ -826,12 +826,33 @@ export const createAccountSettings = () =>
 				type: 'int',
 				public: true,
 				enableQuery,
+				validation: [
+					{
+						query: { $or: [{ value: -1 }, { value: { $gte: 1 } }] },
+						errorKey: 'Accounts_Password_Policy_MinLength_Invalid_Value',
+					},
+					{
+						query: { $or: [{ value: { $lt: 1 } }, { value: { $lte: { $setting: 'Accounts_Password_Policy_MaxLength' } } }] },
+						appliesWhen: { _id: 'Accounts_Password_Policy_MaxLength', value: { $gte: 1 } },
+						errorKey: 'Accounts_Password_Policy_MinLength_Invalid',
+					},
+				],
 			});
 
 			await this.add('Accounts_Password_Policy_MaxLength', -1, {
 				type: 'int',
 				public: true,
 				enableQuery,
+				validation: [
+					{
+						query: { $or: [{ value: -1 }, { value: { $gte: 1 } }] },
+						errorKey: 'Accounts_Password_Policy_MaxLength_Invalid_Value',
+					},
+					{
+						query: { $or: [{ value: { $lt: 1 } }, { value: { $gte: { $setting: 'Accounts_Password_Policy_MinLength' } } }] },
+						errorKey: 'Accounts_Password_Policy_MaxLength_Invalid',
+					},
+				],
 			});
 
 			await this.add('Accounts_Password_Policy_ForbidRepeatingCharacters', true, {

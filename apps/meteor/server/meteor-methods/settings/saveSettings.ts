@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { twoFactorRequired } from '../../lib/2fa/twoFactorRequired';
 import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
+import { validateSettingRules } from '../../lib/settingValidationRules';
 import { saveSettingsBulk } from '../../settings/lib/saveSettingsBulk';
 
 declare module '@rocket.chat/ddp-client' {
@@ -32,6 +33,13 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-action-not-allowed', 'Editing settings is not allowed', {
 				method: 'saveSetting',
 			});
+		}
+
+		try {
+			validateSettingRules(params);
+		} catch (error) {
+			// rethrow as Meteor.Error so the i18n key reaches the client (plain errors are masked as internal server errors)
+			throw new Meteor.Error('error-setting-validation-failed', error instanceof Error ? error.message : String(error));
 		}
 
 		await saveSettingsBulk(uid, params, {
