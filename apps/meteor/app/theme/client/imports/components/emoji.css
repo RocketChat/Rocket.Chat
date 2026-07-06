@@ -25,6 +25,11 @@
 	line-height: 1.5rem;
 }
 
+.rcx-message-reactions__emoji {
+	font-size: 0.75rem;
+	line-height: 1rem;
+}
+
 .rcx-message {
 	/* emojis on messages */
 	&__emoji {
