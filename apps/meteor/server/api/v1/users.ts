@@ -2134,7 +2134,7 @@ API.v1.post(
 );
 API.v1
 	.post(
-		'users.totp.enable',
+		'users.enableTotp',
 		{
 			authRequired: true,
 			response: {
@@ -2157,9 +2157,13 @@ API.v1
 		},
 	)
 	.post(
-		'users.totp.disable',
+		'users.disableTotp',
 		{
 			authRequired: true,
+			rateLimiterOptions: {
+				numRequestsAllowed: 5,
+				intervalTimeInMS: 60000,
+			},
 			body: ajv.compile<{ code: string }>({
 				type: 'object',
 				properties: { code: { type: 'string', minLength: 1 } },
@@ -2186,9 +2190,13 @@ API.v1
 		},
 	)
 	.post(
-		'users.totp.validate',
+		'users.validateTotp',
 		{
 			authRequired: true,
+			rateLimiterOptions: {
+				numRequestsAllowed: 5,
+				intervalTimeInMS: 60000,
+			},
 			body: ajv.compile<{ code: string }>({
 				type: 'object',
 				properties: { code: { type: 'string', minLength: 1 } },
@@ -2210,14 +2218,18 @@ API.v1
 			},
 		},
 		async function action() {
-			const result = await validateTotpTempToken(this.userId, this.bodyParams.code, this.token);
+			const result = await validateTotpTempToken(this.userId, this.bodyParams.code, this.request.headers.get('x-auth-token') ?? undefined);
 			return API.v1.success(result);
 		},
 	)
 	.post(
-		'users.totp.regenerateCodes',
+		'users.regenerateTotpCodes',
 		{
 			authRequired: true,
+			rateLimiterOptions: {
+				numRequestsAllowed: 5,
+				intervalTimeInMS: 60000,
+			},
 			body: ajv.compile<{ code: string }>({
 				type: 'object',
 				properties: { code: { type: 'string', minLength: 1 } },
@@ -2247,7 +2259,7 @@ API.v1
 		},
 	)
 	.get(
-		'users.totp.codesRemaining',
+		'users.totpCodesRemaining',
 		{
 			authRequired: true,
 			response: {

@@ -13,7 +13,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async '2fa:enable'() {
-		methodDeprecationLogger.method('2fa:enable', '9.0.0', '/v1/users.totp.enable');
+		methodDeprecationLogger.method('2fa:enable', '9.0.0', '/v1/users.enableTotp');
 		return enableTotp(Meteor.userId());
 	},
 });

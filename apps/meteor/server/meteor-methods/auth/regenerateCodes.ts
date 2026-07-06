@@ -13,7 +13,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async '2fa:regenerateCodes'(userToken) {
-		methodDeprecationLogger.method('2fa:regenerateCodes', '9.0.0', '/v1/users.totp.regenerateCodes');
+		methodDeprecationLogger.method('2fa:regenerateCodes', '9.0.0', '/v1/users.regenerateTotpCodes');
 		return regenerateTotpCodes(Meteor.userId(), userToken);
 	},
 });

@@ -13,7 +13,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async '2fa:checkCodesRemaining'() {
-		methodDeprecationLogger.method('2fa:checkCodesRemaining', '9.0.0', '/v1/users.totp.codesRemaining');
+		methodDeprecationLogger.method('2fa:checkCodesRemaining', '9.0.0', '/v1/users.totpCodesRemaining');
 		return codesRemainingTotp(Meteor.userId());
 	},
 });

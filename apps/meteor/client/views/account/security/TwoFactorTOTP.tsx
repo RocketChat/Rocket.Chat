@@ -17,17 +17,22 @@ type TwoFactorTOTPFormData = {
 
 export type TwoFactorTOTPProps = ComponentPropsWithoutRef<typeof Box>;
 
+const isInvalidTotpError = (error: unknown): boolean => {
+	const { error: errorCode, errorType } = (error ?? {}) as { error?: string; errorType?: string };
+	return errorCode === 'invalid-totp' || errorType === 'invalid-totp';
+};
+
 const TwoFactorTOTP = (props: TwoFactorTOTPProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const user = useUser();
 	const setModal = useSetModal();
 
-	const enableTotpFn = useEndpoint('POST', '/v1/users.totp.enable');
-	const disableTotpFn = useEndpoint('POST', '/v1/users.totp.disable');
-	const verifyCodeFn = useEndpoint('POST', '/v1/users.totp.validate');
-	const checkCodesRemainingFn = useEndpoint('GET', '/v1/users.totp.codesRemaining');
-	const regenerateCodesFn = useEndpoint('POST', '/v1/users.totp.regenerateCodes');
+	const enableTotpFn = useEndpoint('POST', '/v1/users.enableTotp');
+	const disableTotpFn = useEndpoint('POST', '/v1/users.disableTotp');
+	const verifyCodeFn = useEndpoint('POST', '/v1/users.validateTotp');
+	const checkCodesRemainingFn = useEndpoint('GET', '/v1/users.totpCodesRemaining');
+	const regenerateCodesFn = useEndpoint('POST', '/v1/users.regenerateTotpCodes');
 
 	const [registeringTotp, setRegisteringTotp] = useSafely(useState(false));
 	const [qrCode, setQrCode] = useSafely(useState<string>());
@@ -108,15 +113,14 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps) => {
 			try {
 				const result = await verifyCodeFn({ code: authCode });
 
-				if (!result) {
-					return dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
-				}
-
 				setRegisteringTotp(false);
 				setModal(<BackupCodesModal codes={result.codes} onClose={closeModal} />);
 
 				dispatchToastMessage({ type: 'success', message: t('Two-factor_authentication_enabled') });
 			} catch (error) {
+				if (isInvalidTotpError(error)) {
+					return dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
+				}
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
@@ -126,13 +130,13 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps) => {
 	const handleRegenerateCodes = useCallback(() => {
 		const onRegenerate = async (authCode: string): Promise<void> => {
 			try {
-				const result = await regenerateCodesFn({ code: authCode });
+				const { codes } = await regenerateCodesFn({ code: authCode });
 
-				if (!result?.codes) {
+				setModal(<BackupCodesModal codes={codes} onClose={closeModal} />);
+			} catch (error) {
+				if (isInvalidTotpError(error)) {
 					return dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
 				}
-				setModal(<BackupCodesModal codes={result.codes} onClose={closeModal} />);
-			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		};

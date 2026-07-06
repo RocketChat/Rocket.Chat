@@ -387,23 +387,23 @@ export type UsersEndpoints = {
 		POST: (params: { token: string }) => void;
 	};
 
-	'/v1/users.totp.enable': {
+	'/v1/users.enableTotp': {
 		POST: () => { secret: string; url: string };
 	};
 
-	'/v1/users.totp.disable': {
+	'/v1/users.disableTotp': {
 		POST: (params: { code: string }) => { disabled: boolean };
 	};
 
-	'/v1/users.totp.validate': {
+	'/v1/users.validateTotp': {
 		POST: (params: { code: string }) => { codes: string[] };
 	};
 
-	'/v1/users.totp.regenerateCodes': {
+	'/v1/users.regenerateTotpCodes': {
 		POST: (params: { code: string }) => { codes: string[] };
 	};
 
-	'/v1/users.totp.codesRemaining': {
+	'/v1/users.totpCodesRemaining': {
 		GET: () => { remaining: number };
 	};
 };

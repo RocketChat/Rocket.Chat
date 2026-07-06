@@ -13,7 +13,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async '2fa:validateTempToken'(userToken) {
-		methodDeprecationLogger.method('2fa:validateTempToken', '9.0.0', '/v1/users.totp.validate');
+		methodDeprecationLogger.method('2fa:validateTempToken', '9.0.0', '/v1/users.validateTotp');
 		const { 'x-auth-token': xAuthToken } = this.connection?.httpHeaders ?? {};
 		return validateTotpTempToken(Meteor.userId(), userToken, xAuthToken);
 	},
