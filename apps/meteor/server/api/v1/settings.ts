@@ -28,9 +28,9 @@ import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../lib/notifyListener';
 import { SettingValidationError, validateSettingRules } from '../../lib/settingValidationRules';
 import { disableCustomScripts } from '../../lib/shared/disableCustomScripts';
+import { refreshLoginServices } from '../../lib/refreshLoginServices';
 import { addOAuthServiceMethod } from '../../meteor-methods/auth/addOAuthService';
-import { refreshOAuthServiceMethod } from '../../meteor-methods/auth/refreshOAuthService';
-import { removeOAuthServiceMethod } from '../../meteor-methods/auth/removeOAuthService';
+import { removeCustomOAuthSettings } from '../../meteor-methods/auth/removeOAuthService';
 import { SettingsEvents, settings } from '../../settings';
 import { checkSettingValueBounds } from '../../settings/checkSettingValueBonds';
 import { updateAuditedByUser } from '../../settings/lib/auditedSettingUpdates';
@@ -262,6 +262,9 @@ API.v1.post(
 	{
 		authRequired: true,
 		twoFactorRequired: true,
+		permissionsRequired: {
+			POST: { permissions: ['add-oauth-service'], operation: 'hasAll' },
+		},
 		body: addCustomOAuthBodySchema,
 		response: {
 			200: ajv.compile<void>({
@@ -281,7 +284,7 @@ API.v1.post(
 			throw new Meteor.Error('error-name-param-not-provided', 'The parameter "name" is required');
 		}
 
-		await removeOAuthServiceMethod(this.userId, name);
+		await removeCustomOAuthSettings(name);
 
 		return API.v1.success();
 	},
@@ -292,6 +295,9 @@ API.v1.post(
 	{
 		authRequired: true,
 		twoFactorRequired: true,
+		permissionsRequired: {
+			POST: { permissions: ['add-oauth-service'], operation: 'hasAll' },
+		},
 		response: {
 			200: ajv.compile<void>({
 				type: 'object',
@@ -305,7 +311,7 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		await refreshOAuthServiceMethod(this.userId);
+		await refreshLoginServices();
 		return API.v1.success();
 	},
 );

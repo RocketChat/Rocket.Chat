@@ -3,7 +3,7 @@
 '@rocket.chat/meteor': minor
 ---
 
-Added two new REST endpoints completing the Custom OAuth admin surface:
+Adds two new REST endpoints completing the Custom OAuth admin surface:
 
 - `POST /v1/settings.removeCustomOAuth` body `{ name }` → removes all `Accounts_OAuth_Custom-<Name>-*` setting documents (replaces the deprecated `removeOAuthService` DDP method).
 - `POST /v1/settings.refreshOAuthServices` (no body) → re-reads ServiceConfiguration entries from settings (replaces the deprecated `refreshOAuthService` DDP method).

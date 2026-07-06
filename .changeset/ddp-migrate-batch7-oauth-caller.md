@@ -2,7 +2,7 @@
 '@rocket.chat/meteor': patch
 ---
 
-Migrated the Admin → OAuth services group page from `useMethod` (DDP) to `useEndpoint` (REST):
+Migrates the Admin → OAuth services group page from `useMethod` (DDP) to `useEndpoint` (REST):
 
 - `addOAuthService` → existing `POST /v1/settings.addCustomOAuth`
 - `removeOAuthService` → new `POST /v1/settings.removeCustomOAuth`

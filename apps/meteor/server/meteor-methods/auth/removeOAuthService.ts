@@ -15,12 +15,12 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
-export const removeOAuthServiceMethod = async (userId: string, name: string): Promise<void> => {
-	if ((await hasPermissionAsync(userId, 'add-oauth-service')) !== true) {
-		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'removeOAuthService' });
-	}
-
+export const removeCustomOAuthSettings = async (name: string): Promise<void> => {
 	const normalized = capitalize(name.toLowerCase().replace(/[^a-z0-9_]/g, ''));
+
+	if (!normalized) {
+		throw new Meteor.Error('error-invalid-name', 'Invalid OAuth service name', { method: 'removeOAuthService' });
+	}
 
 	const settingsIds = [
 		`Accounts_OAuth_Custom-${normalized}`,
@@ -77,6 +77,10 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		await removeOAuthServiceMethod(userId, name);
+		if ((await hasPermissionAsync(userId, 'add-oauth-service')) !== true) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'removeOAuthService' });
+		}
+
+		await removeCustomOAuthSettings(name);
 	},
 });

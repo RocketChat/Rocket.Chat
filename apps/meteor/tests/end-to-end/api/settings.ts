@@ -683,9 +683,6 @@ describe('[Settings]', () => {
 	});
 
 	describe('Custom OAuth admin endpoints', () => {
-		// `add-oauth-service` is enforced inside the shared method, so a permission failure currently
-		// surfaces as HTTP 400. Once the routes declare `permissionsRequired`, it becomes 403 — the
-		// assertions below accept either so they survive that change.
 		const oauthName = 'apitest';
 		const enableSettingId = 'Accounts_OAuth_Custom-Apitest';
 
@@ -710,7 +707,7 @@ describe('[Settings]', () => {
 					.set(credentials)
 					.send({ name: oauthName })
 					.expect((res) => {
-						expect([400, 403]).to.include(res.status);
+						expect(res.status).to.equal(403);
 						expect(res.body).to.have.property('success', false);
 					});
 				await updatePermission('add-oauth-service', ['admin']);
@@ -741,7 +738,7 @@ describe('[Settings]', () => {
 					.post(api('settings.refreshOAuthServices'))
 					.set(credentials)
 					.expect((res) => {
-						expect([400, 403]).to.include(res.status);
+						expect(res.status).to.equal(403);
 						expect(res.body).to.have.property('success', false);
 					});
 				await updatePermission('add-oauth-service', ['admin']);
@@ -764,6 +761,16 @@ describe('[Settings]', () => {
 			it('should fail when the "name" param is not provided', () =>
 				request.post(api('settings.removeCustomOAuth')).set(credentials).send({}).expect(400));
 
+			it('should fail when the "name" normalizes to an empty string', () =>
+				request
+					.post(api('settings.removeCustomOAuth'))
+					.set(credentials)
+					.send({ name: '!!!' })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+					}));
+
 			it('should fail when the user does not have the add-oauth-service permission', async () => {
 				await updatePermission('add-oauth-service', []);
 				await request
@@ -771,7 +778,7 @@ describe('[Settings]', () => {
 					.set(credentials)
 					.send({ name: oauthName })
 					.expect((res) => {
-						expect([400, 403]).to.include(res.status);
+						expect(res.status).to.equal(403);
 						expect(res.body).to.have.property('success', false);
 					});
 				await updatePermission('add-oauth-service', ['admin']);
