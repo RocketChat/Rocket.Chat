@@ -1,9 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button } from '@rocket.chat/fuselage';
-import { useStableCallback, useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
+import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import {
-	VirtualizedScrollbars,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
@@ -14,13 +13,13 @@ import {
 	ContextualbarSection,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
+import type { UseInfiniteQueryResult } from '@tanstack/react-query';
 import type { ChangeEvent, Dispatch, SetStateAction, SyntheticEvent } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Virtuoso } from 'react-virtuoso';
 
 import TeamsChannelItem from './TeamsChannelItem';
-import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
+import { PaginatedVirtualList } from '../../../../components/PaginatedVirtualList';
 
 type TeamsChannelsProps = {
 	loading: boolean;
@@ -34,7 +33,7 @@ type TeamsChannelsProps = {
 	onClickAddExisting: false | ((e: SyntheticEvent) => void);
 	onClickCreateNew: false | ((e: SyntheticEvent) => void);
 	total: number;
-	loadMoreItems: () => void;
+	loadMoreItems: UseInfiniteQueryResult['fetchNextPage'];
 	onClickView: (room: IRoom) => void;
 	reload: () => void;
 };
@@ -64,20 +63,6 @@ const TeamsChannels = ({
 			['autoJoin', t('Team_Auto-join')],
 		],
 		[t],
-	);
-
-	const lm = useStableCallback(() => !loading && loadMoreItems());
-
-	const loadMoreChannels = useDebouncedCallback(
-		() => {
-			if (channels.length >= total) {
-				return;
-			}
-
-			lm();
-		},
-		300,
-		[lm, channels],
 	);
 
 	return (
@@ -111,18 +96,16 @@ const TeamsChannels = ({
 								{t('Total')}: {total}
 							</Box>
 						</Box>
-						<Box w='full' h='full' role='list' overflow='hidden' flexShrink={1}>
-							<VirtualizedScrollbars>
-								<Virtuoso
+						<Box w='full' h='full' overflow='hidden' flexShrink={1}>
+							<Box h='full' w='full' style={{ minHeight: 0 }}>
+								<PaginatedVirtualList
+									items={channels}
 									totalCount={total}
-									data={channels}
-									// eslint-disable-next-line react/no-multi-comp
-									components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreChannels} /> }}
-									itemContent={(index, data) => (
-										<TeamsChannelItem onClickView={onClickView} room={data} mainRoom={mainRoom} reload={reload} key={index} />
-									)}
+									overscan={25}
+									onEndReached={loading ? undefined : loadMoreItems}
+									renderItem={(data) => <TeamsChannelItem onClickView={onClickView} room={data} mainRoom={mainRoom} reload={reload} />}
 								/>
-							</VirtualizedScrollbars>
+							</Box>
 						</Box>
 					</>
 				)}

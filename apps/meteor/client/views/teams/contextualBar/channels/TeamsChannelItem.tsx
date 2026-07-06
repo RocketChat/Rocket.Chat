@@ -53,7 +53,7 @@ const TeamsChannelItem = ({ room, mainRoom, onClickView, reload }: TeamsChannelI
 	}
 
 	return (
-		<Option id={room._id} data-rid={room._id} {...handleMenuEvent} onClick={() => onClickView(room)}>
+		<Option is='div' id={room._id} data-rid={room._id} {...handleMenuEvent} onClick={() => onClickView(room)}>
 			<OptionAvatar>
 				<RoomAvatar room={room} size='x28' />
 			</OptionAvatar>
