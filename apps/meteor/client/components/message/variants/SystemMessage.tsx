@@ -38,6 +38,11 @@ import {
 	useMessageListFormatTime,
 } from '../list/MessageListContext';
 
+const SYSTEM_MESSAGE_WRAP_STYLE = {
+  whiteSpace: 'pre-wrap',
+  wordBreak: 'break-word',
+};
+
 type SystemMessageProps = {
 	message: IMessage;
 	showUserAvatar: boolean;
@@ -102,7 +107,11 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 						)}
 					</MessageNameContainer>
 					{messageType && (
-						<MessageSystemBody role='document' aria-roledescription={t('system_message_body')}>
+						<MessageSystemBody
+							role='document'
+							aria-roledescription={t('system_message_body')}
+							style={SYSTEM_MESSAGE_WRAP_STYLE}
+						>
 							{messageType.text(t, message)}
 						</MessageSystemBody>
 					)}
