@@ -84,6 +84,17 @@ describe('LDAPEEManager syncUserChannels', () => {
 		expect(removeUserFromRoomStub.calledWith('ridB', user)).to.be.true;
 	});
 
+	it('should keep a channel that was added in the same sync when another group maps it for removal, and still remove the rest', async () => {
+		setupSettings({ groupA: 'channel-a', groupB: 'channel-a', groupC: 'channel-c' });
+		roomsStub.findOneByNonValidatedName.withArgs('channel-c').resolves({ _id: 'ridC' });
+
+		await syncUserChannels(['groupA']);
+
+		expect(addUserToRoomStub.calledWith('ridA', user)).to.be.true;
+		expect(removeUserFromRoomStub.calledWith('ridA', user)).to.be.false;
+		expect(removeUserFromRoomStub.calledWith('ridC', user)).to.be.true;
+	});
+
 	it('should keep adding and removing channels when an unresolved channel fails to be created on the add pass', async () => {
 		sinon.stub(LDAPEEManager as any, 'createRoomForSync').resolves(undefined);
 
