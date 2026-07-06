@@ -8,9 +8,6 @@ inputs:
   CR_PAT:
     required: true
     description: 'GitHub Container Registry Personal Access Token'
-  deno-version:
-    required: true
-    description: 'Deno version'
   arch:
     required: false
     description: 'Architecture'
@@ -100,7 +97,6 @@ runs:
     - name: Build Docker images
       shell: bash
       env:
-        DENO_VERSION: ${{ inputs.deno-version }}
         INPUT_ARCH: ${{ inputs.arch }}
         INPUT_SERVICE: ${{ inputs.service }}
         INPUT_PUBLISH_IMAGE: ${{ inputs.publish-image }}
