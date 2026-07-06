@@ -78,7 +78,16 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }) => {
 		return setEmojiPicker(<EmojiPicker reference={ref} onClose={() => setEmojiPicker(null)} onPickEmoji={(emoji) => callback(emoji)} />);
 	}, []);
 
-	const handlePreview = useCallback((emoji: string, name: string) => setEmojiToPreview({ emoji, name }), [setEmojiToPreview]);
+	const handlePreview = useCallback(
+		(emoji: string, name: string) =>
+			setEmojiToPreview((preview) => {
+				if (preview?.emoji === emoji && preview?.name === name) {
+					return preview;
+				}
+				return { emoji, name };
+			}),
+		[setEmojiToPreview],
+	);
 
 	const handleRemovePreview = useCallback(() => setEmojiToPreview(null), [setEmojiToPreview]);
 
