@@ -109,9 +109,14 @@ export const upsertThreadMessageInCache = (
 	}
 
 	mutateThreadMessagesInfiniteData(client, queryKey, (messages) => {
-		const idx = messages.findIndex((m) => m._id === message._id);
-		if (idx >= 0) {
-			messages[idx] = message as IThreadMessage;
+		let shouldReturn = false;
+		for (let idx = 0; idx < messages.length; idx++) {
+			if (messages[idx]._id === message._id) {
+				messages[idx] = message as IThreadMessage;
+				shouldReturn = true;
+			}
+		}
+		if (shouldReturn) {
 			return;
 		}
 
