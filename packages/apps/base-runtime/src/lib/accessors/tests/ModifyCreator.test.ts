@@ -56,7 +56,7 @@ describe('ModifyCreator', () => {
 						alias: 'alias',
 						avatarUrl: 'https://avatars.com/123',
 					},
-					'deno-test',
+					'APP_ID',
 				],
 			},
 		]);

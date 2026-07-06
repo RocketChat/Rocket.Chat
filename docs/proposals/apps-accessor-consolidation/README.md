@@ -511,23 +511,34 @@ Host accessor tests in `packages/apps/tests/server/accessors/` are ported to
 `base-runtime/src/lib/accessors/tests/` *in the PR that moves the accessor*, and the host class + its
 tests are deleted in that same PR — gated, for MOVE accessors, on the parity check (§6).
 
-### Phase 0 — Foundations (no behavior change)
+### Phase 0 — Foundations (no behavior change) — ✅ landed
 
-1. Add `RemoteBridges` facade (§5.1) with tests (message-string generation, `do*` gate, error
+1. ✅ Add `RemoteBridges` facade (§5.1) with tests (message-string generation, `do*` gate, error
    formatting). The facade does **not** auto-inject `'APP_ID'` — identity stays an explicit
-   positional arg (§5.1).
-2. Produce the **APP_ID exception list** (§5.2) — the audited set of `do*` params where the appId is
-   an app-supplied argument, not caller identity (known seed: the three `ModerationBridge` methods).
-3. Refactor existing runtime accessors (`Http`, `Notifier`, `ModifyCreator`, `ModifyUpdater`,
+   positional arg (§5.1). → `base-runtime/src/lib/bridges/RemoteBridges.ts` (+ tests).
+2. ✅ Produce the **APP_ID exception list** (§5.2) — the audited set of `do*` params where the appId
+   is an app-supplied argument, not caller identity (known seed: the three `ModerationBridge`
+   methods). → `docs/base-runtime-app-id-exceptions.md`. The audit surfaced a **second** exception
+   category (bucket C): the host's sentinel substitution rewrites only *top-level positional* params,
+   so a nested identity field like `Http.doCall`'s payload `appId` cannot use the sentinel and keeps
+   the resolved id.
+3. ✅ Refactor existing runtime accessors (`Http`, `Notifier`, `ModifyCreator`, `ModifyUpdater`,
    `ModifyExtender`, `roomFactory`) onto `RemoteBridges`; normalize every *caller-identity* param to
-   `'APP_ID'` (§5.2), leaving argument-appIds raw per the exception list.
-4. **Duplicate** `UIHelper` into `base-runtime/src/lib/` so the runtime stops importing the
+   `'APP_ID'` (§5.2), leaving argument-appIds raw per the exception list. Each accessor builds its
+   facade from a `(request) => this.senderFn(request)` thunk so instance-level `senderFn` test
+   stubs stay intercepted; accessors that still hold `accessor:*` sub-proxies (`ModifyCreator`,
+   `ModifyUpdater`) keep `senderFn` for those until their Phase-2 port.
+4. ✅ **Duplicate** `UIHelper` into `base-runtime/src/lib/` so the runtime stops importing the
    `apps/dist` path; leave the `src/server/misc/UIHelper.ts` copy for the still-living host accessors
    (deleted in Phase 4). No cross-package import, no build-order flip (§5.3).
-5. Stand up the transitional **parity harness** scaffolding (§6) used to gate MOVE-accessor deletions
-   in Phases 1–2.
-6. Land this document's drift decisions (§3) and the direction-aware merge rule as the recorded
-   contract (link from CHANGELOG).
+5. ✅ Stand up the transitional **parity harness** scaffolding (§6) used to gate MOVE-accessor
+   deletions in Phases 1–2. → `base-runtime/src/lib/accessors/tests/helpers/parityHarness.ts` (a
+   recording `sendRequest` that captures ordered `{method, params}` traffic so a port can be pinned
+   against its host counterpart's documented bridge calls; removed in Phase 4 teardown).
+6. ✅ Drift decisions (§3) and the direction-aware merge rule recorded in this document.
+   **CHANGELOG note:** `@rocket.chat/apps` is a `private` package and has never carried a changeset;
+   Phase 0 is an internal, behavior-preserving refactor, so no changeset is added — this document and
+   `base-runtime-app-id-exceptions.md` are the recorded contract.
 
 ### Phase 1 — Reader family + Persistence + Environment (server-side settings)
 
