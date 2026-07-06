@@ -21,7 +21,7 @@ import type { Filter } from 'mongodb';
 import {
 	clearIntegrationHistoryMethod,
 	replayOutgoingIntegrationMethod,
-} from '../../../integrations/server/functions/clearIntegrationHistory';
+} from '../../../app/integrations/server/functions/clearIntegrationHistory';
 import {
 	mountIntegrationHistoryQueryBasedOnPermissions,
 	mountIntegrationQueryBasedOnPermissions,
