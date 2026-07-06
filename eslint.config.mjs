@@ -338,7 +338,7 @@ export default [
 		},
 	},
 	{
-		ignores: ['packages/@(apps|apps-engine)/@(client|definition|docs|server|lib|deno-runtime|.deno|.deno-cache)'],
+		ignores: ['packages/@(apps|apps-engine)/@(client|definition|docs|server|lib)'],
 	},
 	{
 		files: ['packages/core-typings/**/*'],
