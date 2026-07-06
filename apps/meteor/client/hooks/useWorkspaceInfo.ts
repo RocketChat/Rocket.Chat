@@ -16,14 +16,15 @@ export const useWorkspaceInfo = ({ refreshStatistics }: { refreshStatistics?: bo
 					const data = await getServerInfo();
 
 					if (!('minimumClientVersions' in data)) {
-						throw new Error('Invalid server info');
+						throw new Error('Invalid server info: missing minimumClientVersions');
 					}
 					if (!('info' in data)) {
-						throw new Error('Invalid server info');
+						throw new Error('Invalid server info: missing info');
 					}
 					if (!('version' in data)) {
-						throw new Error('Invalid server info');
+						throw new Error('Invalid server info: missing version');
 					}
+
 
 					return data as IWorkspaceInfo;
 				},
