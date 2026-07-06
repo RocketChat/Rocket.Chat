@@ -484,33 +484,41 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 	public async escalateCall(uid: IUser['_id'], params: { callId: string }): Promise<string> {
 		const { callId } = params;
 
+		logger.debug({ msg: 'Escalating Voice Call', method: 'MediaCallService.escalateCall', uid, callId });
+
 		const call = await MediaCalls.findOneById(callId);
-		if (!call?.acceptedAt || call.ended) {
-			throw new Error('not-found');
-		}
 
-		if (!call.uids.includes(uid)) {
-			throw new Error('not-found');
-		}
-		if (!call.features.includes('conference-escalation')) {
-			throw new Error('feature-not-available');
-		}
+		try {
+			if (!call?.acceptedAt || call.ended) {
+				throw new Error('not-found');
+			}
 
-		const user = await Users.findOneById(uid);
-		if (!user) {
-			throw new Error('internal-error');
+			if (!call.uids.includes(uid)) {
+				throw new Error('not-found');
+			}
+			if (!call.features.includes('conference-escalation')) {
+				throw new Error('feature-not-available');
+			}
+
+			const user = await Users.findOneById(uid);
+			if (!user) {
+				throw new Error('internal-error');
+			}
+
+			const url = await this.escalateVoiceCallToConference(user, call);
+
+			// If the peer has also escalated this call, then we can hangup as we join the conference
+			if (call.escalatedByPeerAt) {
+				void callServer.hangupEscalatedCall(call, { type: 'user', id: user._id }).catch((err) => {
+					logger.error({ msg: 'Unexpected error while hanging up a fully escalated voice call', err });
+				});
+			}
+
+			return url;
+		} catch (err) {
+			logger.debug({ msg: 'Unexpected error during escalation', err, uid, callId, call });
+			throw err;
 		}
-
-		const url = await this.escalateVoiceCallToConference(user, call);
-
-		// If the peer has also escalated this call, then we can hangup as we join the conference
-		if (call.escalatedByPeerAt) {
-			void callServer.hangupEscalatedCall(call, { type: 'user', id: user._id }).catch((err) => {
-				logger.error({ msg: 'Unexpected error while hanging up a fully escalated voice call', err });
-			});
-		}
-
-		return url;
 	}
 
 	private async escalateVoiceCallToConference(user: IUser, call: IMediaCall): Promise<string> {
