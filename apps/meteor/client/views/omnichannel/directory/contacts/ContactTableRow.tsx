@@ -5,13 +5,15 @@ import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
 
 import ContactItemMenu from './ContactItemMenu';
 import { OmnichannelRoomIcon } from '../../../../components/RoomIcon/OmnichannelRoomIcon';
-import { useTimeFromNow } from '../../../../hooks/useTimeFromNow';
+import { useFormatDate } from '../../../../hooks/useFormatDate';
+import { useReactiveTimeFromNow } from '../../../../hooks/useReactiveTimeFromNow';
 import { useOmnichannelSource } from '../../hooks/useOmnichannelSource';
 import { useOmnichannelDirectoryRouter } from '../hooks/useOmnichannelDirectoryRouter';
 
 const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILivechatContactWithManagerData) => {
 	const { getSourceLabel } = useOmnichannelSource();
-	const getTimeFromNow = useTimeFromNow(true);
+	const relativeLastChatTime = useReactiveTimeFromNow(lastChat?.ts, true);
+	const formatDate = useFormatDate();
 	const omnichannelDirectoryRouter = useOmnichannelDirectoryRouter();
 
 	const latestChannel = channels?.sort((a, b) => {
@@ -32,8 +34,12 @@ const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILiv
 
 	return (
 		<GenericTableRow action key={_id} tabIndex={0} height='40px' rcx-show-call-button-on-hover onClick={() => onRowClick(_id)}>
-			<GenericTableCell withTruncatedText>{name}</GenericTableCell>
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell withTruncatedText verticalAlign='top'>
+				<Box withTruncatedText fontScale='p2m'>
+					{name}
+				</Box>
+			</GenericTableCell>
+			<GenericTableCell withTruncatedText verticalAlign='top'>
 				{latestChannel?.details && (
 					<Box withTruncatedText display='flex' alignItems='center'>
 						<OmnichannelRoomIcon size='x20' source={latestChannel?.details} />
@@ -43,9 +49,22 @@ const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILiv
 					</Box>
 				)}
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText>{contactManager?.username}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{lastChat && getTimeFromNow(lastChat.ts)}</GenericTableCell>
-			<GenericTableCell>
+			<GenericTableCell withTruncatedText verticalAlign='top'>
+				{contactManager?.username}
+			</GenericTableCell>
+			<GenericTableCell withTruncatedText verticalAlign='top'>
+				{lastChat && (
+					<Box display='flex' flexDirection='column'>
+						<Box fontScale='p2m' withTruncatedText title={formatDate(lastChat.ts)}>
+							{formatDate(lastChat.ts)}
+						</Box>
+						<Box color='hint' withTruncatedText title={relativeLastChatTime}>
+							{relativeLastChatTime}
+						</Box>
+					</Box>
+				)}
+			</GenericTableCell>
+			<GenericTableCell verticalAlign='top'>
 				<ContactItemMenu _id={_id} name={name} channels={channels} />
 			</GenericTableCell>
 		</GenericTableRow>
