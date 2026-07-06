@@ -16,7 +16,7 @@ settings.watch('Accounts_BlockedUsernameList', (value: string) => {
 });
 
 const usernameIsBlocked = (username: string, usernameBlackList: RegExp[]): boolean | number =>
-	usernameBlackList.length && usernameBlackList.some((restrictedUsername) => restrictedUsername.test(escapeRegExp(username).trim()));
+	usernameBlackList.length && usernameBlackList.some((restrictedUsername) => restrictedUsername.test(username.trim()));
 
 export const checkUsernameAvailabilityWithValidation = async function (userId: string, username: string): Promise<boolean> {
 	if (!username) {
