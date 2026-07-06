@@ -34,10 +34,7 @@ const log = createLogger('E2E:Room');
 const KEY_ID = Symbol('keyID');
 const PAUSED = Symbol('PAUSED');
 
-const isRoomKeyAlreadyExistsError = async (error: unknown): Promise<boolean> => {
-	if (!(error instanceof Response)) {
-		return false;
-	}
+const isRoomKeyAlreadyExistsError = async (error: Response): Promise<boolean> => {
 	try {
 		const body = await error.clone().json();
 		return body?.errorType === 'error-room-e2e-key-already-exists';
@@ -450,7 +447,7 @@ export class E2ERoom extends Emitter {
 		try {
 			await sdk.rest.post('/v1/e2e.setRoomKeyID', { rid: this.roomId, keyID: this.keyID });
 		} catch (error) {
-			if (await isRoomKeyAlreadyExistsError(error)) {
+			if (error instanceof Response && (await isRoomKeyAlreadyExistsError(error))) {
 				span.info('Room key already established by another member; discarding local key');
 				this.discardGroupKey();
 				return false;
