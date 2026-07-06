@@ -63,6 +63,11 @@ beforeEach(() => {
 	mockedUpsertMessageBulk.mockResolvedValue(undefined);
 });
 
+afterEach(() => {
+	// Restore any spies (e.g. console.error) regardless of test outcome so they don't leak
+	jest.restoreAllMocks();
+});
+
 const renderWithReconnect = (wrapper: ReturnType<ReturnType<typeof mockAppRoot>['build']>) => {
 	mockUseConnectionStatus.mockReturnValue({ connected: false });
 	const utils = renderHook(() => useLoadMissedMessages(), { wrapper });
@@ -219,7 +224,5 @@ describe('useLoadMissedMessages', () => {
 		await waitFor(() => {
 			expect(consoleErrorSpy).toHaveBeenCalledWith('Error syncing missed messages:', expect.any(Error));
 		});
-
-		consoleErrorSpy.mockRestore();
 	});
 });

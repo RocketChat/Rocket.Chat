@@ -142,7 +142,10 @@ export function mountPreviousCursor(
 
 export async function handleWithoutPagination(rid: IRoom['_id'], lastUpdate: Date) {
 	const query = { $gt: lastUpdate };
-	const options: FindOptions<IMessage> = { sort: { ts: -1 } };
+	// Sort by `_updatedAt` (the field being filtered) so the `{ rid, _updatedAt }` index serves
+	// the range and the ordering in one pass, avoiding an in-memory sort on large offline syncs.
+	// Consistent with the cursor-paginated path, which also orders by `_updatedAt`.
+	const options: FindOptions<IMessage> = { sort: { _updatedAt: -1 } };
 
 	const [updatedMessages, deletedMessages] = await Promise.all([
 		Messages.findForUpdates(rid, query, options).toArray(),
