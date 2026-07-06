@@ -165,7 +165,7 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 				filtered = mergeThreadMessages(cachedMessages, filtered);
 			}
 
-			if (offset === 0 && unprocessedReadMessagesEvent.current) {
+			if (offset === 0 && unprocessedReadMessagesEvent.current?.tmid === tmid) {
 				const { until } = unprocessedReadMessagesEvent.current;
 				unprocessedReadMessagesEvent.current = null;
 				filtered = markThreadMessagesAsRead(filtered, until);
