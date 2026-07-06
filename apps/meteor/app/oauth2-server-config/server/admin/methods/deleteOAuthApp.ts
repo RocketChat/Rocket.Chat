@@ -18,7 +18,7 @@ export const deleteOAuthApp = async (userId: string, applicationId: IOAuthApps['
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'deleteOAuthApp' });
 	}
 
-	const application = await OAuthApps.findOneAndDeleteById(applicationId);
+	const application = await OAuthApps.findOneAndDeleteById(applicationId, { projection: { clientId: 1 } });
 	if (!application) {
 		throw new Meteor.Error('error-application-not-found', 'Application not found', {
 			method: 'deleteOAuthApp',

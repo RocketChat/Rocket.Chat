@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { methodDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
-import { notifyOnIntegrationChangedById } from '../../../../lib/server/lib/notifyListener';
+import { notifyOnIntegrationChanged } from '../../../../lib/server/lib/notifyListener';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -35,7 +35,7 @@ export const deleteIncomingIntegration = async (integrationId: string, userId: s
 		});
 	}
 
-	void notifyOnIntegrationChangedById(integrationId, 'removed');
+	void notifyOnIntegrationChanged(integration, 'removed');
 };
 
 Meteor.methods<ServerMethods>({
