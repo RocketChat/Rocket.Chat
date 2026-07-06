@@ -52,7 +52,7 @@ export const removeUserFromRole = async (userId: string, roleId: string, usernam
 		const userIsAdmin = user.roles?.indexOf('admin') > -1;
 		if (adminCount === 1 && userIsAdmin) {
 			throw new Meteor.Error('error-action-not-allowed', 'Leaving the app without admins is not allowed', {
-				method: 'removeUserFromRole',
+				method: 'authorization:removeUserFromRole',
 				action: 'Remove_last_admin',
 			});
 		}
