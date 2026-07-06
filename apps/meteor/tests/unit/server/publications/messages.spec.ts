@@ -213,12 +213,12 @@ describe('handleWithoutPagination', () => {
 			deleted: deletedMessages,
 		});
 
-		sinon.assert.calledWith(messagesMock.findForUpdates, rid, { $gt: lastUpdate }, { sort: { ts: -1 } });
+		sinon.assert.calledWith(messagesMock.findForUpdates, rid, { $gt: lastUpdate }, { sort: { _updatedAt: -1 } });
 		sinon.assert.calledWith(
 			messagesMock.trashFindDeletedAfter,
 			lastUpdate,
 			{ rid },
-			{ projection: { _id: 1, _deletedAt: 1 }, sort: { ts: -1 } },
+			{ projection: { _id: 1, _deletedAt: 1 }, sort: { _updatedAt: -1 } },
 		);
 	});
 
