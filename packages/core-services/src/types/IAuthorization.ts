@@ -21,4 +21,5 @@ export interface IAuthorization {
 	canAccessRoomId(rid: IRoom['_id'], uid?: IUser['_id']): Promise<boolean>;
 	getUsersFromPublicRoles(): Promise<Pick<Required<IUser>, '_id' | 'username' | 'roles'>[]>;
 	hasAnyRole(userId: IUser['_id'], roleIds: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean>;
+	disable2FA(uid: string, code: string): Promise<boolean>;
 }

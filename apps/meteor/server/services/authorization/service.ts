@@ -1,3 +1,4 @@
+import { MeteorError } from '@rocket.chat/core-services';
 import type { IAuthorization, RoomAccessValidator } from '@rocket.chat/core-services';
 import { License, ServiceClass } from '@rocket.chat/core-services';
 import type { IUser, IRole, IRoom, ISubscription } from '@rocket.chat/core-typings';
@@ -9,6 +10,7 @@ import { canReadRoom } from './canReadRoom';
 import { AuthorizationUtils } from '../../../app/authorization/lib/AuthorizationUtils';
 
 import './canAccessRoomLivechat';
+import { TOTP } from '../../../app/2fa/server/lib/totp';
 
 // Register as class
 export class Authorization extends ServiceClass implements IAuthorization {
@@ -205,4 +207,31 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 		return Roles.isUserInRoles(userId, roleIds, scope);
 	}
+
+	async disable2FA(uid: string, code: string): Promise<boolean> {
+        const user = await Users.findOneById(uid, { projection: { 'services.totp': 1 } });
+
+        if (!user) {
+            throw new MeteorError('error-invalid-user', 'Invalid user');
+        }
+
+        if (!user.services?.totp?.enabled || !user.services?.totp?.secret) {
+            return false;
+        }
+
+        const verified = await TOTP.verify({
+            secret: user.services.totp.secret,
+            token: code,
+            userId: uid,
+            backupTokens: user.services.totp.hashedBackup,
+        });
+
+        if (!verified) {
+            throw new MeteorError('invalid-totp');
+        }
+
+        const { modifiedCount } = await Users.disable2FAByUserId(uid);
+        
+        return modifiedCount > 0;
+    }
 }
