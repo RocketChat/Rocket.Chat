@@ -21,6 +21,7 @@ type Payload = {
 	icon_emoji?: IMessage['emoji'];
 	emoji?: IMessage['emoji']; // overridden if icon_emoji is present
 	icon_url?: IMessage['avatar'];
+	avatar_url?: IMessage['avatar'];
 	avatar?: IMessage['avatar']; // overridden if icon_url is present
 	attachments?: IMessage['attachments'];
 	parseUrls?: boolean;
@@ -106,8 +107,18 @@ const buildMessage = (messageObj: Payload, defaultValues: DefaultValues) => {
 		customFields: messageObj.customFields,
 	};
 
-	if (!_.isEmpty(messageObj.icon_url) || !_.isEmpty(messageObj.avatar)) {
-		message.avatar = messageObj.icon_url || messageObj.avatar;
+	if (!_.isEmpty(messageObj.icon_url) || !_.isEmpty(messageObj.avatar_url) || !_.isEmpty(messageObj.avatar)) {
+		const avatarUrl = messageObj.icon_url || messageObj.avatar_url || messageObj.avatar;
+		if (avatarUrl) {
+// -- Ensure avatar_url is a valid URL to prevent malformed webhook payloads:)
+	
+			try {
+				new URL(avatarUrl);
+			} catch {
+				throw new Meteor.Error('invalid-avatar-url', 'Invalid avatar URL');
+			}
+		}
+		message.avatar = avatarUrl;
 	} else if (!_.isEmpty(messageObj.icon_emoji) || !_.isEmpty(messageObj.emoji)) {
 		message.emoji = messageObj.icon_emoji || messageObj.emoji;
 	} else if (!_.isEmpty(defaultValues.avatar)) {
