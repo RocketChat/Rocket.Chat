@@ -1,4 +1,4 @@
-import type { IMediaCall, IMediaCallChannel, MediaCallSignedContact } from '@rocket.chat/core-typings';
+import type { IMediaCall, MediaCallSignedContact } from '@rocket.chat/core-typings';
 import { isBusyState, type ClientMediaSignalBody, type CallHangupReason } from '@rocket.chat/media-signaling';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 import type Srf from 'drachtio-srf';
@@ -35,9 +35,8 @@ export class OutgoingSipCall extends BaseSipCall {
 		session: SipServerSession,
 		call: IMediaCall,
 		protected override readonly agent: BroadcastActorAgent,
-		channel: IMediaCallChannel,
 	) {
-		super(session, call, agent, channel);
+		super(session, call, agent);
 		this.sipDialog = null;
 		this.sipDialogReq = null;
 		this.processedTransfer = false;
@@ -77,9 +76,7 @@ export class OutgoingSipCall extends BaseSipCall {
 			features,
 		});
 
-		const channel = await calleeAgent.getOrCreateChannel(call, session.sessionId);
-
-		const sipCall = new OutgoingSipCall(session, call, calleeAgent, channel);
+		const sipCall = new OutgoingSipCall(session, call, calleeAgent);
 		session.registerCall(sipCall);
 		calleeAgent.provider = sipCall;
 
