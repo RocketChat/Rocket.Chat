@@ -290,7 +290,7 @@ export const sendMessage = async function (user: any, message: any, room: any, o
 		void Apps.self?.triggerEvent(messageEvent, message);
 	}
 
-	await afterSaveMessage(message, room, user, { options });
+	void afterSaveMessage(message, room, user, { options });
 
 	void notifyOnRoomChangedById(message.rid);
 
