@@ -148,7 +148,11 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 			return;
 		}
 		loadingWindowKeyRef.current = windowKey;
-		void loadMessageAround(msgJumpParam);
+		loadMessageAround(msgJumpParam).catch(() => {
+			if (loadingWindowKeyRef.current === windowKey) {
+				loadingWindowKeyRef.current = undefined;
+			}
+		});
 	}, [loading, isFetchingNextPage, isFetchingPreviousPage, msgJumpParam, messages, mainMessage._id, loadMessageAround, hasPreviousPage]);
 
 	const interactionRef = useSafeRefCallback(
