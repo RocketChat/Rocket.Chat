@@ -20,14 +20,14 @@ Meteor.methods<ServerMethods>({
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'getRoomNameById',
+				method: 'getRoomById',
 			});
 		}
 
 		const room = await Rooms.findOneById(rid);
 		if (room == null) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'getRoomNameById',
+				method: 'getRoomById',
 			});
 		}
 		if (!(await canAccessRoomAsync(room, (await Meteor.userAsync()) as IUser))) {
