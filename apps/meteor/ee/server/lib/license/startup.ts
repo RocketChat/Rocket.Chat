@@ -21,7 +21,8 @@ const logOfflineLicense = (() => {
 		}
 
 		if (!logged) {
-			SystemLogger.info(
+			// startup level so it is visible at the default Log_Level, like 'License installed'
+			SystemLogger.startup(
 				'Offline license detected: outbound connections to Rocket.Chat Cloud services and the Rocket.Chat Push Gateway are disabled',
 			);
 			logged = true;
