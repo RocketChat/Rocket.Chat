@@ -29,7 +29,7 @@ const FilterByText = forwardRef<HTMLInputElement, FilterByTextProps>(function Fi
 					{...props}
 					placeholder={placeholder ?? t('Search')}
 					ref={mergedRefs}
-					addon={<Icon name='magnifier' size='x20' />}
+					endAddon={<Icon name='magnifier' size='x20' />}
 					flexGrow={2}
 					minWidth='x220'
 					aria-label={placeholder ?? t('Search')}

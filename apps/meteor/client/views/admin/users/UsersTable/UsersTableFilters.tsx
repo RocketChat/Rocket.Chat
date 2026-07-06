@@ -76,7 +76,7 @@ const UsersTableFilters = ({ roleData, setUsersFilters }: UsersTableFiltersProps
 			<Margins inlineEnd={isLargeScreenOrBigger ? 16 : 0}>
 				<TextInput
 					placeholder={t('Search_Users')}
-					addon={<Icon name='magnifier' size='x20' />}
+					endAddon={<Icon name='magnifier' size='x20' />}
 					onChange={handleSearchTextChange}
 					value={text}
 					flexGrow={2}

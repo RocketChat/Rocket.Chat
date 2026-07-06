@@ -156,7 +156,7 @@ const CreateDiscussion = ({
 							control={control}
 							rules={{ required: t('Required_field', { field: t('Name') }) }}
 							render={({ field }) => (
-								<TextInput {...field} aria-required='true' addon={<Icon name='baloons' size='x20' />} error={errors.name?.message} />
+								<TextInput {...field} aria-required='true' endAddon={<Icon name='baloons' size='x20' />} error={errors.name?.message} />
 							)}
 						/>
 					</FieldRow>

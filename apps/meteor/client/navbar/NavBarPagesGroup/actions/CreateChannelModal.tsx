@@ -216,7 +216,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 									<TextInput
 										{...field}
 										error={errors.name?.message}
-										addon={<Icon name={isPrivate ? 'hashtag-lock' : 'hashtag'} size='x20' />}
+										endAddon={<Icon name={isPrivate ? 'hashtag-lock' : 'hashtag'} size='x20' />}
 										aria-required='true'
 									/>
 								)}
