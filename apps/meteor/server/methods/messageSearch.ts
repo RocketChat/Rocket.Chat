@@ -5,11 +5,11 @@ import { Messages, Subscriptions, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomIdAsync } from '../../app/authorization/server/functions/canAccessRoom';
 import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import type { IRawSearchResult } from '../../app/search/server/model/ISearchResult';
 import { settings } from '../../app/settings/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
+import { canAccessRoomIdAsync } from '../lib/authorization/canAccessRoom';
 import { parseMessageSearchQuery } from '../lib/parseMessageSearchQuery';
 
 const logger = new Logger('MessageSearch');

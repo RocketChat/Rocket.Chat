@@ -24,7 +24,7 @@ const { loginHandlerCAS: handler } = proxyquire.noCallThru().load('./loginHandle
 	'./createNewUser': { createNewUser: sinon.stub().resolves({ _id: 'newUserId' }) },
 	'./findExistingCASUser': { findExistingCASUser },
 	'./logger': { logger: { debug: sinon.stub(), error: sinon.stub() } },
-	'../../../app/lib/server/functions/setRealName': { setRealName: sinon.stub().resolves() },
+	'../users/setRealName': { setRealName: sinon.stub().resolves() },
 	'../../../app/settings/server': { settings: { get: settingsGet } },
 });
 

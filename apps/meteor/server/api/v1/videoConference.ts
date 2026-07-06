@@ -12,10 +12,10 @@ import {
 	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
 
-import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
-import { canSendMessageAsync } from '../../../app/authorization/server/functions/canSendMessage';
-import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
 import { availabilityErrors } from '../../../lib/videoConference/constants';
+import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
+import { canSendMessageAsync } from '../../lib/authorization/canSendMessage';
+import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';

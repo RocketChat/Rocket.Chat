@@ -14,12 +14,12 @@ import {
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { getUsersInRolePaginated } from '../../../app/authorization/server/functions/getUsersInRole';
-import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
-import { hasRoleAsync, hasAnyRoleAsync } from '../../../app/authorization/server/functions/hasRole';
 import { addUserToRole } from '../../../app/authorization/server/methods/addUserToRole';
 import { notifyOnRoleChanged } from '../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../app/settings/server';
+import { getUsersInRolePaginated } from '../../lib/authorization/getUsersInRole';
+import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { hasRoleAsync, hasAnyRoleAsync } from '../../lib/authorization/hasRole';
 import { removeUserFromRolesAsync } from '../../lib/roles/removeUserFromRoles';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';

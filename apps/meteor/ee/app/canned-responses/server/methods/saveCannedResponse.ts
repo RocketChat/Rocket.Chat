@@ -3,8 +3,8 @@ import { LivechatDepartment, CannedResponse, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
 import notifications from '../../../../../app/notifications/server/lib/Notifications';
+import { hasPermissionAsync } from '../../../../../server/lib/authorization/hasPermission';
 
 type ResponseData = {
 	shortcut: string;
