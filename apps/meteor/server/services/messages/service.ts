@@ -7,6 +7,7 @@ import { Messages, Rooms } from '@rocket.chat/models';
 
 import { OEmbed } from './hooks/AfterSaveOEmbed';
 import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
+import { insertMessage } from '../../../app/lib/server/functions/insertMessage';
 import { parseUrlsInMessage } from '../../../app/lib/server/functions/parseUrlsInMessage';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
@@ -140,6 +141,15 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 	async sendMessageWithValidation(user: IUser, message: Partial<IMessage>, room: Partial<IRoom>, upsert = false): Promise<IMessage> {
 		return sendMessage(user, message, room, { upsert });
+	}
+
+	async insertMessage(
+		user: Pick<IUser, '_id' | 'username'>,
+		message: IMessage,
+		rid: IRoom['_id'],
+		upsert = false,
+	): Promise<IMessage | boolean> {
+		return insertMessage(user, message, rid, upsert);
 	}
 
 	async deleteMessage(user: IUser, message: IMessage): Promise<void> {
