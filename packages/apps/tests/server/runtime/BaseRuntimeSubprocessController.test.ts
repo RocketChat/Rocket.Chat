@@ -12,15 +12,17 @@ import { type RpcStatusType, SuccessObject } from 'jsonrpc-lite';
 import type { AppManager } from '../../../src/server/AppManager';
 import type { IParseAppPackageResult } from '../../../src/server/compiler';
 import { AppAccessorManager, AppApiManager } from '../../../src/server/managers';
-import { DenoRuntimeSubprocessController } from '../../../src/server/runtime/deno/AppsEngineDenoRuntime';
+import { NodeRuntimeSubprocessController } from '../../../src/server/runtime/node/AppsEngineNodeRuntime';
 import type { IAppStorageItem } from '../../../src/server/storage';
 import { TestInfastructureSetup } from '../../test-data/utilities';
 
-describe('DenoRuntimeSubprocessController', () => {
+// Exercises the platform-agnostic message loop in BaseRuntimeSubprocessController
+// through its concrete Node implementation.
+describe('BaseRuntimeSubprocessController', () => {
 	const rpcTypeRequest = 'request' as RpcStatusType.request;
 
 	let manager: AppManager;
-	let controller: DenoRuntimeSubprocessController;
+	let controller: NodeRuntimeSubprocessController;
 	let appPackage: IParseAppPackageResult;
 	let appStorageItem: IAppStorageItem;
 
@@ -38,14 +40,12 @@ describe('DenoRuntimeSubprocessController', () => {
 			const appPackageBuffer = await fs.readFile(path.join(__dirname, '../../test-data/apps/hello-world-test_0.0.1.zip'));
 			appPackage = await manager.getParser().unpackageApp(appPackageBuffer);
 
-			await fs.unlink(path.join(manager.getTempFilePath(), 'deno-runtime')).catch(function noop() {});
-
 			appStorageItem = {
 				id: 'hello-world-test',
 				status: AppStatus.MANUALLY_ENABLED,
 			} as IAppStorageItem;
 
-			controller = new DenoRuntimeSubprocessController(manager, appPackage, appStorageItem);
+			controller = new NodeRuntimeSubprocessController(manager, appPackage, appStorageItem);
 			await controller.setupApp();
 		},
 		{ timeout: 60_000 },
@@ -58,9 +58,6 @@ describe('DenoRuntimeSubprocessController', () => {
 	after(
 		async () => {
 			await controller?.stopApp();
-			await fs.unlink(path.join(manager.getTempFilePath(), 'deno-runtime')).catch((reason) => {
-				console.warn('Failed to delete temporary Deno runtime symlink', reason);
-			});
 		},
 		{ timeout: 30_000 },
 	);

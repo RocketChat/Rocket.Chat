@@ -1,6 +1,5 @@
 import * as assert from 'node:assert';
 import * as fs from 'node:fs/promises';
-import * as os from 'node:os';
 import * as path from 'node:path';
 import { describe, it, before, after } from 'node:test';
 
@@ -11,30 +10,30 @@ import { kSecureFields } from '../../../src/lib/SecureFields';
 import type { AppManager } from '../../../src/server/AppManager';
 import type { IParseAppPackageResult } from '../../../src/server/compiler';
 import { AppAccessorManager, AppApiManager } from '../../../src/server/managers';
-import { DenoRuntimeSubprocessController } from '../../../src/server/runtime/deno/AppsEngineDenoRuntime';
+import { NodeRuntimeSubprocessController } from '../../../src/server/runtime/node/AppsEngineNodeRuntime';
 import type { IAppStorageItem } from '../../../src/server/storage';
 import { TestInfastructureSetup } from '../../test-data/utilities';
 
 /**
- * These tests verify end-to-end codec compatibility between Node and Deno, specifically
- * the '@@SecureFields' mechanism introduced to guard access to sensitive room fields
- * (e.g. abacAttributes) behind app permissions.
+ * These tests verify end-to-end codec compatibility between the controller and the app
+ * subprocess, specifically the '@@SecureFields' mechanism introduced to guard access to
+ * sensitive room fields (e.g. abacAttributes) behind app permissions.
  *
  * The flow being tested:
- *  1. Node encodes a room object that includes a '@@SecureFields' descriptor for abacAttributes
- *     using the SECURE_FIELDS_HANDLER_EXT msgpack extension type.
- *  2. Deno receives and decodes the message. Its codec calls applySecureFields(), which:
+ *  1. The controller encodes a room object that includes a '@@SecureFields' descriptor for
+ *     abacAttributes using the SECURE_FIELDS_HANDLER_EXT msgpack extension type.
+ *  2. The subprocess receives and decodes the message. Its codec calls applySecureFields(), which:
  *       - Checks the running app's declared permissions.
  *       - If the app has 'abac.read', it merges abacAttributes into the plain room object.
  *       - Otherwise it strips the field entirely.
- *  3. The Deno app's checkPreRoomCreatePrevent handler returns Array.isArray(room.abacAttributes),
- *     letting Node observe whether the field was received or withheld.
+ *  3. The app's checkPreRoomCreatePrevent handler returns Array.isArray(room.abacAttributes),
+ *     letting the controller observe whether the field was received or withheld.
  *
  * Two app fixtures are used:
  *   - secure-fields-test-with-abac_0.0.1.zip  → declares { name: 'abac.read' }
  *   - secure-fields-test-no-abac_0.0.1.zip    → declares no permissions
  */
-describe('@@SecureFields codec compatibility (Node → Deno)', () => {
+describe('@@SecureFields codec compatibility (controller → subprocess)', () => {
 	/** A minimal room that carries abacAttributes as a secure field. */
 	const roomWithSecureField = {
 		id: 'room-secure-fields-test',
@@ -95,7 +94,7 @@ describe('@@SecureFields codec compatibility (Node → Deno)', () => {
 
 	describe('app that declares abac.read permission', () => {
 		let manager: AppManager;
-		let controller: DenoRuntimeSubprocessController;
+		let controller: NodeRuntimeSubprocessController;
 		let appPackage: IParseAppPackageResult;
 		let appStorageItem: IAppStorageItem;
 
@@ -108,7 +107,7 @@ describe('@@SecureFields codec compatibility (Node → Deno)', () => {
 					status: AppStatus.MANUALLY_ENABLED,
 				} as IAppStorageItem;
 
-				controller = new DenoRuntimeSubprocessController(manager, appPackage, appStorageItem);
+				controller = new NodeRuntimeSubprocessController(manager, appPackage, appStorageItem);
 				await controller.setupApp();
 			},
 			{ timeout: 60_000 },
@@ -117,7 +116,6 @@ describe('@@SecureFields codec compatibility (Node → Deno)', () => {
 		after(
 			async () => {
 				await controller?.stopApp();
-				await fs.unlink(path.join(os.tmpdir(), 'deno-runtime')).catch(() => undefined);
 			},
 			{ timeout: 30_000 },
 		);
@@ -125,7 +123,7 @@ describe('@@SecureFields codec compatibility (Node → Deno)', () => {
 		it('receives abacAttributes when the room is encoded with @@SecureFields', { timeout: 15_000 }, async () => {
 			/**
 			 * The app's checkPreRoomCreatePrevent returns Array.isArray(room.abacAttributes).
-			 * Because the app has abac.read, Deno's applySecureFields should attach
+			 * Because the app has abac.read, the subprocess's applySecureFields should attach
 			 * abacAttributes to the decoded room object, making the result `true`.
 			 */
 			const result = await controller.sendRequest({
@@ -180,7 +178,7 @@ describe('@@SecureFields codec compatibility (Node → Deno)', () => {
 
 	describe('app that does NOT declare abac.read permission', () => {
 		let manager: AppManager;
-		let controller: DenoRuntimeSubprocessController;
+		let controller: NodeRuntimeSubprocessController;
 		let appPackage: IParseAppPackageResult;
 		let appStorageItem: IAppStorageItem;
 
@@ -193,7 +191,7 @@ describe('@@SecureFields codec compatibility (Node → Deno)', () => {
 					status: AppStatus.MANUALLY_ENABLED,
 				} as IAppStorageItem;
 
-				controller = new DenoRuntimeSubprocessController(manager, appPackage, appStorageItem);
+				controller = new NodeRuntimeSubprocessController(manager, appPackage, appStorageItem);
 				await controller.setupApp();
 			},
 			{ timeout: 60_000 },
@@ -202,7 +200,6 @@ describe('@@SecureFields codec compatibility (Node → Deno)', () => {
 		after(
 			async () => {
 				await controller?.stopApp();
-				await fs.unlink(path.join(os.tmpdir(), 'deno-runtime')).catch(() => undefined);
 			},
 			{ timeout: 30_000 },
 		);
@@ -210,7 +207,7 @@ describe('@@SecureFields codec compatibility (Node → Deno)', () => {
 		it('does not receive abacAttributes when the app lacks abac.read permission', { timeout: 15_000 }, async () => {
 			/**
 			 * The room is encoded with @@SecureFields for abacAttributes, but this app
-			 * does not declare abac.read.  Deno's applySecureFields should withhold the
+			 * does not declare abac.read.  The subprocess's applySecureFields should withhold the
 			 * field, so the handler returns `false`.
 			 */
 			const result = await controller.sendRequest({
@@ -227,7 +224,7 @@ describe('@@SecureFields codec compatibility (Node → Deno)', () => {
 			 * (id, type, slugifiedName, customFields, messageCount, …) must survive
 			 * the round-trip unaltered.  The handler only inspects abacAttributes, so
 			 * we verify this indirectly: if the room object were corrupted entirely,
-			 * Deno would throw an error instead of returning a clean `false`.
+			 * The subprocess would throw an error instead of returning a clean `false`.
 			 */
 			const result = await controller.sendRequest({
 				method: 'app:checkPreRoomCreatePrevent',
