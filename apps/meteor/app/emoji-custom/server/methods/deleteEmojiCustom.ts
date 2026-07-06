@@ -20,24 +20,15 @@ export const deleteEmojiCustom = async (userId: string, emojiID: ICustomEmojiDes
 		throw new Meteor.Error('not_authorized');
 	}
 
-	const emoji = await EmojiCustom.findOneById(emojiID);
+	const emoji = await EmojiCustom.findOneAndDeleteById(emojiID);
 	if (emoji == null) {
 		throw new Meteor.Error('Custom_Emoji_Error_Invalid_Emoji', 'Invalid emoji', {
 			method: 'deleteEmojiCustom',
 		});
 	}
 
-	// blob first, record last: a failure leaves a retryable record instead of an unreachable blob
 	await RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emoji.name}.${emoji.extension}`));
-
-	const deletedEmoji = await EmojiCustom.findOneAndDeleteById(emojiID);
-	if (deletedEmoji == null) {
-		throw new Meteor.Error('Custom_Emoji_Error_Invalid_Emoji', 'Invalid emoji', {
-			method: 'deleteEmojiCustom',
-		});
-	}
-
-	void api.broadcast('emoji.deleteCustom', deletedEmoji);
+	void api.broadcast('emoji.deleteCustom', emoji);
 
 	return true;
 };
