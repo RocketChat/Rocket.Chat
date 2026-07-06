@@ -12,13 +12,14 @@ import type { Signals } from '../context/MediaCallInstanceContext';
 
 type MediaCallInstanceProviderProps = {
 	children: ReactNode;
+	enabled?: boolean;
 };
 
-const MediaCallInstanceProvider = ({ children }: MediaCallInstanceProviderProps) => {
+const MediaCallInstanceProvider = ({ children, enabled = true }: MediaCallInstanceProviderProps) => {
 	const [openRoomId, setOpenRoomId] = useState<string | undefined>(undefined);
 	const { currentViews, registerView, unregisterView } = useAvailableViewTracker();
 	const user = useUser();
-	const instance = useMediaSessionInstance(user?._id);
+	const instance = useMediaSessionInstance(enabled ? user?._id : undefined);
 	const [signalEmitter] = useState(() => new Emitter<Signals>());
 
 	const [remoteStreamRefCallback, audioElement] = useAudioStream(instance);
