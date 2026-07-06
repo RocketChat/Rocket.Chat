@@ -1,8 +1,6 @@
 import type { VideoConference } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, Throbber } from '@rocket.chat/fuselage';
-import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import {
-	VirtualizedScrollbars,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
@@ -11,10 +9,11 @@ import {
 	ContextualbarEmptyContent,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
+import type { UseInfiniteQueryResult } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Virtuoso } from 'react-virtuoso';
 
 import VideoConfListItem from './VideoConfListItem';
+import { PaginatedVirtualList } from '../../../../../components/PaginatedVirtualList';
 import { getErrorMessage } from '../../../../../lib/errorHandling';
 
 type VideoConfListProps = {
@@ -24,15 +23,11 @@ type VideoConfListProps = {
 	loading: boolean;
 	error?: Error;
 	reload: () => void;
-	loadMoreItems: () => void;
+	loadMoreItems: UseInfiniteQueryResult['fetchNextPage'];
 };
 
 const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loadMoreItems }: VideoConfListProps) => {
 	const { t } = useTranslation();
-
-	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver<HTMLElement>({
-		debounceDelay: 200,
-	});
 
 	return (
 		<ContextualbarDialog>
@@ -41,7 +36,7 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 				<ContextualbarTitle>{t('Calls')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
-			<ContextualbarContent paddingInline={0} ref={ref}>
+			<ContextualbarContent paddingInline={0}>
 				{loading && (
 					<Box pi={24} pb={12}>
 						<Throbber size='x12' />
@@ -65,21 +60,17 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 						)}
 					</Box>
 				)}
-				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
+				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' style={{ minHeight: 0 }}>
 					{videoConfs.length > 0 && (
-						<VirtualizedScrollbars>
-							<Virtuoso
-								style={{
-									height: blockSize,
-									width: inlineSize,
-								}}
+						<Box h='full' w='full' style={{ minHeight: 0 }}>
+							<PaginatedVirtualList
+								items={videoConfs}
 								totalCount={total}
-								endReached={loadMoreItems}
 								overscan={25}
-								data={videoConfs}
-								itemContent={(_index, data) => <VideoConfListItem videoConfData={data} reload={reload} />}
+								onEndReached={loadMoreItems}
+								renderItem={(data) => <VideoConfListItem videoConfData={data} reload={reload} />}
 							/>
-						</VirtualizedScrollbars>
+						</Box>
 					)}
 				</Box>
 			</ContextualbarContent>
