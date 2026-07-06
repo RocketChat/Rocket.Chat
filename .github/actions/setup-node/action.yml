@@ -15,9 +15,6 @@ inputs:
     required: false
     description: 'development or production'
     default: 'development'
-  deno-version:
-    required: false
-    description: 'Deno version. If not provided, read from .tool-versions'
   NPM_TOKEN:
     required: false
     description: 'NPM token'
@@ -30,9 +27,6 @@ outputs:
   node-version:
     description: 'Node version'
     value: ${{ steps.node-version.outputs.node-version }}
-  cache-deno-hit:
-    description: 'Exact key hit for Deno cache'
-    value: ${{ steps.cache-deno.outputs.cache-hit }}
 
 runs:
   using: composite
@@ -48,35 +42,12 @@ runs:
         echo "NODE_VERSION: ${NODE_VERSION}"
         echo "NODE_VERSION=${NODE_VERSION}" >> $GITHUB_ENV
 
-        DENO_VERSION="${{ inputs.deno-version }}"
-        if [ -z "$DENO_VERSION" ]; then
-          DENO_VERSION=$(awk '$1=="deno"{ print $2 }' .tool-versions)
-        fi
-        echo "DENO_VERSION: ${DENO_VERSION}"
-        echo "DENO_VERSION=${DENO_VERSION}" >> $GITHUB_ENV
-
-    # Turbo local cache: use rharkor/caching-for-turbo in workflows — not stored here to avoid huge redundant keys.
-    - name: Cache Deno (apps-engine)
-      if: inputs.cache-modules
-      id: cache-deno
-      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
-      with:
-        path: packages/apps-engine/.deno-cache
-        key: deno-${{ runner.os }}-${{ runner.arch }}-v${{ env.DENO_VERSION }}-${{ hashFiles('packages/apps-engine/deno-runtime/deno.lock') }}
-        restore-keys: |
-          deno-${{ runner.os }}-${{ runner.arch }}-v${{ env.DENO_VERSION }}-
-
     - name: Use Node.js ${{ env.NODE_VERSION }}
       id: node-version
       uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
       with:
         node-version: ${{ env.NODE_VERSION }}
         cache: ${{ inputs.cache-modules && 'yarn' || '' }}
-
-    - name: Use Deno ${{ env.DENO_VERSION }}
-      uses: denoland/setup-deno@667a34cdef165d8d2b2e98dde39547c9daac7282 # v2.0.4
-      with:
-        deno-version: ${{ env.DENO_VERSION }}
 
     - name: Cache mongodb-memory-server binary
       if: inputs.cache-modules

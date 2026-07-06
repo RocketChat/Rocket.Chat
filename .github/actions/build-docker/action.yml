@@ -14,9 +14,6 @@ inputs:
   DOCKER_PASS:
     required: false
     description: 'DockerHub password (required for FIPS builds to pull private base image)'
-  deno-version:
-    required: true
-    description: 'Deno version'
   arch:
     required: false
     description: 'Architecture'
@@ -114,7 +111,6 @@ runs:
     - name: Build Docker images
       shell: bash
       env:
-        DENO_VERSION: ${{ inputs.deno-version }}
         INPUT_ARCH: ${{ inputs.arch }}
         INPUT_SERVICE: ${{ inputs.service }}
         INPUT_PUBLISH_IMAGE: ${{ inputs.publish-image }}

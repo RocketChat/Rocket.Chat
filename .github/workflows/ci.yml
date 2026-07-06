@@ -41,7 +41,6 @@ jobs:
       gh-docker-tag: ${{ steps.docker.outputs.gh-docker-tag }}
       lowercase-repo: ${{ steps.var.outputs.lowercase-repo }}
       node-version: ${{ steps.var.outputs.node-version }}
-      deno-version: ${{ steps.var.outputs.deno-version }}
       source-hash: ${{ steps.source.outputs.hash }}
       packages-build-cache-key: ${{ steps.ci-cache-keys.outputs.packages-build-cache-key }}
       meteor-rc-cache-key: ${{ steps.ci-cache-keys.outputs.meteor-rc-cache-key }}
@@ -99,10 +98,6 @@ jobs:
           NODE_VERSION=$(node -p "require('./package.json').engines.node")
           echo "NODE_VERSION: ${NODE_VERSION}"
           echo "node-version=${NODE_VERSION}" >> "$GITHUB_OUTPUT"
-
-          DENO_VERSION=$(awk '$1=="deno"{ print $2 }' .tool-versions)
-          echo "DENO_VERSION: ${DENO_VERSION}"
-          echo "deno-version=${DENO_VERSION}" >> "$GITHUB_OUTPUT"
 
       - id: ci-cache-keys
         run: |
@@ -225,7 +220,7 @@ jobs:
           fi;
 
           curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
-              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"denoVersion\": \"${{ needs.release-versions.outputs.deno-version }}\",\"compatibleMongoVersions\": [\"8.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"draft\", \"draftAs\": \"$RC_RELEASE\"}" \
+              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"compatibleMongoVersions\": [\"8.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"draft\", \"draftAs\": \"$RC_RELEASE\"}" \
               https://releases.rocket.chat/update
 
   packages-build:
@@ -264,7 +259,6 @@ jobs:
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
-          deno-version: ${{ needs.release-versions.outputs.deno-version }}
           cache-modules: true
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -275,7 +269,6 @@ jobs:
         run: |
           {
             echo "### 🟢 node_modules cache"
-            echo "- **deno cache hit**: \`${{ steps.setup-node-packages.outputs.cache-deno-hit }}\`"
             echo "- **node_modules size**: \`$(du -sh node_modules 2>/dev/null | cut -f1 || echo 'n/a')\`"
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -336,7 +329,6 @@ jobs:
       - uses: ./.github/actions/meteor-build
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
-          deno-version: ${{ needs.release-versions.outputs.deno-version }}
           source-hash: ${{ needs.release-versions.outputs.packages-build-cache-key }}-${{ needs.release-versions.outputs.meteor-rc-cache-key }}
           type: ${{ matrix.type }}
 
@@ -390,7 +382,6 @@ jobs:
           CR_PAT: ${{ secrets.CR_PAT }}
           DOCKER_USER: ${{ secrets.DOCKER_USER }}
           DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
-          deno-version: ${{ needs.release-versions.outputs.deno-version }}
           arch: ${{ matrix.arch }}
           service: ${{ matrix.service[0] }}
           type: ${{ matrix.type }}
@@ -406,7 +397,6 @@ jobs:
           CR_PAT: ${{ secrets.CR_PAT }}
           DOCKER_USER: ${{ secrets.DOCKER_USER }}
           DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
-          deno-version: ${{ needs.release-versions.outputs.deno-version }}
           arch: ${{ matrix.arch }}
           service: ${{ matrix.service[1] }}
           type: ${{ matrix.type }}
@@ -423,7 +413,6 @@ jobs:
           CR_PAT: ${{ secrets.CR_PAT }}
           DOCKER_USER: ${{ secrets.DOCKER_USER }}
           DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
-          deno-version: ${{ needs.release-versions.outputs.deno-version }}
           arch: ${{ matrix.arch }}
           service: ${{ matrix.service[2] }}
           type: ${{ matrix.type }}
@@ -440,7 +429,6 @@ jobs:
           CR_PAT: ${{ secrets.CR_PAT }}
           DOCKER_USER: ${{ secrets.DOCKER_USER }}
           DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
-          deno-version: ${{ needs.release-versions.outputs.deno-version }}
           arch: ${{ matrix.arch }}
           service: ${{ matrix.service[3] }}
           type: ${{ matrix.type }}
@@ -582,7 +570,6 @@ jobs:
     uses: ./.github/workflows/ci-code-check.yml
     with:
       node-version: ${{ needs.release-versions.outputs.node-version }}
-      deno-version: ${{ needs.release-versions.outputs.deno-version }}
 
   test-storybook:
     name: 🔨 Test Storybook
@@ -592,7 +579,6 @@ jobs:
     uses: ./.github/workflows/ci-test-storybook.yml
     with:
       node-version: ${{ needs.release-versions.outputs.node-version }}
-      deno-version: ${{ needs.release-versions.outputs.deno-version }}
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -604,7 +590,6 @@ jobs:
     uses: ./.github/workflows/ci-test-unit.yml
     with:
       node-version: ${{ needs.release-versions.outputs.node-version }}
-      deno-version: ${{ needs.release-versions.outputs.deno-version }}
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
@@ -618,7 +603,6 @@ jobs:
       type: api
       release: ce
       node-version: ${{ needs.release-versions.outputs.node-version }}
-      deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
     secrets:
@@ -635,7 +619,6 @@ jobs:
       type: api-livechat
       release: ce
       node-version: ${{ needs.release-versions.outputs.node-version }}
-      deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
     secrets:
@@ -656,7 +639,6 @@ jobs:
       shard: '[1, 2, 3, 4]'
       total-shard: 4
       node-version: ${{ needs.release-versions.outputs.node-version }}
-      deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
       retries: ${{ (github.event_name == 'release' || github.event_name == 'merge_group' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
@@ -682,7 +664,6 @@ jobs:
       mongodb-version: "['8.0']"
       coverage: '8.0'
       node-version: ${{ needs.release-versions.outputs.node-version }}
-      deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
     secrets:
@@ -703,7 +684,6 @@ jobs:
       mongodb-version: "['8.0']"
       coverage: '8.0'
       node-version: ${{ needs.release-versions.outputs.node-version }}
-      deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
     secrets:
@@ -724,7 +704,6 @@ jobs:
       mongodb-version: "['8.0']"
       coverage: '8.0'
       node-version: ${{ needs.release-versions.outputs.node-version }}
-      deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
     secrets:
@@ -747,7 +726,6 @@ jobs:
       mongodb-version: "['8.0']"
       coverage: '8.0'
       node-version: ${{ needs.release-versions.outputs.node-version }}
-      deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
       retries: ${{ (github.event_name == 'release' || github.event_name == 'merge_group' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
@@ -843,7 +821,6 @@ jobs:
         uses: ./.github/actions/setup-node
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
-          deno-version: ${{ needs.release-versions.outputs.deno-version }}
           cache-modules: true
           install: true
 
@@ -1265,7 +1242,7 @@ jobs:
           fi;
 
           curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
-              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"denoVersion\": \"${{ needs.release-versions.outputs.deno-version }}\", \"compatibleMongoVersions\": [\"8.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
+              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"compatibleMongoVersions\": [\"8.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
               https://releases.rocket.chat/update
 
           # Makes build fail if the release isn't there
