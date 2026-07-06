@@ -2,7 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { IconButton } from '@rocket.chat/fuselage';
 import DOMPurify from 'dompurify';
 import type { MouseEvent, AllHTMLAttributes } from 'react';
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 
 import type { EmojiItem } from '../../../../app/emoji/client';
 import { usePreviewEmoji } from '../../../contexts/EmojiPickerContext';
@@ -15,7 +15,9 @@ type EmojiElementProps = EmojiItem & { small?: boolean; onClick: (e: MouseEvent<
 const EmojiElement = ({ emoji, image, onClick, small = false, ...props }: EmojiElementProps) => {
 	const { handlePreview, handleRemovePreview } = usePreviewEmoji();
 
-	if (!image) {
+	const emojiElement = useMemo(() => (image ? <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(image) }} /> : null), [image]);
+
+	if (!emojiElement) {
 		return null;
 	}
 
@@ -26,8 +28,6 @@ const EmojiElement = ({ emoji, image, onClick, small = false, ...props }: EmojiE
 			height: 1.125rem;
 		}
 	`;
-
-	const emojiElement = <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(image) }} />;
 
 	return (
 		<IconButton
