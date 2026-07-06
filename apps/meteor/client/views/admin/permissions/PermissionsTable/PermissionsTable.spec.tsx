@@ -1,7 +1,7 @@
 import type { IPermission, IRole } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { composeStories } from '@storybook/react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
@@ -96,4 +96,27 @@ test('should NOT display modal if the permission is access-permissions and has m
 
 	await userEvent.click(screen.getByRole('checkbox', { name: 'access-permissions - Administrator' }));
 	expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+});
+
+test('should reset pagination to the first page when the filter changes', async () => {
+	const setFilter = jest.fn();
+	const setCurrent = jest.fn();
+
+	render(
+		<PermissionsTable
+			permissions={defaultPermissions}
+			total={defaultPermissions.length}
+			setFilter={setFilter}
+			roleList={roles}
+			paginationData={{ ...createMockedPagination(), setCurrent }}
+		/>,
+		{
+			wrapper: mockAppRoot().build(),
+		},
+	);
+
+	await userEvent.type(screen.getByRole('textbox', { name: 'Search' }), 'admin');
+
+	await waitFor(() => expect(setFilter).toHaveBeenCalledWith('admin'));
+	expect(setCurrent).toHaveBeenLastCalledWith(0);
 });

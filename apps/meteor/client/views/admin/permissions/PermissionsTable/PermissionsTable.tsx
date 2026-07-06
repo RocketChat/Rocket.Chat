@@ -23,17 +23,20 @@ type PermissionsTableProps = {
 
 const PermissionsTable = ({ roleList, permissions, setFilter, total, paginationData }: PermissionsTableProps) => {
 	const { t } = useTranslation();
-	const [text, setText] = useState('');
-	const debouncedText = useDebouncedValue(text, 500);
-
-	useEffect(() => {
-		setFilter(debouncedText);
-	}, [debouncedText, setFilter]);
 
 	const grantRole = useMethod('authorization:addPermissionToRole');
 	const removeRole = useMethod('authorization:removeRoleFromPermission');
 
 	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = paginationData;
+
+	const [text, setText] = useState('');
+	const debouncedText = useDebouncedValue(text, 500);
+
+	useEffect(() => {
+		setFilter(debouncedText);
+		// Reset to the first page so narrowing the filter doesn't strand the user on a now-empty offset
+		setCurrent(0);
+	}, [debouncedText, setFilter, setCurrent]);
 
 	const tableCustomStyle = css`
 		// Makes the first column of the table sticky
