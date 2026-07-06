@@ -1,6 +1,6 @@
 import type { IServerEvents, LoginServiceConfiguration } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, describe, it, after } from 'mocha';
+import { before, describe, it, after, afterEach } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission, updateSetting, getSettingValueById } from '../../data/permissions.helper';
@@ -688,6 +688,10 @@ describe('[Settings]', () => {
 
 		before(() => updatePermission('add-oauth-service', ['admin']));
 
+		// guarantee the permission is restored even if a permission-denied assertion fails mid-test,
+		// so a failure cannot cascade into the following cases
+		afterEach(() => updatePermission('add-oauth-service', ['admin']));
+
 		after(async () => {
 			await updatePermission('add-oauth-service', ['admin']);
 			// best-effort cleanup in case a test left the custom service behind
@@ -700,17 +704,19 @@ describe('[Settings]', () => {
 			it('should fail when the "name" param is not provided', () =>
 				request.post(api('settings.addCustomOAuth')).set(credentials).send({}).expect(400));
 
+			// settings.addCustomOAuth still enforces the permission inside the shared method (no route-level
+			// `permissionsRequired`), so a permission failure surfaces as 400 rather than 403.
 			it('should fail when the user does not have the add-oauth-service permission', async () => {
 				await updatePermission('add-oauth-service', []);
 				await request
 					.post(api('settings.addCustomOAuth'))
 					.set(credentials)
 					.send({ name: oauthName })
+					.expect(400)
 					.expect((res) => {
-						expect(res.status).to.equal(403);
 						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.match(/error-action-not-allowed/);
 					});
-				await updatePermission('add-oauth-service', ['admin']);
 			});
 
 			it('should add a custom oauth service', async () => {
@@ -741,7 +747,6 @@ describe('[Settings]', () => {
 						expect(res.status).to.equal(403);
 						expect(res.body).to.have.property('success', false);
 					});
-				await updatePermission('add-oauth-service', ['admin']);
 			});
 
 			it('should refresh the oauth services', () =>
@@ -781,7 +786,6 @@ describe('[Settings]', () => {
 						expect(res.status).to.equal(403);
 						expect(res.body).to.have.property('success', false);
 					});
-				await updatePermission('add-oauth-service', ['admin']);
 			});
 
 			it('should remove a custom oauth service', async () => {
