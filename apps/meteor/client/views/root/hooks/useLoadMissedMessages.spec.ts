@@ -16,7 +16,7 @@ jest.mock('../../../stores', () => ({
 	Messages: {
 		state: {
 			findFirst: jest.fn(),
-			delete: jest.fn(),
+			remove: jest.fn(),
 		},
 	},
 	Subscriptions: {
@@ -35,7 +35,7 @@ jest.mock('@rocket.chat/ui-contexts', () => ({
 
 const mockedUpsertMessageBulk = jest.mocked(upsertMessageBulk);
 const mockedFindFirst = Messages.state.findFirst as jest.Mock;
-const mockedDelete = Messages.state.delete as jest.Mock;
+const mockedRemove = Messages.state.remove as jest.Mock;
 const mockedFindSubscription = Subscriptions.state.find as jest.Mock;
 
 const openedRooms = LegacyRoomManager.openedRooms as unknown as Record<string, { rid?: string }>;
@@ -97,6 +97,31 @@ describe('useLoadMissedMessages', () => {
 		});
 	});
 
+	it('should only consider non-temp, non-hidden messages that have an _updatedAt as the baseline', async () => {
+		const syncMessagesSpy = jest.fn(() => emptyResult as any);
+
+		renderWithReconnect(mockAppRoot().withEndpoint('GET', '/v1/chat.syncMessages', syncMessagesSpy).build());
+
+		await waitFor(() => {
+			expect(mockedFindFirst).toHaveBeenCalled();
+		});
+
+		const [predicate, comparator] = mockedFindFirst.mock.calls[0];
+
+		expect(predicate({ rid: 'room-1', _hidden: false, temp: false, _updatedAt: new Date() })).toBe(true);
+		// an optimistic message that was acked keeps no _updatedAt: it must be skipped so
+		// the comparator never dereferences undefined
+		expect(predicate({ rid: 'room-1', _hidden: false, temp: false, _updatedAt: undefined })).toBe(false);
+		expect(predicate({ rid: 'room-1', _hidden: false, temp: true, _updatedAt: new Date() })).toBe(false);
+		expect(predicate({ rid: 'room-1', _hidden: true, temp: false, _updatedAt: new Date() })).toBe(false);
+		expect(predicate({ rid: 'room-2', _hidden: false, temp: false, _updatedAt: new Date() })).toBe(false);
+
+		const older = { _updatedAt: new Date('2026-01-01T00:00:00.000Z') };
+		const newer = { _updatedAt: new Date('2026-01-02T00:00:00.000Z') };
+		expect(comparator(newer, older)).toBeLessThan(0);
+		expect(comparator(older, newer)).toBeGreaterThan(0);
+	});
+
 	it('should upsert updated messages with dates mapped and delete removed messages', async () => {
 		const syncMessagesSpy = jest.fn(
 			() =>
@@ -135,7 +160,12 @@ describe('useLoadMissedMessages', () => {
 			});
 		});
 
-		expect(mockedDelete).toHaveBeenCalledWith('msg-deleted');
+		await waitFor(() => {
+			expect(mockedRemove).toHaveBeenCalled();
+		});
+		const removePredicate = mockedRemove.mock.calls[0][0];
+		expect(removePredicate({ _id: 'msg-deleted' })).toBe(true);
+		expect(removePredicate({ _id: 'msg-kept' })).toBe(false);
 	});
 
 	it('should apply deletions even when no message was updated', async () => {
@@ -153,8 +183,10 @@ describe('useLoadMissedMessages', () => {
 		renderWithReconnect(mockAppRoot().withEndpoint('GET', '/v1/chat.syncMessages', syncMessagesSpy).build());
 
 		await waitFor(() => {
-			expect(mockedDelete).toHaveBeenCalledWith('msg-deleted');
+			expect(mockedRemove).toHaveBeenCalled();
 		});
+		const removePredicate = mockedRemove.mock.calls[0][0];
+		expect(removePredicate({ _id: 'msg-deleted' })).toBe(true);
 
 		expect(mockedUpsertMessageBulk).not.toHaveBeenCalled();
 	});

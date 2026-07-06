@@ -1,4 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import type { EndpointFunction } from '@rocket.chat/ui-contexts';
 import { useConnectionStatus, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useEffect, useRef } from 'react';
 
@@ -6,7 +7,7 @@ import { LegacyRoomManager, upsertMessageBulk } from '../../../../app/ui-utils/c
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
 import { Messages, Subscriptions } from '../../../stores';
 
-type SyncMessagesEndpoint = ReturnType<typeof useEndpoint<'GET', '/v1/chat.syncMessages'>>;
+type SyncMessagesEndpoint = EndpointFunction<'GET', '/v1/chat.syncMessages'>;
 
 /**
  * Reconciles the messages of a room after a connection loss: everything that
@@ -14,18 +15,20 @@ type SyncMessagesEndpoint = ReturnType<typeof useEndpoint<'GET', '/v1/chat.syncM
  * local store.
  */
 const syncMissedMessages = async (rid: IRoom['_id'], syncMessages: SyncMessagesEndpoint): Promise<void> => {
-	// `_updatedAt` (not `ts`) is the sync baseline: the server query returns any
-	// message changed after it, so edits and reactions are not missed
-	const lastMessage = Messages.state.findFirst(
-		(record) => record.rid === rid && record._hidden !== true && !record.temp,
-		(a, b) => b._updatedAt.getTime() - a._updatedAt.getTime(),
-	);
-
-	if (!lastMessage) {
-		return;
-	}
-
 	try {
+		// `_updatedAt` (not `ts`) is the sync baseline so edits and reactions are not
+		// missed. Records without `_updatedAt` (an optimistic message awaiting server
+		// confirmation) are skipped: the value is transient and the server copy carries
+		// the real `_updatedAt`.
+		const lastMessage = Messages.state.findFirst(
+			(record) => record.rid === rid && record._hidden !== true && !record.temp && Boolean(record._updatedAt),
+			(a, b) => b._updatedAt.getTime() - a._updatedAt.getTime(),
+		);
+
+		if (!lastMessage) {
+			return;
+		}
+
 		const { result } = await syncMessages({ roomId: rid, lastUpdate: lastMessage._updatedAt.toISOString() });
 
 		if (result.updated.length > 0) {
@@ -33,8 +36,9 @@ const syncMissedMessages = async (rid: IRoom['_id'], syncMessages: SyncMessagesE
 			await upsertMessageBulk({ msgs: result.updated.map((message) => mapMessageFromApi(message)), subscription });
 		}
 
-		for (const { _id } of result.deleted) {
-			Messages.state.delete(_id);
+		if (result.deleted.length > 0) {
+			const deletedIds = new Set(result.deleted.map(({ _id }) => _id));
+			Messages.state.remove((record) => deletedIds.has(record._id));
 		}
 	} catch (error) {
 		console.error('Error syncing missed messages:', error);
@@ -51,8 +55,7 @@ export const useLoadMissedMessages = (): void => {
 
 	useEffect(() => {
 		if (connected === true && connectionWasOnlineRef.current === false && LegacyRoomManager.openedRooms) {
-			Object.keys(LegacyRoomManager.openedRooms).forEach((key) => {
-				const value = LegacyRoomManager.openedRooms[key];
+			Object.values(LegacyRoomManager.openedRooms).forEach((value) => {
 				if (value.rid) {
 					syncMissedMessages(value.rid, syncMessages);
 				}
