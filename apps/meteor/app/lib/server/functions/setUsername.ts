@@ -18,6 +18,7 @@ import { validateUsername } from './validateUsername';
 import { onceTransactionCommitedSuccessfully } from '../../../../server/database/utils';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { isFederationEnabled } from '../../../../server/services/federation/utils';
 import { settings } from '../../../settings/server';
 import { notifyOnUserChange } from '../lib/notifyListener';
 
@@ -39,7 +40,7 @@ export const setUsernameWithValidation = async (userId: string, username: string
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setUsername' });
 	}
 
-	if (isUserNativeFederated(user) || (await isUserInFederatedRooms(userId))) {
+	if (isFederationEnabled() && (isUserNativeFederated(user) || (await isUserInFederatedRooms(userId)))) {
 		throw new Meteor.Error('error-not-allowed', 'Cannot change username for federated users or users in federated rooms', {
 			method: 'setUsername',
 		});
@@ -98,7 +99,7 @@ export const _setUsername = async function (
 		return false;
 	}
 
-	if (isUserNativeFederated(fullUser) || (await isUserInFederatedRooms(userId))) {
+	if (isFederationEnabled() && (isUserNativeFederated(fullUser) || (await isUserInFederatedRooms(userId)))) {
 		throw new Meteor.Error('error-not-allowed', 'Cannot change username for federated users or users in federated rooms', {
 			method: 'setUsername',
 		});

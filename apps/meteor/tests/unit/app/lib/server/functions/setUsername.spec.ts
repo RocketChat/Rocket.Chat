@@ -20,6 +20,7 @@ describe('setUsername', () => {
 		settings: {
 			get: sinon.stub(),
 		},
+		isFederationEnabled: sinon.stub(),
 		api: {
 			broadcast: sinon.stub(),
 		},
@@ -52,6 +53,7 @@ describe('setUsername', () => {
 			'@rocket.chat/models': { Users: stubs.Users, Invites: stubs.Invites, Subscriptions: stubs.Subscriptions },
 			'meteor/accounts-base': { Accounts: stubs.Accounts },
 			'underscore': stubs.underscore,
+			'../../../../server/services/federation/utils': { isFederationEnabled: stubs.isFederationEnabled },
 			'../../../settings/server': { settings: stubs.settings },
 			'../lib': { notifyOnUserChange: stubs.notifyOnUserChange },
 			'./addUserToRoom': { addUserToRoom: stubs.addUserToRoom },
@@ -66,6 +68,7 @@ describe('setUsername', () => {
 		});
 
 	beforeEach(() => {
+		stubs.isFederationEnabled.returns(false);
 		stubs.Subscriptions.findUserFederatedRoomIds.returns({
 			hasNext: sinon.stub().resolves(false),
 			close: sinon.stub().resolves(),
@@ -78,6 +81,7 @@ describe('setUsername', () => {
 		stubs.Subscriptions.findUserFederatedRoomIds.reset();
 		stubs.Accounts.sendEnrollmentEmail.reset();
 		stubs.settings.get.reset();
+		stubs.isFederationEnabled.reset();
 		stubs.api.broadcast.reset();
 		stubs.Invites.findOneById.reset();
 		stubs.callbacks.run.reset();
@@ -120,7 +124,7 @@ describe('setUsername', () => {
 			try {
 				await setUsernameWithValidation(userId, username);
 			} catch (error: any) {
-				expect(stubs.settings.get.calledOnce).to.be.true;
+				expect(stubs.settings.get.calledWith('Accounts_AllowUsernameChange')).to.be.true;
 				expect(error.message).to.equal('error-not-allowed');
 			}
 		});
@@ -152,6 +156,7 @@ describe('setUsername', () => {
 
 		it('should throw an error if local user is in federated rooms', async () => {
 			stubs.Users.findOneById.resolves({ _id: userId, username: null });
+			stubs.isFederationEnabled.returns(true);
 			stubs.validateUsername.returns(true);
 			stubs.checkUsernameAvailability.resolves(true);
 			stubs.Subscriptions.findUserFederatedRoomIds.returns({
@@ -174,6 +179,7 @@ describe('setUsername', () => {
 				federated: true,
 				federation: { version: 1, mui: '@user:origin', origin: 'origin' },
 			});
+			stubs.isFederationEnabled.returns(true);
 			stubs.validateUsername.returns(true);
 			stubs.checkUsernameAvailability.resolves(true);
 
@@ -183,6 +189,23 @@ describe('setUsername', () => {
 				expect(stubs.Subscriptions.findUserFederatedRoomIds.notCalled).to.be.true;
 				expect(error.message).to.equal('error-not-allowed');
 			}
+		});
+
+		it('should allow local user in federated rooms to change username when federation is disabled', async () => {
+			stubs.Users.findOneById.resolves({ _id: userId, username: null });
+			stubs.isFederationEnabled.returns(false);
+			stubs.validateUsername.returns(true);
+			stubs.checkUsernameAvailability.resolves(true);
+			stubs.saveUserIdentity.resolves(true);
+			stubs.Subscriptions.findUserFederatedRoomIds.returns({
+				hasNext: sinon.stub().resolves(true),
+				close: sinon.stub().resolves(),
+			});
+
+			await setUsernameWithValidation(userId, 'newUsername');
+
+			expect(stubs.saveUserIdentity.calledOnce).to.be.true;
+			expect(stubs.Subscriptions.findUserFederatedRoomIds.notCalled).to.be.true;
 		});
 
 		it('should save the user identity when valid username is set', async () => {
@@ -309,6 +332,22 @@ describe('setUsername', () => {
 			await _setUsername(userId, username, mockUser);
 
 			expect(stubs.addUserToRoom.calledOnceWith('room id', mockUser)).to.be.true;
+		});
+
+		it('should allow _setUsername when user is in federated rooms but federation is disabled', async () => {
+			const mockUser = { _id: userId, username: 'oldUsername', emails: [{ address: 'test@example.com' }] };
+			stubs.isFederationEnabled.returns(false);
+			stubs.validateUsername.returns(true);
+			stubs.checkUsernameAvailability.resolves(true);
+			stubs.Subscriptions.findUserFederatedRoomIds.returns({
+				hasNext: sinon.stub().resolves(true),
+				close: sinon.stub().resolves(),
+			});
+
+			await _setUsername(userId, username, mockUser);
+
+			expect(stubs.Users.setUsername.calledOnceWith(userId, username)).to.be.true;
+			expect(stubs.Subscriptions.findUserFederatedRoomIds.notCalled).to.be.true;
 		});
 	});
 });
