@@ -107,6 +107,7 @@ export const addAccountRoutes = (router: ClientRouter) => {
 					await createOrUpdateFederatedUser({
 						username: userId,
 						origin: serverName,
+						asId: appService?.registration._id,
 					});
 
 					return {
