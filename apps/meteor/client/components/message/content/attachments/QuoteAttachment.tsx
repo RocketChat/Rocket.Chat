@@ -45,7 +45,7 @@ export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps) => {
 			<AttachmentContent className={quoteStyles} width='full'>
 				<AttachmentDetails
 					is='blockquote'
-					borderRadius='x2'
+					borderRadius={4}
 					borderWidth='default'
 					borderStyle='solid'
 					borderColor='extra-light'
