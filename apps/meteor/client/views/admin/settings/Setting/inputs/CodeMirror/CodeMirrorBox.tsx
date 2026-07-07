@@ -7,7 +7,9 @@ import { useTranslation } from 'react-i18next';
 // A constant 2px border is always reserved so toggling the error state only changes the color, avoiding a layout reflow.
 const editorBorderProps = { borderWidth: 2, borderStyle: 'solid', borderRadius: 4 } as const;
 
-const CodeMirrorBox = ({ label, children, error }: { label: ReactNode; children: ReactNode; error?: string }) => {
+export type CodeMirrorBoxProps = { label: ReactNode; children: ReactNode; error?: string };
+
+const CodeMirrorBox = ({ label, children, error }: CodeMirrorBoxProps) => {
 	const { t } = useTranslation();
 	const [fullScreen, toggleFullScreen] = useToggle(false);
 	const errorId = useId();
