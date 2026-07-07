@@ -27,16 +27,16 @@ const { UserConverter } = proxyquire.noCallThru().load('../../../../../app/impor
 	'../../../settings/server': {
 		settings: { get: settingsStub },
 	},
-	'../../../../lib/server/functions/addUserToDefaultChannels': {
+	'../../../../../server/lib/rooms/addUserToDefaultChannels': {
 		addUserToDefaultChannels,
 	},
-	'../../../../lib/server/functions/getUsernameSuggestion': {
+	'../../../../../server/lib/users/getUsernameSuggestion': {
 		generateUsernameSuggestion,
 	},
-	'../../../../lib/server/functions/saveUserIdentity': {
+	'../../../../../server/lib/users/saveUserIdentity': {
 		saveUserIdentity: sinon.stub(),
 	},
-	'../../../../lib/server/functions/setUserActiveStatus': {
+	'../../../../../server/lib/users/setUserActiveStatus': {
 		setUserActiveStatus: sinon.stub(),
 	},
 	'../../../../lib/server/lib/notifyListener': {

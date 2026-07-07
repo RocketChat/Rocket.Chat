@@ -6,8 +6,8 @@ import { Meteor } from 'meteor/meteor';
 import { createNewUser } from './createNewUser';
 import { findExistingCASUser } from './findExistingCASUser';
 import { logger } from './logger';
-import { setRealName } from '../../../app/lib/server/functions/setRealName';
 import { settings } from '../../../app/settings/server';
+import { setRealName } from '../users/setRealName';
 
 export const loginHandlerCAS = async (options: any): Promise<undefined | Accounts.LoginMethodResult> => {
 	if (!settings.get('CAS_enabled') || !options.cas || typeof options.cas.credentialToken !== 'string') {

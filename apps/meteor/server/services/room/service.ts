@@ -16,12 +16,6 @@ import { getNameForDMs } from './getNameForDMs';
 import { FederationActions } from './hooks/BeforeFederationActions';
 import { saveRoomName } from '../../../app/channel-settings/server';
 import { saveRoomTopic } from '../../../app/channel-settings/server/functions/saveRoomTopic';
-import { performAcceptRoomInvite } from '../../../app/lib/server/functions/acceptRoomInvite';
-import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
-import { performUserBan } from '../../../app/lib/server/functions/banUserFromRoom';
-import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
-import { executeUnbanUserFromRoom } from '../../../app/lib/server/functions/executeUnbanUserFromRoom';
-import { removeUserFromRoom, performUserRemoval } from '../../../app/lib/server/functions/removeUserFromRoom';
 import {
 	notifyOnSubscriptionChanged,
 	notifyOnSubscriptionChangedById,
@@ -33,6 +27,12 @@ import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../lib/getSubscriptionAutotranslateDefaultConfig';
 import { readMessages } from '../../lib/readMessages';
+import { performAcceptRoomInvite } from '../../lib/rooms/acceptRoomInvite';
+import { addUserToRoom } from '../../lib/rooms/addUserToRoom';
+import { performUserBan } from '../../lib/rooms/banUserFromRoom';
+import { createRoom } from '../../lib/rooms/createRoom'; // TODO remove this import
+import { executeUnbanUserFromRoom } from '../../lib/rooms/executeUnbanUserFromRoom';
+import { removeUserFromRoom, performUserRemoval } from '../../lib/rooms/removeUserFromRoom';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { addRoomLeader } from '../../methods/addRoomLeader';
 import { addRoomModerator } from '../../methods/addRoomModerator';

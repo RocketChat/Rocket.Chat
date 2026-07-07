@@ -1,0 +1,169 @@
+import { api } from '@rocket.chat/core-services';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { Messages, Rooms, Subscriptions, ReadReceipts, ReadReceiptsArchive } from '@rocket.chat/models';
+
+import { deleteRoom } from './deleteRoom';
+import { FileUpload } from '../../../app/file-upload/server';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../../../app/lib/server/lib/notifyListener';
+import { NOTIFICATION_ATTACHMENT_COLOR } from '../../../lib/constants';
+import { i18n } from '../i18n';
+
+const FILE_CLEANUP_BATCH_SIZE = 1000;
+
+export async function cleanRoomHistory({
+	rid = '',
+	latest = new Date(),
+	oldest = new Date('0001-01-01T00:00:00Z'),
+	inclusive = true,
+	limit = 0,
+	excludePinned = true,
+	ignoreDiscussion = true,
+	filesOnly = false,
+	fromUsers = [],
+	ignoreThreads = true,
+}: {
+	rid?: IRoom['_id'];
+	latest?: Date;
+	oldest?: Date;
+	inclusive?: boolean;
+	limit?: number;
+	excludePinned?: boolean;
+	ignoreDiscussion?: boolean;
+	filesOnly?: boolean;
+	fromUsers?: string[];
+	ignoreThreads?: boolean;
+}): Promise<number> {
+	const gt = inclusive ? '$gte' : '$gt';
+	const lt = inclusive ? '$lte' : '$lt';
+
+	const ts = { [gt]: oldest, [lt]: latest };
+
+	const text = `_${i18n.t('File_removed_by_prune')}_`;
+
+	let fileCount = 0;
+
+	const cursor = Messages.findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ignoreDiscussion, ts, fromUsers, ignoreThreads, {
+		projection: { pinned: 1, files: 1 },
+		limit,
+	});
+
+	const targetMessageIdsForAttachmentRemoval = new Set<string>();
+	// Since we remove every file from the messages, we don't need to specify which fileId has been removed.
+	const pruneMessageAttachment = { type: 'removed-file', color: NOTIFICATION_ATTACHMENT_COLOR, text };
+
+	async function performFileAttachmentCleanupBatch() {
+		if (targetMessageIdsForAttachmentRemoval.size === 0) return;
+
+		const ids = [...targetMessageIdsForAttachmentRemoval];
+		await Messages.removeFileAttachmentsByMessageIds(ids, pruneMessageAttachment);
+		await Messages.clearFilesByMessageIds(ids);
+		void api.broadcast('notify.deleteMessageBulk', rid, {
+			rid,
+			excludePinned,
+			ignoreDiscussion,
+			ts,
+			users: fromUsers,
+			ids,
+			filesOnly: true,
+			replaceFileAttachmentsWith: pruneMessageAttachment,
+		});
+		targetMessageIdsForAttachmentRemoval.clear();
+	}
+
+	for await (const document of cursor) {
+		const uploadsStore = FileUpload.getStore('Uploads');
+
+		document.files && (await Promise.all(document.files.map((file) => uploadsStore.deleteById(file._id))));
+
+		fileCount++;
+		if (filesOnly) {
+			targetMessageIdsForAttachmentRemoval.add(document._id);
+		}
+
+		if (targetMessageIdsForAttachmentRemoval.size >= FILE_CLEANUP_BATCH_SIZE) {
+			await performFileAttachmentCleanupBatch();
+		}
+	}
+
+	if (targetMessageIdsForAttachmentRemoval.size > 0) {
+		await performFileAttachmentCleanupBatch();
+	}
+
+	if (filesOnly) {
+		return fileCount;
+	}
+
+	if (!ignoreDiscussion) {
+		const discussionsCursor = Messages.findDiscussionByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, fromUsers, {
+			projection: { drid: 1 },
+			...(limit && { limit }),
+		});
+
+		for await (const { drid } of discussionsCursor) {
+			if (!drid) {
+				continue;
+			}
+			await deleteRoom(drid);
+		}
+	}
+
+	if (!ignoreThreads) {
+		const threads = new Set<string>();
+
+		await Messages.findThreadsByRoomIdPinnedTimestampAndUsers(
+			{ rid, pinned: excludePinned, ignoreDiscussion, ts, users: fromUsers },
+			{ projection: { _id: 1 } },
+		).forEach(({ _id }) => {
+			threads.add(_id);
+		});
+
+		if (threads.size > 0) {
+			const subscriptionIds: string[] = (
+				await Subscriptions.findUnreadThreadsByRoomId(rid, [...threads], { projection: { _id: 1 } }).toArray()
+			).map(({ _id }) => _id);
+
+			const { modifiedCount } = await Subscriptions.removeUnreadThreadsByRoomId(rid, [...threads]);
+			if (modifiedCount) {
+				subscriptionIds.forEach((id) => notifyOnSubscriptionChangedById(id));
+			}
+		}
+	}
+
+	const selectedMessageIds = limit
+		? await Messages.findByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreDiscussion, ts, limit, fromUsers, ignoreThreads)
+		: undefined;
+	const count = await Messages.removeByIdPinnedTimestampLimitAndUsers(
+		rid,
+		excludePinned,
+		ignoreDiscussion,
+		ts,
+		limit,
+		fromUsers,
+		ignoreThreads,
+		selectedMessageIds,
+	);
+
+	if (limit && selectedMessageIds) {
+		await ReadReceipts.removeByMessageIds(selectedMessageIds);
+		await ReadReceiptsArchive.removeByMessageIds(selectedMessageIds);
+	}
+
+	if (count) {
+		const lastMessage = await Messages.getLastVisibleUserMessageSentByRoomId(rid);
+
+		await Rooms.resetLastMessageById(rid, lastMessage, -count);
+
+		void notifyOnRoomChangedById(rid);
+
+		void api.broadcast('notify.deleteMessageBulk', rid, {
+			rid,
+			excludePinned,
+			ignoreDiscussion,
+			ts,
+			users: fromUsers,
+			ids: selectedMessageIds,
+		});
+	}
+
+	return count;
+}

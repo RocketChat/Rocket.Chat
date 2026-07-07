@@ -90,7 +90,9 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 									id={webhookUrlField}
 									value={webhookData?._id ? url : t('Will_be_available_here_after_saving')}
 									readOnly
-									addon={webhookData?._id ? <IconButton mini onClick={() => copyWebhookUrl()} title={t('Copy')} icon='copy' /> : undefined}
+									endAddon={
+										webhookData?._id ? <IconButton mini onClick={() => copyWebhookUrl()} title={t('Copy')} icon='copy' /> : undefined
+									}
 									aria-describedby={`${webhookUrlField}-hint`}
 								/>
 							</FieldRow>
@@ -103,7 +105,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 									id={tokenField}
 									value={webhookData?._id ? `${webhookData?._id}/${webhookData?.token}` : t('Will_be_available_here_after_saving')}
 									readOnly
-									addon={webhookData?._id ? <IconButton mini onClick={() => copyToken()} title={t('Copy')} icon='copy' /> : undefined}
+									endAddon={webhookData?._id ? <IconButton mini onClick={() => copyToken()} title={t('Copy')} icon='copy' /> : undefined}
 								/>
 							</FieldRow>
 						</Field>
@@ -125,7 +127,9 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 										id={curlField}
 										value={curlData}
 										readOnly
-										addon={webhookData?._id ? <IconButton mini onClick={() => copyCurlData()} title={t('Copy')} icon='copy' /> : undefined}
+										endAddon={
+											webhookData?._id ? <IconButton mini onClick={() => copyCurlData()} title={t('Copy')} icon='copy' /> : undefined
+										}
 									/>
 								</FieldRow>
 							</Field>
@@ -168,7 +172,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 										<TextInput
 											id={channelField}
 											{...field}
-											addon={<Icon name='at' size='x20' />}
+											endAddon={<Icon name='at' size='x20' />}
 											aria-describedby={`${channelField}-hint-1 ${channelField}-hint-2 ${channelField}-error`}
 											aria-required={true}
 											aria-invalid={Boolean(errors?.channel)}
@@ -199,7 +203,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 										<TextInput
 											id={usernameField}
 											{...field}
-											addon={<Icon name='user' size='x20' />}
+											endAddon={<Icon name='user' size='x20' />}
 											aria-describedby={`${usernameField}-hint-1 ${usernameField}-hint-2 ${usernameField}-error`}
 											aria-required={true}
 											aria-invalid={Boolean(errors?.username)}
@@ -224,7 +228,12 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 									name='alias'
 									control={control}
 									render={({ field }) => (
-										<TextInput id={aliasField} {...field} aria-describedby={`${aliasField}-hint`} addon={<Icon name='edit' size='x20' />} />
+										<TextInput
+											id={aliasField}
+											{...field}
+											aria-describedby={`${aliasField}-hint`}
+											endAddon={<Icon name='edit' size='x20' />}
+										/>
 									)}
 								/>
 							</FieldRow>
@@ -241,7 +250,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 											id={avatarField}
 											{...field}
 											aria-describedby={`${avatarField}-hint-1 ${avatarField}-hint-2`}
-											addon={<Icon name='user-rounded' size='x20' alignSelf='center' />}
+											endAddon={<Icon name='user-rounded' size='x20' alignSelf='center' />}
 										/>
 									)}
 								/>
@@ -260,7 +269,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 											id={emojiField}
 											{...field}
 											aria-describedby={`${emojiField}-hint-1 ${emojiField}-hint-2`}
-											addon={<Icon name='emoji' size='x20' alignSelf='center' />}
+											endAddon={<Icon name='emoji' size='x20' alignSelf='center' />}
 										/>
 									)}
 								/>
@@ -317,7 +326,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 									name='script'
 									control={control}
 									render={({ field }) => (
-										<TextAreaInput id={scriptField} {...field} rows={10} addon={<Icon name='code' size='x20' alignSelf='center' />} />
+										<TextAreaInput id={scriptField} {...field} rows={10} endAddon={<Icon name='code' size='x20' alignSelf='center' />} />
 									)}
 								/>
 							</FieldRow>
