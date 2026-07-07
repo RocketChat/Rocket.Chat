@@ -39,6 +39,7 @@ export interface IAnalyticsModel extends IBaseModel<IAnalytics> {
 		users: number;
 	}>;
 	findByTypeBeforeDate({ type, date }: { type: IAnalytics['type']; date: IAnalytics['date'] }): FindCursor<IAnalytics>;
+	countByTypeBeforeDate({ type, date }: { type: IAnalytics['type']; date: IAnalytics['date'] }): Promise<number>;
 	findRoomsByTypesWithNumberOfMessagesBetweenDate(params: {
 		types: Array<IRoom['t']>;
 		start: number;

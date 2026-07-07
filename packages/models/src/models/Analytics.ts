@@ -216,6 +216,10 @@ export class AnalyticsRaw extends BaseRaw<IAnalytics> implements IAnalyticsModel
 		return this.find({ type, date: { $lte: date } });
 	}
 
+	countByTypeBeforeDate({ type, date }: { type: IAnalytics['type']; date: IAnalytics['date'] }): Promise<number> {
+		return this.countDocuments({ type, date: { $lte: date } });
+	}
+
 	getRoomsWithNumberOfMessagesBetweenDateQuery({
 		types,
 		start,
