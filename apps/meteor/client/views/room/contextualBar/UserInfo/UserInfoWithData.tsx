@@ -24,7 +24,7 @@ import { ReactiveUserStatusText } from '../../../../components/UserStatusText';
 import { usersQueryKeys } from '../../../../lib/queryKeys';
 import { getUserEmailVerified } from '../../../../lib/utils/getUserEmailVerified';
 
-type UserInfoWithDataProps = {
+export type UserInfoWithDataProps = {
 	uid?: IUser['_id'];
 	username?: IUser['username'];
 	rid: IRoom['_id'];

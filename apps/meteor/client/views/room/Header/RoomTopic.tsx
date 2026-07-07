@@ -6,7 +6,7 @@ import { useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import MarkdownText from '../../../components/MarkdownText';
 import { useCanEditRoom } from '../contextualBar/Info/hooks/useCanEditRoom';
 
-type RoomTopicProps = {
+export type RoomTopicProps = {
 	room: IRoom;
 };
 

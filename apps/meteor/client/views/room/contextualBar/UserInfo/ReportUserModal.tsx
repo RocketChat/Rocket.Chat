@@ -5,7 +5,7 @@ import { useId, type ComponentProps } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-type ReportUserModalProps = {
+export type ReportUserModalProps = {
 	onConfirm: (reasonForReport: string) => void;
 	onClose: () => void;
 	displayName: string;
