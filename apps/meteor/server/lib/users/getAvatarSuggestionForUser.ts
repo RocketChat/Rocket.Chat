@@ -5,6 +5,7 @@ import { check } from 'meteor/check';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { settings } from '../../../app/settings/server';
+import { hasOfflineLicense } from '../cloud/offlineLicense';
 
 const avatarProviders = {
 	facebook(user: IUser) {
@@ -101,7 +102,15 @@ const avatarProviders = {
 	},
 
 	emails(user: IUser) {
-		const avatars = [];
+		const avatars: { service: string; url: string }[] = [];
+
+		// Offline (air-gapped) licenses suppress Gravatar lookups: every suggested
+		// URL is fetched server-side below, and gravatar.com is not admin-configured
+		// infrastructure (unlike OAuth provider avatars, which keep working).
+		if (hasOfflineLicense()) {
+			return avatars;
+		}
+
 		if (user.emails && user.emails.length > 0) {
 			for (const email of user.emails) {
 				if (email.verified === true) {
