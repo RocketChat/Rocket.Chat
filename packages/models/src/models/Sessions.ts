@@ -1005,36 +1005,6 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		];
 	}
 
-	async getActiveUsersBetweenDates({ start, end }: DestructuredRange): Promise<ISession[]> {
-		return this.col
-			.aggregate<ISession>([
-				{
-					$match: {
-						...matchBasedOnDate(start, end),
-						type: 'user_daily',
-					},
-				},
-				{
-					$group: {
-						_id: '$userId',
-					},
-				},
-			])
-			.toArray();
-	}
-
-	async findLastLoginByIp(ip: string): Promise<ISession | null> {
-		return this.findOne(
-			{
-				ip,
-			},
-			{
-				sort: { loginAt: -1 },
-				limit: 1,
-			},
-		);
-	}
-
 	findOneBySessionId(sessionId: string): Promise<ISession | null> {
 		return this.findOne({ sessionId });
 	}
@@ -1485,28 +1455,6 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		return this.updateOne(query, update);
 	}
 
-	async updateActiveSessionsByDateAndInstanceIdAndIds(
-		{ year, month, day }: Partial<DestructuredDate> = {},
-		instanceId: string,
-		sessions: string[],
-		data: Record<string, any> = {},
-	): Promise<UpdateResult | Document> {
-		const query = {
-			instanceId,
-			year,
-			month,
-			day,
-			sessionId: { $in: sessions },
-			closedAt: { $exists: false },
-		};
-
-		const update = {
-			$set: data,
-		};
-
-		return this.updateMany(query, update);
-	}
-
 	async updateActiveSessionsByDate(
 		{ year, month, day }: DestructuredDate,
 		data: Record<string, any> = {},
@@ -1526,25 +1474,6 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 			},
 			update,
 		);
-	}
-
-	async logoutByInstanceIdAndSessionIdAndUserId(instanceId: string, sessionId: string, userId: string): Promise<UpdateResult> {
-		const query = {
-			instanceId,
-			sessionId,
-			userId,
-			logoutAt: { $exists: false },
-		};
-
-		const logoutAt = new Date();
-		const update = {
-			$set: {
-				logoutAt,
-				lastActivityAt: logoutAt,
-			},
-		};
-
-		return this.updateOne(query, update);
 	}
 
 	async logoutBySessionIdAndUserId({
