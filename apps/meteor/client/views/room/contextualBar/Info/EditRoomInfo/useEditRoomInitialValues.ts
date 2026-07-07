@@ -18,6 +18,7 @@ export type EditRoomInfoFormData = {
 	archived: boolean;
 	joinCodeRequired: boolean;
 	hideSysMes: boolean;
+	disableLinkPreviews: boolean;
 	encrypted: boolean;
 	retentionEnabled: boolean;
 	retentionOverrideGlobal: boolean;
@@ -35,7 +36,7 @@ export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy): Partia
 	const retentionPolicy = useRetentionPolicy(room);
 	const canEditRoomRetentionPolicy = usePermission('edit-room-retention-policy', room._id);
 
-	const { t, ro, archived, topic, description, announcement, joinCodeRequired, sysMes, encrypted, retention, reactWhenReadOnly } = room;
+	const { t, ro, archived, topic, description, announcement, joinCodeRequired, sysMes, encrypted, retention, reactWhenReadOnly, disableLinkPreviews } = room;
 
 	return useMemo(
 		(): Partial<EditRoomInfoFormData> => ({
@@ -52,6 +53,7 @@ export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy): Partia
 			joinCodeRequired: !!joinCodeRequired,
 			systemMessages: Array.isArray(sysMes) ? sysMes : [],
 			hideSysMes: Array.isArray(sysMes) ? !!sysMes?.length : !!sysMes,
+			disableLinkPreviews: !!disableLinkPreviews,
 			encrypted,
 			...(canEditRoomRetentionPolicy &&
 				retentionPolicy?.enabled && {
@@ -77,6 +79,7 @@ export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy): Partia
 			topic,
 			encrypted,
 			reactWhenReadOnly,
+			disableLinkPreviews,
 			canEditRoomRetentionPolicy,
 		],
 	);

@@ -1854,6 +1854,7 @@
   "Disable": "Disable",
   "Disable_E2E_encryption": "Disable E2E encryption",
   "Disable_Facebook_integration": "Disable Facebook integration",
+  "Disable_Link_Previews": "Disable link previews",
   "Disable_Notifications": "Disable Notifications",
   "Disable_another_app": "Disable another app or upgrade to a Premium plan to enable this app.",
   "Disable_at_least_more_apps": "You will need to disable at least {{numberOfExceededApps}} other apps or upgrade to a Premium plan to enable this app.",

@@ -32,6 +32,8 @@ export interface IRoom extends IRocketChatRecord {
 	// TODO: this boolean might be an accident
 	sysMes?: MessageTypesValues[] | boolean;
 
+	disableLinkPreviews?: boolean;
+
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
 	uids?: Array<string>;
 

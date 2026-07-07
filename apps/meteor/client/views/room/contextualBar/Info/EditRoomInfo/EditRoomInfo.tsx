@@ -122,6 +122,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		archived,
 		joinCodeRequired,
 		hideSysMes,
+		disableLinkPreviews,
 		retentionEnabled,
 		retentionOverrideGlobal,
 		roomType: roomTypeP,
@@ -224,6 +225,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const archivedField = useId();
 	const joinCodeRequiredField = useId();
 	const hideSysMesField = useId();
+	const disableLinkPreviewsField = useId();
 	const retentionEnabledField = useId();
 	const retentionOverrideGlobalField = useId();
 	const retentionMaxAgeField = useId();
@@ -491,6 +493,20 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 																placeholder={t('Select_messages_to_hide')}
 																aria-label={t('Select_messages_to_hide')}
 															/>
+														)}
+													/>
+												</FieldRow>
+											</Field>
+										)}
+										{canViewHideSysMes && (
+											<Field>
+												<FieldRow>
+													<FieldLabel htmlFor={disableLinkPreviewsField}>{t('Disable_Link_Previews')}</FieldLabel>
+													<Controller
+														control={control}
+														name='disableLinkPreviews'
+														render={({ field: { value, ...field } }) => (
+															<ToggleSwitch id={disableLinkPreviewsField} {...field} checked={value} disabled={isFederated} />
 														)}
 													/>
 												</FieldRow>

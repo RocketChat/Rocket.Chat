@@ -8,7 +8,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { isOEmbedUrlWithMetadata } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import { OEmbedCache, Messages } from '@rocket.chat/models';
+import { OEmbedCache, Messages, Rooms } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { isAbsoluteURL } from '@rocket.chat/tools';
 import he from 'he';
@@ -338,6 +338,13 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 
 	if (!Array.isArray(message.urls)) {
 		return message;
+	}
+
+	if (message.rid) {
+		const room = await Rooms.findOneById(message.rid, { projection: { disableLinkPreviews: 1 } });
+		if (room?.disableLinkPreviews) {
+			return message;
+		}
 	}
 
 	log.debug({ msg: 'URLs found in message', count: message.urls.length });
