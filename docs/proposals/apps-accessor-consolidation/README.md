@@ -692,6 +692,13 @@ exist" (undefined serializes to null across the boundary), same adaptation as `S
    `accessor:*` message category no longer exists — the controller dispatches only `bridges:*`,
    `ready`, `log`, and the error notifications.** `JSONRPC_METHOD_NOT_FOUND` is kept (it is imported by
    `ProxiedApp`, `AppListenerManager`, `AppVideoConfProvider`).
+3. ✅ Adapted `tests/server/runtime/DenoRuntimeSubprocessController.test.ts`: removed the four
+   `handleAccessorMessage` cases (HTTP accessor, IRead, IEnvironmentReader-via-IRead, LivechatCreator
+   visitor) that exercised the now-deleted `accessor:*` dispatch path. Their host-side resolution no
+   longer exists (the subprocess resolves accessors locally via `bridges:*`), and the equivalent
+   behavior is covered by the surviving `handleBridgeMessage` "message bridge" case here plus the
+   base-runtime accessor/RemoteBridges suites. The unused `UserStatusConnection`/`UserType` import was
+   dropped with them.
 
 **Scoping decision — physical deletion of the dead accessor classes is folded into follow-up #4.**
 Deleting `src/server/accessors/` + `AppAccessorManager` requires first un-threading the (ignored)
