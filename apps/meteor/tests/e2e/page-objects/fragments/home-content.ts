@@ -30,6 +30,28 @@ export class HomeContent {
 		return this.page.locator('main header');
 	}
 
+	// --- Room-header grouping control (custom categories) ---
+
+	/** The far-left grouping control in the room header (opens the "Move to" list). */
+	get headerGroupingButton(): Locator {
+		return this.channelHeader.getByRole('button', { name: 'Move to' });
+	}
+
+	/** The grouping icon reflects the room's state: `star` (none), `folder` (in a category), `star-filled` (favorited). */
+	headerGroupingIcon(name: 'star' | 'star-filled' | 'folder'): Locator {
+		return this.headerGroupingButton.locator(`.rcx-icon--name-${name}`);
+	}
+
+	async openHeaderGroupingMenu(): Promise<void> {
+		await this.headerGroupingButton.click();
+	}
+
+	/** Picks a target (a category name, "Favorites", "New category", or "Remove from …") from the header grouping list. */
+	async pickHeaderGroupingTarget(name: string | RegExp): Promise<void> {
+		await this.openHeaderGroupingMenu();
+		await this.page.getByRole('menuitem', { name }).click();
+	}
+
 	get burgerButton(): Locator {
 		return this.channelHeader.getByRole('button', { name: 'Open sidebar' });
 	}

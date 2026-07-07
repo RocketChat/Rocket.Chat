@@ -1,17 +1,18 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { SidebarV2Action, SidebarV2Actions, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { useLayout } from '@rocket.chat/ui-contexts';
+import { useLayout, useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
-import type { AllHTMLAttributes, ComponentType, ReactNode } from 'react';
-import { memo, useMemo } from 'react';
+import type { AllHTMLAttributes, ComponentType, MouseEvent, ReactNode } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 
 import { RoomIcon } from '../../components/RoomIcon';
 import { useUserStatusTooltip } from '../../hooks/useUserStatusTooltip';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { getUidDirectMessage } from '../../lib/utils/getUidDirectMessage';
-import { isIOsDevice } from '../../lib/utils/isIOsDevice';
 import { getMessagePreview } from '../../lib/utils/normalizeMessagePreview/getMessagePreview';
+import { useGroupDrop, useRoomDrag } from '../../views/navigation/sidebar/categories/CategoryDnDContext';
+import { CLASSIC_NATIVE_KEYS, getNativeCategoryKey } from '../../views/navigation/sidebar/categories/nativeCategory';
 import { useOmnichannelPriorities } from '../../views/omnichannel/hooks/useOmnichannelPriorities';
 import RoomMenu from '../RoomMenu';
 import SidebarItemBadges from '../badges/SidebarItemBadges';
@@ -57,6 +58,10 @@ type RoomListRowProps = {
 	videoConfActions?: {
 		[action: string]: () => void;
 	};
+
+	/** The sidebar group this row belongs to (translation key for system groups, category id for custom ones). */
+	groupKey?: string;
+	isCustomCategory?: boolean;
 };
 
 const SidebarItemTemplateWithData = ({
@@ -71,6 +76,8 @@ const SidebarItemTemplateWithData = ({
 	isAnonymous,
 	videoConfActions,
 	userId,
+	groupKey,
+	isCustomCategory,
 }: RoomListRowProps) => {
 	const { sidebar } = useLayout();
 
@@ -79,6 +86,44 @@ const SidebarItemTemplateWithData = ({
 
 	const dmUserId = getUidDirectMessage(room, userId);
 	const dmStatusTooltipHandlers = useUserStatusTooltip(dmUserId, title);
+
+	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
+	const discussionEnabled = useSetting('Discussion_enabled');
+	const nativeKey = getNativeCategoryKey(room, {
+		groupByType: Boolean(sidebarGroupByType),
+		discussionEnabled: Boolean(discussionEnabled),
+		keys: CLASSIC_NATIVE_KEYS,
+	});
+
+	const { isDragging, ...dragProps } = useRoomDrag({ rid: room.rid, name: title, isFavorite: room.f, fromGroup: groupKey, nativeKey });
+	const { isDragOver, isFadedOut, dropProps } = useGroupDrop(groupKey, Boolean(isCustomCategory));
+
+	const dragStyle = {
+		...style,
+		// Suppress the iOS Safari long-press preview/callout on the room link; long-press opens the menu instead.
+		WebkitTouchCallout: 'none' as const,
+		// Inset + rounded hover/selected highlight (Slack-style): margins keep it off the sidebar edges.
+		// Rooms are indented (content ~24px from the edge) so they read as nested under the category header.
+		marginInline: '0.5rem',
+		marginBlock: '1px',
+		paddingInlineStart: '1.5rem',
+		paddingInlineEnd: 'calc(0.5rem - 1px)',
+		borderRadius: 'var(--rcx-border-radius-medium, 0.25rem)',
+		...(isDragging || isFadedOut ? { opacity: isDragging ? 0.5 : 0.4 } : {}),
+		// During drag-over, only tint the background — keep the inset margins and rounding so the drop area stays
+		// rounded and the row's height doesn't change.
+		...(isDragOver ? { backgroundColor: 'var(--rcx-color-surface-hover)' } : {}),
+	};
+
+	// Long-press (iOS) / right-click opens the room menu (the kebab) instead of the native preview/context menu.
+	const handleContextMenu = useCallback((event: MouseEvent<HTMLElement>) => {
+		const trigger = event.currentTarget.querySelector<HTMLButtonElement>('.rcx-sidebar-v2-item__menu-wrapper button');
+		if (!trigger) {
+			return;
+		}
+		event.preventDefault();
+		trigger.click();
+	}, []);
 
 	const { unreadTitle, showUnread, unreadCount, highlightUnread: highlighted } = useUnreadDisplay(room);
 
@@ -113,24 +158,28 @@ const SidebarItemTemplateWithData = ({
 			is='a'
 			id={id}
 			data-unread={highlighted}
+			data-drop-group={groupKey}
 			unread={highlighted}
 			selected={selected}
 			aria-current={selected ? 'page' : undefined}
 			href={href}
+			{...dragProps}
+			{...dropProps}
 			onClick={(): void => {
 				if (!selected) sidebar.toggle();
 			}}
+			onContextMenu={handleContextMenu}
 			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
 			title={title}
 			time={lastMessage?.ts}
 			subtitle={subtitle}
 			icon={icon}
-			style={style}
+			style={dragStyle}
 			badges={<SidebarItemBadges room={room} roomTitle={title} />}
 			avatar={AvatarTemplate && <AvatarTemplate {...room} />}
 			actions={actions}
 			menu={
-				!isIOsDevice && !isAnonymous && (!isQueued || (isQueued && isPriorityEnabled))
+				!isAnonymous && (!isQueued || (isQueued && isPriorityEnabled))
 					? () => (
 							<RoomMenu
 								alert={alert}
@@ -168,6 +217,8 @@ const keys: (keyof RoomListRowProps)[] = [
 	't',
 	'sidebarViewMode',
 	'videoConfActions',
+	'groupKey',
+	'isCustomCategory',
 ];
 
 export default memo(SidebarItemTemplateWithData, (prevProps, nextProps) => {

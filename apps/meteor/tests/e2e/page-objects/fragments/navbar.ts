@@ -164,6 +164,12 @@ export class Navbar {
 		await this.createNewMenuItem(name).click();
 	}
 
+	/** Opens the "Create category" modal from the create-new (+) menu. */
+	async openCreateCategory(): Promise<void> {
+		await this.btnCreateNew.click();
+		await this.createNewMenu.getByRole('menuitem', { name: 'Category', exact: true }).click();
+	}
+
 	async logout(): Promise<void> {
 		await this.btnUserMenu.click();
 		return this.btnLogout.click();

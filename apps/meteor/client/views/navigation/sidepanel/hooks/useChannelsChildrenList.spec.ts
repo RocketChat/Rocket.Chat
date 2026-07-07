@@ -57,6 +57,12 @@ jest.mock('../../../../stores/Subscriptions', () => {
 	};
 });
 
+// `RoomsNavigationContext` reads the open room via RoomManager; mock it so importing the context here
+// doesn't pull the real RoomManager module graph (which eagerly loads the stores being mocked above).
+jest.mock('../../../../lib/RoomManager', () => ({
+	useOpenedRoom: () => undefined,
+}));
+
 it('should return all subscriptions parent of fakeChannel', async () => {
 	const { useChannelsChildrenList } = await import('./useChannelsChildrenList');
 

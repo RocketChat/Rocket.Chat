@@ -1,40 +1,113 @@
-import type { ISubscription } from '@rocket.chat/core-typings';
-import { Badge, SidebarV2CollapseGroup } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Badge, Box, SidebarV2CollapseGroup } from '@rocket.chat/fuselage';
 import type { HTMLAttributes, KeyboardEvent, MouseEventHandler } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { AllGroupsKeys } from '../../contexts/RoomsNavigationContext';
+import type { SideBarRoomListItem } from '../../contexts/RoomsNavigationContext';
+import { useGroupDrop } from '../categories/CategoryDnDContext';
+import CategoryLabel from '../categories/CategoryLabel';
+import CategoryMenu from '../categories/CategoryMenu';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
+const barStylingClass = css`
+	/* The header bar's opaque background (identical to the sidebar's) would hide the wrapper's drag-over
+	   tint; keeping it transparent lets the wrapper's inline background drive the header highlight in the
+	   same render as the room rows. The hover background lives on the bar, so it gets the same rounding;
+	   the reduced inline padding keeps the header icon aligned with the room avatars despite the inset. */
+	.rcx-sidebar-v2-collapse-group__bar {
+		min-height: 0;
+		/* Equal inner padding on all sides (the -1px accounts for the bar's 1px transparent border). */
+		padding: calc(0.25rem - 1px);
+		background-color: transparent;
+		border-radius: var(--rcx-border-radius-medium, 0.25rem);
+	}
+
+	/* Hide the built-in chevron; the group icon and the (hover-revealed) chevron are rendered together in
+	   the title's leading slot so they share one place without shifting the title. */
+	.rcx-sidebar-v2-collapse-group__bar .rcx-chevron {
+		display: none;
+	}
+`;
+
 type RoomListCollapserProps = {
-	group: AllGroupsKeys;
-	groupTitle: string;
-	collapsedGroups: string[];
+	group: SideBarRoomListItem;
+	canMoveUp: boolean;
+	canMoveDown: boolean;
+	onMoveUp: () => void;
+	onMoveDown: () => void;
 	onClick: MouseEventHandler<HTMLElement>;
 	onKeyDown: (e: KeyboardEvent) => void;
-	unreadCount: Pick<ISubscription, 'userMentions' | 'groupMentions' | 'unread' | 'tunread' | 'tunreadUser' | 'tunreadGroup'>;
 } & Omit<HTMLAttributes<HTMLElement>, 'onClick' | 'onKeyDown'>;
 
-const RoomListCollapser = ({ groupTitle, unreadCount: unreadGroupCount, collapsedGroups, group, ...props }: RoomListCollapserProps) => {
+const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown, ...props }: RoomListCollapserProps) => {
 	const { t } = useTranslation();
+	const { isDragOver, isFadedOut, dropProps } = useGroupDrop(group.key, Boolean(group.category));
 
-	const { unreadTitle, unreadVariant, showUnread, unreadCount } = useUnreadDisplay(unreadGroupCount);
+	const { unreadTitle, unreadVariant, showUnread, unreadCount } = useUnreadDisplay(group.unreadInfo);
+
+	// `group.title` (string) drives the accessible name; this node is rendered as the visible label, with a
+	// leading icon (emoji/folder for custom, type icon for system) so all groups align. Cast because the
+	// prop is typed `string` but the component renders it as JSX children.
+	const titleContent = (
+		<CategoryLabel emoji={group.category?.icon} iconName={group.icon} name={group.title} collapsed={group.collapsed} unread={showUnread} />
+	) as unknown as string;
+
+	// `SidebarV2CollapseGroup` doesn't render an actions slot, so the kebab is overlaid on the header;
+	// it shows on hover or while its menu is open, replacing the unread badge.
+	const [hovered, setHovered] = useState(false);
+	const [menuOpen, setMenuOpen] = useState(false);
+	const showActions = hovered || menuOpen;
+
 	return (
-		<SidebarV2CollapseGroup
-			title={t(groupTitle)}
-			expanded={!collapsedGroups.includes(group)}
-			badge={
-				showUnread ? (
-					<Badge variant={unreadVariant} title={unreadTitle} aria-label={unreadTitle} role='status'>
-						{unreadCount.total}
-					</Badge>
-				) : undefined
-			}
-			aria-label={
-				!collapsedGroups.includes(group) ? t('Collapse_group', { group: t(groupTitle) }) : t('Expand_group', { group: t(groupTitle) })
-			}
-			{...props}
-		/>
+		// Outer wrapper adds transparent space ABOVE every category (separating it from the previous category's
+		// items, and the first one from the sidebar header). It must be padding, not margin — virtuoso measures
+		// the rendered height, and a top margin would collapse out and let the header overlap its items.
+		<Box {...dropProps} style={{ paddingBlockStart: '0.5rem', opacity: isFadedOut ? 0.4 : undefined }}>
+			<Box
+				position='relative'
+				className={barStylingClass}
+				data-drop-group={group.key}
+				style={{
+					// Inset highlight matching the room rows: the hover tint lives on the bar, the drag-over tint here.
+					// Drag-over only tints the background, keeping the inset rounding so the drop area stays rounded.
+					marginInline: '0.5rem',
+					borderRadius: 'var(--rcx-border-radius-medium, 0.25rem)',
+					backgroundColor: isDragOver ? 'var(--rcx-color-surface-hover)' : undefined,
+				}}
+				onMouseEnter={() => setHovered(true)}
+				onMouseLeave={() => setHovered(false)}
+			>
+				<SidebarV2CollapseGroup
+					title={titleContent}
+					expanded={!group.collapsed}
+					badge={
+						!showActions && showUnread ? (
+							<Badge variant={unreadVariant} title={unreadTitle} aria-label={unreadTitle} role='status'>
+								{unreadCount.total}
+							</Badge>
+						) : undefined
+					}
+					aria-label={group.collapsed ? t('Expand_group', { group: group.title }) : t('Collapse_group', { group: group.title })}
+					{...props}
+				/>
+				{showActions && (
+					<Box position='absolute' insetBlockStart={4} insetInlineEnd={8}>
+						<CategoryMenu
+							category={group.category}
+							groupKey={group.key}
+							showUnreads={group.showUnreads}
+							keepUnreadsOnTop={group.keepUnreadsOnTop}
+							canMoveUp={canMoveUp}
+							canMoveDown={canMoveDown}
+							onMoveUp={onMoveUp}
+							onMoveDown={onMoveDown}
+							onOpenChange={setMenuOpen}
+						/>
+					</Box>
+				)}
+			</Box>
+		</Box>
 	);
 };
 

@@ -12,9 +12,12 @@ type RoomListRowProps = {
 		isAnonymous: boolean;
 	};
 	item: SubscriptionWithRoom;
+	/** The sidebar group this row belongs to (system filter key or custom category id). */
+	groupKey?: string;
+	isCustomCategory?: boolean;
 };
 
-const RoomListRow = ({ data, item }: RoomListRowProps) => {
+const RoomListRow = ({ data, item, groupKey, isCustomCategory }: RoomListRowProps) => {
 	const { t } = data;
 
 	const acceptCall = useVideoConfAcceptCall();
@@ -31,7 +34,9 @@ const RoomListRow = ({ data, item }: RoomListRowProps) => {
 		[acceptCall, rejectCall, currentCall],
 	);
 
-	return <SidebarItemWithData t={t} room={item} videoConfActions={videoConfActions} />;
+	return (
+		<SidebarItemWithData t={t} room={item} videoConfActions={videoConfActions} groupKey={groupKey} isCustomCategory={isCustomCategory} />
+	);
 };
 
 export default memo(RoomListRow);

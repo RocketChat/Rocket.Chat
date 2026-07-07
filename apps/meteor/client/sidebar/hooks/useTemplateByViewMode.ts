@@ -3,16 +3,14 @@ import { useMemo } from 'react';
 
 import Condensed from '../Item/Condensed';
 import Extended from '../Item/Extended';
-import Medium from '../Item/Medium';
+import { normalizeSidebarViewMode } from '../lib/normalizeSidebarViewMode';
 
-export const useTemplateByViewMode = (): typeof Condensed | typeof Extended | typeof Medium => {
-	const sidebarViewMode = useUserPreference('sidebarViewMode');
+export const useTemplateByViewMode = (): typeof Condensed | typeof Extended => {
+	const sidebarViewMode = normalizeSidebarViewMode(useUserPreference('sidebarViewMode'));
 	return useMemo(() => {
 		switch (sidebarViewMode) {
 			case 'extended':
 				return Extended;
-			case 'medium':
-				return Medium;
 			case 'condensed':
 			default:
 				return Condensed;

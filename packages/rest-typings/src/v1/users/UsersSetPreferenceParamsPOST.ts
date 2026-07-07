@@ -1,4 +1,4 @@
-import type { ThemePreference } from '@rocket.chat/core-typings';
+import type { ISidebarCustomCategory, ThemePreference } from '@rocket.chat/core-typings';
 
 import { ajv } from '../Ajv';
 
@@ -39,6 +39,10 @@ export type UsersSetPreferencesParamsPOST = {
 		sidebarViewMode?: string;
 		sidebarDisplayAvatar?: boolean;
 		sidebarGroupByType?: boolean;
+		sidebarShowCustomCategories?: boolean;
+		sidebarShowCategoryIcons?: boolean;
+		sidebarDynamicCategory?: 'none' | 'mention' | 'unreads';
+		sidebarCustomCategories?: ISidebarCustomCategory[];
 		muteFocusedConversations?: boolean;
 		dontAskAgainList?: Array<{ action: string; label: string }>;
 		featuresPreview?: { name: string; value: boolean }[];
@@ -197,6 +201,36 @@ const UsersSetPreferencesParamsPostSchema = {
 				},
 				sidebarGroupByType: {
 					type: 'boolean',
+					nullable: true,
+				},
+				sidebarShowCustomCategories: {
+					type: 'boolean',
+					nullable: true,
+				},
+				sidebarShowCategoryIcons: {
+					type: 'boolean',
+					nullable: true,
+				},
+				sidebarDynamicCategory: {
+					type: 'string',
+					enum: ['none', 'mention', 'unreads'],
+					nullable: true,
+				},
+				sidebarCustomCategories: {
+					type: 'array',
+					items: {
+						type: 'object',
+						properties: {
+							_id: { type: 'string' },
+							name: { type: 'string' },
+							icon: { type: 'string', nullable: true },
+							showUnreads: { type: 'boolean', nullable: true },
+							keepUnreadsOnTop: { type: 'boolean', nullable: true },
+							rooms: { type: 'array', items: { type: 'string' }, nullable: true },
+						},
+						required: ['_id', 'name'],
+						additionalProperties: false,
+					},
 					nullable: true,
 				},
 				muteFocusedConversations: {

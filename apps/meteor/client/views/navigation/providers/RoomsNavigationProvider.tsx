@@ -1,5 +1,5 @@
 import { isDirectMessageRoom, isDiscussion, isOmnichannelRoom, isPrivateRoom, isPublicRoom, isTeamRoom } from '@rocket.chat/core-typings';
-import type { ILivechatInquiryRecord, IRoom } from '@rocket.chat/core-typings';
+import type { ILivechatInquiryRecord, IRoom, ISidebarCustomCategory } from '@rocket.chat/core-typings';
 import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useUserPreference, useUserSubscriptions, useLayout } from '@rocket.chat/ui-contexts';
@@ -54,11 +54,24 @@ const hasMention = (room: SubscriptionWithRoom) =>
 	room.userMentions || room.groupMentions || room.tunreadUser?.length || room.tunreadGroup?.length;
 
 type UnreadGroupDataMap = Map<AllGroupsKeys, GroupedUnreadInfoData>;
+type CustomGroupMap = Map<string, Set<SubscriptionWithRoom>>;
+type CustomUnreadDataMap = Map<string, GroupedUnreadInfoData>;
 
-const useRoomsGroups = (): [RoomsNavigationGroup, UnreadGroupDataMap] => {
+const emptyCategories: ISidebarCustomCategory[] = [];
+
+type RoomsGroupsResult = {
+	groups: RoomsNavigationGroup;
+	unreadGroupData: UnreadGroupDataMap;
+	customCategories: ISidebarCustomCategory[];
+	customGroups: CustomGroupMap;
+	customUnreadData: CustomUnreadDataMap;
+};
+
+const useRoomsGroups = (): RoomsGroupsResult => {
 	const showOmnichannel = useOmnichannelEnabled();
 	const sidebarShowUnread = useUserPreference('sidebarShowUnread');
 	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
+	const customCategories = useUserPreference<ISidebarCustomCategory[]>('sidebarCustomCategories', emptyCategories) ?? emptyCategories;
 	const isDiscussionEnabled = useSetting('Discussion_enabled');
 	const options = useSortQueryOptions();
 
@@ -67,12 +80,22 @@ const useRoomsGroups = (): [RoomsNavigationGroup, UnreadGroupDataMap] => {
 	const inquiries = useQueuedInquiries();
 	const queue = inquiries.enabled ? inquiries.queue : emptyQueue;
 
-	return useDebouncedValue(
+	const { groups, unreadGroupData, customGroups, customUnreadData } = useDebouncedValue(
 		useMemo(() => {
 			const groups: RoomsNavigationGroup = new Map();
 			showOmnichannel && groups.set('queue', new Set(queue));
 
 			const unreadGroupData: UnreadGroupDataMap = new Map();
+
+			// Map each assigned room to its custom category and seed an (initially empty) set per category,
+			// so empty categories still render their "drag rooms here" placeholder.
+			const roomToCategory = new Map<string, string>();
+			const customGroups: CustomGroupMap = new Map();
+			const customUnreadData: CustomUnreadDataMap = new Map();
+			customCategories.forEach((category) => {
+				customGroups.set(category._id, new Set<SubscriptionWithRoom>());
+				category.rooms?.forEach((rid) => roomToCategory.set(rid, category._id));
+			});
 
 			const setGroupRoom = (key: AllGroupsKeys, room: SubscriptionWithRoom) => {
 				const getGroupSet = (key: AllGroupsKeysWithUnread) => {
@@ -94,6 +117,15 @@ const useRoomsGroups = (): [RoomsNavigationGroup, UnreadGroupDataMap] => {
 				}
 			};
 
+			const setCustomGroupRoom = (categoryId: string, room: SubscriptionWithRoom) => {
+				customGroups.get(categoryId)?.add(room);
+
+				if (isUnreadSubscription(room)) {
+					const currentUnreadData = customUnreadData.get(categoryId) || getEmptyUnreadInfo();
+					customUnreadData.set(categoryId, updateGroupUnreadInfo(room, currentUnreadData));
+				}
+			};
+
 			rooms.forEach((room) => {
 				if (room.archived) {
 					return;
@@ -111,6 +143,13 @@ const useRoomsGroups = (): [RoomsNavigationGroup, UnreadGroupDataMap] => {
 
 				if (hasMention(room)) {
 					setGroupRoom('mentions', room);
+				}
+
+				// A room in a custom category is shown only there (exclusive with Favorites and system groups).
+				const categoryId = roomToCategory.get(room.rid);
+				if (categoryId && customGroups.has(categoryId)) {
+					setCustomGroupRoom(categoryId, room);
+					return;
 				}
 
 				if (room.f) {
@@ -145,10 +184,12 @@ const useRoomsGroups = (): [RoomsNavigationGroup, UnreadGroupDataMap] => {
 				}
 			});
 
-			return [groups, unreadGroupData];
-		}, [showOmnichannel, queue, rooms, sidebarShowUnread, sidebarGroupByType, isDiscussionEnabled]),
+			return { groups, unreadGroupData, customGroups, customUnreadData };
+		}, [showOmnichannel, queue, rooms, sidebarShowUnread, sidebarGroupByType, isDiscussionEnabled, customCategories]),
 		50,
 	);
+
+	return { groups, unreadGroupData, customCategories, customGroups, customUnreadData };
 };
 
 const RoomsNavigationContextProvider = ({ children }: { children: ReactNode }) => {
@@ -165,7 +206,7 @@ const RoomsNavigationContextProvider = ({ children }: { children: ReactNode }) =
 		setParentRoom(filter, parentRid);
 	});
 
-	const [groups, unreadGroupData] = useRoomsGroups();
+	const { groups, unreadGroupData, customCategories, customGroups, customUnreadData } = useRoomsGroups();
 
 	const handleRoomOpened = useStableCallback((rid: string) => {
 		const room = Rooms.use.getState().find((r) => r._id === rid);
@@ -219,9 +260,12 @@ const RoomsNavigationContextProvider = ({ children }: { children: ReactNode }) =
 			setFilter,
 			groups,
 			unreadGroupData,
+			customCategories,
+			customGroups,
+			customUnreadData,
 			parentRid,
 		};
-	}, [parentRid, currentFilter, setFilter, groups, unreadGroupData]);
+	}, [parentRid, currentFilter, setFilter, groups, unreadGroupData, customCategories, customGroups, customUnreadData]);
 
 	return <RoomsNavigationContext.Provider value={contextValue}>{children}</RoomsNavigationContext.Provider>;
 };

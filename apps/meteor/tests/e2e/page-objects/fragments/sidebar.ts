@@ -116,6 +116,89 @@ export class RoomSidebar extends Sidebar {
 	getSidebarListItemByName(name: string): Locator {
 		return this.channelsList.getByRole('listitem').filter({ has: this.getSidebarItemByName(name) });
 	}
+
+	// --- Custom categories ---
+
+	/** The collapser (region) of an expanded custom category or system group. */
+	getCategoryCollapser(name: string): Locator {
+		return this.channelsList.getByRole('region', { name: `Collapse ${name}` });
+	}
+
+	/** The collapser (region) of a collapsed custom category or system group. */
+	getCollapsedCategoryCollapser(name: string): Locator {
+		return this.channelsList.getByRole('region', { name: `Expand ${name}` });
+	}
+
+	/** The "drag rooms here" placeholder shown inside an empty custom category. */
+	get dragRoomsPlaceholder(): Locator {
+		return this.channelsList.getByText('Drag rooms here');
+	}
+
+	/**
+	 * The category kebab is overlaid as a sibling of the collapser region, inside the same (unnamed) wrapper,
+	 * so it is reached via the region's parent. It only renders while the collapser is hovered.
+	 */
+	getCategoryKebab(name: string): Locator {
+		return this.getCategoryCollapser(name).locator('xpath=..').getByRole('button', { name: 'Options', exact: true });
+	}
+
+	async openCategoryMenu(name: string): Promise<void> {
+		await this.getCategoryCollapser(name).hover();
+		await this.getCategoryKebab(name).click();
+	}
+
+	async openRoomMenu(name: string): Promise<void> {
+		const item = this.getSidebarItemByName(name);
+		await item.hover();
+		await item.focus();
+		await item.getByRole('button', { name: 'Options', exact: true }).click();
+	}
+
+	/** Move a room into a custom category (or to "Favorites") through the kebab "Move to ▸" submenu. */
+	async moveRoomToCategory(roomName: string, categoryName: string): Promise<void> {
+		await this.openRoomMenu(roomName);
+		await this.page.getByRole('menuitem', { name: 'Move to' }).hover();
+		await this.page.getByRole('menuitem', { name: categoryName, exact: true }).click();
+	}
+
+	/** Remove a room from its current grouping (back to its system group) through the kebab submenu. */
+	async removeRoomFromCategory(roomName: string, categoryName: string): Promise<void> {
+		await this.openRoomMenu(roomName);
+		await this.page.getByRole('menuitem', { name: 'Move to' }).hover();
+		await this.page.getByRole('menuitem', { name: `Remove from ${categoryName}` }).click();
+	}
+
+	/** Create a new category seeded with the given room via the kebab submenu "New category". */
+	async createCategoryFromRoom(roomName: string): Promise<void> {
+		await this.openRoomMenu(roomName);
+		await this.page.getByRole('menuitem', { name: 'Move to' }).hover();
+		await this.page.getByRole('menuitem', { name: 'New category', exact: true }).click();
+	}
+
+	/** Favorite a room through the kebab "Move to ▸ Favorites" item. */
+	async moveRoomToFavorites(roomName: string): Promise<void> {
+		await this.openRoomMenu(roomName);
+		await this.page.getByRole('menuitem', { name: 'Move to' }).hover();
+		await this.page.getByRole('menuitem', { name: 'Favorites', exact: true }).click();
+	}
+
+	/** Unfavorite a room through the kebab "Move to ▸ Remove from Favorites" item. */
+	async removeRoomFromFavorites(roomName: string): Promise<void> {
+		await this.openRoomMenu(roomName);
+		await this.page.getByRole('menuitem', { name: 'Move to' }).hover();
+		await this.page.getByRole('menuitem', { name: 'Remove from Favorites' }).click();
+	}
+
+	/** The "Move to ▸" submenu item for a grouping target (a category, "Favorites", or "Remove from …"). */
+	roomMenuMoveToItem(name: string | RegExp): Locator {
+		return this.page.getByRole('menuitem', { name });
+	}
+
+	/** Opens the room kebab and hovers "Move to ▸" so the submenu targets are queryable. */
+	async openRoomMoveToSubmenu(roomName: string): Promise<void> {
+		await this.openRoomMenu(roomName);
+		await this.page.getByRole('menuitem', { name: 'Move to' }).hover();
+	}
 }
 
 export class AdminSidebar extends Sidebar {
