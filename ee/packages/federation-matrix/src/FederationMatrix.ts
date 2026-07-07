@@ -1063,7 +1063,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	async saveFederationMessage({ event, event_id: eventId }: { event: PduForType<'m.room.message'>; event_id: EventID }): Promise<void> {
 		const { msgtype, body } = event.content;
-		const messageBody = body.toString();
+		// body is typed as required, but events from untrusted homeservers may omit it
+		const messageBody = String(body ?? '');
 
 		if (!messageBody && !msgtype) {
 			this.logger.debug('Received message event with empty body and no msgtype, skipping processing');
@@ -1111,7 +1112,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			if (originalMessage.federation?.eventId !== relation.event_id) {
 				return;
 			}
-			if (originalMessage.msg === event.content['m.new_content']?.body) {
+			if (originalMessage.msg === event.content['m.new_content'].body) {
 				this.logger.debug('No changes in message content, skipping update');
 				return;
 			}
@@ -1154,6 +1155,25 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			return;
 		}
 
+		// Media must be handled before quote replies: a rich reply is valid on any msgtype,
+		// and letting the quote path win would save just the filename and drop the attachment.
+		const isMediaMessage = Object.values(fileTypes).includes(msgtype as FileMessageType);
+		if (isMediaMessage && 'url' in event.content) {
+			const result = await handleMediaMessage(
+				event.content.url,
+				event.content.info,
+				msgtype,
+				messageBody,
+				user,
+				room,
+				event.room_id,
+				eventId,
+				thread,
+			);
+			await Message.saveMessageFromFederation({ ...result, ts: new Date(event.origin_server_ts) });
+			return;
+		}
+
 		if (quoteMessageEventId) {
 			const originalMessage = await Messages.findOneByFederationId(quoteMessageEventId);
 			if (!originalMessage) {
@@ -1176,23 +1196,6 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				thread,
 				ts: new Date(event.origin_server_ts),
 			});
-			return;
-		}
-
-		const isMediaMessage = Object.values(fileTypes).includes(msgtype as FileMessageType);
-		if (isMediaMessage && 'url' in event.content) {
-			const result = await handleMediaMessage(
-				event.content.url,
-				event.content.info,
-				msgtype,
-				messageBody,
-				user,
-				room,
-				event.room_id,
-				eventId,
-				thread,
-			);
-			await Message.saveMessageFromFederation({ ...result, ts: new Date(event.origin_server_ts) });
 			return;
 		}
 

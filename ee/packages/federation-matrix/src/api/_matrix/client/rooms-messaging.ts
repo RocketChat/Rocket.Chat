@@ -1,7 +1,7 @@
 import { api, FederationMatrix, Room } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isUserNativeFederated } from '@rocket.chat/core-typings';
-import type { FileMessageContent, FileMessageType, PduForType, RoomID, UserID } from '@rocket.chat/federation-sdk';
+import type { EventID, FileMessageContent, FileMessageType, PduForType, RoomID, UserID } from '@rocket.chat/federation-sdk';
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Rooms, Users } from '@rocket.chat/models';
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
@@ -266,7 +266,7 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 							},
 						};
 					}
-					const result = await federationSDK.getBackfillEvents(roomId, [fromParam] as never, limit);
+					const result = await federationSDK.getBackfillEvents(roomId, [fromParam] as EventID[], limit);
 					return {
 						statusCode: 200,
 						body: {

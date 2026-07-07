@@ -54,6 +54,10 @@ const ConfigResponseSchema = {
 
 const isConfigResponseProps = ajv.compile(ConfigResponseSchema);
 
+// The resize uses sharp with fit 'contain', which upscales past the original size,
+// so unbounded dimensions would let a client force arbitrarily large allocations.
+const MAX_THUMBNAIL_DIMENSION = 2048;
+
 const SECURITY_HEADERS = {
 	'X-Content-Type-Options': 'nosniff',
 	'X-Frame-Options': 'DENY',
@@ -160,6 +164,13 @@ export const addClientMediaRoutes = (router: ClientRouter) => {
 						return {
 							statusCode: 400,
 							body: { errcode: 'M_BAD_REQUEST', error: 'Invalid width or height' },
+						};
+					}
+
+					if (width > MAX_THUMBNAIL_DIMENSION || height > MAX_THUMBNAIL_DIMENSION) {
+						return {
+							statusCode: 400,
+							body: { errcode: 'M_BAD_REQUEST', error: 'Requested dimensions exceed maximum allowed' },
 						};
 					}
 

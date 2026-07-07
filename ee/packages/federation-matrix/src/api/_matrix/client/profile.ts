@@ -47,6 +47,8 @@ const AvatarUrlBodySchema = {
 
 const isAvatarUrlBodyProps = ajv.compile(AvatarUrlBodySchema);
 
+const ALLOWED_PROFILE_FIELDS = ['displayname', 'avatar_url'];
+
 export const addProfileRoutes = (router: ClientRouter) => {
 	router
 		// GET /_matrix/client/v3/profile/:userId
@@ -98,6 +100,7 @@ export const addProfileRoutes = (router: ClientRouter) => {
 				params: isProfileFieldParamsProps,
 				response: {
 					200: isProfileGetResponseProps,
+					400: isMatrixErrorProps,
 					401: isMatrixErrorProps,
 					404: isMatrixErrorProps,
 					500: isMatrixErrorProps,
@@ -110,8 +113,11 @@ export const addProfileRoutes = (router: ClientRouter) => {
 				const userId = c.req.param('userId');
 				const field = c.req.param('field');
 
-				if (!field) {
-					return internalError('Failed to fetch profile', undefined, { userId, reason: 'missing field parameter' });
+				if (!field || !ALLOWED_PROFILE_FIELDS.includes(field)) {
+					return {
+						statusCode: 400,
+						body: { errcode: 'M_INVALID_PARAM', error: 'Unknown profile field' },
+					};
 				}
 
 				try {
@@ -156,7 +162,19 @@ export const addProfileRoutes = (router: ClientRouter) => {
 			},
 			isAppServiceAuthenticatedMiddleware(),
 			async (c) => {
+				const userId = c.req.param('userId');
 				const username = c.get('impersonatedUserId') as string;
+
+				// A bridge always targets the user it impersonates, so user_id mirrors the path
+				// param (both in packed form for XMPP puppets). The exception is the bot setting
+				// its own displayname, where user_id is omitted and impersonatedUserId holds the
+				// bot's MXID verbatim.
+				if (userId !== (c.req.query('user_id') ?? username)) {
+					return {
+						statusCode: 403,
+						body: { errcode: 'M_FORBIDDEN', error: 'Cannot set the displayname of another user' },
+					};
+				}
 
 				const body = await c.req.json();
 

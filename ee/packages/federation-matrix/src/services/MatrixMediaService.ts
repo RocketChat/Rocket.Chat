@@ -125,6 +125,11 @@ export class MatrixMediaService {
 
 			const uploadAlreadyExists = await Uploads.findByFederationMediaIdAndServerName(parts.mediaId, parts.serverName);
 			if (uploadAlreadyExists) {
+				// App-service uploads are stored before any room is known (empty rid/mrid);
+				// backfill the association now that a message ties the file to a room.
+				if (!uploadAlreadyExists.rid && metadata.rid) {
+					await Uploads.setFederationRoomInfo(uploadAlreadyExists._id, metadata.rid, matrixRoomId);
+				}
 				return uploadAlreadyExists._id;
 			}
 

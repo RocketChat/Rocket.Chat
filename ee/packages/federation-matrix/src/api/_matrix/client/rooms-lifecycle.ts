@@ -19,6 +19,7 @@ import {
 	tags,
 } from './_shared';
 import { getFederatedRoomName } from '../../../helpers/getFederatedRoomName';
+import { logger } from '../../logger';
 import { isAppServiceAuthenticatedMiddleware } from '../../middlewares/isAppServiceAuthenticated';
 
 const CreateRoomBodySchema = {
@@ -206,7 +207,13 @@ export const addRoomsLifecycleRoutes = (router: ClientRouter) => {
 					}
 
 					for (const invitee of (body.invite ?? []) as string[]) {
-						await federationSDK.inviteUserToRoom(invitee as UserID, result.room_id, senderUsername, body.is_direct);
+						try {
+							await federationSDK.inviteUserToRoom(invitee as UserID, result.room_id, senderUsername, body.is_direct);
+						} catch (err) {
+							// The room already exists at this point; failing the whole request would make
+							// the caller believe creation failed and retry, duplicating the room.
+							logger.error({ msg: 'Failed to invite user to newly created room', invitee, roomId: result.room_id, err });
+						}
 					}
 
 					return {

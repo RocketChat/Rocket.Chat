@@ -54,6 +54,9 @@ const isConfigResponseProps = ajv.compile(ConfigResponseSchema);
 const tags = ['Federation', 'Media'];
 const license: ['federation'] = ['federation'];
 
+// Advertised to bridges as m.upload.size in the /r0/config route below.
+const MAX_UPLOAD_SIZE = 50 * 1024 * 1024;
+
 export const getMatrixMediaBridgeRoutes = () => {
 	return (
 		new Router('/media')
@@ -91,6 +94,19 @@ export const getMatrixMediaBridgeRoutes = () => {
 							};
 						}
 
+						// Reject on the declared size before buffering; the byteLength check below
+						// still catches bodies without (or lying about) content-length.
+						const contentLength = Number(c.req.header('content-length'));
+						if (contentLength > MAX_UPLOAD_SIZE) {
+							return {
+								statusCode: 413,
+								body: {
+									errcode: 'M_TOO_LARGE',
+									error: 'Upload exceeds the maximum allowed size',
+								},
+							};
+						}
+
 						const arrayBuffer = await c.req.raw.arrayBuffer();
 						if (!arrayBuffer.byteLength) {
 							return {
@@ -98,6 +114,16 @@ export const getMatrixMediaBridgeRoutes = () => {
 								body: {
 									errcode: 'M_BAD_REQUEST',
 									error: 'Empty upload body',
+								},
+							};
+						}
+
+						if (arrayBuffer.byteLength > MAX_UPLOAD_SIZE) {
+							return {
+								statusCode: 413,
+								body: {
+									errcode: 'M_TOO_LARGE',
+									error: 'Upload exceeds the maximum allowed size',
 								},
 							};
 						}
@@ -143,7 +169,7 @@ export const getMatrixMediaBridgeRoutes = () => {
 					return {
 						statusCode: 200,
 						body: {
-							'm.upload.size': 50 * 1024 * 1024,
+							'm.upload.size': MAX_UPLOAD_SIZE,
 						},
 					};
 				},

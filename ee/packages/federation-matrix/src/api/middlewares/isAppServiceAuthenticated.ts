@@ -2,7 +2,7 @@ import { errCodes, federationSDK } from '@rocket.chat/federation-sdk';
 import type { Context } from 'hono';
 import { createMiddleware } from 'hono/factory';
 
-import { decodeXmppUserId, parseXmppUserId } from '../../helpers/parseXmppUserId';
+import { decodeXmppUserId, isFullXmppUserId, parseXmppUserId } from '../../helpers/parseXmppUserId';
 
 export const isAppServiceAuthenticatedMiddleware = () =>
 	createMiddleware(async (c: Context, next) => {
@@ -62,7 +62,26 @@ export const isAppServiceAuthenticatedMiddleware = () =>
 
 			const decoded = decodeXmppUserId(userId);
 
-			const decodedUsername = parseXmppUserId(decoded);
+			// Not a packed XMPP JID: the registration flow stores these users under the
+			// full MXID as-is, so impersonate that.
+			if (!isFullXmppUserId(decoded)) {
+				c.set('impersonatedUserId', userId);
+				return next();
+			}
+
+			let decodedUsername;
+			try {
+				decodedUsername = parseXmppUserId(decoded);
+			} catch {
+				return c.json(
+					{
+						errcode: 'M_INVALID_USER_ID',
+						error: 'Invalid user id',
+					},
+					400,
+				);
+			}
+
 			if (!decodedUsername.resource) {
 				return c.json(
 					{
