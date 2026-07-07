@@ -15,6 +15,7 @@ const mockVirtualizerHandle = {
 	scrollSize: 1000,
 	viewportSize: 300,
 };
+let mockVirtualizerHasHandle = true;
 
 type MockVListProps = {
 	children: ReactNode;
@@ -33,7 +34,7 @@ jest.mock('virtua', () => {
 				{ children, bufferSize, onScroll, as: asRoot = 'div', item: asItem = 'div', style, className }: MockVListProps,
 				ref: React.Ref<unknown>,
 			) => {
-				React.useImperativeHandle(ref, () => mockVirtualizerHandle);
+				React.useImperativeHandle(ref, () => (mockVirtualizerHasHandle ? mockVirtualizerHandle : null));
 				const Root = asRoot;
 				const Item = asItem;
 				const wrapped = Children.map(children, (child, index) => {
@@ -100,6 +101,7 @@ describe('PaginatedVirtualList', () => {
 		mockVirtualizerHandle.scrollOffset = 0;
 		mockVirtualizerHandle.scrollSize = 1000;
 		mockVirtualizerHandle.viewportSize = 300;
+		mockVirtualizerHasHandle = true;
 	});
 
 	afterEach(() => {
@@ -231,5 +233,69 @@ describe('PaginatedVirtualList', () => {
 		renderVirtualList({ onEndReached });
 
 		expect(onEndReached).toHaveBeenCalledTimes(1);
+	});
+
+	it('does not call onEndReached before the virtualizer handle is ready', async () => {
+		jest.useFakeTimers();
+		const onEndReached = jest.fn().mockResolvedValue(undefined);
+		mockVirtualizerHasHandle = false;
+
+		renderVirtualList({ onEndReached });
+
+		mockVirtualizerHandle.scrollOffset = 700;
+		fireEvent.scroll(screen.getByTestId('virtual-list'));
+		await advanceDebouncedScroll();
+
+		expect(onEndReached).not.toHaveBeenCalled();
+	});
+
+	it('does not call onEndReached when no pagination callback is provided', async () => {
+		jest.useFakeTimers();
+
+		renderVirtualList();
+
+		mockVirtualizerHandle.scrollOffset = 700;
+		fireEvent.scroll(screen.getByTestId('virtual-list'));
+		await advanceDebouncedScroll();
+
+		expect(screen.getByTestId('virtual-list')).toBeInTheDocument();
+	});
+
+	it('does not call onEndReached when the viewport has no measurable height', async () => {
+		jest.useFakeTimers();
+		const onEndReached = jest.fn().mockResolvedValue(undefined);
+		mockVirtualizerHandle.viewportSize = 0;
+
+		renderVirtualList({ onEndReached });
+
+		mockVirtualizerHandle.scrollOffset = 1000;
+		fireEvent.scroll(screen.getByTestId('virtual-list'));
+		await advanceDebouncedScroll();
+
+		expect(onEndReached).not.toHaveBeenCalled();
+	});
+
+	it('does not call onEndReached again while a previous load is pending', async () => {
+		jest.useFakeTimers();
+		let resolveLoad = () => undefined;
+		const pendingLoad = new Promise<void>((resolve) => {
+			resolveLoad = resolve;
+		});
+		const onEndReached = jest.fn().mockReturnValue(pendingLoad);
+
+		renderVirtualList({ onEndReached });
+		mockVirtualizerHandle.scrollOffset = 700;
+		fireEvent.scroll(screen.getByTestId('virtual-list'));
+		await advanceDebouncedScroll();
+
+		fireEvent.scroll(screen.getByTestId('virtual-list'));
+		await advanceDebouncedScroll();
+
+		expect(onEndReached).toHaveBeenCalledTimes(1);
+
+		await act(async () => {
+			resolveLoad();
+			await pendingLoad;
+		});
 	});
 });
