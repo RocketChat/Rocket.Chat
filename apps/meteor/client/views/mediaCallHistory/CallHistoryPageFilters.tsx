@@ -91,7 +91,7 @@ const CallHistoryPageFilters = ({ onChangeText, onChangeType, onChangeStates, se
 					name='search-rooms'
 					alignItems='center'
 					placeholder={t('Search_calls')}
-					addon={<Icon name='magnifier' size='x20' />}
+					endAddon={<Icon name='magnifier' size='x20' />}
 					onChange={(e: ChangeEvent<HTMLInputElement>) => onChangeText(e.currentTarget.value)}
 					value={searchText}
 				/>

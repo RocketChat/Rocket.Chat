@@ -8,7 +8,7 @@ import NavBarSearchItem from './NavBarSearchItem';
 import { ReactiveUserStatus } from '../../components/UserStatus';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
-type NavBarSearchUserRowProps = {
+export type NavBarSearchUserRowProps = {
 	room: SubscriptionWithRoom;
 	id: string;
 	AvatarTemplate: ReactNode;

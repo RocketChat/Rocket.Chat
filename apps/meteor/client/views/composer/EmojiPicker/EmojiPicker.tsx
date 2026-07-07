@@ -25,7 +25,7 @@ import type { EmojiItem } from '../../../../app/emoji/client';
 import { usePreviewEmoji, useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
 import { useIsVisible } from '../../room/hooks/useIsVisible';
 
-type EmojiPickerProps = {
+export type EmojiPickerProps = {
 	reference: Element;
 	onClose: () => void;
 	onPickEmoji: (emoji: string) => void;
@@ -195,7 +195,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 						ref={mergedTextInputRef}
 						value={searchTerm}
 						onChange={handleSearch}
-						addon={<Icon name='magnifier' size='x20' />}
+						endAddon={<Icon name='magnifier' size='x20' />}
 						placeholder={t('Search')}
 						aria-label={t('Search')}
 					/>

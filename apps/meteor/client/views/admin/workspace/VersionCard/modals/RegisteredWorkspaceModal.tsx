@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 
 import useFeatureBullets from '../hooks/useFeatureBullets';
 
-type RegisteredWorkspaceModalProps = {
+export type RegisteredWorkspaceModalProps = {
 	onClose: () => void;
 	onStatusChange?: () => void;
 };

@@ -6,7 +6,7 @@ import { memo } from 'react';
 
 import { useDeferredMenuMount } from '../../../../sidebar/Item/useDeferredMenuMount';
 
-type SidebarItemProps = {
+export type SidebarItemProps = {
 	title: ReactNode;
 	titleIcon?: ReactNode;
 	icon?: ReactNode;
@@ -25,7 +25,7 @@ const SidebarItem = ({ icon, title, actions, unread, menu, badges, room, ...prop
 	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 
 	return (
-		<SidebarV2Item {...props} title={title} onFocus={mountNow} onPointerEnter={requestMount} aria-selected={props.selected}>
+		<SidebarV2Item {...props} onFocus={mountNow} onPointerEnter={requestMount} aria-selected={props.selected}>
 			<SidebarV2ItemAvatarWrapper>
 				<RoomAvatar size='x20' room={{ ...room, _id: room.rid || room._id, type: room.t }} />
 			</SidebarV2ItemAvatarWrapper>

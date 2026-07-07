@@ -17,7 +17,7 @@ import { useExternalLink } from '../../../../hooks/useExternalLink';
 import { useCheckoutUrl } from '../../../admin/subscription/hooks/useCheckoutUrl';
 import { PRICING_LINK } from '../../../admin/subscription/utils/links';
 
-type PrivateAppInstallModalProps = {
+export type PrivateAppInstallModalProps = {
 	onClose: () => void;
 	onProceed: () => void;
 };

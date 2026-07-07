@@ -82,7 +82,7 @@ const KEY_LABEL_TRANSLATIONS: Record<string, string> = {
 const isMacPlatform = (): boolean =>
 	typeof navigator !== 'undefined' && typeof navigator.platform === 'string' && navigator.platform.toLowerCase().includes('mac');
 
-type KeyboardShortcutsModalProps = {
+export type KeyboardShortcutsModalProps = {
 	onClose: () => void;
 };
 

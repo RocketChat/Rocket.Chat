@@ -7,7 +7,7 @@ import { dateToISOString, generateTimestampMarkup } from '../../../../../../../l
 import type { TimestampFormat, TimezoneKey } from '../../../../../../../lib/utils/timestamp/types';
 import GazzodownText from '../../../../../../GazzodownText';
 
-type PreviewProps = {
+export type PreviewProps = {
 	date: Date;
 	format: TimestampFormat;
 	timezone: TimezoneKey;

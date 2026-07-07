@@ -3,7 +3,7 @@ import { memo, useMemo } from 'react';
 
 const availablePercentualWidths = [47, 68, 75, 82];
 
-type ListSkeletonProps = {
+export type ListSkeletonProps = {
 	listCount?: number;
 };
 

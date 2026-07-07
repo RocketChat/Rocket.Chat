@@ -74,7 +74,7 @@ const ContactInfoHistoryMessages = ({ chatId, onBack, onOpenRoom }: ContactHisto
 								placeholder={t('Search')}
 								value={text}
 								onChange={handleSearchChange}
-								addon={<Icon name='magnifier' size='x20' />}
+								endAddon={<Icon name='magnifier' size='x20' />}
 							/>
 							<IconButton title={t('Back')} small icon='back' onClick={onBack} />
 						</Margins>

@@ -11,7 +11,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-type NoMarketplaceOrInstalledAppMatchesEmptyStateProps = { shouldShowSearchText: boolean; text: string };
+export type NoMarketplaceOrInstalledAppMatchesEmptyStateProps = { shouldShowSearchText: boolean; text: string };
 
 const NoMarketplaceOrInstalledAppMatchesEmptyState = ({
 	shouldShowSearchText,

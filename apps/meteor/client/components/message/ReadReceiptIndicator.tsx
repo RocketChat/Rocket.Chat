@@ -2,7 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-type ReadReceiptIndicatorProps = {
+export type ReadReceiptIndicatorProps = {
 	mid: IMessage['_id'];
 	unread?: boolean;
 };

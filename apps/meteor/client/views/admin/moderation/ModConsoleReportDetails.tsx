@@ -8,7 +8,7 @@ import { useState } from 'react';
 import UserMessages from './UserMessages';
 import UserReportInfo from './UserReports/UserReportInfo';
 
-type ModConsoleReportDetailsProps = {
+export type ModConsoleReportDetailsProps = {
 	userId: IUser['_id'];
 	default: string;
 	onRedirect: (mid: string) => void;

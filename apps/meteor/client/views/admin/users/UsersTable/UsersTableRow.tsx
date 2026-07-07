@@ -18,7 +18,7 @@ import { useResetE2EEKeyAction } from '../hooks/useResetE2EEKeyAction';
 import { useResetTOTPAction } from '../hooks/useResetTOTPAction';
 import { useSendWelcomeEmailMutation } from '../hooks/useSendWelcomeEmailMutation';
 
-type UsersTableRowProps = {
+export type UsersTableRowProps = {
 	user: Serialized<DefaultUserInfo>;
 	tab: AdminUsersTab;
 	isMobile: boolean;

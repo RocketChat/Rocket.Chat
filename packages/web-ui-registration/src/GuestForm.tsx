@@ -1,5 +1,5 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { Form } from '@rocket.chat/layout';
+import { Form, FormContainer, FormHeader, FormTitle } from '@rocket.chat/layout';
 import { useDocumentTitle } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
@@ -11,17 +11,17 @@ const GuestForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }) =>
 
 	return (
 		<Form>
-			<Form.Header>
-				<Form.Title>{t('registration.page.guest.chooseHowToJoin')}</Form.Title>
-			</Form.Header>
-			<Form.Container>
+			<FormHeader>
+				<FormTitle>{t('registration.page.guest.chooseHowToJoin')}</FormTitle>
+			</FormHeader>
+			<FormContainer>
 				<ButtonGroup large stretch vertical>
 					<Button primary onClick={() => setLoginRoute('login')}>
 						{t('registration.page.guest.loginWithRocketChat')}
 					</Button>
 					<Button onClick={() => setLoginRoute('anonymous')}>{t('registration.page.guest.continueAsGuest')}</Button>
 				</ButtonGroup>
-			</Form.Container>
+			</FormContainer>
 		</Form>
 	);
 };

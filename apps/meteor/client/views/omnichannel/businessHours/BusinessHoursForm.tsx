@@ -36,7 +36,9 @@ export type BusinessHoursFormData = {
 // TODO: replace `Select` in favor `SelectFiltered`
 // TODO: add time validation for start and finish not be equal on UI
 // TODO: add time validation for start not be higher than finish on UI
-const BusinessHoursForm = ({ type }: { type?: 'default' | 'custom' }) => {
+export type BusinessHoursFormProps = { type?: 'default' | 'custom' };
+
+const BusinessHoursForm = ({ type }: BusinessHoursFormProps) => {
 	const { t } = useTranslation();
 	const timeZones = useTimezoneNameList();
 	const timeZonesOptions: SelectOption[] = useMemo(() => timeZones.map((name) => [name, t(name as TranslationKey)]), [t, timeZones]);
