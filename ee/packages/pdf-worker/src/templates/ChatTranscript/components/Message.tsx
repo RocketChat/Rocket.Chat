@@ -6,7 +6,7 @@ import { Markup } from '../markup';
 import { Divider } from './Divider';
 import { Files } from './Files';
 import { MessageHeader } from './MessageHeader';
-import { Quotes } from './Quotes';
+import Quotes from './Quotes';
 import { isSystemMessage, markupEntriesGreaterThan10, messageLongerThanPage, splitByTens } from './utils';
 
 const styles = StyleSheet.create({
