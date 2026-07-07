@@ -485,13 +485,13 @@ since consolidating more logic into the runtime makes the assumption more load-b
    dropping.
 3. **`messenger.sendRequest` timeout** — the runtime-side TODO becomes more prominent once all
    accessor traffic flows through it.
-4. ✅ **Drop the legacy `_accessors` threading + delete the dead host accessor layer.** — **landed as
-   Phase 5** (§8). Un-threaded the ignored `accessors: AppAccessorManager` parameter from
-   `AppApi.runExecutor`, `AppSlashCommand`/`AppVideoConfProvider`/`AppOutboundCommunicationProvider`
-   `run*`/`runTheCode` and their managers; deleted `AppAccessorManager` (+ its `getAccessorManager()`
-   on `AppManager` and the `purifyApp` call), the entire `src/server/accessors/` directory (unreachable
-   from the subprocess after Phase 4), the host `src/server/misc/UIHelper.ts` copy (its only importers
-   were those deleted accessors), and the `managers/index.ts` export. Behavior-neutral cleanup; kept
+4. ✅ **Drop the legacy `_accessors` threading + delete the dead host accessor layer.** - **landed as
+   Phase 5** (§8). Un-thread the ignored `accessors: AppAccessorManager` parameter from `AppApi.runExecutor`,
+   `AppSlashCommand`/`AppVideoConfProvider`/`AppOutboundCommunicationProvider` `run*`/`runTheCode` and
+   their managers; then delete `AppAccessorManager` (+ its `getAccessorManager()` on `AppManager` and
+   the `purifyApp` call), the entire `src/server/accessors/` directory (now unreachable from the
+   subprocess after Phase 4), the host `src/server/misc/UIHelper.ts` copy (its only importers are
+   those deleted accessors), and the `managers/index.ts` export. Behavior-neutral cleanup; kept
    separate from the Phase 4 message-path teardown because it touches the sandbox-execution core.
    (The parity harness is **not** removed — it became a permanent test utility the base-runtime
    accessor tests depend on.)
