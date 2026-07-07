@@ -42,6 +42,21 @@ test.describe('Preview public channel', () => {
 			await expect(poHomeChannel.content.lastUserMessageBody).toContainText(targetChannelMessage);
 		});
 
+		test('should disable all composer toolbar actions during channel preview', async () => {
+			await poHomeChannel.navbar.btnDirectory.click();
+			await poDirectory.openChannel(targetChannel);
+			await poHomeChannel.content.waitForChannel();
+
+			await expect(poHomeChannel.composer.btnJoinRoom).toBeVisible();
+
+			const actions = await poHomeChannel.composer.allPrimaryActions.all();
+			await Promise.all(
+				actions.map(async (action) => {
+					await expect(action).toBeDisabled();
+				}),
+			);
+		});
+
 		test('should let user view direct rooms', async ({ api }) => {
 			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin'] }] });
 			await createDirectMessage(api);

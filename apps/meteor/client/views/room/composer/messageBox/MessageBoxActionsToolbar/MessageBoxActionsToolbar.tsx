@@ -54,15 +54,13 @@ const MessageBoxActionsToolbar = ({
 
 	const room = useRoom();
 
-	const disableBasicActions = !canSend || isRecording || isEditing;
-
 	const audioMessageAction = useAudioMessageAction(!canSend || isRecording || isMicrophoneDenied, isMicrophoneDenied);
 	const videoMessageAction = useVideoMessageAction(!canSend || isRecording);
-	const fileUploadAction = useFileUploadAction(disableBasicActions);
-	const webdavActions = useWebdavActions(disableBasicActions);
-	const createDiscussionAction = useCreateDiscussionAction(disableBasicActions, room);
-	const shareLocationAction = useShareLocationAction(disableBasicActions, room, tmid);
-	const timestampAction = useTimestampAction(disableBasicActions, chatContext.composer);
+	const fileUploadAction = useFileUploadAction(!canSend || isRecording || isEditing);
+	const webdavActions = useWebdavActions(!canSend || isRecording || isEditing);
+	const createDiscussionAction = useCreateDiscussionAction(room);
+	const shareLocationAction = useShareLocationAction(room, tmid);
+	const timestampAction = useTimestampAction(chatContext.composer);
 
 	const apps = useMessageboxAppsActionButtons();
 	const { composerToolbox: hiddenActions } = useLayoutHiddenActions();
@@ -123,7 +121,6 @@ const MessageBoxActionsToolbar = ({
 						chat: chatContext,
 					}),
 				gap: Boolean(!item.icon),
-				disabled: disableBasicActions,
 			}));
 
 		return {
@@ -149,7 +146,7 @@ const MessageBoxActionsToolbar = ({
 			<MessageComposerActionsDivider />
 			{featured.map((action) => action && renderAction(action))}
 			<GenericMenu
-				disabled={isRecording}
+				disabled={isRecording || !canSend}
 				data-qa-id='menu-more-actions'
 				detached
 				icon='plus'
