@@ -21,7 +21,7 @@ import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 import { useEndpointUploadMutation } from '../../../hooks/useEndpointUploadMutation';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
-type EditCustomEmojiProps = {
+export type EditCustomEmojiProps = {
 	close: () => void;
 	onChange: () => void;
 	data: {

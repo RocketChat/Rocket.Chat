@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 export type VersionStatus = 'outdated' | 'latest' | 'available_version' | undefined;
 
-type VersionTagProps = {
+export type VersionTagProps = {
 	versionStatus: VersionStatus;
 	title?: string;
 };

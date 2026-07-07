@@ -169,6 +169,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	setAbacAttributesById(userId: IUser['_id'], attributes: NonNullable<IUser['abacAttributes']>): Promise<IUser | null>;
 	unsetAbacAttributesById(userId: IUser['_id']): Promise<IUser | null>;
 	findActiveByRoomIds(roomIds: IRoom['_id'][], options?: FindOptions<IUser>): FindCursor<IUser>;
+	setCasExternalIdByUsername(username: string): Promise<IUser | null>;
 
 	updateStatusText(_id: IUser['_id'], statusText: string, options?: UpdateOptions): Promise<UpdateResult>;
 

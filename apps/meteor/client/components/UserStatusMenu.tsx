@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import { UserStatus } from './UserStatus';
 
-type UserStatusMenuProps = {
+export type UserStatusMenuProps = {
 	onChange: (type: UserStatusType) => void;
 	initialStatus?: UserStatusType;
 	optionWidth?: ComponentProps<typeof Box>['width'];

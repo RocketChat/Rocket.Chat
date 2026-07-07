@@ -1,7 +1,7 @@
 import { CannedResponse } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { hasPermissionAsync } from '../../../../app/authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 import { getDepartmentsWhichUserCanAccess } from '../v1/omnichannel/lib/departments';
 
 export async function findAllCannedResponses({ userId }) {

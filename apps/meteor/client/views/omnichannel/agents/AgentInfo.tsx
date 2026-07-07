@@ -19,7 +19,7 @@ import { UserInfoAvatar, UserInfoUsername } from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
 import { MaxChatsPerAgentDisplay } from '../additionalForms';
 
-type AgentInfoProps = {
+export type AgentInfoProps = {
 	uid: string;
 } & Omit<HTMLAttributes<HTMLElement>, 'is'>;
 

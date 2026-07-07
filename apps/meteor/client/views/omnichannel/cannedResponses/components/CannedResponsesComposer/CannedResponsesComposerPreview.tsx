@@ -3,7 +3,7 @@ import { memo } from 'react';
 
 import MarkdownText from '../../../../../components/MarkdownText';
 
-type CannedResponsesComposerPreviewProps = { text: string };
+export type CannedResponsesComposerPreviewProps = { text: string };
 
 const CannedResponsesComposerPreview = ({ text }: CannedResponsesComposerPreviewProps) => {
 	const textM = text.split(/\n/).join('  \n');

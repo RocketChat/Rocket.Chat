@@ -80,7 +80,7 @@ const RoomFiles = ({
 					aria-controls={isSuccess ? filesListId : undefined}
 					value={text}
 					onChange={setText}
-					addon={<Icon name='magnifier' size='x20' />}
+					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
 				<Box w='x144' mis={8}>
 					<Select aria-controls={isSuccess ? filesListId : undefined} onChange={setType} value={type} options={options} />

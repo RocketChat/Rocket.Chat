@@ -16,7 +16,9 @@ export type EditRolePageFormData = {
 	mandatory2fa: boolean;
 };
 
-const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: boolean }) => {
+export type EditRolePageProps = { role?: IRole; isEnterprise: boolean };
+
+const EditRolePage = ({ role, isEnterprise }: EditRolePageProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();

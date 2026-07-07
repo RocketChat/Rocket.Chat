@@ -10,7 +10,7 @@ import { memo, useMemo, useState } from 'react';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { Rooms } from '../../stores';
 
-type UserAndRoomAutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'> & {
+export type UserAndRoomAutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'> & {
 	limit?: number;
 };
 

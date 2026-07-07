@@ -4,7 +4,7 @@ import { memo } from 'react';
 
 import InfoTextIconModal from './InfoTextIconModal';
 
-type FeatureUsageCardProps = {
+export type FeatureUsageCardProps = {
 	children?: ReactNode;
 	card: CardProps;
 };

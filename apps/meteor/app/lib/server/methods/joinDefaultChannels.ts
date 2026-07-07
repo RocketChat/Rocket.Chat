@@ -3,7 +3,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { addUserToDefaultChannels } from '../functions/addUserToDefaultChannels';
+import { addUserToDefaultChannels } from '../../../../server/lib/rooms/addUserToDefaultChannels';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

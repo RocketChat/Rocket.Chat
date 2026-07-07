@@ -30,7 +30,7 @@ const getInitialData = (businessHourData: Serialized<ILivechatBusinessHour> | un
 	departments: businessHourData?.departments?.map(({ _id, name }) => ({ value: _id, label: name })) || [],
 });
 
-type EditBusinessHoursProps = {
+export type EditBusinessHoursProps = {
 	businessHourData?: Serialized<ILivechatBusinessHour>;
 	type: LivechatBusinessHourTypes;
 };

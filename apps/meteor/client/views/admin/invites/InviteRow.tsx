@@ -17,7 +17,7 @@ const isExpired = (expires: IInvite['expires']): boolean => {
 	return false;
 };
 
-type InviteRowProps = Omit<IInvite, 'createdAt' | 'expires' | '_updatedAt'> & {
+export type InviteRowProps = Omit<IInvite, 'createdAt' | 'expires' | '_updatedAt'> & {
 	onRemove: (removeInvite: () => Promise<boolean>) => void;
 	_updatedAt: string;
 	createdAt: string;

@@ -21,7 +21,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { AppLogsFilterFormData } from '../useAppLogsFilterForm';
 
-type ExportLogsModalProps = {
+export type ExportLogsModalProps = {
 	onClose: () => void;
 	filterValues: AppLogsFilterFormData;
 	onConfirm: (url: string) => void;
