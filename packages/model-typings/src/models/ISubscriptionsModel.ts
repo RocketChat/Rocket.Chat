@@ -339,6 +339,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	countByUserIdExceptType(userId: string, typeException: ISubscription['t']): Promise<number>;
 	openByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
 	countByRoomIdWhenUsernameExists(rid: string): Promise<number>;
+	countByRoomIdWhenUsernameExistsAndActive(rid: string): Promise<number>;
 	setE2EKeyByUserIdAndRoomId(userId: string, rid: string, key: string): Promise<null | WithId<ISubscription>>;
 	countUsersInRoles(roles: IRole['_id'][], rid: IRoom['_id'] | undefined): Promise<number>;
 	findUserFederatedRoomIds(userId: IUser['_id']): AggregationCursor<{ _id: IRoom['_id']; externalRoomId: string }>;
