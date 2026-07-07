@@ -66,16 +66,16 @@ export const registerUser = async (
 		}),
 	);
 
-	if (settings.get('Accounts_RegistrationForm') === 'Disabled') {
+	const registrationForm = settings.get<string>('Accounts_RegistrationForm');
+	const registrationSecret = settings.get<string>('Accounts_RegistrationForm_SecretURL');
+
+	if (registrationForm === 'Disabled') {
 		throw new Meteor.Error('error-user-registration-disabled', 'User registration is disabled', {
 			method: 'registerUser',
 		});
 	}
 
-	if (
-		settings.get('Accounts_RegistrationForm') === 'Secret URL' &&
-		(!formData.secretURL || formData.secretURL !== settings.get('Accounts_RegistrationForm_SecretURL'))
-	) {
+	if (registrationForm === 'Secret URL' && (!formData.secretURL || formData.secretURL !== registrationSecret)) {
 		if (!formData.secretURL) {
 			throw new Meteor.Error('error-user-registration-secret', 'User registration is only allowed via Secret URL', {
 				method: 'registerUser',
