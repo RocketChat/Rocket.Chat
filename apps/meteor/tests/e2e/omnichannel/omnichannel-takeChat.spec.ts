@@ -5,7 +5,12 @@ import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
 import { OmnichannelLiveChat } from '../page-objects/omnichannel';
+import type { BaseTest } from '../utils/test';
 import { test, expect } from '../utils/test';
+
+const expectAgentsAvailability = async (api: BaseTest['api'], online: boolean) => {
+	await expect.poll(async () => (await (await api.get('/livechat/config')).json()).config.online).toBe(online);
+};
 
 test.describe('omnichannel-takeChat', () => {
 	let poLiveChat: OmnichannelLiveChat;
@@ -45,6 +50,7 @@ test.describe('omnichannel-takeChat', () => {
 
 	test.beforeEach('start a new livechat chat', async ({ page, api }) => {
 		await agent.poHomeChannel.navbar.changeUserStatus('online');
+		await expectAgentsAvailability(api, true);
 
 		newVisitor = createFakeVisitor();
 
@@ -67,8 +73,9 @@ test.describe('omnichannel-takeChat', () => {
 		await expect(agent.poHomeChannel.composer.inputMessage).toBeVisible();
 	});
 
-	test('When agent is offline should not take the chat', async () => {
+	test('When agent is offline should not take the chat', async ({ api }) => {
 		await agent.poHomeChannel.navbar.changeUserStatus('offline');
+		await expectAgentsAvailability(api, false);
 
 		await sendLivechatMessage();
 
