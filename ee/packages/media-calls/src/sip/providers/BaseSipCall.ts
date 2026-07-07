@@ -1,5 +1,5 @@
 import type { IMediaCall, IMediaCallChannel, MediaCallContact } from '@rocket.chat/core-typings';
-import type { ClientMediaSignalBody } from '@rocket.chat/media-signaling';
+import type { CallHangupReason, ClientMediaSignalBody } from '@rocket.chat/media-signaling';
 import { MediaCalls, VideoConference as VideoConferenceModel } from '@rocket.chat/models';
 import type Srf from 'drachtio-srf';
 import type { SrfRequest, SrfResponse } from 'drachtio-srf';
@@ -239,6 +239,21 @@ export abstract class BaseSipCall extends BaseCallProvider {
 		// no extra handling by default
 	}
 
+	protected onDialogDestroyed(): void {
+		logger.debug({
+			msg: 'SIP Dialog Destroyed',
+			type: this.constructor.name,
+			callId: this.call._id,
+		});
+
+		this.sipDialog = null;
+		if (this.processedEscalation) {
+			this.hangupCall('conference-escalation', 'user');
+		} else {
+			this.hangupCall('remote');
+		}
+	}
+
 	public override async reactToCallChanges(params: { dtmf?: ClientMediaSignalBody<'dtmf'> }): Promise<void> {
 		logger.debug({ msg: 'reactToCallChanges', type: this.constructor.name, callId: this.call._id, lastCallState: this.lastCallState });
 
@@ -300,7 +315,7 @@ export abstract class BaseSipCall extends BaseCallProvider {
 		} catch (err) {
 			logger.error({ msg: 'REFER failed', method: 'processTransferredCall', err, callId: call._id, type: this.constructor.name });
 			if (!call.ended) {
-				void mediaCallDirector.hangupByServer(call, 'signaling-error');
+				this.hangupCall('signaling-error');
 			}
 			return this.processEndedCall(call);
 		}
@@ -360,7 +375,7 @@ export abstract class BaseSipCall extends BaseCallProvider {
 			// If the conference is already associated with two voice calls, then the remote SIP leg is already in it, do not refer
 			if (mediaCallIds.length >= 2) {
 				if (!call.ended) {
-					void mediaCallDirector.hangupByServer(call, 'remote-conference-escalation');
+					this.hangupCall('conference-escalation');
 				}
 				return;
 			}
@@ -369,8 +384,16 @@ export abstract class BaseSipCall extends BaseCallProvider {
 		} catch (err) {
 			logger.error({ msg: 'REFER failed', method: 'processEscalatedCall', err, type: this.constructor.name });
 			if (!call.ended) {
-				void mediaCallDirector.hangupByServer(call, 'signaling-error');
+				this.hangupCall('signaling-error');
 			}
 		}
+	}
+
+	protected hangupCall(hangupReason: CallHangupReason, fromAgent: 'sip' | 'user' = 'sip'): void {
+		const agent = (fromAgent === 'user' && this.agent.oppositeAgent) || this.agent;
+
+		void mediaCallDirector.hangup(this.call, agent, hangupReason).catch((err) => {
+			logger.debug({ msg: 'Unexpected error ending call', err, type: this.constructor.name, hangupReason });
+		});
 	}
 }

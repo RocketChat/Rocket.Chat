@@ -1228,7 +1228,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		const provider = videoConfProviders.getVideoConfProviderHandler(call.providerName);
 		if (provider) {
-			return;
+			return provider.onUserJoin(call, user);
 		}
 
 		return (await this.getProviderManager()).onUserJoin(call.providerName, call, user);

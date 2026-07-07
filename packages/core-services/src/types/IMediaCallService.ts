@@ -8,5 +8,6 @@ export interface IMediaCallService {
 	hangupExpiredCalls(): Promise<void>;
 	getUserStateSignals(uid: IUser['_id'], contractId: string): Promise<ServerMediaCallSignal[]>;
 	escalateCall(uid: IUser['_id'], params: { callId: string }): Promise<string>;
+	hangupAutoEscalatedCall(call: IMediaCall, uid: IUser['_id']): Promise<void>;
 	flagAsRemotelyEscalatedByCallId(callId: string): Promise<void>;
 }

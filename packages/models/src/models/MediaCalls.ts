@@ -287,6 +287,23 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		return count > 0;
 	}
 
+	public findAllPendingEscalationByUidAndCallIds<T extends Document = IMediaCall>(
+		uid: IUser['_id'],
+		callIds: string[],
+		options?: FindOptions<IMediaCall>,
+	): FindCursor<T> {
+		return this.find<T>(
+			{
+				ended: false,
+				uids: uid,
+				_id: { $in: callIds },
+				escalatedAt: { $exists: false },
+				escalatedByPeerAt: { $exists: true },
+			},
+			options,
+		);
+	}
+
 	public async isUserSipExtensionInCallIds(sipExtension: string, callIds: string[]): Promise<boolean> {
 		const count = await this.countDocuments(
 			{

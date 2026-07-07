@@ -637,6 +637,22 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		});
 	}
 
+	public async hangupAutoEscalatedCall(call: IMediaCall, uid: IUser['_id']): Promise<void> {
+		if (!call.escalatedByPeerAt) {
+			return this.flagAsEscalated(call);
+		}
+
+		if (!call.escalatedAt) {
+			await MediaCalls.flagAsEscalatedByCallId(call._id).catch((err) => {
+				logger.error({ msg: 'Unexpected error while flagging call as auto escalated', err });
+			});
+		}
+
+		await callServer.hangupEscalatedCall(call, { type: 'user', id: uid }).catch((err) => {
+			logger.error({ msg: 'Unexpected error while hanging up an auto escalated voice call', err });
+		});
+	}
+
 	private async notifyEscalatedCall(call: AtLeast<IMediaCall, '_id' | 'uids' | 'features'>, escalatedByPeer = false): Promise<void> {
 		for (const uid of call.uids) {
 			await this.sendSignal(uid, {

@@ -1,4 +1,5 @@
 import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
+import { MediaCall } from '@rocket.chat/core-services';
 import type { VideoConference, AtLeast, IRoom, IVideoConferenceUser, RequiredField } from '@rocket.chat/core-typings';
 import { MediaCalls, Rooms } from '@rocket.chat/models';
 
@@ -184,6 +185,25 @@ export class PexipVideoConfProvider {
 				},
 			} as IBlock,
 		];
+	}
+
+	public async onUserJoin(call: VideoConference, user?: IVideoConferenceUser): Promise<void> {
+		if (!user || !call.mediaCallIds?.length) {
+			return;
+		}
+
+		void this.autoEscalateCallBasedOnConferenceJoin(call.mediaCallIds, user._id).catch((err) => {
+			logger.error({ msg: 'Unexpected error flagging media call as auto escalated', err });
+		});
+	}
+
+	private async autoEscalateCallBasedOnConferenceJoin(mediaCallIds: string[], uid: string): Promise<void> {
+		const [mediaCall] = await MediaCalls.findAllPendingEscalationByUidAndCallIds(uid, mediaCallIds, { limit: 1 }).toArray();
+		if (!mediaCall) {
+			return;
+		}
+
+		await MediaCall.hangupAutoEscalatedCall(mediaCall, uid);
 	}
 
 	private async getPinForUser(call: VideoConference, user: IVideoConferenceUser | undefined): Promise<string> {

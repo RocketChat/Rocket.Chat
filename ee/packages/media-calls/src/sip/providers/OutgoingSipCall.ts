@@ -151,7 +151,7 @@ export class OutgoingSipCall extends BaseSipCall {
 								msg: 'OutgoingSipCall.createDialog - request failed',
 								err,
 							});
-							void mediaCallDirector.hangupByServer(call, 'signaling-error');
+							this.hangupCall('signaling-error');
 							return;
 						}
 
@@ -192,16 +192,12 @@ export class OutgoingSipCall extends BaseSipCall {
 
 		if (!this.sipDialog) {
 			this.cancelAnyPendingRequest();
-			void mediaCallDirector.hangupByServer(call, hangupReason || 'signaling-error');
+			this.hangupCall(hangupReason || 'signaling-error');
 			return;
 		}
 
 		logger.debug({ msg: 'OutgoingSipCall.createDialog - dialog created', callId: this.sipDialog.sip?.callId });
-		this.sipDialog.on('destroy', () => {
-			logger.debug({ msg: 'OutgoingSipCall - uac.destroy' });
-			this.sipDialog = null;
-			void mediaCallDirector.hangup(call, this.agent, 'remote');
-		});
+		this.sipDialog.on('destroy', () => this.onDialogDestroyed());
 
 		this.sipDialog.on('modify', (req, res) => {
 			void this.handleDialogModify(req, res);

@@ -45,6 +45,7 @@ export const callHangupReasonList = [
 	'error', // Hanging up because of an unidentified error
 	'unknown', // One of the call's signed users reported they don't know this call
 	'another-client', // One of the call's users requested a hangup from a different client session than the one where the call is happening
+	'conference-escalation', // The user has escalated this call into a video conference
 ] as const;
 
 export type CallHangupReason = (typeof callHangupReasonList)[number];

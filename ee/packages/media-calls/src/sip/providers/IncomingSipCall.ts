@@ -136,7 +136,7 @@ export class IncomingSipCall extends BaseSipCall {
 
 		if (!uas) {
 			logger.error({ msg: 'IncomingSipCall.createDialog - dialog creation failed', callId: this.callId });
-			void mediaCallDirector.hangupByServer(this.call, 'signaling-error');
+			this.hangupCall('signaling-error');
 			return;
 		}
 
@@ -144,11 +144,7 @@ export class IncomingSipCall extends BaseSipCall {
 			void this.handleDialogModify(req, res);
 		});
 
-		uas.on('destroy', () => {
-			logger.debug({ msg: 'IncomingSipCall - uas.destroy' });
-			this.sipDialog = null;
-			void mediaCallDirector.hangup(this.call, this.agent, 'remote');
-		});
+		uas.on('destroy', () => this.onDialogDestroyed());
 
 		this.sipDialog = uas;
 	}
@@ -157,7 +153,7 @@ export class IncomingSipCall extends BaseSipCall {
 		logger.debug({ msg: 'IncomingSipCall.cancel', res: this.session.stripDrachtioServerDetails(res) });
 
 		logger.info({ msg: 'The incoming SIP call was canceled by the caller', callId: this.callId });
-		void mediaCallDirector.hangup(this.call, this.agent, 'remote').catch(() => null);
+		this.hangupCall('remote');
 	}
 
 	protected async reflectCall(call: IMediaCall, params: { dtmf?: ClientMediaSignalBody<'dtmf'> }): Promise<void> {
@@ -334,7 +330,7 @@ export class IncomingSipCall extends BaseSipCall {
 		logger.debug('IncomingSipCall.hangupPendingCall');
 
 		this.cancelPendingInvites(errorCode);
-		void mediaCallDirector.hangupByServer(this.call, `sip-error-${errorCode}`);
+		this.hangupCall('signaling-error');
 	}
 
 	private static async getCalleeFromInvite(req: SrfRequest): Promise<MediaCallContact> {

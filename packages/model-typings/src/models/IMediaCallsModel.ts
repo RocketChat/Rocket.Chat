@@ -37,6 +37,11 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 	hasUnfinishedCalls(): Promise<boolean>;
 	hasUnfinishedCallsByUid(uid: IUser['_id'], exceptCallId?: string): Promise<boolean>;
 	isUserInCallIds(uid: IUser['_id'], callIds: string[]): Promise<boolean>;
+	findAllPendingEscalationByUidAndCallIds<T extends Document = IMediaCall>(
+		uid: IUser['_id'],
+		callIds: string[],
+		options?: FindOptions<IMediaCall>,
+	): FindCursor<T>;
 	isUserSipExtensionInCallIds(sipExtension: string, callIds: string[]): Promise<boolean>;
 	updateParticipantsById(
 		callId: string,
