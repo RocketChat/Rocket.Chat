@@ -3991,6 +3991,29 @@ describe('[Channels]', () => {
 				});
 		});
 
+		it('should return 403 when a user without edit-room permission on the channel tries to convert it to a team using channelName', async () => {
+			await updatePermission('create-team', ['admin', 'user']);
+			await updatePermission('edit-room', ['admin', 'owner', 'moderator']);
+
+			const outsiderChannel = (await createRoom({ type: 'c', name: `channel.convertToTeam.outsider.test.${Date.now()}` })).body.channel;
+			const outsiderUser = await createUser();
+			const outsiderCredentials = await login(outsiderUser.username, password);
+
+			try {
+				await request
+					.post(api('channels.convertToTeam'))
+					.set(outsiderCredentials)
+					.send({ channelName: outsiderChannel.name })
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', false);
+					});
+			} finally {
+				await deleteRoom({ type: 'c', roomId: outsiderChannel._id });
+				await deleteUser(outsiderUser);
+			}
+		});
+
 		it(`should return an error when the channel's name and id are sent as parameter`, (done) => {
 			void request
 				.post(api('channels.convertToTeam'))
