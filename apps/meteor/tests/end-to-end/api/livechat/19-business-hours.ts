@@ -335,7 +335,7 @@ describe('LIVECHAT - business hours', () => {
 
 		it('should unlink only the removed departments when re-saving with a smaller department list', async () => {
 			const { department: keptDepartment, agent: keptAgent } = await createDepartmentWithAnOnlineAgent();
-			const { department: removedDepartment } = await createDepartmentWithAnOnlineAgent();
+			const { department: removedDepartment, agent: removedAgent } = await createDepartmentWithAnOnlineAgent();
 			const customBusinessHour = await createCustomBusinessHour([keptDepartment._id, removedDepartment._id]);
 			await openOrCloseBusinessHour(customBusinessHour, true);
 
@@ -348,6 +348,9 @@ describe('LIVECHAT - business hours', () => {
 
 			const latestKeptAgent = await getMe<ILivechatAgent>(keptAgent.credentials);
 			expect(latestKeptAgent.openBusinessHours).to.be.an('array').that.includes(customBusinessHour._id);
+
+			const latestRemovedAgent = await getMe<ILivechatAgent>(removedAgent.credentials);
+			expect(latestRemovedAgent.openBusinessHours).to.be.an('array').that.does.not.include(customBusinessHour._id);
 		});
 
 		it('should unlink all departments when re-saving with an empty department list', async () => {
