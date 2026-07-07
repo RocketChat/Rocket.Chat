@@ -1,9 +1,4 @@
-type updateCounterDataType = { settingsId: string };
-type slashCommandsDataType = { command: string };
-
-// TODO this is duplicated from /packages/rest-typings/src/v1/statistics.ts
-export type TelemetryMap = { slashCommandsStats: slashCommandsDataType; updateCounter: updateCounterDataType };
-export type TelemetryEvents = keyof TelemetryMap;
+import type { TelemetryMap, TelemetryEvents } from '@rocket.chat/rest-typings';
 
 export interface ITelemetryEvent {
 	register: (name: TelemetryEvents, fn: () => Promise<any> | void) => void;
