@@ -17,7 +17,6 @@ import { AppCompiler, AppFabricationFulfillment, AppPackageParser } from './comp
 import { InvalidLicenseError } from './errors';
 import { InvalidInstallationError } from './errors/InvalidInstallationError';
 import {
-	AppAccessorManager,
 	AppApiManager,
 	AppExternalComponentManager,
 	AppLicenseManager,
@@ -87,8 +86,6 @@ export class AppManager {
 
 	private readonly compiler: AppCompiler;
 
-	private readonly accessorManager: AppAccessorManager;
-
 	private readonly listenerManager: AppListenerManager;
 
 	private readonly commandManager: AppSlashCommandManager;
@@ -153,7 +150,6 @@ export class AppManager {
 
 		this.parser = new AppPackageParser();
 		this.compiler = new AppCompiler();
-		this.accessorManager = new AppAccessorManager(this);
 		this.listenerManager = new AppListenerManager(this);
 		this.commandManager = new AppSlashCommandManager(this);
 		this.apiManager = new AppApiManager(this);
@@ -198,11 +194,6 @@ export class AppManager {
 	/** Gets the compiler instance. */
 	public getCompiler(): AppCompiler {
 		return this.compiler;
-	}
-
-	/** Gets the accessor manager instance. */
-	public getAccessorManager(): AppAccessorManager {
-		return this.accessorManager;
 	}
 
 	/** Gets the instance of the Bridge manager. */
@@ -1096,7 +1087,6 @@ export class AppManager {
 		this.listenerManager.lockEssentialEvents(app);
 		this.externalComponentManager.unregisterExternalComponents(app.getID());
 		await this.apiManager.unregisterApis(app.getID());
-		this.accessorManager.purifyApp(app.getID());
 		this.uiActionButtonManager.clearAppActionButtons(app.getID());
 		await this.videoConfProviderManager.unregisterProviders(app.getID());
 		await this.outboundCommunicationProviderManager.unregisterProviders(app.getID(), {

@@ -485,13 +485,13 @@ since consolidating more logic into the runtime makes the assumption more load-b
    dropping.
 3. **`messenger.sendRequest` timeout** — the runtime-side TODO becomes more prominent once all
    accessor traffic flows through it.
-4. **Drop the legacy `_accessors` threading + delete the dead host accessor layer.** Un-thread the
-   ignored `accessors: AppAccessorManager` parameter from `AppApi.runExecutor`,
-   `AppSlashCommand`/`AppVideoConfProvider`/`AppOutboundCommunicationProvider` `run*`/`runTheCode` and
-   their managers; then delete `AppAccessorManager` (+ its `getAccessorManager()` on `AppManager` and
-   the `purifyApp` call), the entire `src/server/accessors/` directory (now unreachable from the
-   subprocess after Phase 4), the host `src/server/misc/UIHelper.ts` copy (its only importers are
-   those deleted accessors), and the `managers/index.ts` export. Behavior-neutral cleanup; kept
+4. ✅ **Drop the legacy `_accessors` threading + delete the dead host accessor layer.** — **landed as
+   Phase 5** (§8). Un-threaded the ignored `accessors: AppAccessorManager` parameter from
+   `AppApi.runExecutor`, `AppSlashCommand`/`AppVideoConfProvider`/`AppOutboundCommunicationProvider`
+   `run*`/`runTheCode` and their managers; deleted `AppAccessorManager` (+ its `getAccessorManager()`
+   on `AppManager` and the `purifyApp` call), the entire `src/server/accessors/` directory (unreachable
+   from the subprocess after Phase 4), the host `src/server/misc/UIHelper.ts` copy (its only importers
+   were those deleted accessors), and the `managers/index.ts` export. Behavior-neutral cleanup; kept
    separate from the Phase 4 message-path teardown because it touches the sandbox-execution core.
    (The parity harness is **not** removed — it became a permanent test utility the base-runtime
    accessor tests depend on.)
@@ -716,4 +716,42 @@ rather than removed).
 **End state (primary objectives met):** `BaseRuntimeSubprocessController` handles exactly one
 app-originated RPC category — `bridges:*` — with a single dispatcher and a single permission model,
 and accessor *behavior* lives in exactly one place, `packages/apps/base-runtime`. `handleAccessorMessage`
-and the entire `accessor:*` category are gone. What remains is dead-code removal (follow-up #4).
+and the entire `accessor:*` category are gone. What remains is dead-code removal (Phase 5 / follow-up #4).
+
+### Phase 5 — Dead host accessor layer removal (follow-up #4) — ✅ landed
+
+Physical removal of the now-unreachable host accessor code. Behavior-neutral: nothing on the
+subprocess path reached any of it after Phase 4.
+
+1. ✅ **Un-threaded the vestigial `accessors` parameter** from the sandbox-execution core. The
+   `run*`/`runTheCode` methods already ignored it (`_accessors`) — the app executes in the subprocess
+   via `getRuntimeController().sendRequest`, so the host-side accessor manager was never consulted.
+   Dropped the parameter from `AppApi.runExecutor`, `AppSlashCommand.runExecutorOrPreviewer`/
+   `runPreviewExecutor`/`runTheCode`, all `AppVideoConfProvider.run*`/`runTheCode`, and
+   `AppOutboundCommunicationProvider.runGetProviderMetadata`/`runSendOutboundMessage`/`runTheCode`, and
+   updated the four managers' call sites. Removed the now-unused `private readonly accessors` field
+   (and its `this.manager.getAccessorManager()` assignment) from `AppApiManager`,
+   `AppSlashCommandManager`, `AppVideoConfProviderManager`, and `AppOutboundCommunicationProviderManager`.
+2. ✅ **Deleted `AppAccessorManager`** (`src/server/managers/AppAccessorManager.ts`), removed its
+   `managers/index.ts` export, and removed `AppManager`'s `accessorManager` field, its
+   `new AppAccessorManager(this)` construction, the `getAccessorManager()` accessor, and the
+   `accessorManager.purifyApp(...)` call in `removeLocal` (a no-op — the caches it cleared were never
+   populated once no host code called `getReader`/`getModifier`/etc.).
+3. ✅ **Deleted the entire `src/server/accessors/` directory** (64 files — the host copies of the
+   readers, modifiers, builders, environment accessors, and the configuration/registration accessors)
+   and the host `src/server/misc/UIHelper.ts` (only ever imported by those deleted accessors). The
+   base-runtime holds the single source of truth for all of this.
+4. ✅ **Adapted tests:** deleted `tests/server/accessors/` (35 host-accessor unit tests — the
+   base-runtime suites cover the equivalent behavior) and `tests/server/managers/AppAccessorManager.test.ts`;
+   removed the `AppAccessorManager`/`getAccessorManager()`/`(x as any).accessors` setup and assertions
+   from the four manager tests, `AppSettingsManager.test.ts`, `AppManager.test.ts`, the two Deno-runtime
+   integration tests, and `AppListenerManager.test.ts`.
+
+**Verification:** host `tsc` error-set unchanged vs the environmental-only baseline (no new errors);
+`test:node` host suites green (excluding the two `deno`-spawn integration suites, which require the
+`deno` binary unavailable in this environment); base-runtime suite unaffected (untouched by this phase).
+
+**End state:** the `@rocket.chat/apps` host no longer contains any accessor implementation or accessor
+manager. The only accessor-shaped code left on the host is the bridge layer (`AppBridges`/`do*`) and
+`AppResourceBridge`; every accessor an app actually uses is built and resolved inside
+`packages/apps/base-runtime`.

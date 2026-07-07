@@ -10,7 +10,7 @@ import { type RpcStatusType, SuccessObject } from 'jsonrpc-lite';
 
 import type { AppManager } from '../../../src/server/AppManager';
 import type { IParseAppPackageResult } from '../../../src/server/compiler';
-import { AppAccessorManager, AppApiManager } from '../../../src/server/managers';
+import { AppApiManager } from '../../../src/server/managers';
 import { DenoRuntimeSubprocessController } from '../../../src/server/runtime/deno/AppsEngineDenoRuntime';
 import type { IAppStorageItem } from '../../../src/server/storage';
 import { TestInfastructureSetup } from '../../test-data/utilities';
@@ -27,9 +27,6 @@ describe('DenoRuntimeSubprocessController', () => {
 		async () => {
 			const infrastructure = new TestInfastructureSetup();
 			manager = infrastructure.getMockManager();
-
-			const accessors = new AppAccessorManager(manager);
-			manager.getAccessorManager = () => accessors;
 
 			const api = new AppApiManager(manager);
 			manager.getApiManager = () => api;
