@@ -8,7 +8,7 @@ import { useReloadOnError } from '../../components/message/content/attachments/f
 
 const PLAYBACK_RATES = [1, 1.5, 2] as const;
 
-type MediaPlayerProviderProps = {
+export type MediaPlayerProviderProps = {
 	children?: ReactNode;
 };
 

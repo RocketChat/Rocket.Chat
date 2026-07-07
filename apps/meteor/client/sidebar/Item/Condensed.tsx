@@ -4,7 +4,7 @@ import { memo } from 'react';
 
 import { useDeferredMenuMount } from './useDeferredMenuMount';
 
-type CondensedProps = {
+export type CondensedProps = {
 	title: ReactNode;
 	titleIcon?: ReactNode;
 	avatar: ReactNode;
