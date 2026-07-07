@@ -24,7 +24,7 @@ const modelsMock = {
 	},
 };
 
-p.noCallThru().load('../../../../server/methods/deleteFileMessage', {
+p.noCallThru().load('../../../../server/meteor-methods/deleteFileMessage', {
 	'meteor/meteor': {
 		Meteor: {
 			userId: meteorUserIdMock,

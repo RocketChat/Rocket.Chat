@@ -4,7 +4,7 @@ import { removeEmpty } from '@rocket.chat/tools';
 import limax from 'limax';
 
 import { RecordConverter } from './RecordConverter';
-import { createDirectMessage } from '../../../../../server/methods/createDirectMessage';
+import { createDirectMessage } from '../../../../../server/meteor-methods/createDirectMessage';
 import { saveRoomSettings } from '../../../../channel-settings/server/methods/saveRoomSettings';
 import { notifyOnSubscriptionChangedByRoomId } from '../../../../lib/server/lib/notifyListener';
 import { createChannelMethod } from '../../../../lib/server/methods/createChannel';

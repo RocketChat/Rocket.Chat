@@ -12,7 +12,7 @@ import type { FindOptions, Sort } from 'mongodb';
 import { addUserToRoom } from '../../../../server/lib/rooms/addUserToRoom';
 import { deleteRoom } from '../../../../server/lib/rooms/deleteRoom';
 import { removeUserFromRoom } from '../../../../server/lib/rooms/removeUserFromRoom';
-import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
+import { createDirectMessage } from '../../../../server/meteor-methods/createDirectMessage';
 import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
 import { createChannelMethod } from '../../../lib/server/methods/createChannel';
 import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';

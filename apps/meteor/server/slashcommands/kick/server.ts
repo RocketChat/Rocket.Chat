@@ -7,7 +7,7 @@ import { sanitizeUsername } from '../../../app/lib/server/methods/addUsersToRoom
 import { settings } from '../../../app/settings/server';
 import { slashCommands } from '../../../app/utils/server/slashCommand';
 import { i18n } from '../../lib/i18n';
-import { removeUserFromRoomMethod } from '../../methods/removeUserFromRoom';
+import { removeUserFromRoomMethod } from '../../meteor-methods/removeUserFromRoom';
 
 slashCommands.add({
 	command: 'kick',
