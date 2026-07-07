@@ -1,7 +1,5 @@
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, ButtonGroup, Button, Throbber } from '@rocket.chat/fuselage';
-import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import {
-	VirtualizedScrollbars,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
@@ -11,9 +9,9 @@ import {
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useUser } from '@rocket.chat/ui-contexts';
-import { Virtuoso } from 'react-virtuoso';
 
 import OutlookEventItem from './OutlookEventItem';
+import { PaginatedVirtualList } from '../../../components/PaginatedVirtualList';
 import { getErrorMessage } from '../../../lib/errorHandling';
 import { useOutlookAuthentication } from '../hooks/useOutlookAuthentication';
 import { useMutationOutlookCalendarSync, useOutlookCalendarListForToday } from '../hooks/useOutlookCalendarList';
@@ -35,10 +33,6 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => 
 
 	const calendarListResult = useOutlookCalendarListForToday();
 
-	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver<HTMLElement>({
-		debounceDelay: 200,
-	});
-
 	const calendarEvents = calendarListResult.data;
 	const total = calendarEvents?.length || 0;
 
@@ -52,7 +46,7 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => 
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 			<ContextualbarContent paddingInline={0} color='default'>
-				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' justifyContent='center' ref={ref}>
+				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' justifyContent='center' style={{ minHeight: 0 }}>
 					{calendarListResult.isPending && <Throbber size='x12' />}
 					{calendarListResult.isError && (
 						<States>
@@ -68,18 +62,14 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => 
 						</States>
 					)}
 					{calendarListResult.isSuccess && calendarListResult.data.length > 0 && (
-						<VirtualizedScrollbars>
-							<Virtuoso
-								style={{
-									height: blockSize,
-									width: inlineSize,
-								}}
+						<Box h='full' w='full' style={{ minHeight: 0 }}>
+							<PaginatedVirtualList
+								items={calendarListResult.data}
 								totalCount={total}
 								overscan={25}
-								data={calendarEvents}
-								itemContent={(_index, calendarData) => <OutlookEventItem {...calendarData} />}
+								renderItem={(calendarData) => <OutlookEventItem {...calendarData} />}
 							/>
-						</VirtualizedScrollbars>
+						</Box>
 					)}
 				</Box>
 			</ContextualbarContent>
