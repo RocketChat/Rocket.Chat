@@ -153,7 +153,12 @@ export const addRoomsLifecycleRoutes = (router: ClientRouter) => {
 
 				const user = await Users.findOneByUsername(senderUsername, { projection: { _id: 1 } });
 				if (!user) {
-					throw new Error('User not found for creating room');
+					// Mirrors Synapse: 4xx so bridges treat it as terminal (register the user and retry)
+					// instead of hammering a 5xx as a transient fault.
+					return {
+						statusCode: 403,
+						body: { errcode: 'M_FORBIDDEN', error: 'Application service has not registered this user' },
+					};
 				}
 
 				// The human-facing name supplied by the Matrix client, which may be empty or

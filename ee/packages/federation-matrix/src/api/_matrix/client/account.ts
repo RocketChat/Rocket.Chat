@@ -92,7 +92,8 @@ export const addAccountRoutes = (router: ClientRouter) => {
 				if (!isFullXmppUserId(decoded)) {
 					// The spec defines `username` as the desired localpart; normalize either form to the
 					// fully-qualified MXID, which is what gets stored and what `user_id` must carry.
-					const userId = body.username.startsWith('@') ? body.username : `@${body.username}:${serverName}`;
+					const withSigil = body.username.startsWith('@') ? body.username : `@${body.username}`;
+					const userId = withSigil.includes(':') ? withSigil : `${withSigil}:${serverName}`;
 
 					if (isReservedByAnotherAppService(userId)) {
 						return {

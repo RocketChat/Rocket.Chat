@@ -152,14 +152,18 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 				const body = await c.req.json();
 
 				if (eventType === 'org.matrix.bridge.ping') {
-					const event = await federationSDK.sendCustomEvent(roomId, eventType, body, senderUsername);
+					try {
+						const event = await federationSDK.sendCustomEvent(roomId, eventType, body, senderUsername);
 
-					return {
-						statusCode: 200,
-						body: {
-							event_id: event.eventId,
-						},
-					};
+						return {
+							statusCode: 200,
+							body: {
+								event_id: event.eventId,
+							},
+						};
+					} catch (error) {
+						return internalError('Failed to send ping event', error, { roomId, senderUsername });
+					}
 				}
 
 				if (eventType !== 'm.room.message') {

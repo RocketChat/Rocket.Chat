@@ -70,7 +70,10 @@ function contentDispositionHeader(disposition: 'inline' | 'attachment', fileName
 	if (isAscii) {
 		return `${disposition}; filename="${asciiFallback}"`;
 	}
-	return `${disposition}; filename="${asciiFallback}"; filename*=UTF-8''${encodeURIComponent(fileName)}`;
+	// RFC 5987 requires percent-encoding `*'()` too, which encodeURIComponent leaves raw;
+	// a stray `'` is especially bad since it's the delimiter of the charset'lang'value syntax.
+	const rfc5987Value = encodeURIComponent(fileName).replace(/[*'()]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`);
+	return `${disposition}; filename="${asciiFallback}"; filename*=UTF-8''${rfc5987Value}`;
 }
 
 // MSC3916 says authenticated media downloads should be multipart/mixed, but the
@@ -98,8 +101,8 @@ export const addClientMediaRoutes = (router: ClientRouter) => {
 			isAppServiceAuthenticatedMiddleware(),
 			async (c) => {
 				try {
-					const serverName = c.req.param('serverName') ?? '';
-					const mediaId = c.req.param('mediaId') ?? '';
+					const serverName = c.req.param('serverName') as string;
+					const mediaId = c.req.param('mediaId') as string;
 
 					const file = await MatrixMediaService.getLocalFileForMatrixNode(mediaId, serverName);
 					if (!file) {
@@ -148,8 +151,8 @@ export const addClientMediaRoutes = (router: ClientRouter) => {
 			isAppServiceAuthenticatedMiddleware(),
 			async (c) => {
 				try {
-					const serverName = c.req.param('serverName') ?? '';
-					const mediaId = c.req.param('mediaId') ?? '';
+					const serverName = c.req.param('serverName') as string;
+					const mediaId = c.req.param('mediaId') as string;
 					const width = Number(c.req.query('width'));
 					const height = Number(c.req.query('height'));
 
@@ -175,6 +178,9 @@ export const addClientMediaRoutes = (router: ClientRouter) => {
 						};
 					}
 
+					// `method` is validated but not honored: thumbnails are always scaled (the spec
+					// default), never cropped. Spec-wise thumbnailing is best-effort, so serving a
+					// scaled image for a `crop` request is acceptable.
 					const stream = await Upload.streamUploadedFile({ file, imageResizeOpts: { width, height } });
 
 					const mimeType = file.type || 'image/jpeg';

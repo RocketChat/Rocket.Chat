@@ -114,8 +114,19 @@ const getRoomStateEvent = async (roomId: RoomID, eventType: string, stateKey = '
 	}
 };
 
-const putRoomStateEvent = async (roomId: RoomID, eventType: string, senderUsername: UserID, body: Record<string, unknown>) => {
+const putRoomStateEvent = async (
+	roomId: RoomID,
+	eventType: string,
+	senderUsername: UserID,
+	body: Record<string, unknown>,
+	stateKey = '',
+) => {
 	try {
+		// The supported event types are all empty-state-key events per spec; writing them in
+		// response to a keyed request would silently target the wrong state.
+		if (stateKey) {
+			return notImplemented('State events with a non-empty state key are not yet implemented', { roomId, eventType, stateKey });
+		}
 		if (eventType === 'm.room.name' && typeof body.name === 'string') {
 			const event = await federationSDK.updateRoomName(roomId, body.name, senderUsername);
 			return {
@@ -327,10 +338,11 @@ export const addRoomsStateRoutes = (router: ClientRouter) => {
 			async (c) => {
 				const roomId = c.req.param('roomId') as RoomID;
 				const eventType = c.req.param('eventType') as string;
+				const stateKey = c.req.param('stateKey') ?? '';
 				const senderUsername = c.get('impersonatedUserId') as UserID;
 				const body = await c.req.json();
 
-				return putRoomStateEvent(roomId, eventType, senderUsername, body);
+				return putRoomStateEvent(roomId, eventType, senderUsername, body, stateKey);
 			},
 		);
 };
