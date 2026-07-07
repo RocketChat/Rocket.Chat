@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useScopeDict } from '../../../hooks/useScopeDict';
 
-type ItemProps = {
+export type ItemProps = {
 	data: IOmnichannelCannedResponse & { departmentName?: ILivechatDepartment['name'] };
 	allowUse?: boolean;
 	onClickItem: (e: MouseEvent<HTMLOrSVGElement>) => void;

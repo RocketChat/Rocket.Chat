@@ -12,7 +12,7 @@ import { Strategy } from 'passport-oauth2';
 import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
 import { client } from '../../../server/database/utils';
 import { callbacks } from '../../../server/lib/callbacks';
-import { saveUserIdentity } from '../../lib/server/functions/saveUserIdentity';
+import { saveUserIdentity } from '../../../server/lib/users/saveUserIdentity';
 import { notifyOnUserChange } from '../../lib/server/lib/notifyListener';
 import { settings } from '../../settings/server/cached';
 

@@ -1,6 +1,6 @@
 import './splitPlane.css';
 import { useEffect, useContext } from 'react';
-import SplitPane from 'react-split-pane';
+import { Pane, SplitPane } from 'react-split-pane';
 
 import { context, previewTabsToggleAction } from '../../../Context';
 import Display from '../Display';
@@ -25,12 +25,8 @@ const SplitPlaneContainer = ({ previewSize }: SplitPlaneContainerProps) => {
 		dispatch(previewTabsToggleAction(0));
 	}, [isTablet, dispatch]);
 
-	const splitPaneProps = {
-		defaultSize: (previewSize.inlineSize || 1) * 0.5,
-		minSize: 300,
-		maxSize: (previewSize.inlineSize || 1) - 350,
-		allowResize: !isTablet,
-	};
+	const minSize = 300;
+	const maxSize = (previewSize.inlineSize || 1) - 350;
 
 	return isTablet ? (
 		<>
@@ -38,9 +34,13 @@ const SplitPlaneContainer = ({ previewSize }: SplitPlaneContainerProps) => {
 			<EditorPanel />
 		</>
 	) : (
-		<SplitPane {...splitPaneProps}>
-			<Display />
-			<EditorPanel />
+		<SplitPane resizable={!isTablet}>
+			<Pane minSize={minSize} maxSize={maxSize}>
+				<Display />
+			</Pane>
+			<Pane minSize={minSize} maxSize={maxSize}>
+				<EditorPanel />
+			</Pane>
 		</SplitPane>
 	);
 };

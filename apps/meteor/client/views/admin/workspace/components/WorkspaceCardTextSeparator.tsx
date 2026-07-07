@@ -3,7 +3,7 @@ import type { Keys } from '@rocket.chat/icons';
 import { TextSeparator } from '@rocket.chat/ui-client';
 import type { ComponentProps, ReactNode } from 'react';
 
-type WorkspaceCardTextSeparatorProps = {
+export type WorkspaceCardTextSeparatorProps = {
 	label: ReactNode;
 	icon?: Keys;
 	status?: ComponentProps<typeof StatusBullet>['status'];

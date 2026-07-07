@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import AuditFiltersDisplay from './AuditFiltersDisplay';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
-type AuditLogEntryProps = { value: IAuditLog };
+export type AuditLogEntryProps = { value: IAuditLog };
 
 const AuditLogEntry = ({ value: { u, results, ts, _id, fields } }: AuditLogEntryProps) => {
 	const formatDateAndTime = useFormatDateAndTime();

@@ -20,6 +20,7 @@ import { FormSkeleton } from '../../../../components/Skeleton';
 import { UserCardRole } from '../../../../components/UserCard';
 import { UserInfo } from '../../../../components/UserInfo';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
+import { ReactiveUserStatusText } from '../../../../components/UserStatusText';
 import { usersQueryKeys } from '../../../../lib/queryKeys';
 import { getUserEmailVerified } from '../../../../lib/utils/getUserEmailVerified';
 
@@ -56,7 +57,6 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			name,
 			username,
 			roles = [],
-			statusText,
 			bio,
 			utcOffset,
 			lastLogin,
@@ -86,7 +86,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			utcOffset,
 			createdAt,
 			status: <ReactiveUserStatus uid={_id} />,
-			statusText,
+			customStatus: <ReactiveUserStatusText uid={_id} />,
 			nickname,
 			freeSwitchExtension,
 		};

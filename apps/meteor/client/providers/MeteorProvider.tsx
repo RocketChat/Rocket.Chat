@@ -10,6 +10,7 @@ import { DeviceProvider } from './DeviceProvider/DeviceProvider';
 import EmojiPickerProvider from './EmojiPickerProvider';
 import LayoutProvider from './LayoutProvider';
 import MediaCallProvider from './MediaCallProvider';
+import MediaPlayerProvider from './MediaPlayerProvider';
 import OmnichannelProvider from './OmnichannelProvider';
 import RouterProvider from './RouterProvider';
 import ServerProvider from './ServerProvider';
@@ -22,7 +23,7 @@ import UserProvider from './UserProvider';
 import VideoConfProvider from './VideoConfProvider';
 import { OmnichannelRoomIconProvider } from '../components/RoomIcon/OmnichannelRoomIcon/provider/OmnichannelRoomIconProvider';
 
-type MeteorProviderProps = {
+export type MeteorProviderProps = {
 	children?: ReactNode;
 };
 
@@ -48,7 +49,9 @@ const MeteorProvider = ({ children }: MeteorProviderProps) => (
 																			<ActionManagerProvider>
 																				<VideoConfProvider>
 																					<MediaCallProvider>
-																						<OmnichannelProvider>{children}</OmnichannelProvider>
+																						<OmnichannelProvider>
+																							<MediaPlayerProvider>{children}</MediaPlayerProvider>
+																						</OmnichannelProvider>
 																					</MediaCallProvider>
 																				</VideoConfProvider>
 																			</ActionManagerProvider>

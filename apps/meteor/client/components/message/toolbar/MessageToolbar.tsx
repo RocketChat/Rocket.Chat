@@ -58,7 +58,7 @@ const itemsByContext: Record<
 	'search': SearchItems,
 };
 
-type MessageToolbarProps = {
+export type MessageToolbarProps = {
 	message: IMessage & Partial<ITranslatedMessage>;
 	messageContext?: MessageActionContext;
 	room: IRoom;

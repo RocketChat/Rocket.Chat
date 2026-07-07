@@ -4,7 +4,7 @@ import { usePermission } from '@rocket.chat/ui-contexts';
 
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 
-type AppRequestItemProps = {
+export type AppRequestItemProps = {
 	seen: boolean;
 	name: string;
 	createdDate: string;

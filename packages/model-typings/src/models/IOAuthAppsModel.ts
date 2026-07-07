@@ -16,6 +16,11 @@ export interface IOAuthAppsModel extends IBaseModel<IOAuthApps> {
 
 	findOneActiveByClientId(clientId: string, options?: FindOptions<IOAuthApps>): Promise<IOAuthApps | null>;
 
+	updateById(
+		_id: IOAuthApps['_id'],
+		data: Partial<Pick<IOAuthApps, 'name' | 'active' | 'redirectUri' | '_updatedBy'>>,
+	): Promise<IOAuthApps | null>;
+
 	findOneActiveByClientIdAndClientSecret(
 		clientId: string,
 		clientSecret: string,

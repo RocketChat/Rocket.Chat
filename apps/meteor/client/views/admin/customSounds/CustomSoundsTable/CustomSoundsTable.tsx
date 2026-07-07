@@ -18,7 +18,7 @@ import CustomSoundRow from './CustomSoundRow';
 import FilterByText from '../../../../components/FilterByText';
 import GenericNoResults from '../../../../components/GenericNoResults';
 
-type CustomSoundsTableProps = {
+export type CustomSoundsTableProps = {
 	onClick: (soundId: string) => () => void;
 	reload: MutableRefObject<() => void>;
 };

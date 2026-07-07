@@ -1,11 +1,11 @@
 import { Box, Icon, TextInput, Margins } from '@rocket.chat/fuselage';
 import { useAutoFocus, useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import type { ChangeEvent, ComponentPropsWithoutRef, FormEvent } from 'react';
+import type { ChangeEvent, ComponentPropsWithoutRef, SubmitEvent } from 'react';
 import { forwardRef, memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // TODO: consider changing the type of TextInput's `onChange` to (event: ChangeEvent<HTMLInputElement>) => void
-type FilterByTextProps = Omit<ComponentPropsWithoutRef<typeof TextInput>, 'onChange'> & {
+export type FilterByTextProps = Omit<ComponentPropsWithoutRef<typeof TextInput>, 'onChange'> & {
 	shouldAutoFocus?: boolean;
 	onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
 };
@@ -18,7 +18,7 @@ const FilterByText = forwardRef<HTMLInputElement, FilterByTextProps>(function Fi
 	const autoFocusRef = useAutoFocus(shouldAutoFocus);
 	const mergedRefs = useMergedRefs(ref, autoFocusRef);
 
-	const handleFormSubmit = useCallback((event: FormEvent<HTMLFormElement>) => {
+	const handleFormSubmit = useCallback((event: SubmitEvent<HTMLFormElement>) => {
 		event.preventDefault();
 	}, []);
 
@@ -29,7 +29,7 @@ const FilterByText = forwardRef<HTMLInputElement, FilterByTextProps>(function Fi
 					{...props}
 					placeholder={placeholder ?? t('Search')}
 					ref={mergedRefs}
-					addon={<Icon name='magnifier' size='x20' />}
+					endAddon={<Icon name='magnifier' size='x20' />}
 					flexGrow={2}
 					minWidth='x220'
 					aria-label={placeholder ?? t('Search')}

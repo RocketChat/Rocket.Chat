@@ -122,6 +122,10 @@ export class RoomToolbar extends Toolbar {
 	async openTeamChannels() {
 		await this.btnTeamChannels.click();
 	}
+
+	async waitFor() {
+		await this.root.waitFor({ state: 'visible' });
+	}
 }
 
 export class TeamToolbar extends RoomToolbar {

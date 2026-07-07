@@ -243,6 +243,26 @@ Do **not** apply when:
 - Suite covers auth, 2FA, or session lifecycle — the browser state is the subject.
 - Suite has more than ~15 tests: the debug cost of shared state outgrows the speed win (see "Big test files should not be `.serial`" above).
 
+### Pattern 3 — navigate to a known room by URL, not by search
+
+When a test already knows the room it needs (a channel created via API, `general`, etc.), open it directly with `poHomeChannel.gotoChannel(name)` instead of `page.goto('/home')` + `navbar.openChat(name)`.
+
+```ts
+// ❌ fragile — three independent things must align before the combobox `fill` resolves
+await page.goto('/home');
+await poHomeChannel.navbar.openChat(targetChannel);
+
+// ✅ deterministic — navigate straight to the room, then wait for it to be ready
+await poHomeChannel.gotoChannel(targetChannel);
+```
+
+Why: searching the navbar couples the navigation to (1) the app shell hydrating, (2) the **search index** having picked up the room — a real lag for a channel created moments earlier via API — and (3) the listbox rendering and the option becoming clickable. Any one stalling makes `searchInput.fill` hang until the test timeout, surfacing as the misleading `Target page, context or browser has been closed`. `gotoChannel` loads `/channel/<name>` and then `waitForChannel()` (main region, heading, message list, `aria-busy` cleared), so it has a proper readiness wait without the search dependency.
+
+Do **not** apply when:
+- The navbar search is the actual subject of the test.
+- Navigating to a **DM** (`/direct/<username>`) or a **discussion** — `gotoChannel` builds a `/channel/` URL only.
+- Reaching a channel the user is **not a member of** — the direct URL hits a different preview/join flow; verify the behavior before switching.
+
 ## API helpers for state seeding
 
 Prefer these helpers in `beforeAll` / `beforeEach` and in setup `test.step`s. All live under `apps/meteor/tests/e2e/utils/`.
@@ -296,8 +316,7 @@ test.describe.serial('Feature X', () => {
         page = await context.newPage();
         poHomeChannel = new HomeChannel(page);
 
-        await page.goto('/home');
-        await poHomeChannel.navbar.openChat(targetChannel);
+        await poHomeChannel.gotoChannel(targetChannel);
     });
 
     test.afterAll(async ({ api }) => {
@@ -332,6 +351,7 @@ Recipe for a single spec. Keep PRs to at most 5 files so reviews stay tractable.
 - `poHomeChannel.content.sendMessage(...)` used inside `beforeEach` or `beforeAll` — that is setup, should be `sendMessage(api, ...)`.
 - Opening meatball menus or modals purely to create a discussion, thread, or DM as a setup step.
 - `test.describe.serial` combined with `beforeEach(async ({ page }) => { await page.goto(...) })` — the context should be shared in `beforeAll`.
+- `page.goto('/home')` + `navbar.openChat(name)` to reach a room the test already knows — use `poHomeChannel.gotoChannel(name)` (see Pattern 3). Searching a just-created channel races the search index and hangs until timeout.
 - New non-serial suites whose tests still each carry >3s of UI setup.
 - Inline `api.post('/im.create', …)` / `api.post('/chat.sendMessage', …)` in a spec instead of extending the helpers in `utils/`.
 

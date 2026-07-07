@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import AppsList from '../AppsList';
 import FeaturedAppsSections from './FeaturedAppsSections';
 
-type AppsPageContentBodyProps = {
+export type AppsPageContentBodyProps = {
 	isMarketplace: boolean;
 	isFiltered: boolean;
 	appsResult?: PaginatedResult<{

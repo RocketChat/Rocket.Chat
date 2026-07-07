@@ -17,5 +17,8 @@
 		"diff": "^5.1.0",
 		"semver": "^7.5.4",
 		"@xmldom/xmldom": "^0.8.13"
+	},
+	"overrides": {
+		"undici": "6.27.0"
 	}
 }
