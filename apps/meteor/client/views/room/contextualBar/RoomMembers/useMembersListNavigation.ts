@@ -18,19 +18,22 @@ export const useMembersListNavigation = (virtuosoRef: RefObject<GroupedVirtuosoH
 
 			const targetIndex = e.key === 'ArrowUp' ? currentIndex - 1 : currentIndex + 1;
 
-			const focusItem = () => {
-				node
-					.querySelector<HTMLElement>(`[data-item-index="${targetIndex}"][data-item-group-index]`)
-					?.querySelector<HTMLElement>('.rcx-option[tabindex="0"]')
-					?.focus();
-			};
-
 			const nextWrapper = node.querySelector<HTMLElement>(`[data-item-index="${targetIndex}"][data-item-group-index]`);
 			if (nextWrapper) {
 				nextWrapper.querySelector<HTMLElement>('.rcx-option[tabindex="0"]')?.focus();
 			} else {
 				virtuosoRef.current?.scrollToIndex({ index: targetIndex, behavior: 'auto' });
-				requestAnimationFrame(focusItem);
+				const focusWithRetry = (attempts = 0) => {
+					const el = node
+						.querySelector<HTMLElement>(`[data-item-index="${targetIndex}"][data-item-group-index]`)
+						?.querySelector<HTMLElement>('.rcx-option[tabindex="0"]');
+					if (el) {
+						el.focus();
+					} else if (attempts < 5) {
+						requestAnimationFrame(() => focusWithRetry(attempts + 1));
+					}
+				};
+				requestAnimationFrame(() => focusWithRetry());
 			}
 		},
 		[virtuosoRef],
