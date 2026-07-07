@@ -67,6 +67,7 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 			const toAdd = [...departments.filter((dept: string) => !currentDepartments.includes(dept))];
 
 			await this.removeBusinessHourFromDepartmentsIfNeeded(businessHourId, toRemove);
+			await this.removeBusinessHourFromDepartmentsAgents(businessHourId, toRemove);
 
 			// Now will check if the department which we're currently adding to BH is not
 			// associated with any other BH. If it is, then it will remove the old BH from all user's
@@ -98,12 +99,19 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 				projection: { _id: 1 },
 			}).toArray()
 		).map((dept) => dept._id);
+		await this.removeBusinessHourFromDepartmentsAgents(businessHourId, departmentIds);
+	}
+
+	private async removeBusinessHourFromDepartmentsAgents(businessHourId: string, departmentIds: string[]): Promise<void> {
+		if (!departmentIds.length) {
+			return;
+		}
 		const agentIds = (
 			await LivechatDepartmentAgents.findByDepartmentIds(departmentIds, {
 				projection: { agentId: 1 },
 			}).toArray()
 		).map((dept) => dept.agentId);
-		this.UsersRepository.removeBusinessHourByAgentIds(agentIds, businessHourId);
+		await this.UsersRepository.removeBusinessHourByAgentIds(agentIds, businessHourId);
 	}
 
 	private async removeBusinessHourFromDepartmentsIfNeeded(businessHourId: string, departmentsToRemove: string[]): Promise<void> {

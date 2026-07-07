@@ -71,6 +71,9 @@ describe('[OC] CustomBusinessHour', () => {
 			LivechatDepartmentStub.addBusinessHourToDepartmentsByIds.resetHistory();
 			LivechatDepartmentStub.findByBusinessHourId.reset();
 			LivechatDepartmentStub.findByBusinessHourId.returns(cursor([{ _id: 'dept1' }, { _id: 'dept2' }]));
+			LivechatDepartmentAgentsStub.findByDepartmentIds.reset();
+			LivechatDepartmentAgentsStub.findByDepartmentIds.returns(cursor([]));
+			UsersStub.removeBusinessHourByAgentIds.resetHistory();
 		});
 
 		it('should not touch department links when departmentsToApplyBusinessHour is not provided (internal re-save, e.g. DST verifier)', async () => {
@@ -112,6 +115,18 @@ describe('[OC] CustomBusinessHour', () => {
 
 			expect(LivechatDepartmentStub.removeBusinessHourFromDepartmentsByIdsAndBusinessHourId.calledOnceWith(['dept2'], 'bh-id')).to.be.true;
 			expect(LivechatDepartmentStub.addBusinessHourToDepartmentsByIds.calledOnceWith(['dept3'], 'bh-id')).to.be.true;
+		});
+
+		it('should remove the business hour from the agents of removed departments', async () => {
+			LivechatDepartmentAgentsStub.findByDepartmentIds.withArgs(['dept2'], sinon.match.any).returns(cursor([{ agentId: 'agent2' }]));
+
+			await customBusinessHour.saveBusinessHour({
+				...baseBusinessHour,
+				workHours: structuredClone(baseBusinessHour.workHours),
+				departmentsToApplyBusinessHour: 'dept1',
+			});
+
+			expect(UsersStub.removeBusinessHourByAgentIds.calledOnceWith(['agent2'], 'bh-id')).to.be.true;
 		});
 	});
 });
