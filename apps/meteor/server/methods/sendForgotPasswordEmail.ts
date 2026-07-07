@@ -23,6 +23,10 @@ export const sendForgotPasswordEmail = async (to: string): Promise<boolean | und
 		return true;
 	}
 
+	if (!settings.get('Accounts_AllowPasswordChange')) {
+		return false;
+	}
+
 	if (user.services && !user.services.password) {
 		if (!settings.get('Accounts_AllowPasswordChangeForOAuthUsers')) {
 			return false;
