@@ -31,7 +31,7 @@ test.describe.serial('emoji', () => {
 			const activityEmojiTab = poHomeChannel.getEmojiPickerTabByName('Activity');
 			await activityEmojiTab.click();
 			//Picker search input can steal focus and cause failures here
-			await expect(activityEmojiTab).toHaveClass(/rcx-button--icon-pressed/);
+			await expect(activityEmojiTab).toHaveAttribute('aria-selected', 'true');
 			await poHomeChannel.composer.inputMessage.click(); // To close the emoji picker
 		});
 
