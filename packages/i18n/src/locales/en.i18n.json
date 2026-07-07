@@ -4633,8 +4633,6 @@
   "Room_notifications_on": "{{roomName}} notifications on",
   "Room_notifications_off": "{{roomName}} notifications off",
   "Room_password_changed_successfully": "Room password changed successfully",
-  "Room_Toolbox_Layout": "Room Toolbox Layout",
-  "Room_Toolbox_Layout_description": "Configure the Room Toolbox buttons layout (Featured actions, Visible actions, and Overflow) using a JSON configuration.",
   "Room_Toolbox_Layout_Public": "Room Toolbox Layout (Public Channels)",
   "Room_Toolbox_Layout_Public_description": "Configure the Room Toolbox buttons layout for public channels (type 'c') using a JSON configuration.",
   "Room_Toolbox_Layout_Private": "Room Toolbox Layout (Private Groups)",
