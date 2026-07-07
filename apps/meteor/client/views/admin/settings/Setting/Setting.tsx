@@ -15,7 +15,7 @@ import { useHasSettingModule } from '../hooks/useHasSettingModule';
 
 const PRICING_URL = links.go.pricing;
 
-type SettingProps = {
+export type SettingProps = {
 	className?: string;
 	settingId: string;
 	sectionChanged?: boolean;

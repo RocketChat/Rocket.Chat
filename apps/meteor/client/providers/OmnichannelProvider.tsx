@@ -37,7 +37,7 @@ const emptyContextValue: OmnichannelContextValue = {
 	},
 };
 
-type OmnichannelProviderProps = {
+export type OmnichannelProviderProps = {
 	children?: ReactNode;
 };
 

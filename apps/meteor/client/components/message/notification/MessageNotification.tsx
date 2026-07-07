@@ -3,7 +3,7 @@ import { Box } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-type MessageNotificationProps = {
+export type MessageNotificationProps = {
 	label: TranslationKey;
 	bg: keyof (typeof Palette)['badge'];
 };

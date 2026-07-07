@@ -3,7 +3,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Users } from '@rocket.chat/models';
 import { isPersonalAccessToken } from '@rocket.chat/core-typings';
 
-import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../../../../server/lib/authorization/hasPermission';
 import { twoFactorRequired } from '../../../../../app/2fa/server/twoFactorRequired';
 import { removePersonalAccessTokenOfUser } from './removeToken';
 import { generatePersonalAccessTokenOfUser } from './generateToken';

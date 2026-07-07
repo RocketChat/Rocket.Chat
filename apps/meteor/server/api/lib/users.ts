@@ -4,8 +4,8 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Mongo } from 'meteor/mongo';
 import type { Filter, FindOptions, RootFilterOperators } from 'mongodb';
 
-import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
 import { settings } from '../../../app/settings/server';
+import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 
 type UserAutoComplete = Required<Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag'>>;
 

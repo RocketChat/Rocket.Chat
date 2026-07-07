@@ -10,7 +10,9 @@ import PermissionsContextBar from './PermissionsContextBar';
 import PermissionsTable from './PermissionsTable';
 import { usePermissionsAndRoles } from './hooks/usePermissionsAndRoles';
 
-const PermissionsPage = ({ isEnterprise }: { isEnterprise: boolean }) => {
+export type PermissionsPageProps = { isEnterprise: boolean };
+
+const PermissionsPage = ({ isEnterprise }: PermissionsPageProps) => {
 	const { t } = useTranslation();
 	const [filter, setFilter] = useState('');
 	const canViewPermission = usePermission('access-permissions');

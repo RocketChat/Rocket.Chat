@@ -38,9 +38,9 @@ const { banUserFromRoomMethod } = p.noCallThru().load('../../../../server/lib/ba
 	},
 	'@rocket.chat/models': modelsMock,
 	'../../app/authorization/server': { canAccessRoomAsync: canAccessRoomAsyncMock },
-	'../../app/authorization/server/functions/hasPermission': { hasPermissionAsync: hasPermissionAsyncMock },
-	'../../app/authorization/server/functions/hasRole': { hasRoleAsync: hasRoleAsyncMock },
-	'../../app/lib/server/functions/banUserFromRoom': { banUserFromRoom: banUserFromRoomMock },
+	'./authorization/hasPermission': { hasPermissionAsync: hasPermissionAsyncMock },
+	'./authorization/hasRole': { hasRoleAsync: hasRoleAsyncMock },
+	'./rooms/banUserFromRoom': { banUserFromRoom: banUserFromRoomMock },
 	'../../definition/IRoomTypeConfig': { RoomMemberActions },
 	'../lib/rooms/roomCoordinator': { roomCoordinator: roomCoordinatorMock },
 });

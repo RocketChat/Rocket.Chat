@@ -5,7 +5,7 @@ import { memo } from 'react';
 
 import SidebarGenericItem from './SidebarGenericItem';
 
-type SidebarNavigationItemProps = {
+export type SidebarNavigationItemProps = {
 	permissionGranted?: (() => boolean) | boolean;
 	pathSection: string;
 	icon?: IconName;

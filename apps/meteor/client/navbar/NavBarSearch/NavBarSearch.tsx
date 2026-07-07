@@ -89,7 +89,7 @@ const NavBarSearch = () => {
 					aria-autocomplete='list'
 					aria-keyshortcuts='Control+K Meta+K Control+P Meta+P'
 					small
-					addon={
+					endAddon={
 						isDirty ? (
 							<IconButton mini icon='cross' aria-label={t('Clear')} onClick={handleClearText} />
 						) : (

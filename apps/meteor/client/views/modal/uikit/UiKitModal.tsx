@@ -11,7 +11,7 @@ import { useModalContextValue } from '../../../uikit/hooks/useModalContextValue'
 import { useUiKitActionManager } from '../../../uikit/hooks/useUiKitActionManager';
 import { useUiKitView } from '../../../uikit/hooks/useUiKitView';
 
-type UiKitModalProps = {
+export type UiKitModalProps = {
 	key: UiKit.ModalView['id']; // force re-mount when viewId changes
 	initialView: UiKit.ModalView;
 };

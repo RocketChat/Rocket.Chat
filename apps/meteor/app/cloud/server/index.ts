@@ -1,11 +1,11 @@
 import { cronJobs } from '@rocket.chat/cron';
 import { Meteor } from 'meteor/meteor';
 
-import { connectWorkspace } from './functions/connectWorkspace';
-import { CloudWorkspaceAccessTokenEmptyError, getWorkspaceAccessToken } from './functions/getWorkspaceAccessToken';
-import { getWorkspaceAccessTokenWithScope } from './functions/getWorkspaceAccessTokenWithScope';
-import { retrieveRegistrationStatus } from './functions/retrieveRegistrationStatus';
-import { syncWorkspace } from './functions/syncWorkspace';
+import { connectWorkspace } from '../../../server/lib/cloud/connectWorkspace';
+import { CloudWorkspaceAccessTokenEmptyError, getWorkspaceAccessToken } from '../../../server/lib/cloud/getWorkspaceAccessToken';
+import { getWorkspaceAccessTokenWithScope } from '../../../server/lib/cloud/getWorkspaceAccessTokenWithScope';
+import { retrieveRegistrationStatus } from '../../../server/lib/cloud/retrieveRegistrationStatus';
+import { syncWorkspace } from '../../../server/lib/cloud/syncWorkspace';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import './methods';
 

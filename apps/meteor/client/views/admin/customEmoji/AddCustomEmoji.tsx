@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useEndpointUploadMutation } from '../../../hooks/useEndpointUploadMutation';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
-type AddCustomEmojiProps = {
+export type AddCustomEmojiProps = {
 	close: () => void;
 	onChange: () => void;
 };
