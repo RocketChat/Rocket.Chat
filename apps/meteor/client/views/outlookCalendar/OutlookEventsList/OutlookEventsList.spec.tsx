@@ -11,7 +11,7 @@ const mockChangeRoute = jest.fn();
 const mockOnClose = jest.fn();
 const mockSyncOutlookCalendar = jest.fn();
 
-const calendarEvents: Serialized<ICalendarEvent>[] = [
+const mockCalendarEvents: Serialized<ICalendarEvent>[] = [
 	{
 		_id: 'calendar-event-1',
 		_updatedAt: '2026-01-01T00:00:00.000Z',
@@ -48,7 +48,7 @@ jest.mock('../hooks/useOutlookCalendarList', () => ({
 		mutate: mockSyncOutlookCalendar,
 	}),
 	useOutlookCalendarListForToday: () => ({
-		data: calendarEvents,
+		data: mockCalendarEvents,
 		isError: false,
 		isPending: false,
 		isSuccess: true,
@@ -140,7 +140,7 @@ it('renders calendar events through PaginatedVirtualList', () => {
 
 	expect(list.tagName.toLowerCase()).toBe('ul');
 	expect(list).toHaveAttribute('data-buffer-size', '25');
-	expect(within(list).getAllByRole('listitem')).toHaveLength(calendarEvents.length);
+	expect(within(list).getAllByRole('listitem')).toHaveLength(mockCalendarEvents.length);
 	expect(within(list).getByText('Planning sync')).toBeInTheDocument();
 	expect(within(list).getByText('Design review')).toBeInTheDocument();
 });
