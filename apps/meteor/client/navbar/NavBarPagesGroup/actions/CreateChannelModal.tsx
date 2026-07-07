@@ -34,7 +34,7 @@ import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useIsFederationEnabled } from '../../../hooks/useIsFederationEnabled';
 import { useGoToRoom } from '../../../views/room/hooks/useGoToRoom';
 
-type CreateChannelModalProps = {
+export type CreateChannelModalProps = {
 	teamId?: string;
 	mainRoom?: IRoom;
 	onClose: () => void;

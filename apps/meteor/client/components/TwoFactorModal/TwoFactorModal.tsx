@@ -10,7 +10,7 @@ export enum Method {
 
 export type OnConfirm = (code: string, method: Method) => void | Promise<void>;
 
-type TwoFactorModalProps = {
+export type TwoFactorModalProps = {
 	onConfirm: OnConfirm;
 	onClose: () => void;
 	invalidAttempt?: boolean;

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useSortMenu } from './hooks/useSortMenu';
 
-type NavBarItemSortProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
+export type NavBarItemSortProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
 const NavBarItemSort = (props: NavBarItemSortProps) => {
 	const { t } = useTranslation();

@@ -19,7 +19,7 @@ import { useForm, Controller } from 'react-hook-form';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { useGoToRoom } from '../../../views/room/hooks/useGoToRoom';
 
-type CreateDirectMessageProps = { onClose: () => void };
+export type CreateDirectMessageProps = { onClose: () => void };
 
 const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
 	const t = useTranslation();

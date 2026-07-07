@@ -9,7 +9,7 @@ import AutocompleteOptions, { OptionsContext } from './UserAutoCompleteMultipleO
 import UserAvatarChip from './UserAvatarChip';
 import { usersQueryKeys } from '../../lib/queryKeys';
 
-type UserAutoCompleteMultipleProps = {
+export type UserAutoCompleteMultipleProps = {
 	onChange: (value: Array<string>) => void;
 	value: Array<string> | undefined;
 	placeholder?: string;

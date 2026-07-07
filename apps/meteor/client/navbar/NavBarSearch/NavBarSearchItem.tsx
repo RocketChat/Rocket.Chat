@@ -1,7 +1,7 @@
 import { SidebarV2Item, SidebarV2ItemAvatarWrapper, SidebarV2ItemTitle } from '@rocket.chat/fuselage';
 import type { HTMLAttributes, ReactNode } from 'react';
 
-type NavBarSearchItemProps = {
+export type NavBarSearchItemProps = {
 	title: string;
 	avatar: ReactNode;
 	icon: ReactNode;
