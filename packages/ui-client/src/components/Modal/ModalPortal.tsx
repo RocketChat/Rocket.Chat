@@ -1,29 +1,34 @@
+import { useOwnerDocument } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { memo } from 'react';
 import { createPortal } from 'react-dom';
 
-const createModalRoot = (): HTMLElement => {
+const createModalRoot = (ownerDocument: Document): HTMLElement => {
 	const id = 'modal-root';
-	const existing = document.getElementById(id);
+	const existing = ownerDocument.getElementById(id);
 
 	if (existing) return existing;
 
-	const newOne = document.createElement('div');
+	const newOne = ownerDocument.createElement('div');
 	newOne.id = id;
-	document.body.append(newOne);
+	ownerDocument.body.append(newOne);
 
 	return newOne;
 };
-
-let modalRoot: HTMLElement | null = null;
 
 type ModalPortalProps = {
 	children?: ReactNode;
 };
 
+const modalRoots = new WeakMap<Document, HTMLElement>();
+
 const ModalPortal = ({ children }: ModalPortalProps) => {
+	const { document: ownerDocument } = useOwnerDocument();
+
+	let modalRoot = modalRoots.get(ownerDocument);
 	if (!modalRoot) {
-		modalRoot = createModalRoot();
+		modalRoot = createModalRoot(ownerDocument);
+		modalRoots.set(ownerDocument, modalRoot);
 	}
 
 	return createPortal(children, modalRoot);

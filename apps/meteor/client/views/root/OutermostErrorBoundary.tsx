@@ -44,11 +44,7 @@ const OutermostErrorBoundary = ({ children }: OutermostErrorBoundaryProps) => {
 		return <BugsnagErrorBoundary FallbackComponent={AppErrorPage}>{children}</BugsnagErrorBoundary>;
 	}
 
-	return (
-		<ErrorBoundary fallbackRender={({ error, resetErrorBoundary }) => <AppErrorPage error={error} clearError={resetErrorBoundary} />}>
-			{children}
-		</ErrorBoundary>
-	);
+	return <ErrorBoundary fallbackRender={() => <AppErrorPage />}>{children}</ErrorBoundary>;
 };
 
 export default OutermostErrorBoundary;

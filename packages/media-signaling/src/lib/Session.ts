@@ -16,6 +16,7 @@ import type {
 import type { IClientMediaCall, CallActorType, CallContact, CallFeature, AnyMediaCallData } from '../definition/call';
 import type { IMediaSignalLogger } from '../definition/logger';
 import { SessionRegistration } from './components/SessionRegistration';
+import { isSameDeviceId } from './utils/isSameDeviceId';
 
 export type MediaSignalingEvents = {
 	sessionStateChange: void;
@@ -249,7 +250,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		// 1. doesn't have any input track yet
 		// 2. it's the same device id
 		// 3. has no restriction on which device to use
-		if (!this.inputTrack || deviceId === this.currentDeviceId || !deviceId) {
+		if (!this.inputTrack || !deviceId || isSameDeviceId(deviceId, this.currentDeviceId)) {
 			return;
 		}
 

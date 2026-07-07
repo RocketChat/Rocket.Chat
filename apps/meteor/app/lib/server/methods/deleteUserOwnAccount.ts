@@ -7,8 +7,8 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { trim } from '../../../../lib/utils/stringUtils';
+import { deleteUser } from '../../../../server/lib/users/deleteUser';
 import { settings } from '../../../settings/server';
-import { deleteUser } from '../functions/deleteUser';
 import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {

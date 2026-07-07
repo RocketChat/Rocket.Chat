@@ -63,7 +63,6 @@ exports[`CannedResponseList Storybook Stories renders Default without crashing 1
                     placeholder="Search"
                     size="1"
                     type="text"
-                    value=""
                   />
                   <span
                     class="rcx-box rcx-box--full rcx-input-box__addon"
@@ -117,13 +116,13 @@ exports[`CannedResponseList Storybook Stories renders Default without crashing 1
                     aria-expanded="false"
                     aria-haspopup="listbox"
                     aria-label="Type"
-                    aria-labelledby="react-aria-:r8: react-aria-:r3:"
+                    aria-labelledby="react-aria-_r_8_ react-aria-_r_3_"
                     class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
                     type="button"
                   >
                     <span
                       class="rcx-box rcx-box--full rcx-css-11g6st8"
-                      id="react-aria-:r8:"
+                      id="react-aria-_r_8_"
                     />
                     <i
                       aria-hidden="true"

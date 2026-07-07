@@ -1,14 +1,14 @@
 import { Field, FieldLabel, FieldRow, FieldHint, FieldDescription, Skeleton, InputBoxSkeleton } from '@rocket.chat/fuselage';
-import { Form } from '@rocket.chat/layout';
+import { Form, FormContainer, FormFooter, FormHeader, FormTitle } from '@rocket.chat/layout';
 
 const FormSkeleton = () => (
 	<Form aria-busy>
-		<Form.Header>
-			<Form.Title>
+		<FormHeader>
+			<FormTitle>
 				<Skeleton />
-			</Form.Title>
-		</Form.Header>
-		<Form.Container></Form.Container>
+			</FormTitle>
+		</FormHeader>
+		<FormContainer></FormContainer>
 		<Field>
 			<FieldLabel>
 				<Skeleton />
@@ -23,9 +23,9 @@ const FormSkeleton = () => (
 				<Skeleton />
 			</FieldHint>
 		</Field>
-		<Form.Footer>
+		<FormFooter>
 			<Skeleton />
-		</Form.Footer>
+		</FormFooter>
 	</Form>
 );
 

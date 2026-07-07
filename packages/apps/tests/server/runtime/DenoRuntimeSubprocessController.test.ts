@@ -2,7 +2,6 @@
 
 import * as assert from 'node:assert';
 import * as fs from 'node:fs/promises';
-import * as os from 'node:os';
 import * as path from 'node:path';
 import { describe, it, afterEach, mock, before, after } from 'node:test';
 
@@ -39,6 +38,8 @@ describe('DenoRuntimeSubprocessController', () => {
 			const appPackageBuffer = await fs.readFile(path.join(__dirname, '../../test-data/apps/hello-world-test_0.0.1.zip'));
 			appPackage = await manager.getParser().unpackageApp(appPackageBuffer);
 
+			await fs.unlink(path.join(manager.getTempFilePath(), 'deno-runtime')).catch(function noop() {});
+
 			appStorageItem = {
 				id: 'hello-world-test',
 				status: AppStatus.MANUALLY_ENABLED,
@@ -57,7 +58,7 @@ describe('DenoRuntimeSubprocessController', () => {
 	after(
 		async () => {
 			await controller?.stopApp();
-			await fs.unlink(path.join(os.tmpdir(), 'deno-runtime')).catch((reason) => {
+			await fs.unlink(path.join(manager.getTempFilePath(), 'deno-runtime')).catch((reason) => {
 				console.warn('Failed to delete temporary Deno runtime symlink', reason);
 			});
 		},

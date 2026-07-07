@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import type { UnitOption } from '../hooks/useUnitsList';
 import { useUnitsList } from '../hooks/useUnitsList';
 
-type AutoCompleteUnitProps = Omit<
+export type AutoCompleteUnitProps = Omit<
 	ComponentProps<typeof PaginatedSelectFiltered>,
 	'filter' | 'setFilter' | 'options' | 'endReached' | 'renderItem'
 > & {

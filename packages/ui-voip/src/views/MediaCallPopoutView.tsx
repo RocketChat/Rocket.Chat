@@ -1,22 +1,11 @@
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import { memo, useState } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import {
-	ToggleButton,
-	Timer,
-	DevicePicker,
-	ActionButton,
-	CardListContainer,
-	CardListSection,
-	PeerCard,
-	StreamCard,
-	useShouldWrapCards,
-	ActionStrip,
-} from '../components';
+import { ToggleButton, Timer, DevicePicker, ActionButton, useShouldWrapCards, ActionStrip } from '../components';
+import MediaCallCardList from './MediaCallCardList';
 import { useMediaCallView } from '../context/MediaCallViewContext';
-import { usePlayMediaStream } from '../providers/usePlayMediaStream';
 
 type MediaCallPopoutViewProps = {
 	user: {
@@ -31,7 +20,6 @@ type MediaCallPopoutViewProps = {
 const MediaCallPopoutView = ({ user, onClickClosePopout, onClickFullscreen, fullscreen }: MediaCallPopoutViewProps) => {
 	const { t } = useTranslation();
 
-	const [focusedCard, setFocusedCard] = useState<'remote' | 'local' | null>('remote');
 	const {
 		sessionState,
 		onMute,
@@ -39,10 +27,10 @@ const MediaCallPopoutView = ({ user, onClickClosePopout, onClickFullscreen, full
 		onForward,
 		onEndCall,
 		onToggleScreenSharing,
-		streams: { remoteScreen, localScreen },
+		streams: { localScreen },
 	} = useMediaCallView();
 
-	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt } = sessionState;
+	const { muted, held, peerInfo, connectionState, startedAt } = sessionState;
 
 	const { ref, borderBoxSize } = useResizeObserver<HTMLDivElement>();
 
@@ -51,58 +39,9 @@ const MediaCallPopoutView = ({ user, onClickClosePopout, onClickFullscreen, full
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
-	const [remoteStreamRefCallback] = usePlayMediaStream(remoteScreen?.stream ?? null);
-	const [localStreamRefCallback] = usePlayMediaStream(localScreen?.stream ?? null);
-
-	const onClickFocusRemoteCard = () => {
-		setFocusedCard((prev) => (prev === 'remote' ? null : 'remote'));
-	};
-
-	const onClickFocusLocalCard = () => {
-		setFocusedCard((prev) => (prev === 'local' ? null : 'local'));
-	};
-
 	if (!peerInfo || 'number' in peerInfo) {
 		return null;
 	}
-
-	const remoteStreamCard = remoteScreen?.active ? (
-		<StreamCard onClickFocusStream={onClickFocusRemoteCard} focused={focusedCard === 'remote'}>
-			<video
-				preload='metadata'
-				style={{ objectFit: 'contain', height: '100%', width: '100%' }}
-				ref={remoteStreamRefCallback}
-				autoPlay={true}
-				muted={true}
-				playsInline={true}
-			>
-				<track kind='captions' />
-			</video>
-		</StreamCard>
-	) : null;
-
-	const localStreamCard = localScreen?.active ? (
-		<StreamCard
-			own
-			onClickFocusStream={onClickFocusLocalCard}
-			onClickStopSharing={onToggleScreenSharing}
-			focused={focusedCard === 'local'}
-			showStopSharingOnHover
-		>
-			<video
-				preload='metadata'
-				style={{ objectFit: 'contain', height: '100%', width: '100%' }}
-				ref={localStreamRefCallback}
-				autoPlay={true}
-				playsInline={true}
-				muted={true}
-			>
-				<track kind='captions' />
-			</video>
-		</StreamCard>
-	) : null;
-
-	const focusedCardElement = focusedCard === 'remote' ? remoteStreamCard : localStreamCard;
 
 	return (
 		<Box
@@ -117,14 +56,7 @@ const MediaCallPopoutView = ({ user, onClickClosePopout, onClickFullscreen, full
 			flexDirection='column'
 			ref={ref}
 		>
-			<CardListSection>
-				<CardListContainer focusedCard={focusedCard ? focusedCardElement : undefined} shouldWrapCards={shouldWrapCards}>
-					<PeerCard displayName={user.displayName} avatarUrl={user.avatarUrl} muted={muted} held={held} />
-					<PeerCard displayName={peerInfo.displayName} avatarUrl={peerInfo.avatarUrl} muted={remoteMuted} held={remoteHeld} />
-					{focusedCard !== 'remote' && remoteStreamCard}
-					{focusedCard !== 'local' && localStreamCard}
-				</CardListContainer>
-			</CardListSection>
+			<MediaCallCardList user={user} shouldWrapCards={shouldWrapCards} />
 			<ActionStrip
 				leftSlot={
 					<Box color='default' alignContent='center' pis={16}>

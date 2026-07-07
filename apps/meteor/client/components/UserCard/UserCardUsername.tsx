@@ -3,7 +3,7 @@ import type { ReactNode, ComponentProps } from 'react';
 
 import * as UserStatus from '../UserStatus';
 
-type UserCardUsernameProps = ComponentProps<typeof Box> & {
+export type UserCardUsernameProps = ComponentProps<typeof Box> & {
 	name: ReactNode;
 	status: ReactNode;
 };

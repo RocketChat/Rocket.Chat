@@ -6,7 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import { compileIntegrationScript } from './compileIntegrationScript';
 import { isScriptEngineFrozen } from './validateScriptEngine';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
-import { hasPermissionAsync, hasAllPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { hasPermissionAsync, hasAllPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 import { outgoingEvents } from '../../lib/outgoingEvents';
 
 const scopedChannels = ['all_public_channels', 'all_private_groups', 'all_direct_messages'];

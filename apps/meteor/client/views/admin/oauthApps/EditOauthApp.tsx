@@ -26,7 +26,7 @@ type EditOAuthAddAppPayload = {
 	redirectUri: string;
 };
 
-type EditOauthAppProps = {
+export type EditOauthAppProps = {
 	onChange: () => void;
 	data: Serialized<IOAuthApps>;
 } & Omit<ComponentProps<typeof ContextualbarScrollableContent>, 'data'>;

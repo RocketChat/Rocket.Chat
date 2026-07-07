@@ -25,7 +25,7 @@ import {
 } from './list/MessageListContext';
 import { normalizeUsername } from '../../../lib/utils/normalizeUsername';
 
-type MessageHeaderProps = {
+export type MessageHeaderProps = {
 	message: IMessage;
 };
 

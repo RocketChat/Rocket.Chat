@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { PriorityIcon } from '../priorities/PriorityIcon';
 
-type PrioritiesSelectProps = {
+export type PrioritiesSelectProps = {
 	value: string;
 	label: string;
 	options: Serialized<ILivechatPriority[]>;

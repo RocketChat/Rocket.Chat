@@ -5,8 +5,8 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
 
-import { canAccessRoomIdAsync } from '../../app/authorization/server/functions/canAccessRoom';
 import { getChannelHistory } from '../../app/lib/server/methods/getChannelHistory';
+import { canAccessRoomIdAsync } from '../lib/authorization/canAccessRoom';
 
 type CursorPaginationType = 'UPDATED' | 'DELETED';
 

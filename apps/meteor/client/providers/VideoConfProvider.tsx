@@ -9,7 +9,9 @@ import { VideoConfManager } from '../lib/VideoConfManager';
 import VideoConfPopups from '../views/room/contextualBar/VideoConference/VideoConfPopups';
 import { useVideoConfOpenCall } from '../views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
 
-const VideoConfContextProvider = ({ children }: { children: ReactNode }) => {
+export type VideoConfContextProviderProps = { children: ReactNode };
+
+const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) => {
 	const [outgoing, setOutgoing] = useState<VideoConfPopupPayload | undefined>();
 	const handleOpenCall = useVideoConfOpenCall();
 	const dispatchToastMessage = useToastMessageDispatch();

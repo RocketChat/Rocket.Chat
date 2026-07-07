@@ -723,6 +723,11 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				return;
 			}
 
+			if (isUserNativeFederated(user)) {
+				this.logger.debug('Edit originated from a federated user; not re-sending to Matrix');
+				return;
+			}
+
 			const userMui = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
 
 			const parsedMessage = await toExternalMessageFormat({

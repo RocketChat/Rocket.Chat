@@ -15,7 +15,7 @@ type TwoFactorTOTPFormData = {
 	authCode: string;
 };
 
-type TwoFactorTOTPProps = ComponentPropsWithoutRef<typeof Box>;
+export type TwoFactorTOTPProps = ComponentPropsWithoutRef<typeof Box>;
 
 const TwoFactorTOTP = (props: TwoFactorTOTPProps) => {
 	const { t } = useTranslation();

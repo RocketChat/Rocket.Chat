@@ -2,10 +2,10 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { findRoomByIdOrName } from '../../../api/server/v1/rooms';
+import { findRoomByIdOrName } from '../../../../server/api/v1/rooms';
+import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
+import { cleanRoomHistory } from '../../../../server/lib/rooms/cleanRoomHistory';
 import { canAccessRoomAsync } from '../../../authorization/server';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { cleanRoomHistory } from '../functions/cleanRoomHistory';
 
 type CleanRoomHistoryParams = {
 	roomId: string;

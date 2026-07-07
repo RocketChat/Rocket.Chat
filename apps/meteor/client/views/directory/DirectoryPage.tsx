@@ -1,4 +1,4 @@
-import { Tabs } from '@rocket.chat/fuselage';
+import { Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRouter, useRouteParameter, useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect, useCallback } from 'react';
@@ -40,19 +40,19 @@ const DirectoryPage = () => {
 		<Page background='room'>
 			<PageHeader title={t('Directory')} />
 			<Tabs flexShrink={0}>
-				<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>
+				<TabsItem selected={tab === 'channels'} onClick={handleTabClick('channels')}>
 					{t('Channels')}
-				</Tabs.Item>
-				<Tabs.Item selected={tab === 'users'} onClick={handleTabClick('users')}>
+				</TabsItem>
+				<TabsItem selected={tab === 'users'} onClick={handleTabClick('users')}>
 					{t('Users')}
-				</Tabs.Item>
-				<Tabs.Item selected={tab === 'teams'} onClick={handleTabClick('teams')}>
+				</TabsItem>
+				<TabsItem selected={tab === 'teams'} onClick={handleTabClick('teams')}>
 					{t('Teams')}
-				</Tabs.Item>
+				</TabsItem>
 				{federationEnabled && (
-					<Tabs.Item selected={tab === 'external'} onClick={handleTabClick('external')}>
+					<TabsItem selected={tab === 'external'} onClick={handleTabClick('external')}>
 						{t('External_Users')}
-					</Tabs.Item>
+					</TabsItem>
 				)}
 			</Tabs>
 			<PageContent>

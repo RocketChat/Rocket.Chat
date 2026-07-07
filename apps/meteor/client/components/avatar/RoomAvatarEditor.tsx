@@ -12,7 +12,7 @@ import { getAvatarURL } from '../../../app/utils/client/getAvatarURL';
 import { useSingleFileInput } from '../../hooks/useSingleFileInput';
 import { isValidImageFormat } from '../../lib/utils/isValidImageFormat';
 
-type RoomAvatarEditorProps = {
+export type RoomAvatarEditorProps = {
 	room: Pick<IRoom, RoomAdminFieldsType>;
 	disabled?: boolean;
 	roomAvatar?: string;

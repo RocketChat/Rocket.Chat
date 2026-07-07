@@ -18,7 +18,9 @@ type UsersInRolePayload = {
 	users: string[];
 };
 
-const UsersInRolePage = ({ role }: { role: IRole }) => {
+export type UsersInRolePageProps = { role: IRole };
+
+const UsersInRolePage = ({ role }: UsersInRolePageProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();

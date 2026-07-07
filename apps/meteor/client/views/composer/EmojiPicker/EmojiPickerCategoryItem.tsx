@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { EmojiCategory } from '../../../../app/emoji/client';
 
-type EmojiPickerCategoryItemProps = {
+export type EmojiPickerCategoryItemProps = {
 	category: EmojiCategory;
 	active: boolean;
 	handleGoToCategory: () => void;

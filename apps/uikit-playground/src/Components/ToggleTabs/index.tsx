@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Tabs } from '@rocket.chat/fuselage';
+import { Tabs, TabsItem } from '@rocket.chat/fuselage';
 
 const ToggleTabs = ({
 	tabsItem,
@@ -20,9 +20,9 @@ const ToggleTabs = ({
 	return (
 		<Tabs>
 			{tabsItem.map((item: string, index: number) => (
-				<Tabs.Item key={index} selected={selectedTab === index} onClick={() => onChange(index)} className={disableBorder}>
+				<TabsItem key={index} selected={selectedTab === index} onClick={() => onChange(index)} className={disableBorder}>
 					{item}
-				</Tabs.Item>
+				</TabsItem>
 			))}
 		</Tabs>
 	);
