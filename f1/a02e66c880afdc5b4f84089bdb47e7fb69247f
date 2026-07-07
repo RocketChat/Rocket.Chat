@@ -1,0 +1,35 @@
+ee/packages/federation-matrix/src/api/_matrix/client/rooms-lifecycle.ts
+  s_a3c4103e708c43::t_62c59042459841 156-161
+ee/packages/federation-matrix/src/api/_matrix/client/rooms-state.ts
+  s_a3c4103e708c43::t_30849348475502 117-123
+  s_a3c4103e708c43::t_3108b8b846c3e0 125-129
+  s_a3c4103e708c43::t_b251853c4851e4 341,345
+ee/packages/federation-matrix/src/api/_matrix/client/rooms-messaging.ts
+  s_a3c4103e708c43::t_9fca803a849380 155-166
+ee/packages/federation-matrix/src/api/_matrix/client/account.ts
+  s_a3c4103e708c43::t_74eab37dce856e 95-96
+ee/packages/federation-matrix/src/helpers/getFederatedRoomName.ts
+  s_a3c4103e708c43::t_b55a092e2f150a 3-4,7
+ee/packages/federation-matrix/src/helpers/getFederatedRoomName.spec.ts
+  s_a3c4103e708c43::t_2287ba23f3edc0 12-24
+ee/packages/federation-matrix/src/api/_matrix/client/media.ts
+  s_a3c4103e708c43::t_890958416ae2a8 73-76
+  s_a3c4103e708c43::t_609f84c0d7128e 104-105,154-155
+  s_a3c4103e708c43::t_3e2c002d29110b 181-183
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "f1a02e66c880afdc5b4f84089bdb47e7fb69247f",
+  "prompts": {},
+  "sessions": {
+    "s_a3c4103e708c43": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6519e866-6b58-4cab-a56a-34a8f8acff97",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
