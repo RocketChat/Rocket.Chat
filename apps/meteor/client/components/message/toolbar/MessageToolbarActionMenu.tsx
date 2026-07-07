@@ -33,7 +33,7 @@ type MessageActionSection = {
 	items: GenericMenuItemProps[];
 };
 
-type MessageToolbarActionMenuProps = {
+export type MessageToolbarActionMenuProps = {
 	message: IMessage;
 	context: MessageActionContext;
 	room: IRoom;
