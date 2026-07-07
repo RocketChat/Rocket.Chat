@@ -5,7 +5,7 @@ import { forwardRef, memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // TODO: consider changing the type of TextInput's `onChange` to (event: ChangeEvent<HTMLInputElement>) => void
-type FilterByTextProps = Omit<ComponentPropsWithoutRef<typeof TextInput>, 'onChange'> & {
+export type FilterByTextProps = Omit<ComponentPropsWithoutRef<typeof TextInput>, 'onChange'> & {
 	shouldAutoFocus?: boolean;
 	onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
 };
