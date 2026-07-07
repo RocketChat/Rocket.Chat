@@ -34,13 +34,13 @@ import { createRoom } from '../../lib/rooms/createRoom'; // TODO remove this imp
 import { executeUnbanUserFromRoom } from '../../lib/rooms/executeUnbanUserFromRoom';
 import { removeUserFromRoom, performUserRemoval } from '../../lib/rooms/removeUserFromRoom';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
-import { addRoomLeader } from '../../meteor-methods/addRoomLeader';
-import { addRoomModerator } from '../../meteor-methods/addRoomModerator';
-import { addRoomOwner } from '../../meteor-methods/addRoomOwner';
-import { createDirectMessage } from '../../meteor-methods/createDirectMessage';
-import { removeRoomLeader } from '../../meteor-methods/removeRoomLeader';
-import { removeRoomModerator } from '../../meteor-methods/removeRoomModerator';
-import { removeRoomOwner } from '../../meteor-methods/removeRoomOwner';
+import { createDirectMessage } from '../../meteor-methods/messages/createDirectMessage';
+import { addRoomLeader } from '../../meteor-methods/rooms/addRoomLeader';
+import { addRoomModerator } from '../../meteor-methods/rooms/addRoomModerator';
+import { addRoomOwner } from '../../meteor-methods/rooms/addRoomOwner';
+import { removeRoomLeader } from '../../meteor-methods/rooms/removeRoomLeader';
+import { removeRoomModerator } from '../../meteor-methods/rooms/removeRoomModerator';
+import { removeRoomOwner } from '../../meteor-methods/rooms/removeRoomOwner';
 
 export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';

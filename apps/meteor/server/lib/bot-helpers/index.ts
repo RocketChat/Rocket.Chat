@@ -9,7 +9,7 @@ import { addUserToRole } from '../../../app/authorization/server/methods/addUser
 import { removeUserFromRole } from '../../../app/authorization/server/methods/removeUserFromRole';
 import { addUsersToRoomMethod } from '../../../app/lib/server/methods/addUsersToRoom';
 import { settings } from '../../../app/settings/server';
-import { removeUserFromRoomMethod } from '../../meteor-methods/removeUserFromRoom';
+import { removeUserFromRoomMethod } from '../../meteor-methods/rooms/removeUserFromRoom';
 import { hasRoleAsync } from '../authorization/hasRole';
 
 /**
