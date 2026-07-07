@@ -1,10 +1,12 @@
 import { IconButton, MenuItem, MenuSection, Menu } from '@rocket.chat/fuselage';
-import { cloneElement, type ComponentProps, type ReactNode } from 'react';
+import { cloneElement, isValidElement, type ComponentProps, type ReactNode, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { GenericMenuItemProps } from './GenericMenuItem';
 import GenericMenuItem from './GenericMenuItem';
 import { useHandleMenuAction } from './hooks/useHandleMenuAction';
+
+let hasWarnedButtonDeprecation: boolean = false;
 
 type GenericMenuCommonProps = {
 	title: string;
@@ -28,30 +30,69 @@ type GenericMenuConditionalProps =
 			sections?: never;
 	  };
 
-type GenericMenuProps = GenericMenuCommonProps & GenericMenuConditionalProps & Omit<ComponentProps<typeof Menu>, 'children'>;
+type GenericMenuProps =
+	GenericMenuCommonProps &
+	GenericMenuConditionalProps &
+	Omit<ComponentProps<typeof Menu>, 'children'> & {
+		/**
+		 * @deprecated This prop will be removed in the future. A replacement API will be introduced.
+		 */
+		button?: ReactNode;
+	};
 
-const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction, button, className, ...props }: GenericMenuProps) => {
+const GenericMenu = ({
+	title,
+	icon = 'menu',
+	disabled,
+	onAction,
+	callbackAction,
+	button,
+	className,
+	...props
+}: GenericMenuProps) => {
+	useEffect(() => {
+		if (button && !hasWarnedButtonDeprecation) {
+			console.warn(
+				"GenericMenu: The 'button' prop is deprecated. A replacement API will be introduced."
+			);
+			hasWarnedButtonDeprecation = true;
+		}
+	}, [button]);
+
 	const { t, i18n } = useTranslation();
 
 	const sections = 'sections' in props && props.sections;
 	const items = 'items' in props && props.items;
 
-	const itemsList = sections ? sections.reduce((acc, { items }) => [...acc, ...items], [] as GenericMenuItemProps[]) : items || [];
+	const itemsList = sections
+		? sections.reduce((acc, { items }) => [...acc, ...items], [] as GenericMenuItemProps[])
+		: items || [];
 
 	const disabledKeys = itemsList.filter(({ disabled }) => disabled).map(({ id }) => id);
 	const handleAction = useHandleMenuAction(itemsList || [], callbackAction);
 
 	const hasIcon = itemsList.some(({ icon }) => icon);
+
 	const handleItems = (items: GenericMenuItemProps[]) =>
-		hasIcon ? items.map((item) => ({ ...item, gap: item.gap ?? (!item.icon && !item.status) })) : items;
+		hasIcon
+			? items.map((item) => ({
+					...item,
+					gap: item.gap ?? (!item.icon && !item.status),
+			  }))
+			: items;
 
 	const isMenuEmpty = !(sections && sections.length > 0) && !(items && items.length > 0);
+	const isDisabled = disabled || isMenuEmpty;
 
-	if (isMenuEmpty || disabled) {
-		if (button) {
-			// FIXME: deprecate prop `button` as there's no way to ensure it is actually a button
-			// (e.g cloneElement could be passing props to a fragment)
-			return cloneElement(button, { small: true, icon, disabled, title, className } as any);
+	if (isDisabled) {
+		if (button && isValidElement(button)) {
+			return cloneElement(button, {
+				small: true,
+				icon,
+				disabled: isDisabled,
+				title,
+				className,
+			} as any);
 		}
 
 		return <IconButton small icon={icon} className={className} title={title} disabled />;
@@ -84,6 +125,7 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 					))}
 				</Menu>
 			)}
+
 			{items && (
 				<Menu
 					icon={icon}
