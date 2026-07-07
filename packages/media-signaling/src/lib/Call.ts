@@ -157,6 +157,23 @@ export class ClientMediaCall implements IClientMediaCall {
 		return !this.isPendingAcceptance() && !this.isOver();
 	}
 
+	public get ringing(): boolean {
+		if (this.hidden) {
+			return false;
+		}
+
+		if (this._state !== 'ringing' || !this.hasRemoteData) {
+			return false;
+		}
+
+		if (this.role === 'caller' && this._contact?.type === 'sip') {
+			// On SIP Calls, the caller should start ringing only after the offer is sent to the server
+			return this.sentLocalSdp;
+		}
+
+		return true;
+	}
+
 	public get confirmed(): boolean {
 		return this.hasRemoteData;
 	}
@@ -200,6 +217,8 @@ export class ClientMediaCall implements IClientMediaCall {
 	private remoteCallId: string | null;
 
 	private oldClientState: ClientState;
+
+	private hasFiredRingingEvent: boolean;
 
 	private serviceStates: Map<string, string>;
 
@@ -278,6 +297,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			activeTimestamp: this.activeTimestamp,
 			tempCallId: this.tempCallId,
 			hidden: this.hidden,
+			ringing: this.ringing,
 
 			localParticipant: this.localParticipant,
 			remoteParticipant: this.remoteParticipant,
@@ -318,6 +338,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this._role = 'callee';
 		this._state = 'none';
 		this.oldClientState = 'none';
+		this.hasFiredRingingEvent = false;
 		this._ignored = false;
 		this._contact = null;
 		this._transferredBy = null;
@@ -464,6 +485,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			}
 			this.emitter.emit('contactUpdate');
 			this.emitter.emit('confirmed');
+			this.updateRingingEvent();
 		}
 
 		await this.processEarlySignals();
@@ -944,6 +966,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this._state = newState;
 		this.maybeStopWebRTC();
 		this.updateClientState();
+		this.updateRingingEvent();
 
 		this.emitter.emit('stateChange', oldState);
 		this.requestStateReport();
@@ -986,6 +1009,15 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.requestStateReport();
 		this.oldClientState = clientState;
 		this.emitter.emit('clientStateChange', oldClientState);
+	}
+
+	private updateRingingEvent(): void {
+		if (this.hasFiredRingingEvent || !this.ringing) {
+			return;
+		}
+
+		this.hasFiredRingingEvent = true;
+		this.emitter.emit('ringing');
 	}
 
 	private maybeStopWebRTC(): void {
@@ -1118,6 +1150,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		this.updateClientState();
+		this.updateRingingEvent();
 	}
 
 	protected getLocalStreamIds(): MediaStreamIdentification[] {
