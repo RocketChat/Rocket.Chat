@@ -15,7 +15,7 @@ import { memo, useState } from 'react';
 
 import { useShortTimeAgo } from '../../../../hooks/useTimeAgo';
 
-type SidePanelItemProps = {
+export type SidePanelItemProps = {
 	href: string;
 	selected: boolean;
 	title: string;
