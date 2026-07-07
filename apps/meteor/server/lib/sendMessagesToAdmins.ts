@@ -3,8 +3,8 @@ import { Roles, Users } from '@rocket.chat/models';
 
 import { SystemLogger } from './logger/system';
 import { notifyOnUserChangeAsync } from '../../app/lib/server/lib/notifyListener';
-import { executeSendMessage } from '../../app/lib/server/methods/sendMessage';
 import { createDirectMessage } from '../meteor-methods/messages/createDirectMessage';
+import { executeSendMessage } from '../meteor-methods/messages/sendMessage';
 
 type Banner = {
 	id: string;

@@ -5,10 +5,10 @@ import limax from 'limax';
 
 import { RecordConverter } from './RecordConverter';
 import { createDirectMessage } from '../../../../../server/meteor-methods/messages/createDirectMessage';
+import { createChannelMethod } from '../../../../../server/meteor-methods/rooms/createChannel';
+import { createPrivateGroupMethod } from '../../../../../server/meteor-methods/rooms/createPrivateGroup';
 import { saveRoomSettings } from '../../../../channel-settings/server/methods/saveRoomSettings';
 import { notifyOnSubscriptionChangedByRoomId } from '../../../../lib/server/lib/notifyListener';
-import { createChannelMethod } from '../../../../lib/server/methods/createChannel';
-import { createPrivateGroupMethod } from '../../../../lib/server/methods/createPrivateGroup';
 import type { IConversionCallbacks } from '../../definitions/IConversionCallbacks';
 
 export class RoomConverter extends RecordConverter<IImportChannelRecord> {

@@ -6,10 +6,10 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { UpdateFilter } from 'mongodb';
 
+import { setEmailFunction } from './setEmail';
 import { type AuthenticatedContext, twoFactorRequired } from '../../../app/2fa/server/twoFactorRequired';
 import { notifyOnUserChange } from '../../../app/lib/server/lib/notifyListener';
 import { passwordPolicy } from '../../../app/lib/server/lib/passwordPolicy';
-import { setEmailFunction } from '../../../app/lib/server/methods/setEmail';
 import { settings as rcSettings } from '../../../app/settings/server';
 import { setUserStatusMethod } from '../../../app/user-status/server/methods/setUserStatus';
 import { getUserInfo } from '../../api/lib/getUserInfo';
