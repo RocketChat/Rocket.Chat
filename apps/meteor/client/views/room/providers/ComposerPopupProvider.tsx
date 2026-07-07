@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { emoji } from '../../../../app/emoji/client';
 import { slashCommands } from '../../../../app/utils/client';
+import { createMessageBoxPopupConfig } from '../../../components/AutocompletePopup/ComposerPopupOption';
 import { cannedResponsesQueryKeys } from '../../../lib/queryKeys';
 import { Messages, Subscriptions } from '../../../stores';
 import ComposerBoxPopupCannedResponse from '../composer/ComposerBoxPopupCannedResponse';
@@ -24,7 +25,7 @@ import ComposerBoxPopupSlashCommand from '../composer/ComposerBoxPopupSlashComma
 import ComposerBoxPopupUser from '../composer/ComposerBoxPopupUser';
 import type { ComposerBoxPopupUserProps } from '../composer/ComposerBoxPopupUser';
 import type { ComposerPopupContextValue } from '../contexts/ComposerPopupContext';
-import { ComposerPopupContext, createMessageBoxPopupConfig } from '../contexts/ComposerPopupContext';
+import { ComposerPopupContext } from '../contexts/ComposerPopupContext';
 import useCannedResponsesQuery from './hooks/useCannedResponsesQuery';
 import { normalizeUsername } from '../../../../lib/utils/normalizeUsername';
 import { pipe } from '../../../lib/cachedStores/pipe';
