@@ -509,7 +509,7 @@ for f in $(find server/meteor-methods ee/server/meteor-methods -name "*.ts" ! -n
 done
 ```
 
-Match against the full `meteor-methods/<subpath>` suffix — a loose `<domain>/<name>` pattern false-passes on same-named `server/lib/` functions (this exact aliasing hid a dropped `unblockUser` registration in Phase 5b until audited). Known-empty files (`omnichannel/saveBusinessHour.ts`, EE `omnichannel/removeBusinessHour.ts`) register nothing and are expected hits.
+Match against the full `meteor-methods/<subpath>` suffix — a loose `<domain>/<name>` pattern false-passes on same-named `server/lib/` functions (this exact aliasing hid a dropped `unblockUser` registration in Phase 5b until audited). The audit must come back empty: the two historical 0-byte stragglers it initially flagged (`saveBusinessHour.ts`, EE `removeBusinessHour.ts`, emptied but not deleted by #37772/#37819) were removed in Phase 5.
 
 ---
 
