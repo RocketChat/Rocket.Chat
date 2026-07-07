@@ -60,7 +60,8 @@ apps/meteor/server/
 │   ├── ApiClass.ts                #   API framework
 │   ├── api.ts                     #   API initialization
 │   ├── router.ts                  #   Hono router
-│   └── definition.ts              #   TypeScript types
+│   ├── definition.ts              #   TypeScript types
+│   └── webhooks.ts                #   /hooks/* webhook API (from app/integrations/server/api/)
 │
 ├── slashcommands/                 # Slash commands (from app/slashcommands-*/server/)
 │   ├── archiveroom.ts
@@ -102,6 +103,7 @@ apps/meteor/server/
 │   ├── platform/                  #   from app/autotranslate/ + app/e2e/ + existing flat files
 │   ├── import/                    #   from app/importer/server/methods/
 │   ├── integrations/              #   from app/integrations/server/methods/
+│   ├── media/                     #   from app/custom-sounds/, app/emoji-custom/, app/file-upload/ methods (Phase 6e)
 │   └── index.ts                   #   updated to import from domain subfolders
 │
 ├── hooks/                         # EXISTING — event handlers
@@ -397,6 +399,8 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 
 **Note**: After the rename above, the existing flat files (now under `server/meteor-methods/`) are also moved into the appropriate domain subfolder as part of this phase.
 
+**Deferred methods**: features that move wholesale in Phases 6/7 (file-upload, mentions, user-status, emoji-custom, custom-sounds, push-notifications, statistics, version-check, meteor-accounts-saml, oauth2-server-config) keep their `methods/` dirs until their own phase. Those dirs are routed to `server/meteor-methods/<domain>/` by explicit rows in the Phase 6/7 tables — they must not ride along into `server/lib/`. Until then, `verify-no-old-imports.mjs "server/methods"` reports ~11 hits pointing at these dirs; that is expected.
+
 | Source                                            | Destination                                     |
 | ------------------------------------------------- | ----------------------------------------------- |
 | `app/lib/server/methods/setRealName.ts`           | `server/meteor-methods/users/setRealName.ts`           |
@@ -504,6 +508,8 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 
 **Scope**: ~300 files
 
+**Methods stay out of `lib/`.** Several features in this phase still carry a `methods/` subdir that Phase 5 deliberately did not touch (their features move here). Those files go to `server/meteor-methods/<domain>/` — never along with the feature into `server/lib/` — so the "all Meteor methods live in `meteor-methods/`" invariant from Phase 5 holds. Every such dir is listed explicitly in the tables below, and the parent row is qualified with "(non-methods)". This phase introduces one new domain folder, `server/meteor-methods/media/`, for media admin methods (custom sounds, custom emoji, file-upload helpers).
+
 #### Phase 6a: Auth Providers (~30 files)
 
 | Source                                   | Destination                                      |
@@ -520,7 +526,8 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 | `app/iframe-login/server/`               | `server/lib/auth-providers/iframe.ts`            |
 | `app/wordpress/server/`                  | `server/lib/auth-providers/wordpress.ts`         |
 | `app/lib/server/oauth/*.js`              | `server/lib/auth-providers/oauth/`               |
-| `app/meteor-accounts-saml/server/`       | `server/lib/saml/`                               |
+| `app/meteor-accounts-saml/server/` (non-methods) | `server/lib/saml/`                       |
+| `app/meteor-accounts-saml/server/methods/*.ts` | `server/meteor-methods/auth/`              |
 | `app/2fa/server/` (non-methods)          | `server/lib/2fa/`                                |
 | `app/authentication/server/` (non-hooks) | `server/lib/auth/`                               |
 | `app/token-login/server/`                | `server/lib/auth/token-login.ts`                 |
@@ -543,7 +550,8 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 | Source                           | Destination                               |
 | -------------------------------- | ----------------------------------------- |
 | `app/push/server/`               | `server/lib/notifications/push/`          |
-| `app/push-notifications/server/` | `server/lib/notifications/push-config/`   |
+| `app/push-notifications/server/` (non-methods) | `server/lib/notifications/push-config/` |
+| `app/push-notifications/server/methods/saveNotificationSettings.ts` | `server/meteor-methods/users/` |
 | `app/mailer/server/`             | `server/lib/notifications/email/`         |
 | `app/mail-messages/server/`      | `server/lib/notifications/mail-messages/` |
 | `app/notification-queue/server/` | `server/lib/notifications/queue/`         |
@@ -559,7 +567,8 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 | `app/message-pin/server/`                         | `server/lib/messaging/pins/`        |
 | `app/message-star/server/`                        | `server/lib/messaging/stars/`       |
 | `app/message-mark-as-unread/server/`              | `server/lib/messaging/unread/`      |
-| `app/mentions/server/`                            | `server/lib/messaging/mentions/`    |
+| `app/mentions/server/` (non-methods)              | `server/lib/messaging/mentions/`    |
+| `app/mentions/server/methods/getUserMentionsByChannel.ts` | `server/meteor-methods/messages/` |
 | `app/markdown/server/`                            | `server/lib/messaging/markdown/`    |
 | `app/emoji/server/`                               | `server/lib/messaging/emoji/`       |
 
@@ -567,11 +576,16 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 
 | Source                                      | Destination                               |
 | ------------------------------------------- | ----------------------------------------- |
-| `app/file-upload/server/`                   | `server/lib/media/file-upload/`           |
+| `app/file-upload/server/` (non-methods)     | `server/lib/media/file-upload/`           |
+| `app/file-upload/server/methods/sendFileMessage.ts` (+ co-located `.spec.ts`) | `server/meteor-methods/messages/` |
+| `app/file-upload/server/methods/getS3FileUrl.ts` | `server/meteor-methods/media/`       |
+| `app/file-upload/server/methods/isImagePreviewSupported.ts` | `server/meteor-methods/media/` |
 | `app/file/server/`                          | `server/lib/media/file/`                  |
-| `app/emoji-custom/server/`                  | `server/lib/media/emoji-custom/`          |
+| `app/emoji-custom/server/` (non-methods)    | `server/lib/media/emoji-custom/`          |
+| `app/emoji-custom/server/methods/*.ts`      | `server/meteor-methods/media/`            |
 | `app/emoji-emojione/server/`                | `server/lib/media/emoji-emojione/`        |
-| `app/custom-sounds/server/`                 | `server/lib/media/custom-sounds/`         |
+| `app/custom-sounds/server/` (non-methods)   | `server/lib/media/custom-sounds/`         |
+| `app/custom-sounds/server/methods/*.ts`     | `server/meteor-methods/media/`            |
 | `app/assets/server/`                        | `server/lib/media/assets/`                |
 | `app/importer/server/` (non-methods)        | `server/lib/import/`                      |
 | `app/importer-csv/server/`                  | `server/lib/import/csv/`                  |
@@ -583,12 +597,19 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 | `app/search/server/`                        | `server/lib/search/`                      |
 | `app/autotranslate/server/` (non-methods)   | `server/lib/autotranslate/`               |
 | `app/e2e/server/` (non-methods)             | `server/lib/e2e/`                         |
-| `app/integrations/server/` (non-methods)    | `server/lib/integrations/`                |
-| `app/statistics/server/`                    | `server/lib/statistics/`                  |
+| `app/integrations/server/` (non-methods, non-api) | `server/lib/integrations/`          |
+| `app/integrations/server/api/api.ts`        | `server/api/webhooks.ts`                  |
+| `app/statistics/server/` (non-methods)      | `server/lib/statistics/`                  |
+| `app/statistics/server/methods/getStatistics.ts` | `server/meteor-methods/platform/`    |
 | `app/metrics/server/`                       | `server/lib/metrics/`                     |
 | `app/cloud/server/` (non-functions)         | `server/lib/cloud/`                       |
-| `app/version-check/server/`                 | `server/lib/cloud/version-check/`         |
+| `app/version-check/server/` (non-methods)   | `server/lib/cloud/version-check/`         |
+| `app/version-check/server/methods/banner_dismiss.ts` | `server/meteor-methods/platform/` |
 | `app/license/server/`                       | `server/lib/cloud/license/`               |
+
+> `app/integrations/server/api/api.ts` is REST-API responsibility (it builds the `/hooks/*` webhook API on `server/api`'s `APIClass`), so it joins `server/api/` rather than `server/lib/integrations/` — same reasoning that sent the livechat REST endpoints to `server/api/v1/omnichannel/` in Phase 3.
+>
+> `sendFileMessage.spec.ts` is co-located with its source (not a `tests/unit` mirror) and is a **mocha** spec discovered today by the `app/file-upload/server/**/*.spec.ts` glob. When it moves, add a `server/meteor-methods/**/*.spec.ts` glob to `.mocharc.js`, and re-point the `app/file-upload` glob when the rest of the feature moves — see [Test Mocks and Runner Globs](#test-mocks-and-runner-globs-proxyquire--jestmock--lint--tsc-do-not-catch-these).
 
 **Verification**: `yarn lint --quiet` after each sub-phase, full test suite at end of Phase 6.
 
@@ -617,11 +638,13 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 - `app/channel-settings/server/` (non-methods) → `server/lib/rooms/settings/`
 - `app/invites/server/` → `server/lib/rooms/invites/`
 - `app/retention-policy/server/` → `server/lib/rooms/retention/`
-- `app/user-status/server/` → `server/lib/users/status/`
+- `app/user-status/server/` (non-methods) → `server/lib/users/status/`
+- `app/user-status/server/methods/*.ts` (setUserStatus, getUserStatusText, custom-status CRUD) → `server/meteor-methods/users/`
 - `app/bot-helpers/server/` → `server/lib/bot-helpers/` (moved in Phase 1)
 - `app/cors/server/` → `server/lib/cors/`
 - `app/error-handler/server/` → `server/lib/error-handler/`
-- `app/oauth2-server-config/server/` → `server/lib/auth/oauth2-server/`
+- `app/oauth2-server-config/server/` (non-methods) → `server/lib/auth/oauth2-server/`
+- `app/oauth2-server-config/server/admin/methods/*.ts` (deleteOAuthApp, updateOAuthApp) → `server/meteor-methods/auth/`
 - `app/settings/server/` → `server/settings/` (merge with existing)
 - `app/theme/server/` → `server/settings/theme/`
 - `app/utils/server/` → `server/lib/utils/`
