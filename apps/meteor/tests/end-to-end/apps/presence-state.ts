@@ -1,6 +1,6 @@
 import type { App } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
+import { after, afterEach, before, describe, it } from 'mocha';
 
 import { getCredentials, request, credentials } from '../../data/api-data';
 import { appPresenceStateTest } from '../../data/apps/app-packages';
@@ -21,6 +21,15 @@ import { IS_EE } from '../../e2e/config/constants';
 	});
 
 	after(() => cleanupApps());
+
+	afterEach(async () => {
+		const user = await getUserByUsername(adminUsername);
+		await request
+			.post(apps(`/public/${app.id}/end-active-state`))
+			.set(credentials)
+			.send({ userId: user._id })
+			.expect(200);
+	});
 
 	describe('[setActiveState]', () => {
 		it('should set the user presence with status text and source', async () => {
@@ -44,10 +53,20 @@ import { IS_EE } from '../../e2e/config/constants';
 	});
 
 	describe('[endActiveState]', () => {
-		it('should restore the user presence to previous state', async () => {
+		it('should restore the displaced same-priority state and reset once the queue is exhausted', async () => {
 			const user = await getUserByUsername(adminUsername);
 
-			// First set an active state
+			await request
+				.post(apps(`/public/${app.id}/set-active-state`))
+				.set(credentials)
+				.send({
+					userId: user._id,
+					statusDefault: 'busy',
+					statusText: 'In a meeting',
+					statusSource: 'internal',
+				})
+				.expect(200);
+
 			await request
 				.post(apps(`/public/${app.id}/set-active-state`))
 				.set(credentials)
@@ -59,16 +78,25 @@ import { IS_EE } from '../../e2e/config/constants';
 				})
 				.expect(200);
 
-			// Then end it
 			await request
 				.post(apps(`/public/${app.id}/end-active-state`))
 				.set(credentials)
 				.send({ userId: user._id })
 				.expect(200);
 
-			const updatedUser = await getUserByUsername(adminUsername);
-			expect(updatedUser.statusText).to.not.equal('On a call');
-			expect(updatedUser.statusSource).to.not.equal('internal');
+			const restoredUser = await getUserByUsername(adminUsername);
+			expect(restoredUser.statusText).to.equal('In a meeting');
+			expect(restoredUser.statusSource).to.equal('internal');
+
+			await request
+				.post(apps(`/public/${app.id}/end-active-state`))
+				.set(credentials)
+				.send({ userId: user._id })
+				.expect(200);
+
+			const clearedUser = await getUserByUsername(adminUsername);
+			expect(clearedUser.statusText).to.equal('');
+			expect(clearedUser.statusSource).to.be.undefined;
 		});
 	});
 });

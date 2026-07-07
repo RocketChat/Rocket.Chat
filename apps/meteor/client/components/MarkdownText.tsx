@@ -98,7 +98,7 @@ const getRegexp = (supportedURISchemes: string[]): RegExp => {
 	return new RegExp(`^(${schemes}):`, 'im');
 };
 
-type MarkdownTextProps = Partial<MarkdownTextParams>;
+export type MarkdownTextProps = Partial<MarkdownTextParams>;
 
 export const supportedURISchemes = ['http', 'https', 'notes', 'ftp', 'ftps', 'tel', 'mailto', 'sms', 'cid'];
 

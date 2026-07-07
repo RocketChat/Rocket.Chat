@@ -6,10 +6,6 @@ import type { MessageUrl, IMessage, MessageTypesValues, IUser, IRoom, AtLeast } 
 import { Messages, Rooms } from '@rocket.chat/models';
 
 import { OEmbed } from './hooks/AfterSaveOEmbed';
-import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
-import { parseUrlsInMessage } from '../../../app/lib/server/functions/parseUrlsInMessage';
-import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
-import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
 import { notifyUsersOnSystemMessage } from '../../../app/lib/server/lib/notifyUsersOnMessage';
 import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
@@ -27,6 +23,10 @@ import { mentionServer } from './hooks/BeforeSaveMentions';
 import { BeforeSavePreventMention } from './hooks/BeforeSavePreventMention';
 import { BeforeSaveSpotify } from './hooks/BeforeSaveSpotify';
 import { closeUnclosedCodeBlock } from '../../../lib/utils/closeUnclosedCodeBlock';
+import { deleteMessage } from '../../lib/messages/deleteMessage';
+import { parseUrlsInMessage } from '../../lib/messages/parseUrlsInMessage';
+import { sendMessage } from '../../lib/messages/sendMessage';
+import { updateMessage } from '../../lib/messages/updateMessage';
 import { shouldBreakInVersion } from '../../lib/shouldBreakInVersion';
 
 const disableMarkdownParser = ['yes', 'true'].includes(String(process.env.DISABLE_MESSAGE_PARSER).toLowerCase());

@@ -23,7 +23,7 @@ import { useSubscriptionFromMessageQuery } from '../../hooks/useSubscriptionFrom
 import { useMessageListReadReceipts } from '../../list/MessageListContext';
 import UiKitMessageBlock from '../../uikit/UiKitMessageBlock';
 
-type RoomMessageContentProps = {
+export type RoomMessageContentProps = {
 	message: IMessage;
 	unread: boolean;
 	mention: boolean;
@@ -74,7 +74,13 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 				</>
 			)}
 
-			{!!attachments && <Attachments id={message.files?.[0]?._id} attachments={attachments} />}
+			{!!attachments && (
+				<Attachments
+					id={message.files?.[0]?._id}
+					attachments={attachments}
+					source={{ rid: message.rid, mid: message._id, username: message.u.username, name: message.u.name }}
+				/>
+			)}
 
 			{normalizedMessage.blocks && (
 				<UiKitMessageBlock rid={normalizedMessage.rid} mid={normalizedMessage._id} blocks={normalizedMessage.blocks} />

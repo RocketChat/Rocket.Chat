@@ -44,7 +44,7 @@ const MultiSelectCustomList = ({
 						name='select-search'
 						placeholder={t(searchBarText as TranslationKey)}
 						autoComplete='off'
-						addon={<Icon name='magnifier' size='x20' />}
+						endAddon={<Icon name='magnifier' size='x20' />}
 						onChange={handleChange}
 						value={text}
 					/>

@@ -21,7 +21,7 @@ const SettingsPage = () => {
 		<Page background='tint'>
 			<PageHeader title={t('Settings')} borderBlockEndColor='' />
 			<PageBlockWithBorder>
-				<SearchInput value={filter} placeholder={t('Search')} onChange={handleChange} addon={<Icon name='magnifier' size='x20' />} />
+				<SearchInput value={filter} placeholder={t('Search')} onChange={handleChange} endAddon={<Icon name='magnifier' size='x20' />} />
 			</PageBlockWithBorder>
 
 			<PageScrollableContentWithShadow p={0} mi={24} mbe={16}>

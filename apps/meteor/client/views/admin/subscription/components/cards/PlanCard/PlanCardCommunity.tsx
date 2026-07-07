@@ -2,6 +2,7 @@ import { Box, Card, CardBody, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import PlanCardHeader from './PlanCardHeader';
+import PlanCardLicenseDetails from './PlanCardLicenseDetails';
 
 const PlanCardCommunity = () => {
 	const { t } = useTranslation();
@@ -16,6 +17,7 @@ const PlanCardCommunity = () => {
 				<Box display='flex' flexDirection='row' alignItems='center'>
 					<Icon name='cloud-plus' size={24} mie={12} /> {t('Self_managed_hosting')}
 				</Box>
+				<PlanCardLicenseDetails />
 			</CardBody>
 		</Card>
 	);

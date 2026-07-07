@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import GazzodownText from '../../../GazzodownText';
 
-type ThreadMessagePreviewBodyProps = {
+export type ThreadMessagePreviewBodyProps = {
 	message: IMessage;
 };
 

@@ -42,7 +42,7 @@ p.noCallThru().load('../../../../server/methods/deleteFileMessage', {
 	'../../app/file-upload/server': {
 		FileUpload: { getStore: fileUploadGetStoreMock },
 	},
-	'../../app/lib/server/functions/deleteMessage': {
+	'../lib/messages/deleteMessage': {
 		deleteMessageValidatingPermission: deleteMessageValidatingPermissionMock,
 	},
 });

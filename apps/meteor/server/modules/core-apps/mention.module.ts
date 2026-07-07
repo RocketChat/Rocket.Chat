@@ -4,9 +4,9 @@ import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Messages } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { processWebhookMessage } from '../../../app/lib/server/functions/processWebhookMessage';
 import { addUsersToRoomMethod } from '../../../app/lib/server/methods/addUsersToRoom';
 import { i18n } from '../../lib/i18n';
+import { processWebhookMessage } from '../../lib/messages/processWebhookMessage';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
 const retrieveMentionsFromPayload = (stringifiedMentions: string): Exclude<IMessage['mentions'], undefined> => {

@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 
 import Growth from './Growth';
 
-type CounterProps = {
+export type CounterProps = {
 	count: ReactNode;
 	variation?: number;
 	description?: ReactNode;
