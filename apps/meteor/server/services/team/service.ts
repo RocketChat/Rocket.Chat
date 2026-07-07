@@ -40,10 +40,6 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 	protected name = 'team';
 
 	async create(uid: string, { team, room = { name: team.name, extraData: {} }, members, owner }: ITeamCreateParams): Promise<ITeam> {
-		if (room.id && !(await Authorization.hasAllPermission(uid, ['create-team', 'edit-room'], room.id))) {
-			throw new Error('error-no-owner-channel');
-		}
-
 		if (!(await checkUsernameAvailability(team.name))) {
 			throw new Error('team-name-already-exists');
 		}

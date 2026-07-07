@@ -289,10 +289,9 @@ describe('[Teams]', () => {
 					room: { id: targetRoom._id },
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
+				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'error-no-owner-channel');
 				});
 
 			await request
