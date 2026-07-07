@@ -12,10 +12,10 @@ type EngagementDashboardCardErrorBoundaryProps = {
 const EngagementDashboardCardErrorBoundary = ({ children }: EngagementDashboardCardErrorBoundaryProps) => {
 	const { t } = useTranslation();
 
-	const [error, setError] = useState<Error>();
+	const [error, setError] = useState<unknown>(null);
 	const isError = (error: unknown): error is Error => error instanceof Error;
 
-	const errorHandler = (error: Error, info: { componentStack: string }): void => {
+	const errorHandler = (error: unknown, info: { componentStack?: string | null }): void => {
 		setError(error);
 		console.error('Uncaught Error:', error, info);
 	};

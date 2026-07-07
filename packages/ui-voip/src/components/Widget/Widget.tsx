@@ -10,8 +10,9 @@ import { type LastKnownPosition } from '../../providers/useWidgetPositionTracker
 
 // TODO: Initial position from the draggable api instead of style props
 // TODO: A11Y
-const WidgetBase = styled('article')`
+const WidgetBase = styled('div')`
 	position: fixed;
+	padding: 0;
 	right: 2em;
 	top: 11em;
 	display: flex;
@@ -45,7 +46,12 @@ const Widget = ({ children, onChangePosition, restorePosition, ...props }: Widge
 	return (
 		<DragContext.Provider value={{ draggableRef, boundingRef, handleRef }}>
 			<FocusScope autoFocus>
-				<WidgetBase {...props} ref={draggableRef} aria-labelledby='rcx-media-call-widget-title rcx-media-call-widget-caller-info'>
+				<WidgetBase
+					{...props}
+					ref={draggableRef}
+					role='dialog'
+					aria-labelledby='rcx-media-call-widget-title-prefix rcx-media-call-widget-title rcx-media-call-widget-caller-info'
+				>
 					{children}
 				</WidgetBase>
 			</FocusScope>

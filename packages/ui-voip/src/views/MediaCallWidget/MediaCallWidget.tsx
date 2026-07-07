@@ -1,15 +1,15 @@
 import { OngoingCall, NewCall, IncomingCall, OutgoingCall, IncomingCallTransfer, OutgoingCallTransfer } from '..';
 import OngoingCallWithScreen from './OngoingCallWithScreen';
-import { useMediaCallInstance } from '../../context/MediaCallInstanceContext';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
+import useRegisterView from '../../context/useRegisterView';
 
 const MediaCallWidget = () => {
-	const { inRoomView } = useMediaCallInstance();
+	const currentViews = useRegisterView('widget');
 	const {
 		sessionState: { state, hidden, transferredBy, peerInfo, supportedFeatures },
 	} = useMediaCallView();
 
-	if (hidden || inRoomView) {
+	if (hidden || !currentViews.includes('widget')) {
 		return null;
 	}
 

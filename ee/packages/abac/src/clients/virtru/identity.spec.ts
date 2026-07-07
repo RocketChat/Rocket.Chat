@@ -14,6 +14,23 @@ describe('virtru/identity', () => {
 		expect(getUserEntityKey('emailAddress', { _id: 'u', username: 'bob' })).toBeUndefined();
 	});
 
+	it('getUserEntityKey never resolves to an unverified email address', () => {
+		expect(
+			getUserEntityKey('emailAddress', { _id: 'u', emails: [{ address: 'ceo@company.com', verified: false }], username: 'attacker' }),
+		).toBeUndefined();
+		expect(getUserEntityKey('emailAddress', { _id: 'u', emails: [{ address: 'ceo@company.com' }], username: 'attacker' })).toBeUndefined();
+		expect(
+			getUserEntityKey('emailAddress', {
+				_id: 'u',
+				emails: [
+					{ address: 'ceo@company.com', verified: false },
+					{ address: 'real@attacker.com', verified: true },
+				],
+				username: 'attacker',
+			}),
+		).toBe('real@attacker.com');
+	});
+
 	it('buildAttributeFqns round-trips with parseAttributeFqns', () => {
 		const attrs = [{ key: 'clearance', values: ['secret', 'topsecret'] }];
 		const fqns = buildAttributeFqns('example.com', attrs);

@@ -220,7 +220,10 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		}
 
 		if (language && oldLanguage !== language && rcSettings.get('AutoTranslate_AutoEnableOnJoinRoom')) {
-			const response = await Subscriptions.updateAllAutoTranslateLanguagesByUserId(user._id, language);
+			const workspaceLanguage = rcSettings.get('Language');
+			const targetLanguage = language === 'default' || language === workspaceLanguage ? null : language;
+
+			const response = await Subscriptions.setAutoTranslateByUserId(user._id, targetLanguage);
 			if (response.modifiedCount) {
 				void notifyOnSubscriptionChangedByAutoTranslateAndUserId(user._id);
 			}

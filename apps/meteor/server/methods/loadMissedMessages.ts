@@ -4,8 +4,7 @@ import { Messages } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomIdAsync } from '../../app/authorization/server/functions/canAccessRoom';
-import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
+import { canAccessRoomIdAsync } from '../lib/authorization/canAccessRoom';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -16,7 +15,6 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async loadMissedMessages(rid, start) {
-		methodDeprecationLogger.method('loadMissedMessages', '9.0.0', '/v1/chat.syncMessages');
 		check(rid, String);
 		check(start, Date);
 

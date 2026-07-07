@@ -5,6 +5,8 @@ on:
     - cron: '0 9 * * *'
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   auto-close-duplicates:
     runs-on: ubuntu-latest

@@ -50,10 +50,12 @@ const asyncIterable = <T>(items: T[]) => ({
 	},
 });
 
-const user = (over: Partial<{ _id: string; username: string; emails: { address: string }[]; __rooms: string[] }> = {}) => ({
+const user = (
+	over: Partial<{ _id: string; username: string; emails: { address: string; verified?: boolean }[]; __rooms: string[] }> = {},
+) => ({
 	_id: 'u1',
 	username: 'bob',
-	emails: [{ address: 'bob@x.com' }],
+	emails: [{ address: 'bob@x.com', verified: true }],
 	...over,
 });
 
@@ -236,7 +238,9 @@ describe('VirtruPDP.checkUsernamesMatchAttributes', () => {
 	});
 
 	it('resolves when all users get DECISION_PERMIT', async () => {
-		usersFindByUsernames.mockReturnValue(cursor([user(), user({ _id: 'u2', username: 'alice', emails: [{ address: 'a@x.com' }] })]));
+		usersFindByUsernames.mockReturnValue(
+			cursor([user(), user({ _id: 'u2', username: 'alice', emails: [{ address: 'a@x.com', verified: true }] })]),
+		);
 		const apiCall = jest.fn().mockResolvedValue({
 			decisionResponses: [
 				{ resourceDecisions: [{ ephemeralResourceId: 'r1', decision: 'DECISION_PERMIT' }] },
@@ -248,7 +252,9 @@ describe('VirtruPDP.checkUsernamesMatchAttributes', () => {
 	});
 
 	it('throws when any user is DENIED', async () => {
-		usersFindByUsernames.mockReturnValue(cursor([user(), user({ _id: 'u2', username: 'alice', emails: [{ address: 'a@x.com' }] })]));
+		usersFindByUsernames.mockReturnValue(
+			cursor([user(), user({ _id: 'u2', username: 'alice', emails: [{ address: 'a@x.com', verified: true }] })]),
+		);
 		const apiCall = jest.fn().mockResolvedValue({
 			decisionResponses: [
 				{ resourceDecisions: [{ ephemeralResourceId: 'r1', decision: 'DECISION_PERMIT' }] },
@@ -301,7 +307,7 @@ describe('VirtruPDP.onRoomAttributesChanged', () => {
 
 	it('returns users that are DENIED', async () => {
 		const u1 = user();
-		const u2 = user({ _id: 'u2', username: 'alice', emails: [{ address: 'a@x.com' }] });
+		const u2 = user({ _id: 'u2', username: 'alice', emails: [{ address: 'a@x.com', verified: true }] });
 		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([u1, u2]));
 		const apiCall = jest.fn().mockResolvedValue({
 			decisionResponses: [
@@ -335,8 +341,8 @@ describe('VirtruPDP.onRoomAttributesChanged', () => {
 
 	it('still evicts entity-keyless users alongside DENY-only filtering of decided users', async () => {
 		const keyless = user({ _id: 'u0', emails: [] });
-		const denied = user({ _id: 'u2', username: 'alice', emails: [{ address: 'a@x.com' }] });
-		const unspecified = user({ _id: 'u3', username: 'carol', emails: [{ address: 'c@x.com' }] });
+		const denied = user({ _id: 'u2', username: 'alice', emails: [{ address: 'a@x.com', verified: true }] });
+		const unspecified = user({ _id: 'u3', username: 'carol', emails: [{ address: 'c@x.com', verified: true }] });
 		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([keyless, denied, unspecified]));
 		const apiCall = jest.fn().mockResolvedValue({
 			decisionResponses: [

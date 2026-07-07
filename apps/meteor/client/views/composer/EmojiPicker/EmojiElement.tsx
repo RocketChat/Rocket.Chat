@@ -34,7 +34,7 @@ const EmojiElement = ({ emoji, image, onClick, small = false, ...props }: EmojiE
 			{...(small && { className: emojiSmallClass })}
 			small={small}
 			medium={!small}
-			onMouseOver={() => handlePreview(image, emoji)}
+			onMouseEnter={() => handlePreview(image, emoji)}
 			onMouseLeave={handleRemovePreview}
 			onClick={onClick}
 			data-emoji={emoji}

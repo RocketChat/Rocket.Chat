@@ -1,12 +1,13 @@
 import type { OverlayTriggerAria } from '@react-aria/overlays';
 import type { OverlayTriggerState } from '@react-stately/overlays';
 import { Box, Tile } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useStableCallback, useOutsideClick } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import { useRef } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import NavBarSearchItemSkeleton from './NavBarSearchItemSkeleton';
 import NavBarSearchNoResults from './NavBarSearchNoResults';
 import NavBarSearchRow from './NavBarSearchRow';
 import { useSearchItems } from './hooks/useSearchItems';
@@ -28,14 +29,12 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 	const { resetField, watch } = useFormContext();
 	const { filterText } = watch();
 
-	const debouncedFilter = useDebouncedValue(filterText, 500);
-
 	const handleSelect = useStableCallback(() => {
 		state.close();
 		resetField('filterText');
 	});
 
-	const { data: items = [], isLoading } = useSearchItems(debouncedFilter);
+	const { items, isLoading } = useSearchItems(filterText);
 
 	return (
 		<Tile
@@ -51,7 +50,7 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 			width='100%'
 			flexDirection='column'
 		>
-			<ResultsLiveRegion shouldAnnounce={!isLoading} itemCount={items.length} />
+			<ResultsLiveRegion shouldAnnounce={!isLoading} itemCount={items.length} isLoading={isLoading} />
 			<CustomScrollbars>
 				<div {...overlayProps} role='listbox' aria-label={t('Channels')} aria-busy={isLoading} tabIndex={-1} onKeyDown={handleKeyDown}>
 					{items.length === 0 && !isLoading && <NavBarSearchNoResults />}
@@ -63,6 +62,7 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 					{items.map((item) => (
 						<NavBarSearchRow key={item._id} room={item} onClick={handleSelect} />
 					))}
+					{isLoading && Array.from({ length: 4 }, (_, index) => <NavBarSearchItemSkeleton key={`skeleton-${index}`} />)}
 				</div>
 			</CustomScrollbars>
 		</Tile>

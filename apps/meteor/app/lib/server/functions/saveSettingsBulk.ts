@@ -1,13 +1,13 @@
-import type { ISetting } from '@rocket.chat/core-typings';
-import { isSettingCode } from '@rocket.chat/core-typings';
+import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
+import { isSettingCode, isSettingColor } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { disableCustomScripts } from './disableCustomScripts';
+import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
+import { disableCustomScripts } from '../../../../server/lib/shared/disableCustomScripts';
 import { updateAuditedByUser } from '../../../../server/settings/lib/auditedSettingUpdates';
 import { getSettingPermissionId } from '../../../authorization/lib';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import { checkSettingValueBounds } from '../lib/checkSettingValueBonds';
 import { notifyOnSettingChangedById } from '../lib/notifyListener';
@@ -37,7 +37,7 @@ export type SaveSettingsAudit = {
 
 export const saveSettingsBulk = async (
 	uid: string,
-	params: { _id: ISetting['_id']; value: ISetting['value'] }[],
+	params: { _id: ISetting['_id']; value: ISetting['value']; editor?: ISettingColor['editor'] }[],
 	audit: SaveSettingsAudit,
 ): Promise<void> => {
 	const settingsNotAllowed: ISetting['_id'][] = [];
@@ -119,10 +119,24 @@ export const saveSettingsBulk = async (
 		useragent: audit.useragent,
 	});
 
-	const promises = params.map(({ _id, value }) => auditSettingOperation(Settings.updateValueById, _id, value));
+	const promises = params.map(async ({ _id, value, editor }) => {
+		const valueResult = await auditSettingOperation(Settings.updateValueById, _id, value);
 
-	(await Promise.all(promises)).forEach((value, index) => {
-		if (value?.modifiedCount) {
+		if (!editor) {
+			return Boolean(valueResult?.modifiedCount);
+		}
+
+		const setting = await Settings.findOneById(_id, { projection: { type: 1 } });
+		if (!setting || !isSettingColor(setting)) {
+			return Boolean(valueResult?.modifiedCount);
+		}
+
+		const { modifiedCount } = await Settings.updateOptionsById<ISettingColor>(_id, { editor });
+		return Boolean(valueResult?.modifiedCount) || Boolean(modifiedCount);
+	});
+
+	(await Promise.all(promises)).forEach((changed, index) => {
+		if (changed) {
 			void notifyOnSettingChangedById(params[index]._id);
 		}
 	});

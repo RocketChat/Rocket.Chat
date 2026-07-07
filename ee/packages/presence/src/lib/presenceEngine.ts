@@ -2,8 +2,8 @@ import type { IUser, IUserSessionConnection } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 
 export type ClaimUpdate =
-	| { type: 'setActive'; newState: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt'> }
-	| { type: 'endActive' }
+	| { type: 'setActive'; newState: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt' | 'statusId'> }
+	| { type: 'endActive'; statusId?: string }
 	| { type: 'clearActive' };
 
 // Priority: internal > manual > external (lower number = higher priority).
@@ -13,7 +13,7 @@ const NO_PRIORITY = 4;
 
 const RESET_TO_ONLINE = {
 	set: { statusDefault: UserStatus.ONLINE, statusText: '' },
-	unset: ['statusSource', 'statusExpiresAt', 'previousState'],
+	unset: ['statusSource', 'statusExpiresAt', 'previousState', 'statusId'],
 };
 
 function isExpired(expiresAt?: Date): boolean {
@@ -54,12 +54,23 @@ function computeStatus(statusConnection: UserStatus, statusDefault: UserStatus):
 	return statusDefault;
 }
 
+function disconnectedStatus(claimType: ClaimUpdate['type'], isServiceUser: boolean, statusDefault: UserStatus): UserStatus {
+	switch (claimType) {
+		case 'clearActive':
+			return statusDefault;
+		case 'setActive':
+			return isServiceUser ? statusDefault : UserStatus.OFFLINE;
+		case 'endActive':
+			return UserStatus.OFFLINE;
+	}
+}
+
 /**
  * Resolves a claim update against the user's current state using the priority system.
  * Returns the DB fields to set/unset, or null if the claim is rejected.
  */
 function resolveIntent(
-	user: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt' | 'previousState'>,
+	user: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt' | 'statusId' | 'previousState'>,
 	claimUpdate: ClaimUpdate,
 ): { set: Record<string, unknown> & { statusDefault?: UserStatus }; unset: string[] } | null {
 	const currentStatusDefault = user.statusDefault ?? UserStatus.ONLINE;
@@ -69,6 +80,18 @@ function resolveIntent(
 	}
 
 	if (claimUpdate.type === 'endActive') {
+		const { statusId } = claimUpdate;
+		if (statusId) {
+			const matchesActive = user.statusId === statusId;
+			const matchesStash = user.previousState?.statusId === statusId;
+			// stashed claim ended: drop it, keep displaying the still-active claim
+			if (matchesStash && !matchesActive) {
+				return { set: {}, unset: ['previousState'] };
+			}
+			if (!matchesActive && !matchesStash) {
+				return null;
+			}
+		}
 		if (user.previousState && !isExpired(user.previousState.statusExpiresAt)) {
 			const prev = user.previousState;
 			return {
@@ -77,8 +100,9 @@ function resolveIntent(
 					statusSource: prev.statusSource,
 					...(prev.statusText != null && { statusText: prev.statusText }),
 					...(prev.statusExpiresAt && { statusExpiresAt: prev.statusExpiresAt }),
+					...(prev.statusId && { statusId: prev.statusId }),
 				},
-				unset: fieldsToUnset(prev, ['previousState']),
+				unset: fieldsToUnset(prev, prev.statusId ? ['previousState'] : ['previousState', 'statusId']),
 			};
 		}
 		return RESET_TO_ONLINE;
@@ -86,6 +110,7 @@ function resolveIntent(
 
 	// type === 'setActive'
 	const { newState } = claimUpdate;
+	const { statusId } = newState;
 
 	// offline users can only have their status changed by manual sources
 	if (currentStatusDefault === UserStatus.OFFLINE && newState.statusSource !== 'manual') {
@@ -95,21 +120,26 @@ function resolveIntent(
 	const currentPriority = user.statusSource ? PRIORITY[user.statusSource] : NO_PRIORITY;
 	const newPriority = newState.statusSource ? PRIORITY[newState.statusSource] : NO_PRIORITY;
 
-	// a manual claim is the user's explicit intent: when it wins it doesn't stash the
-	// displaced claim and clears any queued one, so it never gets auto-reverted.
+	// manual is the user's explicit intent: it never stashes and clears any queued claim
 	const isManual = newState.statusSource === 'manual';
 
-	// higher priority -> apply new; stash displaced claim unless the new claim is manual
-	if (newPriority < currentPriority) {
-		const previousState =
-			!isManual && user.statusSource
-				? {
-						statusDefault: currentStatusDefault,
-						statusText: user.statusText ?? '',
-						statusSource: user.statusSource,
-						statusExpiresAt: user.statusExpiresAt,
-					}
-				: undefined;
+	// higher or equal priority -> apply new; equal-priority internals (voice + video) stash so statusId
+	// can restore either order. Single slot: a 3rd concurrent internal claim evicts the oldest.
+	if (newPriority <= currentPriority) {
+		// re-applying the same non-stacking source (calendar) updates in place; only internal stacks
+		const sameSourceReapply = user.statusSource === newState.statusSource;
+		const sourceStacks = newState.statusSource === 'internal';
+		const shouldStash = !isManual && Boolean(user.statusSource) && (!sameSourceReapply || sourceStacks);
+
+		const previousState = shouldStash
+			? {
+					statusDefault: currentStatusDefault,
+					statusText: user.statusText ?? '',
+					statusSource: user.statusSource,
+					statusExpiresAt: user.statusExpiresAt,
+					...(user.statusId && { statusId: user.statusId }),
+				}
+			: undefined;
 
 		return {
 			set: {
@@ -117,22 +147,10 @@ function resolveIntent(
 				statusSource: newState.statusSource,
 				...(newState.statusText != null && { statusText: newState.statusText }),
 				...(newState.statusExpiresAt && { statusExpiresAt: newState.statusExpiresAt }),
+				...(statusId && { statusId }),
 				...(previousState && { previousState }),
 			},
-			unset: fieldsToUnset(newState, isManual ? ['previousState'] : []),
-		};
-	}
-
-	// same priority -> overwrite; manual also drops any queued previous
-	if (newPriority === currentPriority) {
-		return {
-			set: {
-				statusDefault: newState.statusDefault,
-				statusSource: newState.statusSource,
-				...(newState.statusText != null && { statusText: newState.statusText }),
-				...(newState.statusExpiresAt && { statusExpiresAt: newState.statusExpiresAt }),
-			},
-			unset: fieldsToUnset(newState, isManual ? ['previousState'] : []),
+			unset: fieldsToUnset(newState, [...(isManual ? ['previousState'] : []), ...(statusId ? [] : ['statusId'])]),
 		};
 	}
 
@@ -141,6 +159,7 @@ function resolveIntent(
 		statusSource: newState.statusSource,
 		...(newState.statusText != null && { statusText: newState.statusText }),
 		...(newState.statusExpiresAt && { statusExpiresAt: newState.statusExpiresAt }),
+		...(statusId && { statusId }),
 	};
 
 	// lower priority -> save as previous if slot available
@@ -171,7 +190,7 @@ function resolveIntent(
  * Returns the DB fields to $set and optionally $unset.
  */
 export function processPresence(
-	user: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt' | 'previousState'>,
+	user: Pick<IUser, 'type' | 'roles' | 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt' | 'statusId' | 'previousState'>,
 	sessions: IUserSessionConnection[],
 	claimUpdate?: ClaimUpdate,
 ): { values: Record<string, unknown>; clear?: string[] } {
@@ -194,11 +213,10 @@ export function processPresence(
 	const statusDefault = set.statusDefault ?? user.statusDefault ?? UserStatus.ONLINE;
 	const clear = unset.length ? unset : undefined;
 
-	// setActive with no DDP sessions: user is disconnected but holding a claim — persist
-	// it for reconnect but display OFFLINE. Other types (clearActive/endActive) use
-	// statusDefault so REST-only callers and bots can appear online.
+	// no live connection: humans fall back to offline; bots/apps keep their declared status
 	if (!sessions.length) {
-		const status = claimUpdate.type === 'setActive' ? UserStatus.OFFLINE : statusDefault;
+		const isServiceUser = user.type === 'bot' || user.type === 'app' || (user.roles?.includes('bot') ?? false);
+		const status = disconnectedStatus(claimUpdate.type, isServiceUser, statusDefault);
 		return { values: { ...set, status, statusConnection: UserStatus.OFFLINE }, clear };
 	}
 

@@ -131,7 +131,7 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 									<Controller
 										name='username'
 										control={control}
-										render={({ field }) => <TextInput id={usernameField} {...field} readOnly addon={<Icon name='at' size='x20' />} />}
+										render={({ field }) => <TextInput id={usernameField} {...field} readOnly endAddon={<Icon name='at' size='x20' />} />}
 									/>
 								</FieldRow>
 							</Field>
@@ -141,7 +141,7 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 									<Controller
 										name='email'
 										control={control}
-										render={({ field }) => <TextInput id={emailField} {...field} readOnly addon={<Icon name='mail' size='x20' />} />}
+										render={({ field }) => <TextInput id={emailField} {...field} readOnly endAddon={<Icon name='mail' size='x20' />} />}
 									/>
 								</FieldRow>
 							</Field>

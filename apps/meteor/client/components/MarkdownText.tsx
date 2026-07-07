@@ -14,7 +14,7 @@ type MarkdownTextParams = {
 	withTruncatedText: boolean;
 } & ComponentProps<typeof Box>;
 
-type MarkdownTextProps = Partial<MarkdownTextParams>;
+export type MarkdownTextProps = Partial<MarkdownTextParams>;
 
 const MarkdownText = ({ content, withTruncatedText = false, variant, preserveHtml, parseEmoji, ...boxProps }: MarkdownTextProps) => {
 	if (content && content.length > getMarkdownParserLimit()) {

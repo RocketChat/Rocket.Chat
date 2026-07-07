@@ -731,7 +731,7 @@ export class AppManager {
 		}
 
 		// If there is any error during disabling, it doesn't really matter
-		await this.disable(old.id).catch(() => {});
+		await this.disable(old.id, AppStatus.DISABLED, true).catch(() => {});
 
 		const descriptor: IAppStorageItem = {
 			...old,
@@ -784,7 +784,7 @@ export class AppManager {
 		if (updateOptions.loadApp) {
 			const shouldEnableApp = AppStatusUtils.isEnabled(old.status);
 			if (shouldEnableApp) {
-				await this.updateAndStartupLocal(stored, app);
+				await this.updateAndStartupLocal(stored, app, false);
 			} else {
 				await this.updateAndInitializeLocal(stored, app);
 			}
@@ -834,9 +834,9 @@ export class AppManager {
 		return app;
 	}
 
-	public async updateAndStartupLocal(stored: IAppStorageItem, appPackageOrInstance: ProxiedApp | Buffer) {
+	public async updateAndStartupLocal(stored: IAppStorageItem, appPackageOrInstance: ProxiedApp | Buffer, silenceStatus = true) {
 		const app = await this.updateLocal(stored, appPackageOrInstance);
-		await this.runStartUpProcess(stored, app, true);
+		await this.runStartUpProcess(stored, app, silenceStatus);
 	}
 
 	public async updateAndInitializeLocal(stored: IAppStorageItem, appPackageOrInstance: ProxiedApp | Buffer) {

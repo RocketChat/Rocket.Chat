@@ -1,4 +1,4 @@
-import { Margins, Tabs, Button } from '@rocket.chat/fuselage';
+import { Margins, Tabs, TabsItem, Button } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { usePagination, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRoute, usePermission, useSetModal } from '@rocket.chat/ui-contexts';
@@ -57,16 +57,16 @@ const PermissionsPage = ({ isEnterprise }: { isEnterprise: boolean }) => {
 				</PageHeader>
 				<Margins blockEnd={16}>
 					<Tabs>
-						<Tabs.Item
+						<TabsItem
 							selected={type === 'permissions'}
 							onClick={canViewPermission ? handlePermissionsTab : undefined}
 							disabled={!canViewPermission}
 						>
 							{t('Permissions')}
-						</Tabs.Item>
-						<Tabs.Item selected={type === 'settings'} onClick={handleSettingsTab} disabled={!canViewSettingPermission}>
+						</TabsItem>
+						<TabsItem selected={type === 'settings'} onClick={handleSettingsTab} disabled={!canViewSettingPermission}>
 							{t('Settings')}
-						</Tabs.Item>
+						</TabsItem>
 					</Tabs>
 				</Margins>
 				<PageContent mb='neg-x8'>

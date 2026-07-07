@@ -197,6 +197,7 @@ describe('parseMessageTextToAstMarkdown', () => {
 			const attachmentTranslatedMessageParsed = {
 				...translatedMessage,
 				md: translatedMessageParsed,
+				mdSource: 'message translated',
 				attachments: [
 					{
 						description: 'description',
@@ -238,6 +239,7 @@ describe('parseMessageTextToAstMarkdown', () => {
 			const attachmentTranslatedMessageParsed = {
 				...translatedMessage,
 				md: translatedMessageParsed,
+				mdSource: 'message translated',
 				attachments: [
 					{
 						text: 'text',
@@ -280,6 +282,7 @@ describe('parseMessageTextToAstMarkdown', () => {
 			const attachmentTranslatedMessageParsed = {
 				...translatedMessage,
 				md: translatedMessageParsed,
+				mdSource: 'message translated',
 				attachments: [
 					{
 						text: 'text',

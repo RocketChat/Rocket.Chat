@@ -2,6 +2,8 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import { roomsQueryKeys } from '../lib/queryKeys';
+
 type UseJoinRoomMutationFunctionProps = {
 	rid: IRoom['_id'];
 	reference: string;
@@ -11,11 +13,7 @@ type UseJoinRoomMutationFunctionProps = {
 export const useJoinRoom = () => {
 	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();
-	// TODO(ddp-removal): /v1/channels.join only resolves public channels; non-`c`
-	// rooms will error here (same as DDP `joinRoom` would, just via REST).
-	// Replace with a unified `/v1/rooms.join` (or per-type endpoints) before
-	// the 9.0.0 sweep removes the DDP method.
-	const joinChannel = useEndpoint('POST', '/v1/channels.join');
+	const joinChannel = useEndpoint('POST', '/v1/rooms.join');
 
 	return useMutation({
 		mutationFn: async ({ rid, reference, type }: UseJoinRoomMutationFunctionProps) => {
@@ -23,8 +21,10 @@ export const useJoinRoom = () => {
 			return { reference, type };
 		},
 		onSuccess: (data) => {
+			// Prefix-match the open-room query key (roomsQueryKeys.roomReference) so the
+			// "not subscribed" screen refetches and flips to the joined state without a reload.
 			queryClient.invalidateQueries({
-				queryKey: ['rooms', data],
+				queryKey: [...roomsQueryKeys.all, data.reference, data.type],
 			});
 		},
 		onError: (error: unknown) => {

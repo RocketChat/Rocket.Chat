@@ -10,6 +10,7 @@ import './methods/saveSettings';
 import './methods/translateMessage';
 import './googleTranslate';
 import './deeplTranslate';
+import './libreTranslate';
 import './msTranslate';
 import './methods/getProviderUiMetadata';
 

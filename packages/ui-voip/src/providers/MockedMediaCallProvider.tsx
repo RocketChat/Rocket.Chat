@@ -4,7 +4,8 @@ import type { MediaSignalingSession } from '@rocket.chat/media-signaling';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 
-import { MediaCallInstanceContext, type Signals } from '../context/MediaCallInstanceContext';
+import { MediaCallInstanceContext } from '../context/MediaCallInstanceContext';
+import type { AvailableViews, Signals } from '../context/MediaCallInstanceContext';
 import MediaCallViewContext from '../context/MediaCallViewContext';
 import type { State, PeerInfo, SessionState } from '../context/definitions';
 
@@ -158,6 +159,8 @@ const MockedMediaCallProvider = ({
 		onSelectPeer,
 		streams: {},
 		onToggleScreenSharing: () => undefined,
+		onOpenPopout: () => undefined,
+		onClosePopout: () => undefined,
 	};
 
 	const instanceContextValue = {
@@ -165,13 +168,14 @@ const MockedMediaCallProvider = ({
 			getState: () => null,
 			on: () => undefined,
 		} as unknown as MediaSignalingSession,
+		currentViews: ['widget'] as AvailableViews[],
+		registerView: (_view: AvailableViews) => undefined,
+		unregisterView: (_view: AvailableViews) => undefined,
 		signalEmitter: new Emitter<Signals>(),
 		audioElement: undefined,
 		openRoomId: undefined,
 		setOpenRoomId: () => undefined,
 		getAutocompleteOptions,
-		inRoomView: false,
-		setInRoomView: () => undefined,
 	};
 
 	return (

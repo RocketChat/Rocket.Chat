@@ -176,7 +176,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	cachedFindByUserId(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 	updateAutoTranslateById(_id: string, autoTranslate: boolean): Promise<UpdateResult>;
 
-	updateAllAutoTranslateLanguagesByUserId(userId: IUser['_id'], language: string): Promise<UpdateResult | Document>;
+	setAutoTranslateByUserId(userId: IUser['_id'], language: string | null): Promise<UpdateResult | Document>;
 	findByAutoTranslateAndUserId(
 		userId: ISubscription['u']['_id'],
 		autoTranslate?: ISubscription['autoTranslate'],
@@ -315,6 +315,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	): Promise<InsertManyResult<ISubscription>>;
 	removeByRoomIdsAndUserId(rids: string[], userId: string): Promise<number>;
 	removeByRoomIdAndUserId(roomId: string, userId: string): Promise<ISubscription | null>;
+	removeInvitedByRoomIdAndUserId(roomId: string, userId: string): Promise<ISubscription | null>;
 
 	removeByRoomIds(rids: string[], options?: { onTrash: (doc: ISubscription) => void }): Promise<DeleteResult>;
 

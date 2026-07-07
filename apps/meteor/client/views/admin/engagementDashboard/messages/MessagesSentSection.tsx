@@ -1,5 +1,5 @@
 import { ResponsiveBar } from '@nivo/bar';
-import { Box, Flex, Skeleton, Palette, Tooltip } from '@rocket.chat/fuselage';
+import { Box, FlexContainer, FlexItem, Skeleton, Palette, Tooltip } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { differenceInDays, addDays, format } from 'date-fns';
 import { useMemo } from 'react';
@@ -77,10 +77,10 @@ const MessagesSentSection = ({ timezone }: MessagesSentSectionProps) => {
 					},
 				]}
 			/>
-			<Flex.Container>
+			<FlexContainer>
 				{values ? (
 					<Box style={{ height: 300 }}>
-						<Flex.Item align='stretch' grow={1} shrink={0}>
+						<FlexItem align='stretch' grow={1} shrink={0}>
 							<Box style={{ position: 'relative' }}>
 								<Box
 									style={{
@@ -151,14 +151,14 @@ const MessagesSentSection = ({ timezone }: MessagesSentSectionProps) => {
 									/>
 								</Box>
 							</Box>
-						</Flex.Item>
+						</FlexItem>
 					</Box>
 				) : (
 					<Box>
 						<Skeleton variant='rect' height={240} />
 					</Box>
 				)}
-			</Flex.Container>
+			</FlexContainer>
 		</>
 	);
 };

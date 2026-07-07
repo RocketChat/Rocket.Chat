@@ -4,8 +4,7 @@ import { Integrations, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
-import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
-import { hasAllPermissionAsync, hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { hasAllPermissionAsync, hasPermissionAsync } from '../../../../../server/lib/authorization/hasPermission';
 import { methodDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnIntegrationChanged } from '../../../../lib/server/lib/notifyListener';
 import { compileIntegrationScript } from '../../lib/compileIntegrationScript';
@@ -144,15 +143,23 @@ export const updateIncomingIntegration = async (
 	}
 
 	const username = 'username' in integration ? integration.username : currentIntegration.username;
-	const user = await Users.findOne({ username });
+	const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
 
-	if (!user?._id) {
+	if (!user) {
 		throw new Meteor.Error('error-invalid-post-as-user', 'Invalid Post As User', {
 			method: 'updateIncomingIntegration',
 		});
 	}
 
-	await addUserRolesAsync(user._id, ['bot']);
+	if (!(await hasPermissionAsync(user._id, 'message-impersonate'))) {
+		throw new Meteor.Error(
+			'error-user-lacks-message-impersonate-permission',
+			"User selected for the incoming integration lacks the 'message-impersonate' permission.",
+			{
+				method: 'updateIncomingIntegration',
+			},
+		);
+	}
 
 	const updatedIntegration = await Integrations.findOneAndUpdate(
 		{ _id: integrationId },

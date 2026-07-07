@@ -748,12 +748,14 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		search,
 		offset = 0,
 		count = 10,
+		currentLoginToken,
 	}: {
 		uid: string;
 		sort?: Record<CustomSortOp, 1 | -1>;
 		search?: string | null;
 		offset?: number;
 		count?: number;
+		currentLoginToken?: string;
 	}): Promise<PaginatedResult<{ sessions: DeviceManagementSession[] }>> {
 		const searchQuery = search ? [{ searchTerm: { $regex: search, $options: 'i' } }] : [];
 
@@ -824,6 +826,15 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 				host: 1,
 				ip: 1,
 				loginAt: 1,
+				...(currentLoginToken && {
+					current: {
+						$cond: {
+							if: { $eq: ['$_id', currentLoginToken] },
+							then: true,
+							else: false,
+						},
+					},
+				}),
 			},
 		};
 
