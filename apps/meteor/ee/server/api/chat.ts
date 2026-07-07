@@ -3,7 +3,7 @@ import { License } from '@rocket.chat/license';
 import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../server/api/api';
-import { getReadReceiptsFunction } from '../methods/getReadReceipts';
+import { getReadReceiptsFunction } from '../meteor-methods/getReadReceipts';
 
 type GetMessageReadReceiptsProps = {
 	messageId: IMessage['_id'];

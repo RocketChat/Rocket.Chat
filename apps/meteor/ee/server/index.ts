@@ -10,7 +10,7 @@ import '../app/settings/server/index';
 import './requestSeatsRoute';
 import './configuration/index';
 import './local-services/ldap/service';
-import './methods/getReadReceipts';
+import './meteor-methods/getReadReceipts';
 import './patches';
 import './hooks/federation';
 

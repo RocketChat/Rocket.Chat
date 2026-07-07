@@ -1,0 +1,7 @@
+# Phase 5 EE mirror: methods → ee/server/meteor-methods
+# Format: old-path<TAB>new-path (relative to apps/meteor/)
+ee/server/methods	ee/server/meteor-methods
+ee/app/canned-responses/server/methods/saveCannedResponse.ts	ee/server/meteor-methods/saveCannedResponse.ts
+ee/app/canned-responses/server/methods/removeCannedResponse.ts	ee/server/meteor-methods/removeCannedResponse.ts
+ee/app/license/server/methods.ts	ee/server/meteor-methods/license.ts
+ee/app/livechat-enterprise/server/methods/removeBusinessHour.ts	ee/server/meteor-methods/omnichannel/removeBusinessHour.ts
