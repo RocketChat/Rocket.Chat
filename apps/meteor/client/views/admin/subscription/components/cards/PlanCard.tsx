@@ -8,7 +8,7 @@ type LicenseLimits = {
 	activeUsers: { max: number; value?: number };
 };
 
-type PlanCardProps = {
+export type PlanCardProps = {
 	license?: ILicenseV3;
 	licenseLimits: LicenseLimits;
 };

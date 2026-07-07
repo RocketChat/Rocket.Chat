@@ -45,7 +45,7 @@ import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
 
-type AdminUserFormProps = {
+export type AdminUserFormProps = {
 	userData?: Serialized<IUser>;
 	onReload: () => void;
 	context: string;

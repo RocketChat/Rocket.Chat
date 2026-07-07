@@ -12,7 +12,7 @@ type FeatureSet = {
 	infoText?: string;
 };
 
-type FeaturesCardProps = {
+export type FeaturesCardProps = {
 	activeModules: string[];
 	isEnterprise: boolean;
 };
