@@ -22,6 +22,7 @@ import { GroupedVirtuoso } from 'react-virtuoso';
 
 import { MembersListDivider } from './MembersListDivider';
 import RoomMembersRow from './RoomMembersRow';
+import { useMembersListNavigation } from './useMembersListNavigation';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import type { RoomMember } from '../../../hooks/useMembersList';
@@ -93,6 +94,7 @@ const RoomMembers = ({
 	);
 
 	const useRealName = useSetting('UI_Use_Real_Name', false);
+	const { onKeyDown } = useMembersListNavigation();
 
 	const { counts, titles } = useMemo(() => {
 		const owners: RoomMember[] = [];
@@ -185,7 +187,7 @@ const RoomMembers = ({
 								</Box>
 							</Box>
 						)}
-						<Box id={membersListId} w='full' h='full' overflow='hidden' flexShrink={1}>
+						<Box id={membersListId} onKeyDown={onKeyDown} w='full' h='full' overflow='hidden' flexShrink={1}>
 							{members.length <= 0 && <ContextualbarEmptyContent title={t('No_members_found')} />}
 							{members.length > 0 && (
 								<VirtualizedScrollbars>
