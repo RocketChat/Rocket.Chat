@@ -572,19 +572,32 @@ tests are deleted in that same PR — gated, for MOVE accessors, on the parity c
 `null`, so the runtime treats `null` and `undefined` alike as "not found". Behaviorally identical for
 apps (the host bridge only ever returns a setting or nothing).
 
-### Phase 2 — Modify family completion
+### Phase 2 — Modify family completion — ✅ runtime port landed
 
-*Same cadence as Phase 1: one PR per accessor (or tight group), parity-checked before the host class
-is deleted. RECONCILE members (`ModifyCreator`/`ModifyUpdater`/`ModifyExtender`/`Notifier`) follow §3
-+ the direction-aware merge rule instead of the parity check.*
-
-1. Port: `ModifyDeleter`, `MessageUpdater`, `LivechatUpdater`, `UserUpdater`, `LivechatCreator`,
-   `UploadCreator`, `EmailCreator`, `ContactCreator`, `UIController`, `SchedulerModify`,
-   `OAuthAppsModify`, `ModerationModify`, `Modify` facade.
-2. Remove the remaining `proxify` entries in `getModifier` and the sub-creator/sub-updater proxies
-   inside runtime `ModifyCreator`/`ModifyUpdater`.
-3. Delete host classes; port tests. After this phase, `getReader`/`getModifier`/`getPersistence`/
+1. ✅ Ported to base-runtime (`accessors/modify/*`): `ModifyDeleter`, `MessageUpdater`,
+   `LivechatUpdater`, `UserUpdater`, `LivechatCreator` (local `createToken`), `UploadCreator`
+   (default-user fetch), `EmailCreator`, `ContactCreator`, `UIController` (local `UIHelper.assignIds`
+   + UIKit interaction formatting), `SchedulerModify` (local `createProcessorId` id-namespacing),
+   `OAuthAppsModify`, `ModerationModify`. Each takes a `RemoteBridges`; caller-identity params use the
+   `'APP_ID'` sentinel, while the `ModerationModify`/`ModifyDeleter.deleteUsers` argument-appIds stay
+   raw (bucket B) and `UIController`/`SchedulerModify` read the real id from `AppObjectRegistry` for
+   their non-identity uses (block/interaction stamping, job-id suffix). Tests:
+   `modify/tests/modifyAccessors.test.ts` + updated `ModifyCreator.test.ts` / `ModifyUpdater.test.ts`.
+2. ✅ Removed the remaining `proxify` entries in `getModifier` (`getDeleter`/`getUiController`/
+   `getScheduler`/`getOAuthAppsModifier`/`getModerationModifier`) and the `accessor:*` sub-creator
+   (`getLivechatCreator`/`getUploadCreator`/`getEmailCreator`/`getContactCreator`) and sub-updater
+   (`getLivechatUpdater`/`getUserUpdater`/`getMessageUpdater`) proxies inside the runtime
+   `ModifyCreator`/`ModifyUpdater`. After this phase, `getReader`/`getModifier`/`getPersistence`/
    `getHttp` generate **zero** `accessor:*` traffic.
+3. Host-class deletion + `AppAccessorManager` pruning again deferred to the Phase 4 teardown, for the
+   same reason as Phase 1 (keeps each step small and green; parity harness guards the transient
+   duplication). The RECONCILE members (`ModifyCreator`/`ModifyUpdater`/`ModifyExtender`/`Notifier`)
+   were already runtime-canonical from Phase 0; their sub-accessors are now local too.
+
+**RPC-boundary note:** the sub-accessor methods that returned typed host-bridge results now flow
+through `RemoteBridges` (`Promise<unknown>`) and are cast to their interface return types;
+`void`-returning methods (`setActiveState`, `endActiveState`, reactions, deletes) `await` instead of
+returning the bridge value, matching the interface.
 
 ### Phase 3 — Registration surface via `AppResourceBridge`
 

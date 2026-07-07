@@ -37,9 +37,14 @@ import { EnvironmentalVariableRead } from './environment/EnvironmentalVariableRe
 import { ServerSettingRead } from './environment/ServerSettingRead';
 import { ServerSettingUpdater } from './environment/ServerSettingUpdater';
 import { ServerSettingsModify } from './environment/ServerSettingsModify';
+import { ModerationModify } from './modify/ModerationModify';
 import { ModifyCreator } from './modify/ModifyCreator';
+import { ModifyDeleter } from './modify/ModifyDeleter';
 import { ModifyExtender } from './modify/ModifyExtender';
 import { ModifyUpdater } from './modify/ModifyUpdater';
+import { OAuthAppsModify } from './modify/OAuthAppsModify';
+import { SchedulerModify } from './modify/SchedulerModify';
+import { UIController } from './modify/UIController';
 import { Notifier } from './notifier';
 import { CloudWorkspaceRead } from './read/CloudWorkspaceRead';
 import { ContactRead } from './read/ContactRead';
@@ -335,12 +340,12 @@ export class AppAccessors {
 				getCreator: this.getCreator.bind(this),
 				getUpdater: this.getUpdater.bind(this),
 				getExtender: this.getExtender.bind(this),
-				getDeleter: () => this.proxify('getModifier:getDeleter'),
+				getDeleter: () => new ModifyDeleter(this.bridges),
 				getNotifier: () => this.getNotifier(),
-				getUiController: () => this.proxify('getModifier:getUiController'),
-				getScheduler: () => this.proxify('getModifier:getScheduler'),
-				getOAuthAppsModifier: () => this.proxify('getModifier:getOAuthAppsModifier'),
-				getModerationModifier: () => this.proxify('getModifier:getModerationModifier'),
+				getUiController: () => new UIController(this.bridges),
+				getScheduler: () => new SchedulerModify(this.bridges),
+				getOAuthAppsModifier: () => new OAuthAppsModify(this.bridges),
+				getModerationModifier: () => new ModerationModify(this.bridges),
 			};
 		}
 
