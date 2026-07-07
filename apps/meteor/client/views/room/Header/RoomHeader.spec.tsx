@@ -102,15 +102,21 @@ describe('RoomHeader', () => {
 			mockUseRealRoomToolbox.value = false;
 		});
 
+		const settingKeyForRoom = (
+			roomType: string,
+		): 'Room_Toolbox_Layout_Public' | 'Room_Toolbox_Layout_Private' | 'Room_Toolbox_Layout_Direct' => {
+			if (roomType === 'c') return 'Room_Toolbox_Layout_Public';
+			if (roomType === 'p') return 'Room_Toolbox_Layout_Private';
+			return 'Room_Toolbox_Layout_Direct';
+		};
+
 		const renderWithLayout = (
 			room = mockedRoom,
 			layoutContextValue?: Partial<LayoutContextValue>,
-			settings = {
-				Accounts_AllowFeaturePreview: true,
-				Room_Toolbox_Layout: mockLayoutConfig,
-			},
+			extraSettings?: Record<string, string | boolean>,
 			featuresPreview = [{ name: 'roomToolboxLayout', value: true }],
 		) => {
+			const scopeKey = settingKeyForRoom(room.t);
 			const mockLayoutContextValue: LayoutContextValue = {
 				isEmbedded: false,
 				showTopNavbarEmbeddedLayout: false,
@@ -151,9 +157,12 @@ describe('RoomHeader', () => {
 				closeTab: () => undefined,
 			};
 
+			const allowFeaturePreview = extraSettings?.Accounts_AllowFeaturePreview ?? true;
+			const layoutValue = extraSettings?.[scopeKey] ?? mockLayoutConfig;
+
 			const appRootWithSettings = mockAppRoot()
-				.withSetting('Accounts_AllowFeaturePreview', settings.Accounts_AllowFeaturePreview)
-				.withSetting('Room_Toolbox_Layout', settings.Room_Toolbox_Layout)
+				.withSetting('Accounts_AllowFeaturePreview', allowFeaturePreview as boolean)
+				.withSetting(scopeKey, layoutValue as string)
 				.withUserPreference('featuresPreview', featuresPreview)
 				.withRoom(room)
 				.wrap((children) => <FakeRoomProvider roomOverrides={room}>{children}</FakeRoomProvider>)
@@ -218,8 +227,7 @@ describe('RoomHeader', () => {
 
 					it('should fallback to legacy behavior if layout configuration is malformed JSON', () => {
 						renderWithLayout(testRoom, undefined, {
-							Accounts_AllowFeaturePreview: true,
-							Room_Toolbox_Layout: '{ invalid json }',
+							[settingKeyForRoom(type)]: '{ invalid json }',
 						});
 
 						expect(screen.getByTitle('Threads')).toBeInTheDocument();
