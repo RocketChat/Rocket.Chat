@@ -36,7 +36,6 @@ export const UserTypeCodec = z.codec(z.string().optional(), z.string(), {
 			case undefined:
 				return UserType.UNKNOWN;
 			default:
-				// eslint-disable-next-line no-console
 				console.warn(`A new user type has been added that the Apps don't know about? "${type}"`);
 				return type.toUpperCase();
 		}
