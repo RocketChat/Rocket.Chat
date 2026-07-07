@@ -29,6 +29,11 @@ Meteor.methods<ServerMethods>({
 	async loadSurroundingMessages(message, limit = 50, showThreadMessages = true) {
 		check(message, Object);
 		check(limit, Number);
+
+		if (typeof showThreadMessages === 'string') {
+			showThreadMessages = showThreadMessages === 'true';
+		}
+
 		check(showThreadMessages, Boolean);
 
 		if (!Meteor.userId()) {
