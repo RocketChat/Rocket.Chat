@@ -147,6 +147,7 @@
 		"@rocket.chat/random": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/server-cloud-communication": "workspace:^",
+		"@rocket.chat/server-core": "workspace:^",
 		"@rocket.chat/server-fetch": "workspace:^",
 		"@rocket.chat/sha256": "workspace:^",
 		"@rocket.chat/string-helpers": "~0.32.0",
