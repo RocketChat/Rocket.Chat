@@ -16,6 +16,7 @@ const mockVirtualizerHandle = {
 	scrollSize: 1000,
 	viewportSize: 300,
 };
+let mockVirtualizerHasHandle = true;
 
 type MockVListProps = {
 	children: ReactNode;
@@ -34,7 +35,7 @@ jest.mock('virtua', () => {
 				{ children, bufferSize, onScroll, as: asRoot = 'div', item: asItem = 'div', style, className }: MockVListProps,
 				ref: React.Ref<unknown>,
 			) => {
-				React.useImperativeHandle(ref, () => mockVirtualizerHandle);
+				React.useImperativeHandle(ref, () => (mockVirtualizerHasHandle ? mockVirtualizerHandle : null));
 				const Root = asRoot;
 				const Item = asItem;
 				const wrapped = Children.map(children, (child, index) => {
@@ -110,6 +111,7 @@ describe('BannedUsers', () => {
 		mockVirtualizerHandle.scrollOffset = 0;
 		mockVirtualizerHandle.scrollSize = 1000;
 		mockVirtualizerHandle.viewportSize = 300;
+		mockVirtualizerHasHandle = true;
 	});
 
 	afterEach(() => {
@@ -204,5 +206,33 @@ describe('BannedUsers', () => {
 		renderBannedUsers({ onLoadMore });
 
 		expect(onLoadMore).toHaveBeenCalledTimes(1);
+	});
+
+	it('does not call onLoadMore before the virtualizer handle is ready', async () => {
+		jest.useFakeTimers();
+		const onLoadMore = jest.fn();
+		mockVirtualizerHasHandle = false;
+
+		renderBannedUsers({ onLoadMore });
+
+		mockVirtualizerHandle.scrollOffset = 700;
+		fireEvent.scroll(screen.getByTestId('banned-users-virtual-list'));
+		await advanceDebouncedScroll();
+
+		expect(onLoadMore).not.toHaveBeenCalled();
+	});
+
+	it('does not call onLoadMore when the viewport has no measurable height', async () => {
+		jest.useFakeTimers();
+		const onLoadMore = jest.fn();
+		mockVirtualizerHandle.viewportSize = 0;
+
+		renderBannedUsers({ onLoadMore });
+
+		mockVirtualizerHandle.scrollOffset = 1000;
+		fireEvent.scroll(screen.getByTestId('banned-users-virtual-list'));
+		await advanceDebouncedScroll();
+
+		expect(onLoadMore).not.toHaveBeenCalled();
 	});
 });
