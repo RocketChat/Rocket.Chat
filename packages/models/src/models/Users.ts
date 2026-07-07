@@ -33,6 +33,8 @@ import { Rooms, Subscriptions } from '../index';
 import { BaseRaw } from './BaseRaw';
 import { queryAvailableAgentsForSelection, queryStatusAgentOnline } from '../helpers';
 
+const usersDefaultFields = { __rooms: 0 } as const;
+
 export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IUsersModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUser>>) {
 		super(db, 'users', trash, {
@@ -41,9 +43,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			},
 		});
 
-		this.defaultFields = {
-			__rooms: 0,
-		};
+		this.defaultFields = usersDefaultFields;
 	}
 
 	// Move index from constructor to here
@@ -146,6 +146,16 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 
 	findActiveByRoomIds(roomIds: IRoom['_id'][], options?: FindOptions<IUser>) {
 		return this.find({ active: true, __rooms: { $in: roomIds } }, options);
+	}
+
+	setCasExternalIdByUsername(username: string): Promise<IUser | null> {
+		// #TODO: Remove regex based search
+		const regex = new RegExp(`^${escapeRegExp(username)}$`, 'i');
+		return this.findOneAndUpdate(
+			{ username: regex },
+			{ $set: { 'services.cas.external_id': username } },
+			{ returnDocument: 'after', projection: usersDefaultFields },
+		);
 	}
 
 	/**

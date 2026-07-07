@@ -14,13 +14,10 @@ export const loginHandlerCAS = async (options: any): Promise<undefined | Account
 		return undefined;
 	}
 
-	// TODO: Sync wrapper due to the chain conversion to async models
-	const credentials = await CredentialTokens.findOneNotExpiredById(options.cas.credentialToken);
+	const credentials = await CredentialTokens.removeNotExpiredById(options.cas.credentialToken);
 	if (credentials === undefined || credentials === null) {
 		throw new Meteor.Error(Accounts.LoginCancelledError.numericError, 'no matching login attempt found');
 	}
-
-	await CredentialTokens.removeById(credentials._id);
 
 	const result = credentials.userInfo;
 	const syncUserDataFieldMap = settings.get<string>('CAS_Sync_User_Data_FieldMap').trim();

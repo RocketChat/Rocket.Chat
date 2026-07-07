@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../../../server/lib/authorization/hasPermission';
 import { methodDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
-import { notifyOnIntegrationChangedById } from '../../../../lib/server/lib/notifyListener';
+import { notifyOnIntegrationChanged } from '../../../../lib/server/lib/notifyListener';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -14,37 +14,35 @@ declare module '@rocket.chat/ddp-client' {
 }
 
 export const deleteOutgoingIntegration = async (integrationId: string, userId: string): Promise<void> => {
-	let integration;
-
 	if (!userId) {
 		throw new Meteor.Error('not_authorized', 'Unauthorized', {
 			method: 'deleteOutgoingIntegration',
 		});
 	}
 
-	if (await hasPermissionAsync(userId, 'manage-outgoing-integrations')) {
-		integration = Integrations.findOneById(integrationId);
-	} else if (await hasPermissionAsync(userId, 'manage-own-outgoing-integrations')) {
-		integration = Integrations.findOne({
-			'_id': integrationId,
-			'_createdBy._id': userId,
-		});
-	} else {
+	const canManageAllIntegrations = await hasPermissionAsync(userId, 'manage-outgoing-integrations');
+	const canManageOwnIntegrations = !canManageAllIntegrations && (await hasPermissionAsync(userId, 'manage-own-outgoing-integrations'));
+
+	if (!canManageAllIntegrations && !canManageOwnIntegrations) {
 		throw new Meteor.Error('not_authorized', 'Unauthorized', {
 			method: 'deleteOutgoingIntegration',
 		});
 	}
 
-	if (!(await integration)) {
+	const integration = await Integrations.removeByIdAndCreatedByIfExists({
+		_id: integrationId,
+		...(canManageOwnIntegrations && { createdBy: userId }),
+	});
+
+	if (!integration) {
 		throw new Meteor.Error('error-invalid-integration', 'Invalid integration', {
 			method: 'deleteOutgoingIntegration',
 		});
 	}
 
-	await Integrations.removeById(integrationId);
 	// Don't sending to IntegrationHistory listener since it don't waits for 'removed' events.
 	await IntegrationHistory.removeByIntegrationId(integrationId);
-	void notifyOnIntegrationChangedById(integrationId, 'removed');
+	void notifyOnIntegrationChanged(integration, 'removed');
 };
 
 Meteor.methods<ServerMethods>({
