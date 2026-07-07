@@ -25,6 +25,7 @@ import sharp from 'sharp';
 import type { WritableStreamBuffer } from 'stream-buffers';
 import streamBuffers from 'stream-buffers';
 
+import { isRenderableImageType } from '../../../../lib/renderableImageTypes';
 import { MultipartUploadHandler } from '../../../../server/api/lib/MultipartUploadHandler';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../../server/lib/authorization/canAccessRoom';
 import { i18n } from '../../../../server/lib/i18n';
@@ -213,8 +214,8 @@ export const FileUpload = {
 		const user = file.uid ? await Users.findOne(file.uid, { projection: { language: 1 } }) : null;
 		const language = user?.language || 'en';
 
-		// accept only images
-		if (!/^image\//.test(file.type || '')) {
+		// accept only images the browser can display as an avatar
+		if (!isRenderableImageType(file.type)) {
 			const reason = i18n.t('File_type_is_not_accepted', { lng: language });
 			throw new Meteor.Error('error-invalid-file-type', reason);
 		}
