@@ -25,6 +25,7 @@ const mockVirtualizerHandle = {
 	viewportSize: 300,
 	cache: null,
 };
+let mockVirtualizerHasHandle = true;
 
 type MockVirtualizerProps = {
 	children: ReactNode;
@@ -43,7 +44,7 @@ jest.mock('virtua', () => ({
 			{ children, bufferSize, keepMounted, onScroll, as: asRoot = 'div', item: asItem = 'div', style, className }: MockVirtualizerProps,
 			ref: React.Ref<unknown>,
 		) => {
-			React.useImperativeHandle(ref, () => mockVirtualizerHandle);
+			React.useImperativeHandle(ref, () => (mockVirtualizerHasHandle ? mockVirtualizerHandle : null));
 			const Root = asRoot;
 			const Item = asItem;
 			const wrapped = Children.map(children, (child, index) => {
@@ -166,6 +167,7 @@ describe('RoomMembers virtualized list', () => {
 		mockVirtualizerHandle.scrollOffset = 0;
 		mockVirtualizerHandle.scrollSize = 1000;
 		mockVirtualizerHandle.viewportSize = 300;
+		mockVirtualizerHasHandle = true;
 	});
 
 	afterEach(() => {
@@ -261,6 +263,7 @@ describe('RoomMembers virtualized list review fixes', () => {
 		mockVirtualizerHandle.scrollOffset = 0;
 		mockVirtualizerHandle.scrollSize = 1000;
 		mockVirtualizerHandle.viewportSize = 300;
+		mockVirtualizerHasHandle = true;
 	});
 
 	afterEach(() => {
@@ -288,6 +291,68 @@ describe('RoomMembers virtualized list review fixes', () => {
 		fireEvent.scroll(screen.getByTestId('room-members-virtual-list'));
 		await advanceDebouncedScroll();
 
+		fireEvent.scroll(screen.getByTestId('room-members-virtual-list'));
+		await advanceDebouncedScroll();
+
+		expect(loadMoreItems).toHaveBeenCalledTimes(2);
+	});
+
+	it('does not load more before the virtualizer handle is ready', async () => {
+		jest.useFakeTimers();
+		const loadMoreItems = jest.fn().mockResolvedValue(undefined);
+		mockVirtualizerHasHandle = false;
+
+		renderRoomMembers({ total: 8, loadMoreItems });
+		fireEvent.scroll(screen.getByTestId('room-members-virtual-list'));
+		await advanceDebouncedScroll();
+
+		expect(loadMoreItems).not.toHaveBeenCalled();
+	});
+
+	it('does not load more when the viewport has no measurable height', async () => {
+		jest.useFakeTimers();
+		const loadMoreItems = jest.fn().mockResolvedValue(undefined);
+		mockVirtualizerHandle.viewportSize = 0;
+
+		renderRoomMembers({ total: 8, loadMoreItems });
+		mockVirtualizerHandle.scrollOffset = 1000;
+		fireEvent.scroll(screen.getByTestId('room-members-virtual-list'));
+		await advanceDebouncedScroll();
+
+		expect(loadMoreItems).not.toHaveBeenCalled();
+	});
+
+	it('does not start a second load while one is pending', async () => {
+		jest.useFakeTimers();
+		let resolveLoad: () => void = () => undefined;
+		const pendingLoad = new Promise<void>((resolve) => {
+			resolveLoad = resolve;
+		});
+		const loadMoreItems = jest.fn().mockReturnValue(pendingLoad);
+
+		renderRoomMembers({ total: 8, loadMoreItems });
+		mockVirtualizerHandle.scrollOffset = 700;
+		fireEvent.scroll(screen.getByTestId('room-members-virtual-list'));
+		await advanceDebouncedScroll();
+		fireEvent.scroll(screen.getByTestId('room-members-virtual-list'));
+		await advanceDebouncedScroll();
+
+		expect(loadMoreItems).toHaveBeenCalledTimes(1);
+
+		await act(async () => {
+			resolveLoad();
+			await pendingLoad;
+		});
+	});
+
+	it('allows loading again after a failed load', async () => {
+		jest.useFakeTimers();
+		const loadMoreItems = jest.fn().mockRejectedValue(new Error('failed to load members'));
+
+		renderRoomMembers({ total: 8, loadMoreItems });
+		mockVirtualizerHandle.scrollOffset = 700;
+		fireEvent.scroll(screen.getByTestId('room-members-virtual-list'));
+		await advanceDebouncedScroll();
 		fireEvent.scroll(screen.getByTestId('room-members-virtual-list'));
 		await advanceDebouncedScroll();
 

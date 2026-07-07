@@ -64,4 +64,17 @@ describe('roomMembersListRows', () => {
 		expect(findActiveStickyIndex([0, 4], -1)).toBe(0);
 		expect(findActiveStickyIndex([], 3)).toBe(-1);
 	});
+
+	it('skips sparse sticky index entries', () => {
+		const sparseStickyIndexes = [0, 4, 8] as Array<number | undefined>;
+		delete sparseStickyIndexes[1];
+
+		expect(findActiveStickyIndex(sparseStickyIndexes as number[], 6)).toBe(0);
+	});
+
+	it('falls back when every sticky index entry is missing', () => {
+		const sparseStickyIndexes = [undefined] as unknown as number[];
+
+		expect(findActiveStickyIndex(sparseStickyIndexes, 3)).toBe(-1);
+	});
 });
