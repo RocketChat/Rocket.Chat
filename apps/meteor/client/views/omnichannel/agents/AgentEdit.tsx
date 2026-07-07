@@ -29,7 +29,7 @@ type AgentEditFormData = {
 	maxNumberSimultaneousChat: number;
 };
 
-type AgentEditProps = {
+export type AgentEditProps = {
 	agentData: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'>;
 	agentDepartments: (Pick<ILivechatDepartmentAgents, 'departmentId'> & { departmentName: string })[];
 };

@@ -7,7 +7,7 @@ import ChannelsTab from './channels/ChannelsTab';
 import MessagesTab from './messages/MessagesTab';
 import UsersTab from './users/UsersTab';
 
-type EngagementDashboardPageProps = {
+export type EngagementDashboardPageProps = {
 	tab: 'users' | 'messages' | 'channels';
 	onSelectTab?: (tab: 'users' | 'messages' | 'channels') => void;
 };

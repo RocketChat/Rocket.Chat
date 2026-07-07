@@ -7,7 +7,7 @@ import { useMemo } from 'react';
 import { useWeeklyChatActivity } from './useWeeklyChatActivity';
 import { formatDate } from '../../../../lib/utils/dateFormat';
 
-type ContentForDaysProps = {
+export type ContentForDaysProps = {
 	displacement: number;
 	onPreviousDateClick: () => void;
 	onNextDateClick: () => void;

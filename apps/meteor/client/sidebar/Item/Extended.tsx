@@ -15,7 +15,7 @@ import { memo } from 'react';
 import { useDeferredMenuMount } from './useDeferredMenuMount';
 import { useShortTimeAgo } from '../../hooks/useTimeAgo';
 
-type ExtendedProps = {
+export type ExtendedProps = {
 	icon?: ReactNode;
 	title: ReactNode;
 	avatar?: ReactNode;

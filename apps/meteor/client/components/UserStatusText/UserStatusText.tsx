@@ -14,7 +14,7 @@ const STATUS_LABEL_KEYS: Record<UserStatus, string> = {
 	[UserStatus.DISABLED]: 'Disabled',
 };
 
-type UserStatusTextProps = {
+export type UserStatusTextProps = {
 	status?: UserStatus;
 	statusText?: string;
 	statusExpiresAt?: Date | string;

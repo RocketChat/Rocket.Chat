@@ -11,17 +11,17 @@ import { useId } from 'react';
 import type { UIEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useOpenEncryptedPdf } from './hooks/useOpenEncryptedPdf';
 import { getFileExtension } from '../../../../../../lib/utils/getFileExtension';
 import { forAttachmentDownload, registerDownloadForUid } from '../../../../../hooks/useDownloadFromServiceWorker';
 import MarkdownText from '../../../../MarkdownText';
 import MessageCollapsible from '../../../MessageCollapsible';
 import MessageContentBody from '../../../MessageContentBody';
 import AttachmentSize from '../structure/AttachmentSize';
-import { useOpenEncryptedPdf } from './hooks/useOpenEncryptedPdf';
 
 const openDocumentViewer = window.RocketChatDesktop?.openDocumentViewer;
 
-type GenericFileAttachmentProps = MessageAttachmentBase;
+export type GenericFileAttachmentProps = MessageAttachmentBase;
 
 const GenericFileAttachment = ({
 	title,

@@ -12,7 +12,9 @@ const DEFAULT_ITEMS_LIMIT = 90;
 // limit recent emojis to 27 (3 rows of 9)
 const RECENT_EMOJIS_LIMIT = 27;
 
-const EmojiPickerProvider = ({ children }: { children: ReactNode }) => {
+export type EmojiPickerProviderProps = { children: ReactNode };
+
+const EmojiPickerProvider = ({ children }: EmojiPickerProviderProps) => {
 	const [emojiPicker, setEmojiPicker] = useState<ReactNode>(null);
 	const [emojiToPreview, setEmojiToPreview] = useDebouncedState<{ emoji: string; name: string } | null>(null, 100);
 	const [recentEmojis, setRecentEmojis] = useLocalStorage<string[]>('emoji.recent', []);

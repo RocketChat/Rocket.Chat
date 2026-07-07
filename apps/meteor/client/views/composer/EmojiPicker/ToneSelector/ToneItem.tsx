@@ -1,7 +1,9 @@
 import { Box } from '@rocket.chat/fuselage';
 import DOMPurify from 'dompurify';
 
-const ToneItem = ({ tone }: { tone: number }) => {
+export type ToneItemProps = { tone: number };
+
+const ToneItem = ({ tone }: ToneItemProps) => {
 	let toneEmoji;
 
 	switch (tone) {

@@ -28,7 +28,9 @@ import useClipboardWithToast from '../../../../hooks/useClipboardWithToast';
 import { useHighlightedCode } from '../../../../hooks/useHighlightedCode';
 import { useExampleData } from '../hooks/useExampleIncomingData';
 
-const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomingIntegration> }) => {
+export type IncomingWebhookFormProps = { webhookData?: Serialized<IIncomingIntegration> };
+
+const IncomingWebhookForm = ({ webhookData }: IncomingWebhookFormProps) => {
 	const { t } = useTranslation();
 	const absoluteUrl = useAbsoluteUrl();
 

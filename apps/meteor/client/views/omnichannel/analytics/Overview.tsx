@@ -12,7 +12,9 @@ const initialData: { title?: string; value: string | number }[] = Array.from({ l
 const conversationsInitialData = [initialData, initialData];
 const productivityInitialData = [initialData];
 
-const Overview = ({ type, dateRange, departmentId }: { type: string; dateRange: { start: string; end: string }; departmentId: string }) => {
+export type OverviewProps = { type: string; dateRange: { start: string; end: string }; departmentId: string };
+
+const Overview = ({ type, dateRange, departmentId }: OverviewProps) => {
 	const { t } = useTranslation();
 
 	const { start, end } = dateRange;

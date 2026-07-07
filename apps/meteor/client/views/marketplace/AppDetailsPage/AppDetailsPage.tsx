@@ -25,7 +25,7 @@ import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
 
 type AppDetailsPageFormData = Record<string, SettingValue>;
 
-type AppDetailsPageProps = {
+export type AppDetailsPageProps = {
 	id: App['id'];
 };
 
