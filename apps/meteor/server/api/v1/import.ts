@@ -21,6 +21,8 @@ import {
 import { Meteor } from 'meteor/meteor';
 
 import { Importers } from '../../../app/importer/server';
+import { PendingAvatarImporter } from '../../../app/importer-pending-avatars/server/PendingAvatarImporter';
+import { PendingFileImporter } from '../../../app/importer-pending-files/server/PendingFileImporter';
 import {
 	executeUploadImportFile,
 	executeDownloadPublicImportFile,
@@ -28,9 +30,7 @@ import {
 	executeGetImportFileData,
 	executeStartImport,
 	executeGetLatestImportOperations,
-} from '../../../app/importer/server/methods';
-import { PendingAvatarImporter } from '../../../app/importer-pending-avatars/server/PendingAvatarImporter';
-import { PendingFileImporter } from '../../../app/importer-pending-files/server/PendingFileImporter';
+} from '../../meteor-methods/import';
 import { API } from '../api';
 
 const successResponseSchema = ajv.compile<void>({

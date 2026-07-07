@@ -20,12 +20,12 @@ import {
 	mountIntegrationHistoryQueryBasedOnPermissions,
 	mountIntegrationQueryBasedOnPermissions,
 } from '../../../app/integrations/server/lib/mountQueriesBasedOnPermission';
-import { addIncomingIntegration } from '../../../app/integrations/server/methods/incoming/addIncomingIntegration';
-import { deleteIncomingIntegration } from '../../../app/integrations/server/methods/incoming/deleteIncomingIntegration';
-import { updateIncomingIntegration } from '../../../app/integrations/server/methods/incoming/updateIncomingIntegration';
-import { addOutgoingIntegration } from '../../../app/integrations/server/methods/outgoing/addOutgoingIntegration';
-import { deleteOutgoingIntegration } from '../../../app/integrations/server/methods/outgoing/deleteOutgoingIntegration';
-import { updateOutgoingIntegration } from '../../../app/integrations/server/methods/outgoing/updateOutgoingIntegration';
+import { addIncomingIntegration } from '../../meteor-methods/integrations/incoming/addIncomingIntegration';
+import { deleteIncomingIntegration } from '../../meteor-methods/integrations/incoming/deleteIncomingIntegration';
+import { updateIncomingIntegration } from '../../meteor-methods/integrations/incoming/updateIncomingIntegration';
+import { addOutgoingIntegration } from '../../meteor-methods/integrations/outgoing/addOutgoingIntegration';
+import { deleteOutgoingIntegration } from '../../meteor-methods/integrations/outgoing/deleteOutgoingIntegration';
+import { updateOutgoingIntegration } from '../../meteor-methods/integrations/outgoing/updateOutgoingIntegration';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
 import { findOneIntegration } from '../lib/integrations';

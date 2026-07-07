@@ -7,7 +7,7 @@ import { RecordConverter } from './RecordConverter';
 import { createDirectMessage } from '../../../../../server/meteor-methods/messages/createDirectMessage';
 import { createChannelMethod } from '../../../../../server/meteor-methods/rooms/createChannel';
 import { createPrivateGroupMethod } from '../../../../../server/meteor-methods/rooms/createPrivateGroup';
-import { saveRoomSettings } from '../../../../channel-settings/server/methods/saveRoomSettings';
+import { saveRoomSettings } from '../../../../../server/meteor-methods/rooms/saveRoomSettings';
 import { notifyOnSubscriptionChangedByRoomId } from '../../../../lib/server/lib/notifyListener';
 import type { IConversionCallbacks } from '../../definitions/IConversionCallbacks';
 

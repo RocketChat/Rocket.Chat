@@ -35,7 +35,6 @@ import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../../app/authorization/server';
-import { saveRoomSettings } from '../../../app/channel-settings/server/methods/saveRoomSettings';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../app/integrations/server/lib/mountQueriesBasedOnPermission';
 import { getUserMentionsByChannel } from '../../../app/mentions/server/methods/getUserMentionsByChannel';
 import { settings } from '../../../app/settings/server';
@@ -59,6 +58,7 @@ import { removeRoomLeader } from '../../meteor-methods/rooms/removeRoomLeader';
 import { removeRoomModerator } from '../../meteor-methods/rooms/removeRoomModerator';
 import { removeRoomOwner } from '../../meteor-methods/rooms/removeRoomOwner';
 import { removeUserFromRoomMethod } from '../../meteor-methods/rooms/removeUserFromRoom';
+import { saveRoomSettings } from '../../meteor-methods/rooms/saveRoomSettings';
 import { executeUnarchiveRoom } from '../../meteor-methods/rooms/unarchiveRoom';
 import { API } from '../api';
 import { addUserToFileObj } from '../lib/addUserToFileObj';

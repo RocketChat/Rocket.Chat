@@ -15,7 +15,6 @@ import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
 import { canAccessRoomAsync, roomAccessAttributes } from '../../../app/authorization/server';
-import { saveRoomSettings } from '../../../app/channel-settings/server/methods/saveRoomSettings';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../app/integrations/server/lib/mountQueriesBasedOnPermission';
 import { normalizeMessagesForUser } from '../../../app/utils/server/lib/normalizeMessagesForUser';
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../lib/authorization/hasPermission';
@@ -37,6 +36,7 @@ import { removeRoomLeader } from '../../meteor-methods/rooms/removeRoomLeader';
 import { removeRoomModerator } from '../../meteor-methods/rooms/removeRoomModerator';
 import { removeRoomOwner } from '../../meteor-methods/rooms/removeRoomOwner';
 import { removeUserFromRoomMethod } from '../../meteor-methods/rooms/removeUserFromRoom';
+import { saveRoomSettings } from '../../meteor-methods/rooms/saveRoomSettings';
 import { executeUnarchiveRoom } from '../../meteor-methods/rooms/unarchiveRoom';
 import { API } from '../api';
 import { addUserToFileObj } from '../lib/addUserToFileObj';

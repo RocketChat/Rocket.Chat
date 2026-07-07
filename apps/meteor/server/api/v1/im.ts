@@ -20,7 +20,6 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
 
-import { saveRoomSettings } from '../../../app/channel-settings/server/methods/saveRoomSettings';
 import { settings } from '../../../app/settings/server';
 import { normalizeMessagesForUser } from '../../../app/utils/server/lib/normalizeMessagesForUser';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
@@ -33,6 +32,7 @@ import { unblockUserMethod } from '../../lib/users/unblockUser';
 import { createDirectMessage } from '../../meteor-methods/messages/createDirectMessage';
 import { getChannelHistory } from '../../meteor-methods/messages/getChannelHistory';
 import { hideRoomMethod } from '../../meteor-methods/rooms/hideRoom';
+import { saveRoomSettings } from '../../meteor-methods/rooms/saveRoomSettings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import type { TypedAction } from '../definition';

@@ -5,9 +5,9 @@ import { Rooms, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import type { Filter, FindCursor } from 'mongodb';
 
-import { addUserToRole } from '../../../app/authorization/server/methods/addUserToRole';
-import { removeUserFromRole } from '../../../app/authorization/server/methods/removeUserFromRole';
 import { settings } from '../../../app/settings/server';
+import { addUserToRole } from '../../meteor-methods/auth/addUserToRole';
+import { removeUserFromRole } from '../../meteor-methods/auth/removeUserFromRole';
 import { addUsersToRoomMethod } from '../../meteor-methods/rooms/addUsersToRoom';
 import { removeUserFromRoomMethod } from '../../meteor-methods/rooms/removeUserFromRoom';
 import { hasRoleAsync } from '../authorization/hasRole';

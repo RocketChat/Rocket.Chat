@@ -25,7 +25,7 @@ const { RoomConverter } = proxyquire.noCallThru().load('../../../../../app/impor
 	'../../../../../server/meteor-methods/messages/createDirectMessage': {
 		createDirectMessage,
 	},
-	'../../../../channel-settings/server/methods/saveRoomSettings': {
+	'../../../../../server/meteor-methods/rooms/saveRoomSettings': {
 		saveRoomSettings,
 	},
 	'../../../../lib/server/lib/notifyListener': {
