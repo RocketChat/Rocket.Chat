@@ -11,7 +11,7 @@ type AddTokenFormData = {
 	bypassTwoFactor: string;
 };
 
-type AddTokenProps = {
+export type AddTokenProps = {
 	reload: () => void;
 };
 

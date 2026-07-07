@@ -14,7 +14,7 @@ import { useFormatDate } from '../../../../hooks/useFormatDate';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 import { useNewUsers } from './useNewUsers';
 
-type NewUsersSectionProps = {
+export type NewUsersSectionProps = {
 	timezone: 'utc' | 'local';
 };
 
