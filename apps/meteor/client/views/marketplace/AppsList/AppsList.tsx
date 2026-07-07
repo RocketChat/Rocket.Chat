@@ -3,7 +3,7 @@ import { Box, CardGroup } from '@rocket.chat/fuselage';
 
 import AppRow from './AppRow';
 
-type AppsListProps = {
+export type AppsListProps = {
 	apps: App[];
 	title?: string;
 	appsListId: string;

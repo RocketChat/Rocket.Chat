@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { apiCurlGetter } from '../../../helpers/apiCurlGetter';
 
-type AppDetailsAPIsProps = {
+export type AppDetailsAPIsProps = {
 	apis: IApiEndpointMetadata[];
 };
 

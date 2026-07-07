@@ -13,7 +13,7 @@ type ExternalCallEndpointData = Serialized<{
 	call?: IMediaCall;
 }>;
 
-type MediaCallHistoryExternalProps = {
+export type MediaCallHistoryExternalProps = {
 	data: ExternalCallEndpointData;
 	onClose: () => void;
 };
