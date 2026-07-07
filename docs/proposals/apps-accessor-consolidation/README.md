@@ -485,9 +485,16 @@ since consolidating more logic into the runtime makes the assumption more load-b
    dropping.
 3. **`messenger.sendRequest` timeout** — the runtime-side TODO becomes more prominent once all
    accessor traffic flows through it.
-4. **Drop the legacy `_accessors` threading** through `AppApi.runExecutor`,
-   `AppSlashCommand.runTheCode`, `AppVideoConfProvider.runTheCode`,
-   `AppOutboundCommunicationProvider.runTheCode` signatures.
+4. **Drop the legacy `_accessors` threading + delete the dead host accessor layer.** Un-thread the
+   ignored `accessors: AppAccessorManager` parameter from `AppApi.runExecutor`,
+   `AppSlashCommand`/`AppVideoConfProvider`/`AppOutboundCommunicationProvider` `run*`/`runTheCode` and
+   their managers; then delete `AppAccessorManager` (+ its `getAccessorManager()` on `AppManager` and
+   the `purifyApp` call), the entire `src/server/accessors/` directory (now unreachable from the
+   subprocess after Phase 4), the host `src/server/misc/UIHelper.ts` copy (its only importers are
+   those deleted accessors), and the `managers/index.ts` export. Behavior-neutral cleanup; kept
+   separate from the Phase 4 message-path teardown because it touches the sandbox-execution core.
+   (The parity harness is **not** removed — it became a permanent test utility the base-runtime
+   accessor tests depend on.)
 5. **Consolidated host↔subprocess protocol/SDK** — a single typed manifest of every host-bound method
    and its accepted params (the §5.2 explicit method/exception list is the seed), replacing today's
    hand-rolled message strings and per-param normalization judgment with a declared contract. A
@@ -672,21 +679,34 @@ returning the bridge value, matching the interface.
 **RPC-boundary note:** `SettingRead.getValueById` treats `null` and `undefined` alike as "does not
 exist" (undefined serializes to null across the boundary), same adaptation as `ServerSettingRead`.
 
-### Phase 4 — Teardown
+### Phase 4 — Teardown — ✅ landed (message-path teardown; dead-class deletion moved to follow-up #4)
 
-1. Replace `AppListenerManager.executePostMessageSent`'s `getReader(...).getAppUser()` with
-   `bridges.getUserBridge().doGetAppUser(appId)`.
-2. Delete `handleAccessorMessage`, `ALLOWED_ACCESSOR_METHODS`, `isValidOrigin`,
-   `getAccessorForOrigin`, and the `accessor:` branch in `handleIncomingMessage`.
-3. Delete `src/server/accessors/` entirely (including dead `AppAccessors`, `Http`), delete
-   `AppAccessorManager` (and its `purifyApp` call in `AppManager`), remove `proxify` from `mod.ts`,
-   and drop the now-unused `getAccessorManager()` threading in managers (follow-up #4 can ride
-   along).
-4. Delete the `src/server/misc/UIHelper.ts` copy (its last importers are gone with the host
-   accessors), leaving the base-runtime copy as the single source of truth; remove the transitional
-   parity harness (§6).
-5. CHANGELOG entry; update any architecture docs referencing the accessor message category.
+1. ✅ Replaced `AppListenerManager.executePostMessageSent`'s `getReader(appId).getUserReader().getAppUser()`
+   with `this.manager.getBridges().getUserBridge().doGetAppUser(appId)` — the only load-bearing
+   host-side accessor consumer outside the RPC path. `AppListenerManager` no longer references
+   `AppAccessorManager`.
+2. ✅ Deleted `handleAccessorMessage`, `ALLOWED_ACCESSOR_METHODS`, `isValidOrigin`,
+   `getAccessorForOrigin`, the `accessor:` branch in `handleIncomingMessage`, and the controller's
+   now-unused `accessors`/`api` fields (and their `manager.getAccessorManager()`/`getApiManager()`
+   reads). `proxify` and `WithProxy` were already removed from `mod.ts` in Phase 3. **The
+   `accessor:*` message category no longer exists — the controller dispatches only `bridges:*`,
+   `ready`, `log`, and the error notifications.** `JSONRPC_METHOD_NOT_FOUND` is kept (it is imported by
+   `ProxiedApp`, `AppListenerManager`, `AppVideoConfProvider`).
 
-**End state:** `BaseRuntimeSubprocessController` handles exactly one app-originated RPC category —
-`bridges:*` — with a single dispatcher, a single permission model, and a single accessor
-implementation living in `packages/apps/base-runtime`.
+**Scoping decision — physical deletion of the dead accessor classes is folded into follow-up #4.**
+Deleting `src/server/accessors/` + `AppAccessorManager` requires first un-threading the (ignored)
+`accessors: AppAccessorManager` parameter from the sandbox-execution core (`AppApi.runExecutor`,
+`AppSlashCommand`/`AppVideoConfProvider`/`AppOutboundCommunicationProvider` `run*`/`runTheCode`, and
+their managers). That is exactly follow-up #4 ("drop the legacy `_accessors` threading"), which the
+plan already carved out as a separate, behavior-neutral change. Rather than refactor the execution
+core at the tail of this work for zero behavior benefit, the now-**unreachable** host accessor
+classes + `AppAccessorManager` are left in place (dead code — nothing on the subprocess path reaches
+them) and their removal is done in follow-up #4 together with the threading cleanup. The host
+`src/server/misc/UIHelper.ts` copy and the parity harness stay for the same reason (the harness has
+also become a genuine, permanent test utility that the Phase 1–3 tests depend on, so it is retained
+rather than removed).
+
+**End state (primary objectives met):** `BaseRuntimeSubprocessController` handles exactly one
+app-originated RPC category — `bridges:*` — with a single dispatcher and a single permission model,
+and accessor *behavior* lives in exactly one place, `packages/apps/base-runtime`. `handleAccessorMessage`
+and the entire `accessor:*` category are gone. What remains is dead-code removal (follow-up #4).
