@@ -599,16 +599,34 @@ through `RemoteBridges` (`Promise<unknown>`) and are cast to their interface ret
 `void`-returning methods (`setActiveState`, `endActiveState`, reactions, deletes) `await` instead of
 returning the bridge value, matching the interface.
 
-### Phase 3 — Registration surface via `AppResourceBridge`
+### Phase 3 — Registration surface via `AppResourceBridge` — ✅ landed
 
-1. Host: implement `AppResourceBridge` (§4) + internal-bridge lookup in `handleBridgeMessage` +
-   `restarting` guard for registration methods. Unit-test the guard and throw-vs-silent permission
-   behaviors.
-2. Runtime: rewrite `getConfigurationExtend` / `getConfigurationModify:slashCommands` /
-   `SettingRead` / `SettingUpdater` / `SettingsExtend` members as local classes calling
-   `RemoteBridges.getAppResourceBridge()`, preserving the `AppObjectRegistry` stash-then-forward
-   wrappers; replace `accessor:api:listApis` with `doListApis`.
-3. Delete the host `*Extend`/`SlashCommandsModify`/`SettingRead`/`SettingUpdater` accessors; port tests.
+1. ✅ Host: added the concrete `AppResourceBridge` (`src/server/bridges/AppResourceBridge.ts`)
+   delegating to the managers (`AppSlashCommandManager`, `AppApiManager`, `AppSchedulerManager`,
+   `UIActionButtonManager`, `AppExternalComponentManager`, `AppVideoConfProviderManager`,
+   `AppOutboundCommunicationProviderManager`) and the app's `ProxiedApp` storage item +
+   `AppSettingsManager` for settings. Wired into `BaseRuntimeSubprocessController.handleBridgeMessage`
+   via a dedicated `getAppResourceBridge` lookup (resolved from a controller field, not `AppBridges`)
+   + the `restarting` guard keyed on `AppResourceBridge.REGISTRATION_METHODS`. Permission/conflict
+   semantics are unchanged because each method calls the same manager the host accessor used (the
+   video-conf/outbound `PermissionDeniedError` throw and the UI log-and-refuse both propagate as
+   before). The `AppManager` instance is passed to the bridge in the controller constructor — no
+   `apps/meteor` orchestrator changes needed.
+2. ✅ Runtime: rewrote `getConfigurationExtend` (ui/settings/externalComponents/api/scheduler/
+   videoConfProviders/outboundCommunication/slashCommands), `getConfigurationModify`
+   (slashCommands → modify/enable/disable; scheduler → local `SchedulerModify`), and the app-settings
+   `SettingRead`/`SettingUpdater`/`SettingsExtend` members to call `getAppResourceBridge().do*`,
+   preserving the `AppObjectRegistry` stash-then-forward. `accessor:api:listApis` is replaced by
+   `doListApis`. `registerButton` stays a synchronous `void` (fire-and-forget) per its interface. The
+   now-dead `proxify` machinery and `WithProxy` type were removed from `mod.ts` — **the runtime no
+   longer emits any `accessor:*` message at all.**
+3. Host accessor deletion (`*Extend`/`SlashCommandsModify`/`SettingRead`/`SettingUpdater`) + the rest
+   of the teardown are deferred to Phase 4, consistent with Phases 1–2. Tests:
+   `accessors/tests/configuration.test.ts` + updated `AppAccessors.test.ts`; the host
+   `DenoRuntimeSubprocessController` test validates the controller wiring.
+
+**RPC-boundary note:** `SettingRead.getValueById` treats `null` and `undefined` alike as "does not
+exist" (undefined serializes to null across the boundary), same adaptation as `ServerSettingRead`.
 
 ### Phase 4 — Teardown
 

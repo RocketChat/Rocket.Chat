@@ -4,6 +4,7 @@ import type { IConfigurationExtend } from '@rocket.chat/apps-engine/definition/a
 import type { IConfigurationModify } from '@rocket.chat/apps-engine/definition/accessors/IConfigurationModify';
 import type { IEnvironmentRead } from '@rocket.chat/apps-engine/definition/accessors/IEnvironmentRead';
 import type { IEnvironmentWrite } from '@rocket.chat/apps-engine/definition/accessors/IEnvironmentWrite';
+import type { IExternalComponentsExtend } from '@rocket.chat/apps-engine/definition/accessors/IExternalComponentsExtend';
 import type { IHttp, IHttpExtend } from '@rocket.chat/apps-engine/definition/accessors/IHttp';
 import type { IModify } from '@rocket.chat/apps-engine/definition/accessors/IModify';
 import type { INotifier } from '@rocket.chat/apps-engine/definition/accessors/INotifier';
@@ -11,8 +12,10 @@ import type { IOutboundCommunicationProviderExtend } from '@rocket.chat/apps-eng
 import type { IPersistence } from '@rocket.chat/apps-engine/definition/accessors/IPersistence';
 import type { IRead } from '@rocket.chat/apps-engine/definition/accessors/IRead';
 import type { ISchedulerExtend } from '@rocket.chat/apps-engine/definition/accessors/ISchedulerExtend';
+import type { ISettingsExtend } from '@rocket.chat/apps-engine/definition/accessors/ISettingsExtend';
 import type { ISlashCommandsExtend } from '@rocket.chat/apps-engine/definition/accessors/ISlashCommandsExtend';
 import type { ISlashCommandsModify } from '@rocket.chat/apps-engine/definition/accessors/ISlashCommandsModify';
+import type { IUIExtend } from '@rocket.chat/apps-engine/definition/accessors/IUIExtend';
 import type { IVideoConfProvidersExtend } from '@rocket.chat/apps-engine/definition/accessors/IVideoConfProvidersExtend';
 import type { IApi } from '@rocket.chat/apps-engine/definition/api/IApi';
 import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api/IApiEndpointMetadata';
@@ -26,7 +29,6 @@ import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/vid
 
 import { Persistence } from './Persistence';
 import { HttpExtend } from './extenders/HttpExtender';
-import { formatErrorResponse } from './formatResponseErrorHandler';
 import { Http } from './http';
 import { AppObjectRegistry } from '../../AppObjectRegistry';
 import { RemoteBridges } from '../bridges/RemoteBridges';
@@ -37,6 +39,8 @@ import { EnvironmentalVariableRead } from './environment/EnvironmentalVariableRe
 import { ServerSettingRead } from './environment/ServerSettingRead';
 import { ServerSettingUpdater } from './environment/ServerSettingUpdater';
 import { ServerSettingsModify } from './environment/ServerSettingsModify';
+import { SettingRead } from './environment/SettingRead';
+import { SettingUpdater } from './environment/SettingUpdater';
 import { ModerationModify } from './modify/ModerationModify';
 import { ModifyCreator } from './modify/ModifyCreator';
 import { ModifyDeleter } from './modify/ModifyDeleter';
@@ -60,9 +64,6 @@ import { ThreadRead } from './read/ThreadRead';
 import { UploadRead } from './read/UploadRead';
 import { UserRead } from './read/UserRead';
 import { VideoConferenceRead } from './read/VideoConferenceRead';
-
-/** Helper: extends T with an internal _proxy property used for delegation. */
-type WithProxy<T> = T & { _proxy: T };
 
 const httpMethods = ['get', 'post', 'put', 'delete', 'head', 'options', 'patch'] as const;
 
@@ -102,39 +103,8 @@ export class AppAccessors {
 
 	private readonly bridges: RemoteBridges;
 
-	private proxify: <T>(namespace: string, overrides?: Record<string, (...args: unknown[]) => unknown>) => T;
-
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {
 		this.bridges = new RemoteBridges(senderFn);
-
-		this.proxify = <T>(namespace: string, overrides: Record<string, (...args: unknown[]) => unknown> = {}): T =>
-			new Proxy(
-				{ __kind: `accessor:${namespace}` },
-				{
-					get:
-						(_target: unknown, prop: string) =>
-						(...params: unknown[]) => {
-							// We don't want to send a request for this prop
-							if (prop === 'toJSON') {
-								return {};
-							}
-
-							// If the prop is inteded to be overriden by the caller
-							if (prop in overrides) {
-								return overrides[prop].apply(undefined, params);
-							}
-
-							return senderFn({
-								method: `accessor:${namespace}:${prop}`,
-								params,
-							})
-								.then((response) => response.result)
-								.catch((err) => {
-									throw formatErrorResponse(err);
-								});
-						},
-				},
-			) as T;
 
 		this.http = new Http(this.getReader(), this.getPersistence(), this.httpExtend, this.getSenderFn());
 		this.notifier = new Notifier(this.getSenderFn());
@@ -146,11 +116,10 @@ export class AppAccessors {
 
 	public getEnvironmentRead(): IEnvironmentRead {
 		if (!this.environmentRead) {
-			// App settings (`getSettings`) remain proxied to the host until Phase 3 (they are
-			// backed by the host ProxiedApp storage item); server settings and environment
-			// variables now run locally against their bridges.
+			// App settings, server settings and environment variables all run locally now; app
+			// settings reach the host ProxiedApp storage item through the internal AppResourceBridge.
 			this.environmentRead = new EnvironmentRead(
-				this.proxify('getEnvironmentRead:getSettings'),
+				new SettingRead(this.bridges),
 				new ServerSettingRead(this.bridges),
 				new EnvironmentalVariableRead(this.bridges),
 			);
@@ -161,11 +130,7 @@ export class AppAccessors {
 
 	public getEnvironmentWrite() {
 		if (!this.environmentWriter) {
-			// App-settings updates (`getSettings`) remain proxied to the host until Phase 3.
-			this.environmentWriter = new EnvironmentWrite(
-				this.proxify('getEnvironmentWrite:getSettings'),
-				new ServerSettingUpdater(this.bridges),
-			);
+			this.environmentWriter = new EnvironmentWrite(new SettingUpdater(this.bridges), new ServerSettingUpdater(this.bridges));
 		}
 
 		return this.environmentWriter;
@@ -173,24 +138,25 @@ export class AppAccessors {
 
 	public getConfigurationModify() {
 		if (!this.configModifier) {
-			const slashCommandsModify: WithProxy<ISlashCommandsModify> = {
-				_proxy: this.proxify('getConfigurationModify:slashCommands'),
+			const resourceBridge = this.bridges.getAppResourceBridge();
+
+			const slashCommandsModify: ISlashCommandsModify = {
 				modifySlashCommand(slashcommand: ISlashCommand) {
 					// Store the slashcommand instance to use when the Apps-Engine calls the slashcommand
 					AppObjectRegistry.set(`slashcommand:${slashcommand.command}`, slashcommand);
 
-					return this._proxy.modifySlashCommand(slashcommand);
+					return resourceBridge.doModifySlashCommand(slashcommand, 'APP_ID') as Promise<void>;
 				},
 				disableSlashCommand(command: string) {
-					return this._proxy.disableSlashCommand(command);
+					return resourceBridge.doDisableSlashCommand(command, 'APP_ID') as Promise<void>;
 				},
 				enableSlashCommand(command: string) {
-					return this._proxy.enableSlashCommand(command);
+					return resourceBridge.doEnableSlashCommand(command, 'APP_ID') as Promise<void>;
 				},
 			};
 
 			this.configModifier = {
-				scheduler: this.proxify('getConfigurationModify:scheduler'),
+				scheduler: new SchedulerModify(this.bridges),
 				slashCommands: slashCommandsModify,
 				serverSettings: new ServerSettingsModify(this.bridges),
 			};
@@ -201,10 +167,9 @@ export class AppAccessors {
 
 	public getConfigurationExtend() {
 		if (!this.configExtender) {
-			const { senderFn } = this;
+			const resourceBridge = this.bridges.getAppResourceBridge();
 
-			const apiExtend: WithProxy<IApiExtend> = {
-				_proxy: this.proxify('getConfigurationExtend:api'),
+			const apiExtend: IApiExtend = {
 				async provideApi(api: IApi) {
 					const apiEndpoints = AppObjectRegistry.get<IApiEndpointMetadata[]>('apiEndpoints')!;
 
@@ -215,67 +180,83 @@ export class AppAccessors {
 						AppObjectRegistry.set(`api:${endpoint.path}`, endpoint);
 					});
 
-					const result = await this._proxy.provideApi(api);
+					await resourceBridge.doProvideApi(api, 'APP_ID');
 
 					// Let's call the listApis method to cache the info from the endpoints
 					// Also, since this is a side-effect, we do it async so we can return to the caller
-					senderFn({ method: 'accessor:api:listApis' })
-						.then((response) => apiEndpoints.push(...(response.result as IApiEndpointMetadata[])))
-						.catch((err) => err.error);
-
-					return result;
+					resourceBridge
+						.doListApis('APP_ID')
+						.then((endpoints) => apiEndpoints.push(...(endpoints as IApiEndpointMetadata[])))
+						.catch(() => undefined);
 				},
 			};
 
-			const schedulerExtend: WithProxy<ISchedulerExtend> = {
-				_proxy: this.proxify('getConfigurationExtend:scheduler'),
+			const schedulerExtend: ISchedulerExtend = {
 				registerProcessors(processors: IProcessor[]) {
 					// Store the processor instance to use when the Apps-Engine calls the processor
 					processors.forEach((processor) => {
 						AppObjectRegistry.set(`scheduler:${processor.id}`, processor);
 					});
 
-					return this._proxy.registerProcessors(processors);
+					return resourceBridge.doRegisterProcessors(processors, 'APP_ID') as Promise<void | Array<string>>;
 				},
 			};
 
-			const videoConfProviders: WithProxy<IVideoConfProvidersExtend> = {
-				_proxy: this.proxify('getConfigurationExtend:videoConfProviders'),
+			const videoConfProviders: IVideoConfProvidersExtend = {
 				provideVideoConfProvider(provider: IVideoConfProvider) {
 					// Store the videoConfProvider instance to use when the Apps-Engine calls the videoConfProvider
 					AppObjectRegistry.set(`videoConfProvider:${provider.name}`, provider);
 
-					return this._proxy.provideVideoConfProvider(provider);
+					return resourceBridge.doProvideVideoConfProvider(provider, 'APP_ID') as Promise<void>;
 				},
 			};
 
-			const outboundCommunication: WithProxy<IOutboundCommunicationProviderExtend> = {
-				_proxy: this.proxify('getConfigurationExtend:outboundCommunication'),
+			const outboundCommunication: IOutboundCommunicationProviderExtend = {
 				registerEmailProvider(provider: IOutboundEmailMessageProvider) {
 					AppObjectRegistry.set(`outboundCommunication:${provider.name}-${provider.type}`, provider);
-					return this._proxy.registerEmailProvider(provider);
+					return resourceBridge.doRegisterOutboundProvider(provider, 'APP_ID') as Promise<void>;
 				},
 				registerPhoneProvider(provider: IOutboundPhoneMessageProvider) {
 					AppObjectRegistry.set(`outboundCommunication:${provider.name}-${provider.type}`, provider);
-					return this._proxy.registerPhoneProvider(provider);
+					return resourceBridge.doRegisterOutboundProvider(provider, 'APP_ID') as Promise<void>;
 				},
 			};
 
-			const slashCommandsExtend: WithProxy<ISlashCommandsExtend> = {
-				_proxy: this.proxify('getConfigurationExtend:slashCommands'),
+			const slashCommandsExtend: ISlashCommandsExtend = {
 				provideSlashCommand(slashcommand: ISlashCommand) {
 					// Store the slashcommand instance to use when the Apps-Engine calls the slashcommand
 					AppObjectRegistry.set(`slashcommand:${slashcommand.command}`, slashcommand);
 
-					return this._proxy.provideSlashCommand(slashcommand);
+					return resourceBridge.doProvideSlashCommand(slashcommand, 'APP_ID') as Promise<void>;
+				},
+			};
+
+			const ui: IUIExtend = {
+				// `registerButton` is a synchronous `void` in the interface, but the host registration
+				// is async over the bridge; fire-and-forget matches the contract. The host manager
+				// logs-and-refuses rather than throwing, so there is no rejection to surface here.
+				registerButton(button) {
+					void resourceBridge.doRegisterActionButton(button, 'APP_ID').catch(() => undefined);
+				},
+			};
+
+			const settings: ISettingsExtend = {
+				provideSetting(setting) {
+					return resourceBridge.doProvideSetting(setting, 'APP_ID') as Promise<void>;
+				},
+			};
+
+			const externalComponents: IExternalComponentsExtend = {
+				register(externalComponent) {
+					return resourceBridge.doRegisterExternalComponent(externalComponent, 'APP_ID') as Promise<void>;
 				},
 			};
 
 			this.configExtender = {
-				ui: this.proxify('getConfigurationExtend:ui'),
+				ui,
 				http: this.httpExtend,
-				settings: this.proxify('getConfigurationExtend:settings'),
-				externalComponents: this.proxify('getConfigurationExtend:externalComponents'),
+				settings,
+				externalComponents,
 				api: apiExtend,
 				scheduler: schedulerExtend,
 				videoConfProviders,
@@ -303,11 +284,8 @@ export class AppAccessors {
 
 	public getReader() {
 		if (!this.reader) {
-			// The environment sub-reader keeps its own `getSettings` proxy namespace
-			// (`getReader:getEnvironmentReader:getSettings`) so the app-settings path stays
-			// byte-for-byte until Phase 3; server settings and env vars run locally.
 			const environmentReader = new EnvironmentRead(
-				this.proxify('getReader:getEnvironmentReader:getSettings'),
+				new SettingRead(this.bridges),
 				new ServerSettingRead(this.bridges),
 				new EnvironmentalVariableRead(this.bridges),
 			);

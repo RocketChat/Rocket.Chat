@@ -110,8 +110,9 @@ describe('AppAccessors', () => {
 					i18nParamsExample: 'test',
 					providesPreview: true,
 				},
+				'APP_ID',
 			],
-			method: 'accessor:getConfigurationModify:slashCommands:modifySlashCommand',
+			method: 'bridges:getAppResourceBridge:doModifySlashCommand',
 		});
 	});
 
@@ -136,7 +137,7 @@ describe('AppAccessors', () => {
 		delete (result as any).params[0].executor;
 
 		assert.deepStrictEqual(result, {
-			method: 'accessor:getConfigurationExtend:slashCommands:provideSlashCommand',
+			method: 'bridges:getAppResourceBridge:doProvideSlashCommand',
 			params: [
 				{
 					command: 'test',
@@ -144,6 +145,7 @@ describe('AppAccessors', () => {
 					i18nParamsExample: 'test',
 					providesPreview: true,
 				},
+				'APP_ID',
 			],
 		});
 	});
