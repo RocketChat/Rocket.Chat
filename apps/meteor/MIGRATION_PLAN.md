@@ -498,6 +498,19 @@ Each phase produces a manifest file (the tables below), feeds it to `move-batch.
 
 **Verification**: `yarn lint --quiet`, test several Meteor methods via DDP client.
 
+**Registration audit (mandatory here and in Phases 6/7).** A method file that loses its side-effect import silently stops registering — lint, tsc and the unit suites all stay green, and e2e only exercises ~24 methods by name (`methodCall` helper), so most drops are invisible to CI. Many methods also have **no in-repo caller** (they serve mobile/DDP clients), so no repo test can ever catch them. After every batch that touches method files, verify that **every** non-empty file under `server/meteor-methods/` (and `ee/server/meteor-methods/`) is imported by the aggregator index or by a named-import consumer:
+
+```sh
+for f in $(find server/meteor-methods ee/server/meteor-methods -name "*.ts" ! -name "*.spec.ts" | grep -v "^server/meteor-methods/index.ts$"); do
+  sub="${f%.ts}"; sub="${sub#*meteor-methods/}"
+  grep -rql --include="*.ts" "meteor-methods/${sub}'" server app ee client imports lib | grep -qv "^${f}$" \
+    || grep -q "'\./${sub}'" server/meteor-methods/index.ts \
+    || echo "UNREGISTERED: $f"
+done
+```
+
+Match against the full `meteor-methods/<subpath>` suffix — a loose `<domain>/<name>` pattern false-passes on same-named `server/lib/` functions (this exact aliasing hid a dropped `unblockUser` registration in Phase 5b until audited). Known-empty files (`omnichannel/saveBusinessHour.ts`, EE `omnichannel/removeBusinessHour.ts`) register nothing and are expected hits.
+
 ---
 
 ### Phase 6: Lib, Hooks, and Feature-Specific Code

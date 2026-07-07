@@ -119,5 +119,6 @@ import './users/setAvatarFromService';
 import './users/setEmail';
 import './users/setRealName';
 import './users/setUserActiveStatus';
+import './users/unblockUser';
 import './users/userPresence';
 import './users/userSetUtcOffset';
