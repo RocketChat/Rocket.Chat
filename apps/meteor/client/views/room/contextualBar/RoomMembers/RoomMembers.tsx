@@ -16,9 +16,10 @@ import {
 } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ChangeEventHandler, ComponentProps, MouseEvent, ElementType } from 'react';
-import { useId, useMemo } from 'react';
+import { useId, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GroupedVirtuoso } from 'react-virtuoso';
+import type { GroupedVirtuosoHandle } from 'react-virtuoso';
 
 import { MembersListDivider } from './MembersListDivider';
 import RoomMembersRow from './RoomMembersRow';
@@ -94,7 +95,8 @@ const RoomMembers = ({
 	);
 
 	const useRealName = useSetting('UI_Use_Real_Name', false);
-	const { onKeyDown } = useMembersListNavigation();
+	const virtuosoRef = useRef<GroupedVirtuosoHandle>(null);
+	const { onKeyDown } = useMembersListNavigation(virtuosoRef);
 
 	const { counts, titles } = useMemo(() => {
 		const owners: RoomMember[] = [];
@@ -192,6 +194,7 @@ const RoomMembers = ({
 							{members.length > 0 && (
 								<VirtualizedScrollbars>
 									<GroupedVirtuoso
+										ref={virtuosoRef}
 										style={{
 											height: '100%',
 											width: '100%',
