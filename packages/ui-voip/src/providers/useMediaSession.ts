@@ -228,6 +228,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 				features: supportedFeatures,
 				transferredBy: callTransferredBy,
 				remoteParticipant: { muted: remoteMuted, held: remoteHeld, contact },
+				ringing,
 			} = instanceState;
 
 			const transferredBy = callTransferredBy?.displayName || callTransferredBy?.username || undefined;
@@ -264,6 +265,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 					callId,
 					startedAt,
 					supportedFeatures,
+					ringing,
 				},
 			});
 		};
