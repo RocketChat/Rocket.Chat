@@ -63,11 +63,14 @@ export function mappedEncode(fieldMap: FieldMap): (app: Loose) => Loose {
 }
 
 /**
- * A map whose entries are either a source property name (string) or a function that derives the
- * target value from the (cloned) source data — the same two entry kinds the legacy
- * `transformMappedData` supports, minus the nested `{ from, map, list }` form.
+ * A map whose entries are one of the three forms the legacy `transformMappedData` supports:
+ * a source property name (string), a function that derives the target value from the (cloned)
+ * source data, or a nested `{ from, map, list }` descriptor for sub-objects and arrays.
  */
-export type AsyncFieldMap = Record<string, string | ((data: Record<string, any>) => unknown | Promise<unknown>)>;
+export type AsyncFieldMap = Record<
+	string,
+	string | ((data: Record<string, any>) => unknown | Promise<unknown>) | { from: string; map?: AsyncFieldMap; list?: boolean }
+>;
 
 /**
  * Rocket.Chat -> Apps-Engine transform for a map mixing string renames and (possibly async)
@@ -93,12 +96,30 @@ export async function mappedDecodeAsync(data: Loose, map: AsyncFieldMap): Promis
 			if (typeof value !== 'undefined') {
 				result[to] = value;
 			}
-		} else {
+		} else if (typeof from === 'string') {
 			if (typeof clone[from] !== 'undefined') {
 				result[to] = clone[from];
 			}
 
 			delete clone[from];
+		} else {
+			const { from: fromName } = from;
+
+			if (from.list) {
+				if (Array.isArray(clone[fromName])) {
+					if ('map' in from && from.map) {
+						result[to] = await Promise.all(clone[fromName].map((item: Loose) => mappedDecodeAsync(item, from.map as AsyncFieldMap)));
+					} else {
+						result[to] = [...clone[fromName]];
+					}
+				} else if (clone[fromName] !== undefined && clone[fromName] !== null) {
+					result[to] = [clone[fromName]];
+				}
+			} else {
+				result[to] = await mappedDecodeAsync(clone[fromName], from.map as AsyncFieldMap);
+			}
+
+			delete clone[fromName];
 		}
 	}
 

@@ -94,4 +94,35 @@ describe('mappedDecodeAsync', () => {
 		(result as any)._unmappedProperties_.nested.a = 999;
 		expect(input.nested.a).to.equal(1);
 	});
+
+	it('maps a nested object recursively, bucketing unmapped fields at each level', async () => {
+		const result = await mappedDecodeAsync(
+			{ _id: 'c1', visitor: { visitorId: 'v1', extra: 'drop' }, spare: true },
+			{
+				_id: '_id',
+				visitor: { from: 'visitor', map: { visitorId: 'visitorId' } },
+			},
+		);
+
+		expect(result).to.deep.equal({
+			_id: 'c1',
+			visitor: { visitorId: 'v1', _unmappedProperties_: { extra: 'drop' } },
+			_unmappedProperties_: { spare: true },
+		});
+	});
+
+	it('maps a list of objects via `list` + `map`, bucketing each element', async () => {
+		const result = await mappedDecodeAsync(
+			{ phones: [{ phoneNumber: '1', extra: 'x' }, { phoneNumber: '2' }] },
+			{ phones: { from: 'phones', list: true, map: { phoneNumber: 'phoneNumber' } } },
+		);
+
+		expect(result).to.deep.equal({
+			phones: [
+				{ phoneNumber: '1', _unmappedProperties_: { extra: 'x' } },
+				{ phoneNumber: '2', _unmappedProperties_: {} },
+			],
+			_unmappedProperties_: {},
+		});
+	});
 });
