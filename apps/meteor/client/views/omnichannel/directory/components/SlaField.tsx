@@ -8,7 +8,7 @@ import Info from '../../components/Info';
 import Label from '../../components/Label';
 import { useSlaInfo } from '../hooks/useSlaInfo';
 
-type SlaFieldProps = {
+export type SlaFieldProps = {
 	id: string;
 };
 

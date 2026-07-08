@@ -21,7 +21,7 @@ const init = (canvas: HTMLCanvasElement, context: chartjs.Chart<'line'> | undefi
 		smallTicks: true,
 	});
 
-type ChatsPerDepartmentChartProps = {
+export type ChatsPerDepartmentChartProps = {
 	departmentId: ILivechatDepartment['_id'];
 	dateRange: { start: string; end: string };
 } & Omit<ComponentPropsWithoutRef<typeof Box>, 'data'>;
