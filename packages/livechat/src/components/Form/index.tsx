@@ -2,7 +2,7 @@ import i18next from 'i18next';
 import type { ComponentChildren } from 'preact';
 import type { JSXInternal } from 'preact/src/jsx';
 
-type FormProps = {
+export type FormProps = {
 	onSubmit?: JSXInternal.GenericEventHandler<HTMLFormElement>;
 	className?: string;
 	style?: JSXInternal.CSSProperties;
