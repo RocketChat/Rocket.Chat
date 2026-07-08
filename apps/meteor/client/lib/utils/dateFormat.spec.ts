@@ -1,5 +1,5 @@
 /**
- * @jest-environment <rootDir>/tests/environments/timezone.js
+ * @jest-environment <rootDir>/tests/environments/timezone.ts
  * @jest-environment-options {"timezone": "America/Argentina/Buenos_Aires"}
  */
 import { formatDate, momentFormatToDateFns, toDate } from './dateFormat';
