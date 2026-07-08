@@ -1,7 +1,7 @@
 import type { ServerResponse } from 'node:http';
 
 import type { IUser, IIncomingMessage, IPersonalAccessToken, IRole } from '@rocket.chat/core-typings';
-import { CredentialTokens, Rooms, Users, Roles } from '@rocket.chat/models';
+import { CredentialTokens, Rooms, Users, Roles, SamlUsedAssertions } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 import { Accounts } from 'meteor/accounts-base';
@@ -503,6 +503,20 @@ export class SAML {
 
 				if (!profile) {
 					throw new Error('No user data collected from IdP response.');
+				}
+
+				const baseExpireAt = profile.expireAt instanceof Date ? profile.expireAt : new Date(Date.now() + 300000);
+
+				const safeExpireAt = new Date(baseExpireAt.getTime() + (service.allowedClockDrift || 0));
+
+				if (!profile.assertionId || !profile.issuer) {
+					SAMLUtils.error({ msg: 'Invalid SAML response: missing Assertion ID or Issuer', profile });
+					throw new Error('Invalid SAML response: missing Assertion ID or Issuer.');
+				}
+
+				if (!(await SamlUsedAssertions.markUsed(profile.assertionId, profile.issuer, safeExpireAt))) {
+					SAMLUtils.warn({ msg: 'SAML assertion replay detected', issuer: profile.issuer, assertionId: profile.assertionId });
+					throw new Error('An assertion with the same ID cannot be used more than once.');
 				}
 
 				// create a random token to store the login result
