@@ -18,7 +18,6 @@ export async function ensureCloudWorkspaceRegistered(): Promise<void> {
 	}
 
 	if (showSetupWizard.valueSource === 'processEnvValue' && showSetupWizard.value === showSetupWizard.processEnvValue) {
-	if (showSetupWizard.valueSource === 'processEnvValue' && showSetupWizard.value === showSetupWizard.processEnvValue) {
 		return;
 	}
 
