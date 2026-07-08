@@ -142,6 +142,7 @@ const MockedMediaCallProvider = ({
 		remoteHeld,
 		callId: undefined,
 		supportedFeatures: ['audio', 'screen-share', 'transfer', 'hold'],
+		escalated: false,
 	} as SessionState;
 
 	const contextValue = {
@@ -161,6 +162,8 @@ const MockedMediaCallProvider = ({
 		onToggleScreenSharing: () => undefined,
 		onOpenPopout: () => undefined,
 		onClosePopout: () => undefined,
+		isRequestingVideoCall: false,
+		onRequestVideoCall: () => undefined,
 	};
 
 	const instanceContextValue = {

@@ -4373,6 +4373,8 @@
   "VideoConf_Enable_DMs": "Aktivieren in Direktnachrichten",
   "VideoConf_Enable_Groups": "Aktivieren in privaten Kanälen",
   "VideoConf_Enable_Teams": "Aktivieren in Teams",
+  "Video_escalation_modal_description": "Wenn Sie einen Videoanruf starten, wird der aktuelle Anruf beendet, wobei die anderen Teilnehmer weitergeleitet und über den neuen Anruf benachrichtigt werden.",
+  "Video_escalation_modal_title": "Sind Sie sicher zu einem Videocall wechseln zu wollen?",
   "Video_Chat_Window": "Video-Chat",
   "Video_Conference": "Videokonferenz",
   "Video_Conference_Description": "Konfigurieren Sie Telefonkonferenzen für Ihren Arbeitsbereich.",
