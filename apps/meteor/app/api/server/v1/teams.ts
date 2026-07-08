@@ -30,7 +30,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { canAccessRoomAsync } from '../../../authorization/server';
-import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { hasPermissionAsync, hasAtLeastOnePermissionAsync, hasAllPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 import { settings } from '../../../settings/server';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
@@ -125,10 +125,15 @@ const teamsEndpoints = API.v1
 				}),
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
 			const { name, type, members, room, owner } = this.bodyParams;
+
+			if (room?.id && !(await hasAllPermissionAsync(this.userId, ['create-team', 'edit-room'], room.id))) {
+				return API.v1.forbidden();
+			}
 
 			const team = await Team.create(this.userId, {
 				team: {
