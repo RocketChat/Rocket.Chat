@@ -9,7 +9,6 @@ import videoConferenceHandler from './handlers/videoconference-handler';
 import { JsonRpcError, isNotificationObject, type SuccessObject } from './lib/jsonrpc';
 import { Logger } from './lib/logger';
 import * as Messenger from './lib/messenger';
-import { sendMetrics } from './lib/metricsCollector';
 import type { RequestContext } from './lib/requestContext';
 import { applySecureFieldsDeep } from './lib/secureFields';
 
@@ -90,7 +89,6 @@ async function handleIncomingMessage(message: unknown): Promise<void> {
 		// Process PING command first as it is not JSON RPC
 		if (message === COMMAND_PING) {
 			void Messenger.pongResponse();
-			void sendMetrics();
 			return;
 		}
 
