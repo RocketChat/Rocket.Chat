@@ -308,7 +308,7 @@ export class NotificationsModule {
 				});
 			}
 
-			return Boolean(this.userId);
+			return false;
 		});
 		this.streamUser.allowRead(async function (eventName) {
 			const [userId, e] = eventName.split('/');
