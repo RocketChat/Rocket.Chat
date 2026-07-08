@@ -1,16 +1,13 @@
 import type { ChildProcess } from 'node:child_process';
 
 import type { COMMAND_PING } from './LivenessManager';
-import type { Encoder } from './codec';
-import { newEncoder } from './codec';
+import { sanitizeForIpc } from '../../../lib/IpcSanitizer';
 import type { JsonRpc } from '../../../lib/jsonrpc';
 
 type Message = JsonRpc | typeof COMMAND_PING;
 
 export class ProcessMessenger {
 	private process: ChildProcess | undefined;
-
-	private encoder: Encoder | undefined;
 
 	private _sendStrategy: (message: Message) => void;
 
@@ -30,17 +27,13 @@ export class ProcessMessenger {
 
 	public clearReceiver() {
 		delete this.process;
-		delete this.encoder;
 
 		this.switchStrategy();
 	}
 
 	private switchStrategy() {
-		if (this.process?.stdin?.writable) {
+		if (this.process?.connected) {
 			this._sendStrategy = this.strategySend.bind(this);
-
-			// Get a clean encoder
-			this.encoder = newEncoder();
 		} else {
 			this._sendStrategy = this.strategyError.bind(this);
 		}
@@ -51,6 +44,10 @@ export class ProcessMessenger {
 	}
 
 	private strategySend(message: Message) {
-		this.process.stdin.write(this.encoder.encode(message));
+		if (!this.process?.connected) {
+			throw new Error('The IPC channel to the subprocess is closed');
+		}
+
+		this.process.send(sanitizeForIpc(message));
 	}
 }
