@@ -19,7 +19,7 @@ const MediaCallInstanceProvider = ({ children, enabled = true }: MediaCallInstan
 	const [openRoomId, setOpenRoomId] = useState<string | undefined>(undefined);
 	const { currentViews, registerView, unregisterView } = useAvailableViewTracker();
 	const user = useUser();
-	const instance = useMediaSessionInstance(enabled ? user?._id : undefined);
+	const instance = useMediaSessionInstance(user?._id, enabled);
 	const [signalEmitter] = useState(() => new Emitter<Signals>());
 
 	const [remoteStreamRefCallback, audioElement] = useAudioStream(instance);
