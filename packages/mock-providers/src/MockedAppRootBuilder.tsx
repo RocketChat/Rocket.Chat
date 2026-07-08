@@ -241,6 +241,7 @@ export class MockedAppRootBuilder {
 			queryRole: () => [() => () => undefined, () => false],
 			getRoles: () => dummyRolesMap,
 			subscribeToRoles: () => () => undefined,
+			getPermission: () => undefined,
 		};
 	})();
 
