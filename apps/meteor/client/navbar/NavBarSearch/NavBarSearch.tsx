@@ -175,10 +175,10 @@ const NavBarSearch = () => {
 										<Tag
 											key={filter.key}
 											onClick={() => handleRemoveFilter(filter.key)}
-											title={filter.label}
+											title={filter.title}
 											display='inline-flex'
 											alignItems='center'
-											maxWidth='x160'
+											maxWidth='x120'
 											fontScale='p2'
 										>
 											<Box is='span' withTruncatedText>

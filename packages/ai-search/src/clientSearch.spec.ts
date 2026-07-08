@@ -97,9 +97,9 @@ describe('AI Search client helpers', () => {
 					startDate: '2026-01-01',
 				}),
 			).toEqual([
-				{ key: 'in', values: ['general', 'dev'], label: 'in: #general, #dev' },
-				{ key: 'from', values: ['alice', 'bob'], label: 'from: @alice, @bob' },
-				{ key: 'after', values: ['2026-01-01'], label: 'after:2026-01-01' },
+				{ key: 'in', values: ['general', 'dev'], label: '#general, #dev', title: 'in: #general, #dev' },
+				{ key: 'from', values: ['alice', 'bob'], label: '@alice, @bob', title: 'from: @alice, @bob' },
+				{ key: 'after', values: ['2026-01-01'], label: 'after:2026-01-01', title: 'after:2026-01-01' },
 			]);
 		});
 	});

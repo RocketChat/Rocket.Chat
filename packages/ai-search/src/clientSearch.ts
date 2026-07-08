@@ -27,6 +27,7 @@ export type SearchFilterSuggestion = {
 export type SearchFilterChip = {
 	key: string;
 	label: string;
+	title: string;
 	values: string[];
 };
 
@@ -193,22 +194,26 @@ export const buildAppliedFilterChips = (filters: SearchFilters): SearchFilterChi
 		filters.roomNames.length && {
 			key: 'in',
 			values: filters.roomNames,
-			label: `in: ${filters.roomNames.map((roomName) => `#${roomName}`).join(', ')}`,
+			label: filters.roomNames.map((roomName) => `#${roomName}`).join(', '),
+			title: `in: ${filters.roomNames.map((roomName) => `#${roomName}`).join(', ')}`,
 		},
 		filters.fromUsernames.length && {
 			key: 'from',
 			values: filters.fromUsernames,
-			label: `from: ${filters.fromUsernames.map((username) => `@${username}`).join(', ')}`,
+			label: filters.fromUsernames.map((username) => `@${username}`).join(', '),
+			title: `from: ${filters.fromUsernames.map((username) => `@${username}`).join(', ')}`,
 		},
 		filters.startDate && {
 			key: 'after',
 			values: [filters.startDate],
 			label: getFilterChipLabel('after', filters.startDate),
+			title: getFilterChipLabel('after', filters.startDate),
 		},
 		filters.endDate && {
 			key: 'before',
 			values: [filters.endDate],
 			label: getFilterChipLabel('before', filters.endDate),
+			title: getFilterChipLabel('before', filters.endDate),
 		},
 	].filter(Boolean) as SearchFilterChip[];
 
