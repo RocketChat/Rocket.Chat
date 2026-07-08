@@ -6,7 +6,7 @@ import useRegisterView from '../../context/useRegisterView';
 const MediaCallWidget = () => {
 	const currentViews = useRegisterView('widget');
 	const {
-		sessionState: { state, hidden, transferredBy, peerInfo, supportedFeatures },
+		sessionState: { state, hidden, transferredBy, supportedFeatures },
 	} = useMediaCallView();
 
 	if (hidden || !currentViews.includes('widget')) {
@@ -15,7 +15,7 @@ const MediaCallWidget = () => {
 
 	switch (state) {
 		case 'ongoing':
-			if ('username' in peerInfo && supportedFeatures.includes('screen-share')) {
+			if (supportedFeatures.includes('screen-share')) {
 				return <OngoingCallWithScreen />;
 			}
 			return <OngoingCall />;

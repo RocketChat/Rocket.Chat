@@ -201,6 +201,10 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 		if (this.remote) {
 			return;
 		}
+		if (this.stopped || ['closed', 'failed'].includes(this.peer.connectionState)) {
+			return;
+		}
+
 		const sender = kind === 'audio' ? this.audioSender : this.videoSender;
 		if (sender) {
 			// If we already have a sender of the same kind for this stream, we can just replace the track with no issues
