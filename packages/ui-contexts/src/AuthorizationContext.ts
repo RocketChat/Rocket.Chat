@@ -1,4 +1,4 @@
-import type { IRole, IRoom } from '@rocket.chat/core-typings';
+import type { IRole, IRoom, IPermission } from '@rocket.chat/core-typings';
 import type { ObjectId } from 'mongodb';
 import { createContext } from 'react';
 
@@ -24,6 +24,7 @@ export type AuthorizationContextValue = {
 	): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => boolean];
 	getRoles(): ReadonlyMap<IRole['_id'], IRole>;
 	subscribeToRoles(callback: () => void): () => void;
+	getPermission(permissionId: string): IPermission | undefined;
 };
 
 const dummyRolesMap: ReadonlyMap<IRole['_id'], IRole> = new Map();
@@ -35,4 +36,5 @@ export const AuthorizationContext = createContext<AuthorizationContextValue>({
 	queryRole: () => [() => (): void => undefined, (): boolean => false],
 	getRoles: (): ReadonlyMap<IRole['_id'], IRole> => dummyRolesMap,
 	subscribeToRoles: (): (() => void) => (): void => undefined,
+	getPermission: (): IPermission | undefined => undefined,
 });
