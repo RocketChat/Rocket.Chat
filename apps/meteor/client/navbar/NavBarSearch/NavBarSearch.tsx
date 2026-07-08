@@ -178,6 +178,8 @@ const NavBarSearch = () => {
 											value={filter.label}
 											onClick={() => handleRemoveFilter(filter.key)}
 											title={filter.label}
+											mbs={2}
+											mbe={2}
 										>
 											<Box is='span' maxWidth='x132' withTruncatedText fontScale='p2'>
 												{filter.label}
