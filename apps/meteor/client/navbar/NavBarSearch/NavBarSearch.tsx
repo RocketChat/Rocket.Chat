@@ -171,19 +171,26 @@ const NavBarSearch = () => {
 						<Box display='flex' alignItems='center' gap={8}>
 							{appliedFilterChips.length > 0 && (
 								<Box display='flex' alignItems='center' gap={4} maxWidth='x320' overflow='hidden'>
-									{appliedFilterChips.map((filter) => (
-										<Chip
-											key={filter.key}
-											height='x16'
-											value={filter.label}
-											onClick={() => handleRemoveFilter(filter.key)}
-											title={filter.title}
-										>
-											<Box is='span' maxWidth='x104' withTruncatedText fontScale='c1'>
-												{filter.label}
-											</Box>
-										</Chip>
-									))}
+									{appliedFilterChips.map((filter) => {
+										const label = filter.label.replace(/^in:\s*/, '').replace(/^from:\s*/, '');
+
+										return (
+											<Chip
+												key={filter.key}
+												height='x20'
+												minHeight='x20'
+												fontScale='c1'
+												value={label}
+												onClick={() => handleRemoveFilter(filter.key)}
+												title={filter.title}
+												renderDismissSymbol={() => <Icon name='cross' size='x12' />}
+											>
+												<Box is='span' maxWidth='x104' withTruncatedText fontScale='c1'>
+													{label}
+												</Box>
+											</Chip>
+										);
+									})}
 								</Box>
 							)}
 							{isDirty ? (
