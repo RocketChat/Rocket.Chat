@@ -14,7 +14,7 @@ const detectEmoji: ComposerMarkupContextValue['detectEmoji'] = (text) => {
 
 	const rawImage = image ? image.replace(/^url\(["']?/, '').replace(/["']?\)$/, '') : undefined;
 
-	return [{ name, className, image: rawImage, content: children ?? '' }];
+	return [{ name, className: className ?? '', image: rawImage, content: children ?? '' }];
 };
 
 export const renderComposerMarkup = (tokens: Root, parseOptions: Options): string => {
