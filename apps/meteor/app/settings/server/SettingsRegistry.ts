@@ -84,7 +84,7 @@ export const compareSettings = compareSettingsIgnoringKeys([
 ]);
 
 const hasOverwrittenValueChanged = (stored: ISetting, overwritten: ISetting): boolean =>
-	stored.value !== overwritten.value ||
+	!isEqual(stored.value, overwritten.value) ||
 	stored.valueSource !== overwritten.valueSource ||
 	!isEqual(stored.processEnvValue, overwritten.processEnvValue);
 
