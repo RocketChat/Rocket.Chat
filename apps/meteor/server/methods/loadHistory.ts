@@ -5,9 +5,9 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
-import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { loadMessageHistory } from '../../app/lib/server/functions/loadMessageHistory';
 import { settings } from '../../app/settings/server';
+import { hasPermissionAsync } from '../lib/authorization/hasPermission';
+import { loadMessageHistory } from '../lib/messages/loadMessageHistory';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -39,7 +39,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const room = await Rooms.findOneById(rid, { projection: { ...roomAccessAttributes, t: 1 } });
+		const room = await Rooms.findOneById(rid, { projection: { ...roomAccessAttributes, t: 1, sysMes: 1 } });
 		if (!room) {
 			return false;
 		}
@@ -51,7 +51,7 @@ Meteor.methods<ServerMethods>({
 
 		// if fromId is undefined and it passed the previous check, the user is reading anonymously
 		if (!fromUser) {
-			return loadMessageHistory({ rid, end, limit, ls, showThreadMessages });
+			return loadMessageHistory({ rid, end, limit, ls, showThreadMessages, room });
 		}
 
 		const canPreview = await hasPermissionAsync(fromUser._id, 'preview-c-room');
@@ -60,6 +60,6 @@ Meteor.methods<ServerMethods>({
 			return false;
 		}
 
-		return loadMessageHistory({ userId: fromUser._id, rid, end, limit, ls, showThreadMessages });
+		return loadMessageHistory({ userId: fromUser._id, rid, end, limit, ls, showThreadMessages, room });
 	},
 });

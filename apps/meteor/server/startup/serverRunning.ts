@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { License } from '@rocket.chat/license';
 // import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import semver from 'semver';
@@ -48,7 +49,8 @@ Meteor.startup(async () => {
 			`     MongoDB Engine: ${mongoStorageEngine}`,
 			`           Platform: ${process.platform}`,
 			`       Process Port: ${process.env.PORT}`,
-			`           Site URL: ${settings.get('Site_Url')}`,
+			`           Site URL: ${settings.get<string>('Site_Url')}`,
+			`    Hashed Site URL: ${License.getHashedWorkspaceUrl()}`,
 		];
 
 		if (Info.commit?.hash) {

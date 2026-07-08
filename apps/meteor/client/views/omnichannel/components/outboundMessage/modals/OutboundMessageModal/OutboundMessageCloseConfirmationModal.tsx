@@ -35,7 +35,13 @@ const OutboundMessageCloseConfirmationModal = ({ onConfirm, onCancel }: Outbound
 			<ModalFooter justifyContent='space-between'>
 				<ModalFooterAnnotation>{t('This_action_cannot_be_undone')}</ModalFooterAnnotation>
 				<ModalFooterControllers>
-					<Button ref={(el) => el?.focus()} secondary onClick={onCancel}>
+					<Button
+						ref={(el) => {
+							el?.focus();
+						}}
+						secondary
+						onClick={onCancel}
+					>
 						{t('Keep_editing')}
 					</Button>
 					<Button danger onClick={onConfirm}>

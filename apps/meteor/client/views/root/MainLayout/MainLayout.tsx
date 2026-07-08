@@ -1,5 +1,5 @@
 import { useEmbeddedLayout } from '@rocket.chat/ui-client';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Suspense } from 'react';
 
 import AuthenticationCheck from './AuthenticationCheck';
@@ -11,7 +11,7 @@ type MainLayoutProps = {
 	children?: ReactNode;
 };
 
-const MainLayout = ({ children = null }: MainLayoutProps): ReactElement => {
+const MainLayout = ({ children = null }: MainLayoutProps) => {
 	useCustomScript();
 
 	const isEmbeddedLayout = useEmbeddedLayout();

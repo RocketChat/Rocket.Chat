@@ -1,4 +1,4 @@
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import { ChatContext } from '../contexts/ChatContext';
 import { useRoom } from '../contexts/RoomContext';
@@ -9,7 +9,7 @@ type ChatProviderProps = {
 	tmid?: string;
 };
 
-const ChatProvider = ({ children, tmid }: ChatProviderProps): ReactElement => {
+const ChatProvider = ({ children, tmid }: ChatProviderProps) => {
 	const { _id: rid, encrypted } = useRoom();
 	const value = useChatMessagesInstance({ rid, tmid, encrypted });
 

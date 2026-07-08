@@ -1,8 +1,7 @@
 import type { MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Palette } from '@rocket.chat/fuselage';
+import { Palette } from '@rocket.chat/fuselage';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import MessageContentBody from '../../MessageContentBody';
@@ -10,9 +9,11 @@ import Attachments from '../Attachments';
 import AttachmentAuthor from './structure/AttachmentAuthor';
 import AttachmentAuthorAvatar from './structure/AttachmentAuthorAvatar';
 import AttachmentAuthorName from './structure/AttachmentAuthorName';
+import AttachmentAuthorTimestamp from './structure/AttachmentAuthorTimestamp';
 import AttachmentContent from './structure/AttachmentContent';
 import AttachmentDetails from './structure/AttachmentDetails';
 import AttachmentInner from './structure/AttachmentInner';
+import AttachmentMessageLink from './structure/AttachmentMessageLink';
 
 // TODO: remove this team collaboration
 const quoteStyles = css`
@@ -31,11 +32,11 @@ const quoteStyles = css`
 	}
 `;
 
-type QuoteAttachmentProps = {
+export type QuoteAttachmentProps = {
 	attachment: MessageQuoteAttachment;
 };
 
-export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElement => {
+export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps) => {
 	const formatTime = useTimeAgo();
 	const displayAvatarPreference = useUserPreference<boolean>('displayAvatars');
 
@@ -57,14 +58,8 @@ export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElem
 						>
 							{attachment.author_name}
 						</AttachmentAuthorName>
-						{attachment.ts && (
-							<Box
-								fontScale='c1'
-								{...(attachment.message_link ? { is: 'a', href: attachment.message_link, color: 'default' } : { color: 'default' })}
-							>
-								{formatTime(attachment.ts)}
-							</Box>
-						)}
+						{attachment.ts && <AttachmentAuthorTimestamp>{formatTime(attachment.ts)}</AttachmentAuthorTimestamp>}
+						{attachment.message_link && <AttachmentMessageLink href={attachment.message_link} />}
 					</AttachmentAuthor>
 					{attachment.attachments && (
 						<AttachmentInner>

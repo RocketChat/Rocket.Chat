@@ -1,4 +1,4 @@
-import { Abac } from '@rocket.chat/core-services';
+import { Abac, LDAPEnterprise } from '@rocket.chat/core-services';
 import { cronJobs } from '@rocket.chat/cron';
 import { License } from '@rocket.chat/license';
 import { Users } from '@rocket.chat/models';
@@ -6,7 +6,6 @@ import { isValidCron } from 'cron-validator';
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../app/settings/server';
-import { LDAPEE } from '../sdk';
 
 const VIRTRU_PDP_SYNC_JOB = 'ABAC_Virtru_PDP_Sync';
 
@@ -26,7 +25,7 @@ Meteor.startup(async () => {
 
 			stopWatcher = settings.watch('ABAC_Enabled', async (value) => {
 				if (value && settings.get<string>('ABAC_PDP_Type') !== 'virtru') {
-					await LDAPEE.syncUsersAbacAttributes(Users.findLDAPUsers());
+					await LDAPEnterprise.syncUsersAbacAttributes(Users.findLDAPUsers());
 				}
 			});
 

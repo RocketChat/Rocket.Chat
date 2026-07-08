@@ -5,6 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { parseDDP } from './ddpProtocol';
+import { setStorageBackend } from './storage';
 
 /**
  * Meteor-backed pass-through DDPSDK used when the SDK transport is OFF.
@@ -271,12 +272,63 @@ const createMeteorBackedAccount = () => {
 	} as unknown as DDPSDK['account'];
 };
 
+export const createMeteorBackedStorage = () => {
+	let appliedBackend: 'local' | 'session' | undefined;
+
+	return {
+		changeStorageBackend: () => {
+			const backend: 'local' | 'session' = window[FORGET_SESSION_SETTING_ID] ? 'session' : 'local';
+
+			if (appliedBackend === backend) {
+				return;
+			}
+
+			if (!setStorageBackend(backend)) {
+				return;
+			}
+
+			(Meteor._localStorage as unknown as Storage) = backend === 'session' ? window.sessionStorage : window.localStorage;
+
+			try {
+				Accounts.config({ clientStorage: backend });
+			} catch (error) {
+				// Accounts.config throws when invoked twice with a conflicting value. Meteor's
+				// own boot may have already set clientStorage; the _localStorage reassign above
+				// is what actually switches the backend Meteor reads from, so swallow.
+				console.warn('[storage] Accounts.config(clientStorage) refused at runtime', error);
+			}
+
+			appliedBackend = backend;
+		},
+	};
+};
+
+export const FORGET_SESSION_SETTING_ID = 'Accounts_ForgetUserSessionOnWindowClose';
+
+declare global {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface Window {
+		[FORGET_SESSION_SETTING_ID]?: boolean;
+	}
+}
+
+declare module '@rocket.chat/ddp-client' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface DDPSDK {
+		storage: {
+			changeStorageBackend: () => void;
+		};
+	}
+}
+
 export const createMeteorBackedSdk = (): DDPSDK => {
 	const connection = createMeteorBackedConnection();
 	const client = createMeteorBackedClient();
 	const account = createMeteorBackedAccount();
+	const storage = createMeteorBackedStorage();
 
 	return {
+		storage,
 		connection,
 		client,
 		account,

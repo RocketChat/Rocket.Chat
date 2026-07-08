@@ -1,7 +1,7 @@
 import { SidebarV2ItemBadge } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-type UnreadBadgeProps = {
+export type UnreadBadgeProps = {
 	title: string;
 	roomTitle?: string;
 	variant: 'primary' | 'warning' | 'danger' | 'secondary';

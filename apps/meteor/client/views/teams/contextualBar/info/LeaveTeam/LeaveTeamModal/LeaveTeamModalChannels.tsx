@@ -1,6 +1,5 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { GenericModal } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ChannelDesertionTable from '../../../../ChannelDesertionTable';
@@ -25,7 +24,7 @@ const LeaveTeamModalChannels = ({
 	onCancel,
 	eligibleRoomsLength,
 	selectedRooms,
-}: LeaveTeamModalChannelsProps): ReactElement => {
+}: LeaveTeamModalChannelsProps) => {
 	const { t } = useTranslation();
 
 	return (

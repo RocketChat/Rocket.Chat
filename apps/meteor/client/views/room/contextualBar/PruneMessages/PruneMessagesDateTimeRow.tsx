@@ -1,5 +1,4 @@
 import { Box, Margins, Field, FieldLabel, InputBox } from '@rocket.chat/fuselage';
-import { type ReactElement } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -8,7 +7,7 @@ type PruneMessagesDateTimeRowProps = {
 	field: 'newer' | 'older';
 };
 
-const PruneMessagesDateTimeRow = ({ label, field }: PruneMessagesDateTimeRowProps): ReactElement => {
+const PruneMessagesDateTimeRow = ({ label, field }: PruneMessagesDateTimeRowProps) => {
 	const { register } = useFormContext();
 	const { t } = useTranslation();
 

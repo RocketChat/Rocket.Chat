@@ -19,7 +19,7 @@ import { useEffect, useMemo, useState } from 'react';
 import FilterByText from '../../../components/FilterByText';
 import GenericNoResults from '../../../components/GenericNoResults';
 
-type CustomEmojiProps = {
+export type CustomEmojiProps = {
 	reload: MutableRefObject<() => void>;
 	onClick: (emoji: string) => () => void;
 };

@@ -20,7 +20,9 @@ import { host } from '../components/App';
 import { useStore } from '../store';
 import { useSDK } from './SDKProvider';
 
-const ServerProvider = ({ children }: { children: ComponentChildren }) => {
+export type ServerProviderProps = { children: ComponentChildren };
+
+const ServerProvider = ({ children }: ServerProviderProps) => {
 	const sdk = useSDK();
 
 	const { token } = useStore();

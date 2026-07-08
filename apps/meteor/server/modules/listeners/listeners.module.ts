@@ -3,7 +3,7 @@ import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definitio
 import type { IServiceClass } from '@rocket.chat/core-services';
 import { EnterpriseSettings } from '@rocket.chat/core-services';
 import { isSettingColor, isSettingEnterprise, UserStatus } from '@rocket.chat/core-typings';
-import type { IUser, IRoom, IRole, VideoConference, ISetting, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { IUser, IRoom, IRole, VideoConference, ISetting, IOmnichannelRoom, PresenceStatusCode } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import type { ServerMediaSignal } from '@rocket.chat/media-signaling';
 import { parse } from '@rocket.chat/message-parser';
@@ -13,7 +13,7 @@ import type { NotificationsModule } from '../notifications/notifications.module'
 
 const isMessageParserDisabled = process.env.DISABLE_MESSAGE_PARSER === 'true';
 
-const STATUS_MAP: Record<UserStatus, 0 | 1 | 2 | 3> = {
+const STATUS_MAP: Record<UserStatus, PresenceStatusCode> = {
 	[UserStatus.OFFLINE]: 0,
 	[UserStatus.ONLINE]: 1,
 	[UserStatus.AWAY]: 2,
@@ -157,7 +157,7 @@ export class ListenersModule {
 		});
 
 		service.onEvent('presence.status', ({ user }) => {
-			const { _id, username, name, status, statusText, roles } = user;
+			const { _id, username, name, status, statusText, statusSource, statusExpiresAt, roles } = user;
 			if (!status || !username) {
 				return;
 			}
@@ -172,16 +172,29 @@ export class ListenersModule {
 				diff: {
 					status,
 					...(statusText && { statusText }),
+					...(statusSource && { statusSource }),
+					...(statusExpiresAt && { statusExpiresAt }),
 				},
 				unset: {
 					...(!statusText && { statusText: 1 }),
+					...(!statusSource && { statusSource: 1 }),
+					...(!statusExpiresAt && { statusExpiresAt: 1 }),
 				},
 			});
 
-			notifications.notifyLoggedInThisInstance('user-status', [_id, username, STATUS_MAP[status], statusText, name, roles]);
+			notifications.notifyLoggedInThisInstance('user-status', [
+				_id,
+				username,
+				STATUS_MAP[status],
+				statusText,
+				name,
+				roles,
+				statusSource,
+				statusExpiresAt,
+			]);
 
 			if (_id) {
-				notifications.sendPresence(_id, username, STATUS_MAP[status], statusText);
+				notifications.sendPresence(_id, username, STATUS_MAP[status], statusText, statusSource, statusExpiresAt);
 			}
 		});
 

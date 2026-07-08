@@ -1757,7 +1757,7 @@
   "LDAP_Sync_Now_Description": "Spustí **Synchronizaci na pozadí ** nyní místo vyčkání  **Interval synchronizace na pozadí** i pokud je **Synchronizaci na pozadí** zakázána.  \n Tato akce je asynchroní. Pro více informací o jejím průběhu zkontrolujte log",
   "LDAP_Sync_User_Active_State": "Synchronizovat stavy aktivity uživatelů",
   "LDAP_Sync_User_Active_State_Both": "Povolit a zakázat uživatele",
-  "LDAP_Sync_User_Active_State_Description": "Rozlišuje zda by měli být uživatelé povolení nebo zakázaní na základě jejich stavu v LDAP. Pro zjištění se používá atribut 'pwdAccountLockedTime'.",
+  "LDAP_Sync_User_Active_State_Description": "Rozlišuje zda by měli být uživatelé povolení nebo zakázaní na základě jejich stavu v LDAP.",
   "LDAP_Sync_User_Active_State_Disable": "Zakázat uživatele",
   "LDAP_Sync_User_Active_State_Nothing": "Nedělat nic",
   "LDAP_Sync_User_Avatar": "Synchronizace uživatelských avatarů",

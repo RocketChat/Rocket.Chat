@@ -185,7 +185,11 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private hasRemoteData: boolean;
 
-	private initialized: boolean;
+	private _initialized: boolean;
+
+	public get initialized(): boolean {
+		return this._initialized;
+	}
 
 	private acknowledged: boolean;
 
@@ -296,7 +300,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.acceptedRemotely = false;
 		this.endedLocally = false;
 		this.hasRemoteData = false;
-		this.initialized = false;
+		this._initialized = false;
 		this.acknowledged = false;
 		this.contractState = 'proposed';
 		this.serviceStates = new Map();
@@ -340,7 +344,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		const wasInitialized = this.initialized;
 
-		this.initialized = true;
+		this._initialized = true;
 		this.acceptedLocally = true;
 		if (this.hasRemoteData) {
 			this.changeContact(contact, { prioritizeExisting: true });
@@ -388,7 +392,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.remoteCallId = signal.callId;
 		const wasInitialized = this.initialized;
 
-		this.initialized = true;
+		this._initialized = true;
 		this.hasRemoteData = true;
 		this._service = signal.service;
 		this._role = signal.role;
@@ -510,6 +514,10 @@ export class ClientMediaCall implements IClientMediaCall {
 				}
 				return 'pending';
 			case 'accepted':
+				if (!this.negotiationManager.isConfigured()) {
+					return 'waiting-for-track';
+				}
+
 				if (!this.negotiationManager.currentNegotiationId) {
 					return 'waiting-for-offer';
 				}
@@ -550,6 +558,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		if (newInputTrack && !hadInputTrack) {
+			this.updateClientState();
 			await this.negotiationManager.processNegotiations();
 		}
 	}
@@ -1268,6 +1277,8 @@ export class ClientMediaCall implements IClientMediaCall {
 		switch (state) {
 			case 'pending':
 				return 'not-answered';
+			case 'waiting-for-track':
+				return 'timeout-local-track';
 			case 'waiting-for-offer':
 			case 'waiting-for-answer':
 				return 'timeout-remote-sdp';
@@ -1366,6 +1377,11 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.config.logger?.debug('ClientMediaCall.onNegotiationNeeded', oldNegotiationId);
 
 		this.config.transporter.requestRenegotiation(this.callId, oldNegotiationId);
+	}
+
+	private onNegotiationStarted(): void {
+		this.config.logger?.debug('ClientMediaCall.onNegotiationStarted');
+		this.updateClientState();
 	}
 
 	private onNegotiationError(negotiationId: string, errorCode: string): void {
@@ -1574,6 +1590,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		this.negotiationManager.emitter.on('local-sdp', ({ sdp, negotiationId }) => this.deliverSdp({ sdp, negotiationId }));
 		this.negotiationManager.emitter.on('negotiation-needed', ({ oldNegotiationId }) => this.onNegotiationNeeded(oldNegotiationId));
+		this.negotiationManager.emitter.on('negotiation-started', () => this.onNegotiationStarted());
 		this.negotiationManager.emitter.on('error', ({ errorCode, negotiationId }) => this.onNegotiationError(negotiationId, errorCode));
 		this.negotiationManager.setWebRTCProcessor(this.webrtcProcessor);
 	}

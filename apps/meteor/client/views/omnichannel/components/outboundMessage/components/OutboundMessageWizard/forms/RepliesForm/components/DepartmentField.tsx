@@ -1,5 +1,5 @@
 import { Field, FieldError, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps } from 'react';
 import { useId } from 'react';
 import type { Control } from 'react-hook-form';
@@ -43,7 +43,7 @@ const DepartmentField = ({
 		},
 	});
 
-	const handleDepartmentChange = useEffectEvent((onChange: (value: string) => void) => {
+	const handleDepartmentChange = useStableCallback((onChange: (value: string) => void) => {
 		return (value: string) => {
 			onChangeExternal();
 			onChange(value);

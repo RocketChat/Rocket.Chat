@@ -1,7 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 
-const AppSecurityLabel = ({ children }: { children: string }): ReactElement => (
+export type AppSecurityLabelProps = { children: string };
+
+const AppSecurityLabel = ({ children }: AppSecurityLabelProps) => (
 	<Box fontScale='h4' mbe={8} color='titles-labels'>
 		{children}
 	</Box>

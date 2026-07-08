@@ -19,7 +19,6 @@ import {
 	InfoPanelText,
 	InfoPanelTitle,
 } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useTeamActions } from './useTeamActions';
@@ -36,7 +35,7 @@ type TeamsInfoProps = {
 	onClickViewChannels: () => void;
 };
 
-const TeamsInfo = ({ room, onClickClose, onClickEdit, onClickViewChannels }: TeamsInfoProps): ReactElement => {
+const TeamsInfo = ({ room, onClickClose, onClickEdit, onClickViewChannels }: TeamsInfoProps) => {
 	const { t } = useTranslation();
 
 	const retentionPolicy = useRetentionPolicy(room);

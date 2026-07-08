@@ -1,6 +1,5 @@
 import { Icon, Margins, Pagination, Skeleton, Table, TableBody, TableCell, TableHead, TableRow, Tile } from '@rocket.chat/fuselage';
 import { format } from 'date-fns';
-import type { ReactElement } from 'react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -11,7 +10,7 @@ import { usePeriodSelectorState } from '../../../../components/dashboards/usePer
 import Growth from '../../../../components/dataView/Growth';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 
-const ChannelsOverview = (): ReactElement => {
+const ChannelsOverview = () => {
 	const [period, periodSelectorProps] = usePeriodSelectorState('last 7 days', 'last 30 days', 'last 90 days');
 
 	const { t } = useTranslation();

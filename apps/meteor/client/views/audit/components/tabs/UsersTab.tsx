@@ -1,5 +1,4 @@
 import { Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 import { useController } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -7,11 +6,11 @@ import { useTranslation } from 'react-i18next';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import type { AuditFields } from '../../hooks/useAuditForm';
 
-type UsersTabProps = {
+export type UsersTabProps = {
 	form: UseFormReturn<AuditFields>;
 };
 
-const UsersTab = ({ form: { control } }: UsersTabProps): ReactElement => {
+const UsersTab = ({ form: { control } }: UsersTabProps) => {
 	const { t } = useTranslation();
 
 	const { field: usersField, fieldState: usersFieldState } = useController({

@@ -19,7 +19,6 @@ import {
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
 import { useMethod, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useState, useMemo, useEffect, useRef, useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -35,7 +34,7 @@ type SaveToWebdavModalProps = {
 	};
 };
 
-const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElement => {
+const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps) => {
 	const { t } = useTranslation();
 	const [isLoading, setIsLoading] = useState(false);
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -114,7 +113,7 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 									name='accountId'
 									control={control}
 									rules={{ required: t('Required_field', { field: t('Select_a_webdav_server') }) }}
-									render={({ field }): ReactElement => (
+									render={({ field }) => (
 										<Select {...field} options={accountsOptions} id={accountIdField} placeholder={t('Select_an_option')} />
 									)}
 								/>

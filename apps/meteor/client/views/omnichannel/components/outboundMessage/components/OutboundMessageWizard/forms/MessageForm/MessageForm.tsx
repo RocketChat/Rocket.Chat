@@ -1,6 +1,6 @@
 import type { IOutboundProviderTemplate, Serialized, ILivechatContact } from '@rocket.chat/core-typings';
 import { Box, Button, FieldGroup, Scrollable } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import type { ReactNode } from 'react';
 import { useId, useMemo } from 'react';
@@ -61,7 +61,7 @@ const MessageForm = (props: MessageFormProps) => {
 	const parametersMetadata = useMemo(() => (template ? extractParameterMetadata(template) : []), [template]);
 	const customActions = useMemo(() => renderActions?.({ isSubmitting }), [isSubmitting, renderActions]);
 
-	const submit = useEffectEvent(async (values: MessageFormData) => {
+	const submit = useStableCallback(async (values: MessageFormData) => {
 		try {
 			const { templateId, templateParameters } = values;
 

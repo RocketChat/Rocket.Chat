@@ -202,7 +202,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								<TextInput
 									id={emailField}
 									error={errors.email?.message as string}
-									addon={<Icon name='mail' size='x20' />}
+									endAddon={<Icon name='mail' size='x20' />}
 									placeholder={t('Email')}
 									{...register('email', {
 										required: t('Required_field', { field: t('Email') }),

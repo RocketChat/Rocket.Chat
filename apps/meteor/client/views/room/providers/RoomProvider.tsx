@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import type { ReactNode, ContextType, ReactElement } from 'react';
+import type { ReactNode, ContextType } from 'react';
 import { useMemo, memo, useEffect } from 'react';
 
 import ComposerPopupProvider from './ComposerPopupProvider';
@@ -26,7 +26,7 @@ type RoomProviderProps = {
 	rid: IRoom['_id'];
 };
 
-const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
+const RoomProvider = ({ rid, children }: RoomProviderProps) => {
 	const room = Rooms.use((state) => state.get(rid));
 
 	const subscritionFromLocal = Subscriptions.use((state) => state.find((record) => record.rid === rid));
@@ -108,7 +108,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	}, [rid, subscribed]);
 
 	if (!pseudoRoom) {
-		return !room ? <RoomNotFound /> : <RoomSkeleton />;
+		return !room && !subscritionFromLocal ? <RoomNotFound /> : <RoomSkeleton />;
 	}
 
 	return (

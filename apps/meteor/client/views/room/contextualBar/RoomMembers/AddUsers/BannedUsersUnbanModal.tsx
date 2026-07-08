@@ -13,7 +13,6 @@ import {
 	ModalFooterAnnotation,
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -22,7 +21,7 @@ type BannedUsersUnbanModalProps = {
 	onConfirm: () => Promise<void>;
 };
 
-const BannedUsersUnbanModal = ({ onClose, onConfirm }: BannedUsersUnbanModalProps): ReactElement => {
+const BannedUsersUnbanModal = ({ onClose, onConfirm }: BannedUsersUnbanModalProps) => {
 	const { t } = useTranslation();
 	const checkboxId = useId();
 	const [unbanConfirmed, setUnbanConfirmed] = useState(false);

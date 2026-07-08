@@ -1,26 +1,30 @@
 import { Box, Tile } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import type { Meta, StoryFn } from '@storybook/react';
-import { createElement } from 'react';
+import type { Meta, StoryObj } from '@storybook/react';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import LoginSwitchLanguageFooter from './LoginSwitchLanguageFooter';
 
+function ExampleTranslationDecorator({ children }: { children: ReactNode }) {
+	const { t } = useTranslation();
+
+	return (
+		<Box>
+			<Tile>{t('example.text')}</Tile>
+			{children}
+		</Box>
+	);
+}
+
 export default {
-	title: 'components/LoginSwitchLanguageFooter',
 	component: LoginSwitchLanguageFooter,
 	decorators: [
-		(fn) =>
-			createElement(function ExampleTranslationDecorator() {
-				const { t } = useTranslation();
-
-				return (
-					<Box>
-						<Tile>{t('example.text')}</Tile>
-						{fn()}
-					</Box>
-				);
-			}),
+		(Story) => (
+			<ExampleTranslationDecorator>
+				<Story />
+			</ExampleTranslationDecorator>
+		),
 		mockAppRoot()
 			.withSetting('Language', 'fi')
 			.withTranslations('en', 'registration', { 'component.switchLanguage': 'Change to <1>{{ name }}</1>' })
@@ -39,4 +43,4 @@ export default {
 	},
 } satisfies Meta<typeof LoginSwitchLanguageFooter>;
 
-export const Default: StoryFn<typeof LoginSwitchLanguageFooter> = (args) => <LoginSwitchLanguageFooter {...args} />;
+export const Example: StoryObj<typeof LoginSwitchLanguageFooter> = {};

@@ -1,5 +1,4 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
@@ -9,7 +8,7 @@ import FeatureUsageCard from '../FeatureUsageCard';
 import FeatureUsageCardBody from '../FeatureUsageCardBody';
 import UpgradeButton from '../UpgradeButton';
 
-const ActiveSessionsPeakCard = (): ReactElement => {
+const ActiveSessionsPeakCard = () => {
 	const { t } = useTranslation();
 	const { data, isLoading } = useStatistics();
 	const formatDate = useFormatDate();

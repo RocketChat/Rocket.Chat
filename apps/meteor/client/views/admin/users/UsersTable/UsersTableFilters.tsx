@@ -3,13 +3,13 @@ import { Box, Icon, Margins, TextInput } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import { MultiSelectCustom } from '@rocket.chat/ui-client';
-import type { Dispatch, FormEvent, SetStateAction } from 'react';
+import type { ChangeEvent, Dispatch, SetStateAction } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { UsersFilters } from '../AdminUsersPage';
 
-type UsersTableFiltersProps = {
+export type UsersTableFiltersProps = {
 	setUsersFilters: Dispatch<SetStateAction<UsersFilters>>;
 	roleData: { roles: Serialized<IRole>[] } | undefined;
 };
@@ -21,7 +21,7 @@ const UsersTableFilters = ({ roleData, setUsersFilters }: UsersTableFiltersProps
 	const [text, setText] = useState('');
 
 	const handleSearchTextChange = useCallback(
-		(event: FormEvent<HTMLInputElement>) => {
+		(event: ChangeEvent<HTMLInputElement>) => {
 			setText(event.currentTarget.value);
 			setUsersFilters({ text: event.currentTarget.value, roles: selectedRoles });
 		},
@@ -66,7 +66,7 @@ const UsersTableFilters = ({ roleData, setUsersFilters }: UsersTableFiltersProps
 		<Box
 			mb={16}
 			is='form'
-			onSubmit={(event: FormEvent<HTMLFormElement>) => {
+			onSubmit={(event) => {
 				event.preventDefault();
 			}}
 			display='flex'
@@ -76,7 +76,7 @@ const UsersTableFilters = ({ roleData, setUsersFilters }: UsersTableFiltersProps
 			<Margins inlineEnd={isLargeScreenOrBigger ? 16 : 0}>
 				<TextInput
 					placeholder={t('Search_Users')}
-					addon={<Icon name='magnifier' size='x20' />}
+					endAddon={<Icon name='magnifier' size='x20' />}
 					onChange={handleSearchTextChange}
 					value={text}
 					flexGrow={2}

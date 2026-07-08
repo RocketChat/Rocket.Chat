@@ -1,6 +1,6 @@
 import { isAppLogsProps, ajv } from '@rocket.chat/rest-typings';
 
-import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
+import { getPaginationItems } from '../../../../../server/api/lib/getPaginationItems';
 import type { AppsRestApi } from '../rest';
 import { makeAppLogsQuery } from './lib/makeAppLogsQuery';
 

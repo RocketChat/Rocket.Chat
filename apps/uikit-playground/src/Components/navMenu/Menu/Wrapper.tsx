@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
-const Wrapper = ({ children }: { children: ReactNode }): ReactElement => (
+const Wrapper = ({ children }: { children: ReactNode }) => (
 	<Box
 		pbs='80px'
 		pis='50px'

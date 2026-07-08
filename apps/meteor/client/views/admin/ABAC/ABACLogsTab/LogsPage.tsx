@@ -114,6 +114,14 @@ const LogsPage = () => {
 									.join(', ') ?? t('Empty'),
 							room: event.data?.find((item) => item.key === 'room')?.value?.name ?? '',
 						};
+					case 'abac.attribute.store.switched':
+						return {
+							...eventInfo,
+							element: t('ABAC_Attribute_Store'),
+							action: t('ABAC_Attribute_Store_Switched'),
+							name: `${event.data?.find((item) => item.key === 'from')?.value} -> ${event.data?.find((item) => item.key === 'to')?.value}`,
+							room: t('ABAC_Rooms_Affected', { count: Number(event.data?.find((item) => item.key === 'roomsAffected')?.value ?? 0) }),
+						};
 					default:
 						return null;
 				}

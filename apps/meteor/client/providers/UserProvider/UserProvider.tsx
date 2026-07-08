@@ -7,7 +7,7 @@ import { UserContext, useRouteParameter, useSearchParameter } from '@rocket.chat
 import { useQueryClient } from '@tanstack/react-query';
 import { Meteor } from 'meteor/meteor';
 import type { Filter, ObjectId } from 'mongodb';
-import type { ContextType, ReactElement, ReactNode } from 'react';
+import type { ContextType, ReactNode } from 'react';
 import { useEffect, useMemo, useRef } from 'react';
 import type { StoreApi, UseBoundStore } from 'zustand';
 
@@ -26,7 +26,7 @@ import { userIdStore } from '../../lib/user';
 import { Users, Rooms, Subscriptions } from '../../stores';
 import { useSamlInviteToken } from '../../views/invite/hooks/useSamlInviteToken';
 
-type UserProviderProps = {
+export type UserProviderProps = {
 	children: ReactNode;
 };
 
@@ -61,7 +61,7 @@ const queryRoom = (
 	return [subscribe, getSnapshot];
 };
 
-const UserProvider = ({ children }: UserProviderProps): ReactElement => {
+const UserProvider = ({ children }: UserProviderProps) => {
 	const userId = userIdStore();
 
 	const user = Users.use((state) => {

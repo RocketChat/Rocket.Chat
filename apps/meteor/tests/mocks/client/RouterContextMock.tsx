@@ -2,7 +2,7 @@ import type { To, SearchParameters, LocationPathname, LocationSearch } from '@ro
 import { RouterContext } from '@rocket.chat/ui-contexts';
 import { compile } from 'path-to-regexp';
 import { useRef, useMemo } from 'react';
-import type { MutableRefObject, ReactElement, ReactNode } from 'react';
+import type { MutableRefObject, ReactNode } from 'react';
 
 const encodeSearchParameters = (searchParameters: SearchParameters) => {
 	const search = new URLSearchParams();
@@ -63,13 +63,7 @@ type RouterContextMockProps = {
 	routeParameters?: Record<string, any>;
 };
 
-const RouterContextMock = ({
-	children,
-	navigate,
-	currentPath,
-	searchParameters = {},
-	routeParameters = {},
-}: RouterContextMockProps): ReactElement => {
+const RouterContextMock = ({ children, navigate, currentPath, searchParameters = {}, routeParameters = {} }: RouterContextMockProps) => {
 	const history = useRef<{ stack: To[]; index: number }>({ stack: ['/'], index: 0 });
 
 	if (currentPath) {

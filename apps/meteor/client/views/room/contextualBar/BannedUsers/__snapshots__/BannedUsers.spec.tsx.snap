@@ -143,7 +143,7 @@ exports[`renders Default without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="More"
                                 class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-:r1:"
+                                id="react-aria-_r_1_"
                                 title="More"
                                 type="button"
                               >
@@ -213,7 +213,7 @@ exports[`renders Default without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="More"
                                 class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-:r3:"
+                                id="react-aria-_r_3_"
                                 title="More"
                                 type="button"
                               >
@@ -296,7 +296,7 @@ exports[`renders Default without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="More"
                                 class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-:r5:"
+                                id="react-aria-_r_5_"
                                 title="More"
                                 type="button"
                               >
@@ -863,7 +863,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="More"
                                 class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-:rb:"
+                                id="react-aria-_r_b_"
                                 title="More"
                                 type="button"
                               >
@@ -939,7 +939,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="More"
                                 class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-:rd:"
+                                id="react-aria-_r_d_"
                                 title="More"
                                 type="button"
                               >
@@ -1028,7 +1028,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="More"
                                 class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-:rf:"
+                                id="react-aria-_r_f_"
                                 title="More"
                                 type="button"
                               >

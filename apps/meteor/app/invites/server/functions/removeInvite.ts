@@ -2,7 +2,7 @@ import type { IInvite } from '@rocket.chat/core-typings';
 import { Invites } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 
 export const removeInvite = async (userId: string, invite: Pick<IInvite, '_id'>) => {
 	if (!userId || !invite) {
@@ -20,16 +20,13 @@ export const removeInvite = async (userId: string, invite: Pick<IInvite, '_id'>)
 		});
 	}
 
-	// Before anything, let's check if there's an existing invite
-	const existing = await Invites.findOneById(invite._id);
+	const { deletedCount } = await Invites.removeById(invite._id);
 
-	if (!existing) {
+	if (!deletedCount) {
 		throw new Meteor.Error('invalid-invitation-id', 'Invalid Invitation _id', {
 			method: 'removeInvite',
 		});
 	}
-
-	await Invites.removeById(invite._id);
 
 	return true;
 };

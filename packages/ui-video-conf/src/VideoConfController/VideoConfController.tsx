@@ -1,6 +1,6 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import type { ReactElement, ButtonHTMLAttributes } from 'react';
+import type { ButtonHTMLAttributes } from 'react';
 
 type VideoConfControllerProps = {
 	icon: IconName;
@@ -10,7 +10,7 @@ type VideoConfControllerProps = {
 	small?: boolean;
 } & Omit<ButtonHTMLAttributes<HTMLElement>, 'ref' | 'is' | 'className' | 'size' | 'elevation'>;
 
-const VideoConfController = ({ icon, active, secondary, disabled, small = true, ...props }: VideoConfControllerProps): ReactElement => (
+const VideoConfController = ({ icon, active, secondary, disabled, small = true, ...props }: VideoConfControllerProps) => (
 	<IconButton
 		aria-live='assertive'
 		small={small}

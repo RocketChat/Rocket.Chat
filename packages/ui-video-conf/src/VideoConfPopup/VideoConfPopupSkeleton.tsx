@@ -6,7 +6,7 @@ import VideoConfPopupContent from './VideoConfPopupContent';
 import VideoConfPopupFooter from './VideoConfPopupFooter';
 import VideoConfPopupHeader from './VideoConfPopupHeader';
 
-type VideoConfPopupSkeletonProps = Omit<ComponentProps<typeof VideoConfPopup>, 'children'>;
+export type VideoConfPopupSkeletonProps = Omit<ComponentProps<typeof VideoConfPopup>, 'children'>;
 
 const VideoConfPopupSkeleton = (props: VideoConfPopupSkeletonProps) => (
 	<VideoConfPopup aria-label='Loading' {...props}>

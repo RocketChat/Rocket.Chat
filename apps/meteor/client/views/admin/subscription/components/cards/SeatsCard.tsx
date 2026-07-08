@@ -1,5 +1,4 @@
 import { Palette } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { CardProps } from '../FeatureUsageCard';
@@ -8,13 +7,13 @@ import FeatureUsageCardBody from '../FeatureUsageCardBody';
 import UpgradeButton from '../UpgradeButton';
 import UsagePieGraph from '../UsagePieGraph';
 
-type SeatsCardProps = {
+export type SeatsCardProps = {
 	value: number;
 	max: number;
 	hideManageSubscription?: boolean;
 };
 
-const SeatsCard = ({ value, max, hideManageSubscription }: SeatsCardProps): ReactElement => {
+const SeatsCard = ({ value, max, hideManageSubscription }: SeatsCardProps) => {
 	const { t } = useTranslation();
 
 	const pieGraph = {

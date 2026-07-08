@@ -1,5 +1,4 @@
 import type { App } from '@rocket.chat/core-typings';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppsList from '../AppsList';
@@ -11,7 +10,7 @@ type FeaturedSectionsProps = {
 	appsListId: string;
 };
 
-const FeaturedAppsSections = ({ appsResult, appsListId }: FeaturedSectionsProps): ReactElement | null => {
+const FeaturedAppsSections = ({ appsResult, appsListId }: FeaturedSectionsProps) => {
 	const { t, i18n } = useTranslation();
 	const featuredApps = useFeaturedApps();
 

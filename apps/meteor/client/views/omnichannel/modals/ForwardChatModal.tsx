@@ -2,7 +2,6 @@ import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Field, FieldGroup, TextAreaInput, Box, Divider, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouter, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useCallback, useEffect, useId } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -22,7 +21,7 @@ type ForwardChatModalProps = {
 	onCancel: () => void;
 };
 
-const ForwardChatModal = ({ room, onCancel }: ForwardChatModalProps): ReactElement => {
+const ForwardChatModal = ({ room, onCancel }: ForwardChatModalProps) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();

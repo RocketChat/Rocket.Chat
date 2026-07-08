@@ -2,7 +2,7 @@ import type { IVideoConferenceUser, Serialized } from '@rocket.chat/core-typings
 import { getUserDisplayName } from '@rocket.chat/core-typings';
 import { Avatar, Box, Icon } from '@rocket.chat/fuselage';
 import { useSetting, useUserAvatarPath, useUserPreference } from '@rocket.chat/ui-contexts';
-import { memo, type ReactElement } from 'react';
+import { memo } from 'react';
 
 const MAX_USERS = 3;
 
@@ -10,7 +10,7 @@ type VideoConfMessageUserStackProps = {
 	users: Serialized<IVideoConferenceUser>[];
 };
 
-const VideoConfMessageUserStack = ({ users }: VideoConfMessageUserStackProps): ReactElement => {
+const VideoConfMessageUserStack = ({ users }: VideoConfMessageUserStackProps) => {
 	const displayAvatars = useUserPreference<boolean>('displayAvatars');
 	const showRealName = useSetting('UI_Use_Real_Name', false);
 	const getUserAvatarPath = useUserAvatarPath();

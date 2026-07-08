@@ -1,5 +1,4 @@
 import { MessageComposerHint } from '@rocket.chat/ui-composer';
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 
@@ -13,7 +12,7 @@ type MessageBoxHintProps = {
 	isMobile?: boolean;
 };
 
-const MessageBoxHint = ({ isEditing, e2eEnabled, unencryptedMessagesAllowed, isMobile }: MessageBoxHintProps): ReactElement | null => {
+const MessageBoxHint = ({ isEditing, e2eEnabled, unencryptedMessagesAllowed, isMobile }: MessageBoxHintProps) => {
 	const room = useRoom();
 	const isReadOnly = room?.ro || false;
 	const { t } = useTranslation();

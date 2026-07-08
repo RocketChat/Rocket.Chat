@@ -8,7 +8,7 @@ import { getPermaLink } from '../../../../../lib/getPermaLink';
 import ForwardMessageModal from '../../../../../views/room/modals/ForwardMessageModal';
 import MessageToolbarItem from '../../MessageToolbarItem';
 
-type ForwardMessageActionProps = {
+export type ForwardMessageActionProps = {
 	message: IMessage;
 	room: IRoom;
 };

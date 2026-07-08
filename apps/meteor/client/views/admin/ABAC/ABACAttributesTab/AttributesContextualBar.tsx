@@ -9,7 +9,7 @@ import type { AttributesFormFormData } from './AttributesForm';
 import AttributesForm from './AttributesForm';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 
-type AttributesContextualBarProps = {
+export type AttributesContextualBarProps = {
 	attributeId?: string;
 	attributeData?: {
 		key: string;

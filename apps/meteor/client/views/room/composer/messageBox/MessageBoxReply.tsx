@@ -2,7 +2,6 @@ import type { IMessage, MessageQuoteAttachment } from '@rocket.chat/core-typings
 import { css } from '@rocket.chat/css-in-js';
 import { IconButton, Box, Margins } from '@rocket.chat/fuselage';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -10,7 +9,7 @@ import { QuoteAttachment } from '../../../../components/message/content/attachme
 import AttachmentProvider from '../../../../providers/AttachmentProvider';
 import { useChat } from '../../contexts/ChatContext';
 
-const MessageBoxReply = ({ reply }: { reply: IMessage }): ReactElement | null => {
+const MessageBoxReply = ({ reply }: { reply: IMessage }) => {
 	const { t } = useTranslation();
 	const chat = useChat();
 

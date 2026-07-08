@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { UserFormProps } from './AdminUserForm';
 
-type AdminUserSetRandomPasswordContentProps = {
+export type AdminUserSetRandomPasswordContentProps = {
 	control: Control<UserFormProps, any>;
 	setRandomPassword: boolean | undefined;
 	isNewUserPage: boolean;

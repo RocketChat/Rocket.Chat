@@ -1,6 +1,6 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { IUser, IInviteSubscription } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, type ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -29,7 +29,7 @@ const RoomInvite = ({ room, subscription, userId, ...props }: RoomInviteProps) =
 
 	useGoToHomeOnRemoved(room, userId);
 
-	const invalidateQueries = useEffectEvent(() => {
+	const invalidateQueries = useStableCallback(() => {
 		const reference = room.federationOriginalName ?? room.name ?? room._id;
 		void queryClient.invalidateQueries({ queryKey: roomsQueryKeys.room(room._id) });
 		void queryClient.invalidateQueries({ queryKey: subscriptionsQueryKeys.subscription(room._id) });

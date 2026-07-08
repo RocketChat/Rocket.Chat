@@ -7,7 +7,7 @@ import type { Document, UpdateResult } from 'mongodb';
 
 import { callbacks } from '../../../../server/lib/callbacks';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
-import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
+import { checkUsernameAvailability } from '../../../../server/lib/users/checkUsernameAvailability';
 import { notifyOnIntegrationChangedByChannels, notifyOnSubscriptionChangedByRoomId } from '../../../lib/server/lib/notifyListener';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
 

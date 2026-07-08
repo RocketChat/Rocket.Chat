@@ -53,6 +53,7 @@ export type UsersSetPreferencesParamsPOST = {
 		enableMobileRinging?: boolean;
 		mentionsWithSymbol?: boolean;
 		desktopNotificationVoiceCalls?: boolean;
+		utcOffset?: number;
 	};
 };
 
@@ -266,6 +267,10 @@ const UsersSetPreferencesParamsPostSchema = {
 				},
 				desktopNotificationVoiceCalls: {
 					type: 'boolean',
+					nullable: true,
+				},
+				utcOffset: {
+					type: 'number',
 					nullable: true,
 				},
 			},

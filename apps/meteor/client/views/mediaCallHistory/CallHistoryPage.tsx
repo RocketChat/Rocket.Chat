@@ -1,9 +1,10 @@
+import type { CallHistoryItem, Serialized } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useSort, usePagination, GenericTableLoadingRow } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
-import { MediaCallHistoryTable, isCallHistoryUnknownContact, isCallHistoryTableInternalContact } from '@rocket.chat/ui-voip';
-import type { CallHistoryTableInternalContact, CallHistoryUnknownContact, CallHistoryTableExternalContact } from '@rocket.chat/ui-voip';
+import { MediaCallHistoryTable, isCallHistoryUnknownContact, isCallHistoryInternalContact } from '@rocket.chat/ui-voip';
+import type { CallHistoryContact } from '@rocket.chat/ui-voip';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +15,7 @@ import CallHistoryRowExternalUser from './CallHistoryRowExternalUser';
 import CallHistoryRowInternalUser from './CallHistoryRowInternalUser';
 import CallHistoryRowUnknownUser from './CallHistoryRowUnknownUser';
 import MediaCallHistoryContextualbar from './MediaCallHistoryContextualbar';
+import { getExternalContact } from './MediaCallHistoryExternal';
 import GenericNoResults from '../../components/GenericNoResults';
 import UserInfoWithData from '../room/contextualBar/UserInfo/UserInfoWithData';
 
@@ -41,6 +43,18 @@ const getStateFilter = <T extends string[]>(states: T): T | [...T, 'error'] | un
 		return [...states, 'error'];
 	}
 	return states;
+};
+
+const getContact = (item: Serialized<CallHistoryItem>): CallHistoryContact => {
+	if (item.external) {
+		return getExternalContact(item);
+	}
+
+	if (!item.contactUsername || !item.contactName) {
+		return { unknown: true };
+	}
+
+	return { _id: item.contactId, username: item.contactUsername, name: item.contactName };
 };
 
 type DetailsTab = {
@@ -130,33 +144,11 @@ const CallHistoryPage = () => {
 
 	const tableData = useMemo(() => {
 		return data?.items.map((item) => {
-			if (item.external) {
-				return {
-					_id: item._id,
-					contact: item.contactExtension
-						? ({ number: item.contactExtension } as CallHistoryTableExternalContact)
-						: ({ unknown: true } as CallHistoryUnknownContact),
-					type: item.direction,
-					status: item.state,
-					timestamp: item.ts,
-					duration: item.duration,
-				};
-			}
-			if (!item.contactUsername || !item.contactName) {
-				return {
-					_id: item._id,
-					contact: { unknown: true } as CallHistoryUnknownContact,
-					type: item.direction,
-					status: item.state,
-					timestamp: item.ts,
-					duration: item.duration,
-				};
-			}
 			return {
 				_id: item._id,
-				rid: item.rid,
-				contact: { _id: item.contactId, username: item.contactUsername, name: item.contactName } as CallHistoryTableInternalContact,
-				messageId: item.messageId,
+				...('rid' in item && { rid: item.rid }),
+				contact: getContact(item),
+				...('messageId' in item && { messageId: item.messageId }),
 				type: item.direction,
 				status: item.state,
 				timestamp: item.ts,
@@ -216,7 +208,7 @@ const CallHistoryPage = () => {
 						if (isCallHistoryUnknownContact(item.contact)) {
 							return <CallHistoryRowUnknownUser key={item._id} {...item} contact={item.contact} onClick={() => onClickRow('', item._id)} />;
 						}
-						if (isCallHistoryTableInternalContact(item.contact)) {
+						if (isCallHistoryInternalContact(item.contact)) {
 							return (
 								<CallHistoryRowInternalUser
 									key={item._id}

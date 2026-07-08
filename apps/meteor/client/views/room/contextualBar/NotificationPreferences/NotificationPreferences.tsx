@@ -9,7 +9,6 @@ import {
 	ContextualbarFooter,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -24,12 +23,7 @@ type NotificationPreferencesProps = {
 	handlePlaySound: () => void;
 };
 
-const NotificationPreferences = ({
-	handleClose,
-	handleSave,
-	notificationOptions,
-	handlePlaySound,
-}: NotificationPreferencesProps): ReactElement => {
+const NotificationPreferences = ({ handleClose, handleSave, notificationOptions, handlePlaySound }: NotificationPreferencesProps) => {
 	const { t } = useTranslation();
 	const {
 		formState: { isDirty, isSubmitting },

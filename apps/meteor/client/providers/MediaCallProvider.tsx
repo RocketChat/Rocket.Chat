@@ -6,7 +6,9 @@ import { useMemo } from 'react';
 
 import { useHasLicenseModule } from '../hooks/useHasLicenseModule';
 
-const MediaCallProvider = ({ children }: { children: ReactNode }) => {
+export type MediaCallProviderProps = { children: ReactNode };
+
+const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 	const canMakeInternalCall = usePermission('allow-internal-voice-calls');
 	const canMakeExternalCall = usePermission('allow-external-voice-calls');
 
@@ -14,8 +16,9 @@ const MediaCallProvider = ({ children }: { children: ReactNode }) => {
 
 	const unauthorizedContextValue = useMemo(
 		() => ({
-			inRoomView: false,
-			setInRoomView: () => undefined,
+			currentViews: [],
+			registerView: () => undefined,
+			unregisterView: () => undefined,
 			instance: undefined,
 			signalEmitter: new Emitter<any>(),
 			audioElement: undefined,

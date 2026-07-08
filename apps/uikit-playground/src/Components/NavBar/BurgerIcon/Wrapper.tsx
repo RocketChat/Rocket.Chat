@@ -1,8 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
-const Wrapper = ({ children }: { children: ReactNode }): ReactElement => (
+const Wrapper = ({ children }: { children: ReactNode }) => (
 	<Box
 		is='span'
 		display='inline-flex'

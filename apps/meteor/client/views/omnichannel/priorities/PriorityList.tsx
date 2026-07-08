@@ -5,7 +5,6 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { PriorityFormData } from './PriorityEditForm';
@@ -18,7 +17,7 @@ type PriorityListProps = {
 	onClose: () => void;
 };
 
-const PriorityList = ({ priorityId, onClose, onSave }: PriorityListProps): ReactElement | null => {
+const PriorityList = ({ priorityId, onClose, onSave }: PriorityListProps) => {
 	const { t } = useTranslation();
 
 	return (

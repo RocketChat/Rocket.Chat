@@ -12,7 +12,6 @@ import {
 	useSetting,
 	useLayout,
 } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useId, useState, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
@@ -23,7 +22,7 @@ import ConfirmOwnerChangeModal from '../../../components/ConfirmOwnerChangeModal
 import { useAllowPasswordChange } from '../security/useAllowPasswordChange';
 
 // TODO: enforce useMutation
-const AccountProfilePage = (): ReactElement => {
+const AccountProfilePage = () => {
 	const t = useTranslation();
 	const user = useUser();
 	const dispatchToastMessage = useToastMessageDispatch();

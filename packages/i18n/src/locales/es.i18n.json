@@ -2102,7 +2102,7 @@
   "LDAP_Sync_Now_Description": "Esta acción iniciará una operación de **Sincronización en segundo plano** ahora, sin esperar a la próxima sincronización programada.  \nEsta acción es asincrónica; consulta los registros para obtener más información.",
   "LDAP_Sync_User_Active_State": "Sincronizar estado de actividad del usuario",
   "LDAP_Sync_User_Active_State_Both": "Habilitar y deshabilitar usuarios",
-  "LDAP_Sync_User_Active_State_Description": "Determina si los usuarios deben estar habilitados o deshabilitados en Rocket.Chat según el estado de LDAP. El atributo \"pwdAccountLockedTime\" se usará para determinar si el usuario está deshabilitado.",
+  "LDAP_Sync_User_Active_State_Description": "Determina si los usuarios deben estar habilitados o deshabilitados en Rocket.Chat según el estado de LDAP.",
   "LDAP_Sync_User_Active_State_Disable": "Habilitar usuarios",
   "LDAP_Sync_User_Active_State_Nothing": "No hacer nada",
   "LDAP_Sync_User_Avatar": "Sincronizar avatar de usuario",

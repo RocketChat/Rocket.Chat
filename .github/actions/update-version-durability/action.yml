@@ -14,6 +14,9 @@ inputs:
   D360_ARTICLE_ID:
     required: true
     description: Document360 Article ID
+  D360_USER_ID:
+    required: true
+    description: Document360 User ID used to fork and publish the article
   PUBLISH:
     required: true
     description: Publish Draft

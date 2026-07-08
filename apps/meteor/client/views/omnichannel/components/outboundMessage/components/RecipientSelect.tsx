@@ -1,6 +1,6 @@
 import type { Serialized, ILivechatContact } from '@rocket.chat/core-typings';
 import { Select } from '@rocket.chat/fuselage';
-import type { ComponentProps, Key, ReactElement } from 'react';
+import type { ComponentProps, Key } from 'react';
 import { useMemo } from 'react';
 
 import { formatPhoneNumber } from '../../../../../lib/formatPhoneNumber';
@@ -12,7 +12,7 @@ type RecipientSelectProps = Omit<ComponentProps<typeof Select>, 'options' | 'onC
 	onChange: (value: Key) => void;
 };
 
-const RecipientSelect = ({ contact, type, value, disabled, onChange, ...props }: RecipientSelectProps): ReactElement => {
+const RecipientSelect = ({ contact, type, value, disabled, onChange, ...props }: RecipientSelectProps) => {
 	const options = useMemo<[string, string][]>(() => {
 		if (!contact) {
 			return [];

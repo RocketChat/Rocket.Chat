@@ -8,7 +8,7 @@ import {
 	ContextualbarClose,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import { useId, type ReactElement } from 'react';
+import { useId } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -23,7 +23,7 @@ type PruneMessagesProps = {
 	onClickPrune: () => void;
 };
 
-const PruneMessages = ({ callOutText, validateText, onClickClose, onClickPrune }: PruneMessagesProps): ReactElement => {
+const PruneMessages = ({ callOutText, validateText, onClickClose, onClickPrune }: PruneMessagesProps) => {
 	const { t } = useTranslation();
 	const { control } = useFormContext();
 

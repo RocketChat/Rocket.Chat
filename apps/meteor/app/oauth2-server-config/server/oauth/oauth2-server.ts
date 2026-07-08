@@ -6,8 +6,8 @@ import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
 import { isPlainObject } from '../../../../lib/utils/isPlainObject';
+import { API } from '../../../../server/api';
 import { OAuth2Server } from '../../../../server/oauth2-server/oauth';
-import { API } from '../../../api/server';
 
 const oauth2server = new OAuth2Server({
 	// If you're developing something related to oauth servers, you should change this to true

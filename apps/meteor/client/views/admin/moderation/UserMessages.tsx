@@ -1,5 +1,5 @@
 import { Box, Callout, Message, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { ContextualbarFooter } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -32,7 +32,7 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 		},
 	});
 
-	const handleChange = useEffectEvent(() => {
+	const handleChange = useStableCallback(() => {
 		reloadUserMessages();
 	});
 

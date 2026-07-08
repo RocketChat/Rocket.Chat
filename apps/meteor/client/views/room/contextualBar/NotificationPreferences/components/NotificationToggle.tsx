@@ -1,5 +1,5 @@
 import { Field, FieldLabel, FieldDescription, FieldGroup, ToggleSwitch, FieldRow } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 import { memo, useId } from 'react';
 
 type NotificationToggleProps = {
@@ -8,7 +8,7 @@ type NotificationToggleProps = {
 	onChange: (e: unknown) => void;
 } & ComponentProps<typeof ToggleSwitch>;
 
-const NotificationToggle = ({ label, description, onChange, ...props }: NotificationToggleProps): ReactElement => {
+const NotificationToggle = ({ label, description, onChange, ...props }: NotificationToggleProps) => {
 	const fieldId = useId();
 
 	return (

@@ -2,7 +2,6 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { GenericModalSkeleton } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 
 import DeleteTeamModal from './DeleteTeamModal';
@@ -13,7 +12,7 @@ type DeleteTeamModalWithRoomsProps = {
 	onCancel: () => void;
 };
 
-const DeleteTeamModalWithRooms = ({ teamId, onConfirm, onCancel }: DeleteTeamModalWithRoomsProps): ReactElement => {
+const DeleteTeamModalWithRooms = ({ teamId, onConfirm, onCancel }: DeleteTeamModalWithRoomsProps) => {
 	const query = useMemo(() => ({ teamId }), [teamId]);
 	const getTeamsListRooms = useEndpoint('GET', '/v1/teams.listRooms');
 	const { data, isLoading } = useQuery({

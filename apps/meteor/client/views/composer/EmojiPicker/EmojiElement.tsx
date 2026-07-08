@@ -7,7 +7,7 @@ import { memo } from 'react';
 import type { EmojiItem } from '../../../../app/emoji/client';
 import { usePreviewEmoji } from '../../../contexts/EmojiPickerContext';
 
-type EmojiElementProps = EmojiItem & { small?: boolean; onClick: (e: MouseEvent<HTMLElement>) => void } & Omit<
+export type EmojiElementProps = EmojiItem & { small?: boolean; onClick: (e: MouseEvent<HTMLElement>) => void } & Omit<
 		AllHTMLAttributes<HTMLButtonElement>,
 		'is'
 	>;
@@ -34,7 +34,7 @@ const EmojiElement = ({ emoji, image, onClick, small = false, ...props }: EmojiE
 			{...(small && { className: emojiSmallClass })}
 			small={small}
 			medium={!small}
-			onMouseOver={() => handlePreview(image, emoji)}
+			onMouseEnter={() => handlePreview(image, emoji)}
 			onMouseLeave={handleRemovePreview}
 			onClick={onClick}
 			data-emoji={emoji}

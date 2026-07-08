@@ -10,7 +10,6 @@ import {
 } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useUserId, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import type { ReactElement, RefObject } from 'react';
 import { useMemo, useCallback } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -20,7 +19,7 @@ import GenericNoResults from '../../../../components/GenericNoResults';
 import { useResizeInlineBreakpoint } from '../../../../hooks/useResizeInlineBreakpoint';
 import { miscQueryKeys } from '../../../../lib/queryKeys';
 
-const AccountTokensTable = (): ReactElement => {
+const AccountTokensTable = () => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -37,7 +36,7 @@ const AccountTokensTable = (): ReactElement => {
 
 	const queryClient = useQueryClient();
 
-	const [ref, isMedium] = useResizeInlineBreakpoint([600], 200) as [RefObject<HTMLElement>, boolean];
+	const [ref, isMedium] = useResizeInlineBreakpoint<HTMLElement>([600], 200);
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 

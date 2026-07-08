@@ -1,11 +1,11 @@
 import { Box, Icon, Tag } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import type { ReactElement } from 'react';
+import type { ReactNode } from 'react';
 import { memo } from 'react';
 
 import SidebarGenericItem from './SidebarGenericItem';
 
-type SidebarNavigationItemProps = {
+export type SidebarNavigationItemProps = {
 	permissionGranted?: (() => boolean) | boolean;
 	pathSection: string;
 	icon?: IconName;
@@ -13,7 +13,7 @@ type SidebarNavigationItemProps = {
 	tag?: string;
 	currentPath?: string;
 	externalUrl?: boolean;
-	badge?: () => ReactElement;
+	badge?: () => ReactNode;
 };
 
 const SidebarNavigationItem = ({

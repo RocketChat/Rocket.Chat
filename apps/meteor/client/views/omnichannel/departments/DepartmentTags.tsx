@@ -1,5 +1,5 @@
 import { Button, Chip, FieldRow, TextInput } from '@rocket.chat/fuselage';
-import type { ComponentProps, FormEvent } from 'react';
+import type { ComponentProps, ChangeEvent } from 'react';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -33,7 +33,7 @@ const DepartmentTags = ({ error, value: tags, onChange, ...props }: DepartmentTa
 					error={error}
 					placeholder={t('Enter_a_tag')}
 					value={tagText}
-					onChange={(e: FormEvent<HTMLInputElement>) => setTagText(e.currentTarget.value)}
+					onChange={(e: ChangeEvent<HTMLInputElement>) => setTagText(e.currentTarget.value)}
 					{...props}
 				/>
 				<Button disabled={Boolean(!tagText.trim()) || tags.includes(tagText)} mis={8} title={t('Add')} onClick={handleAddTag}>

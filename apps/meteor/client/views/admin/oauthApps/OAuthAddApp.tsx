@@ -13,7 +13,6 @@ import {
 } from '@rocket.chat/fuselage';
 import { ContextualbarScrollableContent } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useCallback, useId } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm, Controller } from 'react-hook-form';
@@ -25,7 +24,7 @@ type OAuthAddAppPayload = {
 	redirectUri: string;
 };
 
-const OAuthAddApp = (): ReactElement => {
+const OAuthAddApp = () => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -65,7 +64,7 @@ const OAuthAddApp = (): ReactElement => {
 							name='active'
 							control={control}
 							defaultValue={false}
-							render={({ field }): ReactElement => <ToggleSwitch onChange={field.onChange} checked={field.value} />}
+							render={({ field }) => <ToggleSwitch onChange={field.onChange} checked={field.value} />}
 						/>
 					</FieldRow>
 				</Field>

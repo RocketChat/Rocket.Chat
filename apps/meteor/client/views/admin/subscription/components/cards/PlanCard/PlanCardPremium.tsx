@@ -1,10 +1,10 @@
 import type { ILicenseV3 } from '@rocket.chat/core-typings';
 import { Box, Card, CardBody, Icon, Skeleton } from '@rocket.chat/fuselage';
 import { ExternalLink, useLicenseName } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import PlanCardHeader from './PlanCardHeader';
+import PlanCardLicenseDetails from './PlanCardLicenseDetails';
 import { useFormatDate } from '../../../../../../hooks/useFormatDate';
 import { useIsSelfHosted } from '../../../../../../hooks/useIsSelfHosted';
 import { CONTACT_SALES_LINK } from '../../../utils/links';
@@ -18,7 +18,7 @@ type PlanCardProps = {
 	licenseLimits: LicenseLimits;
 };
 
-const PlanCardPremium = ({ licenseInformation, licenseLimits }: PlanCardProps): ReactElement => {
+const PlanCardPremium = ({ licenseInformation, licenseLimits }: PlanCardProps) => {
 	const { t } = useTranslation();
 	const { isSelfHosted, isLoading } = useIsSelfHosted();
 	const formatDate = useFormatDate();
@@ -59,6 +59,7 @@ const PlanCardPremium = ({ licenseInformation, licenseLimits }: PlanCardProps): 
 				) : (
 					<Skeleton />
 				)}
+				<PlanCardLicenseDetails />
 			</CardBody>
 		</Card>
 	);

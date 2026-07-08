@@ -40,7 +40,7 @@ type CreateTeamModalInputs = {
 	members?: string[];
 };
 
-type CreateTeamModalProps = { onClose: () => void };
+export type CreateTeamModalProps = { onClose: () => void };
 
 const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 	const t = useTranslation();
@@ -179,7 +179,7 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 								render={({ field }) => (
 									<TextInput
 										{...field}
-										addon={<Icon size='x20' name={isPrivate ? 'team-lock' : 'team'} />}
+										endAddon={<Icon size='x20' name={isPrivate ? 'team-lock' : 'team'} />}
 										error={errors.name?.message}
 										aria-required='true'
 									/>

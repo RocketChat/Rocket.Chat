@@ -13,9 +13,13 @@ on:
 env:
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
 
+permissions: {}
+
 jobs:
   code-check:
     runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
 
     name: ${{ matrix.check == 'ts' && 'TypeScript' || 'Code Lint' }}
 
@@ -41,14 +45,14 @@ jobs:
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - uses: rharkor/caching-for-turbo@5d14fba18e450c09393333cfd4242e8b3cb455a6 # v2.4.2
+      - uses: rharkor/caching-for-turbo@75f8ebf4a43d2c60b23bc2a27082cfea94ffdad9 # v2.5.0
 
       - uses: ./.github/actions/restore-packages
 
       - name: Restore TypeScript incremental cache
         id: restore-typecheck
         if: matrix.check == 'ts'
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
         with:
           path: ./apps/meteor/tsconfig.typecheck.tsbuildinfo
           key: typecheck-cache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
@@ -89,7 +93,7 @@ jobs:
 
       - name: Save TypeScript incremental cache
         if: matrix.check == 'ts' && github.ref == 'refs/heads/develop' && github.event_name == 'push'
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ./apps/meteor/tsconfig.typecheck.tsbuildinfo
           key: typecheck-cache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
@@ -97,7 +101,7 @@ jobs:
       - name: Restore ESLint cache
         id: restore-eslint
         if: matrix.check == 'lint'
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
         with:
           path: ./apps/meteor/.eslintcache
           key: eslintcache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
@@ -118,7 +122,7 @@ jobs:
 
       - name: Save ESLint cache
         if: matrix.check == 'lint' && github.ref == 'refs/heads/develop' && github.event_name == 'push'
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ./apps/meteor/.eslintcache
           key: eslintcache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}

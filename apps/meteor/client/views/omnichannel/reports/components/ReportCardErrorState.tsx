@@ -1,12 +1,11 @@
 import { States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type ReportCardErrorStateProps = {
 	onRetry?: () => void;
 };
 
-export const ReportCardErrorState = ({ onRetry }: ReportCardErrorStateProps): ReactElement => {
+export const ReportCardErrorState = ({ onRetry }: ReportCardErrorStateProps) => {
 	const { t } = useTranslation();
 
 	return (

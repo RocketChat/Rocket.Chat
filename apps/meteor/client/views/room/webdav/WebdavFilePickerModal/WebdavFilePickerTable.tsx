@@ -9,7 +9,6 @@ import {
 	GenericTableLoadingRow,
 	GenericTableRow,
 } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { WebdavSortOptions } from './WebdavFilePickerModal';
@@ -27,14 +26,7 @@ type WebdavFilePickerTableProps = {
 	isLoading: boolean;
 };
 
-const WebdavFilePickerTable = ({
-	webdavNodes,
-	sortBy,
-	sortDirection,
-	onSort,
-	onNodeClick,
-	isLoading,
-}: WebdavFilePickerTableProps): ReactElement => {
+const WebdavFilePickerTable = ({ webdavNodes, sortBy, sortDirection, onSort, onNodeClick, isLoading }: WebdavFilePickerTableProps) => {
 	const { t } = useTranslation();
 
 	return (

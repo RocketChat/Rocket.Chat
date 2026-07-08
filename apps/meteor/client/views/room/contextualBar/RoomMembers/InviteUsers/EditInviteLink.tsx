@@ -1,6 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Field, FieldLabel, FieldRow, Select, Button } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useId, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +9,7 @@ type EditInviteLinkProps = {
 	onClickNewLink: (daysAndMaxUses: { days: string; maxUses: string }) => void;
 };
 
-const EditInviteLink = ({ daysAndMaxUses, onClickNewLink }: EditInviteLinkProps): ReactElement => {
+const EditInviteLink = ({ daysAndMaxUses, onClickNewLink }: EditInviteLinkProps) => {
 	const { t } = useTranslation();
 	const {
 		handleSubmit,
@@ -53,7 +52,7 @@ const EditInviteLink = ({ daysAndMaxUses, onClickNewLink }: EditInviteLinkProps)
 					<Controller
 						name='days'
 						control={control}
-						render={({ field: { onChange, value, name } }): ReactElement => (
+						render={({ field: { onChange, value, name } }) => (
 							<Select id={expirationId} name={name} value={value} onChange={onChange} options={daysOptions} />
 						)}
 					/>
@@ -67,7 +66,7 @@ const EditInviteLink = ({ daysAndMaxUses, onClickNewLink }: EditInviteLinkProps)
 					<Controller
 						name='maxUses'
 						control={control}
-						render={({ field: { onChange, value, name } }): ReactElement => (
+						render={({ field: { onChange, value, name } }) => (
 							<Select id={maxUsesId} name={name} value={value} onChange={onChange} options={maxUsesOptions} />
 						)}
 					/>

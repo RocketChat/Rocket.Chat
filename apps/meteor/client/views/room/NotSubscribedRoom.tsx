@@ -1,6 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import RoomLayout from './layout/RoomLayout';
@@ -12,7 +11,7 @@ type NotSubscribedRoomProps = {
 	type: IRoom['t'];
 };
 
-const NotSubscribedRoom = ({ rid, reference, type }: NotSubscribedRoomProps): ReactElement => {
+const NotSubscribedRoom = ({ rid, reference, type }: NotSubscribedRoomProps) => {
 	const { t } = useTranslation();
 	const handleJoinClick = useJoinRoom();
 

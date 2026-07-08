@@ -1,4 +1,14 @@
-import type { IRoom, RoomType, IUser, IMessage, ValueOf, AtLeast, ISubscription, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type {
+	IRoom,
+	RoomType,
+	IUser,
+	IMessage,
+	ValueOf,
+	AtLeast,
+	ISubscription,
+	IOmnichannelRoom,
+	IUpload,
+} from '@rocket.chat/core-typings';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { IRouterPaths, RouteName } from '@rocket.chat/ui-contexts';
 
@@ -88,7 +98,7 @@ export interface IRoomTypeServerDirectives {
 	canBeDeleted: (hasPermission: (permissionId: string, rid?: string) => Promise<boolean> | boolean, room: IRoom) => Promise<boolean>;
 	preventRenaming: () => boolean;
 	getDiscussionType: (room?: AtLeast<IRoom, 'teamId'>) => Promise<RoomType>;
-	canAccessUploadedFile: (params: { rc_uid: string; rc_rid: string; rc_token: string }) => Promise<boolean>;
+	canAccessUploadedFile: (params: { rc_uid: string; rc_rid: string; rc_token: string }, file?: IUpload) => Promise<boolean>;
 	getNotificationDetails: (
 		room: IRoom,
 		sender: AtLeast<IUser, '_id' | 'name' | 'username'>,

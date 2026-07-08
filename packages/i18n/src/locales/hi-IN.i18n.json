@@ -2425,7 +2425,7 @@
   "LDAP_Sync_Now_Description": "यह अगले शेड्यूल किए गए सिंक की प्रतीक्षा किए बिना, अब **बैकग्राउंड सिंक** ऑपरेशन शुरू कर देगा।\nयह क्रिया अतुल्यकालिक है, कृपया अधिक जानकारी के लिए लॉग देखें।",
   "LDAP_Sync_User_Active_State": "उपयोगकर्ता सक्रिय स्थिति सिंक करें",
   "LDAP_Sync_User_Active_State_Both": "उपयोगकर्ताओं को सक्षम और अक्षम करें",
-  "LDAP_Sync_User_Active_State_Description": "एलडीएपी स्थिति के आधार पर निर्धारित करें कि उपयोगकर्ताओं को Rocket.Chat पर सक्षम या अक्षम किया जाना चाहिए या नहीं। 'pwdAccountLockedTime' विशेषता का उपयोग यह निर्धारित करने के लिए किया जाएगा कि उपयोगकर्ता अक्षम है या नहीं।",
+  "LDAP_Sync_User_Active_State_Description": "एलडीएपी स्थिति के आधार पर निर्धारित करें कि उपयोगकर्ताओं को Rocket.Chat पर सक्षम या अक्षम किया जाना चाहिए या नहीं।",
   "LDAP_Sync_User_Active_State_Disable": "उपयोगकर्ताओं को अक्षम करें",
   "LDAP_Sync_User_Active_State_Nothing": "कुछ भी नहीं है",
   "LDAP_Sync_User_Avatar": "उपयोगकर्ता अवतार सिंक करें",

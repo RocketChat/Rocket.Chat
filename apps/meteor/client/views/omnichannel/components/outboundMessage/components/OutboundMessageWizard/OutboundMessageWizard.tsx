@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import { Wizard, useWizard, WizardContent, WizardTabs } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
@@ -86,7 +86,7 @@ const OutboundMessageWizard = ({ defaultValues = {}, onSuccess, onError }: Outbo
 		}
 	}, [hasOmnichannelModule.data, hasOutboundModule.data, hasProviders, isLoadingModule, isLoadingProviders, upsellModal]);
 
-	const handleSubmit = useEffectEvent((values: SubmitPayload) => {
+	const handleSubmit = useStableCallback((values: SubmitPayload) => {
 		if (!hasOutboundModule.data) {
 			upsellModal.open();
 			return;
@@ -95,7 +95,7 @@ const OutboundMessageWizard = ({ defaultValues = {}, onSuccess, onError }: Outbo
 		setState((state) => ({ ...state, ...values }));
 	});
 
-	const handleSend = useEffectEvent(async () => {
+	const handleSend = useStableCallback(async () => {
 		try {
 			if (!isRecipientStepValid(state)) {
 				throw new Error('error-invalid-recipient-step');
@@ -144,7 +144,7 @@ const OutboundMessageWizard = ({ defaultValues = {}, onSuccess, onError }: Outbo
 		}
 	});
 
-	const handleDirtyStep = useEffectEvent(() => {
+	const handleDirtyStep = useStableCallback(() => {
 		wizardApi.resetNextSteps();
 	});
 

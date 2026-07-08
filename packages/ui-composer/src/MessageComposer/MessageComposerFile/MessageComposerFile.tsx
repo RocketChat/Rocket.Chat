@@ -2,7 +2,8 @@ import { css } from '@rocket.chat/css-in-js';
 import { Avatar, Box, Palette, Skeleton } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { FilePreviewIcon } from '@rocket.chat/ui-client';
-import { useMemo, type KeyboardEvent, type MouseEvent, type AllHTMLAttributes, type ReactElement } from 'react';
+import type { ReactNode, KeyboardEvent, MouseEvent, AllHTMLAttributes } from 'react';
+import { useMemo } from 'react';
 
 type MessageComposerFileProps = {
 	fileTitle: string;
@@ -11,7 +12,7 @@ type MessageComposerFileProps = {
 	showPreview?: boolean;
 	previewUrl?: string;
 	alt?: string;
-	actionIcon: ReactElement;
+	actionIcon: ReactNode;
 	error?: boolean;
 	disabled?: boolean;
 	onClick: () => void;

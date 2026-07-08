@@ -1,4 +1,4 @@
-import { useEffectEvent, useStableArray } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback, useStableArray } from '@rocket.chat/fuselage-hooks';
 import {
 	useUserId,
 	useSetting,
@@ -24,7 +24,7 @@ const RoomToolboxProvider = ({ children }: RoomToolboxProviderProps) => {
 
 	const router = useRouter();
 
-	const openTab = useEffectEvent((actionId: string, context?: string) => {
+	const openTab = useStableCallback((actionId: string, context?: string) => {
 		if (actionId === tab?.id && context === undefined) {
 			return closeTab();
 		}
@@ -48,7 +48,7 @@ const RoomToolboxProvider = ({ children }: RoomToolboxProviderProps) => {
 		});
 	});
 
-	const closeTab = useEffectEvent(() => {
+	const closeTab = useStableCallback(() => {
 		const routeName = router.getRouteName();
 
 		if (!routeName) {

@@ -12,7 +12,6 @@ import {
 } from '@rocket.chat/fuselage';
 import { ContextualbarScrollableContent } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useId } from 'react';
 import { useController, useForm } from 'react-hook-form';
 
@@ -31,7 +30,7 @@ type SlaEditFormData = {
 	dueTimeInMinutes: number;
 };
 
-function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactElement {
+function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps) {
 	const slasRoute = useRoute('omnichannel-sla-policies');
 	const saveSLA = useEndpoint('POST', '/v1/livechat/sla');
 	const updateSLA = useEndpoint('PUT', `/v1/livechat/sla/:slaId`, { slaId: slaId || '' });
