@@ -6,7 +6,7 @@ import { withTranslation } from 'react-i18next';
 import ChatFinished from './component';
 import { StoreContext } from '../../store';
 
-type ChatFinishedContainerProps = {
+export type ChatFinishedContainerProps = {
 	ref?: any;
 	t: TFunction;
 	path: string;
