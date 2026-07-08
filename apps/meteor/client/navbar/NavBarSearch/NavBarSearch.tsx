@@ -180,13 +180,10 @@ const NavBarSearch = () => {
 											alignItems='center'
 											maxWidth='x120'
 											fontScale='p2'
-											mbs={4}
-											mbe={4}
 										>
 											<Box is='span' withTruncatedText>
 												{filter.label}
 											</Box>
-											<Icon name='cross' size='x12' mis={4} flexShrink={0} />
 										</Tag>
 									))}
 								</Box>
