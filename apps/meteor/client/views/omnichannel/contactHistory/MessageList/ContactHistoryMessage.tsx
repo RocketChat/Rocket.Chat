@@ -31,7 +31,7 @@ import UiKitMessageBlock from '../../../../components/message/uikit/UiKitMessage
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useFormatTime } from '../../../../hooks/useFormatTime';
 
-type ContactHistoryMessageProps = {
+export type ContactHistoryMessageProps = {
 	message: IMessage;
 	sequential: boolean;
 	isNewDay: boolean;
