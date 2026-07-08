@@ -24,9 +24,10 @@ Node/Yarn versions are pinned in `package.json` (`engines` + `volta`) and in
 `.node-version`. **Use exactly these versions** — mismatches cause obscure build
 errors.
 
-MongoDB is **not required** for the first run: Meteor starts a bundled Mongo.
-For full real-time features you will want an external Mongo with a replica set —
-see section 5.
+MongoDB is **not required** for the first run: Meteor starts a bundled Mongo,
+which already runs as a single-node replica set — enough for the transactions
+and change streams the app relies on. You only need an external Mongo to mirror
+production or to inspect data with an external client (see section 5).
 
 ---
 
@@ -127,7 +128,7 @@ All vars are **optional** for the first run. The most used ones:
 |-----|----------|
 | `PORT` | HTTP port (default `3000`) |
 | `ROOT_URL` | public URL; must match how you open it in the browser |
-| `MONGO_URL` / `MONGO_OPLOG_URL` | external Mongo (replica set) instead of the bundled one |
+| `MONGO_URL` | point at an external Mongo instead of the bundled one (see section 5) |
 | `MAIL_URL` | SMTP; without it, emails go to the console |
 | `ROCKETCHAT_LICENSE` | enables Enterprise (EE) features |
 
@@ -135,10 +136,14 @@ Full commented list: [`apps/meteor/.env.example`](../apps/meteor/.env.example).
 
 ---
 
-## 5. (Optional) External MongoDB with a replica set
+## 5. (Optional) External MongoDB
 
-Some real-time features depend on the **oplog**, which requires a replica set.
-The quickest way to get such a Mongo is via Docker:
+The bundled Mongo already covers local dev. Set up an external one only to
+mirror production or to point external tooling at the data.
+
+Rocket.Chat needs a replica set — not for the oplog (Meteor oplog tailing is
+disabled; real-time is handled by the streamer), but because transactions and
+change streams require it. A single-node replica set is enough:
 
 ```bash
 docker run -d --name rc-mongo -p 27017:27017 \
@@ -151,7 +156,6 @@ Then point the app at it in `apps/meteor/.env`:
 
 ```bash
 MONGO_URL=mongodb://localhost:27017/rocketchat?replicaSet=rs0
-MONGO_OPLOG_URL=mongodb://localhost:27017/local?replicaSet=rs0
 ```
 
 ---
