@@ -1,9 +1,6 @@
-import { Queue } from './messenger';
-
 export function collectMetrics() {
 	return {
 		pid: process.pid,
-		queueSize: Queue.getCurrentSize(),
 	};
 }
 
