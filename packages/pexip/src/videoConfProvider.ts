@@ -150,6 +150,7 @@ export class PexipVideoConfProvider {
 	}
 
 	private async autoEscalateCallBasedOnConferenceJoin(mediaCallIds: string[], uid: string): Promise<void> {
+		logger.debug({ msg: 'Pexip.autoEscalateCallBasedOnConferenceJoin', mediaCallIds, uid });
 		const [mediaCall] = await MediaCalls.findAllPendingEscalationByUidAndCallIds(uid, mediaCallIds, { limit: 1 }).toArray();
 		if (!mediaCall) {
 			return;
@@ -159,6 +160,8 @@ export class PexipVideoConfProvider {
 	}
 
 	private async getPinForUser(call: VideoConference, user: IVideoConferenceUser | undefined): Promise<string> {
+		logger.debug({ msg: 'Pexip.getPinForUser', callId: call._id, uid: user?._id });
+
 		const [hostPin, guestPin] = await this.pexip.createPinsForCall(call);
 
 		if (await this.pexip.isUserCallHost(call, user)) {

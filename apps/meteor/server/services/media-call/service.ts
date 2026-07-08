@@ -514,6 +514,8 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 				});
 			}
 
+			logger.debug({ msg: 'Voice Call escalated', uid, callId, url });
+
 			return url;
 		} catch (err) {
 			logger.debug({ msg: 'Unexpected error during escalation', err, uid, callId, call });
@@ -540,11 +542,24 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 	private async getOrCreateConferenceForEscalatingCall(call: IMediaCall, user: IUser): Promise<VideoConference | null> {
 		const existingConference = await VideoConferenceModel.findOneByMediaCallId(call._id);
 		if (existingConference) {
+			logger.debug({
+				msg: 'Voice Call already linked to a conference',
+				method: 'MediaCallService.getOrCreateConferenceForEscalatingCall',
+				uid: user._id,
+				callId: call._id,
+				conferenceId: existingConference._id,
+			});
 			return existingConference;
 		}
 
 		// If the call is already flagged as escalated but no conference for it exists, don't create a new conference - some other process might still be running
 		if (call.escalatedAt) {
+			logger.warn({
+				msg: 'Voice Call already flagged as escalated, but no conference found',
+				method: 'MediaCallService.getOrCreateConferenceForEscalatingCall',
+				uid: user._id,
+				callId: call._id,
+			});
 			throw new Error('pre-escalated-conference-not-found');
 		}
 
@@ -552,9 +567,20 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 	}
 
 	private async createConferenceForEscalatingCall(user: IUser, call: IMediaCall): Promise<IGroupVideoConference | null> {
+		logger.debug({
+			msg: 'MediaCallService.createConferenceForEscalatingCall',
+			uid: user._id,
+			callId: call._id,
+		});
+
 		// TODO: ensure there are two legs with the same uid pair
 		const rid = await this.getRoomIdForExternalCall(call);
 		if (!rid) {
+			logger.warn({
+				msg: 'No parent room available for the conference',
+				method: 'MediaCallService.createConferenceForEscalatingCall',
+				callId: call._id,
+			});
 			throw new Error('Could not find parent room to create the conference on');
 		}
 
@@ -571,6 +597,13 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		const callerUid = call.caller.uid;
 		const calleeUid = call.callee.uid;
 
+		logger.debug({
+			msg: 'MediaCallService.getRoomIdForExternalCall',
+			callId: call._id,
+			callerUid,
+			calleeUid,
+		});
+
 		if (!callerUid || !calleeUid) {
 			return VideoConf.getRidForExternalConference();
 		}
@@ -581,6 +614,13 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 
 			const room = await Rooms.findOneDirectRoomContainingAllUserIDs(uniqueUids, { projection: { _id: 1 } });
 			if (room) {
+				logger.debug({
+					msg: 'A DM between the users already exists',
+					method: 'MediaCallService.getRoomIdForExternalCall',
+					callId: call._id,
+					callerUid,
+					calleeUid,
+				});
 				return room._id;
 			}
 
@@ -596,6 +636,14 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 				throw new Error('Invalid usernames for DM.');
 			}
 
+			logger.debug({
+				msg: 'Creating new DM for the users',
+				method: 'MediaCallService.getRoomIdForExternalCall',
+				callId: call._id,
+				callerUid,
+				calleeUid,
+			});
+
 			const newRoom = await createDirectMessage(usernames, dmCreatorId, false);
 			return newRoom.rid;
 		} catch (err) {
@@ -605,12 +653,22 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 	}
 
 	private async flagAsEscalated(call: IMediaCall): Promise<void> {
+		logger.debug({
+			msg: 'MediaCallService.flagAsEscalated',
+			callId: call._id,
+		});
+
 		if (call.escalatedAt) {
 			return;
 		}
 
 		const updateResult = await MediaCalls.flagAsEscalatedByCallId(call._id);
 		if (!updateResult.modifiedCount) {
+			logger.debug({
+				msg: 'No calls were modified',
+				method: 'MediaCallService.flagAsEscalated',
+				callId: call._id,
+			});
 			return;
 		}
 
