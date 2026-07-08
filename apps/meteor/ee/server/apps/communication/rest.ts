@@ -542,7 +542,7 @@ export class AppsRestApi {
 
 		this.api.addRoute(
 			'bundles/:id/apps',
-			{ authRequired: true, permissionsRequired: ['manage-apps'] },
+			{ authRequired: true, permissionsRequired: ['manage-apps'], rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 } },
 			{
 				async get() {
 					const headers: Record<string, any> = {};
@@ -580,7 +580,7 @@ export class AppsRestApi {
 
 		this.api.addRoute(
 			'featured-apps',
-			{ authRequired: true },
+			{ authRequired: true, rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 } },
 			{
 				async get() {
 					const headers = getDefaultHeaders();
@@ -614,7 +614,7 @@ export class AppsRestApi {
 
 		this.api.addRoute(
 			'app-request',
-			{ authRequired: true },
+			{ authRequired: true, rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 } },
 			{
 				async get() {
 					const { appId, q = '', sort = '', limit = 25, offset = 0 } = this.queryParams;
@@ -650,7 +650,7 @@ export class AppsRestApi {
 
 		this.api.addRoute(
 			'app-request/stats',
-			{ authRequired: true },
+			{ authRequired: true, rateLimiterOptions: { numRequestsAllowed: 10, intervalTimeInMS: 60000 } },
 			{
 				async get() {
 					const headers = getDefaultHeaders();
