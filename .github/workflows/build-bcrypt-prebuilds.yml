@@ -38,7 +38,7 @@ jobs:
     steps:
       - name: Install build deps (alpine/musl)
         if: matrix.container != ''
-        run: apk add --no-cache python3 make g++ libc6-compat tar
+        run: apk add --no-cache bash python3 make g++ libc6-compat tar
 
       - name: Setup Node (glibc)
         if: matrix.container == ''
