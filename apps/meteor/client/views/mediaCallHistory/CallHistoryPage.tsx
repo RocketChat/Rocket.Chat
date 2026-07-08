@@ -46,7 +46,7 @@ const getStateFilter = <T extends string[]>(states: T): T | [...T, 'error'] | un
 };
 
 const getContact = (item: Serialized<CallHistoryItem>): CallHistoryContact => {
-	if (item.external) {
+	if (item.type !== 'media-call' || item.external) {
 		return getExternalContact(item);
 	}
 
