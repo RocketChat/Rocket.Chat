@@ -117,11 +117,14 @@ const ContactHistoryMessage = ({ message, sequential, isNewDay, showUserAvatar }
 						</MessageHeaderTemplate>
 					)}
 					{!!quotes?.length && <Attachments attachments={quotes} />}
-					{!message.blocks && message.md && (
-						<MessageBody data-qa-type='message-body' dir='auto'>
-							<MessageContentBody md={message.md} mentions={message.mentions} channels={message.channels} />
-						</MessageBody>
-					)}
+					{!message.blocks &&
+						(message.md ? (
+							<MessageContentBody data-qa-type='message-body' md={message.md} mentions={message.mentions} channels={message.channels} />
+						) : (
+							<MessageBody data-qa-type='message-body' dir='auto'>
+								{message.msg}
+							</MessageBody>
+						))}
 					{message.blocks && <UiKitMessageBlock rid={message.rid} mid={message._id} blocks={message.blocks} />}
 					{!!attachments && <Attachments attachments={attachments} />}
 				</MessageContainer>
