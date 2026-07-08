@@ -7,7 +7,7 @@ import { TIMEUNIT, timeUnitToMs, msToTimeUnit } from '../../../../../lib/convert
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type TimespanSettingInputProps = SettingInputProps<string, string | number> & {
+export type TimespanSettingInputProps = SettingInputProps<string, string | number> & {
 	value: string;
 };
 

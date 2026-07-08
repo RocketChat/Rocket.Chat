@@ -8,7 +8,7 @@ import EmojiElement from './EmojiElement';
 import { isRowDivider, isLoadMore } from '../../../../app/emoji/client';
 import type { EmojiPickerItem } from '../../../../app/emoji/client';
 
-type EmojiCategoryRowProps = {
+export type EmojiCategoryRowProps = {
 	customItemsLimit: number;
 	handleLoadMore: () => void;
 	handleSelectEmoji: (e: MouseEvent<HTMLElement>) => void;

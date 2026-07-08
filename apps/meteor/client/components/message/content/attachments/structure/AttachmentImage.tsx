@@ -6,7 +6,7 @@ import ImageBox from './image/ImageBox';
 import Load from './image/Load';
 import Retry from './image/Retry';
 
-type AttachmentImageProps = {
+export type AttachmentImageProps = {
 	previewUrl?: string;
 	dataSrc?: string;
 	src: string;

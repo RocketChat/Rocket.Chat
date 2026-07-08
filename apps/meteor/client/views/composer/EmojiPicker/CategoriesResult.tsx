@@ -9,7 +9,7 @@ import { Virtuoso } from 'react-virtuoso';
 import EmojiCategoryRow from './EmojiCategoryRow';
 import type { EmojiPickerItem } from '../../../../app/emoji/client';
 
-type CategoriesResultProps = {
+export type CategoriesResultProps = {
 	items: EmojiPickerItem[];
 	customItemsLimit: number;
 	handleLoadMore: () => void;

@@ -221,7 +221,7 @@ const NavBarSearch = () => {
 					aria-keyshortcuts='Control+K Meta+K Control+P Meta+P'
 					small
 					style={chipContainerWidth > 0 ? { paddingInlineStart: chipContainerWidth + 16 } : undefined}
-					addon={
+					endAddon={
 						<Box display='flex' alignItems='center' style={{ gap: 6 }}>
 							{isDirty ? (
 								<IconButton mini icon='cross' aria-label={t('Clear')} onClick={handleClearText} />

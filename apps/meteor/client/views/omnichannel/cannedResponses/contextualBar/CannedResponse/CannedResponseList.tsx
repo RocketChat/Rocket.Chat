@@ -20,7 +20,7 @@ import Item from './Item';
 import WrapCannedResponse from './WrapCannedResponse';
 import { useCanCreateCannedResponse } from '../../hooks/useCanCreateCannedResponse';
 
-type CannedResponseListProps = {
+export type CannedResponseListProps = {
 	loadMoreItems: () => void;
 	cannedItems: (IOmnichannelCannedResponse & { departmentName?: ILivechatDepartment['name'] })[];
 	itemCount: number;
@@ -92,7 +92,7 @@ const CannedResponseList = ({
 								placeholder={t('Search')}
 								value={text}
 								onChange={setText}
-								addon={<Icon name='magnifier' size='x20' />}
+								endAddon={<Icon name='magnifier' size='x20' />}
 								ref={inputRef}
 							/>
 							<Box w='x144'>

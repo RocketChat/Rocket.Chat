@@ -4,7 +4,7 @@ import i18next from 'i18next';
 import type { ContextType, ReactNode } from 'react';
 import { useContext, useMemo } from 'react';
 
-type TranslationContextMockProps = {
+export type TranslationContextMockProps = {
 	children: ReactNode;
 };
 

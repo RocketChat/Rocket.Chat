@@ -2,7 +2,7 @@ import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Box, Margins, Tag } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-type RoomTagsProps = {
+export type RoomTagsProps = {
 	room: Serialized<IRoom>;
 };
 

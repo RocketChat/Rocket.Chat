@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { parseUriList } from './parseUriList';
 import type { OauthAppsAddParams } from '../../../../../server/api/v1/oauthapps';
-import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../../../../server/lib/authorization/hasPermission';
 
 export async function addOAuthApp(applicationParams: OauthAppsAddParams, uid: IUser['_id'] | undefined): Promise<IOAuthApps> {
 	if (!uid) {

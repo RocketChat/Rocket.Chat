@@ -5,7 +5,7 @@ import { action } from 'storybook/actions';
 
 const logAction = action('RouterContext');
 
-type RouterContextMockProps = {
+export type RouterContextMockProps = {
 	children: ReactNode;
 };
 

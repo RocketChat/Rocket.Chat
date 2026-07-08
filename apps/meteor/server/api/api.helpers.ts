@@ -1,9 +1,9 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
 import type { ActionThis } from './definition';
-import { hasAllPermissionAsync, hasAtLeastOnePermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import type { DeprecationLoggerNextPlannedVersion } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { apiDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
+import { hasAllPermissionAsync, hasAtLeastOnePermissionAsync } from '../lib/authorization/hasPermission';
 
 type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | '*';
 export type PermissionsPayload = {

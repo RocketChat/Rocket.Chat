@@ -35,6 +35,7 @@
 		"testunit": "turbo run testunit"
 	},
 	"resolutions": {
+		"file-type@npm:^16.5.4": "patch:file-type@npm%3A16.5.4#~/.yarn/patches/file-type-npm-16.5.4-d653e66a40.patch",
 		"external-editor/tmp": "0.2.7",
 		"@sematext/gc-stats@npm:^1.5.9": "patch:@sematext/gc-stats@npm%3A1.5.9#~/.yarn/patches/@sematext-gc-stats-npm-1.5.9-01e77be4d0.patch",
 		"adm-zip": "0.5.9",

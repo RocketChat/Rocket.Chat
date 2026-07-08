@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { FormSkeleton } from '../directory/components/FormSkeleton';
 
-type CustomFieldProps = {
+export type CustomFieldProps = {
 	id: string;
 	value: string;
 };

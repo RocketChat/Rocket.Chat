@@ -12,7 +12,7 @@ import { useEditableSettingsGroupSections } from '../../../EditableSettingsConte
 import SettingsGroupPage from '../../SettingsGroupPage';
 import SettingsSection from '../../SettingsSection';
 
-type OAuthGroupPageProps = ISetting & {
+export type OAuthGroupPageProps = ISetting & {
 	onClickBack?: () => void;
 };
 

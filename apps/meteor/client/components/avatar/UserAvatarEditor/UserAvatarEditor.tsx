@@ -14,7 +14,7 @@ import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 import { isSafeAvatarUrl } from '../../../lib/utils/isSafeAvatarUrl';
 import { isValidImageFormat } from '../../../lib/utils/isValidImageFormat';
 
-type UserAvatarEditorProps = {
+export type UserAvatarEditorProps = {
 	currentUsername: IUser['username'];
 	username: IUser['username'];
 	setAvatarObj: (obj: AvatarObject) => void;
@@ -126,7 +126,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 						<FieldRow>
 							<TextInput
 								placeholder={t('Use_url_for_avatar')}
-								addon={
+								endAddon={
 									<IconButton
 										icon='permalink'
 										secondary

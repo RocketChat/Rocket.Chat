@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import GenericGroupPage from './GenericGroupPage';
 import { useEditableSettingsGroupSections } from '../../EditableSettingsContext';
 
-type TabbedGroupPageProps = {
+export type TabbedGroupPageProps = {
 	headerButtons?: ReactNode;
 	_id: string;
 	i18nLabel: string;
