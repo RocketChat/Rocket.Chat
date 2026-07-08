@@ -31,7 +31,7 @@ import { pipe } from '../../../lib/cachedStores/pipe';
 
 export type CannedResponse = { _id: string; shortcut: string; text: string };
 
-type ComposerPopupProviderProps = {
+export type ComposerPopupProviderProps = {
 	children: ReactNode;
 	room: IRoom;
 };

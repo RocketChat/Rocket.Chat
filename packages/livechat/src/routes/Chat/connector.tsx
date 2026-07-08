@@ -9,7 +9,7 @@ import { canRenderMessage } from '../../helpers/canRenderMessage';
 import { formatAgent } from '../../helpers/formatAgent';
 import { StoreContext } from '../../store';
 
-type ChatConnectorProps = {
+export type ChatConnectorProps = {
 	path: string;
 	default: boolean;
 	t: TFunction;

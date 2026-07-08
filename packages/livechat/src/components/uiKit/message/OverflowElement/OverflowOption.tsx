@@ -5,7 +5,7 @@ import { useCallback } from 'preact/compat';
 
 import { MenuItem } from '../../../Menu';
 
-type OverflowOptionProps = uikit.Option & {
+export type OverflowOptionProps = uikit.Option & {
 	confirm: boolean;
 	parser: uikit.SurfaceRenderer<ComponentChild>;
 	onClick: (value: string) => void;

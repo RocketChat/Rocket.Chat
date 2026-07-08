@@ -19,7 +19,7 @@ import ContactInfoChannels from '../tabs/ContactInfoChannels';
 import ContactInfoDetails from '../tabs/ContactInfoDetails';
 import ContactInfoHistory from '../tabs/ContactInfoHistory';
 
-type ContactInfoProps = {
+export type ContactInfoProps = {
 	contact: Serialized<ILivechatContact>;
 	onClose: () => void;
 };

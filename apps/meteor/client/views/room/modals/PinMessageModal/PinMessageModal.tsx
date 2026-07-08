@@ -7,7 +7,7 @@ import type { ComponentProps } from 'react';
 import { QuoteAttachment } from '../../../../components/message/content/attachments/QuoteAttachment';
 import AttachmentProvider from '../../../../providers/AttachmentProvider';
 
-type PinMessageModalProps = { message: IMessage } & ComponentProps<typeof GenericModal>;
+export type PinMessageModalProps = { message: IMessage } & ComponentProps<typeof GenericModal>;
 
 const PinMessageModal = ({ message, ...props }: PinMessageModalProps) => {
 	const t = useTranslation();

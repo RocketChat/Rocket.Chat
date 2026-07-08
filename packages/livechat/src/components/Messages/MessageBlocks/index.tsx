@@ -6,7 +6,7 @@ import { triggerAction, UIKitIncomingInteractionType, UIKitIncomingInteractionCo
 import { renderMessageBlocks } from '../../uiKit';
 import Surface from '../../uiKit/message/Surface';
 
-type MessageBlocksProps = {
+export type MessageBlocksProps = {
 	blocks?: unknown[];
 	mid?: string;
 	rid?: string;

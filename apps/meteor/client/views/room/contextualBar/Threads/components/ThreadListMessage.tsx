@@ -20,7 +20,7 @@ import ThreadMetricsFollow from '../../../../../components/message/content/Threa
 import ThreadMetricsUnreadBadge from '../../../../../components/message/content/ThreadMetricsUnreadBadge';
 import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
 
-type ThreadListMessageProps = {
+export type ThreadListMessageProps = {
 	_id: IMessage['_id'];
 	msg: ReactNode;
 	following: boolean;

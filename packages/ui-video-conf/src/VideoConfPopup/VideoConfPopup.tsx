@@ -16,7 +16,7 @@ export const VideoConfPopupContainer = styled('div', ({ position: _position, ...
 	border-radius: 0.25rem;
 `;
 
-type VideoConfPopupProps = {
+export type VideoConfPopupProps = {
 	children: ReactNode;
 	position?: number;
 } & HTMLAttributes<HTMLElement>;

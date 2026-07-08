@@ -23,7 +23,7 @@ type RoomEditFormData = {
 	priorityId: string;
 };
 
-type RoomEditProps = {
+export type RoomEditProps = {
 	room: Serialized<IOmnichannelRoom>;
 	visitor: Serialized<ILivechatVisitor>;
 	reload?: () => void;

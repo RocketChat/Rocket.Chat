@@ -9,7 +9,7 @@ import MediaCallPopoutView from './MediaCallPopoutView';
 import type { PopoutContainer } from './usePopoutWindow';
 import MediaCallViewProvider from '../providers/MediaCallViewProvider';
 
-type MediaCallPopoutWindowProps = {
+export type MediaCallPopoutWindowProps = {
 	container: PopoutContainer;
 	onClosePopout: () => void;
 };

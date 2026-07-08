@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import type { ElementType, HTMLAttributes, ReactNode } from 'react';
 import { forwardRef } from 'react';
 
-type MessageComposerProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
+export type MessageComposerProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
 	children: ReactNode;
 	is?: ElementType<any>;
 	variant?: 'default' | 'error' | 'editing';

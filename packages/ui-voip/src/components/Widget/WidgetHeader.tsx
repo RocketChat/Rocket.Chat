@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { VisuallyHidden } from 'react-aria';
 import { useTranslation } from 'react-i18next';
 
-type WidgetHeaderProps = {
+export type WidgetHeaderProps = {
 	title: ReactNode;
 	children: ReactNode;
 };

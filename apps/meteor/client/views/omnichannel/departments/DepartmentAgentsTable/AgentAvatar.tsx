@@ -3,7 +3,9 @@ import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { memo } from 'react';
 
-const AgentAvatar = ({ name, username, eTag }: { name: string; username: string; eTag?: string }) => {
+export type AgentAvatarProps = { name: string; username: string; eTag?: string };
+
+const AgentAvatar = ({ name, username, eTag }: AgentAvatarProps) => {
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
 	return (
