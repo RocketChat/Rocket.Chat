@@ -168,7 +168,7 @@ const NavBarSearch = () => {
 					aria-keyshortcuts='Control+K Meta+K Control+P Meta+P'
 					small
 					endAddon={
-						<Box display='flex' alignItems='center' gap={4}>
+						<Box display='flex' alignItems='center' gap={8}>
 							{appliedFilterChips.length > 0 && (
 								<Box display='flex' alignItems='center' gap={4} maxWidth='x320' overflow='hidden'>
 									{appliedFilterChips.map((filter) => (
@@ -180,11 +180,13 @@ const NavBarSearch = () => {
 											alignItems='center'
 											maxWidth='x120'
 											fontScale='p2'
+											mbs={4}
+											mbe={4}
 										>
 											<Box is='span' withTruncatedText>
 												{filter.label}
 											</Box>
-											<Icon name='cross' size='x16' mis={4} flexShrink={0} />
+											<Icon name='cross' size='x12' mis={4} flexShrink={0} />
 										</Tag>
 									))}
 								</Box>
