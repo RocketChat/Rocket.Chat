@@ -7,7 +7,7 @@ import EmbeddedPreload from './EmbeddedPreload';
 import Preload from './Preload';
 import { useCustomScript } from './useCustomScript';
 
-type MainLayoutProps = {
+export type MainLayoutProps = {
 	children?: ReactNode;
 };
 

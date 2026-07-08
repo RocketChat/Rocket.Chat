@@ -22,7 +22,7 @@ import { Virtuoso } from 'react-virtuoso';
 import TeamsChannelItem from './TeamsChannelItem';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 
-type TeamsChannelsProps = {
+export type TeamsChannelsProps = {
 	loading: boolean;
 	channels: IRoom[];
 	mainRoom: IRoom;

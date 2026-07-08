@@ -25,7 +25,7 @@ import { useTranslation } from 'react-i18next';
 
 type AddWebdavAccountModalPayload = IWebdavAccountPayload;
 
-type AddWebdavAccountModalProps = {
+export type AddWebdavAccountModalProps = {
 	onClose: () => void;
 	onConfirm: () => void;
 };
