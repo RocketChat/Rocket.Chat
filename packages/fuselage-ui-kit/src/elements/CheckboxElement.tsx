@@ -4,7 +4,7 @@ import * as UiKit from '@rocket.chat/ui-kit';
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
 
-type CheckboxElementProps = BlockProps<UiKit.CheckboxElement>;
+export type CheckboxElementProps = BlockProps<UiKit.CheckboxElement>;
 
 const CheckboxElement = ({ block, context, surfaceRenderer }: CheckboxElementProps) => {
 	const [{ loading, value }, action] = useUiKitState(block, context);

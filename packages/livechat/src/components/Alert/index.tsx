@@ -7,7 +7,7 @@ import styles from './styles.scss';
 import { createClassName } from '../../helpers/createClassName';
 import CloseIcon from '../../icons/close.svg';
 
-type AlertProps = {
+export type AlertProps = {
 	id?: string;
 	onDismiss?: (id?: string) => void;
 	success?: boolean;

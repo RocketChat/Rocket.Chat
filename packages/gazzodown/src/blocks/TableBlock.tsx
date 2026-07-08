@@ -3,7 +3,7 @@ import type * as MessageParser from '@rocket.chat/message-parser';
 
 import InlineElements from '../elements/InlineElements';
 
-type TableBlockProps = {
+export type TableBlockProps = {
 	header: MessageParser.TableCell[];
 	rows: MessageParser.TableRow[];
 };
