@@ -3,8 +3,8 @@ import type { IRoom, IRoomAbacRedaction } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Users } from '@rocket.chat/models';
 
-import { scopeAdminRoomsForAbac } from '../../../../app/api/server/lib/scopeAdminRoomsForAbac';
 import { isABACManagedRoom } from '../../../../app/authorization/server/lib/isABACManagedRoom';
+import { scopeAdminRoomsForAbac } from '../../../../server/api/lib/scopeAdminRoomsForAbac';
 
 const redact = <T extends Pick<IRoom, 't' | 'abacAttributes'>>(rooms: T[]): Array<T & IRoomAbacRedaction> =>
 	rooms.map((room) => (isABACManagedRoom(room) ? { ...room, abacAttributes: [], abacAttributesRedacted: true } : room));

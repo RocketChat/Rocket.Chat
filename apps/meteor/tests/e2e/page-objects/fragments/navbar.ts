@@ -62,6 +62,10 @@ export class Navbar {
 		return this.pagesGroup.getByRole('button', { name: 'Directory' });
 	}
 
+	get btnMarketplace(): Locator {
+		return this.pagesGroup.getByRole('button', { name: 'Marketplace' });
+	}
+
 	get btnMenuPages(): Locator {
 		return this.pagesGroup.getByRole('button', { name: 'Pages' });
 	}
@@ -72,6 +76,30 @@ export class Navbar {
 
 	get menuDisplay(): Locator {
 		return this.root.getByRole('menu', { name: 'Display' });
+	}
+
+	get groupDisplay(): Locator {
+		return this.menuDisplay.getByRole('group', { name: 'Display' });
+	}
+
+	getDisplayMenuItem(mode: 'Extended' | 'Medium' | 'Condensed' | 'Avatars'): Locator {
+		return this.groupDisplay.getByRole('menuitemcheckbox', { name: mode });
+	}
+
+	get groupSortBy(): Locator {
+		return this.menuDisplay.getByRole('group', { name: 'Sort by' });
+	}
+
+	getSortMenuItem(mode: 'Activity' | 'Name'): Locator {
+		return this.groupSortBy.getByRole('menuitemcheckbox', { name: mode });
+	}
+
+	get groupGroupBy(): Locator {
+		return this.menuDisplay.getByRole('group', { name: 'Group by' });
+	}
+
+	getGroupByMenuItem(mode: 'Unread' | 'Favorites' | 'Types'): Locator {
+		return this.groupGroupBy.getByRole('menuitemcheckbox', { name: mode });
 	}
 
 	get btnCreateNew(): Locator {
@@ -117,6 +145,10 @@ export class Navbar {
 
 	get btnLogout(): Locator {
 		return this.userMenu.getByRole('menuitemcheckbox', { name: 'Logout' });
+	}
+
+	get btnCustomStatus(): Locator {
+		return this.userMenu.getByRole('menuitemcheckbox', { name: 'Custom...' });
 	}
 
 	getUserProfileMenuOption(name: string): Locator {
@@ -239,9 +271,28 @@ export class Navbar {
 	}
 
 	async changeUserCustomStatus(text?: string): Promise<void> {
-		await this.btnUserMenu.click();
-		await this.getUserProfileMenuOption('Custom Status').click();
+		await this.openEditStatusModal();
 		await this.modals.editStatus.changeStatusMessage(text);
+	}
+
+	get editStatusModal(): EditStatusModal {
+		return this.modals.editStatus;
+	}
+
+	async openEditStatusModal(): Promise<void> {
+		await this.btnUserMenu.click();
+		await this.btnCustomStatus.click();
+	}
+
+	async changeUserCustomStatusWithExpiration(options: {
+		message?: string;
+		statusType?: string;
+		duration: string;
+		customDate?: string;
+		customTime?: string;
+	}): Promise<void> {
+		await this.openEditStatusModal();
+		await this.modals.editStatus.setStatusWithExpiration(options);
 	}
 
 	async switchOmnichannelStatus(status: 'offline' | 'online') {

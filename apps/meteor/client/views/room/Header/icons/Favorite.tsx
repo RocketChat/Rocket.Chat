@@ -7,7 +7,9 @@ import { memo } from 'react';
 import { useUserIsSubscribed } from '../../contexts/RoomContext';
 import { useToggleFavoriteMutation } from '../../hooks/useToggleFavoriteMutation';
 
-const Favorite = ({ room: { _id, f: favorite = false, t: type, name } }: { room: IRoom & { f?: ISubscription['f'] } }) => {
+export type FavoriteProps = { room: IRoom & { f?: ISubscription['f'] } };
+
+const Favorite = ({ room: { _id, f: favorite = false, t: type, name } }: FavoriteProps) => {
 	const t = useTranslation();
 	const subscribed = useUserIsSubscribed();
 

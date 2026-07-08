@@ -2,9 +2,9 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Permissions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 import { notifyOnPermissionChangedById } from '../../../lib/server/lib/notifyListener';
 import { CONSTANTS } from '../../lib';
-import { hasPermissionAsync } from '../functions/hasPermission';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

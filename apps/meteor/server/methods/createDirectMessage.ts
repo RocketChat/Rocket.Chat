@@ -5,11 +5,11 @@ import { Rooms, Users } from '@rocket.chat/models';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { createRoom } from '../../app/lib/server/functions/createRoom';
 import { RateLimiterClass as RateLimiter } from '../../app/lib/server/lib/RateLimiter';
 import { settings } from '../../app/settings/server';
+import { hasPermissionAsync } from '../lib/authorization/hasPermission';
 import { callbacks } from '../lib/callbacks';
+import { createRoom } from '../lib/rooms/createRoom';
 
 export async function createDirectMessage(
 	usernames: IUser['username'][],

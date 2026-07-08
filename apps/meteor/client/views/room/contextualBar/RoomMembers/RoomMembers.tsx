@@ -153,7 +153,7 @@ const RoomMembers = ({
 					value={text}
 					ref={inputRef}
 					onChange={setText}
-					addon={<Icon name='magnifier' size='x20' />}
+					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
 				<Box w='x144' mis={8}>
 					<Select

@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import CustomUserStatusForm from './CustomUserStatusForm';
 import { FormSkeleton } from '../../../components/Skeleton';
 
-type CustomUserStatusFormWithDataProps = {
+export type CustomUserStatusFormWithDataProps = {
 	_id?: IUserStatus['_id'];
 	onClose: () => void;
 	onReload: () => void;

@@ -42,7 +42,7 @@ const useDropdownPosition = (reference: RefObject<HTMLElement | null>, target: R
 	}, [style]);
 };
 
-type EmojiPickerDesktopDropdownProps = {
+export type EmojiPickerDesktopDropdownProps = {
 	children: ReactNode;
 	reference: RefObject<HTMLElement | null>;
 };

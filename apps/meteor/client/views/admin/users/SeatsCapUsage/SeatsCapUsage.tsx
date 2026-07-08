@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 
 import { GenericResourceUsage } from '../../../../components/GenericResourceUsage';
 
-type SeatsCapUsageProps = {
+export type SeatsCapUsageProps = {
 	limit: number;
 	members: number;
 };

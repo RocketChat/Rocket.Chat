@@ -33,6 +33,21 @@ const manifest = fs
 
 console.log(`Processing ${manifest.length} entries from ${manifestPath}\n`);
 
+// License-boundary guard: validate every row up front so a community manifest
+// can never carry an `ee/` source and an EE manifest can never point outside
+// `ee/`. This mirrors the hard check in move-module.mjs (see MIGRATION_PLAN.md).
+const hasEESegment = (p) => p.split('/').includes('ee');
+const boundaryViolations = manifest
+	.map((line) => line.split('\t').map((s) => s.trim()))
+	.filter(([fromDir, toDir]) => fromDir && toDir && hasEESegment(fromDir) !== hasEESegment(toDir));
+if (boundaryViolations.length > 0) {
+	console.error('License-boundary violation in manifest — every `ee/` source must map to an `ee/` destination (and vice versa):');
+	for (const [fromDir, toDir] of boundaryViolations) {
+		console.error(`  ${fromDir} → ${toDir}`);
+	}
+	process.exit(1);
+}
+
 let failed = 0;
 
 for (const line of manifest) {

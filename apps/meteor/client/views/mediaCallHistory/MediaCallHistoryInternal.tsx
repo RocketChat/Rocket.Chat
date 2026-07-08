@@ -9,7 +9,7 @@ type InternalCallEndpointData = Serialized<{
 	call: IMediaCall;
 }>;
 
-type MediaCallHistoryInternalProps = {
+export type MediaCallHistoryInternalProps = {
 	data: InternalCallEndpointData;
 	onClose: () => void;
 	openUserInfo?: (userId: string, rid: string) => void;

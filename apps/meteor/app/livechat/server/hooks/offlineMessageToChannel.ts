@@ -4,7 +4,7 @@ import { LivechatDepartment, Users, Rooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../server/lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
-import { sendMessage } from '../../../lib/server/functions/sendMessage';
+import { sendMessage } from '../../../../server/lib/messages/sendMessage';
 import { settings } from '../../../settings/server';
 
 callbacks.add(

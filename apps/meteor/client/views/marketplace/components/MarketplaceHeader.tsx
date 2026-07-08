@@ -12,7 +12,9 @@ import { usePrivateAppsEnabled } from '../hooks/usePrivateAppsEnabled';
 import PrivateAppInstallModal from './PrivateAppInstallModal/PrivateAppInstallModal';
 import UpdateRocketChatButton from './UpdateRocketChatButton';
 
-const MarketplaceHeader = ({ title, unsupportedVersion }: { title: string; unsupportedVersion: boolean }) => {
+export type MarketplaceHeaderProps = { title: string; unsupportedVersion: boolean };
+
+const MarketplaceHeader = ({ title, unsupportedVersion }: MarketplaceHeaderProps) => {
 	const { t } = useTranslation();
 	const isAdmin = usePermission('manage-apps');
 	const context = (useRouteParameter('context') || 'explore') as 'private' | 'explore' | 'installed' | 'premium' | 'requested';

@@ -2,9 +2,9 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Settings } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermissionAsync } from '../../../../app/authorization/server/functions/hasPermission';
 import { notifyOnSettingChangedById } from '../../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../../app/settings/server';
+import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
 import { updateAuditedByUser } from '../../../settings/lib/auditedSettingUpdates';
 import Bridge from '../irc-bridge';
 

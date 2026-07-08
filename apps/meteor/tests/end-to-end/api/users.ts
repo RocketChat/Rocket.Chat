@@ -1848,6 +1848,34 @@ describe('[Users]', () => {
 					})
 					.end(done);
 			});
+
+			it('should return an offline user that still carries a custom status (vacation text/expiration survives offline)', async () => {
+				const vacationUser = await createUser();
+				const vacationCredentials = await login(vacationUser.username, password);
+				const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+
+				await request
+					.post(api('users.setStatus'))
+					.set(vacationCredentials)
+					.send({ status: 'offline', message: 'On vacation', expiresAt })
+					.expect(200);
+
+				const res = await request
+					.get(api('users.presence'))
+					.query({ ids: vacationUser._id })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				const returned = (res.body.users as IUser[]).find((u) => u._id === vacationUser._id);
+				expect(returned, 'offline user with a custom status must be returned by users.presence').to.not.be.undefined;
+				expect(returned).to.have.property('status', 'offline');
+				expect(returned).to.have.property('statusText', 'On vacation');
+				expect(returned).to.have.property('statusExpiresAt');
+
+				await deleteUser(vacationUser);
+			});
 		});
 	});
 
@@ -5658,7 +5686,7 @@ describe('[Users]', () => {
 					.set(credentials)
 					.send({
 						status: 'busy',
-						message: '',
+						message: 'test',
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)

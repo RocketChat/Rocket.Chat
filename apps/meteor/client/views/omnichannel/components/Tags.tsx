@@ -9,7 +9,7 @@ import { CurrentChatTags } from '../additionalForms';
 import { FormSkeleton } from './FormSkeleton';
 import { useLivechatTags } from '../hooks/useLivechatTags';
 
-type TagsProps = {
+export type TagsProps = {
 	tags?: string[];
 	handler: (value: string[]) => void;
 	error?: string;

@@ -8,7 +8,9 @@ import { useTranslation } from 'react-i18next';
 import EditIncomingWebhook from './incoming/EditIncomingWebhook';
 import EditOutgoingWebhook from './outgoing/EditOutgoingWebhook';
 
-const EditIntegrationsPageWithData = ({ integrationId }: { integrationId: IIncomingIntegration['_id'] }) => {
+export type EditIntegrationsPageWithDataProps = { integrationId: IIncomingIntegration['_id'] };
+
+const EditIntegrationsPageWithData = ({ integrationId }: EditIntegrationsPageWithDataProps) => {
 	const { t } = useTranslation();
 
 	const params = useMemo(() => ({ integrationId }), [integrationId]);

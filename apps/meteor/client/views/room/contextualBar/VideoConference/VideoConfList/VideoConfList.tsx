@@ -16,7 +16,7 @@ import VideoConfListItem from './VideoConfListItem';
 import { PaginatedVirtualList } from '../../../../../components/PaginatedVirtualList';
 import { getErrorMessage } from '../../../../../lib/errorHandling';
 
-type VideoConfListProps = {
+export type VideoConfListProps = {
 	onClose: () => void;
 	total: number;
 	videoConfs: VideoConference[];

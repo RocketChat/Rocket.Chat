@@ -9,8 +9,8 @@ import rateLimit from 'express-rate-limit';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
-import { authenticationMiddleware } from '../../../../app/api/server/middlewares/authentication';
 import { settings } from '../../../../app/settings/server';
+import { authenticationMiddleware } from '../../../../server/api/v1/middlewares/authentication';
 import { Apps } from '../orchestrator';
 
 const apiServer = express();

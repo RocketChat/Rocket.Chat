@@ -3,7 +3,7 @@ import type { ComponentProps, HTMLAttributes, ReactNode } from 'react';
 
 import UserAvatar from './UserAvatar';
 
-type MessageAvatarProps = {
+export type MessageAvatarProps = {
 	emoji?: ReactNode;
 	avatarUrl?: string;
 	username: string;

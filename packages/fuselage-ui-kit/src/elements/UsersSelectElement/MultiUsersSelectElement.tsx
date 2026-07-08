@@ -8,7 +8,7 @@ import { useUsersData } from './hooks/useUsersData';
 import { useUiKitState } from '../../hooks/useUiKitState';
 import type { BlockProps } from '../../utils/BlockProps';
 
-type MultiUsersSelectElementProps = BlockProps<UiKit.MultiUsersSelectElement>;
+export type MultiUsersSelectElementProps = BlockProps<UiKit.MultiUsersSelectElement>;
 
 const MultiUsersSelectElement = ({ block, context }: MultiUsersSelectElementProps) => {
 	const [{ loading, value }, action] = useUiKitState(block, context);

@@ -7,7 +7,7 @@ type Slot = {
 	icon?: IconNames;
 };
 
-type WidgetInfoProps = {
+export type WidgetInfoProps = {
 	slots?: Slot[];
 	variant?: 'default' | 'card-content';
 };

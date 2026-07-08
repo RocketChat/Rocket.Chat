@@ -13,7 +13,7 @@ import ScreenshotCarouselAnchor from '../../../components/ScreenshotCarouselAnch
 import type { AppInfo } from '../../../definitions/AppInfo';
 import { purifyOptions } from '../../../lib/purifyOptions';
 
-type AppDetailsProps = {
+export type AppDetailsProps = {
 	app: AppInfo;
 };
 

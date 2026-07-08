@@ -6,7 +6,9 @@ import { useQuery } from '@tanstack/react-query';
 import EmailInboxForm from './EmailInboxForm';
 import { FormSkeleton } from '../../../components/Skeleton';
 
-const EmailInboxFormWithData = ({ id }: { id: IEmailInbox['_id'] }) => {
+export type EmailInboxFormWithDataProps = { id: IEmailInbox['_id'] };
+
+const EmailInboxFormWithData = ({ id }: EmailInboxFormWithDataProps) => {
 	const t = useTranslation();
 	const getEmailInboxById = useEndpoint('GET', '/v1/email-inbox/:_id', { _id: id });
 	const { data, isPending, error } = useQuery({

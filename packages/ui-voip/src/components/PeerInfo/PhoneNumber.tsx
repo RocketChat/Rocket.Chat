@@ -1,6 +1,6 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
 
-type PhoneNumberProps = {
+export type PhoneNumberProps = {
 	number: string;
 };
 

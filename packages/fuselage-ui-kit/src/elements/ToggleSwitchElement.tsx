@@ -4,7 +4,7 @@ import * as UiKit from '@rocket.chat/ui-kit';
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
 
-type ToggleSwitchElementProps = BlockProps<UiKit.ToggleSwitchElement>;
+export type ToggleSwitchElementProps = BlockProps<UiKit.ToggleSwitchElement>;
 
 const ToggleSwitchElement = ({ block, context, surfaceRenderer }: ToggleSwitchElementProps) => {
 	const [{ value, loading }, action] = useUiKitState(block, context);

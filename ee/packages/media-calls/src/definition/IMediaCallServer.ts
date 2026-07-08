@@ -9,6 +9,8 @@ export type VoipPushNotificationEventType = 'new' | 'answer' | 'end';
 
 export type MediaCallServerEvents = {
 	callUpdated: { callId: string; dtmf?: ClientMediaSignalBody<'dtmf'> };
+	callActivated: { callId: string; uids: IUser['_id'][] };
+	callEnded: { callId: string; uids: IUser['_id'][] };
 	signalRequest: { toUid: IUser['_id']; signal: ServerMediaSignal };
 	historyUpdate: { callId: string };
 	pushNotificationRequest: { callId: string; event: VoipPushNotificationEventType };
