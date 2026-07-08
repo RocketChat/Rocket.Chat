@@ -86,7 +86,8 @@ export const createEmojiList = (
 
 			const emojiToRender = `:${current}${tone}:`;
 
-			if (!emoji.list[emojiToRender]) {
+			const actualEmoji = emoji.list[emojiToRender];
+			if (!actualEmoji) {
 				removeFromRecent(emojiToRender, recentEmojis, setRecentEmojis);
 				return;
 			}
@@ -96,7 +97,8 @@ export const createEmojiList = (
 				continue;
 			}
 
-			const image = emojiPackage.renderPicker(emojiToRender);
+			const actualPackage = actualEmoji.emojiPackage;
+			const image = emoji.packages[actualPackage].renderPicker(emojiToRender);
 			if (!image) {
 				continue;
 			}
@@ -195,12 +197,15 @@ export const getEmojisBySearchTerm = (
 			if (emojiFound) {
 				const emojiToRender = `:${current}${tone}:`;
 
-				if (!emoji.list[emojiToRender]) {
+				const actualEmoji = emoji.list[emojiToRender];
+				if (!actualEmoji) {
 					removeFromRecent(emojiToRender, recentEmojis, setRecentEmojis);
 					break;
 				}
 
-				emojis.push({ emoji: current, image: emoji.packages[emojiPackage].renderPicker(emojiToRender) });
+				const actualPackage = actualEmoji.emojiPackage;
+
+				emojis.push({ emoji: current, image: emoji.packages[actualPackage].renderPicker(emojiToRender) });
 			}
 		}
 	}

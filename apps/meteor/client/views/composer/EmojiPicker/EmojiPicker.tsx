@@ -112,10 +112,15 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 
 		let tone = '';
 
-		for (const emojiPackage in emoji.packages) {
-			if (emoji.packages.hasOwnProperty(emojiPackage)) {
-				if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(_emoji)) {
-					tone = `_tone${actualTone}`;
+		// Custom emoji should overwrite native emoji with the same name
+		// Custom emoji with name `:point_right:` should overwrite every tone
+		// Custom emoji with name `:point_right_tone1:` should overwrite only tone1, and not the original or other tones
+		if (emoji.list[`:${_emoji}:`].emojiPackage !== 'emojiCustom') {
+			for (const emojiPackage in emoji.packages) {
+				if (emoji.packages.hasOwnProperty(emojiPackage)) {
+					if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(_emoji)) {
+						tone = `_tone${actualTone}`;
+					}
 				}
 			}
 		}
