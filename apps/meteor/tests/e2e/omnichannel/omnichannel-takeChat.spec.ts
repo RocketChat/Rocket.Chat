@@ -5,7 +5,7 @@ import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
 import { OmnichannelLiveChat } from '../page-objects/omnichannel';
-import { expectUserStatus } from '../utils/expectUserStatus';
+import { expectPollUserStatus } from '../utils/expectPollUserStatus';
 import { test, expect } from '../utils/test';
 
 test.describe('omnichannel-takeChat', () => {
@@ -46,7 +46,7 @@ test.describe('omnichannel-takeChat', () => {
 
 	test.beforeEach('start a new livechat chat', async ({ page, api }) => {
 		await agent.poHomeChannel.navbar.changeUserStatus('online');
-		await expectUserStatus(api, 'user1', 'online');
+		await expectPollUserStatus(api, 'user1', 'online');
 
 		newVisitor = createFakeVisitor();
 
@@ -71,7 +71,7 @@ test.describe('omnichannel-takeChat', () => {
 
 	test('When agent is offline should not take the chat', async ({ api }) => {
 		await agent.poHomeChannel.navbar.changeUserStatus('offline');
-		await expectUserStatus(api, 'user1', 'offline');
+		await expectPollUserStatus(api, 'user1', 'offline');
 
 		await sendLivechatMessage();
 
