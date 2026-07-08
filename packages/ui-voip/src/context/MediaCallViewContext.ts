@@ -10,7 +10,7 @@ export type MediaCallStreams = {
 	localScreen?: IMediaStreamWrapper;
 };
 
-type MediaCallViewContextValue = {
+export type MediaCallViewContextValue = {
 	sessionState: SessionState;
 	onClickDirectMessage?: () => void;
 	onMute: () => void;
