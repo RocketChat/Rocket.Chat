@@ -81,14 +81,15 @@ export const SourceResult = ({ item }: { item: IntelligentResult }): ReactElemen
 			border='var(--rcx-border-width-default) solid var(--rcx-color-stroke-extra-light)'
 			borderRadius={4}
 			bg='surface-light'
-			style={{ gap: 10, textDecoration: 'none' }}
+			gap={10}
+			textDecoration='none'
 		>
 			<Box flexShrink={0} mbs={2}>
 				<MessageAvatar username={username} size='x28' />
 			</Box>
-			<Box display='flex' flexDirection='column' flexGrow={1} style={{ minWidth: 0, gap: 4 }}>
-				<Box display='flex' alignItems='center' style={{ gap: 8, minWidth: 0 }}>
-					<Box display='flex' alignItems='baseline' flexWrap='wrap' flexGrow={1} style={{ gap: 6, minWidth: 0 }}>
+			<Box display='flex' flexDirection='column' flexGrow={1} minWidth={0} gap={4}>
+				<Box display='flex' alignItems='center' gap={8} minWidth={0}>
+					<Box display='flex' alignItems='baseline' flexWrap='wrap' flexGrow={1} gap={6} minWidth={0}>
 						<Box is='span' fontScale='p2b' withTruncatedText>
 							{displayName}
 						</Box>
@@ -99,7 +100,7 @@ export const SourceResult = ({ item }: { item: IntelligentResult }): ReactElemen
 						)}
 						{roomLabel && (
 							<Tag>
-								<Box display='flex' alignItems='center' style={{ gap: 4 }}>
+								<Box display='flex' alignItems='center' gap={4}>
 									<Icon name='hash' size='x12' />
 									{roomLabel}
 								</Box>
@@ -112,7 +113,7 @@ export const SourceResult = ({ item }: { item: IntelligentResult }): ReactElemen
 						)}
 					</Box>
 					{typeof relevanceScore === 'number' && (
-						<Tag title={`${relevanceScore}%`} style={{ flexShrink: 0 }}>
+						<Tag title={`${relevanceScore}%`} flexShrink={0}>
 							{relevanceScore}%
 						</Tag>
 					)}
@@ -122,7 +123,8 @@ export const SourceResult = ({ item }: { item: IntelligentResult }): ReactElemen
 					variant='inline'
 					parseEmoji
 					fontScale='p2'
-					style={{ lineHeight: 1.35, wordBreak: 'break-word' }}
+					lineHeight={1.35}
+					wordBreak='break-word'
 				/>
 			</Box>
 		</Box>
@@ -150,7 +152,7 @@ const AnswerPanel = ({
 	const answerContent = (): ReactElement => {
 		if (isLoading) {
 			return (
-				<Box display='flex' flexDirection='column' style={{ gap: 12 }} aria-busy='true' aria-label={t('Loading')}>
+				<Box display='flex' flexDirection='column' gap={12} aria-busy='true' aria-label={t('Loading')}>
 					<Skeleton width='60%' />
 					<Skeleton width='100%' />
 					<Skeleton width='95%' />
@@ -161,7 +163,7 @@ const AnswerPanel = ({
 		}
 
 		if (answer) {
-			return <MarkdownText content={answer} parseEmoji fontScale='p2' style={{ lineHeight: 1.55 }} />;
+			return <MarkdownText content={answer} parseEmoji fontScale='p2' lineHeight={1.55} />;
 		}
 
 		return (
@@ -187,7 +189,7 @@ const AnswerPanel = ({
 				p={16}
 				borderBlockEnd='var(--rcx-border-width-default) solid var(--rcx-color-stroke-extra-light)'
 			>
-				<Box display='flex' alignItems='center' fontScale='h4' style={{ gap: 8 }}>
+				<Box display='flex' alignItems='center' fontScale='h4' gap={8}>
 					<Icon name='stars' size='x18' />
 					{t('Search_AI_answer')}
 				</Box>
@@ -354,11 +356,11 @@ const SearchPage = (): ReactElement => {
 			<PageHeader title={t('Intelligent_Search')} />
 			<PageScrollableContentWithShadow p={24}>
 				<Box marginInline='auto' width='full' maxWidth='x800'>
-					<Box display='flex' flexDirection='column' mbe={16} style={{ gap: 8 }}>
+					<Box display='flex' flexDirection='column' mbe={16} gap={8}>
 						{debouncedQuery ? (
-							<Box display='flex' alignItems='center' fontScale='h4' style={{ gap: 8, minWidth: 0 }}>
+							<Box display='flex' alignItems='center' fontScale='h4' gap={8} minWidth={0}>
 								<Icon name='magnifier' size='x18' />
-								<Box display='flex' alignItems='baseline' style={{ gap: 8, minWidth: 0 }}>
+								<Box display='flex' alignItems='baseline' gap={8} minWidth={0}>
 									<Box flexShrink={0}>{t('Results')}</Box>
 									<Box color='hint' withTruncatedText>
 										{debouncedQuery}
@@ -370,7 +372,7 @@ const SearchPage = (): ReactElement => {
 								{t('Intelligent_Search_page_empty_state')}
 							</Box>
 						)}
-						<Box display='flex' alignItems='center' color='hint' fontScale='p2' style={{ gap: 8 }}>
+						<Box display='flex' alignItems='center' color='hint' fontScale='p2' gap={8}>
 							<Icon name='stars' size='x14' />
 							{t('Intelligent_Search_scope_all_rooms')}
 						</Box>

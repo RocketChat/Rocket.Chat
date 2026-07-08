@@ -22,7 +22,7 @@ type CapabilityCardProps = {
 };
 
 const CapabilityCard = ({ icon, title, description, status, actionLabel, disabled, onClick }: CapabilityCardProps): ReactElement => (
-	<Card role='region' style={{ height: '100%', minHeight: 220 }}>
+	<Card role='region' height='full' minHeight={220}>
 		<Box display='flex' flexDirection='column' p={16} height='full'>
 			<Box display='flex' alignItems='center' justifyContent='space-between' mbe={12}>
 				<Box bg='surface-selected' borderRadius={4} size='x40' display='flex' alignItems='center' justifyContent='center'>

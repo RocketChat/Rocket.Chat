@@ -6,7 +6,7 @@ import { SidebarV2Item, SidebarV2ItemAvatarWrapper, SidebarV2ItemTitle, Skeleton
 // it out of reach of focus and mouse clicks. Loading is conveyed via aria-busy.
 const NavBarSearchItemSkeleton = () => {
 	return (
-		<SidebarV2Item aria-hidden tabIndex={-1} style={{ pointerEvents: 'none' }}>
+		<SidebarV2Item aria-hidden tabIndex={-1} pointerEvents='none'>
 			<SidebarV2ItemAvatarWrapper>
 				<Skeleton variant='rect' width={20} height={20} />
 			</SidebarV2ItemAvatarWrapper>

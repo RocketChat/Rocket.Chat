@@ -13,12 +13,11 @@ import { Box, Chip, Icon, IconButton, TextInput } from '@rocket.chat/fuselage';
 import { useMergedRefs, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import tinykeys from 'tinykeys';
 
-import NavBarSearchAIButton from './NavBarSearchAIButton';
 import NavBarSearchListBox from './NavBarSearchListbox';
 import { getShortcutLabel } from './getShortcutLabel';
 import { useSearchClick } from './hooks/useSearchClick';
@@ -55,8 +54,6 @@ const NavBarSearch = () => {
 		() => (aiSearchActive ? buildAppliedFilterChips(appliedFilters) : []),
 		[aiSearchActive, appliedFilters],
 	);
-	const chipContainerRef = useRef<HTMLElement>(null);
-	const [chipContainerWidth, setChipContainerWidth] = useState(0);
 
 	const { ref: filterRef, ...rest } = register('filterText');
 
@@ -66,24 +63,6 @@ const NavBarSearch = () => {
 	const state = useOverlayTriggerState({});
 	const { triggerProps, overlayProps } = useOverlayTrigger({ type: 'listbox' }, state, triggerRef);
 	delete triggerProps.onPress;
-
-	// Observe the (always-rendered) chip container once so the input's leading padding tracks the
-	// real chip width whenever chips are added or removed — including when they appear by toggling
-	// AI mode on over already-typed filters, not just while typing with AI mode already on.
-	useLayoutEffect(() => {
-		const element = chipContainerRef.current;
-		if (!element) {
-			return undefined;
-		}
-
-		const updateWidth = (): void => setChipContainerWidth(Math.ceil(element.getBoundingClientRect().width));
-		updateWidth();
-
-		const resizeObserver = new ResizeObserver(updateWidth);
-		resizeObserver.observe(element);
-
-		return (): void => resizeObserver.disconnect();
-	}, []);
 
 	const handleKeyDown = useSearchInputNavigation(state);
 	const handleFocus = useSearchFocus(state);
@@ -175,38 +154,6 @@ const NavBarSearch = () => {
 	return (
 		<FormProvider {...methods}>
 			<Box width='100%' maxWidth='x622' role='search' aria-label={searchLabel} mi={8} position='relative'>
-				<Box
-					ref={chipContainerRef}
-					position='absolute'
-					display='flex'
-					alignItems='center'
-					zIndex={1}
-					insetBlockStart='50%'
-					insetInlineStart={8}
-					style={{
-						gap: 4,
-						transform: 'translateY(-50%)',
-						maxWidth: 'min(55%, 360px)',
-						height: 20,
-						overflow: 'hidden',
-						pointerEvents: appliedFilterChips.length > 0 ? 'auto' : 'none',
-					}}
-				>
-					{appliedFilterChips.map((filter) => (
-						<Chip
-							key={filter.key}
-							height='x20'
-							value={filter.label}
-							onClick={() => handleRemoveFilter(filter.key)}
-							title={filter.label}
-							style={{ minHeight: 20 }}
-						>
-							<Box is='span' style={{ maxWidth: 132, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-								{filter.label}
-							</Box>
-						</Chip>
-					))}
-				</Box>
 				<TextInput
 					{...rest}
 					{...triggerProps}
@@ -220,17 +167,35 @@ const NavBarSearch = () => {
 					aria-autocomplete='list'
 					aria-keyshortcuts='Control+K Meta+K Control+P Meta+P'
 					small
-					style={chipContainerWidth > 0 ? { paddingInlineStart: chipContainerWidth + 16 } : undefined}
 					endAddon={
-						<Box display='flex' alignItems='center' style={{ gap: 6 }}>
+						<Box display='flex' alignItems='center' gap={4}>
+							{appliedFilterChips.length > 0 && (
+								<Box display='flex' alignItems='center' gap={4} maxWidth='x320' overflow='hidden'>
+									{appliedFilterChips.map((filter) => (
+										<Chip
+											key={filter.key}
+											height='x20'
+											value={filter.label}
+											onClick={() => handleRemoveFilter(filter.key)}
+											title={filter.label}
+										>
+											<Box is='span' maxWidth='x132' withTruncatedText fontScale='p2'>
+												{filter.label}
+											</Box>
+										</Chip>
+									))}
+								</Box>
+							)}
 							{isDirty ? (
 								<IconButton mini icon='cross' aria-label={t('Clear')} onClick={handleClearText} />
 							) : (
 								<Icon name='magnifier' size='x20' aria-label={t('Search')} />
 							)}
 							{aiSearchFeatureEnabled && (
-								<NavBarSearchAIButton
-									active={aiSearchActive}
+								<IconButton
+									mini
+									icon='stars'
+									pressed={aiSearchActive}
 									aria-label={aiSearchButtonTooltip}
 									title={aiSearchButtonTooltip}
 									onClick={handleIntelligentSearchClick}
