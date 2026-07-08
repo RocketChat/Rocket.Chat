@@ -137,7 +137,6 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 	}
 
 	findCustomRoles(options?: FindOptions<IRole>): FindCursor<IRole> {
-		// `protected` may be absent on roles created before that field existed, so `false` alone would miss them
 		const query: Filter<IRole> = {
 			protected: { $ne: true },
 		};
@@ -146,7 +145,6 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 	}
 
 	countCustomRoles(options?: CountDocumentsOptions): Promise<number> {
-		// `protected` may be absent on roles created before that field existed, so `false` alone would miss them
 		const query: Filter<IRole> = {
 			protected: { $ne: true },
 		};
