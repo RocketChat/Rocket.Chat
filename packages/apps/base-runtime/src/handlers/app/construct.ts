@@ -55,18 +55,10 @@ function wrapAppCode(code: string): (require: SandboxRequire) => Promise<Record<
 		`
         const exports = {};
         const module = { exports };
-        const _error = console.error.bind(console);
-        const _console = {
-            log: _error,
-            error: _error,
-            debug: _error,
-            info: _error,
-            warn: _error,
-        };
 
-        const result = (async (exports,module,require,console,globalThis${extraParams}) => {
+        const result = (async (exports,module,require,globalThis${extraParams}) => {
             ${code};
-        })(exports,module,require,_console,undefined${extraArgs});
+        })(exports,module,require,undefined${extraArgs});
 
         return result.then(() => module.exports);`,
 	) as (require: SandboxRequire, globals: SandboxGlobals) => Promise<Record<string, unknown>>;
