@@ -123,12 +123,9 @@ export const createComposerAPI = (
 			input.value = textAreaTxt.substring(0, selection.start) + text + textAreaTxt.substring(selection.end);
 		}
 
-		input.selectionStart = selection.start + text.length;
-		input.selectionEnd = selection.start + text.length;
-
-		if (selectionStart !== selectionEnd) {
-			input.selectionStart = selectionStart;
-		}
+		const cursorPosition = (selection.start ?? 0) + text.length;
+		input.selectionStart = cursorPosition;
+		input.selectionEnd = cursorPosition;
 
 		triggerEvent(input, 'input');
 		triggerEvent(input, 'change');

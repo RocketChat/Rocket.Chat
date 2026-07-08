@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { useState, forwardRef } from 'react';
-import type { FormEvent, ComponentProps } from 'react';
+import type { ComponentProps, InputEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RichTextComposerInput from './RichTextComposerInput';
@@ -18,7 +18,7 @@ const RichTextComposerInputExpandable = forwardRef<HTMLDivElement, RichTextExpan
 		const { t } = useTranslation();
 		const [expanded, setExpanded] = useState(false);
 
-		const handleInput = (event: FormEvent<HTMLDivElement>) => {
+		const handleInput = (event: InputEvent<HTMLDivElement>) => {
 			if ((event.target as HTMLDivElement).innerText.trim().length === 0) {
 				setExpanded(false);
 			}
