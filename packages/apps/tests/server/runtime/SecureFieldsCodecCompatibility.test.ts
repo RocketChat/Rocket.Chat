@@ -15,14 +15,15 @@ import type { IAppStorageItem } from '../../../src/server/storage';
 import { TestInfastructureSetup } from '../../test-data/utilities';
 
 /**
- * These tests verify end-to-end codec compatibility between the controller and the app
+ * These tests verify end-to-end compatibility between the controller and the app
  * subprocess, specifically the '@@SecureFields' mechanism introduced to guard access to
  * sensitive room fields (e.g. abacAttributes) behind app permissions.
  *
  * The flow being tested:
- *  1. The controller encodes a room object that includes a '@@SecureFields' descriptor for
- *     abacAttributes using the SECURE_FIELDS_HANDLER_EXT msgpack extension type.
- *  2. The subprocess receives and decodes the message. Its codec calls applySecureFields(), which:
+ *  1. The controller sends a room object that includes a '@@SecureFields' descriptor for
+ *     abacAttributes over the IPC channel.
+ *  2. The subprocess walks the incoming message and calls applySecureFields() on the marked
+ *     room object, which:
  *       - Checks the running app's declared permissions.
  *       - If the app has 'abac.read', it merges abacAttributes into the plain room object.
  *       - Otherwise it strips the field entirely.

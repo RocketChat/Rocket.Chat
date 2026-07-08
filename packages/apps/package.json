@@ -26,7 +26,6 @@
 		"typecheck": "run-s typecheck:default typecheck:base-runtime typecheck:node-runtime"
 	},
 	"dependencies": {
-		"@msgpack/msgpack": "3.0.0-beta2",
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/model-typings": "workspace:^",
