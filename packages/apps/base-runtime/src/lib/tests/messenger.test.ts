@@ -12,18 +12,16 @@ describe('Messenger', () => {
 	beforeEach(() => {
 		AppObjectRegistry.clear();
 		AppObjectRegistry.set('id', 'test');
-		Messenger.setTransport(Messenger.noopTransport);
 
 		context = createMockRequest({ method: 'test', params: [] });
 	});
 
 	after(() => {
 		AppObjectRegistry.clear();
-		Messenger.setTransport(Messenger.noopTransport);
 	});
 
 	it('should add logs to success responses', async () => {
-		const theSpy = mock.method(Messenger.Queue, 'enqueue');
+		const theSpy = mock.method(Messenger.ipcChannel, 'send', () => Promise.resolve());
 		const { logger } = context.context;
 
 		logger.info('test');
@@ -50,7 +48,7 @@ describe('Messenger', () => {
 	});
 
 	it('should add logs to error responses', async () => {
-		const theSpy = mock.method(Messenger.Queue, 'enqueue');
+		const theSpy = mock.method(Messenger.ipcChannel, 'send', () => Promise.resolve());
 		const { logger } = context.context;
 
 		logger.info('test');
