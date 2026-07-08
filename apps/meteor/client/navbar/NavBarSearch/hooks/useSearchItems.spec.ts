@@ -26,16 +26,16 @@ describe('useSearchItems', () => {
 
 		const { result } = renderHook(() => useSearchItems(myUserName), { wrapper });
 
-		expect(result.current.items).toHaveLength(1);
-		expect(result.current.items[0]._id).toBe('local_room_123');
+		expect(result.current.data.rooms).toHaveLength(1);
+		expect(result.current.data.rooms[0]._id).toBe('local_room_123');
 
 		await waitFor(() => {
 			expect(result.current.isLoading).toBe(false);
 		});
 
-		expect(result.current.items).toHaveLength(1);
-		expect(result.current.items[0]._id).toBe('local_room_123');
-		expect(result.current.items[0].name).toBe(myUserName);
+		expect(result.current.data.rooms).toHaveLength(1);
+		expect(result.current.data.rooms[0]._id).toBe('local_room_123');
+		expect(result.current.data.rooms[0].name).toBe(myUserName);
 	});
 
 	it('should append users from the server if they are NOT duplicates', async () => {
@@ -51,7 +51,7 @@ describe('useSearchItems', () => {
 
 		await waitFor(() => {
 			expect(result.current.isLoading).toBe(false);
-			expect(result.current.items).toHaveLength(2);
+			expect(result.current.data.rooms).toHaveLength(2);
 		});
 	});
 });
