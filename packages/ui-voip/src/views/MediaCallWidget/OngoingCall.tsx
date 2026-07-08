@@ -19,6 +19,8 @@ import {
 } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import { isExternalPeer } from '../../utils/isExternalPeer';
+import AppActions from '../../experimental/AppActionButtons/components/AppActions';
+import { useVisibleAppActions } from '../../experimental/AppActionButtons/hooks/useVisibleAppActions';
 
 const OngoingCall = () => {
 	const { t } = useTranslation();
@@ -37,6 +39,8 @@ const OngoingCall = () => {
 
 	const transferDisabled = !supportedFeatures.includes('transfer');
 	const holdDisabled = !supportedFeatures.includes('hold');
+
+	const appActions = useVisibleAppActions();
 
 	// TODO: Figure out how to ensure this always exist before rendering the component
 	if (!peerInfo) {
@@ -73,6 +77,8 @@ const OngoingCall = () => {
 						<Divider w='100%' />
 					</Box>
 				) : null}
+				<AppActions actions={appActions} vertical />
+				{appActions.length > 0 && <Divider />}
 				<ButtonGroup large>
 					<ActionButton
 						disabled={connecting || reconnecting}

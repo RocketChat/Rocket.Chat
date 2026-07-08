@@ -9,6 +9,7 @@ export {
 } from './context';
 export type { PeekMediaSessionStateReturn } from './context';
 export type { PeerInfo } from './context';
+export { default as MediaCallViewContext } from './context/MediaCallViewContext';
 export { useMediaCallAction, useMediaCallOpenRoomTracker } from './hooks';
 
 export { CallHistoryContextualBar, MediaCallRoomActivity } from './views';
