@@ -9,7 +9,7 @@ import { normalizeUsername } from '../../../../../lib/utils/normalizeUsername';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import type { BannedUser } from '../../../hooks/useRoomBannedUsers';
 
-type BannedUsersItemProps = {
+export type BannedUsersItemProps = {
 	user: BannedUser;
 	useRealName: boolean;
 	onClickUnban: (username: string) => void;

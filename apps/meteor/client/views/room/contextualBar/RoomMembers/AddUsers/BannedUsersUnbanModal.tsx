@@ -16,7 +16,7 @@ import {
 import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type BannedUsersUnbanModalProps = {
+export type BannedUsersUnbanModalProps = {
 	onClose: () => void;
 	onConfirm: () => Promise<void>;
 };

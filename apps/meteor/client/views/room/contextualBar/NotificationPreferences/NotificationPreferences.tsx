@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 
 import NotificationPreferencesForm from './NotificationPreferencesForm';
 
-type NotificationPreferencesProps = {
+export type NotificationPreferencesProps = {
 	handleClose: () => void;
 	handleSave: () => void;
 	notificationOptions: {

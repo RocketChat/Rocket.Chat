@@ -19,7 +19,7 @@ const Room = lazy(() => import('./Room'));
 const RoomLayout = lazy(() => import('./layout/RoomLayout'));
 const NotAuthorizedPage = lazy(() => import('../notAuthorized/NotAuthorizedPage'));
 
-type RoomOpenerProps = {
+export type RoomOpenerProps = {
 	type: RoomType;
 	reference: string;
 };

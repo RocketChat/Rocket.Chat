@@ -5,7 +5,7 @@ import type { JSXInternal } from 'preact/src/jsx';
 import styles from './styles.scss';
 import { createClassName } from '../../../helpers/createClassName';
 
-type TextInputProps = {
+export type TextInputProps = {
 	name?: string;
 	value?: string;
 	placeholder?: string;

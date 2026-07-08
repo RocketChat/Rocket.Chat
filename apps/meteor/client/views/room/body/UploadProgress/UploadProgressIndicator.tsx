@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { Upload } from '../../../../lib/chats/Upload';
 
-type UploadProgressIndicatorProps = {
+export type UploadProgressIndicatorProps = {
 	uploads: readonly Upload[];
 };
 

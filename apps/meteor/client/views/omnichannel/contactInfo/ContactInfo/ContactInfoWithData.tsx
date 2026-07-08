@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import ContactInfoError from '../ContactInfoError';
 import ContactInfo from './ContactInfo';
 
-type ContactInfoWithDataProps = {
+export type ContactInfoWithDataProps = {
 	id: string;
 	onClose: () => void;
 };
