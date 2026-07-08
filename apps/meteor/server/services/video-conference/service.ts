@@ -101,12 +101,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 			const title = (data as Partial<IGroupVideoConference>).title || room.fname || room.name || '';
 			return this.startGroup(providerName, user, room._id, title, data, useAppUser);
-		}).catch((e) => {
+		}).catch((err) => {
 			logger.error({
 				name: 'Error on VideoConf.create',
-				error: e,
+				err,
 			});
-			throw e;
+			throw err;
 		});
 	}
 
@@ -132,12 +132,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			}
 
 			return this.create(data, false);
-		}).catch((e) => {
+		}).catch((err) => {
 			logger.error({
 				name: 'Error on VideoConf.start',
-				error: e,
+				err,
 			});
-			throw e;
+			throw err;
 		});
 	}
 
@@ -164,12 +164,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			}
 
 			return this.joinCall(call, user || undefined, options);
-		}).catch((e) => {
+		}).catch((err) => {
 			logger.error({
 				name: 'Error on VideoConf.join',
-				error: e,
+				err,
 			});
-			throw e;
+			throw err;
 		});
 	}
 
@@ -1237,11 +1237,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	private async addUserToDiscussion(rid: IRoom['_id'], uid: IUser['_id']): Promise<void> {
 		try {
 			await Room.addUserToRoom(rid, { _id: uid }, undefined, { skipSystemMessage: true, createAsHidden: true });
-		} catch (error) {
+		} catch (err) {
 			// Ignore any errors here so that the subscription doesn't block the user from participating in the conference.
 			logger.error({
 				name: 'Error trying to subscribe user to discussion',
-				error,
+				err,
 				rid,
 				uid,
 			});
