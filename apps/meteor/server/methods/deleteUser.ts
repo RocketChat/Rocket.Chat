@@ -4,9 +4,9 @@ import { Users } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { deleteUser } from '../../app/lib/server/functions/deleteUser';
 import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
+import { hasPermissionAsync } from '../lib/authorization/hasPermission';
+import { deleteUser } from '../lib/users/deleteUser';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

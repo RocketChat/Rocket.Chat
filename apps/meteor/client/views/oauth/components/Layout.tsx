@@ -3,7 +3,7 @@ import { VerticalWizardLayout } from '@rocket.chat/layout';
 import { useAssetWithDarkModePath, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 
-type LayoutProps = {
+export type LayoutProps = {
 	children?: ReactNode;
 };
 

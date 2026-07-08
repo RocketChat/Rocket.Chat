@@ -8,7 +8,7 @@ const OmnichannelRoomHeader = lazy(() => import('./Omnichannel/OmnichannelRoomHe
 const RoomHeaderE2EESetup = lazy(() => import('./RoomHeaderE2EESetup'));
 const RoomHeader = lazy(() => import('./RoomHeader'));
 
-type HeaderProps = {
+export type HeaderProps = {
 	room: IRoom;
 	subscription?: ISubscription;
 };

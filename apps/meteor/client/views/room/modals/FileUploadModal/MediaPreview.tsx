@@ -8,7 +8,7 @@ import PreviewSkeleton from './PreviewSkeleton';
 import { userAgentMIMETypeFallback } from '../../../../lib/utils/userAgentMIMETypeFallback';
 import { useFileAsDataURL } from '../../hooks/useFileAsDataURL';
 
-type MediaPreviewProps = {
+export type MediaPreviewProps = {
 	file: File;
 	fileType: FilePreviewType;
 	altText?: string;

@@ -14,9 +14,9 @@ import type { JSONSchemaType } from 'ajv';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomAsync } from '../../../app/authorization/server/functions/canAccessRoom';
 import PushNotification from '../../../app/push-notifications/server/lib/PushNotification';
 import { settings } from '../../../app/settings/server';
+import { canAccessRoomAsync } from '../../lib/authorization/canAccessRoom';
 import { executePushTest } from '../../lib/pushConfig';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';

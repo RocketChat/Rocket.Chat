@@ -7,7 +7,7 @@ import { GenericCard } from '../../../../components/GenericCard';
 import { useExternalLink } from '../../../../hooks/useExternalLink';
 import { PRICING_LINK } from '../utils/links';
 
-type UpgradeToGetMoreProps = {
+export type UpgradeToGetMoreProps = {
 	activeModules: string[];
 	isEnterprise: boolean;
 	children: ReactNode;

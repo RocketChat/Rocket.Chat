@@ -3,7 +3,7 @@ import { Box, Button, Icon } from '@rocket.chat/fuselage';
 import type { IFederationPublicRooms } from '@rocket.chat/rest-typings';
 import { useTranslation } from 'react-i18next';
 
-type FederatedRoomListItemProps = IFederationPublicRooms & {
+export type FederatedRoomListItemProps = IFederationPublicRooms & {
 	disabled: boolean;
 	onClickJoin: () => void;
 };

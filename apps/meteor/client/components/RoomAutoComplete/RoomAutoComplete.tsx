@@ -17,7 +17,7 @@ const generateQuery = (
 	selector: string;
 } => ({ selector: JSON.stringify({ name: term }) });
 
-type RoomAutoCompleteProps = Omit<AutoCompleteProps<LabelType>, 'filter'> & {
+export type RoomAutoCompleteProps = Omit<AutoCompleteProps<LabelType>, 'filter'> & {
 	scope?: 'admin' | 'regular';
 	renderRoomIcon?: (props: { encrypted: IRoom['encrypted']; type: IRoom['t'] }) => ReactNode;
 	setSelectedRoom?: (room: IRoom | undefined) => void;

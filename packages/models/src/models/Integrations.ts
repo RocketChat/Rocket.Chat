@@ -46,6 +46,13 @@ export class IntegrationsRaw extends BaseRaw<IIntegration> implements IIntegrati
 		});
 	}
 
+	removeByIdAndCreatedByIfExists({ _id, createdBy }: { _id: IIntegration['_id']; createdBy?: IUser['_id'] }): Promise<IIntegration | null> {
+		return this.findOneAndDelete({
+			_id,
+			...(createdBy && { '_createdBy._id': createdBy }),
+		});
+	}
+
 	disableByUserId(userId: IIntegration['userId']): ReturnType<IBaseModel<IIntegration>['updateMany']> {
 		return this.updateMany({ userId }, { $set: { enabled: false } });
 	}

@@ -6,7 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import sharp from 'sharp';
 
 import type { EmojiData } from './insertOrUpdateEmoji';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 import { RocketChatFile } from '../../../file/server';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
 

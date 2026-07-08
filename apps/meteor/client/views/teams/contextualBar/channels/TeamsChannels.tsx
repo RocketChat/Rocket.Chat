@@ -88,7 +88,13 @@ const TeamsChannels = ({
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
 			<ContextualbarSection>
-				<TextInput placeholder={t('Search')} value={text} ref={inputRef} onChange={setText} addon={<Icon name='magnifier' size='x20' />} />
+				<TextInput
+					placeholder={t('Search')}
+					value={text}
+					ref={inputRef}
+					onChange={setText}
+					endAddon={<Icon name='magnifier' size='x20' />}
+				/>
 				<Box w='x144' mis={8}>
 					<Select onChange={(val) => setType(val as 'all' | 'autoJoin')} value={type} options={options} />
 				</Box>

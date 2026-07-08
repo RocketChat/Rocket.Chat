@@ -2,7 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 
 import MapView from './location/MapView';
 
-type LocationProps = {
+export type LocationProps = {
 	location?: IMessage['location'];
 };
 

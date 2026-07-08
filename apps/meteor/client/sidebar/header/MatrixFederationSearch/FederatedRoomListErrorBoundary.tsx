@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 
-type FederatedRoomListErrorBoundaryProps = {
+export type FederatedRoomListErrorBoundaryProps = {
 	children?: ReactNode;
 	resetKeys?: unknown[];
 };

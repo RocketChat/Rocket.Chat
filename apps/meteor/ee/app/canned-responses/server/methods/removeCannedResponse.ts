@@ -2,8 +2,8 @@ import { CannedResponse } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
 import notifications from '../../../../../app/notifications/server/lib/Notifications';
+import { hasPermissionAsync } from '../../../../../server/lib/authorization/hasPermission';
 
 export const removeCannedResponse = async (uid: string, _id: string): Promise<void> => {
 	if (!(await hasPermissionAsync(uid, 'remove-canned-responses'))) {

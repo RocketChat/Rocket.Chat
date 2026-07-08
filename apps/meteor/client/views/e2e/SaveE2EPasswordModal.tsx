@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { links } from '../../lib/links';
 
-type SaveE2EPasswordModalProps = {
+export type SaveE2EPasswordModalProps = {
 	randomPassword: string;
 	onClose: () => void;
 	onCancel: () => void;

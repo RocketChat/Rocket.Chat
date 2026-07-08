@@ -5,9 +5,9 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { canAccessRoomAsync } from '../../../app/authorization/server';
-import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
 import { settings } from '../../../app/settings/server';
 import { roomFields } from '../../../lib/publishFields';
+import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
 type PublicRoomField = keyof typeof roomFields;

@@ -16,7 +16,7 @@ import { getCodeSettingError } from '../lib/utils/getCodeSettingError';
 
 const settingsManagementPermissions = ['view-privileged-setting', 'edit-privileged-setting', 'manage-selected-settings'];
 
-type SettingsProviderProps = {
+export type SettingsProviderProps = {
 	children?: ReactNode;
 };
 

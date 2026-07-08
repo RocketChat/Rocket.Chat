@@ -45,7 +45,7 @@ import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
 
-type AdminUserFormProps = {
+export type AdminUserFormProps = {
 	userData?: Serialized<IUser>;
 	onReload: () => void;
 	context: string;
@@ -509,7 +509,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 										aria-invalid={errors.bio ? 'true' : 'false'}
 										aria-describedby={`${bioId}-error`}
 										flexGrow={1}
-										addon={<Icon name='edit' size='x20' alignSelf='center' />}
+										endAddon={<Icon name='edit' size='x20' alignSelf='center' />}
 									/>
 								)}
 							/>

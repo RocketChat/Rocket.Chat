@@ -2,7 +2,9 @@ import { GridItem } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode } from 'react';
 
-const HomepageGridItem = ({ children }: { children: ReactNode }) => {
+export type HomepageGridItemProps = { children: ReactNode };
+
+const HomepageGridItem = ({ children }: HomepageGridItemProps) => {
 	const breakpoints = useBreakpoints();
 
 	const isMedium = !breakpoints.includes('lg');

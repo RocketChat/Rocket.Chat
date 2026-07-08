@@ -40,7 +40,9 @@ const reduceAppearance = (settings: Serialized<ISetting>[]): AppearanceSettings 
 		return acc;
 	}, {});
 
-const AppearancePage = ({ settings }: { settings: Serialized<ISetting>[] }) => {
+export type AppearancePageProps = { settings: Serialized<ISetting>[] };
+
+const AppearancePage = ({ settings }: AppearancePageProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
