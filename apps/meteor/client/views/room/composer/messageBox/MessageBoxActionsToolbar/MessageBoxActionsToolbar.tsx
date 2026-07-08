@@ -60,7 +60,7 @@ const MessageBoxActionsToolbar = ({
 	const webdavActions = useWebdavActions(!canSend || isRecording || isEditing);
 	const createDiscussionAction = useCreateDiscussionAction(room);
 	const shareLocationAction = useShareLocationAction(room, tmid);
-	const timestampAction = useTimestampAction(chatContext.composer);
+	const timestampAction = useTimestampAction(!canSend || isRecording, chatContext.composer);
 
 	const apps = useMessageboxAppsActionButtons();
 	const { composerToolbox: hiddenActions } = useLayoutHiddenActions();
