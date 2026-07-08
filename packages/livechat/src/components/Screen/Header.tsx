@@ -24,7 +24,7 @@ import {
 } from '../Header';
 import { TooltipContainer, TooltipTrigger } from '../Tooltip';
 
-type ScreenHeaderProps = {
+export type ScreenHeaderProps = {
 	alerts: { id: string; children: ComponentChildren; [key: string]: unknown }[];
 	agent: Agent;
 	notificationsEnabled: boolean;

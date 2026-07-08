@@ -4,7 +4,7 @@ import * as UiKit from '@rocket.chat/ui-kit';
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
 
-type RadioButtonElementProps = BlockProps<UiKit.RadioButtonElement>;
+export type RadioButtonElementProps = BlockProps<UiKit.RadioButtonElement>;
 
 const RadioButtonElement = ({ block, context, surfaceRenderer }: RadioButtonElementProps) => {
 	const [{ loading, value }, action] = useUiKitState(block, context);
