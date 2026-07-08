@@ -33,7 +33,12 @@ const verifyQuery = (query: Query, allowedAttributes: string[], allowedOperation
 			}
 
 			if (Array.isArray(value)) {
-				return value.every((v) => verifyQuery(v, allowedAttributes, allowedOperations));
+				return value.every((v) => {
+					if (isRecord(v)) {
+						return verifyQuery(v, allowedAttributes, allowedOperations);
+					}
+					return true;
+				});
 			}
 
 			if (isRecord(value)) {
