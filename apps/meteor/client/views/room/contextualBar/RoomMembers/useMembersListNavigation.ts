@@ -1,43 +1,54 @@
-import { useCallback } from 'react';
-import type { KeyboardEvent, RefObject } from 'react';
-import type { GroupedVirtuosoHandle } from 'react-virtuoso';
+import { createFocusManager } from '@react-aria/focus';
+import type { RefCallback } from 'react';
+import { useCallback, useRef } from 'react';
 
-export const useMembersListNavigation = (virtuosoRef: RefObject<GroupedVirtuosoHandle | null>) => {
-	const onKeyDown = useCallback(
-		(e: KeyboardEvent<HTMLElement>) => {
-			if (!(e.target instanceof Element) || !e.target.classList.contains('rcx-option')) return;
-			if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
+const isMemberItem = (node: Element) => node.getAttribute('role') === 'listitem';
+
+export const useMembersListNavigation = (): { membersListRef: RefCallback<HTMLElement> } => {
+	const cleanupRef = useRef<(() => void) | null>(null);
+
+	const membersListRef: RefCallback<HTMLElement> = useCallback((node) => {
+		cleanupRef.current?.();
+		cleanupRef.current = null;
+
+		if (!node) return;
+
+		const focusManager = createFocusManager({ current: node });
+
+		const onKeyDown = (e: Event) => {
+			if (!(e.target instanceof Element) || !isMemberItem(e.target)) return;
+			if (!(e instanceof KeyboardEvent) || (e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) return;
 
 			e.preventDefault();
 			e.stopPropagation();
 
-			const node = e.currentTarget;
-			const wrapper = (e.target as HTMLElement).closest<HTMLElement>('[data-item-index][data-item-group-index]');
-			const currentIndex = parseInt(wrapper?.dataset.itemIndex ?? '-1', 10);
-			if (currentIndex === -1) return;
+			const isUp = e.key === 'ArrowUp';
+			const moved = isUp ? focusManager.focusPrevious({ accept: isMemberItem }) : focusManager.focusNext({ accept: isMemberItem });
 
-			const targetIndex = e.key === 'ArrowUp' ? currentIndex - 1 : currentIndex + 1;
+			if (moved) return;
 
-			const nextWrapper = node.querySelector<HTMLElement>(`[data-item-index="${targetIndex}"][data-item-group-index]`);
-			if (nextWrapper) {
-				nextWrapper.querySelector<HTMLElement>('.rcx-option[tabindex="0"]')?.focus();
-			} else {
-				virtuosoRef.current?.scrollToIndex({ index: targetIndex, behavior: 'auto' });
-				const focusWithRetry = (attempts = 0) => {
-					const el = node
-						.querySelector<HTMLElement>(`[data-item-index="${targetIndex}"][data-item-group-index]`)
-						?.querySelector<HTMLElement>('.rcx-option[tabindex="0"]');
-					if (el) {
-						el.focus();
-					} else if (attempts < 5) {
-						requestAnimationFrame(() => focusWithRetry(attempts + 1));
-					}
-				};
-				requestAnimationFrame(() => focusWithRetry());
+			// Adjacent item is outside the render window — scroll by one row height and retry
+			let scroller: HTMLElement | null = node.parentElement;
+			while (scroller && getComputedStyle(scroller).overflowY === 'visible') {
+				scroller = scroller.parentElement;
 			}
-		},
-		[virtuosoRef],
-	);
+			const itemHeight = (e.target as HTMLElement).offsetHeight;
+			if (!scroller || itemHeight <= 0) return;
 
-	return { onKeyDown };
+			scroller.scrollTop = isUp ? Math.max(0, scroller.scrollTop - itemHeight) : scroller.scrollTop + itemHeight;
+			requestAnimationFrame(() => {
+				if (!node.isConnected) return;
+				if (isUp) {
+					focusManager.focusPrevious({ accept: isMemberItem });
+				} else {
+					focusManager.focusNext({ accept: isMemberItem });
+				}
+			});
+		};
+
+		node.addEventListener('keydown', onKeyDown);
+		cleanupRef.current = () => node.removeEventListener('keydown', onKeyDown);
+	}, []);
+
+	return { membersListRef };
 };

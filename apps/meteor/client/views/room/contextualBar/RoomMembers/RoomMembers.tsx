@@ -16,14 +16,13 @@ import {
 } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ChangeEventHandler, ComponentProps, MouseEvent, ElementType } from 'react';
-import { useId, useMemo, useRef } from 'react';
+import { useId, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GroupedVirtuoso } from 'react-virtuoso';
-import type { GroupedVirtuosoHandle } from 'react-virtuoso';
 
 import { MembersListDivider } from './MembersListDivider';
+import RoomMembersListWrapper from './RoomMembersListWrapper';
 import RoomMembersRow from './RoomMembersRow';
-import { useMembersListNavigation } from './useMembersListNavigation';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import type { RoomMember } from '../../../hooks/useMembersList';
@@ -95,8 +94,6 @@ const RoomMembers = ({
 	);
 
 	const useRealName = useSetting('UI_Use_Real_Name', false);
-	const virtuosoRef = useRef<GroupedVirtuosoHandle>(null);
-	const { onKeyDown } = useMembersListNavigation(virtuosoRef);
 
 	const { counts, titles } = useMemo(() => {
 		const owners: RoomMember[] = [];
@@ -189,21 +186,23 @@ const RoomMembers = ({
 								</Box>
 							</Box>
 						)}
-						<Box id={membersListId} onKeyDown={onKeyDown} w='full' h='full' overflow='hidden' flexShrink={1}>
+						<Box id={membersListId} w='full' h='full' overflow='hidden' flexShrink={1}>
 							{members.length <= 0 && <ContextualbarEmptyContent title={t('No_members_found')} />}
 							{members.length > 0 && (
 								<VirtualizedScrollbars>
 									<GroupedVirtuoso
-										ref={virtuosoRef}
 										style={{
 											height: '100%',
 											width: '100%',
 										}}
-										overscan={50}
+										overscan={300}
 										groupCounts={counts}
 										groupContent={(index) => titles[index]}
-										// eslint-disable-next-line react/no-multi-comp
-										components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
+										components={{
+											// eslint-disable-next-line react/no-multi-comp
+											Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} />,
+											List: RoomMembersListWrapper,
+										}}
 										itemContent={(index) => (
 											<RowComponent useRealName={useRealName} data={itemData} user={members[index]} index={index} reload={reload} />
 										)}

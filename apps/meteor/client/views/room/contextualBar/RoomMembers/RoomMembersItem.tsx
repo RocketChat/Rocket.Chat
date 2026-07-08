@@ -69,7 +69,7 @@ const RoomMembersItem = ({
 	return (
 		<Option
 			{...focusProps}
-			role='button'
+			aria-label={nameOrUsername}
 			onFocus={(e) => {
 				focusProps.onFocus?.(e);
 				setShowButton(true);
