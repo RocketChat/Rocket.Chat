@@ -596,6 +596,9 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 			case 'ready':
 				this.emit('ready');
 				break;
+			case 'metrics':
+				this.debug('Metrics received from subprocess: %s', inspect(message.payload.params));
+				break;
 			case 'log':
 				console.log('SUBPROCESS LOG', message);
 				break;
@@ -687,13 +690,7 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 		console.log(`[${this.getAppId()}] Subprocess stdout`, chunk.toString());
 	}
 
-	private async parseError(chunk: Buffer): Promise<void> {
-		try {
-			const data = JSON.parse(chunk.toString());
-
-			this.debug('Metrics received from subprocess (via stderr): %s', inspect(data));
-		} catch {
-			console.error('Subprocess stderr', chunk.toString());
-		}
+	private parseError(chunk: Buffer): void {
+		console.error(`[${this.getAppId()}] Subprocess stderr`, chunk.toString());
 	}
 }

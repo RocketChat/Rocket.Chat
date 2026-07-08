@@ -91,7 +91,7 @@ async function handleIncomingMessage(message: unknown): Promise<void> {
 		// Process PING command first as it is not JSON RPC
 		if (message === COMMAND_PING) {
 			void Messenger.pongResponse();
-			void sendMetrics();
+			sendMetrics();
 			return;
 		}
 
