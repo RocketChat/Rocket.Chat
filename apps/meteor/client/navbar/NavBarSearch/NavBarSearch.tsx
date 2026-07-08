@@ -174,12 +174,12 @@ const NavBarSearch = () => {
 									{appliedFilterChips.map((filter) => (
 										<Chip
 											key={filter.key}
-											height='x20'
+											height='x16'
 											value={filter.label}
 											onClick={() => handleRemoveFilter(filter.key)}
 											title={filter.title}
 										>
-											<Box is='span' maxWidth='x120' withTruncatedText fontScale='p2'>
+											<Box is='span' maxWidth='x104' withTruncatedText fontScale='c1'>
 												{filter.label}
 											</Box>
 										</Chip>
