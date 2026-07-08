@@ -16,6 +16,7 @@ export type InternalCallParams = {
 	parentCallId?: string;
 	requestedBy?: MediaCallSignedContact;
 	features: CallFeature[];
+	divertedBy?: MediaCallContact;
 };
 
 export type MediaCallHeader = AtLeast<IMediaCall, '_id' | 'caller' | 'callee'>;
