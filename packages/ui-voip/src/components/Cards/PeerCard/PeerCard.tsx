@@ -3,7 +3,7 @@ import { Avatar, Box, Icon } from '@rocket.chat/fuselage';
 import Card from '../Card';
 import PeerCardSlot from './PeerCardSlot';
 
-type PeerCardProps = {
+export type PeerCardProps = {
 	displayName: string;
 	avatarUrl?: string;
 	muted: boolean;

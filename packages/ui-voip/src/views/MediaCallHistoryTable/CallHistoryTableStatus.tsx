@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { getCallDurationText } from '../../ui-kit/getHistoryMessagePayload';
 
-type CallHistoryTableStatusProps = {
+export type CallHistoryTableStatusProps = {
 	status: CallHistoryItemState;
 	duration: number;
 };

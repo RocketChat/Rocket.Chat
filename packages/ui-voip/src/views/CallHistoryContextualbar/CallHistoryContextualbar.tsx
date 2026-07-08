@@ -31,7 +31,7 @@ export type CallHistoryData = {
 	messageId?: string;
 };
 
-type CallHistoryContextualBarProps = {
+export type CallHistoryContextualBarProps = {
 	onClose: () => void;
 	actions: HistoryActionCallbacks;
 	contact: CallHistoryContact;
