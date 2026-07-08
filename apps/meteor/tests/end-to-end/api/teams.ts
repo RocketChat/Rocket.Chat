@@ -249,6 +249,63 @@ describe('[Teams]', () => {
 				});
 		});
 	});
+
+	describe('/teams.create - existing room ownership check', () => {
+		let roomOwner: TestUser<IUser>;
+		let roomOwnerCredentials: Credentials;
+		let attacker: TestUser<IUser>;
+		let attackerCredentials: Credentials;
+		let targetRoom: IRoom;
+		const teamName = `test-team-hijack-${Date.now()}`;
+
+		before(async () => {
+			[roomOwner, attacker] = await Promise.all([createUser(), createUser()]);
+			[roomOwnerCredentials, attackerCredentials] = await Promise.all([
+				login(roomOwner.username, password),
+				login(attacker.username, password),
+			]);
+			targetRoom = (await createRoom({ type: 'c', name: `test-room-hijack-${Date.now()}`, credentials: roomOwnerCredentials })).body
+				.channel;
+		});
+
+		before(() => updatePermission('create-team', ['admin', 'user']));
+
+		after(async () => {
+			await Promise.all([
+				deleteRoom({ type: 'c', roomId: targetRoom._id }),
+				deleteUser(roomOwner),
+				deleteUser(attacker),
+				updatePermission('create-team', ['admin', 'user']),
+			]);
+		});
+
+		it('should not allow a user with no ownership/moderation of a room to hijack it into a new team by passing room.id', async () => {
+			await request
+				.post(api('teams.create'))
+				.set(attackerCredentials)
+				.send({
+					name: teamName,
+					type: 0,
+					room: { id: targetRoom._id },
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
+
+			await request
+				.get(api('channels.info'))
+				.set(credentials)
+				.query({ roomId: targetRoom._id })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.channel).to.not.have.property('teamId');
+					expect(res.body.channel).to.not.have.property('teamMain');
+				});
+		});
+	});
 });
 
 describe('/teams.convertToChannel', () => {
