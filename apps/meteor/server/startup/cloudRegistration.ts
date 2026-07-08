@@ -17,8 +17,7 @@ export async function ensureCloudWorkspaceRegistered(): Promise<void> {
 		return;
 	}
 
-	// skip if the value was pinned via env override (e.g. air-gapped deployments) and hasn't
-	// been changed since; forcing the wizard would fight the operator's explicit config
+	if (showSetupWizard.valueSource === 'processEnvValue' && showSetupWizard.value === showSetupWizard.processEnvValue) {
 	if (showSetupWizard.valueSource === 'processEnvValue' && showSetupWizard.value === showSetupWizard.processEnvValue) {
 		return;
 	}
