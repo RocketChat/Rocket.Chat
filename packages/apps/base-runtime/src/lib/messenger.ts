@@ -1,8 +1,8 @@
 import EventEmitter from 'node:events';
 
+import { sanitizeForIpc } from '@rocket.chat/apps/dist/lib/IpcSanitizer';
 import * as jsonrpc from 'jsonrpc-lite';
 
-import { encoder } from './codec';
 import type { RequestContext } from './requestContext';
 
 export type RequestDescriptor = Pick<jsonrpc.RequestObject, 'method' | 'params'>;
@@ -32,71 +32,25 @@ const COMMAND_PONG = '_zPONG';
 
 export const RPCResponseObserver = new EventEmitter();
 
-class MessageQueue {
-	private queue: Uint8Array[] = [];
-
-	private isProcessing = false;
-
-	private async processQueue() {
-		if (this.isProcessing) {
-			return;
-		}
-
-		this.isProcessing = true;
-
-		while (this.queue.length) {
-			const message = this.queue.shift();
-
-			if (message) {
-				await transport.send(message);
+/**
+ * The IPC channel connecting this runtime to the host process that spawned it.
+ *
+ * The channel serializes messages with V8's structured clone algorithm, which
+ * throws on functions and other non-cloneable values an app might return, so
+ * every message is sanitized before being handed to Node.
+ */
+export const ipcChannel = {
+	send(message: jsonrpc.JsonRpc | typeof COMMAND_PONG): Promise<void> {
+		return new Promise((resolve, reject) => {
+			if (typeof process.send !== 'function') {
+				reject(new Error('No IPC channel available to communicate with the host process'));
+				return;
 			}
-		}
 
-		this.isProcessing = false;
-	}
-
-	public enqueue(message: jsonrpc.JsonRpc | typeof COMMAND_PONG) {
-		this.queue.push(encoder.encode(message));
-		void this.processQueue();
-	}
-
-	public getCurrentSize() {
-		return this.queue.length;
-	}
-}
-
-export const Queue = new MessageQueue();
-
-/**
- * A platform-dependent component responsible for delivering encoded messages to
- * the host that controls this runtime.
- *
- * Each runtime platform is expected to provide its own implementation and
- * inject it via {@link setTransport}.
- */
-export type Transport = {
-	send(message: Uint8Array): Promise<void>;
+			process.send(sanitizeForIpc(message), undefined, undefined, (error) => (error ? reject(error) : resolve()));
+		});
+	},
 };
-
-/**
- * The default transport. It discards every message, and is used until a
- * platform injects its own transport via {@link setTransport}.
- */
-export const noopTransport: Transport = {
-	send: () => Promise.resolve(),
-};
-
-let transport: Transport = noopTransport;
-
-/**
- * Injects the transport implementation to be used when sending messages.
- *
- * Platforms must call this during bootstrap to wire up the appropriate
- * transport. Until then, messages are discarded by the default no-op transport.
- */
-export function setTransport(newTransport: Transport): void {
-	transport = newTransport;
-}
 
 export function parseMessage(message: string | Record<string, unknown>) {
 	let parsed: jsonrpc.IParsedObject | jsonrpc.IParsedObject[];
@@ -121,25 +75,25 @@ export function parseMessage(message: string | Record<string, unknown>) {
 export async function sendInvalidRequestError(): Promise<void> {
 	const rpc = jsonrpc.error(null, jsonrpc.JsonRpcError.invalidRequest(null));
 
-	await Queue.enqueue(rpc);
+	await ipcChannel.send(rpc);
 }
 
 export async function sendInvalidParamsError(id: jsonrpc.ID): Promise<void> {
 	const rpc = jsonrpc.error(id, jsonrpc.JsonRpcError.invalidParams(null));
 
-	await Queue.enqueue(rpc);
+	await ipcChannel.send(rpc);
 }
 
 export async function sendParseError(): Promise<void> {
 	const rpc = jsonrpc.error(null, jsonrpc.JsonRpcError.parseError(null));
 
-	await Queue.enqueue(rpc);
+	await ipcChannel.send(rpc);
 }
 
 export async function sendMethodNotFound(id: jsonrpc.ID): Promise<void> {
 	const rpc = jsonrpc.error(id, jsonrpc.JsonRpcError.methodNotFound(null));
 
-	await Queue.enqueue(rpc);
+	await ipcChannel.send(rpc);
 }
 
 export async function errorResponse(
@@ -154,7 +108,7 @@ export async function errorResponse(
 
 	const rpc = jsonrpc.error(id, new jsonrpc.JsonRpcError(message, code, data));
 
-	await Queue.enqueue(rpc);
+	await ipcChannel.send(rpc);
 }
 
 export async function successResponse({ id, result }: SuccessResponseDescriptor, req: RequestContext): Promise<void> {
@@ -167,11 +121,11 @@ export async function successResponse({ id, result }: SuccessResponseDescriptor,
 
 	const rpc = jsonrpc.success(id, payload);
 
-	await Queue.enqueue(rpc);
+	await ipcChannel.send(rpc);
 }
 
 export function pongResponse(): Promise<void> {
-	return Promise.resolve(Queue.enqueue(COMMAND_PONG));
+	return ipcChannel.send(COMMAND_PONG);
 }
 
 export async function sendRequest(requestDescriptor: RequestDescriptor): Promise<jsonrpc.SuccessObject> {
@@ -190,7 +144,7 @@ export async function sendRequest(requestDescriptor: RequestDescriptor): Promise
 		RPCResponseObserver.once(`response:${request.id}`, handler);
 	});
 
-	await Queue.enqueue(request);
+	await ipcChannel.send(request);
 
 	return responsePromise as Promise<jsonrpc.SuccessObject>;
 }
@@ -198,7 +152,7 @@ export async function sendRequest(requestDescriptor: RequestDescriptor): Promise
 export function sendNotification({ method, params }: NotificationDescriptor) {
 	const request = jsonrpc.notification(method, params);
 
-	Queue.enqueue(request);
+	void ipcChannel.send(request);
 }
 
 export function log(params: jsonrpc.RpcParams) {
