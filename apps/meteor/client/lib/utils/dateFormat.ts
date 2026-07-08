@@ -192,7 +192,7 @@ const DATE_ONLY_RE = /^\d{4}-\d{2}-\d{2}$/;
  * previous day in negative-offset timezones (e.g. UTC-3 shows "Jul 1"). Full ISO
  * datetimes, numbers and Date objects keep their original instant semantics.
  */
-const toDate = (date: DateInput): Date => {
+export const toDate = (date: DateInput): Date => {
 	if (date instanceof Date) {
 		return date;
 	}
