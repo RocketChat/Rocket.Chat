@@ -22,6 +22,7 @@ import {
 	Http,
 	HttpExtend,
 	LivechatRead,
+	MediaCallRead,
 	MessageRead,
 	Modify,
 	Notifier,
@@ -192,6 +193,7 @@ export class AppAccessorManager {
 			const thread = new ThreadRead(this.bridges.getThreadBridge(), appId);
 			const role = new RoleRead(this.bridges.getRoleBridge(), appId);
 			const experimental = new ExperimentalRead(this.bridges.getExperimentalBridge(), appId);
+			const mediaCall = new MediaCallRead(this.bridges.getMediaCallBridge(), appId);
 
 			this.readers.set(
 				appId,
@@ -211,6 +213,7 @@ export class AppAccessorManager {
 					thread,
 					role,
 					experimental,
+					mediaCall,
 				),
 			);
 		}
