@@ -54,12 +54,14 @@ const MessageBoxActionsToolbar = ({
 
 	const room = useRoom();
 
-	const audioMessageAction = useAudioMessageAction(!canSend || isRecording || isMicrophoneDenied, isMicrophoneDenied);
-	const videoMessageAction = useVideoMessageAction(!canSend || isRecording);
-	const fileUploadAction = useFileUploadAction(!canSend || isRecording || isEditing);
-	const webdavActions = useWebdavActions(!canSend || isRecording || isEditing);
-	const createDiscussionAction = useCreateDiscussionAction(room);
-	const shareLocationAction = useShareLocationAction(room, tmid);
+	const disableBasicActions = !canSend || isRecording || isEditing;
+
+	const audioMessageAction = useAudioMessageAction(disableBasicActions || isMicrophoneDenied, isMicrophoneDenied);
+	const videoMessageAction = useVideoMessageAction(disableBasicActions);
+	const fileUploadAction = useFileUploadAction(disableBasicActions);
+	const webdavActions = useWebdavActions(disableBasicActions);
+	const createDiscussionAction = useCreateDiscussionAction(disableBasicActions, room);
+	const shareLocationAction = useShareLocationAction(disableBasicActions, room, tmid);
 	const timestampAction = useTimestampAction(!canSend || isRecording, chatContext.composer);
 
 	const apps = useMessageboxAppsActionButtons();
@@ -121,6 +123,7 @@ const MessageBoxActionsToolbar = ({
 						chat: chatContext,
 					}),
 				gap: Boolean(!item.icon),
+				disabled: disableBasicActions,
 			}));
 
 		return {
