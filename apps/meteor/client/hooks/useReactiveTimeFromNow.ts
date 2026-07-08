@@ -9,18 +9,17 @@ import { formatFromNow } from '../lib/utils/dateFormat';
 const getRefreshInterval = (elapsedMs: number): number => {
 	const distance = Math.abs(elapsedMs);
 
-	if (distance < 60000) {
-		return 1000;
-	}
-
 	if (distance < 3600000) {
+		// less than 1 hour: refresh every 30 seconds
 		return 30000;
 	}
 
 	if (distance < 86400000) {
+		// less than 1 day: refresh every 5 minutes
 		return 300000;
 	}
 
+	// 1 day or more: refresh every 1 hour
 	return 3600000;
 };
 
