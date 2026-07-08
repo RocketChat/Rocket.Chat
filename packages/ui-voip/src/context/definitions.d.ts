@@ -34,6 +34,11 @@ interface IBaseSession {
 	startedAt?: Date;
 	hidden: boolean;
 	supportedFeatures: readonly CallFeature[];
+	// True when the idle dialer ('new') is docked inside a slot (the sidebar call panel)
+	// rather than opened as a free-floating composer. A docked dialer must never render as
+	// a floating widget: when its slot goes away (navigating off the panel) it disappears
+	// instead of popping out. Irrelevant for non-'new' states.
+	docked?: boolean;
 }
 
 interface IEmptySession extends IBaseSession {
