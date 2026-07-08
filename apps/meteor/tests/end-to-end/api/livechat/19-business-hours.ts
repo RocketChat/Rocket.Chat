@@ -316,9 +316,21 @@ describe('LIVECHAT - business hours', () => {
 			await sleep(1000);
 		});
 
+		const createdDepartments: Awaited<ReturnType<typeof createDepartmentWithAnOnlineAgent>>[] = [];
+		let keptDepartmentWithAgent: Awaited<ReturnType<typeof createDepartmentWithAnOnlineAgent>>;
+		let removedDepartmentWithAgent: Awaited<ReturnType<typeof createDepartmentWithAnOnlineAgent>>;
+
 		beforeEach(async () => {
 			await removeAllCustomBusinessHours();
 			await openOrCloseBusinessHour(await getDefaultBusinessHour(), false);
+			keptDepartmentWithAgent = await createDepartmentWithAnOnlineAgent();
+			removedDepartmentWithAgent = await createDepartmentWithAnOnlineAgent();
+			createdDepartments.push(keptDepartmentWithAgent, removedDepartmentWithAgent);
+		});
+
+		after(async () => {
+			await Promise.all(createdDepartments.map(({ department }) => deleteDepartment(department._id)));
+			await Promise.all(createdDepartments.map(({ agent }) => deleteUser(agent.user)));
 		});
 
 		const resaveWithDepartments = async (businessHour: ILivechatBusinessHour, departmentsToApplyBusinessHour: string) => {
@@ -334,8 +346,8 @@ describe('LIVECHAT - business hours', () => {
 		};
 
 		it('should unlink only the removed departments when re-saving with a smaller department list', async () => {
-			const { department: keptDepartment, agent: keptAgent } = await createDepartmentWithAnOnlineAgent();
-			const { department: removedDepartment, agent: removedAgent } = await createDepartmentWithAnOnlineAgent();
+			const { department: keptDepartment, agent: keptAgent } = keptDepartmentWithAgent;
+			const { department: removedDepartment, agent: removedAgent } = removedDepartmentWithAgent;
 			const customBusinessHour = await createCustomBusinessHour([keptDepartment._id, removedDepartment._id]);
 			await openOrCloseBusinessHour(customBusinessHour, true);
 
@@ -354,7 +366,7 @@ describe('LIVECHAT - business hours', () => {
 		});
 
 		it('should unlink all departments when re-saving with an empty department list', async () => {
-			const { department } = await createDepartmentWithAnOnlineAgent();
+			const { department } = keptDepartmentWithAgent;
 			const customBusinessHour = await createCustomBusinessHour([department._id]);
 			await openOrCloseBusinessHour(customBusinessHour, true);
 
