@@ -9,7 +9,7 @@ import {
 	mergeSearchFilters,
 	type NavBarSearchFormValues,
 } from '@rocket.chat/ai-search';
-import { Box, Chip, Icon, IconButton, TextInput } from '@rocket.chat/fuselage';
+import { Box, Icon, IconButton, Tag, TextInput } from '@rocket.chat/fuselage';
 import { useMergedRefs, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
@@ -172,19 +172,20 @@ const NavBarSearch = () => {
 							{appliedFilterChips.length > 0 && (
 								<Box display='flex' alignItems='center' gap={4} maxWidth='x320' overflow='hidden'>
 									{appliedFilterChips.map((filter) => (
-										<Chip
+										<Tag
 											key={filter.key}
-											height='x20'
-											value={filter.label}
 											onClick={() => handleRemoveFilter(filter.key)}
 											title={filter.label}
-											mbs={2}
-											mbe={2}
+											display='inline-flex'
+											alignItems='center'
+											maxWidth='x160'
+											fontScale='p2'
 										>
-											<Box is='span' maxWidth='x132' withTruncatedText fontScale='p2'>
+											<Box is='span' withTruncatedText>
 												{filter.label}
 											</Box>
-										</Chip>
+											<Icon name='cross' size='x16' mis={4} flexShrink={0} />
+										</Tag>
 									))}
 								</Box>
 							)}
