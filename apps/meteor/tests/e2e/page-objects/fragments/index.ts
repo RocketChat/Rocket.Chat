@@ -9,4 +9,5 @@ export * from './menu';
 export * from './table';
 export * from './toolbar';
 export * from './composer';
+export * from './phone-number-field-list';
 export * from './flextabs';
