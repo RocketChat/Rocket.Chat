@@ -1,0 +1,19 @@
+apps/meteor/server/lib/dataExport/processDataDownloads.spec.ts
+  s_7c6a76c13a919e::t_3bebbc7f0e9104 124,126,133
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "dfe2f8034be37738ecf70d3e605a30c1a13978be",
+  "prompts": {},
+  "sessions": {
+    "s_7c6a76c13a919e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bd67a1bc-8181-41af-8371-afbdb75eacb5",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
