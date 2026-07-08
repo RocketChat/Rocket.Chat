@@ -715,7 +715,7 @@ describe('[Settings]', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.match(/error-action-not-allowed/);
+						expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
 					});
 			});
 

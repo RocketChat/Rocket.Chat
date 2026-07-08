@@ -236,12 +236,7 @@ API.v1.post(
 				required: ['success'],
 				additionalProperties: false,
 			}),
-			400: ajv.compile({
-				type: 'object',
-				properties: { success: { type: 'boolean', enum: [false] }, error: { type: 'string' } },
-				required: ['success'],
-				additionalProperties: false,
-			}),
+			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 		},
 	},
