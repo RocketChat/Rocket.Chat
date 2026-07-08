@@ -112,6 +112,10 @@ export class TranslationProviderRegistry {
 			return;
 		}
 
+		// callbacks.add is a no-op if a callback with this id is already registered, so the
+		// previous provider's callback must be removed first or switching providers has no effect
+		callbacks.remove('afterSaveMessage', 'autotranslate');
+
 		callbacks.add(
 			'afterSaveMessage',
 			(message, { room }) => provider.translateMessage(message, { room }),
