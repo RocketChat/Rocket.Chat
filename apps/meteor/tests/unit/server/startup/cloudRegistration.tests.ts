@@ -1,11 +1,12 @@
 import { expect } from 'chai';
-import { afterEach, beforeEach, describe, it } from 'mocha';
+import { beforeEach, describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const models = {
 	Settings: {
 		getValueById: sinon.stub(),
+		findOneById: sinon.stub(),
 		updateValueById: sinon.stub(),
 	},
 };
@@ -15,41 +16,41 @@ const { ensureCloudWorkspaceRegistered } = proxyquire.noCallThru().load('../../.
 });
 
 describe('ensureCloudWorkspaceRegistered', () => {
-	const originalEnv = process.env.OVERWRITE_SETTING_Show_Setup_Wizard;
-
-	const stubSettings = (values: Record<string, string | undefined>) => {
+	const stubSettings = (values: Record<string, string | undefined>, showSetupWizard: Record<string, unknown> | null) => {
 		models.Settings.getValueById.callsFake(async (id: string) => values[id]);
+		models.Settings.findOneById.resolves(showSetupWizard);
 	};
 
 	beforeEach(() => {
-		delete process.env.OVERWRITE_SETTING_Show_Setup_Wizard;
 		models.Settings.getValueById.reset();
+		models.Settings.findOneById.reset();
 		models.Settings.updateValueById.reset();
 	});
 
-	afterEach(() => {
-		if (originalEnv === undefined) {
-			delete process.env.OVERWRITE_SETTING_Show_Setup_Wizard;
-		} else {
-			process.env.OVERWRITE_SETTING_Show_Setup_Wizard = originalEnv;
-		}
-	});
-
-	it('should not touch the setting when OVERWRITE_SETTING_Show_Setup_Wizard is set', async () => {
-		process.env.OVERWRITE_SETTING_Show_Setup_Wizard = 'completed';
-		stubSettings({ Show_Setup_Wizard: 'completed' });
+	it('should not touch the setting when its value was pinned via env override and is unchanged', async () => {
+		stubSettings({}, { value: 'completed', valueSource: 'processEnvValue', processEnvValue: 'completed' });
 
 		await ensureCloudWorkspaceRegistered();
 
 		expect(models.Settings.updateValueById.called).to.be.false;
 	});
 
+	it('should flip the setting when the value diverged from the env override', async () => {
+		stubSettings({}, { value: 'completed', valueSource: 'processEnvValue', processEnvValue: 'pending' });
+
+		await ensureCloudWorkspaceRegistered();
+
+		expect(models.Settings.updateValueById.calledOnceWith('Show_Setup_Wizard', 'in_progress')).to.be.true;
+	});
+
 	it('should not touch the setting when the workspace is already registered', async () => {
-		stubSettings({
-			Cloud_Workspace_Client_Id: 'client-id',
-			Cloud_Workspace_Client_Secret: 'client-secret',
-			Show_Setup_Wizard: 'completed',
-		});
+		stubSettings(
+			{
+				Cloud_Workspace_Client_Id: 'client-id',
+				Cloud_Workspace_Client_Secret: 'client-secret',
+			},
+			{ value: 'completed', valueSource: 'packageValue' },
+		);
 
 		await ensureCloudWorkspaceRegistered();
 
@@ -57,15 +58,15 @@ describe('ensureCloudWorkspaceRegistered', () => {
 	});
 
 	it('should not touch the setting when the setup wizard is not completed', async () => {
-		stubSettings({ Show_Setup_Wizard: 'in_progress' });
+		stubSettings({}, { value: 'in_progress', valueSource: 'packageValue' });
 
 		await ensureCloudWorkspaceRegistered();
 
 		expect(models.Settings.updateValueById.called).to.be.false;
 	});
 
-	it('should flip the setup wizard to in_progress when unregistered, completed and no env override', async () => {
-		stubSettings({ Show_Setup_Wizard: 'completed' });
+	it('should flip the setup wizard to in_progress when unregistered, completed and not env-pinned', async () => {
+		stubSettings({}, { value: 'completed', valueSource: 'packageValue' });
 
 		await ensureCloudWorkspaceRegistered();
 

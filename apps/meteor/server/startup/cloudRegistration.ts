@@ -1,15 +1,11 @@
 import { Settings } from '@rocket.chat/models';
 
 export async function ensureCloudWorkspaceRegistered(): Promise<void> {
-	// skip if the setting is pinned via env override (e.g. air-gapped deployments); forcing
-	// the wizard would fight the override until the next restart re-applies it
-	if (process.env.OVERWRITE_SETTING_Show_Setup_Wizard) {
-		return;
-	}
-
 	const cloudWorkspaceClientId = await Settings.getValueById('Cloud_Workspace_Client_Id');
 	const cloudWorkspaceClientSecret = await Settings.getValueById('Cloud_Workspace_Client_Secret');
-	const showSetupWizard = await Settings.getValueById('Show_Setup_Wizard');
+	const showSetupWizard = await Settings.findOneById('Show_Setup_Wizard', {
+		projection: { value: 1, valueSource: 1, processEnvValue: 1 },
+	});
 
 	// skip if both fields are already set, which means the workspace is already registered
 	if (!!cloudWorkspaceClientId && !!cloudWorkspaceClientSecret) {
@@ -17,7 +13,13 @@ export async function ensureCloudWorkspaceRegistered(): Promise<void> {
 	}
 
 	// skip if the setup wizard still not completed
-	if (showSetupWizard !== 'completed') {
+	if (showSetupWizard?.value !== 'completed') {
+		return;
+	}
+
+	// skip if the value was pinned via env override (e.g. air-gapped deployments) and hasn't
+	// been changed since; forcing the wizard would fight the operator's explicit config
+	if (showSetupWizard.valueSource === 'processEnvValue' && showSetupWizard.value === showSetupWizard.processEnvValue) {
 		return;
 	}
 
