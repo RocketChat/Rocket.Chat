@@ -1,6 +1,5 @@
 import i18next from 'i18next';
-import type { ComponentChildren } from 'preact';
-import type { JSXInternal } from 'preact/src/jsx';
+import type { ComponentChildren, JSX as JSXInternal } from 'preact';
 
 export type FormProps = {
 	onSubmit?: JSXInternal.GenericEventHandler<HTMLFormElement>;
