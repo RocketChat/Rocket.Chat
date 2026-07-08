@@ -2,8 +2,8 @@ import * as z from 'zod';
 
 /**
  * A declarative field map: keys are the Apps-Engine (target) property names, values are the
- * Rocket.Chat (source) property names. This mirrors the "string" entries of the legacy
- * `transformMappedData` map.
+ * Rocket.Chat (source) property names. This is the "string" entry form supported by
+ * {@link mappedDecodeAsync}.
  */
 export type FieldMap = Record<string, string>;
 

@@ -125,4 +125,31 @@ describe('mappedDecodeAsync', () => {
 			_unmappedProperties_: {},
 		});
 	});
+
+	it('drops a source property from the bucket when a function deletes it explicitly', async () => {
+		const result = await mappedDecodeAsync(
+			{ firstName: 'John', lastName: 'Doe' },
+			{
+				fullName: (d: Record<string, any>) => {
+					const value = `${d.firstName} ${d.lastName}`;
+					delete d.firstName;
+					return value;
+				},
+			},
+		);
+
+		expect(result).to.deep.equal({ fullName: 'John Doe', _unmappedProperties_: { lastName: 'Doe' } });
+	});
+
+	it('wraps a non-array value into a list when `list` is true', async () => {
+		const result = await mappedDecodeAsync({ tag: 'admin' }, { tags: { from: 'tag', list: true, map: {} } });
+
+		expect(result).to.deep.equal({ tags: ['admin'], _unmappedProperties_: {} });
+	});
+
+	it('keeps every property as unmapped when the map is empty', async () => {
+		const result = await mappedDecodeAsync({ os: 'android', version: '1.9', lan: 'en' }, {});
+
+		expect(result).to.deep.equal({ _unmappedProperties_: { os: 'android', version: '1.9', lan: 'en' } });
+	});
 });
