@@ -77,11 +77,15 @@ const buildSegment = (
 const resolveColor = (config: ClassificationBannersConfig, roomAttributes: IAbacAttributeDefinition[]): string => {
 	const driver = config.attributes.find(({ drivesColor }) => drivesColor) ?? config.attributes[0];
 	const roomValues = getRoomValues(driver, roomAttributes);
+	// values are ranked most restrictive first: index 0 = highest ranking
 	const matched = driver.values.filter(({ source }) => roomValues.includes(source));
 	if (matched.length === 0) {
 		return config.banner.fallbackColor ?? FALLBACK_COLOR;
 	}
-	return (config.banner.colorMode ?? 'highest') === 'highest' ? matched[matched.length - 1].color : matched[0].color;
+	if ((config.banner.colorMode ?? 'highest') === 'highest') {
+		return matched[0].color;
+	}
+	return roomValues.map((value) => driver.values.find(({ source }) => source === value)).find(isTruthy)?.color ?? matched[0].color;
 };
 
 export const buildClassificationBanner = (

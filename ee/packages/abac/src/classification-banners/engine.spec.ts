@@ -29,12 +29,12 @@ const config: ClassificationBannersConfig = {
 			multipleLabel: '',
 			drivesColor: true,
 			values: [
-				{ source: 'U', label: 'UNCLASSIFIED', color: '#007a33' },
-				{ source: 'CUI', label: 'CUI', color: '#502b85' },
-				{ source: 'C', label: 'CONFIDENTIAL', color: '#0033a0' },
-				{ source: 'S', label: 'SECRET', color: '#c8102e' },
-				{ source: 'TS', label: 'TOP SECRET', color: '#ff8c00' },
 				{ source: 'TS-SCI', label: 'TOP SECRET//SCI', color: '#fce100' },
+				{ source: 'TS', label: 'TOP SECRET', color: '#ff8c00' },
+				{ source: 'S', label: 'SECRET', color: '#c8102e' },
+				{ source: 'C', label: 'CONFIDENTIAL', color: '#0033a0' },
+				{ source: 'CUI', label: 'CUI', color: '#502b85' },
+				{ source: 'U', label: 'UNCLASSIFIED', color: '#007a33' },
 			],
 		},
 		{
@@ -130,17 +130,17 @@ describe('buildClassificationBanner', () => {
 		expect(banner.text).toBe('SAR-APPLES/ORANGES');
 	});
 
-	it('picks the most restrictive value color in highest mode', () => {
+	it('picks the most restrictive value color in highest mode (index 0 = highest ranking)', () => {
 		const banner = buildClassificationBanner(config, [{ key: 'clearance.level', values: ['U', 'TS'] }]);
 
 		expect(banner.backgroundColor).toBe('#ff8c00');
 	});
 
-	it('picks the first selected value color in attribute mode', () => {
+	it('picks the color of the first room value that is mapped in attribute mode', () => {
 		const attributeModeConfig = { ...config, banner: { ...config.banner, colorMode: 'attribute' as const } };
-		const banner = buildClassificationBanner(attributeModeConfig, [{ key: 'clearance.level', values: ['U', 'TS'] }]);
 
-		expect(banner.backgroundColor).toBe('#007a33');
+		expect(buildClassificationBanner(attributeModeConfig, [{ key: 'clearance.level', values: ['U', 'TS'] }]).backgroundColor).toBe('#007a33');
+		expect(buildClassificationBanner(attributeModeConfig, [{ key: 'clearance.level', values: ['TS', 'U'] }]).backgroundColor).toBe('#ff8c00');
 	});
 
 	it('excludes attributes with showInBanner disabled', () => {

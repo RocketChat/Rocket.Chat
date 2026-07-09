@@ -376,9 +376,11 @@ const buildSegment = (attribute, roomAttributes) => {
 const resolveColor = (config, roomAttributes) => {
 	const driver = config.attributes.find(({ drivesColor }) => drivesColor) ?? config.attributes[0];
 	const roomValues = roomAttributes.find(({ key }) => key === driver.source)?.values ?? [];
+	// values are ranked most restrictive first: index 0 = highest ranking
 	const matched = driver.values.filter(({ source }) => roomValues.includes(source));
 	if (matched.length === 0) return config.banner.fallbackColor ?? FALLBACK_COLOR;
-	return (config.banner.colorMode ?? 'highest') === 'highest' ? matched[matched.length - 1].color : matched[0].color;
+	if ((config.banner.colorMode ?? 'highest') === 'highest') return matched[0].color;
+	return roomValues.map((value) => driver.values.find(({ source }) => source === value)).find(Boolean)?.color ?? matched[0].color;
 };
 
 const buildClassificationBanner = (config, roomAttributes) => {
@@ -427,12 +429,12 @@ const exampleConfig = () => ({
 			showInBanner: true, showLabel: false, bannerLabel: '', labelSeparator: '', valueSeparator: '/',
 			sortAlpha: false, groupThreshold: 0, multipleLabel: '', drivesColor: true,
 			values: [
-				{ source: 'U', label: 'UNCLASSIFIED', color: '#007a33' },
-				{ source: 'CUI', label: 'CUI', color: '#502b85' },
-				{ source: 'C', label: 'CONFIDENTIAL', color: '#0033a0' },
-				{ source: 'S', label: 'SECRET', color: '#c8102e' },
-				{ source: 'TS', label: 'TOP SECRET', color: '#ff8c00' },
 				{ source: 'TS-SCI', label: 'TOP SECRET//SCI', color: '#fce100' },
+				{ source: 'TS', label: 'TOP SECRET', color: '#ff8c00' },
+				{ source: 'S', label: 'SECRET', color: '#c8102e' },
+				{ source: 'C', label: 'CONFIDENTIAL', color: '#0033a0' },
+				{ source: 'CUI', label: 'CUI', color: '#502b85' },
+				{ source: 'U', label: 'UNCLASSIFIED', color: '#007a33' },
 			],
 		},
 		{
@@ -553,8 +555,8 @@ const renderBannerOptions = () => {
 			banner.style === 'segmented'
 				? 'Not used by the segmented style — segments are separated by vertical rules instead of text.'
 				: 'Text placed between segments (max 8 characters). The US-Gov convention is “ // ”. Used by the classic and edge styles.'),
-		field('Color mode', select(banner.colorMode, [['highest', 'Most restrictive value'], ['attribute', 'First matched value']], (v) => { banner.colorMode = v; }),
-			'Which matched value of the color-driving attribute paints the banner. “Most restrictive” = the value furthest down its list, so order values least → most restrictive.'),
+		field('Color mode', select(banner.colorMode, [['highest', 'Most restrictive value'], ['attribute', 'First room value']], (v) => { banner.colorMode = v; }),
+			'Which matched value of the color-driving attribute paints the banner. “Most restrictive” = the highest-ranked match (index 0 = highest); “first room value” follows the order the room lists its values.'),
 		field('Fallback text', el('input', { type: 'text', value: banner.fallbackText, oninput: (e) => { banner.fallbackText = e.target.value; update(false); } }),
 			'Shown when the room carries no values covered by this configuration.'),
 		field('Fallback color', el('div', { className: 'swatch-cell' },
@@ -634,7 +636,7 @@ const renderAttribute = (attribute, index) => {
 		),
 		el('div', { className: 'values' },
 			el('div', { className: 'card-hint' },
-				'Value mappings — “source value” is the raw value on the room (case-sensitive), “banner label” is what displays. For the color-driving attribute, order values least → most restrictive: “most restrictive” color mode picks the furthest-down match.'),
+				'Value mappings — “source value” is the raw value on the room (case-sensitive), “banner label” is what displays. Rank values most restrictive FIRST: index 0 = highest ranking (like Virtru hierarchies); “most restrictive” color mode picks the earliest match.'),
 			el('table', {},
 				el('thead', {}, el('tr', {}, el('th', {}, 'Source value'), el('th', {}, 'Banner label'), el('th', {}, 'Color'), el('th', {}))),
 				el('tbody', {}, ...attribute.values.map(valueRow)),

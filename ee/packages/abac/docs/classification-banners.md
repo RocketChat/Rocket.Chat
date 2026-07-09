@@ -14,7 +14,7 @@ A builder page that generates valid configurations with a live preview is availa
 
 - **Segments**: one per attribute with `showInBanner: true`, in array order, joined by `banner.delimiter`. An attribute contributes a segment only when the room has at least one value matching one of its `values[].source` entries (matched against the room attribute whose key equals `attributes[].source`).
 - **Segment text**: matched value labels joined by `valueSeparator`. With `showLabel: true` the segment is prefixed with `bannerLabel + labelSeparator`. With `sortAlpha: true` labels are sorted alphabetically. When `groupThreshold > 0` and the matched value count is ≥ the threshold, the value list collapses to `multipleLabel`.
-- **Color**: the single attribute with `drivesColor: true` picks the banner background. `colorMode: "highest"` (default) selects the matched value with the highest index in that attribute's `values` array (most restrictive); `"attribute"` selects the first matched value. The foreground color is computed for readable contrast (WCAG relative luminance). If the driver attribute has no matched values, `banner.fallbackColor` is used.
+- **Color**: the single attribute with `drivesColor: true` picks the banner background. Its `values` array is ranked most restrictive first — **index 0 = highest ranking** (same convention as Virtru HIERARCHY attributes). `colorMode: "highest"` (default) selects the highest-ranked matched value (earliest in the array); `"attribute"` selects the first of the room's values that is mapped. The foreground color is computed for readable contrast (WCAG relative luminance). If the driver attribute has no matched values, `banner.fallbackColor` is used.
 - **Fallback**: when no attribute produces a segment, the banner renders `banner.fallbackText` on `banner.fallbackColor` (defaults: `NO CLASSIFICATION DATA` / `#6C727A`).
 - **Styles** (`banner.style`): `classic` — single centered line; `segmented` — segments separated by vertical rules instead of the delimiter; `edge` — classic with contrasting top/bottom edge rules.
 - The banner always renders above the room header.
@@ -63,12 +63,12 @@ This configuration reproduces the design prototype's default state. For a room w
       "multipleLabel": "",
       "drivesColor": true,
       "values": [
-        { "source": "U",      "label": "UNCLASSIFIED",    "color": "#007a33" },
-        { "source": "CUI",    "label": "CUI",             "color": "#502b85" },
-        { "source": "C",      "label": "CONFIDENTIAL",    "color": "#0033a0" },
-        { "source": "S",      "label": "SECRET",          "color": "#c8102e" },
+        { "source": "TS-SCI", "label": "TOP SECRET//SCI", "color": "#fce100" },
         { "source": "TS",     "label": "TOP SECRET",      "color": "#ff8c00" },
-        { "source": "TS-SCI", "label": "TOP SECRET//SCI", "color": "#fce100" }
+        { "source": "S",      "label": "SECRET",          "color": "#c8102e" },
+        { "source": "C",      "label": "CONFIDENTIAL",    "color": "#0033a0" },
+        { "source": "CUI",    "label": "CUI",             "color": "#502b85" },
+        { "source": "U",      "label": "UNCLASSIFIED",    "color": "#007a33" }
       ]
     },
     {
