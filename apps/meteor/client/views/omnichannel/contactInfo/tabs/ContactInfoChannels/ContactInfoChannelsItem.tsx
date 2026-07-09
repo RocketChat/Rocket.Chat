@@ -13,7 +13,7 @@ import { useOutboundMessageModal } from '../../../components/outboundMessage/mod
 import { useVisitorInfo } from '../../../directory/hooks/useVisitorInfo';
 import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
 
-type ContactInfoChannelsItemProps = Serialized<ILivechatContactChannel> & {
+export type ContactInfoChannelsItemProps = Serialized<ILivechatContactChannel> & {
 	contact?: Pick<ILivechatContact, '_id' | 'unknown'>;
 	canSendOutboundMessage?: boolean;
 };

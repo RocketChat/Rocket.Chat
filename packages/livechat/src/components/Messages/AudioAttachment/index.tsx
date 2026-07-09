@@ -5,7 +5,7 @@ import { createClassName } from '../../../helpers/createClassName';
 import { MessageBubble } from '../MessageBubble';
 import styles from './styles.scss';
 
-type AudioAttachmentProps = {
+export type AudioAttachmentProps = {
 	url: string;
 	className?: string;
 	t: (key: string) => string;

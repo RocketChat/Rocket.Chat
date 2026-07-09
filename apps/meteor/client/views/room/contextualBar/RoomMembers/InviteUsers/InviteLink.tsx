@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import useClipboardWithToast from '../../../../../hooks/useClipboardWithToast';
 
-type InviteLinkProps = {
+export type InviteLinkProps = {
 	linkText: string;
 	captionText: string;
 	onClickEdit: () => void;

@@ -10,7 +10,9 @@ import SurfaceRender from '../../Preview/Display/Surface/SurfaceRender';
 import type { SurfaceOptions } from '../../Preview/Display/Surface/constant';
 import RenderPayload from '../../RenderPayload/RenderPayload';
 
-const Payload = ({ blocks, surface }: { surface: SurfaceOptions; blocks: LayoutBlock[] }) => {
+export type PayloadProps = { surface: SurfaceOptions; blocks: LayoutBlock[] };
+
+const Payload = ({ blocks, surface }: PayloadProps) => {
 	const { dispatch } = useContext(context);
 	const blocksWithUniqueIds: ILayoutBlock[] = useMemo(
 		() =>

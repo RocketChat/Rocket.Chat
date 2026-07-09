@@ -1,6 +1,6 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
 
-type VideoConfMessageIconProps = {
+export type VideoConfMessageIconProps = {
 	variant?: keyof typeof styles;
 };
 

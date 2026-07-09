@@ -8,7 +8,7 @@ import QuickActionOptions from './QuickActionOptions';
 import { useQuickActions } from './hooks/useQuickActions';
 import { useOmnichannelRoom } from '../../../contexts/RoomContext';
 
-type QuickActionsProps = {
+export type QuickActionsProps = {
 	className?: ComponentProps<typeof Box>['className'];
 };
 

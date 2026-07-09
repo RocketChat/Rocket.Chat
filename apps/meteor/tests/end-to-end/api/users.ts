@@ -10,7 +10,7 @@ import { MongoClient } from 'mongodb';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials, apiEmail, apiUsername, wait, reservedWords } from '../../data/api-data';
-import { imgURL } from '../../data/interactions';
+import { imgURL, tiffURL } from '../../data/interactions';
 import { createAgent, makeAgentAvailable } from '../../data/livechat/rooms';
 import { removeAgent, getAgent } from '../../data/livechat/users';
 import { updatePermission, updateSetting, restorePermissionToRoles, getSettingValueById } from '../../data/permissions.helper';
@@ -2220,6 +2220,19 @@ describe('[Users]', () => {
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+			it('should reject non-renderable image types (e.g. TIFF)', (done) => {
+				void request
+					.post(api('users.setAvatar'))
+					.set(userCredentials)
+					.attach('image', tiffURL)
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-invalid-file-type');
 					})
 					.end(done);
 			});

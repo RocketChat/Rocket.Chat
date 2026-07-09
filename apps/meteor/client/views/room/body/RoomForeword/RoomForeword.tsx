@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import RoomForewordUsernameList from './RoomForewordUsernameList';
 
-type RoomForewordProps = { user: IUser | null; room: IRoom };
+export type RoomForewordProps = { user: IUser | null; room: IRoom };
 
 const RoomForeword = ({ user, room }: RoomForewordProps) => {
 	const { t } = useTranslation();

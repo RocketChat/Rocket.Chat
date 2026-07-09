@@ -38,7 +38,6 @@ import {
 	LivechatVisitorsRaw,
 	LoginServiceConfigurationRaw,
 	MediaCallsRaw,
-	MediaCallChannelsRaw,
 	MediaCallNegotiationsRaw,
 	MessageReadsRaw,
 	MessagesRaw,
@@ -126,7 +125,6 @@ registerModel('ILivechatTriggerModel', new LivechatTriggerRaw(db));
 registerModel('ILivechatVisitorsModel', new LivechatVisitorsRaw(db));
 registerModel('ILoginServiceConfigurationModel', new LoginServiceConfigurationRaw(db));
 registerModel('IMediaCallsModel', new MediaCallsRaw(db));
-registerModel('IMediaCallChannelsModel', new MediaCallChannelsRaw(db));
 registerModel('IMediaCallNegotiationsModel', new MediaCallNegotiationsRaw(db));
 registerModel('IMessageReadsModel', new MessageReadsRaw(db));
 registerModel('IMessagesModel', new MessagesRaw(db, trashCollection));

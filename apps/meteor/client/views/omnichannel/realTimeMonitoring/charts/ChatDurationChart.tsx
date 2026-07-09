@@ -40,7 +40,7 @@ const init = (canvas: HTMLCanvasElement, context: chartjs.Chart<'line'> | undefi
 		tooltipCallbacks,
 	});
 
-type ChatDurationChartProps = {
+export type ChatDurationChartProps = {
 	departmentId: ILivechatDepartment['_id'];
 	dateRange: { start: string; end: string };
 } & ComponentPropsWithoutRef<typeof Box>;

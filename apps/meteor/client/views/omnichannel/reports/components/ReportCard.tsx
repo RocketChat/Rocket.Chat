@@ -6,7 +6,7 @@ import { ReportCardContent } from './ReportCardContent';
 import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
 import PeriodSelector from '../../../../components/dashboards/PeriodSelector';
 
-type ReportCardProps = {
+export type ReportCardProps = {
 	id: string;
 	title: string;
 	children: ReactNode;

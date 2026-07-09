@@ -25,7 +25,7 @@ type FormPayloadCustomField = { [key: string]: string };
 
 export type RegisterFormValues = { name: string; email: string; department?: string; [key: string]: any };
 
-type RegisterProps = {
+export type RegisterProps = {
 	path: string;
 };
 

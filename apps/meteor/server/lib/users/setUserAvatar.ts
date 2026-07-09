@@ -10,6 +10,7 @@ import type { ClientSession } from 'mongodb';
 import { RocketChatFile } from '../../../app/file/server';
 import { FileUpload } from '../../../app/file-upload/server';
 import { settings } from '../../../app/settings/server';
+import { isRenderableImageType } from '../../../lib/renderableImageTypes';
 import { onceTransactionCommitedSuccessfully } from '../../database/utils';
 import { hasPermissionAsync } from '../authorization/hasPermission';
 import { SystemLogger } from '../logger/system';
@@ -145,10 +146,11 @@ export async function setUserAvatar(
 				});
 			}
 
-			if (!/image\/.+/.test(response.headers.get('content-type') || '')) {
+			const contentType = response.headers.get('content-type');
+			if (!isRenderableImageType(contentType)) {
 				SystemLogger.info({
 					msg: 'Not a valid content-type from the provided avatar url',
-					contentType: response.headers.get('content-type'),
+					contentType,
 					url: dataURI,
 				});
 				throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${dataURI}`, {

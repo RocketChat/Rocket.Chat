@@ -6,7 +6,7 @@ import MarkdownText from '../../../components/MarkdownText';
 import { useExpirationText } from '../../../hooks/useExpirationText';
 import { getUidDirectMessage } from '../../../lib/utils/getUidDirectMessage';
 
-type RoomMemberStatusProps = {
+export type RoomMemberStatusProps = {
 	room: IRoom;
 };
 

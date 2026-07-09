@@ -7,7 +7,9 @@ import RegisterUsername from './RegisterUsername';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
 import HomeSkeleton from '../../home/HomeSkeleton';
 
-const UsernameCheck = ({ children }: { children: ReactNode }) => {
+export type UsernameCheckProps = { children: ReactNode };
+
+const UsernameCheck = ({ children }: UsernameCheckProps) => {
 	const userId = useUserId();
 	const { data: userData, isLoading } = useUserInfoQuery({ userId: userId || '' }, { enabled: !!userId });
 

@@ -35,7 +35,7 @@ if (window.__BUGSNAG_KEY__) {
 	BugsnagErrorBoundary = Bugsnag.getPlugin('react')?.createErrorBoundary(React);
 }
 
-type OutermostErrorBoundaryProps = {
+export type OutermostErrorBoundaryProps = {
 	children: ReactNode;
 };
 

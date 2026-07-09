@@ -75,7 +75,6 @@ export type * from './models/ICronHistoryModel';
 export type * from './models/IMigrationsModel';
 export type * from './models/IModerationReportsModel';
 export type * from './models/IMediaCallsModel';
-export type * from './models/IMediaCallChannelsModel';
 export type * from './models/IMediaCallNegotiationsModel';
 export type * from './updater';
 export type * from './models/IWorkspaceCredentialsModel';

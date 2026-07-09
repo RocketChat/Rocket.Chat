@@ -9,7 +9,7 @@ import { useMemberExists } from '../../../hooks/useMemberExists';
 import type { UserInfoAction as UserInfoActionType } from '../../hooks/useUserInfoActions';
 import { useUserInfoActions } from '../../hooks/useUserInfoActions';
 
-type UserInfoActionsProps = {
+export type UserInfoActionsProps = {
 	user: Pick<IUser, '_id' | 'username' | 'name' | 'freeSwitchExtension'>;
 	rid: IRoom['_id'];
 	isInvited?: boolean;

@@ -16,7 +16,9 @@ import { useTwoFactorAuthSetupCheck } from '../hooks/loggedIn/useTwoFactorAuthSe
 import { useUnread } from '../hooks/loggedIn/useUnread';
 import { useUpdateVideoConfUser } from '../hooks/loggedIn/useUpdateVideoConfUser';
 
-const LoggedInArea = ({ children }: { children: ReactNode }) => {
+export type LoggedInAreaProps = { children: ReactNode };
+
+const LoggedInArea = ({ children }: LoggedInAreaProps) => {
 	const user = useUser();
 
 	if (!user) {

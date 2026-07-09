@@ -9,7 +9,7 @@ import ThreadListMessage from './ThreadListMessage';
 import { useDecryptedMessage } from '../../../../../hooks/useDecryptedMessage';
 import { normalizeThreadMessage } from '../../../../../lib/normalizeThreadMessage';
 
-type ThreadListItemProps = {
+export type ThreadListItemProps = {
 	thread: IThreadMainMessage;
 	unread: string[];
 	unreadUser: string[];

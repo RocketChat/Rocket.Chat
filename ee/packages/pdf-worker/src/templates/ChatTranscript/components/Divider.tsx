@@ -19,7 +19,9 @@ const styles = StyleSheet.create({
 	},
 });
 
-export const Divider = ({ divider }: { divider: string }) => (
+export type DividerProps = { divider: string };
+
+export const Divider = ({ divider }: DividerProps) => (
 	<View style={styles.wrapper} wrap={false}>
 		<View style={styles.line} />
 		<Text style={styles.text}>{divider}</Text>
