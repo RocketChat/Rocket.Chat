@@ -121,6 +121,8 @@
 		align-items: start;
 	}
 	@media (max-width: 980px) { main { grid-template-columns: minmax(0, 1fr); } }
+	.rail { position: sticky; top: 74px; max-height: calc(100vh - 86px); overflow-y: auto; }
+	@media (max-width: 980px) { .rail { position: static; max-height: none; overflow: visible; } }
 
 	section.card {
 		background: var(--paper);
@@ -305,7 +307,7 @@
 		</section>
 	</div>
 
-	<div>
+	<div class="rail">
 		<section class="card">
 			<h2>Simulated room values</h2>
 			<div class="card-hint">
@@ -546,9 +548,11 @@ const renderBannerOptions = () => {
 			...options.map(([v, text]) => el('option', { value: v, selected: v === value }, text)));
 	$('#banner-options').replaceChildren(
 		field('Style', select(banner.style, [['classic', 'Classic'], ['segmented', 'Segmented'], ['edge', 'Edge']], (v) => { banner.style = v; }),
-			'Classic: one centered line. Segmented: vertical rules between segments instead of the delimiter. Edge: classic plus contrasting top/bottom rules.'),
-		field('Segment delimiter', el('input', { type: 'text', className: 'mono', maxLength: 8, value: banner.delimiter, oninput: (e) => { banner.delimiter = e.target.value; update(false); } }),
-			'Text placed between segments (max 8 characters). The US-Gov convention is “ // ”.'),
+			'Classic: one line, segments joined by the delimiter text. Segmented: the delimiter is replaced by vertical divider rules. Edge: same as classic plus contrasting top/bottom border rules.'),
+		field('Segment delimiter', el('input', { type: 'text', className: 'mono', maxLength: 8, value: banner.delimiter, disabled: banner.style === 'segmented', oninput: (e) => { banner.delimiter = e.target.value; update(false); } }),
+			banner.style === 'segmented'
+				? 'Not used by the segmented style — segments are separated by vertical rules instead of text.'
+				: 'Text placed between segments (max 8 characters). The US-Gov convention is “ // ”. Used by the classic and edge styles.'),
 		field('Color mode', select(banner.colorMode, [['highest', 'Most restrictive value'], ['attribute', 'First matched value']], (v) => { banner.colorMode = v; }),
 			'Which matched value of the color-driving attribute paints the banner. “Most restrictive” = the value furthest down its list, so order values least → most restrictive.'),
 		field('Fallback text', el('input', { type: 'text', value: banner.fallbackText, oninput: (e) => { banner.fallbackText = e.target.value; update(false); } }),
@@ -635,7 +639,13 @@ const renderAttribute = (attribute, index) => {
 				el('thead', {}, el('tr', {}, el('th', {}, 'Source value'), el('th', {}, 'Banner label'), el('th', {}, 'Color'), el('th', {}))),
 				el('tbody', {}, ...attribute.values.map(valueRow)),
 			),
-			el('button', { onclick: () => { attribute.values.push({ source: '', label: '', color: '#6C727A' }); update(); } }, 'Add value'),
+			el('button', {
+				onclick: () => {
+					attribute.values.push({ source: '', label: '', color: '#6C727A' });
+					update();
+					document.querySelectorAll('#attributes .attr')[index]?.querySelector('tbody tr:last-child input')?.focus();
+				},
+			}, 'Add value'),
 		),
 	);
 };
@@ -659,7 +669,7 @@ const renderSimulation = () => {
 		return;
 	}
 	host.replaceChildren(
-		...config.attributes.map((attribute) => {
+		...config.attributes.map((attribute, groupIndex) => {
 			const selected = simulation[attribute.source] ?? [];
 			const available = attribute.values.filter((v) => v.source && !selected.includes(v.source));
 			const chip = (source) => {
@@ -680,6 +690,7 @@ const renderSimulation = () => {
 							if (!e.target.value) return;
 							simulation[attribute.source] = [...selected, e.target.value];
 							update();
+							document.querySelectorAll('#sim .sim-group')[groupIndex]?.querySelector('select')?.focus();
 						},
 					},
 						el('option', { value: '' }, selected.length ? 'Add value…' : 'Select values…'),
@@ -771,6 +782,7 @@ $('#btn-add-attr').addEventListener('click', () => {
 		values: [{ source: '', label: '', color: '#6C727A' }],
 	});
 	update();
+	document.querySelector('#attributes .attr:last-of-type input')?.focus();
 });
 
 const importDialog = $('#import-dialog');
