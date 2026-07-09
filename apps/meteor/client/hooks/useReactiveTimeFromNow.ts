@@ -3,9 +3,7 @@ import { useEffect, useReducer } from 'react';
 import type { DateInput } from '../lib/utils/dateFormat';
 import { formatFromNow } from '../lib/utils/dateFormat';
 
-const getRefreshInterval = (elapsedMs: number): number =>
-	// under 1h the text changes every minute; beyond that only hourly/daily, so 5m keeps it fresh
-	Math.abs(elapsedMs) < 3600000 ? 30000 : 300000;
+const getRefreshInterval = (elapsedMs: number): number => (Math.abs(elapsedMs) < 3600000 ? 30000 : 300000);
 
 export const useReactiveTimeFromNow = (date: DateInput | undefined, withSuffix = true): string | undefined => {
 	const parsed = date !== undefined ? new Date(date).getTime() : NaN;
