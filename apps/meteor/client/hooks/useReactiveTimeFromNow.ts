@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useReducer } from 'react';
 
 import type { DateInput } from '../lib/utils/dateFormat';
 import { formatFromNow } from '../lib/utils/dateFormat';
@@ -11,6 +11,8 @@ export const useReactiveTimeFromNow = (date: DateInput | undefined, withSuffix =
 	const parsed = date !== undefined ? new Date(date).getTime() : NaN;
 	const time = Number.isNaN(parsed) ? undefined : parsed;
 
+	const [, rerender] = useReducer((x) => x + 1, 0);
+
 	useEffect(() => {
 		if (time === undefined) {
 			return undefined;
@@ -21,6 +23,7 @@ export const useReactiveTimeFromNow = (date: DateInput | undefined, withSuffix =
 		const schedule = () => {
 			timeoutId = setTimeout(
 				() => {
+					rerender();
 					schedule();
 				},
 				getRefreshInterval(Date.now() - time),
