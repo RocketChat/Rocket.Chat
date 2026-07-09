@@ -1,4 +1,9 @@
-import { AbacAttributeStoreExternalError, buildClassificationBanner, getPdpHealthErrorCode, parseClassificationBannersConfig } from '@rocket.chat/abac';
+import {
+	AbacAttributeStoreExternalError,
+	buildClassificationBanner,
+	getPdpHealthErrorCode,
+	parseClassificationBannersConfig,
+} from '@rocket.chat/abac';
 import { Abac } from '@rocket.chat/core-services';
 import type { AbacActor } from '@rocket.chat/core-services';
 import type { IServerEvents, IUser } from '@rocket.chat/core-typings';

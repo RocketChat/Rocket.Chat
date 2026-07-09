@@ -9,6 +9,8 @@ import { Suspense, useMemo } from 'react';
 import HeaderSkeleton from '../Header/HeaderSkeleton';
 
 export type RoomLayoutProps = {
+	bannerTop?: ReactNode;
+	bannerBottom?: ReactNode;
 	header?: ReactNode;
 	body?: ReactNode;
 	footer?: ReactNode;
@@ -34,7 +36,7 @@ const useBreakpointsElement = () => {
 	};
 };
 
-const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps) => {
+const RoomLayout = ({ bannerTop, bannerBottom, header, body, footer, aside, ...props }: RoomLayoutProps) => {
 	const { ref, breakpoints } = useBreakpointsElement();
 
 	const contextualbarPosition = breakpoints.includes('md') ? 'relative' : 'absolute';
@@ -58,6 +60,7 @@ const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps) 
 			)}
 		>
 			<Box height='full' width='full' display='flex' flexDirection='column' backgroundColor='room' {...props} ref={ref}>
+				{bannerTop}
 				<Suspense fallback={<HeaderSkeleton />}>{header}</Suspense>
 				<Box display='flex' flexGrow={1} overflow='hidden' height='full' position='relative'>
 					<Box display={hideBody ? 'none' : 'flex'} flexDirection='column' flexGrow={1} minWidth={0}>
@@ -68,6 +71,7 @@ const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps) 
 					</Box>
 					{aside && <Suspense fallback={null}>{aside}</Suspense>}
 				</Box>
+				{bannerBottom}
 			</Box>
 		</LayoutContext.Provider>
 	);

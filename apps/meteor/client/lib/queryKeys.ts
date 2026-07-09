@@ -157,6 +157,8 @@ export const ABACQueryKeys = {
 		list: (...args: [query?: PaginatedRequest]) => [...ABACQueryKeys.rooms.all(), ...args] as const,
 		autocomplete: (...args: [query?: PaginatedRequest]) => [...ABACQueryKeys.rooms.all(), 'autocomplete', ...args] as const,
 		room: (roomId: string) => [...ABACQueryKeys.rooms.all(), roomId] as const,
+		classificationBanner: (roomId: string, attributes?: unknown) =>
+			[...ABACQueryKeys.rooms.room(roomId), 'classification-banner', ...(attributes !== undefined ? [attributes] : [])] as const,
 	},
 };
 

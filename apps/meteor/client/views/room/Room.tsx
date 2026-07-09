@@ -7,6 +7,7 @@ import { createElement, lazy, memo, Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 
+import ClassificationBanner from './ClassificationBanner';
 import RoomE2EESetup from './E2EESetup/RoomE2EESetup';
 import Header from './Header';
 import MessageHighlightProvider from './MessageList/providers/MessageHighlightProvider';
@@ -54,6 +55,8 @@ const Room = () => {
 						<RoomLayout
 							data-qa-rc-room={room._id}
 							aria-label={roomLabel}
+							bannerTop={<ClassificationBanner room={room} placement='top' />}
+							bannerBottom={<ClassificationBanner room={room} placement='bottom' />}
 							header={<Header room={room} />}
 							body={
 								shouldDisplayE2EESetup ? (
