@@ -1,4 +1,4 @@
-import { MeteorError, Presence, Team, Calendar } from '@rocket.chat/core-services';
+import { MeteorError, Presence, Team } from '@rocket.chat/core-services';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions, OAuthAccessTokens, OAuthRefreshTokens, OAuthAuthCodes } from '@rocket.chat/models';
 import {
@@ -29,7 +29,7 @@ import {
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { getLoginExpirationInMs, wrapExceptions } from '@rocket.chat/tools';
+import { getLoginExpirationInMs } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -37,26 +37,6 @@ import type { Filter } from 'mongodb';
 
 import { getUserForCheck, emailCheck } from '../../../app/2fa/server/code';
 import { resetTOTP } from '../../../app/2fa/server/functions/resetTOTP';
-import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
-import { checkEmailAvailability } from '../../../app/lib/server/functions/checkEmailAvailability';
-import {
-	checkUsernameAvailability,
-	checkUsernameAvailabilityWithValidation,
-} from '../../../app/lib/server/functions/checkUsernameAvailability';
-import { deleteUser } from '../../../app/lib/server/functions/deleteUser';
-import { getAvatarSuggestionForUser } from '../../../app/lib/server/functions/getAvatarSuggestionForUser';
-import { getFullUserDataByUniqueSearchTerm, defaultFields, fullFields } from '../../../app/lib/server/functions/getFullUserData';
-import { generateUsernameSuggestion } from '../../../app/lib/server/functions/getUsernameSuggestion';
-import { saveCustomFields } from '../../../app/lib/server/functions/saveCustomFields';
-import { saveCustomFieldsWithoutValidation } from '../../../app/lib/server/functions/saveCustomFieldsWithoutValidation';
-import { saveUser } from '../../../app/lib/server/functions/saveUser';
-import { sendWelcomeEmail } from '../../../app/lib/server/functions/saveUser/sendUserEmail';
-import { canEditExtension } from '../../../app/lib/server/functions/saveUser/validateUserEditing';
-import { setUserAvatar } from '../../../app/lib/server/functions/setUserAvatar';
-import { setUsernameWithValidation } from '../../../app/lib/server/functions/setUsername';
-import { validateCustomFields } from '../../../app/lib/server/functions/validateCustomFields';
-import { validateNameChars } from '../../../app/lib/server/functions/validateNameChars';
-import { validateUsername } from '../../../app/lib/server/functions/validateUsername';
 import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../../app/lib/server/lib/notifyListener';
 import { generateAccessToken } from '../../../app/lib/server/methods/createToken';
 import { deleteUserOwnAccount } from '../../../app/lib/server/methods/deleteUserOwnAccount';
@@ -67,9 +47,26 @@ import { generatePersonalAccessTokenOfUser } from '../../../imports/personal-acc
 import { regeneratePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/regenerateToken';
 import { removePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/removeToken';
 import { UserChangedAuditStore } from '../../lib/auditServerEvents/userChanged';
+import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { i18n } from '../../lib/i18n';
 import { SystemLogger } from '../../lib/logger/system';
 import { resetUserE2EEncriptionKey } from '../../lib/resetUserE2EKey';
+import { validateNameChars } from '../../lib/shared/validateNameChars';
+import { checkEmailAvailability } from '../../lib/users/checkEmailAvailability';
+import { checkUsernameAvailability, checkUsernameAvailabilityWithValidation } from '../../lib/users/checkUsernameAvailability';
+import { deleteUser } from '../../lib/users/deleteUser';
+import { getAvatarSuggestionForUser } from '../../lib/users/getAvatarSuggestionForUser';
+import { getFullUserDataByUniqueSearchTerm, defaultFields, fullFields } from '../../lib/users/getFullUserData';
+import { generateUsernameSuggestion } from '../../lib/users/getUsernameSuggestion';
+import { saveCustomFields } from '../../lib/users/saveCustomFields';
+import { saveCustomFieldsWithoutValidation } from '../../lib/users/saveCustomFieldsWithoutValidation';
+import { saveUser } from '../../lib/users/saveUser';
+import { sendWelcomeEmail } from '../../lib/users/saveUser/sendUserEmail';
+import { canEditExtension } from '../../lib/users/saveUser/validateUserEditing';
+import { setUserAvatar } from '../../lib/users/setUserAvatar';
+import { setUsernameWithValidation } from '../../lib/users/setUsername';
+import { validateCustomFields } from '../../lib/users/validateCustomFields';
+import { validateUsername } from '../../lib/users/validateUsername';
 import { registerUser } from '../../methods/registerUser';
 import { requestDataDownload } from '../../methods/requestDataDownload';
 import { resetAvatar } from '../../methods/resetAvatar';
@@ -1031,7 +1028,7 @@ const usersEndpoints = API.v1
 		async function action() {
 			const user = await getUserFromParams(this.bodyParams);
 
-			const data = await generateAccessToken(user._id, this.bodyParams.secret);
+			const data = await generateAccessToken(user._id, this.bodyParams.secret, this.user);
 
 			return API.v1.success({ data });
 		},
@@ -1546,7 +1543,7 @@ API.v1.get(
 
 		if (ids) {
 			return API.v1.success({
-				users: await Users.findNotOfflineByIds(Array.isArray(ids) ? ids : ids.split(','), options).toArray(),
+				users: await Users.findPresenceUsersByIds(Array.isArray(ids) ? ids : ids.split(','), options).toArray(),
 				full: false,
 			});
 		}
@@ -1982,12 +1979,6 @@ API.v1
 				),
 			);
 
-			if (!settings.get('Accounts_AllowUserStatusMessageChange')) {
-				throw new Meteor.Error('error-not-allowed', 'Change status is not allowed', {
-					method: 'users.setStatus',
-				});
-			}
-
 			const user = await (async () => {
 				if (isUserFromParams(this.bodyParams, this.userId, this.user)) {
 					return Users.findOneById(this.userId);
@@ -2002,6 +1993,12 @@ API.v1
 			}
 
 			const { status, message, expiresAt } = this.bodyParams;
+
+			if (message && !settings.get('Accounts_AllowUserStatusMessageChange')) {
+				throw new Meteor.Error('error-not-allowed', 'Change status is not allowed', {
+					method: 'users.setStatus',
+				});
+			}
 
 			const statusExpiresAt = expiresAt ? new Date(expiresAt) : undefined;
 			if (statusExpiresAt && Number.isNaN(statusExpiresAt.getTime())) {
@@ -2027,10 +2024,6 @@ API.v1
 			}
 
 			await Presence.setStatus(user._id, effectiveStatus, message, statusExpiresAt);
-
-			if (status) {
-				void wrapExceptions(() => Calendar.cancelUpcomingStatusChanges(user._id)).suppress();
-			}
 
 			return API.v1.success();
 		},

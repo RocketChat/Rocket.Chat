@@ -2,7 +2,7 @@ import { Box, SidebarItem } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { memo } from 'react';
 
-type SidebarGenericItemProps = {
+export type SidebarGenericItemProps = {
 	href?: string;
 	active?: boolean;
 	featured?: boolean;

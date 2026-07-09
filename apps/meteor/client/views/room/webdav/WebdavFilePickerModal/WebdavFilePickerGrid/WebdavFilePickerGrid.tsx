@@ -6,7 +6,7 @@ import WebdavFilePickerGridItem from './WebdavFilePickerGridItem';
 import GenericNoResults from '../../../../../components/GenericNoResults';
 import { getNodeIconType } from '../lib/getNodeIconType';
 
-type WebdavFilePickerGridProps = {
+export type WebdavFilePickerGridProps = {
 	webdavNodes: IWebdavNode[];
 	onNodeClick: (file: IWebdavNode) => void;
 	isLoading: boolean;

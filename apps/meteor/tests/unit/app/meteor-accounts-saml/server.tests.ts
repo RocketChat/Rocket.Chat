@@ -1,3 +1,5 @@
+import zlib from 'node:zlib';
+
 import { isTruthy } from '@rocket.chat/tools';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
@@ -25,6 +27,8 @@ import {
 	samlResponseAssertionId,
 	samlResponseValidSignatures,
 	samlResponseValidAssertionSignature,
+	samlResponseNestedInWrapper,
+	samlResponseSignatureReferenceMismatch,
 	encryptedResponse,
 	profile,
 	certificate,
@@ -40,17 +44,22 @@ import { LogoutRequestParser } from '../../../../app/meteor-accounts-saml/server
 import { LogoutResponseParser } from '../../../../app/meteor-accounts-saml/server/lib/parsers/LogoutResponse';
 import { ResponseParser } from '../../../../app/meteor-accounts-saml/server/lib/parsers/Response';
 
-const { ServiceProviderMetadata } = proxyquire
-	.noCallThru()
-	.load('../../../../app/meteor-accounts-saml/server/lib/generators/ServiceProviderMetadata', {
-		'meteor/meteor': {
-			Meteor: {
-				absoluteUrl() {
-					return 'http://localhost:3000/';
-				},
+const meteorStub = {
+	'meteor/meteor': {
+		'@global': true,
+		'Meteor': {
+			absoluteUrl() {
+				return 'http://localhost:3000/';
 			},
 		},
-	});
+	},
+};
+
+const { ServiceProviderMetadata } = proxyquire
+	.noCallThru()
+	.load('../../../../app/meteor-accounts-saml/server/lib/generators/ServiceProviderMetadata', meteorStub);
+
+const { SAMLServiceProvider } = proxyquire.noCallThru().load('../../../../app/meteor-accounts-saml/server/lib/ServiceProvider', meteorStub);
 
 describe('SAML', () => {
 	describe('[AuthorizeRequest]', () => {
@@ -269,6 +278,59 @@ describe('SAML', () => {
 					expect(err).to.be.equal('Error. Logout not confirmed by IDP');
 					expect(inResponseTo).to.be.null;
 				});
+			});
+		});
+
+		describe('logoutResponseToUrl', () => {
+			const serviceProvider = new SAMLServiceProvider(serviceProviderOptions);
+
+			const generateUrl = (relayState: string | undefined): Promise<string> =>
+				new Promise((resolve, reject) => {
+					serviceProvider.logoutResponseToUrl('logout-response', relayState, (err: unknown, url?: string) => {
+						if (err || !url) {
+							return reject(err ?? new Error('No URL returned'));
+						}
+						resolve(url);
+					});
+				});
+
+			it('should echo back the exact RelayState received on the request', async () => {
+				const relayState = 'idp-shared-session-relay-state';
+				const url = await generateUrl(relayState);
+				const params = new URLSearchParams(url.split('?')[1]);
+
+				expect(url).to.match(/^\[idpSLORedirectURL\]\?/);
+				expect(params.get('SAMLResponse')).to.be.a('string').that.is.not.empty;
+				expect(params.get('RelayState')).to.be.equal(relayState);
+			});
+
+			it('should preserve a RelayState that requires URL encoding', async () => {
+				const relayState = 'https://sp.example.com/return?foo=bar baz&x=1';
+				const url = await generateUrl(relayState);
+				const params = new URLSearchParams(url.split('?')[1]);
+
+				expect(params.get('RelayState')).to.be.equal(relayState);
+			});
+
+			it('should omit RelayState entirely when none was received on the request', async () => {
+				const url = await generateUrl(undefined);
+				const params = new URLSearchParams(url.split('?')[1]);
+
+				expect(params.has('RelayState')).to.be.false;
+				expect(params.get('SAMLResponse')).to.be.a('string').that.is.not.empty;
+			});
+
+			it('should target the IdP SLO endpoint with the deflated response and the relay state', async () => {
+				const url = await generateUrl('relay-123');
+				const [target, query] = url.split('?');
+				const params = new URLSearchParams(query);
+
+				expect(target).to.be.equal('[idpSLORedirectURL]');
+				expect([...params.keys()]).to.be.deep.equal(['SAMLResponse', 'RelayState']);
+				expect(params.get('RelayState')).to.be.equal('relay-123');
+
+				const inflated = zlib.inflateRawSync(Buffer.from(params.get('SAMLResponse') ?? '', 'base64')).toString();
+				expect(inflated).to.be.equal('logout-response');
 			});
 		});
 	});
@@ -690,6 +752,32 @@ describe('SAML', () => {
 					expect(profile).to.be.null;
 				});
 			});
+
+			for (const signatureValidationType of ['None', 'Response', 'Assertion', 'Either', 'All']) {
+				it(`should reject a response that is not the document root (${signatureValidationType})`, () => {
+					const providerOptions = { ...serviceProviderOptions, signatureValidationType, cert: certificate };
+
+					const parser = new ResponseParser(providerOptions);
+					parser.validate(makeLoginResponseEnvelope(samlResponseNestedInWrapper), (err, profile, loggedOut) => {
+						expect(err).to.be.an('error').that.has.property('message').that.is.equal('SAML Response must be the document root');
+						expect(profile).to.not.exist;
+						expect(loggedOut).to.be.false;
+					});
+				});
+			}
+
+			for (const signatureValidationType of ['Response', 'All']) {
+				it(`should reject a response whose signature does not cover the validated element (${signatureValidationType})`, () => {
+					const providerOptions = { ...serviceProviderOptions, signatureValidationType, cert: certificate };
+
+					const parser = new ResponseParser(providerOptions);
+					parser.validate(makeLoginResponseEnvelope(samlResponseSignatureReferenceMismatch), (err, profile, loggedOut) => {
+						expect(err).to.be.an('error').that.has.property('message').that.is.equal('Invalid Signature');
+						expect(profile).to.not.exist;
+						expect(loggedOut).to.be.false;
+					});
+				});
+			}
 		});
 	});
 
@@ -1102,10 +1190,10 @@ describe('SAML', () => {
 				'./getSAMLEnvelope': { getSAMLEnvelope: async () => ({ relayState: null }) },
 				'../../../../lib/utils/arrayUtils': { ensureArray: (v: any) => v },
 				'../../../../server/lib/logger/system': { SystemLogger: { error: sinon.stub(), warn: sinon.stub() } },
-				'../../../lib/server/functions/addUserToRoom': { addUserToRoom: sinon.stub() },
-				'../../../lib/server/functions/createRoom': { createRoom: sinon.stub() },
-				'../../../lib/server/functions/getUsernameSuggestion': { generateUsernameSuggestion: sinon.stub() },
-				'../../../lib/server/functions/saveUserIdentity': { saveUserIdentity: sinon.stub() },
+				'../../../../server/lib/rooms/addUserToRoom': { addUserToRoom: sinon.stub() },
+				'../../../../server/lib/rooms/createRoom': { createRoom: sinon.stub() },
+				'../../../../server/lib/users/getUsernameSuggestion': { generateUsernameSuggestion: sinon.stub() },
+				'../../../../server/lib/users/saveUserIdentity': { saveUserIdentity: sinon.stub() },
 				'../../../settings/server': { settings: { get: sinon.stub() } },
 				'../../../utils/lib/i18n': { i18n: { t: (s: string) => s, languages: [] } },
 			}).SAML;

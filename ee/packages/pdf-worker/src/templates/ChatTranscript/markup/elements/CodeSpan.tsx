@@ -22,7 +22,7 @@ export const codeStyles = StyleSheet.create({
 	},
 });
 
-type CodeSpanProps = {
+export type CodeSpanProps = {
 	code: string;
 };
 

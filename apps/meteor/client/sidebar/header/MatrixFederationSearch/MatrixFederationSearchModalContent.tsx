@@ -11,7 +11,7 @@ import FederatedRoomListErrorBoundary from './FederatedRoomListErrorBoundary';
 import MatrixFederationManageServersModal from './MatrixFederationManageServerModal';
 import MatrixFederationSearch from './MatrixFederationSearch';
 
-type MatrixFederationSearchModalContentProps = {
+export type MatrixFederationSearchModalContentProps = {
 	servers: Array<{
 		name: string;
 		default: boolean;

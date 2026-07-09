@@ -11,7 +11,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-type NoInstalledAppMatchesEmptyStateProps = {
+export type NoInstalledAppMatchesEmptyStateProps = {
 	shouldShowSearchText: boolean;
 	text: string;
 	onButtonClick: () => void;

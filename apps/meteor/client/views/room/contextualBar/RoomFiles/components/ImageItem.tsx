@@ -1,6 +1,6 @@
 import { Avatar, Box } from '@rocket.chat/fuselage';
 
-type ImageItemProps = {
+export type ImageItemProps = {
 	id: string;
 	url: string | undefined;
 	name: string | undefined;

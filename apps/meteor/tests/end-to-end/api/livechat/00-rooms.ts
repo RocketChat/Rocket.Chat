@@ -1172,6 +1172,105 @@ describe('LIVECHAT - rooms', () => {
 		});
 	});
 
+	describe('livechat/rooms.delete', () => {
+		const createRoomForDeletion = async () => {
+			const visitor = await createVisitor(undefined, `delete-room-${faker.string.uuid()}`);
+			const room = await createLivechatRoom(visitor.token);
+
+			return { room, visitor };
+		};
+
+		it('should fail if user is not logged in', async () => {
+			await request
+				.post(api('livechat/rooms.delete'))
+				.send({ roomId: 'invalid-room-id' })
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
+				});
+		});
+
+		it('should fail if roomId is not provided', async () => {
+			await request
+				.post(api('livechat/rooms.delete'))
+				.set(credentials)
+				.send({})
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('error').that.includes("must have required property 'roomId'");
+				});
+		});
+
+		it('should fail if the livechat room is still open', async () => {
+			const { room, visitor } = await createRoomForDeletion();
+
+			await request
+				.post(api('livechat/rooms.delete'))
+				.set(credentials)
+				.send({ roomId: room._id })
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+
+			await closeOmnichannelRoom(room._id);
+			await deleteVisitor(visitor.token);
+		});
+
+		it('should delete a closed livechat room', async () => {
+			const { room, visitor } = await createRoomForDeletion();
+
+			await closeOmnichannelRoom(room._id);
+
+			await request
+				.post(api('livechat/rooms.delete'))
+				.set(credentials)
+				.send({ roomId: room._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.get(api('channels.info'))
+				.set(credentials)
+				.query({ roomId: room._id })
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-room-not-found');
+				});
+
+			await deleteVisitor(visitor.token);
+		});
+
+		describe('with no permission', () => {
+			before(async () => {
+				await removePermissionFromAllRoles('remove-closed-livechat-room');
+			});
+
+			after(async () => {
+				await restorePermissionToRoles('remove-closed-livechat-room');
+			});
+
+			it('should fail if user does not have the remove-closed-livechat-room permission', async () => {
+				await request
+					.post(api('livechat/rooms.delete'))
+					.set(credentials)
+					.send({ roomId: 'invalid-room-id' })
+					.expect(403)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					});
+			});
+		});
+	});
+
 	describe('livechat/room.forward', () => {
 		it('should return an "unauthorized error" when the user does not have "view-l-room" permission', async () => {
 			await updatePermission('transfer-livechat-guest', ['admin']);

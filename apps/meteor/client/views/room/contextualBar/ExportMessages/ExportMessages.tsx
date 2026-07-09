@@ -343,7 +343,7 @@ const ExportMessages = () => {
 													}}
 													onBlur={onBlur}
 													placeholder={t('Email_Placeholder_any')}
-													addon={<Icon name='mail' size='x20' />}
+													endAddon={<Icon name='mail' size='x20' />}
 													error={errors?.additionalEmails?.message}
 												/>
 											)}
@@ -357,7 +357,7 @@ const ExportMessages = () => {
 										<Controller
 											name='subject'
 											control={control}
-											render={({ field }) => <TextAreaInput rows={3} {...field} addon={<Icon name='edit' size='x20' />} />}
+											render={({ field }) => <TextAreaInput rows={3} {...field} endAddon={<Icon name='edit' size='x20' />} />}
 										/>
 									</FieldRow>
 								</Field>

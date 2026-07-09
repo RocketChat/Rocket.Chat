@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { UsersFilters } from '../AdminUsersPage';
 
-type UsersTableFiltersProps = {
+export type UsersTableFiltersProps = {
 	setUsersFilters: Dispatch<SetStateAction<UsersFilters>>;
 	roleData: { roles: Serialized<IRole>[] } | undefined;
 };
@@ -76,7 +76,7 @@ const UsersTableFilters = ({ roleData, setUsersFilters }: UsersTableFiltersProps
 			<Margins inlineEnd={isLargeScreenOrBigger ? 16 : 0}>
 				<TextInput
 					placeholder={t('Search_Users')}
-					addon={<Icon name='magnifier' size='x20' />}
+					endAddon={<Icon name='magnifier' size='x20' />}
 					onChange={handleSearchTextChange}
 					value={text}
 					flexGrow={2}

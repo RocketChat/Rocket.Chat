@@ -14,7 +14,7 @@ import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 import { useMessagesSent } from './useMessagesSent';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 
-type MessagesSentSectionProps = {
+export type MessagesSentSectionProps = {
 	timezone: 'utc' | 'local';
 };
 

@@ -1,7 +1,7 @@
 import { Box, ProgressBar } from '@rocket.chat/fuselage';
 import { useId, type ReactNode } from 'react';
 
-type AppsUsageCardSectionProps = {
+export type AppsUsageCardSectionProps = {
 	title: ReactNode;
 	tip?: string;
 	appsCount: number;

@@ -22,7 +22,7 @@ import { PaginatedVirtualList } from '../../../../components/PaginatedVirtualLis
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import { useGoToRoom } from '../../hooks/useGoToRoom';
 
-type DiscussionsListProps = {
+export type DiscussionsListProps = {
 	itemCount: number;
 	discussions: Array<IDiscussionMessage>;
 	loadMoreItems: UseInfiniteQueryResult['fetchNextPage'];
@@ -76,7 +76,7 @@ function DiscussionsList({
 					value={text}
 					onChange={onChangeFilter}
 					ref={inputRef as RefObject<HTMLInputElement>}
-					addon={<Icon name='magnifier' size='x20' />}
+					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
 			</ContextualbarSection>
 			<ContextualbarContent paddingInline={0}>

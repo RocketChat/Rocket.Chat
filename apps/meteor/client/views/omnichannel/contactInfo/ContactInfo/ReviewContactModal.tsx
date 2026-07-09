@@ -13,7 +13,7 @@ import { ContactManagerInput } from '../../additionalForms';
 import { useCustomFieldsMetadata } from '../../directory/hooks/useCustomFieldsMetadata';
 import { useReviewContact } from '../hooks/useReviewContact';
 
-type ReviewContactModalProps = {
+export type ReviewContactModalProps = {
 	contact: Serialized<ILivechatContact>;
 	onCancel: () => void;
 };

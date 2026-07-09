@@ -10,7 +10,7 @@ import InviteUsersError from './InviteUsersError';
 import InviteUsersLoading from './InviteUsersLoading';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 
-type InviteUsersWithDataProps = {
+export type InviteUsersWithDataProps = {
 	rid: IRoom['_id'];
 	onClickBack: () => void;
 };

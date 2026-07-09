@@ -48,7 +48,7 @@ type EmailInboxFormData = {
 	imapRetries: string;
 };
 
-type EmailInboxFormProps = {
+export type EmailInboxFormProps = {
 	inboxData?: IEmailInboxPayload;
 };
 

@@ -27,7 +27,7 @@ import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { useArchiveRoom } from '../../hooks/roomActions/useArchiveRoom';
 import { useDeleteRoom } from '../../hooks/roomActions/useDeleteRoom';
 
-type EditRoomProps = {
+export type EditRoomProps = {
 	room: IRoom;
 	onChange: () => void;
 	onDelete: () => void;

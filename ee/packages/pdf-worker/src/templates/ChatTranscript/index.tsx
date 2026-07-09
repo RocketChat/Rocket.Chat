@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
 	},
 });
 
-type ChatTranscriptPDFProps = Omit<ChatTranscriptData, 'i18n'>;
+export type ChatTranscriptPDFProps = Omit<ChatTranscriptData, 'i18n'>;
 
 export const ChatTranscriptPDF = ({ header, messages }: ChatTranscriptPDFProps) => {
 	const { t } = useTranslation();

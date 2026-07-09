@@ -15,7 +15,7 @@ import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useAutoTranslate } from '../hooks/useAutoTranslate';
 import { useKatex } from '../hooks/useKatex';
 
-type MessageListProviderProps = {
+export type MessageListProviderProps = {
 	children: ReactNode;
 	attachmentDimension?: {
 		width?: number;

@@ -26,7 +26,9 @@ const DEPARTMENTS_ENDPOINTS = {
 	archived: '/v1/livechat/departments/archived',
 } as const;
 
-const DepartmentsTable = ({ archived }: { archived: boolean }) => {
+export type DepartmentsTableProps = { archived: boolean };
+
+const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 	const t = useTranslation();
 	const router = useRouter();
 	const [text, setText] = useState('');

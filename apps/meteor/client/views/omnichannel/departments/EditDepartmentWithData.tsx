@@ -9,7 +9,7 @@ import { FormSkeleton } from '../../../components/Skeleton';
 
 const params = { onlyMyDepartments: 'true' } as const;
 
-type EditDepartmentWithDataProps = {
+export type EditDepartmentWithDataProps = {
 	id?: string;
 	title: string;
 };

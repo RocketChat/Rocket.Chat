@@ -4,7 +4,7 @@ import { useMethod } from '@rocket.chat/ui-contexts';
 import type { ActionInputBaseProps } from './ActionInputBase';
 import ActionInputBase from './ActionInputBase';
 
-type MethodActionInputProps = Omit<ActionInputBaseProps, 'onAction'> & {
+export type MethodActionInputProps = Omit<ActionInputBaseProps, 'onAction'> & {
 	value: keyof ServerMethods;
 };
 

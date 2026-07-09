@@ -2,7 +2,7 @@ import { Accordion, AccordionItem, Box, Button } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { Trans, useTranslation } from 'react-i18next';
 
-type DisableE2EEModalProps = {
+export type DisableE2EEModalProps = {
 	onConfirm: () => void;
 	onCancel: () => void;
 	roomType: string;

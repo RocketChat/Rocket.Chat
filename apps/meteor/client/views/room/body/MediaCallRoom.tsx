@@ -26,7 +26,7 @@ const isMediaCallRoom = (room: IRoom, peerInfo?: PeerInfo) => {
 	return room.uids.includes(peerInfo.userId);
 };
 
-type MediaCallRoomProps = {
+export type MediaCallRoomProps = {
 	children: ReactNode;
 };
 

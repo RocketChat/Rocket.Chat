@@ -9,7 +9,7 @@ import { useResetE2EPasswordMutation } from '../../hooks/useResetE2EPasswordMuta
 
 const isInvalidE2EEPasswordError = (error: unknown): boolean => error instanceof DOMException && error.name === 'OperationError';
 
-type EnterE2EPasswordModalProps = {
+export type EnterE2EPasswordModalProps = {
 	onConfirm: (password: string) => void | Promise<void>;
 	onClose: () => void;
 	onCancel: () => void;

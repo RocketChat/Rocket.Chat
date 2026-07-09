@@ -3,9 +3,9 @@ import { MeteorError, Team } from '@rocket.chat/core-services';
 import type { IRoom, ITeam, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
 
-import { deleteRoom } from '../../../app/lib/server/functions/deleteRoom';
 import { eraseRoom } from '../../lib/eraseRoom';
 import { SystemLogger } from '../../lib/logger/system';
+import { deleteRoom } from '../../lib/rooms/deleteRoom';
 
 type EraseRoomFnType = <T extends AtLeast<IUser, '_id' | 'name' | 'username'>>(rid: string, user: T) => Promise<boolean | void>;
 

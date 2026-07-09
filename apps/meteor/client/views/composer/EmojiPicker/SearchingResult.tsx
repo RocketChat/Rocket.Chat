@@ -14,7 +14,7 @@ import type { EmojiItem } from '../../../../app/emoji/client';
  *
  */
 
-type SearchingResultProps = {
+export type SearchingResultProps = {
 	searchResults: EmojiItem[];
 	handleSelectEmoji: (event: MouseEvent<HTMLElement>) => void;
 };

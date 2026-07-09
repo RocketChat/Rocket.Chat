@@ -12,7 +12,7 @@ import Field from '../../components/Field';
 import Info from '../../components/Info';
 import Label from '../../components/Label';
 
-type ContactFieldProps = {
+export type ContactFieldProps = {
 	contact: IVisitor;
 	room: IOmnichannelGenericRoom;
 };

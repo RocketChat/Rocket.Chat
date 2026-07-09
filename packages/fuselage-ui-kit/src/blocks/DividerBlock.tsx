@@ -4,7 +4,7 @@ import { memo } from 'react';
 
 import type { BlockProps } from '../utils/BlockProps';
 
-type DividerBlockProps = BlockProps<UiKit.DividerBlock>;
+export type DividerBlockProps = BlockProps<UiKit.DividerBlock>;
 
 const DividerBlock = ({ className }: DividerBlockProps) => <Divider className={className} marginBlock={24} />;
 

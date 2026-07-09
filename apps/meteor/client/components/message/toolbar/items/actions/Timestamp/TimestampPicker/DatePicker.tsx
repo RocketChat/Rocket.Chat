@@ -4,7 +4,7 @@ import type { ChangeEvent } from 'react';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type DatePickerProps = {
+export type DatePickerProps = {
 	value: Date;
 	onChange: (date: Date) => void;
 };

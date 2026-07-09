@@ -22,7 +22,7 @@ export const CARD_MARGIN = 2;
 export const CARD_TOTAL_HEIGHT = CARD_HEIGHT + CARD_MARGIN * 2;
 export const CARD_TOTAL_WIDTH = CARD_MAX_WIDTH + CARD_MARGIN * 2;
 
-type CardProps = {
+export type CardProps = {
 	children: ReactNode;
 	title?: string;
 	maxWidth?: string | number;

@@ -40,7 +40,9 @@ function expandedReducer(
 	}
 }
 
-const AppLogs = ({ id }: { id: string }) => {
+export type AppLogsProps = { id: string };
+
+const AppLogs = ({ id }: AppLogsProps) => {
 	const { t } = useTranslation();
 
 	const router = useRouter();

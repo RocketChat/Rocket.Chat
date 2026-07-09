@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { ISettings } from '../../../apps/@types/IOrchestrator';
 
-type AppDetailsPageTabsProps = {
+export type AppDetailsPageTabsProps = {
 	context: string;
 	installed: boolean | undefined;
 	isSecurityVisible: boolean;

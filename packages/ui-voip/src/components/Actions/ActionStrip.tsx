@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 
 export const ACTION_STRIP_TOTAL_HEIGHT = 52;
 
-type ActionStripProps = {
+export type ActionStripProps = {
 	children: ReactNode;
 	leftSlot?: ReactNode;
 	rightSlot?: ReactNode;

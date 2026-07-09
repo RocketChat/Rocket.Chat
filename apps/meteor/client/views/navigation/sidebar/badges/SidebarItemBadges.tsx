@@ -5,7 +5,7 @@ import UnreadBadge from './UnreadBadge';
 import InvitationBadge from '../../../../components/InvitationBadge';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
-type SidebarItemBadgesProps = {
+export type SidebarItemBadgesProps = {
 	room: SubscriptionWithRoom;
 	roomTitle?: string;
 };

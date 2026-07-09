@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import EditSound from './EditSound';
 import { FormSkeleton } from '../../../components/Skeleton';
 
-type EditCustomSoundProps = {
+export type EditCustomSoundProps = {
 	_id: string | undefined;
 	onChange?: () => void;
 	close: () => void;

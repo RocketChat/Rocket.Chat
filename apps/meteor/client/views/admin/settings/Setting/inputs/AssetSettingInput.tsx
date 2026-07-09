@@ -6,7 +6,7 @@ import type { ChangeEventHandler, DragEvent, SyntheticEvent } from 'react';
 
 import type { SettingInputProps } from './types';
 
-type AssetSettingInputProps = Omit<SettingInputProps<{ url: string }>, 'onChangeValue'> & {
+export type AssetSettingInputProps = Omit<SettingInputProps<{ url: string }>, 'onChangeValue'> & {
 	asset?: any;
 	fileConstraints?: { extensions: string[] };
 };

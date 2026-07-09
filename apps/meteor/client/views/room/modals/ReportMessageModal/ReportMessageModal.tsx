@@ -14,7 +14,7 @@ type ReportMessageModalsFields = {
 	description: string;
 };
 
-type ReportMessageModalProps = {
+export type ReportMessageModalProps = {
 	onClose: () => void;
 	message: IMessage;
 };
