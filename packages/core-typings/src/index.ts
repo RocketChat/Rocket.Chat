@@ -52,6 +52,7 @@ export * from './IEmojiCustom';
 export * from './ICustomEmojiDescriptor';
 export * from './IAnalytics';
 export * from './ICredentialToken';
+export * from './ISamlUsedAssertions';
 export * from './IAvatar';
 export * from './ICustomUserStatus';
 export * from './IEmailMessageHistory';
