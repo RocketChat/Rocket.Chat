@@ -83,3 +83,4 @@ export * from './updater';
 export * from './models/IWorkspaceCredentialsModel';
 export * from './models/ICallHistoryModel';
 export * from './models/IAbacAttributesModel';
+export * from './models/ISamlUsedAssertionsModel';
