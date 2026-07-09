@@ -5,8 +5,20 @@ import { isRecord } from '@rocket.chat/tools';
 import { SystemLogger } from './logger/system';
 import { settings } from '../settings';
 
-const isValidationRuleArray = (value: unknown): value is SettingValidationRule[] =>
-	Array.isArray(value) && value.every((rule) => isRecord(rule) && 'query' in rule && 'errorKey' in rule);
+export class SettingValidationError extends Error {}
+
+const isAppliesWhenCondition = (value: unknown): value is { _id: ISetting['_id']; value: unknown } =>
+	isRecord(value) && typeof value._id === 'string';
+
+const isValidationRule = (rule: unknown): rule is SettingValidationRule =>
+	isRecord(rule) &&
+	isRecord(rule.query) &&
+	typeof rule.errorKey === 'string' &&
+	(rule.appliesWhen === undefined ||
+		isAppliesWhenCondition(rule.appliesWhen) ||
+		(Array.isArray(rule.appliesWhen) && rule.appliesWhen.every(isAppliesWhenCondition)));
+
+const isValidationRuleArray = (value: unknown): value is SettingValidationRule[] => Array.isArray(value) && value.every(isValidationRule);
 
 const parseValidationRules = (settingId: ISetting['_id'], validation: NonNullable<ISetting['validation']>): SettingValidationRule[] => {
 	if (typeof validation !== 'string') {
@@ -109,7 +121,7 @@ export const validateSettingRules = (changes: { _id: ISetting['_id']; value: ISe
 				continue;
 			}
 
-			throw new Error(rule.errorKey);
+			throw new SettingValidationError(rule.errorKey);
 		}
 	}
 };

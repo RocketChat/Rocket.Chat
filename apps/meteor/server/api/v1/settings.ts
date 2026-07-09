@@ -26,7 +26,7 @@ import _ from 'underscore';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../lib/notifyListener';
-import { validateSettingRules } from '../../lib/settingValidationRules';
+import { SettingValidationError, validateSettingRules } from '../../lib/settingValidationRules';
 import { disableCustomScripts } from '../../lib/shared/disableCustomScripts';
 import { addOAuthServiceMethod } from '../../meteor-methods/auth/addOAuthService';
 import { SettingsEvents, settings } from '../../settings';
@@ -437,19 +437,18 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		// TODO(next major): unify both validations into one function with a common API error response
 		try {
-			validateSettingRules(this.bodyParams.settings);
+			await saveSettingsBulk(this.userId, this.bodyParams.settings, {
+				username: this.user.username ?? '',
+				ip: this.requestIp ?? '',
+				useragent: this.request.headers.get('user-agent') ?? '',
+			});
 		} catch (error) {
-			// the message is the i18n key; it becomes the response `error` so the client translates it
-			return API.v1.failure(error instanceof Error ? error.message : String(error), 'error-setting-validation-failed');
+			if (error instanceof SettingValidationError) {
+				return API.v1.failure(error.message, 'error-setting-validation-failed');
+			}
+			throw error;
 		}
-
-		await saveSettingsBulk(this.userId, this.bodyParams.settings, {
-			username: this.user.username ?? '',
-			ip: this.requestIp ?? '',
-			useragent: this.request.headers.get('user-agent') ?? '',
-		});
 
 		return API.v1.success();
 	},
