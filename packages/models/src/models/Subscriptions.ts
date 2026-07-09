@@ -46,9 +46,10 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			{ key: { alert: 1 } },
 			{ key: { ts: 1 } },
 			{ key: { ls: 1 } },
-			{ key: { desktopNotifications: 1 }, sparse: true },
-			{ key: { mobilePushNotifications: 1 }, sparse: true },
-			{ key: { emailNotifications: 1 }, sparse: true },
+			// TODO: remove these indexes in the next major release (8.0.0) - their only consumers (the per-room notification-preference finders) were removed
+			// { key: { desktopNotifications: 1 }, sparse: true },
+			// { key: { mobilePushNotifications: 1 }, sparse: true },
+			// { key: { emailNotifications: 1 }, sparse: true },
 			{ key: { autoTranslate: 1 }, sparse: true },
 			{ key: { autoTranslateLanguage: 1 }, sparse: true },
 			{ key: { 'userHighlights.0': 1 }, sparse: true },
