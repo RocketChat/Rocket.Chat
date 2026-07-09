@@ -38,7 +38,7 @@ import { removeRoomModerator } from '../../../../server/methods/removeRoomModera
 import { removeRoomOwner } from '../../../../server/methods/removeRoomOwner';
 import { removeUserFromRoomMethod } from '../../../../server/methods/removeUserFromRoom';
 import { canAccessRoomAsync } from '../../../authorization/server';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { hasAllPermissionAsync, hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { addUsersToRoomMethod } from '../../../lib/server/methods/addUsersToRoom';
@@ -515,10 +515,6 @@ API.v1.addRoute(
 				return API.v1.failure('The parameter "channelId" or "channelName" is required');
 			}
 
-			if (channelId && !(await hasPermissionAsync(this.userId, 'edit-room', channelId))) {
-				return API.v1.forbidden();
-			}
-
 			const room = await findChannelByIdOrName({
 				params: channelId !== undefined ? { roomId: channelId } : { roomName: channelName },
 				userId: this.userId,
@@ -526,6 +522,10 @@ API.v1.addRoute(
 
 			if (!room) {
 				return API.v1.failure('Channel not found');
+			}
+
+			if (!(await hasAllPermissionAsync(this.userId, ['create-team', 'edit-room'], room._id))) {
+				return API.v1.forbidden();
 			}
 
 			const subscriptions = await Subscriptions.findByRoomId(room._id, {
