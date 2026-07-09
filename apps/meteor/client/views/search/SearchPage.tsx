@@ -58,6 +58,22 @@ const getMessageHref = (item: IntelligentResult): string | undefined => {
 const trimSourceMessage = (text: string): string =>
 	text.length > MAX_SOURCE_MESSAGE_LENGTH ? `${text.slice(0, MAX_SOURCE_MESSAGE_LENGTH).trimEnd()}...` : text;
 
+const SourceMessageLink = ({ href }: { href?: string }): ReactElement | null => {
+	const { t } = useTranslation();
+
+	if (!href) {
+		return null;
+	}
+
+	return (
+		<Box mbs={8}>
+			<Button small is='a' href={href}>
+				{t('Open')}
+			</Button>
+		</Box>
+	);
+};
+
 export const SourceResult = ({ item }: { item: IntelligentResult }): ReactElement => {
 	const { t } = useTranslation();
 	const roomLabel = item.room?.fname || item.room?.name;
@@ -68,28 +84,24 @@ export const SourceResult = ({ item }: { item: IntelligentResult }): ReactElemen
 
 	return (
 		<Box
-			is={href ? 'a' : 'div'}
-			href={href}
+			is='article'
 			color='default'
 			display='flex'
 			alignItems='flex-start'
 			role='listitem'
-			pi={12}
-			pbs={10}
-			pb={10}
-			mbe={8}
+			p={16}
+			mbe={12}
 			border='var(--rcx-border-width-default) solid var(--rcx-color-stroke-extra-light)'
 			borderRadius={4}
 			bg='surface-light'
-			gap={10}
-			textDecoration='none'
+			gap={12}
 		>
-			<Box flexShrink={0} mbs={2}>
-				<MessageAvatar username={username} size='x28' />
+			<Box flexShrink={0}>
+				<MessageAvatar username={username} size='x36' />
 			</Box>
-			<Box display='flex' flexDirection='column' flexGrow={1} minWidth={0} gap={4}>
-				<Box display='flex' alignItems='center' gap={8} minWidth={0}>
-					<Box display='flex' alignItems='baseline' flexWrap='wrap' flexGrow={1} gap={6} minWidth={0}>
+			<Box display='flex' flexDirection='column' flexGrow={1} minWidth={0}>
+				<Box display='flex' alignItems='flex-start' justifyContent='space-between' gap={12} minWidth={0} mbe={6}>
+					<Box display='flex' alignItems='center' flexWrap='wrap' flexGrow={1} gap={6} minWidth={0}>
 						<Box is='span' fontScale='p2b' withTruncatedText>
 							{displayName}
 						</Box>
@@ -123,9 +135,10 @@ export const SourceResult = ({ item }: { item: IntelligentResult }): ReactElemen
 					variant='inline'
 					parseEmoji
 					fontScale='p2'
-					lineHeight={1.35}
+					lineHeight='x20'
 					wordBreak='break-word'
 				/>
+				<SourceMessageLink href={href} />
 			</Box>
 		</Box>
 	);
