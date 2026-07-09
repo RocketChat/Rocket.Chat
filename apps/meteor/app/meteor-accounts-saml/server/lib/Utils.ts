@@ -149,6 +149,12 @@ export class SAMLUtils {
 		}
 	}
 
+	public static warn(obj: object | string): void {
+		if (logger) {
+			logger.warn(obj);
+		}
+	}
+
 	public static async inflateXml(deflatedXml: Buffer<ArrayBuffer>): Promise<Buffer<ArrayBuffer>> {
 		return new Promise((resolve, reject) => {
 			zlib.inflateRaw(deflatedXml, (err, inflatedXml) => {
