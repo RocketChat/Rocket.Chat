@@ -4,7 +4,7 @@ import type { ReactElement } from 'react';
 
 import { unicodeToShortname } from '../emoji';
 
-type BigEmojiBlockProps = {
+export type BigEmojiBlockProps = {
 	emoji: MessageParser.Emoji[];
 };
 
