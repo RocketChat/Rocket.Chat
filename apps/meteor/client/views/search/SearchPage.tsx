@@ -7,7 +7,7 @@ import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { Page, PageHeader, PageScrollableContentWithShadow, useFeaturePreview } from '@rocket.chat/ui-client';
 import { useEndpoint, useSearchParameter, useSetting, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import type { KeyboardEvent, ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -65,37 +65,16 @@ export const SourceResult = ({ item }: { item: IntelligentResult }): ReactElemen
 	const username = item.u?.username || item.u?.name || t('Unknown_User');
 	const displayName = item.u?.name || username;
 	const relevanceScore = typeof item.score === 'number' ? Math.max(0, Math.min(100, Math.round(item.score * 100))) : undefined;
-	const handleOpenMessage = useCallback((): void => {
-		if (!href) {
-			return;
-		}
-
-		window.location.assign(href);
-	}, [href]);
-	const handleOpenMessageKeyDown = useCallback(
-		(event: KeyboardEvent): void => {
-			if (event.key !== 'Enter' && event.key !== ' ') {
-				return;
-			}
-
-			event.preventDefault();
-			handleOpenMessage();
-		},
-		[handleOpenMessage],
-	);
 
 	return (
 		<Box
-			is='article'
+			is={href ? 'a' : 'article'}
+			href={href}
 			color='default'
 			display='flex'
 			alignItems='flex-start'
-			role={href ? 'link' : 'listitem'}
-			tabIndex={href ? 0 : undefined}
-			aria-label={href ? t('Open') : undefined}
-			onClick={href ? handleOpenMessage : undefined}
-			onKeyDown={href ? handleOpenMessageKeyDown : undefined}
-			cursor={href ? 'pointer' : undefined}
+			role={href ? undefined : 'listitem'}
+			textDecorationLine='none'
 			p={16}
 			mbe={12}
 			border='var(--rcx-border-width-default) solid var(--rcx-color-stroke-extra-light)'
