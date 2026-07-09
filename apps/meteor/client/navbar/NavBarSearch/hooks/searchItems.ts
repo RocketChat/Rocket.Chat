@@ -14,8 +14,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 
-const formatDate = (date: Date): string =>
-	`${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+const formatDate = (date: Date): string => date.toISOString().slice(0, 10);
 
 export const emptySubscriptionQuery = { _id: '__ai_search_no_room_filter__' };
 
