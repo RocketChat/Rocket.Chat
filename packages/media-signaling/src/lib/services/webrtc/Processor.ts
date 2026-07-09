@@ -82,6 +82,8 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 		this.inputTrack = newInputTrack;
 		await this.loadInputTrack();
+
+		this.updateDirectionForInputTrackChanged();
 	}
 
 	public async setScreenVideoTrack(newVideoTrack: MediaStreamTrack | null): Promise<void> {
@@ -157,17 +159,8 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		if (this.stopped) {
 			throw new Error('WebRTC Processor has already been stopped.');
 		}
-		if (!this.inputTrack) {
-			throw new Error('no-input-track');
-		}
 
 		await this.initialization;
-
-		const transceivers = this.getTransceivers('audio');
-
-		if (!transceivers.length) {
-			throw new Error('no-audio-transceiver');
-		}
 
 		return this.peer.createAnswer();
 	}
@@ -326,25 +319,37 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.emitter.emit('internalStateChange', stateName);
 	}
 
+	// If we have an input track, we tell the SDK that we want to send audio and, depending on the "on hold" state, also receive it
+	// If we don't have an input track, we can't send anything, so we only ask to receive (or nothing at all, if on hold)
+	private getDesiredAudioDirection(): RTCRtpTransceiverDirection {
+		if (!this.inputTrack) {
+			return this.held ? 'inactive' : 'recvonly';
+		}
+
+		return this.held ? 'sendonly' : 'sendrecv';
+	}
+
+	private getAcceptableAudioDirection(): RTCRtpTransceiverDirection {
+		if (!this.inputTrack) {
+			return 'inactive';
+		}
+
+		return this.held ? 'inactive' : 'recvonly';
+	}
+
 	private updateAudioDirectionBeforeNegotiation(): void {
 		// Before the negotiation, we set the direction based on our own state only
-		// We'll tell the SDK that we want to send audio and, depending on the "on hold" state, also receive it
-		const desiredDirection = this.held ? 'sendonly' : 'sendrecv';
-
-		this.updateDirectionBeforeNegotiation('audio', desiredDirection);
+		this.updateDirectionBeforeNegotiation('audio', this.getDesiredAudioDirection());
 	}
 
 	private updateAudioDirectionAfterNegotiation(): void {
-		// Before the negotiation started, we told the browser we wanted to send audio - but we don't care if actually send or not, it's up to the other side to determine if they want to receive.
-		// If the other side doesn't want to receive audio, the negotiation will result in a state where "direction" and "currentDirection" don't match
-		// But if the only difference is that we said we want to send audio and are not sending it, then we can change what we say we want to reflect the current state
+		// Before the negotiation started, we told the browser what we wanted - but we don't care if that's actually what happens, it's up to the other side to determine the outcome.
+		// If the other side doesn't agree, the negotiation will result in a state where "direction" and "currentDirection" don't match
+		// But if the only difference is that we asked for more than what's actually happening, then we can change what we say we want to reflect the current state
 
 		// If we didn't do this, everything would still work, but the browser would trigger redundant renegotiations whenever the directions mismatch
 
-		const desiredDirection = this.held ? 'sendonly' : 'sendrecv';
-		const acceptableDirection = this.held ? 'inactive' : 'recvonly';
-
-		this.updateDirectionAfterNegotiation('audio', desiredDirection, acceptableDirection);
+		this.updateDirectionAfterNegotiation('audio', this.getDesiredAudioDirection(), this.getAcceptableAudioDirection());
 	}
 
 	private updateVideoDirectionBeforeNegotiation(): void {
@@ -426,6 +431,10 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.requestDirection('video', desiredDirection, acceptableDirection);
 	}
 
+	private updateDirectionForInputTrackChanged(): void {
+		this.requestDirection('audio', this.getDesiredAudioDirection(), this.getAcceptableAudioDirection());
+	}
+
 	private getTransceivers(kind: 'audio' | 'video'): RTCRtpTransceiver[] {
 		return this.peer
 			.getTransceivers()
@@ -438,8 +447,8 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			return;
 		}
 
-		const desiredDirection = this.held ? 'sendonly' : 'sendrecv';
-		const acceptableDirection = this.held ? 'inactive' : 'recvonly';
+		const desiredDirection = this.getDesiredAudioDirection();
+		const acceptableDirection = this.getAcceptableAudioDirection();
 
 		const transceivers = this.getTransceivers('audio');
 		for (const transceiver of transceivers) {

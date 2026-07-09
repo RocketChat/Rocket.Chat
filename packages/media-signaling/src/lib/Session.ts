@@ -541,12 +541,12 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		this.config.logger?.debug('MediaSignalingSession.startInputTrack.done', this.callsToGetUserMedia);
 
 		if (!userMedia) {
-			return this.hangupCallsThatNeedInput();
+			return;
 		}
 
 		const tracks = userMedia.getAudioTracks();
 		if (!tracks.length) {
-			return this.hangupCallsThatNeedInput();
+			return;
 		}
 
 		const inputTrack = tracks[0];
@@ -563,22 +563,6 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		}
 
 		return this.setInputTrack(inputTrack);
-	}
-
-	private hangupCallsThatNeedInput(): void {
-		this.config.logger?.debug('MediaSignalingSession.hangupCallsThatNeedInput');
-
-		for (const call of this.knownCalls.values()) {
-			if (!call.needsInputTrack()) {
-				continue;
-			}
-
-			try {
-				call.hangup('input-error');
-			} catch {
-				//
-			}
-		}
 	}
 
 	private mayNeedInputTrack(): boolean {

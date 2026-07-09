@@ -248,12 +248,6 @@ export class NegotiationManager {
 			return false;
 		}
 
-		// Wait for the input track before negotiating, to avoid potentially having to renegotiate immediately
-		if (!this.webrtcProcessor.streams.hasAllRequiredTracks()) {
-			this.config.logger?.debug('Delaying WebRTC negotiations due to missing required track.');
-			return false;
-		}
-
 		return true;
 	}
 

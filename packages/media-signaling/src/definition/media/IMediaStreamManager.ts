@@ -23,6 +23,4 @@ export interface IMediaStreamManager {
 
 	getLocalStreamByTag(tag: string): IMediaStreamWrapper | null;
 	getRemoteStreamByTag(tag: string): IMediaStreamWrapper | null;
-
-	hasAllRequiredTracks(): boolean;
 }
