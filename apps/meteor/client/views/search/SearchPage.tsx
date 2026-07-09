@@ -1,9 +1,6 @@
-/* eslint-disable react/no-multi-comp */
-import { AI_LICENSE_MODULE, buildRoomSearchQuery, MAX_SOURCE_MESSAGE_LENGTH, parseSearchFilterText } from '@rocket.chat/ai-search';
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { Box, Button, Callout, Icon, Skeleton, Tag } from '@rocket.chat/fuselage';
+import { AI_LICENSE_MODULE, buildRoomSearchQuery, parseSearchFilterText } from '@rocket.chat/ai-search';
+import { Box, Button, Callout, Icon } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { Page, PageHeader, PageScrollableContentWithShadow, useFeaturePreview } from '@rocket.chat/ui-client';
 import { useEndpoint, useSearchParameter, useSetting, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -11,20 +8,10 @@ import type { ReactElement } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import MarkdownText from '../../components/MarkdownText';
+import SearchAnswerPanel from './SearchAnswerPanel';
+import { SearchSourceResult } from './SearchSourceResult';
+import type { IntelligentResult } from './types';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
-import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
-
-type IntelligentResult = {
-	_id: string;
-	rid?: string;
-	msgId?: string;
-	text: string;
-	score?: number;
-	ts?: string;
-	u?: Pick<IUser, 'username' | 'name'>;
-	room?: Pick<IRoom, '_id' | 't' | 'name' | 'fname'>;
-};
 
 const roomLookupOptions = { sort: { lm: -1, name: 1 }, limit: 20 } as const;
 const emptyRoomLookupQuery = { _id: '__ai_search_no_room_filter__' };
@@ -33,184 +20,6 @@ const emptyRoomLookupQuery = { _id: '__ai_search_no_room_filter__' };
 // generated from. Both are tied to the same constant so that paginating ("Show more") only appends
 // results and never changes the answer source set — preventing a redundant answer regeneration.
 const INTELLIGENT_PAGE_SIZE = 8;
-
-const formatMessageTime = (ts: Date | string | undefined): string => {
-	if (!ts) return '';
-	const date = new Date(ts);
-	if (Number.isNaN(date.getTime())) return '';
-	return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
-};
-
-const getMessageHref = (item: IntelligentResult): string | undefined => {
-	const { room } = item;
-	if (!room) {
-		return undefined;
-	}
-
-	const href = roomCoordinator.getRouteLink(room.t, {
-		rid: room._id || item.rid,
-		name: room.name,
-	});
-	if (!href) return undefined;
-	return `${href}?msg=${encodeURIComponent(item.msgId || item._id)}`;
-};
-
-const trimSourceMessage = (text: string): string =>
-	text.length > MAX_SOURCE_MESSAGE_LENGTH ? `${text.slice(0, MAX_SOURCE_MESSAGE_LENGTH).trimEnd()}...` : text;
-
-export const SourceResult = ({ item }: { item: IntelligentResult }): ReactElement => {
-	const { t } = useTranslation();
-	const roomLabel = item.room?.fname || item.room?.name;
-	const href = getMessageHref(item);
-	const username = item.u?.username || item.u?.name || t('Unknown_User');
-	const displayName = item.u?.name || username;
-	const relevanceScore = typeof item.score === 'number' ? Math.max(0, Math.min(100, Math.round(item.score * 100))) : undefined;
-
-	return (
-		<Box
-			is={href ? 'a' : 'article'}
-			href={href}
-			color='default'
-			display='flex'
-			alignItems='flex-start'
-			role={href ? undefined : 'listitem'}
-			textDecorationLine='none'
-			p={16}
-			mbe={12}
-			border='var(--rcx-border-width-default) solid var(--rcx-color-stroke-extra-light)'
-			borderRadius={4}
-			bg='surface-light'
-			gap={12}
-		>
-			<Box flexShrink={0}>
-				<MessageAvatar username={username} size='x36' />
-			</Box>
-			<Box display='flex' flexDirection='column' flexGrow={1} minWidth={0}>
-				<Box display='flex' alignItems='flex-start' justifyContent='space-between' gap={12} minWidth={0} mbe={6}>
-					<Box display='flex' alignItems='center' flexWrap='wrap' flexGrow={1} gap={6} minWidth={0}>
-						<Box is='span' fontScale='p2b' withTruncatedText>
-							{displayName}
-						</Box>
-						{item.u?.username && (
-							<Box is='span' color='hint' fontScale='p2' withTruncatedText>
-								@{item.u.username}
-							</Box>
-						)}
-						{roomLabel && (
-							<Tag>
-								<Box display='flex' alignItems='center' gap={4}>
-									<Icon name='hash' size='x12' />
-									{roomLabel}
-								</Box>
-							</Tag>
-						)}
-						{item.ts && (
-							<Box is='span' color='hint' fontScale='p2' flexShrink={0}>
-								{formatMessageTime(item.ts)}
-							</Box>
-						)}
-					</Box>
-					{typeof relevanceScore === 'number' && (
-						<Tag title={`${relevanceScore}%`} flexShrink={0}>
-							{relevanceScore}%
-						</Tag>
-					)}
-				</Box>
-				<MarkdownText
-					content={trimSourceMessage(item.text || t('Intelligent_Search_Result'))}
-					variant='inline'
-					parseEmoji
-					fontScale='p2'
-					lineHeight='x20'
-					wordBreak='break-word'
-				/>
-			</Box>
-		</Box>
-	);
-};
-
-const AnswerPanel = ({
-	answer,
-	provider,
-	isLoading,
-	error,
-	disabled,
-	emptyReason,
-	onGenerate,
-}: {
-	answer?: string;
-	provider?: { name: string; model: string };
-	isLoading: boolean;
-	error?: unknown;
-	disabled: boolean;
-	emptyReason: string;
-	onGenerate: () => void;
-}): ReactElement => {
-	const { t } = useTranslation();
-	const answerContent = (): ReactElement => {
-		if (isLoading) {
-			return (
-				<Box display='flex' flexDirection='column' gap={12} aria-busy='true' aria-label={t('Loading')}>
-					<Skeleton width='60%' />
-					<Skeleton width='100%' />
-					<Skeleton width='95%' />
-					<Skeleton width='88%' />
-					<Skeleton width='72%' />
-				</Box>
-			);
-		}
-
-		if (answer) {
-			return <MarkdownText content={answer} parseEmoji fontScale='p2' lineHeight={1.55} />;
-		}
-
-		return (
-			<Box color='hint' fontScale='p2'>
-				{disabled ? emptyReason : t('Search_AI_answer_ready')}
-			</Box>
-		);
-	};
-
-	return (
-		<Box
-			display='flex'
-			flexDirection='column'
-			mbe={24}
-			border='var(--rcx-border-width-default) solid var(--rcx-color-stroke-extra-light)'
-			borderRadius={4}
-			bg='surface-light'
-		>
-			<Box
-				display='flex'
-				alignItems='center'
-				justifyContent='space-between'
-				p={16}
-				borderBlockEnd='var(--rcx-border-width-default) solid var(--rcx-color-stroke-extra-light)'
-			>
-				<Box display='flex' alignItems='center' fontScale='h4' gap={8}>
-					<Icon name='stars' size='x18' />
-					{t('Search_AI_answer')}
-				</Box>
-				<Button small disabled={disabled || isLoading} onClick={onGenerate}>
-					{isLoading ? t('Loading') : t(answer ? 'Regenerate' : 'Generate')}
-				</Button>
-			</Box>
-			<Box p={16}>
-				{provider && (
-					<Box color='hint' fontScale='c1' mbe={8}>
-						{t('Search_AI_answer_provider', { provider: provider.name, model: provider.model })}
-					</Box>
-				)}
-				{Boolean(error) && (
-					<Box color='danger' fontScale='p2'>
-						{t('Search_AI_answer_error')}
-					</Box>
-				)}
-				{answerContent()}
-			</Box>
-		</Box>
-	);
-};
 
 const SearchPage = (): ReactElement => {
 	const { t } = useTranslation();
@@ -396,7 +205,7 @@ const SearchPage = (): ReactElement => {
 						</Callout>
 					)}
 					{debouncedQuery && (
-						<AnswerPanel
+						<SearchAnswerPanel
 							answer={answerData?.answer}
 							provider={answerData?.provider}
 							isLoading={answerPending}
@@ -433,7 +242,7 @@ const SearchPage = (): ReactElement => {
 					)}
 					<Box>
 						{intelligent.map((item) => (
-							<SourceResult key={item._id} item={item} />
+							<SearchSourceResult key={item._id} item={item} />
 						))}
 					</Box>
 				</Box>

@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 
-import { SourceResult } from './SearchPage';
+import { SearchSourceResult } from './SearchSourceResult';
 
 import '@testing-library/jest-dom';
 
@@ -14,7 +14,7 @@ jest.mock('../../lib/rooms/roomCoordinator', () => ({
 describe('AI Search SourceResult', () => {
 	it('renders source messages as compact inline message results', () => {
 		render(
-			<SourceResult
+			<SearchSourceResult
 				item={{
 					_id: 'm1',
 					rid: 'r1',
@@ -42,7 +42,7 @@ describe('AI Search SourceResult', () => {
 
 	it('clamps an out-of-range relevance score to 100%', () => {
 		render(
-			<SourceResult
+			<SearchSourceResult
 				item={{
 					_id: 'm2',
 					rid: 'r1',
@@ -61,7 +61,7 @@ describe('AI Search SourceResult', () => {
 
 	it('renders as a non-link when the source message has no resolvable room', () => {
 		render(
-			<SourceResult
+			<SearchSourceResult
 				item={{
 					_id: 'm3',
 					msgId: 'm3',

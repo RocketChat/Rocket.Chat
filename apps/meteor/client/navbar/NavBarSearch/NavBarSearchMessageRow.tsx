@@ -13,11 +13,15 @@ type NavBarSearchMessageRowProps = {
 	type: 'message' | 'intelligent';
 };
 
+const isUnifiedSearchIntelligentResult = (
+	item: UnifiedSearchMessageResult | UnifiedSearchIntelligentResult,
+): item is UnifiedSearchIntelligentResult => 'text' in item;
+
 const getMessageId = (item: UnifiedSearchMessageResult | UnifiedSearchIntelligentResult): string | undefined =>
-	'msgId' in item ? item.msgId : item._id;
+	isUnifiedSearchIntelligentResult(item) ? item.msgId : item._id;
 
 const getText = (item: UnifiedSearchMessageResult | UnifiedSearchIntelligentResult): string => {
-	if ('text' in item) {
+	if (isUnifiedSearchIntelligentResult(item)) {
 		return item.text;
 	}
 
@@ -26,7 +30,7 @@ const getText = (item: UnifiedSearchMessageResult | UnifiedSearchIntelligentResu
 
 const getHref = (item: UnifiedSearchMessageResult | UnifiedSearchIntelligentResult): string | undefined => {
 	const { room } = item;
-	const rid = 'rid' in item ? item.rid : undefined;
+	const rid = isUnifiedSearchIntelligentResult(item) ? item.rid : undefined;
 	const msgId = getMessageId(item);
 
 	if (!room) {
