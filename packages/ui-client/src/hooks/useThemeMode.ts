@@ -3,7 +3,7 @@ import { useDarkMode } from '@rocket.chat/fuselage-hooks';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 
 /**
- * Returns the current option set by the user, the theme mode resolved given the user configuration and OS (if applies) and a function to set it.
+ * Returns the resolved theme string based on the user's theme appearance preference and system dark-mode setting.
  */
 export const useThemeMode = () => {
 	const themeMode = useUserPreference<ThemeMode>('themeAppearence') || 'auto';
