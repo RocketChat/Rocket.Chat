@@ -69,7 +69,6 @@ const RoomMembersItem = ({
 	return (
 		<Option
 			{...focusProps}
-			role='listitem'
 			aria-label={nameOrUsername}
 			onFocus={(e) => {
 				focusProps.onFocus?.(e);

@@ -2,7 +2,7 @@ import { createFocusManager } from '@react-aria/focus';
 import type { RefCallback } from 'react';
 import { useCallback, useRef } from 'react';
 
-const isMemberItem = (node: Element) => node.getAttribute('role') === 'listitem';
+const isMemberItem = (node: Element) => node.tagName === 'LI';
 
 export const useMembersListNavigation = (): { membersListRef: RefCallback<HTMLElement> } => {
 	const cleanupRef = useRef<(() => void) | null>(null);
