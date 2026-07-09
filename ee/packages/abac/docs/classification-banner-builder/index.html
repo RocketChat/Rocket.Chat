@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Classification banner builder — Rocket.Chat</title>
+<style>
+	:root {
+		--ink: #1f2329;
+		--ink-soft: #6c727a;
+		--line: #e4e7ea;
+		--paper: #ffffff;
+		--wash: #f7f8fa;
+		--action: #156ff5;
+		--danger: #d40c26;
+		--warn-bg: #fff8e0;
+		--warn-line: #f5c700;
+		--radius: 6px;
+		--mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	}
+	* { margin: 0; padding: 0; box-sizing: border-box; }
+	html { scrollbar-gutter: stable; }
+	body {
+		background: var(--wash);
+		color: var(--ink);
+		font: 14px/1.45 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+	}
+	:focus-visible { outline: 2px solid var(--action); outline-offset: 1px; }
+	@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+	#preview-dock { position: sticky; top: 0; z-index: 10; box-shadow: 0 1px 0 var(--line); }
+	#preview-banner {
+		height: 28px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-weight: 700;
+		font-size: 13px;
+		line-height: 1;
+		letter-spacing: 0.08em;
+		white-space: nowrap;
+		overflow: hidden;
+		user-select: none;
+	}
+	#preview-banner.mono { font-family: var(--mono); letter-spacing: 0.02em; }
+	#preview-banner.uppercase { text-transform: uppercase; }
+	#preview-banner .rule { width: 1px; height: 60%; margin: 0 14px; opacity: 0.45; }
+	#preview-chrome {
+		background: var(--paper);
+		border-bottom: 1px solid var(--line);
+		padding: 8px 20px;
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		color: var(--ink-soft);
+		font-size: 12px;
+	}
+	#preview-chrome b { color: var(--ink); font-size: 13px; }
+	#preview-chrome .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; opacity: .35; }
+	#preview-position { margin-left: auto; font-family: var(--mono); font-size: 11px; }
+
+	header.page {
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 28px 20px 12px;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 12px;
+	}
+	header.page h1 { font-size: 19px; font-weight: 700; letter-spacing: -0.01em; }
+	header.page p { color: var(--ink-soft); flex-basis: 100%; max-width: 70ch; }
+	header.page .spacer { flex: 1; }
+
+	main {
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 8px 20px 60px;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 380px;
+		gap: 20px;
+		align-items: start;
+	}
+	@media (max-width: 980px) { main { grid-template-columns: minmax(0, 1fr); } }
+
+	section.card {
+		background: var(--paper);
+		border: 1px solid var(--line);
+		border-radius: var(--radius);
+		margin-bottom: 20px;
+	}
+	section.card > h2 {
+		font-size: 11px;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+		color: var(--ink-soft);
+		padding: 12px 16px;
+		border-bottom: 1px solid var(--line);
+	}
+	.card-body { padding: 16px; }
+
+	.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px 16px; }
+	label.field { display: block; font-size: 12px; color: var(--ink-soft); }
+	label.field > span { display: block; margin-bottom: 4px; }
+	label.check { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink); cursor: pointer; }
+	input[type=text], input[type=number], select, textarea {
+		width: 100%;
+		padding: 6px 8px;
+		border: 1px solid var(--line);
+		border-radius: 4px;
+		background: var(--paper);
+		color: var(--ink);
+		font: inherit;
+	}
+	input.mono, textarea { font-family: var(--mono); font-size: 12px; }
+	input[type=color] { width: 28px; height: 28px; padding: 1px; border: 1px solid var(--line); border-radius: 4px; background: var(--paper); cursor: pointer; }
+
+	button {
+		font: inherit;
+		border: 1px solid var(--line);
+		background: var(--paper);
+		color: var(--ink);
+		border-radius: 4px;
+		padding: 6px 12px;
+		cursor: pointer;
+	}
+	button:hover { background: var(--wash); }
+	button.primary { background: var(--action); border-color: var(--action); color: #fff; font-weight: 600; }
+	button.primary:hover { background: #0d5bd3; }
+	button.ghost { border-color: transparent; color: var(--ink-soft); padding: 4px 6px; }
+	button.ghost:hover { color: var(--ink); background: var(--wash); }
+	button.danger-ghost { border-color: transparent; color: var(--danger); padding: 4px 6px; }
+	button.danger-ghost:hover { background: #fdeef0; }
+	button:disabled { opacity: .4; cursor: default; }
+
+	.attr {
+		border: 1px solid var(--line);
+		border-radius: var(--radius);
+		margin-bottom: 12px;
+	}
+	.attr-head {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 10px 12px;
+		background: var(--wash);
+		border-bottom: 1px solid var(--line);
+		border-radius: var(--radius) var(--radius) 0 0;
+	}
+	.attr-head b { font-size: 13px; }
+	.attr-head .src { font-family: var(--mono); font-size: 11px; color: var(--ink-soft); }
+	.attr-head .flags { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+	.tag { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 2px 6px; border-radius: 3px; background: var(--line); color: var(--ink-soft); }
+	.tag.color-driver { background: var(--ink); color: #fff; }
+	.attr-fields { padding: 12px; border-bottom: 1px solid var(--line); }
+	.values { padding: 8px 12px 12px; }
+	.values table { width: 100%; border-collapse: collapse; }
+	.values th { text-align: left; font-size: 11px; color: var(--ink-soft); font-weight: 600; padding: 4px 6px; }
+	.values td { padding: 3px 6px; }
+	.values td:first-child, .values th:first-child { padding-left: 0; }
+	.swatch-cell { display: flex; align-items: center; gap: 6px; }
+	.hex { font-family: var(--mono); font-size: 11px; color: var(--ink-soft); }
+
+	#warnings { border: 1px solid var(--warn-line); background: var(--warn-bg); border-radius: var(--radius); padding: 12px 16px; margin-bottom: 20px; }
+	#warnings h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 6px; }
+	#warnings ul { margin-left: 18px; }
+	#warnings.ok { border-color: var(--line); background: var(--paper); color: var(--ink-soft); }
+
+	#sim .sim-group { margin-bottom: 12px; }
+	#sim .sim-group > b { display: block; font-size: 12px; margin-bottom: 4px; }
+	#sim .sim-group .src { font-family: var(--mono); font-size: 11px; color: var(--ink-soft); font-weight: 400; }
+	#sim .sim-values { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+
+	#json-out { height: 320px; resize: vertical; }
+	.toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+	.hint { font-size: 12px; color: var(--ink-soft); margin-top: 8px; }
+	.hint code { font-family: var(--mono); background: var(--wash); padding: 1px 4px; border-radius: 3px; }
+	dialog { border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; width: min(640px, 90vw); }
+	dialog::backdrop { background: rgba(31, 35, 41, .4); }
+	dialog h3 { font-size: 14px; margin-bottom: 8px; }
+	dialog textarea { height: 260px; }
+	dialog .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px; }
+	dialog .error { color: var(--danger); font-size: 12px; margin-top: 6px; }
+</style>
+</head>
+<body>
+
+<div id="preview-dock">
+	<div id="preview-banner" role="img"></div>
+	<div id="preview-chrome">
+		<span class="dot"></span><b id="preview-room">#ops-sector-bravo</b><span>simulated room header</span>
+		<span id="preview-position"></span>
+	</div>
+</div>
+
+<header class="page">
+	<h1>Classification banner builder</h1>
+	<div class="spacer"></div>
+	<button id="btn-import">Import JSON</button>
+	<button id="btn-reset">Reset to example</button>
+	<button class="primary" id="btn-copy">Copy JSON</button>
+	<p>
+		Compose the <code style="font-family: var(--mono)">ABAC_Classification_Banners_Config</code> document for Rocket.Chat.
+		The strip above renders live from this configuration and the simulated room values on the right — exactly what members
+		of a matching ABAC room will see.
+	</p>
+</header>
+
+<main>
+	<div>
+		<div id="warnings"></div>
+
+		<section class="card">
+			<h2>Banner options</h2>
+			<div class="card-body grid" id="banner-options"></div>
+		</section>
+
+		<section class="card">
+			<h2>Attributes — banner segments render in this order</h2>
+			<div class="card-body">
+				<div id="attributes"></div>
+				<button id="btn-add-attr">Add attribute</button>
+			</div>
+		</section>
+	</div>
+
+	<div>
+		<section class="card">
+			<h2>Simulated room values</h2>
+			<div class="card-body" id="sim"></div>
+		</section>
+
+		<section class="card">
+			<h2>Configuration JSON</h2>
+			<div class="card-body">
+				<textarea id="json-out" readonly aria-label="Generated configuration JSON"></textarea>
+				<p class="hint">Paste into <b>Admin → ABAC → Settings → Classification banners configuration (JSON)</b>.</p>
+			</div>
+		</section>
+	</div>
+</main>
+
+<dialog id="import-dialog">
+	<h3>Import configuration</h3>
+	<textarea id="import-text" placeholder='Paste a classification banners JSON document (version 1)…'></textarea>
+	<div class="error" id="import-error"></div>
+	<div class="row">
+		<button id="import-cancel">Cancel</button>
+		<button class="primary" id="import-apply">Import</button>
+	</div>
+</dialog>
+
+<script>
+'use strict';
+
+// ---- engine (mirrors @rocket.chat/abac classification-banners/engine.ts) ----
+
+const FALLBACK_TEXT = 'NO CLASSIFICATION DATA';
+const FALLBACK_COLOR = '#6C727A';
+
+const readableTextColor = (hex) => {
+	const [r, g, b] = [0, 2, 4].map((offset) => parseInt(hex.replace('#', '').slice(offset, offset + 2), 16) / 255);
+	const linearize = (channel) => (channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4);
+	const luminance = 0.2126 * linearize(r) + 0.7152 * linearize(g) + 0.0722 * linearize(b);
+	return luminance > 0.55 ? '#1F2329' : '#FFFFFF';
+};
+
+const shade = (hex, factor) => {
+	const [r, g, b] = [0, 2, 4].map((offset) => Math.round(parseInt(hex.replace('#', '').slice(offset, offset + 2), 16) * factor));
+	return `rgb(${r}, ${g}, ${b})`;
+};
+
+const buildSegment = (attribute, roomAttributes) => {
+	const roomValues = roomAttributes.find(({ key }) => key === attribute.source)?.values ?? [];
+	let matched = attribute.values.filter(({ source }) => roomValues.includes(source));
+	if (matched.length === 0) return null;
+	if (attribute.sortAlpha) matched = [...matched].sort((a, b) => a.label.localeCompare(b.label));
+	const threshold = attribute.groupThreshold ?? 0;
+	const body = threshold > 0 && matched.length >= threshold
+		? (attribute.multipleLabel ?? '')
+		: matched.map(({ label }) => label).join(attribute.valueSeparator ?? '/');
+	return {
+		attrId: attribute.id,
+		text: attribute.showLabel ? `${attribute.bannerLabel ?? ''}${attribute.labelSeparator ?? ''}${body}` : body,
+	};
+};
+
+const resolveColor = (config, roomAttributes) => {
+	const driver = config.attributes.find(({ drivesColor }) => drivesColor) ?? config.attributes[0];
+	const roomValues = roomAttributes.find(({ key }) => key === driver.source)?.values ?? [];
+	const matched = driver.values.filter(({ source }) => roomValues.includes(source));
+	if (matched.length === 0) return config.banner.fallbackColor ?? FALLBACK_COLOR;
+	return (config.banner.colorMode ?? 'highest') === 'highest' ? matched[matched.length - 1].color : matched[0].color;
+};
+
+const buildClassificationBanner = (config, roomAttributes) => {
+	const { banner } = config;
+	const base = {
+		style: banner.style ?? 'classic',
+		position: banner.position ?? 'top',
+		uppercase: banner.uppercase ?? true,
+		monospace: banner.monospace ?? false,
+	};
+	const segments = config.attributes
+		.filter(({ showInBanner }) => showInBanner)
+		.map((attribute) => buildSegment(attribute, roomAttributes))
+		.filter(Boolean);
+	if (segments.length === 0) {
+		const backgroundColor = banner.fallbackColor ?? FALLBACK_COLOR;
+		return { ...base, text: banner.fallbackText ?? FALLBACK_TEXT, segments: [], backgroundColor, color: readableTextColor(backgroundColor), fallback: true };
+	}
+	const backgroundColor = resolveColor(config, roomAttributes);
+	return { ...base, text: segments.map(({ text }) => text).join(banner.delimiter), segments, backgroundColor, color: readableTextColor(backgroundColor), fallback: false };
+};
+
+// ---- default configuration (the design prototype's default state) ----
+
+const exampleConfig = () => ({
+	$schema: 'https://rocket.chat/schemas/classification-banners/v1.json',
+	version: 1,
+	enabled: true,
+	source: 'idp',
+	banner: {
+		style: 'classic',
+		position: 'top',
+		uppercase: true,
+		monospace: false,
+		delimiter: ' // ',
+		colorMode: 'highest',
+		fallbackText: 'NO CLASSIFICATION DATA',
+		fallbackColor: '#6C727A',
+	},
+	attributes: [
+		{
+			id: 'classification', source: 'clearance.level', label: 'Classification level',
+			showInBanner: true, showLabel: false, bannerLabel: '', labelSeparator: '', valueSeparator: '/',
+			sortAlpha: false, groupThreshold: 0, multipleLabel: '', drivesColor: true,
+			values: [
+				{ source: 'U', label: 'UNCLASSIFIED', color: '#007a33' },
+				{ source: 'CUI', label: 'CUI', color: '#502b85' },
+				{ source: 'C', label: 'CONFIDENTIAL', color: '#0033a0' },
+				{ source: 'S', label: 'SECRET', color: '#c8102e' },
+				{ source: 'TS', label: 'TOP SECRET', color: '#ff8c00' },
+				{ source: 'TS-SCI', label: 'TOP SECRET//SCI', color: '#fce100' },
+			],
+		},
+		{
+			id: 'sar', source: 'access.programs', label: 'Special access programs',
+			showInBanner: true, showLabel: true, bannerLabel: 'SAR', labelSeparator: '-', valueSeparator: '/',
+			sortAlpha: true, groupThreshold: 4, multipleLabel: 'MULTIPLE PROGRAMS', drivesColor: false,
+			values: [
+				{ source: 'SAP-1042', label: 'APPLES', color: '#c8102e' },
+				{ source: 'SAP-2271', label: 'BANANAS', color: '#ff8c00' },
+				{ source: 'SAP-3380', label: 'ORANGES', color: '#0033a0' },
+				{ source: 'SAP-4419', label: 'PEACHES', color: '#007a33' },
+				{ source: 'SAP-5567', label: 'GRAPES', color: '#502b85' },
+			],
+		},
+		{
+			id: 'relto', source: 'dissem.relto', label: 'Releasable to',
+			showInBanner: true, showLabel: true, bannerLabel: 'RELTO', labelSeparator: ' ', valueSeparator: '/',
+			sortAlpha: false, groupThreshold: 0, multipleLabel: '', drivesColor: false,
+			values: [
+				{ source: 'USA', label: 'USA', color: '#0033a0' },
+				{ source: 'FVEY', label: 'FVEY', color: '#007a33' },
+				{ source: 'NATO', label: 'NATO', color: '#502b85' },
+			],
+		},
+		{
+			id: 'dissem', source: 'dissem.controls', label: 'Dissemination controls',
+			showInBanner: false, showLabel: false, bannerLabel: '', labelSeparator: '', valueSeparator: '/',
+			sortAlpha: true, groupThreshold: 0, multipleLabel: '', drivesColor: false,
+			values: [
+				{ source: 'NF', label: 'NOFORN', color: '#c8102e' },
+				{ source: 'OC', label: 'ORCON', color: '#ff8c00' },
+				{ source: 'IM', label: 'IMCON', color: '#0033a0' },
+			],
+		},
+	],
+});
+
+let config = exampleConfig();
+let simulation = { 'clearance.level': ['TS'], 'access.programs': ['SAP-1042', 'SAP-2271', 'SAP-3380'], 'dissem.relto': ['USA'] };
+
+// ---- cross-field rules (documented in the v1 schema; enforced here as warnings) ----
+
+const lintConfig = (cfg) => {
+	const problems = [];
+	const drivers = cfg.attributes.filter((a) => a.drivesColor);
+	if (drivers.length !== 1) problems.push(`Exactly one attribute must have “drives color” — currently ${drivers.length}.`);
+	const ids = cfg.attributes.map((a) => a.id);
+	if (new Set(ids).size !== ids.length) problems.push('Attribute ids must be unique.');
+	for (const a of cfg.attributes) {
+		if (!/^[a-z][a-z0-9_-]*$/.test(a.id)) problems.push(`Attribute id “${a.id}” must match ^[a-z][a-z0-9_-]*$.`);
+		if (!a.source) problems.push(`Attribute “${a.id}”: source key is required.`);
+		if (!a.label) problems.push(`Attribute “${a.id}”: label is required.`);
+		const sources = a.values.map((v) => v.source);
+		if (new Set(sources).size !== sources.length) problems.push(`Attribute “${a.id}”: value sources must be unique.`);
+		if (a.values.length === 0) problems.push(`Attribute “${a.id}”: at least one value is required.`);
+		if (a.values.some((v) => !v.source || !v.label)) problems.push(`Attribute “${a.id}”: every value needs a source and a label.`);
+		if (a.groupThreshold > 0 && !a.multipleLabel) problems.push(`Attribute “${a.id}”: a grouped label is required when the group threshold is set.`);
+		if (a.groupThreshold !== 0 && (a.groupThreshold < 2 || a.groupThreshold > 20)) problems.push(`Attribute “${a.id}”: group threshold must be 0 or between 2 and 20.`);
+		if (a.showLabel && !a.bannerLabel) problems.push(`Attribute “${a.id}”: a banner label is required when “show label” is on.`);
+	}
+	if (!cfg.banner.delimiter) problems.push('A segment delimiter is required.');
+	return problems;
+};
+
+// ---- rendering ----
+
+const $ = (selector) => document.querySelector(selector);
+const el = (tag, props = {}, ...children) => {
+	const node = document.createElement(tag);
+	for (const [key, value] of Object.entries(props)) {
+		if (key.includes('-') || key === 'for' || key === 'style') node.setAttribute(key, value);
+		else node[key] = value;
+	}
+	node.append(...children.filter((child) => child !== null && child !== false));
+	return node;
+};
+
+const field = (labelText, input) => el('label', { className: 'field' }, el('span', {}, labelText), input);
+const check = (labelText, props) => el('label', { className: 'check' }, el('input', { type: 'checkbox', ...props }), labelText);
+
+const renderPreview = () => {
+	const banner = buildClassificationBanner(config, Object.entries(simulation).map(([key, values]) => ({ key, values })));
+	const strip = $('#preview-banner');
+	strip.replaceChildren();
+	strip.className = `${banner.uppercase ? 'uppercase' : ''} ${banner.monospace ? 'mono' : ''}`;
+	strip.style.background = banner.backgroundColor;
+	strip.style.color = banner.color;
+	strip.style.borderTop = strip.style.borderBottom =
+		banner.style === 'edge' ? `3px solid ${banner.color === '#FFFFFF' ? shade(banner.backgroundColor, 0.6) : 'rgba(0, 0, 0, 0.28)'}` : 'none';
+	strip.setAttribute('aria-label', banner.text);
+	if (banner.style === 'segmented' && banner.segments.length > 0) {
+		banner.segments.forEach((segment, index) => {
+			if (index > 0) strip.append(el('span', { className: 'rule', style: `background:${banner.color}` }));
+			strip.append(el('span', {}, segment.text));
+		});
+	} else {
+		strip.append(el('span', {}, banner.text));
+	}
+	$('#preview-position').textContent = `style: ${banner.style} · position: ${banner.position}${config.enabled ? '' : ' · disabled'}`;
+};
+
+const renderBannerOptions = () => {
+	const { banner } = config;
+	const select = (value, options, onchange) => {
+		const node = el('select', { onchange: (e) => { onchange(e.target.value); update(); } },
+			...options.map(([v, text]) => el('option', { value: v, selected: v === value }, text)));
+		return node;
+	};
+	$('#banner-options').replaceChildren(
+		field('Style', select(banner.style, [['classic', 'Classic'], ['segmented', 'Segmented'], ['edge', 'Edge']], (v) => { banner.style = v; })),
+		field('Position', select(banner.position, [['top', 'Top'], ['bottom', 'Bottom'], ['both', 'Both']], (v) => { banner.position = v; })),
+		field('Segment delimiter', el('input', { type: 'text', className: 'mono', maxLength: 8, value: banner.delimiter, oninput: (e) => { banner.delimiter = e.target.value; update(false); } })),
+		field('Color mode', select(banner.colorMode, [['highest', 'Most restrictive value'], ['attribute', 'First selected value']], (v) => { banner.colorMode = v; })),
+		field('Fallback text', el('input', { type: 'text', value: banner.fallbackText, oninput: (e) => { banner.fallbackText = e.target.value; update(false); } })),
+		field('Fallback color', el('div', { className: 'swatch-cell' },
+			el('input', { type: 'color', value: banner.fallbackColor, oninput: (e) => { banner.fallbackColor = e.target.value; update(false); } }),
+			el('span', { className: 'hex' }, banner.fallbackColor))),
+		el('div', {},
+			check('Uppercase', { checked: banner.uppercase, onchange: (e) => { banner.uppercase = e.target.checked; update(); } }),
+		),
+		el('div', {},
+			check('Monospace', { checked: banner.monospace, onchange: (e) => { banner.monospace = e.target.checked; update(); } }),
+		),
+		el('div', {},
+			check('Enabled', { checked: config.enabled, onchange: (e) => { config.enabled = e.target.checked; update(); } }),
+		),
+	);
+};
+
+const renderAttribute = (attribute, index) => {
+	const move = (delta) => {
+		config.attributes.splice(index + delta, 0, ...config.attributes.splice(index, 1));
+		update();
+	};
+	const textInput = (key, props = {}) =>
+		el('input', { type: 'text', value: attribute[key] ?? '', oninput: (e) => { attribute[key] = e.target.value; update(false); }, ...props });
+	const selectInput = (key, options) =>
+		el('select', { onchange: (e) => { attribute[key] = e.target.value; update(); } },
+			...options.map(([v, text]) => el('option', { value: v, selected: v === (attribute[key] ?? '') }, text)));
+
+	const valueRow = (value, valueIndex) => el('tr', {},
+		el('td', {}, el('input', { type: 'text', className: 'mono', value: value.source, 'aria-label': 'Value source', oninput: (e) => { value.source = e.target.value; update(false); } })),
+		el('td', {}, el('input', { type: 'text', value: value.label, 'aria-label': 'Value label', oninput: (e) => { value.label = e.target.value; update(false); } })),
+		el('td', {}, el('div', { className: 'swatch-cell' },
+			el('input', { type: 'color', value: value.color, 'aria-label': 'Value color', oninput: (e) => { value.color = e.target.value; update(false); } }),
+			el('span', { className: 'hex' }, value.color))),
+		el('td', {}, el('button', { className: 'danger-ghost', title: 'Remove value', 'aria-label': 'Remove value', onclick: () => { attribute.values.splice(valueIndex, 1); update(); } }, '✕')),
+	);
+
+	return el('div', { className: 'attr' },
+		el('div', { className: 'attr-head' },
+			el('button', { className: 'ghost', title: 'Move up', 'aria-label': 'Move attribute up', disabled: index === 0, onclick: () => move(-1) }, '↑'),
+			el('button', { className: 'ghost', title: 'Move down', 'aria-label': 'Move attribute down', disabled: index === config.attributes.length - 1, onclick: () => move(1) }, '↓'),
+			el('b', {}, attribute.label || attribute.id || 'Untitled'),
+			el('span', { className: 'src' }, attribute.source || 'no source key'),
+			el('div', { className: 'flags' },
+				attribute.drivesColor ? el('span', { className: 'tag color-driver' }, 'color driver') : el('button', { className: 'ghost', onclick: () => { config.attributes.forEach((a) => { a.drivesColor = false; }); attribute.drivesColor = true; update(); } }, 'Make color driver'),
+				el('button', { className: 'danger-ghost', onclick: () => { config.attributes.splice(index, 1); update(); } }, 'Remove'),
+			),
+		),
+		el('div', { className: 'attr-fields grid' },
+			field('Id', textInput('id', { className: 'mono' })),
+			field('Source key (IdP)', textInput('source', { className: 'mono' })),
+			field('Label (admin-facing)', textInput('label')),
+			field('Banner label', textInput('bannerLabel')),
+			field('Label separator', selectInput('labelSeparator', [['', 'None'], ['-', 'Dash (-)'], [' ', 'Space']])),
+			field('Value separator', selectInput('valueSeparator', [['/', 'Slash (/)'], [', ', 'Comma (, )'], [' ', 'Space']])),
+			field('Group threshold (0 = never)', el('input', { type: 'number', min: 0, max: 20, value: attribute.groupThreshold ?? 0, oninput: (e) => { attribute.groupThreshold = Number(e.target.value); update(false); } })),
+			field('Grouped label', textInput('multipleLabel')),
+			el('div', {},
+				check('Show in banner', { checked: attribute.showInBanner, onchange: (e) => { attribute.showInBanner = e.target.checked; update(); } }),
+			),
+			el('div', {},
+				check('Show label prefix', { checked: !!attribute.showLabel, onchange: (e) => { attribute.showLabel = e.target.checked; update(); } }),
+			),
+			el('div', {},
+				check('Sort values A→Z', { checked: !!attribute.sortAlpha, onchange: (e) => { attribute.sortAlpha = e.target.checked; update(); } }),
+			),
+		),
+		el('div', { className: 'values' },
+			el('table', {},
+				el('thead', {}, el('tr', {}, el('th', {}, 'Source value'), el('th', {}, 'Banner label'), el('th', {}, 'Color'), el('th', {}))),
+				el('tbody', {}, ...attribute.values.map(valueRow)),
+			),
+			el('button', { onclick: () => { attribute.values.push({ source: '', label: '', color: '#6C727A' }); update(); } }, 'Add value'),
+		),
+	);
+};
+
+const renderAttributes = () => {
+	$('#attributes').replaceChildren(...config.attributes.map(renderAttribute));
+};
+
+const renderSimulation = () => {
+	$('#sim').replaceChildren(
+		...config.attributes.map((attribute) => el('div', { className: 'sim-group' },
+			el('b', {}, `${attribute.label || attribute.id} `, el('span', { className: 'src' }, attribute.source)),
+			el('div', { className: 'sim-values' },
+				...attribute.values.map((value) => check(value.label || value.source, {
+					checked: (simulation[attribute.source] ?? []).includes(value.source),
+					onchange: (e) => {
+						const selected = new Set(simulation[attribute.source] ?? []);
+						e.target.checked ? selected.add(value.source) : selected.delete(value.source);
+						simulation[attribute.source] = [...selected];
+						update();
+					},
+				})),
+			),
+		)),
+	);
+};
+
+const renderWarnings = () => {
+	const problems = lintConfig(config);
+	const box = $('#warnings');
+	box.className = problems.length ? '' : 'ok';
+	box.replaceChildren(
+		el('h3', {}, problems.length ? `Fix before saving (${problems.length})` : 'Configuration passes all cross-field rules'),
+		problems.length ? el('ul', {}, ...problems.map((p) => el('li', {}, p))) : null,
+	);
+};
+
+const renderJson = () => {
+	$('#json-out').value = JSON.stringify(config, null, 2);
+};
+
+const update = (rebuildForms = true) => {
+	renderPreview();
+	renderWarnings();
+	renderJson();
+	if (rebuildForms) {
+		renderBannerOptions();
+		renderAttributes();
+		renderSimulation();
+	}
+};
+
+// ---- toolbar ----
+
+$('#btn-copy').addEventListener('click', async () => {
+	await navigator.clipboard.writeText($('#json-out').value);
+	$('#btn-copy').textContent = 'Copied';
+	setTimeout(() => { $('#btn-copy').textContent = 'Copy JSON'; }, 1200);
+});
+
+$('#btn-reset').addEventListener('click', () => {
+	config = exampleConfig();
+	simulation = { 'clearance.level': ['TS'], 'access.programs': ['SAP-1042', 'SAP-2271', 'SAP-3380'], 'dissem.relto': ['USA'] };
+	update();
+});
+
+$('#btn-add-attr').addEventListener('click', () => {
+	config.attributes.push({
+		id: `attribute-${config.attributes.length + 1}`, source: '', label: '',
+		showInBanner: true, showLabel: false, bannerLabel: '', labelSeparator: '', valueSeparator: '/',
+		sortAlpha: false, groupThreshold: 0, multipleLabel: '', drivesColor: config.attributes.length === 0,
+		values: [{ source: '', label: '', color: '#6C727A' }],
+	});
+	update();
+});
+
+const importDialog = $('#import-dialog');
+$('#btn-import').addEventListener('click', () => { $('#import-error').textContent = ''; $('#import-text').value = ''; importDialog.showModal(); });
+$('#import-cancel').addEventListener('click', () => importDialog.close());
+$('#import-apply').addEventListener('click', () => {
+	try {
+		const parsed = JSON.parse($('#import-text').value);
+		if (parsed?.version !== 1 || !Array.isArray(parsed.attributes) || typeof parsed.banner?.delimiter !== 'string') {
+			throw new Error('Not a version 1 classification banners document.');
+		}
+		config = parsed;
+		simulation = {};
+		importDialog.close();
+		update();
+	} catch (error) {
+		$('#import-error').textContent = error instanceof SyntaxError ? 'Invalid JSON.' : error.message;
+	}
+});
+
+update();
+</script>
+</body>
+</html>
