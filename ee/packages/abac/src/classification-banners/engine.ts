@@ -63,7 +63,10 @@ const buildSegment = (
 	}
 
 	const threshold = attribute.groupThreshold ?? 0;
-	const body = threshold > 0 && matched.length >= threshold ? (attribute.multipleLabel ?? '') : matched.map(({ label }) => label).join(attribute.valueSeparator ?? '/');
+	const body =
+		threshold > 0 && matched.length >= threshold
+			? (attribute.multipleLabel ?? '')
+			: matched.map(({ label }) => label).join(attribute.valueSeparator ?? '/');
 
 	return {
 		attrId: attribute.id,
