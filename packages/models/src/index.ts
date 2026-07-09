@@ -90,6 +90,7 @@ import type {
 	IModerationReportsModel,
 	IWorkspaceCredentialsModel,
 	IFreeSwitchChannelEventDeltaModel,
+	ISamlUsedAssertionsModel,
 } from '@rocket.chat/model-typings';
 import type { Collection, Db } from 'mongodb';
 
@@ -116,6 +117,7 @@ import {
 	TeamRaw,
 	UsersRaw,
 	UsersSessionsRaw,
+	SamlUsedAssertionsRaw,
 } from './modelClasses';
 import { proxify, registerModel } from './proxify';
 
@@ -222,6 +224,7 @@ export const CronHistory = proxify<ICronHistoryModel>('ICronHistoryModel');
 export const Migrations = proxify<IMigrationsModel>('IMigrationsModel');
 export const ModerationReports = proxify<IModerationReportsModel>('IModerationReportsModel');
 export const WorkspaceCredentials = proxify<IWorkspaceCredentialsModel>('IWorkspaceCredentialsModel');
+export const SamlUsedAssertions = proxify<ISamlUsedAssertionsModel>('ISamlUsedAssertionsModel');
 
 export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecordDeleted<any>>): void {
 	registerModel('ISettingsModel', () => new SettingsRaw(db, trash as Collection<RocketChatRecordDeleted<ISetting>>));
@@ -256,6 +259,7 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('ILivechatRoomsModel', () => new LivechatRoomsRaw(db));
 	registerModel('IUploadsModel', () => new UploadsRaw(db));
 	registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsRaw(db));
+	registerModel('ISamlUsedAssertionsModel', () => new SamlUsedAssertionsRaw(db));
 }
 
 if (!dbWatchersDisabled) {
