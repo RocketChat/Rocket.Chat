@@ -58,7 +58,9 @@ export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps) => {
 						>
 							{attachment.author_name}
 						</AttachmentAuthorName>
-						{attachment.ts && <AttachmentAuthorTimestamp>{formatTime(attachment.ts)}</AttachmentAuthorTimestamp>}
+						{attachment.ts && (
+							<AttachmentAuthorTimestamp href={attachment.message_link}>{formatTime(attachment.ts)}</AttachmentAuthorTimestamp>
+						)}
 						{attachment.message_link && <AttachmentMessageLink href={attachment.message_link} />}
 					</AttachmentAuthor>
 					{attachment.attachments && (
