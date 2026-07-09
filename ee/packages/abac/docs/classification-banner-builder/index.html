@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Classification banner builder — Rocket.Chat</title>
+<script>
+	(() => {
+		let stored = null;
+		try { stored = localStorage.getItem('cb-theme'); } catch {}
+		document.documentElement.dataset.theme =
+			stored ?? (window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+	})();
+</script>
 <style>
 	:root {
 		--ink: #1f2329;
@@ -12,12 +20,30 @@
 		--paper: #ffffff;
 		--wash: #f7f8fa;
 		--action: #156ff5;
+		--action-hover: #0d5bd3;
 		--danger: #d40c26;
+		--danger-wash: #fdeef0;
 		--ok: #148660;
 		--warn-bg: #fff8e0;
 		--warn-line: #f5c700;
 		--radius: 6px;
 		--mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+		color-scheme: light;
+	}
+	html[data-theme='dark'] {
+		--ink: #e4e7ea;
+		--ink-soft: #9ea2a8;
+		--line: #3f444d;
+		--paper: #2f343d;
+		--wash: #1f2329;
+		--action: #4a8cf7;
+		--action-hover: #6ba1f8;
+		--danger: #f5455c;
+		--danger-wash: #3b262b;
+		--ok: #2de0a5;
+		--warn-bg: #33301f;
+		--warn-line: #8a7a1a;
+		color-scheme: dark;
 	}
 	* { margin: 0; padding: 0; box-sizing: border-box; }
 	html { scrollbar-gutter: stable; }
@@ -131,11 +157,11 @@
 	}
 	button:hover { background: var(--wash); }
 	button.primary { background: var(--action); border-color: var(--action); color: #fff; font-weight: 600; }
-	button.primary:hover { background: #0d5bd3; }
+	button.primary:hover { background: var(--action-hover); }
 	button.ghost { border-color: transparent; color: var(--ink-soft); padding: 4px 6px; }
 	button.ghost:hover { color: var(--ink); background: var(--wash); }
 	button.danger-ghost { border-color: transparent; color: var(--danger); padding: 4px 6px; }
-	button.danger-ghost:hover { background: #fdeef0; }
+	button.danger-ghost:hover { background: var(--danger-wash); }
 	button:disabled { opacity: .4; cursor: default; }
 
 	.attr {
@@ -232,6 +258,7 @@
 <header class="page">
 	<h1>Classification banner builder</h1>
 	<div class="spacer"></div>
+	<button id="btn-theme" aria-label="Toggle dark mode"></button>
 	<button id="btn-import">Import JSON</button>
 	<button id="btn-example">Load example</button>
 	<button class="primary" id="btn-copy">Copy JSON</button>
@@ -709,6 +736,18 @@ const copyJson = (button) => async () => {
 };
 $('#btn-copy').addEventListener('click', copyJson($('#btn-copy')));
 $('#btn-copy-json').addEventListener('click', copyJson($('#btn-copy-json')));
+
+const themeButton = $('#btn-theme');
+const renderThemeButton = () => {
+	themeButton.textContent = document.documentElement.dataset.theme === 'dark' ? '☀︎ Light' : '☾ Dark';
+};
+themeButton.addEventListener('click', () => {
+	const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+	document.documentElement.dataset.theme = next;
+	try { localStorage.setItem('cb-theme', next); } catch { /* storage unavailable (e.g. file://) — theme still applies for the session */ }
+	renderThemeButton();
+});
+renderThemeButton();
 
 $('#btn-example').addEventListener('click', () => {
 	config = exampleConfig();
