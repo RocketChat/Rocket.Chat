@@ -983,6 +983,16 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 }
 
+export { buildClassificationBanner, parseClassificationBannersConfig, readableTextColor } from './classification-banners/engine';
+export type {
+	ClassificationBannerAttribute,
+	ClassificationBannerPayload,
+	ClassificationBannerPosition,
+	ClassificationBannerSegment,
+	ClassificationBannerStyle,
+	ClassificationBannerValue,
+	ClassificationBannersConfig,
+} from './classification-banners/types';
 export { LocalPDP, VirtruPDP } from './pdp';
 export type { IPolicyDecisionPoint, VirtruPDPConfig } from './pdp';
 export { PdpHealthCheckError, getPdpHealthErrorCode, AbacAttributeStoreExternalError } from './errors';
