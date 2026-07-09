@@ -1,66 +1,36 @@
-import { useLanguage } from '@rocket.chat/ui-contexts';
-import type { Locale } from 'date-fns';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
-import { getDateFnsLocale } from '../../lib/getDateFnsLocale';
 import type { DateInput } from '../lib/utils/dateFormat';
 import { formatFromNow } from '../lib/utils/dateFormat';
 
-const getRefreshInterval = (elapsedMs: number): number => {
-	const distance = Math.abs(elapsedMs);
-
-	if (distance < 3600000) {
-		// less than 1 hour: refresh every 30 seconds
-		return 30000;
-	}
-
-	if (distance < 86400000) {
-		// less than 1 day: refresh every 5 minutes
-		return 300000;
-	}
-
-	// 1 day or more: refresh every 1 hour
-	return 3600000;
-};
+const getRefreshInterval = (elapsedMs: number): number =>
+	// under 1h the text changes every minute; beyond that only hourly/daily, so 5m keeps it fresh
+	Math.abs(elapsedMs) < 3600000 ? 30000 : 300000;
 
 export const useReactiveTimeFromNow = (date: DateInput | undefined, withSuffix = true): string | undefined => {
-	const language = useLanguage();
-	const [locale, setLocale] = useState<Locale>();
-
-	useEffect(() => {
-		let active = true;
-		getDateFnsLocale(language).then((resolved) => {
-			if (active) {
-				setLocale(resolved);
-			}
-		});
-		return () => {
-			active = false;
-		};
-	}, [language]);
-
-	const timestamp = date !== undefined ? new Date(date).getTime() : undefined;
-	const time = timestamp !== undefined && !Number.isNaN(timestamp) ? timestamp : undefined;
-
-	const [text, setText] = useState(() => (time !== undefined ? formatFromNow(time, withSuffix, locale) : undefined));
+	const parsed = date !== undefined ? new Date(date).getTime() : NaN;
+	const time = Number.isNaN(parsed) ? undefined : parsed;
 
 	useEffect(() => {
 		if (time === undefined) {
-			setText(undefined);
-			return;
+			return undefined;
 		}
 
 		let timeoutId: ReturnType<typeof setTimeout>;
 
-		const refresh = () => {
-			setText(formatFromNow(time, withSuffix, locale));
-			timeoutId = setTimeout(refresh, getRefreshInterval(Date.now() - time));
+		const schedule = () => {
+			timeoutId = setTimeout(
+				() => {
+					schedule();
+				},
+				getRefreshInterval(Date.now() - time),
+			);
 		};
 
-		refresh();
+		schedule();
 
 		return () => clearTimeout(timeoutId);
-	}, [time, withSuffix, locale]);
+	}, [time]);
 
-	return text;
+	return time !== undefined ? formatFromNow(time, withSuffix) : undefined;
 };
