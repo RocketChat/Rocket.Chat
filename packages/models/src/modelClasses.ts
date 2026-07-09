@@ -69,7 +69,6 @@ export * from './models/CronHistoryModel';
 export * from './models/Migrations';
 export * from './models/ModerationReports';
 export * from './models/MediaCalls';
-export * from './models/MediaCallChannels';
 export * from './models/MediaCallNegotiations';
 export * from './models/WorkspaceCredentials';
 export * from './models/Trash';
