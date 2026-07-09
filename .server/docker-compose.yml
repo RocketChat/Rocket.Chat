@@ -1,0 +1,32 @@
+version: "3.7"
+
+services:
+  rocketchat:
+    image: registry.rocket.chat/rocketchat/rocket.chat:latest
+    restart: unless-stopped
+    environment:
+      MONGO_URL: "mongodb://mongodb:27017/rocketchat?replicaSet=rs0"
+      ROOT_URL: "http://localhost:3000"
+      PORT: 3000
+    depends_on:
+      - mongodb
+    ports:
+      - 3000:3000
+
+  mongodb:
+    image: docker.io/mongodb/mongodb-community-server:8.0-ubi8
+    restart: unless-stopped
+    command: mongod --oplogSize 128 --replSet rs0
+    volumes:
+      - mongodb_data:/data/db
+
+  mongo-init-replica:
+    image: docker.io/mongodb/mongodb-community-server:8.0-ubi8
+    restart: on-failure
+    command: >
+      bash -c "until mongosh --host mongodb --eval 'db.runCommand({ping: 1})' &>/dev/null; do echo 'Waiting for MongoDB to be ready...'; sleep 2; done; mongosh --host mongodb --eval 'try { rs.status() } catch (e) { rs.initiate({_id: \"rs0\", members: [{_id: 0, host: \"mongodb:27017\"}]}) }'"
+    depends_on:
+      - mongodb
+
+volumes:
+  mongodb_data:
