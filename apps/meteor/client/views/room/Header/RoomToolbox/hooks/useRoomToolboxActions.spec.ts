@@ -5,33 +5,14 @@ import { renderHook } from '@testing-library/react';
 import React from 'react';
 
 import { useRoomToolboxActions } from './useRoomToolboxActions';
-import { RoomContext } from '../../../contexts/RoomContext';
-import type { IRoomWithFederationOriginalName } from '../../../contexts/RoomContext';
-
-const makeRoomContext = (t: string) =>
-	({
-		rid: 'room-123',
-		room: {
-			_id: 'room-123',
-			t,
-			name: 'test-room',
-			fname: 'Test Room',
-		} as IRoomWithFederationOriginalName,
-		subscription: undefined,
-		hasMorePreviousMessages: false,
-		hasMoreNextMessages: false,
-		isLoadingMoreMessages: false,
-	}) as const;
+import FakeRoomProvider from '../../../../../../tests/mocks/client/FakeRoomProvider';
 
 describe('useRoomToolboxActions', () => {
 	it('should return an empty array if there are no actions', () => {
 		const { result } = renderHook(() => useRoomToolboxActions({ actions: [], openTab: () => undefined }), {
-			wrapper: ({ children }) =>
-				React.createElement(
-					mockAppRoot().build(),
-					null,
-					React.createElement(RoomContext.Provider, { value: makeRoomContext('c') }, children),
-				),
+			wrapper: mockAppRoot()
+				.wrap((children) => React.createElement(FakeRoomProvider, { roomOverrides: { t: 'c' } }, children))
+				.build(),
 		});
 		expect(result.current.featuredActions).toEqual([]);
 		expect(result.current.hiddenActions).toEqual([]);
@@ -40,12 +21,9 @@ describe('useRoomToolboxActions', () => {
 
 	it('should return apps actions only inside hiddenActions', () => {
 		const { result } = renderHook(() => useRoomToolboxActions({ actions: appsActions, openTab: () => undefined }), {
-			wrapper: ({ children }) =>
-				React.createElement(
-					mockAppRoot().build(),
-					null,
-					React.createElement(RoomContext.Provider, { value: makeRoomContext('c') }, children),
-				),
+			wrapper: mockAppRoot()
+				.wrap((children) => React.createElement(FakeRoomProvider, { roomOverrides: { t: 'c' } }, children))
+				.build(),
 		});
 		const appsSection = result.current.hiddenActions[0];
 		const appsItems = appsSection.items;
@@ -57,12 +35,9 @@ describe('useRoomToolboxActions', () => {
 
 	it('should return max of 6 items on visibleActions and the rest items inside hiddenActions', () => {
 		const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
-			wrapper: ({ children }) =>
-				React.createElement(
-					mockAppRoot().build(),
-					null,
-					React.createElement(RoomContext.Provider, { value: makeRoomContext('c') }, children),
-				),
+			wrapper: mockAppRoot()
+				.wrap((children) => React.createElement(FakeRoomProvider, { roomOverrides: { t: 'c' } }, children))
+				.build(),
 		});
 		expect(result.current.hiddenActions.length).toBeGreaterThan(0);
 		expect(result.current.visibleActions.length).toBe(6);
@@ -70,12 +45,9 @@ describe('useRoomToolboxActions', () => {
 
 	it('should return featured items inside featuredActions', () => {
 		const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
-			wrapper: ({ children }) =>
-				React.createElement(
-					mockAppRoot().build(),
-					null,
-					React.createElement(RoomContext.Provider, { value: makeRoomContext('c') }, children),
-				),
+			wrapper: mockAppRoot()
+				.wrap((children) => React.createElement(FakeRoomProvider, { roomOverrides: { t: 'c' } }, children))
+				.build(),
 		});
 		expect(result.current.featuredActions).toMatchObject(actions.filter((action) => action.featured));
 	});
@@ -93,16 +65,12 @@ describe('useRoomToolboxActions', () => {
 
 		it('should respect custom featured and visible ordering for public channels', () => {
 			const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
-				wrapper: ({ children }) =>
-					React.createElement(
-						mockAppRoot()
-							.withSetting('Accounts_AllowFeaturePreview', true)
-							.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
-							.withSetting('Room_Toolbox_Layout_Public', mockLayoutConfig)
-							.build(),
-						null,
-						React.createElement(RoomContext.Provider, { value: makeRoomContext('c') }, children),
-					),
+				wrapper: mockAppRoot()
+					.withSetting('Accounts_AllowFeaturePreview', true)
+					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
+					.withSetting('Room_Toolbox_Layout_Public', mockLayoutConfig)
+					.wrap((children) => React.createElement(FakeRoomProvider, { roomOverrides: { t: 'c' } }, children))
+					.build(),
 			});
 
 			expect(result.current.featuredActions.map((a) => a.id)).toEqual(['thread']);
@@ -119,16 +87,12 @@ describe('useRoomToolboxActions', () => {
 				items: [{ id: 'thread', featured: true, order: 1 }],
 			});
 			const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
-				wrapper: ({ children }) =>
-					React.createElement(
-						mockAppRoot()
-							.withSetting('Accounts_AllowFeaturePreview', true)
-							.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
-							.withSetting('Room_Toolbox_Layout_Private', privateConfig)
-							.build(),
-						null,
-						React.createElement(RoomContext.Provider, { value: makeRoomContext('p') }, children),
-					),
+				wrapper: mockAppRoot()
+					.withSetting('Accounts_AllowFeaturePreview', true)
+					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
+					.withSetting('Room_Toolbox_Layout_Private', privateConfig)
+					.wrap((children) => React.createElement(FakeRoomProvider, { roomOverrides: { t: 'p' } }, children))
+					.build(),
 			});
 			expect(result.current.featuredActions.map((a) => a.id)).toEqual(['thread']);
 		});
@@ -139,16 +103,12 @@ describe('useRoomToolboxActions', () => {
 				items: [{ id: 'discussions', featured: false, order: 1 }],
 			});
 			const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
-				wrapper: ({ children }) =>
-					React.createElement(
-						mockAppRoot()
-							.withSetting('Accounts_AllowFeaturePreview', true)
-							.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
-							.withSetting('Room_Toolbox_Layout_Direct', directConfig)
-							.build(),
-						null,
-						React.createElement(RoomContext.Provider, { value: makeRoomContext('d') }, children),
-					),
+				wrapper: mockAppRoot()
+					.withSetting('Accounts_AllowFeaturePreview', true)
+					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
+					.withSetting('Room_Toolbox_Layout_Direct', directConfig)
+					.wrap((children) => React.createElement(FakeRoomProvider, { roomOverrides: { t: 'd' } }, children))
+					.build(),
 			});
 			expect(result.current.visibleActions.map((a) => a.id)).toEqual(['discussions']);
 		});
@@ -160,16 +120,12 @@ describe('useRoomToolboxActions', () => {
 			['items with invalid item types', JSON.stringify({ items: [null] })],
 		])('should fall back to legacy behavior if config is %s', (_, layoutConfigValue) => {
 			const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
-				wrapper: ({ children }) =>
-					React.createElement(
-						mockAppRoot()
-							.withSetting('Accounts_AllowFeaturePreview', true)
-							.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
-							.withSetting('Room_Toolbox_Layout_Public', layoutConfigValue)
-							.build(),
-						null,
-						React.createElement(RoomContext.Provider, { value: makeRoomContext('c') }, children),
-					),
+				wrapper: mockAppRoot()
+					.withSetting('Accounts_AllowFeaturePreview', true)
+					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
+					.withSetting('Room_Toolbox_Layout_Public', layoutConfigValue)
+					.wrap((children) => React.createElement(FakeRoomProvider, { roomOverrides: { t: 'c' } }, children))
+					.build(),
 			});
 
 			const expectedVisible = actions.filter((action) => !action.featured && action.type !== 'apps').slice(0, 6);
@@ -179,16 +135,12 @@ describe('useRoomToolboxActions', () => {
 
 		it('should fall back to legacy behavior if feature preview is disabled', () => {
 			const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
-				wrapper: ({ children }) =>
-					React.createElement(
-						mockAppRoot()
-							.withSetting('Accounts_AllowFeaturePreview', true)
-							.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: false }])
-							.withSetting('Room_Toolbox_Layout_Public', mockLayoutConfig)
-							.build(),
-						null,
-						React.createElement(RoomContext.Provider, { value: makeRoomContext('c') }, children),
-					),
+				wrapper: mockAppRoot()
+					.withSetting('Accounts_AllowFeaturePreview', true)
+					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: false }])
+					.withSetting('Room_Toolbox_Layout_Public', mockLayoutConfig)
+					.wrap((children) => React.createElement(FakeRoomProvider, { roomOverrides: { t: 'c' } }, children))
+					.build(),
 			});
 
 			const expectedVisible = actions.filter((action) => !action.featured && action.type !== 'apps').slice(0, 6);
@@ -236,22 +188,18 @@ describe('useRoomToolboxActions', () => {
 			};
 
 			const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
-				wrapper: ({ children }) => {
-					const Parent = mockAppRoot()
-						.withSetting('Accounts_AllowFeaturePreview', true)
-						.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
-						.withSetting('Room_Toolbox_Layout_Public', mockLayoutConfig)
-						.build();
-					return React.createElement(
-						Parent,
-						null,
+				wrapper: mockAppRoot()
+					.withSetting('Accounts_AllowFeaturePreview', true)
+					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
+					.withSetting('Room_Toolbox_Layout_Public', mockLayoutConfig)
+					.wrap((children) =>
 						React.createElement(
 							LayoutContext.Provider,
 							{ value: mockLayoutContextValue },
-							React.createElement(RoomContext.Provider, { value: makeRoomContext('c') }, children),
+							React.createElement(FakeRoomProvider, { roomOverrides: { t: 'c' } }, children),
 						),
-					);
-				},
+					)
+					.build(),
 			});
 
 			expect(result.current.featuredActions.map((a) => a.id)).toEqual(['thread']);
