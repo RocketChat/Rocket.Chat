@@ -1,0 +1,29 @@
+apps/meteor/MIGRATION_PLAN.md
+  s_7c6a76c13a919e::t_8c55b3403c18cf 570-571
+  s_7c6a76c13a919e::t_e94219dedd2ba2 600-603,606-607,610-612
+  s_7c6a76c13a919e::t_e1f478626c394c 553-554
+  s_7c6a76c13a919e::t_09c2b69b08f00a 579-582,584-585,587-588
+  s_7c6a76c13a919e::t_c697d9e12d4005 641-642,646-647
+  s_7c6a76c13a919e::t_594109caefb100 106
+  s_7c6a76c13a919e::t_e0437f0f4eeb05 511-512
+  s_7c6a76c13a919e::t_03dce0442d6041 63-64
+  s_7c6a76c13a919e::t_3c1b82c97a33d3 529-530
+  s_7c6a76c13a919e::t_01bd13c44981e5 402-403
+  s_7c6a76c13a919e::t_7c5650c4d79727 613
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "f7c1beeffb99753e1a37a64a3701baed4eca81ba",
+  "prompts": {},
+  "sessions": {
+    "s_7c6a76c13a919e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bd67a1bc-8181-41af-8371-afbdb75eacb5",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
