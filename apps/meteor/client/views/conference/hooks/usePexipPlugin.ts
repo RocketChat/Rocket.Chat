@@ -52,7 +52,7 @@ export const usePexipPlugin = ({ conferenceUrl, hasUnread, chatVisible, onToggle
 	// Dial a phone number / SIP destination into the conference via the Pexip plugin.
 	const dialOut = useCallback(
 		(destination: string) => {
-			postToPlugin('dial-out', { role: 'GUEST', destination, protocol: 'sip', call_type: 'audio' });
+			postToPlugin('dial-out', { role: 'GUEST', destination, protocol: 'auto', call_type: 'audio' });
 		},
 		[postToPlugin],
 	);
