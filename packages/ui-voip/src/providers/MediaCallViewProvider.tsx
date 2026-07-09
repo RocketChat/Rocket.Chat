@@ -98,7 +98,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 			stopTracks(stream);
 		} catch (error) {
 			console.error('Media Call - Error requesting device', error);
-			return;
+			// return;
 		}
 
 		if ('userId' in peerInfo) {
@@ -125,9 +125,10 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 			stopTracks(stream);
 		} catch (error) {
 			if (error instanceof PermissionRequestCancelledCallRejectedError) {
-				controls.endCall();
+				console.log('rejected');
+				// controls.endCall();
 			}
-			return;
+			// return;
 		}
 
 		controls.acceptCall();

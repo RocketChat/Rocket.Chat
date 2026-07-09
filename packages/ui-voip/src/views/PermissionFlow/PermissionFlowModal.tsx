@@ -10,7 +10,7 @@ import {
 	ModalFooter,
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
-import { useAbsoluteUrl, useSetModal } from '@rocket.chat/ui-contexts';
+import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -78,17 +78,17 @@ const PermissionFlowModal = ({ onCancel, onConfirm, type }: PermissionFlowModalP
 	const { t } = useTranslation();
 	const modalId = useId();
 	const absoluteUrl = useAbsoluteUrl();
-	const setModal = useSetModal();
+	// const setModal = useSetModal();
 
-	const onClose = () => {
-		setModal(null);
-	};
+	// const onClose = () => {
+	// 	setModal(null);
+	// };
 
 	return (
 		<Modal aria-labelledby={modalId}>
 			<ModalHeader>
 				<ModalTitle id={modalId}>{t('VoIP_device_permission_required')}</ModalTitle>
-				<ModalClose aria-label={t('Close')} onClick={onClose} />
+				<ModalClose aria-label={t('Close')} onClick={onCancel} />
 			</ModalHeader>
 			<ModalContent>
 				<Box is='span' className={breakSpaces} fontScale='p2'>
@@ -98,7 +98,7 @@ const PermissionFlowModal = ({ onCancel, onConfirm, type }: PermissionFlowModalP
 				</Box>
 			</ModalContent>
 			<ModalFooter>
-				<ModalFooterControllers>{getFooter(type, { onCancel, onConfirm, onClose, t })}</ModalFooterControllers>
+				<ModalFooterControllers>{getFooter(type, { onCancel, onConfirm, onClose: onCancel, t })}</ModalFooterControllers>
 			</ModalFooter>
 		</Modal>
 	);
