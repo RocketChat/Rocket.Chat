@@ -7,7 +7,7 @@ import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { Page, PageHeader, PageScrollableContentWithShadow, useFeaturePreview } from '@rocket.chat/ui-client';
 import { useEndpoint, useSearchParameter, useSetting, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
+import type { KeyboardEvent, ReactElement } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -58,22 +58,6 @@ const getMessageHref = (item: IntelligentResult): string | undefined => {
 const trimSourceMessage = (text: string): string =>
 	text.length > MAX_SOURCE_MESSAGE_LENGTH ? `${text.slice(0, MAX_SOURCE_MESSAGE_LENGTH).trimEnd()}...` : text;
 
-const SourceMessageLink = ({ href }: { href?: string }): ReactElement | null => {
-	const { t } = useTranslation();
-
-	if (!href) {
-		return null;
-	}
-
-	return (
-		<Box mbs={8}>
-			<Button small is='a' href={href}>
-				{t('Open')}
-			</Button>
-		</Box>
-	);
-};
-
 export const SourceResult = ({ item }: { item: IntelligentResult }): ReactElement => {
 	const { t } = useTranslation();
 	const roomLabel = item.room?.fname || item.room?.name;
@@ -81,6 +65,24 @@ export const SourceResult = ({ item }: { item: IntelligentResult }): ReactElemen
 	const username = item.u?.username || item.u?.name || t('Unknown_User');
 	const displayName = item.u?.name || username;
 	const relevanceScore = typeof item.score === 'number' ? Math.max(0, Math.min(100, Math.round(item.score * 100))) : undefined;
+	const handleOpenMessage = useCallback((): void => {
+		if (!href) {
+			return;
+		}
+
+		window.location.assign(href);
+	}, [href]);
+	const handleOpenMessageKeyDown = useCallback(
+		(event: KeyboardEvent): void => {
+			if (event.key !== 'Enter' && event.key !== ' ') {
+				return;
+			}
+
+			event.preventDefault();
+			handleOpenMessage();
+		},
+		[handleOpenMessage],
+	);
 
 	return (
 		<Box
@@ -88,7 +90,11 @@ export const SourceResult = ({ item }: { item: IntelligentResult }): ReactElemen
 			color='default'
 			display='flex'
 			alignItems='flex-start'
-			role='listitem'
+			role={href ? 'link' : 'listitem'}
+			tabIndex={href ? 0 : undefined}
+			aria-label={href ? t('Open') : undefined}
+			onClick={href ? handleOpenMessage : undefined}
+			onKeyDown={href ? handleOpenMessageKeyDown : undefined}
 			p={16}
 			mbe={12}
 			border='var(--rcx-border-width-default) solid var(--rcx-color-stroke-extra-light)'
@@ -138,7 +144,6 @@ export const SourceResult = ({ item }: { item: IntelligentResult }): ReactElemen
 					lineHeight='x20'
 					wordBreak='break-word'
 				/>
-				<SourceMessageLink href={href} />
 			</Box>
 		</Box>
 	);
@@ -446,7 +451,7 @@ const SearchPage = (): ReactElement => {
 							{t('No_results_found')}
 						</Box>
 					)}
-					<Box role='list'>
+					<Box>
 						{intelligent.map((item) => (
 							<SourceResult key={item._id} item={item} />
 						))}
