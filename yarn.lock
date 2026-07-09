@@ -10100,6 +10100,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/meteor-client@workspace:^, @rocket.chat/meteor-client@workspace:packages/meteor-client":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/meteor-client@workspace:packages/meteor-client"
+  dependencies:
+    "@rocket.chat/base64": "workspace:^"
+    "@rocket.chat/random": "workspace:^"
+    "@rocket.chat/sha256": "workspace:^"
+    "@rocket.chat/tsconfig": "workspace:*"
+    typescript: "npm:~5.9.3"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/meteor@workspace:apps/meteor":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/meteor@workspace:apps/meteor"
@@ -10176,6 +10188,7 @@ __metadata:
     "@rocket.chat/memo": "workspace:~"
     "@rocket.chat/message-parser": "workspace:^"
     "@rocket.chat/message-types": "workspace:~"
+    "@rocket.chat/meteor-client": "workspace:^"
     "@rocket.chat/mock-providers": "workspace:^"
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
