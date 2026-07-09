@@ -29,12 +29,10 @@ const UserAutoComplete = ({ value, onChange, ...props }: UserAutoCompleteProps) 
 	});
 
 	const options = useMemo(() => {
-		const items = data?.items.map((user) => ({ value: user.username, label: user.name || user.username })) || [];
+		const items = data?.items.map((user) => ({ value: user.username, label: user.name || user.username })) ?? [];
 
-		// as the label until the real name is fetched.
-		// eslint-disable-next-line no-nested-ternary
-		const values = Array.isArray(value) ? value : value ? [value] : [];
-		const missing = values.filter((v) => !items.some((item) => item.value === v)).map((v) => ({ value: v, label: v }));
+		const selectedValues = ([] as string[]).concat(value ?? []);
+		const missing = selectedValues.filter((v) => !items.some((item) => item.value === v)).map((v) => ({ value: v, label: v }));
 
 		return [...items, ...missing];
 	}, [data, value]);
