@@ -3,7 +3,7 @@ import { ButtonGroup } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import { useRef } from 'react';
 
-type UserCardActionsProps = ComponentProps<typeof ButtonGroup>;
+export type UserCardActionsProps = ComponentProps<typeof ButtonGroup>;
 
 const UserCardActions = (props: UserCardActionsProps) => {
 	const ref = useRef<HTMLDivElement>(null);

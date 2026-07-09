@@ -2,7 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactNode } from 'react';
 
-type CollapsibleRegionProps = {
+export type CollapsibleRegionProps = {
 	children: ReactNode;
 	expanded?: boolean;
 } & ComponentProps<typeof Box>;

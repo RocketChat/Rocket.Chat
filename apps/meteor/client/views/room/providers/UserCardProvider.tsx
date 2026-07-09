@@ -10,7 +10,9 @@ import { useRoom } from '../contexts/RoomContext';
 
 const UserCard = lazy(() => import('../UserCard'));
 
-const UserCardProvider = ({ children }: { children: ReactNode }) => {
+export type UserCardProviderProps = { children: ReactNode };
+
+const UserCardProvider = ({ children }: UserCardProviderProps) => {
 	const room = useRoom();
 	const [userCardData, setUserCardData] = useState<ComponentProps<typeof UserCard> | null>(null);
 

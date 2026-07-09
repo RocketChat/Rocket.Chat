@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import MatrixFederationSearchModalContent from './MatrixFederationSearchModalContent';
 import { useMatrixServerList } from './useMatrixServerList';
 
-type MatrixFederationSearchProps = {
+export type MatrixFederationSearchProps = {
 	onClose: () => void;
 	defaultSelectedServer?: string;
 };

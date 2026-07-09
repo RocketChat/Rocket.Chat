@@ -1,6 +1,7 @@
 import { Message } from '@rocket.chat/core-services';
 import type { ILivechatDepartment, ILivechatVisitor, IOmnichannelRoom, TransferData } from '@rocket.chat/core-typings';
 import { Users, LivechatRooms, LivechatVisitors, LivechatDepartment } from '@rocket.chat/models';
+import { check, Match } from 'meteor/check';
 
 import { normalizeTransferredByData } from './Helper';
 import { RoutingManager } from './RoutingManager';

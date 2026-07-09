@@ -4,7 +4,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
 import { Importers } from '..';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 import { RocketChatFile } from '../../../file/server';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { ProgressStep } from '../../lib/ImporterProgressStep';

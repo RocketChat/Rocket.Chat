@@ -10,7 +10,7 @@ import { MongoClient } from 'mongodb';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials, apiEmail, apiUsername, wait, reservedWords } from '../../data/api-data';
-import { imgURL } from '../../data/interactions';
+import { imgURL, tiffURL } from '../../data/interactions';
 import { createAgent, makeAgentAvailable } from '../../data/livechat/rooms';
 import { removeAgent, getAgent } from '../../data/livechat/users';
 import { updatePermission, updateSetting, restorePermissionToRoles, getSettingValueById } from '../../data/permissions.helper';
@@ -1848,6 +1848,34 @@ describe('[Users]', () => {
 					})
 					.end(done);
 			});
+
+			it('should return an offline user that still carries a custom status (vacation text/expiration survives offline)', async () => {
+				const vacationUser = await createUser();
+				const vacationCredentials = await login(vacationUser.username, password);
+				const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+
+				await request
+					.post(api('users.setStatus'))
+					.set(vacationCredentials)
+					.send({ status: 'offline', message: 'On vacation', expiresAt })
+					.expect(200);
+
+				const res = await request
+					.get(api('users.presence'))
+					.query({ ids: vacationUser._id })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				const returned = (res.body.users as IUser[]).find((u) => u._id === vacationUser._id);
+				expect(returned, 'offline user with a custom status must be returned by users.presence').to.not.be.undefined;
+				expect(returned).to.have.property('status', 'offline');
+				expect(returned).to.have.property('statusText', 'On vacation');
+				expect(returned).to.have.property('statusExpiresAt');
+
+				await deleteUser(vacationUser);
+			});
 		});
 	});
 
@@ -2192,6 +2220,19 @@ describe('[Users]', () => {
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+			it('should reject non-renderable image types (e.g. TIFF)', (done) => {
+				void request
+					.post(api('users.setAvatar'))
+					.set(userCredentials)
+					.attach('image', tiffURL)
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-invalid-file-type');
 					})
 					.end(done);
 			});
@@ -5658,7 +5699,7 @@ describe('[Users]', () => {
 					.set(credentials)
 					.send({
 						status: 'busy',
-						message: '',
+						message: 'test',
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)

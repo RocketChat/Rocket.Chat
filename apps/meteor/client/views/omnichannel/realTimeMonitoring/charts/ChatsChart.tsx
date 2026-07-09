@@ -32,7 +32,7 @@ const init = (canvas: HTMLCanvasElement, context: chartjs.Chart<'doughnut'> | un
 		Object.values(initialData),
 	);
 
-type ChatsChartProps = {
+export type ChatsChartProps = {
 	departmentId: ILivechatDepartment['_id'];
 	dateRange: { start: string; end: string };
 } & ComponentPropsWithoutRef<typeof Box>;

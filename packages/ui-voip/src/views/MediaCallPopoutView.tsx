@@ -7,7 +7,7 @@ import { ToggleButton, Timer, DevicePicker, ActionButton, useShouldWrapCards, Ac
 import MediaCallCardList from './MediaCallCardList';
 import { useMediaCallView } from '../context/MediaCallViewContext';
 
-type MediaCallPopoutViewProps = {
+export type MediaCallPopoutViewProps = {
 	user: {
 		displayName: string;
 		avatarUrl: string;

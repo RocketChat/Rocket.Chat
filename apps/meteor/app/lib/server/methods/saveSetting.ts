@@ -4,11 +4,11 @@ import { Settings } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { hasPermissionAsync, hasAllPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
+import { disableCustomScripts } from '../../../../server/lib/shared/disableCustomScripts';
 import { updateAuditedByUser } from '../../../../server/settings/lib/auditedSettingUpdates';
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
 import { getSettingPermissionId } from '../../../authorization/lib';
-import { hasPermissionAsync, hasAllPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { disableCustomScripts } from '../functions/disableCustomScripts';
 import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 import { notifyOnSettingChanged } from '../lib/notifyListener';
 

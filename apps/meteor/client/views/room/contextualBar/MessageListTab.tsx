@@ -27,7 +27,7 @@ import { isMessageNewDay } from '../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../MessageList/providers/MessageListProvider';
 import { useRoomSubscription } from '../contexts/RoomContext';
 
-type MessageListTabProps = {
+export type MessageListTabProps = {
 	iconName: IconName;
 	title: ReactNode;
 	emptyResultMessage: string;

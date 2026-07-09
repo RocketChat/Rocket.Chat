@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import Field from './Field';
 import ShortField from './ShortField';
 
-type FieldsAttachmentProps = {
+export type FieldsAttachmentProps = {
 	fields: {
 		short?: boolean;
 		title: ReactNode;

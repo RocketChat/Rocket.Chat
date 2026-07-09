@@ -8,7 +8,7 @@ import { useMemo, useState } from 'react';
 import MediaCallRoomSection from './MediaCallRoomSection';
 import MediaCallViewProvider from '../../providers/MediaCallViewProvider';
 
-type MediaCallRoomActivityProps = {
+export type MediaCallRoomActivityProps = {
 	children: ReactNode;
 };
 

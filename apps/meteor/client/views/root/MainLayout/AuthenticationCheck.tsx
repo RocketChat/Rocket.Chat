@@ -15,7 +15,9 @@ import UsernameCheck from './UsernameCheck';
  * Guest is only for certain locations, it shows a form asking if the user wants to stay as guest and if so
  * renders the page, without creating an user (not even an anonymous user)
  */
-const AuthenticationCheck = ({ children, guest }: { children: ReactNode; guest?: boolean }) => {
+export type AuthenticationCheckProps = { children: ReactNode; guest?: boolean };
+
+const AuthenticationCheck = ({ children, guest }: AuthenticationCheckProps) => {
 	const user = useUser();
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 	const forceLogin = useSession('forceLogin');

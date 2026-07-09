@@ -4,7 +4,7 @@ import { useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-type ActionConfirmModalProps = {
+export type ActionConfirmModalProps = {
 	isPassword: boolean;
 	onConfirm: (input: string) => Promise<void>;
 	onCancel: () => void;

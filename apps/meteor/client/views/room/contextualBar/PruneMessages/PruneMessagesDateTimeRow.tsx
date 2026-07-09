@@ -2,7 +2,7 @@ import { Box, Margins, Field, FieldLabel, InputBox } from '@rocket.chat/fuselage
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-type PruneMessagesDateTimeRowProps = {
+export type PruneMessagesDateTimeRowProps = {
 	label: string;
 	field: 'newer' | 'older';
 };

@@ -7,7 +7,7 @@ const className = css`
 	white-space: normal;
 `;
 
-type AttachmentProps = ComponentPropsWithoutRef<typeof Box>;
+export type AttachmentProps = ComponentPropsWithoutRef<typeof Box>;
 
 const Attachment = (props: AttachmentProps) => {
 	const { width } = useAttachmentDimensions();

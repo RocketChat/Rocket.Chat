@@ -15,7 +15,7 @@ import { useOmnichannelPriorities } from '../../../omnichannel/hooks/useOmnichan
 import SidePanelItem from '../SidepanelItem';
 import RoomMenu from '../SidepanelItem/RoomMenu';
 
-type InquireSidePanelItemProps = {
+export type InquireSidePanelItemProps = {
 	room: LivechatInquiryLocalRecord;
 	openedRoom?: string;
 };

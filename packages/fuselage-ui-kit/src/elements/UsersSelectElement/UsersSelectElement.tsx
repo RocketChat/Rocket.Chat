@@ -8,7 +8,7 @@ import { useUsersData } from './hooks/useUsersData';
 import { useUiKitState } from '../../hooks/useUiKitState';
 import type { BlockProps } from '../../utils/BlockProps';
 
-type UsersSelectElementProps = BlockProps<UiKit.UsersSelectElement>;
+export type UsersSelectElementProps = BlockProps<UiKit.UsersSelectElement>;
 
 export type UserAutoCompleteOptionType = {
 	value: string;

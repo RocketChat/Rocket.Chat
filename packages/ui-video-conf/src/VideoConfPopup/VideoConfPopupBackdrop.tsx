@@ -14,7 +14,9 @@ const backdropStyle = css`
 	}
 `;
 
-const VideoConfPopupBackdrop = ({ children }: { children: ReactNode }) => (
+export type VideoConfPopupBackdropProps = { children: ReactNode };
+
+const VideoConfPopupBackdrop = ({ children }: VideoConfPopupBackdropProps) => (
 	<Box m={40} zIndex={99} className={backdropStyle}>
 		{children}
 	</Box>

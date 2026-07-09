@@ -4,7 +4,7 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import { links } from '../lib/links';
 
-type FingerprintChangeModalConfirmationProps = {
+export type FingerprintChangeModalConfirmationProps = {
 	onConfirm: () => void;
 	onCancel: () => void;
 	onClose: () => void;

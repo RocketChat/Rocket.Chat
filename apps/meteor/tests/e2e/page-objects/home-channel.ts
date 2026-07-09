@@ -101,6 +101,11 @@ export class HomeChannel {
 		await this.content.waitForChannel();
 	}
 
+	async gotoGroup(name: string) {
+		await this.page.goto(`/group/${name}`);
+		await this.content.waitForChannel();
+	}
+
 	get btnContextualbarClose(): Locator {
 		return this.page.locator('[data-qa="ContextualbarActionClose"]');
 	}
@@ -174,7 +179,7 @@ export class HomeChannel {
 	}
 
 	getEmojiByName(name: string) {
-		return this.dialogEmojiPicker.locator(`role=tabpanel >> role=button[name="${name}"]`);
+		return this.dialogEmojiPicker.locator(`role=tabpanel >> [data-emoji="${name}"]`);
 	}
 
 	async pickEmoji(emoji: string, section = 'Smileys & People') {

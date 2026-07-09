@@ -35,7 +35,7 @@ const useSuggestedLanguages = ({
 	return { suggestions };
 };
 
-type LoginSwitchLanguageFooterProps = {
+export type LoginSwitchLanguageFooterProps = {
 	browserLanguage?: string;
 };
 

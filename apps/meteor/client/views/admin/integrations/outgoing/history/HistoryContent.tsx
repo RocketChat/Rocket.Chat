@@ -4,7 +4,9 @@ import { useTranslation } from 'react-i18next';
 
 import HistoryItem from './HistoryItem';
 
-const HistoryContent = ({ data, isLoading }: { data: Serialized<IIntegrationHistory>[]; isLoading: boolean }) => {
+export type HistoryContentProps = { data: Serialized<IIntegrationHistory>[]; isLoading: boolean };
+
+const HistoryContent = ({ data, isLoading }: HistoryContentProps) => {
 	const { t } = useTranslation();
 
 	if (isLoading) {

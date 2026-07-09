@@ -2,7 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-type RetryButtonProps = {
+export type RetryButtonProps = {
 	loading: boolean;
 	onClick(): void;
 };

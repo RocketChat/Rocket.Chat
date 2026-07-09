@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import RoomForm from './RoomForm';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 
-type RoomsContextualBarProps = {
+export type RoomsContextualBarProps = {
 	attributeId?: string;
 	roomInfo?: { rid: string; name: string };
 	attributesData?: { key: string; values: string[] }[];

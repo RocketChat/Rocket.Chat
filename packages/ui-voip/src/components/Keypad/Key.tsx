@@ -4,7 +4,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Button } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-type KeyProps = {
+export type KeyProps = {
 	primaryKey: string;
 	alternativeKey?: string;
 	longPressKey?: string;

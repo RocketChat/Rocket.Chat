@@ -8,7 +8,7 @@ import { useCallback, useRef } from 'react';
 import Contextualbar from './Contextualbar';
 import ContextualbarResizable from './ContextualbarResizable';
 
-type ContextualbarDialogProps = AriaDialogProps & ComponentProps<typeof Contextualbar> & { onClose?: () => void };
+export type ContextualbarDialogProps = AriaDialogProps & ComponentProps<typeof Contextualbar> & { onClose?: () => void };
 
 /**
  * @prop onClose can be used to close contextualbar outside the room context with ESC key
