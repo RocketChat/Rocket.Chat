@@ -54,7 +54,7 @@ export function addSettings(): Promise<void> {
 					type: 'boolean',
 					public: true,
 					invalidValue: false,
-					section: 'ABAC',
+					section: 'ABAC_Classification_Banners',
 					enableQuery: abacEnabledQuery,
 					i18nDescription: 'ABAC_Classification_Banners_Enabled_Description',
 				});
@@ -64,7 +64,7 @@ export function addSettings(): Promise<void> {
 					multiline: true,
 					public: false,
 					invalidValue: '',
-					section: 'ABAC',
+					section: 'ABAC_Classification_Banners',
 					enableQuery: [abacEnabledQuery, { _id: 'ABAC_Classification_Banners_Enabled', value: true }],
 					i18nDescription: 'ABAC_Classification_Banners_Config_Description',
 				});

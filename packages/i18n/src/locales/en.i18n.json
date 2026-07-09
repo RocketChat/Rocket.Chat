@@ -37,7 +37,8 @@
     "one": "{{count}} room affected",
     "other": "{{count}} rooms affected"
   },
-  "ABAC_Classification_Banners_Enabled": "Classification banners",
+  "ABAC_Classification_Banners": "Classification banners",
+  "ABAC_Classification_Banners_Enabled": "Enable classification banners",
   "ABAC_Classification_Banners_Enabled_Description": "Show a classification banner in rooms managed by ABAC.",
   "ABAC_Classification_Banners_Config": "Classification banners configuration (JSON)",
   "ABAC_Classification_Banners_Config_Description": "JSON document describing which room attributes appear in the banner, their labels and colors. See the classification banners documentation for the schema and examples.",

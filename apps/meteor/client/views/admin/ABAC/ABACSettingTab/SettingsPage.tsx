@@ -20,8 +20,6 @@ const SettingsPage = () => {
 				<SettingField settingId='ABAC_PDP_Type' />
 				{pdpType !== 'local' && <SettingField settingId='ABAC_Attribute_Store' />}
 				<SettingField settingId='ABAC_ShowAttributesInRooms' />
-				<SettingField settingId='ABAC_Classification_Banners_Enabled' />
-				<SettingField settingId='ABAC_Classification_Banners_Config' />
 				<SettingField settingId='Abac_Cache_Decision_Time_Seconds' />
 
 				{pdpType === 'local' && (
@@ -34,6 +32,13 @@ const SettingsPage = () => {
 				)}
 
 				<Accordion>
+					<AccordionItem title={t('ABAC_Classification_Banners')}>
+						<FieldGroup>
+							<SettingField settingId='ABAC_Classification_Banners_Enabled' />
+							<SettingField settingId='ABAC_Classification_Banners_Config' />
+						</FieldGroup>
+					</AccordionItem>
+
 					<AccordionItem title={t('LDAP_DataSync_ABAC')}>
 						<FieldGroup>
 							<SettingField settingId='LDAP_Background_Sync_ABAC_Attributes' />
