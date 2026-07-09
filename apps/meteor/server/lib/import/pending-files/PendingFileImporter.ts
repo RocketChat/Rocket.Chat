@@ -3,10 +3,11 @@ import https from 'node:https';
 
 import { api } from '@rocket.chat/core-services';
 import type { IImport, MessageAttachment, IUpload, IImporterShortSelection } from '@rocket.chat/core-typings';
-import { Messages } from '@rocket.chat/models';
+import { Messages, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
 import { Importer, ProgressStep } from '..';
+import { parseFileIntoMessageAttachments } from '../../../meteor-methods/messages/sendFileMessage';
 import { FileUpload } from '../../media/file-upload';
 import type { ConverterOptions } from '../classes/ImportDataConverter';
 import type { ImporterProgress } from '../classes/ImporterProgress';
@@ -79,6 +80,12 @@ export class PendingFileImporter extends Importer {
 			currentSize -= details.size;
 		};
 
+		const failFile = async (details: { size: number }) => {
+			await this.addCountError(1);
+			count--;
+			currentSize -= details.size;
+		};
+
 		const logError = this.logger.error.bind(this.logger);
 
 		try {
@@ -107,7 +114,6 @@ export class PendingFileImporter extends Importer {
 						rid: message.rid,
 					};
 
-					const requestModule = /https/i.test(url) ? https : http;
 					const fileStore = FileUpload.getStore('Uploads');
 
 					nextSize = details.size;
@@ -116,41 +122,25 @@ export class PendingFileImporter extends Importer {
 					currentSize += nextSize;
 					downloadedFileIds.push(_importFile.id);
 
-					requestModule.get(url, (res) => {
-						const contentType = res.headers['content-type'];
-						if (!details.type && contentType) {
-							details.type = contentType;
-						}
+					void this.downloadFile(url, details)
+						.then(async (rawData) => {
+							// Bypass the fileStore filters
+							const file = await fileStore._doInsert(details, rawData);
 
-						const rawData: Uint8Array[] = [];
-						res.on('data', (chunk) => {
-							rawData.push(chunk);
+							const rocketChatUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name || '')}`);
+							const user = await Users.findOneById(message.u._id);
+							const attachment = user
+								? (await parseFileIntoMessageAttachments(file, message.rid, user)).attachments[0]
+								: this.getMessageAttachment(file, rocketChatUrl);
 
-							// Update progress more often on large files
-							this.reportProgress();
-						});
-						res.on('error', async (err) => {
+							await Messages.setImportFileRocketChatAttachment(_importFile.id, rocketChatUrl, attachment);
 							await completeFile(details);
-							logError({ err });
+							importedRoomIds.add(message.rid);
+						})
+						.catch(async (err) => {
+							logError({ msg: 'Failed to download pending file', url, err });
+							await failFile(details);
 						});
-
-						res.on('end', async () => {
-							try {
-								// Bypass the fileStore filters
-								const file = await fileStore._doInsert(details, Buffer.concat(rawData));
-
-								const url = FileUpload.getPath(`${file._id}/${encodeURI(file.name || '')}`);
-								const attachment = this.getMessageAttachment(file, url);
-
-								await Messages.setImportFileRocketChatAttachment(_importFile.id, url, attachment);
-								await completeFile(details);
-								importedRoomIds.add(message.rid);
-							} catch (err) {
-								await completeFile(details);
-								logError({ err });
-							}
-						});
-					});
 				} catch (err) {
 					this.logger.error({ err });
 				}
@@ -170,6 +160,39 @@ export class PendingFileImporter extends Importer {
 
 		await super.updateProgress(ProgressStep.DONE);
 		return this.getProgress();
+	}
+
+	private downloadFile(url: string, details: { type?: string }): Promise<Buffer> {
+		return new Promise((resolve, reject) => {
+			const requestModule = /https/i.test(url) ? https : http;
+
+			requestModule
+				.get(url, (res) => {
+					res.on('error', reject);
+
+					if (!res.statusCode || res.statusCode < 200 || res.statusCode >= 300) {
+						// Error responses (e.g. a redirect to a login page) would otherwise be saved as the file's content.
+						res.resume(); // discard the body and free the socket
+						reject(new Error(`Unexpected response status ${res.statusCode}`));
+						return;
+					}
+
+					const contentType = res.headers['content-type'];
+					if (!details.type && contentType) {
+						details.type = contentType;
+					}
+
+					const rawData: Uint8Array[] = [];
+					res.on('data', (chunk) => {
+						rawData.push(chunk);
+
+						// Update progress more often on large files
+						this.reportProgress();
+					});
+					res.on('end', () => resolve(Buffer.concat(rawData)));
+				})
+				.on('error', reject);
+		});
 	}
 
 	getMessageAttachment(file: IUpload, url: string): MessageAttachment {

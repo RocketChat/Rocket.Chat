@@ -103,6 +103,55 @@ describe('Message Converter', () => {
 		});
 
 		// #TODO: Validate all message attributes
+
+		it('should include _hidden field when present', async () => {
+			const converter = new MessageConverter({ workInMemory: true });
+
+			const hiddenMessage = {
+				...messageToImport,
+				_hidden: true,
+			};
+
+			const converted = await converter.buildMessageObject(hiddenMessage, 'general', { _id: 'rocket.cat', username: 'rocket.cat' });
+
+			expect(converted).to.have.property('_hidden', true);
+		});
+
+		it('should include _importFile field when present', async () => {
+			const converter = new MessageConverter({ workInMemory: true });
+
+			const importFile = {
+				id: 'F12345',
+				name: 'test.png',
+				downloadUrl: 'https://files.slack.com/F12345/test.png',
+				size: 1024,
+				source: 'slack',
+			};
+
+			const fileMessage = {
+				...messageToImport,
+				_hidden: true,
+				msg: '',
+				_importFile: importFile,
+			};
+
+			const converted = await converter.buildMessageObject(fileMessage, 'general', { _id: 'rocket.cat', username: 'rocket.cat' });
+
+			expect(converted).to.have.property('_hidden', true);
+			expect(converted).to.have.property('msg', '');
+			expect(converted).to.have.property('_importFile').that.deep.includes({
+				id: 'F12345',
+				name: 'test.png',
+			});
+		});
+
+		it('should not include _hidden field when not present or false', async () => {
+			const converter = new MessageConverter({ workInMemory: true });
+
+			const converted = await converter.buildMessageObject(messageToImport, 'general', { _id: 'rocket.cat', username: 'rocket.cat' });
+
+			expect(converted).to.not.have.property('_hidden');
+		});
 	});
 
 	describe('callbacks', () => {
