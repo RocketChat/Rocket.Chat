@@ -40,6 +40,7 @@ import type {
 	IOAuthAppsModel,
 	IOAuthAuthCodesModel,
 	IOAuthAccessTokensModel,
+	ILoginCodesModel,
 	IOAuthRefreshTokensModel,
 	IOEmbedCacheModel,
 	IPushTokenModel,
@@ -79,6 +80,7 @@ import type {
 	IMediaCallNegotiationsModel,
 	ICallHistoryModel,
 	IAbacAttributesModel,
+	ITwoFactorChallengesModel,
 	ISamlUsedAssertionsModel,
 } from '@rocket.chat/model-typings';
 import type { Collection, Db } from 'mongodb';
@@ -173,6 +175,7 @@ export const NpsVote = proxify<INpsVoteModel>('INpsVoteModel');
 export const OAuthApps = proxify<IOAuthAppsModel>('IOAuthAppsModel');
 export const OAuthAuthCodes = proxify<IOAuthAuthCodesModel>('IOAuthAuthCodesModel');
 export const OAuthAccessTokens = proxify<IOAuthAccessTokensModel>('IOAuthAccessTokensModel');
+export const LoginCodes = proxify<ILoginCodesModel>('ILoginCodesModel');
 export const OAuthRefreshTokens = proxify<IOAuthRefreshTokensModel>('IOAuthRefreshTokensModel');
 export const OEmbedCache = proxify<IOEmbedCacheModel>('IOEmbedCacheModel');
 export const PushToken = proxify<IPushTokenModel>('IPushTokenModel');
@@ -207,6 +210,7 @@ export const Migrations = proxify<IMigrationsModel>('IMigrationsModel');
 export const ModerationReports = proxify<IModerationReportsModel>('IModerationReportsModel');
 export const WorkspaceCredentials = proxify<IWorkspaceCredentialsModel>('IWorkspaceCredentialsModel');
 export const AbacAttributes = proxify<IAbacAttributesModel>('IAbacAttributesModel');
+export const TwoFactorChallenges = proxify<ITwoFactorChallengesModel>('ITwoFactorChallengesModel');
 export const SamlUsedAssertions = proxify<ISamlUsedAssertionsModel>('ISamlUsedAssertionsModel');
 
 export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecordDeleted<any>>): void {

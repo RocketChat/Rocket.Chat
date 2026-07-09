@@ -1,13 +1,13 @@
-import type { OauthConfig } from '@rocket.chat/core-typings';
+import type { OAuthConfiguration } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
+import passport from 'passport';
+import _ from 'underscore';
 
+import { addPassportCustomOAuth } from '../../../server/lib/oauth/addPassportCustomOAuth';
 import { CustomOAuth } from '../../custom-oauth/server/custom_oauth_server';
 import { settings } from '../../settings/server';
 
-// Drupal Server CallBack URL needs to be http(s)://{rocketchat.server}[:port]/_oauth/drupal
-// In RocketChat -> Administration the URL needs to be http(s)://{drupal.server}/
-
-const config: OauthConfig = {
+const config: Partial<OAuthConfiguration> = {
 	serverURL: '',
 	identityPath: '/oauth2/UserInfo',
 	authorizePath: '/oauth2/authorize',
@@ -25,9 +25,42 @@ const config: OauthConfig = {
 
 const Drupal = new CustomOAuth('drupal', config);
 
+const configureDrupalOAuth = () => {
+	passport.unuse('drupal');
+	const enabled = settings.get<boolean>('Accounts_OAuth_Drupal');
+	if (!enabled) {
+		return;
+	}
+
+	const serverURL = settings.get<string>('API_Drupal_URL').trim().replace(/\/*$/, '');
+	const clientId = settings.get<string>('Accounts_OAuth_Drupal_id');
+	const clientSecret = settings.get<string>('Accounts_OAuth_Drupal_secret');
+
+	if (!clientId || !clientSecret || !serverURL) {
+		return;
+	}
+
+	const completeConfig = { ...config, serverURL, clientId, clientSecret };
+
+	if (settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow')) {
+		addPassportCustomOAuth('drupal', completeConfig);
+		return;
+	}
+
+	Drupal.configure(completeConfig);
+};
+
 Meteor.startup(() => {
-	settings.watch<string>('API_Drupal_URL', (value) => {
-		config.serverURL = value;
-		Drupal.configure(config);
-	});
+	const updateConfig = _.debounce(configureDrupalOAuth, 300);
+
+	settings.watchMultiple(
+		[
+			'Accounts_OAuth_Drupal',
+			'API_Drupal_URL',
+			'Accounts_OAuth_Drupal_id',
+			'Accounts_OAuth_Drupal_secret',
+			'Accounts_OAuth_Use_Modern_Flow',
+		],
+		updateConfig,
+	);
 });
