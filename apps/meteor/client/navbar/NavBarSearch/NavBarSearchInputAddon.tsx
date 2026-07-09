@@ -29,7 +29,7 @@ const NavBarSearchInputAddon = ({
 }: NavBarSearchInputAddonProps): ReactElement => (
 	<Box display='flex' alignItems='center' gap={8}>
 		{appliedFilterChips.length > 0 && (
-			<Box display='flex' alignItems='center' gap={4} maxWidth='x320' overflow='hidden'>
+			<Box display='flex' alignItems='center' gap={4} maxWidth='x320' overflow='auto'>
 				{appliedFilterChips.map((filter) => {
 					const label = getFilterChipLabel(filter.label);
 

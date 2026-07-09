@@ -11,10 +11,12 @@ import NavBarSearchMessageRow from './NavBarSearchMessageRow';
 
 const NavBarSearchIntelligentSection = ({
 	items,
+	showAction,
 	onSelect,
 	onClose,
 }: {
 	items: UnifiedSearchIntelligentResult[];
+	showAction: boolean;
 	onSelect: () => void;
 	onClose: () => void;
 }): ReactElement | null => {
@@ -32,7 +34,7 @@ const NavBarSearchIntelligentSection = ({
 		onClose();
 	}, [appliedFilters, filterText, onClose, router]);
 
-	if (!items.length) {
+	if (!items.length && !showAction) {
 		return null;
 	}
 
@@ -47,17 +49,21 @@ const NavBarSearchIntelligentSection = ({
 			<Box color='titles-labels' fontScale='c1' fontWeight='bold' pi={12} mbe={4} role='presentation' aria-hidden>
 				{t('Intelligent_Search')}
 			</Box>
-			<Box color='hint' fontScale='c1' pi={12} mbe={4}>
-				{t('AI_Search_related_messages', { count: items.length })}
-			</Box>
+			{items.length > 0 && (
+				<Box color='hint' fontScale='c1' pi={12} mbe={4}>
+					{t('AI_Search_related_messages', { count: items.length })}
+				</Box>
+			)}
 			{items.map((item) => (
 				<NavBarSearchMessageRow key={`intelligent-${item._id}`} type='intelligent' item={item} onClick={onSelect} />
 			))}
-			<Box pi={12} pbs={4}>
-				<Button small onClick={handleOpenAISearch} title={t('Open_AI_Search')}>
-					{t('Open_AI_Search')}
-				</Button>
-			</Box>
+			{showAction && (
+				<Box pi={12} pbs={4}>
+					<Button small onClick={handleOpenAISearch} title={t('Open_AI_Search')}>
+						{t('Open_AI_Search')}
+					</Button>
+				</Box>
+			)}
 		</Box>
 	);
 };

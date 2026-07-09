@@ -27,6 +27,7 @@ const NavBarSearchRoomSection = ({
 	onSelect,
 }: NavBarSearchRoomSectionProps): ReactElement => {
 	const { t } = useTranslation();
+	const showSkeleton = isLoading || (itemCount === 0 && isFetching);
 
 	return (
 		<>
@@ -39,7 +40,7 @@ const NavBarSearchRoomSection = ({
 			{rooms.map((item) => (
 				<NavBarSearchRow key={item._id} room={item} onClick={onSelect} />
 			))}
-			{isLoading && Array.from({ length: 4 }, (_, index) => <NavBarSearchItemSkeleton key={`skeleton-${index}`} />)}
+			{showSkeleton && Array.from({ length: 4 }, (_, index) => <NavBarSearchItemSkeleton key={`skeleton-${index}`} />)}
 		</>
 	);
 };

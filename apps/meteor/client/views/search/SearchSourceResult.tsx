@@ -32,6 +32,18 @@ const getMessageHref = (item: IntelligentResult): string | undefined => {
 const trimSourceMessage = (text: string): string =>
 	text.length > MAX_SOURCE_MESSAGE_LENGTH ? `${text.slice(0, MAX_SOURCE_MESSAGE_LENGTH).trimEnd()}...` : text;
 
+const getRoomIcon = (roomType: NonNullable<IntelligentResult['room']>['t'] | undefined): 'at' | 'hash' | 'lock' => {
+	if (roomType === 'd') {
+		return 'at';
+	}
+
+	if (roomType === 'p') {
+		return 'lock';
+	}
+
+	return 'hash';
+};
+
 export const SearchSourceResult = ({ item }: { item: IntelligentResult }): ReactElement => {
 	const { t } = useTranslation();
 	const roomLabel = item.room?.fname || item.room?.name;
@@ -73,7 +85,7 @@ export const SearchSourceResult = ({ item }: { item: IntelligentResult }): React
 						{roomLabel && (
 							<Tag>
 								<Box display='flex' alignItems='center' gap={4}>
-									<Icon name='hash' size='x12' />
+									<Icon name={getRoomIcon(item.room?.t)} size='x12' />
 									{roomLabel}
 								</Box>
 							</Tag>

@@ -14,7 +14,8 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 
-const formatDate = (date: Date): string => date.toISOString().slice(0, 10);
+const formatDate = (date: Date): string =>
+	`${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
 export const emptySubscriptionQuery = { _id: '__ai_search_no_room_filter__' };
 
@@ -162,7 +163,12 @@ export const getSelectedRooms = (roomNames: string[], rooms: SubscriptionWithRoo
 	}
 
 	return roomNames
-		.map((roomName) => rooms.find(({ name, fname }) => [name, fname].filter(Boolean).includes(roomName)))
+		.map((roomName) => {
+			const normalizedRoomName = roomName.toLowerCase();
+			return rooms.find(({ name, fname }) =>
+				[name, fname].filter(Boolean).some((candidate) => candidate?.toLowerCase() === normalizedRoomName),
+			);
+		})
 		.filter(Boolean) as SubscriptionWithRoom[];
 };
 
@@ -214,7 +220,7 @@ export const buildRooms = ({
 	const fromServer = candidates.filter((item) => matchesFilter(item) && !isLocalDuplicate(item));
 	const exact = fromServer.filter((item) => [item.name, item.fname].includes(name));
 
-	return dedupeRooms([...exact, ...localRooms, ...fromServer]);
+	return dedupeRooms([...exact, ...localRooms, ...fromServer]).slice(0, limit);
 };
 
 export const normalizeSpotlightResults = (spotlight: {
