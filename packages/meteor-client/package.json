@@ -1,0 +1,24 @@
+{
+	"name": "@rocket.chat/meteor-client",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Browser TypeScript port of the Meteor client runtime (DDP, minimongo, tracker, accounts, OAuth) consumed by the vite build in place of the meteor/* packages",
+	"exports": {
+		"./*": "./src/*.ts"
+	},
+	"scripts": {
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@rocket.chat/base64": "workspace:^",
+		"@rocket.chat/random": "workspace:^",
+		"@rocket.chat/sha256": "workspace:^"
+	},
+	"devDependencies": {
+		"@rocket.chat/tsconfig": "workspace:*",
+		"typescript": "~5.9.3"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	}
+}

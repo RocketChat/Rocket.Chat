@@ -1,0 +1,383 @@
+import { check, Match } from './check.ts';
+import { EJSON } from './ejson.ts';
+import { MeteorError } from './meteor.ts';
+import { _selectorIsIdPerhapsAsObject } from './minimongo.ts';
+import { isKey } from './utils/isKey.ts';
+
+type MongoDoc = Record<string, unknown>;
+type ValidatorFn = (userId: string | null, doc: MongoDoc, fields?: string[], modifier?: MongoDoc) => boolean | Promise<boolean>;
+
+type ValidatorSet = {
+	allow: ValidatorFn[];
+	deny: ValidatorFn[];
+};
+
+type CollectionValidators = {
+	insert: ValidatorSet;
+	update: ValidatorSet;
+	remove: ValidatorSet;
+	fetch: string[];
+	fetchAllFields: boolean;
+};
+
+type AllowDenyOptions = {
+	insert?: ValidatorFn;
+	update?: ValidatorFn;
+	remove?: ValidatorFn;
+	fetch?: string[];
+	transform?: ((doc: MongoDoc) => unknown) | undefined;
+	[key: string]: unknown;
+};
+
+type MethodContext = {
+	userId: string | null;
+	isSimulation: boolean;
+	connection: any;
+};
+
+const ALLOWED_UPDATE_OPERATIONS = new Set([
+	'$inc',
+	'$set',
+	'$unset',
+	'$addToSet',
+	'$pop',
+	'$pullAll',
+	'$pull',
+	'$pushAll',
+	'$push',
+	'$bit',
+]);
+
+const asyncSome = async <T>(array: T[], predicate: (item: T) => boolean | Promise<boolean>): Promise<boolean> => {
+	for (const item of array) {
+		// eslint-disable-next-line no-await-in-loop
+		if (await predicate(item)) return true;
+	}
+	return false;
+};
+
+const asyncEvery = async <T>(array: T[], predicate: (item: T) => boolean | Promise<boolean>): Promise<boolean> => {
+	for (const item of array) {
+		// eslint-disable-next-line no-await-in-loop
+		if (!(await predicate(item))) return false;
+	}
+	return true;
+};
+
+const transformDoc = (validator: { transform?: ((doc: MongoDoc) => unknown) | null }, doc: MongoDoc): unknown => {
+	if (validator.transform) return validator.transform(doc);
+	return doc;
+};
+
+const docToValidate = (
+	validator: { transform?: ((doc: MongoDoc) => unknown) | null },
+	doc: MongoDoc,
+	generatedId: string | null,
+): unknown => {
+	let ret = doc;
+	if (validator.transform) {
+		ret = EJSON.clone(doc);
+		if (generatedId !== null) {
+			ret._id = generatedId;
+		}
+		ret = validator.transform(ret) as MongoDoc;
+	}
+	return ret;
+};
+
+const validateUpdateMutator = (mutator: MongoDoc): string[] => {
+	const keys = Object.keys(mutator);
+	if (keys.length === 0) {
+		throw new MeteorError(
+			403,
+			"Access denied. In a restricted collection you can only update documents, not replace them. Use a Mongo update operator, such as '$set'.",
+		);
+	}
+
+	const modifiedFields: Record<string, boolean> = {};
+
+	for (const op of keys) {
+		if (op.charAt(0) !== '$') {
+			throw new MeteorError(
+				403,
+				"Access denied. In a restricted collection you can only update documents, not replace them. Use a Mongo update operator, such as '$set'.",
+			);
+		}
+		if (!ALLOWED_UPDATE_OPERATIONS.has(op)) {
+			throw new MeteorError(403, `Access denied. Operator ${op} not allowed in a restricted collection.`);
+		}
+
+		const params = mutator[op] as Record<string, unknown>;
+		for (const field of Object.keys(params)) {
+			const rootField = field.indexOf('.') !== -1 ? field.substring(0, field.indexOf('.')) : field;
+			modifiedFields[rootField] = true;
+		}
+	}
+
+	return Object.keys(modifiedFields);
+};
+
+export class RestrictedCollectionMixin {
+	public _name?: string;
+
+	public _connection?: any;
+
+	public _collection: any;
+
+	public _prefix = '';
+
+	public _validators: CollectionValidators = {
+		insert: { allow: [], deny: [] },
+		update: { allow: [], deny: [] },
+		remove: { allow: [], deny: [] },
+		fetch: [],
+		fetchAllFields: false,
+	};
+
+	public _restricted = false;
+
+	public _insecure?: boolean | undefined;
+
+	public _transform?: (doc: MongoDoc) => unknown;
+
+	public _makeNewID(): string {
+		throw new Error('Mixin requirement: _makeNewID not implemented');
+	}
+
+	public allow(options: AllowDenyOptions): void {
+		this._addValidator('allow', options);
+	}
+
+	public deny(options: AllowDenyOptions): void {
+		this._addValidator('deny', options);
+	}
+
+	public _isInsecure(): boolean {
+		return !!this._insecure;
+	}
+
+	public _updateFetch(fields?: string[]): void {
+		if (!this._validators.fetchAllFields) {
+			if (fields) {
+				const union = new Set(this._validators.fetch);
+				fields.forEach((f) => union.add(f));
+				this._validators.fetch = Array.from(union);
+			} else {
+				this._validators.fetchAllFields = true;
+				this._validators.fetch = [];
+			}
+		}
+	}
+
+	public _defineMutationMethods(options: { useExisting?: boolean } = {}): void {
+		this._restricted = false;
+		this._insecure = undefined;
+		this._validators = {
+			insert: { allow: [], deny: [] },
+			update: { allow: [], deny: [] },
+			remove: { allow: [], deny: [] },
+			fetch: [],
+			fetchAllFields: false,
+		};
+
+		if (!this._name) return; // anonymous collection
+
+		this._prefix = `/${this._name}/`;
+		if (this._connection) {
+			const methods: Record<string, (...args: any[]) => any> = {};
+			const methodNames = ['insertAsync', 'updateAsync', 'removeAsync', 'insert', 'update', 'remove'];
+
+			for (const method of methodNames) {
+				const fullMethodName = this._prefix + method;
+
+				if (options.useExisting) {
+					const handlerProp = '_methodHandlers';
+					if (this._connection[handlerProp] && typeof this._connection[handlerProp][fullMethodName] === 'function') {
+						continue;
+					}
+				}
+
+				methods[fullMethodName] = this._createMutationMethod(method);
+			}
+
+			this._connection.methods(methods);
+		}
+	}
+
+	protected async _validatedInsertAsync(userId: string | null, doc: MongoDoc, generatedId: string | null): Promise<string> {
+		if (
+			await asyncSome(this._validators.insert.deny, (validator) =>
+				validator(userId, docToValidate(validator as any, doc, generatedId) as MongoDoc),
+			)
+		) {
+			throw new MeteorError(403, 'Access denied');
+		}
+		if (
+			await asyncEvery(
+				this._validators.insert.allow,
+				(validator) => !validator(userId, docToValidate(validator as any, doc, generatedId) as MongoDoc),
+			)
+		) {
+			throw new MeteorError(403, 'Access denied');
+		}
+
+		if (generatedId !== null) doc._id = generatedId;
+		return this._collection.insertAsync(doc);
+	}
+
+	protected async _validatedUpdateAsync(userId: string | null, selector: unknown, mutator: MongoDoc, options: any): Promise<number> {
+		check(mutator, Object);
+		const safeOptions = Object.assign(Object.create(null), options);
+
+		if (!_selectorIsIdPerhapsAsObject(selector)) {
+			throw new Error('validated update should be of a single ID');
+		}
+		if (safeOptions.upsert) {
+			throw new MeteorError(403, 'Access denied. Upserts not allowed in a restricted collection.');
+		}
+
+		const fields = validateUpdateMutator(mutator);
+		const findOptions = this._getFindOptions();
+
+		const doc = await this._collection.findOneAsync(selector, findOptions);
+		if (!doc) return 0;
+		if (
+			await asyncSome(this._validators.update.deny, (validator) =>
+				validator(userId, transformDoc(validator as any, doc) as MongoDoc, fields, mutator),
+			)
+		) {
+			throw new MeteorError(403, 'Access denied');
+		}
+		if (
+			await asyncEvery(
+				this._validators.update.allow,
+				(validator) => !validator(userId, transformDoc(validator as any, doc) as MongoDoc, fields, mutator),
+			)
+		) {
+			throw new MeteorError(403, 'Access denied');
+		}
+
+		safeOptions._forbidReplace = true;
+		return this._collection.updateAsync(selector, mutator, safeOptions);
+	}
+
+	protected async _validatedRemoveAsync(userId: string | null, selector: unknown): Promise<number> {
+		const findOptions = this._getFindOptions();
+		const doc = await this._collection.findOneAsync(selector, findOptions);
+		if (!doc) return 0;
+		if (await asyncSome(this._validators.remove.deny, (validator) => validator(userId, transformDoc(validator as any, doc) as MongoDoc))) {
+			throw new MeteorError(403, 'Access denied');
+		}
+		if (
+			await asyncEvery(this._validators.remove.allow, (validator) => !validator(userId, transformDoc(validator as any, doc) as MongoDoc))
+		) {
+			throw new MeteorError(403, 'Access denied');
+		}
+
+		return this._collection.removeAsync(selector);
+	}
+
+	private _getFindOptions() {
+		const findOptions: Record<string, any> = { transform: null };
+		if (!this._validators.fetchAllFields) {
+			findOptions.fields = {};
+			this._validators.fetch.forEach((fieldName) => {
+				findOptions.fields[fieldName] = 1;
+			});
+		}
+		return findOptions;
+	}
+
+	private _addValidator(allowOrDeny: 'allow' | 'deny', options: AllowDenyOptions) {
+		const validKeys = new Set(['insert', 'update', 'remove', 'fetch', 'transform', 'insertAsync', 'updateAsync', 'removeAsync']);
+
+		for (const key of Object.keys(options)) {
+			if (!validKeys.has(key)) throw new Error(`${allowOrDeny}: Invalid key: ${key}`);
+			if (key.includes('Async')) {
+				const syncKey = key.replace('Async', '');
+				console.warn(`${allowOrDeny}: The "${key}" key is deprecated. Use "${syncKey}" instead.`);
+			}
+		}
+
+		this._restricted = true;
+
+		if (options.update || options.remove || options.updateAsync || options.removeAsync || options.fetch) {
+			if (options.fetch && !Array.isArray(options.fetch)) {
+				throw new Error(`${allowOrDeny}: Value for \`fetch\` must be an array`);
+			}
+			this._updateFetch(options.fetch);
+		}
+	}
+
+	private _createMutationMethod(methodName: string) {
+		const _executeMutation = this._executeMutation.bind(this);
+		return function (this: MethodContext, ...args: unknown[]) {
+			check(args, [Match.Any]);
+			const argArray = Array.from(args);
+			try {
+				return _executeMutation(this, methodName, argArray);
+			} catch (e: any) {
+				if (e.name === 'MongoError' || e.name === 'BulkWriteError' || e.name === 'MongoBulkWriteError' || e.name === 'MinimongoError') {
+					throw new MeteorError(409, e.toString());
+				}
+				throw e;
+			}
+		};
+	}
+
+	private async _executeMutation(methodContext: MethodContext, methodName: string, args: any[]): Promise<unknown> {
+		const isInsert = methodName.includes('insert');
+		const [firstArg] = args;
+		let generatedId: string | null = null;
+		if (isInsert && !isKey(firstArg, '_id')) {
+			generatedId = this._makeNewID();
+		}
+		if (methodContext.isSimulation) {
+			if (generatedId !== null && typeof firstArg === 'object' && firstArg !== null) {
+				firstArg._id = generatedId;
+			}
+			return this._collection[methodName](...args);
+		}
+
+		const syncMethodName = methodName.replace('Async', '');
+		const validatedMethodName =
+			`_validated${syncMethodName.charAt(0).toUpperCase()}${syncMethodName.slice(1)}Async` as keyof RestrictedCollectionMixin;
+		if (this._restricted) {
+			if (this._validators[syncMethodName as 'insert' | 'update' | 'remove'].allow.length === 0) {
+				throw new MeteorError(403, `Access denied. No allow validators set on restricted collection for method '${methodName}'.`);
+			}
+
+			const methodArgs = [methodContext.userId, ...args];
+			if (isInsert) methodArgs.push(generatedId);
+
+			return this[validatedMethodName](...methodArgs);
+		}
+		if (this._isInsecure()) {
+			if (generatedId !== null && typeof firstArg === 'object' && firstArg !== null) {
+				(firstArg as MongoDoc)._id = generatedId;
+			}
+			const syncMethodsMapper = {
+				insert: 'insertAsync',
+				update: 'updateAsync',
+				remove: 'removeAsync',
+			} as const;
+			const targetMethod = syncMethodsMapper[methodName as keyof typeof syncMethodsMapper] || methodName;
+			return this._collection[targetMethod](...args);
+		}
+		throw new MeteorError(403, 'Access denied');
+	}
+}
+const CollectionPrototype: Record<string, any> = {};
+const propertyNames = Object.getOwnPropertyNames(RestrictedCollectionMixin.prototype);
+
+for (const name of propertyNames) {
+	if (name === 'constructor') continue;
+	const descriptor = Object.getOwnPropertyDescriptor(RestrictedCollectionMixin.prototype, name);
+	if (descriptor) {
+		Object.defineProperty(CollectionPrototype, name, { ...descriptor, enumerable: true });
+	}
+}
+
+export const AllowDeny = {
+	CollectionPrototype,
+};
