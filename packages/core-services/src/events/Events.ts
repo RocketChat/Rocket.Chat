@@ -66,7 +66,7 @@ export type EventSignatures = {
 	'banner.disabled'(bannerId: string): void;
 	'banner.user'(userId: string, banner: IBanner): void;
 	'emoji.deleteCustom'(emoji: IEmojiCustom): void;
-	'emoji.updateCustom'(emoji: IEmojiCustom): void;
+	'emoji.updateCustom'(emoji: IEmojiCustom & { previousName?: string; previousExtension?: string }): void;
 	'license.module'(data: { module: string; valid: boolean }): void;
 	'license.sync'(): void;
 	'license.actions'(actions: Record<Partial<LicenseLimitKind>, boolean>): void;

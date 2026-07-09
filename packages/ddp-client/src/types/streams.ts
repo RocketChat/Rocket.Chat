@@ -204,7 +204,7 @@ export interface StreamerEvents {
 		},
 		{ key: 'permissions-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
 		{ key: 'deleteEmojiCustom'; args: [{ emojiData: IEmojiCustom }] },
-		{ key: 'updateEmojiCustom'; args: [{ emojiData: IEmojiCustom }] },
+		{ key: 'updateEmojiCustom'; args: [{ emojiData: IEmojiCustom & { previousName?: string } }] },
 		/* @deprecated */
 		{ key: 'new-banner'; args: [{ bannerId: string }] },
 

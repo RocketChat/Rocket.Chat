@@ -135,9 +135,17 @@ export const customRender = (html: string) => {
 		let emojiAlias = shortname.replace(/:/g, '');
 
 		let dataCheck = emoji.list[shortname];
+		if (!dataCheck) {
+			return shortname;
+		}
+
 		if ('aliasOf' in dataCheck && dataCheck.aliasOf) {
 			emojiAlias = dataCheck.aliasOf;
 			dataCheck = emoji.list[`:${emojiAlias}:`];
+		}
+
+		if (!dataCheck) {
+			return shortname;
 		}
 
 		if (!('extension' in dataCheck)) {
