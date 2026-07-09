@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rocket.chat/schemas/classification-banners/v1.json",
+  "title": "Rocket.Chat Classification Banners configuration",
+  "type": "object",
+  "required": ["version", "enabled", "banner", "attributes"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "const": 1 },
+    "enabled": { "type": "boolean" },
+    "source": { "enum": ["idp", "manual"], "default": "idp" },
+    "banner": {
+      "type": "object",
+      "required": ["delimiter"],
+      "additionalProperties": false,
+      "properties": {
+        "style": { "enum": ["classic", "segmented", "edge"], "default": "classic" },
+        "position": { "enum": ["top", "bottom", "both"], "default": "top" },
+        "uppercase": { "type": "boolean", "default": true },
+        "monospace": { "type": "boolean", "default": false },
+        "delimiter": { "type": "string", "maxLength": 8 },
+        "colorMode": { "enum": ["highest", "attribute"], "default": "highest" },
+        "fallbackText": { "type": "string", "default": "NO CLASSIFICATION DATA" },
+        "fallbackColor": { "$ref": "#/$defs/hexColor" }
+      }
+    },
+    "attributes": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/attribute" }
+    }
+  },
+  "$defs": {
+    "hexColor": {
+      "type": "string",
+      "pattern": "^#[0-9a-fA-F]{6}$"
+    },
+    "attribute": {
+      "type": "object",
+      "required": ["id", "source", "label", "showInBanner", "values"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z][a-z0-9_-]*$" },
+        "source": { "type": "string", "minLength": 1, "description": "Raw attribute key from the IdP (SAML/LDAP)" },
+        "label": { "type": "string", "minLength": 1, "description": "Friendly admin-facing name" },
+        "showInBanner": { "type": "boolean" },
+        "showLabel": { "type": "boolean", "default": false },
+        "bannerLabel": { "type": "string", "default": "" },
+        "labelSeparator": { "enum": ["-", " ", ""], "default": "" },
+        "valueSeparator": { "enum": ["/", ", ", " "], "default": "/" },
+        "sortAlpha": { "type": "boolean", "default": false },
+        "groupThreshold": {
+          "type": "integer",
+          "default": 0,
+          "description": "0 = never collapse; otherwise collapse when value count >= threshold (2-20)",
+          "oneOf": [{ "const": 0 }, { "minimum": 2, "maximum": 20 }]
+        },
+        "multipleLabel": { "type": "string", "default": "" },
+        "drivesColor": { "type": "boolean", "default": false },
+        "values": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["source", "label", "color"],
+            "additionalProperties": false,
+            "properties": {
+              "source": { "type": "string", "minLength": 1 },
+              "label": { "type": "string", "minLength": 1 },
+              "color": { "$ref": "#/$defs/hexColor" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

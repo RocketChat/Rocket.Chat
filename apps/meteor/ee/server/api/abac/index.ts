@@ -1,8 +1,8 @@
-import { AbacAttributeStoreExternalError, getPdpHealthErrorCode } from '@rocket.chat/abac';
+import { AbacAttributeStoreExternalError, buildClassificationBanner, getPdpHealthErrorCode, parseClassificationBannersConfig } from '@rocket.chat/abac';
 import { Abac } from '@rocket.chat/core-services';
 import type { AbacActor } from '@rocket.chat/core-services';
 import type { IServerEvents, IUser } from '@rocket.chat/core-typings';
-import { ServerEvents } from '@rocket.chat/models';
+import { Rooms, ServerEvents } from '@rocket.chat/models';
 import { validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
 
@@ -25,7 +25,10 @@ import {
 	GETAbacAuditEventsResponseSchema,
 	GETAbacPdpHealthResponseSchema,
 	GETAbacPdpHealthErrorResponseSchema,
+	GETAbacClassificationBannerResponseSchema,
 } from './schemas';
+import { canAccessRoomAsync } from '../../../../app/authorization/server';
+import { isABACManagedRoom } from '../../../../app/authorization/server/lib/isABACManagedRoom';
 import { API } from '../../../../server/api';
 import type { ExtractRoutesFromAPI } from '../../../../server/api/ApiClass';
 import { getPaginationItems } from '../../../../server/api/lib/getPaginationItems';
@@ -401,6 +404,37 @@ const abacEndpoints = API.v1
 			} catch (err) {
 				return API.v1.failure({ available: false, message: getPdpHealthErrorCode(err) });
 			}
+		},
+	)
+	.get(
+		'abac/rooms/:rid/classification-banner',
+		{
+			authRequired: true,
+			license: ['abac'],
+			response: {
+				200: GETAbacClassificationBannerResponseSchema,
+				401: validateUnauthorizedErrorResponse,
+				403: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { rid } = this.urlParams;
+
+			const room = await Rooms.findOneById(rid);
+			if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
+				return API.v1.unauthorized();
+			}
+
+			if (!settings.get('ABAC_Classification_Banners_Enabled') || !isABACManagedRoom(room)) {
+				return API.v1.success({ banner: null });
+			}
+
+			const config = parseClassificationBannersConfig(settings.get('ABAC_Classification_Banners_Config'));
+			if (!config?.enabled) {
+				return API.v1.success({ banner: null });
+			}
+
+			return API.v1.success({ banner: buildClassificationBanner(config, room.abacAttributes ?? []) });
 		},
 	)
 	.get(
