@@ -3,7 +3,7 @@ import { Box, Bubble } from '@rocket.chat/fuselage';
 import { isTruthy } from '@rocket.chat/tools';
 import { useState } from 'react';
 
-type JumpToRecentMessageButtonProps = {
+export type JumpToRecentMessageButtonProps = {
 	visible: boolean;
 	onClick: () => void;
 	text: string;

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import type { AllGroupsKeys } from '../../contexts/RoomsNavigationContext';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
-type RoomListCollapserProps = {
+export type RoomListCollapserProps = {
 	group: AllGroupsKeys;
 	groupTitle: string;
 	collapsedGroups: string[];

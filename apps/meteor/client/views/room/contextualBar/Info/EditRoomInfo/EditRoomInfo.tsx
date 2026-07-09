@@ -53,7 +53,7 @@ import { useIsABACManagedRoom } from '../../../../admin/ABAC/hooks/useIsABACMana
 import { useArchiveRoom } from '../../../../hooks/roomActions/useArchiveRoom';
 import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
 
-type EditRoomInfoProps = {
+export type EditRoomInfoProps = {
 	room: IRoomWithRetentionPolicy;
 	onClickClose: () => void;
 	onClickBack: () => void;

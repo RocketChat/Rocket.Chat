@@ -20,7 +20,7 @@ import CustomUserStatusRow from './CustomUserStatusRow';
 import FilterByText from '../../../../components/FilterByText';
 import GenericNoResult from '../../../../components/GenericNoResults';
 
-type CustomUserStatusProps = {
+export type CustomUserStatusProps = {
 	reload: MutableRefObject<() => void>;
 	onClick: (id: string) => void;
 };

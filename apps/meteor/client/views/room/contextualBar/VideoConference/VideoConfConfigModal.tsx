@@ -17,7 +17,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-type VideoConfConfigModalProps = {
+export type VideoConfConfigModalProps = {
 	onClose: () => void;
 	onConfirm?: () => void;
 	isAdmin: boolean;

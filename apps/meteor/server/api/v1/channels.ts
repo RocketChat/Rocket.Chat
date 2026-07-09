@@ -34,7 +34,6 @@ import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../../app/authorization/server';
-import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
 import { saveRoomSettings } from '../../../app/channel-settings/server/methods/saveRoomSettings';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../app/integrations/server/lib/mountQueriesBasedOnPermission';
 import { addUsersToRoomMethod } from '../../../app/lib/server/methods/addUsersToRoom';
@@ -47,6 +46,7 @@ import { executeUnarchiveRoom } from '../../../app/lib/server/methods/unarchiveR
 import { getUserMentionsByChannel } from '../../../app/mentions/server/methods/getUserMentionsByChannel';
 import { settings } from '../../../app/settings/server';
 import { normalizeMessagesForUser } from '../../../app/utils/server/lib/normalizeMessagesForUser';
+import { hasAllPermissionAsync, hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { eraseRoom } from '../../lib/eraseRoom';
 import { findUsersOfRoom } from '../../lib/findUsersOfRoom';
 import { openRoom } from '../../lib/openRoom';
@@ -522,10 +522,6 @@ API.v1.addRoute(
 				return API.v1.failure('The parameter "channelId" or "channelName" is required');
 			}
 
-			if (channelId && !(await hasPermissionAsync(this.userId, 'edit-room', channelId))) {
-				return API.v1.forbidden();
-			}
-
 			const room = await findChannelByIdOrName({
 				params: channelId !== undefined ? { roomId: channelId } : { roomName: channelName },
 				userId: this.userId,
@@ -533,6 +529,10 @@ API.v1.addRoute(
 
 			if (!room) {
 				return API.v1.failure('Channel not found');
+			}
+
+			if (!(await hasAllPermissionAsync(this.userId, ['create-team', 'edit-room'], room._id))) {
+				return API.v1.forbidden();
 			}
 
 			const subscriptions = await Subscriptions.findByRoomId(room._id, {

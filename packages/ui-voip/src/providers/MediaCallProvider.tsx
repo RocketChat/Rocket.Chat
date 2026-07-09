@@ -6,7 +6,7 @@ import MediaCallViewProvider from './MediaCallViewProvider';
 import { MediaCallWidget } from '../views';
 import MediaCallPopout from '../views/MediaCallPopout';
 
-type MediaCallProviderProps = {
+export type MediaCallProviderProps = {
 	children: ReactNode;
 };
 

@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, memo, useCallback, useState } from 'react';
 
 import { TooltipComponent } from '../components/TooltipComponent';
 
-type TooltipProviderProps = {
+export type TooltipProviderProps = {
 	children?: ReactNode;
 	ownerDocument?: Document;
 };

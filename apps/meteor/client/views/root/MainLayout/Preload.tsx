@@ -5,7 +5,9 @@ import { RoomsCachedStore, SubscriptionsCachedStore } from '../../../cachedStore
 import PageLoading from '../PageLoading';
 import { useMainReady } from '../hooks/useMainReady';
 
-const Preload = ({ children }: { children: ReactNode }) => {
+export type PreloadProps = { children: ReactNode };
+
+const Preload = ({ children }: PreloadProps) => {
 	const ready = useMainReady();
 
 	useEffect(() => {

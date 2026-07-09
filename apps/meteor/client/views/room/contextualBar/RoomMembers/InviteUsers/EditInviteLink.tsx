@@ -4,7 +4,7 @@ import { useId, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-type EditInviteLinkProps = {
+export type EditInviteLinkProps = {
 	daysAndMaxUses: { days: string; maxUses: string };
 	onClickNewLink: (daysAndMaxUses: { days: string; maxUses: string }) => void;
 };

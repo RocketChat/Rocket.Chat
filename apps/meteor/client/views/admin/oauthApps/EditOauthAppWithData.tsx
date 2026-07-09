@@ -7,7 +7,9 @@ import { useTranslation } from 'react-i18next';
 import EditOauthApp from './EditOauthApp';
 import { FormSkeleton } from '../../../components/Skeleton';
 
-const EditOauthAppWithData = ({ _id, ...props }: { _id: string }) => {
+export type EditOauthAppWithDataProps = { _id: string };
+
+const EditOauthAppWithData = ({ _id, ...props }: EditOauthAppWithDataProps) => {
 	const { t } = useTranslation();
 
 	const getOauthApps = useEndpoint('GET', '/v1/oauth-apps.get');

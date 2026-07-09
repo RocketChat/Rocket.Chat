@@ -19,7 +19,7 @@ import PriorityField from '../../components/PriorityField';
 import { useOmnichannelRoomInfo } from '../../hooks/useOmnichannelRoomInfo';
 import { formatQueuedAt } from '../../utils/formatQueuedAt';
 
-type ChatInfoProps = {
+export type ChatInfoProps = {
 	id: string;
 	route: keyof IRouterPaths;
 };

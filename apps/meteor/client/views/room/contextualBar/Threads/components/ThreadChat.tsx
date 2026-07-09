@@ -15,7 +15,7 @@ import { useChat } from '../../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../../contexts/RoomContext';
 import { DateListProvider } from '../../../providers/DateListProvider';
 
-type ThreadChatProps = {
+export type ThreadChatProps = {
 	mainMessage: IThreadMainMessage;
 };
 

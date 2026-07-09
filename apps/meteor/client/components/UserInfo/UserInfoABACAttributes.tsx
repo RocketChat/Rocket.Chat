@@ -3,7 +3,7 @@ import { Box, Margins } from '@rocket.chat/fuselage';
 
 import UserInfoABACAttribute from './UserInfoABACAttribute';
 
-type UserInfoABACAttributesProps = {
+export type UserInfoABACAttributesProps = {
 	abacAttributes: IAbacAttributeDefinition[];
 };
 

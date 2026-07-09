@@ -6,7 +6,7 @@ import { memo } from 'react';
 
 const MAX_USERS = 3;
 
-type VideoConfMessageUserStackProps = {
+export type VideoConfMessageUserStackProps = {
 	users: Serialized<IVideoConferenceUser>[];
 };
 

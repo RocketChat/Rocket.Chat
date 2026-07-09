@@ -1,7 +1,7 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 
-type GenericResourceUsageSkeletonProps = {
+export type GenericResourceUsageSkeletonProps = {
 	title?: string;
 } & ComponentProps<typeof Box>;
 

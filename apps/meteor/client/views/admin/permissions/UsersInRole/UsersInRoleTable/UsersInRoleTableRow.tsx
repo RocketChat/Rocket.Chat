@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import { getUserEmailAddress } from '../../../../../../lib/getUserEmailAddress';
 
-type UsersInRoleTableRowProps = {
+export type UsersInRoleTableRowProps = {
 	user: Serialized<IUserInRole>;
 	onRemove: (username: IUserInRole['username']) => void;
 };

@@ -11,7 +11,7 @@ import AutoCompleteContact from '../../../../../../AutoCompleteContact';
 import RetryButton from '../../../components/RetryButton';
 import type { RecipientFormData } from '../RecipientForm';
 
-type ContactFieldProps = ComponentProps<typeof Field> & {
+export type ContactFieldProps = ComponentProps<typeof Field> & {
 	control: Control<RecipientFormData>;
 	isError: boolean;
 	isFetching: boolean;

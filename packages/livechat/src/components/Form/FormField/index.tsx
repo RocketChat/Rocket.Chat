@@ -5,7 +5,7 @@ import type { JSXInternal } from 'preact/src/jsx';
 import styles from './styles.scss';
 import { createClassName } from '../../../helpers/createClassName';
 
-type FormFieldProps = {
+export type FormFieldProps = {
 	required?: boolean;
 	label?: string;
 	description?: string;

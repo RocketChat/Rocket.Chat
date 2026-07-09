@@ -4,7 +4,7 @@ import { Imports } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { Importers } from '..';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 export const executeGetImportProgress = async (): Promise<IImportProgress> => {

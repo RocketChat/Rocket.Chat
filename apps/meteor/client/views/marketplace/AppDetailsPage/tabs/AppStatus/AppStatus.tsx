@@ -16,7 +16,7 @@ import type { AppInstallationHandlerParams } from '../../../hooks/useAppInstalla
 import { useAppInstallationHandler } from '../../../hooks/useAppInstallationHandler';
 import { useMarketplaceActions } from '../../../hooks/useMarketplaceActions';
 
-type AppStatusProps = {
+export type AppStatusProps = {
 	app: App;
 	showStatus?: boolean;
 	isAppDetailsPage: boolean;

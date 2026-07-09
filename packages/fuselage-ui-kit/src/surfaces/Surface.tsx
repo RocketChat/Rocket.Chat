@@ -2,7 +2,7 @@ import type { ContextType, ReactNode } from 'react';
 
 import { SurfaceContext } from '../contexts/SurfaceContext';
 
-type SurfaceProps = {
+export type SurfaceProps = {
 	children: ReactNode;
 	type: ContextType<typeof SurfaceContext>;
 };

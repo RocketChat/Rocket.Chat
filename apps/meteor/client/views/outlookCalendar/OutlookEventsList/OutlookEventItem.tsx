@@ -9,7 +9,7 @@ import { usePreventPropagation } from '../../../hooks/usePreventPropagation';
 import OutlookCalendarEventModal from '../OutlookCalendarEventModal';
 import { useOutlookOpenCall } from '../hooks/useOutlookOpenCall';
 
-type OutlookEventItemProps = Serialized<ICalendarEvent>;
+export type OutlookEventItemProps = Serialized<ICalendarEvent>;
 
 const hovered = css`
 	&:hover {

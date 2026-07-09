@@ -5,7 +5,7 @@ import { useMemo, memo, useSyncExternalStore } from 'react';
 
 import { modalStore } from './ModalStore';
 
-type ModalProviderProps = {
+export type ModalProviderProps = {
 	children?: ReactNode;
 	region?: symbol;
 };

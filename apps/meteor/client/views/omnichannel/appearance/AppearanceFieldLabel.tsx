@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
-type AppearanceFieldLabelProps = ComponentProps<typeof FieldLabel> & {
+export type AppearanceFieldLabelProps = ComponentProps<typeof FieldLabel> & {
 	premium?: boolean;
 	children: string;
 };

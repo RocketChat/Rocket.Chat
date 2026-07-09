@@ -23,7 +23,7 @@ export type DateTimeModalFormData = {
 	endTime?: string;
 };
 
-type DateTimeModalProps = {
+export type DateTimeModalProps = {
 	onClose: () => void;
 	onSave: (value: DateTimeModalFormData) => void;
 	confirmDisabled?: boolean;

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { UserStatus } from '../../../../../components/UserStatus';
 
-type ContactManagerInfoProps = { userId: string };
+export type ContactManagerInfoProps = { userId: string };
 
 const ContactManagerInfo = ({ userId }: ContactManagerInfoProps) => {
 	const { t } = useTranslation();

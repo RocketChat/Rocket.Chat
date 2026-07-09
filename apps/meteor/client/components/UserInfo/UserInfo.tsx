@@ -44,7 +44,7 @@ type UserInfoDataProps = Serialized<
 	>
 >;
 
-type UserInfoProps = UserInfoDataProps & {
+export type UserInfoProps = UserInfoDataProps & {
 	status: ReactNode;
 	customStatus?: ReactNode;
 	email?: string;

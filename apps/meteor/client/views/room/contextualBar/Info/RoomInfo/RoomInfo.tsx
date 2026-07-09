@@ -29,7 +29,7 @@ import { useRoomActions } from '../hooks/useRoomActions';
 import { useSplitRoomActions } from '../hooks/useSplitRoomActions';
 import RoomInfoABACSection from './ABAC/RoomInfoABACSection';
 
-type RoomInfoProps = {
+export type RoomInfoProps = {
 	room: IRoom;
 	icon: string;
 	onClickBack?: () => void;

@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 
-type EngagementDashboardCardErrorBoundaryProps = {
+export type EngagementDashboardCardErrorBoundaryProps = {
 	children?: ReactNode;
 };
 

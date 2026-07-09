@@ -3,7 +3,7 @@ import type { ReactNode, ComponentProps } from 'react';
 
 import * as UserStatus from '../../../components/UserStatus';
 
-type AgentInfoDetailsProps = ComponentProps<typeof Box> & {
+export type AgentInfoDetailsProps = ComponentProps<typeof Box> & {
 	name: string | undefined;
 	status: ReactNode;
 	shortName?: string;

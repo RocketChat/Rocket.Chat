@@ -10,7 +10,7 @@ import { MessageListContext, useOpenEmojiPicker, useUserHasReacted } from '../li
 import Reaction from './reactions/Reaction';
 import { useToggleReactionMutation } from './reactions/useToggleReactionMutation';
 
-type ReactionsProps = {
+export type ReactionsProps = {
 	message: IMessage;
 } & HTMLAttributes<HTMLDivElement>;
 

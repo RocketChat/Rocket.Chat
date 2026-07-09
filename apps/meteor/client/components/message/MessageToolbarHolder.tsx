@@ -7,7 +7,7 @@ import type { MessageActionContext } from '../../../app/ui-utils/client/lib/Mess
 import { useChat } from '../../views/room/contexts/ChatContext';
 import { useIsVisible } from '../../views/room/hooks/useIsVisible';
 
-type MessageToolbarHolderProps = {
+export type MessageToolbarHolderProps = {
 	message: IMessage;
 	context?: MessageActionContext;
 };

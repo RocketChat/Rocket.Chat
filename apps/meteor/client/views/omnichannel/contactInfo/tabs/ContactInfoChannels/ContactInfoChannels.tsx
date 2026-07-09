@@ -9,7 +9,7 @@ import { Virtuoso } from 'react-virtuoso';
 import ContactInfoChannelsItem from './ContactInfoChannelsItem';
 import useOutboundProvidersList from '../../../components/outboundMessage/hooks/useOutboundProvidersList';
 
-type ContactInfoChannelsProps = {
+export type ContactInfoChannelsProps = {
 	contact: Pick<ILivechatContact, '_id' | 'unknown'>;
 };
 

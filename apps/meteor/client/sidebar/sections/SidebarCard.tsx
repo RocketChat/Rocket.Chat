@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-type SidebarCardProps = { children: ReactNode };
+export type SidebarCardProps = { children: ReactNode };
 
 /**
  * Reusable elevated surface for sidebar sections: a padded, rounded, subtly

@@ -83,7 +83,7 @@ test.describe.serial('message-composer', () => {
 
 			await page.keyboard.press('Enter');
 
-			await expect(poHomeChannel.composer.inputMessage).toHaveValue('hello composer :flag_br: ');
+			await expect(poHomeChannel.composer.inputMessage).toHaveValue('hello composer 🇧🇷 ');
 
 			await poHomeChannel.composer.inputMessage.fill('');
 		});
