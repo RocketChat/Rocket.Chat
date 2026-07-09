@@ -22,15 +22,12 @@ export type ClassificationBannerAttribute = {
 
 export type ClassificationBannerStyle = 'classic' | 'segmented' | 'edge';
 
-export type ClassificationBannerPosition = 'top' | 'bottom' | 'both';
-
 export type ClassificationBannersConfig = {
 	version: 1;
 	enabled: boolean;
 	source?: 'idp' | 'manual';
 	banner: {
 		style?: ClassificationBannerStyle;
-		position?: ClassificationBannerPosition;
 		uppercase?: boolean;
 		monospace?: boolean;
 		delimiter: string;
@@ -52,7 +49,6 @@ export type ClassificationBannerPayload = {
 	backgroundColor: string;
 	color: string;
 	style: ClassificationBannerStyle;
-	position: ClassificationBannerPosition;
 	uppercase: boolean;
 	monospace: boolean;
 	fallback: boolean;

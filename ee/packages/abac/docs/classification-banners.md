@@ -17,7 +17,7 @@ A builder page that generates valid configurations with a live preview is availa
 - **Color**: the single attribute with `drivesColor: true` picks the banner background. `colorMode: "highest"` (default) selects the matched value with the highest index in that attribute's `values` array (most restrictive); `"attribute"` selects the first matched value. The foreground color is computed for readable contrast (WCAG relative luminance). If the driver attribute has no matched values, `banner.fallbackColor` is used.
 - **Fallback**: when no attribute produces a segment, the banner renders `banner.fallbackText` on `banner.fallbackColor` (defaults: `NO CLASSIFICATION DATA` / `#6C727A`).
 - **Styles** (`banner.style`): `classic` — single centered line; `segmented` — segments separated by vertical rules instead of the delimiter; `edge` — classic with contrasting top/bottom edge rules.
-- **Position** (`banner.position`): `top` (above the room header), `bottom` (below the message list), or `both`.
+- The banner always renders above the room header.
 - Config changes require no server restart; open clients pick up changes when the room is reloaded.
 
 ### Cross-field rules
@@ -41,7 +41,6 @@ This configuration reproduces the design prototype's default state. For a room w
   "source": "idp",
   "banner": {
     "style": "classic",
-    "position": "top",
     "uppercase": true,
     "monospace": false,
     "delimiter": " // ",

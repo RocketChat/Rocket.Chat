@@ -11,7 +11,6 @@ import { ABACQueryKeys } from '../../../lib/queryKeys';
 
 type ClassificationBannerProps = {
 	room: IRoom;
-	placement: 'top' | 'bottom';
 };
 
 const shade = (hex: string, factor: number): string => {
@@ -29,7 +28,7 @@ const getBannerStyle = (banner: ClassificationBannerPayload): CSSProperties => {
 		fontSize: 13,
 		fontWeight: 700,
 		lineHeight: 1,
-		...(banner.monospace && { fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' }),
+		...(banner.monospace && { fontFamily: 'Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace' }),
 		letterSpacing: banner.monospace ? '0.02em' : '0.08em',
 		textTransform: banner.uppercase ? 'uppercase' : 'none',
 		whiteSpace: 'nowrap',
@@ -38,7 +37,7 @@ const getBannerStyle = (banner: ClassificationBannerPayload): CSSProperties => {
 	};
 };
 
-const ClassificationBanner = ({ room, placement }: ClassificationBannerProps) => {
+const ClassificationBanner = ({ room }: ClassificationBannerProps) => {
 	const { data: hasABAC = false } = useHasLicenseModule('abac');
 	const bannersEnabled = useSetting('ABAC_Classification_Banners_Enabled', false);
 	const enabled = hasABAC && bannersEnabled && isABACManagedRoom(room);
@@ -51,7 +50,7 @@ const ClassificationBanner = ({ room, placement }: ClassificationBannerProps) =>
 	});
 
 	const banner = data?.banner;
-	if (!enabled || !banner || (banner.position !== placement && banner.position !== 'both')) {
+	if (!enabled || !banner) {
 		return null;
 	}
 

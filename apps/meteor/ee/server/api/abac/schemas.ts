@@ -168,12 +168,11 @@ const ClassificationBannerPayload = {
 		backgroundColor: { type: 'string' },
 		color: { type: 'string' },
 		style: { type: 'string', enum: ['classic', 'segmented', 'edge'] },
-		position: { type: 'string', enum: ['top', 'bottom', 'both'] },
 		uppercase: { type: 'boolean' },
 		monospace: { type: 'boolean' },
 		fallback: { type: 'boolean' },
 	},
-	required: ['text', 'segments', 'backgroundColor', 'color', 'style', 'position', 'uppercase', 'monospace', 'fallback'],
+	required: ['text', 'segments', 'backgroundColor', 'color', 'style', 'uppercase', 'monospace', 'fallback'],
 	additionalProperties: false,
 };
 

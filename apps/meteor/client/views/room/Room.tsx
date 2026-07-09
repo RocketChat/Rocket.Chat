@@ -55,8 +55,7 @@ const Room = () => {
 						<RoomLayout
 							data-qa-rc-room={room._id}
 							aria-label={roomLabel}
-							bannerTop={<ClassificationBanner room={room} placement='top' />}
-							bannerBottom={<ClassificationBanner room={room} placement='bottom' />}
+							banner={<ClassificationBanner room={room} />}
 							header={<Header room={room} />}
 							body={
 								shouldDisplayE2EESetup ? (

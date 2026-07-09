@@ -987,7 +987,6 @@ export { buildClassificationBanner, parseClassificationBannersConfig, readableTe
 export type {
 	ClassificationBannerAttribute,
 	ClassificationBannerPayload,
-	ClassificationBannerPosition,
 	ClassificationBannerSegment,
 	ClassificationBannerStyle,
 	ClassificationBannerValue,

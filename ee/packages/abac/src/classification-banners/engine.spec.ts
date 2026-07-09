@@ -7,7 +7,6 @@ const config: ClassificationBannersConfig = {
 	source: 'idp',
 	banner: {
 		style: 'classic',
-		position: 'top',
 		uppercase: true,
 		monospace: false,
 		delimiter: ' // ',
@@ -113,7 +112,7 @@ describe('buildClassificationBanner', () => {
 		expect(banner.backgroundColor).toBe('#ff8c00');
 		expect(banner.color).toBe('#FFFFFF');
 		expect(banner.fallback).toBe(false);
-		expect(banner).toMatchObject({ style: 'classic', position: 'top', uppercase: true, monospace: false });
+		expect(banner).toMatchObject({ style: 'classic', uppercase: true, monospace: false });
 	});
 
 	it('collapses to multipleLabel when value count reaches groupThreshold', () => {
@@ -187,7 +186,6 @@ describe('buildClassificationBanner', () => {
 
 		expect(banner).toMatchObject({
 			style: 'classic',
-			position: 'top',
 			uppercase: true,
 			monospace: false,
 			text: 'NO CLASSIFICATION DATA',

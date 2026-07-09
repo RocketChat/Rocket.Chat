@@ -16,7 +16,6 @@
       "additionalProperties": false,
       "properties": {
         "style": { "enum": ["classic", "segmented", "edge"], "default": "classic" },
-        "position": { "enum": ["top", "bottom", "both"], "default": "top" },
         "uppercase": { "type": "boolean", "default": true },
         "monospace": { "type": "boolean", "default": false },
         "delimiter": { "type": "string", "maxLength": 8 },

@@ -91,7 +91,6 @@ export const buildClassificationBanner = (
 	const { banner } = config;
 	const base = {
 		style: banner.style ?? 'classic',
-		position: banner.position ?? 'top',
 		uppercase: banner.uppercase ?? true,
 		monospace: banner.monospace ?? false,
 	} as const;
