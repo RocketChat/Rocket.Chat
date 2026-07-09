@@ -131,7 +131,7 @@ export class AppThreadsConverter implements IAppThreadsConverter {
 			reactions: msgObj.reactions as unknown as AppsEngineMessage['reactions'],
 		} as IMessage & { reactions?: AppsEngineMessage['reactions'] };
 
-		return mappedDecodeAsync(msgData, map as unknown as AsyncFieldMap) as unknown as Promise<AppsEngineMessage>;
+		return mappedDecodeAsync<AppsEngineMessage>(msgData, map as unknown as AsyncFieldMap);
 	}
 
 	async _convertAttachmentsToApp(

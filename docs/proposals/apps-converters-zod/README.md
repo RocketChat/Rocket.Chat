@@ -249,6 +249,34 @@ messages and threads memoization, which remained in the class layer (see the Pha
 - **Test rewrite** — the existing tests use `proxyquire.noCallThru()` against module paths; codec-ing
   each converter means updating those loaders.
 
+## Type strategy for the mapping helpers
+
+The mapping helpers in `converters/codecs/mappedData.ts` are split by how well the source type is
+known, which is what makes generic typing worthwhile in some cases and not others:
+
+- **Sync string maps → fully generic and inferred.** `mappedDecode<Source>(fieldMap)` and
+  `createMappedCodec<Source>(fieldMap)` are generic over the source document type. The field map is
+  typed `FieldMap<Source> = Record<string, Extract<keyof Source, string>>`, so a renamed or
+  misspelled source field is a **compile error** (a `@ts-expect-error` test locks this). The decode
+  result is the inferred `Decoded<Source, Map>` — each renamed target as an optional property plus the
+  `_unmappedProperties_` bucket typed as `Omit<Source, mappedKeys>` — rather than `Record<string, any>`.
+  `mappedEncode` is the inverse and returns `Partial<Source>`. `Source` defaults to a loose record, so
+  untyped call sites (e.g. tests) still work. Consumers with clean document types (`visitors`,
+  `departments`, `roles`) pass their `Source` and get the typo-safety for free.
+
+- **Async/function/nested maps → loose map, generic result.** `mappedDecodeAsync` keeps its
+  `AsyncFieldMap` loosely typed on purpose: its consumers (`rooms`, `messages`, `uploads`, `contacts`)
+  map many optional/livechat-only fields that are *not* on the base document types (which is why the
+  original converters used dynamic access), and the return shape depends on arbitrary function/nested
+  entries. Fully inferring that would resurrect the large conditional type the old helper avoided. It
+  does take a `Result` type parameter — `mappedDecodeAsync<IAppsUpload>(data, map)` — so call sites
+  assert the produced shape once instead of trailing every call with `as unknown as Promise<…>`.
+
+- **The apps-type boundary keeps a single, documented cast.** The Apps-Engine interfaces
+  (`IAppsVisitor`, …) are hand-authored and don't structurally equal the produced `Decoded`/mapped
+  shape, so exactly one `as unknown as <AppsType>` remains where the codec meets that interface. That
+  is the deliberate loose-validation seam (see design decision 7), not incidental looseness.
+
 ## Non-goals
 
 - Changing the `IAppXConverter` interfaces or any app-facing behaviour.

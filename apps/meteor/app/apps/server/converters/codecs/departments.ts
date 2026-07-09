@@ -12,7 +12,7 @@ import { mappedDecode } from './mappedData';
  * unconditionally, then `_unmappedProperties_` merged on top.
  */
 export const DepartmentCodec = z.codec(z.custom<ILivechatDepartment>(), z.custom<IAppsDepartment>(), {
-	decode: mappedDecode({
+	decode: mappedDecode<ILivechatDepartment>({
 		id: '_id',
 		name: 'name',
 		email: 'email',

@@ -13,7 +13,7 @@ import { mappedDecode } from './mappedData';
  * write `_updatedAt`/`activity` back, and merges `_unmappedProperties_`.
  */
 export const VisitorCodec = z.codec(z.custom<ILivechatVisitor>(), z.custom<IAppsVisitor>(), {
-	decode: mappedDecode({
+	decode: mappedDecode<ILivechatVisitor>({
 		id: '_id',
 		username: 'username',
 		name: 'name',

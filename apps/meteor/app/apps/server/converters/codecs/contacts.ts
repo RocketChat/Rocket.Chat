@@ -98,6 +98,6 @@ export const ContactCodec = z.codec(z.custom<ILivechatContact>(), z.custom<IApps
 			importIds: 'importIds',
 		};
 
-		return mappedDecodeAsync(contact, map) as unknown as Promise<ILivechatContact>;
+		return mappedDecodeAsync<ILivechatContact>(contact, map);
 	},
 });

@@ -110,7 +110,7 @@ export async function decodeRoomRaw(room: IRoom): Promise<IAppsRoomRaw> {
 		},
 	};
 
-	return mappedDecodeAsync(room, map) as unknown as Promise<IAppsRoomRaw>;
+	return mappedDecodeAsync<IAppsRoomRaw>(room, map);
 }
 
 async function getCreator(user: string | undefined) {
@@ -455,7 +455,7 @@ export function createRoomCodec(orch: IAppServerOrchestrator) {
 				}),
 			};
 
-			return mappedDecodeAsync(originalRoom, map) as unknown as Promise<IAppsRoom | IAppsLivechatRoom>;
+			return mappedDecodeAsync<IAppsRoom | IAppsLivechatRoom>(originalRoom, map);
 		},
 		encode: (room): Promise<IRoom> => appRoomToRocketChat(room, false) as unknown as Promise<IRoom>,
 	});

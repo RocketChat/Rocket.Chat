@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { describe, it } from 'mocha';
 import * as z from 'zod';
 
-import { createMappedCodec, mappedDecodeAsync } from '../../../../../../app/apps/server/converters/codecs/mappedData';
+import { createMappedCodec, mappedDecode, mappedDecodeAsync } from '../../../../../../app/apps/server/converters/codecs/mappedData';
 
 describe('createMappedCodec', () => {
 	const codec = createMappedCodec({
@@ -151,5 +151,20 @@ describe('mappedDecodeAsync', () => {
 		const result = await mappedDecodeAsync({ os: 'android', version: '1.9', lan: 'en' }, {});
 
 		expect(result).to.deep.equal({ _unmappedProperties_: { os: 'android', version: '1.9', lan: 'en' } });
+	});
+});
+
+describe('mappedDecode type constraints', () => {
+	type Source = { _id: string; name: string };
+
+	it('constrains map values to keys of the source type and infers the decoded shape', () => {
+		const decode = mappedDecode<Source>({ id: '_id', label: 'name' });
+		const result = decode({ _id: 'a', name: 'b' });
+
+		// `result` is typed `Decoded<Source, ...>`: renamed targets plus the bucket.
+		expect(result).to.deep.equal({ id: 'a', label: 'b', _unmappedProperties_: {} });
+
+		// @ts-expect-error - 'missing' is not a key of Source, so the field map is rejected.
+		mappedDecode<Source>({ id: 'missing' });
 	});
 });

@@ -66,7 +66,7 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 			type: 't',
 		} as const;
 
-		return mappedDecodeAsync(message, map) as unknown as Promise<IAppsMesssageRaw>;
+		return mappedDecodeAsync<IAppsMesssageRaw>(message, map);
 	}
 
 	convertMessage(msgObj: undefined | null): Promise<undefined>;
@@ -164,7 +164,7 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 			},
 		} as const;
 
-		return mappedDecodeAsync(msgObj, map) as unknown as Promise<IAppsMessage>;
+		return mappedDecodeAsync<IAppsMessage>(msgObj, map);
 	}
 
 	convertAppMessage(message: undefined | null): Promise<undefined>;

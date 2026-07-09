@@ -60,7 +60,7 @@ export function createUploadsCodec(orch: IAppServerOrchestrator) {
 				},
 			};
 
-			return mappedDecodeAsync(upload, map) as unknown as Promise<IAppsUpload>;
+			return mappedDecodeAsync<IAppsUpload>(upload, map);
 		},
 		encode: (upload): IUpload => {
 			const { id: userId } = upload.user || {};
