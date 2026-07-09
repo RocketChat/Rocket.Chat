@@ -95,6 +95,7 @@ export const SourceResult = ({ item }: { item: IntelligentResult }): ReactElemen
 			aria-label={href ? t('Open') : undefined}
 			onClick={href ? handleOpenMessage : undefined}
 			onKeyDown={href ? handleOpenMessageKeyDown : undefined}
+			cursor={href ? 'pointer' : undefined}
 			p={16}
 			mbe={12}
 			border='var(--rcx-border-width-default) solid var(--rcx-color-stroke-extra-light)'
