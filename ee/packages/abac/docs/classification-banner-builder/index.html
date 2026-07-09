@@ -254,6 +254,7 @@
 	dialog { border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; width: min(640px, 90vw); }
 	dialog::backdrop { background: rgba(31, 35, 41, .4); }
 	dialog h3 { font-size: 14px; margin-bottom: 8px; }
+	#confirm-text { color: var(--ink-soft); max-width: 44ch; }
 	dialog textarea { height: 260px; }
 	dialog .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px; }
 	dialog .error { color: var(--danger); font-size: 12px; margin-top: 6px; }
@@ -326,6 +327,15 @@
 		<div id="warnings"></div>
 	</div>
 </main>
+
+<dialog id="confirm-dialog">
+	<h3>Replace your current work?</h3>
+	<p id="confirm-text"></p>
+	<div class="row">
+		<button id="confirm-cancel">Keep my work</button>
+		<button class="primary" id="confirm-accept">Replace</button>
+	</div>
+</dialog>
 
 <dialog id="import-dialog">
 	<h3>Import configuration</h3>
@@ -798,11 +808,37 @@ themeButton.addEventListener('click', () => {
 });
 renderThemeButton();
 
-$('#btn-example').addEventListener('click', () => {
-	config = exampleConfig();
-	simulation = { 'clearance.level': ['TS'], 'access.programs': ['SAP-1042', 'SAP-2271', 'SAP-3380'], 'dissem.relto': ['USA'] };
-	update();
+const hasWorkInProgress = () => Object.keys(simulation).length > 0 || JSON.stringify(config) !== JSON.stringify(emptyConfig());
+
+const confirmDialog = $('#confirm-dialog');
+let confirmedAction = null;
+const confirmReplace = (message, action) => {
+	if (!hasWorkInProgress()) {
+		action();
+		return;
+	}
+	if (typeof confirmDialog.showModal !== 'function') {
+		if (window.confirm(message)) action();
+		return;
+	}
+	$('#confirm-text').textContent = message;
+	confirmedAction = action;
+	confirmDialog.showModal();
+};
+$('#confirm-cancel').addEventListener('click', () => confirmDialog.close());
+$('#confirm-accept').addEventListener('click', () => {
+	confirmDialog.close();
+	confirmedAction?.();
+	confirmedAction = null;
 });
+
+$('#btn-example').addEventListener('click', () =>
+	confirmReplace('Loading the example will replace your current configuration and simulated room values.', () => {
+		config = exampleConfig();
+		simulation = { 'clearance.level': ['TS'], 'access.programs': ['SAP-1042', 'SAP-2271', 'SAP-3380'], 'dissem.relto': ['USA'] };
+		update();
+	}),
+);
 
 $('#btn-add-attr').addEventListener('click', () => {
 	config.attributes.push({
@@ -816,7 +852,13 @@ $('#btn-add-attr').addEventListener('click', () => {
 });
 
 const importDialog = $('#import-dialog');
-$('#btn-import').addEventListener('click', () => { $('#import-error').textContent = ''; $('#import-text').value = ''; importDialog.showModal(); });
+$('#btn-import').addEventListener('click', () =>
+	confirmReplace('Importing a document will replace your current configuration and simulated room values.', () => {
+		$('#import-error').textContent = '';
+		$('#import-text').value = '';
+		importDialog.showModal();
+	}),
+);
 $('#import-cancel').addEventListener('click', () => importDialog.close());
 $('#import-apply').addEventListener('click', () => {
 	try {
