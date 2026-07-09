@@ -34,7 +34,7 @@
 		--warn-ink: #2f343d; /* font-pure-black on warning */
 		--warn-line: #f3be08; /* yellow-600 */
 		--radius: 6px;
-		--mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+		--mono: Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; /* Fuselage font-family-mono */
 		color-scheme: light;
 	}
 	html[data-theme='dark'] {
@@ -383,7 +383,6 @@ const buildClassificationBanner = (config, roomAttributes) => {
 	const { banner } = config;
 	const base = {
 		style: banner.style ?? 'classic',
-		position: banner.position ?? 'top',
 		uppercase: banner.uppercase ?? true,
 		monospace: banner.monospace ?? false,
 	};
@@ -408,7 +407,6 @@ const emptyConfig = () => ({
 	source: 'idp',
 	banner: {
 		style: 'classic',
-		position: 'top',
 		uppercase: true,
 		monospace: false,
 		delimiter: ' // ',
@@ -538,7 +536,7 @@ const renderPreview = () => {
 	} else {
 		strip.append(el('span', {}, banner.text));
 	}
-	$('#preview-position').textContent = `style: ${banner.style} · position: ${banner.position}${config.enabled ? '' : ' · disabled'}`;
+	$('#preview-position').textContent = `style: ${banner.style}${config.enabled ? '' : ' · disabled'}`;
 };
 
 const renderBannerOptions = () => {
@@ -549,8 +547,6 @@ const renderBannerOptions = () => {
 	$('#banner-options').replaceChildren(
 		field('Style', select(banner.style, [['classic', 'Classic'], ['segmented', 'Segmented'], ['edge', 'Edge']], (v) => { banner.style = v; }),
 			'Classic: one centered line. Segmented: vertical rules between segments instead of the delimiter. Edge: classic plus contrasting top/bottom rules.'),
-		field('Position', select(banner.position, [['top', 'Top'], ['bottom', 'Bottom'], ['both', 'Both']], (v) => { banner.position = v; }),
-			'Where the strip renders in the room: above the header, below the message list, or both.'),
 		field('Segment delimiter', el('input', { type: 'text', className: 'mono', maxLength: 8, value: banner.delimiter, oninput: (e) => { banner.delimiter = e.target.value; update(false); } }),
 			'Text placed between segments (max 8 characters). The US-Gov convention is “ // ”.'),
 		field('Color mode', select(banner.colorMode, [['highest', 'Most restrictive value'], ['attribute', 'First matched value']], (v) => { banner.colorMode = v; }),
