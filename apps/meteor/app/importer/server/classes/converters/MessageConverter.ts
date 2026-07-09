@@ -104,6 +104,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 			mentions,
 			channels,
 			_importFile: data._importFile,
+			_hidden: data._hidden,
 			url: data.url,
 			attachments: data.attachments,
 			bot: data.bot,
