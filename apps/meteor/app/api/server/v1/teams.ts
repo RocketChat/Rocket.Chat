@@ -30,7 +30,11 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { canAccessRoomAsync } from '../../../authorization/server';
-import { hasPermissionAsync, hasAtLeastOnePermissionAsync, hasAllPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import {
+	hasPermissionAsync,
+	hasAtLeastOnePermissionAsync,
+	hasAllPermissionAsync,
+} from '../../../authorization/server/functions/hasPermission';
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 import { settings } from '../../../settings/server';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
