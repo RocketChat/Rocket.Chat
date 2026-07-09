@@ -31,6 +31,7 @@ import {
 	isChannelsOnlineProps,
 } from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
+import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../../app/authorization/server';
