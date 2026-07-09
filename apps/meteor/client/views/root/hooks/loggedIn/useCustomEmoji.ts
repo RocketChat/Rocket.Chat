@@ -1,3 +1,4 @@
+import type { ICustomEmojiListEntry, IEmojiAlias } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
@@ -38,13 +39,21 @@ export const useCustomEmoji = () => {
 				for (const currentEmoji of customEmojis) {
 					emoji.packages.emojiCustom.emojisByCategory.rocket.push(currentEmoji.name);
 					emoji.packages.emojiCustom.list?.push(`:${currentEmoji.name}:`);
-					emoji.list[`:${currentEmoji.name}:`] = { ...currentEmoji, emojiPackage: 'emojiCustom' } as any;
+					const customEmojiEntry: ICustomEmojiListEntry = {
+						name: currentEmoji.name,
+						aliases: currentEmoji.aliases,
+						extension: currentEmoji.extension,
+						etag: currentEmoji.etag,
+						emojiPackage: 'emojiCustom',
+					};
+					emoji.list[`:${currentEmoji.name}:`] = customEmojiEntry;
 					for (const alias of currentEmoji.aliases) {
 						emoji.packages.emojiCustom.list?.push(`:${alias}:`);
-						emoji.list[`:${alias}:`] = {
+						const aliasEntry: IEmojiAlias = {
 							emojiPackage: 'emojiCustom',
 							aliasOf: currentEmoji.name,
 						};
+						emoji.list[`:${alias}:`] = aliasEntry;
 					}
 				}
 				emoji.dispatchUpdate();

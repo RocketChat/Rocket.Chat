@@ -2,7 +2,7 @@ import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import type {
 	IEmailInbox,
-	IEmoji,
+	IEmojiCustom,
 	IInstanceStatus,
 	IIntegration,
 	IIntegrationHistory,
@@ -65,8 +65,8 @@ export type EventSignatures = {
 	'banner.enabled'(bannerId: string): void;
 	'banner.disabled'(bannerId: string): void;
 	'banner.user'(userId: string, banner: IBanner): void;
-	'emoji.deleteCustom'(emoji: IEmoji): void;
-	'emoji.updateCustom'(emoji: IEmoji): void;
+	'emoji.deleteCustom'(emoji: IEmojiCustom): void;
+	'emoji.updateCustom'(emoji: IEmojiCustom): void;
 	'license.module'(data: { module: string; valid: boolean }): void;
 	'license.sync'(): void;
 	'license.actions'(actions: Record<Partial<LicenseLimitKind>, boolean>): void;

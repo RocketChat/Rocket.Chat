@@ -6,7 +6,7 @@ import type {
 	ISetting,
 	ISubscription,
 	IRole,
-	IEmoji,
+	IEmojiCustom,
 	ICustomSound,
 	INotificationDesktop,
 	IUser,
@@ -203,8 +203,8 @@ export interface StreamerEvents {
 			];
 		},
 		{ key: 'permissions-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
-		{ key: 'deleteEmojiCustom'; args: [{ emojiData: IEmoji }] },
-		{ key: 'updateEmojiCustom'; args: [{ emojiData: IEmoji }] },
+		{ key: 'deleteEmojiCustom'; args: [{ emojiData: IEmojiCustom }] },
+		{ key: 'updateEmojiCustom'; args: [{ emojiData: IEmojiCustom }] },
 		/* @deprecated */
 		{ key: 'new-banner'; args: [{ bannerId: string }] },
 
