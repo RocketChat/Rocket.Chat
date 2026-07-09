@@ -2,6 +2,8 @@ import { expect } from 'chai';
 import p from 'proxyquire';
 import sinon from 'sinon';
 
+import { integerBoundOrDisabled, notAboveSetting, notBelowSetting } from '../../../../server/settings/lib/validationRuleBuilders';
+
 const systemLoggerErrorMock = sinon.stub();
 const settingsGetMock = sinon.stub();
 const settingsGetSettingMock = sinon.stub();
@@ -81,28 +83,14 @@ describe('evaluateSettingValidationRule', () => {
 	});
 });
 
-// mirrors the declarations on server/settings/accounts.ts
 const validationBySettingId: Record<string, unknown> = {
 	Accounts_Password_Policy_MinLength: [
-		{
-			query: { $or: [{ value: -1 }, { value: { $gte: 1 } }] },
-			errorKey: 'Accounts_Password_Policy_MinLength_Invalid_Value',
-		},
-		{
-			query: { $or: [{ value: { $lt: 1 } }, { value: { $lte: { $setting: 'Accounts_Password_Policy_MaxLength' } } }] },
-			appliesWhen: { _id: 'Accounts_Password_Policy_MaxLength', value: { $gte: 1 } },
-			errorKey: 'Accounts_Password_Policy_MinLength_Invalid',
-		},
+		integerBoundOrDisabled('Accounts_Password_Policy_MinLength_Invalid_Value'),
+		notAboveSetting('Accounts_Password_Policy_MaxLength', 'Accounts_Password_Policy_MinLength_Invalid'),
 	],
 	Accounts_Password_Policy_MaxLength: [
-		{
-			query: { $or: [{ value: -1 }, { value: { $gte: 1 } }] },
-			errorKey: 'Accounts_Password_Policy_MaxLength_Invalid_Value',
-		},
-		{
-			query: { $or: [{ value: { $lt: 1 } }, { value: { $gte: { $setting: 'Accounts_Password_Policy_MinLength' } } }] },
-			errorKey: 'Accounts_Password_Policy_MaxLength_Invalid',
-		},
+		integerBoundOrDisabled('Accounts_Password_Policy_MaxLength_Invalid_Value'),
+		notBelowSetting('Accounts_Password_Policy_MinLength', 'Accounts_Password_Policy_MaxLength_Invalid'),
 	],
 };
 
