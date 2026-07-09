@@ -4364,7 +4364,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@istanbuljs/load-nyc-config@npm:^1.0.0":
+"@istanbuljs/load-nyc-config@npm:^1.0.0, @istanbuljs/load-nyc-config@npm:^1.1.0":
   version: 1.1.0
   resolution: "@istanbuljs/load-nyc-config@npm:1.1.0"
   dependencies:
@@ -9541,6 +9541,7 @@ __metadata:
     postcss-scss: "npm:^4.0.9"
     postcss-selector-not: "npm:^8.0.1"
     preact: "npm:~10.25.4"
+    preact-render-to-string: "npm:^6.6.5"
     preact-router: "npm:^4.1.2"
     query-string: "npm:^7.1.3"
     react: "npm:~19.2.7"
@@ -9888,6 +9889,7 @@ __metadata:
     "@types/underscore": "npm:^1.13.0"
     "@types/xml-crypto": "npm:~1.4.6"
     "@types/xml-encryption": "npm:~1.2.4"
+    "@vitejs/plugin-react": "npm:~6.0.2"
     "@xmldom/xmldom": "npm:~0.8.13"
     adm-zip: "npm:0.5.17"
     ajv: "npm:^8.20.0"
@@ -10087,6 +10089,8 @@ __metadata:
     underscore: "npm:^1.13.8"
     universal-perf-hooks: "npm:^1.0.1"
     virtua: "npm:^0.49.0"
+    vite: "npm:^8.0.16"
+    vite-plugin-istanbul: "npm:~9.0.1"
     webdav: "npm:^4.11.5"
     webpack: "npm:~5.104.1"
     xml-crypto: "npm:~3.2.1"
@@ -11057,7 +11061,7 @@ __metadata:
     "@types/lodash": "npm:~4.17.24"
     "@types/react": "npm:~19.2.17"
     "@types/react-dom": "npm:~19.2.3"
-    "@vitejs/plugin-react": "npm:~6.0.1"
+    "@vitejs/plugin-react": "npm:~6.0.2"
     codemirror: "npm:^6.0.2"
     eslint: "npm:~9.39.4"
     eslint4b-prebuilt: "npm:^6.7.2"
@@ -11226,13 +11230,6 @@ __metadata:
   version: 1.0.3
   resolution: "@rolldown/binding-win32-x64-msvc@npm:1.0.3"
   conditions: os=win32 & cpu=x64
-  languageName: node
-  linkType: hard
-
-"@rolldown/pluginutils@npm:1.0.0-rc.7":
-  version: 1.0.0-rc.7
-  resolution: "@rolldown/pluginutils@npm:1.0.0-rc.7"
-  checksum: 10/92853a53b75d665da0b4cc3f855c87e606dda6b8d55e929fd08b4428b68ea833afbb140ba25c6c1f9856a739e419fd2929ef15ac0fd05b44e904705be34efe1f
   languageName: node
   linkType: hard
 
@@ -13255,6 +13252,15 @@ __metadata:
   dependencies:
     "@babel/types": "npm:^7.0.0"
   checksum: 10/34f361a0d54a0d85ea4c4b5122c4025a5738fe6795361c85f07a4f8f9add383de640e8611edeeb8339db8203c2d64bff30be266bdcfe3cf777c19e8d34f9cebc
+  languageName: node
+  linkType: hard
+
+"@types/babel__generator@npm:7.27.0":
+  version: 7.27.0
+  resolution: "@types/babel__generator@npm:7.27.0"
+  dependencies:
+    "@babel/types": "npm:^7.0.0"
+  checksum: 10/f572e67a9a39397664350a4437d8a7fbd34acc83ff4887a8cf08349e39f8aeb5ad2f70fb78a0a0a23a280affe3a5f4c25f50966abdce292bcf31237af1c27b1a
   languageName: node
   linkType: hard
 
@@ -15356,11 +15362,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitejs/plugin-react@npm:~6.0.1":
-  version: 6.0.1
-  resolution: "@vitejs/plugin-react@npm:6.0.1"
+"@vitejs/plugin-react@npm:~6.0.2":
+  version: 6.0.2
+  resolution: "@vitejs/plugin-react@npm:6.0.2"
   dependencies:
-    "@rolldown/pluginutils": "npm:1.0.0-rc.7"
+    "@rolldown/pluginutils": "npm:^1.0.0"
   peerDependencies:
     "@rolldown/plugin-babel": ^0.1.7 || ^0.2.0
     babel-plugin-react-compiler: ^1.0.0
@@ -15370,7 +15376,7 @@ __metadata:
       optional: true
     babel-plugin-react-compiler:
       optional: true
-  checksum: 10/a525799252fa6c12bf9a0a367b17dfc3d5e8e02ec0b5b81554db9d97b764c554be6b0686e3dd385b0ac0350f0c023120ce712d79feedd99fa2cb854b7cd1e960
+  checksum: 10/4b3693e94c1907aac699df34fa71c8d5d53228b110f7520dcaca56c96c7127772e806147fa9d2f15edfc64cdefbe13b28c4c71e058601f7311d303ad435701c6
   languageName: node
   linkType: hard
 
@@ -15816,7 +15822,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"acorn@npm:^8.15.0":
+"acorn@npm:^8.15.0, acorn@npm:^8.16.0":
   version: 8.16.0
   resolution: "acorn@npm:8.16.0"
   bin:
@@ -21449,7 +21455,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-visitor-keys@npm:^5.0.0":
+"eslint-visitor-keys@npm:^5.0.0, eslint-visitor-keys@npm:^5.0.1":
   version: 5.0.1
   resolution: "eslint-visitor-keys@npm:5.0.1"
   checksum: 10/f9cc1a57b75e0ef949545cac33d01e8367e302de4c1483266ed4d8646ee5c306376660196bbb38b004e767b7043d1e661cb4336b49eff634a1bbe75c1db709ec
@@ -21520,6 +21526,17 @@ __metadata:
     acorn-jsx: "npm:^5.3.2"
     eslint-visitor-keys: "npm:^4.2.1"
   checksum: 10/9b355b32dbd1cc9f57121d5ee3be258fab87ebeb7c83fc6c02e5af1a74fc8c5ba79fe8c663e69ea112c3e84a1b95e6a2067ac4443ee7813bb85ac7581acb8bf9
+  languageName: node
+  linkType: hard
+
+"espree@npm:^11.2.0":
+  version: 11.2.0
+  resolution: "espree@npm:11.2.0"
+  dependencies:
+    acorn: "npm:^8.16.0"
+    acorn-jsx: "npm:^5.3.2"
+    eslint-visitor-keys: "npm:^5.0.1"
+  checksum: 10/5cc4233b8f150010c70713669ef8231f07fe9b6391870cfa0a292a07f723ed5c2922064b978e627f7cabf7753280e64c5bde41d3840caaa40946989df7009a51
   languageName: node
   linkType: hard
 
@@ -23013,6 +23030,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"glob@npm:^13.0.6":
+  version: 13.0.6
+  resolution: "glob@npm:13.0.6"
+  dependencies:
+    minimatch: "npm:^10.2.2"
+    minipass: "npm:^7.1.3"
+    path-scurry: "npm:^2.0.2"
+  checksum: 10/201ad69e5f0aa74e1d8c00a481581f8b8c804b6a4fbfabeeb8541f5d756932800331daeba99b58fb9e4cd67e12ba5a7eba5b82fb476691588418060b84353214
+  languageName: node
+  linkType: hard
+
 "glob@npm:^7.0.3, glob@npm:^7.1.3, glob@npm:^7.1.4, glob@npm:^7.1.6, glob@npm:^7.2.0":
   version: 7.2.3
   resolution: "glob@npm:7.2.3"
@@ -23377,13 +23405,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hash-base@npm:~3.0, hash-base@npm:~3.0.4":
+"hash-base@npm:~3.0":
   version: 3.0.4
   resolution: "hash-base@npm:3.0.4"
   dependencies:
     inherits: "npm:^2.0.1"
     safe-buffer: "npm:^5.0.1"
   checksum: 10/878465a0dfcc33cce195c2804135352c590d6d10980adc91a9005fd377e77f2011256c2b7cfce472e3f2e92d561d1bf3228d2da06348a9017ce9a258b3b49764
+  languageName: node
+  linkType: hard
+
+"hash-base@npm:~3.0.4":
+  version: 3.0.5
+  resolution: "hash-base@npm:3.0.5"
+  dependencies:
+    inherits: "npm:^2.0.4"
+    safe-buffer: "npm:^5.2.1"
+  checksum: 10/6a82675a5de2ea9347501bbe655a2334950c7ec972fd9810ae9529e06aeab8f7e8ef68fc2112e5e6f0745561a7e05326efca42ad59bb5fd116537f5f8b0a216d
   languageName: node
   linkType: hard
 
@@ -24952,7 +24990,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"istanbul-lib-instrument@npm:^6.0.0, istanbul-lib-instrument@npm:^6.0.2":
+"istanbul-lib-instrument@npm:^6.0.0, istanbul-lib-instrument@npm:^6.0.2, istanbul-lib-instrument@npm:^6.0.3":
   version: 6.0.3
   resolution: "istanbul-lib-instrument@npm:6.0.3"
   dependencies:
@@ -28047,7 +28085,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:10.2.5, minimatch@npm:^10.1.1, minimatch@npm:^10.2.5":
+"minimatch@npm:10.2.5, minimatch@npm:^10.1.1, minimatch@npm:^10.2.2, minimatch@npm:^10.2.5":
   version: 10.2.5
   resolution: "minimatch@npm:10.2.5"
   dependencies:
@@ -28183,6 +28221,13 @@ __metadata:
   version: 7.1.2
   resolution: "minipass@npm:7.1.2"
   checksum: 10/c25f0ee8196d8e6036661104bacd743785b2599a21de5c516b32b3fa2b83113ac89a2358465bc04956baab37ffb956ae43be679b2262bf7be15fce467ccd7950
+  languageName: node
+  linkType: hard
+
+"minipass@npm:^7.1.3":
+  version: 7.1.3
+  resolution: "minipass@npm:7.1.3"
+  checksum: 10/175e4d5e20980c3cd316ae82d2c031c42f6c746467d8b1905b51060a0ba4461441a0c25bb67c025fd9617f9a3873e152c7b543c6b5ac83a1846be8ade80dffd6
   languageName: node
   linkType: hard
 
@@ -29982,6 +30027,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"path-scurry@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "path-scurry@npm:2.0.2"
+  dependencies:
+    lru-cache: "npm:^11.0.0"
+    minipass: "npm:^7.1.2"
+  checksum: 10/2b4257422bcb870a4c2d205b3acdbb213a72f5e2250f61c80f79c9d014d010f82bdf8584441612c8e1fa4eb098678f5704a66fa8377d72646bad4be38e57a2c3
+  languageName: node
+  linkType: hard
+
 "path-to-regexp@npm:0.1.13":
   version: 0.1.13
   resolution: "path-to-regexp@npm:0.1.13"
@@ -31112,6 +31167,15 @@ __metadata:
   version: 2.2.0
   resolution: "postis@npm:2.2.0"
   checksum: 10/f7a872ad65a80b52f58b5217f917b6fc35dbd503019374cf813207c30e85b4fdf38e275a7faf1a393af554e258321bcda58b3b60c4a13c22d6c70527e16ba730
+  languageName: node
+  linkType: hard
+
+"preact-render-to-string@npm:^6.6.5":
+  version: 6.6.5
+  resolution: "preact-render-to-string@npm:6.6.5"
+  peerDependencies:
+    preact: ">=10 || >= 11.0.0-0"
+  checksum: 10/8d5bbde63857e3b4a0113c8e8d53b1f700cd14c6ee0e0a841aba30939930877e59ae1850bc74e1f369abdc21fd069af04f47fa7943f1b377ecd05366ab1353e6
   languageName: node
   linkType: hard
 
@@ -34039,7 +34103,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map@npm:~0.7.6":
+"source-map@npm:^0.7.6, source-map@npm:~0.7.6":
   version: 0.7.6
   resolution: "source-map@npm:0.7.6"
   checksum: 10/c8d2da7c57c14f3fd7568f764b39ad49bbf9dd7632b86df3542b31fed117d4af2fb74a4f886fc06baf7a510fee68e37998efc3080aacdac951c36211dc29a7a3
@@ -35252,6 +35316,17 @@ __metadata:
     glob: "npm:^7.1.4"
     minimatch: "npm:^3.0.4"
   checksum: 10/8fccb2cb6c8fcb6bb4115394feb833f8b6cf4b9503ec2485c2c90febf435cac62abe882a0c5c51a37b9bbe70640cdd05acf5f45e486ac4583389f4b0855f69e5
+  languageName: node
+  linkType: hard
+
+"test-exclude@npm:^8.0.0":
+  version: 8.0.0
+  resolution: "test-exclude@npm:8.0.0"
+  dependencies:
+    "@istanbuljs/schema": "npm:^0.1.2"
+    glob: "npm:^13.0.6"
+    minimatch: "npm:^10.2.2"
+  checksum: 10/4f16902c4bc91f62678ba64f8a36f70661ae0009d7c480bee4a0befaf9a1118b2925293cec6dde13ceb892a7ab9d71cd5387874a8c91cc05904c45b46fe13831
   languageName: node
   linkType: hard
 
@@ -36812,6 +36887,24 @@ __metadata:
     string_decoder: "npm:^1.1.1"
     util-deprecate: "npm:^1.0.1"
   checksum: 10/ed374bdae0a765a8de902057a5127ab34a908f758f5b31ffa845b76648ba6ecf6743f9559b6c3392035d69a7b20db385a6c521e58b54a7ddfb7f632d33026925
+  languageName: node
+  linkType: hard
+
+"vite-plugin-istanbul@npm:~9.0.1":
+  version: 9.0.1
+  resolution: "vite-plugin-istanbul@npm:9.0.1"
+  dependencies:
+    "@babel/generator": "npm:^7.29.7"
+    "@istanbuljs/load-nyc-config": "npm:^1.1.0"
+    "@types/babel__generator": "npm:7.27.0"
+    espree: "npm:^11.2.0"
+    istanbul-lib-instrument: "npm:^6.0.3"
+    picocolors: "npm:^1.1.1"
+    source-map: "npm:^0.7.6"
+    test-exclude: "npm:^8.0.0"
+  peerDependencies:
+    vite: ">=7"
+  checksum: 10/39cc3076f16e3f1f038884e5fe766e9d03c775aa6ced702881f0366a23ef9dbd50af55a810b09a3165686f986cea713f6cd91c6bb8ae11ca2c6dcaf86730ad1e
   languageName: node
   linkType: hard
 
