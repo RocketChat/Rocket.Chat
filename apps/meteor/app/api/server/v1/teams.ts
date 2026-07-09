@@ -18,7 +18,11 @@ import { Match, check } from 'meteor/check';
 
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { canAccessRoomAsync } from '../../../authorization/server';
-import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import {
+	hasPermissionAsync,
+	hasAtLeastOnePermissionAsync,
+	hasAllPermissionAsync,
+} from '../../../authorization/server/functions/hasPermission';
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
@@ -81,6 +85,10 @@ API.v1.addRoute(
 			);
 
 			const { name, type, members, room, owner } = this.bodyParams;
+
+			if (room?.id && !(await hasAllPermissionAsync(this.userId, ['create-team', 'edit-room'], room.id))) {
+				return API.v1.forbidden();
+			}
 
 			const team = await Team.create(this.userId, {
 				team: {
