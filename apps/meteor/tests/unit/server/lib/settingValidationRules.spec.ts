@@ -139,6 +139,7 @@ describe('validateSettingRules', () => {
 			'[{"query":null,"errorKey":"error"}]',
 			'[{"query":{"value":{"$gte":1}},"errorKey":{}}]',
 			'[{"query":{"value":{"$gte":1}},"errorKey":"error","appliesWhen":"junk"}]',
+			'[{"query":{"value":{"$gte":1}},"errorKey":"error","appliesWhen":{"_id":"Gate"}}]',
 		];
 
 		for (const validation of malformed) {

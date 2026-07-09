@@ -8,7 +8,7 @@ import { settings } from '../settings';
 export class SettingValidationError extends Error {}
 
 const isAppliesWhenCondition = (value: unknown): value is { _id: ISetting['_id']; value: unknown } =>
-	isRecord(value) && typeof value._id === 'string';
+	isRecord(value) && typeof value._id === 'string' && 'value' in value;
 
 const isValidationRule = (rule: unknown): rule is SettingValidationRule =>
 	isRecord(rule) &&
