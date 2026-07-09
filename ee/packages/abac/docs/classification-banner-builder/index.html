@@ -13,6 +13,7 @@
 		--wash: #f7f8fa;
 		--action: #156ff5;
 		--danger: #d40c26;
+		--ok: #148660;
 		--warn-bg: #fff8e0;
 		--warn-line: #f5c700;
 		--radius: 6px;
@@ -69,7 +70,7 @@
 		gap: 12px;
 	}
 	header.page h1 { font-size: 19px; font-weight: 700; letter-spacing: -0.01em; }
-	header.page p { color: var(--ink-soft); flex-basis: 100%; max-width: 70ch; }
+	header.page p { color: var(--ink-soft); flex-basis: 100%; max-width: 78ch; }
 	header.page .spacer { flex: 1; }
 
 	main {
@@ -77,7 +78,7 @@
 		margin: 0 auto;
 		padding: 8px 20px 60px;
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) 380px;
+		grid-template-columns: minmax(0, 1fr) 400px;
 		gap: 20px;
 		align-items: start;
 	}
@@ -98,12 +99,15 @@
 		padding: 12px 16px;
 		border-bottom: 1px solid var(--line);
 	}
+	section.card > .card-hint { padding: 10px 16px 0; color: var(--ink-soft); font-size: 12px; }
 	.card-body { padding: 16px; }
 
-	.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px 16px; }
+	.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px 16px; }
 	label.field { display: block; font-size: 12px; color: var(--ink-soft); }
-	label.field > span { display: block; margin-bottom: 4px; }
-	label.check { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink); cursor: pointer; }
+	label.field > span.fname { display: block; margin-bottom: 4px; font-weight: 600; color: var(--ink); }
+	.fhint { display: block; margin-top: 4px; font-size: 11px; line-height: 1.4; color: var(--ink-soft); font-weight: 400; }
+	label.check { display: inline-flex; align-items: flex-start; gap: 6px; font-size: 13px; color: var(--ink); cursor: pointer; }
+	label.check input { margin-top: 2px; }
 	input[type=text], input[type=number], select, textarea {
 		width: 100%;
 		padding: 6px 8px;
@@ -155,6 +159,7 @@
 	.tag.color-driver { background: var(--ink); color: #fff; }
 	.attr-fields { padding: 12px; border-bottom: 1px solid var(--line); }
 	.values { padding: 8px 12px 12px; }
+	.values .card-hint { padding: 4px 0 8px; color: var(--ink-soft); font-size: 12px; }
 	.values table { width: 100%; border-collapse: collapse; }
 	.values th { text-align: left; font-size: 11px; color: var(--ink-soft); font-weight: 600; padding: 4px 6px; }
 	.values td { padding: 3px 6px; }
@@ -162,17 +167,47 @@
 	.swatch-cell { display: flex; align-items: center; gap: 6px; }
 	.hex { font-family: var(--mono); font-size: 11px; color: var(--ink-soft); }
 
-	#warnings { border: 1px solid var(--warn-line); background: var(--warn-bg); border-radius: var(--radius); padding: 12px 16px; margin-bottom: 20px; }
-	#warnings h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 6px; }
-	#warnings ul { margin-left: 18px; }
-	#warnings.ok { border-color: var(--line); background: var(--paper); color: var(--ink-soft); }
+	#empty-state {
+		border: 1px dashed var(--line);
+		border-radius: var(--radius);
+		padding: 24px 16px;
+		text-align: center;
+		color: var(--ink-soft);
+		margin-bottom: 12px;
+	}
+	#empty-state b { color: var(--ink); }
 
-	#sim .sim-group { margin-bottom: 12px; }
+	#warnings { border: 1px solid var(--warn-line); background: var(--warn-bg); border-radius: var(--radius); padding: 12px 16px; margin-bottom: 20px; }
+	#warnings h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 8px; }
+	#warnings ul { margin-left: 18px; }
+	#warnings li { margin-bottom: 3px; }
+	#warnings.ok { border-color: var(--line); background: var(--paper); }
+	#warnings.ok h3 { color: var(--ok); }
+	#warnings.info { border-color: var(--line); background: var(--paper); color: var(--ink-soft); }
+	#warnings .rules { list-style: none; margin-left: 0; color: var(--ink-soft); font-size: 12px; }
+	#warnings .rules li::before { content: '✓ '; color: var(--ok); font-weight: 700; }
+	#warnings .rules-note { font-size: 11px; color: var(--ink-soft); margin-top: 8px; }
+
+	.ms { border: 1px solid var(--line); border-radius: 4px; background: var(--paper); padding: 4px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; min-height: 34px; }
+	.ms .chip {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		background: var(--wash);
+		border: 1px solid var(--line);
+		border-radius: 4px;
+		padding: 2px 4px 2px 8px;
+		font-size: 12px;
+		font-weight: 600;
+	}
+	.ms .chip button { border: none; padding: 0 4px; color: var(--ink-soft); background: transparent; font-size: 12px; line-height: 1; }
+	.ms .chip button:hover { color: var(--danger); background: transparent; }
+	.ms select { flex: 1; min-width: 110px; border: none; background: transparent; color: var(--ink-soft); font-size: 12px; padding: 4px; }
+	#sim .sim-group { margin-bottom: 14px; }
 	#sim .sim-group > b { display: block; font-size: 12px; margin-bottom: 4px; }
 	#sim .sim-group .src { font-family: var(--mono); font-size: 11px; color: var(--ink-soft); font-weight: 400; }
-	#sim .sim-values { display: flex; flex-wrap: wrap; gap: 4px 14px; }
 
-	#json-out { height: 320px; resize: vertical; }
+	#json-out { height: 300px; resize: vertical; }
 	.toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
 	.hint { font-size: 12px; color: var(--ink-soft); margin-top: 8px; }
 	.hint code { font-family: var(--mono); background: var(--wash); padding: 1px 4px; border-radius: 3px; }
@@ -189,7 +224,7 @@
 <div id="preview-dock">
 	<div id="preview-banner" role="img"></div>
 	<div id="preview-chrome">
-		<span class="dot"></span><b id="preview-room">#ops-sector-bravo</b><span>simulated room header</span>
+		<span class="dot"></span><b id="preview-room">#simulated-room</b><span>this is how the strip renders above the room header</span>
 		<span id="preview-position"></span>
 	</div>
 </div>
@@ -198,12 +233,13 @@
 	<h1>Classification banner builder</h1>
 	<div class="spacer"></div>
 	<button id="btn-import">Import JSON</button>
-	<button id="btn-reset">Reset to example</button>
+	<button id="btn-example">Load example</button>
 	<button class="primary" id="btn-copy">Copy JSON</button>
 	<p>
 		Compose the <code style="font-family: var(--mono)">ABAC_Classification_Banners_Config</code> document for Rocket.Chat.
-		The strip above renders live from this configuration and the simulated room values on the right — exactly what members
-		of a matching ABAC room will see.
+		Add the attributes your rooms carry (e.g. from Virtru or LDAP), map each raw value to a display label and color, and
+		the strip at the top renders live — exactly what members of a matching ABAC room will see. “Load example” shows the
+		complete US-Government configuration from the design prototype.
 	</p>
 </header>
 
@@ -213,11 +249,16 @@
 
 		<section class="card">
 			<h2>Banner options</h2>
+			<div class="card-hint">Global settings for the strip itself — how segments are joined, positioned, colored and typeset.</div>
 			<div class="card-body grid" id="banner-options"></div>
 		</section>
 
 		<section class="card">
-			<h2>Attributes — banner segments render in this order</h2>
+			<h2>Attributes</h2>
+			<div class="card-hint">
+				One entry per room attribute that should appear in the banner. Segments render in list order, joined by the
+				delimiter. An attribute only produces a segment when the room carries at least one of its mapped values.
+			</div>
 			<div class="card-body">
 				<div id="attributes"></div>
 				<button id="btn-add-attr">Add attribute</button>
@@ -228,14 +269,19 @@
 	<div>
 		<section class="card">
 			<h2>Simulated room values</h2>
+			<div class="card-hint">
+				A pretend room for the live preview only — not part of the JSON. Pick which raw values the room carries per
+				attribute, like assigning ABAC attributes to a room in Rocket.Chat.
+			</div>
 			<div class="card-body" id="sim"></div>
 		</section>
 
 		<section class="card">
 			<h2>Configuration JSON</h2>
 			<div class="card-body">
+				<div class="toolbar"><button class="primary" id="btn-copy-json">Copy JSON</button></div>
 				<textarea id="json-out" readonly aria-label="Generated configuration JSON"></textarea>
-				<p class="hint">Paste into <b>Admin → ABAC → Settings → Classification banners configuration (JSON)</b>.</p>
+				<p class="hint">Paste into <b>Admin → ABAC → Settings → Classification banners → configuration (JSON)</b> and enable the toggle.</p>
 			</div>
 		</section>
 	</div>
@@ -314,9 +360,9 @@ const buildClassificationBanner = (config, roomAttributes) => {
 	return { ...base, text: segments.map(({ text }) => text).join(banner.delimiter), segments, backgroundColor, color: readableTextColor(backgroundColor), fallback: false };
 };
 
-// ---- default configuration (the design prototype's default state) ----
+// ---- configurations ----
 
-const exampleConfig = () => ({
+const emptyConfig = () => ({
 	$schema: 'https://rocket.chat/schemas/classification-banners/v1.json',
 	version: 1,
 	enabled: true,
@@ -331,6 +377,11 @@ const exampleConfig = () => ({
 		fallbackText: 'NO CLASSIFICATION DATA',
 		fallbackColor: '#6C727A',
 	},
+	attributes: [],
+});
+
+const exampleConfig = () => ({
+	...emptyConfig(),
 	attributes: [
 		{
 			id: 'classification', source: 'clearance.level', label: 'Classification level',
@@ -367,26 +418,30 @@ const exampleConfig = () => ({
 				{ source: 'NATO', label: 'NATO', color: '#502b85' },
 			],
 		},
-		{
-			id: 'dissem', source: 'dissem.controls', label: 'Dissemination controls',
-			showInBanner: false, showLabel: false, bannerLabel: '', labelSeparator: '', valueSeparator: '/',
-			sortAlpha: true, groupThreshold: 0, multipleLabel: '', drivesColor: false,
-			values: [
-				{ source: 'NF', label: 'NOFORN', color: '#c8102e' },
-				{ source: 'OC', label: 'ORCON', color: '#ff8c00' },
-				{ source: 'IM', label: 'IMCON', color: '#0033a0' },
-			],
-		},
 	],
 });
 
-let config = exampleConfig();
-let simulation = { 'clearance.level': ['TS'], 'access.programs': ['SAP-1042', 'SAP-2271', 'SAP-3380'], 'dissem.relto': ['USA'] };
+let config = emptyConfig();
+let simulation = {};
 
 // ---- cross-field rules (documented in the v1 schema; enforced here as warnings) ----
 
+const RULES = [
+	'Exactly one attribute drives the banner color',
+	'Attribute ids are unique and lowercase (^[a-z][a-z0-9_-]*$)',
+	'Every attribute has a source key, a label and at least one value',
+	'Value sources are unique within each attribute, each with a label and a color',
+	'A grouped label is set wherever a group threshold is set',
+	'A banner label is set wherever “show label prefix” is on',
+	'A segment delimiter is set',
+];
+
 const lintConfig = (cfg) => {
 	const problems = [];
+	if (cfg.attributes.length === 0) {
+		problems.push('At least one attribute is required.');
+		return problems;
+	}
 	const drivers = cfg.attributes.filter((a) => a.drivesColor);
 	if (drivers.length !== 1) problems.push(`Exactly one attribute must have “drives color” — currently ${drivers.length}.`);
 	const ids = cfg.attributes.map((a) => a.id);
@@ -401,7 +456,7 @@ const lintConfig = (cfg) => {
 		if (a.values.some((v) => !v.source || !v.label)) problems.push(`Attribute “${a.id}”: every value needs a source and a label.`);
 		if (a.groupThreshold > 0 && !a.multipleLabel) problems.push(`Attribute “${a.id}”: a grouped label is required when the group threshold is set.`);
 		if (a.groupThreshold !== 0 && (a.groupThreshold < 2 || a.groupThreshold > 20)) problems.push(`Attribute “${a.id}”: group threshold must be 0 or between 2 and 20.`);
-		if (a.showLabel && !a.bannerLabel) problems.push(`Attribute “${a.id}”: a banner label is required when “show label” is on.`);
+		if (a.showLabel && !a.bannerLabel) problems.push(`Attribute “${a.id}”: a banner label is required when “show label prefix” is on.`);
 	}
 	if (!cfg.banner.delimiter) problems.push('A segment delimiter is required.');
 	return problems;
@@ -416,12 +471,15 @@ const el = (tag, props = {}, ...children) => {
 		if (key.includes('-') || key === 'for' || key === 'style') node.setAttribute(key, value);
 		else node[key] = value;
 	}
-	node.append(...children.filter((child) => child !== null && child !== false));
+	node.append(...children.filter((child) => child !== null && child !== false && child !== undefined));
 	return node;
 };
 
-const field = (labelText, input) => el('label', { className: 'field' }, el('span', {}, labelText), input);
-const check = (labelText, props) => el('label', { className: 'check' }, el('input', { type: 'checkbox', ...props }), labelText);
+const field = (labelText, input, hint) =>
+	el('label', { className: 'field' }, el('span', { className: 'fname' }, labelText), input, hint && el('span', { className: 'fhint' }, hint));
+const check = (labelText, props, hint) =>
+	el('label', { className: 'check' }, el('input', { type: 'checkbox', ...props }),
+		el('span', {}, labelText, hint && el('span', { className: 'fhint' }, hint)));
 
 const renderPreview = () => {
 	const banner = buildClassificationBanner(config, Object.entries(simulation).map(([key, values]) => ({ key, values })));
@@ -446,28 +504,35 @@ const renderPreview = () => {
 
 const renderBannerOptions = () => {
 	const { banner } = config;
-	const select = (value, options, onchange) => {
-		const node = el('select', { onchange: (e) => { onchange(e.target.value); update(); } },
+	const select = (value, options, onchange) =>
+		el('select', { onchange: (e) => { onchange(e.target.value); update(); } },
 			...options.map(([v, text]) => el('option', { value: v, selected: v === value }, text)));
-		return node;
-	};
 	$('#banner-options').replaceChildren(
-		field('Style', select(banner.style, [['classic', 'Classic'], ['segmented', 'Segmented'], ['edge', 'Edge']], (v) => { banner.style = v; })),
-		field('Position', select(banner.position, [['top', 'Top'], ['bottom', 'Bottom'], ['both', 'Both']], (v) => { banner.position = v; })),
-		field('Segment delimiter', el('input', { type: 'text', className: 'mono', maxLength: 8, value: banner.delimiter, oninput: (e) => { banner.delimiter = e.target.value; update(false); } })),
-		field('Color mode', select(banner.colorMode, [['highest', 'Most restrictive value'], ['attribute', 'First selected value']], (v) => { banner.colorMode = v; })),
-		field('Fallback text', el('input', { type: 'text', value: banner.fallbackText, oninput: (e) => { banner.fallbackText = e.target.value; update(false); } })),
+		field('Style', select(banner.style, [['classic', 'Classic'], ['segmented', 'Segmented'], ['edge', 'Edge']], (v) => { banner.style = v; }),
+			'Classic: one centered line. Segmented: vertical rules between segments instead of the delimiter. Edge: classic plus contrasting top/bottom rules.'),
+		field('Position', select(banner.position, [['top', 'Top'], ['bottom', 'Bottom'], ['both', 'Both']], (v) => { banner.position = v; }),
+			'Where the strip renders in the room: above the header, below the message list, or both.'),
+		field('Segment delimiter', el('input', { type: 'text', className: 'mono', maxLength: 8, value: banner.delimiter, oninput: (e) => { banner.delimiter = e.target.value; update(false); } }),
+			'Text placed between segments (max 8 characters). The US-Gov convention is “ // ”.'),
+		field('Color mode', select(banner.colorMode, [['highest', 'Most restrictive value'], ['attribute', 'First matched value']], (v) => { banner.colorMode = v; }),
+			'Which matched value of the color-driving attribute paints the banner. “Most restrictive” = the value furthest down its list, so order values least → most restrictive.'),
+		field('Fallback text', el('input', { type: 'text', value: banner.fallbackText, oninput: (e) => { banner.fallbackText = e.target.value; update(false); } }),
+			'Shown when the room carries no values covered by this configuration.'),
 		field('Fallback color', el('div', { className: 'swatch-cell' },
 			el('input', { type: 'color', value: banner.fallbackColor, oninput: (e) => { banner.fallbackColor = e.target.value; update(false); } }),
-			el('span', { className: 'hex' }, banner.fallbackColor))),
+			el('span', { className: 'hex' }, banner.fallbackColor)),
+			'Background of the fallback banner, and of the banner when the color-driving attribute has no match.'),
 		el('div', {},
-			check('Uppercase', { checked: banner.uppercase, onchange: (e) => { banner.uppercase = e.target.checked; update(); } }),
+			check('Uppercase', { checked: banner.uppercase, onchange: (e) => { banner.uppercase = e.target.checked; update(); } },
+				'Force the whole banner text to uppercase.'),
 		),
 		el('div', {},
-			check('Monospace', { checked: banner.monospace, onchange: (e) => { banner.monospace = e.target.checked; update(); } }),
+			check('Monospace', { checked: banner.monospace, onchange: (e) => { banner.monospace = e.target.checked; update(); } },
+				'Render the banner in a monospaced font.'),
 		),
 		el('div', {},
-			check('Enabled', { checked: config.enabled, onchange: (e) => { config.enabled = e.target.checked; update(); } }),
+			check('Enabled', { checked: config.enabled, onchange: (e) => { config.enabled = e.target.checked; update(); } },
+				'Master switch inside the JSON. Rocket.Chat additionally has its own admin toggle.'),
 		),
 	);
 };
@@ -494,35 +559,43 @@ const renderAttribute = (attribute, index) => {
 
 	return el('div', { className: 'attr' },
 		el('div', { className: 'attr-head' },
-			el('button', { className: 'ghost', title: 'Move up', 'aria-label': 'Move attribute up', disabled: index === 0, onclick: () => move(-1) }, '↑'),
-			el('button', { className: 'ghost', title: 'Move down', 'aria-label': 'Move attribute down', disabled: index === config.attributes.length - 1, onclick: () => move(1) }, '↓'),
+			el('button', { className: 'ghost', title: 'Move up (segments render in list order)', 'aria-label': 'Move attribute up', disabled: index === 0, onclick: () => move(-1) }, '↑'),
+			el('button', { className: 'ghost', title: 'Move down (segments render in list order)', 'aria-label': 'Move attribute down', disabled: index === config.attributes.length - 1, onclick: () => move(1) }, '↓'),
 			el('b', {}, attribute.label || attribute.id || 'Untitled'),
 			el('span', { className: 'src' }, attribute.source || 'no source key'),
 			el('div', { className: 'flags' },
-				attribute.drivesColor ? el('span', { className: 'tag color-driver' }, 'color driver') : el('button', { className: 'ghost', onclick: () => { config.attributes.forEach((a) => { a.drivesColor = false; }); attribute.drivesColor = true; update(); } }, 'Make color driver'),
+				attribute.drivesColor
+					? el('span', { className: 'tag color-driver', title: 'This attribute’s matched value decides the banner background color' }, 'color driver')
+					: el('button', { className: 'ghost', title: 'Make this attribute decide the banner background color (exactly one attribute must)', onclick: () => { config.attributes.forEach((a) => { a.drivesColor = false; }); attribute.drivesColor = true; update(); } }, 'Make color driver'),
 				el('button', { className: 'danger-ghost', onclick: () => { config.attributes.splice(index, 1); update(); } }, 'Remove'),
 			),
 		),
 		el('div', { className: 'attr-fields grid' },
-			field('Id', textInput('id', { className: 'mono' })),
-			field('Source key (IdP)', textInput('source', { className: 'mono' })),
-			field('Label (admin-facing)', textInput('label')),
-			field('Banner label', textInput('bannerLabel')),
-			field('Label separator', selectInput('labelSeparator', [['', 'None'], ['-', 'Dash (-)'], [' ', 'Space']])),
-			field('Value separator', selectInput('valueSeparator', [['/', 'Slash (/)'], [', ', 'Comma (, )'], [' ', 'Space']])),
-			field('Group threshold (0 = never)', el('input', { type: 'number', min: 0, max: 20, value: attribute.groupThreshold ?? 0, oninput: (e) => { attribute.groupThreshold = Number(e.target.value); update(false); } })),
-			field('Grouped label', textInput('multipleLabel')),
+			field('Id', textInput('id', { className: 'mono' }), 'Internal identifier — lowercase letters, digits, dashes. Must be unique across attributes.'),
+			field('Source key', textInput('source', { className: 'mono' }), 'Attribute key exactly as stored on the room (e.g. the Virtru attribute name, or the LDAP-mapped key). Case-sensitive.'),
+			field('Label', textInput('label'), 'Admin-facing name for this attribute. Not shown in the banner.'),
+			field('Banner label', textInput('bannerLabel'), 'Prefix shown before the values when “show label prefix” is on (e.g. SAR, REL TO).'),
+			field('Label separator', selectInput('labelSeparator', [['', 'None'], ['-', 'Dash (-)'], [' ', 'Space']]), 'Between the banner label and the values: SAR-APPLES vs REL TO USA.'),
+			field('Value separator', selectInput('valueSeparator', [['/', 'Slash (/)'], [', ', 'Comma (, )'], [' ', 'Space']]), 'Between multiple values in this segment: AAA/BBB.'),
+			field('Group threshold', el('input', { type: 'number', min: 0, max: 20, value: attribute.groupThreshold ?? 0, oninput: (e) => { attribute.groupThreshold = Number(e.target.value); update(false); } }),
+				'Collapse the value list into the grouped label when the room carries at least this many matching values. 0 = never collapse.'),
+			field('Grouped label', textInput('multipleLabel'), 'Replaces the value list when collapsed (e.g. MULTIPLE PROGRAMS). Required if a threshold is set.'),
 			el('div', {},
-				check('Show in banner', { checked: attribute.showInBanner, onchange: (e) => { attribute.showInBanner = e.target.checked; update(); } }),
+				check('Show in banner', { checked: attribute.showInBanner, onchange: (e) => { attribute.showInBanner = e.target.checked; update(); } },
+					'Render this attribute as a banner segment. Off keeps it in the config without displaying it.'),
 			),
 			el('div', {},
-				check('Show label prefix', { checked: !!attribute.showLabel, onchange: (e) => { attribute.showLabel = e.target.checked; update(); } }),
+				check('Show label prefix', { checked: !!attribute.showLabel, onchange: (e) => { attribute.showLabel = e.target.checked; update(); } },
+					'Prefix the segment with the banner label.'),
 			),
 			el('div', {},
-				check('Sort values A→Z', { checked: !!attribute.sortAlpha, onchange: (e) => { attribute.sortAlpha = e.target.checked; update(); } }),
+				check('Sort values A→Z', { checked: !!attribute.sortAlpha, onchange: (e) => { attribute.sortAlpha = e.target.checked; update(); } },
+					'Sort matched value labels alphabetically instead of list order.'),
 			),
 		),
 		el('div', { className: 'values' },
+			el('div', { className: 'card-hint' },
+				'Value mappings — “source value” is the raw value on the room (case-sensitive), “banner label” is what displays. For the color-driving attribute, order values least → most restrictive: “most restrictive” color mode picks the furthest-down match.'),
 			el('table', {},
 				el('thead', {}, el('tr', {}, el('th', {}, 'Source value'), el('th', {}, 'Banner label'), el('th', {}, 'Color'), el('th', {}))),
 				el('tbody', {}, ...attribute.values.map(valueRow)),
@@ -533,35 +606,81 @@ const renderAttribute = (attribute, index) => {
 };
 
 const renderAttributes = () => {
-	$('#attributes').replaceChildren(...config.attributes.map(renderAttribute));
+	const host = $('#attributes');
+	if (config.attributes.length === 0) {
+		host.replaceChildren(el('div', { id: 'empty-state' },
+			el('p', {}, el('b', {}, 'No attributes yet.')),
+			el('p', {}, 'Add the attributes your ABAC rooms carry, or load the US-Government example to see a complete configuration.'),
+		));
+		return;
+	}
+	host.replaceChildren(...config.attributes.map(renderAttribute));
 };
 
 const renderSimulation = () => {
-	$('#sim').replaceChildren(
-		...config.attributes.map((attribute) => el('div', { className: 'sim-group' },
-			el('b', {}, `${attribute.label || attribute.id} `, el('span', { className: 'src' }, attribute.source)),
-			el('div', { className: 'sim-values' },
-				...attribute.values.map((value) => check(value.label || value.source, {
-					checked: (simulation[attribute.source] ?? []).includes(value.source),
-					onchange: (e) => {
-						const selected = new Set(simulation[attribute.source] ?? []);
-						e.target.checked ? selected.add(value.source) : selected.delete(value.source);
-						simulation[attribute.source] = [...selected];
+	const host = $('#sim');
+	if (config.attributes.length === 0) {
+		host.replaceChildren(el('p', { className: 'hint' }, 'Add an attribute first — its values become pickable here.'));
+		return;
+	}
+	host.replaceChildren(
+		...config.attributes.map((attribute) => {
+			const selected = simulation[attribute.source] ?? [];
+			const available = attribute.values.filter((v) => v.source && !selected.includes(v.source));
+			const chip = (source) => {
+				const value = attribute.values.find((v) => v.source === source);
+				return el('span', { className: 'chip' }, value?.label || source,
+					el('button', { 'aria-label': `Remove ${source}`, title: 'Remove', onclick: () => {
+						simulation[attribute.source] = selected.filter((s) => s !== source);
 						update();
+					} }, '✕'));
+			};
+			return el('div', { className: 'sim-group' },
+				el('b', {}, `${attribute.label || attribute.id} `, el('span', { className: 'src' }, attribute.source)),
+				el('div', { className: 'ms' },
+					...selected.map(chip),
+					available.length > 0 && el('select', {
+						'aria-label': `Add ${attribute.label || attribute.id} value`,
+						onchange: (e) => {
+							if (!e.target.value) return;
+							simulation[attribute.source] = [...selected, e.target.value];
+							update();
+						},
 					},
-				})),
-			),
-		)),
+						el('option', { value: '' }, selected.length ? 'Add value…' : 'Select values…'),
+						...available.map((v) => el('option', { value: v.source }, `${v.label || v.source} (${v.source})`)),
+					),
+				),
+			);
+		}),
 	);
 };
 
 const renderWarnings = () => {
 	const problems = lintConfig(config);
 	const box = $('#warnings');
-	box.className = problems.length ? '' : 'ok';
+	if (config.attributes.length === 0) {
+		box.className = 'info';
+		box.replaceChildren(
+			el('h3', {}, 'Getting started'),
+			el('p', {}, 'This configuration has no attributes yet, so every room would show the fallback banner. Add an attribute below, or load the example.'),
+		);
+		return;
+	}
+	if (problems.length) {
+		box.className = '';
+		box.replaceChildren(
+			el('h3', {}, `Fix before saving (${problems.length})`),
+			el('ul', {}, ...problems.map((p) => el('li', {}, p))),
+		);
+		return;
+	}
+	box.className = 'ok';
 	box.replaceChildren(
-		el('h3', {}, problems.length ? `Fix before saving (${problems.length})` : 'Configuration passes all cross-field rules'),
-		problems.length ? el('ul', {}, ...problems.map((p) => el('li', {}, p))) : null,
+		el('h3', {}, 'Configuration passes all cross-field rules'),
+		el('ul', { className: 'rules' }, ...RULES.map((r) => el('li', {}, r))),
+		el('p', { className: 'rules-note' },
+			'These rules are part of the v1 contract on top of the JSON Schema. Rocket.Chat currently validates JSON syntax on save; rule enforcement ships separately — this builder is the guardrail until then.'),
 	);
 };
 
@@ -582,13 +701,16 @@ const update = (rebuildForms = true) => {
 
 // ---- toolbar ----
 
-$('#btn-copy').addEventListener('click', async () => {
+const copyJson = (button) => async () => {
 	await navigator.clipboard.writeText($('#json-out').value);
-	$('#btn-copy').textContent = 'Copied';
-	setTimeout(() => { $('#btn-copy').textContent = 'Copy JSON'; }, 1200);
-});
+	const original = button.textContent;
+	button.textContent = 'Copied';
+	setTimeout(() => { button.textContent = original; }, 1200);
+};
+$('#btn-copy').addEventListener('click', copyJson($('#btn-copy')));
+$('#btn-copy-json').addEventListener('click', copyJson($('#btn-copy-json')));
 
-$('#btn-reset').addEventListener('click', () => {
+$('#btn-example').addEventListener('click', () => {
 	config = exampleConfig();
 	simulation = { 'clearance.level': ['TS'], 'access.programs': ['SAP-1042', 'SAP-2271', 'SAP-3380'], 'dissem.relto': ['USA'] };
 	update();
