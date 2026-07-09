@@ -1,3 +1,4 @@
+import { FocusScope } from '@react-aria/focus';
 import { render, screen } from '@testing-library/react';
 import type { ComponentProps, ElementType, ReactNode } from 'react';
 import { Children, createElement, forwardRef } from 'react';
@@ -123,7 +124,11 @@ const rooms: ComponentProps<typeof SidePanel>['rooms'] = [
 ];
 
 it('renders side panel rooms through Virtua while preserving the list semantics', () => {
-	render(<SidePanel title='Rooms' currentTab='all' unreadOnly={false} toggleUnreadOnly={jest.fn()} rooms={rooms} />);
+	render(
+		<FocusScope>
+			<SidePanel title='Rooms' currentTab='all' unreadOnly={false} toggleUnreadOnly={jest.fn()} rooms={rooms} />
+		</FocusScope>,
+	);
 
 	const list = screen.getByRole('list', { name: 'Channels' });
 
