@@ -16,11 +16,11 @@ const setupComposer = (initialValue: string, cursor: { start: number; end: numbe
 	return { composer, input };
 };
 
-afterEach(() => {
-	document.body.innerHTML = '';
-});
-
 describe('ChatMessages Composer API - replaceText', () => {
+	afterEach(() => {
+		document.body.innerHTML = '';
+	});
+
 	it('should place the cursor right after the mention when inserting at the start of the message', () => {
 		const { composer, input } = setupComposer('@jhello', { start: 2, end: 2 });
 
