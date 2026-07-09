@@ -1,7 +1,7 @@
 import type { IDirectMessageRoom, IRoom } from '@rocket.chat/core-typings';
 import { check, Match } from 'meteor/check';
 
-import { API } from '../../../../app/api/server';
+import { API } from '../../../../server/api';
 import { isDateISOString, transformDatesForAPI } from '../../lib/engagementDashboard/date';
 import {
 	findWeeklyMessagesSentData,

@@ -1,5 +1,5 @@
 import { Modal, ModalBackdrop, ModalClose, ModalContent, ModalHeader, ModalTitle } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect, useId, useState } from 'react';
 import type { KeyboardEvent, ComponentProps } from 'react';
@@ -32,7 +32,7 @@ const OutboundMessageModal = ({ defaultValues, onClose }: OutboundMessageModalPr
 		});
 	}, [initialRoute, onClose, router]);
 
-	const handleKeyDown = useEffectEvent((e: KeyboardEvent<HTMLDivElement>): void => {
+	const handleKeyDown = useStableCallback((e: KeyboardEvent<HTMLDivElement>): void => {
 		if (e.key !== 'Escape') {
 			return;
 		}

@@ -1,6 +1,5 @@
 import { Box, Divider } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { Fragment, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -83,11 +82,11 @@ const KEY_LABEL_TRANSLATIONS: Record<string, string> = {
 const isMacPlatform = (): boolean =>
 	typeof navigator !== 'undefined' && typeof navigator.platform === 'string' && navigator.platform.toLowerCase().includes('mac');
 
-type KeyboardShortcutsModalProps = {
+export type KeyboardShortcutsModalProps = {
 	onClose: () => void;
 };
 
-const KeyboardShortcutsModal = ({ onClose }: KeyboardShortcutsModalProps): ReactElement => {
+const KeyboardShortcutsModal = ({ onClose }: KeyboardShortcutsModalProps) => {
 	const { t } = useTranslation();
 	const isMac = isMacPlatform();
 

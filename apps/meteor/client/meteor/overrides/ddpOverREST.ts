@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { parseDDP, stringifyDDP } from '../../lib/sdk/ddpProtocol';
+import { clearStoredCredentials } from '../../lib/sdk/ddpSdk';
 import { getUserId } from '../../lib/user';
 
 const bypassMethods: string[] = ['setUserStatus', 'logout'];
@@ -101,6 +102,21 @@ const withDDPOverREST = (_send: (this: Meteor.IMeteorConnection, message: Meteor
 			})
 			.catch((error: unknown) => {
 				const e = (error ?? {}) as { error?: unknown; reason?: unknown; message?: unknown };
+
+				// Check if it's a session expiration error and clear credentials.
+				const isExpiredSessionError =
+					(typeof e.error === 'string' && e.error === 'You must be logged in to do this.') ||
+					(typeof e.message === 'string' && e.message === 'You must be logged in to do this.') ||
+					(typeof e.reason === 'string' && e.reason === 'You must be logged in to do this.');
+
+				if (isExpiredSessionError) {
+					console.warn('[ddpOverREST] Expired session detected, clearing credentials', { method: message.method, error });
+					try {
+						clearStoredCredentials();
+					} catch (cleanupError) {
+						console.warn('[ddpOverREST] Failed to clean up expired session', cleanupError);
+					}
+				}
 
 				// method.call / method.callAnon encode the original Meteor error
 				// inside `body.message` as a DDP `result` frame (mountResult in

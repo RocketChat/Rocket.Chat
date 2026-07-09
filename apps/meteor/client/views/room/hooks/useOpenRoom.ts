@@ -31,7 +31,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 		if (!user?._id || !reference || !type) {
 			return undefined;
 		}
-		const sub = Subscriptions.state.find((record) => record.rid === reference || record.name === reference);
+		const sub = Subscriptions.state.find((record) => record.t === type && (record.rid === reference || record.name === reference));
 		if (!sub) {
 			return undefined;
 		}
@@ -78,6 +78,18 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 			try {
 				roomData = await getRoomByTypeAndName(type, reference);
 			} catch (error) {
+				const errorCode = error && typeof error === 'object' && 'error' in error ? error.error : undefined;
+
+				// "No permission" means the room exists but the user can't see it — surface the
+				// not-found/no-access screen rather than retrying it as a transient failure.
+				if (errorCode === 'error-no-permission') {
+					throw new RoomNotFoundError(undefined, { type, reference });
+				}
+
+				if (errorCode !== 'error-invalid-room') {
+					throw error;
+				}
+
 				if (type !== 'd') {
 					throw new RoomNotFoundError(undefined, { type, reference });
 				}
@@ -109,7 +121,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 				throw new TypeError('room is undefined');
 			}
 
-			const sub = Subscriptions.state.find((record) => record.rid === reference || record.name === reference);
+			const sub = Subscriptions.state.find((record) => record.t === type && (record.rid === reference || record.name === reference));
 
 			if (reference !== undefined && room._id !== reference && type === 'd') {
 				// Redirect old url using username to rid
@@ -137,7 +149,16 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 			return { rid: room._id };
 		},
-		retry: 0,
+		retry: (failureCount, error) => {
+			const unrecoverableErrors = [RoomNotFoundError, OldUrlRoomError, NotAuthorizedError, NotSubscribedToRoomError];
+
+			if (unrecoverableErrors.some((e) => error instanceof e)) {
+				return false;
+			}
+
+			return failureCount < 4;
+		},
+		retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 5000),
 	});
 
 	const queryClient = useQueryClient();

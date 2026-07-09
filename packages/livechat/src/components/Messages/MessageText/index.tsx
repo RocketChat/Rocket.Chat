@@ -7,7 +7,7 @@ import isBigEmoji from '../../../lib/emoji/isBigEmoji';
 import shortnameToUnicode from '../../../lib/emoji/shortnameToUnicode';
 import MarkdownBlock from '../../MarkdownBlock';
 
-type MessageTextProps = {
+export type MessageTextProps = {
 	text: string;
 	system?: boolean;
 	className?: string;

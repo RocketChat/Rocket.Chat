@@ -15,7 +15,7 @@ import {
 	VideoConfMessageActions,
 	VideoConfMessageAction,
 } from '@rocket.chat/ui-video-conf';
-import type { MouseEventHandler, ReactElement } from 'react';
+import type { MouseEventHandler } from 'react';
 import { useContext, memo, useMemo } from 'react';
 
 import { UiKitContext } from '../..';
@@ -23,11 +23,11 @@ import { useVideoConfDataStream } from './hooks/useVideoConfDataStream';
 import { useSurfaceType } from '../../hooks/useSurfaceType';
 import type { BlockProps } from '../../utils/BlockProps';
 
-type VideoConferenceBlockProps = BlockProps<UiKit.VideoConferenceBlock>;
+export type VideoConferenceBlockProps = BlockProps<UiKit.VideoConferenceBlock>;
 
 const MAX_USERS = 3;
 
-const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps): ReactElement => {
+const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 	const t = useTranslation();
 	const { callId, appId = 'videoconf-core' } = block;
 	const surfaceType = useSurfaceType();

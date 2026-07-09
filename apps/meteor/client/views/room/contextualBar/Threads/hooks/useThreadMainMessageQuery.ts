@@ -76,7 +76,7 @@ export const useThreadMainMessageQuery = (
 	const subscribeToMessage = useSubscribeToMessage();
 
 	const queryClient = useQueryClient();
-	const unsubscribeRef = useRef<(() => void) | undefined>();
+	const unsubscribeRef = useRef<(() => void) | undefined>(undefined);
 
 	useEffect(() => {
 		return () => {

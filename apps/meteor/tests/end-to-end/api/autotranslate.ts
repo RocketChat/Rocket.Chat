@@ -669,6 +669,96 @@ describe('AutoTranslate', () => {
 				expect(subscription).to.have.property('autoTranslateLanguage', 'es');
 				channelsToRemove.push(newChannel);
 			});
+
+			it('should enable autotranslate on existing subscriptions when user changes from workspace language to a different one', async () => {
+				await setLanguagePref('pt-BR', credA);
+				const newChannel = await createChannel(undefined, credA);
+				channelsToRemove.push(newChannel);
+
+				const subBefore = await getSub(newChannel._id, credA);
+				expect(subBefore).to.not.have.property('autoTranslate');
+				expect(subBefore).to.not.have.property('autoTranslateLanguage');
+
+				await setLanguagePref('en', credA);
+
+				const subAfter = await getSub(newChannel._id, credA);
+				expect(subAfter).to.have.property('autoTranslate', true);
+				expect(subAfter).to.have.property('autoTranslateLanguage', 'en');
+			});
+
+			it("should enable autotranslate on existing subscriptions when user changes from 'default' language to a non-workspace language", async () => {
+				await setLanguagePref('default', credA);
+				const newChannel = await createChannel(undefined, credA);
+				channelsToRemove.push(newChannel);
+
+				const subBefore = await getSub(newChannel._id, credA);
+				expect(subBefore).to.not.have.property('autoTranslate');
+				expect(subBefore).to.not.have.property('autoTranslateLanguage');
+
+				await setLanguagePref('en', credA);
+
+				const subAfter = await getSub(newChannel._id, credA);
+				expect(subAfter).to.have.property('autoTranslate', true);
+				expect(subAfter).to.have.property('autoTranslateLanguage', 'en');
+			});
+
+			it('should disable autotranslate on existing subscriptions when user changes language to default', async () => {
+				await setLanguagePref('en', credA);
+				const newChannel = await createChannel(undefined, credA);
+				channelsToRemove.push(newChannel);
+
+				const subBefore = await getSub(newChannel._id, credA);
+				expect(subBefore).to.have.property('autoTranslate', true);
+
+				await setLanguagePref('default', credA);
+
+				const subAfter = await getSub(newChannel._id, credA);
+				expect(subAfter).to.not.have.property('autoTranslate');
+				expect(subAfter).to.not.have.property('autoTranslateLanguage');
+			});
+
+			it('should disable autotranslate on existing subscriptions when user changes language to the workspace default', async () => {
+				await setLanguagePref('en', credA);
+				const newChannel = await createChannel(undefined, credA);
+				channelsToRemove.push(newChannel);
+
+				const subBefore = await getSub(newChannel._id, credA);
+				expect(subBefore).to.have.property('autoTranslate', true);
+
+				await setLanguagePref('pt-BR', credA);
+
+				const subAfter = await getSub(newChannel._id, credA);
+				expect(subAfter).to.not.have.property('autoTranslate');
+				expect(subAfter).to.not.have.property('autoTranslateLanguage');
+			});
+
+			it('should not re-enable autotranslate for rooms where the user has explicitly opted out', async () => {
+				await updatePermission('auto-translate', ['admin', 'user']);
+
+				await setLanguagePref('en', credA);
+				const newChannel = await createChannel(undefined, credA);
+				channelsToRemove.push(newChannel);
+
+				const subEnabled = await getSub(newChannel._id, credA);
+				expect(subEnabled).to.have.property('autoTranslate', true);
+
+				await request
+					.post(api('autotranslate.saveSettings'))
+					.set(credA)
+					.send({ roomId: newChannel._id, field: 'autoTranslate', value: false, defaultLanguage: 'en' })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				const subOptedOut = await getSub(newChannel._id, credA);
+				expect(subOptedOut).to.have.property('autoTranslate', false);
+
+				await setLanguagePref('es', credA);
+
+				const subAfterLangChange = await getSub(newChannel._id, credA);
+				expect(subAfterLangChange).to.have.property('autoTranslate', false);
+			});
 		});
 	});
 });

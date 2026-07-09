@@ -42,7 +42,7 @@ const defaultValues = {
 	confirmationPassphrase: '',
 };
 
-export const ChangePassphrase = (): JSX.Element => {
+export const ChangePassphrase = () => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 

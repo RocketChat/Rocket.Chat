@@ -6,12 +6,12 @@ function getAbsolutePath(value: any): string {
 	return dirname(require.resolve(join(value, 'package.json')));
 }
 
-const baseConfig = (customConfig?: StorybookConfig): StorybookConfig => {
+const baseConfig = (customConfig?: Partial<StorybookConfig>): StorybookConfig => {
 	return {
 		stories: ['../src/**/*.stories.@(js|jsx|ts|tsx)'],
 		addons: [
 			getAbsolutePath('@storybook/addon-a11y'),
-			getAbsolutePath('@storybook/addon-essentials'),
+			getAbsolutePath('@storybook/addon-docs'),
 			getAbsolutePath('storybook-dark-mode'),
 			getAbsolutePath('@storybook/addon-webpack5-compiler-swc'),
 			getAbsolutePath('@storybook/addon-styling-webpack'),

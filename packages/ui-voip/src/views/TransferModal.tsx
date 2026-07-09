@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { PeerAutocomplete, PeerInfo } from '../components';
 import { usePeerAutocomplete, type PeerInfo as PeerInfoType } from '../context';
 
-type TransferModalProps = {
+export type TransferModalProps = {
 	onCancel(): void;
 	onConfirm(kind: 'user' | 'sip', peer: { displayName: string; id: string }): void;
 };

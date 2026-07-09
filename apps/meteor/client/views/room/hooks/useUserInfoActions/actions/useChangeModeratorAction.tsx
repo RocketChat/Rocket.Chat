@@ -1,6 +1,6 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { GenericModal } from '@rocket.chat/ui-client';
 import {
@@ -14,7 +14,6 @@ import {
 	useToastMessageDispatch,
 } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useCallback, useMemo } from 'react';
 
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
@@ -28,7 +27,7 @@ const getWarningModalForFederatedRooms = (
 	title: string,
 	confirmText: string,
 	bodyText: string,
-): ReactElement => (
+) => (
 	<GenericModal
 		variant='warning'
 		onClose={closeModalFn}
@@ -141,7 +140,7 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 		[setModal, loggedUserId, loggedUserIsModerator, loggedUserIsOwner, t, rid, uid, toggleModerator, room],
 	);
 
-	const changeModeratorAction = useEffectEvent(() => handleChangeModerator({ userId: uid }));
+	const changeModeratorAction = useStableCallback(() => handleChangeModerator({ userId: uid }));
 
 	const roomIsFederated = isRoomFederated(room);
 

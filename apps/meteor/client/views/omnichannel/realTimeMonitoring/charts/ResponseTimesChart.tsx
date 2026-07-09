@@ -41,7 +41,7 @@ const init = (canvas: HTMLCanvasElement, context: chartjs.Chart<'line'> | undefi
 		{ legends: true, anim: true, smallTicks: true, displayColors: false, tooltipCallbacks },
 	);
 
-type ResponseTimesChartProps = {
+export type ResponseTimesChartProps = {
 	departmentId: ILivechatDepartment['_id'];
 	dateRange: { start: string; end: string };
 } & Omit<ComponentPropsWithoutRef<typeof Box>, 'data'>;

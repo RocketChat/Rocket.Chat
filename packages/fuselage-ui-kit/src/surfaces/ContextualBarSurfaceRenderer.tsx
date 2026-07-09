@@ -1,5 +1,5 @@
 import * as UiKit from '@rocket.chat/ui-kit';
-import type { ReactElement } from 'react';
+import type { ReactNode } from 'react';
 
 import { FuselageSurfaceRenderer, renderTextObject } from './FuselageSurfaceRenderer';
 import TabNavigationBlock from '../blocks/TabNavigationBlock';
@@ -14,7 +14,7 @@ export class ContextualBarSurfaceRenderer extends FuselageSurfaceRenderer {
 
 	override mrkdwn = renderTextObject;
 
-	tab_navigation(block: UiKit.ExperimentalTabNavigationBlock, context: UiKit.BlockContext, index: number): ReactElement | null {
+	tab_navigation(block: UiKit.ExperimentalTabNavigationBlock, context: UiKit.BlockContext, index: number): ReactNode {
 		if (context === UiKit.BlockContext.BLOCK) {
 			return (
 				<AppIdProvider key={index} appId={block.appId}>

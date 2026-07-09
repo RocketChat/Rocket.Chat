@@ -21,7 +21,7 @@ import { useTimeFromNow } from '../../../../../hooks/useTimeFromNow';
 import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
 import AdvancedContactModal from '../../AdvancedContactModal';
 
-type ContactInfoHistoryItemProps = Serialized<ContactSearchChatsResult> & {
+export type ContactInfoHistoryItemProps = Serialized<ContactSearchChatsResult> & {
 	onClick: () => void;
 };
 

@@ -49,7 +49,7 @@ test.describe('Admin > Users', () => {
 
 		await test.step('should move from Pending to Active tab', async () => {
 			await admin.getTabByName('Pending').click();
-			await admin.dispatchUserAction(user.data.username, 'Activate');
+			await admin.activatePendingUser(user.data.username);
 			await expect(admin.getUserRowByUsername(user.data.username)).not.toBeVisible();
 			await admin.getTabByName('Active').click();
 			await expect(admin.getUserRowByUsername(user.data.username)).toBeVisible();

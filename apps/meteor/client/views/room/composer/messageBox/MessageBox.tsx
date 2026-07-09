@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 import { isRoomFederated, isRoomNativeFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
-import { useContentBoxSize, useEffectEvent, useMediaQuery, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
+import { useContentBoxSize, useStableCallback, useMediaQuery, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
@@ -13,7 +13,7 @@ import {
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
+import type { MouseEvent, ClipboardEvent, ChangeEvent } from 'react';
 import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'react';
 
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
@@ -22,6 +22,7 @@ import MessageBoxHint from './MessageBoxHint';
 import MessageBoxReplies from './MessageBoxReplies';
 import MessageComposerFiles from './MessageComposerFiles';
 import { handleSelectionWrapping } from './wrapSelection';
+import { emoji } from '../../../../../app/emoji/client';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -49,7 +50,7 @@ import { useDraft } from './hooks/useDraft';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 
-const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
+const reducer = (_: unknown, event: ChangeEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
 
 	return Boolean(target.value.trim());
@@ -80,7 +81,7 @@ const getEmptyFalse = () => false;
 const a: any[] = [];
 const getEmptyArray = () => a;
 
-type MessageBoxProps = {
+export type MessageBoxProps = {
 	tmid?: IMessage['_id'];
 	onSend?: (params: { value: string; tshow?: boolean; previewUrls?: string[]; isSlashCommandAllowed?: boolean }) => Promise<void>;
 	onJoin?: () => Promise<void>;
@@ -106,7 +107,7 @@ const MessageBox = ({
 	onTyping,
 	tshow,
 	previewUrls,
-}: MessageBoxProps): ReactElement => {
+}: MessageBoxProps) => {
 	const chat = useChat();
 	const room = useRoom();
 	const t = useTranslation();
@@ -125,7 +126,7 @@ const MessageBox = ({
 		throw new Error('Chat context not found');
 	}
 
-	const textareaRef = useRef(null);
+	const textareaRef = useRef<HTMLTextAreaElement>(null);
 	const messageComposerRef = useRef<HTMLElement>(null);
 
 	const subscription = useRoomSubscription();
@@ -153,7 +154,7 @@ const MessageBox = ({
 
 	const useEmojis = useUserPreference<boolean>('useEmojis');
 
-	const handleOpenEmojiPicker = useEffectEvent((e: MouseEvent<HTMLElement>) => {
+	const handleOpenEmojiPicker = useStableCallback((e: MouseEvent<HTMLElement>) => {
 		e.stopPropagation();
 		e.preventDefault();
 
@@ -162,12 +163,16 @@ const MessageBox = ({
 		}
 
 		const ref = messageComposerRef.current as HTMLElement;
-		chat.emojiPicker.open(ref, (emoji: string) => chat.composer?.insertText(` :${emoji}: `));
+		chat.emojiPicker.open(ref, (emojiName: string) => {
+			const emojiEntry = emoji.list[`:${emojiName}:`];
+			const text = emojiEntry && 'unicode' in emojiEntry && emojiEntry.unicode ? ` ${emojiEntry.unicode} ` : ` :${emojiName}: `;
+			chat.composer?.insertText(text);
+		});
 	});
 
 	const { hasUploads, handleUploadFiles, isUploading, isProcessingUploads } = useFileUpload();
 
-	const handleSendMessage = useEffectEvent(() => {
+	const handleSendMessage = useStableCallback(() => {
 		if (isUploading || isProcessingUploads) {
 			return;
 		}
@@ -203,7 +208,7 @@ const MessageBox = ({
 		}
 	};
 
-	const keyboardEventHandler = useEffectEvent((event: KeyboardEvent) => {
+	const keyboardEventHandler = useStableCallback((event: KeyboardEvent) => {
 		const { which: keyCode } = event;
 
 		const input = event.target as HTMLTextAreaElement;
@@ -329,7 +334,7 @@ const MessageBox = ({
 		mutationFn: async () => onJoin?.(),
 	});
 
-	const handlePaste = useEffectEvent((event: ClipboardEvent<HTMLTextAreaElement>) => {
+	const handlePaste = useStableCallback((event: ClipboardEvent<HTMLTextAreaElement>) => {
 		const { clipboardData } = event;
 
 		if (!clipboardData) {

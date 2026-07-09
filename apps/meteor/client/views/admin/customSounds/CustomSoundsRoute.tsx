@@ -1,10 +1,9 @@
 import { usePermission } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 
 import CustomSoundsPage from './CustomSoundsPage';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
-const CustomSoundsRoute = (): ReactElement => {
+const CustomSoundsRoute = () => {
 	const canManageCustomSounds = usePermission('manage-sounds');
 
 	if (!canManageCustomSounds) {

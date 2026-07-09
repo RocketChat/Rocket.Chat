@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import ChannelDeletionTable from './ChannelDeletionTable';
 
-type DeleteTeamChannelsProps = {
+export type DeleteTeamChannelsProps = {
 	rooms: Serialized<IRoom>[];
 	onCancel: () => void;
 	selectedRooms: { [key: string]: Serialized<IRoom> };

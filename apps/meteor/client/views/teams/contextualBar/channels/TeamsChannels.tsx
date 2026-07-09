@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button } from '@rocket.chat/fuselage';
-import { useEffectEvent, useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback, useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
 	ContextualbarHeader,
@@ -22,7 +22,7 @@ import { Virtuoso } from 'react-virtuoso';
 import TeamsChannelItem from './TeamsChannelItem';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 
-type TeamsChannelsProps = {
+export type TeamsChannelsProps = {
 	loading: boolean;
 	channels: IRoom[];
 	mainRoom: IRoom;
@@ -66,7 +66,7 @@ const TeamsChannels = ({
 		[t],
 	);
 
-	const lm = useEffectEvent(() => !loading && loadMoreItems());
+	const lm = useStableCallback(() => !loading && loadMoreItems());
 
 	const loadMoreChannels = useDebouncedCallback(
 		() => {
@@ -88,7 +88,13 @@ const TeamsChannels = ({
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
 			<ContextualbarSection>
-				<TextInput placeholder={t('Search')} value={text} ref={inputRef} onChange={setText} addon={<Icon name='magnifier' size='x20' />} />
+				<TextInput
+					placeholder={t('Search')}
+					value={text}
+					ref={inputRef}
+					onChange={setText}
+					endAddon={<Icon name='magnifier' size='x20' />}
+				/>
 				<Box w='x144' mis={8}>
 					<Select onChange={(val) => setType(val as 'all' | 'autoJoin')} value={type} options={options} />
 				</Box>

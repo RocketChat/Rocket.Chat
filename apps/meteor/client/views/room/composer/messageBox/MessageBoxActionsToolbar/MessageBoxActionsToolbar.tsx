@@ -20,7 +20,7 @@ import { useMessageboxAppsActionButtons } from '../../../../../hooks/useMessageb
 import { useChat } from '../../../contexts/ChatContext';
 import { useRoom } from '../../../contexts/RoomContext';
 
-type MessageBoxActionsToolbarProps = {
+export type MessageBoxActionsToolbarProps = {
 	canSend: boolean;
 	isMicrophoneDenied: boolean;
 	variant: 'small' | 'large';

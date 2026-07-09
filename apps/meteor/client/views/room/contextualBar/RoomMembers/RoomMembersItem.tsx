@@ -12,7 +12,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import type { ReactElement, MouseEvent } from 'react';
+import type { MouseEvent } from 'react';
 import { useState } from 'react';
 
 import UserActions from './RoomMembersActions';
@@ -20,9 +20,10 @@ import { getUserDisplayNames } from '../../../../../lib/getUserDisplayNames';
 import InvitationBadge from '../../../../components/InvitationBadge';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
+import { useUserStatusTooltip } from '../../../../hooks/useUserStatusTooltip';
 import type { RoomMember } from '../../../hooks/useMembersList';
 
-type RoomMembersItemProps = Pick<RoomMember, 'federated' | 'username' | 'name' | '_id' | 'freeSwitchExtension' | 'subscription'> & {
+export type RoomMembersItemProps = Pick<RoomMember, 'federated' | 'username' | 'name' | '_id' | 'freeSwitchExtension' | 'subscription'> & {
 	rid: IRoom['_id'];
 	useRealName: boolean;
 	reload: () => void;
@@ -40,18 +41,28 @@ const RoomMembersItem = ({
 	subscription,
 	reload,
 	useRealName,
-}: RoomMembersItemProps): ReactElement => {
-	const [showButton, setShowButton] = useState();
+}: RoomMembersItemProps) => {
+	const [showButton, setShowButton] = useState(false);
 	const isReduceMotionEnabled = usePrefersReducedMotion();
 	const isInvited = subscription?.status === 'INVITED';
 	const invitationDate = isInvited ? subscription?.ts : undefined;
-	const handleMenuEvent = {
-		[isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: setShowButton,
-	};
-
 	const preventPropagation = usePreventPropagation();
-
 	const [nameOrUsername, displayUsername] = getUserDisplayNames(name, username, useRealName);
+
+	const statusTooltipHandlers = useUserStatusTooltip(_id);
+
+	const handleMenuEvent = isReduceMotionEnabled
+		? {
+				...statusTooltipHandlers,
+				onMouseEnter: (e: MouseEvent<HTMLElement>) => {
+					setShowButton(true);
+					statusTooltipHandlers.onMouseEnter(e);
+				},
+			}
+		: {
+				...statusTooltipHandlers,
+				onTransitionEnd: () => setShowButton(true),
+			};
 
 	return (
 		<Option

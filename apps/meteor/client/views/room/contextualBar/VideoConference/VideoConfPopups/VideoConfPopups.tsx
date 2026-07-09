@@ -8,14 +8,15 @@ import {
 	useVideoConfIncomingCalls,
 	VideoConfPopupSkeleton,
 } from '@rocket.chat/ui-video-conf';
-import type { ReactElement } from 'react';
 import { lazy, Suspense, useEffect, useMemo } from 'react';
 
 import VideoConfPopupPortal from '../../../../../portals/VideoConfPopupPortal';
 
 const VideoConfPopup = lazy(() => import('./VideoConfPopup'));
 
-const VideoConfPopups = ({ children }: { children?: VideoConfPopupPayload }): ReactElement => {
+export type VideoConfPopupsProps = { children?: VideoConfPopupPayload };
+
+const VideoConfPopups = ({ children }: VideoConfPopupsProps) => {
 	const { callSounds } = useCustomSound();
 	const incomingCalls = useVideoConfIncomingCalls();
 	const isRinging = useVideoConfIsRinging();

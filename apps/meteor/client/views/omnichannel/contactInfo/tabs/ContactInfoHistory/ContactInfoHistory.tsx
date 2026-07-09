@@ -15,7 +15,7 @@ import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
 import AdvancedContactModal from '../../AdvancedContactModal';
 
-type ContactInfoHistoryProps = {
+export type ContactInfoHistoryProps = {
 	contact: Serialized<ILivechatContact>;
 	setChatId: (chatId: string) => void;
 };

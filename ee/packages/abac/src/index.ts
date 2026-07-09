@@ -12,6 +12,7 @@ import type {
 	AbacAuditReason,
 	AbacAttributeStoreType,
 	AbacPdpType,
+	AbacUserIdentifiers,
 } from '@rocket.chat/core-typings';
 import { Rooms, AbacAttributes, Users, Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -954,6 +955,30 @@ export class AbacService extends ServiceClass implements IAbacService {
 			await Promise.all(nonCompliant.map(({ user, room }) => limit(() => this.removeUserFromRoom(room, user as IUser, 'virtru-pdp-sync'))));
 		} catch (err) {
 			logger.error({ msg: 'Failed to evaluate room membership', err });
+		}
+	}
+
+	async reevaluateUsers(identifiers: AbacUserIdentifiers): Promise<void> {
+		if (!this.pdp || !(await this.pdp.isAvailable())) {
+			return;
+		}
+
+		const users = await Users.findUsersByIdentifiers(identifiers, {
+			projection: { _id: 1, emails: 1, username: 1, __rooms: 1 },
+		}).toArray();
+
+		if (!users.length) {
+			return;
+		}
+
+		try {
+			const nonCompliant = await this.pdp.reevaluateUsers(users);
+			if (Array.isArray(nonCompliant) && nonCompliant.length) {
+				await Promise.all(nonCompliant.map(({ user, room }) => limit(() => this.removeUserFromRoom(room, user as IUser, 'api'))));
+			}
+		} catch (err) {
+			logger.error({ msg: 'Failed to reevaluate users', err });
+			throw err;
 		}
 	}
 }

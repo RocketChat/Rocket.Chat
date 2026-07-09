@@ -7,7 +7,7 @@ import Info from '../../components/Info';
 import Label from '../../components/Label';
 import { usePriorityInfo } from '../hooks/usePriorityInfo';
 
-type PriorityFieldProps = {
+export type PriorityFieldProps = {
 	id: string;
 };
 

@@ -1,5 +1,4 @@
 import { usePermission, useSetModal, useCurrentModal, useRouter, useRouteParameter, useSettingStructure } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { memo, useEffect, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -15,7 +14,7 @@ import SettingsProvider from '../../../providers/SettingsProvider';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import EditableSettingsProvider from '../settings/EditableSettingsProvider';
 
-const AdminABACRoute = (): ReactElement => {
+const AdminABACRoute = () => {
 	const { t } = useTranslation();
 	const canViewABACPage = usePermission('abac-management');
 	const { data: hasABAC = false } = useHasLicenseModule('abac');

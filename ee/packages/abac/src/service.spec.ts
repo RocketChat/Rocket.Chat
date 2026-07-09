@@ -59,6 +59,8 @@ const mockCreateAuditServerEvent = jest.fn();
 const mockRoomsFindAllPrivateAbac = jest.fn();
 const mockUsersFindActiveByRoomIds = jest.fn();
 const mockRoomRemoveUserFromRoom = jest.fn();
+const mockUsersFindUsersByIdentifiers = jest.fn();
+const mockLdapSyncByIds = jest.fn();
 
 jest.mock('@rocket.chat/models', () => ({
 	Rooms: {
@@ -90,6 +92,7 @@ jest.mock('@rocket.chat/models', () => ({
 	Users: {
 		find: (...args: any[]) => mockUsersFind(...args),
 		findActiveByRoomIds: (...args: any[]) => mockUsersFindActiveByRoomIds(...args),
+		findUsersByIdentifiers: (...args: any[]) => mockUsersFindUsersByIdentifiers(...args),
 		setAbacAttributesById: (...args: any[]) => mockUsersSetAbacAttributesById(...args),
 		unsetAbacAttributesById: (...args: any[]) => mockUsersUnsetAbacAttributesById(...args),
 		findOneAndUpdate: (...args: any[]) => mockUsersUpdateOne(...args),
@@ -115,6 +118,9 @@ jest.mock('@rocket.chat/core-services', () => {
 		},
 		Room: {
 			removeUserFromRoom: (...args: any[]) => mockRoomRemoveUserFromRoom(...args),
+		},
+		LDAPEnterprise: {
+			syncUsersAbacAttributesByIds: (...args: any[]) => mockLdapSyncByIds(...args),
 		},
 		api: {
 			broadcast: jest.fn(),
@@ -1981,6 +1987,48 @@ describe('AbacService (unit)', () => {
 			await expect(fireSettingChanged(svc, 'ABAC_PDP_Type', 'local')).resolves.toBeUndefined();
 
 			expect(pdpStrategySpy).toHaveBeenCalledWith('local');
+		});
+	});
+
+	describe('reevaluateUsers', () => {
+		const usersCursor = (items: any[]) => ({ toArray: () => Promise.resolve(items) });
+
+		it('local PDP: forwards resolved user ids to the LDAP broker and removes nothing', async () => {
+			service.setPdpStrategy('local');
+			mockUsersFindUsersByIdentifiers.mockReturnValue(usersCursor([{ _id: 'u1' }, { _id: 'u2' }]));
+
+			await service.reevaluateUsers({ usernames: ['bob'] });
+
+			expect(mockUsersFindUsersByIdentifiers).toHaveBeenCalledWith(
+				{ usernames: ['bob'] },
+				{ projection: { _id: 1, emails: 1, username: 1, __rooms: 1 } },
+			);
+			expect(mockLdapSyncByIds).toHaveBeenCalledWith(['u1', 'u2']);
+			expect(mockRoomRemoveUserFromRoom).not.toHaveBeenCalled();
+		});
+
+		it('virtru PDP: removes the non-compliant pairs the PDP returns', async () => {
+			service.setPdpStrategy('virtru');
+			const u1 = { _id: 'u1', emails: [{ address: 'u1@x.com' }], username: 'u1' };
+			const room = { _id: 'r1', abacAttributes: [] };
+			mockUsersFindUsersByIdentifiers.mockReturnValue(usersCursor([u1]));
+			mockRoomRemoveUserFromRoom.mockResolvedValue(undefined);
+			jest.spyOn((service as any).pdp, 'isAvailable').mockResolvedValue(true);
+			jest.spyOn((service as any).pdp, 'reevaluateUsers').mockResolvedValue([{ user: u1, room }]);
+
+			await service.reevaluateUsers({ ids: ['u1'] });
+
+			expect(mockRoomRemoveUserFromRoom).toHaveBeenCalledTimes(1);
+		});
+
+		it('no-ops when no users match', async () => {
+			service.setPdpStrategy('local');
+			mockUsersFindUsersByIdentifiers.mockReturnValue(usersCursor([]));
+
+			await service.reevaluateUsers({ ids: ['missing'] });
+
+			expect(mockLdapSyncByIds).not.toHaveBeenCalled();
+			expect(mockRoomRemoveUserFromRoom).not.toHaveBeenCalled();
 		});
 	});
 });

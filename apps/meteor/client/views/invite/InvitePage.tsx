@@ -1,6 +1,5 @@
 import { HeroLayout, HeroLayoutTitle } from '@rocket.chat/layout';
 import { useRouteParameter, useUserId } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -10,7 +9,7 @@ import { useInviteTokenMutation } from './hooks/useInviteTokenMutation';
 import { useSamlInviteToken } from './hooks/useSamlInviteToken';
 import { useValidateInviteQuery } from './hooks/useValidateInviteQuery';
 
-const InvitePage = (): ReactElement => {
+const InvitePage = () => {
 	const { t } = useTranslation();
 
 	const token = useRouteParameter('hash');

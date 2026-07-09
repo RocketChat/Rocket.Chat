@@ -7,12 +7,12 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../app/authorization/server';
-import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { hasRoleAsync } from '../../app/authorization/server/functions/hasRole';
 import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { notifyOnRoomChanged, notifyOnSubscriptionChanged } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
+import { hasPermissionAsync } from '../lib/authorization/hasPermission';
+import { hasRoleAsync } from '../lib/authorization/hasRole';
 import { callbacks } from '../lib/callbacks';
 import { afterRemoveFromRoomCallback } from '../lib/callbacks/afterRemoveFromRoomCallback';
 import { removeUserFromRolesAsync } from '../lib/roles/removeUserFromRoles';

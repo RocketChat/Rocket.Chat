@@ -1,15 +1,14 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { VerticalWizardLayout, VerticalWizardLayoutFooter, VerticalWizardLayoutForm, VerticalWizardLayoutTitle } from '@rocket.chat/layout';
 import { useSetting, useTranslation, useAssetWithDarkModePath } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 
 import { LoginPoweredBy } from './components/LoginPoweredBy';
 
-type CMSPageProps = {
+export type CMSPageProps = {
 	page: 'Layout_Terms_of_Service' | 'Layout_Privacy_Policy' | 'Layout_Legal_Notice';
 };
 
-const CMSPage = ({ page }: CMSPageProps): ReactElement => {
+const CMSPage = ({ page }: CMSPageProps) => {
 	const t = useTranslation();
 	const pageContent = useSetting(page, '');
 

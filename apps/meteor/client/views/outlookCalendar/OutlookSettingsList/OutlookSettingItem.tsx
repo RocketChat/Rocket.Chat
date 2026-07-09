@@ -2,7 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, Palette } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-type OutlookSettingItemProps = {
+export type OutlookSettingItemProps = {
 	id: string;
 	title: string;
 	subTitle: string;

@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ComponentProps } from 'react';
 
-type UserColumnProps = {
+export type UserColumnProps = {
 	name?: string;
 	username?: string;
 	isDesktopOrLarger?: boolean;

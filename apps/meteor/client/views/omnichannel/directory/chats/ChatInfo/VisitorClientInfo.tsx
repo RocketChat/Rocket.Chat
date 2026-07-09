@@ -9,7 +9,7 @@ import Info from '../../../components/Info';
 import Label from '../../../components/Label';
 import { FormSkeleton } from '../../components/FormSkeleton';
 
-type VisitorClientInfoProps = {
+export type VisitorClientInfoProps = {
 	uid: string;
 };
 

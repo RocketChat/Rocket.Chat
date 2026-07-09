@@ -2,8 +2,8 @@ import type { IOmnichannelRoom, IOmnichannelServiceLevelAgreements, IUser } from
 import { OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../server/lib/callbacks';
-import { removePriorityFromRoom, updateRoomPriority } from '../api/lib/priorities';
-import { removeRoomSLA, updateRoomSLA } from '../api/lib/sla';
+import { removePriorityFromRoom, updateRoomPriority } from '../../../../server/api/v1/omnichannel/lib/priorities';
+import { removeRoomSLA, updateRoomSLA } from '../../../../server/api/v1/omnichannel/lib/sla';
 
 const updateSLA = async (room: IOmnichannelRoom, user: Required<Pick<IUser, '_id' | 'username' | 'name'>>, slaId?: string) => {
 	if (!slaId) {

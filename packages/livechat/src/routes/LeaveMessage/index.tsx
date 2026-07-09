@@ -21,7 +21,7 @@ import { parentCall } from '../../lib/parentCall';
 import { createToken } from '../../lib/random';
 import { StoreContext } from '../../store';
 
-type LeaveMessageProps = {
+export type LeaveMessageProps = {
 	path: string;
 };
 

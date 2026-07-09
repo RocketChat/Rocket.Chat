@@ -1,5 +1,5 @@
 import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, Box, Button } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
 	GenericTableHeader,
@@ -42,7 +42,7 @@ function ContactTable() {
 		500,
 	);
 
-	const onButtonNewClick = useEffectEvent(() =>
+	const onButtonNewClick = useStableCallback(() =>
 		omnichannelDirectoryRouter.navigate({
 			tab: 'contacts',
 			context: 'new',

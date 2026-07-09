@@ -6,7 +6,7 @@ import InvitationBadge from '../../components/InvitationBadge';
 import OmnichannelBadges from '../../views/omnichannel/components/OmnichannelBadges';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
-type SidebarItemBadgesProps = {
+export type SidebarItemBadgesProps = {
 	room: SubscriptionWithRoom;
 	roomTitle?: string;
 };

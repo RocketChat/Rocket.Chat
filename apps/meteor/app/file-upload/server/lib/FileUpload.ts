@@ -25,14 +25,15 @@ import sharp from 'sharp';
 import type { WritableStreamBuffer } from 'stream-buffers';
 import streamBuffers from 'stream-buffers';
 
+import { isRenderableImageType } from '../../../../lib/renderableImageTypes';
+import { MultipartUploadHandler } from '../../../../server/api/lib/MultipartUploadHandler';
+import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../../server/lib/authorization/canAccessRoom';
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { UploadFS } from '../../../../server/ufs';
 import { ufsComplete } from '../../../../server/ufs/ufs-methods';
 import type { Store, StoreOptions } from '../../../../server/ufs/ufs-store';
-import { MultipartUploadHandler } from '../../../api/server/lib/MultipartUploadHandler';
-import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { settings } from '../../../settings/server';
 import { mime } from '../../../utils/lib/mimeTypes';
 import { validateAndDecodeJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
@@ -98,7 +99,9 @@ const defaults: Record<string, () => Partial<StoreOptions>> = {
 			},
 			onValidate: FileUpload.uploadsOnValidate,
 			async onRead(_fileId: string, file: IUpload, req: http.IncomingMessage, res: http.ServerResponse) {
-				if (!(await FileUpload.requestCanAccessFiles(req))) {
+				// UserDataFiles are GDPR data exports — only the owner of the export may download it.
+				const uid = await FileUpload.getRequestUserId(req);
+				if (!uid || uid !== file.userId) {
 					res.writeHead(403);
 					return false;
 				}
@@ -211,8 +214,8 @@ export const FileUpload = {
 		const user = file.uid ? await Users.findOne(file.uid, { projection: { language: 1 } }) : null;
 		const language = user?.language || 'en';
 
-		// accept only images
-		if (!/^image\//.test(file.type || '')) {
+		// accept only images the browser can display as an avatar
+		if (!isRenderableImageType(file.type)) {
 			const reason = i18n.t('File_type_is_not_accepted', { lng: language });
 			throw new Meteor.Error('error-invalid-file-type', reason);
 		}
@@ -448,6 +451,31 @@ export const FileUpload = {
 		await Avatars.updateFileNameById(file._id, user.username);
 	},
 
+	async getRequestUserId({ headers = {}, url }: http.IncomingMessage): Promise<string | undefined> {
+		if (!url) {
+			return undefined;
+		}
+
+		const { query } = URL.parse(url, true);
+		// eslint-disable-next-line @typescript-eslint/naming-convention
+		let { rc_uid, rc_token } = query as Record<string, string | undefined>;
+
+		if (!rc_uid && headers.cookie) {
+			rc_uid = cookie.get('rc_uid', headers.cookie);
+			rc_token = cookie.get('rc_token', headers.cookie);
+		}
+
+		const uid = rc_uid || (headers['x-user-id'] as string);
+		const authToken = rc_token || (headers['x-auth-token'] as string);
+
+		if (!uid || !authToken) {
+			return undefined;
+		}
+
+		const user = await Users.findOneByIdAndLoginToken(uid, hashLoginToken(authToken), { projection: { _id: 1 } });
+		return user?._id;
+	},
+
 	async requestCanAccessFiles({ headers = {}, url }: http.IncomingMessage, file?: IUpload) {
 		if (!url || !settings.get('FileUpload_ProtectFiles')) {
 			return true;
@@ -469,7 +497,7 @@ export const FileUpload = {
 			rc_room_type &&
 			roomCoordinator
 				.getRoomDirectives(rc_room_type)
-				.canAccessUploadedFile({ rc_uid: rc_uid || '', rc_rid: rc_rid || '', rc_token: rc_token || '' });
+				.canAccessUploadedFile({ rc_uid: rc_uid || '', rc_rid: rc_rid || '', rc_token: rc_token || '' }, file);
 
 		const isAuthorizedByJWT: () => boolean = () => {
 			if (!token || typeof token !== 'string' || !settings.get('FileUpload_Enable_json_web_token_for_files')) {

@@ -1,6 +1,5 @@
 import { Box, Card, CardBody, CardControls, CardTitle, FramedIcon } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { PRICING_LINK } from '../../utils/links';
@@ -13,7 +12,7 @@ type FeatureSet = {
 	infoText?: string;
 };
 
-type FeaturesCardProps = {
+export type FeaturesCardProps = {
 	activeModules: string[];
 	isEnterprise: boolean;
 };
@@ -59,12 +58,12 @@ const getFeatureSet = (modules: string[], isEnterprise: boolean): FeatureSet[] =
 	return featureSet.sort(({ success: a }, { success: b }) => (a === b ? 0 : a ? -1 : 1));
 };
 
-const FeaturesCard = ({ activeModules, isEnterprise }: FeaturesCardProps): ReactElement => {
+const FeaturesCard = ({ activeModules, isEnterprise }: FeaturesCardProps) => {
 	const { t } = useTranslation();
 	const isSmall = useMediaQuery('(min-width: 1180px)');
 
 	return (
-		<Card>
+		<Card height='full'>
 			<CardTitle>{!isEnterprise ? t('Unlock_premium_capabilities') : t('Includes')}</CardTitle>
 			<CardBody>
 				<Box display='flex' flexWrap='wrap' justifyContent='space-between' flexDirection={isSmall ? 'row' : 'column'}>

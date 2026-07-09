@@ -38,7 +38,6 @@ import {
 	LivechatVisitorsRaw,
 	LoginServiceConfigurationRaw,
 	MediaCallsRaw,
-	MediaCallChannelsRaw,
 	MediaCallNegotiationsRaw,
 	MessageReadsRaw,
 	MessagesRaw,
@@ -50,6 +49,7 @@ import {
 	OAuthAccessTokensRaw,
 	OAuthAppsRaw,
 	OAuthAuthCodesRaw,
+	LoginCodesRaw,
 	OAuthRefreshTokensRaw,
 	OEmbedCacheRaw,
 	PermissionsRaw,
@@ -75,6 +75,8 @@ import {
 	WebdavAccountsRaw,
 	WorkspaceCredentialsRaw,
 	AbacAttributesRaw,
+	TwoFactorChallengesRaw,
+	SamlUsedAssertionsRaw,
 } from '@rocket.chat/models';
 import type { Collection } from 'mongodb';
 
@@ -125,7 +127,6 @@ registerModel('ILivechatTriggerModel', new LivechatTriggerRaw(db));
 registerModel('ILivechatVisitorsModel', new LivechatVisitorsRaw(db));
 registerModel('ILoginServiceConfigurationModel', new LoginServiceConfigurationRaw(db));
 registerModel('IMediaCallsModel', new MediaCallsRaw(db));
-registerModel('IMediaCallChannelsModel', new MediaCallChannelsRaw(db));
 registerModel('IMediaCallNegotiationsModel', new MediaCallNegotiationsRaw(db));
 registerModel('IMessageReadsModel', new MessageReadsRaw(db));
 registerModel('IMessagesModel', new MessagesRaw(db, trashCollection));
@@ -137,6 +138,7 @@ registerModel('INpsVoteModel', new NpsVoteRaw(db));
 registerModel('IOAuthAccessTokensModel', new OAuthAccessTokensRaw(db));
 registerModel('IOAuthAppsModel', new OAuthAppsRaw(db));
 registerModel('IOAuthAuthCodesModel', new OAuthAuthCodesRaw(db));
+registerModel('ILoginCodesModel', new LoginCodesRaw(db));
 registerModel('IOAuthRefreshTokensModel', new OAuthRefreshTokensRaw(db));
 registerModel('IOEmbedCacheModel', new OEmbedCacheRaw(db));
 registerModel('IPermissionsModel', new PermissionsRaw(db, trashCollection));
@@ -161,3 +163,5 @@ registerModel('IVideoConferenceModel', new VideoConferenceRaw(db));
 registerModel('IWebdavAccountsModel', new WebdavAccountsRaw(db));
 registerModel('IWorkspaceCredentialsModel', new WorkspaceCredentialsRaw(db));
 registerModel('IAbacAttributesModel', new AbacAttributesRaw(db));
+registerModel('ITwoFactorChallengesModel', new TwoFactorChallengesRaw(db));
+registerModel('ISamlUsedAssertionsModel', new SamlUsedAssertionsRaw(db));

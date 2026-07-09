@@ -1,8 +1,8 @@
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 import type { JSXInternal } from 'preact/src/jsx';
 import { Controller, useForm } from 'react-hook-form';
+import { action } from 'storybook/actions';
 
 import { Form, PasswordInput, SelectInput, TextInput, FormField } from '..';
 import { Button } from '../../Button';

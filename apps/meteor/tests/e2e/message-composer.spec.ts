@@ -57,6 +57,8 @@ test.describe.serial('message-composer', () => {
 		await page.keyboard.press('Control+A'); // on Windows and Linux
 		await page.keyboard.press('Meta+A'); // on macOS
 		await poHomeChannel.composer.btnLinkFormatter.click();
+		// It takes a while for the modal to be visible and ready to receive input, so we need to wait for it before typing the url
+		await poHomeChannel.composer.addLinkModal.waitFor();
 		await page.keyboard.type(url);
 		await page.keyboard.press('Enter');
 
@@ -81,7 +83,7 @@ test.describe.serial('message-composer', () => {
 
 			await page.keyboard.press('Enter');
 
-			await expect(poHomeChannel.composer.inputMessage).toHaveValue('hello composer :flag_br: ');
+			await expect(poHomeChannel.composer.inputMessage).toHaveValue('hello composer 🇧🇷 ');
 
 			await poHomeChannel.composer.inputMessage.fill('');
 		});

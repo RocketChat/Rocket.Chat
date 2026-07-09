@@ -15,9 +15,9 @@ import { Meteor } from 'meteor/meteor';
 
 import { isImagePreviewSupported } from './isImagePreviewSupported';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
+import { canAccessRoomAsync } from '../../../../server/lib/authorization/canAccessRoom';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { FileUpload } from '../lib/FileUpload';
@@ -73,7 +73,7 @@ export const parseFileIntoMessageAttachments = async (
 		const attachment: FileAttachmentProps = {
 			title: file.name,
 			type: 'file',
-			description: file?.description,
+			image_alt: file?.description,
 			title_link: fileUrl,
 			title_link_download: true,
 			image_url: fileUrl,

@@ -7,7 +7,6 @@ import { onClientMessageReceived } from '../../../../client/lib/onClientMessageR
 import { getUserId } from '../../../../client/lib/user';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
-import { waitForElement } from '../../../../client/lib/utils/waitForElement';
 import { Messages, Subscriptions } from '../../../../client/stores';
 import { getUserPreference } from '../../../utils/client';
 
@@ -175,12 +174,13 @@ class RoomHistoryManagerClass extends Emitter {
 				room.oldestTs = messages[messages.length - 1].ts;
 			}
 
-			const wrapper = await waitForElement('.messages-box .wrapper [data-overlayscrollbars-viewport]');
-
-			room.scroll = {
-				scrollHeight: wrapper.scrollHeight,
-				scrollTop: wrapper.scrollTop,
-			};
+			const wrapper = document.querySelector<HTMLElement>('.messages-box .wrapper [data-overlayscrollbars-viewport]');
+			if (wrapper) {
+				room.scroll = {
+					scrollHeight: wrapper.scrollHeight,
+					scrollTop: wrapper.scrollTop,
+				};
+			}
 
 			await upsertMessageBulk({
 				msgs: messages.filter((msg) => msg.t !== 'command'),
@@ -193,7 +193,7 @@ class RoomHistoryManagerClass extends Emitter {
 				room.loaded = 0;
 			}
 
-			const visibleMessages = messages.filter((msg) => !msg.tmid || showThreadsInMainChannel || msg.tshow);
+			const visibleMessages = messages.filter((msg) => msg.t !== 'command' && (!msg.tmid || showThreadsInMainChannel || msg.tshow));
 
 			room.loaded += visibleMessages.length;
 
@@ -201,7 +201,7 @@ class RoomHistoryManagerClass extends Emitter {
 				this.updateRoom(rid, { hasMore: false });
 			}
 
-			if (room.hasMore && (visibleMessages.length === 0 || room.loaded < limit)) {
+			if (room.hasMore && visibleMessages.length === 0) {
 				return this.getMore(rid);
 			}
 

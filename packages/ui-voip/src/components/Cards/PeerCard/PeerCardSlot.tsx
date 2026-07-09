@@ -2,7 +2,7 @@ import { Icon } from '@rocket.chat/fuselage';
 
 import CardSlot from '../CardSlot';
 
-type PeerCardSlotProps = {
+export type PeerCardSlotProps = {
 	muted: boolean;
 	held: boolean;
 	displayName: string;
