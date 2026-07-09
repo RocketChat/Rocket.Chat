@@ -275,7 +275,6 @@
 	<button id="btn-theme" aria-label="Toggle dark mode"></button>
 	<button id="btn-import">Import JSON</button>
 	<button id="btn-example">Load example</button>
-	<button class="primary" id="btn-copy">Copy JSON</button>
 	<p>
 		Compose the <code style="font-family: var(--mono)">ABAC_Classification_Banners_Config</code> document for Rocket.Chat.
 		Add the attributes your rooms carry (e.g. from Virtru or LDAP), map each raw value to a display label and color, and
@@ -462,8 +461,38 @@ const exampleConfig = () => ({
 	],
 });
 
-let config = emptyConfig();
-let simulation = {};
+const CONFIG_KEY = 'cb-config';
+const SIMULATION_KEY = 'cb-simulation';
+
+const loadStoredConfig = () => {
+	try {
+		const stored = JSON.parse(localStorage.getItem(CONFIG_KEY));
+		if (stored?.version === 1 && Array.isArray(stored.attributes) && typeof stored.banner?.delimiter === 'string') {
+			return stored;
+		}
+	} catch { /* corrupt or unavailable storage — start fresh */ }
+	return null;
+};
+
+const loadStoredSimulation = () => {
+	try {
+		const stored = JSON.parse(localStorage.getItem(SIMULATION_KEY));
+		if (stored && typeof stored === 'object' && !Array.isArray(stored)) {
+			return stored;
+		}
+	} catch { /* corrupt or unavailable storage — start fresh */ }
+	return {};
+};
+
+const persist = () => {
+	try {
+		localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+		localStorage.setItem(SIMULATION_KEY, JSON.stringify(simulation));
+	} catch { /* storage unavailable (e.g. file://) — work is session-only */ }
+};
+
+let config = loadStoredConfig() ?? emptyConfig();
+let simulation = loadStoredSimulation();
 
 // ---- cross-field rules (documented in the v1 schema; enforced here as warnings) ----
 
@@ -737,6 +766,7 @@ const renderJson = () => {
 };
 
 const update = (rebuildForms = true) => {
+	persist();
 	renderPreview();
 	renderWarnings();
 	renderJson();
@@ -749,14 +779,12 @@ const update = (rebuildForms = true) => {
 
 // ---- toolbar ----
 
-const copyJson = (button) => async () => {
+$('#btn-copy-json').addEventListener('click', async () => {
 	await navigator.clipboard.writeText($('#json-out').value);
-	const original = button.textContent;
+	const button = $('#btn-copy-json');
 	button.textContent = 'Copied';
-	setTimeout(() => { button.textContent = original; }, 1200);
-};
-$('#btn-copy').addEventListener('click', copyJson($('#btn-copy')));
-$('#btn-copy-json').addEventListener('click', copyJson($('#btn-copy-json')));
+	setTimeout(() => { button.textContent = 'Copy JSON'; }, 1200);
+});
 
 const themeButton = $('#btn-theme');
 const renderThemeButton = () => {
