@@ -1,18 +1,10 @@
 import { Box, Button, ButtonGroup, Callout, Tag } from '@rocket.chat/fuselage';
-import {
-	ContextualbarFooter,
-	ContextualbarScrollableContent,
-	GenericTable,
-	GenericTableBody,
-	GenericTableCell,
-	GenericTableHeader,
-	GenericTableHeaderCell,
-	GenericTableRow,
-} from '@rocket.chat/ui-client';
+import { ContextualbarFooter, ContextualbarScrollableContent } from '@rocket.chat/ui-client';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
+import BackgroundJobHistoryCard from './BackgroundJobHistoryCard';
 import type { BackgroundJobsTab } from './BackgroundJobsPage';
 import { statusVariant } from './helpers';
 import { FormSkeleton } from '../../../components/Skeleton';
@@ -48,7 +40,7 @@ const BackgroundJobInfoContextualBar = ({ jobName, tab, onClose }: BackgroundJob
 		isError,
 	} = useQuery({
 		queryKey: ['cron-history', jobName],
-		queryFn: () => getHistory({ jobName, count: 20, offset: 0 }),
+		queryFn: () => getHistory({ jobName, count: 25, offset: 0 }),
 		meta: {
 			apiErrorToastMessage: true,
 		},
@@ -136,26 +128,11 @@ const BackgroundJobInfoContextualBar = ({ jobName, tab, onClose }: BackgroundJob
 				)}
 
 				{history.length > 0 && (
-					<GenericTable>
-						<GenericTableHeader>
-							<GenericTableHeaderCell>{t('Started')}</GenericTableHeaderCell>
-							<GenericTableHeaderCell>{t('Finished')}</GenericTableHeaderCell>
-							<GenericTableHeaderCell w='x100'>{t('Result')}</GenericTableHeaderCell>
-						</GenericTableHeader>
-						<GenericTableBody>
-							{history.map((entry) => (
-								<GenericTableRow key={entry._id}>
-									<GenericTableCell>{entry.startedAt ? formatDateAndTime(entry.startedAt) : ''}</GenericTableCell>
-									<GenericTableCell>{entry.finishedAt ? formatDateAndTime(entry.finishedAt) : ''}</GenericTableCell>
-									<GenericTableCell>
-										<Box display='flex'>
-											<Tag variant={statusVariant(entry.error ? 'failed' : 'completed')}>{entry.error ? t('Failed') : t('Completed')}</Tag>
-										</Box>
-									</GenericTableCell>
-								</GenericTableRow>
-							))}
-						</GenericTableBody>
-					</GenericTable>
+					<Box display='flex' flexDirection='column' pbs='x8' gap='x16'>
+						{history.map((entry) => (
+							<BackgroundJobHistoryCard key={entry._id} entry={entry} formatDateAndTime={formatDateAndTime} />
+						))}
+					</Box>
 				)}
 			</ContextualbarScrollableContent>
 			{tab === 'system' && (
