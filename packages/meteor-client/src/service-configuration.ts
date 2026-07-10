@@ -1,5 +1,5 @@
 import { Accounts } from './accounts-base.ts';
-import { Collection } from './mongo.ts';
+import { DdpCollectionStore } from './ddp-collection-store.ts';
 
 export class ConfigError extends Error {
 	constructor(serviceName?: string) {
@@ -16,10 +16,19 @@ export class ConfigError extends Error {
 	}
 }
 
-export const configurations = new Collection('meteor_accounts_loginServiceConfiguration', {
-	_preventAutopublish: true,
-	connection: Accounts.connection,
-});
+type LoginServiceConfiguration = {
+	_id: string;
+	service?: string;
+	[key: string]: unknown;
+};
+
+const store = new DdpCollectionStore<LoginServiceConfiguration>('meteor_accounts_loginServiceConfiguration', Accounts.connection);
+
+export const configurations = {
+	findOne(selector: { service?: string } = {}): LoginServiceConfiguration | undefined {
+		return store.findOne((doc) => selector.service === undefined || doc.service === selector.service);
+	},
+};
 
 export const ServiceConfiguration = {
 	configurations,
