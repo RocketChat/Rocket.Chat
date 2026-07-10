@@ -11,6 +11,7 @@ const execAsync = promisify(exec);
 type MeteorRuntimeConfig = {
     meteorEnv: { NODE_ENV: 'production' | 'development'; TEST_METADATA: string };
     ROOT_URL: string;
+    UPSTREAM_ROOT_URL: string;
     ROOT_URL_PATH_PREFIX: string;
     debug: boolean;
     reactFastRefreshEnabled: boolean;
@@ -43,6 +44,10 @@ export function globals(resolvedConfig: ResolvedPluginOptions): Plugin {
                         TEST_METADATA: '{}',
                     },
                     ROOT_URL: resolvedConfig.rootUrl.toString(),
+                    // The actual server behind the local proxy; ROOT_URL gets rewritten to
+                    // window.location.origin below, so this is the only place the client can
+                    // learn which workspace it is talking to (e.g. to key per-server caches)
+                    UPSTREAM_ROOT_URL: resolvedConfig.rootUrl.toString(),
                     ROOT_URL_PATH_PREFIX: '',
                     meteorRelease,
                     gitCommitHash,
