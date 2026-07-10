@@ -43,15 +43,9 @@ const validConfig: ClassificationBannersConfig & { $schema: string } = {
 	],
 };
 
-// Not structuredClone: under jest it clones into the host realm, and ajv's fast-deep-equal
-// rejects cross-realm objects by constructor, silently disabling the uniqueItems assertions.
-const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value));
-
-const mutate = (change: (config: typeof validConfig) => void): unknown => {
-	const config = clone(validConfig);
-	change(config);
-	return config;
-};
+const { banner } = validConfig;
+const [attribute] = validConfig.attributes;
+const [value] = attribute.values;
 
 describe('classification banners JSON schema (v1 enforcement contract)', () => {
 	it('accepts a complete document typed as ClassificationBannersConfig', () => {
@@ -59,26 +53,26 @@ describe('classification banners JSON schema (v1 enforcement contract)', () => {
 	});
 
 	it.each([
-		['wrong version', mutate((c) => Object.assign(c, { version: 2 }))],
-		['missing banner option (colorMode)', mutate((c) => delete (c.banner as Partial<typeof c.banner>).colorMode)],
-		['empty delimiter', mutate((c) => Object.assign(c.banner, { delimiter: '' }))],
-		['oversized delimiter', mutate((c) => Object.assign(c.banner, { delimiter: 'x'.repeat(9) }))],
-		['empty fallbackText', mutate((c) => Object.assign(c.banner, { fallbackText: '' }))],
-		['malformed fallbackColor', mutate((c) => Object.assign(c.banner, { fallbackColor: 'red' }))],
-		['unknown banner option', mutate((c) => Object.assign(c.banner, { position: 'top' }))],
-		['unknown top-level property', mutate((c) => Object.assign(c, { source: 'idp' }))],
-		['empty attributes', mutate((c) => Object.assign(c, { attributes: [] }))],
-		['identical duplicate attributes', mutate((c) => c.attributes.push(clone(c.attributes[0])))],
-		['missing attribute field (drivesColor)', mutate((c) => delete (c.attributes[0] as Partial<(typeof c.attributes)[0]>).drivesColor)],
-		['uppercase attribute id', mutate((c) => Object.assign(c.attributes[0], { id: 'Classification' }))],
-		['invalid labelSeparator', mutate((c) => Object.assign(c.attributes[0], { labelSeparator: '::' }))],
-		['invalid valueSeparator', mutate((c) => Object.assign(c.attributes[0], { valueSeparator: '|' }))],
-		['groupThreshold of 1', mutate((c) => Object.assign(c.attributes[0], { groupThreshold: 1 }))],
-		['groupThreshold above 20', mutate((c) => Object.assign(c.attributes[0], { groupThreshold: 21 }))],
-		['empty values', mutate((c) => Object.assign(c.attributes[0], { values: [] }))],
-		['identical duplicate values', mutate((c) => c.attributes[0].values.push(clone(c.attributes[0].values[0])))],
-		['value with 3-digit color', mutate((c) => Object.assign(c.attributes[0].values[0], { color: '#fff' }))],
-		['value missing label', mutate((c) => delete (c.attributes[0].values[0] as Partial<(typeof c.attributes)[0]['values'][0]>).label)],
+		['wrong version', { ...validConfig, version: 2 }],
+		['missing banner option (colorMode)', { ...validConfig, banner: { ...banner, colorMode: undefined } }],
+		['empty delimiter', { ...validConfig, banner: { ...banner, delimiter: '' } }],
+		['oversized delimiter', { ...validConfig, banner: { ...banner, delimiter: 'x'.repeat(9) } }],
+		['empty fallbackText', { ...validConfig, banner: { ...banner, fallbackText: '' } }],
+		['malformed fallbackColor', { ...validConfig, banner: { ...banner, fallbackColor: 'red' } }],
+		['unknown banner option', { ...validConfig, banner: { ...banner, position: 'top' } }],
+		['unknown top-level property', { ...validConfig, source: 'idp' }],
+		['empty attributes', { ...validConfig, attributes: [] }],
+		['identical duplicate attributes', { ...validConfig, attributes: [attribute, attribute] }],
+		['missing attribute field (drivesColor)', { ...validConfig, attributes: [{ ...attribute, drivesColor: undefined }] }],
+		['uppercase attribute id', { ...validConfig, attributes: [{ ...attribute, id: 'Classification' }] }],
+		['invalid labelSeparator', { ...validConfig, attributes: [{ ...attribute, labelSeparator: '::' }] }],
+		['invalid valueSeparator', { ...validConfig, attributes: [{ ...attribute, valueSeparator: '|' }] }],
+		['groupThreshold of 1', { ...validConfig, attributes: [{ ...attribute, groupThreshold: 1 }] }],
+		['groupThreshold above 20', { ...validConfig, attributes: [{ ...attribute, groupThreshold: 21 }] }],
+		['empty values', { ...validConfig, attributes: [{ ...attribute, values: [] }] }],
+		['identical duplicate values', { ...validConfig, attributes: [{ ...attribute, values: [value, value] }] }],
+		['value with 3-digit color', { ...validConfig, attributes: [{ ...attribute, values: [{ ...value, color: '#fff' }] }] }],
+		['value missing label', { ...validConfig, attributes: [{ ...attribute, values: [{ ...value, label: undefined }] }] }],
 	])('rejects %s', (_name, config) => {
 		expect(validate(config)).toBe(false);
 	});
