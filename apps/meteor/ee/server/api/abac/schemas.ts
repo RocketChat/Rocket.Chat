@@ -1,4 +1,3 @@
-import type { ClassificationBannerPayload as ClassificationBannerPayloadType } from '@rocket.chat/abac';
 import type {
 	IAbacAttribute,
 	IAbacAttributeDefinition,
@@ -148,47 +147,6 @@ const GetAbacAttributeIsInUseResponse = {
 };
 
 export const GETAbacAttributeIsInUseResponseSchema = ajv.compile<{ inUse: boolean }>(GetAbacAttributeIsInUseResponse);
-
-const ClassificationBannerPayload = {
-	type: 'object',
-	properties: {
-		text: { type: 'string' },
-		segments: {
-			type: 'array',
-			items: {
-				type: 'object',
-				properties: {
-					attrId: { type: 'string' },
-					text: { type: 'string' },
-				},
-				required: ['attrId', 'text'],
-				additionalProperties: false,
-			},
-		},
-		backgroundColor: { type: 'string' },
-		color: { type: 'string' },
-		style: { type: 'string', enum: ['classic', 'segmented', 'edge'] },
-		uppercase: { type: 'boolean' },
-		monospace: { type: 'boolean' },
-		fallback: { type: 'boolean' },
-	},
-	required: ['text', 'segments', 'backgroundColor', 'color', 'style', 'uppercase', 'monospace', 'fallback'],
-	additionalProperties: false,
-};
-
-const GetAbacClassificationBannerResponse = {
-	type: 'object',
-	properties: {
-		success: { type: 'boolean', enum: [true] },
-		banner: { anyOf: [{ type: 'null' }, ClassificationBannerPayload] },
-	},
-	required: ['banner'],
-	additionalProperties: false,
-};
-
-export const GETAbacClassificationBannerResponseSchema = ajv.compile<{ banner: ClassificationBannerPayloadType | null }>(
-	GetAbacClassificationBannerResponse,
-);
 
 const GetAbacAuditEventsQuerySchemaObject = {
 	type: 'object',

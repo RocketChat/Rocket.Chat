@@ -1,13 +1,13 @@
 import type { ClassificationBannerPayload } from '@rocket.chat/abac';
+import { buildClassificationBanner, parseClassificationBannersConfig } from '@rocket.chat/abac/dist/classification-banners/engine';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isABACManagedRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import { useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import type { CSSProperties } from 'react';
+import { useMemo } from 'react';
 
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
-import { ABACQueryKeys } from '../../../lib/queryKeys';
 
 type ClassificationBannerProps = {
 	room: IRoom;
@@ -40,17 +40,18 @@ const getBannerStyle = (banner: ClassificationBannerPayload): CSSProperties => {
 const ClassificationBanner = ({ room }: ClassificationBannerProps) => {
 	const { data: hasABAC = false } = useHasLicenseModule('abac');
 	const bannersEnabled = useSetting('ABAC_Classification_Banners_Enabled', false);
+	const rawConfig = useSetting('ABAC_Classification_Banners_Config', '');
 	const enabled = hasABAC && bannersEnabled && isABACManagedRoom(room);
 
-	const getClassificationBanner = useEndpoint('GET', '/v1/abac/rooms/:rid/classification-banner', { rid: room._id });
-	const { data } = useQuery({
-		queryKey: ABACQueryKeys.rooms.classificationBanner(room._id, room.abacAttributes),
-		queryFn: () => getClassificationBanner(),
-		enabled,
-	});
+	const banner = useMemo(() => {
+		if (!enabled) {
+			return null;
+		}
+		const config = parseClassificationBannersConfig(rawConfig);
+		return config?.enabled ? buildClassificationBanner(config, room.abacAttributes ?? []) : null;
+	}, [enabled, rawConfig, room.abacAttributes]);
 
-	const banner = data?.banner;
-	if (!enabled || !banner) {
+	if (!banner) {
 		return null;
 	}
 

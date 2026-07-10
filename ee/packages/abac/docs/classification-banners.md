@@ -2,7 +2,7 @@
 
 Renders a US-Government-style classification banner above the room header in ABAC-managed rooms, driven by a JSON configuration stored in the `ABAC_Classification_Banners_Config` admin setting (Admin → ABAC → Settings), toggled by `ABAC_Classification_Banners_Enabled`.
 
-The banner is computed **server-side** (`GET /v1/abac/rooms/:rid/classification-banner`) from the room's `abacAttributes` and the configuration; the configuration itself is never sent to non-admin clients.
+The configuration is a **public setting**: it syncs to every logged-in client, and the banner is computed client-side from the room's `abacAttributes` and the configuration. Config or room-attribute changes propagate to open clients live, with no reload. Note the visibility tradeoff: any logged-in user can read the full configuration (all source keys and value→label/color mappings), so don't encode anything in it that members shouldn't see.
 
 ## Configuration schema
 
@@ -18,7 +18,7 @@ A builder page that generates valid configurations with a live preview is availa
 - **Fallback**: when no attribute produces a segment, the banner renders `banner.fallbackText` on `banner.fallbackColor` (defaults: `NO CLASSIFICATION DATA` / `#6C727A`).
 - **Styles** (`banner.style`): `classic` — single centered line; `segmented` — segments separated by vertical rules instead of the delimiter; `edge` — classic with contrasting top/bottom edge rules.
 - The banner always renders above the room header.
-- Config changes require no server restart; open clients pick up changes when the room is reloaded.
+- Config changes require no server restart and propagate to open clients live via settings sync.
 
 ### Cross-field rules
 

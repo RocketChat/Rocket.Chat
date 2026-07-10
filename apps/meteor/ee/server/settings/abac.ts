@@ -62,7 +62,7 @@ export function addSettings(): Promise<void> {
 					type: 'code',
 					code: 'application/json',
 					multiline: true,
-					public: false,
+					public: true,
 					invalidValue: '',
 					section: 'ABAC_Classification_Banners',
 					enableQuery: [abacEnabledQuery, { _id: 'ABAC_Classification_Banners_Enabled', value: true }],
