@@ -84,6 +84,7 @@ jobs:
     permissions:
       actions: read
       contents: read
+      pull-requests: write
 
     env:
       # if building for production on develop branch or release, add suffix for coverage images
