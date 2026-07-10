@@ -812,4 +812,70 @@ describe('miscellaneous', () => {
 				.end(done);
 		});
 	});
+
+	describe('[/search.answer]', () => {
+		it('should fail when not authenticated', (done) => {
+			void request
+				.post(api('search.answer'))
+				.send({ query: 'fruit colors', messages: [{ _id: 'some-message-id' }] })
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.end(done);
+		});
+
+		it('should reject answer generation when AI Search is not enabled', (done) => {
+			void request
+				.post(api('search.answer'))
+				.set(credentials)
+				.send({ query: 'fruit colors', messages: [{ _id: 'some-message-id' }] })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-ai-not-enabled');
+				})
+				.end(done);
+		});
+	});
+
+	describe('[/ai.llm.models]', () => {
+		let user: TestUser<IUser>;
+		let userCredentials: Credentials;
+
+		before(async () => {
+			user = await createUser();
+			userCredentials = await doLogin(user.username, password);
+		});
+
+		after(() => deleteUser(user));
+
+		it('should fail when not authenticated', (done) => {
+			void request.get(api('ai.llm.models')).expect('Content-Type', 'application/json').expect(401).end(done);
+		});
+
+		it('should fail for users without the view-privileged-setting permission', (done) => {
+			void request
+				.get(api('ai.llm.models'))
+				.set(userCredentials)
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				})
+				.end(done);
+		});
+
+		it('should return the model options for authorized users', (done) => {
+			void request
+				.get(api('ai.llm.models'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('data').and.to.be.an('array');
+				})
+				.end(done);
+		});
+	});
 });

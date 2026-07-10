@@ -152,7 +152,7 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			hasIntelligentSearchLicense,
 			intelligentSearchEnabled: intelligentSearchEnabled === true,
 			intelligentSearchConfigured: Boolean(pipelineConfig),
-			answerGenerationConfigured: answerGenerationEnabled === true && Boolean(answerProviderConfig),
+			answerGenerationConfigured: answerGenerationEnabled === true && Boolean(answerProviderConfig) && Boolean(pipelineConfig),
 		};
 	}
 
@@ -223,13 +223,14 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 
 		return candidates
 			.flatMap((result) => {
+				// candidates without a visible database message could surface stale pipeline text
 				const dbMessage = result.msgId ? messageMap.get(result.msgId) : undefined;
-				if (result.msgId && !dbMessage) {
+				if (!dbMessage) {
 					logger.debug({ msg: 'AI search result filtered: message not visible', msgId: result.msgId });
 					return [];
 				}
 
-				const rid = dbMessage?.rid || result.rid;
+				const { rid } = dbMessage;
 				if (!rid || !subscribedRoomIds.has(rid)) {
 					return [];
 				}
@@ -239,11 +240,11 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 						_id: result.msgId || result._id,
 						rid,
 						msgId: result.msgId,
-						text: dbMessage?.msg || result.pipelineText || '',
-						ts: dbMessage?.ts?.toISOString(),
-						u: dbMessage?.u ? { username: dbMessage.u.username, name: dbMessage.u.name } : undefined,
+						text: dbMessage.msg || '',
+						ts: dbMessage.ts?.toISOString(),
+						u: dbMessage.u ? { username: dbMessage.u.username, name: dbMessage.u.name } : undefined,
 						...(Number.isFinite(result.score) && { score: result.score }),
-						...(rid && rooms.has(rid) && { room: rooms.get(rid) }),
+						...(rooms.has(rid) && { room: rooms.get(rid) }),
 					},
 				];
 			})
@@ -308,6 +309,12 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		const requestedRoomIds = [...new Set([...(filters.rids || []), ...(filters.rid ? [filters.rid] : [])])];
 		const roomNameIds = await this.getSubscribedRoomIdsByName(userId, filters.roomNames);
 		const scopedRoomIds = [...new Set([...requestedRoomIds, ...roomNameIds])];
+
+		// a room filter that resolves to no subscribed rooms must not fall through to the unscoped path
+		if (filters.roomNames?.length && !scopedRoomIds.length) {
+			logger.debug({ msg: 'AI search skipped: room name filters did not resolve to subscribed rooms' });
+			return [];
+		}
 		const subscribedScopedRoomIds = scopedRoomIds.length ? await this.getSubscribedRoomIds(userId, scopedRoomIds) : [];
 		const pipelineRoomIds = scopedRoomIds.length ? subscribedScopedRoomIds : await this.getUserSubscribedRoomIdsForPipeline(userId);
 

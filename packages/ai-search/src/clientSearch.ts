@@ -107,12 +107,12 @@ export const extractCompletedSearchFilters = (
 	const filters: SearchFilters = emptySearchFilters();
 	let hasCompletedFilters = false;
 	const trimmedLength = filterText.trimEnd().length;
-	const shouldKeepTrailingTokenEditable = Array.from(filterText.matchAll(FILTER_PATTERN)).length <= 1;
 	const searchText = filterText
 		.replace(FILTER_PATTERN, (match, key: string, quotedValue?: string, bareValue?: string, offset?: number) => {
 			const start = typeof offset === 'number' ? offset : 0;
 			const end = start + match.length;
-			const isActiveToken = shouldKeepTrailingTokenEditable && end >= trimmedLength && !/\s$/.test(filterText);
+			// the trailing token stays editable until followed by whitespace, even after completed tokens
+			const isActiveToken = end >= trimmedLength && !/\s$/.test(filterText);
 			if (isActiveToken) {
 				return match;
 			}

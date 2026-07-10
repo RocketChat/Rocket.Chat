@@ -54,6 +54,7 @@ export const normalizeSimilarityPercent = (value: unknown): number => {
 export const getSemanticDistanceThreshold = (minimumSimilarityPercent: number): number =>
 	Number((1 - minimumSimilarityPercent / 100).toFixed(4));
 
+// pipeline contract: `score`/`distance` are cosine distances (lower is better, similarity = 1 - distance)
 const normalizePipelineSimilarityScore = (value: number, type: 'distance' | 'similarity'): number => {
 	const normalizedValue = Math.abs(value) > 1 ? value / 100 : value;
 	const similarity = type === 'distance' ? 1 - normalizedValue : normalizedValue;

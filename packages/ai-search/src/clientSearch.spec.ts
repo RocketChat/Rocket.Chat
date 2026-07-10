@@ -58,12 +58,24 @@ describe('AI Search client helpers', () => {
 		});
 
 		it('extracts multiple completed filters in the same input', () => {
-			expect(extractCompletedSearchFilters('in:general from:ren')).toEqual({
+			expect(extractCompletedSearchFilters('in:general from:ren ')).toEqual({
 				searchText: '',
 				filters: {
 					roomNames: ['general'],
 					rids: [],
 					fromUsernames: ['ren'],
+				},
+				hasCompletedFilters: true,
+			});
+		});
+
+		it('keeps the trailing token editable while completing the preceding filters', () => {
+			expect(extractCompletedSearchFilters('in:general from:ren')).toEqual({
+				searchText: 'from:ren',
+				filters: {
+					roomNames: ['general'],
+					rids: [],
+					fromUsernames: [],
 				},
 				hasCompletedFilters: true,
 			});

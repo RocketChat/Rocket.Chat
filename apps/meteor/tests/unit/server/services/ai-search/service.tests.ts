@@ -144,6 +144,15 @@ describe('AISearchService', () => {
 				answerGenerationConfigured: false,
 			});
 		});
+
+		it('marks answer generation unavailable when the pipeline is not configured', async () => {
+			cachedSettings.get.callsFake((key: string) => (key === 'AI_Intelligent_Search_Pipeline_Base_URL' ? '' : settings[key]));
+
+			expect(await createService().status()).to.include({
+				intelligentSearchConfigured: false,
+				answerGenerationConfigured: false,
+			});
+		});
 	});
 
 	describe('search', () => {
@@ -254,6 +263,29 @@ describe('AISearchService', () => {
 					$le: '2026-01-31T00:00:00.000Z',
 				},
 			});
+		});
+
+		it('returns no results when room-name filters do not resolve to subscribed rooms', async () => {
+			Rooms.findOneByNameOrFname.resolves(null);
+
+			expect(
+				await createService().search({ query: 'fruit', userId: 'user-id', filters: { roomNames: ['unknown-room'] }, limit: 5 }),
+			).to.deep.equal([]);
+			expect(serverFetch.called).to.be.false;
+		});
+
+		it('drops pipeline hits that do not reference a message', async () => {
+			Subscriptions.findByUserId.returns(cursor([{ rid: 'allowed' }]));
+			serverFetch.resolves({
+				ok: true,
+				status: 200,
+				json: async () => ({
+					results: [{ metadata: { room_id: 'allowed' }, text: 'index text without a message reference', score: 0.1 }],
+				}),
+				text: async () => '',
+			});
+
+			expect(await createService().search({ query: 'fruit', userId: 'user-id', limit: 5 })).to.deep.equal([]);
 		});
 
 		it('drops pipeline hits when the referenced message is not visible', async () => {

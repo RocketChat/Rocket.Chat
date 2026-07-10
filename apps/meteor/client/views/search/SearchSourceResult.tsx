@@ -54,20 +54,35 @@ export const SearchSourceResult = ({ item }: { item: IntelligentResult }): React
 
 	return (
 		<Box
-			is={href ? 'a' : 'article'}
-			href={href}
+			is='article'
 			color='default'
 			display='flex'
 			alignItems='flex-start'
-			role={href ? undefined : 'listitem'}
-			textDecorationLine='none'
+			role='listitem'
+			position='relative'
 			p={16}
 			mbe={12}
-			border='var(--rcx-border-width-default) solid var(--rcx-color-stroke-extra-light)'
+			borderWidth='default'
+			borderStyle='solid'
+			borderColor='stroke-extra-light'
 			borderRadius={4}
 			bg='surface-light'
 			gap={12}
 		>
+			{/* overlay link avoids nesting anchors inside the message markdown, which can contain links */}
+			{href && (
+				<Box
+					is='a'
+					href={href}
+					aria-label={t('Jump_to_message')}
+					position='absolute'
+					insetBlockStart={0}
+					insetBlockEnd={0}
+					insetInlineStart={0}
+					insetInlineEnd={0}
+					borderRadius={4}
+				/>
+			)}
 			<Box flexShrink={0}>
 				<MessageAvatar username={username} size='x36' />
 			</Box>
@@ -109,6 +124,7 @@ export const SearchSourceResult = ({ item }: { item: IntelligentResult }): React
 					fontScale='p2'
 					lineHeight='x20'
 					wordBreak='break-word'
+					position='relative'
 				/>
 			</Box>
 		</Box>

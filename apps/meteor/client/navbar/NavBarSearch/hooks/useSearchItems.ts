@@ -1,9 +1,7 @@
 import {
 	AI_LICENSE_MODULE,
-	buildAppliedFilterChips,
 	buildRoomSearchQuery,
 	emptySearchFilters,
-	type SearchFilterChip,
 	type SearchFilters,
 	type SearchFilterSuggestion,
 } from '@rocket.chat/ai-search';
@@ -47,9 +45,7 @@ export type NavBarSearchItems = {
 	rooms: SubscriptionWithRoom[];
 	intelligent: UnifiedSearchIntelligentResult[];
 	filterSuggestions: SearchFilterSuggestion[];
-	appliedFilters: SearchFilterChip[];
 	searchText: string;
-	filters: SearchFilters;
 };
 
 type NavBarSearchItemsResult = {
@@ -216,7 +212,6 @@ export const useSearchItems = (
 		() => getFilterSearchState(filterText, appliedSearchFilters, canUseInlineFilters),
 		[appliedSearchFilters, canUseInlineFilters, filterText],
 	);
-	const appliedFilters = useMemo(() => (canUseInlineFilters ? buildAppliedFilterChips(filters) : []), [canUseInlineFilters, filters]);
 	const [, mention, name] = useMemo(() => searchText.match(/(@|#)?(.*)/i) || [], [searchText]);
 	const debouncedSearchText = useDebouncedValue(searchText, 500);
 	const [, debouncedMention, debouncedName] = useMemo(() => debouncedSearchText.match(/(@|#)?(.*)/i) || [], [debouncedSearchText]);
@@ -264,9 +259,7 @@ export const useSearchItems = (
 			rooms,
 			intelligent,
 			filterSuggestions,
-			appliedFilters,
 			searchText,
-			filters: resolvedFilters,
 		},
 		isLoading,
 		isFetching: isSpotlightFetching || isIntelligentFetching || isUsersFetching,

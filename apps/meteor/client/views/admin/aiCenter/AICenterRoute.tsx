@@ -55,11 +55,11 @@ const AICenterOverview = (): ReactElement => {
 	const { data: hasAILicense } = useHasLicenseModule(AI_LICENSE_MODULE);
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
 
-	let premiumStatus = <Tag>{t('Disabled')}</Tag>;
-	if (!hasAILicense) {
+	let premiumStatus;
+	if (hasAILicense === false) {
 		premiumStatus = <Tag variant='danger'>{t('Locked')}</Tag>;
-	} else if (hasAILicense && intelligentSearchEnabled) {
-		premiumStatus = <Tag variant='primary'>{t('Enabled')}</Tag>;
+	} else if (hasAILicense) {
+		premiumStatus = intelligentSearchEnabled ? <Tag variant='primary'>{t('Enabled')}</Tag> : <Tag>{t('Disabled')}</Tag>;
 	}
 
 	return (

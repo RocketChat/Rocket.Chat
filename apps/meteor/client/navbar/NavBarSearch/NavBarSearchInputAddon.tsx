@@ -42,6 +42,7 @@ const NavBarSearchInputAddon = ({
 							value={label}
 							onClick={() => onRemoveFilter(filter.key)}
 							title={filter.title}
+							aria-label={`${t('Remove')} ${label}`}
 							renderDismissSymbol={() => <Icon name='cross' size='x12' />}
 						>
 							<Box is='span' maxWidth='x104' withTruncatedText fontScale='c1'>
@@ -62,6 +63,7 @@ const NavBarSearchInputAddon = ({
 				mini
 				icon='stars'
 				pressed={aiSearchActive}
+				aria-pressed={aiSearchActive}
 				aria-label={aiSearchButtonTooltip}
 				title={aiSearchButtonTooltip}
 				onClick={onToggleAISearch}

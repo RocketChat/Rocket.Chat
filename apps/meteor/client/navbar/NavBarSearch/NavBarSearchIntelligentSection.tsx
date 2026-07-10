@@ -44,7 +44,9 @@ const NavBarSearchIntelligentSection = ({
 			flexDirection='column'
 			pbs={8}
 			pbe={12}
-			borderBlockEnd='var(--rcx-border-width-default) solid var(--rcx-color-stroke-extra-light)'
+			borderBlockEndWidth={1}
+			borderBlockEndStyle='solid'
+			borderBlockEndColor='stroke-extra-light'
 		>
 			<Box color='titles-labels' fontScale='c1' fontWeight='bold' pi={12} mbe={4} role='presentation' aria-hidden>
 				{t('Intelligent_Search')}
@@ -59,7 +61,7 @@ const NavBarSearchIntelligentSection = ({
 			))}
 			{showAction && (
 				<Box pi={12} pbs={4}>
-					<Button small onClick={handleOpenAISearch} title={t('Open_AI_Search')}>
+					<Button small role='option' onClick={handleOpenAISearch} title={t('Open_AI_Search')}>
 						{t('Open_AI_Search')}
 					</Button>
 				</Box>

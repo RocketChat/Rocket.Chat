@@ -12,6 +12,7 @@ import {
 	isSearchAnswerProps,
 	isUnifiedSearchProps,
 	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import type { SearchAnswer, UnifiedSearchIntelligentResult, UnifiedSearchMessageResult } from '@rocket.chat/rest-typings';
@@ -301,7 +302,7 @@ API.v1.get(
 		const limit = Math.min(count || MAX_UNIFIED_SEARCH_RESULTS, MAX_UNIFIED_SEARCH_RESULTS);
 		const requestedIntelligentCount = Number(this.queryParams.intelligentCount || AI_SEARCH_PAGE_SIZE);
 		const intelligentLimit = Math.min(
-			Math.max(Number.isFinite(requestedIntelligentCount) ? requestedIntelligentCount : AI_SEARCH_PAGE_SIZE, AI_SEARCH_PAGE_SIZE),
+			Math.max(Number.isFinite(requestedIntelligentCount) ? Math.floor(requestedIntelligentCount) : AI_SEARCH_PAGE_SIZE, 1),
 			MAX_INTELLIGENT_SEARCH_RESULTS,
 		);
 		const rid = this.queryParams.rid || undefined;
@@ -444,6 +445,7 @@ API.v1.get(
 		response: {
 			200: aiModelsResponseSchema,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 	},
 	async function action() {
@@ -471,8 +473,7 @@ API.v1.post(
 	async function action() {
 		const { query, messages } = this.bodyParams;
 
-		// Gate on feature availability before doing any DB work so a user cannot drive message
-		// lookups for a feature their workspace has not licensed or enabled.
+		// gate before any DB work so users cannot drive message lookups for an unlicensed feature
 		const aiSearchStatus = await AISearch.status();
 		if (
 			!aiSearchStatus.hasIntelligentSearchLicense ||

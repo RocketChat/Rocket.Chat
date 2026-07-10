@@ -1,8 +1,8 @@
-import { AI_LICENSE_MODULE, buildRoomSearchQuery, parseSearchFilterText } from '@rocket.chat/ai-search';
+import { AI_LICENSE_MODULE, parseSearchFilterText } from '@rocket.chat/ai-search';
 import { Box, Button, Callout, Icon } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow, useFeaturePreview } from '@rocket.chat/ui-client';
-import { useEndpoint, useSearchParameter, useSetting, useUserSubscriptions } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSearchParameter, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -13,12 +13,7 @@ import { SearchSourceResult } from './SearchSourceResult';
 import type { IntelligentResult } from './types';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
-const roomLookupOptions = { sort: { lm: -1, name: 1 }, limit: 20 } as const;
-const emptyRoomLookupQuery = { _id: '__ai_search_no_room_filter__' };
-
-// Number of results revealed per page, and the upper bound on the source set the AI answer is
-// generated from. Both are tied to the same constant so that paginating ("Show more") only appends
-// results and never changes the answer source set — preventing a redundant answer regeneration.
+// page size doubles as the answer source bound so pagination never changes the answer sources
 const INTELLIGENT_PAGE_SIZE = 8;
 
 const SearchPage = (): ReactElement => {
@@ -26,34 +21,11 @@ const SearchPage = (): ReactElement => {
 	const queryParam = useSearchParameter('q') ?? '';
 	const [intelligentCount, setIntelligentCount] = useState(INTELLIGENT_PAGE_SIZE);
 	const parsedSearch = useMemo(() => parseSearchFilterText(queryParam), [queryParam]);
-	const roomLookupText = parsedSearch.filters.roomNames[parsedSearch.filters.roomNames.length - 1] || '';
-	const roomLookupQuery = useMemo(
-		() => (roomLookupText ? buildRoomSearchQuery(roomLookupText, '#') : emptyRoomLookupQuery),
-		[roomLookupText],
-	);
-	const roomFilterRooms = useUserSubscriptions(roomLookupQuery, roomLookupOptions);
-	const selectedRooms = useMemo(() => {
-		if (!parsedSearch.filters.roomNames.length) {
-			return [];
-		}
-
-		return parsedSearch.filters.roomNames
-			.map((roomName) => roomFilterRooms.find(({ name, fname }) => [name, fname].filter(Boolean).includes(roomName)))
-			.filter(Boolean) as Array<(typeof roomFilterRooms)[number]>;
-	}, [parsedSearch.filters.roomNames, roomFilterRooms]);
-	const resolvedFilters = useMemo(
-		() => ({
-			...parsedSearch.filters,
-			rids: selectedRooms.map((room) => room.rid || room._id),
-			...(selectedRooms[0] && { rid: selectedRooms[0].rid || selectedRooms[0]._id }),
-			...(parsedSearch.filters.fromUsernames[0] && { fromUsername: parsedSearch.filters.fromUsernames[0] }),
-		}),
-		[parsedSearch.filters, selectedRooms],
-	);
+	const { filters } = parsedSearch;
 	const debouncedQuery = useDebouncedValue(parsedSearch.searchText.trim(), 300);
 	const aiSearchFeatureEnabled = useFeaturePreview('aiSearch');
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
-	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule(AI_LICENSE_MODULE);
+	const { data: hasIntelligentSearchLicense } = useHasLicenseModule(AI_LICENSE_MODULE);
 	const canUseAISearch = Boolean(hasIntelligentSearchLicense && aiSearchFeatureEnabled);
 	const unifiedSearch = useEndpoint('GET', '/v1/search.unified');
 	const generateAnswer = useEndpoint('POST', '/v1/search.answer');
@@ -66,7 +38,7 @@ const SearchPage = (): ReactElement => {
 		queryKey: [
 			'search/intelligent/page',
 			debouncedQuery,
-			resolvedFilters,
+			filters,
 			hasIntelligentSearchLicense,
 			aiSearchFeatureEnabled,
 			intelligentSearchEnabled,
@@ -80,20 +52,17 @@ const SearchPage = (): ReactElement => {
 				intelligentCount,
 				includeMessages: false,
 				includeIntelligent: Boolean(canUseAISearch && intelligentSearchEnabled),
-				rid: resolvedFilters.rid,
-				rids: resolvedFilters.rids.join(','),
-				roomNames: resolvedFilters.roomNames.join(','),
-				fromUsername: resolvedFilters.fromUsername,
-				fromUsernames: resolvedFilters.fromUsernames.join(','),
-				startDate: resolvedFilters.startDate,
-				endDate: resolvedFilters.endDate,
+				roomNames: filters.roomNames.join(','),
+				fromUsernames: filters.fromUsernames.join(','),
+				startDate: filters.startDate,
+				endDate: filters.endDate,
 			}),
 		enabled: Boolean(debouncedQuery && canUseAISearch && intelligentSearchEnabled),
+		// without this, pagination empties the answer source set and re-triggers the LLM generation
+		placeholderData: (previousData) => previousData,
 	});
 
 	const intelligent = useMemo(() => (result.data?.intelligent as IntelligentResult[] | undefined) ?? [], [result.data?.intelligent]);
-	// Only the first page of results feeds the AI answer. Revealing more results via "Show more"
-	// appends to the list without changing this slice, so the answer is not regenerated on paginate.
 	const answerMessages = useMemo(
 		() =>
 			intelligent.slice(0, INTELLIGENT_PAGE_SIZE).map((item) => ({
@@ -122,14 +91,15 @@ const SearchPage = (): ReactElement => {
 	});
 	const { data: answerData, error: answerError, isPending: answerPending, mutate: mutateAnswer, reset: resetAnswer } = answerMutation;
 
-	// When the query or source set changes, drop the previous answer and abort any in-flight LLM
-	// request so a stale (and costly) generation cannot resolve into the new context.
 	useEffect(() => {
 		resetAnswer();
 		return abortPendingAnswer;
 	}, [answerKey, resetAnswer, abortPendingAnswer]);
 
-	const canGenerateAnswer = Boolean(result.data?.meta.answerGenerationConfigured && debouncedQuery && intelligent.length > 0);
+	// placeholder data belongs to the previous query key — never generate an answer from it
+	const canGenerateAnswer = Boolean(
+		result.data?.meta.answerGenerationConfigured && !result.isPlaceholderData && debouncedQuery && intelligent.length > 0,
+	);
 	const answerEmptyReason = useMemo(() => {
 		if (!debouncedQuery) {
 			return t('Search_AI_answer_start_from_top_bar');
@@ -184,7 +154,7 @@ const SearchPage = (): ReactElement => {
 							{t('Intelligent_Search_scope_all_rooms')}
 						</Box>
 					</Box>
-					{!hasIntelligentSearchLicense && (
+					{hasIntelligentSearchLicense === false && (
 						<Callout type='info' icon='stars' title={t('Intelligent_Search_upsell_title')} mbe={16}>
 							{t('Intelligent_Search_upsell_description')}
 						</Callout>
@@ -240,7 +210,7 @@ const SearchPage = (): ReactElement => {
 							{t('No_results_found')}
 						</Box>
 					)}
-					<Box>
+					<Box role='list'>
 						{intelligent.map((item) => (
 							<SearchSourceResult key={item._id} item={item} />
 						))}

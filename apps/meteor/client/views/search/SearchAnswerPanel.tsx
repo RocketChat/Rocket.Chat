@@ -53,7 +53,9 @@ const SearchAnswerPanel = ({
 			display='flex'
 			flexDirection='column'
 			mbe={24}
-			border='var(--rcx-border-width-default) solid var(--rcx-color-stroke-extra-light)'
+			borderWidth='default'
+			borderStyle='solid'
+			borderColor='stroke-extra-light'
 			borderRadius={4}
 			bg='surface-light'
 		>
@@ -62,7 +64,9 @@ const SearchAnswerPanel = ({
 				alignItems='center'
 				justifyContent='space-between'
 				p={16}
-				borderBlockEnd='var(--rcx-border-width-default) solid var(--rcx-color-stroke-extra-light)'
+				borderBlockEndWidth={1}
+				borderBlockEndStyle='solid'
+				borderBlockEndColor='stroke-extra-light'
 			>
 				<Box display='flex' alignItems='center' fontScale='h4' gap={8}>
 					<Icon name='stars' size='x18' />
@@ -78,12 +82,13 @@ const SearchAnswerPanel = ({
 						{t('Search_AI_answer_provider', { provider: provider.name, model: provider.model })}
 					</Box>
 				)}
-				{Boolean(error) && (
+				{error && !isLoading ? (
 					<Box color='danger' fontScale='p2'>
 						{t('Search_AI_answer_error')}
 					</Box>
+				) : (
+					answerContent()
 				)}
-				{answerContent()}
 			</Box>
 		</Box>
 	);
