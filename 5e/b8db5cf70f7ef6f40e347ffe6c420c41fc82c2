@@ -1,0 +1,54 @@
+apps/meteor/server/api/v1/permissions.ts
+  s_6a9e2ab12a892a::t_438daed696b82a 163,165,171,173
+packages/model-typings/src/models/IEmojiCustomModel.ts
+  s_6a9e2ab12a892a::t_9dad60e8f08fcc 8
+packages/models/src/models/LivechatRooms.ts
+  s_6a9e2ab12a892a::t_c8c67a7b3d2191 1935,1940
+apps/meteor/server/api/v1/omnichannel/message.ts
+  s_6a9e2ab12a892a::t_117e0fbe920fe5 260-261
+packages/model-typings/src/models/IBaseModel.ts
+  s_6a9e2ab12a892a::t_0ed1c5887b2f37 7
+  s_6a9e2ab12a892a::t_4414abdb2c18fc 132
+packages/models/src/models/Messages.ts
+  s_6a9e2ab12a892a::t_11564a2494784b 1453-1459
+apps/meteor/app/user-status/server/methods/insertOrUpdateUserStatus.ts
+  s_6a9e2ab12a892a::t_42430bcf566b2b 55-57,59
+packages/model-typings/src/models/ILivechatRoomsModel.ts
+  s_6a9e2ab12a892a::t_2b1e43f1a83c46 187-191
+apps/meteor/app/emoji-custom/server/lib/insertOrUpdateEmoji.ts
+  s_6a9e2ab12a892a::t_83ab8173c0fe11 71-73,75
+apps/meteor/app/statistics/server/lib/statistics.ts
+  s_6a9e2ab12a892a::t_e4bbb50cc4644d 450-466
+packages/models/src/models/EmojiCustom.ts
+  s_6a9e2ab12a892a::t_9ca9f572d37b22 31-39
+  s_6a9e2ab12a892a::t_82df8bdc0c26e5 3
+packages/models/src/models/CustomUserStatus.ts
+  s_6a9e2ab12a892a::t_3eb15ee661d6a8 24-32
+packages/models/src/models/CustomSounds.ts
+  s_6a9e2ab12a892a::t_2e3d78ac910b19 26-34
+packages/model-typings/src/models/ICustomUserStatusModel.ts
+  s_6a9e2ab12a892a::t_9598c46c887000 9
+apps/meteor/app/meteor-accounts-saml/server/lib/SAML.ts
+  s_6a9e2ab12a892a::t_4ce7a80d79c936 331-335
+  s_6a9e2ab12a892a::t_9c07ed0aea5632 387-388
+apps/meteor/app/custom-sounds/server/lib/insertOrUpdateSound.ts
+  s_6a9e2ab12a892a::t_a77f41290e2ccd 31,33
+packages/model-typings/src/models/ICustomSoundsModel.ts
+  s_6a9e2ab12a892a::t_a93fbd06195aa8 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "5eb8db5cf70f7ef6f40e347ffe6c420c41fc82c2",
+  "prompts": {},
+  "sessions": {
+    "s_6a9e2ab12a892a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c2f23627-5a8c-4859-abdd-26940e9ae6e0",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
