@@ -36,7 +36,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../../app/authorization/server';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../app/integrations/server/lib/mountQueriesBasedOnPermission';
-import { getUserMentionsByChannel } from '../../../app/mentions/server/methods/getUserMentionsByChannel';
 import { settings } from '../../../app/settings/server';
 import { normalizeMessagesForUser } from '../../../app/utils/server/lib/normalizeMessagesForUser';
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../lib/authorization/hasPermission';
@@ -44,6 +43,7 @@ import { eraseRoom } from '../../lib/eraseRoom';
 import { findUsersOfRoom } from '../../lib/findUsersOfRoom';
 import { openRoom } from '../../lib/openRoom';
 import { getChannelHistory } from '../../meteor-methods/messages/getChannelHistory';
+import { getUserMentionsByChannel } from '../../meteor-methods/messages/getUserMentionsByChannel';
 import { addAllUserToRoomFn } from '../../meteor-methods/rooms/addAllUserToRoom';
 import { addRoomLeader } from '../../meteor-methods/rooms/addRoomLeader';
 import { addRoomModerator } from '../../meteor-methods/rooms/addRoomModerator';

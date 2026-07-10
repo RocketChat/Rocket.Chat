@@ -5,8 +5,8 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from './authorization/hasPermission';
 import { i18n } from './i18n';
+import { Push } from './notifications/push';
 import { RateLimiter } from '../../app/lib/server/lib';
-import { Push } from '../../app/push/server';
 import { settings } from '../../app/settings/server';
 
 export const executePushTest = async (userId: IUser['_id'], username: IUser['username']): Promise<number> => {

@@ -3,10 +3,10 @@ import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { notifyOnUserChange } from '../../../../app/lib/server/lib/notifyListener';
-import * as Mailer from '../../../../app/mailer/server/api';
 import { settings } from '../../../../app/settings/server';
 import { i18n } from '../../i18n';
 import { isUserIdFederated } from '../../isUserIdFederated';
+import * as Mailer from '../../notifications/email/api';
 
 const sendResetNotification = async function (uid: string): Promise<void> {
 	const user = await Users.findOneById<Pick<IUser, 'language' | 'emails'>>(uid, {

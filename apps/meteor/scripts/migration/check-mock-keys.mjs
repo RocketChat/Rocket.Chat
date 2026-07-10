@@ -33,7 +33,15 @@ function getAllFiles(dir) {
 function resolveModule(fromDir, spec) {
 	const resolved = path.resolve(fromDir, spec);
 	const noJsExt = resolved.replace(/\.js$/, '');
-	for (const c of [resolved, `${resolved}.ts`, `${resolved}.tsx`, `${resolved}.js`, `${noJsExt}.ts`, path.join(resolved, 'index.ts'), path.join(resolved, 'index.js')]) {
+	for (const c of [
+		resolved,
+		`${resolved}.ts`,
+		`${resolved}.tsx`,
+		`${resolved}.js`,
+		`${noJsExt}.ts`,
+		path.join(resolved, 'index.ts'),
+		path.join(resolved, 'index.js'),
+	]) {
 		if (fs.existsSync(c) && fs.statSync(c).isFile()) return c;
 	}
 	return null;
@@ -63,7 +71,9 @@ for (const dir of dirs) {
 				continue;
 			}
 			const modContent = fs.readFileSync(targetFile, 'utf8');
-			const modSpecifiers = new Set([...modContent.matchAll(/(?:from\s+|import\s+|(?:import|require)\s*\(\s*)(['"])([^'"]+)\1/g)].map((x) => x[2]));
+			const modSpecifiers = new Set(
+				[...modContent.matchAll(/(?:from\s+|import\s+|(?:import|require)\s*\(\s*)(['"])([^'"]+)\1/g)].map((x) => x[2]),
+			);
 			// keys of the stub object immediately following this .load( target,
 			// only when the second argument is an inline object literal
 			const after = content.slice(m.index + m[0].length);

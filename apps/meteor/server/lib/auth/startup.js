@@ -10,7 +10,6 @@ import _ from 'underscore';
 
 import { isValidAttemptByUser, isValidLoginAttemptByIp } from './restrictLoginAttempts';
 import { notifyOnSettingChangedById } from '../../../app/lib/server/lib/notifyListener';
-import * as Mailer from '../../../app/mailer/server/api';
 import { settings } from '../../../app/settings/server';
 import { getBaseUserFields } from '../../../app/utils/server/functions/getBaseUserFields';
 import { parseCSV } from '../../../lib/utils/parseCSV';
@@ -21,6 +20,7 @@ import { beforeCreateUserCallback } from '../callbacks/beforeCreateUserCallback'
 import { getClientAddress } from '../getClientAddress';
 import { getMaxLoginTokens } from '../getMaxLoginTokens';
 import { i18n } from '../i18n';
+import * as Mailer from '../notifications/email/api';
 import { addUserRolesAsync } from '../roles/addUserRoles';
 import { joinDefaultChannels } from '../rooms/joinDefaultChannels';
 import { getAvatarSuggestionForUser } from '../users/getAvatarSuggestionForUser';

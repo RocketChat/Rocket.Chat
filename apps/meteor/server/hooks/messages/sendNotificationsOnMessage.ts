@@ -18,10 +18,10 @@ import { notifyDesktopUser, shouldNotifyDesktop } from '../../../app/lib/server/
 import { getEmailData, shouldNotifyEmail } from '../../../app/lib/server/functions/notifications/email';
 import { messageContainsHighlight } from '../../../app/lib/server/functions/notifications/messageContainsHighlight';
 import { getPushData, shouldNotifyMobile } from '../../../app/lib/server/functions/notifications/mobile';
-import { Notification } from '../../../app/notification-queue/server/NotificationQueue';
 import { settings } from '../../../app/settings/server';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
+import { Notification } from '../../lib/notifications/queue/NotificationQueue';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
 type SubscriptionAggregation = {

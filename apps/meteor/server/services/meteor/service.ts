@@ -12,12 +12,12 @@ import { triggerHandler } from '../../../app/integrations/server/lib/triggerHand
 import { notifyGuestStatusChanged } from '../../../app/livechat/server/lib/guests';
 import { onlineAgents, monitorAgents } from '../../../app/livechat/server/lib/stream/agentStatus';
 import { metrics } from '../../../app/metrics/server';
-import notifications from '../../../app/notifications/server/lib/Notifications';
 import { settings } from '../../../app/settings/server';
 import { use } from '../../../app/settings/server/Middleware';
 import { setValue, updateValue } from '../../../app/settings/server/raw';
 import { getURL } from '../../../app/utils/server/getURL';
 import { configureEmailInboxes } from '../../features/EmailInbox/EmailInbox';
+import notifications from '../../lib/notifications/core/lib/Notifications';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { ListenersModule } from '../../modules/listeners/listeners.module';
 import { invalidate as invalidatePublicationUserCache } from '../../modules/streamer/publication-user-cache';

@@ -19,7 +19,7 @@ const { EmailCheck } = proxyquire.noCallThru().load('./EmailCheck', {
 			t: (key: string) => key,
 		},
 	},
-	'../../../../app/mailer/server/api': {
+	'../../notifications/email/api': {
 		send: () => undefined,
 	},
 	'../../../../app/settings/server': {

@@ -5,9 +5,9 @@ import bcrypt from 'bcrypt';
 import { Accounts } from 'meteor/accounts-base';
 
 import type { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
-import * as Mailer from '../../../../app/mailer/server/api';
 import { settings } from '../../../../app/settings/server';
 import { i18n } from '../../i18n';
+import * as Mailer from '../../notifications/email/api';
 
 export class EmailCheck implements ICodeCheck {
 	public readonly name: string = 'email';

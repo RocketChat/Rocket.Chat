@@ -18,20 +18,18 @@ const livechatUnitStub = {
 const hasAnyRoleStub = sinon.stub();
 const getUnitsFromUserStub = sinon.stub();
 
-const { manageDepartmentUnit } = proxyquire
-	.noCallThru()
-	.load('../../../../../server/hooks/omnichannel/manageDepartmentUnit.ts', {
-		'@rocket.chat/omni-core-ee': {
-			getUnitsFromUser: getUnitsFromUserStub,
-		},
-		'../../../../server/lib/authorization/hasRole': {
-			hasAnyRoleAsync: hasAnyRoleStub,
-		},
-		'@rocket.chat/models': {
-			LivechatDepartment: livechatDepartmentStub,
-			LivechatUnit: livechatUnitStub,
-		},
-	});
+const { manageDepartmentUnit } = proxyquire.noCallThru().load('../../../../../server/hooks/omnichannel/manageDepartmentUnit.ts', {
+	'@rocket.chat/omni-core-ee': {
+		getUnitsFromUser: getUnitsFromUserStub,
+	},
+	'../../../../server/lib/authorization/hasRole': {
+		hasAnyRoleAsync: hasAnyRoleStub,
+	},
+	'@rocket.chat/models': {
+		LivechatDepartment: livechatDepartmentStub,
+		LivechatUnit: livechatUnitStub,
+	},
+});
 
 describe('hooks/manageDepartmentUnit', () => {
 	beforeEach(() => {

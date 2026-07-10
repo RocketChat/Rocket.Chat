@@ -4,8 +4,8 @@ import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import type { ImporterProgress } from '../../../app/importer/server/classes/ImporterProgress';
-import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
 import { SystemLogger } from '../../lib/logger/system';
+import { emit, StreamPresence } from '../../lib/notifications/core/lib/Presence';
 import { getCachedUserForPublication } from '../streamer/publication-user-cache';
 import { Streamer as StreamerModule } from '../streamer/streamer.module';
 import type { IStreamer, IStreamerConstructor } from '../streamer/types';

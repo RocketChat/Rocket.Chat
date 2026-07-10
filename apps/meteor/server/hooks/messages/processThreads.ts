@@ -7,9 +7,9 @@ import { updateThreadUsersSubscriptions, getMentions } from './notifyUsersOnMess
 import { sendMessageNotifications } from './sendNotificationsOnMessage';
 import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../app/settings/server';
-import { reply } from '../../../app/threads/server/functions';
 import { callbacks } from '../../lib/callbacks';
 import type { SendMessageOptions } from '../../lib/messages/sendMessage';
+import { reply } from '../../lib/messaging/threads/functions';
 
 async function notifyUsersOnReply(message: IMessage, replies: IUser['_id'][]) {
 	// skips this callback if the message was edited

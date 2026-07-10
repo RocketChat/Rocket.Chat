@@ -21,11 +21,11 @@ import {
 	notifyOnSubscriptionChangedById,
 	notifyOnSubscriptionChangedByRoomIdAndUserId,
 } from '../../../app/lib/server/lib/notifyListener';
-import { readThread } from '../../../app/threads/server/functions';
 import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../lib/getSubscriptionAutotranslateDefaultConfig';
+import { readThread } from '../../lib/messaging/threads/functions';
 import { readMessages } from '../../lib/readMessages';
 import { performAcceptRoomInvite } from '../../lib/rooms/acceptRoomInvite';
 import { addUserToRoom } from '../../lib/rooms/addUserToRoom';

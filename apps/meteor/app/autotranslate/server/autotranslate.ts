@@ -14,8 +14,8 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { callbacks } from '../../../server/lib/callbacks';
+import { Markdown } from '../../../server/lib/messaging/markdown';
 import { notifyOnMessageChange } from '../../lib/server/lib/notifyListener';
-import { Markdown } from '../../markdown/server';
 import { settings } from '../../settings/server';
 
 const translationLogger = new Logger('AutoTranslate');

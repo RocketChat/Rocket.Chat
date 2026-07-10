@@ -20,8 +20,8 @@ import moment from 'moment-timezone';
 
 import { callbacks } from '../../../../server/lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
+import * as Mailer from '../../../../server/lib/notifications/email/api';
 import { FileUpload } from '../../../file-upload/server';
-import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
 

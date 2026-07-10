@@ -1,7 +1,7 @@
 import type { IImportProgress } from '@rocket.chat/core-typings';
 
+import notifications from '../../../../server/lib/notifications/core/lib/Notifications';
 import type { IStreamer } from '../../../../server/modules/streamer/types';
-import notifications from '../../../notifications/server/lib/Notifications';
 
 class ImporterWebsocketDef {
 	private streamer: IStreamer<'importers'>;
