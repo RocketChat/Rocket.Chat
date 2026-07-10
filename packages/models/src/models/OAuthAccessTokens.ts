@@ -1,6 +1,6 @@
 import type { IOAuthAccessToken, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IOAuthAccessTokensModel } from '@rocket.chat/model-typings';
-import type { Db, Collection, FindOptions, IndexDescription } from 'mongodb';
+import type { Db, Collection, DeleteResult, FindOptions, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -13,6 +13,7 @@ export class OAuthAccessTokensRaw extends BaseRaw<IOAuthAccessToken> implements 
 		return [
 			{ key: { accessToken: 1 } },
 			{ key: { refreshToken: 1 } },
+			{ key: { userId: 1 } },
 			{ key: { expires: 1 }, expireAfterSeconds: 60 * 60 * 24 * 30 },
 			{ key: { refreshTokenExpiresAt: 1 }, expireAfterSeconds: 60 * 60 * 24 * 30 },
 		];
@@ -30,5 +31,13 @@ export class OAuthAccessTokensRaw extends BaseRaw<IOAuthAccessToken> implements 
 			return null;
 		}
 		return this.findOne({ refreshToken }, options);
+	}
+
+	async deleteByUserId(userId: string): Promise<DeleteResult> {
+		return this.deleteMany({ userId });
+	}
+
+	async deleteByUserIds(userIds: string[]): Promise<DeleteResult> {
+		return this.deleteMany({ userId: { $in: userIds } });
 	}
 }

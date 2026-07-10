@@ -6,8 +6,8 @@ import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
 import { isPlainObject } from '../../../../lib/utils/isPlainObject';
+import { API } from '../../../../server/api';
 import { OAuth2Server } from '../../../../server/oauth2-server/oauth';
-import { API } from '../../../api/server';
 
 const oauth2server = new OAuth2Server({
 	// If you're developing something related to oauth servers, you should change this to true
@@ -34,9 +34,9 @@ export async function oAuth2ServerAuth(partialRequest: { authorization?: string;
 		return;
 	}
 
-	const user = await Users.findOneById(accessToken.userId);
+	const user = await Users.findOneActiveById(accessToken.userId);
 
-	if (user == null) {
+	if (!user) {
 		return;
 	}
 
@@ -54,8 +54,8 @@ oauth2server.app.get('/oauth/userinfo', async (req: Request, res: Response) => {
 	if (token == null) {
 		return res.status(401).send('Invalid Token');
 	}
-	const user = await Users.findOneById(token.userId);
-	if (user == null) {
+	const user = await Users.findOneActiveById(token.userId);
+	if (!user) {
 		return res.status(401).send('Invalid Token');
 	}
 	return res.send({

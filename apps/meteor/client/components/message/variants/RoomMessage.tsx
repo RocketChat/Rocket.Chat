@@ -3,7 +3,7 @@ import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rock
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId, useUserCard } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, KeyboardEvent } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -15,7 +15,6 @@ import {
 	useIsSelectedMessage,
 	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
-import { useJumpToMessage } from '../../../views/room/MessageList/hooks/useJumpToMessage';
 import Emoji from '../../Emoji';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
@@ -25,7 +24,7 @@ import RoomMessageContent from './room/RoomMessageContent';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
 import { useMessageListReadReceipts } from '../list/MessageListContext';
 
-type RoomMessageProps = {
+export type RoomMessageProps = {
 	message: IMessage & { ignored?: boolean };
 	showUserAvatar: boolean;
 	sequential: boolean;
@@ -72,7 +71,7 @@ const RoomMessage = ({
 	ignoredUser,
 	searchText,
 	...props
-}: RoomMessageProps): ReactElement => {
+}: RoomMessageProps) => {
 	const { t } = useTranslation();
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
@@ -88,9 +87,8 @@ const RoomMessage = ({
 	const { enabled: readReceiptEnabled } = useMessageListReadReceipts();
 
 	useCountSelected();
-	const messageRef = useJumpToMessage(message._id);
 
-	const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+	const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
 		if (!selecting) return;
 
 		if (!(e.code === 'Space' || e.code === 'Enter')) return;
@@ -103,7 +101,6 @@ const RoomMessage = ({
 
 	return (
 		<Message
-			ref={messageRef}
 			id={message._id}
 			role='listitem'
 			tabIndex={0}

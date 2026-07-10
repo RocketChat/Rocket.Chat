@@ -19,7 +19,7 @@ import './lib/routing/LoadBalancing';
 import './lib/routing/LoadRotation';
 import './lib/AutoCloseOnHoldScheduler';
 import './business-hour';
-import './api';
+import '../../../server/api/v1/omnichannel';
 import { createDefaultPriorities } from './priorities';
 
 patchOmniCore();

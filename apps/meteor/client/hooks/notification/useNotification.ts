@@ -1,5 +1,5 @@
 import type { INotificationDesktop } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Random } from '@rocket.chat/random';
 import { useRouter, useUserPreference } from '@rocket.chat/ui-contexts';
 
@@ -14,7 +14,7 @@ export const useNotification = () => {
 	const router = useRouter();
 	const notificationAllowed = useNotificationAllowed();
 
-	const notify = useEffectEvent(async (notification: INotificationDesktop) => {
+	const notify = useStableCallback(async (notification: INotificationDesktop) => {
 		if (!notificationAllowed) {
 			return;
 		}
@@ -33,7 +33,7 @@ export const useNotification = () => {
 		} as any);
 
 		const n = new Notification(notification.title, {
-			icon: notification.icon || getUserAvatarURL(notification.payload.sender?.username as string),
+			icon: notification.icon || getUserAvatarURL(notification.payload.sender?.username),
 			body: stripTags(message?.msg),
 			tag: msgId,
 			canReply: true,

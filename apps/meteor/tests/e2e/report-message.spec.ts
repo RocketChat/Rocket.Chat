@@ -111,8 +111,9 @@ test.describe.serial('report message', () => {
 			await adminPage.goto('/admin/moderation/messages');
 
 			await expect(adminPage.getByRole('tab', { name: 'Reported messages' })).toBeVisible();
-			await expect(adminPage.getByRole('link', { name: 'user1' })).toBeVisible();
-			await adminPage.getByRole('link', { name: 'user1' }).click();
+			const reportedUserLink = adminPage.getByRole('table').getByRole('link', { name: 'user1' });
+			await expect(reportedUserLink).toBeVisible();
+			await reportedUserLink.click();
 
 			await expect(adminPage.getByText(testMessage)).toBeVisible();
 

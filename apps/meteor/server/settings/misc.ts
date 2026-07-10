@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 
 import { Logger } from '@rocket.chat/logger';
 import { Settings } from '@rocket.chat/models';

@@ -3,7 +3,7 @@ import { Box, Option, Icon } from '@rocket.chat/fuselage';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-type MatrixFederationRemoveServerListProps = {
+export type MatrixFederationRemoveServerListProps = {
 	servers: Array<{ name: string; default: boolean; local: boolean }>;
 };
 

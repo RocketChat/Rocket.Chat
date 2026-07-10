@@ -63,7 +63,6 @@ exports[`CannedResponseList Storybook Stories renders Default without crashing 1
                     placeholder="Search"
                     size="1"
                     type="text"
-                    value=""
                   />
                   <span
                     class="rcx-box rcx-box--full rcx-input-box__addon"
@@ -80,46 +79,50 @@ exports[`CannedResponseList Storybook Stories renders Default without crashing 1
                   class="rcx-box rcx-box--full rcx-css-1dtwr38 rcx-css-njvvp7"
                 >
                   <div
-                    aria-hidden="true"
-                    data-a11y-ignore="aria-hidden-focus"
-                    data-react-aria-prevent-focus="true"
-                    data-testid="hidden-select-container"
-                    style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                    class="rcx-box rcx-box--full rcx-css-1mbgoc8"
                   >
-                    <label>
-                      <select
-                        tabindex="-1"
-                      >
-                        <option />
-                        <option
-                          value="all"
+                    <div
+                      aria-hidden="true"
+                      data-a11y-ignore="aria-hidden-focus"
+                      data-react-aria-prevent-focus="true"
+                      data-testid="hidden-select-container"
+                      style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                    >
+                      <label>
+                        <select
+                          tabindex="-1"
                         >
-                          all
-                        </option>
-                        <option
-                          value="global"
-                        >
-                          global
-                        </option>
-                        <option
-                          value="user"
-                        >
-                          user
-                        </option>
-                      </select>
-                    </label>
+                          <option />
+                          <option
+                            value="all"
+                          >
+                            all
+                          </option>
+                          <option
+                            value="global"
+                          >
+                            global
+                          </option>
+                          <option
+                            value="user"
+                          >
+                            user
+                          </option>
+                        </select>
+                      </label>
+                    </div>
                   </div>
                   <button
                     aria-expanded="false"
                     aria-haspopup="listbox"
                     aria-label="Type"
-                    aria-labelledby="react-aria-:r8: react-aria-:r3:"
+                    aria-labelledby="react-aria-_r_8_ react-aria-_r_3_"
                     class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
                     type="button"
                   >
                     <span
                       class="rcx-box rcx-box--full rcx-css-11g6st8"
-                      id="react-aria-:r8:"
+                      id="react-aria-_r_8_"
                     />
                     <i
                       aria-hidden="true"

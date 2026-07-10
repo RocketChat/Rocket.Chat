@@ -3,7 +3,7 @@ import { OrganizationInfoPage } from '@rocket.chat/onboarding-ui';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRole } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
@@ -26,7 +26,7 @@ const getSettingOptions = (
 	return setting.values.map(({ i18nLabel, key }) => [String(key), t(i18nLabel as TranslationKey)]);
 };
 
-const OrganizationInfoStep = (): ReactElement => {
+const OrganizationInfoStep = () => {
 	const { t, i18n } = useTranslation();
 	const hasAdminRole = useRole('admin');
 

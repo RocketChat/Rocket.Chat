@@ -1,5 +1,5 @@
-import { EventEmitter } from 'events';
-import { Readable } from 'stream';
+import { EventEmitter } from 'node:events';
+import { Readable } from 'node:stream';
 
 import { EmailInbox } from '@rocket.chat/models';
 import type { ImapMessage, ImapMessageBodyInfo } from 'imap';

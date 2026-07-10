@@ -1,4 +1,4 @@
-import stream from 'stream';
+import stream from 'node:stream';
 
 import {
 	DeleteObjectCommand,
@@ -13,12 +13,12 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import type { IUpload } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { check } from 'meteor/check';
-import type { OptionalId } from 'mongodb';
 import _ from 'underscore';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { UploadFS } from '../../../../server/ufs';
 import type { StoreOptions } from '../../../../server/ufs/ufs-store';
+import { getUrlExpiryTimeSpanWithFallback } from '../../server/lib/urlExpiry';
 
 export type S3Options = StoreOptions & {
 	connection: S3ClientConfig;
@@ -27,11 +27,11 @@ export type S3Options = StoreOptions & {
 		ACL: string;
 	};
 	URLExpiryTimeSpan: number;
-	getPath: (file: OptionalId<IUpload>) => string;
+	getPath: (file: Omit<IUpload, '_updatedAt'>) => string;
 };
 
 class AmazonS3Store extends UploadFS.Store {
-	protected getPath: (file: IUpload) => string;
+	protected getPath: (file: Omit<IUpload, '_updatedAt'>) => string;
 
 	constructor(options: S3Options) {
 		// Default options
@@ -81,6 +81,7 @@ class AmazonS3Store extends UploadFS.Store {
 		};
 
 		this.getRedirectURL = async (file, forceDownload = false) => {
+			const expiresIn = getUrlExpiryTimeSpanWithFallback(classOptions.URLExpiryTimeSpan);
 			return getSignedUrl(
 				s3,
 				new GetObjectCommand({
@@ -88,9 +89,7 @@ class AmazonS3Store extends UploadFS.Store {
 					ResponseContentDisposition: `${forceDownload ? 'attachment' : 'inline'}; filename="${encodeURI(file.name || '')}"`,
 					Bucket: classOptions.params.Bucket,
 				}),
-				{
-					expiresIn: classOptions.URLExpiryTimeSpan, // seconds
-				},
+				{ expiresIn },
 			);
 		};
 
@@ -105,7 +104,7 @@ class AmazonS3Store extends UploadFS.Store {
 			}
 
 			file.AmazonS3 = {
-				path: classOptions.getPath(file),
+				path: classOptions.getPath(file as Omit<IUpload, '_updatedAt'>),
 			};
 
 			file.store = this.options.name; // assign store to file
@@ -204,7 +203,7 @@ class AmazonS3Store extends UploadFS.Store {
 		};
 
 		this.getUrlExpiryTimeSpan = async () => {
-			return classOptions.URLExpiryTimeSpan || null;
+			return getUrlExpiryTimeSpanWithFallback(classOptions.URLExpiryTimeSpan);
 		};
 	}
 }

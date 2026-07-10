@@ -1,5 +1,6 @@
 import { api } from '@rocket.chat/core-services';
 import type { RequiredField } from '@rocket.chat/core-typings';
+import { CustomSounds } from '@rocket.chat/models';
 
 import { RocketChatFile } from '../../../file/server';
 import type { ICustomSoundData } from '../methods/insertOrUpdateSound';
@@ -29,7 +30,12 @@ export const uploadCustomSound = async (
 		});
 
 		ws.on('end', () => {
-			setTimeout(() => api.broadcast('notify.updateCustomSound', { soundData }), 500);
+			setTimeout(async () => {
+				const sound = await CustomSounds.findOneById(soundData._id);
+				if (sound) {
+					void api.broadcast('notify.updateCustomSound', { soundData: sound });
+				}
+			}, 500);
 			resolve();
 		});
 

@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs from 'node:fs';
 
 import type { IImport, IImportUser } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';

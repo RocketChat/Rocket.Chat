@@ -2,7 +2,6 @@ import { Box, IconButton } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useRemoveAgent } from '../hooks/useRemoveAgent';
@@ -20,7 +19,7 @@ const AgentsTableRow = ({
 		statusLivechat: string;
 	};
 	mediaQuery: boolean;
-}): ReactElement => {
+}) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 

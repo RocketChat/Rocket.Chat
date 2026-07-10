@@ -43,7 +43,7 @@ const ChatWrapper = ({ children, rid }) => {
 };
 
 class ChatContainer extends Component {
-	state = {
+	innerState = {
 		room: null,
 		connectingAgent: false,
 		queueSpot: 0,
@@ -53,16 +53,16 @@ class ChatContainer extends Component {
 
 	checkConnectingAgent = async () => {
 		const { connecting, queueInfo } = this.props;
-		const { connectingAgent, queueSpot, estimatedWaitTime } = this.state;
+		const { connectingAgent, queueSpot, estimatedWaitTime } = this.innerState;
 
 		const newConnecting = connecting;
 		const newQueueSpot = (queueInfo && queueInfo.spot) || 0;
 		const newEstimatedWaitTime = queueInfo && queueInfo.estimatedWaitTimeSeconds;
 
 		if (newConnecting !== connectingAgent || newQueueSpot !== queueSpot || newEstimatedWaitTime !== estimatedWaitTime) {
-			this.state.connectingAgent = newConnecting;
-			this.state.queueSpot = newQueueSpot;
-			this.state.estimatedWaitTime = newEstimatedWaitTime;
+			this.innerState.connectingAgent = newConnecting;
+			this.innerState.queueSpot = newQueueSpot;
+			this.innerState.estimatedWaitTime = newEstimatedWaitTime;
 			await this.handleQueueMessage(connecting, queueInfo);
 			await this.handleConnectingAgentAlert(newConnecting, await normalizeQueueAlert(queueInfo));
 		}
@@ -70,9 +70,9 @@ class ChatContainer extends Component {
 
 	checkRoom = () => {
 		const { room } = this.props;
-		const { room: stateRoom } = this.state;
+		const { room: stateRoom } = this.innerState;
 		if (room && (!stateRoom || room._id !== stateRoom._id)) {
-			this.state.room = room;
+			this.innerState.room = room;
 			setTimeout(loadMessages, 500);
 		}
 	};
@@ -341,14 +341,14 @@ class ChatContainer extends Component {
 
 		const { livechatQueueMessageId } = constants;
 		const { message: { text: msg, user: u } = {} } = queueInfo;
-		const { triggerQueueMessage } = this.state;
+		const { triggerQueueMessage } = this.innerState;
 
 		const { room } = this.props;
 		if (!room || !connecting || !msg || !triggerQueueMessage) {
 			return;
 		}
 
-		this.state.triggerQueueMessage = false;
+		this.innerState.triggerQueueMessage = false;
 
 		const { dispatch, messages } = this.props;
 		const ts = new Date();

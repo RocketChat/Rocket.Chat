@@ -1,4 +1,4 @@
-import url from 'url';
+import url from 'node:url';
 
 import jsdom from 'jsdom';
 import mem from 'mem';
@@ -38,7 +38,9 @@ function parseExtraAttributes(widgetData: string): string {
 	return doc.documentElement.innerHTML;
 }
 
-const memoizedParseExtraAttributes = mem(parseExtraAttributes, { maxAge: process.env.TEST_MODE === 'true' ? 1 : 60000 });
+const memoizedParseExtraAttributes = mem(parseExtraAttributes, {
+	maxAge: process.env.TEST_MODE === 'true' || process.env.TEST_MODE === 'api' ? 1 : 60000,
+});
 
 WebApp.connectHandlers.use('/livechat', (req, res, next) => {
 	if (!req.url) {

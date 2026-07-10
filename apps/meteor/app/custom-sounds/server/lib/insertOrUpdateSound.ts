@@ -51,13 +51,10 @@ export const insertOrUpdateSound = async (soundData: ICustomSoundData): Promise<
 
 	if (soundData.name !== soundData.previousName || soundData.extension !== soundData.previousExtension) {
 		await CustomSounds.updateById(soundData._id, { name: soundData.name, extension: soundData.extension });
-		void api.broadcast('notify.updateCustomSound', {
-			soundData: {
-				_id: soundData._id,
-				name: soundData.name,
-				extension: soundData.extension,
-			},
-		});
+		const updatedSound = await CustomSounds.findOneById(soundData._id);
+		if (updatedSound) {
+			void api.broadcast('notify.updateCustomSound', { soundData: updatedSound });
+		}
 	}
 
 	return soundData._id;

@@ -1,8 +1,8 @@
-import type { ReadStream } from 'fs';
-import fs from 'fs';
-import fsp from 'fs/promises';
-import path from 'path';
-import { Readable } from 'stream';
+import type { ReadStream } from 'node:fs';
+import fs from 'node:fs';
+import fsp from 'node:fs/promises';
+import path from 'node:path';
+import { Readable } from 'node:stream';
 
 import type { ObjectId } from 'bson';
 import { MongoInternals } from 'meteor/mongo';

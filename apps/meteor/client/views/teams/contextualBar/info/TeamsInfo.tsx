@@ -19,7 +19,6 @@ import {
 	InfoPanelText,
 	InfoPanelTitle,
 } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useTeamActions } from './useTeamActions';
@@ -29,14 +28,14 @@ import RoomInfoABACSection from '../../../room/contextualBar/Info/RoomInfo/ABAC/
 import { useSplitRoomActions } from '../../../room/contextualBar/Info/hooks/useSplitRoomActions';
 import { useRetentionPolicy } from '../../../room/hooks/useRetentionPolicy';
 
-type TeamsInfoProps = {
+export type TeamsInfoProps = {
 	room: IRoom;
 	onClickEdit?: () => void;
 	onClickClose?: () => void;
 	onClickViewChannels: () => void;
 };
 
-const TeamsInfo = ({ room, onClickClose, onClickEdit, onClickViewChannels }: TeamsInfoProps): ReactElement => {
+const TeamsInfo = ({ room, onClickClose, onClickEdit, onClickViewChannels }: TeamsInfoProps) => {
 	const { t } = useTranslation();
 
 	const retentionPolicy = useRetentionPolicy(room);

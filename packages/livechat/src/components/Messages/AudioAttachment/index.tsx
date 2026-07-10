@@ -5,7 +5,7 @@ import { createClassName } from '../../../helpers/createClassName';
 import { MessageBubble } from '../MessageBubble';
 import styles from './styles.scss';
 
-type AudioAttachmentProps = {
+export type AudioAttachmentProps = {
 	url: string;
 	className?: string;
 	t: (key: string) => string;
@@ -13,6 +13,7 @@ type AudioAttachmentProps = {
 
 const AudioAttachment = ({ url, className, t, ...messageBubbleProps }: AudioAttachmentProps) => (
 	<MessageBubble nude className={createClassName(styles, 'audio-attachment', {}, [className])} {...messageBubbleProps}>
+		{/* eslint-disable-next-line jsx-a11y/media-has-caption */}
 		<audio src={url} controls className={createClassName(styles, 'audio-attachment__inner')}>
 			{t('you_browser_doesn_t_support_audio_element')}
 		</audio>

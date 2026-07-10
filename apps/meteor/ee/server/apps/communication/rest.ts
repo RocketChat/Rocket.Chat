@@ -16,16 +16,16 @@ import { registerAppLogsDistinctInstanceHandler } from './endpoints/appLogsDisti
 import { registerAppLogsExportHandler } from './endpoints/appLogsExportHandler';
 import { registerAppLogsHandler } from './endpoints/appLogsHandler';
 import { registerAppsCountHandler } from './endpoints/appsCountHandler';
-import { API } from '../../../../app/api/server';
-import type { APIClass } from '../../../../app/api/server/ApiClass';
-import { getUploadFormData } from '../../../../app/api/server/lib/getUploadFormData';
-import { loggerMiddleware } from '../../../../app/api/server/middlewares/logger';
-import { metricsMiddleware } from '../../../../app/api/server/middlewares/metrics';
-import { tracerSpanMiddleware } from '../../../../app/api/server/middlewares/tracer';
 import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../../app/cloud/server';
 import { metrics } from '../../../../app/metrics/server';
 import { settings } from '../../../../app/settings/server';
 import { Info } from '../../../../app/utils/rocketchat.info';
+import { API } from '../../../../server/api';
+import type { APIClass } from '../../../../server/api/ApiClass';
+import { getUploadFormData } from '../../../../server/api/lib/getUploadFormData';
+import { loggerMiddleware } from '../../../../server/api/v1/middlewares/logger';
+import { metricsMiddleware } from '../../../../server/api/v1/middlewares/metrics';
+import { tracerSpanMiddleware } from '../../../../server/api/v1/middlewares/tracer';
 import { i18n } from '../../../../server/lib/i18n';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
 import { AppsEngineNoNodesFoundError } from '../../../../server/services/apps-engine/service';
@@ -70,10 +70,21 @@ export class AppsRestApi {
 		});
 
 		const logger = new Logger('APPS');
+
 		this.api.router
-			.use(loggerMiddleware(logger))
-			.use(metricsMiddleware({ basePathRegex: new RegExp(/^\/api\/apps\//), api: this.api, settings, summary: metrics.rocketchatRestApi }))
-			.use(tracerSpanMiddleware);
+			.use(
+				metricsMiddleware({
+					basePathRegex: new RegExp(/^\/api\/apps\//),
+					api: this.api,
+					settings,
+					endpointTimeSummary: metrics.rocketchatRestApi,
+					endpointTimeHistogram: metrics.rocketchatRestApiSeconds,
+					responseSizeHistogram: metrics.rocketchatRestApiResponseSizeBytes,
+					activeRequestsGauge: metrics.rocketchatRestApiActiveRequests,
+				}),
+			)
+			.use(tracerSpanMiddleware)
+			.use(loggerMiddleware(logger));
 
 		this.addManagementRoutes();
 		// Using the same instance of the existing API for now, to be able to use the same api prefix(/api)

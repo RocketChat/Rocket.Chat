@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 export function sanitizeFileName(fileName: string) {
 	const base = path.basename(fileName);

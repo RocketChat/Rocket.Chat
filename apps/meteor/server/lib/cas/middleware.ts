@@ -1,5 +1,5 @@
-import type { IncomingMessage, ServerResponse } from 'http';
-import url from 'url';
+import type { IncomingMessage, ServerResponse } from 'node:http';
+import url from 'node:url';
 
 import { validate } from '@rocket.chat/cas-validate';
 import type { ICredentialToken, RequiredField } from '@rocket.chat/core-typings';

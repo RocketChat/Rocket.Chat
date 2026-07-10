@@ -10,7 +10,6 @@ export interface IIntegrationHistory extends IRocketChatRecord {
 	};
 	event: OutgoingIntegrationEvent;
 	_createdAt: Date;
-	_updatedAt: Date;
 	data?: {
 		user?: any;
 		room?: any;

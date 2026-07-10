@@ -1,6 +1,6 @@
-import type * as http from 'http';
-import type * as https from 'https';
-import type * as net from 'net';
+import type * as http from 'node:http';
+import type * as https from 'node:https';
+import type * as net from 'node:net';
 
 import { ForbiddenNativeModuleAccess } from '.';
 import { PermissionDeniedError } from '../../errors/PermissionDeniedError';

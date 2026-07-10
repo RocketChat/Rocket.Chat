@@ -1,19 +1,18 @@
 import type { AppScreenshot } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import ScreenshotCarousel from './ScreenshotCarousel';
 
-type ScreenshotCarouselAnchorProps = {
+export type ScreenshotCarouselAnchorProps = {
 	screenshots: AppScreenshot[];
 };
 
 type voidFunction = () => void;
 
-const ScreenshotCarouselAnchor = ({ screenshots }: ScreenshotCarouselAnchorProps): ReactElement => {
+const ScreenshotCarouselAnchor = ({ screenshots }: ScreenshotCarouselAnchorProps) => {
 	const [viewCarousel, setViewCarousel] = useState(false);
 
 	const [currentSlideIndex, setCurrentSlideIndex] = useState(0);

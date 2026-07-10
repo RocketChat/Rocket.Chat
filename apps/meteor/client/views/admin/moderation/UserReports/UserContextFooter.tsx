@@ -6,7 +6,7 @@ import useDeactivateUserAction from '../hooks/useDeactivateUserAction';
 import useDismissUserAction from '../hooks/useDismissUserAction';
 import useResetAvatarAction from '../hooks/useResetAvatarAction';
 
-type UserContextFooterProps = { userId: string; deleted: boolean };
+export type UserContextFooterProps = { userId: string; deleted: boolean };
 
 const UserContextFooter = ({ userId, deleted }: UserContextFooterProps) => {
 	const { t } = useTranslation();

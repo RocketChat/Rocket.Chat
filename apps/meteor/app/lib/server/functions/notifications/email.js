@@ -77,8 +77,13 @@ export async function getEmailContent({ message, user, room }) {
 	}
 
 	if (hasFiles) {
-		const fileParts = files.map((file) => {
-			return escapeHTML(file.name);
+		const attachments = message.attachments || [];
+		const fileParts = files.map((file, index) => {
+			let part = escapeHTML(file.name);
+			if (attachments[index]?.description) {
+				part += `<br/><br/>${escapeHTML(attachments[index].description)}`;
+			}
+			return part;
 		});
 		contentParts.push(fileParts.join('<br/><br/>'));
 	}
@@ -178,13 +183,14 @@ export async function getEmailData({ message, receiver, sender, subscription, ro
 		)}${message.tmid || message._id}@${replyto.split('@')[1]}`;
 	}
 
-	metrics.notificationsSent.inc({ notification_type: 'email' });
 	return email;
 }
 
 export function sendEmailFromData(data) {
-	metrics.notificationsSent.inc({ notification_type: 'email' });
-	return Mailer.send(data);
+	return Mailer.send(data).then(() => {
+		metrics.notificationsSent.inc({ notification_type: 'email' });
+		metrics.notificationsSentTotal.inc({ notification_type: 'email' });
+	});
 }
 
 export function shouldNotifyEmail({

@@ -144,6 +144,7 @@ export class ImportService extends ServiceClassInternal implements IImportServic
 					roles: data.roles ? [...new Set([...data.roles, ...defaultRoles])] : defaultRoles,
 				},
 				dataType: 'user',
+				_updatedAt: new Date(),
 			})),
 		);
 

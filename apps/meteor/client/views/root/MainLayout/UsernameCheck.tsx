@@ -1,5 +1,5 @@
 import { useUserId, useSetting } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 
 import PasswordChangeCheck from './PasswordChangeCheck';
@@ -7,7 +7,9 @@ import RegisterUsername from './RegisterUsername';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
 import HomeSkeleton from '../../home/HomeSkeleton';
 
-const UsernameCheck = ({ children }: { children: ReactNode }): ReactElement => {
+export type UsernameCheckProps = { children: ReactNode };
+
+const UsernameCheck = ({ children }: UsernameCheckProps) => {
 	const userId = useUserId();
 	const { data: userData, isLoading } = useUserInfoQuery({ userId: userId || '' }, { enabled: !!userId });
 

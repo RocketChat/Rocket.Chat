@@ -2,7 +2,6 @@ import type { IRole, IPermission } from '@rocket.chat/core-typings';
 import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -25,14 +24,14 @@ const getName = (t: TFunction, permission: IPermission): string => {
 	return t(permission._id as TranslationKey);
 };
 
-type PermissionRowProps = {
+export type PermissionRowProps = {
 	permission: IPermission;
 	roleList: IRole[];
 	onGrant: (permissionId: IPermission['_id'], roleId: IRole['_id']) => Promise<void>;
 	onRemove: (permissionId: IPermission['_id'], roleId: IRole['_id']) => Promise<void>;
 };
 
-const PermissionRow = ({ permission, roleList, onGrant, onRemove }: PermissionRowProps): ReactElement => {
+const PermissionRow = ({ permission, roleList, onGrant, onRemove }: PermissionRowProps) => {
 	const { t } = useTranslation();
 	const { _id: permissionId, roles } = permission;
 	const changeRole = useChangeRole({ onGrant, onRemove, permissionId });

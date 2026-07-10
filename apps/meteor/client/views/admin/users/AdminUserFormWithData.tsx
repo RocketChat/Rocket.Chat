@@ -1,26 +1,25 @@
-import type { IRole, IUser } from '@rocket.chat/core-typings';
+import type { IRole, IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box, Callout } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import type { ReactElement } from 'react';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from 'react-i18next';
 
 import AdminUserForm from './AdminUserForm';
 import { FormSkeleton } from '../../../components/Skeleton';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
 
-type AdminUserFormWithDataProps = {
+export type AdminUserFormWithDataProps = {
 	uid: IUser['_id'];
 	onReload: () => void;
 	context: string;
-	roleData: { roles: IRole[] } | undefined;
+	roleData: { roles: Serialized<IRole>[] } | undefined;
 	roleError: Error | null;
 };
 
-const AdminUserFormWithData = ({ uid, onReload, context, roleData, roleError }: AdminUserFormWithDataProps): ReactElement => {
+const AdminUserFormWithData = ({ uid, onReload, context, roleData, roleError }: AdminUserFormWithDataProps) => {
 	const { t } = useTranslation();
 	const { data, isPending, isError, refetch } = useUserInfoQuery({ userId: uid });
 
-	const handleReload = useEffectEvent(() => {
+	const handleReload = useStableCallback(() => {
 		onReload();
 		refetch();
 	});

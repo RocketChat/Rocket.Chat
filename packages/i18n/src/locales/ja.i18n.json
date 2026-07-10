@@ -2047,7 +2047,7 @@
   "LDAP_Sync_Now_Description": "次回の同期予定を待たずに**バックグラウンド同期**を今すぐ実行します。  \nこのアクションは非同期です。詳細についてはログを参照してください。",
   "LDAP_Sync_User_Active_State": "ユーザーのアクティブ状態の同期",
   "LDAP_Sync_User_Active_State_Both": "ユーザーの有効化と無効化",
-  "LDAP_Sync_User_Active_State_Description": "LDAPステータスに基づいて、Rocket.Chatでユーザーを有効にするか無効にするかを決定します。「pwdAccountLockedTime」属性は、ユーザーが無効になっているかどうかを判断するために使用されます。",
+  "LDAP_Sync_User_Active_State_Description": "LDAPステータスに基づいて、Rocket.Chatでユーザーを有効にするか無効にするかを決定します。",
   "LDAP_Sync_User_Active_State_Disable": "ユーザーを無効にする",
   "LDAP_Sync_User_Active_State_Nothing": "何もしない",
   "LDAP_Sync_User_Avatar": "ユーザーのアバターの同期",

@@ -24,7 +24,7 @@ const { manageDepartmentUnit } = proxyquire
 		'@rocket.chat/omni-core-ee': {
 			getUnitsFromUser: getUnitsFromUserStub,
 		},
-		'../../../../../app/authorization/server/functions/hasRole': {
+		'../../../../../server/lib/authorization/hasRole': {
 			hasAnyRoleAsync: hasAnyRoleStub,
 		},
 		'@rocket.chat/models': {

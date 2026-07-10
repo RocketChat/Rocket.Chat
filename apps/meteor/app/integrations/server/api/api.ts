@@ -9,22 +9,23 @@ import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
 
 import { isPlainObject } from '../../../../lib/utils/isPlainObject';
-import { APIClass } from '../../../api/server/ApiClass';
-import type { RateLimiterOptions } from '../../../api/server/api';
-import { API, defaultRateLimiterOptions } from '../../../api/server/api';
-import type { FailureResult, GenericRouteExecutionContext, SuccessResult, UnavailableResult } from '../../../api/server/definition';
-import { loggerMiddleware } from '../../../api/server/middlewares/logger';
-import { metricsMiddleware } from '../../../api/server/middlewares/metrics';
-import { tracerSpanMiddleware } from '../../../api/server/middlewares/tracer';
-import type { APIActionContext } from '../../../api/server/router';
-import type { WebhookResponseItem } from '../../../lib/server/functions/processWebhookMessage';
-import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
+import { APIClass } from '../../../../server/api/ApiClass';
+import type { RateLimiterOptions } from '../../../../server/api/api';
+import { API, defaultRateLimiterOptions } from '../../../../server/api/api';
+import type { FailureResult, GenericRouteExecutionContext, SuccessResult, UnavailableResult } from '../../../../server/api/definition';
+import type { APIActionContext } from '../../../../server/api/router';
+import { loggerMiddleware } from '../../../../server/api/v1/middlewares/logger';
+import { metricsMiddleware } from '../../../../server/api/v1/middlewares/metrics';
+import { tracerSpanMiddleware } from '../../../../server/api/v1/middlewares/tracer';
+import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
+import type { WebhookResponseItem } from '../../../../server/lib/messages/processWebhookMessage';
+import { processWebhookMessage } from '../../../../server/lib/messages/processWebhookMessage';
+import { addOutgoingIntegration } from '../../../../server/meteor-methods/integrations/outgoing/addOutgoingIntegration';
+import { deleteOutgoingIntegration } from '../../../../server/meteor-methods/integrations/outgoing/deleteOutgoingIntegration';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { IsolatedVMScriptEngine } from '../lib/isolated-vm/isolated-vm';
 import { incomingLogger, integrationLogger } from '../logger';
-import { addOutgoingIntegration } from '../methods/outgoing/addOutgoingIntegration';
-import { deleteOutgoingIntegration } from '../methods/outgoing/deleteOutgoingIntegration';
 
 const ivmEngine = new IsolatedVMScriptEngine(true);
 
@@ -166,6 +167,15 @@ async function executeIntegrationRest(
 
 	if (this.request.integration.enabled !== true) {
 		return API.v1.unavailable('Service Unavailable');
+	}
+
+	if (!(await hasPermissionAsync(this.user._id, 'message-impersonate'))) {
+		incomingLogger.error({
+			msg: 'Error trying to execute integration',
+			integration: this.request.integration.name,
+			error: 'The assigned user from the integration must have the message-impersonate permission.',
+		});
+		return API.v1.failure('error-user-lacks-message-impersonate-permission');
 	}
 
 	const defaultValues = {
@@ -427,9 +437,19 @@ const Api = new WebHookAPI({
 });
 
 Api.router
-	.use(loggerMiddleware(integrationLogger))
-	.use(metricsMiddleware({ basePathRegex: new RegExp(/^\/hooks\//), api: Api, settings, summary: metrics.rocketchatRestApi }))
-	.use(tracerSpanMiddleware);
+	.use(
+		metricsMiddleware({
+			basePathRegex: new RegExp(/^\/hooks\//),
+			api: Api,
+			settings,
+			endpointTimeSummary: metrics.rocketchatRestApi,
+			endpointTimeHistogram: metrics.rocketchatRestApiSeconds,
+			responseSizeHistogram: metrics.rocketchatRestApiResponseSizeBytes,
+			activeRequestsGauge: metrics.rocketchatRestApiActiveRequests,
+		}),
+	)
+	.use(tracerSpanMiddleware)
+	.use(loggerMiddleware(integrationLogger));
 
 Api.addRoute(
 	':integrationId/:userId/:token',

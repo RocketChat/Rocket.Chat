@@ -22,7 +22,7 @@ import { useTranslation, Trans } from 'react-i18next';
 
 import WorkspaceRegistrationModal from './RegisterWorkspaceModal';
 
-type RegisterWorkspaceTokenModalProps = {
+export type RegisterWorkspaceTokenModalProps = {
 	onClose: () => void;
 	onStatusChange?: () => void;
 };

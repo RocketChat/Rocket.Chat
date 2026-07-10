@@ -1,7 +1,8 @@
 import { Box, Tag } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 
-const ReactionUserTag = ({ displayName }: { displayName: string }): ReactElement => (
+export type ReactionUserTagProps = { displayName: string };
+
+const ReactionUserTag = ({ displayName }: ReactionUserTagProps) => (
 	<Box mie={4} mbe={4}>
 		<Tag variant='primary'>{displayName}</Tag>
 	</Box>

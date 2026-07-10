@@ -1,4 +1,4 @@
-import type { UrlWithStringQuery } from 'url';
+import type { UrlWithStringQuery } from 'node:url';
 
 import type Icons from '@rocket.chat/icons';
 import type { Root } from '@rocket.chat/message-parser';

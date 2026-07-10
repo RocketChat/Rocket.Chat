@@ -1,5 +1,5 @@
 import { log } from 'console';
-import os from 'os';
+import os from 'node:os';
 
 import { Analytics, Team, VideoConf, Presence } from '@rocket.chat/core-services';
 import type { IRoom, IStats, ISetting } from '@rocket.chat/core-typings';

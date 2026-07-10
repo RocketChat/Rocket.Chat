@@ -1,3 +1,4 @@
+import './absoluteUrl';
 import './ddpOverREST';
 import './ddpSdkCollectionBridge';
 import './subscribeViaSDK';
@@ -7,5 +8,4 @@ import './desktopInjection';
 import './oauthRedirectUri';
 import './settings';
 import './totpOnCall';
-import './unstoreLoginToken';
 import './userAndUsers';

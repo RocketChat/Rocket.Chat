@@ -1,11 +1,12 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import FeatureUsageCard from '../FeatureUsageCard';
 import FeatureUsageCardBody from '../FeatureUsageCardBody';
 
-const CountSeatsCard = ({ activeUsers }: { activeUsers: number }): ReactElement => {
+export type CountSeatsCardProps = { activeUsers: number };
+
+const CountSeatsCard = ({ activeUsers }: CountSeatsCardProps) => {
 	const { t } = useTranslation();
 
 	return (

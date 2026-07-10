@@ -53,7 +53,7 @@ roomCoordinator.add(
 			if (roomData.prid || isRoomFederated(roomData)) {
 				return roomData.fname;
 			}
-			if (settings.watch('UI_Allow_room_names_with_special_chars')) {
+			if (settings.peek('UI_Allow_room_names_with_special_chars')) {
 				return roomData.fname || roomData.name;
 			}
 			return roomData.name;

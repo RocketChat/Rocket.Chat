@@ -5,6 +5,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../../authorization/server';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -38,6 +39,7 @@ export const getUserMentionsByChannel = async (
 
 Meteor.methods<ServerMethods>({
 	async getUserMentionsByChannel({ roomId, options }) {
+		methodDeprecationLogger.method('getUserMentionsByChannel', '9.0.0', '/v1/channels.getAllUserMentionsByChannel');
 		const uid = Meteor.userId();
 
 		if (!uid) {

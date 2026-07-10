@@ -8,6 +8,7 @@ const mockSounds = Array.from({ length: 25 }, (_, i) => ({
 	_id: `sound-${i}`,
 	name: `Custom Sound ${i + 1}`,
 	extension: 'mp3',
+	_updatedAt: '2024-01-01T00:00:00.000Z',
 }));
 
 const getMockedAppRoot = () =>

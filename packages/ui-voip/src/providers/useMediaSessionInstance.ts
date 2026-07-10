@@ -28,12 +28,23 @@ type MediaSessionStoreEventMap = {
 	requestToast: { message: TranslationKey; args?: Record<string, string>; type: 'error' | 'success' | 'info' | 'warning' };
 };
 
+const MAX_FAILED_SCREEN_SHARE_ATTEMPTS = 3;
+const isNotAllowedError = (error: unknown): error is DOMException & { name: 'NotAllowedError' } => {
+	return error instanceof DOMException && error.name === 'NotAllowedError';
+};
+
 class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 	private sessionInstance: MediaSignalingSession | null = null;
 
 	private sendSignalFn: SignalTransport | null = null;
 
 	private _webrtcProcessorFactory: ((config: WebRTCProcessorConfig) => MediaCallWebRTCProcessor) | null = null;
+
+	private failedScreenShareAttempts = 0;
+
+	private logger = new MediaCallLogger();
+
+	private popoutWindow: Window | undefined;
 
 	constructor() {
 		super();
@@ -86,16 +97,34 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 
 	private async getDisplayMedia(constraints: MediaStreamConstraints) {
 		try {
-			if (!navigator?.mediaDevices?.getDisplayMedia) {
+			const actualWindow = this.popoutWindow || window;
+			if (!actualWindow.navigator?.mediaDevices?.getDisplayMedia) {
 				throw new Error('getDisplayMedia is not supported');
 			}
-			const stream = await navigator.mediaDevices.getDisplayMedia(constraints);
+
+			const stream = await actualWindow.navigator.mediaDevices.getDisplayMedia(constraints);
 			if (!stream) {
+				this.logger.log('MediaSessionStore - getDisplayMedia - no stream returned');
 				throw new Error('MediaSessionStore - getDisplayMedia - Failed to get display media');
 			}
+
+			this.failedScreenShareAttempts = 0;
 			return stream;
 		} catch (error) {
-			this.requestToast({ message: 'Share_screen_failed_update_or_check_permissions', type: 'error' });
+			this.logger.log('MediaSessionStore - getDisplayMedia - error', {
+				attempts: this.failedScreenShareAttempts,
+				error,
+			});
+
+			if (isNotAllowedError(error) && this.failedScreenShareAttempts < MAX_FAILED_SCREEN_SHARE_ATTEMPTS) {
+				this.logger.log('MediaSessionStore - getDisplayMedia - error - soft failure #', this.failedScreenShareAttempts);
+				this.failedScreenShareAttempts++;
+				throw error;
+			}
+
+			this.logger.log('MediaSessionStore - getDisplayMedia - error - dispatching toast');
+			this.requestToast({ message: 'Share_screen_failed_update_or_check_permissions', type: 'info' });
+
 			throw error;
 		}
 	}
@@ -105,6 +134,8 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 			this.sessionInstance.endSession();
 			this.sessionInstance = null;
 		}
+
+		this.failedScreenShareAttempts = 0;
 
 		if (!this._webrtcProcessorFactory || !this.sendSignalFn) {
 			return null;
@@ -122,7 +153,7 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 			mediaStreamFactory: (...args) => navigator.mediaDevices.getUserMedia(...args),
 			randomStringFactory,
 			oldSessionId: this.getOldSessionId(userId),
-			logger: new MediaCallLogger(),
+			logger: this.logger,
 			features: ['audio', 'screen-share', 'transfer', 'hold'],
 			autoSync: true,
 		});
@@ -168,9 +199,23 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 
 		void this.sessionInstance.processSignal(signal);
 	}
+
+	public setPopoutWindow(popoutWindow?: Window) {
+		if (!popoutWindow) {
+			this.popoutWindow = undefined;
+		}
+		this.popoutWindow = popoutWindow;
+	}
 }
 
 const mediaSession = new MediaSessionStore();
+
+export const useSetPopoutWindow = (popoutWindow?: Window) => {
+	useEffect(() => {
+		mediaSession.setPopoutWindow(popoutWindow);
+		return () => mediaSession.setPopoutWindow(undefined);
+	});
+};
 
 export const useMediaSessionInstance = (userId?: string) => {
 	const { t } = useTranslation();

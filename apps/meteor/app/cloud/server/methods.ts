@@ -2,16 +2,17 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { buildWorkspaceRegistrationData } from './functions/buildRegistrationData';
-import { checkUserHasCloudLogin } from './functions/checkUserHasCloudLogin';
-import { connectWorkspace } from './functions/connectWorkspace';
-import { finishOAuthAuthorization } from './functions/finishOAuthAuthorization';
-import { getOAuthAuthorizationUrl } from './functions/getOAuthAuthorizationUrl';
-import { retrieveRegistrationStatus } from './functions/retrieveRegistrationStatus';
-import { startRegisterWorkspace } from './functions/startRegisterWorkspace';
-import { syncWorkspace } from './functions/syncWorkspace';
-import { userLogout } from './functions/userLogout';
-import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../../server/lib/authorization/hasPermission';
+import { buildWorkspaceRegistrationData } from '../../../server/lib/cloud/buildRegistrationData';
+import { checkUserHasCloudLogin } from '../../../server/lib/cloud/checkUserHasCloudLogin';
+import { connectWorkspace } from '../../../server/lib/cloud/connectWorkspace';
+import { finishOAuthAuthorization } from '../../../server/lib/cloud/finishOAuthAuthorization';
+import { getOAuthAuthorizationUrl } from '../../../server/lib/cloud/getOAuthAuthorizationUrl';
+import { retrieveRegistrationStatus } from '../../../server/lib/cloud/retrieveRegistrationStatus';
+import { startRegisterWorkspace } from '../../../server/lib/cloud/startRegisterWorkspace';
+import { syncWorkspace } from '../../../server/lib/cloud/syncWorkspace';
+import { userLogout } from '../../../server/lib/cloud/userLogout';
+import { methodDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -40,6 +41,7 @@ Meteor.methods<ServerMethods>({
 	 * Prefer using cloud.registrationStatus rest api.
 	 */
 	async 'cloud:checkRegisterStatus'() {
+		methodDeprecationLogger.method('cloud:checkRegisterStatus', '9.0.0', '/v1/cloud.registrationStatus');
 		const uid = Meteor.userId();
 
 		if (!uid) {

@@ -89,10 +89,11 @@ runs:
           # Read only the specified platform architecture
           manifest_file="$service_dir/$PLATFORM/manifest.json"
           if [[ -f "$manifest_file" ]]; then
-            # Docker manifest inspect -v returns SchemaV2Manifest with sizes
-            # Extract config size and layer sizes
-            config_size=$(jq -r '.SchemaV2Manifest.config.size // 0' "$manifest_file")
-            layers_size=$(jq '[.SchemaV2Manifest.layers[]?.size // 0] | add // 0' "$manifest_file")
+            # docker manifest inspect -v puts the manifest under SchemaV2Manifest
+            # (Docker schema2 images) or OCIManifest (OCI images, which buildx
+            # produces by default). Coalesce so both formats are read.
+            config_size=$(jq -r '(.SchemaV2Manifest // .OCIManifest).config.size // 0' "$manifest_file")
+            layers_size=$(jq '[(.SchemaV2Manifest // .OCIManifest).layers[]?.size // 0] | add // 0' "$manifest_file")
             size=$((config_size + layers_size))
 
             echo "  → Found $manifest_file: $size bytes (config: $config_size, layers: $layers_size)"

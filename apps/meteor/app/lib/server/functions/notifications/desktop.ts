@@ -67,6 +67,7 @@ export async function notifyDesktopUser({
 	};
 
 	metrics.notificationsSent.inc({ notification_type: 'desktop' });
+	metrics.notificationsSentTotal.inc({ notification_type: 'desktop' });
 
 	void api.broadcast('notify.desktop', userId, payload);
 }

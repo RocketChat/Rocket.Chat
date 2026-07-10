@@ -1,6 +1,6 @@
-import { action } from '@storybook/addon-actions';
 import type { Decorator } from '@storybook/preact';
 import { loremIpsum as originalLoremIpsum } from 'lorem-ipsum';
+import { action } from 'storybook/actions';
 
 import gazzoAvatar from './assets/gazzo.jpg';
 import martinAvatar from './assets/martin.jpg';

@@ -1,4 +1,4 @@
-import os from 'os';
+import os from 'node:os';
 
 import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';

@@ -6,7 +6,7 @@ import Info from '../../../components/Info';
 import Label from '../../../components/Label';
 import { useDepartmentInfo } from '../../hooks/useDepartmentInfo';
 
-type DepartmentFieldProps = {
+export type DepartmentFieldProps = {
 	departmentId: string;
 };
 

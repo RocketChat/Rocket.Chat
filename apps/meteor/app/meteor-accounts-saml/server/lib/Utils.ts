@@ -1,5 +1,5 @@
-import { EventEmitter } from 'events';
-import zlib from 'zlib';
+import { EventEmitter } from 'node:events';
+import zlib from 'node:zlib';
 
 import type { Logger } from '@rocket.chat/logger';
 
@@ -146,6 +146,12 @@ export class SAMLUtils {
 	public static error(obj: object | string): void {
 		if (logger) {
 			logger.error(obj);
+		}
+	}
+
+	public static warn(obj: object | string): void {
+		if (logger) {
+			logger.warn(obj);
 		}
 	}
 

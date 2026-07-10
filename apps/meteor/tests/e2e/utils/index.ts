@@ -3,5 +3,6 @@ export * from './setSettingValueById';
 export * from './getSettingValueById';
 export * from './getPermissionRoles';
 export * from './goToRouteAndWait';
+export * from './updatePermissions';
 export * from './setUserPreferences';
 export * from './updateOwnUserInfo';

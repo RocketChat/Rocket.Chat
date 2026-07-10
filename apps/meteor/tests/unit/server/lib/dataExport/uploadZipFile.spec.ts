@@ -24,10 +24,10 @@ const { uploadZipFile } = proxyquire.noCallThru().load('../../../../../server/li
 			id: stubs.randomId,
 		},
 	},
-	'fs/promises': {
+	'node:fs/promises': {
 		stat: stubs.stat,
 	},
-	'fs': {
+	'node:fs': {
 		createReadStream: stubs.createReadStream,
 	},
 	'../../../app/file-upload/server': {

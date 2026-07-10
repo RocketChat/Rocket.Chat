@@ -1,14 +1,16 @@
 import type { ReactNode } from 'react';
 
 import Card from '../Card';
+import StreamCardOpenInRoomButton from './StreamCardOpenInRoom';
 import StreamCardPin from './StreamCardPin';
 import StreamCardStopSharingButton from './StreamCardStopSharingButton';
 
-type StreamCardProps = {
+export type StreamCardProps = {
 	children: ReactNode;
 	own?: boolean;
 	onClickFocusStream?: () => void;
 	onClickStopSharing?: () => void;
+	onClickOpenInRoom?: () => void;
 	focused?: boolean;
 	autoHeight?: boolean;
 	maxHeight?: number;
@@ -27,6 +29,7 @@ const StreamCard = ({
 	own,
 	onClickFocusStream,
 	onClickStopSharing,
+	onClickOpenInRoom,
 	focused,
 	autoHeight,
 	maxHeight,
@@ -42,6 +45,7 @@ const StreamCard = ({
 		>
 			{onClickFocusStream && <StreamCardPin focused={focused} onClick={onClickFocusStream} position='bottomRight' />}
 			{own && onClickStopSharing && <StreamCardStopSharingButton onClick={onClickStopSharing} showOnHover={showStopSharingOnHover} />}
+			{onClickOpenInRoom && <StreamCardOpenInRoomButton onClick={onClickOpenInRoom} showOnHover={true} />}
 			{children}
 		</Card>
 	);

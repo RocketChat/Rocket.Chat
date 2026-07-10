@@ -1,4 +1,4 @@
-import type http from 'http';
+import type http from 'node:http';
 
 import type { IUpload } from '@rocket.chat/core-typings';
 

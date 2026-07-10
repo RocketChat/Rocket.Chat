@@ -32,8 +32,7 @@ test.describe.serial('Quote Messages', () => {
 		page = await context.newPage();
 		poHomeChannel = new HomeChannel(page);
 
-		await poHomeChannel.goto();
-		await poHomeChannel.navbar.openChat(targetChannel);
+		await poHomeChannel.gotoChannel(targetChannel);
 	});
 
 	test.afterAll(async ({ api }) => {

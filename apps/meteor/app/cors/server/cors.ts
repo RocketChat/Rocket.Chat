@@ -1,6 +1,6 @@
-import type http from 'http';
-import type { UrlWithParsedQuery } from 'url';
-import url from 'url';
+import type http from 'node:http';
+import type { UrlWithParsedQuery } from 'node:url';
+import url from 'node:url';
 
 import { Logger } from '@rocket.chat/logger';
 import { Meteor } from 'meteor/meteor';

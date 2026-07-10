@@ -2,18 +2,17 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { GenericModal, GenericModalSkeleton } from '@rocket.chat/ui-client';
 import { useMethod, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ReadReceiptRow from './ReadReceiptRow';
 
-type ReadReceiptsModalProps = {
+export type ReadReceiptsModalProps = {
 	messageId: IMessage['_id'];
 	onClose: () => void;
 };
 
-const ReadReceiptsModal = ({ messageId, onClose }: ReadReceiptsModalProps): ReactElement => {
+const ReadReceiptsModal = ({ messageId, onClose }: ReadReceiptsModalProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 

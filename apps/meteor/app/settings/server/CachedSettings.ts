@@ -183,7 +183,7 @@ export class CachedSettings
 		}
 
 		const mergeFunction =
-			process.env.TEST_MODE !== 'true'
+			process.env.TEST_MODE !== 'true' && process.env.TEST_MODE !== 'api'
 				? _.debounce((): void => {
 						callback(_id.map((id) => this.store.get(id)?.value) as T[]);
 					}, 100)

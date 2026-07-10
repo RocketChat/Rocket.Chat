@@ -34,6 +34,7 @@ export async function sendRequest(
 
 		if (result.status === 200) {
 			metrics.totalLivechatWebhooksSuccess.inc();
+			metrics.totalLivechatWebhooksSuccessTotal.inc();
 			await cb?.(result);
 			return result;
 		}
@@ -46,10 +47,12 @@ export async function sendRequest(
 				response: await result.text(),
 			});
 			metrics.totalLivechatWebhooksFailures.inc();
+			metrics.totalLivechatWebhooksFailuresTotal.inc();
 			return;
 		}
 
 		metrics.totalLivechatWebhooksFailures.inc();
+		metrics.totalLivechatWebhooksFailuresTotal.inc();
 		throw new Error(await result.text());
 	} catch (err) {
 		const retryAfter = timeout * 4;

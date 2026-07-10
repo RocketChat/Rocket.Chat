@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 
 import {
 	ServiceClass,
@@ -312,7 +312,9 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				}
 			}
 
-			const msg = message.msg || '';
+			// When you send a file message, the things you type in the modal are not "msg", they're in "description" of the attachment
+			// So, we'll fetch the the msg, if empty, go for the first description on an attachment, if empty, empty string
+			const msg = message.msg || message.attachments.find((attachment) => attachment.description)?.description || '';
 			// Remove nulls from final array
 			messagesData.push({
 				msg,
@@ -466,7 +468,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 					streamParam,
 					details: {
 						// transcript_{company-name}_{date}_{hour}.pdf
-						name: `${transcriptText}_${data.siteName}_${new Intl.DateTimeFormat('en-US').format(new Date()).replace(/\//g, '-')}_${
+						name: `${transcriptText}_${data.siteName}_${new Intl.DateTimeFormat('en-US').format(new Date()).replaceAll('/', '-')}_${
 							data.visitor?.name || data.visitor?.username || 'Visitor'
 						}.pdf`,
 						type: 'application/pdf',

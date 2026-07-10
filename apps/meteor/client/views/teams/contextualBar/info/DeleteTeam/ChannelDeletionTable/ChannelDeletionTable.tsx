@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import ChannelDeletionTableRow from './ChannelDeletionTableRow';
 
-type ChannelDeletionTableProps = {
+export type ChannelDeletionTableProps = {
 	rooms: Serialized<IRoom>[];
 	onToggleAllRooms: () => void;
 	onChangeRoomSelection: (room: Serialized<IRoom>) => void;

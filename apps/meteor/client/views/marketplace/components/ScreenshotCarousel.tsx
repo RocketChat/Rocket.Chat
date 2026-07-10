@@ -1,8 +1,7 @@
 import type { AppScreenshot } from '@rocket.chat/core-typings';
 import { Box, IconButton } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 
-type ScreenshotCarouselProps = {
+export type ScreenshotCarouselProps = {
 	AppScreenshots: Array<AppScreenshot>;
 	setViewCarousel: (state: boolean) => void;
 	handleNextSlide: () => void;
@@ -20,8 +19,8 @@ const ScreenshotCarousel = ({
 	isFirstSlide,
 	isLastSlide,
 	currentSlideIndex,
-}: ScreenshotCarouselProps): ReactElement => {
-	const handleScreenshotRender = (): JSX.Element[] =>
+}: ScreenshotCarouselProps) => {
+	const handleScreenshotRender = () =>
 		AppScreenshots.map((currentScreenshot, index) => {
 			const isCurrentImageOnScreen = index === currentSlideIndex;
 			const screenshotWrapperStyle = isCurrentImageOnScreen

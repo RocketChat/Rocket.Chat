@@ -3,7 +3,7 @@ import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode, ComponentProps } from 'react';
 import { useRef, useState, useEffect } from 'react';
 
-type ThumbnailProps = ComponentProps<typeof Box> & {
+export type ThumbnailProps = ComponentProps<typeof Box> & {
 	of: ReactNode;
 };
 

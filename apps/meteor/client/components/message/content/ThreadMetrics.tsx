@@ -7,7 +7,6 @@ import {
 	MessageMetricsItemLabel,
 } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ThreadMetricsFollow from './ThreadMetricsFollow';
@@ -15,7 +14,7 @@ import ThreadMetricsParticipants from './ThreadMetricsParticipants';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { useGoToThread } from '../../../views/room/hooks/useGoToThread';
 
-type ThreadMetricsProps = {
+export type ThreadMetricsProps = {
 	unread: boolean;
 	mention: boolean;
 	all: boolean;
@@ -27,7 +26,7 @@ type ThreadMetricsProps = {
 	following: boolean;
 };
 
-const ThreadMetrics = ({ unread, mention, all, rid, mid, counter, participants, following, lm }: ThreadMetricsProps): ReactElement => {
+const ThreadMetrics = ({ unread, mention, all, rid, mid, counter, participants, following, lm }: ThreadMetricsProps) => {
 	const { t } = useTranslation();
 
 	const format = useTimeAgo();

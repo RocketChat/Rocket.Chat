@@ -14,7 +14,7 @@ import {
 } from '../../../../app/importer/lib/ImporterProgressStep';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
-type ImportOperationSummaryProps = {
+export type ImportOperationSummaryProps = {
 	type: string;
 	_updatedAt: Serialized<Date>;
 	status: (typeof ProgressStep)[keyof typeof ProgressStep];

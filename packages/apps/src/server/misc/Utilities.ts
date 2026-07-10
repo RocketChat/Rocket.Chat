@@ -10,7 +10,7 @@ export class Utilities {
 
 		Object.getOwnPropertyNames(item).forEach((prop: string) => {
 			if (
-				item.hasOwnProperty(prop) &&
+				Object.hasOwn(item, prop) &&
 				item[prop] !== null &&
 				(typeof item[prop] === 'object' || typeof item[prop] === 'function') &&
 				!Object.isFrozen(item[prop])

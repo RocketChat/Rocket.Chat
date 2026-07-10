@@ -158,6 +158,7 @@ export class RecordConverter<R extends IImportRecord, T extends RecordConverterO
 			data,
 			dataType: this.getDataType(),
 			options,
+			_updatedAt: new Date(),
 		});
 	}
 

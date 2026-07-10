@@ -1,4 +1,4 @@
-import http from 'http';
+import http from 'node:http';
 
 import { Statistics } from '@rocket.chat/models';
 import { tracerSpan } from '@rocket.chat/tracing';
@@ -92,6 +92,7 @@ app.use('/metrics', (_req, res) => {
 		.metrics()
 		.then((data) => {
 			metrics.metricsRequests.inc();
+			metrics.metricsRequestsTotal.inc();
 			metrics.metricsSize.set(data.length);
 
 			res.end(data);

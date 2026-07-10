@@ -1,8 +1,8 @@
 import { Accounts } from 'meteor/accounts-base';
-import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
+import { type DDPMessage, parseDDP, stringifyDDP } from '../../lib/sdk/ddpProtocol';
 import { adoptAccountFromMeteorLoginResult, getDdpSdk } from '../../lib/sdk/ddpSdk';
 import { isSdkTransportEnabled } from '../../lib/sdk/sdkTransportEnabled';
 
@@ -26,42 +26,14 @@ import { isSdkTransportEnabled } from '../../lib/sdk/sdkTransportEnabled';
  *  - connect/pong frames — discarded; the SDK socket has its own handshake.
  */
 
-type MeteorIDDPStream = {
-	currentStatus: {
-		status: string;
-		connected: boolean;
-		retryCount: number;
-		retryTime?: number;
-		reason?: string;
-	};
-	eventCallbacks?: Record<string, Array<(...args: unknown[]) => void>>;
-	statusListeners?: { changed(): void };
-	on(event: string, callback: (...args: unknown[]) => void): void;
-	forEachCallback(name: string, cb: (callback: (...args: unknown[]) => void) => void): void;
-	send(data: string): void;
-	status(): MeteorIDDPStream['currentStatus'];
-	statusChanged(): void;
-	reconnect(options?: unknown): void;
-	disconnect(options?: { _permanent?: boolean; _error?: unknown }): void;
-	_lostConnection(error?: unknown): void;
-};
-
-type MeteorConnectionInternals = {
-	_stream: MeteorIDDPStream;
-	_streamHandlers: {
-		onMessage(raw: string): void;
-		onReset(): void;
-	};
-};
-
 if (isSdkTransportEnabled()) {
 	installStubMeteorStream();
 }
 
 function installStubMeteorStream(): void {
-	const conn = Meteor.connection as unknown as MeteorConnectionInternals;
+	const conn = Meteor.connection;
 
-	const realStream = conn._stream;
+	const realStream = conn._stream!;
 
 	// Carry Meteor's already-registered handlers (registered in the Connection
 	// constructor BEFORE we got a chance to swap `_stream`) over to the stub —
@@ -76,11 +48,11 @@ function installStubMeteorStream(): void {
 		// already closed / never opened
 	}
 
-	const eventCallbacks: Record<string, Array<(...args: unknown[]) => void>> = Object.create(null);
+	const eventCallbacks: Record<string, Array<(...args: any[]) => void>> = Object.create(null);
 	for (const [name, callbacks] of Object.entries(inheritedCallbacks)) {
-		eventCallbacks[name] = (callbacks as Array<(...args: unknown[]) => void>).slice();
+		eventCallbacks[name] = callbacks.slice();
 	}
-	const fire = (name: string, ...args: unknown[]): void => {
+	const fire = (name: string, ...args: any[]): void => {
 		const list = eventCallbacks[name];
 		if (!list) return;
 		list.slice().forEach((cb) => cb(...args));
@@ -89,14 +61,14 @@ function installStubMeteorStream(): void {
 	const TrackerDependency = (Tracker as unknown as { Dependency?: new () => { changed(): void } }).Dependency;
 	const statusListeners = TrackerDependency ? new TrackerDependency() : undefined;
 
-	const stub: MeteorIDDPStream = {
+	conn._stream = {
 		currentStatus: {
 			status: 'connected',
 			connected: true,
 			retryCount: 0,
 		},
 
-		eventCallbacks,
+		eventCallbacks: eventCallbacks as NonNullable<typeof conn._stream>['eventCallbacks'],
 		statusListeners,
 
 		on(name, callback) {
@@ -113,7 +85,7 @@ function installStubMeteorStream(): void {
 		send(data) {
 			let frame: { msg?: string; id?: string; method?: string; name?: string; params?: unknown[] } | undefined;
 			try {
-				frame = DDPCommon.parseDDP(data) as typeof frame;
+				frame = parseDDP(data) as typeof frame;
 			} catch {
 				return;
 			}
@@ -141,12 +113,8 @@ function installStubMeteorStream(): void {
 		},
 	};
 
-	conn._stream = stub;
-
 	const bridgePongFor = (id?: string): void => {
-		conn._streamHandlers.onMessage(
-			DDPCommon.stringifyDDP({ msg: 'pong', ...(id != null && { id }) } as unknown as Parameters<typeof DDPCommon.stringifyDDP>[0]),
-		);
+		conn._streamHandlers.onMessage(stringifyDDP({ msg: 'pong', ...(id != null && { id }) } as unknown as DDPMessage));
 	};
 
 	type SdkDdp = {
@@ -208,10 +176,10 @@ function installStubMeteorStream(): void {
 		if (c._lastSessionId) return;
 		try {
 			conn._streamHandlers.onMessage(
-				DDPCommon.stringifyDDP({
+				stringifyDDP({
 					msg: 'connected',
 					session: 'sdk-bridged',
-				} as unknown as Parameters<typeof DDPCommon.stringifyDDP>[0]),
+				} as unknown as DDPMessage),
 			);
 			fire('reset');
 		} catch (err) {

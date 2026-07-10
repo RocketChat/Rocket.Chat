@@ -1,6 +1,6 @@
-import { mkdir, mkdtemp } from 'fs/promises';
-import { tmpdir } from 'os';
-import path, { join } from 'path';
+import { mkdir, mkdtemp } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path, { join } from 'node:path';
 
 import type { IUser } from '@rocket.chat/core-typings';
 

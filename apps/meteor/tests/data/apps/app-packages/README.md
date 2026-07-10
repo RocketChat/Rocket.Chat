@@ -31,25 +31,26 @@ An app that handles the `IPreFileUpload` event. If the file name starts with `"t
 <summary>App source code</summary>
 
 ```typescript
-import {
-    IHttp,
-    IModify,
-    IPersistence,
-    IRead,
-} from '@rocket.chat/apps-engine/definition/accessors';
+import { IHttp, IModify, IPersistence, IRead } from '@rocket.chat/apps-engine/definition/accessors';
 import { App } from '@rocket.chat/apps-engine/definition/App';
 import { FileUploadNotAllowedException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { IPreFileUpload } from '@rocket.chat/apps-engine/definition/uploads';
 import { IFileUploadContext } from '@rocket.chat/apps-engine/definition/uploads/IFileUploadContext';
 
 export class TestIPreFileUpload extends App implements IPreFileUpload {
-    public async executePreFileUpload(context: IFileUploadContext, read: IRead, http: IHttp, persis: IPersistence, modify: IModify): Promise<void> {
-        if (context.file.name.startsWith('test-should-reject')) {
-            console.log('[executePreFileUpload] Rejecting file which name starts with "test-should-reject"');
-            throw new FileUploadNotAllowedException(`Test file rejected ${context.content.toString()}`);
-        }
-        console.log('[executePreFileUpload] Did not reject file');
-    }
+	public async executePreFileUpload(
+		context: IFileUploadContext,
+		read: IRead,
+		http: IHttp,
+		persis: IPersistence,
+		modify: IModify,
+	): Promise<void> {
+		if (context.file.name.startsWith('test-should-reject')) {
+			console.log('[executePreFileUpload] Rejecting file which name starts with "test-should-reject"');
+			throw new FileUploadNotAllowedException(`Test file rejected ${context.content.toString()}`);
+		}
+		console.log('[executePreFileUpload] Did not reject file');
+	}
 }
 ```
 
@@ -62,6 +63,7 @@ File name: `api-parameter-test_0.0.1.zip`
 An app that provides a public API endpoint with URL parameters. The endpoint path is `/api/:param1/:param2/test` and returns the values of both parameters in the response.
 
 **Response format:**
+
 - Content-Type: `text/plain`
 - Body: `Param1: <param1_value>, Param2: <param2_value>`
 - Status: 200 OK
@@ -70,66 +72,47 @@ An app that provides a public API endpoint with URL parameters. The endpoint pat
 <summary>App source code</summary>
 
 **APIParameterTestApp.ts**
+
 ```typescript
-import {
-    IAppAccessors,
-    IConfigurationExtend,
-    IEnvironmentRead,
-    ILogger,
-} from '@rocket.chat/apps-engine/definition/accessors';
+import { IAppAccessors, IConfigurationExtend, IEnvironmentRead, ILogger } from '@rocket.chat/apps-engine/definition/accessors';
 import { ApiSecurity, ApiVisibility } from '@rocket.chat/apps-engine/definition/api';
 import { App } from '@rocket.chat/apps-engine/definition/App';
 import { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import { TestEndpoint } from './TestEndpoint';
 
 export class APIParameterTestApp extends App {
-    constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
-        super(info, logger, accessors);
-    }
+	constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
+		super(info, logger, accessors);
+	}
 
-    protected async extendConfiguration(configuration: IConfigurationExtend, environmentRead: IEnvironmentRead): Promise<void> {
-        await configuration.api.provideApi({
-            visibility: ApiVisibility.PUBLIC,
-            security: ApiSecurity.UNSECURE,
-            endpoints: [
-                new TestEndpoint(this),
-            ]
-        })
-    }
+	protected async extendConfiguration(configuration: IConfigurationExtend, environmentRead: IEnvironmentRead): Promise<void> {
+		await configuration.api.provideApi({
+			visibility: ApiVisibility.PUBLIC,
+			security: ApiSecurity.UNSECURE,
+			endpoints: [new TestEndpoint(this)],
+		});
+	}
 }
 ```
 
 **TestEndpoint.ts**
+
 ```typescript
-import {
-    HttpStatusCode,
-    IModify,
-    IRead,
-} from "@rocket.chat/apps-engine/definition/accessors";
-import {
-    ApiEndpoint,
-    IApiEndpointInfo,
-    IApiRequest,
-    IApiResponse,
-} from "@rocket.chat/apps-engine/definition/api";
+import { HttpStatusCode, IModify, IRead } from '@rocket.chat/apps-engine/definition/accessors';
+import { ApiEndpoint, IApiEndpointInfo, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
 
 export class TestEndpoint extends ApiEndpoint {
-    public path = "api/:param1/:param2/test";
+	public path = 'api/:param1/:param2/test';
 
-    public async get(
-        request: IApiRequest,
-        endpoint: IApiEndpointInfo,
-        read: IRead,
-        modify: IModify,
-    ): Promise<IApiResponse> {
-        return {
-            content: `Param1: ${request.params.param1}, Param2: ${request.params.param2}`,
-            status: HttpStatusCode.OK,
-            headers: {
-                "Content-Type": "text/plain",
-            },
-        }
-    }
+	public async get(request: IApiRequest, endpoint: IApiEndpointInfo, read: IRead, modify: IModify): Promise<IApiResponse> {
+		return {
+			content: `Param1: ${request.params.param1}, Param2: ${request.params.param2}`,
+			status: HttpStatusCode.OK,
+			headers: {
+				'Content-Type': 'text/plain',
+			},
+		};
+	}
 }
 ```
 
@@ -295,34 +278,46 @@ This situation used to cause logs for the originating handler (the slashcommand 
 
 ```typescript
 export class NestedRequestsApp extends App implements IPostMessageSent {
-    public async executePostMessageSent(message: IMessage, _read: IRead, _http: IHttp, _persistence: IPersistence, _modify: IModify): Promise<void> {
-        this.getLogger().debug('executed_post_message_sent', message.id);
-    }
+	public async executePostMessageSent(
+		message: IMessage,
+		_read: IRead,
+		_http: IHttp,
+		_persistence: IPersistence,
+		_modify: IModify,
+	): Promise<void> {
+		this.getLogger().debug('executed_post_message_sent', message.id);
+	}
 
-    protected async extendConfiguration(configuration: IConfigurationExtend, _environmentRead: IEnvironmentRead): Promise<void> {
-        configuration.slashCommands.provideSlashCommand(new class implements ISlashCommand {
-            public command= 'nest';
-            public i18nParamsExample = 'nest';
-            public i18nDescription = 'nest';
-            public providesPreview = false;
+	protected async extendConfiguration(configuration: IConfigurationExtend, _environmentRead: IEnvironmentRead): Promise<void> {
+		configuration.slashCommands.provideSlashCommand(
+			new (class implements ISlashCommand {
+				public command = 'nest';
+				public i18nParamsExample = 'nest';
+				public i18nDescription = 'nest';
+				public providesPreview = false;
 
-            constructor(private readonly app: IApp) { }
+				constructor(private readonly app: IApp) {}
 
-            public async executor(context: SlashCommandContext, _read: IRead, modify: IModify, _http: IHttp, _persis: IPersistence): Promise<void> {
-                const [execId] = context.getArguments();
+				public async executor(
+					context: SlashCommandContext,
+					_read: IRead,
+					modify: IModify,
+					_http: IHttp,
+					_persis: IPersistence,
+				): Promise<void> {
+					const [execId] = context.getArguments();
 
-                this.app.getLogger().debug('slashcommand_triggered', execId);
+					this.app.getLogger().debug('slashcommand_triggered', execId);
 
-                const mb = modify.getCreator().startMessage()
-                    .setText(`nested_test_message ${execId}`)
-                    .setRoom(context.getRoom());
+					const mb = modify.getCreator().startMessage().setText(`nested_test_message ${execId}`).setRoom(context.getRoom());
 
-                const id = await modify.getCreator().finish(mb);
+					const id = await modify.getCreator().finish(mb);
 
-                this.app.getLogger().debug('slashcommand_message_sent', id);
-            }
-        }(this));
-    }
+					this.app.getLogger().debug('slashcommand_message_sent', id);
+				}
+			})(this),
+		);
+	}
 }
 ```
 
@@ -483,4 +478,192 @@ export class MessageUpdaterTestApp extends App {
     }
 }
 ```
+
+#### UIKit Room Context Test
+
+File name: `uikit-room-test_0.0.1.zip`
+
+An app that validates room context propagation and interaction data in UIKit interactions across all surfaces (message, modal, contextual bar). It provides a slash command (`open-uikit-room-test-modal`) with three actions:
+
+- `modal` - Opens a modal with a button and submit action
+- `ctx` - Opens a contextual bar with a button and submit action
+- `message` - Sends a message with a button
+
+It also takes a second argument with a random "seed" used to identify the current execution context.
+
+Each interaction handler (`executeBlockActionHandler`, `executeViewSubmitHandler`, `executeViewClosedHandler`) logs detailed data including room ID, user name, view id, block value, triggerId, actionId, and container type. These logs are used by Playwright e2e tests to verify that interaction data is correctly propagated.
+
+<details>
+<summary>App source code</summary>
+
+```typescript
+import {
+	IAppAccessors,
+	IConfigurationExtend,
+	IEnvironmentRead,
+	IHttp,
+	ILogger,
+	IModify,
+	IPersistence,
+	IRead,
+} from '@rocket.chat/apps-engine/definition/accessors';
+import { App } from '@rocket.chat/apps-engine/definition/App';
+import { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import {
+	IUIKitInteractionHandler,
+	IUIKitResponse,
+	UIKitBlockInteractionContext,
+	UIKitViewCloseInteractionContext,
+	UIKitViewSubmitInteractionContext,
+} from '@rocket.chat/apps-engine/definition/uikit';
+import { AppMethod } from '@rocket.chat/apps-engine/definition/metadata';
+import { UIKitSurfaceType } from '@rocket.chat/apps-engine/definition/uikit';
+
+export class UiKitRoomTestApp extends App implements IUIKitInteractionHandler {
+	constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
+		super(info, logger, accessors);
+	}
+
+	async [AppMethod.UIKIT_BLOCK_ACTION](
+		context: UIKitBlockInteractionContext,
+		_read: IRead,
+		_http: IHttp,
+		_persistence: IPersistence,
+		_modify: IModify,
+	): Promise<IUIKitResponse> {
+		const data = context.getInteractionData();
+		this.getLogger().debug('block_action_room', data.room ? data.room.id : 'no-room');
+		this.getLogger().debug('block_action_user', data.user ? data.user.username : 'no-user');
+		this.getLogger().debug('block_action_triggerId', data.triggerId || 'no-triggerId');
+		this.getLogger().debug('block_action_actionId', data.actionId || 'no-actionId');
+		this.getLogger().debug('block_action_value', data.value);
+		this.getLogger().debug('block_action_container', data.container ? data.container.type : 'no-container');
+		return context.getInteractionResponder().successResponse();
+	}
+
+	async [AppMethod.UIKIT_VIEW_SUBMIT](
+		context: UIKitViewSubmitInteractionContext,
+		_read: IRead,
+		_http: IHttp,
+		_persistence: IPersistence,
+		_modify: IModify,
+	): Promise<IUIKitResponse> {
+		const data = context.getInteractionData();
+		this.getLogger().debug('view_submit_room', data.room ? data.room.id : 'no-room');
+		this.getLogger().debug('view_submit_user', data.user ? data.user.username : 'no-user');
+		this.getLogger().debug('view_submit_id', data.view.id);
+		this.getLogger().debug('view_submit_triggerId', data.triggerId || 'no-triggerId');
+		this.getLogger().debug('view_submit_actionId', data.actionId || 'no-actionId');
+		return context.getInteractionResponder().successResponse();
+	}
+
+	async [AppMethod.UIKIT_VIEW_CLOSE](
+		context: UIKitViewCloseInteractionContext,
+		_read: IRead,
+		_http: IHttp,
+		_persistence: IPersistence,
+		_modify: IModify,
+	): Promise<IUIKitResponse> {
+		const data = context.getInteractionData();
+		this.getLogger().debug('view_closed_room', data.room ? data.room.id : 'no-room');
+		this.getLogger().debug('view_closed_user', data.user ? data.user.username : 'no-user');
+		this.getLogger().debug('view_closed_id', data.view.id);
+		this.getLogger().debug('view_closed_triggerId', data.triggerId || 'no-triggerId');
+		this.getLogger().debug('view_closed_actionId', data.actionId || 'no-actionId');
+		return context.getInteractionResponder().successResponse();
+	}
+
+	protected async extendConfiguration(configuration: IConfigurationExtend, _environmentRead: IEnvironmentRead): Promise<void> {
+		await configuration.slashCommands.provideSlashCommand({
+			command: 'open-uikit-room-test-modal',
+			i18nDescription: '',
+			i18nParamsExample: '',
+			providesPreview: false,
+			executor: async (context, _read, modify, _http, _persis) => {
+				const [action, seed] = context.getArguments();
+				const triggerId = context.getTriggerId();
+
+				if (!triggerId) {
+					this.getLogger().error('No triggerId provided to slash command');
+					return;
+				}
+
+				if (action === 'modal') {
+					await modify.getUiController().openSurfaceView(
+						{
+							id: `modal-${seed}`,
+							title: { type: 'plain_text', text: 'UIKit Room Test Modal' },
+							type: UIKitSurfaceType.MODAL,
+							blocks: [
+								{
+									type: 'section',
+									text: { type: 'plain_text', text: 'This modal tests room context in UIKit interactions.' },
+								},
+								{
+									type: 'actions',
+									elements: [{ type: 'button', value: seed, actionId: 'modal-button', text: { type: 'plain_text', text: 'Click!' } }],
+								},
+							],
+							submit: {
+								type: 'button',
+								actionId: `modal-submit-${seed}`,
+								text: { type: 'plain_text', text: 'Submit' },
+							},
+						},
+						{ triggerId },
+						context.getSender(),
+					);
+				}
+
+				if (action === 'ctx') {
+					await modify.getUiController().openSurfaceView(
+						{
+							id: `ctx-${seed}`,
+							title: { type: 'plain_text', text: 'UIKit Room Test Contextual Bar' },
+							type: UIKitSurfaceType.CONTEXTUAL_BAR,
+							blocks: [
+								{
+									type: 'section',
+									text: { type: 'plain_text', text: 'This contextual bar tests room context.' },
+								},
+								{
+									type: 'actions',
+									elements: [{ type: 'button', value: seed, actionId: 'ctx-button', text: { type: 'plain_text', text: 'Click!' } }],
+								},
+							],
+							submit: {
+								type: 'button',
+								actionId: `ctxbar-submit-${seed}`,
+								text: { type: 'plain_text', text: 'Submit' },
+							},
+						},
+						{ triggerId },
+						context.getSender(),
+					);
+				}
+
+				if (action === 'message') {
+					const msg = modify
+					.getCreator()
+					.startMessage()
+					.setRoom(context.getRoom())
+					.setBlocks([
+						{
+							type: 'section',
+							text: { type: 'plain_text', text: 'This message tests room context.' },
+						},
+						{
+							type: 'actions',
+							elements: [{ type: 'button', value: seed, actionId: 'msg-button', text: { type: 'plain_text', text: 'Click!' } }],
+						},
+					]);
+
+					await modify.getCreator().finish(msg);
+				}
+			},
+		});
+	}
+}
+```
+
 </details>

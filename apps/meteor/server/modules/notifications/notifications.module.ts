@@ -1,11 +1,12 @@
 import { Authorization, MediaCall, VideoConf, Settings } from '@rocket.chat/core-services';
-import type { ISubscription, IOmnichannelRoom, IUser, IUserDataEvent } from '@rocket.chat/core-typings';
+import type { ISubscription, IOmnichannelRoom, IUser, IUserDataEvent, PresenceSource, PresenceStatusCode } from '@rocket.chat/core-typings';
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ddp-client';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import type { ImporterProgress } from '../../../app/importer/server/classes/ImporterProgress';
 import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
 import { SystemLogger } from '../../lib/logger/system';
+import { getCachedUserForPublication } from '../streamer/publication-user-cache';
 import { Streamer as StreamerModule } from '../streamer/streamer.module';
 import type { IStreamer, IStreamerConstructor } from '../streamer/types';
 
@@ -103,13 +104,14 @@ export class NotificationsModule {
 				return false;
 			}
 
-			const user = this.userId ? { _id: this.userId } : undefined;
-			return Authorization.canReadRoom(room, user, extraData);
+			const user = await getCachedUserForPublication(this);
+			return Authorization.canReadRoom(room, user ?? undefined, extraData);
 		});
 
 		this.streamRoomMessage.allowRead('__my_messages__', 'all');
 		this.streamRoomMessage.allowEmit('__my_messages__', async function (_eventName, { rid }) {
-			if (!this.userId) {
+			const user = await getCachedUserForPublication(this);
+			if (!user) {
 				return false;
 			}
 
@@ -119,12 +121,12 @@ export class NotificationsModule {
 					return false;
 				}
 
-				const canAccess = await Authorization.canAccessRoom(room, { _id: this.userId });
+				const canAccess = await Authorization.canAccessRoom(room, user);
 				if (!canAccess) {
 					return false;
 				}
 
-				const roomParticipant = await Subscriptions.countByRoomIdAndUserId(room._id, this.userId);
+				const roomParticipant = await Subscriptions.countByRoomIdAndUserId(room._id, user._id);
 
 				return {
 					roomParticipant: roomParticipant > 0,
@@ -140,10 +142,11 @@ export class NotificationsModule {
 		this.streamAll.allowWrite('none');
 		this.streamAll.allowRead('all');
 		this.streamLogged.allowRead('private-settings-changed', async function () {
-			if (this.userId == null) {
+			const user = await getCachedUserForPublication(this);
+			if (!user) {
 				return false;
 			}
-			return Authorization.hasAtLeastOnePermission(this.userId, [
+			return Authorization.hasAtLeastOnePermission(user, [
 				'view-privileged-setting',
 				'edit-privileged-setting',
 				'manage-selected-settings',
@@ -173,10 +176,11 @@ export class NotificationsModule {
 				return !!room && room.t === 'l' && room.v.token === extraData.token;
 			}
 
-			if (!this.userId) {
+			const user = await getCachedUserForPublication(this);
+			if (!user) {
 				return false;
 			}
-			const canAccess = await Authorization.canAccessRoomId(room._id, this.userId);
+			const canAccess = await Authorization.canAccessRoom(room, user);
 
 			return canAccess;
 		});
@@ -294,7 +298,7 @@ export class NotificationsModule {
 				return false;
 			}
 
-			return Boolean(this.userId);
+			return false;
 		});
 		this.streamUser.allowRead(async function (eventName) {
 			const [userId] = eventName.split('/');
@@ -318,19 +322,17 @@ export class NotificationsModule {
 
 		this.streamCannedResponses.allowWrite('none');
 		this.streamCannedResponses.allowRead(async function () {
-			return (
-				!!this.userId &&
-				!!(await Settings.get('Canned_Responses_Enable')) &&
-				Authorization.hasPermission(this.userId, 'view-canned-responses')
-			);
+			const user = await getCachedUserForPublication(this);
+			return !!user && !!(await Settings.get('Canned_Responses_Enable')) && Authorization.hasPermission(user, 'view-canned-responses');
 		});
 
 		this.streamIntegrationHistory.allowWrite('none');
 		this.streamIntegrationHistory.allowRead(async function () {
-			if (!this.userId) {
+			const user = await getCachedUserForPublication(this);
+			if (!user) {
 				return false;
 			}
-			return Authorization.hasAtLeastOnePermission(this.userId, ['manage-outgoing-integrations', 'manage-own-outgoing-integrations']);
+			return Authorization.hasAtLeastOnePermission(user, ['manage-outgoing-integrations', 'manage-own-outgoing-integrations']);
 		});
 
 		this.streamLivechatRoom.allowRead(async (roomId, extraData) => {
@@ -351,12 +353,14 @@ export class NotificationsModule {
 
 		this.streamLivechatQueueData.allowWrite('none');
 		this.streamLivechatQueueData.allowRead(async function () {
-			return this.userId ? Authorization.hasPermission(this.userId, 'view-l-room') : false;
+			const user = await getCachedUserForPublication(this);
+			return user ? Authorization.hasPermission(user, 'view-l-room') : false;
 		});
 
 		this.streamRoomData.allowWrite('none');
 		this.streamRoomData.allowRead(async function (rid) {
-			if (!this.userId) {
+			const user = await getCachedUserForPublication(this);
+			if (!user) {
 				return false;
 			}
 
@@ -366,7 +370,7 @@ export class NotificationsModule {
 					return false;
 				}
 
-				const canAccess = await Authorization.canAccessRoom(room, { _id: this.userId });
+				const canAccess = await Authorization.canAccessRoom(room, user);
 				if (!canAccess) {
 					return false;
 				}
@@ -508,7 +512,10 @@ export class NotificationsModule {
 		return this.streamUser.emitWithoutBroadcast(`${userId}/${eventName}`, ...args);
 	}
 
-	sendPresence(uid: string, ...args: [username: string, status?: 0 | 1 | 2 | 3, statusText?: string]): void {
+	sendPresence(
+		uid: string,
+		...args: [username: string, status?: PresenceStatusCode, statusText?: string, statusSource?: PresenceSource, statusExpiresAt?: Date]
+	): void {
 		emit(uid, [args]);
 		return this.streamPresence.emitWithoutBroadcast(uid, args);
 	}

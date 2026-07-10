@@ -1816,7 +1816,7 @@
   "LDAP_Sync_Now_Description": "다음번 동기화를 기다리지 않고, 지금 **백그라운드 동기화** 작업을 시작합니다.  \n이 작업은 비동기로 이뤄지며, 자세한 내용은 로그를 참조하십시오.",
   "LDAP_Sync_User_Active_State": "사용자 활성 상태 동기화",
   "LDAP_Sync_User_Active_State_Both": "사용자 활성화 및 비활성화",
-  "LDAP_Sync_User_Active_State_Description": "LDAP 상태를 기반으로 Rocket.Chat에서 사용자의 활성화 또는 비활성화 여부를 결정하십시오. 'pwdAccountLockedTime'속성은 사용자의 비활성화 여부를 결정하는 데 사용됩니다.",
+  "LDAP_Sync_User_Active_State_Description": "LDAP 상태를 기반으로 Rocket.Chat에서 사용자의 활성화 또는 비활성화 여부를 결정하십시오.",
   "LDAP_Sync_User_Active_State_Disable": "사용자 비활성화",
   "LDAP_Sync_User_Active_State_Nothing": "없음",
   "LDAP_Sync_User_Avatar": "사용자 아바타 동기화",

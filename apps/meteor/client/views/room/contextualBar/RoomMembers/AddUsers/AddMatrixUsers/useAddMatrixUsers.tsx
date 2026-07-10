@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 
@@ -12,7 +12,7 @@ export type useAddMatrixUsersProps = {
 export const useAddMatrixUsers = () => {
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const handleClose = useEffectEvent(() => setModal(null));
+	const handleClose = useStableCallback(() => setModal(null));
 	const dispatchVerifyEndpoint = useEndpoint('GET', '/v1/federation/matrixIds.verify');
 
 	return useMutation({

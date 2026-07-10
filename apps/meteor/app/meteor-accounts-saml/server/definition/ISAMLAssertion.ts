@@ -1,4 +1,4 @@
 export interface ISAMLAssertion {
-	assertion: Element | Document;
+	assertion: Element;
 	xml: string;
 }

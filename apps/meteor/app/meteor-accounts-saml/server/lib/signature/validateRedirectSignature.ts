@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 
 import type { SAMLRedirectEnvelope } from '../../definition/SAMLEnvelope';
 import { SAMLUtils } from '../Utils';

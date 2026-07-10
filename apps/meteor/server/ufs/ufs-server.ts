@@ -1,8 +1,8 @@
-import domain from 'domain';
-import fs from 'fs';
-import stream from 'stream';
-import URL from 'url';
-import zlib from 'zlib';
+import fs from 'node:fs';
+import stream from 'node:stream';
+import { pipeline } from 'node:stream/promises';
+import URL from 'node:url';
+import zlib from 'node:zlib';
 
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
@@ -31,14 +31,6 @@ Meteor.startup(() => {
 			});
 		}
 	});
-});
-
-// Create domain to handle errors
-// and possibly avoid server crashes.
-const d = domain.create();
-
-d.on('error', (err) => {
-	console.error(`ufs: ${err.message}`);
 });
 
 // Listen HTTP requests to serve files
@@ -132,7 +124,7 @@ WebApp.connectHandlers.use(async (req, res, next) => {
 			return;
 		}
 
-		await d.run(async () => {
+		try {
 			// Check if the file can be accessed
 			if ((await store.onRead.call(store, fileId, file, req, res)) !== false) {
 				const options: {
@@ -267,7 +259,7 @@ WebApp.connectHandlers.use(async (req, res, next) => {
 							headers['Content-Encoding'] = 'gzip';
 							delete headers['Content-Length'];
 							res.writeHead(status, headers);
-							ws.pipe(zlib.createGzip()).pipe(res);
+							await pipeline(ws, zlib.createGzip(), res);
 							return;
 						}
 						// Compress with deflate
@@ -275,7 +267,7 @@ WebApp.connectHandlers.use(async (req, res, next) => {
 							headers['Content-Encoding'] = 'deflate';
 							delete headers['Content-Length'];
 							res.writeHead(status, headers);
-							ws.pipe(zlib.createDeflate()).pipe(res);
+							await pipeline(ws, zlib.createDeflate(), res);
 							return;
 						}
 					}
@@ -284,12 +276,20 @@ WebApp.connectHandlers.use(async (req, res, next) => {
 				// Send raw data
 				if (!headers['Content-Encoding']) {
 					res.writeHead(status, headers);
-					ws.pipe(res);
+					await pipeline(ws, res);
 				}
 			} else {
 				res.end();
 			}
-		});
+		} catch (err) {
+			console.error(`ufs: ${err instanceof Error ? err.message : String(err)}`);
+			if (!res.headersSent) {
+				res.writeHead(500);
+			}
+			if (!res.writableEnded) {
+				res.end();
+			}
+		}
 	} else {
 		next();
 	}

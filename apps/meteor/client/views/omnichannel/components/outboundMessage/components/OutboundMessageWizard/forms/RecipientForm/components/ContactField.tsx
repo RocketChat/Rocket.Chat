@@ -1,5 +1,5 @@
 import { Box, Field, FieldError, FieldLabel, FieldRow, Option, OptionContent, OptionDescription } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useId } from 'react';
 import type { ComponentProps } from 'react';
@@ -11,7 +11,7 @@ import AutoCompleteContact from '../../../../../../AutoCompleteContact';
 import RetryButton from '../../../components/RetryButton';
 import type { RecipientFormData } from '../RecipientForm';
 
-type ContactFieldProps = ComponentProps<typeof Field> & {
+export type ContactFieldProps = ComponentProps<typeof Field> & {
 	control: Control<RecipientFormData>;
 	isError: boolean;
 	isFetching: boolean;
@@ -38,7 +38,7 @@ const ContactField = ({ control, isError = false, isFetching = false, onRetry, .
 		},
 	});
 
-	const renderContactOption = useEffectEvent<RenderFnType>(({ label, ...props }, { phones }) => {
+	const renderContactOption = useStableCallback<RenderFnType>(({ label, ...props }, { phones }) => {
 		const phoneList = phones?.map((p) => formatPhoneNumber(p.phoneNumber)).join(', ');
 
 		return (

@@ -617,7 +617,7 @@ const POSTLivechatTagsSaveSuccessResponseSchema = {
 	additionalProperties: false,
 };
 
-export const POSTLivechatTagsSaveSuccessResponse = ajv.compile<ILivechatTag>(POSTLivechatTagsSaveSuccessResponseSchema);
+export const POSTLivechatTagsSaveSuccessResponse = ajv.compile<Omit<ILivechatTag, '_updatedAt'>>(POSTLivechatTagsSaveSuccessResponseSchema);
 
 type POSTLivechatTagsDeleteParams = {
 	id: string;

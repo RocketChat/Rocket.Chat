@@ -1,19 +1,18 @@
 import type { AppPermission } from '@rocket.chat/core-typings';
 import { Box, Margins } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppSecurityLabel from './AppSecurityLabel';
 import AppPermissionsList from '../../../components/AppPermissionsList';
 
-type AppSecurityProps = {
+export type AppSecurityProps = {
 	privacyPolicySummary?: string;
 	appPermissions?: AppPermission[];
 	tosLink?: string;
 	privacyLink?: string;
 };
 
-const AppSecurity = ({ privacyPolicySummary, appPermissions, tosLink, privacyLink }: AppSecurityProps): ReactElement => {
+const AppSecurity = ({ privacyPolicySummary, appPermissions, tosLink, privacyLink }: AppSecurityProps) => {
 	const { t } = useTranslation();
 
 	return (

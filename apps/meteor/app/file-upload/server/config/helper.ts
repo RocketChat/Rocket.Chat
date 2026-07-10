@@ -1,5 +1,5 @@
-import type http from 'http';
-import URL from 'url';
+import type http from 'node:http';
+import URL from 'node:url';
 
 export const forceDownload = (req: http.IncomingMessage): boolean => {
 	const { query } = URL.parse(req.url || '', true);

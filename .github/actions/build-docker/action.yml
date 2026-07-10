@@ -70,6 +70,33 @@ runs:
             }
           }
 
+    # Microservice images build from a pruned, self-contained context (out/<service>)
+    # produced by `turbo prune`, instead of a hand-maintained list of COPY lines.
+    # The rocketchat (Meteor) image is a prebuilt bundle and is staged separately above.
+    - name: Stage service build context
+      if: inputs.service != 'rocketchat'
+      shell: bash
+      env:
+        INPUT_SERVICE: ${{ inputs.service }}
+      run: |
+        set -o xtrace
+
+        # The Docker SERVICE arg (folder under ee/apps) lives in the compose build args;
+        # the compose service name (INPUT_SERVICE) can differ (e.g. ddp-streamer-service).
+        SERVICE_DIR=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "$INPUT_SERVICE" '.services[$s].build.args.SERVICE')
+        PKG_NAME=$(node -p "require('./ee/apps/${SERVICE_DIR}/package.json').name")
+        TURBO_VERSION=$(node -p "require('./package.json').devDependencies.turbo")
+
+        rm -rf "out/${SERVICE_DIR}"
+
+        # `turbo prune` derives the exact workspace dependency closure for the service — no
+        # hand-maintained list. --use-gitignore=false also captures the gitignored build output
+        # we need (dist/, generated definition/), at the cost of dragging in node_modules/.turbo,
+        # which we strip below; `yarn workspaces focus --production` rebuilds node_modules in-image.
+        npx -y "turbo@${TURBO_VERSION}" prune "$PKG_NAME" --skip-infer --use-gitignore=false --out-dir "out/${SERVICE_DIR}"
+
+        find "out/${SERVICE_DIR}" \( -name node_modules -o -name .turbo \) -type d -prune -exec rm -rf {} +
+
     - name: Build Docker images
       shell: bash
       env:

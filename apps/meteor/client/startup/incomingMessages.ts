@@ -3,6 +3,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { onLoggedIn } from '../lib/loggedIn';
 import { getUserId } from '../lib/user';
+import { upsertThreadMessageInCache } from '../lib/utils/threadMessageUtils';
 import { Messages } from '../stores';
 
 onLoggedIn(() => {
@@ -11,6 +12,10 @@ onLoggedIn(() => {
 	return sdk.stream('notify-user', [`${getUserId()}/message`], (msg: IMessage) => {
 		msg.u = msg.u || { username: 'rocket.cat' };
 		msg.private = true;
+
+		if (msg.tmid) {
+			upsertThreadMessageInCache(msg, msg.rid, msg.tmid);
+		}
 
 		return Messages.state.store(msg);
 	}).stop;

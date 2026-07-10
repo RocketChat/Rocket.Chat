@@ -7,7 +7,6 @@ import {
 	ContextualbarClose,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { IGame } from './GameCenter';
@@ -18,7 +17,7 @@ interface IGameCenterContainerProps {
 	game: IGame;
 }
 
-const GameCenterContainer = ({ handleClose, handleBack, game }: IGameCenterContainerProps): ReactElement => {
+const GameCenterContainer = ({ handleClose, handleBack, game }: IGameCenterContainerProps) => {
 	const { t } = useTranslation();
 
 	return (

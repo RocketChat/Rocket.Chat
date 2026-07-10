@@ -21,7 +21,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 	private rolesHasPermissionCached = mem(this.rolesHasPermission.bind(this), {
 		cacheKey: JSON.stringify,
-		...(process.env.TEST_MODE === 'true' && { maxAge: 1 }),
+		...((process.env.TEST_MODE === 'true' || process.env.TEST_MODE === 'api') && { maxAge: 1 }),
 	});
 
 	constructor() {

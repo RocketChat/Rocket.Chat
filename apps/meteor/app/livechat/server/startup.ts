@@ -11,12 +11,12 @@ import { businessHourManager } from './business-hour';
 import { createDefaultBusinessHourIfNotExists } from './business-hour/Helper';
 import { setUserStatusLivechatIf } from './lib/utils';
 import { LivechatAgentActivityMonitor } from './statistics/LivechatAgentActivityMonitor';
+import { maybeMigrateLivechatRoom } from '../../../server/api/lib/maybeMigrateLivechatRoom';
+import { hasPermissionAsync } from '../../../server/lib/authorization/hasPermission';
 import { callbacks } from '../../../server/lib/callbacks';
 import { beforeLeaveRoomCallback } from '../../../server/lib/callbacks/beforeLeaveRoomCallback';
 import { i18n } from '../../../server/lib/i18n';
 import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';
-import { maybeMigrateLivechatRoom } from '../../api/server/lib/maybeMigrateLivechatRoom';
-import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { notifyOnUserChange } from '../../lib/server/lib/notifyListener';
 import { settings } from '../../settings/server';
 import './roomAccessValidator.internalService';
@@ -120,7 +120,7 @@ Meteor.startup(async () => {
 			}
 			await businessHourManager.stopManager();
 		},
-		process.env.TEST_MODE === 'true'
+		process.env.TEST_MODE === 'true' || process.env.TEST_MODE === 'api'
 			? {
 					debounce: 10,
 				}
