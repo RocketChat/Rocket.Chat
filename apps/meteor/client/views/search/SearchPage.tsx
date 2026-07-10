@@ -1,4 +1,4 @@
-import { AI_LICENSE_MODULE, parseSearchFilterText } from '@rocket.chat/ai-search';
+import { AI_LICENSE_MODULE, MAX_SEARCH_ANSWER_MESSAGES, parseSearchFilterText } from '@rocket.chat/ai-search';
 import { Box, Button, Callout, Icon } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow, useFeaturePreview } from '@rocket.chat/ui-client';
@@ -13,7 +13,6 @@ import { SearchSourceResult } from './SearchSourceResult';
 import type { IntelligentResult } from './types';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
-// page size doubles as the answer source bound so pagination never changes the answer sources
 const INTELLIGENT_PAGE_SIZE = 8;
 
 const SearchPage = (): ReactElement => {
@@ -58,14 +57,15 @@ const SearchPage = (): ReactElement => {
 				endDate: filters.endDate,
 			}),
 		enabled: Boolean(debouncedQuery && canUseAISearch && intelligentSearchEnabled),
-		// without this, pagination empties the answer source set and re-triggers the LLM generation
+		// keeps the revealed results visible while the next page loads
 		placeholderData: (previousData) => previousData,
 	});
 
 	const intelligent = useMemo(() => (result.data?.intelligent as IntelligentResult[] | undefined) ?? [], [result.data?.intelligent]);
+	// the answer regenerates from every revealed result, capped by the search.answer schema limit
 	const answerMessages = useMemo(
 		() =>
-			intelligent.slice(0, INTELLIGENT_PAGE_SIZE).map((item) => ({
+			intelligent.slice(0, MAX_SEARCH_ANSWER_MESSAGES).map((item) => ({
 				_id: item._id,
 				score: item.score,
 			})),

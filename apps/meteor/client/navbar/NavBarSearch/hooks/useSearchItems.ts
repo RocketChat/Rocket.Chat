@@ -1,5 +1,6 @@
 import {
 	AI_LICENSE_MODULE,
+	AI_SEARCH_PAGE_SIZE,
 	buildRoomSearchQuery,
 	emptySearchFilters,
 	type SearchFilters,
@@ -137,7 +138,7 @@ const useIntelligentSearchResults = ({
 				query,
 				count: 0,
 				includeSpotlight: false,
-				intelligentCount: 3,
+				intelligentCount: AI_SEARCH_PAGE_SIZE,
 				includeMessages: false,
 				includeIntelligent: true,
 				...(filters.rid && { rid: filters.rid }),

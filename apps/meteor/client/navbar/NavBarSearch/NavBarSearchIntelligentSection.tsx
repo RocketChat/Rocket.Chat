@@ -34,20 +34,12 @@ const NavBarSearchIntelligentSection = ({
 		onClose();
 	}, [appliedFilters, filterText, onClose, router]);
 
-	if (!items.length && !showAction) {
+	if (!items.length) {
 		return null;
 	}
 
 	return (
-		<Box
-			display='flex'
-			flexDirection='column'
-			pbs={8}
-			pbe={12}
-			borderBlockEndWidth={1}
-			borderBlockEndStyle='solid'
-			borderBlockEndColor='stroke-extra-light'
-		>
+		<Box display='flex' flexDirection='column' pbs={8} pbe={12}>
 			<Box color='titles-labels' fontScale='c1' fontWeight='bold' pi={12} mbe={4} role='presentation' aria-hidden>
 				{t('Intelligent_Search')}
 			</Box>
