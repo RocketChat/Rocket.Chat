@@ -2,7 +2,7 @@
 	"name": "@rocket.chat/meteor-client",
 	"version": "0.1.0",
 	"private": true,
-	"description": "Browser TypeScript port of the Meteor client runtime (DDP, minimongo, tracker, accounts, OAuth) consumed by the vite build in place of the meteor/* packages",
+	"description": "Browser TypeScript port of the Meteor client runtime (DDP, tracker, accounts, OAuth) consumed by the vite build in place of the meteor/* packages",
 	"exports": {
 		"./*": "./src/*.ts"
 	},

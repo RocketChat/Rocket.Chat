@@ -4,7 +4,6 @@ import { DiffSequence } from './diff-sequence.ts';
 import { EJSON, type EJSONable } from './ejson.ts';
 import { IdMap } from './id-map.ts';
 import { Meteor } from './meteor.ts';
-import type { LocalCollection } from './minimongo.ts';
 import { ObjectID } from './mongo-id.ts';
 import { Random } from './random.ts';
 import { Reload } from './reload.ts';
@@ -896,8 +895,6 @@ export class Connection {
 	_getServerDoc: (collection: string, id: string) => any;
 
 	_liveDataWritesPromise: Promise<void> | undefined;
-
-	_mongo_livedata_collections?: Map<string, LocalCollection>;
 
 	constructor(url: string | any, options: Partial<ConnectionOptions>) {
 		this.options = {

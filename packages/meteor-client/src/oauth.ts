@@ -1,5 +1,4 @@
 import { Base64 } from './base64.ts';
-import { check } from './check.ts';
 import { Meteor } from './meteor.ts';
 import { Reload } from './reload.ts';
 import { _constructUrl } from './url.ts';
@@ -193,8 +192,9 @@ export const OAuth = {
 	},
 
 	_handleCredentialSecret(credentialToken: string, secret: string) {
-		check(credentialToken, String);
-		check(secret, String);
+		if (typeof credentialToken !== 'string' || typeof secret !== 'string') {
+			throw new Error('credentialToken and secret must be strings');
+		}
 
 		if (!Object.prototype.hasOwnProperty.call(credentialSecrets, credentialToken)) {
 			credentialSecrets[credentialToken] = secret;
