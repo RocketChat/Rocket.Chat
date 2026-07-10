@@ -2,7 +2,7 @@ import { Box, PaletteStyleTag, States, StatesAction, StatesActions, StatesIcon, 
 import { useThemeMode } from '@rocket.chat/ui-client';
 
 const AppErrorPage = () => {
-	const [, , theme] = useThemeMode();
+	const theme = useThemeMode();
 
 	return (
 		<>

@@ -3,6 +3,7 @@ import { createElement, lazy, useEffect } from 'react';
 
 import { appLayout } from '../lib/appLayout';
 import { router } from '../providers/RouterProvider';
+import OAuthTwoFactorAuthenticationRouter from '../views/OAuthTwoFactorAuthentication/OAuthTwoFactorAuthenticationRouter';
 import MainLayout from '../views/root/MainLayout';
 
 const IndexRoute = lazy(() => import('../views/root/IndexRoute'));
@@ -39,6 +40,10 @@ declare module '@rocket.chat/ui-contexts' {
 		'meet': {
 			pathname: `/meet/${string}`;
 			pattern: '/meet/:rid';
+		};
+		'2fa': {
+			pathname: `/2fa/${string}/${string}`;
+			pattern: '/2fa/:method/:challengeId';
 		};
 		'home': {
 			pathname: '/home';
@@ -135,6 +140,11 @@ router.defineRoutes([
 
 			return null;
 		}),
+	},
+	{
+		path: '/2fa/:method/:challengeId',
+		id: '2fa',
+		element: appLayout.wrap(<OAuthTwoFactorAuthenticationRouter />),
 	},
 	{
 		path: '/home',

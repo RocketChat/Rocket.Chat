@@ -2,9 +2,9 @@ import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 
 import { API } from '../..';
 import { FileUpload } from '../../../../app/file-upload/server';
-import { sendFileLivechatMessage } from '../../../../app/livechat/server/methods/sendFileLivechatMessage';
 import { settings } from '../../../../app/settings/server';
 import { fileUploadIsValidContentType } from '../../../../app/utils/server/restrictions';
+import { sendFileLivechatMessage } from '../../../meteor-methods/omnichannel/sendFileLivechatMessage';
 import { MultipartUploadHandler } from '../../lib/MultipartUploadHandler';
 
 API.v1.addRoute('livechat/upload/:rid', {

@@ -27,11 +27,11 @@ import _ from 'underscore';
 import { saveSettingsBulk } from '../../../app/lib/server/functions/saveSettingsBulk';
 import { checkSettingValueBounds } from '../../../app/lib/server/lib/checkSettingValueBonds';
 import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../../app/lib/server/lib/notifyListener';
-import { addOAuthServiceMethod } from '../../../app/lib/server/methods/addOAuthService';
 import { SettingsEvents, settings } from '../../../app/settings/server';
 import { setValue } from '../../../app/settings/server/raw';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { disableCustomScripts } from '../../lib/shared/disableCustomScripts';
+import { addOAuthServiceMethod } from '../../meteor-methods/auth/addOAuthService';
 import { updateAuditedByUser } from '../../settings/lib/auditedSettingUpdates';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
@@ -181,6 +181,7 @@ API.v1.get(
 	},
 	async function action() {
 		const oAuthServicesEnabled = await LoginServiceConfigurationModel.find({}, { projection: { secret: 0 } }).toArray();
+		const isPassportFlowEnabled = settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow');
 
 		return API.v1.success({
 			services: oAuthServicesEnabled.map((service) => {
@@ -188,8 +189,17 @@ API.v1.get(
 					return service;
 				}
 
-				if ((service as OAuthConfiguration).custom || (service.service && ['saml', 'cas', 'wordpress'].includes(service.service))) {
-					return { ...service };
+				//	CAUTION: Never hide sign-in with apple button from mobile app.
+				if (service.service && ['apple'].includes(service.service)) {
+					return { ...service, hideButtonOnMobile: false };
+				}
+
+				if (service.service && ['saml', 'cas', 'ldap'].includes(service.service)) {
+					return { ...service, hideButtonOnMobile: false };
+				}
+
+				if ((service as OAuthConfiguration).custom || (service.service && service.service === 'wordpress')) {
+					return { ...service, hideButtonOnMobile: isPassportFlowEnabled };
 				}
 
 				return {
@@ -203,6 +213,7 @@ API.v1.get(
 					buttonColor: service.buttonColor || '',
 					buttonLabelColor: service.buttonLabelColor || '',
 					custom: false,
+					hideButtonOnMobile: isPassportFlowEnabled,
 				};
 			}),
 		});

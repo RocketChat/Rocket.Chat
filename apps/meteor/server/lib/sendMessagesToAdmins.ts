@@ -1,10 +1,10 @@
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import { Roles, Users } from '@rocket.chat/models';
 
-import { notifyOnUserChangeAsync } from '../../app/lib/server/lib/notifyListener';
-import { executeSendMessage } from '../../app/lib/server/methods/sendMessage';
-import { createDirectMessage } from '../methods/createDirectMessage';
 import { SystemLogger } from './logger/system';
+import { notifyOnUserChangeAsync } from '../../app/lib/server/lib/notifyListener';
+import { createDirectMessage } from '../meteor-methods/messages/createDirectMessage';
+import { executeSendMessage } from '../meteor-methods/messages/sendMessage';
 
 type Banner = {
 	id: string;

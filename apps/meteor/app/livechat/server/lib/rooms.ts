@@ -22,6 +22,7 @@ import {
 	ReadReceipts,
 	ReadReceiptsArchive,
 } from '@rocket.chat/models';
+import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { normalizeTransferredByData } from './Helper';
