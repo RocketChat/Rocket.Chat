@@ -86,6 +86,6 @@ import '../app/notifications/server';
 import '../app/ui-utils/server';
 import '../app/reactions/server';
 import '../app/livechat/server';
-import '../app/authentication/server/hooks/login';
+import './hooks/auth/login';
 import './lib/auth/startup';
 import './lib/auth-providers/github';

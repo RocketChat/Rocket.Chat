@@ -1,3 +1,3 @@
 import './permissions';
 
-import './hooks/propagateDiscussionMetadata';
+import '../../../server/hooks/messages/propagateDiscussionMetadata';

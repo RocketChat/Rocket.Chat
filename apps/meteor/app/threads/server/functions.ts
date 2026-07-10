@@ -2,12 +2,12 @@ import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import { Messages, Subscriptions, NotificationQueue } from '@rocket.chat/models';
 
+import { getMentions, getUserIdsFromHighlights } from '../../../server/hooks/messages/notifyUsersOnMessage';
 import { callbacks } from '../../../server/lib/callbacks';
 import {
 	notifyOnSubscriptionChangedByRoomIdAndUserIds,
 	notifyOnSubscriptionChangedByRoomIdAndUserId,
 } from '../../lib/server/lib/notifyListener';
-import { getMentions, getUserIdsFromHighlights } from '../../lib/server/lib/notifyUsersOnMessage';
 
 export async function reply({ tmid }: { tmid?: string }, message: IMessage, parentMessage: IMessage, followers: string[]) {
 	if (!tmid || isEditedMessage(message)) {

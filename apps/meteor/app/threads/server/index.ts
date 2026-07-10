@@ -1,1 +1,1 @@
-import './hooks';
+import '../../../server/hooks/messages/processThreads';

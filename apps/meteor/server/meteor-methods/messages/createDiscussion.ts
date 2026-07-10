@@ -6,9 +6,9 @@ import { Random } from '@rocket.chat/random';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { afterSaveMessageAsync } from '../../../app/lib/server/lib/afterSaveMessage';
 import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../../app/settings/server';
+import { afterSaveMessageAsync } from '../../hooks/messages/afterSaveMessage';
 import { canSendMessageAsync } from '../../lib/authorization/canSendMessage';
 import { hasAtLeastOnePermissionAsync } from '../../lib/authorization/hasPermission';
 import { i18n } from '../../lib/i18n';
