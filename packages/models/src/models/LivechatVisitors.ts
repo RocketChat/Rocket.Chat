@@ -138,15 +138,6 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.findOne<T>(query, options);
 	}
 
-	findVisitorByToken(token: string): FindCursor<ILivechatVisitor> {
-		const query = {
-			token,
-			disabled: { $ne: true },
-		};
-
-		return this.find(query);
-	}
-
 	getVisitorByToken(token: string, options: FindOptions<ILivechatVisitor>): Promise<ILivechatVisitor | null> {
 		const query = {
 			token,
