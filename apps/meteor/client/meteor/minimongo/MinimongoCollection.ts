@@ -1,4 +1,3 @@
-import { Mongo } from 'meteor/mongo';
 import type { StoreApi, UseBoundStore } from 'zustand';
 
 import { LocalCollection } from './LocalCollection';
