@@ -1,5 +1,27 @@
 # @rocket.chat/meteor
 
+## 8.2.7
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#41238](https://github.com/RocketChat/Rocket.Chat/pull/41238) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#41247](https://github.com/RocketChat/Rocket.Chat/pull/41247) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#41296](https://github.com/RocketChat/Rocket.Chat/pull/41296) by [@dionisio-bot](https://github.com/dionisio-bot)) Ensures the `users.CreateToken` endpoint checks for the `user-generate-access-token` permission when generating a login token for another user
+
+- ([#41288](https://github.com/RocketChat/Rocket.Chat/pull/41288) by [@dionisio-bot](https://github.com/dionisio-bot)) Ensures room permission checks are applied consistently regardless of how the room is identified when converting a channel to a team or creating a team from an existing room
+
+- <details><summary>Updated dependencies [20d752e0e4dc1d37518c826dd2be3476a35710b3]:</summary>
+
+  - @rocket.chat/core-typings@8.2.7
+  - @rocket.chat/model-typings@2.1.5
+  - @rocket.chat/models@2.1.5
+  - @rocket.chat/rest-typings@8.2.7
+  </details>
+
 ## 8.2.6
 
 ### Patch Changes
