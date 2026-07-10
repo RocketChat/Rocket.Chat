@@ -192,6 +192,7 @@
 		border-bottom: 1px solid var(--line-soft);
 		border-radius: var(--radius) var(--radius) 0 0;
 	}
+	.attr > .attr-head:only-child { border-bottom: none; border-radius: var(--radius); }
 	.attr-head b { font-size: 13px; }
 	.attr-head .src { font-family: var(--mono); font-size: 11px; color: var(--ink-soft); }
 	.attr-head .flags { margin-left: auto; display: flex; gap: 6px; align-items: center; }
@@ -503,6 +504,7 @@ const persist = () => {
 
 let config = loadStoredConfig() ?? emptyConfig();
 let simulation = loadStoredSimulation();
+const collapsedAttributes = new WeakSet();
 
 // ---- cross-field rules (documented in the v1 schema; enforced here as warnings) ----
 
@@ -637,8 +639,20 @@ const renderAttribute = (attribute, index) => {
 		el('td', {}, el('button', { className: 'danger-ghost', title: 'Remove value', 'aria-label': 'Remove value', onclick: () => { attribute.values.splice(valueIndex, 1); update(); } }, '✕')),
 	);
 
+	const isCollapsed = collapsedAttributes.has(attribute);
+
 	return el('div', { className: 'attr' },
 		el('div', { className: 'attr-head' },
+			el('button', {
+				className: 'ghost',
+				title: isCollapsed ? 'Expand attribute' : 'Collapse attribute',
+				'aria-label': isCollapsed ? 'Expand attribute' : 'Collapse attribute',
+				'aria-expanded': String(!isCollapsed),
+				onclick: () => {
+					isCollapsed ? collapsedAttributes.delete(attribute) : collapsedAttributes.add(attribute);
+					update();
+				},
+			}, isCollapsed ? '▸' : '▾'),
 			el('button', { className: 'ghost', title: 'Move up (segments render in list order)', 'aria-label': 'Move attribute up', disabled: index === 0, onclick: () => move(-1) }, '↑'),
 			el('button', { className: 'ghost', title: 'Move down (segments render in list order)', 'aria-label': 'Move attribute down', disabled: index === config.attributes.length - 1, onclick: () => move(1) }, '↓'),
 			el('b', {}, attribute.label || attribute.id || 'Untitled'),
@@ -650,7 +664,7 @@ const renderAttribute = (attribute, index) => {
 				el('button', { className: 'danger-ghost', onclick: () => { config.attributes.splice(index, 1); update(); } }, 'Remove'),
 			),
 		),
-		el('div', { className: 'attr-fields grid' },
+		!isCollapsed && el('div', { className: 'attr-fields grid' },
 			field('Id', textInput('id', { className: 'mono' }), 'Internal identifier — lowercase letters, digits, dashes. Must be unique across attributes.'),
 			field('Source key', textInput('source', { className: 'mono' }), 'Attribute key exactly as stored on the room (e.g. the Virtru attribute name, or the LDAP-mapped key). Case-sensitive.'),
 			field('Label', textInput('label'), 'Admin-facing name for this attribute. Not shown in the banner.'),
@@ -673,7 +687,7 @@ const renderAttribute = (attribute, index) => {
 					'Sort matched value labels alphabetically instead of list order.'),
 			),
 		),
-		el('div', { className: 'values' },
+		!isCollapsed && el('div', { className: 'values' },
 			el('div', { className: 'card-hint' },
 				'Value mappings — “source value” is the raw value on the room (case-sensitive), “banner label” is what displays. Rank values most restrictive FIRST: index 0 = highest ranking (like Virtru hierarchies); “most restrictive” color mode picks the earliest match.'),
 			el('table', {},
