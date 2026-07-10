@@ -9,7 +9,6 @@
     "$schema": { "type": "string" },
     "version": { "const": 1 },
     "enabled": { "type": "boolean" },
-    "source": { "enum": ["idp", "manual"], "default": "idp" },
     "banner": {
       "type": "object",
       "required": ["delimiter"],

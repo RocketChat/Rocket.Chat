@@ -112,7 +112,6 @@ export const buildClassificationBanner = (
 			segments: [],
 			backgroundColor,
 			color: readableTextColor(backgroundColor),
-			fallback: true,
 		};
 	}
 
@@ -123,6 +122,5 @@ export const buildClassificationBanner = (
 		segments,
 		backgroundColor,
 		color: readableTextColor(backgroundColor),
-		fallback: false,
 	};
 };

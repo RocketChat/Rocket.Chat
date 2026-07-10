@@ -25,7 +25,6 @@ export type ClassificationBannerStyle = 'classic' | 'segmented' | 'edge';
 export type ClassificationBannersConfig = {
 	version: 1;
 	enabled: boolean;
-	source?: 'idp' | 'manual';
 	banner: {
 		style?: ClassificationBannerStyle;
 		uppercase?: boolean;
@@ -51,5 +50,4 @@ export type ClassificationBannerPayload = {
 	style: ClassificationBannerStyle;
 	uppercase: boolean;
 	monospace: boolean;
-	fallback: boolean;
 };

@@ -1,17 +1,12 @@
-import type { ClassificationBannerPayload } from '@rocket.chat/abac';
 import { buildClassificationBanner, parseClassificationBannersConfig } from '@rocket.chat/abac/dist/classification-banners/engine';
-import type { IRoom } from '@rocket.chat/core-typings';
-import { isABACManagedRoom } from '@rocket.chat/core-typings';
+import type { ClassificationBannerPayload } from '@rocket.chat/abac/dist/classification-banners/types';
 import { Box } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { CSSProperties } from 'react';
 import { useMemo } from 'react';
 
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
-
-type ClassificationBannerProps = {
-	room: IRoom;
-};
+import { useIsABACManagedRoom } from '../../admin/ABAC/hooks/useIsABACManagedRoom';
+import { useRoom } from '../contexts/RoomContext';
 
 const shade = (hex: string, factor: number): string => {
 	const [r, g, b] = [0, 2, 4].map((offset) => Math.round(parseInt(hex.replace('#', '').slice(offset, offset + 2), 16) * factor));
@@ -37,11 +32,12 @@ const getBannerStyle = (banner: ClassificationBannerPayload): CSSProperties => {
 	};
 };
 
-const ClassificationBanner = ({ room }: ClassificationBannerProps) => {
-	const { data: hasABAC = false } = useHasLicenseModule('abac');
+const ClassificationBanner = () => {
+	const room = useRoom();
+	const isABACRoom = useIsABACManagedRoom(room);
 	const bannersEnabled = useSetting('ABAC_Classification_Banners_Enabled', false);
 	const rawConfig = useSetting('ABAC_Classification_Banners_Config', '');
-	const enabled = hasABAC && bannersEnabled && isABACManagedRoom(room);
+	const enabled = bannersEnabled && isABACRoom;
 
 	const banner = useMemo(() => {
 		if (!enabled) {

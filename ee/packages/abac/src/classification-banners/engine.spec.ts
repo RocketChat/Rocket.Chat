@@ -4,7 +4,6 @@ import type { ClassificationBannersConfig } from './types';
 const config: ClassificationBannersConfig = {
 	version: 1,
 	enabled: true,
-	source: 'idp',
 	banner: {
 		style: 'classic',
 		uppercase: true,
@@ -111,7 +110,6 @@ describe('buildClassificationBanner', () => {
 		expect(banner.segments.map((s) => s.attrId)).toEqual(['classification', 'sar', 'relto']);
 		expect(banner.backgroundColor).toBe('#ff8c00');
 		expect(banner.color).toBe('#FFFFFF');
-		expect(banner.fallback).toBe(false);
 		expect(banner).toMatchObject({ style: 'classic', uppercase: true, monospace: false });
 	});
 
@@ -164,7 +162,7 @@ describe('buildClassificationBanner', () => {
 
 		expect(banner.text).toBe('RELTO USA');
 		expect(banner.backgroundColor).toBe('#6C727A');
-		expect(banner.fallback).toBe(false);
+		expect(banner.segments).toHaveLength(1);
 	});
 
 	it('renders the fallback banner when nothing matches', () => {
@@ -175,7 +173,6 @@ describe('buildClassificationBanner', () => {
 			segments: [],
 			backgroundColor: '#6C727A',
 			color: '#FFFFFF',
-			fallback: true,
 		});
 	});
 
@@ -194,7 +191,6 @@ describe('buildClassificationBanner', () => {
 			monospace: false,
 			text: 'NO CLASSIFICATION DATA',
 			backgroundColor: '#6C727A',
-			fallback: true,
 		});
 	});
 });

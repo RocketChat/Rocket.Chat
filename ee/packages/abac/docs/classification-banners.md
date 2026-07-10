@@ -38,7 +38,6 @@ This configuration reproduces the design prototype's default state. For a room w
   "$schema": "https://rocket.chat/schemas/classification-banners/v1.json",
   "version": 1,
   "enabled": true,
-  "source": "idp",
   "banner": {
     "style": "classic",
     "uppercase": true,
