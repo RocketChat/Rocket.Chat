@@ -26,6 +26,8 @@
     "attributes": {
       "type": "array",
       "minItems": 1,
+      "uniqueItems": true,
+      "description": "Attribute ids must be unique across entries (uniqueness by id is not expressible in JSON Schema; validated by tooling)",
       "items": { "$ref": "#/$defs/attribute" }
     }
   },
@@ -59,6 +61,8 @@
         "values": {
           "type": "array",
           "minItems": 1,
+          "uniqueItems": true,
+          "description": "Value sources must be unique within the attribute (uniqueness by source is not expressible in JSON Schema; validated by tooling)",
           "items": {
             "type": "object",
             "required": ["source", "label", "color"],
