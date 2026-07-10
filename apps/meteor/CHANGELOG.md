@@ -1,5 +1,54 @@
 # @rocket.chat/meteor
 
+## 8.1.7
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#41239](https://github.com/RocketChat/Rocket.Chat/pull/41239) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#41248](https://github.com/RocketChat/Rocket.Chat/pull/41248) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#41297](https://github.com/RocketChat/Rocket.Chat/pull/41297) by [@dionisio-bot](https://github.com/dionisio-bot)) Ensures the `users.CreateToken` endpoint checks for the `user-generate-access-token` permission when generating a login token for another user
+
+- ([#41289](https://github.com/RocketChat/Rocket.Chat/pull/41289) by [@dionisio-bot](https://github.com/dionisio-bot)) Ensures room permission checks are applied consistently regardless of how the room is identified when converting a channel to a team or creating a team from an existing room
+
+- <details><summary>Updated dependencies [4511f54f5ef67fb76f4d82389da6d6bd4a279c9f]:</summary>
+
+  - @rocket.chat/core-typings@8.1.7
+  - @rocket.chat/model-typings@2.0.9
+  - @rocket.chat/models@2.0.9
+  - @rocket.chat/abac@0.1.9
+  - @rocket.chat/federation-matrix@0.0.18
+  - @rocket.chat/license@1.1.16
+  - @rocket.chat/media-calls@0.2.9
+  - @rocket.chat/omnichannel-services@0.3.53
+  - @rocket.chat/pdf-worker@0.3.35
+  - @rocket.chat/presence@0.2.56
+  - @rocket.chat/api-client@0.2.56
+  - @rocket.chat/apps@0.6.9
+  - @rocket.chat/core-services@0.12.9
+  - @rocket.chat/cron@0.1.56
+  - @rocket.chat/fuselage-ui-kit@27.0.7
+  - @rocket.chat/gazzodown@27.0.7
+  - @rocket.chat/http-router@7.9.23
+  - @rocket.chat/message-types@0.1.0
+  - @rocket.chat/rest-typings@8.1.7
+  - @rocket.chat/ui-avatar@23.0.7
+  - @rocket.chat/ui-client@27.0.7
+  - @rocket.chat/ui-contexts@27.0.7
+  - @rocket.chat/ui-voip@17.0.7
+  - @rocket.chat/web-ui-registration@27.0.7
+  - @rocket.chat/omni-core-ee@0.0.21
+  - @rocket.chat/instance-status@0.1.56
+  - @rocket.chat/omni-core@0.0.21
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.35
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-video-conf@27.0.7
+  </details>
+
 ## 8.1.6
 
 ### Patch Changes
