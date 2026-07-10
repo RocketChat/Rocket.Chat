@@ -447,35 +447,23 @@ export const statistics = {
 		);
 
 		statsPms.push(
-			Integrations.find(
-				{},
-				{
-					projection: {
-						_id: 0,
-						type: 1,
-						enabled: 1,
-						scriptEnabled: 1,
-					},
-					readPreference,
-				},
-			)
-				.toArray()
-				.then((found) => {
-					const integrations = found;
-
-					statistics.integrations = {
-						totalIntegrations: integrations.length,
-						totalIncoming: integrations.filter((integration) => integration.type === 'webhook-incoming').length,
-						totalIncomingActive: integrations.filter(
-							(integration) => integration.enabled === true && integration.type === 'webhook-incoming',
-						).length,
-						totalOutgoing: integrations.filter((integration) => integration.type === 'webhook-outgoing').length,
-						totalOutgoingActive: integrations.filter(
-							(integration) => integration.enabled === true && integration.type === 'webhook-outgoing',
-						).length,
-						totalWithScriptEnabled: integrations.filter((integration) => integration.scriptEnabled === true).length,
-					};
-				}),
+			Promise.all([
+				Integrations.countDocuments({}, { readPreference }),
+				Integrations.countDocuments({ type: 'webhook-incoming' }, { readPreference }),
+				Integrations.countDocuments({ enabled: true, type: 'webhook-incoming' }, { readPreference }),
+				Integrations.countDocuments({ type: 'webhook-outgoing' }, { readPreference }),
+				Integrations.countDocuments({ enabled: true, type: 'webhook-outgoing' }, { readPreference }),
+				Integrations.countDocuments({ scriptEnabled: true }, { readPreference }),
+			]).then(([totalIntegrations, totalIncoming, totalIncomingActive, totalOutgoing, totalOutgoingActive, totalWithScriptEnabled]) => {
+				statistics.integrations = {
+					totalIntegrations,
+					totalIncoming,
+					totalIncomingActive,
+					totalOutgoing,
+					totalOutgoingActive,
+					totalWithScriptEnabled,
+				};
+			}),
 		);
 
 		statsPms.push(
