@@ -20,7 +20,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../app/settings/server';
 import { normalizeMessagesForUser } from '../../../app/utils/server/lib/normalizeMessagesForUser';
-import { messageSearch } from '../../methods/messageSearch';
+import { messageSearch } from '../../meteor-methods/messages/messageSearch';
 import { spotlightMethod } from '../../publications/spotlight';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
