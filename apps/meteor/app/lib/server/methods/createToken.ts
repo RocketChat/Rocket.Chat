@@ -16,7 +16,7 @@ export async function generateAccessToken(userId: string, secret: string, caller
 		throw new MeteorError('error-not-authorized', 'Not authorized');
 	}
 
-	if (caller._id !== userId && !(await Authorization.hasPermission(caller, 'user-generate-access-token'))) {
+	if (caller._id !== userId && !(await Authorization.hasPermission(caller._id, 'user-generate-access-token'))) {
 		throw new MeteorError('error-not-authorized', 'Not authorized');
 	}
 

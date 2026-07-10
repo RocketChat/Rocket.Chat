@@ -52,7 +52,7 @@ describe('generateAccessToken', () => {
 		await expect(generateAccessToken('targetId', 'V@9#mK2$pL8!nQ5^rT1&wX6*jY3%uZ7', { _id: 'callerId' })).to.be.rejectedWith(
 			'Not authorized',
 		);
-		sinon.assert.calledOnceWithExactly(hasPermissionStub, { _id: 'callerId' }, 'user-generate-access-token');
+		sinon.assert.calledOnceWithExactly(hasPermissionStub, 'callerId', 'user-generate-access-token');
 	});
 
 	it('should succeed if caller targets another user and has user-generate-access-token permission', async () => {
@@ -63,7 +63,7 @@ describe('generateAccessToken', () => {
 		const result = await generateAccessToken('targetId', 'V@9#mK2$pL8!nQ5^rT1&wX6*jY3%uZ7', { _id: 'callerId' });
 
 		expect(result).to.deep.equal({ userId: 'targetId', authToken: 'abc123' });
-		sinon.assert.calledOnceWithExactly(hasPermissionStub, { _id: 'callerId' }, 'user-generate-access-token');
+		sinon.assert.calledOnceWithExactly(hasPermissionStub, 'callerId', 'user-generate-access-token');
 	});
 
 	it('should succeed without permission check when caller generates token for themselves', async () => {
