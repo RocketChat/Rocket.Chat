@@ -557,6 +557,8 @@ jobs:
 
   test-api:
     name: 🔨 Test API (CE)
+    # No coverage output; merge queue already gated this tree. Skip the pure rerun on the post-merge develop push.
+    if: ${{ !(github.event_name == 'push' && github.ref == 'refs/heads/develop' && github.actor == 'github-merge-queue[bot]') }}
     needs: [checks, build-gh-docker-publish, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
@@ -574,6 +576,8 @@ jobs:
 
   test-api-livechat:
     name: 🔨 Test API Livechat (CE)
+    # No coverage output; merge queue already gated this tree. Skip the pure rerun on the post-merge develop push.
+    if: ${{ !(github.event_name == 'push' && github.ref == 'refs/heads/develop' && github.actor == 'github-merge-queue[bot]') }}
     needs: [checks, build-gh-docker-publish, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
@@ -591,6 +595,8 @@ jobs:
 
   test-ui:
     name: 🔨 Test UI (CE)
+    # No coverage output; merge queue already gated this tree. Skip the pure rerun on the post-merge develop push.
+    if: ${{ !(github.event_name == 'push' && github.ref == 'refs/heads/develop' && github.actor == 'github-merge-queue[bot]') }}
     needs: [checks, build-gh-docker-publish, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
@@ -617,6 +623,8 @@ jobs:
 
   test-api-ee:
     name: 🔨 Test API (EE)
+    # merge queue already gated this tree; skip the pure rerun on the post-merge develop push.
+    if: ${{ !(github.event_name == 'push' && github.ref == 'refs/heads/develop' && github.actor == 'github-merge-queue[bot]') }}
     needs: [checks, build-gh-docker-publish, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
@@ -638,6 +646,8 @@ jobs:
 
   test-api-livechat-ee:
     name: 🔨 Test API Livechat (EE)
+    # merge queue already gated this tree; skip the pure rerun on the post-merge develop push.
+    if: ${{ !(github.event_name == 'push' && github.ref == 'refs/heads/develop' && github.actor == 'github-merge-queue[bot]') }}
     needs: [checks, build-gh-docker-publish, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
@@ -659,6 +669,8 @@ jobs:
 
   test-api-apps-node-ee:
     name: 🔨 Test API Apps (node-runtime - EE)
+    # merge queue already gated this tree; skip the pure rerun on the post-merge develop push.
+    if: ${{ !(github.event_name == 'push' && github.ref == 'refs/heads/develop' && github.actor == 'github-merge-queue[bot]') }}
     needs: [checks, build-gh-docker-publish, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
@@ -680,6 +692,8 @@ jobs:
 
   test-ui-ee:
     name: 🔨 Test UI (EE)
+    # merge queue already gated this tree; skip the pure rerun on the post-merge develop push.
+    if: ${{ !(github.event_name == 'push' && github.ref == 'refs/heads/develop' && github.actor == 'github-merge-queue[bot]') }}
     needs: [checks, build-gh-docker-publish, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
@@ -709,8 +723,9 @@ jobs:
 
   test-federation-matrix:
     name: 🔨 Test Federation Matrix
+    # merge queue already gated this tree; skip the pure rerun on the post-merge develop push.
+    if: ${{ !(github.event_name == 'push' && github.ref == 'refs/heads/develop' && github.actor == 'github-merge-queue[bot]') }}
     needs: [checks, build-gh-docker-publish, packages-build, release-versions]
-    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -870,31 +885,32 @@ jobs:
             exit 1
           fi
 
-          if [[ '${{ needs.test-api.result }}' != 'success' ]]; then
+          # CE and EE tests are skipped on the merge-queue post-merge develop push; treat skipped as pass.
+          if [[ '${{ needs.test-api.result }}' != 'success' && '${{ needs.test-api.result }}' != 'skipped' ]]; then
             exit 1
           fi
 
-          if [[ '${{ needs.test-ui.result }}' != 'success' ]]; then
+          if [[ '${{ needs.test-ui.result }}' != 'success' && '${{ needs.test-ui.result }}' != 'skipped' ]]; then
             exit 1
           fi
 
-          if [[ '${{ needs.test-api-ee.result }}' != 'success' ]]; then
+          if [[ '${{ needs.test-api-ee.result }}' != 'success' && '${{ needs.test-api-ee.result }}' != 'skipped' ]]; then
             exit 1
           fi
 
-          if [[ '${{ needs.test-ui-ee.result }}' != 'success' ]]; then
+          if [[ '${{ needs.test-ui-ee.result }}' != 'success' && '${{ needs.test-ui-ee.result }}' != 'skipped' ]]; then
             exit 1
           fi
 
-          if [[ '${{ needs.test-api-livechat.result }}' != 'success' ]]; then
+          if [[ '${{ needs.test-api-livechat.result }}' != 'success' && '${{ needs.test-api-livechat.result }}' != 'skipped' ]]; then
             exit 1
           fi
 
-          if [[ '${{ needs.test-api-livechat-ee.result }}' != 'success' ]]; then
+          if [[ '${{ needs.test-api-livechat-ee.result }}' != 'success' && '${{ needs.test-api-livechat-ee.result }}' != 'skipped' ]]; then
             exit 1
           fi
 
-          if [[ '${{ needs.test-federation-matrix.result }}' != 'success' ]]; then
+          if [[ '${{ needs.test-federation-matrix.result }}' != 'success' && '${{ needs.test-federation-matrix.result }}' != 'skipped' ]]; then
             exit 1
           fi
 
