@@ -10,7 +10,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const ROOT = path.resolve(import.meta.dirname, '../..');
-const dirs = process.argv.slice(2).length ? process.argv.slice(2) : ['app', 'server', 'ee', 'lib', 'imports', 'client', 'definition', 'tests'];
+const dirs = process.argv.slice(2).length
+	? process.argv.slice(2)
+	: ['app', 'server', 'ee', 'lib', 'imports', 'client', 'definition', 'tests'];
 
 const IMPORT_RE = /(?:from\s+|import\s+|(?:import|require)\s*\(\s*)(['"])(\.[^'"]+)\1/g;
 const EXT = ['.ts', '.tsx', '.js', '.jsx'];
@@ -52,6 +54,17 @@ for (const dir of dirs) {
 				console.log(`${path.relative(ROOT, file)}: unresolved import ${m[2]}`);
 				problems++;
 			}
+		}
+	}
+}
+for (const entry of fs.readdirSync(ROOT, { withFileTypes: true })) {
+	if (!entry.isFile() || !EXT.some((e) => entry.name.endsWith(e))) continue;
+	const file = path.join(ROOT, entry.name);
+	const content = fs.readFileSync(file, 'utf8');
+	for (const m of content.matchAll(IMPORT_RE)) {
+		if (!resolves(file, m[2])) {
+			console.log(`: unresolved import `);
+			problems++;
 		}
 	}
 }

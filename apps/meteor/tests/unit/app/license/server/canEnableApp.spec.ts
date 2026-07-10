@@ -5,7 +5,7 @@ import type { Apps } from '@rocket.chat/core-services';
 import type { LicenseImp } from '@rocket.chat/license';
 import { expect } from 'chai';
 
-import { _canEnableApp } from '../../../../../ee/app/license/server/canEnableApp';
+import { _canEnableApp } from '../../../../../ee/server/lib/license/canEnableApp';
 
 const getDefaultApp = (): IAppStorageItem => ({
 	_id: '6706d9258e0ca97c2f0cc885',
