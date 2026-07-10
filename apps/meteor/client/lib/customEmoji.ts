@@ -4,22 +4,13 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { emoji, removeFromRecent, replaceEmojiInRecent } from '../../app/emoji/client';
 import { getURL } from '../../app/utils/client';
 
-const isSetNotNull = (fn: () => unknown) => {
-	let value;
-	try {
-		value = fn();
-	} catch (e) {
-		value = null;
-	}
-	return value !== null && value !== undefined;
-};
-
 export const updateEmojiCustom = (emojiData: IEmoji) => {
-	const previousExists = isSetNotNull(() => emojiData.previousName);
-	const currentAliases = isSetNotNull(() => emojiData.aliases);
+	const { previousName } = emojiData;
+	const previousExists = previousName !== null && previousName !== undefined;
+	const currentAliases = emojiData.aliases !== null && emojiData.aliases !== undefined;
 
-	if (previousExists && isSetNotNull(() => emoji.list[`:${emojiData.previousName}:`].aliases)) {
-		for (const alias of emoji.list[`:${emojiData.previousName}:`].aliases ?? []) {
+	if (previousExists && emoji.list[`:${previousName}:`]?.aliases != null) {
+		for (const alias of emoji.list[`:${previousName}:`].aliases ?? []) {
 			delete emoji.list[`:${alias}:`];
 			const aliasIndex = emoji.packages.emojiCustom.list?.indexOf(`:${alias}:`) ?? -1;
 			if (aliasIndex !== -1) {
@@ -28,16 +19,16 @@ export const updateEmojiCustom = (emojiData: IEmoji) => {
 		}
 	}
 
-	if (previousExists && emojiData.name !== emojiData.previousName) {
-		const arrayIndex = emoji.packages.emojiCustom.emojisByCategory.rocket.indexOf(emojiData.previousName);
+	if (previousExists && emojiData.name !== previousName) {
+		const arrayIndex = emoji.packages.emojiCustom.emojisByCategory.rocket.indexOf(previousName);
 		if (arrayIndex !== -1) {
 			emoji.packages.emojiCustom.emojisByCategory.rocket.splice(arrayIndex, 1);
 		}
-		const arrayIndexList = emoji.packages.emojiCustom.list?.indexOf(`:${emojiData.previousName}:`) ?? -1;
+		const arrayIndexList = emoji.packages.emojiCustom.list?.indexOf(`:${previousName}:`) ?? -1;
 		if (arrayIndexList !== -1) {
 			emoji.packages.emojiCustom.list?.splice(arrayIndexList, 1);
 		}
-		delete emoji.list[`:${emojiData.previousName}:`];
+		delete emoji.list[`:${previousName}:`];
 	}
 
 	const categoryIndex = emoji.packages.emojiCustom.emojisByCategory.rocket.indexOf(`${emojiData.name}`);
@@ -46,13 +37,12 @@ export const updateEmojiCustom = (emojiData: IEmoji) => {
 		emoji.packages.emojiCustom.list?.push(`:${emojiData.name}:`);
 	}
 	// Don't inherit fields from a native emoji being overridden (e.g. its unicode), or the pick would output the native emoji
-	// TODO: Fix the IEmoji type and standardize the emoji packs types
 	emoji.list[`:${emojiData.name}:`] = {
 		...emojiData,
 		emojiPackage: 'emojiCustom',
-	} as unknown as (typeof emoji.list)[keyof typeof emoji.list];
+	};
 	if (currentAliases) {
-		for (const alias of emojiData.aliases) {
+		for (const alias of emojiData.aliases ?? []) {
 			emoji.packages.emojiCustom.list?.push(`:${alias}:`);
 			emoji.list[`:${alias}:`] = {
 				emojiPackage: 'emojiCustom',
@@ -62,7 +52,7 @@ export const updateEmojiCustom = (emojiData: IEmoji) => {
 	}
 
 	if (previousExists) {
-		replaceEmojiInRecent({ oldEmoji: emojiData.previousName, newEmoji: emojiData.name });
+		replaceEmojiInRecent({ oldEmoji: previousName, newEmoji: emojiData.name });
 	}
 
 	emoji.dispatchUpdate();

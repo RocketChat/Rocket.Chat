@@ -23,7 +23,7 @@ export type EmojiEntry = {
 	uc_greedy: string;
 	shortnames: string[];
 	category: string;
-	emojiPackage: string;
+	emojiPackage: 'native';
 	unicode: string;
 };
 

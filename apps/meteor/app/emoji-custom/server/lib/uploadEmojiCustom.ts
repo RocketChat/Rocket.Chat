@@ -41,11 +41,6 @@ export async function uploadEmojiCustomWithBuffer(
 		throw new Meteor.Error('not_authorized');
 	}
 
-	if (!Array.isArray(emojiData.aliases)) {
-		// delete aliases for notification purposes. here, it is a string or undefined rather than an array
-		delete emojiData.aliases;
-	}
-
 	emojiData.name = limax(emojiData.name, { replacement: '_' });
 
 	const file = await getFile(buffer, emojiData.extension);
@@ -73,7 +68,9 @@ export async function uploadEmojiCustomWithBuffer(
 		ws.on('end', async () => {
 			const etag = Random.hexString(6);
 			await EmojiCustom.setETagByName(emojiData.name, etag);
-			setTimeout(() => api.broadcast('emoji.updateCustom', { ...emojiData, etag }), 500);
+			// aliases may still be a raw comma-separated string here (deprecated method); only broadcast parsed arrays
+			const { aliases, ...restEmojiData } = emojiData;
+			setTimeout(() => api.broadcast('emoji.updateCustom', { ...restEmojiData, ...(Array.isArray(aliases) && { aliases }), etag }), 500);
 			resolve();
 		});
 

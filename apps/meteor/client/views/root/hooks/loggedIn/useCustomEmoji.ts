@@ -38,7 +38,7 @@ export const useCustomEmoji = () => {
 				for (const currentEmoji of customEmojis) {
 					emoji.packages.emojiCustom.emojisByCategory.rocket.push(currentEmoji.name);
 					emoji.packages.emojiCustom.list?.push(`:${currentEmoji.name}:`);
-					emoji.list[`:${currentEmoji.name}:`] = { ...currentEmoji, emojiPackage: 'emojiCustom' } as any;
+					emoji.list[`:${currentEmoji.name}:`] = { ...currentEmoji, emojiPackage: 'emojiCustom' };
 					for (const alias of currentEmoji.aliases) {
 						emoji.packages.emojiCustom.list?.push(`:${alias}:`);
 						emoji.list[`:${alias}:`] = {
