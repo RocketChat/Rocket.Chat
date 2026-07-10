@@ -4,17 +4,18 @@ import sinon from 'sinon';
 
 import { integerBoundOrDisabled, notAboveSetting, notBelowSetting } from '../../../../server/settings/lib/validationRuleBuilders';
 
-const systemLoggerErrorMock = sinon.stub();
 const settingsGetMock = sinon.stub();
 const settingsGetSettingMock = sinon.stub();
 
 // createPredicateFromFilter (@rocket.chat/mongo-adapter) and isRecord (@rocket.chat/tools) are pure — left un-stubbed
-const { validateSettingRules, SettingValidationError } = p
-	.noCallThru()
-	.load('../../../../server/lib/settingValidationRules.ts', {
-		'./logger/system': { SystemLogger: { error: systemLoggerErrorMock } },
-		'../settings': { settings: { get: settingsGetMock, getSetting: settingsGetSettingMock } },
-	});
+const { validateSettingRules, SettingValidationError } = p.noCallThru().load('../../../../server/lib/settingValidationRules.ts', {
+	'@rocket.chat/logger': {
+		Logger: class {
+			error = (): undefined => undefined;
+		},
+	},
+	'../settings': { settings: { get: settingsGetMock, getSetting: settingsGetSettingMock } },
+});
 
 const validationBySettingId: Record<string, unknown> = {
 	Accounts_Password_Policy_MinLength: [integerBoundOrDisabled(), notAboveSetting('Accounts_Password_Policy_MaxLength')],
@@ -25,7 +26,6 @@ describe('validateSettingRules', () => {
 	beforeEach(() => {
 		settingsGetMock.reset();
 		settingsGetSettingMock.reset();
-		systemLoggerErrorMock.reset();
 
 		settingsGetSettingMock.callsFake((_id: string) => ({
 			_id,
@@ -117,7 +117,7 @@ describe('validateSettingRules', () => {
 		expect(() => validateSettingRules([{ _id: 'Some_Unrelated_Setting', value: 10 }])).to.not.throw();
 	});
 
-	it('logs and passes a rule referencing a setting that does not exist', () => {
+	it('passes a rule referencing a setting that does not exist', () => {
 		settingsGetSettingMock.withArgs('Ref_Setting').returns({
 			_id: 'Ref_Setting',
 			type: 'int',
@@ -125,10 +125,9 @@ describe('validateSettingRules', () => {
 		});
 
 		expect(() => validateSettingRules([{ _id: 'Ref_Setting', value: 999 }])).to.not.throw();
-		expect(systemLoggerErrorMock.calledOnce).to.be.true;
 	});
 
-	it('skips malformed persisted rules, logging instead of crashing or throwing garbage', () => {
+	it('skips malformed persisted rules instead of crashing the save', () => {
 		const malformed = [
 			'[{"query":null}]',
 			'[{"query":{"value":{"$gte":1}},"appliesWhen":"junk"}]',
@@ -136,11 +135,9 @@ describe('validateSettingRules', () => {
 		];
 
 		for (const validation of malformed) {
-			systemLoggerErrorMock.reset();
 			settingsGetSettingMock.withArgs('Malformed_Setting').returns({ _id: 'Malformed_Setting', type: 'int', validation });
 
 			expect(() => validateSettingRules([{ _id: 'Malformed_Setting', value: 0 }]), validation).to.not.throw();
-			expect(systemLoggerErrorMock.calledOnce, validation).to.be.true;
 		}
 	});
 

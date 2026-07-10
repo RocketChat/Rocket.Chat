@@ -1,9 +1,11 @@
 import type { ISetting, SettingValidationRule } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import { isRecord } from '@rocket.chat/tools';
 
-import { SystemLogger } from './logger/system';
 import { settings } from '../settings';
+
+const logger = new Logger('SettingValidation');
 
 export class SettingValidationError extends Error {}
 
@@ -28,12 +30,12 @@ const parseValidationRules = (settingId: ISetting['_id'], validation: NonNullabl
 	try {
 		parsed = JSON.parse(validation);
 	} catch (err) {
-		SystemLogger.error({ msg: 'Failed to parse setting validation rules', settingId, err });
+		logger.error({ msg: 'Failed to parse setting validation rules', settingId, err });
 		return [];
 	}
 
 	if (!isValidationRuleArray(parsed)) {
-		SystemLogger.error({ msg: 'Setting validation rules are not well-formed', settingId });
+		logger.error({ msg: 'Setting validation rules are not well-formed', settingId });
 		return [];
 	}
 
@@ -48,7 +50,7 @@ const isSettingReference = (value: unknown): value is { $setting: ISetting['_id'
  * rejects the candidate. A rule that references a setting which does not exist is logged and treated as passing, so a
  * broken declaration never blocks a save.
  */
-export const evaluateSettingValidationRule = (
+const evaluateSettingValidationRule = (
 	settingId: ISetting['_id'],
 	rule: SettingValidationRule,
 	get: (id: ISetting['_id']) => unknown,
@@ -86,7 +88,7 @@ export const evaluateSettingValidationRule = (
 
 	const unknownReferences = Object.keys(references).filter((id) => references[id] === undefined);
 	if (unknownReferences.length) {
-		SystemLogger.error({ msg: 'Setting validation rule references unknown settings', settingId, references: unknownReferences });
+		logger.error({ msg: 'Setting validation rule references unknown settings', settingId, references: unknownReferences });
 		return true;
 	}
 

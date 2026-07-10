@@ -395,8 +395,10 @@ API.v1.post(
 			try {
 				validateSettingRules([{ _id, value: bodyParams.value }]);
 			} catch (error) {
-				// the message is the i18n key; it becomes the response `error` so the client translates it
-				return API.v1.failure(error instanceof Error ? error.message : String(error), 'error-setting-validation-failed');
+				if (error instanceof SettingValidationError) {
+					return API.v1.failure(error.message, 'error-setting-validation-failed');
+				}
+				throw error;
 			}
 
 			const { matchedCount } = await auditSettingOperation(Settings.updateValueNotHiddenById, _id, bodyParams.value);

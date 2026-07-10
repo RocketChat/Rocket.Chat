@@ -43,7 +43,6 @@ Meteor.methods<ServerMethods>({
 			});
 		} catch (error) {
 			if (error instanceof SettingValidationError) {
-				// rethrow as Meteor.Error so the i18n key reaches the client (plain errors are masked as internal server errors)
 				throw new Meteor.Error('error-setting-validation-failed', error.message);
 			}
 			throw error;
