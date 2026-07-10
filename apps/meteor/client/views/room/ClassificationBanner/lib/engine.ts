@@ -41,18 +41,16 @@ const buildSegment = (
 	};
 };
 
-const resolveColor = (config: ClassificationBannersConfig, roomAttributes: IAbacAttributeDefinition[]): string => {
-	const driver = config.attributes.find(({ drivesColor }) => drivesColor) ?? config.attributes[0];
+const resolveColor = ({ attributes, banner }: ClassificationBannersConfig, roomAttributes: IAbacAttributeDefinition[]): string => {
+	const driver = attributes.find(({ drivesColor }) => drivesColor) ?? attributes[0];
 	const roomValues = roomAttributes.find(({ key }) => key === driver.source)?.values ?? [];
-	// values are ranked most restrictive first: index 0 = highest ranking
-	const matched = driver.values.filter(({ source }) => roomValues.includes(source));
-	if (!matched.length) {
-		return config.banner.fallbackColor;
-	}
-	if (config.banner.colorMode === 'highest') {
-		return matched[0].color;
-	}
-	return roomValues.map((value) => driver.values.find(({ source }) => source === value)).find(isTruthy)?.color ?? matched[0].color;
+	// values are ranked most restrictive first, so in 'highest' mode the first match wins;
+	// in 'attribute' mode the room's own value order decides instead
+	const match =
+		banner.colorMode === 'highest'
+			? driver.values.find(({ source }) => roomValues.includes(source))
+			: roomValues.map((value) => driver.values.find(({ source }) => source === value)).find(isTruthy);
+	return match?.color ?? banner.fallbackColor;
 };
 
 export const buildClassificationBanner = (
