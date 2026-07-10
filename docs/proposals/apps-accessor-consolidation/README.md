@@ -661,8 +661,15 @@ returning the bridge value, matching the interface.
    + the `restarting` guard keyed on `AppResourceBridge.REGISTRATION_METHODS`. Permission/conflict
    semantics are unchanged because each method calls the same manager the host accessor used (the
    video-conf/outbound `PermissionDeniedError` throw and the UI log-and-refuse both propagate as
-   before). The `AppManager` instance is passed to the bridge in the controller constructor — no
-   `apps/meteor` orchestrator changes needed.
+   before). No `apps/meteor` orchestrator changes needed.
+
+   **Ownership (revised):** the bridge is stateless — every method takes the `appId` as an argument
+   and delegates to an `AppManager`-owned manager, so no per-app or per-subprocess state exists. It is
+   therefore constructed **once** by `AppManager` (`getAppResourceBridge()`) and the shared instance is
+   consumed by every `BaseRuntimeSubprocessController` (the controller field now holds
+   `manager.getAppResourceBridge()` rather than a `new AppResourceBridge(manager)` per controller).
+   This matches the §4 "instantiated by `AppManager`" design point and removes the tight coupling of a
+   bridge lifetime to each subprocess controller.
 2. ✅ Runtime: rewrote `getConfigurationExtend` (ui/settings/externalComponents/api/scheduler/
    videoConfProviders/outboundCommunication/slashCommands), `getConfigurationModify`
    (slashCommands → modify/enable/disable; scheduler → local `SchedulerModify`), and the app-settings
