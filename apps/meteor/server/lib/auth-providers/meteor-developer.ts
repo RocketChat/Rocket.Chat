@@ -2,8 +2,8 @@ import type { OAuthConfiguration } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import passport from 'passport';
 
-import { addPassportCustomOAuth } from '../../../server/lib/oauth/addPassportCustomOAuth';
-import { settings } from '../../settings/server';
+import { settings } from '../../../app/settings/server';
+import { addPassportCustomOAuth } from '../oauth/addPassportCustomOAuth';
 
 const config: Partial<OAuthConfiguration> = {
 	serverURL: 'https://www.meteor.com',
