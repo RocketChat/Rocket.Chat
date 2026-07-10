@@ -1,6 +1,7 @@
 import type { IAbacAttributeDefinition } from '@rocket.chat/core-typings';
 import { isTruthy } from '@rocket.chat/tools';
 
+import { FALLBACK_COLOR, FALLBACK_TEXT } from './constants';
 import type {
 	ClassificationBannerAttribute,
 	ClassificationBannerPayload,
@@ -8,15 +9,22 @@ import type {
 	ClassificationBannersConfig,
 } from './types';
 
-const FALLBACK_TEXT = 'NO CLASSIFICATION DATA';
-const FALLBACK_COLOR = '#6C727A';
-
 export const readableTextColor = (hex: string): '#1F2329' | '#FFFFFF' => {
 	const [r, g, b] = [0, 2, 4].map((offset) => parseInt(hex.replace('#', '').slice(offset, offset + 2), 16) / 255);
 	const linearize = (channel: number): number => (channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4);
 	const luminance = 0.2126 * linearize(r) + 0.7152 * linearize(g) + 0.0722 * linearize(b);
 	return luminance > 0.55 ? '#1F2329' : '#FFFFFF';
 };
+
+const isStructurallyValidConfig = (config: ClassificationBannersConfig): boolean =>
+	config.version === 1 &&
+	typeof config.enabled === 'boolean' &&
+	typeof config.banner?.delimiter === 'string' &&
+	Array.isArray(config.attributes) &&
+	config.attributes.length > 0 &&
+	config.attributes.every(
+		(attribute) => typeof attribute?.id === 'string' && typeof attribute.source === 'string' && Array.isArray(attribute.values),
+	);
 
 export const parseClassificationBannersConfig = (raw: string): ClassificationBannersConfig | null => {
 	let parsed: unknown;
@@ -30,30 +38,14 @@ export const parseClassificationBannersConfig = (raw: string): ClassificationBan
 	}
 
 	const config = parsed as ClassificationBannersConfig;
-	if (
-		config.version !== 1 ||
-		typeof config.enabled !== 'boolean' ||
-		typeof config.banner?.delimiter !== 'string' ||
-		!Array.isArray(config.attributes) ||
-		config.attributes.length === 0 ||
-		!config.attributes.every(
-			(attribute) => typeof attribute?.id === 'string' && typeof attribute.source === 'string' && Array.isArray(attribute.values),
-		)
-	) {
-		return null;
-	}
-
-	return config;
+	return isStructurallyValidConfig(config) ? config : null;
 };
-
-const getRoomValues = (attribute: ClassificationBannerAttribute, roomAttributes: IAbacAttributeDefinition[]): string[] =>
-	roomAttributes.find(({ key }) => key === attribute.source)?.values ?? [];
 
 const buildSegment = (
 	attribute: ClassificationBannerAttribute,
 	roomAttributes: IAbacAttributeDefinition[],
 ): ClassificationBannerSegment | null => {
-	const roomValues = getRoomValues(attribute, roomAttributes);
+	const roomValues = roomAttributes.find(({ key }) => key === attribute.source)?.values ?? [];
 	let matched = attribute.values.filter(({ source }) => roomValues.includes(source));
 	if (matched.length === 0) {
 		return null;
@@ -76,7 +68,7 @@ const buildSegment = (
 
 const resolveColor = (config: ClassificationBannersConfig, roomAttributes: IAbacAttributeDefinition[]): string => {
 	const driver = config.attributes.find(({ drivesColor }) => drivesColor) ?? config.attributes[0];
-	const roomValues = getRoomValues(driver, roomAttributes);
+	const roomValues = roomAttributes.find(({ key }) => key === driver.source)?.values ?? [];
 	// values are ranked most restrictive first: index 0 = highest ranking
 	const matched = driver.values.filter(({ source }) => roomValues.includes(source));
 	if (matched.length === 0) {

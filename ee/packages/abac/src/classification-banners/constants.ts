@@ -1,0 +1,2 @@
+export const FALLBACK_TEXT = 'NO CLASSIFICATION DATA';
+export const FALLBACK_COLOR = '#6C727A';
