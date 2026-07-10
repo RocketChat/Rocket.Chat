@@ -1,5 +1,49 @@
 # @rocket.chat/meteor
 
+## 7.10.14
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#41241](https://github.com/RocketChat/Rocket.Chat/pull/41241) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#41253](https://github.com/RocketChat/Rocket.Chat/pull/41253) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#41291](https://github.com/RocketChat/Rocket.Chat/pull/41291) by [@dionisio-bot](https://github.com/dionisio-bot)) Ensures room permission checks are applied consistently regardless of how the room is identified when converting a channel to a team or creating a team from an existing room
+
+- <details><summary>Updated dependencies [ff59bb4253abfd907db783a090d31d9787141165]:</summary>
+
+  - @rocket.chat/core-typings@7.10.14
+  - @rocket.chat/model-typings@1.7.14
+  - @rocket.chat/models@1.6.14
+  - @rocket.chat/license@1.0.42
+  - @rocket.chat/omnichannel-services@0.3.48
+  - @rocket.chat/pdf-worker@0.3.30
+  - @rocket.chat/presence@0.2.51
+  - @rocket.chat/api-client@0.2.51
+  - @rocket.chat/apps@0.5.30
+  - @rocket.chat/core-services@0.10.14
+  - @rocket.chat/cron@0.1.51
+  - @rocket.chat/freeswitch@1.2.38
+  - @rocket.chat/fuselage-ui-kit@22.0.14
+  - @rocket.chat/gazzodown@22.0.14
+  - @rocket.chat/http-router@7.9.18
+  - @rocket.chat/rest-typings@7.10.14
+  - @rocket.chat/ui-avatar@18.0.14
+  - @rocket.chat/ui-client@22.0.14
+  - @rocket.chat/ui-contexts@22.0.14
+  - @rocket.chat/web-ui-registration@22.0.14
+  - @rocket.chat/omni-core-ee@0.0.16
+  - @rocket.chat/instance-status@0.1.51
+  - @rocket.chat/omni-core@0.0.16
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.30
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-video-conf@22.0.14
+  - @rocket.chat/ui-voip@12.0.14
+  </details>
+
 ## 7.10.13
 
 ### Patch Changes
