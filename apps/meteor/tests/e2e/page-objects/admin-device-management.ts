@@ -4,7 +4,6 @@ import { Admin } from './admin';
 import { MenuOptions, DevicesTable } from './fragments';
 import { DeviceInfoFlexTab } from './fragments/flextabs';
 import { ConfirmLogoutModal } from './fragments/modals';
-import { goToRouteAndWait } from '../utils/goToRouteAndWait';
 
 export class AdminDeviceManagement extends Admin {
 	readonly deviceInfo: DeviceInfoFlexTab;
@@ -28,7 +27,8 @@ export class AdminDeviceManagement extends Admin {
 	}
 
 	async goto(): Promise<void> {
-		await goToRouteAndWait(this.page, '/admin/device-management', this.adminPageContent);
+		await this.page.goto('/admin/device-management');
+		await this.adminPageContent.waitFor({ state: 'visible' });
 	}
 
 	get notAuthorizedMessage(): Locator {
