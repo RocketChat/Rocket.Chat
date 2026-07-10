@@ -2,7 +2,6 @@ import type { Locator, Page } from '@playwright/test';
 
 import { Account } from './account';
 import { DeleteAccountModal } from './fragments';
-import { goToRouteAndWait } from '../utils/goToRouteAndWait';
 
 export class AccountProfile extends Account {
 	readonly deleteAccountModal: DeleteAccountModal;
@@ -163,22 +162,27 @@ export class AccountProfile extends Account {
 	}
 
 	async gotoProfile(): Promise<void> {
-		await goToRouteAndWait(this.page, '/account/profile', this.profileHeading);
+		await this.page.goto('/account/profile');
+		await this.profileHeading.waitFor({ state: 'visible' });
 	}
 
 	async gotoTokens(): Promise<void> {
-		await goToRouteAndWait(this.page, '/account/tokens', this.personalAccessTokensHeading);
+		await this.page.goto('/account/tokens');
+		await this.personalAccessTokensHeading.waitFor({ state: 'visible' });
 	}
 
 	async gotoOmnichannel(): Promise<void> {
-		await goToRouteAndWait(this.page, '/account/omnichannel', this.omnichannelHeading);
+		await this.page.goto('/account/omnichannel');
+		await this.omnichannelHeading.waitFor({ state: 'visible' });
 	}
 
 	async gotoFeaturePreview(): Promise<void> {
-		await goToRouteAndWait(this.page, '/account/feature-preview', this.featurePreviewHeading);
+		await this.page.goto('/account/feature-preview');
+		await this.featurePreviewHeading.waitFor({ state: 'visible' });
 	}
 
 	async gotoAccessibilityAndAppearance(): Promise<void> {
-		await goToRouteAndWait(this.page, '/account/accessibility-and-appearance', this.accessibilityAndAppearanceHeading);
+		await this.page.goto('/account/accessibility-and-appearance');
+		await this.accessibilityAndAppearanceHeading.waitFor({ state: 'visible' });
 	}
 }

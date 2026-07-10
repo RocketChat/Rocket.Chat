@@ -23,7 +23,6 @@ import {
 import { RoomToolbar } from './fragments/toolbar';
 import { UserCard } from './fragments/user-card';
 import { VoiceCalls } from './fragments/voice-calls';
-import { goToRouteAndWait } from '../utils/goToRouteAndWait';
 
 export class HomeChannel {
 	public readonly page: Page;
@@ -94,7 +93,8 @@ export class HomeChannel {
 	}
 
 	async goto(): Promise<void> {
-		await goToRouteAndWait(this.page, '/home', this.homepageHeader);
+		await this.page.goto('/home');
+		await this.homepageHeader.waitFor({ state: 'visible' });
 	}
 
 	async gotoChannel(name: string) {

@@ -2,7 +2,6 @@ import type { Locator, Page } from '@playwright/test';
 
 import { Admin } from './admin';
 import { MenuMoreActions, UserInfoFlexTab, EditUserFlexTab } from './fragments';
-import { goToRouteAndWait } from '../utils/goToRouteAndWait';
 import { expect } from '../utils/test';
 
 type UserActions = 'Make Admin' | 'Remove Admin' | 'Activate' | 'Deactivate';
@@ -38,7 +37,8 @@ export class AdminUsers extends Admin {
 	}
 
 	async goto(): Promise<void> {
-		await goToRouteAndWait(this.page, '/admin/users', this.inputSearchUsers);
+		await this.page.goto('/admin/users');
+		await this.inputSearchUsers.waitFor({ state: 'visible' });
 	}
 
 	get btnMoreActionsMenu(): Locator {
