@@ -1,0 +1,14 @@
+apps/meteor/ee/server/lib/engagementDashboard/users.ts
+  h_4c386397e672f4 20,23-24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "56fe462522a6adc0e3688013bf4db7a0bb5a8b29",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
