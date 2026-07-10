@@ -7,7 +7,6 @@ import { integerBoundOrDisabled, notAboveSetting, notBelowSetting } from '../../
 const settingsGetMock = sinon.stub();
 const settingsGetSettingMock = sinon.stub();
 
-// createPredicateFromFilter (@rocket.chat/mongo-adapter) and isRecord (@rocket.chat/tools) are pure — left un-stubbed
 const { validateSettingRules, SettingValidationError } = p.noCallThru().load('../../../../server/lib/settingValidationRules.ts', {
 	'@rocket.chat/logger': {
 		Logger: class {
@@ -53,7 +52,6 @@ describe('validateSettingRules', () => {
 	it('resolves values batch-first, not from the stale cached value', () => {
 		settingsGetMock.withArgs('Accounts_Password_Policy_MinLength').returns(14);
 
-		// cached min is 14, but the batch lowers it to 6 — max 10 must be accepted
 		expect(() =>
 			validateSettingRules([
 				{ _id: 'Accounts_Password_Policy_MinLength', value: 6 },
