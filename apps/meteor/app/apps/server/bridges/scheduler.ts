@@ -49,12 +49,25 @@ function _callProcessor(processor: IProcessor['processor']): (job: Job) => Promi
 				await job.agenda.cancel({ _id: job.attrs._id });
 			}
 		} catch (error: unknown) {
+			let errorMessage: string;
+			if (error instanceof Error) {
+				errorMessage = error.stack || error.message || String(error);
+			} else if (typeof error === 'object' && error !== null) {
+				try {
+					errorMessage = JSON.stringify(error, null, 2);
+				} catch {
+					errorMessage = String(error);
+				}
+			} else {
+				errorMessage = String(error);
+			}
+
 			await CronHistory.updateOne(
 				{ _id: insertedId },
 				{
 					$set: {
 						finishedAt: new Date(),
-						error: error instanceof Error && error.stack ? error.stack : String(error),
+						error: errorMessage,
 					},
 				},
 			);
