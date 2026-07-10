@@ -10,7 +10,7 @@ import type { IDocumentMapStore } from '../../lib/cachedStores/DocumentMapStore'
  *
  * It's a middle layer between the Mongo.Collection and Zustand aiming for complete migration to Zustand.
  */
-export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collection<T> {
+export class MinimongoCollection<T extends { _id: string }> {
 	private pendingRecomputations = new Set<Query<T>>();
 
 	recomputeAll() {
@@ -61,9 +61,7 @@ export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collec
 		 * queries that depend on the changed documents.
 		 */
 		public readonly use: UseBoundStore<StoreApi<IDocumentMapStore<T>>>,
-	) {
-		super(null);
-	}
+	) {}
 
 	/**
 	 * Returns the Zustand store state that holds the records of the collection.
