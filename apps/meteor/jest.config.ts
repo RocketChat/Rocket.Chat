@@ -54,7 +54,7 @@ export default {
 				'<rootDir>/server/api/v1/middlewares/*.spec.ts',
 				'<rootDir>/app/version-check/server/**/*.spec.ts',
 				'<rootDir>/app/apple/lib/**.spec.ts',
-				'<rootDir>/app/apple/server/**.spec.ts',
+				'<rootDir>/server/lib/auth-providers/apple/**.spec.ts',
 			],
 			coveragePathIgnorePatterns: ['/node_modules/'],
 		},

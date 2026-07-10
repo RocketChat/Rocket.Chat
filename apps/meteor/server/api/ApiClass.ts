@@ -48,10 +48,10 @@ import { settings } from '../../app/settings/server';
 import { getNestedProp } from '../lib/getNestedProp';
 import { authenticationMiddlewareForHono } from './v1/middlewares/authenticationHono';
 import { permissionsMiddleware } from './v1/middlewares/permissions';
-import { checkCodeForUser } from '../../app/2fa/server/code';
 import { getDefaultUserFields } from '../../app/utils/server/functions/getDefaultUserFields';
 import { license } from '../../ee/server/api/v1/middlewares/license';
 import { isObject } from '../../lib/utils/isObject';
+import { checkCodeForUser } from '../lib/2fa/code';
 import { hasPermissionAsync } from '../lib/authorization/hasPermission';
 import { shouldBreakInVersion } from '../lib/shouldBreakInVersion';
 

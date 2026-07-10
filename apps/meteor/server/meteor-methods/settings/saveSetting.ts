@@ -4,10 +4,10 @@ import { Settings } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { twoFactorRequired } from '../../../app/2fa/server/twoFactorRequired';
 import { getSettingPermissionId } from '../../../app/authorization/lib';
 import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
 import { notifyOnSettingChanged } from '../../../app/lib/server/lib/notifyListener';
+import { twoFactorRequired } from '../../lib/2fa/twoFactorRequired';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../lib/authorization/hasPermission';
 import { disableCustomScripts } from '../../lib/shared/disableCustomScripts';
 import { updateAuditedByUser } from '../../settings/lib/auditedSettingUpdates';

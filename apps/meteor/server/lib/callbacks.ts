@@ -22,9 +22,9 @@ import type {
 import type { Updater } from '@rocket.chat/models';
 import type { FilterOperators } from 'mongodb';
 
+import type { ILoginAttempt } from './auth/ILoginAttempt';
 import { Callbacks } from './callbacks/callbacksBase';
 import type { SendMessageOptions } from './messages/sendMessage';
-import type { ILoginAttempt } from '../../app/authentication/server/ILoginAttempt';
 import type { IBusinessHourBehavior } from '../../app/livechat/server/business-hour/AbstractBusinessHour';
 import type { CloseRoomParams } from '../../app/livechat/server/lib/localTypes';
 
