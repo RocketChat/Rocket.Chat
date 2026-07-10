@@ -104,7 +104,7 @@ A change in the DOM structure can break the test.
 - page-objects are a great way to reuse locators across tests using `getters` and `methods`.
 - They make it easier to write tests that are more readable and maintainable.
 - Always make sure to use the most restricted scope possible - not the whole page to avoid multiple matches.
-- Page-object `goto()` and route-specific `gotoX()` methods should own navigation and wait for a page-specific ready state before returning; prefer them over raw `page.goto()`.
+- When a page-object already exposes a route-aware `goto()` helper, prefer it over raw `page.goto()` so readiness checks stay coupled to navigation.
 
 If you are writing a new test, make sure to look at the existing page-objects to see if there is a suitable one for your use case.
 

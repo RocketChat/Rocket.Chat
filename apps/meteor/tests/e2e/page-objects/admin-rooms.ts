@@ -2,6 +2,7 @@ import type { Locator, Page } from '@playwright/test';
 
 import { Admin } from './admin';
 import { EditAdminRoomFlexTab } from './fragments/flextabs';
+import { goToRouteAndWait } from '../utils/goToRouteAndWait';
 
 export class AdminRooms extends Admin {
 	readonly editRoom: EditAdminRoomFlexTab;
@@ -16,8 +17,7 @@ export class AdminRooms extends Admin {
 	}
 
 	async goto(): Promise<void> {
-		await this.page.goto('/admin/rooms');
-		await this.adminPageContent.waitFor({ state: 'visible' });
+		await goToRouteAndWait(this.page, '/admin/rooms', this.adminPageContent);
 	}
 
 	get inputSearchRooms(): Locator {
