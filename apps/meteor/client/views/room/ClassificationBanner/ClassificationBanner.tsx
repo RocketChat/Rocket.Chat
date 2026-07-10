@@ -1,9 +1,9 @@
-import { buildClassificationBanner, parseClassificationBannersConfig } from '@rocket.chat/abac/dist/classification-banners/engine';
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
+import { buildClassificationBanner, parseClassificationBannersConfig } from './lib/engine';
 import { useIsABACManagedRoom } from '../../admin/ABAC/hooks/useIsABACManagedRoom';
 import { useRoom } from '../contexts/RoomContext';
 
