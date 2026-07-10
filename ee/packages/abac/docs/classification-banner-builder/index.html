@@ -256,6 +256,13 @@
 	dialog::backdrop { background: rgba(31, 35, 41, .4); }
 	dialog h3 { font-size: 14px; margin-bottom: 8px; }
 	#confirm-text { color: var(--ink-soft); max-width: 44ch; }
+	#docs-dialog { width: min(760px, 92vw); max-height: 85vh; overflow-y: auto; }
+	.docs-body { font-size: 13px; }
+	.docs-body p, .docs-body ul { margin-bottom: 10px; }
+	.docs-body ul { margin-left: 18px; }
+	.docs-body li { margin-bottom: 6px; }
+	.docs-body h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .1em; color: var(--ink-soft); margin: 14px 0 6px; }
+	.docs-body code { font-family: var(--mono); font-size: 11px; background: var(--wash); padding: 1px 4px; border-radius: 3px; }
 	dialog textarea { height: 260px; }
 	dialog .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px; }
 	dialog .error { color: var(--danger); font-size: 12px; margin-top: 6px; }
@@ -275,6 +282,7 @@
 	<h1>Classification banner builder</h1>
 	<div class="spacer"></div>
 	<button id="btn-theme" aria-label="Toggle dark mode"></button>
+	<button id="btn-docs">Docs</button>
 	<button id="btn-import">Import JSON</button>
 	<button id="btn-example">Load example</button>
 	<p>
@@ -328,6 +336,87 @@
 		<div id="warnings"></div>
 	</div>
 </main>
+
+<dialog id="docs-dialog">
+	<h3>Classification banners (ABAC)</h3>
+	<div class="docs-body">
+		<p>
+			Renders a US-Government-style classification banner above the room header in ABAC-managed rooms, driven by a JSON
+			configuration stored in the <code>ABAC_Classification_Banners_Config</code> admin setting
+			(<b>Admin → ABAC → Settings</b>), toggled by <code>ABAC_Classification_Banners_Enabled</code>.
+		</p>
+		<p>
+			The configuration is a <b>public setting</b>: it syncs to every logged-in client, and the banner is computed
+			client-side from the room's <code>abacAttributes</code> and the configuration. Config or room-attribute changes
+			propagate to open clients live, with no reload. Note the visibility tradeoff: any logged-in user can read the full
+			configuration (all source keys and value→label/color mappings), so don't encode anything in it that members
+			shouldn't see.
+		</p>
+
+		<h4>Configuration schema</h4>
+		<p>
+			Version 1 of the configuration is described by the JSON Schema with
+			<code>$id: https://rocket.chat/schemas/classification-banners/v1.json</code>
+			(published in the Rocket.Chat repository at <code>ee/packages/abac/docs/classification-banners.schema.json</code>).
+			This builder generates and validates documents against that contract.
+		</p>
+
+		<h4>Semantics</h4>
+		<ul>
+			<li>
+				<b>Segments</b> — one per attribute with <code>showInBanner: true</code>, in array order, joined by
+				<code>banner.delimiter</code>. An attribute contributes a segment only when the room has at least one value
+				matching one of its <code>values[].source</code> entries (matched against the room attribute whose key equals
+				<code>attributes[].source</code>).
+			</li>
+			<li>
+				<b>Segment text</b> — matched value labels joined by <code>valueSeparator</code>. With
+				<code>showLabel: true</code> the segment is prefixed with <code>bannerLabel + labelSeparator</code>. With
+				<code>sortAlpha: true</code> labels are sorted alphabetically. When <code>groupThreshold &gt; 0</code> and the
+				matched value count reaches the threshold, the value list collapses to <code>multipleLabel</code>.
+			</li>
+			<li>
+				<b>Color</b> — the single attribute with <code>drivesColor: true</code> picks the banner background. Its
+				<code>values</code> array is ranked most restrictive first — <b>index 0 = highest ranking</b> (same convention
+				as Virtru HIERARCHY attributes). <code>colorMode: "highest"</code> (default) selects the highest-ranked matched
+				value (earliest in the array); <code>"attribute"</code> selects the first of the room's values that is mapped.
+				The foreground color is computed for readable contrast (WCAG relative luminance). If the driver attribute has
+				no matched values, <code>banner.fallbackColor</code> is used.
+			</li>
+			<li>
+				<b>Fallback</b> — when no attribute produces a segment, the banner renders <code>banner.fallbackText</code> on
+				<code>banner.fallbackColor</code> (defaults: <code>NO CLASSIFICATION DATA</code> / <code>#6C727A</code>).
+			</li>
+			<li>
+				<b>Styles</b> (<code>banner.style</code>) — <code>classic</code>: single centered line; <code>segmented</code>:
+				segments separated by vertical rules instead of the delimiter; <code>edge</code>: classic with contrasting
+				top/bottom edge rules.
+			</li>
+			<li>The banner always renders above the room header.</li>
+			<li>Config changes require no server restart and propagate to open clients live via settings sync.</li>
+		</ul>
+
+		<h4>Cross-field rules</h4>
+		<p>These rules are part of the v1 contract and are validated by this builder (save-time enforcement in Rocket.Chat ships separately):</p>
+		<ul>
+			<li>Exactly one attribute has <code>drivesColor: true</code>.</li>
+			<li><code>attributes[].id</code> values are unique; within an attribute, <code>values[].source</code> are unique.</li>
+			<li><code>multipleLabel</code> is required when <code>groupThreshold &gt; 0</code>.</li>
+			<li><code>bannerLabel</code> is required when <code>showLabel: true</code>.</li>
+		</ul>
+
+		<h4>Example</h4>
+		<p>
+			The bundled example reproduces the design prototype's default state. For a room with
+			<code>clearance.level = [TS]</code>, <code>access.programs = [SAP-1042, SAP-2271, SAP-3380]</code>,
+			<code>dissem.relto = [USA]</code> it renders <code>TOP SECRET // SAR-APPLES/BANANAS/ORANGES // RELTO USA</code> on
+			the Top Secret orange. Use <b>Load example</b> to open it in the builder and copy its JSON.
+		</p>
+	</div>
+	<div class="row">
+		<button id="docs-close" class="primary">Close</button>
+	</div>
+</dialog>
 
 <dialog id="confirm-dialog">
 	<h3>Replace your current work?</h3>
@@ -863,6 +952,10 @@ $('#btn-add-attr').addEventListener('click', () => {
 	update();
 	document.querySelector('#attributes .attr:last-of-type input')?.focus();
 });
+
+const docsDialog = $('#docs-dialog');
+$('#btn-docs').addEventListener('click', () => docsDialog.showModal());
+$('#docs-close').addEventListener('click', () => docsDialog.close());
 
 const importDialog = $('#import-dialog');
 $('#btn-import').addEventListener('click', () =>
