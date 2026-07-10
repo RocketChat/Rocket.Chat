@@ -827,20 +827,14 @@ export const createAccountSettings = () =>
 				type: 'int',
 				public: true,
 				enableQuery,
-				validation: [
-					integerBoundOrDisabled('Accounts_Password_Policy_MinLength_Invalid_Value'),
-					notAboveSetting('Accounts_Password_Policy_MaxLength', 'Accounts_Password_Policy_MinLength_Invalid'),
-				],
+				validation: [integerBoundOrDisabled(), notAboveSetting('Accounts_Password_Policy_MaxLength')],
 			});
 
 			await this.add('Accounts_Password_Policy_MaxLength', -1, {
 				type: 'int',
 				public: true,
 				enableQuery,
-				validation: [
-					integerBoundOrDisabled('Accounts_Password_Policy_MaxLength_Invalid_Value'),
-					notBelowSetting('Accounts_Password_Policy_MinLength', 'Accounts_Password_Policy_MaxLength_Invalid'),
-				],
+				validation: [integerBoundOrDisabled(), notBelowSetting('Accounts_Password_Policy_MinLength')],
 			});
 
 			await this.add('Accounts_Password_Policy_ForbidRepeatingCharacters', true, {

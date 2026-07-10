@@ -13,7 +13,6 @@ const isAppliesWhenCondition = (value: unknown): value is { _id: ISetting['_id']
 const isValidationRule = (rule: unknown): rule is SettingValidationRule =>
 	isRecord(rule) &&
 	isRecord(rule.query) &&
-	typeof rule.errorKey === 'string' &&
 	(rule.appliesWhen === undefined ||
 		isAppliesWhenCondition(rule.appliesWhen) ||
 		(Array.isArray(rule.appliesWhen) && rule.appliesWhen.every(isAppliesWhenCondition)));
@@ -121,7 +120,7 @@ export const validateSettingRules = (changes: { _id: ISetting['_id']; value: ISe
 				continue;
 			}
 
-			throw new SettingValidationError(rule.errorKey);
+			throw new SettingValidationError(`${setting._id}_Invalid`);
 		}
 	}
 };

@@ -17,14 +17,8 @@ const { validateSettingRules, SettingValidationError } = p
 	});
 
 const validationBySettingId: Record<string, unknown> = {
-	Accounts_Password_Policy_MinLength: [
-		integerBoundOrDisabled('Accounts_Password_Policy_MinLength_Invalid_Value'),
-		notAboveSetting('Accounts_Password_Policy_MaxLength', 'Accounts_Password_Policy_MinLength_Invalid'),
-	],
-	Accounts_Password_Policy_MaxLength: [
-		integerBoundOrDisabled('Accounts_Password_Policy_MaxLength_Invalid_Value'),
-		notBelowSetting('Accounts_Password_Policy_MinLength', 'Accounts_Password_Policy_MaxLength_Invalid'),
-	],
+	Accounts_Password_Policy_MinLength: [integerBoundOrDisabled(), notAboveSetting('Accounts_Password_Policy_MaxLength')],
+	Accounts_Password_Policy_MaxLength: [integerBoundOrDisabled(), notBelowSetting('Accounts_Password_Policy_MinLength')],
 };
 
 describe('validateSettingRules', () => {
@@ -99,10 +93,10 @@ describe('validateSettingRules', () => {
 		settingsGetMock.withArgs('Accounts_Password_Policy_MinLength').returns(6);
 
 		expect(() => validateSettingRules([{ _id: 'Accounts_Password_Policy_MaxLength', value: 0 }])).to.throw(
-			'Accounts_Password_Policy_MaxLength_Invalid_Value',
+			'Accounts_Password_Policy_MaxLength_Invalid',
 		);
 		expect(() => validateSettingRules([{ _id: 'Accounts_Password_Policy_MinLength', value: -5 }])).to.throw(
-			'Accounts_Password_Policy_MinLength_Invalid_Value',
+			'Accounts_Password_Policy_MinLength_Invalid',
 		);
 	});
 
@@ -127,7 +121,7 @@ describe('validateSettingRules', () => {
 		settingsGetSettingMock.withArgs('Ref_Setting').returns({
 			_id: 'Ref_Setting',
 			type: 'int',
-			validation: '[{"query":{"value":{"$lte":{"$setting":"Missing_Setting"}}},"errorKey":"error"}]',
+			validation: '[{"query":{"value":{"$lte":{"$setting":"Missing_Setting"}}}}]',
 		});
 
 		expect(() => validateSettingRules([{ _id: 'Ref_Setting', value: 999 }])).to.not.throw();
@@ -136,10 +130,9 @@ describe('validateSettingRules', () => {
 
 	it('skips malformed persisted rules, logging instead of crashing or throwing garbage', () => {
 		const malformed = [
-			'[{"query":null,"errorKey":"error"}]',
-			'[{"query":{"value":{"$gte":1}},"errorKey":{}}]',
-			'[{"query":{"value":{"$gte":1}},"errorKey":"error","appliesWhen":"junk"}]',
-			'[{"query":{"value":{"$gte":1}},"errorKey":"error","appliesWhen":{"_id":"Gate"}}]',
+			'[{"query":null}]',
+			'[{"query":{"value":{"$gte":1}},"appliesWhen":"junk"}]',
+			'[{"query":{"value":{"$gte":1}},"appliesWhen":{"_id":"Gate"}}]',
 		];
 
 		for (const validation of malformed) {
