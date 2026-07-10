@@ -1,3 +1,6 @@
+/**
+ * @jest-environment node
+ */
 import Ajv2020 from 'ajv/dist/2020';
 
 import type { ClassificationBannersConfig } from './types';
@@ -41,6 +44,8 @@ const validConfig: ClassificationBannersConfig & { $schema: string } = {
 	],
 };
 
+// Not structuredClone: under jest it clones into the host realm, and ajv's fast-deep-equal
+// rejects cross-realm objects by constructor, silently disabling the uniqueItems assertions.
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value));
 
 const mutate = (change: (config: typeof validConfig) => void): unknown => {
