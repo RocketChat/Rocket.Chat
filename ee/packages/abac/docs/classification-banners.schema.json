@@ -17,9 +17,9 @@
         "style": { "enum": ["classic", "segmented", "edge"] },
         "uppercase": { "type": "boolean" },
         "monospace": { "type": "boolean" },
-        "delimiter": { "type": "string", "maxLength": 8 },
+        "delimiter": { "type": "string", "minLength": 1, "maxLength": 8 },
         "colorMode": { "enum": ["highest", "attribute"] },
-        "fallbackText": { "type": "string" },
+        "fallbackText": { "type": "string", "minLength": 1 },
         "fallbackColor": { "$ref": "#/$defs/hexColor" }
       }
     },
