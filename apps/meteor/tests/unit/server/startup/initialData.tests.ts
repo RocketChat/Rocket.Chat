@@ -31,7 +31,7 @@ const { insertAdminUserFromEnv } = proxyquire.noCallThru().load('../../../../ser
 			startup: sinon.stub(),
 		},
 	},
-	'../../app/file-upload/server': {},
+	'../lib/media/file-upload': {},
 	'../../app/file/server': {},
 	'../lib/rooms/addUserToDefaultChannels': {},
 	'../lib/users/checkUsernameAvailability': {

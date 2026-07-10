@@ -3,7 +3,7 @@ import type { ISubscription, IOmnichannelRoom, IUser, IUserDataEvent, PresenceSo
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ddp-client';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
-import type { ImporterProgress } from '../../../app/importer/server/classes/ImporterProgress';
+import type { ImporterProgress } from '../../lib/import/classes/ImporterProgress';
 import { SystemLogger } from '../../lib/logger/system';
 import { emit, StreamPresence } from '../../lib/notifications/core/lib/Presence';
 import { getCachedUserForPublication } from '../streamer/publication-user-cache';

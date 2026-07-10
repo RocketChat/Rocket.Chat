@@ -31,11 +31,11 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
 import { roomAccessAttributes } from '../../../app/authorization/server';
-import { applyAirGappedRestrictionsValidation } from '../../../app/license/server/airGappedRestrictionsWrapper';
 import { settings } from '../../../app/settings/server';
 import { normalizeMessagesForUser } from '../../../app/utils/server/lib/normalizeMessagesForUser';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { applyAirGappedRestrictionsValidation } from '../../lib/cloud/license/airGappedRestrictionsWrapper';
 import { deleteMessageValidatingPermission } from '../../lib/messages/deleteMessage';
 import { processWebhookMessage } from '../../lib/messages/processWebhookMessage';
 import { pinMessage, unpinMessage } from '../../lib/messaging/pins/pinMessage';

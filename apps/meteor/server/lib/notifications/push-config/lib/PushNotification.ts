@@ -2,12 +2,12 @@ import type { IMessage, IPushNotificationConfig, IRoom, IUser } from '@rocket.ch
 import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { RocketChatAssets } from '../../../../../app/assets/server';
 import { replaceMentionedUsernamesWithFullNames, parseMessageTextPerUser } from '../../../../../app/lib/server/functions/notifications';
 import { getPushData } from '../../../../../app/lib/server/functions/notifications/mobile';
-import { metrics } from '../../../../../app/metrics/server';
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../callbacks';
+import { RocketChatAssets } from '../../../media/assets';
+import { metrics } from '../../../metrics';
 import { Push } from '../../push';
 
 type PushNotificationData = {

@@ -6,11 +6,11 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
-import type { IRawSearchResult } from '../../../app/search/server/model/ISearchResult';
 import { settings } from '../../../app/settings/server';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { parseMessageSearchQuery } from '../../lib/parseMessageSearchQuery';
+import type { IRawSearchResult } from '../../lib/search/model/ISearchResult';
 
 const logger = new Logger('MessageSearch');
 

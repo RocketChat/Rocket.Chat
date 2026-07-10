@@ -4,10 +4,10 @@ import { MediaCalls, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { getPushNotificationType } from './getPushNotificationType';
-import { metrics } from '../../../../app/metrics/server/lib/metrics';
 import { settings } from '../../../../app/settings/server';
 import { getUserAvatarURL } from '../../../../app/utils/server/getUserAvatarURL';
 import { getUserPreference } from '../../../../app/utils/server/lib/getUserPreference';
+import { metrics } from '../../../lib/metrics/lib/metrics';
 import { Push } from '../../../lib/notifications/push/push';
 import PushNotification from '../../../lib/notifications/push-config/lib/PushNotification';
 import { logger } from '../logger';

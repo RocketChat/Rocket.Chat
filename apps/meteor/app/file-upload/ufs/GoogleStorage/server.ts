@@ -5,9 +5,9 @@ import { Random } from '@rocket.chat/random';
 import { check } from 'meteor/check';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { getUrlExpiryTimeSpanWithFallback } from '../../../../server/lib/media/file-upload/lib/urlExpiry';
 import { UploadFS } from '../../../../server/ufs';
 import type { StoreOptions } from '../../../../server/ufs/ufs-store';
-import { getUrlExpiryTimeSpanWithFallback } from '../../server/lib/urlExpiry';
 
 type GStoreOptions = StoreOptions & {
 	connection: {

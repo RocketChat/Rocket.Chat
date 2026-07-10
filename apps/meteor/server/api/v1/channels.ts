@@ -35,12 +35,12 @@ import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../../app/authorization/server';
-import { mountIntegrationQueryBasedOnPermissions } from '../../../app/integrations/server/lib/mountQueriesBasedOnPermission';
 import { settings } from '../../../app/settings/server';
 import { normalizeMessagesForUser } from '../../../app/utils/server/lib/normalizeMessagesForUser';
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { eraseRoom } from '../../lib/eraseRoom';
 import { findUsersOfRoom } from '../../lib/findUsersOfRoom';
+import { mountIntegrationQueryBasedOnPermissions } from '../../lib/integrations/lib/mountQueriesBasedOnPermission';
 import { openRoom } from '../../lib/openRoom';
 import { getChannelHistory } from '../../meteor-methods/messages/getChannelHistory';
 import { getUserMentionsByChannel } from '../../meteor-methods/messages/getUserMentionsByChannel';

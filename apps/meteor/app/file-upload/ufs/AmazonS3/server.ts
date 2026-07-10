@@ -16,9 +16,9 @@ import { check } from 'meteor/check';
 import _ from 'underscore';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { getUrlExpiryTimeSpanWithFallback } from '../../../../server/lib/media/file-upload/lib/urlExpiry';
 import { UploadFS } from '../../../../server/ufs';
 import type { StoreOptions } from '../../../../server/ufs/ufs-store';
-import { getUrlExpiryTimeSpanWithFallback } from '../../server/lib/urlExpiry';
 
 export type S3Options = StoreOptions & {
 	connection: S3ClientConfig;

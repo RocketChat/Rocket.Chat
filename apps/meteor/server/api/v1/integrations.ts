@@ -25,7 +25,7 @@ import {
 import {
 	mountIntegrationHistoryQueryBasedOnPermissions,
 	mountIntegrationQueryBasedOnPermissions,
-} from '../../../app/integrations/server/lib/mountQueriesBasedOnPermission';
+} from '../../lib/integrations/lib/mountQueriesBasedOnPermission';
 import { addIncomingIntegration } from '../../meteor-methods/integrations/incoming/addIncomingIntegration';
 import { deleteIncomingIntegration } from '../../meteor-methods/integrations/incoming/deleteIncomingIntegration';
 import { updateIncomingIntegration } from '../../meteor-methods/integrations/incoming/updateIncomingIntegration';

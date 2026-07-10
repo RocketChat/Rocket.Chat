@@ -52,7 +52,7 @@ export default {
 				'<rootDir>/server/api/*.spec.ts',
 				'<rootDir>/server/api/lib/getUserInfo.spec.ts',
 				'<rootDir>/server/api/v1/middlewares/*.spec.ts',
-				'<rootDir>/app/version-check/server/**/*.spec.ts',
+				'<rootDir>/server/lib/cloud/version-check/**/*.spec.ts',
 				'<rootDir>/app/apple/lib/**.spec.ts',
 				'<rootDir>/server/lib/auth-providers/apple/**.spec.ts',
 			],

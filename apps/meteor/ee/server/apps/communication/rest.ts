@@ -16,8 +16,6 @@ import { registerAppLogsDistinctInstanceHandler } from './endpoints/appLogsDisti
 import { registerAppLogsExportHandler } from './endpoints/appLogsExportHandler';
 import { registerAppLogsHandler } from './endpoints/appLogsHandler';
 import { registerAppsCountHandler } from './endpoints/appsCountHandler';
-import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../../app/cloud/server';
-import { metrics } from '../../../../app/metrics/server';
 import { settings } from '../../../../app/settings/server';
 import { Info } from '../../../../app/utils/rocketchat.info';
 import { API } from '../../../../server/api';
@@ -26,7 +24,9 @@ import { getUploadFormData } from '../../../../server/api/lib/getUploadFormData'
 import { loggerMiddleware } from '../../../../server/api/v1/middlewares/logger';
 import { metricsMiddleware } from '../../../../server/api/v1/middlewares/metrics';
 import { tracerSpanMiddleware } from '../../../../server/api/v1/middlewares/tracer';
+import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../../server/lib/cloud';
 import { i18n } from '../../../../server/lib/i18n';
+import { metrics } from '../../../../server/lib/metrics';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
 import { AppsEngineNoNodesFoundError } from '../../../../server/services/apps-engine/service';
 import { canEnableApp } from '../../../app/license/server/canEnableApp';

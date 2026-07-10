@@ -4,7 +4,7 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import * as z from 'zod';
 
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
-import { LICENSE_VERSION } from '../../../app/cloud/server/license';
+import { LICENSE_VERSION } from './license';
 import { settings } from '../../../app/settings/server';
 import { CloudWorkspaceConnectionError } from '../../../lib/errors/CloudWorkspaceConnectionError';
 import { CloudWorkspaceLicenseError } from '../../../lib/errors/CloudWorkspaceLicenseError';
