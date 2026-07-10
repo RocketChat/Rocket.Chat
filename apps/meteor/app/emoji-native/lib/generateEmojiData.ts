@@ -105,10 +105,9 @@ function buildEmojiData() {
 				if (!skin.tone) continue;
 
 				const tones = Array.isArray(skin.tone) ? skin.tone : [skin.tone];
-				const toneKey = `:${primaryShortcode}_tone${tones.join('-')}:`;
 				const skinHex = hexFromEmoji(skin.emoji);
 
-				emojiList[toneKey] = {
+				const skinEntry: EmojiEntry = {
 					uc_base: skinHex,
 					uc_output: skinHex,
 					uc_match: skinHex,
@@ -118,6 +117,12 @@ function buildEmojiData() {
 					emojiPackage: 'native',
 					unicode: skin.emoji,
 				};
+
+				const toneShortcodes = getShortcodes(skin.hexcode);
+				const fallbackShortcode = `${primaryShortcode}_tone${tones.join('-')}`;
+				for (const code of [...toneShortcodes, fallbackShortcode]) {
+					emojiList[`:${code}:`] = skinEntry;
+				}
 			}
 		}
 	}
