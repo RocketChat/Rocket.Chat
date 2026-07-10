@@ -26,7 +26,7 @@ import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import type { RoomMember } from '../../../hooks/useMembersList';
 
-type RoomMembersProps = {
+export type RoomMembersProps = {
 	rid: IRoom['_id'];
 	isTeam?: boolean;
 	isDirect?: boolean;

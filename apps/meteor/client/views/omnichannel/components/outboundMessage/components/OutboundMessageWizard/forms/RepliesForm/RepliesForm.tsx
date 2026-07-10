@@ -32,7 +32,7 @@ export type RepliesFormRef = {
 	submit: () => Promise<RepliesFormSubmitPayload>;
 };
 
-type RepliesFormProps = {
+export type RepliesFormProps = {
 	defaultValues?: Partial<RepliesFormData>;
 	renderActions?(props: { isSubmitting: boolean }): ReactNode;
 	onSubmit: (data: RepliesFormSubmitPayload) => void;

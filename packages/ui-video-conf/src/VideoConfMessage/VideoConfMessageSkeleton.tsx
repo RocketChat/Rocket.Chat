@@ -4,7 +4,7 @@ import type { AllHTMLAttributes } from 'react';
 import VideoConfMessage from './VideoConfMessage';
 import VideoConfMessageRow from './VideoConfMessageRow';
 
-type VideoConfMessageSkeletonProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
+export type VideoConfMessageSkeletonProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
 
 const VideoConfMessageSkeleton = (props: VideoConfMessageSkeletonProps) => (
 	<VideoConfMessage {...props}>

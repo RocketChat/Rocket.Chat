@@ -10,7 +10,7 @@ import AutoCompleteAgent from '../../../../AutoCompleteDepartmentAgent';
 import { cxp } from '../../../utils/cx';
 import type { RepliesFormData } from '../RepliesForm';
 
-type AgentFieldProps = ComponentProps<typeof Field> & {
+export type AgentFieldProps = ComponentProps<typeof Field> & {
 	control: Control<RepliesFormData>;
 	agents: Serialized<ILivechatDepartmentAgents>[];
 	canAssignAgent?: boolean;

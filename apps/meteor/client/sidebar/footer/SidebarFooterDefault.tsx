@@ -7,7 +7,7 @@ import DOMPurify from 'dompurify';
 import { SidebarFooterWatermark } from './SidebarFooterWatermark';
 
 const SidebarFooterDefault = () => {
-	const [, , theme] = useThemeMode();
+	const theme = useThemeMode();
 	const logo = useSetting(theme === 'dark' ? 'Layout_Sidenav_Footer_Dark' : 'Layout_Sidenav_Footer', '').trim();
 
 	const sidebarFooterStyle = css`

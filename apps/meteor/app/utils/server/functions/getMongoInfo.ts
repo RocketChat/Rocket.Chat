@@ -1,4 +1,4 @@
-import { MongoInternals } from 'meteor/mongo';
+import { MongoInternals, type MongoConnection } from 'meteor/mongo';
 
 function getOplogInfo(): { mongo: MongoConnection } {
 	const { mongo } = MongoInternals.defaultRemoteCollectionDriver();

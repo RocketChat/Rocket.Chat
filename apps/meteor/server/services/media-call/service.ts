@@ -26,7 +26,7 @@ import { sendVoipPushNotification } from './push/sendVoipPushNotification';
 import { settings } from '../../../app/settings/server';
 import { i18n } from '../../lib/i18n';
 import { sendMessage } from '../../lib/messages/sendMessage';
-import { createDirectMessage } from '../../methods/createDirectMessage';
+import { createDirectMessage } from '../../meteor-methods/messages/createDirectMessage';
 
 export class MediaCallService extends ServiceClassInternal implements IMediaCallService {
 	protected name = 'media-call';

@@ -6,7 +6,7 @@ import { useId } from 'react';
 
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
-type ChannelDesertionTableRowProps = {
+export type ChannelDesertionTableRowProps = {
 	onChange: (room: Serialized<IRoom> & { isLastOwner?: boolean }) => void;
 	selected: boolean;
 	room: Serialized<IRoom> & { isLastOwner?: boolean };

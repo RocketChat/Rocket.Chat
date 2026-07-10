@@ -31,7 +31,7 @@ import { isSMTPConfigured } from '../../../app/utils/server/functions/isSMTPConf
 import { getURL } from '../../../app/utils/server/getURL';
 import { i18n } from '../../lib/i18n';
 import { SystemLogger } from '../../lib/logger/system';
-import { browseChannelsMethod } from '../../methods/browseChannels';
+import { browseChannelsMethod } from '../../meteor-methods/rooms/browseChannels';
 import { spotlightMethod } from '../../publications/spotlight';
 import { resetAuditedSettingByUser, updateAuditedByUser } from '../../settings/lib/auditedSettingUpdates';
 import { API } from '../api';

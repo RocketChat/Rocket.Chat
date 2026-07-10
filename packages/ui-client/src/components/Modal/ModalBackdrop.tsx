@@ -67,7 +67,7 @@ const useOutsideClick = (ref: RefObject<HTMLElement | null>, onDismiss: (() => v
 	};
 };
 
-type ModalBackdropProps = {
+export type ModalBackdropProps = {
 	children?: ReactNode;
 	onDismiss?: () => void;
 };

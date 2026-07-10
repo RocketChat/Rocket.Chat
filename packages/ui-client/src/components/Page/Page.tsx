@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import PageContext from './PageContext';
 
-type PageProps = Omit<ComponentProps<typeof Box>, 'backgroundColor'> & {
+export type PageProps = Omit<ComponentProps<typeof Box>, 'backgroundColor'> & {
 	background?: 'light' | 'tint' | 'neutral' | 'room';
 };
 

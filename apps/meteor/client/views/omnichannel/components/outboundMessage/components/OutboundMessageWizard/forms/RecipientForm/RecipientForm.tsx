@@ -33,7 +33,7 @@ export type RecipientFormSubmitPayload = {
 	sender: string;
 };
 
-type RecipientFormProps = {
+export type RecipientFormProps = {
 	defaultValues?: Partial<RecipientFormData>;
 	onDirty?(): void;
 	onSubmit(values: RecipientFormSubmitPayload): void;

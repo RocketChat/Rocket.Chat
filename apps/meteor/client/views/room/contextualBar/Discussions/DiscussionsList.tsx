@@ -22,7 +22,7 @@ import { PaginatedVirtualList } from '../../../../components/PaginatedVirtualLis
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import { useGoToRoom } from '../../hooks/useGoToRoom';
 
-type DiscussionsListProps = {
+export type DiscussionsListProps = {
 	itemCount: number;
 	discussions: Array<IDiscussionMessage>;
 	loadMoreItems: UseInfiniteQueryResult['fetchNextPage'];

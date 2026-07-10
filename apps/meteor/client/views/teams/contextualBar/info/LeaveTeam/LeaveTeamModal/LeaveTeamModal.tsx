@@ -10,7 +10,7 @@ const LEAVE_TEAM_STEPS = {
 	CONFIRM_LEAVE: 'CONFIRM_LEAVE',
 } as const;
 
-type LeaveTeamModalProps = {
+export type LeaveTeamModalProps = {
 	rooms: (Serialized<IRoom> & { isLastOwner?: boolean })[];
 	onCancel: () => void;
 	onConfirm: () => void;

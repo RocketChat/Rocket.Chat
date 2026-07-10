@@ -17,7 +17,7 @@ import { useController, useForm } from 'react-hook-form';
 
 import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 
-type SlaEditProps = {
+export type SlaEditProps = {
 	isNew?: boolean;
 	slaId?: string;
 	reload: () => void;

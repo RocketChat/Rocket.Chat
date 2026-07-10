@@ -10,7 +10,7 @@ import type { EditDepartmentFormData } from '../definitions';
 import AddAgent from './AddAgent';
 import AgentRow from './AgentRow';
 
-type DepartmentAgentsTableProps = Pick<AriaAttributes, 'aria-labelledby'> & {
+export type DepartmentAgentsTableProps = Pick<AriaAttributes, 'aria-labelledby'> & {
 	control: Control<EditDepartmentFormData>;
 	register: UseFormRegister<EditDepartmentFormData>;
 };

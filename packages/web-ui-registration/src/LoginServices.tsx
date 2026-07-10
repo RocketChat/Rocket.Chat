@@ -1,10 +1,12 @@
-import { ButtonGroup, Divider } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Divider } from '@rocket.chat/fuselage';
 import { useLoginServices, useSetting } from '@rocket.chat/ui-contexts';
-import type { Dispatch, SetStateAction } from 'react';
+import { useMemo, type Dispatch, type SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { LoginErrorState } from './LoginForm';
 import LoginServicesButton from './LoginServicesButton';
+
+const servicesToBeShownOnDesktop = ['saml', 'cas', 'ldap'];
 
 export type LoginServicesProps = { disabled?: boolean; setError: Dispatch<SetStateAction<LoginErrorState>> };
 
@@ -12,10 +14,29 @@ const LoginServices = ({ disabled, setError }: LoginServicesProps) => {
 	const { t } = useTranslation();
 	const services = useLoginServices();
 	const showFormLogin = useSetting('Accounts_ShowFormLogin');
+	const enableModernOAuthFlow = useSetting('Accounts_OAuth_Use_Modern_Flow', true);
+
+	const isDesktopApp = !!window.RocketChatDesktop?.openInBrowser && enableModernOAuthFlow;
+
+	const servicesToShow = useMemo(
+		() => (isDesktopApp ? services.filter(({ service }) => servicesToBeShownOnDesktop.includes(service)) : services),
+		[isDesktopApp, services],
+	);
 
 	if (services.length === 0) {
 		return null;
 	}
+
+	const handleLoginOnWeb = () => {
+		if (!isDesktopApp) {
+			return;
+		}
+
+		const redirectUrl = new URL(window.location.href);
+		redirectUrl.searchParams.set('loginClient', 'desktop');
+
+		window.RocketChatDesktop?.openInBrowser(redirectUrl.toString());
+	};
 
 	return (
 		<>
@@ -24,11 +45,26 @@ const LoginServices = ({ disabled, setError }: LoginServicesProps) => {
 					{t('registration.component.form.divider')}
 				</Divider>
 			)}
-			<ButtonGroup vertical stretch small>
-				{services.map((service) => (
-					<LoginServicesButton disabled={disabled} key={service.service} {...service} setError={setError} />
-				))}
-			</ButtonGroup>
+
+			{servicesToShow.length > 0 && (
+				<ButtonGroup vertical stretch small>
+					{servicesToShow.map((service) => (
+						<LoginServicesButton
+							disabled={disabled}
+							key={service.service}
+							{...service}
+							setError={setError}
+							enableModernOAuthFlow={enableModernOAuthFlow}
+						/>
+					))}
+				</ButtonGroup>
+			)}
+
+			{isDesktopApp && (
+				<Button width='100%' primary onClick={handleLoginOnWeb} marginBlockStart={4}>
+					{t('registration.component.login.onWeb')}
+				</Button>
+			)}
 		</>
 	);
 };

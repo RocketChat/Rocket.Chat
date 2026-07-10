@@ -6,7 +6,7 @@ import { useRef, type ChangeEventHandler, type ChangeEvent, type ComponentProps 
 import PlaceholderSelector from './TemplatePlaceholderSelector';
 import type { TemplateParameter } from '../../types/template';
 
-type TemplatePlaceholderInputProps = Omit<ComponentProps<typeof TextInput>, 'value' | 'onChange'> & {
+export type TemplatePlaceholderInputProps = Omit<ComponentProps<typeof TextInput>, 'value' | 'onChange'> & {
 	type?: TemplateParameter['type'];
 	value: string;
 	contact?: Serialized<ILivechatContact>;

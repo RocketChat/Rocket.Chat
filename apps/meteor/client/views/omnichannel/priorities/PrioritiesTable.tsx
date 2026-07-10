@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import PrioritiesTableRow from './PrioritiesTableRow';
 import GenericNoResults from '../../../components/GenericNoResults';
 
-type PrioritiesTableProps = {
+export type PrioritiesTableProps = {
 	priorities?: Serialized<ILivechatPriority>[];
 	onRowClick: (id: string) => void;
 	isLoading: boolean;

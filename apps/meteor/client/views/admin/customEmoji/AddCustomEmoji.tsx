@@ -1,6 +1,7 @@
 import { Box, Button, ButtonGroup, Margins, TextInput, Field, FieldLabel, FieldRow, FieldError, IconButton } from '@rocket.chat/fuselage';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -31,10 +32,12 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps) => {
 	);
 
 	const dispatchToastMessage = useToastMessageDispatch();
+	const queryClient = useQueryClient();
 
 	const { mutateAsync: saveAction } = useEndpointUploadMutation('/v1/emoji-custom.create', {
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Custom_Emoji_Added_Successfully') });
+			queryClient.invalidateQueries({ queryKey: ['emoji-custom.list'] });
 			onChange();
 			close();
 		},

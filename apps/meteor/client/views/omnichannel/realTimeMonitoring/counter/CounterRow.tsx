@@ -3,7 +3,7 @@ import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 import { Fragment } from 'react';
 import flattenChildren from 'react-keyed-flatten-children';
 
-type CounterRowProps = {
+export type CounterRowProps = {
 	children?: ReactNode[];
 } & ComponentPropsWithoutRef<typeof Box>;
 
