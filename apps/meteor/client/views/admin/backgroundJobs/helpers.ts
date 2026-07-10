@@ -33,3 +33,17 @@ export const translateInterval = (interval: string | number | undefined): string
 		return interval;
 	}
 };
+
+export const formatDuration = (startedAt?: Date | string, finishedAt?: Date | string): string => {
+	if (!startedAt || !finishedAt) {
+		return '';
+	}
+	const diffMs = new Date(finishedAt).getTime() - new Date(startedAt).getTime();
+	if (Number.isNaN(diffMs) || diffMs < 0) {
+		return '';
+	}
+	if (diffMs < 1000) {
+		return `${diffMs}ms`;
+	}
+	return `${(diffMs / 1000).toFixed(1)}s`;
+};
