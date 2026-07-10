@@ -1,7 +1,6 @@
 import { Hook } from './callback-hook.ts';
+import { DdpCollectionStore } from './ddp-collection-store.ts';
 import { DDP, type Connection } from './ddp-client.ts';
-import { MeteorError } from './meteor.ts';
-import { Collection } from './mongo.ts';
 import { Random } from './random.ts';
 import { ReactiveVar } from './reactive-var.ts';
 import { Tracker } from './tracker.ts';
@@ -26,8 +25,6 @@ const VALID_CONFIG_KEYS = [
 	'argon2TimeCost',
 	'argon2MemoryCost',
 	'argon2Parallelism',
-	'defaultFieldSelector',
-	'collection',
 	'loginTokenExpirationHours',
 	'tokenSequenceLength',
 	'clientStorage',
@@ -53,8 +50,6 @@ type AccountsClientOptions = {
 	argon2TimeCost?: number;
 	argon2MemoryCost?: number;
 	argon2Parallelism?: number;
-	defaultFieldSelector?: Record<string, any>;
-	collection?: Collection | string;
 	loginTokenExpirationHours?: number;
 	tokenSequenceLength?: number;
 	clientStorage?: 'local' | 'session';
@@ -86,7 +81,7 @@ export class AccountsClient {
 
 	public connection: Connection = DDP.connection;
 
-	public users: any;
+	public users: DdpCollectionStore;
 
 	public _onLoginHook = new Hook<
 		[{ type: 'resume' | 'normal'; allowed?: boolean; error?: any; methodName?: string; methodArguments?: any[] }]
@@ -160,7 +155,7 @@ export class AccountsClient {
 
 		this._options = options || {};
 		this.connection = this._initConnection(options || {});
-		this.users = this._initializeCollection(options || {});
+		this.users = new DdpCollectionStore('users', this.connection);
 
 		this._loginServicesHandle = this.connection.subscribe('meteor.loginServiceConfiguration');
 
@@ -174,61 +169,13 @@ export class AccountsClient {
 		this._loginCallbacksCalled = false;
 	}
 
-	_initializeCollection(options: AccountsClientOptions) {
-		if (options.collection && typeof options.collection !== 'string' && !(options.collection instanceof Collection)) {
-			throw new MeteorError('Collection parameter can be only of type string or "Mongo.Collection"');
-		}
-
-		let collectionName = 'users';
-		if (typeof options.collection === 'string') {
-			collectionName = options.collection;
-		}
-
-		return options.collection instanceof Collection
-			? options.collection
-			: new Collection(collectionName, {
-					_preventAutopublish: true,
-					connection: this.connection,
-				});
-	}
-
-	_addDefaultFieldSelector(options: any = {}) {
-		if (!this._options.defaultFieldSelector) {
-			return options;
-		}
-		if (!options.fields)
-			return {
-				...options,
-				fields: this._options.defaultFieldSelector,
-			};
-		const keys = Object.keys(options.fields);
-		if (!keys.length) {
-			return options;
-		}
-		if (options.fields[keys[0]]) {
-			return options;
-		}
-		const keys2 = Object.keys(this._options.defaultFieldSelector);
-		return this._options.defaultFieldSelector[keys2[0]]
-			? options
-			: {
-					...options,
-					fields: {
-						...options.fields,
-						...this._options.defaultFieldSelector,
-					},
-				};
-	}
-
-	user(options?: any) {
+	user(_options?: any) {
 		const userId = this.userId();
-		const findOne = (...args: any[]) => this.users.findOne(...args);
-		return userId ? findOne(userId, this._addDefaultFieldSelector(options)) : null;
+		return userId ? (this.users.get(userId) ?? null) : null;
 	}
 
-	async userAsync(options?: any) {
-		const userId = this.userId();
-		return userId ? this.users.findOneAsync(userId, this._addDefaultFieldSelector(options)) : null;
+	async userAsync(_options?: any) {
+		return this.user();
 	}
 
 	onLogin(func: (...args: any[]) => any) {
@@ -308,9 +255,6 @@ export class AccountsClient {
 			}
 		}
 
-		if (options.collection && options.collection !== this.users._name && options.collection !== this.users) {
-			this.users = this._initializeCollection(options);
-		}
 		this.initStorageLocation(options);
 	}
 
