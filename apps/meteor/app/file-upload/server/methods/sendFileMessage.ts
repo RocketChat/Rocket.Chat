@@ -15,11 +15,11 @@ import { Meteor } from 'meteor/meteor';
 
 import { isImagePreviewSupported } from './isImagePreviewSupported';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
+import { canAccessRoomAsync } from '../../../../server/lib/authorization/canAccessRoom';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { executeSendMessage } from '../../../../server/meteor-methods/messages/sendMessage';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
-import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { FileUpload } from '../lib/FileUpload';
 
 function validateFileRequiredFields(file: Partial<IUpload>): asserts file is AtLeast<IUpload, '_id' | 'name' | 'type' | 'size'> {

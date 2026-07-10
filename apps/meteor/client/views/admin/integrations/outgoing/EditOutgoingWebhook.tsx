@@ -61,7 +61,7 @@ const getInitialValue = (webhookData: Serialized<IOutgoingIntegration> | undefin
 
 const OUTGOING_TYPE = 'webhook-outgoing';
 
-type EditOutgoingWebhookProps = {
+export type EditOutgoingWebhookProps = {
 	webhookData?: Serialized<IOutgoingIntegration>;
 };
 

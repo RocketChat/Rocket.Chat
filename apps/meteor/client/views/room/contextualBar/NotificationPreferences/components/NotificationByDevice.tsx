@@ -3,7 +3,7 @@ import type { Keys as IconName } from '@rocket.chat/icons';
 import type { ReactNode } from 'react';
 import { memo } from 'react';
 
-type NotificationByDeviceProps = {
+export type NotificationByDeviceProps = {
 	device: string;
 	icon: IconName;
 	children: ReactNode;

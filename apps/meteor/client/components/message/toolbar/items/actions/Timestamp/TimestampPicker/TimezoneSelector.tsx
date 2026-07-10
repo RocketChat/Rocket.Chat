@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { UTCOffsets } from '../../../../../../../lib/utils/timestamp/types';
 import type { TimezoneKey } from '../../../../../../../lib/utils/timestamp/types';
 
-type TimezoneSelectorProps = {
+export type TimezoneSelectorProps = {
 	value: TimezoneKey;
 	onChange: (timezone: TimezoneKey) => void;
 };

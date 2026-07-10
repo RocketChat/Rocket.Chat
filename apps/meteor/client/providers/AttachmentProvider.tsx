@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 
 import { getURL } from '../../app/utils/client';
 
-type AttachmentProviderProps = {
+export type AttachmentProviderProps = {
 	children?: ReactNode;
 	width?: number;
 	height?: number;

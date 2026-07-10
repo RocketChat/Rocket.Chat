@@ -1,5 +1,24 @@
 # @rocket.chat/ui-voip
 
+## 22.0.0
+
+### Minor Changes
+
+- ([#40202](https://github.com/RocketChat/Rocket.Chat/pull/40202)) Introduces popout functionality for voice calls
+
+### Patch Changes
+
+- ([#41060](https://github.com/RocketChat/Rocket.Chat/pull/41060) by [@aleksandernsilva](https://github.com/aleksandernsilva)) Fixes voice call UI not reflecting active call state when a new view mounted while a call was already active (e.g. opening the popout window)
+
+- <details><summary>Updated dependencies [ebc9c17b6ba63ee754320eadfba20c024c53c18f, 5d5edd8520ddb424bd336e3ec802c1f4a4e7d1ce]:</summary>
+
+  - @rocket.chat/media-signaling@1.1.0
+  - @rocket.chat/fuselage-ui-kit@32.0.0
+  - @rocket.chat/ui-avatar@28.0.0
+  - @rocket.chat/ui-client@32.0.0
+  - @rocket.chat/ui-contexts@32.0.0
+  </details>
+
 ## 22.0.0-rc.1
 
 ### Patch Changes

@@ -4,7 +4,7 @@ import { useContext } from 'react';
 import PageContext from './PageContext';
 import PageScrollableContent from './PageScrollableContent';
 
-type PageScrollableContentWithShadowProps = ComponentPropsWithoutRef<typeof PageScrollableContent>;
+export type PageScrollableContentWithShadowProps = ComponentPropsWithoutRef<typeof PageScrollableContent>;
 
 const PageScrollableContentWithShadow = ({ onScroll, ...props }: PageScrollableContentWithShadowProps) => {
 	const [, setBorder] = useContext(PageContext);

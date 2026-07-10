@@ -1,6 +1,6 @@
 import { Box, Throbber } from '@rocket.chat/fuselage';
 
-type VideoConfPopupTitleProps = {
+export type VideoConfPopupTitleProps = {
 	text: string;
 	counter?: boolean;
 };

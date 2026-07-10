@@ -26,7 +26,7 @@ import { userIdStore } from '../../lib/user';
 import { Users, Rooms, Subscriptions } from '../../stores';
 import { useSamlInviteToken } from '../../views/invite/hooks/useSamlInviteToken';
 
-type UserProviderProps = {
+export type UserProviderProps = {
 	children: ReactNode;
 };
 

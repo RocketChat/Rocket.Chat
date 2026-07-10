@@ -45,37 +45,37 @@ import {
 import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
-import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
 import { stripABACManagedFieldsForAdmin } from '../../../app/authorization/server/lib/isABACManagedRoom';
-import { saveRoomSettings } from '../../../app/channel-settings/server/methods/saveRoomSettings';
-import { createDiscussion } from '../../../app/discussion/server/methods/createDiscussion';
 import { FileUpload } from '../../../app/file-upload/server';
 import { sendFileMessage } from '../../../app/file-upload/server/methods/sendFileMessage';
-import { syncRolePrioritiesForRoomIfRequired } from '../../../app/lib/server/functions/syncRolePrioritiesForRoomIfRequired';
 import { notifyOnSubscriptionChanged } from '../../../app/lib/server/lib/notifyListener';
-import { executeArchiveRoom } from '../../../app/lib/server/methods/archiveRoom';
-import { cleanRoomHistoryMethod } from '../../../app/lib/server/methods/cleanRoomHistory';
-import { executeGetRoomRoles } from '../../../app/lib/server/methods/getRoomRoles';
-import { leaveRoomMethod } from '../../../app/lib/server/methods/leaveRoom';
-import { executeUnarchiveRoom } from '../../../app/lib/server/methods/unarchiveRoom';
 import { applyAirGappedRestrictionsValidation } from '../../../app/license/server/airGappedRestrictionsWrapper';
 import type { NotificationFieldType } from '../../../app/push-notifications/server/methods/saveNotificationSettings';
 import { saveNotificationSettingsMethod } from '../../../app/push-notifications/server/methods/saveNotificationSettings';
 import { settings } from '../../../app/settings/server';
 import { adminFields } from '../../../lib/rooms/adminFields';
 import { omit } from '../../../lib/utils/omit';
+import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
+import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { banUserFromRoomMethod } from '../../lib/banUserFromRoom';
 import * as dataExport from '../../lib/dataExport';
 import { eraseRoom } from '../../lib/eraseRoom';
 import { findUsersOfRoomOrderedByRole } from '../../lib/findUsersOfRoomOrderedByRole';
 import { openRoom } from '../../lib/openRoom';
 import type { RoomRoles } from '../../lib/roles/getRoomRoles';
+import { syncRolePrioritiesForRoomIfRequired } from '../../lib/rooms/syncRolePrioritiesForRoomIfRequired';
 import { unbanUserFromRoom } from '../../lib/unbanUserFromRoom';
-import { hideRoomMethod } from '../../methods/hideRoom';
-import { muteUserInRoom } from '../../methods/muteUserInRoom';
-import { toggleFavoriteMethod } from '../../methods/toggleFavorite';
-import { unmuteUserInRoom } from '../../methods/unmuteUserInRoom';
+import { createDiscussion } from '../../meteor-methods/messages/createDiscussion';
+import { executeArchiveRoom } from '../../meteor-methods/rooms/archiveRoom';
+import { cleanRoomHistoryMethod } from '../../meteor-methods/rooms/cleanRoomHistory';
+import { executeGetRoomRoles } from '../../meteor-methods/rooms/getRoomRoles';
+import { hideRoomMethod } from '../../meteor-methods/rooms/hideRoom';
+import { leaveRoomMethod } from '../../meteor-methods/rooms/leaveRoom';
+import { muteUserInRoom } from '../../meteor-methods/rooms/muteUserInRoom';
+import { saveRoomSettings } from '../../meteor-methods/rooms/saveRoomSettings';
+import { toggleFavoriteMethod } from '../../meteor-methods/rooms/toggleFavorite';
+import { executeUnarchiveRoom } from '../../meteor-methods/rooms/unarchiveRoom';
+import { unmuteUserInRoom } from '../../meteor-methods/rooms/unmuteUserInRoom';
 import { roomsGetMethod } from '../../publications/room';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
@@ -535,7 +535,7 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		const room = await findRoomByIdOrName({ params: this.queryParams });
+		const room = await findRoomByIdOrName({ params: this.queryParams, checkedArchived: false });
 		const { fields } = await this.parseJsonQuery();
 
 		if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {

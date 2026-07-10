@@ -11,7 +11,7 @@ import WorkspaceCardSection from '../components/WorkspaceCardSection';
 import InstancesModal from './components/InstancesModal';
 import WorkspaceCardSectionTitle from '../components/WorkspaceCardSectionTitle';
 
-type DeploymentCardProps = {
+export type DeploymentCardProps = {
 	serverInfo: IWorkspaceInfo;
 	instances: IInstance[];
 	statistics: IStats;

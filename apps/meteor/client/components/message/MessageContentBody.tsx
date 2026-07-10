@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import type { MessageWithMdEnforced } from '../../lib/parseMessageTextToAstMarkdown';
 import GazzodownText from '../GazzodownText';
 
-type MessageContentBodyProps = Pick<MessageWithMdEnforced, 'mentions' | 'channels' | 'md'> & {
+export type MessageContentBodyProps = Pick<MessageWithMdEnforced, 'mentions' | 'channels' | 'md'> & {
 	/** Original source text the `md` was parsed from; used to render the fallback of unsupported blocks. */
 	msg?: string;
 	searchText?: string;

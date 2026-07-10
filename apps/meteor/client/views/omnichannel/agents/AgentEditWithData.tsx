@@ -8,7 +8,9 @@ import { useTranslation } from 'react-i18next';
 import AgentEdit from './AgentEdit';
 import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 
-const AgentEditWithData = ({ uid }: { uid: ILivechatAgent['_id'] }) => {
+export type AgentEditWithDataProps = { uid: ILivechatAgent['_id'] };
+
+const AgentEditWithData = ({ uid }: AgentEditWithDataProps) => {
 	const { t } = useTranslation();
 
 	const getAgentById = useEndpoint('GET', '/v1/livechat/users/agent/:_id', { _id: uid });

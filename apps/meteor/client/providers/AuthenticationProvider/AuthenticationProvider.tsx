@@ -14,7 +14,7 @@ import { STORAGE_KEYS, getStoredItem, removeStoredItem } from '../../lib/sdk/sto
 
 export type LoginMethods = keyof typeof Meteor extends infer T ? (T extends `loginWith${string}` ? T : never) : never;
 
-type AuthenticationProviderProps = {
+export type AuthenticationProviderProps = {
 	children: ReactNode;
 };
 

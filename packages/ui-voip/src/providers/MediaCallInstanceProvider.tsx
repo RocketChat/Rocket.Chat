@@ -10,7 +10,7 @@ import { useMediaSessionInstance } from './useMediaSessionInstance';
 import { MediaCallInstanceContext } from '../context/MediaCallInstanceContext';
 import type { Signals } from '../context/MediaCallInstanceContext';
 
-type MediaCallInstanceProviderProps = {
+export type MediaCallInstanceProviderProps = {
 	children: ReactNode;
 };
 

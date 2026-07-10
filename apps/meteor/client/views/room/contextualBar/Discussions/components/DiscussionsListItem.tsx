@@ -22,7 +22,7 @@ import { useTranslation } from 'react-i18next';
 import Emoji from '../../../../../components/Emoji';
 import { clickableItem } from '../../../../../lib/clickableItem';
 
-type DiscussionListItemProps = {
+export type DiscussionListItemProps = {
 	_id: IDiscussionMessage['_id'];
 	msg: ReactNode;
 	dcount: number;

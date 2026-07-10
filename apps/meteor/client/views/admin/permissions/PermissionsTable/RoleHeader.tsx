@@ -5,7 +5,7 @@ import { GenericTableHeaderCell } from '@rocket.chat/ui-client';
 import { useRoute } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 
-type RoleHeaderProps = {
+export type RoleHeaderProps = {
 	_id: IRole['_id'];
 	name: IRole['name'];
 	description: IRole['description'];

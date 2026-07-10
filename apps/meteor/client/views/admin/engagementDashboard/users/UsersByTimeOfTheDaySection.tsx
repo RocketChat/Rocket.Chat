@@ -12,7 +12,7 @@ import PeriodSelector from '../../../../components/dashboards/PeriodSelector';
 import { usePeriodSelectorState } from '../../../../components/dashboards/usePeriodSelectorState';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 
-type UsersByTimeOfTheDaySectionProps = {
+export type UsersByTimeOfTheDaySectionProps = {
 	timezone: 'utc' | 'local';
 };
 

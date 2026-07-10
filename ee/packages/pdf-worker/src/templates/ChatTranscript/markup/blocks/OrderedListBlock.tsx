@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
 	},
 });
 
-type OrderedListBlockProps = {
+export type OrderedListBlockProps = {
 	items: MessageParser.ListItem[];
 };
 

@@ -7,7 +7,7 @@ import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { defaultSounds, getCustomSoundURL, formatVolume } from './lib';
 import { useUserSoundPreferences } from '../../hooks/useUserSoundPreferences';
 
-type CustomSoundProviderProps = {
+export type CustomSoundProviderProps = {
 	children?: ReactNode;
 };
 

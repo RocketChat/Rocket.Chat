@@ -15,7 +15,7 @@ import IncomingPopup from './IncomingPopup';
 import OutgoingPopup from './OutgoingPopup';
 import StartCallPopup from './StartCallPopup';
 
-type TimedVideoConfPopupProps = {
+export type TimedVideoConfPopupProps = {
 	id: string;
 	rid: IRoom['_id'];
 	isReceiving?: boolean;

@@ -4,7 +4,7 @@ import { Fragment } from 'react';
 import Items from './Items';
 import type { Item, ItemBranch } from './types';
 
-type DropDownProps = {
+export type DropDownProps = {
 	readonly blocksTree: Item;
 };
 

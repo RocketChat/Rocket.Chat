@@ -11,7 +11,7 @@ const customClass = css`
 	}
 `;
 
-type RoomFileItemWrapperProps = ComponentProps<typeof Box> & { item: IUploadWithUser };
+export type RoomFileItemWrapperProps = ComponentProps<typeof Box> & { item: IUploadWithUser };
 
 const RoomFileItemWrapper = forwardRef(function RoomFileItemWrapper(
 	{ item, ...props }: RoomFileItemWrapperProps,

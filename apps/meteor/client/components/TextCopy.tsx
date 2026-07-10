@@ -10,7 +10,7 @@ const defaultWrapperRenderer = (text: string) => (
 	</Box>
 );
 
-type TextCopyProps = {
+export type TextCopyProps = {
 	text: string;
 	wrapper?: (text: string) => ReactNode;
 } & ComponentProps<typeof Box>;

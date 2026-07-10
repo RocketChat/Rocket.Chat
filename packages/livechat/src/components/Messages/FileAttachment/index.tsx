@@ -6,7 +6,7 @@ import { FileAttachmentIcon } from '../FileAttachmentIcon';
 import { MessageBubble } from '../MessageBubble';
 import styles from './styles.scss';
 
-type FileAttachmentProps = {
+export type FileAttachmentProps = {
 	url: string;
 	title: string;
 	className?: string;

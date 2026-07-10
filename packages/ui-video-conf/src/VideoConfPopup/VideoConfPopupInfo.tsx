@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-type VideoConfPopupInfoProps = {
+export type VideoConfPopupInfoProps = {
 	avatar?: ReactNode;
 	icon?: ReactNode;
 	children: ReactNode;

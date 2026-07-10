@@ -12,7 +12,9 @@ import {
 import { Scrollbars } from 'rc-scrollbars';
 import type { ReactNode } from 'react';
 
-const ContextualBarSurface = ({ children }: { children: ReactNode }) => (
+export type ContextualBarSurfaceProps = { children: ReactNode };
+
+const ContextualBarSurface = ({ children }: ContextualBarSurfaceProps) => (
 	<Contextualbar>
 		<ContextualbarHeader>
 			<Avatar url='data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==' />

@@ -11,7 +11,7 @@ import Field from '../../components/Field';
 import Info from '../../components/Info';
 import Label from '../../components/Label';
 
-type AgentFieldProps = {
+export type AgentFieldProps = {
 	agent: IOmnichannelRoom['servedBy'];
 	isSmall?: boolean;
 };

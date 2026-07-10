@@ -3,7 +3,9 @@ import { Box, Label } from '@rocket.chat/fuselage';
 import Payload from './Payload';
 import type { templateType } from '../../../utils/templates';
 
-const Section = ({ template, index }: { template: templateType; index: number }) => (
+export type SectionProps = { template: templateType; index: number };
+
+const Section = ({ template, index }: SectionProps) => (
 	<Box mbs='25px' width='100%' key={index}>
 		<Box mbe='5px'>
 			<Label fontSize={24} fontWeight={800}>

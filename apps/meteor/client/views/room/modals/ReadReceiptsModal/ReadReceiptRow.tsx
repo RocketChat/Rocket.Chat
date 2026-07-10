@@ -11,7 +11,7 @@ const ReadReceiptRow = ({ user, ts }: IReadReceiptWithUser) => {
 
 	return (
 		<Box role='listitem' display='flex' flexDirection='row' justifyContent='space-between' alignItems='center' mbe={8}>
-			<Box>
+			<Box display='flex' flexDirection='row' alignItems='center'>
 				<UserAvatar username={user?.username || ''} size='x24' />
 				<Box is='span' mis={8}>
 					{displayName}

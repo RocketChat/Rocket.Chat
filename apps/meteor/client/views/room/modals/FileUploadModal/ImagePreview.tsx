@@ -4,7 +4,7 @@ import { useState } from 'react';
 import GenericPreview from './GenericPreview';
 import PreviewSkeleton from './PreviewSkeleton';
 
-type ImagePreviewProps = {
+export type ImagePreviewProps = {
 	url: string;
 	file: File;
 	altText?: string;

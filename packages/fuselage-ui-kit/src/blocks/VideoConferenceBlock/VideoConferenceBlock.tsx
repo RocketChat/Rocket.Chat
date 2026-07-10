@@ -23,7 +23,7 @@ import { useVideoConfDataStream } from './hooks/useVideoConfDataStream';
 import { useSurfaceType } from '../../hooks/useSurfaceType';
 import type { BlockProps } from '../../utils/BlockProps';
 
-type VideoConferenceBlockProps = BlockProps<UiKit.VideoConferenceBlock>;
+export type VideoConferenceBlockProps = BlockProps<UiKit.VideoConferenceBlock>;
 
 const MAX_USERS = 3;
 

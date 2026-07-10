@@ -31,34 +31,35 @@ import {
 	isChannelsOnlineProps,
 } from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
+import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../../app/authorization/server';
-import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
-import { saveRoomSettings } from '../../../app/channel-settings/server/methods/saveRoomSettings';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../app/integrations/server/lib/mountQueriesBasedOnPermission';
-import { addUsersToRoomMethod } from '../../../app/lib/server/methods/addUsersToRoom';
-import { executeArchiveRoom } from '../../../app/lib/server/methods/archiveRoom';
-import { createChannelMethod } from '../../../app/lib/server/methods/createChannel';
-import { getChannelHistory } from '../../../app/lib/server/methods/getChannelHistory';
-import { executeGetRoomRoles } from '../../../app/lib/server/methods/getRoomRoles';
-import { leaveRoomMethod } from '../../../app/lib/server/methods/leaveRoom';
-import { executeUnarchiveRoom } from '../../../app/lib/server/methods/unarchiveRoom';
 import { getUserMentionsByChannel } from '../../../app/mentions/server/methods/getUserMentionsByChannel';
 import { settings } from '../../../app/settings/server';
 import { normalizeMessagesForUser } from '../../../app/utils/server/lib/normalizeMessagesForUser';
+import { hasAllPermissionAsync, hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { eraseRoom } from '../../lib/eraseRoom';
 import { findUsersOfRoom } from '../../lib/findUsersOfRoom';
 import { openRoom } from '../../lib/openRoom';
-import { addAllUserToRoomFn } from '../../methods/addAllUserToRoom';
-import { addRoomLeader } from '../../methods/addRoomLeader';
-import { addRoomModerator } from '../../methods/addRoomModerator';
-import { addRoomOwner } from '../../methods/addRoomOwner';
-import { hideRoomMethod } from '../../methods/hideRoom';
-import { removeRoomLeader } from '../../methods/removeRoomLeader';
-import { removeRoomModerator } from '../../methods/removeRoomModerator';
-import { removeRoomOwner } from '../../methods/removeRoomOwner';
-import { removeUserFromRoomMethod } from '../../methods/removeUserFromRoom';
+import { getChannelHistory } from '../../meteor-methods/messages/getChannelHistory';
+import { addAllUserToRoomFn } from '../../meteor-methods/rooms/addAllUserToRoom';
+import { addRoomLeader } from '../../meteor-methods/rooms/addRoomLeader';
+import { addRoomModerator } from '../../meteor-methods/rooms/addRoomModerator';
+import { addRoomOwner } from '../../meteor-methods/rooms/addRoomOwner';
+import { addUsersToRoomMethod } from '../../meteor-methods/rooms/addUsersToRoom';
+import { executeArchiveRoom } from '../../meteor-methods/rooms/archiveRoom';
+import { createChannelMethod } from '../../meteor-methods/rooms/createChannel';
+import { executeGetRoomRoles } from '../../meteor-methods/rooms/getRoomRoles';
+import { hideRoomMethod } from '../../meteor-methods/rooms/hideRoom';
+import { leaveRoomMethod } from '../../meteor-methods/rooms/leaveRoom';
+import { removeRoomLeader } from '../../meteor-methods/rooms/removeRoomLeader';
+import { removeRoomModerator } from '../../meteor-methods/rooms/removeRoomModerator';
+import { removeRoomOwner } from '../../meteor-methods/rooms/removeRoomOwner';
+import { removeUserFromRoomMethod } from '../../meteor-methods/rooms/removeUserFromRoom';
+import { saveRoomSettings } from '../../meteor-methods/rooms/saveRoomSettings';
+import { executeUnarchiveRoom } from '../../meteor-methods/rooms/unarchiveRoom';
 import { API } from '../api';
 import { addUserToFileObj } from '../lib/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../lib/composeRoomWithLastMessage';
@@ -522,10 +523,6 @@ API.v1.addRoute(
 				return API.v1.failure('The parameter "channelId" or "channelName" is required');
 			}
 
-			if (channelId && !(await hasPermissionAsync(this.userId, 'edit-room', channelId))) {
-				return API.v1.forbidden();
-			}
-
 			const room = await findChannelByIdOrName({
 				params: channelId !== undefined ? { roomId: channelId } : { roomName: channelName },
 				userId: this.userId,
@@ -533,6 +530,10 @@ API.v1.addRoute(
 
 			if (!room) {
 				return API.v1.failure('Channel not found');
+			}
+
+			if (!(await hasAllPermissionAsync(this.userId, ['create-team', 'edit-room'], room._id))) {
+				return API.v1.forbidden();
 			}
 
 			const subscriptions = await Subscriptions.findByRoomId(room._id, {

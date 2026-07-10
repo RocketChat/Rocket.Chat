@@ -25,7 +25,6 @@ import CountSeatsCard from './components/cards/CountSeatsCard';
 import FeaturesCard from './components/cards/FeaturesCard';
 import MACCard from './components/cards/MACCard';
 import PlanCard from './components/cards/PlanCard';
-import PlanCardCommunity from './components/cards/PlanCard/PlanCardCommunity';
 import SeatsCard from './components/cards/SeatsCard';
 import { useCancelSubscriptionModal } from './hooks/useCancelSubscriptionModal';
 import { useWorkspaceSync } from './hooks/useWorkspaceSync';
@@ -143,8 +142,7 @@ const SubscriptionPage = () => {
 						<Box marginBlock='none' marginInline='auto' width='full' color='default'>
 							<Grid m={0}>
 								<GridItem lg={4} xs={4} p={8} minHeight={260}>
-									{license && <PlanCard licenseInformation={license.information} licenseLimits={{ activeUsers: seatsLimit }} />}
-									{!license && <PlanCardCommunity />}
+									<PlanCard license={license} licenseLimits={{ activeUsers: seatsLimit }} />
 								</GridItem>
 
 								<GridItem lg={8} xs={4} p={8} minHeight={260}>
