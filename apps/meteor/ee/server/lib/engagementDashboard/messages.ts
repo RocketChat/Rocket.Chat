@@ -34,7 +34,7 @@ export const handleMessagesDeleted = async (message: IMessage, { room }: { room:
 };
 
 export const fillFirstDaysOfMessagesIfNeeded = async (date: Date): Promise<void> => {
-	const messagesFromAnalytics = await Analytics.countByTypeBeforeDate({
+	const messagesFromAnalytics = await Analytics.findOneByTypeBeforeDate({
 		type: 'messages',
 		date: convertDateToInt(date),
 	});

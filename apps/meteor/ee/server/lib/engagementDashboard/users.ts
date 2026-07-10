@@ -17,7 +17,7 @@ export const handleUserCreated = async (user: IUser): Promise<IUser> => {
 };
 
 export const fillFirstDaysOfUsersIfNeeded = async (date: Date): Promise<void> => {
-	const usersFromAnalytics = await Analytics.countByTypeBeforeDate({
+	const usersFromAnalytics = await Analytics.findOneByTypeBeforeDate({
 		type: 'users',
 		date: convertDateToInt(date),
 	});
