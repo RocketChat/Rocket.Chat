@@ -117,128 +117,40 @@ runs:
           echo "⚠️ Warning: report.json was not created"
         fi
 
-    - name: PR comment + labels
+    - name: Report to job summary
       if: github.event_name == 'pull_request'
-      continue-on-error: true # perf result already reported; comment/labels are cosmetic
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const fs = require('fs');
-          
-          if (!fs.existsSync('report.json')) {
-            core.setFailed('report.json not found. Performance tests may have failed.');
-            return;
-          }
+      continue-on-error: true # perf result already reported via step status; summary is cosmetic
+      shell: bash
+      run: |
+        # ponytail: job summary instead of a PR comment so no pull-requests:write is
+        # needed on the shared reusable test job (write there startup-fails every other caller).
+        node -e '
+          const fs = require("fs");
+          if (!fs.existsSync("report.json")) process.exit(0);
+          const reports = JSON.parse(fs.readFileSync("report.json", "utf8"));
+          if (!Array.isArray(reports) || reports.length === 0) process.exit(0);
 
-          
-          const reports = JSON.parse(fs.readFileSync('report.json', 'utf8'));
-
-          console.log('reports', reports);
-          
-          if (!Array.isArray(reports) || reports.length === 0) {
-            core.warning('report.json is empty or invalid. No performance data to report.');
-            return;
-          }
-
-          const marker = '<!-- k6-perf-report -->';
-          const formatNumber = (n) => (typeof n === 'number' ? n.toFixed(2) : '—');
-          const formatDelta = (n) => (typeof n === 'number' ? `${n.toFixed(1)}%` : '—');
+          const num = (n) => (typeof n === "number" ? n.toFixed(2) : "—");
+          const delta = (n) => (typeof n === "number" ? `${n.toFixed(1)}%` : "—");
 
           const sections = reports.map((r) => {
-            console.log('r.metrics', r.metrics);
             const rows = (r.metrics || [])
-              .map((m) => `| ${m.name} | ${formatNumber(m.base)} | ${formatNumber(m.curr)} | ${formatDelta(m.delta)} |`)
-              .join('\n');
-
+              .map((m) => `| ${m.name} | ${num(m.base)} | ${num(m.curr)} | ${delta(m.delta)} |`)
+              .join("\n");
             return [
               `**${r.name}** (${r.profile})`,
-              '',
-              '| Métrica | Baseline | PR | Δ |',
-              '|-------|---------|----|----|',
-              rows || '| — | — | — | — |',
-              '',
-              r.regression ? '❌ Regression detected' : '✅ OK',
-            ].join('\n');
+              "",
+              "| Metric | Baseline | PR | Δ |",
+              "|--------|----------|----|----|",
+              rows || "| — | — | — | — |",
+              "",
+              r.regression ? "❌ Regression detected" : "✅ OK",
+            ].join("\n");
           });
 
-          const body = [
-            marker,
-            '### ⚙️ k6 Performance Report',
-            '',
-            sections.join('\n---\n'),
-            '',
-          ].join('\n');
-
-          const issue_number = context?.issue?.number;
-          if (!issue_number) {
-            throw new Error('Missing PR issue number in context');
-          }
-
-          const comments = await github.paginate(github.rest.issues.listComments, {
-            ...context.repo,
-            issue_number,
-            per_page: 100,
-          });
-
-          const markerComments = comments
-            .filter((c) => (c.body || '').includes(marker))
-            .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-
-          const primary = markerComments.at(-1);
-
-          if (primary) {
-            await github.rest.issues.updateComment({
-              ...context.repo,
-              comment_id: primary.id,
-              body
-            });
-          } else {
-            await github.rest.issues.createComment({
-              ...context.repo,
-              issue_number,
-              body
-            });
-          }
-
-          // Best-effort: remove duplicates (can happen due to race between concurrent workflow runs)
-          if (markerComments.length > 1) {
-            const duplicates = markerComments.slice(0, -1);
-            for (const c of duplicates) {
-              try {
-                await github.rest.issues.deleteComment({
-                  ...context.repo,
-                  comment_id: c.id,
-                });
-              } catch (e) {
-                // Ignore if we can't delete (permissions) or it was already removed
-                if (e?.status !== 404) {
-                  core?.warning?.(`Failed to delete duplicate comment ${c.id}: ${e.message || e}`);
-                }
-              }
-            }
-          }
-
-          const hasRegression = reports.some(r => r.regression);
-
-          if (hasRegression) {
-            await github.rest.issues.addLabels({
-              ...context.repo,
-              issue_number,
-              labels: ['perf-regression']
-            });
-          } else {
-            try {
-              await github.rest.issues.removeLabel({
-                ...context.repo,
-                issue_number,
-                name: 'perf-regression',
-              });
-            } catch (e) {
-              if (e?.status !== 404) {
-                throw e;
-              }
-            }
-          }
+          const body = ["### ⚙️ k6 Performance Report", "", sections.join("\n---\n"), ""].join("\n");
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, body + "\n");
+        '
 
     - name: Update baseline
       if: >

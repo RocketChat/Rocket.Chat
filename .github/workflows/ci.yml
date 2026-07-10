@@ -592,10 +592,6 @@ jobs:
   test-perf:
     name: ⚡ Performance (k6 SendMessage)
     needs: [checks, build-gh-docker-publish, release-versions]
-    permissions:
-      contents: read
-      actions: read
-      pull-requests: write
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
