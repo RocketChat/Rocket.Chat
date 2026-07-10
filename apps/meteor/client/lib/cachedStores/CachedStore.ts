@@ -370,7 +370,11 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 
 export class PublicCachedStore<T extends IRocketChatRecord, U = T> extends CachedStore<T, U> {
 	protected override getToken() {
-		return undefined;
+		// The vite dev client is served from a fixed localhost origin regardless of which
+		// server it proxies to, so public caches must be keyed by the upstream server to
+		// avoid reusing another workspace's data. Undefined in the Meteor-served client,
+		// where the origin already identifies the workspace.
+		return __meteor_runtime_config__.UPSTREAM_ROOT_URL;
 	}
 
 	override clearCacheOnLogout() {
