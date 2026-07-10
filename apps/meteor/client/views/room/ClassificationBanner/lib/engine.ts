@@ -1,20 +1,13 @@
 import type { IAbacAttributeDefinition } from '@rocket.chat/core-typings';
 import { isTruthy } from '@rocket.chat/tools';
 
-import { FALLBACK_COLOR, FALLBACK_TEXT } from './constants';
+import { readableTextColor } from './colors';
 import type {
 	ClassificationBannerAttribute,
 	ClassificationBannerPayload,
 	ClassificationBannerSegment,
 	ClassificationBannersConfig,
 } from './types';
-
-export const readableTextColor = (hex: string): '#1F2329' | '#FFFFFF' => {
-	const [r, g, b] = [0, 2, 4].map((offset) => parseInt(hex.replace('#', '').slice(offset, offset + 2), 16) / 255);
-	const linearize = (channel: number): number => (channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4);
-	const luminance = 0.2126 * linearize(r) + 0.7152 * linearize(g) + 0.0722 * linearize(b);
-	return luminance > 0.55 ? '#1F2329' : '#FFFFFF';
-};
 
 export const parseClassificationBannersConfig = (raw: string): ClassificationBannersConfig | null => {
 	try {
@@ -37,15 +30,14 @@ const buildSegment = (
 		matched = [...matched].sort((a, b) => a.label.localeCompare(b.label));
 	}
 
-	const threshold = attribute.groupThreshold ?? 0;
 	const body =
-		threshold > 0 && matched.length >= threshold
-			? (attribute.multipleLabel ?? '')
-			: matched.map(({ label }) => label).join(attribute.valueSeparator ?? '/');
+		attribute.groupThreshold > 0 && matched.length >= attribute.groupThreshold
+			? attribute.multipleLabel
+			: matched.map(({ label }) => label).join(attribute.valueSeparator);
 
 	return {
 		attrId: attribute.id,
-		text: attribute.showLabel ? `${attribute.bannerLabel ?? ''}${attribute.labelSeparator ?? ''}${body}` : body,
+		text: attribute.showLabel ? `${attribute.bannerLabel}${attribute.labelSeparator}${body}` : body,
 	};
 };
 
@@ -55,9 +47,9 @@ const resolveColor = (config: ClassificationBannersConfig, roomAttributes: IAbac
 	// values are ranked most restrictive first: index 0 = highest ranking
 	const matched = driver.values.filter(({ source }) => roomValues.includes(source));
 	if (!matched.length) {
-		return config.banner.fallbackColor ?? FALLBACK_COLOR;
+		return config.banner.fallbackColor;
 	}
-	if ((config.banner.colorMode ?? 'highest') === 'highest') {
+	if (config.banner.colorMode === 'highest') {
 		return matched[0].color;
 	}
 	return roomValues.map((value) => driver.values.find(({ source }) => source === value)).find(isTruthy)?.color ?? matched[0].color;
@@ -69,9 +61,9 @@ export const buildClassificationBanner = (
 ): ClassificationBannerPayload => {
 	const { banner } = config;
 	const base = {
-		style: banner.style ?? 'classic',
-		uppercase: banner.uppercase ?? true,
-		monospace: banner.monospace ?? false,
+		style: banner.style,
+		uppercase: banner.uppercase,
+		monospace: banner.monospace,
 	} as const;
 
 	const segments = config.attributes
@@ -80,13 +72,12 @@ export const buildClassificationBanner = (
 		.filter(isTruthy);
 
 	if (!segments.length) {
-		const backgroundColor = banner.fallbackColor ?? FALLBACK_COLOR;
 		return {
 			...base,
-			text: banner.fallbackText ?? FALLBACK_TEXT,
+			text: banner.fallbackText,
 			segments: [],
-			backgroundColor,
-			color: readableTextColor(backgroundColor),
+			backgroundColor: banner.fallbackColor,
+			color: readableTextColor(banner.fallbackColor),
 		};
 	}
 

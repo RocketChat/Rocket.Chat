@@ -1,4 +1,5 @@
-import { buildClassificationBanner, parseClassificationBannersConfig, readableTextColor } from './engine';
+import { readableTextColor } from './colors';
+import { buildClassificationBanner, parseClassificationBannersConfig } from './engine';
 import type { ClassificationBannersConfig } from './types';
 
 const config: ClassificationBannersConfig = {
@@ -173,24 +174,6 @@ describe('buildClassificationBanner', () => {
 			segments: [],
 			backgroundColor: '#6C727A',
 			color: '#FFFFFF',
-		});
-	});
-
-	it('applies engine defaults for omitted banner options', () => {
-		const minimal: ClassificationBannersConfig = {
-			version: 1,
-			enabled: true,
-			banner: { delimiter: ' // ' },
-			attributes: [config.attributes[0]],
-		};
-		const banner = buildClassificationBanner(minimal, []);
-
-		expect(banner).toMatchObject({
-			style: 'classic',
-			uppercase: true,
-			monospace: false,
-			text: 'NO CLASSIFICATION DATA',
-			backgroundColor: '#6C727A',
 		});
 	});
 });

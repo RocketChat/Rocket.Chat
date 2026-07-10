@@ -3,14 +3,10 @@ import { Box } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
+import { shade } from './lib/colors';
 import { buildClassificationBanner, parseClassificationBannersConfig } from './lib/engine';
 import { useIsABACManagedRoom } from '../../admin/ABAC/hooks/useIsABACManagedRoom';
 import { useRoom } from '../contexts/RoomContext';
-
-const shade = (hex: string, factor: number): string => {
-	const [r, g, b] = [0, 2, 4].map((offset) => Math.round(parseInt(hex.replace('#', '').slice(offset, offset + 2), 16) * factor));
-	return `rgb(${r}, ${g}, ${b})`;
-};
 
 const ClassificationBanner = () => {
 	const room = useRoom();
