@@ -406,10 +406,10 @@ const buildClassificationBanner = (config, roomAttributes) => {
 		.filter(Boolean);
 	if (segments.length === 0) {
 		const backgroundColor = banner.fallbackColor ?? FALLBACK_COLOR;
-		return { ...base, text: banner.fallbackText ?? FALLBACK_TEXT, segments: [], backgroundColor, color: readableTextColor(backgroundColor), fallback: true };
+		return { ...base, text: banner.fallbackText ?? FALLBACK_TEXT, segments: [], backgroundColor, color: readableTextColor(backgroundColor) };
 	}
 	const backgroundColor = resolveColor(config, roomAttributes);
-	return { ...base, text: segments.map(({ text }) => text).join(banner.delimiter), segments, backgroundColor, color: readableTextColor(backgroundColor), fallback: false };
+	return { ...base, text: segments.map(({ text }) => text).join(banner.delimiter), segments, backgroundColor, color: readableTextColor(backgroundColor) };
 };
 
 // ---- configurations ----
