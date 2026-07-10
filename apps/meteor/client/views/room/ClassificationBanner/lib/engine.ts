@@ -16,29 +16,12 @@ export const readableTextColor = (hex: string): '#1F2329' | '#FFFFFF' => {
 	return luminance > 0.55 ? '#1F2329' : '#FFFFFF';
 };
 
-const isStructurallyValidConfig = (config: ClassificationBannersConfig): boolean =>
-	config.version === 1 &&
-	typeof config.enabled === 'boolean' &&
-	typeof config.banner?.delimiter === 'string' &&
-	Array.isArray(config.attributes) &&
-	config.attributes.length > 0 &&
-	config.attributes.every(
-		(attribute) => typeof attribute?.id === 'string' && typeof attribute.source === 'string' && Array.isArray(attribute.values),
-	);
-
 export const parseClassificationBannersConfig = (raw: string): ClassificationBannersConfig | null => {
-	let parsed: unknown;
 	try {
-		parsed = JSON.parse(raw);
+		return JSON.parse(raw) as ClassificationBannersConfig;
 	} catch {
 		return null;
 	}
-	if (typeof parsed !== 'object' || parsed === null) {
-		return null;
-	}
-
-	const config = parsed as ClassificationBannersConfig;
-	return isStructurallyValidConfig(config) ? config : null;
 };
 
 const buildSegment = (

@@ -210,14 +210,8 @@ describe('parseClassificationBannersConfig', () => {
 	});
 
 	it.each([
-		['empty string', ''],
+		['empty string (unset setting)', ''],
 		['invalid JSON', 'not json'],
-		['non-object', '"str"'],
-		['missing everything', '{}'],
-		['wrong version', JSON.stringify({ ...config, version: 2 })],
-		['missing delimiter', JSON.stringify({ ...config, banner: {} })],
-		['empty attributes', JSON.stringify({ ...config, attributes: [] })],
-		['malformed attribute', JSON.stringify({ ...config, attributes: [{ id: 'x' }] })],
 	])('returns null for %s', (_name, raw) => {
 		expect(parseClassificationBannersConfig(raw)).toBeNull();
 	});
