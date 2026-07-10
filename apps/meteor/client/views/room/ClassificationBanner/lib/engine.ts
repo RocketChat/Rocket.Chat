@@ -30,7 +30,7 @@ const buildSegment = (
 ): ClassificationBannerSegment | null => {
 	const roomValues = roomAttributes.find(({ key }) => key === attribute.source)?.values ?? [];
 	let matched = attribute.values.filter(({ source }) => roomValues.includes(source));
-	if (matched.length === 0) {
+	if (!matched.length) {
 		return null;
 	}
 	if (attribute.sortAlpha) {
@@ -54,7 +54,7 @@ const resolveColor = (config: ClassificationBannersConfig, roomAttributes: IAbac
 	const roomValues = roomAttributes.find(({ key }) => key === driver.source)?.values ?? [];
 	// values are ranked most restrictive first: index 0 = highest ranking
 	const matched = driver.values.filter(({ source }) => roomValues.includes(source));
-	if (matched.length === 0) {
+	if (!matched.length) {
 		return config.banner.fallbackColor ?? FALLBACK_COLOR;
 	}
 	if ((config.banner.colorMode ?? 'highest') === 'highest') {
@@ -79,7 +79,7 @@ export const buildClassificationBanner = (
 		.map((attribute) => buildSegment(attribute, roomAttributes))
 		.filter(isTruthy);
 
-	if (segments.length === 0) {
+	if (!segments.length) {
 		const backgroundColor = banner.fallbackColor ?? FALLBACK_COLOR;
 		return {
 			...base,
