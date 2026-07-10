@@ -4,11 +4,11 @@ import https from 'node:https';
 import _ from 'underscore';
 
 import { forceDownload } from './helper';
-import type { S3Options } from '../../../../../app/file-upload/ufs/AmazonS3/server';
 import { settings } from '../../../../../app/settings/server';
 import { SystemLogger } from '../../../logger/system';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
-import '../../../../../app/file-upload/ufs/AmazonS3/server';
+import type { S3Options } from '../ufs/AmazonS3/server';
+import '../ufs/AmazonS3/server';
 
 const hasScheme = (value: string) => /^[a-z][a-z0-9+.-]*:\/\//i.test(value);
 

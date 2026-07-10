@@ -4,10 +4,10 @@ import type { IUpload } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { check } from 'meteor/check';
 
-import { SystemLogger } from '../../../../server/lib/logger/system';
-import { getUrlExpiryTimeSpanWithFallback } from '../../../../server/lib/media/file-upload/lib/urlExpiry';
-import { UploadFS } from '../../../../server/ufs';
-import type { StoreOptions } from '../../../../server/ufs/ufs-store';
+import { UploadFS } from '../../../../../ufs';
+import type { StoreOptions } from '../../../../../ufs/ufs-store';
+import { SystemLogger } from '../../../../logger/system';
+import { getUrlExpiryTimeSpanWithFallback } from '../../lib/urlExpiry';
 
 type GStoreOptions = StoreOptions & {
 	connection: {
