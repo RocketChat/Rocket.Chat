@@ -40,7 +40,6 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 	): FindPaginated<FindCursor<ILivechatDepartmentAgents>>;
 
 	findByDepartmentIds(departmentIds: string[], options?: Record<string, any>): FindCursor<ILivechatDepartmentAgents>;
-	findAgentsByAgentIdAndBusinessHourId(_agentId: string, _businessHourId: string): Promise<ILivechatDepartmentAgents[]>;
 	setDepartmentEnabledByDepartmentId(departmentId: string, departmentEnabled: boolean): Promise<Document | UpdateResult>;
 	removeByDepartmentId(departmentId: string): Promise<DeleteResult>;
 	findByDepartmentId(departmentId: string, options?: FindOptions<ILivechatDepartmentAgents>): FindCursor<ILivechatDepartmentAgents>;

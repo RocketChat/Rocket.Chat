@@ -63,6 +63,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 			{
 				key: {
 					status: 1,
+					department: 1,
 				},
 			},
 			{

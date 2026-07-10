@@ -9,7 +9,7 @@ import type {
 	IUser,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
-import type { FindPaginated, IRoomsModel, IChannelsWithNumberOfMessagesBetweenDate } from '@rocket.chat/model-typings';
+import type { FindPaginated, IRoomsModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
 	AggregationCursor,
@@ -481,144 +481,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		options: UpdateOptions = {},
 	): Promise<UpdateResult> {
 		return this.updateOne({ _id: rid }, { $set: { teamDefault } }, options);
-	}
-
-	getChannelsWithNumberOfMessagesBetweenDateQuery({
-		types,
-		start,
-		end,
-		startOfLastWeek,
-		endOfLastWeek,
-		options,
-	}: {
-		types: Array<IRoom['t']>;
-		start: number;
-		end: number;
-		startOfLastWeek: number;
-		endOfLastWeek: number;
-		options?: any;
-	}) {
-		const typeMatch = {
-			$match: {
-				t: { $in: types },
-			},
-		};
-		const lookup = {
-			$lookup: {
-				from: 'rocketchat_analytics',
-				localField: '_id',
-				foreignField: 'room._id',
-				as: 'messages',
-			},
-		};
-		const messagesProject = {
-			$project: {
-				room: '$$ROOT',
-				messages: {
-					$filter: {
-						input: '$messages',
-						as: 'message',
-						cond: {
-							$and: [{ $gte: ['$$message.date', start] }, { $lte: ['$$message.date', end] }],
-						},
-					},
-				},
-				lastWeekMessages: {
-					$filter: {
-						input: '$messages',
-						as: 'message',
-						cond: {
-							$and: [{ $gte: ['$$message.date', startOfLastWeek] }, { $lte: ['$$message.date', endOfLastWeek] }],
-						},
-					},
-				},
-			},
-		};
-		const messagesUnwind = {
-			$unwind: {
-				path: '$messages',
-				preserveNullAndEmptyArrays: true,
-			},
-		};
-		const messagesGroup = {
-			$group: {
-				_id: {
-					_id: '$room._id',
-				},
-				room: { $first: '$room' },
-				messages: { $sum: '$messages.messages' },
-				lastWeekMessages: { $first: '$lastWeekMessages' },
-			},
-		};
-		const lastWeekMessagesUnwind = {
-			$unwind: {
-				path: '$lastWeekMessages',
-				preserveNullAndEmptyArrays: true,
-			},
-		};
-		const lastWeekMessagesGroup = {
-			$group: {
-				_id: {
-					_id: '$room._id',
-				},
-				room: { $first: '$room' },
-				messages: { $first: '$messages' },
-				lastWeekMessages: { $sum: '$lastWeekMessages.messages' },
-			},
-		};
-		const presentationProject = {
-			$project: {
-				_id: 0,
-				room: {
-					_id: '$_id._id',
-					name: { $ifNull: ['$room.name', '$room.fname'] },
-					ts: '$room.ts',
-					t: '$room.t',
-					_updatedAt: '$room._updatedAt',
-					usernames: '$room.usernames',
-				},
-				messages: '$messages',
-				lastWeekMessages: '$lastWeekMessages',
-				diffFromLastWeek: { $subtract: ['$messages', '$lastWeekMessages'] },
-			},
-		};
-		const firstParams = [typeMatch, lookup, messagesProject, messagesUnwind, messagesGroup];
-		const lastParams = [lastWeekMessagesUnwind, lastWeekMessagesGroup, presentationProject];
-
-		const sort = { $sort: options?.sort || { messages: -1 } };
-		const sortAndPaginationParams: Exclude<Parameters<Collection<IRoom>['aggregate']>[0], undefined> = [sort];
-
-		if (options?.offset) {
-			sortAndPaginationParams.push({ $skip: options.offset });
-		}
-
-		if (options?.count) {
-			sortAndPaginationParams.push({ $limit: options.count });
-		}
-		const params: Exclude<Parameters<Collection<IRoom>['aggregate']>[0], undefined> = [...firstParams];
-
-		if (options?.sort) {
-			params.push(...lastParams, ...sortAndPaginationParams);
-		} else {
-			params.push(...sortAndPaginationParams, ...lastParams, sort);
-		}
-
-		return params;
-	}
-
-	findChannelsByTypesWithNumberOfMessagesBetweenDate(params: {
-		types: Array<IRoom['t']>;
-		start: number;
-		end: number;
-		startOfLastWeek: number;
-		endOfLastWeek: number;
-		options?: any;
-	}): AggregationCursor<IChannelsWithNumberOfMessagesBetweenDate> {
-		const aggregationParams = this.getChannelsWithNumberOfMessagesBetweenDateQuery(params);
-		return this.col.aggregate<IChannelsWithNumberOfMessagesBetweenDate>(aggregationParams, {
-			allowDiskUse: true,
-			readPreference: readSecondaryPreferred(),
-		});
 	}
 
 	findOneByNameOrFname(name: NonNullable<IRoom['name']>, options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
@@ -2131,18 +1993,24 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 							from: 'rocketchat_subscription',
 							localField: '_id',
 							foreignField: 'rid',
+							pipeline: [
+								{
+									$match: {
+										'u._id': uid,
+										'E2EKey': {
+											$exists: false,
+										},
+									},
+								},
+								{ $limit: 1 },
+								{ $project: { _id: 1 } },
+							],
 							as: 'subs',
 						},
 					},
 					{
-						$unwind: '$subs',
-					},
-					{
 						$match: {
-							'subs.u._id': uid,
-							'subs.E2EKey': {
-								$exists: false,
-							},
+							'subs.0': { $exists: true },
 						},
 					},
 					{

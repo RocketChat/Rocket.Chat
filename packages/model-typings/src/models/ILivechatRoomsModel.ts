@@ -53,8 +53,6 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 
 	findAllServiceTime(params: Period & WithDepartment & WithOnlyCount & WithOptions): any;
 
-	findAllNumberOfTransferredRooms(params: Period & WithDepartment & WithOptions): any;
-
 	countAllOpenChatsBetweenDate(params: Period & WithDepartment): any;
 
 	countAllClosedChatsBetweenDate(params: Period & WithDepartment): any;
