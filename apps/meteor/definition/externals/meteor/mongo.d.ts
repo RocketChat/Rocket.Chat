@@ -37,7 +37,6 @@ declare module 'meteor/mongo' {
 					connection?: object | null;
 					idGeneration?: string;
 					transform?: (<T>(doc: T) => T) | null;
-					_preventAutopublish?: boolean;
 				},
 			): Collection<T>;
 		}
