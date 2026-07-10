@@ -13,13 +13,13 @@ import sharp from 'sharp';
 
 import { FileUpload } from '../../../app/file-upload/server';
 import { parseFileIntoMessageAttachments, sendFileMessage } from '../../../app/file-upload/server/methods/sendFileMessage';
-import { sendFileLivechatMessage } from '../../../app/livechat/server/methods/sendFileLivechatMessage';
 import { NOTIFICATION_ATTACHMENT_COLOR } from '../../../lib/constants';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { canDeleteMessageAsync } from '../../lib/authorization/canDeleteMessage';
 import { i18n } from '../../lib/i18n';
 import { updateMessage } from '../../lib/messages/updateMessage';
 import { setUserAvatar } from '../../lib/users/setUserAvatar';
+import { sendFileLivechatMessage } from '../../meteor-methods/omnichannel/sendFileLivechatMessage';
 import { UploadFS } from '../../ufs';
 
 const logger = new Logger('UploadService');

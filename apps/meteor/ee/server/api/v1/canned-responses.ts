@@ -4,8 +4,8 @@ import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typing
 
 import { API } from '../../../../server/api';
 import { getPaginationItems } from '../../../../server/api/lib/getPaginationItems';
-import { removeCannedResponse } from '../../../app/canned-responses/server/methods/removeCannedResponse';
-import { saveCannedResponse } from '../../../app/canned-responses/server/methods/saveCannedResponse';
+import { removeCannedResponse } from '../../meteor-methods/removeCannedResponse';
+import { saveCannedResponse } from '../../meteor-methods/saveCannedResponse';
 import { findAllCannedResponses, findAllCannedResponsesFilter, findOneCannedResponse } from '../lib/canned-responses';
 
 declare module '@rocket.chat/rest-typings' {

@@ -3,13 +3,6 @@ import { api } from '@rocket.chat/core-services';
 import { callbacks } from '../../../server/lib/callbacks';
 
 import './beforeCreateRoom';
-import './methods/setUserPublicAndPrivateKeys';
-import './methods/getUsersOfRoomWithoutKey';
-import './methods/updateGroupKey';
-import './methods/setRoomKeyID';
-import './methods/fetchMyKeys';
-import './methods/resetOwnE2EKey';
-import './methods/requestSubscriptionKeys';
 
 callbacks.add(
 	'afterJoinRoom',

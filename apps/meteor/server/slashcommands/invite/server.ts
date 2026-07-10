@@ -5,10 +5,10 @@ import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { addUsersToRoomMethod, sanitizeUsername } from '../../../app/lib/server/methods/addUsersToRoom';
 import { settings } from '../../../app/settings/server';
 import { slashCommands } from '../../../app/utils/server/slashCommand';
 import { i18n } from '../../lib/i18n';
+import { addUsersToRoomMethod, sanitizeUsername } from '../../meteor-methods/rooms/addUsersToRoom';
 import { FederationActions } from '../../services/room/hooks/BeforeFederationActions';
 
 // Type guards for the error

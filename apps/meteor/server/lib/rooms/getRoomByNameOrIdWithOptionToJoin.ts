@@ -4,7 +4,7 @@ import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { isObject } from '../../../lib/utils/isObject';
-import { createDirectMessage } from '../../methods/createDirectMessage';
+import { createDirectMessage } from '../../meteor-methods/messages/createDirectMessage';
 
 export const getRoomByNameOrIdWithOptionToJoin = async ({
 	user,
