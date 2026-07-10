@@ -139,8 +139,12 @@ describe('buildClassificationBanner', () => {
 	it('picks the color of the first room value that is mapped in attribute mode', () => {
 		const attributeModeConfig = { ...config, banner: { ...config.banner, colorMode: 'attribute' as const } };
 
-		expect(buildClassificationBanner(attributeModeConfig, [{ key: 'clearance.level', values: ['U', 'TS'] }]).backgroundColor).toBe('#007a33');
-		expect(buildClassificationBanner(attributeModeConfig, [{ key: 'clearance.level', values: ['TS', 'U'] }]).backgroundColor).toBe('#ff8c00');
+		expect(buildClassificationBanner(attributeModeConfig, [{ key: 'clearance.level', values: ['U', 'TS'] }]).backgroundColor).toBe(
+			'#007a33',
+		);
+		expect(buildClassificationBanner(attributeModeConfig, [{ key: 'clearance.level', values: ['TS', 'U'] }]).backgroundColor).toBe(
+			'#ff8c00',
+		);
 	});
 
 	it('excludes attributes with showInBanner disabled', () => {
