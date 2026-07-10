@@ -1,12 +1,11 @@
 /**
  * @jest-environment node
  */
-import Ajv2020 from 'ajv/dist/2020';
+import { ajv } from '@rocket.chat/rest-typings';
 
 import type { ClassificationBannersConfig } from './types';
 import schema from '../../../../../../../ee/packages/abac/docs/classification-banners.schema.json';
 
-const ajv = new Ajv2020({ allErrors: true });
 const validate = ajv.compile(schema);
 
 const validConfig: ClassificationBannersConfig & { $schema: string } = {
