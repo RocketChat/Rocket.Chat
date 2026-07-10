@@ -195,7 +195,7 @@ const RoomMembers = ({
 											height: '100%',
 											width: '100%',
 										}}
-										overscan={300}
+										overscan={50}
 										groupCounts={counts}
 										groupContent={(index) => titles[index]}
 										components={{
