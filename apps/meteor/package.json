@@ -420,7 +420,7 @@
 		"@types/ua-parser-js": "^0.7.39",
 		"@types/underscore": "^1.13.0",
 		"@types/xml-encryption": "~1.2.4",
-		"@vitejs/plugin-react": "~6.0.2",
+		"@vitejs/plugin-react": "~6.0.3",
 		"autoprefixer": "^10.5.4",
 		"babel-loader": "~10.0.0",
 		"babel-plugin-array-includes": "^2.0.3",
@@ -468,7 +468,7 @@
 		"ts-node": "^10.9.2",
 		"tsx": "~4.22.5",
 		"typescript": "~5.9.3",
-		"vite": "^8.0.16",
+		"vite": "~8.1.4",
 		"vite-plugin-istanbul": "~9.0.1",
 		"webpack": "~5.104.1"
 	},
