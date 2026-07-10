@@ -111,6 +111,21 @@ it('should apply a valid license and close the modal', async () => {
 	await waitFor(() => expect(onCancel).toHaveBeenCalled());
 });
 
+it('should keep the apply button disabled after erasing a valid license', async () => {
+	render(<ManageLicenseModal enterpriseLicense={LICENSE} onCancel={jest.fn()} />, {
+		wrapper: mockAppRoot().withEndpoint('POST', '/v1/licenses.validate', validationSuccess).build(),
+	});
+
+	expect(await screen.findByText('Valid_license')).toBeInTheDocument();
+
+	const applyButton = screen.getByRole('button', { name: 'Apply_license' });
+
+	await userEvent.clear(screen.getByRole('textbox'));
+
+	expect(applyButton).toBeDisabled();
+	await waitFor(() => expect(applyButton).toBeDisabled());
+});
+
 it('should ask for confirmation before removing the current license', async () => {
 	render(<ManageLicenseModal enterpriseLicense={LICENSE} onCancel={jest.fn()} />, {
 		wrapper: mockAppRoot().withEndpoint('POST', '/v1/licenses.validate', validationSuccess).build(),

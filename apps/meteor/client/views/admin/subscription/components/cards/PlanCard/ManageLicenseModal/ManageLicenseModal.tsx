@@ -51,7 +51,7 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 
 	const isCurrentLicense = !isEmpty && trimmedLicense === enterpriseLicense.trim();
 
-	const isLicenseValid = !fileError && !isError && validation?.valid === true;
+	const isLicenseValid = isPlausible && !fileError && !isError && validation?.valid === true;
 
 	const invalidMessage = (() => {
 		if (fileError) {
