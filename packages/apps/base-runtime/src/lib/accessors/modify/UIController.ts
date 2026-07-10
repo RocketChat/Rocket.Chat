@@ -18,10 +18,11 @@ import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 
 import { AppObjectRegistry } from '../../../AppObjectRegistry';
 import { UIHelper } from '../../UIHelper';
-import type { RemoteBridges } from '../../bridges/RemoteBridges';
+import { bridgeCall } from '../../bridges/bridgeCall';
+import type * as Messenger from '../../messenger';
 
 export class UIController implements IUIController {
-	constructor(private readonly bridges: RemoteBridges) {}
+	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}
 
 	// The real app id, used to stamp block/interaction payloads (a non-identity, local use). The
 	// trailing appId passed to `doNotifyUser` uses the 'APP_ID' sentinel instead so the host
@@ -89,9 +90,14 @@ export class UIController implements IUIController {
 			appId: this.appId,
 		};
 
-		return this.bridges
-			.getUiInteractionBridge()
-			.doNotifyUser(user, formatErrorInteraction(errorInteraction, interactionContext), 'APP_ID') as Promise<void>;
+		return bridgeCall<void>(
+			this.senderFn,
+			'getUiInteractionBridge',
+			'doNotifyUser',
+			user,
+			formatErrorInteraction(errorInteraction, interactionContext),
+			'APP_ID',
+		);
 	}
 
 	private openContextualBar(
@@ -110,9 +116,14 @@ export class UIController implements IUIController {
 			appId: this.appId,
 		};
 
-		return this.bridges
-			.getUiInteractionBridge()
-			.doNotifyUser(user, formatContextualBarInteraction(view, interactionContext), 'APP_ID') as Promise<void>;
+		return bridgeCall<void>(
+			this.senderFn,
+			'getUiInteractionBridge',
+			'doNotifyUser',
+			user,
+			formatContextualBarInteraction(view, interactionContext),
+			'APP_ID',
+		);
 	}
 
 	private openModal(view: IUIKitModalViewParam, context: IUIKitInteractionParam, user: IUser, isUpdate = false): Promise<void> {
@@ -126,8 +137,13 @@ export class UIController implements IUIController {
 			appId: this.appId,
 		};
 
-		return this.bridges
-			.getUiInteractionBridge()
-			.doNotifyUser(user, formatModalInteraction(view, interactionContext), 'APP_ID') as Promise<void>;
+		return bridgeCall<void>(
+			this.senderFn,
+			'getUiInteractionBridge',
+			'doNotifyUser',
+			user,
+			formatModalInteraction(view, interactionContext),
+			'APP_ID',
+		);
 	}
 }

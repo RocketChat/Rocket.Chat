@@ -5,20 +5,15 @@ import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 
+import { bridgeCall } from '../bridges/bridgeCall';
 import type * as Messenger from '../messenger';
 import { MessageBuilder } from './builders/MessageBuilder';
-import { RemoteBridges } from '../bridges/RemoteBridges';
 
 export class Notifier implements INotifier {
 	private readonly senderFn: typeof Messenger.sendRequest;
 
-	private readonly bridges: RemoteBridges;
-
 	constructor(senderFn: typeof Messenger.sendRequest) {
 		this.senderFn = senderFn;
-		// The facade reads `this.senderFn` at call time (rather than capturing it) so
-		// that tests which swap out `senderFn` after construction remain intercepted.
-		this.bridges = new RemoteBridges((request) => this.senderFn(request));
 	}
 
 	public async notifyUser(user: IUser, message: IMessage): Promise<void> {
@@ -28,7 +23,7 @@ export class Notifier implements INotifier {
 			message.sender = appUser as IUser;
 		}
 
-		await this.bridges.getMessageBridge().doNotifyUser(user, message, 'APP_ID');
+		await bridgeCall(this.senderFn, 'getMessageBridge', 'doNotifyUser', user, message, 'APP_ID');
 	}
 
 	public async notifyRoom(room: IRoom, message: IMessage): Promise<void> {
@@ -38,7 +33,7 @@ export class Notifier implements INotifier {
 			message.sender = appUser as IUser;
 		}
 
-		await this.bridges.getMessageBridge().doNotifyRoom(room, message, 'APP_ID');
+		await bridgeCall(this.senderFn, 'getMessageBridge', 'doNotifyRoom', room, message, 'APP_ID');
 	}
 
 	public async typing(options: ITypingOptions): Promise<() => Promise<void>> {
@@ -49,10 +44,10 @@ export class Notifier implements INotifier {
 			options.username = appUser?.name || '';
 		}
 
-		await this.bridges.getMessageBridge().doTyping({ ...options, isTyping: true }, 'APP_ID');
+		await bridgeCall(this.senderFn, 'getMessageBridge', 'doTyping', { ...options, isTyping: true }, 'APP_ID');
 
 		return async () => {
-			await this.bridges.getMessageBridge().doTyping({ ...options, isTyping: false }, 'APP_ID');
+			await bridgeCall(this.senderFn, 'getMessageBridge', 'doTyping', { ...options, isTyping: false }, 'APP_ID');
 		};
 	}
 
@@ -61,6 +56,6 @@ export class Notifier implements INotifier {
 	}
 
 	private async getAppUser(): Promise<IUser | undefined> {
-		return this.bridges.getUserBridge().doGetAppUser('APP_ID') as Promise<IUser | undefined>;
+		return bridgeCall<IUser | undefined>(this.senderFn, 'getUserBridge', 'doGetAppUser', 'APP_ID');
 	}
 }
