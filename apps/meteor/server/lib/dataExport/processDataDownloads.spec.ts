@@ -121,16 +121,16 @@ const { exportRoomMessagesToFile } = proxyquire.noCallThru().load('./exportRoomM
 	},
 });
 
-const { requestDataDownload } = proxyquire.noCallThru().load('../../methods/requestDataDownload.ts', {
+const { requestDataDownload } = proxyquire.noCallThru().load('../../meteor-methods/platform/requestDataDownload.ts', {
 	'@rocket.chat/models': modelsMock,
-	'../../app/settings/server': {
+	'../../../app/settings/server': {
 		settings: {
 			get: (_key: string) => {
 				return undefined;
 			},
 		},
 	},
-	'../lib/dataExport': {
+	'../../lib/dataExport': {
 		getPath: (fileId: string) => `/data-download/${fileId}`,
 	},
 	'meteor/meteor': {

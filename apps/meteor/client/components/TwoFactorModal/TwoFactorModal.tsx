@@ -21,6 +21,12 @@ export type TwoFactorModalProps = {
 	| {
 			method: 'email';
 			emailOrUsername: string;
+			challengeId?: never;
+	  }
+	| {
+			method: 'email';
+			challengeId: string;
+			emailOrUsername?: never;
 	  }
 );
 
@@ -30,9 +36,9 @@ const TwoFactorModal = ({ onConfirm, onClose, invalidAttempt, ...props }: TwoFac
 	}
 
 	if (props.method === Method.EMAIL) {
-		const { emailOrUsername } = props;
+		// const { emailOrUsername, challengeId } = props;
 
-		return <TwoFactorEmail onConfirm={onConfirm} onClose={onClose} emailOrUsername={emailOrUsername} invalidAttempt={invalidAttempt} />;
+		return <TwoFactorEmail onConfirm={onConfirm} onClose={onClose} invalidAttempt={invalidAttempt} {...props} />;
 	}
 
 	if (props.method === Method.PASSWORD) {

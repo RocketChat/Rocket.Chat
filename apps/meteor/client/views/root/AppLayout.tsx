@@ -27,12 +27,15 @@ import { useKeyboardShortcutsHotkey } from './hooks/useKeyboardShortcutsHotkey';
 import { useLivechatEnterprise } from './hooks/useLivechatEnterprise';
 import { useLoadMissedMessages } from './hooks/useLoadMissedMessages';
 import { useLoadRoomForAllowedAnonymousRead } from './hooks/useLoadRoomForAllowedAnonymousRead';
+import { useLoginOtherClients } from './hooks/useLoginOtherClients';
 import { useLoginViaQuery } from './hooks/useLoginViaQuery';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
 import { useNativeEmoji } from './hooks/useNativeEmoji';
 import { useNotificationPermission } from './hooks/useNotificationPermission';
+import { useOAuthLogin } from './hooks/useOAuthLogin';
 import { useRedirectToSetupWizard } from './hooks/useRedirectToSetupWizard';
 import { useSettingsOnLoadSiteUrl } from './hooks/useSettingsOnLoadSiteUrl';
+import { useShareSessionWithOtherClients } from './hooks/useShareSessionWithOtherClients';
 import { useStartupEvent } from './hooks/useStartupEvent';
 import { appLayout } from '../../lib/appLayout';
 
@@ -71,6 +74,9 @@ const AppLayout = () => {
 	useAutoupdate();
 	useCodeHighlight();
 	useLoginViaQuery();
+	useLoginOtherClients();
+	useOAuthLogin();
+	useShareSessionWithOtherClients();
 	useLoadMissedMessages();
 	useDesktopFavicon();
 	useDesktopTitle();

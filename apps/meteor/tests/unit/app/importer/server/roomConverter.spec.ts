@@ -22,19 +22,19 @@ const { RoomConverter } = proxyquire.noCallThru().load('../../../../../app/impor
 	'../../../settings/server': {
 		settings: { get: settingsStub },
 	},
-	'../../../../../server/methods/createDirectMessage': {
+	'../../../../../server/meteor-methods/messages/createDirectMessage': {
 		createDirectMessage,
 	},
-	'../../../../channel-settings/server/methods/saveRoomSettings': {
+	'../../../../../server/meteor-methods/rooms/saveRoomSettings': {
 		saveRoomSettings,
 	},
 	'../../../../lib/server/lib/notifyListener': {
 		notifyOnSubscriptionChangedByRoomId: sinon.stub(),
 	},
-	'../../../../lib/server/methods/createChannel': {
+	'../../../../../server/meteor-methods/rooms/createChannel': {
 		createChannelMethod: sinon.stub(),
 	},
-	'../../../../lib/server/methods/createPrivateGroup': {
+	'../../../../../server/meteor-methods/rooms/createPrivateGroup': {
 		createPrivateGroupMethod: sinon.stub(),
 	},
 	'meteor/check': sinon.stub(),
