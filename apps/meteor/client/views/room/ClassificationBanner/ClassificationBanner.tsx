@@ -1,8 +1,7 @@
 import { buildClassificationBanner, parseClassificationBannersConfig } from '@rocket.chat/abac/dist/classification-banners/engine';
-import type { ClassificationBannerPayload } from '@rocket.chat/abac/dist/classification-banners/types';
+import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import type { CSSProperties } from 'react';
 import { useMemo } from 'react';
 
 import { useIsABACManagedRoom } from '../../admin/ABAC/hooks/useIsABACManagedRoom';
@@ -11,25 +10,6 @@ import { useRoom } from '../contexts/RoomContext';
 const shade = (hex: string, factor: number): string => {
 	const [r, g, b] = [0, 2, 4].map((offset) => Math.round(parseInt(hex.replace('#', '').slice(offset, offset + 2), 16) * factor));
 	return `rgb(${r}, ${g}, ${b})`;
-};
-
-const getBannerStyle = (banner: ClassificationBannerPayload): CSSProperties => {
-	const edgeRule = banner.color === '#FFFFFF' ? shade(banner.backgroundColor, 0.6) : 'rgba(0, 0, 0, 0.28)';
-
-	return {
-		height: 28,
-		background: banner.backgroundColor,
-		color: banner.color,
-		fontSize: 13,
-		fontWeight: 700,
-		lineHeight: 1,
-		...(banner.monospace && { fontFamily: 'Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace' }),
-		letterSpacing: banner.monospace ? '0.02em' : '0.08em',
-		textTransform: banner.uppercase ? 'uppercase' : 'none',
-		whiteSpace: 'nowrap',
-		userSelect: 'none',
-		...(banner.style === 'edge' && { borderTop: `3px solid ${edgeRule}`, borderBottom: `3px solid ${edgeRule}` }),
-	};
 };
 
 const ClassificationBanner = () => {
@@ -51,6 +31,29 @@ const ClassificationBanner = () => {
 		return null;
 	}
 
+	const edgeRule = banner.color === '#FFFFFF' ? shade(banner.backgroundColor, 0.6) : 'rgba(0, 0, 0, 0.28)';
+	const bannerClass = css`
+		height: 28px;
+		background-color: ${banner.backgroundColor};
+		color: ${banner.color};
+		font-size: 13px;
+		font-weight: 700;
+		line-height: 1;
+		letter-spacing: ${banner.monospace ? '0.02em' : '0.08em'};
+		text-transform: ${banner.uppercase ? 'uppercase' : 'none'};
+		white-space: nowrap;
+		user-select: none;
+		${banner.monospace ? 'font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;' : ''}
+		${banner.style === 'edge' ? `border-top: 3px solid ${edgeRule}; border-bottom: 3px solid ${edgeRule};` : ''}
+	`;
+	const segmentRuleClass = css`
+		width: 1px;
+		height: 60%;
+		margin: 0 14px;
+		background-color: ${banner.color};
+		opacity: 0.45;
+	`;
+
 	return (
 		<Box
 			role='note'
@@ -61,12 +64,12 @@ const ClassificationBanner = () => {
 			justifyContent='center'
 			flexShrink={0}
 			overflow='hidden'
-			style={getBannerStyle(banner)}
+			className={bannerClass}
 		>
 			{banner.style === 'segmented' ? (
 				banner.segments.map((segment, index) => (
 					<Box key={segment.attrId} display='flex' alignItems='center'>
-						{index > 0 && <Box style={{ width: 1, height: '60%', margin: '0 14px', background: banner.color, opacity: 0.45 }} />}
+						{index > 0 && <Box className={segmentRuleClass} />}
 						<span>{segment.text}</span>
 					</Box>
 				))
