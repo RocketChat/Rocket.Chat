@@ -12,12 +12,12 @@ export async function getPaginationItems(params: { offset?: string | number | nu
 
 	const hardUpperLimit = hardUpperLimitTest && hardUpperLimitTest <= 0 ? 100 : settings.get<number>('API_Upper_Count_Limit');
 	const defaultCount = defaultCountTest && defaultCountTest <= 0 ? 50 : settings.get<number>('API_Default_Count');
-	const offset = params.offset ? parseInt(String(params.offset || 0)) : 0;
+	const offset = params.offset ? parseInt(String(params.offset || 0), 10) : 0;
 	let count = defaultCount;
 
 	// Ensure count is an appropriate amount
 	if (params.count !== undefined && params.count !== null) {
-		count = parseInt(String(params.count || 0));
+		count = parseInt(String(params.count || 0), 10);
 	} else {
 		count = defaultCount;
 	}
