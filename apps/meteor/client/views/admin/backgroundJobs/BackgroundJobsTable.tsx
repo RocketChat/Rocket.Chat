@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { BackgroundJobsTab } from './BackgroundJobsPage';
 import BackgroundJobsTableFilters from './BackgroundJobsTableFilters';
-import { statusVariant, translateInterval } from './helpers';
+import { statusVariant, useTranslateInterval } from './helpers';
 import GenericNoResults from '../../../components/GenericNoResults';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
@@ -32,6 +32,7 @@ const BackgroundJobsTable = ({ tab }: BackgroundJobsTableProps) => {
 	const [, setSearchTerm] = useState('');
 	const formatDateAndTime = useFormatDateAndTime();
 	const timeAgo = useTimeAgo();
+	const translateInterval = useTranslateInterval();
 	const isDesktopOrLarger = useMediaQuery('(min-width: 1024px)');
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 
@@ -135,7 +136,7 @@ const BackgroundJobsTable = ({ tab }: BackgroundJobsTableProps) => {
 											<GenericTableCell withTruncatedText>{job.nextRunAt ? formatDateAndTime(job.nextRunAt) : ''}</GenericTableCell>
 										</>
 									)}
-									<GenericTableCell withTruncatedText>{translateInterval(job.repeatInterval) || ''}</GenericTableCell>
+									<GenericTableCell withTruncatedText>{translateInterval(job.repeatInterval)}</GenericTableCell>
 								</GenericTableRow>
 							))}
 						</GenericTableBody>
