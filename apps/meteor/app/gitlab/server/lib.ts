@@ -1,13 +1,17 @@
-import type { OauthConfig } from '@rocket.chat/core-typings';
+import type { OAuthConfiguration } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
+import passport from 'passport';
 import _ from 'underscore';
 
+import { addPassportCustomOAuth } from '../../../server/lib/oauth/addPassportCustomOAuth';
 import { CustomOAuth } from '../../custom-oauth/server/custom_oauth_server';
 import { settings } from '../../settings/server';
 
-const config: OauthConfig = {
+const config: Partial<OAuthConfiguration> = {
 	serverURL: 'https://gitlab.com',
 	identityPath: '/api/v4/user',
+	authorizePath: '/oauth/authorize',
+	tokenPath: '/oauth/token',
 	scope: 'read_user',
 	mergeUsers: false,
 	addAutopublishFields: {
@@ -19,13 +23,47 @@ const config: OauthConfig = {
 
 const Gitlab = new CustomOAuth('gitlab', config);
 
-Meteor.startup(() => {
-	const updateConfig = _.debounce(() => {
-		config.serverURL = settings.get<string>('API_Gitlab_URL').trim().replace(/\/*$/, '') || config.serverURL;
-		config.identityPath = settings.get('Accounts_OAuth_Gitlab_identity_path') || config.identityPath;
-		config.mergeUsers = Boolean(settings.get<boolean>('Accounts_OAuth_Gitlab_merge_users'));
-		Gitlab.configure(config);
-	}, 300);
+const configureGitlabOAuth = () => {
+	passport.unuse('gitlab');
 
-	settings.watchMultiple(['API_Gitlab_URL', 'Accounts_OAuth_Gitlab_identity_path', 'Accounts_OAuth_Gitlab_merge_users'], updateConfig);
+	const enabled = settings.get<boolean>('Accounts_OAuth_Gitlab');
+	if (!enabled) {
+		return;
+	}
+
+	const clientId = settings.get<string>('Accounts_OAuth_Gitlab_id');
+	const clientSecret = settings.get<string>('Accounts_OAuth_Gitlab_secret');
+	const serverURL = settings.get<string>('API_Gitlab_URL').trim().replace(/\/*$/, '') || config.serverURL;
+	const identityPath = settings.get<string>('Accounts_OAuth_Gitlab_identity_path') || config.identityPath;
+	const mergeUsers = Boolean(settings.get<boolean>('Accounts_OAuth_Gitlab_merge_users'));
+
+	if (!clientId || !clientSecret) {
+		return;
+	}
+
+	const completeConfig = { ...config, clientId, clientSecret, serverURL, identityPath, mergeUsers };
+
+	if (settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow')) {
+		addPassportCustomOAuth('gitlab', completeConfig);
+		return;
+	}
+
+	Gitlab.configure(completeConfig);
+};
+
+Meteor.startup(() => {
+	const updateConfig = _.debounce(configureGitlabOAuth, 300);
+
+	settings.watchMultiple(
+		[
+			'Accounts_OAuth_Gitlab',
+			'API_Gitlab_URL',
+			'Accounts_OAuth_Gitlab_id',
+			'Accounts_OAuth_Gitlab_secret',
+			'Accounts_OAuth_Gitlab_identity_path',
+			'Accounts_OAuth_Gitlab_merge_users',
+			'Accounts_OAuth_Use_Modern_Flow',
+		],
+		updateConfig,
+	);
 });

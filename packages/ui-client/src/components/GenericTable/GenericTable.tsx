@@ -4,7 +4,7 @@ import { forwardRef } from 'react';
 
 import { CustomScrollbars } from '../CustomScrollbars';
 
-type GenericTableProps = {
+export type GenericTableProps = {
 	fixed?: boolean;
 	children: ReactNode;
 } & ComponentProps<typeof Table>;

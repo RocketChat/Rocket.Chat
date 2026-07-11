@@ -18,7 +18,7 @@ import { StoreContext } from '../../store';
 
 type SwitchDepartmentFormData = { department: string };
 
-type SwitchDepartmentProps = {
+export type SwitchDepartmentProps = {
 	path: string;
 };
 

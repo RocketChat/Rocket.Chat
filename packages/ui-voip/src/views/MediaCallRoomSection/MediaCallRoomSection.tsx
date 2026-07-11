@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import CallStage from './CallStage';
 import { ToggleButton, Timer, DevicePicker, CameraPicker, ActionButton, ActionStrip, ActionToggleChat } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
-import useRoomView from '../../context/useRoomView';
+import useRegisterView from '../../context/useRegisterView';
 import { useAudioLevel } from '../../providers/useAudioLevel';
 import { playRecordingChime, playRecordingStopChime } from '../../utils/callChimes';
 import { CALL_LANGUAGES, DEFAULT_CALL_LANGUAGE } from '../../utils/callLanguages';
@@ -535,7 +535,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
-	useRoomView();
+	useRegisterView('room');
 
 	const localParticipant = {
 		id: user.id || 'local',

@@ -5,7 +5,7 @@ import type { ComponentPropsWithoutRef } from 'react';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type MultiSelectCustomAnchorProps = {
+export type MultiSelectCustomAnchorProps = {
 	collapsed: boolean;
 	defaultTitle: string;
 	selectedOptionsTitle: string;

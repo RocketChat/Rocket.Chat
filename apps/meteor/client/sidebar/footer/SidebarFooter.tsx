@@ -1,8 +1,6 @@
-import type { ReactElement } from 'react';
-
 import SidebarFooterDefault from './SidebarFooterDefault';
 
-const SidebarFooter = (): ReactElement => {
+const SidebarFooter = () => {
 	return <SidebarFooterDefault />;
 };
 

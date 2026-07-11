@@ -1,5 +1,5 @@
 import { Box, Callout, Field, FieldLabel, FieldRow, FieldError, ButtonGroup, Button, ContextualbarFooter } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal, ContextualbarScrollableContent } from '@rocket.chat/ui-client';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import type { Dispatch, SetStateAction } from 'react';
@@ -11,7 +11,7 @@ import RoomFormAttributeFields from './RoomFormAttributeFields';
 import RoomFormAutocomplete from './RoomFormAutocomplete';
 import RoomFormAutocompleteDummy from './RoomFormAutocompleteDummy';
 
-type RoomFormProps = {
+export type RoomFormProps = {
 	onClose: () => void;
 	onSave: (data: RoomFormData) => void;
 	roomInfo?: { rid: string; name: string };
@@ -42,7 +42,7 @@ const RoomForm = ({ onClose, onSave, roomInfo, setSelectedRoomLabel, redacted = 
 
 	const setModal = useSetModal();
 
-	const updateAction = useEffectEvent(async (action: () => void) => {
+	const updateAction = useStableCallback(async (action: () => void) => {
 		setModal(
 			<GenericModal
 				variant='info'
@@ -65,7 +65,7 @@ const RoomForm = ({ onClose, onSave, roomInfo, setSelectedRoomLabel, redacted = 
 		);
 	});
 
-	const handleSave = useEffectEvent(() => {
+	const handleSave = useStableCallback(() => {
 		if (roomInfo) {
 			updateAction(handleSubmit(onSave));
 		} else {

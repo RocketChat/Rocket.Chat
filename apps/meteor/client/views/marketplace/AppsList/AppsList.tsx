@@ -1,16 +1,15 @@
 import type { App } from '@rocket.chat/core-typings';
 import { Box, CardGroup } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 
 import AppRow from './AppRow';
 
-type AppsListProps = {
+export type AppsListProps = {
 	apps: App[];
 	title?: string;
 	appsListId: string;
 };
 
-const AppsList = ({ apps, title, appsListId }: AppsListProps): ReactElement => {
+const AppsList = ({ apps, title, appsListId }: AppsListProps) => {
 	return (
 		<Box mbe={16}>
 			{title && (

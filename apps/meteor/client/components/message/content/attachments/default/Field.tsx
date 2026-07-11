@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactNode } from 'react';
 
-type FieldProps = {
+export type FieldProps = {
 	short?: boolean;
 	title: ReactNode;
 	value: ReactNode;

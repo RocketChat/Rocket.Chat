@@ -1,19 +1,20 @@
 import { Box, Button, ButtonGroup, Margins, TextInput, Field, FieldLabel, FieldRow, FieldError, IconButton } from '@rocket.chat/fuselage';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ChangeEvent } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import type { ChangeEvent } from 'react';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useEndpointUploadMutation } from '../../../hooks/useEndpointUploadMutation';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
-type AddCustomEmojiProps = {
+export type AddCustomEmojiProps = {
 	close: () => void;
 	onChange: () => void;
 };
 
-const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): ReactElement => {
+const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps) => {
 	const { t } = useTranslation();
 	const [name, setName] = useState('');
 	const [aliases, setAliases] = useState('');
@@ -31,10 +32,12 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 	);
 
 	const dispatchToastMessage = useToastMessageDispatch();
+	const queryClient = useQueryClient();
 
 	const { mutateAsync: saveAction } = useEndpointUploadMutation('/v1/emoji-custom.create', {
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Custom_Emoji_Added_Successfully') });
+			queryClient.invalidateQueries({ queryKey: ['emoji-custom.list'] });
 			onChange();
 			close();
 		},

@@ -141,6 +141,50 @@ describe('Settings', () => {
 		});
 	});
 
+	it('should stamp the env source when the override equals the stored value', async () => {
+		const addSetting = (registry: SettingsRegistry) =>
+			registry.addGroup('group', async function () {
+				await this.section('section', async function () {
+					await this.add('my_setting_stamped', 0, {
+						type: 'int',
+						sorter: 0,
+					});
+				});
+			});
+
+		const bootRegistry = () => {
+			const settings = new CachedSettings();
+			Settings.settings = settings;
+			for (const _id of ['group', 'my_setting_stamped']) {
+				const stored = Settings.findOne({ _id });
+				if (stored) {
+					settings.set(stored);
+				}
+			}
+			settings.initialized();
+			return new SettingsRegistry({ store: settings, model: Settings as any });
+		};
+
+		await addSetting(bootRegistry());
+
+		expect(Settings.findOne({ _id: 'my_setting_stamped' })).to.include({ value: 0, valueSource: 'packageValue' });
+
+		process.env.OVERWRITE_SETTING_my_setting_stamped = '0';
+
+		await addSetting(bootRegistry());
+
+		expect(Settings).to.have.property('upsertCalls').to.be.equal(1);
+		expect(Settings.findOne({ _id: 'my_setting_stamped' })).to.include({
+			value: 0,
+			processEnvValue: 0,
+			valueSource: 'processEnvValue',
+		});
+
+		await addSetting(bootRegistry());
+
+		expect(Settings).to.have.property('upsertCalls').to.be.equal(1);
+	});
+
 	it('should respect override via environment as boolean', async () => {
 		process.env.OVERWRITE_SETTING_my_setting_bool = 'true';
 

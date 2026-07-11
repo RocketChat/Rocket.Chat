@@ -9,7 +9,9 @@ import CannedResponseEditWithDepartmentData from './CannedResponseEditWithDepart
 import { useRemoveCannedResponse } from './useRemoveCannedResponse';
 import { FormSkeleton } from '../../../../components/Skeleton';
 
-const CannedResponseEditWithData = ({ cannedResponseId }: { cannedResponseId: IOmnichannelCannedResponse['_id'] }) => {
+export type CannedResponseEditWithDataProps = { cannedResponseId: IOmnichannelCannedResponse['_id'] };
+
+const CannedResponseEditWithData = ({ cannedResponseId }: CannedResponseEditWithDataProps) => {
 	const { t } = useTranslation();
 
 	const getCannedResponseById = useEndpoint('GET', '/v1/canned-responses/:_id', { _id: cannedResponseId });

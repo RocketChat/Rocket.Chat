@@ -1,11 +1,10 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useFormatDate } from '../../../hooks/useFormatDate';
 
-type AuditFiltersDisplayProps = {
+export type AuditFiltersDisplayProps = {
 	users?: IUser['username'][];
 	room?: IRoom['name'];
 	startDate?: Date;
@@ -13,7 +12,7 @@ type AuditFiltersDisplayProps = {
 	filters?: string;
 };
 
-const AuditFiltersDisplay = ({ users, room, startDate, endDate, filters }: AuditFiltersDisplayProps): ReactElement => {
+const AuditFiltersDisplay = ({ users, room, startDate, endDate, filters }: AuditFiltersDisplayProps) => {
 	const formatDate = useFormatDate();
 	const { t } = useTranslation();
 

@@ -4,7 +4,7 @@ import { usePagination } from '@rocket.chat/ui-client';
 import type { Dispatch, SetStateAction, ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type PrepareContactsProps = {
+export type PrepareContactsProps = {
 	contactsCount: number;
 	contacts: IImporterSelectionContact[];
 	setContacts: Dispatch<SetStateAction<IImporterSelectionContact[]>>;

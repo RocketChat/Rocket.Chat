@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 
 import DotLeader from './DotLeader';
 
-type TextSeparatorProps = {
+export type TextSeparatorProps = {
 	label: ReactNode;
 	value: ReactNode;
 };

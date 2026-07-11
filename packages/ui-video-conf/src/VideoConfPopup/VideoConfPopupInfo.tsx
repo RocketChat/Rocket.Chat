@@ -1,13 +1,13 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
-type VideoConfPopupInfoProps = {
-	avatar?: ReactElement;
+export type VideoConfPopupInfoProps = {
+	avatar?: ReactNode;
 	icon?: ReactNode;
 	children: ReactNode;
 };
 
-const VideoConfPopupInfo = ({ avatar, icon, children }: VideoConfPopupInfoProps): ReactElement => (
+const VideoConfPopupInfo = ({ avatar, icon, children }: VideoConfPopupInfoProps) => (
 	<Box display='flex' alignItems='center'>
 		{avatar}
 		{(icon || children) && (

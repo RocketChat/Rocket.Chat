@@ -1,6 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { MessageBlock } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 
 import { useOembedLayout } from '../hooks/useOembedLayout';
 import type { OEmbedPreviewMetadata } from './urlPreviews/OEmbedPreviewMetadata';
@@ -105,9 +104,9 @@ const isPreviewData = (data: PreviewData | false): data is PreviewData => !!data
 
 const isMetaPreview = (_data: PreviewData['data'], type: PreviewTypes): _data is OEmbedPreviewMetadata => type === 'oembed';
 
-type UrlPreviewsProps = { urls: OembedUrlLegacy[] };
+export type UrlPreviewsProps = { urls: OembedUrlLegacy[] };
 
-const UrlPreviews = ({ urls }: UrlPreviewsProps): ReactElement | null => {
+const UrlPreviews = ({ urls }: UrlPreviewsProps) => {
 	const { maxWidth: oembedMaxWidth } = useOembedLayout();
 	const metaAndHeaders = urls.map(processMetaAndHeaders).filter(isPreviewData);
 

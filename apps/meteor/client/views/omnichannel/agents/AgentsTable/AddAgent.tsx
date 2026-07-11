@@ -1,5 +1,5 @@
 import { Button, Box, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAutoComplete } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -25,7 +25,7 @@ const AddAgent = () => {
 		},
 	});
 
-	const handleSave = useEffectEvent(async () => {
+	const handleSave = useStableCallback(async () => {
 		await saveAction({ username });
 	});
 

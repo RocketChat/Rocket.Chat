@@ -1,7 +1,7 @@
 import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import type { VideoConfPopupPayload, VideoConfContextValue } from '@rocket.chat/ui-video-conf';
 import { VideoConfContext } from '@rocket.chat/ui-video-conf';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -10,7 +10,9 @@ import VideoConfPopups from '../views/room/contextualBar/VideoConference/VideoCo
 import { useVideoConfOpenCall } from '../views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
 import { useLiveKitVideoConf } from '../views/videoConference/livekit/LiveKitVideoConfContext';
 
-const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactElement => {
+export type VideoConfContextProviderProps = { children: ReactNode };
+
+const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) => {
 	const [outgoing, setOutgoing] = useState<VideoConfPopupPayload | undefined>();
 	const handleOpenCall = useVideoConfOpenCall();
 	const dispatchToastMessage = useToastMessageDispatch();

@@ -1,15 +1,14 @@
 import { Box } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type EnableE2EEModalProps = {
+export type EnableE2EEModalProps = {
 	onConfirm: () => void;
 	onClose: () => void;
 	roomType: string;
 };
 
-const EnableE2EEModal = ({ onConfirm, onClose, roomType }: EnableE2EEModalProps): ReactElement => {
+const EnableE2EEModal = ({ onConfirm, onClose, roomType }: EnableE2EEModalProps) => {
 	const { t } = useTranslation();
 
 	return (

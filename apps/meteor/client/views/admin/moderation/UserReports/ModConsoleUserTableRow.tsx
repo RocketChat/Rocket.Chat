@@ -12,7 +12,7 @@ export type ModConsoleUserRowProps = {
 	isDesktopOrLarger: boolean;
 };
 
-const ModConsoleUserTableRow = ({ report, onClick, isDesktopOrLarger }: ModConsoleUserRowProps): JSX.Element => {
+const ModConsoleUserTableRow = ({ report, onClick, isDesktopOrLarger }: ModConsoleUserRowProps) => {
 	const { reportedUser, count, ts } = report;
 	const { _id, name, createdAt, emails } = reportedUser;
 	const username = reportedUser.username ? normalizeUsername(reportedUser.username) : undefined;

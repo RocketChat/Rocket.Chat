@@ -1,6 +1,6 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
-import { messageSearch } from '../../../../server/methods/messageSearch';
+import { messageSearch } from '../../../../server/meteor-methods/messages/messageSearch';
 import type { IRawSearchResult } from '../model/ISearchResult';
 import { SearchProvider } from '../model/SearchProvider';
 

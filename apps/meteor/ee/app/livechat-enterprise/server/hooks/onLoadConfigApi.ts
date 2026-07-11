@@ -1,6 +1,6 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 
-import { getExtraConfigInfo } from '../../../../../app/livechat/server/api/lib/livechat';
+import { getExtraConfigInfo } from '../../../../../server/api/v1/omnichannel/lib/livechat';
 import { getLivechatQueueInfo, getLivechatCustomFields } from '../lib/Helper';
 
 getExtraConfigInfo.patch(

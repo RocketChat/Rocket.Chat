@@ -33,7 +33,6 @@ jest.mock('./clients/virtru/VirtruClient', () => ({
 const fakeActor = { _id: 'test-user', username: 'testuser', type: 'user' };
 
 const mockFindOneByIdAndType = jest.fn();
-const mockUpdateAbacConfigurationById = jest.fn();
 const mockAbacInsertOne = jest.fn();
 const mockAbacFindPaginated = jest.fn();
 const mockAbacFindOne = jest.fn();
@@ -48,7 +47,7 @@ const mockUpdateAbacAttributeValuesArrayFilteredById = jest.fn();
 const mockRemoveAbacAttributeByRoomIdAndKey = jest.fn();
 const mockInsertAbacAttributeIfNotExistsById = jest.fn();
 const mockUnsetAbacAttributesById = jest.fn();
-const mockRoomsUpdateMany = jest.fn();
+const mockRoomsUnsetAllAbacAttributes = jest.fn();
 const mockSettingsSet = jest.fn();
 const mockUsersFind = jest.fn();
 const mockUsersUpdateOne = jest.fn();
@@ -56,11 +55,15 @@ const mockUsersSetAbacAttributesById = jest.fn();
 const mockUsersUnsetAbacAttributesById = jest.fn();
 const mockAbacFindOneAndUpdate = jest.fn();
 const mockCreateAuditServerEvent = jest.fn();
+const mockRoomsFindAllPrivateAbac = jest.fn();
+const mockUsersFindActiveByRoomIds = jest.fn();
+const mockRoomRemoveUserFromRoom = jest.fn();
+const mockUsersFindUsersByIdentifiers = jest.fn();
+const mockLdapSyncByIds = jest.fn();
 
 jest.mock('@rocket.chat/models', () => ({
 	Rooms: {
 		findOneByIdAndType: (...args: any[]) => mockFindOneByIdAndType(...args),
-		updateAbacConfigurationById: (...args: any[]) => mockUpdateAbacConfigurationById(...args),
 		isAbacAttributeInUse: (...args: any[]) => mockRoomsIsAbacAttributeInUse(...args),
 		findPaginated: (...args: any[]) => mockRoomsFindPaginated(...args),
 		setAbacAttributesById: (...args: any[]) => mockSetAbacAttributesById(...args),
@@ -69,7 +72,8 @@ jest.mock('@rocket.chat/models', () => ({
 		removeAbacAttributeByRoomIdAndKey: (...args: any[]) => mockRemoveAbacAttributeByRoomIdAndKey(...args),
 		insertAbacAttributeIfNotExistsById: (...args: any[]) => mockInsertAbacAttributeIfNotExistsById(...args),
 		unsetAbacAttributesById: (...args: any[]) => mockUnsetAbacAttributesById(...args),
-		updateMany: (...args: any[]) => mockRoomsUpdateMany(...args),
+		unsetAllAbacAttributes: (...args: any[]) => mockRoomsUnsetAllAbacAttributes(...args),
+		findAllPrivateRoomsWithAbacAttributes: (...args: any[]) => mockRoomsFindAllPrivateAbac(...args),
 	},
 	AbacAttributes: {
 		insertOne: (...args: any[]) => mockAbacInsertOne(...args),
@@ -85,6 +89,8 @@ jest.mock('@rocket.chat/models', () => ({
 	},
 	Users: {
 		find: (...args: any[]) => mockUsersFind(...args),
+		findActiveByRoomIds: (...args: any[]) => mockUsersFindActiveByRoomIds(...args),
+		findUsersByIdentifiers: (...args: any[]) => mockUsersFindUsersByIdentifiers(...args),
 		setAbacAttributesById: (...args: any[]) => mockUsersSetAbacAttributesById(...args),
 		unsetAbacAttributesById: (...args: any[]) => mockUsersUnsetAbacAttributesById(...args),
 		findOneAndUpdate: (...args: any[]) => mockUsersUpdateOne(...args),
@@ -109,7 +115,10 @@ jest.mock('@rocket.chat/core-services', () => {
 			onEvent = jest.fn();
 		},
 		Room: {
-			removeUserFromRoom: jest.fn(),
+			removeUserFromRoom: (...args: any[]) => mockRoomRemoveUserFromRoom(...args),
+		},
+		LDAPEnterprise: {
+			syncUsersAbacAttributesByIds: (...args: any[]) => mockLdapSyncByIds(...args),
 		},
 		api: {
 			broadcast: jest.fn(),
@@ -641,6 +650,16 @@ describe('AbacService (unit)', () => {
 			]);
 			expect(mockSetAbacAttributesById).toHaveBeenCalledWith('r1', [{ key: 'dept', values: ['eng', 'sales'] }]);
 		});
+
+		it('clears all attributes via unset (not setAbacAttributesById) when given an empty map for a room that had attributes', async () => {
+			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [{ key: 'dept', values: ['eng'] }] });
+
+			await service.setRoomAbacAttributes('r1', {}, fakeActor);
+
+			expect(mockUnsetAbacAttributesById).toHaveBeenCalledWith('r1');
+			expect(mockSetAbacAttributesById).not.toHaveBeenCalled();
+			expect((service as any).onRoomAttributesChanged).not.toHaveBeenCalled();
+		});
 	});
 
 	describe('isAbacAttributeInUseByKey', () => {
@@ -803,6 +822,16 @@ describe('AbacService (unit)', () => {
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: existing });
 			await (service as any).removeRoomAbacAttribute('r1', 'dept', fakeActor);
 			expect(mockRemoveAbacAttributeByRoomIdAndKey).toHaveBeenCalledWith('r1', 'dept');
+			expect((service as any).onRoomAttributesChanged).not.toHaveBeenCalled();
+		});
+
+		it('unsets every attribute (not single-key removal) when removing the last remaining attribute', async () => {
+			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [{ key: 'dept', values: ['eng'] }] });
+
+			await (service as any).removeRoomAbacAttribute('r1', 'dept', fakeActor);
+
+			expect(mockUnsetAbacAttributesById).toHaveBeenCalledWith('r1');
+			expect(mockRemoveAbacAttributeByRoomIdAndKey).not.toHaveBeenCalled();
 			expect((service as any).onRoomAttributesChanged).not.toHaveBeenCalled();
 		});
 	});
@@ -1231,6 +1260,87 @@ describe('AbacService (unit)', () => {
 		});
 	});
 
+	describe('PDP down (fail-closed)', () => {
+		const usePdp = (over: Record<string, jest.Mock> = {}) => {
+			const pdp = {
+				isAvailable: jest.fn().mockResolvedValue(true),
+				checkUsernamesMatchAttributes: jest.fn().mockResolvedValue(undefined),
+				onRoomAttributesChanged: jest.fn().mockResolvedValue([]),
+				onSubjectAttributesChanged: jest.fn().mockResolvedValue([]),
+				evaluateUserRooms: jest.fn().mockResolvedValue([]),
+				...over,
+			} as any;
+			(service as any).pdp = pdp;
+			return pdp;
+		};
+
+		const room = { _id: 'r1', name: 'room', t: 'p', teamMain: false, abacAttributes: [{ key: 'dept', values: ['eng'] }] } as any;
+		const attributes = [{ key: 'dept', values: ['eng'] }];
+
+		describe('checkUsernamesMatchAttributes', () => {
+			it('rejects with error-pdp-unavailable and skips the decision call when the PDP is unavailable', async () => {
+				const pdp = usePdp({ isAvailable: jest.fn().mockResolvedValue(false) });
+
+				await expect(service.checkUsernamesMatchAttributes(['alice'], attributes as any, room)).rejects.toMatchObject({
+					code: 'error-pdp-unavailable',
+				});
+				expect(pdp.checkUsernamesMatchAttributes).not.toHaveBeenCalled();
+				expect(mockCreateAuditServerEvent).not.toHaveBeenCalled();
+			});
+
+			it('propagates the error (invite blocked) and writes no audit when the decision call fails', async () => {
+				const pdp = usePdp({ checkUsernamesMatchAttributes: jest.fn().mockRejectedValue(new Error('virtru down')) });
+
+				await expect(service.checkUsernamesMatchAttributes(['alice'], attributes as any, room)).rejects.toThrow('virtru down');
+				expect(pdp.checkUsernamesMatchAttributes).toHaveBeenCalled();
+				expect(mockCreateAuditServerEvent).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('onRoomAttributesChanged', () => {
+			it('swallows the PDP error and removes nobody', async () => {
+				const pdp = usePdp({ onRoomAttributesChanged: jest.fn().mockRejectedValue(new Error('virtru down')) });
+
+				await expect((service as any).onRoomAttributesChanged(room, attributes)).resolves.toBeUndefined();
+				expect(pdp.onRoomAttributesChanged).toHaveBeenCalled();
+				expect(mockRoomRemoveUserFromRoom).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('onSubjectAttributesChanged', () => {
+			const subject = { _id: 'u1', __rooms: ['r1'] } as any;
+
+			it('swallows the PDP error and removes nobody', async () => {
+				const pdp = usePdp({ onSubjectAttributesChanged: jest.fn().mockRejectedValue(new Error('virtru down')) });
+
+				await expect((service as any).onSubjectAttributesChanged(subject, [])).resolves.toBeUndefined();
+				expect(pdp.onSubjectAttributesChanged).toHaveBeenCalled();
+				expect(mockRoomRemoveUserFromRoom).not.toHaveBeenCalled();
+			});
+
+			it('returns early without calling the PDP when it reports unavailable', async () => {
+				const pdp = usePdp({ isAvailable: jest.fn().mockResolvedValue(false) });
+
+				await expect((service as any).onSubjectAttributesChanged(subject, [])).resolves.toBeUndefined();
+				expect(pdp.onSubjectAttributesChanged).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('evaluateRoomMembership', () => {
+			it('swallows the PDP error and removes nobody', async () => {
+				const pdp = usePdp({ evaluateUserRooms: jest.fn().mockRejectedValue(new Error('virtru down')) });
+				mockRoomsFindAllPrivateAbac.mockReturnValue({ toArray: async () => [room] });
+				mockUsersFindActiveByRoomIds.mockReturnValue({
+					map: (fn: (u: any) => any) => ({ toArray: async () => [{ _id: 'u1', __rooms: ['r1'] }].map(fn) }),
+				});
+
+				await expect(service.evaluateRoomMembership()).resolves.toBeUndefined();
+				expect(pdp.evaluateUserRooms).toHaveBeenCalled();
+				expect(mockRoomRemoveUserFromRoom).not.toHaveBeenCalled();
+			});
+		});
+	});
+
 	describe('listAbacRooms', () => {
 		const actor = { _id: 'admin-1', username: 'admin', name: 'Admin' };
 
@@ -1589,7 +1699,7 @@ describe('AbacService (unit)', () => {
 			(VirtruClient as jest.Mock).mockClear();
 			mockHasModule.mockReset();
 			mockSettingsGet.mockReset();
-			mockRoomsUpdateMany.mockReset();
+			mockRoomsUnsetAllAbacAttributes.mockReset();
 			mockCreateAuditServerEvent.mockReset();
 			auditSpy = jest.spyOn(Audit, 'attributeStoreSwitched').mockResolvedValue(undefined);
 			evictionSpy = jest.spyOn(AbacService.prototype as any, 'onRoomAttributesChanged').mockResolvedValue(undefined);
@@ -1626,34 +1736,34 @@ describe('AbacService (unit)', () => {
 
 		it('wipes and audits (local->virtru, N) when ABAC_Attribute_Store flips local->virtru via the real listener', async () => {
 			mockHasModule.mockReturnValue(true);
-			mockRoomsUpdateMany.mockResolvedValue({ modifiedCount: 7 });
+			mockRoomsUnsetAllAbacAttributes.mockResolvedValue({ modifiedCount: 7 });
 			const svc = await bootWith(buildSettings({ ABAC_Attribute_Store: 'local' }));
 
 			await fireSettingChanged(svc, 'ABAC_Attribute_Store', 'virtru');
 			await new Promise((r) => setImmediate(r));
 
-			expect(mockRoomsUpdateMany).toHaveBeenCalledTimes(1);
-			expect(mockRoomsUpdateMany).toHaveBeenCalledWith({ abacAttributes: { $exists: true } }, { $unset: { abacAttributes: '' } });
+			expect(mockRoomsUnsetAllAbacAttributes).toHaveBeenCalledTimes(1);
+			expect(mockRoomsUnsetAllAbacAttributes).toHaveBeenCalledWith();
 			expect(auditSpy).toHaveBeenCalledTimes(1);
 			expect(auditSpy).toHaveBeenCalledWith('local', 'virtru', 7);
 		});
 
 		it('wipes and audits (virtru->local, N) when ABAC_Attribute_Store explicitly set to local while other conditions stay virtru', async () => {
 			mockHasModule.mockReturnValue(true);
-			mockRoomsUpdateMany.mockResolvedValue({ modifiedCount: 5 });
+			mockRoomsUnsetAllAbacAttributes.mockResolvedValue({ modifiedCount: 5 });
 			const svc = await bootWith(buildSettings({}));
 			setVirtruMode(svc);
 
 			await fireSettingChanged(svc, 'ABAC_Attribute_Store', 'local');
 			await new Promise((r) => setImmediate(r));
 
-			expect(mockRoomsUpdateMany).toHaveBeenCalledTimes(1);
-			expect(mockRoomsUpdateMany).toHaveBeenCalledWith({ abacAttributes: { $exists: true } }, { $unset: { abacAttributes: '' } });
+			expect(mockRoomsUnsetAllAbacAttributes).toHaveBeenCalledTimes(1);
+			expect(mockRoomsUnsetAllAbacAttributes).toHaveBeenCalledWith();
 			expect(auditSpy).toHaveBeenCalledTimes(1);
 			expect(auditSpy).toHaveBeenCalledWith('virtru', 'local', 5);
 		});
 
-		it('skips updateMany and audit when the abac license is absent at Store-setting change time', async () => {
+		it('skips the wipe and audit when the abac license is absent at Store-setting change time', async () => {
 			mockHasModule.mockReturnValue(true);
 			const svc = await bootWith(buildSettings({ ABAC_Attribute_Store: 'local' }));
 
@@ -1661,14 +1771,14 @@ describe('AbacService (unit)', () => {
 			await fireSettingChanged(svc, 'ABAC_Attribute_Store', 'virtru');
 			await new Promise((r) => setImmediate(r));
 
-			expect(mockRoomsUpdateMany).not.toHaveBeenCalled();
+			expect(mockRoomsUnsetAllAbacAttributes).not.toHaveBeenCalled();
 			expect(auditSpy).not.toHaveBeenCalled();
 		});
 
-		it('does not block the settings-save: the listener returns before updateMany resolves, audit fires after', async () => {
+		it('does not block the settings-save: the listener returns before the wipe resolves, audit fires after', async () => {
 			mockHasModule.mockReturnValue(true);
 			let resolveWipe: (value: { modifiedCount: number }) => void = () => undefined;
-			mockRoomsUpdateMany.mockReturnValue(
+			mockRoomsUnsetAllAbacAttributes.mockReturnValue(
 				new Promise<{ modifiedCount: number }>((resolve) => {
 					resolveWipe = resolve;
 				}),
@@ -1682,7 +1792,7 @@ describe('AbacService (unit)', () => {
 			entry[1]({ setting: { value: 'virtru' } });
 			await new Promise((r) => setImmediate(r));
 
-			expect(mockRoomsUpdateMany).toHaveBeenCalledTimes(1);
+			expect(mockRoomsUnsetAllAbacAttributes).toHaveBeenCalledTimes(1);
 			expect(auditSpy).not.toHaveBeenCalled();
 
 			resolveWipe({ modifiedCount: 4 });
@@ -1694,7 +1804,7 @@ describe('AbacService (unit)', () => {
 
 		it('never triggers eviction / PDP / per-room audit during the local->virtru wipe', async () => {
 			mockHasModule.mockReturnValue(true);
-			mockRoomsUpdateMany.mockResolvedValue({ modifiedCount: 12 });
+			mockRoomsUnsetAllAbacAttributes.mockResolvedValue({ modifiedCount: 12 });
 			const svc = await bootWith(buildSettings({ ABAC_Attribute_Store: 'local' }));
 
 			await fireSettingChanged(svc, 'ABAC_Attribute_Store', 'virtru');
@@ -1705,15 +1815,15 @@ describe('AbacService (unit)', () => {
 			expect(mockCreateAuditServerEvent).not.toHaveBeenCalled();
 		});
 
-		it('does not emit an audit when updateMany reports modifiedCount: 0 (loser node in multi-node fan-out)', async () => {
+		it('does not emit an audit when the wipe reports modifiedCount: 0 (loser node in multi-node fan-out)', async () => {
 			mockHasModule.mockReturnValue(true);
-			mockRoomsUpdateMany.mockResolvedValue({ modifiedCount: 0 });
+			mockRoomsUnsetAllAbacAttributes.mockResolvedValue({ modifiedCount: 0 });
 			const svc = await bootWith(buildSettings({ ABAC_Attribute_Store: 'local' }));
 
 			await fireSettingChanged(svc, 'ABAC_Attribute_Store', 'virtru');
 			await new Promise((r) => setImmediate(r));
 
-			expect(mockRoomsUpdateMany).toHaveBeenCalledTimes(1);
+			expect(mockRoomsUnsetAllAbacAttributes).toHaveBeenCalledTimes(1);
 			expect(auditSpy).not.toHaveBeenCalled();
 		});
 
@@ -1721,39 +1831,39 @@ describe('AbacService (unit)', () => {
 			mockHasModule.mockReturnValue(true);
 			const svc = await bootWith(buildSettings({}));
 			await new Promise((r) => setImmediate(r));
-			expect(mockRoomsUpdateMany).not.toHaveBeenCalled();
+			expect(mockRoomsUnsetAllAbacAttributes).not.toHaveBeenCalled();
 			expect(auditSpy).not.toHaveBeenCalled();
 
 			await fireSettingChanged(svc, 'ABAC_Virtru_Attribute_Namespace', 'other.example');
 			await new Promise((r) => setImmediate(r));
-			expect(mockRoomsUpdateMany).not.toHaveBeenCalled();
+			expect(mockRoomsUnsetAllAbacAttributes).not.toHaveBeenCalled();
 			expect(auditSpy).not.toHaveBeenCalled();
 		});
 
 		it('wipes virtru->local when ABAC_PDP_Type flips to local while Store=virtru (effective store transitions)', async () => {
 			mockHasModule.mockReturnValue(true);
-			mockRoomsUpdateMany.mockResolvedValue({ modifiedCount: 4 });
+			mockRoomsUnsetAllAbacAttributes.mockResolvedValue({ modifiedCount: 4 });
 			const svc = await bootWith(buildSettings({}));
 			setVirtruMode(svc);
 
 			await fireSettingChanged(svc, 'ABAC_PDP_Type', 'local');
 			await new Promise((r) => setImmediate(r));
 
-			expect(mockRoomsUpdateMany).toHaveBeenCalledTimes(1);
-			expect(mockRoomsUpdateMany).toHaveBeenCalledWith({ abacAttributes: { $exists: true } }, { $unset: { abacAttributes: '' } });
+			expect(mockRoomsUnsetAllAbacAttributes).toHaveBeenCalledTimes(1);
+			expect(mockRoomsUnsetAllAbacAttributes).toHaveBeenCalledWith();
 			expect(auditSpy).toHaveBeenCalledTimes(1);
 			expect(auditSpy).toHaveBeenCalledWith('virtru', 'local', 4);
 		});
 
 		it('does NOT wipe when ABAC_PDP_Type flips to local while Store=local (effective store stays local)', async () => {
 			mockHasModule.mockReturnValue(true);
-			mockRoomsUpdateMany.mockResolvedValue({ modifiedCount: 9 });
+			mockRoomsUnsetAllAbacAttributes.mockResolvedValue({ modifiedCount: 9 });
 			const svc = await bootWith(buildSettings({ ABAC_Attribute_Store: 'local' }));
 
 			await fireSettingChanged(svc, 'ABAC_PDP_Type', 'local');
 			await new Promise((r) => setImmediate(r));
 
-			expect(mockRoomsUpdateMany).not.toHaveBeenCalled();
+			expect(mockRoomsUnsetAllAbacAttributes).not.toHaveBeenCalled();
 			expect(auditSpy).not.toHaveBeenCalled();
 		});
 
@@ -1765,43 +1875,43 @@ describe('AbacService (unit)', () => {
 			await fireSettingChanged(svc, 'ABAC_Enabled', false);
 			await new Promise((r) => setImmediate(r));
 
-			expect(mockRoomsUpdateMany).not.toHaveBeenCalled();
+			expect(mockRoomsUnsetAllAbacAttributes).not.toHaveBeenCalled();
 			expect(auditSpy).not.toHaveBeenCalled();
 		});
 
 		it('does NOT wipe when ABAC_Attribute_Store flips local->virtru while ABAC_Enabled is false (effective store stays local)', async () => {
 			mockHasModule.mockReturnValue(true);
-			mockRoomsUpdateMany.mockResolvedValue({ modifiedCount: 9 });
+			mockRoomsUnsetAllAbacAttributes.mockResolvedValue({ modifiedCount: 9 });
 			const svc = await bootWith(buildSettings({ ABAC_Enabled: false, ABAC_Attribute_Store: 'local' }));
 
 			await fireSettingChanged(svc, 'ABAC_Attribute_Store', 'virtru');
 			await new Promise((r) => setImmediate(r));
 
-			expect(mockRoomsUpdateMany).not.toHaveBeenCalled();
+			expect(mockRoomsUnsetAllAbacAttributes).not.toHaveBeenCalled();
 			expect(auditSpy).not.toHaveBeenCalled();
 		});
 
 		it('does NOT wipe when ABAC_Attribute_Store flips local->virtru while ABAC_PDP_Type is local (effective store stays local)', async () => {
 			mockHasModule.mockReturnValue(true);
-			mockRoomsUpdateMany.mockResolvedValue({ modifiedCount: 9 });
+			mockRoomsUnsetAllAbacAttributes.mockResolvedValue({ modifiedCount: 9 });
 			const svc = await bootWith(buildSettings({ ABAC_PDP_Type: 'local', ABAC_Attribute_Store: 'local' }));
 
 			await fireSettingChanged(svc, 'ABAC_Attribute_Store', 'virtru');
 			await new Promise((r) => setImmediate(r));
 
-			expect(mockRoomsUpdateMany).not.toHaveBeenCalled();
+			expect(mockRoomsUnsetAllAbacAttributes).not.toHaveBeenCalled();
 			expect(auditSpy).not.toHaveBeenCalled();
 		});
 
 		it('does NOT wipe when ABAC_Attribute_Store flips virtru->local while the virtru store was never effective (PDP=local)', async () => {
 			mockHasModule.mockReturnValue(true);
-			mockRoomsUpdateMany.mockResolvedValue({ modifiedCount: 9 });
+			mockRoomsUnsetAllAbacAttributes.mockResolvedValue({ modifiedCount: 9 });
 			const svc = await bootWith(buildSettings({ ABAC_PDP_Type: 'local', ABAC_Attribute_Store: 'virtru' }));
 
 			await fireSettingChanged(svc, 'ABAC_Attribute_Store', 'local');
 			await new Promise((r) => setImmediate(r));
 
-			expect(mockRoomsUpdateMany).not.toHaveBeenCalled();
+			expect(mockRoomsUnsetAllAbacAttributes).not.toHaveBeenCalled();
 			expect(auditSpy).not.toHaveBeenCalled();
 		});
 	});
@@ -1875,6 +1985,48 @@ describe('AbacService (unit)', () => {
 			await expect(fireSettingChanged(svc, 'ABAC_PDP_Type', 'local')).resolves.toBeUndefined();
 
 			expect(pdpStrategySpy).toHaveBeenCalledWith('local');
+		});
+	});
+
+	describe('reevaluateUsers', () => {
+		const usersCursor = (items: any[]) => ({ toArray: () => Promise.resolve(items) });
+
+		it('local PDP: forwards resolved user ids to the LDAP broker and removes nothing', async () => {
+			service.setPdpStrategy('local');
+			mockUsersFindUsersByIdentifiers.mockReturnValue(usersCursor([{ _id: 'u1' }, { _id: 'u2' }]));
+
+			await service.reevaluateUsers({ usernames: ['bob'] });
+
+			expect(mockUsersFindUsersByIdentifiers).toHaveBeenCalledWith(
+				{ usernames: ['bob'] },
+				{ projection: { _id: 1, emails: 1, username: 1, __rooms: 1 } },
+			);
+			expect(mockLdapSyncByIds).toHaveBeenCalledWith(['u1', 'u2']);
+			expect(mockRoomRemoveUserFromRoom).not.toHaveBeenCalled();
+		});
+
+		it('virtru PDP: removes the non-compliant pairs the PDP returns', async () => {
+			service.setPdpStrategy('virtru');
+			const u1 = { _id: 'u1', emails: [{ address: 'u1@x.com' }], username: 'u1' };
+			const room = { _id: 'r1', abacAttributes: [] };
+			mockUsersFindUsersByIdentifiers.mockReturnValue(usersCursor([u1]));
+			mockRoomRemoveUserFromRoom.mockResolvedValue(undefined);
+			jest.spyOn((service as any).pdp, 'isAvailable').mockResolvedValue(true);
+			jest.spyOn((service as any).pdp, 'reevaluateUsers').mockResolvedValue([{ user: u1, room }]);
+
+			await service.reevaluateUsers({ ids: ['u1'] });
+
+			expect(mockRoomRemoveUserFromRoom).toHaveBeenCalledTimes(1);
+		});
+
+		it('no-ops when no users match', async () => {
+			service.setPdpStrategy('local');
+			mockUsersFindUsersByIdentifiers.mockReturnValue(usersCursor([]));
+
+			await service.reevaluateUsers({ ids: ['missing'] });
+
+			expect(mockLdapSyncByIds).not.toHaveBeenCalled();
+			expect(mockRoomRemoveUserFromRoom).not.toHaveBeenCalled();
 		});
 	});
 });

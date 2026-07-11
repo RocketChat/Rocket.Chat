@@ -1,8 +1,8 @@
 import { Margins } from '@rocket.chat/fuselage';
 import { PageContent } from '@rocket.chat/ui-client';
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
 import { useRef } from 'react';
+import { action } from 'storybook/actions';
 
 import CustomSoundsTable from './CustomSoundsTable';
 
@@ -22,7 +22,10 @@ const Template: StoryFn<typeof CustomSoundsTable> = (args) => {
 	return <CustomSoundsTable {...args} reload={reloadRef} />;
 };
 
-export const Default = Template.bind({});
-Default.args = {
-	onClick: () => action('clicked'),
+export const Default = {
+	render: Template,
+
+	args: {
+		onClick: () => action('clicked'),
+	},
 };

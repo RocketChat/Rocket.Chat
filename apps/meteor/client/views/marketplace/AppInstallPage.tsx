@@ -46,7 +46,7 @@ const AppInstallPage = () => {
 										readOnly
 										{...field}
 										value={field.value?.name || ''}
-										addon={
+										endAddon={
 											<Button icon='upload' small primary onClick={handleUploadButtonClick} mb='neg-x4' mie='neg-x8'>
 												{t('Browse_Files')}
 											</Button>

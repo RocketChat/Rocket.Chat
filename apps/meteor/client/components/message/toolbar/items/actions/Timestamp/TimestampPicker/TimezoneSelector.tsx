@@ -1,16 +1,16 @@
 import { Box, Field, FieldHint, FieldDescription, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
-import type { ReactElement, Key } from 'react';
+import type { Key } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { UTCOffsets } from '../../../../../../../lib/utils/timestamp/types';
 import type { TimezoneKey } from '../../../../../../../lib/utils/timestamp/types';
 
-type TimezoneSelectorProps = {
+export type TimezoneSelectorProps = {
 	value: TimezoneKey;
 	onChange: (timezone: TimezoneKey) => void;
 };
 
-const TimezoneSelector = ({ value, onChange }: TimezoneSelectorProps): ReactElement => {
+const TimezoneSelector = ({ value, onChange }: TimezoneSelectorProps) => {
 	const { t } = useTranslation();
 
 	const handleTimezoneChange = (key: Key): void => {

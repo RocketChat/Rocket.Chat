@@ -2,7 +2,6 @@ import type { ISubscription, RoomType } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { Header } from '@rocket.chat/ui-client';
 import { useStream, useUserId } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { lazy, Suspense, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -27,7 +26,7 @@ type RoomOpenerProps = {
 	reference: string;
 };
 
-const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps): ReactElement => {
+const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps) => {
 	const { data, error, isSuccess, isError, isLoading } = useOpenRoom({ type, reference });
 	const uid = useUserId();
 	const subscribeToNotifyUser = useStream('notify-user');

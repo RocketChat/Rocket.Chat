@@ -4,6 +4,7 @@ export type NegotiationManagerEvents = {
 	'error': { errorCode: string; negotiationId: string };
 	'local-sdp': { negotiationId: string; sdp: RTCSessionDescriptionInit };
 	'negotiation-needed': { oldNegotiationId: string };
+	'negotiation-started': void;
 };
 
 export type NegotiationManagerConfig = {

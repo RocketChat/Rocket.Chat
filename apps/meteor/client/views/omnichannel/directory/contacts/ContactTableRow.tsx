@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { ILivechatContactWithManagerData } from '@rocket.chat/rest-typings';
 import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
 
@@ -22,7 +22,7 @@ const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILiv
 		return 0;
 	})[0];
 
-	const onRowClick = useEffectEvent((id: string) =>
+	const onRowClick = useStableCallback((id: string) =>
 		omnichannelDirectoryRouter.navigate({
 			id,
 			tab: 'contacts',

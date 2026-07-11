@@ -15,16 +15,15 @@ import {
 	ModalFooterAnnotation,
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type VideoConfConfigModalProps = {
+export type VideoConfConfigModalProps = {
 	onClose: () => void;
 	onConfirm?: () => void;
 	isAdmin: boolean;
 };
 
-const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigModalProps): ReactElement => {
+const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigModalProps) => {
 	const { t } = useTranslation();
 
 	return (

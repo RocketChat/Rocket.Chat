@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { DeepWritable, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isVideoConfMessage } from '@rocket.chat/core-typings';
 import type { IActionManager } from '@rocket.chat/ui-contexts';
 
@@ -17,12 +17,6 @@ import { sendMessage } from '../../../../client/lib/chats/flows/sendMessage';
 import { uploadFiles } from '../../../../client/lib/chats/flows/uploadFiles';
 import { ReadStateManager } from '../../../../client/lib/chats/readStateManager';
 import { setHighlightMessage } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
-
-type DeepWritable<T> = T extends (...args: any) => any
-	? T
-	: {
-			-readonly [P in keyof T]: DeepWritable<T[P]>;
-		};
 
 export class ChatMessages implements ChatAPI {
 	public uid: string | undefined;
@@ -120,7 +114,7 @@ export class ChatMessages implements ChatAPI {
 		},
 		editMessage: async (message: IMessage, { cursorAtStart = false }: { cursorAtStart?: boolean } = {}) => {
 			this.composer?.uploads.clear();
-			const text = (await this.data.getDraft(message._id)) || message.msg;
+			const text = (await this.data.getDraft(message._id)) || message.attachments?.[0]?.description || message.msg;
 
 			await this.currentEditingMessage.stop();
 

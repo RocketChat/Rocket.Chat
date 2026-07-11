@@ -5,7 +5,7 @@ import RoomFormAttributeField from './RoomFormAttributeField';
 import { useAttributeList } from '../hooks/useAttributeList';
 import { useIsExternalAttributeStore } from '../hooks/useIsExternalAttributeStore';
 
-type RoomFormAttributeFieldsProps = {
+export type RoomFormAttributeFieldsProps = {
 	fields: { id: string }[];
 	remove: (index: number) => void;
 	disabled?: boolean;

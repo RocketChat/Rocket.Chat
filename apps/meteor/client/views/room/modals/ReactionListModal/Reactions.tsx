@@ -1,12 +1,13 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 
 import ReactionUserTag from './ReactionUserTag';
 import Emoji from '../../../../components/Emoji';
 
-const Reactions = ({ reactions }: { reactions: Required<IMessage>['reactions'] }): ReactElement => {
+export type ReactionsProps = { reactions: Required<IMessage>['reactions'] };
+
+const Reactions = ({ reactions }: ReactionsProps) => {
 	const useRealName = useSetting('UI_Use_Real_Name');
 
 	return (

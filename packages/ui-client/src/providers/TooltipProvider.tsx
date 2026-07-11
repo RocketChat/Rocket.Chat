@@ -5,13 +5,13 @@ import { useEffect, useMemo, useRef, memo, useCallback, useState } from 'react';
 
 import { TooltipComponent } from '../components/TooltipComponent';
 
-type TooltipProviderProps = {
+export type TooltipProviderProps = {
 	children?: ReactNode;
 	ownerDocument?: Document;
 };
 
 const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipProviderProps) => {
-	const lastAnchor = useRef<HTMLElement>();
+	const lastAnchor = useRef<HTMLElement>(undefined);
 	const hasHover = !useMediaQuery('(hover: none)');
 
 	const [tooltip, setTooltip] = useDebouncedState<ReactNode>(null, 300);

@@ -1,0 +1,21 @@
+# Phase 4b: Room functions migration
+# Format: old-path<TAB>new-path (relative to apps/meteor/)
+app/lib/server/functions/createRoom.ts	server/lib/rooms/createRoom.ts
+app/lib/server/functions/createDirectRoom.ts	server/lib/rooms/createDirectRoom.ts
+app/lib/server/functions/deleteRoom.ts	server/lib/rooms/deleteRoom.ts
+app/lib/server/functions/archiveRoom.ts	server/lib/rooms/archiveRoom.ts
+app/lib/server/functions/unarchiveRoom.ts	server/lib/rooms/unarchiveRoom.ts
+app/lib/server/functions/addUserToRoom.ts	server/lib/rooms/addUserToRoom.ts
+app/lib/server/functions/addUserToDefaultChannels.ts	server/lib/rooms/addUserToDefaultChannels.ts
+app/lib/server/functions/getDefaultChannels.ts	server/lib/rooms/getDefaultChannels.ts
+app/lib/server/functions/removeUserFromRoom.ts	server/lib/rooms/removeUserFromRoom.ts
+app/lib/server/functions/acceptRoomInvite.ts	server/lib/rooms/acceptRoomInvite.ts
+app/lib/server/functions/cleanRoomHistory.ts	server/lib/rooms/cleanRoomHistory.ts
+app/lib/server/functions/getRoomByNameOrIdWithOptionToJoin.ts	server/lib/rooms/getRoomByNameOrIdWithOptionToJoin.ts
+app/lib/server/functions/getRoomsWithSingleOwner.ts	server/lib/rooms/getRoomsWithSingleOwner.ts
+app/lib/server/functions/joinDefaultChannels.ts	server/lib/rooms/joinDefaultChannels.ts
+app/lib/server/functions/relinquishRoomOwnerships.ts	server/lib/rooms/relinquishRoomOwnerships.ts
+app/lib/server/functions/setRoomAvatar.ts	server/lib/rooms/setRoomAvatar.ts
+app/lib/server/functions/updateGroupDMsName.ts	server/lib/rooms/updateGroupDMsName.ts
+app/lib/server/functions/banUserFromRoom.ts	server/lib/rooms/banUserFromRoom.ts
+app/lib/server/functions/executeUnbanUserFromRoom.ts	server/lib/rooms/executeUnbanUserFromRoom.ts

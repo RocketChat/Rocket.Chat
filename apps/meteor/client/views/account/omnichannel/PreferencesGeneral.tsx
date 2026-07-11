@@ -1,9 +1,8 @@
 import { Field, FieldGroup, FieldHint, FieldLabel, FieldRow, ToggleSwitch } from '@rocket.chat/fuselage-forms';
-import type { ReactElement } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-export const PreferencesGeneral = (): ReactElement => {
+export const PreferencesGeneral = () => {
 	const { t } = useTranslation();
 	const { control } = useFormContext();
 

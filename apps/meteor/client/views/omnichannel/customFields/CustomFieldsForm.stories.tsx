@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { StoryObj, Meta } from '@storybook/react';
 
 import EditCustomFields from './EditCustomFields';
 
@@ -14,5 +14,6 @@ export default {
 	],
 } satisfies Meta<typeof EditCustomFields>;
 
-export const Default: StoryFn<typeof EditCustomFields> = (args) => <EditCustomFields {...args} />;
-Default.storyName = 'CustomFieldsForm';
+export const Default: StoryObj<typeof EditCustomFields> = {
+	name: 'CustomFieldsForm',
+};

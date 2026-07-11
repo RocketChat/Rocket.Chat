@@ -14,12 +14,12 @@ import {
 	ModalFooterAnnotation,
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 import { useId, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-type AddMatrixUsersModalProps = {
+export type AddMatrixUsersModalProps = {
 	matrixIdVerifiedStatus: Map<string, string>;
 	completeUserList: string[];
 	onClose: () => void;
@@ -41,7 +41,7 @@ const verificationStatusAsIcon = (verificationStatus: string): ComponentProps<ty
 	return 'circle-exclamation';
 };
 
-const AddMatrixUsersModal = ({ onClose, matrixIdVerifiedStatus, onSave, completeUserList }: AddMatrixUsersModalProps): ReactElement => {
+const AddMatrixUsersModal = ({ onClose, matrixIdVerifiedStatus, onSave, completeUserList }: AddMatrixUsersModalProps) => {
 	const { t } = useTranslation();
 	const checkboxId = useId();
 	const [bannedError, setBannedError] = useState(false);

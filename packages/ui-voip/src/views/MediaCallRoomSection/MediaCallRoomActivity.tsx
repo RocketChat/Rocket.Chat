@@ -8,7 +8,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import MediaCallRoomSection from './MediaCallRoomSection';
 import MediaCallViewProvider from '../../providers/MediaCallViewProvider';
 
-type MediaCallRoomActivityProps = {
+export type MediaCallRoomActivityProps = {
 	children: ReactNode;
 	/**
 	 * Provider that populates MediaCallViewContext. Default is the 1:1

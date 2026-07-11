@@ -1,6 +1,5 @@
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useRoute, useSetModal, useUser } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useEffect } from 'react';
 
 import ConferencePageError from './ConferencePageError';
@@ -15,7 +14,7 @@ const getQueryParams = () => {
 	return { callUrlParam };
 };
 
-const ConferencePage = (): ReactElement => {
+const ConferencePage = () => {
 	const user = useUser();
 	const defaultRoute = useRoute('home');
 	const setModal = useSetModal();

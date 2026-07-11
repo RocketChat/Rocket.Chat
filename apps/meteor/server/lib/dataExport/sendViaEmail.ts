@@ -1,5 +1,6 @@
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { Messages, Users } from '@rocket.chat/models';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 import moment from 'moment';
 
 import * as Mailer from '../../../app/mailer/server/api';
@@ -67,9 +68,9 @@ export async function sendViaEmail(
 	)
 		.map((message: IMessage) => {
 			const dateTime = moment(message.ts).locale(lang).format('L LT');
-			return `<p style='margin-bottom: 5px'><b>${
-				message.u.username
-			}</b> <span style='color: #aaa; font-size: 12px'>${dateTime}</span><br/>${Message.parse(message, data.language)}</p>`;
+			return `<p style='margin-bottom: 5px'><b>${escapeHTML(
+				message.u.username ?? '',
+			)}</b> <span style='color: #aaa; font-size: 12px'>${dateTime}</span><br/>${Message.parse(message, data.language)}</p>`;
 		})
 		.join('');
 

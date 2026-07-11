@@ -126,6 +126,8 @@ type MediaCallViewContextValue = {
 	 */
 	broadcastRecordingState?: (isRecording: boolean) => void;
 	broadcastTranscriptionState?: (enabled: boolean) => void;
+	onOpenPopout: () => void;
+	onClosePopout: () => void;
 	streams: MediaCallStreams;
 	/**
 	 * Remote participants in the call. Populated by the VC LiveKit bridge for
@@ -166,6 +168,8 @@ export const defaultMediaCallContextValue: MediaCallViewContextValue = {
 	onSelectPeer: () => undefined,
 	onToggleScreenSharing: () => undefined,
 	onToggleCamera: () => undefined,
+	onOpenPopout: () => undefined,
+	onClosePopout: () => undefined,
 	streams: {},
 	remoteParticipants: [],
 };
