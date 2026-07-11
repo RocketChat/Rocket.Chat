@@ -1,11 +1,14 @@
-import { Calendar } from '@rocket.chat/core-services';
+import { Calendar, Presence } from '@rocket.chat/core-services';
 import type { ICalendarSyncState, IUser } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import { CalendarEvent, CalendarSyncState, Users } from '@rocket.chat/models';
 
-import type { ICalendarSyncProvider, ICalendarSyncWindow, IExternalCalendarEvent } from './definition';
+import type { ICalendarSyncProvider, ICalendarSyncWindow, IExternalCalendarEvent, IFreeBusyInterval } from './definition';
+import { CalendarSyncError } from './definition';
 import { sanitizeError } from './logSanitizer';
 import type { MailboxSource } from './mailboxResolver';
 import { resolveMailbox } from './mailboxResolver';
+import { i18n } from '../../../../server/lib/i18n';
 
 export interface ICalendarSyncEngineConfig {
 	mode: 'full-events' | 'free-busy-only';
@@ -14,6 +17,7 @@ export interface ICalendarSyncEngineConfig {
 	presenceEnabled: boolean;
 	mailboxSource: MailboxSource;
 	mailboxCustomField: string;
+	defaultLanguage: string;
 }
 
 export interface ICalendarSyncRunSummary {
@@ -36,6 +40,34 @@ interface ILoggerLike {
 /** Keep using a delta token while the requested window still fits its epoch window */
 const DELTA_EPOCH_BUFFER_MS = 24 * 60 * 60 * 1000;
 
+/** Availability lookahead in free/busy-only mode; long meetings keep extending on later runs */
+const FREE_BUSY_WINDOW_HOURS = 4;
+
+/** Shared presence-claim id — must match the legacy CalendarService's claim so both paths compose */
+const CALENDAR_STATUS_ID = 'calendar';
+
+type SyncableUser = Pick<IUser, '_id' | 'emails' | 'customFields' | 'username' | 'language'>;
+
+/**
+ * Returns when the user's current busy block ends, merging back-to-back intervals,
+ * or null when the user is not busy at `now`. Expects no particular input order.
+ */
+export function computeBusyUntil(intervals: IFreeBusyInterval[], now: Date): Date | null {
+	const sorted = [...intervals].sort((a, b) => a.start.getTime() - b.start.getTime());
+
+	let busyUntil: Date | null = null;
+	for (const interval of sorted) {
+		const current: Date | null = busyUntil;
+		const coversNow = interval.start <= now && interval.end > now;
+		const extendsBlock = current !== null && interval.start <= current && interval.end > current;
+		if ((coversNow || extendsBlock) && (current === null || interval.end > current)) {
+			busyUntil = interval.end;
+		}
+	}
+
+	return busyUntil;
+}
+
 export class CalendarSyncEngine {
 	private running = false;
 
@@ -49,6 +81,10 @@ export class CalendarSyncEngine {
 
 	public getLastRunSummary(): ICalendarSyncRunSummary | null {
 		return this.lastRunSummary;
+	}
+
+	public isRunning(): boolean {
+		return this.running;
 	}
 
 	public async runSync(): Promise<ICalendarSyncRunSummary | null> {
@@ -73,9 +109,8 @@ export class CalendarSyncEngine {
 		}
 
 		const config = this.getConfig();
-		if (config.mode !== 'full-events') {
-			// free/busy-only mode lands in a follow-up phase
-			this.logger.warn(`Calendar sync mode "${config.mode}" is not supported yet; skipping run`);
+		if (config.mode === 'free-busy-only' && !config.presenceEnabled) {
+			this.logger.warn('Calendar sync is in free/busy-only mode but presence updates are disabled; nothing to do');
 			return null;
 		}
 
@@ -90,20 +125,25 @@ export class CalendarSyncEngine {
 			eventsDeleted: 0,
 		};
 
+		// Free/busy only needs to know whether users are busy right now (and until when);
+		// full event sync uses the admin-configured rolling window
 		const window: ICalendarSyncWindow = {
 			start: startedAt,
-			end: new Date(startedAt.getTime() + config.windowDays * 24 * 60 * 60 * 1000),
+			end:
+				config.mode === 'free-busy-only'
+					? new Date(startedAt.getTime() + FREE_BUSY_WINDOW_HOURS * 60 * 60 * 1000)
+					: new Date(startedAt.getTime() + config.windowDays * 24 * 60 * 60 * 1000),
 		};
 
-		const projection: Record<string, number> = { emails: 1, username: 1 };
+		const projection: Record<string, number> = { emails: 1, username: 1, language: 1 };
 		if (config.mailboxSource === 'custom-field' && config.mailboxCustomField) {
 			projection[`customFields.${config.mailboxCustomField}`] = 1;
 		}
 
-		const cursor = Users.find<Pick<IUser, '_id' | 'emails' | 'customFields' | 'username'>>({ active: true, type: 'user' }, { projection });
+		const cursor = Users.find<SyncableUser>({ active: true, type: 'user' }, { projection });
 
 		const batchSize = Math.max(1, config.batchSize);
-		let batch: Pick<IUser, '_id' | 'emails' | 'customFields' | 'username'>[] = [];
+		let batch: SyncableUser[] = [];
 
 		const flush = async (): Promise<void> => {
 			if (!batch.length) {
@@ -111,6 +151,10 @@ export class CalendarSyncEngine {
 			}
 			const users = batch;
 			batch = [];
+			if (config.mode === 'free-busy-only') {
+				await this.syncBatchFreeBusy(users, provider, window, config, summary);
+				return;
+			}
 			await Promise.all(users.map((user) => this.syncUser(user, provider, window, config, summary)));
 		};
 
@@ -199,6 +243,103 @@ export class CalendarSyncEngine {
 				error: { ...sanitized, at: new Date() },
 			}).catch((stateError) => this.logger.error(`Unable to record calendar sync failure for user ${user._id}`, stateError));
 		}
+	}
+
+	/**
+	 * Free/busy-only mode: one availability request per user batch drives presence
+	 * directly, without ever ingesting or storing event subjects/details.
+	 */
+	private async syncBatchFreeBusy(
+		users: SyncableUser[],
+		provider: ICalendarSyncProvider,
+		window: ICalendarSyncWindow,
+		config: ICalendarSyncEngineConfig,
+		summary: ICalendarSyncRunSummary,
+	): Promise<void> {
+		const entries = users.flatMap((user) => {
+			const mailbox = resolveMailbox(user, config.mailboxSource, config.mailboxCustomField);
+			if (!mailbox) {
+				summary.usersSkippedNoMailbox++;
+				return [];
+			}
+			return [{ user, mailbox }];
+		});
+
+		if (!entries.length) {
+			return;
+		}
+
+		let results;
+		try {
+			results = await provider.getFreeBusy(
+				entries.map((entry) => entry.mailbox),
+				window,
+			);
+		} catch (error) {
+			const sanitized = sanitizeError(error);
+			this.logger.error(`Calendar free/busy sync failed for a batch of ${entries.length} users: [${sanitized.code}] ${sanitized.message}`);
+			const at = new Date();
+			await Promise.all(
+				entries.map(({ user, mailbox }) => {
+					summary.usersFailed++;
+					return CalendarSyncState.recordFailure(user._id, { mailbox, provider: provider.type, error: { ...sanitized, at } }).catch(
+						(stateError) => this.logger.error(`Unable to record calendar sync failure for user ${user._id}`, stateError),
+					);
+				}),
+			);
+			return;
+		}
+
+		const byMailbox = new Map(results.map((result) => [result.mailbox.toLowerCase(), result]));
+		const now = new Date();
+
+		await Promise.all(
+			entries.map(async ({ user, mailbox }) => {
+				const result = byMailbox.get(mailbox.toLowerCase());
+				try {
+					if (!result || result.error) {
+						throw new CalendarSyncError(
+							result?.error?.code ?? 'missing-availability',
+							result?.error?.message ?? 'no availability returned',
+						);
+					}
+
+					await this.applyFreeBusyPresence(user, result.intervals, now, config);
+					await CalendarSyncState.recordSuccess(user._id, { mailbox, provider: provider.type, at: now });
+					summary.usersProcessed++;
+				} catch (error) {
+					summary.usersFailed++;
+					const sanitized = sanitizeError(error);
+					this.logger.error(`Calendar free/busy sync failed for user ${user._id}: [${sanitized.code}] ${sanitized.message}`);
+					await CalendarSyncState.recordFailure(user._id, { mailbox, provider: provider.type, error: { ...sanitized, at: now } }).catch(
+						(stateError) => this.logger.error(`Unable to record calendar sync failure for user ${user._id}`, stateError),
+					);
+				}
+			}),
+		);
+	}
+
+	/** Applies (or ends) the same presence claim the legacy calendar service uses */
+	private async applyFreeBusyPresence(
+		user: SyncableUser,
+		intervals: IFreeBusyInterval[],
+		now: Date,
+		config: ICalendarSyncEngineConfig,
+	): Promise<void> {
+		const busyUntil = computeBusyUntil(intervals, now);
+
+		if (!busyUntil) {
+			await Presence.endActiveState(user._id, CALENDAR_STATUS_ID);
+			return;
+		}
+
+		await Presence.setActiveState(user._id, {
+			statusDefault: UserStatus.BUSY,
+			statusText: i18n.t('Presence_status_outlook_in_a_meeting', { lng: user.language || config.defaultLanguage }),
+			statusSource: 'external',
+			statusExpiresAt: busyUntil,
+			statusId: CALENDAR_STATUS_ID,
+		});
 	}
 
 	private getUsableDeltaToken(

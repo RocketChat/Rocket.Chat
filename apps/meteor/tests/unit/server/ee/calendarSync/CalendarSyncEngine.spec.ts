@@ -11,27 +11,38 @@ const findServerSyncedStub = sinon.stub();
 const syncStateFindOneStub = sinon.stub();
 const recordSuccessStub = sinon.stub();
 const recordFailureStub = sinon.stub();
+const setActiveStateStub = sinon.stub();
+const endActiveStateStub = sinon.stub();
 
-const { CalendarSyncEngine } = proxyquire.noCallThru().load('../../../../../ee/server/lib/calendarSync/CalendarSyncEngine.ts', {
-	'@rocket.chat/core-services': {
-		Calendar: {
-			import: calendarImportStub,
-			delete: calendarDeleteStub,
+const { CalendarSyncEngine, computeBusyUntil } = proxyquire
+	.noCallThru()
+	.load('../../../../../ee/server/lib/calendarSync/CalendarSyncEngine.ts', {
+		'@rocket.chat/core-services': {
+			Calendar: {
+				import: calendarImportStub,
+				delete: calendarDeleteStub,
+			},
+			Presence: {
+				setActiveState: setActiveStateStub,
+				endActiveState: endActiveStateStub,
+			},
 		},
-	},
-	'@rocket.chat/models': {
-		Users: { find: usersFindStub },
-		CalendarEvent: {
-			findOneByExternalIdAndUserId: findOneByExternalIdAndUserIdStub,
-			findServerSyncedByUserIdBetweenDates: findServerSyncedStub,
+		'@rocket.chat/models': {
+			Users: { find: usersFindStub },
+			CalendarEvent: {
+				findOneByExternalIdAndUserId: findOneByExternalIdAndUserIdStub,
+				findServerSyncedByUserIdBetweenDates: findServerSyncedStub,
+			},
+			CalendarSyncState: {
+				findOneByUserId: syncStateFindOneStub,
+				recordSuccess: recordSuccessStub,
+				recordFailure: recordFailureStub,
+			},
 		},
-		CalendarSyncState: {
-			findOneByUserId: syncStateFindOneStub,
-			recordSuccess: recordSuccessStub,
-			recordFailure: recordFailureStub,
+		'../../../../server/lib/i18n': {
+			i18n: { t: (key: string) => key },
 		},
-	},
-});
+	});
 
 const silentLogger = {
 	debug: () => undefined,
@@ -47,6 +58,7 @@ const DEFAULT_CONFIG = {
 	presenceEnabled: true,
 	mailboxSource: 'email' as const,
 	mailboxCustomField: '',
+	defaultLanguage: 'en',
 };
 
 const user = (id: string, email = `${id}@example.com`) => ({
@@ -100,6 +112,10 @@ describe('calendarSync/CalendarSyncEngine', () => {
 		recordSuccessStub.resolves({});
 		recordFailureStub.reset();
 		recordFailureStub.resolves({});
+		setActiveStateStub.reset();
+		setActiveStateStub.resolves(true);
+		endActiveStateStub.reset();
+		endActiveStateStub.resolves(true);
 	});
 
 	it('should upsert fetched events through Calendar.import with the provider discriminator', async () => {
@@ -261,11 +277,169 @@ describe('calendarSync/CalendarSyncEngine', () => {
 		expect(usersFindStub.called).to.be.false;
 	});
 
-	it('should skip runs in free-busy-only mode until the mode is implemented', async () => {
+	it('should skip free-busy-only runs when presence updates are disabled', async () => {
 		const provider = makeProvider();
-		const summary = await makeEngine(provider, { mode: 'free-busy-only' }).runSync();
+		const summary = await makeEngine(provider, { mode: 'free-busy-only', presenceEnabled: false }).runSync();
 		expect(summary).to.be.null;
 		expect(provider.listEvents.called).to.be.false;
+		expect(provider.getFreeBusy.called).to.be.false;
+	});
+
+	describe('free-busy-only mode', () => {
+		const NOW_MS_TOLERANCE = 5_000;
+		const inMinutes = (minutes: number) => new Date(Date.now() + minutes * 60_000);
+
+		it('should drive presence from availability without creating any event records', async () => {
+			usersFindStub.returns([user('u1')]);
+			const getFreeBusy = sinon.stub().resolves([
+				{
+					mailbox: 'u1@example.com',
+					intervals: [{ start: inMinutes(-30), end: inMinutes(30), status: 'busy' }],
+				},
+			]);
+			const provider = makeProvider({ getFreeBusy });
+
+			const summary = await makeEngine(provider, { mode: 'free-busy-only' }).runSync();
+
+			expect(provider.listEvents.called).to.be.false;
+			expect(calendarImportStub.called).to.be.false;
+
+			expect(setActiveStateStub.calledOnce).to.be.true;
+			const [uid, state] = setActiveStateStub.firstCall.args;
+			expect(uid).to.equal('u1');
+			expect(state.statusId).to.equal('calendar');
+			expect(state.statusSource).to.equal('external');
+			expect(state.statusText).to.equal('Presence_status_outlook_in_a_meeting');
+			expect(state.statusExpiresAt.getTime()).to.be.closeTo(inMinutes(30).getTime(), NOW_MS_TOLERANCE);
+
+			expect(summary?.usersProcessed).to.equal(1);
+			expect(summary?.eventsUpserted).to.equal(0);
+			expect(recordSuccessStub.calledOnce).to.be.true;
+			expect(recordSuccessStub.firstCall.args[1].deltaToken).to.be.undefined;
+		});
+
+		it('should merge back-to-back busy intervals into one expiry', async () => {
+			usersFindStub.returns([user('u1')]);
+			const provider = makeProvider({
+				getFreeBusy: sinon.stub().resolves([
+					{
+						mailbox: 'u1@example.com',
+						intervals: [
+							{ start: inMinutes(-10), end: inMinutes(20), status: 'busy' },
+							{ start: inMinutes(20), end: inMinutes(50), status: 'tentative' },
+							{ start: inMinutes(120), end: inMinutes(150), status: 'busy' }, // detached: must not extend
+						],
+					},
+				]),
+			});
+
+			await makeEngine(provider, { mode: 'free-busy-only' }).runSync();
+
+			expect(setActiveStateStub.firstCall.args[1].statusExpiresAt.getTime()).to.be.closeTo(inMinutes(50).getTime(), NOW_MS_TOLERANCE);
+		});
+
+		it('should end the calendar claim when the user is not busy now', async () => {
+			usersFindStub.returns([user('u1')]);
+			const provider = makeProvider({
+				getFreeBusy: sinon.stub().resolves([
+					{
+						mailbox: 'u1@example.com',
+						intervals: [{ start: inMinutes(60), end: inMinutes(90), status: 'busy' }],
+					},
+				]),
+			});
+
+			const summary = await makeEngine(provider, { mode: 'free-busy-only' }).runSync();
+
+			expect(setActiveStateStub.called).to.be.false;
+			expect(endActiveStateStub.calledOnceWith('u1', 'calendar')).to.be.true;
+			expect(summary?.usersProcessed).to.equal(1);
+		});
+
+		it('should batch all mailboxes into a single availability request', async () => {
+			usersFindStub.returns([user('u1'), user('u2'), { _id: 'u3', emails: [{ address: 'x', verified: false }] }]);
+			const getFreeBusy = sinon.stub().resolves([
+				{ mailbox: 'u1@example.com', intervals: [] },
+				{ mailbox: 'u2@example.com', intervals: [] },
+			]);
+			const provider = makeProvider({ getFreeBusy });
+
+			const summary = await makeEngine(provider, { mode: 'free-busy-only' }).runSync();
+
+			expect(getFreeBusy.calledOnce).to.be.true;
+			expect(getFreeBusy.firstCall.args[0]).to.deep.equal(['u1@example.com', 'u2@example.com']);
+			expect(summary?.usersSkippedNoMailbox).to.equal(1);
+			expect(summary?.usersProcessed).to.equal(2);
+		});
+
+		it('should record per-mailbox availability errors without failing the batch', async () => {
+			usersFindStub.returns([user('u1'), user('u2')]);
+			const provider = makeProvider({
+				getFreeBusy: sinon.stub().resolves([
+					{ mailbox: 'u1@example.com', intervals: [], error: { code: 'schedule-unavailable', message: 'nope' } },
+					{ mailbox: 'u2@example.com', intervals: [] },
+				]),
+			});
+
+			const summary = await makeEngine(provider, { mode: 'free-busy-only' }).runSync();
+
+			expect(summary?.usersFailed).to.equal(1);
+			expect(summary?.usersProcessed).to.equal(1);
+			expect(recordFailureStub.calledOnce).to.be.true;
+			expect(recordFailureStub.firstCall.args[0]).to.equal('u1');
+			expect(recordFailureStub.firstCall.args[1].error.code).to.equal('schedule-unavailable');
+		});
+
+		it('should fail the whole batch gracefully when the availability request throws', async () => {
+			usersFindStub.returns([user('u1'), user('u2')]);
+			const provider = makeProvider({
+				getFreeBusy: sinon.stub().rejects(Object.assign(new Error('down'), { code: 'network-error' })),
+			});
+
+			const summary = await makeEngine(provider, { mode: 'free-busy-only' }).runSync();
+
+			expect(summary?.usersFailed).to.equal(2);
+			expect(recordFailureStub.callCount).to.equal(2);
+			expect(setActiveStateStub.called).to.be.false;
+		});
+	});
+
+	describe('computeBusyUntil', () => {
+		const now = new Date('2026-07-11T12:00:00Z');
+		const at = (iso: string) => new Date(iso);
+
+		it('should return null when no interval covers now', () => {
+			expect(computeBusyUntil([], now)).to.be.null;
+			expect(computeBusyUntil([{ start: at('2026-07-11T13:00:00Z'), end: at('2026-07-11T14:00:00Z'), status: 'busy' }], now)).to.be.null;
+		});
+
+		it('should return the end of the covering interval', () => {
+			const result = computeBusyUntil([{ start: at('2026-07-11T11:00:00Z'), end: at('2026-07-11T12:30:00Z'), status: 'busy' }], now);
+			expect(result?.toISOString()).to.equal('2026-07-11T12:30:00.000Z');
+		});
+
+		it('should chain overlapping and adjacent intervals regardless of input order', () => {
+			const result = computeBusyUntil(
+				[
+					{ start: at('2026-07-11T13:00:00Z'), end: at('2026-07-11T14:00:00Z'), status: 'busy' },
+					{ start: at('2026-07-11T11:30:00Z'), end: at('2026-07-11T12:15:00Z'), status: 'busy' },
+					{ start: at('2026-07-11T12:10:00Z'), end: at('2026-07-11T13:00:00Z'), status: 'oof' },
+				],
+				now,
+			);
+			expect(result?.toISOString()).to.equal('2026-07-11T14:00:00.000Z');
+		});
+
+		it('should not extend past a gap', () => {
+			const result = computeBusyUntil(
+				[
+					{ start: at('2026-07-11T11:00:00Z'), end: at('2026-07-11T12:30:00Z'), status: 'busy' },
+					{ start: at('2026-07-11T12:45:00Z'), end: at('2026-07-11T14:00:00Z'), status: 'busy' },
+				],
+				now,
+			);
+			expect(result?.toISOString()).to.equal('2026-07-11T12:30:00.000Z');
+		});
 	});
 
 	it('should not overlap concurrent runs', async () => {

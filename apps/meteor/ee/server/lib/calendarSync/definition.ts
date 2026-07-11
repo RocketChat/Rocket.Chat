@@ -52,7 +52,8 @@ export interface ICalendarSyncProvider {
 	readonly supportsDelta: boolean;
 	readonly supportsWebhooks: boolean;
 
-	testConnection(): Promise<IConnectionTestResult>;
+	/** With `probeMailbox` the check also proves calendar access/impersonation on that mailbox */
+	testConnection(probeMailbox?: string): Promise<IConnectionTestResult>;
 	getFreeBusy(mailboxes: string[], window: ICalendarSyncWindow): Promise<IFreeBusyResult[]>;
 	listEvents(mailbox: string, window: ICalendarSyncWindow, deltaToken?: string): Promise<ICalendarSyncListResult>;
 }

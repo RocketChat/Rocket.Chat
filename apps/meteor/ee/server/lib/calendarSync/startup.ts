@@ -19,6 +19,7 @@ function getEngineConfig(): ICalendarSyncEngineConfig {
 		presenceEnabled: settings.get<boolean>('CalendarSync_Presence_Enabled') ?? true,
 		mailboxSource: settings.get<string>('CalendarSync_Mailbox_Source') === 'custom-field' ? 'custom-field' : 'email',
 		mailboxCustomField: settings.get<string>('CalendarSync_Mailbox_CustomField') || '',
+		defaultLanguage: settings.get<string>('Language') || 'en',
 	};
 }
 
