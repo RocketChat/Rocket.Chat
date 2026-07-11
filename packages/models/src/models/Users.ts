@@ -2264,7 +2264,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 
 	findOneWithoutLDAPByEmailAddress(emailAddress: string, options?: FindOptions<IUser>) {
 		const query = {
-			'email.address': emailAddress.trim().toLowerCase(),
+			'emails.address': emailAddress.trim().toLowerCase(),
 			'services.ldap': {
 				$exists: false,
 			},
