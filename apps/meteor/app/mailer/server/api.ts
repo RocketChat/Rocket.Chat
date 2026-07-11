@@ -158,6 +158,28 @@ export const sendNoWrap = async ({
 	if (!checkAddressFormat(to)) {
 		throw new Meteor.Error('invalid email');
 	}
+    
+    const mailUrl=process.env.MAIL_URL;
+	if(!mailUrl){
+		const host = settings.get<string>('SMTP_Host');
+		const port = settings.get<number>('SMTP_Port');
+		const username = settings.get<string>('SMTP_Username');
+		const password = settings.get<string>('SMTP_Password');
+
+		const isIncompleteSMTP = 
+			!host?.trim() || 
+			!username?.trim() || 
+			!password?.trim() || 
+			!port === undefined ||
+			!port === null;
+
+		if(isIncompleteSMTP){
+			throw new Meteor.Error(
+				'smtp-not-configured',
+				'SMTP is not fully configured.'
+			);
+		}
+	}
 
 	if (!text) {
 		text = html ? stripHtml(html).result : undefined;
@@ -175,7 +197,6 @@ export const sendNoWrap = async ({
 	const email = { to, from, replyTo, subject, html, text, headers };
 
 	const eventResult = await Apps.self?.triggerEvent(AppEvents.IPreEmailSent, { email });
-
 	setImmediate(() => Email.sendAsync(eventResult || email).catch((e) => console.error(e)));
 };
 
