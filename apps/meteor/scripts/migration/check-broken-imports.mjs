@@ -63,7 +63,7 @@ for (const entry of fs.readdirSync(ROOT, { withFileTypes: true })) {
 	const content = fs.readFileSync(file, 'utf8');
 	for (const m of content.matchAll(IMPORT_RE)) {
 		if (!resolves(file, m[2])) {
-			console.log(`: unresolved import `);
+			console.log(`${entry.name}: unresolved import ${m[2]}`);
 			problems++;
 		}
 	}
