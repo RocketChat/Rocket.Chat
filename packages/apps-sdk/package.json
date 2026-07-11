@@ -1,0 +1,29 @@
+{
+	"$schema": "https://json.schemastore.org/package",
+	"name": "@rocket.chat/apps-sdk",
+	"version": "0.0.0",
+	"private": true,
+	"description": "Apps v2 app-facing SDK (defineApp + authoring contract). Zero host dependencies.",
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "rimraf dist && tsc -p tsconfig.json",
+		"dev": "tsc --watch --preserveWatchOutput -p tsconfig.json",
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix .",
+		"typecheck": "tsc --noEmit",
+		"test": "echo \"no tests (slice 1)\" && exit 0"
+	},
+	"devDependencies": {
+		"@rocket.chat/tsconfig": "workspace:^",
+		"@types/node": "~22.19.17",
+		"rimraf": "^6.0.1",
+		"typescript": "~5.9.3"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	}
+}

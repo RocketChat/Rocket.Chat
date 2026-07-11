@@ -1,11 +1,34 @@
 # Steering notes — pick up here next session
 
-Last session: grilling round 4 (2026-06-26). Set the six **guiding tenets** (`TENETS.md`) —
-added & scoped Isolation and Public-contract stability; pinned the Observability/Auditing seam,
-re-scoped Permissioning's "static analysis" to build-time tooling, and committed Testability's
-test kit to the public contract. Pinned **Watt/Platformatic + worker-thread-per-app** as the
-isolation/orchestration direction. Round 3 designed the event-handler model (`0003`) and
-declarative filtering (`0004`); rounds 1–2 covered entry (`0001`) and data-access reads (`0002`).
+Last session: grilling round 5 (2026-06-26). Defined the **walking skeleton** (`0005`) — the
+concrete point to start coding so design stops looping. Pinned: boundary-first (prove worker-
+thread isolation before thickening the contract); raw `node:worker_threads` now with **Watt as a
+gated fast-follow** (spike validated Watt 3.57.0 — GO, with a thread-level-not-process-level
+isolation caveat to reconcile into TENETS §5); **two packages** (`apps-sdk` / `apps-runtime`);
+**JSON-RPC 2.0** host↔worker protocol with four ratified invariants; `.tgz` → `node:vm` eval →
+brand check for loading; and an acceptance-tested slice-1 "done". v2 is a **full rewrite**, not
+built on `packages/apps-engine` (v1); the server hosts both in parallel.
+
+Round 4 set the six **guiding tenets** (`TENETS.md`) — added & scoped Isolation and Public-contract
+stability; pinned the Observability/Auditing seam, re-scoped Permissioning's "static analysis" to
+build-time tooling, committed Testability's test kit to the public contract; pinned
+**Watt/Platformatic + worker-thread-per-app** as the isolation/orchestration direction. Round 3
+designed the event-handler model (`0003`) and declarative filtering (`0004`); rounds 1–2 covered
+entry (`0001`) and data-access reads (`0002`).
+
+## NEXT ACTION: iteration 2 — the `ctx` round-trip
+
+**Slice 1 is BUILT and green** (`0005` §6): `packages/apps-sdk` + `packages/apps-runtime`, 7
+acceptance tests pass, dispatch round-trip measured at ~0.019 ms. The boundary is proven.
+
+Per the iteration ladder (`0005` §7), **next is the `ctx` round-trip**: a minimal read-only
+`ctx.rooms.findById` exposed to the handler, implemented as a **worker→host JSON-RPC request** over
+the same channel — exercising the protocol's symmetry and the injected-`ctx` invariant
+([0002]/[0003]). After that: the capability cage (patched `require` at the `node:vm` seam), Watt
+adoption, the event catalogue + filtering, then the deferred pillars below.
+
+The Watt spike lives on branch `spike/watt-discoverability` (`WATT-FINDINGS.md`) — reference, not a
+dependency. The forks below (A–D) are deferred until the ladder reaches them.
 
 ## How to resume
 
