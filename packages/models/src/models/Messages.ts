@@ -608,14 +608,19 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			'_importFile.id': importFileId,
 		};
 
-		return this.updateMany(query, {
-			$set: {
-				'_importFile.rocketChatUrl': rocketChatUrl,
-				'_importFile.downloaded': true,
-			},
-			$addToSet: {
-				attachments: attachment,
-			},
+		return this.updateMany(
+			{ ...query, attachments: { $not: { $type: "array" } } },
+			{ $set: { attachments: [] } }
+		).then(() => {
+			return this.updateMany(query, {
+				$set: {
+					'_importFile.rocketChatUrl': rocketChatUrl,
+					'_importFile.downloaded': true,
+				},
+				$addToSet: {
+					attachments: attachment,
+				},
+			});
 		});
 	}
 
