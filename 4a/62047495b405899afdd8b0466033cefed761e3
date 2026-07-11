@@ -1,0 +1,210 @@
+apps/meteor/server/lib/messaging/mentions/Mentions.ts
+  s_0fce651a0b3be0::t_f0448816a9bd91 1-7,9-115
+  s_0fce651a0b3be0::t_fc22ba0aad8052 8
+apps/meteor/server/lib/pushConfig.ts
+  s_0fce651a0b3be0::t_f1c59e78b26ea3 8
+apps/meteor/server/importPackages.ts
+  s_0fce651a0b3be0::t_f0448816a9bd91 19,43-47,82,88
+  s_0fce651a0b3be0::t_f1c59e78b26ea3 42,50,86
+  s_0fce651a0b3be0::t_59ebc73227e20e 72,83
+apps/meteor/server/meteor-methods/index.ts
+  s_0fce651a0b3be0::t_fbcd61e0ce335f 67,121
+  s_0fce651a0b3be0::t_56eade8ccac91d 45
+apps/meteor/server/bridges/slack/SlackAdapter.ts
+  s_0fce651a0b3be0::t_fc22ba0aad8052 26
+apps/meteor/app/lib/server/lib/msgStream.ts
+  s_0fce651a0b3be0::t_f1c59e78b26ea3 1
+apps/meteor/server/lib/messaging/stars/starMessage.ts
+  s_0fce651a0b3be0::t_f0448816a9bd91 1-10,12-77
+  s_0fce651a0b3be0::t_fc22ba0aad8052 11
+apps/meteor/server/lib/notifications/mail-messages/functions/sendMail.ts
+  s_0fce651a0b3be0::t_f1c59e78b26ea3 1-7,9-101
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 8
+apps/meteor/app/invites/server/functions/sendInvitationEmail.ts
+  s_0fce651a0b3be0::t_f1c59e78b26ea3 6
+apps/meteor/server/api/v1/subscriptions.ts
+  s_0fce651a0b3be0::t_f0448816a9bd91 14
+apps/meteor/server/lib/notifications/push-config/index.ts
+  s_0fce651a0b3be0::t_f1c59e78b26ea3 1-3
+apps/meteor/server/lib/users/setUserActiveStatus.ts
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 17
+apps/meteor/server/lib/2fa/functions/resetTOTP.ts
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 9
+apps/meteor/server/lib/dataExport/sendViaEmail.ts
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 9
+apps/meteor/app/autotranslate/server/autotranslate.ts
+  s_0fce651a0b3be0::t_f0448816a9bd91 17
+apps/meteor/server/lib/notifications/push/push.ts
+  s_0fce651a0b3be0::t_f1c59e78b26ea3 1-514
+apps/meteor/server/lib/notifications/push-config/lib/PushNotification.ts
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 10-11
+  s_0fce651a0b3be0::t_f1c59e78b26ea3 1-9,12-156
+apps/meteor/ee/server/meteor-methods/saveCannedResponse.ts
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 7
+apps/meteor/server/bridges/smarsh/functions/sendEmail.ts
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 10
+apps/meteor/server/lib/notifications/mail-messages/functions/unsubscribe.ts
+  s_0fce651a0b3be0::t_f1c59e78b26ea3 1-19
+apps/meteor/server/lib/notifications/queue/NotificationQueue.ts
+  s_0fce651a0b3be0::t_f1c59e78b26ea3 1-6,8-182
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 7
+apps/meteor/server/lib/resetUserE2EKey.ts
+  s_0fce651a0b3be0::t_f1c59e78b26ea3 7
+apps/meteor/server/lib/users/setEmail.ts
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 13
+apps/meteor/app/livechat/server/lib/messages.ts
+  s_0fce651a0b3be0::t_f1c59e78b26ea3 16
+apps/meteor/server/hooks/messages/processThreads.ts
+  s_0fce651a0b3be0::t_fc22ba0aad8052 12
+apps/meteor/server/lib/messaging/mentions/getMentionedTeamMembers.ts
+  s_0fce651a0b3be0::t_f0448816a9bd91 1-4,6-23
+  s_0fce651a0b3be0::t_fc22ba0aad8052 5
+apps/meteor/server/meteor-methods/messages/getThreadMessages.ts
+  s_0fce651a0b3be0::t_fc22ba0aad8052 9
+apps/meteor/server/api/v1/push.ts
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 19
+apps/meteor/server/services/messages/hooks/BeforeSaveMentions.ts
+  s_0fce651a0b3be0::t_fc22ba0aad8052 7
+apps/meteor/tests/unit/server/lib/notifications/push/push.spec.ts
+  s_0fce651a0b3be0::t_9c70cf03897601 10
+  s_0fce651a0b3be0::t_a7a03e4d05cf55 1-9,11-112
+apps/meteor/server/lib/dataExport/sendEmail.ts
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 5
+apps/meteor/server/meteor-methods/users/saveNotificationSettings.ts
+  s_0fce651a0b3be0::t_f1c59e78b26ea3 1-172
+apps/meteor/server/lib/messages/parseUrlsInMessage.ts
+  s_0fce651a0b3be0::t_fc22ba0aad8052 6
+apps/meteor/app/importer/server/classes/ImporterWebsocket.ts
+  s_0fce651a0b3be0::t_f1c59e78b26ea3 3
+apps/meteor/server/lib/notifications/core/lib/Notifications.ts
+  s_0fce651a0b3be0::t_f1c59e78b26ea3 1-40
+apps/meteor/server/lib/notifications/push/index.ts
+  s_0fce651a0b3be0::t_f1c59e78b26ea3 1
+apps/meteor/server/modules/notifications/notifications.module.ts
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 8
+apps/meteor/server/services/messages/service.ts
+  s_0fce651a0b3be0::t_fc22ba0aad8052 28
+apps/meteor/tests/unit/app/livechat/server/lib/sendTranscript.spec.ts
+  s_0fce651a0b3be0::t_63b3bc8840a900 69
+apps/meteor/server/hooks/messages/sendNotificationsOnMessage.ts
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 24
+apps/meteor/ee/server/meteor-methods/removeCannedResponse.ts
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 6
+apps/meteor/server/configuration/pushNotification.ts
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 3
+apps/meteor/server/lib/messaging/pins/pinMessage.ts
+  s_0fce651a0b3be0::t_f0448816a9bd91 1-15,18-228
+  s_0fce651a0b3be0::t_fc22ba0aad8052 16-17
+apps/meteor/scripts/migration/phase6d-messaging.tsv
+  s_0fce651a0b3be0::t_55365706aa1d8b 1-14
+apps/meteor/server/lib/messaging/reactions/setReaction.ts
+  s_0fce651a0b3be0::t_462f7b6bd37cb0 13
+  s_0fce651a0b3be0::t_fc22ba0aad8052 7-8
+  s_0fce651a0b3be0::t_f0448816a9bd91 1-6,9-12,14-150
+apps/meteor/server/api/v1/chat.ts
+  s_0fce651a0b3be0::t_fc22ba0aad8052 41-43
+apps/meteor/server/lib/messaging/emoji.ts
+  s_0fce651a0b3be0::t_f0448816a9bd91 1-28
+apps/meteor/app/apps/server/bridges/email.ts
+  s_0fce651a0b3be0::t_f1c59e78b26ea3 5
+apps/meteor/server/lib/messaging/markdown.ts
+  s_0fce651a0b3be0::t_fc22ba0aad8052 5
+  s_0fce651a0b3be0::t_f0448816a9bd91 1-4,6-21
+apps/meteor/server/api/v1/rooms.ts
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 77-78
+apps/meteor/tests/unit/server/lib/messaging/mentions/server.tests.js
+  s_0fce651a0b3be0::t_f0448816a9bd91 1-287
+apps/meteor/server/meteor-methods/platform/push.ts
+  s_0fce651a0b3be0::t_f1c59e78b26ea3 1-8,10-79
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 9
+apps/meteor/.mocharc.js
+  s_0fce651a0b3be0::t_bc742cfd9b9282 40
+apps/meteor/scripts/migration/check-mock-keys.mjs
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 36-44,74-76
+apps/meteor/server/lib/messaging/threads/functions.ts
+  s_0fce651a0b3be0::t_f0448816a9bd91 1-8,11-100
+  s_0fce651a0b3be0::t_fc22ba0aad8052 9-10
+apps/meteor/ee/server/hooks/canned-responses/onRemoveAgentDepartment.ts
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 4
+apps/meteor/ee/server/hooks/canned-responses/onSaveAgentDepartment.ts
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 4
+apps/meteor/server/meteor-methods/messages/getUserMentionsByChannel.ts
+  s_0fce651a0b3be0::t_f0448816a9bd91 1-53
+apps/meteor/server/api/v1/mailer.ts
+  s_0fce651a0b3be0::t_f1c59e78b26ea3 10-11
+apps/meteor/app/apps/server/bridges/messages.ts
+  s_0fce651a0b3be0::t_f1c59e78b26ea3 13
+  s_0fce651a0b3be0::t_fc22ba0aad8052 12
+apps/meteor/server/lib/notifications/email/api.ts
+  s_0fce651a0b3be0::t_f1c59e78b26ea3 1-14,17-225
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 15-16
+apps/meteor/server/services/video-conference/service.ts
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 57-58
+apps/meteor/app/lib/server/functions/notifications/email.js
+  s_0fce651a0b3be0::t_f1c59e78b26ea3 7
+apps/meteor/server/lib/notifications/core/lib/Presence.ts
+  s_0fce651a0b3be0::t_f1c59e78b26ea3 1-115
+apps/meteor/server/services/meteor/service.ts
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 20
+apps/meteor/server/meteor-methods/messages/followMessage.ts
+  s_0fce651a0b3be0::t_fc22ba0aad8052 13
+apps/meteor/ee/server/lib/deviceManagement/session.ts
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 12
+apps/meteor/app/livechat/server/lib/sendTranscript.ts
+  s_0fce651a0b3be0::t_f1c59e78b26ea3 23
+apps/meteor/scripts/migration/phase6c-notifications.tsv
+  s_0fce651a0b3be0::t_32ba697fdf0a82 1-10
+apps/meteor/scripts/migration/phase6e-media-import-libs.tsv
+  s_0fce651a0b3be0::t_8e4c6ffa8d58ef 1-49
+apps/meteor/server/meteor-methods/settings/sendSMTPTestEmail.ts
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 6
+apps/meteor/server/lib/auth/startup.js
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 23
+apps/meteor/tests/unit/app/mailer/api.spec.ts
+  s_0fce651a0b3be0::t_f1c59e78b26ea3 3
+apps/meteor/server/meteor-methods/messages/readThreads.ts
+  s_0fce651a0b3be0::t_fc22ba0aad8052 10
+apps/meteor/server/meteor-methods/messages/unfollowMessage.ts
+  s_0fce651a0b3be0::t_fc22ba0aad8052 13
+apps/meteor/ee/server/apps/communication/websockets.ts
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 9
+apps/meteor/tests/unit/server/lib/messaging/reactions/setReaction.spec.ts
+  s_0fce651a0b3be0::t_462f7b6bd37cb0 38-53
+  s_0fce651a0b3be0::t_5b1de9cfede628 1-37,54-430
+apps/meteor/server/lib/users/saveUser/sendUserEmail.ts
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 6
+apps/meteor/ee/tests/unit/server/hooks/omnichannel/manageDepartmentUnit.spec.ts
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 21-32
+apps/meteor/tests/unit/server/lib/users/saveUser/sendUserEmail.spec.ts
+  s_0fce651a0b3be0::t_63b3bc8840a900 58
+apps/meteor/server/services/media-call/push/sendVoipPushNotification.ts
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 11-12
+apps/meteor/server/services/room/service.ts
+  s_0fce651a0b3be0::t_fc22ba0aad8052 28
+apps/meteor/server/lib/2fa/code/EmailCheck.ts
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 10
+apps/meteor/server/lib/messaging/unread/unreadMessages.ts
+  s_0fce651a0b3be0::t_f0448816a9bd91 1-95
+apps/meteor/server/api/v1/channels.ts
+  s_0fce651a0b3be0::t_fc22ba0aad8052 46
+apps/meteor/server/meteor-methods/integrations/clearIntegrationHistory.ts
+  s_0fce651a0b3be0::t_1c2c9666bf43ba 6
+apps/meteor/server/lib/2fa/code/EmailCheck.spec.ts
+  s_0fce651a0b3be0::t_63b3bc8840a900 22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "4a62047495b405899afdd8b0466033cefed761e3",
+  "prompts": {},
+  "sessions": {
+    "s_0fce651a0b3be0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2cf1f83c-986f-44ab-b6f9-f1db46b9698b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
