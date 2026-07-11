@@ -67,7 +67,12 @@ export class DenoRuntimeSubprocessController extends BaseRuntimeSubprocessContro
 		this.denoDir = process.env.DENO_DIR ?? path.join(this.packagePath, '.deno-cache');
 
 		this.denoRuntimePath = path.join(this.tempFilePath, 'deno-runtime', 'main.ts');
-		this.denoEphemeralConfigPath = this.denoConfigPath.replace('.jsonc', '.runtime.jsonc');
+	this.denoEphemeralConfigPath = path.join(
+	this.tempFilePath,
+	'deno-runtime',
+	'deno.runtime.jsonc',
+);
+
 
 		/**
 		 * Deno 2.x refuses to run scripts inside the node_modules, so we create a symlink to the deno runtime files in the temp directory
