@@ -69,6 +69,15 @@ Deeper references: [API endpoint migration](./api-endpoint-migration.md) ·
 
 - [Add a REST endpoint end-to-end](./guides/add-a-rest-endpoint.md).
 
+## Contributing & workflow
+
+- [Development workflow & standards](./guides/development.md) — workstation
+  baseline, lint/test before push, coding style.
+- [Opening & handling Pull Requests](./guides/pull-requests.md) — draft-first,
+  title/changelog conventions, description, ownership, size, merge automation.
+- [Reviewing a Pull Request](./guides/reviewing.md) — the reviewer checklist:
+  PR hygiene, code, and server-specific concerns.
+
 ## Build & stack
 
 - [Meteor modern build stack](./meteor-modern-stack.md) — Meteor build, watcher,
