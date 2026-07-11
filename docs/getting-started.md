@@ -116,13 +116,9 @@ Recommended light loop: `cd apps/meteor && yarn dev` in one terminal, and
 
 ## 4. Environment variables
 
-Copy the example and adjust if needed:
-
-```bash
-cp apps/meteor/.env.example apps/meteor/.env
-```
-
-All vars are **optional** for the first run. The most used ones:
+Rocket.Chat is configured through environment variables. All are **optional**
+for the first run — with none set, the app boots on the bundled Mongo. A var
+exported in your shell is picked up on the next start. The most used ones:
 
 | Var | Purpose |
 |-----|----------|
@@ -131,8 +127,6 @@ All vars are **optional** for the first run. The most used ones:
 | `MONGO_URL` | point at an external Mongo instead of the bundled one (see section 5) |
 | `MAIL_URL` | SMTP; without it, emails go to the console |
 | `ROCKETCHAT_LICENSE` | enables Enterprise (EE) features |
-
-Full commented list: [`apps/meteor/.env.example`](../apps/meteor/.env.example).
 
 ---
 
