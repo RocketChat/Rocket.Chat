@@ -8,6 +8,7 @@ export * from './models/Avatars';
 export * from './models/Banners';
 export * from './models/BannersDismiss';
 export * from './models/CalendarEvent';
+export * from './models/CalendarSyncState';
 export * from './models/CustomSounds';
 export * from './models/CustomUserStatus';
 export * from './models/EmailInbox';
