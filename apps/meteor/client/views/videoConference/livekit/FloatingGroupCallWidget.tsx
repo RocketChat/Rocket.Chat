@@ -75,7 +75,7 @@ const clampToViewport = (x: number, y: number, w: number, h: number) => {
  *
  * Visibility is driven by `useOpenedRoom()` (which reflects the currently-open
  * room from the route, not the React tree), so MediaCallRoomSection's own
- * useRoomView() can't cause a mount/unmount feedback loop.
+ * useRegisterView('room') can't cause a mount/unmount feedback loop.
  */
 const FloatingGroupCallWidget = () => {
 	const { activeCall } = useLiveKitVideoConf();

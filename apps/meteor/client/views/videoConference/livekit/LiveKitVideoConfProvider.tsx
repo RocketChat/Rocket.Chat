@@ -756,7 +756,7 @@ const LiveKitVideoConfBridge = ({ children }: { children: ReactNode }) => {
 			{children}
 			{/* Floating mini-view of the call, shown when the user has navigated
 			    away from the call's room. Renders nothing while in the call room
-			    (MediaCallRoomSection.useRoomView keeps inRoomView=true) or when
+			    (MediaCallRoomSection.useRegisterView('room') keeps the room view registered) or when
 			    no group call is active. */}
 			<FloatingGroupCallWidget />
 			{lkActive && creds && callId && lkPortalTarget
