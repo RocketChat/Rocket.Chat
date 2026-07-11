@@ -8,8 +8,8 @@ import {
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 
-import { API } from '../../../app/api/server/api';
-import { canAccessRoomAsync } from '../../../app/authorization/server/functions/canAccessRoom';
+import { API } from '../../../server/api/api';
+import { canAccessRoomAsync } from '../../../server/lib/authorization/canAccessRoom';
 import notifications from '../../../app/notifications/server/lib/Notifications';
 import { settings } from '../../../app/settings/server';
 import {

@@ -3,7 +3,7 @@ import { VideoConference as VideoConferenceModel, Uploads, Users } from '@rocket
 
 import type { EgressInfo, EgressFileResult } from './egress';
 import { sendFileMessage } from '../../../../app/file-upload/server/methods/sendFileMessage';
-import { executeSendMessage } from '../../../../app/lib/server/methods/sendMessage';
+import { executeSendMessage } from '../../../../server/meteor-methods/messages/sendMessage';
 
 const logger = new Logger('LiveKit/MediaCall/Finalize');
 
