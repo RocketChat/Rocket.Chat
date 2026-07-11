@@ -18,11 +18,6 @@ import { closeBusinessHour } from '../../../../../app/livechat/server/business-h
 import { settings } from '../../../../../app/settings/server';
 import { bhLogger } from '../lib/logger';
 
-interface IBusinessHoursExtraProperties extends ILivechatBusinessHour {
-	timezoneName: string;
-	departmentsToApplyBusinessHour: string;
-}
-
 export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior implements IBusinessHourBehavior {
 	constructor() {
 		super();
@@ -91,11 +86,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		}
 	}
 
-	async afterSaveBusinessHours(businessHourData: IBusinessHoursExtraProperties): Promise<void> {
-		const departments = businessHourData.departmentsToApplyBusinessHour?.split(',').filter(Boolean);
-		const currentDepartments = businessHourData.departments?.map((dept) => dept._id);
-		const toRemove = [...(currentDepartments || []).filter((dept) => !departments.includes(dept))];
-		await this.removeBusinessHourFromRemovedDepartmentsUsersIfNeeded(businessHourData._id, toRemove);
+	async afterSaveBusinessHours(businessHourData: ILivechatBusinessHour): Promise<void> {
 		const businessHour = await this.BusinessHourRepository.findOneById(businessHourData._id);
 		if (!businessHour) {
 			return;
@@ -363,19 +354,6 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 
 	private async openBusinessHour(businessHour: Pick<ILivechatBusinessHour, '_id' | 'type'>): Promise<void> {
 		return openBusinessHour(businessHour);
-	}
-
-	private async removeBusinessHourFromRemovedDepartmentsUsersIfNeeded(
-		businessHourId: string,
-		departmentsToRemove: string[],
-	): Promise<void> {
-		if (!departmentsToRemove.length) {
-			return;
-		}
-		const agentIds = (
-			await LivechatDepartmentAgents.findByDepartmentIds(departmentsToRemove, { projection: { agentId: 1 } }).toArray()
-		).map((dept) => dept.agentId);
-		await removeBusinessHourByAgentIds(agentIds, businessHourId);
 	}
 
 	private async closeBusinessHour(businessHour: Pick<ILivechatBusinessHour, '_id' | 'type'>): Promise<void> {
