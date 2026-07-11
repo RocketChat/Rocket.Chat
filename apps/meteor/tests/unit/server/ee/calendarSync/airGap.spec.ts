@@ -106,8 +106,14 @@ describe('calendarSync/air-gap (provider = exchange-ews)', () => {
 			`<t:CalendarItem><t:ItemId Id="id-1"/><t:TextBody>body</t:TextBody></t:CalendarItem>` +
 			`</m:Items></m:GetItemResponseMessage></m:ResponseMessages></m:GetItemResponse></s:Body></s:Envelope>`;
 
-		let soapCall = 0;
-		const recordingRequestFn = async (options: { url: string; headers: Record<string, string> }) => {
+		const syncFolderItemsResponse =
+			`<?xml version="1.0"?><s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"><s:Body>` +
+			`<m:SyncFolderItemsResponse xmlns:m="${M}"><m:ResponseMessages>` +
+			`<m:SyncFolderItemsResponseMessage ResponseClass="Success"><m:ResponseCode>NoError</m:ResponseCode>` +
+			`<m:SyncState>ST-1</m:SyncState><m:IncludesLastItemInRange>true</m:IncludesLastItemInRange><m:Changes/>` +
+			`</m:SyncFolderItemsResponseMessage></m:ResponseMessages></m:SyncFolderItemsResponse></s:Body></s:Envelope>`;
+
+		const recordingRequestFn = async (options: { url: string; headers: Record<string, string>; body: string }) => {
 			requestedUrls.push(options.url);
 			if (
 				options.headers.Authorization?.startsWith('NTLM ') &&
@@ -115,8 +121,13 @@ describe('calendarSync/air-gap (provider = exchange-ews)', () => {
 			) {
 				return { statusCode: 401, headers: { 'www-authenticate': type2Message }, body: '' };
 			}
-			soapCall++;
-			return { statusCode: 200, headers: {}, body: soapCall === 1 ? findItemResponse : getItemResponse };
+			if (options.body.includes('<m:SyncFolderItems>')) {
+				return { statusCode: 200, headers: {}, body: syncFolderItemsResponse };
+			}
+			if (options.body.includes('<m:FindItem')) {
+				return { statusCode: 200, headers: {}, body: findItemResponse };
+			}
+			return { statusCode: 200, headers: {}, body: getItemResponse };
 		};
 
 		const client = new EwsHttpClient(

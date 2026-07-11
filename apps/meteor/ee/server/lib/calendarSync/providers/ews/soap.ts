@@ -32,22 +32,39 @@ export function soapEnvelope(body: string, impersonatedMailbox?: string): string
 	);
 }
 
+const CALENDAR_ITEM_SHAPE =
+	`<t:BaseShape>IdOnly</t:BaseShape><t:AdditionalProperties>` +
+	`<t:FieldURI FieldURI="item:Subject"/>` +
+	`<t:FieldURI FieldURI="calendar:Start"/>` +
+	`<t:FieldURI FieldURI="calendar:End"/>` +
+	`<t:FieldURI FieldURI="calendar:LegacyFreeBusyStatus"/>` +
+	`<t:FieldURI FieldURI="calendar:UID"/>` +
+	`<t:FieldURI FieldURI="calendar:IsCancelled"/>` +
+	`</t:AdditionalProperties>`;
+
 export function buildFindCalendarItemsRequest(mailbox: string, window: ICalendarSyncWindow, maxEntries = 512): string {
 	return soapEnvelope(
 		`<m:FindItem Traversal="Shallow">` +
-			`<m:ItemShape><t:BaseShape>IdOnly</t:BaseShape><t:AdditionalProperties>` +
-			`<t:FieldURI FieldURI="item:Subject"/>` +
-			`<t:FieldURI FieldURI="calendar:Start"/>` +
-			`<t:FieldURI FieldURI="calendar:End"/>` +
-			`<t:FieldURI FieldURI="calendar:LegacyFreeBusyStatus"/>` +
-			`<t:FieldURI FieldURI="calendar:UID"/>` +
-			`<t:FieldURI FieldURI="calendar:IsCancelled"/>` +
-			`</t:AdditionalProperties></m:ItemShape>` +
+			`<m:ItemShape>${CALENDAR_ITEM_SHAPE}</m:ItemShape>` +
 			`<m:CalendarView MaxEntriesReturned="${maxEntries}" StartDate="${window.start.toISOString()}" EndDate="${window.end.toISOString()}"/>` +
 			`<m:ParentFolderIds><t:DistinguishedFolderId Id="calendar">` +
 			`<t:Mailbox><t:EmailAddress>${escapeXml(mailbox)}</t:EmailAddress></t:Mailbox>` +
 			`</t:DistinguishedFolderId></m:ParentFolderIds>` +
 			`</m:FindItem>`,
+		mailbox,
+	);
+}
+
+export function buildSyncFolderItemsRequest(mailbox: string, syncState?: string, maxChanges = 512): string {
+	return soapEnvelope(
+		`<m:SyncFolderItems>` +
+			`<m:ItemShape>${CALENDAR_ITEM_SHAPE}</m:ItemShape>` +
+			`<m:SyncFolderId><t:DistinguishedFolderId Id="calendar">` +
+			`<t:Mailbox><t:EmailAddress>${escapeXml(mailbox)}</t:EmailAddress></t:Mailbox>` +
+			`</t:DistinguishedFolderId></m:SyncFolderId>${
+				syncState ? `<m:SyncState>${escapeXml(syncState)}</m:SyncState>` : ''
+			}<m:MaxChangesReturned>${maxChanges}</m:MaxChangesReturned>` +
+			`</m:SyncFolderItems>`,
 		mailbox,
 	);
 }
@@ -112,6 +129,9 @@ const EWS_ERROR_CODES: Record<string, string> = {
 	ErrorServerBusy: 'throttled',
 	ErrorTooManyObjectsOpened: 'throttled',
 	ErrorInvalidServerVersion: 'provider-error',
+	// Expired/invalid incremental sync state — same recovery path as Graph's 410
+	ErrorInvalidSyncStateData: 'delta-token-expired',
+	ErrorSyncFolderNotFound: 'delta-token-expired',
 };
 
 export function mapEwsResponseCode(responseCode: string, messageText?: string): CalendarSyncError {
@@ -182,31 +202,86 @@ export interface IEwsCalendarItem {
 	isCancelled: boolean;
 }
 
+function parseCalendarItem(element: Element): IEwsCalendarItem | null {
+	const [itemIdElement] = elementsNS(element, EWS_TYPES_NS, 'ItemId');
+	const itemId = itemIdElement?.getAttribute('Id');
+	const start = parseEwsDate(textNS(element, EWS_TYPES_NS, 'Start'));
+	const end = parseEwsDate(textNS(element, EWS_TYPES_NS, 'End'));
+	if (!itemId || !start || !end) {
+		return null;
+	}
+
+	return {
+		itemId,
+		subject: textNS(element, EWS_TYPES_NS, 'Subject') ?? '',
+		start,
+		end,
+		legacyFreeBusyStatus: textNS(element, EWS_TYPES_NS, 'LegacyFreeBusyStatus') ?? 'Busy',
+		uid: textNS(element, EWS_TYPES_NS, 'UID'),
+		isCancelled: textNS(element, EWS_TYPES_NS, 'IsCancelled') === 'true',
+	};
+}
+
 export function parseFindItemResponse(xml: string): IEwsCalendarItem[] {
 	const doc = parseXml(xml);
 	assertResponseSuccess(doc, 'FindItemResponseMessage');
 
-	const items: IEwsCalendarItem[] = [];
-	for (const element of elementsNS(doc, EWS_TYPES_NS, 'CalendarItem')) {
-		const [itemIdElement] = elementsNS(element, EWS_TYPES_NS, 'ItemId');
-		const itemId = itemIdElement?.getAttribute('Id');
-		const start = parseEwsDate(textNS(element, EWS_TYPES_NS, 'Start'));
-		const end = parseEwsDate(textNS(element, EWS_TYPES_NS, 'End'));
-		if (!itemId || !start || !end) {
-			continue;
-		}
+	return elementsNS(doc, EWS_TYPES_NS, 'CalendarItem')
+		.map(parseCalendarItem)
+		.filter((item): item is IEwsCalendarItem => item !== null);
+}
 
-		items.push({
-			itemId,
-			subject: textNS(element, EWS_TYPES_NS, 'Subject') ?? '',
-			start,
-			end,
-			legacyFreeBusyStatus: textNS(element, EWS_TYPES_NS, 'LegacyFreeBusyStatus') ?? 'Busy',
-			uid: textNS(element, EWS_TYPES_NS, 'UID'),
-			isCancelled: textNS(element, EWS_TYPES_NS, 'IsCancelled') === 'true',
-		});
+export interface IEwsSyncFolderItemsResult {
+	syncState: string;
+	includesLastItemInRange: boolean;
+	/** Created or updated calendar items */
+	items: IEwsCalendarItem[];
+	deletedItemIds: string[];
+}
+
+export function parseSyncFolderItemsResponse(xml: string): IEwsSyncFolderItemsResult {
+	const doc = parseXml(xml);
+	const [message] = assertResponseSuccess(doc, 'SyncFolderItemsResponseMessage');
+
+	const syncState = textNS(message, EWS_MESSAGES_NS, 'SyncState');
+	if (!syncState) {
+		throw new CalendarSyncError('provider-error', 'SyncFolderItems response is missing the sync state');
 	}
-	return items;
+
+	const items: IEwsCalendarItem[] = [];
+	const deletedItemIds: string[] = [];
+
+	const [changes] = elementsNS(message, EWS_MESSAGES_NS, 'Changes');
+	if (changes) {
+		for (const change of Array.from(changes.childNodes)) {
+			if (change.nodeType !== 1) {
+				continue;
+			}
+			const element = change as Element;
+			if (element.localName === 'Create' || element.localName === 'Update') {
+				const [calendarItem] = elementsNS(element, EWS_TYPES_NS, 'CalendarItem');
+				const item = calendarItem && parseCalendarItem(calendarItem);
+				if (item) {
+					items.push(item);
+				}
+				continue;
+			}
+			if (element.localName === 'Delete') {
+				const [itemIdElement] = elementsNS(element, EWS_TYPES_NS, 'ItemId');
+				const itemId = itemIdElement?.getAttribute('Id');
+				if (itemId) {
+					deletedItemIds.push(itemId);
+				}
+			}
+		}
+	}
+
+	return {
+		syncState,
+		includesLastItemInRange: textNS(message, EWS_MESSAGES_NS, 'IncludesLastItemInRange') !== 'false',
+		items,
+		deletedItemIds,
+	};
 }
 
 export function parseGetItemBodiesResponse(xml: string): Map<string, string> {

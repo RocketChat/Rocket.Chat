@@ -1,15 +1,18 @@
 import { EwsHttpClient } from './ewsHttp';
 import type { IEwsHttpResponse, IEwsHttpConfig } from './ewsHttp';
+import type { IEwsCalendarItem } from './soap';
 import {
 	assertGetFolderSuccess,
 	buildFindCalendarItemsRequest,
 	buildGetCalendarFolderRequest,
 	buildGetItemBodiesRequest,
 	buildGetUserAvailabilityRequest,
+	buildSyncFolderItemsRequest,
 	mapEwsResponseCode,
 	parseAvailabilityResponse,
 	parseFindItemResponse,
 	parseGetItemBodiesResponse,
+	parseSyncFolderItemsResponse,
 } from './soap';
 import type {
 	FreeBusyStatus,
@@ -33,6 +36,8 @@ const defaultSleep: SleepFn = (ms) =>
 const THROTTLE_RETRY_MS = 5_000;
 const AVAILABILITY_MAX_MAILBOXES = 50;
 const BUSY_STATUSES = new Set(['Busy', 'OOF']);
+/** Cap on SyncFolderItems round-trips per user per run (512 changes each) */
+const SYNC_MAX_PAGES = 20;
 
 function mapBusyType(busyType: string): FreeBusyStatus {
 	if (busyType === 'OOF') {
@@ -57,7 +62,7 @@ export interface IEwsProviderClient {
 export class ExchangeEwsCalendarProvider implements ICalendarSyncProvider {
 	public readonly type = 'exchange-ews' as const;
 
-	public readonly supportsDelta = false;
+	public readonly supportsDelta = true;
 
 	public readonly supportsWebhooks = false;
 
@@ -83,10 +88,79 @@ export class ExchangeEwsCalendarProvider implements ICalendarSyncProvider {
 		}
 	}
 
-	public async listEvents(mailbox: string, window: ICalendarSyncWindow): Promise<ICalendarSyncListResult> {
+	public async listEvents(mailbox: string, window: ICalendarSyncWindow, deltaToken?: string): Promise<ICalendarSyncListResult> {
+		if (deltaToken) {
+			try {
+				return await this.listEventsIncremental(mailbox, window, deltaToken);
+			} catch (error) {
+				if (error instanceof CalendarSyncError && error.code === 'delta-token-expired') {
+					// Stale/invalid SyncState: fall back to a full window snapshot
+					return this.listEvents(mailbox, window);
+				}
+				throw error;
+			}
+		}
+
+		// Establish the SyncState BEFORE the snapshot so nothing created in between
+		// is missed — re-reported items are upserted idempotently anyway
+		const nextDeltaToken = await this.establishSyncState(mailbox);
+
 		const findResponse = await this.post(buildFindCalendarItemsRequest(mailbox, window));
 		const items = parseFindItemResponse(findResponse.body);
+		const events = await this.buildEvents(mailbox, items);
 
+		return { events, deletedEventIds: [], full: true, ...(nextDeltaToken && { nextDeltaToken }) };
+	}
+
+	/** Incremental changes via SyncFolderItems; the folder is not window-scoped, so filtering happens here */
+	private async listEventsIncremental(mailbox: string, window: ICalendarSyncWindow, syncState: string): Promise<ICalendarSyncListResult> {
+		const changed: IEwsCalendarItem[] = [];
+		const deletedEventIds: string[] = [];
+		let state = syncState;
+
+		for (let page = 0; page < SYNC_MAX_PAGES; page++) {
+			const parsed = parseSyncFolderItemsResponse((await this.post(buildSyncFolderItemsRequest(mailbox, state))).body);
+			state = parsed.syncState;
+			changed.push(...parsed.items);
+			deletedEventIds.push(...parsed.deletedItemIds);
+			if (parsed.includesLastItemInRange) {
+				break;
+			}
+		}
+
+		const inWindow: IEwsCalendarItem[] = [];
+		for (const item of changed) {
+			if (item.start.getTime() < window.end.getTime() && item.end.getTime() > window.start.getTime()) {
+				inWindow.push(item);
+			} else {
+				// The event may have been rescheduled out of the window; deleting is idempotent
+				// and only ever touches events this integration owns
+				deletedEventIds.push(item.itemId);
+			}
+		}
+
+		return {
+			events: await this.buildEvents(mailbox, inWindow),
+			deletedEventIds,
+			nextDeltaToken: state,
+			full: false,
+		};
+	}
+
+	/** Fast-forwards SyncFolderItems to the current state; undefined when the mailbox is too large to page through */
+	private async establishSyncState(mailbox: string): Promise<string | undefined> {
+		let state: string | undefined;
+		for (let page = 0; page < SYNC_MAX_PAGES; page++) {
+			const parsed = parseSyncFolderItemsResponse((await this.post(buildSyncFolderItemsRequest(mailbox, state))).body);
+			state = parsed.syncState;
+			if (parsed.includesLastItemInRange) {
+				return state;
+			}
+		}
+		return undefined;
+	}
+
+	private async buildEvents(mailbox: string, items: IEwsCalendarItem[]): Promise<IExternalCalendarEvent[]> {
 		const activeItems = items.filter((item) => !item.isCancelled);
 		const bodies = activeItems.length
 			? parseGetItemBodiesResponse(
@@ -101,7 +175,7 @@ export class ExchangeEwsCalendarProvider implements ICalendarSyncProvider {
 				)
 			: new Map<string, string>();
 
-		const events: IExternalCalendarEvent[] = items.map((item) => ({
+		return items.map((item) => ({
 			externalId: item.itemId,
 			...(item.uid && { iCalUId: item.uid }),
 			subject: item.subject,
@@ -111,9 +185,6 @@ export class ExchangeEwsCalendarProvider implements ICalendarSyncProvider {
 			busy: BUSY_STATUSES.has(item.legacyFreeBusyStatus),
 			...(item.isCancelled && { isCancelled: true }),
 		}));
-
-		// EWS has no delta in this integration: every result is a full window snapshot
-		return { events, deletedEventIds: [], full: true };
 	}
 
 	public async getFreeBusy(mailboxes: string[], window: ICalendarSyncWindow): Promise<IFreeBusyResult[]> {

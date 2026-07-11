@@ -129,6 +129,56 @@ describe('calendarSync/ews/soap', () => {
 		});
 	});
 
+	describe('SyncFolderItems', () => {
+		it('should build requests with the sync state and impersonation only when present', async () => {
+			const { buildSyncFolderItemsRequest } = await import('../../../../../ee/server/lib/calendarSync/providers/ews/soap');
+
+			const initial = buildSyncFolderItemsRequest('user@example.mil');
+			expect(initial).to.not.include('<m:SyncState>');
+			expect(initial).to.include('<m:MaxChangesReturned>512</m:MaxChangesReturned>');
+			expect(initial).to.include('<t:PrimarySmtpAddress>user@example.mil</t:PrimarySmtpAddress>');
+
+			const incremental = buildSyncFolderItemsRequest('user@example.mil', 'STATE==');
+			expect(incremental).to.include('<m:SyncState>STATE==</m:SyncState>');
+		});
+
+		it('should parse creates, updates, deletes and the new sync state', async () => {
+			const { parseSyncFolderItemsResponse } = await import('../../../../../ee/server/lib/calendarSync/providers/ews/soap');
+			const xml = envelope(
+				`<m:SyncFolderItemsResponse xmlns:m="${M}" xmlns:t="${T}"><m:ResponseMessages>` +
+					`<m:SyncFolderItemsResponseMessage ResponseClass="Success"><m:ResponseCode>NoError</m:ResponseCode>` +
+					`<m:SyncState>NEW-STATE</m:SyncState><m:IncludesLastItemInRange>false</m:IncludesLastItemInRange>` +
+					`<m:Changes>` +
+					`<t:Create><t:CalendarItem><t:ItemId Id="new-1"/><t:Subject>New</t:Subject>` +
+					`<t:Start>2026-07-12T10:00:00Z</t:Start><t:End>2026-07-12T11:00:00Z</t:End></t:CalendarItem></t:Create>` +
+					`<t:Update><t:CalendarItem><t:ItemId Id="upd-1"/><t:Subject>Moved</t:Subject>` +
+					`<t:Start>2026-07-13T10:00:00Z</t:Start><t:End>2026-07-13T11:00:00Z</t:End></t:CalendarItem></t:Update>` +
+					`<t:Delete><t:ItemId Id="gone-1"/></t:Delete>` +
+					`</m:Changes>` +
+					`</m:SyncFolderItemsResponseMessage></m:ResponseMessages></m:SyncFolderItemsResponse>`,
+			);
+
+			const result = parseSyncFolderItemsResponse(xml);
+			expect(result.syncState).to.equal('NEW-STATE');
+			expect(result.includesLastItemInRange).to.be.false;
+			expect(result.items.map((item) => item.itemId)).to.deep.equal(['new-1', 'upd-1']);
+			expect(result.deletedItemIds).to.deep.equal(['gone-1']);
+		});
+
+		it('should map ErrorInvalidSyncStateData to delta-token-expired', async () => {
+			const { parseSyncFolderItemsResponse } = await import('../../../../../ee/server/lib/calendarSync/providers/ews/soap');
+			const xml = envelope(
+				`<m:SyncFolderItemsResponse xmlns:m="${M}"><m:ResponseMessages>` +
+					`<m:SyncFolderItemsResponseMessage ResponseClass="Error"><m:ResponseCode>ErrorInvalidSyncStateData</m:ResponseCode>` +
+					`</m:SyncFolderItemsResponseMessage></m:ResponseMessages></m:SyncFolderItemsResponse>`,
+			);
+
+			expect(() => parseSyncFolderItemsResponse(xml))
+				.to.throw()
+				.and.satisfy((error: any) => error.code === 'delta-token-expired');
+		});
+	});
+
 	describe('parseGetItemBodiesResponse', () => {
 		it('should map item ids to their text bodies', () => {
 			const xml = envelope(
