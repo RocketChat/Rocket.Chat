@@ -44,7 +44,7 @@ export const useNotification = () => {
 			canReply: true,
 			silent: true,
 			requireInteraction,
-			...(notification.actions?.length ? { actions: notification.actions } : {}),
+			...(window.RocketChatDesktop && notification.actions?.length ? { actions: notification.actions } : {}),
 		} as NotificationOptions & {
 			canReply?: boolean;
 		});
