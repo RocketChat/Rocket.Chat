@@ -1,6 +1,7 @@
 import { serverFetch } from '@rocket.chat/server-fetch';
 
 import type { CalendarSyncFetchFn, ICalendarSyncProvider } from './definition';
+import { ExchangeEwsCalendarProvider } from './providers/ews/ExchangeEwsCalendarProvider';
 import { MicrosoftGraphCalendarProvider } from './providers/graph/MicrosoftGraphCalendarProvider';
 import { settings } from '../../../../app/settings/server';
 
@@ -53,6 +54,26 @@ export function getConfiguredProvider(): ICalendarSyncProvider | null {
 		return cached.provider;
 	}
 
-	// 'exchange-ews' is implemented in a follow-up phase
+	if (type === 'exchange-ews') {
+		const url = settings.get<string>('CalendarSync_Ews_Url')?.trim();
+		const username = settings.get<string>('CalendarSync_Ews_Username')?.trim();
+		const password = settings.get<string>('CalendarSync_Ews_Password');
+		const authMethod = settings.get<string>('CalendarSync_Ews_AuthMethod') === 'basic' ? ('basic' as const) : ('ntlm' as const);
+		const allowSelfSignedCerts = settings.get<boolean>('CalendarSync_Ews_AllowSelfSignedCerts') === true;
+
+		if (!url || !username || !password) {
+			return null;
+		}
+
+		const key = JSON.stringify([type, url, username, password, authMethod, allowSelfSignedCerts]);
+		if (cached?.key !== key) {
+			cached = {
+				key,
+				provider: new ExchangeEwsCalendarProvider({ url, username, password, authMethod, allowSelfSignedCerts }),
+			};
+		}
+		return cached.provider;
+	}
+
 	return null;
 }

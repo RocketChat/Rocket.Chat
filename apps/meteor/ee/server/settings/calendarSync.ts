@@ -57,6 +57,47 @@ export function addSettings(): void {
 					});
 				});
 
+				await this.section('CalendarSync_Section_Exchange_EWS', async function () {
+					const ewsQuery = { _id: 'CalendarSync_Provider', value: 'exchange-ews' };
+
+					await this.add('CalendarSync_Ews_Url', '', {
+						type: 'string',
+						invalidValue: '',
+						placeholder: 'https://mail.example.com/EWS/Exchange.asmx',
+						enableQuery: ewsQuery,
+					});
+
+					await this.add('CalendarSync_Ews_Username', '', {
+						type: 'string',
+						invalidValue: '',
+						placeholder: 'DOMAIN\\serviceaccount',
+						enableQuery: ewsQuery,
+					});
+
+					await this.add('CalendarSync_Ews_Password', '', {
+						type: 'password',
+						secret: true,
+						invalidValue: '',
+						enableQuery: ewsQuery,
+					});
+
+					await this.add('CalendarSync_Ews_AuthMethod', 'ntlm', {
+						type: 'select',
+						values: [
+							{ key: 'ntlm', i18nLabel: 'CalendarSync_Ews_AuthMethod_Ntlm' },
+							{ key: 'basic', i18nLabel: 'CalendarSync_Ews_AuthMethod_Basic' },
+						],
+						invalidValue: 'ntlm',
+						enableQuery: ewsQuery,
+					});
+
+					await this.add('CalendarSync_Ews_AllowSelfSignedCerts', false, {
+						type: 'boolean',
+						invalidValue: false,
+						enableQuery: ewsQuery,
+					});
+				});
+
 				await this.section('CalendarSync_Section_Schedule', async function () {
 					await this.add('CalendarSync_Interval', 5, {
 						type: 'int',
