@@ -1,7 +1,9 @@
 import type { CronJobStatus } from '@rocket.chat/core-typings';
 import type { Tag } from '@rocket.chat/fuselage';
-import cronstrue from 'cronstrue';
+import { useLanguage } from '@rocket.chat/ui-contexts';
+import cronstrue from 'cronstrue/i18n';
 import type { ComponentProps } from 'react';
+import { useCallback } from 'react';
 
 export const statusVariant = (status?: CronJobStatus): ComponentProps<typeof Tag>['variant'] => {
 	switch (status) {
@@ -20,18 +22,26 @@ export const statusVariant = (status?: CronJobStatus): ComponentProps<typeof Tag
 	}
 };
 
-export const translateInterval = (interval: string | number | undefined): string => {
-	if (interval === undefined) {
-		return '';
-	}
-	if (typeof interval === 'number') {
-		return interval.toString();
-	}
-	try {
-		return cronstrue.toString(interval);
-	} catch {
-		return interval;
-	}
+export const useTranslateInterval = () => {
+	const language = useLanguage();
+	const locale = language?.replaceAll('-', '_') || 'en';
+
+	return useCallback(
+		(interval: string | number | undefined): string => {
+			if (interval === undefined) {
+				return '';
+			}
+			if (typeof interval === 'number') {
+				return interval.toString();
+			}
+			try {
+				return cronstrue.toString(interval, { locale });
+			} catch {
+				return interval;
+			}
+		},
+		[locale],
+	);
 };
 
 export const formatDuration = (startedAt?: Date | string, finishedAt?: Date | string): string => {
