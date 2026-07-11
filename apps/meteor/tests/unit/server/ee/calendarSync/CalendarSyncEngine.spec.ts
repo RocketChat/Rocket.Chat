@@ -59,6 +59,7 @@ const DEFAULT_CONFIG = {
 	mailboxSource: 'email' as const,
 	mailboxCustomField: '',
 	defaultLanguage: 'en',
+	roles: [] as string[],
 };
 
 const user = (id: string, email = `${id}@example.com`) => ({
@@ -269,6 +270,19 @@ describe('calendarSync/CalendarSyncEngine', () => {
 		expect(recordFailureStub.firstCall.args[0]).to.equal('u1');
 		expect(recordFailureStub.firstCall.args[1].error.code).to.equal('consent-missing');
 		expect(recordSuccessStub.calledOnceWith('u2')).to.be.true;
+	});
+
+	it('should restrict the user query to the configured roles', async () => {
+		usersFindStub.returns([]);
+		const provider = makeProvider();
+
+		await makeEngine(provider, { roles: ['sales', 'support'] }).runSync();
+		expect(usersFindStub.firstCall.args[0]).to.deep.include({ roles: { $in: ['sales', 'support'] } });
+
+		usersFindStub.resetHistory();
+		usersFindStub.returns([]);
+		await makeEngine(provider).runSync();
+		expect(usersFindStub.firstCall.args[0]).to.not.have.property('roles');
 	});
 
 	it('should do nothing when no provider is configured', async () => {

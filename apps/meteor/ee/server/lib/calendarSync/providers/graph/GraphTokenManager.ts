@@ -1,11 +1,18 @@
+import { buildClientAssertion } from './clientAssertion';
 import type { CalendarSyncFetchFn } from '../../definition';
 import { CalendarSyncError } from '../../definition';
 
 export interface IGraphTokenManagerConfig {
 	tenantId: string;
 	clientId: string;
-	clientSecret: string;
-	/** e.g. https://login.microsoftonline.com — configurable for national clouds (P1) */
+	/** Defaults to 'client-secret' */
+	authMethod?: 'client-secret' | 'certificate';
+	clientSecret?: string;
+	/** PEM certificate uploaded to the Entra ID app registration (certificate auth) */
+	certificatePem?: string;
+	/** PEM private key matching the certificate; never leaves the server (certificate auth) */
+	privateKeyPem?: string;
+	/** e.g. https://login.microsoftonline.com — configurable for national clouds */
 	loginHost: string;
 	/** e.g. https://graph.microsoft.com — used as the token scope audience */
 	graphHost: string;
@@ -58,18 +65,42 @@ export class GraphTokenManager {
 	}
 
 	private async requestToken(): Promise<string> {
-		const { tenantId, clientId, clientSecret, loginHost, graphHost } = this.config;
+		const {
+			tenantId,
+			clientId,
+			authMethod = 'client-secret',
+			clientSecret,
+			certificatePem,
+			privateKeyPem,
+			loginHost,
+			graphHost,
+		} = this.config;
 
-		if (!tenantId || !clientId || !clientSecret) {
-			throw new CalendarSyncError('missing-credentials', 'Microsoft Graph tenant id, client id and client secret must be configured');
+		if (!tenantId || !clientId) {
+			throw new CalendarSyncError('missing-credentials', 'Microsoft Graph tenant id and client id must be configured');
 		}
 
 		const url = `${loginHost}/${encodeURIComponent(tenantId)}/oauth2/v2.0/token`;
+
+		const credentialParams: Record<string, string> = {};
+		if (authMethod === 'certificate') {
+			if (!certificatePem || !privateKeyPem) {
+				throw new CalendarSyncError('missing-credentials', 'Certificate authentication requires both a certificate and a private key');
+			}
+			credentialParams.client_assertion_type = 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer';
+			credentialParams.client_assertion = buildClientAssertion({ clientId, tokenUrl: url, certificatePem, privateKeyPem });
+		} else {
+			if (!clientSecret) {
+				throw new CalendarSyncError('missing-credentials', 'Microsoft Graph tenant id, client id and client secret must be configured');
+			}
+			credentialParams.client_secret = clientSecret;
+		}
+
 		const body = new URLSearchParams({
 			grant_type: 'client_credentials',
 			client_id: clientId,
-			client_secret: clientSecret,
 			scope: `${graphHost}/.default`,
+			...credentialParams,
 		}).toString();
 
 		let response;

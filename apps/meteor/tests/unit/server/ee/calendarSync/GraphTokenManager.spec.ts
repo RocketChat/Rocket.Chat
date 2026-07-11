@@ -110,6 +110,42 @@ describe('calendarSync/GraphTokenManager', () => {
 		});
 	}
 
+	it('should send a client assertion instead of a secret when using certificate auth', async () => {
+		const crypto = require('crypto');
+		const { privateKey } = crypto.generateKeyPairSync('rsa', { modulusLength: 2048 });
+		const certificatePem =
+			'-----BEGIN CERTIFICATE-----\nMIICtjCCAZ4CCQDMv8cc+9Zt7DANBgkqhkiG9w0BAQsFADAdMRswGQYDVQQDDBJj\n-----END CERTIFICATE-----';
+
+		const fetchFn = sinon.stub().resolves(tokenResponse('tok-1'));
+		const manager = new GraphTokenManager(
+			{
+				...CONFIG,
+				clientSecret: undefined,
+				authMethod: 'certificate',
+				certificatePem,
+				privateKeyPem: privateKey.export({ type: 'pkcs8', format: 'pem' }).toString(),
+			},
+			fetchFn,
+		);
+
+		expect(await manager.getToken()).to.equal('tok-1');
+		const { body } = fetchFn.firstCall.args[1];
+		expect(body).to.include(`client_assertion_type=${encodeURIComponent('urn:ietf:params:oauth:client-assertion-type:jwt-bearer')}`);
+		expect(body).to.include('client_assertion=');
+		expect(body).to.not.include('client_secret');
+	});
+
+	it('should fail fast when certificate auth is selected but the key is missing', async () => {
+		const fetchFn = sinon.stub();
+		const manager = new GraphTokenManager({ ...CONFIG, clientSecret: undefined, authMethod: 'certificate' }, fetchFn);
+
+		await manager.getToken().then(
+			() => expect.fail('expected rejection'),
+			(error) => expect(error.code).to.equal('missing-credentials'),
+		);
+		expect(fetchFn.called).to.be.false;
+	});
+
 	it('should map transport failures to network-error', async () => {
 		const fetchFn = sinon.stub().rejects(new Error('ECONNREFUSED'));
 		const manager = new GraphTokenManager(CONFIG, fetchFn);

@@ -37,6 +37,17 @@ export function addSettings(): void {
 				await this.section('CalendarSync_Section_Microsoft_Graph', async function () {
 					const graphQuery = { _id: 'CalendarSync_Provider', value: 'microsoft-graph' };
 
+					await this.add('CalendarSync_Graph_Cloud', 'commercial', {
+						type: 'select',
+						values: [
+							{ key: 'commercial', i18nLabel: 'CalendarSync_Graph_Cloud_Commercial' },
+							{ key: 'gcc-high', i18nLabel: 'CalendarSync_Graph_Cloud_GccHigh' },
+							{ key: 'dod', i18nLabel: 'CalendarSync_Graph_Cloud_Dod' },
+						],
+						invalidValue: 'commercial',
+						enableQuery: graphQuery,
+					});
+
 					await this.add('CalendarSync_Graph_TenantId', '', {
 						type: 'string',
 						invalidValue: '',
@@ -49,11 +60,36 @@ export function addSettings(): void {
 						enableQuery: graphQuery,
 					});
 
+					await this.add('CalendarSync_Graph_Auth_Method', 'client-secret', {
+						type: 'select',
+						values: [
+							{ key: 'client-secret', i18nLabel: 'CalendarSync_Graph_Auth_Method_Client_Secret' },
+							{ key: 'certificate', i18nLabel: 'CalendarSync_Graph_Auth_Method_Certificate' },
+						],
+						invalidValue: 'client-secret',
+						enableQuery: graphQuery,
+					});
+
 					await this.add('CalendarSync_Graph_ClientSecret', '', {
 						type: 'password',
 						secret: true,
 						invalidValue: '',
-						enableQuery: graphQuery,
+						enableQuery: [graphQuery, { _id: 'CalendarSync_Graph_Auth_Method', value: 'client-secret' }],
+					});
+
+					await this.add('CalendarSync_Graph_Certificate', '', {
+						type: 'string',
+						multiline: true,
+						invalidValue: '',
+						enableQuery: [graphQuery, { _id: 'CalendarSync_Graph_Auth_Method', value: 'certificate' }],
+					});
+
+					await this.add('CalendarSync_Graph_PrivateKey', '', {
+						type: 'string',
+						multiline: true,
+						secret: true,
+						invalidValue: '',
+						enableQuery: [graphQuery, { _id: 'CalendarSync_Graph_Auth_Method', value: 'certificate' }],
 					});
 				});
 
@@ -116,6 +152,18 @@ export function addSettings(): void {
 						invalidValue: 10,
 						enableQuery: { _id: 'CalendarSync_Enabled', value: true },
 					});
+				});
+
+				await this.add('CalendarSync_User_Roles', '', {
+					type: 'string',
+					invalidValue: '',
+					enableQuery: { _id: 'CalendarSync_Enabled', value: true },
+				});
+
+				await this.add('CalendarSync_Test_Connection', 'calendarSyncTestConnection', {
+					type: 'action',
+					actionText: 'Test_Connection',
+					i18nLabel: 'Test_Connection',
 				});
 
 				await this.section('CalendarSync_Section_Mailbox_Mapping', async function () {

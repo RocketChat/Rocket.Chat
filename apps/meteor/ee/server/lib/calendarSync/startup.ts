@@ -20,6 +20,10 @@ function getEngineConfig(): ICalendarSyncEngineConfig {
 		mailboxSource: settings.get<string>('CalendarSync_Mailbox_Source') === 'custom-field' ? 'custom-field' : 'email',
 		mailboxCustomField: settings.get<string>('CalendarSync_Mailbox_CustomField') || '',
 		defaultLanguage: settings.get<string>('Language') || 'en',
+		roles: (settings.get<string>('CalendarSync_User_Roles') || '')
+			.split(',')
+			.map((role) => role.trim())
+			.filter(Boolean),
 	};
 }
 
@@ -57,6 +61,7 @@ const STATE_RESET_SETTINGS = [
 	'CalendarSync_Presence_Enabled',
 	'CalendarSync_Mailbox_Source',
 	'CalendarSync_Mailbox_CustomField',
+	'CalendarSync_Graph_Cloud',
 ];
 
 const JOB_SETTINGS = ['CalendarSync_Enabled', 'CalendarSync_Interval'];

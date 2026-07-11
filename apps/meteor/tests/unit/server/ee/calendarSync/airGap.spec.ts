@@ -154,6 +154,8 @@ describe('calendarSync/air-gap (provider = exchange-ews)', () => {
 				presenceEnabled: true,
 				mailboxSource: 'email',
 				mailboxCustomField: '',
+				defaultLanguage: 'en',
+				roles: [],
 			}),
 			{ debug: () => undefined, info: () => undefined, warn: () => undefined, error: () => undefined },
 		);

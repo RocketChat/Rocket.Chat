@@ -18,6 +18,8 @@ export interface ICalendarSyncEngineConfig {
 	mailboxSource: MailboxSource;
 	mailboxCustomField: string;
 	defaultLanguage: string;
+	/** Restrict sync to users holding any of these roles; empty = all active users */
+	roles: string[];
 }
 
 export interface ICalendarSyncRunSummary {
@@ -140,7 +142,10 @@ export class CalendarSyncEngine {
 			projection[`customFields.${config.mailboxCustomField}`] = 1;
 		}
 
-		const cursor = Users.find<SyncableUser>({ active: true, type: 'user' }, { projection });
+		const cursor = Users.find<SyncableUser>(
+			{ active: true, type: 'user', ...(config.roles.length && { roles: { $in: config.roles } }) },
+			{ projection },
+		);
 
 		const batchSize = Math.max(1, config.batchSize);
 		let batch: SyncableUser[] = [];

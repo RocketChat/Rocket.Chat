@@ -3,11 +3,8 @@ import { serverFetch } from '@rocket.chat/server-fetch';
 import type { CalendarSyncFetchFn, ICalendarSyncProvider } from './definition';
 import { ExchangeEwsCalendarProvider } from './providers/ews/ExchangeEwsCalendarProvider';
 import { MicrosoftGraphCalendarProvider } from './providers/graph/MicrosoftGraphCalendarProvider';
+import { GRAPH_CLOUDS, resolveGraphCloud } from './providers/graph/clouds';
 import { settings } from '../../../../app/settings/server';
-
-// Commercial-cloud endpoints; national clouds (GCC High/DoD) become configurable in a follow-up phase
-const MICROSOFT_LOGIN_HOST = 'https://login.microsoftonline.com';
-const MICROSOFT_GRAPH_HOST = 'https://graph.microsoft.com';
 
 // The provider only ever targets the hardcoded Microsoft cloud hosts, so SSRF
 // validation (meant for user-supplied URLs) does not apply — same as the Slack bridge
@@ -29,13 +26,21 @@ export function getConfiguredProvider(): ICalendarSyncProvider | null {
 	if (type === 'microsoft-graph') {
 		const tenantId = settings.get<string>('CalendarSync_Graph_TenantId')?.trim();
 		const clientId = settings.get<string>('CalendarSync_Graph_ClientId')?.trim();
+		const authMethod =
+			settings.get<string>('CalendarSync_Graph_Auth_Method') === 'certificate' ? ('certificate' as const) : ('client-secret' as const);
 		const clientSecret = settings.get<string>('CalendarSync_Graph_ClientSecret');
+		const certificatePem = settings.get<string>('CalendarSync_Graph_Certificate');
+		const privateKeyPem = settings.get<string>('CalendarSync_Graph_PrivateKey');
+		const cloud = resolveGraphCloud(settings.get<string>('CalendarSync_Graph_Cloud'));
 
-		if (!tenantId || !clientId || !clientSecret) {
+		if (!tenantId || !clientId) {
+			return null;
+		}
+		if (authMethod === 'certificate' ? !certificatePem || !privateKeyPem : !clientSecret) {
 			return null;
 		}
 
-		const key = JSON.stringify([type, tenantId, clientId, clientSecret]);
+		const key = JSON.stringify([type, tenantId, clientId, authMethod, clientSecret, certificatePem, privateKeyPem, cloud]);
 		if (cached?.key !== key) {
 			cached = {
 				key,
@@ -43,9 +48,9 @@ export function getConfiguredProvider(): ICalendarSyncProvider | null {
 					{
 						tenantId,
 						clientId,
-						clientSecret,
-						loginHost: MICROSOFT_LOGIN_HOST,
-						graphHost: MICROSOFT_GRAPH_HOST,
+						authMethod,
+						...(authMethod === 'certificate' ? { certificatePem, privateKeyPem } : { clientSecret }),
+						...GRAPH_CLOUDS[cloud],
 					},
 					fetchAdapter,
 				),
