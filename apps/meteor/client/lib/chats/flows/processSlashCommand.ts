@@ -10,7 +10,7 @@ import { settings } from '../../settings';
 import type { ChatAPI } from '../ChatAPI';
 
 const parse = (msg: string): { command: string; params: string } | { command: SlashCommand; params: string } | undefined => {
-	const match = msg.match(/^\/([^\s]+)(.*)/);
+	const match = msg.match(/^\/([^\s]+)(.*)/s);
 
 	if (!match) {
 		return undefined;
