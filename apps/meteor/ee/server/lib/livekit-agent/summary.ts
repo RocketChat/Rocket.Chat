@@ -4,8 +4,8 @@ import { VideoConference as VideoConferenceModel, Users as UsersModel } from '@r
 
 import { FileUpload } from '../../../../app/file-upload/server';
 import { sendFileMessage } from '../../../../app/file-upload/server/methods/sendFileMessage';
-import { executeSendMessage } from '../../../../server/meteor-methods/messages/sendMessage';
 import { settings } from '../../../../app/settings/server';
+import { executeSendMessage } from '../../../../server/meteor-methods/messages/sendMessage';
 
 const logger = new Logger('MediaCalls/Summary');
 

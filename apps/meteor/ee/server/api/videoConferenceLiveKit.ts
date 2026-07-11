@@ -8,10 +8,10 @@ import {
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 
-import { API } from '../../../server/api/api';
-import { canAccessRoomAsync } from '../../../server/lib/authorization/canAccessRoom';
 import notifications from '../../../app/notifications/server/lib/Notifications';
 import { settings } from '../../../app/settings/server';
+import { API } from '../../../server/api/api';
+import { canAccessRoomAsync } from '../../../server/lib/authorization/canAccessRoom';
 import {
 	createLiveKitAccessToken,
 	getLiveKitConfig,
