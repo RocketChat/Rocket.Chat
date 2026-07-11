@@ -2,10 +2,10 @@ import { cronJobs } from '@rocket.chat/cron';
 import { Logger } from '@rocket.chat/logger';
 import { CalendarSyncState, Permissions } from '@rocket.chat/models';
 
-import { settings } from '../../../app/settings/server';
 import { CalendarSyncEngine } from './CalendarSyncEngine';
 import type { ICalendarSyncEngineConfig } from './CalendarSyncEngine';
 import { getConfiguredProvider } from './factory';
+import { settings } from '../../../../app/settings/server';
 
 const JOB_NAME = 'calendar-sync';
 

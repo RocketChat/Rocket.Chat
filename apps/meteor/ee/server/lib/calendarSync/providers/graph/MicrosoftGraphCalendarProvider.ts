@@ -1,3 +1,5 @@
+import type { IGraphTokenManagerConfig } from './GraphTokenManager';
+import { GraphTokenManager } from './GraphTokenManager';
 import type {
 	CalendarSyncFetchFn,
 	FreeBusyStatus,
@@ -11,8 +13,6 @@ import type {
 } from '../../definition';
 import { CalendarSyncError } from '../../definition';
 import { sanitizeError } from '../../logSanitizer';
-import type { IGraphTokenManagerConfig } from './GraphTokenManager';
-import { GraphTokenManager } from './GraphTokenManager';
 
 export interface IMicrosoftGraphProviderConfig extends IGraphTokenManagerConfig {
 	/** Page size requested from Graph (odata.maxpagesize) */
@@ -35,6 +35,13 @@ const GET_SCHEDULE_MAX_MAILBOXES = 20;
 const EVENT_SELECT_FIELDS = 'id,iCalUId,subject,bodyPreview,start,end,showAs,isCancelled,onlineMeeting,onlineMeetingUrl';
 
 const BUSY_STATUSES = new Set(['busy', 'oof']);
+
+function mapFreeBusyStatus(status: string): FreeBusyStatus {
+	if (status === 'oof' || status === 'tentative') {
+		return status;
+	}
+	return 'busy';
+}
 
 export class MicrosoftGraphCalendarProvider implements ICalendarSyncProvider {
 	public readonly type = 'microsoft-graph' as const;
@@ -179,7 +186,7 @@ export class MicrosoftGraphCalendarProvider implements ICalendarSyncProvider {
 					.map((item: { status: string; start: { dateTime: string }; end: { dateTime: string } }) => ({
 						start: this.parseGraphDate(item.start?.dateTime),
 						end: this.parseGraphDate(item.end?.dateTime),
-						status: (item.status === 'oof' ? 'oof' : item.status === 'tentative' ? 'tentative' : 'busy') as FreeBusyStatus,
+						status: mapFreeBusyStatus(item.status),
 					}))
 					.filter((interval: { start: Date | null; end: Date | null }) => interval.start && interval.end);
 
@@ -307,9 +314,17 @@ export class MicrosoftGraphCalendarProvider implements ICalendarSyncProvider {
 			return new CalendarSyncError('throttled', 'Microsoft Graph throttling limit reached');
 		}
 		if (status === 403 || graphCode === 'Authorization_RequestDenied' || graphCode === 'ErrorAccessDenied') {
-			return new CalendarSyncError('consent-missing', `Access denied by Microsoft Graph — check application permissions and admin consent (${message})`);
+			return new CalendarSyncError(
+				'consent-missing',
+				`Access denied by Microsoft Graph — check application permissions and admin consent (${message})`,
+			);
 		}
-		if (status === 404 || graphCode === 'ErrorItemNotFound' || graphCode === 'ResourceNotFound' || graphCode === 'MailboxNotEnabledForRESTAPI') {
+		if (
+			status === 404 ||
+			graphCode === 'ErrorItemNotFound' ||
+			graphCode === 'ResourceNotFound' ||
+			graphCode === 'MailboxNotEnabledForRESTAPI'
+		) {
 			return new CalendarSyncError('mailbox-not-found', message);
 		}
 		if (status === 401) {

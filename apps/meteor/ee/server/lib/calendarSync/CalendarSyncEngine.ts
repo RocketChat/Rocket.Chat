@@ -1,5 +1,5 @@
-import type { ICalendarSyncState, IUser } from '@rocket.chat/core-typings';
 import { Calendar } from '@rocket.chat/core-services';
+import type { ICalendarSyncState, IUser } from '@rocket.chat/core-typings';
 import { CalendarEvent, CalendarSyncState, Users } from '@rocket.chat/models';
 
 import type { ICalendarSyncProvider, ICalendarSyncWindow, IExternalCalendarEvent } from './definition';
@@ -100,10 +100,7 @@ export class CalendarSyncEngine {
 			projection[`customFields.${config.mailboxCustomField}`] = 1;
 		}
 
-		const cursor = Users.find<Pick<IUser, '_id' | 'emails' | 'customFields' | 'username'>>(
-			{ active: true, type: 'user' },
-			{ projection },
-		);
+		const cursor = Users.find<Pick<IUser, '_id' | 'emails' | 'customFields' | 'username'>>({ active: true, type: 'user' }, { projection });
 
 		const batchSize = Math.max(1, config.batchSize);
 		let batch: Pick<IUser, '_id' | 'emails' | 'customFields' | 'username'>[] = [];

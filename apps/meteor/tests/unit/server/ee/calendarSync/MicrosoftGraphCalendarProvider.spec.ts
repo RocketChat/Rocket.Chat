@@ -30,14 +30,14 @@ const TOKEN_PAYLOAD = { access_token: 'tok-1', expires_in: 3600, token_type: 'Be
 const isTokenUrl = (url: string) => url.includes('/oauth2/v2.0/token');
 
 const graphEvent = (id: string, overrides: Record<string, unknown> = {}) => ({
-	'id': id,
-	'iCalUId': `ical-${id}`,
-	'subject': `Meeting ${id}`,
-	'bodyPreview': `Agenda for ${id}`,
-	'start': { dateTime: '2026-07-12T10:00:00.0000000', timeZone: 'UTC' },
-	'end': { dateTime: '2026-07-12T11:00:00.0000000', timeZone: 'UTC' },
-	'showAs': 'busy',
-	'isCancelled': false,
+	id,
+	iCalUId: `ical-${id}`,
+	subject: `Meeting ${id}`,
+	bodyPreview: `Agenda for ${id}`,
+	start: { dateTime: '2026-07-12T10:00:00.0000000', timeZone: 'UTC' },
+	end: { dateTime: '2026-07-12T11:00:00.0000000', timeZone: 'UTC' },
+	showAs: 'busy',
+	isCancelled: false,
 	...overrides,
 });
 

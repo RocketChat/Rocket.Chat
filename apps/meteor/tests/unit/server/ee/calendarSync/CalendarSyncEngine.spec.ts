@@ -41,7 +41,7 @@ const silentLogger = {
 };
 
 const DEFAULT_CONFIG = {
-	mode: 'full-events' as const,
+	mode: 'full-events' as 'full-events' | 'free-busy-only',
 	windowDays: 7,
 	batchSize: 10,
 	presenceEnabled: true,
@@ -239,7 +239,9 @@ describe('calendarSync/CalendarSyncEngine', () => {
 	it('should record per-user failures and keep processing the remaining users', async () => {
 		usersFindStub.returns([user('u1'), user('u2')]);
 		const listEvents = sinon.stub();
-		listEvents.withArgs('u1@example.com', sinon.match.any, sinon.match.any).rejects(Object.assign(new Error('denied'), { code: 'consent-missing' }));
+		listEvents
+			.withArgs('u1@example.com', sinon.match.any, sinon.match.any)
+			.rejects(Object.assign(new Error('denied'), { code: 'consent-missing' }));
 		listEvents.withArgs('u2@example.com', sinon.match.any, sinon.match.any).resolves({ events: [], deletedEventIds: [], full: true });
 		const provider = makeProvider({ listEvents });
 

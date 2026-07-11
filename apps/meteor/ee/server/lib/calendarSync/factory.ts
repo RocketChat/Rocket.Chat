@@ -1,14 +1,16 @@
 import { serverFetch } from '@rocket.chat/server-fetch';
 
-import { settings } from '../../../app/settings/server';
 import type { CalendarSyncFetchFn, ICalendarSyncProvider } from './definition';
 import { MicrosoftGraphCalendarProvider } from './providers/graph/MicrosoftGraphCalendarProvider';
+import { settings } from '../../../../app/settings/server';
 
 // Commercial-cloud endpoints; national clouds (GCC High/DoD) become configurable in a follow-up phase
 const MICROSOFT_LOGIN_HOST = 'https://login.microsoftonline.com';
 const MICROSOFT_GRAPH_HOST = 'https://graph.microsoft.com';
 
-const fetchAdapter: CalendarSyncFetchFn = (url, options) => serverFetch(url, options);
+// The provider only ever targets the hardcoded Microsoft cloud hosts, so SSRF
+// validation (meant for user-supplied URLs) does not apply — same as the Slack bridge
+const fetchAdapter: CalendarSyncFetchFn = (url, options) => serverFetch(url, { ...options, ignoreSsrfValidation: true });
 
 let cached: { key: string; provider: ICalendarSyncProvider } | null = null;
 
