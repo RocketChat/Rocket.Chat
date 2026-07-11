@@ -10,7 +10,7 @@ import { useChat } from '../../room/contexts/ChatContext';
 
 const audioRecorder = new AudioRecorder();
 
-type AudioMessageRecorderProps = {
+export type AudioMessageRecorderProps = {
 	rid: IRoom['_id'];
 	isMicrophoneDenied?: boolean;
 };

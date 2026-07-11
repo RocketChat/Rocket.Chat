@@ -7,7 +7,7 @@ import AutoCompleteAgent from '../../../omnichannel/components/AutoCompleteAgent
 import type { AuditFields } from '../../hooks/useAuditForm';
 import VisitorAutoComplete from '../forms/VisitorAutoComplete';
 
-type OmnichannelTabProps = {
+export type OmnichannelTabProps = {
 	form: UseFormReturn<AuditFields>;
 };
 

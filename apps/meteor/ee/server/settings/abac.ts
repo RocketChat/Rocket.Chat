@@ -27,6 +27,7 @@ export function addSettings(): Promise<void> {
 						{ key: 'local', i18nLabel: 'ABAC_PDP_Type_Local' },
 						{ key: 'virtru', i18nLabel: 'ABAC_PDP_Type_Virtru' },
 					],
+					alert: 'ABAC_PDP_Type_Switch_Alert',
 					enableQuery: abacEnabledQuery,
 				});
 				await this.add('ABAC_Attribute_Store', 'local', {

@@ -36,8 +36,8 @@ const { parseFileIntoMessageAttachments } = proxyquire.noCallThru().load('./send
 	'../../../../lib/utils/getFileExtension': { getFileExtension },
 	'../../../../server/lib/callbacks': { callbacks: { runAsync: sinon.stub() } },
 	'../../../../server/lib/logger/system': { SystemLogger: { error: sinon.stub() } },
-	'../../../authorization/server/functions/canAccessRoom': { canAccessRoomAsync: sinon.stub().resolves(true) },
-	'../../../lib/server/methods/sendMessage': { executeSendMessage: sinon.stub().resolves({}) },
+	'../../../../server/lib/authorization/canAccessRoom': { canAccessRoomAsync: sinon.stub().resolves(true) },
+	'../../../../server/meteor-methods/messages/sendMessage': { executeSendMessage: sinon.stub().resolves({}) },
 });
 
 describe('sendFileMessage - Mass Assignment & Type Pollution Prevention', () => {

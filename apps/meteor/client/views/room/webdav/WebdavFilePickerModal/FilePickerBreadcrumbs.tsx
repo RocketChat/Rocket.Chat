@@ -2,7 +2,7 @@ import { Box, Icon, IconButton, Tag } from '@rocket.chat/fuselage';
 import type { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type FilePickerBreadcrumbsProps = {
+export type FilePickerBreadcrumbsProps = {
 	parentFolders: string[];
 	handleBreadcrumb: (e: MouseEvent<HTMLElement>) => void;
 	handleBack: () => void;

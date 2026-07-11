@@ -180,6 +180,33 @@ describe('[Settings]', () => {
 					});
 			});
 
+			it('should accept an optional editor for a setting', async () => {
+				await request
+					.post(api('settings'))
+					.set(credentials)
+					.send({ settings: [{ _id: 'Livechat_title_color', value: '#000000', editor: 'color' }] })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				await request
+					.get(api('settings/Livechat_title_color'))
+					.set(credentials)
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('value', '#000000');
+					});
+			});
+
+			it('should return bad request when editor is an empty string', async () => {
+				await request
+					.post(api('settings'))
+					.set(credentials)
+					.send({ settings: [{ _id: 'Livechat_title_color', value: '#C1272D', editor: '' }] })
+					.expect(400);
+			});
+
 			it('should fail when the user does not have edit-privileged-setting permission', async () => {
 				await updatePermission('edit-privileged-setting', []);
 				await request

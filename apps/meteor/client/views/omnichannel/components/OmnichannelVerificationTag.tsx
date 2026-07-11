@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
-type OmnichannelVerificationTagProps = {
+export type OmnichannelVerificationTagProps = {
 	verified?: boolean;
 	onClick?: () => void;
 };

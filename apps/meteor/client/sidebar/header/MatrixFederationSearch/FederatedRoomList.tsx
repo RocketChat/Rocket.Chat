@@ -11,7 +11,7 @@ import FederatedRoomListItem from './FederatedRoomListItem';
 import { useInfiniteFederationSearchPublicRooms } from './useInfiniteFederationSearchPublicRooms';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 
-type FederatedRoomListProps = {
+export type FederatedRoomListProps = {
 	serverName: string;
 	roomName?: string;
 	pageToken?: string;

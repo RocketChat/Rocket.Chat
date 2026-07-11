@@ -4,8 +4,8 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, Subscriptions, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { isTheLastMessage } from '../../../server/lib/messages/isTheLastMessage';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
-import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
 import { methodDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../lib/server/lib/notifyListener';
 import { settings } from '../../settings/server';

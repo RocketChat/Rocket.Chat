@@ -24,7 +24,7 @@ const getName = (t: TFunction, permission: IPermission): string => {
 	return t(permission._id as TranslationKey);
 };
 
-type PermissionRowProps = {
+export type PermissionRowProps = {
 	permission: IPermission;
 	roleList: IRole[];
 	onGrant: (permissionId: IPermission['_id'], roleId: IRole['_id']) => Promise<void>;

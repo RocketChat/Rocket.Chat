@@ -5,7 +5,7 @@ import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { AllHTMLAttributes } from 'react';
 import { useMemo, useState } from 'react';
 
-type AutoCompleteDepartmentAgentProps = Omit<AllHTMLAttributes<HTMLInputElement>, 'onChange'> & {
+export type AutoCompleteDepartmentAgentProps = Omit<AllHTMLAttributes<HTMLInputElement>, 'onChange'> & {
 	error?: boolean;
 	value: string;
 	onChange(value: string): void;

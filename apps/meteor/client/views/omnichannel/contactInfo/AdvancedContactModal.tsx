@@ -9,7 +9,7 @@ import { useExternalLink } from '../../../hooks/useExternalLink';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { links } from '../../../lib/links';
 
-type AdvancedContactModalProps = {
+export type AdvancedContactModalProps = {
 	onCancel: () => void;
 };
 

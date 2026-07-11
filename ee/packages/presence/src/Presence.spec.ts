@@ -118,6 +118,32 @@ describe('Presence class', () => {
 				undefined,
 			);
 		});
+
+		it('should reject a past statusExpiresAt', async () => {
+			await expect(
+				presence.setActiveState('u1', {
+					statusDefault: UserStatus.BUSY,
+					statusSource: 'manual',
+					statusText: 'Focus',
+					statusExpiresAt: new Date(Date.now() - 3600_000),
+				}),
+			).rejects.toThrow('statusExpiresAt must be a future date');
+
+			expect(updatePresenceMock).not.toHaveBeenCalled();
+		});
+
+		it('should reject an invalid statusExpiresAt', async () => {
+			await expect(
+				presence.setActiveState('u1', {
+					statusDefault: UserStatus.BUSY,
+					statusSource: 'manual',
+					statusText: 'Focus',
+					statusExpiresAt: new Date('not a date'),
+				}),
+			).rejects.toThrow('statusExpiresAt must be a future date');
+
+			expect(updatePresenceMock).not.toHaveBeenCalled();
+		});
 	});
 
 	describe('endActiveState', () => {

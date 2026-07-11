@@ -6,7 +6,7 @@ import { FormSkeleton } from '../../../components';
 import { useOmnichannelRoomInfo } from '../../../hooks/useOmnichannelRoomInfo';
 import { useVisitorInfo } from '../../../hooks/useVisitorInfo';
 
-type RoomEditWithDataProps = {
+export type RoomEditWithDataProps = {
 	id: string;
 	reload?: () => void;
 	reloadInfo?: () => void;

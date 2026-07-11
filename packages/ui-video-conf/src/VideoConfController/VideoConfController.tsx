@@ -2,7 +2,7 @@ import { IconButton } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { ButtonHTMLAttributes } from 'react';
 
-type VideoConfControllerProps = {
+export type VideoConfControllerProps = {
 	icon: IconName;
 	active?: boolean;
 	secondary?: boolean;

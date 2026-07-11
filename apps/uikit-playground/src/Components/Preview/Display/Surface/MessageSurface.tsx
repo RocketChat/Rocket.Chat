@@ -15,7 +15,9 @@ import {
 } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-const MessageSurface = ({ children }: { children: ReactNode }) => (
+export type MessageSurfaceProps = { children: ReactNode };
+
+const MessageSurface = ({ children }: MessageSurfaceProps) => (
 	<Message>
 		<MessageLeftContainer>
 			<Avatar

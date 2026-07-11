@@ -3,7 +3,7 @@ import type { ComponentPropsWithoutRef } from 'react';
 
 import HeaderDivider from './HeaderDivider';
 
-type HeaderProps = ComponentPropsWithoutRef<typeof Box>;
+export type HeaderProps = ComponentPropsWithoutRef<typeof Box>;
 
 const Header = (props: HeaderProps) => (
 	<Box

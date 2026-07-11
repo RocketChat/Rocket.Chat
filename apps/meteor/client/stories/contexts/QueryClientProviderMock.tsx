@@ -14,7 +14,7 @@ const queryClient = new QueryClient({
 	},
 });
 
-type QueryClientProviderMockProps = {
+export type QueryClientProviderMockProps = {
 	children?: ReactNode;
 };
 

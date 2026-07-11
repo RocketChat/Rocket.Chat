@@ -14,7 +14,7 @@ import UsersInRoleTableRow from './UsersInRoleTableRow';
 import GenericError from '../../../../../components/GenericError';
 import GenericNoResults from '../../../../../components/GenericNoResults';
 
-type UsersInRoleTableProps = {
+export type UsersInRoleTableProps = {
 	isLoading: boolean;
 	isError: boolean;
 	isSuccess: boolean;

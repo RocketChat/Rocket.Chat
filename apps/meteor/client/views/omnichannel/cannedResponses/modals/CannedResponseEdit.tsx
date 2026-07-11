@@ -17,7 +17,7 @@ export type CannedResponseEditFormData = {
 	departmentId: string;
 };
 
-type CannedResponseEditProps = {
+export type CannedResponseEditProps = {
 	cannedResponseData?: Serialized<IOmnichannelCannedResponse>;
 	departmentData?: Serialized<ILivechatDepartment>;
 	onDelete?: () => void;

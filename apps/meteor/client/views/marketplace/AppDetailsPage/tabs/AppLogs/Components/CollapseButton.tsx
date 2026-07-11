@@ -2,7 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Chevron, Palette } from '@rocket.chat/fuselage';
 import type { CSSProperties, ReactNode } from 'react';
 
-type CollapseButtonProps = {
+export type CollapseButtonProps = {
 	children: ReactNode;
 	regionId: string;
 	expanded?: boolean;

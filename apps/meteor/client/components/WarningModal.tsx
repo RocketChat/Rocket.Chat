@@ -12,7 +12,7 @@ import {
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type WarningModalProps = {
+export type WarningModalProps = {
 	text: ReactNode;
 	confirmText: ReactNode;
 	cancelText?: ReactNode;

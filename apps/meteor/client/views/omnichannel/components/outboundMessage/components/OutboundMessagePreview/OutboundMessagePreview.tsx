@@ -15,7 +15,7 @@ import { formatPhoneNumber } from '../../../../../../lib/formatPhoneNumber';
 import type { TemplateParameters } from '../../types/template';
 import TemplatePreview from '../TemplatePreview';
 
-type OutboundMessagePreviewProps = ComponentProps<typeof Box> & {
+export type OutboundMessagePreviewProps = ComponentProps<typeof Box> & {
 	template?: IOutboundProviderTemplate;
 	contactName?: ILivechatContact['name'];
 	providerName?: IOutboundProviderMetadata['providerName'];

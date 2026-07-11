@@ -14,7 +14,7 @@ const { MessageConverter } = proxyquire.noCallThru().load('../../../../../app/im
 	'../../../settings/server': {
 		settings: { get: settingsStub },
 	},
-	'../../../../lib/server/functions/insertMessage': {
+	'../../../../../server/lib/messages/insertMessage': {
 		insertMessage,
 	},
 	'meteor/check': sinon.stub(),

@@ -13,7 +13,7 @@ import {
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { FormEvent, MouseEvent, ClipboardEvent } from 'react';
+import type { MouseEvent, ClipboardEvent, ChangeEvent } from 'react';
 import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'react';
 
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
@@ -22,6 +22,7 @@ import MessageBoxHint from './MessageBoxHint';
 import MessageBoxReplies from './MessageBoxReplies';
 import MessageComposerFiles from './MessageComposerFiles';
 import { handleSelectionWrapping } from './wrapSelection';
+import { emoji } from '../../../../../app/emoji/client';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -49,7 +50,7 @@ import { useDraft } from './hooks/useDraft';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 
-const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
+const reducer = (_: unknown, event: ChangeEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
 
 	return Boolean(target.value.trim());
@@ -80,7 +81,7 @@ const getEmptyFalse = () => false;
 const a: any[] = [];
 const getEmptyArray = () => a;
 
-type MessageBoxProps = {
+export type MessageBoxProps = {
 	tmid?: IMessage['_id'];
 	onSend?: (params: { value: string; tshow?: boolean; previewUrls?: string[]; isSlashCommandAllowed?: boolean }) => Promise<void>;
 	onJoin?: () => Promise<void>;
@@ -162,7 +163,11 @@ const MessageBox = ({
 		}
 
 		const ref = messageComposerRef.current as HTMLElement;
-		chat.emojiPicker.open(ref, (emoji: string) => chat.composer?.insertText(` :${emoji}: `));
+		chat.emojiPicker.open(ref, (emojiName: string) => {
+			const emojiEntry = emoji.list[`:${emojiName}:`];
+			const text = emojiEntry && 'unicode' in emojiEntry && emojiEntry.unicode ? ` ${emojiEntry.unicode} ` : ` :${emojiName}: `;
+			chat.composer?.insertText(text);
+		});
 	});
 
 	const { hasUploads, handleUploadFiles, isUploading, isProcessingUploads } = useFileUpload();

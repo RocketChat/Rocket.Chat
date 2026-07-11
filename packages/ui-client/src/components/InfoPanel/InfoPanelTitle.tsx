@@ -2,7 +2,7 @@ import { Box, Icon } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { ReactNode } from 'react';
 
-type InfoPanelTitleProps = {
+export type InfoPanelTitleProps = {
 	title: string;
 	icon: ReactNode;
 };

@@ -3,7 +3,7 @@ import { Slider, Field, FieldLabel, FieldRow, FieldHint } from '@rocket.chat/fus
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type RangeSettingInputProps = SettingInputProps<number> & {
+export type RangeSettingInputProps = SettingInputProps<number> & {
 	hint?: string;
 	minValue?: number;
 	maxValue?: number;

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import ContextualbarAction from './ContextualbarAction';
 
-type ContextualbarBackProps = Partial<ComponentProps<typeof ContextualbarAction>>;
+export type ContextualbarBackProps = Partial<ComponentProps<typeof ContextualbarAction>>;
 
 const ContextualbarBack = (props: ContextualbarBackProps) => {
 	const { t } = useTranslation();

@@ -4,7 +4,7 @@ import { useMemo, type ComponentProps } from 'react';
 
 import { formatPhoneNumber } from '../../../../../lib/formatPhoneNumber';
 
-type SenderSelectProps = Omit<ComponentProps<typeof Select>, 'options'> & {
+export type SenderSelectProps = Omit<ComponentProps<typeof Select>, 'options'> & {
 	provider: IOutboundProviderMetadata | undefined;
 };
 

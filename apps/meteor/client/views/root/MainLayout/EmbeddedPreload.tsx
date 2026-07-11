@@ -13,7 +13,9 @@ import { Rooms } from '../../../stores';
 import PageLoading from '../PageLoading';
 import { useMainReady } from '../hooks/useMainReady';
 
-const EmbeddedPreload = ({ children }: { children: ReactNode }) => {
+export type EmbeddedPreloadProps = { children: ReactNode };
+
+const EmbeddedPreload = ({ children }: EmbeddedPreloadProps) => {
 	const ready = useMainReady();
 	const router = useRouter();
 	const uid = useUserId();

@@ -26,7 +26,7 @@ import { useChat } from '../contexts/ChatContext';
 import type { RetentionPolicy } from '../hooks/useRetentionPolicy';
 import { useKeepMountedMessages } from './hooks/useKeepMountedMessages';
 
-type MessageListProps = {
+export type MessageListProps = {
 	rid: IRoom['_id'];
 	canPreview: boolean;
 	hasMorePreviousMessages: boolean;

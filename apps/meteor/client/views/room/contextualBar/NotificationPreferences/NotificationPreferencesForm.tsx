@@ -7,7 +7,7 @@ import NotificationByDevice from './components/NotificationByDevice';
 import NotificationPreference from './components/NotificationPreference';
 import NotificationToggle from './components/NotificationToggle';
 
-type NotificationPreferencesFormProps = {
+export type NotificationPreferencesFormProps = {
 	notificationOptions: {
 		[key: string]: SelectOption[];
 	};

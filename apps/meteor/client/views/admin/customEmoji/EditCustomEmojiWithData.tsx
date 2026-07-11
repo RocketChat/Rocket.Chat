@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import EditCustomEmoji from './EditCustomEmoji';
 import { FormSkeleton } from '../../../components/Skeleton';
 
-type EditCustomEmojiWithDataProps = {
+export type EditCustomEmojiWithDataProps = {
 	_id: string;
 	close: () => void;
 	onChange: () => void;
