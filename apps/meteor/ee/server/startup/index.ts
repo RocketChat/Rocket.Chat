@@ -1,4 +1,3 @@
-import '../../app/authorization/lib/addRoleRestrictions';
 import '../hooks/auth/callback';
 import './audit';
 import './deviceManagement';
