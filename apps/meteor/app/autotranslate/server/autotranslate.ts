@@ -102,8 +102,9 @@ export class TranslationProviderRegistry {
 	}
 
 	static registerCallbacks(): void {
+		callbacks.remove('afterSaveMessage', 'autotranslate');
+
 		if (!TranslationProviderRegistry.enabled) {
-			callbacks.remove('afterSaveMessage', 'autotranslate');
 			return;
 		}
 
