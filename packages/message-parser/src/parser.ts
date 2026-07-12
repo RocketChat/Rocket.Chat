@@ -16,6 +16,9 @@ import type {
 	OrderedList,
 	KaTeX,
 	LineBreak,
+	CodeLine,
+	Paragraph,
+	ListItem,
 } from './definitions';
 import type { Options } from './index';
 import {
@@ -195,6 +198,7 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			}
 		}
 
+		// KaTeX inline (must be before escape handler)
 		if (ch === '$' || (ch === '\\' && scanner.charAt(1) === '(')) {
 			const result = tryKatexInline(scanner, options);
 			if (result !== null) {
@@ -227,6 +231,7 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			}
 		}
 
+		// Bold
 		if (ch === '*') {
 			const result = tryBold(scanner, options);
 			if (result !== null) {
@@ -236,17 +241,17 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			}
 		}
 
+		// Italic
 		if (ch === '_') {
-			if (!isAlphaNum(prevChar)) {
-				const result = tryItalic(scanner, options);
-				if (result !== null) {
-					nodes.push(result);
-					prevChar = '_';
-					continue;
-				}
+			const result = tryItalic(scanner, options, prevChar);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = '_';
+				continue;
 			}
 		}
 
+		// Strike
 		if (ch === '~') {
 			const result = tryStrike(scanner, options);
 			if (result !== null) {
@@ -265,23 +270,23 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			}
 		}
 
+		// User mention
 		if (ch === '@') {
-			const result = tryUserMention(scanner);
+			const result = tryUserMention(scanner, prevChar);
 			if (result !== null) {
 				nodes.push(result);
-				prevChar = '@';
+				prevChar = ch;
 				continue;
 			}
 		}
 
+		// Mention channel
 		if (ch === '#') {
-			if (prevChar === '' || isSpace(prevChar)) {
-				const result = tryChannelMention(scanner);
-				if (result !== null) {
-					nodes.push(result);
-					prevChar = '#';
-					continue;
-				}
+			const result = tryChannelMention(scanner, prevChar);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = ch;
+				continue;
 			}
 		}
 
@@ -423,6 +428,7 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			}
 		}
 
+		// KaTeX inline (must be before escape handler)
 		if (ch === '$' || (ch === '\\' && scanner.charAt(1) === '(')) {
 			const result = tryKatexInline(scanner, options);
 			if (result !== null) {
@@ -455,6 +461,7 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			}
 		}
 
+		// Bold
 		if (ch === '*') {
 			const result = tryBold(scanner, options);
 			if (result !== null) {
@@ -464,17 +471,17 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			}
 		}
 
+		// Italic
 		if (ch === '_') {
-			if (!isAlphaNum(prevChar)) {
-				const result = tryItalic(scanner, options);
-				if (result !== null) {
-					nodes.push(result);
-					prevChar = '_';
-					continue;
-				}
+			const result = tryItalic(scanner, options, prevChar);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = '_';
+				continue;
 			}
 		}
 
+		// Strike
 		if (ch === '~') {
 			const result = tryStrike(scanner, options);
 			if (result !== null) {
@@ -493,23 +500,23 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			}
 		}
 
+		// User mention
 		if (ch === '@') {
-			const result = tryUserMention(scanner);
+			const result = tryUserMention(scanner, prevChar);
 			if (result !== null) {
 				nodes.push(result);
-				prevChar = '@';
+				prevChar = ch;
 				continue;
 			}
 		}
 
+		// Mention channel
 		if (ch === '#') {
-			if (prevChar === '' || isSpace(prevChar)) {
-				const result = tryChannelMention(scanner);
-				if (result !== null) {
-					nodes.push(result);
-					prevChar = '#';
-					continue;
-				}
+			const result = tryChannelMention(scanner, prevChar);
+			if (result !== null) {
+				nodes.push(result);
+				prevChar = ch;
+				continue;
 			}
 		}
 
@@ -634,73 +641,92 @@ function tryLineBreak(scanner: Scanner): LineBreak | null {
 function tryBold(scanner: Scanner, options: Options): Inlines | null {
 	if (skipBold) return null;
 	const start = scanner.position();
+
 	if (scanner.matches('***')) {
 		scanner.consume(1);
 		return plain('*');
 	}
 	const isDouble = scanner.matches('**');
 	const delimiter = isDouble ? '**' : '*';
+
 	scanner.consume(delimiter.length);
 	if (scanner.isEnd() || isNewline(scanner.char())) {
 		scanner.backtrack(start);
 		return null;
 	}
+
 	skipBold = true;
 	const content = parseInlineContent(scanner, options, delimiter);
 	skipBold = false;
+
 	if (!scanner.matches(delimiter)) {
 		scanner.backtrack(start);
 		return null;
 	}
+
 	if (content.length === 0) {
 		scanner.backtrack(start);
 		return null;
 	}
+
 	if (isWhitespaceOnly(content)) {
 		scanner.backtrack(start);
 		return null;
 	}
+
 	scanner.consume(delimiter.length);
 	return bold(reducePlainTexts(content) as Bold['value']);
 }
 
-function tryItalic(scanner: Scanner, options: Options): Inlines | null {
+function tryItalic(scanner: Scanner, options: Options, prevChar: string): Inlines | null {
+	if (isAlphaNum(prevChar)) return null;
+
 	if (skipItalic) return null;
 	const start = scanner.position();
+
 	if (scanner.matches('___')) {
 		scanner.consume(1);
 		return plain('_');
 	}
+
 	const isDouble = scanner.matches('__');
 	const delimiter = isDouble ? '__' : '_';
+
 	scanner.consume(delimiter.length);
 	if (scanner.isEnd() || isNewline(scanner.char())) {
 		scanner.backtrack(start);
 		return null;
 	}
+
 	skipItalic = true;
 	const content = parseInlineContent(scanner, options, delimiter);
 	skipItalic = false;
+
 	if (!scanner.matches(delimiter)) {
 		scanner.backtrack(start);
 		return null;
 	}
+
 	if (content.length === 0) {
 		scanner.backtrack(start);
 		return null;
 	}
+
 	if (isWhitespaceOnly(content)) {
 		scanner.backtrack(start);
 		return null;
 	}
+
 	if (isDouble && isAlphaNum(scanner.charAt(delimiter.length))) {
 		scanner.backtrack(start);
 		return null;
 	}
+
 	if (!isDouble && isAlpha(scanner.charAt(delimiter.length))) {
 		scanner.backtrack(start);
 		return null;
 	}
+
 	scanner.consume(delimiter.length);
 	return italic(reducePlainTexts(content) as Italic['value']);
 }
@@ -708,52 +734,65 @@ function tryItalic(scanner: Scanner, options: Options): Inlines | null {
 function tryStrike(scanner: Scanner, options: Options): Inlines | null {
 	if (skipStrike) return null;
 	const start = scanner.position();
+
 	if (scanner.matches('~~~')) {
 		scanner.consume(1);
 		return plain('~');
 	}
+
 	const isDouble = scanner.matches('~~');
 	const delimiter = isDouble ? '~~' : '~';
+
 	scanner.consume(delimiter.length);
 	if (scanner.isEnd() || isNewline(scanner.char())) {
 		scanner.backtrack(start);
 		return null;
 	}
+
 	skipStrike = true;
 	const content = parseInlineContent(scanner, options, delimiter);
 	skipStrike = false;
+
 	if (!scanner.matches(delimiter)) {
 		scanner.backtrack(start);
 		return null;
 	}
+
 	if (content.length === 0) {
 		scanner.backtrack(start);
 		return null;
 	}
+
 	if (isWhitespaceOnly(content)) {
 		scanner.backtrack(start);
 		return null;
 	}
+
 	scanner.consume(delimiter.length);
 	return strike(reducePlainTexts(content) as Strike['value']);
 }
 
 function tryInlineCode(scanner: Scanner): Inlines | null {
 	const start = scanner.position();
-	scanner.consume();
+	scanner.consume(); // consume opening backtrack(`)
+
 	const contentStart = scanner.position();
+
 	while (!scanner.isEnd() && !isNewline(scanner.char()) && scanner.char() !== '`') {
 		scanner.consume();
 	}
+
 	if (scanner.isEnd() || isNewline(scanner.char()) || scanner.char() !== '`') {
 		scanner.backtrack(start);
 		return null;
 	}
+
 	const content = scanner.sliceFrom(contentStart);
 	if (content.length === 0) {
 		scanner.backtrack(start);
 		return null;
 	}
+
 	scanner.consume();
 	return inlineCode(plain(content));
 }
@@ -1058,69 +1097,81 @@ function tryEmoticon(scanner: Scanner): Inlines | null {
 	return null;
 }
 
-function tryUserMention(scanner: Scanner): Inlines | null {
+function tryUserMention(scanner: Scanner, prev: string): Inlines | null {
+	if (isAlphaNum(prev)) return null;
+
 	const start = scanner.position();
-	scanner.consume();
+
+	scanner.consume(); // consume '@'
 	const nameStart = scanner.position();
+
 	while (!scanner.isEnd() && !isNewline(scanner.char()) && !isSpace(scanner.char())) {
 		const ch = scanner.char();
 		const code = ch.charCodeAt(0);
-		if (isAlphaNum(ch) || ch === '.' || ch === '-' || ch === '_' || ch === ':' || ch === '@' || code > 127) {
+
+		if (isAlphaNum(ch) || '._-:@'.includes(ch) || code > 127) {
 			scanner.consume();
 		} else {
 			break;
 		}
 	}
+
 	const name = scanner.sliceFrom(nameStart);
+
 	if (name.length === 0) {
 		scanner.backtrack(start);
 		return null;
 	}
-	if (name.endsWith('__')) {
-		scanner.backtrack(start);
-		return null;
-	}
+
 	return mentionUser(name);
 }
 
-function tryChannelMention(scanner: Scanner): Inlines | null {
+function tryChannelMention(scanner: Scanner, prev: string): Inlines | null {
+	if (prev !== '' && !isSpace(prev)) return null;
+
 	const start = scanner.position();
 	scanner.consume();
+
 	const nameStart = scanner.position();
+
 	while (!scanner.isEnd() && !isNewline(scanner.char()) && !isSpace(scanner.char())) {
-		const ch = scanner.char();
-		if (!isAlphaNum(ch) && ch !== '-' && ch !== '_' && ch !== '.') break;
+		const c = scanner.char();
+		if (!isAlphaNum(c) && !'_-.'.includes(c)) break;
 		scanner.consume();
 	}
+
 	const name = scanner.sliceFrom(nameStart);
 	if (name.length === 0) {
 		scanner.backtrack(start);
 		return null;
 	}
+
 	return mentionChannel(name);
 }
 
 function trySpoiler(scanner: Scanner, options: Options): Inlines | null {
-	const spoilerChar = '||';
 	const start = scanner.position();
-	if (!scanner.matches(spoilerChar)) {
+	const delimiter = '||';
+
+	// Must start with "||"
+	if (!scanner.matches(delimiter)) {
 		return null;
 	}
-	scanner.consume(spoilerChar.length);
-	if (scanner.matches('||')) {
+	scanner.consume(delimiter.length); // consume opening "||"
+
+	const content = parseInlineContent(scanner, options, delimiter);
+
+	if (!scanner.matches(delimiter)) {
 		scanner.backtrack(start);
 		return null;
 	}
-	const content = parseInlineContent(scanner, options, '||');
-	if (!scanner.matches(spoilerChar)) {
-		scanner.backtrack(start);
-		return null;
-	}
-	scanner.consume(spoilerChar.length);
+	scanner.consume(delimiter.length); // consume closing "||"
+
 	if (content.length === 0) {
 		scanner.backtrack(start);
 		return null;
 	}
+
 	return spoiler(reducePlainTexts(content) as Spoiler['value']);
 }
 
@@ -1180,7 +1231,7 @@ function tryMarkdownLink(scanner: Scanner, options: Options): Inlines | null {
 			}
 		}
 		if (ch === '_' && !isAlphaNum(prevChar)) {
-			const r = tryItalic(scanner, options);
+			const r = tryItalic(scanner, options, prevChar);
 			if (r !== null) {
 				titleNodes.push(r);
 				prevChar = '_';
@@ -1371,8 +1422,10 @@ function tryBareUrl(scanner: Scanner): Inlines | null {
 
 function tryKatexInline(scanner: Scanner, options: Options): Inlines | null {
 	const start = scanner.position();
+
 	let openDelim: string;
 	let closeDelim: string;
+
 	if (options.katex?.dollarSyntax && scanner.matches('$') && !scanner.matches('$$')) {
 		openDelim = '$';
 		closeDelim = '$';
@@ -1382,18 +1435,25 @@ function tryKatexInline(scanner: Scanner, options: Options): Inlines | null {
 	} else {
 		return null;
 	}
+
 	scanner.consume(openDelim.length);
+
 	const contentStart = scanner.position();
+
+	// Inline katex: no newlines allowed inside
 	while (!scanner.isEnd() && !isNewline(scanner.char())) {
 		if (scanner.matches(closeDelim)) break;
 		scanner.consume();
 	}
+
 	if (!scanner.matches(closeDelim)) {
 		scanner.backtrack(start);
 		return null;
 	}
+
 	const content = scanner.sliceFrom(contentStart);
 	scanner.consume(closeDelim.length);
+
 	return inlineKatex(content);
 }
 
@@ -1448,7 +1508,7 @@ function tryEmojiShortCode(scanner: Scanner): Inlines | null {
 
 function tryUnicodeEmoji(scanner: Scanner): Inlines | null {
 	const ch = scanner.char();
-	if (ch === '' || ch.charCodeAt(0) <= 0x7f) return null; // fast-reject ASCII
+	if (ch === '' || ch.charCodeAt(0) <= 127) return null; // fast-reject ASCII
 	let window = '';
 	for (let i = 0; i < 32; i++) {
 		const c = scanner.charAt(i);
@@ -1464,65 +1524,89 @@ function tryUnicodeEmoji(scanner: Scanner): Inlines | null {
 // ─── Block methods ──────────────────────────────────────────────────────────────
 
 function tryCodeFence(scanner: Scanner): Code | null {
-	const fence = '```';
 	const start = scanner.position();
+	const fence = '```';
+
 	if (!scanner.matches(fence)) {
 		return null;
 	}
 	scanner.consume(fence.length);
+
+	// Optional language tag
 	const langStart = scanner.position();
 	while (!scanner.isEnd() && !isNewline(scanner.char())) {
 		scanner.consume();
 	}
 	const language = scanner.sliceFrom(langStart).trim();
+
+	// Must be followed by newline
 	if (scanner.isEnd()) {
 		scanner.backtrack(start);
 		return null;
 	}
-	consumeEndOfLine(scanner);
-	const lines: ReturnType<typeof codeLine>[] = [];
+
+	consumeEndOfLine(scanner); // Consume newline after opening ```
+
+	const lines: CodeLine[] = [];
+	let closed = false;
+
 	while (!scanner.isEnd()) {
-		if (scanner.matches('```')) {
+		if (scanner.matches(fence)) {
 			scanner.consume(fence.length);
-			while (!scanner.isEnd() && !isNewline(scanner.char())) {
-				scanner.consume();
-			}
-			return code(lines, language || undefined);
+			while (!scanner.isEnd() && !isNewline(scanner.char())) scanner.consume();
+			closed = true;
+			break;
 		}
+
 		const lineStart = scanner.position();
 		while (!scanner.isEnd() && !isNewline(scanner.char())) {
 			scanner.consume();
 		}
-		const lineText = scanner.sliceFrom(lineStart);
-		lines.push(codeLine(plain(lineText)));
+
+		const text = scanner.sliceFrom(lineStart);
+		lines.push(codeLine(plain(text)));
+
 		consumeEndOfLine(scanner);
 	}
-	scanner.backtrack(start);
-	return null;
+
+	if (!closed) {
+		scanner.backtrack(start);
+		return null;
+	}
+
+	return code(lines, language || undefined);
 }
 
 function tryHeading(scanner: Scanner, options: Options): Heading | null {
 	const start = scanner.position();
-	let level = 0;
+	let level = 0; // Count # characters (max 4)
+
 	while (level < 4 && scanner.char() === '#') {
-		level++;
 		scanner.consume();
+		level++;
 	}
+
 	if (level === 0) {
 		scanner.backtrack(start);
 		return null;
 	}
+
+	// Must be followed by at least one space or tab
 	if (!isSpace(scanner.char())) {
 		scanner.backtrack(start);
 		return null;
 	}
+
+	// Skip all leading spaces/tabs
 	while (isSpace(scanner.char())) {
 		scanner.consume();
 	}
+
 	if (scanner.isEnd() || isNewline(scanner.char())) {
 		scanner.backtrack(start);
 		return null;
 	}
+
 	const inlines = parseInline(scanner, options);
 	consumeEndOfLine(scanner);
 	return heading(inlines, level as 1 | 2 | 3 | 4);
@@ -1530,167 +1614,193 @@ function tryHeading(scanner: Scanner, options: Options): Heading | null {
 
 function tryBlockquote(scanner: Scanner, options: Options): Quote | null {
 	const start = scanner.position();
+
 	if (scanner.char() !== '>') {
 		return null;
 	}
-	const paragraphs: ReturnType<typeof paragraph>[] = [];
+
+	const paragraphs: Paragraph[] = [];
+
 	while (!scanner.isEnd() && scanner.char() === '>') {
-		const lineStart = scanner.position();
-		scanner.consume();
+		scanner.consume(); // consume '>'
+
+		// Optional space/tab after '>'
 		if (isSpace(scanner.char())) {
 			scanner.consume();
 		}
-		if (isNewline(scanner.char())) {
-			paragraphs.push(paragraph([plain('')]));
-		} else if (scanner.isEnd()) {
-			scanner.backtrack(lineStart);
-			break;
+
+		if (scanner.isEnd() || isNewline(scanner.char())) {
+			paragraphs.push(paragraph([plain('')])); // empty quoted line
 		} else {
 			const inlines = parseInline(scanner, options);
 			paragraphs.push(paragraph(inlines));
 		}
-		consumeEndOfLine(scanner);
+
+		consumeEndOfLine(scanner); // Consume newline
 	}
+
 	if (paragraphs.length === 0) {
 		scanner.backtrack(start);
 		return null;
 	}
+
 	return quote(paragraphs);
 }
 
 function tryBlockSpoiler(scanner: Scanner, options: Options): SpoilerBlock | null {
-	const spoilerChar = '||';
 	const start = scanner.position();
-	if (!scanner.matches(spoilerChar)) {
+	const spoiler = '||';
+
+	// Opening line must be exactly "||"
+	if (!scanner.matches(spoiler)) {
 		return null;
 	}
-	scanner.consume(spoilerChar.length);
-	if (!scanner.isEnd() && !isNewline(scanner.char())) {
-		scanner.backtrack(start);
-		return null;
-	}
-	// "||" alone at end of input (no content) is not a block spoiler.
-	if (scanner.isEnd()) {
-		scanner.backtrack(start);
+	scanner.consume(spoiler.length);
+
+	if (scanner.isEnd() || !isNewline(scanner.char())) {
+		scanner.backtrack(start); // "||" not alone on its line, or at EOF
 		return null;
 	}
 	consumeEndOfLine(scanner);
-	const paragraphs: ReturnType<typeof paragraph>[] = [];
+
+	const paragraphs: Paragraph[] = [];
+	let closed = false;
+
 	while (!scanner.isEnd()) {
-		if (scanner.matches('||')) {
+		if (scanner.matches(spoiler)) {
 			const closingPos = scanner.position();
-			scanner.consume(spoilerChar.length);
+			scanner.consume(spoiler.length);
+
 			if (scanner.isEnd() || isNewline(scanner.char())) {
-				if (paragraphs.length === 0) {
-					scanner.backtrack(start);
-					return null;
-				}
-				return spoilerBlock(paragraphs);
+				closed = true;
+				break;
 			}
-			scanner.backtrack(closingPos);
+			scanner.backtrack(closingPos); // not a closing line → treat as content
 		}
+
 		const inlines = parseInline(scanner, options);
 		paragraphs.push(paragraph(inlines));
 		consumeEndOfLine(scanner);
 	}
-	scanner.backtrack(start);
-	return null;
+
+	if (!closed || paragraphs.length === 0) {
+		scanner.backtrack(start);
+		return null;
+	}
+
+	return spoilerBlock(paragraphs);
 }
 
 function tryUnorderedList(scanner: Scanner, options: Options): UnorderedList | null {
 	const start = scanner.position();
+
 	const marker = scanner.char();
 	if (marker !== '-' && marker !== '*') {
 		return null;
 	}
+
 	if (!isSpace(scanner.charAt(1))) {
 		return null;
 	}
-	const items: ReturnType<typeof listItem>[] = [];
+
+	const items: ListItem[] = [];
+
 	while (!scanner.isEnd()) {
-		const itemStart = scanner.position();
 		const ch = scanner.char();
+		const itemStart = scanner.position();
+
+		// Stop if marker changes or line is no longer a list item
 		if (ch !== marker) break;
 		if (!isSpace(scanner.charAt(1))) break;
-		scanner.consume();
+
+		scanner.consume(); // consume marker
+
 		while (isSpace(scanner.char())) {
 			scanner.consume();
 		}
+
 		const inlines = parseInline(scanner, options);
-		// Grammar: UnorderedListItemContent = ...+ !"*". An asterisk-bulleted item
-		// whose content is empty or ends with a dangling '*' is not a list item
-		// (e.g. "* *", "* Hello*") — let it fall through to inline emphasis.
+
+		// '*' is also the bold marker, so "* " or text ending in '*' is bold, not a list
 		if (marker === '*') {
 			const last = inlines[inlines.length - 1];
-			if (inlines.length === 0 || (last.type === 'PLAIN_TEXT' && last.value.endsWith('*'))) {
+			const isEmpty = inlines.length === 0;
+			const endsWithStar = last?.type === 'PLAIN_TEXT' && last.value.endsWith('*');
+
+			if (isEmpty || endsWithStar) {
 				scanner.backtrack(itemStart);
 				break;
 			}
 		}
+
 		items.push(listItem(inlines));
+
 		consumeEndOfLine(scanner);
 	}
+
 	if (items.length === 0) {
 		scanner.backtrack(start);
 		return null;
 	}
+
 	return unorderedList(items);
 }
 
 function tryOrderedList(scanner: Scanner, options: Options): OrderedList | null {
 	const start = scanner.position();
+
 	if (!isDigit(scanner.char())) {
 		return null;
 	}
-	const peekStart = scanner.position();
-	while (!scanner.isEnd() && isDigit(scanner.char())) {
-		scanner.consume();
-	}
-	if (scanner.char() !== '.') {
-		scanner.backtrack(start);
-		return null;
-	}
-	scanner.consume();
-	if (!isSpace(scanner.char())) {
-		scanner.backtrack(start);
-		return null;
-	}
-	scanner.backtrack(peekStart);
-	const items: ReturnType<typeof listItem>[] = [];
+
+	const items: ListItem[] = [];
+
 	while (!scanner.isEnd()) {
 		if (!isDigit(scanner.char())) break;
+
+		// Collect leading digits
 		const numStart = scanner.position();
 		while (!scanner.isEnd() && isDigit(scanner.char())) {
 			scanner.consume();
 		}
 		const numStr = scanner.sliceFrom(numStart);
+
+		// Must be followed by '.' then a space
 		if (scanner.char() !== '.') {
 			scanner.backtrack(start);
 			return null;
 		}
-		scanner.consume();
+		scanner.consume(); // consume '.'
+
 		if (!isSpace(scanner.char())) {
 			scanner.backtrack(start);
 			return null;
 		}
+
 		while (isSpace(scanner.char())) {
 			scanner.consume();
 		}
+
 		const inlines = parseInline(scanner, options);
-		items.push(listItem(inlines, parseInt(numStr, 10)));
+		items.push(listItem(inlines, parseInt(numStr)));
+
 		consumeEndOfLine(scanner);
 	}
+
 	if (items.length === 0) {
 		scanner.backtrack(start);
 		return null;
 	}
+
 	return orderedList(items);
 }
 
 function tryKatexBlock(scanner: Scanner, options: Options): KaTeX | null {
 	const start = scanner.position();
+
 	let openDelim: string;
 	let closeDelim: string;
+
 	if (options.katex?.dollarSyntax && scanner.matches('$$')) {
 		openDelim = '$$';
 		closeDelim = '$$';
@@ -1700,18 +1810,24 @@ function tryKatexBlock(scanner: Scanner, options: Options): KaTeX | null {
 	} else {
 		return null;
 	}
+
 	scanner.consume(openDelim.length);
+
+	// Collect content until closing delimiter
 	const contentStart = scanner.position();
 	while (!scanner.isEnd()) {
 		if (scanner.matches(closeDelim)) break;
 		scanner.consume();
 	}
+
 	if (!scanner.matches(closeDelim)) {
 		scanner.backtrack(start);
 		return null;
 	}
+
 	const content = scanner.sliceFrom(contentStart);
 	scanner.consume(closeDelim.length);
+
 	return katex(content);
 }
 
