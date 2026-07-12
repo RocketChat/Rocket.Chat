@@ -49,12 +49,15 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 	}
 
 	public async import(data: Omit<InsertionModel<ICalendarEvent>, 'notificationSent'>): Promise<ICalendarEvent['_id']> {
-		const { externalId } = data;
+		const { externalId, uid } = data;
+		if (this.isEnterpriseManagedUser(uid)) {
+			throw new Error('calendar-managed-by-server');
+		}
 		if (!externalId) {
 			return this.create(data);
 		}
 
-		const { uid, startTime, endTime, subject, description, reminderMinutesBeforeStart, busy } = data;
+		const { startTime, endTime, subject, description, reminderMinutesBeforeStart, busy } = data;
 		const meetingUrl = data.meetingUrl ? data.meetingUrl : await this.parseDescriptionForMeetingUrl(description);
 		const reminderTime = reminderMinutesBeforeStart ? getShiftedTime(startTime, -reminderMinutesBeforeStart) : undefined;
 
@@ -389,5 +392,22 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		}
 
 		return undefined;
+	}
+
+	private isEnterpriseManagedUser(uid: IUser['_id']): boolean {
+		if (!settings.get<boolean>('Enterprise_Calendar_Enabled')) return false;
+		try {
+			const mappings = JSON.parse(settings.get<string>('Enterprise_Calendar_Mailbox_Mappings') || '[]') as unknown;
+			return (
+				Array.isArray(mappings) &&
+				mappings.some((mapping) => {
+					if (!mapping || typeof mapping !== 'object') return false;
+					const record = mapping as Record<string, unknown>;
+					return record.userId === uid && record.enabled !== false;
+				})
+			);
+		} catch {
+			return false;
+		}
 	}
 }

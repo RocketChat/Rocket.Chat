@@ -9063,6 +9063,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/enterprise-calendar@workspace:^, @rocket.chat/enterprise-calendar@workspace:ee/packages/enterprise-calendar":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/enterprise-calendar@workspace:ee/packages/enterprise-calendar"
+  dependencies:
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/tsconfig": "workspace:*"
+    "@types/jest": "npm:~30.0.0"
+    "@types/node": "npm:~22.19.17"
+    eslint: "npm:~9.39.4"
+    jest: "npm:~30.2.0"
+    typescript: "npm:~5.9.3"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/eslint-config@workspace:packages/eslint-config, @rocket.chat/eslint-config@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/eslint-config@workspace:packages/eslint-config"
@@ -9738,6 +9752,7 @@ __metadata:
     "@rocket.chat/ddp-client": "workspace:^"
     "@rocket.chat/desktop-api": "workspace:~"
     "@rocket.chat/emitter": "npm:^0.32.0"
+    "@rocket.chat/enterprise-calendar": "workspace:^"
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/federation-matrix": "workspace:^"
     "@rocket.chat/federation-sdk": "npm:0.6.3"

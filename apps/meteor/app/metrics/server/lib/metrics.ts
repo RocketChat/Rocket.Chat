@@ -325,6 +325,31 @@ export const metrics = {
 		help: 'Histogram of time taken in seconds for an item to be processed for the first time by Omni queues',
 		buckets: queueWaitBuckets,
 	}),
+	enterpriseCalendarSyncTotal: new client.Counter({
+		name: 'rocketchat_enterprise_calendar_sync_total',
+		labelNames: ['provider', 'result'],
+		help: 'Enterprise calendar mailbox synchronization attempts by provider and sanitized result',
+	}),
+	enterpriseCalendarSyncDurationSeconds: new client.Histogram({
+		name: 'rocketchat_enterprise_calendar_sync_duration_seconds',
+		labelNames: ['provider'],
+		help: 'Enterprise calendar mailbox synchronization duration',
+		buckets: latencyBuckets,
+	}),
+	enterpriseCalendarNotificationsTotal: new client.Counter({
+		name: 'rocketchat_enterprise_calendar_notifications_total',
+		labelNames: ['result'],
+		help: 'Microsoft Graph calendar notifications by validation result',
+	}),
+	enterpriseCalendarPresenceTransitionsTotal: new client.Counter({
+		name: 'rocketchat_enterprise_calendar_presence_transitions_total',
+		labelNames: ['status'],
+		help: 'Enterprise calendar presence transitions by content-free status',
+	}),
+	enterpriseCalendarConfiguredUsers: new client.Gauge({
+		name: 'rocketchat_enterprise_calendar_configured_users',
+		help: 'Number of explicitly enabled enterprise calendar mappings',
+	}),
 };
 
 // Metrics

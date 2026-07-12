@@ -169,6 +169,24 @@ describe('CalendarService', () => {
 	});
 
 	describe('#import', () => {
+		it('rejects delegated imports after server ownership is assigned', async () => {
+			settingsMock.set('Enterprise_Calendar_Enabled', true);
+			settingsMock.set(
+				'Enterprise_Calendar_Mailbox_Mappings',
+				JSON.stringify([{ userId: fakeUserId, provider: 'microsoft-graph', address: 'user@example.com', enabled: true }]),
+			);
+
+			await expect(
+				service.import({
+					uid: fakeUserId,
+					startTime: fakeStartTime,
+					subject: fakeSubject,
+					description: fakeDescription,
+				}),
+			).to.be.rejectedWith('calendar-managed-by-server');
+			sinon.assert.notCalled(CalendarEventMock.insertOne);
+		});
+
 		it('should create a new event if externalId is not provided', async () => {
 			const eventData = {
 				uid: fakeUserId,

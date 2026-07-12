@@ -17,6 +17,11 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 			{
 				key: { reminderTime: -1, notificationSent: 1 },
 			},
+			{
+				key: { uid: 1, source: 1, provider: 1, externalId: 1 },
+				unique: true,
+				partialFilterExpression: { source: 'enterprise-calendar', externalId: { $type: 'string' } },
+			},
 		];
 	}
 
@@ -134,6 +139,7 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 			_id: { $ne: eventId }, // Exclude current event
 			uid,
 			busy: { $ne: false },
+			source: { $ne: 'enterprise-calendar' },
 			$or: [
 				// Event starts during our event
 				{ startTime: { $gte: startTime, $lt: endTime } },
@@ -150,6 +156,7 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 			{
 				startTime: { $gte: startTime },
 				busy: { $ne: false },
+				source: { $ne: 'enterprise-calendar' },
 				endTime: { $exists: true },
 			},
 			{
@@ -169,6 +176,7 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 					$lt: new Date(now.getTime() + offset),
 				},
 				busy: { $ne: false },
+				source: { $ne: 'enterprise-calendar' },
 			},
 			{
 				projection: {
