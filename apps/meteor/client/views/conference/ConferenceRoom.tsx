@@ -4,7 +4,9 @@ import { LayoutContext, useLayout, useStream, useUserId } from '@rocket.chat/ui-
 import type { ReactElement } from 'react';
 import { lazy, Suspense, useEffect, useMemo } from 'react';
 
+import { LegacyRoomManager } from '../../../app/ui-utils/client';
 import { SubscriptionsCachedStore } from '../../cachedStores';
+import { Rooms } from '../../stores';
 import RoomSkeleton from '../room/RoomSkeleton';
 
 const RoomProvider = lazy(() => import('../room/providers/RoomProvider'));
@@ -19,6 +21,7 @@ const ConferenceRoom = ({ rid }: ConferenceRoomProps): ReactElement => {
 	const subscribeToNotifyUser = useStream('notify-user');
 	const layoutContext = useLayout();
 	const layoutContextEmbedded = useMemo(() => ({ ...layoutContext, isEmbedded: true }), [layoutContext]);
+	const room = Rooms.use((state) => state.get(rid));
 
 	useEffect(() => {
 		if (!uid) {
@@ -33,6 +36,14 @@ const ConferenceRoom = ({ rid }: ConferenceRoomProps): ReactElement => {
 			SubscriptionsCachedStore.upsertSubscription(sub as ISubscription);
 		});
 	}, [rid, subscribeToNotifyUser, uid]);
+
+	useEffect(() => {
+		if (!room) {
+			return;
+		}
+
+		LegacyRoomManager.open({ typeName: room.t + room.name, rid: room._id });
+	}, [room]);
 
 	return (
 		<LayoutContext.Provider value={layoutContextEmbedded}>

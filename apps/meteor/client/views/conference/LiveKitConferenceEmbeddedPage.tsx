@@ -3,7 +3,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useRouteParameter, useSearchParameter, useSetModal, useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { MediaCallRoomSection, useMediaCallView } from '@rocket.chat/ui-voip';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import ConferenceChat from './ConferenceChat';
 import ConferenceDisconnectedModal from './ConferenceDisconnectedModal';
@@ -39,6 +39,10 @@ const LiveKitConferenceEmbeddedPage = () => {
 	const [disconnected, setDisconnected] = useState(false);
 	const wasConnected = useRef(false);
 	const hasJoined = useRef(false);
+
+	const [showChat, setShowChat] = useState(true);
+	const toggleChat = useCallback(() => setShowChat((prev) => !prev), []);
+	const closeChat = useCallback(() => setShowChat(false), []);
 
 	useEffect(() => {
 		if (sessionState.state === 'ongoing') {
@@ -107,11 +111,13 @@ const LiveKitConferenceEmbeddedPage = () => {
 
 	return (
 		<Box bg='surface-light' w='full' h='full' display='flex' overflow='hidden'>
-			<Box display='flex' flexDirection='column' flexShrink={0} width={400} h='full' borderInlineEndWidth={1} borderColor='stroke-light'>
-				<ConferenceChat rid={room.rid} loading={room.loading} />
-			</Box>
+			{showChat && (
+				<Box display='flex' flexDirection='column' flexShrink={0} width={400} h='full' borderInlineEndWidth={1} borderColor='stroke-light'>
+					<ConferenceChat rid={room.rid} loading={room.loading} onClose={closeChat} />
+				</Box>
+			)}
 			<Box flexGrow={1} display='flex' flexDirection='column' position='relative' minWidth={0} minHeight={0}>
-				<MediaCallRoomSection showChat={false} onToggleChat={() => undefined} user={ownUser} hideChatToggle />
+				<MediaCallRoomSection showChat={showChat} onToggleChat={toggleChat} user={ownUser} />
 			</Box>
 		</Box>
 	);
