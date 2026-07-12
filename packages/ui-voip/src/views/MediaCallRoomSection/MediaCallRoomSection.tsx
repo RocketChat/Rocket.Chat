@@ -5,11 +5,13 @@ import { useTranslation } from 'react-i18next';
 
 import CallStage from './CallStage';
 import { ToggleButton, Timer, DevicePicker, CameraPicker, ActionButton, ActionStrip, ActionToggleChat } from '../../components';
+import { useMediaCallInstance } from '../../context/MediaCallInstanceContext';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import useRegisterView from '../../context/useRegisterView';
 import { useAudioLevel } from '../../providers/useAudioLevel';
 import { playRecordingChime, playRecordingStopChime } from '../../utils/callChimes';
 import { CALL_LANGUAGES, DEFAULT_CALL_LANGUAGE } from '../../utils/callLanguages';
+import PopoutDockPrompt from '../PopoutDockPrompt';
 
 // Speaking threshold used to auto-lower a raised hand. Mirrors the visual
 // threshold in CallTile so the auto-lower triggers on the same "actually
@@ -283,6 +285,8 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 		onToggleScreenSharing,
 		onToggleCamera,
 		onToggleHand,
+		onOpenPopout,
+		onClosePopout,
 		localHandRaised,
 		raisedHands,
 		onSendReaction,
@@ -299,6 +303,10 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 		streams: { localScreen, localCamera, localMicrophone },
 		remoteParticipants: remoteParticipantsRaw,
 	} = useMediaCallView();
+	const { currentViews } = useMediaCallInstance();
+	const isPopout = currentViews.includes('popout');
+
+	useRegisterView('room');
 
 	// Optional on the context — only the VC LiveKit bridge populates it. The
 	// 1:1 VoIP path doesn't render this component so the fallback to [] is
@@ -535,8 +543,6 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
-	useRegisterView('room');
-
 	const localParticipant = {
 		id: user.id || 'local',
 		displayName: user.displayName,
@@ -610,8 +616,38 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 		}
 	}, [liveLevel, localHandRaised, onToggleHand]);
 
+	if (isPopout) {
+		return (
+			<Box
+				ref={rootRef}
+				is='section'
+				aria-label={t('Voice_call')}
+				w='full'
+				h='full'
+				bg='surface-tint'
+				overflow='hidden'
+				display='flex'
+				flexDirection='column'
+				minHeight={0}
+			>
+				<PopoutDockPrompt onClosePopout={onClosePopout} />
+			</Box>
+		);
+	}
+
 	return (
-		<Box ref={rootRef} w='full' h='full' bg='surface-tint' overflow='hidden' display='flex' flexDirection='column' minHeight={0}>
+		<Box
+			ref={rootRef}
+			is='section'
+			aria-label={t('Voice_call')}
+			w='full'
+			h='full'
+			bg='surface-tint'
+			overflow='hidden'
+			display='flex'
+			flexDirection='column'
+			minHeight={0}
+		>
 			<Box className={callHeaderStyles}>
 				<Box className={callHeaderTimerStyles}>
 					<Timer startAt={startedAt} />
@@ -754,6 +790,15 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 					!hideChatToggle ? (
 						<ButtonGroup>
 							<ActionToggleChat pressed={showChat} onClick={onToggleChat} />
+							<ToggleButton
+								label={t('Open_in_new_window')}
+								titles={[t('Open_in_new_window'), t('Return_to_main_window')]}
+								icons={['arrow-to-square-box', 'arrow-from-cross-box']}
+								pressed={isPopout}
+								onToggle={isPopout ? onClosePopout : onOpenPopout}
+								danger={false}
+							/>
+							<DevicePicker secondary />
 						</ButtonGroup>
 					) : undefined
 				}
