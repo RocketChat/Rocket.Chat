@@ -793,16 +793,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle, ch
 					/>
 				</Box>
 				{showChat && children && (
-					<Box
-						display='flex'
-						flexDirection='column'
-						flexShrink={0}
-						width={400}
-						h='full'
-						bg='surface-light'
-						borderInlineStartWidth={1}
-						borderColor='stroke-light'
-					>
+					<Box display='flex' flexDirection='column' flexShrink={0} width={400} h='full' overflow='hidden'>
 						{children}
 					</Box>
 				)}

@@ -1,4 +1,5 @@
-import { Box, IconButton } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
+import { Contextualbar, ContextualbarHeader, ContextualbarIcon, ContextualbarTitle, ContextualbarClose } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import ConferenceRoom from './ConferenceRoom';
@@ -26,25 +27,15 @@ const ConferenceChat = ({ rid, loading, onClose }: ConferenceChatProps) => {
 	return (
 		<Box position='relative' display='flex' flexDirection='column' flexGrow={1} height='full'>
 			<ConferenceRoomPreload rid={rid}>
-				<Box
-					is='header'
-					display='flex'
-					alignItems='center'
-					justifyContent='space-between'
-					pi={24}
-					pb={16}
-					borderBlockEndWidth={1}
-					borderBlockEndColor='stroke-extra-light'
-				>
-					<Box display='flex' alignItems='center'>
-						{onClose && <IconButton mie={8} small icon='cross' title={t('Close')} onClick={onClose} />}
-						<Box is='h1' fontScale='h2' color='default'>
-							{t('Chat')}
-						</Box>
-					</Box>
-				</Box>
+				<Contextualbar width='100%' height='full' position='relative'>
+					<ContextualbarHeader>
+						<ContextualbarIcon name='chat' />
+						<ContextualbarTitle>{t('Chat')}</ContextualbarTitle>
+						{onClose && <ContextualbarClose onClick={onClose} />}
+					</ContextualbarHeader>
 
-				<ConferenceRoom rid={rid} />
+					<ConferenceRoom rid={rid} />
+				</Contextualbar>
 			</ConferenceRoomPreload>
 		</Box>
 	);

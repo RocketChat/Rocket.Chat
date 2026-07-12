@@ -47,7 +47,7 @@ const ConferenceRoom = ({ rid }: ConferenceRoomProps): ReactElement => {
 
 	return (
 		<LayoutContext.Provider value={layoutContextEmbedded}>
-			<Box display='flex' w='full' h='full'>
+			<Box display='flex' w='full' h='full' minHeight={0}>
 				<Suspense fallback={<RoomSkeleton />}>
 					<RoomProvider rid={rid}>
 						<Room />
