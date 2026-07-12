@@ -1,19 +1,21 @@
+import type { CallPreferences } from '@rocket.chat/core-typings';
 import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import type { VideoConfPopupPayload, VideoConfContextValue } from '@rocket.chat/ui-video-conf';
 import { VideoConfContext } from '@rocket.chat/ui-video-conf';
 import type { ReactNode } from 'react';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { VideoConfManager } from '../lib/VideoConfManager';
+import VideoConfBlockModal from '../views/room/contextualBar/VideoConference/VideoConfBlockModal';
 import VideoConfPopups from '../views/room/contextualBar/VideoConference/VideoConfPopups';
 import { useVideoConfOpenCall } from '../views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
-import { useLiveKitVideoConf } from '../views/videoConference/livekit/LiveKitVideoConfContext';
 
 export type VideoConfContextProviderProps = { children: ReactNode };
 
 const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) => {
 	const [outgoing, setOutgoing] = useState<VideoConfPopupPayload | undefined>();
+	const [conferenceBlockUrl, setConferenceBlockUrl] = useState<string | null>(null);
 	const handleOpenCall = useVideoConfOpenCall();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { t } = useTranslation();
@@ -23,30 +25,44 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 
 	useEffect(
 		() =>
-			VideoConfManager.on('call/join', (props) => {
-				handleOpenCall(props.url, props.providerName);
+			VideoConfManager.on('call/join', ({ url, providerName }) => {
+				handleOpenCall(url, providerName);
 			}),
 		[handleOpenCall],
 	);
 
-	// Embedded providers (LiveKit) don't open a URL — they mount their UI
-	// inline. We forward the join into the embedded provider's React context
-	// here so the manager singleton doesn't need a direct dependency on it.
-	const { joinCall: joinEmbeddedCall } = useLiveKitVideoConf();
-	useEffect(
-		() =>
-			VideoConfManager.on('call/joinEmbedded', ({ callId, rid, providerName, preferences }) => {
-				if (providerName === 'livekit') {
-					joinEmbeddedCall({ callId, rid, preferences });
-				}
-			}),
-		[joinEmbeddedCall],
+	// Embedded providers (LiveKit) are opened in a dedicated /conference/:id
+	// window with the persistent chat on the left, instead of mounting inline
+	// in the room. The conference page takes over the embedded provider context.
+	const openConference = useCallback(
+		(callId: string, preferences: CallPreferences = {}) => {
+			const url = new URL(`/conference/${callId}`, window.location.href);
+			url.searchParams.set('mic', String(preferences.mic ?? true));
+			url.searchParams.set('cam', String(preferences.cam ?? false));
+
+			const urlString = url.toString();
+			const popup = window.open(urlString, '_blank', 'width=1280,height=800,resizable=yes');
+			if (!popup) {
+				setConferenceBlockUrl(urlString);
+			}
+		},
+		[setConferenceBlockUrl],
 	);
 
 	useEffect(
 		() =>
-			VideoConfManager.on('error', (props) => {
-				const message = t(props.error?.startsWith('error-') ? props.error : 'error-videoconf-unexpected');
+			VideoConfManager.on('call/joinEmbedded', ({ callId, providerName, preferences }) => {
+				if (providerName === 'livekit') {
+					openConference(callId, preferences);
+				}
+			}),
+		[openConference],
+	);
+
+	useEffect(
+		() =>
+			VideoConfManager.on('error', ({ error }) => {
+				const message = t(error?.startsWith('error-') ? error : 'error-videoconf-unexpected');
 				dispatchToastMessage({ type: 'error', message });
 			}),
 		[dispatchToastMessage, t],
@@ -61,9 +77,9 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 		() => ({
 			dispatchOutgoing: (option) => setOutgoing({ ...option, id: option.rid }),
 			dismissOutgoing: () => setOutgoing(undefined),
-			startCall: (rid, confTitle) => VideoConfManager.startCall(rid, confTitle),
+			startCall: (rid, confTitle) => void VideoConfManager.startCall(rid, confTitle),
 			acceptCall: (callId) => VideoConfManager.acceptIncomingCall(callId),
-			joinCall: (callId) => VideoConfManager.joinCall(callId),
+			joinCall: (callId) => void VideoConfManager.joinCall(callId),
 			dismissCall: (callId) => VideoConfManager.dismissIncomingCall(callId),
 			rejectIncomingCall: (callId) => VideoConfManager.rejectIncomingCall(callId),
 			abortCall: () => VideoConfManager.abortCall(),
@@ -81,6 +97,15 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 	return (
 		<VideoConfContext.Provider value={contextValue}>
 			{children}
+			{conferenceBlockUrl && (
+				<VideoConfBlockModal
+					onClose={() => setConferenceBlockUrl(null)}
+					onConfirm={() => {
+						void window.open(conferenceBlockUrl, '_blank', 'width=1280,height=800,resizable=yes');
+						setConferenceBlockUrl(null);
+					}}
+				/>
+			)}
 			<VideoConfPopups>{outgoing}</VideoConfPopups>
 		</VideoConfContext.Provider>
 	);

@@ -24,7 +24,11 @@ import { addSettings } from '../settings/video-conference';
 // LK on/off (or fill in missing keys) without restarting the server.
 const refreshLiveKitProviderRegistration = (): void => {
 	if (isLiveKitFullyConfigured()) {
-		videoConfProviders.registerProvider('livekit', { mic: true, cam: true, title: true, embedded: true }, CORE_PROVIDER_APP_ID);
+		videoConfProviders.registerProvider(
+			'livekit',
+			{ mic: true, cam: true, title: true, persistentChat: true, embedded: true },
+			CORE_PROVIDER_APP_ID,
+		);
 	} else {
 		videoConfProviders.unRegisterProvider('livekit');
 	}

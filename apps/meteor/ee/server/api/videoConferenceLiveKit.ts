@@ -11,7 +11,7 @@ import {
 import notifications from '../../../app/notifications/server/lib/Notifications';
 import { settings } from '../../../app/settings/server';
 import { API } from '../../../server/api/api';
-import { canAccessRoomAsync } from '../../../server/lib/authorization/canAccessRoom';
+import { canAccessRoomIdAsync } from '../../../server/lib/authorization/canAccessRoom';
 import {
 	createLiveKitAccessToken,
 	getLiveKitConfig,
@@ -62,8 +62,22 @@ async function authorizeCall(
 	const call = await VideoConferenceModel.findOneById(callId);
 	if (!call) return { error: 'invalid-call' };
 	if (!call.rid) return { error: 'invalid-call' };
-	const room = await Rooms.findOneById(call.rid);
-	if (!room || !(await canAccessRoomAsync(room, { _id: userId }))) {
+
+	// Invited users may only be members of the conference's discussion rather
+	// than the original room, so allow access through either.
+	const canAccessRoom = await (async () => {
+		const room = await Rooms.findOneById(call.rid);
+		if (room && (await canAccessRoomIdAsync(room._id, userId))) {
+			return true;
+		}
+		if (!call.discussionRid) {
+			return false;
+		}
+		const discussion = await Rooms.findOneById(call.discussionRid);
+		return Boolean(discussion && (await canAccessRoomIdAsync(discussion._id, userId)));
+	})();
+
+	if (!canAccessRoom) {
 		return { error: 'forbidden' };
 	}
 	return { call };
@@ -71,6 +85,7 @@ async function authorizeCall(
 
 const broadcastVideoConferenceState = (rid: string, payload: { action: 'started' | 'ended'; callId: string }) => {
 	try {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 		(notifications.notifyRoom as any)(rid, 'video-conference-state', payload);
 	} catch {
 		/* notify is best-effort */

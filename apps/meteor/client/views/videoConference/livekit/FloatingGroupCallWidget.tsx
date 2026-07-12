@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, IconButton, Palette } from '@rocket.chat/fuselage';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
-import { useGoToRoom, useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
+import { useCurrentRoutePath, useGoToRoom, useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { MediaCallRoomSection, useMediaCallView } from '@rocket.chat/ui-voip';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -81,13 +81,15 @@ const FloatingGroupCallWidget = () => {
 	const { activeCall } = useLiveKitVideoConf();
 	const { sessionState: viewSession } = useMediaCallView();
 	const openedRoomId = useOpenedRoom();
+	const routePath = useCurrentRoutePath();
 	const goToRoom = useGoToRoom();
 	const user = useUser();
 	const displayName = useUserDisplayName({ name: user?.name, username: user?.username });
 	const getUserAvatarPath = useUserAvatarPath();
 
 	const rid = activeCall?.rid;
-	const shouldShow = Boolean(rid) && rid !== openedRoomId && viewSession.state === 'ongoing';
+	const isConferenceRoute = routePath.startsWith('/conference/');
+	const shouldShow = Boolean(rid) && rid !== openedRoomId && viewSession.state === 'ongoing' && !isConferenceRoute;
 
 	const ownUser = useMemo(
 		() => ({
