@@ -25,13 +25,13 @@ class AppLayoutSubscription extends Emitter<{ update: void }> {
 		this.setCurrentValue(element);
 	}
 
-	wrap(element: ReactNode): ReactNode {
+	wrap(element: ReactNode, { embedded = false }: { embedded?: boolean } = {}): ReactNode {
 		return (
 			<AppLayoutThemeWrapper>
 				<ConnectionStatusBar />
 				<ActionManagerBusyState />
-				<CloudAnnouncementsRegion />
-				<BannerRegion />
+				{!embedded && <CloudAnnouncementsRegion />}
+				{!embedded && <BannerRegion />}
 				{element}
 				<ModalRegion />
 			</AppLayoutThemeWrapper>

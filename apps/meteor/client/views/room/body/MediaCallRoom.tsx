@@ -1,5 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
+import { useLayout } from '@rocket.chat/ui-contexts';
 import type { PeerInfo } from '@rocket.chat/ui-voip';
 import {
 	MediaCallRoomActivity,
@@ -39,9 +40,16 @@ const MediaCallRoom = ({ children }: MediaCallRoomProps) => {
 	const peerInfo = usePeekMediaSessionPeerInfo();
 	const features = usePeekMediaSessionFeatures();
 	const room = useRoom();
+	const { isEmbedded } = useLayout();
 	const { activeCall: activeLkCall } = useLiveKitVideoConf();
 
 	const screenShareEnabled = features.includes('screen-share');
+
+	// Embedded conference windows already show the call UI in a dedicated
+	// panel, so the room should only render the chat stream.
+	if (isEmbedded) {
+		return <>{children}</>;
+	}
 
 	// Group-call detection: the LiveKit context owns the active LK call's rid
 	// (set by useGroupCallRoomAction.joinCall). Decoupled from VoIP entirely.
