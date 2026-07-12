@@ -128,7 +128,7 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 
 	findCustomRoles(options?: FindOptions<IRole>): FindCursor<IRole> {
 		const query: Filter<IRole> = {
-			protected: false,
+			protected: { $ne: true },
 		};
 
 		return this.find(query, options || {});
@@ -136,7 +136,7 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 
 	countCustomRoles(options?: CountDocumentsOptions): Promise<number> {
 		const query: Filter<IRole> = {
-			protected: false,
+			protected: { $ne: true },
 		};
 
 		return this.countDocuments(query, options || {});
