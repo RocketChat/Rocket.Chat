@@ -88,7 +88,7 @@ const FloatingGroupCallWidget = () => {
 	const getUserAvatarPath = useUserAvatarPath();
 
 	const rid = activeCall?.rid;
-	const isConferenceRoute = routePath.startsWith('/conference/');
+	const isConferenceRoute = routePath?.startsWith('/conference/') ?? false;
 	const shouldShow = Boolean(rid) && rid !== openedRoomId && viewSession.state === 'ongoing' && !isConferenceRoute;
 
 	const ownUser = useMemo(

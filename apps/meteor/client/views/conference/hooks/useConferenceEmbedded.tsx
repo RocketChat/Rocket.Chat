@@ -29,7 +29,7 @@ export const useConferenceEmbedded = (callId: string, state: CallPreferences = {
 	const joinConference = useEndpoint('POST', '/v1/video-conference.join');
 	const getConferenceInfo = useEndpoint('GET', '/v1/video-conference.info');
 	const getConferenceCallUrl = useConferenceCallUrl();
-	const subscribeToVideoConference = useStream('video-conference');
+	const subscribeToVideoConference = useStream('notify-user');
 	const queryClient = useQueryClient();
 
 	const {
@@ -58,12 +58,14 @@ export const useConferenceEmbedded = (callId: string, state: CallPreferences = {
 	});
 
 	useEffect(() => {
-		if (!callId) {
+		if (!callId || !uid) {
 			return;
 		}
 
-		return subscribeToVideoConference(`${callId}/discussionUpdated`, () => {
-			void queryClient.invalidateQueries({ queryKey: ['conference-embedded', 'info', callId, uid] });
+		return subscribeToVideoConference(`${uid}/video-conference`, ({ action, params }) => {
+			if (action === 'discussionUpdated' && params?.callId === callId) {
+				void queryClient.invalidateQueries({ queryKey: ['conference-embedded', 'info', callId, uid] });
+			}
 		});
 	}, [callId, queryClient, subscribeToVideoConference, uid]);
 

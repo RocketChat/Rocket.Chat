@@ -13,7 +13,7 @@ type ConferenceChatProps = {
 };
 
 const ConferenceChat = ({ rid, loading, onClose }: ConferenceChatProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	if (loading) {
 		return <PageLoading />;
