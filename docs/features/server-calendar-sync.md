@@ -99,6 +99,16 @@ Server-synced events carry a `provider` discriminator (`microsoft-graph`/`exchan
 | `/api/v1/calendar-sync.run` | POST | Triggers a sync run immediately (returns `{ started: false }` if one is in progress). |
 | `/api/v1/calendar-sync.status` | GET | Last run summary (users processed/skipped/failed, events upserted/deleted) plus state counts. |
 | `/api/v1/calendar-sync.user-status?userId=…` | GET | Per-user sync state: mailbox, provider, last sync/success, last sanitized error, consecutive failures. |
+| `/api/v1/calendar-sync.webhook` | POST | Receiver for Microsoft Graph change notifications (unauthenticated by design; each notification is authenticated against the per-subscription `clientState` secret). Handles the subscription validation handshake. |
+
+## Change notifications (webhooks, optional)
+
+With **Enable change notifications** turned on (Graph provider only), the sync engine creates one Graph subscription per synced user (`/users/{mailbox}/events`, ~70 h TTL) and renews it during regular sync runs when less than 24 h remain — no extra scheduler. Notifications carry no calendar data; a valid notification only triggers an immediate delta sync for that user. Requirements and caveats:
+
+- The workspace **Site URL must be HTTPS and publicly reachable** by Microsoft's cloud. When it isn't, the setting is effectively inert.
+- Polling continues on its normal interval regardless — webhooks are an optimization, never a dependency (firewalled deployments simply leave this off).
+- Notifications with an unknown subscription id or a mismatched `clientState` are dropped and logged.
+- When disabled again, existing subscriptions lapse on their own within ~3 days; incoming notifications are ignored immediately.
 
 ## Troubleshooting error codes
 
@@ -116,7 +126,7 @@ Sync errors are logged with user id and error code only — never event contents
 
 ## Limitations
 
-- No write-back to Exchange; no webhooks (polling with Graph delta queries; EWS runs full-window snapshots per cycle).
-- EWS `CalendarView` is capped at 512 events per user per window; NTLM requests are serialized on one authenticated connection per workspace (tune batch size).
+- No write-back to Exchange. Webhooks are Graph-only (EWS deployments poll, with `SyncFolderItems` incremental sync between daily snapshot refreshes).
+- EWS `CalendarView` is capped at 512 events per user per window; NTLM requests are serialized on one authenticated connection per workspace (tune batch size). Mailboxes too large to fast-forward through `SyncFolderItems` (>10k items) fall back to windowed polling automatically.
 - Switching provider, mode, or mailbox mapping resets per-user sync state and forces a full resync. Events imported before switching to free/busy-only mode are not retroactively deleted.
 - Kerberos authentication is not supported.
