@@ -28,7 +28,7 @@ const AccountsAdminPage = () => {
 		{ id: 'login-integrations', label: t('Accounts_Section_LoginIntegrations') },
 	];
 
-	const refs: Record<string, React.RefObject<HTMLElement>> = { registration: registrationRef };
+	const refs: Record<string, React.RefObject<HTMLElement | null>> = { registration: registrationRef };
 
 	const handleSelect = (id: string) => {
 		setActiveId(id);
