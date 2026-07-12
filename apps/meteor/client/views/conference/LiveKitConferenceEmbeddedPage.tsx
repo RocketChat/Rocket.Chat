@@ -1,7 +1,14 @@
 import type { CallPreferences } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
-import { useRouteParameter, useSearchParameter, useSetModal, useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
+import {
+	useRouteParameter,
+	useSearchParameter,
+	useSetModal,
+	useUser,
+	useUserAvatarPath,
+	useUserSubscription,
+} from '@rocket.chat/ui-contexts';
 import { MediaCallRoomSection, useMediaCallView } from '@rocket.chat/ui-voip';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -40,7 +47,7 @@ const LiveKitConferenceEmbeddedPage = () => {
 	const wasConnected = useRef(false);
 	const hasJoined = useRef(false);
 
-	const [showChat, setShowChat] = useState(true);
+	const [showChat, setShowChat] = useState(false);
 	const toggleChat = useCallback(() => setShowChat((prev) => !prev), []);
 	const closeChat = useCallback(() => setShowChat(false), []);
 
@@ -97,6 +104,9 @@ const LiveKitConferenceEmbeddedPage = () => {
 		[displayName, getUserAvatarPath, user?._id],
 	);
 
+	const subscription = useUserSubscription(room.rid ?? '');
+	const unreadCount = subscription?.unread ?? 0;
+
 	if (conference.error || (conference.providerName && conference.providerName !== 'livekit')) {
 		return <ConferencePageError />;
 	}
@@ -111,14 +121,9 @@ const LiveKitConferenceEmbeddedPage = () => {
 
 	return (
 		<Box bg='surface-light' w='full' h='full' display='flex' overflow='hidden'>
-			{showChat && (
-				<Box display='flex' flexDirection='column' flexShrink={0} width={400} h='full' borderInlineEndWidth={1} borderColor='stroke-light'>
-					<ConferenceChat rid={room.rid} loading={room.loading} onClose={closeChat} />
-				</Box>
-			)}
-			<Box flexGrow={1} display='flex' flexDirection='column' position='relative' minWidth={0} minHeight={0}>
-				<MediaCallRoomSection showChat={showChat} onToggleChat={toggleChat} user={ownUser} />
-			</Box>
+			<MediaCallRoomSection showChat={showChat} onToggleChat={toggleChat} user={ownUser} unreadCount={unreadCount}>
+				<ConferenceChat rid={room.rid} loading={room.loading} onClose={closeChat} />
+			</MediaCallRoomSection>
 		</Box>
 	);
 };

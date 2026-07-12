@@ -47,6 +47,8 @@ const VideoConfListItem = ({
 		createdAt,
 		endedAt,
 		discussionRid,
+		providerName,
+		rid,
 	} = videoConfData;
 
 	const displayName = useUserDisplayName({ name, username });
@@ -63,7 +65,7 @@ const VideoConfListItem = ({
 	`;
 
 	const handleJoinConference = useStableCallback((): void => {
-		joinCall(callId);
+		joinCall(callId, providerName, rid);
 		return reload();
 	});
 

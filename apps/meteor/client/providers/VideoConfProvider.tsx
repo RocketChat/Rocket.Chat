@@ -79,7 +79,7 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 			dismissOutgoing: () => setOutgoing(undefined),
 			startCall: (rid, confTitle) => void VideoConfManager.startCall(rid, confTitle),
 			acceptCall: (callId) => VideoConfManager.acceptIncomingCall(callId),
-			joinCall: (callId) => void VideoConfManager.joinCall(callId),
+			joinCall: (callId, providerName, rid) => void VideoConfManager.joinCall(callId, providerName, rid),
 			dismissCall: (callId) => VideoConfManager.dismissIncomingCall(callId),
 			rejectIncomingCall: (callId) => VideoConfManager.rejectIncomingCall(callId),
 			abortCall: () => VideoConfManager.abortCall(),

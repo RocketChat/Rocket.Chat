@@ -14,6 +14,8 @@ import {
 	VideoConfMessageContent,
 	VideoConfMessageActions,
 	VideoConfMessageAction,
+	useVideoConfJoinCall,
+	useVideoConfSetPreferences,
 } from '@rocket.chat/ui-video-conf';
 import type { MouseEventHandler } from 'react';
 import { useContext, memo, useMemo } from 'react';
@@ -37,6 +39,8 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 	const showRealName = useSetting('UI_Use_Real_Name', false);
 
 	const { action, viewId = undefined, rid } = useContext(UiKitContext);
+	const joinCall = useVideoConfJoinCall();
+	const setPreferences = useVideoConfSetPreferences();
 
 	if (surfaceType !== 'message') {
 		throw new Error('VideoConferenceBlock cannot be rendered outside message');
@@ -47,19 +51,6 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 	}
 
 	const result = useVideoConfDataStream({ rid, callId });
-
-	const joinHandler: MouseEventHandler<HTMLButtonElement> = (e): void => {
-		void action(
-			{
-				blockId: block.blockId || '',
-				appId,
-				actionId: 'join',
-				value: block.blockId || '',
-				viewId,
-			},
-			e,
-		);
-	};
 
 	const callAgainHandler: MouseEventHandler<HTMLButtonElement> = (e): void => {
 		void action(
@@ -129,6 +120,12 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 					count: data.users.length - MAX_USERS,
 				})
 			: t('__usernames__joined', { usernames: joinedNamesOrUsernames });
+
+	const joinHandler: MouseEventHandler<HTMLButtonElement> = (e): void => {
+		e.preventDefault();
+		setPreferences({ mic: true, cam: false });
+		void joinCall(callId, data.providerName, data.rid);
+	};
 
 	const actions = (
 		<VideoConfMessageActions>

@@ -184,9 +184,9 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			case 'direct':
 				return this.callUser({ uid: data.calleeId, rid: roomId, callId: data.callId });
 			case 'videoconference':
-				return this.joinCall(data.callId);
+				return this.joinCall(data.callId, data.providerName, data.rid);
 			case 'livechat':
-				return this.joinCall(data.callId);
+				return this.joinCall(data.callId, data.providerName, undefined);
 		}
 	}
 
@@ -356,7 +356,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		this._logLevel = Math.max(0, Math.min(level, 2));
 	}
 
-	public async joinCall(callId: string): Promise<void> {
+	public async joinCall(callId: string, providerName?: string, rid?: string): Promise<void> {
 		this.debugLog(`[VideoConf] Joining call ${callId}.`);
 
 		if (this.incomingDirectCalls.has(callId)) {
@@ -376,7 +376,28 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			},
 		};
 
-		const { url, providerName, rid } = await sdk.rest.post('/v1/video-conference.join', params).catch((e) => {
+		// LiveKit calls are rendered in a dedicated /conference/:callId window.
+		// Open that window synchronously while the click user-gesture is still
+		// active; the conference page itself validates the join on the server.
+		if (providerName === 'livekit') {
+			this.debugLog(`[VideoConf] Opening embedded ${providerName} call ${callId} in room ${rid}.`);
+			this.emit('call/joinEmbedded', {
+				callId,
+				rid: rid || '',
+				providerName,
+				// Forward the same prefs the server received so the
+				// embedded provider can publish/skip mic + camera tracks
+				// according to the preflight popup's toggle state.
+				preferences: { ...this._preferences },
+			});
+			return;
+		}
+
+		const {
+			url,
+			providerName: responseProviderName,
+			rid: responseRid,
+		} = await sdk.rest.post('/v1/video-conference.join', params).catch((e) => {
 			console.error(`[VideoConf] Failed to join call ${callId}`, e);
 			this.emitError(e?.xhr?.responseJSON?.error || 'error-videoconf-join-failed');
 
@@ -387,12 +408,12 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		// url + a rid — the call is mounted inline by their React provider
 		// instead of opened in a popup. Dispatch to that provider via a
 		// distinct event so the URL-handling code path doesn't run.
-		if (!url && providerName && rid) {
-			this.debugLog(`[VideoConf] Joining embedded ${providerName} call ${callId} in room ${rid}.`);
+		if (!url && responseProviderName && responseRid) {
+			this.debugLog(`[VideoConf] Joining embedded ${responseProviderName} call ${callId} in room ${responseRid}.`);
 			this.emit('call/joinEmbedded', {
 				callId,
-				rid,
-				providerName,
+				rid: responseRid,
+				providerName: responseProviderName,
 				// Forward the same prefs the server received so the
 				// embedded provider can publish/skip mic + camera tracks
 				// according to the preflight popup's toggle state.
@@ -407,7 +428,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		}
 
 		this.debugLog(`[VideoConf] Opening ${url}.`);
-		this.emit('call/join', { url, callId, providerName });
+		this.emit('call/join', { url, callId, providerName: responseProviderName });
 	}
 
 	public abortCall(): void {

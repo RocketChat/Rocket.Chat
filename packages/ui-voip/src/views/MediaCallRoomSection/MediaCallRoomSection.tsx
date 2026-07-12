@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, ButtonGroup, Icon } from '@rocket.chat/fuselage';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CallStage from './CallStage';
@@ -271,9 +271,13 @@ type MediaCallRoomSectionProps = {
 	};
 	/** When true, suppresses the chat-toggle button (used by the floating widget which has no chat slot). */
 	hideChatToggle?: boolean;
+	/** Optional chat panel rendered inside the call surface when showChat is true. */
+	children?: ReactNode;
+	/** Number of unread messages in the chat panel, shown as a badge on the toggle button. */
+	unreadCount?: number;
 };
 
-const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: MediaCallRoomSectionProps) => {
+const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle, children, unreadCount }: MediaCallRoomSectionProps) => {
 	const { t } = useTranslation();
 
 	const {
@@ -777,19 +781,37 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle }: 
 					</Box>
 				</Box>
 			</Box>
-			<CallStage
-				localParticipant={localParticipant}
-				remoteParticipants={remoteParticipants}
-				onStopLocalScreenShare={onToggleScreenSharing}
-				handPositions={handPositions}
-				reactionsByParticipant={reactionsByParticipant}
-				captionsByParticipant={activeCaptions}
-			/>
+			<Box display='flex' flexDirection='row' flexGrow={1} minWidth={0} minHeight={0} overflow='hidden'>
+				<Box flexGrow={1} minWidth={0} minHeight={0} display='flex' flexDirection='column'>
+					<CallStage
+						localParticipant={localParticipant}
+						remoteParticipants={remoteParticipants}
+						onStopLocalScreenShare={onToggleScreenSharing}
+						handPositions={handPositions}
+						reactionsByParticipant={reactionsByParticipant}
+						captionsByParticipant={activeCaptions}
+					/>
+				</Box>
+				{showChat && children && (
+					<Box
+						display='flex'
+						flexDirection='column'
+						flexShrink={0}
+						width={400}
+						h='full'
+						bg='surface-light'
+						borderInlineStartWidth={1}
+						borderColor='stroke-light'
+					>
+						{children}
+					</Box>
+				)}
+			</Box>
 			<ActionStrip
 				rightSlot={
 					!hideChatToggle ? (
 						<ButtonGroup>
-							<ActionToggleChat pressed={showChat} onClick={onToggleChat} />
+							<ActionToggleChat pressed={showChat} onClick={onToggleChat} unreadCount={unreadCount} />
 							<ToggleButton
 								label={t('Open_in_new_window')}
 								titles={[t('Open_in_new_window'), t('Return_to_main_window')]}
