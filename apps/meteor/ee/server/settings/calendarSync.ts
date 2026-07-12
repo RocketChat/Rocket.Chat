@@ -152,6 +152,15 @@ export function addSettings(): void {
 						invalidValue: 10,
 						enableQuery: { _id: 'CalendarSync_Enabled', value: true },
 					});
+
+					await this.add('CalendarSync_Webhooks_Enabled', false, {
+						type: 'boolean',
+						invalidValue: false,
+						enableQuery: [
+							{ _id: 'CalendarSync_Enabled', value: true },
+							{ _id: 'CalendarSync_Provider', value: 'microsoft-graph' },
+						],
+					});
 				});
 
 				await this.add('CalendarSync_User_Roles', '', {

@@ -6,6 +6,8 @@ import sinon from 'sinon';
 const calendarImportStub = sinon.stub();
 const calendarDeleteStub = sinon.stub();
 const usersFindStub = sinon.stub();
+const usersFindOneByIdStub = sinon.stub();
+const setSubscriptionStub = sinon.stub();
 const findOneByExternalIdAndUserIdStub = sinon.stub();
 const findServerSyncedStub = sinon.stub();
 const syncStateFindOneStub = sinon.stub();
@@ -28,7 +30,7 @@ const { CalendarSyncEngine, computeBusyUntil } = proxyquire
 			},
 		},
 		'@rocket.chat/models': {
-			Users: { find: usersFindStub },
+			Users: { find: usersFindStub, findOneById: usersFindOneByIdStub },
 			CalendarEvent: {
 				findOneByExternalIdAndUserId: findOneByExternalIdAndUserIdStub,
 				findServerSyncedByUserIdBetweenDates: findServerSyncedStub,
@@ -37,6 +39,7 @@ const { CalendarSyncEngine, computeBusyUntil } = proxyquire
 				findOneByUserId: syncStateFindOneStub,
 				recordSuccess: recordSuccessStub,
 				recordFailure: recordFailureStub,
+				setSubscription: setSubscriptionStub,
 			},
 		},
 		'../../../../server/lib/i18n': {
@@ -60,6 +63,8 @@ const DEFAULT_CONFIG = {
 	mailboxCustomField: '',
 	defaultLanguage: 'en',
 	roles: [] as string[],
+	webhooksEnabled: false,
+	webhookUrl: '',
 };
 
 const user = (id: string, email = `${id}@example.com`) => ({
@@ -79,7 +84,7 @@ const externalEvent = (externalId: string, overrides: Record<string, unknown> = 
 	...overrides,
 });
 
-const makeProvider = (overrides: Record<string, unknown> = {}) => ({
+const makeProvider = (overrides: Record<string, unknown> = {}): any => ({
 	type: 'microsoft-graph',
 	supportsDelta: true,
 	supportsWebhooks: false,
@@ -117,6 +122,10 @@ describe('calendarSync/CalendarSyncEngine', () => {
 		setActiveStateStub.resolves(true);
 		endActiveStateStub.reset();
 		endActiveStateStub.resolves(true);
+		usersFindOneByIdStub.reset();
+		usersFindOneByIdStub.resolves(null);
+		setSubscriptionStub.reset();
+		setSubscriptionStub.resolves({});
 	});
 
 	it('should upsert fetched events through Calendar.import with the provider discriminator', async () => {
@@ -270,6 +279,132 @@ describe('calendarSync/CalendarSyncEngine', () => {
 		expect(recordFailureStub.firstCall.args[0]).to.equal('u1');
 		expect(recordFailureStub.firstCall.args[1].error.code).to.equal('consent-missing');
 		expect(recordSuccessStub.calledOnceWith('u2')).to.be.true;
+	});
+
+	describe('change-notification subscriptions', () => {
+		const WEBHOOK_CONFIG = { webhooksEnabled: true, webhookUrl: 'https://chat.example.com/api/v1/calendar-sync.webhook' };
+
+		const subscribableProvider = (overrides: Record<string, unknown> = {}) =>
+			makeProvider({
+				supportsWebhooks: true,
+				createSubscription: sinon.stub().resolves({ id: 'sub-new', expiresAt: new Date(Date.now() + 70 * 60 * 60 * 1000) }),
+				renewSubscription: sinon.stub().resolves({ id: 'sub-old', expiresAt: new Date(Date.now() + 70 * 60 * 60 * 1000) }),
+				...overrides,
+			});
+
+		it('should create a subscription after a successful sync when none exists', async () => {
+			usersFindStub.returns([user('u1')]);
+			const provider = subscribableProvider();
+
+			await makeEngine(provider, WEBHOOK_CONFIG).runSync();
+
+			expect(provider.createSubscription.calledOnce).to.be.true;
+			const [mailbox, url, clientState] = provider.createSubscription.firstCall.args;
+			expect(mailbox).to.equal('u1@example.com');
+			expect(url).to.equal(WEBHOOK_CONFIG.webhookUrl);
+			expect(clientState).to.be.a('string').with.lengthOf.greaterThan(20);
+
+			expect(setSubscriptionStub.calledOnce).to.be.true;
+			expect(setSubscriptionStub.firstCall.args[1]).to.deep.include({ id: 'sub-new', clientState });
+		});
+
+		it('should renew a subscription close to expiry and keep its clientState', async () => {
+			usersFindStub.returns([user('u1')]);
+			syncStateFindOneStub.resolves({
+				uid: 'u1',
+				mailbox: 'u1@example.com',
+				provider: 'microsoft-graph',
+				subscriptionId: 'sub-old',
+				subscriptionExpiresAt: new Date(Date.now() + 60 * 60 * 1000), // 1h left
+				subscriptionClientState: 'keep-me',
+			});
+			const provider = subscribableProvider();
+
+			await makeEngine(provider, WEBHOOK_CONFIG).runSync();
+
+			expect(provider.renewSubscription.calledOnceWith('sub-old')).to.be.true;
+			expect(provider.createSubscription.called).to.be.false;
+			expect(setSubscriptionStub.firstCall.args[1].clientState).to.equal('keep-me');
+		});
+
+		it('should recreate the subscription when renewal fails', async () => {
+			usersFindStub.returns([user('u1')]);
+			syncStateFindOneStub.resolves({
+				uid: 'u1',
+				mailbox: 'u1@example.com',
+				provider: 'microsoft-graph',
+				subscriptionId: 'sub-old',
+				subscriptionExpiresAt: new Date(Date.now() + 60 * 60 * 1000),
+				subscriptionClientState: 'old-state',
+			});
+			const provider = subscribableProvider({
+				renewSubscription: sinon.stub().rejects(new Error('gone')),
+			});
+
+			await makeEngine(provider, WEBHOOK_CONFIG).runSync();
+
+			expect(provider.createSubscription.calledOnce).to.be.true;
+		});
+
+		it('should leave healthy subscriptions alone and do nothing when webhooks are disabled', async () => {
+			usersFindStub.returns([user('u1')]);
+			syncStateFindOneStub.resolves({
+				uid: 'u1',
+				mailbox: 'u1@example.com',
+				provider: 'microsoft-graph',
+				subscriptionId: 'sub-old',
+				subscriptionExpiresAt: new Date(Date.now() + 60 * 60 * 60 * 1000), // 60h left
+				subscriptionClientState: 's',
+			});
+			const healthy = subscribableProvider();
+			await makeEngine(healthy, WEBHOOK_CONFIG).runSync();
+			expect(healthy.createSubscription.called).to.be.false;
+			expect(healthy.renewSubscription.called).to.be.false;
+
+			usersFindStub.returns([user('u1')]);
+			syncStateFindOneStub.resolves(null);
+			const disabled = subscribableProvider();
+			await makeEngine(disabled).runSync();
+			expect(disabled.createSubscription.called).to.be.false;
+		});
+
+		it('should never fail the user sync because of subscription errors', async () => {
+			usersFindStub.returns([user('u1')]);
+			const provider = subscribableProvider({
+				createSubscription: sinon.stub().rejects(new Error('subscription quota exceeded')),
+			});
+
+			const summary = await makeEngine(provider, WEBHOOK_CONFIG).runSync();
+
+			expect(summary?.usersProcessed).to.equal(1);
+			expect(summary?.usersFailed).to.equal(0);
+		});
+	});
+
+	describe('syncUserById', () => {
+		it('should sync a single user on demand', async () => {
+			usersFindOneByIdStub.withArgs('u1').resolves(user('u1'));
+			const provider = makeProvider({
+				listEvents: sinon.stub().resolves({ events: [externalEvent('e1')], deletedEventIds: [], full: true }),
+			});
+
+			const ok = await makeEngine(provider).syncUserById('u1');
+
+			expect(ok).to.be.true;
+			expect(calendarImportStub.calledOnce).to.be.true;
+			expect(calendarImportStub.firstCall.args[0].uid).to.equal('u1');
+		});
+
+		it('should return false for unknown users, failed syncs and non-event modes', async () => {
+			const provider = makeProvider();
+			expect(await makeEngine(provider).syncUserById('missing')).to.be.false;
+
+			usersFindOneByIdStub.withArgs('u1').resolves(user('u1'));
+			expect(await makeEngine(provider, { mode: 'free-busy-only' }).syncUserById('u1')).to.be.false;
+
+			const failing = makeProvider({ listEvents: sinon.stub().rejects(new Error('down')) });
+			expect(await makeEngine(failing).syncUserById('u1')).to.be.false;
+		});
 	});
 
 	it('should restrict the user query to the configured roles', async () => {

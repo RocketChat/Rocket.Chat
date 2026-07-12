@@ -23,4 +23,9 @@ export interface ICalendarSyncState extends IRocketChatRecord {
 	lastSuccessAt?: Date;
 	lastError?: ICalendarSyncStateError;
 	consecutiveFailures: number;
+
+	/** Graph change-notification subscription (optional optimization; polling continues regardless) */
+	subscriptionId?: string;
+	subscriptionExpiresAt?: Date;
+	subscriptionClientState?: string;
 }

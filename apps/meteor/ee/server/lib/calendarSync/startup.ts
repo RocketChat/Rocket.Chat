@@ -11,6 +11,15 @@ const JOB_NAME = 'calendar-sync';
 
 const logger = new Logger('CalendarSync');
 
+function getWebhookUrl(): string {
+	const siteUrl = (settings.get<string>('Site_Url') || '').replace(/\/+$/, '');
+	// Microsoft only delivers notifications to public HTTPS endpoints
+	if (!siteUrl.startsWith('https://')) {
+		return '';
+	}
+	return `${siteUrl}/api/v1/calendar-sync.webhook`;
+}
+
 function getEngineConfig(): ICalendarSyncEngineConfig {
 	return {
 		mode: settings.get<ICalendarSyncEngineConfig['mode']>('CalendarSync_Mode') || 'full-events',
@@ -24,6 +33,8 @@ function getEngineConfig(): ICalendarSyncEngineConfig {
 			.split(',')
 			.map((role) => role.trim())
 			.filter(Boolean),
+		webhooksEnabled: settings.get<boolean>('CalendarSync_Webhooks_Enabled') === true,
+		webhookUrl: getWebhookUrl(),
 	};
 }
 

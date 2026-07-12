@@ -3,9 +3,12 @@ import { validateForbiddenErrorResponse, validateUnauthorizedErrorResponse } fro
 
 import {
 	CalendarSyncGenericErrorSchema,
+	CalendarSyncWebhookAcceptedResponseSchema,
+	CalendarSyncWebhookValidationResponseSchema,
 	GETCalendarSyncStatusResponseSchema,
 	GETCalendarSyncUserStatusQuerySchema,
 	GETCalendarSyncUserStatusResponseSchema,
+	GETCalendarSyncWebhookQuerySchema,
 	POSTCalendarSyncRunResponseSchema,
 	POSTCalendarSyncTestConnectionBodySchema,
 	POSTCalendarSyncTestConnectionResponseSchema,
@@ -15,6 +18,8 @@ import { API } from '../../../../server/api';
 import type { ExtractRoutesFromAPI } from '../../../../server/api/ApiClass';
 import { getConfiguredProvider } from '../../lib/calendarSync/factory';
 import { calendarSyncEngine } from '../../lib/calendarSync/startup';
+import type { IGraphNotificationPayload } from '../../lib/calendarSync/webhooks';
+import { processGraphNotifications } from '../../lib/calendarSync/webhooks';
 
 const calendarSyncEndpoints = API.v1
 	.post(
@@ -95,6 +100,50 @@ const calendarSyncEndpoints = API.v1
 				lastRun: calendarSyncEngine.getLastRunSummary(),
 				states: { total, failing },
 			});
+		},
+	)
+	.post(
+		'calendar-sync.webhook',
+		{
+			// Called by Microsoft's cloud, not by users; notifications are authenticated
+			// against the per-subscription clientState secret stored in the sync state
+			authRequired: false,
+			// Microsoft batches and retries aggressively; the default per-IP limiter would drop bursts
+			rateLimiterOptions: false,
+			query: GETCalendarSyncWebhookQuerySchema,
+			response: {
+				200: CalendarSyncWebhookValidationResponseSchema,
+				202: CalendarSyncWebhookAcceptedResponseSchema,
+			},
+		},
+		async function action() {
+			// Subscription validation handshake: echo the token back as plain text
+			const { validationToken } = this.queryParams;
+			if (typeof validationToken === 'string' && validationToken) {
+				return {
+					statusCode: 200 as const,
+					headers: { 'content-type': 'text/plain' },
+					body: validationToken,
+				};
+			}
+
+			// Always accept quickly (Graph requires a response within a few seconds);
+			// processing is authenticated per notification and runs in the background
+			if (settings.get<boolean>('CalendarSync_Webhooks_Enabled') === true) {
+				const payload = this.bodyParams as IGraphNotificationPayload;
+				const { logger } = this;
+				setImmediate(() => {
+					void processGraphNotifications(payload, calendarSyncEngine, logger).catch((error) =>
+						logger.error(`Unable to process calendar change notifications: ${(error as Error).message}`),
+					);
+				});
+			}
+
+			return {
+				statusCode: 202 as const,
+				headers: { 'content-type': 'text/plain' },
+				body: '',
+			};
 		},
 	)
 	.get(

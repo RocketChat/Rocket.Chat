@@ -87,6 +87,30 @@ export class CalendarSyncStateRaw extends BaseRaw<ICalendarSyncState> implements
 		);
 	}
 
+	public async findOneBySubscriptionId(subscriptionId: string): Promise<ICalendarSyncState | null> {
+		return this.findOne({ subscriptionId });
+	}
+
+	public async setSubscription(
+		uid: IUser['_id'],
+		{ id, expiresAt, clientState }: { id: string; expiresAt: Date; clientState: string },
+	): Promise<UpdateResult> {
+		return this.updateOne(
+			{ uid },
+			{
+				$set: {
+					subscriptionId: id,
+					subscriptionExpiresAt: expiresAt,
+					subscriptionClientState: clientState,
+				},
+			},
+		);
+	}
+
+	public async clearSubscription(uid: IUser['_id']): Promise<UpdateResult> {
+		return this.updateOne({ uid }, { $unset: { subscriptionId: 1, subscriptionExpiresAt: 1, subscriptionClientState: 1 } });
+	}
+
 	public async removeByUserId(uid: IUser['_id']): Promise<DeleteResult> {
 		return this.deleteOne({ uid });
 	}

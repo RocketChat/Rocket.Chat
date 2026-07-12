@@ -1,3 +1,5 @@
+import { randomUUID } from 'crypto';
+
 import { Calendar, Presence } from '@rocket.chat/core-services';
 import type { ICalendarSyncState, IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
@@ -20,6 +22,10 @@ export interface ICalendarSyncEngineConfig {
 	defaultLanguage: string;
 	/** Restrict sync to users holding any of these roles; empty = all active users */
 	roles: string[];
+	/** Change-notification webhooks (optional optimization; polling always continues) */
+	webhooksEnabled: boolean;
+	/** Public URL of the calendar-sync.webhook endpoint; empty when not derivable */
+	webhookUrl: string;
 }
 
 export interface ICalendarSyncRunSummary {
@@ -47,6 +53,9 @@ const FREE_BUSY_WINDOW_HOURS = 4;
 
 /** Shared presence-claim id — must match the legacy CalendarService's claim so both paths compose */
 const CALENDAR_STATUS_ID = 'calendar';
+
+/** Renew change-notification subscriptions when they have less than this left */
+const SUBSCRIPTION_RENEW_THRESHOLD_MS = 24 * 60 * 60 * 1000;
 
 type SyncableUser = Pick<IUser, '_id' | 'emails' | 'customFields' | 'username' | 'language'>;
 
@@ -237,6 +246,8 @@ export class CalendarSyncEngine {
 				}),
 			});
 
+			await this.maintainSubscription(user._id, mailbox, provider, state, config);
+
 			summary.usersProcessed++;
 		} catch (error) {
 			summary.usersFailed++;
@@ -247,6 +258,94 @@ export class CalendarSyncEngine {
 				provider: provider.type,
 				error: { ...sanitized, at: new Date() },
 			}).catch((stateError) => this.logger.error(`Unable to record calendar sync failure for user ${user._id}`, stateError));
+		}
+	}
+
+	/**
+	 * Immediately re-syncs a single user, used by change-notification webhooks.
+	 * Returns false when the user is out of scope or the sync failed.
+	 */
+	public async syncUserById(uid: IUser['_id']): Promise<boolean> {
+		const provider = this.getProvider();
+		const config = this.getConfig();
+		if (!provider || config.mode !== 'full-events') {
+			return false;
+		}
+
+		const projection: Record<string, number> = { emails: 1, username: 1, language: 1 };
+		if (config.mailboxSource === 'custom-field' && config.mailboxCustomField) {
+			projection[`customFields.${config.mailboxCustomField}`] = 1;
+		}
+
+		const user = await Users.findOneById<SyncableUser>(uid, { projection });
+		if (!user) {
+			return false;
+		}
+
+		const now = new Date();
+		const window: ICalendarSyncWindow = {
+			start: now,
+			end: new Date(now.getTime() + config.windowDays * 24 * 60 * 60 * 1000),
+		};
+		const summary: ICalendarSyncRunSummary = {
+			startedAt: now,
+			durationMs: 0,
+			usersProcessed: 0,
+			usersSkippedNoMailbox: 0,
+			usersFailed: 0,
+			eventsUpserted: 0,
+			eventsDeleted: 0,
+		};
+
+		await this.syncUser(user, provider, window, config, summary);
+		return summary.usersProcessed === 1;
+	}
+
+	/**
+	 * Keeps the user's change-notification subscription alive: creates one when
+	 * missing, renews it inside the threshold. Failures are logged, never thrown —
+	 * webhooks are an optimization on top of polling, not a dependency.
+	 */
+	private async maintainSubscription(
+		uid: IUser['_id'],
+		mailbox: string,
+		provider: ICalendarSyncProvider,
+		state: ICalendarSyncState | null,
+		config: ICalendarSyncEngineConfig,
+	): Promise<void> {
+		if (!config.webhooksEnabled || !config.webhookUrl || !provider.supportsWebhooks) {
+			return;
+		}
+		if (!provider.createSubscription || !provider.renewSubscription) {
+			return;
+		}
+
+		try {
+			const remainingMs = state?.subscriptionExpiresAt ? state.subscriptionExpiresAt.getTime() - Date.now() : 0;
+			if (state?.subscriptionId && remainingMs > SUBSCRIPTION_RENEW_THRESHOLD_MS) {
+				return;
+			}
+
+			if (state?.subscriptionId && state.subscriptionClientState && remainingMs > 0) {
+				try {
+					const renewed = await provider.renewSubscription(state.subscriptionId);
+					await CalendarSyncState.setSubscription(uid, {
+						id: renewed.id,
+						expiresAt: renewed.expiresAt,
+						clientState: state.subscriptionClientState,
+					});
+					return;
+				} catch {
+					// expired or gone on the provider side — recreate below
+				}
+			}
+
+			const clientState = randomUUID();
+			const created = await provider.createSubscription(mailbox, config.webhookUrl, clientState);
+			await CalendarSyncState.setSubscription(uid, { id: created.id, expiresAt: created.expiresAt, clientState });
+		} catch (error) {
+			const sanitized = sanitizeError(error);
+			this.logger.warn(`Unable to maintain the calendar subscription for user ${uid}: [${sanitized.code}] ${sanitized.message}`);
 		}
 	}
 

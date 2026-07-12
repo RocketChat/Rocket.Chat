@@ -249,6 +249,42 @@ describe('calendarSync/MicrosoftGraphCalendarProvider', () => {
 		});
 	});
 
+	describe('subscriptions', () => {
+		it('should create a change-notification subscription for the mailbox events resource', async () => {
+			const { fetchFn, graphCalls } = makeFetch([() => jsonResponse({ id: 'sub-1', expirationDateTime: '2026-07-14T10:00:00.0000000Z' })]);
+			const provider = new MicrosoftGraphCalendarProvider(CONFIG, fetchFn, noSleep);
+
+			const subscription = await provider.createSubscription(
+				'user@example.com',
+				'https://chat.example.com/api/v1/calendar-sync.webhook',
+				'secret',
+			);
+
+			expect(subscription.id).to.equal('sub-1');
+			expect(subscription.expiresAt.toISOString()).to.equal('2026-07-14T10:00:00.000Z');
+
+			expect(graphCalls[0].url).to.equal('https://graph.microsoft.com/v1.0/subscriptions');
+			const body = JSON.parse(graphCalls[0].options.body);
+			expect(body.changeType).to.equal('created,updated,deleted');
+			expect(body.resource).to.equal('/users/user@example.com/events');
+			expect(body.notificationUrl).to.equal('https://chat.example.com/api/v1/calendar-sync.webhook');
+			expect(body.clientState).to.equal('secret');
+			expect(body.expirationDateTime).to.be.a('string');
+		});
+
+		it('should renew subscriptions with a PATCH carrying a new expiry', async () => {
+			const { fetchFn, graphCalls } = makeFetch([() => jsonResponse({ id: 'sub-1', expirationDateTime: '2026-07-14T10:00:00.0000000Z' })]);
+			const provider = new MicrosoftGraphCalendarProvider(CONFIG, fetchFn, noSleep);
+
+			const renewed = await provider.renewSubscription('sub-1');
+
+			expect(renewed.id).to.equal('sub-1');
+			expect(graphCalls[0].url).to.equal('https://graph.microsoft.com/v1.0/subscriptions/sub-1');
+			expect(graphCalls[0].options.method).to.equal('PATCH');
+			expect(JSON.parse(graphCalls[0].options.body)).to.have.property('expirationDateTime');
+		});
+	});
+
 	describe('testConnection', () => {
 		it('should succeed when a token can be acquired', async () => {
 			const fetchFn = sinon.stub().callsFake(async (url: string) => {

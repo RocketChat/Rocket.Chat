@@ -47,6 +47,11 @@ export interface IConnectionTestResult {
 	error?: { code: string; message: string };
 }
 
+export interface ICalendarSubscription {
+	id: string;
+	expiresAt: Date;
+}
+
 export interface ICalendarSyncProvider {
 	readonly type: CalendarSyncProviderType;
 	readonly supportsDelta: boolean;
@@ -56,6 +61,11 @@ export interface ICalendarSyncProvider {
 	testConnection(probeMailbox?: string): Promise<IConnectionTestResult>;
 	getFreeBusy(mailboxes: string[], window: ICalendarSyncWindow): Promise<IFreeBusyResult[]>;
 	listEvents(mailbox: string, window: ICalendarSyncWindow, deltaToken?: string): Promise<ICalendarSyncListResult>;
+
+	/** Change-notification subscriptions; only present when supportsWebhooks is true */
+	createSubscription?(mailbox: string, notificationUrl: string, clientState: string): Promise<ICalendarSubscription>;
+	renewSubscription?(subscriptionId: string): Promise<ICalendarSubscription>;
+	deleteSubscription?(subscriptionId: string): Promise<void>;
 }
 
 export class CalendarSyncError extends Error {

@@ -24,6 +24,9 @@ export interface ICalendarSyncStateModel extends IBaseModel<ICalendarSyncState> 
 			error: ICalendarSyncStateError;
 		},
 	): Promise<UpdateResult>;
+	findOneBySubscriptionId(subscriptionId: string): Promise<ICalendarSyncState | null>;
+	setSubscription(uid: IUser['_id'], data: { id: string; expiresAt: Date; clientState: string }): Promise<UpdateResult>;
+	clearSubscription(uid: IUser['_id']): Promise<UpdateResult>;
 	removeByUserId(uid: IUser['_id']): Promise<DeleteResult>;
 	removeAll(): Promise<DeleteResult>;
 }

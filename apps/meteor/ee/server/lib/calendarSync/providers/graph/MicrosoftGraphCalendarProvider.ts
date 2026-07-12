@@ -3,6 +3,7 @@ import { GraphTokenManager } from './GraphTokenManager';
 import type {
 	CalendarSyncFetchFn,
 	FreeBusyStatus,
+	ICalendarSubscription,
 	ICalendarSyncListResult,
 	ICalendarSyncProvider,
 	ICalendarSyncWindow,
@@ -26,6 +27,9 @@ const defaultSleep: SleepFn = (ms) =>
 		setTimeout(resolve, ms);
 	});
 
+/** Calendar-event subscriptions are capped at 4230 minutes by Graph; stay just under */
+const SUBSCRIPTION_TTL_MS = 4200 * 60 * 1000;
+
 const MAX_THROTTLE_RETRIES = 3;
 const MAX_RETRY_AFTER_MS = 30_000;
 const DEFAULT_RETRY_AFTER_MS = 5_000;
@@ -48,7 +52,7 @@ export class MicrosoftGraphCalendarProvider implements ICalendarSyncProvider {
 
 	public readonly supportsDelta = true;
 
-	public readonly supportsWebhooks = false;
+	public readonly supportsWebhooks = true;
 
 	private readonly tokens: GraphTokenManager;
 
@@ -195,6 +199,44 @@ export class MicrosoftGraphCalendarProvider implements ICalendarSyncProvider {
 		}
 
 		return results;
+	}
+
+	public async createSubscription(mailbox: string, notificationUrl: string, clientState: string): Promise<ICalendarSubscription> {
+		const payload = await this.requestJson(
+			'POST',
+			`${this.graphHost}/v1.0/subscriptions`,
+			JSON.stringify({
+				changeType: 'created,updated,deleted',
+				notificationUrl,
+				resource: `/users/${mailbox}/events`,
+				expirationDateTime: new Date(Date.now() + SUBSCRIPTION_TTL_MS).toISOString(),
+				clientState,
+			}),
+			{ 'Content-Type': 'application/json' },
+		);
+		return this.mapSubscription(payload);
+	}
+
+	public async renewSubscription(subscriptionId: string): Promise<ICalendarSubscription> {
+		const payload = await this.requestJson(
+			'PATCH',
+			`${this.graphHost}/v1.0/subscriptions/${encodeURIComponent(subscriptionId)}`,
+			JSON.stringify({ expirationDateTime: new Date(Date.now() + SUBSCRIPTION_TTL_MS).toISOString() }),
+			{ 'Content-Type': 'application/json' },
+		);
+		return this.mapSubscription(payload);
+	}
+
+	public async deleteSubscription(subscriptionId: string): Promise<void> {
+		await this.requestJson('DELETE', `${this.graphHost}/v1.0/subscriptions/${encodeURIComponent(subscriptionId)}`);
+	}
+
+	private mapSubscription(payload: Record<string, any>): ICalendarSubscription {
+		const expiresAt = this.parseGraphDate(payload.expirationDateTime);
+		if (typeof payload.id !== 'string' || !expiresAt) {
+			throw new CalendarSyncError('provider-error', 'Unexpected subscription response from Microsoft Graph');
+		}
+		return { id: payload.id, expiresAt };
 	}
 
 	private mapEvent(entry: Record<string, any>): IExternalCalendarEvent | null {

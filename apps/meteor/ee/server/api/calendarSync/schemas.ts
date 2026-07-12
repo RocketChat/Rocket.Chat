@@ -128,6 +128,22 @@ export const GETCalendarSyncUserStatusResponseSchema = ajv.compile<{ state: unkn
 	additionalProperties: false,
 });
 
+export const GETCalendarSyncWebhookQuerySchema = ajvQuery.compile<{ validationToken?: string }>({
+	type: 'object',
+	properties: {
+		validationToken: { type: 'string' },
+	},
+	additionalProperties: true,
+});
+
+/**
+ * Both webhook responses are plain text: the validation handshake echoes the token,
+ * notification deliveries get an empty 202 (Graph only checks the status code).
+ */
+export const CalendarSyncWebhookValidationResponseSchema = ajv.compile<string>({ type: 'string' });
+
+export const CalendarSyncWebhookAcceptedResponseSchema = ajv.compile<string>({ type: 'string' });
+
 export const CalendarSyncGenericErrorSchema = ajv.compile<{ success: boolean; error?: string }>({
 	type: 'object',
 	properties: {

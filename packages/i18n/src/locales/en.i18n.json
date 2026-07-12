@@ -1103,6 +1103,8 @@
   "CalendarSync_Section_Schedule": "Schedule",
   "CalendarSync_User_Roles": "Limit to roles",
   "CalendarSync_User_Roles_Description": "Comma-separated list of role IDs. When set, only active users holding at least one of these roles are synchronized; leave empty to synchronize all active users. Mirror this scoping on the Exchange side with an ApplicationAccessPolicy or a scoped impersonation role assignment.",
+  "CalendarSync_Webhooks_Enabled": "Enable change notifications (webhooks)",
+  "CalendarSync_Webhooks_Enabled_Description": "Subscribe to Microsoft Graph change notifications so calendar changes sync within seconds instead of waiting for the next polling cycle. Requires the workspace Site URL to be HTTPS and publicly reachable by Microsoft's cloud. Polling continues regardless — this is an optimization, never a dependency.",
   "CalendarSync_Window_Days": "Sync window (days)",
   "CalendarSync_Window_Days_Description": "Events starting between now and this many days ahead are synchronized.",
   "Call": "Call",
