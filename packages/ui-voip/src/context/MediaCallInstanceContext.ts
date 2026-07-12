@@ -27,7 +27,7 @@ type MediaCallInstanceContextValue = {
 	unregisterView: UnregisterView;
 };
 
-export const MediaCallInstanceContext = createContext<MediaCallInstanceContextValue>({
+export const defaultMediaCallInstanceContextValue: MediaCallInstanceContextValue = {
 	instance: undefined,
 	signalEmitter: new Emitter<Signals>(),
 	audioElement: undefined,
@@ -37,6 +37,8 @@ export const MediaCallInstanceContext = createContext<MediaCallInstanceContextVa
 	currentViews: [],
 	registerView: () => undefined,
 	unregisterView: () => undefined,
-});
+};
+
+export const MediaCallInstanceContext = createContext<MediaCallInstanceContextValue>(defaultMediaCallInstanceContextValue);
 
 export const useMediaCallInstance = (): MediaCallInstanceContextValue => useContext(MediaCallInstanceContext);

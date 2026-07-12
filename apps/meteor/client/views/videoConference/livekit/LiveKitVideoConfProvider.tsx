@@ -1,19 +1,25 @@
 /* eslint-disable react/no-multi-comp */
 import { LiveKitRoom, RoomAudioRenderer, useLocalParticipant, useParticipants, useRoomContext, useTracks } from '@livekit/components-react';
-import { useUserAvatarPath } from '@rocket.chat/ui-contexts';
+import { useUserDisplayName } from '@rocket.chat/ui-client';
+import { useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import {
+	MediaCallInstanceInertProvider,
+	MediaCallRoomSection,
 	MediaCallViewContext,
 	defaultMediaCallContextValue,
 	playJoinChime,
+	useMediaCallInstance,
+	usePopoutWindow,
 	DEFAULT_CALL_LANGUAGE,
 	findCallLanguage,
 	type CallLanguage,
+	type PopoutContainer,
 	type RemoteParticipantInfo,
 } from '@rocket.chat/ui-voip';
 import type { LocalAudioTrack, RemoteParticipant } from 'livekit-client';
 import { ParticipantKind, RoomEvent, Track } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { ReactNode } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
 import FloatingGroupCallWidget from './FloatingGroupCallWidget';
@@ -67,10 +73,14 @@ const InnerProvider = ({
 	callId,
 	onLeave,
 	onContextChange,
+	onOpenPopout,
+	onClosePopout,
 }: {
 	callId: string;
 	onLeave: () => void;
 	onContextChange: (value: unknown) => void;
+	onOpenPopout: () => void;
+	onClosePopout: () => void;
 }) => {
 	const room = useRoomContext();
 	const { localParticipant } = useLocalParticipant();
@@ -606,6 +616,8 @@ const InnerProvider = ({
 				supportedFeatures: ['audio', 'video', 'screen-share'] as any,
 			},
 			onMute: onToggleMic,
+			onOpenPopout,
+			onClosePopout,
 			onHold: () => undefined,
 			onDeviceChange: () => undefined,
 			onForward: () => undefined,
@@ -668,6 +680,8 @@ const InnerProvider = ({
 			localCameraStream,
 			localScreenStream,
 			localMicrophoneStream,
+			onOpenPopout,
+			onClosePopout,
 		],
 	);
 
@@ -676,6 +690,25 @@ const InnerProvider = ({
 	}, [ctxValue, onContextChange]);
 
 	return null;
+};
+
+const LiveKitPopout = ({
+	container,
+	ownUser,
+}: {
+	container: PopoutContainer | null;
+	ownUser: ComponentProps<typeof MediaCallRoomSection>['user'];
+}) => {
+	if (!container) {
+		return null;
+	}
+
+	return createPortal(
+		<MediaCallInstanceInertProvider>
+			<MediaCallRoomSection showChat={false} onToggleChat={() => undefined} user={ownUser} hideChatToggle />
+		</MediaCallInstanceInertProvider>,
+		container.root,
+	);
 };
 
 /**
@@ -696,6 +729,51 @@ const LiveKitVideoConfBridge = ({ children }: { children: ReactNode }) => {
 	const callId = activeCall?.callId;
 	const [creds, setCreds] = useState<LKCreds | null>(null);
 	const [ctxValue, setCtxValue] = useState<unknown>(defaultMediaCallContextValue);
+
+	const user = useUser();
+	const displayName = useUserDisplayName({ name: user?.name, username: user?.username });
+	const getUserAvatarPath = useUserAvatarPath();
+	const ownUser = useMemo(
+		() => ({
+			id: user?._id || 'local',
+			displayName: displayName || '',
+			avatarUrl: getUserAvatarPath({ userId: user?._id || '' }),
+		}),
+		[displayName, getUserAvatarPath, user?._id],
+	);
+
+	const { registerView, unregisterView } = useMediaCallInstance();
+	const openPopoutWindowRef = useRef<((callId: string) => Promise<void>) | undefined>(undefined);
+	const closePopoutWindowRef = useRef<(() => void) | undefined>(undefined);
+	const onClosePopoutRef = useRef<() => void>(() => undefined);
+
+	const handleBeforeUnload = useCallback(() => {
+		onClosePopoutRef.current();
+	}, []);
+
+	const { container, openPopoutWindow, closePopoutWindow } = usePopoutWindow(handleBeforeUnload);
+	openPopoutWindowRef.current = openPopoutWindow;
+	closePopoutWindowRef.current = closePopoutWindow;
+
+	const onOpenPopout = useCallback(() => {
+		registerView('popout');
+		if (callId) {
+			void openPopoutWindowRef.current?.(callId);
+		}
+	}, [callId, registerView]);
+
+	const onClosePopout = useCallback(() => {
+		unregisterView('popout');
+		closePopoutWindowRef.current?.();
+	}, [unregisterView]);
+
+	onClosePopoutRef.current = onClosePopout;
+
+	useEffect(() => {
+		if (!callId) {
+			onClosePopoutRef.current();
+		}
+	}, [callId]);
 
 	useEffect(() => {
 		if (!callId) {
@@ -759,6 +837,7 @@ const LiveKitVideoConfBridge = ({ children }: { children: ReactNode }) => {
 			    (MediaCallRoomSection.useRegisterView('room') keeps the room view registered) or when
 			    no group call is active. */}
 			<FloatingGroupCallWidget />
+			<LiveKitPopout container={container} ownUser={ownUser} />
 			{lkActive && creds && callId && lkPortalTarget
 				? createPortal(
 						// Apply preflight mic/cam preferences from the VC
@@ -774,7 +853,13 @@ const LiveKitVideoConfBridge = ({ children }: { children: ReactNode }) => {
 							video={activeCall?.preferences?.cam ?? false}
 							onDisconnected={onLeave}
 						>
-							<InnerProvider callId={callId} onLeave={onLeave} onContextChange={setCtxValue} />
+							<InnerProvider
+								callId={callId}
+								onLeave={onLeave}
+								onContextChange={setCtxValue}
+								onOpenPopout={onOpenPopout}
+								onClosePopout={onClosePopout}
+							/>
 							<RoomAudioRenderer />
 						</LiveKitRoom>,
 						lkPortalTarget,

@@ -1,4 +1,5 @@
 export { default as MediaCallProvider } from './providers/MediaCallProvider';
+export { default as MediaCallInstanceInertProvider } from './providers/MediaCallInstanceInertProvider';
 
 export {
 	MediaCallInstanceContext,
@@ -34,6 +35,11 @@ export { default as Timer } from './components/Timer';
 export { default as MediaCallRoomSection } from './views/MediaCallRoomSection/MediaCallRoomSection';
 export { default as MediaCallViewContext, defaultMediaCallContextValue } from './context/MediaCallViewContext';
 export type { RemoteParticipantInfo, MediaCallStreams } from './context/MediaCallViewContext';
+
+// Popout window hook used by VoIP and LiveKit call UIs to render the same
+// in-room call section into a separate browser window.
+export { usePopoutWindow } from './views/usePopoutWindow';
+export type { PopoutContainer } from './views/usePopoutWindow';
 
 // In-call notification chimes used by the Video Conference (LiveKit) UI —
 // recording started/stopped and remote-participant joined. Synthesized via
