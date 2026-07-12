@@ -4,6 +4,8 @@
 
 Premium feature (license module `outlook-calendar`). The server periodically fetches users' Outlook/Exchange calendars using administrator-provided credentials and imports them through the existing calendar service (`calendar_event` collection, reminders, busy-presence). Unlike the client-based Outlook Calendar integration — which keeps working unchanged alongside this one — users never authenticate individually and no desktop app is required.
 
+> Setting up a test environment (M365 tenant or on-prem Exchange lab) and a full verification checklist: see the [testing guide](./server-calendar-sync-testing.md).
+
 Key source locations:
 
 - Sync engine and providers: `apps/meteor/ee/server/lib/calendarSync/`
