@@ -14,6 +14,9 @@ declare module '@rocket.chat/ddp-client' {
 Meteor.methods<ServerMethods>({
 	async replayOutgoingIntegration({ integrationId, historyId }) {
 		methodDeprecationLogger.method('replayOutgoingIntegration', '9.0.0', '/v1/integrations.replayOutgoing');
+		if (!this.userId) {
+			throw new Meteor.Error('not_authorized', 'Unauthorized', { method: 'replayOutgoingIntegration' });
+		}
 		await replayOutgoingIntegrationMethod(this.userId, { integrationId, historyId });
 		return true;
 	},

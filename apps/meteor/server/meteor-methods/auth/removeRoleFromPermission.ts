@@ -14,6 +14,10 @@ declare module '@rocket.chat/ddp-client' {
 Meteor.methods<ServerMethods>({
 	async 'authorization:removeRoleFromPermission'(permissionId, role) {
 		methodDeprecationLogger.method('authorization:removeRoleFromPermission', '9.0.0', '/v1/permissions.removeRole');
-		await removeRoleFromPermissionMethod(Meteor.userId(), permissionId, role);
+		const uid = Meteor.userId();
+		if (!uid) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'authorization:removeRoleFromPermission' });
+		}
+		await removeRoleFromPermissionMethod(uid, permissionId, role);
 	},
 });

@@ -14,6 +14,9 @@ declare module '@rocket.chat/ddp-client' {
 Meteor.methods<ServerMethods>({
 	async clearIntegrationHistory(integrationId) {
 		methodDeprecationLogger.method('clearIntegrationHistory', '9.0.0', '/v1/integrations.clearHistory');
+		if (!this.userId) {
+			throw new Meteor.Error('not_authorized', 'Unauthorized', { method: 'clearIntegrationHistory' });
+		}
 		await clearIntegrationHistoryMethod(this.userId, integrationId);
 		return true;
 	},

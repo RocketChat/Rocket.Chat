@@ -6,7 +6,7 @@ import { hasPermissionAsync } from './hasPermission';
 import { notifyOnPermissionChangedById } from '../../../lib/server/lib/notifyListener';
 import { CONSTANTS, AuthorizationUtils } from '../../lib';
 
-export const addPermissionToRoleMethod = async (uid: string | null, permissionId: string, role: string): Promise<void> => {
+export const addPermissionToRoleMethod = async (uid: string, permissionId: string, role: string): Promise<void> => {
 	if (role === 'guest' && !AuthorizationUtils.hasRestrictionsToRole(role) && (await License.hasValidLicense())) {
 		AuthorizationUtils.addRolePermissionWhiteList(role, await License.getGuestPermissions());
 	}
@@ -35,7 +35,6 @@ export const addPermissionToRoleMethod = async (uid: string | null, permissionId
 	}
 
 	if (
-		!uid ||
 		!(await hasPermissionAsync(uid, 'access-permissions')) ||
 		(permission.level === CONSTANTS.SETTINGS_LEVEL && !(await hasPermissionAsync(uid, 'access-setting-permissions')))
 	) {
@@ -55,7 +54,7 @@ export const addPermissionToRoleMethod = async (uid: string | null, permissionId
 	void notifyOnPermissionChangedById(permission._id);
 };
 
-export const removeRoleFromPermissionMethod = async (uid: string | null, permissionId: string, role: string): Promise<void> => {
+export const removeRoleFromPermissionMethod = async (uid: string, permissionId: string, role: string): Promise<void> => {
 	const permission = await Permissions.findOneById(permissionId);
 
 	if (!permission) {
@@ -65,7 +64,6 @@ export const removeRoleFromPermissionMethod = async (uid: string | null, permiss
 	}
 
 	if (
-		!uid ||
 		!(await hasPermissionAsync(uid, 'access-permissions')) ||
 		(permission.level === CONSTANTS.SETTINGS_LEVEL && !(await hasPermissionAsync(uid, 'access-setting-permissions')))
 	) {

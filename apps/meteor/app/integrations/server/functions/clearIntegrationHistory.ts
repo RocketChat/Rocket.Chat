@@ -6,11 +6,7 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import notifications from '../../../notifications/server/lib/Notifications';
 import { triggerHandler } from '../lib/triggerHandler';
 
-export const clearIntegrationHistoryMethod = async (userId: string | null, integrationId: string): Promise<void> => {
-	if (!userId) {
-		throw new Meteor.Error('not_authorized', 'Unauthorized', { method: 'clearIntegrationHistory' });
-	}
-
+export const clearIntegrationHistoryMethod = async (userId: string, integrationId: string): Promise<void> => {
 	let integration: IIntegration | null = null;
 
 	if (await hasPermissionAsync(userId, 'manage-outgoing-integrations')) {
@@ -34,13 +30,9 @@ export const clearIntegrationHistoryMethod = async (userId: string | null, integ
 };
 
 export const replayOutgoingIntegrationMethod = async (
-	userId: string | null,
+	userId: string,
 	{ integrationId, historyId }: { integrationId: string; historyId: string },
 ): Promise<void> => {
-	if (!userId) {
-		throw new Meteor.Error('not_authorized', 'Unauthorized', { method: 'replayOutgoingIntegration' });
-	}
-
 	let integration: IOutgoingIntegration | null = null;
 
 	if (await hasPermissionAsync(userId, 'manage-outgoing-integrations')) {
