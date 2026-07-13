@@ -19,7 +19,6 @@ type GenericMenuConditionalProps =
 			sections?: {
 				title?: ReactNode;
 				items: GenericMenuItemProps[];
-				permission?: boolean | '' | 0 | null | undefined;
 			}[];
 			items?: never;
 	  }
