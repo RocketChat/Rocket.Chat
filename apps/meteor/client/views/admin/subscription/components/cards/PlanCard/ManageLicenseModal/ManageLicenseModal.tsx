@@ -43,13 +43,14 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 
 	const trimmedLicense = license.trim();
 	const debouncedLicense = useDebouncedValue(trimmedLicense, 500);
-	const { data: validation, isPending, isError } = useValidateLicense(debouncedLicense);
 
 	const isEmpty = trimmedLicense === '';
 	const isPlausible = isPlausibleLicense(trimmedLicense);
-	const isValidating = isPlausible && (trimmedLicense !== debouncedLicense || isPending);
-
 	const isCurrentLicense = !isEmpty && trimmedLicense === enterpriseLicense.trim();
+
+	const { data: validation, isPending, isError } = useValidateLicense(debouncedLicense, !isCurrentLicense);
+
+	const isValidating = isPlausible && !isCurrentLicense && (trimmedLicense !== debouncedLicense || isPending);
 
 	const isLicenseValid = isPlausible && !fileError && !isError && validation?.valid === true;
 
@@ -65,7 +66,7 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 		return t(getLicenseInvalidMessage(validation?.reasons ?? []));
 	})();
 
-	const showStatus = isPlausible || Boolean(fileError);
+	const showStatus = !isCurrentLicense && (isPlausible || Boolean(fileError));
 
 	const handleApply = async () => {
 		try {
@@ -148,20 +149,23 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 						borderColor={isDragOver ? 'stroke-highlight' : 'stroke-light'}
 						style={{ fontFamily: 'monospace' }}
 						rows={4}
+						readOnly={isCurrentLicense}
 						placeholder={t('Drag_and_drop_license_placeholder')}
 						value={license}
 						onChange={handleTextChange}
-						onDrop={handleDrop}
-						onDragOver={handleDragOver}
-						onDragEnter={handleDragOver}
-						onDragLeave={handleDragLeave}
+						onDrop={isCurrentLicense ? undefined : handleDrop}
+						onDragOver={isCurrentLicense ? undefined : handleDragOver}
+						onDragEnter={isCurrentLicense ? undefined : handleDragOver}
+						onDragLeave={isCurrentLicense ? undefined : handleDragLeave}
 					/>
 				</FieldRow>
 			</Field>
 			<ButtonGroup>
-				<Button icon='upload' small onClick={() => inputRef.current?.click()}>
-					{t('Upload_license_file')}
-				</Button>
+				{!isCurrentLicense && (
+					<Button icon='upload' small onClick={() => inputRef.current?.click()}>
+						{t('Upload_license_file')}
+					</Button>
+				)}
 				{isCurrentLicense && (
 					<Button icon='trash' small secondary danger onClick={() => setIsConfirmingRemoval(true)}>
 						{t('Remove_license')}
