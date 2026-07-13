@@ -136,19 +136,28 @@ describe('shutdownAPN', () => {
 		mocks.ApnProvider.reset();
 	});
 
-	it('should shut down the active provider', () => {
+	it('should shut down the active provider', async () => {
 		const shutdown = sandbox.stub().resolves();
 		mocks.ApnProvider.returns({ shutdown });
 
 		initAPN({ options: buildOptions(), absoluteUrl: 'https://example.com' });
-		shutdownAPN();
+		await shutdownAPN();
 
 		expect(shutdown.calledOnce).to.be.true;
 	});
 
-	it('should not throw when no provider was initialized', () => {
-		shutdownAPN();
+	it('should resolve when no provider was initialized', async () => {
+		await shutdownAPN();
+		await shutdownAPN();
+	});
 
-		expect(() => shutdownAPN()).to.not.throw();
+	it('should not reject when provider shutdown fails', async () => {
+		const shutdown = sandbox.stub().rejects(new Error('shutdown failed'));
+		mocks.ApnProvider.returns({ shutdown });
+
+		initAPN({ options: buildOptions(), absoluteUrl: 'https://example.com' });
+		await shutdownAPN();
+
+		expect(mocks.logger.error.called).to.be.true;
 	});
 });

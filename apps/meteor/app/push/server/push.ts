@@ -168,10 +168,10 @@ class PushClass {
 		}
 	}
 
-	public unconfigure(): void {
+	public async unconfigure(): Promise<void> {
 		logger.info('Push service disabled: shutting down existing connections');
-		shutdownAPN();
 		this.isConfigured = false;
+		await shutdownAPN();
 	}
 
 	private removeToken(token: string): void {
