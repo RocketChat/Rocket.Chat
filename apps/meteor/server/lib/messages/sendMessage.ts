@@ -169,7 +169,7 @@ export const validateMessage = async (message: any, room: any, user: any) => {
 	if (message.alias || message.avatar) {
 		const isLiveChatGuest = !message.avatar && user.token && user.token === room.v?.token;
 
-		if (!isLiveChatGuest && !(await hasPermissionAsync(user._id, 'message-impersonate', room._id))) {
+		if (!isLiveChatGuest && !(await hasPermissionAsync(user, 'message-impersonate', room._id))) {
 			throw new Error('Not enough permission');
 		}
 	}

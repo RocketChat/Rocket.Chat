@@ -92,7 +92,7 @@ Meteor.methods<ServerMethods>({
 		check(endDate, Date);
 
 		const user = (await Meteor.userAsync()) as IUser;
-		if (!user || !(await hasPermissionAsync(user._id, 'can-audit'))) {
+		if (!user || !(await hasPermissionAsync(user, 'can-audit'))) {
 			throw new Meteor.Error('Not allowed');
 		}
 
@@ -139,7 +139,7 @@ Meteor.methods<ServerMethods>({
 		check(endDate, Date);
 
 		const user = (await Meteor.userAsync()) as IUser;
-		if (!user || !(await hasPermissionAsync(user._id, 'can-audit'))) {
+		if (!user || !(await hasPermissionAsync(user, 'can-audit'))) {
 			throw new Meteor.Error('Not allowed');
 		}
 
