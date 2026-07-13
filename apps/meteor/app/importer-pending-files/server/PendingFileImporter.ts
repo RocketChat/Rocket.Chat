@@ -73,11 +73,12 @@ export class PendingFileImporter extends Importer {
 
 			const renewal = setInterval(() => void Messages.renewPendingFileImportLease(message._id, LEASE_MS), LEASE_MS / 4);
 
+			let file: IUpload | undefined;
 			try {
 				const fileStream = await this.downloadFile(url, details);
 
 				// Bypass the fileStore filters
-				const file = await FileUpload.getStore('Uploads')._doInsert(details, fileStream);
+				file = await FileUpload.getStore('Uploads')._doInsert(details, fileStream);
 
 				const rocketChatUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name || '')}`);
 				const user = await Users.findOneById(message.u._id);
@@ -90,6 +91,11 @@ export class PendingFileImporter extends Importer {
 				importedRoomIds.add(message.rid);
 			} catch (err) {
 				this.logger.error({ msg: 'Failed to download pending file', url: url.split('?')[0], err });
+				if (file) {
+					await FileUpload.getStore('Uploads')
+						.deleteById(file._id)
+						.catch(() => undefined);
+				}
 				skipMessageIds.add(message._id);
 				inFlightFileIds.delete(_importFile.id);
 				await this.addCountError(1);
