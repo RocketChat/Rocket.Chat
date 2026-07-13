@@ -1,22 +1,20 @@
 import { serializeSearchQuery, type NavBarSearchFormValues } from '@rocket.chat/ai-search';
-import { Box, Button } from '@rocket.chat/fuselage';
+import { Box, Icon, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
 import type { UnifiedSearchIntelligentResult } from '@rocket.chat/rest-typings';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { useCallback } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import NavBarSearchItem from './NavBarSearchItem';
 import NavBarSearchMessageRow from './NavBarSearchMessageRow';
 
 const NavBarSearchIntelligentSection = ({
 	items,
-	showAction,
 	onSelect,
 	onClose,
 }: {
 	items: UnifiedSearchIntelligentResult[];
-	showAction: boolean;
 	onSelect: () => void;
 	onClose: () => void;
 }): ReactElement | null => {
@@ -25,39 +23,34 @@ const NavBarSearchIntelligentSection = ({
 	const { watch } = useFormContext<NavBarSearchFormValues>();
 	const { filterText, appliedFilters } = watch();
 
-	const handleOpenAISearch = useCallback(() => {
-		const query = serializeSearchQuery(filterText, appliedFilters);
-		router.navigate({
-			name: 'search',
-			search: query ? { q: query } : {},
-		});
-		onClose();
-	}, [appliedFilters, filterText, onClose, router]);
-
 	if (!items.length) {
 		return null;
 	}
+
+	const query = serializeSearchQuery(filterText, appliedFilters);
+	const searchHref = router.buildRoutePath({
+		name: 'search',
+		search: query ? { q: query } : {},
+	});
 
 	return (
 		<Box display='flex' flexDirection='column' pbs={8} pbe={12}>
 			<Box color='titles-labels' fontScale='c1' fontWeight='bold' pi={12} mbe={4} role='presentation' aria-hidden>
 				{t('Intelligent_Search')}
 			</Box>
-			{items.length > 0 && (
-				<Box color='hint' fontScale='c1' pi={12} mbe={4}>
-					{t('AI_Search_related_messages', { count: items.length })}
-				</Box>
-			)}
+			<Box color='hint' fontScale='c1' pi={12} mbe={4}>
+				{t('AI_Search_related_messages', { count: items.length })}
+			</Box>
 			{items.map((item) => (
 				<NavBarSearchMessageRow key={`intelligent-${item._id}`} type='intelligent' item={item} onClick={onSelect} />
 			))}
-			{showAction && (
-				<Box pi={12} pbs={4}>
-					<Button small role='option' onClick={handleOpenAISearch} title={t('Open_AI_Search')}>
-						{t('Open_AI_Search')}
-					</Button>
-				</Box>
-			)}
+			<NavBarSearchItem
+				title={t('Open_AI_Search')}
+				avatar={null}
+				icon={<SidebarV2ItemIcon icon={<Icon name='arrow-forward' size='x16' />} />}
+				href={searchHref}
+				onClick={onClose}
+			/>
 		</Box>
 	);
 };

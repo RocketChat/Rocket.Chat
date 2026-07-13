@@ -1,3 +1,4 @@
+import { MAX_AI_SERVICE_RESPONSE_SIZE } from './constants';
 import type { AIServiceFetch, AIServiceLogger, OpenAICompatibleProviderConfig, SearchAnswerMessage, SearchAnswerResult } from './types';
 
 const buildEndpointUrl = (baseUrl: string, path: string): string =>
@@ -51,6 +52,7 @@ export const generateOpenAICompatibleSearchAnswer = async ({
 		const response = await fetch(buildEndpointUrl(provider.baseUrl, 'chat/completions'), {
 			method: 'POST',
 			timeout: 20000,
+			size: MAX_AI_SERVICE_RESPONSE_SIZE,
 			headers: {
 				'Content-Type': 'application/json',
 				'Accept': 'application/json',
@@ -112,6 +114,7 @@ export const listOpenAICompatibleModels = async ({
 		const response = await fetch(buildEndpointUrl(provider.baseUrl, 'models'), {
 			method: 'GET',
 			timeout: 10000,
+			size: MAX_AI_SERVICE_RESPONSE_SIZE,
 			headers: {
 				Accept: 'application/json',
 				Authorization: `Bearer ${provider.apiKey}`,

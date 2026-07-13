@@ -101,7 +101,6 @@ describe('[Settings]', () => {
 				})
 				.end(done);
 		});
-
 		it('should return the default values of the settings when includeDefaults is true', async () => {
 			return request
 				.get(api('settings'))
@@ -113,8 +112,7 @@ describe('[Settings]', () => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('settings');
 					expect(res.body).to.have.property('count');
-					const setting = res.body.settings.find((setting: Record<string, unknown>) => Object.hasOwn(setting, 'value'));
-					expect(setting).to.have.property('packageValue');
+					expect(res.body.settings[0]).to.have.property('packageValue');
 				});
 		});
 

@@ -11,19 +11,19 @@ jest.mock('../../lib/rooms/roomCoordinator', () => ({
 	},
 }));
 
-describe('AI Search SourceResult', () => {
-	it('renders source messages as compact inline message results', () => {
+describe('SearchSourceResult', () => {
+	it('renders source metadata, markdown, and a message link', () => {
 		render(
 			<SearchSourceResult
 				item={{
-					_id: 'm1',
-					rid: 'r1',
-					msgId: 'm1',
+					_id: 'message-id',
+					rid: 'room-id',
+					msgId: 'message-id',
 					text: '**Oranges** are green',
 					score: 0.61,
 					ts: '2026-01-05T12:00:00.000Z',
 					u: { name: 'Search User', username: 'search.user' },
-					room: { _id: 'r1', t: 'c', name: 'general', fname: 'General' },
+					room: { _id: 'room-id', t: 'c', name: 'general', fname: 'General' },
 				}}
 			/>,
 			{ wrapper: mockAppRoot().build() },
@@ -34,23 +34,18 @@ describe('AI Search SourceResult', () => {
 		expect(screen.getByText('General')).toBeInTheDocument();
 		expect(screen.getByText('61%')).toBeInTheDocument();
 		expect(screen.getByText('Oranges').tagName).toBe('STRONG');
-		expect(screen.getByText(/are green/)).toBeInTheDocument();
-		expect(
-			screen.queryByText((_, element) => element?.tagName === 'P' && element.textContent === 'Oranges are green'),
-		).not.toBeInTheDocument();
+		expect(screen.getByRole('link')).toHaveAttribute('href', '/channel/general?msg=message-id');
 	});
 
 	it('clamps an out-of-range relevance score to 100%', () => {
 		render(
 			<SearchSourceResult
 				item={{
-					_id: 'm2',
-					rid: 'r1',
-					msgId: 'm2',
+					_id: 'message-id',
 					text: 'plain text',
 					score: 1.5,
 					u: { name: 'Search User', username: 'search.user' },
-					room: { _id: 'r1', t: 'c', name: 'general', fname: 'General' },
+					room: { _id: 'room-id', t: 'c', name: 'general', fname: 'General' },
 				}}
 			/>,
 			{ wrapper: mockAppRoot().build() },
@@ -59,12 +54,11 @@ describe('AI Search SourceResult', () => {
 		expect(screen.getByText('100%')).toBeInTheDocument();
 	});
 
-	it('renders as a non-link when the source message has no resolvable room', () => {
+	it('does not render a link when the source has no resolvable room', () => {
 		render(
 			<SearchSourceResult
 				item={{
-					_id: 'm3',
-					msgId: 'm3',
+					_id: 'message-id',
 					text: 'orphan message',
 					u: { name: 'Search User', username: 'search.user' },
 				}}

@@ -82,6 +82,7 @@ const settings: Record<string, unknown> = {
 	AI_LLM_OpenAI_API_Key: 'llm-key',
 	AI_LLM_OpenAI_Model: 'gpt-test',
 	AI_Intelligent_Search_Answer_System_Prompt: 'Use sources only.',
+	SSRF_Allowlist: 'pipeline.example.com,llm.example.com',
 };
 
 const createService = (): InstanceType<typeof AISearchService> => new AISearchService();
@@ -199,12 +200,20 @@ describe('AISearchService', () => {
 			expect(body.filters).to.deep.equal({
 				room_id: { $in: subscribedRoomIds },
 			});
+			expect(options).to.include({
+				ignoreSsrfValidation: false,
+				allowList: 'pipeline.example.com,llm.example.com',
+			});
 			expect(
 				Subscriptions.findByUserId.calledWith('user-id', {
 					projection: { rid: 1 },
 				}),
 			).to.be.true;
-			expect(Subscriptions.findByUserIdAndRoomIds.calledWith('user-id', ['allowed'], { projection: { rid: 1 } })).to.be.true;
+			expect(
+				Subscriptions.findByUserIdAndRoomIds.calledWith('user-id', ['blocked', 'allowed'], {
+					projection: { rid: 1, status: 1 },
+				}),
+			).to.be.true;
 		});
 
 		it('resolves room-name filters before querying the pipeline', async () => {
@@ -249,7 +258,7 @@ describe('AISearchService', () => {
 			expect(results).to.have.lengthOf(1);
 			expect(results[0]).to.include({ _id: 'general-msg', rid: 'room-general', score: 0.8 });
 			expect(
-				Messages.findVisibleByIds.calledWith(['general-msg'], {
+				Messages.findVisibleByIds.calledWith(['general-msg', 'blocked-msg'], {
 					projection: { _id: 1, rid: 1, msg: 1, ts: 1, u: 1 },
 				}),
 			).to.be.true;
@@ -302,6 +311,21 @@ describe('AISearchService', () => {
 
 			expect(await createService().search({ query: 'fruit', userId: 'user-id', limit: 5 })).to.deep.equal([]);
 		});
+
+		it('drops pipeline hits from rooms where the user subscription is banned', async () => {
+			Subscriptions.findByUserId.returns(cursor([{ rid: 'allowed' }]));
+			Subscriptions.findByUserIdAndRoomIds.returns(cursor([{ rid: 'allowed', status: 'BANNED' }]));
+			serverFetch.resolves({
+				ok: true,
+				status: 200,
+				json: async () => ({
+					results: [{ metadata: { room_id: 'allowed', msg_id: 'allowed-msg' }, text: 'pipeline text', similarity: 0.8 }],
+				}),
+				text: async () => '',
+			});
+
+			expect(await createService().search({ query: 'fruit', userId: 'user-id', limit: 5 })).to.deep.equal([]);
+		});
 	});
 
 	describe('answer', () => {
@@ -339,6 +363,15 @@ describe('AISearchService', () => {
 			expect(url).to.equal('https://llm.example.com/chat/completions');
 			expect(options.headers.Authorization).to.equal('Bearer llm-key');
 			expect(JSON.parse(options.body).messages[0]).to.deep.equal({ role: 'system', content: 'Use sources only.' });
+		});
+	});
+
+	describe('models', () => {
+		it('does not contact the provider without the AI add-on', async () => {
+			License.hasModule.resolves(false);
+
+			expect(await createService().models()).to.deep.equal([]);
+			expect(serverFetch.called).to.be.false;
 		});
 	});
 });

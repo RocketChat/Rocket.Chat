@@ -66,13 +66,8 @@ const NavBarSearchListBox = ({ state, overlayProps, aiSearchActive = false, aiSe
 		>
 			<ResultsLiveRegion shouldAnnounce={!isLoading} itemCount={itemCount} isLoading={isLoading} />
 			<CustomScrollbars>
-				<div {...overlayProps} role='listbox' aria-label={t('Channels')} aria-busy={isLoading} tabIndex={-1} onKeyDown={handleKeyDown}>
-					<NavBarSearchIntelligentSection
-						items={items.intelligent}
-						showAction={aiSearchActive && Boolean(items.searchText.trim())}
-						onSelect={handleSelect}
-						onClose={state.close}
-					/>
+				<div {...overlayProps} role='listbox' aria-label={t('Search')} aria-busy={isLoading} tabIndex={-1} onKeyDown={handleKeyDown}>
+					<NavBarSearchIntelligentSection items={items.intelligent} onSelect={handleSelect} onClose={state.close} />
 					<NavBarSearchFilterSuggestions suggestions={items.filterSuggestions} />
 					<NavBarSearchRoomSection
 						filterText={filterText}

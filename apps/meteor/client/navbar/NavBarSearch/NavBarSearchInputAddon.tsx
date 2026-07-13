@@ -1,5 +1,6 @@
 import type { SearchFilterChip } from '@rocket.chat/ai-search';
 import { Box, Chip, Icon, IconButton } from '@rocket.chat/fuselage';
+import type { TFunction } from 'i18next';
 import type { ReactElement } from 'react';
 
 type NavBarSearchInputAddonProps = {
@@ -11,7 +12,7 @@ type NavBarSearchInputAddonProps = {
 	onClearText: () => void;
 	onRemoveFilter: (filterKey: string) => void;
 	onToggleAISearch: () => void;
-	t: (key: string) => string;
+	t: TFunction;
 };
 
 const getFilterChipLabel = (label: string): string => label.replace(/^in:\s*/, '').replace(/^from:\s*/, '');
@@ -42,10 +43,10 @@ const NavBarSearchInputAddon = ({
 							value={label}
 							onClick={() => onRemoveFilter(filter.key)}
 							title={filter.title}
-							aria-label={`${t('Remove')} ${label}`}
+							aria-label={t('Remove_filter', { filter: label })}
 							renderDismissSymbol={() => <Icon name='cross' size='x12' />}
 						>
-							<Box is='span' maxWidth='x104' withTruncatedText fontScale='c1'>
+							<Box is='span' maxWidth='x104' withTruncatedText>
 								{label}
 							</Box>
 						</Chip>
@@ -63,7 +64,6 @@ const NavBarSearchInputAddon = ({
 				mini
 				icon='stars'
 				pressed={aiSearchActive}
-				aria-pressed={aiSearchActive}
 				aria-label={aiSearchButtonTooltip}
 				title={aiSearchButtonTooltip}
 				onClick={onToggleAISearch}

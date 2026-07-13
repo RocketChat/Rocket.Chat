@@ -1,3 +1,4 @@
+import { MAX_AI_SERVICE_RESPONSE_SIZE } from './constants';
 import type {
 	AIServiceFetch,
 	AIServiceLogger,
@@ -225,6 +226,7 @@ export const searchIntelligentPipeline = async ({
 		response = await fetch(url, {
 			method: 'POST',
 			timeout: 10000,
+			size: MAX_AI_SERVICE_RESPONSE_SIZE,
 			headers: {
 				'Content-Type': 'application/json',
 				'Accept': 'application/json',

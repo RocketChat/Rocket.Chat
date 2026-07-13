@@ -23,7 +23,7 @@ import type {
 	IAISearchService,
 } from '@rocket.chat/core-services';
 import { License, ServiceClass } from '@rocket.chat/core-services';
-import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import { isBannedSubscription, type IMessage, type IRoom, type IUser } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import type { UnifiedSearchIntelligentResult } from '@rocket.chat/rest-typings';
@@ -33,13 +33,12 @@ import { settings } from '../../../app/settings/server';
 
 const logger = new Logger('AISearchService');
 
-const DEFAULT_ANSWER_SYSTEM_PROMPT = [
-	"Given below user's query and the search results, provide a concise and accurate answer to the query based on the search results. Make sure to include relevant caveats and context. Add references to the search results in the format [N] after the relevant information. If you are unsure about the answer, say that you are not sure instead of making something up.",
-	"For formatting the answer, use markdown. For code snippets, use markdown code blocks with the appropriate language specified. Keep the answers as concise as possible, while still providing a complete answer to the user's question, and everything in a single column, without using tables or other formatting that may be hard to read in the Rocket.Chat client.",
-].join('\n');
-
 const fetchWithSsrfValidation = (url: string, options: Omit<ExtendedFetchOptions, 'allowList' | 'ignoreSsrfValidation'>) =>
-	serverFetch(url, { ...options, ignoreSsrfValidation: false, allowList: [] });
+	serverFetch(url, {
+		...options,
+		ignoreSsrfValidation: false,
+		allowList: settings.get<string>('SSRF_Allowlist'),
+	});
 
 const asString = (value: unknown): string => {
 	if (typeof value === 'string') {
@@ -182,43 +181,37 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			return new Set();
 		}
 
-		const subscribedRoomIds = await Subscriptions.findByUserIdAndRoomIds(userId, uniqueRoomIds, {
-			projection: { rid: 1 },
-		})
-			.map(({ rid }) => rid)
-			.toArray();
+		const subscriptions = await Subscriptions.findByUserIdAndRoomIds(userId, uniqueRoomIds, {
+			projection: { rid: 1, status: 1 },
+		}).toArray();
 
-		return new Set(subscribedRoomIds);
+		return new Set(subscriptions.filter((subscription) => !isBannedSubscription(subscription)).map(({ rid }) => rid));
 	}
 
 	private async normalizeIntelligentResults(
 		rawSearchResults: unknown,
 		userId: string,
-		prefilterRoomIds: string[] = [],
 		limit = AI_SEARCH_PAGE_SIZE,
-		candidateLimit = limit,
 	): Promise<UnifiedSearchIntelligentResult[]> {
-		const candidates = normalizeIntelligentSearchCandidates(rawSearchResults, prefilterRoomIds, candidateLimit, logger);
-		const msgIds = candidates.map(({ msgId }) => msgId).filter((msgId): msgId is string => Boolean(msgId));
-		const messageMap = new Map<string, IMessage>();
+		const candidates = normalizeIntelligentSearchCandidates(rawSearchResults, [], limit, logger);
+		const msgIds = [...new Set(candidates.map(({ msgId }) => msgId).filter((msgId): msgId is string => Boolean(msgId)))];
+		let messageMap = new Map<string, IMessage>();
 
 		if (msgIds.length > 0) {
-			const msgs = await Messages.findVisibleByIds(msgIds, {
-				projection: { _id: 1, rid: 1, msg: 1, ts: 1, u: 1 },
-			}).toArray();
-			for (const message of msgs) {
-				messageMap.set(String(message._id), message);
-			}
+			messageMap = new Map(
+				await Messages.findVisibleByIds(msgIds, {
+					projection: { _id: 1, rid: 1, msg: 1, ts: 1, u: 1 },
+				})
+					.map((message) => [String(message._id), message] as const)
+					.toArray(),
+			);
 			logger.debug({ msg: 'AI search messages fetched from DB', requested: msgIds.length, found: messageMap.size });
 		}
 
-		const rooms = await this.getRoomMap([
-			...candidates.map(({ rid }) => rid).filter((rid): rid is string => Boolean(rid)),
-			...Array.from(messageMap.values()).map(({ rid }) => rid),
-		]);
-		const subscribedRoomIds = await this.getSubscribedRoomIdSet(userId, [
-			...candidates.map(({ rid }) => rid).filter((rid): rid is string => Boolean(rid)),
-			...Array.from(messageMap.values()).map(({ rid }) => rid),
+		const resultRoomIds = Array.from(messageMap.values(), ({ rid }) => rid);
+		const [rooms, subscribedRoomIds] = await Promise.all([
+			this.getRoomMap(resultRoomIds),
+			this.getSubscribedRoomIdSet(userId, resultRoomIds),
 		]);
 
 		return candidates
@@ -315,8 +308,10 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			logger.debug({ msg: 'AI search skipped: room name filters did not resolve to subscribed rooms' });
 			return [];
 		}
-		const subscribedScopedRoomIds = scopedRoomIds.length ? await this.getSubscribedRoomIds(userId, scopedRoomIds) : [];
-		const pipelineRoomIds = scopedRoomIds.length ? subscribedScopedRoomIds : await this.getUserSubscribedRoomIdsForPipeline(userId);
+		const [pipelineRoomIds, classifications] = await Promise.all([
+			scopedRoomIds.length ? this.getSubscribedRoomIds(userId, scopedRoomIds) : this.getUserSubscribedRoomIdsForPipeline(userId),
+			this.getUserClassifications(userId),
+		]);
 
 		if (!pipelineRoomIds.length) {
 			logger.debug({ msg: 'AI search skipped: user has no room subscriptions' });
@@ -333,7 +328,6 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			return [];
 		}
 
-		const classifications = await this.getUserClassifications(userId);
 		const json = await searchIntelligentPipeline({
 			query,
 			config,
@@ -344,7 +338,7 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			logger,
 		});
 
-		return this.normalizeIntelligentResults(json, userId, pipelineRoomIds, limit, limit);
+		return this.normalizeIntelligentResults(json, userId, limit);
 	}
 
 	async answer({ query, messages }: { query: string; messages: AISearchAnswerMessage[] }): Promise<AISearchAnswerResult> {
@@ -363,7 +357,7 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			throw new Error('error-ai-provider-not-configured');
 		}
 
-		const systemPrompt = asString(systemPromptSetting) || DEFAULT_ANSWER_SYSTEM_PROMPT;
+		const systemPrompt = asString(systemPromptSetting);
 
 		const sanitizedMessages: SearchAnswerMessage[] = messages.map(({ text, username, roomName, ts, score }) => ({
 			text,
@@ -386,6 +380,10 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 	}
 
 	async models(): Promise<AISearchModelOption[]> {
+		if (!(await License.hasModule(AI_LICENSE_MODULE))) {
+			return [];
+		}
+
 		const provider = this.getAnswerProviderSettings();
 		const selectedModel = settings.get<string>('AI_LLM_OpenAI_Model');
 

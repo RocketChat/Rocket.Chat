@@ -10,7 +10,7 @@ const NavBarSearchNoResults = ({ suggestAISearch = false }: NavBarSearchNoResult
 	const { t } = useTranslation();
 	return (
 		<GenericNoResults
-			description={t(suggestAISearch ? 'Try_entering_a_different_search_term_or_enable_AI_Search' : 'Try_entering_a_different_search_term')}
+			description={t(suggestAISearch ? 'Try_entering_a_different_search_term_or_search_with_AI' : 'Try_entering_a_different_search_term')}
 		/>
 	);
 };

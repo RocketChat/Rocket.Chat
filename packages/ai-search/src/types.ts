@@ -10,6 +10,7 @@ export type AIServiceFetch = (
 	options: {
 		method: string;
 		timeout?: number;
+		size?: number;
 		headers?: Record<string, string>;
 		body?: string;
 	},

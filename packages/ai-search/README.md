@@ -1,6 +1,6 @@
 # @rocket.chat/ai-search
 
-Shared AI Search service primitives.
+Shared AI Search primitives.
 
 This package keeps AI Search provider calls and normalization logic outside the
 Meteor REST handlers. It is intentionally framework-light: callers inject
@@ -9,6 +9,7 @@ monolith or from a future standalone service process.
 
 Current responsibilities:
 
+- Client-side filter parsing and search-query serialization.
 - OpenAI-compatible model listing.
 - OpenAI-compatible answer generation for search results.
 - Intelligent Search pipeline request construction.

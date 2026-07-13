@@ -1,5 +1,6 @@
-import { Box, Button, Icon, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Button, Card, CardBody, CardControls, CardHeader, CardTitle, FramedIcon, Skeleton } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
+import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../components/MarkdownText';
@@ -24,6 +25,8 @@ const SearchAnswerPanel = ({
 	onGenerate,
 }: SearchAnswerPanelProps): ReactElement => {
 	const { t } = useTranslation();
+	const titleId = useId();
+
 	const answerContent = (): ReactElement => {
 		if (isLoading) {
 			return (
@@ -38,7 +41,7 @@ const SearchAnswerPanel = ({
 		}
 
 		if (answer) {
-			return <MarkdownText content={answer} parseEmoji fontScale='p2' lineHeight={1.55} />;
+			return <MarkdownText content={answer} parseEmoji fontScale='p2' />;
 		}
 
 		return (
@@ -49,47 +52,32 @@ const SearchAnswerPanel = ({
 	};
 
 	return (
-		<Box
-			display='flex'
-			flexDirection='column'
-			mbe={24}
-			borderWidth='default'
-			borderStyle='solid'
-			borderColor='stroke-extra-light'
-			borderRadius={4}
-			bg='surface-light'
-		>
-			<Box
-				display='flex'
-				alignItems='center'
-				justifyContent='space-between'
-				p={16}
-				borderBlockEndWidth={1}
-				borderBlockEndStyle='solid'
-				borderBlockEndColor='stroke-extra-light'
-			>
-				<Box display='flex' alignItems='center' fontScale='h4' gap={8}>
-					<Icon name='stars' size='x18' />
-					{t('Search_AI_answer')}
-				</Box>
-				<Button small disabled={disabled || isLoading} onClick={onGenerate}>
-					{isLoading ? t('Loading') : t(answer ? 'Regenerate' : 'Generate')}
-				</Button>
-			</Box>
-			<Box p={16}>
-				{provider && (
-					<Box color='hint' fontScale='c1' mbe={8}>
-						{t('Search_AI_answer_provider', { provider: provider.name, model: provider.model })}
-					</Box>
-				)}
-				{error && !isLoading ? (
-					<Box color='danger' fontScale='p2'>
-						{t('Search_AI_answer_error')}
-					</Box>
-				) : (
-					answerContent()
-				)}
-			</Box>
+		<Box mbe={24}>
+			<Card role='region' aria-labelledby={titleId}>
+				<CardHeader>
+					<FramedIcon icon='stars' />
+					<CardTitle id={titleId}>{t('Search_AI_answer')}</CardTitle>
+				</CardHeader>
+				<CardBody flexDirection='column'>
+					{provider && (
+						<Box color='hint' fontScale='c1' mbe={8}>
+							{t('Search_AI_answer_provider', { provider: provider.name, model: provider.model })}
+						</Box>
+					)}
+					{error && !isLoading ? (
+						<Box color='danger' fontScale='p2'>
+							{t('Search_AI_answer_error')}
+						</Box>
+					) : (
+						answerContent()
+					)}
+				</CardBody>
+				<CardControls>
+					<Button medium disabled={disabled || isLoading} onClick={onGenerate}>
+						{isLoading ? t('Loading') : t(answer ? 'Regenerate' : 'Generate')}
+					</Button>
+				</CardControls>
+			</Card>
 		</Box>
 	);
 };

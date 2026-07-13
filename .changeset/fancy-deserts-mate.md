@@ -7,4 +7,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-Adds native Intelligent Search to Rocket.Chat.
+Adds AI Search with semantic message results, optional OpenAI-compatible answers, and AI Center configuration.

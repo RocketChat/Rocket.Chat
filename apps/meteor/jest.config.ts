@@ -23,8 +23,6 @@ export default {
 				'^react-virtuoso($|/.+)': '<rootDir>/node_modules/react-virtuoso$1',
 				'^react-dom($|/.+)': '<rootDir>/node_modules/react-dom$1',
 				'^react-i18next($|/.+)': '<rootDir>/node_modules/react-i18next$1',
-				'^@rocket.chat/ai-search$': '<rootDir>/../../packages/ai-search/src',
-				'^@rocket.chat/rest-typings$': '<rootDir>/../../packages/rest-typings/src',
 				'^@rocket.chat/(.+)': '<rootDir>/node_modules/@rocket.chat/$1',
 				'^@tanstack/(.+)': '<rootDir>/node_modules/@tanstack/$1',
 				'^meteor/(.*)': '<rootDir>/tests/mocks/client/meteor.ts',

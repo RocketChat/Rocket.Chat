@@ -1,135 +1,73 @@
-import { AI_LICENSE_MODULE, MAX_SEARCH_ANSWER_MESSAGES, parseSearchFilterText } from '@rocket.chat/ai-search';
+import { AI_LICENSE_MODULE, MAX_SEARCH_ANSWER_MESSAGES } from '@rocket.chat/ai-search';
 import { Box, Button, Callout, Icon } from '@rocket.chat/fuselage';
-import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow, useFeaturePreview } from '@rocket.chat/ui-client';
-import { useEndpoint, useSearchParameter, useSetting } from '@rocket.chat/ui-contexts';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useSearchParameter, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import SearchAnswerPanel from './SearchAnswerPanel';
 import { SearchSourceResult } from './SearchSourceResult';
-import type { IntelligentResult } from './types';
+import { useAISearchAnswer } from './hooks/useAISearchAnswer';
+import { useAISearchResults } from './hooks/useAISearchResults';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
-
-const INTELLIGENT_PAGE_SIZE = 8;
 
 const SearchPage = (): ReactElement => {
 	const { t } = useTranslation();
 	const queryParam = useSearchParameter('q') ?? '';
-	const [intelligentCount, setIntelligentCount] = useState(INTELLIGENT_PAGE_SIZE);
-	const parsedSearch = useMemo(() => parseSearchFilterText(queryParam), [queryParam]);
-	const { filters } = parsedSearch;
-	const debouncedQuery = useDebouncedValue(parsedSearch.searchText.trim(), 300);
 	const aiSearchFeatureEnabled = useFeaturePreview('aiSearch');
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
 	const { data: hasIntelligentSearchLicense } = useHasLicenseModule(AI_LICENSE_MODULE);
 	const canUseAISearch = Boolean(hasIntelligentSearchLicense && aiSearchFeatureEnabled);
-	const unifiedSearch = useEndpoint('GET', '/v1/search.unified');
-	const generateAnswer = useEndpoint('POST', '/v1/search.answer');
-
-	useEffect(() => {
-		setIntelligentCount(INTELLIGENT_PAGE_SIZE);
-	}, [queryParam]);
-
-	const result = useQuery({
-		queryKey: [
-			'search/intelligent/page',
-			debouncedQuery,
-			filters,
-			hasIntelligentSearchLicense,
-			aiSearchFeatureEnabled,
-			intelligentSearchEnabled,
-			intelligentCount,
-		],
-		queryFn: () =>
-			unifiedSearch({
-				query: debouncedQuery,
-				count: 0,
-				includeSpotlight: false,
-				intelligentCount,
-				includeMessages: false,
-				includeIntelligent: Boolean(canUseAISearch && intelligentSearchEnabled),
-				roomNames: filters.roomNames.join(','),
-				fromUsernames: filters.fromUsernames.join(','),
-				startDate: filters.startDate,
-				endDate: filters.endDate,
-			}),
-		enabled: Boolean(debouncedQuery && canUseAISearch && intelligentSearchEnabled),
-		// keeps the revealed results visible while the next page loads
-		placeholderData: (previousData) => previousData,
-	});
-
-	const intelligent = useMemo(() => (result.data?.intelligent as IntelligentResult[] | undefined) ?? [], [result.data?.intelligent]);
+	const {
+		query: debouncedQuery,
+		intelligent,
+		meta,
+		hasMoreResults,
+		loadMore,
+		isLoading,
+		isPlaceholderData,
+		error: searchError,
+	} = useAISearchResults(queryParam, canUseAISearch && intelligentSearchEnabled);
 	// the answer regenerates from every revealed result, capped by the search.answer schema limit
 	const answerMessages = useMemo(
 		() =>
 			intelligent.slice(0, MAX_SEARCH_ANSWER_MESSAGES).map((item) => ({
-				_id: item._id,
+				_id: item.msgId || item._id,
 				score: item.score,
 			})),
 		[intelligent],
 	);
-	const answerKey = useMemo(
-		() =>
-			JSON.stringify({
-				query: debouncedQuery,
-				messages: answerMessages,
-			}),
-		[answerMessages, debouncedQuery],
-	);
-	const answerAbortRef = useRef<AbortController | undefined>(undefined);
-	const abortPendingAnswer = useCallback((): void => answerAbortRef.current?.abort(), []);
-	const answerMutation = useMutation({
-		mutationFn: () => {
-			abortPendingAnswer();
-			const controller = new AbortController();
-			answerAbortRef.current = controller;
-			return generateAnswer({ query: debouncedQuery, messages: answerMessages }, { signal: controller.signal });
-		},
-	});
-	const { data: answerData, error: answerError, isPending: answerPending, mutate: mutateAnswer, reset: resetAnswer } = answerMutation;
-
-	useEffect(() => {
-		resetAnswer();
-		return abortPendingAnswer;
-	}, [answerKey, resetAnswer, abortPendingAnswer]);
 
 	// placeholder data belongs to the previous query key — never generate an answer from it
-	const canGenerateAnswer = Boolean(
-		result.data?.meta.answerGenerationConfigured && !result.isPlaceholderData && debouncedQuery && intelligent.length > 0,
-	);
+	const canGenerateAnswer = Boolean(meta?.answerGenerationConfigured && !isPlaceholderData && debouncedQuery && intelligent.length > 0);
+	const answerResult = useAISearchAnswer(debouncedQuery, answerMessages, canGenerateAnswer);
 	const answerEmptyReason = useMemo(() => {
 		if (!debouncedQuery) {
 			return t('Search_AI_answer_start_from_top_bar');
 		}
 
-		if (result.isLoading) {
+		if (isLoading) {
 			return t('Search_AI_answer_waiting_for_sources');
+		}
+
+		if (searchError) {
+			return t('Search_AI_answer_sources_error');
 		}
 
 		if (!intelligent.length) {
 			return t('Search_AI_answer_no_sources');
 		}
 
-		if (!result.data?.meta.answerGenerationConfigured) {
+		if (!meta?.answerGenerationConfigured) {
 			return t('Search_AI_answer_disabled');
 		}
 
 		return t('Search_AI_answer_ready');
-	}, [debouncedQuery, intelligent.length, result.data?.meta.answerGenerationConfigured, result.isLoading, t]);
-
-	useEffect(() => {
-		if (!canGenerateAnswer || answerPending || answerData || answerError) {
-			return;
-		}
-
-		mutateAnswer();
-	}, [answerData, answerError, answerPending, canGenerateAnswer, mutateAnswer]);
+	}, [debouncedQuery, intelligent.length, isLoading, meta?.answerGenerationConfigured, searchError, t]);
 
 	return (
-		<Page background='tint'>
+		<Page bg='tint'>
 			<PageHeader title={t('Intelligent_Search')} />
 			<PageScrollableContentWithShadow p={24}>
 				<Box marginInline='auto' width='full' maxWidth='x800'>
@@ -169,28 +107,33 @@ const SearchPage = (): ReactElement => {
 							{t('Intelligent_Search_disabled_description')}
 						</Callout>
 					)}
-					{canUseAISearch && intelligentSearchEnabled && result.data && !result.data.meta.intelligentSearchConfigured && (
+					{canUseAISearch && intelligentSearchEnabled && meta && !meta.intelligentSearchConfigured && (
 						<Callout type='warning' icon='warning' title={t('Intelligent_Search_missing_configuration_title')} mbe={16}>
 							{t('Intelligent_Search_missing_configuration_description')}
 						</Callout>
 					)}
+					{searchError && (
+						<Callout type='danger' icon='warning' mbe={16}>
+							{t('AI_Search_request_failed')}
+						</Callout>
+					)}
 					{debouncedQuery && (
 						<SearchAnswerPanel
-							answer={answerData?.answer}
-							provider={answerData?.provider}
-							isLoading={answerPending}
-							error={answerError}
+							answer={answerResult.data?.answer}
+							provider={answerResult.data?.provider}
+							isLoading={answerResult.isFetching}
+							error={answerResult.error}
 							disabled={!canGenerateAnswer}
 							emptyReason={answerEmptyReason}
-							onGenerate={() => mutateAnswer()}
+							onGenerate={() => void answerResult.refetch()}
 						/>
 					)}
 					<Box display='flex' alignItems='center' justifyContent='space-between' mbe={12}>
 						<Box is='h2' fontScale='h4'>
 							{t('Sources')} · {intelligent.length} {t('Messages')}
 						</Box>
-						{intelligent.length >= intelligentCount && (
-							<Button small onClick={() => setIntelligentCount((current) => current + INTELLIGENT_PAGE_SIZE)}>
+						{hasMoreResults && (
+							<Button small onClick={loadMore}>
 								{t('Show_more')}
 							</Button>
 						)}
@@ -200,12 +143,12 @@ const SearchPage = (): ReactElement => {
 							{t('Intelligent_Search_start_from_top_bar')}
 						</Box>
 					)}
-					{result.isLoading && (
+					{isLoading && (
 						<Box display='flex' justifyContent='center' color='hint' p={24}>
 							{t('Loading')}
 						</Box>
 					)}
-					{debouncedQuery && !result.isLoading && intelligent.length === 0 && (
+					{debouncedQuery && !isLoading && !searchError && intelligent.length === 0 && (
 						<Box display='flex' justifyContent='center' color='hint' p={24}>
 							{t('No_results_found')}
 						</Box>

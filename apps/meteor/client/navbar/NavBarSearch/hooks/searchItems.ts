@@ -3,6 +3,7 @@ import {
 	buildRoomSearchQuery,
 	emptySearchFilters,
 	getActiveSearchFilter,
+	MAX_ROOM_SEARCH_PATTERN_LENGTH,
 	mergeSearchFilters,
 	parseSearchFilterText,
 	type ActiveSearchFilter,
@@ -202,7 +203,7 @@ export const buildRooms = ({
 	serverResults: SubscriptionWithRoom[] | undefined;
 	limit: number;
 }): SubscriptionWithRoom[] => {
-	const filterRegex = new RegExp(escapeRegExp(name), 'i');
+	const filterRegex = new RegExp(escapeRegExp(name.slice(0, MAX_ROOM_SEARCH_PATTERN_LENGTH)), 'i');
 	const matchesFilter = ({ name, fname }: { name?: string; fname?: string }): boolean =>
 		Boolean((name && filterRegex.test(name)) || (fname && filterRegex.test(fname)));
 

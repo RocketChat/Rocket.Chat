@@ -1,21 +1,41 @@
 import { MAX_SOURCE_MESSAGE_LENGTH } from '@rocket.chat/ai-search';
-import { Box, Icon, Tag } from '@rocket.chat/fuselage';
+import type { IRoom } from '@rocket.chat/core-typings';
+import {
+	Box,
+	Icon,
+	Message,
+	MessageBody,
+	MessageContainer,
+	MessageContainerFixed,
+	MessageHeader,
+	MessageLeftContainer,
+	MessageName,
+	MessageRole,
+	MessageTimestamp,
+	MessageUsername,
+} from '@rocket.chat/fuselage';
+import type { UnifiedSearchIntelligentResult } from '@rocket.chat/rest-typings';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { IntelligentResult } from './types';
 import MarkdownText from '../../components/MarkdownText';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
-const formatMessageTime = (ts: Date | string | undefined): string => {
-	if (!ts) return '';
+const formatMessageTime = (ts: string | undefined): string => {
+	if (!ts) {
+		return '';
+	}
+
 	const date = new Date(ts);
-	if (Number.isNaN(date.getTime())) return '';
+	if (Number.isNaN(date.getTime())) {
+		return '';
+	}
+
 	return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
 };
 
-const getMessageHref = (item: IntelligentResult): string | undefined => {
+const getMessageHref = (item: UnifiedSearchIntelligentResult): string | undefined => {
 	const { room } = item;
 	if (!room) {
 		return undefined;
@@ -25,51 +45,79 @@ const getMessageHref = (item: IntelligentResult): string | undefined => {
 		rid: room._id || item.rid,
 		name: room.name,
 	});
-	if (!href) return undefined;
-	return `${href}?msg=${encodeURIComponent(item.msgId || item._id)}`;
+
+	return href ? `${href}?msg=${encodeURIComponent(item.msgId || item._id)}` : undefined;
 };
 
 const trimSourceMessage = (text: string): string =>
 	text.length > MAX_SOURCE_MESSAGE_LENGTH ? `${text.slice(0, MAX_SOURCE_MESSAGE_LENGTH).trimEnd()}...` : text;
 
-const getRoomIcon = (roomType: NonNullable<IntelligentResult['room']>['t'] | undefined): 'at' | 'hash' | 'lock' => {
+const getRoomIcon = (roomType: IRoom['t'] | undefined) => {
 	if (roomType === 'd') {
-		return 'at';
+		return 'at' as const;
 	}
 
 	if (roomType === 'p') {
-		return 'lock';
+		return 'lock' as const;
 	}
 
-	return 'hash';
+	return 'hash' as const;
 };
 
-export const SearchSourceResult = ({ item }: { item: IntelligentResult }): ReactElement => {
+export const SearchSourceResult = ({ item }: { item: UnifiedSearchIntelligentResult }): ReactElement => {
 	const { t } = useTranslation();
 	const roomLabel = item.room?.fname || item.room?.name;
 	const href = getMessageHref(item);
 	const username = item.u?.username || item.u?.name || t('Unknown_User');
 	const displayName = item.u?.name || username;
+	const messageTime = formatMessageTime(item.ts);
 	const relevanceScore = typeof item.score === 'number' ? Math.max(0, Math.min(100, Math.round(item.score * 100))) : undefined;
 
 	return (
 		<Box
 			is='article'
-			color='default'
-			display='flex'
-			alignItems='flex-start'
 			role='listitem'
 			position='relative'
-			p={16}
-			mbe={12}
+			mbe={8}
 			borderWidth='default'
 			borderStyle='solid'
-			borderColor='stroke-extra-light'
+			borderColor='extra-light'
 			borderRadius={4}
 			bg='surface-light'
-			gap={12}
 		>
-			{/* overlay link avoids nesting anchors inside the message markdown, which can contain links */}
+			<Message clickable={Boolean(href)}>
+				<MessageLeftContainer>
+					<MessageAvatar username={username} size='x36' />
+				</MessageLeftContainer>
+				<MessageContainer>
+					<MessageHeader>
+						<MessageName title={displayName}>{displayName}</MessageName>
+						{item.u?.username && <MessageUsername>@{item.u.username}</MessageUsername>}
+						{roomLabel && (
+							<MessageRole>
+								<Box display='flex' alignItems='center' gap={4}>
+									<Icon name={getRoomIcon(item.room?.t)} size='x12' />
+									{roomLabel}
+								</Box>
+							</MessageRole>
+						)}
+						{messageTime && <MessageTimestamp title={item.ts}>{messageTime}</MessageTimestamp>}
+					</MessageHeader>
+					<MessageBody>
+						<MarkdownText
+							content={trimSourceMessage(item.text || t('Intelligent_Search_Result'))}
+							variant='inline'
+							parseEmoji
+							wordBreak='break-word'
+						/>
+					</MessageBody>
+				</MessageContainer>
+				{typeof relevanceScore === 'number' && (
+					<MessageContainerFixed>
+						<MessageRole title={`${relevanceScore}%`}>{relevanceScore}%</MessageRole>
+					</MessageContainerFixed>
+				)}
+			</Message>
 			{href && (
 				<Box
 					is='a'
@@ -83,50 +131,6 @@ export const SearchSourceResult = ({ item }: { item: IntelligentResult }): React
 					borderRadius={4}
 				/>
 			)}
-			<Box flexShrink={0}>
-				<MessageAvatar username={username} size='x36' />
-			</Box>
-			<Box display='flex' flexDirection='column' flexGrow={1} minWidth={0}>
-				<Box display='flex' alignItems='flex-start' justifyContent='space-between' gap={12} minWidth={0} mbe={6}>
-					<Box display='flex' alignItems='center' flexWrap='wrap' flexGrow={1} gap={6} minWidth={0}>
-						<Box is='span' fontScale='p2b' withTruncatedText>
-							{displayName}
-						</Box>
-						{item.u?.username && (
-							<Box is='span' color='hint' fontScale='p2' withTruncatedText>
-								@{item.u.username}
-							</Box>
-						)}
-						{roomLabel && (
-							<Tag>
-								<Box display='flex' alignItems='center' gap={4}>
-									<Icon name={getRoomIcon(item.room?.t)} size='x12' />
-									{roomLabel}
-								</Box>
-							</Tag>
-						)}
-						{item.ts && (
-							<Box is='span' color='hint' fontScale='p2' flexShrink={0}>
-								{formatMessageTime(item.ts)}
-							</Box>
-						)}
-					</Box>
-					{typeof relevanceScore === 'number' && (
-						<Tag title={`${relevanceScore}%`} flexShrink={0}>
-							{relevanceScore}%
-						</Tag>
-					)}
-				</Box>
-				<MarkdownText
-					content={trimSourceMessage(item.text || t('Intelligent_Search_Result'))}
-					variant='inline'
-					parseEmoji
-					fontScale='p2'
-					lineHeight='x20'
-					wordBreak='break-word'
-					position='relative'
-				/>
-			</Box>
 		</Box>
 	);
 };

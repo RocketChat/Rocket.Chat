@@ -62,10 +62,7 @@ export const registerServices = async (): Promise<void> => {
 	api.registerService(new UserService());
 	api.registerService(new MediaCallService());
 	api.registerService(new CallHistoryService());
-
-	if (!process.env.USE_EXTERNAL_AI_SEARCH_SERVICE) {
-		api.registerService(new AISearchService());
-	}
+	api.registerService(new AISearchService());
 
 	// if the process is running in micro services mode we don't need to register services that will run separately
 	if (!isRunningMs()) {

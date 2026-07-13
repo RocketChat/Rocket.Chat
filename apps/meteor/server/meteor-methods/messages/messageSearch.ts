@@ -1,3 +1,4 @@
+import { isBannedSubscription } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Logger } from '@rocket.chat/logger';
 import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
@@ -46,12 +47,9 @@ const getUserIdsByUsernames = async (usernames: string[]): Promise<string[] | un
 	}
 
 	const usernameLookupValues = [...new Set(requestedUsernames.flat())];
-	const users = await Users.find(
-		{ username: { $in: usernameLookupValues } },
-		{
-			projection: { _id: 1, username: 1 },
-		},
-	).toArray();
+	const users = await Users.findByUsernames(usernameLookupValues, {
+		projection: { _id: 1, username: 1 },
+	}).toArray();
 
 	return users.map(({ _id }) => _id);
 };
@@ -85,15 +83,28 @@ const mergeDateFilter = (current: unknown, startDate?: Date, endDate?: Date): Re
 
 const getRoomSearchScope = async (userId: string | undefined, filters?: MessageSearchFilters): Promise<string[]> => {
 	const roomNameIds = await getRoomIdsByNames(filters?.roomNames || []);
-	const hasRoomFilter = Boolean(filters?.rids?.length || roomNameIds);
+	const hasRoomFilter = Boolean(filters?.rids?.length || filters?.roomNames?.length);
 	const filterRoomIds = [...new Set([...(filters?.rids || []), ...(roomNameIds || [])].filter(Boolean))];
-	const subscribedRoomIds = userId
-		? await Subscriptions.findByUserId(userId, { projection: { rid: 1 } })
-				.map(({ rid }) => rid)
-				.toArray()
-		: [];
 
-	return hasRoomFilter ? subscribedRoomIds.filter((roomId) => filterRoomIds.includes(roomId)) : subscribedRoomIds;
+	if (!userId) {
+		return [];
+	}
+
+	if (hasRoomFilter) {
+		if (!filterRoomIds.length) {
+			return [];
+		}
+
+		const subscriptions = await Subscriptions.findByUserIdAndRoomIds(userId, filterRoomIds, {
+			projection: { rid: 1, status: 1 },
+		}).toArray();
+
+		return subscriptions.filter((subscription) => !isBannedSubscription(subscription)).map(({ rid }) => rid);
+	}
+
+	return Subscriptions.findByUserId(userId, { projection: { rid: 1 } })
+		.map(({ rid }) => rid)
+		.toArray();
 };
 
 export const messageSearch = async function (

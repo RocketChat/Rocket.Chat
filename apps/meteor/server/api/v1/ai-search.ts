@@ -5,7 +5,7 @@ import {
 	MAX_UNIFIED_SEARCH_RESULTS,
 } from '@rocket.chat/ai-search';
 import { AISearch } from '@rocket.chat/core-services';
-import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import { isBannedSubscription, type IMessage, type IRoom, type IUser } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
 	ajv,
@@ -18,8 +18,10 @@ import {
 import type { SearchAnswer, UnifiedSearchIntelligentResult, UnifiedSearchMessageResult } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
+import { getSettingPermissionId } from '../../../app/authorization/lib';
 import { settings } from '../../../app/settings/server';
 import { normalizeMessagesForUser } from '../../../app/utils/server/lib/normalizeMessagesForUser';
+import { hasAllPermissionAsync, hasAtLeastOnePermissionAsync } from '../../lib/authorization/hasPermission';
 import { messageSearch } from '../../meteor-methods/messages/messageSearch';
 import { spotlightMethod } from '../../publications/spotlight';
 import { API } from '../api';
@@ -224,13 +226,11 @@ const getSubscribedRoomIds = async (userId: string, roomIds: string[]): Promise<
 		return new Set();
 	}
 
-	const subscribedRoomIds = await Subscriptions.findByUserIdAndRoomIds(userId, uniqueRoomIds, {
-		projection: { rid: 1 },
-	})
-		.map(({ rid }) => rid)
-		.toArray();
+	const subscriptions = await Subscriptions.findByUserIdAndRoomIds(userId, uniqueRoomIds, {
+		projection: { rid: 1, status: 1 },
+	}).toArray();
 
-	return new Set(subscribedRoomIds);
+	return new Set(subscriptions.filter((subscription) => !isBannedSubscription(subscription)).map(({ rid }) => rid));
 };
 
 const getSearchAnswerMessagesForUser = async (userId: string, messages: SearchAnswer['messages']) => {
@@ -316,18 +316,19 @@ API.v1.get(
 		const includeMessages = parseQueryBoolean(this.queryParams.includeMessages);
 		const includeIntelligent = parseQueryBoolean(this.queryParams.includeIntelligent);
 		const globalMessagesEnabled = settings.get('Search.defaultProvider.GlobalSearchEnabled') === true;
+		const aiSearchStatusPromise = AISearch.status().catch((error) => {
+			this.logger.warn({ msg: 'AI search status unavailable', ...getErrorLogContext(error) });
+
+			return {
+				hasIntelligentSearchLicense: false,
+				intelligentSearchEnabled: false,
+				intelligentSearchConfigured: false,
+				answerGenerationConfigured: false,
+			};
+		});
 
 		if (!includeSpotlight && !includeMessages && !includeIntelligent) {
-			const aiSearchStatus = await AISearch.status().catch((error) => {
-				this.logger.warn({ msg: 'AI search status unavailable', ...getErrorLogContext(error) });
-
-				return {
-					hasIntelligentSearchLicense: false,
-					intelligentSearchEnabled: false,
-					intelligentSearchConfigured: false,
-					answerGenerationConfigured: false,
-				};
-			});
+			const aiSearchStatus = await aiSearchStatusPromise;
 
 			return API.v1.success({
 				users: [],
@@ -363,16 +364,7 @@ API.v1.get(
 						userId: this.userId,
 						type: { users: true, rooms: true, includeFederatedRooms: true },
 					}),
-			AISearch.status().catch((error) => {
-				this.logger.warn({ msg: 'AI search status unavailable', ...getErrorLogContext(error) });
-
-				return {
-					hasIntelligentSearchLicense: false,
-					intelligentSearchEnabled: false,
-					intelligentSearchConfigured: false,
-					answerGenerationConfigured: false,
-				};
-			}),
+			aiSearchStatusPromise,
 		]);
 
 		let messages: UnifiedSearchMessageResult[] = [];
@@ -437,7 +429,6 @@ API.v1.get(
 	'ai.llm.models',
 	{
 		authRequired: true,
-		permissionsRequired: ['view-privileged-setting'],
 		rateLimiterOptions: {
 			numRequestsAllowed: 5,
 			intervalTimeInMS: 60000,
@@ -449,6 +440,15 @@ API.v1.get(
 		},
 	},
 	async function action() {
+		const canAccessAllSettings = await hasAtLeastOnePermissionAsync(this.userId, ['view-privileged-setting', 'edit-privileged-setting']);
+		const canAccessModelSetting =
+			canAccessAllSettings ||
+			(await hasAllPermissionAsync(this.userId, ['manage-selected-settings', getSettingPermissionId('AI_LLM_OpenAI_Model')]));
+
+		if (!canAccessModelSetting) {
+			return API.v1.forbidden();
+		}
+
 		return API.v1.success({
 			data: await AISearch.models(),
 		});
@@ -492,13 +492,13 @@ API.v1.post(
 			});
 		} catch (error) {
 			const message = error instanceof Error ? error.message : '';
-			if (message.includes('error-ai-not-enabled')) {
+			if (message === 'error-ai-not-enabled') {
 				throw new Meteor.Error('error-ai-not-enabled');
 			}
-			if (message.includes('error-ai-provider-not-configured')) {
+			if (message === 'error-ai-provider-not-configured') {
 				throw new Meteor.Error('error-ai-provider-not-configured');
 			}
-			if (message.includes('error-ai-provider-empty-response')) {
+			if (message === 'error-ai-provider-empty-response') {
 				throw new Meteor.Error('error-ai-provider-empty-response');
 			}
 			throw new Meteor.Error('error-ai-provider-request-failed');
