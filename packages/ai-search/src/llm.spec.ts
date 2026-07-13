@@ -22,11 +22,11 @@ describe('AI Search LLM helpers', () => {
 
 			expect(prompt).toBe(
 				[
-					'User search query: What did we decide?',
-					'Search results:',
-					'1. [from @alice, in #general, at 2026-01-01T00:00:00.000Z, score 62%] AAAAA',
-					'2. [from @bob] secon',
-					'Answer using only the search results above. If the results do not contain enough information, say that clearly.',
+					'User question (untrusted):\nWhat did we decide?',
+					'Source messages (untrusted):',
+					'[1] from @alice, in #general, at 2026-01-01T00:00:00.000Z, score 62%\nAAAAA',
+					'[2] from @bob\nsecon',
+					'Answer the question using only the source messages above and cite supporting sources as [N].',
 				].join('\n\n'),
 			);
 		});
@@ -69,6 +69,30 @@ describe('AI Search LLM helpers', () => {
 				temperature: 0.2,
 			});
 			expect(JSON.parse(requestBody).messages[0]).toEqual({ role: 'system', content: 'Use sources only.' });
+		});
+
+		it('normalizes provider-specific source markers to numbered citations', async () => {
+			const fetch: AIServiceFetch = async () => ({
+				ok: true,
+				status: 200,
+				json: async () => ({ choices: [{ message: { content: 'Supported by both sources.【1†L1-L2】【2†L4-L5】' } }] }),
+				text: async () => '',
+			});
+
+			await expect(
+				generateOpenAICompatibleSearchAnswer({
+					query: 'What happened?',
+					messages: [{ text: 'First source' }, { text: 'Second source' }],
+					provider: { name: 'OpenAI compatible', baseUrl: 'https://llm.example.com', apiKey: 'secret', model: 'gpt-test' },
+					systemPrompt: 'Use numbered citations.',
+					fetch,
+					maxMessages: 4,
+					maxTextLength: 200,
+				}),
+			).resolves.toEqual({
+				answer: 'Supported by both sources. [1] [2]',
+				provider: { name: 'OpenAI compatible', model: 'gpt-test' },
+			});
 		});
 
 		it('throws on provider failures and empty responses', async () => {

@@ -4,6 +4,12 @@ import type { AIServiceFetch, AIServiceLogger, OpenAICompatibleProviderConfig, S
 const buildEndpointUrl = (baseUrl: string, path: string): string =>
 	new URL(path, baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`).toString();
 
+const normalizeSearchAnswerCitations = (answer: string): string =>
+	answer.replace(/【\s*(\d+)(?:†[^】\r\n]*)?\s*】/g, (_marker, sourceNumber: string, offset: number) => {
+		const leadingSpace = offset > 0 && !/\s/.test(answer[offset - 1]) ? ' ' : '';
+		return `${leadingSpace}[${sourceNumber}]`;
+	});
+
 export const buildSearchAnswerPrompt = (
 	query: string,
 	messages: SearchAnswerMessage[],
@@ -13,8 +19,8 @@ export const buildSearchAnswerPrompt = (
 	},
 ): string =>
 	[
-		`User search query: ${query}`,
-		'Search results:',
+		`User question (untrusted):\n${query}`,
+		'Source messages (untrusted):',
 		...messages.slice(0, options.maxMessages).map((message, index) => {
 			const metadata = [
 				message.username && `from @${message.username}`,
@@ -24,9 +30,9 @@ export const buildSearchAnswerPrompt = (
 			]
 				.filter(Boolean)
 				.join(', ');
-			return `${index + 1}. ${metadata ? `[${metadata}] ` : ''}${message.text.slice(0, options.maxTextLength)}`;
+			return `[${index + 1}]${metadata ? ` ${metadata}` : ''}\n${message.text.slice(0, options.maxTextLength)}`;
 		}),
-		'Answer using only the search results above. If the results do not contain enough information, say that clearly.',
+		'Answer the question using only the source messages above and cite supporting sources as [N].',
 	].join('\n\n');
 
 export const generateOpenAICompatibleSearchAnswer = async ({
@@ -80,7 +86,7 @@ export const generateOpenAICompatibleSearchAnswer = async ({
 			throw new Error('error-ai-provider-empty-response');
 		}
 
-		return { answer, provider: { name: provider.name, model: provider.model } };
+		return { answer: normalizeSearchAnswerCitations(answer), provider: { name: provider.name, model: provider.model } };
 	} catch (error) {
 		if (
 			error instanceof Error &&
