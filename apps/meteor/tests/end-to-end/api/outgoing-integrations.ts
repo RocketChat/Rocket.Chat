@@ -634,7 +634,7 @@ describe('[Outgoing Integrations]', () => {
 					.expect(400)
 					.expect((res) => expect(res.body).to.have.property('success', false)));
 
-			it('should fail with 400 when the user lacks the manage-outgoing-integrations permission', async () => {
+			it('should fail with 400 when the user lacks permission (integration becomes inaccessible)', async () => {
 				await Promise.all([updatePermission('manage-outgoing-integrations', []), updatePermission('manage-own-outgoing-integrations', [])]);
 				await request
 					.post(api('integrations.replayOutgoing'))
@@ -643,7 +643,7 @@ describe('[Outgoing Integrations]', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'not_authorized');
+						expect(res.body).to.have.property('errorType', 'error-invalid-integration');
 					});
 			});
 		});
