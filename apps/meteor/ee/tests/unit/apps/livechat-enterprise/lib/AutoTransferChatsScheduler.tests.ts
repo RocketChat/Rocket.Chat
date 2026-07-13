@@ -7,13 +7,9 @@ import sinon from 'sinon';
 
 chai.use(chaiDateTime);
 
-const mockAgendaConstructor = sinon.stub();
-const mockAgendaStart = sinon.stub();
-const mockAgendaScheduler = sinon.stub();
-const mockAgendaCancel = sinon.stub();
-const mockAgendaDefine = sinon.stub();
+const mockCronAddAtTimestamp = sinon.stub();
+const mockCronRemove = sinon.stub();
 const returnRoomAsInquiryMock = sinon.stub();
-const mockMeteorStartup = sinon.stub();
 const mockLivechatRooms = {
 	findOneById: sinon.stub(),
 	setAutoTransferOngoingById: sinon.stub(),
@@ -23,28 +19,6 @@ const mockLivechatRooms = {
 const mockUsers = {
 	findOneById: sinon.stub(),
 };
-
-class MockAgendaClass {
-	constructor(opts: Record<string, any>) {
-		mockAgendaConstructor(opts);
-	}
-
-	async start() {
-		return mockAgendaStart();
-	}
-
-	async schedule(...args: any) {
-		return mockAgendaScheduler(...args);
-	}
-
-	async cancel(...args: any) {
-		return mockAgendaCancel(...args);
-	}
-
-	async define(...args: any) {
-		return mockAgendaDefine(...args);
-	}
-}
 
 const mockLogger = {
 	section: sinon.stub().returns({
@@ -59,15 +33,10 @@ const routingConfigMock = sinon.stub();
 const getNextAgent = sinon.stub();
 
 const mocks = {
-	'@rocket.chat/agenda': { Agenda: MockAgendaClass },
-	'meteor/meteor': { Meteor: { startup: mockMeteorStartup } },
-	'meteor/mongo': {
-		MongoInternals: {
-			defaultRemoteCollectionDriver: () => {
-				return {
-					mongo: { client: { db: sinon.stub() } },
-				};
-			},
+	'@rocket.chat/cron': {
+		cronJobs: {
+			addAtTimestamp: mockCronAddAtTimestamp,
+			remove: mockCronRemove,
 		},
 	},
 	'../../../../../app/livechat/server/lib/RoutingManager': { RoutingManager: { getConfig: routingConfigMock, getNextAgent } },
@@ -97,54 +66,57 @@ describe('AutoTransferChats', () => {
 	});
 
 	describe('scheduleRoom', () => {
+		beforeEach(() => {
+			mockCronAddAtTimestamp.resetHistory();
+		});
+
 		it('should schedule a room', async () => {
 			const scheduler = new AutoTransferChatSchedulerClass();
-			await scheduler.init();
 			scheduler.unscheduleRoom = sinon.stub();
 
 			const myScheduleTime = moment(new Date()).add(10, 's').toDate();
 			await scheduler.scheduleRoom('roomId', 10);
 
 			expect(scheduler.unscheduleRoom.calledWith('roomId')).to.be.true;
-			expect(mockAgendaDefine.getCall(0).firstArg).to.be.equal('omnichannel_scheduler-roomId');
-			const funcScheduleTime = mockAgendaScheduler.getCall(0).firstArg;
-
-			expect(funcScheduleTime).to.be.closeToTime(myScheduleTime, 5);
+			expect(mockCronAddAtTimestamp.getCall(0).args[0]).to.be.equal('omnichannel_scheduler-roomId');
+			expect(mockCronAddAtTimestamp.getCall(0).args[1]).to.be.closeToTime(myScheduleTime, 5);
+			expect(mockCronAddAtTimestamp.getCall(0).args[2]).to.be.a('function');
 			expect(mockLivechatRooms.setAutoTransferOngoingById.getCall(0).firstArg).to.be.equal('roomId');
 		});
 	});
 
 	describe('unscheduleRoom', () => {
+		beforeEach(() => {
+			mockCronRemove.resetHistory();
+		});
+
 		it('should unschedule a room', async () => {
 			const scheduler = new AutoTransferChatSchedulerClass();
-			await scheduler.init();
 
 			await scheduler.unscheduleRoom('roomId');
 
 			expect(mockLivechatRooms.unsetAutoTransferOngoingById.getCall(0).firstArg).to.be.equal('roomId');
-			expect(mockAgendaCancel.getCall(0).firstArg).to.be.deep.equal({ name: 'omnichannel_scheduler-roomId' });
+			expect(mockCronRemove.getCall(0).firstArg).to.be.equal('omnichannel_scheduler-roomId');
 		});
 	});
 
 	describe('executeJob', () => {
 		it('should execute job', async () => {
 			const scheduler = new AutoTransferChatSchedulerClass();
-			await scheduler.init();
 
 			scheduler.transferRoom = sinon.stub();
 
-			await scheduler.executeJob({ attrs: { data: { roomId: 'roomId' } } });
+			await scheduler.executeJob('roomId');
 
 			expect(scheduler.transferRoom.getCall(0).firstArg).to.be.equal('roomId');
 			expect(mockLivechatRooms.setAutoTransferredAtById.getCall(0).firstArg).to.be.equal('roomId');
 		});
 		it('shouldnt fail even if job fails', async () => {
 			const scheduler = new AutoTransferChatSchedulerClass();
-			await scheduler.init();
 
 			scheduler.transferRoom = sinon.stub().throws('dummy error');
 
-			const r = await scheduler.executeJob({ attrs: { data: { roomId: 'roomId' } } });
+			const r = await scheduler.executeJob('roomId');
 
 			expect(r).to.be.undefined;
 		});
@@ -160,21 +132,18 @@ describe('AutoTransferChats', () => {
 		it('should not transfer undefined rooms', async () => {
 			mockLivechatRooms.findOneById.resolves(undefined);
 			const scheduler = new AutoTransferChatSchedulerClass();
-			await scheduler.init();
 
 			await expect(scheduler.transferRoom('roomId')).to.be.rejectedWith('Room is not open or is not being served by an agent');
 		});
 		it('should not transfer closed rooms', async () => {
 			mockLivechatRooms.findOneById.resolves({ _id: 1 });
 			const scheduler = new AutoTransferChatSchedulerClass();
-			await scheduler.init();
 
 			await expect(scheduler.transferRoom('roomId')).to.be.rejectedWith('Room is not open or is not being served by an agent');
 		});
 		it('should not transfer unserved rooms', async () => {
 			mockLivechatRooms.findOneById.resolves({ _id: 1, open: true });
 			const scheduler = new AutoTransferChatSchedulerClass();
-			await scheduler.init();
 
 			await expect(scheduler.transferRoom('roomId')).to.be.rejectedWith('Room is not open or is not being served by an agent');
 		});
@@ -183,7 +152,6 @@ describe('AutoTransferChats', () => {
 			mockUsers.findOneById.resolves({ _id: 'rocket.cat' });
 			settingsGet.returns(5);
 			const scheduler = new AutoTransferChatSchedulerClass();
-			await scheduler.init();
 
 			await scheduler.transferRoom('roomId');
 
@@ -203,7 +171,6 @@ describe('AutoTransferChats', () => {
 			settingsGet.returns(5);
 
 			const scheduler = new AutoTransferChatSchedulerClass();
-			await scheduler.init();
 
 			const r = await scheduler.transferRoom('roomId');
 
@@ -219,7 +186,6 @@ describe('AutoTransferChats', () => {
 			settingsGet.returns(5);
 
 			const scheduler = new AutoTransferChatSchedulerClass();
-			await scheduler.init();
 
 			await expect(scheduler.transferRoom('roomId')).to.be.rejectedWith('error-no-cat');
 
@@ -235,7 +201,6 @@ describe('AutoTransferChats', () => {
 			settingsGet.returns(5);
 
 			const scheduler = new AutoTransferChatSchedulerClass();
-			await scheduler.init();
 
 			const r = await scheduler.transferRoom('roomId');
 

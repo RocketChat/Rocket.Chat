@@ -1,9 +1,7 @@
-import { Agenda } from '@rocket.chat/agenda';
 import type { IUser } from '@rocket.chat/core-typings';
+import { cronJobs } from '@rocket.chat/cron';
 import type { MainLogger } from '@rocket.chat/logger';
 import { LivechatRooms, Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
-import { MongoInternals } from 'meteor/mongo';
 
 import { schedulerLogger } from './logger';
 import { forwardRoomToAgent } from '../../../../../app/livechat/server/lib/Helper';
@@ -14,33 +12,10 @@ import { settings } from '../../../../../app/settings/server';
 const SCHEDULER_NAME = 'omnichannel_scheduler';
 
 export class AutoTransferChatSchedulerClass {
-	scheduler: Agenda;
-
-	running: boolean;
-
-	user: IUser;
-
 	logger: MainLogger;
 
 	constructor() {
 		this.logger = schedulerLogger.section('AutoTransferChatScheduler');
-	}
-
-	public async init(): Promise<void> {
-		if (this.running) {
-			return;
-		}
-
-		this.scheduler = new Agenda({
-			mongo: (MongoInternals.defaultRemoteCollectionDriver().mongo as any).client.db(),
-			db: { collection: SCHEDULER_NAME },
-			defaultConcurrency: 1,
-			processEvery: process.env.TEST_MODE === 'true' || process.env.TEST_MODE === 'api' ? '3 seconds' : '1 minute',
-		});
-
-		await this.scheduler.start();
-		this.running = true;
-		this.logger.info('Service started');
 	}
 
 	private async getSchedulerUser(): Promise<IUser & { userType: 'user' }> {
@@ -59,21 +34,16 @@ export class AutoTransferChatSchedulerClass {
 		this.logger.debug({ msg: 'Scheduling room to be transferred', roomId, timeoutSeconds: timeout });
 		await this.unscheduleRoom(roomId);
 
-		const jobName = `${SCHEDULER_NAME}-${roomId}`;
-		const when = new Date();
-		when.setSeconds(when.getSeconds() + timeout);
-
-		this.scheduler.define(jobName, this.executeJob.bind(this));
-		await this.scheduler.schedule(when, jobName, { roomId });
+		const when = new Date(Date.now() + timeout * 1000);
+		await cronJobs.addAtTimestamp(`${SCHEDULER_NAME}-${roomId}`, when, () => this.executeJob(roomId));
 		await LivechatRooms.setAutoTransferOngoingById(roomId);
 	}
 
 	public async unscheduleRoom(roomId: string): Promise<void> {
 		this.logger.debug({ msg: 'Unscheduling room', roomId });
-		const jobName = `${SCHEDULER_NAME}-${roomId}`;
 
 		await LivechatRooms.unsetAutoTransferOngoingById(roomId);
-		await this.scheduler.cancel({ name: jobName });
+		await cronJobs.remove(`${SCHEDULER_NAME}-${roomId}`);
 	}
 
 	private async transferRoom(roomId: string): Promise<void> {
@@ -130,9 +100,7 @@ export class AutoTransferChatSchedulerClass {
 		});
 	}
 
-	private async executeJob({ attrs: { data } }: any = {}): Promise<void> {
-		const { roomId } = data;
-
+	private async executeJob(roomId: string): Promise<void> {
 		try {
 			await this.transferRoom(roomId);
 
@@ -144,7 +112,3 @@ export class AutoTransferChatSchedulerClass {
 }
 
 export const AutoTransferChatScheduler = new AutoTransferChatSchedulerClass();
-
-Meteor.startup(() => {
-	void AutoTransferChatScheduler.init();
-});

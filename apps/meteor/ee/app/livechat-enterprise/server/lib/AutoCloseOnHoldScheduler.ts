@@ -1,10 +1,7 @@
-import { Agenda } from '@rocket.chat/agenda';
 import type { IUser } from '@rocket.chat/core-typings';
+import { cronJobs } from '@rocket.chat/cron';
 import type { MainLogger } from '@rocket.chat/logger';
 import { LivechatRooms, Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
-import { MongoInternals } from 'meteor/mongo';
-import moment from 'moment';
 
 import { schedulerLogger } from './logger';
 import { closeRoom } from '../../../../../app/livechat/server/lib/closeRoom';
@@ -12,11 +9,7 @@ import { closeRoom } from '../../../../../app/livechat/server/lib/closeRoom';
 const SCHEDULER_NAME = 'omnichannel_auto_close_on_hold_scheduler';
 
 export class AutoCloseOnHoldSchedulerClass {
-	scheduler: Agenda;
-
 	schedulerUser: IUser;
-
-	running: boolean;
 
 	logger: MainLogger;
 
@@ -24,50 +17,21 @@ export class AutoCloseOnHoldSchedulerClass {
 		this.logger = schedulerLogger.section('AutoCloseOnHoldScheduler');
 	}
 
-	public async init(): Promise<void> {
-		if (this.running) {
-			return;
-		}
-
-		this.scheduler = new Agenda({
-			mongo: (MongoInternals.defaultRemoteCollectionDriver().mongo as any).client.db(),
-			db: { collection: SCHEDULER_NAME },
-			defaultConcurrency: 1,
-			processEvery: process.env.TEST_MODE === 'true' || process.env.TEST_MODE === 'api' ? '3 seconds' : '1 minute',
-		});
-
-		await this.scheduler.start();
-		this.running = true;
-		this.logger.info('Service started');
-	}
-
 	public async scheduleRoom(roomId: string, timeout: number, comment: string): Promise<void> {
-		if (!this.running) {
-			throw new Error('AutoCloseOnHoldScheduler is not running');
-		}
-
 		this.logger.debug({ msg: 'Scheduling room to be closed', roomId, timeoutSeconds: timeout });
 		await this.unscheduleRoom(roomId);
 
-		const jobName = `${SCHEDULER_NAME}-${roomId}`;
-		const when = moment(new Date()).add(timeout, 's').toDate();
-
-		this.scheduler.define(jobName, this.executeJob.bind(this));
-		await this.scheduler.schedule(when, jobName, { roomId, comment });
+		const when = new Date(Date.now() + timeout * 1000);
+		await cronJobs.addAtTimestamp(`${SCHEDULER_NAME}-${roomId}`, when, () => this.executeJob(roomId, comment));
 	}
 
 	public async unscheduleRoom(roomId: string): Promise<void> {
-		if (!this.running) {
-			throw new Error('AutoCloseOnHoldScheduler is not running');
-		}
 		this.logger.debug({ msg: 'Unscheduling room', roomId });
-		const jobName = `${SCHEDULER_NAME}-${roomId}`;
-		await this.scheduler.cancel({ name: jobName });
+		await cronJobs.remove(`${SCHEDULER_NAME}-${roomId}`);
 	}
 
-	private async executeJob({ attrs: { data } }: any = {}): Promise<void> {
-		this.logger.debug({ msg: 'Executing job for room', roomId: data.roomId });
-		const { roomId, comment } = data;
+	private async executeJob(roomId: string, comment: string): Promise<void> {
+		this.logger.debug({ msg: 'Executing job for room', roomId });
 
 		const [room, user] = await Promise.all([LivechatRooms.findOneById(roomId), this.getSchedulerUser()]);
 		if (!room || !user) {
@@ -76,13 +40,7 @@ export class AutoCloseOnHoldSchedulerClass {
 			);
 		}
 
-		const payload = {
-			room,
-			user,
-			comment,
-		};
-
-		await closeRoom(payload);
+		await closeRoom({ room, user, comment });
 	}
 
 	private async getSchedulerUser(): Promise<IUser> {
@@ -99,7 +57,3 @@ export class AutoCloseOnHoldSchedulerClass {
 }
 
 export const AutoCloseOnHoldScheduler = new AutoCloseOnHoldSchedulerClass();
-
-Meteor.startup(() => {
-	void AutoCloseOnHoldScheduler.init();
-});

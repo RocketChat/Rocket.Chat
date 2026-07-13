@@ -67,7 +67,7 @@ export class AgendaCronJobs {
 			mongo,
 			db: { collection: 'rocketchat_cron' },
 			defaultConcurrency: 1,
-			processEvery: '1 minute',
+			processEvery: process.env.TEST_MODE === 'true' || process.env.TEST_MODE === 'api' ? '3 seconds' : '1 minute',
 		});
 
 		this.scheduler.on('start', (job: Job) => {
@@ -166,8 +166,22 @@ export class AgendaCronJobs {
 			return this.unreserve(name);
 		}
 
-		await this.scheduler.cancel({ name });
-		logger.debug({ msg: `Cron job "${name}" removed`, jobName: name });
+		const removedCount = await this.scheduler.cancel({ name });
+		if (removedCount) {
+			logger.debug({ msg: `Cron job "${name}" removed`, jobName: name });
+		}
+	}
+
+	public async removeByNamePrefix(prefix: string): Promise<void> {
+		if (!this.scheduler) {
+			this.reservedJobs = this.reservedJobs.filter(({ name }) => !name.startsWith(prefix));
+			return;
+		}
+
+		const removedCount = await this.scheduler.cancel({ name: new RegExp(`^${prefix}`) });
+		if (removedCount) {
+			logger.debug({ msg: `Cron jobs with prefix "${prefix}" removed`, prefix, removedCount });
+		}
 	}
 
 	public async has(jobName: string): Promise<boolean> {
