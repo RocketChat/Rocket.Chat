@@ -70,6 +70,7 @@ export interface IVideoConfService {
 	createEscalatedConference(
 		data: Required<Pick<IGroupVideoConference, 'rid' | 'mediaCallIds'>>,
 		user: IRegisterUser,
+		options: { createDiscussion: boolean },
 	): Promise<IGroupVideoConference | null>;
 	getRidForExternalConference(): Promise<string | null>;
 	makePersistentChatUrlForConference(conferenceId: string): Promise<string>;

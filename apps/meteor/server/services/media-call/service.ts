@@ -574,7 +574,8 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		});
 
 		// TODO: ensure there are two legs with the same uid pair
-		const rid = await this.getRoomIdForExternalCall(call);
+		const dmRid = await this.getRoomIdForExternalCall(call);
+		const rid = dmRid || (await VideoConf.getRidForExternalConference());
 		if (!rid) {
 			logger.warn({
 				msg: 'No parent room available for the conference',
@@ -590,6 +591,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 				mediaCallIds: [call._id],
 			},
 			user as IRegisterUser,
+			{ createDiscussion: !dmRid },
 		);
 	}
 
@@ -605,7 +607,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		});
 
 		if (!callerUid || !calleeUid) {
-			return VideoConf.getRidForExternalConference();
+			return null;
 		}
 
 		try {
@@ -648,7 +650,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			return newRoom.rid;
 		} catch (err) {
 			logger.error({ msg: 'Failed to determine DM room for external call', err });
-			return VideoConf.getRidForExternalConference();
+			return null;
 		}
 	}
 

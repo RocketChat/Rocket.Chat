@@ -1075,7 +1075,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 			await this.runNewVideoConferenceEvent(callId);
 
-			await this.maybeCreateDiscussion(callId, user);
+			// DMV fix: skip Discussions when starting new conferences from rocket.chat
+			// await this.maybeCreateDiscussion(callId, user);
 
 			const call = (await this.getUnfiltered(callId)) as IDirectVideoConference | null;
 			if (!call) {
@@ -1216,6 +1217,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	public async createEscalatedConference(
 		data: Required<Pick<IGroupVideoConference, 'rid' | 'mediaCallIds'>>,
 		user: IRegisterUser,
+		{ createDiscussion }: { createDiscussion: boolean },
 	): Promise<IGroupVideoConference | null> {
 		logger.debug({
 			msg: 'VideoConf.createEscalatedConference',
@@ -1242,7 +1244,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			});
 
 			await this.maybeAddSipAliasToCall(callId, providerName);
-			await this.maybeCreateDiscussion(callId);
+			if (createDiscussion) {
+				await this.maybeCreateDiscussion(callId);
+			}
 
 			const callData = {
 				_id: callId,
@@ -1295,7 +1299,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 			await this.runNewVideoConferenceEvent(callId);
 
-			await this.maybeCreateDiscussion(callId, user);
+			// DMV fix: skip Discussions when starting new conferences from rocket.chat
+			// await this.maybeCreateDiscussion(callId, user);
 
 			const call = (await this.getUnfiltered(callId)) as IGroupVideoConference | null;
 			if (!call) {
