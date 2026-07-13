@@ -2,12 +2,13 @@ import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useRef } from 'react';
 
-export const useDraft = (rid: string, serverDraft?: string, tmid?: string) => {
+export const useDraft = (rid: string, serverDraft?: string, tmid?: string, threadExists = true) => {
 	const storageKey = `messagebox_${rid}${tmid ? `-${tmid}` : ''}`;
 	const [localDraft, setLocalDraft] = useLocalStorage<string>(storageKey, '');
 	const saveDraft = useEndpoint('POST', '/v1/rooms.saveDraft');
 	const initialValueRef = useRef(serverDraft || localDraft);
 	const draftRef = useRef<string | null>(null);
+	const threadExistsRef = useRef(threadExists);
 
 	const persistLocal = useCallback(
 		(value: string) => {
@@ -18,11 +19,16 @@ export const useDraft = (rid: string, serverDraft?: string, tmid?: string) => {
 	);
 
 	const flushDraft = useCallback(() => {
-		if (draftRef.current === null || tmid) {
+		if (draftRef.current === null) {
 			return;
 		}
 
-		void saveDraft({ rid, draft: draftRef.current });
+		if (tmid && !threadExistsRef.current) {
+			draftRef.current = null;
+			return;
+		}
+
+		void saveDraft({ rid, draft: draftRef.current, ...(tmid && { tmid }) });
 		draftRef.current = null;
 	}, [saveDraft, rid, tmid]);
 

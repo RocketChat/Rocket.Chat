@@ -11,6 +11,7 @@ import MessageBox from './messageBox/MessageBox';
 
 export type ComposerMessageProps = {
 	tmid?: IMessage['_id'];
+	threadExists?: boolean;
 	children?: ReactNode;
 	subscription?: ISubscription;
 	tshow?: boolean;

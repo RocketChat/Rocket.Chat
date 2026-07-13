@@ -42,7 +42,7 @@ const Extended = ({
 	menu,
 	menuOptions: _menuOptions,
 	subtitle = '',
-	titleIcon: _titleIcon,
+	titleIcon,
 	badges,
 	threadUnread: _threadUnread,
 	unread,
@@ -63,6 +63,7 @@ const Extended = ({
 				</SidebarV2ItemRow>
 				<SidebarV2ItemRow>
 					<SidebarV2ItemContent unread={unread}>{subtitle}</SidebarV2ItemContent>
+					{titleIcon}
 					{badges}
 					{actions}
 					{menu && (

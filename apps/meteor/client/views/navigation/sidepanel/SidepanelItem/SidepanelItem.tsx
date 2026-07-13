@@ -19,6 +19,7 @@ export type SidePanelItemProps = {
 	href: string;
 	selected: boolean;
 	title: string;
+	titleIcon?: ReactNode;
 	avatar: ReactNode;
 	icon: ReactNode;
 	unread: boolean;
@@ -33,6 +34,7 @@ const SidePanelItem = ({
 	href,
 	selected,
 	title,
+	titleIcon,
 	avatar,
 	icon,
 	unread,
@@ -72,6 +74,7 @@ const SidePanelItem = ({
 				<SidebarV2ItemRow>
 					<SidebarV2ItemContent unread={unread}>{subtitle}</SidebarV2ItemContent>
 					{parentRoom}
+					{titleIcon}
 					{badges}
 					{menu && (
 						<SidebarV2ItemMenu>

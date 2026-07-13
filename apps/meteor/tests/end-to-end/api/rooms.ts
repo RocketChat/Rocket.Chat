@@ -181,6 +181,53 @@ describe('[Rooms]', () => {
 				});
 		});
 
+		it('should save a thread draft keyed by tmid without touching the main draft', async () => {
+			const tmid = `tmid-${Date.now()}`;
+			const draft = `thread-draft-${Date.now()}`;
+
+			await request
+				.post(api('rooms.saveDraft'))
+				.set(credentials)
+				.send({ rid: testChannel._id, draft, tmid })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.query({ roomId: testChannel._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.subscription).to.have.nested.property(`threadDrafts.${tmid}`, draft);
+					expect(res.body.subscription).to.not.have.property('draft');
+				});
+		});
+
+		it('should clear a thread draft when saving an empty draft for the tmid', async () => {
+			const tmid = `tmid-to-clear-${Date.now()}`;
+			const draft = `thread-draft-${Date.now()}`;
+
+			await request.post(api('rooms.saveDraft')).set(credentials).send({ rid: testChannel._id, draft, tmid }).expect(200);
+
+			await request.post(api('rooms.saveDraft')).set(credentials).send({ rid: testChannel._id, draft: '', tmid }).expect(200);
+
+			await request
+				.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.query({ roomId: testChannel._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.subscription).to.not.have.nested.property(`threadDrafts.${tmid}`);
+				});
+		});
+
 		it('should fail when the user does not have a subscription for the room', async () => {
 			await request
 				.post(api('rooms.saveDraft'))

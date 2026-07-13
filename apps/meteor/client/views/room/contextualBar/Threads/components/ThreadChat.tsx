@@ -113,6 +113,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 					<RoomComposer aria-label={t('Thread_composer')}>
 						<ComposerContainer
 							tmid={mainMessage._id}
+							threadExists={Boolean(mainMessage.tcount)}
 							subscription={subscription}
 							onSend={handleSend}
 							onEscape={handleComposerEscape}
