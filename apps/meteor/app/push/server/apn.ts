@@ -103,6 +103,11 @@ export const sendAPN = ({
 	});
 };
 
+export const shutdownAPN = () => {
+	void apnConnection?.shutdown();
+	apnConnection = undefined;
+};
+
 export const initAPN = ({ options, absoluteUrl }: { options: RequiredField<PushOptions, 'apn'>; absoluteUrl: string }) => {
 	logger.debug('APN configured');
 

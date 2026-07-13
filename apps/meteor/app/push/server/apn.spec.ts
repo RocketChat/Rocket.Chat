@@ -20,7 +20,7 @@ const apnMock = {
 	'@noCallThru': true,
 };
 
-const { initAPN } = proxyquire.noCallThru().load('./apn', {
+const { initAPN, shutdownAPN } = proxyquire.noCallThru().load('./apn', {
 	'@parse/node-apn': {
 		default: apnMock,
 		...apnMock,
@@ -127,5 +127,28 @@ describe('initAPN', () => {
 				}),
 			).to.not.throw();
 		});
+	});
+});
+
+describe('shutdownAPN', () => {
+	beforeEach(() => {
+		sandbox.resetHistory();
+		mocks.ApnProvider.reset();
+	});
+
+	it('should shut down the active provider', () => {
+		const shutdown = sandbox.stub().resolves();
+		mocks.ApnProvider.returns({ shutdown });
+
+		initAPN({ options: buildOptions(), absoluteUrl: 'https://example.com' });
+		shutdownAPN();
+
+		expect(shutdown.calledOnce).to.be.true;
+	});
+
+	it('should not throw when no provider was initialized', () => {
+		shutdownAPN();
+
+		expect(() => shutdownAPN()).to.not.throw();
 	});
 });
