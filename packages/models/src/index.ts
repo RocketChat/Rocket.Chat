@@ -70,7 +70,6 @@ import type {
 	IAppsPersistenceModel,
 	IAppLogsModel,
 	IImportsModel,
-	IFederationRoomEventsModel,
 	IAuditLogModel,
 	ICronHistoryModel,
 	IMigrationsModel,
@@ -144,7 +143,6 @@ export const EmailMessageHistory = proxify<IEmailMessageHistoryModel>('IEmailMes
 export const EmojiCustom = proxify<IEmojiCustomModel>('IEmojiCustomModel');
 export const ExportOperations = proxify<IExportOperationsModel>('IExportOperationsModel');
 export const FederationKeys = proxify<IFederationKeysModel>('IFederationKeysModel');
-export const FederationRoomEvents = proxify<IFederationRoomEventsModel>('IFederationRoomEventsModel');
 export const ImportData = proxify<IImportDataModel>('IImportDataModel');
 export const Imports = proxify<IImportsModel>('IImportsModel');
 export const InstanceStatus = proxify<IInstanceStatusModel>('IInstanceStatusModel');

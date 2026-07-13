@@ -210,10 +210,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	removeBusinessHourByAgentIds(agentIds: any, businessHourId: any): any;
 
-	openBusinessHourToAgentsWithoutDepartment(agentIdsWithDepartment: any, businessHourId: any): any;
-
-	closeBusinessHourToAgentsWithoutDepartment(agentIdsWithDepartment: any, businessHourId: any): any;
-
 	closeAgentsBusinessHoursByBusinessHourIds(businessHourIds: any): any;
 
 	setLivechatStatusActiveBasedOnBusinessHours(userId: any): any;
@@ -240,11 +236,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	addBannerById(_id: IUser['_id'], banner: any): Promise<UpdateResult>;
 
-	findActiveUsersTOTPEnable(options: any): any;
-
 	countActiveUsersTOTPEnable(options: any): Promise<number>;
-
-	findActiveUsersEmail2faEnable(options: any): any;
 
 	countActiveUsersEmail2faEnable(options: any): Promise<number>;
 
@@ -253,8 +245,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	setAsFederated(userId: string): any;
 
 	removeRoomByRoomId(rid: any, options?: UpdateOptions): any;
-
-	findOneByResetToken(token: string, options: FindOptions<IUser>): Promise<IUser | null>;
 
 	updateStatusById(
 		userId: IUser['_id'],
@@ -266,25 +256,12 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		}: { statusDefault?: UserStatus; status: UserStatus; statusConnection: UserStatus; statusText?: string },
 	): Promise<UpdateResult>;
 
-	updateStatusAndStatusDefault(userId: string, status: UserStatus, statusDefault: UserStatus): Promise<UpdateResult>;
-
-	setFederationAvatarUrlById(userId: IUser['_id'], federationAvatarUrl: string): Promise<UpdateResult>;
-
-	setFederationAvatarUrlById(userId: IUser['_id'], federationAvatarUrl: string): Promise<UpdateResult>;
-
-	findSearchedServerNamesByUserId(userId: IUser['_id']): Promise<string[]>;
-
-	addServerNameToSearchedServerNamesList(userId: string, serverName: string): Promise<UpdateResult>;
-
-	removeServerNameFromSearchedServerNamesList(userId: string, serverName: string): Promise<UpdateResult>;
-
 	countFederatedExternalUsers(): Promise<number>;
 	findOnlineUserFromList<T extends Document = ILivechatAgent>(
 		userList: string | string[],
 		isLivechatEnabledWhenAgentIdle?: boolean,
 		acceptChatsWithNoAgents?: boolean,
 	): FindCursor<T>;
-	countOnlineUserFromList(userList: string | string[], isLivechatEnabledWhenAgentIdle?: boolean): Promise<number>;
 	getUnavailableAgents(
 		departmentId?: string,
 		extraQuery?: Filter<AvailableAgentsAggregation>,
@@ -306,9 +283,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	addRoomByUserIds(uids: string[], rid: string): Promise<UpdateResult | Document>;
 	removeRoomByRoomIds(rids: string[]): Promise<UpdateResult | Document>;
 	addRoomRolePriorityByUserId(userId: string, rid: string, rolePriority: number): Promise<UpdateResult>;
-	removeRoomRolePriorityByUserId(userId: string, rid: string): Promise<UpdateResult>;
 	assignRoomRolePrioritiesByUserIdPriorityMap(rolePrioritiesMap: Record<string, number>, rid: string): Promise<number>;
-	unassignRoomRolePrioritiesByRoomId(rid: string): Promise<UpdateResult | Document>;
 	getLoginTokensByUserId(userId: string): FindCursor<ILoginToken>;
 	addPersonalAccessTokenToUser(data: { userId: string; loginTokenObject: IPersonalAccessToken }): Promise<UpdateResult>;
 	removePersonalAccessTokenOfUser(data: {
@@ -322,15 +297,12 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		isLivechatEnabledWhenIdle?: boolean,
 		acceptChatsWithNoAgents?: boolean,
 	): FindCursor<T>;
-	countOnlineAgents(agentId: string): Promise<number>;
-	findOneBotAgent<T extends Document = ILivechatAgent>(): Promise<T | null>;
 	findOneOnlineAgentById(
 		agentId: string,
 		isLivechatEnabledWhenAgentIdle?: boolean,
 		acceptChatsWithNoAgents?: boolean,
 		options?: FindOptions<IUser>,
 	): Promise<ILivechatAgent | null>;
-	findAgents(): FindCursor<ILivechatAgent>;
 	countAgents(): Promise<number>;
 	getNextAgent(
 		ignoreAgentId?: string,
@@ -346,7 +318,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		agentId: IUser['_id'],
 		showAgentEmail?: boolean,
 	): Promise<Pick<ILivechatAgent, '_id' | 'name' | 'username' | 'phone' | 'customFields' | 'status' | 'livechat' | 'emails'> | null>;
-	roleBaseQuery(userId: string): { _id: string };
 	setE2EPublicAndPrivateKeysByUserId(userId: string, e2e: { public_key: string; private_key: string }): Promise<UpdateResult>;
 	rocketMailUnsubscribe(userId: string, createdAt: string): Promise<number>;
 	fetchKeysByUserId(userId: string): Promise<{ public_key: string; private_key: string } | object>;
@@ -387,22 +358,15 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	countUsersNotOffline(options?: FindOptions<IUser>): Promise<number>;
 	findNotIdUpdatedFrom(userId: string, updatedFrom: Date, options?: FindOptions<IUser>): FindCursor<IUser>;
 	findByRoomId(roomId: string, options?: FindOptions<IUser>): Promise<FindCursor<IUser>>;
-	findByUsername(username: string, options?: FindOptions<IUser>): FindCursor<IUser>;
 	findByUsernames(usernames: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
 	findByUsernamesIgnoringCase(usernames: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
 	findActiveByUserIds(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
-	findActiveLocalGuests(idsExceptions: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
 	countActiveLocalGuests(idsExceptions: string[]): Promise<number>;
-	findUsersByNameOrUsername(name: string, options?: FindOptions<IUser>): FindCursor<IUser>;
-	findByUsernameNameOrEmailAddress(nameOrUsernameOrEmail: string, options?: FindOptions<IUser>): FindCursor<IUser>;
 	findCrowdUsers(options?: FindOptions<IUser>): FindCursor<IUser>;
 	getLastLogin(options?: FindOptions<IUser>): Promise<Date | undefined>;
 	findUsersByUsernames<T extends Document = IUser>(usernames: string[], options?: FindOptions<IUser>): FindCursor<T>;
 	findUsersByIds(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
-	findUsersWithUsernameByIds(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
-	findUsersWithUsernameByIdsNotOffline(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
 	getOldest(options?: FindOptions<IUser>): Promise<IUser | null>;
-	findActiveFederated(options?: FindOptions<IUser>): FindCursor<IUser>;
 	getSAMLByIdAndSAMLProvider(userId: string, samlProvider: string): Promise<IUser | null>;
 	findBySAMLNameIdOrIdpSession(samlNameId: string, idpSession: string, options?: FindOptions<IUser>): FindCursor<IUser>;
 	findBySAMLInResponseTo(inResponseTo: string, options?: FindOptions<IUser>): FindCursor<IUser>;
@@ -443,12 +407,9 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	removeBannerById(userId: string, bannerId: string): Promise<UpdateResult>;
 	setBannersInBulk(updates: { userId: IUser['_id']; banners: NonNullable<IUser['banners']> }[]): Promise<BulkWriteResult>;
 	removeSamlServiceSession(userId: string): Promise<UpdateResult>;
-	updateDefaultStatus(userId: string, status: string): Promise<UpdateResult>;
 	setSamlInResponseTo(userId: string, inResponseTo: string): Promise<UpdateResult>;
 	create(data: Partial<IUser>): Promise<InsertOneResult<IUser>>;
 	removeById(userId: string): Promise<DeleteResult>;
-	removeLivechatData(userId: string): Promise<UpdateResult>;
-	getUsersToSendOfflineEmail(userIds: string[]): FindCursor<Pick<IUser, 'name' | 'username' | 'emails' | 'settings' | 'language'>>;
 	countActiveUsersByService(service: string, options?: FindOptions<IUser>): Promise<number>;
 	getActiveLocalUserCount(): Promise<number>;
 	getActiveLocalGuestCount(exceptions?: IUser['_id'] | IUser['_id'][]): Promise<number>;
@@ -456,7 +417,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findAllUsersWithPendingAvatar(): FindCursor<IUser>;
 	updateCustomFieldsById(userId: string, customFields: Record<string, unknown>): Promise<UpdateResult>;
 	countRoomMembers(roomId: string): Promise<number>;
-	countRemote(options?: FindOptions<IUser>): Promise<number>;
 	findOneByImportId<T extends Document = IUser>(_id: IUser['_id'], options?: FindOptions<IUser>): Promise<T | null>;
 	removeAgent(_id: string): Promise<UpdateResult>;
 	findAgentsWithDepartments<T extends Document = ILivechatAgent>(

@@ -20,7 +20,6 @@ export interface ILivechatUnitModel extends IBaseModel<IOmnichannelBusinessUnit>
 		options: FindOptions<IOmnichannelBusinessUnit>,
 		extra?: Record<string, any>,
 	): Promise<P | null>;
-	remove(query: Filter<IOmnichannelBusinessUnit>): Promise<DeleteResult>;
 	createOrUpdateUnit(
 		_id: string | null,
 		{ name, visibility }: { name: string; visibility: IOmnichannelBusinessUnit['visibility'] },

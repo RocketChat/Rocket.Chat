@@ -1,6 +1,5 @@
-import type { ComponentChildren } from 'preact';
+import type { ComponentChildren, JSX as JSXInternal } from 'preact';
 import type { CSSProperties } from 'preact/compat';
-import type { JSXInternal } from 'preact/src/jsx';
 import { useTranslation } from 'react-i18next';
 
 import styles from './styles.scss';
