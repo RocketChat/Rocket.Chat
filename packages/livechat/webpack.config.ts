@@ -160,6 +160,19 @@ const config = (_env: any, args: webpack.WebpackOptionsNormalized): webpack.Conf
 					ignored: [_('./dist'), _('./node_modules')],
 				},
 			},
+			proxy: [
+				{
+					context: ['/api'],
+					target: 'http://localhost:3000',
+					changeOrigin: true,
+				},
+				{
+					context: ['/websocket'],
+					target: 'http://localhost:3000',
+					changeOrigin: true,
+					ws: true,
+				},
+			],
 		},
 	},
 	{
