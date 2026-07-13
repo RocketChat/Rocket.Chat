@@ -1,6 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
-import type { KeyboardEvent } from 'react';
 import { useEffect, useMemo, useState } from 'react';
 
 export type TableOfContentsEntry = {
@@ -48,6 +47,12 @@ const useScrollSpy = (ids: string[]): string | undefined => {
 };
 
 const itemStyle = css`
+	appearance: none;
+	border: none;
+	background: transparent;
+	width: 100%;
+	text-align: start;
+	font: inherit;
 	cursor: pointer;
 	text-decoration: none;
 
@@ -73,13 +78,6 @@ const SettingsPageTableOfContents = ({ title, entries }: SettingsPageTableOfCont
 		document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 	};
 
-	const handleKeyDown = (event: KeyboardEvent<HTMLElement>, id: string): void => {
-		if (event.key === 'Enter' || event.key === ' ') {
-			event.preventDefault();
-			handleSelect(id);
-		}
-	};
-
 	return (
 		<Box is='nav' aria-label={title} width='x260' flexShrink={0} pi={24} pbs={24} display='flex' flexDirection='column'>
 			<Box mbe={12} pi={12} fontScale='micro' color='hint' style={{ textTransform: 'uppercase' }}>
@@ -90,12 +88,10 @@ const SettingsPageTableOfContents = ({ title, entries }: SettingsPageTableOfCont
 				return (
 					<Box
 						key={id}
-						is='a'
-						role='button'
-						tabIndex={0}
+						is='button'
+						type='button'
 						aria-current={isActive ? 'true' : undefined}
 						onClick={() => handleSelect(id)}
-						onKeyDown={(event: KeyboardEvent<HTMLElement>) => handleKeyDown(event, id)}
 						pi={12}
 						pb={8}
 						mbe={2}
