@@ -1,9 +1,9 @@
-import { type ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '../Button';
 import { ButtonGroup } from '../ButtonGroup';
 import ModalMessage from './MessageModal';
+import type { ModalProps } from './Modal';
 import Modal from './Modal';
 
 export type ConfirmationModalProps = {
@@ -12,7 +12,7 @@ export type ConfirmationModalProps = {
 	cancelButtonText?: string;
 	onConfirm: () => void;
 	onCancel: () => void;
-} & Omit<ComponentProps<typeof Modal>, 'open' | 'onDismiss'>;
+} & Omit<ModalProps, 'open' | 'onDismiss'>;
 
 const ConfirmationModal = ({ text, confirmButtonText, cancelButtonText, onConfirm, onCancel, ...props }: ConfirmationModalProps) => {
 	const { t } = useTranslation();

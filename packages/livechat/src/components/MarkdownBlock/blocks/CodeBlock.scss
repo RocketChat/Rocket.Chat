@@ -1,0 +1,21 @@
+.codeblock {
+	position: relative;
+
+	&__copyonly {
+		display: none;
+
+		width: 0;
+		height: 0;
+
+		user-select: none;
+		vertical-align: baseline;
+
+		font-size: 0;
+		-moz-box-orient: vertical;
+
+		code & {
+			float: left;
+		}
+	}
+
+}

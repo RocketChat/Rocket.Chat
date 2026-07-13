@@ -1,7 +1,7 @@
 import { parse } from '@rocket.chat/message-parser';
-import { Suspense, lazy } from 'preact/compat';
+import { Suspense } from 'preact/compat';
 
-const Markup = lazy(() => import('@rocket.chat/gazzodown/dist/Markup'));
+import Markup from './Markup';
 
 export type MarkdownBlockProps = { text: string; emoticons?: boolean };
 
