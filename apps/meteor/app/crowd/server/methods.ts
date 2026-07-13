@@ -24,7 +24,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!(await hasPermissionAsync(user._id, 'test-admin-options'))) {
+		if (!(await hasPermissionAsync(user, 'test-admin-options'))) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'crowd_test_connection',
 			});
@@ -56,7 +56,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('crowd_disabled');
 		}
 
-		if (!user || !(await hasPermissionAsync(user._id, 'sync-auth-services-users'))) {
+		if (!user || !(await hasPermissionAsync(user, 'sync-auth-services-users'))) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'crowd_sync_users',
 			});
