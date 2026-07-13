@@ -82,10 +82,13 @@ describe('DenoRuntimeSubprocessController', () => {
 		// eslint-disable-next-line prefer-destructuring -- accessing a private field for testing
 		const runtimeTempPath = secondController['runtimeTempPath'];
 
-		assert.notStrictEqual(runtimeTempPath, controller['runtimeTempPath']);
-		assert.strictEqual((await fs.stat(runtimeTempPath)).isDirectory(), true);
+		try {
+			assert.notStrictEqual(runtimeTempPath, controller['runtimeTempPath']);
+			assert.strictEqual((await fs.stat(runtimeTempPath)).isDirectory(), true);
+		} finally {
+			await secondController.stopApp();
+		}
 
-		await secondController.stopApp();
 		await assert.rejects(fs.stat(runtimeTempPath), { code: 'ENOENT' });
 	});
 
