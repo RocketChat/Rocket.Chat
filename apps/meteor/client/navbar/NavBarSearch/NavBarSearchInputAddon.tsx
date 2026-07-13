@@ -3,7 +3,7 @@ import { Box, Chip, Icon, IconButton } from '@rocket.chat/fuselage';
 import type { TFunction } from 'i18next';
 import type { ReactElement } from 'react';
 
-type NavBarSearchInputAddonProps = {
+export type NavBarSearchInputAddonProps = {
 	appliedFilterChips: SearchFilterChip[];
 	aiSearchActive: boolean;
 	aiSearchFeatureEnabled: boolean;

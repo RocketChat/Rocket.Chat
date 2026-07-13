@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../components/MarkdownText';
 
-type SearchAnswerPanelProps = {
+export type SearchAnswerPanelProps = {
 	answer?: string;
 	provider?: { name: string; model: string };
 	isLoading: boolean;
@@ -27,29 +27,26 @@ const SearchAnswerPanel = ({
 	const { t } = useTranslation();
 	const titleId = useId();
 
-	const answerContent = (): ReactElement => {
-		if (isLoading) {
-			return (
-				<Box display='flex' flexDirection='column' gap={12} aria-busy='true' aria-label={t('Loading')}>
-					<Skeleton width='60%' />
-					<Skeleton width='100%' />
-					<Skeleton width='95%' />
-					<Skeleton width='88%' />
-					<Skeleton width='72%' />
-				</Box>
-			);
-		}
-
-		if (answer) {
-			return <MarkdownText content={answer} parseEmoji fontScale='p2' />;
-		}
-
-		return (
+	let content: ReactElement;
+	if (isLoading) {
+		content = (
+			<Box display='flex' flexDirection='column' gap={12} aria-busy='true' aria-label={t('Loading')}>
+				<Skeleton width='60%' />
+				<Skeleton width='100%' />
+				<Skeleton width='95%' />
+				<Skeleton width='88%' />
+				<Skeleton width='72%' />
+			</Box>
+		);
+	} else if (answer) {
+		content = <MarkdownText content={answer} parseEmoji fontScale='p2' />;
+	} else {
+		content = (
 			<Box color='hint' fontScale='p2'>
 				{disabled ? emptyReason : t('Search_AI_answer_ready')}
 			</Box>
 		);
-	};
+	}
 
 	return (
 		<Box mbe={24}>
@@ -69,7 +66,7 @@ const SearchAnswerPanel = ({
 							{t('Search_AI_answer_error')}
 						</Box>
 					) : (
-						answerContent()
+						content
 					)}
 				</CardBody>
 				<CardControls>

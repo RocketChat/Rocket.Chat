@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import NavBarSearchItem from './NavBarSearchItem';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
-type NavBarSearchMessageRowProps = {
+export type NavBarSearchMessageRowProps = {
 	item: UnifiedSearchMessageResult | UnifiedSearchIntelligentResult;
 	onClick: () => void;
 	type: 'message' | 'intelligent';

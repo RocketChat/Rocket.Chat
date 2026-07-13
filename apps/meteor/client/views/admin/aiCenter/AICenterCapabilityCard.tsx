@@ -2,7 +2,7 @@ import { Box, Button, Card, CardBody, CardControls, CardHeader, CardTitle, Frame
 import type { ComponentProps, ReactElement, ReactNode } from 'react';
 import { useId } from 'react';
 
-type AICenterCapabilityCardProps = {
+export type AICenterCapabilityCardProps = {
 	icon: ComponentProps<typeof FramedIcon>['icon'];
 	title: string;
 	description: string;

@@ -16,7 +16,7 @@ import {
 } from '@rocket.chat/fuselage';
 import type { UnifiedSearchIntelligentResult } from '@rocket.chat/rest-typings';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
-import type { ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../components/MarkdownText';
@@ -52,19 +52,23 @@ const getMessageHref = (item: UnifiedSearchIntelligentResult): string | undefine
 const trimSourceMessage = (text: string): string =>
 	text.length > MAX_SOURCE_MESSAGE_LENGTH ? `${text.slice(0, MAX_SOURCE_MESSAGE_LENGTH).trimEnd()}...` : text;
 
-const getRoomIcon = (roomType: IRoom['t'] | undefined) => {
+const getRoomIcon = (roomType: IRoom['t'] | undefined): ComponentProps<typeof Icon>['name'] => {
 	if (roomType === 'd') {
-		return 'at' as const;
+		return 'at';
 	}
 
 	if (roomType === 'p') {
-		return 'lock' as const;
+		return 'lock';
 	}
 
-	return 'hash' as const;
+	return 'hash';
 };
 
-export const SearchSourceResult = ({ item }: { item: UnifiedSearchIntelligentResult }): ReactElement => {
+export type SearchSourceResultProps = {
+	item: UnifiedSearchIntelligentResult;
+};
+
+const SearchSourceResult = ({ item }: SearchSourceResultProps): ReactElement => {
 	const { t } = useTranslation();
 	const roomLabel = item.room?.fname || item.room?.name;
 	const href = getMessageHref(item);
@@ -82,7 +86,7 @@ export const SearchSourceResult = ({ item }: { item: UnifiedSearchIntelligentRes
 			borderWidth='default'
 			borderStyle='solid'
 			borderColor='extra-light'
-			borderRadius={4}
+			borderRadius='x4'
 			bg='surface-light'
 		>
 			<Message clickable={Boolean(href)}>
@@ -128,9 +132,11 @@ export const SearchSourceResult = ({ item }: { item: UnifiedSearchIntelligentRes
 					insetBlockEnd={0}
 					insetInlineStart={0}
 					insetInlineEnd={0}
-					borderRadius={4}
+					borderRadius='x4'
 				/>
 			)}
 		</Box>
 	);
 };
+
+export default SearchSourceResult;

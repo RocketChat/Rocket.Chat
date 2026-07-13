@@ -9,15 +9,13 @@ import { useTranslation } from 'react-i18next';
 import NavBarSearchItem from './NavBarSearchItem';
 import NavBarSearchMessageRow from './NavBarSearchMessageRow';
 
-const NavBarSearchIntelligentSection = ({
-	items,
-	onSelect,
-	onClose,
-}: {
+export type NavBarSearchIntelligentSectionProps = {
 	items: UnifiedSearchIntelligentResult[];
 	onSelect: () => void;
 	onClose: () => void;
-}): ReactElement | null => {
+};
+
+const NavBarSearchIntelligentSection = ({ items, onSelect, onClose }: NavBarSearchIntelligentSectionProps): ReactElement | null => {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const { watch } = useFormContext<NavBarSearchFormValues>();

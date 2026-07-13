@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 
 import GenericNoResults from '../../components/GenericNoResults';
 
-type NavBarSearchNoResultsProps = {
+export type NavBarSearchNoResultsProps = {
 	suggestAISearch?: boolean;
 };
 

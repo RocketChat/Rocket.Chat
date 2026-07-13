@@ -7,7 +7,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import SearchAnswerPanel from './SearchAnswerPanel';
-import { SearchSourceResult } from './SearchSourceResult';
+import SearchSourceResult from './SearchSourceResult';
 import { useAISearchAnswer } from './hooks/useAISearchAnswer';
 import { useAISearchResults } from './hooks/useAISearchResults';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';

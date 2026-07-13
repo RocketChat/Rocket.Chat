@@ -7,7 +7,7 @@ import NavBarSearchItemSkeleton from './NavBarSearchItemSkeleton';
 import NavBarSearchNoResults from './NavBarSearchNoResults';
 import NavBarSearchRow from './NavBarSearchRow';
 
-type NavBarSearchRoomSectionProps = {
+export type NavBarSearchRoomSectionProps = {
 	filterText: string;
 	itemCount: number;
 	isLoading: boolean;

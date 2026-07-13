@@ -16,6 +16,10 @@ const filterSuggestionGroupLabels = {
 	dates: 'Search_filter_dates',
 } as const;
 
+export type NavBarSearchFilterSuggestionsProps = {
+	suggestions: SearchFilterSuggestion[];
+};
+
 const groupFilterSuggestions = (suggestions: SearchFilterSuggestion[]): [SearchFilterSuggestion['group'], SearchFilterSuggestion[]][] => {
 	const grouped: Record<SearchFilterSuggestion['group'], SearchFilterSuggestion[]> = { rooms: [], users: [], dates: [] };
 	for (const suggestion of suggestions) {
@@ -32,7 +36,7 @@ const groupFilterSuggestions = (suggestions: SearchFilterSuggestion[]): [SearchF
 	return groups;
 };
 
-const NavBarSearchFilterSuggestions = ({ suggestions }: { suggestions: SearchFilterSuggestion[] }): ReactElement | null => {
+const NavBarSearchFilterSuggestions = ({ suggestions }: NavBarSearchFilterSuggestionsProps): ReactElement | null => {
 	const { t } = useTranslation();
 	const { getValues, setFocus, setValue } = useFormContext<NavBarSearchFormValues>();
 	const filterSuggestionGroups = useMemo(() => groupFilterSuggestions(suggestions), [suggestions]);
