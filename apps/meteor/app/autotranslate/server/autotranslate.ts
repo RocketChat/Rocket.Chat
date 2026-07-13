@@ -107,14 +107,16 @@ export class TranslationProviderRegistry {
 			return;
 		}
 
-		const provider = TranslationProviderRegistry.getActiveProvider();
-		if (!provider) {
-			return;
-		}
-
 		callbacks.add(
 			'afterSaveMessage',
-			(message, { room }) => provider.translateMessage(message, { room }),
+			(message, { room }) => {
+				const provider = TranslationProviderRegistry.getActiveProvider();
+				if (!provider) {
+					translationLogger.warn('No active translation provider available during message translation');
+					return message;
+				}
+				return provider.translateMessage(message, { room });
+			},
 			callbacks.priority.MEDIUM,
 			'autotranslate',
 		);
