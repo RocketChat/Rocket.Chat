@@ -157,19 +157,33 @@ export const getRoomLookupText = (
 export const getRoomLookupQuery = (roomLookupText: string): ReturnType<typeof buildRoomSearchQuery> | typeof emptySubscriptionQuery =>
 	roomLookupText ? buildRoomSearchQuery(roomLookupText, '#') : emptySubscriptionQuery;
 
-export const getSelectedRooms = (roomNames: string[], rooms: SubscriptionWithRoom[]): SubscriptionWithRoom[] => {
+export const getSelectedRooms = <T extends { name?: string; fname?: string }>(roomNames: string[], rooms: T[]): T[] => {
 	if (!roomNames.length) {
 		return [];
 	}
 
-	return roomNames
-		.map((roomName) => {
-			const normalizedRoomName = roomName.toLowerCase();
-			return rooms.find(({ name, fname }) =>
-				[name, fname].filter(Boolean).some((candidate) => candidate?.toLowerCase() === normalizedRoomName),
-			);
-		})
-		.filter(Boolean) as SubscriptionWithRoom[];
+	const roomsByName = new Map<string, T>();
+	const addRoomName = (candidate: string | undefined, room: T): void => {
+		if (candidate) {
+			const normalizedCandidate = candidate.toLowerCase();
+			if (!roomsByName.has(normalizedCandidate)) {
+				roomsByName.set(normalizedCandidate, room);
+			}
+		}
+	};
+	for (const room of rooms) {
+		addRoomName(room.name, room);
+		addRoomName(room.fname, room);
+	}
+
+	const selectedRooms: T[] = [];
+	for (const roomName of roomNames) {
+		const room = roomsByName.get(roomName.toLowerCase());
+		if (room) {
+			selectedRooms.push(room);
+		}
+	}
+	return selectedRooms;
 };
 
 export const resolveSearchFilters = (filters: SearchFilters, selectedRooms: SubscriptionWithRoom[]): SearchFilters => ({
@@ -206,19 +220,47 @@ export const buildRooms = ({
 	const filterRegex = new RegExp(escapeRegExp(name.slice(0, MAX_ROOM_SEARCH_PATTERN_LENGTH)), 'i');
 	const matchesFilter = ({ name, fname }: { name?: string; fname?: string }): boolean =>
 		Boolean((name && filterRegex.test(name)) || (fname && filterRegex.test(fname)));
+	const candidates = localRooms.length < limit ? (serverResults ?? []) : [];
+	if (!candidates.length) {
+		return dedupeRooms(localRooms).slice(0, limit);
+	}
+
+	const localRoomIds = new Set<string>();
+	const localSubscriptionIds = new Set<string>();
+	const localDirectMessageUserIds = new Set<string>();
+	const localDirectMessageNames = new Set<string>();
+	for (const room of localRooms) {
+		localRoomIds.add(room._id);
+		localRoomIds.add(room.rid);
+		localSubscriptionIds.add(room._id);
+		if (room.t !== 'd') {
+			continue;
+		}
+		localDirectMessageNames.add(room.name);
+		if (room.uids?.length === 2) {
+			room.uids.forEach((userId) => localDirectMessageUserIds.add(userId));
+		}
+	}
 
 	const isLocalDuplicate = (item: { _id: string; t?: string; uids?: string[]; name?: string }): boolean =>
-		localRooms.some((room) => {
-			const sameRoom = [room.rid, room._id].includes(item._id);
-			const sameGroupDM = item.t === 'd' && !!item.uids && item.uids.length > 1 && item.uids.includes(room._id);
-			const sameDirectDM = item.t === 'd' && room.t === 'd' && !!room.uids && room.uids.length === 2 && room.uids.includes(item._id);
-			const sameUserDM = item.t === 'd' && room.t === 'd' && item.name === room.name;
-			return sameRoom || sameGroupDM || sameDirectDM || sameUserDM;
-		});
+		localRoomIds.has(item._id) ||
+		(item.t === 'd' &&
+			(((item.uids?.length ?? 0) > 1 && item.uids?.some((userId) => localSubscriptionIds.has(userId))) ||
+				localDirectMessageUserIds.has(item._id) ||
+				(item.name !== undefined && localDirectMessageNames.has(item.name))));
 
-	const candidates = localRooms.length < limit ? (serverResults ?? []) : [];
-	const fromServer = candidates.filter((item) => matchesFilter(item) && !isLocalDuplicate(item));
-	const exact = fromServer.filter((item) => [item.name, item.fname].includes(name));
+	const exact: SubscriptionWithRoom[] = [];
+	const fromServer: SubscriptionWithRoom[] = [];
+	for (const item of candidates) {
+		if (!matchesFilter(item) || isLocalDuplicate(item)) {
+			continue;
+		}
+		if (item.name === name || item.fname === name) {
+			exact.push(item);
+		} else {
+			fromServer.push(item);
+		}
+	}
 
 	return dedupeRooms([...exact, ...localRooms, ...fromServer]).slice(0, limit);
 };
@@ -241,24 +283,20 @@ export const normalizeSpotlightResults = (spotlight: {
 	}[];
 }): SubscriptionWithRoom[] => {
 	const userIds = new Set<string>();
-	const users = spotlight.users
-		.filter(({ _id }) => {
-			if (userIds.has(_id)) {
-				return false;
-			}
-			userIds.add(_id);
-			return true;
-		})
-		.map(
-			(user): SubscriptionWithRoom =>
-				({
-					_id: user._id,
-					t: 'd',
-					name: user.username,
-					fname: user.name,
-					avatarETag: user.avatarETag,
-				}) as SubscriptionWithRoom,
-		);
+	const users: SubscriptionWithRoom[] = [];
+	for (const user of spotlight.users) {
+		if (userIds.has(user._id)) {
+			continue;
+		}
+		userIds.add(user._id);
+		users.push({
+			_id: user._id,
+			t: 'd',
+			name: user.username,
+			fname: user.name,
+			avatarETag: user.avatarETag,
+		} as SubscriptionWithRoom);
+	}
 
 	return [...users, ...(spotlight.rooms as SubscriptionWithRoom[])];
 };

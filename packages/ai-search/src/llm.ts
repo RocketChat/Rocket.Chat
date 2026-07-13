@@ -4,6 +4,36 @@ import type { AIServiceFetch, AIServiceLogger, OpenAICompatibleProviderConfig, S
 const buildEndpointUrl = (baseUrl: string, path: string): string =>
 	new URL(path, baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`).toString();
 
+const isRecord = (value: unknown): value is Record<string, unknown> => Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+
+const getChatCompletionContent = (value: unknown): string | undefined => {
+	if (!isRecord(value) || !Array.isArray(value.choices)) {
+		return undefined;
+	}
+
+	const firstChoice = value.choices[0];
+	if (!isRecord(firstChoice) || !isRecord(firstChoice.message) || typeof firstChoice.message.content !== 'string') {
+		return undefined;
+	}
+
+	return firstChoice.message.content.trim() || undefined;
+};
+
+const getModelIds = (value: unknown): string[] => {
+	if (!isRecord(value) || !Array.isArray(value.data)) {
+		return [];
+	}
+
+	const modelIds = new Set<string>();
+	for (const model of value.data) {
+		if (isRecord(model) && typeof model.id === 'string' && model.id) {
+			modelIds.add(model.id);
+		}
+	}
+
+	return [...modelIds].sort((a, b) => a.localeCompare(b));
+};
+
 const normalizeSearchAnswerCitations = (answer: string): string =>
 	answer.replace(/【\s*(\d+)(?:†[^】\r\n]*)?\s*】/g, (_marker, sourceNumber: string, offset: number) => {
 		const leadingSpace = offset > 0 && !/\s/.test(answer[offset - 1]) ? ' ' : '';
@@ -80,8 +110,7 @@ export const generateOpenAICompatibleSearchAnswer = async ({
 			throw new Error('error-ai-provider-request-failed');
 		}
 
-		const json = (await response.json()) as { choices?: { message?: { content?: string } }[] };
-		const answer = json.choices?.[0]?.message?.content?.trim();
+		const answer = getChatCompletionContent(await response.json());
 		if (!answer) {
 			throw new Error('error-ai-provider-empty-response');
 		}
@@ -132,18 +161,13 @@ export const listOpenAICompatibleModels = async ({
 			return fallback;
 		}
 
-		const json = (await response.json()) as { data?: { id?: string }[] };
-		const data = (json.data || [])
-			.map(({ id }) => id)
-			.filter((id): id is string => Boolean(id))
-			.sort((a, b) => a.localeCompare(b))
-			.map((id) => ({ key: id, label: id }));
+		const modelIds = getModelIds(await response.json());
 
-		if (selectedModel && !data.some(({ key }) => key === selectedModel)) {
-			data.unshift({ key: selectedModel, label: selectedModel });
+		if (selectedModel && !modelIds.includes(selectedModel)) {
+			modelIds.unshift(selectedModel);
 		}
 
-		return data;
+		return modelIds.map((id) => ({ key: id, label: id }));
 	} catch (error) {
 		logger?.warn?.({ msg: 'AI LLM model lookup request failed', err: error });
 		return fallback;

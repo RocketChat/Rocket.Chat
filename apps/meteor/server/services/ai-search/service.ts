@@ -59,8 +59,22 @@ const toDate = (value?: string | Date): Date | undefined => {
 	return Number.isNaN(date.getTime()) ? undefined : date;
 };
 
-const limitFilterValues = (values: string[] | undefined): string[] | undefined =>
-	values?.filter(Boolean).slice(0, MAX_SEARCH_FILTER_VALUES);
+const limitFilterValues = (values: string[] | undefined): string[] | undefined => {
+	if (!values) {
+		return undefined;
+	}
+
+	const limitedValues: string[] = [];
+	for (const value of values) {
+		if (value) {
+			limitedValues.push(value);
+			if (limitedValues.length === MAX_SEARCH_FILTER_VALUES) {
+				break;
+			}
+		}
+	}
+	return limitedValues;
+};
 
 const normalizeFilters = (filters: AISearchFilters = {}): IntelligentSearchFilters => ({
 	rid: filters.rid,
@@ -176,7 +190,13 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 	}
 
 	private async getSubscribedRoomIdSet(userId: string, roomIds: string[]): Promise<Set<string>> {
-		const uniqueRoomIds = [...new Set(roomIds)].filter(Boolean);
+		const uniqueRoomIdSet = new Set<string>();
+		for (const roomId of roomIds) {
+			if (roomId) {
+				uniqueRoomIdSet.add(roomId);
+			}
+		}
+		const uniqueRoomIds = [...uniqueRoomIdSet];
 		if (!uniqueRoomIds.length) {
 			return new Set();
 		}
@@ -185,7 +205,13 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			projection: { rid: 1, status: 1 },
 		}).toArray();
 
-		return new Set(subscriptions.filter((subscription) => !isBannedSubscription(subscription)).map(({ rid }) => rid));
+		const subscribedRoomIds = new Set<string>();
+		for (const subscription of subscriptions) {
+			if (!isBannedSubscription(subscription)) {
+				subscribedRoomIds.add(subscription.rid);
+			}
+		}
+		return subscribedRoomIds;
 	}
 
 	private async normalizeIntelligentResults(
@@ -194,7 +220,13 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		limit = AI_SEARCH_PAGE_SIZE,
 	): Promise<UnifiedSearchIntelligentResult[]> {
 		const candidates = normalizeIntelligentSearchCandidates(rawSearchResults, [], limit, logger);
-		const msgIds = [...new Set(candidates.map(({ msgId }) => msgId).filter((msgId): msgId is string => Boolean(msgId)))];
+		const msgIdSet = new Set<string>();
+		for (const { msgId } of candidates) {
+			if (msgId) {
+				msgIdSet.add(msgId);
+			}
+		}
+		const msgIds = [...msgIdSet];
 		let messageMap = new Map<string, IMessage>();
 
 		if (msgIds.length > 0) {
@@ -214,34 +246,37 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			this.getSubscribedRoomIdSet(userId, resultRoomIds),
 		]);
 
-		return candidates
-			.flatMap((result) => {
-				// candidates without a visible database message could surface stale pipeline text
-				const dbMessage = result.msgId ? messageMap.get(result.msgId) : undefined;
-				if (!dbMessage) {
-					logger.debug({ msg: 'AI search result filtered: message not visible', msgId: result.msgId });
-					return [];
-				}
+		const normalizedResults: UnifiedSearchIntelligentResult[] = [];
+		for (const result of candidates) {
+			// candidates without a visible database message could surface stale pipeline text
+			const dbMessage = result.msgId ? messageMap.get(result.msgId) : undefined;
+			if (!dbMessage) {
+				logger.debug({ msg: 'AI search result filtered: message not visible', msgId: result.msgId });
+				continue;
+			}
 
-				const { rid } = dbMessage;
-				if (!rid || !subscribedRoomIds.has(rid)) {
-					return [];
-				}
+			const { rid } = dbMessage;
+			if (!rid || !subscribedRoomIds.has(rid)) {
+				continue;
+			}
 
-				return [
-					{
-						_id: result.msgId || result._id,
-						rid,
-						msgId: result.msgId,
-						text: dbMessage.msg || '',
-						ts: dbMessage.ts?.toISOString(),
-						u: dbMessage.u ? { username: dbMessage.u.username, name: dbMessage.u.name } : undefined,
-						...(Number.isFinite(result.score) && { score: result.score }),
-						...(rooms.has(rid) && { room: rooms.get(rid) }),
-					},
-				];
-			})
-			.slice(0, limit);
+			const room = rooms.get(rid);
+			normalizedResults.push({
+				_id: result.msgId || result._id,
+				rid,
+				msgId: result.msgId,
+				text: dbMessage.msg || '',
+				ts: dbMessage.ts?.toISOString(),
+				u: dbMessage.u ? { username: dbMessage.u.username, name: dbMessage.u.name } : undefined,
+				...(Number.isFinite(result.score) && { score: result.score }),
+				...(room && { room }),
+			});
+			if (normalizedResults.length === limit) {
+				break;
+			}
+		}
+
+		return normalizedResults;
 	}
 
 	private async getUserClassifications(userId: string): Promise<string[]> {

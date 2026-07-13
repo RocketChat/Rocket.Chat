@@ -50,23 +50,40 @@ const splitFilterValues = (value: string): string[] =>
 		.map((item) => item.replace(/^[@#]/, '').trim())
 		.filter(Boolean);
 
-const unique = (items: string[]): string[] => Array.from(new Set(items));
+const isSearchFilterKey = (value: string): value is ActiveSearchFilter['key'] =>
+	value === 'in' || value === 'from' || value === 'after' || value === 'before';
 
 export const emptySearchFilters = (): SearchFilters => ({ roomNames: [], rids: [], fromUsernames: [] });
 
-export const mergeSearchFilters = (...filtersList: SearchFilters[]): SearchFilters =>
-	filtersList.reduce<SearchFilters>(
-		(result, filters) => ({
-			roomNames: unique([...result.roomNames, ...filters.roomNames]),
-			rids: unique([...result.rids, ...filters.rids]),
-			fromUsernames: unique([...result.fromUsernames, ...filters.fromUsernames]),
-			startDate: filters.startDate || result.startDate,
-			endDate: filters.endDate || result.endDate,
-			rid: filters.rid || result.rid,
-			fromUsername: filters.fromUsername || result.fromUsername,
-		}),
-		emptySearchFilters(),
-	);
+export const mergeSearchFilters = (...filtersList: SearchFilters[]): SearchFilters => {
+	const roomNames = new Set<string>();
+	const rids = new Set<string>();
+	const fromUsernames = new Set<string>();
+	let startDate: string | undefined;
+	let endDate: string | undefined;
+	let rid: string | undefined;
+	let fromUsername: string | undefined;
+
+	for (const filters of filtersList) {
+		filters.roomNames.forEach((roomName) => roomNames.add(roomName));
+		filters.rids.forEach((roomId) => rids.add(roomId));
+		filters.fromUsernames.forEach((username) => fromUsernames.add(username));
+		startDate = filters.startDate || startDate;
+		endDate = filters.endDate || endDate;
+		rid = filters.rid || rid;
+		fromUsername = filters.fromUsername || fromUsername;
+	}
+
+	return {
+		roomNames: [...roomNames],
+		rids: [...rids],
+		fromUsernames: [...fromUsernames],
+		...(startDate && { startDate }),
+		...(endDate && { endDate }),
+		...(rid && { rid }),
+		...(fromUsername && { fromUsername }),
+	};
+};
 
 export const parseSearchFilterText = (filterText: string): { searchText: string; filters: SearchFilters } => {
 	const filters: SearchFilters = emptySearchFilters();
@@ -152,9 +169,14 @@ export const getActiveSearchFilter = (filterText: string): ActiveSearchFilter | 
 		return undefined;
 	}
 
+	const key = match[1].toLowerCase();
+	if (!isSearchFilterKey(key)) {
+		return undefined;
+	}
+
 	const tokenStart = filterText.lastIndexOf(match[1], filterText.length - match[2].length - 1);
 	return {
-		key: match[1].toLowerCase() as ActiveSearchFilter['key'],
+		key,
 		value: match[2],
 		start: tokenStart,
 		end: filterText.length,
@@ -189,33 +211,51 @@ const getFilterChipLabel = (key: ActiveSearchFilter['key'], value: string): stri
 	}
 };
 
-export const buildAppliedFilterChips = (filters: SearchFilters): SearchFilterChip[] =>
-	[
-		filters.roomNames.length && {
+export const buildAppliedFilterChips = (filters: SearchFilters): SearchFilterChip[] => {
+	const chips: SearchFilterChip[] = [];
+
+	if (filters.roomNames.length) {
+		const label = filters.roomNames.map((roomName) => `#${roomName}`).join(', ');
+		chips.push({
 			key: 'in',
 			values: filters.roomNames,
-			label: filters.roomNames.map((roomName) => `#${roomName}`).join(', '),
-			title: `in: ${filters.roomNames.map((roomName) => `#${roomName}`).join(', ')}`,
-		},
-		filters.fromUsernames.length && {
+			label,
+			title: `in: ${label}`,
+		});
+	}
+
+	if (filters.fromUsernames.length) {
+		const label = filters.fromUsernames.map((username) => `@${username}`).join(', ');
+		chips.push({
 			key: 'from',
 			values: filters.fromUsernames,
-			label: filters.fromUsernames.map((username) => `@${username}`).join(', '),
-			title: `from: ${filters.fromUsernames.map((username) => `@${username}`).join(', ')}`,
-		},
-		filters.startDate && {
+			label,
+			title: `from: ${label}`,
+		});
+	}
+
+	if (filters.startDate) {
+		const label = getFilterChipLabel('after', filters.startDate);
+		chips.push({
 			key: 'after',
 			values: [filters.startDate],
-			label: getFilterChipLabel('after', filters.startDate),
-			title: getFilterChipLabel('after', filters.startDate),
-		},
-		filters.endDate && {
+			label,
+			title: label,
+		});
+	}
+
+	if (filters.endDate) {
+		const label = getFilterChipLabel('before', filters.endDate);
+		chips.push({
 			key: 'before',
 			values: [filters.endDate],
-			label: getFilterChipLabel('before', filters.endDate),
-			title: getFilterChipLabel('before', filters.endDate),
-		},
-	].filter(Boolean) as SearchFilterChip[];
+			label,
+			title: label,
+		});
+	}
+
+	return chips;
+};
 
 export const serializeSearchQuery = (searchText: string, filters: SearchFilters): string =>
 	normalizeFilterText(

@@ -157,6 +157,27 @@ describe('AI Search LLM helpers', () => {
 				}),
 			).rejects.toThrow('error-ai-provider-request-failed');
 		});
+
+		it('rejects valid JSON with an invalid chat completion shape', async () => {
+			const invalidResponseFetch: AIServiceFetch = async () => ({
+				ok: true,
+				status: 200,
+				json: async () => ({ choices: [{ message: { content: 42 } }] }),
+				text: async () => '',
+			});
+
+			await expect(
+				generateOpenAICompatibleSearchAnswer({
+					query: 'fruit colors',
+					messages: [{ text: 'oranges are green' }],
+					provider: { name: 'OpenAI compatible', baseUrl: 'https://llm.example.com', apiKey: 'secret', model: 'gpt-test' },
+					systemPrompt: 'Use sources only.',
+					fetch: invalidResponseFetch,
+					maxMessages: 4,
+					maxTextLength: 200,
+				}),
+			).rejects.toThrow('error-ai-provider-empty-response');
+		});
 	});
 
 	describe('listOpenAICompatibleModels', () => {
@@ -174,7 +195,7 @@ describe('AI Search LLM helpers', () => {
 			const fetch: AIServiceFetch = async () => ({
 				ok: true,
 				status: 200,
-				json: async () => ({ data: [{ id: 'z-model' }, { id: 'a-model' }] }),
+				json: async () => ({ data: [{ id: 'z-model' }, { id: 'a-model' }, { id: 'a-model' }, { id: 42 }, null] }),
 				text: async () => '',
 			});
 

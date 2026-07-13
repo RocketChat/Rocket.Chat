@@ -71,10 +71,15 @@ const useRoomSearchResults = ({
 	isFetching: boolean;
 } => {
 	const getSpotlight = useEndpoint('GET', '/v1/spotlight');
-	const usernamesFromClient = useMemo(
-		() => localRooms.map(({ t, name }) => (t === 'd' ? name : null)).filter(Boolean) as string[],
-		[localRooms],
-	);
+	const usernamesFromClient = useMemo(() => {
+		const usernames: string[] = [];
+		for (const { t, name } of localRooms) {
+			if (t === 'd' && name) {
+				usernames.push(name);
+			}
+		}
+		return usernames;
+	}, [localRooms]);
 	const searchForChannels = debouncedMention === '#';
 	const searchForDMs = debouncedMention === '@';
 

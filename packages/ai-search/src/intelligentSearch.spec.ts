@@ -109,6 +109,14 @@ describe('AI Search intelligent search helpers', () => {
 				username: { $eq: 'alice' },
 			});
 		});
+
+		it('intersects explicit room filters while preserving their order', () => {
+			const roomIds = Array.from({ length: 10_000 }, (_, index) => `r${index}`);
+
+			expect(buildIntelligentSearchPipelineFilters(roomIds, { rids: ['r9999', 'missing', 'r1'] })).toEqual({
+				room_id: { $in: ['r9999', 'r1'] },
+			});
+		});
 	});
 
 	describe('searchIntelligentPipeline', () => {

@@ -5,7 +5,7 @@ import {
 	MAX_UNIFIED_SEARCH_RESULTS,
 } from '@rocket.chat/ai-search';
 import { AISearch } from '@rocket.chat/core-services';
-import { isBannedSubscription, type IMessage, type IRoom, type IUser } from '@rocket.chat/core-typings';
+import { isBannedSubscription, type IRoom, type IUser } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
 	ajv,
@@ -187,12 +187,23 @@ const searchAnswerResponseSchema = ajv.compile<{
 	additionalProperties: false,
 });
 
-const parseCommaList = (value: string | undefined): string[] =>
-	String(value ?? '')
-		.split(',')
-		.map((item) => item.trim())
-		.filter(Boolean)
-		.slice(0, MAX_SEARCH_FILTER_VALUES);
+const parseCommaList = (value: string | undefined): string[] => {
+	if (!value) {
+		return [];
+	}
+
+	const items: string[] = [];
+	for (const item of value.split(',')) {
+		const normalizedItem = item.trim();
+		if (normalizedItem) {
+			items.push(normalizedItem);
+			if (items.length === MAX_SEARCH_FILTER_VALUES) {
+				break;
+			}
+		}
+	}
+	return items;
+};
 
 const parseQueryBoolean = (value: unknown, defaultValue = false): boolean => {
 	if (value === undefined || value === null) {
@@ -221,7 +232,13 @@ const getRoomMap = async (roomIds: string[]): Promise<Map<string, Pick<IRoom, '_
 };
 
 const getSubscribedRoomIds = async (userId: string, roomIds: string[]): Promise<Set<string>> => {
-	const uniqueRoomIds = [...new Set(roomIds)].filter(Boolean);
+	const uniqueRoomIdSet = new Set<string>();
+	for (const roomId of roomIds) {
+		if (roomId) {
+			uniqueRoomIdSet.add(roomId);
+		}
+	}
+	const uniqueRoomIds = [...uniqueRoomIdSet];
 	if (!uniqueRoomIds.length) {
 		return new Set();
 	}
@@ -230,18 +247,35 @@ const getSubscribedRoomIds = async (userId: string, roomIds: string[]): Promise<
 		projection: { rid: 1, status: 1 },
 	}).toArray();
 
-	return new Set(subscriptions.filter((subscription) => !isBannedSubscription(subscription)).map(({ rid }) => rid));
+	const subscribedRoomIds = new Set<string>();
+	for (const subscription of subscriptions) {
+		if (!isBannedSubscription(subscription)) {
+			subscribedRoomIds.add(subscription.rid);
+		}
+	}
+	return subscribedRoomIds;
 };
 
 const getSearchAnswerMessagesForUser = async (userId: string, messages: SearchAnswer['messages']) => {
-	const messageIds = [...new Set(messages.map(({ _id }) => _id).filter(Boolean))];
+	const messageIds: string[] = [];
+	const messageIdSet = new Set<string>();
+	const scoreByMessageId = new Map<string, number | undefined>();
+	const clampScore = (score: number | undefined): number | undefined =>
+		typeof score === 'number' && Number.isFinite(score) ? Math.min(1, Math.max(0, score)) : undefined;
+	for (const { _id, score } of messages) {
+		if (!_id) {
+			continue;
+		}
+		if (!messageIdSet.has(_id)) {
+			messageIdSet.add(_id);
+			messageIds.push(_id);
+		}
+		scoreByMessageId.set(_id, clampScore(score));
+	}
 	if (!messageIds.length) {
 		throw new Meteor.Error('error-invalid-search-answer-sources');
 	}
 
-	const clampScore = (score: number | undefined): number | undefined =>
-		typeof score === 'number' && Number.isFinite(score) ? Math.min(1, Math.max(0, score)) : undefined;
-	const scoreByMessageId = new Map(messages.map(({ _id, score }) => [_id, clampScore(score)]));
 	const docs = await Messages.findVisibleByIds(messageIds, {
 		projection: { _id: 1, rid: 1, msg: 1, ts: 1, u: 1 },
 	}).toArray();
@@ -249,30 +283,29 @@ const getSearchAnswerMessagesForUser = async (userId: string, messages: SearchAn
 		userId,
 		docs.map((message) => message.rid),
 	);
-	const subscribedDocs = docs.filter((message) => subscribedRoomIds.has(message.rid));
-	if (docs.length !== messageIds.length || subscribedDocs.length !== docs.length) {
+	if (docs.length !== messageIds.length || docs.some((message) => !subscribedRoomIds.has(message.rid))) {
 		throw new Meteor.Error('error-invalid-search-answer-sources');
 	}
 
-	const normalizedDocs = await normalizeMessagesForUser(subscribedDocs, userId);
-	const docsById = new Map(normalizedDocs.map((message: IMessage) => [message._id, message]));
-	const rooms = await getRoomMap(normalizedDocs.map((message: IMessage) => message.rid));
+	const normalizedDocs = await normalizeMessagesForUser(docs, userId);
+	const docsById = new Map(normalizedDocs.map((message) => [message._id, message]));
+	const rooms = await getRoomMap(normalizedDocs.map((message) => message.rid));
 
-	const answerMessages = messageIds
-		.map((messageId) => docsById.get(messageId))
-		.filter((message): message is IMessage => Boolean(message?.msg))
-		.map((message) => {
-			const room = rooms.get(message.rid);
+	const answerMessages = [];
+	for (const messageId of messageIds) {
+		const message = docsById.get(messageId);
+		if (message?.msg) {
 			const score = scoreByMessageId.get(message._id);
-
-			return {
+			const room = rooms.get(message.rid);
+			answerMessages.push({
 				text: message.msg,
 				username: message.u?.username,
 				roomName: room?.fname || room?.name,
 				ts: message.ts?.toISOString(),
 				...(Number.isFinite(score) && { score }),
-			};
-		});
+			});
+		}
+	}
 
 	if (!answerMessages.length) {
 		throw new Meteor.Error('error-invalid-search-answer-sources');
@@ -371,8 +404,8 @@ API.v1.get(
 		if (includeMessages && (rid || globalMessagesEnabled)) {
 			const searchResult = await messageSearch(this.userId, query, rid, limit, 0, filters);
 			const docs = searchResult && searchResult.message ? await normalizeMessagesForUser(searchResult.message.docs, this.userId) : [];
-			const rooms = await getRoomMap(docs.map((message: IMessage) => message.rid));
-			messages = docs.map((message: IMessage) => ({
+			const rooms = await getRoomMap(docs.map((message) => message.rid));
+			messages = docs.map((message) => ({
 				_id: message._id,
 				rid: message.rid,
 				msg: message.msg,

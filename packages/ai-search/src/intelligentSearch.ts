@@ -8,13 +8,12 @@ import type {
 	IntelligentSearchPipelineRequest,
 } from './types';
 
-type IntelligentSearchRawResult = Record<string, unknown> & { metadata?: Record<string, unknown> };
-
 const buildEndpointUrl = (baseUrl: string, path: string): string =>
 	new URL(path, baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`).toString();
 
-const asRecord = (value: unknown): Record<string, unknown> =>
-	value && typeof value === 'object' ? (value as Record<string, unknown>) : {};
+const isRecord = (value: unknown): value is Record<string, unknown> => Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+
+const asRecord = (value: unknown): Record<string, unknown> => (isRecord(value) ? value : {});
 
 const firstString = (...values: unknown[]): string | undefined => {
 	for (const value of values) {
@@ -63,7 +62,7 @@ const normalizePipelineSimilarityScore = (value: number, type: 'distance' | 'sim
 	return Math.min(1, Math.max(0, similarity));
 };
 
-const extractPipelineSimilarityScore = (result: IntelligentSearchRawResult, metadata: Record<string, unknown>): number | undefined => {
+const extractPipelineSimilarityScore = (result: Record<string, unknown>, metadata: Record<string, unknown>): number | undefined => {
 	const similarity = firstNumber(result.similarity, metadata.similarity);
 	if (typeof similarity === 'number') {
 		return normalizePipelineSimilarityScore(similarity, 'similarity');
@@ -77,7 +76,7 @@ const extractPipelineSimilarityScore = (result: IntelligentSearchRawResult, meta
 	return undefined;
 };
 
-const extractIntelligentResultIds = (result: IntelligentSearchRawResult): { rid?: string; msgId?: string } => {
+const extractIntelligentResultIds = (result: Record<string, unknown>): { rid?: string; msgId?: string } => {
 	const metadata = asRecord(result.metadata);
 	let rid = firstString(metadata.room_id, metadata.rid, result.room_id, result.rid);
 	let msgId = firstString(metadata.msg_id, metadata.message_id, result.msg_id, result.message_id, result.id);
@@ -128,33 +127,28 @@ export const normalizeIntelligentSearchCandidates = (
 	const userRoomIdSet = new Set(userRoomIds);
 	const shouldFilterByRoomIds = userRoomIdSet.size > 0;
 
-	const candidates = rawResults
-		.map((rawResult: unknown, index: number): IntelligentSearchCandidate => {
-			const result = asRecord(rawResult) as IntelligentSearchRawResult;
-			const metadata = asRecord(result.metadata);
-			const { rid, msgId } = extractIntelligentResultIds(result);
-			const pipelineText = firstString(result.text, result.content, result.document, result.page_content, metadata.text) || '';
-			const score = extractPipelineSimilarityScore(result, metadata);
+	const candidates: IntelligentSearchCandidate[] = [];
+	for (let index = 0; index < rawResults.length && candidates.length < limit; index++) {
+		const result = asRecord(rawResults[index]);
+		const metadata = asRecord(result.metadata);
+		const { rid, msgId } = extractIntelligentResultIds(result);
+		if (!msgId && !rid) {
+			continue;
+		}
+		if (shouldFilterByRoomIds && rid && !userRoomIdSet.has(rid)) {
+			logger?.debug?.({ msg: 'Intelligent search result filtered: room not in user subscriptions', rid });
+			continue;
+		}
 
-			return {
-				_id: msgId || `intelligent-${index}`,
-				rid,
-				msgId,
-				pipelineText,
-				...(typeof score === 'number' && { score }),
-			};
-		})
-		.filter((result) => {
-			if (!result.msgId && !result.rid) {
-				return false;
-			}
-			if (shouldFilterByRoomIds && result.rid && !userRoomIdSet.has(result.rid)) {
-				logger?.debug?.({ msg: 'Intelligent search result filtered: room not in user subscriptions', rid: result.rid });
-				return false;
-			}
-			return true;
-		})
-		.slice(0, limit);
+		const score = extractPipelineSimilarityScore(result, metadata);
+		candidates.push({
+			_id: msgId || `intelligent-${index}`,
+			rid,
+			msgId,
+			pipelineText: firstString(result.text, result.content, result.document, result.page_content, metadata.text) || '',
+			...(typeof score === 'number' && { score }),
+		});
+	}
 
 	logger?.debug?.({ msg: 'Intelligent search after filter', candidateCount: candidates.length });
 
@@ -169,8 +163,24 @@ export const buildIntelligentSearchPipelineFilters = (
 		return undefined;
 	}
 
-	const requestedRoomIds = [...new Set([...(rids || []), ...(rid ? [rid] : [])])];
-	const subscribedRoomIds = requestedRoomIds.length ? requestedRoomIds.filter((roomId) => userRoomIds.includes(roomId)) : userRoomIds;
+	const requestedRoomIdSet = new Set(rids);
+	if (rid) {
+		requestedRoomIdSet.add(rid);
+	}
+	const requestedRoomIds = [...requestedRoomIdSet];
+	let subscribedRoomIds = userRoomIds;
+	if (requestedRoomIds.length) {
+		const matchedRoomIds = new Set<string>();
+		for (const roomId of userRoomIds) {
+			if (requestedRoomIdSet.has(roomId)) {
+				matchedRoomIds.add(roomId);
+				if (matchedRoomIds.size === requestedRoomIdSet.size) {
+					break;
+				}
+			}
+		}
+		subscribedRoomIds = requestedRoomIds.filter((roomId) => matchedRoomIds.has(roomId));
+	}
 	const filters: IntelligentSearchPipelineFilters = {};
 
 	if (requestedRoomIds.length && !subscribedRoomIds.length) {
@@ -179,9 +189,20 @@ export const buildIntelligentSearchPipelineFilters = (
 
 	filters.room_id = subscribedRoomIds.length === 1 ? { $eq: subscribedRoomIds[0] } : { $in: subscribedRoomIds };
 
-	const usernames = [
-		...new Set([...(fromUsernames || []), ...(fromUsername ? [fromUsername] : [])].map((username) => username.replace(/^@/, ''))),
-	];
+	const usernameSet = new Set<string>();
+	for (const username of fromUsernames || []) {
+		const normalizedUsername = username.replace(/^@/, '');
+		if (normalizedUsername) {
+			usernameSet.add(normalizedUsername);
+		}
+	}
+	if (fromUsername) {
+		const normalizedUsername = fromUsername.replace(/^@/, '');
+		if (normalizedUsername) {
+			usernameSet.add(normalizedUsername);
+		}
+	}
+	const usernames = [...usernameSet];
 	if (usernames.length === 1) {
 		filters.username = { $eq: usernames[0] };
 	} else if (usernames.length > 1) {
