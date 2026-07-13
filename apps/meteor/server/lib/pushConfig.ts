@@ -46,7 +46,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!(await hasPermissionAsync(user._id, 'test-push-notifications'))) {
+		if (!(await hasPermissionAsync(user, 'test-push-notifications'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'push_test',
 			});

@@ -467,7 +467,7 @@ API.v1.get(
 		const sortBy = sort ? Object.keys(sort)[0] : undefined;
 		const sortDirection = sort && Object.values(sort)[0] === 1 ? 'asc' : 'desc';
 
-		const user = await Users.findOneById(this.userId, { projection: { __rooms: 1 } });
+		const user = await Users.findOneById(this.userId, { projection: { __rooms: 1, roles: 1 } });
 		const result = await browseChannelsMethod(
 			{
 				...filter,

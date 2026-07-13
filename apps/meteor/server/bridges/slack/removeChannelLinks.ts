@@ -21,7 +21,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!(await hasPermissionAsync(user._id, 'remove-slackbridge-links'))) {
+		if (!(await hasPermissionAsync(user, 'remove-slackbridge-links'))) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'removeSlackBridgeChannelLinks',
 			});
