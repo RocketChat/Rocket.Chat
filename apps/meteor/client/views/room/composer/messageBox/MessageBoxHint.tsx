@@ -5,7 +5,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { useRoom } from '../../contexts/RoomContext';
 import { useE2EERoomState } from '../../hooks/useE2EERoomState';
 
-type MessageBoxHintProps = {
+export type MessageBoxHintProps = {
 	isEditing?: boolean;
 	e2eEnabled?: boolean;
 	unencryptedMessagesAllowed?: boolean;

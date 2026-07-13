@@ -5,8 +5,8 @@ import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
 
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
+import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import { getURL } from '../../../utils/server/getURL';
 

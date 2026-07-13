@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import type { EditableSetting } from '../../EditableSettingsContext';
 import { useEditableSettingsDispatch, useEditableSettings } from '../../EditableSettingsContext';
 
-type SettingsGroupPageProps = {
+export type SettingsGroupPageProps = {
 	children: ReactNode;
 	headerButtons?: ReactNode;
 	onClickBack?: () => void;

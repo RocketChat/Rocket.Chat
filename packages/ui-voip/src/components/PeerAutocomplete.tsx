@@ -13,7 +13,7 @@ export type PeerAutocompleteOptions = {
 	avatarUrl?: string;
 };
 
-type PeerAutocompleteProps = {
+export type PeerAutocompleteProps = {
 	options: PeerAutocompleteOptions[];
 	onChangeValue: (value: string | string[]) => void;
 	onChangeFilter: (filter: string) => void;

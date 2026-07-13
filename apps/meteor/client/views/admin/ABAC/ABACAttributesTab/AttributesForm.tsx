@@ -25,7 +25,7 @@ export type AttributesFormFormData = {
 	lockedAttributes: { value: string }[];
 };
 
-type AttributesFormProps = {
+export type AttributesFormProps = {
 	onSave: (data: AttributesFormFormData) => void;
 	onCancel: () => void;
 	description: string;

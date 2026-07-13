@@ -11,7 +11,7 @@ import PermissionsTableFilter from './PermissionsTableFilter';
 import RoleHeader from './RoleHeader';
 import GenericNoResults from '../../../../components/GenericNoResults';
 
-type PermissionsTableProps = {
+export type PermissionsTableProps = {
 	roleList: IRole[];
 	permissions: IPermission[];
 	setFilter: (filter: string) => void;

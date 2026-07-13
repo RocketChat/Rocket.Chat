@@ -22,6 +22,7 @@ import {
 	ReadReceipts,
 	ReadReceiptsArchive,
 } from '@rocket.chat/models';
+import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { normalizeTransferredByData } from './Helper';
@@ -33,8 +34,8 @@ import { checkDefaultAgentOnNewRoom } from './hooks';
 import { livechatLogger } from './logger';
 import { saveTransferHistory } from './transfer';
 import { trim } from '../../../../lib/utils/stringUtils';
+import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 import { callbacks } from '../../../../server/lib/callbacks';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import {
 	notifyOnLivechatInquiryChangedByRoom,
 	notifyOnSubscriptionChangedByRoomId,

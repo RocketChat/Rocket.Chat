@@ -4,8 +4,8 @@ import { LivechatRooms, Subscriptions } from '@rocket.chat/models';
 import { isLivechatRoomOnHoldProps, isLivechatRoomResumeOnHoldProps, isPOSTLivechatRoomPriorityParams } from '@rocket.chat/rest-typings';
 
 import { removePriorityFromRoom, updateRoomPriority } from './lib/priorities';
-import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
 import { API } from '../../../../../server/api';
+import { hasPermissionAsync } from '../../../../../server/lib/authorization/hasPermission';
 import { i18n } from '../../../../../server/lib/i18n';
 
 API.v1.addRoute(

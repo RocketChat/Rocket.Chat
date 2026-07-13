@@ -1,0 +1,197 @@
+import type { INewIncomingIntegration, IIncomingIntegration } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { Integrations, Subscriptions, Users, Rooms } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
+import { removeEmpty } from '@rocket.chat/tools';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
+
+import { compileIntegrationScript } from '../../../../app/integrations/server/lib/compileIntegrationScript';
+import { validateScriptEngine, isScriptEngineFrozen } from '../../../../app/integrations/server/lib/validateScriptEngine';
+import { methodDeprecationLogger } from '../../../../app/lib/server/lib/deprecationWarningLogger';
+import { notifyOnIntegrationChanged } from '../../../../app/lib/server/lib/notifyListener';
+import { hasPermissionAsync, hasAllPermissionAsync } from '../../../lib/authorization/hasPermission';
+
+const validChannelChars = ['@', '#'];
+
+declare module '@rocket.chat/ddp-client' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		addIncomingIntegration(integration: INewIncomingIntegration): Promise<IIncomingIntegration>;
+	}
+}
+
+export const addIncomingIntegration = async (userId: string, integration: INewIncomingIntegration): Promise<IIncomingIntegration> => {
+	check(
+		integration,
+		Match.ObjectIncluding({
+			type: String,
+			name: String,
+			enabled: Boolean,
+			username: String,
+			channel: String,
+			alias: Match.Maybe(String),
+			emoji: Match.Maybe(String),
+			scriptEnabled: Boolean,
+			scriptEngine: Match.Maybe(String),
+			overrideDestinationChannelEnabled: Match.Maybe(Boolean),
+			script: Match.Maybe(String),
+			avatar: Match.Maybe(String),
+		}),
+	);
+
+	if (
+		!userId ||
+		(!(await hasPermissionAsync(userId, 'manage-incoming-integrations')) &&
+			!(await hasPermissionAsync(userId, 'manage-own-incoming-integrations')))
+	) {
+		throw new Meteor.Error('not_authorized', 'Unauthorized', {
+			method: 'addIncomingIntegration',
+		});
+	}
+
+	if (!integration.channel || typeof integration.channel.valueOf() !== 'string') {
+		throw new Meteor.Error('error-invalid-channel', 'Invalid channel', {
+			method: 'addIncomingIntegration',
+		});
+	}
+
+	if (integration.channel.trim() === '') {
+		throw new Meteor.Error('error-invalid-channel', 'Invalid channel', {
+			method: 'addIncomingIntegration',
+		});
+	}
+
+	const channels = integration.channel.split(',').map((channel) => channel.trim());
+
+	for (const channel of channels) {
+		if (!validChannelChars.includes(channel[0])) {
+			throw new Meteor.Error('error-invalid-channel-start-with-chars', 'Invalid channel. Start with @ or #', {
+				method: 'updateIncomingIntegration',
+			});
+		}
+	}
+
+	if (!integration.username || typeof integration.username.valueOf() !== 'string' || integration.username.trim() === '') {
+		throw new Meteor.Error('error-invalid-username', 'Invalid username', {
+			method: 'addIncomingIntegration',
+		});
+	}
+
+	if (integration.script?.trim()) {
+		validateScriptEngine(integration.scriptEngine ?? 'isolated-vm');
+	}
+
+	const user = await Users.findOneByUsername(integration.username, { projection: { _id: 1 } });
+
+	if (!user) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			method: 'addIncomingIntegration',
+		});
+	}
+
+	if (!(await hasPermissionAsync(user._id, 'message-impersonate'))) {
+		throw new Meteor.Error(
+			'error-user-lacks-message-impersonate-permission',
+			"User selected for the incoming integration lacks the 'message-impersonate' permission.",
+			{
+				method: 'addIncomingIntegration',
+			},
+		);
+	}
+
+	// Default to transpiling with Babel for backwards compatibility; integrations
+	// can opt-out per-record by setting `skipTranspile: true` (removed in 9.0.0).
+	const skipTranspile = integration.skipTranspile === true;
+
+	const integrationData: IIncomingIntegration = {
+		...integration,
+		scriptEngine: integration.scriptEngine ?? 'isolated-vm',
+		skipTranspile,
+		type: 'webhook-incoming',
+		channel: channels,
+		overrideDestinationChannelEnabled: integration.overrideDestinationChannelEnabled ?? false,
+		token: Random.id(48),
+		userId: user._id,
+		_createdAt: new Date(),
+		_createdBy: await Users.findOne({ _id: userId }, { projection: { username: 1 } }),
+	};
+
+	if (
+		!isScriptEngineFrozen(integrationData.scriptEngine) &&
+		integration.scriptEnabled === true &&
+		integration.script &&
+		integration.script.trim() !== ''
+	) {
+		const { script, error } = compileIntegrationScript(integration.script, { transpile: !skipTranspile });
+		if (error) {
+			integrationData.scriptCompiled = undefined;
+			integrationData.scriptError = error;
+		} else {
+			integrationData.scriptCompiled = script;
+			delete integrationData.scriptError;
+		}
+	}
+
+	for (let channel of channels) {
+		let record;
+		const channelType = channel[0];
+		channel = channel.substr(1);
+
+		switch (channelType) {
+			case '#':
+				record = await Rooms.findOne({
+					$or: [{ _id: channel }, { name: channel }],
+				});
+				break;
+			case '@':
+				record = await Users.findOne({
+					$or: [{ _id: channel }, { username: channel }],
+				});
+				break;
+		}
+
+		if (!record) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+				method: 'addIncomingIntegration',
+			});
+		}
+
+		if (
+			!(await hasAllPermissionAsync(userId, ['manage-incoming-integrations', 'manage-own-incoming-integrations'])) &&
+			!(await Subscriptions.findOneByRoomIdAndUserId(record._id, userId, { projection: { _id: 1 } }))
+		) {
+			throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', {
+				method: 'addIncomingIntegration',
+			});
+		}
+	}
+
+	const strippedIntegrationData = removeEmpty(integrationData);
+
+	const { insertedId } = await Integrations.insertOne(strippedIntegrationData);
+
+	const integrationStored = await Integrations.findOne({ _id: insertedId });
+
+	if (!integrationStored) {
+		throw new Error('Error inserting integration');
+	}
+	void notifyOnIntegrationChanged({ ...integrationStored, _id: insertedId }, 'inserted');
+
+	return integrationStored as IIncomingIntegration;
+};
+
+Meteor.methods<ServerMethods>({
+	async addIncomingIntegration(integration: INewIncomingIntegration): Promise<IIncomingIntegration> {
+		methodDeprecationLogger.method('addIncomingIntegration', '9.0.0', '/v1/integrations.create');
+		const { userId } = this;
+
+		if (!userId) {
+			throw new Meteor.Error('invalid-user', 'Invalid User', {
+				method: 'addIncomingIntegration',
+			});
+		}
+
+		return addIncomingIntegration(userId, integration);
+	},
+});

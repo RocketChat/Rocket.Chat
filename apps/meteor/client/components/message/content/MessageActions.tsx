@@ -16,7 +16,7 @@ type MessageActionOptions = {
 	actionLinksAlignment?: string;
 };
 
-type MessageActionsProps = {
+export type MessageActionsProps = {
 	message: IMessage;
 	actions: MessageActionOptions[];
 };

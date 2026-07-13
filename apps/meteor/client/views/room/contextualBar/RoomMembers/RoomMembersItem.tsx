@@ -23,7 +23,7 @@ import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
 import { useUserStatusTooltip } from '../../../../hooks/useUserStatusTooltip';
 import type { RoomMember } from '../../../hooks/useMembersList';
 
-type RoomMembersItemProps = Pick<RoomMember, 'federated' | 'username' | 'name' | '_id' | 'freeSwitchExtension' | 'subscription'> & {
+export type RoomMembersItemProps = Pick<RoomMember, 'federated' | 'username' | 'name' | '_id' | 'freeSwitchExtension' | 'subscription'> & {
 	rid: IRoom['_id'];
 	useRealName: boolean;
 	reload: () => void;

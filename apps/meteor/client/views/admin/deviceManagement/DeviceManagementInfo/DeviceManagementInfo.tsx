@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { useDeviceLogout } from '../../../../hooks/useDeviceLogout';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 
-type DeviceManagementInfoProps = DeviceManagementPopulatedSession;
+export type DeviceManagementInfoProps = DeviceManagementPopulatedSession;
 
 const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user }: DeviceManagementInfoProps) => {
 	const { t } = useTranslation();

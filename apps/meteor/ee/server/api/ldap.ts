@@ -1,8 +1,8 @@
 import { LDAPEnterprise } from '@rocket.chat/core-services';
 
-import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
 import { settings } from '../../../app/settings/server';
 import { API } from '../../../server/api/api';
+import { hasPermissionAsync } from '../../../server/lib/authorization/hasPermission';
 
 API.v1.addRoute(
 	'ldap.syncNow',

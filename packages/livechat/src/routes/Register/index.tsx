@@ -1,5 +1,5 @@
+import type { JSX as JSXInternal } from 'preact';
 import { useContext, useEffect, useMemo, useRef } from 'preact/hooks';
-import type { JSXInternal } from 'preact/src/jsx';
 import { route } from 'preact-router';
 import type { FieldValues, SubmitHandler } from 'react-hook-form';
 import { Controller, useForm } from 'react-hook-form';
@@ -25,7 +25,7 @@ type FormPayloadCustomField = { [key: string]: string };
 
 export type RegisterFormValues = { name: string; email: string; department?: string; [key: string]: any };
 
-type RegisterProps = {
+export type RegisterProps = {
 	path: string;
 };
 

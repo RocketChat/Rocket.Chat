@@ -9,7 +9,7 @@ import { Meteor } from 'meteor/meteor';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
 import sharp from 'sharp';
 
-import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../../server/lib/authorization/hasPermission';
 import { RocketChatFile } from '../../file/server';
 import { notifyOnSettingChangedById } from '../../lib/server/lib/notifyListener';
 import { settings, settingsRegistry } from '../../settings/server';

@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 
 import Attachment from './Attachment';
 
-type AttachmentBlockProps = { pre?: ReactNode; color?: string | undefined; children?: ReactNode };
+export type AttachmentBlockProps = { pre?: ReactNode; color?: string | undefined; children?: ReactNode };
 
 const AttachmentBlock = ({ pre, color = 'annotation', children }: AttachmentBlockProps) => (
 	<Attachment>

@@ -14,7 +14,7 @@ const anon = {
 	avatarETag: undefined,
 } as const;
 
-type UserMenuButtonProps = ComponentPropsWithoutRef<typeof IconButton>;
+export type UserMenuButtonProps = ComponentPropsWithoutRef<typeof IconButton>;
 
 const UserMenuButton = forwardRef(function UserMenuButton(props: UserMenuButtonProps, ref: ForwardedRef<HTMLElement>) {
 	const user = useUser();

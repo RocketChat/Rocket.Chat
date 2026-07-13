@@ -18,7 +18,7 @@ import useRegisterView from '../../context/useRegisterView';
 import MediaCallCardList from '../MediaCallCardList';
 import PopoutDockPrompt from '../PopoutDockPrompt';
 
-type MediaCallRoomSectionProps = {
+export type MediaCallRoomSectionProps = {
 	showChat: boolean;
 	onToggleChat: () => void;
 	user: {

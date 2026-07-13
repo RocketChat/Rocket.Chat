@@ -1,14 +1,15 @@
-import type { OauthConfig } from '@rocket.chat/core-typings';
+import type { OAuthConfiguration } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
+import passport from 'passport';
 
 import { CustomOAuth } from '../../../app/custom-oauth/server/custom_oauth_server';
 import { settings } from '../../../app/settings/server';
+import { addPassportCustomOAuth } from '../../lib/oauth/addPassportCustomOAuth';
 
-const config: OauthConfig = {
+const NEXTCLOUD_PATHS = {
 	serverURL: '',
 	tokenPath: '/index.php/apps/oauth2/api/v1/token',
-	tokenSentVia: 'header',
+	tokenSentVia: 'header' as OAuthConfiguration['tokenSentVia'],
 	authorizePath: '/index.php/apps/oauth2/authorize',
 	identityPath: '/ocs/v2.php/cloud/user?format=json',
 	scope: 'openid',
@@ -18,20 +19,42 @@ const config: OauthConfig = {
 	},
 };
 
-const Nextcloud = new CustomOAuth('nextcloud', config);
+const Nextcloud = new CustomOAuth('nextcloud', NEXTCLOUD_PATHS);
 
-const fillServerURL = _.debounce((): void => {
-	const nextcloudURL = settings.get<string>('Accounts_OAuth_Nextcloud_URL');
-	if (!nextcloudURL) {
-		if (nextcloudURL === undefined) {
-			return fillServerURL();
-		}
+function configureNextcloudOAuth(): void {
+	passport.unuse('nextcloud');
+	const enabled = settings.get<boolean>('Accounts_OAuth_Nextcloud');
+	if (!enabled) {
 		return;
 	}
-	config.serverURL = nextcloudURL.trim().replace(/\/*$/, '');
-	return Nextcloud.configure(config);
-}, 1000);
+
+	const serverURL = settings.get<string>('Accounts_OAuth_Nextcloud_URL')?.trim().replace(/\/*$/, '');
+	const clientId = settings.get<string>('Accounts_OAuth_Nextcloud_id');
+	const clientSecret = settings.get<string>('Accounts_OAuth_Nextcloud_secret');
+
+	if (!serverURL || !clientId || !clientSecret) {
+		return;
+	}
+
+	const config = { ...NEXTCLOUD_PATHS, serverURL, clientId, clientSecret };
+
+	if (settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow')) {
+		addPassportCustomOAuth('nextcloud', config);
+		return;
+	}
+
+	Nextcloud.configure(config);
+}
 
 Meteor.startup(() => {
-	settings.watch('Accounts_OAuth_Nextcloud_URL', () => fillServerURL());
+	settings.watchMultiple(
+		[
+			'Accounts_OAuth_Nextcloud',
+			'Accounts_OAuth_Nextcloud_URL',
+			'Accounts_OAuth_Nextcloud_id',
+			'Accounts_OAuth_Nextcloud_secret',
+			'Accounts_OAuth_Use_Modern_Flow',
+		],
+		configureNextcloudOAuth,
+	);
 });

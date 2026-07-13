@@ -8,7 +8,9 @@ import type { idType } from '../../../Context/initialState';
 import SurfaceRender from '../../Preview/Display/Surface/SurfaceRender';
 import RenderPayload from '../../RenderPayload/RenderPayload';
 
-const UIKitWrapper = ({ id, data }: { id: string; data: idType }) => {
+export type UIKitWrapperProps = { id: string; data: idType };
+
+const UIKitWrapper = ({ id, data }: UIKitWrapperProps) => {
 	const {
 		state: { screens },
 	} = useContext(context);

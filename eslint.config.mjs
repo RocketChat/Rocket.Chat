@@ -7,7 +7,6 @@ export default [
 	...rocketChatConfig,
 	{
 		ignores: [
-			'apps/meteor/app/emoji-emojione/generateEmojiIndex.js',
 			'apps/meteor/**/public',
 			'apps/meteor/**/private/moment-locales',
 			'apps/meteor/**/imports',

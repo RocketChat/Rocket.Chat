@@ -11,7 +11,7 @@ import { ActionButton } from '.';
 import { useMediaCallView } from '../context/MediaCallViewContext';
 import { useDevicePermissionPrompt2, stopTracks } from '../hooks/useDevicePermissionPrompt';
 
-type DevicePickerButtonProps = {
+export type DevicePickerButtonProps = {
 	secondary?: boolean;
 	small?: boolean;
 } & Omit<ComponentProps<typeof ActionButton>, 'label' | 'icon'>;
@@ -35,8 +35,10 @@ const getDefaultDeviceItem = (label: string, type: 'input' | 'output') => ({
 	id: `default-${type}`,
 });
 
+export type DevicePickerProps = { secondary?: boolean; className?: string };
+
 // eslint-disable-next-line react/no-multi-comp
-const DevicePicker = ({ secondary = false, className }: { secondary?: boolean; className?: string }) => {
+const DevicePicker = ({ secondary = false, className }: DevicePickerProps) => {
 	const { t } = useTranslation();
 
 	const { onDeviceChange } = useMediaCallView();

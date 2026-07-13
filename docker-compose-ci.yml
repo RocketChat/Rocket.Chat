@@ -14,6 +14,7 @@ services:
     image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${DOCKER_TAG}${DOCKER_TAG_SUFFIX_ROCKETCHAT:-}
     environment:
       - 'TEST_MODE=${TEST_MODE:-true}'
+      - APPS_ENGINE_RUNTIME_BACKEND=${APPS_ENGINE_RUNTIME_BACKEND:-}
       - DEBUG=${DEBUG:-}
       - EXIT_UNHANDLEDPROMISEREJECTION=true
       - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0

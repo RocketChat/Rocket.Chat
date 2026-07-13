@@ -8,7 +8,9 @@ const iconMap: Record<string, IconName> = {
 	'mobile-app': 'mobile',
 };
 
-const DeviceIcon = ({ deviceType }: { deviceType: string }) => (
+export type DeviceIconProps = { deviceType: string };
+
+const DeviceIcon = ({ deviceType }: DeviceIconProps) => (
 	<Box
 		is='span'
 		display='inline-flex'

@@ -22,7 +22,9 @@ const labels = {
 	},
 };
 
-const SignInSignUp = ({ route }: { route: string }) => {
+export type SignInSignUpProps = { route: string };
+
+const SignInSignUp = ({ route }: SignInSignUpProps) => {
 	const navigate = useNavigate();
 	const clickHandler = () => {
 		navigate(route === routes.login ? routes.signup : routes.login);

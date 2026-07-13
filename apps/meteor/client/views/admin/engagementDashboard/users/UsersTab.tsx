@@ -8,7 +8,7 @@ import BusiestChatTimesSection from './BusiestChatTimesSection';
 import NewUsersSection from './NewUsersSection';
 import UsersByTimeOfTheDaySection from './UsersByTimeOfTheDaySection';
 
-type UsersTabProps = {
+export type UsersTabProps = {
 	timezone: 'utc' | 'local';
 };
 

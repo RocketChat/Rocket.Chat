@@ -5,7 +5,7 @@ import { memo, useState } from 'react';
 import { TabElement } from '../elements/TabElement';
 import type { BlockProps } from '../utils/BlockProps';
 
-type TabNavigationBlockProps = BlockProps<ExperimentalTabNavigationBlock>;
+export type TabNavigationBlockProps = BlockProps<ExperimentalTabNavigationBlock>;
 
 const TabNavigationBlock = (blockProps: TabNavigationBlockProps) => {
 	const {

@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 
 import { Surface } from './Surface';
 
-type MessageSurfaceProps = {
+export type MessageSurfaceProps = {
 	children?: ReactNode;
 };
 

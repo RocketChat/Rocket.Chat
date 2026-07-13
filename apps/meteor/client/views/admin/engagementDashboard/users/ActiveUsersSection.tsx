@@ -12,7 +12,7 @@ import { useFormatDate } from '../../../../hooks/useFormatDate';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 import LegendSymbol from '../dataView/LegendSymbol';
 
-type ActiveUsersSectionProps = {
+export type ActiveUsersSectionProps = {
 	timezone: 'utc' | 'local';
 };
 

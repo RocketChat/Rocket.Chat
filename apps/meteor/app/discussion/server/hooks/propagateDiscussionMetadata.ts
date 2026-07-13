@@ -2,7 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, VideoConference } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../server/lib/callbacks';
-import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
+import { deleteRoom } from '../../../../server/lib/rooms/deleteRoom';
 import { notifyOnMessageChange } from '../../../lib/server/lib/notifyListener';
 
 const updateAndNotifyParentRoomWithParentMessage = async (room: IRoom): Promise<void> => {

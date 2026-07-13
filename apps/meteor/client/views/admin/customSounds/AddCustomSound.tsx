@@ -11,7 +11,7 @@ import { CUSTOM_SOUND_ALLOWED_MIME_TYPES, MAX_CUSTOM_SOUND_SIZE_BYTES } from '..
 import { useEndpointUploadMutation } from '../../../hooks/useEndpointUploadMutation';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
-type AddCustomSoundProps = {
+export type AddCustomSoundProps = {
 	goToNew: (_id: string) => () => void;
 	close: () => void;
 	onChange: () => void;

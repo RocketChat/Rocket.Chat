@@ -3,7 +3,7 @@ import type { PasswordPolicyValidation } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { useTranslation, type UseTranslationResponse } from 'react-i18next';
 
-type PasswordVerifierItemProps = PasswordPolicyValidation & {
+export type PasswordVerifierItemProps = PasswordPolicyValidation & {
 	vertical: boolean;
 };
 

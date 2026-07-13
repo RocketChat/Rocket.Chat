@@ -10,7 +10,9 @@ import { outgoingEvents } from '../../../../../../app/integrations/lib/outgoingE
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import { useHighlightedCode } from '../../../../../hooks/useHighlightedCode';
 
-const HistoryItem = ({ data }: { data: Serialized<IIntegrationHistory> }) => {
+export type HistoryItemProps = { data: Serialized<IIntegrationHistory> };
+
+const HistoryItem = ({ data }: HistoryItemProps) => {
 	const { t } = useTranslation();
 
 	const replayOutgoingIntegration = useMethod('replayOutgoingIntegration');

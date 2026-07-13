@@ -11,7 +11,7 @@ type PreviewSizeType = {
 	inlineSize: number;
 };
 
-type SplitPlaneContainerProps = {
+export type SplitPlaneContainerProps = {
 	previewSize: Partial<PreviewSizeType>;
 };
 

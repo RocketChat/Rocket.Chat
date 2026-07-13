@@ -13,7 +13,7 @@ import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 import { useMessageListHighlights, useMessageListShowRealName } from './message/list/MessageListContext';
 import { useGoToRoom } from '../views/room/hooks/useGoToRoom';
 
-type GazzodownTextProps = {
+export type GazzodownTextProps = {
 	children: ReactNode;
 	mentions?: {
 		type?: 'user' | 'team';

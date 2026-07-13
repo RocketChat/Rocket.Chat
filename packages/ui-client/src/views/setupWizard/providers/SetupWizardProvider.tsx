@@ -37,7 +37,7 @@ const initialData: ContextType<typeof SetupWizardContext>['setupWizardData'] = {
 
 type HandleRegisterServer = (params: { email: string; resend?: boolean }) => Promise<void>;
 
-type SetupWizardProviderProps = {
+export type SetupWizardProviderProps = {
 	children: ReactNode;
 };
 

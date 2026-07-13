@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import useClipboardWithToast from '../../../../../hooks/useClipboardWithToast';
 
-type InviteLinkProps = {
+export type InviteLinkProps = {
 	linkText: string;
 	captionText: string;
 	onClickEdit: () => void;
@@ -24,7 +24,7 @@ const InviteLink = ({ linkText, captionText, onClickEdit }: InviteLinkProps) => 
 				<FieldRow>
 					{!linkText && <InputBoxSkeleton />}
 					{linkText && (
-						<UrlInput id={inviteLinkId} value={linkText} addon={<Icon onClick={(): Promise<void> => copy()} name='copy' size='x16' />} />
+						<UrlInput id={inviteLinkId} value={linkText} endAddon={<Icon onClick={(): Promise<void> => copy()} name='copy' size='x16' />} />
 					)}
 				</FieldRow>
 				{captionText && (

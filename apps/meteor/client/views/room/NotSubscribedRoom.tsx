@@ -5,7 +5,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import RoomLayout from './layout/RoomLayout';
 import { useJoinRoom } from '../../hooks/useJoinRoom';
 
-type NotSubscribedRoomProps = {
+export type NotSubscribedRoomProps = {
 	rid: IRoom['_id'];
 	reference: string;
 	type: IRoom['t'];

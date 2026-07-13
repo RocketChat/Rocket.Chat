@@ -1,2 +1,2 @@
 import './settings';
-import './methods';
+import '../../../server/meteor-methods/license';

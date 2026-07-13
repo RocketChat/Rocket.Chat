@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import type { AuditFields } from '../../hooks/useAuditForm';
 
-type DirectTabProps = {
+export type DirectTabProps = {
 	form: UseFormReturn<AuditFields>;
 };
 
