@@ -1,23 +1,45 @@
 import type { IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
-import { isPOSTLivechatPageVisitedParams } from '@rocket.chat/rest-typings';
+import { ajv, isPOSTLivechatPageVisitedParams, validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
 
 import { API } from '../..';
 import { savePageHistory } from '../../../lib/omnichannel/tracking';
 
-API.v1.addRoute(
-	'livechat/page.visited',
-	{ validateParams: isPOSTLivechatPageVisitedParams },
-	{
-		async post() {
-			const { token, rid, pageInfo } = this.bodyParams;
-
-			const message = await savePageHistory(token, rid, pageInfo);
-			if (!message) {
-				return API.v1.success();
-			}
-
-			const { msg, navigation } = message as IOmnichannelSystemMessage;
-			return API.v1.success({ page: { msg, navigation } });
+const pageVisitedResponseSchema = ajv.compile<{ page: Pick<IOmnichannelSystemMessage, 'msg' | 'navigation'> } | void>({
+	type: 'object',
+	properties: {
+		page: {
+			type: 'object',
+			properties: {
+				msg: { type: 'string' },
+				navigation: { type: 'object' },
+			},
+			required: ['msg', 'navigation'],
+			additionalProperties: false,
 		},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['success'],
+	additionalProperties: false,
+});
+
+API.v1.post(
+	'livechat/page.visited',
+	{
+		body: isPOSTLivechatPageVisitedParams,
+		response: {
+			200: pageVisitedResponseSchema,
+			400: validateBadRequestErrorResponse,
+		},
+	},
+	async function action() {
+		const { token, rid, pageInfo } = this.bodyParams;
+
+		const message = await savePageHistory(token, rid, pageInfo);
+		if (!message) {
+			return API.v1.success();
+		}
+
+		const { msg, navigation } = message as IOmnichannelSystemMessage;
+		return API.v1.success({ page: { msg, navigation } });
 	},
 );

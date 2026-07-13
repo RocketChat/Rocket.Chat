@@ -1,11 +1,13 @@
 import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import {
+	ajv,
 	isGETBusinessHourParams,
 	isPOSTLivechatBusinessHoursSaveParams,
 	isPOSTLivechatBusinessHoursRemoveParams,
 	POSTLivechatBusinessHoursRemoveSuccessResponse,
 	POSTLivechatBusinessHoursSaveSuccessResponse,
 	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 
@@ -14,17 +16,35 @@ import { businessHourManager } from '../../../lib/omnichannel/business-hour';
 import type { ExtractRoutesFromAPI } from '../../ApiClass';
 import { findLivechatBusinessHour } from './lib/businessHours';
 
-API.v1.addRoute(
+const businessHourResponseSchema = ajv.compile<{ businessHour?: ILivechatBusinessHour }>({
+	type: 'object',
+	properties: {
+		businessHour: { type: 'object' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['success'],
+	additionalProperties: false,
+});
+
+API.v1.get(
 	'livechat/business-hour',
-	{ authRequired: true, permissionsRequired: ['view-livechat-business-hours'], validateParams: isGETBusinessHourParams },
 	{
-		async get() {
-			const { _id, type } = this.queryParams;
-			const { businessHour } = await findLivechatBusinessHour(_id, type);
-			return API.v1.success({
-				businessHour,
-			});
+		authRequired: true,
+		permissionsRequired: ['view-livechat-business-hours'],
+		query: isGETBusinessHourParams,
+		response: {
+			200: businessHourResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		const { _id, type } = this.queryParams;
+		const { businessHour } = await findLivechatBusinessHour(_id, type);
+		return API.v1.success({
+			businessHour,
+		});
 	},
 );
 
