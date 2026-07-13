@@ -188,10 +188,21 @@ export class RestClient implements RestClientInterface {
 
 	async delete<TPathPattern extends MatchPathPattern<TPath>, TPath extends PathFor<'DELETE'>>(
 		endpoint: TPath,
-		_params?: ParamsFor<'DELETE', TPathPattern>,
-		options: Omit<RequestInit, 'method'> = {},
+		params?: ParamsFor<'DELETE', TPathPattern>,
+		{ headers, ...options }: Omit<RequestInit, 'method'> = {},
 	): Promise<Serialized<OperationResult<'DELETE', TPathPattern>>> {
-		const response = await this.send(endpoint, 'DELETE', options ?? {});
+		const isFormData = checkIfIsFormData(params);
+		const response = await this.send(endpoint, 'DELETE', {
+			...(params !== undefined && { body: isFormData ? buildFormData(params) : JSON.stringify(params) }),
+
+			headers: {
+				Accept: 'application/json',
+				...(!isFormData && { 'Content-Type': 'application/json' }),
+				...headers,
+			},
+
+			...options,
+		});
 		return response.json();
 	}
 
