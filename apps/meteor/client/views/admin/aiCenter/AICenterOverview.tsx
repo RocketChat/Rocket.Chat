@@ -6,16 +6,21 @@ import type { ReactElement, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AICenterCapabilityCard from './AICenterCapabilityCard';
+import PageSkeleton from '../../../components/PageSkeleton';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 const AICenterOverview = (): ReactElement => {
 	const { t } = useTranslation();
 	const router = useRouter();
-	const { data: hasAILicense } = useHasLicenseModule(AI_LICENSE_MODULE);
+	const { data: hasAILicense, isPending } = useHasLicenseModule(AI_LICENSE_MODULE);
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
 	const searchSettingsHref = router.buildRoutePath({ name: 'admin-ai-center', params: { section: 'search' } });
 	const llmSettingsHref = router.buildRoutePath({ name: 'admin-ai-center', params: { section: 'llm-providers' } });
 	const subscriptionHref = router.buildRoutePath({ name: 'subscription' });
+
+	if (isPending) {
+		return <PageSkeleton />;
+	}
 
 	let aiSearchStatus: ReactNode;
 	let llmProviderStatus: ReactNode;
