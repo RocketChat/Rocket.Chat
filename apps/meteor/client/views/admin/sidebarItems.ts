@@ -47,12 +47,6 @@ export const {
 		permissionGranted: (): boolean => hasPermission('view-user-administration'),
 	},
 	{
-		href: '/admin/accounts',
-		i18nLabel: 'Accounts',
-		icon: 'user',
-		permissionGranted: (): boolean => hasPermission('view-privileged-setting'),
-	},
-	{
 		href: '/admin/invites',
 		i18nLabel: 'Invites',
 		icon: 'user-plus',

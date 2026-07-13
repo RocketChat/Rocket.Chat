@@ -1,5 +1,5 @@
 import { isSetting, isSettingColor } from '@rocket.chat/core-typings';
-import { AccordionItem, Box, Button, FieldGroup } from '@rocket.chat/fuselage';
+import { Box, Button, FieldGroup } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useEditableSettings, useEditableSettingsDispatch } from '../../EditableSettingsContext';
 import Setting from '../Setting';
+import { getSectionAnchorId } from '../lib/sectionAnchor';
 
 export type SettingsSectionProps = {
 	groupId: string;
@@ -71,13 +72,25 @@ function SettingsSection({ groupId, hasReset = true, sectionName, currentTab, so
 	};
 
 	return (
-		<AccordionItem
+		<Box
+			is='section'
+			id={getSectionAnchorId(groupId, sectionName)}
 			data-qa-section={sectionName}
-			noncollapsible={solo || !sectionName}
-			title={sectionName && t(sectionName as TranslationKey)}
+			mbe={24}
+			p={24}
+			borderWidth={1}
+			borderStyle='solid'
+			borderColor='extra-light'
+			borderRadius={8}
+			backgroundColor='surface-tint'
 		>
+			{sectionName && !solo && (
+				<Box is='h3' fontScale='h4' mbe={help ? 4 : 16}>
+					{t(sectionName as TranslationKey)}
+				</Box>
+			)}
 			{help && (
-				<Box is='p' color='hint' fontScale='p2'>
+				<Box is='p' color='hint' fontScale='p2' mbe={16}>
 					{help}
 				</Box>
 			)}
@@ -93,7 +106,7 @@ function SettingsSection({ groupId, hasReset = true, sectionName, currentTab, so
 					{t('Reset_section_settings')}
 				</Button>
 			)}
-		</AccordionItem>
+		</Box>
 	);
 }
 
