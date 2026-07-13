@@ -750,7 +750,6 @@ export const createAccountSettings = () =>
 				'Open_Livechats',
 				'On_Hold_Chats',
 				'Unread',
-				'Drafts',
 				'Favorites',
 				'Teams',
 				'Discussions',
