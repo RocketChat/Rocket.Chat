@@ -45,7 +45,6 @@ import { getURL } from '../../../app/utils/server/getURL';
 import { generatePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/generateToken';
 import { regeneratePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/regenerateToken';
 import { removePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/removeToken';
-import { runUserLogoutCleanUp } from '../../hooks/userLogoutCleanUp';
 import { UserChangedAuditStore } from '../../lib/auditServerEvents/userChanged';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { i18n } from '../../lib/i18n';
@@ -1885,8 +1884,6 @@ API.v1
 				return API.v1.forbidden();
 			}
 
-			const user = await Users.findOneById(userId);
-
 			// this method logs the user out automatically, if successful returns 1, otherwise 0
 			if (!(await Users.unsetLoginTokens(userId))) {
 				throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
@@ -1895,10 +1892,6 @@ API.v1
 			await Sessions.logoutAllByUserId(userId, this.userId);
 
 			void notifyOnUserChange({ clientAction: 'updated', id: userId, diff: { 'services.resume.loginTokens': [] } });
-
-			if (user) {
-				await runUserLogoutCleanUp(user);
-			}
 
 			return API.v1.success({
 				message: `User ${userId} has been logged out!`,
