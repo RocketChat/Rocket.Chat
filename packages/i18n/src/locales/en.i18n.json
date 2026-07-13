@@ -5002,6 +5002,7 @@
   "Setting": "Setting",
   "Setting_change": "Setting change",
   "Settings": "Settings",
+  "Settings_in_group": "Settings in {{group}}",
   "Settings_updated": "Settings updated",
   "Setup_SMTP": "Set up SMTP",
   "Setup_Wizard": "Setup Wizard",
