@@ -1,16 +1,17 @@
-import http from 'node:http';
-import https from 'node:https';
-import type { Readable } from 'node:stream';
+import { Transform, type Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 
 import { api } from '@rocket.chat/core-services';
 import type { MessageAttachment, IUpload, IImporterShortSelection, IMessageWithPendingFileImport } from '@rocket.chat/core-typings';
 import { Messages, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+import { serverFetch } from '@rocket.chat/server-fetch';
 
 import { FileUpload } from '../../file-upload/server';
 import { parseFileIntoMessageAttachments } from '../../file-upload/server/methods/sendFileMessage';
 import { Importer, ProgressStep } from '../../importer/server';
 import type { ImporterProgress } from '../../importer/server/classes/ImporterProgress';
+import { settings } from '../../settings/server';
 
 const LEASE_MS = 2 * 60 * 1000;
 
@@ -123,30 +124,32 @@ export class PendingFileImporter extends Importer {
 		return this.getProgress();
 	}
 
-	private downloadFile(url: string, details: { type?: string }): Promise<Readable> {
-		return new Promise((resolve, reject) => {
-			const requestModule = /https/i.test(url) ? https : http;
+	private async downloadFile(url: string, details: { type?: string }): Promise<Readable> {
+		const response = await serverFetch(url, { ignoreSsrfValidation: false, allowList: settings.get<string>('SSRF_Allowlist') });
 
-			const request = requestModule.get(url, (res) => {
-				if (!res.statusCode || res.statusCode < 200 || res.statusCode >= 300) {
-					// Error responses (e.g. a redirect to a login page) would otherwise be saved as the file's content.
-					res.on('error', () => undefined); // already rejected; just avoid crashing while draining
-					res.resume(); // discard the body and free the socket
-					reject(new Error(`Unexpected response status ${res.statusCode}`));
-					return;
-				}
+		if (!response.ok) {
+			response.body.resume();
+			throw new Error(`Unexpected response status ${response.status}`);
+		}
 
-				if (!details.type) {
-					details.type = res.headers['content-type'] || 'application/octet-stream';
-				}
+		if (!details.type) {
+			details.type = response.headers.get('content-type') || 'application/octet-stream';
+		}
 
-				resolve(res);
-			});
-
-			request.on('error', reject);
-
-			request.setTimeout(60 * 1000, () => request.destroy(new Error('Download stalled')));
+		// serverFetch only times out connecting; fail the download if the body goes idle for 60s.
+		// Per-chunk reset (not a total cap) so large files aren't cut off mid-download.
+		let idle: ReturnType<typeof setTimeout>;
+		const meter = new Transform({
+			transform(chunk, _encoding, callback) {
+				idle.refresh();
+				callback(null, chunk);
+			},
 		});
+		idle = setTimeout(() => meter.destroy(new Error('Download stalled')), 60 * 1000);
+		meter.on('close', () => clearTimeout(idle));
+
+		void pipeline(response.body, meter).catch(() => undefined);
+		return meter;
 	}
 
 	getMessageAttachment(file: IUpload, url: string): MessageAttachment {
