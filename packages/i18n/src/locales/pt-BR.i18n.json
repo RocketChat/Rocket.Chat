@@ -4418,7 +4418,6 @@
   "Regexp_validation": "Validação por expressão regular",
   "Register": "Registrar-se",
   "RegisterWorkspace_Button": "Registrar workspace",
-  "RegisterWorkspace_Connection_Error": "Ocorreu um erro ao conectar",
   "RegisterWorkspace_Disconnect_Error": "Ocorreu um erro ao desconectar",
   "RegisterWorkspace_Disconnect_Subtitle": "A desconexão de seu espaço de trabalho resultará na perda do seguinte",
   "RegisterWorkspace_Features_Marketplace_Description": "Instale os aplicativos do Rocket.Chat Marketplace nesse worspace.",
