@@ -45,6 +45,26 @@ export interface Connection
 	reconnect(): Promise<boolean>;
 
 	close(): void;
+
+	/**
+	 * Active liveness check: sends a DDP `ping` and resolves `true` if a `pong`
+	 * arrives within `timeoutMs`. Detects zombie sockets that stay `connected`
+	 * while their transport is actually dead (e.g. mobile NAT timeouts that
+	 * never fire `onclose`).
+	 */
+	probe(timeoutMs?: number): Promise<boolean>;
+
+	/**
+	 * Tear down the current socket and reconnect from scratch. Concurrent
+	 * callers share one in-flight promise so parallel calls don't race.
+	 */
+	forceReopen(): Promise<boolean>;
+
+	/**
+	 * Ensure the socket is usable: if not `connected`, force-reopens; if
+	 * `connected`, probes for zombie sockets and force-reopens on a dead probe.
+	 */
+	checkAndReopen(probeTimeoutMs?: number): Promise<boolean>;
 }
 
 interface WebSocketConstructor {
@@ -77,6 +97,8 @@ export class ConnectionImpl
 	private connectPromise?: Promise<boolean>;
 
 	public queue = new Set<string>();
+
+	private reopenInFlight: Promise<boolean> | null = null;
 
 	constructor(
 		url: string,
@@ -270,8 +292,72 @@ export class ConnectionImpl
 
 	close() {
 		this.status = 'closed';
-		this.ws?.close();
+		if (this.ws) {
+			// Sever all handlers before closing so the dying socket cannot deliver
+			// late messages or fire `onclose` on the live connection (e.g. a replaced
+			// socket whose transport is still limping along).
+			try {
+				this.ws.onopen = null;
+				this.ws.onmessage = null;
+				this.ws.onerror = null;
+				this.ws.onclose = null;
+			} catch {
+				// some WebSocket implementations throw on null assignment — safe to ignore
+			}
+			this.ws.close();
+		}
 		this.emitStatus();
+	}
+
+	probe(timeoutMs = 2000): Promise<boolean> {
+		return new Promise<boolean>((resolve) => {
+			let settled = false;
+			let off: () => void = () => {};
+			let timer: ReturnType<typeof setTimeout>;
+
+			const finish = (alive: boolean) => {
+				if (settled) {
+					return;
+				}
+				settled = true;
+				clearTimeout(timer);
+				off();
+				resolve(alive);
+			};
+
+			timer = setTimeout(() => finish(false), timeoutMs);
+			off = this.client.onMessage((payload) => {
+				if (payload.msg === 'pong') {
+					finish(true);
+				}
+			});
+			this.client.ping();
+		});
+	}
+
+	forceReopen(): Promise<boolean> {
+		if (this.reopenInFlight) {
+			return this.reopenInFlight;
+		}
+		this.close();
+		const promise = this.reconnect()
+			.then((connected) => Boolean(connected))
+			.catch(() => false);
+		this.reopenInFlight = promise;
+		void promise.finally(() => {
+			if (this.reopenInFlight === promise) {
+				this.reopenInFlight = null;
+			}
+		});
+		return promise;
+	}
+
+	async checkAndReopen(probeTimeoutMs = 2000): Promise<boolean> {
+		if (this.status !== 'connected') {
+			return this.forceReopen();
+		}
+		const alive = await this.probe(probeTimeoutMs);
+		return alive || this.forceReopen();
 	}
 
 	static create(

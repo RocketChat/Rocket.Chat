@@ -40,6 +40,14 @@ export class DDPSDK implements SDK {
 		return this.client.callAsync(method, ...params);
 	}
 
+	/**
+	 * Probe the connection for liveness and force-reopen if the socket is dead
+	 * or zombie. See `Connection.checkAndReopen`.
+	 */
+	checkAndReopen(probeTimeoutMs?: number) {
+		return this.connection.checkAndReopen(probeTimeoutMs);
+	}
+
 	stream(name: string, data: unknown, cb: (...data: PublicationPayloads['fields']['args']) => void) {
 		const [key, args] = Array.isArray(data) ? data : [data];
 		const subscription = this.client.subscribe(`stream-${name}`, key, { useCollection: false, args: [args] });
