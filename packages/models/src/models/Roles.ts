@@ -110,16 +110,6 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 		return this.find(query, options || {}) as P extends Pick<IRole, '_id'> ? FindCursor<P> : FindCursor<IRole>;
 	}
 
-	findAllExceptIds<P>(ids: IRole['_id'][], options?: FindOptions<IRole>): P extends Pick<IRole, '_id'> ? FindCursor<P> : FindCursor<IRole> {
-		const query: Filter<IRole> = {
-			_id: {
-				$nin: ids,
-			},
-		};
-
-		return this.find(query, options || {}) as P extends Pick<IRole, '_id'> ? FindCursor<P> : FindCursor<IRole>;
-	}
-
 	findByScope(scope: IRole['scope'], options?: FindOptions<IRole>): FindCursor<IRole> {
 		const query = {
 			scope,

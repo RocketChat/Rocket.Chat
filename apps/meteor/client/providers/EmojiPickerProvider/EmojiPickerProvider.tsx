@@ -80,6 +80,8 @@ const EmojiPickerProvider = ({ children }: EmojiPickerProviderProps) => {
 		return setEmojiPicker(<EmojiPicker reference={ref} onClose={() => setEmojiPicker(null)} onPickEmoji={(emoji) => callback(emoji)} />);
 	}, []);
 
+	const close = useCallback(() => setEmojiPicker(null), []);
+
 	const handlePreview = useCallback(
 		(emoji: string, name: string) =>
 			setEmojiToPreview((preview) => {
@@ -96,7 +98,7 @@ const EmojiPickerProvider = ({ children }: EmojiPickerProviderProps) => {
 	const contextValue = useMemo(
 		(): ContextType<typeof EmojiPickerContext> => ({
 			isOpen: emojiPicker !== null,
-			close: () => setEmojiPicker(null),
+			close,
 			open,
 			emojiToPreview,
 			handlePreview,
@@ -117,6 +119,7 @@ const EmojiPickerProvider = ({ children }: EmojiPickerProviderProps) => {
 		[
 			emojiPicker,
 			open,
+			close,
 			emojiToPreview,
 			addRecentEmoji,
 			emojiListByCategory,

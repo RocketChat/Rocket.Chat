@@ -4,12 +4,7 @@ import type { FindOptions, Document, UpdateResult, DeleteResult, FindCursor, Del
 import type { IBaseModel } from './IBaseModel';
 
 export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord> {
-	findOneQueuedByRoomId(rid: string): Promise<(ILivechatInquiryRecord & { status: LivechatInquiryStatus.QUEUED }) | null>;
 	findOneByRoomId<T extends Document = ILivechatInquiryRecord>(
-		rid: string,
-		options?: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
-	): Promise<T | null>;
-	findOneReadyByRoomId<T extends Document = ILivechatInquiryRecord>(
 		rid: string,
 		options?: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
 	): Promise<T | null>;
@@ -32,7 +27,6 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	removeByRoomId(rid: string, options?: DeleteOptions): Promise<DeleteResult>;
 	getQueuedInquiries(options?: FindOptions<ILivechatInquiryRecord>): FindCursor<ILivechatInquiryRecord>;
 	takeInquiry(inquiryId: string, lockedAt?: Date): Promise<UpdateResult>;
-	openInquiry(inquiryId: string): Promise<UpdateResult>;
 	queueInquiry(inquiryId: string, lastMessage?: IMessage, defaultAgent?: SelectedAgent | null): Promise<ILivechatInquiryRecord | null>;
 	queueInquiryAndRemoveDefaultAgent(inquiryId: string): Promise<UpdateResult>;
 	readyInquiry(inquiryId: string): Promise<UpdateResult>;
@@ -43,9 +37,7 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	setNameByRoomId(rid: string, name: string): Promise<UpdateResult>;
 	findOneByToken(token: string): Promise<ILivechatInquiryRecord | null>;
 	removeDefaultAgentById(inquiryId: string): Promise<UpdateResult | Document>;
-	removeByVisitorToken(token: string): Promise<void>;
 	markInquiryActiveForPeriod(rid: ILivechatInquiryRecord['rid'], period: string): Promise<ILivechatInquiryRecord | null>;
-	findIdsByVisitorToken(token: ILivechatInquiryRecord['v']['token']): FindCursor<ILivechatInquiryRecord>;
 	setStatusById(inquiryId: string, status: LivechatInquiryStatus): Promise<ILivechatInquiryRecord>;
 	updateNameByVisitorIds(visitorIds: string[], name: string): Promise<UpdateResult | Document>;
 	findByVisitorIds(visitorIds: string[], options?: FindOptions<ILivechatInquiryRecord>): FindCursor<ILivechatInquiryRecord>;

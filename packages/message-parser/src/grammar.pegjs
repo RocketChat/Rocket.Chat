@@ -163,8 +163,9 @@ CodeLine
   / "\n" chunk:CodeChunk { return codeLine(chunk); }
   / "\n" !"```" { return codeLine(plain('')); }
 
-// Charclass avoids per-char lookahead; never consume start of "```"
-CodeChunkChar = [^\r\n`] / "`" [^`\r\n] / "`" "`" [^`\r\n]
+// Charclass avoids per-char lookahead; never consume start of "```".
+// Trailing 1-2 backticks before a line end (or EOF) are content, not a fence.
+CodeChunkChar = [^\r\n`] / "`" [^`\r\n] / "`" "`" [^`\r\n] / "`" "`" &("\r" / "\n" / !.) / "`" &("\r" / "\n" / !.)
 CodeChunk = text:$(CodeChunkChar)+ { return plain(text); }
 
 /**
