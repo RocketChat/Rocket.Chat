@@ -38,8 +38,6 @@ import type { Filter } from 'mongodb';
 
 import { getUserForCheck, emailCheck } from '../../../app/2fa/server/code';
 import { resetTOTP } from '../../../app/2fa/server/functions/resetTOTP';
-import { runUserLogoutCleanUp } from '../../hooks/userLogoutCleanUp';
-import { runAfterVerifyEmail } from '../../lib/users/runAfterVerifyEmail';
 import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../app/settings/server';
 import { isSMTPConfigured } from '../../../app/utils/server/functions/isSMTPConfigured';
@@ -60,6 +58,7 @@ import { deleteUser } from '../../lib/users/deleteUser';
 import { getAvatarSuggestionForUser } from '../../lib/users/getAvatarSuggestionForUser';
 import { getFullUserDataByUniqueSearchTerm, defaultFields, fullFields } from '../../lib/users/getFullUserData';
 import { generateUsernameSuggestion } from '../../lib/users/getUsernameSuggestion';
+import { runAfterVerifyEmail } from '../../lib/users/runAfterVerifyEmail';
 import { saveCustomFields } from '../../lib/users/saveCustomFields';
 import { saveCustomFieldsWithoutValidation } from '../../lib/users/saveCustomFieldsWithoutValidation';
 import { saveUser } from '../../lib/users/saveUser';

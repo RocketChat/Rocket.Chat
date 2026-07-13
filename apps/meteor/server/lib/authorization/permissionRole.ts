@@ -3,8 +3,8 @@ import { Permissions, Roles } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from './hasPermission';
-import { notifyOnPermissionChangedById } from '../../../lib/server/lib/notifyListener';
-import { CONSTANTS, AuthorizationUtils } from '../../lib';
+import { CONSTANTS, AuthorizationUtils } from '../../../app/authorization/lib';
+import { notifyOnPermissionChangedById } from '../../../app/lib/server/lib/notifyListener';
 
 export const addPermissionToRoleMethod = async (uid: string, permissionId: string, role: string): Promise<void> => {
 	if (role === 'guest' && !AuthorizationUtils.hasRestrictionsToRole(role) && (await License.hasValidLicense())) {

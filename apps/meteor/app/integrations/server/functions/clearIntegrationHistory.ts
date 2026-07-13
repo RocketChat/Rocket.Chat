@@ -2,7 +2,7 @@ import type { IOutgoingIntegration, IIntegration } from '@rocket.chat/core-typin
 import { Integrations, IntegrationHistory } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 import notifications from '../../../notifications/server/lib/Notifications';
 import { triggerHandler } from '../lib/triggerHandler';
 
