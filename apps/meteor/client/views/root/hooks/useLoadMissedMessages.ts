@@ -1,8 +1,10 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useConnectionStatus } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 
 import { LegacyRoomManager, upsertMessage } from '../../../../app/ui-utils/client';
+import { roomsQueryKeys } from '../../../lib/queryKeys';
 import { callWithErrorHandling } from '../../../lib/utils/callWithErrorHandling';
 import { Messages, Subscriptions } from '../../../stores';
 
@@ -41,6 +43,7 @@ const loadMissedMessages = async (rid: IRoom['_id']): Promise<void> => {
 export const useLoadMissedMessages = (): void => {
 	const { connected } = useConnectionStatus();
 	const connectionWasOnlineRef = useRef(connected);
+	const queryClient = useQueryClient();
 
 	useEffect(() => {
 		if (connected === true && connectionWasOnlineRef.current === false && LegacyRoomManager.openedRooms) {
@@ -48,10 +51,11 @@ export const useLoadMissedMessages = (): void => {
 				const value = LegacyRoomManager.openedRooms[key];
 				if (value.rid) {
 					loadMissedMessages(value.rid);
+					queryClient.invalidateQueries({ queryKey: roomsQueryKeys.room(value.rid) });
 				}
 			});
 		}
 
 		connectionWasOnlineRef.current = connected;
-	}, [connected]);
+	}, [connected, queryClient]);
 };
