@@ -15,13 +15,13 @@ const BackgroundJobHistoryCard = ({ entry, formatDateAndTime }: BackgroundJobHis
 	const isRunning = !entry.finishedAt;
 
 	let status: 'running' | 'failed' | 'completed' = 'completed';
-	let statusText = t('Completed');
+	let statusText = t('Background_Job_Status_completed');
 	if (isRunning) {
 		status = 'running';
-		statusText = t('Running');
+		statusText = t('Background_Job_Status_running');
 	} else if (hasError) {
 		status = 'failed';
-		statusText = t('Failed');
+		statusText = t('Background_Job_Status_failed');
 	}
 
 	const duration = formatDuration(entry.startedAt, entry.finishedAt);

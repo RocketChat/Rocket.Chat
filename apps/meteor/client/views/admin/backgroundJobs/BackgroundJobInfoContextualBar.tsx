@@ -1,5 +1,6 @@
 import { Box, Button, ButtonGroup, Callout, Tag } from '@rocket.chat/fuselage';
 import { ContextualbarFooter, ContextualbarScrollableContent } from '@rocket.chat/ui-client';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -112,8 +113,8 @@ const BackgroundJobInfoContextualBar = ({ jobName, tab, onClose }: BackgroundJob
 				</Box>
 
 				<Box mbe={16} display='flex'>
-					<Tag variant={statusVariant(currentJob?.status)} textTransform='capitalize'>
-						{currentJob?.status ? t(currentJob.status) : t('Unknown')}
+					<Tag variant={statusVariant(currentJob?.status)}>
+						{currentJob?.status ? t(`Background_Job_Status_${currentJob.status}` as TranslationKey) : t('Unknown')}
 					</Tag>
 				</Box>
 

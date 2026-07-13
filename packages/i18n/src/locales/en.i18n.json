@@ -7479,6 +7479,7 @@
   "Your_invite_link_will_never_expire": "Your invite link will never expire.",
   "your_message": "your message",
   "your_message_optional": "your message (optional)",
+<<<<<<< HEAD
   "Your_new_email_is_email": "Your new email address is <strong>[email]</strong>.",
   "Your_password_is_wrong": "Your password is wrong!",
   "Your_password_was_changed_by_an_admin": "Your password was changed by an admin.",
@@ -7495,5 +7496,21 @@
   "Zapier_integration_has_been_deprecated": "The Zapier integration has been deprecated, may not work as expected and will not receive updates",
   "Zapier_integration_is_not_available": "The Zapier integration has been deprecated and is no longer available for new Rocket.Chat workspaces",
   "Zoom_in": "Zoom in",
-  "Zoom_out": "Zoom out"
+  "Zoom_out": "Zoom out",
+  "Background_Jobs": "Background Jobs",
+  "Interval": "Interval",
+  "Job_Disabled_Successfully": "Job disabled successfully",
+  "Job_Enabled_Successfully": "Job enabled successfully",
+  "Job_Info": "Job Info",
+  "Job_Triggered_Successfully": "Job triggered successfully",
+  "Last_Run": "Last Run",
+  "Next_Run": "Next Run",
+  "No_background_jobs_found": "No background jobs found",
+  "No_history_available": "No history available",
+  "Run_now": "Run now",
+  "Background_Job_Status_running": "Running",
+  "Background_Job_Status_scheduled": "Scheduled",
+  "Background_Job_Status_completed": "Completed",
+  "Background_Job_Status_failed": "Failed",
+  "Background_Job_Status_disabled": "Disabled"
 }
