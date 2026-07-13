@@ -10,6 +10,7 @@ import {
 	GenericTableRow,
 	usePagination,
 } from '@rocket.chat/ui-client';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
@@ -125,8 +126,8 @@ const BackgroundJobsTable = ({ tab }: BackgroundJobsTableProps) => {
 									</GenericTableCell>
 									<GenericTableCell>
 										<Box display='flex'>
-											<Tag variant={statusVariant(job.status)} textTransform='capitalize'>
-												{job.status ? t(job.status) : t('Unknown')}
+											<Tag variant={statusVariant(job.status)}>
+												{job.status ? t(`Background_Job_Status_${job.status}` as TranslationKey) : t('Unknown')}
 											</Tag>
 										</Box>
 									</GenericTableCell>
