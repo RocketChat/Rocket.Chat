@@ -5,6 +5,7 @@ import type { ICachedSettings } from '../../app/settings/server/CachedSettings';
 export async function configurePushNotifications(settings: ICachedSettings): Promise<void> {
 	settings.watch<boolean>('Push_enable', async (enabled) => {
 		if (!enabled) {
+			await Push.unconfigure();
 			return;
 		}
 		const gateways =

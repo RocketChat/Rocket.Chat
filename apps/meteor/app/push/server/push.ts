@@ -8,7 +8,7 @@ import { JWT } from 'google-auth-library';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { initAPN, sendAPN } from './apn';
+import { initAPN, sendAPN, shutdownAPN } from './apn';
 import type { PushOptions, PendingPushNotification } from './definition';
 import { sendFCM } from './fcm';
 import { logger } from './logger';
@@ -166,6 +166,12 @@ class PushClass {
 		if (this.options.apn) {
 			initAPN({ options: this.options as RequiredField<PushOptions, 'apn'>, absoluteUrl: Meteor.absoluteUrl() });
 		}
+	}
+
+	public async unconfigure(): Promise<void> {
+		logger.info('Push service disabled: shutting down existing connections');
+		this.isConfigured = false;
+		return shutdownAPN();
 	}
 
 	private removeToken(token: string): void {
