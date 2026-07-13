@@ -281,7 +281,8 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	setAsReadById(_id: string): Promise<UpdateResult>;
 	countThreads(): Promise<number>;
 	addThreadFollowerByThreadId(tmid: string, userId: string): Promise<UpdateResult>;
-	findAllImportedMessagesWithFilesToDownload(): FindCursor<IMessageWithPendingFileImport>;
+	findOneAndClaimPendingFileImport(leaseMs: number, excludedMessageIds: IMessage['_id'][]): Promise<IMessageWithPendingFileImport | null>;
+	renewPendingFileImportLease(messageId: IMessage['_id'], leaseMs: number): Promise<UpdateResult>;
 	countAllImportedMessagesWithFilesToDownload(): Promise<number>;
 	findAgentLastMessageByVisitorLastMessageTs(roomId: string, visitorLastMessageTs: Date): Promise<IMessage | null>;
 	removeThreadFollowerByThreadId(tmid: string, userId: string): Promise<UpdateResult>;

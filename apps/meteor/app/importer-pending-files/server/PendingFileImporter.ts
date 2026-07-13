@@ -1,23 +1,20 @@
 import http from 'node:http';
 import https from 'node:https';
+import type { Readable } from 'node:stream';
 
 import { api } from '@rocket.chat/core-services';
-import type { IImport, MessageAttachment, IUpload, IImporterShortSelection } from '@rocket.chat/core-typings';
+import type { MessageAttachment, IUpload, IImporterShortSelection, IMessageWithPendingFileImport } from '@rocket.chat/core-typings';
 import { Messages, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
 import { FileUpload } from '../../file-upload/server';
 import { parseFileIntoMessageAttachments } from '../../file-upload/server/methods/sendFileMessage';
 import { Importer, ProgressStep } from '../../importer/server';
-import type { ConverterOptions } from '../../importer/server/classes/ImportDataConverter';
 import type { ImporterProgress } from '../../importer/server/classes/ImporterProgress';
-import type { ImporterInfo } from '../../importer/server/definitions/ImporterInfo';
+
+const LEASE_MS = 2 * 60 * 1000;
 
 export class PendingFileImporter extends Importer {
-	constructor(info: ImporterInfo, importRecord: IImport, converterOptions: ConverterOptions = {}) {
-		super(info, importRecord, converterOptions);
-	}
-
 	async prepareFileCount() {
 		this.logger.debug('start preparing import operation');
 		await super.updateProgress(ProgressStep.PREPARING_STARTED);
@@ -38,160 +35,117 @@ export class PendingFileImporter extends Importer {
 		this.reportProgress();
 
 		setImmediate(() => {
-			void this.startImport({});
+			this.startImport({}).catch(() => undefined);
 		});
 
 		return fileCount;
 	}
 
-	override async startImport(importSelection: IImporterShortSelection): Promise<ImporterProgress> {
-		const downloadedFileIds: string[] = [];
-		const maxFileCount = 10;
-		const maxFileSize = 1024 * 1024 * 500;
+	override async startImport(_importSelection: IImporterShortSelection): Promise<ImporterProgress> {
+		const importedRoomIds = new Set<string>();
+		const inFlightFileIds = new Set<string>();
+		const skipMessageIds = new Set<string>();
 
-		let count = 0;
-		let currentSize = 0;
-		let nextSize = 0;
+		const processMessage = async (message: IMessageWithPendingFileImport) => {
+			const { _importFile } = message;
+			const url = _importFile.downloadUrl;
 
-		const waitForFiles = async () => {
-			if (count + 1 < maxFileCount && currentSize + nextSize < maxFileSize) {
+			if (!url?.startsWith('http')) {
+				skipMessageIds.add(message._id);
+				await this.addCountError(1);
 				return;
 			}
 
-			return new Promise<void>((resolve) => {
-				const handler = setInterval(() => {
-					if (count + 1 >= maxFileCount) {
-						return;
-					}
+			if (inFlightFileIds.has(_importFile.id)) {
+				skipMessageIds.add(message._id);
+				return;
+			}
+			inFlightFileIds.add(_importFile.id);
 
-					if (currentSize + nextSize >= maxFileSize && count > 0) {
-						return;
-					}
+			const details: { message_id: string; name: string; size: number; userId: string; rid: string; type?: string } = {
+				message_id: `${message._id}-file-${_importFile.id}`,
+				name: _importFile.name || Random.id(),
+				size: _importFile.size || 0,
+				userId: message.u._id,
+				rid: message.rid,
+			};
 
-					clearInterval(handler);
-					resolve();
-				}, 1000);
-			});
+			const renewal = setInterval(() => void Messages.renewPendingFileImportLease(message._id, LEASE_MS), LEASE_MS / 4);
+
+			try {
+				const fileStream = await this.downloadFile(url, details);
+
+				// Bypass the fileStore filters
+				const file = await FileUpload.getStore('Uploads')._doInsert(details, fileStream);
+
+				const rocketChatUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name || '')}`);
+				const user = await Users.findOneById(message.u._id);
+				const attachment = user
+					? (await parseFileIntoMessageAttachments(file, message.rid, user)).attachments[0]
+					: this.getMessageAttachment(file, rocketChatUrl);
+
+				const result = await Messages.setImportFileRocketChatAttachment(_importFile.id, rocketChatUrl, attachment);
+				await this.addCountCompleted('modifiedCount' in result ? result.modifiedCount : 1);
+				importedRoomIds.add(message.rid);
+			} catch (err) {
+				this.logger.error({ msg: 'Failed to download pending file', url: url.split('?')[0], err });
+				skipMessageIds.add(message._id);
+				inFlightFileIds.delete(_importFile.id);
+				await this.addCountError(1);
+			} finally {
+				clearInterval(renewal);
+			}
 		};
 
-		const completeFile = async (details: { size: number }) => {
-			await this.addCountCompleted(1);
-			count--;
-			currentSize -= details.size;
-		};
-
-		const failFile = async (details: { size: number }) => {
-			await this.addCountError(1);
-			count--;
-			currentSize -= details.size;
-		};
-
-		const logError = this.logger.error.bind(this.logger);
-
-		try {
-			const pendingFileMessageList = Messages.findAllImportedMessagesWithFilesToDownload();
-			const importedRoomIds = new Set<string>();
-			for await (const message of pendingFileMessageList) {
-				try {
-					const { _importFile } = message;
-
-					if (!_importFile || _importFile.downloaded || downloadedFileIds.includes(_importFile.id)) {
-						await this.addCountCompleted(1);
-						continue;
-					}
-
-					const url = _importFile.downloadUrl;
-					if (!url?.startsWith('http')) {
-						await this.addCountCompleted(1);
-						continue;
-					}
-
-					const details: { message_id: string; name: string; size: number; userId: string; rid: string; type?: string } = {
-						message_id: `${message._id}-file-${_importFile.id}`,
-						name: _importFile.name || Random.id(),
-						size: _importFile.size || 0,
-						userId: message.u._id,
-						rid: message.rid,
-					};
-
-					const fileStore = FileUpload.getStore('Uploads');
-
-					nextSize = details.size;
-					await waitForFiles();
-					count++;
-					currentSize += nextSize;
-					downloadedFileIds.push(_importFile.id);
-
-					void this.downloadFile(url, details)
-						.then(async (rawData) => {
-							// Bypass the fileStore filters
-							const file = await fileStore._doInsert(details, rawData);
-
-							const rocketChatUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name || '')}`);
-							const user = await Users.findOneById(message.u._id);
-							const attachment = user
-								? (await parseFileIntoMessageAttachments(file, message.rid, user)).attachments[0]
-								: this.getMessageAttachment(file, rocketChatUrl);
-
-							await Messages.setImportFileRocketChatAttachment(_importFile.id, rocketChatUrl, attachment);
-							await completeFile(details);
-							importedRoomIds.add(message.rid);
-						})
-						.catch(async (err) => {
-							logError({ msg: 'Failed to download pending file', url, err });
-							await failFile(details);
-						});
-				} catch (err) {
-					this.logger.error({ err });
+		const worker = async () => {
+			for (;;) {
+				const message = await Messages.findOneAndClaimPendingFileImport(LEASE_MS, Array.from(skipMessageIds));
+				if (!message) {
+					return;
 				}
-			}
 
-			void api.broadcast('notify.importedMessages', { roomIds: Array.from(importedRoomIds) });
-		} catch (error) {
-			// If the cursor expired, restart the method
-			if (this.isCursorNotFoundError(error)) {
-				this.logger.info('CursorNotFound');
-				return this.startImport(importSelection);
+				await processMessage(message);
 			}
+		};
 
+		const results = await Promise.allSettled(Array.from({ length: 10 }, () => worker()));
+
+		const crashes = results.filter((result): result is PromiseRejectedResult => result.status === 'rejected');
+		if (crashes.length > 0) {
+			crashes.forEach((crash) => this.logger.error({ msg: 'Pending file worker crashed', err: crash.reason }));
 			await super.updateProgress(ProgressStep.ERROR);
-			throw error;
+			throw crashes[0].reason;
 		}
+
+		void api.broadcast('notify.importedMessages', { roomIds: Array.from(importedRoomIds) });
 
 		await super.updateProgress(ProgressStep.DONE);
 		return this.getProgress();
 	}
 
-	private downloadFile(url: string, details: { type?: string }): Promise<Buffer> {
+	private downloadFile(url: string, details: { type?: string }): Promise<Readable> {
 		return new Promise((resolve, reject) => {
 			const requestModule = /https/i.test(url) ? https : http;
 
-			requestModule
-				.get(url, (res) => {
-					res.on('error', reject);
+			const request = requestModule.get(url, (res) => {
+				if (!res.statusCode || res.statusCode < 200 || res.statusCode >= 300) {
+					// Error responses (e.g. a redirect to a login page) would otherwise be saved as the file's content.
+					res.on('error', () => undefined); // already rejected; just avoid crashing while draining
+					res.resume(); // discard the body and free the socket
+					reject(new Error(`Unexpected response status ${res.statusCode}`));
+					return;
+				}
 
-					if (!res.statusCode || res.statusCode < 200 || res.statusCode >= 300) {
-						// Error responses (e.g. a redirect to a login page) would otherwise be saved as the file's content.
-						res.resume(); // discard the body and free the socket
-						reject(new Error(`Unexpected response status ${res.statusCode}`));
-						return;
-					}
+				if (!details.type) {
+					details.type = res.headers['content-type'] || 'application/octet-stream';
+				}
 
-					const contentType = res.headers['content-type'];
-					if (!details.type && contentType) {
-						details.type = contentType;
-					}
+				resolve(res);
+			});
 
-					const rawData: Uint8Array[] = [];
-					res.on('data', (chunk) => {
-						rawData.push(chunk);
+			request.on('error', reject);
 
-						// Update progress more often on large files
-						this.reportProgress();
-					});
-					res.on('end', () => resolve(Buffer.concat(rawData)));
-				})
-				.on('error', reject);
+			request.setTimeout(60 * 1000, () => request.destroy(new Error('Download stalled')));
 		});
 	}
 

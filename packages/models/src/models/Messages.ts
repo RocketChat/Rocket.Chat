@@ -657,20 +657,18 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		rocketChatUrl: string,
 		attachment: MessageAttachment,
 	): Promise<UpdateResult | Document> {
-		const query = {
-			'_importFile.id': importFileId,
-		};
-
-		return this.updateMany(query, {
-			$set: {
-				'_hidden': false,
-				'_importFile.rocketChatUrl': rocketChatUrl,
-				'_importFile.downloaded': true,
+		return this.updateMany(
+			{ '_importFile.id': importFileId, '_importFile.downloaded': { $ne: true } },
+			{
+				$set: {
+					'_hidden': false,
+					'_importFile.rocketChatUrl': rocketChatUrl,
+					'_importFile.downloaded': true,
+				},
+				$unset: { '_importFile.lockedUntil': 1 },
+				$addToSet: { attachments: attachment },
 			},
-			$addToSet: {
-				attachments: attachment,
-			},
-		});
+		);
 	}
 
 	countVisibleByRoomIdBetweenTimestampsInclusive(roomId: string, afterTimestamp: Date, beforeTimestamp: Date): Promise<number> {
@@ -1720,42 +1718,38 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findOne(query, { sort: { ts: 1 } });
 	}
 
-	findAllImportedMessagesWithFilesToDownload(): FindCursor<IMessageWithPendingFileImport> {
-		const query = {
-			'_importFile.downloadUrl': {
-				$exists: true,
-			},
-			'_importFile.rocketChatUrl': {
-				$exists: false,
-			},
-			'_importFile.downloaded': {
-				$ne: true,
-			},
-			'_importFile.external': {
-				$ne: true,
-			},
-		};
+	findOneAndClaimPendingFileImport(leaseMs: number, excludedMessageIds: IMessage['_id'][]): Promise<IMessageWithPendingFileImport | null> {
+		const now = new Date();
 
-		return this.find<IMessageWithPendingFileImport>(query);
+		return this.col.findOneAndUpdate(
+			{
+				'_id': { $nin: excludedMessageIds },
+				'_importFile.downloadUrl': { $exists: true },
+				'_importFile.rocketChatUrl': { $exists: false },
+				'_importFile.downloaded': { $ne: true },
+				'_importFile.external': { $ne: true },
+				'$or': [{ '_importFile.lockedUntil': { $exists: false } }, { '_importFile.lockedUntil': { $lt: now } }],
+			},
+			{ $set: { '_importFile.lockedUntil': new Date(now.getTime() + leaseMs) } },
+			{ returnDocument: 'after' },
+		) as Promise<IMessageWithPendingFileImport | null>;
+	}
+
+	renewPendingFileImportLease(messageId: IMessage['_id'], leaseMs: number): Promise<UpdateResult> {
+		// The downloaded guard keeps a renewal racing the finalize from re-adding a stale lock.
+		return this.updateOne(
+			{ '_id': messageId, '_importFile.downloaded': { $ne: true } },
+			{ $set: { '_importFile.lockedUntil': new Date(Date.now() + leaseMs) } },
+		);
 	}
 
 	countAllImportedMessagesWithFilesToDownload(): Promise<number> {
-		const query = {
-			'_importFile.downloadUrl': {
-				$exists: true,
-			},
-			'_importFile.rocketChatUrl': {
-				$exists: false,
-			},
-			'_importFile.downloaded': {
-				$ne: true,
-			},
-			'_importFile.external': {
-				$ne: true,
-			},
-		};
-
-		return this.countDocuments(query);
+		return this.countDocuments({
+			'_importFile.downloadUrl': { $exists: true },
+			'_importFile.rocketChatUrl': { $exists: false },
+			'_importFile.downloaded': { $ne: true },
+			'_importFile.external': { $ne: true },
+		});
 	}
 
 	decreaseReplyCountById(_id: string, inc = -1): Promise<IMessage | null> {
