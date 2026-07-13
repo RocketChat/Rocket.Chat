@@ -1,0 +1,49 @@
+apps/meteor/ee/server/apps/communication/rest.ts
+  s_0fce651a0b3be0::t_2d3f4522230fc5 34
+apps/meteor/scripts/migration/check-broken-imports.mjs
+  s_0fce651a0b3be0::t_2d2b2ab9475487 60-70
+  s_0fce651a0b3be0::t_2d3f4522230fc5 13-15
+apps/meteor/ee/server/lib/message-read-receipt/index.ts
+  s_0fce651a0b3be0::t_050a756dc0a08c 1-7
+apps/meteor/ee/tests/unit/server/airgappedRestrictions/airgappedRestrictions.spec.ts
+  s_0fce651a0b3be0::t_aa7c67bc6d8e4d 50
+apps/meteor/scripts/migration/phase6a-followup-oauth.tsv
+  s_0fce651a0b3be0::t_a097e9cf6dda5d 1-3
+apps/meteor/ee/server/index.ts
+  s_0fce651a0b3be0::t_050a756dc0a08c 2-3,5,7
+apps/meteor/server/routes/avatar/utils.spec.ts
+  s_0fce651a0b3be0::t_aa7c67bc6d8e4d 38
+apps/meteor/tests/unit/app/license/server/canEnableApp.spec.ts
+  s_0fce651a0b3be0::t_050a756dc0a08c 8
+apps/meteor/ee/server/lib/canned-responses/index.ts
+  s_0fce651a0b3be0::t_050a756dc0a08c 1-13
+apps/meteor/startRocketChat.ts
+  s_0fce651a0b3be0::t_535b04405f7543 1
+apps/meteor/ee/server/requestSeatsRoute.ts
+  s_0fce651a0b3be0::t_2d3f4522230fc5 5
+apps/meteor/ee/server/startup/services.ts
+  s_0fce651a0b3be0::t_2d3f4522230fc5 7
+apps/meteor/ee/server/apps/orchestrator.js
+  s_0fce651a0b3be0::t_050a756dc0a08c 32
+apps/meteor/jest.config.ts
+  s_0fce651a0b3be0::t_d0a16bfa602b17 40
+apps/meteor/ee/server/lib/license/license.internalService.ts
+  s_0fce651a0b3be0::t_050a756dc0a08c 1-6,8-57
+  s_0fce651a0b3be0::t_2d3f4522230fc5 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "3956417bac73673d984e14c3cfd2289fe1bfe4af",
+  "prompts": {},
+  "sessions": {
+    "s_0fce651a0b3be0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2cf1f83c-986f-44ab-b6f9-f1db46b9698b",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
