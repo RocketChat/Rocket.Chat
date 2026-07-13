@@ -273,9 +273,8 @@ describe('[Permissions]', () => {
 				.expect(200)
 				.expect((res) => {
 					const permission = res.body.update.find((p: { _id: string; roles: string[] }) => p._id === testPermission);
-					if (permission) {
-						expect(permission.roles).to.not.include(testRole);
-					}
+					expect(permission).to.be.an('object');
+					expect(permission.roles).to.not.include(testRole);
 				});
 		});
 	});
