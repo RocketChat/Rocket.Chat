@@ -18,10 +18,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
 import type { Filter } from 'mongodb';
 
-import {
-	clearIntegrationHistoryMethod,
-	replayOutgoingIntegrationMethod,
-} from '../../../app/integrations/server/functions/clearIntegrationHistory';
+import { clearIntegrationHistoryMethod, replayOutgoingIntegrationMethod } from '../../lib/integrations/functions/clearIntegrationHistory';
 import {
 	mountIntegrationHistoryQueryBasedOnPermissions,
 	mountIntegrationQueryBasedOnPermissions,

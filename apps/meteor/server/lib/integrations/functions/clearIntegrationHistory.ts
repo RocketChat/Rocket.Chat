@@ -2,8 +2,8 @@ import type { IOutgoingIntegration, IIntegration } from '@rocket.chat/core-typin
 import { Integrations, IntegrationHistory } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
-import notifications from '../../../notifications/server/lib/Notifications';
+import { hasPermissionAsync } from '../../authorization/hasPermission';
+import notifications from '../../notifications/core/lib/Notifications';
 import { triggerHandler } from '../lib/triggerHandler';
 
 export const clearIntegrationHistoryMethod = async (userId: string, integrationId: string): Promise<void> => {
