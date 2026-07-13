@@ -1,6 +1,7 @@
 import { Emitter } from '@rocket.chat/emitter';
 
 import type { DDPClient } from './types/DDPClient';
+import type { RemoveListener } from './types/RemoveListener';
 
 // type Subscription = {
 // 	name: string;
@@ -312,7 +313,7 @@ export class ConnectionImpl
 	probe(timeoutMs = 2000): Promise<boolean> {
 		return new Promise<boolean>((resolve) => {
 			let settled = false;
-			let off: () => void = () => {};
+			let off: RemoveListener | undefined;
 			let timer: ReturnType<typeof setTimeout>;
 
 			const finish = (alive: boolean) => {
@@ -321,7 +322,7 @@ export class ConnectionImpl
 				}
 				settled = true;
 				clearTimeout(timer);
-				off();
+				off?.();
 				resolve(alive);
 			};
 
