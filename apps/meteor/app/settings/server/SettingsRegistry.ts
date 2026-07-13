@@ -83,6 +83,11 @@ export const compareSettings = compareSettingsIgnoringKeys([
 	'_updatedAt',
 ]);
 
+const hasOverwrittenValueChanged = (stored: ISetting, overwritten: ISetting): boolean =>
+	!isEqual(stored.value, overwritten.value) ||
+	stored.valueSource !== overwritten.valueSource ||
+	!isEqual(stored.processEnvValue, overwritten.processEnvValue);
+
 export class SettingsRegistry {
 	private model: ISettingsModel;
 
@@ -175,7 +180,7 @@ export class SettingsRegistry {
 		}
 
 		if (settingStored && isOverwritten) {
-			if (settingStored.value !== settingFromCodeOverwritten.value) {
+			if (hasOverwrittenValueChanged(settingStored, settingFromCodeOverwritten)) {
 				const overwrittenKeys = Object.keys(settingFromCodeOverwritten);
 				const removedKeys = Object.keys(settingStored).filter((key) => !['_updatedAt'].includes(key) && !overwrittenKeys.includes(key));
 
