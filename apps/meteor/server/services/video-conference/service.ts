@@ -46,6 +46,7 @@ import { MongoInternals } from 'meteor/mongo';
 
 import { RocketChatAssets } from '../../../app/assets/server';
 import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
+import { addUsersToRoomMethod } from '../../../app/lib/server/methods/addUsersToRoom';
 import { metrics } from '../../../app/metrics/server/lib/metrics';
 import { Push } from '../../../app/push/server/push';
 import PushNotification from '../../../app/push-notifications/server/lib/PushNotification';
@@ -1842,32 +1843,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			await this.assignDiscussionToConference(callId, discussion._id);
 
 			// Let the newly invited users know with a desktop notification; clicking it opens the discussion.
-			const invitedUsers = await Users.find<Pick<IUser, '_id' | 'language'>>(
-				{ username: { $in: usernames } },
-				{ projection: { language: 1 } },
-			).toArray();
-
-			for (const invited of invitedUsers) {
-				const text = i18n.t('You_were_invited_to_a_conference', { lng: invited.language });
-				void api.broadcast('notify.desktop', invited._id, {
-					title: name,
-					text,
-					// Keep the invite on screen until the user acts on it.
-					requireInteraction: true,
-					// "Join call" button opens the conference directly (desktop app); clicking the body opens the discussion.
-					actions: [{ action: 'join', title: i18n.t('Join_call', { lng: invited.language }) }],
-					payload: {
-						_id: discussion._id,
-						rid: discussion._id,
-						sender: { _id: user._id, username: user.username as string, name: user.name },
-						type: discussion.t,
-						name: discussion.name,
-						conferenceId: callId,
-						message: { msg: text },
-						audioNotificationValue: '',
-					},
-				});
-			}
+			await this.notifyUsersInvitedToConference(user, usernames, callId, discussion);
 
 			return discussion._id;
 		} catch (err) {
@@ -1876,6 +1852,93 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				err,
 			});
 			throw err;
+		}
+	}
+
+	public async addUsersToConferenceRoom(
+		uid: IUser['_id'],
+		callId: VideoConference['_id'],
+		usernames: NonNullable<IUser['username']>[],
+	): Promise<IRoom['_id']> {
+		logger.debug({
+			msg: 'VideoConf.addUsersToConferenceRoom',
+			callId,
+			uid,
+			usernames,
+		});
+
+		try {
+			const call = await VideoConferenceModel.findOneById(callId, { projection: { rid: 1, discussionRid: 1 } });
+			if (!call) {
+				throw new Error('invalid-video-conference');
+			}
+
+			const user = await Users.findOneById(uid);
+			if (!user) {
+				throw new Error('invalid-user');
+			}
+
+			// The active conference room is the discussion when one was created, otherwise the original room.
+			const rid = call.discussionRid || call.rid;
+
+			const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'name' | 'fname'>>(rid, {
+				projection: { t: 1, name: 1, fname: 1 },
+			});
+			if (!room) {
+				throw new Error('invalid-room');
+			}
+
+			// Add the users to the existing room (keeping its history) instead of spinning up a discussion.
+			await addUsersToRoomMethod(uid, { rid, users: usernames }, user);
+
+			// Let the added users know with a desktop notification; clicking it opens the room.
+			await this.notifyUsersInvitedToConference(user, usernames, callId, room);
+
+			return rid;
+		} catch (err) {
+			logger.error({
+				msg: 'Error on VideoConf.addUsersToConferenceRoom',
+				err,
+			});
+			throw err;
+		}
+	}
+
+	// Sends every added/invited user a desktop notification about the conference; clicking it opens the
+	// room, and the "Join call" action opens the conference directly.
+	private async notifyUsersInvitedToConference(
+		inviter: AtLeast<IUser, '_id' | 'username' | 'name'>,
+		usernames: NonNullable<IUser['username']>[],
+		callId: VideoConference['_id'],
+		room: AtLeast<IRoom, '_id' | 't' | 'name' | 'fname'>,
+	): Promise<void> {
+		const invitedUsers = await Users.find<Pick<IUser, '_id' | 'language'>>(
+			{ username: { $in: usernames } },
+			{ projection: { language: 1 } },
+		).toArray();
+
+		const displayName = room.fname || room.name || '';
+
+		for (const invited of invitedUsers) {
+			const text = i18n.t('You_were_invited_to_a_conference', { lng: invited.language });
+			void api.broadcast('notify.desktop', invited._id, {
+				title: displayName,
+				text,
+				// Keep the invite on screen until the user acts on it.
+				requireInteraction: true,
+				// "Join call" button opens the conference directly (desktop app); clicking the body opens the room.
+				actions: [{ action: 'join', title: i18n.t('Join_call', { lng: invited.language }) }],
+				payload: {
+					_id: room._id,
+					rid: room._id,
+					sender: { _id: inviter._id, username: inviter.username as string, name: inviter.name },
+					type: room.t,
+					name: room.name,
+					conferenceId: callId,
+					message: { msg: text },
+					audioNotificationValue: '',
+				},
+			});
 		}
 	}
 

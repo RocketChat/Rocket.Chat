@@ -5,6 +5,9 @@ import { ajv } from '../Ajv';
 export type VideoConfAddParticipantsProps = {
 	callId: string;
 	users: string[];
+	// When true, add the users to the conference's existing room (keeping its history) instead of
+	// spinning up a new discussion for them.
+	keepHistory?: boolean;
 };
 
 const videoConfAddParticipantsPropsSchema: JSONSchemaType<VideoConfAddParticipantsProps> = {
@@ -19,6 +22,10 @@ const videoConfAddParticipantsPropsSchema: JSONSchemaType<VideoConfAddParticipan
 			items: {
 				type: 'string',
 			},
+		},
+		keepHistory: {
+			type: 'boolean',
+			nullable: true,
 		},
 	},
 	required: ['callId', 'users'],

@@ -56,6 +56,11 @@ export interface IVideoConfService {
 		callId: VideoConference['_id'],
 		usernames: NonNullable<IUser['username']>[],
 	): Promise<IRoom['_id']>;
+	addUsersToConferenceRoom(
+		uid: IUser['_id'],
+		callId: VideoConference['_id'],
+		usernames: NonNullable<IUser['username']>[],
+	): Promise<IRoom['_id']>;
 	createVoIP(data: InsertionModel<IVoIPVideoConference>): Promise<IVoIPVideoConference['_id'] | undefined>;
 	joinCall(
 		call: ExternalVideoConference,

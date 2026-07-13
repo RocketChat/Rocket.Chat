@@ -287,7 +287,7 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		const { callId, users } = this.bodyParams;
+		const { callId, users, keepHistory } = this.bodyParams;
 		const { userId } = this;
 
 		const call = await VideoConf.get(callId);
@@ -299,7 +299,11 @@ API.v1.post(
 			return API.v1.failure('invalid-params');
 		}
 
-		const rid = await VideoConf.createConferenceDiscussionWithParticipants(userId, callId, users);
+		// `keepHistory` adds the users to the conference's existing room (they keep its history);
+		// otherwise a fresh discussion is created so they don't get the room's history.
+		const rid = keepHistory
+			? await VideoConf.addUsersToConferenceRoom(userId, callId, users)
+			: await VideoConf.createConferenceDiscussionWithParticipants(userId, callId, users);
 		return API.v1.success({ rid });
 	},
 );

@@ -70,8 +70,6 @@ const AddParticipantsModal = ({ callId, rid, onClose, onDialOut }: AddParticipan
 	const isDirect = room?.t === 'd';
 
 	const getUsers = useEndpoint('GET', '/v1/users.autocomplete');
-	const inviteToChannel = useEndpoint('POST', '/v1/channels.invite');
-	const inviteToGroup = useEndpoint('POST', '/v1/groups.invite');
 	const addParticipants = useEndpoint('POST', '/v1/video-conference.add-participants');
 
 	// Exclude users already in the room from the autocomplete so they can't be selected again. DMs
@@ -162,17 +160,14 @@ const AddParticipantsModal = ({ callId, rid, onClose, onDialOut }: AddParticipan
 			numbersToDial.forEach((number) => onDialOut?.(number));
 
 			if (usersToAdd.length) {
+				// The server either adds the users to the current room (invite/keep-history) or creates a
+				// discussion off it (existing members + the new ones) and repoints the conference at it. It
+				// also notifies everyone added in both cases.
+				await addParticipants({ callId, users: usersToAdd, keepHistory: mode === 'invite' });
+
 				if (mode === 'discussion') {
-					// The server creates the discussion (existing members + the new ones) and repoints the
-					// conference at it. Refresh the conference info so the chat panel switches to the new room.
-					await addParticipants({ callId, users: usersToAdd });
+					// The conference now points at the new discussion — refresh its info so the chat panel switches.
 					await queryClient.invalidateQueries({ queryKey: ['conference-info', callId] });
-				} else {
-					await Promise.all(
-						usersToAdd.map((username) =>
-							isPrivate ? inviteToGroup({ roomId: rid, username }) : inviteToChannel({ roomId: rid, username }),
-						),
-					);
 				}
 			}
 
