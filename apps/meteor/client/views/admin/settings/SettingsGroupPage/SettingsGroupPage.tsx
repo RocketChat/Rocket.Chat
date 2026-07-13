@@ -1,5 +1,5 @@
 import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
-import { Accordion, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
@@ -8,6 +8,8 @@ import type { ReactNode, MouseEvent, SubmitEvent } from 'react';
 import { useMemo, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import SettingsSectionNav from './SettingsSectionNav';
+import type { SettingsSectionNavItem } from './SettingsSectionNav';
 import type { EditableSetting } from '../../EditableSettingsContext';
 import { useEditableSettingsDispatch, useEditableSettings } from '../../EditableSettingsContext';
 
@@ -19,6 +21,7 @@ export type SettingsGroupPageProps = {
 	i18nLabel: string;
 	i18nDescription?: string;
 	tabs?: ReactNode;
+	navItems?: SettingsSectionNavItem[];
 	isCustom?: boolean;
 };
 
@@ -30,6 +33,7 @@ const SettingsGroupPage = ({
 	i18nLabel,
 	i18nDescription = undefined,
 	tabs = undefined,
+	navItems = undefined,
 	isCustom = false,
 }: SettingsGroupPageProps) => {
 	const { t, i18n } = useTranslation();
@@ -146,17 +150,24 @@ const SettingsGroupPage = ({
 			{isCustom ? (
 				children
 			) : (
-				<PageScrollableContentWithShadow>
-					<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
-						{i18nDescription && isTranslationKey(i18nDescription) && i18n.exists(i18nDescription) && (
-							<Box is='p' color='hint' fontScale='p2'>
-								{t(i18nDescription)}
-							</Box>
-						)}
+				<Box display='flex' flexDirection='row' flexGrow={1} minHeight={0} overflow='hidden'>
+					<Box display='flex' flexDirection='column' flexGrow={1} minWidth={0}>
+						<PageScrollableContentWithShadow>
+							<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x600' pbe={24}>
+								{i18nDescription && isTranslationKey(i18nDescription) && i18n.exists(i18nDescription) && (
+									<Box is='p' color='hint' fontScale='p2' mbe={24}>
+										{t(i18nDescription)}
+									</Box>
+								)}
 
-						<Accordion>{children}</Accordion>
+								{children}
+							</Box>
+						</PageScrollableContentWithShadow>
 					</Box>
-				</PageScrollableContentWithShadow>
+					{navItems && navItems.length > 1 && (
+						<SettingsSectionNav groupLabel={isTranslationKey(i18nLabel) ? t(i18nLabel) : i18nLabel} items={navItems} />
+					)}
+				</Box>
 			)}
 			<PageFooter isDirty={!(changedEditableSettings.length === 0)}>
 				<ButtonGroup>

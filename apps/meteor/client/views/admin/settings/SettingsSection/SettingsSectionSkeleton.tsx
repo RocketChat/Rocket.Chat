@@ -1,20 +1,21 @@
-import { AccordionItem, Box, FieldGroup, Skeleton } from '@rocket.chat/fuselage';
+import { Box, FieldGroup, Skeleton } from '@rocket.chat/fuselage';
 
 import SettingSkeleton from '../Setting/SettingSkeleton';
 
 function SettingsSectionSkeleton() {
 	return (
-		<AccordionItem noncollapsible title={<Skeleton />}>
-			<Box is='p' color='hint' fontScale='p2'>
+		<Box is='section' mbe={24}>
+			<Box mbe={12} width='x160'>
 				<Skeleton />
 			</Box>
-
-			<FieldGroup>
-				{Array.from({ length: 10 }).map((_, i) => (
-					<SettingSkeleton key={i} />
-				))}
-			</FieldGroup>
-		</AccordionItem>
+			<Box p={24} borderWidth='default' borderColor='light' borderRadius='x8' backgroundColor='surface-light'>
+				<FieldGroup>
+					{Array.from({ length: 10 }).map((_, i) => (
+						<SettingSkeleton key={i} />
+					))}
+				</FieldGroup>
+			</Box>
+		</Box>
 	);
 }
 

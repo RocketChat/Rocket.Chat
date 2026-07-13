@@ -4,13 +4,14 @@ import { capitalize } from '@rocket.chat/string-helpers';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useAbsoluteUrl, useMethod, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
 
 import CreateOAuthModal from './CreateOAuthModal';
 import { strRight } from '../../../../../../lib/utils/stringUtils';
 import { useEditableSettingsGroupSections } from '../../../EditableSettingsContext';
 import SettingsGroupPage from '../../SettingsGroupPage';
 import SettingsSection from '../../SettingsSection';
+import { getSettingsSectionAnchorId } from '../getSettingsSectionAnchorId';
 
 export type OAuthGroupPageProps = ISetting & {
 	onClickBack?: () => void;
@@ -18,10 +19,15 @@ export type OAuthGroupPageProps = ISetting & {
 
 function OAuthGroupPage({ _id, onClickBack, ...group }: OAuthGroupPageProps) {
 	const sections = useEditableSettingsGroupSections(_id);
-	const solo = sections.length === 1;
 	const t = useTranslation();
 
 	const [settingSections, setSettingSections] = useState(sections);
+
+	const navItems = useMemo(
+		() =>
+			settingSections.filter(Boolean).map((sectionName) => ({ id: getSettingsSectionAnchorId(_id, sectionName), label: t(sectionName) })),
+		[settingSections, _id, t],
+	);
 
 	const sectionIsCustomOAuth = (sectionName: string): string | boolean => sectionName && /^Custom OAuth:\s.+/.test(sectionName);
 
@@ -98,6 +104,7 @@ function OAuthGroupPage({ _id, onClickBack, ...group }: OAuthGroupPageProps) {
 			_id={_id}
 			{...group}
 			onClickBack={onClickBack}
+			navItems={navItems}
 			headerButtons={
 				<>
 					<Button onClick={handleRefreshOAuthServicesButtonClick}>{t('Refresh_oauth_services')}</Button>
@@ -114,6 +121,7 @@ function OAuthGroupPage({ _id, onClickBack, ...group }: OAuthGroupPageProps) {
 					return (
 						<SettingsSection
 							key={sectionName}
+							id={getSettingsSectionAnchorId(_id, sectionName)}
 							groupId={_id}
 							help={
 								<span
@@ -123,7 +131,6 @@ function OAuthGroupPage({ _id, onClickBack, ...group }: OAuthGroupPageProps) {
 								/>
 							}
 							sectionName={sectionName}
-							solo={solo}
 						>
 							<div className='submit'>
 								<Button secondary danger onClick={handleRemoveCustomOAuthButtonClick}>
@@ -134,7 +141,9 @@ function OAuthGroupPage({ _id, onClickBack, ...group }: OAuthGroupPageProps) {
 					);
 				}
 
-				return <SettingsSection key={sectionName} groupId={_id} sectionName={sectionName} solo={solo} />;
+				return (
+					<SettingsSection key={sectionName} id={getSettingsSectionAnchorId(_id, sectionName)} groupId={_id} sectionName={sectionName} />
+				);
 			})}
 		</SettingsGroupPage>
 	);

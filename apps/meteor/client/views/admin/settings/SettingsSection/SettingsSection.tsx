@@ -1,5 +1,5 @@
 import { isSetting, isSettingColor } from '@rocket.chat/core-typings';
-import { AccordionItem, Box, Button, FieldGroup } from '@rocket.chat/fuselage';
+import { Box, Button, FieldGroup } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
@@ -14,12 +14,12 @@ export type SettingsSectionProps = {
 	hasReset?: boolean;
 	sectionName: string;
 	currentTab?: string;
-	solo: boolean;
+	id?: string;
 	help?: ReactNode;
 	children?: ReactNode;
 };
 
-function SettingsSection({ groupId, hasReset = true, sectionName, currentTab, solo, help, children }: SettingsSectionProps) {
+function SettingsSection({ groupId, hasReset = true, sectionName, currentTab, id, help, children }: SettingsSectionProps) {
 	const { t } = useTranslation();
 
 	const editableSettings = useEditableSettings(
@@ -71,29 +71,47 @@ function SettingsSection({ groupId, hasReset = true, sectionName, currentTab, so
 	};
 
 	return (
-		<AccordionItem
-			data-qa-section={sectionName}
-			noncollapsible={solo || !sectionName}
-			title={sectionName && t(sectionName as TranslationKey)}
-		>
-			{help && (
-				<Box is='p' color='hint' fontScale='p2'>
-					{help}
+		<Box is='section' data-qa-section={sectionName} id={id} mbe={24}>
+			{sectionName && (
+				<Box is='h2' fontScale='h4' mbe={12}>
+					{t(sectionName as TranslationKey)}
 				</Box>
 			)}
-			<FieldGroup>
-				{editableSettings.map(
-					(setting) => isSetting(setting) && <Setting key={setting._id} settingId={setting._id} sectionChanged={changed} />,
+			<Box
+				p={24}
+				borderWidth='default'
+				borderColor='light'
+				borderRadius='x8'
+				backgroundColor='surface-light'
+				display='flex'
+				flexDirection='column'
+			>
+				{help && (
+					<Box is='p' color='hint' fontScale='p2' mbe={16}>
+						{help}
+					</Box>
 				)}
+				<FieldGroup>
+					{editableSettings.map(
+						(setting) => isSetting(setting) && <Setting key={setting._id} settingId={setting._id} sectionChanged={changed} />,
+					)}
 
-				{children}
-			</FieldGroup>
-			{hasReset && canReset && (
-				<Button secondary danger marginBlockStart={16} data-section={sectionName} onClick={handleResetSectionClick}>
-					{t('Reset_section_settings')}
-				</Button>
-			)}
-		</AccordionItem>
+					{children}
+				</FieldGroup>
+				{hasReset && canReset && (
+					<Button
+						secondary
+						danger
+						marginBlockStart={16}
+						alignSelf='flex-start'
+						data-section={sectionName}
+						onClick={handleResetSectionClick}
+					>
+						{t('Reset_section_settings')}
+					</Button>
+				)}
+			</Box>
+		</Box>
 	);
 }
 
