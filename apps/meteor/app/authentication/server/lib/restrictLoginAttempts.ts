@@ -2,6 +2,7 @@ import type { IServerEvent } from '@rocket.chat/core-typings';
 import { ServerEventType } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, ServerEvents, Users } from '@rocket.chat/models';
+import { isIpInCidrRange } from '@rocket.chat/server-fetch';
 
 import { addMinutesToADate } from '../../../../lib/utils/addMinutesToADate';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
@@ -52,7 +53,15 @@ export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 	if (
 		!settings.get('Block_Multiple_Failed_Logins_Enabled') ||
 		!settings.get('Block_Multiple_Failed_Logins_By_Ip') ||
-		whitelist.includes(ip)
+		whitelist.some((entry) => {
+			const trimmed = entry.trim();
+			try {
+				return trimmed === ip || isIpInCidrRange(ip, trimmed);
+			} catch (error) {
+				logger.error({ msg: 'Invalid CIDR entry in whitelist', entry: trimmed, error });
+				return false;
+			}
+		})
 	) {
 		return true;
 	}
@@ -100,7 +109,9 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 		return true;
 	}
 
-	const loginUsername = login.methodArguments[0].user?.username;
+	const { username, email } = (login.methodArguments[0].user || {}) as { username?: string; email?: string };
+	const loginUsername = login.user?.username || username || email;
+
 	if (!loginUsername) {
 		return true;
 	}
@@ -147,7 +158,7 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 export const saveFailedLoginAttempts = async (login: ILoginAttempt): Promise<void> => {
 	const user: IServerEvent['u'] = {
 		_id: login.user?._id,
-		username: login.user?.username || login.methodArguments[0].user?.username,
+		username: login.user?.username || login.methodArguments[0].user?.username || login.methodArguments[0].user?.email,
 	};
 
 	await ServerEvents.insertOne({
@@ -161,7 +172,7 @@ export const saveFailedLoginAttempts = async (login: ILoginAttempt): Promise<voi
 export const saveSuccessfulLogin = async (login: ILoginAttempt): Promise<void> => {
 	const user: IServerEvent['u'] = {
 		_id: login.user?._id,
-		username: login.user?.username || login.methodArguments[0].user?.username,
+		username: login.user?.username || login.methodArguments[0].user?.username || login.methodArguments[0].user?.email,
 	};
 
 	await ServerEvents.insertOne({

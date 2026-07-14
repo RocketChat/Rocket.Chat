@@ -297,9 +297,10 @@ describe('checkForSsrfHelpers', () => {
 				expect(isIpInCidrRange('::1', '127.0.0.0/8')).toBe(false);
 			});
 		});
-		it('returns false for invalid IP', () => {
+		it('returns false for malformed IP or CIDR', () => {
 			expect(isIpInCidrRange('not-an-ip', '192.168.0.0/16')).toBe(false);
 			expect(isIpInCidrRange('256.1.1.1', '192.168.0.0/16')).toBe(false);
+			expect(isIpInCidrRange('::1', '::g/128')).toBe(false); // Malformed hex group
 		});
 	});
 
