@@ -1,0 +1,26 @@
+apps/meteor/server/lib/statistics/lib/statistics.ts
+  s_7d357c34a7efec::t_eb45abed0d9b9b 450-451
+packages/model-typings/src/models/IIntegrationsModel.ts
+  s_7d357c34a7efec::t_2b40c8a3e162b9 2,6-13
+  s_7d357c34a7efec::t_e77bf4f41bb1eb 28
+  s_7d357c34a7efec::t_47c780cc43fb1b 14
+packages/models/src/models/Integrations.ts
+  s_7d357c34a7efec::t_e7870c9f68ed18 2-3
+  s_7d357c34a7efec::t_4efd130aed77b3 75-116
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "619b5a883fde53ce65430b4ef57160f36a24e613",
+  "prompts": {},
+  "sessions": {
+    "s_7d357c34a7efec": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9899d913-8534-41ff-9505-cddfe14090ee",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
