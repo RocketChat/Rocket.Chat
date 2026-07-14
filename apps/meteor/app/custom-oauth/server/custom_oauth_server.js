@@ -145,11 +145,11 @@ export class CustomOAuth {
 
 		try {
 			const request = await fetch(`${this.tokenPath}`, {
-				// SECURITY: URL can only be configured by users with enough privileges. It's ok to disable this check here.
-				ignoreSsrfValidation: true,
+				// SECURITY: URL can only be configured by privileged admins. Enforcing SSRF allowlist instead of full bypass.
 				method: 'POST',
 				headers,
 				body: params,
+				allowList: settings.get('SSRF_Allowlist')
 			});
 
 			if (!request.ok) {
@@ -184,8 +184,8 @@ export class CustomOAuth {
 		}
 
 		try {
-			// SECURITY: URL can only be configured by users with enough privileges. It's ok to disable this check here.
-			const request = await fetch(`${this.identityPath}`, { method: 'GET', headers, params, ignoreSsrfValidation: true });
+			// SECURITY: URL can only be configured by privileged admins. Enforcing SSRF allowlist instead of full bypass.
+			const request = await fetch(`${this.identityPath}`, { method: 'GET', headers, params, allowList: settings.get('SSRF_Allowlist') });
 
 			if (!request.ok) {
 				throw new Error(request.statusText);
@@ -291,9 +291,8 @@ export class CustomOAuth {
 		}
 
 		try {
-			// SECURITY: URL can only be configured by users with enough privileges. It's ok to disable this check here.
-			const request = await fetch(`${this.emailPath}`, { method: 'GET', headers, params, ignoreSsrfValidation: true });
-
+			// SECURITY: URL can only be configured by privileged admins. Enforcing SSRF allowlist instead of full bypass.
+			const request = await fetch(`${this.emailPath}`, { method: 'GET', headers, params, allowList: settings.get('SSRF_Allowlist') });
 			if (!request.ok) {
 				throw new Error(request.statusText);
 			}
