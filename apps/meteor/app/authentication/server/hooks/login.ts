@@ -7,8 +7,13 @@ import { logFailedLoginAttempts } from '../lib/logLoginAttempts';
 import { saveFailedLoginAttempts, saveSuccessfulLogin } from '../lib/restrictLoginAttempts';
 
 const ignoredErrorTypes = ['totp-required', 'error-login-blocked-for-user'];
+const logger = new Logger('LoginAttempts');
 
 Accounts.onLoginFailure(async (login: ILoginAttempt) => {
+	// Prototype: Detect deactivated user login attempts
+	if (login.user?.active === false) {
+	    logger.warn(`Deactivated user attempted login - userId: ${login.user?._id}, IP: ${login.connection?.clientAddress}`);
+	}
 	// do not save specific failed login attempts
 	if (
 		settings.get('Block_Multiple_Failed_Logins_Enabled') &&
