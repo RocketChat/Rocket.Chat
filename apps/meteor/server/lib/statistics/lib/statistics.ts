@@ -447,22 +447,8 @@ export const statistics = {
 		);
 
 		statsPms.push(
-			Promise.all([
-				Integrations.countDocuments({}, { readPreference }),
-				Integrations.countDocuments({ type: 'webhook-incoming' }, { readPreference }),
-				Integrations.countDocuments({ enabled: true, type: 'webhook-incoming' }, { readPreference }),
-				Integrations.countDocuments({ type: 'webhook-outgoing' }, { readPreference }),
-				Integrations.countDocuments({ enabled: true, type: 'webhook-outgoing' }, { readPreference }),
-				Integrations.countDocuments({ scriptEnabled: true }, { readPreference }),
-			]).then(([totalIntegrations, totalIncoming, totalIncomingActive, totalOutgoing, totalOutgoingActive, totalWithScriptEnabled]) => {
-				statistics.integrations = {
-					totalIntegrations,
-					totalIncoming,
-					totalIncomingActive,
-					totalOutgoing,
-					totalOutgoingActive,
-					totalWithScriptEnabled,
-				};
+			Integrations.getStatistics({ readPreference }).then((integrations) => {
+				statistics.integrations = integrations;
 			}),
 		);
 
