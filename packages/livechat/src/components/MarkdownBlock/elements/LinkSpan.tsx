@@ -1,12 +1,11 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { useMemo } from 'preact/hooks';
-import { useTranslation } from 'react-i18next';
 
 import BoldSpan from './BoldSpan';
 import ItalicSpan from './ItalicSpan';
 import PlainSpan from './PlainSpan';
 import StrikeSpan from './StrikeSpan';
-import { getBaseURI, isExternal, sanitizeUrl } from '../url';
+import { sanitizeUrl } from '../url';
 
 export type LinkSpanProps = {
 	href: string;
@@ -17,7 +16,6 @@ const LinkSpan = ({ href, label }: LinkSpanProps) => {
 	// Should sanitize 'href' if any of the insecure prefixes are present - see DSK-34 on Jira
 	const sanitizedHref = sanitizeUrl(href);
 
-	const { t } = useTranslation();
 	const children = useMemo(() => {
 		const labelArray = Array.isArray(label) ? label : [label];
 
@@ -43,16 +41,8 @@ const LinkSpan = ({ href, label }: LinkSpanProps) => {
 		return labelElements;
 	}, [label]);
 
-	if (isExternal(sanitizedHref)) {
-		return (
-			<a href={sanitizedHref} title={sanitizedHref} rel='noopener noreferrer' target='_blank'>
-				{children}
-			</a>
-		);
-	}
-
 	return (
-		<a href={sanitizedHref} title={t('Go_to_href', { href: sanitizedHref.replace(getBaseURI(), '') })}>
+		<a href={sanitizedHref} title={sanitizedHref} rel='noopener noreferrer' target='_blank'>
 			{children}
 		</a>
 	);
