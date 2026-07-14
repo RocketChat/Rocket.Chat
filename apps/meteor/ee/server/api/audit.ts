@@ -1,6 +1,14 @@
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
 import { Rooms, AuditLog, ServerEvents } from '@rocket.chat/models';
-import { isServerEventsAuditSettingsProps, ajv, ajvQuery } from '@rocket.chat/rest-typings';
+import {
+	isServerEventsAuditSettingsProps,
+	ajv,
+	ajvQuery,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
+	validateNotFoundErrorResponse,
+} from '@rocket.chat/rest-typings';
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
 import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
 
@@ -39,60 +47,97 @@ declare module '@rocket.chat/rest-typings' {
 	}
 }
 
-API.v1.addRoute(
+const auditRoomMembersResponseSchema = ajv.compile<
+	PaginatedResult<{ members: Pick<IUser, '_id' | 'name' | 'username' | 'status' | '_updatedAt'>[] }>
+>({
+	type: 'object',
+	properties: {
+		members: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					_id: { type: 'string' },
+					name: { type: 'string' },
+					username: { type: 'string' },
+					nickname: { type: 'string' },
+					status: { type: 'string', enum: ['online', 'away', 'offline', 'busy', 'disabled'] },
+					avatarETag: { type: 'string' },
+					federated: { type: 'boolean' },
+					_updatedAt: { type: 'string', format: 'date-time' },
+				},
+				required: ['_id'],
+				additionalProperties: false,
+			},
+		},
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['members', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
+API.v1.get(
 	'audit/rooms.members',
 	{
 		authRequired: true,
 		permissionsRequired: ['view-members-list-all-rooms'],
-		validateParams: isAuditRoomMembersProps,
+		query: isAuditRoomMembersProps,
 		license: ['auditing'],
-	},
-	{
-		async get() {
-			const { roomId, filter } = this.queryParams;
-			const { count: limit, offset: skip } = await getPaginationItems(this.queryParams);
-			const { sort } = await this.parseJsonQuery();
-
-			const room = await Rooms.findOneById<Pick<IRoom, '_id' | 'name' | 'fname'>>(roomId, { projection: { _id: 1, name: 1, fname: 1 } });
-			if (!room) {
-				return API.v1.notFound();
-			}
-
-			const { cursor, totalCount } = findUsersOfRoom({
-				rid: room._id,
-				filter,
-				skip,
-				limit,
-				...(sort?.username && { sort: { username: sort.username } }),
-			});
-
-			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			await AuditLog.insertOne({
-				ts: new Date(),
-				results: total,
-				u: {
-					_id: this.user._id,
-					username: this.user.username,
-					name: this.user.name,
-					...(this.user.avatarETag && { avatarETag: this.user.avatarETag }),
-				},
-				fields: {
-					msg: 'Room_members_list',
-					rids: [room._id],
-					type: 'room_member_list',
-					room: room.name || room.fname,
-					filters: filter,
-				},
-			});
-
-			return API.v1.success({
-				members,
-				count: members.length,
-				offset: skip,
-				total,
-			});
+		response: {
+			200: auditRoomMembersResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+			404: validateNotFoundErrorResponse,
 		},
+	},
+	async function action() {
+		const { roomId, filter } = this.queryParams;
+		const { count: limit, offset: skip } = await getPaginationItems(this.queryParams);
+		const { sort } = await this.parseJsonQuery();
+
+		const room = await Rooms.findOneById<Pick<IRoom, '_id' | 'name' | 'fname'>>(roomId, { projection: { _id: 1, name: 1, fname: 1 } });
+		if (!room) {
+			return API.v1.notFound();
+		}
+
+		const { cursor, totalCount } = findUsersOfRoom({
+			rid: room._id,
+			filter,
+			skip,
+			limit,
+			...(sort?.username && { sort: { username: sort.username } }),
+		});
+
+		const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		await AuditLog.insertOne({
+			ts: new Date(),
+			results: total,
+			u: {
+				_id: this.user._id,
+				username: this.user.username,
+				name: this.user.name,
+				...(this.user.avatarETag && { avatarETag: this.user.avatarETag }),
+			},
+			fields: {
+				msg: 'Room_members_list',
+				rids: [room._id],
+				type: 'room_member_list',
+				room: room.name || room.fname,
+				filters: filter,
+			},
+		});
+
+		return API.v1.success({
+			members,
+			count: members.length,
+			offset: skip,
+			total,
+		});
 	},
 );
 
