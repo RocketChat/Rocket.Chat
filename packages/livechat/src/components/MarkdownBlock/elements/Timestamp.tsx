@@ -34,12 +34,30 @@ const Timestamp = ({ format, value }: TimestampProps) => {
 	}
 };
 
+const parseTimestamp = (timestamp: string): Date | null => {
+	const parsed = parseInt(timestamp);
+	if (Number.isNaN(parsed)) {
+		return null;
+	}
+	const date = new Date(parsed * 1000);
+	if (Number.isNaN(date.getTime())) {
+		return null;
+	}
+	return date;
+};
+
 // eslint-disable-next-line react/no-multi-comp
-const TimestampWrapper = ({ children }: BoldSpanProps) => (
-	<ErrorBoundary fallback={<>{new Date(parseInt(children.value.timestamp) * 1000).toUTCString()}</>}>
-		<Timestamp format={children.value.format} value={new Date(parseInt(children.value.timestamp) * 1000)} />
-	</ErrorBoundary>
-);
+const TimestampWrapper = ({ children }: BoldSpanProps) => {
+	const date = parseTimestamp(children.value.timestamp);
+	if (!date) {
+		return <Tag>Invalid Date</Tag>;
+	}
+	return (
+		<ErrorBoundary fallback={<Tag>{date.toUTCString()}</Tag>}>
+			<Timestamp format={children.value.format} value={date} />
+		</ErrorBoundary>
+	);
+};
 
 export type ShortTimeProps = { value: Date };
 
