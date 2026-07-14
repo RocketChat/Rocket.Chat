@@ -25,6 +25,7 @@ describe('LDAPConnection', () => {
 
 		beforeEach(() => {
 			connection = new LDAPConnection();
+			connection.options.userSearchField = 'uid';
 			connection.client = { search: sinon.stub().throws(parseError) };
 		});
 
@@ -51,6 +52,58 @@ describe('LDAPConnection', () => {
 			await connection.searchAllUsers({ endCallback });
 			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 			expect(endCallback.calledOnceWithExactly(parseError)).to.be.true;
+		});
+	});
+
+	describe('getUserFilter', () => {
+		let connection: any;
+
+		beforeEach(() => {
+			connection = new LDAPConnection();
+		});
+
+		it('should compose the filter for a single search field', () => {
+			connection.options.userSearchField = 'uid';
+			expect(connection.getUserFilter('john')).to.equal('(&(uid=john))');
+		});
+
+		it('should compose an OR filter for multiple search fields', () => {
+			connection.options.userSearchField = 'uid,sAMAccountName';
+			expect(connection.getUserFilter('john')).to.equal('(&(|(uid=john)(sAMAccountName=john)))');
+		});
+
+		it('should trim whitespace and ignore empty segments (e.g. trailing commas)', () => {
+			connection.options.userSearchField = ' uid , sAMAccountName ,';
+			expect(connection.getUserFilter('john')).to.equal('(&(|(uid=john)(sAMAccountName=john)))');
+		});
+
+		it('should include the user search filter when configured', () => {
+			connection.options.userSearchField = 'uid';
+			connection.options.userSearchFilter = '(objectclass=user)';
+			expect(connection.getUserFilter('*')).to.equal('(&(objectclass=user)(uid=*))');
+		});
+
+		it('should throw a configuration error when the search field is empty', () => {
+			connection.options.userSearchField = '';
+			expect(() => connection.getUserFilter('*')).to.throw('LDAP User Search Field is not configured');
+		});
+
+		it('should throw a configuration error when the search field only has empty segments', () => {
+			connection.options.userSearchField = ' , ,';
+			expect(() => connection.getUserFilter('*')).to.throw('LDAP User Search Field is not configured');
+		});
+
+		it('should reject searchAllUsers with the configuration error instead of composing an invalid filter', async () => {
+			connection.options.userSearchField = '';
+			connection.client = { search: sinon.stub() };
+			const endCallback = sinon.stub();
+			const error = await connection.searchAllUsers({ endCallback }).then(
+				() => undefined,
+				(e: unknown) => e,
+			);
+			expect(error).to.be.an('error').with.property('message', 'LDAP User Search Field is not configured');
+			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+			expect(connection.client.search.called).to.be.false;
 		});
 	});
 });
