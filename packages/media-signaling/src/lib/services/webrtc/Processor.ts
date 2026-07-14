@@ -282,7 +282,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 				setTimeout(resolve, 1);
 			});
 
-			if (this.peer.iceGatheringState === 'complete') {
+			if (this.stopped || this.peer.iceGatheringState === 'complete') {
 				return;
 			}
 		}
