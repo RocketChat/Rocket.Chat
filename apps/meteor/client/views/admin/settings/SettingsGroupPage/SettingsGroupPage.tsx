@@ -1,15 +1,17 @@
 import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
-import { Accordion, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useSettingsDispatch, useSettings } from '@rocket.chat/ui-contexts';
 import type { ReactNode, MouseEvent, SubmitEvent } from 'react';
 import { useMemo, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import SettingsPageTableOfContents from './SettingsPageTableOfContents';
 import type { EditableSetting } from '../../EditableSettingsContext';
 import { useEditableSettingsDispatch, useEditableSettings } from '../../EditableSettingsContext';
+import { getSectionAnchorId } from '../lib/sectionAnchor';
 
 export type SettingsGroupPageProps = {
 	children: ReactNode;
@@ -20,6 +22,7 @@ export type SettingsGroupPageProps = {
 	i18nDescription?: string;
 	tabs?: ReactNode;
 	isCustom?: boolean;
+	sections?: string[];
 };
 
 const SettingsGroupPage = ({
@@ -31,6 +34,7 @@ const SettingsGroupPage = ({
 	i18nDescription = undefined,
 	tabs = undefined,
 	isCustom = false,
+	sections = [],
 }: SettingsGroupPageProps) => {
 	const { t, i18n } = useTranslation();
 	const dispatch = useSettingsDispatch();
@@ -137,39 +141,48 @@ const SettingsGroupPage = ({
 
 	const isTranslationKey = (key: string): key is TranslationKey => (key as TranslationKey) !== undefined;
 
+	const isDirty = changedEditableSettings.length > 0;
+	const groupTitle = (i18nLabel && isTranslationKey(i18nLabel) && t(i18nLabel)) || '';
+
+	const tableOfContentsEntries = sections
+		.filter((sectionName) => Boolean(sectionName))
+		.map((sectionName) => ({
+			id: getSectionAnchorId(_id, sectionName),
+			label: t(sectionName as TranslationKey),
+		}));
+
 	return (
 		<Page is='form' action='#' method='post' onSubmit={handleSubmit}>
-			<PageHeader onClickBack={onClickBack} title={i18nLabel && isTranslationKey(i18nLabel) && t(i18nLabel)}>
-				<ButtonGroup>{headerButtons}</ButtonGroup>
+			<PageHeader onClickBack={onClickBack} title={groupTitle}>
+				<ButtonGroup>
+					{headerButtons}
+					<Button type='reset' disabled={!isDirty} onClick={handleCancelClick}>
+						{t('Reset')}
+					</Button>
+					<Button className='save' disabled={isSaveDisabled} primary type='submit' onClick={handleSaveClick}>
+						{t('Save_changes')}
+					</Button>
+				</ButtonGroup>
 			</PageHeader>
 			{tabs}
 			{isCustom ? (
 				children
 			) : (
-				<PageScrollableContentWithShadow>
-					<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
-						{i18nDescription && isTranslationKey(i18nDescription) && i18n.exists(i18nDescription) && (
-							<Box is='p' color='hint' fontScale='p2'>
-								{t(i18nDescription)}
-							</Box>
-						)}
+				<Box display='flex' flexGrow={1} height='full' overflow='hidden'>
+					<PageScrollableContentWithShadow>
+						<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x640'>
+							{i18nDescription && isTranslationKey(i18nDescription) && i18n.exists(i18nDescription) && (
+								<Box is='p' color='hint' fontScale='p2' mbe={16}>
+									{t(i18nDescription)}
+								</Box>
+							)}
 
-						<Accordion>{children}</Accordion>
-					</Box>
-				</PageScrollableContentWithShadow>
+							{children}
+						</Box>
+					</PageScrollableContentWithShadow>
+					{tableOfContentsEntries.length > 1 && <SettingsPageTableOfContents title={groupTitle} entries={tableOfContentsEntries} />}
+				</Box>
 			)}
-			<PageFooter isDirty={!(changedEditableSettings.length === 0)}>
-				<ButtonGroup>
-					{changedEditableSettings.length > 0 && (
-						<Button type='reset' onClick={handleCancelClick}>
-							{t('Cancel')}
-						</Button>
-					)}
-					<Button className='save' disabled={isSaveDisabled} primary type='submit' onClick={handleSaveClick}>
-						{t('Save_changes')}
-					</Button>
-				</ButtonGroup>
-			</PageFooter>
 		</Page>
 	);
 };

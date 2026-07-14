@@ -19,7 +19,7 @@ function GenericGroupPage({ _id, i18nLabel, sections, tabs, currentTab, hasReset
 	const solo = sections.length === 1;
 
 	return (
-		<SettingsGroupPage _id={_id} i18nLabel={i18nLabel} onClickBack={onClickBack} tabs={tabs} {...props}>
+		<SettingsGroupPage _id={_id} i18nLabel={i18nLabel} onClickBack={onClickBack} tabs={tabs} sections={sections} {...props}>
 			{sections.map((sectionName) => (
 				<Section key={sectionName || ''} hasReset={hasReset} groupId={_id} sectionName={sectionName} currentTab={currentTab} solo={solo} />
 			))}

@@ -98,6 +98,7 @@ function OAuthGroupPage({ _id, onClickBack, ...group }: OAuthGroupPageProps) {
 			_id={_id}
 			{...group}
 			onClickBack={onClickBack}
+			sections={settingSections}
 			headerButtons={
 				<>
 					<Button onClick={handleRefreshOAuthServicesButtonClick}>{t('Refresh_oauth_services')}</Button>
