@@ -5,11 +5,11 @@ import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import { UAParser } from 'ua-parser-js';
 
-import * as Mailer from '../../../../app/mailer/server/api';
 import { settings } from '../../../../app/settings/server';
-import { UAParserDesktop, UAParserMobile } from '../../../../app/statistics/server/lib/UAParserCustom';
 import { t } from '../../../../app/utils/lib/i18n';
 import { getUserPreference } from '../../../../app/utils/server/lib/getUserPreference';
+import * as Mailer from '../../../../server/lib/notifications/email/api';
+import { UAParserDesktop, UAParserMobile } from '../../../../server/lib/statistics/lib/UAParserCustom';
 import { deviceManagementEvents } from '../../../../server/services/device-management/events';
 
 let mailTemplates: string;

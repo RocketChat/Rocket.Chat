@@ -5,7 +5,7 @@ import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
 
 import { sleep } from '../../../../lib/utils/sleep';
-import { metrics } from '../../../metrics/server';
+import { metrics } from '../../../../server/lib/metrics';
 import { settings } from '../../../settings/server';
 
 const logger = new Logger('RateLimiter');

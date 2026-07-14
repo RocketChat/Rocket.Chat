@@ -9,10 +9,10 @@ import { supportedVersionsChooseLatest } from './supportedVersionsChooseLatest';
 import { notifyOnSettingChangedById } from '../../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../../app/settings/server';
 import { supportedVersions as supportedVersionsFromBuild } from '../../../../app/utils/rocketchat-supported-versions.info';
-import { buildVersionUpdateMessage } from '../../../../app/version-check/server/functions/buildVersionUpdateMessage';
 import { updateAuditedBySystem } from '../../../settings/lib/auditedSettingUpdates';
 import { SystemLogger } from '../../logger/system';
 import { generateWorkspaceBearerHttpHeader } from '../getWorkspaceAccessToken';
+import { buildVersionUpdateMessage } from '../version-check/functions/buildVersionUpdateMessage';
 
 declare module '@rocket.chat/core-typings' {
 	interface ILicenseV3 {

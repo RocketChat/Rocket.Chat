@@ -9,12 +9,12 @@ import { LoginServiceConfiguration } from '@rocket.chat/models';
 
 import { addPassportCustomOAuth } from './addPassportCustomOAuth';
 import { logger } from './logger';
-import { CustomOAuth } from '../../../app/custom-oauth/server/custom_oauth_server';
 import {
 	notifyOnLoginServiceConfigurationChanged,
 	notifyOnLoginServiceConfigurationChangedByService,
 } from '../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../app/settings/server/cached';
+import { CustomOAuth } from '../auth-providers/custom-oauth/custom_oauth_server';
 
 export async function updateOAuthServices(): Promise<void> {
 	const services = settings.getByRegexp(/^(Accounts_OAuth_|Accounts_OAuth_Custom-)[a-z0-9_]+$/i);

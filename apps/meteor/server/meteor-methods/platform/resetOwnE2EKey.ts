@@ -2,8 +2,8 @@ import { MeteorError } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
-import { twoFactorRequired } from '../../../app/2fa/server/twoFactorRequired';
 import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
+import { twoFactorRequired } from '../../lib/2fa/twoFactorRequired';
 import { resetUserE2EEncriptionKey } from '../../lib/resetUserE2EKey';
 
 declare module '@rocket.chat/ddp-client' {
