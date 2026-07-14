@@ -55,8 +55,7 @@ export class OmnichannelQueueInactivityMonitorClass {
 
 	async closeRoom(inquiryId: string): Promise<void> {
 		try {
-			// TODO: add projection and maybe use findOneQueued to avoid fetching the whole inquiry
-			const inquiry = await LivechatInquiryRaw.findOneById(inquiryId);
+			const inquiry = await LivechatInquiryRaw.findOneById(inquiryId, { projection: { status: 1, rid: 1 } });
 			if (inquiry?.status !== 'queued') {
 				return;
 			}
