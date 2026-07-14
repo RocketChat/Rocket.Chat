@@ -149,23 +149,20 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 						borderColor={isDragOver ? 'stroke-highlight' : 'stroke-light'}
 						style={{ fontFamily: 'monospace' }}
 						rows={4}
-						readOnly={isCurrentLicense}
 						placeholder={t('Drag_and_drop_license_placeholder')}
 						value={license}
 						onChange={handleTextChange}
-						onDrop={isCurrentLicense ? undefined : handleDrop}
-						onDragOver={isCurrentLicense ? undefined : handleDragOver}
-						onDragEnter={isCurrentLicense ? undefined : handleDragOver}
-						onDragLeave={isCurrentLicense ? undefined : handleDragLeave}
+						onDrop={handleDrop}
+						onDragOver={handleDragOver}
+						onDragEnter={handleDragOver}
+						onDragLeave={handleDragLeave}
 					/>
 				</FieldRow>
 			</Field>
 			<ButtonGroup>
-				{!isCurrentLicense && (
-					<Button icon='upload' small onClick={() => inputRef.current?.click()}>
-						{t('Upload_license_file')}
-					</Button>
-				)}
+				<Button icon='upload' small onClick={() => inputRef.current?.click()}>
+					{t('Upload_license_file')}
+				</Button>
 				{isCurrentLicense && (
 					<Button icon='trash' small secondary danger onClick={() => setIsConfirmingRemoval(true)}>
 						{t('Remove_license')}
