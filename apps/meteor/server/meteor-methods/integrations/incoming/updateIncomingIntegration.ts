@@ -151,7 +151,7 @@ export const updateIncomingIntegration = async (
 		});
 	}
 
-	if (!(await hasPermissionAsync(user, 'message-impersonate'))) {
+	if (!(await hasPermissionAsync(user._id, 'message-impersonate'))) {
 		throw new Meteor.Error(
 			'error-user-lacks-message-impersonate-permission',
 			"User selected for the incoming integration lacks the 'message-impersonate' permission.",

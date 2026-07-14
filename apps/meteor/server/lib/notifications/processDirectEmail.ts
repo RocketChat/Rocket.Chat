@@ -101,7 +101,7 @@ export const processDirectEmail = async function (email: ParsedMail): Promise<vo
 
 	// room is readonly
 	if (roomInfo.ro === true) {
-		if (!(await hasPermissionAsync(user, 'post-readonly', roomInfo._id))) {
+		if (!(await hasPermissionAsync(user._id, 'post-readonly', roomInfo._id))) {
 			// Check if the user was manually unmuted
 			if (!(roomInfo.unmuted || []).includes(user.username || '')) {
 				return;
