@@ -105,7 +105,7 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 		roomId: room._id,
 		uidsExclude: [message.u._id],
 		uidsInclude: userIds,
-		onlyRead: !toAll && !toHere && !unreadAllMessages,
+		onlyRead: !toAll && !toHere && !unreadAllMessages && room.t !== 'd',
 	}).toArray();
 
 	// Give priority to user mentions over group mentions
@@ -115,7 +115,7 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 		await Subscriptions.incGroupMentionsAndUnreadForRoomIdExcludingUserId(room._id, message.u._id, 1, groupMentionInc);
 	}
 
-	if (!toAll && !toHere && unreadAllMessages) {
+	if (!toAll && !toHere && (unreadAllMessages || room.t === 'd')) {
 		await Subscriptions.incUnreadForRoomIdExcludingUserIds(room._id, [...userIds, message.u._id], 1);
 	}
 
@@ -127,7 +127,7 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 
 	subs.forEach((sub) => {
 		const hasUserMention = userIds.includes(sub.u._id);
-		const shouldIncUnread = hasUserMention || toAll || toHere || unreadAllMessages;
+		const shouldIncUnread = hasUserMention || toAll || toHere || unreadAllMessages || room.t === 'd';
 		void notifyOnSubscriptionChanged(
 			{
 				...sub,
