@@ -8,7 +8,7 @@ import { saveQueueInquiry } from '../../../../server/lib/omnichannel/QueueManage
 import { setDepartmentForGuest } from '../../../../server/lib/omnichannel/departmentsLib';
 import { beforeRouteChat } from '../../../../server/lib/omnichannel/hooks';
 import { online } from '../../../../server/lib/omnichannel/service-status';
-import { cbLogger } from '../../../app/livechat-enterprise/server/lib/logger';
+import { cbLogger } from '../../lib/omnichannel/logger';
 
 beforeRouteChat.patch(
 	async (

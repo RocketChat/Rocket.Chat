@@ -3,7 +3,7 @@ import moment from 'moment';
 
 import { settings } from '../../../../app/settings/server';
 import { afterInquiryQueued } from '../../../../server/lib/omnichannel/hooks';
-import { OmnichannelQueueInactivityMonitor } from '../../../app/livechat-enterprise/server/lib/QueueInactivityMonitor';
+import { OmnichannelQueueInactivityMonitor } from '../../lib/omnichannel/QueueInactivityMonitor';
 
 export const afterInquiryQueuedFunc = async (inquiry: ILivechatInquiryRecord) => {
 	const timer = settings.get<number>('Livechat_max_queue_wait_time');

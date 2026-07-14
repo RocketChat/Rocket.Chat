@@ -4,7 +4,7 @@ import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../server/lib/callbacks';
-import { isAgentWithinChatLimits } from '../../../app/livechat-enterprise/server/lib/Helper';
+import { isAgentWithinChatLimits } from '../../lib/omnichannel/Helper';
 
 callbacks.add(
 	'beforeJoinRoom',

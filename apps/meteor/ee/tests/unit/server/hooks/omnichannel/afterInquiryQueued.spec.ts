@@ -19,7 +19,7 @@ const { afterInquiryQueuedFunc: afterInquiryQueued } = proxyquire
 		'../../../../app/settings/server': {
 			settings: settingStub,
 		},
-		'../../../app/livechat-enterprise/server/lib/QueueInactivityMonitor': {
+		'../../lib/omnichannel/QueueInactivityMonitor': {
 			OmnichannelQueueInactivityMonitor: queueMonitorStub,
 		},
 		'../../../../server/lib/omnichannel/hooks': {

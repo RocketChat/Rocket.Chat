@@ -4,8 +4,8 @@ import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { allowAgentSkipQueue } from '../../../../server/lib/omnichannel/Helper';
 import { checkOnlineAgents } from '../../../../server/lib/omnichannel/service-status';
-import { isAgentWithinChatLimits } from '../../../app/livechat-enterprise/server/lib/Helper';
-import { cbLogger } from '../../../app/livechat-enterprise/server/lib/logger';
+import { isAgentWithinChatLimits } from '../../lib/omnichannel/Helper';
+import { cbLogger } from '../../lib/omnichannel/logger';
 
 const validateMaxChats = async ({
 	agent,

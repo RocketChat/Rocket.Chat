@@ -7,7 +7,7 @@ import { client, shouldRetryTransaction } from '../../../server/database/utils';
 import { QueueManager } from '../../../server/lib/omnichannel/QueueManager';
 import { mergeContacts } from '../../../server/lib/omnichannel/contacts/mergeContacts';
 import { verifyContactChannel } from '../../../server/lib/omnichannel/contacts/verifyContactChannel';
-import { contactLogger as logger } from '../../app/livechat-enterprise/server/lib/logger';
+import { contactLogger as logger } from '../lib/omnichannel/logger';
 
 type VerifyContactChannelParams = {
 	contactId: string;

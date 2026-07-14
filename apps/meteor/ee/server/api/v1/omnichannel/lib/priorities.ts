@@ -6,7 +6,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { FindOptions } from 'mongodb';
 
 import { notifyOnLivechatInquiryChangedByRoom, notifyOnRoomChanged } from '../../../../../../app/lib/server/lib/notifyListener';
-import { logger } from '../../../../../app/livechat-enterprise/server/lib/logger';
+import { logger } from '../../../../lib/omnichannel/logger';
 
 type FindPriorityParams = {
 	text?: string;

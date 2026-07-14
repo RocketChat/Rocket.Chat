@@ -31,7 +31,7 @@ import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } fr
 import { getOmniChatSortQuery } from '../../../app/livechat/lib/inquiries';
 import { settings } from '../../../app/settings/server';
 import { i18n } from '../../../app/utils/lib/i18n';
-import { dispatchInquiryPosition } from '../../../ee/app/livechat-enterprise/server/lib/Helper';
+import { dispatchInquiryPosition } from '../../../ee/server/lib/omnichannel/Helper';
 import { client, shouldRetryTransaction } from '../../database/utils';
 
 const logger = new Logger('QueueManager');

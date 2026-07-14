@@ -3,8 +3,8 @@ import { LivechatRooms } from '@rocket.chat/models';
 
 import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../server/lib/callbacks';
-import { AutoCloseOnHoldScheduler } from '../../../app/livechat-enterprise/server/lib/AutoCloseOnHoldScheduler';
-import { debouncedDispatchWaitingQueueStatus } from '../../../app/livechat-enterprise/server/lib/Helper';
+import { AutoCloseOnHoldScheduler } from '../../lib/omnichannel/AutoCloseOnHoldScheduler';
+import { debouncedDispatchWaitingQueueStatus } from '../../lib/omnichannel/Helper';
 
 type LivechatCloseCallbackParams = {
 	room: IOmnichannelRoom;

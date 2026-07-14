@@ -5,7 +5,7 @@ import { LivechatDepartment } from '@rocket.chat/models';
 import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { forwardRoomToDepartment } from '../../../../server/lib/omnichannel/Helper';
-import { cbLogger } from '../../../app/livechat-enterprise/server/lib/logger';
+import { cbLogger } from '../../lib/omnichannel/logger';
 
 const onTransferFailure = async (
 	room: IRoom,

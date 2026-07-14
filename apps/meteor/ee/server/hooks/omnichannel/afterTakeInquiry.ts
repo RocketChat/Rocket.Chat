@@ -4,10 +4,10 @@ import { LivechatVisitors } from '@rocket.chat/models';
 import { settings } from '../../../../app/settings/server';
 import { RoutingManager } from '../../../../server/lib/omnichannel/RoutingManager';
 import { afterTakeInquiry } from '../../../../server/lib/omnichannel/hooks';
-import { AutoTransferChatScheduler } from '../../../app/livechat-enterprise/server/lib/AutoTransferChatScheduler';
-import { debouncedDispatchWaitingQueueStatus } from '../../../app/livechat-enterprise/server/lib/Helper';
-import { OmnichannelQueueInactivityMonitor } from '../../../app/livechat-enterprise/server/lib/QueueInactivityMonitor';
-import { cbLogger } from '../../../app/livechat-enterprise/server/lib/logger';
+import { AutoTransferChatScheduler } from '../../lib/omnichannel/AutoTransferChatScheduler';
+import { debouncedDispatchWaitingQueueStatus } from '../../lib/omnichannel/Helper';
+import { OmnichannelQueueInactivityMonitor } from '../../lib/omnichannel/QueueInactivityMonitor';
+import { cbLogger } from '../../lib/omnichannel/logger';
 
 afterTakeInquiry.patch(
 	async (
