@@ -17,7 +17,7 @@ import { updateAuditedByUser } from '../../../settings/lib/auditedSettingUpdates
 const appearanceResponseSchema = ajv.compile<{ appearance: ISetting[] }>({
 	type: 'object',
 	properties: {
-		appearance: { type: 'array', items: { type: 'object' } },
+		appearance: { type: 'array', items: { $ref: '#/components/schemas/ISettingBase' } },
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['appearance', 'success'],

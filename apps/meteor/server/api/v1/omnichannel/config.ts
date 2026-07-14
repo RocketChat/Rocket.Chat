@@ -13,6 +13,12 @@ const cachedSettings = mem(settings, {
 	cacheKey: JSON.stringify,
 });
 
+// TODO: `config` is the full Livechat widget config assembled at runtime (enabled, a nested
+// `settings` object, `theme`, `triggers`, `departments`, `resources`, plus optional `guest`/`room`/`agent`).
+// The manual `Endpoints` entry types it as `{ [k]: string | boolean } & { room?; agent? }`, which does
+// not match the actual nested shape, so neither that type nor a simple `additionalProperties` schema is
+// faithful. Left as a relaxed `object` until the return type is corrected in rest-typings and a full
+// schema (or a registered core-typings type) is written for it.
 const livechatConfigResponseSchema = ajv.compile<{ config: Record<string, unknown> }>({
 	type: 'object',
 	properties: {

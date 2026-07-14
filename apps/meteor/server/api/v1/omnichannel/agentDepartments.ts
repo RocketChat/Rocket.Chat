@@ -13,7 +13,19 @@ import { findAgentDepartments } from './lib/agents';
 const agentDepartmentsResponseSchema = ajv.compile<{ departments: (ILivechatDepartmentAgents & { departmentName: string })[] }>({
 	type: 'object',
 	properties: {
-		departments: { type: 'array', items: { type: 'object' } },
+		departments: {
+			type: 'array',
+			items: {
+				allOf: [
+					{ $ref: '#/components/schemas/ILivechatDepartmentAgents' },
+					{
+						type: 'object',
+						properties: { departmentName: { type: 'string' } },
+						required: ['departmentName'],
+					},
+				],
+			},
+		},
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['departments', 'success'],

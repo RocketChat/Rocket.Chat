@@ -7,7 +7,7 @@ import { findIntegrationSettings } from './lib/integrations';
 const integrationSettingsResponseSchema = ajv.compile<{ settings: ISetting[] }>({
 	type: 'object',
 	properties: {
-		settings: { type: 'array', items: { type: 'object' } },
+		settings: { type: 'array', items: { $ref: '#/components/schemas/ISettingBase' } },
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['settings', 'success'],

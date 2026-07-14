@@ -15,7 +15,36 @@ import { getPaginationItems } from '../../lib/getPaginationItems';
 const transferHistoryResponseSchema = ajv.compile<PaginatedResult<{ history: IOmnichannelSystemMessage['transferData'][] }>>({
 	type: 'object',
 	properties: {
-		history: { type: 'array', items: { type: 'object' } },
+		history: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					comment: { type: 'string' },
+					transferredBy: {
+						type: 'object',
+						properties: { name: { type: 'string' }, username: { type: 'string' } },
+						required: ['username'],
+						additionalProperties: false,
+					},
+					transferredTo: {
+						type: 'object',
+						properties: { name: { type: 'string' }, username: { type: 'string' } },
+						required: ['username'],
+						additionalProperties: false,
+					},
+					nextDepartment: {
+						type: 'object',
+						properties: { _id: { type: 'string' }, name: { type: 'string' } },
+						required: ['_id'],
+						additionalProperties: false,
+					},
+					scope: { type: 'string', enum: ['department', 'agent', 'queue'] },
+				},
+				required: ['comment', 'transferredBy', 'transferredTo', 'scope'],
+				additionalProperties: false,
+			},
+		},
 		count: { type: 'number' },
 		offset: { type: 'number' },
 		total: { type: 'number' },

@@ -313,6 +313,9 @@ These types are already registered and available via `$ref`:
 - `#/components/schemas/IModerationAudit`
 - `#/components/schemas/IModerationReport`
 - `#/components/schemas/IBanner`
+- `#/components/schemas/ILivechatBusinessHour`
+- `#/components/schemas/ILivechatDepartmentAgents`
+- `#/components/schemas/ISettingBase` (and the other `ISetting*` variants — `ISetting` is a union, so typia emits one schema per variant; `$ref` the `ISettingBase` schema, which every setting satisfies)
 - `#/components/schemas/CallHistoryItem`
 - `#/components/schemas/ICustomUserStatus`
 - `#/components/schemas/SlashCommand`

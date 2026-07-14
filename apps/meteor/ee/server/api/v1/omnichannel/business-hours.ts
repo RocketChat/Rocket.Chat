@@ -33,7 +33,7 @@ const businessHoursResponseSchema = ajv.compile<{
 }>({
 	type: 'object',
 	properties: {
-		businessHours: { type: 'array', items: { type: 'object' } },
+		businessHours: { type: 'array', items: { $ref: '#/components/schemas/ILivechatBusinessHour' } },
 		count: { type: 'number' },
 		offset: { type: 'number' },
 		total: { type: 'number' },

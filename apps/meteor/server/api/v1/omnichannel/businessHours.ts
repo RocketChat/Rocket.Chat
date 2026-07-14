@@ -19,7 +19,7 @@ import { findLivechatBusinessHour } from './lib/businessHours';
 const businessHourResponseSchema = ajv.compile<{ businessHour?: ILivechatBusinessHour }>({
 	type: 'object',
 	properties: {
-		businessHour: { type: 'object' },
+		businessHour: { $ref: '#/components/schemas/ILivechatBusinessHour' },
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['success'],

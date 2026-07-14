@@ -11,9 +11,30 @@ const pageVisitedResponseSchema = ajv.compile<{ page: Pick<IOmnichannelSystemMes
 			type: 'object',
 			properties: {
 				msg: { type: 'string' },
-				navigation: { type: 'object' },
+				navigation: {
+					type: 'object',
+					properties: {
+						page: {
+							type: 'object',
+							properties: {
+								title: { type: 'string' },
+								location: {
+									type: 'object',
+									properties: { href: { type: 'string' } },
+									required: ['href'],
+									additionalProperties: false,
+								},
+								token: { type: 'string' },
+							},
+							required: ['title', 'location'],
+							additionalProperties: false,
+						},
+					},
+					required: ['page'],
+					additionalProperties: false,
+				},
 			},
-			required: ['msg', 'navigation'],
+			required: ['msg'],
 			additionalProperties: false,
 		},
 		success: { type: 'boolean', enum: [true] },
