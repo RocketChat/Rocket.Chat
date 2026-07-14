@@ -1,6 +1,6 @@
 import { Accounts } from 'meteor/accounts-base';
 
-import { handleIdentityToken } from '../../../../app/apple/lib/handleIdentityToken';
+import { handleIdentityToken } from './handleIdentityToken';
 import { settings } from '../../../settings';
 
 jest.mock(
@@ -38,7 +38,7 @@ jest.mock('../../../settings', () => ({
 	},
 }));
 
-jest.mock('../../../../app/apple/lib/handleIdentityToken', () => ({
+jest.mock('./handleIdentityToken', () => ({
 	handleIdentityToken: jest.fn(),
 }));
 

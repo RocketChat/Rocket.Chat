@@ -7,7 +7,6 @@ import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { createDirectRoom } from './createDirectRoom';
-import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
 import { calculateRoomRolePriorityFromRoles } from '../../../lib/roles/calculateRoomRolePriorityFromRoles';
 import { callbacks } from '../callbacks';
 import { beforeAddUserToRoom } from '../callbacks/beforeAddUserToRoom';
@@ -15,6 +14,7 @@ import { beforeCreateRoomCallback, prepareCreateRoomCallback } from '../callback
 import { getSubscriptionAutotranslateDefaultConfig } from '../getSubscriptionAutotranslateDefaultConfig';
 import { notifyOnRoomChanged, notifyOnSubscriptionChangedById } from '../notifyListener';
 import { syncRoomRolePriorityForUserAndRoom } from '../roles/syncRoomRolePriority';
+import { getDefaultSubscriptionPref } from '../utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../utils/lib/getValidRoomName';
 
 const isValidName = (name: unknown): name is string => {

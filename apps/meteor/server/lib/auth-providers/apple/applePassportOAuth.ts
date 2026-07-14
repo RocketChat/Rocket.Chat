@@ -8,8 +8,8 @@ import { Strategy as AppleStrategy } from 'passport-apple';
 import type { Profile } from 'passport-apple';
 
 import { AppleCustomOAuth } from './AppleCustomOAuth';
+import { handleIdentityToken } from './handleIdentityToken';
 import { config } from '../../../../app/apple/lib/config';
-import { handleIdentityToken } from '../../../../app/apple/lib/handleIdentityToken';
 import { oAuthRouter } from '../../../configuration/configurePassport';
 import { settings } from '../../../settings';
 import { allowPassportOAuthMiddleware } from '../../oauth/allowPassportOAuthMiddleware';

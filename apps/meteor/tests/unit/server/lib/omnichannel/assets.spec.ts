@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { describe, it, before, after } from 'mocha';
 
-import { addServerUrlToIndex } from '../../../../../app/livechat/lib/Assets';
+import { addServerUrlToIndex } from '../../../../../server/lib/omnichannel/Assets';
 
 describe('addServerUrlToIndex', () => {
 	before(() => {

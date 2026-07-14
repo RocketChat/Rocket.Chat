@@ -1,7 +1,7 @@
 import { MeteorError } from '@rocket.chat/core-services';
 import { Accounts } from 'meteor/accounts-base';
 
-import { handleIdentityToken } from '../../../../app/apple/lib/handleIdentityToken';
+import { handleIdentityToken } from './handleIdentityToken';
 import { settings } from '../../../settings';
 import { CustomOAuth } from '../custom-oauth/custom_oauth_server';
 

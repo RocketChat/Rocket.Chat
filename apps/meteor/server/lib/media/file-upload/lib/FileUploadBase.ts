@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { UploadFS } from '../../../server/ufs';
+import { UploadFS } from '../../../../ufs';
 
 // set ufs temp dir to $TMPDIR/ufs instead of /tmp/ufs if the variable is set
 if ('TMPDIR' in process.env) {

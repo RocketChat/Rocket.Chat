@@ -14,7 +14,6 @@ import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { getNameForDMs } from './getNameForDMs';
 import { FederationActions } from './hooks/BeforeFederationActions';
-import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../lib/getSubscriptionAutotranslateDefaultConfig';
 import { readThread } from '../../lib/messaging/threads/functions';
@@ -33,6 +32,7 @@ import { removeUserFromRoom, performUserRemoval } from '../../lib/rooms/removeUs
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { saveRoomName } from '../../lib/rooms/settings';
 import { saveRoomTopic } from '../../lib/rooms/settings/saveRoomTopic';
+import { getDefaultSubscriptionPref } from '../../lib/utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../lib/utils/lib/getValidRoomName';
 import { createDirectMessage } from '../../meteor-methods/messages/createDirectMessage';
 import { addRoomLeader } from '../../meteor-methods/rooms/addRoomLeader';
