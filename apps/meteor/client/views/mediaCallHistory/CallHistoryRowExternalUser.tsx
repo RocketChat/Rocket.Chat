@@ -22,6 +22,10 @@ const CallHistoryRowExternalUser = ({ _id, contact, type, status, duration, time
 		if (state === 'unavailable') {
 			return [];
 		}
+		if (!('number' in contact) || !contact.number) {
+			return [];
+		}
+
 		const disabled = state !== 'available';
 		return [
 			{

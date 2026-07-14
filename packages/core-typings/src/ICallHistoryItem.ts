@@ -50,4 +50,25 @@ export interface IExternalMediaCallHistoryItem extends IMediaCallHistoryItem {
 	contactExtension: string;
 }
 
-export type CallHistoryItem = IInternalMediaCallHistoryItem | IExternalMediaCallHistoryItem;
+export interface IMitelCallHistoryItem extends ICallHistoryItem {
+	type: 'mitel';
+
+	contactNumber?: string;
+	contactName?: string;
+	duration: number;
+
+	transferredFrom?: {
+		number?: string;
+		name?: string;
+	};
+
+	transferredTo?: {
+		number?: string;
+		name?: string;
+	};
+
+	transferred?: boolean;
+	diverted?: boolean;
+}
+
+export type CallHistoryItem = IInternalMediaCallHistoryItem | IExternalMediaCallHistoryItem | IMitelCallHistoryItem;
