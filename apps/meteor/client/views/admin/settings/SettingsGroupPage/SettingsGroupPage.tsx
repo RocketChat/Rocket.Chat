@@ -1,5 +1,5 @@
 import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
-import { Accordion, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
@@ -8,6 +8,7 @@ import type { ReactNode, MouseEvent, SubmitEvent } from 'react';
 import { useMemo, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import SettingsGroupPageTOC from './SettingsGroupPageTOC';
 import type { EditableSetting } from '../../EditableSettingsContext';
 import { useEditableSettingsDispatch, useEditableSettings } from '../../EditableSettingsContext';
 
@@ -20,6 +21,7 @@ export type SettingsGroupPageProps = {
 	i18nDescription?: string;
 	tabs?: ReactNode;
 	isCustom?: boolean;
+	sections?: string[];
 };
 
 const SettingsGroupPage = ({
@@ -31,6 +33,7 @@ const SettingsGroupPage = ({
 	i18nDescription = undefined,
 	tabs = undefined,
 	isCustom = false,
+	sections = undefined,
 }: SettingsGroupPageProps) => {
 	const { t, i18n } = useTranslation();
 	const dispatch = useSettingsDispatch();
@@ -137,6 +140,8 @@ const SettingsGroupPage = ({
 
 	const isTranslationKey = (key: string): key is TranslationKey => (key as TranslationKey) !== undefined;
 
+	const hasToc = !!sections && sections.filter(Boolean).length > 1;
+
 	return (
 		<Page is='form' action='#' method='post' onSubmit={handleSubmit}>
 			<PageHeader onClickBack={onClickBack} title={i18nLabel && isTranslationKey(i18nLabel) && t(i18nLabel)}>
@@ -147,14 +152,24 @@ const SettingsGroupPage = ({
 				children
 			) : (
 				<PageScrollableContentWithShadow>
-					<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
-						{i18nDescription && isTranslationKey(i18nDescription) && i18n.exists(i18nDescription) && (
-							<Box is='p' color='hint' fontScale='p2'>
-								{t(i18nDescription)}
-							</Box>
-						)}
+					<Box
+						marginBlock='none'
+						marginInline='auto'
+						width='full'
+						maxWidth={hasToc ? 'x860' : 'x580'}
+						display='flex'
+						alignItems='flex-start'
+					>
+						<Box flexGrow={1} flexShrink={1} minWidth={0} maxWidth={hasToc ? 'x580' : 'full'}>
+							{i18nDescription && isTranslationKey(i18nDescription) && i18n.exists(i18nDescription) && (
+								<Box is='p' color='hint' fontScale='p2' mbe={24}>
+									{t(i18nDescription)}
+								</Box>
+							)}
 
-						<Accordion>{children}</Accordion>
+							{children}
+						</Box>
+						{hasToc && sections && <SettingsGroupPageTOC groupId={_id} sections={sections} />}
 					</Box>
 				</PageScrollableContentWithShadow>
 			)}

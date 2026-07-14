@@ -76,8 +76,8 @@ test.describe.parallel('administration-settings', () => {
 		test.afterAll(async ({ api }) => setSettingValueById(api, 'theme-custom-css', ''));
 
 		test('should display the code mirror correctly', async ({ page, api }) => {
-			await poAdminSettings.getAccordionBtnByName('Custom CSS').click();
-
+			// Settings sections now render as always-open cards, so the Custom CSS
+			// editor is visible without expanding an accordion.
 			await test.step('should render only one code mirror element', async () => {
 				const codeMirrorParent = page.getByRole('code');
 				await expect(codeMirrorParent.locator('.CodeMirror')).toHaveCount(1);
