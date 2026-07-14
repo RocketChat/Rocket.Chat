@@ -524,8 +524,6 @@ export class LDAPConnection {
 		});
 	}
 
-	// ldapjs parses the filter synchronously and throws on invalid filters (e.g. an empty search field);
-	// route those to the callback so they don't escape as unhandled rejections and crash the process.
 	private clientSearch(baseDN: string, searchOptions: ldapjs.SearchOptions, callback: ldapjs.SearchCallBack): void {
 		try {
 			this.client.search(baseDN, searchOptions, callback);
