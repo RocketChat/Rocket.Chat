@@ -27,7 +27,7 @@ import { getUserEmailVerified } from '../../../../lib/utils/getUserEmailVerified
 export type UserInfoWithDataProps = {
 	uid?: IUser['_id'];
 	username?: IUser['username'];
-	rid: IRoom['_id'];
+	rid?: IRoom['_id'];
 	invitationDate?: string;
 	onClose: () => void;
 	onClickBack?: () => void;
@@ -121,7 +121,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 				<UserInfo
 					{...user}
 					invitationDate={invitationDate}
-					actions={<UserInfoActions user={user} rid={rid} isInvited={Boolean(invitationDate)} backToList={onClickBack} />}
+					actions={rid ? <UserInfoActions user={user} rid={rid} isInvited={Boolean(invitationDate)} backToList={onClickBack} /> : null}
 				/>
 			)}
 		</ContextualbarDialog>
