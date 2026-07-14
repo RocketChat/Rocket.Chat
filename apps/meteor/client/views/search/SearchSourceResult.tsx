@@ -78,7 +78,14 @@ const SearchSourceResult = ({ item }: SearchSourceResultProps): ReactElement => 
 	const relevanceScore = typeof item.score === 'number' ? Math.max(0, Math.min(100, Math.round(item.score * 100))) : undefined;
 
 	return (
-		<Box is='article' role='listitem' position='relative'>
+		<Box
+			is='article'
+			role='listitem'
+			position='relative'
+			borderBlockEndWidth={1}
+			borderBlockEndStyle='solid'
+			borderBlockEndColor='stroke-extra-light'
+		>
 			<Message clickable={Boolean(href)}>
 				<MessageLeftContainer>
 					<MessageAvatar username={username} size='x36' />

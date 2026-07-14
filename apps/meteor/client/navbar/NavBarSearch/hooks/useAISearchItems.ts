@@ -42,7 +42,8 @@ export const useAISearchItems = (
 		[appliedSearchFilters, enabled, filterText],
 	);
 	const debouncedSearchText = useDebouncedValue(searchText, 500);
-	const debouncedUserFilter = useDebouncedValue(activeFilter?.key === 'from' ? activeFilter.value.replace(/^@/, '') : '', 500);
+	const userFilter = activeFilter?.key === 'from' ? activeFilter.value.replace(/^@/, '') : '';
+	const debouncedUserFilter = useDebouncedValue(userFilter, 500);
 	const roomLookupText = useMemo(() => getRoomLookupText(activeFilter, enabled), [activeFilter, enabled]);
 	const roomLookupQuery = useMemo(() => (roomLookupText ? getRoomLookupQuery(roomLookupText) : emptySubscriptionQuery), [roomLookupText]);
 	const roomFilterRooms = useUserSubscriptions(roomLookupQuery, roomLookupOptions);
@@ -81,14 +82,17 @@ export const useAISearchItems = (
 	const filterSuggestions = useMemo(
 		() =>
 			activeFilter?.key === 'from'
-				? mergeFilterSuggestions(buildUserFilterSuggestions(filterText, activeFilter, users, t), localSuggestions)
+				? mergeFilterSuggestions(
+						buildUserFilterSuggestions(filterText, activeFilter, userFilter === debouncedUserFilter ? users : [], t),
+						localSuggestions,
+					)
 				: localSuggestions,
-		[activeFilter, filterText, localSuggestions, t, users],
+		[activeFilter, debouncedUserFilter, filterText, localSuggestions, t, userFilter, users],
 	);
 
 	return {
 		data: {
-			intelligent: shouldSearch ? intelligent : [],
+			intelligent: shouldSearch && searchText === debouncedSearchText ? intelligent : [],
 			filterSuggestions,
 			searchText,
 		},

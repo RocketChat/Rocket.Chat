@@ -207,6 +207,20 @@ describe('AI Search client helpers', () => {
 				activeFilter: undefined,
 			});
 		});
+
+		it('parses and merges filters while AI Search is active', () => {
+			expect(
+				getFilterSearchState('deployment in:general from:bob', { roomNames: [], rids: ['room-id'], fromUsernames: ['alice'] }, true),
+			).toEqual({
+				searchText: 'deployment',
+				filters: {
+					roomNames: ['general'],
+					rids: ['room-id'],
+					fromUsernames: ['alice', 'bob'],
+				},
+				activeFilter: { key: 'from', value: 'bob', start: 22, end: 30 },
+			});
+		});
 	});
 
 	describe('getAISearchButtonTooltip', () => {
