@@ -32,6 +32,18 @@ const flattenMarkup = (
 			return label ? `${label} (${href})` : href;
 		}
 
+		case 'EMOJI':
+			return 'unicode' in markup ? markup.unicode : `:${markup.shortCode ?? markup.value.value}:`;
+
+		case 'MENTION_USER':
+			return `@${markup.value.value}`;
+
+		case 'MENTION_CHANNEL':
+			return `#${markup.value.value}`;
+
+		case 'TIMESTAMP':
+			return new Date(parseInt(markup.value.timestamp) * 1000).toLocaleString();
+
 		default:
 			return '';
 	}
