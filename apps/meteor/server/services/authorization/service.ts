@@ -16,7 +16,10 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 	private getRolesCached = mem(this.getRoles.bind(this), {
 		maxAge: 1000,
-		cacheKey: JSON.stringify,
+		cacheKey: (args: unknown[]) => {
+			const [user, scope] = args as [string | UserWithRoles, IRoom['_id']?];
+			return typeof user === 'string' ? `${user}/${scope ?? ''}` : `${user._id}/${scope ?? ''}/${JSON.stringify(user.roles ?? [])}`;
+		},
 	});
 
 	private rolesHasPermissionCached = mem(this.rolesHasPermission.bind(this), {
@@ -168,8 +171,15 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		return [...userRoles, ...subscriptionsRoles].sort((a, b) => a.localeCompare(b));
 	}
 
+	private async resolveRoles(user: string | UserWithRoles, scope?: IRoom['_id']): Promise<string[]> {
+		if (typeof user !== 'string' && !scope) {
+			return [...(user.roles ?? [])].sort((a, b) => a.localeCompare(b));
+		}
+		return this.getRolesCached(user, scope);
+	}
+
 	private async atLeastOne(user: string | UserWithRoles, permissions: string[] = [], scope?: string): Promise<boolean> {
-		const sortedRoles = await this.getRolesCached(user, scope);
+		const sortedRoles = await this.resolveRoles(user, scope);
 		for await (const permission of permissions) {
 			if (await this.rolesHasPermissionCached(permission, sortedRoles)) {
 				return true;
@@ -180,7 +190,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 	}
 
 	private async all(user: string | UserWithRoles, permissions: string[] = [], scope?: string): Promise<boolean> {
-		const sortedRoles = await this.getRolesCached(user, scope);
+		const sortedRoles = await this.resolveRoles(user, scope);
 		for await (const permission of permissions) {
 			if (!(await this.rolesHasPermissionCached(permission, sortedRoles))) {
 				return false;
