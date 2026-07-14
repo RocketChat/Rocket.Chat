@@ -87,9 +87,14 @@ export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 	}
 
 	if (settings.get('Block_Multiple_Failed_Logins_Notify_Failed')) {
-		const willBeBlockedUntil = addMinutesToADate(new Date(lastFailedAttemptAt), minutesUntilUnblock);
-
-		await notifyFailedLogin(ip, willBeBlockedUntil, failedAttemptsSinceLastLogin);
+		// Only notify exactly when the threshold is first crossed (===).
+		// Using > would re-notify on every subsequent blocked attempt within the same
+		// block window, flooding the admin channel. Once the window expires and attempts
+		// accumulate again, the === check will fire once more as intended.
+		if (failedAttemptsSinceLastLogin === attemptsUntilBlock) {
+			const willBeBlockedUntil = addMinutesToADate(new Date(lastFailedAttemptAt), minutesUntilUnblock);
+			await notifyFailedLogin(ip, willBeBlockedUntil, failedAttemptsSinceLastLogin);
+		}
 	}
 
 	return false;
@@ -136,9 +141,14 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 	}
 
 	if (settings.get('Block_Multiple_Failed_Logins_Notify_Failed')) {
-		const willBeBlockedUntil = addMinutesToADate(new Date(lastFailedAttemptAt), minutesUntilUnblock);
-
-		await notifyFailedLogin(loginUsername, willBeBlockedUntil, failedAttemptsSinceLastLogin);
+		// Only notify exactly when the threshold is first crossed (===).
+		// Using > would re-notify on every subsequent blocked attempt within the same
+		// block window, flooding the admin channel. Once the window expires and attempts
+		// accumulate again, the === check will fire once more as intended.
+		if (failedAttemptsSinceLastLogin === attemptsUntilBlock) {
+			const willBeBlockedUntil = addMinutesToADate(new Date(lastFailedAttemptAt), minutesUntilUnblock);
+			await notifyFailedLogin(loginUsername, willBeBlockedUntil, failedAttemptsSinceLastLogin);
+		}
 	}
 
 	return false;
