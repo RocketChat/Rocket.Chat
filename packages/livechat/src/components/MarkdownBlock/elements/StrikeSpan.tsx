@@ -7,6 +7,7 @@ import EmojiElement from './EmojiElement';
 import ItalicSpan from './ItalicSpan';
 import LinkSpan from './LinkSpan';
 import PlainSpan from './PlainSpan';
+import Timestamp from './Timestamp';
 import UserMentionElement from './UserMentionElement';
 
 type MessageBlock =
@@ -64,6 +65,9 @@ const renderBlockComponent = (block: MessageBlock, index: number) => {
 
 		case 'INLINE_CODE':
 			return <CodeElement key={index} code={block.value.value} />;
+
+		case 'TIMESTAMP':
+			return <Timestamp key={index}>{block}</Timestamp>;
 
 		default:
 			return null;
