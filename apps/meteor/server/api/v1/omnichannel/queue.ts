@@ -14,9 +14,8 @@ import { getPaginationItems } from '../../lib/getPaginationItems';
 const queueMetricsResponseSchema = ajv.compile<
 	PaginatedResult<{
 		queue: {
-			_id: string;
-			user: { _id: string; userId: string; username: string; status: string };
-			department: { _id: string; name: string };
+			user: { _id: string; username: string; status: string };
+			department: { _id?: string; name?: string };
 			chats: number;
 		}[];
 	}>
@@ -25,19 +24,20 @@ const queueMetricsResponseSchema = ajv.compile<
 	properties: {
 		queue: {
 			type: 'array',
+			// Shape matches the getQueueMetrics aggregation projection: `_id: 0` (no top-level _id),
+			// `user` has _id/username/status, and `department` uses preserveNullAndEmptyArrays so its
+			// _id/name are absent when the queued room has no department yet (serializes to `{}`).
 			items: {
 				type: 'object',
 				properties: {
-					_id: { type: 'string' },
 					user: {
 						type: 'object',
 						properties: {
 							_id: { type: 'string' },
-							userId: { type: 'string' },
 							username: { type: 'string' },
 							status: { type: 'string' },
 						},
-						required: ['_id', 'userId', 'username', 'status'],
+						required: ['_id', 'username', 'status'],
 						additionalProperties: false,
 					},
 					department: {
@@ -46,12 +46,11 @@ const queueMetricsResponseSchema = ajv.compile<
 							_id: { type: 'string' },
 							name: { type: 'string' },
 						},
-						required: ['_id', 'name'],
 						additionalProperties: false,
 					},
 					chats: { type: 'number' },
 				},
-				required: ['_id', 'user', 'department', 'chats'],
+				required: ['user', 'department', 'chats'],
 				additionalProperties: false,
 			},
 		},
