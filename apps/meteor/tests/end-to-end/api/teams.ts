@@ -973,6 +973,10 @@ describe('/teams.list', () => {
 
 		const teamBefore = await readTeam();
 
+		// use a dedicated user: adding an existing test actor (e.g. the admin) to this team
+		// would change which teams teams.list returns for them in the other tests of this suite
+		const countMember = await createUser();
+
 		const channel1 = (
 			await createRoom({ type: 'c', name: `team-list-count-1-${Date.now()}-${Math.random()}`, credentials: testUser1Credentials })
 		).body.channel;
@@ -989,14 +993,20 @@ describe('/teams.list', () => {
 		await request
 			.post(api('teams.addMembers'))
 			.set(testUser1Credentials)
-			.send({ teamId: testTeam1._id, members: [{ userId: credentials['X-User-Id'], roles: ['member'] }] })
+			.send({ teamId: testTeam1._id, members: [{ userId: countMember._id, roles: ['member'] }] })
 			.expect(200);
 
 		const teamAfter = await readTeam();
 		expect(teamAfter.rooms).to.equal(teamBefore.rooms + 2);
 		expect(teamAfter.numberOfUsers).to.equal(teamBefore.numberOfUsers + 1);
 
+		await request
+			.post(api('teams.removeMember'))
+			.set(testUser1Credentials)
+			.send({ teamId: testTeam1._id, userId: countMember._id })
+			.expect(200);
 		await Promise.all([deleteRoom({ type: 'c', roomId: channel1._id }), deleteRoom({ type: 'c', roomId: channel2._id })]);
+		await deleteUser(countMember);
 	});
 
 	it("should prevent users from accessing unrelated teams via 'query' parameter", () => {
