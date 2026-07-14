@@ -214,13 +214,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		// Only a provider supplied by an app has an app to ask; the apps engine throws for a built-in one.
 		if (!this.isEmbeddedProvider(call.providerName)) {
-			const blocks = await (
-				await this.getProviderManager()
-			)
-				.getVideoConferenceInfo(call.providerName, call, user || undefined)
-				.catch((e) => {
-					throw new Error(e);
-				});
+			const blocks = await this.getBlocks(call.providerName, call, user || undefined).catch((e) => {
+				throw new Error(e);
+			});
 
 			if (blocks?.length) {
 				return blocks as UiKit.ModalSurfaceLayout;
@@ -251,6 +247,15 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				},
 			},
 		];
+	}
+
+	private async getBlocks(providerName: string, call: any, user?: any) {
+		const provider = videoConfProviders.getVideoConfProviderHandler(providerName);
+		if (provider) {
+			return provider.getVideoConferenceInfo(call, user);
+		}
+
+		return (await this.getProviderManager()).getVideoConferenceInfo(call.providerName, call, user || undefined);
 	}
 
 	public async cancel(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void> {
@@ -374,7 +379,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	public async listProviders(): Promise<{ key: string; label: string }[]> {
-		return videoConfProviders.getProviderList();
+		return videoConfProviders.getAllProviders();
 	}
 
 	public async listProviderCapabilities(providerName: string): Promise<VideoConferenceCapabilities> {
@@ -682,11 +687,22 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		if (this.isEmbeddedProvider(providerName)) {
 			return;
 		}
-		const manager = await this.getProviderManager();
-		const configured = await manager.isFullyConfigured(providerName).catch(() => false);
+		const configured = await this.isFullyConfigured(providerName);
 		if (!configured) {
 			throw new Error(availabilityErrors.NOT_CONFIGURED);
 		}
+	}
+
+	private async isFullyConfigured(providerName: string): Promise<boolean> {
+		const provider = videoConfProviders.getVideoConfProviderHandler(providerName);
+		if (provider) {
+			return provider.isFullyConfigured();
+		}
+
+		const manager = await this.getProviderManager();
+		const configured = await manager.isFullyConfigured(providerName).catch(() => false);
+
+		return configured;
 	}
 
 	private async getValidatedProvider(): Promise<string> {
@@ -1092,6 +1108,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('video-conf-provider-unavailable');
 		}
 
+		const provider = videoConfProviders.getVideoConfProviderHandler(call.providerName);
+		if (provider) {
+			// TODO: compensate for the getRoomName?
+			return provider.generateUrl(call);
+		}
+
 		const title = isGroupVideoConference(call) ? call.title || (await this.getRoomName(call.rid)) : '';
 		const callData: VideoConfData = {
 			_id: call._id,
@@ -1147,7 +1169,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	private async getUrl(
 		call: ExternalVideoConference,
-		user?: AtLeast<IUser, '_id' | 'username' | 'name'>,
+		user?: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'>,
 		options: VideoConferenceJoinOptions = {},
 	): Promise<string> {
 		if (!videoConfProviders.isProviderAvailable(call.providerName)) {
@@ -1157,6 +1179,20 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		if (!call.url) {
 			call.url = await this.generateNewUrl(call);
 			await VideoConferenceModel.setUrlById(call._id, call.url);
+		}
+
+		const userData = user && {
+			_id: user._id,
+			username: user.username as string,
+			name: user.name as string,
+			avatarETag: user.avatarETag || null,
+			ts: new Date(),
+		};
+
+		const provider = videoConfProviders.getVideoConfProviderHandler(call.providerName);
+		if (provider) {
+			// TODO: compensate for the call title?
+			return provider.customizeUrl(call, userData);
 		}
 
 		const callData: VideoConfDataExtended = {
@@ -1171,12 +1207,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			},
 			title: await this.getCallTitle(call),
 			discussionRid: call.discussionRid,
-		};
-
-		const userData = user && {
-			_id: user._id,
-			username: user.username as string,
-			name: user.name as string,
 		};
 
 		return (await this.getProviderManager()).customizeUrl(call.providerName, callData, userData, options);
@@ -1204,6 +1234,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return;
 		}
 
+		const provider = videoConfProviders.getVideoConfProviderHandler(call.providerName);
+		if (provider) {
+			return provider.onNewVideoConference(call);
+		}
+
 		return (await this.getProviderManager()).onNewVideoConference(call.providerName, call);
 	}
 
@@ -1226,6 +1261,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return;
 		}
 
+		const provider = videoConfProviders.getVideoConfProviderHandler(call.providerName);
+		if (provider) {
+			return;
+		}
+
 		return (await this.getProviderManager()).onVideoConferenceChanged(call.providerName, call);
 	}
 
@@ -1245,6 +1285,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		if (this.isEmbeddedProvider(call.providerName)) {
+			return;
+		}
+
+		const provider = videoConfProviders.getVideoConfProviderHandler(call.providerName);
+		if (provider) {
 			return;
 		}
 
