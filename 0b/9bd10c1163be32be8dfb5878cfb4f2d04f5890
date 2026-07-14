@@ -1,0 +1,50 @@
+apps/meteor/server/lib/auth-providers/apple/loginHandler.spec.ts
+  s_e5403c65369c09::t_8b51553e7a4984 3
+  s_e5403c65369c09::t_f5cf0faa4b5aa2 41
+apps/meteor/server/lib/auth-providers/apple/handleIdentityToken.spec.ts
+  s_e5403c65369c09::t_8b51553e7a4984 1-133
+apps/meteor/server/lib/media/file-upload/index.ts
+  s_e5403c65369c09::t_8b51553e7a4984 1
+apps/meteor/server/lib/media/file-upload/lib/FileUploadBase.ts
+  s_e5403c65369c09::t_8b51553e7a4984 1-8
+apps/meteor/tests/unit/server/lib/omnichannel/assets.spec.ts
+  s_e5403c65369c09::t_8b51553e7a4984 1-35
+apps/meteor/ee/server/lib/ldap/copyCustomFieldsLDAP.ts
+  s_e5403c65369c09::t_9a1a97d31ce2f8 6
+apps/meteor/server/lib/rooms/addUserToDefaultChannels.ts
+  s_e5403c65369c09::t_9a1a97d31ce2f8 10
+apps/meteor/server/services/room/service.ts
+  s_e5403c65369c09::t_9a1a97d31ce2f8 35
+apps/meteor/server/lib/rooms/createRoom.ts
+  s_e5403c65369c09::t_9a1a97d31ce2f8 17
+apps/meteor/server/lib/auth-providers/apple/applePassportOAuth.ts
+  s_e5403c65369c09::t_8b51553e7a4984 11
+apps/meteor/server/lib/auth-providers/apple/AppleCustomOAuth.ts
+  s_e5403c65369c09::t_8b51553e7a4984 4
+apps/meteor/server/lib/auth-providers/apple/loginHandler.ts
+  s_e5403c65369c09::t_8b51553e7a4984 4
+apps/meteor/server/lib/omnichannel/livechat.ts
+  s_e5403c65369c09::t_8b51553e7a4984 7
+apps/meteor/server/meteor-methods/rooms/addAllUserToRoom.ts
+  s_e5403c65369c09::t_9a1a97d31ce2f8 14
+apps/meteor/server/routes/avatar/utils.ts
+  s_e5403c65369c09::t_9a1a97d31ce2f8 13
+apps/meteor/server/lib/rooms/createDirectRoom.ts
+  s_e5403c65369c09::t_9a1a97d31ce2f8 15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "0b9bd10c1163be32be8dfb5878cfb4f2d04f5890",
+  "prompts": {},
+  "sessions": {
+    "s_e5403c65369c09": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6b768a80-3a9f-455c-bbb1-16411b638726",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
