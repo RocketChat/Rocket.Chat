@@ -859,28 +859,14 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
 
-			const online: Pick<IUser, '_id' | 'username'>[] = await Users.findUsersNotOffline({
-				projection: {
-					username: 1,
-				},
-			}).toArray();
-
-			const onlineInRoom = await Promise.all(
-				online.map(async (user) => {
-					const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
-						projection: { _id: 1, username: 1 },
-					});
-					if (subscription) {
-						return {
-							_id: user._id,
-							username: user.username,
-						};
-					}
-				}),
-			);
+			const onlineInRoom = await Users.findUsersNotOfflineByRoomId(room._id, {
+				projection: { username: 1 },
+			})
+				.map(({ _id, username }) => ({ _id, username }))
+				.toArray();
 
 			return API.v1.success({
-				online: onlineInRoom.filter(Boolean) as IUser[],
+				online: onlineInRoom as IUser[],
 			});
 		},
 	},

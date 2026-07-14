@@ -294,6 +294,25 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.countDocuments(query);
 	}
 
+	countGroupedByTeamIds(teamIds: ITeam['_id'][]): Promise<{ _id: ITeam['_id']; count: number }[]> {
+		return this.col
+			.aggregate<{ _id: ITeam['_id']; count: number }>([
+				{
+					$match: {
+						teamId: { $in: teamIds },
+						teamMain: { $exists: false },
+					},
+				},
+				{
+					$group: {
+						_id: '$teamId',
+						count: { $sum: 1 },
+					},
+				},
+			])
+			.toArray();
+	}
+
 	findPaginatedByTeamIdContainingNameAndDefault(
 		teamId: ITeam['_id'],
 		name: IRoom['name'],

@@ -75,6 +75,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	findByTeamId(teamId: ITeam['_id'], options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
 	countByTeamId(teamId: ITeam['_id']): Promise<number>;
+	countGroupedByTeamIds(teamIds: ITeam['_id'][]): Promise<{ _id: ITeam['_id']; count: number }[]>;
 
 	findPaginatedByTeamIdContainingNameAndDefault(
 		teamId: ITeam['_id'],

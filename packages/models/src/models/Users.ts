@@ -2349,6 +2349,20 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.find(query, options);
 	}
 
+	findUsersNotOfflineByRoomId(rid: IRoom['_id'], options?: FindOptions<IUser>) {
+		const query = {
+			__rooms: rid,
+			username: {
+				$exists: true,
+			},
+			status: {
+				$in: [UserStatus.ONLINE, UserStatus.AWAY, UserStatus.BUSY],
+			},
+		};
+
+		return this.find(query, options);
+	}
+
 	countUsersNotOffline(options?: FindOptions<IUser>) {
 		const query = {
 			username: {

@@ -355,6 +355,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findOneByRolesAndType<T extends Document = IUser>(roles: IRole['_id'][], type: string, options?: FindOptions<IUser>): Promise<T | null>;
 	findPresenceUsersByIds(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
 	findUsersNotOffline(options?: FindOptions<IUser>): FindCursor<IUser>;
+	findUsersNotOfflineByRoomId(rid: IRoom['_id'], options?: FindOptions<IUser>): FindCursor<IUser>;
 	countUsersNotOffline(options?: FindOptions<IUser>): Promise<number>;
 	findNotIdUpdatedFrom(userId: string, updatedFrom: Date, options?: FindOptions<IUser>): FindCursor<IUser>;
 	findByRoomId(roomId: string, options?: FindOptions<IUser>): Promise<FindCursor<IUser>>;

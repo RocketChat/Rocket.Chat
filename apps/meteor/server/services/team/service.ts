@@ -247,18 +247,9 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		const [records, total] = await Promise.all([cursor.toArray(), totalCount]);
 
-		const results: ITeamInfo[] = [];
-		for await (const record of records) {
-			results.push({
-				...record,
-				rooms: await Rooms.countByTeamId(record._id),
-				numberOfUsers: await TeamMember.countByTeamId(record._id),
-			});
-		}
-
 		return {
 			total,
-			records: results,
+			records: await this.composeTeamsInfo(records),
 		};
 	}
 
@@ -273,19 +264,24 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		const [records, total] = await Promise.all([cursor.toArray(), totalCount]);
 
-		const results: ITeamInfo[] = [];
-		for await (const record of records) {
-			results.push({
-				...record,
-				rooms: await Rooms.countByTeamId(record._id),
-				numberOfUsers: await TeamMember.countByTeamId(record._id),
-			});
-		}
-
 		return {
 			total,
-			records: results,
+			records: await this.composeTeamsInfo(records),
 		};
+	}
+
+	private async composeTeamsInfo(records: ITeam[]): Promise<ITeamInfo[]> {
+		const teamIds = records.map(({ _id }) => _id);
+		const [roomsCount, membersCount] = await Promise.all([Rooms.countGroupedByTeamIds(teamIds), TeamMember.countGroupedByTeamIds(teamIds)]);
+
+		const roomsCountByTeamId = new Map(roomsCount.map(({ _id, count }) => [_id, count]));
+		const membersCountByTeamId = new Map(membersCount.map(({ _id, count }) => [_id, count]));
+
+		return records.map((record) => ({
+			...record,
+			rooms: roomsCountByTeamId.get(record._id) ?? 0,
+			numberOfUsers: membersCountByTeamId.get(record._id) ?? 0,
+		}));
 	}
 
 	listByNames(names: Array<string>): Promise<ITeam[]>;
@@ -477,11 +473,8 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				{ _id: { $ne: room.u._id } },
 			);
 
-			for await (const m of teamMembers.records) {
-				if (await addUserToRoom(room._id, m.user, user)) {
-					room.usersCount++;
-				}
-			}
+			const added = await Promise.all(teamMembers.records.map((member) => addUserToRoom(room._id, member.user, user)));
+			room.usersCount += added.filter(Boolean).length;
 		}
 
 		return {
@@ -584,22 +577,26 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		let teamRoomIds: string[];
 
 		if (showCanDeleteOnly) {
-			const canDeleteTeamChannel = await Authorization.hasPermission(userId, 'delete-team-channel', team.roomId);
-			const canDeleteTeamGroup = await Authorization.hasPermission(userId, 'delete-team-group', team.roomId);
-			for await (const room of teamRooms) {
-				const isPublicRoom = room.t === 'c';
-				const canDeleteTeamRoom = isPublicRoom ? canDeleteTeamChannel : canDeleteTeamGroup;
-				const canDeleteRoom =
-					canDeleteTeamRoom && (await Authorization.hasPermission(userId, isPublicRoom ? 'delete-c' : 'delete-p', room._id));
-				room.userCanDelete = canDeleteRoom;
-			}
+			const [canDeleteTeamChannel, canDeleteTeamGroup] = await Promise.all([
+				Authorization.hasPermission(userId, 'delete-team-channel', team.roomId),
+				Authorization.hasPermission(userId, 'delete-team-group', team.roomId),
+			]);
+			await Promise.all(
+				teamRooms.map(async (room) => {
+					const isPublicRoom = room.t === 'c';
+					const canDeleteTeamRoom = isPublicRoom ? canDeleteTeamChannel : canDeleteTeamGroup;
+					const canDeleteRoom =
+						canDeleteTeamRoom && (await Authorization.hasPermission(userId, isPublicRoom ? 'delete-c' : 'delete-p', room._id));
+					room.userCanDelete = canDeleteRoom;
+				}),
+			);
 
 			teamRoomIds = teamRooms.filter((room) => (room.t === 'c' || room.t === 'p') && room.userCanDelete).map((room) => room._id);
 		} else {
 			teamRoomIds = teamRooms.filter((room) => room.t === 'p' || room.t === 'c').map((room) => room._id);
 		}
 
-		const subscriptionsCursor = Subscriptions.findByUserIdAndRoomIds(userId, teamRoomIds);
+		const subscriptionsCursor = Subscriptions.findByUserIdAndRoomIds(userId, teamRoomIds, { projection: { rid: 1 } });
 		const subscriptionRoomIds = (await subscriptionsCursor.toArray()).map((subscription) => subscription.rid);
 		const { cursor, totalCount } = Rooms.findPaginatedByIds(subscriptionRoomIds, {
 			skip,
@@ -608,7 +605,15 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
 
-		const roomData = await getSubscribedRoomsForUserWithDetails(userId, false, teamRoomIds);
+		// the owner-details lookup issues per-room count queries, so restrict it to the returned page
+		// (an empty id list would make it fall back to scanning every non-DM subscription of the user)
+		const roomData = rooms.length
+			? await getSubscribedRoomsForUserWithDetails(
+					userId,
+					false,
+					rooms.map(({ _id }) => _id),
+				)
+			: [];
 		const records = [];
 
 		for (const room of rooms) {
@@ -664,15 +669,23 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			};
 		}
 
-		const users = await Users.findActive({ ...query }).toArray();
-		const userIds = users.map((m) => m._id);
+		// restrict the users query to the team's members instead of scanning every active user in the workspace
+		const teamMemberIds = await TeamMember.findByTeamId<Pick<ITeamMember, 'userId'>>(teamId, { projection: { userId: 1 } })
+			.map(({ userId }) => userId)
+			.toArray();
+
+		const users = await Users.findActive(
+			{ ...query, _id: { $in: teamMemberIds } },
+			{ projection: { username: 1, name: 1, status: 1, settings: 1 } },
+		).toArray();
+		const usersById = new Map(users.map((user) => [user._id, user]));
 		const { cursor, totalCount } = TeamMember.findPaginatedMembersInfoByTeamId(teamId, count, offset, {
-			userId: { $in: userIds },
+			userId: { $in: users.map(({ _id }) => _id) },
 		});
 
 		const results: ITeamMemberInfo[] = [];
 		for await (const record of cursor) {
-			const user = users.find((u) => u._id === record.userId);
+			const user = usersById.get(record.userId);
 			if (!user) {
 				continue;
 			}

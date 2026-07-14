@@ -76,6 +76,24 @@ export class TeamMemberRaw extends BaseRaw<ITeamMember> implements ITeamMemberMo
 		return this.countDocuments({ teamId });
 	}
 
+	countGroupedByTeamIds(teamIds: Array<string>): Promise<{ _id: string; count: number }[]> {
+		return this.col
+			.aggregate<{ _id: string; count: number }>([
+				{
+					$match: {
+						teamId: { $in: teamIds },
+					},
+				},
+				{
+					$group: {
+						_id: '$teamId',
+						count: { $sum: 1 },
+					},
+				},
+			])
+			.toArray();
+	}
+
 	findByTeamIds(teamIds: Array<string>): FindCursor<ITeamMember>;
 
 	findByTeamIds(teamIds: Array<string>, options: FindOptions<ITeamMember>): FindCursor<ITeamMember>;

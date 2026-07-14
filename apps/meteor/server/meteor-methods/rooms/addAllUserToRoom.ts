@@ -38,8 +38,8 @@ export const addAllUserToRoomFn = async (userId: string, rid: IRoom['_id'], acti
 		userFilter.active = true;
 	}
 
-	const users = await Users.find(userFilter).toArray();
-	if (users.length > settings.get<number>('API_User_Limit')) {
+	const userCount = await Users.countDocuments(userFilter);
+	if (userCount > settings.get<number>('API_User_Limit')) {
 		throw new Meteor.Error('error-user-limit-exceeded', 'User Limit Exceeded', {
 			method: 'addAllToRoom',
 		});
@@ -52,15 +52,21 @@ export const addAllUserToRoomFn = async (userId: string, rid: IRoom['_id'], acti
 		});
 	}
 
-	await beforeAddUserToRoom(
-		users.map((u) => u.username!),
-		room,
+	const usernames = await Users.find(userFilter, { projection: { username: 1 } })
+		.map((user) => user.username!)
+		.toArray();
+
+	await beforeAddUserToRoom(usernames, room);
+
+	const subscribedUserIds = new Set(
+		await Subscriptions.findByRoomId(rid, { projection: { 'u._id': 1 } })
+			.map((subscription) => subscription.u._id)
+			.toArray(),
 	);
 
 	const now = new Date();
-	for await (const user of users) {
-		const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
-		if (subscription != null) {
+	for await (const user of Users.find(userFilter)) {
+		if (subscribedUserIds.has(user._id)) {
 			continue;
 		}
 		await callbacks.run('beforeJoinRoom', user, room);

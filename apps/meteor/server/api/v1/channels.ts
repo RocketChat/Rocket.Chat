@@ -36,7 +36,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../../app/authorization/server';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../app/integrations/server/lib/mountQueriesBasedOnPermission';
-import { getUserMentionsByChannel } from '../../../app/mentions/server/methods/getUserMentionsByChannel';
 import { settings } from '../../../app/settings/server';
 import { normalizeMessagesForUser } from '../../../app/utils/server/lib/normalizeMessagesForUser';
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../lib/authorization/hasPermission';
@@ -441,19 +440,26 @@ API.v1.addRoute(
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
 
-			const mentions = await getUserMentionsByChannel(this.userId, roomId, {
+			const room = await Rooms.findOneById(roomId);
+			if (!room || !(await canAccessRoomAsync(room, this.user))) {
+				throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+					method: 'getUserMentionsByChannel',
+				});
+			}
+
+			const { cursor, totalCount } = Messages.findPaginatedVisibleByMentionAndRoomId(this.user.username, roomId, {
 				sort: sort || { ts: 1 },
 				skip: offset,
 				limit: count,
 			});
 
-			const allMentions = await getUserMentionsByChannel(this.userId, roomId, {});
+			const [mentions, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				mentions,
 				count: mentions.length,
 				offset,
-				total: allMentions.length,
+				total,
 			});
 		},
 	},
@@ -1170,26 +1176,14 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
 
-			const online: Pick<IUser, '_id' | 'username'>[] = await Users.findUsersNotOffline({
+			const onlineInRoom = await Users.findUsersNotOfflineByRoomId(room._id, {
 				projection: { username: 1 },
-			}).toArray();
-
-			const onlineInRoom = await Promise.all(
-				online.map(async (user) => {
-					const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
-						projection: { _id: 1, username: 1 },
-					});
-					if (subscription) {
-						return {
-							_id: user._id,
-							username: user.username,
-						};
-					}
-				}),
-			);
+			})
+				.map(({ _id, username }) => ({ _id, username }))
+				.toArray();
 
 			return API.v1.success({
-				online: onlineInRoom.filter(Boolean) as IUser[],
+				online: onlineInRoom as IUser[],
 			});
 		},
 	},
