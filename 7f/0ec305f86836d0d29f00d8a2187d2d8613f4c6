@@ -1,0 +1,22 @@
+.github/CODEOWNERS
+  s_e5403c65369c09::t_f9f8b6f6f58e7b 33-34,36-38
+  s_e5403c65369c09::t_31ad62fffbc652 23-26
+  s_e5403c65369c09::t_925dc36f22ccbf 39-40
+  s_e5403c65369c09::t_053f80b5d41e4a 35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "7f0ec305f86836d0d29f00d8a2187d2d8613f4c6",
+  "prompts": {},
+  "sessions": {
+    "s_e5403c65369c09": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6b768a80-3a9f-455c-bbb1-16411b638726",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
