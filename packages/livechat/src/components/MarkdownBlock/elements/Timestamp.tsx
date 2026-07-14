@@ -132,7 +132,7 @@ const RelativeTime = ({ value }: RelativeTimeProps) => {
 };
 
 const getTimeToRefresh = (time: number): number => {
-	const timeToRefresh = time - Date.now();
+	const timeToRefresh = Math.abs(time - Date.now());
 
 	// less than 1 minute
 	if (timeToRefresh < 60000) {
