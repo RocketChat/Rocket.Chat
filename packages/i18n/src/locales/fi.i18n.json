@@ -3392,7 +3392,6 @@
   "Regexp_validation": "Validointi säännöllisellä lausekkeella",
   "Register": "Rekisteröi",
   "RegisterWorkspace_Button": "Rekisteröi työtila",
-  "RegisterWorkspace_Connection_Error": "Virhe yhdistettäessä",
   "RegisterWorkspace_Disconnect_Error": "Virhe katkaistaessa yhteyttä",
   "RegisterWorkspace_Disconnect_Subtitle": "Jos katkaiset työtilan yhteyden, menetät seuraavat",
   "RegisterWorkspace_Features_Marketplace_Description": "Asenna Rocket.Chat-markkinapaikan sovelluksia tähän työtilaan.",

@@ -103,6 +103,17 @@ export const sendAPN = ({
 	});
 };
 
+export const shutdownAPN = async () => {
+	const connection = apnConnection;
+	apnConnection = undefined;
+
+	try {
+		await connection?.shutdown();
+	} catch (err) {
+		logger.error({ msg: 'Error shutting down APN connection', err });
+	}
+};
+
 export const initAPN = ({ options, absoluteUrl }: { options: RequiredField<PushOptions, 'apn'>; absoluteUrl: string }) => {
 	logger.debug('APN configured');
 

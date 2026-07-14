@@ -40,7 +40,7 @@ export async function setReaction(room: IRoom, user: IUser, message: IMessage, r
 		});
 	}
 
-	if (room.ro === true && !room.reactWhenReadOnly && !(await hasPermissionAsync(user._id, 'post-readonly', room._id))) {
+	if (room.ro === true && !room.reactWhenReadOnly && !(await hasPermissionAsync(user, 'post-readonly', room._id))) {
 		// Unless the user was manually unmuted
 		if (!(room.unmuted || []).includes(user.username as string)) {
 			throw new Error("You can't send messages because the room is readonly.");

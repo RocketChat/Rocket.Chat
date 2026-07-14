@@ -3964,7 +3964,6 @@
   "Regenerate_codes": "Regenerere koder",
   "Register": "Registrer en ny konto",
   "RegisterWorkspace_Button": "Registrer arbeidsområde",
-  "RegisterWorkspace_Connection_Error": "Det oppsto en feil ved tilkobling",
   "RegisterWorkspace_Disconnect_Error": "Det oppstod en feil ved frakobling",
   "RegisterWorkspace_Disconnect_Subtitle": "Å koble fra arbeidsområdet vil resultere i tap av følgende",
   "RegisterWorkspace_Features_Marketplace_Description": "Installer Rocket.Chat Markedsplass-apper på dette arbeidsområdet.",

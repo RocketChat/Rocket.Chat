@@ -4453,7 +4453,6 @@
   "Regexp_validation": "Validation by regular expression",
   "Register": "Register",
   "RegisterWorkspace_Button": "Register workspace",
-  "RegisterWorkspace_Connection_Error": "An error occurred connecting",
   "RegisterWorkspace_Disconnect_Error": "An error occurred disconnecting",
   "RegisterWorkspace_Disconnect_Subtitle": "Disconnecting your workspace will result in the loss of the following",
   "RegisterWorkspace_Features_Marketplace_Description": "Install Rocket.Chat Marketplace apps on this workspace.",

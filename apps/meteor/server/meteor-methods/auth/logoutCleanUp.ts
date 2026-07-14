@@ -4,6 +4,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
 import { afterLogoutCleanUpCallback } from '../../lib/callbacks/afterLogoutCleanUpCallback';
 
 declare module '@rocket.chat/ddp-client' {
@@ -15,6 +16,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async logoutCleanUp(user) {
+		methodDeprecationLogger.method('logoutCleanUp', '9.0.0', '/v1/users.logout');
 		check(user, Object);
 
 		setImmediate(() => {
