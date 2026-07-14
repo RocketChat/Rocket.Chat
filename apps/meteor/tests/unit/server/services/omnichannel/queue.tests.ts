@@ -57,7 +57,7 @@ const { OmnichannelQueue } = p.noCallThru().load('../../../../../server/services
 	'./logger': { queueLogger },
 	'@rocket.chat/models': models,
 	'@rocket.chat/license': { License: license },
-	'../../../app/metrics/server': {
+	'../../lib/metrics': {
 		metrics: {
 			timeToQueueProcessingByQueue: { observe: Sinon.stub() },
 			timeToQueueProcessingByQueueHistogram: { observe: Sinon.stub() },

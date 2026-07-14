@@ -103,10 +103,6 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		return this.canAccessRoom(room, { _id: user });
 	}
 
-	async addRoleRestrictions(role: IRole['_id'], permissions: string[]): Promise<void> {
-		AuthorizationUtils.addRolePermissionWhiteList(role, permissions);
-	}
-
 	async getUsersFromPublicRoles(): Promise<
 		{
 			_id: string;

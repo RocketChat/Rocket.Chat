@@ -12,9 +12,9 @@ import {
 	notifyOnSubscriptionChangedByNameAndRoomType,
 	notifyOnUserChange,
 } from '../../../app/lib/server/lib/notifyListener';
-import * as Mailer from '../../../app/mailer/server/api';
 import { settings } from '../../../app/settings/server';
 import { callbacks } from '../callbacks';
+import * as Mailer from '../notifications/email/api';
 import { closeOmnichannelConversations } from '../omnichannel/closeOmnichannelConversations';
 import { shouldRemoveOrChangeOwner, getSubscribedRoomsForUserWithDetails } from '../rooms/getRoomsWithSingleOwner';
 import { relinquishRoomOwnerships } from '../rooms/relinquishRoomOwnerships';

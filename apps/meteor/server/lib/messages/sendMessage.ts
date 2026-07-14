@@ -5,13 +5,13 @@ import { Messages } from '@rocket.chat/models';
 import { isAbsoluteURL } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 
-import { FileUpload } from '../../../app/file-upload/server';
-import { afterSaveMessage } from '../../../app/lib/server/lib/afterSaveMessage';
 import { notifyOnRoomChangedById } from '../../../app/lib/server/lib/notifyListener';
 import { validateCustomMessageFields } from '../../../app/lib/server/lib/validateCustomMessageFields';
 import { settings } from '../../../app/settings/server';
 import { isRelativeURL } from '../../../lib/utils/isRelativeURL';
+import { afterSaveMessage } from '../../hooks/messages/afterSaveMessage';
 import { hasPermissionAsync } from '../authorization/hasPermission';
+import { FileUpload } from '../media/file-upload';
 
 export type SendMessageOptions = {
 	upsert?: boolean;

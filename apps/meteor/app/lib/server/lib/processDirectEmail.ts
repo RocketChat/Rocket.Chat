@@ -5,8 +5,8 @@ import moment from 'moment';
 
 import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 import { sendMessage } from '../../../../server/lib/messages/sendMessage';
+import { metrics } from '../../../../server/lib/metrics';
 import { canAccessRoomAsync } from '../../../authorization/server';
-import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 
 const isParsedEmail = (email: ParsedMail): email is Required<ParsedMail> => 'date' in email && 'html' in email;

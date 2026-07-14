@@ -1,0 +1,255 @@
+import type {
+	MessageAttachment,
+	FileAttachmentProps,
+	IUser,
+	IUpload,
+	AtLeast,
+	FilesAndAttachments,
+	IMessage,
+	FileProp,
+} from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { Rooms, Uploads, Users } from '@rocket.chat/models';
+import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
+
+import { executeSendMessage } from './sendMessage';
+import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
+import { getFileExtension } from '../../../lib/utils/getFileExtension';
+import { canAccessRoomAsync } from '../../lib/authorization/canAccessRoom';
+import { callbacks } from '../../lib/callbacks';
+import { SystemLogger } from '../../lib/logger/system';
+import { isImagePreviewSupported } from '../../lib/media/file-upload/isImagePreviewSupported';
+import { FileUpload } from '../../lib/media/file-upload/lib/FileUpload';
+
+function validateFileRequiredFields(file: Partial<IUpload>): asserts file is AtLeast<IUpload, '_id' | 'name' | 'type' | 'size'> {
+	const requiredFields = ['_id', 'name', 'type', 'size'];
+	requiredFields.forEach((field) => {
+		if (!Object.keys(file).includes(field)) {
+			throw new Meteor.Error('error-invalid-file', 'Invalid file');
+		}
+	});
+}
+
+export const parseFileIntoMessageAttachments = async (
+	file: Partial<IUpload>,
+	roomId: string,
+	user: IUser,
+): Promise<FilesAndAttachments> => {
+	validateFileRequiredFields(file);
+
+	const upload = await Uploads.findOneByIdAndUserIdAndRoomId(file._id, user._id, roomId, { projection: { _id: 1 } });
+	if (!upload) {
+		throw new Meteor.Error('error-invalid-file', 'Invalid file', {
+			method: 'sendFileMessage',
+		});
+	}
+
+	const safeMetadata = {
+		...(typeof file.name === 'string' && { name: file.name }),
+		...(typeof file.description === 'string' && { description: file.description }),
+		...(typeof file.typeGroup === 'string' && { typeGroup: file.typeGroup }),
+		...(file.content && typeof file.content === 'object' && { content: file.content }),
+	};
+
+	await Uploads.updateFileMetadata(file._id, user._id, safeMetadata);
+
+	const fileUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name || '')}`);
+
+	const attachments: MessageAttachment[] = [];
+
+	const files: FileProp[] = [
+		{
+			_id: file._id,
+			name: file.name || '',
+			type: file.type || 'file',
+			size: file.size || 0,
+			format: file.identify?.format || '',
+			typeGroup: file.typeGroup,
+		},
+	];
+
+	if (isImagePreviewSupported(file.type as string)) {
+		const attachment: FileAttachmentProps = {
+			title: file.name,
+			type: 'file',
+			image_alt: file?.description,
+			title_link: fileUrl,
+			title_link_download: true,
+			image_url: fileUrl,
+			image_type: file.type as string,
+			image_size: file.size,
+			fileId: file._id,
+		};
+
+		if (file.identify?.size) {
+			attachment.image_dimensions = file.identify.size;
+		}
+
+		try {
+			attachment.image_preview = await FileUpload.resizeImagePreview(file);
+			const thumbResult = await FileUpload.createImageThumbnail(file);
+			if (thumbResult) {
+				const { data: thumbBuffer, width, height, thumbFileType, thumbFileName, originalFileId } = thumbResult;
+				const thumbnail = await FileUpload.uploadImageThumbnail(
+					{
+						thumbFileName,
+						thumbFileType,
+						originalFileId,
+					},
+					thumbBuffer,
+					roomId,
+					user._id,
+				);
+				const thumbUrl = FileUpload.getPath(`${thumbnail._id}/${encodeURI(file.name || '')}`);
+				attachment.image_url = thumbUrl;
+				attachment.image_type = thumbnail.type;
+				attachment.image_dimensions = {
+					width,
+					height,
+				};
+				files.push({
+					_id: thumbnail._id,
+					name: thumbnail.name || '',
+					type: thumbnail.type || 'file',
+					size: thumbnail.size || 0,
+					format: thumbnail.identify?.format || '',
+					typeGroup: thumbnail.typeGroup || '',
+				});
+			}
+		} catch (err) {
+			SystemLogger.error({ err });
+		}
+		attachments.push(attachment);
+	} else if (/^audio\/.+/.test(file.type as string)) {
+		const attachment: FileAttachmentProps = {
+			title: file.name,
+			type: 'file',
+			description: file.description,
+			title_link: fileUrl,
+			title_link_download: true,
+			audio_url: fileUrl,
+			audio_type: file.type as string,
+			audio_size: file.size,
+			fileId: file._id,
+		};
+		attachments.push(attachment);
+	} else if (/^video\/.+/.test(file.type as string)) {
+		const attachment: FileAttachmentProps = {
+			title: file.name,
+			type: 'file',
+			description: file.description,
+			title_link: fileUrl,
+			title_link_download: true,
+			video_url: fileUrl,
+			video_type: file.type as string,
+			video_size: file.size as number,
+			fileId: file._id,
+		};
+		attachments.push(attachment);
+	} else {
+		const attachment = {
+			title: file.name,
+			type: 'file',
+			format: getFileExtension(file.name),
+			description: file.description,
+			title_link: fileUrl,
+			title_link_download: true,
+			size: file.size as number,
+			fileId: file._id,
+		};
+		attachments.push(attachment);
+	}
+	return { files, attachments };
+};
+
+declare module '@rocket.chat/ddp-client' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		sendFileMessage: (roomId: string, _store: string, file: Partial<IUpload>, msgData?: Record<string, any>) => boolean;
+	}
+}
+
+export const sendFileMessage = async (
+	userId: string,
+	{
+		roomId,
+		file,
+		msgData,
+	}: {
+		roomId: string;
+		file: Partial<IUpload>;
+		msgData?: Record<string, any>;
+	},
+): Promise<boolean> => {
+	const user = await Users.findOneById(userId, { projection: { services: 0 } });
+
+	if (!user) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			method: 'sendFileMessage',
+		} as any);
+	}
+
+	const room = await Rooms.findOneById(roomId);
+	if (!room) {
+		return false;
+	}
+
+	if (user?.type !== 'app' && !(await canAccessRoomAsync(room, user))) {
+		return false;
+	}
+
+	check(
+		msgData,
+		Match.Maybe({
+			avatar: Match.Optional(String),
+			emoji: Match.Optional(String),
+			alias: Match.Optional(String),
+			groupable: Match.Optional(Boolean),
+			msg: Match.Optional(String),
+			tmid: Match.Optional(String),
+			customFields: Match.Optional(String),
+			t: Match.Optional(String),
+			content: Match.Optional(
+				Match.ObjectIncluding({
+					algorithm: String,
+					ciphertext: String,
+				}),
+			),
+		}),
+	);
+
+	const data = {
+		rid: roomId,
+		ts: new Date(),
+		...(msgData as Partial<IMessage>),
+		...(msgData?.customFields && { customFields: JSON.parse(msgData.customFields) }),
+		msg: msgData?.msg ?? '',
+		groupable: msgData?.groupable ?? false,
+	};
+
+	const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
+	data.file = files[0];
+	data.files = files;
+	data.attachments = attachments;
+
+	const msg = await executeSendMessage(userId, data);
+
+	callbacks.runAsync('afterFileUpload', { user, room, message: msg });
+
+	return msg;
+};
+
+Meteor.methods<ServerMethods>({
+	async sendFileMessage(roomId, _store, file, msgData = {}) {
+		methodDeprecationLogger.method('sendFileMessage', '9.0.0', '/v1/rooms.mediaConfirm/:rid/:fileId');
+		const userId = Meteor.userId();
+		if (!userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'sendFileMessage',
+			} as any);
+		}
+
+		return sendFileMessage(userId, { roomId, file, msgData });
+	},
+});

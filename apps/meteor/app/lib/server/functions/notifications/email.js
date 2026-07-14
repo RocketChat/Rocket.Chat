@@ -4,9 +4,9 @@ import { Meteor } from 'meteor/meteor';
 import { ltrim } from '../../../../../lib/utils/stringUtils';
 import { callbacks } from '../../../../../server/lib/callbacks';
 import { i18n } from '../../../../../server/lib/i18n';
+import { metrics } from '../../../../../server/lib/metrics';
+import * as Mailer from '../../../../../server/lib/notifications/email/api';
 import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
-import * as Mailer from '../../../../mailer/server/api';
-import { metrics } from '../../../../metrics/server';
 import { settings } from '../../../../settings/server';
 import { getURL } from '../../../../utils/server/getURL';
 

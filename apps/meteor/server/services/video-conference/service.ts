@@ -40,13 +40,8 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 
-import { RocketChatAssets } from '../../../app/assets/server';
 import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
-import { metrics } from '../../../app/metrics/server/lib/metrics';
-import { Push } from '../../../app/push/server/push';
-import PushNotification from '../../../app/push-notifications/server/lib/PushNotification';
 import { settings } from '../../../app/settings/server';
-import { updateCounter } from '../../../app/statistics/server/functions/updateStatsCounter';
 import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
 import { getUserPreference } from '../../../app/utils/server/lib/getUserPreference';
 import { availabilityErrors } from '../../../lib/videoConference/constants';
@@ -55,9 +50,14 @@ import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { callbacks } from '../../lib/callbacks';
 import { i18n } from '../../lib/i18n';
 import { isRoomCompatibleWithVideoConfRinging } from '../../lib/isRoomCompatibleWithVideoConfRinging';
+import { RocketChatAssets } from '../../lib/media/assets';
 import { sendMessage } from '../../lib/messages/sendMessage';
+import { metrics } from '../../lib/metrics/lib/metrics';
+import { Push } from '../../lib/notifications/push/push';
+import PushNotification from '../../lib/notifications/push-config/lib/PushNotification';
 import { createRoom } from '../../lib/rooms/createRoom';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import { updateCounter } from '../../lib/statistics/functions/updateStatsCounter';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { videoConfTypes } from '../../lib/videoConfTypes';
 

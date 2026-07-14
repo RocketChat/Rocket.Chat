@@ -1,8 +1,8 @@
 import { api } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
 
+import { metrics } from '../../../../../server/lib/metrics';
 import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
-import { metrics } from '../../../../metrics/server';
 import { settings } from '../../../../settings/server';
 
 /**

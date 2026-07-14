@@ -15,10 +15,10 @@ import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
 import { getLdapDynamicValue } from './getLdapDynamicValue';
 import { getLdapString } from './getLdapString';
 import { ldapKeyExists } from './ldapKeyExists';
-import type { UserConverterOptions } from '../../../app/importer/server/classes/converters/UserConverter';
 import { settings } from '../../../app/settings/server';
 import { omit } from '../../../lib/utils/omit';
 import { callbacks } from '../callbacks';
+import type { UserConverterOptions } from '../import/classes/converters/UserConverter';
 import { setUserAvatar } from '../users/setUserAvatar';
 
 export class LDAPManager {
