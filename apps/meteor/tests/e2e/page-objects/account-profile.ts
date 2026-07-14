@@ -1,14 +1,17 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { Account } from './account';
-import { DeleteAccountModal } from './fragments';
+import { DeleteAccountModal, PhoneNumberFieldList } from './fragments';
 
 export class AccountProfile extends Account {
 	readonly deleteAccountModal: DeleteAccountModal;
 
+	readonly phoneNumber: PhoneNumberFieldList;
+
 	constructor(page: Page) {
 		super(page);
 		this.deleteAccountModal = new DeleteAccountModal(page);
+		this.phoneNumber = new PhoneNumberFieldList(page.locator('main'));
 	}
 
 	get inputName(): Locator {
@@ -42,6 +45,19 @@ export class AccountProfile extends Account {
 
 	get emailTextInput(): Locator {
 		return this.page.locator('//label[contains(text(), "Email")]/..//input');
+	}
+
+	get inputStatusText(): Locator {
+		return this.page.getByRole('textbox', { name: 'Status' });
+	}
+
+	get selectClearStatusAfter(): Locator {
+		return this.page.getByLabel('Clear status after');
+	}
+
+	async chooseClearStatusAfter(option: string): Promise<void> {
+		await this.selectClearStatusAfter.click();
+		await this.page.getByRole('option', { name: new RegExp(option) }).click();
 	}
 
 	get preferencesSoundAccordionOption(): Locator {

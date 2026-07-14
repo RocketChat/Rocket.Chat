@@ -24,6 +24,7 @@ import UTCClock from '../UTCClock';
 import { UserCardRoles } from '../UserCard';
 import UserInfoABACAttributes from './UserInfoABACAttributes';
 import UserInfoAvatar from './UserInfoAvatar';
+import UserInfoPhoneNumberList from './UserInfoPhoneNumberList';
 
 type UserInfoDataProps = Serialized<
 	Pick<
@@ -35,9 +36,8 @@ type UserInfoDataProps = Serialized<
 		| 'lastLogin'
 		| 'avatarETag'
 		| 'utcOffset'
-		| 'phone'
+		| 'phones'
 		| 'createdAt'
-		| 'statusText'
 		| 'canViewAllInfo'
 		| 'customFields'
 		| 'freeSwitchExtension'
@@ -45,8 +45,9 @@ type UserInfoDataProps = Serialized<
 	>
 >;
 
-type UserInfoProps = UserInfoDataProps & {
+export type UserInfoProps = UserInfoDataProps & {
 	status: ReactNode;
+	customStatus?: ReactNode;
 	email?: string;
 	verified?: boolean;
 	actions: ReactNode;
@@ -64,12 +65,12 @@ const UserInfo = ({
 	avatarETag,
 	roles,
 	utcOffset,
-	phone,
+	phones,
 	email,
 	verified,
 	createdAt,
 	status,
-	statusText,
+	customStatus,
 	customFields,
 	canViewAllInfo,
 	actions,
@@ -100,11 +101,7 @@ const UserInfo = ({
 				<InfoPanelSection>
 					{userDisplayName && <InfoPanelTitle icon={status} title={userDisplayName} />}
 
-					{statusText && (
-						<InfoPanelText>
-							<MarkdownText content={statusText} parseEmoji={true} variant='inline' />
-						</InfoPanelText>
-					)}
+					{customStatus && <InfoPanelText>{customStatus}</InfoPanelText>}
 				</InfoPanelSection>
 
 				<InfoPanelSection>
@@ -165,13 +162,11 @@ const UserInfo = ({
 						</InfoPanelField>
 					)}
 
-					{phone && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Phone')}</InfoPanelLabel>
-							<InfoPanelText display='flex' flexDirection='row' alignItems='center'>
-								<Box is='a' withTruncatedText href={`tel:${phone}`}>
-									{phone}
-								</Box>
+					{phones && phones.length > 0 && (
+						<InfoPanelField is='dl'>
+							<InfoPanelLabel is='dt'>{t('Phone_Numbers')}</InfoPanelLabel>
+							<InfoPanelText is='dd'>
+								<UserInfoPhoneNumberList phones={phones} />
 							</InfoPanelText>
 						</InfoPanelField>
 					)}

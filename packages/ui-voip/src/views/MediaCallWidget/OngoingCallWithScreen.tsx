@@ -1,6 +1,7 @@
-import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Divider } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
+import MediaCallDialpad from './MediaCallDialpad';
 import {
 	ToggleButton,
 	PeerInfo,
@@ -19,7 +20,10 @@ import {
 } from '../../components';
 import { useMediaCallInstance } from '../../context';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
+import AppActions from '../../experimental/AppActionButtons/components/AppActions';
+import { useVisibleAppActions } from '../../experimental/AppActionButtons/hooks/useVisibleAppActions';
 import { usePlayMediaStream } from '../../providers/usePlayMediaStream';
+import { isExternalPeer } from '../../utils/isExternalPeer';
 
 const OngoingCall = () => {
 	const { t } = useTranslation();
@@ -52,6 +56,8 @@ const OngoingCall = () => {
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
+	const appActions = useVisibleAppActions();
+
 	// TODO: Figure out how to ensure this always exist before rendering the component
 	if (!peerInfo) {
 		throw new Error('Peer info is required');
@@ -81,6 +87,8 @@ const OngoingCall = () => {
 			<WidgetContent>
 				<CardWidgetContainer>
 					<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
+
+					<MediaCallDialpad />
 
 					{isPopout && (
 						<Box display='flex' flexDirection='column' gap={4}>
@@ -118,6 +126,8 @@ const OngoingCall = () => {
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
 			<WidgetFooter>
+				<AppActions actions={appActions} vertical />
+				{appActions.length > 0 && <Divider />}
 				<ButtonGroup large>
 					<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
 
@@ -137,7 +147,9 @@ const OngoingCall = () => {
 					/>
 					<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
 					<ActionButton
-						label={t('Voice_call__user__hangup', { user: 'userId' in peerInfo ? peerInfo.displayName : peerInfo.number })}
+						label={t('Voice_call__user__hangup', {
+							user: isExternalPeer(peerInfo) ? peerInfo.displayName || peerInfo.number : peerInfo.displayName,
+						})}
 						icon='phone-off'
 						danger
 						onClick={onEndCall}

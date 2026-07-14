@@ -1,7 +1,7 @@
 import type { AppScreenshot } from '@rocket.chat/core-typings';
 import { Box, IconButton } from '@rocket.chat/fuselage';
 
-type ScreenshotCarouselProps = {
+export type ScreenshotCarouselProps = {
 	AppScreenshots: Array<AppScreenshot>;
 	setViewCarousel: (state: boolean) => void;
 	handleNextSlide: () => void;

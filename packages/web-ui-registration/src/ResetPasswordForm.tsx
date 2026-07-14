@@ -8,7 +8,9 @@ import { useTranslation } from 'react-i18next';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import { useSendForgotPassword } from './hooks/useSendForgotPassword';
 
-export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }) => {
+export type ResetPasswordFormProps = { setLoginRoute: DispatchLoginRouter };
+
+export const ResetPasswordForm = ({ setLoginRoute }: ResetPasswordFormProps) => {
 	const { t } = useTranslation();
 	const emailId = useId();
 	const formLabelId = useId();

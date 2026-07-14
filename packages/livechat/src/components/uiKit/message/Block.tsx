@@ -8,7 +8,7 @@ const BlockContext = createContext({
 	blockId: null,
 });
 
-type BlockProps = {
+export type BlockProps = {
 	appId?: string;
 	blockId?: string;
 	children: ComponentChildren;

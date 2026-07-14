@@ -6,7 +6,7 @@ import { createPortal } from 'react-dom';
 
 import ScreenshotCarousel from './ScreenshotCarousel';
 
-type ScreenshotCarouselAnchorProps = {
+export type ScreenshotCarouselAnchorProps = {
 	screenshots: AppScreenshot[];
 };
 

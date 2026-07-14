@@ -20,10 +20,11 @@ import { FormSkeleton } from '../../../../components/Skeleton';
 import { UserCardRole } from '../../../../components/UserCard';
 import { UserInfo } from '../../../../components/UserInfo';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
+import { ReactiveUserStatusText } from '../../../../components/UserStatusText';
 import { usersQueryKeys } from '../../../../lib/queryKeys';
 import { getUserEmailVerified } from '../../../../lib/utils/getUserEmailVerified';
 
-type UserInfoWithDataProps = {
+export type UserInfoWithDataProps = {
 	uid?: IUser['_id'];
 	username?: IUser['username'];
 	rid: IRoom['_id'];
@@ -56,17 +57,20 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			name,
 			username,
 			roles = [],
-			statusText,
 			bio,
 			utcOffset,
 			lastLogin,
 			customFields,
 			phone,
+			phones,
 			nickname,
 			createdAt,
 			canViewAllInfo,
 			freeSwitchExtension,
 		} = data.user;
+
+		const phonesFallback = phone ? [{ number: phone }] : undefined;
+		const normalizedPhones = phones ?? phonesFallback;
 
 		return {
 			_id,
@@ -79,14 +83,14 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			roles: roles && getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			bio,
 			canViewAllInfo,
-			phone,
+			phones: normalizedPhones,
 			customFields,
 			verified: getUserEmailVerified(data.user),
 			email: getUserEmailAddress(data.user),
 			utcOffset,
 			createdAt,
 			status: <ReactiveUserStatus uid={_id} />,
-			statusText,
+			customStatus: <ReactiveUserStatusText uid={_id} />,
 			nickname,
 			freeSwitchExtension,
 		};

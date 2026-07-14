@@ -33,6 +33,8 @@ import { Rooms, Subscriptions } from '../index';
 import { BaseRaw } from './BaseRaw';
 import { queryAvailableAgentsForSelection, queryStatusAgentOnline } from '../helpers';
 
+const usersDefaultFields = { __rooms: 0 } as const;
+
 export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IUsersModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUser>>) {
 		super(db, 'users', trash, {
@@ -41,9 +43,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			},
 		});
 
-		this.defaultFields = {
-			__rooms: 0,
-		};
+		this.defaultFields = usersDefaultFields;
 	}
 
 	// Move index from constructor to here
@@ -69,6 +69,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			{ key: { openBusinessHours: 1 }, sparse: true },
 			{ key: { statusLivechat: 1 }, sparse: true },
 			{ key: { freeSwitchExtension: 1 }, sparse: true, unique: true },
+			{ key: { 'phones.number': 1 }, sparse: true },
 			{ key: { language: 1 }, sparse: true },
 			{ key: { 'active': 1, 'services.email2fa.enabled': 1 }, sparse: true }, // used by statistics
 			{ key: { 'active': 1, 'services.totp.enabled': 1 }, sparse: true }, // used by statistics
@@ -146,6 +147,16 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 
 	findActiveByRoomIds(roomIds: IRoom['_id'][], options?: FindOptions<IUser>) {
 		return this.find({ active: true, __rooms: { $in: roomIds } }, options);
+	}
+
+	setCasExternalIdByUsername(username: string): Promise<IUser | null> {
+		// #TODO: Remove regex based search
+		const regex = new RegExp(`^${escapeRegExp(username)}$`, 'i');
+		return this.findOneAndUpdate(
+			{ username: regex },
+			{ $set: { 'services.cas.external_id': username } },
+			{ returnDocument: 'after', projection: usersDefaultFields },
+		);
 	}
 
 	/**
@@ -1103,6 +1114,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 				IUser,
 				| '_id'
 				| 'username'
+				| 'type'
 				| 'roles'
 				| 'status'
 				| 'statusDefault'
@@ -1110,6 +1122,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 				| 'statusText'
 				| 'statusExpiresAt'
 				| 'statusConnection'
+				| 'statusId'
 				| 'previousState'
 			>
 		>(
@@ -1117,6 +1130,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			{
 				projection: {
 					username: 1,
+					type: 1,
 					roles: 1,
 					status: 1,
 					statusDefault: 1,
@@ -1124,6 +1138,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 					statusText: 1,
 					statusExpiresAt: 1,
 					statusConnection: 1,
+					statusId: 1,
 					previousState: 1,
 				},
 				sort: { statusExpiresAt: 1 },
@@ -2484,12 +2499,14 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne<T>(query, options);
 	}
 
-	findNotOfflineByIds(users?: IUser['_id'][], options?: FindOptions<IUser>) {
+	findPresenceUsersByIds(users: IUser['_id'][], options?: FindOptions<IUser>) {
 		const query = {
 			_id: { $in: users },
-			status: {
-				$in: [UserStatus.ONLINE, UserStatus.AWAY, UserStatus.BUSY],
-			},
+			$or: [
+				{ status: { $in: [UserStatus.ONLINE, UserStatus.AWAY, UserStatus.BUSY] } },
+				{ statusText: { $exists: true, $ne: '' } },
+				{ statusExpiresAt: { $exists: true } },
+			],
 		};
 		return this.find(query, options);
 	}
@@ -2808,6 +2825,15 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
+	findByPhone<T extends Document = IUser>(phoneNumber: string, options: FindOptions<IUser> = {}): FindCursor<T> {
+		return this.find<T>(
+			{
+				'phones.number': phoneNumber,
+			} as Filter<IUser>,
+			options,
+		);
+	}
+
 	// UPDATE
 	addImportIds(_id: IUser['_id'], importIds: string[]) {
 		importIds = ([] as string[]).concat(importIds);
@@ -3094,6 +3120,11 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 						},
 					}),
 		};
+		return this.updateOne({ _id }, update);
+	}
+
+	setPhones(_id: IUser['_id'], phones: IUser['phones']) {
+		const update: UpdateFilter<IUser> = phones?.length ? { $set: { phones } } : { $unset: { phones: 1 } };
 		return this.updateOne({ _id }, update);
 	}
 

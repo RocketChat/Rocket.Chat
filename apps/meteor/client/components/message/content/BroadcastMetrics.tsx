@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useChat } from '../../../views/room/contexts/ChatContext';
 
-type BroadcastMetricsProps = {
+export type BroadcastMetricsProps = {
 	username: string;
 	message: IMessage;
 };

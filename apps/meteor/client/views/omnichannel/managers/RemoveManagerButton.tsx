@@ -9,7 +9,9 @@ import { useTranslation } from 'react-i18next';
 import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 
-const RemoveManagerButton = ({ _id }: { _id: string }) => {
+export type RemoveManagerButtonProps = { _id: string };
+
+const RemoveManagerButton = ({ _id }: RemoveManagerButtonProps) => {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const { mutateAsync: deleteAction } = useEndpointMutation('DELETE', '/v1/livechat/users/manager/:_id', {

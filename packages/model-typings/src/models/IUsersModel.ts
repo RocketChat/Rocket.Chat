@@ -169,6 +169,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	setAbacAttributesById(userId: IUser['_id'], attributes: NonNullable<IUser['abacAttributes']>): Promise<IUser | null>;
 	unsetAbacAttributesById(userId: IUser['_id']): Promise<IUser | null>;
 	findActiveByRoomIds(roomIds: IRoom['_id'][], options?: FindOptions<IUser>): FindCursor<IUser>;
+	setCasExternalIdByUsername(username: string): Promise<IUser | null>;
 
 	updateStatusText(_id: IUser['_id'], statusText: string, options?: UpdateOptions): Promise<UpdateResult>;
 
@@ -177,6 +178,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 			IUser,
 			| '_id'
 			| 'username'
+			| 'type'
 			| 'roles'
 			| 'status'
 			| 'statusDefault'
@@ -184,6 +186,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 			| 'statusText'
 			| 'statusExpiresAt'
 			| 'statusConnection'
+			| 'statusId'
 			| 'previousState'
 		>
 	>;
@@ -379,7 +382,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findOneActiveById(userId: string, options?: FindOptions<IUser>): Promise<IUser | null>;
 	findOneByIdOrUsername(userId: string, options?: FindOptions<IUser>): Promise<IUser | null>;
 	findOneByRolesAndType<T extends Document = IUser>(roles: IRole['_id'][], type: string, options?: FindOptions<IUser>): Promise<T | null>;
-	findNotOfflineByIds(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
+	findPresenceUsersByIds(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
 	findUsersNotOffline(options?: FindOptions<IUser>): FindCursor<IUser>;
 	countUsersNotOffline(options?: FindOptions<IUser>): Promise<number>;
 	findNotIdUpdatedFrom(userId: string, updatedFrom: Date, options?: FindOptions<IUser>): FindCursor<IUser>;
@@ -429,6 +432,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	setProfile(userId: string, profile: Record<string, unknown>): Promise<UpdateResult>;
 	setBio(userId: string, bio?: string): Promise<UpdateResult>;
 	setNickname(userId: string, nickname?: string): Promise<UpdateResult>;
+	setPhones(userId: string, phones: IUser['phones']): Promise<UpdateResult>;
 	clearSettings(userId: string): Promise<UpdateResult>;
 	setPreferences(userId: string, preferences: Record<string, unknown>): Promise<UpdateResult>;
 	setTwoFactorAuthorizationHashAndUntilForUserIdAndToken(userId: string, token: string, hash: string, until: Date): Promise<UpdateResult>;
@@ -468,6 +472,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findAgentsAvailableWithoutBusinessHours(userIds?: IUser['_id'][]): FindCursor<Pick<ILivechatAgent, '_id' | 'openBusinessHours'>>;
 	updateLivechatStatusByAgentIds(userIds: string[], status: ILivechatAgentStatus): Promise<UpdateResult | Document>;
 	findOneByFreeSwitchExtension<T extends Document = IUser>(freeSwitchExtension: string, options?: FindOptions<IUser>): Promise<T | null>;
+	findByPhone<T extends Document = IUser>(phoneNumber: string, options?: FindOptions<IUser>): FindCursor<T>;
 	countUsersInRoles(roles: IRole['_id'][]): Promise<number>;
 	countAllUsersWithPendingAvatar(): Promise<number>;
 	findOneByIdAndRole(userId: IUser['_id'], role: string, options: FindOptions<IUser>): Promise<IUser | null>;

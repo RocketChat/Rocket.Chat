@@ -15,8 +15,8 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import type { OutgoingRequestData } from './ScriptEngine';
-import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getRoomByNameOrIdWithOptionToJoin';
-import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
+import { processWebhookMessage } from '../../../../server/lib/messages/processWebhookMessage';
+import { getRoomByNameOrIdWithOptionToJoin } from '../../../../server/lib/rooms/getRoomByNameOrIdWithOptionToJoin';
 import { notifyOnIntegrationChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { outgoingEvents } from '../../lib/outgoingEvents';

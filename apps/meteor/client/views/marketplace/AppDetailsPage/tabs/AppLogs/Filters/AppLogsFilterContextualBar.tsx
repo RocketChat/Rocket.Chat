@@ -17,7 +17,7 @@ import { SeverityFilterSelect } from './SeverityFilterSelect';
 import { TimeFilterSelect } from './TimeFilterSelect';
 import { useAppLogsFilterFormContext } from '../useAppLogsFilterForm';
 
-type AppLogsFilterContextualBarProps = {
+export type AppLogsFilterContextualBarProps = {
 	appId: string;
 	onClose: () => void;
 };

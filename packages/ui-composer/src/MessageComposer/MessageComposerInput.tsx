@@ -11,7 +11,7 @@ const messageComposerInputStyle = css`
 	}
 `;
 
-type MessageComposerInputProps = ComponentProps<typeof Box>;
+export type MessageComposerInputProps = ComponentProps<typeof Box>;
 
 const MessageComposerInput = forwardRef<HTMLTextAreaElement, MessageComposerInputProps>(function MessageComposerInput(props, ref) {
 	return (

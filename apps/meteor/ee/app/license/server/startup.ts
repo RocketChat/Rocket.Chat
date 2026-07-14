@@ -6,10 +6,10 @@ import { wrapExceptions } from '@rocket.chat/tools';
 import moment from 'moment';
 
 import { getAppCount } from './lib/getAppCount';
-import { syncWorkspace } from '../../../../app/cloud/server/functions/syncWorkspace';
 import { notifyOnSettingChangedById } from '../../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../server/lib/callbacks';
+import { syncWorkspace } from '../../../../server/lib/cloud/syncWorkspace';
 
 export const startLicense = async () => {
 	settings.watch<string>('Site_Url', (value) => {

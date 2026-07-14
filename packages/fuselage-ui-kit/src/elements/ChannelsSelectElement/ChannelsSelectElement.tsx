@@ -8,7 +8,7 @@ import { useChannelsData } from './hooks/useChannelsData';
 import { useUiKitState } from '../../hooks/useUiKitState';
 import type { BlockProps } from '../../utils/BlockProps';
 
-type ChannelsSelectElementProps = BlockProps<UiKit.ChannelsSelectElement>;
+export type ChannelsSelectElementProps = BlockProps<UiKit.ChannelsSelectElement>;
 
 const ChannelsSelectElement = ({ block, context }: ChannelsSelectElementProps) => {
 	const [{ value, loading }, action] = useUiKitState(block, context);

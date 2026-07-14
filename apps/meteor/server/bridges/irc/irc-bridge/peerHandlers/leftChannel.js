@@ -1,6 +1,6 @@
 import { Users, Rooms } from '@rocket.chat/models';
 
-import { removeUserFromRoom } from '../../../../../app/lib/server/functions/removeUserFromRoom';
+import { removeUserFromRoom } from '../../../../lib/rooms/removeUserFromRoom';
 
 export default async function handleLeftChannel(args) {
 	const user = await Users.findOne({

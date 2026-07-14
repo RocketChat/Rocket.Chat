@@ -8,7 +8,7 @@ import { useE2EEResetRoomKey } from '../../hooks/useE2EEResetRoomKey';
 
 const E2EE_RESET_KEY_LINK = links.go.e2eeGuide;
 
-type ResetKeysE2EEModalProps = {
+export type ResetKeysE2EEModalProps = {
 	roomType: string;
 	roomId: string;
 	onCancel: () => void;

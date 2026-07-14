@@ -133,12 +133,13 @@ export const useSearchItems = (filterText: string): { items: SubscriptionWithRoo
 		// local subscription, checked against the *current* localRooms. The query isn't keyed on
 		// localRooms (to avoid refetching on every subscription change), so subscriptions that load
 		// in after the fetch would otherwise render twice — once from localRooms, once from server.
-		const isLocalDuplicate = (item: { _id: string; t?: string; uids?: string[] }): boolean =>
+		const isLocalDuplicate = (item: { _id: string; t?: string; uids?: string[]; name: string }): boolean =>
 			localRooms.some((room) => {
 				const sameRoom = [room.rid, room._id].includes(item._id);
 				const sameGroupDM = item.t === 'd' && !!item.uids && item.uids.length > 1 && item.uids.includes(room._id);
 				const sameDirectDM = item.t === 'd' && room.t === 'd' && !!room.uids && room.uids.length === 2 && room.uids.includes(item._id);
-				return sameRoom || sameGroupDM || sameDirectDM;
+				const sameUserDM = item.t === 'd' && room.t === 'd' && item.name === room.name;
+				return sameRoom || sameGroupDM || sameDirectDM || sameUserDM;
 			});
 
 		// When local subscriptions already fill the limit the server query is disabled, but React Query

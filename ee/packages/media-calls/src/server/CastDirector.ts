@@ -2,12 +2,12 @@ import type { IUser, MediaCallActor, MediaCallActorType, MediaCallContact, Media
 import type { CallRole } from '@rocket.chat/media-signaling';
 import { Users } from '@rocket.chat/models';
 
+import { BroadcastActorAgent } from './BroadcastAgent';
 import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
 import type { IMediaCallCastDirector } from '../definition/IMediaCallCastDirector';
 import type { GetActorContactOptions, MinimalUserData, MediaCallHeader } from '../definition/common';
 import { UserActorAgent } from '../internal/agents/UserActorAgent';
 import { logger } from '../logger';
-import { BroadcastActorAgent } from './BroadcastAgent';
 
 type ContactList = Record<MediaCallActorType, MediaCallContact | null>;
 
@@ -89,9 +89,26 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 
 		const list = user
 			? this.buildContactListForUser(user, defaultContactInfo)
-			: this.buildContactListForExtension(sipExtension, defaultContactInfo);
+			: await this.buildContactListForExtension(sipExtension, defaultContactInfo);
 
 		return this.getContactFromList(list, options);
+	}
+
+	private async findUserByPhone(phoneNumber: string): Promise<Pick<IUser, '_id' | 'name' | 'username' | 'freeSwitchExtension'> | null> {
+		const users = await Users.findByPhone<Pick<IUser, '_id' | 'name' | 'username' | 'freeSwitchExtension'>>(phoneNumber, {
+			projection: { name: 1, username: 1, freeSwitchExtension: 1 },
+		}).toArray();
+
+		if (!users.length) {
+			return null;
+		}
+
+		if (users.length > 1) {
+			logger.warn({ msg: 'Multiple users found for phone number, identity cannot be resolved', phoneNumber });
+			return null;
+		}
+
+		return users[0];
 	}
 
 	public async getAgentForActorAndRole(actor: MediaCallContact, role: CallRole): Promise<IMediaCallAgent | null> {
@@ -120,6 +137,7 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 
 		const data: Partial<MediaCallContact> = {
 			...defaultContactInfo,
+			uid: id,
 			...(displayName && { displayName }),
 			...(username && { username }),
 			...(sipExtension && { sipExtension }),
@@ -141,10 +159,17 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 		};
 	}
 
-	protected buildContactListForExtension(sipExtension: string, defaultContactInfo?: MediaCallContactInformation): ContactList {
+	protected async buildContactListForExtension(
+		sipExtension: string,
+		defaultContactInfo?: MediaCallContactInformation,
+	): Promise<ContactList> {
+		const user = await this.findUserByPhone(sipExtension);
+
 		const data: Partial<MediaCallContact> = {
 			...defaultContactInfo,
 			...(sipExtension && { sipExtension }),
+			...(user?.username && { username: user.username }),
+			...(user?.name && { displayName: user.name }),
 		};
 
 		return {

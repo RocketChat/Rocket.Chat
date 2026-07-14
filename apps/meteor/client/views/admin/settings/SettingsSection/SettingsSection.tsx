@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useEditableSettings, useEditableSettingsDispatch } from '../../EditableSettingsContext';
 import Setting from '../Setting';
 
-type SettingsSectionProps = {
+export type SettingsSectionProps = {
 	groupId: string;
 	hasReset?: boolean;
 	sectionName: string;

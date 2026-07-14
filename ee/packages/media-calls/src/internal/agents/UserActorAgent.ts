@@ -160,6 +160,23 @@ export class UserActorAgent extends BaseMediaCallAgent {
 		});
 	}
 
+	public async onCallUpdated(callId: string): Promise<void> {
+		const call = await MediaCalls.findOneById(callId);
+
+		if (!call?.acceptedAt || call.ended) {
+			return;
+		}
+
+		const contact = this.getOtherCallActor(call);
+
+		await this.sendSignal({
+			type: 'update',
+			callId: call._id,
+			contact,
+			features: call.features as CallFeature[],
+		});
+	}
+
 	public async onDTMF(callId: string, dtmf: string, duration: number): Promise<void> {
 		logger.debug({ msg: 'UserActorAgent.onDTMF', callId, dtmf, duration, role: this.role });
 		// internal calls have nothing to do with DTMFs

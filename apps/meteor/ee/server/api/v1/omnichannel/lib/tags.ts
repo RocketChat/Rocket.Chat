@@ -4,7 +4,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Filter, FindOptions } from 'mongodb';
 
 import { getDepartmentsWhichUserCanAccess } from './departments';
-import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../../../../../server/lib/authorization/hasPermission';
 import { helperLogger } from '../../../../../app/livechat-enterprise/server/lib/logger';
 
 type FindTagsParams = {

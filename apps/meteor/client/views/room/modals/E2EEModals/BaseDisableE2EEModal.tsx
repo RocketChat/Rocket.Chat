@@ -9,7 +9,7 @@ const STEPS = {
 	RESET_ROOM_KEY: 'RESET_ROOM_KEY',
 };
 
-type BaseDisableE2EEModalProps = {
+export type BaseDisableE2EEModalProps = {
 	onConfirm: () => void;
 	onClose: () => void;
 	roomType: string;

@@ -103,7 +103,10 @@ type UsersPresencePayload = {
 };
 
 export type UserPresence = Readonly<
-	Partial<Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag' | 'roles' | 'username'>> & Required<Pick<IUser, '_id'>>
+	Partial<
+		Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'avatarETag' | 'roles' | 'username'>
+	> &
+		Required<Pick<IUser, '_id'>>
 >;
 
 export type UserPersonalTokens = Pick<IPersonalAccessToken, 'name' | 'lastTokenPart' | 'bypassTwoFactor'> & { createdAt: string };

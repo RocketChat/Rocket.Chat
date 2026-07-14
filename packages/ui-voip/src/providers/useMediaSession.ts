@@ -20,6 +20,7 @@ const defaultSessionInfo: SessionState = {
 	startedAt: undefined,
 	hidden: false,
 	supportedFeatures: ['audio', 'transfer', 'hold'],
+	docked: false,
 };
 
 export const getExtensionFromInstanceContact = (contact: CallContact): string | undefined => {
@@ -51,12 +52,22 @@ const reducer = (
 				type: 'reset';
 		  }
 		| {
+				type: 'call_cleared';
+		  }
+		| {
 				type: 'selectPeer';
 				payload: { peerInfo?: PeerInfo };
 		  }
 		| {
 				type: 'toggleWidget';
 				payload: { peerInfo?: PeerInfo };
+		  }
+		| {
+				type: 'openDialer';
+				payload: { peerInfo?: PeerInfo };
+		  }
+		| {
+				type: 'closeDialer';
 		  }
 		| {
 				type: 'instance_updated';
@@ -69,12 +80,44 @@ const reducer = (
 ): SessionState => {
 	if (action.type === 'toggleWidget') {
 		if (reducerState.state === 'closed') {
-			return { ...reducerState, state: 'new', peerInfo: action.payload?.peerInfo };
+			// Opened via a user action (room/user "call") — a free-floating composer, not docked.
+			return { ...reducerState, state: 'new', peerInfo: action.payload?.peerInfo, docked: false };
 		}
 
 		if (reducerState.state === 'new') {
+			// If a peer is supplied while the dialer is already open, replace the
+			// peer instead of toggling closed — keeps "Call rodrigo" working when
+			// the dialer is already mounted (e.g. inside the sidebar rail panel).
+			if (action.payload?.peerInfo) {
+				return { ...reducerState, peerInfo: action.payload.peerInfo, docked: false };
+			}
 			return { ...reducerState, state: 'closed' };
 		}
+	}
+
+	// Idempotent intents (open/close the idle dialer). Unlike `toggleWidget`, calling
+	// them repeatedly is safe, so callers can express "ensure open/closed" without
+	// tracking the current state (e.g. StrictMode double-invoked effects).
+	if (action.type === 'openDialer') {
+		if (reducerState.state === 'closed') {
+			// Only the sidebar call panel uses openDialer; mark the dialer docked so it renders
+			// inside the panel slot and never floats once the panel unmounts.
+			return { ...reducerState, state: 'new', peerInfo: action.payload?.peerInfo, docked: true };
+		}
+
+		if (reducerState.state === 'new' && action.payload?.peerInfo) {
+			return { ...reducerState, peerInfo: action.payload.peerInfo };
+		}
+
+		return reducerState;
+	}
+
+	if (action.type === 'closeDialer') {
+		if (reducerState.state === 'new') {
+			return { ...reducerState, state: 'closed' };
+		}
+
+		return reducerState;
 	}
 
 	if (action.type === 'instance_updated') {
@@ -82,7 +125,8 @@ const reducer = (
 	}
 
 	if (action.type === 'selectPeer') {
-		if (reducerState.state !== 'new') {
+		// TODO: This is a workaround for the docked widget, which doesn't have a "closed" state.
+		if (reducerState.state !== 'closed' && reducerState.state !== 'new') {
 			return reducerState;
 		}
 
@@ -90,6 +134,18 @@ const reducer = (
 	}
 
 	if (action.type === 'reset') {
+		return defaultSessionInfo;
+	}
+
+	// No active call on the instance. Tear down call-derived state, but preserve a user-driven
+	// idle compose widget ('new') — e.g. the sidebar call panel dialer, or a dial pad pre-filled
+	// from a desktop telephony deeplink — which the instance's autoSync emit would otherwise
+	// clobber right after it initializes (leaving the panel empty after a call ends).
+	if (action.type === 'call_cleared') {
+		if (reducerState.state === 'new') {
+			return reducerState;
+		}
+
 		return defaultSessionInfo;
 	}
 
@@ -103,6 +159,8 @@ const reducer = (
 export type MediaSessionStateWithWidgetControls = {
 	sessionState: SessionState;
 	toggleWidget: (peerInfo?: PeerInfo) => void;
+	openDialer: (peerInfo?: PeerInfo) => void;
+	closeDialer: () => void;
 	selectPeer: (peerInfo: PeerInfo) => void;
 };
 
@@ -120,7 +178,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 		const updateSessionState = () => {
 			const instanceState = instance.getState();
 			if (!instanceState) {
-				dispatch({ type: 'reset' });
+				dispatch({ type: 'call_cleared' });
 				return;
 			}
 
@@ -131,7 +189,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 			const state = deriveWidgetStateFromCallState(callState, role);
 
 			if (!state) {
-				dispatch({ type: 'reset' });
+				dispatch({ type: 'call_cleared' });
 				return;
 			}
 
@@ -170,44 +228,27 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 				features: supportedFeatures,
 				transferredBy: callTransferredBy,
 				remoteParticipant: { muted: remoteMuted, held: remoteHeld, contact },
+				ringing,
 			} = instanceState;
 
 			const transferredBy = callTransferredBy?.displayName || callTransferredBy?.username || undefined;
-
-			if (contact.type === 'sip') {
-				dispatch({
-					type: 'instance_updated',
-					payload: {
-						peerInfo: derivePeerInfoFromInstanceContact(contact),
-						transferredBy,
-						state,
-						muted,
-						held,
-						connectionState,
-						hidden,
-						remoteHeld,
-						remoteMuted,
-						callId,
-						startedAt,
-						supportedFeatures,
-					},
-				});
-				return;
-			}
 
 			const avatarUrl = (() => {
 				if (contact.username) {
 					return getAvatarUrl({ username: contact.username });
 				}
 
-				if (contact.id) {
+				if (contact.type === 'user' && contact.id) {
 					return getAvatarUrl({ userId: contact.id });
 				}
 
 				return undefined;
 			})();
 
-			const peerInfo = { ...derivePeerInfoFromInstanceContact(contact), avatarUrl };
+			const peerInfo = {
+				...derivePeerInfoFromInstanceContact(contact),
+				avatarUrl,
+			};
 
 			dispatch({
 				type: 'instance_updated',
@@ -224,6 +265,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 					callId,
 					startedAt,
 					supportedFeatures,
+					ringing,
 				},
 			});
 		};
@@ -241,6 +283,14 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 		dispatch({ type: 'toggleWidget', payload: { peerInfo } });
 	}, []);
 
+	const openDialer = useCallback((peerInfo?: PeerInfo) => {
+		dispatch({ type: 'openDialer', payload: { peerInfo } });
+	}, []);
+
+	const closeDialer = useCallback(() => {
+		dispatch({ type: 'closeDialer' });
+	}, []);
+
 	const selectPeer = useCallback((peerInfo: PeerInfo) => {
 		dispatch({ type: 'selectPeer', payload: { peerInfo } });
 	}, []);
@@ -256,6 +306,8 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 	return {
 		sessionState: mediaSession,
 		toggleWidget,
+		openDialer,
+		closeDialer,
 		selectPeer,
 	};
 };

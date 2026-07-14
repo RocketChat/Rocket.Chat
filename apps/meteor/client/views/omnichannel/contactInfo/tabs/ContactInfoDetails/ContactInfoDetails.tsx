@@ -12,7 +12,7 @@ import Field from '../../../components/Field';
 import Info from '../../../components/Info';
 import Label from '../../../components/Label';
 
-type ContactInfoDetailsProps = {
+export type ContactInfoDetailsProps = {
 	contact: Pick<ILivechatContact, '_id' | 'unknown'>;
 	emails?: string[];
 	phones?: string[];

@@ -13,7 +13,7 @@ type ExternalCallEndpointData = Serialized<{
 	call?: IMediaCall;
 }>;
 
-type MediaCallHistoryExternalProps = {
+export type MediaCallHistoryExternalProps = {
 	data: ExternalCallEndpointData;
 	onClose: () => void;
 };
@@ -22,6 +22,19 @@ export const getExternalContact = (item: ExternalCallEndpointData['item']): Call
 	if (item.type === 'media-call') {
 		return {
 			number: item.contactExtension,
+		};
+	}
+
+	if (item.contactNumber) {
+		return {
+			number: item.contactNumber,
+			name: item.contactName,
+		};
+	}
+
+	if (item.contactName) {
+		return {
+			name: item.contactName,
 		};
 	}
 
@@ -48,6 +61,9 @@ const MediaCallHistoryExternal = ({ data, onClose }: MediaCallHistoryExternalPro
 
 	const actions = useMemo(() => {
 		if (state !== 'available') {
+			return {};
+		}
+		if (!('number' in contact) || !contact.number) {
 			return {};
 		}
 		return {

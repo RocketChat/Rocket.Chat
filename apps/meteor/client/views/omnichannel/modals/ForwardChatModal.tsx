@@ -16,7 +16,7 @@ type ForwardChatModalFormData = {
 	username: string;
 };
 
-type ForwardChatModalProps = {
+export type ForwardChatModalProps = {
 	room: IOmnichannelRoom;
 	onCancel: () => void;
 };

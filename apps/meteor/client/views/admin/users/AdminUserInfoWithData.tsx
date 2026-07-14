@@ -13,9 +13,10 @@ import { FormSkeleton } from '../../../components/Skeleton';
 import { UserCardRole } from '../../../components/UserCard';
 import { UserInfo } from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
+import { UserStatusText } from '../../../components/UserStatusText';
 import { getUserEmailVerified } from '../../../lib/utils/getUserEmailVerified';
 
-type AdminUserInfoWithDataProps = {
+export type AdminUserInfoWithDataProps = {
 	uid: IUser['_id'];
 	onReload: () => void;
 	tab: AdminUsersTab;
@@ -56,10 +57,12 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 			name,
 			username,
 			phone,
+			phones,
 			createdAt,
 			roles = [],
 			status,
 			statusText,
+			statusExpiresAt,
 			bio,
 			utcOffset,
 			lastLogin,
@@ -70,6 +73,9 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 			abacAttributes,
 		} = data.user;
 
+		const phonesFallback = phone ? [{ number: phone }] : undefined;
+		const normalizedPhones = phones ?? phonesFallback;
+
 		return {
 			avatarETag,
 			name,
@@ -78,7 +84,7 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 			roles: getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			bio,
 			canViewAllInfo,
-			phone,
+			phones: normalizedPhones,
 			utcOffset,
 			customFields: {
 				...data.user.customFields,
@@ -88,7 +94,7 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 			email: getUserEmailAddress(data.user),
 			createdAt,
 			status: <UserStatus status={status} />,
-			statusText,
+			customStatus: <UserStatusText status={status} statusText={statusText} statusExpiresAt={statusExpiresAt} />,
 			nickname,
 			reason,
 			freeSwitchExtension,

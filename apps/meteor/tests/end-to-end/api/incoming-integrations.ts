@@ -227,7 +227,10 @@ describe('[Incoming Integrations]', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'Invalid user [error-invalid-user]');
+						expect(res.body).to.have.property(
+							'error',
+							"User selected for the incoming integration lacks the 'message-impersonate' permission. [error-user-lacks-message-impersonate-permission]",
+						);
 					});
 			});
 		});
@@ -965,7 +968,10 @@ describe('[Incoming Integrations]', () => {
 				})
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Invalid Post As User [error-invalid-post-as-user]');
+					expect(res.body).to.have.property(
+						'error',
+						"User selected for the incoming integration lacks the 'message-impersonate' permission. [error-user-lacks-message-impersonate-permission]",
+					);
 				});
 		});
 

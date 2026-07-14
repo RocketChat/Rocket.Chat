@@ -68,7 +68,7 @@ export const ScreenContext = createContext<ScreenContextValue>({
 	onOpenWindow: () => undefined,
 } as ScreenContextValue);
 
-type ScreenProviderProps = {
+export type ScreenProviderProps = {
 	children: ComponentChildren;
 };
 

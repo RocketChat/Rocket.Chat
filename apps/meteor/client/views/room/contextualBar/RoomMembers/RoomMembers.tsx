@@ -26,7 +26,7 @@ import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import type { RoomMember } from '../../../hooks/useMembersList';
 
-type RoomMembersProps = {
+export type RoomMembersProps = {
 	rid: IRoom['_id'];
 	isTeam?: boolean;
 	isDirect?: boolean;
@@ -153,7 +153,7 @@ const RoomMembers = ({
 					value={text}
 					ref={inputRef}
 					onChange={setText}
-					addon={<Icon name='magnifier' size='x20' />}
+					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
 				<Box w='x144' mis={8}>
 					<Select

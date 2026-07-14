@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useCallSounds } from './useCallSounds';
 import { useDesktopNotifications } from './useDesktopNotifications';
+import { useDesktopTelephonyListener } from './useDesktopTelephonyListener';
 import { useMediaSession } from './useMediaSession';
 import { useMediaSessionControls } from './useMediaSessionControls';
 import { useScreenShareStreams } from './useScreenShareStreams';
@@ -25,7 +26,7 @@ import { stopTracks, useDevicePermissionPrompt2, PermissionRequestCancelledCallR
 import { isValidTone, useTonePlayer } from '../hooks/useTonePlayer';
 import TransferModal from '../views/TransferModal';
 
-type MediaCallViewProviderProps = {
+export type MediaCallViewProviderProps = {
 	children?: ReactNode;
 };
 
@@ -37,10 +38,12 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 
 	const { instance, audioElement, openRoomId, registerView, unregisterView } = useMediaCallInstance();
 
-	const { sessionState, toggleWidget, selectPeer } = useMediaSession(instance);
+	const { sessionState, toggleWidget, openDialer, closeDialer, selectPeer } = useMediaSession(instance);
 	const controls = useMediaSessionControls(instance);
 
 	useDesktopNotifications(sessionState);
+
+	useDesktopTelephonyListener({ sessionState, toggleWidget, selectPeer });
 
 	const setOutputMediaDevice = useSetOutputMediaDevice();
 	const setInputMediaDevice = useSetInputMediaDevice();
@@ -61,7 +64,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 	}, [audioInput?.id, controls, sessionState.hidden]);
 
 	useCallSounds(
-		sessionState.hidden ? 'closed' : sessionState.state,
+		sessionState.hidden || !sessionState.ringing ? 'closed' : sessionState.state,
 		useCallback(
 			(callback) => {
 				if (!instance) {
@@ -82,7 +85,8 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 	const onHold = () => controls.toggleHold();
 
 	const onCall = async () => {
-		if (sessionState.state !== 'new') {
+		// TODO: This is a workaround for the docked widget, which doesn't have a "closed" state.
+		if (sessionState.state !== 'new' && sessionState.state !== 'closed') {
 			console.error('Cannot start call in state', sessionState.state);
 			return;
 		}
@@ -90,6 +94,12 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		const { peerInfo } = sessionState;
 
 		if (!peerInfo) {
+			return;
+		}
+
+		// A number peer can be emptied by clearing the dial-pad input; don't request media or
+		// attempt a SIP call with no destination.
+		if ('number' in peerInfo && peerInfo.number.trim() === '') {
 			return;
 		}
 
@@ -226,6 +236,23 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 			},
 			[toggleWidget],
 		),
+	);
+
+	useWidgetExternalControlSignalListener(
+		'openDialer',
+		useCallback(
+			({ peerInfo }) => {
+				openDialer(peerInfo);
+			},
+			[openDialer],
+		),
+	);
+
+	useWidgetExternalControlSignalListener(
+		'closeDialer',
+		useCallback(() => {
+			closeDialer();
+		}, [closeDialer]),
 	);
 
 	const { onChangePosition, getRestorePosition } = useWidgetPositionTracker();

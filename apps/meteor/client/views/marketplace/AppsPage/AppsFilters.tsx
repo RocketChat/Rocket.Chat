@@ -9,7 +9,7 @@ import RadioDropDown from '../components/RadioDropDown/RadioDropDown';
 import type { CategoryDropDownListProps, CategoryOnSelected, selectedCategoriesList } from '../definitions/CategoryDropdownDefinitions';
 import type { RadioDropDownGroup, RadioDropDownOnSelected } from '../definitions/RadioDropDownDefinitions';
 
-type AppsFiltersProps = {
+export type AppsFiltersProps = {
 	text: string;
 	setText: (text: string) => void;
 	freePaidFilterStructure: RadioDropDownGroup;

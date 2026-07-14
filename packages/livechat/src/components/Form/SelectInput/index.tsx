@@ -6,7 +6,7 @@ import styles from './styles.scss';
 import { createClassName } from '../../../helpers/createClassName';
 import ArrowIcon from '../../../icons/arrowDown.svg';
 
-type SelectInputProps = {
+export type SelectInputProps = {
 	name?: string;
 	placeholder?: ComponentChild;
 	options: { value: string; label: ComponentChild }[];

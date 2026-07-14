@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import AppSecurityLabel from './AppSecurityLabel';
 import AppPermissionsList from '../../../components/AppPermissionsList';
 
-type AppSecurityProps = {
+export type AppSecurityProps = {
 	privacyPolicySummary?: string;
 	appPermissions?: AppPermission[];
 	tosLink?: string;

@@ -1,6 +1,8 @@
 import { Box, Skeleton, TableRow, TableCell } from '@rocket.chat/fuselage';
 
-export const GenericTableLoadingRow = ({ cols }: { cols: number }) => (
+export type GenericTableLoadingRowProps = { cols: number };
+
+export const GenericTableLoadingRow = ({ cols }: GenericTableLoadingRowProps) => (
 	<TableRow>
 		<TableCell>
 			<Box display='flex'>

@@ -23,7 +23,7 @@ type AddExistingModalFormData = {
 	rooms: IRoom['_id'][];
 };
 
-type AddExistingModalProps = {
+export type AddExistingModalProps = {
 	teamId: string;
 	onClose: () => void;
 	reload?: () => void;

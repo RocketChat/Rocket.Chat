@@ -80,7 +80,7 @@ const getEmptyFalse = () => false;
 const a: any[] = [];
 const getEmptyArray = () => a;
 
-type MessageBoxProps = {
+export type MessageBoxProps = {
 	tmid?: IMessage['_id'];
 	onSend?: (params: { value: string; tshow?: boolean; previewUrls?: string[]; isSlashCommandAllowed?: boolean }) => Promise<void>;
 	onJoin?: () => Promise<void>;

@@ -9,7 +9,7 @@ import { useChat } from '../contexts/ChatContext';
 
 type ComposerBoxPopupPreviewItem = { _id: string; type: 'image' | 'video' | 'audio' | 'text' | 'other'; value: string; sort?: number };
 
-type ComposerBoxPopupPreviewProps = ComposerBoxPopupProps<ComposerBoxPopupPreviewItem> & {
+export type ComposerBoxPopupPreviewProps = ComposerBoxPopupProps<ComposerBoxPopupPreviewItem> & {
 	title?: ReactNode;
 	rid: string;
 	tmid?: string;

@@ -3,8 +3,9 @@ import { Box } from '@rocket.chat/fuselage';
 
 import Key from './Key';
 
-type KeypadProps = {
+export type KeypadProps = {
 	onKeyPress(key: string): void;
+	autoFocus?: boolean;
 };
 
 const DIGITS = [
@@ -22,8 +23,8 @@ const DIGITS = [
 	['#', ''],
 ];
 
-const Keypad = ({ onKeyPress }: KeypadProps) => (
-	<FocusScope autoFocus>
+const Keypad = ({ onKeyPress, autoFocus = true }: KeypadProps) => (
+	<FocusScope autoFocus={autoFocus}>
 		<Box display='flex' justifyContent='center' flexWrap='wrap' maxWidth={196}>
 			{DIGITS.map(([primaryDigit, alternativeDigit, longPressDigit]) => (
 				<Key

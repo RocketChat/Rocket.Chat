@@ -26,7 +26,7 @@ export type MessageFormSubmitPayload = {
 	templateParameters: TemplateParameters;
 };
 
-type MessageFormProps = {
+export type MessageFormProps = {
 	contact?: Omit<Serialized<ILivechatContact>, 'contactManager'>;
 	templates?: IOutboundProviderTemplate[];
 	onSubmit(values: MessageFormSubmitPayload): void;

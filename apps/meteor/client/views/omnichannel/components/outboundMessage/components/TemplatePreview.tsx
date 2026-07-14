@@ -7,7 +7,7 @@ import MarkdownText from '../../../../../components/MarkdownText';
 import type { TemplateParameters, ComponentType } from '../types/template';
 import { processTemplatePreviewText } from '../utils/template';
 
-type TemplatePreviewProps = {
+export type TemplatePreviewProps = {
 	template: IOutboundProviderTemplate;
 	parameters?: TemplateParameters;
 };

@@ -6,7 +6,7 @@ import styles from './styles.scss';
 import type { Theme } from '../../Theme';
 import { createClassName } from '../../helpers/createClassName';
 
-type HeaderProps = {
+export type HeaderProps = {
 	children?: ComponentChildren;
 	theme?: Partial<Theme>;
 	className?: string;

@@ -10,7 +10,7 @@ import { getURL } from '../../../../../../app/utils/client';
 import { download, downloadAs } from '../../../../../lib/download';
 import { useMessageDeletionIsAllowed } from '../hooks/useMessageDeletionIsAllowed';
 
-type FileItemMenuProps = {
+export type FileItemMenuProps = {
 	rid: IRoom['_id'];
 	fileData: IUpload;
 	onClickDelete: (id: IUpload['_id']) => void;

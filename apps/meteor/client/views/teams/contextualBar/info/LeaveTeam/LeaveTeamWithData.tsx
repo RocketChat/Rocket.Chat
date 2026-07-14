@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import LeaveTeamModal from './LeaveTeamModal/LeaveTeamModal';
 
-type LeaveTeamWithDataProps = {
+export type LeaveTeamWithDataProps = {
 	teamId: ITeam['_id'];
 	onCancel: () => void;
 	onConfirm: () => void;

@@ -16,7 +16,7 @@ import { Virtuoso } from 'react-virtuoso';
 import BannedUsersItem from './BannedUsersItem';
 import type { BannedUser } from '../../../hooks/useRoomBannedUsers';
 
-type BannedUsersProps = {
+export type BannedUsersProps = {
 	loading: boolean;
 	error?: Error;
 	useRealName?: boolean;

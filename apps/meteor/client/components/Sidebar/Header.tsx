@@ -2,7 +2,7 @@ import { Box, IconButton } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type HeaderProps = {
+export type HeaderProps = {
 	children?: ReactNode;
 	title?: ReactNode;
 	onClose?: () => void;

@@ -4,7 +4,7 @@ import { Margins } from '@rocket.chat/fuselage';
 import RoomForewordUsernameListItem from './RoomForewordUsernameListItem';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 
-type RoomForewordUsernameListProps = { usernames: Array<NonNullable<IUser['username']>> };
+export type RoomForewordUsernameListProps = { usernames: Array<NonNullable<IUser['username']>> };
 
 const RoomForewordUsernameList = ({ usernames }: RoomForewordUsernameListProps) => {
 	return (
