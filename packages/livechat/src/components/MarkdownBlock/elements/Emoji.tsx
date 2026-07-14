@@ -15,10 +15,6 @@ const Emoji = ({ big = false, ...emoji }: EmojiProps) => {
 		[emoji],
 	);
 
-	if ('shortCode' in emoji) {
-		return <PlainSpan text={emoji.shortCode === emoji.value.value ? `:${emoji.shortCode}:` : emoji.value.value} />;
-	}
-
 	if (asciiEmoji) {
 		return <PlainSpan text={asciiEmoji} />;
 	}
