@@ -1,13 +1,12 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import DOMPurify from 'dompurify';
-import { useMemo } from 'preact/hooks';
 
 type EmojiProps = MessageParser.Emoji & {
 	big?: boolean;
 };
 
 const EmojiRenderer = (props: EmojiProps) => {
-	const fallback = useMemo(() => ('unicode' in props ? props.unicode : `:${props.shortCode ?? props.value.value}:`), [props]);
+	const fallback = 'unicode' in props ? props.unicode : `:${props.shortCode ?? props.value.value}:`;
 
 	const sanitizedFallback = DOMPurify.sanitize(fallback);
 
