@@ -1,10 +1,10 @@
 import { LivechatClientImpl } from '@rocket.chat/ddp-client';
-import { parse } from 'query-string';
 
-const host = window.SERVER_URL ?? parse(window.location.search).serverUrl ?? `${window.location.protocol}//${window.location.host}`;
-export const useSsl = Boolean((Array.isArray(host) ? host[0] : host)?.match(/^https:/));
+import { host, useSsl } from './host';
 
-export const Livechat = LivechatClientImpl.create(host.replace(/^http/, 'ws'));
+export { useSsl };
+
+export const Livechat = LivechatClientImpl.create(host?.replace(/^http/, 'ws'));
 
 Livechat.rest.use(async function (request, next) {
 	try {

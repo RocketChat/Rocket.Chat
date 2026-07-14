@@ -1,12 +1,10 @@
-import { parse } from 'query-string';
-
 import App from './App';
+import { host } from '../../host';
 import SDKProvider from '../../providers/SDKProvider';
 import ServerProvider from '../../providers/ServerProvider';
 import { Provider as StoreProvider, Consumer as StoreConsumer } from '../../store';
 
-export const host = window.SERVER_URL ?? parse(window.location.search).serverUrl ?? `${window.location.protocol}//${window.location.host}`;
-export const useSsl = Boolean((Array.isArray(host) ? host[0] : host)?.match(/^https:/));
+export { host };
 
 const AppConnector = () => (
 	<div id='app'>
