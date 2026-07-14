@@ -98,7 +98,7 @@ API.v1.post(
 		const valid = settings.every((setting) => validSettingList.includes(setting._id));
 
 		if (!valid) {
-			throw new Error('invalid-setting');
+			return API.v1.failure('invalid-setting');
 		}
 
 		const dbSettings = await Settings.findByIds(validSettingList, { projection: { _id: 1, value: 1, type: 1, values: 1 } })

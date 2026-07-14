@@ -85,7 +85,7 @@ API.v1.get(
 
 		const room = await LivechatRooms.findOneById(rid, { projection: { _id: 1 } });
 		if (!room) {
-			throw new Error('invalid-room');
+			return API.v1.failure('invalid-room');
 		}
 		const { offset, count } = await getPaginationItems(this.queryParams);
 		const { sort } = await this.parseJsonQuery();

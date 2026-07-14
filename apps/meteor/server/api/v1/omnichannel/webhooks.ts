@@ -110,7 +110,7 @@ const webhookEndpoints = API.v1.post(
 			throw new Error('Invalid status code');
 		} catch (error) {
 			logger.error({ msg: 'Error testing webhook', err: error });
-			throw new Error('error-invalid-webhook-response');
+			return API.v1.failure('error-invalid-webhook-response');
 		}
 	},
 );
