@@ -284,10 +284,12 @@ export const buildRoomSearchQuery = (value: string, mention?: string) => {
 export const getAISearchButtonTooltip = ({
 	hasIntelligentSearchLicense,
 	intelligentSearchEnabled,
+	aiSearchActive,
 	t,
 }: {
 	hasIntelligentSearchLicense: boolean;
 	intelligentSearchEnabled: boolean;
+	aiSearchActive: boolean;
 	t: (key: string) => string;
 }): string => {
 	if (!hasIntelligentSearchLicense) {
@@ -298,5 +300,5 @@ export const getAISearchButtonTooltip = ({
 		return t('AI_Search_disabled_tooltip');
 	}
 
-	return t('Search_with_AI');
+	return t(aiSearchActive ? 'Disable_AI_Search' : 'Enable_AI_Search');
 };

@@ -100,7 +100,7 @@ export const useNavBarAISearch = ({
 		aiSearchFeatureEnabled,
 		canSearchWithAIFromTopBar,
 		appliedFilterChips,
-		aiSearchButtonTooltip: getAISearchButtonTooltip({ hasIntelligentSearchLicense, intelligentSearchEnabled, t }),
+		aiSearchButtonTooltip: getAISearchButtonTooltip({ hasIntelligentSearchLicense, intelligentSearchEnabled, aiSearchActive, t }),
 		handleRemoveFilter,
 		handleToggleAISearch,
 	};

@@ -32,7 +32,7 @@ const renderSection = (
 		.withTranslations('en', 'core', {
 			Intelligent_Search: 'AI Search',
 			AI_Search_related_messages: '{{count}} related message',
-			Open_AI_Search: 'Open AI Search',
+			View_all_results: 'View all results',
 		})
 		.withRouter(router)
 		.build();
@@ -50,7 +50,7 @@ describe('NavBarSearchIntelligentSection', () => {
 		const buildRoutePath = jest.fn(() => '/search' as const);
 		renderSection([], { buildRoutePath });
 
-		expect(screen.queryByText('Open AI Search')).not.toBeInTheDocument();
+		expect(screen.queryByText('View all results')).not.toBeInTheDocument();
 		expect(buildRoutePath).not.toHaveBeenCalled();
 	});
 
@@ -70,7 +70,7 @@ describe('NavBarSearchIntelligentSection', () => {
 			onClose,
 		);
 
-		const action = screen.getByRole('option', { name: 'Open AI Search' });
+		const action = screen.getByRole('option', { name: 'View all results' });
 		expect(action.tagName).toBe('A');
 		expect(action).toHaveAttribute('href', '/search?q=in%3Ageneral%20deployment%20errors');
 		expect(buildRoutePath).toHaveBeenCalledWith({

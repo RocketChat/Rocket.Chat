@@ -158,19 +158,27 @@ describe('AI Search client helpers', () => {
 		const t = (key: string): string => key;
 
 		it('explains unavailable AI Search when the add-on is missing', () => {
-			expect(getAISearchButtonTooltip({ hasIntelligentSearchLicense: false, intelligentSearchEnabled: true, t })).toBe(
-				'AI_Search_license_required_tooltip',
-			);
+			expect(
+				getAISearchButtonTooltip({ hasIntelligentSearchLicense: false, intelligentSearchEnabled: true, aiSearchActive: false, t }),
+			).toBe('AI_Search_license_required_tooltip');
 		});
 
 		it('explains disabled AI Search when the add-on is available', () => {
-			expect(getAISearchButtonTooltip({ hasIntelligentSearchLicense: true, intelligentSearchEnabled: false, t })).toBe(
-				'AI_Search_disabled_tooltip',
-			);
+			expect(
+				getAISearchButtonTooltip({ hasIntelligentSearchLicense: true, intelligentSearchEnabled: false, aiSearchActive: false, t }),
+			).toBe('AI_Search_disabled_tooltip');
 		});
 
-		it('uses the normal action label when AI Search can be toggled', () => {
-			expect(getAISearchButtonTooltip({ hasIntelligentSearchLicense: true, intelligentSearchEnabled: true, t })).toBe('Search_with_AI');
+		it('offers to enable AI Search when it is inactive', () => {
+			expect(
+				getAISearchButtonTooltip({ hasIntelligentSearchLicense: true, intelligentSearchEnabled: true, aiSearchActive: false, t }),
+			).toBe('Enable_AI_Search');
+		});
+
+		it('offers to disable AI Search when it is active', () => {
+			expect(getAISearchButtonTooltip({ hasIntelligentSearchLicense: true, intelligentSearchEnabled: true, aiSearchActive: true, t })).toBe(
+				'Disable_AI_Search',
+			);
 		});
 	});
 });
