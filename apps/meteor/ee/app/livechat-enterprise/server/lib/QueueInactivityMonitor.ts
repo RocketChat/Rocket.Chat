@@ -54,20 +54,24 @@ export class OmnichannelQueueInactivityMonitorClass {
 	}
 
 	async closeRoom(inquiryId: string): Promise<void> {
-		// TODO: add projection and maybe use findOneQueued to avoid fetching the whole inquiry
-		const inquiry = await LivechatInquiryRaw.findOneById(inquiryId);
-		if (inquiry?.status !== 'queued') {
-			return;
-		}
+		try {
+			// TODO: add projection and maybe use findOneQueued to avoid fetching the whole inquiry
+			const inquiry = await LivechatInquiryRaw.findOneById(inquiryId);
+			if (inquiry?.status !== 'queued') {
+				return;
+			}
 
-		const room = await LivechatRooms.findOneById(inquiry.rid);
-		if (!room) {
-			this.logger.error({ msg: 'Unable to find room to close in queue inactivity monitor', inquiryId, roomId: inquiry.rid });
-			return;
-		}
+			const room = await LivechatRooms.findOneById(inquiry.rid);
+			if (!room) {
+				this.logger.error({ msg: 'Unable to find room to close in queue inactivity monitor', inquiryId, roomId: inquiry.rid });
+				return;
+			}
 
-		await Promise.all([this.closeRoomAction(room), this.stopInquiry(inquiryId)]);
-		this.logger.info({ msg: 'Closed room due to queue inactivity', roomId: inquiry.rid, inquiryId });
+			await this.closeRoomAction(room);
+			this.logger.info({ msg: 'Closed room due to queue inactivity', roomId: inquiry.rid, inquiryId });
+		} finally {
+			await this.stopInquiry(inquiryId);
+		}
 	}
 }
 

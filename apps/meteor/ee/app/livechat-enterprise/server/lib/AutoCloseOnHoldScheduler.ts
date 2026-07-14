@@ -33,14 +33,18 @@ export class AutoCloseOnHoldSchedulerClass {
 	private async executeJob(roomId: string, comment: string): Promise<void> {
 		this.logger.debug({ msg: 'Executing job for room', roomId });
 
-		const [room, user] = await Promise.all([LivechatRooms.findOneById(roomId), this.getSchedulerUser()]);
-		if (!room || !user) {
-			throw new Error(
-				`Unable to process AutoCloseOnHoldScheduler job because room or user not found for roomId: ${roomId} and userId: rocket.cat`,
-			);
-		}
+		try {
+			const [room, user] = await Promise.all([LivechatRooms.findOneById(roomId), this.getSchedulerUser()]);
+			if (!room || !user) {
+				throw new Error(
+					`Unable to process AutoCloseOnHoldScheduler job because room or user not found for roomId: ${roomId} and userId: rocket.cat`,
+				);
+			}
 
-		await closeRoom({ room, user, comment });
+			await closeRoom({ room, user, comment });
+		} finally {
+			await this.unscheduleRoom(roomId);
+		}
 	}
 
 	private async getSchedulerUser(): Promise<IUser> {

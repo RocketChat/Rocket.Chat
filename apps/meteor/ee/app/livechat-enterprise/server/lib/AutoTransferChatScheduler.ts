@@ -9,7 +9,7 @@ import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingMa
 import { returnRoomAsInquiry } from '../../../../../app/livechat/server/lib/rooms';
 import { settings } from '../../../../../app/settings/server';
 
-const SCHEDULER_NAME = 'omnichannel_scheduler';
+const SCHEDULER_NAME = 'omnichannel_auto_transfer_scheduler';
 
 export class AutoTransferChatSchedulerClass {
 	logger: MainLogger;
@@ -103,10 +103,11 @@ export class AutoTransferChatSchedulerClass {
 	private async executeJob(roomId: string): Promise<void> {
 		try {
 			await this.transferRoom(roomId);
-
-			await Promise.all([LivechatRooms.setAutoTransferredAtById(roomId), this.unscheduleRoom(roomId)]);
+			await LivechatRooms.setAutoTransferredAtById(roomId);
 		} catch (error) {
 			this.logger.error({ msg: 'Error while executing auto-transfer job', schedulerName: SCHEDULER_NAME, roomId, err: error });
+		} finally {
+			await this.unscheduleRoom(roomId);
 		}
 	}
 }

@@ -78,7 +78,7 @@ describe('AutoTransferChats', () => {
 			await scheduler.scheduleRoom('roomId', 10);
 
 			expect(scheduler.unscheduleRoom.calledWith('roomId')).to.be.true;
-			expect(mockCronAddAtTimestamp.getCall(0).args[0]).to.be.equal('omnichannel_scheduler-roomId');
+			expect(mockCronAddAtTimestamp.getCall(0).args[0]).to.be.equal('omnichannel_auto_transfer_scheduler-roomId');
 			expect(mockCronAddAtTimestamp.getCall(0).args[1]).to.be.closeToTime(myScheduleTime, 5);
 			expect(mockCronAddAtTimestamp.getCall(0).args[2]).to.be.a('function');
 			expect(mockLivechatRooms.setAutoTransferOngoingById.getCall(0).firstArg).to.be.equal('roomId');
@@ -96,7 +96,7 @@ describe('AutoTransferChats', () => {
 			await scheduler.unscheduleRoom('roomId');
 
 			expect(mockLivechatRooms.unsetAutoTransferOngoingById.getCall(0).firstArg).to.be.equal('roomId');
-			expect(mockCronRemove.getCall(0).firstArg).to.be.equal('omnichannel_scheduler-roomId');
+			expect(mockCronRemove.getCall(0).firstArg).to.be.equal('omnichannel_auto_transfer_scheduler-roomId');
 		});
 	});
 
