@@ -450,7 +450,7 @@ API.v1.addRoute(
 
 			if (
 				(!room.servedBy || room.servedBy._id !== this.userId) &&
-				!(await hasPermissionAsync(this.userId, 'save-others-livechat-room-info'))
+				!(await hasPermissionAsync(this.user, 'save-others-livechat-room-info'))
 			) {
 				return API.v1.forbidden();
 			}

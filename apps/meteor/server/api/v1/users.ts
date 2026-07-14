@@ -237,7 +237,7 @@ API.v1
 			if (
 				this.bodyParams.userId &&
 				this.bodyParams.userId !== this.userId &&
-				!(await hasPermissionAsync(this.userId, 'edit-other-user-info'))
+				!(await hasPermissionAsync(this.user, 'edit-other-user-info'))
 			) {
 				throw new Meteor.Error('error-action-not-allowed', 'Editing user is not allowed');
 			}
@@ -284,7 +284,7 @@ API.v1
 			},
 		},
 		async function action() {
-			const canEditOtherUserAvatar = await hasPermissionAsync(this.userId, 'edit-other-user-avatar');
+			const canEditOtherUserAvatar = await hasPermissionAsync(this.user, 'edit-other-user-avatar');
 
 			if (!settings.get('Accounts_AllowUserAvatarChange') && !canEditOtherUserAvatar) {
 				throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed', {
@@ -338,7 +338,7 @@ API.v1
 				}
 
 				const isAnotherUser = this.userId !== user._id;
-				if (isAnotherUser && !(await hasPermissionAsync(this.userId, 'edit-other-user-avatar'))) {
+				if (isAnotherUser && !(await hasPermissionAsync(this.user, 'edit-other-user-avatar'))) {
 					throw new Meteor.Error('error-not-allowed', 'Not allowed');
 				}
 			}
@@ -615,7 +615,7 @@ API.v1.get(
 
 		const myself = user._id === this.userId;
 
-		if (this.queryParams.includeUserRooms === 'true' && (myself || (await hasPermissionAsync(this.userId, 'view-other-user-channels')))) {
+		if (this.queryParams.includeUserRooms === 'true' && (myself || (await hasPermissionAsync(this.user, 'view-other-user-channels')))) {
 			return API.v1.success({
 				user: {
 					...user,
@@ -657,11 +657,11 @@ API.v1.addRoute(
 		async get() {
 			if (
 				settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
-				!(await hasPermissionAsync(this.userId, 'view-outside-room'))
+				!(await hasPermissionAsync(this.user, 'view-outside-room'))
 			) {
 				return API.v1.forbidden();
 			}
-			const canViewFullOtherUserInfo = await hasPermissionAsync(this.userId, 'view-full-other-user-info');
+			const canViewFullOtherUserInfo = await hasPermissionAsync(this.user, 'view-full-other-user-info');
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
@@ -800,7 +800,7 @@ API.v1.get(
 	async function action() {
 		if (
 			settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
-			!(await hasPermissionAsync(this.userId, 'view-outside-room'))
+			!(await hasPermissionAsync(this.user, 'view-outside-room'))
 		) {
 			return API.v1.forbidden();
 		}
@@ -963,8 +963,8 @@ API.v1.post(
 		if (settings.get('Accounts_AllowUserAvatarChange') && user._id === this.userId) {
 			await resetAvatar(this.userId, this.userId);
 		} else if (
-			(await hasPermissionAsync(this.userId, 'edit-other-user-avatar')) ||
-			(await hasPermissionAsync(this.userId, 'manage-moderation-actions'))
+			(await hasPermissionAsync(this.user, 'edit-other-user-avatar')) ||
+			(await hasPermissionAsync(this.user, 'manage-moderation-actions'))
 		) {
 			await resetAvatar(this.userId, user._id);
 		} else {
@@ -1696,7 +1696,7 @@ API.v1.get(
 
 		try {
 			if (selector?.conditions) {
-				const canViewFullInfo = await hasPermissionAsync(this.userId, 'view-full-other-user-info');
+				const canViewFullInfo = await hasPermissionAsync(this.user, 'view-full-other-user-info');
 				const allowedFields = canViewFullInfo ? [...Object.keys(defaultFields), ...Object.keys(fullFields)] : Object.keys(defaultFields);
 
 				if (!isValidQuery(selector.conditions, allowedFields, ['$and', '$ne', '$exists'])) {
@@ -1759,7 +1759,7 @@ API.v1
 					throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 				}
 
-				if (!(await hasPermissionAsync(this.userId, 'edit-other-user-e2ee'))) {
+				if (!(await hasPermissionAsync(this.user, 'edit-other-user-e2ee'))) {
 					throw new Meteor.Error('error-not-allowed', 'Not allowed');
 				}
 
@@ -1796,7 +1796,7 @@ API.v1
 		},
 		async function action() {
 			if ('userId' in this.bodyParams || 'username' in this.bodyParams || 'user' in this.bodyParams) {
-				if (!(await hasPermissionAsync(this.userId, 'edit-other-user-totp'))) {
+				if (!(await hasPermissionAsync(this.user, 'edit-other-user-totp'))) {
 					throw new Meteor.Error('error-not-allowed', 'Not allowed');
 				}
 
@@ -1849,7 +1849,7 @@ API.v1
 			const { userId } = this.queryParams;
 
 			// If the caller has permission to view all teams, there's no need to filter the teams
-			const adminId = (await hasPermissionAsync(this.userId, 'view-all-teams')) ? undefined : this.userId;
+			const adminId = (await hasPermissionAsync(this.user, 'view-all-teams')) ? undefined : this.userId;
 
 			const teams = await Team.findBySubscribedUserIds(userId, adminId);
 
@@ -1881,7 +1881,7 @@ API.v1
 		async function action() {
 			const userId = this.bodyParams.userId || this.userId;
 
-			if (userId !== this.userId && !(await hasPermissionAsync(this.userId, 'logout-other-user'))) {
+			if (userId !== this.userId && !(await hasPermissionAsync(this.user, 'logout-other-user'))) {
 				return API.v1.forbidden();
 			}
 
@@ -2000,7 +2000,7 @@ API.v1
 				if (isUserFromParams(this.bodyParams, this.userId, this.user)) {
 					return Users.findOneById(this.userId);
 				}
-				if (await hasPermissionAsync(this.userId, 'edit-other-user-info')) {
+				if (await hasPermissionAsync(this.user, 'edit-other-user-info')) {
 					return getUserFromParams(this.bodyParams);
 				}
 			})();

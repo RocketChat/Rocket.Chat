@@ -273,7 +273,7 @@ API.v1.get(
 			hidden: { $ne: true },
 		};
 
-		if (!(await hasPermissionAsync(this.userId, 'view-privileged-setting'))) {
+		if (!(await hasPermissionAsync(this.user, 'view-privileged-setting'))) {
 			ourQuery.public = true;
 		}
 

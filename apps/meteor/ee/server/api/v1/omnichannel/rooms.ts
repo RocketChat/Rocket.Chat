@@ -30,7 +30,7 @@ API.v1.addRoute(
 			}
 
 			const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, { projection: { _id: 1 } });
-			if (!subscription && !(await hasPermissionAsync(this.userId, 'on-hold-others-livechat-room'))) {
+			if (!subscription && !(await hasPermissionAsync(this.user, 'on-hold-others-livechat-room'))) {
 				throw new Error('Not_authorized');
 			}
 
@@ -71,7 +71,7 @@ API.v1.addRoute(
 			}
 
 			const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, { projection: { _id: 1 } });
-			if (!subscription && !(await hasPermissionAsync(this.userId, 'on-hold-others-livechat-room'))) {
+			if (!subscription && !(await hasPermissionAsync(this.user, 'on-hold-others-livechat-room'))) {
 				throw new Error('Not_authorized');
 			}
 
