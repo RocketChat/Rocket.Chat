@@ -23,6 +23,7 @@ export async function notifyDesktopUser({
 	duration,
 	notificationMessage,
 	audioNotificationValue,
+	icon,
 }: {
 	userId: string;
 	user: AtLeast<IUser, '_id' | 'name' | 'username'>;
@@ -31,6 +32,7 @@ export async function notifyDesktopUser({
 	duration?: number;
 	notificationMessage: string;
 	audioNotificationValue?: string;
+	icon?: string;
 }): Promise<void> {
 	const { title, text, name } = await roomCoordinator
 		.getRoomDirectives(room.t)
@@ -40,6 +42,7 @@ export async function notifyDesktopUser({
 		title: title || '',
 		text,
 		duration,
+		icon,
 		payload: {
 			_id: '',
 			rid: '',

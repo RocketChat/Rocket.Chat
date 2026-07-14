@@ -39,6 +39,7 @@ export type AccountPreferencesData = {
 	notificationsSoundVolume?: number;
 	voipRingerVolume?: number;
 	desktopNotificationVoiceCalls?: boolean;
+	receiveReactionNotifications?: boolean;
 };
 
 export const useAccountPreferencesValues = (): AccountPreferencesData => {
@@ -55,6 +56,7 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 	const receiveLoginDetectionEmail = useUserPreference<boolean>('receiveLoginDetectionEmail', true);
 	const notifyCalendarEvents = useUserPreference<boolean>('notifyCalendarEvents');
 	const enableMobileRinging = useUserPreference<boolean>('enableMobileRinging');
+	const receiveReactionNotifications = useUserPreference<boolean>('receiveReactionNotifications');
 
 	const unreadAlert = useUserPreference<boolean>('unreadAlert');
 	const showThreadsInMainChannel = useUserPreference<boolean>('showThreadsInMainChannel');
@@ -111,5 +113,6 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 		notificationsSoundVolume,
 		voipRingerVolume,
 		desktopNotificationVoiceCalls,
+		receiveReactionNotifications,
 	};
 };

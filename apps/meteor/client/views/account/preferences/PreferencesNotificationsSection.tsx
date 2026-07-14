@@ -204,6 +204,16 @@ const PreferencesNotificationsSection = () => {
 						</FieldRow>
 					</Field>
 				)}
+				<Field>
+					<FieldRow>
+						<FieldLabel>{t('Receive_Reaction_Notifications')}</FieldLabel>
+						<Controller
+							name='receiveReactionNotifications'
+							control={control}
+							render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} />}
+						/>
+					</FieldRow>
+				</Field>
 			</FieldGroup>
 		</AccordionItem>
 	);
