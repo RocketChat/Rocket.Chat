@@ -85,15 +85,22 @@ const SearchSourceResult = ({ item }: SearchSourceResultProps): ReactElement => 
 			borderBlockEndWidth={1}
 			borderBlockEndStyle='solid'
 			borderBlockEndColor='extra-light'
+			pbs={16}
+			pbe={16}
 		>
-			<Message clickable={Boolean(href)} pbs={16} pbe={16}>
+			<Message clickable={Boolean(href)}>
 				<MessageLeftContainer>
 					<MessageAvatar username={username} size='x36' />
 				</MessageLeftContainer>
 				<MessageContainer>
 					<MessageHeader>
 						<MessageName title={displayName}>{displayName}</MessageName>
-						{item.u?.username && <MessageUsername mis={4}>@{item.u.username}</MessageUsername>}
+						{item.u?.username && (
+							<>
+								{' '}
+								<MessageUsername>@{item.u.username}</MessageUsername>
+							</>
+						)}
 						{roomLabel && (
 							<MessageRole>
 								<Box display='flex' alignItems='center' gap={4}>
