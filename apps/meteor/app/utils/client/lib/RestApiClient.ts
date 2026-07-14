@@ -3,6 +3,7 @@ import { RestClient } from '@rocket.chat/api-client';
 
 import { invokeTwoFactorModal } from '../../../../client/lib/2fa/process2faReturn';
 import { baseURI } from '../../../../client/lib/baseURI';
+import { clearStoredCredentials } from '../../../../client/lib/sdk/ddpSdk';
 import { STORAGE_KEYS, getStoredItem } from '../../../../client/lib/sdk/storage';
 
 class RestApiClient extends RestClient {
@@ -42,6 +43,14 @@ APIClient.use(async (request, next) => {
 		return await next(...request);
 	} catch (error) {
 		if (error instanceof Response) {
+			// A 401 means the stored session token is no longer valid (expired or revoked
+			// server-side). DDP-routed calls cleared credentials via ddpOverREST; direct REST
+			// calls must do the same so the router falls through to the login page instead of
+			// leaving the user wedged. Only 401 (unauthenticated) — never 403 (authenticated but
+			// lacking permission), which must not log the user out.
+			if (error.status === 401) {
+				clearStoredCredentials();
+			}
 			const e = await error.json();
 			throw e;
 		}
