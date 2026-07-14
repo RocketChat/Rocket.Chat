@@ -30,6 +30,7 @@ import type { LDAPEndpoints } from './v1/ldap';
 import type { LicensesEndpoints } from './v1/licenses';
 import type { MailerEndpoints } from './v1/mailer';
 import type { MeEndpoints } from './v1/me';
+import type { MediaCallsEndpoints } from './v1/media-calls';
 import type { MiscEndpoints } from './v1/misc';
 import type { ModerationEndpoints } from './v1/moderation';
 import type { OmnichannelEndpoints } from './v1/omnichannel';
@@ -94,6 +95,7 @@ export interface Endpoints
 		ImportEndpoints,
 		ServerEventsEndpoints,
 		TwoFactorChallengesEndpoints,
+		MediaCallsEndpoints,
 		DefaultEndpoints {}
 
 type OperationsByPathPatternAndMethod<

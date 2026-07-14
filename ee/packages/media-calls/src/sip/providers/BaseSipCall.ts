@@ -1,10 +1,11 @@
-import type { IMediaCall, MediaCallContact } from '@rocket.chat/core-typings';
-import type { ClientMediaSignalBody } from '@rocket.chat/media-signaling';
-import { MediaCalls } from '@rocket.chat/models';
+import type { IMediaCall, MediaCallContact, AtLeast, IVideoConference } from '@rocket.chat/core-typings';
+import type { ClientMediaSignalBody, CallHangupReason } from '@rocket.chat/media-signaling';
+import { MediaCalls, VideoConference as VideoConferenceModel } from '@rocket.chat/models';
 import type Srf from 'drachtio-srf';
 import type { SrfRequest, SrfResponse } from 'drachtio-srf';
 
 import { BaseCallProvider } from '../../base/BaseCallProvider';
+import { UserActorAgent } from '../../internal/agents/UserActorAgent';
 import { logger } from '../../logger';
 import type { BroadcastActorAgent } from '../../server/BroadcastAgent';
 import { mediaCallDirector } from '../../server/CallDirector';
@@ -25,6 +26,12 @@ export abstract class BaseSipCall extends BaseCallProvider {
 
 	protected abstract inboundRenegotiations: Map<string, SipCallNegotiation>;
 
+	protected sipDialog: Srf.Dialog | null;
+
+	protected processedTransfer: boolean;
+
+	protected processedEscalation: boolean;
+
 	constructor(
 		protected readonly session: SipServerSession,
 		call: IMediaCall,
@@ -32,6 +39,9 @@ export abstract class BaseSipCall extends BaseCallProvider {
 	) {
 		super(call);
 		this.lastCallState = 'none';
+		this.sipDialog = null;
+		this.processedTransfer = false;
+		this.processedEscalation = false;
 	}
 
 	protected async handleDialogModify(req: SrfRequest, res: SrfResponse): Promise<void> {
@@ -41,7 +51,44 @@ export abstract class BaseSipCall extends BaseCallProvider {
 		const newContact = await this.detectSipInitiatedTransfer(callingNumber);
 
 		if (newContact) {
-			return this.updateRemoteContact(newContact);
+			const header = req.has('p-asserted-identity') ? req.get('p-asserted-identity') : req.get('from');
+
+			// If the call's updated identity includes the pexip SIP host, treat it as an escalated call.
+			if (header && this.session.isPexipIdentity(header)) {
+				await this.processEscalatedRemotely(callingNumber);
+			}
+
+			await this.updateRemoteContact(newContact);
+		}
+	}
+
+	/**
+	 * Flag a call as escalated by peer based on a contact change on the SIP negotiation
+	 */
+	protected async processEscalatedRemotely(sipAlias: string): Promise<void> {
+		// The call might have already been flagged as escalated by the event sink, so do nothing in that case
+		if (this.call.escalatedByPeerAt) {
+			return;
+		}
+
+		const updateResult = await MediaCalls.flagAsRemotelyEscalatedByCallId(this.call._id);
+		if (!updateResult.modifiedCount) {
+			return;
+		}
+
+		const conference = await VideoConferenceModel.addMediaCallIdByProviderNameAndSipAlias('core.pexip', sipAlias, this.call._id);
+		if (!conference) {
+			// TODO: maybe rollback `flagAsRemotelyEscalatedByCallId` ?
+			return;
+		}
+
+		const { oppositeAgent } = this.agent;
+		if (oppositeAgent && oppositeAgent instanceof UserActorAgent) {
+			await oppositeAgent.sendSignal({
+				callId: this.call._id,
+				type: 'notification',
+				notification: 'escalated',
+			});
 		}
 	}
 
@@ -191,6 +238,21 @@ export abstract class BaseSipCall extends BaseCallProvider {
 		// no extra handling by default
 	}
 
+	protected onDialogDestroyed(): void {
+		logger.debug({
+			msg: 'SIP Dialog Destroyed',
+			type: this.constructor.name,
+			callId: this.call._id,
+		});
+
+		this.sipDialog = null;
+		if (this.processedEscalation) {
+			this.hangupCall('conference-escalation', 'user');
+		} else {
+			this.hangupCall('remote');
+		}
+	}
+
 	public override async reactToCallChanges(params: { dtmf?: ClientMediaSignalBody<'dtmf'> }): Promise<void> {
 		logger.debug({ msg: 'reactToCallChanges', type: this.constructor.name, callId: this.call._id, lastCallState: this.lastCallState });
 
@@ -216,6 +278,8 @@ export abstract class BaseSipCall extends BaseCallProvider {
 
 	protected abstract reflectCall(call: IMediaCall, params: { dtmf?: ClientMediaSignalBody<'dtmf'> }): Promise<void>;
 
+	protected abstract processEndedCall(call: IMediaCall): Promise<void>;
+
 	protected async sendDTMF(dialog: Srf.Dialog, dtmf: string, duration: number): Promise<void> {
 		logger.debug({ msg: 'BaseSipCall.sendDTMF' });
 		await dialog.request({
@@ -225,5 +289,137 @@ export abstract class BaseSipCall extends BaseCallProvider {
 			},
 			body: `Signal=${dtmf}\r\nDuration=${duration}`,
 		});
+	}
+
+	protected async processTransferredCall(call: IMediaCall): Promise<void> {
+		if (this.lastCallState === 'hangup' || !call.transferredTo || !call.transferredBy) {
+			return;
+		}
+
+		if (!this.sipDialog || this.processedTransfer) {
+			if (call.ended) {
+				return this.processEndedCall(call);
+			}
+			return;
+		}
+
+		logger.debug({ msg: 'processTransferredCall', callId: call._id, lastCallState: this.lastCallState, type: this.constructor.name });
+		this.processedTransfer = true;
+
+		try {
+			await this.session.sendReferRequest(this.sipDialog, {
+				transferredTo: call.transferredTo,
+				transferredBy: call.transferredBy,
+			});
+		} catch (err) {
+			logger.error({ msg: 'REFER failed', method: 'processTransferredCall', err, callId: call._id, type: this.constructor.name });
+			if (!call.ended) {
+				this.hangupCall('signaling-error');
+			}
+			return this.processEndedCall(call);
+		}
+	}
+
+	/**
+	 * The call has been flagged as escalated by a rocket.chat user, so update the SIP dialog accordingly
+	 */
+	protected async processEscalatedCall(call: IMediaCall): Promise<void> {
+		if (this.lastCallState === 'hangup' || !call.escalatedAt) {
+			return;
+		}
+
+		if (!this.sipDialog || this.processedEscalation || call.escalatedByPeerAt) {
+			if (call.ended) {
+				return this.processEndedCall(call);
+			}
+			return;
+		}
+
+		const conference = await VideoConferenceModel.findOneByMediaCallId(call._id, {
+			projection: { sipAlias: 1, mediaCallIds: 1, webrtcParticipantCount: 1 },
+		});
+		if (!conference) {
+			logger.debug({
+				msg: 'Could not find Conference for escalated voice call',
+				method: 'processEscalatedCall',
+				callId: call._id,
+				type: this.constructor.name,
+			});
+			return;
+		}
+
+		// Check again to avoid race conditions
+		if (this.processedEscalation) {
+			if (call.ended) {
+				return this.processEndedCall(call);
+			}
+			return;
+		}
+
+		logger.debug({ msg: 'Processing Call Escalation', callId: call._id, lastCallState: this.lastCallState, type: this.constructor.name });
+		this.processedEscalation = true;
+
+		try {
+			await this.sendEscalationRefer(conference, call._id);
+		} catch (err) {
+			logger.error({ msg: 'REFER failed', method: 'processEscalatedCall', err, type: this.constructor.name });
+			if (!call.ended) {
+				this.hangupCall('signaling-error');
+			}
+		}
+	}
+
+	protected hangupCall(hangupReason: CallHangupReason, fromAgent: 'sip' | 'user' = 'sip'): void {
+		const agent = (fromAgent === 'user' && this.agent.oppositeAgent) || this.agent;
+
+		void mediaCallDirector.hangup(this.call, agent, hangupReason).catch((err) => {
+			logger.debug({ msg: 'Unexpected error ending call', err, type: this.constructor.name, hangupReason });
+		});
+	}
+
+	protected async sendEscalationRefer(
+		conference: AtLeast<IVideoConference, '_id' | 'sipAlias' | 'webrtcParticipantCount'>,
+		callId: IMediaCall['_id'],
+	): Promise<void> {
+		// Typeguard only. Can't happen.
+		if (!this.sipDialog) {
+			return;
+		}
+
+		const { sipAlias: conferenceAlias, mediaCallIds, webrtcParticipantCount } = conference;
+
+		if (!conferenceAlias || !mediaCallIds) {
+			logger.debug({
+				msg: 'Escalated Conference does not have a SIP Alias',
+				method: 'sendEscalationRefer',
+				callId,
+				conferenceId: conference._id,
+				type: this.constructor.name,
+				conferenceAlias,
+				mediaCallIds,
+			});
+			return;
+		}
+
+		// If the conference is already associated with two voice calls, then our peer is already in it, no need to refer
+		if (mediaCallIds.length >= 2) {
+			return;
+		}
+
+		// If nobody has joined the webrtc conference yet
+		if (!webrtcParticipantCount) {
+			// So far this seems to still work fine, but if turns into a problem we'll need to delay the initial refer just like we delay the hangup for the second user
+			logger.warn({
+				msg: 'Sending REFER without any webrtcParticipantCount',
+				method: 'sendEscalationRefer',
+				callId,
+				conferenceId: conference._id,
+				type: this.constructor.name,
+				conferenceAlias,
+				mediaCallIds,
+			});
+		}
+
+		await this.session.sendReferRequest(this.sipDialog, { conferenceAlias });
 	}
 }

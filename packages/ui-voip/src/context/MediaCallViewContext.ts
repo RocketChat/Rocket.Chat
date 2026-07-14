@@ -13,6 +13,8 @@ export type MediaCallStreams = {
 export type MediaCallViewContextValue = {
 	sessionState: SessionState;
 	targetPeer?: PeerInfo;
+	isRequestingVideoCall: boolean;
+	onRequestVideoCall: () => void;
 	onClickDirectMessage?: () => void;
 	onMute: () => void;
 	onHold: () => void;
@@ -45,12 +47,15 @@ export const defaultSessionState: SessionState = {
 	remoteHeld: false,
 	callId: undefined,
 	startedAt: undefined,
+	escalated: false,
 	supportedFeatures: ['audio', 'transfer', 'hold'],
 };
 
 export const defaultMediaCallContextValue: MediaCallViewContextValue = {
 	sessionState: defaultSessionState,
 	targetPeer: undefined,
+	isRequestingVideoCall: false,
+	onRequestVideoCall: () => undefined,
 	onMute: () => undefined,
 	onHold: () => undefined,
 	onDeviceChange: () => undefined,

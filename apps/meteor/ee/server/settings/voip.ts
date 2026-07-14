@@ -82,6 +82,18 @@ export function addSettings(): Promise<void> {
 						invalidValue: 5060,
 					});
 				});
+
+				await this.section('VoIP_TeamCollab_AdvancedFeatures', async function () {
+					const enableQuery = { _id: 'Pexip_Integration_Enabled', value: true };
+
+					await this.add('VoIP_TeamCollab_Video_Escalation_Enabled', false, {
+						type: 'boolean',
+						public: true,
+						invalidValue: false,
+						enableQuery,
+						i18nDescription: 'VoIP_TeamCollab_Video_Escalation_Enabled_Description',
+					});
+				});
 			},
 		);
 	});
