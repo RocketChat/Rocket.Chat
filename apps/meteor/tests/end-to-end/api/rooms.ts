@@ -5172,7 +5172,9 @@ describe('[Rooms]', () => {
 			expect(res.body).to.have.property('success', true);
 			expect(res.body).to.have.property('total', bannedUsers.length);
 			expect(res.body).to.have.property('offset', 2);
-			expect(res.body.bannedUsers).to.be.an('array').with.lengthOf(bannedUsers.length - 2);
+			expect(res.body.bannedUsers)
+				.to.be.an('array')
+				.with.lengthOf(bannedUsers.length - 2);
 		});
 
 		it('should paginate through all banned users without overlapping results', async () => {
