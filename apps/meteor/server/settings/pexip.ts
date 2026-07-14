@@ -25,6 +25,13 @@ export function createPexipSettings(): Promise<void> {
 			i18nDescription: `Pexip_Integration_Meeting_Url_Description`,
 		});
 
+		await this.add('Pexip_Integration_Escalation_Params', 'join=1&muteCamera=true', {
+			type: 'string',
+			public: true,
+			invalidValue: '',
+			i18nDescription: `Pexip_Integration_Escalation_Params_Description`,
+		});
+
 		await this.section('Pexip_Integration_API', async function () {
 			await this.add('Pexip_Integration_API_Username', '', {
 				type: 'string',
@@ -98,6 +105,38 @@ export function createPexipSettings(): Promise<void> {
 				],
 			});
 		});
+
+		await this.section('Pexip_Integration_SIP', async function () {
+			await this.add('Pexip_Integration_SIP_AddAlias', false, {
+				type: 'boolean',
+				public: true,
+				invalidValue: '',
+				i18nDescription: `Pexip_Integration_SIP_AddAlias_Description`,
+			});
+
+			await this.add('Pexip_Integration_SIP_Host', '', {
+				type: 'string',
+				public: true,
+				invalidValue: '',
+				i18nDescription: `Pexip_Integration_SIP_Host_Description`,
+			});
+
+			await this.add('Pexip_Integration_SIP_Port', 5060, {
+				type: 'int',
+				public: true,
+				invalidValue: '',
+				i18nDescription: `Pexip_Integration_SIP_Port_Description`,
+			});
+		});
+
+		await this.section('Pexip_Integration_PersistentChat', async function () {
+			await this.add('Pexip_Integration_PersistentChat_ExternalRoom', '', {
+				type: 'roomPick',
+				public: true,
+				invalidValue: '',
+				i18nDescription: `Pexip_Integration_PersistentChat_ExternalRoom_Description`,
+			});
+		});
 	});
 }
 
@@ -106,6 +145,7 @@ export function getPexipSettings(): PexipSettings {
 		enabled: settings.get<boolean>('Pexip_Integration_Enabled'),
 		baseUrl: settings.get<string>('Pexip_Integration_Base_Url'),
 		meetingUrl: settings.get<string>('Pexip_Integration_Meeting_Url'),
+		escalationParams: settings.get<string>('Pexip_Integration_Escalation_Params'),
 		api: {
 			username: settings.get<string>('Pexip_Integration_API_Username'),
 			password: settings.get<string>('Pexip_Integration_API_Password'),
@@ -120,11 +160,15 @@ export function getPexipSettings(): PexipSettings {
 			overlayText: settings.get<boolean>('Pexip_Integration_Overlay_Text'),
 			meetingLayout: settings.get<PexipLayout>('Pexip_Integration_Meeting_Layout'),
 		},
-
 		workspace: {
 			siteUrl: settings.get<string>('Site_Url'),
 			discussionsEnabled: settings.get<boolean>('Discussion_enabled'),
 			persistentChatEnabled: settings.get<boolean>('VideoConf_Enable_Persistent_Chat'),
+		},
+		sip: {
+			addAlias: settings.get<boolean>('Pexip_Integration_SIP_AddAlias'),
+			host: settings.get<string>('Pexip_Integration_SIP_Host'),
+			port: settings.get<number>('Pexip_Integration_SIP_Port'),
 		},
 	};
 }
