@@ -7,8 +7,6 @@ import { wrapExceptions } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
 import { processOnChange, serviceConfigCallbacks } from './userReactivity';
-import { notifyGuestStatusChanged } from '../../../app/livechat/server/lib/guests';
-import { onlineAgents, monitorAgents } from '../../../app/livechat/server/lib/stream/agentStatus';
 import { settings } from '../../../app/settings/server';
 import { use } from '../../../app/settings/server/Middleware';
 import { setValue, updateValue } from '../../../app/settings/server/raw';
@@ -18,6 +16,8 @@ import { isOutgoingIntegration } from '../../lib/integrations/lib/definition';
 import { triggerHandler } from '../../lib/integrations/lib/triggerHandler';
 import { metrics } from '../../lib/metrics';
 import notifications from '../../lib/notifications/core/lib/Notifications';
+import { notifyGuestStatusChanged } from '../../lib/omnichannel/guests';
+import { onlineAgents, monitorAgents } from '../../lib/omnichannel/stream/agentStatus';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { ListenersModule } from '../../modules/listeners/listeners.module';
 import { invalidate as invalidatePublicationUserCache } from '../../modules/streamer/publication-user-cache';

@@ -6,10 +6,10 @@ import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@roc
 
 import { schedulerLogger } from './logger';
 import { notifyOnRoomChangedById } from '../../../../../app/lib/server/lib/notifyListener';
-import { closeRoom } from '../../../../../app/livechat/server/lib/closeRoom';
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../server/lib/callbacks';
 import { i18n } from '../../../../../server/lib/i18n';
+import { closeRoom } from '../../../../../server/lib/omnichannel/closeRoom';
 
 const isPromiseRejectedResult = (result: any): result is PromiseRejectedResult => result && result.status === 'rejected';
 

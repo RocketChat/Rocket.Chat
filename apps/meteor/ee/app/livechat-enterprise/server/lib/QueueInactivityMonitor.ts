@@ -7,9 +7,9 @@ import { MongoInternals } from 'meteor/mongo';
 import type { Db } from 'mongodb';
 
 import { schedulerLogger } from './logger';
-import { closeRoom } from '../../../../../app/livechat/server/lib/closeRoom';
 import { settings } from '../../../../../app/settings/server';
 import { i18n } from '../../../../../server/lib/i18n';
+import { closeRoom } from '../../../../../server/lib/omnichannel/closeRoom';
 
 const SCHEDULER_NAME = 'omnichannel_queue_inactivity_monitor';
 

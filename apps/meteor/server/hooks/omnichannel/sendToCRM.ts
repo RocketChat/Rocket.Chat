@@ -3,11 +3,11 @@ import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, Messages } from '@rocket.chat/models';
 import type { Response } from '@rocket.chat/server-fetch';
 
-import { getLivechatRoomGuestInfo } from '../../../app/livechat/server/lib/guests';
-import { sendRequest } from '../../../app/livechat/server/lib/webhooks';
 import { settings } from '../../../app/settings/server';
 import { normalizeMessageFileUpload } from '../../../app/utils/server/functions/normalizeMessageFileUpload';
 import { callbacks } from '../../lib/callbacks';
+import { getLivechatRoomGuestInfo } from '../../lib/omnichannel/guests';
+import { sendRequest } from '../../lib/omnichannel/webhooks';
 
 type AdditionalFields =
 	| Record<string, unknown>

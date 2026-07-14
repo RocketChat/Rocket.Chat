@@ -97,7 +97,7 @@ import './lib/metrics';
 import './lib/notifications/core';
 import '../app/ui-utils/server';
 import './lib/messaging/reactions/setReaction';
-import '../app/livechat/server';
+import './lib/omnichannel';
 import './hooks/auth/login';
 import './lib/auth/startup';
 import './lib/auth-providers/github';

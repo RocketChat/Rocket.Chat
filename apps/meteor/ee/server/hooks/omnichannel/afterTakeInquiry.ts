@@ -1,9 +1,9 @@
 import type { InquiryWithAgentInfo, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors } from '@rocket.chat/models';
 
-import { RoutingManager } from '../../../../app/livechat/server/lib/RoutingManager';
-import { afterTakeInquiry } from '../../../../app/livechat/server/lib/hooks';
 import { settings } from '../../../../app/settings/server';
+import { RoutingManager } from '../../../../server/lib/omnichannel/RoutingManager';
+import { afterTakeInquiry } from '../../../../server/lib/omnichannel/hooks';
 import { AutoTransferChatScheduler } from '../../../app/livechat-enterprise/server/lib/AutoTransferChatScheduler';
 import { debouncedDispatchWaitingQueueStatus } from '../../../app/livechat-enterprise/server/lib/Helper';
 import { OmnichannelQueueInactivityMonitor } from '../../../app/livechat-enterprise/server/lib/QueueInactivityMonitor';

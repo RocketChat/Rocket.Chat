@@ -22,7 +22,7 @@ const { afterInquiryQueuedFunc: afterInquiryQueued } = proxyquire
 		'../../../app/livechat-enterprise/server/lib/QueueInactivityMonitor': {
 			OmnichannelQueueInactivityMonitor: queueMonitorStub,
 		},
-		'../../../../app/livechat/server/lib/hooks': {
+		'../../../../server/lib/omnichannel/hooks': {
 			afterInquiryQueued: { patch: sinon.stub() },
 		},
 	});

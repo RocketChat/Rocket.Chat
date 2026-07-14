@@ -1,0 +1,15 @@
+# Phase 7a: livechat server -> server/lib/omnichannel
+# Format: old-path<TAB>new-path (relative to apps/meteor/)
+# order: subdirs first, then root files, index last (so its './lib/...' imports are rewritten before it moves)
+app/livechat/server/lib	server/lib/omnichannel
+app/livechat/server/business-hour	server/lib/omnichannel/business-hour
+app/livechat/server/statistics	server/lib/omnichannel/statistics
+app/livechat/server/livechat.ts	server/lib/omnichannel/livechat.ts
+app/livechat/server/startup.ts	server/lib/omnichannel/startup.ts
+app/livechat/server/sendMessageBySMS.ts	server/lib/omnichannel/sendMessageBySMS.ts
+app/livechat/server/roomAccessValidator.compatibility.ts	server/lib/omnichannel/roomAccessValidator.compatibility.ts
+app/livechat/server/roomAccessValidator.internalService.ts	server/lib/omnichannel/roomAccessValidator.internalService.ts
+app/livechat/server/index.ts	server/lib/omnichannel/index.ts
+# test mirrors
+tests/unit/app/livechat/server/business-hour	tests/unit/server/lib/omnichannel/business-hour
+tests/unit/app/livechat/server/lib	tests/unit/server/lib/omnichannel

@@ -5,9 +5,9 @@ import { LivechatRooms, LivechatContacts, LivechatInquiry } from '@rocket.chat/m
 import moment from 'moment';
 
 import { notifyOnLivechatInquiryChanged } from '../../../app/lib/server/lib/notifyListener';
-import { isMessageFromBot } from '../../../app/livechat/server/lib/isMessageFromBot';
 import { settings } from '../../../app/settings/server';
 import { callbacks } from '../../lib/callbacks';
+import { isMessageFromBot } from '../../lib/omnichannel/isMessageFromBot';
 
 export async function markRoomResponded(
 	message: IMessage,

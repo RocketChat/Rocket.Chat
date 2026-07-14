@@ -33,7 +33,7 @@ const { getSecondsWhenOfficeHoursIsDisabled, parseDays, getSecondsSinceLastAgent
 		'../../../app/settings/server': {
 			settings: { get: settingsStub },
 		},
-		'../../../app/livechat/server/business-hour': { businessHourManager: businessHourManagerMock },
+		'../../lib/omnichannel/business-hour': { businessHourManager: businessHourManagerMock },
 	});
 
 describe('processRoomAbandonment', () => {

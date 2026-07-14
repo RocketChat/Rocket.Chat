@@ -10,11 +10,11 @@ import {
 	notifyOnLivechatInquiryChangedById,
 	notifyOnRoomChangedById,
 } from '../../../../../app/lib/server/lib/notifyListener';
-import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
-import { queueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
-import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../server/lib/callbacks';
+import { dispatchAgentDelegated } from '../../../../../server/lib/omnichannel/Helper';
+import { queueInquiry } from '../../../../../server/lib/omnichannel/QueueManager';
+import { RoutingManager } from '../../../../../server/lib/omnichannel/RoutingManager';
 
 export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelEEService {
 	protected name = 'omnichannel-ee';

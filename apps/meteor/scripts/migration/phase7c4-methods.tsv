@@ -1,0 +1,8 @@
+# Phase 7c4: remaining Meteor methods -> server/meteor-methods/<domain>
+app/user-status/server/methods/deleteCustomUserStatus.ts	server/meteor-methods/users/deleteCustomUserStatus.ts
+app/user-status/server/methods/insertOrUpdateUserStatus.ts	server/meteor-methods/users/insertOrUpdateUserStatus.ts
+app/user-status/server/methods/listCustomUserStatus.ts	server/meteor-methods/users/listCustomUserStatus.ts
+app/user-status/server/methods/setUserStatus.ts	server/meteor-methods/users/setUserStatus.ts
+app/user-status/server/methods/getUserStatusText.ts	server/meteor-methods/users/getUserStatusText.ts
+app/oauth2-server-config/server/admin/methods/updateOAuthApp.ts	server/meteor-methods/auth/updateOAuthApp.ts
+app/oauth2-server-config/server/admin/methods/deleteOAuthApp.ts	server/meteor-methods/auth/deleteOAuthApp.ts

@@ -1,0 +1,6 @@
+# Phase 7c3: room-domain leftovers -> server/lib/rooms/*
+app/channel-settings/server/functions	server/lib/rooms/settings
+app/channel-settings/server/index.ts	server/lib/rooms/settings/index.ts
+app/invites/server/functions	server/lib/rooms/invites
+app/retention-policy/server/cronPruneMessages.ts	server/lib/rooms/retention/cronPruneMessages.ts
+app/retention-policy/server/index.ts	server/lib/rooms/retention/index.ts

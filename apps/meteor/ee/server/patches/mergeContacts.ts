@@ -5,8 +5,8 @@ import type { ClientSession } from 'mongodb';
 
 import { notifyOnSettingChanged } from '../../../app/lib/server/lib/notifyListener';
 import { isSameChannel } from '../../../app/livechat/lib/isSameChannel';
-import { ContactMerger } from '../../../app/livechat/server/lib/contacts/ContactMerger';
-import { mergeContacts } from '../../../app/livechat/server/lib/contacts/mergeContacts';
+import { ContactMerger } from '../../../server/lib/omnichannel/contacts/ContactMerger';
+import { mergeContacts } from '../../../server/lib/omnichannel/contacts/mergeContacts';
 import { contactLogger as logger } from '../../app/livechat-enterprise/server/lib/logger';
 
 export const runMergeContacts = async (

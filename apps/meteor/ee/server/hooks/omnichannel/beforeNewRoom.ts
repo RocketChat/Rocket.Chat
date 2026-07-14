@@ -2,8 +2,8 @@ import type { IOmnichannelRoomInfo, IOmnichannelRoomExtraData, IOmnichannelRoom 
 import { OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { beforeNewRoom } from '../../../../app/livechat/server/lib/hooks';
 import { isPlainObject } from '../../../../lib/utils/isPlainObject';
+import { beforeNewRoom } from '../../../../server/lib/omnichannel/hooks';
 
 export const beforeNewRoomPatched = async (
 	_next: any,

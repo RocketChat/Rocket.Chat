@@ -2,9 +2,9 @@ import { isEditedMessage } from '@rocket.chat/core-typings';
 import { LivechatInquiry } from '@rocket.chat/models';
 
 import { notifyOnLivechatInquiryChanged } from '../../../app/lib/server/lib/notifyListener';
-import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../app/settings/server';
 import { callbacks } from '../../lib/callbacks';
+import { RoutingManager } from '../../lib/omnichannel/RoutingManager';
 
 callbacks.add(
 	'afterOmnichannelSaveMessage',

@@ -5,9 +5,9 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
-import type { ILivechatMessage } from '../../../app/livechat/server/lib/localTypes';
-import { sendMessage } from '../../../app/livechat/server/lib/messages';
 import { settings } from '../../../app/settings/server';
+import type { ILivechatMessage } from '../../lib/omnichannel/localTypes';
+import { sendMessage } from '../../lib/omnichannel/messages';
 
 interface ILivechatMessageAgent {
 	agentId: string;

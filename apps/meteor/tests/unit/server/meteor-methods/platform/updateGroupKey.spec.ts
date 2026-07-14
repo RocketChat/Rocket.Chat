@@ -20,11 +20,6 @@ const { updateGroupKey } = proxyquire.noCallThru().load('../../../../../server/m
 		notifyOnRoomChangedById: sinon.stub(),
 		notifyOnSubscriptionChangedById: sinon.stub(),
 	},
-	'../../../app/lib/server/lib/deprecationWarningLogger': {
-		methodDeprecationLogger: {
-			method: sinon.stub(),
-		},
-	},
 	'@rocket.chat/models': models,
 	'meteor/meteor': { Meteor: { methods: sinon.stub() } },
 });

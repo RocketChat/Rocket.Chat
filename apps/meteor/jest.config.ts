@@ -34,8 +34,7 @@ export default {
 			displayName: 'server',
 			preset: server.preset,
 			testMatch: [
-				'<rootDir>/app/livechat/server/business-hour/**/*.spec.ts?(x)',
-				'<rootDir>/app/livechat/server/api/**/*.spec.ts',
+				'<rootDir>/server/lib/omnichannel/business-hour/**/*.spec.ts?(x)',
 				'<rootDir>/ee/server/lib/authorization/validateUserRoles.spec.ts',
 				'<rootDir>/ee/server/lib/license/**/*.spec.ts',
 				'<rootDir>/ee/server/patches/**/*.spec.ts',

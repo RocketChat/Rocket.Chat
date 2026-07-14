@@ -5,9 +5,9 @@ import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.cha
 import {
 	makeAgentsUnavailableBasedOnBusinessHour,
 	makeOnlineAgentsAvailable,
-} from '../../../../../app/livechat/server/business-hour/Helper';
-import { getAgentIdsForBusinessHour } from '../../../../../app/livechat/server/business-hour/getAgentIdsForBusinessHour';
-import { businessHourLogger } from '../../../../../app/livechat/server/lib/logger';
+} from '../../../../../server/lib/omnichannel/business-hour/Helper';
+import { getAgentIdsForBusinessHour } from '../../../../../server/lib/omnichannel/business-hour/getAgentIdsForBusinessHour';
+import { businessHourLogger } from '../../../../../server/lib/omnichannel/logger';
 
 export const getAgentIdsToHandle = async (businessHour: Pick<ILivechatBusinessHour, '_id' | 'type'>): Promise<string[]> => {
 	if (businessHour.type === LivechatBusinessHourTypes.DEFAULT) {

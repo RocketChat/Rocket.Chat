@@ -6,10 +6,10 @@ import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 
 import { schedulerLogger } from './logger';
-import { forwardRoomToAgent } from '../../../../../app/livechat/server/lib/Helper';
-import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
-import { returnRoomAsInquiry } from '../../../../../app/livechat/server/lib/rooms';
 import { settings } from '../../../../../app/settings/server';
+import { forwardRoomToAgent } from '../../../../../server/lib/omnichannel/Helper';
+import { RoutingManager } from '../../../../../server/lib/omnichannel/RoutingManager';
+import { returnRoomAsInquiry } from '../../../../../server/lib/omnichannel/rooms';
 
 const SCHEDULER_NAME = 'omnichannel_scheduler';
 

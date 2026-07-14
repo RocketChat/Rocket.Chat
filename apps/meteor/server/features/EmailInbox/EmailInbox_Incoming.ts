@@ -14,12 +14,12 @@ import { stripHtml } from 'string-strip-html';
 
 import { logger } from './logger';
 import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
-import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
-import { setDepartmentForGuest } from '../../../app/livechat/server/lib/departmentsLib';
-import { sendMessage } from '../../../app/livechat/server/lib/messages';
 import { settings } from '../../../app/settings/server';
 import { i18n } from '../../lib/i18n';
 import { FileUpload } from '../../lib/media/file-upload';
+import { QueueManager } from '../../lib/omnichannel/QueueManager';
+import { setDepartmentForGuest } from '../../lib/omnichannel/departmentsLib';
+import { sendMessage } from '../../lib/omnichannel/messages';
 
 type FileAttachment = VideoAttachmentProps & ImageAttachmentProps & AudioAttachmentProps;
 

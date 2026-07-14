@@ -5,17 +5,17 @@ import { isTruthy } from '@rocket.chat/tools';
 import moment from 'moment';
 
 import { openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
-import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
-import type { IBusinessHourBehavior } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
-import { AbstractBusinessHourBehavior } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
+import { settings } from '../../../../../app/settings/server';
+import { businessHourManager } from '../../../../../server/lib/omnichannel/business-hour';
+import type { IBusinessHourBehavior } from '../../../../../server/lib/omnichannel/business-hour/AbstractBusinessHour';
+import { AbstractBusinessHourBehavior } from '../../../../../server/lib/omnichannel/business-hour/AbstractBusinessHour';
 import {
 	filterBusinessHoursThatMustBeOpened,
 	filterBusinessHoursThatMustBeOpenedByDay,
 	makeOnlineAgentsAvailable,
 	makeAgentsUnavailableBasedOnBusinessHour,
-} from '../../../../../app/livechat/server/business-hour/Helper';
-import { closeBusinessHour } from '../../../../../app/livechat/server/business-hour/closeBusinessHour';
-import { settings } from '../../../../../app/settings/server';
+} from '../../../../../server/lib/omnichannel/business-hour/Helper';
+import { closeBusinessHour } from '../../../../../server/lib/omnichannel/business-hour/closeBusinessHour';
 import { bhLogger } from '../lib/logger';
 
 export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior implements IBusinessHourBehavior {

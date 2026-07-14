@@ -42,7 +42,7 @@ const { banUserFromRoomMethod } = p.noCallThru().load('../../../../server/lib/ba
 	'./authorization/hasRole': { hasRoleAsync: hasRoleAsyncMock },
 	'./rooms/banUserFromRoom': { banUserFromRoom: banUserFromRoomMock },
 	'../../definition/IRoomTypeConfig': { RoomMemberActions },
-	'../lib/rooms/roomCoordinator': { roomCoordinator: roomCoordinatorMock },
+	'./rooms/roomCoordinator': { roomCoordinator: roomCoordinatorMock },
 });
 
 describe('banUserFromRoomMethod', () => {

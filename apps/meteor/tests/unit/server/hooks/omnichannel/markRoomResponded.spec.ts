@@ -26,7 +26,7 @@ const { markRoomResponded } = proxyquire.noCallThru().load('../../../../../serve
 	'../../../app/lib/server/lib/notifyListener': { notifyOnLivechatInquiryChanged: Sinon.stub() },
 	'@rocket.chat/models': models,
 	'../../../app/settings/server': { settings: settingsGetMock },
-	'../../../app/livechat/server/lib/isMessageFromBot': isMessageFromBotMock,
+	'../../lib/omnichannel/isMessageFromBot': isMessageFromBotMock,
 });
 
 describe('markRoomResponded', () => {

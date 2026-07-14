@@ -24,9 +24,6 @@ const { UserConverter } = proxyquire.noCallThru().load('../../../../../server/li
 	'../../../callbacks': {
 		callbacks,
 	},
-	'../../../settings/server': {
-		settings: { get: settingsStub },
-	},
 	'../../../rooms/addUserToDefaultChannels': {
 		addUserToDefaultChannels,
 	},

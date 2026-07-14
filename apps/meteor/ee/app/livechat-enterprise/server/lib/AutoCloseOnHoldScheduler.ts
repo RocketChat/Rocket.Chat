@@ -7,7 +7,7 @@ import { MongoInternals } from 'meteor/mongo';
 import moment from 'moment';
 
 import { schedulerLogger } from './logger';
-import { closeRoom } from '../../../../../app/livechat/server/lib/closeRoom';
+import { closeRoom } from '../../../../../server/lib/omnichannel/closeRoom';
 
 const SCHEDULER_NAME = 'omnichannel_auto_close_on_hold_scheduler';
 

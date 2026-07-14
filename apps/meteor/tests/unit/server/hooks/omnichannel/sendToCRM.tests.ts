@@ -19,8 +19,8 @@ const { sendMessageType, isOmnichannelNavigationMessage, isOmnichannelClosingMes
 		'../../../app/utils/server/functions/normalizeMessageFileUpload': {
 			normalizeMessageFileUpload: sinon.stub().returnsArg(0),
 		},
-		'../../../app/livechat/server/lib/webhooks': {},
-		'../../../app/livechat/server/lib/guests': { getLivechatRoomGuestInfo: sinon.stub() },
+		'../../lib/omnichannel/webhooks': {},
+		'../../lib/omnichannel/guests': { getLivechatRoomGuestInfo: sinon.stub() },
 	});
 
 describe('[OC] Send TO CRM', () => {

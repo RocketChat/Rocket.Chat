@@ -27,9 +27,6 @@ const {
 	'meteor/ostrio:cookies': {
 		Cookies: CookiesMock,
 	},
-	'../../../../app/utils/server/getURL': {
-		getURL: () => '',
-	},
 	'@rocket.chat/models': {
 		Users: {
 			findOneByIdAndLoginToken: mocks.findOneByIdAndLoginToken,

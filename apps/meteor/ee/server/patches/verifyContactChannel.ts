@@ -3,10 +3,10 @@ import type { ILivechatContact, IOmnichannelRoom } from '@rocket.chat/core-typin
 import { License } from '@rocket.chat/license';
 import { LivechatContacts, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
-import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
-import { mergeContacts } from '../../../app/livechat/server/lib/contacts/mergeContacts';
-import { verifyContactChannel } from '../../../app/livechat/server/lib/contacts/verifyContactChannel';
 import { client, shouldRetryTransaction } from '../../../server/database/utils';
+import { QueueManager } from '../../../server/lib/omnichannel/QueueManager';
+import { mergeContacts } from '../../../server/lib/omnichannel/contacts/mergeContacts';
+import { verifyContactChannel } from '../../../server/lib/omnichannel/contacts/verifyContactChannel';
 import { contactLogger as logger } from '../../app/livechat-enterprise/server/lib/logger';
 
 type VerifyContactChannelParams = {

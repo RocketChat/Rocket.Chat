@@ -1,7 +1,7 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 
-import { onNewRoom } from '../../../../app/livechat/server/lib/hooks';
+import { onNewRoom } from '../../../../server/lib/omnichannel/hooks';
 
 onNewRoom.patch(async (originalFn, room) => {
 	await originalFn(room);

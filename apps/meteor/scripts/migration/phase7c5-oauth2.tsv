@@ -1,0 +1,5 @@
+# Phase 7c5: oauth2-server-config (non-methods) -> server/lib/auth/oauth2-server
+app/oauth2-server-config/server/oauth/oauth2-server.ts	server/lib/auth/oauth2-server/oauth2-server.ts
+app/oauth2-server-config/server/admin/functions/addOAuthApp.ts	server/lib/auth/oauth2-server/addOAuthApp.ts
+app/oauth2-server-config/server/admin/functions/parseUriList.ts	server/lib/auth/oauth2-server/parseUriList.ts
+app/oauth2-server-config/server/index.ts	server/lib/auth/oauth2-server/index.ts

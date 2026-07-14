@@ -2,13 +2,13 @@ import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
 
-import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
-import type { IBusinessHourType } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
-import { AbstractBusinessHourType } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
+import { businessHourManager } from '../../../../../server/lib/omnichannel/business-hour';
+import type { IBusinessHourType } from '../../../../../server/lib/omnichannel/business-hour/AbstractBusinessHour';
+import { AbstractBusinessHourType } from '../../../../../server/lib/omnichannel/business-hour/AbstractBusinessHour';
 import {
 	filterBusinessHoursThatMustBeOpened,
 	makeAgentsUnavailableBasedOnBusinessHour,
-} from '../../../../../app/livechat/server/business-hour/Helper';
+} from '../../../../../server/lib/omnichannel/business-hour/Helper';
 import { bhLogger } from '../lib/logger';
 
 type IBusinessHoursExtraProperties = {
