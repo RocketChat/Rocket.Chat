@@ -296,28 +296,17 @@ export class Navbar {
 	}
 
 	async switchOmnichannelStatus(status: 'offline' | 'online') {
-		// button has a id of "omnichannel-status-toggle"
 		const toggleButton = this.btnSwitchOmnichannelStatus;
 		await expect(toggleButton).toBeVisible();
 
-		enum StatusTitleMap {
-			offline = 'Turn on answer chats',
-			online = 'Turn off answer chats',
-		}
+		const expectedTitle = status === 'offline' ? 'Turn on answer chats' : 'Turn off answer chats';
 
 		const currentStatus = await toggleButton.getAttribute('title');
-		if (status === 'offline') {
-			if (currentStatus === StatusTitleMap.online) {
-				await toggleButton.click();
-			}
-		} else if (currentStatus === StatusTitleMap.offline) {
+		if (currentStatus !== expectedTitle) {
 			await toggleButton.click();
 		}
 
-		await this.root.waitForTimeout(500);
-
-		const newStatus = await this.btnSwitchOmnichannelStatus.getAttribute('title');
-		expect(newStatus).toBe(status === 'offline' ? StatusTitleMap.offline : StatusTitleMap.online);
+		await expect(toggleButton).toHaveAttribute('title', expectedTitle);
 	}
 
 	getUserStatusBadge(status: 'online' | 'away' | 'busy' | 'offline'): Locator {
