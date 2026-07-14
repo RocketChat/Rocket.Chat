@@ -403,6 +403,7 @@ export type IMessageWithPendingFileImport = IMessage & {
 		original: Record<string, any>;
 		rocketChatUrl?: string;
 		downloaded?: boolean;
+		lockedUntil?: Date;
 	};
 };
 

@@ -226,6 +226,14 @@ export class Importer {
 				await this.applySettingValues(this.oldSettings);
 			}
 
+			if (this.progress.step === ProgressStep.DONE) {
+				try {
+					await this.onImportComplete?.();
+				} catch (err) {
+					this.logger.error({ msg: 'Failed to run the post-import step', err });
+				}
+			}
+
 			const timeTook = Date.now() - started;
 			this.logger.log({ msg: 'Import completed', durationMs: timeTook });
 		});
@@ -267,6 +275,8 @@ export class Importer {
 	getProgress(): ImporterProgress {
 		return this.progress;
 	}
+
+	protected onImportComplete?(): Promise<void>;
 
 	/**
 	 * Updates the progress step of this importer.

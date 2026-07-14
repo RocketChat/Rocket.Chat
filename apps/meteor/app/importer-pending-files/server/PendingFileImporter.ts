@@ -1,22 +1,21 @@
-import http from 'node:http';
-import https from 'node:https';
+import { Transform, type Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 
 import { api } from '@rocket.chat/core-services';
-import type { IImport, MessageAttachment, IUpload, IImporterShortSelection } from '@rocket.chat/core-typings';
-import { Messages } from '@rocket.chat/models';
+import type { MessageAttachment, IUpload, IImporterShortSelection, IMessageWithPendingFileImport } from '@rocket.chat/core-typings';
+import { Messages, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+import { serverFetch } from '@rocket.chat/server-fetch';
 
 import { FileUpload } from '../../file-upload/server';
+import { parseFileIntoMessageAttachments } from '../../file-upload/server/methods/sendFileMessage';
 import { Importer, ProgressStep } from '../../importer/server';
-import type { ConverterOptions } from '../../importer/server/classes/ImportDataConverter';
 import type { ImporterProgress } from '../../importer/server/classes/ImporterProgress';
-import type { ImporterInfo } from '../../importer/server/definitions/ImporterInfo';
+import { settings } from '../../settings/server';
+
+const LEASE_MS = 2 * 60 * 1000;
 
 export class PendingFileImporter extends Importer {
-	constructor(info: ImporterInfo, importRecord: IImport, converterOptions: ConverterOptions = {}) {
-		super(info, importRecord, converterOptions);
-	}
-
 	async prepareFileCount() {
 		this.logger.debug('start preparing import operation');
 		await super.updateProgress(ProgressStep.PREPARING_STARTED);
@@ -37,139 +36,126 @@ export class PendingFileImporter extends Importer {
 		this.reportProgress();
 
 		setImmediate(() => {
-			void this.startImport({});
+			this.startImport({}).catch(() => undefined);
 		});
 
 		return fileCount;
 	}
 
-	override async startImport(importSelection: IImporterShortSelection): Promise<ImporterProgress> {
-		const downloadedFileIds: string[] = [];
-		const maxFileCount = 10;
-		const maxFileSize = 1024 * 1024 * 500;
+	override async startImport(_importSelection: IImporterShortSelection): Promise<ImporterProgress> {
+		const importedRoomIds = new Set<string>();
+		const inFlightFileIds = new Set<string>();
+		const skipMessageIds = new Set<string>();
 
-		let count = 0;
-		let currentSize = 0;
-		let nextSize = 0;
+		const processMessage = async (message: IMessageWithPendingFileImport) => {
+			const { _importFile } = message;
+			const url = _importFile.downloadUrl;
 
-		const waitForFiles = async () => {
-			if (count + 1 < maxFileCount && currentSize + nextSize < maxFileSize) {
+			if (!url?.startsWith('http')) {
+				skipMessageIds.add(message._id);
+				await this.addCountError(1);
 				return;
 			}
 
-			return new Promise<void>((resolve) => {
-				const handler = setInterval(() => {
-					if (count + 1 >= maxFileCount) {
-						return;
-					}
+			if (inFlightFileIds.has(_importFile.id)) {
+				skipMessageIds.add(message._id);
+				return;
+			}
+			inFlightFileIds.add(_importFile.id);
 
-					if (currentSize + nextSize >= maxFileSize && count > 0) {
-						return;
-					}
+			const details: { message_id: string; name: string; size: number; userId: string; rid: string; type?: string } = {
+				message_id: `${message._id}-file-${_importFile.id}`,
+				name: _importFile.name || Random.id(),
+				size: _importFile.size || 0,
+				userId: message.u._id,
+				rid: message.rid,
+			};
 
-					clearInterval(handler);
-					resolve();
-				}, 1000);
-			});
-		};
+			const renewal = setInterval(() => void Messages.renewPendingFileImportLease(message._id, LEASE_MS), LEASE_MS / 4);
 
-		const completeFile = async (details: { size: number }) => {
-			await this.addCountCompleted(1);
-			count--;
-			currentSize -= details.size;
-		};
+			let file: IUpload | undefined;
+			try {
+				const fileStream = await this.downloadFile(url, details);
 
-		const logError = this.logger.error.bind(this.logger);
+				// Bypass the fileStore filters
+				file = await FileUpload.getStore('Uploads')._doInsert(details, fileStream);
 
-		try {
-			const pendingFileMessageList = Messages.findAllImportedMessagesWithFilesToDownload();
-			const importedRoomIds = new Set<string>();
-			for await (const message of pendingFileMessageList) {
-				try {
-					const { _importFile } = message;
+				const rocketChatUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name || '')}`);
+				const user = await Users.findOneById(message.u._id);
+				const attachment = user
+					? (await parseFileIntoMessageAttachments(file, message.rid, user)).attachments[0]
+					: this.getMessageAttachment(file, rocketChatUrl);
 
-					if (!_importFile || _importFile.downloaded || downloadedFileIds.includes(_importFile.id)) {
-						await this.addCountCompleted(1);
-						continue;
-					}
-
-					const url = _importFile.downloadUrl;
-					if (!url?.startsWith('http')) {
-						await this.addCountCompleted(1);
-						continue;
-					}
-
-					const details: { message_id: string; name: string; size: number; userId: string; rid: string; type?: string } = {
-						message_id: `${message._id}-file-${_importFile.id}`,
-						name: _importFile.name || Random.id(),
-						size: _importFile.size || 0,
-						userId: message.u._id,
-						rid: message.rid,
-					};
-
-					const requestModule = /https/i.test(url) ? https : http;
-					const fileStore = FileUpload.getStore('Uploads');
-
-					nextSize = details.size;
-					await waitForFiles();
-					count++;
-					currentSize += nextSize;
-					downloadedFileIds.push(_importFile.id);
-
-					requestModule.get(url, (res) => {
-						const contentType = res.headers['content-type'];
-						if (!details.type && contentType) {
-							details.type = contentType;
-						}
-
-						const rawData: Uint8Array[] = [];
-						res.on('data', (chunk) => {
-							rawData.push(chunk);
-
-							// Update progress more often on large files
-							this.reportProgress();
-						});
-						res.on('error', async (err) => {
-							await completeFile(details);
-							logError({ err });
-						});
-
-						res.on('end', async () => {
-							try {
-								// Bypass the fileStore filters
-								const file = await fileStore._doInsert(details, Buffer.concat(rawData));
-
-								const url = FileUpload.getPath(`${file._id}/${encodeURI(file.name || '')}`);
-								const attachment = this.getMessageAttachment(file, url);
-
-								await Messages.setImportFileRocketChatAttachment(_importFile.id, url, attachment);
-								await completeFile(details);
-								importedRoomIds.add(message.rid);
-							} catch (err) {
-								await completeFile(details);
-								logError({ err });
-							}
-						});
-					});
-				} catch (err) {
-					this.logger.error({ err });
+				const result = await Messages.setImportFileRocketChatAttachment(_importFile.id, rocketChatUrl, attachment);
+				await this.addCountCompleted('modifiedCount' in result ? result.modifiedCount : 1);
+				importedRoomIds.add(message.rid);
+			} catch (err) {
+				this.logger.error({ msg: 'Failed to download pending file', url: url.split('?')[0], err });
+				if (file) {
+					await FileUpload.getStore('Uploads')
+						.deleteById(file._id)
+						.catch(() => undefined);
 				}
+				skipMessageIds.add(message._id);
+				inFlightFileIds.delete(_importFile.id);
+				await this.addCountError(1);
+			} finally {
+				clearInterval(renewal);
 			}
+		};
 
-			void api.broadcast('notify.importedMessages', { roomIds: Array.from(importedRoomIds) });
-		} catch (error) {
-			// If the cursor expired, restart the method
-			if (this.isCursorNotFoundError(error)) {
-				this.logger.info('CursorNotFound');
-				return this.startImport(importSelection);
+		const worker = async () => {
+			for (;;) {
+				const message = await Messages.findOneAndClaimPendingFileImport(LEASE_MS, Array.from(skipMessageIds));
+				if (!message) {
+					return;
+				}
+
+				await processMessage(message);
 			}
+		};
 
+		const results = await Promise.allSettled(Array.from({ length: 10 }, () => worker()));
+
+		const crashes = results.filter((result): result is PromiseRejectedResult => result.status === 'rejected');
+		if (crashes.length > 0) {
+			crashes.forEach((crash) => this.logger.error({ msg: 'Pending file worker crashed', err: crash.reason }));
 			await super.updateProgress(ProgressStep.ERROR);
-			throw error;
+			throw crashes[0].reason;
 		}
+
+		void api.broadcast('notify.importedMessages', { roomIds: Array.from(importedRoomIds) });
 
 		await super.updateProgress(ProgressStep.DONE);
 		return this.getProgress();
+	}
+
+	private async downloadFile(url: string, details: { type?: string }): Promise<Readable> {
+		const response = await serverFetch(url, { ignoreSsrfValidation: false, allowList: settings.get<string>('SSRF_Allowlist') });
+
+		if (!response.ok) {
+			response.body.resume();
+			throw new Error(`Unexpected response status ${response.status}`);
+		}
+
+		if (!details.type) {
+			details.type = response.headers.get('content-type') || 'application/octet-stream';
+		}
+
+		// serverFetch only times out connecting; fail the download if the body goes idle for 60s.
+		// Per-chunk reset (not a total cap) so large files aren't cut off mid-download.
+		let idle: ReturnType<typeof setTimeout>;
+		const meter = new Transform({
+			transform(chunk, _encoding, callback) {
+				idle.refresh();
+				callback(null, chunk);
+			},
+		});
+		idle = setTimeout(() => meter.destroy(new Error('Download stalled')), 60 * 1000);
+		meter.on('close', () => clearTimeout(idle));
+
+		void pipeline(response.body, meter).catch(() => undefined);
+		return meter;
 	}
 
 	getMessageAttachment(file: IUpload, url: string): MessageAttachment {

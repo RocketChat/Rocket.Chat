@@ -1,9 +1,11 @@
+import { Import } from '@rocket.chat/core-services';
 import type { IImportUser, IImportMessage, IImportPendingFile } from '@rocket.chat/core-typings';
 import { Messages, Settings, ImportData } from '@rocket.chat/models';
 import type { IZipEntry } from 'adm-zip';
 
-import { Importer, ProgressStep, ImporterWebsocket } from '../../importer/server';
+import { Importer, ProgressStep, ImporterWebsocket, Importers } from '../../importer/server';
 import type { ImporterProgress } from '../../importer/server/classes/ImporterProgress';
+import { PendingFileImporter } from '../../importer-pending-files/server/PendingFileImporter';
 import { notifyOnSettingChanged } from '../../lib/server/lib/notifyListener';
 import { MentionsParser } from '../../mentions/lib/MentionsParser';
 import { settings } from '../../settings/server';
@@ -118,6 +120,21 @@ type SlackAttachment = {
 
 export class SlackImporter extends Importer {
 	private _useUpsert = false;
+
+	protected override async onImportComplete(): Promise<void> {
+		const pendingFilesImporter = Importers.get('pending-files');
+		if (!pendingFilesImporter) {
+			return;
+		}
+
+		if ((await Messages.countAllImportedMessagesWithFilesToDownload()) === 0) {
+			return;
+		}
+
+		const operation = await Import.newOperation(this.importRecord.user, pendingFilesImporter.name, pendingFilesImporter.key);
+		const instance = new PendingFileImporter(pendingFilesImporter, operation);
+		await instance.prepareFileCount();
+	}
 
 	async prepareChannelsFile(entry: IZipEntry): Promise<number> {
 		await super.updateProgress(ProgressStep.PREPARING_CHANNELS);
@@ -496,7 +513,8 @@ export class SlackImporter extends Importer {
 						_id: fileId,
 						rid: newMessage.rid,
 						ts: newMessage.ts,
-						msg: message.file.url_private_download || '',
+						msg: '',
+						_hidden: true,
 						_importFile: this.convertSlackFileToPendingFile(message.file),
 						u: {
 							_id: newMessage.u._id,
@@ -568,7 +586,8 @@ export class SlackImporter extends Importer {
 						_id: fileId,
 						rid: slackChannelId,
 						ts: newMessage.ts,
-						msg: file.url_private_download || '',
+						msg: '',
+						_hidden: true,
 						_importFile: this.convertSlackFileToPendingFile(file),
 						u: {
 							_id: this._replaceSlackUserId(message.user),

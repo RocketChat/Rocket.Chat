@@ -5,7 +5,7 @@ import { unlink, rename, writeFile } from 'node:fs/promises';
 import type * as http from 'node:http';
 import type * as https from 'node:https';
 import stream from 'node:stream';
-import { finished } from 'node:stream/promises';
+import { pipeline } from 'node:stream/promises';
 import URL from 'node:url';
 import { isArrayBufferView } from 'node:util/types';
 
@@ -904,13 +904,16 @@ export class FileUploadClass {
 			} else if (isArrayBufferView(content)) {
 				await fs.promises.writeFile(tmpFile, content);
 			} else if (content instanceof stream.Readable) {
-				await finished(content.pipe(fs.createWriteStream(tmpFile)), { cleanup: true });
+				await pipeline(content, fs.createWriteStream(tmpFile));
 			} else {
 				throw new Error('Invalid file type');
 			}
 
-			return ufsComplete(fileId, this.name, { session: options?.session });
+			return await ufsComplete(fileId, this.name, { session: options?.session });
 		} catch (e) {
+			// The record is created before the content is written; drop it so a failed
+			// stream doesn't leave an orphaned upload record and tmp file behind.
+			await this.store.removeById(fileId, { session: options?.session }).catch(() => undefined);
 			throw e;
 		}
 	}
