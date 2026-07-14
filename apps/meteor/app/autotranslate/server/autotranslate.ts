@@ -112,6 +112,8 @@ export class TranslationProviderRegistry {
 			return;
 		}
 
+		callbacks.remove('afterSaveMessage', 'autotranslate');
+
 		callbacks.add(
 			'afterSaveMessage',
 			(message, { room }) => provider.translateMessage(message, { room }),
