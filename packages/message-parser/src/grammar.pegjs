@@ -426,7 +426,7 @@ Image = "![" title:Line? "](" href:MarkdownLinkRef ")" { return title ? image(hr
 URL
   = head:($(URLScheme URLAuthority) / $(URLAuthorityHost)) tail:$(URLBody*) { return head + tail; }
 
-URLScheme = $([A-Za-z0-9+-] |1..32| ":")
+URLScheme = $([A-Za-z0-9+-] |1..32| ":") &"//"
 
 URLBody
   = (
