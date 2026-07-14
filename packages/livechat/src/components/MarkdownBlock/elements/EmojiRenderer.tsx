@@ -1,8 +1,6 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 
-type EmojiProps = MessageParser.Emoji & {
-	big?: boolean;
-};
+export type EmojiProps = MessageParser.Emoji;
 
 const EmojiRenderer = (props: EmojiProps) => {
 	const fallback = 'unicode' in props ? props.unicode : `:${props.shortCode ?? props.value.value}:`;

@@ -4,6 +4,6 @@ import Emoji from './Emoji';
 
 export type BigEmojiElementProps = MessageParser.Emoji;
 
-const BigEmojiElement = (emoji: BigEmojiElementProps) => <Emoji big {...emoji} />;
+const BigEmojiElement = (emoji: BigEmojiElementProps) => <Emoji {...emoji} />;
 
 export default BigEmojiElement;

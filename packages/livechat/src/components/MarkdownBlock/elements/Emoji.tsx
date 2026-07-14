@@ -5,11 +5,9 @@ import { useMemo } from 'preact/hooks';
 import EmojiRenderer from './EmojiRenderer';
 import PlainSpan from './PlainSpan';
 
-export type EmojiProps = MessageParser.Emoji & {
-	big?: boolean;
-};
+export type EmojiProps = MessageParser.Emoji;
 
-const Emoji = ({ big = false, ...emoji }: EmojiProps) => {
+const Emoji = (emoji: EmojiProps) => {
 	const asciiEmoji = useMemo(
 		() => ('shortCode' in emoji && emoji.value.value !== emoji.shortCode ? emoji.value.value : undefined),
 		[emoji],
@@ -19,7 +17,7 @@ const Emoji = ({ big = false, ...emoji }: EmojiProps) => {
 		return <PlainSpan text={asciiEmoji} />;
 	}
 
-	return <EmojiRenderer big={big} {...emoji} />;
+	return <EmojiRenderer {...emoji} />;
 };
 
 export default memo(Emoji);
