@@ -1,10 +1,8 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { Permissions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { CONSTANTS } from '../../../app/authorization/lib';
-import { notifyOnPermissionChangedById } from '../../../app/lib/server/lib/notifyListener';
-import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
+import { removeRoleFromPermissionMethod } from '../../lib/authorization/permissionRole';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -15,34 +13,11 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'authorization:removeRoleFromPermission'(permissionId, role) {
+		methodDeprecationLogger.method('authorization:removeRoleFromPermission', '9.0.0', '/v1/permissions.removeRole');
 		const uid = Meteor.userId();
-		const permission = await Permissions.findOneById(permissionId);
-
-		if (!permission) {
-			throw new Meteor.Error('error-permission-not-found', 'Permission not found', {
-				method: 'authorization:removeRoleFromPermission',
-			});
+		if (!uid) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'authorization:removeRoleFromPermission' });
 		}
-
-		if (
-			!uid ||
-			!(await hasPermissionAsync(uid, 'access-permissions')) ||
-			(permission.level === CONSTANTS.SETTINGS_LEVEL && !(await hasPermissionAsync(uid, 'access-setting-permissions')))
-		) {
-			throw new Meteor.Error('error-action-not-allowed', 'Removing permission is not allowed', {
-				method: 'authorization:removeRoleFromPermission',
-				action: 'Removing_permission',
-			});
-		}
-
-		// for setting based permissions, revoke the group permission once all setting permissions
-		// related to this group have been removed
-		if (permission.groupPermissionId) {
-			await Permissions.removeRole(permission.groupPermissionId, role);
-			void notifyOnPermissionChangedById(permission.groupPermissionId);
-		}
-
-		await Permissions.removeRole(permission._id, role);
-		void notifyOnPermissionChangedById(permission._id);
+		await removeRoleFromPermissionMethod(uid, permissionId, role);
 	},
 });
