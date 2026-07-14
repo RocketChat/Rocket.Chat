@@ -45,7 +45,7 @@ export const defaultMetadataTemplate = `<?xml version="1.0"?>
 export const defaultNameIDTemplate =
 	'<samlp:NameIDPolicy xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" Format="__identifierFormat__" AllowCreate="true"></samlp:NameIDPolicy>';
 export const defaultIdentifierFormat = 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress';
-export const defaultAuthnContext = 'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport';
+export const defaultAuthnContext = '';
 
 export const StatusCode = {
 	success: 'urn:oasis:names:tc:SAML:2.0:status:Success',
