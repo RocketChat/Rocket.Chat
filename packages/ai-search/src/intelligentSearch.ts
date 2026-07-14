@@ -15,6 +15,8 @@ const isRecord = (value: unknown): value is Record<string, unknown> => Boolean(v
 
 const asRecord = (value: unknown): Record<string, unknown> => (isRecord(value) ? value : {});
 
+const getErrorType = (error: unknown): string => (error instanceof Error ? error.name : typeof error);
+
 const firstString = (...values: unknown[]): string | undefined => {
 	for (const value of values) {
 		if (typeof value === 'string' && value) {
@@ -269,7 +271,7 @@ export const searchIntelligentPipeline = async ({
 			}),
 		});
 	} catch (fetchError: unknown) {
-		logger?.warn?.({ msg: 'Intelligent search fetch failed', url, err: fetchError });
+		logger?.warn?.({ msg: 'Intelligent search fetch failed', url, errorType: getErrorType(fetchError) });
 		throw fetchError;
 	}
 

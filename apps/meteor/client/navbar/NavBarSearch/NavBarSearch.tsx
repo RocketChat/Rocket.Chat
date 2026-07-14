@@ -1,3 +1,4 @@
+import { useFocusManager } from '@react-aria/focus';
 import { useOverlayTrigger } from '@react-aria/overlays';
 import { useOverlayTriggerState } from '@react-stately/overlays';
 import { emptySearchFilters, type NavBarSearchFormValues } from '@rocket.chat/ai-search';
@@ -18,6 +19,7 @@ import { useSearchInputNavigation } from './hooks/useSearchNavigation';
 
 const NavBarSearch = () => {
 	const { t } = useTranslation();
+	const focusManager = useFocusManager();
 	const shortcut = getShortcutLabel();
 
 	const methods = useForm<NavBarSearchFormValues>({ defaultValues: { filterText: '', appliedFilters: emptySearchFilters() } });
@@ -44,15 +46,8 @@ const NavBarSearch = () => {
 	const handleFocus = useSearchFocus(state);
 	const handleClick = useSearchClick(state);
 
-	const {
-		aiSearchActive,
-		aiSearchFeatureEnabled,
-		canSearchWithAIFromTopBar,
-		appliedFilterChips,
-		aiSearchButtonTooltip,
-		handleRemoveFilter,
-		handleToggleAISearch,
-	} = useNavBarAISearch({ filterText, appliedFilters, setFocus, setValue, state, t });
+	const { aiSearchActive, aiSearchFeatureEnabled, appliedFilterChips, aiSearchButtonTooltip, handleRemoveFilter, handleToggleAISearch } =
+		useNavBarAISearch({ filterText, appliedFilters, setFocus, setValue, state, t });
 
 	const searchLabel = aiSearchActive ? t('Search_rooms_or_ask_AI') : t('Search_rooms');
 	const placeholder = [searchLabel, shortcut].filter(Boolean).join(' ');
@@ -88,7 +83,7 @@ const NavBarSearch = () => {
 		return (): void => {
 			unsubscribe();
 		};
-	}, [handleEscSearch, setFocus]);
+	}, [focusManager, handleEscSearch, setFocus]);
 
 	return (
 		<FormProvider {...methods}>
@@ -120,14 +115,7 @@ const NavBarSearch = () => {
 						/>
 					}
 				/>
-				{state.isOpen && (
-					<NavBarSearchListBox
-						state={state}
-						overlayProps={overlayProps}
-						aiSearchActive={aiSearchActive}
-						aiSearchAvailable={canSearchWithAIFromTopBar}
-					/>
-				)}
+				{state.isOpen && <NavBarSearchListBox state={state} overlayProps={overlayProps} aiSearchActive={aiSearchActive} />}
 			</Box>
 		</FormProvider>
 	);

@@ -14,7 +14,7 @@ import {
 	MessageTimestamp,
 	MessageUsername,
 } from '@rocket.chat/fuselage';
-import type { UnifiedSearchIntelligentResult } from '@rocket.chat/rest-typings';
+import type { AISearchResult } from '@rocket.chat/rest-typings';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import type { ComponentProps, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -35,7 +35,7 @@ const formatMessageTime = (ts: string | undefined): string => {
 	return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
 };
 
-const getMessageHref = (item: UnifiedSearchIntelligentResult): string | undefined => {
+const getMessageHref = (item: AISearchResult): string | undefined => {
 	const { room } = item;
 	if (!room) {
 		return undefined;
@@ -65,7 +65,7 @@ const getRoomIcon = (roomType: IRoom['t'] | undefined): ComponentProps<typeof Ic
 };
 
 export type SearchSourceResultProps = {
-	item: UnifiedSearchIntelligentResult;
+	item: AISearchResult;
 };
 
 const SearchSourceResult = ({ item }: SearchSourceResultProps): ReactElement => {
@@ -78,17 +78,7 @@ const SearchSourceResult = ({ item }: SearchSourceResultProps): ReactElement => 
 	const relevanceScore = typeof item.score === 'number' ? Math.max(0, Math.min(100, Math.round(item.score * 100))) : undefined;
 
 	return (
-		<Box
-			is='article'
-			role='listitem'
-			position='relative'
-			mbe={12}
-			borderWidth='default'
-			borderStyle='solid'
-			borderColor='extra-light'
-			borderRadius='x4'
-			bg='surface-light'
-		>
+		<Box is='article' role='listitem' position='relative'>
 			<Message clickable={Boolean(href)}>
 				<MessageLeftContainer>
 					<MessageAvatar username={username} size='x36' />
@@ -132,7 +122,6 @@ const SearchSourceResult = ({ item }: SearchSourceResultProps): ReactElement => 
 					insetBlockEnd={0}
 					insetInlineStart={0}
 					insetInlineEnd={0}
-					borderRadius='x4'
 				/>
 			)}
 		</Box>

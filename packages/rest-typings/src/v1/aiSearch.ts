@@ -1,13 +1,9 @@
-import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 
 import { ajv, ajvQuery } from './Ajv';
-import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 
-type UnifiedSearch = PaginatedRequest<{
+type AISearch = {
 	query: string;
-	includeMessages?: boolean;
-	includeIntelligent?: boolean;
-	includeSpotlight?: boolean;
 	intelligentCount?: number;
 	rid?: string;
 	rids?: string;
@@ -16,15 +12,12 @@ type UnifiedSearch = PaginatedRequest<{
 	fromUsernames?: string;
 	startDate?: string;
 	endDate?: string;
-}>;
+};
 
-const UnifiedSearchSchema = {
+const AISearchSchema = {
 	type: 'object',
 	properties: {
 		query: { type: 'string', minLength: 1, pattern: '\\S', maxLength: 500 },
-		includeMessages: { type: 'boolean' },
-		includeIntelligent: { type: 'boolean' },
-		includeSpotlight: { type: 'boolean' },
 		intelligentCount: { type: 'number' },
 		rid: { type: 'string', maxLength: 256 },
 		rids: { type: 'string', maxLength: 4096 },
@@ -45,15 +38,12 @@ const UnifiedSearchSchema = {
 				{ type: 'string', format: 'date-time' },
 			],
 		},
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		sort: { type: 'string' },
 	},
 	required: ['query'],
 	additionalProperties: false,
 };
 
-export const isUnifiedSearchProps = ajvQuery.compile<UnifiedSearch>(UnifiedSearchSchema);
+export const isAISearchProps = ajvQuery.compile<AISearch>(AISearchSchema);
 
 export type SearchAnswer = {
 	query: string;
@@ -88,11 +78,7 @@ const SearchAnswerSchema = {
 
 export const isSearchAnswerProps = ajv.compile<SearchAnswer>(SearchAnswerSchema);
 
-export type UnifiedSearchMessageResult = Pick<IMessage, '_id' | 'rid' | 'msg' | 'ts' | 'u'> & {
-	room?: Pick<IRoom, '_id' | 't' | 'name' | 'fname'>;
-};
-
-export type UnifiedSearchIntelligentResult = {
+export type AISearchResult = {
 	_id: string;
 	rid?: string;
 	msgId?: string;
@@ -104,21 +90,17 @@ export type UnifiedSearchIntelligentResult = {
 };
 
 export type AISearchEndpoints = {
-	'/v1/search.unified': {
-		GET: (params: UnifiedSearch) => {
-			users: (Pick<Required<IUser>, 'name' | 'status' | '_id' | 'username'> & Partial<Pick<IUser, 'statusText' | 'avatarETag'>>)[];
-			rooms: Pick<IRoom, 't' | 'name' | 'fname' | '_id'>[];
-			messages: UnifiedSearchMessageResult[];
-			intelligent: UnifiedSearchIntelligentResult[];
+	'/v1/ai.search': {
+		GET: (params: AISearch) => {
+			intelligent: AISearchResult[];
 			meta: {
-				globalMessagesEnabled: boolean;
 				intelligentSearchEnabled: boolean;
 				intelligentSearchConfigured: boolean;
 				answerGenerationConfigured: boolean;
 			};
 		};
 	};
-	'/v1/search.answer': {
+	'/v1/ai.search.answer': {
 		POST: (params: SearchAnswer) => {
 			answer: string;
 			provider: { name: string; model: string };

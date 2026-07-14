@@ -1,5 +1,5 @@
 import { Box, Icon, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
-import type { UnifiedSearchIntelligentResult, UnifiedSearchMessageResult } from '@rocket.chat/rest-typings';
+import type { AISearchResult } from '@rocket.chat/rest-typings';
 import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,31 +8,11 @@ import NavBarSearchItem from './NavBarSearchItem';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
 export type NavBarSearchMessageRowProps = {
-	item: UnifiedSearchMessageResult | UnifiedSearchIntelligentResult;
+	item: AISearchResult;
 	onClick: () => void;
-	type: 'message' | 'intelligent';
 };
 
-const isUnifiedSearchIntelligentResult = (
-	item: UnifiedSearchMessageResult | UnifiedSearchIntelligentResult,
-): item is UnifiedSearchIntelligentResult => 'text' in item;
-
-const getMessageId = (item: UnifiedSearchMessageResult | UnifiedSearchIntelligentResult): string | undefined =>
-	isUnifiedSearchIntelligentResult(item) ? item.msgId : item._id;
-
-const getText = (item: UnifiedSearchMessageResult | UnifiedSearchIntelligentResult): string => {
-	if (isUnifiedSearchIntelligentResult(item)) {
-		return item.text;
-	}
-
-	return item.msg || '';
-};
-
-const getHref = (item: UnifiedSearchMessageResult | UnifiedSearchIntelligentResult): string | undefined => {
-	const { room } = item;
-	const rid = isUnifiedSearchIntelligentResult(item) ? item.rid : undefined;
-	const msgId = getMessageId(item);
-
+const getHref = ({ room, rid, msgId }: AISearchResult): string | undefined => {
 	if (!room) {
 		return undefined;
 	}
@@ -49,22 +29,21 @@ const getHref = (item: UnifiedSearchMessageResult | UnifiedSearchIntelligentResu
 	return msgId ? `${href}?msg=${encodeURIComponent(msgId)}` : href;
 };
 
-const NavBarSearchMessageRow = ({ item, onClick, type }: NavBarSearchMessageRowProps): ReactElement => {
+const NavBarSearchMessageRow = ({ item, onClick }: NavBarSearchMessageRowProps): ReactElement => {
 	const { t } = useTranslation();
 	const { room } = item;
-	const text = getText(item);
-	const title = text.trim() || t(type === 'intelligent' ? 'Intelligent_Search_Result' : 'Message');
+	const title = item.text.trim() || t('Intelligent_Search_Result');
 	const roomLabel = room?.fname || room?.name;
 	const href = getHref(item);
 
 	return (
 		<NavBarSearchItem
-			id={`search-${type}-${item._id}`}
+			id={`search-intelligent-${item._id}`}
 			href={href}
 			onClick={onClick}
 			title={title}
 			avatar={null}
-			icon={<SidebarV2ItemIcon icon={<Icon name={type === 'intelligent' ? 'stars' : 'post'} size='x16' />} />}
+			icon={<SidebarV2ItemIcon icon={<Icon name='stars' size='x16' />} />}
 			actions={
 				roomLabel ? (
 					<Box color='hint' fontScale='c1' withTruncatedText flexShrink={0} maxWidth='x120'>

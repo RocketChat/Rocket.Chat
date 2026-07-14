@@ -1,6 +1,6 @@
 import { serializeSearchQuery, type NavBarSearchFormValues } from '@rocket.chat/ai-search';
 import { Box, Icon, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
-import type { UnifiedSearchIntelligentResult } from '@rocket.chat/rest-typings';
+import type { AISearchResult } from '@rocket.chat/rest-typings';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useFormContext } from 'react-hook-form';
@@ -10,7 +10,7 @@ import NavBarSearchItem from './NavBarSearchItem';
 import NavBarSearchMessageRow from './NavBarSearchMessageRow';
 
 export type NavBarSearchIntelligentSectionProps = {
-	items: UnifiedSearchIntelligentResult[];
+	items: AISearchResult[];
 	onSelect: () => void;
 	onClose: () => void;
 };
@@ -40,7 +40,7 @@ const NavBarSearchIntelligentSection = ({ items, onSelect, onClose }: NavBarSear
 				{t('AI_Search_related_messages', { count: items.length })}
 			</Box>
 			{items.map((item) => (
-				<NavBarSearchMessageRow key={`intelligent-${item._id}`} type='intelligent' item={item} onClick={onSelect} />
+				<NavBarSearchMessageRow key={`intelligent-${item._id}`} item={item} onClick={onSelect} />
 			))}
 			<NavBarSearchItem
 				title={t('View_all_results')}

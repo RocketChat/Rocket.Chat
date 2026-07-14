@@ -1,4 +1,4 @@
-import { MAX_ROOM_SEARCH_PATTERN_LENGTH } from './constants';
+import { AI_SEARCH_FILTER_SUGGESTION_LIMIT, MAX_ROOM_SEARCH_PATTERN_LENGTH } from './constants';
 
 export type SearchFilters = {
 	roomNames: string[];
@@ -22,6 +22,19 @@ export type SearchFilterSuggestion = {
 	description: string;
 	value: string;
 	icon: 'hash' | 'user' | 'calendar';
+};
+
+export type SearchRoomSuggestionSource = {
+	_id: string;
+	rid?: string;
+	name?: string;
+	fname?: string;
+};
+
+export type SearchUserSuggestionSource = {
+	_id: string;
+	name?: string;
+	username: string;
 };
 
 export type SearchFilterChip = {
@@ -198,6 +211,125 @@ export const applySearchFilterToken = (
 	}
 
 	return normalizeFilterText(`${filterText.trim()} ${token} `);
+};
+
+const formatDate = (date: Date): string => date.toISOString().slice(0, 10);
+
+const getDateFilterSuggestions = (
+	filterText: string,
+	activeFilter: ActiveSearchFilter,
+	key: 'after' | 'before',
+	t: (key: string) => string,
+): SearchFilterSuggestion[] => {
+	const today = new Date();
+	const yesterday = new Date(today);
+	yesterday.setDate(today.getDate() - 1);
+	const lastWeek = new Date(today);
+	lastWeek.setDate(today.getDate() - 7);
+
+	return [
+		{ label: t('Today'), value: formatDate(today) },
+		{ label: t('Yesterday'), value: formatDate(yesterday) },
+		{ label: t('Last_7_days'), value: formatDate(lastWeek) },
+	].map(({ label, value }) => ({
+		key: `${key}-${value}`,
+		group: 'dates',
+		title: `${key}:${value}`,
+		description: label,
+		value: applySearchFilterToken(filterText, activeFilter, key, value),
+		icon: 'calendar',
+	}));
+};
+
+export const buildFilterSuggestions = (
+	filterText: string,
+	activeFilter: ActiveSearchFilter | undefined,
+	rooms: SearchRoomSuggestionSource[],
+	t: (key: string) => string,
+): SearchFilterSuggestion[] => {
+	if (!activeFilter) {
+		return [];
+	}
+
+	if (activeFilter.key === 'in') {
+		return rooms.slice(0, AI_SEARCH_FILTER_SUGGESTION_LIMIT).map((room) => ({
+			key: `in-${room.rid || room._id}`,
+			group: 'rooms',
+			title: `#${room.fname || room.name}`,
+			description: t('Search_in_this_room'),
+			value: applySearchFilterToken(filterText, activeFilter, 'in', room.name || room.fname || ''),
+			icon: 'hash',
+		}));
+	}
+
+	if (activeFilter.key === 'from') {
+		return [
+			{
+				key: 'from-current',
+				group: 'users',
+				title: activeFilter.value ? `from:${activeFilter.value.replace(/^@/, '')}` : 'from:username',
+				description: t('Search_messages_from_this_username'),
+				value: applySearchFilterToken(filterText, activeFilter, 'from', activeFilter.value.replace(/^@/, '')),
+				icon: 'user',
+			},
+		];
+	}
+
+	return getDateFilterSuggestions(filterText, activeFilter, activeFilter.key, t);
+};
+
+export const buildUserFilterSuggestions = (
+	filterText: string,
+	activeFilter: ActiveSearchFilter | undefined,
+	users: SearchUserSuggestionSource[],
+	t: (key: string) => string,
+): SearchFilterSuggestion[] => {
+	if (activeFilter?.key !== 'from') {
+		return [];
+	}
+
+	return users.slice(0, AI_SEARCH_FILTER_SUGGESTION_LIMIT).map((user) => ({
+		key: `from-${user._id}`,
+		group: 'users',
+		title: `@${user.username}`,
+		description: user.name || t('Search_messages_from_this_user'),
+		value: applySearchFilterToken(filterText, activeFilter, 'from', user.username),
+		icon: 'user',
+	}));
+};
+
+export const mergeFilterSuggestions = (primary: SearchFilterSuggestion[], fallback: SearchFilterSuggestion[]): SearchFilterSuggestion[] => {
+	const existingValues = new Set(primary.map(({ value }) => value));
+	return [...primary, ...fallback.filter(({ value }) => !existingValues.has(value))];
+};
+
+export const getFilterSearchState = (
+	filterText: string,
+	appliedSearchFilters: SearchFilters,
+	canUseInlineFilters: boolean,
+): {
+	searchText: string;
+	filters: SearchFilters;
+	activeFilter: ActiveSearchFilter | undefined;
+} => {
+	if (!canUseInlineFilters) {
+		return { searchText: filterText, filters: emptySearchFilters(), activeFilter: undefined };
+	}
+
+	const parsed = parseSearchFilterText(filterText);
+	return {
+		searchText: parsed.searchText,
+		filters: mergeSearchFilters(appliedSearchFilters, parsed.filters),
+		activeFilter: getActiveSearchFilter(filterText),
+	};
+};
+
+export const getRoomLookupText = (activeFilter: ActiveSearchFilter | undefined, canUseInlineFilters: boolean): string => {
+	if (!canUseInlineFilters || activeFilter?.key !== 'in') {
+		return '';
+	}
+
+	return activeFilter.value.replace(/^#/, '');
 };
 
 const getFilterChipLabel = (key: ActiveSearchFilter['key'], value: string): string => {

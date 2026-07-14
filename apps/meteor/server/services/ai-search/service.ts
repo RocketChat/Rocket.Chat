@@ -19,6 +19,7 @@ import type {
 	AISearchAnswerResult,
 	AISearchFilters,
 	AISearchModelOption,
+	AISearchResult,
 	AISearchStatus,
 	IAISearchService,
 } from '@rocket.chat/core-services';
@@ -26,7 +27,6 @@ import { License, ServiceClass } from '@rocket.chat/core-services';
 import { isBannedSubscription, type IMessage, type IRoom, type IUser } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
-import type { UnifiedSearchIntelligentResult } from '@rocket.chat/rest-typings';
 import { serverFetch, type ExtendedFetchOptions } from '@rocket.chat/server-fetch';
 
 import { settings } from '../../../app/settings/server';
@@ -182,11 +182,13 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 	}
 
 	private async getUserSubscribedRoomIdsForPipeline(userId: string): Promise<string[]> {
-		return Subscriptions.findByUserId(userId, {
-			projection: { rid: 1 },
+		const roomIds = await Subscriptions.findByUserId(userId, {
+			projection: { rid: 1, status: 1 },
 		})
-			.map(({ rid }) => rid)
+			.map((subscription) => (isBannedSubscription(subscription) ? undefined : subscription.rid))
 			.toArray();
+
+		return roomIds.filter((rid): rid is string => Boolean(rid));
 	}
 
 	private async getSubscribedRoomIdSet(userId: string, roomIds: string[]): Promise<Set<string>> {
@@ -218,7 +220,7 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		rawSearchResults: unknown,
 		userId: string,
 		limit = AI_SEARCH_PAGE_SIZE,
-	): Promise<UnifiedSearchIntelligentResult[]> {
+	): Promise<AISearchResult[]> {
 		const candidates = normalizeIntelligentSearchCandidates(rawSearchResults, [], limit, logger);
 		const msgIdSet = new Set<string>();
 		for (const { msgId } of candidates) {
@@ -246,7 +248,7 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 			this.getSubscribedRoomIdSet(userId, resultRoomIds),
 		]);
 
-		const normalizedResults: UnifiedSearchIntelligentResult[] = [];
+		const normalizedResults: AISearchResult[] = [];
 		for (const result of candidates) {
 			// candidates without a visible database message could surface stale pipeline text
 			const dbMessage = result.msgId ? messageMap.get(result.msgId) : undefined;
@@ -318,7 +320,7 @@ export class AISearchService extends ServiceClass implements IAISearchService {
 		userId: string;
 		filters?: AISearchFilters;
 		limit?: number;
-	}): Promise<UnifiedSearchIntelligentResult[]> {
+	}): Promise<AISearchResult[]> {
 		const hasIntelligentSearchLicense = await License.hasModule(AI_LICENSE_MODULE);
 		const intelligentSearchEnabled = settings.get<boolean>('AI_Intelligent_Search_Enabled');
 		const config = this.getPipelineConfig();

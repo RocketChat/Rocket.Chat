@@ -1,12 +1,12 @@
 import { AI_SEARCH_RESULTS_PAGE_SIZE, MAX_INTELLIGENT_SEARCH_RESULTS, parseSearchFilterText } from '@rocket.chat/ai-search';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { UnifiedSearchIntelligentResult } from '@rocket.chat/rest-typings';
+import type { AISearchResult } from '@rocket.chat/rest-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export const useAISearchResults = (queryParam: string, enabled: boolean) => {
-	const unifiedSearch = useEndpoint('GET', '/v1/search.unified');
+	const aiSearch = useEndpoint('GET', '/v1/ai.search');
 	const [resultCount, setResultCount] = useState(AI_SEARCH_RESULTS_PAGE_SIZE);
 	const parsedSearch = useMemo(() => parseSearchFilterText(queryParam), [queryParam]);
 	const query = useDebouncedValue(parsedSearch.searchText.trim(), 300);
@@ -19,13 +19,9 @@ export const useAISearchResults = (queryParam: string, enabled: boolean) => {
 	const result = useQuery({
 		queryKey: ['search/intelligent/page', query, filters, resultCount],
 		queryFn: () =>
-			unifiedSearch({
+			aiSearch({
 				query,
-				count: 0,
-				includeSpotlight: false,
 				intelligentCount: Math.min(resultCount + 1, MAX_INTELLIGENT_SEARCH_RESULTS),
-				includeMessages: false,
-				includeIntelligent: true,
 				roomNames: filters.roomNames.join(','),
 				fromUsernames: filters.fromUsernames.join(','),
 				startDate: filters.startDate,
@@ -35,7 +31,7 @@ export const useAISearchResults = (queryParam: string, enabled: boolean) => {
 		placeholderData: (previousData, previousQuery) => (previousQuery?.queryKey[1] === query ? previousData : undefined),
 	});
 
-	const intelligent = useMemo<UnifiedSearchIntelligentResult[]>(
+	const intelligent = useMemo<AISearchResult[]>(
 		() => result.data?.intelligent.slice(0, resultCount) ?? [],
 		[result.data?.intelligent, resultCount],
 	);

@@ -6,6 +6,8 @@ const buildEndpointUrl = (baseUrl: string, path: string): string =>
 
 const isRecord = (value: unknown): value is Record<string, unknown> => Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 
+const getErrorType = (error: unknown): string => (error instanceof Error ? error.name : typeof error);
+
 const getChatCompletionContent = (value: unknown): string | undefined => {
 	if (!isRecord(value) || !Array.isArray(value.choices)) {
 		return undefined;
@@ -124,7 +126,7 @@ export const generateOpenAICompatibleSearchAnswer = async ({
 			throw error;
 		}
 
-		logger?.warn?.({ msg: 'Search answer LLM provider request failed', err: error });
+		logger?.warn?.({ msg: 'Search answer LLM provider request failed', errorType: getErrorType(error) });
 		throw new Error('error-ai-provider-request-failed', { cause: error });
 	}
 };
@@ -169,7 +171,7 @@ export const listOpenAICompatibleModels = async ({
 
 		return modelIds.map((id) => ({ key: id, label: id }));
 	} catch (error) {
-		logger?.warn?.({ msg: 'AI LLM model lookup request failed', err: error });
+		logger?.warn?.({ msg: 'AI LLM model lookup request failed', errorType: getErrorType(error) });
 		return fallback;
 	}
 };

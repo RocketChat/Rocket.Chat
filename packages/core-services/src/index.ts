@@ -5,6 +5,7 @@ import type {
 	AISearchAnswerResult,
 	AISearchFilters,
 	AISearchModelOption,
+	AISearchResult,
 	AISearchStatus,
 } from './types/IAISearchService';
 import type { IAbacService } from './types/IAbacService';
@@ -159,6 +160,7 @@ export type {
 	AISearchAnswerResult,
 	AISearchFilters,
 	AISearchModelOption,
+	AISearchResult,
 	AISearchStatus,
 	ICallHistoryService,
 	IOmnichannelTranscriptService,

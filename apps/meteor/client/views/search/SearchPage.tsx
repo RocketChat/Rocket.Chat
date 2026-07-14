@@ -29,7 +29,7 @@ const SearchPage = (): ReactElement => {
 		isPlaceholderData,
 		error: searchError,
 	} = useAISearchResults(queryParam, canUseAISearch && intelligentSearchEnabled);
-	// the answer regenerates from every revealed result, capped by the search.answer schema limit
+	// The answer regenerates from every revealed result, capped by the AI answer schema limit.
 	const answerMessages = useMemo(
 		() =>
 			intelligent.slice(0, MAX_SEARCH_ANSWER_MESSAGES).map((item) => ({

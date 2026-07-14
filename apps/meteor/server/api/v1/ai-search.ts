@@ -1,72 +1,26 @@
-import {
-	AI_SEARCH_PAGE_SIZE,
-	MAX_INTELLIGENT_SEARCH_RESULTS,
-	MAX_SEARCH_FILTER_VALUES,
-	MAX_UNIFIED_SEARCH_RESULTS,
-} from '@rocket.chat/ai-search';
+import { AI_SEARCH_PAGE_SIZE, MAX_INTELLIGENT_SEARCH_RESULTS, MAX_SEARCH_FILTER_VALUES } from '@rocket.chat/ai-search';
 import { AISearch } from '@rocket.chat/core-services';
-import { isBannedSubscription, type IRoom, type IUser } from '@rocket.chat/core-typings';
+import { isBannedSubscription, type IRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
 	ajv,
 	isSearchAnswerProps,
-	isUnifiedSearchProps,
+	isAISearchProps,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
-import type { SearchAnswer, UnifiedSearchIntelligentResult, UnifiedSearchMessageResult } from '@rocket.chat/rest-typings';
+import type { AISearchResult, SearchAnswer } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { getSettingPermissionId } from '../../../app/authorization/lib';
-import { settings } from '../../../app/settings/server';
 import { normalizeMessagesForUser } from '../../../app/utils/server/lib/normalizeMessagesForUser';
 import { hasAllPermissionAsync, hasAtLeastOnePermissionAsync } from '../../lib/authorization/hasPermission';
-import { messageSearch } from '../../meteor-methods/messages/messageSearch';
-import { spotlightMethod } from '../../publications/spotlight';
 import { API } from '../api';
-import { getPaginationItems } from '../lib/getPaginationItems';
 
-const searchUsersSchema = {
-	type: 'array',
-	items: {
-		type: 'object',
-		properties: {
-			_id: { type: 'string' },
-			name: { type: 'string' },
-			username: { type: 'string' },
-			status: { type: 'string' },
-			statusText: { type: 'string' },
-			avatarETag: { type: 'string' },
-		},
-		required: ['_id', 'name', 'username', 'status'],
-		additionalProperties: true,
-	},
-} as const;
-
-const searchRoomsSchema = {
-	type: 'array',
-	items: {
-		type: 'object',
-		properties: {
-			_id: { type: 'string' },
-			t: { type: 'string' },
-			name: { type: 'string' },
-			fname: { type: 'string' },
-			lastMessage: { $ref: '#/components/schemas/IMessage' },
-		},
-		required: ['_id', 't'],
-		additionalProperties: true,
-	},
-} as const;
-
-const unifiedSearchResponseSchema = ajv.compile<{
-	users: Pick<IUser, 'name' | 'status' | 'statusText' | 'avatarETag' | '_id' | 'username'>[];
-	rooms: Pick<IRoom, 't' | 'name' | 'fname' | '_id'>[];
-	messages: UnifiedSearchMessageResult[];
-	intelligent: UnifiedSearchIntelligentResult[];
+const aiSearchResponseSchema = ajv.compile<{
+	intelligent: AISearchResult[];
 	meta: {
-		globalMessagesEnabled: boolean;
 		intelligentSearchEnabled: boolean;
 		intelligentSearchConfigured: boolean;
 		answerGenerationConfigured: boolean;
@@ -74,33 +28,6 @@ const unifiedSearchResponseSchema = ajv.compile<{
 }>({
 	type: 'object',
 	properties: {
-		users: searchUsersSchema,
-		rooms: searchRoomsSchema,
-		messages: {
-			type: 'array',
-			items: {
-				type: 'object',
-				properties: {
-					_id: { type: 'string' },
-					rid: { type: 'string' },
-					msg: { type: 'string' },
-					u: { type: 'object' },
-					room: {
-						type: 'object',
-						properties: {
-							_id: { type: 'string' },
-							t: { type: 'string' },
-							name: { type: 'string' },
-							fname: { type: 'string' },
-						},
-						required: ['_id', 't'],
-						additionalProperties: true,
-					},
-				},
-				required: ['_id', 'rid'],
-				additionalProperties: true,
-			},
-		},
 		intelligent: {
 			type: 'array',
 			items: {
@@ -130,17 +57,16 @@ const unifiedSearchResponseSchema = ajv.compile<{
 		meta: {
 			type: 'object',
 			properties: {
-				globalMessagesEnabled: { type: 'boolean' },
 				intelligentSearchEnabled: { type: 'boolean' },
 				intelligentSearchConfigured: { type: 'boolean' },
 				answerGenerationConfigured: { type: 'boolean' },
 			},
-			required: ['globalMessagesEnabled', 'intelligentSearchEnabled', 'intelligentSearchConfigured', 'answerGenerationConfigured'],
+			required: ['intelligentSearchEnabled', 'intelligentSearchConfigured', 'answerGenerationConfigured'],
 			additionalProperties: false,
 		},
 		success: { type: 'boolean', enum: [true] },
 	},
-	required: ['users', 'rooms', 'messages', 'intelligent', 'meta', 'success'],
+	required: ['intelligent', 'meta', 'success'],
 	additionalProperties: false,
 });
 
@@ -203,14 +129,6 @@ const parseCommaList = (value: string | undefined): string[] => {
 		}
 	}
 	return items;
-};
-
-const parseQueryBoolean = (value: unknown, defaultValue = false): boolean => {
-	if (value === undefined || value === null) {
-		return defaultValue;
-	}
-
-	return value === true || value === 'true';
 };
 
 const parseQueryDate = (value: string | undefined): Date | undefined => (value ? new Date(value) : undefined);
@@ -315,24 +233,22 @@ const getSearchAnswerMessagesForUser = async (userId: string, messages: SearchAn
 };
 
 API.v1.get(
-	'search.unified',
+	'ai.search',
 	{
 		authRequired: true,
-		query: isUnifiedSearchProps,
+		query: isAISearchProps,
 		rateLimiterOptions: {
 			numRequestsAllowed: 120,
 			intervalTimeInMS: 60000,
 		},
 		response: {
-			200: unifiedSearchResponseSchema,
+			200: aiSearchResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 		},
 	},
 	async function action() {
 		const query = this.queryParams.query.trim();
-		const { count } = await getPaginationItems(this.queryParams);
-		const limit = Math.min(count || MAX_UNIFIED_SEARCH_RESULTS, MAX_UNIFIED_SEARCH_RESULTS);
 		const requestedIntelligentCount = Number(this.queryParams.intelligentCount || AI_SEARCH_PAGE_SIZE);
 		const intelligentLimit = Math.min(
 			Math.max(Number.isFinite(requestedIntelligentCount) ? Math.floor(requestedIntelligentCount) : AI_SEARCH_PAGE_SIZE, 1),
@@ -345,11 +261,7 @@ API.v1.get(
 		const fromUsernames = parseCommaList(this.queryParams.fromUsernames);
 		const startDate = parseQueryDate(this.queryParams.startDate);
 		const endDate = parseQueryDate(this.queryParams.endDate);
-		const includeSpotlight = parseQueryBoolean(this.queryParams.includeSpotlight, true);
-		const includeMessages = parseQueryBoolean(this.queryParams.includeMessages);
-		const includeIntelligent = parseQueryBoolean(this.queryParams.includeIntelligent);
-		const globalMessagesEnabled = settings.get('Search.defaultProvider.GlobalSearchEnabled') === true;
-		const aiSearchStatusPromise = AISearch.status().catch((error) => {
+		const aiSearchStatus = await AISearch.status().catch((error) => {
 			this.logger.warn({ msg: 'AI search status unavailable', ...getErrorLogContext(error) });
 
 			return {
@@ -359,65 +271,8 @@ API.v1.get(
 				answerGenerationConfigured: false,
 			};
 		});
-
-		if (!includeSpotlight && !includeMessages && !includeIntelligent) {
-			const aiSearchStatus = await aiSearchStatusPromise;
-
-			return API.v1.success({
-				users: [],
-				rooms: [],
-				messages: [],
-				intelligent: [],
-				meta: {
-					globalMessagesEnabled,
-					intelligentSearchEnabled: aiSearchStatus.intelligentSearchEnabled,
-					intelligentSearchConfigured: aiSearchStatus.intelligentSearchConfigured,
-					answerGenerationConfigured: aiSearchStatus.answerGenerationConfigured,
-				},
-			});
-		}
-
-		const hasFilters = Boolean(rid || rids.length || roomNames.length || fromUsername || fromUsernames.length || startDate || endDate);
-		const filters = hasFilters
-			? {
-					rids,
-					roomNames,
-					fromUsername,
-					fromUsernames,
-					startDate,
-					endDate,
-				}
-			: undefined;
-
-		const [spotlight, aiSearchStatus] = await Promise.all([
-			rid || !includeSpotlight
-				? Promise.resolve({ users: [], rooms: [] })
-				: spotlightMethod({
-						text: query,
-						userId: this.userId,
-						type: { users: true, rooms: true, includeFederatedRooms: true },
-					}),
-			aiSearchStatusPromise,
-		]);
-
-		let messages: UnifiedSearchMessageResult[] = [];
-		if (includeMessages && (rid || globalMessagesEnabled)) {
-			const searchResult = await messageSearch(this.userId, query, rid, limit, 0, filters);
-			const docs = searchResult && searchResult.message ? await normalizeMessagesForUser(searchResult.message.docs, this.userId) : [];
-			const rooms = await getRoomMap(docs.map((message) => message.rid));
-			messages = docs.map((message) => ({
-				_id: message._id,
-				rid: message.rid,
-				msg: message.msg,
-				ts: message.ts,
-				u: message.u,
-				...(rooms.has(message.rid) && { room: rooms.get(message.rid) }),
-			}));
-		}
-
-		let intelligentResults: UnifiedSearchIntelligentResult[] = [];
+		let intelligentResults: AISearchResult[] = [];
 		if (
-			includeIntelligent &&
 			aiSearchStatus.hasIntelligentSearchLicense &&
 			aiSearchStatus.intelligentSearchEnabled &&
 			aiSearchStatus.intelligentSearchConfigured
@@ -444,12 +299,8 @@ API.v1.get(
 		}
 
 		return API.v1.success({
-			users: spotlight.users,
-			rooms: spotlight.rooms,
-			messages,
 			intelligent: intelligentResults,
 			meta: {
-				globalMessagesEnabled,
 				intelligentSearchEnabled: aiSearchStatus.intelligentSearchEnabled,
 				intelligentSearchConfigured: aiSearchStatus.intelligentSearchConfigured,
 				answerGenerationConfigured: aiSearchStatus.answerGenerationConfigured,
@@ -489,7 +340,7 @@ API.v1.get(
 );
 
 API.v1.post(
-	'search.answer',
+	'ai.search.answer',
 	{
 		authRequired: true,
 		body: isSearchAnswerProps,

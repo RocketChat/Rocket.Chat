@@ -13,7 +13,6 @@ export type NavBarSearchRoomSectionProps = {
 	isLoading: boolean;
 	isFetching: boolean;
 	rooms: SubscriptionWithRoom[];
-	suggestAISearch: boolean;
 	onSelect: () => void;
 };
 
@@ -23,7 +22,6 @@ const NavBarSearchRoomSection = ({
 	isLoading,
 	isFetching,
 	rooms,
-	suggestAISearch,
 	onSelect,
 }: NavBarSearchRoomSectionProps): ReactElement => {
 	const { t } = useTranslation();
@@ -31,7 +29,7 @@ const NavBarSearchRoomSection = ({
 
 	return (
 		<>
-			{itemCount === 0 && !isLoading && !isFetching && <NavBarSearchNoResults suggestAISearch={suggestAISearch} />}
+			{itemCount === 0 && !isLoading && !isFetching && <NavBarSearchNoResults />}
 			{rooms.length > 0 && (
 				<Box color='titles-labels' fontScale='c1' fontWeight='bold' pi={12} mbe={4} role='presentation' aria-hidden>
 					{filterText ? t('Results') : t('Recent')}

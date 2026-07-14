@@ -166,7 +166,7 @@ describe('AISearchService', () => {
 
 		it('sends subscribed room scope to the pipeline for broad searches', async () => {
 			const subscribedRoomIds = [...Array.from({ length: 1001 }, (_, index) => `room-${index}`), 'allowed'];
-			Subscriptions.findByUserId.returns(cursor(subscribedRoomIds.map((rid) => ({ rid }))));
+			Subscriptions.findByUserId.returns(cursor([...subscribedRoomIds.map((rid) => ({ rid })), { rid: 'banned-room', status: 'BANNED' }]));
 			serverFetch.resolves({
 				ok: true,
 				status: 200,
@@ -206,7 +206,7 @@ describe('AISearchService', () => {
 			});
 			expect(
 				Subscriptions.findByUserId.calledWith('user-id', {
-					projection: { rid: 1 },
+					projection: { rid: 1, status: 1 },
 				}),
 			).to.be.true;
 			expect(

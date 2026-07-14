@@ -1,9 +1,12 @@
 import {
 	buildAppliedFilterChips,
+	buildFilterSuggestions,
 	buildRoomSearchQuery,
+	buildUserFilterSuggestions,
 	emptySearchFilters,
 	extractCompletedSearchFilters,
 	getAISearchButtonTooltip,
+	getFilterSearchState,
 	mergeSearchFilters,
 	parseSearchFilterText,
 	serializeSearchQuery,
@@ -151,6 +154,58 @@ describe('AI Search client helpers', () => {
 			}
 
 			expect(nameRegex.source).toBe('\\/'.repeat(64));
+		});
+	});
+
+	describe('filter suggestions', () => {
+		const t = (key: string): string => key;
+
+		it('builds room suggestions from an active in filter', () => {
+			expect(
+				buildFilterSuggestions(
+					'deployment in:gen',
+					{ key: 'in', value: 'gen', start: 11, end: 17 },
+					[{ _id: 'room-id', name: 'general', fname: 'General' }],
+					t,
+				),
+			).toEqual([
+				{
+					key: 'in-room-id',
+					group: 'rooms',
+					title: '#General',
+					description: 'Search_in_this_room',
+					value: 'deployment in:general ',
+					icon: 'hash',
+				},
+			]);
+		});
+
+		it('builds user suggestions from an active from filter', () => {
+			expect(
+				buildUserFilterSuggestions(
+					'deployment from:ali',
+					{ key: 'from', value: 'ali', start: 11, end: 19 },
+					[{ _id: 'user-id', name: 'Example User', username: 'alice' }],
+					t,
+				),
+			).toEqual([
+				{
+					key: 'from-user-id',
+					group: 'users',
+					title: '@alice',
+					description: 'Example User',
+					value: 'deployment from:alice ',
+					icon: 'user',
+				},
+			]);
+		});
+
+		it('does not parse filters while AI Search is inactive', () => {
+			expect(getFilterSearchState('deployment in:general', emptySearchFilters(), false)).toEqual({
+				searchText: 'deployment in:general',
+				filters: emptySearchFilters(),
+				activeFilter: undefined,
+			});
 		});
 	});
 

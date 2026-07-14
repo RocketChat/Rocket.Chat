@@ -1,4 +1,4 @@
-import type { UnifiedSearchIntelligentResult } from '@rocket.chat/rest-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 
 import type { IServiceClass } from './ServiceClass';
 
@@ -40,10 +40,21 @@ export type AISearchModelOption = {
 	label: string;
 };
 
+export type AISearchResult = {
+	_id: string;
+	rid?: string;
+	msgId?: string;
+	text: string;
+	score?: number;
+	ts?: string;
+	u?: { username: string; name?: string };
+	room?: Pick<IRoom, '_id' | 't' | 'name' | 'fname'>;
+};
+
 export interface IAISearchService extends IServiceClass {
 	status(): Promise<AISearchStatus>;
 
-	search(params: { query: string; userId: string; filters?: AISearchFilters; limit?: number }): Promise<UnifiedSearchIntelligentResult[]>;
+	search(params: { query: string; userId: string; filters?: AISearchFilters; limit?: number }): Promise<AISearchResult[]>;
 
 	answer(params: { query: string; messages: AISearchAnswerMessage[] }): Promise<AISearchAnswerResult>;
 

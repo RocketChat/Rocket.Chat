@@ -1,7 +1,7 @@
-import { isBannedSubscription } from '@rocket.chat/core-typings';
+import type { ISubscription } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Logger } from '@rocket.chat/logger';
-import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { Messages, Subscriptions, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -21,99 +21,12 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
-export type MessageSearchFilters = {
-	fromUsername?: string;
-	fromUsernames?: string[];
-	rids?: string[];
-	roomNames?: string[];
-	startDate?: Date;
-	endDate?: Date;
-};
-
-const getUsernameLookupValues = (username: string): string[] => {
-	const trimmed = username.trim();
-	if (!trimmed) {
-		return [];
-	}
-
-	const withoutMentionPrefix = trimmed.replace(/^@(?=[^@])/, '');
-	return [...new Set([trimmed, withoutMentionPrefix])];
-};
-
-const getUserIdsByUsernames = async (usernames: string[]): Promise<string[] | undefined> => {
-	const requestedUsernames = usernames.map((username) => getUsernameLookupValues(username)).filter((values) => values.length);
-	if (!requestedUsernames.length) {
-		return undefined;
-	}
-
-	const usernameLookupValues = [...new Set(requestedUsernames.flat())];
-	const users = await Users.findByUsernames(usernameLookupValues, {
-		projection: { _id: 1, username: 1 },
-	}).toArray();
-
-	return users.map(({ _id }) => _id);
-};
-
-const getRoomIdsByNames = async (roomNames: string[]): Promise<string[] | undefined> => {
-	const normalizedRoomNames = [...new Set(roomNames.filter(Boolean))];
-	if (!normalizedRoomNames.length) {
-		return undefined;
-	}
-
-	const rooms = await Promise.all(normalizedRoomNames.map((roomName) => Rooms.findOneByNameOrFname(roomName, { projection: { _id: 1 } })));
-
-	return rooms.reduce<string[]>((roomIds, room) => {
-		if (typeof room?._id === 'string') {
-			roomIds.push(room._id);
-		}
-
-		return roomIds;
-	}, []);
-};
-
-const mergeDateFilter = (current: unknown, startDate?: Date, endDate?: Date): Record<string, Date> => {
-	const previous = current && typeof current === 'object' && !Array.isArray(current) ? (current as Record<string, Date>) : {};
-
-	return {
-		...previous,
-		...(startDate && { $gte: startDate }),
-		...(endDate && { $lte: endDate }),
-	};
-};
-
-const getRoomSearchScope = async (userId: string | undefined, filters?: MessageSearchFilters): Promise<string[]> => {
-	const roomNameIds = await getRoomIdsByNames(filters?.roomNames || []);
-	const hasRoomFilter = Boolean(filters?.rids?.length || filters?.roomNames?.length);
-	const filterRoomIds = [...new Set([...(filters?.rids || []), ...(roomNameIds || [])].filter(Boolean))];
-
-	if (!userId) {
-		return [];
-	}
-
-	if (hasRoomFilter) {
-		if (!filterRoomIds.length) {
-			return [];
-		}
-
-		const subscriptions = await Subscriptions.findByUserIdAndRoomIds(userId, filterRoomIds, {
-			projection: { rid: 1, status: 1 },
-		}).toArray();
-
-		return subscriptions.filter((subscription) => !isBannedSubscription(subscription)).map(({ rid }) => rid);
-	}
-
-	return Subscriptions.findByUserId(userId, { projection: { rid: 1 } })
-		.map(({ rid }) => rid)
-		.toArray();
-};
-
 export const messageSearch = async function (
 	userId: string,
 	text: string,
 	rid?: string,
 	limit?: number,
 	offset?: number,
-	filters?: MessageSearchFilters,
 ): Promise<IRawSearchResult | false> {
 	check(text, String);
 	check(rid, Match.Maybe(String));
@@ -173,28 +86,8 @@ export const messageSearch = async function (
 		query.rid = rid;
 	} else {
 		query.rid = {
-			$in: await getRoomSearchScope(user?._id, filters),
+			$in: user?._id ? (await Subscriptions.findByUserId(user._id).toArray()).map((subscription: ISubscription) => subscription.rid) : [],
 		};
-	}
-
-	const filterUserIds = await getUserIdsByUsernames([
-		...(filters?.fromUsernames || []),
-		...(filters?.fromUsername ? [filters.fromUsername] : []),
-	]);
-	if (filterUserIds?.length === 0) {
-		return {
-			message: {
-				docs: [],
-			},
-		};
-	}
-
-	if (filterUserIds?.length) {
-		query['u._id'] = filterUserIds.length === 1 ? filterUserIds[0] : { $in: filterUserIds };
-	}
-
-	if (filters?.startDate || filters?.endDate) {
-		query.ts = mergeDateFilter(query.ts, filters.startDate, filters.endDate);
 	}
 
 	try {

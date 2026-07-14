@@ -1,35 +1,10 @@
-import {
-	AI_LICENSE_MODULE,
-	AI_SEARCH_PAGE_SIZE,
-	buildRoomSearchQuery,
-	emptySearchFilters,
-	type SearchFilters,
-	type SearchFilterSuggestion,
-} from '@rocket.chat/ai-search';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { UnifiedSearchIntelligentResult } from '@rocket.chat/rest-typings';
-import { useFeaturePreview } from '@rocket.chat/ui-client';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { useEndpoint, useSetting, useUserSubscriptions } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 
-import {
-	buildFilterSuggestions,
-	buildRooms,
-	buildUserFilterSuggestions,
-	buildUsernameAutocompleteQuery,
-	emptySubscriptionQuery,
-	getFilterSearchState,
-	getRoomLookupQuery,
-	getRoomLookupText,
-	getSelectedRooms,
-	mergeFilterSuggestions,
-	normalizeSpotlightResults,
-	resolveSearchFilters,
-} from './searchItems';
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { getConfig } from '../../../lib/utils/getConfig';
 
 const LIMIT = parseInt(String(getConfig('Sidebar_Search_Spotlight_LIMIT', 20)));
@@ -42,46 +17,31 @@ const options = {
 	limit: LIMIT,
 } as const;
 
-export type NavBarSearchItems = {
-	rooms: SubscriptionWithRoom[];
-	intelligent: UnifiedSearchIntelligentResult[];
-	filterSuggestions: SearchFilterSuggestion[];
-	searchText: string;
-};
+export const useSearchItems = (filterText: string): { items: SubscriptionWithRoom[]; isLoading: boolean } => {
+	const [, mention, name] = useMemo(() => filterText.match(/(@|#)?(.*)/i) || [], [filterText]);
 
-type NavBarSearchItemsResult = {
-	data: NavBarSearchItems;
-	isLoading: boolean;
-	isFetching: boolean;
-};
+	const query = useMemo(() => {
+		const filterRegex = new RegExp(escapeRegExp(name), 'i');
 
-const useRoomSearchResults = ({
-	name,
-	debouncedName,
-	debouncedMention,
-	localRooms,
-}: {
-	name: string;
-	debouncedName: string;
-	debouncedMention: string | undefined;
-	localRooms: SubscriptionWithRoom[];
-}): {
-	rooms: SubscriptionWithRoom[];
-	isLoading: boolean;
-	isFetching: boolean;
-} => {
-	const getSpotlight = useEndpoint('GET', '/v1/spotlight');
-	const usernamesFromClient = useMemo(() => {
-		const usernames: string[] = [];
-		for (const { t, name } of localRooms) {
-			if (t === 'd' && name) {
-				usernames.push(name);
-			}
-		}
-		return usernames;
-	}, [localRooms]);
-	const searchForChannels = debouncedMention === '#';
-	const searchForDMs = debouncedMention === '@';
+		return {
+			$or: [{ name: filterRegex }, { fname: filterRegex }],
+			...(mention && {
+				t: mention === '@' ? 'd' : { $ne: 'd' },
+			}),
+		};
+	}, [name, mention]);
+
+	// Local cached subscriptions are matched against the *immediate* filter text so joined
+	// rooms show up instantly, without waiting for the debounce or the server response.
+	const localRooms = useUserSubscriptions(query, options);
+
+	// Only the server spotlight call is debounced — the local results above stay instant.
+	const debouncedName = useDebouncedValue(name, 500);
+
+	const usernamesFromClient = [...localRooms?.map(({ t, name }) => (t === 'd' ? name : null))].filter(Boolean) as string[];
+
+	const searchForChannels = mention === '#';
+	const searchForDMs = mention === '@';
 
 	const type = useMemo(() => {
 		if (searchForChannels) {
@@ -93,13 +53,19 @@ const useRoomSearchResults = ({
 		return { users: true, rooms: true, includeFederatedRooms: true };
 	}, [searchForChannels, searchForDMs]);
 
+	const getSpotlight = useEndpoint('GET', '/v1/spotlight');
+
 	const {
 		data: serverResults,
 		isFetching,
 		isPlaceholderData,
 	} = useQuery({
-		queryKey: ['sidebar/search/spotlight', debouncedName, debouncedMention, type],
+		// Keyed on the debounced term only, so typing doesn't refetch on every keystroke.
+		queryKey: ['sidebar/search/spotlight', debouncedName, mention, type],
+
+		// When local subscriptions already fill the limit there's nothing more to fetch.
 		enabled: localRooms.length < LIMIT,
+
 		queryFn: async () => {
 			const spotlight = await getSpotlight({
 				query: debouncedName,
@@ -107,167 +73,87 @@ const useRoomSearchResults = ({
 				type: JSON.stringify(type),
 			});
 
-			return normalizeSpotlightResults(spotlight);
+			const filterUsersUnique = ({ _id }: { _id: string }, index: number, arr: { _id: string }[]): boolean =>
+				index === arr.findIndex((user) => _id === user._id);
+
+			const userMap = (user: {
+				_id: string;
+				name: string;
+				username: string;
+				avatarETag?: string;
+			}): {
+				_id: string;
+				t: string;
+				name: string;
+				fname: string;
+				avatarETag?: string;
+			} => ({
+				_id: user._id,
+				t: 'd',
+				name: user.username,
+				fname: user.name,
+				avatarETag: user.avatarETag,
+			});
+
+			type resultsFromServerType = {
+				_id: string;
+				t: string;
+				name: string;
+				teamMain?: boolean;
+				fname?: string;
+				avatarETag?: string | undefined;
+				uids?: string[] | undefined;
+			}[];
+
+			// Local subscriptions are deduped reactively in the merge below (against the *current*
+			// localRooms), so server results aren't filtered against them here.
+			const resultsFromServer: resultsFromServerType = [];
+			resultsFromServer.push(...spotlight.users.filter(filterUsersUnique).map(userMap));
+			resultsFromServer.push(...spotlight.rooms);
+
+			return resultsFromServer;
 		},
+
 		staleTime: 60_000,
+		// Keep the previous server results visible while a new search is in flight.
 		placeholderData: (previousData) => previousData,
 	});
 
-	const rooms = useMemo(() => buildRooms({ name, localRooms, serverResults, limit: LIMIT }), [localRooms, name, serverResults]);
+	// Merge reactively (outside the query) so local results render the instant the user types
+	// and server results fold in — deduped — once they arrive.
+	const items = useMemo(() => {
+		// Server results are keyed on the *debounced* term, so while the user is still typing
+		// (or via placeholderData) they may belong to a previous search. Drop the ones that no
+		// longer match the current text so stale, non-matching results aren't rendered.
+		const filterRegex = new RegExp(escapeRegExp(name), 'i');
+		const matchesFilter = ({ name, fname }: { name?: string; fname?: string }) =>
+			(name && filterRegex.test(name)) || (fname && filterRegex.test(fname));
 
-	return {
-		rooms,
-		isLoading: isFetching && (isPlaceholderData || serverResults === undefined),
-		isFetching,
-	};
-};
-
-const useIntelligentSearchResults = ({
-	enabled,
-	query,
-	filters,
-}: {
-	enabled: boolean;
-	query: string;
-	filters: SearchFilters;
-}): {
-	intelligent: UnifiedSearchIntelligentResult[];
-	isFetching: boolean;
-} => {
-	const unifiedSearch = useEndpoint('GET', '/v1/search.unified');
-	const { data: intelligent = [], isFetching } = useQuery({
-		queryKey: ['sidebar/search/intelligent', query, filters],
-		enabled,
-		queryFn: async () => {
-			const result = await unifiedSearch({
-				query,
-				count: 0,
-				includeSpotlight: false,
-				intelligentCount: AI_SEARCH_PAGE_SIZE,
-				includeMessages: false,
-				includeIntelligent: true,
-				...(filters.rid && { rid: filters.rid }),
-				...(filters.rids.length && { rids: filters.rids.join(',') }),
-				...(filters.roomNames.length && { roomNames: filters.roomNames.join(',') }),
-				...(filters.fromUsername && { fromUsername: filters.fromUsername }),
-				...(filters.fromUsernames.length && { fromUsernames: filters.fromUsernames.join(',') }),
-				...(filters.startDate && { startDate: filters.startDate }),
-				...(filters.endDate && { endDate: filters.endDate }),
+		// Single source of truth for local/server dedup: drop any server result already present as a
+		// local subscription, checked against the *current* localRooms. The query isn't keyed on
+		// localRooms (to avoid refetching on every subscription change), so subscriptions that load
+		// in after the fetch would otherwise render twice — once from localRooms, once from server.
+		const isLocalDuplicate = (item: { _id: string; t?: string; uids?: string[]; name: string }): boolean =>
+			localRooms.some((room) => {
+				const sameRoom = [room.rid, room._id].includes(item._id);
+				const sameGroupDM = item.t === 'd' && !!item.uids && item.uids.length > 1 && item.uids.includes(room._id);
+				const sameDirectDM = item.t === 'd' && room.t === 'd' && !!room.uids && room.uids.length === 2 && room.uids.includes(item._id);
+				const sameUserDM = item.t === 'd' && room.t === 'd' && item.name === room.name;
+				return sameRoom || sameGroupDM || sameDirectDM || sameUserDM;
 			});
 
-			return result.intelligent;
-		},
-		staleTime: 60_000,
-	});
+		// When local subscriptions already fill the limit the server query is disabled, but React Query
+		// keeps the last results around — ignore them so a full local list isn't padded with stale rows.
+		const candidates = localRooms.length < LIMIT ? (serverResults ?? []) : [];
+		const fromServer = candidates.filter((item) => matchesFilter(item) && !isLocalDuplicate(item));
+		const exact = fromServer.filter((item) => [item.name, item.fname].includes(name));
+		return Array.from(new Set([...exact, ...localRooms, ...fromServer])) as SubscriptionWithRoom[];
+	}, [serverResults, localRooms, name]);
 
-	return { intelligent: enabled ? intelligent : [], isFetching };
-};
+	// `isFetching` is also true for silent background revalidations (after staleTime) of results we
+	// already show — only surface loading while there's no usable data for the current term yet, i.e.
+	// the very first fetch (serverResults undefined) or a new term still showing placeholder data.
+	const isLoading = isFetching && (isPlaceholderData || serverResults === undefined);
 
-const useInlineFilterSuggestions = ({
-	canUseInlineFilters,
-	filterText,
-	activeFilter,
-	roomFilterRooms,
-	debouncedUserFilter,
-}: {
-	canUseInlineFilters: boolean;
-	filterText: string;
-	activeFilter: ReturnType<typeof getFilterSearchState>['activeFilter'];
-	roomFilterRooms: SubscriptionWithRoom[];
-	debouncedUserFilter: string;
-}): {
-	filterSuggestions: SearchFilterSuggestion[];
-	isFetching: boolean;
-} => {
-	const { t } = useTranslation();
-	const usersAutocomplete = useEndpoint('GET', '/v1/users.autocomplete');
-	const filterSuggestions = useMemo(
-		() => (canUseInlineFilters ? buildFilterSuggestions(filterText, activeFilter, roomFilterRooms, t) : []),
-		[activeFilter, canUseInlineFilters, filterText, roomFilterRooms, t],
-	);
-
-	const { data: users = [], isFetching } = useQuery({
-		queryKey: ['sidebar/search/users-autocomplete', debouncedUserFilter],
-		enabled: canUseInlineFilters && activeFilter?.key === 'from',
-		queryFn: async () => (await usersAutocomplete(buildUsernameAutocompleteQuery(debouncedUserFilter))).items,
-		staleTime: 60_000,
-	});
-
-	const nextFilterSuggestions = useMemo(
-		() =>
-			activeFilter?.key === 'from'
-				? mergeFilterSuggestions(buildUserFilterSuggestions(filterText, activeFilter, users, t), filterSuggestions)
-				: filterSuggestions,
-		[activeFilter, filterSuggestions, filterText, users, t],
-	);
-
-	return { filterSuggestions: nextFilterSuggestions, isFetching };
-};
-
-export const useSearchItems = (
-	filterText: string,
-	appliedSearchFilters: SearchFilters = emptySearchFilters(),
-	aiSearchActive = false,
-): NavBarSearchItemsResult => {
-	const aiSearchFeatureEnabled = useFeaturePreview('aiSearch');
-	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
-	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule(AI_LICENSE_MODULE);
-	const canUseAISearch = Boolean(hasIntelligentSearchLicense && aiSearchFeatureEnabled);
-	const canUseInlineFilters = Boolean(canUseAISearch && aiSearchActive);
-	const { searchText, filters, activeFilter } = useMemo(
-		() => getFilterSearchState(filterText, appliedSearchFilters, canUseInlineFilters),
-		[appliedSearchFilters, canUseInlineFilters, filterText],
-	);
-	const [, mention, name] = useMemo(() => searchText.match(/(@|#)?(.*)/i) || [], [searchText]);
-	const debouncedSearchText = useDebouncedValue(searchText, 500);
-	const [, debouncedMention, debouncedName] = useMemo(() => debouncedSearchText.match(/(@|#)?(.*)/i) || [], [debouncedSearchText]);
-	const debouncedUserFilter = useDebouncedValue(activeFilter?.key === 'from' ? activeFilter.value.replace(/^@/, '') : '', 500);
-	const roomLookupText = useMemo(
-		() => getRoomLookupText(activeFilter, filters, canUseInlineFilters),
-		[activeFilter, canUseInlineFilters, filters],
-	);
-	const query = useMemo(() => buildRoomSearchQuery(name, mention), [name, mention]);
-	const roomLookupQuery = useMemo(() => (roomLookupText ? getRoomLookupQuery(roomLookupText) : emptySubscriptionQuery), [roomLookupText]);
-
-	const localRooms = useUserSubscriptions(query, options);
-	const roomFilterRooms = useUserSubscriptions(roomLookupQuery, options);
-	const selectedRooms = useMemo(() => getSelectedRooms(filters.roomNames, roomFilterRooms), [filters.roomNames, roomFilterRooms]);
-	const resolvedFilters = useMemo(() => resolveSearchFilters(filters, selectedRooms), [filters, selectedRooms]);
-
-	const shouldSearchIntelligent = Boolean(
-		aiSearchActive && debouncedName.trim() && !debouncedMention && canUseAISearch && intelligentSearchEnabled,
-	);
-	const {
-		rooms,
-		isLoading,
-		isFetching: isSpotlightFetching,
-	} = useRoomSearchResults({
-		name,
-		debouncedName,
-		debouncedMention,
-		localRooms,
-	});
-	const { intelligent, isFetching: isIntelligentFetching } = useIntelligentSearchResults({
-		enabled: shouldSearchIntelligent,
-		query: debouncedName,
-		filters: resolvedFilters,
-	});
-	const { filterSuggestions, isFetching: isUsersFetching } = useInlineFilterSuggestions({
-		canUseInlineFilters,
-		filterText,
-		activeFilter,
-		roomFilterRooms,
-		debouncedUserFilter,
-	});
-
-	return {
-		data: {
-			rooms,
-			intelligent,
-			filterSuggestions,
-			searchText,
-		},
-		isLoading,
-		isFetching: isSpotlightFetching || isIntelligentFetching || isUsersFetching,
-	};
+	return { items, isLoading };
 };
