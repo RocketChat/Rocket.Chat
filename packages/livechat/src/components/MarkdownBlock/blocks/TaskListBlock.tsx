@@ -12,7 +12,7 @@ const TaskListBlock = ({ tasks }: TaskListBlockProps) => {
 		<ul className='task-list'>
 			{tasks.map((item, index) => (
 				<li key={index}>
-					<CheckBox checked={item.status} onChange={undefined} /> <InlineElements>{item.value}</InlineElements>
+					<CheckBox checked={item.status} readOnly /> <InlineElements>{item.value}</InlineElements>
 				</li>
 			))}
 		</ul>
