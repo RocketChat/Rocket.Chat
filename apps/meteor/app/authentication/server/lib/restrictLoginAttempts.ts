@@ -10,6 +10,28 @@ import { settings } from '../../../settings/server';
 import type { ILoginAttempt } from '../ILoginAttempt';
 
 const logger = new Logger('LoginProtection');
+const notifiedBlockUntilByIdentifier = new Map<string, number>();
+
+const pruneExpiredNotificationWindows = (currentTime: number): void => {
+	for (const [identifier, blockedUntilTime] of notifiedBlockUntilByIdentifier.entries()) {
+		if (blockedUntilTime < currentTime) {
+			notifiedBlockUntilByIdentifier.delete(identifier);
+		}
+	}
+};
+
+const shouldNotifyForBlockWindow = (identifier: string, blockedUntil: Date): boolean => {
+	const blockedUntilTime = blockedUntil.getTime();
+	const currentTime = Date.now();
+	pruneExpiredNotificationWindows(currentTime);
+
+	if (notifiedBlockUntilByIdentifier.get(identifier) === blockedUntilTime) {
+		return false;
+	}
+
+	notifiedBlockUntilByIdentifier.set(identifier, blockedUntilTime);
+	return true;
+};
 
 const notifyFailedLogin = async (ipOrUsername: string, blockedUntil: Date, failedAttempts: number): Promise<void> => {
 	const channelToNotify = settings.get<string>('Block_Multiple_Failed_Logins_Notify_Failed_Channel');
@@ -88,8 +110,9 @@ export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 
 	if (settings.get('Block_Multiple_Failed_Logins_Notify_Failed')) {
 		const willBeBlockedUntil = addMinutesToADate(new Date(lastFailedAttemptAt), minutesUntilUnblock);
-
-		await notifyFailedLogin(ip, willBeBlockedUntil, failedAttemptsSinceLastLogin);
+		if (shouldNotifyForBlockWindow(`ip:${ip}`, willBeBlockedUntil)) {
+			await notifyFailedLogin(ip, willBeBlockedUntil, failedAttemptsSinceLastLogin);
+		}
 	}
 
 	return false;
@@ -137,8 +160,9 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 
 	if (settings.get('Block_Multiple_Failed_Logins_Notify_Failed')) {
 		const willBeBlockedUntil = addMinutesToADate(new Date(lastFailedAttemptAt), minutesUntilUnblock);
-
-		await notifyFailedLogin(loginUsername, willBeBlockedUntil, failedAttemptsSinceLastLogin);
+		if (shouldNotifyForBlockWindow(`user:${loginUsername}`, willBeBlockedUntil)) {
+			await notifyFailedLogin(loginUsername, willBeBlockedUntil, failedAttemptsSinceLastLogin);
+		}
 	}
 
 	return false;

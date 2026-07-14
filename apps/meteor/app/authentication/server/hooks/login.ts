@@ -6,7 +6,7 @@ import type { ILoginAttempt } from '../ILoginAttempt';
 import { logFailedLoginAttempts } from '../lib/logLoginAttempts';
 import { saveFailedLoginAttempts, saveSuccessfulLogin } from '../lib/restrictLoginAttempts';
 
-const ignoredErrorTypes = ['totp-required', 'error-login-blocked-for-user'];
+const ignoredErrorTypes = ['totp-required', 'error-login-blocked-for-user', 'error-login-blocked-for-ip'];
 
 Accounts.onLoginFailure(async (login: ILoginAttempt) => {
 	// do not save specific failed login attempts
