@@ -31,15 +31,17 @@ Accounts.registerLoginHandler(async (options) => {
 
 	// Skip everything if there's no service set by the oauth middleware
 	if (!service) {
-		throw new Error(`Unexpected AccessToken service ${options.serviceName}`);
+		throw new Meteor.Error('error-invalid-service', `Unexpected AccessToken service ${options.serviceName}`);
 	}
 
 	// Make sure we're configured
-	if (!(await ServiceConfiguration.configurations.findOneAsync({ service: options.serviceName }))) {
-		throw new Accounts.ConfigError();
+	const config = await ServiceConfiguration.configurations.findOneAsync({ service: options.serviceName });
+	if (!config) {
+		throw new Meteor.Error('error-service-not-configured', `Service ${options.serviceName} is not configured`);
 	}
 
-	if (!_.contains(Accounts.oauth.serviceNames(), service.serviceName)) {
+	const isRegistered = _.contains(Accounts.oauth.serviceNames(), service.serviceName);
+	if (!isRegistered) {
 		// serviceName was not found in the registered services list.
 		// This could happen because the service never registered itself or
 		// unregisterService was called on it.
@@ -49,7 +51,12 @@ Accounts.registerLoginHandler(async (options) => {
 		};
 	}
 
-	const oauthResult = await service.handleAccessTokenRequest(options);
+	let oauthResult;
+	try {
+		oauthResult = await service.handleAccessTokenRequest(options);
+	} catch (err) {
+		throw new Meteor.Error('error-invalid-access-token', err.message);
+	}
 
 	return Accounts.updateOrCreateUserFromExternalService(service.serviceName, oauthResult.serviceData, oauthResult.options);
 });
