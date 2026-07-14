@@ -26,6 +26,17 @@ export const logFailedLoginAttempts = (login: ILoginAttempt): void => {
 	if (!settings.get('Login_Logs_UserAgent')) {
 		userAgent = '-';
 	}
+	let isDeactivated = false;
+	let daysInactive = 0;
+	const reason = login.error?.reason || login.error?.message;
+
+	if (login.user) {
+		isDeactivated = login.user.active === false;
+		if (login.user.lastLogin) {
+			const msInactive = Date.now() - new Date(login.user.lastLogin).getTime();
+			daysInactive = Math.floor(msInactive / (1000 * 60 * 60 * 24));
+		}
+	}
 	SystemLogger.info({
 		msg: 'Failed login detected',
 		user,
@@ -33,5 +44,8 @@ export const logFailedLoginAttempts = (login: ILoginAttempt): void => {
 		forwardedFor,
 		realIp,
 		userAgent,
+		...(reason && { reason }),
+		...(isDeactivated && { accountStatus: 'deactivated', deactivatedWarning: 'Login attempt on deactivated account' }),
+		...(daysInactive >= 180 && { daysInactive, dormantWarning: 'Login attempt on dormant account' })
 	});
 };
