@@ -9,7 +9,7 @@ import { PexipEndpoint } from './endpoint';
 
 export class ServerConfigurationEndpoint extends PexipEndpoint {
 	public async get(serviceRequest: SerializedServiceConfigurationRequest): Promise<ServiceConfiguration | null> {
-		const { local_alias: alias, protocol = null, remote_alias: participantUri = null } = serviceRequest;
+		const { local_alias: alias, protocol = null, remote_alias: participantUri = null, call_direction: direction } = serviceRequest;
 		logger.debug({ msg: 'Processing Pexip Policy Server Request', alias, protocol });
 
 		if (!alias) {
@@ -18,7 +18,7 @@ export class ServerConfigurationEndpoint extends PexipEndpoint {
 		}
 
 		const identification = this.getIdentificationFromAlias(alias);
-		const participantSipUri = protocol === 'sip' ? participantUri : null;
+		const participantSipUri = protocol === 'sip' && direction === 'dial_in' ? participantUri : null;
 
 		return this.getServiceConfigurationForIdentification(identification, participantSipUri);
 	}
