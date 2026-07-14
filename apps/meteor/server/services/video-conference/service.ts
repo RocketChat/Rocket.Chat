@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 import { Apps } from '@rocket.chat/apps';
 import type { AppVideoConfProviderManager } from '@rocket.chat/apps/dist/server/managers/AppVideoConfProviderManager';
 import type { VideoConfData, VideoConfDataExtended } from '@rocket.chat/apps-engine/definition/videoConfProviders';
@@ -23,6 +25,8 @@ import type {
 	Optional,
 	ExternalVideoConference,
 	IVoIPVideoConference,
+	RequiredField,
+	IRegisterUser,
 } from '@rocket.chat/core-typings';
 import {
 	VideoConferenceStatus,
@@ -564,7 +568,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return videoConfTypes.getTypeForRoom(room, allowRinging);
 	}
 
-	private async createMessage(call: VideoConference, createdBy?: IUser, customBlocks?: IMessage['blocks']): Promise<IMessage['_id']> {
+	private async createMessage(
+		call: AtLeast<VideoConference, '_id' | 'rid' | 'providerName'>,
+		createdBy?: IUser,
+		customBlocks?: IMessage['blocks'],
+	): Promise<IMessage['_id']> {
 		const record = {
 			t: 'videoconf',
 			msg: i18n.t('Video_Conference', {
@@ -772,6 +780,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			providerName,
 		});
 
+		await this.maybeAddSipAliasToCall(callId, providerName);
+
 		await this.runNewVideoConferenceEvent(callId);
 
 		await this.maybeCreateDiscussion(callId, user);
@@ -827,6 +837,105 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await subscriptions.forEach((subscription) => this.notifyUser(subscription.u._id, action, params));
 	}
 
+	private makeSipAlias(): string {
+		const result: number[] = [];
+		const buffer = new Uint8Array(16);
+		crypto.getRandomValues(buffer);
+
+		let bufferIndex = 0;
+
+		const nextByte = (): number => {
+			if (bufferIndex >= buffer.length) {
+				crypto.getRandomValues(buffer);
+				bufferIndex = 0;
+			}
+			return buffer[bufferIndex++];
+		};
+
+		while (result.length === 0) {
+			const value = nextByte();
+			if (value < 252) {
+				result.push((value % 9) + 1);
+			}
+		}
+
+		while (result.length < 8) {
+			const value = nextByte();
+			if (value < 250) {
+				result.push(value % 10);
+			}
+		}
+
+		return result.join('');
+	}
+
+	private async addSipAlias(callId: string, attempt = 0): Promise<string | null> {
+		const alias = this.makeSipAlias();
+
+		try {
+			await VideoConferenceModel.setSipAliasById(callId, alias);
+			return alias;
+		} catch (err) {
+			if (err && typeof err === 'object' && err instanceof Error && err.message.includes('E11000')) {
+				if (attempt >= 20) {
+					logger.error({ msg: 'Failed to generate a unique SIP alias for this conference.', err });
+					return null;
+				}
+				return this.addSipAlias(callId, attempt + 1);
+			}
+
+			logger.error({ msg: 'Failed to add Sip Alias to video conference', err });
+			return null;
+		}
+	}
+
+	private async maybeAddSipAliasToCall(callId: string, providerName: string): Promise<void> {
+		if (providerName !== 'core.pexip') {
+			return;
+		}
+
+		if (!settings.get('Pexip_Integration_SIP_AddAlias')) {
+			return;
+		}
+
+		await this.addSipAlias(callId);
+	}
+
+	public async createEscalatedConference(
+		data: Required<Pick<IGroupVideoConference, 'rid' | 'mediaCallIds'>>,
+		user: IRegisterUser,
+	): Promise<IGroupVideoConference | null> {
+		const providerName = 'core.pexip';
+
+		const { _id, name, username } = user;
+
+		const callId = await VideoConferenceModel.createGroup({
+			...data,
+			// TODO: custom title
+			title: 'Escalated Media Call',
+			providerName,
+			createdBy: {
+				_id,
+				name,
+				username,
+			},
+		});
+
+		await this.maybeAddSipAliasToCall(callId, providerName);
+		await this.maybeCreateDiscussion(callId);
+
+		const callData = {
+			_id: callId,
+			providerName,
+			rid: data.rid,
+		};
+
+		const messageId = await this.createMessage(callData, user);
+		await VideoConferenceModel.setMessageById(callId, 'started', messageId);
+
+		return VideoConferenceModel.findOneById<IGroupVideoConference>(callId);
+	}
+
 	private async startGroup(
 		providerName: string,
 		user: IUser,
@@ -846,6 +955,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			},
 			providerName,
 		});
+
+		await this.maybeAddSipAliasToCall(callId, providerName);
 
 		await this.runNewVideoConferenceEvent(callId);
 
@@ -907,7 +1018,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		};
 	}
 
-	private async joinCall(
+	public async joinCall(
 		call: ExternalVideoConference,
 		user: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'> | undefined,
 		options: VideoConferenceJoinOptions,
@@ -1002,6 +1113,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return 'Rocket.Chat';
 	}
 
+	private requireCallUrl(call: ExternalVideoConference): asserts call is RequiredField<ExternalVideoConference, 'url'> {
+		if (!call.url) {
+			throw new Error('Call url is missing');
+		}
+	}
+
 	private async getUrl(
 		call: ExternalVideoConference,
 		user?: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'>,
@@ -1015,6 +1132,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			call.url = await this.generateNewUrl(call);
 			await VideoConferenceModel.setUrlById(call._id, call.url);
 		}
+		this.requireCallUrl(call);
 
 		const userData = user && {
 			_id: user._id,
@@ -1110,7 +1228,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		const provider = videoConfProviders.getVideoConfProviderHandler(call.providerName);
 		if (provider) {
-			return;
+			return provider.onUserJoin(call, user);
 		}
 
 		return (await this.getProviderManager()).onUserJoin(call.providerName, call, user);

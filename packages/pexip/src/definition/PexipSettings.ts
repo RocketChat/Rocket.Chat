@@ -4,6 +4,7 @@ export type PexipSettings = {
 	enabled: boolean;
 	baseUrl: string;
 	meetingUrl: string;
+	escalationParams: string;
 	api: {
 		username: string;
 		password: string;
@@ -22,5 +23,10 @@ export type PexipSettings = {
 		siteUrl: string;
 		discussionsEnabled: boolean;
 		persistentChatEnabled: boolean;
+	};
+	sip: {
+		addAlias: boolean;
+		host: string;
+		port: number;
 	};
 };
