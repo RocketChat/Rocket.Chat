@@ -334,3 +334,126 @@ it('should ignore a stale ws.onclose that fires after the socket has been replac
 	expect(connection.status).toBe(statusBefore);
 	expect((connection as unknown as { retryCount: number }).retryCount).toBe(retryBefore);
 });
+
+// The existing tests above share the `ws://localhost:1234` URL. jest-websocket-mock
+// is backed by `mock-socket`, whose server registry is keyed by URL; leftover closed
+// servers accumulate across tests and can capture a later `new WebSocket(url)`. Run the
+// liveness tests on a separate port so they never bind to a stale server.
+const setupLiveness = (retryOptions: { retryCount: number; retryTime: number } = { retryCount: 0, retryTime: 0 }) => {
+	server = new WS('ws://localhost:4321/websocket');
+	const client = new MinimalDDPClient();
+	const connection = ConnectionImpl.create('ws://localhost:4321', WebSocket, client, retryOptions);
+	return { client, connection };
+};
+
+it('probe resolves true when the server answers the ping with a pong', async () => {
+	const { connection } = setupLiveness();
+
+	await handleConnection(server, connection.connect());
+	expect(connection.status).toBe('connected');
+
+	const probePromise = connection.probe();
+
+	await server.nextMessage.then((message) => {
+		expect(message).toBe('{"msg":"ping"}');
+		server.send('{"msg":"pong"}');
+	});
+
+	await expect(probePromise).resolves.toBe(true);
+});
+
+it('probe resolves false when no pong arrives before the timeout', async () => {
+	const { connection } = setupLiveness();
+
+	await handleConnection(server, connection.connect());
+	expect(connection.status).toBe('connected');
+
+	jest.useFakeTimers();
+	const probePromise = connection.probe(100);
+	await jest.advanceTimersByTimeAsync(100);
+	await expect(probePromise).resolves.toBe(false);
+	jest.useRealTimers();
+});
+
+it('forceReopen closes the socket and re-establishes the connection', async () => {
+	const { connection } = setupLiveness();
+
+	await handleConnection(server, connection.connect());
+	expect(connection.status).toBe('connected');
+
+	const reopened = connection.forceReopen();
+
+	await handleConnection(server, reopened);
+
+	expect(connection.status).toBe('connected');
+	await expect(reopened).resolves.toBe(true);
+	expect((connection as unknown as { reopenInFlight: unknown }).reopenInFlight).toBeNull();
+});
+
+it('forceReopen dedupes concurrent callers onto the in-flight reopen', async () => {
+	const { connection } = setupLiveness();
+
+	await handleConnection(server, connection.connect());
+	expect(connection.status).toBe('connected');
+
+	const first = connection.forceReopen();
+	const second = connection.forceReopen();
+	expect(second).toBe(first);
+
+	await handleConnection(server, first, second);
+
+	await expect(first).resolves.toBe(true);
+	expect((connection as unknown as { reopenInFlight: unknown }).reopenInFlight).toBeNull();
+});
+
+it('checkAndReopen probes and returns true without a forced reopen when alive', async () => {
+	const { connection } = setupLiveness();
+
+	await handleConnection(server, connection.connect());
+	const sessionBefore = connection.session;
+
+	const resultPromise = connection.checkAndReopen();
+
+	await server.nextMessage.then((message) => {
+		expect(message).toBe('{"msg":"ping"}');
+		server.send('{"msg":"pong"}');
+	});
+
+	await expect(resultPromise).resolves.toBe(true);
+	expect(connection.status).toBe('connected');
+	expect(connection.session).toBe(sessionBefore);
+});
+
+it('checkAndReopen force-reopens when the probe reports the connection dead', async () => {
+	const { connection } = setupLiveness();
+
+	await handleConnection(server, connection.connect());
+	expect(connection.status).toBe('connected');
+
+	// Drive the "probe reports dead" branch directly so we don't depend on ping/
+	// pong timing between two in-flight messages.
+	const probeSpy = jest.spyOn(connection, 'probe').mockResolvedValue(false);
+
+	const resultPromise = connection.checkAndReopen();
+
+	await handleConnection(server, resultPromise);
+
+	await expect(resultPromise).resolves.toBe(true);
+	expect(connection.status).toBe('connected');
+	probeSpy.mockRestore();
+});
+
+it('checkAndReopen force-reopens directly when the connection is not connected', async () => {
+	const { connection } = setupLiveness();
+
+	await handleConnection(server, connection.connect());
+	connection.close();
+	expect(connection.status).toBe('closed');
+
+	const resultPromise = connection.checkAndReopen();
+
+	await handleConnection(server, resultPromise);
+
+	await expect(resultPromise).resolves.toBe(true);
+	expect(connection.status).toBe('connected');
+});
