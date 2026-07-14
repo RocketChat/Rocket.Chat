@@ -19,7 +19,7 @@ export class AutoTransferChatSchedulerClass {
 	}
 
 	private async getSchedulerUser(): Promise<IUser & { userType: 'user' }> {
-		const user = await Users.findOneById('rocket.cat', { projection: { __rooms: 0 } });
+		const user = await Users.findOneById('rocket.cat');
 		if (!user) {
 			this.logger.error('Error while transferring room: user not found');
 			throw new Error('error-no-cat');
