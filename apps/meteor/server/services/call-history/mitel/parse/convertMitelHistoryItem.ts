@@ -28,7 +28,17 @@ function getTypeData(item: Partial<MitelCallItem>): Pick<IMitelCallHistoryItem, 
 	};
 }
 
-export function convertMitelHistoryItem(item: Partial<MitelCallItem>, uid: IUser['_id']): InsertionModel<IMitelCallHistoryItem> {
+type ConversionOptions = {
+	numberLookup?: (number?: string) => { uid: string; name: string; username: string } | null;
+};
+
+export function convertMitelHistoryItem(
+	item: Partial<MitelCallItem>,
+	uid: IUser['_id'],
+	options: ConversionOptions = {},
+): InsertionModel<IMitelCallHistoryItem> {
+	const { numberLookup = () => null } = options;
+
 	const {
 		callIdentity: callId,
 		dateTime: ts,
@@ -51,18 +61,19 @@ export function convertMitelHistoryItem(item: Partial<MitelCallItem>, uid: IUser
 
 	const { direction, state } = getTypeData(item);
 
+	const directoryLookup = numberLookup(directoryNumber);
+
 	const hasExtraContact = direction === 'inbound' && Boolean(extraNumber || extraContactName);
-	const transferredFrom = diverted &&
-		hasExtraContact && {
-			...(extraNumber && { number: extraNumber }),
-			...(extraContactName && { name: extraContactName }),
-		};
-	const transferredTo = transferred &&
-		!diverted &&
-		hasExtraContact && {
-			...(extraNumber && { number: extraNumber }),
-			...(extraContactName && { name: extraContactName }),
-		};
+	const extraNumberLookup = numberLookup(extraNumber);
+
+	const extraContact = hasExtraContact && {
+		...(extraNumber && { number: extraNumber }),
+		...(extraContactName && { name: extraContactName }),
+		...extraNumberLookup,
+	};
+
+	const transferredFrom = diverted && extraContact;
+	const transferredTo = transferred && !diverted && extraContact;
 
 	return {
 		type: 'mitel',
@@ -74,6 +85,11 @@ export function convertMitelHistoryItem(item: Partial<MitelCallItem>, uid: IUser
 		duration,
 		...(directoryNumber && { contactNumber: directoryNumber }),
 		...(name && { contactName: name }),
+		...(directoryLookup && {
+			contactId: directoryLookup.uid,
+			contactName: directoryLookup.name,
+			contactUsername: directoryLookup.username,
+		}),
 
 		...(diverted && { diverted }),
 		...(transferredFrom && { transferredFrom }),

@@ -55,16 +55,23 @@ export interface IMitelCallHistoryItem extends ICallHistoryItem {
 
 	contactNumber?: string;
 	contactName?: string;
+	contactId?: IUser['_id'];
+	contactUsername?: IUser['username'];
+
 	duration: number;
 
 	transferredFrom?: {
 		number?: string;
 		name?: string;
+		username?: IUser['username'];
+		uid?: IUser['_id'];
 	};
 
 	transferredTo?: {
 		number?: string;
 		name?: string;
+		username?: IUser['username'];
+		uid?: IUser['_id'];
 	};
 
 	transferred?: boolean;
