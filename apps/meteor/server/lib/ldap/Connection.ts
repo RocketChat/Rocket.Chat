@@ -349,7 +349,7 @@ export class LDAPConnection {
 		let realEntries = 0;
 
 		return new Promise((resolve, reject) => {
-			this.client.search(baseDN, searchOptions, (err, res: ldapjs.SearchCallbackResponse) => {
+			this.clientSearch(baseDN, searchOptions, (err, res: ldapjs.SearchCallbackResponse) => {
 				if (err) {
 					searchLogger.error({ err });
 					reject(err);
@@ -517,6 +517,16 @@ export class LDAPConnection {
 		});
 	}
 
+	// ldapjs parses the filter synchronously and throws on invalid filters (e.g. an empty search field);
+	// route those to the callback so they don't escape as unhandled rejections and crash the process.
+	private clientSearch(baseDN: string, searchOptions: ldapjs.SearchOptions, callback: ldapjs.SearchCallBack): void {
+		try {
+			this.client.search(baseDN, searchOptions, callback);
+		} catch (err) {
+			callback(err as ldapjs.Error, undefined as unknown as ldapjs.SearchCallbackResponse);
+		}
+	}
+
 	private async doAsyncSearch<T = ldapjs.SearchEntry>(
 		baseDN: string,
 		searchOptions: ldapjs.SearchOptions,
@@ -527,7 +537,7 @@ export class LDAPConnection {
 
 		searchLogger.debug({ msg: 'searchOptions', searchOptions, baseDN });
 
-		this.client.search(baseDN, searchOptions, (err: ldapjs.Error | null, res: ldapjs.SearchCallbackResponse): void => {
+		this.clientSearch(baseDN, searchOptions, (err: ldapjs.Error | null, res: ldapjs.SearchCallbackResponse): void => {
 			if (err) {
 				searchLogger.error({ err });
 				callback(err);
@@ -591,7 +601,7 @@ export class LDAPConnection {
 
 		searchLogger.debug({ msg: 'searchOptions', searchOptions, baseDN });
 
-		this.client.search(baseDN, searchOptions, (err: ldapjs.Error | null, res: ldapjs.SearchCallbackResponse): void => {
+		this.clientSearch(baseDN, searchOptions, (err: ldapjs.Error | null, res: ldapjs.SearchCallbackResponse): void => {
 			if (err) {
 				searchLogger.error({ err });
 				callback(err);
