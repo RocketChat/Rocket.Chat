@@ -13,7 +13,7 @@ const generateQuery = (
 	filter: string;
 } => ({ filter: term });
 
-type RoomFormAutocompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter' | 'onChange'> & {
+export type RoomFormAutocompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter' | 'onChange'> & {
 	onSelectedRoom: (value: string, label: string) => void;
 };
 

@@ -7,7 +7,7 @@ import AdminUserForm from './AdminUserForm';
 import { FormSkeleton } from '../../../components/Skeleton';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
 
-type AdminUserFormWithDataProps = {
+export type AdminUserFormWithDataProps = {
 	uid: IUser['_id'];
 	onReload: () => void;
 	context: string;

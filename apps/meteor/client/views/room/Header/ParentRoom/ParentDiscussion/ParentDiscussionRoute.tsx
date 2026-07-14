@@ -4,7 +4,7 @@ import { useUserSubscription } from '@rocket.chat/ui-contexts';
 import ParentDiscussion from './ParentDiscussion';
 import ParentDiscussionWithData from './ParentDiscussionWithData';
 
-type ParentDiscussionRouteProps = {
+export type ParentDiscussionRouteProps = {
 	room: Pick<IRoom, '_id' | 't' | 'name' | 'fname' | 'prid' | 'u'>;
 };
 

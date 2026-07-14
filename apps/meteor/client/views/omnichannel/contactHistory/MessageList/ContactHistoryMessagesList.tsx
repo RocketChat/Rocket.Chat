@@ -34,7 +34,7 @@ import { useHistoryMessageList } from './useHistoryMessageList';
 import { isMessageNewDay } from '../../../room/MessageList/lib/isMessageNewDay';
 import { isMessageSequential } from '../../../room/MessageList/lib/isMessageSequential';
 
-type ContactHistoryMessagesListProps = {
+export type ContactHistoryMessagesListProps = {
 	chatId: string;
 	onClose: () => void;
 	onOpenRoom?: () => void;

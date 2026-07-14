@@ -21,12 +21,13 @@ import { useTranslation } from 'react-i18next';
 import { GroupedVirtuoso } from 'react-virtuoso';
 
 import { MembersListDivider } from './MembersListDivider';
+import RoomMembersListWrapper from './RoomMembersListWrapper';
 import RoomMembersRow from './RoomMembersRow';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import type { RoomMember } from '../../../hooks/useMembersList';
 
-type RoomMembersProps = {
+export type RoomMembersProps = {
 	rid: IRoom['_id'];
 	isTeam?: boolean;
 	isDirect?: boolean;
@@ -197,8 +198,11 @@ const RoomMembers = ({
 										overscan={50}
 										groupCounts={counts}
 										groupContent={(index) => titles[index]}
-										// eslint-disable-next-line react/no-multi-comp
-										components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
+										components={{
+											// eslint-disable-next-line react/no-multi-comp
+											Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} />,
+											List: RoomMembersListWrapper,
+										}}
 										itemContent={(index) => (
 											<RowComponent useRealName={useRealName} data={itemData} user={members[index]} index={index} reload={reload} />
 										)}

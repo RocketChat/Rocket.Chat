@@ -20,12 +20,12 @@ import { tracerSpanMiddleware } from '../../../../server/api/v1/middlewares/trac
 import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 import type { WebhookResponseItem } from '../../../../server/lib/messages/processWebhookMessage';
 import { processWebhookMessage } from '../../../../server/lib/messages/processWebhookMessage';
+import { addOutgoingIntegration } from '../../../../server/meteor-methods/integrations/outgoing/addOutgoingIntegration';
+import { deleteOutgoingIntegration } from '../../../../server/meteor-methods/integrations/outgoing/deleteOutgoingIntegration';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { IsolatedVMScriptEngine } from '../lib/isolated-vm/isolated-vm';
 import { incomingLogger, integrationLogger } from '../logger';
-import { addOutgoingIntegration } from '../methods/outgoing/addOutgoingIntegration';
-import { deleteOutgoingIntegration } from '../methods/outgoing/deleteOutgoingIntegration';
 
 const ivmEngine = new IsolatedVMScriptEngine(true);
 

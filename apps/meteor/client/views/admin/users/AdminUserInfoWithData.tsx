@@ -16,7 +16,7 @@ import { UserStatus } from '../../../components/UserStatus';
 import { UserStatusText } from '../../../components/UserStatusText';
 import { getUserEmailVerified } from '../../../lib/utils/getUserEmailVerified';
 
-type AdminUserInfoWithDataProps = {
+export type AdminUserInfoWithDataProps = {
 	uid: IUser['_id'];
 	onReload: () => void;
 	tab: AdminUsersTab;

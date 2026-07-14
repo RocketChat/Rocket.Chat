@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
 
-type UserMentionElementProps = {
+export type UserMentionElementProps = {
 	mention: string;
 };
 

@@ -7,15 +7,9 @@ export type RoomAccessValidator = (
 ) => Promise<boolean>;
 
 export interface IAuthorization {
-	hasAllPermission(user: IUser, permissions: string[], scope?: string): Promise<boolean>;
-	// @deprecated
-	hasAllPermission(userId: string, permissions: string[], scope?: string): Promise<boolean>;
-	hasPermission(user: IUser, permissionId: string, scope?: string): Promise<boolean>;
-	// @deprecated
-	hasPermission(userId: string, permissionId: string, scope?: string): Promise<boolean>;
-	hasAtLeastOnePermission(user: IUser, permissions: string[], scope?: string): Promise<boolean>;
-	// @deprecated
-	hasAtLeastOnePermission(userId: string, permissions: string[], scope?: string): Promise<boolean>;
+	hasAllPermission(user: string | IUser, permissions: string[], scope?: string): Promise<boolean>;
+	hasPermission(user: string | IUser, permissionId: string, scope?: string): Promise<boolean>;
+	hasAtLeastOnePermission(user: string | IUser, permissions: string[], scope?: string): Promise<boolean>;
 	canAccessRoom: RoomAccessValidator;
 	canReadRoom: RoomAccessValidator;
 	canAccessRoomId(rid: IRoom['_id'], uid?: IUser['_id']): Promise<boolean>;

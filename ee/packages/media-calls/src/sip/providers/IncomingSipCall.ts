@@ -1,10 +1,4 @@
-import type {
-	MediaCallSignedContact,
-	IMediaCall,
-	MediaCallContactInformation,
-	MediaCallContact,
-	IMediaCallChannel,
-} from '@rocket.chat/core-typings';
+import type { MediaCallSignedContact, IMediaCall, MediaCallContactInformation, MediaCallContact } from '@rocket.chat/core-typings';
 import { isBusyState, type ClientMediaSignalBody } from '@rocket.chat/media-signaling';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 import type { SipMessage, SrfRequest, SrfResponse } from 'drachtio-srf';
@@ -39,12 +33,11 @@ export class IncomingSipCall extends BaseSipCall {
 		session: SipServerSession,
 		call: IMediaCall,
 		protected override readonly agent: BroadcastActorAgent,
-		channel: IMediaCallChannel,
 		private readonly srf: Srf,
 		private readonly req: SrfRequest,
 		private readonly res: SrfResponse,
 	) {
-		super(session, call, agent, channel);
+		super(session, call, agent);
 		this.sipDialog = null;
 		this.inboundRenegotiations = new Map();
 		this.processedTransfer = false;
@@ -109,9 +102,7 @@ export class IncomingSipCall extends BaseSipCall {
 
 		const negotiationId = await mediaCallDirector.startNewNegotiation(call, 'caller', webrtcOffer);
 
-		const channel = await callerAgent.getOrCreateChannel(call, session.sessionId);
-
-		sipCall = new IncomingSipCall(session, call, callerAgent, channel, srf, req, res);
+		sipCall = new IncomingSipCall(session, call, callerAgent, srf, req, res);
 
 		callerAgent.provider = sipCall;
 

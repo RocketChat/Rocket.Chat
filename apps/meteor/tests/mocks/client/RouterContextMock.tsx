@@ -55,7 +55,7 @@ const buildRoutePath = (to: To): LocationPathname | `${LocationPathname}?${Locat
 	throw new Error('Invalid route');
 };
 
-type RouterContextMockProps = {
+export type RouterContextMockProps = {
 	children?: ReactNode;
 	navigate?: (toOrDelta: number | To) => void;
 	currentPath?: MutableRefObject<string | undefined>;

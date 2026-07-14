@@ -11,7 +11,7 @@ import RoomFormAttributeFields from './RoomFormAttributeFields';
 import RoomFormAutocomplete from './RoomFormAutocomplete';
 import RoomFormAutocompleteDummy from './RoomFormAutocompleteDummy';
 
-type RoomFormProps = {
+export type RoomFormProps = {
 	onClose: () => void;
 	onSave: (data: RoomFormData) => void;
 	roomInfo?: { rid: string; name: string };

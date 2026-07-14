@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 
 import type { CallHistoryInternalContact } from '../definitions';
 
-type CallHistoryInternalUserProps = {
+export type CallHistoryInternalUserProps = {
 	contact: CallHistoryInternalContact;
 };
 

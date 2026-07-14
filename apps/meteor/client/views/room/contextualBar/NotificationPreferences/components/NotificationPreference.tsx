@@ -2,7 +2,7 @@ import type { SelectOption } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-type NotificationPreferenceProps = {
+export type NotificationPreferenceProps = {
 	id: string;
 	name: string;
 	options: SelectOption[];

@@ -5,7 +5,9 @@ import { useTranslation } from 'react-i18next';
 
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 
-const GuestForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }) => {
+export type GuestFormProps = { setLoginRoute: DispatchLoginRouter };
+
+const GuestForm = ({ setLoginRoute }: GuestFormProps) => {
 	const { t } = useTranslation();
 	useDocumentTitle(t('registration.component.login'), false);
 

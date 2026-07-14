@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useRoom } from '../../contexts/RoomContext';
 
-type AutoTranslateProps = {
+export type AutoTranslateProps = {
 	language: string;
 	languages: SelectOption[];
 	handleSwitch: (e: ChangeEvent<HTMLInputElement>) => void;

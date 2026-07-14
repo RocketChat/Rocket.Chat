@@ -36,7 +36,7 @@ type UnitEditFormData = {
 	}[];
 };
 
-type UnitEditProps = {
+export type UnitEditProps = {
 	unitData?: Serialized<IOmnichannelBusinessUnit>;
 	unitMonitors?: Serialized<ILivechatUnitMonitor>[];
 	unitDepartments?: Serialized<ILivechatDepartment>[];

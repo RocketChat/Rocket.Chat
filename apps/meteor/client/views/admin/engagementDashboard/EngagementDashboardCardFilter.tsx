@@ -1,7 +1,7 @@
 import { Box, FlexItem, InputBoxSkeleton } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-type EngagementDashboardCardFilterProps = {
+export type EngagementDashboardCardFilterProps = {
 	children?: ReactNode;
 };
 

@@ -6,7 +6,7 @@ import { memo, useState } from 'react';
 
 import { useAgentsList } from '../hooks/useAgentsList';
 
-type AutoCompleteMultipleAgentProps = Omit<
+export type AutoCompleteMultipleAgentProps = Omit<
 	ComponentProps<typeof PaginatedMultiSelectFiltered>,
 	'options' | 'renderItem' | 'setFilter' | 'filter' | 'endReached' | 'value' | 'onChange'
 > & {

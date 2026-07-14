@@ -936,40 +936,21 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 	}
 
 	async addRolesToMember(teamId: string, userId: string, roles: Array<string>): Promise<boolean> {
-		const isMember = await TeamMember.findOneByUserIdAndTeamId(userId, teamId, {
-			projection: { _id: 1 },
-		});
+		const { matchedCount } = await TeamMember.updateRolesByTeamIdAndUserId(teamId, userId, roles);
 
-		if (!isMember) {
-			// TODO should this throw an error instead?
-			return false;
-		}
-
-		return !!(await TeamMember.updateRolesByTeamIdAndUserId(teamId, userId, roles));
+		return matchedCount > 0;
 	}
 
 	async addRolesToSubscription(roomId: string, userId: string, roles: Array<string>): Promise<boolean> {
-		const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, userId);
+		const { matchedCount } = await Subscriptions.addRolesByUserId(userId, roles, roomId);
 
-		if (!subscription) {
-			// TODO should this throw an error instead?
-			return false;
-		}
-
-		return !!(await Subscriptions.addRolesByUserId(userId, roles, roomId));
+		return matchedCount > 0;
 	}
 
 	async removeRolesFromMember(teamId: string, userId: string, roles: Array<string>): Promise<boolean> {
-		const isMember = await TeamMember.findOneByUserIdAndTeamId(userId, teamId, {
-			projection: { _id: 1 },
-		});
+		const { matchedCount } = await TeamMember.removeRolesByTeamIdAndUserId(teamId, userId, roles);
 
-		if (!isMember) {
-			// TODO should this throw an error instead?
-			return false;
-		}
-
-		return !!(await TeamMember.removeRolesByTeamIdAndUserId(teamId, userId, roles));
+		return matchedCount > 0;
 	}
 
 	async getInfoByName(teamName: string): Promise<Omit<ITeam, 'usernames'> | null> {

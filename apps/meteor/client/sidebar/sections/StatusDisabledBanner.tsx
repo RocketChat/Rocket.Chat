@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useStatusDisabledModal } from '../../views/admin/customUserStatus/hooks/useStatusDisabledModal';
 
-type StatusDisabledSectionProps = { onDismiss: () => void };
+export type StatusDisabledSectionProps = { onDismiss: () => void };
 
 const StatusDisabledSection = ({ onDismiss }: StatusDisabledSectionProps) => {
 	const { t } = useTranslation();

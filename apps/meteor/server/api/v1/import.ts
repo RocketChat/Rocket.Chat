@@ -21,16 +21,14 @@ import {
 import { Meteor } from 'meteor/meteor';
 
 import { Importers } from '../../../app/importer/server';
-import {
-	executeUploadImportFile,
-	executeDownloadPublicImportFile,
-	executeGetImportProgress,
-	executeGetImportFileData,
-	executeStartImport,
-	executeGetLatestImportOperations,
-} from '../../../app/importer/server/methods';
 import { PendingAvatarImporter } from '../../../app/importer-pending-avatars/server/PendingAvatarImporter';
 import { PendingFileImporter } from '../../../app/importer-pending-files/server/PendingFileImporter';
+import { executeDownloadPublicImportFile } from '../../meteor-methods/import/downloadPublicImportFile';
+import { executeGetImportFileData } from '../../meteor-methods/import/getImportFileData';
+import { executeGetImportProgress } from '../../meteor-methods/import/getImportProgress';
+import { executeGetLatestImportOperations } from '../../meteor-methods/import/getLatestImportOperations';
+import { executeStartImport } from '../../meteor-methods/import/startImport';
+import { executeUploadImportFile } from '../../meteor-methods/import/uploadImportFile';
 import { API } from '../api';
 
 const successResponseSchema = ajv.compile<void>({

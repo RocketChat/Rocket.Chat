@@ -22,7 +22,7 @@ import GenericNoResults from '../../../../components/GenericNoResults';
 import type { AdminUsersTab, UsersFilters, UsersTableSortingOption } from '../AdminUsersPage';
 import { useShowVoipExtension } from '../useShowVoipExtension';
 
-type UsersTableProps = {
+export type UsersTableProps = {
 	tab: AdminUsersTab;
 	roleData: { roles: Serialized<IRole>[] } | undefined;
 	users: Serialized<DefaultUserInfo>[];

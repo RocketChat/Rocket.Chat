@@ -4,7 +4,7 @@ import { GenericModal } from '@rocket.chat/ui-client';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type BackupCodesModalProps = {
+export type BackupCodesModalProps = {
 	codes: string[];
 	onClose: () => void;
 };

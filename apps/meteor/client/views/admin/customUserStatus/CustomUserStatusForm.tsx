@@ -11,7 +11,7 @@ type CustomUserStatusFormFormData = {
 	statusType: string;
 };
 
-type CustomUserStatusFormProps = {
+export type CustomUserStatusFormProps = {
 	onClose: () => void;
 	onReload: () => void;
 	status?: IUserStatus;

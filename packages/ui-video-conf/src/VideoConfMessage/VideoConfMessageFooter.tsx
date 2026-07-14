@@ -3,7 +3,7 @@ import type { AllHTMLAttributes } from 'react';
 
 import VideoConfMessageRow from './VideoConfMessageRow';
 
-type VideoConfMessageFooterProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
+export type VideoConfMessageFooterProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
 
 const VideoConfMessageFooter = ({ children, ...props }: VideoConfMessageFooterProps) => (
 	<VideoConfMessageRow backgroundColor='tint' {...props}>

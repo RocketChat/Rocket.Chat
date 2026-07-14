@@ -23,7 +23,7 @@ import { useSubscriptionFromMessageQuery } from '../../hooks/useSubscriptionFrom
 import { useMessageListReadReceipts } from '../../list/MessageListContext';
 import UiKitMessageBlock from '../../uikit/UiKitMessageBlock';
 
-type RoomMessageContentProps = {
+export type RoomMessageContentProps = {
 	message: IMessage;
 	unread: boolean;
 	mention: boolean;

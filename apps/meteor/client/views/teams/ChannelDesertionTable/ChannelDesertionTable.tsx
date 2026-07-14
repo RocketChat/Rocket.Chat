@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import ChannelDesertionTableRow from './ChannelDesertionTableRow';
 
-type ChannelDesertionTableProps = {
+export type ChannelDesertionTableProps = {
 	lastOwnerWarning?: string;
 	rooms?: (Serialized<IRoom> & { isLastOwner?: boolean })[];
 	eligibleRoomsLength: number | undefined;

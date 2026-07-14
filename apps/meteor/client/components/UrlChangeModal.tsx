@@ -3,7 +3,7 @@ import { GenericModal } from '@rocket.chat/ui-client';
 import DOMPurify from 'dompurify';
 import { useTranslation } from 'react-i18next';
 
-type UrlChangeModalProps = {
+export type UrlChangeModalProps = {
 	onConfirm: () => void;
 	siteUrl: string;
 	currentUrl: string;

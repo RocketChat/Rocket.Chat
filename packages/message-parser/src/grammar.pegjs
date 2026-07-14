@@ -163,8 +163,9 @@ CodeLine
   / "\n" chunk:CodeChunk { return codeLine(chunk); }
   / "\n" !"```" { return codeLine(plain('')); }
 
-// Charclass avoids per-char lookahead; never consume start of "```"
-CodeChunkChar = [^\r\n`] / "`" [^`\r\n] / "`" "`" [^`\r\n]
+// Charclass avoids per-char lookahead; never consume start of "```".
+// Trailing 1-2 backticks before a line end (or EOF) are content, not a fence.
+CodeChunkChar = [^\r\n`] / "`" [^`\r\n] / "`" "`" [^`\r\n] / "`" "`" &("\r" / "\n" / !.) / "`" &("\r" / "\n" / !.)
 CodeChunk = text:$(CodeChunkChar)+ { return plain(text); }
 
 /**
@@ -795,20 +796,8 @@ EmoticonBackslash
 UnicodeEmoji
   = UnicodeEmojiEmoticon
   / $(
-    UnicodeEmojiSupplementalSymbolsAndPictographs
-      (
-        UnicodeEmojiMiscellaneousSymbolsAndPictographs
-          ([\u200D] UnicodeEmojiMiscellaneousSymbolsAndPictographs)*
-      )?
-  )
-  / $(
-    (
-        UnicodeEmojiMiscellaneousSymbolsAndPictographs
-          UnicodeEmojiMiscellaneousSymbolsAndPictographsFitzpatrickModifiers?
-          [\u200D]
-      )*
-      UnicodeEmojiMiscellaneousSymbolsAndPictographs
-      UnicodeEmojiMiscellaneousSymbolsAndPictographsFitzpatrickModifiers?
+    (UnicodeEmojiZwjComponent [\u200D])*
+    UnicodeEmojiZwjComponent
   )
   / UnicodeEmojiTransportAndMapSymbols
   / UnicodeEmojiMiscellaneousTechnical
@@ -818,7 +807,12 @@ UnicodeEmoji
 
 UnicodeEmojiEmoticon = $([\uD83D] [\uDE00-\uDE4F])
 
-UnicodeEmojiSupplementalSymbolsAndPictographs = $([\uD83E] [\uDD00-\uDDFF])
+UnicodeEmojiSupplementalSymbolsAndPictographs = $([\uD83E] [\uDD00-\uDFFF])
+
+UnicodeEmojiZwjComponent
+  = (UnicodeEmojiSupplementalSymbolsAndPictographs / UnicodeEmojiMiscellaneousSymbolsAndPictographs) UnicodeEmojiMiscellaneousSymbolsAndPictographsFitzpatrickModifiers?
+  / UnicodeEmojiDingbats
+  / UnicodeEmojiMiscellaneousSymbols
 
 UnicodeEmojiMiscellaneousSymbolsAndPictographs = $([\uD83C] [\uDF00-\uDFFF] [\uFE00-\uFE0F]?) / $([\uD83D] [\uDC00-\uDDFF] [\uFE00-\uFE0F]?)
 

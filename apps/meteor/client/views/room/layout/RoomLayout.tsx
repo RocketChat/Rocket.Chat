@@ -8,7 +8,7 @@ import { Suspense, useMemo } from 'react';
 
 import HeaderSkeleton from '../Header/HeaderSkeleton';
 
-type RoomLayoutProps = {
+export type RoomLayoutProps = {
 	header?: ReactNode;
 	body?: ReactNode;
 	footer?: ReactNode;

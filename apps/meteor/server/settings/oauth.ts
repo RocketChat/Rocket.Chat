@@ -1,7 +1,16 @@
+import { Random } from '@rocket.chat/random';
+
 import { settingsRegistry } from '../../app/settings/server';
 
 export const createOauthSettings = () =>
 	settingsRegistry.addGroup('OAuth', async function () {
+		await this.add('Accounts_OAuth_Use_Modern_Flow', false, {
+			type: 'boolean',
+			public: true,
+			i18nLabel: 'Accounts_OAuth_Use_Modern_Flow_Label',
+			i18nDescription: 'Accounts_OAuth_Use_Modern_Flow_Description',
+		});
+
 		await this.section('Drupal', async function () {
 			const enableQuery = {
 				_id: 'Accounts_OAuth_Drupal',
@@ -404,6 +413,11 @@ export const createOauthSettings = () =>
 				readonly: true,
 				enableQuery,
 			});
+		});
+		await this.add('Accounts_OAuth_Session_Secret', Random.secret(), {
+			type: 'string',
+			secret: true,
+			hidden: true,
 		});
 		return this.section('Proxy', async function () {
 			await this.add('Accounts_OAuth_Proxy_host', 'https://oauth-proxy.rocket.chat', {

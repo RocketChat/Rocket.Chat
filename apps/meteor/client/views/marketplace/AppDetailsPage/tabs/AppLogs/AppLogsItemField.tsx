@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactNode } from 'react';
 
-type AppsLogItemFieldProps = {
+export type AppsLogItemFieldProps = {
 	field: ReactNode | string;
 	label: string;
 } & ComponentProps<typeof Box>;

@@ -8,7 +8,7 @@ import { useAppUiKitInteraction } from '../hooks/useAppUiKitInteraction';
 import { useTranslationsForApps } from '../hooks/useTranslationsForApps';
 import { useInstance } from '../views/room/providers/hooks/useInstance';
 
-type ActionManagerProviderProps = {
+export type ActionManagerProviderProps = {
 	children?: ReactNode;
 };
 

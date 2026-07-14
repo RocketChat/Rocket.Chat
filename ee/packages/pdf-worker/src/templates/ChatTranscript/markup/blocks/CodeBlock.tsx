@@ -3,7 +3,7 @@ import type * as MessageParser from '@rocket.chat/message-parser';
 
 import { codeStyles } from '../elements/CodeSpan';
 
-type CodeBlockProps = {
+export type CodeBlockProps = {
 	lines: MessageParser.CodeLine[];
 };
 

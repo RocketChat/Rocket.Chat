@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useScopeDict } from '../../../hooks/useScopeDict';
 
-type CannedResponseProps = {
+export type CannedResponseProps = {
 	allowEdit: boolean;
 	allowUse: boolean;
 	data: {

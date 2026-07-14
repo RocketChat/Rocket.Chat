@@ -21,7 +21,7 @@ const clampStyle = css`
 	word-break: break-word;
 `;
 
-type UserCardProps = {
+export type UserCardProps = {
 	user?: {
 		nickname?: string;
 		name?: string;

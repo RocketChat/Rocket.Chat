@@ -14,7 +14,9 @@ import LoginSwitchLanguageFooter from '../components/LoginSwitchLanguageFooter';
 import LoginTerms from '../components/LoginTerms';
 import { RegisterTitle } from '../components/RegisterTitle';
 
-const HorizontalTemplate = ({ children }: { children: ReactNode }) => {
+export type HorizontalTemplateProps = { children: ReactNode };
+
+const HorizontalTemplate = ({ children }: HorizontalTemplateProps) => {
 	const hideLogo = useSetting('Layout_Login_Hide_Logo', false);
 	const customLogo = useAssetWithDarkModePath('logo');
 	const customBackground = useAssetWithDarkModePath('background');

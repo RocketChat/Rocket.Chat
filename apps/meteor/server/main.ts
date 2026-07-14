@@ -18,7 +18,7 @@ import { startRocketChat } from '../startRocketChat';
 import './routes';
 import '../app/lib/server/startup';
 import './importPackages';
-import './methods';
+import './meteor-methods';
 import './publications';
 import '../lib/oauthRedirectUriServer';
 import './lib/pushConfig';

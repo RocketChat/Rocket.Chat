@@ -1,5 +1,6 @@
 import xmldom from '@xmldom/xmldom';
 import xmlCrypto from 'xml-crypto';
+import type { Reference, SignedXml } from 'xml-crypto';
 import xmlenc from 'xml-encryption';
 
 import type { ISAMLAssertion } from '../../definition/ISAMLAssertion';
@@ -72,6 +73,11 @@ export class ResponseParser {
 			return callback(new Error('Too many SAML responses'), null, false);
 		}
 		const response = allResponses[0];
+
+		if (response !== doc.documentElement) {
+			return callback(new Error('SAML Response must be the document root'), null, false);
+		}
+
 		SAMLUtils.log('Got response');
 
 		SAMLUtils.log('Verify status');
@@ -335,10 +341,31 @@ export class ResponseParser {
 			return false;
 		}
 
-		return this.validateSignature(xml, cert, signature);
+		return this.validateSignature(xml, cert, signature, this.getElementId(parent));
 	}
 
-	private validateSignature(xml: string, cert: string, signature: Element): any {
+	private getElementId(element: Element): string | null {
+		return element.getAttribute('ID') || element.getAttribute('Id') || element.getAttribute('id');
+	}
+
+	private signatureCoversElement(sig: SignedXml, expectedId: string | null): boolean {
+		if (!expectedId) {
+			return false;
+		}
+
+		const references: Reference[] = sig.references || [];
+		if (references.length === 0) {
+			return false;
+		}
+
+		return references.every((reference: Reference) => {
+			const uri = reference.uri || '';
+			const referencedId = uri.charAt(0) === '#' ? uri.substring(1) : uri;
+			return referencedId === expectedId;
+		});
+	}
+
+	private validateSignature(xml: string, cert: string, signature: Element, expectedId: string | null): boolean {
 		const sig = new xmlCrypto.SignedXml();
 
 		sig.keyInfoProvider = {
@@ -349,11 +376,19 @@ export class ResponseParser {
 		sig.loadSignature(signature);
 
 		const result = sig.checkSignature(xml);
-		if (!result && sig.validationErrors) {
-			SAMLUtils.log(sig.validationErrors);
+		if (!result) {
+			if (sig.validationErrors) {
+				SAMLUtils.log(sig.validationErrors);
+			}
+			return false;
 		}
 
-		return result;
+		if (!this.signatureCoversElement(sig, expectedId)) {
+			SAMLUtils.log('Failed to validate SAML signature: signed reference does not match the processed element');
+			return false;
+		}
+
+		return true;
 	}
 
 	private getIssuer(assertion: Element): any {

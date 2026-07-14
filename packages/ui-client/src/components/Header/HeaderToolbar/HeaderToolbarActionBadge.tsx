@@ -2,7 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Badge } from '@rocket.chat/fuselage';
 import type { ComponentPropsWithoutRef } from 'react';
 
-type HeaderToolbarActionBadgeProps = ComponentPropsWithoutRef<typeof Badge>;
+export type HeaderToolbarActionBadgeProps = ComponentPropsWithoutRef<typeof Badge>;
 
 const HeaderToolbarActionBadge = (props: HeaderToolbarActionBadgeProps) => (
 	<Box

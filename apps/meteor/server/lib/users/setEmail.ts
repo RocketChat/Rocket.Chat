@@ -10,7 +10,7 @@ import { validateEmailDomain } from '../../../app/lib/server/lib';
 import * as Mailer from '../../../app/mailer/server/api';
 import { settings } from '../../../app/settings/server';
 import { onceTransactionCommitedSuccessfully } from '../../database/utils';
-import { sendConfirmationEmail } from '../../methods/sendConfirmationEmail';
+import { sendConfirmationEmail } from '../../meteor-methods/auth/sendConfirmationEmail';
 
 let html = '';
 Meteor.startup(() => {

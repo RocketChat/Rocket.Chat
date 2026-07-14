@@ -105,7 +105,7 @@ export const usePopoutWindow = (onBeforeUnload: () => void): UsePopoutWindowRetu
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const [, , theme] = useThemeMode();
+	const theme = useThemeMode();
 
 	const openPopoutWindow = useCallback(
 		async (callId: string) => {

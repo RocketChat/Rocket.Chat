@@ -5,7 +5,7 @@ import type { ComponentProps, MouseEventHandler } from 'react';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type CategoryDropDownAnchorProps = { selectedCategoriesCount: number; onClick?: MouseEventHandler<HTMLElement> } & ComponentProps<
+export type CategoryDropDownAnchorProps = { selectedCategoriesCount: number; onClick?: MouseEventHandler<HTMLElement> } & ComponentProps<
 	typeof Button
 >;
 

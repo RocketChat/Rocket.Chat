@@ -1,0 +1,37 @@
+# Phase 5b: app/lib/server/methods → server/meteor-methods/<domain>
+# Format: old-path<TAB>new-path (relative to apps/meteor/)
+app/lib/server/methods/setRealName.ts	server/meteor-methods/users/setRealName.ts
+app/lib/server/methods/setEmail.ts	server/meteor-methods/users/setEmail.ts
+app/lib/server/methods/blockUser.ts	server/meteor-methods/users/blockUser.ts
+app/lib/server/methods/unblockUser.ts	server/meteor-methods/users/unblockUser.ts
+app/lib/server/methods/deleteUserOwnAccount.ts	server/meteor-methods/users/deleteUserOwnAccount.ts
+app/lib/server/methods/getUsernameSuggestion.ts	server/meteor-methods/users/getUsernameSuggestion.ts
+app/lib/server/methods/createChannel.ts	server/meteor-methods/rooms/createChannel.ts
+app/lib/server/methods/createPrivateGroup.ts	server/meteor-methods/rooms/createPrivateGroup.ts
+app/lib/server/methods/addUserToRoom.ts	server/meteor-methods/rooms/addUserToRoom.ts
+app/lib/server/methods/addUsersToRoom.ts	server/meteor-methods/rooms/addUsersToRoom.ts
+app/lib/server/methods/archiveRoom.ts	server/meteor-methods/rooms/archiveRoom.ts
+app/lib/server/methods/unarchiveRoom.ts	server/meteor-methods/rooms/unarchiveRoom.ts
+app/lib/server/methods/leaveRoom.ts	server/meteor-methods/rooms/leaveRoom.ts
+app/lib/server/methods/joinRoom.ts	server/meteor-methods/rooms/joinRoom.ts
+app/lib/server/methods/joinDefaultChannels.ts	server/meteor-methods/rooms/joinDefaultChannels.ts
+app/lib/server/methods/cleanRoomHistory.ts	server/meteor-methods/rooms/cleanRoomHistory.ts
+app/lib/server/methods/getRoomJoinCode.ts	server/meteor-methods/rooms/getRoomJoinCode.ts
+app/lib/server/methods/getRoomRoles.ts	server/meteor-methods/rooms/getRoomRoles.ts
+app/lib/server/methods/sendMessage.ts	server/meteor-methods/messages/sendMessage.ts
+app/lib/server/methods/updateMessage.ts	server/meteor-methods/messages/updateMessage.ts
+app/lib/server/methods/getChannelHistory.ts	server/meteor-methods/messages/getChannelHistory.ts
+app/lib/server/methods/getMessages.ts	server/meteor-methods/messages/getMessages.ts
+app/lib/server/methods/getSingleMessage.ts	server/meteor-methods/messages/getSingleMessage.ts
+app/lib/server/methods/executeSlashCommandPreview.ts	server/meteor-methods/messages/executeSlashCommandPreview.ts
+app/lib/server/methods/getSlashCommandPreviews.ts	server/meteor-methods/messages/getSlashCommandPreviews.ts
+app/lib/server/methods/addOAuthService.ts	server/meteor-methods/auth/addOAuthService.ts
+app/lib/server/methods/refreshOAuthService.ts	server/meteor-methods/auth/refreshOAuthService.ts
+app/lib/server/methods/removeOAuthService.ts	server/meteor-methods/auth/removeOAuthService.ts
+app/lib/server/methods/createToken.ts	server/meteor-methods/auth/createToken.ts
+app/lib/server/methods/checkRegistrationSecretURL.ts	server/meteor-methods/auth/checkRegistrationSecretURL.ts
+app/lib/server/methods/saveSetting.ts	server/meteor-methods/settings/saveSetting.ts
+app/lib/server/methods/saveSettings.ts	server/meteor-methods/settings/saveSettings.ts
+app/lib/server/methods/sendSMTPTestEmail.ts	server/meteor-methods/settings/sendSMTPTestEmail.ts
+app/lib/server/methods/restartServer.ts	server/meteor-methods/platform/restartServer.ts
+app/lib/server/methods/checkFederationConfiguration.ts	server/meteor-methods/platform/checkFederationConfiguration.ts

@@ -4,7 +4,7 @@ import { useUserPresence } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { memo } from 'react';
 
-type ReactiveUserStatusProps = {
+export type ReactiveUserStatusProps = {
 	uid: IUser['_id'];
 } & ComponentProps<typeof UserStatus.UserStatus>;
 

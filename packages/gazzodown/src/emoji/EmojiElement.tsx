@@ -3,7 +3,7 @@ import { memo } from 'react';
 
 import Emoji from './Emoji';
 
-type EmojiElementProps = MessageParser.Emoji;
+export type EmojiElementProps = MessageParser.Emoji;
 
 const EmojiElement = (emoji: EmojiElementProps) => <Emoji {...emoji} />;
 

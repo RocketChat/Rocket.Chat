@@ -7,7 +7,7 @@ import DescriptionList from './DescriptionList';
 import DescriptionListEntry from './DescriptionListEntry';
 import { useFormatDateAndTime } from '../../../../../../hooks/useFormatDateAndTime';
 
-type InstancesModalProps = {
+export type InstancesModalProps = {
 	instances: IInstance[];
 	onClose: () => void;
 };

@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-type CardListSectionProps = {
+export type CardListSectionProps = {
 	children: ReactNode;
 };
 

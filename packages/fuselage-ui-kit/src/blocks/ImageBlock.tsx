@@ -29,7 +29,7 @@ const fetchImageState = (img: HTMLImageElement) => {
 	};
 };
 
-type ImageBlockProps = BlockProps<UiKit.ImageBlock>;
+export type ImageBlockProps = BlockProps<UiKit.ImageBlock>;
 
 const ImageBlock = ({ className, block, surfaceRenderer }: ImageBlockProps) => {
 	const surface = useSurfaceType();

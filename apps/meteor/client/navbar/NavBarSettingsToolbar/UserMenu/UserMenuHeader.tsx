@@ -3,7 +3,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 
-type UserMenuHeaderProps = { user: IUser };
+export type UserMenuHeaderProps = { user: IUser };
 
 const UserMenuHeader = ({ user }: UserMenuHeaderProps) => {
 	const displayName = useUserDisplayName(user);
