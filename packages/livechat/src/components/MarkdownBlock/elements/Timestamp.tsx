@@ -3,6 +3,9 @@ import type * as MessageParser from '@rocket.chat/message-parser';
 import { format, intlFormatDistance } from 'date-fns';
 import { useEffect, useState } from 'preact/hooks';
 import { ErrorBoundary } from 'react-error-boundary';
+import { useTranslation } from 'react-i18next';
+
+import { normalizeLanguageString } from '../../../lib/locale';
 
 type BoldSpanProps = {
 	children: MessageParser.Timestamp;
@@ -110,7 +113,8 @@ export type RelativeTimeProps = { value: Date };
 const RelativeTime = ({ value }: RelativeTimeProps) => {
 	const time = value.getTime();
 
-	const locale = 'en';
+	const { i18n } = useTranslation();
+	const locale = normalizeLanguageString(i18n.language);
 	const [text, setText] = useState(() => intlFormatDistance(time, Date.now(), { locale }));
 
 	useEffect(() => {
