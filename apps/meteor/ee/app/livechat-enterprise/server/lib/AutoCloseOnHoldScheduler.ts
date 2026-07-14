@@ -48,7 +48,7 @@ export class AutoCloseOnHoldSchedulerClass {
 
 	private async getSchedulerUser(): Promise<IUser> {
 		if (!this.schedulerUser) {
-			const schedulerUser = await Users.findOneById('rocket.cat');
+			const schedulerUser = await Users.findOneById('rocket.cat', { projection: { __rooms: 0 } });
 			if (!schedulerUser) {
 				this.logger.error({ msg: 'Unable to process auto close on-hold job: scheduler user not found', userId: 'rocket.cat' });
 				throw new Error('error-user-not-found');
