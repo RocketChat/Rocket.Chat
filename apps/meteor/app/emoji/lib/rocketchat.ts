@@ -20,6 +20,7 @@ export type EmojiPackages = {
 	list: {
 		[key: keyof NonNullable<EmojiPackages['packages']>]:
 			| {
+					name?: string;
 					category: string;
 					emojiPackage: string;
 					shortnames: string[];
@@ -34,6 +35,7 @@ export type EmojiPackages = {
 					unicode?: string;
 			  }
 			| {
+					name?: undefined;
 					emojiPackage: string;
 					aliasOf: string;
 					extension?: undefined;

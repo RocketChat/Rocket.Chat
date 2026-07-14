@@ -65,6 +65,13 @@ describe('Emoji Client Helpers', () => {
 		it('excludes skin-tone variants from the results', () => {
 			expect(names('+1').some((name) => /_tone[1-5]/.test(name))).to.be.false;
 		});
+
+		it('applies the selected skin tone when searching by an alias', () => {
+			const result = getEmojisBySearchTerm('thumbsup', 2, [], () => undefined).find(({ image }) => image?.includes('👍'));
+
+			expect(result).to.exist;
+			expect(result?.image).to.include('👍🏼');
+		});
 	});
 
 	describe('updateRecent', () => {

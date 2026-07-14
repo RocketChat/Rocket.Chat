@@ -172,11 +172,11 @@ export const getEmojisBySearchTerm = (
 			continue;
 		}
 
-		const { emojiPackage, shortnames = [] } = emojiObject;
+		const { emojiPackage, shortnames = [], name } = emojiObject;
 		let tone = '';
 		current = current.replace(/:/g, '');
 
-		if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(current)) {
+		if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(name ?? current)) {
 			tone = `_tone${actualTone}`;
 		}
 
