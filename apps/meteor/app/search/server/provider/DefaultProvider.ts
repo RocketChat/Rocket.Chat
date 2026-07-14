@@ -34,19 +34,38 @@ export class DefaultProvider extends SearchProvider<{ searchAll?: boolean; limit
 	 * Uses Meteor function 'messageSearch'
 	 */
 	async search(
-		userId: string,
-		text: string,
-		context: { uid?: IUser['_id']; rid: IRoom['_id'] },
-		payload: { searchAll?: boolean; limit?: number } = {},
-		callback?: (error: Error | null, result: IRawSearchResult) => void,
-	): Promise<void> {
+	userId: string,
+	text: string,
+	context: { uid?: IUser['_id']; rid: IRoom['_id'] },
+	payload: { searchAll?: boolean; limit?: number } = {},
+	callback?: (error: Error | null, result: IRawSearchResult) => void,
+): Promise<void> {
+	try {
 		const _rid = payload.searchAll ? undefined : context.rid;
-
 		const _limit = payload.limit || this._settings.get<number>('PageSize');
 
 		const result = await messageSearch(userId, text, _rid, _limit);
-		if (callback && result !== false) {
-			return callback(null, result);
+
+		const safeResult: IRawSearchResult = result || {
+			messages: [],
+			users: [],
+			rooms: [],
+		};
+
+		if (callback) {
+			return callback(null, safeResult);
 		}
+
+		return;
+	} catch (error) {
+		if (callback) {
+			return callback(error as Error, {
+				messages: [],
+				users: [],
+				rooms: [],
+			});
+		}
+
+		throw error;
 	}
 }
