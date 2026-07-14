@@ -104,17 +104,28 @@ describe('AI Search client helpers', () => {
 
 	describe('buildAppliedFilterChips', () => {
 		it('groups common filter types into a single readable chip', () => {
+			const t = (key: string, options?: Record<string, string>): string =>
+				({
+					Search_filter_in_rooms: `Messages in ${options?.rooms}`,
+					Search_filter_from_users: `Messages from ${options?.users}`,
+					Search_filter_after_date: `Messages after ${options?.date}`,
+					Search_filter_before_date: `Messages before ${options?.date}`,
+				})[key] || key;
+
 			expect(
-				buildAppliedFilterChips({
-					roomNames: ['general', 'dev'],
-					rids: [],
-					fromUsernames: ['alice', 'bob'],
-					startDate: '2026-01-01',
-				}),
+				buildAppliedFilterChips(
+					{
+						roomNames: ['general', 'dev'],
+						rids: [],
+						fromUsernames: ['alice', 'bob'],
+						startDate: '2026-01-01',
+					},
+					t,
+				),
 			).toEqual([
-				{ key: 'in', values: ['general', 'dev'], label: '#general, #dev', title: 'in: #general, #dev' },
-				{ key: 'from', values: ['alice', 'bob'], label: '@alice, @bob', title: 'from: @alice, @bob' },
-				{ key: 'after', values: ['2026-01-01'], label: 'after:2026-01-01', title: 'after:2026-01-01' },
+				{ key: 'in', values: ['general', 'dev'], label: '#general, #dev', title: 'Messages in #general, #dev' },
+				{ key: 'from', values: ['alice', 'bob'], label: '@alice, @bob', title: 'Messages from @alice, @bob' },
+				{ key: 'after', values: ['2026-01-01'], label: 'after:2026-01-01', title: 'Messages after 2026-01-01' },
 			]);
 		});
 	});

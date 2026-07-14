@@ -6,7 +6,6 @@ import type { ReactElement } from 'react';
 export type NavBarSearchInputAddonProps = {
 	appliedFilterChips: SearchFilterChip[];
 	aiSearchActive: boolean;
-	aiSearchFeatureEnabled: boolean;
 	aiSearchButtonTooltip: string;
 	isDirty: boolean;
 	onClearText: () => void;
@@ -15,12 +14,9 @@ export type NavBarSearchInputAddonProps = {
 	t: TFunction;
 };
 
-const getFilterChipLabel = (label: string): string => label.replace(/^in:\s*/, '').replace(/^from:\s*/, '');
-
 const NavBarSearchInputAddon = ({
 	appliedFilterChips,
 	aiSearchActive,
-	aiSearchFeatureEnabled,
 	aiSearchButtonTooltip,
 	isDirty,
 	onClearText,
@@ -31,44 +27,34 @@ const NavBarSearchInputAddon = ({
 	<Box display='flex' alignItems='center' gap={8}>
 		{appliedFilterChips.length > 0 && (
 			<Box display='flex' alignItems='center' gap={4} maxWidth='x320' overflow='auto'>
-				{appliedFilterChips.map((filter) => {
-					const label = getFilterChipLabel(filter.label);
-
-					return (
-						<Chip
-							key={filter.key}
-							height='x20'
-							minHeight='x20'
-							fontScale='c1'
-							value={label}
-							onClick={() => onRemoveFilter(filter.key)}
-							title={filter.title}
-							aria-label={t('Remove_filter', { filter: label })}
-							renderDismissSymbol={() => <Icon name='cross' size='x12' />}
-						>
-							<Box is='span' maxWidth='x104' withTruncatedText>
-								{label}
-							</Box>
-						</Chip>
-					);
-				})}
+				{appliedFilterChips.map((filter) => (
+					<Chip
+						key={filter.key}
+						height='x20'
+						minHeight='x20'
+						fontScale='c1'
+						value={filter.label}
+						onClick={() => onRemoveFilter(filter.key)}
+						title={filter.title}
+						aria-label={t('Remove_filter', { filter: filter.label })}
+						renderDismissSymbol={() => <Icon name='cross' size='x12' />}
+					>
+						<Box is='span' maxWidth='x104' withTruncatedText>
+							{filter.label}
+						</Box>
+					</Chip>
+				))}
 			</Box>
 		)}
-		{isDirty ? (
-			<IconButton mini icon='cross' aria-label={t('Clear')} onClick={onClearText} />
-		) : (
-			<Icon name='magnifier' size='x20' aria-label={t('Search')} />
-		)}
-		{aiSearchFeatureEnabled && (
-			<IconButton
-				mini
-				icon='stars'
-				pressed={aiSearchActive}
-				aria-label={aiSearchButtonTooltip}
-				title={aiSearchButtonTooltip}
-				onClick={onToggleAISearch}
-			/>
-		)}
+		{isDirty ? <IconButton mini icon='cross' aria-label={t('Clear')} onClick={onClearText} /> : <Icon name='magnifier' size='x20' />}
+		<IconButton
+			mini
+			icon='stars'
+			pressed={aiSearchActive}
+			aria-label={aiSearchButtonTooltip}
+			title={aiSearchButtonTooltip}
+			onClick={onToggleAISearch}
+		/>
 	</Box>
 );
 

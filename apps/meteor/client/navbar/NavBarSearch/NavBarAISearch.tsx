@@ -1,33 +1,37 @@
 import { useFocusManager } from '@react-aria/focus';
 import { useOverlayTrigger } from '@react-aria/overlays';
 import { useOverlayTriggerState } from '@react-stately/overlays';
-import { Box, Icon, IconButton, TextInput } from '@rocket.chat/fuselage';
-import { useStableCallback, useMergedRefs } from '@rocket.chat/fuselage-hooks';
+import { emptySearchFilters, type NavBarSearchFormValues } from '@rocket.chat/ai-search';
+import { Box, TextInput } from '@rocket.chat/fuselage';
+import { useMergedRefs, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useCallback, useEffect, useRef } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import tinykeys from 'tinykeys';
 
-import NavBarSearchListBox from './NavBarSearchListbox';
+import NavBarAISearchListBox from './NavBarAISearchListbox';
+import NavBarSearchInputAddon from './NavBarSearchInputAddon';
 import { getShortcutLabel } from './getShortcutLabel';
+import { useNavBarAISearch } from './hooks/useNavBarAISearch';
 import { useSearchClick } from './hooks/useSearchClick';
 import { useSearchFocus } from './hooks/useSearchFocus';
 import { useSearchInputNavigation } from './hooks/useSearchNavigation';
 
-const NavBarSearch = () => {
+const NavBarAISearch = () => {
 	const { t } = useTranslation();
 	const focusManager = useFocusManager();
 	const shortcut = getShortcutLabel();
 
-	const placeholder = [t('Search_rooms'), shortcut].filter(Boolean).join(' ');
-
-	const methods = useForm({ defaultValues: { filterText: '' } });
+	const methods = useForm<NavBarSearchFormValues>({ defaultValues: { filterText: '', appliedFilters: emptySearchFilters() } });
 	const {
 		formState: { isDirty },
 		register,
 		resetField,
 		setFocus,
+		setValue,
+		watch,
 	} = methods;
+	const { filterText, appliedFilters } = watch();
 
 	const { ref: filterRef, ...rest } = register('filterText');
 
@@ -42,13 +46,21 @@ const NavBarSearch = () => {
 	const handleFocus = useSearchFocus(state);
 	const handleClick = useSearchClick(state);
 
+	const { aiSearchActive, canSearchWithAIFromTopBar, appliedFilterChips, aiSearchButtonTooltip, handleRemoveFilter, handleToggleAISearch } =
+		useNavBarAISearch({ filterText, appliedFilters, setFocus, setValue, state, t });
+
+	const searchLabel = aiSearchActive ? t('Search_rooms_or_ask_AI') : t('Search_rooms');
+	const placeholder = [searchLabel, shortcut].filter(Boolean).join(' ');
+
 	const handleEscSearch = useCallback(() => {
 		resetField('filterText');
+		setValue('appliedFilters', emptySearchFilters());
 		state.close();
-	}, [resetField, state]);
+	}, [resetField, setValue, state]);
 
 	const handleClearText = useStableCallback(() => {
 		resetField('filterText');
+		setValue('appliedFilters', emptySearchFilters());
 		setFocus('filterText');
 	});
 
@@ -75,7 +87,7 @@ const NavBarSearch = () => {
 
 	return (
 		<FormProvider {...methods}>
-			<Box width='100%' maxWidth='x622' role='search' aria-label={t('Search_rooms')} mi={8} position='relative'>
+			<Box width='100%' maxWidth='x622' role='search' aria-label={searchLabel} mi={8} position='relative'>
 				<TextInput
 					{...rest}
 					{...triggerProps}
@@ -86,21 +98,34 @@ const NavBarSearch = () => {
 					placeholder={placeholder}
 					ref={mergedRefs}
 					role='combobox'
+					aria-label={searchLabel}
 					aria-autocomplete='list'
 					aria-keyshortcuts='Control+K Meta+K Control+P Meta+P'
 					small
-					addon={
-						isDirty ? (
-							<IconButton mini icon='cross' aria-label={t('Clear')} onClick={handleClearText} />
-						) : (
-							<Icon name='magnifier' size='x16' aria-label={t('Search')} />
-						)
+					endAddon={
+						<NavBarSearchInputAddon
+							appliedFilterChips={appliedFilterChips}
+							aiSearchActive={aiSearchActive}
+							aiSearchButtonTooltip={aiSearchButtonTooltip}
+							isDirty={isDirty}
+							onClearText={handleClearText}
+							onRemoveFilter={handleRemoveFilter}
+							onToggleAISearch={handleToggleAISearch}
+							t={t}
+						/>
 					}
 				/>
-				{state.isOpen && <NavBarSearchListBox state={state} overlayProps={overlayProps} />}
+				{state.isOpen && (
+					<NavBarAISearchListBox
+						state={state}
+						overlayProps={overlayProps}
+						aiSearchActive={aiSearchActive}
+						aiSearchAvailable={canSearchWithAIFromTopBar}
+					/>
+				)}
 			</Box>
 		</FormProvider>
 	);
 };
 
-export default NavBarSearch;
+export default NavBarAISearch;

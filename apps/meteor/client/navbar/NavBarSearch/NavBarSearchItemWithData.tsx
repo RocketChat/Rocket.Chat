@@ -9,7 +9,7 @@ import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import SidebarItemBadges from '../../sidebar/badges/SidebarItemBadges';
 import { useUnreadDisplay } from '../../sidebar/hooks/useUnreadDisplay';
 
-export type NavBarSearchItemWithDataProps = {
+type NavBarSearchItemWithDataProps = {
 	room: SubscriptionWithRoom;
 	id: string;
 	AvatarTemplate: ReactNode;

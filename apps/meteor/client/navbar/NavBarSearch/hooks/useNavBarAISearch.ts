@@ -7,7 +7,6 @@ import {
 	mergeSearchFilters,
 	type NavBarSearchFormValues,
 } from '@rocket.chat/ai-search';
-import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { UseFormSetFocus, UseFormSetValue } from 'react-hook-form';
@@ -32,17 +31,15 @@ export const useNavBarAISearch = ({
 	state: OverlayTriggerState;
 	t: TranslationFn;
 }) => {
-	const aiSearchFeatureEnabled = useFeaturePreview('aiSearch');
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
 	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule(AI_LICENSE_MODULE);
-	const canUseAISearch = Boolean(hasIntelligentSearchLicense && aiSearchFeatureEnabled);
-	const canSearchWithAIFromTopBar = Boolean(canUseAISearch && intelligentSearchEnabled);
+	const canSearchWithAIFromTopBar = Boolean(hasIntelligentSearchLicense && intelligentSearchEnabled);
 	const [aiSearchRequested, setAISearchRequested] = useState(false);
 	const aiSearchActive = Boolean(aiSearchRequested && canSearchWithAIFromTopBar);
 
 	const appliedFilterChips = useMemo(
-		() => (aiSearchActive ? buildAppliedFilterChips(appliedFilters) : []),
-		[aiSearchActive, appliedFilters],
+		() => (aiSearchActive ? buildAppliedFilterChips(appliedFilters, t) : []),
+		[aiSearchActive, appliedFilters, t],
 	);
 
 	const handleRemoveFilter = useCallback(
@@ -97,7 +94,6 @@ export const useNavBarAISearch = ({
 
 	return {
 		aiSearchActive,
-		aiSearchFeatureEnabled,
 		canSearchWithAIFromTopBar,
 		appliedFilterChips,
 		aiSearchButtonTooltip: getAISearchButtonTooltip({ hasIntelligentSearchLicense, intelligentSearchEnabled, aiSearchActive, t }),

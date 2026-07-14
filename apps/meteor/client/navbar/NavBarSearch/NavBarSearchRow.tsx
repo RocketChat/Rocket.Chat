@@ -5,7 +5,7 @@ import { memo } from 'react';
 import NavBarSearchItemWithData from './NavBarSearchItemWithData';
 import NavBarSearchUserRow from './NavBarSearchUserRow';
 
-export type NavBarSearchRowProps = {
+type NavBarSearchRowProps = {
 	room: SubscriptionWithRoom;
 	onClick: () => void;
 };

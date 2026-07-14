@@ -1,1 +1,1 @@
-export { default } from './NavBarSearch';
+export { default } from './NavBarSearchFeaturePreview';

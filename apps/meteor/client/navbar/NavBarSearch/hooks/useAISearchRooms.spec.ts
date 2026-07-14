@@ -2,9 +2,9 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { renderHook, waitFor } from '@testing-library/react';
 
-import { useSearchItems } from './useSearchItems';
+import { useAISearchRooms } from './useAISearchRooms';
 
-describe('useSearchItems', () => {
+describe('useAISearchRooms', () => {
 	it('should deduplicate a user if they already exist in local subscriptions as a self-DM', async () => {
 		const myUserName = 'rocketchat.internal.admin.test';
 		const myUserId = 'user_id_456';
@@ -24,7 +24,7 @@ describe('useSearchItems', () => {
 			}))
 			.build();
 
-		const { result } = renderHook(() => useSearchItems(myUserName), { wrapper });
+		const { result } = renderHook(() => useAISearchRooms(myUserName), { wrapper });
 
 		expect(result.current.items).toHaveLength(1);
 		expect(result.current.items[0]._id).toBe('local_room_123');
@@ -47,7 +47,7 @@ describe('useSearchItems', () => {
 			}))
 			.build();
 
-		const { result } = renderHook(() => useSearchItems('jo'), { wrapper });
+		const { result } = renderHook(() => useAISearchRooms('jo'), { wrapper });
 
 		await waitFor(() => {
 			expect(result.current.isLoading).toBe(false);

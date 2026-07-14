@@ -349,26 +349,29 @@ const getFilterChipLabel = (key: ActiveSearchFilter['key'], value: string): stri
 	}
 };
 
-export const buildAppliedFilterChips = (filters: SearchFilters): SearchFilterChip[] => {
+export const buildAppliedFilterChips = (
+	filters: SearchFilters,
+	t: (key: string, options?: Record<string, string>) => string,
+): SearchFilterChip[] => {
 	const chips: SearchFilterChip[] = [];
 
 	if (filters.roomNames.length) {
-		const label = filters.roomNames.map((roomName) => `#${roomName}`).join(', ');
+		const label = filters.roomNames.map((roomName) => getFilterChipLabel('in', roomName)).join(', ');
 		chips.push({
 			key: 'in',
 			values: filters.roomNames,
 			label,
-			title: `in: ${label}`,
+			title: t('Search_filter_in_rooms', { rooms: label }),
 		});
 	}
 
 	if (filters.fromUsernames.length) {
-		const label = filters.fromUsernames.map((username) => `@${username}`).join(', ');
+		const label = filters.fromUsernames.map((username) => getFilterChipLabel('from', username)).join(', ');
 		chips.push({
 			key: 'from',
 			values: filters.fromUsernames,
 			label,
-			title: `from: ${label}`,
+			title: t('Search_filter_from_users', { users: label }),
 		});
 	}
 
@@ -378,7 +381,7 @@ export const buildAppliedFilterChips = (filters: SearchFilters): SearchFilterChi
 			key: 'after',
 			values: [filters.startDate],
 			label,
-			title: label,
+			title: t('Search_filter_after_date', { date: filters.startDate }),
 		});
 	}
 
@@ -388,7 +391,7 @@ export const buildAppliedFilterChips = (filters: SearchFilters): SearchFilterChi
 			key: 'before',
 			values: [filters.endDate],
 			label,
-			title: label,
+			title: t('Search_filter_before_date', { date: filters.endDate }),
 		});
 	}
 
