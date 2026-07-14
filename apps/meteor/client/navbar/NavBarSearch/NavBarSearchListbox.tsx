@@ -20,9 +20,10 @@ export type NavBarSearchListBoxProps = {
 	state: OverlayTriggerState;
 	overlayProps: OverlayTriggerAria['overlayProps'];
 	aiSearchActive?: boolean;
+	aiSearchAvailable?: boolean;
 };
 
-const NavBarSearchListBox = ({ state, overlayProps, aiSearchActive = false }: NavBarSearchListBoxProps) => {
+const NavBarSearchListBox = ({ state, overlayProps, aiSearchActive = false, aiSearchAvailable = false }: NavBarSearchListBoxProps) => {
 	const { t } = useTranslation();
 	const containerRef = useRef<HTMLElement>(null);
 
@@ -67,6 +68,7 @@ const NavBarSearchListBox = ({ state, overlayProps, aiSearchActive = false }: Na
 						isLoading={isLoading}
 						isFetching={isFetching}
 						rooms={rooms}
+						suggestAISearch={aiSearchAvailable && !aiSearchActive}
 						onSelect={handleSelect}
 					/>
 				</div>

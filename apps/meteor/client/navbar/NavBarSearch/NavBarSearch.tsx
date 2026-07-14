@@ -46,8 +46,15 @@ const NavBarSearch = () => {
 	const handleFocus = useSearchFocus(state);
 	const handleClick = useSearchClick(state);
 
-	const { aiSearchActive, aiSearchFeatureEnabled, appliedFilterChips, aiSearchButtonTooltip, handleRemoveFilter, handleToggleAISearch } =
-		useNavBarAISearch({ filterText, appliedFilters, setFocus, setValue, state, t });
+	const {
+		aiSearchActive,
+		aiSearchFeatureEnabled,
+		canSearchWithAIFromTopBar,
+		appliedFilterChips,
+		aiSearchButtonTooltip,
+		handleRemoveFilter,
+		handleToggleAISearch,
+	} = useNavBarAISearch({ filterText, appliedFilters, setFocus, setValue, state, t });
 
 	const searchLabel = aiSearchActive ? t('Search_rooms_or_ask_AI') : t('Search_rooms');
 	const placeholder = [searchLabel, shortcut].filter(Boolean).join(' ');
@@ -115,7 +122,14 @@ const NavBarSearch = () => {
 						/>
 					}
 				/>
-				{state.isOpen && <NavBarSearchListBox state={state} overlayProps={overlayProps} aiSearchActive={aiSearchActive} />}
+				{state.isOpen && (
+					<NavBarSearchListBox
+						state={state}
+						overlayProps={overlayProps}
+						aiSearchActive={aiSearchActive}
+						aiSearchAvailable={canSearchWithAIFromTopBar}
+					/>
+				)}
 			</Box>
 		</FormProvider>
 	);
