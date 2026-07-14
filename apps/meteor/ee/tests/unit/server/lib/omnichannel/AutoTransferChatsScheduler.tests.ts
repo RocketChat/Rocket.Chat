@@ -73,7 +73,7 @@ const mocks = {
 	'../../../../server/lib/omnichannel/RoutingManager': { RoutingManager: { getConfig: routingConfigMock, getNextAgent } },
 	'../../../../server/lib/omnichannel/Helper': { forwardRoomToAgent },
 	'../../../../server/lib/omnichannel/rooms': { returnRoomAsInquiry: returnRoomAsInquiryMock },
-	'../../../../app/settings/server': { settings: { get: settingsGet } },
+	'../../../../server/settings': { settings: { get: settingsGet } },
 	'./logger': { schedulerLogger: mockLogger },
 	'@rocket.chat/models': {
 		LivechatRooms: mockLivechatRooms,

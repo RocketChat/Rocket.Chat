@@ -44,7 +44,11 @@ import { migrateVisitorIfMissingContact } from './contacts/migrateVisitorIfMissi
 import { afterRoomQueued, beforeNewRoom } from './hooks';
 import { checkOnlineAgents, getOnlineAgents } from './service-status';
 import { saveTransferHistory } from './transfer';
-import { sendNotification } from '../../../app/lib/server';
+import { sendNotification } from '../../hooks/messages/sendNotificationsOnMessage';
+import { settings } from '../../settings';
+import { hasRoleAsync } from '../authorization/hasRole';
+import { callbacks } from '../callbacks';
+import { i18n } from '../i18n';
 import {
 	notifyOnLivechatDepartmentAgentChanged,
 	notifyOnLivechatDepartmentAgentChangedByAgentsAndDepartmentId,
@@ -53,11 +57,7 @@ import {
 	notifyOnSubscriptionChanged,
 	notifyOnRoomChangedById,
 	notifyOnLivechatInquiryChangedByRoom,
-} from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
-import { hasRoleAsync } from '../authorization/hasRole';
-import { callbacks } from '../callbacks';
-import { i18n } from '../i18n';
+} from '../notifyListener';
 
 const logger = new Logger('LivechatHelper');
 export const allowAgentSkipQueue = (agent: SelectedAgent) => {

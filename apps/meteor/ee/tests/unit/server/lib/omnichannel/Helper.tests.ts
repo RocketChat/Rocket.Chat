@@ -15,7 +15,7 @@ const mocks = {
 	'./QueueInactivityMonitor': { stop: sinon.stub() },
 	'../../../../server/lib/omnichannel/settings': { getInquirySortMechanismSetting: sinon.stub() },
 	'../../../../app/livechat/lib/inquiries': { getOmniChatSortQuery: sinon.stub() },
-	'../../../../app/settings/server': { settings: { get: settingGetMock } },
+	'../../../../server/settings': { settings: { get: settingGetMock } },
 	'@rocket.chat/models': { Users: usersModelMock, LivechatDepartment: departmentsMock },
 };
 

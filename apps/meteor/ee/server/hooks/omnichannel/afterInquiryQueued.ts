@@ -1,8 +1,8 @@
 import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import moment from 'moment';
 
-import { settings } from '../../../../app/settings/server';
 import { afterInquiryQueued } from '../../../../server/lib/omnichannel/hooks';
+import { settings } from '../../../../server/settings';
 import { OmnichannelQueueInactivityMonitor } from '../../lib/omnichannel/QueueInactivityMonitor';
 
 export const afterInquiryQueuedFunc = async (inquiry: ILivechatInquiryRecord) => {

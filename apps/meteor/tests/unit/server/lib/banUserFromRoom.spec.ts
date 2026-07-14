@@ -37,7 +37,7 @@ const { banUserFromRoomMethod } = p.noCallThru().load('../../../../server/lib/ba
 		isBannedSubscription: (sub: { status?: string } | null) => sub?.status === 'BANNED',
 	},
 	'@rocket.chat/models': modelsMock,
-	'../../app/authorization/server': { canAccessRoomAsync: canAccessRoomAsyncMock },
+	'./authorization': { canAccessRoomAsync: canAccessRoomAsyncMock },
 	'./authorization/hasPermission': { hasPermissionAsync: hasPermissionAsyncMock },
 	'./authorization/hasRole': { hasRoleAsync: hasRoleAsyncMock },
 	'./rooms/banUserFromRoom': { banUserFromRoom: banUserFromRoomMock },

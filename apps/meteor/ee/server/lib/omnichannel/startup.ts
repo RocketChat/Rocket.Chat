@@ -4,9 +4,9 @@ import { updatePredictedVisitorAbandonment, updateQueueInactivityTimeout } from 
 import { VisitorInactivityMonitor } from './VisitorInactivityMonitor';
 import { MultipleBusinessHoursBehavior } from './business-hour/Multiple';
 import { logger } from './logger';
-import { settings } from '../../../../app/settings/server';
 import { businessHourManager } from '../../../../server/lib/omnichannel/business-hour';
 import { SingleBusinessHourBehavior } from '../../../../server/lib/omnichannel/business-hour/Single';
+import { settings } from '../../../../server/settings';
 
 const visitorActivityMonitor = new VisitorInactivityMonitor();
 const businessHours = {

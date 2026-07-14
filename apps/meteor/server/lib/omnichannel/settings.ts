@@ -1,7 +1,7 @@
 import { OmnichannelSortingMechanismSettingType } from '@rocket.chat/core-typings';
 
 import { showConnecting } from './utils';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 
 export const getInquirySortMechanismSetting = (): OmnichannelSortingMechanismSettingType =>
 	settings.get<OmnichannelSortingMechanismSettingType>('Omnichannel_sorting_mechanism') || OmnichannelSortingMechanismSettingType.Timestamp;

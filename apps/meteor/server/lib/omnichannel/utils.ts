@@ -6,8 +6,8 @@ import type { Filter } from 'mongodb';
 import { RoutingManager } from './RoutingManager';
 import { businessHourManager } from './business-hour';
 import type { AKeyOf } from './localTypes';
-import { notifyOnUserChange } from '../../../app/lib/server/lib/notifyListener';
 import { callbacks } from '../callbacks';
+import { notifyOnUserChange } from '../notifyListener';
 
 export function showConnecting() {
 	return RoutingManager.getConfig()?.showConnecting || false;

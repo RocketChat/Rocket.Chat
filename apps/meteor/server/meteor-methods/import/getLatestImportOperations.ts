@@ -3,8 +3,8 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Imports } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 
 export const executeGetLatestImportOperations = async () => {
 	const data = Imports.find(

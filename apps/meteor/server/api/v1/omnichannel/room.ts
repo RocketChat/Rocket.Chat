@@ -32,8 +32,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { API } from '../..';
 import { findGuest, findRoom, settings, findAgent, onCheckRoomParams } from './lib/livechat';
-import { canAccessRoomAsync } from '../../../../app/authorization/server';
-import { settings as rcSettings } from '../../../../app/settings/server';
+import { canAccessRoomAsync } from '../../../lib/authorization';
 import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
 import { callbacks } from '../../../lib/callbacks';
 import { i18n } from '../../../lib/i18n';
@@ -46,6 +45,7 @@ import { livechatLogger } from '../../../lib/omnichannel/logger';
 import { createRoom, removeOmnichannelRoom, saveRoomInfo } from '../../../lib/omnichannel/rooms';
 import { transfer } from '../../../lib/omnichannel/transfer';
 import { addUserToRoom } from '../../../lib/rooms/addUserToRoom';
+import { settings as rcSettings } from '../../../settings';
 import type { ExtractRoutesFromAPI } from '../../ApiClass';
 import { isWidget } from '../../lib/isWidget';
 

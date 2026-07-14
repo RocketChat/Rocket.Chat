@@ -1,9 +1,9 @@
 import { Users } from '@rocket.chat/models';
 
-import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { allowAgentSkipQueue } from '../../../../server/lib/omnichannel/Helper';
 import { checkOnlineAgents } from '../../../../server/lib/omnichannel/service-status';
+import { settings } from '../../../../server/settings';
 import { isAgentWithinChatLimits } from '../../lib/omnichannel/Helper';
 import { cbLogger } from '../../lib/omnichannel/logger';
 

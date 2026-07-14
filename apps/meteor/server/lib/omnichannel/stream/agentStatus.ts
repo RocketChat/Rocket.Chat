@@ -1,6 +1,6 @@
 import { Logger } from '@rocket.chat/logger';
 
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../settings';
 import { closeOpenChats } from '../closeRoom';
 import { forwardOpenChats } from '../transfer';
 

@@ -1,9 +1,9 @@
 import type { OEmbedMeta, OEmbedUrlContent, OEmbedProvider } from '@rocket.chat/core-typings';
 import { camelCase } from 'change-case';
 
-import { settings } from '../../../../../app/settings/server';
 import { Info } from '../../../../../app/utils/rocketchat.info';
 import { SystemLogger } from '../../../../lib/logger/system';
+import { settings } from '../../../../settings';
 
 class Providers {
 	private providers: OEmbedProvider[];

@@ -40,10 +40,6 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 
-import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
-import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
-import { getUserPreference } from '../../../app/utils/server/lib/getUserPreference';
 import { availabilityErrors } from '../../../lib/videoConference/constants';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
@@ -55,11 +51,15 @@ import { sendMessage } from '../../lib/messages/sendMessage';
 import { metrics } from '../../lib/metrics/lib/metrics';
 import { Push } from '../../lib/notifications/push/push';
 import PushNotification from '../../lib/notifications/push-config/lib/PushNotification';
+import { notifyOnMessageChange } from '../../lib/notifyListener';
 import { createRoom } from '../../lib/rooms/createRoom';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { updateCounter } from '../../lib/statistics/functions/updateStatsCounter';
+import { getUserAvatarURL } from '../../lib/utils/getUserAvatarURL';
+import { getUserPreference } from '../../lib/utils/lib/getUserPreference';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { videoConfTypes } from '../../lib/videoConfTypes';
+import { settings } from '../../settings';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 

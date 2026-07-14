@@ -18,12 +18,12 @@ import { JSDOM } from 'jsdom';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment-timezone';
 
-import { settings } from '../../../app/settings/server';
-import { getTimezone } from '../../../app/utils/server/lib/getTimezone';
+import { settings } from '../../settings';
 import { callbacks } from '../callbacks';
 import { i18n } from '../i18n';
 import { FileUpload } from '../media/file-upload';
 import * as Mailer from '../notifications/email/api';
+import { getTimezone } from '../utils/lib/getTimezone';
 
 const logger = new Logger('Livechat-SendTranscript');
 

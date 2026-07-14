@@ -33,6 +33,11 @@ import { getRequiredDepartment } from './departmentsLib';
 import { checkDefaultAgentOnNewRoom } from './hooks';
 import { livechatLogger } from './logger';
 import { saveTransferHistory } from './transfer';
+import { i18n } from '../../../app/utils/lib/i18n';
+import { trim } from '../../../lib/utils/stringUtils';
+import { settings } from '../../settings';
+import { hasPermissionAsync } from '../authorization/hasPermission';
+import { callbacks } from '../callbacks';
 import {
 	notifyOnLivechatInquiryChangedByRoom,
 	notifyOnSubscriptionChangedByRoomId,
@@ -40,12 +45,7 @@ import {
 	notifyOnLivechatInquiryChanged,
 	notifyOnSubscriptionChanged,
 	notifyOnRoomChanged,
-} from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
-import { i18n } from '../../../app/utils/lib/i18n';
-import { trim } from '../../../lib/utils/stringUtils';
-import { hasPermissionAsync } from '../authorization/hasPermission';
-import { callbacks } from '../callbacks';
+} from '../notifyListener';
 
 export async function getRoom(
 	guest: ILivechatVisitor,

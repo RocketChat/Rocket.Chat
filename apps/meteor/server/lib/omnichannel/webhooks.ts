@@ -2,7 +2,7 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import type { Response } from '@rocket.chat/server-fetch';
 
 import { webhooksLogger } from './logger';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 import { metrics } from '../metrics';
 
 const isRetryable = (status: number): boolean => status >= 500 || status === 429;

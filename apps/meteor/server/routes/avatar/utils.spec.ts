@@ -37,7 +37,7 @@ const {
 			get: mocks.fileUploadGet,
 		},
 	},
-	'../../../app/settings/server': {
+	'../../settings': {
 		settings: {
 			get: mocks.settingsGet,
 		},

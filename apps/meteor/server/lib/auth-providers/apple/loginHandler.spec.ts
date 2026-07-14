@@ -1,7 +1,7 @@
 import { Accounts } from 'meteor/accounts-base';
 
 import { handleIdentityToken } from '../../../../app/apple/lib/handleIdentityToken';
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../settings';
 
 jest.mock(
 	'meteor/accounts-base',
@@ -32,7 +32,7 @@ jest.mock(
 	{ virtual: true },
 );
 
-jest.mock('../../../../app/settings/server', () => ({
+jest.mock('../../../settings', () => ({
 	settings: {
 		get: jest.fn(),
 	},

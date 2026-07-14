@@ -17,7 +17,7 @@ const settingsGetMock = {
 
 const { parseTranscriptRequest } = p.noCallThru().load('../../../../../server/lib/omnichannel/parseTranscriptRequest', {
 	'@rocket.chat/models': modelsMock,
-	'../../../app/settings/server': { settings: settingsGetMock },
+	'../../settings': { settings: settingsGetMock },
 });
 
 describe('parseTranscriptRequest', () => {

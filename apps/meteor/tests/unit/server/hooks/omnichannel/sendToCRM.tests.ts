@@ -9,14 +9,14 @@ const resultObj = {
 const { sendMessageType, isOmnichannelNavigationMessage, isOmnichannelClosingMessage, getAdditionalFieldsByType } = p
 	.noCallThru()
 	.load('../../../../../server/hooks/omnichannel/sendToCRM', {
-		'../../../app/settings/server': {
+		'../../settings': {
 			settings: {
 				get() {
 					return resultObj.result;
 				},
 			},
 		},
-		'../../../app/utils/server/functions/normalizeMessageFileUpload': {
+		'../../lib/utils/functions/normalizeMessageFileUpload': {
 			normalizeMessageFileUpload: sinon.stub().returnsArg(0),
 		},
 		'../../lib/omnichannel/webhooks': {},

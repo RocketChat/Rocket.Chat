@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { License } from '@rocket.chat/license';
 
-import { use } from '../../../app/settings/server/Middleware';
 import { API } from '../../../server/api/api';
 import type { NonEnterpriseTwoFactorOptions, Options } from '../../../server/api/definition';
+import { use } from '../../../server/settings/Middleware';
 
 // Overwrites two factor method to enforce 2FA check for enterprise APIs when
 // no license was provided to prevent abuse on enterprise APIs.

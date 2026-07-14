@@ -3,9 +3,9 @@ import { isEditedMessage } from '@rocket.chat/core-typings';
 import { LivechatVisitors } from '@rocket.chat/models';
 
 import { callbackLogger } from './logger';
-import { settings } from '../../../app/settings/server';
-import { normalizeMessageFileUpload } from '../../../app/utils/server/functions/normalizeMessageFileUpload';
+import { settings } from '../../settings';
 import { callbacks } from '../callbacks';
+import { normalizeMessageFileUpload } from '../utils/functions/normalizeMessageFileUpload';
 
 callbacks.add(
 	'afterOmnichannelSaveMessage',

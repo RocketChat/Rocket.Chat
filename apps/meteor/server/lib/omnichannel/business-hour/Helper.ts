@@ -5,7 +5,7 @@ import moment from 'moment';
 
 import { createDefaultBusinessHourRow } from './LivechatBusinessHours';
 import { filterBusinessHoursThatMustBeOpened } from './filterBusinessHoursThatMustBeOpened';
-import { notifyOnUserChangeAsync } from '../../../../app/lib/server/lib/notifyListener';
+import { notifyOnUserChangeAsync } from '../../notifyListener';
 import { businessHourLogger } from '../logger';
 
 export { filterBusinessHoursThatMustBeOpened };

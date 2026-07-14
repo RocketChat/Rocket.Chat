@@ -3,7 +3,7 @@ import { LivechatContacts, Settings } from '@rocket.chat/models';
 
 import { patchContact } from './patchContact';
 import { validateContactManager } from './validateContactManager';
-import { notifyOnSettingChanged } from '../../../../app/lib/server/lib/notifyListener';
+import { notifyOnSettingChanged } from '../../notifyListener';
 
 export type ResolveContactConflictsParams = {
 	contactId: string;

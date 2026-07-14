@@ -4,8 +4,8 @@ import { LivechatRooms, Users, LivechatVisitors, LivechatAgentActivity } from '@
 import mem from 'mem';
 import moment from 'moment';
 
-import { settings } from '../../../../app/settings/server';
 import { secondsToHHMMSS } from '../../../../lib/utils/secondsToHHMMSS';
+import { settings } from '../../../settings';
 import { getAnalyticsOverviewDataCachedForRealtime } from '../AnalyticsTyped';
 import {
 	findPercentageOfAbandonedRoomsAsync,

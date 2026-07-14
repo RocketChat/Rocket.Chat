@@ -9,15 +9,15 @@ import type { ClientSession } from 'mongodb';
 import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor } from './localTypes';
 import { livechatLogger as logger } from './logger';
 import { parseTranscriptRequest } from './parseTranscriptRequest';
+import { client, shouldRetryTransaction } from '../../database/utils';
+import { settings } from '../../settings';
+import { callbacks } from '../callbacks';
 import {
 	notifyOnLivechatInquiryChanged,
 	notifyOnRoomChanged,
 	notifyOnRoomChangedById,
 	notifyOnSubscriptionChanged,
-} from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
-import { client, shouldRetryTransaction } from '../../database/utils';
-import { callbacks } from '../callbacks';
+} from '../notifyListener';
 
 type ChatCloser = { _id: string; username: string | undefined };
 

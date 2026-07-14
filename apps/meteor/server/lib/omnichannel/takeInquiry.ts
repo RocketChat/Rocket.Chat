@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import { RoutingManager } from './RoutingManager';
 import { isAgentAvailableToTakeContactInquiry } from './contacts/isAgentAvailableToTakeContactInquiry';
 import { migrateVisitorIfMissingContact } from './contacts/migrateVisitorIfMissingContact';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 
 export const takeInquiry = async (
 	userId: string,

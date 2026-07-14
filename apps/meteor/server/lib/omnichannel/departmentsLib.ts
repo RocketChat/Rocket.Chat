@@ -8,12 +8,9 @@ import { Meteor } from 'meteor/meteor';
 import { updateDepartmentAgents } from './Helper';
 import { afterDepartmentArchived, afterDepartmentUnarchived } from './hooks';
 import { livechatLogger } from './logger';
-import {
-	notifyOnLivechatDepartmentAgentChangedByDepartmentId,
-	notifyOnLivechatDepartmentAgentChanged,
-} from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 import { callbacks } from '../callbacks';
+import { notifyOnLivechatDepartmentAgentChangedByDepartmentId, notifyOnLivechatDepartmentAgentChanged } from '../notifyListener';
 /**
  * @param {string|null} _id - The department id
  * @param {Partial<import('@rocket.chat/core-typings').ILivechatDepartment>} departmentData

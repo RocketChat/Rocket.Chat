@@ -27,7 +27,7 @@ import { resolveVisitor } from '../../../../server/lib/omnichannel/resolveVisito
 import { createRoom } from '../../../../server/lib/omnichannel/rooms';
 import { online } from '../../../../server/lib/omnichannel/service-status';
 import { transfer } from '../../../../server/lib/omnichannel/transfer';
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 
 declare module '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator' {
 	interface IExtraRoomParams {

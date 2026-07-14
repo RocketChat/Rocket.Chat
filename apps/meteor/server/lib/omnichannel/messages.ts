@@ -9,7 +9,7 @@ import { Meteor } from 'meteor/meteor';
 import type { ILivechatMessage } from './localTypes';
 import { getRoom } from './rooms';
 import { showConnecting } from './utils';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 import { callbacks } from '../callbacks';
 import { deleteMessage as deleteMessageFunc } from '../messages/deleteMessage';
 import { sendMessage as sendMessageFunc } from '../messages/sendMessage';

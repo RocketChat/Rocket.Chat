@@ -1,9 +1,9 @@
 import type { IOmnichannelCustomAgent } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import { settings } from '../../../../../app/settings/server';
 import type { IRoutingManagerConfig } from '../../../../../definition/IRoutingManagerConfig';
 import { RoutingManager } from '../../../../../server/lib/omnichannel/RoutingManager';
+import { settings } from '../../../../../server/settings';
 import { getChatLimitsQuery } from '../../../hooks/omnichannel/applySimultaneousChatsRestrictions';
 import { logger } from '../logger';
 

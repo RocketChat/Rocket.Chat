@@ -25,7 +25,7 @@ const { runMergeContacts } = proxyquire.noCallThru().load('../../../../../../ser
 	'../../../server/lib/omnichannel/contacts/mergeContacts': { mergeContacts: { patch: sinon.stub() } },
 	'../../../server/lib/omnichannel/contacts/ContactMerger': { ContactMerger: contactMergerStub },
 	'../lib/omnichannel/logger': { contactLogger: { info: sinon.stub(), debug: sinon.stub() } },
-	'../../../app/lib/server/lib/notifyListener': { notifyOnSettingChanged: sinon.stub() },
+	'../../../server/lib/notifyListener': { notifyOnSettingChanged: sinon.stub() },
 	'@rocket.chat/models': modelsMock,
 });
 

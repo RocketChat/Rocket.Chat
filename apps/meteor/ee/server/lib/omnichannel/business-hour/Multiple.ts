@@ -5,7 +5,6 @@ import { isTruthy } from '@rocket.chat/tools';
 import moment from 'moment';
 
 import { openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
-import { settings } from '../../../../../app/settings/server';
 import { businessHourManager } from '../../../../../server/lib/omnichannel/business-hour';
 import type { IBusinessHourBehavior } from '../../../../../server/lib/omnichannel/business-hour/AbstractBusinessHour';
 import { AbstractBusinessHourBehavior } from '../../../../../server/lib/omnichannel/business-hour/AbstractBusinessHour';
@@ -16,6 +15,7 @@ import {
 	makeAgentsUnavailableBasedOnBusinessHour,
 } from '../../../../../server/lib/omnichannel/business-hour/Helper';
 import { closeBusinessHour } from '../../../../../server/lib/omnichannel/business-hour/closeBusinessHour';
+import { settings } from '../../../../../server/settings';
 import { bhLogger } from '../logger';
 
 export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior implements IBusinessHourBehavior {

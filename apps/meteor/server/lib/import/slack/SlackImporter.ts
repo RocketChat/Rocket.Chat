@@ -3,10 +3,10 @@ import { Messages, Settings, ImportData } from '@rocket.chat/models';
 import type { IZipEntry } from 'adm-zip';
 
 import { Importer, ProgressStep, ImporterWebsocket } from '..';
-import { notifyOnSettingChanged } from '../../../../app/lib/server/lib/notifyListener';
 import { MentionsParser } from '../../../../app/mentions/lib/MentionsParser';
-import { settings } from '../../../../app/settings/server';
-import { getUserAvatarURL } from '../../../../app/utils/server/getUserAvatarURL';
+import { settings } from '../../../settings';
+import { notifyOnSettingChanged } from '../../notifyListener';
+import { getUserAvatarURL } from '../../utils/getUserAvatarURL';
 import type { ImporterProgress } from '../classes/ImporterProgress';
 
 type SlackChannel = {

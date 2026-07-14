@@ -1,5 +1,0 @@
-# Phase 7c1: app/settings/server -> server/settings (merge)
-# PRE-STEP (run before this manifest): move-module --from server/settings/index.ts --to server/settings/definitions.ts
-# so the incoming registry index.ts does not collide with the existing settings-definitions loader.
-app/settings/server	server/settings
-tests/unit/app/settings/server/functions	tests/unit/server/settings/functions

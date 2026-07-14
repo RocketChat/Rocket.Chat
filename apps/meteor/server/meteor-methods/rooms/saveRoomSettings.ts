@@ -6,23 +6,23 @@ import { Rooms, Users } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { isABACManagedRoom } from '../../../app/authorization/server/lib/isABACManagedRoom';
-import { saveReactWhenReadOnly } from '../../../app/channel-settings/server/functions/saveReactWhenReadOnly';
-import { saveRoomAnnouncement } from '../../../app/channel-settings/server/functions/saveRoomAnnouncement';
-import { saveRoomCustomFields } from '../../../app/channel-settings/server/functions/saveRoomCustomFields';
-import { saveRoomDescription } from '../../../app/channel-settings/server/functions/saveRoomDescription';
-import { saveRoomEncrypted } from '../../../app/channel-settings/server/functions/saveRoomEncrypted';
-import { saveRoomName } from '../../../app/channel-settings/server/functions/saveRoomName';
-import { saveRoomReadOnly } from '../../../app/channel-settings/server/functions/saveRoomReadOnly';
-import { saveRoomSystemMessages } from '../../../app/channel-settings/server/functions/saveRoomSystemMessages';
-import { saveRoomTopic } from '../../../app/channel-settings/server/functions/saveRoomTopic';
-import { saveRoomType } from '../../../app/channel-settings/server/functions/saveRoomType';
-import { notifyOnRoomChangedById } from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
 import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { isABACManagedRoom } from '../../lib/authorization/isABACManagedRoom';
+import { notifyOnRoomChangedById } from '../../lib/notifyListener';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { setRoomAvatar } from '../../lib/rooms/setRoomAvatar';
+import { saveReactWhenReadOnly } from '../../lib/rooms/settings/saveReactWhenReadOnly';
+import { saveRoomAnnouncement } from '../../lib/rooms/settings/saveRoomAnnouncement';
+import { saveRoomCustomFields } from '../../lib/rooms/settings/saveRoomCustomFields';
+import { saveRoomDescription } from '../../lib/rooms/settings/saveRoomDescription';
+import { saveRoomEncrypted } from '../../lib/rooms/settings/saveRoomEncrypted';
+import { saveRoomName } from '../../lib/rooms/settings/saveRoomName';
+import { saveRoomReadOnly } from '../../lib/rooms/settings/saveRoomReadOnly';
+import { saveRoomSystemMessages } from '../../lib/rooms/settings/saveRoomSystemMessages';
+import { saveRoomTopic } from '../../lib/rooms/settings/saveRoomTopic';
+import { saveRoomType } from '../../lib/rooms/settings/saveRoomType';
+import { settings } from '../../settings';
 
 type RoomSettings = {
 	roomAvatar: string;

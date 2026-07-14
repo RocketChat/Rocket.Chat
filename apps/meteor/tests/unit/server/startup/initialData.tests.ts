@@ -36,7 +36,7 @@ const { insertAdminUserFromEnv } = proxyquire.noCallThru().load('../../../../ser
 	'../lib/users/checkUsernameAvailability': {
 		checkUsernameAvailability,
 	},
-	'../../app/settings/server': {
+	'../settings': {
 		settings: { get: settingsGet },
 	},
 	'@rocket.chat/tools': {

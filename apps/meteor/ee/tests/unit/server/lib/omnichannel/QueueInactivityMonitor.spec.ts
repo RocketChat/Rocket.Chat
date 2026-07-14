@@ -42,7 +42,7 @@ const { OmnichannelQueueInactivityMonitorClass } = proxyquire
 		'meteor/meteor': meteorMock,
 		'meteor/mongo': mongoMock,
 		'../../../../server/lib/omnichannel/closeRoom': livechatMock,
-		'../../../../app/settings/server': settingsMock,
+		'../../../../server/settings': settingsMock,
 		'../../../../server/lib/i18n': { i18n: { t: sinon.stub().returns('Closed automatically') } },
 	});
 

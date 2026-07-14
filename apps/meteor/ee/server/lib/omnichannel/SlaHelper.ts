@@ -2,12 +2,12 @@ import { Message } from '@rocket.chat/core-services';
 import type { IOmnichannelServiceLevelAgreements, IUser } from '@rocket.chat/core-typings';
 import { LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
+import { callbacks } from '../../../../server/lib/callbacks';
 import {
 	notifyOnRoomChangedById,
 	notifyOnLivechatInquiryChangedByRoom,
 	notifyOnLivechatInquiryChanged,
-} from '../../../../app/lib/server/lib/notifyListener';
-import { callbacks } from '../../../../server/lib/callbacks';
+} from '../../../../server/lib/notifyListener';
 
 export const removeSLAFromRooms = async (slaId: string, userId: string) => {
 	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId });

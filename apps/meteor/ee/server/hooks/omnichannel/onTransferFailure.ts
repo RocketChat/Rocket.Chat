@@ -2,9 +2,9 @@ import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { IRoom, ILivechatVisitor, ILivechatDepartment, TransferData, AtLeast } from '@rocket.chat/core-typings';
 import { LivechatDepartment } from '@rocket.chat/models';
 
-import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { forwardRoomToDepartment } from '../../../../server/lib/omnichannel/Helper';
+import { settings } from '../../../../server/settings';
 import { cbLogger } from '../../lib/omnichannel/logger';
 
 const onTransferFailure = async (

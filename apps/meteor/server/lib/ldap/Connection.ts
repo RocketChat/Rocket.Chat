@@ -12,8 +12,8 @@ import ldapjs from 'ldapjs';
 import { logger, connLogger, searchLogger, authLogger, bindLogger, mapLogger } from './Logger';
 import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
 import { processLdapVariables, type LDAPVariableMap } from './processLdapVariables';
-import { settings } from '../../../app/settings/server';
 import { ensureArray } from '../../../lib/utils/arrayUtils';
+import { settings } from '../../settings';
 
 interface ILDAPEntryCallback<T> {
 	(entry: ldapjs.SearchEntry): T | undefined;

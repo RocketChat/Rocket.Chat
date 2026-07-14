@@ -6,9 +6,9 @@ import moment from 'moment-timezone';
 
 import type { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
 import { closeBusinessHour } from './closeBusinessHour';
-import { notifyOnUserChange } from '../../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../settings';
 import { callbacks } from '../../callbacks';
+import { notifyOnUserChange } from '../../notifyListener';
 import { businessHourLogger } from '../logger';
 
 const CRON_EVERY_MIDNIGHT_EXPRESSION = '0 0 * * *';

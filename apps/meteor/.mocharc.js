@@ -40,6 +40,6 @@ module.exports = {
 		'server/meteor-methods/**/*.spec.ts',
 		'server/lib/omnichannel/**/*.spec.ts',
 		'server/lib/notifications/push/**/*.spec.ts',
-		'app/utils/server/**/*.spec.ts',
+		'server/lib/utils/**/*.spec.ts',
 	],
 };

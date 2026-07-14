@@ -6,7 +6,7 @@ import type { IWorkHoursCronJobsWrapper } from '@rocket.chat/models';
 import moment from 'moment-timezone';
 import type { UpdateFilter } from 'mongodb';
 
-import { notifyOnUserChange } from '../../../../app/lib/server/lib/notifyListener';
+import { notifyOnUserChange } from '../../notifyListener';
 
 export interface IBusinessHourBehavior {
 	findHoursToCreateJobs(): Promise<IWorkHoursCronJobsWrapper[]>;

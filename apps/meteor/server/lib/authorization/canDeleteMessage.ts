@@ -3,7 +3,7 @@ import { Rooms } from '@rocket.chat/models';
 
 import { canAccessRoomAsync } from './canAccessRoom';
 import { hasPermissionAsync } from './hasPermission';
-import { getValue } from '../../../app/settings/server/raw';
+import { getValue } from '../../settings/raw';
 
 const elapsedTime = (ts: Date): number => {
 	const dif = Date.now() - ts.getTime();

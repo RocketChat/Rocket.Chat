@@ -7,9 +7,9 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 
-import { settings } from '../../../app/settings/server';
 import { isRenderableImageType } from '../../../lib/renderableImageTypes';
 import { onceTransactionCommitedSuccessfully } from '../../database/utils';
+import { settings } from '../../settings';
 import { hasPermissionAsync } from '../authorization/hasPermission';
 import { SystemLogger } from '../logger/system';
 import { RocketChatFile } from '../media/file';

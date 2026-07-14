@@ -6,8 +6,6 @@ import type { MessageUrl, IMessage, MessageTypesValues, IUser, IRoom, AtLeast } 
 import { Messages, Rooms } from '@rocket.chat/models';
 
 import { OEmbed } from './hooks/AfterSaveOEmbed';
-import { settings } from '../../../app/settings/server';
-import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
 import { BeforeSaveCannedResponse } from '../../../ee/server/hooks/messages/BeforeSaveCannedResponse';
 import { FederationMatrixInvalidConfigurationError } from '../federation/utils';
 import { FederationActions } from './hooks/BeforeFederationActions';
@@ -18,7 +16,6 @@ import { BeforeSaveMarkdownParser } from './hooks/BeforeSaveMarkdownParser';
 import { mentionServer } from './hooks/BeforeSaveMentions';
 import { BeforeSavePreventMention } from './hooks/BeforeSavePreventMention';
 import { BeforeSaveSpotify } from './hooks/BeforeSaveSpotify';
-import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
 import { closeUnclosedCodeBlock } from '../../../lib/utils/closeUnclosedCodeBlock';
 import { notifyUsersOnSystemMessage } from '../../hooks/messages/notifyUsersOnMessage';
 import { deleteMessage } from '../../lib/messages/deleteMessage';
@@ -26,8 +23,11 @@ import { parseUrlsInMessage } from '../../lib/messages/parseUrlsInMessage';
 import { sendMessage } from '../../lib/messages/sendMessage';
 import { updateMessage } from '../../lib/messages/updateMessage';
 import { executeSetReaction } from '../../lib/messaging/reactions/setReaction';
+import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../lib/notifyListener';
 import { shouldBreakInVersion } from '../../lib/shouldBreakInVersion';
+import { getUserAvatarURL } from '../../lib/utils/getUserAvatarURL';
 import { executeSendMessage } from '../../meteor-methods/messages/sendMessage';
+import { settings } from '../../settings';
 
 const disableMarkdownParser = ['yes', 'true'].includes(String(process.env.DISABLE_MESSAGE_PARSER).toLowerCase());
 

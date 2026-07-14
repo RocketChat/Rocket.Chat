@@ -5,11 +5,11 @@ import type { MainLogger } from '@rocket.chat/logger';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
 
 import { schedulerLogger } from './logger';
-import { notifyOnRoomChangedById } from '../../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
+import { notifyOnRoomChangedById } from '../../../../server/lib/notifyListener';
 import { closeRoom } from '../../../../server/lib/omnichannel/closeRoom';
+import { settings } from '../../../../server/settings';
 
 const isPromiseRejectedResult = (result: any): result is PromiseRejectedResult => result && result.status === 'rejected';
 

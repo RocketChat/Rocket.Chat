@@ -10,8 +10,8 @@ import type { Profile } from 'passport-apple';
 import { AppleCustomOAuth } from './AppleCustomOAuth';
 import { config } from '../../../../app/apple/lib/config';
 import { handleIdentityToken } from '../../../../app/apple/lib/handleIdentityToken';
-import { settings } from '../../../../app/settings/server';
 import { oAuthRouter } from '../../../configuration/configurePassport';
+import { settings } from '../../../settings';
 import { allowPassportOAuthMiddleware } from '../../oauth/allowPassportOAuthMiddleware';
 import { passportOAuthCallback } from '../../oauth/passportOAuthCallback';
 

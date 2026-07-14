@@ -1,5 +1,0 @@
-# Phase 7c2: app/authorization/server leftovers -> server/lib/authorization
-app/authorization/server/constant	server/lib/authorization/constant
-app/authorization/server/streamer	server/lib/authorization/streamer
-app/authorization/server/lib/isABACManagedRoom.ts	server/lib/authorization/isABACManagedRoom.ts
-app/authorization/server/index.ts	server/lib/authorization/index.ts

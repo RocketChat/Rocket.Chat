@@ -22,7 +22,7 @@ const { EmailCheck } = proxyquire.noCallThru().load('./EmailCheck', {
 	'../../notifications/email/api': {
 		send: () => undefined,
 	},
-	'../../../../app/settings/server': {
+	'../../../settings': {
 		settings: {
 			get: settingsMock,
 		},

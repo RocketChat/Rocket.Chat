@@ -5,16 +5,16 @@ import type { IOmnichannelRoom, IUser, ILivechatInquiryRecord, IOmnichannelSyste
 import { Logger } from '@rocket.chat/logger';
 import { LivechatRooms, Subscriptions, LivechatInquiry } from '@rocket.chat/models';
 
+import { callbacks } from '../../../server/lib/callbacks';
 import {
 	notifyOnSubscriptionChangedByRoomId,
 	notifyOnLivechatInquiryChangedById,
 	notifyOnRoomChangedById,
-} from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
-import { callbacks } from '../../../server/lib/callbacks';
+} from '../../../server/lib/notifyListener';
 import { dispatchAgentDelegated } from '../../../server/lib/omnichannel/Helper';
 import { queueInquiry } from '../../../server/lib/omnichannel/QueueManager';
 import { RoutingManager } from '../../../server/lib/omnichannel/RoutingManager';
+import { settings } from '../../../server/settings';
 
 export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelEEService {
 	protected name = 'omnichannel-ee';

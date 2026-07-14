@@ -45,7 +45,7 @@ proxyquire.noCallThru().load('../../../../../../server/lib/omnichannel/business-
 		'LivechatDepartmentAgents': LivechatDepartmentAgentsStub,
 		'Users': UsersStub,
 	},
-	'../../../../app/lib/server/lib/notifyListener': {
+	'../../notifyListener': {
 		'@global': true,
 		'notifyOnUserChange': sinon.stub(),
 		'notifyOnUserChangeAsync': sinon.stub(),

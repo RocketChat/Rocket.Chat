@@ -41,7 +41,7 @@ jest.mock('../../lib/import', () => ({
 }));
 
 const mockSettingsGet = jest.fn();
-jest.mock('../../../app/settings/server', () => ({
+jest.mock('../../settings', () => ({
 	settings: {
 		get: (...args: unknown[]) => mockSettingsGet(...args),
 	},

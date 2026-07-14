@@ -7,7 +7,7 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import _ from 'underscore';
 
 import { AutoTranslate, TranslationProviderRegistry } from './autotranslate';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 import { i18n } from '../i18n';
 import { SystemLogger } from '../logger/system';
 

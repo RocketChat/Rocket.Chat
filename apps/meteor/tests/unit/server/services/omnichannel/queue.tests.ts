@@ -53,7 +53,7 @@ const { OmnichannelQueue } = p.noCallThru().load('../../../../../server/services
 		},
 	},
 	'../../lib/omnichannel/settings': libSettings,
-	'../../../app/settings/server': { settings },
+	'../../settings': { settings },
 	'./logger': { queueLogger },
 	'@rocket.chat/models': models,
 	'@rocket.chat/license': { License: license },

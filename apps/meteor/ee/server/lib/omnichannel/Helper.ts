@@ -22,9 +22,9 @@ import { updateInquiryQueueSla } from './SlaHelper';
 import { memoizeDebounce } from './debounceByParams';
 import { logger } from './logger';
 import { getOmniChatSortQuery } from '../../../../app/livechat/lib/inquiries';
-import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { getInquirySortMechanismSetting } from '../../../../server/lib/omnichannel/settings';
+import { settings } from '../../../../server/settings';
 
 type QueueInfo = {
 	message: {

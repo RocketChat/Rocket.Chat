@@ -10,7 +10,7 @@ import {
 	notifyOnRoomChangedByContactId,
 	notifyOnLivechatInquiryChangedByVisitorIds,
 	notifyOnSettingChanged,
-} from '../../../../app/lib/server/lib/notifyListener';
+} from '../../notifyListener';
 
 export type UpdateContactParams = {
 	contactId: string;

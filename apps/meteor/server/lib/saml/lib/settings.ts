@@ -14,12 +14,9 @@ import {
 	defaultMetadataTemplate,
 	defaultMetadataCertificateTemplate,
 } from './constants';
-import {
-	notifyOnLoginServiceConfigurationChanged,
-	notifyOnLoginServiceConfigurationChangedByService,
-} from '../../../../app/lib/server/lib/notifyListener';
-import { settings, settingsRegistry } from '../../../../app/settings/server';
+import { settings, settingsRegistry } from '../../../settings';
 import { SystemLogger } from '../../logger/system';
+import { notifyOnLoginServiceConfigurationChanged, notifyOnLoginServiceConfigurationChangedByService } from '../../notifyListener';
 import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 
 const getSamlConfigs = function (service: string): SAMLConfiguration {

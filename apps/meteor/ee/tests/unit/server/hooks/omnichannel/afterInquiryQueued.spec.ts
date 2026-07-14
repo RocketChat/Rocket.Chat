@@ -16,7 +16,7 @@ const queueMonitorStub = {
 const { afterInquiryQueuedFunc: afterInquiryQueued } = proxyquire
 	.noCallThru()
 	.load('../../../../../server/hooks/omnichannel/afterInquiryQueued.ts', {
-		'../../../../app/settings/server': {
+		'../../../../server/settings': {
 			settings: settingStub,
 		},
 		'../../lib/omnichannel/QueueInactivityMonitor': {

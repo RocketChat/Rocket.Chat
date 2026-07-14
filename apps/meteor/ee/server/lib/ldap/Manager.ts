@@ -6,8 +6,6 @@ import type ldapjs from 'ldapjs';
 import type { FindCursor } from 'mongodb';
 
 import { copyCustomFieldsLDAP } from './copyCustomFieldsLDAP';
-import { settings } from '../../../../app/settings/server';
-import { getValidRoomName } from '../../../../app/utils/server/lib/getValidRoomName';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
 import type {
 	ImporterAfterImportCallback,
@@ -21,6 +19,8 @@ import { addUserToRoom } from '../../../../server/lib/rooms/addUserToRoom';
 import { createRoom } from '../../../../server/lib/rooms/createRoom';
 import { removeUserFromRoom } from '../../../../server/lib/rooms/removeUserFromRoom';
 import { setUserActiveStatus } from '../../../../server/lib/users/setUserActiveStatus';
+import { getValidRoomName } from '../../../../server/lib/utils/lib/getValidRoomName';
+import { settings } from '../../../../server/settings';
 import { syncUserRoles } from '../syncUserRoles';
 
 export class LDAPEEManager extends LDAPManager {

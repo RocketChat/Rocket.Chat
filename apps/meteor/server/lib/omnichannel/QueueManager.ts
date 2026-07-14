@@ -26,13 +26,13 @@ import { checkOnlineForDepartment } from './departmentsLib';
 import { afterInquiryQueued, afterRoomQueued, beforeDelegateAgent, beforeRouteChat, onNewRoom } from './hooks';
 import { checkOnlineAgents, getOnlineAgents } from './service-status';
 import { getInquirySortMechanismSetting } from './settings';
-import { sendNotification } from '../../../app/lib/server';
-import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } from '../../../app/lib/server/lib/notifyListener';
 import { getOmniChatSortQuery } from '../../../app/livechat/lib/inquiries';
-import { settings } from '../../../app/settings/server';
 import { i18n } from '../../../app/utils/lib/i18n';
 import { dispatchInquiryPosition } from '../../../ee/server/lib/omnichannel/Helper';
 import { client, shouldRetryTransaction } from '../../database/utils';
+import { sendNotification } from '../../hooks/messages/sendNotificationsOnMessage';
+import { settings } from '../../settings';
+import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } from '../notifyListener';
 
 const logger = new Logger('QueueManager');
 

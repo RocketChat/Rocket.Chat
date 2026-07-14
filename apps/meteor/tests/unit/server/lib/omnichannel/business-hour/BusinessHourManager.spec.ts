@@ -25,7 +25,7 @@ const saveBusinessHourStub = sinon.stub();
 const loggerStub = sinon.stub();
 
 const { BusinessHourManager } = proxyquire.noCallThru().load('../../../../../../server/lib/omnichannel/business-hour/BusinessHourManager', {
-	'../../../../app/settings/server': {},
+	'../../../settings': {},
 	'../../callbacks': {},
 	'./AbstractBusinessHour': {},
 	'moment-timezone': momentStub,

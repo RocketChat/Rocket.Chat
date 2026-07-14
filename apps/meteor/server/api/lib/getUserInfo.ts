@@ -1,10 +1,10 @@
 import { isOAuthUser, type IMeApiUser, type IUser, type IUserEmail, type IUserCalendar } from '@rocket.chat/core-typings';
 import semver from 'semver';
 
-import { settings } from '../../../app/settings/server';
 import { Info } from '../../../app/utils/rocketchat.info';
-import { getURL } from '../../../app/utils/server/getURL';
-import { getUserPreference } from '../../../app/utils/server/lib/getUserPreference';
+import { getURL } from '../../lib/utils/getURL';
+import { getUserPreference } from '../../lib/utils/lib/getUserPreference';
+import { settings } from '../../settings';
 
 const isVerifiedEmail = (me: IUser): false | IUserEmail | undefined => {
 	if (!me || !Array.isArray(me.emails)) {

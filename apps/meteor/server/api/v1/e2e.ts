@@ -10,7 +10,6 @@ import {
 } from '@rocket.chat/rest-typings';
 import ExpiryMap from 'expiry-map';
 
-import { settings } from '../../../app/settings/server';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { handleSuggestedGroupKey } from '../../lib/e2e/functions/handleSuggestedGroupKey';
@@ -21,6 +20,7 @@ import { requestSubscriptionKeysMethod } from '../../meteor-methods/platform/req
 import { setRoomKeyIDMethod } from '../../meteor-methods/platform/setRoomKeyID';
 import { setUserPublicAndPrivateKeysMethod } from '../../meteor-methods/platform/setUserPublicAndPrivateKeys';
 import { updateGroupKey } from '../../meteor-methods/platform/updateGroupKey';
+import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 

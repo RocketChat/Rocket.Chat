@@ -3,7 +3,7 @@ import { type Logger } from '@rocket.chat/logger';
 import type { MiddlewareHandler } from 'hono';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../settings';
 import { applyBreakingChanges, type APIClass } from '../../ApiClass';
 import { convertHonoContextToApiActionContext, type HonoContext } from '../../router';
 

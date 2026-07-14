@@ -2,9 +2,9 @@ import { api, Team, MeteorError } from '@rocket.chat/core-services';
 import type { IMessage, IUser, IRoom } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 
-import { settings } from '../../../../app/settings/server';
 import { i18n } from '../../../lib/i18n';
 import { MentionsServer } from '../../../lib/messaging/mentions/Mentions';
+import { settings } from '../../../settings';
 
 class MentionQueries {
 	async getUsers(usernames: string[]): Promise<{ type: 'team' | 'user'; _id: string; username?: string; name?: string }[]> {

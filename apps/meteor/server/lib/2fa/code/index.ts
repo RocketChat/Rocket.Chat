@@ -9,7 +9,7 @@ import { EmailCheck } from './EmailCheck';
 import type { ICodeCheck } from './ICodeCheck';
 import { PasswordCheckFallback } from './PasswordCheckFallback';
 import { TOTPCheck } from './TOTPCheck';
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../settings';
 import { normalizeHeaders } from '../../shared/getModifiedHttpHeaders';
 
 export interface ITwoFactorOptions {

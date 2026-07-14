@@ -2,9 +2,9 @@ import type { ISetting } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
-import { saveSettingsBulk } from '../../../app/lib/server/functions/saveSettingsBulk';
-import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
 import { twoFactorRequired } from '../../lib/2fa/twoFactorRequired';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
+import { saveSettingsBulk } from '../../settings/lib/saveSettingsBulk';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

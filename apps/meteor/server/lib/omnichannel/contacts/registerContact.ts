@@ -5,12 +5,8 @@ import type { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
 
 import { getAllowedCustomFields } from './getAllowedCustomFields';
 import { validateCustomFields } from './validateCustomFields';
-import {
-	notifyOnRoomChangedById,
-	notifyOnSubscriptionChangedByRoomId,
-	notifyOnLivechatInquiryChangedByRoom,
-} from '../../../../app/lib/server/lib/notifyListener';
 import { callbacks } from '../../callbacks';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChangedByRoomId, notifyOnLivechatInquiryChangedByRoom } from '../../notifyListener';
 
 type RegisterContactProps = {
 	_id?: string;

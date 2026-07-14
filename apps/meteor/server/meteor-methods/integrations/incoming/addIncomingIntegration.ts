@@ -6,11 +6,11 @@ import { removeEmpty } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../../../app/lib/server/lib/deprecationWarningLogger';
-import { notifyOnIntegrationChanged } from '../../../../app/lib/server/lib/notifyListener';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../../lib/authorization/hasPermission';
+import { methodDeprecationLogger } from '../../../lib/deprecationWarningLogger';
 import { compileIntegrationScript } from '../../../lib/integrations/lib/compileIntegrationScript';
 import { validateScriptEngine, isScriptEngineFrozen } from '../../../lib/integrations/lib/validateScriptEngine';
+import { notifyOnIntegrationChanged } from '../../../lib/notifyListener';
 
 const validChannelChars = ['@', '#'];
 

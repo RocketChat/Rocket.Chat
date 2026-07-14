@@ -23,9 +23,9 @@ const isMessageFromBotMock = { isMessageFromBot: Sinon.stub() };
 
 const { markRoomResponded } = proxyquire.noCallThru().load('../../../../../server/hooks/omnichannel/markRoomResponded.ts', {
 	'../../lib/callbacks': { callbacks: { add: Sinon.stub(), priority: { HIGH: 'high' } } },
-	'../../../app/lib/server/lib/notifyListener': { notifyOnLivechatInquiryChanged: Sinon.stub() },
+	'../../lib/notifyListener': { notifyOnLivechatInquiryChanged: Sinon.stub() },
 	'@rocket.chat/models': models,
-	'../../../app/settings/server': { settings: settingsGetMock },
+	'../../settings': { settings: settingsGetMock },
 	'../../lib/omnichannel/isMessageFromBot': isMessageFromBotMock,
 });
 

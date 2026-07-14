@@ -4,7 +4,7 @@ import { LivechatBusinessHours, Users } from '@rocket.chat/models';
 import type { IBusinessHourBehavior } from './AbstractBusinessHour';
 import { AbstractBusinessHourBehavior } from './AbstractBusinessHour';
 import { filterBusinessHoursThatMustBeOpened, makeAgentsUnavailableBasedOnBusinessHour, openBusinessHourDefault } from './Helper';
-import { notifyOnUserChange } from '../../../../app/lib/server/lib/notifyListener';
+import { notifyOnUserChange } from '../../notifyListener';
 import { businessHourLogger } from '../logger';
 
 export class SingleBusinessHourBehavior extends AbstractBusinessHourBehavior implements IBusinessHourBehavior {

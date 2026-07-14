@@ -1,8 +1,8 @@
 import type { IMessage, AtLeast } from '@rocket.chat/core-typings';
 
 import { extractUrlsFromMessageAST } from './extractUrlsFromMessageAST';
-import { settings } from '../../../app/settings/server';
 import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
+import { settings } from '../../settings';
 import { Markdown } from '../messaging/markdown';
 
 const prepareUrl = (url: string, previewUrls: string[] | undefined) => ({

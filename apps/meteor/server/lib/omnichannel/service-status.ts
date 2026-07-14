@@ -4,7 +4,7 @@ import type { FindCursor } from 'mongodb';
 
 import { checkOnlineForDepartment, getOnlineForDepartment } from './departmentsLib';
 import { livechatLogger } from './logger';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 
 export async function getOnlineAgents(department?: string, agent?: SelectedAgent | null): Promise<FindCursor<ILivechatAgent> | undefined> {
 	if (agent?.agentId) {

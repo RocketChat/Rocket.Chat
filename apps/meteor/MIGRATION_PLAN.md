@@ -1,5 +1,15 @@
 # Backend Folder Structure Migration Plan
 
+## Status: COMPLETE
+
+All phases (1–7) and the EE mirror are done. `apps/meteor/app/*/server/` no longer exists except `app/apps/server/` (explicitly out of scope). Notes on where Phase 7 deviated from the tables below:
+
+- `ee/app/livechat-enterprise/server/services/` went to `ee/server/local-services/` — the `ee/server/services/` path named in the EE Mirror table is docker/build scaffolding, not code.
+- `app/lib/server/functions/notifications/` went to `server/lib/notifications/message/` — a flat `email.js` would have collided with the existing `server/lib/notifications/email/` directory.
+- The pre-existing `server/settings/index.ts` (settings-definitions loader) was renamed to `server/settings/definitions.ts` so the incoming `app/settings/server/index.ts` registry barrel could keep its dir-index role; merging the two would have created a top-level-await import cycle.
+- Unit specs that test EE code but lived under community `tests/unit/` were moved to their `ee/tests/unit/` mirrors (Custom.spec, QueueInactivityMonitor.spec, AutoCloseOnHold, AutoTransferChatsScheduler, Helper.tests, requestPdfTranscript.spec, canEnableApp.spec).
+- `server/startup/rateLimiter.js` and `robots.js` are loaded from `server/main.ts` (where the old `app/lib/server/startup` barrel was imported), preserving startup order.
+
 ## Goal
 
 Move server-side files from `apps/meteor/app/*/server/` into `apps/meteor/server/`, extending the existing responsibility-based folder structure. Files move; code stays the same. Import paths update, but no refactoring.

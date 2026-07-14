@@ -1,7 +1,7 @@
 import type { ILivechatContact } from '@rocket.chat/core-typings';
 import { LivechatContacts, LivechatRooms } from '@rocket.chat/models';
 
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../settings';
 import { removeGuest } from '../guests';
 
 export async function disableContactById(contactId: string): Promise<void> {

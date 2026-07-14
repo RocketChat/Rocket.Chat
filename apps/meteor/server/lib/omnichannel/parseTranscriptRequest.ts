@@ -2,7 +2,7 @@ import type { ILivechatVisitor, IOmnichannelRoom, IUser } from '@rocket.chat/cor
 import { LivechatVisitors, Users } from '@rocket.chat/models';
 
 import type { CloseRoomParams } from './localTypes';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 
 export const parseTranscriptRequest = async (
 	room: IOmnichannelRoom,

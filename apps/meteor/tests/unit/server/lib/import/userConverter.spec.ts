@@ -36,7 +36,7 @@ const { UserConverter } = proxyquire.noCallThru().load('../../../../../server/li
 	'../../../users/setUserActiveStatus': {
 		setUserActiveStatus: sinon.stub(),
 	},
-	'../../../../../app/lib/server/lib/notifyListener': {
+	'../../../notifyListener': {
 		notifyOnUserChange: sinon.stub(),
 	},
 	'./generateTempPassword': {

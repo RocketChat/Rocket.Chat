@@ -30,9 +30,9 @@ import {
 } from './Helper';
 import { conditionalLockAgent } from './conditionalLockAgent';
 import { afterTakeInquiry, beforeDelegateAgent } from './hooks';
-import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 import { callbacks } from '../callbacks';
+import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } from '../notifyListener';
 
 const logger = new Logger('RoutingManager');
 

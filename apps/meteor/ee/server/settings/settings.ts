@@ -4,8 +4,8 @@ import { License } from '@rocket.chat/license';
 import { Settings } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { settings, SettingsEvents } from '../../../app/settings/server';
-import { use } from '../../../app/settings/server/Middleware';
+import { settings, SettingsEvents } from '../../../server/settings';
+import { use } from '../../../server/settings/Middleware';
 
 export function changeSettingValue(record: ISetting): SettingValue {
 	if (!record.enterprise) {

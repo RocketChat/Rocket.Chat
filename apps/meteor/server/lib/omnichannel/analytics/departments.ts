@@ -1,6 +1,6 @@
 import { LivechatRooms, Messages } from '@rocket.chat/models';
 
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../settings';
 
 type Params = {
 	start: Date;

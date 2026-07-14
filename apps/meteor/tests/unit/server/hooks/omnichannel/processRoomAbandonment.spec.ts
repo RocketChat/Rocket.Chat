@@ -30,7 +30,7 @@ const { getSecondsWhenOfficeHoursIsDisabled, parseDays, getSecondsSinceLastAgent
 		'../../lib/callbacks': {
 			callbacks: { add: sinon.stub(), priority: { HIGH: 'high' } },
 		},
-		'../../../app/settings/server': {
+		'../../settings': {
 			settings: { get: settingsStub },
 		},
 		'../../lib/omnichannel/business-hour': { businessHourManager: businessHourManagerMock },

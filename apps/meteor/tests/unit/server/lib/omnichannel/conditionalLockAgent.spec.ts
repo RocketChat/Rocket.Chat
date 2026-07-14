@@ -16,7 +16,7 @@ const mockHasRoleAsync = sinon.stub();
 const { conditionalLockAgent } = proxyquire.noCallThru().load('../../../../../server/lib/omnichannel/conditionalLockAgent', {
 	'@rocket.chat/models': { Users: mockUsers },
 	'../authorization/hasRole': { hasRoleAsync: mockHasRoleAsync },
-	'../../../app/settings/server': { settings: mockSettings },
+	'../../settings': { settings: mockSettings },
 });
 
 describe('conditionalLockAgent', () => {

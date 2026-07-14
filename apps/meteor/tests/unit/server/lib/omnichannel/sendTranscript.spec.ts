@@ -52,6 +52,11 @@ const mailerMock = sinon.stub();
 const tStub = sinon.stub();
 
 const { sendTranscript } = p.noCallThru().load('../../../../../server/lib/omnichannel/sendTranscript', {
+	// mocked so the spec doesn't depend on whichever broker a previously-run spec installed
+	'@rocket.chat/core-services': {
+		Message: { saveSystemMessage: sinon.stub().resolves() },
+		Omnichannel: { isWithinMACLimit: sinon.stub().resolves(true) },
+	},
 	'@rocket.chat/models': modelsMock,
 	'@rocket.chat/logger': { Logger: mockLogger },
 	'meteor/meteor': {
@@ -67,8 +72,8 @@ const { sendTranscript } = p.noCallThru().load('../../../../../server/lib/omnich
 	},
 	'../i18n': { i18n: { t: tStub } },
 	'../notifications/email/api': { send: mailerMock },
-	'../../../app/settings/server': { settings: { get: settingsMock } },
-	'../../../app/utils/server/lib/getTimezone': { getTimezone: getTimezoneMock },
+	'../../settings': { settings: { get: settingsMock } },
+	'../utils/lib/getTimezone': { getTimezone: getTimezoneMock },
 	// TODO: add tests for file handling on transcripts
 	'../media/file-upload': { FileUpload: {} },
 });

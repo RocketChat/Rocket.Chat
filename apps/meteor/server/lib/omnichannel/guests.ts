@@ -17,15 +17,11 @@ import UAParser from 'ua-parser-js';
 import { parseAgentCustomFields } from './Helper';
 import type { ICRMData } from './localTypes';
 import { livechatLogger } from './logger';
-import {
-	notifyOnSubscriptionChanged,
-	notifyOnLivechatInquiryChanged,
-	notifyOnLivechatInquiryChangedByToken,
-} from '../../../app/lib/server/lib/notifyListener';
 import { trim } from '../../../lib/utils/stringUtils';
 import { hasPermissionAsync } from '../authorization/hasPermission';
 import { i18n } from '../i18n';
 import { FileUpload } from '../media/file-upload';
+import { notifyOnSubscriptionChanged, notifyOnLivechatInquiryChanged, notifyOnLivechatInquiryChangedByToken } from '../notifyListener';
 
 export async function saveGuest(
 	guestData: Pick<ILivechatVisitor, '_id' | 'name' | 'livechatData'> & { email?: string; phone?: string },

@@ -59,7 +59,7 @@ function buildSubject(options?: {
 		'@rocket.chat/server-fetch': { serverFetch: fetchStub },
 		'./logger': { webhooksLogger: logger },
 		'../metrics': { metrics },
-		'../../../app/settings/server': { settings },
+		'../../settings': { settings },
 	});
 
 	return {

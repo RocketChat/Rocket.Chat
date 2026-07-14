@@ -11,10 +11,10 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
 import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
-import { notifyOnUserChange } from '../../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../../app/settings/server';
 import { client } from '../../../database/utils';
+import { settings } from '../../../settings';
 import { callbacks } from '../../callbacks';
+import { notifyOnUserChange } from '../../notifyListener';
 import { saveUserIdentity } from '../../users/saveUserIdentity';
 import { registerAccessTokenService } from '../oauth/oauth';
 

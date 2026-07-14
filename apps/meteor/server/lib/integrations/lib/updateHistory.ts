@@ -1,8 +1,8 @@
 import type { IIntegrationHistory, OutgoingIntegrationEvent, IIntegration, IMessage, AtLeast } from '@rocket.chat/core-typings';
 import { IntegrationHistory } from '@rocket.chat/models';
 
-import { notifyOnIntegrationHistoryChangedById, notifyOnIntegrationHistoryChanged } from '../../../../app/lib/server/lib/notifyListener';
 import { omit } from '../../../../lib/utils/omit';
+import { notifyOnIntegrationHistoryChangedById, notifyOnIntegrationHistoryChanged } from '../../notifyListener';
 
 export const updateHistory = async ({
 	historyId,

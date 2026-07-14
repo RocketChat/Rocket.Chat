@@ -17,7 +17,6 @@ import {
 	findDepartmentAgents,
 	findArchivedDepartments,
 } from './lib/departments';
-import { settings } from '../../../../app/settings/server';
 import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
 import {
 	saveDepartment,
@@ -26,6 +25,7 @@ import {
 	saveDepartmentAgents,
 	removeDepartment,
 } from '../../../lib/omnichannel/departmentsLib';
+import { settings } from '../../../settings';
 import { getPaginationItems } from '../../lib/getPaginationItems';
 
 API.v1.addRoute(

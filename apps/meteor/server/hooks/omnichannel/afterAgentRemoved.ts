@@ -1,7 +1,7 @@
 import { LivechatDepartment, Users, LivechatDepartmentAgents, LivechatVisitors } from '@rocket.chat/models';
 
-import { notifyOnLivechatDepartmentAgentChanged, notifyOnUserChange } from '../../../app/lib/server/lib/notifyListener';
 import { callbacks } from '../../lib/callbacks';
+import { notifyOnLivechatDepartmentAgentChanged, notifyOnUserChange } from '../../lib/notifyListener';
 
 callbacks.add('livechat.afterAgentRemoved', async ({ agent }) => {
 	const departments = await LivechatDepartmentAgents.findByAgentId(agent._id).toArray();
