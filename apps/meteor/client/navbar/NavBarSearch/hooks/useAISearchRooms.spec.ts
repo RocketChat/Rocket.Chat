@@ -54,4 +54,28 @@ describe('useAISearchRooms', () => {
 			expect(result.current.items).toHaveLength(2);
 		});
 	});
+
+	it('should not expose remote suggestions for a previous debounced value', async () => {
+		const wrapper = mockAppRoot()
+			.withSubscriptions([{ _id: 'local_room_123', t: 'c', name: 'general' } as unknown as SubscriptionWithRoom])
+			.withEndpoint('GET', '/v1/spotlight', () => ({
+				users: [{ _id: 'user_id_456', username: 'john.doe', name: 'John Doe' }],
+				rooms: [],
+			}))
+			.build();
+
+		const { result, rerender } = renderHook(({ filterText }) => useAISearchRooms(filterText), {
+			initialProps: { filterText: '@john' },
+			wrapper,
+		});
+
+		await waitFor(() => {
+			expect(result.current.items).toHaveLength(2);
+		});
+
+		rerender({ filterText: '@j' });
+
+		expect(result.current.items).toHaveLength(1);
+		expect(result.current.items[0]._id).toBe('local_room_123');
+	});
 });

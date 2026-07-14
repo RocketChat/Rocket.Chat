@@ -26,7 +26,7 @@ const NavBarAISearch = () => {
 	const {
 		formState: { isDirty },
 		register,
-		resetField,
+		reset,
 		setFocus,
 		setValue,
 		watch,
@@ -53,14 +53,12 @@ const NavBarAISearch = () => {
 	const placeholder = [searchLabel, shortcut].filter(Boolean).join(' ');
 
 	const handleEscSearch = useCallback(() => {
-		resetField('filterText');
-		setValue('appliedFilters', emptySearchFilters());
+		reset();
 		state.close();
-	}, [resetField, setValue, state]);
+	}, [reset, state]);
 
 	const handleClearText = useStableCallback(() => {
-		resetField('filterText');
-		setValue('appliedFilters', emptySearchFilters());
+		reset();
 		setFocus('filterText');
 	});
 

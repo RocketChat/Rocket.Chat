@@ -61,11 +61,7 @@ export const useAISearchRooms = (filterText: string): { items: SubscriptionWithR
 	}, [searchForChannels, searchForDMs]);
 
 	const getSpotlight = useEndpoint('GET', '/v1/spotlight');
-	const {
-		data: serverResults,
-		isFetching,
-		isPlaceholderData,
-	} = useQuery({
+	const { data: serverResults, isFetching } = useQuery({
 		queryKey: ['sidebar/ai-search/spotlight', debouncedName, mention, type],
 		enabled: localRooms.length < LIMIT,
 		queryFn: async () => {
@@ -91,7 +87,6 @@ export const useAISearchRooms = (filterText: string): { items: SubscriptionWithR
 			return results;
 		},
 		staleTime: 60_000,
-		placeholderData: (previousData) => previousData,
 	});
 
 	const items = useMemo(() => {
@@ -107,14 +102,14 @@ export const useAISearchRooms = (filterText: string): { items: SubscriptionWithR
 				return sameRoom || sameGroupDM || sameDirectDM || sameUserDM;
 			});
 
-		const candidates = localRooms.length < LIMIT ? (serverResults ?? []) : [];
+		const candidates = name === debouncedName && localRooms.length < LIMIT ? (serverResults ?? []) : [];
 		const fromServer = candidates.filter((item) => matchesFilter(item) && !isLocalDuplicate(item));
 		const exact = fromServer.filter((item) => [item.name, item.fname].includes(name));
 
 		return [...exact, ...localRooms, ...fromServer.filter((item) => !exact.includes(item))] as SubscriptionWithRoom[];
-	}, [localRooms, name, serverResults]);
+	}, [debouncedName, localRooms, name, serverResults]);
 
-	const isLoading = isFetching && (isPlaceholderData || serverResults === undefined);
+	const isLoading = isFetching && serverResults === undefined;
 
 	return { items, isLoading };
 };

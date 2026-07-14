@@ -1,6 +1,6 @@
 import type { OverlayTriggerAria } from '@react-aria/overlays';
 import type { OverlayTriggerState } from '@react-stately/overlays';
-import { emptySearchFilters, type NavBarSearchFormValues } from '@rocket.chat/ai-search';
+import type { NavBarSearchFormValues } from '@rocket.chat/ai-search';
 import { Tile } from '@rocket.chat/fuselage';
 import { useOutsideClick, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
@@ -30,18 +30,18 @@ const NavBarAISearchListBox = ({ state, overlayProps, aiSearchActive, aiSearchAv
 	const handleKeyDown = useListboxNavigation(state);
 	useOutsideClick([containerRef], state.close);
 
-	const { resetField, setValue, watch } = useFormContext<NavBarSearchFormValues>();
+	const { reset, watch } = useFormContext<NavBarSearchFormValues>();
 	const { filterText, appliedFilters } = watch();
 
 	const handleSelect = useStableCallback(() => {
 		state.close();
-		resetField('filterText');
-		setValue('appliedFilters', emptySearchFilters());
+		reset();
 	});
 
 	const { data: aiItems, isFetching } = useAISearchItems(filterText, appliedFilters, aiSearchActive);
 	const { items: rooms, isLoading } = useAISearchRooms(aiSearchActive ? aiItems.searchText : filterText);
 	const itemCount = rooms.length + aiItems.intelligent.length + aiItems.filterSuggestions.length;
+	const isSearchLoading = isLoading || isFetching;
 
 	return (
 		<Tile
@@ -57,13 +57,13 @@ const NavBarAISearchListBox = ({ state, overlayProps, aiSearchActive, aiSearchAv
 			width='100%'
 			flexDirection='column'
 		>
-			<ResultsLiveRegion shouldAnnounce={!isLoading} itemCount={itemCount} isLoading={isLoading} />
+			<ResultsLiveRegion shouldAnnounce={!isSearchLoading} itemCount={itemCount} isLoading={isSearchLoading} />
 			<CustomScrollbars>
 				<div
 					{...overlayProps}
 					role='listbox'
 					aria-label={t('AI_Search_results')}
-					aria-busy={isLoading || isFetching}
+					aria-busy={isSearchLoading}
 					tabIndex={-1}
 					onKeyDown={handleKeyDown}
 				>
