@@ -3,7 +3,7 @@ import type { ComponentProps, ChangeEvent } from 'react';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type DepartmentTagsProps = {
+export type DepartmentTagsProps = {
 	error: string;
 	value: string[];
 	onChange: (tags: string[]) => void;

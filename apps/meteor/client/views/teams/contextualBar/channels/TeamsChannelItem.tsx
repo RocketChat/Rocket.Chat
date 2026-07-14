@@ -21,7 +21,7 @@ import TeamsChannelItemMenu from './TeamsChannelItemMenu';
 import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 
-type TeamsChannelItemProps = {
+export type TeamsChannelItemProps = {
 	room: IRoom;
 	mainRoom: IRoom;
 	onClickView: (room: IRoom) => void;

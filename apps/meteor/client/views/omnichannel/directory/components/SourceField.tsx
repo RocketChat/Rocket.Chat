@@ -8,7 +8,7 @@ import Info from '../../components/Info';
 import Label from '../../components/Label';
 import { useOmnichannelSource } from '../../hooks/useOmnichannelSource';
 
-type SourceFieldProps = {
+export type SourceFieldProps = {
 	room: IOmnichannelRoom;
 };
 

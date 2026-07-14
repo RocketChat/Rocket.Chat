@@ -15,10 +15,10 @@ import { LivechatContacts, LivechatDepartmentAgents, LivechatVisitors, Users } f
 import { makeFunction } from '@rocket.chat/patch-injection';
 
 import { setUserStatusLivechat } from './utils';
+import { sendToCRM } from '../../../../server/hooks/omnichannel/sendToCRM';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { notifyOnLivechatDepartmentAgentChangedByDepartmentId } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
-import { sendToCRM } from '../hooks/sendToCRM';
 
 export async function afterAgentUserActivated(user: IUser) {
 	if (!user.roles.includes('livechat-agent')) {

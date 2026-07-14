@@ -10,7 +10,7 @@ const STEPS = {
 	CONFIRM_CONVERT: 'CONFIRM_CONVERT',
 };
 
-type BaseConvertToChannelModalProps = {
+export type BaseConvertToChannelModalProps = {
 	onClose: () => void;
 	onCancel: () => void;
 	onConfirm: (deletedRooms: { [key: string]: Serialized<IRoom> }) => void;

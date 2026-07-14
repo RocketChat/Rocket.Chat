@@ -77,7 +77,7 @@ const {
 		Room: RoomServiceStub,
 	},
 	'../../../lib/utils/isObject': isObjectMock,
-	'../../methods/createDirectMessage': {
+	'../../meteor-methods/messages/createDirectMessage': {
 		createDirectMessage: createDirectMessageStub,
 	},
 	'meteor/meteor': MeteorStub,

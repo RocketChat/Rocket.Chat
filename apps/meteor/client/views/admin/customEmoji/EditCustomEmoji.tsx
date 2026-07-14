@@ -13,6 +13,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { GenericModal, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import { useSetModal, useAbsoluteUrl, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
 import { useCallback, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -37,6 +38,7 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const absoluteUrl = useAbsoluteUrl();
+	const queryClient = useQueryClient();
 	const [errors, setErrors] = useState({ name: false, aliases: false });
 
 	const { _id, name: previousName, aliases: previousAliases } = data || {};
@@ -69,6 +71,7 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 	const { mutateAsync: saveAction } = useEndpointUploadMutation('/v1/emoji-custom.update', {
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Custom_Emoji_Updated_Successfully') });
+			queryClient.invalidateQueries({ queryKey: ['emoji-custom.list'] });
 			onChange();
 			close();
 		},
@@ -100,6 +103,7 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 	const { mutateAsync: deleteAction } = useEndpointMutation('POST', '/v1/emoji-custom.delete', {
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Custom_Emoji_Has_Been_Deleted') });
+			queryClient.invalidateQueries({ queryKey: ['emoji-custom.list'] });
 		},
 		onSettled: () => {
 			onChange();

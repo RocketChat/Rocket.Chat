@@ -8,7 +8,7 @@ import { memo, useMemo, useState } from 'react';
 
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 
-type RoomsAvailableForTeamsAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'>;
+export type RoomsAvailableForTeamsAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'>;
 
 const RoomsAvailableForTeamsAutoComplete = ({ value, onChange, ...props }: RoomsAvailableForTeamsAutoCompleteProps) => {
 	const [filter, setFilter] = useState('');

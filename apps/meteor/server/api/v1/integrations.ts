@@ -8,6 +8,8 @@ import {
 	isIntegrationsGetProps,
 	isIntegrationsUpdateProps,
 	isIntegrationsListProps,
+	isIntegrationsClearHistoryProps,
+	isIntegrationsReplayProps,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
@@ -16,16 +18,17 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
 import type { Filter } from 'mongodb';
 
+import { clearIntegrationHistoryMethod, replayOutgoingIntegrationMethod } from '../../lib/integrations/functions/clearIntegrationHistory';
 import {
 	mountIntegrationHistoryQueryBasedOnPermissions,
 	mountIntegrationQueryBasedOnPermissions,
-} from '../../../app/integrations/server/lib/mountQueriesBasedOnPermission';
-import { addIncomingIntegration } from '../../../app/integrations/server/methods/incoming/addIncomingIntegration';
-import { deleteIncomingIntegration } from '../../../app/integrations/server/methods/incoming/deleteIncomingIntegration';
-import { updateIncomingIntegration } from '../../../app/integrations/server/methods/incoming/updateIncomingIntegration';
-import { addOutgoingIntegration } from '../../../app/integrations/server/methods/outgoing/addOutgoingIntegration';
-import { deleteOutgoingIntegration } from '../../../app/integrations/server/methods/outgoing/deleteOutgoingIntegration';
-import { updateOutgoingIntegration } from '../../../app/integrations/server/methods/outgoing/updateOutgoingIntegration';
+} from '../../lib/integrations/lib/mountQueriesBasedOnPermission';
+import { addIncomingIntegration } from '../../meteor-methods/integrations/incoming/addIncomingIntegration';
+import { deleteIncomingIntegration } from '../../meteor-methods/integrations/incoming/deleteIncomingIntegration';
+import { updateIncomingIntegration } from '../../meteor-methods/integrations/incoming/updateIncomingIntegration';
+import { addOutgoingIntegration } from '../../meteor-methods/integrations/outgoing/addOutgoingIntegration';
+import { deleteOutgoingIntegration } from '../../meteor-methods/integrations/outgoing/deleteOutgoingIntegration';
+import { updateOutgoingIntegration } from '../../meteor-methods/integrations/outgoing/updateOutgoingIntegration';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
 import { findOneIntegration } from '../lib/integrations';
@@ -361,5 +364,49 @@ API.v1.put(
 			default:
 				return API.v1.failure('Invalid integration type.');
 		}
+	},
+);
+
+const voidIntegrationsResponse = ajv.compile<void>({
+	type: 'object',
+	properties: { success: { type: 'boolean', enum: [true] } },
+	required: ['success'],
+	additionalProperties: false,
+});
+
+API.v1.post(
+	'integrations.clearHistory',
+	{
+		authRequired: true,
+		body: isIntegrationsClearHistoryProps,
+		response: {
+			200: voidIntegrationsResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		await clearIntegrationHistoryMethod(this.userId, this.bodyParams.integrationId);
+		return API.v1.success();
+	},
+);
+
+API.v1.post(
+	'integrations.replayOutgoing',
+	{
+		authRequired: true,
+		body: isIntegrationsReplayProps,
+		response: {
+			200: voidIntegrationsResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		const { integrationId, historyId } = this.bodyParams;
+		await replayOutgoingIntegrationMethod(this.userId, { integrationId, historyId });
+		return API.v1.success();
 	},
 );

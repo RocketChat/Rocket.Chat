@@ -246,7 +246,7 @@ test.describe('Messaging', () => {
 				text: messageText,
 				attachments: [
 					{
-						text: `${attachmentText} B) `,
+						text: `${attachmentText} :sunglasses_cool: `,
 					},
 				],
 			});

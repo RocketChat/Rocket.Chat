@@ -554,65 +554,12 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
-	async findOneByFederationIdAndUsernameOnReactions(federationEventId: string, username: string): Promise<IMessage | null> {
-		return (
-			await this.col
-				.aggregate(
-					[
-						{
-							$match: {
-								t: { $ne: 'rm' },
-							},
-						},
-						{
-							$project: {
-								document: '$$ROOT',
-								reactions: { $objectToArray: '$reactions' },
-							},
-						},
-						{
-							$unwind: {
-								path: '$reactions',
-							},
-						},
-						{
-							$match: {
-								$and: [
-									{ 'reactions.v.usernames': { $in: [username] } },
-									{ [`reactions.v.federationReactionEventIds.${federationEventId}`]: username },
-								],
-							},
-						},
-						{ $replaceRoot: { newRoot: '$document' } },
-					],
-					{ readPreference: readSecondaryPreferred() },
-				)
-				.toArray()
-		)[0] as IMessage;
-	}
-
 	removeByRoomId(roomId: string): Promise<DeleteResult> {
 		return this.deleteMany({ rid: roomId });
 	}
 
 	setReactions(messageId: string, reactions: IMessage['reactions']): Promise<UpdateResult> {
 		return this.updateOne({ _id: messageId }, { $set: { reactions } });
-	}
-
-	keepHistoryForToken(token: string): Promise<UpdateResult | Document> {
-		return this.updateMany(
-			{
-				'navigation.token': token,
-				'expireAt': {
-					$exists: true,
-				},
-			},
-			{
-				$unset: {
-					expireAt: 1,
-				},
-			},
-		);
 	}
 
 	setRoomIdByToken(token: string, rid: string): Promise<UpdateResult | Document> {

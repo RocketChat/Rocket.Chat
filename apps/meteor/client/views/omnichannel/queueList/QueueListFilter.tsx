@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import AutoCompleteAgent from '../components/AutoCompleteAgent';
 import AutoCompleteDepartment from '../components/AutoCompleteDepartment';
 
-type QueueListFilterProps = {
+export type QueueListFilterProps = {
 	setFilter: Dispatch<SetStateAction<any>>;
 };
 

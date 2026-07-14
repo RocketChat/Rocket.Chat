@@ -14,7 +14,7 @@ const { LDAPEEManager } = proxyquire.noCallThru().load('./Manager', {
 	'@rocket.chat/core-services': { Abac: {}, Team: {} },
 	'@rocket.chat/license': { License: { hasModule: () => false } },
 	'@rocket.chat/models': { Users: {}, Roles: {}, Subscriptions: subscriptionsStub, Rooms: roomsStub },
-	'../../../../app/importer/server/definitions/IConversionCallbacks': {},
+	'../../../../server/lib/import/definitions/IConversionCallbacks': {},
 	'../../../../app/settings/server': { settings: settingsStub },
 	'../../../../app/utils/server/lib/getValidRoomName': { getValidRoomName: (name: string) => Promise.resolve(name) },
 	'../../../../lib/utils/arrayUtils': { ensureArray: (value: unknown) => (Array.isArray(value) ? value : [value]) },

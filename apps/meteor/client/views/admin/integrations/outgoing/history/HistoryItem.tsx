@@ -1,7 +1,7 @@
 import type { IIntegrationHistory, Serialized } from '@rocket.chat/core-typings';
 import { Button, Icon, Box, AccordionItem, Field, FieldGroup, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { useMethod } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import type { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +15,7 @@ export type HistoryItemProps = { data: Serialized<IIntegrationHistory> };
 const HistoryItem = ({ data }: HistoryItemProps) => {
 	const { t } = useTranslation();
 
-	const replayOutgoingIntegration = useMethod('replayOutgoingIntegration');
+	const replayOutgoingIntegration = useEndpoint('POST', '/v1/integrations.replayOutgoing');
 
 	const {
 		_id,

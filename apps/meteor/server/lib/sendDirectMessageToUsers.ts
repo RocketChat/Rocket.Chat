@@ -1,9 +1,9 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import { executeSendMessage } from '../../app/lib/server/methods/sendMessage';
-import { createDirectMessage } from '../methods/createDirectMessage';
 import { SystemLogger } from './logger/system';
+import { createDirectMessage } from '../meteor-methods/messages/createDirectMessage';
+import { executeSendMessage } from '../meteor-methods/messages/sendMessage';
 
 export async function sendDirectMessageToUsers(
 	fromId = 'rocket.cat',
