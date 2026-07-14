@@ -55,8 +55,14 @@ export class AutoTransferChatSchedulerClass {
 			open: 1,
 			departmentId: 1,
 		});
-		if (!room?.open || !room?.servedBy?._id) {
-			throw new Error('Room is not open or is not being served by an agent');
+		if (!room) {
+			throw new Error('error-room-not-found');
+		}
+		if (!room.open) {
+			throw new Error('error-room-already-closed');
+		}
+		if (!room.servedBy?._id) {
+			throw new Error('error-room-not-served');
 		}
 
 		const {

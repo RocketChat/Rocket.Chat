@@ -19,10 +19,12 @@ const mockUsers = {
 
 const infoStub = sinon.stub();
 const debugStub = sinon.stub();
+const errorStub = sinon.stub();
 const mockLogger = {
 	section: sinon.stub().returns({
 		info: infoStub,
 		debug: debugStub,
+		error: errorStub,
 	}),
 };
 
@@ -100,9 +102,8 @@ describe('AutoCloseOnHoldScheduler', () => {
 			try {
 				await scheduler.executeJob('roomId', 'comment');
 			} catch (e: any) {
-				expect(e.message).to.be.equal(
-					'Unable to process AutoCloseOnHoldScheduler job because room or user not found for roomId: roomId and userId: rocket.cat',
-				);
+				expect(e.message).to.be.equal('error-room-not-found');
+				expect(errorStub.calledWithMatch({ roomId: 'roomId' })).to.be.true;
 			}
 		});
 
@@ -115,7 +116,7 @@ describe('AutoCloseOnHoldScheduler', () => {
 			try {
 				await scheduler.executeJob('roomId', 'comment');
 			} catch (e: any) {
-				expect(e.message).to.be.equal('Scheduler user not found');
+				expect(e.message).to.be.equal('error-user-not-found');
 			}
 		});
 
@@ -153,7 +154,7 @@ describe('AutoCloseOnHoldScheduler', () => {
 			try {
 				await scheduler.getSchedulerUser();
 			} catch (e: any) {
-				expect(e.message).to.be.equal('Scheduler user not found');
+				expect(e.message).to.be.equal('error-user-not-found');
 			}
 		});
 

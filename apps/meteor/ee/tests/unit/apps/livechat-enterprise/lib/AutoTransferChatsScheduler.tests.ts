@@ -133,19 +133,19 @@ describe('AutoTransferChats', () => {
 			mockLivechatRooms.findOneById.resolves(undefined);
 			const scheduler = new AutoTransferChatSchedulerClass();
 
-			await expect(scheduler.transferRoom('roomId')).to.be.rejectedWith('Room is not open or is not being served by an agent');
+			await expect(scheduler.transferRoom('roomId')).to.be.rejectedWith('error-room-not-found');
 		});
 		it('should not transfer closed rooms', async () => {
 			mockLivechatRooms.findOneById.resolves({ _id: 1 });
 			const scheduler = new AutoTransferChatSchedulerClass();
 
-			await expect(scheduler.transferRoom('roomId')).to.be.rejectedWith('Room is not open or is not being served by an agent');
+			await expect(scheduler.transferRoom('roomId')).to.be.rejectedWith('error-room-already-closed');
 		});
 		it('should not transfer unserved rooms', async () => {
 			mockLivechatRooms.findOneById.resolves({ _id: 1, open: true });
 			const scheduler = new AutoTransferChatSchedulerClass();
 
-			await expect(scheduler.transferRoom('roomId')).to.be.rejectedWith('Room is not open or is not being served by an agent');
+			await expect(scheduler.transferRoom('roomId')).to.be.rejectedWith('error-room-not-served');
 		});
 		it('should return a room as inquiry when the routing method is not automatic', async () => {
 			mockLivechatRooms.findOneById.resolves({ _id: 1, open: true, servedBy: { _id: 2 }, departmentId: undefined });

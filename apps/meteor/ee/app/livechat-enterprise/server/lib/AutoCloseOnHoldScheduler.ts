@@ -35,10 +35,9 @@ export class AutoCloseOnHoldSchedulerClass {
 
 		try {
 			const [room, user] = await Promise.all([LivechatRooms.findOneById(roomId), this.getSchedulerUser()]);
-			if (!room || !user) {
-				throw new Error(
-					`Unable to process AutoCloseOnHoldScheduler job because room or user not found for roomId: ${roomId} and userId: rocket.cat`,
-				);
+			if (!room) {
+				this.logger.error({ msg: 'Unable to process auto close on-hold job: room not found', roomId });
+				throw new Error('error-room-not-found');
 			}
 
 			await closeRoom({ room, user, comment });
@@ -51,7 +50,8 @@ export class AutoCloseOnHoldSchedulerClass {
 		if (!this.schedulerUser) {
 			const schedulerUser = await Users.findOneById('rocket.cat');
 			if (!schedulerUser) {
-				throw new Error('Scheduler user not found');
+				this.logger.error({ msg: 'Unable to process auto close on-hold job: scheduler user not found', userId: 'rocket.cat' });
+				throw new Error('error-user-not-found');
 			}
 			this.schedulerUser = schedulerUser;
 		}
