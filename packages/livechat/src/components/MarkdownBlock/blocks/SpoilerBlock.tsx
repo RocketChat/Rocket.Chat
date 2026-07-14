@@ -56,7 +56,7 @@ const SpoilerBlock = ({ children }: SpoilerBlockProps) => {
 
 	if (revealed) {
 		return (
-			<div style={revealedStyle}>
+			<div key='spoiler' aria-expanded style={revealedStyle}>
 				{children.map((paragraph: MessageParser.Paragraph, index: number) => (
 					<ParagraphBlock key={index}>{paragraph.value}</ParagraphBlock>
 				))}
@@ -65,7 +65,16 @@ const SpoilerBlock = ({ children }: SpoilerBlockProps) => {
 	}
 
 	return (
-		<div role='button' tabIndex={0} aria-expanded={false} aria-label={srText} onClick={reveal} onKeyDown={onKeyDown} style={spoilerStyle}>
+		<div
+			key='spoiler'
+			role='button'
+			tabIndex={0}
+			aria-expanded={false}
+			aria-label={srText}
+			onClick={reveal}
+			onKeyDown={onKeyDown}
+			style={spoilerStyle}
+		>
 			<span style={srOnlyStyle}>{srText}</span>
 			<div aria-hidden>
 				{children.map((paragraph: MessageParser.Paragraph, index: number) => (
