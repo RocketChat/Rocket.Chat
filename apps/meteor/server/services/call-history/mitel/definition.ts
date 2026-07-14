@@ -12,7 +12,7 @@ export type MitelCallItem = {
 	dateTime: Date | null;
 	timeZone?: string;
 	duration: number;
-	typeOfCall?: 'incoming-answered' | 'incoming-missed' | 'outgoing';
+	typeOfCall?: 'incoming-answered' | 'incoming-missed' | 'outgoing' | 'outgoing-missed';
 	transferredCall: boolean;
 	divertedCall: boolean;
 	firstDialledNumber?: string;

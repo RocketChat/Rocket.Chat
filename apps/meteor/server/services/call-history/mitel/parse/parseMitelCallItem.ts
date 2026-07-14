@@ -43,5 +43,10 @@ export function parseMitelCallItem(record: Record<string, unknown>): MitelCallIt
 		divertedCall: Boolean(record.divertedCall) && record.divertedCall !== 'false',
 		dateTime: parseMitelTimestamp(record.dateTime),
 		duration: parseMitelDuration(record.duration),
+
+		...(record.typeOfCall === 'outgoing' &&
+			record.duration === '' && {
+				typeOfCall: 'outgoing-missed',
+			}),
 	};
 }

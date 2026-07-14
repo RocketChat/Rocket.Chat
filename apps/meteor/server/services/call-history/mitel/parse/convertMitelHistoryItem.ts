@@ -6,14 +6,15 @@ import type { MitelCallItem } from '../definition';
 function getTypeData(item: Partial<MitelCallItem>): Pick<IMitelCallHistoryItem, 'direction' | 'state'> {
 	const { typeOfCall, transferredCall } = item;
 
-	if (typeOfCall === 'incoming-missed') {
+	const direction = typeOfCall?.startsWith('out') ? 'outbound' : 'inbound';
+
+	if (typeOfCall?.endsWith('-missed')) {
 		return {
-			direction: 'inbound',
+			direction,
 			state: 'not-answered',
 		};
 	}
 
-	const direction = typeof typeOfCall === 'string' && typeOfCall.includes('outgoing') ? 'outbound' : 'inbound';
 	if (transferredCall && direction === 'inbound') {
 		return {
 			direction,
