@@ -604,6 +604,72 @@ describe('[Channels]', () => {
 			.end(done);
 	});
 
+	describe('/channels.addAll memberships', () => {
+		let testChannel: IRoom;
+		let freshUser1: TestUser<IUser>;
+		let freshUser2: TestUser<IUser>;
+		let freshUser1Credentials: Credentials;
+		let freshUser2Credentials: Credentials;
+
+		const expectSubscription = (userCredentials: Credentials) =>
+			request
+				.get(api('subscriptions.getOne'))
+				.set(userCredentials)
+				.query({ roomId: testChannel._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.subscription).to.be.an('object');
+					expect(res.body.subscription).to.have.nested.property('u._id');
+				});
+
+		before(async () => {
+			await updateSetting('API_User_Limit', 10000);
+			freshUser1 = await createUser();
+			freshUser2 = await createUser();
+			freshUser1Credentials = await login(freshUser1.username, password);
+			freshUser2Credentials = await login(freshUser2.username, password);
+			testChannel = (await createRoom({ type: 'c', name: `add-all-members-${Date.now()}-${Math.random()}` })).body.channel;
+		});
+
+		after(async () => {
+			await updateSetting('API_User_Limit', 500);
+			await deleteRoom({ type: 'c', roomId: testChannel._id });
+			await Promise.all([deleteUser(freshUser1), deleteUser(freshUser2)]);
+		});
+
+		it('should subscribe every user on the server to the channel', async () => {
+			await request
+				.post(api('channels.addAll'))
+				.set(credentials)
+				.send({ roomId: testChannel._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await expectSubscription(freshUser1Credentials);
+			await expectSubscription(freshUser2Credentials);
+		});
+
+		it('should succeed when called again and keep existing members subscribed', async () => {
+			await request
+				.post(api('channels.addAll'))
+				.set(credentials)
+				.send({ roomId: testChannel._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await expectSubscription(freshUser1Credentials);
+			await expectSubscription(freshUser2Credentials);
+		});
+	});
+
 	it('/channels.addLeader', (done) => {
 		void request
 			.post(api('channels.addLeader'))
@@ -1416,6 +1482,56 @@ describe('[Channels]', () => {
 						username: testUser.username,
 					};
 					expect(res.body.online).to.deep.include(expected);
+				});
+		});
+
+		it('should not include offline members of the channel', async () => {
+			const { testUser, testUserCredentials, room } = await createUserAndChannel();
+
+			const offlineUser = await createUser();
+			createdUsers.push(offlineUser);
+			const offlineUserCredentials = await login(offlineUser.username, password);
+
+			await request.post(api('channels.invite')).set(credentials).send({ roomId: room._id, userId: offlineUser._id }).expect(200);
+
+			await request
+				.post(api('users.setStatus'))
+				.set(offlineUserCredentials)
+				.send({
+					message: '',
+					status: 'offline',
+				})
+				.expect(200);
+
+			await request
+				.get(api('channels.online'))
+				.set(testUserCredentials)
+				.query({ _id: room._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					const onlineIds = res.body.online.map((user: IUser) => user._id);
+					expect(onlineIds).to.include(testUser._id);
+					expect(onlineIds).to.not.include(offlineUser._id);
+				});
+		});
+
+		it('should not include online users that are not members of the channel', async () => {
+			const { testUser, testUserCredentials, room } = await createUserAndChannel();
+			const { testUser: onlineNonMember } = await createUserAndChannel();
+
+			await request
+				.get(api('channels.online'))
+				.set(testUserCredentials)
+				.query({ _id: room._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					const onlineIds = res.body.online.map((user: IUser) => user._id);
+					expect(onlineIds).to.include(testUser._id);
+					expect(onlineIds).to.not.include(onlineNonMember._id);
 				});
 		});
 	});
@@ -3348,6 +3464,81 @@ describe('[Channels]', () => {
 					expect(res.body).to.have.property('total');
 				})
 				.end(done);
+		});
+
+		describe('pagination and totals', () => {
+			let testChannel: IRoom;
+			let mentioningUser: TestUser<IUser>;
+			let mentioningUserCredentials: Credentials;
+			const totalMentions = 3;
+
+			before(async () => {
+				testChannel = (await createRoom({ type: 'c', name: `mentions-pagination-${Date.now()}-${Math.random()}` })).body.channel;
+				mentioningUser = await createUser();
+				mentioningUserCredentials = await login(mentioningUser.username, password);
+
+				await request
+					.post(api('channels.invite'))
+					.set(credentials)
+					.send({ roomId: testChannel._id, userId: mentioningUser._id })
+					.expect(200);
+
+				for (let i = 0; i < totalMentions; i++) {
+					await sendMessage({
+						message: { rid: testChannel._id, msg: `hey @${adminUsername} - mention ${i}` },
+						requestCredentials: mentioningUserCredentials,
+					}).expect(200);
+				}
+			});
+
+			after(async () => {
+				await deleteRoom({ type: 'c', roomId: testChannel._id });
+				await deleteUser(mentioningUser);
+			});
+
+			it('should return every mention of the calling user with the correct total', async () => {
+				const res = await request
+					.get(api('channels.getAllUserMentionsByChannel'))
+					.set(credentials)
+					.query({ roomId: testChannel._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('total', totalMentions);
+				expect(res.body).to.have.property('count', totalMentions);
+				expect(res.body).to.have.property('offset', 0);
+				expect(res.body.mentions).to.be.an('array').with.lengthOf(totalMentions);
+			});
+
+			it('should limit mentions when count is provided and keep the total intact', async () => {
+				const res = await request
+					.get(api('channels.getAllUserMentionsByChannel'))
+					.set(credentials)
+					.query({ roomId: testChannel._id, count: 2 })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('total', totalMentions);
+				expect(res.body.mentions).to.be.an('array').with.lengthOf(2);
+			});
+
+			it('should skip mentions when offset is provided and keep the total intact', async () => {
+				const res = await request
+					.get(api('channels.getAllUserMentionsByChannel'))
+					.set(credentials)
+					.query({ roomId: testChannel._id, offset: 2, count: 2 })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('total', totalMentions);
+				expect(res.body).to.have.property('offset', 2);
+				expect(res.body.mentions)
+					.to.be.an('array')
+					.with.lengthOf(totalMentions - 2);
+			});
 		});
 	});
 

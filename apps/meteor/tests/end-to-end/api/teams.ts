@@ -720,6 +720,160 @@ describe('/teams.members', () => {
 			})
 			.end(done);
 	});
+
+	it('should filter members by a partial (mid-string) username match', async () => {
+		// mid-string slice: locks the substring (unanchored) matching semantics of the filter
+		const filter = testUser.username.slice(3, 15);
+
+		const res = await request
+			.get(api('teams.members'))
+			.set(credentials)
+			.query({ teamName: testTeam.name, username: filter })
+			.expect('Content-Type', 'application/json')
+			.expect(200);
+
+		expect(res.body).to.have.property('success', true);
+		const memberIds = res.body.members.map((member: { user: IUser }) => member.user._id);
+		expect(memberIds).to.include(testUser._id);
+		res.body.members.forEach((member: { user: IUser }) => {
+			expect(member.user.username).to.have.string(filter);
+		});
+	});
+
+	it('should paginate the members list', async () => {
+		const firstPage = await request
+			.get(api('teams.members'))
+			.set(credentials)
+			.query({ teamName: testTeam.name, count: 2 })
+			.expect('Content-Type', 'application/json')
+			.expect(200);
+
+		expect(firstPage.body).to.have.property('success', true);
+		expect(firstPage.body).to.have.property('total', 3);
+		expect(firstPage.body).to.have.property('count', 2);
+		expect(firstPage.body.members).to.be.an('array').with.lengthOf(2);
+
+		const secondPage = await request
+			.get(api('teams.members'))
+			.set(credentials)
+			.query({ teamName: testTeam.name, count: 2, offset: 2 })
+			.expect('Content-Type', 'application/json')
+			.expect(200);
+
+		expect(secondPage.body).to.have.property('success', true);
+		expect(secondPage.body).to.have.property('total', 3);
+		expect(secondPage.body).to.have.property('offset', 2);
+		expect(secondPage.body.members).to.be.an('array').with.lengthOf(1);
+
+		const firstPageIds = firstPage.body.members.map((member: { user: IUser }) => member.user._id);
+		const secondPageIds = secondPage.body.members.map((member: { user: IUser }) => member.user._id);
+		expect(firstPageIds.filter((id: string) => secondPageIds.includes(id))).to.be.empty;
+	});
+});
+
+describe('/teams.listRoomsOfUser', () => {
+	let testTeam: ITeam;
+	const teamName = `test-team-rooms-of-user-${Date.now()}`;
+	let member: TestUser<IUser>;
+	let memberCredentials: Credentials;
+	let otherUser: TestUser<IUser>;
+	let otherUserCredentials: Credentials;
+	let subscribedChannelA: IRoom;
+	let subscribedChannelB: IRoom;
+	let unsubscribedChannel: IRoom;
+
+	before(async () => {
+		member = await createUser();
+		memberCredentials = await login(member.username, password);
+		otherUser = await createUser();
+		otherUserCredentials = await login(otherUser.username, password);
+
+		testTeam = (await request.post(api('teams.create')).set(credentials).send({ name: teamName, type: 0 })).body.team;
+
+		subscribedChannelA = (await createRoom({ type: 'c', name: `team-room-a-${Date.now()}-${Math.random()}`, members: [member.username] }))
+			.body.channel;
+		subscribedChannelB = (await createRoom({ type: 'c', name: `team-room-b-${Date.now()}-${Math.random()}`, members: [member.username] }))
+			.body.channel;
+		unsubscribedChannel = (await createRoom({ type: 'c', name: `team-room-c-${Date.now()}-${Math.random()}` })).body.channel;
+
+		await request
+			.post(api('teams.addRooms'))
+			.set(credentials)
+			.send({ teamId: testTeam._id, rooms: [subscribedChannelA._id, subscribedChannelB._id, unsubscribedChannel._id] })
+			.expect(200);
+
+		await request
+			.post(api('teams.addMembers'))
+			.set(credentials)
+			.send({ teamId: testTeam._id, members: [{ userId: member._id, roles: ['member'] }] })
+			.expect(200);
+	});
+
+	after(async () => {
+		await Promise.all([
+			deleteRoom({ type: 'c', roomId: subscribedChannelA._id }),
+			deleteRoom({ type: 'c', roomId: subscribedChannelB._id }),
+			deleteRoom({ type: 'c', roomId: unsubscribedChannel._id }),
+		]);
+		await deleteTeam(credentials, teamName);
+		await Promise.all([deleteUser(member), deleteUser(otherUser)]);
+	});
+
+	it('should list only the team rooms the user is subscribed to', async () => {
+		const res = await request
+			.get(api('teams.listRoomsOfUser'))
+			.set(memberCredentials)
+			.query({ teamId: testTeam._id, userId: member._id })
+			.expect('Content-Type', 'application/json')
+			.expect(200);
+
+		expect(res.body).to.have.property('success', true);
+		expect(res.body).to.have.property('total', 2);
+		const roomIds = res.body.rooms.map((room: IRoom) => room._id);
+		expect(roomIds).to.have.members([subscribedChannelA._id, subscribedChannelB._id]);
+		expect(roomIds).to.not.include(unsubscribedChannel._id);
+	});
+
+	it('should paginate the rooms list without overlap', async () => {
+		const firstPage = await request
+			.get(api('teams.listRoomsOfUser'))
+			.set(memberCredentials)
+			.query({ teamId: testTeam._id, userId: member._id, count: 1 })
+			.expect(200);
+
+		const secondPage = await request
+			.get(api('teams.listRoomsOfUser'))
+			.set(memberCredentials)
+			.query({ teamId: testTeam._id, userId: member._id, count: 1, offset: 1 })
+			.expect(200);
+
+		expect(firstPage.body).to.have.property('total', 2);
+		expect(firstPage.body.rooms).to.be.an('array').with.lengthOf(1);
+		expect(secondPage.body.rooms).to.be.an('array').with.lengthOf(1);
+		const allIds = [...firstPage.body.rooms, ...secondPage.body.rooms].map((room: IRoom) => room._id);
+		expect(allIds).to.have.members([subscribedChannelA._id, subscribedChannelB._id]);
+	});
+
+	it("should allow an admin to list another user's team rooms", async () => {
+		const res = await request
+			.get(api('teams.listRoomsOfUser'))
+			.set(credentials)
+			.query({ teamId: testTeam._id, userId: member._id })
+			.expect('Content-Type', 'application/json')
+			.expect(200);
+
+		expect(res.body).to.have.property('success', true);
+		expect(res.body).to.have.property('total', 2);
+	});
+
+	it("should forbid a regular user from listing another user's team rooms", async () => {
+		await request
+			.get(api('teams.listRoomsOfUser'))
+			.set(otherUserCredentials)
+			.query({ teamId: testTeam._id, userId: member._id })
+			.expect('Content-Type', 'application/json')
+			.expect(403);
+	});
 });
 
 describe('/teams.list', () => {
@@ -807,6 +961,42 @@ describe('/teams.list', () => {
 				expect(res.body.teams[0]).to.have.property('numberOfUsers');
 			})
 			.end(done);
+	});
+
+	it('should report rooms and numberOfUsers counts that reflect the team contents', async () => {
+		const readTeam = async (): Promise<ITeam & { rooms: number; numberOfUsers: number }> => {
+			const res = await request.get(api('teams.list')).set(testUser1Credentials).expect(200);
+			const team = res.body.teams.find((team: ITeam) => team._id === testTeam1._id);
+			expect(team).to.not.be.undefined;
+			return team;
+		};
+
+		const teamBefore = await readTeam();
+
+		const channel1 = (
+			await createRoom({ type: 'c', name: `team-list-count-1-${Date.now()}-${Math.random()}`, credentials: testUser1Credentials })
+		).body.channel;
+		const channel2 = (
+			await createRoom({ type: 'c', name: `team-list-count-2-${Date.now()}-${Math.random()}`, credentials: testUser1Credentials })
+		).body.channel;
+
+		await request
+			.post(api('teams.addRooms'))
+			.set(testUser1Credentials)
+			.send({ teamId: testTeam1._id, rooms: [channel1._id, channel2._id] })
+			.expect(200);
+
+		await request
+			.post(api('teams.addMembers'))
+			.set(testUser1Credentials)
+			.send({ teamId: testTeam1._id, members: [{ userId: credentials['X-User-Id'], roles: ['member'] }] })
+			.expect(200);
+
+		const teamAfter = await readTeam();
+		expect(teamAfter.rooms).to.equal(teamBefore.rooms + 2);
+		expect(teamAfter.numberOfUsers).to.equal(teamBefore.numberOfUsers + 1);
+
+		await Promise.all([deleteRoom({ type: 'c', roomId: channel1._id }), deleteRoom({ type: 'c', roomId: channel2._id })]);
 	});
 
 	it("should prevent users from accessing unrelated teams via 'query' parameter", () => {

@@ -1643,6 +1643,23 @@ describe('[Groups]', () => {
 					expect(res.body).to.have.property('errorType', 'error-not-allowed');
 				});
 		});
+
+		it('should not include online users that are not members of the group', async () => {
+			const { testUser, testUserCredentials, room } = await createUserAndChannel();
+			const { testUser: onlineNonMember } = await createUserAndChannel();
+
+			const response = await request
+				.get(api('groups.online'))
+				.set(testUserCredentials)
+				.query({
+					_id: room._id,
+				})
+				.expect(200);
+
+			const onlineIds = response.body.online.map((user: IUser) => user._id);
+			expect(onlineIds).to.include(testUser._id);
+			expect(onlineIds).to.not.include(onlineNonMember._id);
+		});
 	});
 
 	describe('/groups.members', () => {
