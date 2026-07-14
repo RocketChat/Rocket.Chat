@@ -1,0 +1,20 @@
+docs/backend-folder-structure.md
+  s_e5403c65369c09::t_bfa1ecf033102d 1-2,4-122
+  s_e5403c65369c09::t_6ac4b52b560ead 3,123
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "6640bfab171339be050741b2eaf6f29f73a876da",
+  "prompts": {},
+  "sessions": {
+    "s_e5403c65369c09": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6b768a80-3a9f-455c-bbb1-16411b638726",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
