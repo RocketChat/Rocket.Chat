@@ -54,7 +54,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		callServer.setHooks({ onPreCallCreated: runPreMediaCallCreatedAppHook });
 
 		this.onEvent('watch.settings', async ({ setting }): Promise<void> => {
-			if (setting._id.startsWith('VoIP_TeamCollab_')) {
+			if (setting._id.startsWith('VoIP_TeamCollab_') && !setting._id.includes('ExternalCallHistory')) {
 				setImmediate(() => this.configureMediaCallServer());
 			}
 		});
