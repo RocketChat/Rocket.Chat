@@ -184,8 +184,6 @@ export class CustomOAuth {
 		}
 
 		try {
-			// SSRF protection: the OAuth identity endpoint URL is set by admins, but should
-			// still respect the allowlist so private-IP IdPs can be explicitly permitted.
 			const request = await fetch(`${this.identityPath}`, {
 				method: 'GET',
 				headers,
@@ -298,7 +296,6 @@ export class CustomOAuth {
 		}
 
 		try {
-			// SSRF protection: respect the allowlist so private-IP email endpoints can be explicitly permitted.
 			const request = await fetch(`${this.emailPath}`, {
 				method: 'GET',
 				headers,
