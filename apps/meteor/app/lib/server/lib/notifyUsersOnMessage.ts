@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IUser, RoomType } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
@@ -84,6 +84,21 @@ const getUnreadSettingCount = (roomType: RoomType): UnreadCountType => {
 	return settings.get(unreadSetting);
 };
 
+const isDesktopDefaultAllMessages = (): boolean => settings.get('Accounts_Default_User_Preferences_desktopNotifications') === 'all';
+
+const isMobileDefaultAllMessages = (): boolean => settings.get('Accounts_Default_User_Preferences_pushNotifications') === 'all';
+
+const shouldCountAllMessagesForSubscription = ({
+	unreadAlert,
+	desktopNotifications,
+	mobilePushNotifications,
+}: Pick<ISubscription, 'unreadAlert' | 'desktopNotifications' | 'mobilePushNotifications'>): boolean =>
+	unreadAlert === 'all' ||
+	desktopNotifications === 'all' ||
+	mobilePushNotifications === 'all' ||
+	(!desktopNotifications && isDesktopDefaultAllMessages()) ||
+	(!mobilePushNotifications && isMobileDefaultAllMessages());
+
 async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise<void> {
 	if (!room || message.tmid) {
 		return;
@@ -98,6 +113,8 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 
 	const userMentionInc = getUserMentions(room.t, unreadCount as Exclude<UnreadCountType, 'group_mentions_only'>);
 	const groupMentionInc = getGroupMentions(room.t, unreadCount as Exclude<UnreadCountType, 'user_mentions_only'>);
+	const includeSubscriptionsWithDefaultDesktopNotification = isDesktopDefaultAllMessages();
+	const includeSubscriptionsWithDefaultMobileNotification = isMobileDefaultAllMessages();
 
 	// find all subscriptions that will need to be notified after the update.
 	// we need to use toArray() here and keep results in memory because we'll update the them later
@@ -106,6 +123,8 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 		uidsExclude: [message.u._id],
 		uidsInclude: userIds,
 		onlyRead: !toAll && !toHere && !unreadAllMessages,
+		includeSubscriptionsWithDefaultDesktopNotification,
+		includeSubscriptionsWithDefaultMobileNotification,
 	}).toArray();
 
 	// Give priority to user mentions over group mentions
@@ -119,6 +138,26 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 		await Subscriptions.incUnreadForRoomIdExcludingUserIds(room._id, [...userIds, message.u._id], 1);
 	}
 
+	const subscriptionIdsToIncrementUnread = subs
+		.filter((sub) => {
+			if (!shouldCountAllMessagesForSubscription(sub)) {
+				return false;
+			}
+
+			const hasUserMention = userIds.includes(sub.u._id);
+			const alreadyIncrementedUnread =
+				(hasUserMention && Boolean(userMentionInc)) ||
+				((toAll || toHere) && Boolean(groupMentionInc)) ||
+				(!toAll && !toHere && unreadAllMessages && !hasUserMention);
+
+			return !alreadyIncrementedUnread;
+		})
+		.map(({ _id }) => _id);
+
+	if (subscriptionIdsToIncrementUnread.length) {
+		await Subscriptions.incUnreadForIds(subscriptionIdsToIncrementUnread, 1);
+	}
+
 	// update subscriptions of other members of the room
 	await Promise.all([
 		Subscriptions.setAlertForRoomIdExcludingUserId(message.rid, message.u._id),
@@ -127,7 +166,7 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 
 	subs.forEach((sub) => {
 		const hasUserMention = userIds.includes(sub.u._id);
-		const shouldIncUnread = hasUserMention || toAll || toHere || unreadAllMessages;
+		const shouldIncUnread = hasUserMention || toAll || toHere || unreadAllMessages || shouldCountAllMessagesForSubscription(sub);
 		void notifyOnSubscriptionChanged(
 			{
 				...sub,
