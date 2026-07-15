@@ -106,7 +106,6 @@ async function findPrivateGroupByIdOrName({
 }> {
 	const room = await getRoomFromParams(params);
 
-	// `roles` is required by the room access validators, which read it straight from the user object
 	const user = await Users.findOneById(userId, { projection: { username: 1, roles: 1 } });
 
 	if (!room || !user || !(await canAccessRoomAsync(room, user))) {
