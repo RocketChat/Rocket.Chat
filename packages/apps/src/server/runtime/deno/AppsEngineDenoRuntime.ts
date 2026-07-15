@@ -100,13 +100,7 @@ export class DenoRuntimeSubprocessController extends BaseRuntimeSubprocessContro
 		 * Deno 2.x refuses to run scripts inside the node_modules, so we create a symlink to the deno runtime files in the temp directory
 		 * The temp directory is the same we are given by the host to store temporary upload files
 		 */
-		try {
-			fs.symlinkSync(path.dirname(this.denoConfigPath), path.dirname(this.denoRuntimePath), 'dir');
-		} catch (reason: unknown) {
-			if ((reason as NodeJS.ErrnoException).code !== 'EEXIST') {
-				throw reason;
-			}
-		}
+		ensureSymlink(path.dirname(this.denoRuntimePath), path.dirname(this.denoConfigPath));
 
 		// Generate a runtime config with the resolved absolute path for @rocket.chat/apps-engine/
 		generateEphemeralDenoConfig(this.denoEphemeralConfigPath, this.denoConfigPath, this.appsEnginePath);
