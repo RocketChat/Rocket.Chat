@@ -1,6 +1,6 @@
-import { getWorkspaceAccessToken } from '../../app/cloud/server';
-import { Push } from '../../app/push/server';
 import type { ICachedSettings } from '../../app/settings/server/CachedSettings';
+import { getWorkspaceAccessToken } from '../lib/cloud';
+import { Push } from '../lib/notifications/push';
 
 export async function configurePushNotifications(settings: ICachedSettings): Promise<void> {
 	settings.watch<boolean>('Push_enable', async (enabled) => {

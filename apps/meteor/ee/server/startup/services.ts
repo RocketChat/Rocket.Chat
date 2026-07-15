@@ -2,9 +2,9 @@ import { AbacService } from '@rocket.chat/abac';
 import { api } from '@rocket.chat/core-services';
 
 import { isRunningMs } from '../../../server/lib/isRunningMs';
-import { LicenseService } from '../../app/license/server/license.internalService';
 import { OmnichannelEE } from '../../app/livechat-enterprise/server/services/omnichannel.internalService';
 import { EnterpriseSettings } from '../../app/settings/server/settings.internalService';
+import { LicenseService } from '../lib/license/license.internalService';
 import { InstanceService } from '../local-services/instance/service';
 import { LDAPEEService } from '../local-services/ldap/service';
 import { MessageReadsService } from '../local-services/message-reads/service';

@@ -9,8 +9,8 @@ import { RateLimiter } from '../../../app/lib/server';
 import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
 import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../app/settings/server';
-import { follow } from '../../../app/threads/server/functions';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
+import { follow } from '../../lib/messaging/threads/functions';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

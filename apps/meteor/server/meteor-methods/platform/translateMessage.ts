@@ -5,7 +5,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../../app/authorization/server';
-import { translateMessage } from '../../../app/autotranslate/server/functions/translateMessage';
+import { translateMessage } from '../../lib/autotranslate/functions/translateMessage';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

@@ -6,8 +6,8 @@ import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
 
 import { getMethodArgs } from '../../../../server/lib/logger/logPayloads';
+import { metrics } from '../../../../server/lib/metrics';
 import { getModifiedHttpHeaders } from '../../../../server/lib/shared/getModifiedHttpHeaders';
-import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 
 const logger = new Logger('Meteor');

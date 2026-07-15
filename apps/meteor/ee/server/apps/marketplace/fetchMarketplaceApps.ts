@@ -3,8 +3,8 @@ import * as z from 'zod';
 
 import { getMarketplaceHeaders } from './getMarketplaceHeaders';
 import { MarketplaceAppsError, MarketplaceConnectionError, MarketplaceUnsupportedVersionError } from './marketplaceErrors';
-import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
 import { settings } from '../../../../app/settings/server';
+import { getWorkspaceAccessToken } from '../../../../server/lib/cloud';
 import { Apps } from '../orchestrator';
 
 type FetchMarketplaceAppsParams = {

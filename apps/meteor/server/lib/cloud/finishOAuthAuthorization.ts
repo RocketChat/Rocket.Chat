@@ -3,7 +3,7 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
 
 import { getRedirectUri } from './getRedirectUri';
-import { userScopes } from '../../../app/cloud/server/oauthScopes';
+import { userScopes } from './oauthScopes';
 import { settings } from '../../../app/settings/server';
 import { SystemLogger } from '../logger/system';
 

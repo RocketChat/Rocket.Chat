@@ -90,7 +90,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (settings.get('Store_Last_Message') && user && !(await hasPermissionAsync(user._id, 'preview-c-room'))) {
+		if (settings.get('Store_Last_Message') && user && !(await hasPermissionAsync(user, 'preview-c-room'))) {
 			delete room.lastMessage;
 		}
 
