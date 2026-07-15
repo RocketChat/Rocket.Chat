@@ -129,7 +129,7 @@ const MessageBox = ({
 		});
 	});
 
-	const { hasUploads, handleUploadFiles, isUploading, isProcessingUploads } = useFileUpload();
+	const { hasUploads, isUploading, isProcessingUploads } = useFileUpload();
 
 	const handleSendMessage = useStableCallback(() => {
 		if (isUploading || isProcessingUploads) {
