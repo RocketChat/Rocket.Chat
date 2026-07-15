@@ -134,8 +134,6 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 	}, [isPrivate, setValue]);
 
 	useEffect(() => {
-		// Workspace policy forces encryption on for private rooms; keep the toggle on
-		// whenever the room is private (and not federated, which cannot be encrypted).
 		if (isPrivate && e2eEnforcedForPrivate && !federated) {
 			setValue('encrypted', true);
 		}
