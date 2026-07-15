@@ -79,7 +79,10 @@ export const ensureMessagesTextIndex = async (): Promise<void> => {
 		shape: desiredShape,
 	});
 	try {
-		const name = await Messages.col.createIndex(desiredShape === 'room-scoped' ? { rid: 1, msg: 'text' } : { msg: 'text' });
+		const index = desiredShape === 'room-scoped' ? { rid: 1, msg: 'text' } : { msg: 'text' };
+		const name = await Messages.col.createIndex(index, {
+			name: desiredShape === 'room-scoped' ? 'messages_room_text' : 'messages_text',
+		});
 		SystemLogger.startup({ msg: 'created messages text index', name, shape: desiredShape });
 	} catch (err) {
 		SystemLogger.error({ msg: 'failed to create messages text index', shape: desiredShape, err });
