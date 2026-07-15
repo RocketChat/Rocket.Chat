@@ -53,12 +53,17 @@ function generateEphemeralDenoConfig(targetPath: string, denoConfigPath: string,
  * Then creates the symlink, catching EEXIST to guard against race conditions.
  */
 export function ensureSymlink(symlinkPath: string, targetPath: string): void {
-	// Clean up any existing entry at the symlink path
 	try {
-		fs.rmSync(symlinkPath, { recursive: true });
+		const currentTarget = fs.readlinkSync(symlinkPath);
+
+		if (currentTarget === targetPath) {
+			return;
+		}
+
+		fs.rmSync(symlinkPath, { recursive: true, force: true });
 	} catch (err: unknown) {
 		if ((err as NodeJS.ErrnoException).code !== 'ENOENT') {
-			throw err;
+			fs.rmSync(symlinkPath, { recursive: true, force: true });
 		}
 	}
 
