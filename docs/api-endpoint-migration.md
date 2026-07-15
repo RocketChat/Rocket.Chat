@@ -315,7 +315,7 @@ These types are already registered and available via `$ref`:
 - `#/components/schemas/IBanner`
 - `#/components/schemas/ILivechatBusinessHour`
 - `#/components/schemas/ILivechatDepartmentAgents`
-- `#/components/schemas/ISettingBase` (and the other `ISetting*` variants — `ISetting` is a union, so typia emits one schema per variant; `$ref` the `ISettingBase` schema, which every setting satisfies)
+- `#/components/schemas/ISettingBase` (and the other `ISetting*` variants — `ISetting` is a union, so typia emits one schema per variant). ⚠️ Do not `$ref` these to validate settings responses: `ISettingBase.value` is a `SettingValue` union whose typia `oneOf` (Date `date-time` vs `string`) overlaps and fails AJV validation — the same class as the [`Date | string` pitfall](#known-pitfall-date--string-unions). Leave `value`/whole setting items relaxed until that union is reworked.
 - `#/components/schemas/CallHistoryItem`
 - `#/components/schemas/ICustomUserStatus`
 - `#/components/schemas/SlashCommand`

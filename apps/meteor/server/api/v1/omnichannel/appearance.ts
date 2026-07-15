@@ -14,10 +14,14 @@ import { findAppearance } from './lib/appearance';
 import { notifyOnSettingChangedById } from '../../../lib/notifyListener';
 import { updateAuditedByUser } from '../../../settings/lib/auditedSettingUpdates';
 
+// TODO: `ISetting.value` is a `SettingValue` union (string | number | boolean | Date | string[] | ...).
+// typia emits it as a `oneOf` whose Date (format: date-time) and string branches overlap, so real values
+// fail AJV `oneOf` validation (same class as the documented `Date | string` pitfall). Until the setting
+// schema's `value` is reworked (e.g. an ajv.ts patch collapsing the union), items stay unconstrained here.
 const appearanceResponseSchema = ajv.compile<{ appearance: ISetting[] }>({
 	type: 'object',
 	properties: {
-		appearance: { type: 'array', items: { $ref: '#/components/schemas/ISettingBase' } },
+		appearance: { type: 'array', items: { type: 'object' } },
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['appearance', 'success'],
