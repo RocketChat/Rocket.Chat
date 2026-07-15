@@ -1,4 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { Box, Callout } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouter, useSetModal, useToastMessageDispatch, useEndpoint, usePermission, useUserSubscription } from '@rocket.chat/ui-contexts';
@@ -46,7 +47,12 @@ export const useRoomLeave = (room: IRoom) => {
 
 		setModal(
 			<WarningModal
-				text={t(warnText as TranslationKey, { roomName: room.fname || room.name })}
+				text={
+					<>
+						<Box mbe={16}>{t(warnText as TranslationKey, { roomName: room.fname || room.name })}</Box>
+						{room.encrypted && <Callout type='warning'>{t('E2E_Leave_Encrypted_Room_Warning')}</Callout>}
+					</>
+				}
 				confirmText={t('Leave_room')}
 				close={() => setModal(null)}
 				cancelText={t('Cancel')}
