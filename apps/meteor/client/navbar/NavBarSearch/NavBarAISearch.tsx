@@ -11,6 +11,7 @@ import tinykeys from 'tinykeys';
 
 import NavBarAISearchListBox from './NavBarAISearchListbox';
 import NavBarSearchInputAddon from './NavBarSearchInputAddon';
+import NavBarSearchListBox from './NavBarSearchListbox';
 import { getShortcutLabel } from './getShortcutLabel';
 import { useNavBarAISearch } from './hooks/useNavBarAISearch';
 import { useSearchClick } from './hooks/useSearchClick';
@@ -113,14 +114,12 @@ const NavBarAISearch = () => {
 						/>
 					}
 				/>
-				{state.isOpen && (
-					<NavBarAISearchListBox
-						state={state}
-						overlayProps={overlayProps}
-						aiSearchActive={aiSearchActive}
-						aiSearchAvailable={canSearchWithAIFromTopBar}
-					/>
-				)}
+				{state.isOpen &&
+					(aiSearchActive ? (
+						<NavBarAISearchListBox state={state} overlayProps={overlayProps} aiSearchActive aiSearchAvailable={canSearchWithAIFromTopBar} />
+					) : (
+						<NavBarSearchListBox state={state} overlayProps={overlayProps} />
+					))}
 			</Box>
 		</FormProvider>
 	);
