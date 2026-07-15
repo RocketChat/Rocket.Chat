@@ -1,167 +1,112 @@
-# Proposal: Type-System Enforcement for Offline-License Cloud Guards
+# Proposal: License Capability Enforcement via Branded Proofs
 
 ## Status
 
-Draft
+Draft — v2. Supersedes the earlier `CloudConnection`-only draft: the single-purpose connection capability is generalized into one proof mechanism that can guard any license-controlled capability, with the specific entitlement captured in the type.
 
 ## Problem
 
-Workspaces with an offline (air-gapped) license must never initiate outbound connections to Rocket.Chat-owned endpoints — Cloud/Fleet Command (`cloud.rocket.chat`), Marketplace, the usage collector, `releases.rocket.chat`, NPS, and the Push Gateway. For the customers this serves, the *attempt* itself is a compliance violation, regardless of whether it succeeds.
+License enforcement today is a runtime side-condition the compiler knows nothing about, in two distinct places:
 
-Today this is enforced by runtime checks — `License.hasOfflineLicense()` guards scattered across ~15 files:
+1. **Module entitlements.** `License.hasModule('auditing')` returns a `boolean`. Nothing ties that boolean to the code it guards: a feature entry point can be called without any check, a check for the *wrong* module still typechecks, and a refactor that moves code out from under its `if` block breaks enforcement silently.
+2. **Offline (air-gapped) licenses.** When `license.information.offline` is true, the workspace must never initiate outbound connections to Rocket.Chat-owned endpoints. This is enforced by ~15 scattered `hasOfflineLicense()` checks (sync, marketplace, telemetry, push gateway, Gravatar). Any new feature can `import { serverFetch }` and ship a compliance violation no type error catches — and two real bugs of exactly this class were found during QA (a startup race in the usage report, and a stale verdict held by the push retry chain).
 
-- `apps/meteor/app/cloud/server/functions/syncWorkspace/index.ts` (sync entry)
-- `apps/meteor/app/cloud/server/functions/getWorkspaceAccessToken.ts` and `getWorkspaceAccessTokenWithScope.ts` (OAuth token funnel)
-- `apps/meteor/ee/server/apps/marketplace/MarketplaceAPIClient.ts`, `ee/server/apps/cron.ts`, `ee/server/apps/appRequestsCron.ts`
-- `apps/meteor/app/statistics/server/functions/sendUsageReport.ts`
-- `apps/meteor/app/version-check/server/functions/checkVersionUpdate.ts`
-- `apps/meteor/app/push/server/push.ts` (`shouldUseGateway()` and the send loop)
-- `apps/meteor/server/modules/core-apps/cloudAnnouncements.module.ts`
-- `assertNotOfflineLicense()` calls in the interactive registration/OAuth/billing functions under `apps/meteor/app/cloud/server/functions/`
-
-These checks work, but they are a **side-condition the compiler knows nothing about**. Any new feature can `import { serverFetch } from '@rocket.chat/server-fetch'`, build a URL from `Cloud_Url` (or hardcode a domain), and ship a compliance violation that no type error, no test, and no reviewer checklist reliably catches. The guard has to be *remembered*, and knowledge of *which* endpoints require it lives only in developers' heads.
+Both are the same underlying flaw: **the license check produces no evidence**. Nothing forces the check to happen, to happen for the right entitlement, or to happen at the right time.
 
 ## Proposed Solution
 
-Make the ability to contact a Rocket.Chat-owned endpoint a **capability**: a value of a branded type that can only be produced by a factory that performs the offline-license check. Every function that performs cloud I/O requires that value in its signature. New code physically cannot typecheck a cloud call without going through the guard — forgetting it becomes a compile error instead of a compliance incident.
+Make every license check return an unforgeable **proof value**, and make guarded code demand that proof in its signature. The pattern has three parts.
 
-### The capability module
+### 1. The lock — branded proof types
 
-One new module, `apps/meteor/app/cloud/server/cloudClient.ts`, becomes the single construction site:
+One brand mechanism, parameterized by what it proves. The generic parameter captures the exact literal passed to the checker, so proofs for different modules are not interchangeable:
 
 ```ts
-import { License } from '@rocket.chat/license';
-import { serverFetch, type ExtendedFetchOptions, type Response } from '@rocket.chat/server-fetch';
+// packages/core-typings/src/license/LicenseModule.ts (already exists)
+export type InternalModuleName = (typeof CoreModules)[number];
+export type ExternalModuleName = `${string}.${string}`;
+export type LicenseModule = InternalModuleName | ExternalModuleName;
 
-import { CloudOfflineLicenseError } from '../../../lib/errors/CloudOfflineLicenseError';
-import { SystemLogger } from '../../../server/lib/logger/system';
+// ee/packages/license/src/proofs.ts (new)
+declare const LicenseAuthorized: unique symbol; // NOT exported — unforgeable outside the package
 
-declare const cloudConnectionBrand: unique symbol; // NOT exported — unforgeable outside this module
-
-/**
- * Capability proving the offline-license check has been performed for this attempt.
- *
- * Acquire one per attempt, at the top of the operation. NEVER store a connection on a
- * class field, module scope, or a retry/timer closure — the license can change at
- * runtime, and a cached connection would keep a stale "online" verdict alive.
- */
-export type CloudConnection = {
-	readonly [cloudConnectionBrand]: true;
-	fetch(input: string, options?: ExtendedFetchOptions, allowSelfSignedCerts?: boolean): Promise<Response>;
+/** Proof that the current license grants module M. */
+export type ModuleProof<M extends LicenseModule> = {
+	readonly [LicenseAuthorized]: M;
 };
 
-// Consumers get their fetch types from here, not from @rocket.chat/server-fetch.
-export type { ExtendedFetchOptions, Response };
+/** Proof that the current license permits outbound calls to Rocket.Chat-owned
+ *  endpoints (absent when the license carries the offline flag). */
+export type CloudEgressProof = {
+	readonly [LicenseAuthorized]: 'cloud:egress';
+};
+```
 
-const createConnection = (): CloudConnection =>
-	({
-		fetch: (input, options, allowSelfSignedCerts) => serverFetch(input, options, allowSelfSignedCerts),
-	}) as CloudConnection; // the only cast, inside the only allowed module
+The brand property is phantom — no such field exists at runtime. Proofs are frozen empty objects: zero allocation cost (a shared singleton per kind), zero serialization surface.
 
-/** Background jobs: `null` means offline — skip silently. */
-export function tryGetCloudConnection(context?: string): CloudConnection | null {
-	if (License.hasOfflineLicense()) {
-		SystemLogger.debug({ msg: 'Skipping cloud communication: workspace has an offline license', context });
-		return null;
-	}
-	return createConnection();
+### 2. The keymaker — the license package owns construction
+
+The only casts live inside `ee/packages/license`, next to the state they attest to:
+
+```ts
+// on LicenseManager — additive API; the existing boolean hasModule() stays
+public proveModule<M extends LicenseModule>(module: M): ModuleProof<M> | undefined {
+	return this.hasModule(module) ? (PROOF as ModuleProof<M>) : undefined;
 }
 
-/** Interactive flows: throws the typed error surfaced to the caller/UI. */
-export function getCloudConnectionOrThrow(message?: string): CloudConnection {
-	if (License.hasOfflineLicense()) {
-		throw new CloudOfflineLicenseError(
-			message ?? 'Cloud connectivity is disabled by the offline license applied to this workspace',
-		);
-	}
-	return createConnection();
+public proveCloudEgress(): CloudEgressProof | undefined {
+	return this.hasOfflineLicense() ? undefined : (PROOF as CloudEgressProof);
 }
 ```
 
-Design notes:
+Design decisions:
 
-- **The factories are synchronous.** `License.hasOfflineLicense()` is a sync read of the in-memory license, so per-attempt acquisition is free — removing any temptation to cache the connection.
-- **The two factories mirror the existing runtime helper pair** in `apps/meteor/app/cloud/server/functions/offlineLicense.ts` (`hasOfflineLicense` for silent background skips, `assertNotOfflineLicense` for interactive throws), so migration is mechanical and behavior-preserving: same silent skips, same `CloudOfflineLicenseError`, same single informational log at license application.
-- **The `message` parameter** preserves context-specific error text (e.g. the Marketplace-specific message currently thrown by `MarketplaceAPIClient.fetch`).
-- **The workspace access token is deliberately NOT bundled into the capability.** The OAuth token exchange is itself a guarded fetch (`getWorkspaceAccessTokenWithScope.ts` posts to `${Cloud_Url}/api/oauth/token`), several guarded endpoints are unauthenticated (releases, collector, pre-registration), scopes vary per caller, and push has its own authorization flow. Instead, the token funnel migrates to the capability internally — which transitively guards its ~30 consumers exactly as the runtime checks do today, preserving the `''`-token-when-offline contract.
+- **Additive, not a signature change.** `hasModule(): boolean` has hundreds of call sites, including display logic and the REST surface the client consumes. Those keep the boolean. `proveModule()` is what *server-side entry points* migrate to.
+- **Synchronous.** License state is in memory; proofs are free to acquire, which matters for the per-attempt rule below.
+- **The offline gate is a proof family, not a module.** The offline flag has inverted semantics — it *revokes* a permission rather than granting a feature — but the same brand expresses it: `proveCloudEgress()` returns `undefined` exactly when the offline license forbids egress. A `proveCloudEgressOrThrow(message?)` variant throws the existing `CloudOfflineLicenseError` for interactive flows (registration, cloud login, billing), preserving today's error contract.
 
-### Signatures carry the requirement
-
-The payoff is in function signatures. Helpers that perform cloud I/O take the capability as a parameter:
+### 3. The guard — signatures demand proofs
 
 ```ts
-// before — nothing in the signature says this talks to Rocket.Chat Cloud:
-export async function fetchWorkspaceSyncPayload({ token, data }: { ... }): Promise<...>
+// Module-gated feature entry point:
+function initAuditing(proof: ModuleProof<'auditing'>) { ... }
 
-// after — cloud I/O is visible, and the compiler forces callers through the guard:
-export async function fetchWorkspaceSyncPayload(
-	connection: CloudConnection,
-	{ token, data }: { ... },
-): Promise<...>
-```
-
-A developer adding a new cloud endpoint follows the types: they need a `CloudConnection`, the only way to get one is a factory whose name and JSDoc explain the offline rule, and the choice between the two factories forces them to *decide* the offline behavior (skip vs. throw) instead of ignoring it.
-
-### Migration patterns
-
-Roughly 27 files fetch Rocket.Chat-owned endpoints. They fall into four shapes:
-
-**A — Interactive flows** (registration, OAuth, checkout, license removal, announcement interactions: `startRegisterWorkspace.ts`, `connectWorkspace.ts`, `finishOAuthAuthorization.ts`, `getCheckoutUrl.ts`, `cloudAnnouncements.module.ts`, …). The existing `assertNotOfflineLicense()` line and the raw fetch collapse into:
-
-```ts
-const connection = getCloudConnectionOrThrow();
-const response = await connection.fetch(`${cloudUrl}/api/v2/register/workspace`, { ... });
-```
-
-**B — Background jobs** (`syncWorkspace/index.ts`, `sendUsageReport.ts`, the NPS pair, `getNewUpdates.ts`). Null means skip, keeping existing side effects:
-
-```ts
-const connection = tryGetCloudConnection('syncWorkspace');
-if (!connection) {
-	await getCachedSupportedVersionsToken.reset(); // still refreshed locally from the license/build
-	return;
+initAuditing();          // ❌ compile error: expected 1 argument
+const token = License.proveModule('auditing');
+initAuditing(token);     // ❌ compile error: possibly undefined
+if (token) {
+	initAuditing(token); // ✅ narrowed to ModuleProof<'auditing'>
 }
-await announcementSync(connection);
-await syncCloudData(connection);
+
+// Cloud I/O — the single fetch wrapper in apps/meteor/server/lib/cloud/cloudClient.ts:
+export function cloudFetch(proof: CloudEgressProof, input: string, options?: ExtendedFetchOptions): Promise<Response>;
 ```
 
-Inner helpers only reachable from a guarded entry point (`announcementSync`, `fetchWorkspaceSyncPayload`, `legacySyncWorkspace`) take `connection` as a parameter rather than re-acquiring — acceptable within one logical operation with no timers between acquisition and use.
+The developer experience does the enforcement: to call the function you need the token; the only way to get the token is the checker whose name and JSDoc explain the rule; the `| undefined` return forces an explicit decision about the denied case (skip silently vs. throw); and truthiness narrowing makes the happy path read naturally.
 
-**C — Class-based client** (`MarketplaceAPIClient.ts`). The strategy pattern (real vs. mock fetch for tests) is preserved; the strategy signature gains a leading `connection` parameter, acquired per `fetch()` call and never stored on the instance. All `orchestrator.getMarketplaceClient().fetch(...)` consumers keep their call sites unchanged.
+Inner helpers that are only reachable from a guarded entry point take the proof as a parameter rather than re-checking — the signature documents "this function performs cloud I/O / module-X work", and the compiler walks the requirement up the call graph to wherever the proof is legitimately acquired.
 
-**D — Retry closures** (push gateway `sendGatewayPush` in `apps/meteor/app/push/server/push.ts`, the `supportedVersionsToken` retry chain). The rule: **acquire at the top of each attempt; the timer closure holds no connection.**
+## The staleness rule: acquire per attempt, never cache
 
-```ts
-private async sendGatewayPush(gateway, service, token, notification, retryOptions): Promise<void> {
-	const connection = tryGetCloudConnection('push-gateway');
-	if (!connection) {
-		return; // license went offline between scheduling and this attempt — drop, incl. pending retries
-	}
-	// ...
-	setTimeout(() => this.sendGatewayPush(...), ms); // next attempt re-checks
-}
-```
+Licenses change at runtime — swapped, upgraded, invalidated, or an offline license applied mid-flight. A proof is a **point-in-time verdict**, and both QA-discovered bugs in the offline work were staleness bugs:
 
-This is strictly better than the current runtime checks: today a retry chain started while online keeps fetching if the license flips to offline mid-flight; per-attempt acquisition stops it.
+- the usage report evaluated its gate at function entry, then spent seconds generating statistics before fetching (the verdict predated license application);
+- the push gateway retry chain captured its decision in `setTimeout` closures that outlived a license change.
 
-**Carve-out**: the two fetches in `ee/server/apps/communication/rest.ts` that download an app package from an **admin-supplied URL** (install-from-URL) are not Rocket.Chat endpoints and must keep working under offline licenses — installing private apps from a URL or file is core to air-gapped operation. They stay on raw `serverFetch`.
+Rules, to be stated in the proofs' JSDoc and enforced in review:
 
-### What stays as-is
+1. Acquire the proof at the top of each operation *attempt*; retry closures re-acquire on every attempt (the factories are sync — this costs nothing).
+2. Never store a proof on a class field, module scope, or queue payload.
+3. A proof is not a subscription. Long-lived module features (services started when a module is granted) must still use the existing lifecycle events — `License.onValidFeature` / `onInvalidFeature` / `onToggledFeature` — for startup and teardown. Proofs guard entry points; events manage lifetimes.
+4. Proofs are server-only and must never cross the API boundary; the client keeps boolean checks driven by `licenses.info`.
 
-The `offlineLicense.ts` helpers remain for **behavior** gates that don't themselves fetch: `shouldUseGateway()` in push, the marketplace cron-body early returns, and the fail-fast assert in `getOAuthAuthorizationUrl` (which only builds a URL). These gate control flow, not I/O, and don't need a capability.
+## Migration
 
-### Migration ordering and test impact
-
-1. `cloudClient.ts` + unit tests (no behavior change).
-2. Token funnel (`getWorkspaceAccessTokenWithScope.ts`) — transitively guards all token consumers.
-3. The 15 other `app/cloud/server/functions/**` files.
-4. Marketplace (`MarketplaceAPIClient.ts` strategy, `appRequestNotifyUsers.ts`).
-5. Telemetry, NPS, version-check, announcements, push gateway.
-
-Every step is independently green. Test impact is confined to proxyquire maps: `sendUsageReport.spec.ts` and `push.spec.ts` swap their `@rocket.chat/server-fetch` stubs for a `cloudClient` stub — and the offline assertions get *stronger*, since specs can now assert the connection was never requested at all. The `ee/packages/license` jest suite is untouched.
+1. **Cloud egress first** (the offline license feature, already enforced at runtime in ~27 files): introduce `proveCloudEgress()` and `cloudFetch(proof, ...)`, then convert the four established patterns — interactive flows (`OrThrow`), background jobs (`undefined` → keep side effects, skip), the marketplace client (proof acquired per `fetch()` call, never stored on the instance), and retry closures (per-attempt). The existing `hasOfflineLicense()` helpers remain for behavior gates that don't perform I/O themselves (`shouldUseGateway()`, cron-body skips, Gravatar suggestion filtering).
+2. **Module proofs opportunistically**: as EE features are touched, their server entry points gain `ModuleProof<'...'>` parameters, starting with features whose checks have historically drifted from their code. No big-bang rewrite; the boolean API keeps working throughout.
 
 ## Limitations
 
-TypeScript cannot forbid an import. A brand-new file can still `import { serverFetch }` directly and hardcode `cloud.rocket.chat`, bypassing the capability entirely; `{} as CloudConnection` likewise defeats the brand (though it is greppable and glaring in review). What the type system guarantees is narrower but valuable: **all code routed through the typed cloud helpers cannot skip the guard**, the offline decision (skip vs. throw) is forced explicitly at every new call site, and violations shrink to two obvious review signals — a raw `serverFetch` import next to a Rocket.Chat domain, or a forged cast.
+TypeScript cannot forbid an import: a new file can still `import { serverFetch }` directly and hardcode an endpoint, and `{} as ModuleProof<'auditing'>` defeats the brand (both are greppable and glaring in review — the cast requires importing a type whose only documented constructor is the license manager). What the type system guarantees is narrower but real: **code routed through proof-demanding signatures cannot skip the check, cannot check the wrong module, and must handle the denied case explicitly** — and violations shrink to two obvious review signals: a raw `serverFetch` near a Rocket.Chat domain, or a forged cast.
 
-A directory-scoped lint rule (`no-restricted-imports` on `@rocket.chat/server-fetch` with `cloudClient.ts` as the sole exemption) or a CI grep could close the remaining hole; both were considered and deliberately left out of this proposal in favor of a types-only approach.
+A directory-scoped lint rule (`no-restricted-imports` on `@rocket.chat/server-fetch` with `cloudClient.ts` exempt) or a CI grep could close the import hole; both were considered and deliberately left out in favor of a types-only approach.
