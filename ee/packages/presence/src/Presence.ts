@@ -145,8 +145,6 @@ export class Presence extends ServiceClass implements IPresence {
 			return;
 		}
 
-		// addAtTimestamp adds a new job document each call, so cancel the previous one first —
-		// otherwise every reschedule leaves a duplicate job behind.
 		await cronJobs.remove(STATUS_EXPIRATION_JOB);
 
 		if (!next?.statusExpiresAt) {
