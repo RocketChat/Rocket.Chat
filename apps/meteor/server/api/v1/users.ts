@@ -36,8 +36,6 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
-import { getUserForCheck, emailCheck } from '../../../app/2fa/server/code';
-import { resetTOTP } from '../../../app/2fa/server/functions/resetTOTP';
 import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../app/settings/server';
 import { isSMTPConfigured } from '../../../app/utils/server/functions/isSMTPConfigured';
@@ -46,6 +44,8 @@ import { generatePersonalAccessTokenOfUser } from '../../../imports/personal-acc
 import { regeneratePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/regenerateToken';
 import { removePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/removeToken';
 import { runUserLogoutCleanUp } from '../../hooks/userLogoutCleanUp';
+import { getUserForCheck, emailCheck } from '../../lib/2fa/code';
+import { resetTOTP } from '../../lib/2fa/functions/resetTOTP';
 import { UserChangedAuditStore } from '../../lib/auditServerEvents/userChanged';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { i18n } from '../../lib/i18n';

@@ -1,0 +1,10 @@
+# Phase 6c: notification libraries → server/lib/notifications/
+# Format: old-path<TAB>new-path (relative to apps/meteor/)
+app/push/server/methods.ts	server/meteor-methods/platform/push.ts
+app/push/server	server/lib/notifications/push
+app/push-notifications/server/methods/saveNotificationSettings.ts	server/meteor-methods/users/saveNotificationSettings.ts
+app/push-notifications/server	server/lib/notifications/push-config
+app/mailer/server	server/lib/notifications/email
+app/mail-messages/server	server/lib/notifications/mail-messages
+app/notification-queue/server/NotificationQueue.ts	server/lib/notifications/queue/NotificationQueue.ts
+app/notifications/server	server/lib/notifications/core

@@ -30,7 +30,7 @@ const mocks = {
 			getRoomName: () => '',
 		},
 	},
-	'../../../../mailer/server/api': {
+	'../../../../../server/lib/notifications/email/api': {
 		getTemplate: () => {},
 		send: () => {},
 		replace: () => {},
@@ -41,7 +41,7 @@ const mocks = {
 			watch: () => {},
 		},
 	},
-	'../../../../metrics/server': {
+	'../../../../../server/lib/metrics': {
 		metrics: {},
 	},
 	'../../../../utils/server/getURL': {

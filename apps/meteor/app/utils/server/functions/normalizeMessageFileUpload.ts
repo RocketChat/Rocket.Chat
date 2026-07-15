@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Uploads } from '@rocket.chat/models';
 
-import { FileUpload } from '../../../file-upload/server';
+import { FileUpload } from '../../../../server/lib/media/file-upload';
 import { getURL } from '../getURL';
 
 export const normalizeMessageFileUpload = async (message: Omit<IMessage, '_updatedAt'>): Promise<Omit<IMessage, '_updatedAt'>> => {

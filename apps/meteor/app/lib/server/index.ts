@@ -2,11 +2,11 @@ import '../lib/MessageTypes';
 import './lib/bugsnag';
 import './lib/debug';
 import './lib/loginErrorMessageOverride';
-import './oauth/oauth';
-import './oauth/facebook';
-import './oauth/google';
-import './oauth/proxy';
-import './oauth/twitter';
+import '../../../server/lib/auth-providers/oauth/oauth';
+import '../../../server/lib/auth-providers/oauth/facebook';
+import '../../../server/lib/auth-providers/oauth/google';
+import '../../../server/lib/auth-providers/oauth/proxy';
+import '../../../server/lib/auth-providers/oauth/twitter';
 import './startup/mentionUserNotInChannel';
 
 export * from './lib';
