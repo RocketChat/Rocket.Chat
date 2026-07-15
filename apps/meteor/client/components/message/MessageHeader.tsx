@@ -10,7 +10,6 @@ import {
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -26,11 +25,11 @@ import {
 } from './list/MessageListContext';
 import { normalizeUsername } from '../../../lib/utils/normalizeUsername';
 
-type MessageHeaderProps = {
+export type MessageHeaderProps = {
 	message: IMessage;
 };
 
-const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
+const MessageHeader = ({ message }: MessageHeaderProps) => {
 	const { t } = useTranslation();
 
 	const formatTime = useMessageListFormatTime();

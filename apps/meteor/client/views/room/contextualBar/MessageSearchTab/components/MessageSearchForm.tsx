@@ -1,6 +1,6 @@
 import type { IMessageSearchProvider } from '@rocket.chat/core-typings';
 import { Box, Field, FieldLabel, FieldHint, Icon, TextInput, ToggleSwitch, Callout } from '@rocket.chat/fuselage';
-import { useDebouncedCallback, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedCallback, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import { useEffect, useId } from 'react';
@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { getRoomTypeTranslation } from '../../../../../lib/getRoomTypeTranslation';
 import { useRoom } from '../../../contexts/RoomContext';
 
-type MessageSearchFormProps = {
+export type MessageSearchFormProps = {
 	provider: IMessageSearchProvider;
 	onSearch: (params: { searchText: string; globalSearch: boolean }) => void;
 	searchListId: string;
@@ -31,7 +31,7 @@ const MessageSearchForm = ({ provider, onSearch, searchListId, isSuccess }: Mess
 		setFocus('searchText');
 	}, [setFocus]);
 
-	const debouncedOnSearch = useDebouncedCallback(useEffectEvent(onSearch), 300);
+	const debouncedOnSearch = useDebouncedCallback(useStableCallback(onSearch), 300);
 
 	const submitHandler = handleSubmit(({ searchText, globalSearch }) => {
 		debouncedOnSearch.cancel();
@@ -54,7 +54,7 @@ const MessageSearchForm = ({ provider, onSearch, searchListId, isSuccess }: Mess
 		<Box is='form' onSubmit={submitHandler} w='full'>
 			<Field>
 				<TextInput
-					addon={<Icon name='magnifier' size='x20' />}
+					endAddon={<Icon name='magnifier' size='x20' />}
 					placeholder={t('Search_Messages')}
 					aria-label={t('Search_Messages')}
 					aria-controls={isSuccess ? searchListId : undefined}

@@ -1,7 +1,7 @@
 import type { ILivechatAgent, ILivechatAgentStatus, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldGroup, FieldRow, TextInput, Button, Box, Icon, Select, ButtonGroup } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarTitle,
 	ContextualbarClose,
@@ -29,7 +29,7 @@ type AgentEditFormData = {
 	maxNumberSimultaneousChat: number;
 };
 
-type AgentEditProps = {
+export type AgentEditProps = {
 	agentData: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'>;
 	agentDepartments: (Pick<ILivechatDepartmentAgents, 'departmentId'> & { departmentName: string })[];
 };
@@ -79,7 +79,7 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 	const saveAgentInfo = useEndpoint('POST', '/v1/livechat/agents.saveInfo');
 	const saveAgentStatus = useEndpoint('POST', '/v1/livechat/agent.status');
 
-	const handleSave = useEffectEvent(async ({ status, departments, ...data }: AgentEditFormData) => {
+	const handleSave = useStableCallback(async ({ status, departments, ...data }: AgentEditFormData) => {
 		try {
 			await saveAgentStatus({ agentId: agentData._id, status });
 			await saveAgentInfo({
@@ -131,7 +131,7 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 									<Controller
 										name='username'
 										control={control}
-										render={({ field }) => <TextInput id={usernameField} {...field} readOnly addon={<Icon name='at' size='x20' />} />}
+										render={({ field }) => <TextInput id={usernameField} {...field} readOnly endAddon={<Icon name='at' size='x20' />} />}
 									/>
 								</FieldRow>
 							</Field>
@@ -141,7 +141,7 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 									<Controller
 										name='email'
 										control={control}
-										render={({ field }) => <TextInput id={emailField} {...field} readOnly addon={<Icon name='mail' size='x20' />} />}
+										render={({ field }) => <TextInput id={emailField} {...field} readOnly endAddon={<Icon name='mail' size='x20' />} />}
 									/>
 								</FieldRow>
 							</Field>

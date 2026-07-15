@@ -401,7 +401,7 @@ export class E2ERoom extends Emitter {
 
 		// Import session key for use.
 		try {
-			const key = await Aes.importKey(JSON.parse(this.sessionKeyExportedString!));
+			const key = await Aes.importKey(JSON.parse(this.sessionKeyExportedString));
 			// Key has been obtained. E2E is now in session.
 			this.groupSessionKey = key;
 			span.info('Group key imported');
@@ -423,7 +423,7 @@ export class E2ERoom extends Emitter {
 	async createGroupKey() {
 		await this.createNewGroupKey();
 
-		await sdk.call('e2e.setRoomKeyID', this.roomId, this.keyID);
+		await sdk.rest.post('/v1/e2e.setRoomKeyID', { rid: this.roomId, keyID: this.keyID });
 		const myKey = await this.encryptGroupKeyForParticipant(e2e.publicKey!);
 		if (myKey) {
 			await sdk.rest.post('/v1/e2e.updateGroupKey', {
@@ -482,7 +482,9 @@ export class E2ERoom extends Emitter {
 		try {
 			const mySub = Subscriptions.state.find((record) => record.rid === this.roomId);
 			const decryptedOldGroupKeys = await this.exportOldRoomKeys(mySub?.oldRoomKeys);
-			const users = (await sdk.call('e2e.getUsersOfRoomWithoutKey', this.roomId)).users.filter((user) => user?.e2e?.public_key);
+			const users = (await sdk.rest.get('/v1/e2e.getUsersOfRoomWithoutKey', { rid: this.roomId })).users.filter(
+				(user) => user?.e2e?.public_key,
+			);
 
 			if (!users.length) {
 				span.info('No users to encrypt the key for');
@@ -498,13 +500,13 @@ export class E2ERoom extends Emitter {
 				}[]
 			> = { [this.roomId]: [] };
 			for await (const user of users) {
-				const encryptedGroupKey = await this.encryptGroupKeyForParticipant(user.e2e!.public_key!);
+				const encryptedGroupKey = await this.encryptGroupKeyForParticipant(user.e2e!.public_key);
 				if (!encryptedGroupKey) {
 					span.warn(`Could not encrypt group key for user ${user._id}`);
 					return;
 				}
 				if (decryptedOldGroupKeys) {
-					const oldKeys = await this.encryptOldKeysForParticipant(user.e2e!.public_key!, decryptedOldGroupKeys);
+					const oldKeys = await this.encryptOldKeysForParticipant(user.e2e!.public_key, decryptedOldGroupKeys);
 					if (oldKeys) {
 						usersSuggestedGroupKeys[this.roomId].push({ _id: user._id, key: encryptedGroupKey, oldKeys });
 						continue;

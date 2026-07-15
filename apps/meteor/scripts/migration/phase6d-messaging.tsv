@@ -1,0 +1,14 @@
+# Phase 6d: messaging libraries → server/lib/messaging/
+# Format: old-path<TAB>new-path (relative to apps/meteor/)
+app/mentions/server/methods/getUserMentionsByChannel.ts	server/meteor-methods/messages/getUserMentionsByChannel.ts
+app/mentions/server	server/lib/messaging/mentions
+app/threads/server/functions.ts	server/lib/messaging/threads/functions.ts
+app/discussion/server/permissions.ts	server/lib/messaging/discussions/permissions.ts
+app/reactions/server/setReaction.ts	server/lib/messaging/reactions/setReaction.ts
+app/message-pin/server/pinMessage.ts	server/lib/messaging/pins/pinMessage.ts
+app/message-star/server/starMessage.ts	server/lib/messaging/stars/starMessage.ts
+app/message-mark-as-unread/server/logger.ts	server/lib/messaging/unread/logger.ts
+app/message-mark-as-unread/server/unreadMessages.ts	server/lib/messaging/unread/unreadMessages.ts
+app/markdown/server/index.ts	server/lib/messaging/markdown.ts
+app/emoji/server/lib.ts	server/lib/messaging/emoji.ts
+tests/unit/app/mentions/server.tests.js	tests/unit/server/lib/messaging/mentions/server.tests.js

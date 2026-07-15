@@ -2,7 +2,8 @@ import type { IMessage } from '@rocket.chat/core-typings';
 
 import { emoji } from '../../../../app/emoji/client';
 import { runOptimisticSetReaction } from '../../../../app/reactions/client/methods/setReaction';
-import { callWithErrorHandling } from '../../utils/callWithErrorHandling';
+import { sdk } from '../../../../app/utils/client/lib/SDKClient';
+import { dispatchToastMessage } from '../../toast';
 import type { ChatAPI } from '../ChatAPI';
 
 export const processSetReaction = async (chat: ChatAPI, { msg }: Pick<IMessage, 'msg'>): Promise<boolean> => {
@@ -24,6 +25,11 @@ export const processSetReaction = async (chat: ChatAPI, { msg }: Pick<IMessage, 
 
 	chat.composer?.clear();
 	runOptimisticSetReaction(reaction, lastMessage._id);
-	await callWithErrorHandling('setReaction', reaction, lastMessage._id);
+	try {
+		await sdk.rest.post('/v1/chat.react', { emoji: reaction, messageId: lastMessage._id });
+	} catch (error) {
+		dispatchToastMessage({ type: 'error', message: error });
+		throw error;
+	}
 	return true;
 };

@@ -3,7 +3,7 @@ import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 
-type UserAvatarChipProps = ComponentProps<typeof Chip> & {
+export type UserAvatarChipProps = ComponentProps<typeof Chip> & {
 	federated?: boolean;
 	username: string;
 	name?: string;

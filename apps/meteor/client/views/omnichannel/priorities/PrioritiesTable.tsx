@@ -6,19 +6,18 @@ import {
 	GenericTableBody,
 	GenericTableLoadingTable,
 } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import PrioritiesTableRow from './PrioritiesTableRow';
 import GenericNoResults from '../../../components/GenericNoResults';
 
-type PrioritiesTableProps = {
+export type PrioritiesTableProps = {
 	priorities?: Serialized<ILivechatPriority>[];
 	onRowClick: (id: string) => void;
 	isLoading: boolean;
 };
 
-export const PrioritiesTable = ({ priorities, onRowClick, isLoading }: PrioritiesTableProps): ReactElement => {
+export const PrioritiesTable = ({ priorities, onRowClick, isLoading }: PrioritiesTableProps) => {
 	const { t } = useTranslation();
 
 	const headers = (

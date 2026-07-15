@@ -1,4 +1,4 @@
-import type { Meta, StoryFn } from '@storybook/react';
+import type { StoryObj, Meta } from '@storybook/react';
 
 import UnsupportedEmptyState from './UnsupportedEmptyState';
 
@@ -10,5 +10,7 @@ export default {
 	},
 } as Meta<typeof UnsupportedEmptyState>;
 
-export const Default: StoryFn<typeof UnsupportedEmptyState> = () => <UnsupportedEmptyState />;
-Default.storyName = 'UnsupportedEmptyState';
+export const Default: StoryObj<typeof UnsupportedEmptyState> = {
+	render: () => <UnsupportedEmptyState />,
+	name: 'UnsupportedEmptyState',
+};

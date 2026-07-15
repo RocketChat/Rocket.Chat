@@ -3,7 +3,7 @@ import type { HTMLAttributes } from 'react';
 
 import { useOmnichannelQueueAction } from './hooks/useOmnichannelQueueAction';
 
-type NavBarItemOmnichannelQueueProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
+export type NavBarItemOmnichannelQueueProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
 const NavBarItemOmnichannelQueue = (props: NavBarItemOmnichannelQueueProps) => {
 	const { isEnabled, title, icon, isPressed, handleGoToQueue } = useOmnichannelQueueAction();

@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import type { ComponentPropsWithoutRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type AttachmentTextProps = ComponentPropsWithoutRef<typeof Box>;
+export type AttachmentTextProps = ComponentPropsWithoutRef<typeof Box>;
 
 const AttachmentText = (props: AttachmentTextProps) => {
 	const { t } = useTranslation();

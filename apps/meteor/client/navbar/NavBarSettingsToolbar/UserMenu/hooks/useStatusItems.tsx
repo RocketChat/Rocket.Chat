@@ -1,27 +1,44 @@
-import { Box } from '@rocket.chat/fuselage';
+import type { ICustomUserStatus, IUser } from '@rocket.chat/core-typings';
+import { UserStatus as UserStatusEnum } from '@rocket.chat/core-typings';
+import { Box, Icon, RadioButton } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { clientCallbacks } from '@rocket.chat/ui-client';
-import { useEndpoint, useMethod, useSetting, useStream } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetting, useStream } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCustomStatusModalHandler } from './useCustomStatusModalHandler';
 import MarkdownText from '../../../../components/MarkdownText';
 import { UserStatus } from '../../../../components/UserStatus';
+import { useExpirationText } from '../../../../hooks/useExpirationText';
 import { useFireGlobalEvent } from '../../../../hooks/useFireGlobalEvent';
 import { userStatuses } from '../../../../lib/userStatuses';
 import type { UserStatusDescriptor } from '../../../../lib/userStatuses';
+import { mapCustomUserStatusFromApi } from '../../../../lib/utils/mapCustomUserStatusFromApi';
 import { useStatusDisabledModal } from '../../../../views/admin/customUserStatus/hooks/useStatusDisabledModal';
 
-export const useStatusItems = (): GenericMenuItemProps[] => {
+export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 	// We should lift this up to somewhere else if we want to use it in other places
 
 	userStatuses.invisibleAllowed = useSetting('Accounts_AllowInvisibleStatusOption', true);
 
 	const queryClient = useQueryClient();
 	const stream = useStream('notify-logged');
-	const listCustomUserStatus = useMethod('listCustomUserStatus');
+	const listCustomUserStatusEndpoint = useEndpoint('GET', '/v1/custom-user-status.list');
+	const listCustomUserStatus = useCallback(async (): Promise<ICustomUserStatus[]> => {
+		const all: ICustomUserStatus[] = [];
+		const count = 100;
+		let offset = 0;
+		// REST endpoint is paginated; loop until total reached.
+		while (true) {
+			const { statuses, total } = await listCustomUserStatusEndpoint({ count, offset });
+			all.push(...statuses.map(mapCustomUserStatusFromApi));
+			if (all.length >= total || statuses.length === 0) break;
+			offset += statuses.length;
+		}
+		return all;
+	}, [listCustomUserStatusEndpoint]);
 
 	useEffect(
 		() =>
@@ -33,17 +50,21 @@ export const useStatusItems = (): GenericMenuItemProps[] => {
 
 	const { t } = useTranslation();
 
+	const presenceDisabled = useSetting('Presence_broadcast_disabled', false);
+	const allowUserStatusMessageChange = useSetting('Accounts_AllowUserStatusMessageChange', true);
+
 	const fireGlobalStatusEvent = useFireGlobalEvent('user-status-manually-set');
 	const setStatus = useEndpoint('POST', '/v1/users.setStatus');
 	const setStatusMutation = useMutation({
 		mutationFn: async (status: UserStatusDescriptor) => {
-			void setStatus({ status: status.statusType, message: userStatuses.isValidType(status.id) ? '' : status.name });
+			void setStatus({
+				status: status.statusType,
+				...(allowUserStatusMessageChange && { message: userStatuses.isValidType(status.id) ? '' : status.name }),
+			});
 			void clientCallbacks.run('userStatusManuallySet', status);
 			await fireGlobalStatusEvent.mutateAsync(status);
 		},
 	});
-
-	const presenceDisabled = useSetting('Presence_broadcast_disabled', false);
 
 	const { data: statuses } = useQuery({
 		queryKey: ['user-statuses'],
@@ -52,41 +73,106 @@ export const useStatusItems = (): GenericMenuItemProps[] => {
 			return Array.from(userStatuses);
 		},
 		staleTime: Infinity,
-		select: (statuses) =>
-			statuses.map((status): GenericMenuItemProps => {
-				const content = status.localizeName ? t(status.name) : status.name;
-				return {
-					id: status.id,
-					status: <UserStatus status={status.statusType} />,
-					content: <MarkdownText content={content} parseEmoji={true} variant='inline' />,
-					disabled: presenceDisabled,
-					onClick: () => setStatusMutation.mutate(status),
-				};
-			}),
 	});
 
 	const handleStatusDisabledModal = useStatusDisabledModal();
 	const handleCustomStatus = useCustomStatusModalHandler();
+	const customStatusExpiration = useExpirationText(user?.statusExpiresAt);
 
-	return [
-		...(presenceDisabled
-			? [
-					{
-						id: 'presence-disabled',
-						content: (
-							<Box fontScale='p2'>
-								<Box mbe={4} wordBreak='break-word' style={{ whiteSpace: 'normal' }}>
-									{t('User_status_disabled')}
-								</Box>
-								<Box is='a' color='info' onClick={handleStatusDisabledModal}>
-									{t('Learn_more')}
-								</Box>
+	return useMemo<GenericMenuItemProps[]>(() => {
+		if (presenceDisabled) {
+			return [
+				{
+					id: 'presence-disabled',
+					content: (
+						<Box fontScale='p2'>
+							<Box mbe={4} wordBreak='break-word' style={{ whiteSpace: 'normal' }}>
+								{t('User_status_disabled')}
 							</Box>
-						),
-					},
-				]
-			: []),
-		...(statuses ?? []),
-		{ id: 'custom-status', icon: 'emoji', content: t('Custom_Status'), onClick: handleCustomStatus, disabled: presenceDisabled },
-	];
+							<Box is='a' color='info' onClick={handleStatusDisabledModal}>
+								{t('Learn_more')}
+							</Box>
+						</Box>
+					),
+				},
+			];
+		}
+
+		const items: GenericMenuItemProps[] = [];
+
+		// Top: user's currently-active custom status (display only — clicking does nothing, already selected).
+		if (user?.statusText || customStatusExpiration) {
+			const contentValue = user?.statusText || (user?.status ? t(user.status) : undefined);
+			items.push({
+				id: 'current-custom-status',
+				status: <UserStatus status={user?.status} />,
+				content: (
+					<>
+						{contentValue && <MarkdownText content={contentValue} parseEmoji variant='inline' />}
+						{customStatusExpiration && (
+							<Box color='secondary-info' display='flex' alignItems='center'>
+								<Icon name='clock' size='x16' mie={4} />
+								{customStatusExpiration}
+							</Box>
+						)}
+					</>
+				),
+				addon: <RadioButton checked readOnly />,
+			});
+		}
+
+		// "Custom..." action opens the edit modal
+		if (allowUserStatusMessageChange) {
+			items.push({
+				id: 'custom-status-edit',
+				icon: 'edit',
+				content: t('Custom_Status'),
+				onClick: handleCustomStatus,
+			});
+		}
+
+		// Presets: filter to Online / Busy / Offline. Keep Away only if user is currently on Away (legacy).
+		const isPresetSelected = (statusType: UserStatusEnum): boolean =>
+			!user?.statusText && !customStatusExpiration && user?.status === statusType;
+		const presetItems = (statuses ?? [])
+			.filter((s) => userStatuses.isValidType(s.id))
+			.filter((s) => s.statusType !== UserStatusEnum.AWAY || isPresetSelected(UserStatusEnum.AWAY))
+			.map(
+				(status): GenericMenuItemProps => ({
+					id: status.id,
+					status: <UserStatus status={status.statusType} />,
+					content: <MarkdownText content={status.localizeName ? t(status.name) : status.name} parseEmoji variant='inline' />,
+					addon: <RadioButton checked={isPresetSelected(status.statusType)} readOnly />,
+					onClick: () => setStatusMutation.mutate(status),
+				}),
+			);
+
+		// Admin-defined custom statuses
+		const customItems = allowUserStatusMessageChange
+			? (statuses ?? [])
+					.filter((s) => !userStatuses.isValidType(s.id))
+					.map(
+						(status): GenericMenuItemProps => ({
+							id: status.id,
+							status: <UserStatus status={status.statusType} />,
+							content: <MarkdownText content={status.localizeName ? t(status.name) : status.name} parseEmoji variant='inline' />,
+							addon: <RadioButton checked={user?.statusText === status.name} readOnly />,
+							onClick: () => setStatusMutation.mutate(status),
+						}),
+					)
+			: [];
+
+		return [...items, ...presetItems, ...customItems];
+	}, [
+		presenceDisabled,
+		allowUserStatusMessageChange,
+		t,
+		handleStatusDisabledModal,
+		user?.status,
+		user?.statusText,
+		customStatusExpiration,
+		statuses,
+		handleCustomStatus,
+		setStatusMutation,
+	]);
 };

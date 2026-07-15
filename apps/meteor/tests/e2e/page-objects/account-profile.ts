@@ -44,6 +44,19 @@ export class AccountProfile extends Account {
 		return this.page.locator('//label[contains(text(), "Email")]/..//input');
 	}
 
+	get inputStatusText(): Locator {
+		return this.page.getByRole('textbox', { name: 'Status' });
+	}
+
+	get selectClearStatusAfter(): Locator {
+		return this.page.getByLabel('Clear status after');
+	}
+
+	async chooseClearStatusAfter(option: string): Promise<void> {
+		await this.selectClearStatusAfter.click();
+		await this.page.getByRole('option', { name: new RegExp(option) }).click();
+	}
+
 	get preferencesSoundAccordionOption(): Locator {
 		return this.page.locator('h2:has-text("Sound")');
 	}

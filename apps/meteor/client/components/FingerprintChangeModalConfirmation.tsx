@@ -1,23 +1,17 @@
 import { Box } from '@rocket.chat/fuselage';
 import { ExternalLink, GenericModal } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { links } from '../lib/links';
 
-type FingerprintChangeModalConfirmationProps = {
+export type FingerprintChangeModalConfirmationProps = {
 	onConfirm: () => void;
 	onCancel: () => void;
 	onClose: () => void;
 	newWorkspace: boolean;
 };
 
-const FingerprintChangeModalConfirmation = ({
-	onConfirm,
-	onCancel,
-	onClose,
-	newWorkspace,
-}: FingerprintChangeModalConfirmationProps): ReactElement => {
+const FingerprintChangeModalConfirmation = ({ onConfirm, onCancel, onClose, newWorkspace }: FingerprintChangeModalConfirmationProps) => {
 	const { t } = useTranslation();
 	return (
 		<GenericModal

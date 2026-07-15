@@ -18,7 +18,9 @@ const styles = StyleSheet.create({
 	},
 });
 
-export const MessageHeader = ({ name, time, light }: { name: string; time: string; light?: boolean }) => (
+export type MessageHeaderProps = { name: string; time: string; light?: boolean };
+
+export const MessageHeader = ({ name, time, light }: MessageHeaderProps) => (
 	<View style={styles.header} wrap={false}>
 		<Text style={styles.name}>{name}</Text>
 		<Text style={{ ...styles.time, color: light ? colors.n600 : colors.n700 }}>{time}</Text>

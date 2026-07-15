@@ -2,13 +2,18 @@ import type { OAuthConfiguration } from '@rocket.chat/core-typings';
 import passport from 'passport';
 import type { DoneCallback, Profile } from 'passport';
 
+import { allowPassportOAuthMiddleware } from './allowPassportOAuthMiddleware';
 import { passportOAuthCallback } from './passportOAuthCallback';
 import { verifyFunction } from './verifyFunction';
-import { CustomOAuthStrategy } from '../../../app/custom-oauth/server/customOAuth';
 import { settings } from '../../../app/settings/server';
 import { oAuthRouter } from '../../configuration/configurePassport';
+import { CustomOAuthStrategy } from '../auth-providers/custom-oauth/customOAuth';
 
-export const addPassportCustomOAuth = (serviceName: string, config: Partial<OAuthConfiguration & { clientSecret: string }>) => {
+export const addPassportCustomOAuth = (
+	serviceName: string,
+	config: Partial<OAuthConfiguration & { clientSecret: string }>,
+	isCustomOAuth: boolean = false,
+) => {
 	passport.unuse(serviceName);
 
 	if (!config.clientId || !config.clientSecret || !config.serverURL) {
@@ -25,10 +30,11 @@ export const addPassportCustomOAuth = (serviceName: string, config: Partial<OAut
 		),
 	);
 
-	const siteUrl = settings.get<string>('Site_Url');
+	const siteUrl = settings.get<string>('Site_Url').replace(/\/$/, '');
 
 	oAuthRouter.get(
 		`/oauth/${serviceName}`,
+		allowPassportOAuthMiddleware(serviceName, isCustomOAuth),
 		(req, _res, next) => {
 			const { loginClient } = req.query;
 			if (loginClient === 'mobile' || loginClient === 'desktop') {
@@ -47,7 +53,8 @@ export const addPassportCustomOAuth = (serviceName: string, config: Partial<OAut
 
 	oAuthRouter.get(
 		`/_oauth/${serviceName}`,
-		passport.authenticate(serviceName, { failureRedirect: '/login', failureFlash: true, failWithError: true, keepSessionInfo: true }),
-		passportOAuthCallback(siteUrl),
+		allowPassportOAuthMiddleware(serviceName, isCustomOAuth),
+		passport.authenticate(serviceName, { failureRedirect: '/login', failWithError: true, keepSessionInfo: true }),
+		passportOAuthCallback(siteUrl, config.loginStyle ? config.loginStyle : undefined),
 	);
 };

@@ -10,7 +10,7 @@ import { useDownloadFromServiceWorker } from '../../../../../hooks/useDownloadFr
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import { isPreviewableImage } from '../../../../../lib/utils/isPreviewableImage';
 
-type FileItemProps = {
+export type FileItemProps = {
 	rid: IRoom['_id'];
 	fileData: IUploadWithUser;
 	onClickDelete: (id: IUpload['_id']) => void;

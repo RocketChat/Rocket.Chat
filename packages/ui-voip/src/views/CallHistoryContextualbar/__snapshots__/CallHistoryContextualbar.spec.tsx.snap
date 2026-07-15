@@ -43,7 +43,7 @@ exports[`renders Default without crashing 1`] = `
                 aria-haspopup="true"
                 aria-label="Options"
                 class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                id="react-aria-:r1:"
+                id="react-aria-_r_1_"
                 title="Options"
                 type="button"
               >
@@ -402,7 +402,7 @@ exports[`renders ExternalContact without crashing 1`] = `
                 aria-haspopup="true"
                 aria-label="Options"
                 class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                id="react-aria-:r4:"
+                id="react-aria-_r_4_"
                 title="Options"
                 type="button"
               >
@@ -469,16 +469,6 @@ exports[`renders ExternalContact without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-framed-icon--neutral rcx-framed-icon rcx-icon--name-user rcx-icon rcx-css-1bepdyv"
                         >
                           
-                        </i>
-                      </div>
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-1rtu0k9"
-                      >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-icon--name-phone rcx-icon rcx-css-1bepdyv"
-                        >
-                          
                         </i>
                       </div>
                       <div

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useResetE2EPasswordMutation } from '../../hooks/useResetE2EPasswordMutation';
 
-export const ResetPassphrase = (): JSX.Element => {
+export const ResetPassphrase = () => {
 	const { t } = useTranslation();
 	const resetE2EPassword = useResetE2EPasswordMutation();
 	return (

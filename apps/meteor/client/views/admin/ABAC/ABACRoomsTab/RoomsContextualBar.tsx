@@ -9,15 +9,16 @@ import { useTranslation } from 'react-i18next';
 import RoomForm from './RoomForm';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 
-type RoomsContextualBarProps = {
+export type RoomsContextualBarProps = {
 	attributeId?: string;
 	roomInfo?: { rid: string; name: string };
 	attributesData?: { key: string; values: string[] }[];
+	redacted?: boolean;
 
 	onClose: () => void;
 };
 
-const RoomsContextualBar = ({ roomInfo, attributesData, onClose }: RoomsContextualBarProps) => {
+const RoomsContextualBar = ({ roomInfo, attributesData, redacted = false, onClose }: RoomsContextualBarProps) => {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 
@@ -80,6 +81,7 @@ const RoomsContextualBar = ({ roomInfo, attributesData, onClose }: RoomsContextu
 					onSave={(values) => saveMutation.mutateAsync(values)}
 					onClose={onClose}
 					setSelectedRoomLabel={setSelectedRoomLabel}
+					redacted={redacted}
 				/>
 			</FormProvider>
 		</>

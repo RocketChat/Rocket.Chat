@@ -1,6 +1,5 @@
 import { ButtonGroup, IconButton } from '@rocket.chat/fuselage';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -17,7 +16,7 @@ const AdminUserInfoActions = ({
 	tab,
 	onChange,
 	onReload,
-}: AdminUserInfoActionsProps): ReactElement => {
+}: AdminUserInfoActionsProps) => {
 	const { t } = useTranslation();
 	const { actions: actionsDefinition, menuActions: menuOptions } = useAdminUserInfoActions({
 		username,
@@ -48,7 +47,7 @@ const AdminUserInfoActions = ({
 	}, [t, menuOptions]);
 
 	const actions = useMemo(() => {
-		const mapAction = ([key, { content, title, icon = 'kebab', onClick, disabled }]: [string, AdminUserAction]): ReactElement => (
+		const mapAction = ([key, { content, title, icon = 'kebab', onClick, disabled }]: [string, AdminUserAction]) => (
 			<UserInfoAction key={key} title={title} label={content} onClick={onClick} disabled={disabled} icon={icon} />
 		);
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);

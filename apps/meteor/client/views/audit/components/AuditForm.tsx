@@ -13,7 +13,7 @@ import OmnichannelTab from './tabs/OmnichannelTab';
 import RoomsTab from './tabs/RoomsTab';
 import UsersTab from './tabs/UsersTab';
 
-type AuditFormProps = {
+export type AuditFormProps = {
 	type: IAuditLog['fields']['type'];
 	onSubmit?: (payload: { type: IAuditLog['fields']['type'] } & AuditFields) => void;
 	setSelectedRoom: Dispatch<SetStateAction<IRoom | undefined>>;

@@ -64,15 +64,21 @@ export const seedDefaultMocks = async () => {
 	]);
 };
 
-export const seedGetDecisions = async (decision: Decision, times = 0) => {
-	await mockServerSet('POST', '/authorization.AuthorizationService/GetDecisions', { decisionResponses: [{ decision }] }, 200, times);
-};
-
 export const seedGetDecisionBulk = async (
 	responses: Array<{ resourceDecisions: Array<{ decision: Decision; ephemeralResourceId?: string }> }>,
 	times = 0,
 ) => {
 	await mockServerSet('POST', '/authorization.v2.AuthorizationService/GetDecisionBulk', { decisionResponses: responses }, 200, times);
+};
+
+export const seedGetEntitlements = async (fqnMap: Record<string, unknown>, times = 0) => {
+	await mockServerSet(
+		'POST',
+		'/authorization.v2.AuthorizationService/GetEntitlements',
+		{ entitlements: [{ actionsPerAttributeValueFqn: fqnMap }] },
+		200,
+		times,
+	);
 };
 
 export const seedBulkDecisionByEntity = async (permitValues: string[], defaultDecision: Decision = 'DECISION_DENY') => {

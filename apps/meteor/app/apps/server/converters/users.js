@@ -45,6 +45,8 @@ export class AppUsersConverter {
 			lastLoginAt: user.lastLogin,
 			appId: user.appId,
 			customFields: user.customFields,
+			isFederated: user.federated,
+			federation: user.federation,
 			sipExtension: user.freeSwitchExtension,
 			settings: {
 				preferences: {
@@ -75,6 +77,8 @@ export class AppUsersConverter {
 			_updatedAt: user.updatedAt,
 			lastLogin: user.lastLoginAt,
 			appId: user.appId,
+			federated: user.isFederated,
+			federation: user.federation,
 			freeSwitchExtension: user.sipExtension,
 		});
 	}

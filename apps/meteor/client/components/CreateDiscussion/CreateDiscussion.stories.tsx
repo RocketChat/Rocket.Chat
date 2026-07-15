@@ -1,4 +1,4 @@
-import type { Meta, StoryFn } from '@storybook/react';
+import type { StoryObj, Meta } from '@storybook/react';
 
 import CreateDiscussion from './CreateDiscussion';
 
@@ -13,4 +13,4 @@ export default {
 	},
 } satisfies Meta<typeof CreateDiscussion>;
 
-export const Default: StoryFn<typeof CreateDiscussion> = (args) => <CreateDiscussion {...args} />;
+export const Default: StoryObj<typeof CreateDiscussion> = {};

@@ -13,13 +13,12 @@ import {
 } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 
 import InviteRow from './InviteRow';
 import GenericNoResults from '../../../components/GenericNoResults';
 
-const InvitesPage = (): ReactElement => {
+const InvitesPage = () => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -111,7 +110,7 @@ const InvitesPage = (): ReactElement => {
 							</GenericTableBody>
 						</GenericTable>
 					)}
-					{isSuccess && data && data.length === 0 && <GenericNoResults />}
+					{isSuccess && data?.length === 0 && <GenericNoResults />}
 					{isError && (
 						<States>
 							<StatesIcon name='warning' variation='danger' />

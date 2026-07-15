@@ -25,19 +25,19 @@ exports[`renders Default without crashing 1`] = `
         >
           <div
             class="rcx-css-146twpt"
-            id="react-aria-:r0:"
+            id="react-aria-_r_0_"
             role="group"
           >
             <label
               aria-live="off"
               class="rcx-box rcx-box--full rcx-label"
-              for="react-aria-:r0:-0"
+              for="react-aria-_r_0_-0"
             >
               <span
                 aria-live="off"
                 class="rcx-box rcx-box--full rcx-label"
                 data-testid="slider-output"
-                for="react-aria-:r0:-0"
+                for="react-aria-_r_0_-0"
               >
                 0
               </span>
@@ -56,10 +56,10 @@ exports[`renders Default without crashing 1`] = `
                   <input
                     aria-describedby=""
                     aria-details=""
-                    aria-labelledby="react-aria-:r0:"
+                    aria-labelledby="react-aria-_r_0_"
                     aria-orientation="horizontal"
                     aria-valuetext="0"
-                    id="react-aria-:r0:-0"
+                    id="react-aria-_r_0_-0"
                     max="100"
                     min="0"
                     step="1"
@@ -103,19 +103,19 @@ exports[`renders Disabled without crashing 1`] = `
         >
           <div
             class="rcx-css-146twpt"
-            id="react-aria-:r6:"
+            id="react-aria-_r_6_"
             role="group"
           >
             <label
               aria-live="off"
               class="rcx-box rcx-box--full rcx-label"
-              for="react-aria-:r6:-0"
+              for="react-aria-_r_6_-0"
             >
               <span
                 aria-live="off"
                 class="rcx-box rcx-box--full rcx-label"
                 data-testid="slider-output"
-                for="react-aria-:r6:-0"
+                for="react-aria-_r_6_-0"
               >
                 0
               </span>
@@ -134,11 +134,11 @@ exports[`renders Disabled without crashing 1`] = `
                   <input
                     aria-describedby=""
                     aria-details=""
-                    aria-labelledby="react-aria-:r6:"
+                    aria-labelledby="react-aria-_r_6_"
                     aria-orientation="horizontal"
                     aria-valuetext="0"
                     disabled=""
-                    id="react-aria-:r6:-0"
+                    id="react-aria-_r_6_-0"
                     max="100"
                     min="0"
                     step="1"
@@ -190,19 +190,19 @@ exports[`renders WithHint without crashing 1`] = `
         >
           <div
             class="rcx-css-146twpt"
-            id="react-aria-:rc:"
+            id="react-aria-_r_c_"
             role="group"
           >
             <label
               aria-live="off"
               class="rcx-box rcx-box--full rcx-label"
-              for="react-aria-:rc:-0"
+              for="react-aria-_r_c_-0"
             >
               <span
                 aria-live="off"
                 class="rcx-box rcx-box--full rcx-label"
                 data-testid="slider-output"
-                for="react-aria-:rc:-0"
+                for="react-aria-_r_c_-0"
               >
                 50
               </span>
@@ -221,10 +221,10 @@ exports[`renders WithHint without crashing 1`] = `
                   <input
                     aria-describedby=""
                     aria-details=""
-                    aria-labelledby="react-aria-:rc:"
+                    aria-labelledby="react-aria-_r_c_"
                     aria-orientation="horizontal"
                     aria-valuetext="50"
-                    id="react-aria-:rc:-0"
+                    id="react-aria-_r_c_-0"
                     max="100"
                     min="0"
                     step="1"
@@ -280,19 +280,19 @@ exports[`renders WithResetButton without crashing 1`] = `
         >
           <div
             class="rcx-css-146twpt"
-            id="react-aria-:ri:"
+            id="react-aria-_r_i_"
             role="group"
           >
             <label
               aria-live="off"
               class="rcx-box rcx-box--full rcx-label"
-              for="react-aria-:ri:-0"
+              for="react-aria-_r_i_-0"
             >
               <span
                 aria-live="off"
                 class="rcx-box rcx-box--full rcx-label"
                 data-testid="slider-output"
-                for="react-aria-:ri:-0"
+                for="react-aria-_r_i_-0"
               >
                 50
               </span>
@@ -311,10 +311,10 @@ exports[`renders WithResetButton without crashing 1`] = `
                   <input
                     aria-describedby=""
                     aria-details=""
-                    aria-labelledby="react-aria-:ri:"
+                    aria-labelledby="react-aria-_r_i_"
                     aria-orientation="horizontal"
                     aria-valuetext="50"
-                    id="react-aria-:ri:-0"
+                    id="react-aria-_r_i_-0"
                     max="100"
                     min="0"
                     step="1"
@@ -358,19 +358,19 @@ exports[`renders WithValue without crashing 1`] = `
         >
           <div
             class="rcx-css-146twpt"
-            id="react-aria-:ro:"
+            id="react-aria-_r_o_"
             role="group"
           >
             <label
               aria-live="off"
               class="rcx-box rcx-box--full rcx-label"
-              for="react-aria-:ro:-0"
+              for="react-aria-_r_o_-0"
             >
               <span
                 aria-live="off"
                 class="rcx-box rcx-box--full rcx-label"
                 data-testid="slider-output"
-                for="react-aria-:ro:-0"
+                for="react-aria-_r_o_-0"
               >
                 50
               </span>
@@ -389,10 +389,10 @@ exports[`renders WithValue without crashing 1`] = `
                   <input
                     aria-describedby=""
                     aria-details=""
-                    aria-labelledby="react-aria-:ro:"
+                    aria-labelledby="react-aria-_r_o_"
                     aria-orientation="horizontal"
                     aria-valuetext="50"
-                    id="react-aria-:ro:-0"
+                    id="react-aria-_r_o_-0"
                     max="100"
                     min="0"
                     step="1"

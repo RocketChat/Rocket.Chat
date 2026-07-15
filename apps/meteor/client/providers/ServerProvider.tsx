@@ -174,7 +174,7 @@ const subscribeStatus = (cb: () => void): (() => void) => {
 
 const getStatusSnapshot = (): CombinedStatus => cachedStatus;
 
-type ServerProviderProps = { children?: ReactNode };
+export type ServerProviderProps = { children?: ReactNode };
 
 const ServerProvider = ({ children }: ServerProviderProps) => {
 	const { connected, status, retryCount, retryTime } = useSyncExternalStore(subscribeStatus, getStatusSnapshot);

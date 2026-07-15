@@ -1,0 +1,42 @@
+import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
+
+import { RateLimiter } from '../../../app/lib/server/lib';
+import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
+import { settings } from '../../../app/settings/server';
+import { setRealName } from '../../lib/users/setRealName';
+
+declare module '@rocket.chat/ddp-client' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		setRealName(name: string): string;
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	async setRealName(name) {
+		methodDeprecationLogger.method('setRealName', '9.0.0', '/v1/users.updateOwnBasicInfo');
+		check(name, String);
+		const userId = Meteor.userId();
+		if (!userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setRealName' });
+		}
+
+		if (!settings.get('Accounts_AllowRealNameChange')) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setRealName' });
+		}
+
+		if (!(await setRealName(userId, name))) {
+			throw new Meteor.Error('error-could-not-change-name', 'Could not change name', {
+				method: 'setRealName',
+			});
+		}
+
+		return name;
+	},
+});
+
+RateLimiter.limitMethod('setRealName', 1, 1000, {
+	userId: () => true,
+});

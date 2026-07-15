@@ -39,7 +39,7 @@ export class OmnichannelQueueInactivityMonitorClass {
 			mongo: (MongoInternals.defaultRemoteCollectionDriver().mongo as any).client.db(),
 			db: { collection: SCHEDULER_NAME },
 			defaultConcurrency: 1,
-			processEvery: process.env.TEST_MODE === 'true' ? '3 seconds' : '1 minute',
+			processEvery: process.env.TEST_MODE === 'true' || process.env.TEST_MODE === 'api' ? '3 seconds' : '1 minute',
 		});
 		this.createIndex();
 		const language = settings.get<string>('Language') || 'en';
@@ -112,7 +112,7 @@ export class OmnichannelQueueInactivityMonitorClass {
 		const { inquiryId } = data;
 		// TODO: add projection and maybe use findOneQueued to avoid fetching the whole inquiry
 		const inquiry = await LivechatInquiryRaw.findOneById(inquiryId);
-		if (!inquiry || inquiry.status !== 'queued') {
+		if (inquiry?.status !== 'queued') {
 			return;
 		}
 

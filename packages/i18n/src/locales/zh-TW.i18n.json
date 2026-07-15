@@ -2024,7 +2024,7 @@
   "LDAP_Sync_Now_Description": "將立即執行**背景同步**，而不是等待下一次排程同步。  \n這個操作是不同步的，請參閱日誌以取得更多資訊。",
   "LDAP_Sync_User_Active_State": "同步使用者活動狀態",
   "LDAP_Sync_User_Active_State_Both": "啟用和停用使用者",
-  "LDAP_Sync_User_Active_State_Description": "根據 LDAP 狀態確定應在 Rocket.Chat 上啟用還是停用使用者。 “ pwdAccountLockedTime”屬性將用於確定使用者是否被停用。",
+  "LDAP_Sync_User_Active_State_Description": "根據 LDAP 狀態確定應在 Rocket.Chat 上啟用還是停用使用者。",
   "LDAP_Sync_User_Active_State_Disable": "停用使用者",
   "LDAP_Sync_User_Active_State_Nothing": "不做任何事",
   "LDAP_Sync_User_Avatar": "同步使用者大頭貼",

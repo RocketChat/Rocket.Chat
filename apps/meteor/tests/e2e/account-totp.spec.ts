@@ -26,7 +26,7 @@ test.describe('account-totp ddpOverREST preserves the totp-required error', () =
 
 			if (!hasTotp) {
 				// First leg: server demands a TOTP code. The body is shaped exactly
-				// like `mountResult({ id, error })` in app/api/server/v1/misc.ts —
+				// like `mountResult({ id, error })` in server/api/v1/misc.ts —
 				// `message` is a DDP-encoded `result` frame whose `error.error`
 				// carries the original `totp-required` code. The bug under test
 				// rebuilt this envelope as `error: 'unknown'` and the 2FA modal

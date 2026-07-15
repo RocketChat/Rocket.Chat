@@ -3,13 +3,13 @@ import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useUserAvatarPath, useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-type CallHistoryInternalUserProps = {
-	username: string;
-	name?: string;
-	_id: string;
+import type { CallHistoryInternalContact } from '../definitions';
+
+export type CallHistoryInternalUserProps = {
+	contact: CallHistoryInternalContact;
 };
 
-const CallHistoryInternalUser = ({ username, name, _id }: CallHistoryInternalUserProps) => {
+const CallHistoryInternalUser = ({ contact: { username, name, _id } }: CallHistoryInternalUserProps) => {
 	const getUserAvatarPath = useUserAvatarPath();
 
 	const avatarUrl = useMemo(() => {

@@ -758,7 +758,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(rcMessage?.attachments?.[0]?.title_link).toMatch(/^\/file-upload\/[^/]+\/.+$/);
 						expect(rcMessage?.attachments?.[0]?.title_link_download).toBe(true);
 						expect((rcMessage?.attachments?.[0] as any)?.type).toBe('file');
-						expect(rcMessage?.attachments?.[0]?.description).toBe(fileInfo.description);
+						expect((rcMessage?.attachments?.[0] as any)?.image_alt).toBe(fileInfo.description);
 						expect((rcMessage?.attachments?.[0] as any)?.image_url).toMatch(/^\/file-upload\/[^/]+\/.+$/);
 						expect((rcMessage?.attachments?.[0] as any)?.image_type).toBe('image/webp');
 						expect((rcMessage?.attachments?.[0] as any)?.image_size).toBe(uploadResponse.message.files?.[0]?.size);

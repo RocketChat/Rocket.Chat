@@ -8,7 +8,7 @@ import AutoCompleteAgent from '../../components/AutoCompleteAgent';
 
 type SharingValues = '' | 'user' | 'global' | 'department';
 
-type CannedResponsesFilterProps = {
+export type CannedResponsesFilterProps = {
 	createdBy: string;
 	setCreatedBy: (value: string) => void;
 	sharing: SharingValues;
@@ -34,7 +34,7 @@ const CannedResponsesFilter = ({ createdBy, setCreatedBy, sharing, setSharing, t
 				<TextInput
 					value={text}
 					onChange={(e: ChangeEvent<HTMLInputElement>) => setText(e.target.value)}
-					addon={<Icon name='magnifier' size='x20' />}
+					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
 			</Box>
 			<Box display='flex' mie={8} flexGrow={1} flexDirection='column'>

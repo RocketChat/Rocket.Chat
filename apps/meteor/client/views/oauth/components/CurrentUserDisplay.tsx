@@ -17,7 +17,7 @@ const clampStyle = css`
 	word-break: break-all;
 `;
 
-type CurrentUserDisplayProps = {
+export type CurrentUserDisplayProps = {
 	user: IUser;
 };
 

@@ -64,14 +64,15 @@ export const useHandleUnread = (
 		let message = firstUnread;
 		if (!message) {
 			message = findFirstMessage(
-				(record) => record.rid === rid && record.ts.getTime() > (unread?.since.getTime() ?? -Infinity),
+				(record) =>
+					record.rid === rid && record.ts.getTime() > (unread?.since.getTime() ?? -Infinity) && (!record.tmid || record.tshow === true),
 				(a, b) => a.ts.getTime() - b.ts.getTime(),
 			);
 		}
 		if (!message) {
 			return;
 		}
-		setMessageJumpQueryStringParameter(message?._id);
+		setMessageJumpQueryStringParameter(message?._id, 'jumpToUnread');
 		chat.readStateManager.markAsRead();
 		setUnreadCount(0);
 	}, [room._id, setUnreadCount, findFirstMessage, unread?.since, chat.readStateManager]);

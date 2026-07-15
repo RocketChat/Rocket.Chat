@@ -27,7 +27,6 @@ declare module '@rocket.chat/model-typings' {
 		unsetAllPredictedVisitorAbandonment(): Promise<void>;
 		setOnHoldByRoomId(roomId: string): Promise<UpdateResult>;
 		unsetOnHoldByRoomId(roomId: string): Promise<UpdateResult>;
-		unsetOnHoldAndPredictedVisitorAbandonmentByRoomId(roomId: string): Promise<UpdateResult>;
 		setSlaForRoomById(
 			roomId: string,
 			sla: Pick<IOmnichannelServiceLevelAgreements, '_id' | 'dueTimeInMinutes'>,
@@ -111,20 +110,6 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 
 	override unsetOnHoldByRoomId(roomId: string): Promise<UpdateResult> {
 		return this.updateOne({ _id: roomId }, { $unset: { onHold: 1 } });
-	}
-
-	override unsetOnHoldAndPredictedVisitorAbandonmentByRoomId(roomId: string): Promise<UpdateResult> {
-		return this.updateOne(
-			{
-				_id: roomId,
-			},
-			{
-				$unset: {
-					'omnichannel.predictedVisitorAbandonmentAt': 1,
-					'onHold': 1,
-				},
-			},
-		);
 	}
 
 	override setSlaForRoomById(

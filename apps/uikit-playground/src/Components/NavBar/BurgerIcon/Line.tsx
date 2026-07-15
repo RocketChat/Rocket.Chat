@@ -1,8 +1,9 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 
-const Line = ({ animated, moved }: { animated: boolean; moved?: boolean }): ReactElement => {
+export type LineProps = { animated: boolean; moved?: boolean };
+
+const Line = ({ animated, moved }: LineProps) => {
 	const animatedStyle = animated
 		? css`
 				will-change: transform;

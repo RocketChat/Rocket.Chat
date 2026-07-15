@@ -18,7 +18,7 @@ import { useCodeHighlight } from './hooks/useCodeHighlight';
 import { useCorsSSLConfig } from './hooks/useCorsSSLConfig';
 import { useDesktopFavicon } from './hooks/useDesktopFavicon';
 import { useDesktopTitle } from './hooks/useDesktopTitle';
-import { useEmojiOne } from './hooks/useEmojiOne';
+import { useDesktopUserRoles } from './hooks/useDesktopUserRoles';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useIframeCommands } from './hooks/useIframeCommands';
@@ -30,7 +30,9 @@ import { useLoadRoomForAllowedAnonymousRead } from './hooks/useLoadRoomForAllowe
 import { useLoginOtherClients } from './hooks/useLoginOtherClients';
 import { useLoginViaQuery } from './hooks/useLoginViaQuery';
 import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
+import { useNativeEmoji } from './hooks/useNativeEmoji';
 import { useNotificationPermission } from './hooks/useNotificationPermission';
+import { useOAuthLogin } from './hooks/useOAuthLogin';
 import { useRedirectToSetupWizard } from './hooks/useRedirectToSetupWizard';
 import { useSettingsOnLoadSiteUrl } from './hooks/useSettingsOnLoadSiteUrl';
 import { useShareSessionWithOtherClients } from './hooks/useShareSessionWithOtherClients';
@@ -55,7 +57,7 @@ const AppLayout = () => {
 	useAnalyticsEventTracking();
 	useLoadRoomForAllowedAnonymousRead();
 	useNotificationPermission();
-	useEmojiOne();
+	useNativeEmoji();
 	useRedirectToSetupWizard();
 	useSettingsOnLoadSiteUrl();
 	useLivechatEnterprise();
@@ -73,10 +75,12 @@ const AppLayout = () => {
 	useCodeHighlight();
 	useLoginViaQuery();
 	useLoginOtherClients();
+	useOAuthLogin();
 	useShareSessionWithOtherClients();
 	useLoadMissedMessages();
 	useDesktopFavicon();
 	useDesktopTitle();
+	useDesktopUserRoles();
 	useStartupEvent();
 	useIframeCommands();
 

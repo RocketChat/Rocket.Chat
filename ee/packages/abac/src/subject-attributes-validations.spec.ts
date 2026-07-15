@@ -16,22 +16,7 @@ jest.mock('@rocket.chat/core-services', () => ({
 	isMeteorError: () => false,
 }));
 
-const makeUser = (overrides: Partial<IUser> = {}): IUser =>
-	({
-		_id: `user-fixed-id-${Math.random()}`,
-		username: 'user-fixed-username',
-		roles: [],
-		type: 'user',
-		active: true,
-		createdAt: new Date(0),
-		_updatedAt: new Date(0),
-		...overrides,
-	}) as IUser;
-
-const makeLdap = (overrides: Partial<ILDAPEntry> = {}): ILDAPEntry =>
-	({
-		...overrides,
-	}) as ILDAPEntry;
+const makeLdapEntry = (overrides: Partial<ILDAPEntry> = {}): ILDAPEntry => ({ ...overrides }) as ILDAPEntry;
 
 type StaticUserDefinition = {
 	_id: string;
@@ -149,8 +134,6 @@ const configureStaticUsers = async (users: StaticUserUpdate[]) => {
 	await usersCol.bulkWrite(operations);
 };
 
-const makeLdapEntry = makeLdap; // preserve existing helper naming intent
-
 const insertRooms = async (rooms: { _id: string; abacAttributes?: IAbacAttributeDefinition[] }[]) => {
 	await roomsCol.insertMany(
 		rooms.map((room) => ({
@@ -187,8 +170,8 @@ describe('Subject Attributes validation', () => {
 	describe('AbacService.addSubjectAttributes (unit)', () => {
 		describe('early returns and no-ops', () => {
 			it('returns early when user has no _id', async () => {
-				const user = makeUser({ _id: undefined });
-				await service.addSubjectAttributes(user, makeLdap(), { group: 'dept' });
+				const user = { _id: undefined, username: 'user-no-id' } as unknown as IUser;
+				await service.addSubjectAttributes(user, makeLdapEntry(), { group: 'dept' });
 				const found = await Users.findOne({ username: user.username });
 				expect(found).toBeFalsy();
 			});

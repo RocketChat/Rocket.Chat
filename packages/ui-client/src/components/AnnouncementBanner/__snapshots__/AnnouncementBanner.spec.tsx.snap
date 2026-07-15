@@ -31,6 +31,7 @@ exports[`renders WithLink without crashing 1`] = `
       >
         <a
           href="https://rocket.chat"
+          rel="noreferrer"
           target="_blank"
         >
           Announcement

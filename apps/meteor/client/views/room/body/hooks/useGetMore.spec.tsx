@@ -54,6 +54,9 @@ describe('useGetMore', () => {
 
 		const scrollableElement = screen.getByTestId('scrollable-element');
 		scrollableElement.scrollTop = 10;
+		// Simulate real user input before the scroll — the hook ignores observer / programmatic
+		// scroll events until the user has interacted with the list.
+		scrollableElement.dispatchEvent(new Event('wheel'));
 		scrollableElement.dispatchEvent(new Event('scroll'));
 
 		expect(screen.getByTestId('scrollable-element')).toBeInTheDocument();
@@ -89,6 +92,9 @@ describe('useGetMore', () => {
 		});
 		const scrollableElement = screen.getByTestId('scrollable-element');
 		scrollableElement.scrollTop = 700;
+		// Simulate real user input before the scroll — the hook ignores observer / programmatic
+		// scroll events until the user has interacted with the list.
+		scrollableElement.dispatchEvent(new Event('wheel'));
 		scrollableElement.dispatchEvent(new Event('scroll'));
 		expect(screen.getByTestId('scrollable-element')).toBeInTheDocument();
 		expect(RoomHistoryManager.getMoreNext).toHaveBeenCalledWith('room-id');

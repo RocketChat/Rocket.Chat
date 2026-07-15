@@ -12,13 +12,12 @@ import {
 } from '@rocket.chat/ui-client';
 import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useMemo, useCallback } from 'react';
 
 import SendTestButton from './SendTestButton';
 import GenericNoResults from '../../../components/GenericNoResults';
 
-const EmailInboxTable = (): ReactElement => {
+const EmailInboxTable = () => {
 	const t = useTranslation();
 	const router = useRoute('admin-email-inboxes');
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();

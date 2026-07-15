@@ -40,7 +40,7 @@ export const overrideGenerator =
 		try {
 			const value = convertValue(overwriteValue, setting.type);
 
-			if (compareSettingsValue(value, setting.value, setting.type)) {
+			if (compareSettingsValue(value, setting.value, setting.type) && compareSettingsValue(value, setting.processEnvValue, setting.type)) {
 				return setting;
 			}
 

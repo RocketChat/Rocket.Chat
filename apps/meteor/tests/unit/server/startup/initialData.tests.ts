@@ -31,10 +31,10 @@ const { insertAdminUserFromEnv } = proxyquire.noCallThru().load('../../../../ser
 			startup: sinon.stub(),
 		},
 	},
-	'../../app/file-upload/server': {},
+	'../lib/media/file-upload': {},
 	'../../app/file/server': {},
-	'../../app/lib/server/functions/addUserToDefaultChannels': {},
-	'../../app/lib/server/functions/checkUsernameAvailability': {
+	'../lib/rooms/addUserToDefaultChannels': {},
+	'../lib/users/checkUsernameAvailability': {
 		checkUsernameAvailability,
 	},
 	'../../app/settings/server': {

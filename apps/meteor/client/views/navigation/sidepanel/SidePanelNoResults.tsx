@@ -4,7 +4,7 @@ import GenericNoResults from '../../../components/GenericNoResults';
 import { sidePanelFiltersConfig } from '../contexts/RoomsNavigationContext';
 import type { AllGroupsKeys } from '../contexts/RoomsNavigationContext';
 
-type SidePanelNoResultsProps = { currentTab: AllGroupsKeys };
+export type SidePanelNoResultsProps = { currentTab: AllGroupsKeys };
 
 const SidePanelNoResults = ({ currentTab }: SidePanelNoResultsProps) => {
 	const { t } = useTranslation();

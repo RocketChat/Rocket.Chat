@@ -1,7 +1,7 @@
 import type { IAbacAttributeDefinition } from './IAbacAttribute';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRole } from './IRole';
-import type { UserStatus } from './UserStatus';
+import type { PresenceSource, UserStatus } from './UserStatus';
 import type { Serialized } from './utils';
 
 export interface ILoginToken {
@@ -187,6 +187,16 @@ export interface IUser extends IRocketChatRecord {
 	language?: string;
 	statusDefault?: UserStatus;
 	statusText?: string;
+	statusSource?: PresenceSource;
+	statusExpiresAt?: Date;
+	statusId?: string;
+	previousState?: {
+		statusDefault: UserStatus;
+		statusText: string;
+		statusSource: PresenceSource;
+		statusExpiresAt?: Date;
+		statusId?: string;
+	};
 	oauth?: {
 		authorizedClients: string[];
 	};
@@ -287,7 +297,10 @@ export type IUserInRole = Pick<
 >;
 
 export type UserPresence = Readonly<
-	Partial<Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag' | 'roles' | 'username'>> & Required<Pick<IUser, '_id'>>
+	Partial<
+		Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'avatarETag' | 'roles' | 'username'>
+	> &
+		Required<Pick<IUser, '_id'>>
 >;
 
 export type AvatarUrlObj = {
