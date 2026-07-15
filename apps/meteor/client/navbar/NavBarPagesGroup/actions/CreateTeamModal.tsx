@@ -106,7 +106,6 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 		if (!isPrivate) {
 			setValue('encrypted', false);
 		} else if (e2eEnforcedForPrivate) {
-			// Workspace policy forces encryption on for private rooms; keep the toggle on.
 			setValue('encrypted', true);
 		}
 
