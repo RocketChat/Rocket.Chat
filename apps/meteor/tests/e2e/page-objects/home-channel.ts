@@ -188,8 +188,8 @@ export class HomeChannel {
 		await this.getEmojiByName(emoji).click();
 	}
 
-	async waitForHome(): Promise<void> {
-		await this.homepageHeader.waitFor({ state: 'visible' });
+	async waitForHome(timeout?: number): Promise<void> {
+		await this.homepageHeader.waitFor({ state: 'visible', timeout });
 	}
 
 	async waitForRoomLoad(): Promise<void> {

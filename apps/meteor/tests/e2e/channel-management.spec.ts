@@ -21,8 +21,16 @@ test.describe.serial('channel-management', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
-		await poHomeChannel.waitForHome();
+		// Waiting for the 'load' event can consume most of the test timeout on a busy CI runner,
+		// and the client boot can occasionally get stuck on the loading screen, so wait for the
+		// Home heading with a bounded timeout and recover with a single reload instead of failing
+		await page.goto('/home', { waitUntil: 'domcontentloaded' });
+		try {
+			await poHomeChannel.waitForHome(15_000);
+		} catch {
+			await page.reload({ waitUntil: 'domcontentloaded' });
+			await poHomeChannel.waitForHome();
+		}
 	});
 
 	test('should navigate on toolbar using arrow keys', async ({ page }) => {
