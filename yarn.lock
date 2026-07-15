@@ -9577,19 +9577,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/log-format@workspace:^, @rocket.chat/log-format@workspace:packages/log-format":
-  version: 0.0.0-use.local
-  resolution: "@rocket.chat/log-format@workspace:packages/log-format"
-  dependencies:
-    "@types/chalk": "npm:^2.2.4"
-    "@types/ejson": "npm:^2.2.2"
-    chalk: "npm:^4.1.2"
-    ejson: "npm:^2.2.3"
-    eslint: "npm:~9.39.4"
-    typescript: "npm:~5.9.3"
-  languageName: unknown
-  linkType: soft
-
 "@rocket.chat/logger@workspace:^, @rocket.chat/logger@workspace:packages/logger":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/logger@workspace:packages/logger"
@@ -9764,7 +9751,6 @@ __metadata:
     "@rocket.chat/layout": "npm:~0.36.0"
     "@rocket.chat/license": "workspace:^"
     "@rocket.chat/livechat": "workspace:^"
-    "@rocket.chat/log-format": "workspace:^"
     "@rocket.chat/logger": "workspace:^"
     "@rocket.chat/logo": "npm:~0.33.1"
     "@rocket.chat/media-calls": "workspace:^"
@@ -13384,15 +13370,6 @@ __metadata:
     "@types/deep-eql": "npm:*"
     assertion-error: "npm:^2.0.1"
   checksum: 10/e79947307dc235953622e65f83d2683835212357ca261389116ab90bed369ac862ba28b146b4fed08b503ae1e1a12cb93ce783f24bb8d562950469f4320e1c7c
-  languageName: node
-  linkType: hard
-
-"@types/chalk@npm:^2.2.4":
-  version: 2.2.4
-  resolution: "@types/chalk@npm:2.2.4"
-  dependencies:
-    chalk: "npm:*"
-  checksum: 10/e8a905a4688e9bb97fc83055ebfc041a0245449ea5174f9e637f26a940dc2e2f8d5cc2e2f192ef85e418a032b051fde3cf84c47945521a821a9d425cdd7332b6
   languageName: node
   linkType: hard
 
@@ -18045,13 +18022,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:*, chalk@npm:^5.2.0":
-  version: 5.4.1
-  resolution: "chalk@npm:5.4.1"
-  checksum: 10/29df3ffcdf25656fed6e95962e2ef86d14dfe03cd50e7074b06bad9ffbbf6089adbb40f75c00744d843685c8d008adaf3aed31476780312553caf07fa86e5bc7
-  languageName: node
-  linkType: hard
-
 "chalk@npm:2.4.2, chalk@npm:^2.4.1, chalk@npm:^2.4.2":
   version: 2.4.2
   resolution: "chalk@npm:2.4.2"
@@ -18070,6 +18040,13 @@ __metadata:
     ansi-styles: "npm:^4.1.0"
     supports-color: "npm:^7.1.0"
   checksum: 10/cb3f3e594913d63b1814d7ca7c9bafbf895f75fbf93b92991980610dfd7b48500af4e3a5d4e3a8f337990a96b168d7eb84ee55efdce965e2ee8efc20f8c8f139
+  languageName: node
+  linkType: hard
+
+"chalk@npm:^5.2.0":
+  version: 5.4.1
+  resolution: "chalk@npm:5.4.1"
+  checksum: 10/29df3ffcdf25656fed6e95962e2ef86d14dfe03cd50e7074b06bad9ffbbf6089adbb40f75c00744d843685c8d008adaf3aed31476780312553caf07fa86e5bc7
   languageName: node
   linkType: hard
 
