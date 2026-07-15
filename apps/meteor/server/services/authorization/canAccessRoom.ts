@@ -6,13 +6,13 @@ import { Subscriptions, Rooms, TeamMember, Team, Users } from '@rocket.chat/mode
 
 import { canAccessRoomLivechat } from './canAccessRoomLivechat';
 
-async function canAccessPublicRoom(user?: Partial<IUser>): Promise<boolean> {
+async function canAccessPublicRoom(user?: IUser): Promise<boolean> {
 	if (!user?._id) {
 		const anon = await Settings.get<boolean>('Accounts_AllowAnonymousRead');
 		return !!anon;
 	}
 
-	return Authorization.hasPermission(user._id, 'view-c-room');
+	return Authorization.hasPermission(user, 'view-c-room');
 }
 
 type RoomAccessValidatorConverted = (

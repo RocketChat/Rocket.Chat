@@ -54,7 +54,7 @@ Meteor.methods<ServerMethods>({
 			return loadMessageHistory({ rid, end, limit, ls, showThreadMessages, room });
 		}
 
-		const canPreview = await hasPermissionAsync(fromUser._id, 'preview-c-room');
+		const canPreview = await hasPermissionAsync(fromUser, 'preview-c-room');
 
 		if (room.t === 'c' && !canPreview && !(await Subscriptions.findOneByRoomIdAndUserId(rid, fromUser._id, { projection: { _id: 1 } }))) {
 			return false;

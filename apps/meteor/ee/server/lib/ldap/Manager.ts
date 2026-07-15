@@ -6,13 +6,13 @@ import type ldapjs from 'ldapjs';
 import type { FindCursor } from 'mongodb';
 
 import { copyCustomFieldsLDAP } from './copyCustomFieldsLDAP';
-import type {
-	ImporterAfterImportCallback,
-	ImporterBeforeImportCallback,
-} from '../../../../app/importer/server/definitions/IConversionCallbacks';
 import { settings } from '../../../../app/settings/server';
 import { getValidRoomName } from '../../../../app/utils/server/lib/getValidRoomName';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
+import type {
+	ImporterAfterImportCallback,
+	ImporterBeforeImportCallback,
+} from '../../../../server/lib/import/definitions/IConversionCallbacks';
 import { LDAPConnection } from '../../../../server/lib/ldap/Connection';
 import { logger, searchLogger, mapLogger } from '../../../../server/lib/ldap/Logger';
 import { LDAPManager } from '../../../../server/lib/ldap/Manager';

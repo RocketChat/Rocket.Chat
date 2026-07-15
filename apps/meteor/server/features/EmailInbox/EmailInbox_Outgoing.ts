@@ -8,12 +8,12 @@ import type Mail from 'nodemailer/lib/mailer';
 import { inboxes } from './EmailInbox';
 import type { Inbox } from './EmailInbox';
 import { logger } from './logger';
-import { FileUpload } from '../../../app/file-upload/server';
 import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../app/settings/server';
 import { slashCommands } from '../../../app/utils/server/slashCommand';
 import { callbacks } from '../../lib/callbacks';
 import { i18n } from '../../lib/i18n';
+import { FileUpload } from '../../lib/media/file-upload';
 import { sendMessage } from '../../lib/messages/sendMessage';
 
 const livechatQuoteRegExp = /^\[\s\]\(https?:\/\/.+\/live\/.+\?msg=(?<id>.+?)\)\s(?<text>.+)/s;

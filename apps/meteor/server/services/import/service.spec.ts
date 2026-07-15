@@ -34,7 +34,7 @@ jest.mock('@rocket.chat/models', () => ({
 }));
 
 const mockImportersGet = jest.fn();
-jest.mock('../../../app/importer/server', () => ({
+jest.mock('../../lib/import', () => ({
 	Importers: {
 		get: (...args: unknown[]) => mockImportersGet(...args),
 	},

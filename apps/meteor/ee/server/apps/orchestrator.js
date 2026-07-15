@@ -29,7 +29,7 @@ import {
 } from '../../../app/apps/server/converters';
 import { AppThreadsConverter } from '../../../app/apps/server/converters/threads';
 import { settings } from '../../../app/settings/server';
-import { canEnableApp } from '../../app/license/server/canEnableApp';
+import { canEnableApp } from '../lib/license/canEnableApp';
 
 const DISABLED_PRIVATE_APP_INSTALLATION = ['yes', 'true'].includes(String(process.env.DISABLE_PRIVATE_APP_INSTALLATION).toLowerCase());
 
