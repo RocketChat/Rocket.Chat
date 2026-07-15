@@ -40,7 +40,7 @@ export const findAllDepartmentsByUnit = async (
 		{
 			ancestors: { $in: [unitId] },
 		},
-		{ limit: count, skip: offset },
+		{ limit: count, skip: offset, sort: { name: 1, _id: 1 } },
 	);
 
 	const [departments, total] = await Promise.all([cursor.toArray(), totalCount]);
