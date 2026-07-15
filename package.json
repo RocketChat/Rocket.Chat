@@ -24,6 +24,12 @@
 	"scripts": {
 		"build": "turbo run build",
 		"build:services": "turbo run build --filter=rocketchat-services...",
+		"dev-db:up": "TS_NODE_TRANSPILE_ONLY=1 ts-node --project packages/dev-db/tsconfig.json packages/dev-db/src/cli.ts up",
+		"dev-db:down": "TS_NODE_TRANSPILE_ONLY=1 ts-node --project packages/dev-db/tsconfig.json packages/dev-db/src/cli.ts down",
+		"dev-db:status": "TS_NODE_TRANSPILE_ONLY=1 ts-node --project packages/dev-db/tsconfig.json packages/dev-db/src/cli.ts status --json",
+		"dev-db:url": "TS_NODE_TRANSPILE_ONLY=1 ts-node --project packages/dev-db/tsconfig.json packages/dev-db/src/cli.ts url --json",
+		"dev-db:reset": "TS_NODE_TRANSPILE_ONLY=1 ts-node --project packages/dev-db/tsconfig.json packages/dev-db/src/cli.ts reset",
+		"dev-db:doctor": "TS_NODE_TRANSPILE_ONLY=1 ts-node --project packages/dev-db/tsconfig.json packages/dev-db/src/cli.ts doctor --json",
 		"dev": "turbo run dev --env-mode=loose --parallel --filter=@rocket.chat/meteor...",
 		"dsv": "turbo run dsv --env-mode=loose --filter=@rocket.chat/meteor...",
 		"ms": "turbo run ms --env-mode=loose",
