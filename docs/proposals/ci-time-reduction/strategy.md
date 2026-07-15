@@ -431,7 +431,13 @@ Before rollout, instrument to make the wins visible and catch regressions:
 
 ## 10. Design‑review responses
 
-Follow‑ups from review of §1–§9.
+Follow‑ups from review of §1–§9. Runnable prototypes referenced below live in
+`docs/proposals/ci-time-reduction/prototypes/` (plain Node, no install, no git
+history — each has a `--demo`):
+
+- `affected-packages.mjs` — static file→workspace→dependents graph query (§10.1).
+- `impact-from-coverage.mjs` — coverage → `sourceFile→specs` reverse index (§10.5).
+- `shadow-reconcile.mjs` — automated real‑vs‑flake reconciliation (§10.2).
 
 ### 10.1 Checkout depth — we don't need full history, and we drop `turbo --affected`
 
@@ -452,13 +458,55 @@ The repo is approaching ~30k commits; `fetch-depth: 0` is not acceptable
     precedent and our source of truth. Extend it (or use `dorny/paths-filter`,
     which on `pull_request` events uses the API and needs no checkout history).
   - "Affected packages **+ dependents**" (Layer 2) is a *static* graph query —
-    map files → workspaces, expand with `turbo … --filter=...<pkg>`. Static
-    graph data needs no merge‑base. See revised Layer 2 above.
+    map files → workspaces, expand over the dependency graph. Needs no
+    merge‑base. See revised Layer 2 above.
 - **Net:** default `actions/checkout` (depth 1) is sufficient everywhere. Path
   selection uses the API; dependent expansion uses the static graph. For `push`/
   `merge_group`/`release` events (where an API PR diff isn't available) we
   already default to a **full run**, so there's no history dependency there
   either.
+
+**Very large PRs — truncation ⇒ full run (good, and intended).** The GitHub
+"list PR files" API caps at **3000 files** (30/page), and `gh pr diff` can be
+truncated on very large diffs. Guard for it: if the file list is truncated or
+its length exceeds a conservative threshold, set `full=true`. A PR that touches
+thousands of files is precisely one you *want* to run in full — so the failure
+mode here is safe by construction. Concretely, in the `changes` job:
+
+```bash
+FILES=$(gh pr diff --name-only --repo "$REPO" "$PR" || echo "__ERROR__")
+COUNT=$(printf '%s\n' "$FILES" | grep -c . || true)
+if [[ "$FILES" == *__ERROR__* || "$COUNT" -ge 500 ]]; then
+  echo "full=true" >> "$GITHUB_OUTPUT"   # truncated / huge / API error -> full
+fi
+```
+
+**Prototype — the static graph query.** `prototypes/affected-packages.mjs`
+implements exactly this with **no turbo install and no git history**, reading
+only the workspace `package.json` files (present in any depth‑1 checkout). Given
+changed files it prints the owning workspaces plus all transitive dependents.
+Run against the PR #41376 file set:
+
+```
+$ node prototypes/affected-packages.mjs \
+    packages/apps/base-runtime/src/lib/accessors/http.ts \
+    docs/proposals/.../base-runtime-accessor-consolidation.md
+owners:   [ "@rocket.chat/apps" ]
+affected: 16 / 74 workspaces   (apps + everything depending on it, incl. core-services → the service tree)
+unmappedFilesDeferredToPathRules: [ "docs/…md" ]
+```
+
+**Important nuance this surfaces:** `@rocket.chat/apps` is *upstream of*
+`core-services`, so the raw **package graph** marks 16 workspaces affected —
+much broader than the *product* blast radius. That is correct and expected, and
+it is why **Layer 2 (package‑task selection) and Layer 3 (domain E2E scoping)
+are different mechanisms**: the graph query governs which `testunit`/`lint`/
+`typecheck` tasks run; the hand‑authored domain/coupling map (§10.4) — not the
+package graph — governs which E2E suites run. Don't conflate them.
+
+In production you can use the same graph via turbo instead of the script:
+`turbo run testunit lint typecheck --filter=...@rocket.chat/apps` (the `...`
+prefix = package + dependents, static, no history).
 
 ### 10.2 Ship Layer 1 first as a **shadow (dry‑run) mode**
 
@@ -479,6 +527,24 @@ gather evidence that its decisions are safe on real traffic.
 - The signal that matters: **did a would‑skip job fail for a real (non‑flake)
   reason?** If yes → the mapping is unsafe, widen it. If would‑skip jobs are
   consistently green, the classifier is safe to enforce.
+
+  **This is automated, not a manual read.** Real‑vs‑flake is decided from
+  signals CI already emits (`prototypes/shadow-reconcile.mjs` demonstrates it):
+
+  1. **Same‑run retry.** UI tests already run with `PLAYWRIGHT_RETRIES`.
+     Playwright marks fail‑then‑pass as status **`flaky`**; a final
+     `unexpected`/`timedOut` is a **real** failure. Both are in the Playwright
+     JSON report — parse it, don't eyeball it.
+  2. **Rolling flake registry.** RC already streams history to external
+     reporters (`tests/e2e/reporters/rocketchat.ts`, `jira.ts`,
+     `playwright-qase-reporter`). Aggregate the trailing N `develop` runs into a
+     set of chronically‑flaky titles and discount those even on a hard failure.
+
+  The reconciliation step buckets every would‑skip job's results into
+  real‑failures vs flakes and **exits non‑zero on any real failure**, so unsafe
+  mappings show up as a failed shadow check. Only a *brand‑new* hard failure on
+  a would‑skip job (not a retry‑flake, not in the registry) warrants a human
+  glance — which is exactly the rare, high‑value signal we're mining for.
 - After N weeks of clean shadow data, **flip** the gates (Layer 1 enforcement)
   by changing the affected jobs' `if:` from always‑run to flag‑gated. One‑line
   change per job, fully reversible.
@@ -684,6 +750,35 @@ domain jobs make per‑domain coverage cheap, and validate it through the §10.2
 shadow harness (measure how often it would have skipped a test that then failed)
 before it influences any gate. Use it as a corroborating signal that *sharpens*
 the hand‑written coupling map (§10.4) with real data — not as the primary gate.
+
+#### Getting the coverage data and using it in a script (concrete)
+
+The format is plain Istanbul JSON. Steps:
+
+1. **Produce it.** CI already builds a `-cov` image and writes per‑shard nyc
+   output to `$COVERAGE_DIR` (`ci-test-e2e.yml`). Locally:
+   `E2E_COVERAGE=true yarn test:e2e` then `npx nyc report --reporter=json` →
+   `coverage-final.json`.
+2. **Read it.** `coverage-final.json` is an object keyed by absolute source
+   path: `{ "<abs>": { path, statementMap, s: { "0": <hits>, … } } }`. A file is
+   "covered by this run" iff any `s` count > 0. That's the whole trick.
+3. **Build the reverse index and query it.**
+   `prototypes/impact-from-coverage.mjs` does both — `--map <dir>` folds a
+   directory of per‑spec `coverage-final` files into
+   `sourceFile → [specs]`, and `--query <map> <changedFiles…>` returns the
+   specs to run, flagging any **unknown** changed file with `fallbackToFull`
+   (coverage can't vouch for a file it has never seen). Runnable today:
+
+   ```
+   $ node prototypes/impact-from-coverage.mjs --demo
+   changed: [ packages/apps/base-runtime/.../http.ts, README.md ]
+   => specs: [ "apps/apps-modal.spec" ],  fallbackToFull: true  (README.md unseen)
+   ```
+
+4. **Per‑spec attribution** (the one missing piece) comes from the small
+   `tests/e2e/utils/test.ts` change described above; until then, run the same
+   script at **per‑domain** granularity using the domain jobs' separate coverage
+   outputs.
 
 ### 10.6 How the pieces reinforce each other
 
