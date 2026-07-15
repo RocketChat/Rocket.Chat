@@ -1,9 +1,9 @@
 import { LDAPEnterprise } from '@rocket.chat/core-services';
 import { ajv, validateBadRequestErrorResponse, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
 
-import { settings } from '../../../app/settings/server';
 import { API } from '../../../server/api/api';
 import { hasPermissionAsync } from '../../../server/lib/authorization/hasPermission';
+import { settings } from '../../../server/settings';
 
 const ldapSyncNowResponseSchema = ajv.compile<{ message: string }>({
 	type: 'object',

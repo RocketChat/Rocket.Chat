@@ -1,8 +1,8 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../../server/lib/callbacks';
-import { AutoCloseOnHoldScheduler } from '../../../app/livechat-enterprise/server/lib/AutoCloseOnHoldScheduler';
-import { cbLogger } from '../../../app/livechat-enterprise/server/lib/logger';
+import { AutoCloseOnHoldScheduler } from '../../lib/omnichannel/AutoCloseOnHoldScheduler';
+import { cbLogger } from '../../lib/omnichannel/logger';
 
 type IRoom = Pick<IOmnichannelRoom, '_id'>;
 

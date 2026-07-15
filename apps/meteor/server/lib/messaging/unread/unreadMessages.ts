@@ -4,8 +4,8 @@ import { Messages, Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import logger from './logger';
-import { methodDeprecationLogger } from '../../../../app/lib/server/lib/deprecationWarningLogger';
-import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../../app/lib/server/lib/notifyListener';
+import { methodDeprecationLogger } from '../../deprecationWarningLogger';
+import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../notifyListener';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

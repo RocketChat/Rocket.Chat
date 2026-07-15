@@ -1,6 +1,6 @@
 import _ from 'underscore';
 
-import { settings } from '../../../../../app/settings/server';
+import { settings } from '../../../../settings';
 import { SystemLogger } from '../../../logger/system';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import '../ufs/Webdav/server';

@@ -19,8 +19,8 @@ import {
 	findVisitorsToAutocomplete,
 	findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField,
 } from './lib/visitors';
-import { canAccessRoomAsync } from '../../../../app/authorization/server';
-import { normalizeMessagesForUser } from '../../../../app/utils/server/lib/normalizeMessagesForUser';
+import { canAccessRoomAsync } from '../../../lib/authorization';
+import { normalizeMessagesForUser } from '../../../lib/utils/lib/normalizeMessagesForUser';
 import { getPaginationItems } from '../../lib/getPaginationItems';
 
 API.v1.addRoute(

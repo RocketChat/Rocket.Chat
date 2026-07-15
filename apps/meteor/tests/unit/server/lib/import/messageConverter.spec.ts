@@ -11,9 +11,6 @@ const modelsMock = {
 const insertMessage = sinon.stub();
 
 const { MessageConverter } = proxyquire.noCallThru().load('../../../../../server/lib/import/classes/converters/MessageConverter', {
-	'../../../settings/server': {
-		settings: { get: settingsStub },
-	},
 	'../../../messages/insertMessage': {
 		insertMessage,
 	},

@@ -5,7 +5,7 @@ import { Logger } from '@rocket.chat/logger';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../settings';
 import { uploadFileToWebdav } from '../lib/uploadFileToWebdav';
 
 const logger = new Logger('WebDAV_Upload');

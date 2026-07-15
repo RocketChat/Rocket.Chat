@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
 
-import { settings } from '../../../../../app/settings/server';
+import { settings } from '../../../../settings';
 import { SystemLogger } from '../../../logger/system';
 import { RocketChatFile } from '../../file';
 

@@ -2,7 +2,7 @@ import { MeteorError } from '@rocket.chat/core-services';
 import { Meteor } from 'meteor/meteor';
 
 import type { SaveUserData } from './saveUser';
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../settings';
 import * as Mailer from '../../notifications/email/api';
 
 let html = '';

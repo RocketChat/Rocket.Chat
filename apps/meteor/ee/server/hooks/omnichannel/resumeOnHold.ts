@@ -3,9 +3,9 @@ import type { ILivechatVisitor, IMessage, IOmnichannelRoom, IUser } from '@rocke
 import { isMessageFromVisitor, isEditedMessage } from '@rocket.chat/core-typings';
 import { LivechatRooms, LivechatVisitors, Users } from '@rocket.chat/models';
 
-import { callbackLogger } from '../../../../app/livechat/server/lib/logger';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
+import { callbackLogger } from '../../../../server/lib/omnichannel/logger';
 
 const resumeOnHoldCommentAndUser = async (room: IOmnichannelRoom): Promise<{ comment: string; resumedBy: IUser }> => {
 	const {

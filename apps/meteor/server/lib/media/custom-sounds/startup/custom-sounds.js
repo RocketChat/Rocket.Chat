@@ -2,7 +2,7 @@ import { CustomSounds } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
-import { settings } from '../../../../../app/settings/server';
+import { settings } from '../../../../settings';
 import { SystemLogger } from '../../../logger/system';
 import { RocketChatFile } from '../../file';
 

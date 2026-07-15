@@ -3,9 +3,9 @@ import { Messages, Users } from '@rocket.chat/models';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import moment from 'moment';
 
-import { settings } from '../../../app/settings/server';
-import { Message } from '../../../app/ui-utils/server';
+import { settings } from '../../settings';
 import { getMomentLocale } from '../getMomentLocale';
+import { Message } from '../messaging/Message';
 import * as Mailer from '../notifications/email/api';
 
 export async function sendViaEmail(

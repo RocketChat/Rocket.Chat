@@ -14,9 +14,9 @@ import { ChartData } from './ChartData';
 import { OverviewData } from './OverviewData';
 import { serviceLogger } from './logger';
 import { dayIterator } from './utils';
-import { getTimezone } from '../../../app/utils/server/lib/getTimezone';
 import { callbacks } from '../../lib/callbacks';
 import { i18n } from '../../lib/i18n';
+import { getTimezone } from '../../lib/utils/lib/getTimezone';
 
 const HOURS_IN_DAY = 24;
 

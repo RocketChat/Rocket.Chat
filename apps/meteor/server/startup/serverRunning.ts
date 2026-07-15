@@ -6,13 +6,13 @@ import { License } from '@rocket.chat/license';
 import { Meteor } from 'meteor/meteor';
 import semver from 'semver';
 
-import { settings } from '../../app/settings/server';
 import { Info } from '../../app/utils/rocketchat.info';
-import { getMongoInfo } from '../../app/utils/server/functions/getMongoInfo';
+import { showErrorBox, showSuccessBox, showWarningBox } from '../lib/logger/showBox';
+import { getMongoInfo } from '../lib/utils/functions/getMongoInfo';
 // import { i18n } from '../lib/i18n';
 // import { isRunningMs } from '../lib/isRunningMs';
 // import { sendMessagesToAdmins } from '../lib/sendMessagesToAdmins';
-import { showErrorBox, showSuccessBox, showWarningBox } from '../lib/logger/showBox';
+import { settings } from '../settings';
 
 const exitIfNotBypassed = (ignore: string | undefined, errorCode = 1) => {
 	if (typeof ignore === 'string' && ['yes', 'true'].includes(ignore.toLowerCase())) {

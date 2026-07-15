@@ -8,7 +8,7 @@ import _ from 'underscore';
 
 import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
 import { msLogger } from './logger';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 import { i18n } from '../i18n';
 
 /**

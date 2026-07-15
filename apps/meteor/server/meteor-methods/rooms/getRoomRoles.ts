@@ -3,10 +3,10 @@ import { Rooms } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomAsync } from '../../../app/authorization/server';
-import { settings } from '../../../app/settings/server';
+import { canAccessRoomAsync } from '../../lib/authorization';
 import type { RoomRoles } from '../../lib/roles/getRoomRoles';
 import { getRoomRoles } from '../../lib/roles/getRoomRoles';
+import { settings } from '../../settings';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

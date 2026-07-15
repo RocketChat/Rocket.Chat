@@ -1,6 +1,6 @@
 import { Random } from '@rocket.chat/random';
 
-import { settingsRegistry } from '../../app/settings/server';
+import { settingsRegistry } from '.';
 
 export const createAccountSettings = () =>
 	settingsRegistry.addGroup('Accounts', async function () {

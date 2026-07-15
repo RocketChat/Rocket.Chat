@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 import { Accounts } from 'meteor/accounts-base';
 
 import type { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../settings';
 import { i18n } from '../../i18n';
 import * as Mailer from '../../notifications/email/api';
 

@@ -17,15 +17,15 @@ import {
 	findDepartmentAgents,
 	findArchivedDepartments,
 } from './lib/departments';
+import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
 import {
 	saveDepartment,
 	archiveDepartment,
 	unarchiveDepartment,
 	saveDepartmentAgents,
 	removeDepartment,
-} from '../../../../app/livechat/server/lib/departmentsLib';
-import { settings } from '../../../../app/settings/server';
-import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
+} from '../../../lib/omnichannel/departmentsLib';
+import { settings } from '../../../settings';
 import { getPaginationItems } from '../../lib/getPaginationItems';
 
 API.v1.addRoute(

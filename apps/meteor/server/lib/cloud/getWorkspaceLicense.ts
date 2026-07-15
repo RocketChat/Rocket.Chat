@@ -5,9 +5,9 @@ import * as z from 'zod';
 
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { LICENSE_VERSION } from './license';
-import { settings } from '../../../app/settings/server';
 import { CloudWorkspaceConnectionError } from '../../../lib/errors/CloudWorkspaceConnectionError';
 import { CloudWorkspaceLicenseError } from '../../../lib/errors/CloudWorkspaceLicenseError';
+import { settings } from '../../settings';
 import { callbacks } from '../callbacks';
 import { SystemLogger } from '../logger/system';
 

@@ -9,11 +9,11 @@ import { Meteor } from 'meteor/meteor';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
 import sharp from 'sharp';
 
-import { notifyOnSettingChangedById } from '../../../../app/lib/server/lib/notifyListener';
-import { settings, settingsRegistry } from '../../../../app/settings/server';
 import { getExtension } from '../../../../app/utils/lib/mimeTypes';
-import { getURL } from '../../../../app/utils/server/getURL';
+import { settings, settingsRegistry } from '../../../settings';
 import { hasPermissionAsync } from '../../authorization/hasPermission';
+import { notifyOnSettingChangedById } from '../../notifyListener';
+import { getURL } from '../../utils/getURL';
 import { RocketChatFile } from '../file';
 
 const RocketChatAssetsInstance = new RocketChatFile.GridFS({

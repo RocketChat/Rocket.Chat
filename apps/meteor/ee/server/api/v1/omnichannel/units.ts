@@ -5,8 +5,8 @@ import { findUnits, findUnitById, findUnitMonitors, findUnitsOfUser } from './li
 import { API } from '../../../../../server/api';
 import { getPaginationItems } from '../../../../../server/api/lib/getPaginationItems';
 import { hasPermissionAsync } from '../../../../../server/lib/authorization/hasPermission';
-import { findAllDepartmentsAvailable, findAllDepartmentsByUnit } from '../../../../app/livechat-enterprise/server/lib/Department';
-import { LivechatEnterprise } from '../../../../app/livechat-enterprise/server/lib/LivechatEnterprise';
+import { findAllDepartmentsAvailable, findAllDepartmentsByUnit } from '../../../lib/omnichannel/Department';
+import { LivechatEnterprise } from '../../../lib/omnichannel/LivechatEnterprise';
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

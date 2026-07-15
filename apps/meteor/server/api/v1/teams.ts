@@ -28,11 +28,11 @@ import {
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { canAccessRoomAsync } from '../../../app/authorization/server';
-import { settings } from '../../../app/settings/server';
+import { canAccessRoomAsync } from '../../lib/authorization';
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync, hasAllPermissionAsync } from '../../lib/authorization/hasPermission';
 import { eraseRoom } from '../../lib/eraseRoom';
 import { removeUserFromRoom } from '../../lib/rooms/removeUserFromRoom';
+import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { eraseTeam } from '../lib/eraseTeam';

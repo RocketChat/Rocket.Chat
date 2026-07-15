@@ -2,7 +2,7 @@ import { cronJobs } from '@rocket.chat/cron';
 import { Meteor } from 'meteor/meteor';
 
 import { checkVersionUpdate } from './functions/checkVersionUpdate';
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../settings';
 
 const jobName = 'version_check';
 

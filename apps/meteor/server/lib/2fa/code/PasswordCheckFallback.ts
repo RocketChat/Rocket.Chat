@@ -3,7 +3,7 @@ import { Accounts } from 'meteor/accounts-base';
 import type { Meteor } from 'meteor/meteor';
 
 import type { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../settings';
 
 export class PasswordCheckFallback implements ICodeCheck {
 	public readonly name = 'password';

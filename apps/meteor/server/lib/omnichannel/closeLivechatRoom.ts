@@ -1,8 +1,8 @@
 import type { IUser, IRoom, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, Subscriptions } from '@rocket.chat/models';
 
-import { closeRoom } from '../../../app/livechat/server/lib/closeRoom';
-import type { CloseRoomParams } from '../../../app/livechat/server/lib/localTypes';
+import { closeRoom } from './closeRoom';
+import type { CloseRoomParams } from './localTypes';
 import { hasPermissionAsync } from '../authorization/hasPermission';
 
 export const closeLivechatRoom = async (

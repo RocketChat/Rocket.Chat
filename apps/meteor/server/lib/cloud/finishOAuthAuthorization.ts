@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { getRedirectUri } from './getRedirectUri';
 import { userScopes } from './oauthScopes';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 import { SystemLogger } from '../logger/system';
 
 export async function finishOAuthAuthorization(code: string, state: string) {

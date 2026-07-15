@@ -6,12 +6,12 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import { addCallHistoryTestData } from './callHistoryTestData';
-import { notifyOnSettingChangedById } from '../../app/lib/server/lib/notifyListener';
-import { settings } from '../../app/settings/server';
 import { FileUpload } from '../lib/media/file-upload';
+import { notifyOnSettingChangedById } from '../lib/notifyListener';
 import { addUserRolesAsync } from '../lib/roles/addUserRoles';
 import { addUserToDefaultChannels } from '../lib/rooms/addUserToDefaultChannels';
 import { checkUsernameAvailability } from '../lib/users/checkUsernameAvailability';
+import { settings } from '../settings';
 
 export async function insertAdminUserFromEnv() {
 	if (process.env.ADMIN_PASS) {

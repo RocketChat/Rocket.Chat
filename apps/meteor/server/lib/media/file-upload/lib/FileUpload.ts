@@ -25,12 +25,10 @@ import sharp from 'sharp';
 import type { WritableStreamBuffer } from 'stream-buffers';
 import streamBuffers from 'stream-buffers';
 
-import { settings } from '../../../../../app/settings/server';
 import { mime } from '../../../../../app/utils/lib/mimeTypes';
-import { validateAndDecodeJWT, generateJWT } from '../../../../../app/utils/server/lib/JWTHelper';
-import { fileUploadIsValidContentType } from '../../../../../app/utils/server/restrictions';
 import { isRenderableImageType } from '../../../../../lib/renderableImageTypes';
 import { MultipartUploadHandler } from '../../../../api/lib/MultipartUploadHandler';
+import { settings } from '../../../../settings';
 import { UploadFS } from '../../../../ufs';
 import { ufsComplete } from '../../../../ufs/ufs-methods';
 import type { Store, StoreOptions } from '../../../../ufs/ufs-store';
@@ -38,6 +36,8 @@ import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization
 import { i18n } from '../../../i18n';
 import { SystemLogger } from '../../../logger/system';
 import { roomCoordinator } from '../../../rooms/roomCoordinator';
+import { validateAndDecodeJWT, generateJWT } from '../../../utils/lib/JWTHelper';
+import { fileUploadIsValidContentType } from '../../../utils/restrictions';
 
 const cookie = new Cookies();
 let maxFileSize = 0;

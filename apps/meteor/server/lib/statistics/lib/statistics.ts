@@ -36,13 +36,13 @@ import { getContactVerificationStatistics } from './getContactVerificationStatis
 import { getStatistics as getEnterpriseStatistics } from './getEEStatistics';
 import { getImporterStatistics } from './getImporterStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
-import { settings } from '../../../../app/settings/server';
 import { Info } from '../../../../app/utils/rocketchat.info';
-import { getMongoInfo } from '../../../../app/utils/server/functions/getMongoInfo';
 import { readSecondaryPreferred } from '../../../database/readSecondaryPreferred';
 import { getMatrixFederationStatistics } from '../../../services/federation/infrastructure/rocket-chat/adapters/Statistics';
+import { settings } from '../../../settings';
 import { isRunningMs } from '../../isRunningMs';
 import { getControl } from '../../migrations';
+import { getMongoInfo } from '../../utils/functions/getMongoInfo';
 import { getSettingsStatistics } from '../getSettingsStatistics';
 
 const getUserLanguages = async (totalUsers: number): Promise<{ [key: string]: number }> => {
