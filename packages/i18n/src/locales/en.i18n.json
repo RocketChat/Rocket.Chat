@@ -7340,5 +7340,9 @@
   "Avatar_preview_updated": "Avatar preview updated",
   "Select_message_from_user": "Select message from {{username}}",
   "Select_message_from_user_with_preview": "Select message from {{username}}: {{message}}",
-  "current": "current"
+  "current": "current",
+  "Sensitive_information_detected": "Sensitive information detected",
+  "Sensitive_information_warning": "Your message appears to contain confidential information such as an API key, password, access token, or private key.\n\nAre you sure you want to send this message?",
+  "Edit_message": "Edit message",
+  "Send_anyway": "Send anyway"
 }
