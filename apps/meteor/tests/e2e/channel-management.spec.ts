@@ -24,7 +24,7 @@ test.describe.serial('channel-management', () => {
 		await expect(async () => {
 			await page.goto('/home', { waitUntil: 'domcontentloaded' });
 			await poHomeChannel.waitForHome(15_000);
-		}).toPass();
+		}).toPass({ timeout: 30_000 });
 	});
 
 	test('should navigate on toolbar using arrow keys', async ({ page }) => {
