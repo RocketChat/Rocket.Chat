@@ -1,4 +1,5 @@
 import { Box, Icon, TextInput } from '@rocket.chat/fuselage';
+import { Button } from '@rocket.chat/fuselage';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import { MultiSelectCustom } from '@rocket.chat/ui-client';
 import { useCallback, useMemo, useState } from 'react';
@@ -51,6 +52,16 @@ const RoomsTableFilters = ({ setFilters }: RoomsTableFiltersProps) => {
 
 	const [roomTypeSelectedOptions, setRoomTypeSelectedOptions] = useState<OptionProp[]>([]);
 
+	const handleClearFilters = () => {
+		setRoomTypeSelectedOptions([]);
+		setText("");
+				
+		setFilters({
+		searchText:"",
+		types:[],
+		});
+};
+
 	const roomTypeFilterStructure = useMemo(() => {
 		return initialRoomTypeFilterStructure.map((option) => ({
 			...option,
@@ -95,6 +106,7 @@ const RoomsTableFilters = ({ setFilters }: RoomsTableFiltersProps) => {
 					value={text}
 				/>
 			</Box>
+			
 			<Box minWidth='x224' m='x4'>
 				<MultiSelectCustom
 					dropdownOptions={roomTypeFilterStructure}
@@ -104,6 +116,11 @@ const RoomsTableFilters = ({ setFilters }: RoomsTableFiltersProps) => {
 					selectedOptions={roomTypeSelectedOptions}
 				/>
 			</Box>
+			<Box m='x4' display='flex' alignItems='center'>
+				<Button small ghost onClick={handleClearFilters}>
+					{t('Clear_filters')}
+					</Button>
+		    </Box>
 		</Box>
 	);
 };
