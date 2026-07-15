@@ -27,6 +27,22 @@ ABCDEF
     ).toBe(true);
   });
 
+  it('detects sensitive content embedded in normal text', () => {
+    expect(
+      detectSensitiveContent('Here is my AWS key: AKIAIOSFODNN7EXAMPLE'),
+    ).toBe(true);
+
+    expect(
+      detectSensitiveContent('Credentials: password=secret123'),
+    ).toBe(true);
+
+    expect(
+      detectSensitiveContent(
+        'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
+      ),
+    ).toBe(true);
+  });
+
   it('returns false for empty input', () => {
     expect(detectSensitiveContent('')).toBe(false);
   });
