@@ -1,10 +1,10 @@
 import { LivechatContacts, Statistics, Users } from '@rocket.chat/models';
 import moment from 'moment';
 
-import { LICENSE_VERSION } from '../../../app/cloud/server/license';
+import { LICENSE_VERSION } from './license';
 import { settings } from '../../../app/settings/server';
-import { statistics } from '../../../app/statistics/server';
 import { Info } from '../../../app/utils/rocketchat.info';
+import { statistics } from '../statistics';
 
 export type WorkspaceRegistrationData<T> = {
 	uniqueId: string;

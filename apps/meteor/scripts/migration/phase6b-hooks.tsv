@@ -1,0 +1,13 @@
+# Phase 6b: hooks → server/hooks/<domain>/
+# Format: old-path<TAB>new-path (relative to apps/meteor/)
+app/authentication/server/hooks/login.ts	server/hooks/auth/login.ts
+app/discussion/server/hooks/propagateDiscussionMetadata.ts	server/hooks/messages/propagateDiscussionMetadata.ts
+app/threads/server/hooks/aftersavemessage.ts	server/hooks/messages/processThreads.ts
+app/lib/server/lib/afterSaveMessage.ts	server/hooks/messages/afterSaveMessage.ts
+app/lib/server/lib/notifyUsersOnMessage.ts	server/hooks/messages/notifyUsersOnMessage.ts
+app/lib/server/lib/sendNotificationsOnMessage.ts	server/hooks/messages/sendNotificationsOnMessage.ts
+app/lib/server/lib/beforeAddUserToRoom.ts	server/hooks/rooms/beforeAddUserToRoom.ts
+app/livechat/server/hooks	server/hooks/omnichannel
+tests/unit/app/livechat/server/hooks	tests/unit/server/hooks/omnichannel
+tests/unit/server/livechat/hooks/markRoomResponded.spec.ts	tests/unit/server/hooks/omnichannel/markRoomResponded.spec.ts
+tests/unit/server/livechat/hooks/beforeNewRoom.spec.ts	tests/unit/server/hooks/omnichannel/beforeNewRoom.spec.ts

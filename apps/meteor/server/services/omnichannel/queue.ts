@@ -10,8 +10,8 @@ import { getOmniChatSortQuery } from '../../../app/livechat/lib/inquiries';
 import { dispatchAgentDelegated } from '../../../app/livechat/server/lib/Helper';
 import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
 import { getInquirySortMechanismSetting } from '../../../app/livechat/server/lib/settings';
-import { metrics } from '../../../app/metrics/server';
 import { settings } from '../../../app/settings/server';
+import { metrics } from '../../lib/metrics';
 
 const DEFAULT_RACE_TIMEOUT = 5000;
 

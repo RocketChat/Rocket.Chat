@@ -10,12 +10,12 @@ import {
 } from '@rocket.chat/rest-typings';
 import ExpiryMap from 'expiry-map';
 
-import { handleSuggestedGroupKey } from '../../../app/e2e/server/functions/handleSuggestedGroupKey';
-import { provideUsersSuggestedGroupKeys } from '../../../app/e2e/server/functions/provideUsersSuggestedGroupKeys';
-import { resetRoomKey } from '../../../app/e2e/server/functions/resetRoomKey';
 import { settings } from '../../../app/settings/server';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { handleSuggestedGroupKey } from '../../lib/e2e/functions/handleSuggestedGroupKey';
+import { provideUsersSuggestedGroupKeys } from '../../lib/e2e/functions/provideUsersSuggestedGroupKeys';
+import { resetRoomKey } from '../../lib/e2e/functions/resetRoomKey';
 import { getUsersOfRoomWithoutKeyMethod } from '../../meteor-methods/platform/getUsersOfRoomWithoutKey';
 import { requestSubscriptionKeysMethod } from '../../meteor-methods/platform/requestSubscriptionKeys';
 import { setRoomKeyIDMethod } from '../../meteor-methods/platform/setRoomKeyID';

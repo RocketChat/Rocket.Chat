@@ -7,8 +7,8 @@ import { Cookies } from 'meteor/ostrio:cookies';
 import { WebApp } from 'meteor/webapp';
 import { match } from 'path-to-regexp';
 
-import { FileUpload } from '../../app/file-upload/server';
 import { settings } from '../../app/settings/server';
+import { FileUpload } from '../lib/media/file-upload';
 
 const cookies = new Cookies();
 

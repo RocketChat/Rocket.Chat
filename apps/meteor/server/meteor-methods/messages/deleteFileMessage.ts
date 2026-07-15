@@ -5,8 +5,8 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { DeleteResult } from 'mongodb';
 
-import { FileUpload } from '../../../app/file-upload/server';
 import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
+import { FileUpload } from '../../lib/media/file-upload';
 import { deleteMessageValidatingPermission } from '../../lib/messages/deleteMessage';
 
 declare module '@rocket.chat/ddp-client' {
