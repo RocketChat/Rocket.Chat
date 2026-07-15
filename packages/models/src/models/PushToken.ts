@@ -14,12 +14,7 @@ export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel
 	}
 
 	override modelIndexes(): IndexDescription[] {
-		return [
-			{ key: { userId: 1, authToken: 1 } },
-			{ key: { tokenValue: 1 } },
-			{ key: { appName: 1, tokenValue: 1 } },
-			{ key: { tokenType: 1 } },
-		];
+		return [{ key: { userId: 1, authToken: 1 } }, { key: { tokenValue: 1 } }, { key: { tokenType: 1 } }];
 	}
 
 	countApnTokens() {
