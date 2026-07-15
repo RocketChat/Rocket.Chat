@@ -45,6 +45,33 @@ function generateEphemeralDenoConfig(targetPath: string, denoConfigPath: string,
 	fs.writeFileSync(targetPath, JSON.stringify(runtimeConfig, null, '\t'));
 }
 
+/**
+ * Ensures a directory symlink exists at `symlinkPath` pointing to `targetPath`.
+ *
+ * First removes whatever currently lives at `symlinkPath` (broken symlink,
+ * wrong target, or a non-symlink entry), ignoring ENOENT if nothing is there.
+ * Then creates the symlink, catching EEXIST to guard against race conditions.
+ */
+export function ensureSymlink(symlinkPath: string, targetPath: string): void {
+	// Clean up any existing entry at the symlink path
+	try {
+		fs.rmSync(symlinkPath, { recursive: true });
+	} catch (err: unknown) {
+		if ((err as NodeJS.ErrnoException).code !== 'ENOENT') {
+			throw err;
+		}
+	}
+
+	// Create the symlink; guard against a concurrent creator
+	try {
+		fs.symlinkSync(targetPath, symlinkPath, 'dir');
+	} catch (err: unknown) {
+		if ((err as NodeJS.ErrnoException).code !== 'EEXIST') {
+			throw err;
+		}
+	}
+}
+
 export class DenoRuntimeSubprocessController extends BaseRuntimeSubprocessController {
 	private readonly denoBin = 'deno';
 
@@ -73,37 +100,11 @@ export class DenoRuntimeSubprocessController extends BaseRuntimeSubprocessContro
 		 * Deno 2.x refuses to run scripts inside the node_modules, so we create a symlink to the deno runtime files in the temp directory
 		 * The temp directory is the same we are given by the host to store temporary upload files
 		 */
-		const targetPath = path.dirname(this.denoConfigPath);
-		const symlinkPath = path.dirname(this.denoRuntimePath);
-
-		let shouldRecreate = false;
 		try {
-			const stat = fs.lstatSync(symlinkPath);
-			if (stat.isSymbolicLink()) {
-				const currentTarget = fs.readlinkSync(symlinkPath);
-				const isBroken = !fs.existsSync(symlinkPath);
-				if (currentTarget !== targetPath || isBroken) {
-					shouldRecreate = true;
-				}
-			} else {
-				shouldRecreate = true;
-			}
-		} catch (err) {
-			if ((err as NodeJS.ErrnoException).code === 'ENOENT') {
-				shouldRecreate = true;
-			} else {
-				throw err;
-			}
-		}
-
-		if (shouldRecreate) {
-			try {
-				fs.rmSync(symlinkPath, { recursive: true, force: true });
-				fs.symlinkSync(targetPath, symlinkPath, 'dir');
-			} catch (symlinkError: unknown) {
-				if ((symlinkError as NodeJS.ErrnoException).code !== 'EEXIST') {
-					throw symlinkError;
-				}
+			fs.symlinkSync(path.dirname(this.denoConfigPath), path.dirname(this.denoRuntimePath), 'dir');
+		} catch (reason: unknown) {
+			if ((reason as NodeJS.ErrnoException).code !== 'EEXIST') {
+				throw reason;
 			}
 		}
 

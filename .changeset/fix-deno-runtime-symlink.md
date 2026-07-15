@@ -1,5 +1,5 @@
 ---
-"@rocket.chat/apps": patch
+'@rocket.chat/apps': patch
 ---
 
-Fix: Recreate broken or stale temporary deno-runtime symlinks on server startup.
+Fixes an issue that would cause apps to fail with 'Module not found' errors in some cases
