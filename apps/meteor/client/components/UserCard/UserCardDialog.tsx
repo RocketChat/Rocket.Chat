@@ -15,7 +15,7 @@ const UserCardDialog = (props: UserCardDialogProps) => {
 			ref={ref}
 			minHeight='x214'
 			rcx-user-card
-			bg='surface'
+			backgroundColor='surface'
 			elevation='2'
 			p={24}
 			display='flex'

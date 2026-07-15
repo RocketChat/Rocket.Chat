@@ -45,7 +45,12 @@ const OutboundMessageModal = ({ defaultValues, onClose }: OutboundMessageModalPr
 	});
 
 	return (
-		<ModalBackdrop bg='transparent' onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onKeyDown={handleKeyDown}>
+		<ModalBackdrop
+			backgroundColor='transparent'
+			onClick={(e) => e.stopPropagation()}
+			onMouseDown={(e) => e.stopPropagation()}
+			onKeyDown={handleKeyDown}
+		>
 			<Modal aria-labelledby={modalId} display={isClosing ? 'none' : undefined}>
 				<ModalHeader>
 					<ModalTitle id={modalId}>{t('Outbound_message')}</ModalTitle>

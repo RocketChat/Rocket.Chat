@@ -20,7 +20,7 @@ const Preview = () => {
 		<Box
 			display='flex'
 			flexGrow={1}
-			bg='#fff'
+			backgroundColor='#fff'
 			zIndex={3}
 			height='100%'
 			flexDirection='column'

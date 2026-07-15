@@ -19,7 +19,7 @@ const ActionStrip = ({ children, leftSlot, rightSlot }: ActionStripProps) => {
 			w='full'
 			alignItems='center'
 			height={ACTION_STRIP_TOTAL_HEIGHT}
-			bg='surface-light'
+			backgroundColor='surface-light'
 			borderBlock='1px solid'
 			borderColor='stroke-extra-light'
 			paddingInline={20}

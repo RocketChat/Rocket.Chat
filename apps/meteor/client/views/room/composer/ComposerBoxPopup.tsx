@@ -82,7 +82,7 @@ function ComposerBoxPopup<
 		<Box position='relative'>
 			<Tile ref={composerBoxPopupRef} padding={0} role='menu' mbe={8} overflow='hidden' aria-labelledby={id} name='ComposerBoxPopup'>
 				{title && (
-					<Box bg='tint' pi={16} pb={8} id={id}>
+					<Box backgroundColor='tint' pi={16} pb={8} id={id}>
 						{title}
 					</Box>
 				)}

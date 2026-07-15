@@ -45,7 +45,7 @@ const ScreenshotCarousel = ({
 
 	return (
 		<>
-			<Box position='fixed' w='100%' h='100vh' bg='font-pure-black' opacity='0.7' marginBlock='-0.75px' zIndex='2' />
+			<Box position='fixed' w='100%' h='100vh' backgroundColor='font-pure-black' opacity='0.7' marginBlock='-0.75px' zIndex='2' />
 
 			{!isFirstSlide && (
 				<IconButton

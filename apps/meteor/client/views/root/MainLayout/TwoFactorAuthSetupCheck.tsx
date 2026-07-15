@@ -17,7 +17,7 @@ const TwoFactorAuthSetupCheck = ({ children }: TwoFactorAuthSetupCheckProps) => 
 
 	if (require2faSetup) {
 		return (
-			<Box bg='surface-light' id='rocket-chat' className={embeddedLayout ? 'embedded-view' : undefined}>
+			<Box backgroundColor='surface-light' id='rocket-chat' className={embeddedLayout ? 'embedded-view' : undefined}>
 				<MainContent>
 					<AccountSecurityPage />
 				</MainContent>

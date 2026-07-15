@@ -144,7 +144,7 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 						withRichContent
 						mbe={8}
 						width='100%'
-						bg={isDragOver ? 'tint' : undefined}
+						backgroundColor={isDragOver ? 'tint' : undefined}
 						borderStyle={isDragOver ? 'dashed' : 'solid'}
 						borderColor={isDragOver ? 'stroke-highlight' : 'stroke-light'}
 						style={{ fontFamily: 'monospace' }}

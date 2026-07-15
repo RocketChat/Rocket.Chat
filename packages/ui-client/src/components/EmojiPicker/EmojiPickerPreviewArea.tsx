@@ -5,7 +5,7 @@ const EmojiPickerPreviewArea = (props: Omit<AllHTMLAttributes<HTMLDivElement>, '
 	<Box
 		{...props}
 		p={12}
-		bg='tint'
+		backgroundColor='tint'
 		color='secondary-info'
 		display='flex'
 		alignItems='center'

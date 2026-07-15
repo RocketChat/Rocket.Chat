@@ -37,7 +37,7 @@ const WorkspacePage = ({
 	const warningMultipleInstances = !data?.isEnterprise && !statistics?.msEnabled && statistics?.instanceCount > 1;
 
 	return (
-		<Page bg='tint'>
+		<Page background='tint'>
 			<PageHeader title={t('Workspace')}>
 				{canViewStatistics && (
 					<ButtonGroup>

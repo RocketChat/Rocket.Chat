@@ -13,7 +13,7 @@ export default {
 	},
 	decorators: [
 		(fn) => (
-			<Box maxWidth='x300' bg='dark' borderRadius='x4'>
+			<Box maxWidth='x300' backgroundColor='dark' borderRadius='x4'>
 				{fn()}
 			</Box>
 		),

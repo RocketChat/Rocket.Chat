@@ -107,7 +107,7 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 		<Box position='relative'>
 			<Tile padding={0} role='menu' mbe={8} overflow='hidden' aria-labelledby={id}>
 				{title && (
-					<Box bg='tint' pi={16} pb={8} id={id}>
+					<Box backgroundColor='tint' pi={16} pb={8} id={id}>
 						{title}
 					</Box>
 				)}
@@ -126,7 +126,7 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 									className={['popup-item', item === focused && 'selected'].filter(Boolean).join(' ')}
 									id={`popup-item-${item._id}`}
 									key={item._id}
-									bg={item === focused ? 'selected' : undefined}
+									backgroundColor={item === focused ? 'selected' : undefined}
 									borderColor={item === focused ? 'highlight' : 'transparent'}
 									tabIndex={item === focused ? 0 : -1}
 									aria-selected={item === focused}

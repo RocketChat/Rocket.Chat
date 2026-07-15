@@ -59,7 +59,7 @@ const EditMenu = ({
 			</Button>
 			{isOpen && (
 				<Box position='absolute'>
-					<Box elevation='1' pb='10px' bg='white'>
+					<Box elevation='1' pb='10px' backgroundColor='white'>
 						<Box mi='10px'>
 							<EditableLabel value={name} onChange={onChange} onBlur={onBlur} {...labelProps} />
 							<Box withTruncatedText mbs='2px' fontScale='p2'>

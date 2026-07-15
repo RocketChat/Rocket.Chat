@@ -17,7 +17,7 @@ const UIKitWrapper = ({ id, data }: UIKitWrapperProps) => {
 	if (!screens[data]) return null;
 	const { blocks, surface } = screens[data].payload;
 	return (
-		<Box padding='10px' border='var(--default-border)' bg='white' borderRadius='10px'>
+		<Box padding='10px' border='var(--default-border)' backgroundColor='white' borderRadius='10px'>
 			<Handle type='target' className='react-flow-targetHandle' position={Position.Left} id={`${id}`} />
 			<SurfaceRender type={surface}>
 				{blocks.map((block, index) => (

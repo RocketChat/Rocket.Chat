@@ -21,7 +21,7 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 			ref={ref}
 			onClick={onClick}
 			alignItems='center'
-			bg={selectedCategoriesCount ? colorTokens.b500 : 'light'}
+			backgroundColor={selectedCategoriesCount ? colorTokens.b500 : 'light'}
 			borderColor={selectedCategoriesCount ? 'none' : 'light'}
 			borderRadius='x4'
 			borderWidth={selectedCategoriesCount ? 'none' : 'x1'}
@@ -41,7 +41,7 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 				<Box
 					is='span'
 					alignItems='center'
-					bg='light'
+					backgroundColor='light'
 					borderRadius='x32'
 					color='info'
 					display='flex'

@@ -10,7 +10,7 @@ export type MessageNotificationProps = {
 
 const MessageNotification = ({ label, bg }: MessageNotificationProps) => {
 	const { t } = useTranslation();
-	return <Box width='x8' aria-label={t(label)} borderRadius='full' height='x8' bg={bg} />;
+	return <Box width='x8' aria-label={t(label)} borderRadius='full' height='x8' backgroundColor={bg} />;
 };
 
 export default MessageNotification;

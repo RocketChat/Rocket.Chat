@@ -104,7 +104,7 @@ const SubscriptionPage = () => {
 	}, [handleSyncLicenseUpdate, router, subscriptionSuccess, syncLicenseUpdate.isIdle]);
 
 	return (
-		<Page bg='tint'>
+		<Page background='tint'>
 			<PageHeaderNoShadow title={t('Subscription')}>
 				<ButtonGroup>
 					{canViewRegistrationStatus && (
