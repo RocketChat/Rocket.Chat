@@ -208,8 +208,8 @@ export const notifyOnIntegrationChangedByChannels = async <T extends IIntegratio
 	}
 };
 
-export const notifyOnEmailInboxChanged = async <T extends IEmailInbox>(
-	data: Pick<T, '_id'> | T, // TODO: improve typing
+export const notifyOnEmailInboxChanged = async (
+	data: Pick<IEmailInbox, '_id'> & Partial<IEmailInbox>,
 	clientAction: ClientAction = 'updated',
 ): Promise<void> => {
 	void api.broadcast('watch.emailInbox', { clientAction, id: data._id, data });
