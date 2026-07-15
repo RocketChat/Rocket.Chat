@@ -3,9 +3,9 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Imports } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { Importers } from '../../../app/importer/server';
 import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { Importers } from '../../lib/import';
 
 export const executeGetImportProgress = async (): Promise<IImportProgress> => {
 	const operation = await Imports.findLastImport();

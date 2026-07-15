@@ -6,12 +6,12 @@ import { WebApp } from 'meteor/webapp';
 
 import { APIClass } from './ApiClass';
 import { type APIActionHandler, RocketChatAPIRouter } from './router';
+import { metrics } from '../lib/metrics';
 import { cors } from './v1/middlewares/cors';
 import { loggerMiddleware } from './v1/middlewares/logger';
 import { metricsMiddleware } from './v1/middlewares/metrics';
 import { remoteAddressMiddleware } from './v1/middlewares/remoteAddressMiddleware';
 import { tracerSpanMiddleware } from './v1/middlewares/tracer';
-import { metrics } from '../../app/metrics/server';
 import { settings } from '../../app/settings/server';
 
 const logger = new Logger('API');

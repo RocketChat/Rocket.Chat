@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { replaceVariables } from '../../../../app/mailer/server/replaceVariables';
+import { replaceVariables } from '../../../../server/lib/notifications/email/replaceVariables';
 
 describe('Mailer-API', () => {
 	describe('replaceVariables', () => {

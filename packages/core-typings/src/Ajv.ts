@@ -16,6 +16,7 @@ import type { IMessage } from './IMessage';
 import type { IModerationAudit, IModerationReport } from './IModerationReport';
 import type { IOAuthApps } from './IOAuthApps';
 import type { IPermission } from './IPermission';
+import type { IReadReceiptWithUser } from './IReadReceipt';
 import type { IRole } from './IRole';
 import type { IRoom, IDirectoryChannelResult, IRoomAdmin } from './IRoom';
 import type { ISubscription } from './ISubscription';
@@ -58,6 +59,7 @@ export const schemas = typia.json.schemas<
 			| IIntegration
 			| IIntegrationHistory
 			| IMeApiUser
+			| IReadReceiptWithUser
 		),
 		CallHistoryItem,
 		ICustomUserStatus,

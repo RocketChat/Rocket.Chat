@@ -10,10 +10,10 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { canAccessRoomAsync } from '../../../app/authorization/server';
-import { getSupportedLanguages } from '../../../app/autotranslate/server/functions/getSupportedLanguages';
-import { saveAutoTranslateSettings } from '../../../app/autotranslate/server/functions/saveSettings';
-import { translateMessage } from '../../../app/autotranslate/server/functions/translateMessage';
 import { settings } from '../../../app/settings/server';
+import { getSupportedLanguages } from '../../lib/autotranslate/functions/getSupportedLanguages';
+import { saveAutoTranslateSettings } from '../../lib/autotranslate/functions/saveSettings';
+import { translateMessage } from '../../lib/autotranslate/functions/translateMessage';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 

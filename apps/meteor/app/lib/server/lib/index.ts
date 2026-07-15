@@ -6,9 +6,9 @@
 	library files.
 */
 import './afterUserActions';
-import './notifyUsersOnMessage';
+import '../../../../server/hooks/messages/notifyUsersOnMessage';
 
-export { sendNotification } from './sendNotificationsOnMessage';
+export { sendNotification } from '../../../../server/hooks/messages/sendNotificationsOnMessage';
 export { passwordPolicy } from './passwordPolicy';
 export { validateEmailDomain } from './validateEmailDomain';
 export { RateLimiterClass as RateLimiter } from './RateLimiter';

@@ -5,7 +5,6 @@ import type { ClientSession } from 'mongodb';
 
 import { setRealName } from './setRealName';
 import { _setUsername } from './setUsername';
-import { FileUpload } from '../../../app/file-upload/server';
 import {
 	notifyOnRoomChangedByUsernamesOrUids,
 	notifyOnSubscriptionChangedByUserId,
@@ -13,6 +12,7 @@ import {
 } from '../../../app/lib/server/lib/notifyListener';
 import { onceTransactionCommitedSuccessfully } from '../../database/utils';
 import { SystemLogger } from '../logger/system';
+import { FileUpload } from '../media/file-upload';
 import { updateGroupDMsName } from '../rooms/updateGroupDMsName';
 import { validateName } from '../shared/validateName';
 
