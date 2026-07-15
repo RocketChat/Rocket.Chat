@@ -360,6 +360,7 @@ API.v1
 		'users.create',
 		{
 			authRequired: true,
+			twoFactorRequired: true,
 			body: isUserCreateParamsPOST,
 			response: {
 				200: userObjectResponse,
@@ -982,6 +983,7 @@ const usersEndpoints = API.v1
 		'users.createToken',
 		{
 			authRequired: true,
+			twoFactorRequired: true,
 			body: ajv.compile<{ userId: string; secret: string }>({
 				type: 'object',
 				properties: {
