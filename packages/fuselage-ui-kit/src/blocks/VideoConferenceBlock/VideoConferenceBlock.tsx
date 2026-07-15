@@ -36,7 +36,7 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 	const displayAvatars = useUserPreference<boolean>('displayAvatars');
 	const showRealName = useSetting('UI_Use_Real_Name', false);
 
-	const { action, viewId = undefined, rid } = useContext(UiKitContext);
+	const { action, viewId = undefined, rid, videoConfJoinDisabled = false } = useContext(UiKitContext);
 
 	if (surfaceType !== 'message') {
 		throw new Error('VideoConferenceBlock cannot be rendered outside message');
@@ -132,7 +132,7 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 
 	const actions = (
 		<VideoConfMessageActions>
-			{data.discussionRid && <VideoConfMessageAction icon='discussion' title={t('Join_discussion')} onClick={openDiscussion} />}
+			{data.discussionRid && <VideoConfMessageAction primary icon='discussion' title={t('Join_discussion')} onClick={openDiscussion} />}
 			<VideoConfMessageAction icon='info' onClick={openCallInfo} />
 		</VideoConfMessageActions>
 	);
@@ -150,7 +150,9 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 				<VideoConfMessageFooter>
 					{data.type === 'direct' && (
 						<>
-							<VideoConfMessageButton onClick={callAgainHandler}>{isUserCaller ? t('Call_again') : t('Call_back')}</VideoConfMessageButton>
+							<VideoConfMessageButton disabled={videoConfJoinDisabled} onClick={callAgainHandler}>
+								{isUserCaller ? t('Call_again') : t('Call_back')}
+							</VideoConfMessageButton>
 							{[VideoConferenceStatus.EXPIRED, VideoConferenceStatus.DECLINED].includes(data.status) && (
 								<VideoConfMessageFooterText>{t('Call_was_not_answered')}</VideoConfMessageFooterText>
 							)}
@@ -199,7 +201,7 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 				{actions}
 			</VideoConfMessageRow>
 			<VideoConfMessageFooter>
-				<VideoConfMessageButton primary onClick={joinHandler}>
+				<VideoConfMessageButton primary disabled={videoConfJoinDisabled} onClick={joinHandler}>
 					{t('Join')}
 				</VideoConfMessageButton>
 				{Boolean(data.users.length) && (

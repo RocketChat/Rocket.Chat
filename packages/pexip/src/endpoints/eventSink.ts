@@ -28,8 +28,8 @@ export class EventSinkEndpoint extends PexipEndpoint {
 	protected async processParticipantConnected(data: ParticipantStatusEventData): Promise<void> {
 		logger.debug({ msg: 'Pexip Participant Connected', data });
 
-		const { destination_alias: conferenceUri, source_alias: participantUri, protocol } = data;
-		if (protocol !== 'SIP' || !conferenceUri || !participantUri) {
+		const { destination_alias: conferenceUri, source_alias: participantUri, protocol, call_direction: direction } = data;
+		if (protocol !== 'SIP' || !conferenceUri || !participantUri || direction !== 'in') {
 			return;
 		}
 
