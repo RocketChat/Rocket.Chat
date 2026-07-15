@@ -89,7 +89,7 @@ export class AppUploadsConverter implements IAppUploadsConverter {
 
 		const { id: userId } = upload.user || {};
 		const { token: visitorToken } = upload.visitor || {};
-		const { id: rid } = upload.room;
+		const { id: rid } = upload.room || {};
 
 		const newUpload = {
 			_id: upload.id,

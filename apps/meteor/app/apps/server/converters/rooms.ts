@@ -161,7 +161,7 @@ export class AppRoomsConverter implements IAppRoomsConverter {
 			return;
 		}
 
-		const { lastMessageTs, phone } = visitorChannelInfo;
+		const { lastMessageTs, phone } = visitorChannelInfo || {};
 
 		return {
 			_id: visitor._id,
