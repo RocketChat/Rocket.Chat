@@ -115,8 +115,6 @@ type GatewayNotification = {
 	query?: {
 		userId: any;
 	};
-	token?: IPushToken['token'];
-	tokens?: IPushToken['token'][];
 	payload?: Record<string, any>;
 	delayUntil?: Date;
 	createdAt: Date;
@@ -176,7 +174,7 @@ class PushClass {
 	}
 
 	private removeToken(token: string): void {
-		void PushToken.removeOrUnsetByTokenString(token).catch((err) => {
+		void PushToken.removeByTokenString(token).catch((err) => {
 			logger.error({ msg: 'Failed to remove push token', err });
 		});
 	}
@@ -195,18 +193,16 @@ class PushClass {
 		countApn: string[],
 		countGcm: string[],
 	): Promise<void> {
-		logger.debug({ msg: 'send to token', token: app.token });
+		logger.debug({ msg: 'send to token', tokenType: app.tokenType });
 
-		if ('apn' in app.token && app.token.apn) {
-			const userToken = notification.useVoipToken ? app.voipToken : app.token.apn;
-			const topic = notification.useVoipToken ? `${app.appName}.voip` : app.appName;
+		if ((app.tokenType === 'voip') !== Boolean(notification.useVoipToken)) {
+			return;
+		}
 
-			// Send to APN
-			if (this.options.apn && userToken) {
-				countApn.push(app._id);
-				sendAPN({ userToken, notification: { topic, ...notification }, _removeToken: this.removeToken });
+		if (app.tokenType === 'gcm') {
+			if (!app.tokenValue) {
+				return;
 			}
-		} else if ('gcm' in app.token && app.token.gcm) {
 			countGcm.push(app._id);
 
 			// override this.options.gcm.apiKey with the oauth2 token
@@ -221,14 +217,25 @@ class PushClass {
 			};
 
 			sendFCM({
-				userTokens: app.token.gcm,
+				userTokens: app.tokenValue,
 				notification,
 				_removeToken: this.removeToken,
 				options: sendGCMOptions as RequiredField<PushOptions, 'gcm'>,
 			});
-		} else {
-			throw new Error('send got a faulty query');
+			return;
 		}
+
+		if (app.tokenType === 'apn' || app.tokenType === 'voip') {
+			const topic = app.tokenType === 'voip' ? `${app.appName}.voip` : app.appName;
+
+			if (this.options.apn && app.tokenValue) {
+				countApn.push(app._id);
+				sendAPN({ userToken: app.tokenValue, notification: { topic, ...notification }, _removeToken: this.removeToken });
+			}
+			return;
+		}
+
+		throw new Error('send got a faulty query');
 	}
 
 	private async getNativeNotificationAuthorizationCredentials(): Promise<{ token: string; projectId: string }> {
@@ -345,22 +352,27 @@ class PushClass {
 			maxRetries: notification.useVoipToken ? 0 : PUSH_GATEWAY_MAX_RETRIES,
 		};
 
+		if ((app.tokenType === 'voip') !== Boolean(notification.useVoipToken)) {
+			return;
+		}
+
 		for (const gateway of this.options.gateways) {
-			logger.debug({ msg: 'send to token', token: app.token });
+			logger.debug({ msg: 'send to token', tokenType: app.tokenType });
 
-			if ('apn' in app.token && app.token.apn) {
-				const token = notification.useVoipToken ? app.voipToken : app.token.apn;
-				const topic = notification.useVoipToken ? `${app.appName}.voip` : app.appName;
+			if (app.tokenType === 'apn' || app.tokenType === 'voip') {
+				const topic = app.tokenType === 'voip' ? `${app.appName}.voip` : app.appName;
 
-				if (token) {
+				if (app.tokenValue) {
 					countApn.push(app._id);
-					return this.sendGatewayPush(gateway, 'apn', token, { topic, ...gatewayNotification }, retryOptions);
+					return this.sendGatewayPush(gateway, 'apn', app.tokenValue, { topic, ...gatewayNotification }, retryOptions);
 				}
 			}
 
-			if ('gcm' in app.token && app.token.gcm) {
-				countGcm.push(app._id);
-				return this.sendGatewayPush(gateway, 'gcm', app.token.gcm, gatewayNotification, retryOptions);
+			if (app.tokenType === 'gcm') {
+				if (app.tokenValue) {
+					countGcm.push(app._id);
+					return this.sendGatewayPush(gateway, 'gcm', app.tokenValue, gatewayNotification, retryOptions);
+				}
 			}
 		}
 	}
@@ -395,7 +407,7 @@ class PushClass {
 			: PushToken.findAllTokensByUserId(notification.userId);
 
 		for await (const app of appTokens) {
-			logger.debug({ msg: 'send to token', token: app.token });
+			logger.debug({ msg: 'send to token', tokenType: app.tokenType });
 
 			if (this.shouldUseGateway()) {
 				await this.sendNotificationGateway(app, notification, countApn, countGcm);

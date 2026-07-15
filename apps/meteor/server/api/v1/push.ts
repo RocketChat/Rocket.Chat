@@ -1,6 +1,6 @@
 import { Push } from '@rocket.chat/core-services';
 import { pushTokenTypes } from '@rocket.chat/core-typings';
-import type { IMessage, IPushNotificationConfig, IPushToken, IPushTokenTypes } from '@rocket.chat/core-typings';
+import type { IMessage, IPushNotificationConfig, IPushToken, IPushTokenTypes, PushTokenTarget } from '@rocket.chat/core-typings';
 import { Messages, PushToken, Users, Rooms, Settings } from '@rocket.chat/models';
 import {
 	ajv,
@@ -78,23 +78,23 @@ const PushTokenDELETESchema: JSONSchemaType<PushTokenDELETE> = {
 
 export const isPushTokenDELETEProps = ajv.compile<PushTokenDELETE>(PushTokenDELETESchema);
 
-type PushTokenResult = Pick<IPushToken, '_id' | 'token' | 'appName' | 'userId' | 'enabled' | 'createdAt' | '_updatedAt' | 'voipToken'>;
+type PushTokenResult = Pick<IPushToken, '_id' | 'tokenType' | 'tokenValue' | 'appName' | 'userId' | 'enabled' | 'createdAt' | '_updatedAt'>;
 
 /**
  * Pick only the attributes we actually want to return on the endpoint, ensuring nothing from older schemas get mixed in
  */
 function cleanTokenResult(result: Omit<IPushToken, 'authToken'>): PushTokenResult {
-	const { _id, token, appName, userId, enabled, createdAt, _updatedAt, voipToken } = result;
+	const { _id, tokenType, tokenValue, appName, userId, enabled, createdAt, _updatedAt } = result;
 
 	return {
 		_id,
-		token,
+		tokenType,
+		tokenValue,
 		appName,
 		userId,
 		enabled,
 		createdAt,
 		_updatedAt,
-		voipToken,
 	};
 }
 
@@ -118,18 +118,12 @@ const pushTokenEndpoints = API.v1
 								_id: {
 									type: 'string',
 								},
-								token: {
-									type: 'object',
-									properties: {
-										apn: {
-											type: 'string',
-										},
-										gcm: {
-											type: 'string',
-										},
-									},
-									required: [],
-									additionalProperties: false,
+								tokenType: {
+									type: 'string',
+									enum: [...pushTokenTypes, 'voip'],
+								},
+								tokenValue: {
+									type: 'string',
 								},
 								appName: {
 									type: 'string',
@@ -147,10 +141,6 @@ const pushTokenEndpoints = API.v1
 								_updatedAt: {
 									type: 'string',
 								},
-								voipToken: {
-									type: 'string',
-									nullable: true,
-								},
 							},
 							additionalProperties: false,
 						},
@@ -167,10 +157,6 @@ const pushTokenEndpoints = API.v1
 		async function action() {
 			const { id, type, value, appName, voipToken } = this.bodyParams;
 
-			if (voipToken && !id) {
-				return API.v1.failure('voip-tokens-must-specify-device-id');
-			}
-
 			const rawToken = this.request.headers.get('x-auth-token');
 			if (!rawToken) {
 				throw new Meteor.Error('error-authToken-param-not-valid', 'The required "authToken" header param is missing or invalid.');
@@ -179,7 +165,7 @@ const pushTokenEndpoints = API.v1
 
 			const result = await Push.registerPushToken({
 				...(id && { _id: id }),
-				token: { [type]: value } as IPushToken['token'],
+				token: { [type]: value } as PushTokenTarget,
 				authToken,
 				appName,
 				userId: this.userId,

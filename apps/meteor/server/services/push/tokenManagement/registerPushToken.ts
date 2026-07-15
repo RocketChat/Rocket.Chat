@@ -5,33 +5,19 @@ import { findDocumentToUpdate } from './findDocumentToUpdate';
 import { logger } from '../logger';
 
 export type PushTokenData = Optional<
-	Pick<IPushToken, '_id' | 'token' | 'authToken' | 'appName' | 'userId' | 'metadata' | 'voipToken'>,
+	Pick<IPushToken, '_id' | 'tokenType' | 'tokenValue' | 'authToken' | 'appName' | 'userId' | 'metadata'>,
 	'_id' | 'metadata'
 >;
-
-function canModifyTokenDocument(doc: IPushToken, data: Partial<IPushToken>): boolean {
-	// If there's no voip on either side of the operation, any doc can be updated
-	if (!doc.voipToken && !data.voipToken) {
-		return true;
-	}
-
-	// VoIP tokens MUST be referenced by id, so if there's no id on the data, do not let this doc be changed
-	if (!data._id || data._id !== doc._id) {
-		return false;
-	}
-
-	return true;
-}
 
 async function insertToken(data: PushTokenData): Promise<IPushToken['_id']> {
 	const insertResult = await PushToken.insertToken({
 		...(data._id && { _id: data._id }),
-		token: data.token,
+		tokenType: data.tokenType,
+		tokenValue: data.tokenValue,
 		authToken: data.authToken,
 		appName: data.appName,
 		userId: data.userId,
 		...(data.metadata && { metadata: data.metadata }),
-		...(data.voipToken && data._id && { voipToken: data.voipToken }),
 	});
 
 	const { authToken: _, ...dataWithNoAuthToken } = data;
@@ -42,11 +28,11 @@ async function insertToken(data: PushTokenData): Promise<IPushToken['_id']> {
 
 async function updateToken(doc: IPushToken, data: PushTokenData): Promise<IPushToken['_id']> {
 	const updateResult = await PushToken.refreshTokenById(doc._id, {
-		token: data.token,
+		tokenType: data.tokenType,
+		tokenValue: data.tokenValue,
 		authToken: data.authToken,
 		appName: data.appName,
 		userId: data.userId,
-		...(data.voipToken && { voipToken: data.voipToken }),
 	});
 
 	if (updateResult.modifiedCount) {
@@ -59,10 +45,19 @@ async function updateToken(doc: IPushToken, data: PushTokenData): Promise<IPushT
 
 export async function registerPushToken(data: PushTokenData): Promise<IPushToken['_id']> {
 	const doc = await findDocumentToUpdate(data);
+	const _id = doc ? await updateToken(doc, data) : await insertToken(data);
 
-	if (!doc || !canModifyTokenDocument(doc, data)) {
-		return insertToken(data);
+	// Scope dedup by tokenType so a coexisting voip doc (same authToken) survives.
+	const removeResult = await PushToken.removeDuplicateTokens({
+		_id,
+		tokenType: data.tokenType,
+		tokenValue: data.tokenValue,
+		appName: data.appName,
+		authToken: data.authToken,
+	});
+	if (removeResult.deletedCount) {
+		logger.debug({ msg: 'Removed existing app items', tokenType: data.tokenType, removed: removeResult.deletedCount });
 	}
 
-	return updateToken(doc, data);
+	return _id;
 }

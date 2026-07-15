@@ -1,6 +1,6 @@
 import type { IPushService } from '@rocket.chat/core-services';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
-import type { IPushToken, Optional } from '@rocket.chat/core-typings';
+import type { IPushToken, RegisterPushTokenInput } from '@rocket.chat/core-typings';
 import { PushToken } from '@rocket.chat/models';
 
 import { logger } from './logger';
@@ -31,19 +31,15 @@ export class PushService extends ServiceClassInternal implements IPushService {
 		});
 	}
 
-	async registerPushToken(
-		data: Optional<Pick<IPushToken, '_id' | 'token' | 'authToken' | 'appName' | 'userId' | 'metadata'>, '_id' | 'metadata'>,
-	): Promise<Omit<IPushToken, 'authToken'>> {
-		const tokenId = await registerPushToken(data);
+	async registerPushToken(data: RegisterPushTokenInput): Promise<Omit<IPushToken, 'authToken'>> {
+		const { authToken, appName, userId } = data;
+		const tokenType = 'apn' in data.token ? 'apn' : 'gcm';
+		const tokenValue = 'apn' in data.token ? data.token.apn : data.token.gcm;
 
-		const removeResult = await PushToken.removeDuplicateTokens({
-			_id: tokenId,
-			token: data.token,
-			appName: data.appName,
-			authToken: data.authToken,
-		});
-		if (removeResult.deletedCount) {
-			logger.debug({ msg: 'Removed existing app items', removed: removeResult.deletedCount });
+		const tokenId = await registerPushToken({ _id: data._id, tokenType, tokenValue, authToken, appName, userId, metadata: data.metadata });
+
+		if (data.voipToken) {
+			await registerPushToken({ tokenType: 'voip', tokenValue: data.voipToken, authToken, appName, userId });
 		}
 
 		const updatedDoc = await PushToken.findOneById<Omit<IPushToken, 'authToken'>>(tokenId, { projection: { authToken: 0 } });

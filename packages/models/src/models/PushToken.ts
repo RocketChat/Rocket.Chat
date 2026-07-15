@@ -14,46 +14,32 @@ export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel
 	}
 
 	override modelIndexes(): IndexDescription[] {
-		return [{ key: { userId: 1, authToken: 1 } }, { key: { appName: 1, token: 1 } }];
+		return [
+			{ key: { userId: 1, authToken: 1 } },
+			{ key: { tokenValue: 1 } },
+			{ key: { appName: 1, tokenValue: 1 } },
+			{ key: { tokenType: 1 } },
+		];
 	}
 
 	countApnTokens() {
-		const query = {
-			'token.apn': { $exists: true },
-		};
-
-		return this.countDocuments(query);
+		return this.countDocuments({ tokenType: 'apn' });
 	}
 
 	countGcmTokens() {
-		const query = {
-			'token.gcm': { $exists: true },
-		};
-
-		return this.countDocuments(query);
+		return this.countDocuments({ tokenType: 'gcm' });
 	}
 
 	countTokensByUserId(userId: IUser['_id']) {
-		const query = {
-			userId,
-			$or: [{ 'token.apn': { $exists: true } }, { 'token.gcm': { $exists: true } }],
-		};
-
-		return this.countDocuments(query);
+		return this.countDocuments({ userId, tokenType: { $in: ['apn', 'gcm'] } });
 	}
 
 	async findFirstByUserId<T extends IPushToken>(userId: IUser['_id'], options: FindOptions<IPushToken> = {}): Promise<T | null> {
-		return this.findOne<T>({ userId }, options);
+		return this.findOne<T>({ userId, tokenType: { $in: ['apn', 'gcm'] } }, options);
 	}
 
 	findAllTokensByUserId<T extends IPushToken>(userId: IUser['_id'], options?: FindOptions<IPushToken>): FindCursor<T> {
-		return this.find<T>(
-			{
-				userId,
-				$or: [{ 'token.apn': { $exists: true } }, { 'token.gcm': { $exists: true } }],
-			},
-			options,
-		);
+		return this.find<T>({ userId }, options);
 	}
 
 	findTokensByUserIdExceptId<T extends IPushToken>(
@@ -61,17 +47,12 @@ export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel
 		idToIgnore: IPushToken['_id'],
 		options?: FindOptions<IPushToken>,
 	): FindCursor<T> {
-		return this.find<T>(
-			{
-				_id: { $ne: idToIgnore },
-				userId,
-				$or: [{ 'token.apn': { $exists: true } }, { 'token.gcm': { $exists: true } }],
-			},
-			options,
-		);
+		return this.find<T>({ _id: { $ne: idToIgnore }, userId }, options);
 	}
 
-	async insertToken(data: AtLeast<IPushToken, 'token' | 'authToken' | 'appName' | 'userId'>): Promise<InsertOneResult<IPushToken>> {
+	async insertToken(
+		data: AtLeast<IPushToken, 'tokenType' | 'tokenValue' | 'authToken' | 'appName' | 'userId'>,
+	): Promise<InsertOneResult<IPushToken>> {
 		return this.insertOne({
 			enabled: true,
 			createdAt: new Date(),
@@ -81,28 +62,24 @@ export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel
 
 	async refreshTokenById(
 		id: IPushToken['_id'],
-		data: Pick<IPushToken, 'token' | 'appName' | 'authToken' | 'userId' | 'voipToken'>,
+		data: Pick<IPushToken, 'tokenType' | 'tokenValue' | 'appName' | 'authToken' | 'userId'>,
 	): Promise<UpdateResult<IPushToken>> {
 		return this.updateOne(
 			{ _id: id },
 			{
 				$set: {
-					token: data.token,
+					tokenType: data.tokenType,
+					tokenValue: data.tokenValue,
 					authToken: data.authToken,
 					appName: data.appName,
 					userId: data.userId,
-					...(data.voipToken && { voipToken: data.voipToken }),
 				},
-				...(!data.voipToken && { $unset: { voipToken: 1 } }),
 			},
 		);
 	}
 
-	findOneByTokenAndAppName(token: IPushToken['token'], appName: IPushToken['appName']): Promise<IPushToken | null> {
-		return this.findOne({
-			token,
-			appName,
-		});
+	findOneByTokenAndAppName(tokenValue: IPushToken['tokenValue'], appName: IPushToken['appName']): Promise<IPushToken | null> {
+		return this.findOne({ tokenValue, appName });
 	}
 
 	removeByUserIdExceptTokens(userId: string, tokens: IPushToken['authToken'][]): Promise<DeleteResult> {
@@ -112,17 +89,12 @@ export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel
 		});
 	}
 
-	removeDuplicateTokens(tokenData: Pick<IPushToken, '_id' | 'token' | 'appName' | 'authToken'>): Promise<DeleteResult> {
+	removeDuplicateTokens(tokenData: Pick<IPushToken, '_id' | 'tokenType' | 'tokenValue' | 'appName' | 'authToken'>): Promise<DeleteResult> {
 		return this.deleteMany({
 			_id: { $ne: tokenData._id },
 			$or: [
-				{
-					token: tokenData.token,
-					appName: tokenData.appName,
-				},
-				{
-					authToken: tokenData.authToken,
-				},
+				{ tokenValue: tokenData.tokenValue, appName: tokenData.appName },
+				{ authToken: tokenData.authToken, tokenType: tokenData.tokenType },
 			],
 		});
 	}
@@ -135,42 +107,12 @@ export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel
 
 	removeAllByTokenStringAndUserId(token: string, userId: string): Promise<DeleteResult> {
 		return this.deleteMany({
-			$or: [
-				{
-					'token.apn': token,
-				},
-				{
-					'token.gcm': token,
-				},
-				{
-					voipToken: token,
-				},
-			],
+			tokenValue: token,
 			userId,
 		});
 	}
 
-	async removeOrUnsetByTokenString(token: string): Promise<void> {
-		await this.deleteMany({
-			$or: [
-				{
-					'token.apn': token,
-				},
-				{
-					'token.gcm': token,
-				},
-			],
-		});
-
-		await this.updateMany(
-			{
-				voipToken: token,
-			},
-			{
-				$unset: {
-					voipToken: 1,
-				},
-			},
-		);
+	removeByTokenString(token: string): Promise<DeleteResult> {
+		return this.deleteMany({ tokenValue: token });
 	}
 }

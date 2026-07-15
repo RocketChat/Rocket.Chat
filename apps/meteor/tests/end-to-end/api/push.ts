@@ -21,6 +21,7 @@ describe('[Push]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('result').and.to.be.an('object');
+					expect(res.body.result).to.include({ tokenValue: 'token', tokenType: 'gcm' });
 				});
 		});
 
@@ -37,6 +38,7 @@ describe('[Push]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('result').and.to.be.an('object');
+					expect(res.body.result).to.include({ tokenValue: 'token', tokenType: 'apn' });
 				});
 		});
 
