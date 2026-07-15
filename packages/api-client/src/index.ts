@@ -30,7 +30,7 @@ function buildFormData(data?: Record<string, any> | void, formData = new FormDat
 
 	if (typeof data === 'object' && !(data instanceof File)) {
 		Object.keys(data).forEach((key) => {
-			buildFormData(formData, data[key], parentKey ? `${parentKey}[${key}]` : key);
+			buildFormData(data[key], formData, parentKey ? `${parentKey}[${key}]` : key);
 		});
 	} else {
 		data && parentKey && formData.append(parentKey, data);
@@ -197,12 +197,17 @@ export class RestClient implements RestClientInterface {
 
 			headers: {
 				Accept: 'application/json',
-				...(!isFormData && { 'Content-Type': 'application/json' }),
+				...(!isFormData && params !== undefined && { 'Content-Type': 'application/json' }),
 				...headers,
 			},
 
 			...options,
 		});
+
+		if (response.status === 204) {
+			return {} as any;
+		}
+
 		return response.json();
 	}
 
