@@ -24,7 +24,9 @@ import type { IUser, IDirectoryUserResult } from './IUser';
 import type { VideoConference, VideoConferenceInstructions } from './IVideoConference';
 import type { SlashCommand } from './SlashCommands';
 import type { VideoConferenceCapabilities } from './VideoConferenceCapabilities';
+import type { ICloudSyncAnnouncement } from './cloud/CloudSyncAnnouncement';
 import type { IImport } from './import/IImport';
+import type { LicenseInfo } from './license/LicenseInfo';
 import type { IMediaCall } from './mediaCalls/IMediaCall';
 
 export const schemas = typia.json.schemas<
@@ -60,6 +62,8 @@ export const schemas = typia.json.schemas<
 			| IIntegrationHistory
 			| IMeApiUser
 			| IReadReceiptWithUser
+			| LicenseInfo
+			| ICloudSyncAnnouncement
 		),
 		CallHistoryItem,
 		ICustomUserStatus,
