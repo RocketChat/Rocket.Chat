@@ -21,9 +21,6 @@ test.describe.serial('channel-management', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		// The client boot can occasionally get stuck on the loading screen on a busy CI runner,
-		// and only a fresh navigation recovers it, so retry the navigation with a bounded wait
-		// instead of letting a single attempt exhaust the whole test timeout
 		await expect(async () => {
 			await page.goto('/home', { waitUntil: 'domcontentloaded' });
 			await poHomeChannel.waitForHome(15_000);
