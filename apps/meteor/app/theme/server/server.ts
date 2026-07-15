@@ -37,7 +37,8 @@ WebApp.rawConnectHandlers.use((req, res, next) => {
 	}
 
 	res.setHeader('Content-Type', 'text/css; charset=UTF-8');
-	res.setHeader('Content-Length', style.length);
+	res.setHeader('Content-Length', Buffer.byteLength(style, 'utf8'));
 	res.setHeader('ETag', `"${crypto.createHash('sha1').update(style).digest('hex')}"`);
+
 	res.end(style, 'utf-8');
 });
