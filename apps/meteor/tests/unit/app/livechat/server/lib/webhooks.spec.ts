@@ -58,7 +58,7 @@ function buildSubject(options?: {
 	const { sendRequest } = proxyquire.noCallThru().load(MODULE_PATH, {
 		'@rocket.chat/server-fetch': { serverFetch: fetchStub },
 		'./logger': { webhooksLogger: logger },
-		'../../../metrics/server': { metrics },
+		'../../../../server/lib/metrics': { metrics },
 		'../../../settings/server': { settings },
 	});
 

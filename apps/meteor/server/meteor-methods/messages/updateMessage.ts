@@ -5,10 +5,10 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
-import { applyAirGappedRestrictionsValidation } from '../../../app/license/server/airGappedRestrictionsWrapper';
 import { settings } from '../../../app/settings/server';
 import { canSendMessageAsync } from '../../lib/authorization/canSendMessage';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { applyAirGappedRestrictionsValidation } from '../../lib/cloud/license/airGappedRestrictionsWrapper';
 import { updateMessage } from '../../lib/messages/updateMessage';
 
 const allowedEditedFields = ['tshow', 'alias', 'attachments', 'avatar', 'emoji', 'msg', 'customFields', 'content', 'e2eMentions'];

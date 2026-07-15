@@ -4,11 +4,11 @@ import { Integrations, Users } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
-import { validateOutgoingIntegration } from '../../../../app/integrations/server/lib/validateOutgoingIntegration';
-import { isScriptEngineFrozen, validateScriptEngine } from '../../../../app/integrations/server/lib/validateScriptEngine';
 import { methodDeprecationLogger } from '../../../../app/lib/server/lib/deprecationWarningLogger';
 import { notifyOnIntegrationChanged } from '../../../../app/lib/server/lib/notifyListener';
 import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
+import { validateOutgoingIntegration } from '../../../lib/integrations/lib/validateOutgoingIntegration';
+import { isScriptEngineFrozen, validateScriptEngine } from '../../../lib/integrations/lib/validateScriptEngine';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

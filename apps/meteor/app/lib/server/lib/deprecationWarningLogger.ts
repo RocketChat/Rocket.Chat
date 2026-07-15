@@ -2,7 +2,7 @@ import { Logger } from '@rocket.chat/logger';
 import type { PathPattern } from '@rocket.chat/rest-typings';
 import semver from 'semver';
 
-import { metrics } from '../../../metrics/server/lib/metrics';
+import { metrics } from '../../../../server/lib/metrics/lib/metrics';
 
 const deprecationLogger = new Logger('DeprecationWarning');
 

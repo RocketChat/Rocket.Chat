@@ -4,9 +4,9 @@ import { Imports } from '@rocket.chat/models';
 import { isStartImportParamsPOST, type StartImportParamsPOST } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { Importers } from '../../../app/importer/server';
 import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { Importers } from '../../lib/import';
 
 export const executeStartImport = async ({ input }: StartImportParamsPOST, startedByUserId: IUser['_id']) => {
 	const operation = await Imports.findLastImport();

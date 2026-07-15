@@ -11,14 +11,14 @@ import { Uploads, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import sharp from 'sharp';
 
-import { FileUpload } from '../../../app/file-upload/server';
-import { parseFileIntoMessageAttachments, sendFileMessage } from '../../../app/file-upload/server/methods/sendFileMessage';
 import { NOTIFICATION_ATTACHMENT_COLOR } from '../../../lib/constants';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { canDeleteMessageAsync } from '../../lib/authorization/canDeleteMessage';
 import { i18n } from '../../lib/i18n';
+import { FileUpload } from '../../lib/media/file-upload';
 import { updateMessage } from '../../lib/messages/updateMessage';
 import { setUserAvatar } from '../../lib/users/setUserAvatar';
+import { parseFileIntoMessageAttachments, sendFileMessage } from '../../meteor-methods/messages/sendFileMessage';
 import { sendFileLivechatMessage } from '../../meteor-methods/omnichannel/sendFileLivechatMessage';
 import { UploadFS } from '../../ufs';
 
