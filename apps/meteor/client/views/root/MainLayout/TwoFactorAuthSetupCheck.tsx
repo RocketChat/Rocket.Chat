@@ -3,7 +3,6 @@ import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { lazy } from 'react';
 
-import LayoutWithSidebar from './LayoutWithSidebar';
 import MainContent from './MainContent';
 import { useRequire2faSetup } from '../../hooks/useRequire2faSetup';
 
@@ -25,7 +24,7 @@ const TwoFactorAuthSetupCheck = ({ children }: TwoFactorAuthSetupCheckProps) => 
 		);
 	}
 
-	return <LayoutWithSidebar>{children}</LayoutWithSidebar>;
+	return children;
 };
 
 export default TwoFactorAuthSetupCheck;

@@ -37,6 +37,8 @@ export class IncomingSipCall extends BaseSipCall {
 		this.inboundRenegotiations = new Map();
 		this.processedTransfer = false;
 		this.processedEscalation = false;
+
+		this.checkIfCallComesFromEscalatedPexipConference();
 	}
 
 	public static async processInvite(session: SipServerSession, srf: Srf, req: SrfRequest, res: SrfResponse): Promise<IncomingSipCall> {
@@ -331,6 +333,24 @@ export class IncomingSipCall extends BaseSipCall {
 
 		this.cancelPendingInvites(errorCode);
 		this.hangupCall('signaling-error');
+	}
+
+	private checkIfCallComesFromEscalatedPexipConference(): void {
+		const { callingNumber } = this.req;
+		if (!callingNumber) {
+			return;
+		}
+		const header = this.req.has('p-asserted-identity') ? this.req.get('p-asserted-identity') : this.req.get('from');
+		if (!header || !this.session.isPexipIdentity(header)) {
+			return;
+		}
+
+		void this.processEscalatedRemotely(callingNumber).catch((err) => {
+			logger.error({
+				msg: 'Unexpected error checking if new incoming call originates from an escalated conference',
+				err,
+			});
+		});
 	}
 
 	private static async getCalleeFromInvite(req: SrfRequest): Promise<MediaCallContact> {

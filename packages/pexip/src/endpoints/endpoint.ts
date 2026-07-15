@@ -16,6 +16,14 @@ export class PexipEndpoint {
 		return alias.substring(0, alias.indexOf('@')).replace('sip:', '');
 	}
 
+	protected normalizeSipExtension(identification: string): string {
+		if (!identification.startsWith('+')) {
+			return identification;
+		}
+
+		return identification.substring(1, identification.length);
+	}
+
 	protected async getCallByIdentification(identification: string): Promise<VideoConference | null> {
 		if (!identification.match(/\D/g)) {
 			const call = await VideoConferenceModel.findOneByProviderNameAndSipAlias('core.pexip', identification);
