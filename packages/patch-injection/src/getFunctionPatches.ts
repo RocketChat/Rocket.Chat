@@ -1,5 +1,5 @@
-import { calledFunctions, functions } from './data';
-import type { BaseFunction, PatchData } from './definition';
+import { calledFunctions, functions } from './data.js';
+import type { BaseFunction, PatchData } from './definition.js';
 
 export const getFunctionPatches = <T extends BaseFunction>(baseFunction: T): Set<PatchData<T>> => {
 	if (calledFunctions.has(baseFunction)) {

@@ -1,2 +1,2 @@
-export * from './makeFunction';
-export * from './midleware';
+export * from './makeFunction.js';
+export * from './midleware.js';

@@ -1,5 +1,5 @@
-import type { BaseFunction, PatchData, PatchFunction } from './definition';
-import { getFunctionPatches } from './getFunctionPatches';
+import type { BaseFunction, PatchData, PatchFunction } from './definition.js';
+import { getFunctionPatches } from './getFunctionPatches.js';
 
 export const addPatch = <T extends BaseFunction>(baseFunction: T, patch: PatchFunction<T>, condition?: () => boolean) => {
 	const patches = getFunctionPatches(baseFunction);
