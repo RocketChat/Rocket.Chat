@@ -117,7 +117,7 @@ const TeamsChannels = ({
 								{t('Total')}: {total}
 							</Box>
 						</Box>
-						<Box width='full' h='full' role='list' overflow='hidden' flexShrink={1}>
+						<Box width='full' height='full' role='list' overflow='hidden' flexShrink={1}>
 							<VirtualizedScrollbars>
 								<Virtuoso
 									totalCount={total}

@@ -33,7 +33,7 @@ const MultiSelectCustomAnchor = forwardRef<HTMLElement, MultiSelectCustomAnchorP
 			display='flex'
 			justifyContent='space-between'
 			alignItems='center'
-			h='x40'
+			height='x40'
 			className={['rcx-input-box__wrapper', customStyle, ...(Array.isArray(className) ? className : [className])].filter(Boolean)}
 			{...props}
 		>

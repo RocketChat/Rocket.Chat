@@ -16,8 +16,8 @@ const PruneMessagesDateTimeRow = ({ label, field }: PruneMessagesDateTimeRowProp
 			<FieldLabel flexGrow={0}>{label}</FieldLabel>
 			<Box display='flex' mi='neg-x4'>
 				<Margins inline={4}>
-					<InputBox aria-label={`${label} ${t('Date')}`} type='date' flexGrow={1} h='x20' {...register(`${field}.date`)} />
-					<InputBox aria-label={`${label} ${t('Time')}`} type='time' flexGrow={1} h='x20' {...register(`${field}.time`)} />
+					<InputBox aria-label={`${label} ${t('Date')}`} type='date' flexGrow={1} height='x20' {...register(`${field}.date`)} />
+					<InputBox aria-label={`${label} ${t('Time')}`} type='time' flexGrow={1} height='x20' {...register(`${field}.time`)} />
 				</Margins>
 			</Box>
 		</Field>

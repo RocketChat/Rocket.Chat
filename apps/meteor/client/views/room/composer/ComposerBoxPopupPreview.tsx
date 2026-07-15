@@ -116,7 +116,7 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 						{isLoading &&
 							Array(5)
 								.fill(5)
-								.map((_, index) => <Skeleton variant='rect' h='100px' width='120px' m={2} key={index} />)}
+								.map((_, index) => <Skeleton variant='rect' height='100px' width='120px' m={2} key={index} />)}
 
 						{!isLoading &&
 							itemsFlat.map((item) => (

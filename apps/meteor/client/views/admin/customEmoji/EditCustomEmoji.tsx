@@ -175,7 +175,7 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 						{newEmojiPreview && (
 							<Box display='flex' flexDirection='row' mbs='none' justifyContent='center'>
 								<Margins inline={4}>
-									<Box is='img' objectFit='contain' width='x120' h='x120' src={newEmojiPreview} />
+									<Box is='img' objectFit='contain' width='x120' height='x120' src={newEmojiPreview} />
 								</Margins>
 							</Box>
 						)}

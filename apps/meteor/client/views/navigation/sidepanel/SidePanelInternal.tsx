@@ -51,7 +51,7 @@ const SidePanelInternal = ({ title, currentTab, unreadOnly, toggleUnreadOnly, ro
 					<ToggleSwitch id={unreadFieldId} checked={unreadOnly} onChange={toggleUnreadOnly} />
 				</Box>
 			</SidepanelHeader>
-			<Box h='full' ref={ref}>
+			<Box height='full' ref={ref}>
 				{rooms && rooms.length === 0 && <SidePanelNoResults currentTab={currentTab} />}
 				<VirtualizedScrollbars>
 					<Virtuoso

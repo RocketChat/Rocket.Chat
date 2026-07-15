@@ -186,7 +186,7 @@ const RoomMembers = ({
 								</Box>
 							</Box>
 						)}
-						<Box id={membersListId} width='full' h='full' overflow='hidden' flexShrink={1}>
+						<Box id={membersListId} width='full' height='full' overflow='hidden' flexShrink={1}>
 							{members.length <= 0 && <ContextualbarEmptyContent title={t('No_members_found')} />}
 							{members.length > 0 && (
 								<VirtualizedScrollbars>

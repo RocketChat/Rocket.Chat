@@ -64,7 +64,7 @@ const AppRequests = ({ id, isAdminUser }: AppRequestsProps) => {
 	}
 
 	return (
-		<Box h='full' display='flex' flexDirection='column'>
+		<Box height='full' display='flex' flexDirection='column'>
 			<Box width='full' maxWidth='x608' marginInline='auto' pbs={36} flexGrow='1'>
 				{isSuccess && paginatedAppRequests.data?.length ? (
 					paginatedAppRequests.data.map((request) => (

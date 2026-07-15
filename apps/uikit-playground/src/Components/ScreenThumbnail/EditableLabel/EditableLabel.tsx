@@ -17,7 +17,7 @@ const EditableLabel = (props: ComponentProps<typeof Input>) => {
 			position='relative'
 			className='rc-editableLabel'
 			width='100%'
-			h='max-content'
+			height='max-content'
 			display='flex'
 			alignItems='center'
 			onMouseEnter={() => setHover(true)}

@@ -45,7 +45,7 @@ export const AgentsSection = () => {
 					/>
 				</Box>
 
-				<Box display='flex' h='x360' minWidth='50%' flexGrow={1}>
+				<Box display='flex' height='x360' minWidth='50%' flexGrow={1}>
 					<AgentsTable data={data} sortBy={sortBy} sortDirection={sortDirection} setSort={setSort} />
 				</Box>
 			</Box>

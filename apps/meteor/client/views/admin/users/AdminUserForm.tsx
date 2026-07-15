@@ -250,7 +250,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							</FieldError>
 						)}
 						{isLoadingSmtpStatus ? (
-							<Skeleton width='full' h={26} />
+							<Skeleton width='full' height={26} />
 						) : (
 							<>
 								<FieldRow mbs={12}>
@@ -430,7 +430,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 					)}
 					<Field>
 						{isLoadingSmtpStatus ? (
-							<Skeleton width='full' h={26} />
+							<Skeleton width='full' height={26} />
 						) : (
 							<>
 								<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1} mbe={8}>
@@ -531,7 +531,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							<Button
 								fontScale='c2'
 								width='x140'
-								h='x28'
+								height='x28'
 								display='flex'
 								alignItems='center'
 								justifyContent='center'

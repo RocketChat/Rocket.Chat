@@ -158,7 +158,7 @@ const ThreadList = () => {
 					</Callout>
 				)}
 				{isSuccess && (
-					<Box id={threadListId} width='full' h='full' overflow='hidden' flexShrink={1}>
+					<Box id={threadListId} width='full' height='full' overflow='hidden' flexShrink={1}>
 						{items.length === 0 && <ContextualbarEmptyContent title={t('No_Threads')} />}
 						{items.length > 0 && (
 							<VirtualizedScrollbars>

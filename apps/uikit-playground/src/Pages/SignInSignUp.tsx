@@ -33,8 +33,8 @@ const SignInSignUp = ({ route }: SignInSignUpProps) => {
 		<FlexContainer justifyContent='center' alignItems='center'>
 			<Box width='100%' flexGrow={1}>
 				<FlexContainer justifyContent='start' alignItems='center' direction='column'>
-					<Box width='max-content' h='100%'>
-						<Box width='180px' h='40px' mbs='100px'>
+					<Box width='max-content' height='100%'>
+						<Box width='180px' height='40px' mbs='100px'>
 							<RocketChatLogo />
 						</Box>
 						<Label mbs='20px' fontScale='hero'>

@@ -32,7 +32,7 @@ const MediaCallRoomActivity = ({ children }: MediaCallRoomActivityProps) => {
 		setShowChat((prev) => !prev);
 	};
 	return (
-		<Box width='full' h='full' display='flex' flexDirection='column' justifyContent='space-between' ref={ref}>
+		<Box width='full' height='full' display='flex' flexDirection='column' justifyContent='space-between' ref={ref}>
 			<MediaCallViewProvider>
 				<MediaCallRoomSection
 					showChat={showChat}
