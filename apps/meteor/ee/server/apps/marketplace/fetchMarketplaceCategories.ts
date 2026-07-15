@@ -4,6 +4,7 @@ import * as z from 'zod';
 import { getMarketplaceHeaders } from './getMarketplaceHeaders';
 import { MarketplaceAppsError, MarketplaceConnectionError, MarketplaceUnsupportedVersionError } from './marketplaceErrors';
 import { settings } from '../../../../app/settings/server';
+import { CloudOfflineLicenseError } from '../../../../lib/errors/CloudOfflineLicenseError';
 import { getWorkspaceAccessToken } from '../../../../server/lib/cloud';
 import { Apps } from '../orchestrator';
 
@@ -41,6 +42,12 @@ export async function fetchMarketplaceCategories(): Promise<AppCategory[]> {
 			allowList: settings.get<string>('SSRF_Allowlist'),
 		});
 	} catch (error) {
+		// Offline (air-gapped) licenses reject before any request is made; keep the
+		// typed error so the REST layer can report the real reason instead of a
+		// generic connectivity failure.
+		if (error instanceof CloudOfflineLicenseError) {
+			throw error;
+		}
 		throw new MarketplaceConnectionError('Marketplace_Bad_Marketplace_Connection');
 	}
 

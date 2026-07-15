@@ -21,6 +21,12 @@ export async function registerPreIntentWorkspaceWizard(): Promise<boolean> {
 
 	const regInfo = await buildWorkspaceRegistrationData(email);
 
+	// Re-validated at dispatch time: an offline license applied while the
+	// registration data was being built must still suppress the request.
+	if (hasOfflineLicense()) {
+		return false;
+	}
+
 	try {
 		const cloudUrl = settings.get<string>('Cloud_Url');
 		const response = await fetch(`${cloudUrl}/api/v2/register/workspace/pre-intent`, {
