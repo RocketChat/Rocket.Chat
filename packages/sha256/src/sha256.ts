@@ -1,7 +1,7 @@
-import { binb2hex } from './binb2hex';
-import { core } from './core';
-import { str2binb } from './str2binb';
-import { utf8Encode } from './utf8Encode';
+import { binb2hex } from './binb2hex.js';
+import { core } from './core.js';
+import { str2binb } from './str2binb.js';
+import { utf8Encode } from './utf8Encode.js';
 
 export function SHA256(input: string) {
 	input = utf8Encode(input);
