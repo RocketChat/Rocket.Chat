@@ -1,5 +1,6 @@
 import { Divider, Box } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoomListFiltersItem from './RoomListFiltersItem';
@@ -11,14 +12,23 @@ const TeamCollabFilters = () => {
 
 	return (
 		<>
-			<Box role='tablist' aria-label={t('Team_collaboration_filters')} aria-orientation='vertical'>
+			<Box 
+				role='tablist' 
+				aria-label={t('Team_collaboration_filters')} 
+				aria-orientation='horizontal' 
+				display='flex' 
+				justifyContent='space-around' 
+				pb='x8'
+			>
 				<RoomListFiltersItem group='all' icon={sidePanelFiltersConfig.all.icon} />
 				<RoomListFiltersItem group='favorites' icon={sidePanelFiltersConfig.favorites.icon} />
-				{isDiscussionEnabled && <RoomListFiltersItem group='discussions' icon={sidePanelFiltersConfig.discussions.icon} />}
+				{isDiscussionEnabled && (
+					<RoomListFiltersItem group='discussions' icon={sidePanelFiltersConfig.discussions.icon} />
+				)}
 			</Box>
-			<Divider borderColor='stroke-light' mb={4} mi={16} />
+			<Divider borderColor='stroke-light' mb='x4' mi='x16' />
 		</>
 	);
 };
 
-export default TeamCollabFilters;
+export default memo(TeamCollabFilters);
