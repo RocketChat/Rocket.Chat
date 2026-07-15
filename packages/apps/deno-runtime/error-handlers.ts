@@ -1,4 +1,4 @@
-import * as Messenger from './lib/messenger';
+import * as Messenger from '@rocket.chat/apps/base-runtime/lib/messenger';
 
 export function unhandledRejectionListener(event: PromiseRejectionEvent) {
 	event.preventDefault();

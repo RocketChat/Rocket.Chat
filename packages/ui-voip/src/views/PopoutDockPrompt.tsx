@@ -1,7 +1,7 @@
 import { Box, Button } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-type PopoutDockPromptProps = {
+export type PopoutDockPromptProps = {
 	onClosePopout: () => void;
 };
 

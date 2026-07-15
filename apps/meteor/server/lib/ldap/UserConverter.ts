@@ -4,10 +4,10 @@ import type { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 
 import { logger } from './Logger';
-import type { ConverterCache } from '../../../app/importer/server/classes/converters/ConverterCache';
-import type { RecordConverterOptions } from '../../../app/importer/server/classes/converters/RecordConverter';
-import { UserConverter, type UserConverterOptions } from '../../../app/importer/server/classes/converters/UserConverter';
 import { settings } from '../../../app/settings/server';
+import type { ConverterCache } from '../import/classes/converters/ConverterCache';
+import type { RecordConverterOptions } from '../import/classes/converters/RecordConverter';
+import { UserConverter, type UserConverterOptions } from '../import/classes/converters/UserConverter';
 
 export class LDAPUserConverter extends UserConverter {
 	private mergeExistingUsers: boolean;

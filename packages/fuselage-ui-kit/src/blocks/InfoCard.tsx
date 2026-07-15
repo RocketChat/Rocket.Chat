@@ -4,7 +4,7 @@ import * as UiKit from '@rocket.chat/ui-kit';
 import IconElement from '../elements/IconElement';
 import type { BlockProps } from '../utils/BlockProps';
 
-type InfoCardProps = BlockProps<UiKit.InfoCardBlock>;
+export type InfoCardProps = BlockProps<UiKit.InfoCardBlock>;
 
 const InfoCard = ({ block, surfaceRenderer, context }: InfoCardProps) => {
 	const { rows, blockId } = block;

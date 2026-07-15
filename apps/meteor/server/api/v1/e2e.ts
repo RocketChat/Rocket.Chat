@@ -10,17 +10,17 @@ import {
 } from '@rocket.chat/rest-typings';
 import ExpiryMap from 'expiry-map';
 
-import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
-import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
-import { handleSuggestedGroupKey } from '../../../app/e2e/server/functions/handleSuggestedGroupKey';
-import { provideUsersSuggestedGroupKeys } from '../../../app/e2e/server/functions/provideUsersSuggestedGroupKeys';
-import { resetRoomKey } from '../../../app/e2e/server/functions/resetRoomKey';
-import { getUsersOfRoomWithoutKeyMethod } from '../../../app/e2e/server/methods/getUsersOfRoomWithoutKey';
-import { requestSubscriptionKeysMethod } from '../../../app/e2e/server/methods/requestSubscriptionKeys';
-import { setRoomKeyIDMethod } from '../../../app/e2e/server/methods/setRoomKeyID';
-import { setUserPublicAndPrivateKeysMethod } from '../../../app/e2e/server/methods/setUserPublicAndPrivateKeys';
-import { updateGroupKey } from '../../../app/e2e/server/methods/updateGroupKey';
 import { settings } from '../../../app/settings/server';
+import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
+import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { handleSuggestedGroupKey } from '../../lib/e2e/functions/handleSuggestedGroupKey';
+import { provideUsersSuggestedGroupKeys } from '../../lib/e2e/functions/provideUsersSuggestedGroupKeys';
+import { resetRoomKey } from '../../lib/e2e/functions/resetRoomKey';
+import { getUsersOfRoomWithoutKeyMethod } from '../../meteor-methods/platform/getUsersOfRoomWithoutKey';
+import { requestSubscriptionKeysMethod } from '../../meteor-methods/platform/requestSubscriptionKeys';
+import { setRoomKeyIDMethod } from '../../meteor-methods/platform/setRoomKeyID';
+import { setUserPublicAndPrivateKeysMethod } from '../../meteor-methods/platform/setUserPublicAndPrivateKeys';
+import { updateGroupKey } from '../../meteor-methods/platform/updateGroupKey';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 

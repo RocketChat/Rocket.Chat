@@ -3,7 +3,7 @@ import type { SyntheticEvent } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type IgnoredContentProps = {
+export type IgnoredContentProps = {
 	messageId: string;
 	onShowMessageIgnored: () => void;
 };

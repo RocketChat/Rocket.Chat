@@ -5,12 +5,12 @@ import { Rooms, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import type { Filter, FindCursor } from 'mongodb';
 
-import { hasRoleAsync } from '../../../app/authorization/server/functions/hasRole';
-import { addUserToRole } from '../../../app/authorization/server/methods/addUserToRole';
-import { removeUserFromRole } from '../../../app/authorization/server/methods/removeUserFromRole';
-import { addUsersToRoomMethod } from '../../../app/lib/server/methods/addUsersToRoom';
 import { settings } from '../../../app/settings/server';
-import { removeUserFromRoomMethod } from '../../methods/removeUserFromRoom';
+import { addUserToRole } from '../../meteor-methods/auth/addUserToRole';
+import { removeUserFromRole } from '../../meteor-methods/auth/removeUserFromRole';
+import { addUsersToRoomMethod } from '../../meteor-methods/rooms/addUsersToRoom';
+import { removeUserFromRoomMethod } from '../../meteor-methods/rooms/removeUserFromRoom';
+import { hasRoleAsync } from '../authorization/hasRole';
 
 /**
  * BotHelpers helps bots

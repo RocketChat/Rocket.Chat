@@ -3,8 +3,8 @@ import type { ExtendedFetchOptions } from '@rocket.chat/server-fetch';
 
 import { appRequestNotififyForUsers } from './marketplace/appRequestNotifyUsers';
 import { Apps } from './orchestrator';
-import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { settings } from '../../../app/settings/server';
+import { getWorkspaceAccessToken } from '../../../server/lib/cloud';
 
 const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 	try {

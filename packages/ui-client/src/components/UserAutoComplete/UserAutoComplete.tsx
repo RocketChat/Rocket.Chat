@@ -13,7 +13,7 @@ const query = (
 	selector: string;
 } => ({ selector: JSON.stringify({ term, conditions }) });
 
-type UserAutoCompleteProps = Omit<ComponentPropsWithoutRef<typeof AutoComplete>, 'filter'> & {
+export type UserAutoCompleteProps = Omit<ComponentPropsWithoutRef<typeof AutoComplete>, 'filter'> & {
 	conditions?: { [key: string]: unknown };
 };
 

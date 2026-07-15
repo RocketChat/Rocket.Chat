@@ -4,7 +4,7 @@ import { memo } from 'react';
 
 const videoConfAnchorId = 'video-conf-root';
 
-type VideoConfPortalProps = {
+export type VideoConfPortalProps = {
 	children?: ReactNode;
 };
 

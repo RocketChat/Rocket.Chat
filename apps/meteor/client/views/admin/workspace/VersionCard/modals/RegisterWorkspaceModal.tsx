@@ -19,7 +19,7 @@ import RegisterWorkspaceTokenModal from './RegisterWorkspaceTokenModal';
 import { links } from '../../../../../lib/links';
 import useFeatureBullets from '../hooks/useFeatureBullets';
 
-type RegisterWorkspaceModalProps = {
+export type RegisterWorkspaceModalProps = {
 	onClose: () => void;
 	onStatusChange?: () => void;
 };

@@ -6,7 +6,7 @@ import type { ComponentProps, ChangeEvent } from 'react';
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type DateRangePickerProps = Omit<ComponentProps<typeof Box>, 'onChange'> & {
+export type DateRangePickerProps = Omit<ComponentProps<typeof Box>, 'onChange'> & {
 	onChange(range: { start: string; end: string }): void;
 };
 

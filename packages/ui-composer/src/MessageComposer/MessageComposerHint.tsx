@@ -2,7 +2,7 @@ import type { IconProps } from '@rocket.chat/fuselage';
 import { Box, Icon, Tag } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-type MessageComposerHintProps = {
+export type MessageComposerHintProps = {
 	children: string;
 	icon?: IconProps['name'];
 	helperText?: ReactNode;

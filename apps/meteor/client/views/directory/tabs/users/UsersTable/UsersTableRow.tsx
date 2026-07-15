@@ -7,7 +7,7 @@ import type { KeyboardEvent, MouseEvent } from 'react';
 import MarkdownText from '../../../../../components/MarkdownText';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
 
-type UsersTableRowProps = {
+export type UsersTableRowProps = {
 	user: Serialized<IDirectoryUserResult> & { domain?: string };
 	onClick: (username: IUser['username']) => (e: KeyboardEvent | MouseEvent) => void;
 	mediaQuery: boolean;

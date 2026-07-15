@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-type InfoPanelProps = {
+export type InfoPanelProps = {
 	children?: ReactNode;
 };
 

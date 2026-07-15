@@ -2,7 +2,7 @@ import { Icon, IconButton } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { AllHTMLAttributes, ComponentPropsWithoutRef, MouseEventHandler } from 'react';
 
-type HeaderStateProps =
+export type HeaderStateProps =
 	| (Pick<ComponentPropsWithoutRef<typeof IconButton>, 'color' | 'title' | 'icon'> & {
 			onClick: MouseEventHandler;
 	  } & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is'>)

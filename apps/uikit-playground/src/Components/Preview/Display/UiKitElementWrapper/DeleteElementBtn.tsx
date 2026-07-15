@@ -4,7 +4,9 @@ import { useContext } from 'react';
 
 import { context, updatePayloadAction } from '../../../../Context';
 
-const Display = ({ elementIndex }: { elementIndex: number }) => {
+export type DisplayProps = { elementIndex: number };
+
+const Display = ({ elementIndex }: DisplayProps) => {
 	const { state, dispatch } = useContext(context);
 
 	const deleteElement = () => {

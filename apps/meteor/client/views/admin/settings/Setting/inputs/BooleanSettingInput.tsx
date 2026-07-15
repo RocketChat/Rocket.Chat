@@ -4,7 +4,7 @@ import type { ChangeEvent } from 'react';
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type BooleanSettingInputProps = SettingInputProps<boolean>;
+export type BooleanSettingInputProps = SettingInputProps<boolean>;
 
 function BooleanSettingInput({
 	_id,

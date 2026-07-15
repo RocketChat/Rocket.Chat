@@ -154,7 +154,9 @@ exports[`renders Default without crashing 1`] = `
                     style="position: -webkit-sticky; top: 0px; width: 100%; z-index: 1; margin-top: 0px;"
                   >
                     <div
+                      aria-label="Members"
                       data-testid="virtuoso-top-item-list"
+                      role="list"
                     />
                   </div>
                   <div
@@ -162,7 +164,9 @@ exports[`renders Default without crashing 1`] = `
                     style="height: 100%; position: absolute; top: 0px; width: 100%;"
                   >
                     <div
+                      aria-label="Members"
                       data-testid="virtuoso-item-list"
+                      role="list"
                       style="box-sizing: border-box; margin-top: 0px; padding-bottom: 0px; padding-top: 0px;"
                     />
                     <div>
@@ -748,7 +752,9 @@ exports[`renders WithABACRoom without crashing 1`] = `
                     style="position: -webkit-sticky; top: 0px; width: 100%; z-index: 1; margin-top: 0px;"
                   >
                     <div
+                      aria-label="Members"
                       data-testid="virtuoso-top-item-list"
+                      role="list"
                     />
                   </div>
                   <div
@@ -756,7 +762,9 @@ exports[`renders WithABACRoom without crashing 1`] = `
                     style="height: 100%; position: absolute; top: 0px; width: 100%;"
                   >
                     <div
+                      aria-label="Members"
                       data-testid="virtuoso-item-list"
+                      role="list"
                       style="box-sizing: border-box; margin-top: 0px; padding-bottom: 0px; padding-top: 0px;"
                     />
                     <div>
@@ -964,7 +972,9 @@ exports[`renders WithInvitedMember without crashing 1`] = `
                     style="position: -webkit-sticky; top: 0px; width: 100%; z-index: 1; margin-top: 0px;"
                   >
                     <div
+                      aria-label="Members"
                       data-testid="virtuoso-top-item-list"
+                      role="list"
                     />
                   </div>
                   <div
@@ -972,7 +982,9 @@ exports[`renders WithInvitedMember without crashing 1`] = `
                     style="height: 100%; position: absolute; top: 0px; width: 100%;"
                   >
                     <div
+                      aria-label="Members"
                       data-testid="virtuoso-item-list"
+                      role="list"
                       style="box-sizing: border-box; margin-top: 0px; padding-bottom: 0px; padding-top: 0px;"
                     />
                     <div>

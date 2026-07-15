@@ -14,7 +14,7 @@ import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
 import ThreadMessageContent from './thread/ThreadMessageContent';
 
-type ThreadMessageProps = {
+export type ThreadMessageProps = {
 	message: IThreadMessage | IThreadMainMessage;
 	unread: boolean;
 	sequential: boolean;

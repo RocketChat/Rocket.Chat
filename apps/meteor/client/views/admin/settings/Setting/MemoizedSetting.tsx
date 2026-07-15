@@ -47,7 +47,7 @@ const inputsByType: Record<ISettingBase['type'], ElementType<any>> = {
 	group: GenericSettingInput, // @todo: implement
 };
 
-type MemoizedSettingProps = {
+export type MemoizedSettingProps = {
 	_id?: string;
 	type: ISettingBase['type'];
 	packageValue: ISettingBase['packageValue'];

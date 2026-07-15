@@ -3,7 +3,7 @@ import { Box, Button, Chip, States, StatesActions, StatesIcon, StatesLink, State
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from 'react-i18next';
 
-type RoomInviteBodyProps = {
+export type RoomInviteBodyProps = {
 	isLoading?: boolean;
 	inviter: IInviteSubscription['inviter'];
 	infoLink?: {

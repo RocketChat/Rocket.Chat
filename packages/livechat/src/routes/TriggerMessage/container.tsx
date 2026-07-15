@@ -9,7 +9,7 @@ import { formatAgent } from '../../helpers/formatAgent';
 import { parentCall } from '../../lib/parentCall';
 import { StoreContext } from '../../store';
 
-type TriggerMessageContainerProps = {
+export type TriggerMessageContainerProps = {
 	path: string;
 	ref?: Ref<any>;
 };

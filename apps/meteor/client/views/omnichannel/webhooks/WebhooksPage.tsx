@@ -21,7 +21,7 @@ import { Controller, useForm, useWatch } from 'react-hook-form';
 
 import { links } from '../../../lib/links';
 
-type WebhooksPageProps = {
+export type WebhooksPageProps = {
 	settings: Record<string, SettingValue>;
 };
 

@@ -17,7 +17,7 @@ import { Virtuoso } from 'react-virtuoso';
 import VideoConfListItem from './VideoConfListItem';
 import { getErrorMessage } from '../../../../../lib/errorHandling';
 
-type VideoConfListProps = {
+export type VideoConfListProps = {
 	onClose: () => void;
 	total: number;
 	videoConfs: VideoConference[];

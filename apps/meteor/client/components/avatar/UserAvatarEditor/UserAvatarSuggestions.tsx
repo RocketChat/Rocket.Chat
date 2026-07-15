@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import type { UserAvatarSuggestion } from './UserAvatarSuggestion';
 import { useUserAvatarSuggestions } from './useUserAvatarSuggestions';
 
-type UserAvatarSuggestionsProps = {
+export type UserAvatarSuggestionsProps = {
 	disabled?: boolean;
 	onSelectOne?: (suggestion: UserAvatarSuggestion) => void;
 };

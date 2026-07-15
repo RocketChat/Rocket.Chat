@@ -19,7 +19,7 @@ import { useOutlookAuthentication } from '../hooks/useOutlookAuthentication';
 import { useMutationOutlookCalendarSync, useOutlookCalendarListForToday } from '../hooks/useOutlookCalendarList';
 import { NotOnDesktopError } from '../lib/NotOnDesktopError';
 
-type OutlookEventsListProps = {
+export type OutlookEventsListProps = {
 	onClose: () => void;
 	changeRoute: () => void;
 };

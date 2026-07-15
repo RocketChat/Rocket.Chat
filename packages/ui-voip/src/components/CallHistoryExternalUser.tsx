@@ -2,7 +2,7 @@ import { Box, Icon, FramedIcon } from '@rocket.chat/fuselage';
 
 import type { CallHistoryExternalContact } from '../definitions';
 
-type CallHistoryExternalUserProps = {
+export type CallHistoryExternalUserProps = {
 	contact: CallHistoryExternalContact;
 	showIcon?: boolean;
 };

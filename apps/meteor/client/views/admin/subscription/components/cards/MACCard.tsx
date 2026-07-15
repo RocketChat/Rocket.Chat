@@ -7,7 +7,9 @@ import FeatureUsageCardBody from '../FeatureUsageCardBody';
 import UpgradeButton from '../UpgradeButton';
 import UsagePieGraph from '../UsagePieGraph';
 
-const MACCard = ({ value = 0, max, hideManageSubscription }: { value: number; max: number; hideManageSubscription?: boolean }) => {
+export type MACCardProps = { value: number; max: number; hideManageSubscription?: boolean };
+
+const MACCard = ({ value = 0, max, hideManageSubscription }: MACCardProps) => {
 	const { t } = useTranslation();
 
 	const pieGraph = {

@@ -12,7 +12,9 @@ const DEFAULT_ITEMS_LIMIT = 90;
 // limit recent emojis to 27 (3 rows of 9)
 const RECENT_EMOJIS_LIMIT = 27;
 
-const EmojiPickerProvider = ({ children }: { children: ReactNode }) => {
+export type EmojiPickerProviderProps = { children: ReactNode };
+
+const EmojiPickerProvider = ({ children }: EmojiPickerProviderProps) => {
 	const [emojiPicker, setEmojiPicker] = useState<ReactNode>(null);
 	const [emojiToPreview, setEmojiToPreview] = useDebouncedState<{ emoji: string; name: string } | null>(null, 100);
 	const [recentEmojis, setRecentEmojis] = useLocalStorage<string[]>('emoji.recent', []);
@@ -78,14 +80,25 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }) => {
 		return setEmojiPicker(<EmojiPicker reference={ref} onClose={() => setEmojiPicker(null)} onPickEmoji={(emoji) => callback(emoji)} />);
 	}, []);
 
-	const handlePreview = useCallback((emoji: string, name: string) => setEmojiToPreview({ emoji, name }), [setEmojiToPreview]);
+	const close = useCallback(() => setEmojiPicker(null), []);
+
+	const handlePreview = useCallback(
+		(emoji: string, name: string) =>
+			setEmojiToPreview((preview) => {
+				if (preview?.emoji === emoji && preview?.name === name) {
+					return preview;
+				}
+				return { emoji, name };
+			}),
+		[setEmojiToPreview],
+	);
 
 	const handleRemovePreview = useCallback(() => setEmojiToPreview(null), [setEmojiToPreview]);
 
 	const contextValue = useMemo(
 		(): ContextType<typeof EmojiPickerContext> => ({
 			isOpen: emojiPicker !== null,
-			close: () => setEmojiPicker(null),
+			close,
 			open,
 			emojiToPreview,
 			handlePreview,
@@ -106,6 +119,7 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }) => {
 		[
 			emojiPicker,
 			open,
+			close,
 			emojiToPreview,
 			addRecentEmoji,
 			emojiListByCategory,

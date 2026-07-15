@@ -1,8 +1,8 @@
 import type { INpsVote } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
-import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { settings } from '../../../app/settings/server';
+import { getWorkspaceAccessToken } from '../../lib/cloud';
 import { SystemLogger } from '../../lib/logger/system';
 
 type NPSResultPayload = {

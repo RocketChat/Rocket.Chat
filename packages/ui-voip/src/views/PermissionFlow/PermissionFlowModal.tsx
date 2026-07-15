@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next';
 
 export type PermissionFlowModalType = 'denied' | 'incomingPrompt' | 'outgoingPrompt' | 'deviceChangePrompt';
 
-type PermissionFlowModalProps = {
+export type PermissionFlowModalProps = {
 	onCancel: () => void;
 	onConfirm: () => void;
 	type: PermissionFlowModalType;

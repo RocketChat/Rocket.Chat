@@ -17,7 +17,7 @@ const parseDate = (ts: number, t: TFunction) => {
 	});
 };
 
-type MessageTimeProps = {
+export type MessageTimeProps = {
 	ts: number;
 	normal?: boolean;
 	inverted?: boolean;

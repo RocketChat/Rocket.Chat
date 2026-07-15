@@ -9,7 +9,7 @@ import { useEndpointMutation } from '../../../../hooks/useEndpointMutation';
 import AutoCompleteAgent from '../../components/AutoCompleteAgent';
 import type { IDepartmentAgent } from '../definitions';
 
-type AddAgentProps = Pick<AriaAttributes, 'aria-labelledby'> & {
+export type AddAgentProps = Pick<AriaAttributes, 'aria-labelledby'> & {
 	agentList: IDepartmentAgent[];
 	onAdd: (agent: IDepartmentAgent) => void;
 };

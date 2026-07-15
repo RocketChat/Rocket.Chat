@@ -1,4 +1,4 @@
-import type { IMediaCall, IMediaCallChannel } from '@rocket.chat/core-typings';
+import type { IMediaCall } from '@rocket.chat/core-typings';
 import type { ClientMediaSignalBody } from '@rocket.chat/media-signaling';
 import { MediaCalls } from '@rocket.chat/models';
 import type Srf from 'drachtio-srf';
@@ -15,7 +15,6 @@ export abstract class BaseSipCall extends BaseCallProvider {
 		protected readonly session: SipServerSession,
 		call: IMediaCall,
 		protected readonly agent: BroadcastActorAgent,
-		protected readonly channel: IMediaCallChannel,
 	) {
 		super(call);
 		this.lastCallState = 'none';

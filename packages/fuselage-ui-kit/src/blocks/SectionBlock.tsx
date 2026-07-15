@@ -5,7 +5,7 @@ import { memo, useMemo } from 'react';
 import Fields from './SectionBlock.Fields';
 import type { BlockProps } from '../utils/BlockProps';
 
-type SectionBlockProps = BlockProps<UiKit.SectionBlock>;
+export type SectionBlockProps = BlockProps<UiKit.SectionBlock>;
 
 const SectionBlock = ({ className, block, surfaceRenderer }: SectionBlockProps) => {
 	const { text, fields } = block;

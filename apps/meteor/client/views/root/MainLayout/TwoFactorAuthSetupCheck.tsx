@@ -9,7 +9,9 @@ import { useRequire2faSetup } from '../../hooks/useRequire2faSetup';
 
 const AccountSecurityPage = lazy(() => import('../../account/security/AccountSecurityPage'));
 
-const TwoFactorAuthSetupCheck = ({ children }: { children: ReactNode }) => {
+export type TwoFactorAuthSetupCheckProps = { children: ReactNode };
+
+const TwoFactorAuthSetupCheck = ({ children }: TwoFactorAuthSetupCheckProps) => {
 	const { isEmbedded: embeddedLayout } = useLayout();
 	const require2faSetup = useRequire2faSetup();
 

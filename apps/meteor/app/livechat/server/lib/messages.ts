@@ -3,15 +3,17 @@ import * as util from 'node:util';
 
 import type { ILivechatVisitor, AtLeast, IMessage, IUser, IOmnichannelRoomInfo, SelectedAgent } from '@rocket.chat/core-typings';
 import { LivechatDepartment, Messages } from '@rocket.chat/models';
+import { check, Match } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import type { ILivechatMessage } from './localTypes';
 import { getRoom } from './rooms';
 import { showConnecting } from './utils';
 import { callbacks } from '../../../../server/lib/callbacks';
-import { deleteMessage as deleteMessageFunc } from '../../../lib/server/functions/deleteMessage';
-import { sendMessage as sendMessageFunc } from '../../../lib/server/functions/sendMessage';
-import { updateMessage as updateMessageFunc } from '../../../lib/server/functions/updateMessage';
-import * as Mailer from '../../../mailer/server/api';
+import { deleteMessage as deleteMessageFunc } from '../../../../server/lib/messages/deleteMessage';
+import { sendMessage as sendMessageFunc } from '../../../../server/lib/messages/sendMessage';
+import { updateMessage as updateMessageFunc } from '../../../../server/lib/messages/updateMessage';
+import * as Mailer from '../../../../server/lib/notifications/email/api';
 import { settings } from '../../../settings/server';
 
 const dnsResolveMx = util.promisify(dns.resolveMx);

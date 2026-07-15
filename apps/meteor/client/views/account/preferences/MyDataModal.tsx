@@ -13,7 +13,7 @@ import {
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type MyDataModalProps = {
+export type MyDataModalProps = {
 	onCancel: () => void;
 	title: string;
 	text?: ReactNode;

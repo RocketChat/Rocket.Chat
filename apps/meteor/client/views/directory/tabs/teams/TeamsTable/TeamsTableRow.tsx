@@ -9,7 +9,7 @@ import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import RoomTags from '../../../RoomTags';
 
-type TeamsTableRowProps = {
+export type TeamsTableRowProps = {
 	onClick: (name: IRoom['name'], type: IRoom['t']) => (e: KeyboardEvent | MouseEvent) => void;
 	team: Serialized<IRoom & { roomsCount: number }>;
 	mediaQuery: boolean;
