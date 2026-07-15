@@ -82,7 +82,7 @@ const RoomFiles = ({
 					onChange={setText}
 					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
-				<Box w='x144' mis={8}>
+				<Box width='x144' mis={8}>
 					<Select aria-controls={isSuccess ? filesListId : undefined} onChange={setType} value={type} options={options} />
 				</Box>
 			</ContextualbarSection>
@@ -94,7 +94,7 @@ const RoomFiles = ({
 					</Box>
 				)}
 				{isSuccess && (
-					<Box w='full' h='full' id={filesListId} flexShrink={1} overflow='hidden'>
+					<Box width='full' h='full' id={filesListId} flexShrink={1} overflow='hidden'>
 						{filesItems.length === 0 && <ContextualbarEmptyContent title={t('No_files_found')} />}
 						{filesItems.length > 0 && (
 							<VirtualizedScrollbars>

@@ -46,7 +46,7 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 	const openExternalLink = useExternalLink();
 
 	return (
-		<Box mbs='36px' maxWidth='x640' w='full' marginInline='auto' color='default'>
+		<Box mbs='36px' maxWidth='x640' width='full' marginInline='auto' color='default'>
 			{appAddon && !workspaceHasAddon && (
 				<Callout
 					mb={16}

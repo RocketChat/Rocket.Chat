@@ -44,7 +44,7 @@ const AccountSecurityPage = () => {
 		<Page>
 			<PageHeader title={t('Security')} />
 			<PageScrollableContentWithShadow>
-				<Box maxWidth='x600' w='full' alignSelf='center' color='default'>
+				<Box maxWidth='x600' width='full' alignSelf='center' color='default'>
 					{allowPasswordChange && (
 						<FormProvider {...methods}>
 							<Accordion>

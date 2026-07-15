@@ -52,7 +52,7 @@ const BannedUsers = ({ loading, error, bannedUsers, useRealName = false, onClick
 				)}
 
 				{!loading && !error && bannedUsers.length > 0 && (
-					<Box w='full' h='full' overflow='hidden' flexShrink={1}>
+					<Box width='full' h='full' overflow='hidden' flexShrink={1}>
 						<VirtualizedScrollbars>
 							<Virtuoso
 								style={{ height: '100%', width: '100%' }}

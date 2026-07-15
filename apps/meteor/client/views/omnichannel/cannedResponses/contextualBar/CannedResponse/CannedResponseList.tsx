@@ -95,7 +95,7 @@ const CannedResponseList = ({
 								endAddon={<Icon name='magnifier' size='x20' />}
 								ref={inputRef}
 							/>
-							<Box w='x144'>
+							<Box width='x144'>
 								<Select aria-label={t('Type')} onChange={(value) => setType(String(value))} value={type} options={options} />
 							</Box>
 						</Margins>

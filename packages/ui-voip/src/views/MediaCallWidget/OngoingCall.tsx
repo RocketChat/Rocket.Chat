@@ -57,7 +57,7 @@ const OngoingCall = () => {
 			<WidgetInfo slots={slots} />
 			<WidgetFooter>
 				{open ? (
-					<Box display='flex' justifyContent='center' alignItems='center' w='100%' flexDirection='column' mbe={8}>
+					<Box display='flex' justifyContent='center' alignItems='center' width='100%' flexDirection='column' mbe={8}>
 						<Field mbe={8}>
 							<FieldRow>
 								<TextInput value={inputValue} readOnly small mi={24} />
@@ -69,7 +69,7 @@ const OngoingCall = () => {
 								onTone(...args);
 							}}
 						/>
-						<Divider w='100%' />
+						<Divider width='100%' />
 					</Box>
 				) : null}
 				<ButtonGroup large>

@@ -76,7 +76,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 	return (
 		<Box
 			id='outer-element'
-			w='full'
+			width='full'
 			backgroundColor='surface-tint'
 			overflow='hidden'
 			display='flex'

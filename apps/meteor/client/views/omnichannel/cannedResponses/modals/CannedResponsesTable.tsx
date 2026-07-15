@@ -108,7 +108,7 @@ const CannedResponsesTable = () => {
 			<GenericTableHeaderCell key='tags' direction={sortDirection} active={sortBy === 'tags'} onClick={setSort} sort='tags'>
 				{t('Tags')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='remove' w='x60'>
+			<GenericTableHeaderCell key='remove' width='x60'>
 				{t('Remove')}
 			</GenericTableHeaderCell>
 		</>

@@ -22,7 +22,7 @@ const EditIntegrationsPageWithData = ({ integrationId }: EditIntegrationsPageWit
 
 	if (isPending) {
 		return (
-			<Box w='full' p={24}>
+			<Box width='full' p={24}>
 				<Skeleton mbe={4} />
 				<Skeleton mbe={8} />
 				<Skeleton mbe={4} />

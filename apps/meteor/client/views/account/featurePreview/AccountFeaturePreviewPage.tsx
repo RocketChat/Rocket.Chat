@@ -78,7 +78,7 @@ const AccountFeaturePreviewPage = () => {
 		<Page>
 			<PageHeader title={t('Feature_preview')} />
 			<PageScrollableContentWithShadow>
-				<Box maxWidth='x600' w='full' alignSelf='center'>
+				<Box maxWidth='x600' width='full' alignSelf='center'>
 					{featuresPreview.length === 0 && (
 						<States>
 							<StatesIcon name='magnifier' />

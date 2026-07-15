@@ -68,7 +68,7 @@ const RegisterWorkspaceModal = ({ onClose, onStatusChange, ...props }: RegisterW
 				</Box>
 			</ModalContent>
 			<ModalFooter>
-				<Box is='div' display='flex' justifyContent='space-between' alignItems='center' w='full'>
+				<Box is='div' display='flex' justifyContent='space-between' alignItems='center' width='full'>
 					<ExternalLink to={documentationLink}>{t('Learn_more')}</ExternalLink>
 					<ButtonGroup align='end'>
 						<Button onClick={handleTokenModal}>{t('Use_token')}</Button>

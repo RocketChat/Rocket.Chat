@@ -68,7 +68,7 @@ const AudioAttachment = ({
 					pie={8}
 					pis={16}
 					borderRadius='x4'
-					w='100%'
+					width='100%'
 					maxWidth='x300'
 				>
 					<AudioPlayerControls

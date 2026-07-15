@@ -156,7 +156,7 @@ const RoomMembers = ({
 					onChange={setText}
 					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
-				<Box w='x144' mis={8}>
+				<Box width='x144' mis={8}>
 					<Select
 						aria-controls={isSuccess ? membersListId : undefined}
 						options={options}
@@ -186,7 +186,7 @@ const RoomMembers = ({
 								</Box>
 							</Box>
 						)}
-						<Box id={membersListId} w='full' h='full' overflow='hidden' flexShrink={1}>
+						<Box id={membersListId} width='full' h='full' overflow='hidden' flexShrink={1}>
 							{members.length <= 0 && <ContextualbarEmptyContent title={t('No_members_found')} />}
 							{members.length > 0 && (
 								<VirtualizedScrollbars>

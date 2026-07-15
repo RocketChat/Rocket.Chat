@@ -59,7 +59,7 @@ const RealTimeMonitoringPage = () => {
 			<PageHeader title={t('Real_Time_Monitoring')} />
 			<PageScrollableContentWithShadow>
 				<Margins block='x4'>
-					<Box flexDirection='row' display='flex' justifyContent='space-between' alignSelf='center' w='full'>
+					<Box flexDirection='row' display='flex' justifyContent='space-between' alignSelf='center' width='full'>
 						<Box maxWidth='50%' display='flex' mi={4} flexGrow={1} flexDirection='column'>
 							<Label mb={4}>{t('Departments')}</Label>
 							<AutoCompleteDepartment
@@ -81,31 +81,31 @@ const RealTimeMonitoringPage = () => {
 							/>
 						</Box>
 					</Box>
-					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
+					<Box display='flex' flexDirection='row' width='full' alignItems='stretch' flexShrink={1}>
 						<ConversationOverview flexGrow={1} flexShrink={1} width='50%' departmentId={departmentId} dateRange={dateRange} />
 					</Box>
-					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
+					<Box display='flex' flexDirection='row' width='full' alignItems='stretch' flexShrink={1}>
 						<ChatsChart flexGrow={1} flexShrink={1} width='50%' mie={2} departmentId={departmentId} dateRange={dateRange} />
 						<ChatsPerAgentChart flexGrow={1} flexShrink={1} width='50%' mis={2} departmentId={departmentId} dateRange={dateRange} />
 					</Box>
-					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
+					<Box display='flex' flexDirection='row' width='full' alignItems='stretch' flexShrink={1}>
 						<ChatsOverview flexGrow={1} flexShrink={1} width='50%' departmentId={departmentId} dateRange={dateRange} />
 					</Box>
-					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
+					<Box display='flex' flexDirection='row' width='full' alignItems='stretch' flexShrink={1}>
 						<AgentStatusChart flexGrow={1} flexShrink={1} width='50%' mie={2} departmentId={departmentId} />
 						<ChatsPerDepartmentChart flexGrow={1} flexShrink={1} width='50%' mis={2} departmentId={departmentId} dateRange={dateRange} />
 					</Box>
-					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
+					<Box display='flex' flexDirection='row' width='full' alignItems='stretch' flexShrink={1}>
 						<AgentsOverview flexGrow={1} flexShrink={1} departmentId={departmentId} dateRange={dateRange} />
 					</Box>
-					<Box display='flex' w='full' flexShrink={1}>
-						<ChatDurationChart flexGrow={1} flexShrink={1} w='100%' departmentId={departmentId} dateRange={dateRange} />
+					<Box display='flex' width='full' flexShrink={1}>
+						<ChatDurationChart flexGrow={1} flexShrink={1} width='100%' departmentId={departmentId} dateRange={dateRange} />
 					</Box>
-					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
+					<Box display='flex' flexDirection='row' width='full' alignItems='stretch' flexShrink={1}>
 						<ProductivityOverview flexGrow={1} flexShrink={1} departmentId={departmentId} dateRange={dateRange} />
 					</Box>
-					<Box display='flex' w='full' flexShrink={1}>
-						<ResponseTimesChart flexGrow={1} flexShrink={1} w='100%' departmentId={departmentId} dateRange={dateRange} />
+					<Box display='flex' width='full' flexShrink={1}>
+						<ResponseTimesChart flexGrow={1} flexShrink={1} width='100%' departmentId={departmentId} dateRange={dateRange} />
 					</Box>
 				</Margins>
 			</PageScrollableContentWithShadow>

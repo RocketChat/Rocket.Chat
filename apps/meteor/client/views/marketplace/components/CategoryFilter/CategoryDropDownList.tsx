@@ -5,7 +5,7 @@ import type { CategoryDropDownListProps } from '../../definitions/CategoryDropdo
 
 const CategoryDropDownList = ({ categories, onSelected }: CategoryDropDownListProps) => {
 	return (
-		<Tile overflow='auto' pb={12} pi={0} elevation='2' w='full' backgroundColor='light' borderRadius={2}>
+		<Tile overflow='auto' pb={12} pi={0} elevation='2' width='full' backgroundColor='light' borderRadius={2}>
 			{categories.map((category, index) => (
 				<Fragment key={index}>
 					{category.label && (

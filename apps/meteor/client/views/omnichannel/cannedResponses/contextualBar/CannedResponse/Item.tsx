@@ -40,7 +40,7 @@ const Item = ({ data, allowUse, onClickItem, onClickUse }: ItemProps) => {
 			onMouseLeave={(): void => setVisibility(false)}
 		>
 			<Box display='flex' flexDirection='row' justifyContent='space-between' alignItems='center'>
-				<Box w='full' minWidth={0}>
+				<Box width='full' minWidth={0}>
 					<Box fontScale='p2m' withTruncatedText>
 						!{data.shortcut}
 					</Box>
@@ -65,7 +65,7 @@ const Item = ({ data, allowUse, onClickItem, onClickUse }: ItemProps) => {
 				"{data.text}"
 			</Box>
 			{data.tags && data.tags.length > 0 && (
-				<Box display='flex' w='full' flexDirection='row' mbs='8px' flexWrap='wrap'>
+				<Box display='flex' width='full' flexDirection='row' mbs='8px' flexWrap='wrap'>
 					{data.tags.map((tag: string, idx: number) => (
 						<Box key={idx} mie='4px' mbe='4px'>
 							<Tag>{tag}</Tag>

@@ -75,7 +75,7 @@ const AdminFeaturePreviewPage = () => {
 		<Page>
 			<PageHeader title={t('Feature_preview')} />
 			<PageScrollableContentWithShadow>
-				<Box maxWidth='x600' w='full' alignSelf='center'>
+				<Box maxWidth='x600' width='full' alignSelf='center'>
 					<Box>
 						<Margins block={24}>
 							<Box fontScale='p1'>{t('Feature_preview_admin_page_description')}</Box>

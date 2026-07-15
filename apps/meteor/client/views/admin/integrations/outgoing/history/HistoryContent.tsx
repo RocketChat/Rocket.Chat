@@ -11,7 +11,7 @@ const HistoryContent = ({ data, isLoading }: HistoryContentProps) => {
 
 	if (isLoading) {
 		return (
-			<Box w='full' pb={24}>
+			<Box width='full' pb={24}>
 				<Skeleton mbe={4} />
 				<Skeleton mbe={8} />
 				<Skeleton mbe={4} />
@@ -28,7 +28,7 @@ const HistoryContent = ({ data, isLoading }: HistoryContentProps) => {
 
 	return (
 		<Box display='flex' alignItems='center' flexDirection='column'>
-			<Accordion w='full' maxWidth='x600' alignSelf='center' key='content'>
+			<Accordion width='full' maxWidth='x600' alignSelf='center' key='content'>
 				{data.map((current) => (
 					<HistoryItem data={current} key={current._id} />
 				))}

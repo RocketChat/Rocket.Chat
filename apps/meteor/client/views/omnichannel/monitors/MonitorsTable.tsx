@@ -123,7 +123,7 @@ const MonitorsTable = () => {
 			<GenericTableHeaderCell key='email' direction={sortDirection} active={sortBy === 'email'} onClick={setSort}>
 				{t('Email')}
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key='spacer' w={40} />,
+			<GenericTableHeaderCell key='spacer' width={40} />,
 		],
 		[setSort, sortBy, sortDirection, t],
 	);

@@ -136,7 +136,7 @@ const ThreadList = () => {
 					value={searchText}
 					onChange={handleSearchTextChange}
 				/>
-				<Box w='x144' mis={8}>
+				<Box width='x144' mis={8}>
 					<Select
 						aria-controls={isSuccess ? threadListId : undefined}
 						options={typeOptions}
@@ -158,7 +158,7 @@ const ThreadList = () => {
 					</Callout>
 				)}
 				{isSuccess && (
-					<Box id={threadListId} w='full' h='full' overflow='hidden' flexShrink={1}>
+					<Box id={threadListId} width='full' h='full' overflow='hidden' flexShrink={1}>
 						{items.length === 0 && <ContextualbarEmptyContent title={t('No_Threads')} />}
 						{items.length > 0 && (
 							<VirtualizedScrollbars>

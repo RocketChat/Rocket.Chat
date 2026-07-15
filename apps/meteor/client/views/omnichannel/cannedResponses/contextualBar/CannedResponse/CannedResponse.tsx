@@ -82,7 +82,7 @@ const CannedResponse = ({
 						</Box>
 						<Box display='flex' flexDirection='row'>
 							{tags && tags.length > 0 ? (
-								<Box display='flex' w='full' flexDirection='row' mbs='8px' flexWrap='wrap'>
+								<Box display='flex' width='full' flexDirection='row' mbs='8px' flexWrap='wrap'>
 									{tags.map((tag: string, idx: number) => (
 										<Box key={idx} mie='4px' mbe='4px'>
 											<Tag>{tag}</Tag>

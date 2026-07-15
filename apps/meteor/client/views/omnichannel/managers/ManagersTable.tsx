@@ -72,7 +72,7 @@ const ManagersTable = () => {
 			>
 				{t('Email')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='remove' w='x60'>
+			<GenericTableHeaderCell key='remove' width='x60'>
 				{t('Remove')}
 			</GenericTableHeaderCell>
 		</>

@@ -16,7 +16,7 @@ const EditableLabel = (props: ComponentProps<typeof Input>) => {
 		<Box
 			position='relative'
 			className='rc-editableLabel'
-			w='100%'
+			width='100%'
 			h='max-content'
 			display='flex'
 			alignItems='center'

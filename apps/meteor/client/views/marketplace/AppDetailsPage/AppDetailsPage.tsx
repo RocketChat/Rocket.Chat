@@ -109,7 +109,7 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps) => {
 			<Page flexDirection='column' h='full'>
 				<PageHeader title={t('App_Info')} onClickBack={handleReturn} />
 				<PageScrollableContentWithShadow pi={24} pbs={24} pbe={0} h='full'>
-					<Box w='full' alignSelf='center' h='full' display='flex' flexDirection='column'>
+					<Box width='full' alignSelf='center' h='full' display='flex' flexDirection='column'>
 						{!appData && <AppDetailsPageLoading />}
 						{appData && (
 							<>

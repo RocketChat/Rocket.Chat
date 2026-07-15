@@ -101,11 +101,11 @@ export const ChangePassphrase = () => {
 			<Box is='p' fontScale='p1' id={e2ePasswordExplanationId}>
 				<Trans i18nKey='E2E_Encryption_Password_Explanation' />
 			</Box>
-			<Box mbs={36} w='full'>
+			<Box mbs={36} width='full'>
 				<Box is='h3' fontScale='h4' mbe={12}>
 					{t('Change_E2EE_password')}
 				</Box>
-				<FieldGroup w='full'>
+				<FieldGroup width='full'>
 					<Field>
 						<FieldLabel htmlFor={passphraseId}>{t('New_E2EE_password')}</FieldLabel>
 						<FieldRow>

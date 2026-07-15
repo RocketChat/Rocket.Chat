@@ -81,7 +81,16 @@ const AccessibilityPage = () => {
 		<Page>
 			<PageHeader title={t('Accessibility_and_Appearance')} />
 			<PageScrollableContentWithShadow>
-				<Box is='form' id={pageFormId} onSubmit={handleSubmit(handleSaveData)} maxWidth='x600' w='full' alignSelf='center' mb={40} mi={36}>
+				<Box
+					is='form'
+					id={pageFormId}
+					onSubmit={handleSubmit(handleSaveData)}
+					maxWidth='x600'
+					width='full'
+					alignSelf='center'
+					mb={40}
+					mi={36}
+				>
 					<Box fontScale='p1' mbe={24}>
 						<Box pb={16} is='p'>
 							{t('Accessibility_activation')}

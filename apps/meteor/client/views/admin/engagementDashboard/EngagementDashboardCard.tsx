@@ -14,7 +14,7 @@ const EngagementDashboardCard = ({ children, title = undefined }: EngagementDash
 			{title && <CardTitle>{title}</CardTitle>}
 			<CardBody>
 				<EngagementDashboardCardErrorBoundary>
-					<Box w='full'>{children}</Box>
+					<Box width='full'>{children}</Box>
 				</EngagementDashboardCardErrorBoundary>
 			</CardBody>
 		</Card>

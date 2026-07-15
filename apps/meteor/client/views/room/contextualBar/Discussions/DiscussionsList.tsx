@@ -92,10 +92,10 @@ function DiscussionsList({
 					</Callout>
 				)}
 				{isSuccess && (
-					<Box id={discussionListId} w='full' h='full' overflow='hidden' flexShrink={1}>
+					<Box id={discussionListId} width='full' h='full' overflow='hidden' flexShrink={1}>
 						{discussions.length === 0 && <ContextualbarEmptyContent title={t('No_Discussions_found')} />}
 						{discussions.length > 0 && (
-							<Box h='full' w='full' style={{ minHeight: 0 }}>
+							<Box h='full' width='full' style={{ minHeight: 0 }}>
 								<PaginatedVirtualList
 									items={discussions}
 									totalCount={itemCount}

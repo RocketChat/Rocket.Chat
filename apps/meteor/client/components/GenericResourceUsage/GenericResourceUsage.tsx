@@ -27,7 +27,7 @@ const GenericResourceUsage = ({
 	return (
 		<Box
 			title={tooltip}
-			w='x180'
+			width='x180'
 			h='x40'
 			mi={8}
 			fontScale='c1'

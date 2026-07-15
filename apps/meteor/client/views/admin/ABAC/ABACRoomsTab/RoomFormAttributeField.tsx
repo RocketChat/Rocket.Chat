@@ -65,7 +65,7 @@ const RoomFormAttributeField = ({
 	}, [attributeList, keyField.value]);
 
 	return (
-		<Box display='flex' flexDirection='column' w='full'>
+		<Box display='flex' flexDirection='column' width='full'>
 			<FieldRow>
 				<SelectFiltered
 					{...keyField}

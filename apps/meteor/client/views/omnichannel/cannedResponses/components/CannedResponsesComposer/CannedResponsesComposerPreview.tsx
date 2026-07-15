@@ -10,7 +10,7 @@ const CannedResponsesComposerPreview = ({ text }: CannedResponsesComposerPreview
 
 	return (
 		<Box style={{ wordBreak: 'normal' }} display='flex' flexDirection='column' pb={0} pi={12} rcx-box--animated rcx-input-box__wrapper>
-			<MarkdownText w='full' flexGrow={1} content={textM} parseEmoji={true} />
+			<MarkdownText width='full' flexGrow={1} content={textM} parseEmoji={true} />
 		</Box>
 	);
 };

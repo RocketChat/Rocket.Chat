@@ -33,7 +33,7 @@ const AppInstallPage = () => {
 		<Page flexDirection='column'>
 			<PageHeader title={t('App_Installation')} />
 			<PageScrollableContent>
-				<FieldGroup display='flex' flexDirection='column' alignSelf='center' maxWidth='x600' w='full'>
+				<FieldGroup display='flex' flexDirection='column' alignSelf='center' maxWidth='x600' width='full'>
 					<Field>
 						<FieldLabel htmlFor={fileField}>{t('App_Url_to_Install_From_File')}</FieldLabel>
 						<FieldRow>

@@ -36,7 +36,7 @@ const AppDetailsPageHeader = ({ app }: AppDetailsPageHeaderProps) => {
 	const incompatibleStatus = versionIncompatible ? appIncompatibleStatusProps() : undefined;
 
 	return (
-		<Box color='default' display='flex' flexDirection='row' mbe={20} w='full'>
+		<Box color='default' display='flex' flexDirection='row' mbe={20} width='full'>
 			<Box mie={32}>
 				<AppAvatar size='x124' iconFileContent={iconFileContent} iconFileData={iconFileData} />
 			</Box>

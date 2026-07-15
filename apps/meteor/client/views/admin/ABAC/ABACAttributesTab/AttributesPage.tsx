@@ -80,7 +80,7 @@ const AttributesPage = () => {
 						<GenericTableHeader>
 							<GenericTableHeaderCell>{t('Name')}</GenericTableHeaderCell>
 							<GenericTableHeaderCell>{t('Value')}</GenericTableHeaderCell>
-							<GenericTableHeaderCell key='spacer' w={40} />
+							<GenericTableHeaderCell key='spacer' width={40} />
 						</GenericTableHeader>
 						<GenericTableBody>
 							{data?.attributes?.map((attribute) => (

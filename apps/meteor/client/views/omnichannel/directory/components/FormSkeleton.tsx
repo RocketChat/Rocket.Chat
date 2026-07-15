@@ -4,7 +4,7 @@ import type { ComponentPropsWithoutRef } from 'react';
 export type FormSkeletonProps = ComponentPropsWithoutRef<typeof Box>;
 
 export const FormSkeleton = (props: FormSkeletonProps) => (
-	<Box w='full' pb={24} {...props}>
+	<Box width='full' pb={24} {...props}>
 		<Skeleton mbe={8} />
 		<Skeleton mbe={4} />
 		<Skeleton mbe={4} />

@@ -31,7 +31,7 @@ const CreateNewScreenContainer = () => {
 		<Scrollable horizontal>
 			<Box
 				ref={mergedRef}
-				w='100%'
+				width='100%'
 				height='250px'
 				borderBlockEnd='var(--default-border)'
 				position='fixed'

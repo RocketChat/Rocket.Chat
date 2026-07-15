@@ -95,7 +95,7 @@ const TeamsChannels = ({
 					onChange={setText}
 					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
-				<Box w='x144' mis={8}>
+				<Box width='x144' mis={8}>
 					<Select onChange={(val) => setType(val as 'all' | 'autoJoin')} value={type} options={options} />
 				</Box>
 			</ContextualbarSection>
@@ -117,7 +117,7 @@ const TeamsChannels = ({
 								{t('Total')}: {total}
 							</Box>
 						</Box>
-						<Box w='full' h='full' role='list' overflow='hidden' flexShrink={1}>
+						<Box width='full' h='full' role='list' overflow='hidden' flexShrink={1}>
 							<VirtualizedScrollbars>
 								<Virtuoso
 									totalCount={total}

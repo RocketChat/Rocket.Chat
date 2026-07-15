@@ -13,7 +13,7 @@ const PopoutDockPrompt = ({ onClosePopout }: PopoutDockPromptProps) => {
 			is='section'
 			mb={20}
 			p={24}
-			w='full'
+			width='full'
 			display='flex'
 			flexDirection='column'
 			justifyContent='center'

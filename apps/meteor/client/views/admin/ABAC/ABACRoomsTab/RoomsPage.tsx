@@ -106,7 +106,7 @@ const RoomsPage = () => {
 							<GenericTableHeaderCell>{t('Members')}</GenericTableHeaderCell>
 							<GenericTableHeaderCell>{t('ABAC_Attributes')}</GenericTableHeaderCell>
 							<GenericTableHeaderCell>{t('ABAC_Attribute_Values')}</GenericTableHeaderCell>
-							<GenericTableHeaderCell key='spacer' w={40} />
+							<GenericTableHeaderCell key='spacer' width={40} />
 						</GenericTableHeader>
 						<GenericTableBody>
 							{data?.rooms?.map((room) => (

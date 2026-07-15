@@ -119,7 +119,7 @@ const AccountProfilePage = () => {
 		<Page>
 			<PageHeader title={t('Profile')} />
 			<PageScrollableContentWithShadow>
-				<Box maxWidth='600px' w='full' alignSelf='center'>
+				<Box maxWidth='600px' width='full' alignSelf='center'>
 					<FormProvider {...methods}>
 						<AccountProfileForm id={profileFormId} />
 					</FormProvider>

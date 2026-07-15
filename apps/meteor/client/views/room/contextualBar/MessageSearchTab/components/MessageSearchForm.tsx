@@ -51,7 +51,7 @@ const MessageSearchForm = ({ provider, onSearch, searchListId, isSuccess }: Mess
 	const { t } = useTranslation();
 
 	return (
-		<Box is='form' onSubmit={submitHandler} w='full'>
+		<Box is='form' onSubmit={submitHandler} width='full'>
 			<Field>
 				<TextInput
 					endAddon={<Icon name='magnifier' size='x20' />}

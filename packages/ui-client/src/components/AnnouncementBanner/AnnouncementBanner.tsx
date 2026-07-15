@@ -41,7 +41,7 @@ const AnnouncementBanner = ({ children, className, onClick, ...props }: Announce
 			onClick={onClick}
 			{...props}
 		>
-			<Box withTruncatedText w='none'>
+			<Box withTruncatedText width='none'>
 				{children}
 			</Box>
 		</Box>

@@ -22,7 +22,7 @@ const Template: StoryFn<typeof Extended> = (args) => (
 		{...args}
 		title='John Doe'
 		subtitle={
-			<Box display='flex' flexDirection='row' w='full' alignItems='center'>
+			<Box display='flex' flexDirection='row' width='full' alignItems='center'>
 				<Box flexGrow='1' withTruncatedText>
 					John Doe: test 123
 				</Box>

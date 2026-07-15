@@ -52,7 +52,7 @@ const PrototypeRender = ({
 					>
 						<Box
 							position='relative'
-							w='100%'
+							width='100%'
 							h='100%'
 							className={css`
 								pointer-events: none;

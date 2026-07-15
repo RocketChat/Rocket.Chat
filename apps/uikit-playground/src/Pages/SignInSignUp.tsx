@@ -31,10 +31,10 @@ const SignInSignUp = ({ route }: SignInSignUpProps) => {
 	};
 	return (
 		<FlexContainer justifyContent='center' alignItems='center'>
-			<Box w='100%' flexGrow={1}>
+			<Box width='100%' flexGrow={1}>
 				<FlexContainer justifyContent='start' alignItems='center' direction='column'>
-					<Box w='max-content' h='100%'>
-						<Box w='180px' h='40px' mbs='100px'>
+					<Box width='max-content' h='100%'>
+						<Box width='180px' h='40px' mbs='100px'>
 							<RocketChatLogo />
 						</Box>
 						<Label mbs='20px' fontScale='hero'>
@@ -43,8 +43,8 @@ const SignInSignUp = ({ route }: SignInSignUpProps) => {
 						<Label mbs='10px' fontScale='p2'>
 							{labels[route].description}
 						</Label>
-						<InputBox mbs='20px' w='80%' maxHeight='50px' type='email' />
-						<Button mbs='20px' w='80%' primary>
+						<InputBox mbs='20px' width='80%' maxHeight='50px' type='email' />
+						<Button mbs='20px' width='80%' primary>
 							{labels[route].button}
 						</Button>
 						<Label mbs='20px' fontScale='p2'>

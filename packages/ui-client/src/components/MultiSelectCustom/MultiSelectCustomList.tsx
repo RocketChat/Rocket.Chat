@@ -37,7 +37,7 @@ const MultiSelectCustomList = ({
 	const filteredOptions = useFilteredOptions(text, options);
 
 	return (
-		<Tile overflow='auto' pb={12} pi={0} elevation='2' w='full' backgroundColor='light' borderRadius={2} maxHeight='50vh'>
+		<Tile overflow='auto' pb={12} pi={0} elevation='2' width='full' backgroundColor='light' borderRadius={2} maxHeight='50vh'>
 			{searchBarText && (
 				<Box pi={12} mbe={12}>
 					<SearchInput
@@ -59,7 +59,7 @@ const MultiSelectCustomList = ({
 					) : (
 						<Option key={option.id}>
 							{option.icon && <OptionIcon name={option.icon.name} color={getIconColor(option.icon.color)} mie={4} />}
-							<Box w='full' display='flex' justifyContent='space-between' is='label'>
+							<Box width='full' display='flex' justifyContent='space-between' is='label'>
 								{t(option.text as TranslationKey)}
 
 								<CheckBox checked={option.checked} pi={0} name={option.text} id={option.id} onChange={() => onSelected(option)} />

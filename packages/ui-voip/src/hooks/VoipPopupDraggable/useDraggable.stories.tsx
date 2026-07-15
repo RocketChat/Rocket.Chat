@@ -456,17 +456,17 @@ const MockedPage = () => {
 		<>
 			<Box display='flex' flexDirection='row' height='100vh' width='100vw' overflow='hidden'>
 				<Box {...overflowBoxProps}>
-					<Box w='full' h='full' data-testid='scrollable-1'>
+					<Box width='full' h='full' data-testid='scrollable-1'>
 						{getLorem(100)}
 					</Box>
 				</Box>
 				<Box {...overflowBoxProps}>
-					<Box w='full' h='full' data-testid='scrollable-2'>
+					<Box width='full' h='full' data-testid='scrollable-2'>
 						{getLorem(100)}
 					</Box>
 				</Box>
 				<Box {...overflowBoxProps}>
-					<Box w='full' h='full' data-testid='scrollable-3'>
+					<Box width='full' h='full' data-testid='scrollable-3'>
 						{getLorem(100)}
 					</Box>
 				</Box>
