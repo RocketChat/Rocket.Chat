@@ -2,8 +2,8 @@ import { useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { BaseAvatarProps } from './BaseAvatar';
-import BaseAvatar from './BaseAvatar';
+import type { BaseAvatarProps } from './BaseAvatar.js';
+import BaseAvatar from './BaseAvatar.js';
 
 type UsernameProp = {
 	username: string;
