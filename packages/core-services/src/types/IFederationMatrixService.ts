@@ -34,6 +34,6 @@ export interface IFederationMatrixService {
 	canUserAccessFederation(user: IUser): Promise<boolean>;
 	notifyRoomRead(params: { room: IRoomNativeFederated; userId: string; threadId?: string }): Promise<void>;
 	updateUserName(user: IUser): Promise<void>;
-	joinXMPPChatRoom(roomAlias: string, user: IUser): Promise<boolean>;
+	joinAppServiceRoom(roomAlias: string, user: IUser): Promise<boolean>;
 	saveFederationMessage(event: { event: PduForType<'m.room.message'>; event_id: EventID }): Promise<void>;
 }

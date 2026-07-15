@@ -69,7 +69,7 @@ export async function configureFederationMatrixSettings(settings: {
 		throw new Error('Invalid Federation domain');
 	}
 
-	await federationSDK.setConfig({
+	federationSDK.setConfig({
 		instanceId,
 		serverName,
 		keyRefreshInterval: Number.parseInt(process.env.MATRIX_KEY_REFRESH_INTERVAL || '60', 10),
@@ -106,14 +106,27 @@ export async function configureFederationMatrixSettings(settings: {
 			processPresence: processEDUPresence,
 			processReceipt: processEDUReceipt,
 		},
-		...(xmppEnabled && {
-			xmpp: {
-				bridgeURL: xmppBridgeURL,
-				hsToken: xmppBridgeHSToken,
-				asToken: xmppBridgeASToken,
-			},
-		}),
 	});
+
+	if (xmppEnabled) {
+		await federationSDK.registerAppService({
+			_id: 'xmpp',
+			url: xmppBridgeURL,
+			asToken: xmppBridgeASToken,
+			hsToken: xmppBridgeHSToken,
+			senderLocalpart: 'xmpp',
+			namespaces: {
+				users: [{ regex: '@_xmpp_.*', exclusive: true }],
+				aliases: [{ regex: '#_xmpp_.*', exclusive: true }],
+				rooms: [],
+			},
+			protocols: ['xmpp'],
+			rateLimited: false,
+			receiveEphemeral: true,
+		});
+	} else {
+		await federationSDK.unregisterAppService('xmpp');
+	}
 }
 
 export async function setupFederationMatrix() {

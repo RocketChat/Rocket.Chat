@@ -115,7 +115,7 @@ export const startFederationService = async (): Promise<void> => {
 				return;
 			}
 
-			const joined = await FederationMatrixService.joinXMPPChatRoom(channel, user);
+			const joined = await FederationMatrixService.joinAppServiceRoom(`_xmpp_${channel}`, user);
 
 			const lng = settings.get<string>('Language') || 'en';
 			if (joined) {
