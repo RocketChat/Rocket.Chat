@@ -10,12 +10,18 @@ import { SystemLogger } from '../logger/system';
 export async function userLogout(userId: string): Promise<string | boolean> {
 	const { workspaceRegistered } = await retrieveRegistrationStatus();
 
-	if (!workspaceRegistered || hasOfflineLicense()) {
+	if (!workspaceRegistered) {
 		return '';
 	}
 
 	if (!userId) {
 		return '';
+	}
+
+	// Offline (air-gapped) licenses forbid the outbound token-revocation call, but
+	// the local cloud credentials must still be destroyed on logout.
+	if (hasOfflineLicense()) {
+		return userLoggedOut(userId);
 	}
 
 	const user = await Users.findOneById(userId);
