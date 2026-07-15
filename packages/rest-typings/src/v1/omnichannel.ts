@@ -649,7 +649,7 @@ const POSTLivechatTagsDeleteSuccessResponseSchema = {
 
 export const POSTLivechatTagsDeleteSuccessResponse = ajv.compile<void>(POSTLivechatTagsDeleteSuccessResponseSchema);
 
-type LivechatTagsListProps = PaginatedRequest<{ text: string; viewAll?: 'true' | 'false'; department?: string }, 'name'>;
+type LivechatTagsListProps = PaginatedRequest<{ text?: string; viewAll?: 'true' | 'false'; department?: string }, 'name'>;
 
 const LivechatTagsListSchema = {
 	type: 'object',
@@ -683,7 +683,7 @@ const LivechatTagsListSchema = {
 			nullable: true,
 		},
 	},
-	required: ['text'],
+	required: [],
 	additionalProperties: false,
 };
 

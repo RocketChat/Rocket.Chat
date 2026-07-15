@@ -11,6 +11,7 @@ import type { IEmojiCustom } from './IEmojiCustom';
 import type { IIntegration } from './IIntegration';
 import type { IIntegrationHistory } from './IIntegrationHistory';
 import type { IInvite } from './IInvite';
+import type { ILivechatTag } from './ILivechatTag';
 import type { IMeApiUser } from './IMeApiUser';
 import type { IMessage } from './IMessage';
 import type { IModerationAudit, IModerationReport } from './IModerationReport';
@@ -60,6 +61,7 @@ export const schemas = typia.json.schemas<
 			| IIntegrationHistory
 			| IMeApiUser
 			| IReadReceiptWithUser
+			| ILivechatTag
 		),
 		CallHistoryItem,
 		ICustomUserStatus,

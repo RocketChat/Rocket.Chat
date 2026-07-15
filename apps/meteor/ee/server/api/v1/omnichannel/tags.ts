@@ -1,4 +1,7 @@
+import type { ILivechatTag, FindTagsResult } from '@rocket.chat/core-typings';
 import {
+	ajv,
+	isLivechatTagsListProps,
 	isPOSTLivechatTagsSaveParams,
 	POSTLivechatTagsSaveSuccessResponse,
 	isPOSTLivechatTagsDeleteParams,
@@ -6,6 +9,7 @@ import {
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
+	validateNotFoundErrorResponse,
 } from '@rocket.chat/rest-typings';
 
 import { findTags, findTagById } from './lib/tags';
@@ -14,58 +18,96 @@ import type { ExtractRoutesFromAPI } from '../../../../../server/api/ApiClass';
 import { getPaginationItems } from '../../../../../server/api/lib/getPaginationItems';
 import { LivechatEnterprise } from '../../../../app/livechat-enterprise/server/lib/LivechatEnterprise';
 
-API.v1.addRoute(
+const livechatTagsListResponseSchema = ajv.compile<FindTagsResult>({
+	type: 'object',
+	properties: {
+		tags: {
+			type: 'array',
+			items: { $ref: '#/components/schemas/ILivechatTag' },
+		},
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['tags', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
+const livechatTagResponseSchema = ajv.compile<ILivechatTag>({
+	allOf: [
+		{ $ref: '#/components/schemas/ILivechatTag' },
+		{
+			type: 'object',
+			properties: {
+				success: { type: 'boolean', enum: [true] },
+			},
+			required: ['success'],
+		},
+	],
+});
+
+API.v1.get(
 	'livechat/tags',
 	{
 		authRequired: true,
 		permissionsRequired: { GET: { permissions: ['view-l-room', 'manage-livechat-tags'], operation: 'hasAny' } },
 		license: ['livechat-enterprise'],
-	},
-	{
-		async get() {
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort } = await this.parseJsonQuery();
-			const { text, viewAll, department } = this.queryParams;
-
-			return API.v1.success(
-				await findTags({
-					userId: this.userId,
-					text,
-					department,
-					viewAll: viewAll === 'true',
-					pagination: {
-						offset,
-						count,
-						sort: typeof sort === 'string' ? JSON.parse(sort || '{}') : sort,
-					},
-				}),
-			);
+		query: isLivechatTagsListProps,
+		response: {
+			200: livechatTagsListResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort } = await this.parseJsonQuery();
+		const { text, viewAll, department } = this.queryParams;
+
+		return API.v1.success(
+			await findTags({
+				userId: this.userId,
+				text,
+				department,
+				viewAll: viewAll === 'true',
+				pagination: {
+					offset,
+					count,
+					sort: typeof sort === 'string' ? JSON.parse(sort || '{}') : sort,
+				},
+			}),
+		);
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'livechat/tags/:tagId',
 	{
 		authRequired: true,
 		permissionsRequired: { GET: { permissions: ['view-l-room', 'manage-livechat-tags'], operation: 'hasAny' } },
 		license: ['livechat-enterprise'],
-	},
-	{
-		async get() {
-			const { tagId } = this.urlParams;
-
-			const tag = await findTagById({
-				userId: this.userId,
-				tagId,
-			});
-
-			if (!tag) {
-				return API.v1.notFound('Tag not found');
-			}
-
-			return API.v1.success(tag);
+		response: {
+			200: livechatTagResponseSchema,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+			404: validateNotFoundErrorResponse,
 		},
+	},
+	async function action() {
+		const { tagId } = this.urlParams;
+
+		const tag = await findTagById({
+			userId: this.userId,
+			tagId,
+		});
+
+		if (!tag) {
+			return API.v1.notFound('Tag not found');
+		}
+
+		return API.v1.success(tag);
 	},
 );
 
