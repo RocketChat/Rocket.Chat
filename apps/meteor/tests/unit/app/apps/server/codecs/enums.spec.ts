@@ -104,7 +104,7 @@ describe('apps converter enum codecs', () => {
 	});
 
 	describe('UserStatusConnectionCodec', () => {
-		const inputs = ['offline', 'online', 'away', 'busy', undefined, 'weird'];
+		const inputs = ['offline', 'online', 'away', 'busy', '', undefined, 'weird'];
 
 		it('decode matches the legacy _convertStatusConnectionToEnum for every input', () => {
 			for (const input of inputs) {

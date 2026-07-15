@@ -16,7 +16,11 @@ export class AppUsersConverter implements IAppUsersConverter {
 	}
 
 	async convertByUsername(username: IUser['username']): Promise<IAppsUser | undefined> {
-		const user = await Users.findOneByUsername(username as string);
+		if (!username) {
+			return undefined;
+		}
+
+		const user = await Users.findOneByUsername(username);
 
 		return this.convertToApp(user);
 	}
