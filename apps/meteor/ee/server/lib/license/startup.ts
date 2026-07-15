@@ -146,6 +146,10 @@ export const startLicense = async () => {
 
 			logOfflineLicense();
 			License.onValidateLicense(logOfflineLicense);
+			// Also run on invalidate/remove so the once-per-activation flag resets and a
+			// subsequently re-applied offline license is logged again.
+			License.onInvalidateLicense(logOfflineLicense);
+			License.onRemoveLicense(logOfflineLicense);
 
 			// After the current license is already loaded, watch the setting value to react to new licenses being applied.
 			settings.change<string>('Enterprise_License', (license) => applyLicenseOrRemove(license, true));

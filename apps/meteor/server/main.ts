@@ -9,6 +9,7 @@ import './settings/definitions';
 
 import { startRestAPI } from './api/api';
 import { configureServer } from './configuration';
+import { SystemLogger } from './lib/logger/system';
 import { registerServices } from './services/startup';
 import { settings } from './settings';
 import { startup } from './startup';
@@ -33,7 +34,11 @@ await startRocketChat();
 // Cron jobs start only after startRocketChat() has applied the license, so jobs
 // that contact Rocket.Chat Cloud on boot (e.g. the usage report) respect the
 // offline license flag from their very first run.
-setImmediate(() => startCronJobs());
+setImmediate(() => {
+	startCronJobs().catch((err) => {
+		SystemLogger.error({ msg: 'Failed to start cron jobs', err });
+	});
+});
 
 await startupApp();
 await startRestAPI();

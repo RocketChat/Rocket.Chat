@@ -84,6 +84,8 @@ export function cloudFetch(proof: CloudEgressProof, input: string, options?: Ext
 
 The developer experience does the enforcement: to call the function you need the token; the only way to get the token is the checker whose name and JSDoc explain the rule; the `| undefined` return forces an explicit decision about the denied case (skip silently vs. throw); and truthiness narrowing makes the happy path read naturally.
 
+The proof is compile-time evidence, not the runtime gate itself: `cloudFetch` **re-validates `hasOfflineLicense()` immediately before dispatching** and drops the request if the license changed while the operation was in flight. The proof parameter guarantees the check can't be forgotten; the dispatch-time re-check guarantees it can't go stale.
+
 Inner helpers that are only reachable from a guarded entry point take the proof as a parameter rather than re-checking — the signature documents "this function performs cloud I/O / module-X work", and the compiler walks the requirement up the call graph to wherever the proof is legitimately acquired.
 
 ## The staleness rule: acquire per attempt, never cache

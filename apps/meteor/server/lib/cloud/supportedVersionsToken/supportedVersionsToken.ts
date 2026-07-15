@@ -114,6 +114,12 @@ const getSupportedVersionsFromCloud = async () => {
 
 	const headers = await generateWorkspaceBearerHttpHeader();
 
+	// Re-validated at dispatch time: an offline license applied while this async
+	// operation was in flight must still suppress the request.
+	if (License.hasOfflineLicense()) {
+		return { success: true, result: undefined } as const;
+	}
+
 	const response = await handleResponse<SupportedVersions>(
 		fetch(releaseEndpoint, {
 			headers,
