@@ -22,7 +22,7 @@ export interface IBusinessHourWorkHour {
 	start: IBusinessHourTime;
 	finish: IBusinessHourTime;
 	open: boolean;
-	code: unknown;
+	code?: unknown;
 }
 
 export interface IBusinessHourTimezone {
