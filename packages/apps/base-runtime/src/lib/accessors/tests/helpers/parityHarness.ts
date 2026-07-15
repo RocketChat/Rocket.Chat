@@ -3,7 +3,7 @@ import type * as Messenger from '../../../messenger';
 /**
  * Transitional parity harness for the accessor-consolidation migration.
  *
- * MOVE accessors (see docs/base-runtime-accessor-consolidation.md) are *live in
+ * MOVE accessors (see docs/proposals/apps-accessor-consolidation/README.md) are *live in
  * production today* via the host proxy path, so a subtly wrong port - a dropped
  * default, an off-by-one on a cap, a renamed sort field - is an immediate
  * observable regression. Ordinary ported unit tests only prove the new local
@@ -62,7 +62,10 @@ export function createRecordingSender(responses: CannedResponses = {}): Recordin
 	const calls: RecordedCall[] = [];
 
 	const sender = ((requestDescriptor: { method: string; params?: unknown }) => {
-		const params = Array.isArray(requestDescriptor.params) ? requestDescriptor.params : [];
+		// Deep-snapshot the params at emit time (including nested objects/arrays) so a
+		// later accessor mutation of a shared object cannot rewrite a call we already
+		// recorded - the recorded sequence must reflect the wire traffic as it was sent.
+		const params = structuredClone(Array.isArray(requestDescriptor.params) ? requestDescriptor.params : []);
 		const call: RecordedCall = { method: requestDescriptor.method, params };
 		calls.push(call);
 

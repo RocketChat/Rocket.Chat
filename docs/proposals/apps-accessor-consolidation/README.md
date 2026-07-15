@@ -258,7 +258,7 @@ manager / the app's own storage item"*. Rather than keeping a residual `accessor
 them, add one internal bridge so they ride the existing, permission-checked, appId-substituting
 `bridges:*` channel:
 
-```
+```text
 AppResourceBridge (host-side, internal — not part of the app-facing definition surface)
 ├── doProvideSetting(setting, appId)            → ProxiedApp.getStorageItem() mutation (SettingsExtend semantics)
 ├── doGetAppSetting(id, appId)                  → app.getStorageItem().settings[id] (SettingRead semantics)

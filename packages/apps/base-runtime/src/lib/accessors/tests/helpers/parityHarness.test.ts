@@ -44,7 +44,7 @@ describe('parityHarness', () => {
 	});
 
 	it('pins the host-bound traffic a MOVE-style accessor emits (worked example: ModifyExtender.extendMessage + finish)', async () => {
-		const { sender, methods } = createRecordingSender({
+		const { sender, emitted } = createRecordingSender({
 			'bridges:getMessageBridge:doGetById': { id: 'message-id', text: 'original' },
 		});
 
@@ -55,7 +55,23 @@ describe('parityHarness', () => {
 		await extender.finish(messageExtender);
 
 		// This is the parity assertion a Phase 1-2 port must keep satisfying: the
-		// exact ordered bridge traffic, normalized to the APP_ID sentinel.
-		assert.deepStrictEqual(methods(), ['bridges:getMessageBridge:doGetById', 'bridges:getMessageBridge:doUpdate']);
+		// exact ordered bridge traffic *and* its params, normalized to the APP_ID
+		// sentinel.
+		const calls = emitted();
+		assert.deepStrictEqual(
+			calls.map((c) => c.method),
+			['bridges:getMessageBridge:doGetById', 'bridges:getMessageBridge:doUpdate'],
+		);
+
+		// extendMessage looks the message up by id; the caller identity is the APP_ID sentinel.
+		assert.deepStrictEqual(calls[0].params, ['message-id', 'APP_ID']);
+
+		// finish writes the mutated message back, again trailed by the APP_ID sentinel.
+		// (editedAt is a fresh Date, so we assert the fields the accessor is responsible for.)
+		const [updatedMessage, appId] = calls[1].params as [Record<string, unknown>, string];
+		assert.strictEqual(appId, 'APP_ID');
+		assert.strictEqual(updatedMessage.id, 'message-id');
+		assert.deepStrictEqual(updatedMessage.editor, { id: 'user-id' });
+		assert.deepStrictEqual(updatedMessage.customFields, { key: 'value' });
 	});
 });
