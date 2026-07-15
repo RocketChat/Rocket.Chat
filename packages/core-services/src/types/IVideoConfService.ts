@@ -11,6 +11,7 @@ import type {
 	VideoConferenceCapabilities,
 	VideoConferenceCreateData,
 	VideoConferenceInstructions,
+	VideoConferenceWithDiscussion,
 } from '@rocket.chat/core-typings';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
@@ -29,7 +30,10 @@ export interface IVideoConfService {
 	cancel(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void>;
 	get(callId: VideoConference['_id']): Promise<Omit<VideoConference, 'providerData'> | null>;
 	getUnfiltered(callId: VideoConference['_id']): Promise<VideoConference | null>;
-	list(roomId: IRoom['_id'], pagination?: { offset?: number; count?: number }): Promise<PaginatedResult<{ data: VideoConference[] }>>;
+	list(
+		roomId: IRoom['_id'],
+		pagination?: { offset?: number; count?: number },
+	): Promise<PaginatedResult<{ data: VideoConferenceWithDiscussion[] }>>;
 	setProviderData(callId: VideoConference['_id'], data: VideoConference['providerData'] | undefined): Promise<void>;
 	setEndedBy(callId: VideoConference['_id'], endedBy: IUser['_id']): Promise<void>;
 	setEndedAt(callId: VideoConference['_id'], endedAt: Date): Promise<void>;
@@ -47,6 +51,16 @@ export interface IVideoConfService {
 		params: { callId: VideoConference['_id']; uid: IUser['_id']; rid: IRoom['_id'] },
 	): Promise<boolean>;
 	assignDiscussionToConference(callId: VideoConference['_id'], rid: IRoom['_id'] | undefined): Promise<void>;
+	createConferenceDiscussionWithParticipants(
+		uid: IUser['_id'],
+		callId: VideoConference['_id'],
+		usernames: NonNullable<IUser['username']>[],
+	): Promise<IRoom['_id']>;
+	addUsersToConferenceRoom(
+		uid: IUser['_id'],
+		callId: VideoConference['_id'],
+		usernames: NonNullable<IUser['username']>[],
+	): Promise<IRoom['_id']>;
 	createVoIP(data: InsertionModel<IVoIPVideoConference>): Promise<IVoIPVideoConference['_id'] | undefined>;
 	joinCall(
 		call: ExternalVideoConference,
@@ -56,5 +70,9 @@ export interface IVideoConfService {
 	createEscalatedConference(
 		data: Required<Pick<IGroupVideoConference, 'rid' | 'mediaCallIds'>>,
 		user: IRegisterUser,
+		options: { createDiscussion: boolean },
 	): Promise<IGroupVideoConference | null>;
+	getRidForExternalConference(): Promise<string | null>;
+	makePersistentChatUrlForConference(conferenceId: string): Promise<string>;
+	initializeOrJoinScheduledConference(sipAlias: string, uid: IUser['_id']): Promise<string>;
 }

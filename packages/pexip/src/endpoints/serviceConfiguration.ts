@@ -9,7 +9,7 @@ import { PexipEndpoint } from './endpoint';
 
 export class ServerConfigurationEndpoint extends PexipEndpoint {
 	public async get(serviceRequest: SerializedServiceConfigurationRequest): Promise<ServiceConfiguration | null> {
-		const { local_alias: alias, protocol = null, remote_alias: participantUri = null } = serviceRequest;
+		const { local_alias: alias, protocol = null, remote_alias: participantUri = null, call_direction: direction } = serviceRequest;
 		logger.debug({ msg: 'Processing Pexip Policy Server Request', alias, protocol });
 
 		if (!alias) {
@@ -18,7 +18,7 @@ export class ServerConfigurationEndpoint extends PexipEndpoint {
 		}
 
 		const identification = this.getIdentificationFromAlias(alias);
-		const participantSipUri = protocol === 'sip' ? participantUri : null;
+		const participantSipUri = protocol === 'sip' && direction === 'dial_in' ? participantUri : null;
 
 		return this.getServiceConfigurationForIdentification(identification, participantSipUri);
 	}
@@ -75,7 +75,7 @@ export class ServerConfigurationEndpoint extends PexipEndpoint {
 			return false;
 		}
 
-		const participantSipExtension = this.getIdentificationFromAlias(participantUri);
+		const participantSipExtension = this.normalizeSipExtension(this.getIdentificationFromAlias(participantUri));
 
 		if (!participantSipExtension) {
 			logger.debug({ msg: 'Someone connected to a Pexip Conference via SIP, but we could not identify them.' });
@@ -98,6 +98,7 @@ export class ServerConfigurationEndpoint extends PexipEndpoint {
 				// Check if the user is already linked to the conference
 				if (linkedMediaCallIds?.length) {
 					if (await MediaCalls.isUserSipExtensionInCallIds(participantSipExtension, linkedMediaCallIds)) {
+						logger.debug({ msg: 'User already had a media call linked to the conference' });
 						return true;
 					}
 				}
@@ -110,6 +111,7 @@ export class ServerConfigurationEndpoint extends PexipEndpoint {
 
 			const updateResult = await VideoConferenceModel.addMediaCallIdByConferenceId(conference._id, mediaCallId);
 			if (updateResult.modifiedCount) {
+				logger.debug({ msg: 'Media Call linked to Conference', conference: conference._id, call: mediaCallId });
 				await MediaCall.flagAsRemotelyEscalatedByCallId(mediaCallId);
 			}
 		} catch (err) {
