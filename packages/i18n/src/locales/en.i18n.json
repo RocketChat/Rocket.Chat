@@ -170,8 +170,10 @@
   "AI_Intelligent_Search_Pipeline_ID": "Pipeline ID",
   "AI_Intelligent_Search_Pipeline_ID_Description": "Identifier of the target pipeline used for semantic search requests.",
   "Intelligent_Search_page_empty_state": "Use the top search bar to ask a question.",
-  "AI_Search_related_messages": "{{count}} related message",
-  "AI_Search_related_messages_plural": "{{count}} related messages",
+  "AI_Search_related_messages": {
+    "one": "{{count}} related message",
+    "other": "{{count}} related messages"
+  },
   "Intelligent_Search_scope_all_rooms": "Searching rooms you can access where AI Search is enabled",
   "Intelligent_Search_start_from_top_bar": "Open AI Search from the top search bar to search your workspace semantically.",
   "View_all_results": "View all results",
