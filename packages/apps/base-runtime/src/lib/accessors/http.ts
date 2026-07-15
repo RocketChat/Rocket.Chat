@@ -79,7 +79,7 @@ export class Http implements IHttp {
 
 		// `appId` here is a field inside the payload object, not a top-level positional
 		// param, so the host's `'APP_ID'` sentinel substitution cannot reach it - we send
-		// the resolved id. See docs/base-runtime-app-id-exceptions.md (bucket C).
+		// the resolved id. See docs/proposals/apps-accessor-consolidation/base-runtime-app-id-exceptions.md (bucket C).
 		let response = await this.bridges.getHttpBridge().doCall({
 			appId: AppObjectRegistry.get<string>('id'),
 			method,

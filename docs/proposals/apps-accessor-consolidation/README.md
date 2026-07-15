@@ -518,7 +518,7 @@ tests are deleted in that same PR — gated, for MOVE accessors, on the parity c
    positional arg (§5.1). → `base-runtime/src/lib/bridges/RemoteBridges.ts` (+ tests).
 2. ✅ Produce the **APP_ID exception list** (§5.2) — the audited set of `do*` params where the appId
    is an app-supplied argument, not caller identity (known seed: the three `ModerationBridge`
-   methods). → `docs/base-runtime-app-id-exceptions.md`. The audit surfaced a **second** exception
+   methods). → `docs/proposals/apps-accessor-consolidation/base-runtime-app-id-exceptions.md`. The audit surfaced a **second** exception
    category (bucket C): the host's sentinel substitution rewrites only *top-level positional* params,
    so a nested identity field like `Http.doCall`'s payload `appId` cannot use the sentinel and keeps
    the resolved id.
