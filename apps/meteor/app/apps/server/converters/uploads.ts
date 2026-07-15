@@ -44,10 +44,11 @@ export class AppUploadsConverter implements IAppUploadsConverter {
 			updatedAt: '_updatedAt',
 			uploadedAt: 'uploadedAt',
 			room: async (upload: IUpload) => {
-				const result = await this.orch
-					.getConverters()
-					.get('rooms')
-					.convertById(upload.rid as string);
+				if (!upload.rid) {
+					return undefined;
+				}
+
+				const result = await this.orch.getConverters().get('rooms').convertById(upload.rid);
 				delete (upload as { rid?: string }).rid;
 				return result;
 			},
