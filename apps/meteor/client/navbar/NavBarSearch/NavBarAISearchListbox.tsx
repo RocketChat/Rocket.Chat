@@ -42,6 +42,7 @@ const NavBarAISearchListBox = ({ state, overlayProps, aiSearchActive, aiSearchAv
 	const { items: rooms, isLoading } = useAISearchRooms(aiSearchActive ? aiItems.searchText : filterText);
 	const itemCount = rooms.length + aiItems.intelligent.length + aiItems.filterSuggestions.length;
 	const isSearchLoading = isLoading || isFetching;
+	const listboxLabel = aiSearchActive ? t('AI_Search_results') : t('Channels');
 
 	return (
 		<Tile
@@ -59,14 +60,7 @@ const NavBarAISearchListBox = ({ state, overlayProps, aiSearchActive, aiSearchAv
 		>
 			<ResultsLiveRegion shouldAnnounce={!isSearchLoading} itemCount={itemCount} isLoading={isSearchLoading} />
 			<CustomScrollbars>
-				<div
-					{...overlayProps}
-					role='listbox'
-					aria-label={t('AI_Search_results')}
-					aria-busy={isSearchLoading}
-					tabIndex={-1}
-					onKeyDown={handleKeyDown}
-				>
+				<div {...overlayProps} role='listbox' aria-label={listboxLabel} aria-busy={isSearchLoading} tabIndex={-1} onKeyDown={handleKeyDown}>
 					<NavBarSearchIntelligentSection items={aiItems.intelligent} onSelect={handleSelect} onClose={state.close} />
 					<NavBarSearchFilterSuggestions suggestions={aiItems.filterSuggestions} />
 					<NavBarSearchRoomSection
