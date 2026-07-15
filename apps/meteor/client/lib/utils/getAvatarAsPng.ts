@@ -27,6 +27,7 @@ export const getAvatarAsPng = (username: IUser['username'], cb: (dataURL: string
 
 	image.onload = onLoad;
 	image.onerror = onError;
+	image.crossOrigin = 'anonymous';
 	image.src = getUserAvatarURL(username || '') as string;
 
 	return onError;

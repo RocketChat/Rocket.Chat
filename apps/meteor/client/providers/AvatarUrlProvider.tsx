@@ -17,15 +17,15 @@ const AvatarUrlProvider = ({ children }: AvatarUrlProviderProps) => {
 		function getUserPathAvatar(...args: any): string {
 			if (typeof args[0] === 'string') {
 				const [username, etag] = args;
-				return getURL(`/avatar/${username}${etag ? `?etag=${etag}` : ''}`);
+				return getURL(`/avatar/${username}${etag ? `?etag=${etag}` : ''}`, { cdn: false });
 			}
 			const [params] = args;
 			if ('userId' in params) {
 				const { userId, etag } = params;
-				return getURL(`/avatar/uid/${userId}${etag ? `?etag=${etag}` : ''}`);
+				return getURL(`/avatar/uid/${userId}${etag ? `?etag=${etag}` : ''}`, { cdn: false });
 			}
 			const { username, etag } = params;
-			return getURL(`/avatar/${username}${etag ? `?etag=${etag}` : ''}`);
+			return getURL(`/avatar/${username}${etag ? `?etag=${etag}` : ''}`, { cdn: false });
 		}
 		return {
 			getUserPathAvatar,
