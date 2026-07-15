@@ -3,7 +3,7 @@ import { Users } from '@rocket.chat/models';
 import { RoutingManager } from '../../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../../app/settings/server';
 import type { IRoutingManagerConfig } from '../../../../../../definition/IRoutingManagerConfig';
-import { getChatLimitsQuery } from '../../hooks/applySimultaneousChatsRestrictions';
+import { getChatLimitsQuery } from '../../../../../server/hooks/omnichannel/applySimultaneousChatsRestrictions';
 import { logger } from '../logger';
 
 /* Load Balancing Queuing method:

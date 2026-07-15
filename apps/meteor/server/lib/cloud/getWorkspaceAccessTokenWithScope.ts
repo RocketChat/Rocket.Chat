@@ -2,9 +2,9 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { getRedirectUri } from './getRedirectUri';
 import { CloudWorkspaceAccessTokenError } from './getWorkspaceAccessToken';
+import { workspaceScopes } from './oauthScopes';
 import { removeWorkspaceRegistrationInfo } from './removeWorkspaceRegistrationInfo';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
-import { workspaceScopes } from '../../../app/cloud/server/oauthScopes';
 import { settings } from '../../../app/settings/server';
 import { SystemLogger } from '../logger/system';
 

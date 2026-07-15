@@ -2,8 +2,8 @@ import type { OAuthConfiguration } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import passport from 'passport';
 
-import { CustomOAuth } from '../../../app/custom-oauth/server/custom_oauth_server';
 import { settings } from '../../../app/settings/server';
+import { CustomOAuth } from '../../lib/auth-providers/custom-oauth/custom_oauth_server';
 import { addPassportCustomOAuth } from '../../lib/oauth/addPassportCustomOAuth';
 
 const NEXTCLOUD_PATHS = {

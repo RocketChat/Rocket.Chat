@@ -4,7 +4,7 @@ import { getHeader } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
-import type { ILoginAttempt } from '../../app/authentication/server/ILoginAttempt';
+import type { ILoginAttempt } from '../lib/auth/ILoginAttempt';
 import { deviceManagementEvents } from '../services/device-management/events';
 import { sauEvents } from '../services/sauMonitor/events';
 

@@ -1,8 +1,8 @@
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 
-import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
 import { settings } from '../../../../app/settings/server';
 import { Info } from '../../../../app/utils/rocketchat.info';
+import { getWorkspaceAccessToken } from '../../../../server/lib/cloud';
 import { Apps } from '../orchestrator';
 
 type MarketplaceNotificationType = 'install' | 'update' | 'uninstall';

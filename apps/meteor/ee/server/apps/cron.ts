@@ -4,7 +4,7 @@ import { cronJobs } from '@rocket.chat/cron';
 import { Settings, Users } from '@rocket.chat/models';
 
 import { Apps } from './orchestrator';
-import { getWorkspaceAccessToken } from '../../../app/cloud/server';
+import { getWorkspaceAccessToken } from '../../../server/lib/cloud';
 import { i18n } from '../../../server/lib/i18n';
 import { sendMessagesToAdmins } from '../../../server/lib/sendMessagesToAdmins';
 

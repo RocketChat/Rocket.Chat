@@ -3,8 +3,8 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
+import * as Mailer from '../../../../server/lib/notifications/email/api';
 import { notifyOnSettingChanged } from '../../../lib/server/lib/notifyListener';
-import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 
 let html = '';

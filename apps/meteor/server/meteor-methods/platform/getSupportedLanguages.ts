@@ -3,7 +3,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
-import { getSupportedLanguages } from '../../../app/autotranslate/server/functions/getSupportedLanguages';
+import { getSupportedLanguages } from '../../lib/autotranslate/functions/getSupportedLanguages';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

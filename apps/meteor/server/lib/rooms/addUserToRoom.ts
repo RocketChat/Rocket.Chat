@@ -8,9 +8,9 @@ import { Meteor } from 'meteor/meteor';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { callbacks } from '../callbacks';
 import { roomCoordinator } from './roomCoordinator';
-import { beforeAddUserToRoom as beforeAddUserToRoomPatch } from '../../../app/lib/server/lib/beforeAddUserToRoom';
 import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../app/settings/server';
+import { beforeAddUserToRoom as beforeAddUserToRoomPatch } from '../../hooks/rooms/beforeAddUserToRoom';
 import { beforeAddUserToRoom } from '../callbacks/beforeAddUserToRoom';
 
 /**

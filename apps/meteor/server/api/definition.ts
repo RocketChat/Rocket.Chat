@@ -5,8 +5,8 @@ import type { Logger } from '@rocket.chat/logger';
 import type { Method, MethodOf, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type { ValidateFunction } from 'ajv';
 
-import type { ITwoFactorOptions } from '../../app/2fa/server/code';
 import type { DeprecationLoggerNextPlannedVersion } from '../../app/lib/server/lib/deprecationWarningLogger';
+import type { ITwoFactorOptions } from '../lib/2fa/code';
 
 export type SuccessStatusCodes = Exclude<Range<208>, Range<200>>;
 

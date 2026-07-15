@@ -7,13 +7,13 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 
-import { RocketChatFile } from '../../../app/file/server';
-import { FileUpload } from '../../../app/file-upload/server';
 import { settings } from '../../../app/settings/server';
 import { isRenderableImageType } from '../../../lib/renderableImageTypes';
 import { onceTransactionCommitedSuccessfully } from '../../database/utils';
 import { hasPermissionAsync } from '../authorization/hasPermission';
 import { SystemLogger } from '../logger/system';
+import { RocketChatFile } from '../media/file';
+import { FileUpload } from '../media/file-upload';
 
 export const setAvatarFromServiceWithValidation = async (
 	userId: string,

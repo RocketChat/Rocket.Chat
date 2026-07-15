@@ -4,10 +4,10 @@ import type { IMessage, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { afterSaveMessage } from '../../../app/lib/server/lib/afterSaveMessage';
 import { notifyOnRoomChangedById } from '../../../app/lib/server/lib/notifyListener';
 import { validateCustomMessageFields } from '../../../app/lib/server/lib/validateCustomMessageFields';
 import { settings } from '../../../app/settings/server';
+import { afterSaveMessage } from '../../hooks/messages/afterSaveMessage';
 
 export const updateMessage = async function (
 	{

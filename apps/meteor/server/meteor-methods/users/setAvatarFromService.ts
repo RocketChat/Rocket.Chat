@@ -3,6 +3,7 @@ import { Match, check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
+import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
 import { setAvatarFromServiceWithValidation } from '../../lib/users/setUserAvatar';
 
 declare module '@rocket.chat/ddp-client' {
@@ -14,6 +15,8 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async setAvatarFromService(dataURI, contentType, service, targetUserId) {
+		methodDeprecationLogger.method('setAvatarFromService', '9.0.0', '/v1/users.setAvatar');
+
 		check(dataURI, String);
 		check(contentType, Match.Optional(String));
 		check(service, Match.Optional(String));
