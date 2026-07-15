@@ -1,0 +1,16 @@
+apps/meteor/tests/unit/server/lib/import/SlackImporter.spec.ts
+  h_4c386397e672f4 56,68-69
+apps/meteor/server/lib/ldap/Connection.spec.ts
+  h_4c386397e672f4 9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "d925c2dd440e42f4750daad46cb0d9c15660ef1a",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
