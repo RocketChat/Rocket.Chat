@@ -20,7 +20,7 @@ const PageHeaderNoShadow = ({ children = undefined, title, onClickBack, ...props
 	useDocumentTitle(typeof title === 'string' ? title : undefined);
 
 	return (
-		<Box is='header' borderBlockEndWidth='default' pb={8} borderBlockEndColor='transparent' {...props}>
+		<Box is='header' position='relative' zIndex={9999999} bg='surface' borderBlockEndWidth='default' pb={8} borderBlockEndColor='transparent' {...props}>
 			<Box
 				height='100%'
 				marginInline={24}

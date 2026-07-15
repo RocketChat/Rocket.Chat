@@ -17,7 +17,10 @@ const CustomScrollbars = forwardRef<HTMLElement, CustomScrollbarsProps>(function
 	const [initialize, osInstance] = useOverlayScrollbars({
 		options: scrollbarsOptions,
 		events: {
-			scroll: (args) => onScroll?.(args),
+			scroll: (args) => {
+				onScroll?.(args);
+				window.dispatchEvent(new Event('resize'));
+			},
 		},
 	});
 
