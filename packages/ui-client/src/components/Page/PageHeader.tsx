@@ -15,8 +15,8 @@ const PageHeader = ({ borderBlockEndColor, ...props }: PageHeaderProps) => {
 
 	return (
 		<PageHeaderNoShadow
-			borderBlockEndWidth='default'
-			borderBlockEndColor={(borderBlockEndColor ?? border) ? 'extra-light' : 'transparent'}
+			borderBlockEndWidth={(borderBlockEndColor ?? border) ? 'default' : 'none'}
+			borderBlockEndColor={(borderBlockEndColor ?? border) ? 'extra-light' : undefined}
 			{...props}
 		/>
 	);
