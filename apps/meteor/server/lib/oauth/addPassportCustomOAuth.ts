@@ -5,9 +5,9 @@ import type { DoneCallback, Profile } from 'passport';
 import { allowPassportOAuthMiddleware } from './allowPassportOAuthMiddleware';
 import { passportOAuthCallback } from './passportOAuthCallback';
 import { verifyFunction } from './verifyFunction';
-import { CustomOAuthStrategy } from '../../../app/custom-oauth/server/customOAuth';
 import { settings } from '../../../app/settings/server';
 import { oAuthRouter } from '../../configuration/configurePassport';
+import { CustomOAuthStrategy } from '../auth-providers/custom-oauth/customOAuth';
 
 export const addPassportCustomOAuth = (
 	serviceName: string,

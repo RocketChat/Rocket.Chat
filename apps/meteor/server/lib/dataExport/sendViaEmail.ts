@@ -3,10 +3,10 @@ import { Messages, Users } from '@rocket.chat/models';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import moment from 'moment';
 
-import * as Mailer from '../../../app/mailer/server/api';
 import { settings } from '../../../app/settings/server';
 import { Message } from '../../../app/ui-utils/server';
 import { getMomentLocale } from '../getMomentLocale';
+import * as Mailer from '../notifications/email/api';
 
 export async function sendViaEmail(
 	data: {

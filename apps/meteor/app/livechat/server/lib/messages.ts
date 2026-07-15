@@ -13,7 +13,7 @@ import { callbacks } from '../../../../server/lib/callbacks';
 import { deleteMessage as deleteMessageFunc } from '../../../../server/lib/messages/deleteMessage';
 import { sendMessage as sendMessageFunc } from '../../../../server/lib/messages/sendMessage';
 import { updateMessage as updateMessageFunc } from '../../../../server/lib/messages/updateMessage';
-import * as Mailer from '../../../mailer/server/api';
+import * as Mailer from '../../../../server/lib/notifications/email/api';
 import { settings } from '../../../settings/server';
 
 const dnsResolveMx = util.promisify(dns.resolveMx);

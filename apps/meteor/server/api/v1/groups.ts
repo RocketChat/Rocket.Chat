@@ -15,11 +15,11 @@ import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
 import { canAccessRoomAsync, roomAccessAttributes } from '../../../app/authorization/server';
-import { mountIntegrationQueryBasedOnPermissions } from '../../../app/integrations/server/lib/mountQueriesBasedOnPermission';
 import { normalizeMessagesForUser } from '../../../app/utils/server/lib/normalizeMessagesForUser';
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { eraseRoom } from '../../lib/eraseRoom';
 import { findUsersOfRoom } from '../../lib/findUsersOfRoom';
+import { mountIntegrationQueryBasedOnPermissions } from '../../lib/integrations/lib/mountQueriesBasedOnPermission';
 import { openRoom } from '../../lib/openRoom';
 import { getChannelHistory } from '../../meteor-methods/messages/getChannelHistory';
 import { addAllUserToRoomFn } from '../../meteor-methods/rooms/addAllUserToRoom';

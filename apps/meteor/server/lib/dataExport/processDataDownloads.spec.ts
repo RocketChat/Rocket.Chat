@@ -149,7 +149,7 @@ const { requestDataDownload } = proxyquire.noCallThru().load('../../meteor-metho
 
 const { processDataDownloads } = proxyquire.noCallThru().load('./processDataDownloads.ts', {
 	'@rocket.chat/models': modelsMock,
-	'../../../app/file-upload/server': {
+	'../media/file-upload': {
 		FileUpload: {
 			copy: async (fileId: string, _options: any) => {
 				return `copied-${fileId}`;

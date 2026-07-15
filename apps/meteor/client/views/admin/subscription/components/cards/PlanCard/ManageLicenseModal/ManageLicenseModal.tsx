@@ -43,15 +43,16 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 
 	const trimmedLicense = license.trim();
 	const debouncedLicense = useDebouncedValue(trimmedLicense, 500);
-	const { data: validation, isPending, isError } = useValidateLicense(debouncedLicense);
 
 	const isEmpty = trimmedLicense === '';
 	const isPlausible = isPlausibleLicense(trimmedLicense);
-	const isValidating = isPlausible && (trimmedLicense !== debouncedLicense || isPending);
-
 	const isCurrentLicense = !isEmpty && trimmedLicense === enterpriseLicense.trim();
 
-	const isLicenseValid = !fileError && !isError && validation?.valid === true;
+	const { data: validation, isPending, isError } = useValidateLicense(debouncedLicense, !isCurrentLicense);
+
+	const isValidating = isPlausible && !isCurrentLicense && (trimmedLicense !== debouncedLicense || isPending);
+
+	const isLicenseValid = isPlausible && !fileError && !isError && validation?.valid === true;
 
 	const invalidMessage = (() => {
 		if (fileError) {
@@ -65,7 +66,7 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 		return t(getLicenseInvalidMessage(validation?.reasons ?? []));
 	})();
 
-	const showStatus = isPlausible || Boolean(fileError);
+	const showStatus = !isCurrentLicense && (isPlausible || Boolean(fileError));
 
 	const handleApply = async () => {
 		try {

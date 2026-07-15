@@ -6,13 +6,13 @@ import type ldapjs from 'ldapjs';
 import type { FindCursor } from 'mongodb';
 
 import { copyCustomFieldsLDAP } from './copyCustomFieldsLDAP';
-import type {
-	ImporterAfterImportCallback,
-	ImporterBeforeImportCallback,
-} from '../../../../app/importer/server/definitions/IConversionCallbacks';
 import { settings } from '../../../../app/settings/server';
 import { getValidRoomName } from '../../../../app/utils/server/lib/getValidRoomName';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
+import type {
+	ImporterAfterImportCallback,
+	ImporterBeforeImportCallback,
+} from '../../../../server/lib/import/definitions/IConversionCallbacks';
 import { LDAPConnection } from '../../../../server/lib/ldap/Connection';
 import { logger, searchLogger, mapLogger } from '../../../../server/lib/ldap/Logger';
 import { LDAPManager } from '../../../../server/lib/ldap/Manager';
@@ -702,26 +702,28 @@ export class LDAPEEManager extends LDAPManager {
 		return new Promise((resolve, reject) => {
 			let count = 0;
 
-			void ldap.searchAllUsers<IImportUser>({
-				entryCallback: (entry: ldapjs.SearchEntry): IImportUser | undefined => {
-					const data = ldap.extractLdapEntryData(entry);
-					count++;
+			ldap
+				.searchAllUsers<IImportUser>({
+					entryCallback: (entry: ldapjs.SearchEntry): IImportUser | undefined => {
+						const data = ldap.extractLdapEntryData(entry);
+						count++;
 
-					const userData = this.mapUserData(data);
-					converter.addObjectToMemory(userData, { dn: data.dn, username: this.getLdapUsername(data) });
-					return userData;
-				},
-				endCallback: (err: any): void => {
-					if (err) {
-						logger.error({ err });
-						reject(err);
-						return;
-					}
+						const userData = this.mapUserData(data);
+						converter.addObjectToMemory(userData, { dn: data.dn, username: this.getLdapUsername(data) });
+						return userData;
+					},
+					endCallback: (err: any): void => {
+						if (err) {
+							logger.error({ err });
+							reject(err);
+							return;
+						}
 
-					logger.info({ msg: 'LDAP finished loading users. Users added to importer', count });
-					resolve();
-				},
-			});
+						logger.info({ msg: 'LDAP finished loading users. Users added to importer', count });
+						resolve();
+					},
+				})
+				.catch(reject);
 		});
 	}
 
