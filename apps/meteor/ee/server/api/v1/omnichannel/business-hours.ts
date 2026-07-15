@@ -2,6 +2,7 @@ import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 import {
 	ajv,
+	ajvQuery,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
@@ -15,7 +16,7 @@ declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'/v1/livechat/business-hours': {
-			GET: (params: PaginatedRequest) => {
+			GET: (params: PaginatedRequest<{ name?: string }>) => {
 				businessHours: ILivechatBusinessHour[];
 				count: number;
 				offset: number;
@@ -24,6 +25,18 @@ declare module '@rocket.chat/rest-typings' {
 		};
 	}
 }
+
+const businessHoursQueryValidator = ajvQuery.compile<PaginatedRequest<{ name?: string }>>({
+	type: 'object',
+	properties: {
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		sort: { type: 'string' },
+		query: { type: 'string' },
+		name: { type: 'string' },
+	},
+	additionalProperties: false,
+});
 
 const businessHoursResponseSchema = ajv.compile<{
 	businessHours: ILivechatBusinessHour[];
@@ -49,6 +62,7 @@ API.v1.get(
 		authRequired: true,
 		permissionsRequired: ['view-livechat-business-hours'],
 		license: ['livechat-enterprise'],
+		query: businessHoursQueryValidator,
 		response: {
 			200: businessHoursResponseSchema,
 			400: validateBadRequestErrorResponse,

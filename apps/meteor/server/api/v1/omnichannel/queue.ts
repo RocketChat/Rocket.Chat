@@ -24,9 +24,6 @@ const queueMetricsResponseSchema = ajv.compile<
 	properties: {
 		queue: {
 			type: 'array',
-			// Shape matches the getQueueMetrics aggregation projection: `_id: 0` (no top-level _id),
-			// `user` has _id/username/status, and `department` uses preserveNullAndEmptyArrays so its
-			// _id/name are absent when the queued room has no department yet (serializes to `{}`).
 			items: {
 				type: 'object',
 				properties: {

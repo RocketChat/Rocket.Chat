@@ -17,9 +17,6 @@ const transferHistoryResponseSchema = ajv.compile<PaginatedResult<{ history: IOm
 	properties: {
 		history: {
 			type: 'array',
-			// The persisted transferData is richer than the IMessage['transferData'] TS type: entries also
-			// carry `ts`, and the transferredBy/transferredTo actors include `_id`/`userType`. Match the
-			// actual stored shape (superset of the type).
 			items: {
 				type: 'object',
 				properties: {
@@ -55,7 +52,7 @@ const transferHistoryResponseSchema = ajv.compile<PaginatedResult<{ history: IOm
 					},
 					scope: { type: 'string', enum: ['department', 'agent', 'queue'] },
 				},
-				required: ['comment', 'transferredBy', 'transferredTo', 'scope'],
+				required: ['comment', 'transferredBy', 'scope'],
 				additionalProperties: false,
 			},
 		},

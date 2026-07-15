@@ -25,6 +25,7 @@ const requestTranscriptEndpoints = API.v1.post(
 		authRequired: true,
 		permissionsRequired: ['request-pdf-transcript'],
 		license: ['livechat-enterprise'],
+		body: ajv.compile<undefined>({ type: 'object', additionalProperties: false }),
 		response: {
 			200: requestTranscriptResponseSchema,
 			400: validateBadRequestErrorResponse,
@@ -51,11 +52,6 @@ const requestTranscriptEndpoints = API.v1.post(
 				return API.v1.failure('error-not-allowed');
 			}
 
-			// Flow is as follows:
-			// 1. On Test Mode, call Transcript.workOnPdf directly
-			// 2. On Normal Mode, call QueueWorker.queueWork to queue the work
-			// 3. OmnichannelTranscript.workOnPdf will be called by the worker to generate the transcript
-			// 4. We be happy :)
 			await requestPdfTranscript(room, this.userId);
 
 			return API.v1.success();
