@@ -610,6 +610,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 		return this.updateMany(query, {
 			$set: {
+				'_hidden': false,
 				'_importFile.rocketChatUrl': rocketChatUrl,
 				'_importFile.downloaded': true,
 			},

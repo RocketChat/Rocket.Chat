@@ -1,0 +1,3 @@
+# Phase 6a follow-up: OAuth providers missed by the plan table
+app/linkedin/server/lib.ts	server/lib/auth-providers/linkedin.ts
+app/meteor-developer/server/lib.ts	server/lib/auth-providers/meteor-developer.ts

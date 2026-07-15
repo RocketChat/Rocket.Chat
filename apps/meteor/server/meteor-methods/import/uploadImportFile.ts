@@ -3,12 +3,12 @@ import type { IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
-import { RocketChatFile } from '../../../app/file/server';
 import { ProgressStep } from '../../../app/importer/lib/ImporterProgressStep';
-import { Importers } from '../../../app/importer/server';
-import { RocketChatImportFileInstance } from '../../../app/importer/server/startup/store';
 import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { Importers } from '../../lib/import';
+import { RocketChatImportFileInstance } from '../../lib/import/startup/store';
+import { RocketChatFile } from '../../lib/media/file';
 
 export const executeUploadImportFile = async (
 	userId: IUser['_id'],

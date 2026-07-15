@@ -35,7 +35,7 @@ const {
 			findOneByIdAndLoginToken: mocks.findOneByIdAndLoginToken,
 		},
 	},
-	'../../../app/file-upload/server': {
+	'../../lib/media/file-upload': {
 		FileUpload: {
 			get: mocks.fileUploadGet,
 		},

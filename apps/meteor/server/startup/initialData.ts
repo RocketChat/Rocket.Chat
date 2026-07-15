@@ -6,9 +6,9 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import { addCallHistoryTestData } from './callHistoryTestData';
-import { FileUpload } from '../../app/file-upload/server';
 import { notifyOnSettingChangedById } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
+import { FileUpload } from '../lib/media/file-upload';
 import { addUserRolesAsync } from '../lib/roles/addUserRoles';
 import { addUserToDefaultChannels } from '../lib/rooms/addUserToDefaultChannels';
 import { checkUsernameAvailability } from '../lib/users/checkUsernameAvailability';

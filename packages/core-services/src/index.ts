@@ -4,7 +4,7 @@ import type { IAccount, ILoginResult } from './types/IAccount';
 import type { IAnalyticsService } from './types/IAnalyticsService';
 import type { IApiService } from './types/IApiService';
 import type { IAppsEngineService } from './types/IAppsEngineService';
-import type { IAuthorization, RoomAccessValidator } from './types/IAuthorization';
+import type { IAuthorization, RoomAccessValidator, UserWithRoles } from './types/IAuthorization';
 import type { IAuthorizationLivechat } from './types/IAuthorizationLivechat';
 import type { IBannerService } from './types/IBannerService';
 import type { ICalendarService } from './types/ICalendarService';
@@ -138,6 +138,7 @@ export type {
 	NPSVotePayload,
 	ResizeResult,
 	RoomAccessValidator,
+	UserWithRoles,
 	TelemetryEvents,
 	TelemetryMap,
 	VideoConferenceJoinOptions,

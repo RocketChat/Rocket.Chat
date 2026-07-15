@@ -7,8 +7,8 @@ import {
 	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
 
-import { sendMail } from '../../../app/mail-messages/server/functions/sendMail';
-import { Mailer } from '../../../app/mail-messages/server/lib/Mailer';
+import { sendMail } from '../../lib/notifications/mail-messages/functions/sendMail';
+import { Mailer } from '../../lib/notifications/mail-messages/lib/Mailer';
 import { API } from '../api';
 
 const mailerResponseSchema = ajv.compile<void>({

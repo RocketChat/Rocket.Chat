@@ -20,7 +20,7 @@ import { livechatLogger } from './logger';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 import { i18n } from '../../../../server/lib/i18n';
-import { FileUpload } from '../../../file-upload/server';
+import { FileUpload } from '../../../../server/lib/media/file-upload';
 import {
 	notifyOnSubscriptionChanged,
 	notifyOnLivechatInquiryChanged,

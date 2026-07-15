@@ -5,8 +5,8 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from './authorization/hasPermission';
 import { i18n } from './i18n';
+import { Push } from './notifications/push';
 import { RateLimiter } from '../../app/lib/server/lib';
-import { Push } from '../../app/push/server';
 import { settings } from '../../app/settings/server';
 
 export const executePushTest = async (userId: IUser['_id'], username: IUser['username']): Promise<number> => {
@@ -46,7 +46,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!(await hasPermissionAsync(user._id, 'test-push-notifications'))) {
+		if (!(await hasPermissionAsync(user, 'test-push-notifications'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'push_test',
 			});

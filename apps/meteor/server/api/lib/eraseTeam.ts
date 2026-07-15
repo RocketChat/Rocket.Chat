@@ -7,9 +7,9 @@ import { eraseRoom } from '../../lib/eraseRoom';
 import { SystemLogger } from '../../lib/logger/system';
 import { deleteRoom } from '../../lib/rooms/deleteRoom';
 
-type EraseRoomFnType = <T extends AtLeast<IUser, '_id' | 'name' | 'username'>>(rid: string, user: T) => Promise<boolean | void>;
+type EraseRoomFnType = <T extends AtLeast<IUser, '_id' | 'name' | 'username' | 'roles'>>(rid: string, user: T) => Promise<boolean | void>;
 
-export const eraseTeamShared = async <T extends AtLeast<IUser, '_id' | 'name' | 'username'>>(
+export const eraseTeamShared = async <T extends AtLeast<IUser, '_id' | 'name' | 'username' | 'roles'>>(
 	user: T,
 	team: ITeam,
 	roomsToRemove: IRoom['_id'][] = [],

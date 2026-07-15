@@ -2,7 +2,7 @@ import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import { EmailBridge } from '@rocket.chat/apps/dist/server/bridges/EmailBridge';
 import type { IEmail } from '@rocket.chat/apps-engine/definition/email';
 
-import * as Mailer from '../../../mailer/server/api';
+import * as Mailer from '../../../../server/lib/notifications/email/api';
 import { settings } from '../../../settings/server';
 
 export class AppEmailBridge extends EmailBridge {
