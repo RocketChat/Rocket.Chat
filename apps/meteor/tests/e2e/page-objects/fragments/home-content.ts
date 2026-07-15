@@ -55,11 +55,11 @@ export class HomeContent {
 	}
 
 	get mainMessageListScroller(): Locator {
-		return this.page.locator('[data-overlayscrollbars-viewport]', { has: this.mainMessageList });
+		return this.page.locator('[data-overlayscrollbars]', { has: this.mainMessageList });
 	}
 
 	get threadMessageListScroller(): Locator {
-		return this.page.locator('[data-overlayscrollbars-viewport]', { has: this.threadMessageList });
+		return this.page.locator('[data-overlayscrollbars]', { has: this.threadMessageList });
 	}
 
 	get systemMessageListItems(): Locator {
@@ -136,16 +136,18 @@ export class HomeContent {
 		// either way Meteor's optimistic insert renders the new list item
 		// before the server confirms, and the `rcx-message--pending` class
 		// drops once the server result lands.
-		const before = await this.messageListItems.count();
+		if ((await this.messageListItems.count()) > 0) {
+			const lastMessageBeforeSend = await this.messageListItems.last().getAttribute('id');
 
-		await this.composer.btnSend.click();
+			await this.composer.btnSend.click();
 
-		// Use `>=` rather than `==` because some flows (e.g. just-created
-		// encrypted channels) drop additional list items in alongside the
-		// user's send (other in-flight messages, decryption-status items),
-		// so an exact count is racy.
-		await expect.poll(() => this.messageListItems.count(), { timeout: 10_000 }).toBeGreaterThanOrEqual(before + 1);
-		await expect(this.lastUserMessage).not.toHaveClass(/rcx-message--pending/);
+			await expect.poll(() => this.messageListItems.last().getAttribute('id'), { timeout: 10_000 }).not.toEqual(lastMessageBeforeSend);
+			await expect(this.lastUserMessage).not.toHaveClass(/rcx-message--pending/);
+		} else {
+			// No previous messages, nothing to compare
+			await this.composer.btnSend.click();
+			await expect(this.lastUserMessage).not.toHaveClass(/rcx-message--pending/);
+		}
 	}
 
 	async dispatchSlashCommand(text: string): Promise<void> {
@@ -176,18 +178,6 @@ export class HomeContent {
 
 	private get fileUploadModal(): Locator {
 		return this.page.getByRole('dialog', { name: 'File Upload' });
-	}
-
-	get createDiscussionModal(): Locator {
-		return this.page.getByRole('dialog', { name: 'Create discussion' });
-	}
-
-	get inputDiscussionName(): Locator {
-		return this.createDiscussionModal.getByRole('textbox', { name: 'Name' });
-	}
-
-	get btnCreateDiscussionModal(): Locator {
-		return this.createDiscussionModal.getByRole('button', { name: 'Create' });
 	}
 
 	get btnModalConfirm(): Locator {
@@ -288,7 +278,7 @@ export class HomeContent {
 	}
 
 	get lastThreadMessagePreviewText(): Locator {
-		return this.page.locator('div.messages-box ul.messages-list [role=link]').last();
+		return this.page.locator('div.messages-box .messages-list [role=link]').last();
 	}
 
 	get lastThreadMessageFileDescription(): Locator {
@@ -542,8 +532,28 @@ export class HomeContent {
 		return this.page.locator('[role="listitem"][aria-roledescription="message"]', { hasText: text });
 	}
 
+	getLastMessageActionButton(name: string): Locator {
+		return this.lastUserMessage.getByRole('button', { name, exact: true });
+	}
+
+	getLastThreadMessageActionButton(name: string): Locator {
+		return this.lastUserThreadMessage.getByRole('button', { name, exact: true });
+	}
+
 	getMessageById(id: string): Locator {
 		return this.page.locator(`[role="listitem"][aria-roledescription="message"][id="${id}"]`);
+	}
+
+	async scrollToMessage(messageLocator: Locator, direction: 'up' | 'down' = 'up'): Promise<Locator> {
+		const scroller = this.mainMessageListScroller;
+		const delta = direction === 'up' ? -400 : 400;
+
+		await expect(async () => {
+			await scroller.evaluate((el, d) => el.scrollBy(0, d), delta);
+			await expect(messageLocator.first()).toBeVisible({ timeout: 500 });
+		}).toPass({ timeout: 30000, intervals: [100] });
+
+		return messageLocator;
 	}
 
 	async waitForChannel(): Promise<void> {

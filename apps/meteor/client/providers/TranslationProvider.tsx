@@ -15,7 +15,7 @@ import type { TranslationContextValue } from '@rocket.chat/ui-contexts';
 import { useSetting, TranslationContext } from '@rocket.chat/ui-contexts';
 import type i18next from 'i18next';
 import I18NextHttpBackend from 'i18next-http-backend';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useEffect, useMemo } from 'react';
 import { I18nextProvider, initReactI18next, useTranslation } from 'react-i18next';
 
@@ -184,11 +184,11 @@ const getLanguageName = (code: string, lng: string): string => {
 	}
 };
 
-type TranslationProviderProps = {
+export type TranslationProviderProps = {
 	children: ReactNode;
 };
 
-const TranslationProvider = ({ children }: TranslationProviderProps): ReactElement => {
+const TranslationProvider = ({ children }: TranslationProviderProps) => {
 	const language = useAutoLanguage();
 	const i18nextInstance = useI18next(language);
 	useCustomTranslations(i18nextInstance);
@@ -252,7 +252,7 @@ const TranslationProviderInner = ({
 		ogName: string;
 		key: string;
 	}[];
-}): ReactElement => {
+}) => {
 	const { t, i18n } = useTranslation();
 
 	const value: TranslationContextValue = useMemo(

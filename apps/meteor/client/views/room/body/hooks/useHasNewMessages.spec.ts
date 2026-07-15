@@ -15,33 +15,27 @@ jest.mock('../../../../../app/ui-utils/client', () => ({
 	RoomHistoryManager: {
 		clear: jest.fn(),
 		getMoreIfIsEmpty: jest.fn(),
+		hasMoreNext: jest.fn(),
 	},
 }));
 
 describe('useHasNewMessages', () => {
-	const mockScrollBehavior = {
-		sendToBottom: jest.fn(),
-		sendToBottomIfNecessary: jest.fn(),
-		isAtBottom: jest.fn(() => true),
-	};
-
-	const atBottomRef = { current: true };
+	const isAtBottom = { current: true };
+	const setShouldJumpToBottom = jest.fn();
 	const rid = 'room-id';
 	const uid = 'current-user-id';
 
 	beforeEach(() => {
 		jest.clearAllMocks();
 		clientCallbacks.remove('streamNewMessage', rid);
-		clientCallbacks.remove('afterSaveMessage', rid);
 	});
 
 	afterEach(() => {
 		clientCallbacks.remove('streamNewMessage', rid);
-		clientCallbacks.remove('afterSaveMessage', rid);
 	});
 
 	it('should NOT show new messages button when user sends their own message', () => {
-		const { result } = renderHook(() => useHasNewMessages(rid, uid, atBottomRef, mockScrollBehavior), { wrapper: mockAppRoot().build() });
+		const { result } = renderHook(() => useHasNewMessages(rid, uid, setShouldJumpToBottom, isAtBottom), { wrapper: mockAppRoot().build() });
 
 		const ownMsg: IMessage = {
 			_id: 'msg-1',
@@ -60,12 +54,7 @@ describe('useHasNewMessages', () => {
 	});
 
 	it('should NOT show new messages button when user sends own message during race condition (not at bottom)', () => {
-		const scrollBehavior = {
-			...mockScrollBehavior,
-			isAtBottom: jest.fn(() => false),
-		};
-
-		const { result } = renderHook(() => useHasNewMessages(rid, uid, atBottomRef, scrollBehavior), { wrapper: mockAppRoot().build() });
+		const { result } = renderHook(() => useHasNewMessages(rid, uid, setShouldJumpToBottom, isAtBottom), { wrapper: mockAppRoot().build() });
 
 		const ownMsg: IMessage = {
 			_id: 'msg-race',
@@ -84,12 +73,9 @@ describe('useHasNewMessages', () => {
 	});
 
 	it('should show new messages button when another user sends a message and user is NOT at bottom', () => {
-		const scrollBehavior = {
-			...mockScrollBehavior,
-			isAtBottom: jest.fn(() => false),
-		};
-
-		const { result } = renderHook(() => useHasNewMessages(rid, uid, atBottomRef, scrollBehavior), { wrapper: mockAppRoot().build() });
+		const { result } = renderHook(() => useHasNewMessages(rid, uid, setShouldJumpToBottom, { current: false }), {
+			wrapper: mockAppRoot().build(),
+		});
 
 		const otherUserMsg: IMessage = {
 			_id: 'msg-2',
@@ -108,7 +94,7 @@ describe('useHasNewMessages', () => {
 	});
 
 	it('should NOT show new messages button when another user sends a message but user IS at bottom', () => {
-		const { result } = renderHook(() => useHasNewMessages(rid, uid, atBottomRef, mockScrollBehavior), { wrapper: mockAppRoot().build() });
+		const { result } = renderHook(() => useHasNewMessages(rid, uid, setShouldJumpToBottom, isAtBottom), { wrapper: mockAppRoot().build() });
 
 		const otherUserMsg: IMessage = {
 			_id: 'msg-3',
@@ -127,12 +113,7 @@ describe('useHasNewMessages', () => {
 	});
 
 	it('should ignore edited messages in streamNewMessage', () => {
-		const scrollBehavior = {
-			...mockScrollBehavior,
-			isAtBottom: jest.fn(() => false),
-		};
-
-		const { result } = renderHook(() => useHasNewMessages(rid, uid, atBottomRef, scrollBehavior), { wrapper: mockAppRoot().build() });
+		const { result } = renderHook(() => useHasNewMessages(rid, uid, setShouldJumpToBottom, isAtBottom), { wrapper: mockAppRoot().build() });
 
 		const editedMsg: IEditedMessage = {
 			_id: 'msg-4',
@@ -153,12 +134,7 @@ describe('useHasNewMessages', () => {
 	});
 
 	it('should ignore thread messages in streamNewMessage', () => {
-		const scrollBehavior = {
-			...mockScrollBehavior,
-			isAtBottom: jest.fn(() => false),
-		};
-
-		const { result } = renderHook(() => useHasNewMessages(rid, uid, atBottomRef, scrollBehavior), { wrapper: mockAppRoot().build() });
+		const { result } = renderHook(() => useHasNewMessages(rid, uid, setShouldJumpToBottom, isAtBottom), { wrapper: mockAppRoot().build() });
 
 		const threadMsg: IMessage = {
 			_id: 'msg-5',
@@ -177,13 +153,31 @@ describe('useHasNewMessages', () => {
 		expect(result.current.hasNewMessages).toBe(false);
 	});
 
-	it('should clear hasNewMessages when afterSaveMessage fires for current user', () => {
-		const scrollBehavior = {
-			...mockScrollBehavior,
-			isAtBottom: jest.fn(() => false),
+	it('should NOT jump to bottom when streamNewMessage fires for current user editing their own message', () => {
+		renderHook(() => useHasNewMessages(rid, uid, setShouldJumpToBottom, isAtBottom), { wrapper: mockAppRoot().build() });
+
+		const editedOwnMsg: IEditedMessage = {
+			_id: 'msg-edit',
+			rid,
+			u: { _id: uid, username: 'current-user', name: 'Current User' },
+			msg: 'Edited message',
+			ts: new Date(),
+			_updatedAt: new Date(),
+			editedAt: new Date(),
+			editedBy: { _id: uid, username: 'current-user' },
 		};
 
-		const { result } = renderHook(() => useHasNewMessages(rid, uid, atBottomRef, scrollBehavior), { wrapper: mockAppRoot().build() });
+		const streamNewMessageCallbacks = clientCallbacks.getCallbacks('streamNewMessage');
+		act(() => {
+			streamNewMessageCallbacks.forEach((callback) => callback(editedOwnMsg));
+		});
+		expect(setShouldJumpToBottom).not.toHaveBeenCalled();
+	});
+
+	it('should clear hasNewMessages when streamNewMessage fires for current users message', () => {
+		const { result } = renderHook(() => useHasNewMessages(rid, uid, setShouldJumpToBottom, { current: false }), {
+			wrapper: mockAppRoot().build(),
+		});
 
 		const otherUserMsg: IMessage = {
 			_id: 'msg-6',
@@ -209,11 +203,11 @@ describe('useHasNewMessages', () => {
 			_updatedAt: new Date(),
 		};
 
-		const afterSaveCallbacks = clientCallbacks.getCallbacks('afterSaveMessage');
+		const streamNewMessageCallbacks = clientCallbacks.getCallbacks('streamNewMessage');
 		act(() => {
-			afterSaveCallbacks.forEach((callback) => callback(ownMsg));
+			streamNewMessageCallbacks.forEach((callback) => callback(ownMsg));
 		});
 		expect(result.current.hasNewMessages).toBe(false);
-		expect(mockScrollBehavior.sendToBottom).toHaveBeenCalled();
+		expect(setShouldJumpToBottom).toHaveBeenCalledWith(true);
 	});
 });

@@ -7,19 +7,20 @@ import { wrapExceptions } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
 import { processOnChange, serviceConfigCallbacks } from './userReactivity';
-import { isOutgoingIntegration } from '../../../app/integrations/server/lib/definition';
-import { triggerHandler } from '../../../app/integrations/server/lib/triggerHandler';
 import { notifyGuestStatusChanged } from '../../../app/livechat/server/lib/guests';
 import { onlineAgents, monitorAgents } from '../../../app/livechat/server/lib/stream/agentStatus';
-import { metrics } from '../../../app/metrics/server';
-import notifications from '../../../app/notifications/server/lib/Notifications';
 import { settings } from '../../../app/settings/server';
 import { use } from '../../../app/settings/server/Middleware';
 import { setValue, updateValue } from '../../../app/settings/server/raw';
 import { getURL } from '../../../app/utils/server/getURL';
 import { configureEmailInboxes } from '../../features/EmailInbox/EmailInbox';
+import { isOutgoingIntegration } from '../../lib/integrations/lib/definition';
+import { triggerHandler } from '../../lib/integrations/lib/triggerHandler';
+import { metrics } from '../../lib/metrics';
+import notifications from '../../lib/notifications/core/lib/Notifications';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { ListenersModule } from '../../modules/listeners/listeners.module';
+import { invalidate as invalidatePublicationUserCache } from '../../modules/streamer/publication-user-cache';
 
 const disableMsgRoundtripTracking = ['yes', 'true'].includes(String(process.env.DISABLE_MESSAGE_ROUNDTRIP_TRACKING).toLowerCase());
 
@@ -78,6 +79,8 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		});
 
 		this.onEvent('watch.users', async (data) => {
+			invalidatePublicationUserCache(data.id);
+
 			if (data.clientAction === 'updated' && data.diff) {
 				processOnChange(data.diff, data.id);
 			}
@@ -140,7 +143,9 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		if (!disableMsgRoundtripTracking) {
 			this.onEvent('watch.messages', async ({ message }) => {
 				if (message?._updatedAt instanceof Date) {
-					metrics.messageRoundtripTime.observe(Date.now() - message._updatedAt.getTime());
+					const elapsedMs = Date.now() - message._updatedAt.getTime();
+					metrics.messageRoundtripTime.observe(elapsedMs);
+					metrics.messageRoundtripTimeSeconds.observe(elapsedMs / 1000);
 				}
 			});
 		}

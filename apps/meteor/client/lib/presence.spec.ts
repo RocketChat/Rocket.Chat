@@ -6,6 +6,10 @@ jest.mock('meteor/meteor', () => ({
 	Meteor: {
 		subscribe: jest.fn(),
 	},
+	DDPCommon: {
+		parseDDP: jest.fn((msg: string) => JSON.parse(msg)),
+		stringifyDDP: jest.fn((msg: unknown) => JSON.stringify(msg)),
+	},
 }));
 
 const mockGet = jest.fn();

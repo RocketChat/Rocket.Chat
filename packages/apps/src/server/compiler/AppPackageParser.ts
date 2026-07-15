@@ -1,10 +1,10 @@
-import * as path from 'path';
+import { randomUUID } from 'node:crypto';
+import * as path from 'node:path';
 
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata/IAppInfo';
-import { ENGINE_VERSION } from '@rocket.chat/apps-engine/definition/version';
+import { version } from '@rocket.chat/apps-engine/package.json';
 import AdmZip from 'adm-zip';
 import * as semver from 'semver';
-import { v4 as uuidv4 } from 'uuid';
 
 import { AppImplements } from '.';
 import type { IParseAppPackageResult } from './IParseAppPackageResult';
@@ -15,7 +15,11 @@ export class AppPackageParser {
 
 	private allowedIconExts: Array<string> = ['.png', '.jpg', '.jpeg', '.gif'];
 
-	private appsEngineVersion: string = ENGINE_VERSION;
+	private readonly appsEngineVersion: string;
+
+	constructor() {
+		[this.appsEngineVersion] = version.split('-'); // In case there is a suffix like -dev, -rc.0, etc. We just want the version number for semver comparison
+	}
 
 	public async unpackageApp(appPackage: Buffer): Promise<IParseAppPackageResult> {
 		const zip = new AdmZip(appPackage);
@@ -27,7 +31,7 @@ export class AppPackageParser {
 				info = JSON.parse(infoZip.getData().toString()) as IAppInfo;
 
 				if (!AppPackageParser.uuid4Regex.test(info.id)) {
-					info.id = uuidv4();
+					info.id = randomUUID();
 					console.warn(
 						'WARNING: We automatically generated a uuid v4 id for',
 						info.name,
@@ -93,7 +97,7 @@ export class AppPackageParser {
 	}
 
 	private getLanguageContent(zip: AdmZip): { [key: string]: object } {
-		const languageContent: { [key: string]: object } = {};
+		const languageContent: { [key: string]: object } = Object.create(null);
 
 		zip
 			.getEntries()

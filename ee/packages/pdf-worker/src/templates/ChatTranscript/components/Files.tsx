@@ -1,4 +1,4 @@
-import { Buffer } from 'buffer';
+import { Buffer } from 'node:buffer';
 
 import { View, StyleSheet, Text, Image } from '@react-pdf/renderer';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
@@ -38,7 +38,9 @@ const styles = StyleSheet.create({
 	},
 });
 
-export const Files = ({ files, invalidMessage }: { files: PDFFile[]; invalidMessage: string }) => (
+export type FilesProps = { files: PDFFile[]; invalidMessage: string };
+
+export const Files = ({ files, invalidMessage }: FilesProps) => (
 	<View style={styles.container}>
 		{files?.map((file, index) => (
 			<View style={styles.file} key={index} wrap>

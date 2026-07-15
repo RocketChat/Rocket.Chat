@@ -1,5 +1,5 @@
 import { Box, Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import {
 	GenericTable,
@@ -63,9 +63,9 @@ const CannedResponsesTable = () => {
 		refetchOnWindowFocus: false,
 	});
 
-	const handleAddNew = useEffectEvent(() => router.navigate('/omnichannel/canned-responses/new'));
+	const handleAddNew = useStableCallback(() => router.navigate('/omnichannel/canned-responses/new'));
 
-	const onRowClick = useEffectEvent((id: string, scope: string) => (): void => {
+	const onRowClick = useStableCallback((id: string, scope: string) => (): void => {
 		if (scope === 'global' && isMonitor && !isManager) {
 			return dispatchToastMessage({
 				type: 'error',

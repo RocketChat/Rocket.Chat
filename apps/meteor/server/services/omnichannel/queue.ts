@@ -10,8 +10,8 @@ import { getOmniChatSortQuery } from '../../../app/livechat/lib/inquiries';
 import { dispatchAgentDelegated } from '../../../app/livechat/server/lib/Helper';
 import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
 import { getInquirySortMechanismSetting } from '../../../app/livechat/server/lib/settings';
-import { metrics } from '../../../app/metrics/server';
 import { settings } from '../../../app/settings/server';
+import { metrics } from '../../lib/metrics';
 
 const DEFAULT_RACE_TIMEOUT = 5000;
 
@@ -269,7 +269,9 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 				void dispatchAgentDelegated(rid, agentId);
 			}, 1000);
 
-			metrics.timeToQueueProcessingByQueue.observe({ queue }, (Date.now() - inquiry.ts.getTime()) / 1000);
+			const waitTimeSeconds = (Date.now() - inquiry.ts.getTime()) / 1000;
+			metrics.timeToQueueProcessingByQueue.observe({ queue }, waitTimeSeconds);
+			metrics.timeToQueueProcessingByQueueHistogram.observe({ queue }, waitTimeSeconds);
 			metrics.totalItemsProcessedByQueue.inc({ queue });
 			return true;
 		}

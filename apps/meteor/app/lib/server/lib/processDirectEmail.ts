@@ -3,11 +3,11 @@ import { Messages, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import type { ParsedMail } from 'mailparser';
 import moment from 'moment';
 
+import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
+import { sendMessage } from '../../../../server/lib/messages/sendMessage';
+import { metrics } from '../../../../server/lib/metrics';
 import { canAccessRoomAsync } from '../../../authorization/server';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
-import { sendMessage } from '../functions/sendMessage';
 
 const isParsedEmail = (email: ParsedMail): email is Required<ParsedMail> => 'date' in email && 'html' in email;
 
@@ -109,8 +109,6 @@ export const processDirectEmail = async function (email: ParsedMail): Promise<vo
 		}
 	}
 
-	metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
-
 	const message: Pick<IMessage, 'ts' | 'msg' | 'groupable' | 'rid' | 'sentByEmail' | 'tmid'> = {
 		ts: tsDiff < 10000 ? ts : new Date(),
 		msg,
@@ -120,5 +118,10 @@ export const processDirectEmail = async function (email: ParsedMail): Promise<vo
 		rid: prevMessage.rid,
 	};
 
-	return sendMessage(user, message, roomInfo);
+	const result = await sendMessage(user, message, roomInfo);
+
+	metrics.messagesSent.inc();
+	metrics.messagesSentTotal.inc();
+
+	return result;
 };

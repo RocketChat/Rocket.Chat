@@ -23,9 +23,13 @@ env:
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
   ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
 
+permissions: {}
+
 jobs:
   test:
     runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
 
     name: Unit Tests
 
@@ -41,14 +45,14 @@ jobs:
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - uses: rharkor/caching-for-turbo@564b6d155a4aec5ada97411ba7f7956e4bac890a # v2.4.0
+      - uses: rharkor/caching-for-turbo@75f8ebf4a43d2c60b23bc2a27082cfea94ffdad9 # v2.5.0
 
       - uses: ./.github/actions/restore-packages
 
       - name: Unit Test
         run: yarn testunit --concurrency=1
 
-      - uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 # v6.0.0
+      - uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
         with:
           flags: unit
           verbose: true

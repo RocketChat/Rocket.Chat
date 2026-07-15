@@ -3,7 +3,6 @@ import { css } from '@rocket.chat/css-in-js';
 import { TextAreaInput, FieldGroup, Field, FieldRow, FieldError, FieldLabel, FieldDescription, Box } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +14,7 @@ type ReportMessageModalsFields = {
 	description: string;
 };
 
-type ReportMessageModalProps = {
+export type ReportMessageModalProps = {
 	onClose: () => void;
 	message: IMessage;
 };
@@ -24,7 +23,7 @@ const wordBreak = css`
 	word-break: break-word;
 `;
 
-const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps): ReactElement => {
+const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps) => {
 	const { t } = useTranslation();
 	const reasonForReportId = useId();
 	const {

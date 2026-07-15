@@ -1,11 +1,10 @@
 import { Field, FieldHint, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import { useLanguages } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type LanguageSettingInputProps = SettingInputProps<string, string | number>;
+export type LanguageSettingInputProps = SettingInputProps<string, string | number>;
 
 function LanguageSettingInput({
 	_id,
@@ -20,7 +19,7 @@ function LanguageSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}: LanguageSettingInputProps): ReactElement {
+}: LanguageSettingInputProps) {
 	const languages = useLanguages();
 
 	const handleChange = (value: string): void => {

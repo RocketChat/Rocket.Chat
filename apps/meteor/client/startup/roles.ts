@@ -8,7 +8,7 @@ import { Roles } from '../stores';
 onLoggedIn(async () => {
 	const { roles } = await sdk.rest.get('/v1/roles.list');
 	// if a role is checked before this collection is populated, it will return undefined
-	Roles.state.replaceAll(roles);
+	Roles.state.replaceAll(roles.map((role) => ({ ...role, _updatedAt: new Date(role._updatedAt) })));
 });
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';

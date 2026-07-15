@@ -1,14 +1,14 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ElementType, HTMLAttributes, ReactElement, ReactNode } from 'react';
+import type { ElementType, HTMLAttributes, ReactNode } from 'react';
 import { forwardRef } from 'react';
 
-type MessageComposerProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
+export type MessageComposerProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
 	children: ReactNode;
 	is?: ElementType<any>;
 	variant?: 'default' | 'error' | 'editing';
 };
 
-const MessageComposer = forwardRef<HTMLElement, MessageComposerProps>(function MessageComposer({ variant, ...props }, ref): ReactElement {
+const MessageComposer = forwardRef<HTMLElement, MessageComposerProps>(function MessageComposer({ variant, ...props }, ref) {
 	return (
 		<Box
 			rcx-input-box__wrapper

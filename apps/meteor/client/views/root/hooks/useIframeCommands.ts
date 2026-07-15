@@ -7,6 +7,7 @@ import { AccountBox } from '../../../../app/ui-utils/client/lib/AccountBox';
 import { capitalize, ltrim, rtrim } from '../../../../lib/utils/stringUtils';
 import { baseURI } from '../../../lib/baseURI';
 import { loginServices } from '../../../lib/loginServices';
+import { getRootUrlPathPrefix } from '../../../lib/meteorRuntimeConfig';
 import { settings } from '../../../lib/settings';
 import { router } from '../../../providers/RouterProvider';
 
@@ -16,6 +17,7 @@ export const useIframeCommands = () => {
 	const loginWithToken = useLoginWithToken();
 	const loginWithCustomOauth = useLoginWithCustomOauth();
 	const { logout } = useContext(UserContext);
+	const enableModernOAuthFlow = useSetting('Accounts_OAuth_Use_Modern_Flow', true);
 
 	useEffect(() => {
 		if (!iframeReceiveEnabled) {
@@ -37,10 +39,7 @@ export const useIframeCommands = () => {
 					{} as Record<string, string>,
 				);
 
-				const newPath = newUrl.pathname.replace(
-					new RegExp(`^${escapeRegExp(__meteor_runtime_config__.ROOT_URL_PATH_PREFIX)}`),
-					'',
-				) as LocationPathname;
+				const newPath = newUrl.pathname.replace(new RegExp(`^${escapeRegExp(getRootUrlPathPrefix())}`), '') as LocationPathname;
 				router.navigate({
 					pathname: newPath,
 					search: { ...router.getSearchParameters(), ...newParams },
@@ -52,6 +51,21 @@ export const useIframeCommands = () => {
 			},
 
 			'call-custom-oauth-login'(data: { service: string; redirectUrl?: string | null }, event: MessageEvent) {
+				if (enableModernOAuthFlow) {
+					const url = new URL(window.location.href);
+					const queryParams = url.searchParams;
+					const loginClient = queryParams.get('loginClient');
+
+					const redirectUrl = new URL(`/oauth/${data.service}`, window.location.origin);
+
+					if (loginClient) {
+						redirectUrl.searchParams.set('loginClient', loginClient);
+					}
+
+					window.location.href = redirectUrl.toString();
+					return;
+				}
+
 				const customOAuthCallback = (response: unknown) => {
 					event.source?.postMessage(
 						{
@@ -67,7 +81,7 @@ export const useIframeCommands = () => {
 					data.redirectUrl = null;
 				}
 
-				if (typeof data.service === 'string' && window.ServiceConfiguration) {
+				if (window.ServiceConfiguration) {
 					const customOauth = loginServices.getLoginService(data.service);
 
 					if (customOauth) {
@@ -119,5 +133,5 @@ export const useIframeCommands = () => {
 		return () => {
 			window.removeEventListener('message', messageListener);
 		};
-	}, [iframeReceiveEnabled, iframeReceiveOrigin, loginWithToken, loginWithCustomOauth, logout]);
+	}, [iframeReceiveEnabled, iframeReceiveOrigin, loginWithToken, loginWithCustomOauth, logout, enableModernOAuthFlow]);
 };

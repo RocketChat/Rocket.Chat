@@ -7,7 +7,6 @@ export default [
 	...rocketChatConfig,
 	{
 		ignores: [
-			'apps/meteor/app/emoji-emojione/generateEmojiIndex.js',
 			'apps/meteor/**/public',
 			'apps/meteor/**/private/moment-locales',
 			'apps/meteor/**/imports',
@@ -430,14 +429,6 @@ export default [
 					capIsNewExceptions: ['SHA256'],
 				},
 			],
-		},
-	},
-	// FIXME: React 19 useEffectEvent conflicts with fuselage-hooks
-	{
-		files: ['**/*.@(ts|tsx)'],
-		rules: {
-			'react-hooks/exhaustive-deps': 'warn',
-			'react-hooks/rules-of-hooks': 'warn',
 		},
 	},
 	// FIXME: these rules require type information and the files are not included in the main tsconfig.json

@@ -13,7 +13,7 @@ const generateQuery = (
 	filter: string;
 } => ({ filter: term });
 
-type RoomFormAutocompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter' | 'onChange'> & {
+export type RoomFormAutocompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter' | 'onChange'> & {
 	onSelectedRoom: (value: string, label: string) => void;
 };
 
@@ -28,7 +28,7 @@ const RoomFormAutocomplete = ({ value, onSelectedRoom, ...props }: RoomFormAutoc
 		placeholderData: keepPreviousData,
 		select: (data) =>
 			data.rooms
-				.filter((room) => !room.abacAttributes || room.abacAttributes.length === 0)
+				.filter((room) => !room.abacAttributesRedacted && (!room.abacAttributes || room.abacAttributes.length === 0))
 				.map((room) => ({
 					value: room._id,
 					label: { name: room.fname || room.name },

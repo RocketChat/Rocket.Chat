@@ -5,7 +5,7 @@ import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
 
 import { sleep } from '../../../../lib/utils/sleep';
-import { metrics } from '../../../metrics/server';
+import { metrics } from '../../../../server/lib/metrics';
 import { settings } from '../../../settings/server';
 
 const logger = new Logger('RateLimiter');
@@ -126,14 +126,16 @@ const ruleIds = {};
 const callback = (msg, name) => async (reply, input) => {
 	if (reply.allowed === false) {
 		rateLimiterLog({ msg, reply, input });
-		metrics.ddpRateLimitExceeded.inc({
+		const rateLimitLabels = {
 			limit_name: name,
 			user_id: input.userId,
 			client_address: input.clientAddress,
 			type: input.type,
 			name: input.name,
 			connection_id: input.connectionId,
-		});
+		};
+		metrics.ddpRateLimitExceeded.inc(rateLimitLabels);
+		metrics.ddpRateLimitExceededTotal.inc(rateLimitLabels);
 		// sleep before sending the error to slow down next requests
 		if (slowDownRate > 0 && reply.numInvocationsExceeded) {
 			await sleep(slowDownRate * reply.numInvocationsExceeded);

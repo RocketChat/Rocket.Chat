@@ -1,5 +1,5 @@
 import type { AtLeast, INotificationDesktop, ISubscription, IUser } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { useCustomSound, useRouter, useStream, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
@@ -18,7 +18,7 @@ export const useNotifyUser = (user: IUser) => {
 	const newMessageNotification = useNewMessageNotification();
 	const showDesktopNotification = useDesktopNotification();
 
-	const notifyNewRoom = useEffectEvent(async (sub: AtLeast<ISubscription, 'rid'>): Promise<void> => {
+	const notifyNewRoom = useStableCallback(async (sub: AtLeast<ISubscription, 'rid'>): Promise<void> => {
 		if (user.status === 'busy') {
 			return;
 		}
@@ -28,7 +28,7 @@ export const useNotifyUser = (user: IUser) => {
 		}
 	});
 
-	const notifyNewMessageAudioAndDesktop = useEffectEvent((notification: INotificationDesktop) => {
+	const notifyNewMessageAudioAndDesktop = useStableCallback((notification: INotificationDesktop) => {
 		const hasFocus = document.hasFocus();
 
 		const openedRoomId = ['channel', 'group', 'direct'].includes(router.getRouteName() || '') ? RoomManager.opened : undefined;

@@ -34,7 +34,7 @@ import { useHistoryMessageList } from './useHistoryMessageList';
 import { isMessageNewDay } from '../../../room/MessageList/lib/isMessageNewDay';
 import { isMessageSequential } from '../../../room/MessageList/lib/isMessageSequential';
 
-type ContactHistoryMessagesListProps = {
+export type ContactHistoryMessagesListProps = {
 	chatId: string;
 	onClose: () => void;
 	onOpenRoom?: () => void;
@@ -95,7 +95,7 @@ const ContactHistoryMessagesList = ({ chatId, onClose, onOpenRoom }: ContactHist
 								placeholder={t('Search')}
 								value={text}
 								onChange={handleSearchChange}
-								addon={<Icon name='magnifier' size='x20' />}
+								endAddon={<Icon name='magnifier' size='x20' />}
 							/>
 						</Margins>
 					</Box>

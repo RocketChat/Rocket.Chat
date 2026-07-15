@@ -67,6 +67,7 @@ if (false) {
 	import('@rocket.chat/i18n/dist/resources/sv.i18n.json');
 	import('@rocket.chat/i18n/dist/resources/ta-IN.i18n.json');
 	import('@rocket.chat/i18n/dist/resources/th-TH.i18n.json');
+	import('@rocket.chat/i18n/dist/resources/tl.i18n.json');
 	import('@rocket.chat/i18n/dist/resources/tr.i18n.json');
 	import('@rocket.chat/i18n/dist/resources/ug.i18n.json');
 	import('@rocket.chat/i18n/dist/resources/uk.i18n.json');

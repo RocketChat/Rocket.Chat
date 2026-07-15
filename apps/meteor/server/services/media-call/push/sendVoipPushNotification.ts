@@ -4,12 +4,12 @@ import { MediaCalls, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { getPushNotificationType } from './getPushNotificationType';
-import { metrics } from '../../../../app/metrics/server/lib/metrics';
-import { Push } from '../../../../app/push/server/push';
-import PushNotification from '../../../../app/push-notifications/server/lib/PushNotification';
 import { settings } from '../../../../app/settings/server';
 import { getUserAvatarURL } from '../../../../app/utils/server/getUserAvatarURL';
 import { getUserPreference } from '../../../../app/utils/server/lib/getUserPreference';
+import { metrics } from '../../../lib/metrics/lib/metrics';
+import { Push } from '../../../lib/notifications/push/push';
+import PushNotification from '../../../lib/notifications/push-config/lib/PushNotification';
 import { logger } from '../logger';
 
 async function getActorUser(actor: MediaCallContact): Promise<Pick<IUser, '_id' | 'name' | 'username' | 'freeSwitchExtension'> | null> {

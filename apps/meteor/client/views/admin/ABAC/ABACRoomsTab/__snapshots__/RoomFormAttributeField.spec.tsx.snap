@@ -61,6 +61,7 @@ exports[`RoomFormAttributeField renders Default without crashing 1`] = `
                   aria-haspopup="listbox"
                   aria-invalid="false"
                   aria-required="false"
+                  autocomplete="off"
                   class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-trljwa rcx-css-pqpp8q"
                   name="attributes.0.values"
                   placeholder="ABAC_Select_Attribute_Values"

@@ -1,20 +1,20 @@
 import type { IMessage, MessageAttachmentAction } from '@rocket.chat/core-typings';
 import { Button } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import { usePerformActionMutation } from './hooks/usePerformActionMutation';
 
 type ProcessingType = Exclude<MessageAttachmentAction['actions'][number]['msg_processing_type'], undefined>;
 
-type ActionAttachmentButtonProps = {
+export type ActionAttachmentButtonProps = {
 	children: ReactNode;
 	mid?: IMessage['_id'];
 	msg?: string;
 	processingType: ProcessingType;
 };
 
-const ActionAttachmentButton = ({ children, processingType, msg, mid }: ActionAttachmentButtonProps): ReactElement => {
+const ActionAttachmentButton = ({ children, processingType, msg, mid }: ActionAttachmentButtonProps) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const performActionMutation = usePerformActionMutation({

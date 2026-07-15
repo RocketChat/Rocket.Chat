@@ -4,9 +4,9 @@ import { Meteor } from 'meteor/meteor';
 import { ltrim } from '../../../../../lib/utils/stringUtils';
 import { callbacks } from '../../../../../server/lib/callbacks';
 import { i18n } from '../../../../../server/lib/i18n';
+import { metrics } from '../../../../../server/lib/metrics';
+import * as Mailer from '../../../../../server/lib/notifications/email/api';
 import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
-import * as Mailer from '../../../../mailer/server/api';
-import { metrics } from '../../../../metrics/server';
 import { settings } from '../../../../settings/server';
 import { getURL } from '../../../../utils/server/getURL';
 
@@ -77,8 +77,13 @@ export async function getEmailContent({ message, user, room }) {
 	}
 
 	if (hasFiles) {
-		const fileParts = files.map((file) => {
-			return escapeHTML(file.name);
+		const attachments = message.attachments || [];
+		const fileParts = files.map((file, index) => {
+			let part = escapeHTML(file.name);
+			if (attachments[index]?.description) {
+				part += `<br/><br/>${escapeHTML(attachments[index].description)}`;
+			}
+			return part;
 		});
 		contentParts.push(fileParts.join('<br/><br/>'));
 	}
@@ -178,13 +183,14 @@ export async function getEmailData({ message, receiver, sender, subscription, ro
 		)}${message.tmid || message._id}@${replyto.split('@')[1]}`;
 	}
 
-	metrics.notificationsSent.inc({ notification_type: 'email' });
 	return email;
 }
 
 export function sendEmailFromData(data) {
-	metrics.notificationsSent.inc({ notification_type: 'email' });
-	return Mailer.send(data);
+	return Mailer.send(data).then(() => {
+		metrics.notificationsSent.inc({ notification_type: 'email' });
+		metrics.notificationsSentTotal.inc({ notification_type: 'email' });
+	});
 }
 
 export function shouldNotifyEmail({

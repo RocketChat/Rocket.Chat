@@ -1,4 +1,4 @@
-import * as os from 'os';
+import * as os from 'node:os';
 
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IHttp, IModify, IPersistence, IRead } from '@rocket.chat/apps-engine/definition/accessors';
@@ -76,7 +76,7 @@ export class TestInfastructureSetup {
 	private runtimeManager: AppRuntimeManager;
 
 	constructor() {
-		this.appStorage = TestsAppStorage.getInstance();
+		this.appStorage = new TestsAppStorage();
 		this.logStorage = new TestsAppLogStorage();
 		this.bridges = new TestsAppBridges();
 		this.sourceStorage = new TestSourceStorage();

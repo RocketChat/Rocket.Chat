@@ -40,24 +40,24 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 
-import { RocketChatAssets } from '../../../app/assets/server';
-import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
-import { createRoom } from '../../../app/lib/server/functions/createRoom';
-import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
-import { metrics } from '../../../app/metrics/server/lib/metrics';
-import { Push } from '../../../app/push/server/push';
-import PushNotification from '../../../app/push-notifications/server/lib/PushNotification';
 import { settings } from '../../../app/settings/server';
-import { updateCounter } from '../../../app/statistics/server/functions/updateStatsCounter';
 import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
 import { getUserPreference } from '../../../app/utils/server/lib/getUserPreference';
 import { availabilityErrors } from '../../../lib/videoConference/constants';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { callbacks } from '../../lib/callbacks';
 import { i18n } from '../../lib/i18n';
 import { isRoomCompatibleWithVideoConfRinging } from '../../lib/isRoomCompatibleWithVideoConfRinging';
+import { RocketChatAssets } from '../../lib/media/assets';
+import { sendMessage } from '../../lib/messages/sendMessage';
+import { metrics } from '../../lib/metrics/lib/metrics';
+import { Push } from '../../lib/notifications/push/push';
+import PushNotification from '../../lib/notifications/push-config/lib/PushNotification';
+import { createRoom } from '../../lib/rooms/createRoom';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import { updateCounter } from '../../lib/statistics/functions/updateStatsCounter';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { videoConfTypes } from '../../lib/videoConfTypes';
 
@@ -101,12 +101,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 			const title = (data as Partial<IGroupVideoConference>).title || room.fname || room.name || '';
 			return this.startGroup(providerName, user, room._id, title, data, useAppUser);
-		}).catch((e) => {
+		}).catch((err) => {
 			logger.error({
 				name: 'Error on VideoConf.create',
-				error: e,
+				err,
 			});
-			throw e;
+			throw err;
 		});
 	}
 
@@ -132,12 +132,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			}
 
 			return this.create(data, false);
-		}).catch((e) => {
+		}).catch((err) => {
 			logger.error({
 				name: 'Error on VideoConf.start',
-				error: e,
+				err,
 			});
-			throw e;
+			throw err;
 		});
 	}
 
@@ -164,12 +164,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			}
 
 			return this.joinCall(call, user || undefined, options);
-		}).catch((e) => {
+		}).catch((err) => {
 			logger.error({
 				name: 'Error on VideoConf.join',
-				error: e,
+				err,
 			});
-			throw e;
+			throw err;
 		});
 	}
 
@@ -674,7 +674,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return;
 		}
 
-		metrics.notificationsSent.inc({ notification_type: 'mobile' });
 		await Push.send({
 			from: 'push',
 			badge: 0,
@@ -701,6 +700,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				category: 'VIDEOCONF',
 			},
 		});
+
+		metrics.notificationsSent.inc({ notification_type: 'mobile' });
+		metrics.notificationsSentTotal.inc({ notification_type: 'mobile' });
 	}
 
 	private async sendAllPushNotifications(callId: VideoConference['_id']): Promise<void> {
@@ -1235,11 +1237,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	private async addUserToDiscussion(rid: IRoom['_id'], uid: IUser['_id']): Promise<void> {
 		try {
 			await Room.addUserToRoom(rid, { _id: uid }, undefined, { skipSystemMessage: true, createAsHidden: true });
-		} catch (error) {
+		} catch (err) {
 			// Ignore any errors here so that the subscription doesn't block the user from participating in the conference.
 			logger.error({
 				name: 'Error trying to subscribe user to discussion',
-				error,
+				err,
 				rid,
 				uid,
 			});

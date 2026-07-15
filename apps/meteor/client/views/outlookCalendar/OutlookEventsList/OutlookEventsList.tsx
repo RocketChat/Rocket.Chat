@@ -11,7 +11,6 @@ import {
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useUser } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import OutlookEventItem from './OutlookEventItem';
@@ -20,12 +19,12 @@ import { useOutlookAuthentication } from '../hooks/useOutlookAuthentication';
 import { useMutationOutlookCalendarSync, useOutlookCalendarListForToday } from '../hooks/useOutlookCalendarList';
 import { NotOnDesktopError } from '../lib/NotOnDesktopError';
 
-type OutlookEventsListProps = {
+export type OutlookEventsListProps = {
 	onClose: () => void;
 	changeRoute: () => void;
 };
 
-const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): ReactElement => {
+const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => {
 	const t = useTranslation();
 	const user = useUser();
 	const { authEnabled, isError, error } = useOutlookAuthentication();
@@ -78,7 +77,7 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 								totalCount={total}
 								overscan={25}
 								data={calendarEvents}
-								itemContent={(_index, calendarData): ReactElement => <OutlookEventItem {...calendarData} />}
+								itemContent={(_index, calendarData) => <OutlookEventItem {...calendarData} />}
 							/>
 						</VirtualizedScrollbars>
 					)}

@@ -1,5 +1,4 @@
 import { usePermission, useRouter, useSetModal, useCurrentModal } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -11,7 +10,7 @@ import PageSkeleton from '../../../components/PageSkeleton';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
-const DeviceManagementAdminRoute = (): ReactElement => {
+const DeviceManagementAdminRoute = () => {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const setModal = useSetModal();

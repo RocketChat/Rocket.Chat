@@ -64,14 +64,6 @@ afterEach(() => {
 });
 
 describe('useLoadSurroundingMessages', () => {
-	it('should return a jumpToRef', () => {
-		const { result } = renderHook(() => useLoadSurroundingMessages(), {
-			wrapper: mockAppRoot().build(),
-		});
-
-		expect(result.current.jumpToRef).toBeDefined();
-	});
-
 	it('should not fetch a message when msg search parameter is absent', () => {
 		const endpointSpy = jest.fn();
 
@@ -138,7 +130,7 @@ describe('useLoadSurroundingMessages', () => {
 							message,
 						}) as any,
 				)
-				.withMethod('getRoomById', () => ({ _id: 'room-2', t: 'c', name: 'general' }) as any)
+				.withEndpoint('GET', '/v1/rooms.info', () => ({ room: { _id: 'room-2', t: 'c', name: 'general' } }) as any)
 				.build(),
 		});
 
@@ -249,7 +241,7 @@ describe('useLoadSurroundingMessages', () => {
 							message,
 						}) as any,
 				)
-				.withMethod('getRoomById', () => ({ _id: 'room-5', t: 'c', name: 'general' }) as any)
+				.withEndpoint('GET', '/v1/rooms.info', () => ({ room: { _id: 'room-5', t: 'c', name: 'general' } }) as any)
 				.build(),
 		});
 

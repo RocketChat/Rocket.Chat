@@ -6,6 +6,7 @@ import { Inject } from 'meteor/meteorhacks:inject-initial';
 import { Tracker } from 'meteor/tracker';
 
 import { applyHeadInjections, headInjections, injectIntoBody, injectIntoHead } from './inject';
+import { getMessageMaxParseLength } from '../../../lib/getMessageMaxParseLength';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
 import { settings } from '../../settings/server';
 import { getURL } from '../../utils/server/getURL';
@@ -126,6 +127,9 @@ Meteor.startup(() => {
 	})(__meteor_runtime_config__.ROOT_URL_PATH_PREFIX);
 
 	injectIntoHead('base', `<base href="${baseUrl}">`);
+
+	const escapedMessageMaxParseLength = escapeHTML(String(getMessageMaxParseLength()));
+	injectIntoHead('MESSAGE_MAX_PARSE_LENGTH', `<meta name="rc-message-parser-max-length" content="${escapedMessageMaxParseLength}" />`);
 });
 
 const renderDynamicCssList = withDebouncing({ wait: 500 })(async () => {

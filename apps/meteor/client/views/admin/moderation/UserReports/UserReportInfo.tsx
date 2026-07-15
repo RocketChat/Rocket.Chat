@@ -25,7 +25,9 @@ import { useFormatDate } from '../../../../hooks/useFormatDate';
 import ReportReason from '../helpers/ReportReason';
 import UserColumn from '../helpers/UserColumn';
 
-const UserReportInfo = ({ userId }: { userId: string }) => {
+export type UserReportInfoProps = { userId: string };
+
+const UserReportInfo = ({ userId }: UserReportInfoProps) => {
 	const { t } = useTranslation();
 	const getUserReports = useEndpoint('GET', '/v1/moderation.user.reportsByUserId');
 	const formatDateAndTime = useFormatDate();

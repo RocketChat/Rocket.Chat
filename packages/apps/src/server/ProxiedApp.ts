@@ -1,4 +1,4 @@
-import { inspect } from 'util';
+import { inspect } from 'node:util';
 
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
@@ -12,7 +12,7 @@ import { AppConsole } from './logging';
 import { AppLicenseValidationResult } from './marketplace/license';
 import type { AppsEngineRuntime } from './runtime/AppsEngineRuntime';
 import type { IRuntimeController } from './runtime/IRuntimeController';
-import { JSONRPC_METHOD_NOT_FOUND } from './runtime/deno/AppsEngineDenoRuntime';
+import { JSONRPC_METHOD_NOT_FOUND } from './runtime/base/BaseRuntimeSubprocessController';
 import type { AppInstallationSource, IAppStorageItem } from './storage';
 
 export class ProxiedApp {

@@ -1,6 +1,6 @@
-import * as fs from 'fs';
-import * as os from 'os';
-import * as path from 'path';
+import * as fs from 'node:fs';
+import * as os from 'node:os';
+import * as path from 'node:path';
 
 import { registerOrchestrator } from '@rocket.chat/apps';
 import { AppManager } from '@rocket.chat/apps/dist/server/AppManager';
@@ -29,7 +29,7 @@ import {
 } from '../../../app/apps/server/converters';
 import { AppThreadsConverter } from '../../../app/apps/server/converters/threads';
 import { settings } from '../../../app/settings/server';
-import { canEnableApp } from '../../app/license/server/canEnableApp';
+import { canEnableApp } from '../lib/license/canEnableApp';
 
 const DISABLED_PRIVATE_APP_INSTALLATION = ['yes', 'true'].includes(String(process.env.DISABLE_PRIVATE_APP_INSTALLATION).toLowerCase());
 

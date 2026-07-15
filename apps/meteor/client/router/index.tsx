@@ -14,6 +14,7 @@ import type {
 
 import { Context, Page } from './page';
 import { appLayout } from '../lib/appLayout';
+import { getRootUrlPathPrefix } from '../lib/meteorRuntimeConfig';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
 export class Router implements RouterContextValue {
@@ -40,7 +41,7 @@ export class Router implements RouterContextValue {
 
 	private pathDefById = new Map<Route['pathDef'], Route['id']>();
 
-	private readonly basePath = window.__meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
+	private readonly basePath = getRootUrlPathPrefix();
 
 	private readonly page = new Page();
 

@@ -8,9 +8,8 @@ import {
 	useMethod,
 } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 
-const ComposerAnonymous = (): ReactElement => {
+const ComposerAnonymous = () => {
 	const t = useTranslation();
 	const dispatch = useToastMessageDispatch();
 	const isAnonymousWriteEnabled = useSetting('Accounts_AllowAnonymousWrite');

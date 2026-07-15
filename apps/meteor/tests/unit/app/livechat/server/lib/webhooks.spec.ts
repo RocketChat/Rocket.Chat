@@ -50,13 +50,15 @@ function buildSubject(options?: {
 
 	const metrics = {
 		totalLivechatWebhooksSuccess: { inc: sinon.spy() },
+		totalLivechatWebhooksSuccessTotal: { inc: sinon.spy() },
 		totalLivechatWebhooksFailures: { inc: sinon.spy() },
+		totalLivechatWebhooksFailuresTotal: { inc: sinon.spy() },
 	};
 
 	const { sendRequest } = proxyquire.noCallThru().load(MODULE_PATH, {
 		'@rocket.chat/server-fetch': { serverFetch: fetchStub },
 		'./logger': { webhooksLogger: logger },
-		'../../../metrics/server': { metrics },
+		'../../../../server/lib/metrics': { metrics },
 		'../../../settings/server': { settings },
 	});
 

@@ -6,7 +6,7 @@ import GenericUpsellModal from '../../../../../../components/GenericUpsellModal'
 import { useExternalLink } from '../../../../../../hooks/useExternalLink';
 import { CONTACT_SALES_LINK, OUTBOUND_DOCS_LINK } from '../../constants';
 
-type OutboundMessageUpsellModalProps = {
+export type OutboundMessageUpsellModalProps = {
 	hasModule?: boolean;
 	isAdmin?: boolean;
 	isCommunity?: boolean;

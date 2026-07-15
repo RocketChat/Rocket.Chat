@@ -11,7 +11,7 @@ import {
 	FieldRow,
 	FieldError,
 } from '@rocket.chat/fuselage-forms';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -33,7 +33,7 @@ type CreateDiscussionFormValues = {
 	topic: string;
 };
 
-type CreateDiscussionProps = {
+export type CreateDiscussionProps = {
 	parentMessageId?: IMessage['_id'];
 	encryptedParentRoom?: boolean;
 	onClose: () => void;
@@ -69,7 +69,7 @@ const CreateDiscussion = ({
 		},
 	});
 
-	const onParentRoomChange = useEffectEvent((room: IRoom | undefined) => {
+	const onParentRoomChange = useStableCallback((room: IRoom | undefined) => {
 		if (!room) {
 			return;
 		}
@@ -124,7 +124,7 @@ const CreateDiscussion = ({
 							<Controller
 								control={control}
 								name='parentRoom'
-								render={({ field }) => <DefaultParentRoomField {...field} defaultParentRoom={defaultParentRoom} required={true} />}
+								render={() => <DefaultParentRoomField defaultParentRoom={defaultParentRoom} />}
 							/>
 						)}
 						{!defaultParentRoom && (
@@ -156,7 +156,7 @@ const CreateDiscussion = ({
 							control={control}
 							rules={{ required: t('Required_field', { field: t('Name') }) }}
 							render={({ field }) => (
-								<TextInput {...field} aria-required='true' addon={<Icon name='baloons' size='x20' />} error={errors.name?.message} />
+								<TextInput {...field} aria-required='true' endAddon={<Icon name='baloons' size='x20' />} error={errors.name?.message} />
 							)}
 						/>
 					</FieldRow>

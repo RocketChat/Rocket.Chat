@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { StoryObj, Meta } from '@storybook/react';
 
 import BusinessHoursForm from './BusinessHoursForm';
 
@@ -14,5 +14,6 @@ export default {
 	],
 } satisfies Meta<typeof BusinessHoursForm>;
 
-export const Default: StoryFn<typeof BusinessHoursForm> = (args) => <BusinessHoursForm {...args} />;
-Default.storyName = 'BusinessHoursForm';
+export const Default: StoryObj<typeof BusinessHoursForm> = {
+	name: 'BusinessHoursForm',
+};

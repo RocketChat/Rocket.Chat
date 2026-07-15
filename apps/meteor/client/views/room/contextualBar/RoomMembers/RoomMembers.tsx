@@ -15,18 +15,19 @@ import {
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import type { ReactElement, FormEventHandler, ComponentProps, MouseEvent, ElementType } from 'react';
+import type { ChangeEventHandler, ComponentProps, MouseEvent, ElementType } from 'react';
 import { useId, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GroupedVirtuoso } from 'react-virtuoso';
 
 import { MembersListDivider } from './MembersListDivider';
+import RoomMembersListWrapper from './RoomMembersListWrapper';
 import RoomMembersRow from './RoomMembersRow';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import type { RoomMember } from '../../../hooks/useMembersList';
 
-type RoomMembersProps = {
+export type RoomMembersProps = {
 	rid: IRoom['_id'];
 	isTeam?: boolean;
 	isDirect?: boolean;
@@ -34,7 +35,7 @@ type RoomMembersProps = {
 	isSuccess: boolean;
 	text: string;
 	type: string;
-	setText: FormEventHandler<HTMLInputElement>;
+	setText: ChangeEventHandler<HTMLInputElement>;
 	setType: (type: 'online' | 'all') => void;
 	members: RoomMember[];
 	total: number;
@@ -70,7 +71,7 @@ const RoomMembers = ({
 	isDirect,
 	reload,
 	isABACRoom = false,
-}: RoomMembersProps): ReactElement => {
+}: RoomMembersProps) => {
 	const { t } = useTranslation();
 	const membersListId = useId();
 	const inputRef = useAutoFocus<HTMLInputElement>(true);
@@ -153,7 +154,7 @@ const RoomMembers = ({
 					value={text}
 					ref={inputRef}
 					onChange={setText}
-					addon={<Icon name='magnifier' size='x20' />}
+					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
 				<Box w='x144' mis={8}>
 					<Select
@@ -196,10 +197,13 @@ const RoomMembers = ({
 										}}
 										overscan={50}
 										groupCounts={counts}
-										groupContent={(index): ReactElement => titles[index]}
-										// eslint-disable-next-line react/no-multi-comp
-										components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
-										itemContent={(index): ReactElement => (
+										groupContent={(index) => titles[index]}
+										components={{
+											// eslint-disable-next-line react/no-multi-comp
+											Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} />,
+											List: RoomMembersListWrapper,
+										}}
+										itemContent={(index) => (
 											<RowComponent useRealName={useRealName} data={itemData} user={members[index]} index={index} reload={reload} />
 										)}
 									/>

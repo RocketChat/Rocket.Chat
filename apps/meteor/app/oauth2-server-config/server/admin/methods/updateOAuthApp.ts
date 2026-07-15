@@ -3,7 +3,8 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { OAuthApps, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../../../../server/lib/authorization/hasPermission';
+import { methodDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 import { parseUriList } from '../functions/parseUriList';
 
 declare module '@rocket.chat/ddp-client' {
@@ -41,13 +42,6 @@ export const updateOAuthApp = async (
 		});
 	}
 
-	const currentApplication = await OAuthApps.findOneById(applicationId);
-	if (currentApplication == null) {
-		throw new Meteor.Error('error-application-not-found', 'Application not found', {
-			method: 'updateOAuthApp',
-		});
-	}
-
 	const redirectUri = parseUriList(application.redirectUri);
 
 	if (redirectUri.length === 0) {
@@ -56,27 +50,29 @@ export const updateOAuthApp = async (
 		});
 	}
 
-	await OAuthApps.updateOne(
-		{ _id: applicationId },
-		{
-			$set: {
-				name: application.name,
-				active: application.active,
-				redirectUri,
-				_updatedAt: new Date(),
-				_updatedBy: await Users.findOneById(userId, {
-					projection: {
-						username: 1,
-					},
-				}),
+	const updatedApplication = await OAuthApps.updateById(applicationId, {
+		name: application.name,
+		active: application.active,
+		redirectUri,
+		_updatedBy: await Users.findOneById(userId, {
+			projection: {
+				username: 1,
 			},
-		},
-	);
-	return OAuthApps.findOneById(applicationId);
+		}),
+	});
+
+	if (updatedApplication == null) {
+		throw new Meteor.Error('error-application-not-found', 'Application not found', {
+			method: 'updateOAuthApp',
+		});
+	}
+
+	return updatedApplication;
 };
 
 Meteor.methods<ServerMethods>({
 	async updateOAuthApp(applicationId, application) {
+		methodDeprecationLogger.method('updateOAuthApp', '9.0.0', '/v1/oauth-apps.update');
 		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'updateOAuthApp' });
 		}

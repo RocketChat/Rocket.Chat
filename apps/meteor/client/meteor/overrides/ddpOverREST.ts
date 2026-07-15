@@ -1,7 +1,8 @@
-import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
+import { parseDDP, stringifyDDP } from '../../lib/sdk/ddpProtocol';
+import { clearStoredCredentials } from '../../lib/sdk/ddpSdk';
 import { getUserId } from '../../lib/user';
 
 const bypassMethods: string[] = ['setUserStatus', 'logout'];
@@ -79,7 +80,7 @@ const withDDPOverREST = (_send: (this: Meteor.IMeteorConnection, message: Meteor
 		const endpoint = !getUserId() || wasResumeLogin ? 'method.callAnon' : 'method.call';
 
 		const restParams = {
-			message: DDPCommon.stringifyDDP({ ...message }),
+			message: stringifyDDP({ ...message }),
 		};
 
 		const method = encodeURIComponent(message.method.replace(/\//g, ':'));
@@ -92,7 +93,7 @@ const withDDPOverREST = (_send: (this: Meteor.IMeteorConnection, message: Meteor
 				// processed, but the Accounts.onLogin callbacks fire before that follow-up request — so any requests
 				// initiated inside onLogin callbacks queue behind the loginWithToken and only run after it completes.
 				if (!wasResumeLogin && message.method === 'login') {
-					const parsedMessage = DDPCommon.parseDDP(_message) as { result?: { token?: string } };
+					const parsedMessage = parseDDP(_message) as { result?: { token?: string } };
 					if (parsedMessage.result?.token) {
 						Meteor.loginWithToken(parsedMessage.result.token);
 					}
@@ -102,6 +103,21 @@ const withDDPOverREST = (_send: (this: Meteor.IMeteorConnection, message: Meteor
 			.catch((error: unknown) => {
 				const e = (error ?? {}) as { error?: unknown; reason?: unknown; message?: unknown };
 
+				// Check if it's a session expiration error and clear credentials.
+				const isExpiredSessionError =
+					(typeof e.error === 'string' && e.error === 'You must be logged in to do this.') ||
+					(typeof e.message === 'string' && e.message === 'You must be logged in to do this.') ||
+					(typeof e.reason === 'string' && e.reason === 'You must be logged in to do this.');
+
+				if (isExpiredSessionError) {
+					console.warn('[ddpOverREST] Expired session detected, clearing credentials', { method: message.method, error });
+					try {
+						clearStoredCredentials();
+					} catch (cleanupError) {
+						console.warn('[ddpOverREST] Failed to clean up expired session', cleanupError);
+					}
+				}
+
 				// method.call / method.callAnon encode the original Meteor error
 				// inside `body.message` as a DDP `result` frame (mountResult in
 				// app/api/server/v1/misc.ts). Forward it untouched so the original
@@ -110,7 +126,7 @@ const withDDPOverREST = (_send: (this: Meteor.IMeteorConnection, message: Meteor
 				// open the 2FA modal.
 				if (typeof e.message === 'string') {
 					try {
-						const parsed = DDPCommon.parseDDP(e.message) as { msg?: string; id?: string };
+						const parsed = parseDDP(e.message) as { msg?: string; id?: string };
 						if (parsed?.msg === 'result' && parsed.id === message.id) {
 							processResult(e.message);
 							console.error(error);
@@ -126,7 +142,7 @@ const withDDPOverREST = (_send: (this: Meteor.IMeteorConnection, message: Meteor
 				// plain string — not a DDP frame. Re-encode as a proper DDP error
 				// result so Accounts' resume callback clears stale creds and the
 				// user isn't wedged on /home with no main UI.
-				const errorMessage = DDPCommon.stringifyDDP({
+				const errorMessage = stringifyDDP({
 					msg: 'result',
 					id: message.id,
 					error: {

@@ -30,6 +30,18 @@ test.each([
 	[':smile:', [bigEmoji([emoji('smile')])]],
 	['Hi :+1:', [paragraph([plain('Hi '), emoji('+1')])]],
 	['Hi :+1_tone4:', [paragraph([plain('Hi '), emoji('+1_tone4')])]],
+	['Hi :thumbsup_tone3:', [paragraph([plain('Hi '), emoji('thumbsup_tone3')])]],
+	['Hi :yes_tone3:', [paragraph([plain('Hi '), emoji('yes_tone3')])]],
+	['Hi :clapping_hands_tone2:', [paragraph([plain('Hi '), emoji('clapping_hands_tone2')])]],
+	['Hi :pray_tone4:', [paragraph([plain('Hi '), emoji('pray_tone4')])]],
+	['Hi :regional_indicator_a:', [paragraph([plain('Hi '), emoji('regional_indicator_a')])]],
+	['Hi :digit_zero:', [paragraph([plain('Hi '), emoji('digit_zero')])]],
+	['Hi :pound_symbol:', [paragraph([plain('Hi '), emoji('pound_symbol')])]],
+	['Hi :asterisk_symbol:', [paragraph([plain('Hi '), emoji('asterisk_symbol')])]],
+	['Hi :tone3:', [paragraph([plain('Hi '), emoji('tone3')])]],
+	[':thumbsup_tone3:', [bigEmoji([emoji('thumbsup_tone3')])]],
+	[':regional_indicator_a:', [bigEmoji([emoji('regional_indicator_a')])]],
+	[':digit_zero:', [bigEmoji([emoji('digit_zero')])]],
 ])('parses %p', (input, output) => {
 	expect(parse(input)).toEqual(output);
 });
@@ -57,6 +69,25 @@ test.each([
 	['👆🏽👆🏽👆🏽', [bigEmoji([emojiUnicode('👆🏽'), emojiUnicode('👆🏽'), emojiUnicode('👆🏽')])]],
 	['👆🏺', [bigEmoji([emojiUnicode('👆'), emojiUnicode('🏺')])]],
 	['Hi 👍', [paragraph([plain('Hi '), emojiUnicode('👍')])]],
+	// Symbols and Pictographs Extended-A (U+1FA00–U+1FAFF) — Unicode 13+/14+
+	['🫠', [bigEmoji([emojiUnicode('🫠')])]],
+	['🫡', [bigEmoji([emojiUnicode('🫡')])]],
+	['🫶', [bigEmoji([emojiUnicode('🫶')])]],
+	['Hi 🫠', [paragraph([plain('Hi '), emojiUnicode('🫠')])]],
+	// ZWJ sequences involving Dingbats (❤️ U+2764) — couple/kiss emojis
+	['👨‍❤️‍💋‍👨', [bigEmoji([emojiUnicode('👨‍❤️‍💋‍👨')])]],
+	['👩‍❤️‍💋‍👩', [bigEmoji([emojiUnicode('👩‍❤️‍💋‍👩')])]],
+	['👨‍❤️‍👨', [bigEmoji([emojiUnicode('👨‍❤️‍👨')])]],
+	['💑', [bigEmoji([emojiUnicode('💑')])]],
+	['Hi 👨‍❤️‍💋‍👨', [paragraph([plain('Hi '), emojiUnicode('👨‍❤️‍💋‍👨')])]],
+	// ZWJ sequences involving Misc Symbols (⚕️, ⚖️, ✈️) — profession emojis
+	['👨‍⚕️', [bigEmoji([emojiUnicode('👨‍⚕️')])]],
+	['👩‍⚖️', [bigEmoji([emojiUnicode('👩‍⚖️')])]],
+	['👨‍✈️', [bigEmoji([emojiUnicode('👨‍✈️')])]],
+	['🩷', [bigEmoji([emojiUnicode('🩷')])]], // v15
+	['🫱🏿‍🫲🏻', [bigEmoji([emojiUnicode('🫱🏿‍🫲🏻')])]], // v14
+	['🫩', [bigEmoji([emojiUnicode('🫩')])]], // v16
+	['🇨🇶', [bigEmoji([emojiUnicode('🇨🇶')])]], // v16
 ])('parses %p', (input, output) => {
 	expect(parse(input)).toEqual(output);
 });

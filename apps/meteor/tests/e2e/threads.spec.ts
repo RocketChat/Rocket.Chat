@@ -56,6 +56,7 @@ test.describe.serial('Threads', () => {
 				await expect(page).toHaveURL(/.*thread/);
 				await expect(poHomeChannel.content.lastUserThreadMessage).toContainText('This is a thread message also sent in channel');
 			});
+			await expect(page).not.toHaveURL(/[?&]msg=/);
 
 			await poHomeChannel.content.lastUserMessage.click();
 			await expect(page).not.toHaveURL(/.*thread/);

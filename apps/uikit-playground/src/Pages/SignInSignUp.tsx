@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Flex, Box, InputBox, Button, Label } from '@rocket.chat/fuselage';
+import { FlexContainer, Box, InputBox, Button, Label } from '@rocket.chat/fuselage';
 import { RocketChatLogo } from '@rocket.chat/logo';
 import { useNavigate } from 'react-router-dom';
 
@@ -22,15 +22,17 @@ const labels = {
 	},
 };
 
-const SignInSignUp = ({ route }: { route: string }) => {
+export type SignInSignUpProps = { route: string };
+
+const SignInSignUp = ({ route }: SignInSignUpProps) => {
 	const navigate = useNavigate();
 	const clickHandler = () => {
 		navigate(route === routes.login ? routes.signup : routes.login);
 	};
 	return (
-		<Flex.Container justifyContent='center' alignItems='center'>
+		<FlexContainer justifyContent='center' alignItems='center'>
 			<Box w='100%' flexGrow={1}>
-				<Flex.Container justifyContent='start' alignItems='center' direction='column'>
+				<FlexContainer justifyContent='start' alignItems='center' direction='column'>
 					<Box w='max-content' h='100%'>
 						<Box w='180px' h='40px' mbs='100px'>
 							<RocketChatLogo />
@@ -59,9 +61,9 @@ const SignInSignUp = ({ route }: { route: string }) => {
 							</Label>
 						</Label>
 					</Box>
-				</Flex.Container>
+				</FlexContainer>
 			</Box>
-		</Flex.Container>
+		</FlexContainer>
 	);
 };
 

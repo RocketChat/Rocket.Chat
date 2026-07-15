@@ -89,20 +89,6 @@ export class TeamMemberRaw extends BaseRaw<ITeamMember> implements ITeamMemberMo
 		return options ? this.col.find({ teamId: { $in: teamIds } }, options) : this.col.find({ teamId: { $in: teamIds } }, options);
 	}
 
-	findByTeamIdAndRole(teamId: string, role: IRole['_id']): FindCursor<ITeamMember>;
-
-	findByTeamIdAndRole(teamId: string, role: IRole['_id'], options: FindOptions<ITeamMember>): FindCursor<ITeamMember>;
-
-	findByTeamIdAndRole<P extends Document>(teamId: string, role: IRole['_id'], options: FindOptions<P>): FindCursor<P>;
-
-	findByTeamIdAndRole<P extends Document>(
-		teamId: string,
-		role: IRole['_id'],
-		options?: undefined | FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
-	): FindCursor<P> | FindCursor<ITeamMember> {
-		return options ? this.col.find({ teamId, roles: role }, options) : this.col.find({ teamId, roles: role });
-	}
-
 	countByTeamIdAndRole(teamId: string, role: IRole['_id']): Promise<number> {
 		return this.countDocuments({ teamId, roles: role });
 	}

@@ -7,6 +7,7 @@ import type {
 	RocketChatRecordDeleted,
 	MessageAttachment,
 	IMessageWithPendingFileImport,
+	DeepWritable,
 } from '@rocket.chat/core-typings';
 import type { FindPaginated, IMessagesModel } from '@rocket.chat/model-typings';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
@@ -32,12 +33,6 @@ import type {
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
 
-type DeepWritable<T> = T extends (...args: any) => any
-	? T
-	: {
-			-readonly [P in keyof T]: DeepWritable<T[P]>;
-		};
-
 export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IMessage>>) {
 		super(db, 'message', trash);
@@ -52,7 +47,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{ key: { 'editedBy._id': 1 }, sparse: true },
 			{ key: { 'rid': 1, 't': 1, 'u._id': 1 } },
 			{ key: { expireAt: 1 }, expireAfterSeconds: 0 },
-			{ key: { msg: 'text' } },
+			// The text index on `msg` is managed at startup by `ensureMessagesTextIndex`
+			// because its shape is controlled by the `USE_ROOM_SEARCH_INDEX` env var
+			// (default `{ msg: 'text' }` vs. room-scoped `{ rid: 1, msg: 'text' }`).
 			{ key: { 'file._id': 1 }, sparse: true },
 			{ key: { 'files._id': 1 }, sparse: true },
 			{ key: { 'mentions.username': 1 }, sparse: true },
@@ -557,65 +554,12 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
-	async findOneByFederationIdAndUsernameOnReactions(federationEventId: string, username: string): Promise<IMessage | null> {
-		return (
-			await this.col
-				.aggregate(
-					[
-						{
-							$match: {
-								t: { $ne: 'rm' },
-							},
-						},
-						{
-							$project: {
-								document: '$$ROOT',
-								reactions: { $objectToArray: '$reactions' },
-							},
-						},
-						{
-							$unwind: {
-								path: '$reactions',
-							},
-						},
-						{
-							$match: {
-								$and: [
-									{ 'reactions.v.usernames': { $in: [username] } },
-									{ [`reactions.v.federationReactionEventIds.${federationEventId}`]: username },
-								],
-							},
-						},
-						{ $replaceRoot: { newRoot: '$document' } },
-					],
-					{ readPreference: readSecondaryPreferred() },
-				)
-				.toArray()
-		)[0] as IMessage;
-	}
-
 	removeByRoomId(roomId: string): Promise<DeleteResult> {
 		return this.deleteMany({ rid: roomId });
 	}
 
 	setReactions(messageId: string, reactions: IMessage['reactions']): Promise<UpdateResult> {
 		return this.updateOne({ _id: messageId }, { $set: { reactions } });
-	}
-
-	keepHistoryForToken(token: string): Promise<UpdateResult | Document> {
-		return this.updateMany(
-			{
-				'navigation.token': token,
-				'expireAt': {
-					$exists: true,
-				},
-			},
-			{
-				$unset: {
-					expireAt: 1,
-				},
-			},
-		);
 	}
 
 	setRoomIdByToken(token: string, rid: string): Promise<UpdateResult | Document> {
@@ -666,6 +610,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 		return this.updateMany(query, {
 			$set: {
+				'_hidden': false,
 				'_importFile.rocketChatUrl': rocketChatUrl,
 				'_importFile.downloaded': true,
 			},

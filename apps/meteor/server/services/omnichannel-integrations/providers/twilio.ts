@@ -272,7 +272,7 @@ export class Twilio implements ISMSProvider {
 
 	async validateRequest(request: Request, requestBody: unknown): Promise<boolean> {
 		// We're not getting original twilio requests on CI :p
-		if (process.env.TEST_MODE === 'true') {
+		if (process.env.TEST_MODE === 'true' || process.env.TEST_MODE === 'api') {
 			return true;
 		}
 		const twilioHeader = request.headers.get('x-twilio-signature') || '';

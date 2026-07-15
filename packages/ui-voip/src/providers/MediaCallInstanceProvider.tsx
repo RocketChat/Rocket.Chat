@@ -4,20 +4,22 @@ import { useMemo, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
 import { useAudioStream } from './useAudioStream';
+import useAvailableViewTracker from './useAvailableViewTracker';
 import { useGetAutocompleteOptions } from './useGetAutocompleteOptions';
 import { useMediaSessionInstance } from './useMediaSessionInstance';
 import { MediaCallInstanceContext } from '../context/MediaCallInstanceContext';
 import type { Signals } from '../context/MediaCallInstanceContext';
 
-type MediaCallInstanceProviderProps = {
+export type MediaCallInstanceProviderProps = {
 	children: ReactNode;
+	enabled?: boolean;
 };
 
-const MediaCallInstanceProvider = ({ children }: MediaCallInstanceProviderProps) => {
+const MediaCallInstanceProvider = ({ children, enabled = true }: MediaCallInstanceProviderProps) => {
 	const [openRoomId, setOpenRoomId] = useState<string | undefined>(undefined);
-	const [inRoomView, setInRoomView] = useState(false);
+	const { currentViews, registerView, unregisterView } = useAvailableViewTracker();
 	const user = useUser();
-	const instance = useMediaSessionInstance(user?._id);
+	const instance = useMediaSessionInstance(user?._id, enabled);
 	const [signalEmitter] = useState(() => new Emitter<Signals>());
 
 	const [remoteStreamRefCallback, audioElement] = useAudioStream(instance);
@@ -25,8 +27,18 @@ const MediaCallInstanceProvider = ({ children }: MediaCallInstanceProviderProps)
 	const getAutocompleteOptions = useGetAutocompleteOptions(instance);
 
 	const value = useMemo(
-		() => ({ instance, signalEmitter, audioElement, openRoomId, setOpenRoomId, getAutocompleteOptions, inRoomView, setInRoomView }),
-		[instance, signalEmitter, audioElement, openRoomId, setOpenRoomId, getAutocompleteOptions, inRoomView],
+		() => ({
+			instance,
+			signalEmitter,
+			audioElement,
+			openRoomId,
+			setOpenRoomId,
+			getAutocompleteOptions,
+			currentViews,
+			registerView,
+			unregisterView,
+		}),
+		[instance, signalEmitter, audioElement, openRoomId, setOpenRoomId, getAutocompleteOptions, currentViews, registerView, unregisterView],
 	);
 
 	return (

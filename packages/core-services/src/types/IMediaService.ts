@@ -1,4 +1,4 @@
-import type { Readable, Stream } from 'stream';
+import type { Readable, Stream } from 'node:stream';
 
 import type sharp from 'sharp';
 

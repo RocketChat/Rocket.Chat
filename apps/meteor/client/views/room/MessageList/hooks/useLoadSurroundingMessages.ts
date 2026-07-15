@@ -3,7 +3,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
 import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { RoomManager } from '../../../../lib/RoomManager';
@@ -13,8 +13,6 @@ import { useGoToRoom } from '../../hooks/useGoToRoom';
 
 export const useLoadSurroundingMessages = () => {
 	const msgId = useSearchParameter('msg');
-
-	const jumpToRef = useRef<HTMLElement>(undefined);
 
 	const getMessage = useEndpoint('GET', '/v1/chat.getMessage');
 
@@ -57,8 +55,6 @@ export const useLoadSurroundingMessages = () => {
 	});
 
 	useEffect(() => {
-		if (jumpToRef.current) return;
-
 		if (!message) return;
 
 		if (isThreadMessage(message) || isThreadMainMessage(message)) {
@@ -70,6 +66,4 @@ export const useLoadSurroundingMessages = () => {
 
 		handleRegularMessage(message);
 	}, [msgId, getMessage, message, tab, context, handleRegularMessage, handleThreadMessage]);
-
-	return { jumpToRef };
 };

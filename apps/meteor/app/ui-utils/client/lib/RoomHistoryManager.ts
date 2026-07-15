@@ -2,13 +2,11 @@ import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { differenceInMilliseconds } from 'date-fns';
 import { useCallback, useSyncExternalStore } from 'react';
-import type { MutableRefObject } from 'react';
 
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import { getUserId } from '../../../../client/lib/user';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
-import { waitForElement } from '../../../../client/lib/utils/waitForElement';
 import { Messages, Subscriptions } from '../../../../client/stores';
 import { getUserPreference } from '../../../utils/client';
 
@@ -108,10 +106,14 @@ class RoomHistoryManagerClass extends Emitter {
 
 	private run(fn: () => void) {
 		const difference = this.lastRequest ? differenceInMilliseconds(new Date(), this.lastRequest) : Infinity;
-		if (difference > 500) {
+		// Original cooldown was 500ms which forced ~330ms wait on the second getMore call when a
+		// user opens a room. Pagination throughput here is bounded by the loadHistory server
+		// method itself, so a smaller client-side spacing is enough to avoid hammering.
+		const minSpacingMs = 100;
+		if (difference > minSpacingMs) {
 			return fn();
 		}
-		return setTimeout(fn, 500 - difference);
+		return setTimeout(fn, minSpacingMs - difference);
 	}
 
 	public isLoaded(rid: IRoom['_id']) {
@@ -172,12 +174,13 @@ class RoomHistoryManagerClass extends Emitter {
 				room.oldestTs = messages[messages.length - 1].ts;
 			}
 
-			const wrapper = await waitForElement('.messages-box .wrapper [data-overlayscrollbars-viewport]');
-
-			room.scroll = {
-				scrollHeight: wrapper.scrollHeight,
-				scrollTop: wrapper.scrollTop,
-			};
+			const wrapper = document.querySelector<HTMLElement>('.messages-box .wrapper [data-overlayscrollbars-viewport]');
+			if (wrapper) {
+				room.scroll = {
+					scrollHeight: wrapper.scrollHeight,
+					scrollTop: wrapper.scrollTop,
+				};
+			}
 
 			await upsertMessageBulk({
 				msgs: messages.filter((msg) => msg.t !== 'command'),
@@ -190,7 +193,7 @@ class RoomHistoryManagerClass extends Emitter {
 				room.loaded = 0;
 			}
 
-			const visibleMessages = messages.filter((msg) => !msg.tmid || showThreadsInMainChannel || msg.tshow);
+			const visibleMessages = messages.filter((msg) => msg.t !== 'command' && (!msg.tmid || showThreadsInMainChannel || msg.tshow));
 
 			room.loaded += visibleMessages.length;
 
@@ -198,7 +201,7 @@ class RoomHistoryManagerClass extends Emitter {
 				this.updateRoom(rid, { hasMore: false });
 			}
 
-			if (room.hasMore && (visibleMessages.length === 0 || room.loaded < limit)) {
+			if (room.hasMore && visibleMessages.length === 0) {
 				return this.getMore(rid);
 			}
 
@@ -225,14 +228,13 @@ class RoomHistoryManagerClass extends Emitter {
 		room.scroll = undefined;
 	}
 
-	public async getMoreNext(rid: IRoom['_id'], atBottomRef: MutableRefObject<boolean>) {
+	public async getMoreNext(rid: IRoom['_id']) {
 		const room = this.getRoom(rid);
 		if (room.hasMoreNext !== true) {
 			return;
 		}
 
 		await this.queue();
-		atBottomRef.current = false;
 
 		this.updateRoom(rid, { isLoading: true });
 
@@ -323,6 +325,7 @@ class RoomHistoryManagerClass extends Emitter {
 		}
 
 		const room = this.getRoom(message.rid);
+		this.updateRoom(message.rid, { isLoading: true });
 
 		const subscription = Subscriptions.state.find((record) => record.rid === message.rid);
 		const result = await callWithErrorHandling('loadSurroundingMessages', message, defaultLimit, showThreadMessages);
@@ -330,6 +333,7 @@ class RoomHistoryManagerClass extends Emitter {
 		this.clear(message.rid);
 
 		if (!result) {
+			this.updateRoom(message.rid, { isLoading: false });
 			return;
 		}
 		const { messages = [] } = result;

@@ -14,8 +14,8 @@ export const getURL = function (
 	cloudDeepLinkUrl?: string,
 	cacheKey?: boolean,
 ): string {
-	const cdnPrefix = settings.watch('CDN_PREFIX') || '';
-	const siteUrl = settings.watch('Site_Url') || '';
+	const cdnPrefix = settings.peek('CDN_PREFIX') || '';
+	const siteUrl = settings.peek('Site_Url') || '';
 
 	if (cacheKey) {
 		path += `${path.includes('?') ? '&' : '?'}cacheKey=${Info.version}`;

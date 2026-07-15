@@ -3,9 +3,10 @@ import EJSON from 'ejson';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
-import { createMeteorBackedSdk } from './meteorBackedSdk';
+import { createMeteorBackedSdk, createMeteorBackedStorage } from './meteorBackedSdk';
 import { isSdkTransportEnabled } from './sdkTransportEnabled';
-import { STORAGE_KEYS, getStoredItem } from './storage';
+import { getRootUrl } from '../meteorRuntimeConfig';
+import { STORAGE_KEYS, getStoredItem, removeStoredItem } from './storage';
 import { userIdStore } from '../user';
 
 const sdkTransportEnabled = isSdkTransportEnabled();
@@ -13,7 +14,7 @@ const sdkTransportEnabled = isSdkTransportEnabled();
 const stripTrailingSlash = (value: string): string => (value.endsWith('/') ? value.slice(0, -1) : value);
 
 const computeDdpUrl = (): string => {
-	const rootUrl = typeof __meteor_runtime_config__ !== 'undefined' ? __meteor_runtime_config__.ROOT_URL : undefined;
+	const rootUrl = getRootUrl();
 	const source = rootUrl && rootUrl !== '/' ? rootUrl : window.location.origin;
 	return stripTrailingSlash(source.replace(/^http/, 'ws'));
 };
@@ -52,6 +53,14 @@ export const getDdpSdk = (): DDPSDK => {
 	if (!instance) {
 		if (sdkTransportEnabled) {
 			instance = DDPSDK.create(computeDdpUrl());
+			// TODO: This is a temporary fix to ensure Accounts/Meteor and Update Session On Window Close work together.
+			try {
+				instance.storage = createMeteorBackedStorage();
+			} catch (error) {
+				// DDPSDK.create may return a sealed/frozen instance under strict mode; failing
+				// to attach the storage hook must not abort SDK bootstrap.
+				console.warn('[ddpSdk] failed to attach storage hook to SDK instance', error);
+			}
 			applyEjsonEncoding(instance);
 			void startConnect(instance);
 		} else {
@@ -67,7 +76,7 @@ export const getDdpSdk = (): DDPSDK => {
 	return instance;
 };
 
-const readStoredLoginToken = (): string | null => getStoredItem(STORAGE_KEYS.LOGIN_TOKEN);
+export const readStoredLoginToken = (): string | null => getStoredItem(STORAGE_KEYS.LOGIN_TOKEN);
 
 let inflightLogin: Promise<void> | undefined;
 
@@ -142,20 +151,41 @@ export const ensureConnectedAndAuthenticated = async (): Promise<void> => {
 			// latter dispatches a `logout` method which itself races against
 			// parallel re-auth flows in CI's parallel-shard environment and
 			// kicked otherwise-healthy tests out.
-			Accounts._unstoreLoginToken();
-			Meteor.connection.setUserId(null);
+			clearStoredCredentials();
 			return;
 		}
 		console.warn('[ddpSdk] loginWithToken failed', error);
 	}
 };
 
-const isAuthError = (error: unknown): boolean => {
+/**
+ * Drop the local session credentials without dispatching Meteor's `logout`
+ * method. Nulling the connection userId propagates through the
+ * Accounts.connection.userId() Tracker.autorun (see overrides/userAndUsers.ts)
+ * into the userIdStore, so `useUserId()` becomes undefined and the router falls
+ * through to LoginPage. We avoid `Meteor.logout()` on purpose: it dispatches a
+ * `logout` method that races parallel re-auth flows (fresh registration,
+ * Meteor's own resume) and has kicked otherwise-healthy sessions/tests out.
+ */
+export const clearStoredCredentials = (): void => {
+	removeStoredItem(STORAGE_KEYS.USER_ID);
+	removeStoredItem(STORAGE_KEYS.LOGIN_TOKEN);
+	removeStoredItem(STORAGE_KEYS.LOGIN_TOKEN_EXPIRES);
+	Meteor.connection.setUserId(null);
+};
+
+export const isAuthError = (error: unknown): boolean => {
 	if (!error || typeof error !== 'object') return false;
-	const e = error as { error?: unknown; reason?: unknown };
+	const e = error as { error?: unknown; reason?: unknown; status?: unknown; statusCode?: unknown };
 	return (
 		e.error === 401 ||
 		e.error === 403 ||
+		// REST-shaped failures (e.g. sdk.rest.get('/v1/me'), userData stream
+		// `nosub`) surface the HTTP status instead of a DDP `error` code.
+		e.status === 401 ||
+		e.status === 403 ||
+		e.statusCode === 401 ||
+		e.statusCode === 403 ||
 		e.reason === 'User not found' ||
 		e.reason === 'Login token expired' ||
 		e.reason === 'You are not allowed to use this token'

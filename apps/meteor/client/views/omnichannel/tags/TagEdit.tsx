@@ -23,8 +23,8 @@ type TagEditPayload = {
 	departments: { label: string; value: string }[];
 };
 
-type TagEditProps = {
-	tagData?: ILivechatTag;
+export type TagEditProps = {
+	tagData?: Serialized<ILivechatTag>;
 	currentDepartments?: Serialized<ILivechatDepartment>[];
 	onClose: () => void;
 };

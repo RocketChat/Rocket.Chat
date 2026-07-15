@@ -1,11 +1,12 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import FeatureUsageCard from '../FeatureUsageCard';
 import FeatureUsageCardBody from '../FeatureUsageCardBody';
 
-const CountMACCard = ({ macsCount }: { macsCount: number }): ReactElement => {
+export type CountMACCardProps = { macsCount: number };
+
+const CountMACCard = ({ macsCount }: CountMACCardProps) => {
 	const { t } = useTranslation();
 
 	return (

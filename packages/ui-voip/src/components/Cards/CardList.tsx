@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-type CardListProps = {
+export type CardListProps = {
 	children: ReactNode;
 	shouldWrapCards?: boolean;
 	direction?: 'row' | 'column';

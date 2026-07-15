@@ -1,17 +1,11 @@
 import type { SettingValue } from '@rocket.chat/core-typings';
 
-import { watch } from '../../meteor/watch';
 import { PublicSettings } from '../../stores';
 
 type SettingCallback = (key: string, value: SettingValue) => void;
 
 class Settings {
 	private readonly store = PublicSettings.use;
-
-	/** Get a setting value Tracker-reactively */
-	watch<TValue = any>(_id: string): TValue | undefined {
-		return watch(this.store, (state) => state.get(_id)?.value) as TValue | undefined;
-	}
 
 	/** Get a setting value non-reactively */
 	peek<TValue = any>(_id: string): TValue | undefined {

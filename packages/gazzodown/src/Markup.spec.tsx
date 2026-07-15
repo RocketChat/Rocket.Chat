@@ -345,3 +345,56 @@ it('renders plain text instead of ASCII emojis based on useEmojis preference', (
 
 	expect(screen.getByText('Hey! :smile: :)')).toBeInTheDocument();
 });
+
+describe('ImageElement sanitization', () => {
+	it.each([['javascript:alert(1)'], ['JAVASCRIPT:alert(1)'], ['data:text/html,<script>alert(1)</script>'], ['vbscript:msgbox(1)']])(
+		'replaces dangerous %s scheme with "#" in image href and src',
+		(dangerousSrc) => {
+			render(
+				<Markup
+					tokens={[
+						{
+							type: 'PARAGRAPH',
+							value: [
+								{
+									type: 'IMAGE',
+									value: {
+										src: { type: 'PLAIN_TEXT', value: dangerousSrc },
+										label: { type: 'PLAIN_TEXT', value: 'click me' },
+									},
+								},
+							],
+						},
+					]}
+				/>,
+			);
+
+			expect(screen.getByRole('link')).toHaveAttribute('href', '#');
+			expect(screen.getByRole('img')).toHaveAttribute('src', '#');
+		},
+	);
+
+	it('preserves safe http(s) image URLs untouched', () => {
+		render(
+			<Markup
+				tokens={[
+					{
+						type: 'PARAGRAPH',
+						value: [
+							{
+								type: 'IMAGE',
+								value: {
+									src: { type: 'PLAIN_TEXT', value: 'https://rocket.chat/logo.svg' },
+									label: { type: 'PLAIN_TEXT', value: 'logo' },
+								},
+							},
+						],
+					},
+				]}
+			/>,
+		);
+
+		expect(screen.getByRole('link')).toHaveAttribute('href', 'https://rocket.chat/logo.svg');
+		expect(screen.getByRole('img')).toHaveAttribute('src', 'https://rocket.chat/logo.svg');
+	});
+});

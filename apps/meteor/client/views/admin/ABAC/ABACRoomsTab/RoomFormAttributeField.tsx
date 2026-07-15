@@ -12,9 +12,17 @@ type ABACAttributeAutocompleteProps = {
 	index: number;
 	attributeList: { value: string; label: string; attributeValues: string[] }[];
 	required?: boolean;
+	disabled?: boolean;
 };
 
-const RoomFormAttributeField = ({ labelId, onRemove, index, attributeList, required = false }: ABACAttributeAutocompleteProps) => {
+const RoomFormAttributeField = ({
+	labelId,
+	onRemove,
+	index,
+	attributeList,
+	required = false,
+	disabled = false,
+}: ABACAttributeAutocompleteProps) => {
 	const { t } = useTranslation();
 
 	const { control, getValues, resetField } = useFormContext<RoomFormData>();
@@ -71,6 +79,7 @@ const RoomFormAttributeField = ({ labelId, onRemove, index, attributeList, requi
 					mbe={4}
 					error={keyFieldState.error?.message}
 					withTruncatedText
+					disabled={disabled}
 					onChange={(value) => {
 						keyField.onChange(value);
 						resetField(`attributes.${index}.values`, { defaultValue: [] });
@@ -94,6 +103,7 @@ const RoomFormAttributeField = ({ labelId, onRemove, index, attributeList, requi
 					options={valueOptions}
 					placeholder={t('ABAC_Select_Attribute_Values')}
 					error={valuesFieldState.error?.message}
+					disabled={disabled}
 				/>
 			</FieldRow>
 			{valuesFieldState.error && (
@@ -102,7 +112,7 @@ const RoomFormAttributeField = ({ labelId, onRemove, index, attributeList, requi
 				</FieldError>
 			)}
 			{index !== 0 && (
-				<Button onClick={onRemove} title={t('Remove')} mbs={8}>
+				<Button onClick={onRemove} title={t('Remove')} mbs={8} disabled={disabled}>
 					{t('Remove')}
 				</Button>
 			)}

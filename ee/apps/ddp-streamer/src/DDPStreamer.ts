@@ -14,6 +14,7 @@ import { Autoupdate } from './lib/Autoupdate';
 import { proxy } from './proxy';
 import { ListenersModule } from '../../../../apps/meteor/server/modules/listeners/listeners.module';
 import type { NotificationsModule } from '../../../../apps/meteor/server/modules/notifications/notifications.module';
+import { invalidate as invalidatePublicationUserCache } from '../../../../apps/meteor/server/modules/streamer/publication-user-cache';
 import { StreamerCentral } from '../../../../apps/meteor/server/modules/streamer/streamer.module';
 
 const { PORT = 4000 } = process.env;
@@ -83,6 +84,16 @@ export class DDPStreamer extends ServiceClass {
 
 		this.onEvent('meteor.clientVersionUpdated', (versions): void => {
 			Autoupdate.updateVersion(versions);
+		});
+
+		// The publication user cache lives inside the NotificationsModule process. In a
+		// microservices deployment, ddp-streamer hosts that module but does not host
+		// MeteorService, so the watch.users invalidation registered in
+		// apps/meteor/server/services/meteor/service.ts never reaches this process.
+		// Without this listener, role/ban/user changes would only propagate after the
+		// 60s TTL expires.
+		this.onEvent('watch.users', (data): void => {
+			invalidatePublicationUserCache(data.id);
 		});
 	}
 

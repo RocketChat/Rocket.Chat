@@ -7,10 +7,10 @@ import './models';
  */
 import './settings';
 
+import { startRestAPI } from './api/api';
 import { configureServer } from './configuration';
 import { registerServices } from './services/startup';
 import { startup } from './startup';
-import { startRestAPI } from '../app/api/server/api';
 import { settings } from '../app/settings/server';
 import { startupApp } from '../ee/server';
 import { startRocketChat } from '../startRocketChat';
@@ -18,7 +18,7 @@ import { startRocketChat } from '../startRocketChat';
 import './routes';
 import '../app/lib/server/startup';
 import './importPackages';
-import './methods';
+import './meteor-methods';
 import './publications';
 import '../lib/oauthRedirectUriServer';
 import './lib/pushConfig';

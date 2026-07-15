@@ -4,7 +4,7 @@ import { memo, useSyncExternalStore } from 'react';
 import SidebarItemsAssembler from '../../../components/Sidebar/SidebarItemsAssembler';
 import { subscribeToAdminSidebarItems, getAdminSidebarItems } from '../sidebarItems';
 
-type AdminSidebarPagesProps = {
+export type AdminSidebarPagesProps = {
 	currentPath: string;
 };
 

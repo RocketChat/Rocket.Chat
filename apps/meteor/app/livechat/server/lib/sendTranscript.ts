@@ -20,8 +20,8 @@ import moment from 'moment-timezone';
 
 import { callbacks } from '../../../../server/lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
-import { FileUpload } from '../../../file-upload/server';
-import * as Mailer from '../../../mailer/server/api';
+import { FileUpload } from '../../../../server/lib/media/file-upload';
+import * as Mailer from '../../../../server/lib/notifications/email/api';
 import { settings } from '../../../settings/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
 
@@ -108,7 +108,7 @@ export async function sendTranscript({
 
 		const messageType = MessageTypes.getType(message);
 
-		const messageContent = messageType?.system
+		let messageContent = messageType?.system
 			? DOMPurify.sanitize(`
 				<i>${messageType.text(i18n.cloneInstance({ interpolation: { escapeValue: false } }).t, message)}}</i>`)
 			: escapeHtml(message.msg);
@@ -116,6 +116,9 @@ export async function sendTranscript({
 		let filesHTML = '';
 
 		if (message.attachments && message.attachments?.length > 0) {
+			messageContent = message.attachments[0].description || '';
+			escapeHtml(messageContent);
+
 			for await (const attachment of message.attachments) {
 				if (!isFileAttachment(attachment)) {
 					continue;

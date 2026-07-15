@@ -1,8 +1,8 @@
 import { api } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
 
+import { metrics } from '../../../../../server/lib/metrics';
 import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
-import { metrics } from '../../../../metrics/server';
 import { settings } from '../../../../settings/server';
 
 /**
@@ -67,6 +67,7 @@ export async function notifyDesktopUser({
 	};
 
 	metrics.notificationsSent.inc({ notification_type: 'desktop' });
+	metrics.notificationsSentTotal.inc({ notification_type: 'desktop' });
 
 	void api.broadcast('notify.desktop', userId, payload);
 }

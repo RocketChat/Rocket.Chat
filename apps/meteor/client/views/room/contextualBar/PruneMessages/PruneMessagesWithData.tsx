@@ -1,8 +1,7 @@
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useEndpoint, useRoomToolbox } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -36,7 +35,7 @@ export const initialValues = {
 
 const DEFAULT_PRUNE_LIMIT = 2000;
 
-const PruneMessagesWithData = (): ReactElement => {
+const PruneMessagesWithData = () => {
 	const { t } = useTranslation();
 	const room = useRoom();
 	const setModal = useSetModal();
@@ -68,7 +67,7 @@ const PruneMessagesWithData = (): ReactElement => {
 		return new Date(`${olderDate || '9999-12-31'}T${olderTime || '23:59'}:59${getTimeZoneOffset()}`);
 	}, [olderDate, olderTime]);
 
-	const handlePrune = useEffectEvent((): void => {
+	const handlePrune = useStableCallback((): void => {
 		const handlePruneAction = async () => {
 			const limit = DEFAULT_PRUNE_LIMIT;
 
