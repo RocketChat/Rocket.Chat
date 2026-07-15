@@ -53,7 +53,7 @@ const { SlackImporter } = proxyquire.noCallThru().load('../../../../../server/li
 		},
 		ImporterWebsocket: { progressUpdated: sinon.stub() },
 	},
-	'../../../../app/lib/server/lib/notifyListener': { notifyOnSettingChanged: sinon.stub() },
+	'../../notifyListener': { notifyOnSettingChanged: sinon.stub() },
 	'../../../../app/mentions/lib/MentionsParser': {
 		MentionsParser: class {
 			getUserMentions() {
@@ -65,8 +65,8 @@ const { SlackImporter } = proxyquire.noCallThru().load('../../../../../server/li
 			}
 		},
 	},
-	'../../../../app/settings/server': { settings: settingsStub },
-	'../../../../app/utils/server/getUserAvatarURL': { getUserAvatarURL: sinon.stub().returns('/avatar/user') },
+	'../../../settings': { settings: settingsStub },
+	'../../utils/getUserAvatarURL': { getUserAvatarURL: sinon.stub().returns('/avatar/user') },
 });
 
 describe('SlackImporter', () => {
