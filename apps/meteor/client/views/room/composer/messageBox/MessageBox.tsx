@@ -9,13 +9,7 @@ import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'rea
 
 import MessageBoxBase from './MessageBoxBase';
 import MessageComposerFiles from './MessageComposerFiles';
-import {
-	emptySubscribe,
-	getEmptyFalse,
-	getEmptyArray,
-	handleFormattingShortcut,
-	extractImageFilesFromClipboard,
-} from './messageBoxHelpers';
+import { emptySubscribe, getEmptyFalse, getEmptyArray, handleFormattingShortcut } from './messageBoxHelpers';
 import { handleSelectionWrapping } from './wrapSelection';
 import { emoji } from '../../../../../app/emoji/client';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
@@ -36,6 +30,7 @@ import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedR
 import { useDraft } from './hooks/useDraft';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
+import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
 
 const reducer = (_: unknown, event: ChangeEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -49,6 +44,7 @@ export type MessageBoxProps = {
 	onJoin?: () => Promise<void>;
 	onResize?: () => void;
 	onTyping?: () => void;
+	onUploadFiles?: (files: File[]) => void;
 	onEscape?: () => void;
 	onNavigateToPreviousMessage?: () => void;
 	onNavigateToNextMessage?: () => void;
@@ -65,6 +61,7 @@ const MessageBox = ({
 	onJoin,
 	onNavigateToNextMessage,
 	onNavigateToPreviousMessage,
+	onUploadFiles,
 	onEscape,
 	onTyping,
 	tshow,
@@ -297,11 +294,42 @@ const MessageBox = ({
 	});
 
 	const handlePaste = useStableCallback((event: ClipboardEvent<HTMLTextAreaElement>) => {
-		const files = extractImageFilesFromClipboard(event, format);
+		const { clipboardData } = event;
+
+		if (!clipboardData) {
+			return;
+		}
+
+		const items = Array.from(clipboardData.items);
+
+		if (items.some(({ kind, type }) => kind === 'string' && type === 'text/plain')) {
+			return;
+		}
+
+		const files = items
+			.filter((item) => item.kind === 'file' && item.type.indexOf('image/') !== -1)
+			.map((item) => {
+				const fileItem = item.getAsFile();
+
+				if (!fileItem) {
+					return;
+				}
+
+				const imageExtension = fileItem ? getImageExtensionFromMime(fileItem.type) : undefined;
+
+				const extension = imageExtension ? `.${imageExtension}` : '';
+
+				Object.defineProperty(fileItem, 'name', {
+					writable: true,
+					value: `Clipboard - ${format(new Date())}${extension}`,
+				});
+				return fileItem;
+			})
+			.filter((file): file is File => !!file);
 
 		if (files.length) {
 			event.preventDefault();
-			handleUploadFiles?.(files);
+			onUploadFiles?.(files);
 		}
 	});
 
