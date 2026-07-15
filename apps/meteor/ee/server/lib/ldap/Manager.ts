@@ -702,26 +702,28 @@ export class LDAPEEManager extends LDAPManager {
 		return new Promise((resolve, reject) => {
 			let count = 0;
 
-			void ldap.searchAllUsers<IImportUser>({
-				entryCallback: (entry: ldapjs.SearchEntry): IImportUser | undefined => {
-					const data = ldap.extractLdapEntryData(entry);
-					count++;
+			ldap
+				.searchAllUsers<IImportUser>({
+					entryCallback: (entry: ldapjs.SearchEntry): IImportUser | undefined => {
+						const data = ldap.extractLdapEntryData(entry);
+						count++;
 
-					const userData = this.mapUserData(data);
-					converter.addObjectToMemory(userData, { dn: data.dn, username: this.getLdapUsername(data) });
-					return userData;
-				},
-				endCallback: (err: any): void => {
-					if (err) {
-						logger.error({ err });
-						reject(err);
-						return;
-					}
+						const userData = this.mapUserData(data);
+						converter.addObjectToMemory(userData, { dn: data.dn, username: this.getLdapUsername(data) });
+						return userData;
+					},
+					endCallback: (err: any): void => {
+						if (err) {
+							logger.error({ err });
+							reject(err);
+							return;
+						}
 
-					logger.info({ msg: 'LDAP finished loading users. Users added to importer', count });
-					resolve();
-				},
-			});
+						logger.info({ msg: 'LDAP finished loading users. Users added to importer', count });
+						resolve();
+					},
+				})
+				.catch(reject);
 		});
 	}
 

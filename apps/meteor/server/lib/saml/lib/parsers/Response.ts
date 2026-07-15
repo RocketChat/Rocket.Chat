@@ -1,6 +1,6 @@
 import xmldom from '@xmldom/xmldom';
-import xmlCrypto from 'xml-crypto';
-import type { Reference, SignedXml } from 'xml-crypto';
+import { SignedXml } from 'xml-crypto';
+import type { Reference } from 'xml-crypto';
 import xmlenc from 'xml-encryption';
 
 import type { ISAMLAssertion } from '../../definition/ISAMLAssertion';
@@ -318,11 +318,11 @@ export class ResponseParser {
 	}
 
 	private validateSignatureChildren(xml: string, cert: string, parent: Element): boolean {
-		const xpathSigQuery = ".//*[local-name(.)='Signature' and namespace-uri(.)='http://www.w3.org/2000/09/xmldsig#']";
-		const signatures = xmlCrypto.xpath(parent, xpathSigQuery) as Array<Element>;
+		const signatures = parent.getElementsByTagNameNS('http://www.w3.org/2000/09/xmldsig#', 'Signature');
 		let signature = null;
 
-		for (const sign of signatures) {
+		for (let i = 0; i < signatures.length; i++) {
+			const sign = signatures[i];
 			if (sign.parentNode !== parent) {
 				continue;
 			}
@@ -353,12 +353,18 @@ export class ResponseParser {
 			return false;
 		}
 
-		const references: Reference[] = sig.references || [];
+		const references: Reference[] = sig.getReferences() || [];
 		if (references.length === 0) {
 			return false;
 		}
 
 		return references.every((reference: Reference) => {
+			// `signedReference` is only populated for references that were part of the successfully
+			// validated signature, so its presence proves this reference was actually covered.
+			if (reference.signedReference == null) {
+				return false;
+			}
+
 			const uri = reference.uri || '';
 			const referencedId = uri.charAt(0) === '#' ? uri.substring(1) : uri;
 			return referencedId === expectedId;
@@ -366,20 +372,17 @@ export class ResponseParser {
 	}
 
 	private validateSignature(xml: string, cert: string, signature: Element, expectedId: string | null): boolean {
-		const sig = new xmlCrypto.SignedXml();
-
-		sig.keyInfoProvider = {
-			getKeyInfo: () => '<X509Data></X509Data>',
-			getKey: () => Buffer.from(SAMLUtils.certToPEM(cert)),
-		};
+		const sig = new SignedXml({ publicCert: Buffer.from(SAMLUtils.certToPEM(cert)) });
 
 		sig.loadSignature(signature);
 
-		const result = sig.checkSignature(xml);
-		if (!result) {
-			if (sig.validationErrors) {
-				SAMLUtils.log(sig.validationErrors);
+		try {
+			if (!sig.checkSignature(xml)) {
+				SAMLUtils.log(sig.getReferences().map((reference) => reference.validationError?.message));
+				return false;
 			}
+		} catch (e) {
+			SAMLUtils.log(e instanceof Error ? e.message : String(e));
 			return false;
 		}
 
