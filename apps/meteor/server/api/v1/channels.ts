@@ -34,16 +34,15 @@ import { isTruthy } from '@rocket.chat/tools';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomAsync } from '../../../app/authorization/server';
-import { mountIntegrationQueryBasedOnPermissions } from '../../../app/integrations/server/lib/mountQueriesBasedOnPermission';
-import { getUserMentionsByChannel } from '../../../app/mentions/server/methods/getUserMentionsByChannel';
-import { settings } from '../../../app/settings/server';
-import { normalizeMessagesForUser } from '../../../app/utils/server/lib/normalizeMessagesForUser';
+import { canAccessRoomAsync } from '../../lib/authorization';
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { eraseRoom } from '../../lib/eraseRoom';
 import { findUsersOfRoom } from '../../lib/findUsersOfRoom';
+import { mountIntegrationQueryBasedOnPermissions } from '../../lib/integrations/lib/mountQueriesBasedOnPermission';
 import { openRoom } from '../../lib/openRoom';
+import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
 import { getChannelHistory } from '../../meteor-methods/messages/getChannelHistory';
+import { getUserMentionsByChannel } from '../../meteor-methods/messages/getUserMentionsByChannel';
 import { addAllUserToRoomFn } from '../../meteor-methods/rooms/addAllUserToRoom';
 import { addRoomLeader } from '../../meteor-methods/rooms/addRoomLeader';
 import { addRoomModerator } from '../../meteor-methods/rooms/addRoomModerator';
@@ -60,6 +59,7 @@ import { removeRoomOwner } from '../../meteor-methods/rooms/removeRoomOwner';
 import { removeUserFromRoomMethod } from '../../meteor-methods/rooms/removeUserFromRoom';
 import { saveRoomSettings } from '../../meteor-methods/rooms/saveRoomSettings';
 import { executeUnarchiveRoom } from '../../meteor-methods/rooms/unarchiveRoom';
+import { settings } from '../../settings';
 import { API } from '../api';
 import { addUserToFileObj } from '../lib/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../lib/composeRoomWithLastMessage';
@@ -328,7 +328,7 @@ API.v1.addRoute(
 
 			// Special check for the permissions
 			if (
-				(await hasPermissionAsync(this.userId, 'view-joined-room')) &&
+				(await hasPermissionAsync(this.user, 'view-joined-room')) &&
 				!(await Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId, { projection: { _id: 1 } }))
 			) {
 				return API.v1.forbidden();
@@ -532,7 +532,7 @@ API.v1.addRoute(
 				return API.v1.failure('Channel not found');
 			}
 
-			if (!(await hasAllPermissionAsync(this.userId, ['create-team', 'edit-room'], room._id))) {
+			if (!(await hasAllPermissionAsync(this.user, ['create-team', 'edit-room'], room._id))) {
 				return API.v1.forbidden();
 			}
 
@@ -625,7 +625,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const access = await hasPermissionAsync(this.userId, 'view-room-administration');
+			const access = await hasPermissionAsync(this.user, 'view-room-administration');
 			const { userId } = this.queryParams;
 			let user = this.userId;
 			let unreads = null;
@@ -787,7 +787,7 @@ API.v1.addRoute(
 			}
 
 			if (bodyParams.teams) {
-				const canSeeAllTeams = await hasPermissionAsync(this.userId, 'view-all-teams');
+				const canSeeAllTeams = await hasPermissionAsync(this.user, 'view-all-teams');
 				const teams = await Team.listByNames(bodyParams.teams, { projection: { _id: 1 } });
 				const teamMembers = [];
 
@@ -994,7 +994,7 @@ API.v1.addRoute(
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
-			const hasPermissionToSeeAllPublicChannels = await hasPermissionAsync(this.userId, 'view-c-room');
+			const hasPermissionToSeeAllPublicChannels = await hasPermissionAsync(this.user, 'view-c-room');
 
 			const { _id } = this.queryParams;
 
@@ -1106,7 +1106,7 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
-			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult._id))) {
+			if (findResult.broadcast && !(await hasPermissionAsync(this.user, 'view-broadcast-member-list', findResult._id))) {
 				return API.v1.forbidden();
 			}
 

@@ -1,3 +1,4 @@
+import { useFocusRing } from '@react-aria/focus';
 import type { IRoom } from '@rocket.chat/core-typings';
 import {
 	Option,
@@ -12,7 +13,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import type { MouseEvent } from 'react';
+import type { KeyboardEvent, MouseEvent } from 'react';
 import { useState } from 'react';
 
 import UserActions from './RoomMembersActions';
@@ -44,6 +45,7 @@ const RoomMembersItem = ({
 }: RoomMembersItemProps) => {
 	const [showButton, setShowButton] = useState(false);
 	const isReduceMotionEnabled = usePrefersReducedMotion();
+	const { focusProps, isFocusVisible } = useFocusRing();
 	const isInvited = subscription?.status === 'INVITED';
 	const invitationDate = isInvited ? subscription?.ts : undefined;
 	const preventPropagation = usePreventPropagation();
@@ -66,10 +68,24 @@ const RoomMembersItem = ({
 
 	return (
 		<Option
+			{...focusProps}
+			aria-label={nameOrUsername}
+			onFocus={(e) => {
+				focusProps.onFocus?.(e);
+				setShowButton(true);
+			}}
+			focus={isFocusVisible}
 			data-username={username}
 			data-userid={_id}
 			data-invitationdate={invitationDate}
 			onClick={onClickView}
+			onKeyDown={(e: KeyboardEvent<HTMLElement>) => {
+				if (e.key === 'Enter' || e.key === ' ') {
+					e.preventDefault();
+					e.currentTarget.click();
+				}
+			}}
+			tabIndex={0}
 			style={{ paddingInline: 24 }}
 			{...handleMenuEvent}
 		>

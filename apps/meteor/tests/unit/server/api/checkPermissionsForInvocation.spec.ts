@@ -21,7 +21,7 @@ const mocks = {
 			return permissions.some((permission) => userPermissions[userId].includes(permission));
 		},
 	},
-	'../../app/lib/server/lib/deprecationWarningLogger': {
+	'../lib/deprecationWarningLogger': {
 		apiDeprecationLogger: {
 			endpoint: Sinon.stub(),
 		},

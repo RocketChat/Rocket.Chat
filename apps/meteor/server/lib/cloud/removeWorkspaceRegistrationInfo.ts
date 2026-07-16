@@ -1,8 +1,8 @@
 import { Settings, WorkspaceCredentials } from '@rocket.chat/models';
 
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
-import { notifyOnSettingChangedById } from '../../../app/lib/server/lib/notifyListener';
 import { updateAuditedBySystem } from '../../settings/lib/auditedSettingUpdates';
+import { notifyOnSettingChangedById } from '../notifyListener';
 
 export async function removeWorkspaceRegistrationInfo() {
 	const { workspaceRegistered } = await retrieveRegistrationStatus();

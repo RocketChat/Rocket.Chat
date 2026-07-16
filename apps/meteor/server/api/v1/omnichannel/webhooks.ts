@@ -3,7 +3,7 @@ import type { ExtendedFetchOptions } from '@rocket.chat/server-fetch';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { API } from '../..';
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../settings';
 
 const logger = new Logger('WebhookTest');
 

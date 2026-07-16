@@ -20,9 +20,9 @@ import {
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { Importers } from '../../../app/importer/server';
-import { PendingAvatarImporter } from '../../../app/importer-pending-avatars/server/PendingAvatarImporter';
-import { PendingFileImporter } from '../../../app/importer-pending-files/server/PendingFileImporter';
+import { Importers } from '../../lib/import';
+import { PendingAvatarImporter } from '../../lib/import/pending-avatars/PendingAvatarImporter';
+import { PendingFileImporter } from '../../lib/import/pending-files/PendingFileImporter';
 import { executeDownloadPublicImportFile } from '../../meteor-methods/import/downloadPublicImportFile';
 import { executeGetImportFileData } from '../../meteor-methods/import/getImportFileData';
 import { executeGetImportProgress } from '../../meteor-methods/import/getImportProgress';

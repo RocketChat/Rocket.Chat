@@ -3,10 +3,10 @@ import { Settings, Users } from '@rocket.chat/models';
 import { isLicensesInfoProps, isLicensesValidateProps } from '@rocket.chat/rest-typings';
 import { check } from 'meteor/check';
 
-import { notifyOnSettingChangedById } from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
 import { API } from '../../../server/api/api';
 import { hasPermissionAsync } from '../../../server/lib/authorization/hasPermission';
+import { notifyOnSettingChangedById } from '../../../server/lib/notifyListener';
+import { settings } from '../../../server/settings';
 import { updateAuditedByUser } from '../../../server/settings/lib/auditedSettingUpdates';
 
 API.v1.addRoute(
@@ -14,7 +14,7 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isLicensesInfoProps },
 	{
 		async get() {
-			const unrestrictedAccess = await hasPermissionAsync(this.userId, 'view-privileged-setting');
+			const unrestrictedAccess = await hasPermissionAsync(this.user, 'view-privileged-setting');
 			const loadCurrentValues = unrestrictedAccess && Boolean(this.queryParams.loadValues);
 
 			const license = await License.getInfo({
@@ -26,7 +26,7 @@ API.v1.addRoute(
 			try {
 				// TODO: Remove this logic after setting type object is implemented.
 				const cloudSyncAnnouncement = JSON.parse(settings.get('Cloud_Sync_Announcement_Payload') ?? null);
-				const canManageCloud = await hasPermissionAsync(this.userId, 'manage-cloud');
+				const canManageCloud = await hasPermissionAsync(this.user, 'manage-cloud');
 				return API.v1.success({
 					license,
 					...(canManageCloud && cloudSyncAnnouncement && { cloudSyncAnnouncement }),

@@ -25,7 +25,7 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 	let agents: Awaited<ReturnType<typeof createAgent>>[];
 	let monitors: Awaited<ReturnType<typeof createMonitor>>[];
 	let units: Awaited<ReturnType<typeof createOrUpdateUnit>>[];
-	let sessions: { page: Page; poHomeOmnichannel: HomeOmnichannel }[];
+	let sessions: { page: Page; poHomeOmnichannel: HomeOmnichannel }[] = [];
 
 	let poOmnichannel: HomeOmnichannel;
 
@@ -100,11 +100,10 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 
 	// Create sessions
 	test.beforeEach(async ({ browser }) => {
-		sessions = await Promise.all([
-			createAuxContext(browser, Users.user1).then(wrapSession),
-			createAuxContext(browser, Users.user2).then(wrapSession),
-			createAuxContext(browser, Users.admin).then(wrapSession),
-		]);
+		sessions = [];
+		for (const user of [Users.user1, Users.user2, Users.admin]) {
+			sessions.push(await createAuxContext(browser, user).then(wrapSession));
+		}
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -116,6 +115,7 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 	// Close sessions
 	test.afterEach(async () => {
 		await Promise.all(sessions.map(({ page }) => page.close()));
+		sessions = [];
 	});
 
 	test.afterAll(async ({ api }) => {
