@@ -88,7 +88,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 			{isPopout ? <PopoutDockPrompt onClosePopout={onClosePopout} /> : <MediaCallCardList user={user} shouldWrapCards={shouldWrapCards} />}
 			<ActionStrip
 				leftSlot={
-					<Box color='default' alignContent='center' pis={16}>
+					<Box color='default' alignContent='center' paddingInlineStart={16}>
 						<Timer startAt={startedAt} />
 					</Box>
 				}

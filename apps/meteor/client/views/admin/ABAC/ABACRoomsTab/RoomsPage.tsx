@@ -77,7 +77,7 @@ const RoomsPage = () => {
 						value={text}
 						onChange={(e) => setText((e.target as HTMLInputElement).value)}
 					/>
-					<Box pis={8} maxWidth={200}>
+					<Box paddingInlineStart={8} maxWidth={200}>
 						<Select
 							options={[
 								['all', t('All'), true],

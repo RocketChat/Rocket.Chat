@@ -54,7 +54,7 @@ const ContactInfoChannels = ({ contact }: ContactInfoChannelsProps) => {
 			)}
 			{data.channels && data.channels.length > 0 && (
 				<>
-					<Box is='span' fontScale='p2' paddingBlockStart={24} pis={24} marginBlockEnd={8}>
+					<Box is='span' fontScale='p2' paddingBlockStart={24} paddingInlineStart={24} marginBlockEnd={8}>
 						{t('Last_contacts')}
 					</Box>
 					<Box role='list' flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>

@@ -39,7 +39,7 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 				<ModalHeroImage maxHeight='initial' src='/images/conf-call-config.svg' />
 				<Box fontScale='h3'>{t('Premium_capabilities')}</Box>
 				<Box withRichContent>
-					<Box is='ul' pis={24}>
+					<Box is='ul' paddingInlineStart={24}>
 						<li>{t('Ringtones_and_visual_indicators_notify_people_of_incoming_calls')}</li>
 						<li>{t('Call_history_provides_a_record_of_when_calls_took_place_and_who_joined')}</li>
 					</Box>

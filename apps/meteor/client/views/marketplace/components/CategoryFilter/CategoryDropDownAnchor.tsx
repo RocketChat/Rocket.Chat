@@ -32,7 +32,7 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 			minWidth='x144'
 			height='x40'
 			pie={7}
-			pis={14}
+			paddingInlineStart={14}
 			lineHeight='unset'
 			rcx-input-box
 			{...props}

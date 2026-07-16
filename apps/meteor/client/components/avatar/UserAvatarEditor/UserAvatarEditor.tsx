@@ -121,7 +121,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 						<IconButton icon='upload' secondary disabled={disabled} title={t('Upload')} marginInline={4} onClick={clickUpload} />
 						<UserAvatarSuggestions disabled={disabled} onSelectOne={handleSelectSuggestion} />
 					</Box>
-					<Field pis={4} marginBlockStart={12}>
+					<Field paddingInlineStart={4} marginBlockStart={12}>
 						<FieldLabel>{t('Use_url_for_avatar')}</FieldLabel>
 						<FieldRow>
 							<TextInput

@@ -18,7 +18,7 @@ const ToggleSwitchElement = ({ block, context, surfaceRenderer }: ToggleSwitchEl
 				return (
 					<Box key={option.value} paddingBlock={4}>
 						<ToggleSwitch disabled={loading} value={option.value} checked={isChecked} onChange={action} />
-						<Box is='label' pis={8}>
+						<Box is='label' paddingInlineStart={8}>
 							{surfaceRenderer.renderTextObject(option.text, 0, UiKit.BlockContext.NONE)}
 						</Box>
 					</Box>

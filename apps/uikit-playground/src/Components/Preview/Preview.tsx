@@ -24,7 +24,7 @@ const Preview = () => {
 			zIndex={3}
 			height='100%'
 			flexDirection='column'
-			pis={isMobile ? '' : 'var(--sidebar-width)'}
+			paddingInlineStart={isMobile ? '' : 'var(--sidebar-width)'}
 			className={css`
 				transition: 0.5s ease;
 			`}
