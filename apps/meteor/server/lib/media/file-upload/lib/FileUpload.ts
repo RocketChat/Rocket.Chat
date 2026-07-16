@@ -457,7 +457,7 @@ export const FileUpload = {
 		}
 
 		const { query } = URL.parse(url, true);
-		// eslint-disable-next-line @typescript-eslint/naming-convention
+
 		let { rc_uid, rc_token } = query as Record<string, string | undefined>;
 
 		if (!rc_uid && headers.cookie) {
@@ -482,7 +482,7 @@ export const FileUpload = {
 		}
 
 		const { query } = URL.parse(url, true);
-		// eslint-disable-next-line @typescript-eslint/naming-convention
+
 		let { rc_uid, rc_token, rc_rid, rc_room_type } = query as Record<string, string | undefined>;
 		const { token } = query;
 
@@ -699,7 +699,6 @@ export const FileUpload = {
 				return;
 			}
 
-			// eslint-disable-next-line prettier/prettier
 			const headersToProxy = ['age', 'cache-control', 'content-length', 'content-type', 'date', 'expired', 'last-modified'];
 
 			headersToProxy.forEach((header) => {

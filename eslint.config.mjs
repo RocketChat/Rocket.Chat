@@ -29,11 +29,11 @@ export default [
 			'you-dont-need-lodash-underscore': youDontNeedLodashUnderscorePlugin,
 		},
 		settings: {
-			'import/ignore': ['meteor/.+'],
+			'import-x/ignore': ['meteor/.+'],
 		},
 		rules: {
-			'import/named': 'error',
-			'import/no-unresolved': [
+			'import-x/named': 'error',
+			'import-x/no-unresolved': [
 				'error',
 				{
 					commonjs: true,
@@ -249,8 +249,8 @@ export default [
 		},
 		rules: {
 			'@typescript-eslint/no-floating-promises': 'error',
-			'import/named': 'error',
-			'import/order': [
+			'import-x/named': 'error',
+			'import-x/order': [
 				'error',
 				{
 					'newlines-between': 'always',
@@ -470,7 +470,7 @@ export default [
 	{
 		files: ['ee/packages/federation-matrix/src/api/.well-known/server.ts'],
 		rules: {
-			'import/order': 'warn',
+			'import-x/order': 'warn',
 		},
 	},
 ];

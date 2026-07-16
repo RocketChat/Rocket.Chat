@@ -21,13 +21,12 @@ export async function archiveOldReadReceipts(): Promise<void> {
 	let batchNumber = 0;
 	let hasMore = true;
 
-	// eslint-disable-next-line no-await-in-loop
 	while (hasMore) {
 		batchNumber++;
 		logger.info({ msg: 'Processing batch', batchNumber });
 
 		// Find receipts older than the retention period, limited by batch size
-		// eslint-disable-next-line no-await-in-loop
+
 		const oldReceipts = await ReadReceipts.findOlderThan(cutoffDate).limit(batchSize).toArray();
 
 		if (oldReceipts.length === 0) {
@@ -43,7 +42,6 @@ export async function archiveOldReadReceipts(): Promise<void> {
 		try {
 			// Insert receipts into archive collection (using insertMany with ordered: false to continue on duplicate key errors)
 			try {
-				// eslint-disable-next-line no-await-in-loop
 				await ReadReceiptsArchive.insertMany(oldReceipts, { ordered: false });
 				logger.info({ msg: 'Successfully archived read receipts', count: oldReceipts.length, batchNumber });
 			} catch (error: unknown) {
@@ -71,13 +69,13 @@ export async function archiveOldReadReceipts(): Promise<void> {
 			}
 
 			// Mark messages as having archived receipts
-			// eslint-disable-next-line no-await-in-loop
+
 			const updateResult = await Messages.setReceiptsArchivedById(messageIds, true);
 			logger.info({ msg: 'Marked messages as having archived receipts', modifiedCount: updateResult.modifiedCount, batchNumber });
 
 			// Delete old receipts from hot storage for this batch
 			const receiptIds = oldReceipts.map((receipt) => receipt._id);
-			// eslint-disable-next-line no-await-in-loop
+
 			const deleteResult = await ReadReceipts.removeByIds(receiptIds);
 			logger.info({ msg: 'Deleted old receipts from hot storage', deletedCount: deleteResult.deletedCount, batchNumber });
 
@@ -86,7 +84,7 @@ export async function archiveOldReadReceipts(): Promise<void> {
 			// If we processed a full batch, there might be more, so wait and continue
 			if (oldReceipts.length === batchSize) {
 				logger.info({ msg: 'Batch complete, waiting before next batch', batchNumber, delayMs: BATCH_DELAY_MS });
-				// eslint-disable-next-line no-await-in-loop
+
 				await sleep(BATCH_DELAY_MS);
 			} else {
 				// This was the last batch (partial batch)

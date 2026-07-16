@@ -57,7 +57,7 @@ jest.mock('../user/lib/getNewUserRoles', () => ({
 	getNewUserRoles: (...args: unknown[]) => mockGetNewUserRoles(...args),
 }));
 
-// eslint-disable-next-line import/first
+// eslint-disable-next-line import-x/first
 import { ImportService } from './service';
 
 const createMockOperation = (overrides?: Partial<IImport>): IImport => ({
