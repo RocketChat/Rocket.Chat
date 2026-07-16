@@ -35,6 +35,7 @@ import {
 	ajvQuery,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
+	validateNotFoundErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
@@ -2095,11 +2096,43 @@ API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+const channelsAnonymousReadQuery = ajvQuery.compile<{
+	roomId?: string;
+	roomName?: string;
+	offset?: number;
+	count?: number;
+	sort?: string;
+	query?: string;
+	fields?: string;
+}>({
+	type: 'object',
+	properties: {
+		roomId: { type: 'string' },
+		roomName: { type: 'string' },
+		offset: { type: 'number' },
+		count: { type: 'number' },
+		sort: { type: 'string' },
+		query: { type: 'string' },
+		fields: { type: 'string' },
+	},
+	anyOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
+	additionalProperties: false,
+});
+
+API.v1.get(
 	'channels.anonymousread',
-	{ authOrAnonRequired: true },
 	{
-		async get() {
+		authOrAnonRequired: true,
+		query: channelsAnonymousReadQuery,
+		response: {
+			200: channelsMessagesResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			404: validateNotFoundErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			const findResult = await findChannelByIdOrName({
 				params: this.queryParams,
 				checkedArchived: false,
@@ -2140,6 +2173,9 @@ API.v1.addRoute(
 				offset,
 				total,
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
