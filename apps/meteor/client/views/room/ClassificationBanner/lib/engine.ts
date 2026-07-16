@@ -22,15 +22,16 @@ const buildSegment = (
 	roomAttributes: IAbacAttributeDefinition[],
 ): ClassificationBannerSegment | null => {
 	const roomValues = roomAttributes.find(({ key }) => key === attribute.source)?.values ?? [];
-	let matched = [
-		...attribute.values.filter(({ source }) => roomValues.includes(source)),
-		...roomValues.filter((value) => !attribute.values.some(({ source }) => source === value)).map((label) => ({ label })),
-	];
+	const mapped = attribute.values.filter(({ source }) => roomValues.includes(source));
+	const unmapped = roomValues.filter((value) => !attribute.values.some(({ source }) => source === value)).map((label) => ({ label }));
+	if (attribute.sortAlpha) {
+		const byLabel = (a: { label: string }, b: { label: string }) => a.label.localeCompare(b.label);
+		mapped.sort(byLabel);
+		unmapped.sort(byLabel);
+	}
+	const matched = [...mapped, ...unmapped];
 	if (!matched.length) {
 		return null;
-	}
-	if (attribute.sortAlpha) {
-		matched = [...matched].sort((a, b) => a.label.localeCompare(b.label));
 	}
 
 	const body =

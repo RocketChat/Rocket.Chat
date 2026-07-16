@@ -164,8 +164,10 @@ describe('buildClassificationBanner', () => {
 		expect(banner.text).toBe('TOP SECRET // RELTO USA/ACGU');
 	});
 
-	it('sorts mapped and unmapped values together when sortAlpha is set and counts both toward groupThreshold', () => {
-		expect(buildClassificationBanner(config, [{ key: 'access.programs', values: ['SAP-3380', 'cherry'] }]).text).toBe('SAR-cherry/ORANGES');
+	it('sorts each group alphabetically when sortAlpha is set, keeping unmapped values last, and counts both toward groupThreshold', () => {
+		expect(buildClassificationBanner(config, [{ key: 'access.programs', values: ['aaa', 'SAP-3380', 'SAP-1042'] }]).text).toBe(
+			'SAR-APPLES/ORANGES/aaa',
+		);
 		expect(
 			buildClassificationBanner(config, [{ key: 'access.programs', values: ['SAP-1042', 'SAP-2271', 'SAP-3380', 'cherry'] }]).text,
 		).toBe('SAR-MULTIPLE PROGRAMS');
