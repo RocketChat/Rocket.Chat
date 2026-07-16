@@ -36,7 +36,6 @@ import {
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
-import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
@@ -1436,11 +1435,56 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const channelsMembersQuery = ajvQuery.compile<{
+	roomId?: string;
+	roomName?: string;
+	filter?: string;
+	status?: string[];
+	offset?: number;
+	count?: number;
+	sort?: string;
+}>({
+	type: 'object',
+	properties: {
+		roomId: { type: 'string' },
+		roomName: { type: 'string' },
+		filter: { type: 'string' },
+		status: { type: 'array', items: { type: 'string' } },
+		offset: { type: 'number' },
+		count: { type: 'number' },
+		sort: { type: 'string' },
+	},
+	anyOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
+	additionalProperties: false,
+});
+
+const channelsMembersResponseSchema = ajv.compile<{ members: IUser[]; count: number; offset: number; total: number }>({
+	type: 'object',
+	properties: {
+		members: { type: 'array', items: { $ref: '#/components/schemas/IUser' } },
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['members', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
+API.v1.get(
 	'channels.members',
-	{ authRequired: true },
 	{
-		async get() {
+		authRequired: true,
+		query: channelsMembersQuery,
+		response: {
+			200: channelsMembersResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			const findResult = await findChannelByIdOrName({
 				params: this.queryParams,
 				checkedArchived: false,
@@ -1457,13 +1501,6 @@ API.v1.addRoute(
 			const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
 			const { sort = {} } = await this.parseJsonQuery();
 
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					status: Match.Maybe([String]),
-					filter: Match.Maybe(String),
-				}),
-			);
 			const { status, filter } = this.queryParams;
 
 			const { cursor, totalCount } = await findUsersOfRoom({
@@ -1483,15 +1520,44 @@ API.v1.addRoute(
 				offset: skip,
 				total,
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
-API.v1.addRoute(
+const channelsOnlineResponseSchema = ajv.compile<{ online: Pick<IUser, '_id' | 'username'>[] }>({
+	type: 'object',
+	properties: {
+		online: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: { _id: { type: 'string' }, username: { type: 'string' } },
+				required: ['_id'],
+				additionalProperties: false,
+			},
+		},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['online', 'success'],
+	additionalProperties: false,
+});
+
+API.v1.get(
 	'channels.online',
-	{ authRequired: true, validateParams: isChannelsOnlineProps },
 	{
-		async get() {
+		authRequired: true,
+		query: isChannelsOnlineProps,
+		response: {
+			200: channelsOnlineResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			const { query } = await this.parseJsonQuery();
 			const { _id } = this.queryParams;
 
@@ -1533,9 +1599,12 @@ API.v1.addRoute(
 			);
 
 			return API.v1.success({
-				online: onlineInRoom.filter(Boolean) as IUser[],
+				online: onlineInRoom.filter(isTruthy),
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
