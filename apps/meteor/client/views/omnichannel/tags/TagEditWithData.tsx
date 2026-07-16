@@ -24,7 +24,7 @@ const TagEditWithData = ({ tagId, onClose }: { tagId: ILivechatTag['_id']; onClo
 
 	if (isError) {
 		return (
-			<Callout m={16} type='danger'>
+			<Callout margin={16} type='danger'>
 				{t('Not_Available')}
 			</Callout>
 		);

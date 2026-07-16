@@ -1,7 +1,6 @@
 import { Button, FieldRow, FieldHint } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { SettingInputProps } from './types';
@@ -12,7 +11,7 @@ export type ActionInputBaseProps = SettingInputProps & {
 	onAction: () => Promise<{ message: TranslationKey; params?: string[] }>;
 };
 
-function ActionInputBase({ actionText, hint, disabled, sectionChanged, onAction }: ActionInputBaseProps): ReactElement {
+function ActionInputBase({ actionText, hint, disabled, sectionChanged, onAction }: ActionInputBaseProps) {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 

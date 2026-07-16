@@ -1,5 +1,5 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarTitle,
 	ContextualbarHeader,
@@ -29,7 +29,7 @@ const SlaPage = () => {
 		reload.current();
 	}, []);
 
-	const handleClick = useEffectEvent(() =>
+	const handleClick = useStableCallback(() =>
 		slaPoliciesRoute.push({
 			context: 'new',
 		}),

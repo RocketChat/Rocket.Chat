@@ -301,6 +301,10 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	}
 
 	public updateUser(userId: string | null, isLoggingIn: boolean, isConnected: boolean): void {
+		if (userId === this.userId && !isLoggingIn && !isConnected) {
+			return;
+		}
+
 		this.debugLog(`[VideoConf] Logged user or connection status has changed.`);
 
 		if (this.userId) {

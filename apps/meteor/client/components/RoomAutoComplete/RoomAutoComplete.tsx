@@ -6,7 +6,7 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
+import type { ReactNode } from 'react';
 import { forwardRef, memo, useMemo, useState } from 'react';
 
 type LabelType = { name: string; avatarETag?: string; type: IRoom['t']; encrypted?: IRoom['encrypted'] };
@@ -17,9 +17,9 @@ const generateQuery = (
 	selector: string;
 } => ({ selector: JSON.stringify({ name: term }) });
 
-type RoomAutoCompleteProps = Omit<AutoCompleteProps<LabelType>, 'filter'> & {
+export type RoomAutoCompleteProps = Omit<AutoCompleteProps<LabelType>, 'filter'> & {
 	scope?: 'admin' | 'regular';
-	renderRoomIcon?: (props: { encrypted: IRoom['encrypted']; type: IRoom['t'] }) => ReactElement | null;
+	renderRoomIcon?: (props: { encrypted: IRoom['encrypted']; type: IRoom['t'] }) => ReactNode;
 	setSelectedRoom?: (room: IRoom | undefined) => void;
 };
 
@@ -78,10 +78,10 @@ const RoomAutoComplete = forwardRef<HTMLInputElement, RoomAutoCompleteProps>(fun
 			setFilter={setFilter}
 			renderSelected={({ selected: { value, label } }) => (
 				<>
-					<Box margin='none' mi={2}>
+					<Box margin='none' marginInline={2}>
 						<RoomAvatar size={AVATAR_SIZE} room={{ ...label, type: label?.type || 'c', _id: value }} />
 					</Box>
-					<Box margin='none' mi={2}>
+					<Box margin='none' marginInline={2}>
 						{label?.name}
 					</Box>
 					{renderRoomIcon?.({ encrypted: label?.encrypted, type: label?.type })}

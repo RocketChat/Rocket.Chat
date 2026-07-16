@@ -1,12 +1,14 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
 
-const FilePreviewIcon = ({ format }: { format: string }) => {
+export type FilePreviewIconProps = { format: string };
+
+const FilePreviewIcon = ({ format }: FilePreviewIconProps) => {
 	return (
 		<Box
 			width='x48'
 			height='x48'
 			borderRadius={4}
-			bg='surface-neutral'
+			backgroundColor='surface-neutral'
 			justifyContent='center'
 			display='flex'
 			flexDirection='column'

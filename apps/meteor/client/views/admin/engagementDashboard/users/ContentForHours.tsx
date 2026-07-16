@@ -3,20 +3,19 @@ import { Box, Button, Chevron, Skeleton, Tooltip } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { format } from 'date-fns';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useHourlyChatActivity } from './useHourlyChatActivity';
 
-type ContentForHoursProps = {
+export type ContentForHoursProps = {
 	displacement: number;
 	onPreviousDateClick: () => void;
 	onNextDateClick: () => void;
 	timezone: 'utc' | 'local';
 };
 
-const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick, timezone }: ContentForHoursProps): ReactElement => {
+const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick, timezone }: ContentForHoursProps) => {
 	const utc = timezone === 'utc';
 	const { data } = useHourlyChatActivity({ displacement, utc });
 
@@ -49,7 +48,7 @@ const ContentForHours = ({ displacement, onPreviousDateClick, onNextDateClick, t
 				<Button square small onClick={onPreviousDateClick}>
 					<Chevron left size='x20' style={{ verticalAlign: 'middle' }} />
 				</Button>
-				<Box mi={8} flexBasis='25%' is='span' style={{ textAlign: 'center' }}>
+				<Box marginInline={8} flexBasis='25%' is='span' style={{ textAlign: 'center' }}>
 					{data ? format(new Date(data.day), displacement < 7 ? 'EEEE' : 'P') : null}
 				</Box>
 				<Button square small disabled={displacement === 0} onClick={onNextDateClick}>

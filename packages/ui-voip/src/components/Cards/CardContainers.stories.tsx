@@ -1,6 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { Meta, StoryFn } from '@storybook/react';
-import type { ComponentType, ReactNode } from 'react';
+import type { Meta, StoryObj } from '@storybook/react';
 
 import CardList from './CardList';
 import CardListSection from './CardListSection';
@@ -19,77 +18,53 @@ const avatarUrl = `data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBg
               SuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlP
               UH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z`;
 
-type StoryComponentType = ComponentType<{
-	getPeerCardProps: (index: number) => {
-		displayName: string;
-		avatarUrl: string;
-		muted: boolean;
-		held: boolean;
-		sharing: boolean;
-	};
-	getStreamCardProps: (index: number) => {
-		children: ReactNode;
-		own: boolean;
-		onClickFocusStream: () => void;
-		focused: boolean;
-		autoHeight: boolean;
-	};
-}>;
-
 export default {
-	title: 'V2/Components/CardContainers',
 	component: CardList,
-	args: {
-		getPeerCardProps: (index: number) => ({
-			displayName: `John Doe ${index}`,
-			avatarUrl,
-			muted: index % 3 !== 0,
-			held: index % 2 === 0,
-			sharing: index % 2 !== 0,
-			variant: index % 2 === 0 ? 'highlighted' : 'default',
-		}),
-		getStreamCardProps: (index: number) => ({
-			children: (
-				<Box width='100%' height='100%' minHeight={120}>
-					test
-				</Box>
-			),
-			own: index % 2 === 0,
-			onClickFocusStream: () => undefined,
-			focused: index % 4 === 0,
-			autoHeight: index % 4 === 0,
-			onClickStopSharing: () => undefined,
-		}),
-	},
 	decorators: [
 		(Story) => (
-			<Box width='700px' height='400px' border='1px solid' borderColor='stroke-light' overflow='hidden'>
+			<Box width={700} height={400} border='1px solid' borderColor='stroke-light' overflow='hidden'>
 				<CardListSection>
 					<Story />
 				</CardListSection>
 			</Box>
 		),
 	],
-} satisfies Meta<StoryComponentType>;
+} satisfies Meta<typeof CardList>;
 
-export const CardListStory: StoryFn<StoryComponentType> = (args) => {
-	return (
+export const CardListStory: StoryObj<typeof CardList> = {
+	render: (args) => (
 		<CardList {...args}>
-			<PeerCard {...args.getPeerCardProps(0)} />
-			<PeerCard {...args.getPeerCardProps(1)} />
-			<PeerCard {...args.getPeerCardProps(2)} />
-			<PeerCard {...args.getPeerCardProps(3)} />
+			<PeerCard displayName='John Doe 0' avatarUrl={avatarUrl} muted={false} held={true} />
+			<PeerCard displayName='John Doe 1' avatarUrl={avatarUrl} muted={true} held={false} />
+			<PeerCard displayName='John Doe 2' avatarUrl={avatarUrl} muted={true} held={true} />
+			<PeerCard displayName='John Doe 3' avatarUrl={avatarUrl} muted={false} held={false} />
 		</CardList>
-	);
+	),
 };
 
-export const StreamCardListStory: StoryFn<StoryComponentType> = (args) => {
-	return (
+export const StreamCardListStory: StoryObj<typeof CardList> = {
+	render: (args) => (
 		<CardList {...args}>
-			<StreamCard {...args.getStreamCardProps(0)} />
-			<StreamCard {...args.getStreamCardProps(1)} />
-			<StreamCard {...args.getStreamCardProps(2)} />
-			<StreamCard {...args.getStreamCardProps(3)} />
+			<StreamCard own focused autoHeight onClickFocusStream={() => undefined} onClickStopSharing={() => undefined}>
+				<Box width='100%' height='100%' minHeight={120}>
+					test
+				</Box>
+			</StreamCard>
+			<StreamCard onClickFocusStream={() => undefined} onClickStopSharing={() => undefined}>
+				<Box width='100%' height='100%' minHeight={120}>
+					test
+				</Box>
+			</StreamCard>
+			<StreamCard own onClickFocusStream={() => undefined} onClickStopSharing={() => undefined}>
+				<Box width='100%' height='100%' minHeight={120}>
+					test
+				</Box>
+			</StreamCard>
+			<StreamCard onClickFocusStream={() => undefined} onClickStopSharing={() => undefined}>
+				<Box width='100%' height='100%' minHeight={120}>
+					test
+				</Box>
+			</StreamCard>
 		</CardList>
-	);
+	),
 };

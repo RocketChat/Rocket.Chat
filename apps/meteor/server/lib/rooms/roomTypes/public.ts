@@ -2,11 +2,11 @@ import { Team } from '@rocket.chat/core-services';
 import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated, isRoomNativeFederated, TeamType } from '@rocket.chat/core-typings';
 
-import { settings } from '../../../../app/settings/server';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { getPublicRoomType } from '../../../../lib/rooms/roomTypes/public';
 import { isFederationEnabled } from '../../../services/federation/utils';
+import { settings } from '../../../settings';
 import { roomCoordinator } from '../roomCoordinator';
 
 const PublicRoomType = getPublicRoomType(roomCoordinator);

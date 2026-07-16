@@ -11,7 +11,7 @@ import {
 	Box,
 } from '@rocket.chat/fuselage';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
-import type { ComponentProps, ReactElement, ReactNode } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import { memo } from 'react';
 
 import ThreadListMetrics from './ThreadListMetrics';
@@ -20,7 +20,7 @@ import ThreadMetricsFollow from '../../../../../components/message/content/Threa
 import ThreadMetricsUnreadBadge from '../../../../../components/message/content/ThreadMetricsUnreadBadge';
 import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
 
-type ThreadListMessageProps = {
+export type ThreadListMessageProps = {
 	_id: IMessage['_id'];
 	msg: ReactNode;
 	following: boolean;
@@ -54,12 +54,12 @@ const ThreadListMessage = ({
 	className = [],
 	emoji,
 	...props
-}: ThreadListMessageProps): ReactElement => {
+}: ThreadListMessageProps) => {
 	const formatDate = useTimeAgo();
 
 	return (
 		<Box className={className}>
-			<Box pbs={16} is={Message} {...props}>
+			<Box paddingBlockStart={16} is={Message} {...props}>
 				<MessageLeftContainer>
 					<MessageAvatar emoji={emoji ? <Emoji emojiHandle={emoji} fillContainer /> : undefined} username={username} size='x36' />
 				</MessageLeftContainer>
@@ -74,7 +74,7 @@ const ThreadListMessage = ({
 				<MessageContainerFixed>
 					<ThreadMetricsFollow following={following} mid={_id} rid={rid} mention={false} unread={false} all={false} />
 					{unread && (
-						<Box mbs={24}>
+						<Box marginBlockStart={24}>
 							<ThreadMetricsUnreadBadge unread={unread} mention={mention} all={all} />
 						</Box>
 					)}

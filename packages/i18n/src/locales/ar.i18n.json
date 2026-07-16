@@ -2070,7 +2070,7 @@
   "LDAP_Sync_Now_Description": "سيبدأ هذا عملية **مزامنة الخلفية** الآن، من دون انتظار المزامنة المجدولة التالية.  \nهذا الإجراء غير متزامن، يرجى الاطلاع على السجلات للحصول على مزيد من المعلومات.",
   "LDAP_Sync_User_Active_State": "مزامنة الحالة النشطة للمستخدم",
   "LDAP_Sync_User_Active_State_Both": "تمكين وتعطيل المستخدمين",
-  "LDAP_Sync_User_Active_State_Description": "حدد ما إذا كان يجب تمكين المستخدمين أو تعطيلهم على Rocket.Chat بناءً على حالة LDAP. سيتم استخدام السمة \"pwdAccountLockedTime\" لتحديد ما إذا كان المستخدم معطلاً أم لا.",
+  "LDAP_Sync_User_Active_State_Description": "حدد ما إذا كان يجب تمكين المستخدمين أو تعطيلهم على Rocket.Chat بناءً على حالة LDAP.",
   "LDAP_Sync_User_Active_State_Disable": "تعطيل المستخدمين",
   "LDAP_Sync_User_Active_State_Nothing": "عدم القيام بشيء",
   "LDAP_Sync_User_Avatar": "مزامنة الصورة الرمزية للمستخدم",

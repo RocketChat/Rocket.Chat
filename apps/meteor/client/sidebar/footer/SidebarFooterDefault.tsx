@@ -3,12 +3,11 @@ import { Box, SidebarDivider, Palette, SidebarFooter as Footer } from '@rocket.c
 import { useThemeMode } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
-import type { ReactElement } from 'react';
 
 import { SidebarFooterWatermark } from './SidebarFooterWatermark';
 
-const SidebarFooterDefault = (): ReactElement => {
-	const [, , theme] = useThemeMode();
+const SidebarFooterDefault = () => {
+	const theme = useThemeMode();
 	const logo = useSetting(theme === 'dark' ? 'Layout_Sidenav_Footer_Dark' : 'Layout_Sidenav_Footer', '').trim();
 
 	const sidebarFooterStyle = css`
@@ -27,8 +26,8 @@ const SidebarFooterDefault = (): ReactElement => {
 			<SidebarDivider />
 			<Box
 				is='footer'
-				pb={12}
-				pi={16}
+				paddingBlock={12}
+				paddingInline={16}
 				height='x48'
 				width='auto'
 				className={sidebarFooterStyle}

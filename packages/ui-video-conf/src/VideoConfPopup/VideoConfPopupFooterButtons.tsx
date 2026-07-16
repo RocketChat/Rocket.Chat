@@ -1,6 +1,6 @@
 import { ButtonGroup } from '@rocket.chat/fuselage';
-import type { ReactElement, ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
 
-const VideoConfPopupFooterButtons = (props: ComponentProps<typeof ButtonGroup>): ReactElement => <ButtonGroup stretch {...props} />;
+const VideoConfPopupFooterButtons = (props: ComponentProps<typeof ButtonGroup>) => <ButtonGroup stretch {...props} />;
 
 export default VideoConfPopupFooterButtons;

@@ -12,7 +12,6 @@ import {
 	useSetting,
 	useLayout,
 } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useId, useState, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
@@ -23,7 +22,7 @@ import ConfirmOwnerChangeModal from '../../../components/ConfirmOwnerChangeModal
 import { useAllowPasswordChange } from '../security/useAllowPasswordChange';
 
 // TODO: enforce useMutation
-const AccountProfilePage = (): ReactElement => {
+const AccountProfilePage = () => {
 	const t = useTranslation();
 	const user = useUser();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -120,11 +119,11 @@ const AccountProfilePage = (): ReactElement => {
 		<Page>
 			<PageHeader title={t('Profile')} />
 			<PageScrollableContentWithShadow>
-				<Box maxWidth='600px' w='full' alignSelf='center'>
+				<Box maxWidth='600px' width='full' alignSelf='center'>
 					<FormProvider {...methods}>
 						<AccountProfileForm id={profileFormId} />
 					</FormProvider>
-					<Box mb={12}>
+					<Box marginBlock={12}>
 						<ButtonGroup stretch vertical={isMobile}>
 							<Button onClick={handleLogoutOtherLocations} flexGrow={0} loading={loggingOut}>
 								{t('Logout_Others')}

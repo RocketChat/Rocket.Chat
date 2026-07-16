@@ -25,7 +25,7 @@ const Items = ({ label, children, layer, payload }: ItemProps) => {
 	};
 
 	return (
-		<Box mbe={layer === 1 ? '10px' : '0px'}>
+		<Box marginBlockEnd={layer === 1 ? '10px' : '0px'}>
 			<Box
 				display='flex'
 				alignItems='center'

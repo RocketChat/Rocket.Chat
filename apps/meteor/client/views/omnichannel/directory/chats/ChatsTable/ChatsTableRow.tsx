@@ -1,6 +1,6 @@
 import type { IOmnichannelRoomWithDepartment } from '@rocket.chat/core-typings';
 import { Tag, Box } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
@@ -39,7 +39,7 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 		return onHold ? t('On_Hold_Chats') : t('Room_Status_Open');
 	};
 
-	const onRowClick = useEffectEvent((id: string) =>
+	const onRowClick = useStableCallback((id: string) =>
 		omnichannelDirectoryRouter.navigate({
 			tab: 'chats',
 			context: 'info',
@@ -55,7 +55,7 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 					{tags && (
 						<Box color='hint' display='flex' flex-direction='row'>
 							{tags.map((tag: string) => (
-								<Box mbs={4} mie={4} withTruncatedText overflow={tag.length > 10 ? 'hidden' : 'visible'} key={tag}>
+								<Box marginBlockStart={4} marginInlineEnd={4} withTruncatedText overflow={tag.length > 10 ? 'hidden' : 'visible'} key={tag}>
 									<Tag style={{ display: 'inline' }} disabled>
 										{tag}
 									</Tag>
@@ -73,7 +73,7 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 			<GenericTableCell withTruncatedText>
 				<Box display='flex' alignItems='center'>
 					<OmnichannelRoomIcon size='x20' source={source} />
-					<Box mis={8}>{getSourceLabel(source)}</Box>
+					<Box marginInlineStart={8}>{getSourceLabel(source)}</Box>
 				</Box>
 			</GenericTableCell>
 			<GenericTableCell withTruncatedText>{servedBy?.username}</GenericTableCell>

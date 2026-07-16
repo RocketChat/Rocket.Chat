@@ -1,4 +1,4 @@
-import '../../app/authorization/server';
+import '../hooks/auth/callback';
 import './audit';
 import './deviceManagement';
 import './engagementDashboard';

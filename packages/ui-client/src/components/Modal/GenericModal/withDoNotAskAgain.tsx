@@ -1,6 +1,6 @@
 import { Box, Label, CheckBox } from '@rocket.chat/fuselage';
 import { useUserPreference, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ComponentType } from 'react';
+import type { ComponentType, ReactNode } from 'react';
 import { useId, useState } from 'react';
 
 import type { DontAskAgainList } from '../../../hooks/useDontAskAgain';
@@ -15,13 +15,10 @@ type DoNotAskAgainProps = {
 
 export type RequiredModalProps = {
 	onConfirm?: (...args: any) => Promise<void> | void;
-	dontAskAgain?: ReactElement;
+	dontAskAgain?: ReactNode;
 };
 
-function withDoNotAskAgain<T extends RequiredModalProps>(
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	Component: ComponentType<any>,
-) {
+function withDoNotAskAgain<T extends RequiredModalProps>(Component: ComponentType<any>) {
 	type WrappedComponentProps = DoNotAskAgainProps & Omit<T, keyof RequiredModalProps>;
 	const WrappedComponent = function ({ onConfirm, dontAskAgain, ...props }: WrappedComponentProps) {
 		const t = useTranslation();
@@ -53,7 +50,7 @@ function withDoNotAskAgain<T extends RequiredModalProps>(
 				dontAskAgain={
 					<Box display='flex' flexDirection='row'>
 						<CheckBox id={dontAskAgainId} checked={state} onChange={onChange} name='dont_ask_again' />
-						<Label color='annotation' fontScale='p2' mis={8} htmlFor={dontAskAgainId}>
+						<Label color='annotation' fontScale='p2' marginInlineStart={8} htmlFor={dontAskAgainId}>
 							{t('Dont_ask_me_again')}
 						</Label>
 					</Box>

@@ -1,15 +1,15 @@
 import { Box, Field, FieldLabel, FieldRow, InputBox } from '@rocket.chat/fuselage';
 import { format } from 'date-fns';
-import type { ChangeEvent, ReactElement } from 'react';
+import type { ChangeEvent } from 'react';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type DatePickerProps = {
+export type DatePickerProps = {
 	value: Date;
 	onChange: (date: Date) => void;
 };
 
-const DatePicker = ({ value, onChange }: DatePickerProps): ReactElement => {
+const DatePicker = ({ value, onChange }: DatePickerProps) => {
 	const { t } = useTranslation();
 	const fieldId = useId();
 
@@ -23,7 +23,7 @@ const DatePicker = ({ value, onChange }: DatePickerProps): ReactElement => {
 	const dateValue = value && !isNaN(value.getTime()) ? format(value, 'yyyy-MM-dd') : '';
 
 	return (
-		<Box mb='x16'>
+		<Box marginBlock='x16'>
 			<Field>
 				<FieldLabel htmlFor={fieldId}>{t('Date')}</FieldLabel>
 				<FieldRow>

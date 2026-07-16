@@ -1,7 +1,7 @@
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { UiKitContext, bannerParser, UiKitComponent } from '@rocket.chat/fuselage-ui-kit';
 import type { View } from '@rocket.chat/ui-kit';
-import type { ContextType, Dispatch, ReactElement } from 'react';
+import type { ContextType, Dispatch } from 'react';
 import { useMemo } from 'react';
 
 import type { SubscriptionLicenseLayout } from './UiKitSubscriptionLicenseSurface';
@@ -11,9 +11,9 @@ import { useUiKitActionManager } from '../../../../uikit/hooks/useUiKitActionMan
 import { useUiKitView } from '../../../../uikit/hooks/useUiKitView';
 
 // TODO: move this to fuselage-ui-kit itself
-bannerParser.mrkdwn = ({ text }): ReactElement => <MarkdownText variant='inline' content={text} />;
+bannerParser.mrkdwn = ({ text }) => <MarkdownText variant='inline' content={text} />;
 
-type UiKitSubscriptionLicenseProps = {
+export type UiKitSubscriptionLicenseProps = {
 	key: string;
 	initialView: {
 		viewId: string;

@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { Keys } from '@rocket.chat/icons';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
@@ -11,7 +11,7 @@ export const useOmnichannelLivechatToggle = () => {
 	const changeAgentStatus = useEndpoint('POST', '/v1/livechat/agent.status');
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleAvailableStatusChange = useEffectEvent(async () => {
+	const handleAvailableStatusChange = useStableCallback(async () => {
 		try {
 			await changeAgentStatus({});
 		} catch (error: unknown) {

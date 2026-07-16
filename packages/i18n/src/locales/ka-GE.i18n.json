@@ -1679,7 +1679,7 @@
   "LDAP_Sync_Now_Description": "** შეასრულებს ** ფონის სინქრონიზაციას ახლა, ვიდრე დაელოდება ** სინქრონიზაციის ინტერვალს ** მაშინაც კი, თუ ** ფონი სინქრონიზაცია ** გამორთულია.  \n  ეს მოქმედება ასინქრონულია, ნახეთ ლოგები მეტი ინფორმაციისთვის",
   "LDAP_Sync_User_Active_State": "მომხმარებლის აქტიური მდგომარეობის სინქრონიზაცია",
   "LDAP_Sync_User_Active_State_Both": "მომხმარებლების ჩართვა და გამორთვა",
-  "LDAP_Sync_User_Active_State_Description": "დაადგინეთ, ჩართულია თუ არა მომხმარებლები Rocket.Chat– ში LDAP სტატუსის საფუძველზე. 'PwdAccountLockedTime' ატრიბუტი გამოყენებული იქნება, თუ მომხმარებელი გამორთულია.",
+  "LDAP_Sync_User_Active_State_Description": "დაადგინეთ, ჩართულია თუ არა მომხმარებლები Rocket.Chat– ში LDAP სტატუსის საფუძველზე.",
   "LDAP_Sync_User_Active_State_Disable": "მომხმარებლების გამორთვა",
   "LDAP_Sync_User_Active_State_Nothing": "Არაფრის კეთება",
   "LDAP_Sync_User_Avatar": "მომხმარებლის ავატარის სინქრონიზაცია",

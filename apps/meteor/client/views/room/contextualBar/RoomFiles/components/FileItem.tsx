@@ -10,7 +10,7 @@ import { useDownloadFromServiceWorker } from '../../../../../hooks/useDownloadFr
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import { isPreviewableImage } from '../../../../../lib/utils/isPreviewableImage';
 
-type FileItemProps = {
+export type FileItemProps = {
 	rid: IRoom['_id'];
 	fileData: IUploadWithUser;
 	onClickDelete: (id: IUpload['_id']) => void;
@@ -47,7 +47,7 @@ const FileItem = ({ rid, fileData, onClickDelete }: FileItemProps) => {
 					{...(path?.includes('/file-decrypt/') ? encryptedAnchorProps : {})}
 				>
 					<FilePreviewIcon format={getFileExtension(name)} />
-					<Box mis={8} flexShrink={1} overflow='hidden'>
+					<Box marginInlineStart={8} flexShrink={1} overflow='hidden'>
 						<Box withTruncatedText color='default' fontScale='p2m'>
 							{name}
 						</Box>

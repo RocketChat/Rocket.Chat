@@ -1,6 +1,6 @@
 import type { IOutboundProviderTemplate, Serialized, ILivechatContact } from '@rocket.chat/core-typings';
 import { Box, Button, FieldGroup, Scrollable } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import type { ReactNode } from 'react';
 import { useId, useMemo } from 'react';
@@ -26,7 +26,7 @@ export type MessageFormSubmitPayload = {
 	templateParameters: TemplateParameters;
 };
 
-type MessageFormProps = {
+export type MessageFormProps = {
 	contact?: Omit<Serialized<ILivechatContact>, 'contactManager'>;
 	templates?: IOutboundProviderTemplate[];
 	onSubmit(values: MessageFormSubmitPayload): void;
@@ -61,7 +61,7 @@ const MessageForm = (props: MessageFormProps) => {
 	const parametersMetadata = useMemo(() => (template ? extractParameterMetadata(template) : []), [template]);
 	const customActions = useMemo(() => renderActions?.({ isSubmitting }), [isSubmitting, renderActions]);
 
-	const submit = useEffectEvent(async (values: MessageFormData) => {
+	const submit = useStableCallback(async (values: MessageFormData) => {
 		try {
 			const { templateId, templateParameters } = values;
 
@@ -80,7 +80,7 @@ const MessageForm = (props: MessageFormProps) => {
 	return (
 		<Form id={messageFormId} onSubmit={handleSubmit(submit)} noValidate>
 			<Scrollable vertical>
-				<FieldGroup justifyContent='start' pi={2}>
+				<FieldGroup justifyContent='start' paddingInline={2}>
 					<TemplateField control={control} templates={templates} onChange={() => setValue('templateParameters', {})} />
 
 					{parametersMetadata.map((metadata) => (
@@ -92,7 +92,7 @@ const MessageForm = (props: MessageFormProps) => {
 			</Scrollable>
 
 			{customActions ?? (
-				<Box mbs={24} display='flex' justifyContent='end'>
+				<Box marginBlockStart={24} display='flex' justifyContent='end'>
 					<Button type='submit' primary loading={isSubmitting}>
 						{t('Submit')}
 					</Button>

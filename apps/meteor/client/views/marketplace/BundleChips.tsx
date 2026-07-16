@@ -1,10 +1,9 @@
 import { Tag } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { App } from './types';
 
-type BundleChipsProps = {
+export type BundleChipsProps = {
 	bundledIn: {
 		bundleId: string;
 		bundleName: string;
@@ -12,7 +11,7 @@ type BundleChipsProps = {
 	}[];
 };
 
-const BundleChips = ({ bundledIn }: BundleChipsProps): ReactElement => {
+const BundleChips = ({ bundledIn }: BundleChipsProps) => {
 	const { t } = useTranslation();
 
 	const handlePlanName = (label: string): string => {

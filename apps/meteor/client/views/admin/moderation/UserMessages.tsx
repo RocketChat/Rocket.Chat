@@ -1,5 +1,5 @@
 import { Box, Callout, Message, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { ContextualbarFooter } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -32,7 +32,7 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 		},
 	});
 
-	const handleChange = useEffectEvent(() => {
+	const handleChange = useStableCallback(() => {
 		reloadUserMessages();
 	});
 
@@ -48,7 +48,7 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 							</Callout>
 						)}
 						{!report.user && (
-							<Callout mbs={8} type='warning' icon='warning'>
+							<Callout marginBlockStart={8} type='warning' icon='warning'>
 								{t('Moderation_User_deleted_warning')}
 							</Callout>
 						)}
@@ -69,7 +69,7 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 					))}
 				{isSuccess && report.messages.length === 0 && <GenericNoResults title={t('No_message_reports')} icon='message' />}
 				{isError && (
-					<Box display='flex' flexDirection='column' alignItems='center' pb={20} color='default'>
+					<Box display='flex' flexDirection='column' alignItems='center' paddingBlock={20} color='default'>
 						<StatesIcon name='warning' variation='danger' />
 						<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
 						<StatesActions>

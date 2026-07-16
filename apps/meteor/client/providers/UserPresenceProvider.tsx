@@ -9,7 +9,7 @@ import { UserPresence } from '../lib/userPresence';
 
 export const userPresence = new UserPresence();
 
-type UserPresenceProviderProps = {
+export type UserPresenceProviderProps = {
 	children?: ReactNode;
 };
 

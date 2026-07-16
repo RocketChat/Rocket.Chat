@@ -22,7 +22,7 @@ import {
 	TextAreaInput,
 	AccordionItem,
 } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarHeader,
 	ContextualbarBack,
@@ -53,7 +53,7 @@ import { useIsABACManagedRoom } from '../../../../admin/ABAC/hooks/useIsABACMana
 import { useArchiveRoom } from '../../../../hooks/roomActions/useArchiveRoom';
 import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
 
-type EditRoomInfoProps = {
+export type EditRoomInfoProps = {
 	room: IRoomWithRetentionPolicy;
 	onClickClose: () => void;
 	onClickBack: () => void;
@@ -152,7 +152,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const handleArchive = useArchiveRoom(room);
 
 	// TODO: add payload validation
-	const handleUpdateRoomData = useEffectEvent(
+	const handleUpdateRoomData = useStableCallback(
 		async ({
 			hideSysMes,
 			joinCodeRequired,
@@ -195,7 +195,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		},
 	);
 
-	const handleSave = useEffectEvent((data: EditRoomInfoFormData) =>
+	const handleSave = useStableCallback((data: EditRoomInfoFormData) =>
 		Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean)),
 	);
 
@@ -243,7 +243,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 				<ContextualbarTitle>{t(`${title[roomType]}`)}</ContextualbarTitle>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
-			<ContextualbarScrollableContent p={24}>
+			<ContextualbarScrollableContent padding={24}>
 				<form id={formId} onSubmit={handleSubmit(handleSave)}>
 					<Box display='flex' justifyContent='center'>
 						<Controller

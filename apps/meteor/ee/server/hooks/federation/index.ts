@@ -4,7 +4,6 @@ import type { IRoomNativeFederated, IMessage, IRoom, IUser } from '@rocket.chat/
 import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
-import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../../../../app/lib/server/lib/notifyListener';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { afterBanFromRoomCallback } from '../../../../server/lib/callbacks/afterBanFromRoomCallback';
 import { afterLeaveRoomCallback } from '../../../../server/lib/callbacks/afterLeaveRoomCallback';
@@ -13,6 +12,7 @@ import { afterUnbanFromRoomCallback } from '../../../../server/lib/callbacks/aft
 import { beforeAddUsersToRoom, beforeAddUserToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
 import { beforeChangeRoomRole } from '../../../../server/lib/callbacks/beforeChangeRoomRole';
 import { prepareCreateRoomCallback } from '../../../../server/lib/callbacks/beforeCreateRoomCallback';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../../../../server/lib/notifyListener';
 import { FederationActions } from '../../../../server/services/room/hooks/BeforeFederationActions';
 
 // callbacks.add('federation-event-example', async () => FederationMatrix.handleExample(), callbacks.priority.MEDIUM, 'federation-event-example-handler');
@@ -78,8 +78,13 @@ callbacks.add(
 
 callbacks.add(
 	'afterDeleteMessage',
-	async (message: IMessage, { room }) => {
+	async (message: IMessage, { room, user }) => {
 		if (!message.federation?.eventId) {
+			return;
+		}
+
+		// deletion came from federation — don't echo
+		if (isUserNativeFederated(user)) {
 			return;
 		}
 
@@ -255,14 +260,19 @@ callbacks.add(
 
 callbacks.add(
 	'afterSaveMessage',
-	async (message: IMessage, { room }) => {
-		if (FederationActions.shouldPerformFederationAction(room)) {
-			if (!isEditedMessage(message)) {
-				return;
-			}
-
-			await FederationMatrix.updateMessage(room, message);
+	async (message: IMessage, { room, user }) => {
+		if (!FederationActions.shouldPerformFederationAction(room)) {
+			return;
 		}
+		if (!isEditedMessage(message)) {
+			return;
+		}
+		// editor is remote -> edit came from federation, don't echo
+		if (isUserNativeFederated(user)) {
+			return;
+		}
+
+		await FederationMatrix.updateMessage(room, message);
 	},
 	callbacks.priority.HIGH,
 	'federation-matrix-after-room-message-updated',

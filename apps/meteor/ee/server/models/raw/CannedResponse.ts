@@ -78,23 +78,11 @@ export class CannedResponseRaw extends BaseRaw<IOmnichannelCannedResponse> imple
 		return this.findOne(query, options);
 	}
 
-	findByCannedResponseId(_id: string, options?: FindOptions<IOmnichannelCannedResponse>): FindCursor<IOmnichannelCannedResponse> {
-		const query = { _id };
-
-		return this.find(query, options);
-	}
-
 	findByDepartmentId(departmentId: string, options?: FindOptions<IOmnichannelCannedResponse>): FindCursor<IOmnichannelCannedResponse> {
 		const query = {
 			scope: 'department',
 			departmentId,
 		};
-
-		return this.find(query, options);
-	}
-
-	findByShortcut(shortcut: string, options?: FindOptions<IOmnichannelCannedResponse>): FindCursor<IOmnichannelCannedResponse> {
-		const query = { shortcut };
 
 		return this.find(query, options);
 	}

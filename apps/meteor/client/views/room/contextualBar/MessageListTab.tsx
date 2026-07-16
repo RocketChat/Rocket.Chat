@@ -14,7 +14,7 @@ import {
 } from '@rocket.chat/ui-client';
 import { useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -27,7 +27,7 @@ import { isMessageNewDay } from '../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../MessageList/providers/MessageListProvider';
 import { useRoomSubscription } from '../contexts/RoomContext';
 
-type MessageListTabProps = {
+export type MessageListTabProps = {
 	iconName: IconName;
 	title: ReactNode;
 	emptyResultMessage: string;
@@ -35,7 +35,7 @@ type MessageListTabProps = {
 	queryResult: UseQueryResult<IMessage[]>;
 };
 
-const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryResult }: MessageListTabProps): ReactElement => {
+const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryResult }: MessageListTabProps) => {
 	const formatDate = useFormatDate();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 

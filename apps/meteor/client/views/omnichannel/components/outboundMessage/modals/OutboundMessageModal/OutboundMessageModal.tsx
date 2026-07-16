@@ -1,5 +1,5 @@
 import { Modal, ModalBackdrop, ModalClose, ModalContent, ModalHeader, ModalTitle } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect, useId, useState } from 'react';
 import type { KeyboardEvent, ComponentProps } from 'react';
@@ -32,7 +32,7 @@ const OutboundMessageModal = ({ defaultValues, onClose }: OutboundMessageModalPr
 		});
 	}, [initialRoute, onClose, router]);
 
-	const handleKeyDown = useEffectEvent((e: KeyboardEvent<HTMLDivElement>): void => {
+	const handleKeyDown = useStableCallback((e: KeyboardEvent<HTMLDivElement>): void => {
 		if (e.key !== 'Escape') {
 			return;
 		}
@@ -45,14 +45,19 @@ const OutboundMessageModal = ({ defaultValues, onClose }: OutboundMessageModalPr
 	});
 
 	return (
-		<ModalBackdrop bg='transparent' onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()} onKeyDown={handleKeyDown}>
+		<ModalBackdrop
+			backgroundColor='transparent'
+			onClick={(e) => e.stopPropagation()}
+			onMouseDown={(e) => e.stopPropagation()}
+			onKeyDown={handleKeyDown}
+		>
 			<Modal aria-labelledby={modalId} display={isClosing ? 'none' : undefined}>
 				<ModalHeader>
 					<ModalTitle id={modalId}>{t('Outbound_message')}</ModalTitle>
 					<ModalClose aria-label={t('Close')} onClick={() => setClosingConfirmation(true)} />
 				</ModalHeader>
 
-				<ModalContent pbe={16} height='100%'>
+				<ModalContent paddingBlockEnd={16} height='100%'>
 					<OutboundMessageWizard defaultValues={defaultValues} onSuccess={onClose} onError={onClose} />
 				</ModalContent>
 			</Modal>

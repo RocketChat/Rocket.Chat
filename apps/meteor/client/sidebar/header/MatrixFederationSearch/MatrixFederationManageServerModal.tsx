@@ -18,14 +18,14 @@ import {
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetModal, useTranslation, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { FormEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { useState } from 'react';
 
 import MatrixFederationRemoveServerList from './MatrixFederationRemoveServerList';
 import MatrixFederationSearch from './MatrixFederationSearch';
 import { useMatrixServerList } from './useMatrixServerList';
 
-type MatrixFederationAddServerModalProps = {
+export type MatrixFederationAddServerModalProps = {
 	onClickClose: () => void;
 };
 
@@ -90,13 +90,13 @@ const MatrixFederationAddServerModal = ({ onClickClose }: MatrixFederationAddSer
 						<TextInput
 							disabled={isPending}
 							value={serverName}
-							onChange={(e: FormEvent<HTMLInputElement>) => {
+							onChange={(e: ChangeEvent<HTMLInputElement>) => {
 								setServerName(e.currentTarget.value);
 								if (errorKey) {
 									setErrorKey(undefined);
 								}
 							}}
-							mie={4}
+							marginInlineEnd={4}
 						/>
 						<Button onClick={() => addServer()} primary loading={isPending}>
 							{t('Add')}
@@ -105,7 +105,7 @@ const MatrixFederationAddServerModal = ({ onClickClose }: MatrixFederationAddSer
 					{isError && errorKey && <FieldError>{t(errorKey)}</FieldError>}
 					<FieldHint>{t('Federation_Example_matrix_server')}</FieldHint>
 				</Field>
-				<Divider mb={16} />
+				<Divider marginBlock={16} />
 				{!isLoadingServerList && data?.servers && <MatrixFederationRemoveServerList servers={data.servers} />}
 			</ModalContent>
 			<ModalFooter>

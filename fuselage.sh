@@ -4,10 +4,12 @@ if [[ $1 == "--help" || $1 == "-h" ]]; then
 echo "==================================================================================================
 Usage: yarn fuselage -a [action] -p [package]
 Options:
--a | --action [link|undo|unlink|next|latest|next-all|latest-all]
-    Specify the action to be performed by the script. This option accepts one of four arguments:
+-a | --action [link|undo|unlink|link-all|unlink-all|next|latest|next-all|latest-all]
+    Specify the action to be performed by the script.
     - link        : Creates a symbolic link for the fuselage package
-    - undo|unlink : Removes the symbolic li nk for the fuselage package
+    - undo|unlink : Removes the symbolic link for the fuselage package
+    - link-all    : Creates symbolic links for all packages in ../fuselage/packages
+    - unlink-all  : Removes symbolic links for all packages in ../fuselage/packages
     - next        : Update dependencies with the @next npm package version
     - latest      : Update dependencies with the @latest npm package version
     - next-all    : Update ALL fuselage dependencies with the @next npm packages version
@@ -35,6 +37,12 @@ Example usage:
 
 - Update ALL fuselage dependencies with the @latest npm packages version:
     yarn fuselage -a latest-all
+
+- Create symbolic links for all local fuselage packages:
+    yarn fuselage -a link-all
+
+- Remove symbolic links for all local fuselage packages:
+    yarn fuselage -a unlink-all
 =================================================================================================="
 
     exit 1
@@ -67,10 +75,31 @@ done
 action="${action:-link}"
 packages="${packages:-fuselage}"
 
-if [[ $action != "link" && $action != "undo" && $action != "unlink" && $action != 'next' && $action != 'next-all' && $action != 'latest' && $action != 'latest-all' ]]; then
+if [[ $action != "link" && $action != "undo" && $action != "unlink" && $action != "link-all" && $action != "unlink-all" && $action != 'next' && $action != 'next-all' && $action != 'latest' && $action != 'latest-all' ]]; then
     echo "Invalid action"
     echo "Run yarn fuselage --help for more information"
     exit 1
+fi
+
+if [[ $action == "link-all" || $action == "unlink-all" ]]; then
+    if [[ ! -d "../fuselage/packages" ]]; then
+        echo "Could not find ../fuselage/packages"
+        echo "Make sure the fuselage repository is available at the project root"
+        exit 1
+    fi
+
+    packages=$(find "../fuselage/packages" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | paste -sd ";" -)
+
+    if [[ -z "$packages" ]]; then
+        echo "No packages found in ../fuselage/packages"
+        exit 1
+    fi
+
+    if [[ $action == "link-all" ]]; then
+        action="link"
+    else
+        action="unlink"
+    fi
 fi
 
 if [[ $action == "next-all" || $action == "latest-all" ]]; then
