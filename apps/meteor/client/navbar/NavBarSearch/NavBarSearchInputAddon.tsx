@@ -32,7 +32,6 @@ const NavBarSearchInputAddon = ({
 						key={filter.key}
 						height='x20'
 						minHeight='x20'
-						fontScale='c1'
 						value={filter.label}
 						onClick={() => onRemoveFilter(filter.key)}
 						title={filter.title}

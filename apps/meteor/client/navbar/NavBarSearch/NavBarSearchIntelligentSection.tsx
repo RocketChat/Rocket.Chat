@@ -33,7 +33,7 @@ const NavBarSearchIntelligentSection = ({ items, onSelect, onClose }: NavBarSear
 
 	return (
 		<Box display='flex' flexDirection='column' pbs={8} pbe={12}>
-			<Box color='titles-labels' fontScale='c1' fontWeight='bold' pi={12} mbe={4} role='presentation' aria-hidden>
+			<Box color='titles-labels' fontScale='c2' pi={16} mbe={4} role='presentation' aria-hidden>
 				{t('Intelligent_Search')}
 			</Box>
 			<Box color='hint' fontScale='c1' pi={12} mbe={4}>
