@@ -31,6 +31,7 @@ export const AppPermissions = {
 	'ui': {
 		interaction: { name: 'ui.interact' },
 		registerButtons: { name: 'ui.registerButtons' },
+		serverInitiatedView: { name: 'ui.server-initiated-view' },
 	},
 	'setting': {
 		read: { name: 'server-setting.read', hiddenSettings: [] } as IReadSettingPermission,

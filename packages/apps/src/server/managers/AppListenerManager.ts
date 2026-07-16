@@ -28,6 +28,7 @@ import type {
 	IUIKitLivechatBlockIncomingInteraction,
 	IUIKitLivechatIncomingInteraction,
 } from '@rocket.chat/apps-engine/definition/uikit/livechat';
+import type { IFileMessageConfirmContext } from '@rocket.chat/apps-engine/definition/uploads/IFileMessageConfirmContext';
 import type { IFileUploadInternalContext } from '@rocket.chat/apps-engine/definition/uploads/IFileUploadContext';
 import type { IUser, IUserContext, IUserStatusContext, IUserUpdateContext } from '@rocket.chat/apps-engine/definition/users';
 
@@ -212,6 +213,10 @@ export interface IListenerExecutor {
 	[AppInterface.IPreFileUpload]: {
 		args: [IFileUploadInternalContext];
 		result: void;
+	};
+	[AppInterface.IPreFileMessageConfirm]: {
+		args: [IFileMessageConfirmContext];
+		result: boolean;
 	};
 	// Email
 	[AppInterface.IPreEmailSent]: {
@@ -454,6 +459,8 @@ export class AppListenerManager {
 			// FileUpload
 			case AppInterface.IPreFileUpload:
 				return this.executePreFileUpload(data as IFileUploadInternalContext);
+			case AppInterface.IPreFileMessageConfirm:
+				return this.executePreFileMessageConfirm(data as IFileMessageConfirmContext);
 			// Email
 			case AppInterface.IPreEmailSent:
 				return this.executePreEmailSent(data as IPreEmailSentContext);
@@ -1181,6 +1188,21 @@ export class AppListenerManager {
 
 			await app.call(AppMethod.EXECUTE_PRE_FILE_UPLOAD, data);
 		}
+	}
+
+	private async executePreFileMessageConfirm(data: IFileMessageConfirmContext): Promise<boolean> {
+		for (const appId of this.listeners.get(AppInterface.IPreFileMessageConfirm)) {
+			const app = this.manager.getOneById(appId);
+
+			const confirmed = (await app.call(AppMethod.EXECUTE_PRE_FILE_MESSAGE_CONFIRM, data)) as boolean;
+
+			// Any app that declines cancels the send.
+			if (confirmed === false) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	private async executePreEmailSent(data: IPreEmailSentContext): Promise<IEmailDescriptor> {

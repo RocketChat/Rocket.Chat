@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto';
+
 import type { IUIController } from '@rocket.chat/apps-engine/definition/accessors';
 import type {
 	IUIKitErrorInteractionParam,
@@ -79,6 +81,33 @@ export class UIController implements IUIController {
 			case UIKitSurfaceType.MODAL:
 				return this.openModal(viewWithIds, context, user, true);
 		}
+	}
+
+	public openServerInitiatedView(view: IUIKitSurfaceViewParam, user: IUser): Promise<void> {
+		const blocks = UIHelper.assignIds(view.blocks, this.appId);
+		const viewWithIds = { ...view, blocks };
+
+		// A server-minted token stands in for the (absent) user triggerId. The client
+		// trusts these via the explicit `serverInitiated` flag + the app permission,
+		// not by validating the token against a client-minted map.
+		const interactionContext = { triggerId: randomUUID(), appId: this.appId };
+
+		let interaction;
+		switch (view.type) {
+			case UIKitSurfaceType.MODAL:
+				interaction = formatModalInteraction(viewWithIds, { ...interactionContext, type: UIKitInteractionType.MODAL_OPEN });
+				break;
+			case UIKitSurfaceType.CONTEXTUAL_BAR:
+				interaction = formatContextualBarInteraction(viewWithIds, {
+					...interactionContext,
+					type: UIKitInteractionType.CONTEXTUAL_BAR_OPEN,
+				});
+				break;
+			default:
+				throw new Error('A server-initiated view must be a modal or contextual bar surface');
+		}
+
+		return this.uiInteractionBridge.doNotifyUserServerInitiated(user, { ...interaction, serverInitiated: true }, this.appId);
 	}
 
 	public setViewError(errorInteraction: IUIKitErrorInteractionParam, context: IUIKitInteractionParam, user: IUser) {

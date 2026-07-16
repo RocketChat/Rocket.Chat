@@ -140,6 +140,18 @@ export class ActionManager implements IActionManager {
 
 		const appId = this.invalidateTriggerId(triggerId);
 		if (!appId) {
+			// Surfaces opened by an app in response to a server-side event carry no
+			// client-minted triggerId. They are trusted via the explicit `serverInitiated`
+			// flag (the server gates them behind the `ui.server-initiated-view` permission),
+			// and only open modal / contextual bar surfaces are accepted here.
+			if (interaction.type === 'modal.open' && interaction.serverInitiated) {
+				this.openModal(interaction.view);
+				return interaction.type;
+			}
+			if (interaction.type === 'contextual_bar.open' && interaction.serverInitiated) {
+				this.openContextualBar(interaction.view);
+				return interaction.type;
+			}
 			return;
 		}
 

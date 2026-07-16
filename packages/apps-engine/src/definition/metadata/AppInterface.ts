@@ -53,6 +53,7 @@ export enum AppInterface {
 	IPostLivechatDepartmentDisabled = 'IPostLivechatDepartmentDisabled',
 	// FileUpload
 	IPreFileUpload = 'IPreFileUpload',
+	IPreFileMessageConfirm = 'IPreFileMessageConfirm',
 	// Email
 	IPreEmailSent = 'IPreEmailSent',
 	IPostUserCreated = 'IPostUserCreated',

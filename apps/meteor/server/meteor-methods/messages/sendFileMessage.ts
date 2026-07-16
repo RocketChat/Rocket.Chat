@@ -1,3 +1,4 @@
+import { Apps, AppEvents } from '@rocket.chat/apps';
 import type {
 	MessageAttachment,
 	FileAttachmentProps,
@@ -232,6 +233,16 @@ export const sendFileMessage = async (
 	data.file = files[0];
 	data.files = files;
 	data.attachments = attachments;
+
+	// App IPreFileMessageConfirm hook: fires at the SEND stage (unlike IPreFileUpload,
+	// which fires at the blob-upload/attach stage). Returning false cancels the post.
+	const fileMessageConfirmed = await Apps.self?.triggerEvent(AppEvents.IPreFileMessageConfirm, {
+		file: { name: file.name || '', size: file.size || 0, type: file.type || '', rid: roomId, userId },
+		messageText: data.msg ?? '',
+	});
+	if (fileMessageConfirmed === false) {
+		throw new Meteor.Error('error-app-prevented', 'File message send was cancelled by an app', { method: 'sendFileMessage' });
+	}
 
 	const msg = await executeSendMessage(userId, data);
 

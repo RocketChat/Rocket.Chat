@@ -13,7 +13,28 @@ export abstract class UiInteractionBridge extends BaseBridge {
 		}
 	}
 
+	public async doNotifyUserServerInitiated(user: IUser, interaction: IUIKitInteraction, appId: string): Promise<void> {
+		if (this.hasServerInitiatedViewPermission(appId)) {
+			return this.notifyUser(user, interaction, appId);
+		}
+	}
+
 	protected abstract notifyUser(user: IUser, interaction: IUIKitInteraction, appId: string): Promise<void>;
+
+	private hasServerInitiatedViewPermission(appId: string): boolean {
+		if (AppPermissionManager.hasPermission(appId, AppPermissions.ui.serverInitiatedView)) {
+			return true;
+		}
+
+		AppPermissionManager.notifyAboutError(
+			new PermissionDeniedError({
+				appId,
+				missingPermissions: [AppPermissions.ui.serverInitiatedView],
+			}),
+		);
+
+		return false;
+	}
 
 	private hasInteractionPermission(appId: string): boolean {
 		if (AppPermissionManager.hasPermission(appId, AppPermissions.ui.interaction)) {

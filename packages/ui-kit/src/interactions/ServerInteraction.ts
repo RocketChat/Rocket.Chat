@@ -9,6 +9,7 @@ type OpenModalServerInteraction = {
 	triggerId: string;
 	appId: string;
 	view: ModalView;
+	serverInitiated?: boolean;
 };
 
 type UpdateModalServerInteraction = {
@@ -49,6 +50,7 @@ type OpenContextualBarServerInteraction = {
 	triggerId: string;
 	appId: string;
 	view: ContextualBarView;
+	serverInitiated?: boolean;
 };
 
 type UpdateContextualBarServerInteraction = {

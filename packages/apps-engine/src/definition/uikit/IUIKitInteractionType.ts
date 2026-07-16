@@ -18,6 +18,12 @@ export interface IUIKitInteraction {
 	type: UIKitInteractionType;
 	triggerId: string;
 	appId: string;
+	/**
+	 * Set when the surface was opened by the server in response to an app event
+	 * (no user-initiated triggerId). The client renders these through a dedicated
+	 * channel instead of validating triggerId. See `IUIController.openServerInitiatedView`.
+	 */
+	serverInitiated?: boolean;
 }
 
 export interface IUIKitErrorInteraction extends IUIKitInteraction {
