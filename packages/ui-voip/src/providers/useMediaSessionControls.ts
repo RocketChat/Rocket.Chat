@@ -19,7 +19,12 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 	return useMemo(() => {
 		const toggleMute = () => {
 			const instanceState = instance?.getState();
-			if (!instanceState) {
+			if (!instanceState || !instance) {
+				return;
+			}
+			if (instanceState.localParticipant.muted && !instance.hasInput()) {
+				// TODO: unmute after
+				void instance.forceInputTrackUpdate();
 				return;
 			}
 			instanceState.localParticipant.setMuted(!instanceState.localParticipant.muted);

@@ -126,7 +126,7 @@ export const useDevicePermissionPrompt2 = () => {
 					void requestDevice?.({
 						onReject: (...args) => {
 							reject(...args);
-							setModal(<PermissionFlowModal type='denied' onCancel={() => setModal(null)} onConfirm={() => setModal(null)} />);
+							setModal(<PermissionFlowModal type='denied' onCancel={onCancel} onConfirm={onCancel} />);
 						},
 						onAccept: (...args) => {
 							onAccept(...args);
@@ -139,9 +139,7 @@ export const useDevicePermissionPrompt2 = () => {
 				const modalType = getModalType(actionType, state);
 
 				const onCancel = () => {
-					if (modalType === 'incomingPrompt') {
-						reject(new PermissionRequestCancelledCallRejectedError('Permission request modal closed'));
-					}
+					reject(new PermissionRequestCancelledCallRejectedError('Permission request modal closed'));
 
 					setModal(null);
 				};
