@@ -154,7 +154,7 @@ const ForwardChatModal = ({ room, onCancel }: ForwardChatModalProps) => {
 				<Field marginBlock={15}>
 					<FieldLabel htmlFor={commentFieldId}>
 						{t('Leave_a_comment')}
-						<Box mis={4} is='span' color='annotation'>
+						<Box marginInlineStart={4} is='span' color='annotation'>
 							({t('Optional')})
 						</Box>
 					</FieldLabel>

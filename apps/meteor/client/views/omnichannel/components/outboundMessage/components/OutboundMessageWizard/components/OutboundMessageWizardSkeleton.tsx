@@ -5,9 +5,9 @@ const OutboubdMessageWizardSkeleton = () => {
 		<Box role='status' aria-busy='true'>
 			<Box display='flex'>
 				<Skeleton width={75} height={40} />
-				<Skeleton mis={8} width={100} height={50} />
-				<Skeleton mis={8} width={100} height={50} />
-				<Skeleton mis={8} width={100} height={50} />
+				<Skeleton marginInlineStart={8} width={100} height={50} />
+				<Skeleton marginInlineStart={8} width={100} height={50} />
+				<Skeleton marginInlineStart={8} width={100} height={50} />
 			</Box>
 
 			<Box marginBlockStart={10}>

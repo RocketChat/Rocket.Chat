@@ -44,7 +44,7 @@ const ReportUserModal = ({ username, displayName, onConfirm, onClose }: ReportUs
 		>
 			<Box marginBlockEnd={16} display='flex' alignItems='center'>
 				<UserAvatar username={username} />
-				<Box mis={8} fontScale='p2b'>
+				<Box marginInlineStart={8} fontScale='p2b'>
 					{displayName}
 				</Box>
 			</Box>

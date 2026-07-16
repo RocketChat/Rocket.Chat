@@ -156,7 +156,7 @@ const RoomMembers = ({
 					onChange={setText}
 					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
-				<Box width='x144' mis={8}>
+				<Box width='x144' marginInlineStart={8}>
 					<Select
 						aria-controls={isSuccess ? membersListId : undefined}
 						options={options}

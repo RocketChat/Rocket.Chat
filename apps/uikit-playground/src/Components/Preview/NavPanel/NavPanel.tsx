@@ -34,7 +34,7 @@ const NavPanel = () => {
 			{!isMobile && (
 				<Box display='flex' alignItems='center' flexGrow={0} pis={4}>
 					<SurfaceSelect />
-					<Button mis='10px' small warning height='max-content' onClick={() => dispatch(templatesToggleAction(true))}>
+					<Button marginInlineStart='10px' small warning height='max-content' onClick={() => dispatch(templatesToggleAction(true))}>
 						Templates
 					</Button>
 				</Box>

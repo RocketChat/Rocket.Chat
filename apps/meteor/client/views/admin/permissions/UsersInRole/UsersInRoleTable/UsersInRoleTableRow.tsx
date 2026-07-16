@@ -32,7 +32,7 @@ const UsersInRoleTableRow = ({ user, onRemove }: UsersInRoleTableRowProps) => {
 							{name || username}
 						</Box>
 						{name && (
-							<Box mis={4} fontScale='p2' color='hint' withTruncatedText>
+							<Box marginInlineStart={4} fontScale='p2' color='hint' withTruncatedText>
 								{`@${username}`}
 							</Box>
 						)}

@@ -36,7 +36,7 @@ const DepartmentTags = ({ error, value: tags, onChange, ...props }: DepartmentTa
 					onChange={(e: ChangeEvent<HTMLInputElement>) => setTagText(e.currentTarget.value)}
 					{...props}
 				/>
-				<Button disabled={Boolean(!tagText.trim()) || tags.includes(tagText)} mis={8} title={t('Add')} onClick={handleAddTag}>
+				<Button disabled={Boolean(!tagText.trim()) || tags.includes(tagText)} marginInlineStart={8} title={t('Add')} onClick={handleAddTag}>
 					{t('Add')}
 				</Button>
 			</FieldRow>

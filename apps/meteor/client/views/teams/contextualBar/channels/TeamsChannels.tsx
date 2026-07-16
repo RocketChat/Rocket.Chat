@@ -95,7 +95,7 @@ const TeamsChannels = ({
 					onChange={setText}
 					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
-				<Box width='x144' mis={8}>
+				<Box width='x144' marginInlineStart={8}>
 					<Select onChange={(val) => setType(val as 'all' | 'autoJoin')} value={type} options={options} />
 				</Box>
 			</ContextualbarSection>
@@ -113,7 +113,7 @@ const TeamsChannels = ({
 								{t('Showing')}: {channels.length}
 							</Box>
 
-							<Box is='span' color='hint' fontScale='p2' mis={8}>
+							<Box is='span' color='hint' fontScale='p2' marginInlineStart={8}>
 								{t('Total')}: {total}
 							</Box>
 						</Box>

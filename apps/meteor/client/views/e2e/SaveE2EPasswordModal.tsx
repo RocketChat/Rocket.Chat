@@ -33,7 +33,7 @@ const SaveE2EPasswordModal = ({ randomPassword, onClose, onCancel, onConfirm }: 
 		>
 			<p>
 				{t('E2E_password_reveal_text')}
-				<ExternalLink to={DOCS_URL} mis={4}>
+				<ExternalLink to={DOCS_URL} marginInlineStart={4}>
 					{t('Learn_more_about_E2EE')}
 				</ExternalLink>
 			</p>

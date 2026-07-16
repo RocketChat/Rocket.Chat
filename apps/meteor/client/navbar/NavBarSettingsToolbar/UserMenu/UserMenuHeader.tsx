@@ -13,7 +13,7 @@ const UserMenuHeader = ({ user }: UserMenuHeaderProps) => {
 			<Box mie={4}>
 				<UserAvatar size='x36' username={user?.username || ''} etag={user?.avatarETag} />
 			</Box>
-			<Box mis={4} display='flex' overflow='hidden' flexDirection='column' fontScale='p2' flexGrow={1} flexShrink={1}>
+			<Box marginInlineStart={4} display='flex' overflow='hidden' flexDirection='column' fontScale='p2' flexGrow={1} flexShrink={1}>
 				<Box withTruncatedText width='full' is='span' fontWeight='700'>
 					{displayName}
 				</Box>

@@ -140,7 +140,7 @@ const DateRangePicker = ({ onChange = () => undefined, ...props }: DateRangePick
 						<Box height='x40' display='flex' width='full'>
 							<InputBox type='date' onChange={handleEnd} min={start} max={todayDate} value={end} />
 						</Box>
-						<Box mis={8}>
+						<Box marginInlineStart={8}>
 							<GenericMenu title={t('Date_range_presets')} items={options} small />
 						</Box>
 					</FieldRow>

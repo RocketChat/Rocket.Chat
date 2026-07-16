@@ -73,7 +73,7 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 			<GenericTableCell withTruncatedText>
 				<Box display='flex' alignItems='center'>
 					<OmnichannelRoomIcon size='x20' source={source} />
-					<Box mis={8}>{getSourceLabel(source)}</Box>
+					<Box marginInlineStart={8}>{getSourceLabel(source)}</Box>
 				</Box>
 			</GenericTableCell>
 			<GenericTableCell withTruncatedText>{servedBy?.username}</GenericTableCell>

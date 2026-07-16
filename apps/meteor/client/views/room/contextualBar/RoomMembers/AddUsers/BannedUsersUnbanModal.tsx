@@ -60,7 +60,7 @@ const BannedUsersUnbanModal = ({ onClose, onConfirm }: BannedUsersUnbanModalProp
 				<ModalFooterAnnotation>
 					<Box display='flex' alignItems='center'>
 						<CheckBox checked={unbanConfirmed} onChange={() => setUnbanConfirmed((prev) => !prev)} id={checkboxId} />
-						<Label htmlFor={checkboxId} mis={8}>
+						<Label htmlFor={checkboxId} marginInlineStart={8}>
 							{t('Yes_unban_user')}
 						</Label>
 					</Box>

@@ -136,7 +136,7 @@ const ThreadList = () => {
 					value={searchText}
 					onChange={handleSearchTextChange}
 				/>
-				<Box width='x144' mis={8}>
+				<Box width='x144' marginInlineStart={8}>
 					<Select
 						aria-controls={isSuccess ? threadListId : undefined}
 						options={typeOptions}

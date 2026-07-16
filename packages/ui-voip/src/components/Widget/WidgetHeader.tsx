@@ -17,7 +17,7 @@ const WidgetHeader = ({ title, children }: WidgetHeaderProps) => {
 			<Box is='h3' color='titles-labels' fontScale='p1b' id='rcx-media-call-widget-title'>
 				{title}
 			</Box>
-			<Box mis={8} display='flex' flexDirection='row'>
+			<Box marginInlineStart={8} display='flex' flexDirection='row'>
 				{children}
 			</Box>
 		</Box>

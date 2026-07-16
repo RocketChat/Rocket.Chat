@@ -144,7 +144,13 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 									})}
 								/>
 								{index !== 0 && (
-									<IconButton mis={8} small title={t('ABAC_Remove_attribute')} icon='trash' onClick={() => removeLockedAttribute(index)} />
+									<IconButton
+										marginInlineStart={8}
+										small
+										title={t('ABAC_Remove_attribute')}
+										icon='trash'
+										onClick={() => removeLockedAttribute(index)}
+									/>
 								)}
 							</FieldRow>
 							{errors.lockedAttributes?.[index]?.value && (
@@ -189,7 +195,7 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 									})}
 								/>
 								{(index !== 0 || lockedAttributesFields.length > 0) && (
-									<IconButton mis={8} small title={t('ABAC_Remove_attribute')} icon='trash' onClick={() => remove(index)} />
+									<IconButton marginInlineStart={8} small title={t('ABAC_Remove_attribute')} icon='trash' onClick={() => remove(index)} />
 								)}
 							</FieldRow>
 							{errors.attributeValues?.[index]?.value && (

@@ -28,7 +28,7 @@ const AppSecurity = ({ privacyPolicySummary, appPermissions, tosLink, privacyLin
 
 					<Box is='section'>
 						<AppSecurityLabel>{t('Permissions')}</AppSecurityLabel>
-						<Box is='ol' type='1' style={{ listStyleType: 'decimal' }} mis={24}>
+						<Box is='ol' type='1' style={{ listStyleType: 'decimal' }} marginInlineStart={24}>
 							<AppPermissionsList appPermissions={appPermissions} />
 						</Box>
 					</Box>

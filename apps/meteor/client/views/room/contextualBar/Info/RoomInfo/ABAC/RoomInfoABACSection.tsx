@@ -34,7 +34,7 @@ const RoomInfoABACSection = ({ room }: RoomInfoABACSectionProps) => {
 					<Tag medium>
 						<Box display='flex' alignItems='center'>
 							<RoomIcon room={room} />
-							<Box mis={2}>{t('ABAC_Managed')}</Box>
+							<Box marginInlineStart={2}>{t('ABAC_Managed')}</Box>
 						</Box>
 					</Tag>
 				</Box>

@@ -94,7 +94,7 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 							flexGrow={1}
 							placeholder={t('Enter_a_tag')}
 						/>
-						<Button disabled={!tagValue} mis={8} title={t('Add')} onClick={handleTagTextSubmit}>
+						<Button disabled={!tagValue} marginInlineStart={8} title={t('Add')} onClick={handleTagTextSubmit}>
 							{t('Add')}
 						</Button>
 					</FieldRow>

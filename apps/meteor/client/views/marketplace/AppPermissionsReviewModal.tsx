@@ -26,7 +26,7 @@ const AppPermissionsReviewModal = ({ appPermissions, onCancel, onConfirm }: AppP
 			<Box fontScale='p2' marginBlockEnd={20}>
 				{t('Apps_Permissions_Review_Modal_Subtitle')}
 			</Box>
-			<Box is='ol' type='1' style={{ listStyleType: 'decimal' }} mis={24}>
+			<Box is='ol' type='1' style={{ listStyleType: 'decimal' }} marginInlineStart={24}>
 				<AppPermissionsList appPermissions={appPermissions} />
 			</Box>
 		</GenericModal>

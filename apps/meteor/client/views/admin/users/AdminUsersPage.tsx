@@ -142,7 +142,7 @@ const AdminUsersPage = () => {
 					</TabsItem>
 					<TabsItem selected={tab === 'pending'} onClick={() => handleTabChange('pending')} display='flex' flexDirection='row'>
 						{`${t('Pending')} `}
-						{pendingUsersCount.isLoading && <Skeleton variant='circle' height='x16' width='x16' mis={8} />}
+						{pendingUsersCount.isLoading && <Skeleton variant='circle' height='x16' width='x16' marginInlineStart={8} />}
 						{pendingUsersCount.isSuccess && `(${pendingUsersCount.data})`}
 					</TabsItem>
 					<TabsItem selected={tab === 'active'} onClick={() => handleTabChange('active')}>

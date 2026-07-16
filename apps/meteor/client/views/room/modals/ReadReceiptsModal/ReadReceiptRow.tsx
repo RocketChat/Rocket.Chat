@@ -13,7 +13,7 @@ const ReadReceiptRow = ({ user, ts }: IReadReceiptWithUser) => {
 		<Box role='listitem' display='flex' flexDirection='row' justifyContent='space-between' alignItems='center' marginBlockEnd={8}>
 			<Box display='flex' flexDirection='row' alignItems='center'>
 				<UserAvatar username={user?.username || ''} size='x24' />
-				<Box is='span' mis={8}>
+				<Box is='span' marginInlineStart={8}>
 					{displayName}
 				</Box>
 			</Box>

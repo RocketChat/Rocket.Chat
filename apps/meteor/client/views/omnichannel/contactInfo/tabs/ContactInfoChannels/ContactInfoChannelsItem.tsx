@@ -102,7 +102,7 @@ const ContactInfoChannelsItem = ({
 					</Box>
 				)}
 				{lastChat && (
-					<Box mis={4} fontScale='c1'>
+					<Box marginInlineStart={4} fontScale='c1'>
 						{getTimeFromNow(lastChat.ts)}
 					</Box>
 				)}

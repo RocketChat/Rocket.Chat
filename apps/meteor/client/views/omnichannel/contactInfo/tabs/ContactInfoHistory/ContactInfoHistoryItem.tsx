@@ -68,14 +68,14 @@ const ContactInfoHistoryItem = ({ source, lastMessage, verified, onClick }: Cont
 						</Box>
 					)}
 					{lastMessage && (
-						<Box mis={4} fontScale='c1'>
+						<Box marginInlineStart={4} fontScale='c1'>
 							{getTimeFromNow(lastMessage.ts)}
 						</Box>
 					)}
 				</Box>
-				<Box mis={4} is='span' onClick={preventPropagation}>
+				<Box marginInlineStart={4} is='span' onClick={preventPropagation}>
 					{hasLicense && verified ? (
-						<Icon title={t('Verified')} mis={4} size='x16' name='success-circle' color='stroke-highlight' />
+						<Icon title={t('Verified')} marginInlineStart={4} size='x16' name='success-circle' color='stroke-highlight' />
 					) : (
 						<IconButton
 							title={t('Unverified')}

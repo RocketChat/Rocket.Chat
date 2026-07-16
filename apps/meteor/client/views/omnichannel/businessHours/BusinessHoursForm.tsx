@@ -110,7 +110,7 @@ const BusinessHoursForm = ({ type }: BusinessHoursFormProps) => {
 								render={({ field }) => <InputBox id={`${daysTimeField + index}-start`} type='time' {...field} />}
 							/>
 						</Box>
-						<Box display='flex' flexDirection='column' flexGrow={1} mis={2}>
+						<Box display='flex' flexDirection='column' flexGrow={1} marginInlineStart={2}>
 							<FieldLabel htmlFor={`${daysTimeField + index}-finish`}>{t('Close')}</FieldLabel>
 							<Controller
 								name={`daysTime.${index}.finish.time`}
