@@ -21,7 +21,7 @@ const UIKitWrapper = ({ id, data }: UIKitWrapperProps) => {
 			<Handle type='target' className='react-flow-targetHandle' position={Position.Left} id={`${id}`} />
 			<SurfaceRender type={surface}>
 				{blocks.map((block, index) => (
-					<Box key={index} pie='6px' className='uiKitWrapper'>
+					<Box key={index} paddingInlineEnd='6px' className='uiKitWrapper'>
 						<Box position='relative' border='var(--default-border)' padding='10px'>
 							<RenderPayload blocks={[block]} surface={surface} />
 							<Handle type='source' className='react-flow-sourceHandle' position={Position.Right} id={block.actionId} />

@@ -31,7 +31,7 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 			justifyContent='space-between'
 			minWidth='x144'
 			height='x40'
-			pie={7}
+			paddingInlineEnd={7}
 			paddingInlineStart={14}
 			lineHeight='unset'
 			rcx-input-box
