@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import LoginSwitchLanguageFooter from './LoginSwitchLanguageFooter';
+import LoginSwitchLanguageFooter from './LoginSwitchLanguageFooter.js';
 
 function ExampleTranslationDecorator({ children }: { children: ReactNode }) {
 	const { t } = useTranslation();

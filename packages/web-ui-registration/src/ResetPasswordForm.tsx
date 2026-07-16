@@ -5,8 +5,8 @@ import { useEffect, useId, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import type { DispatchLoginRouter } from './hooks/useLoginRouter';
-import { useSendForgotPassword } from './hooks/useSendForgotPassword';
+import type { DispatchLoginRouter } from './hooks/useLoginRouter.js';
+import { useSendForgotPassword } from './hooks/useSendForgotPassword.js';
 
 export type ResetPasswordFormProps = { setLoginRoute: DispatchLoginRouter };
 

@@ -2,13 +2,13 @@ import { useDocumentTitle } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import RegisterForm from './RegisterForm';
-import RegisterFormDisabled from './RegisterFormDisabled';
-import RegisterTemplate from './RegisterTemplate';
-import SecretRegisterForm from './SecretRegisterForm';
-import SecretRegisterInvalidForm from './SecretRegisterInvalidForm';
-import type { DispatchLoginRouter } from './hooks/useLoginRouter';
-import FormSkeleton from './template/FormSkeleton';
+import RegisterForm from './RegisterForm.js';
+import RegisterFormDisabled from './RegisterFormDisabled.js';
+import RegisterTemplate from './RegisterTemplate.js';
+import SecretRegisterForm from './SecretRegisterForm.js';
+import SecretRegisterInvalidForm from './SecretRegisterInvalidForm.js';
+import type { DispatchLoginRouter } from './hooks/useLoginRouter.js';
+import FormSkeleton from './template/FormSkeleton.js';
 
 export const RegisterSecretPageRouter = ({
 	setLoginRoute,
