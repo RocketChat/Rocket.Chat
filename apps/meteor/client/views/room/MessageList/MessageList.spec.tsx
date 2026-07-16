@@ -177,6 +177,27 @@ describe('MessageList scroll position', () => {
 		expect(mockVirtualizerHandle.scrollToIndex).toHaveBeenCalledWith(2, { align: 'end' });
 	});
 
+	it.each([
+		{ canPreview: true, expectedIndex: 4 },
+		{ canPreview: false, expectedIndex: 3 },
+	])('should keep the latest message at the end when new messages arrive with canPreview=$canPreview', ({ canPreview, expectedIndex }) => {
+		const isAtBottom = { current: false };
+		(RoomManager.getStore as jest.Mock).mockReturnValue({ scroll: undefined, atBottom: false, update: jest.fn() });
+
+		const { rerender } = render(<MessageList {...defaultProps} canPreview={canPreview} isAtBottom={isAtBottom} />, {
+			wrapper: root.build(),
+		});
+
+		mockVirtualizerHandle.scrollToIndex.mockClear();
+		isAtBottom.current = true;
+		mockVirtualizerHandle.scrollSize = 1200;
+		(useMessages as jest.Mock).mockReturnValue([createMessage('message-1'), createMessage('message-2'), createMessage('message-3')]);
+
+		rerender(<MessageList {...defaultProps} canPreview={canPreview} isAtBottom={isAtBottom} />);
+
+		expect(mockVirtualizerHandle.scrollToIndex).toHaveBeenCalledWith(expectedIndex, { align: 'end' });
+	});
+
 	it('should jump to bottom if unreads are present', () => {
 		const store = {
 			scroll: 123,
