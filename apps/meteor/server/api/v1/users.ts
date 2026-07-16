@@ -2137,6 +2137,10 @@ API.v1
 		'users.enableTotp',
 		{
 			authRequired: true,
+			rateLimiterOptions: {
+				numRequestsAllowed: 5,
+				intervalTimeInMS: 60000,
+			},
 			response: {
 				200: ajv.compile<{ secret: string; url: string }>({
 					type: 'object',
@@ -2262,6 +2266,10 @@ API.v1
 		'users.totpCodesRemaining',
 		{
 			authRequired: true,
+			rateLimiterOptions: {
+				numRequestsAllowed: 5,
+				intervalTimeInMS: 60000,
+			},
 			response: {
 				200: ajv.compile<{ remaining: number }>({
 					type: 'object',
