@@ -10,7 +10,7 @@ const EmojiPickerFooter = (props: Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>)
 		alignItems='center'
 		color='secondary-info'
 		fontScale='micro'
-		pb={8}
+		paddingBlock={8}
 	/>
 );
 

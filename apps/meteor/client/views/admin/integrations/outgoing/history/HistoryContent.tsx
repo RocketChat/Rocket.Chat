@@ -11,7 +11,7 @@ const HistoryContent = ({ data, isLoading }: HistoryContentProps) => {
 
 	if (isLoading) {
 		return (
-			<Box width='full' pb={24}>
+			<Box width='full' paddingBlock={24}>
 				<Skeleton marginBlockEnd={4} />
 				<Skeleton marginBlockEnd={8} />
 				<Skeleton marginBlockEnd={4} />

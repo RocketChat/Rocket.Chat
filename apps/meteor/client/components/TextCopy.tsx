@@ -39,7 +39,7 @@ const TextCopy = ({ text, wrapper = defaultWrapperRenderer, ...props }: TextCopy
 			justifyContent='stretch'
 			alignItems='flex-start'
 			flexGrow={1}
-			pb={16}
+			paddingBlock={16}
 			backgroundColor='surface'
 			width='full'
 			{...props}

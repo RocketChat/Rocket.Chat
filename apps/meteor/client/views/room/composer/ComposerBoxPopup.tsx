@@ -90,12 +90,12 @@ function ComposerBoxPopup<
 				name='ComposerBoxPopup'
 			>
 				{title && (
-					<Box backgroundColor='tint' pi={16} pb={8} id={id}>
+					<Box backgroundColor='tint' pi={16} paddingBlock={8} id={id}>
 						{title}
 					</Box>
 				)}
 				<CustomScrollbars>
-					<Box pb={8} maxHeight='x320'>
+					<Box paddingBlock={8} maxHeight='x320'>
 						{!isLoading && itemsFlat.length === 0 && <Option>{t('No_results_found')}</Option>}
 						{isLoading && <OptionSkeleton />}
 						{itemsFlat.map((item, index) => {

@@ -165,22 +165,22 @@ const RoomMembers = ({
 					/>
 				</Box>
 			</ContextualbarSection>
-			<ContextualbarContent padding={0} pb={12}>
+			<ContextualbarContent padding={0} paddingBlock={12}>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={members.length} />
 				{isPending && (
-					<Box pi={24} pb={12}>
+					<Box pi={24} paddingBlock={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}
 				{error && (
-					<Box pi={24} pb={12}>
+					<Box pi={24} paddingBlock={12}>
 						<Callout type='danger'>{error.message}</Callout>
 					</Box>
 				)}
 				{isSuccess && (
 					<>
 						{members.length > 0 && (
-							<Box pi={24} pb={12}>
+							<Box pi={24} paddingBlock={12}>
 								<Box is='span' color='hint' fontScale='p2'>
 									{t('Showing_current_of_total', { current: members.length, total })}
 								</Box>

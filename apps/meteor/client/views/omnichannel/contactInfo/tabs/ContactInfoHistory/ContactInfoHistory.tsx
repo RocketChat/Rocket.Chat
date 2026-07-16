@@ -91,7 +91,7 @@ const ContactInfoHistory = ({ contact, setChatId }: ContactInfoHistoryProps) => 
 				</Box>
 			</Box>
 			{isLoading && (
-				<Box pi={24} pb={12}>
+				<Box pi={24} paddingBlock={12}>
 					<Throbber size='x12' />
 				</Box>
 			)}
@@ -106,7 +106,7 @@ const ContactInfoHistory = ({ contact, setChatId }: ContactInfoHistoryProps) => 
 			)}
 			{!isError && data?.history && data.history.length > 0 && (
 				<>
-					<Box pi={24} pb={12}>
+					<Box pi={24} paddingBlock={12}>
 						<Box is='span' color='hint' fontScale='p2'>
 							{t('Showing_current_of_total', { current: data?.history.length, total: data?.total })}
 						</Box>

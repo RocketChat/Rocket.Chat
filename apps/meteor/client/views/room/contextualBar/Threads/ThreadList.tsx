@@ -148,7 +148,7 @@ const ThreadList = () => {
 			<ContextualbarContent paddingInline={0} ref={ref}>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
 				{isPending && (
-					<Box pi={24} pb={12}>
+					<Box pi={24} paddingBlock={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}

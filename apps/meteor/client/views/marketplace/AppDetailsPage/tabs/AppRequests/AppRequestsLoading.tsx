@@ -2,7 +2,7 @@ import { Box, Skeleton } from '@rocket.chat/fuselage';
 
 const AppRequestsLoading = () => {
 	const appRequestsLoading = Array.from({ length: 5 }, (_, i) => (
-		<Box key={i} display='flex' flexDirection='row' pb={12} pie={24} marginBlockEnd={8}>
+		<Box key={i} display='flex' flexDirection='row' paddingBlock={12} pie={24} marginBlockEnd={8}>
 			<Box is='section' marginInlineEnd={8} marginBlockStart={2} display='flex' flexDirection='row' alignItems='flex-start' height='full'>
 				<Skeleton variant='rect' height='x36' width='x36' />
 			</Box>

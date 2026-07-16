@@ -37,7 +37,7 @@ const MultiSelectCustomList = ({
 	const filteredOptions = useFilteredOptions(text, options);
 
 	return (
-		<Tile overflow='auto' pb={12} pi={0} elevation='2' width='full' backgroundColor='light' borderRadius={2} maxHeight='50vh'>
+		<Tile overflow='auto' paddingBlock={12} pi={0} elevation='2' width='full' backgroundColor='light' borderRadius={2} maxHeight='50vh'>
 			{searchBarText && (
 				<Box pi={12} marginBlockEnd={12}>
 					<SearchInput

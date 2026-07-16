@@ -38,9 +38,9 @@ const BannedUsers = ({ loading, error, bannedUsers, useRealName = false, onClick
 				<ContextualbarTitle>{t('Banned_Users')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClickClose} />
 			</ContextualbarHeader>
-			<ContextualbarContent padding={0} pb={12}>
+			<ContextualbarContent padding={0} paddingBlock={12}>
 				{loading && (
-					<Box pi={24} pb={12}>
+					<Box pi={24} paddingBlock={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}

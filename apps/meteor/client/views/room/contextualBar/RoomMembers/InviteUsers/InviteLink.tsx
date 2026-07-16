@@ -28,7 +28,7 @@ const InviteLink = ({ linkText, captionText, onClickEdit }: InviteLinkProps) => 
 					)}
 				</FieldRow>
 				{captionText && (
-					<Box pb={8} color='annotation' fontScale='c2'>
+					<Box paddingBlock={8} color='annotation' fontScale='c2'>
 						{captionText}
 					</Box>
 				)}

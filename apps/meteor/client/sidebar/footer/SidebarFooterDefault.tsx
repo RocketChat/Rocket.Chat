@@ -26,7 +26,7 @@ const SidebarFooterDefault = () => {
 			<SidebarDivider />
 			<Box
 				is='footer'
-				pb={12}
+				paddingBlock={12}
 				pi={16}
 				height='x48'
 				width='auto'

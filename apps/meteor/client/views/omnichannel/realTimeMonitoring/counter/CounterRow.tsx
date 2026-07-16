@@ -8,7 +8,16 @@ export type CounterRowProps = {
 } & ComponentPropsWithoutRef<typeof Box>;
 
 const CounterRow = ({ children, ...props }: CounterRowProps) => (
-	<Box pb={28} pi={20} display='flex' flexDirection='row' justifyContent='space-around' alignItems='center' flexGrow={1} {...props}>
+	<Box
+		paddingBlock={28}
+		pi={20}
+		display='flex'
+		flexDirection='row'
+		justifyContent='space-around'
+		alignItems='center'
+		flexGrow={1}
+		{...props}
+	>
 		{children &&
 			flattenChildren(children).reduce(
 				(acc: ReactNode[], child, i) =>

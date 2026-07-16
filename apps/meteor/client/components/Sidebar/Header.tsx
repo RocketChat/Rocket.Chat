@@ -12,7 +12,7 @@ const Header = ({ title, onClose, children, ...props }: HeaderProps) => {
 	const { t } = useTranslation();
 
 	return (
-		<Box display='flex' flexDirection='column' pb={16} {...props}>
+		<Box display='flex' flexDirection='column' paddingBlock={16} {...props}>
 			{(title || onClose) && (
 				<Box display='flex' flexDirection='row' alignItems='center' pi={24} justifyContent='space-between' flexGrow={1}>
 					{title && (

@@ -25,7 +25,7 @@ const MessageComposerInput = forwardRef<HTMLTextAreaElement, MessageComposerInpu
 			fontScale='p2'
 			ref={ref}
 			pi={12}
-			pb={16}
+			paddingBlock={16}
 			borderWidth={0}
 			is='textarea'
 			{...props}

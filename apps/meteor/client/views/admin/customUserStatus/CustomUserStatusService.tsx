@@ -32,7 +32,7 @@ const CustomUserStatusService = () => {
 
 	if (result.isPending || disablePresenceService.isPending || licenseIsLoading) {
 		return (
-			<Box pi={16} pb={8}>
+			<Box pi={16} paddingBlock={8}>
 				<Skeleton />
 				<Skeleton />
 				<Skeleton />
@@ -43,7 +43,7 @@ const CustomUserStatusService = () => {
 	}
 	if (result.isError || disablePresenceService.isError) {
 		return (
-			<Box display='flex' flexDirection='column' alignItems='center' pb={20} color='default'>
+			<Box display='flex' flexDirection='column' alignItems='center' paddingBlock={20} color='default'>
 				<StatesIcon name='circle-exclamation' />
 				<StatesSubtitle>{t('Unable_to_load_active_connections')}</StatesSubtitle>
 				<StatesAction icon='reload' onClick={() => result.refetch()}>

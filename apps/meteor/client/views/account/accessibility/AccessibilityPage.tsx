@@ -92,7 +92,7 @@ const AccessibilityPage = () => {
 					marginInline={36}
 				>
 					<Box fontScale='p1' marginBlockEnd={24}>
-						<Box pb={16} is='p'>
+						<Box paddingBlock={16} is='p'>
 							{t('Accessibility_activation')}
 						</Box>
 						<p id={linkListId}>{t('Learn_more_about_accessibility')}</p>

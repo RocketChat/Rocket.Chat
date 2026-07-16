@@ -16,7 +16,7 @@ const ListSkeleton = ({ listCount = 2 }: ListSkeletonProps) => {
 	return (
 		<Box display='flex' height='100%' justifyContent='flex-start' flexDirection='column'>
 			{widths.map((width, index) => (
-				<Box key={index} pi={24} pb={16} display='flex'>
+				<Box key={index} pi={24} paddingBlock={16} display='flex'>
 					<Box>
 						<Skeleton variant='rect' width={36} height={36} />
 					</Box>

@@ -30,7 +30,7 @@ const OutlookSettingItem = ({ id, title, subTitle, enabled, handleEnable }: Outl
 			borderBlockEndStyle='solid'
 			className={hovered}
 			pi={24}
-			pb={16}
+			paddingBlock={16}
 			display='flex'
 			justifyContent='space-between'
 		>

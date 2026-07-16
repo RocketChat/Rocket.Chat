@@ -51,7 +51,7 @@ const CannedResponse = ({
 				{onClose && <ContextualbarClose onClick={onClose} />}
 			</ContextualbarHeader>
 			<ContextualbarContent>
-				<Box pb='24px'>
+				<Box paddingBlock='24px'>
 					<Box marginBlockEnd='16px'>
 						<Box fontScale='p2m' marginBlockEnd='8px'>
 							{t('Shortcut')}:

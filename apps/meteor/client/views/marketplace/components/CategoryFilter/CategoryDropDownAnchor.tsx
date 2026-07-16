@@ -51,7 +51,7 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 					justifyContent='center'
 					marginInlineEnd={6}
 					minWidth={22}
-					pb={4}
+					paddingBlock={4}
 					pi={0}
 				>
 					{selectedCategoriesCount}

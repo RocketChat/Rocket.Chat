@@ -45,7 +45,7 @@ function ConnectionStatusBar() {
 			className={connectionStatusBarStyle}
 			rcx-connection-status-bar
 			insetBlockStart={0}
-			pb={4}
+			paddingBlock={4}
 			pi={12}
 			width='100%'
 			borderBlockEndWidth={2}

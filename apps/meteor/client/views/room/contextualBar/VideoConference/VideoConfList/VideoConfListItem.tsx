@@ -76,7 +76,7 @@ const VideoConfListItem = ({
 			borderBlockEndColor='stroke-extra-light'
 			borderBlockEndStyle='solid'
 			className={[...className, hovered].filter(Boolean)}
-			pb={8}
+			paddingBlock={8}
 		>
 			<Message {...props}>
 				<MessageLeftContainer>{username && <UserAvatar username={username} size='x36' />}</MessageLeftContainer>

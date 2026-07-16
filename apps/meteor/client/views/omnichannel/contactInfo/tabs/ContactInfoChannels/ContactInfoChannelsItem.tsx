@@ -87,7 +87,7 @@ const ContactInfoChannelsItem = ({
 			borderBlockEndStyle='solid'
 			className={['rcx-box--animated', customClass]}
 			pi={24}
-			pb={12}
+			paddingBlock={12}
 			display='flex'
 			flexDirection='column'
 			onFocus={() => setShowButton(true)}

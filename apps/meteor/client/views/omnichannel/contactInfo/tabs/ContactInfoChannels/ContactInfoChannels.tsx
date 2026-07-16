@@ -29,7 +29,7 @@ const ContactInfoChannels = ({ contact }: ContactInfoChannelsProps) => {
 	if (isPending) {
 		return (
 			<ContextualbarContent>
-				<Box pb={12}>
+				<Box paddingBlock={12}>
 					<Throbber size='x12' />
 				</Box>
 			</ContextualbarContent>
