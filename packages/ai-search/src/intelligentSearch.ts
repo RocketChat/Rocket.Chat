@@ -1,4 +1,5 @@
 import { MAX_AI_SERVICE_RESPONSE_SIZE } from './constants';
+import { getErrorType } from './utils';
 import type {
 	AIServiceFetch,
 	AIServiceLogger,
@@ -14,8 +15,6 @@ const buildEndpointUrl = (baseUrl: string, path: string): string =>
 const isRecord = (value: unknown): value is Record<string, unknown> => Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 
 const asRecord = (value: unknown): Record<string, unknown> => (isRecord(value) ? value : {});
-
-const getErrorType = (error: unknown): string => (error instanceof Error ? error.name : typeof error);
 
 const firstString = (...values: unknown[]): string | undefined => {
 	for (const value of values) {

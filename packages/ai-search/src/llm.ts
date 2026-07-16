@@ -1,12 +1,11 @@
 import { MAX_AI_SERVICE_RESPONSE_SIZE } from './constants';
 import type { AIServiceFetch, AIServiceLogger, OpenAICompatibleProviderConfig, SearchAnswerMessage, SearchAnswerResult } from './types';
+import { getErrorType } from './utils';
 
 const buildEndpointUrl = (baseUrl: string, path: string): string =>
 	new URL(path, baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`).toString();
 
 const isRecord = (value: unknown): value is Record<string, unknown> => Boolean(value) && typeof value === 'object' && !Array.isArray(value);
-
-const getErrorType = (error: unknown): string => (error instanceof Error ? error.name : typeof error);
 
 const getChatCompletionContent = (value: unknown): string | undefined => {
 	if (!isRecord(value) || !Array.isArray(value.choices)) {

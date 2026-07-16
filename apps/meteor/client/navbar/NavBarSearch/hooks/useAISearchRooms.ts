@@ -1,5 +1,6 @@
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { isTruthy } from '@rocket.chat/tools';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -45,7 +46,7 @@ export const useAISearchRooms = (filterText: string): { items: SubscriptionWithR
 
 	const localRooms = useUserSubscriptions(query, options);
 	const debouncedName = useDebouncedValue(name, 500);
-	const usernamesFromClient = [...localRooms.map(({ t, name }) => (t === 'd' ? name : null))].filter(Boolean) as string[];
+	const usernamesFromClient = localRooms.map(({ t, name }) => (t === 'd' ? name : null)).filter(isTruthy);
 	const searchForChannels = mention === '#';
 	const searchForDMs = mention === '@';
 	const type = useMemo(() => {

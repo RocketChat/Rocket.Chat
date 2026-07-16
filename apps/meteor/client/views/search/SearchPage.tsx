@@ -29,7 +29,6 @@ const SearchPage = (): ReactElement => {
 		isPlaceholderData,
 		error: searchError,
 	} = useAISearchResults(queryParam, canUseAISearch && intelligentSearchEnabled);
-	// The answer regenerates from every revealed result, capped by the AI answer schema limit.
 	const answerMessages = useMemo(
 		() =>
 			intelligent.slice(0, MAX_SEARCH_ANSWER_MESSAGES).map((item) => ({
@@ -39,7 +38,6 @@ const SearchPage = (): ReactElement => {
 		[intelligent],
 	);
 
-	// placeholder data belongs to the previous query key — never generate an answer from it
 	const canGenerateAnswer = Boolean(meta?.answerGenerationConfigured && !isPlaceholderData && debouncedQuery && intelligent.length > 0);
 	const answerResult = useAISearchAnswer(debouncedQuery, answerMessages, canGenerateAnswer);
 	const answerEmptyReason = useMemo(() => {

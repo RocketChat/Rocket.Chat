@@ -31,9 +31,9 @@ export const useNavBarAISearch = ({
 	state: OverlayTriggerState;
 	t: TranslationFn;
 }) => {
-	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
+	const intelligentSearchEnabled = useSetting<boolean>('AI_Intelligent_Search_Enabled', false);
 	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule(AI_LICENSE_MODULE);
-	const canSearchWithAIFromTopBar = Boolean(hasIntelligentSearchLicense && intelligentSearchEnabled);
+	const canSearchWithAIFromTopBar = hasIntelligentSearchLicense && intelligentSearchEnabled;
 	const [aiSearchRequested, setAISearchRequested] = useState(false);
 	const aiSearchActive = Boolean(aiSearchRequested && canSearchWithAIFromTopBar);
 

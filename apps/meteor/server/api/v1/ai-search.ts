@@ -133,10 +133,6 @@ const parseCommaList = (value: string | undefined): string[] => {
 
 const parseQueryDate = (value: string | undefined): Date | undefined => (value ? new Date(value) : undefined);
 
-const getErrorLogContext = (error: unknown): { errorType: string } => ({
-	errorType: error instanceof Error ? error.name : typeof error,
-});
-
 const getRoomMap = async (roomIds: string[]): Promise<Map<string, Pick<IRoom, '_id' | 't' | 'name' | 'fname'>>> => {
 	if (!roomIds.length) {
 		return new Map();
@@ -249,9 +245,9 @@ API.v1.get(
 	},
 	async function action() {
 		const query = this.queryParams.query.trim();
-		const requestedIntelligentCount = Number(this.queryParams.intelligentCount || AI_SEARCH_PAGE_SIZE);
+		const requestedIntelligentCount = this.queryParams.intelligentCount ?? AI_SEARCH_PAGE_SIZE;
 		const intelligentLimit = Math.min(
-			Math.max(Number.isFinite(requestedIntelligentCount) ? Math.floor(requestedIntelligentCount) : AI_SEARCH_PAGE_SIZE, 1),
+			Math.max(Math.floor(requestedIntelligentCount), 1),
 			MAX_INTELLIGENT_SEARCH_RESULTS,
 		);
 		const rid = this.queryParams.rid || undefined;
@@ -262,7 +258,7 @@ API.v1.get(
 		const startDate = parseQueryDate(this.queryParams.startDate);
 		const endDate = parseQueryDate(this.queryParams.endDate);
 		const aiSearchStatus = await AISearch.status().catch((error) => {
-			this.logger.warn({ msg: 'AI search status unavailable', ...getErrorLogContext(error) });
+			this.logger.warn({ msg: 'AI search status unavailable', err: error });
 
 			return {
 				hasIntelligentSearchLicense: false,
@@ -293,7 +289,7 @@ API.v1.get(
 					limit: intelligentLimit,
 				});
 			} catch (error) {
-				this.logger.warn({ msg: 'AI search request failed', ...getErrorLogContext(error) });
+				this.logger.warn({ msg: 'AI search request failed', err: error });
 				intelligentResults = [];
 			}
 		}
@@ -368,12 +364,13 @@ API.v1.post(
 		}
 
 		const answerMessages = await getSearchAnswerMessagesForUser(this.userId, messages);
-		let answer;
 		try {
-			answer = await AISearch.answer({
+			const answer = await AISearch.answer({
 				query,
 				messages: answerMessages,
 			});
+
+			return API.v1.success(answer);
 		} catch (error) {
 			const message = error instanceof Error ? error.message : '';
 			if (message === 'error-ai-not-enabled') {
@@ -387,7 +384,5 @@ API.v1.post(
 			}
 			throw new Meteor.Error('error-ai-provider-request-failed');
 		}
-
-		return API.v1.success(answer);
 	},
 );
