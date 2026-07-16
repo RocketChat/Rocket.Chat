@@ -1899,6 +1899,62 @@ describe('[Rooms]', () => {
 					.end(done);
 			});
 		});
+
+		describe('E2E forced encryption for private rooms', () => {
+			let unencryptedPrivateParent: IRoom;
+			let encryptedPrivateParent: IRoom;
+			let createdDiscussionId: IRoom['_id'] | undefined;
+
+			before(async () => {
+				// the unencrypted private parent must exist before the policy is enforced
+				unencryptedPrivateParent = (await createRoom({ type: 'p', name: `unencrypted-parent-${Date.now()}` })).body.group;
+				await Promise.all([updateSetting('E2E_Enable', true), updateSetting('E2E_Force_Encryption_For_Private_Rooms', true)]);
+				encryptedPrivateParent = (await createRoom({ type: 'p', name: `encrypted-parent-${Date.now()}`, extraData: { encrypted: true } }))
+					.body.group;
+			});
+
+			after(async () => {
+				await Promise.all([
+					updateSetting('E2E_Enable', false),
+					updateSetting('E2E_Force_Encryption_For_Private_Rooms', false),
+					deleteRoom({ type: 'p', roomId: unencryptedPrivateParent._id }),
+					deleteRoom({ type: 'p', roomId: encryptedPrivateParent._id }),
+					...(createdDiscussionId ? [deleteRoom({ type: 'p', roomId: createdDiscussionId })] : []),
+				]);
+			});
+
+			it('should reject creating a discussion in an unencrypted private room when private room encryption is forced', async () => {
+				await request
+					.post(api('rooms.createDiscussion'))
+					.set(credentials)
+					.send({
+						prid: unencryptedPrivateParent._id,
+						t_name: `forced-discussion-${Date.now()}`,
+					})
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-encrypted-private-rooms-enforced-discussion');
+					});
+			});
+
+			it('should create an encrypted discussion in an encrypted private room when private room encryption is forced', async () => {
+				await request
+					.post(api('rooms.createDiscussion'))
+					.set(credentials)
+					.send({
+						prid: encryptedPrivateParent._id,
+						t_name: `forced-discussion-encrypted-${Date.now()}`,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('discussion.t', 'p');
+						expect(res.body).to.have.nested.property('discussion.encrypted', true);
+						createdDiscussionId = res.body.discussion._id;
+					});
+			});
+		});
 	});
 
 	describe('/rooms.getDiscussions', () => {

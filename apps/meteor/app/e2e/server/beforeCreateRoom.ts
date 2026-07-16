@@ -17,7 +17,8 @@ prepareCreateRoomCallback.add(({ type, extraData }) => {
 
 	// Workspace policy can force every newly created private room to be encrypted,
 	// rejecting any attempt to opt-out (e.g. an API request with `encrypted: false`).
-	if (type === 'p' && settings.get<boolean>('E2E_Force_Encryption_For_Private_Rooms')) {
+	// Federated rooms are exempt since federation does not support E2EE.
+	if (type === 'p' && extraData.federated !== true && settings.get<boolean>('E2E_Force_Encryption_For_Private_Rooms')) {
 		if (extraData.encrypted === false) {
 			throw new Meteor.Error('error-encrypted-private-rooms-enforced', 'Workspace policy requires all private rooms to be encrypted.');
 		}

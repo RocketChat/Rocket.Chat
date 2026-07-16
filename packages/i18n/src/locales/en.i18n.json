@@ -6350,6 +6350,7 @@
   "error-email-inbox-not-found": "Email Inbox not found",
   "error-email-send-failed": "Error trying to send email: {{message}}",
   "error-encrypted-private-rooms-enforced": "Workspace policy requires all private rooms to be encrypted.",
+  "error-encrypted-private-rooms-enforced-discussion": "Workspace policy requires all private rooms to be encrypted. To create this discussion, make the parent channel public or enable encryption on it.",
   "error-essential-app-disabled": "Error: a Rocket.Chat App that is essential for this is disabled. Please contact your administrator",
   "error-extension-not-assigned": "Extension not assigned",
   "error-extension-not-available": "Extension not available",

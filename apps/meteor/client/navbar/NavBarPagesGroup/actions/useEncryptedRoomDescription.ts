@@ -13,7 +13,7 @@ export const useEncryptedRoomDescription = (roomType: 'channel' | 'team' | 'disc
 		if (!isPrivate) {
 			return t('Encrypted_not_available', { roomType: t(roomType) });
 		}
-		if (e2eEnforcedForPrivate) {
+		if (e2eEnforcedForPrivate && encrypted) {
 			return t('Encrypted_enforced_by_workspace_policy');
 		}
 		if (encrypted) {
