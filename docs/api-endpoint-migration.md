@@ -558,6 +558,40 @@ API.v1.post('endpoint', {
 }, async function action() { ... });
 ```
 
+## Error Handling (thrown errors)
+
+The typed router does **not** convert thrown errors into HTTP error responses the way the legacy `addRoute` wrapper did. `addRoute` wrapped every handler in a `try/catch` that turned a thrown `Meteor.Error` into a `400` failure (with `error`/`errorType`). The typed router has **no global error handler** — an uncaught throw propagates and becomes a **500 Internal Server Error**.
+
+So when migrating a handler (or a helper it calls, e.g. `findChannelByIdOrName`, `Room.join`, `requestPdfTranscript`) that throws to signal a client error, you must catch it and return an explicit failure to preserve the previous status:
+
+```typescript
+async function action() {
+	try {
+		const room = await findChannelByIdOrName({ params: this.bodyParams });
+		// ...
+		return API.v1.success({ channel: room });
+	} catch (error) {
+		const [message, errorType] = errorToFailureArgs(error);
+		return API.v1.failure(message, errorType);
+	}
+}
+```
+
+Remember to declare `400: validateBadRequestErrorResponse` in the `response` block (any handler that can return `API.v1.failure()` needs it).
+
+### Extract `errorType` by shape, not `instanceof`
+
+Errors thrown by **`@rocket.chat/core-services`** calls (e.g. `Room.join`, `Team.*`) cross a service boundary and are **not** `instanceof` the local `Meteor.Error`, so an `error instanceof Meteor.Error` check silently drops their `error`/`errorType`. Extract them by shape (matching the legacy `addRoute` behavior), otherwise e2e assertions like `expect(res.body).to.have.property('errorType', ...)` fail:
+
+```typescript
+function errorToFailureArgs(error: unknown): [string, string | undefined] {
+	const e = error as { message?: unknown; error?: unknown };
+	return [typeof e?.message === 'string' ? e.message : String(error), typeof e?.error === 'string' ? e.error : undefined];
+}
+```
+
+Keep the `API.v1.failure(...)` call **inline** in the `catch` (a helper that itself returns `API.v1.failure(...)` breaks `TypedAction` return-type inference); factor out only the argument extraction.
+
 ## Test Changes
 
 Migrating an endpoint changes how validation errors are returned. Tests must be updated accordingly.
