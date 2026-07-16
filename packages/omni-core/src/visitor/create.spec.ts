@@ -3,7 +3,7 @@ import type { ILivechatContactsModel, ILivechatDepartmentModel, ILivechatVisitor
 import { registerModel } from '@rocket.chat/models';
 import { validateEmail } from '@rocket.chat/tools';
 
-import { registerGuest } from './create.js';
+import { registerGuest } from './create';
 
 // Mock the validateEmail function
 jest.mock('@rocket.chat/tools', () => ({
