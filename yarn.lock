@@ -8895,7 +8895,7 @@ __metadata:
   dependencies:
     "@rocket.chat/apps": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.7.0-beta.8"
+    "@rocket.chat/federation-sdk": "npm:0.7.0"
     "@rocket.chat/http-router": "workspace:^"
     "@rocket.chat/icons": "npm:^0.48.0"
     "@rocket.chat/jest-presets": "workspace:~"
@@ -9108,7 +9108,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/ddp-client": "workspace:^"
     "@rocket.chat/emitter": "npm:^0.33.0"
-    "@rocket.chat/federation-sdk": "npm:0.7.0-beta.8"
+    "@rocket.chat/federation-sdk": "npm:0.7.0"
     "@rocket.chat/http-router": "workspace:^"
     "@rocket.chat/license": "workspace:^"
     "@rocket.chat/models": "workspace:^"
@@ -9137,9 +9137,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/federation-sdk@npm:0.7.0-beta.8":
-  version: 0.7.0-beta.8
-  resolution: "@rocket.chat/federation-sdk@npm:0.7.0-beta.8"
+"@rocket.chat/federation-sdk@npm:0.7.0":
+  version: 0.7.0
+  resolution: "@rocket.chat/federation-sdk@npm:0.7.0"
   dependencies:
     "@datastructures-js/priority-queue": "npm:^6.3.5"
     "@noble/ed25519": "npm:^3.0.0"
@@ -9153,7 +9153,7 @@ __metadata:
     zod: "npm:~4.3.6"
   peerDependencies:
     typescript: ~5.9.2
-  checksum: 10/13a731899a320492d75330bcdf6dc304cb9f08aa88fd9fb71bd3ac362f48585afbbf932ff9744df7573a5d5853830be76d3e8a68b57007c29f230f1d585ff51d
+  checksum: 10/cebd162f6ba829456dac69040a750f33c7c25bb19c4646bf2036a49511c461971bbd8ad840d5ae5a7c48e3b87ca02f0beb8700a1f03e017018962a610bc13bed
   languageName: node
   linkType: hard
 
@@ -9741,7 +9741,7 @@ __metadata:
     "@rocket.chat/emitter": "npm:^0.33.0"
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/federation-matrix": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.7.0-beta.8"
+    "@rocket.chat/federation-sdk": "npm:0.7.0"
     "@rocket.chat/fuselage": "npm:^0.82.0"
     "@rocket.chat/fuselage-forms": "npm:~1.5.0"
     "@rocket.chat/fuselage-hooks": "npm:~0.43.0"
