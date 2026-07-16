@@ -90,7 +90,8 @@ export class AppUsersConverter implements IAppUsersConverter {
 			bio: user.bio,
 			status: user.status,
 			statusConnection: user.statusConnection,
-			utcOffset: (user as { utfOffset?: number }).utfOffset,
+			// Prefer the correct `utcOffset`; keep the historical `utfOffset` typo as a compatibility fallback.
+			utcOffset: user.utcOffset ?? (user as { utfOffset?: number }).utfOffset,
 			createdAt: user.createdAt,
 			_updatedAt: user.updatedAt,
 			lastLogin: user.lastLoginAt,

@@ -145,10 +145,13 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 					return undefined;
 				}
 
+				// Keep a reference to the original sender before it is deleted below, so the fallback still has it.
+				const sender = message.u;
+
 				// When the message contains token, means the message is from the visitor(omnichannel)
 				const user = await (isMessageFromVisitor(msgObj)
-					? cache.get('user.convertToApp')(message.u)
-					: cache.get('user.convertById')(message.u._id));
+					? cache.get('user.convertToApp')(sender)
+					: cache.get('user.convertById')(sender._id));
 
 				delete message.u;
 
@@ -157,7 +160,7 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 				 * `sender` as undefined, so we need to add this fallback here.
 				 */
 
-				return user || cache.get('user.convertToApp')(message.u);
+				return user || cache.get('user.convertToApp')(sender);
 			},
 		} as const;
 
@@ -207,10 +210,17 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 		let editedBy;
 		if (message.editor) {
 			const editor = await Users.findOneById(message.editor.id);
-			editedBy = {
-				_id: editor!._id,
-				username: editor!.username,
-			};
+			// Fall back to the editor data carried on the app payload when the user no longer exists,
+			// mirroring the sender handling above instead of dereferencing a possibly-null lookup.
+			editedBy = editor
+				? {
+						_id: editor._id,
+						username: editor.username,
+					}
+				: {
+						_id: message.editor.id,
+						username: message.editor.username,
+					};
 		}
 
 		const attachments = this._convertAppAttachments(message.attachments);

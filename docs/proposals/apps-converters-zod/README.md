@@ -137,9 +137,11 @@ Each phase is independently shippable, keeps the class façade, and is gated by 
 
 ### Phase 0 — Scaffolding & de-risk (done, PR #41205)
 
-- Converted the 7 remaining `.js` converters to `.ts`, behaviour-preserving (including the legacy
-  `utfOffset` read and throw-on-null paths). `rooms`/`messages` keep loose typing on their transform
-  maps for now; that tightens when each is codec-ified.
+- Converted the 7 remaining `.js` converters to `.ts`, behaviour-preserving. `rooms`/`messages` keep
+  loose typing on their transform maps for now; that tightens when each is codec-ified.
+- Fixed three pre-existing latent bugs that surfaced once the converters were typed (see
+  [Incidental fixes](#incidental-fixes)). These are the only intentional behaviour changes in the
+  phase and are each pinned by a golden/focused test.
 - Added `converters/codecs/` with the first shared primitives: bidirectional enum codecs
   (`UserType`, `UserStatusConnection`, `RoomType`, `SettingType`).
 - Added the **behavioural safety net**: enum-codec unit tests (asserting parity with the legacy
@@ -148,6 +150,31 @@ Each phase is independently shippable, keeps the class façade, and is gated by 
   videoConferences, contacts and uploads.
 - Validated the async-codec approach (`z.decodeAsync` / `z.encodeAsync`, `$ZodAsyncError`) that
   Phases 3–4 depend on.
+
+#### Incidental fixes
+
+Typing the converters exposed three latent bugs in the legacy code. They are small, self-contained,
+and fixed in Phase 0 rather than carried forward as "behaviour to preserve":
+
+1. **`users` — `utfOffset` typo (from-app).** `convertToRocketChat` read the misspelled
+   `appUser.utfOffset`, so a round-tripped user always lost its `utcOffset`. It now reads
+   `utcOffset` first and keeps `utfOffset` only as a compatibility fallback for any app still
+   emitting the old key. The golden round-trip fixture uses `utcOffset`; a focused test pins the
+   legacy fallback.
+2. **`messages` — dead visitor-sender fallback (to-app).** The `sender` resolver deleted
+   `message.u` *before* the "old system message without token" fallback re-read it, so the fallback
+   always received `undefined`. It now captures the sender before deletion. A focused test drives a
+   missing primary lookup and asserts the fallback resolves the original sender.
+3. **`messages` — null editor deref (from-app).** `convertAppMessage` dereferenced
+   `Users.findOneById(editor.id)` through a non-null assertion, throwing if the editor no longer
+   exists. It now falls back to the editor data carried on the app payload, mirroring the adjacent
+   sender handling.
+
+Alongside these, a few defensive guards were added where a destructuring or lookup could hit an
+optional value that the types claimed was always present (`uploads` `rid`/`room`, `users`
+`convertByUsername`, `rooms` `visitorChannelInfo`). These only turn a latent `TypeError` into the
+already-intended empty result and match the guards their sibling fields already had, so they change
+no covered output.
 
 ### Phase 1 — Trivial, one-way, sync
 

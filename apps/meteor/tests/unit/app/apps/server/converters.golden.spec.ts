@@ -130,7 +130,7 @@ describe('apps converters — golden snapshots (pre-codec behaviour)', () => {
 			});
 		});
 
-		it('convertToRocketChat maps an app user back to the RC shape (note: reads utfOffset)', () => {
+		it('convertToRocketChat maps an app user back to the RC shape', () => {
 			const appUser = {
 				id: 'user-1',
 				username: 'john.doe',
@@ -142,7 +142,7 @@ describe('apps converters — golden snapshots (pre-codec behaviour)', () => {
 				bio: 'hello',
 				status: 'online',
 				statusConnection: 'online',
-				utfOffset: -3,
+				utcOffset: -3,
 				createdAt: ts,
 				updatedAt: updated,
 				lastLoginAt: ts,
@@ -778,6 +778,33 @@ describe('apps converters — decode golden snapshots (rooms/messages/threads)',
 				sender: { __converted: 'users', id: 'user-1' },
 				_unmappedProperties_: { spare: 'keep' },
 			});
+		});
+
+		it('sender falls back to the original message.u when the primary lookup resolves to nothing', async () => {
+			// Old system messages from visitors have no `token`, so the primary lookup can miss; the
+			// fallback must still receive the original sender rather than the already-deleted `message.u`.
+			const fallbackOrch: any = {
+				getConverters: () => ({
+					get: (key: string) => ({
+						convertById: async () => undefined,
+						convertToApp: (u: any) => (u ? { __fallback: key, id: u._id } : undefined),
+						convertByToken: async () => undefined,
+					}),
+				}),
+			};
+			const fallbackConverter = new AppMessagesConverter(fallbackOrch);
+
+			const result = await fallbackConverter.convertMessage({
+				_id: 'msg-3',
+				rid: 'GENERAL',
+				u: { _id: 'user-9', username: 'u9' },
+				msg: 'hi',
+				ts,
+				_updatedAt: updated,
+				t: 'p',
+			} as any);
+
+			expect((json(result) as any).sender).to.deep.equal({ __fallback: 'users', id: 'user-9' });
 		});
 	});
 
