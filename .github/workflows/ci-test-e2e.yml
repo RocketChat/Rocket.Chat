@@ -320,6 +320,10 @@ jobs:
         if: failure()
         run: docker compose -f docker-compose-ci.yml logs mongo
 
+      - name: Show traefik logs if E2E test failed
+        if: failure()
+        run: docker compose -f docker-compose-ci.yml logs traefik
+
       - name: Store coverage
         if: inputs.coverage == matrix.mongodb-version
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

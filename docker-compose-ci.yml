@@ -29,6 +29,7 @@ services:
       - Federation_Service_Enabled=true
       - 'Federation_Service_Domain=rc.host'
       - HEAP_USAGE_PERCENT=99
+      - SOCKET_FORENSICS=true
     depends_on:
       - traefik
       - mongo
@@ -218,6 +219,8 @@ services:
     command:
       - --providers.docker=true
       - '--serverstransport.maxidleconnsperhost=-1'
+      - --accesslog=true
+      - --accesslog.format=json
     ports:
       - 3000:80
     volumes:
