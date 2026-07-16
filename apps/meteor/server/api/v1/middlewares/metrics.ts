@@ -1,7 +1,7 @@
 import type { MiddlewareHandler } from 'hono';
 import type { Gauge, Histogram, Summary } from 'prom-client';
 
-import type { CachedSettings } from '../../../../app/settings/server/CachedSettings';
+import type { CachedSettings } from '../../../settings/CachedSettings';
 import type { APIClass } from '../../ApiClass';
 
 export const metricsMiddleware =

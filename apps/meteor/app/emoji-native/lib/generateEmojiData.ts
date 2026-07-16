@@ -31,6 +31,12 @@ function hexFromEmoji(emoji: string): string {
 	return [...emoji].map((cp) => cp.codePointAt(0)!.toString(16)).join('-');
 }
 
+function isRegionalIndicator(hexcode: string): boolean {
+	if (hexcode.includes('-')) return false;
+	const cp = parseInt(hexcode, 16);
+	return cp >= 0x1f1e6 && cp <= 0x1f1ff;
+}
+
 function getShortcodes(hexcode: string): string[] {
 	const entry = (shortcodes as Record<string, string | string[]>)[hexcode];
 	if (!entry) return [];
@@ -55,7 +61,8 @@ function buildEmojiData() {
 		// Skip component group (skin tones, hair styles)
 		if (emojiData.group === 2) continue;
 
-		const category = groupToCategory[emojiData.group ?? -1];
+		const isRegional = isRegionalIndicator(emojiData.hexcode);
+		const category = groupToCategory[emojiData.group ?? -1] ?? (isRegional ? 'flags' : undefined);
 		if (!category) continue;
 
 		const codes = getShortcodes(emojiData.hexcode);
@@ -80,7 +87,7 @@ function buildEmojiData() {
 		emojiList[key] = entry;
 
 		// Only add to category if it's NOT a skin tone variant
-		if (!emojiData.tone) {
+		if (!emojiData.tone && !isRegional) {
 			emojisByCategory[category].push(primaryShortcode);
 		}
 
@@ -98,10 +105,9 @@ function buildEmojiData() {
 				if (!skin.tone) continue;
 
 				const tones = Array.isArray(skin.tone) ? skin.tone : [skin.tone];
-				const toneKey = `:${primaryShortcode}_tone${tones.join('-')}:`;
 				const skinHex = hexFromEmoji(skin.emoji);
 
-				emojiList[toneKey] = {
+				const skinEntry: EmojiEntry = {
 					uc_base: skinHex,
 					uc_output: skinHex,
 					uc_match: skinHex,
@@ -111,6 +117,12 @@ function buildEmojiData() {
 					emojiPackage: 'native',
 					unicode: skin.emoji,
 				};
+
+				const toneShortcodes = getShortcodes(skin.hexcode);
+				const fallbackShortcode = `${primaryShortcode}_tone${tones.join('-')}`;
+				for (const code of [...toneShortcodes, fallbackShortcode]) {
+					emojiList[`:${code}:`] = skinEntry;
+				}
 			}
 		}
 	}

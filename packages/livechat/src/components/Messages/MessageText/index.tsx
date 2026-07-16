@@ -1,5 +1,5 @@
+import type { JSX as JSXInternal } from 'preact';
 import { memo } from 'preact/compat';
-import type { JSXInternal } from 'preact/src/jsx';
 
 import styles from './styles.scss';
 import { createClassName } from '../../../helpers/createClassName';

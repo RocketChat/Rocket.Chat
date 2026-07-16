@@ -1,9 +1,9 @@
 import { Permissions, Roles, Settings, Users } from '@rocket.chat/models';
 import type { UpdateResult } from 'mongodb';
 
-import { settings } from '../../../app/settings/server';
 import { upsertPermissions } from '../../lib/authorization/upsertPermissions';
 import { migrateDatabase, onServerVersionChange } from '../../lib/migrations';
+import { settings } from '../../settings';
 import { ensureCloudWorkspaceRegistered } from '../cloudRegistration';
 
 const { MIGRATION_VERSION = 'latest' } = process.env;

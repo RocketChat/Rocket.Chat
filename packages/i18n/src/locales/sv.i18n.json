@@ -4404,7 +4404,6 @@
   "Regexp_validation": "Validering med reguljärt uttryck",
   "Register": "Registrera",
   "RegisterWorkspace_Button": "Registrera arbetsytan",
-  "RegisterWorkspace_Connection_Error": "Ett fel inträffade vid försök att ansluta",
   "RegisterWorkspace_Disconnect_Error": "Ett fel inträffade när du kopplade ifrån",
   "RegisterWorkspace_Disconnect_Subtitle": "Om du kopplar bort din arbetsyta förlorar du följande",
   "RegisterWorkspace_Features_Marketplace_Description": "Installera Rocket.Chat Marketplace-appar i den här arbetsytan",

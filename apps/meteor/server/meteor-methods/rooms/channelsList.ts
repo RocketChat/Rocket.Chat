@@ -6,11 +6,11 @@ import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
 import _ from 'underscore';
 
-import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
-import { settings } from '../../../app/settings/server';
-import { getUserPreference } from '../../../app/utils/server/lib/getUserPreference';
 import { trim } from '../../../lib/utils/stringUtils';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
+import { getUserPreference } from '../../lib/utils/lib/getUserPreference';
+import { settings } from '../../settings';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

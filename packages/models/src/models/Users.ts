@@ -1170,10 +1170,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
-	updateStatusAndStatusDefault(_id: IUser['_id'], status: UserStatus, statusDefault: UserStatus) {
-		return this.updateOne({ _id }, { $set: { status, statusDefault } });
-	}
-
 	updateStatusByAppId(appId: string, status: UserStatus) {
 		const query = {
 			appId,
@@ -1287,34 +1283,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		const query = {
 			_id: { $in: agentIds },
 			roles: 'livechat-agent',
-		};
-
-		const update = {
-			$pull: {
-				openBusinessHours: businessHourId,
-			},
-		};
-
-		return this.updateMany(query, update);
-	}
-
-	openBusinessHourToAgentsWithoutDepartment(agentIdsWithDepartment: IUser['_id'][] = [], businessHourId: string) {
-		const query = {
-			_id: { $nin: agentIdsWithDepartment },
-		};
-
-		const update = {
-			$addToSet: {
-				openBusinessHours: businessHourId,
-			},
-		};
-
-		return this.updateMany(query, update);
-	}
-
-	closeBusinessHourToAgentsWithoutDepartment(agentIdsWithDepartment: IUser['_id'][] = [], businessHourId: string) {
-		const query = {
-			_id: { $nin: agentIdsWithDepartment },
 		};
 
 		const update = {
@@ -1546,28 +1514,12 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne(query, update);
 	}
 
-	findActiveUsersTOTPEnable(options?: FindOptions<IUser>) {
-		const query = {
-			'active': true,
-			'services.totp.enabled': true,
-		};
-		return this.find(query, options);
-	}
-
 	countActiveUsersTOTPEnable(options?: FindOptions<IUser>) {
 		const query = {
 			'active': true,
 			'services.totp.enabled': true,
 		};
 		return this.countDocuments(query, options);
-	}
-
-	findActiveUsersEmail2faEnable(options?: FindOptions<IUser>) {
-		const query = {
-			'active': true,
-			'services.email2fa.enabled': true,
-		};
-		return this.find(query, options);
 	}
 
 	countActiveUsersEmail2faEnable(options?: FindOptions<IUser>) {
@@ -1607,10 +1559,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
-	findOneByResetToken(token: string, options?: FindOptions<IUser>) {
-		return this.findOne({ 'services.password.reset.token': token }, options);
-	}
-
 	findOneByIdWithEmailAddress(userId: IUser['_id'], options?: FindOptions<IUser>) {
 		return this.findOne(
 			{
@@ -1618,60 +1566,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 				emails: { $exists: true, $ne: [] },
 			},
 			options,
-		);
-	}
-
-	setFederationAvatarUrlById(userId: IUser['_id'], federationAvatarUrl: string) {
-		return this.updateOne(
-			{
-				_id: userId,
-			},
-			{
-				$set: {
-					'federation.avatarUrl': federationAvatarUrl,
-				},
-			},
-		);
-	}
-
-	async findSearchedServerNamesByUserId(userId: IUser['_id']): Promise<string[]> {
-		const user = await this.findOne<Pick<IUser, 'federation'>>(
-			{
-				_id: userId,
-			},
-			{
-				projection: {
-					'federation.searchedServerNames': 1,
-				},
-			},
-		);
-
-		return user?.federation?.searchedServerNames || [];
-	}
-
-	addServerNameToSearchedServerNamesList(userId: IUser['_id'], serverName: string) {
-		return this.updateOne(
-			{
-				_id: userId,
-			},
-			{
-				$addToSet: {
-					'federation.searchedServerNames': serverName,
-				},
-			},
-		);
-	}
-
-	removeServerNameFromSearchedServerNamesList(userId: IUser['_id'], serverName: string) {
-		return this.updateOne(
-			{
-				_id: userId,
-			},
-			{
-				$pull: {
-					'federation.searchedServerNames': serverName,
-				},
-			},
 		);
 	}
 
@@ -1694,17 +1588,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		const query = queryStatusAgentOnline({ username }, isLivechatEnabledWhenAgentIdle, acceptChatsWithNoAgents);
 
 		return this.find<T>(query);
-	}
-
-	countOnlineUserFromList(userList: string | string[], isLivechatEnabledWhenAgentIdle?: boolean) {
-		// TODO: Create class Agent
-		const username = {
-			$in: ([] as string[]).concat(userList),
-		};
-
-		const query = queryStatusAgentOnline({ username }, isLivechatEnabledWhenAgentIdle);
-
-		return this.countDocuments(query);
 	}
 
 	findOneOnlineAgentByUserList(
@@ -1844,19 +1727,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
-	removeRoomRolePriorityByUserId(userId: IUser['_id'], rid: IRoom['_id']) {
-		return this.updateOne(
-			{
-				_id: userId,
-			},
-			{
-				$unset: {
-					[`roomRolePriorities.${rid}`]: '',
-				},
-			},
-		);
-	}
-
 	async assignRoomRolePrioritiesByUserIdPriorityMap(userIdAndrolePriorityMap: Record<string, number>, rid: IRoom['_id']) {
 		const bulk = this.col.initializeUnorderedBulkOp();
 
@@ -1870,19 +1740,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		}
 
 		return 0;
-	}
-
-	unassignRoomRolePrioritiesByRoomId(rid: IRoom['_id']) {
-		return this.updateMany(
-			{
-				__rooms: rid,
-			},
-			{
-				$unset: {
-					[`roomRolePriorities.${rid}`]: '',
-				},
-			},
-		);
 	}
 
 	getLoginTokensByUserId(userId: IUser['_id']) {
@@ -1954,24 +1811,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.find<T>(query);
 	}
 
-	countOnlineAgents(agentId: IUser['_id']) {
-		// TODO:: Create class Agent
-		const query = queryStatusAgentOnline(agentId && { _id: agentId });
-
-		return this.col.countDocuments(query);
-	}
-
-	findOneBotAgent<T extends Document = ILivechatAgent>() {
-		// TODO:: Create class Agent
-		const query = {
-			roles: {
-				$all: ['bot', 'livechat-agent'],
-			},
-		};
-
-		return this.findOne<T>(query);
-	}
-
 	findOneOnlineAgentById<T extends Document = ILivechatAgent>(
 		_id: IUser['_id'],
 		isLivechatEnabledWhenAgentIdle?: boolean,
@@ -1982,15 +1821,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		const query = queryStatusAgentOnline({ _id }, isLivechatEnabledWhenAgentIdle, acceptChatsWithNoAgents);
 
 		return this.findOne<T>(query, options);
-	}
-
-	findAgents<T extends Document = ILivechatAgent>() {
-		// TODO: Create class Agent
-		const query = {
-			roles: 'livechat-agent',
-		};
-
-		return this.find<T>(query);
 	}
 
 	countAgents() {
@@ -2142,10 +1972,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		};
 
 		return this.findOne(query, options);
-	}
-
-	roleBaseQuery(userId: IUser['_id']) {
-		return { _id: userId };
 	}
 
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -2438,7 +2264,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 
 	findOneWithoutLDAPByEmailAddress(emailAddress: string, options?: FindOptions<IUser>) {
 		const query = {
-			'email.address': emailAddress.trim().toLowerCase(),
+			'emails.address': emailAddress.trim().toLowerCase(),
 			'services.ldap': {
 				$exists: false,
 			},
@@ -2565,12 +2391,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.find(query, options);
 	}
 
-	findByUsername(username: string, options?: FindOptions<IUser>) {
-		const query = { username };
-
-		return this.find(query, options);
-	}
-
 	findByUsernames(usernames: string[], options?: FindOptions<IUser>) {
 		const query = { username: { $in: usernames } };
 
@@ -2598,28 +2418,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
-	findActiveLocalGuests(idExceptions: IUser['_id'] | IUser['_id'][] = [], options: FindOptions<IUser> = {}) {
-		const query: Filter<IUser> = {
-			active: true,
-			type: { $nin: ['app'] },
-			roles: {
-				$eq: 'guest',
-				$size: 1,
-			},
-			isRemote: { $ne: true },
-		};
-
-		if (idExceptions) {
-			if (!Array.isArray(idExceptions)) {
-				idExceptions = [idExceptions];
-			}
-
-			query._id = { $nin: idExceptions };
-		}
-
-		return this.find(query, options);
-	}
-
 	countActiveLocalGuests(idExceptions: IUser['_id'] | IUser['_id'][] = []) {
 		const query: Filter<IUser> = {
 			active: true,
@@ -2640,38 +2438,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		}
 
 		return this.countDocuments(query);
-	}
-
-	// 4
-	findUsersByNameOrUsername(nameOrUsername: string, options?: FindOptions<IUser>) {
-		const query = {
-			username: {
-				$exists: true,
-			},
-
-			$or: [{ name: nameOrUsername }, { username: nameOrUsername }],
-
-			type: {
-				$in: ['user'],
-			},
-		};
-
-		return this.find(query, options);
-	}
-
-	findByUsernameNameOrEmailAddress(usernameNameOrEmailAddress: string, options?: FindOptions<IUser>) {
-		const query = {
-			$or: [
-				{ name: usernameNameOrEmailAddress },
-				{ username: usernameNameOrEmailAddress },
-				{ 'emails.address': usernameNameOrEmailAddress },
-			],
-			type: {
-				$in: ['user', 'bot'],
-			},
-		};
-
-		return this.find(query, options);
 	}
 
 	findCrowdUsers(options?: FindOptions<IUser>) {
@@ -2705,35 +2471,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.find(query, options);
 	}
 
-	findUsersWithUsernameByIds(ids: IUser['_id'][], options?: FindOptions<IUser>) {
-		const query = {
-			_id: {
-				$in: ids,
-			},
-			username: {
-				$exists: true,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
-	findUsersWithUsernameByIdsNotOffline(ids: IUser['_id'][], options?: FindOptions<IUser>) {
-		const query = {
-			_id: {
-				$in: ids,
-			},
-			username: {
-				$exists: true,
-			},
-			status: {
-				$in: [UserStatus.ONLINE, UserStatus.AWAY, UserStatus.BUSY],
-			},
-		};
-
-		return this.find(query, options);
-	}
-
 	/**
 	 * @param {import('mongodb').Filter<import('@rocket.chat/core-typings').IStats>} projection
 	 */
@@ -2752,31 +2489,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		};
 
 		return this.findOne(query, options);
-	}
-
-	countRemote(options: FindOptions<IUser> = {}) {
-		return this.countDocuments({ isRemote: true }, options);
-	}
-
-	findActiveRemote(options: FindOptions<IUser> = {}) {
-		return this.find(
-			{
-				active: true,
-				isRemote: true,
-				roles: { $ne: ['guest'] },
-			},
-			options,
-		);
-	}
-
-	findActiveFederated(options: FindOptions<IUser> = {}) {
-		return this.find(
-			{
-				active: true,
-				federated: true,
-			},
-			options,
-		);
 	}
 
 	getSAMLByIdAndSAMLProvider(_id: IUser['_id'], provider: string) {
@@ -2798,12 +2510,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			},
 			options,
 		);
-	}
-
-	countBySAMLNameIdOrIdpSession(nameID: string, idpSession: string) {
-		return this.countDocuments({
-			$or: [{ 'services.saml.nameID': nameID }, { 'services.saml.idpSession': idpSession }],
-		});
 	}
 
 	findBySAMLInResponseTo(inResponseTo: string, options?: FindOptions<IUser>) {
@@ -3246,20 +2952,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne({ _id }, update);
 	}
 
-	updateDefaultStatus(_id: IUser['_id'], statusDefault: UserStatus) {
-		return this.updateOne(
-			{
-				_id,
-				statusDefault: { $ne: statusDefault },
-			},
-			{
-				$set: {
-					statusDefault,
-				},
-			},
-		);
-	}
-
 	setSamlInResponseTo(_id: IUser['_id'], inResponseTo: string) {
 		return this.updateOne(
 			{
@@ -3288,53 +2980,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	// REMOVE
 	override removeById(_id: IUser['_id']) {
 		return this.deleteOne({ _id });
-	}
-
-	removeLivechatData(userId: IUser['_id']) {
-		const query = {
-			_id: userId,
-		};
-
-		const update = {
-			$unset: {
-				livechat: 1 as const,
-			},
-		};
-
-		return this.updateOne(query, update);
-	}
-
-	/*
-		Find users to send a message by email if:
-		- he is not online
-		- has a verified email
-		- has not disabled email notifications
-		- `active` is equal to true (false means they were deactivated and can't login)
-	*/
-	getUsersToSendOfflineEmail(usersIds: IUser['_id'][]) {
-		const query = {
-			'_id': {
-				$in: usersIds,
-			},
-			'active': true,
-			'status': UserStatus.OFFLINE,
-			'statusConnection': {
-				$ne: UserStatus.ONLINE,
-			},
-			'emails.verified': true,
-		};
-
-		const options = {
-			projection: {
-				'name': 1,
-				'username': 1,
-				'emails': 1,
-				'settings.preferences.emailNotificationMode': 1,
-				'language': 1,
-			},
-		};
-
-		return this.find(query, options);
 	}
 
 	countActiveUsersByService(serviceName: string, options?: FindOptions<IUser>) {

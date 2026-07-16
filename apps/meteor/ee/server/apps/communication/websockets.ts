@@ -5,8 +5,8 @@ import { api } from '@rocket.chat/core-services';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 
 import { AppEvents } from './events';
-import notifications from '../../../../app/notifications/server/lib/Notifications';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import notifications from '../../../../server/lib/notifications/core/lib/Notifications';
 import type { IStreamer } from '../../../../server/modules/streamer/types';
 import type { AppServerOrchestrator } from '../orchestrator';
 

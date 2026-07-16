@@ -9,7 +9,7 @@ import type {
 	IUser,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
-import type { FindPaginated, IRoomsModel, IChannelsWithNumberOfMessagesBetweenDate } from '@rocket.chat/model-typings';
+import type { FindPaginated, IRoomsModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
 	AggregationCursor,
@@ -458,15 +458,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne({ _id: rid }, { $unset: { teamId: '', teamDefault: '' } }, options);
 	}
 
-	setTeamById(
-		rid: IRoom['_id'],
-		teamId: ITeam['_id'],
-		teamDefault: IRoom['teamDefault'],
-		options: UpdateOptions = {},
-	): Promise<UpdateResult> {
-		return this.updateOne({ _id: rid }, { $set: { teamId, teamDefault } }, options);
-	}
-
 	setTeamMainById(rid: IRoom['_id'], teamId: ITeam['_id'], options: UpdateOptions = {}): Promise<UpdateResult> {
 		return this.updateOne({ _id: rid }, { $set: { teamId, teamMain: true } }, options);
 	}
@@ -481,144 +472,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		options: UpdateOptions = {},
 	): Promise<UpdateResult> {
 		return this.updateOne({ _id: rid }, { $set: { teamDefault } }, options);
-	}
-
-	getChannelsWithNumberOfMessagesBetweenDateQuery({
-		types,
-		start,
-		end,
-		startOfLastWeek,
-		endOfLastWeek,
-		options,
-	}: {
-		types: Array<IRoom['t']>;
-		start: number;
-		end: number;
-		startOfLastWeek: number;
-		endOfLastWeek: number;
-		options?: any;
-	}) {
-		const typeMatch = {
-			$match: {
-				t: { $in: types },
-			},
-		};
-		const lookup = {
-			$lookup: {
-				from: 'rocketchat_analytics',
-				localField: '_id',
-				foreignField: 'room._id',
-				as: 'messages',
-			},
-		};
-		const messagesProject = {
-			$project: {
-				room: '$$ROOT',
-				messages: {
-					$filter: {
-						input: '$messages',
-						as: 'message',
-						cond: {
-							$and: [{ $gte: ['$$message.date', start] }, { $lte: ['$$message.date', end] }],
-						},
-					},
-				},
-				lastWeekMessages: {
-					$filter: {
-						input: '$messages',
-						as: 'message',
-						cond: {
-							$and: [{ $gte: ['$$message.date', startOfLastWeek] }, { $lte: ['$$message.date', endOfLastWeek] }],
-						},
-					},
-				},
-			},
-		};
-		const messagesUnwind = {
-			$unwind: {
-				path: '$messages',
-				preserveNullAndEmptyArrays: true,
-			},
-		};
-		const messagesGroup = {
-			$group: {
-				_id: {
-					_id: '$room._id',
-				},
-				room: { $first: '$room' },
-				messages: { $sum: '$messages.messages' },
-				lastWeekMessages: { $first: '$lastWeekMessages' },
-			},
-		};
-		const lastWeekMessagesUnwind = {
-			$unwind: {
-				path: '$lastWeekMessages',
-				preserveNullAndEmptyArrays: true,
-			},
-		};
-		const lastWeekMessagesGroup = {
-			$group: {
-				_id: {
-					_id: '$room._id',
-				},
-				room: { $first: '$room' },
-				messages: { $first: '$messages' },
-				lastWeekMessages: { $sum: '$lastWeekMessages.messages' },
-			},
-		};
-		const presentationProject = {
-			$project: {
-				_id: 0,
-				room: {
-					_id: '$_id._id',
-					name: { $ifNull: ['$room.name', '$room.fname'] },
-					ts: '$room.ts',
-					t: '$room.t',
-					_updatedAt: '$room._updatedAt',
-					usernames: '$room.usernames',
-				},
-				messages: '$messages',
-				lastWeekMessages: '$lastWeekMessages',
-				diffFromLastWeek: { $subtract: ['$messages', '$lastWeekMessages'] },
-			},
-		};
-		const firstParams = [typeMatch, lookup, messagesProject, messagesUnwind, messagesGroup];
-		const lastParams = [lastWeekMessagesUnwind, lastWeekMessagesGroup, presentationProject];
-
-		const sort = { $sort: options?.sort || { messages: -1 } };
-		const sortAndPaginationParams: Exclude<Parameters<Collection<IRoom>['aggregate']>[0], undefined> = [sort];
-
-		if (options?.offset) {
-			sortAndPaginationParams.push({ $skip: options.offset });
-		}
-
-		if (options?.count) {
-			sortAndPaginationParams.push({ $limit: options.count });
-		}
-		const params: Exclude<Parameters<Collection<IRoom>['aggregate']>[0], undefined> = [...firstParams];
-
-		if (options?.sort) {
-			params.push(...lastParams, ...sortAndPaginationParams);
-		} else {
-			params.push(...sortAndPaginationParams, ...lastParams, sort);
-		}
-
-		return params;
-	}
-
-	findChannelsByTypesWithNumberOfMessagesBetweenDate(params: {
-		types: Array<IRoom['t']>;
-		start: number;
-		end: number;
-		startOfLastWeek: number;
-		endOfLastWeek: number;
-		options?: any;
-	}): AggregationCursor<IChannelsWithNumberOfMessagesBetweenDate> {
-		const aggregationParams = this.getChannelsWithNumberOfMessagesBetweenDateQuery(params);
-		return this.col.aggregate<IChannelsWithNumberOfMessagesBetweenDate>(aggregationParams, {
-			allowDiskUse: true,
-			readPreference: readSecondaryPreferred(),
-		});
 	}
 
 	findOneByNameOrFname(name: NonNullable<IRoom['name']>, options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
@@ -703,15 +556,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		]);
 	}
 
-	findByBroadcast(options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
-		return this.find(
-			{
-				broadcast: true,
-			},
-			options,
-		);
-	}
-
 	countByBroadcast(options?: CountDocumentsOptions): Promise<number> {
 		return this.countDocuments(
 			{
@@ -725,14 +569,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne({ _id: roomId }, { $set: { 'federated': true, 'federation.mrid': mrid, 'federation.origin': origin } });
 	}
 
-	setRoomTypeById(roomId: IRoom['_id'], roomType: IRoom['t']): Promise<UpdateResult> {
-		return this.updateOne({ _id: roomId }, { $set: { t: roomType } });
-	}
-
-	setRoomNameById(roomId: IRoom['_id'], name: IRoom['name']): Promise<UpdateResult> {
-		return this.updateOne({ _id: roomId }, { $set: { name } });
-	}
-
 	setFnameById(_id: IRoom['_id'], fname: IRoom['fname']): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
 
@@ -743,19 +579,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		};
 
 		return this.updateOne(query, update);
-	}
-
-	setRoomTopicById(roomId: IRoom['_id'], topic: IRoom['description']): Promise<UpdateResult> {
-		return this.updateOne({ _id: roomId }, { $set: { description: topic } });
-	}
-
-	findByE2E(options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
-		return this.find(
-			{
-				encrypted: true,
-			},
-			options,
-		);
 	}
 
 	countByE2E(options?: CountDocumentsOptions): Promise<number> {
@@ -775,14 +598,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			},
 			options,
 		);
-	}
-
-	findRoomsInsideTeams(autoJoin = false): FindCursor<IRoom> {
-		return this.find({
-			teamId: { $exists: true },
-			teamMain: { $exists: false },
-			...(autoJoin && { teamDefault: true }),
-		});
 	}
 
 	countRoomsInsideTeams(autoJoin = false): Promise<number> {
@@ -918,14 +733,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		});
 	}
 
-	findFederatedRooms(options: FindOptions<IRoom> = {}): FindCursor<IRoomFederated> {
-		const query: Filter<IRoom> = {
-			federated: true,
-		};
-
-		return this.find<IRoomFederated>(query, options);
-	}
-
 	findFederatedByIds<T extends Document = IRoomNativeFederated>(ids: Array<IRoom['_id']>, options: FindOptions<T> = {}): FindCursor<T> {
 		const query = {
 			_id: { $in: ids },
@@ -942,15 +749,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		};
 
 		return this.findOne<IRoomFederated>(query, options);
-	}
-
-	findCountOfRoomsWithActiveCalls(): Promise<number> {
-		const query: Filter<IRoom> = {
-			// No matter the actual "status" of the call, if the room has a callStatus, it means there is/was a call
-			callStatus: { $exists: true },
-		};
-
-		return this.countDocuments(query);
 	}
 
 	async findBiggestFederatedRoomInNumberOfUsers(options?: FindOptions<IRoom>): Promise<IRoom | undefined> {
@@ -1492,15 +1290,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne(query, options);
 	}
 
-	findByTypeAndName(type: IRoom['t'], name: NonNullable<IRoom['name']>, options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
-		const query: Filter<IRoom> = {
-			name,
-			t: type,
-		};
-
-		return this.findOne(query, options);
-	}
-
 	findByTypeAndNameOrId(
 		type: IRoom['t'],
 		identifier: NonNullable<IRoom['name'] | IRoom['_id']>,
@@ -1983,24 +1772,16 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	updateAbacConfigurationById(_id: IRoom['_id'], value: boolean): Promise<UpdateResult> {
-		const query: Filter<IRoom> = { _id };
-
-		const update: UpdateFilter<IRoom> = {
-			$set: {
-				abac: value === true,
-			},
-		};
-
-		return this.updateOne(query, update);
-	}
-
 	setAbacAttributesById(_id: IRoom['_id'], attributes: NonNullable<IRoom['abacAttributes']>): Promise<IRoom | null> {
 		return this.findOneAndUpdate({ _id }, { $set: { abacAttributes: attributes } }, { returnDocument: 'after' });
 	}
 
 	unsetAbacAttributesById(_id: IRoom['_id']): Promise<UpdateResult> {
 		return this.updateOne({ _id }, { $unset: { abacAttributes: 1 } });
+	}
+
+	unsetAllAbacAttributes(): Promise<Document | UpdateResult> {
+		return this.updateMany({ abacAttributes: { $exists: true } }, { $unset: { abacAttributes: '' } });
 	}
 
 	updateSingleAbacAttributeValuesById(_id: IRoom['_id'], key: string, values: string[]): Promise<UpdateResult> {

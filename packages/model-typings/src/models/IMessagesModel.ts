@@ -90,8 +90,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	unsetFederationReactionEventId(federationEventId: string, _id: string, reaction: string): Promise<void>;
 
-	findOneByFederationIdAndUsernameOnReactions(federationEventId: string, username: string): Promise<IMessage | null>;
-
 	findOneByFederationId(federationEventId: string): Promise<IMessage | null>;
 
 	findLatestFederationThreadMessageByTmid(tmid: string, messageId: IMessage['_id']): Promise<IMessage | null>;
@@ -112,7 +110,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	findLivechatClosingMessage(rid: IRoom['_id'], options?: FindOptions<IMessage>): Promise<IMessage | null>;
 
 	setReactions(messageId: string, reactions: IMessage['reactions']): Promise<UpdateResult>;
-	keepHistoryForToken(token: string): Promise<UpdateResult | Document>;
 	setRoomIdByToken(token: string, rid: string): Promise<UpdateResult | Document>;
 	createWithTypeRoomIdMessageUserAndUnread(
 		type: MessageTypesValues,
