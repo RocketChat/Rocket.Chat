@@ -8,13 +8,13 @@ import { isTruthy } from '@rocket.chat/tools';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomAsync, roomAccessAttributes } from '../../../../app/authorization/server';
-import { methodDeprecationLogger } from '../../../../app/lib/server/lib/deprecationWarningLogger';
-import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../../app/settings/server';
-import { getUserAvatarURL } from '../../../../app/utils/server/getUserAvatarURL';
+import { settings } from '../../../settings';
+import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization';
 import { hasPermissionAsync } from '../../authorization/hasPermission';
+import { methodDeprecationLogger } from '../../deprecationWarningLogger';
 import { isTheLastMessage } from '../../messages/isTheLastMessage';
+import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../notifyListener';
+import { getUserAvatarURL } from '../../utils/getUserAvatarURL';
 
 const recursiveRemove = (msg: MessageAttachment, deep = 1) => {
 	if (!msg || !isQuoteAttachment(msg)) {

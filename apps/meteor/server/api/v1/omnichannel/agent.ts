@@ -13,12 +13,12 @@ import {
 
 import { API } from '../..';
 import { findRoom, findGuest, findAgent, findOpenRoom } from './lib/livechat';
-import { RoutingManager } from '../../../../app/livechat/server/lib/RoutingManager';
-import { getRequiredDepartment } from '../../../../app/livechat/server/lib/departmentsLib';
-import { saveAgentInfo } from '../../../../app/livechat/server/lib/omni-users';
-import { setUserStatusLivechat, allowAgentChangeServiceStatus } from '../../../../app/livechat/server/lib/utils';
 import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
 import { hasRoleAsync } from '../../../lib/authorization/hasRole';
+import { RoutingManager } from '../../../lib/omnichannel/RoutingManager';
+import { getRequiredDepartment } from '../../../lib/omnichannel/departmentsLib';
+import { saveAgentInfo } from '../../../lib/omnichannel/omni-users';
+import { setUserStatusLivechat, allowAgentChangeServiceStatus } from '../../../lib/omnichannel/utils';
 import type { ExtractRoutesFromAPI } from '../../ApiClass';
 
 API.v1.addRoute('livechat/agent.info/:rid/:token', {

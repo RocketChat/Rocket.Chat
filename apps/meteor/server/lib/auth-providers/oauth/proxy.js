@@ -1,7 +1,7 @@
 import { OAuth } from 'meteor/oauth';
 import _ from 'underscore';
 
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../settings';
 
 OAuth._redirectUri = _.wrap(OAuth._redirectUri, (func, serviceName, ...args) => {
 	const proxy = settings.get('Accounts_OAuth_Proxy_services').replace(/\s/g, '').split(',');

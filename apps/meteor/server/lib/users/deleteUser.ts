@@ -17,16 +17,16 @@ import {
 import { Meteor } from 'meteor/meteor';
 
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
+import { settings } from '../../settings';
+import { callbacks } from '../callbacks';
+import { i18n } from '../i18n';
+import { FileUpload } from '../media/file-upload';
 import {
 	notifyOnRoomChangedById,
 	notifyOnIntegrationChangedByUserId,
 	notifyOnLivechatDepartmentAgentChanged,
 	notifyOnUserChange,
-} from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
-import { callbacks } from '../callbacks';
-import { i18n } from '../i18n';
-import { FileUpload } from '../media/file-upload';
+} from '../notifyListener';
 import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from '../rooms/getRoomsWithSingleOwner';
 import { relinquishRoomOwnerships } from '../rooms/relinquishRoomOwnerships';
 import { updateGroupDMsName } from '../rooms/updateGroupDMsName';

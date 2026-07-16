@@ -12,7 +12,7 @@ import { initAPN, sendAPN, shutdownAPN } from './apn';
 import type { PushOptions, PendingPushNotification } from './definition';
 import { sendFCM } from './fcm';
 import { logger } from './logger';
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../settings';
 
 export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
 

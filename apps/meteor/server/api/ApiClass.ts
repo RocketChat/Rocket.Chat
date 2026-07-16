@@ -10,11 +10,11 @@ import { wrapExceptions } from '@rocket.chat/tools';
 import type { ValidateFunction } from 'ajv';
 import { Accounts } from 'meteor/accounts-base';
 import { DDP } from 'meteor/ddp';
-// eslint-disable-next-line import/no-duplicates
+// eslint-disable-next-line import-x/no-duplicates
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
-// eslint-disable-next-line import/no-duplicates
+// eslint-disable-next-line import-x/no-duplicates
 import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
 
@@ -43,17 +43,17 @@ import { getUserInfo } from './lib/getUserInfo';
 import { parseJsonQuery } from './lib/parseJsonQuery';
 import type { APIActionContext } from './router';
 import { RocketChatAPIRouter } from './router';
-import { notifyOnUserChangeAsync } from '../../app/lib/server/lib/notifyListener';
-import { settings } from '../../app/settings/server';
-import { getNestedProp } from '../lib/getNestedProp';
-import { authenticationMiddlewareForHono } from './v1/middlewares/authenticationHono';
-import { permissionsMiddleware } from './v1/middlewares/permissions';
-import { getDefaultUserFields } from '../../app/utils/server/functions/getDefaultUserFields';
-import { license } from '../../ee/server/api/v1/middlewares/license';
 import { isObject } from '../../lib/utils/isObject';
 import { checkCodeForUser } from '../lib/2fa/code';
 import { hasPermissionAsync } from '../lib/authorization/hasPermission';
+import { getNestedProp } from '../lib/getNestedProp';
+import { notifyOnUserChangeAsync } from '../lib/notifyListener';
 import { shouldBreakInVersion } from '../lib/shouldBreakInVersion';
+import { authenticationMiddlewareForHono } from './v1/middlewares/authenticationHono';
+import { permissionsMiddleware } from './v1/middlewares/permissions';
+import { license } from '../../ee/server/api/v1/middlewares/license';
+import { getDefaultUserFields } from '../lib/utils/functions/getDefaultUserFields';
+import { settings } from '../settings';
 
 const logger = new Logger('API');
 

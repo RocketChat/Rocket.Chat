@@ -13,10 +13,10 @@ import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 import { callbacks } from '../callbacks';
 import { Markdown } from '../messaging/markdown';
+import { notifyOnMessageChange } from '../notifyListener';
 
 const translationLogger = new Logger('AutoTranslate');
 

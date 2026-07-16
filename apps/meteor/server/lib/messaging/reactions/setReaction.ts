@@ -4,12 +4,12 @@ import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Messages, EmojiCustom, Rooms, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomAsync } from '../../../../app/authorization/server';
-import { notifyOnMessageChange } from '../../../../app/lib/server/lib/notifyListener';
+import { canAccessRoomAsync } from '../../authorization';
 import { hasPermissionAsync } from '../../authorization/hasPermission';
 import { callbacks } from '../../callbacks';
 import { i18n } from '../../i18n';
 import { isTheLastMessage } from '../../messages/isTheLastMessage';
+import { notifyOnMessageChange } from '../../notifyListener';
 import { emoji } from '../emoji';
 
 export const removeUserReaction = (message: IMessage, reaction: string, username: string) => {

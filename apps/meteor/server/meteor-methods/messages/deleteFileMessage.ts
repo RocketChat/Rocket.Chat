@@ -5,7 +5,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { DeleteResult } from 'mongodb';
 
-import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { FileUpload } from '../../lib/media/file-upload';
 import { deleteMessageValidatingPermission } from '../../lib/messages/deleteMessage';
 

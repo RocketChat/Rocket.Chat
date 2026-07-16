@@ -6,8 +6,8 @@ import type Mail from 'nodemailer/lib/mailer';
 
 import { onEmailReceived } from './EmailInbox_Incoming';
 import { logger } from './logger';
-import { settings } from '../../../app/settings/server';
 import { IMAPInterceptor } from '../../email/IMAPInterceptor';
+import { settings } from '../../settings';
 
 export type Inbox = {
 	imap: IMAPInterceptor;

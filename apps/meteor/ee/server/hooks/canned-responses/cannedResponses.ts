@@ -1,6 +1,6 @@
 import { License } from '@rocket.chat/license';
 
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../../server/settings';
 import { BeforeSaveCannedResponse } from '../messages/BeforeSaveCannedResponse';
 
 void License.onToggledFeature('canned-responses', {

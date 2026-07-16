@@ -15,15 +15,10 @@ const models = {
 };
 
 const { updateGroupKey } = proxyquire.noCallThru().load('../../../../../server/meteor-methods/platform/updateGroupKey.ts', {
-	'../../../app/lib/server/lib/notifyListener': {
+	'../../lib/notifyListener': {
 		notifyOnSubscriptionChanged: sinon.stub(),
 		notifyOnRoomChangedById: sinon.stub(),
 		notifyOnSubscriptionChangedById: sinon.stub(),
-	},
-	'../../../app/lib/server/lib/deprecationWarningLogger': {
-		methodDeprecationLogger: {
-			method: sinon.stub(),
-		},
 	},
 	'@rocket.chat/models': models,
 	'meteor/meteor': { Meteor: { methods: sinon.stub() } },

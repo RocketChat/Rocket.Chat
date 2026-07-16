@@ -1,10 +1,10 @@
 import { Accounts } from 'meteor/accounts-base';
 
-import { settings } from '../../../app/settings/server';
 import type { ILoginAttempt } from '../../lib/auth/ILoginAttempt';
 import { logFailedLoginAttempts } from '../../lib/auth/logLoginAttempts';
 import { saveFailedLoginAttempts, saveSuccessfulLogin } from '../../lib/auth/restrictLoginAttempts';
 import { callbacks } from '../../lib/callbacks';
+import { settings } from '../../settings';
 
 const ignoredErrorTypes = ['totp-required', 'error-login-blocked-for-user'];
 

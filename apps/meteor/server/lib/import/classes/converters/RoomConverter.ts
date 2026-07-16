@@ -4,11 +4,11 @@ import { removeEmpty } from '@rocket.chat/tools';
 import limax from 'limax';
 
 import { RecordConverter } from './RecordConverter';
-import { notifyOnSubscriptionChangedByRoomId } from '../../../../../app/lib/server/lib/notifyListener';
 import { createDirectMessage } from '../../../../meteor-methods/messages/createDirectMessage';
 import { createChannelMethod } from '../../../../meteor-methods/rooms/createChannel';
 import { createPrivateGroupMethod } from '../../../../meteor-methods/rooms/createPrivateGroup';
 import { saveRoomSettings } from '../../../../meteor-methods/rooms/saveRoomSettings';
+import { notifyOnSubscriptionChangedByRoomId } from '../../../notifyListener';
 import type { IConversionCallbacks } from '../../definitions/IConversionCallbacks';
 
 export class RoomConverter extends RecordConverter<IImportChannelRecord> {

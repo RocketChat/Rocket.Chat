@@ -51,7 +51,7 @@ const { checkCodeForUser } = proxyquire.noCallThru().load('./index', {
 	'./EmailCheck': { EmailCheck: DisabledCheckMock },
 	'./PasswordCheckFallback': { PasswordCheckFallback: class extends DisabledCheckMock {} },
 	'../../shared/getModifiedHttpHeaders': { normalizeHeaders: (headers: unknown) => headers },
-	'../../../../app/settings/server': { settings: { get: settingsMock } },
+	'../../../settings': { settings: { get: settingsMock } },
 	'@rocket.chat/models': {
 		Users: {
 			findOneById: async () => null,

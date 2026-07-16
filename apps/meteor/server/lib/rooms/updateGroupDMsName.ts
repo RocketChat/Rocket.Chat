@@ -3,7 +3,7 @@ import { isNotUndefined } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import type { ClientSession } from 'mongodb';
 
-import { notifyOnSubscriptionChangedByRoomId } from '../../../app/lib/server/lib/notifyListener';
+import { notifyOnSubscriptionChangedByRoomId } from '../notifyListener';
 
 const getFname = (members: IUser[]): string => members.map(({ name, username }) => name || username).join(', ');
 const getName = (members: IUser[]): string => members.map(({ username }) => username).join(',');
@@ -57,7 +57,6 @@ export const updateGroupDMsName = async (
 
 	const rooms = Rooms.findGroupDMsByUids([userThatChangedName._id], { projection: { uids: 1 }, session });
 
-	// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 	const getMembers = (uids: string[]) => uids.map((uid) => users.get(uid)).filter(isNotUndefined);
 
 	// loop rooms to update the subscriptions from them all

@@ -2,7 +2,7 @@ import type { ISubscription, IUser, IRoom } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import type { AnyBulkWriteOperation } from 'mongodb';
 
-import { notifyOnRoomChanged, notifyOnSubscriptionChanged } from '../../../../app/lib/server/lib/notifyListener';
+import { notifyOnRoomChanged, notifyOnSubscriptionChanged } from '../../notifyListener';
 
 export async function resetRoomKey(roomId: string, userId: string, newRoomKey: string, newRoomKeyId: string) {
 	const user = await Users.findOneById<Pick<IUser, 'e2e'>>(userId, { projection: { e2e: 1 } });

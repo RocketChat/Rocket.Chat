@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { setAvatarFromServiceWithValidation } from '../../lib/users/setUserAvatar';
 
 declare module '@rocket.chat/ddp-client' {

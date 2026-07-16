@@ -30,9 +30,7 @@ import {
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
-import { roomAccessAttributes } from '../../../app/authorization/server';
-import { settings } from '../../../app/settings/server';
-import { normalizeMessagesForUser } from '../../../app/utils/server/lib/normalizeMessagesForUser';
+import { roomAccessAttributes } from '../../lib/authorization';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { applyAirGappedRestrictionsValidation } from '../../lib/cloud/license/airGappedRestrictionsWrapper';
@@ -42,6 +40,7 @@ import { pinMessage, unpinMessage } from '../../lib/messaging/pins/pinMessage';
 import { executeSetReaction } from '../../lib/messaging/reactions/setReaction';
 import { starMessage } from '../../lib/messaging/stars/starMessage';
 import { reportMessage } from '../../lib/moderation/reportMessage';
+import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
 import { followMessage } from '../../meteor-methods/messages/followMessage';
 import { getSingleMessage } from '../../meteor-methods/messages/getSingleMessage';
 import { messageSearch } from '../../meteor-methods/messages/messageSearch';
@@ -50,6 +49,7 @@ import { unfollowMessage } from '../../meteor-methods/messages/unfollowMessage';
 import { executeUpdateMessage } from '../../meteor-methods/messages/updateMessage';
 import { ignoreUser } from '../../meteor-methods/users/ignoreUser';
 import { getMessageHistory } from '../../publications/messages';
+import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';

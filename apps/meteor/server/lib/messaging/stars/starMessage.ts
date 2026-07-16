@@ -4,11 +4,11 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, Subscriptions, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomAsync, roomAccessAttributes } from '../../../../app/authorization/server';
-import { methodDeprecationLogger } from '../../../../app/lib/server/lib/deprecationWarningLogger';
-import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../settings';
+import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization';
+import { methodDeprecationLogger } from '../../deprecationWarningLogger';
 import { isTheLastMessage } from '../../messages/isTheLastMessage';
+import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../notifyListener';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

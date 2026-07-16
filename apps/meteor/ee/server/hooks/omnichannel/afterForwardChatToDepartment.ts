@@ -2,7 +2,7 @@ import type { ILivechatDepartment, IOmnichannelRoom } from '@rocket.chat/core-ty
 import { LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../server/lib/callbacks';
-import { cbLogger } from '../../../app/livechat-enterprise/server/lib/logger';
+import { cbLogger } from '../../lib/omnichannel/logger';
 
 callbacks.add(
 	'livechat.afterForwardChatToDepartment',

@@ -24,15 +24,15 @@ import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
 import _ from 'underscore';
 
-import { saveSettingsBulk } from '../../../app/lib/server/functions/saveSettingsBulk';
-import { checkSettingValueBounds } from '../../../app/lib/server/lib/checkSettingValueBonds';
-import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../../app/lib/server/lib/notifyListener';
-import { SettingsEvents, settings } from '../../../app/settings/server';
-import { setValue } from '../../../app/settings/server/raw';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../lib/notifyListener';
 import { disableCustomScripts } from '../../lib/shared/disableCustomScripts';
 import { addOAuthServiceMethod } from '../../meteor-methods/auth/addOAuthService';
+import { SettingsEvents, settings } from '../../settings';
+import { checkSettingValueBounds } from '../../settings/checkSettingValueBonds';
 import { updateAuditedByUser } from '../../settings/lib/auditedSettingUpdates';
+import { saveSettingsBulk } from '../../settings/lib/saveSettingsBulk';
+import { setValue } from '../../settings/raw';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
 

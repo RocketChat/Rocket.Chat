@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
 import { EventService } from './EventService';
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../settings';
 import { callbacks } from '../../callbacks';
 import { searchProviderService } from '../service';
 

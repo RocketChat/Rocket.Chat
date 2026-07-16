@@ -1,5 +1,5 @@
 import type { ILoginAttempt } from './ILoginAttempt';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 import { SystemLogger } from '../logger/system';
 
 export const logFailedLoginAttempts = (login: ILoginAttempt): void => {

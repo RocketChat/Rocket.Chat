@@ -14,7 +14,7 @@ import { findMonitors, findMonitorByUsername } from './lib/monitors';
 import { API } from '../../../../../server/api';
 import type { ExtractRoutesFromAPI } from '../../../../../server/api/ApiClass';
 import { getPaginationItems } from '../../../../../server/api/lib/getPaginationItems';
-import { LivechatEnterprise } from '../../../../app/livechat-enterprise/server/lib/LivechatEnterprise';
+import { LivechatEnterprise } from '../../../lib/omnichannel/LivechatEnterprise';
 
 API.v1.addRoute(
 	'livechat/monitors',

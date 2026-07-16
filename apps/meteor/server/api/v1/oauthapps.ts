@@ -8,10 +8,10 @@ import {
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 
-import { addOAuthApp } from '../../../app/oauth2-server-config/server/admin/functions/addOAuthApp';
-import { deleteOAuthApp } from '../../../app/oauth2-server-config/server/admin/methods/deleteOAuthApp';
-import { updateOAuthApp } from '../../../app/oauth2-server-config/server/admin/methods/updateOAuthApp';
+import { addOAuthApp } from '../../lib/auth/oauth2-server/addOAuthApp';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { deleteOAuthApp } from '../../meteor-methods/auth/deleteOAuthApp';
+import { updateOAuthApp } from '../../meteor-methods/auth/updateOAuthApp';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 
