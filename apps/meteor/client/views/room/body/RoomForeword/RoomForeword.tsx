@@ -1,19 +1,19 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
-import { Flex, Box } from '@rocket.chat/fuselage';
+import { FlexItem, Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from 'react-i18next';
 
 import RoomForewordUsernameList from './RoomForewordUsernameList';
 
-type RoomForewordProps = { user: IUser | null; room: IRoom };
+export type RoomForewordProps = { user: IUser | null; room: IRoom };
 
 const RoomForeword = ({ user, room }: RoomForewordProps) => {
 	const { t } = useTranslation();
 
 	if (!isDirectMessageRoom(room)) {
 		return (
-			<Box fontScale='c1' color='default' display='flex' justifyContent='center' mb={8}>
+			<Box fontScale='c1' color='default' display='flex' justifyContent='center' marginBlock={8}>
 				{t('Start_of_conversation')}
 			</Box>
 		);
@@ -26,17 +26,17 @@ const RoomForeword = ({ user, room }: RoomForewordProps) => {
 	}
 
 	return (
-		<Box is='div' flexGrow={1} display='flex' justifyContent='center' flexDirection='column' mb={8}>
-			<Flex.Item grow={1}>
+		<Box is='div' flexGrow={1} display='flex' justifyContent='center' flexDirection='column' marginBlock={8}>
+			<FlexItem grow={1}>
 				<Box display='flex' alignItems='center' justifyContent='center'>
 					{usernames.map((username, index) => (
-						<Box is='span' mi={4} key={index}>
+						<Box is='span' marginInline={4} key={index}>
 							<UserAvatar size='x48' username={username} />
 						</Box>
 					))}
 				</Box>
-			</Flex.Item>
-			<Box display='flex' color='default' fontScale='h4' flexGrow={1} justifyContent='center' mb={16}>
+			</FlexItem>
+			<Box display='flex' color='default' fontScale='h4' flexGrow={1} justifyContent='center' marginBlock={16}>
 				{t('Direct_message_you_have_joined')}
 			</Box>
 			<Box is='div' flexGrow={1} display='flex' justifyContent='center'>

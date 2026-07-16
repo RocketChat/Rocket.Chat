@@ -4,7 +4,7 @@ import { Box } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import { useRef } from 'react';
 
-type UserCardDialogProps = AriaDialogProps & ComponentProps<typeof Box>;
+export type UserCardDialogProps = AriaDialogProps & ComponentProps<typeof Box>;
 
 const UserCardDialog = (props: UserCardDialogProps) => {
 	const ref = useRef(null);
@@ -15,9 +15,9 @@ const UserCardDialog = (props: UserCardDialogProps) => {
 			ref={ref}
 			minHeight='x214'
 			rcx-user-card
-			bg='surface'
+			backgroundColor='surface'
 			elevation='2'
-			p={24}
+			padding={24}
 			display='flex'
 			borderRadius='x4'
 			width='439px'

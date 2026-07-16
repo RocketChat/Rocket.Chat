@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
 
-type CodeBlockProps = {
+export type CodeBlockProps = {
 	language?: string;
 	lines: MessageParser.CodeLine[];
 };

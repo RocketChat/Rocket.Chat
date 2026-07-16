@@ -22,7 +22,7 @@ const mockDeviceContextValue: DeviceContextValue = {
 	setAudioInputDevice: () => undefined,
 };
 
-type MockedDeviceContextProps = Partial<DeviceContextValue> & {
+export type MockedDeviceContextProps = Partial<DeviceContextValue> & {
 	children: ReactNode;
 };
 

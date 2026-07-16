@@ -6,7 +6,7 @@ import { createClassName } from '../../../../helpers/createClassName';
 import Block from '../Block';
 import styles from './styles.scss';
 
-type ContextBlockProps = uikit.ContextBlock & {
+export type ContextBlockProps = uikit.ContextBlock & {
 	parser: uikit.SurfaceRenderer<ComponentChild>;
 };
 

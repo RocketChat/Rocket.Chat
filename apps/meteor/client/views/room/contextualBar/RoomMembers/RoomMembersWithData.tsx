@@ -28,7 +28,9 @@ enum ROOM_MEMBERS_TABS {
 
 type validRoomType = 'd' | 'p' | 'c';
 
-const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }) => {
+export type RoomMembersWithDataProps = { rid: IRoom['_id'] };
+
+const RoomMembersWithData = ({ rid }: RoomMembersWithDataProps) => {
 	const user = useUser();
 	const room = useUserRoom(rid);
 	const { closeTab } = useRoomToolbox();

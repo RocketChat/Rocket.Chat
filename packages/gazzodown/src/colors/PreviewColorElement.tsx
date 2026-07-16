@@ -2,7 +2,7 @@ import { memo } from 'react';
 
 const toHexByte = (value: number): string => value.toString(16).padStart(2, '0');
 
-type PreviewColorElementProps = {
+export type PreviewColorElementProps = {
 	r: number;
 	g: number;
 	b: number;

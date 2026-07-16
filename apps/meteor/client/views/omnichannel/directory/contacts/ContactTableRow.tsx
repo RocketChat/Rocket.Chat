@@ -37,7 +37,7 @@ const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILiv
 				{latestChannel?.details && (
 					<Box withTruncatedText display='flex' alignItems='center'>
 						<OmnichannelRoomIcon size='x20' source={latestChannel?.details} />
-						<Box withTruncatedText mis={8}>
+						<Box withTruncatedText marginInlineStart={8}>
 							{getSourceLabel(latestChannel?.details)}
 						</Box>
 					</Box>

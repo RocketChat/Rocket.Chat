@@ -1,4 +1,4 @@
-import { settingsRegistry } from '../../app/settings/server';
+import { settingsRegistry } from '.';
 
 export const createE2ESettings = () =>
 	settingsRegistry.addGroup('End-to-end_encryption', async function () {

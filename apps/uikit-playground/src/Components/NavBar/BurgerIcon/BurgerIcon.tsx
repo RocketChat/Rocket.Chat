@@ -6,7 +6,9 @@ import Line from './Line';
 import Wrapper from './Wrapper';
 import { context } from '../../../Context';
 
-const BurgerIcon = ({ children }: { children?: ReactNode }) => {
+export type BurgerIconProps = { children?: ReactNode };
+
+const BurgerIcon = ({ children }: BurgerIconProps) => {
 	const isReducedMotionPreferred = usePrefersReducedMotion();
 	const {
 		state: { navMenuToggle },

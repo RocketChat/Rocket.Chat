@@ -21,10 +21,10 @@ const SettingsPage = () => {
 		<Page background='tint'>
 			<PageHeader title={t('Settings')} borderBlockEndColor='' />
 			<PageBlockWithBorder>
-				<SearchInput value={filter} placeholder={t('Search')} onChange={handleChange} addon={<Icon name='magnifier' size='x20' />} />
+				<SearchInput value={filter} placeholder={t('Search')} onChange={handleChange} endAddon={<Icon name='magnifier' size='x20' />} />
 			</PageBlockWithBorder>
 
-			<PageScrollableContentWithShadow p={0} mi={24} mbe={16}>
+			<PageScrollableContentWithShadow padding={0} marginInline={24} marginBlockEnd={16}>
 				<CardGrid
 					breakpoints={{
 						xs: 4,
@@ -32,7 +32,7 @@ const SettingsPage = () => {
 						md: 4,
 						lg: 6,
 						xl: 4,
-						p: 8,
+						padding: 8,
 					}}
 				>
 					{!!groups.length &&

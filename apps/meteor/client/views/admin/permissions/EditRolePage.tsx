@@ -16,7 +16,9 @@ export type EditRolePageFormData = {
 	mandatory2fa: boolean;
 };
 
-const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: boolean }) => {
+export type EditRolePageProps = { role?: IRole; isEnterprise: boolean };
+
+const EditRolePage = ({ role, isEnterprise }: EditRolePageProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -98,7 +100,7 @@ const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: bool
 	return (
 		<>
 			<ContextualbarScrollableContent>
-				<Box w='full' alignSelf='center' mb='neg-x8'>
+				<Box width='full' alignSelf='center' marginBlock='neg-x8'>
 					<Margins block={8}>
 						<FormProvider {...methods}>
 							<RoleForm editing={Boolean(role?._id)} isProtected={role?.protected} isDisabled={!isEnterprise} />

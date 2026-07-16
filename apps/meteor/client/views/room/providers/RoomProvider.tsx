@@ -21,7 +21,7 @@ import RoomSkeleton from '../RoomSkeleton';
 import type { IRoomWithFederationOriginalName } from '../contexts/RoomContext';
 import { RoomContext } from '../contexts/RoomContext';
 
-type RoomProviderProps = {
+export type RoomProviderProps = {
 	children: ReactNode;
 	rid: IRoom['_id'];
 };

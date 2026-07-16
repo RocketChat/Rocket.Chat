@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-type MembersListDividerProps = {
+export type MembersListDividerProps = {
 	title: TranslationKey;
 	count: number;
 };

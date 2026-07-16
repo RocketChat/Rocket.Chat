@@ -2,7 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, Palette } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-type OutlookSettingItemProps = {
+export type OutlookSettingItemProps = {
 	id: string;
 	title: string;
 	subTitle: string;
@@ -29,12 +29,12 @@ const OutlookSettingItem = ({ id, title, subTitle, enabled, handleEnable }: Outl
 			borderBlockEndColor='stroke-extra-light'
 			borderBlockEndStyle='solid'
 			className={hovered}
-			pi={24}
-			pb={16}
+			paddingInline={24}
+			paddingBlock={16}
 			display='flex'
 			justifyContent='space-between'
 		>
-			<Box mie={8}>
+			<Box marginInlineEnd={8}>
 				<Box fontScale='h4'>{title}</Box>
 				<Box fontScale='p2'>{subTitle}</Box>
 			</Box>

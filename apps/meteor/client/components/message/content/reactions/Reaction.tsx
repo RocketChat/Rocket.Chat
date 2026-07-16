@@ -13,7 +13,7 @@ import { MessageListContext } from '../../list/MessageListContext';
 const normalizeUsernames = (names: string[]) => names.map<string>(normalizeUsername);
 
 // TODO: replace it with proper usage of i18next plurals
-type ReactionProps = {
+export type ReactionProps = {
 	hasReacted: (name: string) => boolean;
 	counter: number;
 	name: string;

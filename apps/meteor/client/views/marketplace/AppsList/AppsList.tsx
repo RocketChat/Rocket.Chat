@@ -3,7 +3,7 @@ import { Box, CardGroup } from '@rocket.chat/fuselage';
 
 import AppRow from './AppRow';
 
-type AppsListProps = {
+export type AppsListProps = {
 	apps: App[];
 	title?: string;
 	appsListId: string;
@@ -11,9 +11,9 @@ type AppsListProps = {
 
 const AppsList = ({ apps, title, appsListId }: AppsListProps) => {
 	return (
-		<Box mbe={16}>
+		<Box marginBlockEnd={16}>
 			{title && (
-				<Box is='h2' id={appsListId} fontScale='h3' color='default' mbe={20}>
+				<Box is='h2' id={appsListId} fontScale='h3' color='default' marginBlockEnd={20}>
 					{title}
 				</Box>
 			)}

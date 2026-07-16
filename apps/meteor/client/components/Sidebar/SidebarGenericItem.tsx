@@ -2,7 +2,7 @@ import { Box, SidebarItem } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { memo } from 'react';
 
-type SidebarGenericItemProps = {
+export type SidebarGenericItemProps = {
 	href?: string;
 	active?: boolean;
 	featured?: boolean;
@@ -19,7 +19,7 @@ const SidebarGenericItem = ({ href, active, externalUrl, children, ...props }: S
 		{...(externalUrl && { target: '_blank', rel: 'noopener noreferrer' })}
 		{...props}
 	>
-		<Box display='flex' flexDirection='row' alignItems='center' pb={8} width='100%'>
+		<Box display='flex' flexDirection='row' alignItems='center' paddingBlock={8} width='100%'>
 			{children}
 		</Box>
 	</SidebarItem>

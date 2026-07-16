@@ -1,6 +1,6 @@
 import { AirGappedRestriction } from '@rocket.chat/license';
 
-import { applyAirGappedRestrictionsValidation } from '../../../app/license/server/airGappedRestrictionsWrapper';
+import { applyAirGappedRestrictionsValidation } from '../../../server/lib/cloud/license/airGappedRestrictionsWrapper';
 
 applyAirGappedRestrictionsValidation.patch(async <T>(_: any, fn: () => Promise<T>): Promise<T> => {
 	if (AirGappedRestriction.restricted) {

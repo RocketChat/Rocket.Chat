@@ -6,7 +6,7 @@ import Action from './ActionsBlock.Action';
 import { useSurfaceType } from '../hooks/useSurfaceType';
 import type { BlockProps } from '../utils/BlockProps';
 
-type ActionsBlockProps = BlockProps<UiKit.ActionsBlock>;
+export type ActionsBlockProps = BlockProps<UiKit.ActionsBlock>;
 
 const ActionsBlock = ({ className, block, surfaceRenderer }: ActionsBlockProps) => {
 	const surfaceType = useSurfaceType();

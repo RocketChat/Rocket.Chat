@@ -13,7 +13,7 @@ const generateQuery = (
 	filter: string;
 } => ({ filter: term });
 
-type RoomFormAutocompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter' | 'onChange'> & {
+export type RoomFormAutocompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter' | 'onChange'> & {
 	onSelectedRoom: (value: string, label: string) => void;
 };
 
@@ -45,7 +45,7 @@ const RoomFormAutocomplete = ({ value, onSelectedRoom, ...props }: RoomFormAutoc
 			filter={filter}
 			setFilter={setFilter}
 			renderSelected={({ selected: { label } }) => (
-				<Box margin='none' mi={2}>
+				<Box margin='none' marginInline={2}>
 					{label?.name}
 				</Box>
 			)}

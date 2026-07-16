@@ -30,7 +30,7 @@ const WidgetBase = styled('div')`
 	overflow: hidden;
 `;
 
-type WidgetProps = {
+export type WidgetProps = {
 	children: ReactNode;
 	restorePosition?: LastKnownPosition | null;
 	onChangePosition?: (position: LastKnownPosition | null) => void;

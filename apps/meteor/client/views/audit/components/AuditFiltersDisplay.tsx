@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useFormatDate } from '../../../hooks/useFormatDate';
 
-type AuditFiltersDisplayProps = {
+export type AuditFiltersDisplayProps = {
 	users?: IUser['username'][];
 	room?: IRoom['name'];
 	startDate?: Date;

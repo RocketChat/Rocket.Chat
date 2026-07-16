@@ -4,7 +4,7 @@ import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ActionInputBaseProps } from './ActionInputBase';
 import ActionInputBase from './ActionInputBase';
 
-type EndpointActionInputProps = Omit<ActionInputBaseProps, 'onAction'> & {
+export type EndpointActionInputProps = Omit<ActionInputBaseProps, 'onAction'> & {
 	endpoint: {
 		method: Method;
 		path: PathPattern;
