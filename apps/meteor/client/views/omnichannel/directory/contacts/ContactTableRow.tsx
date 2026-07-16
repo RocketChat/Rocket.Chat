@@ -6,13 +6,13 @@ import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
 import ContactItemMenu from './ContactItemMenu';
 import { OmnichannelRoomIcon } from '../../../../components/RoomIcon/OmnichannelRoomIcon';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
-import { useReactiveTimeFromNow } from '../../../../hooks/useReactiveTimeFromNow';
+import { useTimeFromNow } from '../../../../hooks/useTimeFromNow';
 import { useOmnichannelSource } from '../../hooks/useOmnichannelSource';
 import { useOmnichannelDirectoryRouter } from '../hooks/useOmnichannelDirectoryRouter';
 
 const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILivechatContactWithManagerData) => {
 	const { getSourceLabel } = useOmnichannelSource();
-	const relativeLastChatTime = useReactiveTimeFromNow(lastChat?.ts, true);
+	const getTimeFromNow = useTimeFromNow(true);
 	const formatDate = useFormatDate();
 	const omnichannelDirectoryRouter = useOmnichannelDirectoryRouter();
 
@@ -55,11 +55,11 @@ const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILiv
 			<GenericTableCell withTruncatedText verticalAlign='top'>
 				{lastChat && (
 					<Box display='flex' flexDirection='column'>
-						<Box fontScale='p2m' withTruncatedText title={formatDate(lastChat.ts)}>
+						<Box fontScale='p2m' withTruncatedText>
 							{formatDate(lastChat.ts)}
 						</Box>
-						<Box color='hint' withTruncatedText title={relativeLastChatTime}>
-							{relativeLastChatTime}
+						<Box color='hint' withTruncatedText>
+							{getTimeFromNow(lastChat.ts)}
 						</Box>
 					</Box>
 				)}

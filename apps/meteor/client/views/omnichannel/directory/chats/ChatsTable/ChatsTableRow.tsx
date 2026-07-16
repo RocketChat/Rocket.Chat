@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import RemoveChatButton from './RemoveChatButton';
 import { OmnichannelRoomIcon } from '../../../../../components/RoomIcon/OmnichannelRoomIcon';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
-import { useReactiveTimeFromNow } from '../../../../../hooks/useReactiveTimeFromNow';
+import { useTimeFromNow } from '../../../../../hooks/useTimeFromNow';
 import OmnichannelVerificationTag from '../../../components/OmnichannelVerificationTag';
 import RoomActivityIcon from '../../../components/RoomActivityIcon';
 import { useOmnichannelPriorities } from '../../../hooks/useOmnichannelPriorities';
@@ -20,8 +20,7 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 	const { t } = useTranslation();
 	const { _id, fname, tags, servedBy, ts, department, open, priorityWeight, lm, onHold, source, verified } = room;
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
-	const relativeStartedTime = useReactiveTimeFromNow(ts, true);
-	const relativeLastMessageTime = useReactiveTimeFromNow(lm, true);
+	const getTimeFromNow = useTimeFromNow(true);
 	const formatDate = useFormatDate();
 	const { getSourceLabel } = useOmnichannelSource();
 
@@ -92,11 +91,11 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 			</GenericTableCell>
 			<GenericTableCell withTruncatedText verticalAlign='top'>
 				<Box display='flex' flexDirection='column'>
-					<Box fontScale='p2m' withTruncatedText title={formatDate(ts)}>
+					<Box fontScale='p2m' withTruncatedText>
 						{formatDate(ts)}
 					</Box>
-					<Box color='hint' withTruncatedText title={relativeStartedTime}>
-						{relativeStartedTime}
+					<Box color='hint' withTruncatedText>
+						{getTimeFromNow(ts)}
 					</Box>
 				</Box>
 			</GenericTableCell>
@@ -106,8 +105,8 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 						<Box fontScale='p2m' withTruncatedText title={formatDate(lm)}>
 							{formatDate(lm)}
 						</Box>
-						<Box color='hint' withTruncatedText title={relativeLastMessageTime}>
-							{relativeLastMessageTime}
+						<Box color='hint' withTruncatedText>
+							{getTimeFromNow(lm)}
 						</Box>
 					</Box>
 				)}
