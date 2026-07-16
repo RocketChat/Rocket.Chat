@@ -61,7 +61,7 @@ const RealTimeMonitoringPage = () => {
 				<Margins block='x4'>
 					<Box flexDirection='row' display='flex' justifyContent='space-between' alignSelf='center' width='full'>
 						<Box maxWidth='50%' display='flex' mi={4} flexGrow={1} flexDirection='column'>
-							<Label mb={4}>{t('Departments')}</Label>
+							<Label marginBlock={4}>{t('Departments')}</Label>
 							<AutoCompleteDepartment
 								value={departmentId}
 								onChange={setDepartment}
@@ -73,7 +73,7 @@ const RealTimeMonitoringPage = () => {
 							/>
 						</Box>
 						<Box maxWidth='50%' display='flex' mi={4} flexGrow={1} flexDirection='column'>
-							<Label mb={4}>{t('Update_every')}</Label>
+							<Label marginBlock={4}>{t('Update_every')}</Label>
 							<Select
 								options={reloadOptions}
 								onChange={useStableCallback((val: Key) => setReloadFrequency(val as number))}

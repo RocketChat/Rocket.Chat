@@ -14,7 +14,7 @@ const EmojiPickerContainer = forwardRef<HTMLElement, Omit<AllHTMLAttributes<HTML
 				borderRadius={4}
 				display='flex'
 				flexDirection='column'
-				mb='neg-x12'
+				marginBlock='neg-x12'
 			/>
 		);
 	},

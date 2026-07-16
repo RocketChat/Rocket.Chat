@@ -27,7 +27,7 @@ const AgentInfoDetails = ({ name, shortName, status = <UserStatus.Offline />, ..
 			{name}
 		</Box>
 		{shortName && (
-			<Box display='flex' mis={8} mb={8} justifyContent='center' fontScale='c1'>
+			<Box display='flex' mis={8} marginBlock={8} justifyContent='center' fontScale='c1'>
 				({shortName})
 			</Box>
 		)}

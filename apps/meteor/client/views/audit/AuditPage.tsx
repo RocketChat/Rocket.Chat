@@ -34,7 +34,7 @@ const AuditPage = () => {
 					{t('Omnichannel')}
 				</TabsItem>
 			</Tabs>
-			<PageScrollableContentWithShadow mb={-4}>
+			<PageScrollableContentWithShadow marginBlock={-4}>
 				<Margins block={4}>
 					<AuditForm key={type} type={type} setSelectedRoom={setSelectedRoom} onSubmit={auditMutation.mutate} />
 					{selectedRoom?.encrypted && type === '' ? (

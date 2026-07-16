@@ -40,7 +40,7 @@ const PrototypeRender = ({
 		}, 1000);
 	};
 	return (
-		<Box height='max-content' mb='auto' className='rc-prototype-renderer'>
+		<Box height='max-content' marginBlock='auto' className='rc-prototype-renderer'>
 			<SurfaceRender type={surface}>
 				{blocks.map((action, id) => (
 					<Box

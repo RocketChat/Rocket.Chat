@@ -67,7 +67,7 @@ const TransferModal = ({ onCancel, onConfirm }: TransferModalProps) => {
 			<ModalContent>
 				<PeerAutocomplete {...autocomplete} error={error} onChangeValue={onChangeValue} />
 				{peer && (
-					<Box mb={8}>
+					<Box marginBlock={8}>
 						<PeerInfo {...peer} />
 					</Box>
 				)}

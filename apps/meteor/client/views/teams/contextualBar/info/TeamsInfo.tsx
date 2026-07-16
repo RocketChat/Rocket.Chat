@@ -75,7 +75,7 @@ const TeamsInfo = ({ room, onClickClose, onClickEdit, onClickViewChannels }: Tea
 
 					<InfoPanelSection>
 						{room.archived && (
-							<Box mb={16}>
+							<Box marginBlock={16}>
 								<Callout type='warning'>{t('Room_archived')}</Callout>
 							</Box>
 						)}

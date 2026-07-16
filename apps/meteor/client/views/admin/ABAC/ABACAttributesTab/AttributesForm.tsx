@@ -200,7 +200,7 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 						</Fragment>
 					))}
 					<Button
-						mb={8}
+						marginBlock={8}
 						onClick={() => append({ value: '' })}
 						// Checking for values since rhf does consider the newly added field as dirty after an append() call
 						disabled={!!getAttributeValuesError() || attributeValues?.some((value: { value: string }) => value?.value === '')}

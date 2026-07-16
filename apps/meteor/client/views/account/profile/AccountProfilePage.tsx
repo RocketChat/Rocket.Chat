@@ -123,7 +123,7 @@ const AccountProfilePage = () => {
 					<FormProvider {...methods}>
 						<AccountProfileForm id={profileFormId} />
 					</FormProvider>
-					<Box mb={12}>
+					<Box marginBlock={12}>
 						<ButtonGroup stretch vertical={isMobile}>
 							<Button onClick={handleLogoutOtherLocations} flexGrow={0} loading={loggingOut}>
 								{t('Logout_Others')}

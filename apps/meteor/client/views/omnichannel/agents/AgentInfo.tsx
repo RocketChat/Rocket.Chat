@@ -68,7 +68,7 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 					<AgentInfoAction key={t('Remove')} title={t('Remove')} label={t('Remove')} onClick={handleDelete} icon='trash' />
 				</ButtonGroup>
 				<Margins block={4}>
-					<Box mb={2}>
+					<Box marginBlock={2}>
 						<UserInfoUsername username={username} status={<UserStatus status={userStatus} />} />
 					</Box>
 					{statusLivechat && (

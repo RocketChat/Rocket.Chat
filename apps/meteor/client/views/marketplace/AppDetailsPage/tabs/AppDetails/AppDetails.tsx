@@ -49,7 +49,7 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 		<Box mbs='36px' maxWidth='x640' width='full' marginInline='auto' color='default'>
 			{appAddon && !workspaceHasAddon && (
 				<Callout
-					mb={16}
+					marginBlock={16}
 					title={t('Subscription_add-on_required')}
 					type='info'
 					actions={
@@ -64,13 +64,13 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 			{app.licenseValidation && (
 				<>
 					{Object.entries(app.licenseValidation.warnings).map(([key]) => (
-						<Callout key={key} type='warning' mb={16}>
+						<Callout key={key} type='warning' marginBlock={16}>
 							{t(`Apps_License_Message_${key}` as TranslationKey)}
 						</Callout>
 					))}
 
 					{Object.entries(app.licenseValidation.errors).map(([key]) => (
-						<Callout key={key} type='danger' mb={16}>
+						<Callout key={key} type='danger' marginBlock={16}>
 							{t(`Apps_License_Message_${key}` as TranslationKey)}
 						</Callout>
 					))}

@@ -154,7 +154,7 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps) => {
 						<Box>{t('Scan_QR_code')}</Box>
 						<Box>{t('Scan_QR_code_alternative_s')}</Box>
 						<TextCopy text={totpSecret || ''} />
-						<Box mis='-16px' mb='-16px' is='img' size='x200' src={qrCode} aria-hidden='true' />
+						<Box mis='-16px' marginBlock='-16px' is='img' size='x200' src={qrCode} aria-hidden='true' />
 						<Field>
 							<FieldLabel htmlFor={totpCodeId}>{t('Enter_code_provided_by_authentication_app')}</FieldLabel>
 							<FieldRow>

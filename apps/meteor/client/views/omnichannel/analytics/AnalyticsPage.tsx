@@ -58,11 +58,11 @@ const AnalyticsPage = () => {
 					<Box display='flex' mi='neg-x4' flexWrap='wrap' flexGrow={1}>
 						<Box display='flex' flexWrap='wrap' flexGrow={1}>
 							<Box display='flex' mi={4} flexDirection='column' flexGrow={1}>
-								<Label mb={4}>{t('Type')}</Label>
+								<Label marginBlock={4}>{t('Type')}</Label>
 								<Select options={typeOptions} value={type} onChange={(value) => setType(String(value))} />
 							</Box>
 							<Box display='flex' mi={4} flexDirection='column' flexGrow={1}>
-								<Label mb={4}>{t('Departments')}</Label>
+								<Label marginBlock={4}>{t('Departments')}</Label>
 								<AutoCompleteDepartment
 									value={department || undefined}
 									onChange={setDepartment}

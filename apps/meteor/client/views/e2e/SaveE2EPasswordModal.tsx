@@ -37,7 +37,7 @@ const SaveE2EPasswordModal = ({ randomPassword, onClose, onCancel, onConfirm }: 
 					{t('Learn_more_about_E2EE')}
 				</ExternalLink>
 			</p>
-			<Box is='p' fontWeight='bold' mb={20}>
+			<Box is='p' fontWeight='bold' marginBlock={20}>
 				{t('E2E_password_save_text')}
 			</Box>
 			<p id={passwordId}>{t('Your_E2EE_password_is')}</p>

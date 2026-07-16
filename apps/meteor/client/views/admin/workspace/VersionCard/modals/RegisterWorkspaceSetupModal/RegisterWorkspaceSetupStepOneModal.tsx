@@ -97,7 +97,7 @@ const RegisterWorkspaceSetupStepOneModal = ({
 							/>
 						</FieldRow>
 					</Field>
-					<Box mb={16} fontSize='c1'>
+					<Box marginBlock={16} fontSize='c1'>
 						<Box is='p'>
 							<strong>{t('RegisterWorkspace_Setup_Have_Account_Title')}</strong>
 						</Box>

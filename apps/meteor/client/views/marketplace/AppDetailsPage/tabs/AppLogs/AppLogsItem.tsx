@@ -58,7 +58,7 @@ const AppLogsItem = ({ regionId, expanded, onExpand, ...props }: AppLogsItemProp
 				<AppLogsItemEntry fullLog={props} />
 			</CollapsibleRegion>
 			<Box is='dt'>
-				<Divider mb={0} />
+				<Divider marginBlock={0} />
 			</Box>
 		</>
 	);

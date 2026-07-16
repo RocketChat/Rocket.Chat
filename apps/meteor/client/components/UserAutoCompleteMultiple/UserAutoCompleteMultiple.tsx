@@ -107,7 +107,7 @@ const UserAutoCompleteMultiple = forwardRef<HTMLInputElement, UserAutoCompleteMu
 						return (
 							<UserAvatarChip
 								mie={4}
-								mb={2}
+								marginBlock={2}
 								key={username}
 								federated={currentCachedOption._federated}
 								name={currentCachedOption.name}

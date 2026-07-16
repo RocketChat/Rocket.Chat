@@ -80,7 +80,7 @@ const CallHistoryPageFilters = ({ onChangeText, onChangeType, onChangeStates, se
 		<Box
 			is='form'
 			onSubmit={useCallback((e: SubmitEvent<HTMLFormElement>) => e.preventDefault(), [])}
-			mb='x8'
+			marginBlock='x8'
 			display='flex'
 			flexWrap='wrap'
 			alignItems='center'

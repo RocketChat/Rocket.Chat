@@ -89,7 +89,7 @@ const CustomContentCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => 
 	if (!willNotShowCustomContent && !isCustomContentOnly) {
 		return (
 			<Card>
-				<Box mb={8}>
+				<Box marginBlock={8}>
 					<CustomHomepageContent role='status' aria-label={customContentBody} />
 				</Box>
 			</Card>

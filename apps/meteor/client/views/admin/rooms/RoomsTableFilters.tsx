@@ -79,7 +79,7 @@ const RoomsTableFilters = ({ setFilters }: RoomsTableFiltersProps) => {
 		<Box
 			is='form'
 			onSubmit={useCallback((e: FormEvent) => e.preventDefault(), [])}
-			mb='x8'
+			marginBlock='x8'
 			display='flex'
 			flexWrap='wrap'
 			alignItems='center'

@@ -36,7 +36,7 @@ const Key = ({ primaryKey, alternativeKey, longPressKey, onLongKeyPress, onKeyPr
 
 	return (
 		<Button minWidth={52} width={52} height={40} p={0} margin={4} {...buttonProps} className={dialPadButtonClass} borderRadius={8}>
-			<Box is='span' fontScale={large ? 'h1' : 'p1'} fontWeight={large ? 300 : 400} mb={-4}>
+			<Box is='span' fontScale={large ? 'h1' : 'p1'} fontWeight={large ? 300 : 400} marginBlock={-4}>
 				{primaryKey}
 			</Box>
 			<Box is='span' fontScale='c1' color='hint' aria-hidden minHeight={16} letterSpacing='0.15em'>

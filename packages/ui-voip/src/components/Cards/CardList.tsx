@@ -23,7 +23,7 @@ const CardList = ({
 	return (
 		<Box
 			display='flex'
-			mb={autoMargin ? 'auto' : undefined}
+			marginBlock={autoMargin ? 'auto' : undefined}
 			mi={marginInline}
 			flexDirection={direction}
 			flexWrap={shouldWrapCards ? 'wrap' : 'nowrap'}

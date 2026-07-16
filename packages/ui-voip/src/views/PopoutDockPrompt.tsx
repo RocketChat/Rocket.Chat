@@ -11,7 +11,7 @@ const PopoutDockPrompt = ({ onClosePopout }: PopoutDockPromptProps) => {
 	return (
 		<Box
 			is='section'
-			mb={20}
+			marginBlock={20}
 			p={24}
 			width='full'
 			display='flex'

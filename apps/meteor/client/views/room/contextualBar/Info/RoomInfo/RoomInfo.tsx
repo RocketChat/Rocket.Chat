@@ -78,7 +78,7 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 
 					{archived && (
 						<InfoPanelSection>
-							<Box mb={16}>
+							<Box marginBlock={16}>
 								<Callout type='warning'>{t('Room_archived')}</Callout>
 							</Box>
 						</InfoPanelSection>

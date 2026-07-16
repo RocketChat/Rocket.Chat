@@ -88,7 +88,7 @@ const AccessibilityPage = () => {
 					maxWidth='x600'
 					width='full'
 					alignSelf='center'
-					mb={40}
+					marginBlock={40}
 					mi={36}
 				>
 					<Box fontScale='p1' mbe={24}>
@@ -142,7 +142,7 @@ const AccessibilityPage = () => {
 									<FieldRow>
 										<Controller control={control} name='fontSize' render={({ field }) => <Select {...field} options={fontSizes(t)} />} />
 									</FieldRow>
-									<FieldDescription mb={12}>{t('Adjustable_font_size_description')}</FieldDescription>
+									<FieldDescription marginBlock={12}>{t('Adjustable_font_size_description')}</FieldDescription>
 								</Field>
 								<Field>
 									<FieldRow>
@@ -157,7 +157,7 @@ const AccessibilityPage = () => {
 										className={css`
 											white-space: break-spaces;
 										`}
-										mb={12}
+										marginBlock={12}
 									>
 										{t('Mentions_with_@_symbol_description')}
 									</FieldDescription>

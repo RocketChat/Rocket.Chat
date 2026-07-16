@@ -28,7 +28,7 @@ const RoomInfoABACSection = ({ room }: RoomInfoABACSectionProps) => {
 
 	return (
 		<>
-			<Divider mb={32} width='full' />
+			<Divider marginBlock={32} width='full' />
 			<InfoPanelField>
 				<Box display='flex' mbe={16}>
 					<Tag medium>
@@ -44,7 +44,7 @@ const RoomInfoABACSection = ({ room }: RoomInfoABACSectionProps) => {
 				<InfoPanelLabel id='room-attributes-list-label'>{t('ABAC_Room_Attributes')}</InfoPanelLabel>
 				<Box is='ul' aria-labelledby='room-attributes-list-label'>
 					{room.abacAttributes.map((attribute) => (
-						<Box is='li' key={attribute.key} mb={16}>
+						<Box is='li' key={attribute.key} marginBlock={16}>
 							<Box is='span' id={`room-attribute-${attribute.key}-label`}>
 								{attribute.key}
 							</Box>

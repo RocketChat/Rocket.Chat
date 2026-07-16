@@ -417,9 +417,9 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 						<Field>
 							<DepartmentBusinessHours bhId={department?.businessHourId} />
 						</Field>
-						<Divider mb={16} />
+						<Divider marginBlock={16} />
 						<Field>
-							<FieldLabel id={agentsLabelId} mb={4}>
+							<FieldLabel id={agentsLabelId} marginBlock={4}>
 								{t('Agents')}
 							</FieldLabel>
 							<Box display='flex' flexDirection='column' height='50vh'>
