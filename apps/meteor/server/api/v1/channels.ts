@@ -2,6 +2,8 @@ import { Team, Room } from '@rocket.chat/core-services';
 import {
 	TeamType,
 	isRoomNativeFederated,
+	type IIntegration,
+	type IMessage,
 	type IRoom,
 	type ISubscription,
 	type IUser,
@@ -472,15 +474,34 @@ API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+const channelsMessagesResponseSchema = ajv.compile<{ messages: IMessage[]; count: number; offset: number; total: number }>({
+	type: 'object',
+	properties: {
+		messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['messages', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
+API.v1.get(
 	'channels.messages',
 	{
 		authRequired: true,
-		validateParams: isChannelsMessagesProps,
+		query: isChannelsMessagesProps,
 		permissionsRequired: ['view-c-room'],
+		response: {
+			200: channelsMessagesResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
 	},
-	{
-		async get() {
+	async function action() {
+		try {
 			const { roomId, mentionIds, starredIds, pinned } = this.queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
@@ -529,7 +550,10 @@ API.v1.addRoute(
 				offset,
 				total,
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
