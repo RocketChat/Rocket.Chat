@@ -2,4 +2,4 @@
 "@rocket.chat/apps": patch
 ---
 
-Fix Deno app startup for non-root containers by writing the generated runtime configuration to the writable temporary directory.
+Fixes app startup failing with EACCESS errors in docker deployments running with specified UIDs

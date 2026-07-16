@@ -18,14 +18,14 @@ function getDenoConfigPath(): string {
 }
 
 /**
- * Generates a runtime deno.jsonc in the controller's temporary directory by reading
+ * Generates a runtime deno.jsonc at `<tempDir>/deno_runtime.jsonc` by reading
  * the static config and injecting the resolved absolute path for
  * `@rocket.chat/apps-engine/`. This makes deno-runtime location-independent:
  * the path is always correct regardless of where this package is installed.
  *
  * Returns the path to the generated config file.
  */
-function generateEphemeralDenoConfig(targetPath: string, denoConfigPath: string, appsEnginePath: string): void {
+function generateEphemeralDenoConfig(targetPath: string, denoConfigPath: string, appsEnginePath: string, packagePath: string): void {
 	let staticConfig: DenoConfigurationFileSchema;
 
 	try {
@@ -37,17 +37,10 @@ function generateEphemeralDenoConfig(targetPath: string, denoConfigPath: string,
 	const runtimeConfig = {
 		...staticConfig,
 		imports: {
-			...Object.fromEntries(
-				Object.entries(staticConfig.imports ?? {}).map(([specifier, target]) => {
-					if (!target.startsWith('.')) {
-						return [specifier, target];
-					}
-
-					const resolvedTarget = path.resolve(path.dirname(denoConfigPath), target).split(path.sep).join(path.posix.sep);
-					return [specifier, `${resolvedTarget}${target.endsWith('/') ? '/' : ''}`];
-				}),
-			),
+			...staticConfig.imports,
 			'@rocket.chat/apps-engine/': `${appsEnginePath}/`,
+			'@rocket.chat/apps/base-runtime/': `${path.join(packagePath, 'base-runtime', 'src')}/`,
+			'@rocket.chat/apps/': `${packagePath}/`,
 		},
 	};
 
@@ -58,8 +51,6 @@ export class DenoRuntimeSubprocessController extends BaseRuntimeSubprocessContro
 	private readonly denoBin = 'deno';
 
 	private readonly denoRuntimePath: string;
-
-	private readonly runtimeTempPath: string;
 
 	private readonly denoConfigPath: string;
 
@@ -77,9 +68,9 @@ export class DenoRuntimeSubprocessController extends BaseRuntimeSubprocessContro
 		this.packagePath = path.join(path.dirname(this.denoConfigPath), '..');
 		this.denoDir = process.env.DENO_DIR ?? path.join(this.packagePath, '.deno-cache');
 
-		this.runtimeTempPath = fs.mkdtempSync(path.join(this.tempFilePath, 'deno-runtime-'));
-		this.denoRuntimePath = path.join(this.runtimeTempPath, 'runtime', 'main.ts');
-		this.denoEphemeralConfigPath = path.join(this.runtimeTempPath, 'deno.runtime.jsonc');
+		this.denoRuntimePath = path.join(this.tempFilePath, 'deno-runtime', 'main.ts');
+		// this.denoEphemeralConfigPath = this.denoConfigPath.replace('.jsonc', '.runtime.jsonc');
+		this.denoEphemeralConfigPath = path.join(this.tempFilePath, 'deno.runtime.jsonc');
 
 		/**
 		 * Deno 2.x refuses to run scripts inside the node_modules, so we create a symlink to the deno runtime files in the temp directory
@@ -87,19 +78,14 @@ export class DenoRuntimeSubprocessController extends BaseRuntimeSubprocessContro
 		 */
 		try {
 			fs.symlinkSync(path.dirname(this.denoConfigPath), path.dirname(this.denoRuntimePath), 'dir');
-			generateEphemeralDenoConfig(this.denoEphemeralConfigPath, this.denoConfigPath, this.appsEnginePath);
 		} catch (reason: unknown) {
-			fs.rmSync(this.runtimeTempPath, { recursive: true, force: true });
-			throw reason;
+			if ((reason as NodeJS.ErrnoException).code !== 'EEXIST') {
+				throw reason;
+			}
 		}
-	}
 
-	public override async stopApp(): Promise<void> {
-		try {
-			await super.stopApp();
-		} finally {
-			fs.rmSync(this.runtimeTempPath, { recursive: true, force: true });
-		}
+		// Generate a runtime config with the resolved absolute path for @rocket.chat/apps-engine/ and @rocket.chat/apps/ paths
+		generateEphemeralDenoConfig(this.denoEphemeralConfigPath, this.denoConfigPath, this.appsEnginePath, this.packagePath);
 	}
 
 	protected buildProcessConfiguration(): ProcessConfiguration {
