@@ -126,6 +126,14 @@ const successResponseSchema = ajv.compile<void>({
 	additionalProperties: false,
 });
 
+// findChannelByIdOrName and the room methods throw for client errors. The typed router does not map thrown
+// errors to 400 (the legacy addRoute wrapper did), so handlers catch and return a failure. Errors coming from
+// core-services cross a boundary and are not `instanceof Meteor.Error`, so extract message/errorType by shape.
+function errorToFailureArgs(error: unknown): [string, string | undefined] {
+	const e = error as { message?: unknown; error?: unknown };
+	return [typeof e?.message === 'string' ? e.message : String(error), typeof e?.error === 'string' ? e.error : undefined];
+}
+
 API.v1.post(
 	'channels.addAll',
 	{
@@ -148,10 +156,8 @@ API.v1.post(
 				channel: await findChannelByIdOrName({ params, userId: this.userId }),
 			});
 		} catch (error) {
-			return API.v1.failure(
-				error instanceof Meteor.Error ? error.message : String(error),
-				error instanceof Meteor.Error && typeof error.error === 'string' ? error.error : undefined,
-			);
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
 		}
 	},
 );
@@ -175,10 +181,8 @@ API.v1.post(
 
 			return API.v1.success();
 		} catch (error) {
-			return API.v1.failure(
-				error instanceof Meteor.Error ? error.message : String(error),
-				error instanceof Meteor.Error && typeof error.error === 'string' ? error.error : undefined,
-			);
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
 		}
 	},
 );
@@ -209,10 +213,8 @@ API.v1.post(
 
 			return API.v1.success();
 		} catch (error) {
-			return API.v1.failure(
-				error instanceof Meteor.Error ? error.message : String(error),
-				error instanceof Meteor.Error && typeof error.error === 'string' ? error.error : undefined,
-			);
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
 		}
 	},
 );
@@ -295,10 +297,8 @@ API.v1.post(
 				channel: await findChannelByIdOrName({ params, userId: this.userId }),
 			});
 		} catch (error) {
-			return API.v1.failure(
-				error instanceof Meteor.Error ? error.message : String(error),
-				error instanceof Meteor.Error && typeof error.error === 'string' ? error.error : undefined,
-			);
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
 		}
 	},
 );
@@ -330,10 +330,8 @@ API.v1.post(
 				channel: await findChannelByIdOrName({ params, userId: this.userId }),
 			});
 		} catch (error) {
-			return API.v1.failure(
-				error instanceof Meteor.Error ? error.message : String(error),
-				error instanceof Meteor.Error && typeof error.error === 'string' ? error.error : undefined,
-			);
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
 		}
 	},
 );
@@ -364,10 +362,8 @@ API.v1.post(
 				channel: await findChannelByIdOrName({ params, userId: this.userId }),
 			});
 		} catch (error) {
-			return API.v1.failure(
-				error instanceof Meteor.Error ? error.message : String(error),
-				error instanceof Meteor.Error && typeof error.error === 'string' ? error.error : undefined,
-			);
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
 		}
 	},
 );
