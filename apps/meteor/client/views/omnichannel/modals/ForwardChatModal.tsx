@@ -128,7 +128,7 @@ const ForwardChatModal = ({ room, onCancel }: ForwardChatModalProps) => {
 						/>
 					</FieldRow>
 				</Field>
-				<Divider p={0}>{t('or')}</Divider>
+				<Divider padding={0}>{t('or')}</Divider>
 				<Field>
 					<FieldLabel htmlFor={userFieldId}>{t('Forward_to_user')}</FieldLabel>
 					<FieldRow>

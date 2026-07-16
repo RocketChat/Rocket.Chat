@@ -26,7 +26,7 @@ const WebdavFilePickerGrid = ({ webdavNodes, onNodeClick, isLoading }: WebdavFil
 				Array(6)
 					.fill('')
 					.map((_, index) => (
-						<WebdavFilePickerGridItem p={4} key={index}>
+						<WebdavFilePickerGridItem padding={4} key={index}>
 							<Skeleton variant='rect' width='full' height='full' />
 						</WebdavFilePickerGridItem>
 					))}

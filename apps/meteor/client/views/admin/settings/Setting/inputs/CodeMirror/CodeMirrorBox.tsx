@@ -26,7 +26,7 @@ const CodeMirrorBox = ({ label, children, error }: CodeMirrorBoxProps) => {
 				flexDirection='column'
 				width='100%'
 				height='100%'
-				p={40}
+				padding={40}
 			>
 				<Box fontScale='p1' marginBlockEnd={4}>
 					{label}

@@ -12,7 +12,7 @@ const PopoutDockPrompt = ({ onClosePopout }: PopoutDockPromptProps) => {
 		<Box
 			is='section'
 			marginBlock={20}
-			p={24}
+			padding={24}
 			width='full'
 			display='flex'
 			flexDirection='column'

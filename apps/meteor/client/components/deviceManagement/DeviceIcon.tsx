@@ -16,7 +16,7 @@ const DeviceIcon = ({ deviceType }: DeviceIconProps) => (
 		display='inline-flex'
 		alignItems='center'
 		justifyContent='center'
-		p={4}
+		padding={4}
 		backgroundColor='selected'
 		size='x24'
 		borderRadius='full'

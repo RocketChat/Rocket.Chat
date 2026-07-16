@@ -89,7 +89,7 @@ const RoomFiles = ({
 			<ContextualbarContent paddingInline={0}>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={total} />
 				{isPending && (
-					<Box p={24}>
+					<Box padding={24}>
 						<Throbber size='x12' />
 					</Box>
 				)}

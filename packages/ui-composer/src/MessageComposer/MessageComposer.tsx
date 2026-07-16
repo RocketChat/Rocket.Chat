@@ -19,7 +19,7 @@ const MessageComposer = forwardRef<HTMLElement, MessageComposerProps>(function M
 			display='flex'
 			flexDirection='column'
 			overflow='hidden'
-			p={0}
+			padding={0}
 			{...props}
 		/>
 	);

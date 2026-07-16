@@ -26,7 +26,7 @@ const AdminUserFormWithData = ({ uid, onReload, context, roleData, roleError }: 
 
 	if (isPending) {
 		return (
-			<Box p={24}>
+			<Box padding={24}>
 				<FormSkeleton />
 			</Box>
 		);

@@ -22,7 +22,7 @@ const CMSPage = ({ page }: CMSPageProps) => {
 		>
 			<VerticalWizardLayoutTitle>{t(page)}</VerticalWizardLayoutTitle>
 			<VerticalWizardLayoutForm>
-				<Box p={32}>
+				<Box padding={32}>
 					<IconButton title={t('Back')} icon='arrow-back' onClick={() => window.history.back()} style={{ float: 'right' }} />
 					<Box withRichContent dangerouslySetInnerHTML={{ __html: pageContent }} />
 				</Box>

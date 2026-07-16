@@ -57,7 +57,7 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
 
-			<ContextualbarScrollableContent p={24}>
+			<ContextualbarScrollableContent padding={24}>
 				<InfoPanel>
 					<InfoPanelSection maxWidth='x332' marginInline='auto'>
 						<InfoPanelAvatar>

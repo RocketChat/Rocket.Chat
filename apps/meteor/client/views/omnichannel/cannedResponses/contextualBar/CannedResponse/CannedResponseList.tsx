@@ -85,7 +85,7 @@ const CannedResponseList = ({
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 			<ContextualbarContent paddingInline={0} ref={ref}>
-				<Box display='flex' flexDirection='row' p={24} flexShrink={0}>
+				<Box display='flex' flexDirection='row' padding={24} flexShrink={0}>
 					<Box display='flex' flexDirection='row' flexGrow={1} marginInline='neg-x4'>
 						<Margins inline={4}>
 							<TextInput

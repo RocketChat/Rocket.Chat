@@ -83,7 +83,7 @@ const ContactHistoryMessagesList = ({ chatId, onClose, onOpenRoom }: ContactHist
 				<Box
 					display='flex'
 					flexDirection='row'
-					p={24}
+					padding={24}
 					borderBlockEndWidth='default'
 					borderBlockEndStyle='solid'
 					borderBlockEndColor='extra-light'

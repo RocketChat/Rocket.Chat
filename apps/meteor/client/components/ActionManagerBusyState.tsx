@@ -33,7 +33,7 @@ const ActionManagerBusyState = () => {
 				`}
 				position='absolute'
 				insetInlineStart='50%'
-				p={16}
+				padding={16}
 				backgroundColor='tint'
 				color='default'
 				textAlign='center'

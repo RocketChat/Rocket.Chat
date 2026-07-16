@@ -99,7 +99,7 @@ const TeamsChannels = ({
 					<Select onChange={(val) => setType(val as 'all' | 'autoJoin')} value={type} options={options} />
 				</Box>
 			</ContextualbarSection>
-			<ContextualbarContent p={12}>
+			<ContextualbarContent padding={12}>
 				{loading && (
 					<Box pi={24} pb={12}>
 						<Throbber size='x12' />

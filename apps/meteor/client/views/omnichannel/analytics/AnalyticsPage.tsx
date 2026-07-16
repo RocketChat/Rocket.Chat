@@ -97,7 +97,7 @@ const AnalyticsPage = () => {
 							dateRange={dateRange}
 							alignSelf='stretch'
 						/>
-						<Box display='flex' width='33%' justifyContent='stretch' p={10} marginInlineStart={4}>
+						<Box display='flex' width='33%' justifyContent='stretch' padding={10} marginInlineStart={4}>
 							<AgentOverview type={chartName || ''} dateRange={dateRange} departmentId={department || ''} />
 						</Box>
 					</Box>

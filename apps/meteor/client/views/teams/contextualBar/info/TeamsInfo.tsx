@@ -50,7 +50,7 @@ const TeamsInfo = ({ room, onClickClose, onClickEdit, onClickViewChannels }: Tea
 				<ContextualbarTitle>{t('Teams_Info')}</ContextualbarTitle>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
-			<ContextualbarScrollableContent p={24}>
+			<ContextualbarScrollableContent padding={24}>
 				<InfoPanel>
 					<InfoPanelSection maxWidth='x332' marginInline='auto'>
 						<InfoPanelAvatar>

@@ -72,7 +72,7 @@ const ContactInfoHistory = ({ contact, setChatId }: ContactInfoHistoryProps) => 
 			<Box
 				display='flex'
 				flexDirection='row'
-				p={24}
+				padding={24}
 				borderBlockEndWidth='default'
 				borderBlockEndStyle='solid'
 				borderBlockEndColor='extra-light'
