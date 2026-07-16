@@ -149,7 +149,6 @@ const descriptionResponseSchema = stringFieldResponseSchema<{ description: strin
 const purposeResponseSchema = stringFieldResponseSchema<{ purpose: string }>('purpose');
 const topicResponseSchema = stringFieldResponseSchema<{ topic: string }>('topic');
 
-// Body validator for the `channels.set*` endpoints: a room target (roomId or roomName) plus the setting field.
 const roomSettingBody = <T>(field: string, fieldSchema: Record<string, unknown>) =>
 	ajv.compile<T>({
 		type: 'object',
@@ -159,6 +158,7 @@ const roomSettingBody = <T>(field: string, fieldSchema: Record<string, unknown>)
 			[field]: fieldSchema,
 		},
 		required: [field],
+		anyOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
 		additionalProperties: false,
 	});
 
