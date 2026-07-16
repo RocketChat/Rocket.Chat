@@ -70,6 +70,7 @@ export const createComposerHistory = ({
 	let breakNext = true;
 	let applying = false;
 	let composing = false;
+	let pendingBoundary = false;
 
 	const sameState = (a: ComposerHistoryEntry, b: ComposerHistoryEntry): boolean =>
 		normalize(a.text) === normalize(b.text) && a.selectionStart === b.selectionStart && a.selectionEnd === b.selectionEnd;
@@ -93,6 +94,7 @@ export const createComposerHistory = ({
 		lastKind = null;
 		lastAt = now();
 		breakNext = true;
+		pendingBoundary = false;
 	};
 
 	const undo = (): void => {
@@ -127,10 +129,11 @@ export const createComposerHistory = ({
 		const kindChanged = lastKind !== null && kind !== lastKind;
 		const alwaysBreak = kind === 'paste' || kind === 'newline';
 
-		if (breakNext || kindChanged || alwaysBreak || pause) {
+		if (breakNext || kindChanged || alwaysBreak || pause || pendingBoundary) {
 			commit();
 		}
 
+		pendingBoundary = false;
 		current = next;
 		lastKind = kind;
 		lastAt = now();
@@ -176,6 +179,16 @@ export const createComposerHistory = ({
 		if (event.inputType === 'historyRedo') {
 			event.preventDefault();
 			redo();
+			return;
+		}
+
+		if (applying || composing) {
+			return;
+		}
+
+		const { selectionStart, selectionEnd } = getSelectionRange(input);
+		if (selectionStart !== current.selectionStart || selectionEnd !== current.selectionEnd) {
+			pendingBoundary = true;
 		}
 	};
 
@@ -195,6 +208,7 @@ export const createComposerHistory = ({
 		lastKind = null;
 		lastAt = now();
 		breakNext = true;
+		pendingBoundary = false;
 	};
 
 	input.addEventListener('input', onInput);

@@ -68,6 +68,29 @@ describe('createComposerHistory', () => {
 		expect(applyState).toHaveBeenCalledWith(expect.objectContaining({ text: '' }));
 	});
 
+	it('breaks the undo step when the caret moves between edits', () => {
+		const input = makeInput();
+		const applyState = jest.fn();
+		const history = createComposerHistory({ input, applyState, now });
+
+		typeInput(input, 'a');
+		typeInput(input, 'ab', 'b');
+		typeInput(input, 'abc', 'c');
+
+		// Move the caret to the start, then make a noncontiguous edit.
+		mockedGetSelectionRange.mockReturnValue({ selectionStart: 0, selectionEnd: 0 });
+		input.dispatchEvent(new InputEvent('beforeinput', { inputType: 'insertText', data: 'x', bubbles: true }));
+
+		setState(input, 'xabc', 1);
+		input.dispatchEvent(new InputEvent('input', { inputType: 'insertText', data: 'x', bubbles: true }));
+
+		history.undo();
+		expect(applyState).toHaveBeenLastCalledWith(expect.objectContaining({ text: 'abc' }));
+
+		history.undo();
+		expect(applyState).toHaveBeenLastCalledWith(expect.objectContaining({ text: '' }));
+	});
+
 	it('breaks the undo step on whitespace boundaries', () => {
 		const input = makeInput();
 		const applyState = jest.fn();
