@@ -29,6 +29,9 @@ import {
 	isChannelsListProps,
 	isChannelsFilesListProps,
 	isChannelsOnlineProps,
+	ajv,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
 import { check, Match } from 'meteor/check';
@@ -106,14 +109,36 @@ async function findChannelByIdOrName({
 	return room;
 }
 
-API.v1.addRoute(
+const channelResponseSchema = ajv.compile<{ channel: IRoom }>({
+	type: 'object',
+	properties: {
+		channel: { $ref: '#/components/schemas/IRoom' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['channel', 'success'],
+	additionalProperties: false,
+});
+
+const successResponseSchema = ajv.compile<void>({
+	type: 'object',
+	properties: { success: { type: 'boolean', enum: [true] } },
+	required: ['success'],
+	additionalProperties: false,
+});
+
+API.v1.post(
 	'channels.addAll',
 	{
 		authRequired: true,
-		validateParams: isChannelsAddAllProps,
+		body: isChannelsAddAllProps,
+		response: {
+			200: channelResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
 	},
-	{
-		async post() {
+	async function action() {
+		try {
 			const { activeUsersOnly, ...params } = this.bodyParams;
 			const findResult = await findChannelByIdOrName({ params, userId: this.userId });
 
@@ -122,35 +147,55 @@ API.v1.addRoute(
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params, userId: this.userId }),
 			});
-		},
+		} catch (error) {
+			return API.v1.failure(
+				error instanceof Meteor.Error ? error.message : String(error),
+				error instanceof Meteor.Error && typeof error.error === 'string' ? error.error : undefined,
+			);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'channels.archive',
 	{
 		authRequired: true,
-		validateParams: isChannelsArchiveProps,
+		body: isChannelsArchiveProps,
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
 	},
-	{
-		async post() {
+	async function action() {
+		try {
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
 			await executeArchiveRoom(this.userId, findResult._id);
 
 			return API.v1.success();
-		},
+		} catch (error) {
+			return API.v1.failure(
+				error instanceof Meteor.Error ? error.message : String(error),
+				error instanceof Meteor.Error && typeof error.error === 'string' ? error.error : undefined,
+			);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'channels.unarchive',
 	{
 		authRequired: true,
-		validateParams: isChannelsUnarchiveProps,
+		body: isChannelsUnarchiveProps,
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
 	},
-	{
-		async post() {
+	async function action() {
+		try {
 			const findResult = await findChannelByIdOrName({
 				params: this.bodyParams,
 				checkedArchived: false,
@@ -163,7 +208,12 @@ API.v1.addRoute(
 			await executeUnarchiveRoom(this.userId, findResult._id);
 
 			return API.v1.success();
-		},
+		} catch (error) {
+			return API.v1.failure(
+				error instanceof Meteor.Error ? error.message : String(error),
+				error instanceof Meteor.Error && typeof error.error === 'string' ? error.error : undefined,
+			);
+		}
 	},
 );
 
@@ -223,14 +273,19 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'channels.join',
 	{
 		authRequired: true,
-		validateParams: isChannelsJoinProps,
+		body: isChannelsJoinProps,
+		response: {
+			200: channelResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
 	},
-	{
-		async post() {
+	async function action() {
+		try {
 			const { joinCode, ...params } = this.bodyParams;
 			const findResult = await findChannelByIdOrName({ params });
 
@@ -239,18 +294,28 @@ API.v1.addRoute(
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params, userId: this.userId }),
 			});
-		},
+		} catch (error) {
+			return API.v1.failure(
+				error instanceof Meteor.Error ? error.message : String(error),
+				error instanceof Meteor.Error && typeof error.error === 'string' ? error.error : undefined,
+			);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'channels.kick',
 	{
 		authRequired: true,
-		validateParams: isChannelsKickProps,
+		body: isChannelsKickProps,
+		response: {
+			200: channelResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
 	},
-	{
-		async post() {
+	async function action() {
+		try {
 			const { ...params /* userId */ } = this.bodyParams;
 			const findResult = await findChannelByIdOrName({ params });
 
@@ -264,18 +329,28 @@ API.v1.addRoute(
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params, userId: this.userId }),
 			});
-		},
+		} catch (error) {
+			return API.v1.failure(
+				error instanceof Meteor.Error ? error.message : String(error),
+				error instanceof Meteor.Error && typeof error.error === 'string' ? error.error : undefined,
+			);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'channels.leave',
 	{
 		authRequired: true,
-		validateParams: isChannelsLeaveProps,
+		body: isChannelsLeaveProps,
+		response: {
+			200: channelResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
 	},
-	{
-		async post() {
+	async function action() {
+		try {
 			const { ...params } = this.bodyParams;
 			const findResult = await findChannelByIdOrName({ params });
 
@@ -288,7 +363,12 @@ API.v1.addRoute(
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params, userId: this.userId }),
 			});
-		},
+		} catch (error) {
+			return API.v1.failure(
+				error instanceof Meteor.Error ? error.message : String(error),
+				error instanceof Meteor.Error && typeof error.error === 'string' ? error.error : undefined,
+			);
+		}
 	},
 );
 
