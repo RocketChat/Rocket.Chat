@@ -103,7 +103,7 @@ const UserReportInfo = ({ userId }: UserReportInfoProps) => {
 								</Field>
 							</FieldGroup>
 						) : (
-							<Callout mbs={8} type='warning' icon='warning'>
+							<Callout marginBlockStart={8} type='warning' icon='warning'>
 								{t('Moderation_User_deleted_warning')}
 							</Callout>
 						)}

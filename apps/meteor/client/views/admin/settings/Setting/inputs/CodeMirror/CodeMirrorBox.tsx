@@ -44,11 +44,11 @@ const CodeMirrorBox = ({ label, children, error }: CodeMirrorBoxProps) => {
 					{children}
 				</Box>
 				{error && (
-					<FieldError id={errorId} role='alert' mbs={4}>
+					<FieldError id={errorId} role='alert' marginBlockStart={4}>
 						{error}
 					</FieldError>
 				)}
-				<Box mbs={8}>
+				<Box marginBlockStart={8}>
 					<ButtonGroup>
 						<Button primary onClick={(): void => toggleFullScreen()}>
 							{t('Exit_Full_Screen')}
@@ -75,11 +75,11 @@ const CodeMirrorBox = ({ label, children, error }: CodeMirrorBoxProps) => {
 				{children}
 			</Box>
 			{error && (
-				<FieldError id={errorId} role='alert' mbs={4}>
+				<FieldError id={errorId} role='alert' marginBlockStart={4}>
 					{error}
 				</FieldError>
 			)}
-			<Box mbs={8}>
+			<Box marginBlockStart={8}>
 				<ButtonGroup>
 					<Button primary onClick={(): void => toggleFullScreen()}>
 						{t('Full_Screen')}

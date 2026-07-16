@@ -52,7 +52,7 @@ const UserCard = ({
 		<UserCardDialog aria-label={t('User_card')} {...props}>
 			<div>
 				{username && <UserAvatar username={username} etag={etag} size='x124' />}
-				<Box flexGrow={0} display='flex' mbs={12} alignItems='center' justifyContent='center'>
+				<Box flexGrow={0} display='flex' marginBlockStart={12} alignItems='center' justifyContent='center'>
 					<UserCardActions aria-label={t('User_card_actions')}>{actions}</UserCardActions>
 				</Box>
 			</div>

@@ -6,7 +6,7 @@ import type { templateType } from '../../../utils/templates';
 export type SectionProps = { template: templateType; index: number };
 
 const Section = ({ template, index }: SectionProps) => (
-	<Box mbs='25px' width='100%' key={index}>
+	<Box marginBlockStart='25px' width='100%' key={index}>
 		<Box mbe='5px'>
 			<Label fontSize={24} fontWeight={800}>
 				{template.heading}

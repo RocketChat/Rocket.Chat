@@ -62,11 +62,11 @@ const EditMenu = ({
 					<Box elevation='1' pb='10px' backgroundColor='white'>
 						<Box mi='10px'>
 							<EditableLabel value={name} onChange={onChange} onBlur={onBlur} {...labelProps} />
-							<Box withTruncatedText mbs='2px' fontScale='p2'>
+							<Box withTruncatedText marginBlockStart='2px' fontScale='p2'>
 								{formatDate(date)}
 							</Box>
 						</Box>
-						<Divider mbs='12px' />
+						<Divider marginBlockStart='12px' />
 						<Option disabled={!onDuplicate} onClick={duplicatehandler}>
 							Duplicate
 						</Option>

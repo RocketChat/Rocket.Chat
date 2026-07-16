@@ -56,7 +56,7 @@ const AdminUserSetRandomPasswordRadios = ({
 				</FieldLabel>
 			</Box>
 			{!isSmtpEnabled && (
-				<FieldHint id={`${setRandomPasswordId}-hint`} mbe={16} mbs={0}>
+				<FieldHint id={`${setRandomPasswordId}-hint`} mbe={16} marginBlockStart={0}>
 					<Trans
 						i18nKey='Send_Email_SMTP_Warning'
 						components={{

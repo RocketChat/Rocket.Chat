@@ -8,7 +8,7 @@ const ScrollableSideBar = () => (
 	<Scrollable vertical>
 		<Box
 			width='100%'
-			mbs='39px'
+			marginBlockStart='39px'
 			borderBlockStart='var(--default-border)'
 			backgroundColor='var(--primaryBackgroundColor)'
 			className={css`

@@ -23,7 +23,7 @@ const WidgetInfo = ({ slots, variant = 'default' }: WidgetInfoProps) => {
 			flexDirection='row'
 			justifyContent={variant === 'card-content' ? 'center' : 'space-between'}
 			mi={12}
-			mbs={4}
+			marginBlockStart={4}
 			mbe={variant === 'card-content' ? 0 : 4}
 		>
 			{slots.map((slot) => (

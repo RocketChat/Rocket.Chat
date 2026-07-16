@@ -23,7 +23,7 @@ const HistoryContent = ({ data, isLoading }: HistoryContentProps) => {
 	}
 
 	if (data.length < 1) {
-		return <Box mbs={16}>{t('Integration_Outgoing_WebHook_No_History')}</Box>;
+		return <Box marginBlockStart={16}>{t('Integration_Outgoing_WebHook_No_History')}</Box>;
 	}
 
 	return (

@@ -8,7 +8,7 @@ const UserCardSkeleton = (props: ComponentProps<typeof UserCardDialog>) => {
 		<UserCardDialog {...props}>
 			<Box>
 				<Skeleton borderRadius='x4' width='x124' height='x124' variant='rect' />
-				<Box flexGrow={0} display='flex' mbs={12} alignItems='center' justifyContent='center'>
+				<Box flexGrow={0} display='flex' marginBlockStart={12} alignItems='center' justifyContent='center'>
 					{Array.from({ length: 3 }).map((_, i) => (
 						<Skeleton key={i} variant='rect' height='x28' width='x28' borderRadius='x4' mi={2} />
 					))}

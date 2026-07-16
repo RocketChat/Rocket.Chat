@@ -87,7 +87,7 @@ const ContactInfoHistoryItem = ({ source, lastMessage, verified, onClick }: Cont
 				</Box>
 			</Box>
 			{lastMessage?.msg.trim() && (
-				<Box width='full' mbs={8}>
+				<Box width='full' marginBlockStart={8}>
 					<MessageGenericPreview>
 						<MessageGenericPreviewContent>
 							<MessageGenericPreviewTitle>{t('Closing_chat_message')}:</MessageGenericPreviewTitle>

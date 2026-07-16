@@ -237,7 +237,7 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 						</Fragment>
 					))}
 					<Button
-						mbs={8}
+						marginBlockStart={8}
 						onClick={validateMultipleFields(emailFields.length, hasLicense) ? handleOpenUpSellModal : () => appendEmail({ address: '' })}
 					>
 						{t('Add_email')}
@@ -263,7 +263,7 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 						</Fragment>
 					))}
 					<Button
-						mbs={8}
+						marginBlockStart={8}
 						onClick={
 							validateMultipleFields(phoneFields.length, hasLicense) ? handleOpenUpSellModal : () => appendPhone({ phoneNumber: '' })
 						}

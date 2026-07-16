@@ -34,7 +34,7 @@ const InviteLink = ({ linkText, captionText, onClickEdit }: InviteLinkProps) => 
 				)}
 			</Field>
 			{onClickEdit && (
-				<Box mbs={8}>
+				<Box marginBlockStart={8}>
 					<Button onClick={onClickEdit}>{t('Edit_Invite')}</Button>
 				</Box>
 			)}

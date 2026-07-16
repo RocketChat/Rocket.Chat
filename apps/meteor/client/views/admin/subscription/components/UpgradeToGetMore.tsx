@@ -44,7 +44,7 @@ const UpgradeToGetMore = ({ activeModules, children }: UpgradeToGetMoreProps) =>
 	}
 
 	return (
-		<Box width='full' p={8} mbs={40}>
+		<Box width='full' p={8} marginBlockStart={40}>
 			<States>
 				<StatesIcon name='rocket' />
 				<StatesTitle>{t('UpgradeToGetMore_Headline')}</StatesTitle>

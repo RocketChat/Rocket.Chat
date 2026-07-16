@@ -353,7 +353,7 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-				<Box mbs={8}>
+				<Box marginBlockStart={8}>
 					<ButtonGroup stretch>
 						<Button icon='trash' danger loading={isDeleting} disabled={!canDeleteRoom || roomIsFederated} onClick={handleDelete}>
 							{t('Delete')}

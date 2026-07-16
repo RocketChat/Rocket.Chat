@@ -112,7 +112,7 @@ const RoomFormAttributeField = ({
 				</FieldError>
 			)}
 			{index !== 0 && (
-				<Button onClick={onRemove} title={t('Remove')} mbs={8} disabled={disabled}>
+				<Button onClick={onRemove} title={t('Remove')} marginBlockStart={8} disabled={disabled}>
 					{t('Remove')}
 				</Button>
 			)}

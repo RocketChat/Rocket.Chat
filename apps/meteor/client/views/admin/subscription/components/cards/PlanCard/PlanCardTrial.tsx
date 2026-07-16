@@ -58,7 +58,7 @@ const PlanCardTrial = ({ licenseInformation }: PlanCardProps) => {
 					target='plan_card_trial'
 					action={isSalesAssisted ? 'finish_purchase' : 'contact_sales'}
 					primary
-					mbs='auto'
+					marginBlockStart='auto'
 					width='full'
 				>
 					{isSalesAssisted ? t('Finish_purchase') : t('Contact_sales')}

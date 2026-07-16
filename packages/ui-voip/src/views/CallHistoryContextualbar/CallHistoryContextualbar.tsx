@@ -76,7 +76,7 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 								<UiKitComponent render={UiKitMessageSurfaceRender} blocks={getHistoryMessagePayload(data.state, duration).blocks} />
 							</UiKitContext.Provider>
 						</MessageBlock>
-						<Box mbs={-8}>{date}</Box>
+						<Box marginBlockStart={-8}>{date}</Box>
 					</InfoPanelSection>
 					<InfoPanelSection>
 						<InfoPanelLabel>{t('Call_ID')}</InfoPanelLabel>

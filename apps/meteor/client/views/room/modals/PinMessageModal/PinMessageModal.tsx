@@ -33,7 +33,7 @@ const PinMessageModal = ({ message, ...props }: PinMessageModalProps) => {
 			<AttachmentProvider>
 				<QuoteAttachment attachment={attachment} />
 			</AttachmentProvider>
-			<Box is='p' fontScale='c1' mbs={16}>
+			<Box is='p' fontScale='c1' marginBlockStart={16}>
 				{t('Pinned_messages_are_visible_to_everyone')}
 			</Box>
 			<Box is='p' fontScale='c1'>

@@ -92,7 +92,7 @@ const MessageForm = (props: MessageFormProps) => {
 			</Scrollable>
 
 			{customActions ?? (
-				<Box mbs={24} display='flex' justifyContent='end'>
+				<Box marginBlockStart={24} display='flex' justifyContent='end'>
 					<Button type='submit' primary loading={isSubmitting}>
 						{t('Submit')}
 					</Button>

@@ -24,7 +24,7 @@ export const PasswordVerifierList = ({ id, validations, vertical = true }: Passw
 			<span id={id} hidden>
 				{t('Password_Policy_Aria_Description')}
 			</span>
-			<Box display='flex' flexDirection='column' mbs={8}>
+			<Box display='flex' flexDirection='column' marginBlockStart={8}>
 				<Box mbe={8} fontScale='c2' id={uniqueId} aria-hidden>
 					{t('Password_must_have')}
 				</Box>

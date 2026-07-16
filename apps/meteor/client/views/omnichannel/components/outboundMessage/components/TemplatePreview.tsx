@@ -34,7 +34,7 @@ const TemplatePreview = ({ template, parameters = {} }: TemplatePreviewProps) =>
 	}, [components, parameters, t]);
 
 	return (
-		<Box mbs={12}>
+		<Box marginBlockStart={12}>
 			<Box is='p' fontScale='p2m' mbe={2} id={previewId}>
 				{t('Message_preview')}
 			</Box>

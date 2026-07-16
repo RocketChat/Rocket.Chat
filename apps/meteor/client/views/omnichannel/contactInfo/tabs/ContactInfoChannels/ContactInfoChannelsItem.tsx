@@ -107,7 +107,7 @@ const ContactInfoChannelsItem = ({
 					</Box>
 				)}
 			</Box>
-			<Box minHeight='x24' alignItems='center' mbs={4} display='flex' justifyContent='space-between'>
+			<Box minHeight='x24' alignItems='center' marginBlockStart={4} display='flex' justifyContent='space-between'>
 				<Box>{channelLabel}</Box>
 				{showButton && <GenericMenu detached title={t('Options')} sections={[{ items: menuItems }]} tiny />}
 			</Box>

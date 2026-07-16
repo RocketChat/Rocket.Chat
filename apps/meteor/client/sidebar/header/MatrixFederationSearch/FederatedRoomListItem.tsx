@@ -49,7 +49,7 @@ const FederatedRoomListItem = ({
 				</Box>
 			)}
 
-			<Box mbs={4} fontScale='micro' fontWeight='bolder' verticalAlign='top'>
+			<Box marginBlockStart={4} fontScale='micro' fontWeight='bolder' verticalAlign='top'>
 				{canonicalAlias}{' '}
 				<Box color='hint' is='span' verticalAlign='top'>
 					<Icon name='user' size='x12' mbe={2} />

@@ -46,7 +46,7 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 	const openExternalLink = useExternalLink();
 
 	return (
-		<Box mbs='36px' maxWidth='x640' width='full' marginInline='auto' color='default'>
+		<Box marginBlockStart='36px' maxWidth='x640' width='full' marginInline='auto' color='default'>
 			{appAddon && !workspaceHasAddon && (
 				<Callout
 					marginBlock={16}

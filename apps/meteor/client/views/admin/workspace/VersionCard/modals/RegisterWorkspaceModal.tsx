@@ -56,7 +56,7 @@ const RegisterWorkspaceModal = ({ onClose, onStatusChange, ...props }: RegisterW
 						{bulletFeatures.map((features) => (
 							<li key={features.key}>
 								<strong>{features.title}</strong>
-								<Box is='p' mbs={4}>
+								<Box is='p' marginBlockStart={4}>
 									{features.description}
 								</Box>
 							</li>

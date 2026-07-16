@@ -168,7 +168,7 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps) => {
 				)}
 				{totpEnabled && (
 					<>
-						<Box fontScale='p2m' mbs={8}>
+						<Box fontScale='p2m' marginBlockStart={8}>
 							{t('Backup_codes')}
 						</Box>
 						<Box color='font-secondary-info'>{t('You_have_n_codes_remaining', { number: codesRemaining })}</Box>

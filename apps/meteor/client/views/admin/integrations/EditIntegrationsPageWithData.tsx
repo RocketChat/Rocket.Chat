@@ -34,7 +34,7 @@ const EditIntegrationsPageWithData = ({ integrationId }: EditIntegrationsPageWit
 	}
 
 	if (isError) {
-		return <Box mbs={16}>{t('Oops_page_not_found')}</Box>;
+		return <Box marginBlockStart={16}>{t('Oops_page_not_found')}</Box>;
 	}
 
 	if (data?.integration.type === 'webhook-outgoing') {

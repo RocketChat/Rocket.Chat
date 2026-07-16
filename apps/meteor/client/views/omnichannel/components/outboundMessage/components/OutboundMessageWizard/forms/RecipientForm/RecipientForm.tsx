@@ -216,7 +216,7 @@ const RecipientForm = (props: RecipientFormProps) => {
 			</Scrollable>
 
 			{customActions ?? (
-				<Box mbs={24} display='flex' justifyContent='end' flexGrow={0} flexShrink={0}>
+				<Box marginBlockStart={24} display='flex' justifyContent='end' flexGrow={0} flexShrink={0}>
 					<Button type='submit' primary loading={isSubmitting}>
 						{t('Submit')}
 					</Button>

@@ -125,7 +125,7 @@ const AccessibilityPage = () => {
 												)}
 											/>
 										</FieldRow>
-										<FieldHint mbs={12} style={{ whiteSpace: 'break-spaces' }}>
+										<FieldHint marginBlockStart={12} style={{ whiteSpace: 'break-spaces' }}>
 											{t(description)}
 										</FieldHint>
 									</Field>

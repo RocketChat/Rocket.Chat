@@ -253,7 +253,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							<Skeleton width='full' height={26} />
 						) : (
 							<>
-								<FieldRow mbs={12}>
+								<FieldRow marginBlockStart={12}>
 									<Box display='flex' alignItems='center'>
 										<FieldLabel htmlFor={verifiedId} p={0} disabled={!isSmtpEnabled || !isVerificationNeeded} margin={0}>
 											{t('Mark_email_as_verified')}
@@ -455,7 +455,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 									</FieldRow>
 								</Box>
 								{!isSmtpEnabled && (
-									<FieldHint id={`${sendWelcomeEmailId}-hint`} mbs={0}>
+									<FieldHint id={`${sendWelcomeEmailId}-hint`} marginBlockStart={0}>
 										<Trans
 											i18nKey='Send_Email_SMTP_Warning'
 											components={{

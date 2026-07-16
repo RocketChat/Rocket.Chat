@@ -71,7 +71,7 @@ const BusinessHoursForm = ({ type }: BusinessHoursFormProps) => {
 						render={({ field }) => <Select id={timezoneField} {...field} options={timeZonesOptions} />}
 					/>
 				</FieldRow>
-				<Callout title={t('Daylight_savings_time')} type='info' mbs='x8'>
+				<Callout title={t('Daylight_savings_time')} type='info' marginBlockStart='x8'>
 					{t('Business_hours_will_update_automatically')}
 				</Callout>
 			</Field>

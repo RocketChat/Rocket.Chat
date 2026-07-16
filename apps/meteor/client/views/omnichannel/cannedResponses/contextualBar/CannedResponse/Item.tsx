@@ -61,11 +61,11 @@ const Item = ({ data, allowUse, onClickItem, onClickUse }: ItemProps) => {
 					<Icon name='chevron-left' size='x24' color='hint' />
 				</Box>
 			</Box>
-			<Box fontScale='p2' mbs='8px' color='hint' withTruncatedText>
+			<Box fontScale='p2' marginBlockStart='8px' color='hint' withTruncatedText>
 				"{data.text}"
 			</Box>
 			{data.tags && data.tags.length > 0 && (
-				<Box display='flex' width='full' flexDirection='row' mbs='8px' flexWrap='wrap'>
+				<Box display='flex' width='full' flexDirection='row' marginBlockStart='8px' flexWrap='wrap'>
 					{data.tags.map((tag: string, idx: number) => (
 						<Box key={idx} mie='4px' mbe='4px'>
 							<Tag>{tag}</Tag>

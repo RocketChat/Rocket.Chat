@@ -48,7 +48,7 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 							</Callout>
 						)}
 						{!report.user && (
-							<Callout mbs={8} type='warning' icon='warning'>
+							<Callout marginBlockStart={8} type='warning' icon='warning'>
 								{t('Moderation_User_deleted_warning')}
 							</Callout>
 						)}

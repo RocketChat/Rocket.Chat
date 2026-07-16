@@ -56,7 +56,7 @@ const ChannelDesertionTable = ({
 	}, [rooms, sortBy, sortDirection]);
 
 	return (
-		<Box display='flex' flexDirection='column' height='x200' mbs={24}>
+		<Box display='flex' flexDirection='column' height='x200' marginBlockStart={24}>
 			<GenericTable fixed={false}>
 				<GenericTableHeader>
 					<GenericTableHeaderCell key='name' sort='name' onClick={setSort} direction={sortDirection} active={sortBy === 'name'}>

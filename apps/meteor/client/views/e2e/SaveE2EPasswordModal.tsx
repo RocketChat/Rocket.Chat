@@ -46,7 +46,7 @@ const SaveE2EPasswordModal = ({ randomPassword, onClose, onCancel, onConfirm }: 
 				buttonText={hasCopied ? t('Copied') : t('Copy')}
 				buttonDisabled={hasCopied}
 				onClick={() => copy()}
-				mbs={8}
+				marginBlockStart={8}
 			>
 				{randomPassword}
 			</CodeSnippet>

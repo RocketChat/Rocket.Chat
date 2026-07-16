@@ -170,7 +170,7 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 				)}
 			</ButtonGroup>
 			{showStatus && (
-				<Box mbs={16}>
+				<Box marginBlockStart={16}>
 					<LicenseStatus isValidating={isValidating} isValid={isLicenseValid} invalidMessage={invalidMessage} />
 				</Box>
 			)}

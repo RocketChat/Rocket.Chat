@@ -173,7 +173,7 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 							<IconButton icon='upload' secondary onClick={clickUpload} />
 						</FieldLabel>
 						{newEmojiPreview && (
-							<Box display='flex' flexDirection='row' mbs='none' justifyContent='center'>
+							<Box display='flex' flexDirection='row' marginBlockStart='none' justifyContent='center'>
 								<Margins inline={4}>
 									<Box is='img' objectFit='contain' width='x120' height='x120' src={newEmojiPreview} />
 								</Margins>
@@ -189,7 +189,7 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-				<Box mbs={8}>
+				<Box marginBlockStart={8}>
 					<ButtonGroup stretch>
 						<Button icon='trash' danger onClick={handleDeleteButtonClick}>
 							{t('Delete')}

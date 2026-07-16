@@ -10,23 +10,23 @@ const OutboubdMessageWizardSkeleton = () => {
 				<Skeleton mis={8} width={100} height={50} />
 			</Box>
 
-			<Box mbs={10}>
+			<Box marginBlockStart={10}>
 				<Skeleton width={80} height={30} />
 				<Skeleton width='100%' height={50} />
 			</Box>
-			<Box mbs={10}>
+			<Box marginBlockStart={10}>
 				<Skeleton width={80} height={30} />
 				<Skeleton width='100%' height={50} />
 			</Box>
-			<Box mbs={10}>
+			<Box marginBlockStart={10}>
 				<Skeleton width={80} height={30} />
 				<Skeleton width='100%' height={50} />
 			</Box>
-			<Box mbs={10}>
+			<Box marginBlockStart={10}>
 				<Skeleton width={80} height={30} />
 				<Skeleton width='100%' height={50} />
 			</Box>
-			<Box mbs={10} display='flex' justifyContent='end'>
+			<Box marginBlockStart={10} display='flex' justifyContent='end'>
 				<Skeleton width={85} height={60} />
 			</Box>
 		</Box>

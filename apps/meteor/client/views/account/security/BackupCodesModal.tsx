@@ -20,7 +20,7 @@ const BackupCodesModal = ({ codes, onClose }: BackupCodesModalProps) => {
 			<Box marginBlock={8} withRichContent>
 				{t('Make_sure_you_have_a_copy_of_your_codes_1')}
 			</Box>
-			<CodeSnippet buttonText={hasCopied ? t('Copied') : t('Copy')} buttonDisabled={hasCopied} onClick={() => copy()} mbs={8}>
+			<CodeSnippet buttonText={hasCopied ? t('Copied') : t('Copy')} buttonDisabled={hasCopied} onClick={() => copy()} marginBlockStart={8}>
 				{codesText}
 			</CodeSnippet>
 			<Box marginBlock={8} withRichContent>
