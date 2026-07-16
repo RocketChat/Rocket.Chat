@@ -12,12 +12,12 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { rocketLogger } from './logger';
-import { settings } from '../../../app/settings/server';
 import { sleep } from '../../../lib/utils/sleep';
 import { callbacks } from '../../lib/callbacks';
 import { sendMessage } from '../../lib/messages/sendMessage';
 import { createRoom } from '../../lib/rooms/createRoom';
 import { setUserAvatar } from '../../lib/users/setUserAvatar';
+import { settings } from '../../settings';
 
 export default class RocketAdapter {
 	constructor(slackBridge) {

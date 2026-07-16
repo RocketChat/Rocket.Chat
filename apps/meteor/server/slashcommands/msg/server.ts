@@ -3,11 +3,11 @@ import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
-import { settings } from '../../../app/settings/server';
-import { slashCommands } from '../../../app/utils/server/slashCommand';
 import { i18n } from '../../lib/i18n';
+import { slashCommands } from '../../lib/utils/slashCommand';
 import { createDirectMessage } from '../../meteor-methods/messages/createDirectMessage';
 import { executeSendMessage } from '../../meteor-methods/messages/sendMessage';
+import { settings } from '../../settings';
 
 /*
  * Msg is a named function that will replace /msg commands

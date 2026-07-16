@@ -13,7 +13,7 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { API } from '../..';
-import { setCustomFields, setMultipleCustomFields } from '../../../../app/livechat/server/lib/custom-fields';
+import { setCustomFields, setMultipleCustomFields } from '../../../lib/omnichannel/custom-fields';
 import type { ExtractRoutesFromAPI } from '../../ApiClass';
 import { findLivechatCustomFields, findCustomFieldById } from './lib/customFields';
 import { findGuest } from './lib/livechat';

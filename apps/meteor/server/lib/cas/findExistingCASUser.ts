@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 
 export const findExistingCASUser = async (username: string): Promise<IUser | undefined> => {
 	const casUser = await Users.findOne({ 'services.cas.external_id': username });

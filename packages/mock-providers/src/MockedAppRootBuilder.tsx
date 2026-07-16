@@ -60,7 +60,6 @@ type Mutable<T> = {
 	-readonly [P in keyof T]: T[P];
 };
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 // interface MockedAppRootEvents extends Record<`stream-${StreamNames}-${StreamKeys<StreamNames>}`, any> {
 // 	'update-modal': void;
 // }
