@@ -157,7 +157,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		if (this.stopped) {
 			throw new Error('WebRTC Processor has already been stopped.');
 		}
-		if (!this.inputTrack && !this.config.call.hasFlag('internal')) {
+		if (!this.inputTrack && !this.config.call.micless) {
 			throw new Error('no-input-track');
 		}
 
@@ -166,7 +166,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		const transceivers = this.getTransceivers('audio');
 
 		// TODO: Not sure about this
-		if (!transceivers.length && !this.config.call.hasFlag('internal')) {
+		if (!transceivers.length && !this.config.call.micless) {
 			throw new Error('no-audio-transceiver');
 		}
 

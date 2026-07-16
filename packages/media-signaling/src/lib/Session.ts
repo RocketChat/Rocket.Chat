@@ -263,16 +263,20 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		await this.startInputTrack();
 	}
 
-	public async startCall(calleeType: CallActorType, calleeId: string, params: { contactInfo?: CallContact } = {}): Promise<void> {
+	public async startCall(
+		calleeType: CallActorType,
+		calleeId: string,
+		params: { contactInfo?: CallContact; micless?: boolean } = {},
+	): Promise<void> {
 		this.config.logger?.debug('MediaSignalingSession.startCall', calleeId);
 		if (this.getMainCall(false)) {
 			throw new Error(`Already on a call.`);
 		}
 
-		const { contactInfo } = params;
+		const { contactInfo, micless } = params;
 
 		const callId = this.createTemporaryCallId();
-		const call = this.createCall(callId);
+		const call = this.createCall(callId, micless);
 
 		await call.requestCall({ type: calleeType, id: calleeId }, this.config.features, contactInfo);
 	}
@@ -501,7 +505,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		}
 
 		for (const call of this.knownCalls.values()) {
-			if (call.needsInputTrack() || (call.mayNeedInputTrack() && !call.hasInputTrack() && !call.muted)) {
+			if (call.needsInputTrack()) {
 				return true;
 			}
 		}
@@ -545,12 +549,12 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		this.config.logger?.debug('MediaSignalingSession.startInputTrack.done', this.callsToGetUserMedia);
 
 		if (!userMedia) {
-			return this.hangupOrMuteCallsThatNeedInput();
+			return this.hangupCallsThatNeedInput();
 		}
 
 		const tracks = userMedia.getAudioTracks();
 		if (!tracks.length) {
-			return this.hangupOrMuteCallsThatNeedInput();
+			return this.hangupCallsThatNeedInput();
 		}
 
 		const inputTrack = tracks[0];
@@ -578,14 +582,11 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	/* Internal calls do not require input (listen only) and are marked as muted at this point */
-	private hangupOrMuteCallsThatNeedInput(): void {
+	private hangupCallsThatNeedInput(): void {
 		this.config.logger?.debug('MediaSignalingSession.hangupCallsThatNeedInput');
 
 		for (const call of this.knownCalls.values()) {
 			if (!call.needsInputTrack()) {
-				if (call.mayNeedInputTrack()) {
-					call.setMuted(true);
-				}
 				continue;
 			}
 
@@ -649,7 +650,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		await this.setScreenVideoTrack(track, call);
 	}
 
-	private createCall(callId: string): ClientMediaCall {
+	private createCall(callId: string, micless?: boolean): ClientMediaCall {
 		this.config.logger?.debug('MediaSignalingSession.createCall');
 		const config = {
 			userId: this.config.userId,
@@ -660,6 +661,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			iceServers: this.config.iceServers || [],
 			sessionId: this._sessionId,
 			supportedFeatures: this.config.features,
+			micless,
 		};
 
 		const call = new ClientMediaCall(config, callId, { inputTrack: this.inputTrack });
