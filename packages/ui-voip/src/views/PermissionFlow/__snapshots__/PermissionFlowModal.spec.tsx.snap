@@ -67,7 +67,13 @@ Allow speaker and microphone access in your browser settings to prevent seeing t
               <span
                 class="rcx-button--content"
               >
-                Cancel
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-mic-off rcx-icon rcx-css-1hdf9ok"
+                >
+                  
+                </i>
+                Continue without mic
               </span>
             </button>
           </div>
@@ -227,7 +233,7 @@ Allow speaker and microphone access in your browser settings to prevent seeing t
             role="group"
           >
             <button
-              class="rcx-box rcx-box--full rcx-button--danger rcx-button"
+              class="rcx-box rcx-box--full rcx-button"
               type="button"
             >
               <span
@@ -235,11 +241,11 @@ Allow speaker and microphone access in your browser settings to prevent seeing t
               >
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-1hdf9ok"
+                  class="rcx-box rcx-box--full rcx-icon--name-mic-off rcx-icon rcx-css-1hdf9ok"
                 >
-                  
+                  
                 </i>
-                Cancel and reject
+                Accept without mic
               </span>
             </button>
             <button
@@ -333,7 +339,13 @@ Allow speaker and microphone access in your browser settings to prevent seeing t
               <span
                 class="rcx-button--content"
               >
-                Cancel
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-mic-off rcx-icon rcx-css-1hdf9ok"
+                >
+                  
+                </i>
+                Call without mic
               </span>
             </button>
             <button
