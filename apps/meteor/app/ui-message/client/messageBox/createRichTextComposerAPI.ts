@@ -24,18 +24,24 @@ export const createRichTextComposerAPI = (
 	const setText: SetText = (text, { selection, skipFocus } = {}) => {
 		!skipFocus && focus();
 
-		// Use innerHTML to set the value in RichTextComposer instead of innerText
-		// Here, text is the variable holding the text to be inserted to the composer
 		const { selectionStart, selectionEnd } = getSelectionRange(input);
-		const textAreaTxt = input.innerHTML;
 
 		if (typeof selection === 'function') {
 			selection = selection({ start: selectionStart, end: selectionEnd });
 		}
 
 		if (selection) {
-			if (!document.execCommand?.('insertText', false, text)) {
-				input.innerHTML = escapeHTML(textAreaTxt.substring(0, selectionStart) + text + textAreaTxt.substring(selectionStart));
+			// Establish the caret inside the input before execCommand. Focusing alone does not create a
+			// selection range on an empty/blurred composer, so without this the insert is a silent no-op.
+			setSelectionRange(input, selectionStart, selectionEnd);
+
+			// execCommand can report success while inserting nothing (empty composer) or insert into a
+			// different focused element (e.g. the emoji picker search box). Detect that the composer text
+			// did not actually change and fall back to editing it directly.
+			const before = input.innerText;
+			const inserted = document.execCommand?.('insertText', false, text) ?? false;
+			if (!inserted || input.innerText === before) {
+				input.innerText = before.substring(0, selectionStart) + text + before.substring(selectionEnd);
 				!skipFocus && focus();
 			}
 			setSelectionRange(input, selection.start ?? 0, selection.end ?? text.length);
@@ -136,33 +142,18 @@ export const createRichTextComposerAPI = (
 	const replaceText = (text: string, selection: { readonly start: number; readonly end: number }): void => {
 		const { selectionStart, selectionEnd } = getSelectionRange(input);
 
-		// Selects the text that is connected to the cursor
+		// Selects the text that is connected to the cursor, then focus so execCommand has an active target
 		setSelectionRange(input, selection.start ?? 0, selection.end ?? text.length);
+		focus();
 		const textAreaTxt = input.innerText;
 
-		if (!document.execCommand?.('insertText', false, text)) {
+		const inserted = document.execCommand?.('insertText', false, text) ?? false;
+		if (!inserted || input.innerText === textAreaTxt) {
 			input.innerText = textAreaTxt.substring(0, selection.start) + text + textAreaTxt.substring(selection.end);
 		}
 
-		focus();
-
-		// Check if the text starts and ends with a colon symbol (:) - Used for emoji detection
-		const emoji = /^:.*:$/.test(text.trim());
-
-		let newStart;
-		let newEnd;
-
-		// selectionStart is the current cursor position whereas
-		// selection.start is cursor starting position from where replaceText takes into consideration
-		// if emoji is true then increment cursor position by 1
-		// else increment by the length of the text
-		if (emoji) {
-			newStart = selection.start + 1;
-			newEnd = selection.start + 1;
-		} else {
-			newStart = selectionStart + text.length;
-			newEnd = selectionStart + text.length;
-		}
+		const newStart = selection.start + text.length;
+		const newEnd = selection.start + text.length;
 
 		if (selectionStart !== selectionEnd) {
 			setSelectionRange(input, selectionStart, selectionStart);

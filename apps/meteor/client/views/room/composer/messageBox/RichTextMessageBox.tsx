@@ -50,6 +50,17 @@ type TypingState = {
 	hideplaceholder: boolean;
 };
 
+// We store the last known cursor position for each contenteditable div using a WeakMap keyed by the element.
+// This allows us to restore the caret position when the user refocuses the editor,
+// preventing the cursor from jumping to the start and improving typing experience in multiple composer instances.
+const cursorMap = new WeakMap<
+	HTMLElement,
+	{
+		selectionStart: number;
+		selectionEnd: number;
+	}
+>();
+
 const reducer = (_: unknown, event: FormEvent<HTMLElement>): TypingState => {
 	const target = event.target as HTMLDivElement;
 	const { childNodes } = target;
@@ -118,38 +129,22 @@ const RichTextMessageBox = ({
 		throw new Error('Chat context not found');
 	}
 
-	// We store the last known cursor position for each contenteditable div using a WeakMap keyed by the element.
-	// This allows us to restore the caret position when the user refocuses the editor,
-	// preventing the cursor from jumping to the start and improving typing experience in multiple composer instances.
-	const cursorMap = new WeakMap<
-		HTMLElement,
-		{
-			selectionStart: number;
-			selectionEnd: number;
-		}
-	>();
-
 	// This state will update every time the input is updated
 	const [, setMdLines] = useState<string[]>([]);
 
 	const setLastCursorPosition = (e: React.FocusEvent<HTMLElement>) => {
 		const node = e.currentTarget as HTMLDivElement;
 		cursorMap.set(node, getSelectionRange(node));
-		console.log('Saved cursor position for:', node);
 	};
 
 	const getLastCursorPosition = (e: React.FocusEvent<HTMLElement>) => {
 		const node = e.currentTarget as HTMLDivElement;
 		const savedPosition = cursorMap.get(node);
 		if (savedPosition === undefined) {
-			console.log('There is no savedPosition for current node');
 			return;
-		} // no saved cursor position
+		}
 
-		// Retrieve the value onFocus
 		setSelectionRange(node, savedPosition.selectionStart, savedPosition.selectionEnd);
-
-		console.log('Restored cursor position for:', node);
 	};
 
 	/* const textareaRef = useRef<HTMLTextAreaElement>(null); */
