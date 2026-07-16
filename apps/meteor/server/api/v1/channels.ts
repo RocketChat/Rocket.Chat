@@ -30,12 +30,15 @@ import {
 	isChannelsFilesListProps,
 	isChannelsOnlineProps,
 	ajv,
+	ajvQuery,
 	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
+import type { Filter } from 'mongodb';
 
 import { canAccessRoomAsync } from '../../lib/authorization';
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../lib/authorization/hasPermission';
@@ -161,6 +164,30 @@ const roomSettingBody = <T>(field: string, fieldSchema: Record<string, unknown>)
 		anyOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
 		additionalProperties: false,
 	});
+
+// Query validator for GETs targeting a single room (roomId or roomName).
+const roomTargetQuery = ajvQuery.compile<{ roomId?: string; roomName?: string }>({
+	type: 'object',
+	properties: {
+		roomId: { type: 'string' },
+		roomName: { type: 'string' },
+	},
+	anyOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
+	additionalProperties: false,
+});
+
+const channelsListResponseSchema = ajv.compile<{ channels: IRoom[]; count: number; offset: number; total: number }>({
+	type: 'object',
+	properties: {
+		channels: { type: 'array', items: { $ref: '#/components/schemas/IRoom' } },
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['channels', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
 
 API.v1.post(
 	'channels.addAll',
@@ -1085,11 +1112,20 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'channels.info',
-	{ authRequired: true },
 	{
-		async get() {
+		authRequired: true,
+		query: roomTargetQuery,
+		response: {
+			200: channelResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			const findResult = await findChannelByIdOrName({
 				params: this.queryParams,
 				checkedArchived: false,
@@ -1103,7 +1139,10 @@ API.v1.addRoute(
 			return API.v1.success({
 				channel: findResult,
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
@@ -1141,75 +1180,79 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'channels.list',
 	{
 		authRequired: true,
 		permissionsRequired: {
 			GET: { permissions: ['view-c-room', 'view-joined-room'], operation: 'hasAny' },
 		},
-		validateParams: isChannelsListProps,
-	},
-	{
-		async get() {
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
-			const hasPermissionToSeeAllPublicChannels = await hasPermissionAsync(this.user, 'view-c-room');
-
-			const { _id } = this.queryParams;
-
-			const ourQuery = {
-				...query,
-				...(_id ? { _id } : {}),
-				t: 'c',
-			};
-
-			if (!hasPermissionToSeeAllPublicChannels) {
-				const roomIds = (
-					await Subscriptions.findByUserIdAndType(this.userId, 'c', {
-						projection: { rid: 1 },
-					}).toArray()
-				).map((s) => s.rid);
-				ourQuery._id = { $in: roomIds };
-			}
-
-			// teams filter - I would love to have a way to apply this filter @ db level :(
-			const ids = (await Subscriptions.findByUserId(this.userId, { projection: { rid: 1 } }).toArray()).map(
-				(item: Record<string, any>) => item.rid,
-			);
-
-			ourQuery.$or = [
-				{
-					teamId: {
-						$exists: false,
-					},
-				},
-				{
-					teamId: {
-						$exists: true,
-					},
-					_id: {
-						$in: ids,
-					},
-				},
-			];
-
-			const { cursor, totalCount } = Rooms.findPaginated(ourQuery, {
-				sort: sort || { name: 1 },
-				skip: offset,
-				limit: count,
-				projection: fields,
-			});
-
-			const [channels, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				channels: await Promise.all(channels.map((room) => composeRoomWithLastMessage(room, this.userId))),
-				count: channels.length,
-				offset,
-				total,
-			});
+		query: isChannelsListProps,
+		response: {
+			200: channelsListResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort, fields, query } = await this.parseJsonQuery();
+		const hasPermissionToSeeAllPublicChannels = await hasPermissionAsync(this.user, 'view-c-room');
+
+		const { _id } = this.queryParams;
+
+		const ourQuery: Filter<IRoom> = {
+			...query,
+			...(_id ? { _id } : {}),
+			t: 'c',
+		};
+
+		if (!hasPermissionToSeeAllPublicChannels) {
+			const roomIds = (
+				await Subscriptions.findByUserIdAndType(this.userId, 'c', {
+					projection: { rid: 1 },
+				}).toArray()
+			).map((s) => s.rid);
+			ourQuery._id = { $in: roomIds };
+		}
+
+		// teams filter - I would love to have a way to apply this filter @ db level :(
+		const ids = (await Subscriptions.findByUserId(this.userId, { projection: { rid: 1 } }).toArray()).map(
+			(item: Record<string, any>) => item.rid,
+		);
+
+		ourQuery.$or = [
+			{
+				teamId: {
+					$exists: false,
+				},
+			},
+			{
+				teamId: {
+					$exists: true,
+				},
+				_id: {
+					$in: ids,
+				},
+			},
+		];
+
+		const { cursor, totalCount } = Rooms.findPaginated(ourQuery, {
+			sort: sort || { name: 1 },
+			skip: offset,
+			limit: count,
+			projection: fields,
+		});
+
+		const [channels, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return API.v1.success({
+			channels: await Promise.all(channels.map((room) => composeRoomWithLastMessage(room, this.userId))),
+			count: channels.length,
+			offset,
+			total,
+		});
 	},
 );
 
