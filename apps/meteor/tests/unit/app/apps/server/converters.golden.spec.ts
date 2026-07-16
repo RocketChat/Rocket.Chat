@@ -574,6 +574,19 @@ describe('apps converters — golden snapshots (pre-codec behaviour)', () => {
 				extraUpload: true,
 			});
 		});
+
+		it('convertToRocketChat does not throw when the app upload has no room (e.g. deleted room)', () => {
+			const appUpload = {
+				id: 'up-1',
+				name: 'file.png',
+				user: { id: 'user-1' },
+			};
+
+			const result = json(converter.convertToRocketChat(appUpload as any)) as Record<string, unknown>;
+
+			expect(result).to.deep.equal({ _id: 'up-1', name: 'file.png', userId: 'user-1' });
+			expect(result).to.not.have.property('rid');
+		});
 	});
 });
 

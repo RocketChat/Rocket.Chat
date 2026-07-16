@@ -140,7 +140,7 @@ async function getVisitor({ visitor: roomVisitor, visitorChannelInfo }: any) {
 		return;
 	}
 
-	const { lastMessageTs, phone } = visitorChannelInfo;
+	const { lastMessageTs, phone } = visitorChannelInfo || {};
 
 	return {
 		_id: visitor._id,
