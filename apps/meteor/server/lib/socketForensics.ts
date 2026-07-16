@@ -2,7 +2,7 @@ import type { Server, ServerResponse } from 'http';
 import { Socket } from 'net';
 
 const log = (event: string, data: Record<string, unknown>): void => {
-	console.error(`[socket-forensics] ${event}`, JSON.stringify(data));
+	console.error(`[socket-forensics] ${event}`, JSON.stringify({ time: new Date().toISOString(), ...data }));
 };
 
 const isInFlight = (res: ServerResponse): boolean => res.headersSent && !res.writableFinished;
