@@ -38,7 +38,7 @@ const { AISearchService } = proxyquire.noCallThru().load('../../../../../server/
 			protected name = '';
 		},
 	},
-	'../../../app/settings/server': {
+	'../../settings': {
 		settings: cachedSettings,
 	},
 	'@rocket.chat/logger': {
