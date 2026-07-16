@@ -1,4 +1,4 @@
-import { makeFunction } from './makeFunction.js';
+import { makeFunction } from './makeFunction';
 
 describe('Make a simple function', () => {
 	it('should execute the function passed as argument', () => {
