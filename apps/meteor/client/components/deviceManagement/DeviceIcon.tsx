@@ -20,7 +20,7 @@ const DeviceIcon = ({ deviceType }: DeviceIconProps) => (
 		backgroundColor='selected'
 		size='x24'
 		borderRadius='full'
-		mie={8}
+		marginInlineEnd={8}
 	>
 		<Icon name={iconMap[deviceType] || 'globe'} size='x16' color='hint' />
 	</Box>

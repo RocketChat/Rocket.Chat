@@ -23,7 +23,7 @@ const AnalyticsReports = () => {
 						alignItems='center'
 						borderRadius={2}
 						p={4}
-						mie={8}
+						marginInlineEnd={8}
 						backgroundColor='status-background-info'
 					>
 						<Icon name='info' size={20} color='info' />

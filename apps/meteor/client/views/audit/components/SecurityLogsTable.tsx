@@ -182,7 +182,7 @@ const SecurityLogsTable = () => {
 									<GenericTableCell withTruncatedText>
 										<Box display='flex' alignItems='center'>
 											{item.actor.type === 'user' && (
-												<Box mie={4}>
+												<Box marginInlineEnd={4}>
 													<UserAvatar size='x24' userId={item.actor._id} />
 												</Box>
 											)}

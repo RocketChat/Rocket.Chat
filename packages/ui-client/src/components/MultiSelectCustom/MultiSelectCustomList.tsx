@@ -58,7 +58,7 @@ const MultiSelectCustomList = ({
 						</Box>
 					) : (
 						<Option key={option.id}>
-							{option.icon && <OptionIcon name={option.icon.name} color={getIconColor(option.icon.color)} mie={4} />}
+							{option.icon && <OptionIcon name={option.icon.name} color={getIconColor(option.icon.color)} marginInlineEnd={4} />}
 							<Box width='full' display='flex' justifyContent='space-between' is='label'>
 								{t(option.text as TranslationKey)}
 

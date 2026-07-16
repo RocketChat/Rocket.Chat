@@ -56,7 +56,7 @@ const RoomInfoABACSection = ({ room }: RoomInfoABACSectionProps) => {
 								aria-labelledby={`room-attribute-${attribute.key}-label`}
 							>
 								{attribute.values.map((value) => (
-									<Box is='li' mie={4} key={value}>
+									<Box is='li' marginInlineEnd={4} key={value}>
 										<Tag medium>{value}</Tag>
 									</Box>
 								))}

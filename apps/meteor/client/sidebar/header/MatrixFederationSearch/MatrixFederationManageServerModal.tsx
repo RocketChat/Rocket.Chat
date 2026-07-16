@@ -96,7 +96,7 @@ const MatrixFederationAddServerModal = ({ onClickClose }: MatrixFederationAddSer
 									setErrorKey(undefined);
 								}
 							}}
-							mie={4}
+							marginInlineEnd={4}
 						/>
 						<Button onClick={() => addServer()} primary loading={isPending}>
 							{t('Add')}

@@ -36,7 +36,7 @@ const WebdavFilePickerGrid = ({ webdavNodes, onNodeClick, isLoading }: WebdavFil
 
 					return (
 						<WebdavFilePickerGridItem key={index} className={hoverStyle} onClick={(): void => onNodeClick(webdavNode)}>
-							<Icon mie={4} size='x72' name={icon} />
+							<Icon marginInlineEnd={4} size='x72' name={icon} />
 							<Box textAlign='center'>{webdavNode.basename}</Box>
 						</WebdavFilePickerGridItem>
 					);

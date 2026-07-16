@@ -85,7 +85,7 @@ const RealTimeMonitoringPage = () => {
 						<ConversationOverview flexGrow={1} flexShrink={1} width='50%' departmentId={departmentId} dateRange={dateRange} />
 					</Box>
 					<Box display='flex' flexDirection='row' width='full' alignItems='stretch' flexShrink={1}>
-						<ChatsChart flexGrow={1} flexShrink={1} width='50%' mie={2} departmentId={departmentId} dateRange={dateRange} />
+						<ChatsChart flexGrow={1} flexShrink={1} width='50%' marginInlineEnd={2} departmentId={departmentId} dateRange={dateRange} />
 						<ChatsPerAgentChart
 							flexGrow={1}
 							flexShrink={1}
@@ -99,7 +99,7 @@ const RealTimeMonitoringPage = () => {
 						<ChatsOverview flexGrow={1} flexShrink={1} width='50%' departmentId={departmentId} dateRange={dateRange} />
 					</Box>
 					<Box display='flex' flexDirection='row' width='full' alignItems='stretch' flexShrink={1}>
-						<AgentStatusChart flexGrow={1} flexShrink={1} width='50%' mie={2} departmentId={departmentId} />
+						<AgentStatusChart flexGrow={1} flexShrink={1} width='50%' marginInlineEnd={2} departmentId={departmentId} />
 						<ChatsPerDepartmentChart
 							flexGrow={1}
 							flexShrink={1}

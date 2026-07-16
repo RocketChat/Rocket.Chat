@@ -42,7 +42,7 @@ export const PasswordVerifierItem = ({ isValid, ...props }: PasswordVerifierItem
 			aria-hidden='false'
 			aria-labelledby={`${iconId} ${textId}`}
 		>
-			<Icon id={iconId} aria-hidden='false' size='x16' mie={4} {...icon} />
+			<Icon id={iconId} aria-hidden='false' size='x16' marginInlineEnd={4} {...icon} />
 			<span id={textId}>{requirementText}</span>
 		</Box>
 	);

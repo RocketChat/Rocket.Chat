@@ -70,7 +70,7 @@ const FeaturesCard = ({ activeModules, isEnterprise }: FeaturesCardProps) => {
 					{getFeatureSet(activeModules, isEnterprise).map(({ success, title, infoText }, index) => (
 						<Box key={`feature_${index}`} display='flex' alignItems='center' marginBlockEnd={4} width={isSmall ? '50%' : 'full'}>
 							<FramedIcon success={success} icon={success ? 'check' : 'lock'} />
-							<Box is='p' fontScale='p2' marginInlineStart={12} mie={2} color='font-secondary-info'>
+							<Box is='p' fontScale='p2' marginInlineStart={12} marginInlineEnd={2} color='font-secondary-info'>
 								{t(title)}
 							</Box>
 							{infoText && <InfoTextIconModal title={t(title)} infoText={t(infoText)} />}

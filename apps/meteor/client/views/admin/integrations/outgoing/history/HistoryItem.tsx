@@ -58,7 +58,7 @@ const HistoryItem = ({ data }: HistoryItemProps) => {
 			title={
 				<Box display='inline-flex' width='full' flexDirection='row' justifyContent='space-between'>
 					<Box display='flex' flexDirection='row' alignItems='center'>
-						<Icon name='info-circled' size='x16' mie={4} />
+						<Icon name='info-circled' size='x16' marginInlineEnd={4} />
 						{formatDateAndTime(_createdAt)}
 					</Box>
 					<Button secondary onClick={handleClickReplay}>

@@ -158,7 +158,7 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps) => {
 						<Field>
 							<FieldLabel htmlFor={totpCodeId}>{t('Enter_code_provided_by_authentication_app')}</FieldLabel>
 							<FieldRow>
-								<TextInput id={totpCodeId} mie='8px' {...register('authCode')} />
+								<TextInput id={totpCodeId} marginInlineEnd='8px' {...register('authCode')} />
 								<Button primary onClick={handleSubmit(handleVerifyCode)}>
 									{t('Verify')}
 								</Button>

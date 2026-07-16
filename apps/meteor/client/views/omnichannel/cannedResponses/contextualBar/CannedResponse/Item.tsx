@@ -67,7 +67,7 @@ const Item = ({ data, allowUse, onClickItem, onClickUse }: ItemProps) => {
 			{data.tags && data.tags.length > 0 && (
 				<Box display='flex' width='full' flexDirection='row' marginBlockStart='8px' flexWrap='wrap'>
 					{data.tags.map((tag: string, idx: number) => (
-						<Box key={idx} mie='4px' marginBlockEnd='4px'>
+						<Box key={idx} marginInlineEnd='4px' marginBlockEnd='4px'>
 							<Tag>{tag}</Tag>
 						</Box>
 					))}

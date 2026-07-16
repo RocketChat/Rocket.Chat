@@ -103,7 +103,7 @@ const BusinessHoursForm = ({ type }: BusinessHoursFormProps) => {
 				<Field key={dayTime.id}>
 					<FieldLabel>{t(dayTime.day as TranslationKey)}</FieldLabel>
 					<FieldRow>
-						<Box display='flex' flexDirection='column' flexGrow={1} mie={2}>
+						<Box display='flex' flexDirection='column' flexGrow={1} marginInlineEnd={2}>
 							<FieldLabel htmlFor={`${daysTimeField + index}-start`}>{t('Open')}</FieldLabel>
 							<Controller
 								name={`daysTime.${index}.start.time`}

@@ -80,7 +80,7 @@ const ChatsTableFilter = () => {
 					}
 
 					return (
-						<Chip mie={8} marginBlockEnd={8} key={index} onClick={() => removeFilter(value)}>
+						<Chip marginInlineEnd={8} marginBlockEnd={8} key={index} onClick={() => removeFilter(value)}>
 							{label}
 						</Chip>
 					);

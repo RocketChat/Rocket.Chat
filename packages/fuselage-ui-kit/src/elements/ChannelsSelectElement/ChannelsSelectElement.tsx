@@ -33,7 +33,7 @@ const ChannelsSelectElement = ({ block, context }: ChannelsSelectElementProps) =
 			filter={filter}
 			setFilter={setFilter}
 			renderSelected={({ selected: { value, label } }) => (
-				<Chip height='x20' value={value} mie={4}>
+				<Chip height='x20' value={value} marginInlineEnd={4}>
 					<RoomAvatar size='x20' room={{ _id: value, ...label, type: label?.type || 'c' }} />
 					<Box verticalAlign='middle' is='span' margin='none' marginInline={4}>
 						{label.name}

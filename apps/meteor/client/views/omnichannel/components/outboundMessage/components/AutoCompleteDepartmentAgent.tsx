@@ -41,7 +41,7 @@ const AutoCompleteDepartmentAgent = ({ value, onChange, agents, placeholder, ...
 			options={options}
 			renderSelected={({ selected: { value, label }, ...props }) => {
 				return (
-					<Chip {...props} height='x20' value={value} onClick={() => onChange('')} mie={4}>
+					<Chip {...props} height='x20' value={value} onClick={() => onChange('')} marginInlineEnd={4}>
 						<UserAvatar size='x20' username={label} />
 						<Box is='span' margin='none' marginInlineStart={4}>
 							{label}

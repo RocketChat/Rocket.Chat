@@ -103,7 +103,7 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 							<InfoPanelText>
 								<ul aria-labelledby={`${roomId}-tags`}>
 									{tags.map((tag) => (
-										<Box is='li' key={tag} mie={4} display='inline'>
+										<Box is='li' key={tag} marginInlineEnd={4} display='inline'>
 											<Tag style={{ display: 'inline' }} disabled>
 												{tag}
 											</Tag>

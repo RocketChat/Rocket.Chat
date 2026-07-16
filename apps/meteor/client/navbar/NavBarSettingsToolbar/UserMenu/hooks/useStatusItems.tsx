@@ -111,7 +111,7 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 						{contentValue && <MarkdownText content={contentValue} parseEmoji variant='inline' />}
 						{customStatusExpiration && (
 							<Box color='secondary-info' display='flex' alignItems='center'>
-								<Icon name='clock' size='x16' mie={4} />
+								<Icon name='clock' size='x16' marginInlineEnd={4} />
 								{customStatusExpiration}
 							</Box>
 						)}

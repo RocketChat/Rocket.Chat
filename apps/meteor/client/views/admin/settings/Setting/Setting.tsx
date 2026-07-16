@@ -153,7 +153,7 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 
 		return (
 			<>
-				<Box is='span' mie={4}>
+				<Box is='span' marginInlineEnd={4}>
 					{labelText}
 				</Box>
 				<Tag variant='featured'>{t('Premium')}</Tag>

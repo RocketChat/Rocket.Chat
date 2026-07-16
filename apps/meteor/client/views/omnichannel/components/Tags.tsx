@@ -104,7 +104,7 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 			{customTags.length > 0 && (
 				<FieldRow justifyContent='flex-start'>
 					{customTags?.map((tag, i) => (
-						<Chip key={i} onClick={(): void => removeTag(tag)} mie={8}>
+						<Chip key={i} onClick={(): void => removeTag(tag)} marginInlineEnd={8}>
 							{tag}
 						</Chip>
 					))}

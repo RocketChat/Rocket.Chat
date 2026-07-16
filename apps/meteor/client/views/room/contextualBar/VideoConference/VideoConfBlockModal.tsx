@@ -9,7 +9,7 @@ const VideoConfBlockModal = ({ onClose, onConfirm }: { onClose: () => void; onCo
 
 	const confirmButtonContent = (
 		<Box>
-			<Icon mie={8} size='x20' name='new-window' />
+			<Icon marginInlineEnd={8} size='x20' name='new-window' />
 			{t('Open_call')}
 		</Box>
 	);

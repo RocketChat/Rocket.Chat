@@ -43,7 +43,7 @@ const DepartmentTags = ({ error, value: tags, onChange, ...props }: DepartmentTa
 			{tags?.length > 0 && (
 				<FieldRow justifyContent='flex-start'>
 					{tags.map((tag, i) => (
-						<Chip key={i} onClick={handleTagChipClick(tag)} mie={8}>
+						<Chip key={i} onClick={handleTagChipClick(tag)} marginInlineEnd={8}>
 							{tag}
 						</Chip>
 					))}

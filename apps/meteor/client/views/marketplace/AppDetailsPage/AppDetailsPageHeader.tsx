@@ -37,12 +37,12 @@ const AppDetailsPageHeader = ({ app }: AppDetailsPageHeaderProps) => {
 
 	return (
 		<Box color='default' display='flex' flexDirection='row' marginBlockEnd={20} width='full'>
-			<Box mie={32}>
+			<Box marginInlineEnd={32}>
 				<AppAvatar size='x124' iconFileContent={iconFileContent} iconFileData={iconFileData} />
 			</Box>
 			<Box display='flex' flexDirection='column'>
 				<Box display='flex' flexDirection='row' alignItems='center' marginBlockEnd={8}>
-					<Box fontScale='h1' mie={8}>
+					<Box fontScale='h1' marginInlineEnd={8}>
 						{name}
 					</Box>
 					{bundledIn && Boolean(bundledIn.length) && <BundleChips bundledIn={bundledIn} />}

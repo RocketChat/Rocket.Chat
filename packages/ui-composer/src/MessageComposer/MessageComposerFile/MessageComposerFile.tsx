@@ -80,7 +80,7 @@ const MessageComposerFile = ({
 			position='relative'
 			height='x58'
 			width='x234'
-			mie={8}
+			marginInlineEnd={8}
 			onClick={handleClick}
 			{...props}
 		>

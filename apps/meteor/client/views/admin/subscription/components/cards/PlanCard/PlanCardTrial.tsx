@@ -26,7 +26,7 @@ const PlanCardTrial = ({ licenseInformation }: PlanCardProps) => {
 			<CardBody flexDirection='column'>
 				{visualExpiration && (
 					<CardRow>
-						<Box fontScale='p2b' mie={8}>
+						<Box fontScale='p2b' marginInlineEnd={8}>
 							{t('Trial_active')}
 						</Box>
 						<Tag>{t('n_days_left', { n: differenceInDays(new Date(visualExpiration), new Date()) })}</Tag>

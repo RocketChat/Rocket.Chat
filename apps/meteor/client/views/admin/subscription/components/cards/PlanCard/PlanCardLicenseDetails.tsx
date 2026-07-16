@@ -34,7 +34,7 @@ const PlanCardLicenseDetails = () => {
 			<Divider />
 			<Box>
 				<Box display='flex'>
-					<Box mie={4}>{t('Site_Url')}</Box>
+					<Box marginInlineEnd={4}>{t('Site_Url')}</Box>
 					{hasCopiedSiteURL ? (
 						<IconButton success icon='check' mini />
 					) : (
@@ -47,7 +47,7 @@ const PlanCardLicenseDetails = () => {
 			</Box>
 			<Box>
 				<Box display='flex'>
-					<Box mie={4}>{t('Hashed_Site_Url')}</Box>
+					<Box marginInlineEnd={4}>{t('Hashed_Site_Url')}</Box>
 					{hasCopiedHashed ? (
 						<IconButton success icon='check' mini />
 					) : (

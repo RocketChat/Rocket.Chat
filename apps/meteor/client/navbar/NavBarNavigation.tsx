@@ -16,7 +16,7 @@ const NavbarNavigation = () => {
 				<NavBarSearch />
 			</FocusScope>
 			{!isMobile && (
-				<Box mie={8}>
+				<Box marginInlineEnd={8}>
 					<NavBarGroup aria-label={t('History_navigation')}>
 						<NavBarItem title={t('Back_in_history')} onClick={() => navigate(-1)} icon='chevron-right' small />
 						<NavBarItem title={t('Forward_in_history')} onClick={() => navigate(1)} icon='chevron-left' small />

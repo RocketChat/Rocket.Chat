@@ -113,7 +113,7 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 							{t('Contact')}
 						</Box>
 						<Box display='flex' flexDirection='row' flexGrow={1} justifyContent='space-around' flexWrap='wrap' marginBlockEnd={24}>
-							<Box display='flex' flexDirection='column' mie={12} flexGrow={1}>
+							<Box display='flex' flexDirection='column' marginInlineEnd={12} flexGrow={1}>
 								<Box fontScale='h4' color='hint'>
 									{t('Author_Site')}
 								</Box>

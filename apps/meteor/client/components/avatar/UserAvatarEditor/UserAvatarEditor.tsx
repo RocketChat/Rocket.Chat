@@ -135,7 +135,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 										title={t('Add_URL')}
 										onClick={handleAddUrl}
 										marginBlock={-4}
-										mie={-4}
+										marginInlineEnd={-4}
 									/>
 								}
 								disabled={disabled}

@@ -34,7 +34,7 @@ const OutlookSettingItem = ({ id, title, subTitle, enabled, handleEnable }: Outl
 			display='flex'
 			justifyContent='space-between'
 		>
-			<Box mie={8}>
+			<Box marginInlineEnd={8}>
 				<Box fontScale='h4'>{title}</Box>
 				<Box fontScale='p2'>{subTitle}</Box>
 			</Box>

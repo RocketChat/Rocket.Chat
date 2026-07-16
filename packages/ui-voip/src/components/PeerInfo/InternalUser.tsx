@@ -23,7 +23,7 @@ const InternalUser = ({ displayName, avatarUrl, callerId, status, slots, remoteM
 	const remoteStatusText = getRemoteStatusText(slots);
 	return (
 		<Box display='flex' flexDirection='row' id='rcx-media-call-widget-caller-info'>
-			<Box mie={8}>{avatarUrl ? <Avatar url={avatarUrl} size='x20' /> : <Icon name='user' size='x20' />}</Box>
+			<Box marginInlineEnd={8}>{avatarUrl ? <Avatar url={avatarUrl} size='x20' /> : <Icon name='user' size='x20' />}</Box>
 			<Box display='flex' flexDirection='column' flexGrow={1}>
 				<Box display='flex' flexDirection='row' alignItems='center' fontScale='p2b' color='default' justifyContent='space-between'>
 					<Box is='span' display='flex' flexDirection='row' alignItems='center'>
