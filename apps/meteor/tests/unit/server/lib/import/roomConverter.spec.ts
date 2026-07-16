@@ -19,16 +19,13 @@ const createDirectMessage = sinon.stub();
 const saveRoomSettings = sinon.stub();
 
 const { RoomConverter } = proxyquire.noCallThru().load('../../../../../server/lib/import/classes/converters/RoomConverter', {
-	'../../../settings/server': {
-		settings: { get: settingsStub },
-	},
 	'../../../../meteor-methods/messages/createDirectMessage': {
 		createDirectMessage,
 	},
 	'../../../../meteor-methods/rooms/saveRoomSettings': {
 		saveRoomSettings,
 	},
-	'../../../../../app/lib/server/lib/notifyListener': {
+	'../../../notifyListener': {
 		notifyOnSubscriptionChangedByRoomId: sinon.stub(),
 	},
 	'../../../../meteor-methods/rooms/createChannel': {

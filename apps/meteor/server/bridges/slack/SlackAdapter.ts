@@ -16,9 +16,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { SlackAPI } from './SlackAPI';
 import { slackLogger } from './logger';
-import { saveRoomName, saveRoomTopic } from '../../../app/channel-settings/server';
-import { settings } from '../../../app/settings/server';
-import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
 import { FileUpload } from '../../lib/media/file-upload';
 import { deleteMessage } from '../../lib/messages/deleteMessage';
 import { sendMessage } from '../../lib/messages/sendMessage';
@@ -27,7 +24,10 @@ import { executeSetReaction } from '../../lib/messaging/reactions/setReaction';
 import { addUserToRoom } from '../../lib/rooms/addUserToRoom';
 import { archiveRoom } from '../../lib/rooms/archiveRoom';
 import { removeUserFromRoom } from '../../lib/rooms/removeUserFromRoom';
+import { saveRoomName, saveRoomTopic } from '../../lib/rooms/settings';
 import { unarchiveRoom } from '../../lib/rooms/unarchiveRoom';
+import { getUserAvatarURL } from '../../lib/utils/getUserAvatarURL';
+import { settings } from '../../settings';
 
 export default class SlackAdapter {
 	constructor(slackBridge) {

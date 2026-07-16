@@ -2,7 +2,7 @@ import { api } from '@rocket.chat/core-services';
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import { Messages, Uploads, ReadReceipts, ReadReceiptsArchive } from '@rocket.chat/models';
 
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 import { FileUpload } from '../media/file-upload';
 
 // heavily inspired from message delete taking place in the user deletion process

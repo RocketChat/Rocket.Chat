@@ -60,7 +60,7 @@ proxyquire.noCallThru().load('../../../../server/lib/license/airGappedRestrictio
 			findLastStatsToken: mocks.findLastToken,
 		},
 	},
-	'../../../../app/lib/server/lib/notifyListener': {
+	'../../../../server/lib/notifyListener': {
 		notifyOnSettingChangedById: mocks.notifySetting,
 	},
 	'../../../../server/lib/i18n': {

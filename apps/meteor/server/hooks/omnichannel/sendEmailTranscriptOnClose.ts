@@ -2,9 +2,9 @@ import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 
-import type { CloseRoomParams } from '../../../app/livechat/server/lib/localTypes';
-import { sendTranscript } from '../../../app/livechat/server/lib/sendTranscript';
 import { callbacks } from '../../lib/callbacks';
+import type { CloseRoomParams } from '../../lib/omnichannel/localTypes';
+import { sendTranscript } from '../../lib/omnichannel/sendTranscript';
 
 type LivechatCloseCallbackParams = {
 	room: IOmnichannelRoom;

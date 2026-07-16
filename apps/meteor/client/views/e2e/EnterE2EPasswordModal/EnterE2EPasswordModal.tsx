@@ -80,7 +80,7 @@ const EnterE2EPasswordModal = ({ onConfirm, onClose, onCancel }: EnterE2EPasswor
 			onCancel={onCancel}
 		>
 			<Box>{t('E2E_password_request_text')}</Box>
-			<FieldGroup mbs={24} w='full'>
+			<FieldGroup marginBlockStart={24} width='full'>
 				<Field>
 					<FieldRow>
 						<Controller

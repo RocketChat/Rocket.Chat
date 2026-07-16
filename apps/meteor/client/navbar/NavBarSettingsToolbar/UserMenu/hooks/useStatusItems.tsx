@@ -86,7 +86,7 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 					id: 'presence-disabled',
 					content: (
 						<Box fontScale='p2'>
-							<Box mbe={4} wordBreak='break-word' style={{ whiteSpace: 'normal' }}>
+							<Box marginBlockEnd={4} wordBreak='break-word' style={{ whiteSpace: 'normal' }}>
 								{t('User_status_disabled')}
 							</Box>
 							<Box is='a' color='info' onClick={handleStatusDisabledModal}>
@@ -111,7 +111,7 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 						{contentValue && <MarkdownText content={contentValue} parseEmoji variant='inline' />}
 						{customStatusExpiration && (
 							<Box color='secondary-info' display='flex' alignItems='center'>
-								<Icon name='clock' size='x16' mie={4} />
+								<Icon name='clock' size='x16' marginInlineEnd={4} />
 								{customStatusExpiration}
 							</Box>
 						)}

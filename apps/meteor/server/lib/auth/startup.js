@@ -9,22 +9,22 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { isValidAttemptByUser, isValidLoginAttemptByIp } from './restrictLoginAttempts';
-import { notifyOnSettingChangedById } from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
-import { getBaseUserFields } from '../../../app/utils/server/functions/getBaseUserFields';
 import { parseCSV } from '../../../lib/utils/parseCSV';
 import { safeHtmlDots } from '../../../lib/utils/safeHtmlDots';
 import { getNewUserRoles } from '../../services/user/lib/getNewUserRoles';
+import { settings } from '../../settings';
 import { callbacks } from '../callbacks';
 import { beforeCreateUserCallback } from '../callbacks/beforeCreateUserCallback';
 import { getClientAddress } from '../getClientAddress';
 import { getMaxLoginTokens } from '../getMaxLoginTokens';
 import { i18n } from '../i18n';
 import * as Mailer from '../notifications/email/api';
+import { notifyOnSettingChangedById } from '../notifyListener';
 import { addUserRolesAsync } from '../roles/addUserRoles';
 import { joinDefaultChannels } from '../rooms/joinDefaultChannels';
 import { getAvatarSuggestionForUser } from '../users/getAvatarSuggestionForUser';
 import { setAvatarFromServiceWithValidation } from '../users/setUserAvatar';
+import { getBaseUserFields } from '../utils/functions/getBaseUserFields';
 
 Accounts.config({
 	forbidClientAccountCreation: true,

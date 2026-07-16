@@ -10,7 +10,7 @@ import {
 	removeSlaFromRoom,
 	updateInquiryQueueSla,
 	updateRoomSlaWeights,
-} from '../../../../../app/livechat-enterprise/server/lib/SlaHelper';
+} from '../../../../lib/omnichannel/SlaHelper';
 
 type FindSLAParams = {
 	text?: string;

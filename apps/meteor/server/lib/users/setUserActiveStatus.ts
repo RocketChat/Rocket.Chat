@@ -6,15 +6,15 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
+import { settings } from '../../settings';
+import { callbacks } from '../callbacks';
+import * as Mailer from '../notifications/email/api';
 import {
 	notifyOnRoomChangedById,
 	notifyOnRoomChangedByUserDM,
 	notifyOnSubscriptionChangedByNameAndRoomType,
 	notifyOnUserChange,
-} from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
-import { callbacks } from '../callbacks';
-import * as Mailer from '../notifications/email/api';
+} from '../notifyListener';
 import { closeOmnichannelConversations } from '../omnichannel/closeOmnichannelConversations';
 import { shouldRemoveOrChangeOwner, getSubscribedRoomsForUserWithDetails } from '../rooms/getRoomsWithSingleOwner';
 import { relinquishRoomOwnerships } from '../rooms/relinquishRoomOwnerships';

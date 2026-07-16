@@ -7,18 +7,18 @@ import { Meteor } from 'meteor/meteor';
 import type { UpdateFilter } from 'mongodb';
 
 import { setEmailFunction } from './setEmail';
-import { notifyOnUserChange } from '../../../app/lib/server/lib/notifyListener';
-import { passwordPolicy } from '../../../app/lib/server/lib/passwordPolicy';
-import { settings as rcSettings } from '../../../app/settings/server';
-import { setUserStatusMethod } from '../../../app/user-status/server/methods/setUserStatus';
+import { setUserStatusMethod } from './setUserStatus';
 import { getUserInfo } from '../../api/lib/getUserInfo';
 import { type AuthenticatedContext, twoFactorRequired } from '../../lib/2fa/twoFactorRequired';
+import { passwordPolicy } from '../../lib/auth/passwordPolicy';
 import { callbacks } from '../../lib/callbacks';
 import { compareUserPassword } from '../../lib/compareUserPassword';
 import { compareUserPasswordHistory } from '../../lib/compareUserPasswordHistory';
+import { notifyOnUserChange } from '../../lib/notifyListener';
 import { saveCustomFields } from '../../lib/users/saveCustomFields';
 import { validateUserEditing } from '../../lib/users/saveUser';
 import { saveUserIdentity } from '../../lib/users/saveUserIdentity';
+import { settings as rcSettings } from '../../settings';
 
 const MAX_BIO_LENGTH = 260;
 const MAX_NICKNAME_LENGTH = 120;

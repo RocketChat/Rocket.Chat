@@ -23,11 +23,11 @@ const AgentInfoDetails = ({ name, shortName, status = <UserStatus.Offline />, ..
 		{...props}
 	>
 		{status}{' '}
-		<Box mis={8} flexGrow={1} withTruncatedText>
+		<Box marginInlineStart={8} flexGrow={1} withTruncatedText>
 			{name}
 		</Box>
 		{shortName && (
-			<Box display='flex' mis={8} mb={8} justifyContent='center' fontScale='c1'>
+			<Box display='flex' marginInlineStart={8} marginBlock={8} justifyContent='center' fontScale='c1'>
 				({shortName})
 			</Box>
 		)}

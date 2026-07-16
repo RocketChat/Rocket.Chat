@@ -37,7 +37,7 @@ const AgentEditWithData = ({ uid }: AgentEditWithDataProps) => {
 	}
 
 	if (error || agentsDepartmentsError || !data?.user) {
-		return <Box p={16}>{t('User_not_found')}</Box>;
+		return <Box padding={16}>{t('User_not_found')}</Box>;
 	}
 
 	return <AgentEdit agentData={data.user} agentDepartments={agentDepartments.departments} />;

@@ -4,8 +4,8 @@ import { capitalize } from '@rocket.chat/string-helpers';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { notifyOnSettingChangedById } from '../../../app/lib/server/lib/notifyListener';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { notifyOnSettingChangedById } from '../../lib/notifyListener';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

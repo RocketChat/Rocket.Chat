@@ -1,8 +1,8 @@
 import { AirGappedRestriction, License } from '@rocket.chat/license';
 import { Settings, Statistics } from '@rocket.chat/models';
 
-import { notifyOnSettingChangedById } from '../../../../app/lib/server/lib/notifyListener';
 import { i18n } from '../../../../server/lib/i18n';
+import { notifyOnSettingChangedById } from '../../../../server/lib/notifyListener';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
 import { updateAuditedBySystem } from '../../../../server/settings/lib/auditedSettingUpdates';
 

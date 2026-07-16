@@ -136,7 +136,7 @@ const ThreadList = () => {
 					value={searchText}
 					onChange={handleSearchTextChange}
 				/>
-				<Box w='x144' mis={8}>
+				<Box width='x144' marginInlineStart={8}>
 					<Select
 						aria-controls={isSuccess ? threadListId : undefined}
 						options={typeOptions}
@@ -148,17 +148,17 @@ const ThreadList = () => {
 			<ContextualbarContent paddingInline={0} ref={ref}>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
 				{isPending && (
-					<Box pi={24} pb={12}>
+					<Box paddingInline={24} paddingBlock={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}
 				{error && (
-					<Callout mi={24} type='danger'>
+					<Callout marginInline={24} type='danger'>
 						{getErrorMessage(error, t('Something_went_wrong'))}
 					</Callout>
 				)}
 				{isSuccess && (
-					<Box id={threadListId} w='full' h='full' overflow='hidden' flexShrink={1}>
+					<Box id={threadListId} width='full' height='full' overflow='hidden' flexShrink={1}>
 						{items.length === 0 && <ContextualbarEmptyContent title={t('No_Threads')} />}
 						{items.length > 0 && (
 							<VirtualizedScrollbars>

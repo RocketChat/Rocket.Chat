@@ -22,7 +22,7 @@ const RoleHeader = ({ _id, name, description }: RoleHeaderProps) => {
 	});
 
 	return (
-		<GenericTableHeaderCell pi={4} p={8}>
+		<GenericTableHeaderCell paddingInline={4} padding={8}>
 			<Button small icon='edit' secondary onClick={handleEditRole}>
 				{description || name}
 			</Button>

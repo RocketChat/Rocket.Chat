@@ -35,13 +35,26 @@ test.describe('Preview public channel', () => {
 	test.describe('User', () => {
 		test.use({ storageState: Users.user1.state });
 
-		test('should let user preview public rooms messages', async ({ page }) => {
-			await page.goto('/home');
-
-			await poHomeChannel.navbar.btnDirectory.click();
+		test('should let user preview public rooms messages', async () => {
+			await poDirectory.goto();
 			await poDirectory.openChannel(targetChannel);
 
 			await expect(poHomeChannel.content.lastUserMessageBody).toContainText(targetChannelMessage);
+		});
+
+		test('should disable all composer toolbar actions during channel preview', async () => {
+			await poDirectory.goto();
+			await poDirectory.openChannel(targetChannel);
+			await poHomeChannel.content.waitForChannel();
+
+			await expect(poHomeChannel.composer.btnJoinRoom).toBeVisible();
+
+			const actions = await poHomeChannel.composer.allPrimaryActions.all();
+			await Promise.all(
+				actions.map(async (action) => {
+					await expect(action).toBeDisabled();
+				}),
+			);
 		});
 
 		test('should let user view direct rooms', async ({ api, page }) => {
@@ -56,12 +69,10 @@ test.describe('Preview public channel', () => {
 			await expect(poHomeChannel.composer.inputMessage).toBeEnabled();
 		});
 
-		test('should not let user role preview public rooms', async ({ api, page }) => {
+		test('should not let user role preview public rooms', async ({ api }) => {
 			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin'] }] });
 
-			await page.goto('/home');
-
-			await poHomeChannel.navbar.btnDirectory.click();
+			await poDirectory.goto();
 			await poDirectory.openChannel(targetChannel);
 
 			await expect(poHomeChannel.btnJoinChannel).toBeVisible();
@@ -76,9 +87,7 @@ test.describe('Preview public channel', () => {
 		test('should prevent user from join the room', async ({ api, page }) => {
 			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin', 'user', 'anonymous'] }] });
 
-			await page.goto('/home');
-
-			await poHomeChannel.navbar.btnDirectory.click();
+			await poDirectory.goto();
 			await poDirectory.openChannel(targetChannel);
 
 			await expect(poHomeChannel.content.lastUserMessageBody).toContainText(targetChannelMessage);
@@ -95,9 +104,7 @@ test.describe('Preview public channel', () => {
 		test('should prevent user from join the room without preview permission', async ({ api, page }) => {
 			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin'] }] });
 
-			await page.goto('/home');
-
-			await poHomeChannel.navbar.btnDirectory.click();
+			await poDirectory.goto();
 			await poDirectory.openChannel(targetChannel);
 			await expect(poHomeChannel.content.lastUserMessageBody).not.toBeVisible();
 

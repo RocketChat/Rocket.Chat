@@ -6,7 +6,7 @@ import UserCardInfo from './UserCardInfo';
 export type UserCardRolesProps = { children: ReactNode };
 
 const UserCardRoles = ({ children }: UserCardRolesProps) => (
-	<Box m='neg-x2'>
+	<Box margin='neg-x2'>
 		<UserCardInfo flexWrap='wrap' display='flex' flexShrink={0}>
 			{children}
 		</UserCardInfo>

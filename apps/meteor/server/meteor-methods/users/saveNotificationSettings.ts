@@ -4,9 +4,9 @@ import { Subscriptions } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
-import { notifyOnSubscriptionChangedById } from '../../../app/lib/server/lib/notifyListener';
-import { getUserNotificationPreference } from '../../../app/utils/server/getUserNotificationPreference';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
+import { notifyOnSubscriptionChangedById } from '../../lib/notifyListener';
+import { getUserNotificationPreference } from '../../lib/utils/getUserNotificationPreference';
 
 const saveAudioNotificationValue = (subId: ISubscription['_id'], value: string) =>
 	value === 'default' ? Subscriptions.clearAudioNotificationValueById(subId) : Subscriptions.updateAudioNotificationValueById(subId, value);

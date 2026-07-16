@@ -21,7 +21,7 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 			ref={ref}
 			onClick={onClick}
 			alignItems='center'
-			bg={selectedCategoriesCount ? colorTokens.b500 : 'light'}
+			backgroundColor={selectedCategoriesCount ? colorTokens.b500 : 'light'}
 			borderColor={selectedCategoriesCount ? 'none' : 'light'}
 			borderRadius='x4'
 			borderWidth={selectedCategoriesCount ? 'none' : 'x1'}
@@ -31,8 +31,8 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 			justifyContent='space-between'
 			minWidth='x144'
 			height='x40'
-			pie={7}
-			pis={14}
+			paddingInlineEnd={7}
+			paddingInlineStart={14}
 			lineHeight='unset'
 			rcx-input-box
 			{...props}
@@ -41,18 +41,18 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 				<Box
 					is='span'
 					alignItems='center'
-					bg='light'
+					backgroundColor='light'
 					borderRadius='x32'
 					color='info'
 					display='flex'
 					fontSize='micro'
 					fontWeight={700}
-					h='fit-content'
+					height='fit-content'
 					justifyContent='center'
-					mie={6}
+					marginInlineEnd={6}
 					minWidth={22}
-					pb={4}
-					pi={0}
+					paddingBlock={4}
+					paddingInline={0}
 				>
 					{selectedCategoriesCount}
 				</Box>
@@ -60,7 +60,7 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 			<Box is='span' display='flex' flexGrow={1} fontScale='p2' color={selectedCategoriesCount ? 'white' : 'hint'}>
 				{selectedCategoriesCount > 0 ? t('Categories') : t('All_categories')}
 			</Box>
-			<Box mi={4} display='flex' alignItems='center' justifyContent='center'>
+			<Box marginInline={4} display='flex' alignItems='center' justifyContent='center'>
 				<Icon name='chevron-down' size='x20' color={selectedCategoriesCount ? 'white' : 'hint'} />
 			</Box>
 		</Box>

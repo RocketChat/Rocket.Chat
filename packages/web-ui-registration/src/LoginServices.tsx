@@ -41,7 +41,7 @@ const LoginServices = ({ disabled, setError }: LoginServicesProps) => {
 	return (
 		<>
 			{showFormLogin && (
-				<Divider mb={24} p={0}>
+				<Divider marginBlock={24} padding={0}>
 					{t('registration.component.form.divider')}
 				</Divider>
 			)}

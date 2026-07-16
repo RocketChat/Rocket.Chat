@@ -8,7 +8,7 @@ const CallHistoryTableDirection = ({ direction }: CallHistoryTableDirectionProps
 	const iconName = direction === 'outbound' ? 'arrow-up-right' : 'arrow-down-left';
 	return (
 		<Box display='flex' flexDirection='row' alignItems='center'>
-			<Icon name={iconName} color='primary' size={20} mie={8} />
+			<Icon name={iconName} color='primary' size={20} marginInlineEnd={8} />
 			{t('Voice')}
 		</Box>
 	);

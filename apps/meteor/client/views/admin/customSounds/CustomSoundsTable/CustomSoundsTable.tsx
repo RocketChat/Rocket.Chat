@@ -59,7 +59,7 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 				{t('Name')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell w='x40' key='action' />
+			<GenericTableHeaderCell width='x40' key='action' />
 		</>
 	);
 

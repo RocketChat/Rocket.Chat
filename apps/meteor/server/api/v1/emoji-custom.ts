@@ -6,11 +6,11 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 import type { WithId } from 'mongodb';
 
-import { settings } from '../../../app/settings/server';
 import type { EmojiData } from '../../lib/media/emoji-custom/lib/insertOrUpdateEmoji';
 import { insertOrUpdateEmoji } from '../../lib/media/emoji-custom/lib/insertOrUpdateEmoji';
 import { uploadEmojiCustomWithBuffer } from '../../lib/media/emoji-custom/lib/uploadEmojiCustom';
 import { deleteEmojiCustom } from '../../meteor-methods/media/deleteEmojiCustom';
+import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { findEmojisCustom } from '../lib/emoji-custom';

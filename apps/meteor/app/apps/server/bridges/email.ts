@@ -3,7 +3,7 @@ import { EmailBridge } from '@rocket.chat/apps/dist/server/bridges/EmailBridge';
 import type { IEmail } from '@rocket.chat/apps-engine/definition/email';
 
 import * as Mailer from '../../../../server/lib/notifications/email/api';
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 
 export class AppEmailBridge extends EmailBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {

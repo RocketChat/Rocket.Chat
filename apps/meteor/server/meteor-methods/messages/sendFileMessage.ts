@@ -14,10 +14,10 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { executeSendMessage } from './sendMessage';
-import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
 import { getFileExtension } from '../../../lib/utils/getFileExtension';
 import { canAccessRoomAsync } from '../../lib/authorization/canAccessRoom';
 import { callbacks } from '../../lib/callbacks';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { SystemLogger } from '../../lib/logger/system';
 import { isImagePreviewSupported } from '../../lib/media/file-upload/isImagePreviewSupported';
 import { FileUpload } from '../../lib/media/file-upload/lib/FileUpload';

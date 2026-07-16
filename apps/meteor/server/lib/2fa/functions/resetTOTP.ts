@@ -2,11 +2,11 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { notifyOnUserChange } from '../../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../settings';
 import { i18n } from '../../i18n';
 import { isUserIdFederated } from '../../isUserIdFederated';
 import * as Mailer from '../../notifications/email/api';
+import { notifyOnUserChange } from '../../notifyListener';
 
 const sendResetNotification = async function (uid: string): Promise<void> {
 	const user = await Users.findOneById<Pick<IUser, 'language' | 'emails'>>(uid, {

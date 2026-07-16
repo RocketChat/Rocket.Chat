@@ -10,10 +10,10 @@ import { stripHtml } from 'string-strip-html';
 import _ from 'underscore';
 
 import { replaceVariables } from './replaceVariables';
-import { notifyOnSettingChanged } from '../../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../../app/settings/server';
 import { strLeft, strRightBack } from '../../../../lib/utils/stringUtils';
+import { settings } from '../../../settings';
 import { i18n } from '../../i18n';
+import { notifyOnSettingChanged } from '../../notifyListener';
 
 let contentHeader: string | undefined;
 let contentFooter: string | undefined;

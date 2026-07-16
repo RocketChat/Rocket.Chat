@@ -22,7 +22,7 @@ const livechatStub = {
 const hasPermissionStub = sinon.stub();
 
 const { closeLivechatRoom } = proxyquire.noCallThru().load('../../../../../server/lib/omnichannel/closeLivechatRoom.ts', {
-	'../../../app/livechat/server/lib/closeRoom': livechatStub,
+	'./closeRoom': livechatStub,
 	'../authorization/hasPermission': {
 		hasPermissionAsync: hasPermissionStub,
 	},

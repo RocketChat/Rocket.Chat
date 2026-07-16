@@ -58,7 +58,7 @@ const CallHistoryTableStatus = ({ status, duration }: CallHistoryTableStatusProp
 
 	return (
 		<Box display='flex' flexDirection='row' alignItems='center' color={variant}>
-			<Icon name={icon} color={variant} size={20} mie={8} />
+			<Icon name={icon} color={variant} size={20} marginInlineEnd={8} />
 			{getCallStateText(status, t)}
 			{durationText && <> - {durationText}</>}
 		</Box>

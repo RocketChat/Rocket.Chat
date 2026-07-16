@@ -43,7 +43,7 @@ const ActionConfirmModal = ({ isPassword, onConfirm, onCancel }: ActionConfirmMo
 			title={t('Delete_account?')}
 			confirmText={t('Delete_account')}
 		>
-			<FieldGroup w='full'>
+			<FieldGroup width='full'>
 				<Field>
 					<FieldLabel required htmlFor={credentialFieldId}>
 						{isPassword ? t('Enter_your_password_to_delete_your_account') : t('Enter_your_username_to_delete_your_account')}

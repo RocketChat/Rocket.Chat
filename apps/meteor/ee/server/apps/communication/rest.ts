@@ -16,7 +16,6 @@ import { registerAppLogsDistinctInstanceHandler } from './endpoints/appLogsDisti
 import { registerAppLogsExportHandler } from './endpoints/appLogsExportHandler';
 import { registerAppLogsHandler } from './endpoints/appLogsHandler';
 import { registerAppsCountHandler } from './endpoints/appsCountHandler';
-import { settings } from '../../../../app/settings/server';
 import { Info } from '../../../../app/utils/rocketchat.info';
 import { API } from '../../../../server/api';
 import type { APIClass } from '../../../../server/api/ApiClass';
@@ -29,6 +28,7 @@ import { i18n } from '../../../../server/lib/i18n';
 import { metrics } from '../../../../server/lib/metrics';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
 import { AppsEngineNoNodesFoundError } from '../../../../server/services/apps-engine/service';
+import { settings } from '../../../../server/settings';
 import { fetchAppsStatusFromCluster } from '../../../lib/misc/fetchAppsStatusFromCluster';
 import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceForRest';
 import { canEnableApp } from '../../lib/license/canEnableApp';

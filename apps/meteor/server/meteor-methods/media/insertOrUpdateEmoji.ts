@@ -1,7 +1,7 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { insertOrUpdateEmoji } from '../../lib/media/emoji-custom/lib/insertOrUpdateEmoji';
 
 declare module '@rocket.chat/ddp-client' {

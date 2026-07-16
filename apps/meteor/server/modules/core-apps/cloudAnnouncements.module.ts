@@ -11,13 +11,13 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { isTruthy } from '@rocket.chat/tools';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
-import { settings } from '../../../app/settings/server';
 import { CloudWorkspaceConnectionError } from '../../../lib/errors/CloudWorkspaceConnectionError';
 import { InvalidCloudAnnouncementInteractionError } from '../../../lib/errors/InvalidCloudAnnouncementInteractionError';
 import { InvalidCoreAppInteractionError } from '../../../lib/errors/InvalidCoreAppInteractionError';
 import { getWorkspaceAccessToken } from '../../lib/cloud';
 import { syncWorkspace } from '../../lib/cloud/syncWorkspace';
 import { SystemLogger } from '../../lib/logger/system';
+import { settings } from '../../settings';
 
 type CloudAnnouncementInteractant =
 	| {

@@ -38,7 +38,7 @@ const TwoFactorEmail = (props: ComponentProps<typeof Box>) => {
 	);
 
 	return (
-		<Box display='flex' flexDirection='column' alignItems='flex-start' mbs={16} {...props}>
+		<Box display='flex' flexDirection='column' alignItems='flex-start' marginBlockStart={16} {...props}>
 			<Margins blockEnd={8}>
 				<Field>
 					<FieldRow>
