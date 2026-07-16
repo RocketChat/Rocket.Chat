@@ -65,7 +65,7 @@ const AttributesPage = () => {
 						value={text}
 						onChange={(e) => setText((e.target as HTMLInputElement).value)}
 					/>
-					<Button onClick={handleNewAttribute} primary mis={8} disabled={!isABACAvailable}>
+					<Button onClick={handleNewAttribute} primary marginInlineStart={8} disabled={!isABACAvailable}>
 						{t('ABAC_New_attribute')}
 					</Button>
 				</Box>
@@ -80,7 +80,7 @@ const AttributesPage = () => {
 						<GenericTableHeader>
 							<GenericTableHeaderCell>{t('Name')}</GenericTableHeaderCell>
 							<GenericTableHeaderCell>{t('Value')}</GenericTableHeaderCell>
-							<GenericTableHeaderCell key='spacer' w={40} />
+							<GenericTableHeaderCell key='spacer' width={40} />
 						</GenericTableHeader>
 						<GenericTableBody>
 							{data?.attributes?.map((attribute) => (

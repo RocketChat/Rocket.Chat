@@ -48,9 +48,9 @@ const MediaCallPopoutView = ({ user, onClickClosePopout, onClickFullscreen, full
 			is='main'
 			aria-label={t('Voice_call')}
 			id='outer-element'
-			w='full'
-			h='full'
-			bg='surface-tint'
+			width='full'
+			height='full'
+			backgroundColor='surface-tint'
 			overflow='hidden'
 			display='flex'
 			flexDirection='column'
@@ -59,7 +59,7 @@ const MediaCallPopoutView = ({ user, onClickClosePopout, onClickFullscreen, full
 			<MediaCallCardList user={user} shouldWrapCards={shouldWrapCards} />
 			<ActionStrip
 				leftSlot={
-					<Box color='default' alignContent='center' pis={16}>
+					<Box color='default' alignContent='center' paddingInlineStart={16}>
 						<Timer startAt={startedAt} />
 					</Box>
 				}

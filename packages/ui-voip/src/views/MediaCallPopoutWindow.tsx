@@ -55,7 +55,7 @@ const MediaCallPopoutWindow = ({ container, onClosePopout }: MediaCallPopoutWind
 					<StyledOwnerDocument.Provider value={contextValue}>
 						<TooltipProvider ownerDocument={ownerDocument}>
 							{createPortal(
-								<Box w='full' h='full' display='flex' flexDirection='column' justifyContent='space-between'>
+								<Box width='full' height='full' display='flex' flexDirection='column' justifyContent='space-between'>
 									<MediaCallPopoutView
 										user={ownUser}
 										onClickClosePopout={onClosePopout}

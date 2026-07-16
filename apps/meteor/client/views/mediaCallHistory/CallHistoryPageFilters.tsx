@@ -80,13 +80,13 @@ const CallHistoryPageFilters = ({ onChangeText, onChangeType, onChangeStates, se
 		<Box
 			is='form'
 			onSubmit={useCallback((e: SubmitEvent<HTMLFormElement>) => e.preventDefault(), [])}
-			mb='x8'
+			marginBlock='x8'
 			display='flex'
 			flexWrap='wrap'
 			alignItems='center'
 			justifyContent='center'
 		>
-			<Box minWidth='x224' flexBasis='45%' display='flex' m='x4' flexGrow={2} flexShrink={0}>
+			<Box minWidth='x224' flexBasis='45%' display='flex' margin='x4' flexGrow={2} flexShrink={0}>
 				<TextInput
 					name='search-rooms'
 					alignItems='center'
@@ -97,10 +97,10 @@ const CallHistoryPageFilters = ({ onChangeText, onChangeType, onChangeStates, se
 				/>
 			</Box>
 			<Box display='flex' flexGrow={1} flexShrink={2} flexWrap='wrap'>
-				<Box minWidth='x224' m='x4' flexGrow={1} flexShrink={1} alignItems='stretch' display='flex'>
+				<Box minWidth='x224' margin='x4' flexGrow={1} flexShrink={1} alignItems='stretch' display='flex'>
 					<Select options={selectTypeOptions} value={type} onChange={(key: Key) => onChangeType(key as TypeFilter)} />
 				</Box>
-				<Box minWidth='x224' m='x4' flexGrow={1} flexShrink={1}>
+				<Box minWidth='x224' margin='x4' flexGrow={1} flexShrink={1}>
 					<MultiSelectCustom
 						dropdownOptions={dropdownStatesOptions}
 						defaultTitle='All_statuses'

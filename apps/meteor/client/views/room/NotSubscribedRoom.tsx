@@ -31,7 +31,7 @@ const NotSubscribedRoom = ({ rid, reference, type }: NotSubscribedRoomProps) => 
 								/>
 							</Box>
 						</StatesSubtitle>
-						<Box mbs={16}>
+						<Box marginBlockStart={16}>
 							<StatesActions>
 								<StatesAction disabled={handleJoinClick.isPending} onClick={() => handleJoinClick.mutate({ rid, reference, type })}>
 									{t('Join_channel')}

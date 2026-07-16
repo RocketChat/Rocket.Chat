@@ -136,7 +136,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	};
 
 	return (
-		<Box {...props} display='flex' alignItems='center' mie={8}>
+		<Box {...props} display='flex' alignItems='center' marginInlineEnd={8}>
 			{button && isAppDetailsPage && (!installed || canUpdate) && (
 				<Box
 					display='flex'
@@ -153,7 +153,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 						loading={loading}
 						disabled={action === 'request' && (app?.requestedEndUser || endUserRequested)}
 						onClick={handleAcquireApp}
-						mie={8}
+						marginInlineEnd={8}
 					>
 						{t(button.label)}
 					</Button>
@@ -168,7 +168,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 				<Margins inlineEnd={index !== statuses.length - 1 ? 8 : undefined} key={index}>
 					<Tag data-qa-type='app-status-tag' variant={getStatusVariant(status)} title={status.tooltipText ? status.tooltipText : ''}>
 						<Box display='flex' color={getStatusFontColor(status)} alignItems='center'>
-							{status.icon && <Icon name={status.icon} size={16} mie={2} />}
+							{status.icon && <Icon name={status.icon} size={16} marginInlineEnd={2} />}
 							{handleAppRequestsNumber(status)} {t(status.label)}
 						</Box>
 					</Tag>

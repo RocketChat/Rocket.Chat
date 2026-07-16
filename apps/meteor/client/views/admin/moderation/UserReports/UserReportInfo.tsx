@@ -63,7 +63,7 @@ const UserReportInfo = ({ userId }: UserReportInfoProps) => {
 
 	if (isError) {
 		return (
-			<Box display='flex' flexDirection='column' alignItems='center' pb={20} color='default'>
+			<Box display='flex' flexDirection='column' alignItems='center' paddingBlock={20} color='default'>
 				<StatesIcon name='warning' variation='danger' />
 				<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
 				<StatesActions>
@@ -103,7 +103,7 @@ const UserReportInfo = ({ userId }: UserReportInfoProps) => {
 								</Field>
 							</FieldGroup>
 						) : (
-							<Callout mbs={8} type='warning' icon='warning'>
+							<Callout marginBlockStart={8} type='warning' icon='warning'>
 								{t('Moderation_User_deleted_warning')}
 							</Callout>
 						)}

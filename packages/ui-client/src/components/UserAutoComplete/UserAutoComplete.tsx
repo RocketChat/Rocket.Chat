@@ -38,9 +38,9 @@ const UserAutoComplete = ({ value, onChange, ...props }: UserAutoCompleteProps) 
 			filter={filter}
 			setFilter={setFilter}
 			renderSelected={({ selected: { value, label } }) => (
-				<Chip height='x20' value={value} mie={4}>
+				<Chip height='x20' value={value} marginInlineEnd={4}>
 					<UserAvatar size='x20' username={value} />
-					<Box verticalAlign='middle' is='span' margin='none' mi={4}>
+					<Box verticalAlign='middle' is='span' margin='none' marginInline={4}>
 						{label}
 					</Box>
 				</Chip>

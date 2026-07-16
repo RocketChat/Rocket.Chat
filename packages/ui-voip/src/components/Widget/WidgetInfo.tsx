@@ -22,9 +22,9 @@ const WidgetInfo = ({ slots, variant = 'default' }: WidgetInfoProps) => {
 			display='flex'
 			flexDirection='row'
 			justifyContent={variant === 'card-content' ? 'center' : 'space-between'}
-			mi={12}
-			mbs={4}
-			mbe={variant === 'card-content' ? 0 : 4}
+			marginInline={12}
+			marginBlockStart={4}
+			marginBlockEnd={variant === 'card-content' ? 0 : 4}
 		>
 			{slots.map((slot) => (
 				<Box
@@ -33,7 +33,7 @@ const WidgetInfo = ({ slots, variant = 'default' }: WidgetInfoProps) => {
 					fontScale={variant === 'card-content' ? 'c1' : 'p2'}
 					key={slot.text}
 				>
-					{slot.icon && <Icon name={slot.icon} mbe={4} />} {slot.text}
+					{slot.icon && <Icon name={slot.icon} marginBlockEnd={4} />} {slot.text}
 				</Box>
 			))}
 		</Box>

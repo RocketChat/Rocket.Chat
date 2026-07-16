@@ -5,7 +5,15 @@ import { useTranslation } from 'react-i18next';
 import useClipboardWithToast from '../hooks/useClipboardWithToast';
 
 const defaultWrapperRenderer = (text: string) => (
-	<Box fontFamily='mono' alignSelf='center' fontScale='p2' style={{ wordBreak: 'break-all' }} mie={4} flexGrow={1} maxHeight='x108'>
+	<Box
+		fontFamily='mono'
+		alignSelf='center'
+		fontScale='p2'
+		style={{ wordBreak: 'break-all' }}
+		marginInlineEnd={4}
+		flexGrow={1}
+		maxHeight='x108'
+	>
 		{text}
 	</Box>
 );
@@ -31,7 +39,7 @@ const TextCopy = ({ text, wrapper = defaultWrapperRenderer, ...props }: TextCopy
 			justifyContent='stretch'
 			alignItems='flex-start'
 			flexGrow={1}
-			pb={16}
+			paddingBlock={16}
 			backgroundColor='surface'
 			width='full'
 			{...props}

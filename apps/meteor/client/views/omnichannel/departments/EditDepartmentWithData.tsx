@@ -28,11 +28,11 @@ const EditDepartmentWithData = ({ id, title }: EditDepartmentWithDataProps) => {
 	}
 
 	if (isError || (id && !data?.department)) {
-		return <Box mbs={16}>{t('Department_not_found')}</Box>;
+		return <Box marginBlockStart={16}>{t('Department_not_found')}</Box>;
 	}
 
 	if (data?.department?.archived === true) {
-		return <Box mbs={16}>{t('Department_archived')}</Box>;
+		return <Box marginBlockStart={16}>{t('Department_archived')}</Box>;
 	}
 
 	return (

@@ -60,7 +60,7 @@ const FederatedRoomList = ({ serverName, roomName, count }: FederatedRoomListPro
 
 	const flattenedData = data?.pages.flatMap((page) => page.rooms);
 	return (
-		<Box is='ul' overflow='hidden' height='356px' flexGrow={1} flexShrink={0} mi={-24}>
+		<Box is='ul' overflow='hidden' height='356px' flexGrow={1} flexShrink={0} marginInline={-24}>
 			<VirtualizedScrollbars>
 				<Virtuoso
 					data={flattenedData || []}

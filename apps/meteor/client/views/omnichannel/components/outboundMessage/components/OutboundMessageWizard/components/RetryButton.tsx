@@ -28,7 +28,7 @@ const RetryButton = ({ loading, onClick }: RetryButtonProps) => {
 			rcx-button--loading={loading}
 			icon={loading ? 'loading' : 'reload'}
 			title={loading ? t('Loading...') : t('Retry')}
-			mis={4}
+			marginInlineStart={4}
 			onClick={() => onClick()}
 		/>
 	);
