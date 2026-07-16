@@ -36,6 +36,9 @@ export class NegotiationManager {
 	/** id of the newest negotiation that has finished processing */
 	protected highestFinishedNegotiationId: string | null;
 
+	/** whether a negotiation-needed event was deferred because a negotiation was already in progress */
+	protected deferredNegotiationNeeded: boolean;
+
 	constructor(
 		protected readonly call: IClientMediaCall,
 		protected readonly config: NegotiationManagerConfig,
@@ -49,6 +52,7 @@ export class NegotiationManager {
 		this.highestNegotiationId = null;
 		this.highestKnownNegotiationId = null;
 		this.highestFinishedNegotiationId = null;
+		this.deferredNegotiationNeeded = false;
 
 		this.emitter = new Emitter();
 	}
@@ -137,6 +141,10 @@ export class NegotiationManager {
 
 		const nextNegotiation = this.getNextInQueue();
 		if (!nextNegotiation) {
+			if (this.deferredNegotiationNeeded) {
+				this.deferredNegotiationNeeded = false;
+				this.onWebRTCNegotiationNeeded();
+			}
 			return;
 		}
 
@@ -201,6 +209,11 @@ export class NegotiationManager {
 		this.currentNegotiation = negotiation;
 		this.highestProcessedSequence = negotiation.sequence;
 		this.highestNegotiationId = negotiation.negotiationId;
+
+		// A local negotiation builds its offer from the current stream state, so it fulfills any deferred need
+		if (negotiation.isLocal) {
+			this.deferredNegotiationNeeded = false;
+		}
 
 		negotiation.emitter.on('ended', () => {
 			if (this.currentNegotiation !== negotiation) {
@@ -280,6 +293,13 @@ export class NegotiationManager {
 
 		// If we already have a queued negotiation that would fulfill this need, then don't do anything
 		if (this.isFulfillingNegotiationQueued()) {
+			return;
+		}
+
+		// The server rejects renegotiation requests from the offerer of a negotiation that is still waiting
+		// for an answer, so defer the request until the current negotiation is done.
+		if (this.currentNegotiation) {
+			this.deferredNegotiationNeeded = true;
 			return;
 		}
 

@@ -7,6 +7,22 @@ import { HomeChannel } from './page-objects';
 import { setSettingValueById } from './utils';
 import { expect, test } from './utils/test';
 
+// If a test fails mid-call, the call stays active server-side and poisons every test that
+// tries to start a new call with the same users, so always hang up leftover calls.
+const endLeftoverCalls = async (sessions: { page: Page }[]) => {
+	for (const { page } of sessions) {
+		if (page.isClosed()) {
+			continue;
+		}
+
+		const btnEndCall = page.getByRole('button', { name: /^End call/ }).first();
+		if (await btnEndCall.isVisible()) {
+			await btnEndCall.click();
+			await expect(btnEndCall).not.toBeVisible();
+		}
+	}
+};
+
 test.describe('Internal Voice Calls - Enterprise Edition', () => {
 	test.skip(!IS_EE, 'Enterprise Edition Only');
 	let sessions: { page: Page; poHomeChannel: HomeChannel }[];
@@ -30,6 +46,8 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 		await setSettingValueById(api, 'VoIP_TeamCollab_Screen_Sharing_Enabled', true);
 		await Promise.all([...sessions.map(({ page }) => page.close())]);
 	});
+
+	test.afterEach(() => endLeftoverCalls(sessions));
 
 	test('should initiate voice call from direct message', async () => {
 		const [user1, user2] = sessions;
@@ -177,6 +195,8 @@ test.describe('Internal Voice Calls - In-room view - Enterprise Edition', () => 
 	test.afterAll(async () => {
 		await Promise.all([...sessions.map(({ page }) => page.close())]);
 	});
+
+	test.afterEach(() => endLeftoverCalls(sessions));
 
 	test('should show in-room view when navigating to peer DM during call', async () => {
 		const [user1, user2] = sessions;
@@ -340,6 +360,8 @@ test.describe('Internal Voice Calls - Popout view - Enterprise Edition', () => {
 	test.afterAll(async () => {
 		await Promise.all([...sessions.map(({ page }) => page.close())]);
 	});
+
+	test.afterEach(() => endLeftoverCalls(sessions));
 
 	test('should show popout view', async () => {
 		const [user1, user2] = sessions;
