@@ -1,9 +1,9 @@
 import type { IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
 
-import type { CloseRoomParams } from '../../../../app/livechat/server/lib/localTypes';
-import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../server/lib/callbacks';
-import { AutoTransferChatScheduler } from '../../../app/livechat-enterprise/server/lib/AutoTransferChatScheduler';
+import type { CloseRoomParams } from '../../../../server/lib/omnichannel/localTypes';
+import { settings } from '../../../../server/settings';
+import { AutoTransferChatScheduler } from '../../lib/omnichannel/AutoTransferChatScheduler';
 
 type LivechatCloseCallbackParams = {
 	room: IOmnichannelRoom;

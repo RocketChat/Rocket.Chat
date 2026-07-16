@@ -43,11 +43,11 @@ const { removeUserReaction, executeSetReaction, setReaction } = p
 		'meteor/meteor': { Meteor: { methods: meteorMethodsMock, Error: meteorErrorMock } },
 		'../../callbacks': { callbacks: { run: callbacksRunMock } },
 		'../../i18n': { i18n: i18nMock },
-		'../../../../app/authorization/server': { canAccessRoomAsync: canAccessRoomAsyncMock },
+		'../../authorization': { canAccessRoomAsync: canAccessRoomAsyncMock },
 		'../../authorization/hasPermission': { hasPermissionAsync: hasPermissionAsyncMock },
 		'../emoji': { emoji: { list: emojiList } },
 		'../../messages/isTheLastMessage': { isTheLastMessage: isTheLastMessageMock },
-		'../../../../app/lib/server/lib/notifyListener': {
+		'../../notifyListener': {
 			notifyOnMessageChange: notifyOnMessageChangeMock,
 		},
 	});

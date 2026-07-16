@@ -4,7 +4,7 @@ import { Messages, Rooms } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomAsync } from '../../../app/authorization/server';
+import { canAccessRoomAsync } from '../../lib/authorization';
 import { translateMessage } from '../../lib/autotranslate/functions/translateMessage';
 
 declare module '@rocket.chat/ddp-client' {

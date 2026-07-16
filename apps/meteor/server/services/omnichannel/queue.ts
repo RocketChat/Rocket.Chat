@@ -5,13 +5,13 @@ import { LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 import { tracerSpan } from '@rocket.chat/tracing';
 
 import { queueLogger } from './logger';
-import { notifyOnLivechatInquiryChangedByRoom } from '../../../app/lib/server/lib/notifyListener';
 import { getOmniChatSortQuery } from '../../../app/livechat/lib/inquiries';
-import { dispatchAgentDelegated } from '../../../app/livechat/server/lib/Helper';
-import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
-import { getInquirySortMechanismSetting } from '../../../app/livechat/server/lib/settings';
-import { settings } from '../../../app/settings/server';
 import { metrics } from '../../lib/metrics';
+import { notifyOnLivechatInquiryChangedByRoom } from '../../lib/notifyListener';
+import { dispatchAgentDelegated } from '../../lib/omnichannel/Helper';
+import { RoutingManager } from '../../lib/omnichannel/RoutingManager';
+import { getInquirySortMechanismSetting } from '../../lib/omnichannel/settings';
+import { settings } from '../../settings';
 
 const DEFAULT_RACE_TIMEOUT = 5000;
 

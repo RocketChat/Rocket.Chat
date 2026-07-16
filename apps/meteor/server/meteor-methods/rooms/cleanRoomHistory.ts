@@ -2,8 +2,8 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomAsync } from '../../../app/authorization/server';
 import { findRoomByIdOrName } from '../../api/v1/rooms';
+import { canAccessRoomAsync } from '../../lib/authorization';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { cleanRoomHistory } from '../../lib/rooms/cleanRoomHistory';
 

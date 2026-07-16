@@ -1,8 +1,8 @@
 import { Abac } from '@rocket.chat/core-services';
 import { License } from '@rocket.chat/license';
 
-import { settings } from '../../../../app/settings/server';
 import { beforeAddUserToRoom } from '../../../../server/hooks/rooms/beforeAddUserToRoom';
+import { settings } from '../../../../server/settings';
 
 beforeAddUserToRoom.patch(async (prev, users, room, actor) => {
 	await prev(users, room, actor);

@@ -17,12 +17,12 @@ import { Meteor } from 'meteor/meteor';
 
 import { API } from '../..';
 import { setCustomField } from './lib/customFields';
-import type { ILivechatMessage } from '../../../../app/livechat/server/lib/localTypes';
-import { sendMessage } from '../../../../app/livechat/server/lib/messages';
-import { createRoom } from '../../../../app/livechat/server/lib/rooms';
-import { settings } from '../../../../app/settings/server';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
 import { FileUpload } from '../../../lib/media/file-upload';
+import type { ILivechatMessage } from '../../../lib/omnichannel/localTypes';
+import { sendMessage } from '../../../lib/omnichannel/messages';
+import { createRoom } from '../../../lib/omnichannel/rooms';
+import { settings } from '../../../settings';
 
 const logger = new Logger('SMS');
 

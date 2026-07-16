@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from './hasPermission';
 import { CONSTANTS, AuthorizationUtils } from '../../../app/authorization/lib';
-import { notifyOnPermissionChangedById } from '../../../app/lib/server/lib/notifyListener';
+import { notifyOnPermissionChangedById } from '../notifyListener';
 
 export const addPermissionToRoleMethod = async (uid: string, permissionId: string, role: string): Promise<void> => {
 	if (role === 'guest' && !AuthorizationUtils.hasRestrictionsToRole(role) && (await License.hasValidLicense())) {

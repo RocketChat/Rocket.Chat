@@ -1,8 +1,8 @@
 import { Users } from '@rocket.chat/models';
 import { MongoInternals } from 'meteor/mongo';
 
-import { settings } from '../../../../app/settings/server';
 import { readSecondaryPreferred } from '../../../database/readSecondaryPreferred';
+import { settings } from '../../../settings';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 

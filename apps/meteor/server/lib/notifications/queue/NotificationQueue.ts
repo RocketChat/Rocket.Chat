@@ -3,8 +3,8 @@ import { NotificationQueue, Users } from '@rocket.chat/models';
 import { tracerSpan } from '@rocket.chat/tracing';
 import { Meteor } from 'meteor/meteor';
 
-import { sendEmailFromData } from '../../../../app/lib/server/functions/notifications/email';
 import { SystemLogger } from '../../logger/system';
+import { sendEmailFromData } from '../message/email';
 import { PushNotification } from '../push-config';
 
 const {

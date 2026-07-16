@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
-import { settings } from '../../../app/settings/server';
 import { getUserEmailAddress } from '../../../lib/getUserEmailAddress';
+import { settings } from '../../settings';
 import * as Mailer from '../notifications/email/api';
 
 export const sendEmail = async (userData: Pick<IUser, 'name' | 'emails'>, subject: string, body: string): Promise<void> => {

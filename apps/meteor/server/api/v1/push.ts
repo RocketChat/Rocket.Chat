@@ -14,10 +14,10 @@ import type { JSONSchemaType } from 'ajv';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../app/settings/server';
 import { canAccessRoomAsync } from '../../lib/authorization/canAccessRoom';
 import PushNotification from '../../lib/notifications/push-config/lib/PushNotification';
 import { executePushTest } from '../../lib/pushConfig';
+import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import type { SuccessResult } from '../definition';

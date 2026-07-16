@@ -6,11 +6,11 @@ import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 
 import { checkEmailAvailability } from './checkEmailAvailability';
-import { validateEmailDomain } from '../../../app/lib/server/lib';
-import { settings } from '../../../app/settings/server';
 import { onceTransactionCommitedSuccessfully } from '../../database/utils';
 import { sendConfirmationEmail } from '../../meteor-methods/auth/sendConfirmationEmail';
+import { settings } from '../../settings';
 import * as Mailer from '../notifications/email/api';
+import { validateEmailDomain } from '../validateEmailDomain';
 
 let html = '';
 Meteor.startup(() => {

@@ -5,12 +5,12 @@ import { Messages } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { RateLimiter } from '../../../app/lib/server';
-import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
-import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
+import { RateLimiterClass as RateLimiter } from '../../lib/RateLimiter';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { unfollow } from '../../lib/messaging/threads/functions';
+import { notifyOnMessageChange } from '../../lib/notifyListener';
+import { settings } from '../../settings';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

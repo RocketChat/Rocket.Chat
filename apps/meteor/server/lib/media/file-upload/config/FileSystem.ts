@@ -1,7 +1,7 @@
 import fsp from 'node:fs/promises';
 
 import { getContentDisposition } from './helper';
-import { settings } from '../../../../../app/settings/server';
+import { settings } from '../../../../settings';
 import { UploadFS } from '../../../../ufs';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import { getFileRange, setRangeHeaders } from '../lib/ranges';

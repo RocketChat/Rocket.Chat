@@ -8,10 +8,10 @@ import { Meteor } from 'meteor/meteor';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { callbacks } from '../callbacks';
 import { roomCoordinator } from './roomCoordinator';
-import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
 import { beforeAddUserToRoom as beforeAddUserToRoomPatch } from '../../hooks/rooms/beforeAddUserToRoom';
+import { settings } from '../../settings';
 import { beforeAddUserToRoom } from '../callbacks/beforeAddUserToRoom';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../notifyListener';
 
 /**
  * This function adds user to the given room.

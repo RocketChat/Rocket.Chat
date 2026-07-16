@@ -6,17 +6,17 @@ import { Random } from '@rocket.chat/random';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
-import { settings } from '../../../app/settings/server';
 import { afterSaveMessageAsync } from '../../hooks/messages/afterSaveMessage';
 import { canSendMessageAsync } from '../../lib/authorization/canSendMessage';
 import { hasAtLeastOnePermissionAsync } from '../../lib/authorization/hasPermission';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { i18n } from '../../lib/i18n';
 import { attachMessage } from '../../lib/messages/attachMessage';
 import { sendMessage } from '../../lib/messages/sendMessage';
 import { addUserToRoom } from '../../lib/rooms/addUserToRoom';
 import { createRoom } from '../../lib/rooms/createRoom';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import { settings } from '../../settings';
 
 const getParentRoom = async (rid: IRoom['_id']) => {
 	const room = await Rooms.findOne(rid);

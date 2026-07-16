@@ -1,6 +1,6 @@
 import { Settings } from '@rocket.chat/models';
 
-import { notifyOnSettingChanged } from '../../../../app/lib/server/lib/notifyListener';
+import { notifyOnSettingChanged } from '../../notifyListener';
 import telemetryEvent from '../lib/telemetryEvents';
 
 type updateCounterDataType = { settingsId: string };

@@ -80,7 +80,7 @@ const { checkCodeForUser, getFingerprintFromConnection } = proxyquire.noCallThru
 	'../../shared/getModifiedHttpHeaders': {
 		normalizeHeaders: (headers: unknown) => headers,
 	},
-	'../../../../app/settings/server': {
+	'../../../settings': {
 		settings: { get: settingsGet },
 	},
 });

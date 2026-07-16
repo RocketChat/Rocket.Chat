@@ -32,12 +32,11 @@ const { insertAdminUserFromEnv } = proxyquire.noCallThru().load('../../../../ser
 		},
 	},
 	'../lib/media/file-upload': {},
-	'../../app/file/server': {},
 	'../lib/rooms/addUserToDefaultChannels': {},
 	'../lib/users/checkUsernameAvailability': {
 		checkUsernameAvailability,
 	},
-	'../../app/settings/server': {
+	'../settings': {
 		settings: { get: settingsGet },
 	},
 	'@rocket.chat/tools': {

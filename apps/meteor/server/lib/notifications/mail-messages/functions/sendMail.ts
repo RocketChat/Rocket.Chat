@@ -5,9 +5,9 @@ import EJSON from 'ejson';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
-import { placeholders } from '../../../../../app/utils/server/placeholders';
 import { generatePath } from '../../../../../lib/utils/generatePath';
 import { SystemLogger } from '../../../logger/system';
+import { placeholders } from '../../../utils/placeholders';
 import * as Mailer from '../../email/api';
 
 export const sendMail = async function ({

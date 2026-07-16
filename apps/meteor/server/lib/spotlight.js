@@ -2,12 +2,12 @@ import { Team } from '@rocket.chat/core-services';
 import { Users, Subscriptions as SubscriptionsRaw, Rooms } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
+import { canAccessRoomAsync, roomAccessAttributes } from './authorization';
 import { hasPermissionAsync, hasAllPermissionAsync } from './authorization/hasPermission';
-import { canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
-import { settings } from '../../app/settings/server';
+import { roomCoordinator } from './rooms/roomCoordinator';
 import { trim } from '../../lib/utils/stringUtils';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
-import { roomCoordinator } from './rooms/roomCoordinator';
+import { settings } from '../settings';
 
 export class Spotlight {
 	async fetchRooms(userId, rooms) {

@@ -1,6 +1,6 @@
 import type { SettingValue } from '@rocket.chat/core-typings';
 
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../settings';
 
 /**
  * Setting Object in order to manage settings loading for providers and admin ui display
