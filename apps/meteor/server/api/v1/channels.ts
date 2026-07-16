@@ -1417,11 +1417,34 @@ API.v1.get(
 	},
 );
 
-API.v1.addRoute(
-	'channels.invite',
-	{ authRequired: true },
+const channelsInviteBody = ajv.compile<({ roomId: string } | { roomName: string }) & { userId?: string; username?: string; user?: string }>(
 	{
-		async post() {
+		type: 'object',
+		properties: {
+			roomId: { type: 'string' },
+			roomName: { type: 'string' },
+			userId: { type: 'string' },
+			username: { type: 'string' },
+			user: { type: 'string' },
+		},
+		anyOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
+		additionalProperties: false,
+	},
+);
+
+API.v1.post(
+	'channels.invite',
+	{
+		authRequired: true,
+		body: channelsInviteBody,
+		response: {
+			200: channelResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
 			// Federated rooms invite by raw username: the federated user record is created
@@ -1447,7 +1470,10 @@ API.v1.addRoute(
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
