@@ -32,7 +32,7 @@ API.v1.post(
 			throw new Error('error-invalid-user');
 		}
 
-		if (!(await hasPermissionAsync(this.userId, 'sync-auth-services-users'))) {
+		if (!(await hasPermissionAsync(this.user, 'sync-auth-services-users'))) {
 			throw new Error('error-not-authorized');
 		}
 

@@ -438,7 +438,7 @@ const e2eEndpoints = API.v1
 
 		async function action() {
 			const { rid, e2eKey, e2eKeyId } = this.bodyParams;
-			if (!(await hasPermissionAsync(this.userId, 'toggle-room-e2e-encryption', rid))) {
+			if (!(await hasPermissionAsync(this.user, 'toggle-room-e2e-encryption', rid))) {
 				return API.v1.forbidden('error-not-allowed');
 			}
 			if (LockMap.has(rid)) {

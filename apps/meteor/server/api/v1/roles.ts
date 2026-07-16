@@ -189,7 +189,7 @@ const rolesRoutes = API.v1
 			if (!role) {
 				throw new Meteor.Error('error-param-not-provided', 'Query param "role" is required');
 			}
-			if (roomId && !(await hasPermissionAsync(this.userId, 'view-other-user-channels'))) {
+			if (roomId && !(await hasPermissionAsync(this.user, 'view-other-user-channels'))) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
 

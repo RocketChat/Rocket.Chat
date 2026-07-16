@@ -328,7 +328,7 @@ API.v1.addRoute(
 
 			// Special check for the permissions
 			if (
-				(await hasPermissionAsync(this.userId, 'view-joined-room')) &&
+				(await hasPermissionAsync(this.user, 'view-joined-room')) &&
 				!(await Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId, { projection: { _id: 1 } }))
 			) {
 				return API.v1.forbidden();
@@ -532,7 +532,7 @@ API.v1.addRoute(
 				return API.v1.failure('Channel not found');
 			}
 
-			if (!(await hasAllPermissionAsync(this.userId, ['create-team', 'edit-room'], room._id))) {
+			if (!(await hasAllPermissionAsync(this.user, ['create-team', 'edit-room'], room._id))) {
 				return API.v1.forbidden();
 			}
 
@@ -625,7 +625,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const access = await hasPermissionAsync(this.userId, 'view-room-administration');
+			const access = await hasPermissionAsync(this.user, 'view-room-administration');
 			const { userId } = this.queryParams;
 			let user = this.userId;
 			let unreads = null;
@@ -787,7 +787,7 @@ API.v1.addRoute(
 			}
 
 			if (bodyParams.teams) {
-				const canSeeAllTeams = await hasPermissionAsync(this.userId, 'view-all-teams');
+				const canSeeAllTeams = await hasPermissionAsync(this.user, 'view-all-teams');
 				const teams = await Team.listByNames(bodyParams.teams, { projection: { _id: 1 } });
 				const teamMembers = [];
 
@@ -994,7 +994,7 @@ API.v1.addRoute(
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
-			const hasPermissionToSeeAllPublicChannels = await hasPermissionAsync(this.userId, 'view-c-room');
+			const hasPermissionToSeeAllPublicChannels = await hasPermissionAsync(this.user, 'view-c-room');
 
 			const { _id } = this.queryParams;
 
@@ -1106,7 +1106,7 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
-			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult._id))) {
+			if (findResult.broadcast && !(await hasPermissionAsync(this.user, 'view-broadcast-member-list', findResult._id))) {
 				return API.v1.forbidden();
 			}
 

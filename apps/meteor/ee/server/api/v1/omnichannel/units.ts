@@ -55,7 +55,7 @@ API.v1.addRoute(
 			const { sort } = await this.parseJsonQuery();
 			const { text } = this.queryParams;
 
-			if (!(await hasPermissionAsync(this.userId, 'manage-livechat-units'))) {
+			if (!(await hasPermissionAsync(this.user, 'manage-livechat-units'))) {
 				return API.v1.success(await findUnitsOfUser({ text, userId: this.userId, pagination: { offset, count, sort } }));
 			}
 

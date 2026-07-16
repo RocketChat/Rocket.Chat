@@ -271,7 +271,7 @@ const oauthAppsEndpoints = API.v1
 		},
 
 		async function action() {
-			const isOAuthAppsManager = await hasPermissionAsync(this.userId, 'manage-oauth-apps');
+			const isOAuthAppsManager = await hasPermissionAsync(this.user, 'manage-oauth-apps');
 
 			const oauthApp = await OAuthApps.findOneAuthAppByIdOrClientId(
 				this.queryParams,

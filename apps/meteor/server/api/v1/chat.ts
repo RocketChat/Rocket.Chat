@@ -565,11 +565,7 @@ const chatEndpoints = API.v1
 				return API.v1.failure('The room id provided does not match where the message is from.');
 			}
 
-			if (
-				this.bodyParams.asUser &&
-				msg.u._id !== this.userId &&
-				!(await hasPermissionAsync(this.userId, 'force-delete-message', msg.rid))
-			) {
+			if (this.bodyParams.asUser && msg.u._id !== this.userId && !(await hasPermissionAsync(this.user, 'force-delete-message', msg.rid))) {
 				return API.v1.failure('Unauthorized. You must have the permission "force-delete-message" to delete other\'s message as them.');
 			}
 

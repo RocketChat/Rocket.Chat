@@ -1006,7 +1006,7 @@ API.v1.post(
 	async function action() {
 		const { rid, type } = this.bodyParams;
 
-		if (!(await hasPermissionAsync(this.userId, 'mail-messages', rid))) {
+		if (!(await hasPermissionAsync(this.user, 'mail-messages', rid))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Mailing is not allowed');
 		}
 
@@ -1151,7 +1151,7 @@ API.v1.get(
 			return API.v1.failure('error-room-type-not-supported');
 		}
 
-		if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult._id))) {
+		if (findResult.broadcast && !(await hasPermissionAsync(this.user, 'view-broadcast-member-list', findResult._id))) {
 			return API.v1.unauthorized();
 		}
 

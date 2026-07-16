@@ -258,7 +258,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const access = await hasPermissionAsync(this.userId, 'view-room-administration');
+			const access = await hasPermissionAsync(this.user, 'view-room-administration');
 			const params = this.queryParams;
 			let user = this.userId;
 			let room;
@@ -744,7 +744,7 @@ API.v1.addRoute(
 				userId: this.userId,
 			});
 
-			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult.rid))) {
+			if (findResult.broadcast && !(await hasPermissionAsync(this.user, 'view-broadcast-member-list', findResult.rid))) {
 				return API.v1.forbidden();
 			}
 
@@ -1288,7 +1288,7 @@ API.v1.addRoute(
 				return API.v1.failure('Private group not found');
 			}
 
-			if (!(await hasAllPermissionAsync(this.userId, ['create-team', 'edit-room'], room.rid))) {
+			if (!(await hasAllPermissionAsync(this.user, ['create-team', 'edit-room'], room.rid))) {
 				return API.v1.forbidden();
 			}
 

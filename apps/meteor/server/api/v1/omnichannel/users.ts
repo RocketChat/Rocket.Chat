@@ -33,7 +33,7 @@ API.v1.addRoute(
 			const { text } = this.queryParams;
 
 			if (this.urlParams.type === 'agent') {
-				if (!(await hasAtLeastOnePermissionAsync(this.userId, ['transfer-livechat-guest', 'edit-omnichannel-contact']))) {
+				if (!(await hasAtLeastOnePermissionAsync(this.user, ['transfer-livechat-guest', 'edit-omnichannel-contact']))) {
 					return API.v1.forbidden();
 				}
 
@@ -53,7 +53,7 @@ API.v1.addRoute(
 				);
 			}
 			if (this.urlParams.type === 'manager') {
-				if (!(await hasAtLeastOnePermissionAsync(this.userId, ['view-livechat-manager']))) {
+				if (!(await hasAtLeastOnePermissionAsync(this.user, ['view-livechat-manager']))) {
 					return API.v1.forbidden();
 				}
 

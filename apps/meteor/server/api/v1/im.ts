@@ -170,7 +170,7 @@ const dmDeleteAction = <Path extends string>(_path: Path): TypedAction<typeof dm
 		const { room } = await findDirectMessageRoom(this.bodyParams, this.userId);
 
 		const canAccess =
-			(await canAccessRoomIdAsync(room._id, this.userId)) || (await hasPermissionAsync(this.userId, 'view-room-administration'));
+			(await canAccessRoomIdAsync(room._id, this.userId)) || (await hasPermissionAsync(this.user, 'view-room-administration'));
 
 		if (!canAccess) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed');
