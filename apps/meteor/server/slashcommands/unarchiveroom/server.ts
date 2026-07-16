@@ -4,13 +4,13 @@ import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../app/settings/server';
-import { slashCommands } from '../../../app/utils/server/slashCommand';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { i18n } from '../../lib/i18n';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { unarchiveRoom } from '../../lib/rooms/unarchiveRoom';
+import { slashCommands } from '../../lib/utils/slashCommand';
+import { settings } from '../../settings';
 
 slashCommands.add({
 	command: 'unarchive',

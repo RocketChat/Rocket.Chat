@@ -2,7 +2,7 @@ import type { IMessage, RequiredField, SlashCommandPreviews } from '@rocket.chat
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
-import { slashCommands } from '../../../app/utils/server/slashCommand';
+import { slashCommands } from '../../lib/utils/slashCommand';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

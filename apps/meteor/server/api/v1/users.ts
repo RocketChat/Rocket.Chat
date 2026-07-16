@@ -27,6 +27,7 @@ import {
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
+	validateNotFoundErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { getLoginExpirationInMs } from '@rocket.chat/tools';
@@ -35,19 +36,17 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
-import { getUserForCheck, emailCheck } from '../../../app/2fa/server/code';
-import { resetTOTP } from '../../../app/2fa/server/functions/resetTOTP';
-import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
-import { isSMTPConfigured } from '../../../app/utils/server/functions/isSMTPConfigured';
-import { getURL } from '../../../app/utils/server/getURL';
 import { generatePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/generateToken';
 import { regeneratePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/regenerateToken';
 import { removePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/removeToken';
+import { runUserLogoutCleanUp } from '../../hooks/userLogoutCleanUp';
+import { getUserForCheck, emailCheck } from '../../lib/2fa/code';
+import { resetTOTP } from '../../lib/2fa/functions/resetTOTP';
 import { UserChangedAuditStore } from '../../lib/auditServerEvents/userChanged';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { i18n } from '../../lib/i18n';
 import { SystemLogger } from '../../lib/logger/system';
+import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../lib/notifyListener';
 import { resetUserE2EEncriptionKey } from '../../lib/resetUserE2EKey';
 import { validateNameChars } from '../../lib/shared/validateNameChars';
 import { checkEmailAvailability } from '../../lib/users/checkEmailAvailability';
@@ -56,6 +55,7 @@ import { deleteUser } from '../../lib/users/deleteUser';
 import { getAvatarSuggestionForUser } from '../../lib/users/getAvatarSuggestionForUser';
 import { getFullUserDataByUniqueSearchTerm, defaultFields, fullFields } from '../../lib/users/getFullUserData';
 import { generateUsernameSuggestion } from '../../lib/users/getUsernameSuggestion';
+import { runAfterVerifyEmail } from '../../lib/users/runAfterVerifyEmail';
 import { saveCustomFields } from '../../lib/users/saveCustomFields';
 import { saveCustomFieldsWithoutValidation } from '../../lib/users/saveCustomFieldsWithoutValidation';
 import { saveUser } from '../../lib/users/saveUser';
@@ -65,6 +65,8 @@ import { setUserAvatar } from '../../lib/users/setUserAvatar';
 import { setUsernameWithValidation } from '../../lib/users/setUsername';
 import { validateCustomFields } from '../../lib/users/validateCustomFields';
 import { validateUsername } from '../../lib/users/validateUsername';
+import { isSMTPConfigured } from '../../lib/utils/functions/isSMTPConfigured';
+import { getURL } from '../../lib/utils/getURL';
 import { generateAccessToken } from '../../meteor-methods/auth/createToken';
 import { sendConfirmationEmail } from '../../meteor-methods/auth/sendConfirmationEmail';
 import { sendForgotPasswordEmail } from '../../meteor-methods/auth/sendForgotPasswordEmail';
@@ -75,6 +77,7 @@ import { resetAvatar } from '../../meteor-methods/users/resetAvatar';
 import { saveUserPreferences } from '../../meteor-methods/users/saveUserPreferences';
 import { executeSaveUserProfile } from '../../meteor-methods/users/saveUserProfile';
 import { executeSetUserActiveStatus } from '../../meteor-methods/users/setUserActiveStatus';
+import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
@@ -338,6 +341,14 @@ API.v1
 				if (isAnotherUser && !(await hasPermissionAsync(this.userId, 'edit-other-user-avatar'))) {
 					throw new Meteor.Error('error-not-allowed', 'Not allowed');
 				}
+			}
+
+			// an avatar coming from an OAuth service suggestion carries the provider data URI (a string) in the
+			// image field; setUserAvatar parses it and records the provider name as the avatar origin. A regular
+			// upload has no service and is stored from the binary buffer.
+			if (typeof fields.service === 'string' && fields.service.length > 0) {
+				await setUserAvatar(user, fileBuffer.toString('utf8'), mimetype, fields.service);
+				return API.v1.success();
 			}
 
 			await setUserAvatar(user, fileBuffer, mimetype, 'rest');
@@ -1874,6 +1885,8 @@ API.v1
 				return API.v1.forbidden();
 			}
 
+			const user = await Users.findOneById(userId);
+
 			// this method logs the user out automatically, if successful returns 1, otherwise 0
 			if (!(await Users.unsetLoginTokens(userId))) {
 				throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
@@ -1882,6 +1895,10 @@ API.v1
 			await Sessions.logoutAllByUserId(userId, this.userId);
 
 			void notifyOnUserChange({ clientAction: 'updated', id: userId, diff: { 'services.resume.loginTokens': [] } });
+
+			if (user) {
+				await runUserLogoutCleanUp(user);
+			}
 
 			return API.v1.success({
 				message: `User ${userId} has been logged out!`,
@@ -2072,6 +2089,42 @@ API.v1
 			});
 		},
 	);
+
+API.v1.post(
+	'users.verifyEmail',
+	{
+		authRequired: false,
+		body: ajv.compile<{ token: string }>({
+			type: 'object',
+			properties: {
+				token: { type: 'string', minLength: 1 },
+			},
+			required: ['token'],
+			additionalProperties: false,
+		}),
+		response: {
+			200: voidSuccessResponse,
+			400: validateBadRequestErrorResponse,
+			404: validateNotFoundErrorResponse,
+		},
+	},
+	async function action() {
+		const { token } = this.bodyParams;
+
+		// the token is looked up before verifyEmail runs because the method consumes (removes) it on success
+		const user = await Users.findOne<Pick<IUser, '_id'>>({ 'services.email.verificationTokens.token': token }, { projection: { _id: 1 } });
+
+		if (!user) {
+			return API.v1.notFound();
+		}
+
+		await Meteor.callAsync('verifyEmail', token);
+
+		await runAfterVerifyEmail(user._id);
+
+		return API.v1.success();
+	},
+);
 
 settings.watch<number>('Rate_Limiter_Limit_RegisterUser', (value) => {
 	const userRegisterRoute = '/api/v1/users.registerpost';

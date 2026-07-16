@@ -4,8 +4,8 @@ import { InstanceStatus } from '@rocket.chat/instance-status';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 
-import { settings } from '../../../app/settings/server';
 import { StreamerCentral } from '../../../server/modules/streamer/streamer.module';
+import { settings } from '../../../server/settings';
 import { registerFederationRoutes } from '../api/federation';
 
 const logger = new Logger('Federation');

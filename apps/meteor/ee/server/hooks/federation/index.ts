@@ -4,7 +4,6 @@ import type { IRoomNativeFederated, IMessage, IRoom, IUser } from '@rocket.chat/
 import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
-import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../../../../app/lib/server/lib/notifyListener';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { afterBanFromRoomCallback } from '../../../../server/lib/callbacks/afterBanFromRoomCallback';
 import { afterLeaveRoomCallback } from '../../../../server/lib/callbacks/afterLeaveRoomCallback';
@@ -13,6 +12,7 @@ import { afterUnbanFromRoomCallback } from '../../../../server/lib/callbacks/aft
 import { beforeAddUsersToRoom, beforeAddUserToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
 import { beforeChangeRoomRole } from '../../../../server/lib/callbacks/beforeChangeRoomRole';
 import { prepareCreateRoomCallback } from '../../../../server/lib/callbacks/beforeCreateRoomCallback';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../../../../server/lib/notifyListener';
 import { FederationActions } from '../../../../server/services/room/hooks/BeforeFederationActions';
 
 // callbacks.add('federation-event-example', async () => FederationMatrix.handleExample(), callbacks.priority.MEDIUM, 'federation-event-example-handler');

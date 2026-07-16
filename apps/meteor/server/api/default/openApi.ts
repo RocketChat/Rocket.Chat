@@ -5,7 +5,7 @@ import express from 'express';
 import { WebApp } from 'meteor/webapp';
 import swaggerUi from 'swagger-ui-express';
 
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 import { API } from '../api';
 import { getTrimmedServerVersion } from '../lib/getTrimmedServerVersion';
 

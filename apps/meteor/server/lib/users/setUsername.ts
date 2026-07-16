@@ -13,11 +13,11 @@ import { getAvatarSuggestionForUser } from './getAvatarSuggestionForUser';
 import { saveUserIdentity } from './saveUserIdentity';
 import { setUserAvatar } from './setUserAvatar';
 import { validateUsername } from './validateUsername';
-import { notifyOnUserChange } from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
 import { onceTransactionCommitedSuccessfully } from '../../database/utils';
+import { settings } from '../../settings';
 import { callbacks } from '../callbacks';
 import { SystemLogger } from '../logger/system';
+import { notifyOnUserChange } from '../notifyListener';
 import { addUserToRoom } from '../rooms/addUserToRoom';
 import { joinDefaultChannels } from '../rooms/joinDefaultChannels';
 

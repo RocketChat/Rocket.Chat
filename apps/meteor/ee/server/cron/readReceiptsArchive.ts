@@ -2,8 +2,8 @@ import { cronJobs } from '@rocket.chat/cron';
 import { Logger } from '@rocket.chat/logger';
 import { ReadReceipts, ReadReceiptsArchive, Messages } from '@rocket.chat/models';
 
-import { settings } from '../../../app/settings/server';
 import { sleep } from '../../../lib/utils/sleep';
+import { settings } from '../../../server/settings';
 
 const logger = new Logger('ReadReceiptsArchive');
 

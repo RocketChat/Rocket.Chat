@@ -3621,7 +3621,6 @@
   "Regexp_validation": "नियमित अभिव्यक्ति द्वारा सत्यापन",
   "Register": "पंजीकरण करवाना",
   "RegisterWorkspace_Button": "कार्यक्षेत्र पंजीकृत करें",
-  "RegisterWorkspace_Connection_Error": "कनेक्ट करने में त्रुटि उत्पन्न हुई",
   "RegisterWorkspace_Disconnect_Error": "डिस्कनेक्ट करने में त्रुटि उत्पन्न हुई",
   "RegisterWorkspace_Disconnect_Subtitle": "आपके कार्यक्षेत्र को डिस्कनेक्ट करने से निम्नलिखित की हानि होगी",
   "RegisterWorkspace_Features_Marketplace_Description": "इस कार्यक्षेत्र पर Rocket.Chat मार्केटप्लेस ऐप्स इंस्टॉल करें।",

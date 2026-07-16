@@ -4301,7 +4301,6 @@
   "Regexp_validation": "正则表达式验证",
   "Register": "注册一个新帐号",
   "RegisterWorkspace_Button": "注册工作区",
-  "RegisterWorkspace_Connection_Error": "连接时发生错误",
   "RegisterWorkspace_Disconnect_Error": "断开连接时发生错误",
   "RegisterWorkspace_Disconnect_Subtitle": "断开工作区连接将导致以下内容丢失",
   "RegisterWorkspace_Features_Marketplace_Description": "在此工作区安装 Rocket.Chat 应用市场应用。",

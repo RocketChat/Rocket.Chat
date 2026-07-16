@@ -8,7 +8,7 @@ import { debounce } from 'lodash';
 import RocketAdapter from './RocketAdapter';
 import SlackAdapter from './SlackAdapter';
 import { classLogger, connLogger } from './logger';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 
 /**
  * SlackBridge interfaces between this Rocket installation and a remote Slack installation.

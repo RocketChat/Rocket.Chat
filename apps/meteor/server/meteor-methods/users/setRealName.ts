@@ -2,10 +2,10 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { RateLimiter } from '../../../app/lib/server/lib';
-import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
-import { settings } from '../../../app/settings/server';
+import { RateLimiterClass as RateLimiter } from '../../lib/RateLimiter';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { setRealName } from '../../lib/users/setRealName';
+import { settings } from '../../settings';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
