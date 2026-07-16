@@ -741,11 +741,19 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'groups.kick',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomUserBody<{ roomId?: string; roomName?: string; userId?: string; username?: string; user?: string }>(),
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			const room = await getRoomFromParams(this.bodyParams);
 
 			const user = await getUserFromParams(this.bodyParams);
@@ -756,15 +764,26 @@ API.v1.addRoute(
 			await removeUserFromRoomMethod(this.userId, { rid: room._id, username: user.username });
 
 			return API.v1.success();
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'groups.leave',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomTargetBody<{ roomId?: string; roomName?: string }>(),
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			const findResult = await findPrivateGroupByIdOrName({
 				params: this.bodyParams,
 				userId: this.userId,
@@ -777,7 +796,10 @@ API.v1.addRoute(
 			await leaveRoomMethod(user, findResult.rid);
 
 			return API.v1.success();
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
@@ -1000,11 +1022,19 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'groups.open',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomTargetBody<{ roomId?: string; roomName?: string }>(),
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			const findResult = await findPrivateGroupByIdOrName({
 				params: this.bodyParams,
 				userId: this.userId,
@@ -1018,15 +1048,26 @@ API.v1.addRoute(
 			await openRoom(this.userId, findResult.rid);
 
 			return API.v1.success();
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'groups.removeModerator',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomUserBody<{ roomId?: string; roomName?: string; userId?: string; username?: string; user?: string }>(),
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			const findResult = await findPrivateGroupByIdOrName({
 				params: this.bodyParams,
 				userId: this.userId,
@@ -1037,15 +1078,26 @@ API.v1.addRoute(
 			await removeRoomModerator(this.userId, findResult.rid, user._id);
 
 			return API.v1.success();
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'groups.removeOwner',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomUserBody<{ roomId?: string; roomName?: string; userId?: string; username?: string; user?: string }>(),
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			const findResult = await findPrivateGroupByIdOrName({
 				params: this.bodyParams,
 				userId: this.userId,
@@ -1056,15 +1108,26 @@ API.v1.addRoute(
 			await removeRoomOwner(this.userId, findResult.rid, user._id);
 
 			return API.v1.success();
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'groups.removeLeader',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomUserBody<{ roomId?: string; roomName?: string; userId?: string; username?: string; user?: string }>(),
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			const findResult = await findPrivateGroupByIdOrName({
 				params: this.bodyParams,
 				userId: this.userId,
@@ -1075,15 +1138,26 @@ API.v1.addRoute(
 			await removeRoomLeader(this.userId, findResult.rid, user._id);
 
 			return API.v1.success();
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'groups.rename',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomTargetBody<{ roomId?: string; roomName?: string; name: string }>({ name: { type: 'string' } }, ['name']),
+		response: {
+			200: groupResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			if (!this.bodyParams.name?.trim()) {
 				return API.v1.failure('The bodyParam "name" is required');
 			}
@@ -1104,7 +1178,10 @@ API.v1.addRoute(
 			return API.v1.success({
 				group: await composeRoomWithLastMessage(room, this.userId),
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
@@ -1295,11 +1372,19 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'groups.unarchive',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomTargetBody<{ roomId?: string; roomName?: string }>(),
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			const findResult = await findPrivateGroupByIdOrName({
 				params: this.bodyParams,
 				userId: this.userId,
@@ -1309,7 +1394,10 @@ API.v1.addRoute(
 			await executeUnarchiveRoom(this.userId, findResult.rid);
 
 			return API.v1.success();
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
@@ -1355,11 +1443,19 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'groups.setEncrypted',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomTargetBody<{ roomId?: string; roomName?: string; encrypted: boolean }>({ encrypted: { type: 'boolean' } }, ['encrypted']),
+		response: {
+			200: groupResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			if (!Match.test(this.bodyParams, Match.ObjectIncluding({ encrypted: Boolean }))) {
 				return API.v1.failure('The bodyParam "encrypted" is required');
 			}
@@ -1381,7 +1477,10 @@ API.v1.addRoute(
 			return API.v1.success({
 				group: await composeRoomWithLastMessage(room, this.userId),
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
