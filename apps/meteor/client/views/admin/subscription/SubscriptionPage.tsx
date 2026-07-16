@@ -124,7 +124,7 @@ const SubscriptionPage = () => {
 			)}
 			<PageScrollableContentWithShadow p={16}>
 				{(showSubscriptionCallout || syncLicenseUpdate.isPending) && (
-					<Callout type='info' title={t('Sync_license_update_Callout_Title')} m={8}>
+					<Callout type='info' title={t('Sync_license_update_Callout_Title')} margin={8}>
 						{t('Sync_license_update_Callout')}
 					</Callout>
 				)}
@@ -140,7 +140,7 @@ const SubscriptionPage = () => {
 							</Accordion>
 						)}
 						<Box marginBlock='none' marginInline='auto' width='full' color='default'>
-							<Grid m={0}>
+							<Grid margin={0}>
 								<GridItem lg={4} xs={4} p={8} minHeight={260}>
 									<PlanCard license={license} licenseLimits={{ activeUsers: seatsLimit }} />
 								</GridItem>

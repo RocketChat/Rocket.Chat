@@ -92,13 +92,13 @@ const KeyboardShortcutsModal = ({ onClose }: KeyboardShortcutsModalProps) => {
 
 	return (
 		<GenericModal icon='keyboard' variant='info' title={t('Keyboard_Shortcuts_Title')} cancelText={t('Close')} onCancel={onClose}>
-			<Box is='dl' aria-label={t('Keyboard_Shortcuts_Title')} m={0}>
+			<Box is='dl' aria-label={t('Keyboard_Shortcuts_Title')} margin={0}>
 				{SHORTCUTS.map(({ id, descriptionKey, combos }) => (
 					<Box key={id} mbe={12}>
 						<Box is='dt' fontScale='p2m' fontWeight='700' mbe={4}>
 							{t(descriptionKey)}
 						</Box>
-						<Box is='dd' fontScale='p2' m={0} mbe={8}>
+						<Box is='dd' fontScale='p2' margin={0} mbe={8}>
 							{combos.map((combo, comboIndex) => {
 								const keys = isMac ? combo.mac : combo.other;
 								return (
@@ -124,7 +124,7 @@ const KeyboardShortcutsModal = ({ onClose }: KeyboardShortcutsModalProps) => {
 								);
 							})}
 						</Box>
-						<Divider aria-hidden='true' m={0} />
+						<Divider aria-hidden='true' margin={0} />
 					</Box>
 				))}
 			</Box>

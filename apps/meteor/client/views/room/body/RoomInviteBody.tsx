@@ -19,7 +19,7 @@ const RoomInviteBody = ({ inviter, infoLink, isLoading, onAccept, onReject }: Ro
 	const { name, username } = inviter;
 
 	return (
-		<Box m='auto'>
+		<Box margin='auto'>
 			<States>
 				<StatesIcon name='mail' />
 				<StatesTitle>{t('Message_request')}</StatesTitle>

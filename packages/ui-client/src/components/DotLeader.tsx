@@ -13,7 +13,7 @@ const DotLeader = ({ color = 'neutral-300', dotSize = 'x2' }: DotLeaderProps) =>
 		alignSelf='flex-end'
 		borderBlockEndStyle='dotted'
 		borderBlockEndWidth={dotSize}
-		m={2}
+		margin={2}
 		borderColor={color}
 	/>
 );

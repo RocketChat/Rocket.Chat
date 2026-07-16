@@ -16,7 +16,7 @@ const CounterRow = ({ children, ...props }: CounterRowProps) => (
 						? [
 								...acc,
 								<Fragment key={i}>{child}</Fragment>,
-								<Divider key={(i + 1) * children.length} width='x2' m='none' alignSelf='stretch' />,
+								<Divider key={(i + 1) * children.length} width='x2' margin='none' alignSelf='stretch' />,
 							]
 						: [...acc, child],
 				[],

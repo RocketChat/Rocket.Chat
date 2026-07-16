@@ -116,7 +116,7 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 						{isLoading &&
 							Array(5)
 								.fill(5)
-								.map((_, index) => <Skeleton variant='rect' height='100px' width='120px' m={2} key={index} />)}
+								.map((_, index) => <Skeleton variant='rect' height='100px' width='120px' margin={2} key={index} />)}
 
 						{!isLoading &&
 							itemsFlat.map((item) => (
@@ -130,7 +130,7 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 									borderColor={item === focused ? 'highlight' : 'transparent'}
 									tabIndex={item === focused ? 0 : -1}
 									aria-selected={item === focused}
-									m={2}
+									margin={2}
 									borderWidth='default'
 									borderRadius='x4'
 								>

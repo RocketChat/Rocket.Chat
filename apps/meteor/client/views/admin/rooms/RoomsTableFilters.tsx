@@ -85,7 +85,7 @@ const RoomsTableFilters = ({ setFilters }: RoomsTableFiltersProps) => {
 			alignItems='center'
 			justifyContent='center'
 		>
-			<Box minWidth='x224' display='flex' m='x4' flexGrow={2}>
+			<Box minWidth='x224' display='flex' margin='x4' flexGrow={2}>
 				<TextInput
 					name='search-rooms'
 					alignItems='center'
@@ -95,7 +95,7 @@ const RoomsTableFilters = ({ setFilters }: RoomsTableFiltersProps) => {
 					value={text}
 				/>
 			</Box>
-			<Box minWidth='x224' m='x4'>
+			<Box minWidth='x224' margin='x4'>
 				<MultiSelectCustom
 					dropdownOptions={roomTypeFilterStructure}
 					defaultTitle='All_rooms'

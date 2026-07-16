@@ -101,7 +101,7 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 						</Box>
 						<Box display='flex' flexDirection='row' flexWrap='wrap' justifyContent='start' alignItems='center'>
 							{categories?.map((current) => (
-								<Chip key={current} textTransform='uppercase' m={4}>
+								<Chip key={current} textTransform='uppercase' margin={4}>
 									{current}
 								</Chip>
 							))}
