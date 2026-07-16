@@ -5,7 +5,7 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
 import { auditGetAuditionsMethod, auditGetMessagesMethod, auditGetOmnichannelMessagesMethod } from './functions';
-import { methodDeprecationLogger } from '../../../../app/lib/server/lib/deprecationWarningLogger';
+import { methodDeprecationLogger } from '../../../../server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

@@ -5,7 +5,7 @@ import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
-import { updateCounter } from '../../../../app/statistics/server';
+import { updateCounter } from '../../../../server/lib/statistics';
 import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
