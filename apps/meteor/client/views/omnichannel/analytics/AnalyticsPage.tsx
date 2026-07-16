@@ -90,7 +90,7 @@ const AnalyticsPage = () => {
 					<Box display='flex' flexGrow={1} flexShrink={1}>
 						<InterchangeableChart
 							flexShrink={1}
-							w='66%'
+							width='66%'
 							height='100%'
 							chartName={chartName || ''}
 							departmentId={department || ''}

@@ -57,7 +57,7 @@ const UpgradeToGetMore = ({ activeModules, children }: UpgradeToGetMoreProps) =>
 					md: 4,
 					lg: 6,
 					xl: 4,
-					p: 8,
+					padding: 8,
 				}}
 			>
 				{upgradeModules.map((card, index) => {

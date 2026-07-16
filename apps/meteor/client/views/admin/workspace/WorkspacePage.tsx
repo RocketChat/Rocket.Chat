@@ -57,7 +57,7 @@ const WorkspacePage = ({
 					<Box marginBlockEnd={16}>
 						<VersionCard serverInfo={serverInfo} />
 					</Box>
-					<CardGrid breakpoints={{ lg: 4, xs: 4, p: 8 }}>
+					<CardGrid breakpoints={{ lg: 4, xs: 4, padding: 8 }}>
 						<DeploymentCard serverInfo={serverInfo} statistics={statistics} instances={instances} />
 						<UsersUploadsCard statistics={statistics} />
 						<MessagesRoomsCard statistics={statistics} />

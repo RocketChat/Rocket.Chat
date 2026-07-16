@@ -444,7 +444,7 @@ const MockedPage = () => {
 
 	const overflowBoxProps = {
 		display: 'flex',
-		h: 'full',
+		height: 'full',
 		flexGrow: 1,
 		flexShrink: 0,
 		flexBasis: '33%',
