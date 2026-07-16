@@ -177,7 +177,6 @@ export const MessageList = function MessageList({
 		}
 
 		const handle = virtualizerRef.current;
-		const lastItemIndex = messages.length - 1;
 		if (shouldJumpToBottom === true) {
 			handle?.scrollToIndex(messagesLength, {
 				align: 'end',
@@ -186,7 +185,7 @@ export const MessageList = function MessageList({
 		// If new messages arrive and is at bottom, scroll to keep at bottom.
 		if (isAtBottom.current && lastScrollSizeRef.current !== handle?.scrollSize && !isLoadingMoreMessages) {
 			lastScrollSizeRef.current = handle?.scrollSize ?? 0;
-			handle?.scrollToIndex(lastItemIndex + 1, {
+			handle?.scrollToIndex(messagesLength, {
 				align: 'end',
 			});
 		}
