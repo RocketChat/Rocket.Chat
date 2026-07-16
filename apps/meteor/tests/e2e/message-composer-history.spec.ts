@@ -1,6 +1,7 @@
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel, deleteChannel } from './utils';
+import { preserveSettings } from './utils/preserveSettings';
 import { setSettingValueById } from './utils/setSettingValueById';
 import { setUserPreferences } from './utils/setUserPreferences';
 import { expect, test } from './utils/test';
@@ -11,6 +12,8 @@ test.describe.serial('message-composer-history', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
 	let otherChannel: string;
+
+	preserveSettings(['Accounts_AllowFeaturePreview']);
 
 	test.beforeAll(async ({ api }) => {
 		await setSettingValueById(api, 'Accounts_AllowFeaturePreview', true);
