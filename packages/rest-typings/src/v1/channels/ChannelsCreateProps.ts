@@ -5,6 +5,7 @@ export type ChannelsCreateProps = {
 	members?: string[];
 	teams?: string[];
 	readOnly?: boolean;
+	customFields?: Record<string, any>;
 	extraData?: {
 		broadcast?: boolean;
 		encrypted?: boolean;
@@ -25,8 +26,17 @@ const channelsCreatePropsSchema = {
 		teams: {
 			type: 'array',
 		},
-		readonly: {
+		readOnly: {
 			type: 'boolean',
+			nullable: true,
+		},
+		customFields: {
+			type: 'object',
+			nullable: true,
+		},
+		excludeSelf: {
+			type: 'boolean',
+			nullable: true,
 		},
 		extraData: {
 			type: 'object',

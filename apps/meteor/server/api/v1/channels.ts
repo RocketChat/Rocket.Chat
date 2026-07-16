@@ -26,6 +26,7 @@ import {
 	isChannelsGetAllUserMentionsByChannelProps,
 	isChannelsModeratorsProps,
 	isChannelsConvertToTeamProps,
+	isChannelsCreateProps,
 	isChannelsSetReadOnlyProps,
 	isChannelsDeleteProps,
 	isChannelsListProps,
@@ -1137,49 +1138,51 @@ API.channels = {
 	},
 };
 
-API.v1.addRoute(
+API.v1.post(
 	'channels.create',
-	{ authRequired: true },
 	{
-		async post() {
-			const { userId, bodyParams } = this;
+		authRequired: true,
+		body: isChannelsCreateProps,
+		response: {
+			200: channelResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		const { userId, bodyParams } = this;
 
-			let error;
-
-			try {
-				await API.channels?.create.validate({
-					user: {
-						value: userId,
-					},
-					name: {
-						value: bodyParams.name,
-						key: 'name',
-					},
-					members: {
-						value: bodyParams.members,
-						key: 'members',
-					},
-					teams: {
-						value: bodyParams.teams,
-						key: 'teams',
-					},
-					teamId: {
-						value: bodyParams.extraData?.teamId,
-						key: 'teamId',
-					},
-				});
-			} catch (e: any) {
-				if (e.message === 'unauthorized') {
-					error = API.v1.forbidden();
-				} else {
-					error = API.v1.failure(e.message);
-				}
+		try {
+			await API.channels?.create.validate({
+				user: {
+					value: userId,
+				},
+				name: {
+					value: bodyParams.name,
+					key: 'name',
+				},
+				members: {
+					value: bodyParams.members,
+					key: 'members',
+				},
+				teams: {
+					value: bodyParams.teams,
+					key: 'teams',
+				},
+				teamId: {
+					value: bodyParams.extraData?.teamId,
+					key: 'teamId',
+				},
+			});
+		} catch (e: any) {
+			if (e.message === 'unauthorized') {
+				return API.v1.forbidden();
 			}
+			return API.v1.failure(e.message);
+		}
 
-			if (error) {
-				return error;
-			}
-
+		try {
 			if (bodyParams.teams) {
 				const canSeeAllTeams = await hasPermissionAsync(this.user, 'view-all-teams');
 				const teams = await Team.listByNames(bodyParams.teams, { projection: { _id: 1 } });
@@ -1198,8 +1201,16 @@ API.v1.addRoute(
 				bodyParams.members = [...membersToAdd].filter(Boolean) as string[];
 			}
 
-			return API.v1.success(await API.channels?.create.execute(userId, bodyParams));
-		},
+			const result = await API.channels?.create.execute(userId, bodyParams);
+			if (!result) {
+				return API.v1.failure('Failed to create channel');
+			}
+
+			return API.v1.success(result);
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
