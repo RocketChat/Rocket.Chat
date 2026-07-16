@@ -1,14 +1,17 @@
 import type { MediaSignalingSession } from '@rocket.chat/media-signaling';
 import { useMemo } from 'react';
 
+import { useDevicePermissionPrompt2 } from '../hooks';
 import { getEndCall } from '../utils/instanceControlsGetters';
+
+type InitiateCallOptions = { micless?: boolean };
 
 export type MediaSessionControls = {
 	toggleMute: () => void;
 	toggleHold: () => void;
 	endCall: () => void;
-	startCall: (id: string, kind: 'user' | 'sip') => Promise<void>;
-	acceptCall: () => void;
+	startCall: (id: string, kind: 'user' | 'sip', options?: InitiateCallOptions) => Promise<void>;
+	acceptCall: (options?: InitiateCallOptions) => void;
 	changeDevice: (deviceId: string) => Promise<void>;
 	forwardCall: (type: 'user' | 'sip', id: string) => void;
 	sendTone: (tone: string) => void;
@@ -16,15 +19,21 @@ export type MediaSessionControls = {
 };
 
 export const useMediaSessionControls = (instance?: MediaSignalingSession): MediaSessionControls => {
+	const requestDevice = useDevicePermissionPrompt2();
 	return useMemo(() => {
 		const toggleMute = () => {
 			const instanceState = instance?.getState();
 			if (!instanceState || !instance) {
 				return;
 			}
-			if (instanceState.localParticipant.muted && !instance.hasInput()) {
-				// TODO: unmute after
-				void instance.forceInputTrackUpdate();
+			if (!instance.hasInput()) {
+				void requestDevice({ actionType: 'device-change' }).then(() => {
+					void instance.forceInputTrackUpdate().then(() => {
+						if (instance.hasInput()) {
+							instanceState.localParticipant.setMuted(false);
+						}
+					});
+				});
 				return;
 			}
 			instanceState.localParticipant.setMuted(!instanceState.localParticipant.muted);
@@ -40,7 +49,7 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 
 		const endCall = getEndCall(instance);
 
-		const acceptCall = () => {
+		const acceptCall = (options?: InitiateCallOptions) => {
 			if (!instance) {
 				return;
 			}
@@ -48,15 +57,15 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 			if (!instanceState?.confirmed || instanceState.state !== 'ringing') {
 				return;
 			}
-			instanceState.call.accept();
+			instanceState.call.accept(options);
 		};
 
-		const startCall = async (id: string, kind: 'user' | 'sip') => {
+		const startCall = async (id: string, kind: 'user' | 'sip', options?: InitiateCallOptions) => {
 			if (!instance) {
 				return;
 			}
 			try {
-				await instance.startCall(kind, id);
+				await instance.startCall(kind, id, options);
 			} catch (error) {
 				console.error('Error starting call', error);
 			}
@@ -124,5 +133,5 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 			forwardCall,
 			sendTone,
 		};
-	}, [instance]);
+	}, [instance, requestDevice]);
 };

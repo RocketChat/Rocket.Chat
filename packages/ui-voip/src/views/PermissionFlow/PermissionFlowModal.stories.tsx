@@ -13,7 +13,9 @@ const meta = {
 				VoIP_device_permission_required: 'Mic/speaker access required',
 				VoIP_allow_and_call: 'Allow and call',
 				VoIP_allow_and_accept: 'Allow and accept',
-				VoIP_cancel_and_reject: 'Cancel and reject',
+				Continue_without_mic: 'Continue without mic',
+				Call_without_mic: 'Call without mic',
+				Accept_without_mic: 'Accept without mic',
 				Cancel: 'Cancel',
 				VoIP_device_permission_required_description:
 					'Your web browser stopped {{workspaceUrl}} from using your microphone and/or speaker.\n\nAllow speaker and microphone access in your browser settings to prevent seeing this message again.',

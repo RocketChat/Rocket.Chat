@@ -93,21 +93,26 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 			return;
 		}
 
+		const startCall = (micless?: boolean) => {
+			if ('userId' in peerInfo) {
+				void controls.startCall(peerInfo.userId, 'user', { micless });
+				return;
+			}
+
+			if ('number' in peerInfo) {
+				void controls.startCall(peerInfo.number, 'sip', { micless });
+			}
+		};
+
 		try {
 			const stream = await requestDevice({ actionType: 'outgoing' });
 			stopTracks(stream);
+			startCall();
 		} catch (error) {
 			console.error('Media Call - Error requesting device', error);
-			// return;
-		}
-
-		if ('userId' in peerInfo) {
-			void controls.startCall(peerInfo.userId, 'user');
-			return;
-		}
-
-		if ('number' in peerInfo) {
-			void controls.startCall(peerInfo.number, 'sip');
+			if (error instanceof PermissionRequestCancelledCallRejectedError) {
+				startCall(true);
+			}
 			return;
 		}
 
@@ -125,10 +130,9 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 			stopTracks(stream);
 		} catch (error) {
 			if (error instanceof PermissionRequestCancelledCallRejectedError) {
-				console.log('rejected');
-				// controls.endCall();
+				controls.acceptCall({ micless: true });
 			}
-			// return;
+			return;
 		}
 
 		controls.acceptCall();

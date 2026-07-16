@@ -40,14 +40,14 @@ const getFooter = (
 	switch (type) {
 		case 'denied':
 			return [
-				<Button key='cancel' onClick={onClose}>
-					{t('Cancel')}
+				<Button icon='mic-off' key='join-micless' danger secondary onClick={onCancel}>
+					{t('Continue_without_mic')}
 				</Button>,
 			];
 		case 'incomingPrompt':
 			return [
-				<Button key='cancel' danger onClick={onCancel} icon='phone-off'>
-					{t('VoIP_cancel_and_reject')}
+				<Button key='join-micless' danger secondary onClick={onCancel} icon='mic-off'>
+					{t('Accept_without_mic')}
 				</Button>,
 				<Button key='confirm' success onClick={onConfirm} icon='phone'>
 					{t('VoIP_allow_and_accept')}
@@ -55,8 +55,8 @@ const getFooter = (
 			];
 		case 'outgoingPrompt':
 			return [
-				<Button key='cancel' onClick={onClose}>
-					{t('Cancel')}
+				<Button key='join-micless' danger secondary onClick={onClose} icon='mic-off'>
+					{t('Call_without_mic')}
 				</Button>,
 				<Button key='confirm' success onClick={onConfirm} icon='phone'>
 					{t('VoIP_allow_and_call')}
