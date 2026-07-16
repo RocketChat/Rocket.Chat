@@ -11,7 +11,7 @@ const AttachmentText = (props: AttachmentTextProps) => {
 			role='document'
 			aria-roledescription={t('message_attachment')}
 			marginBlockEnd={4}
-			mi={2}
+			marginInline={2}
 			fontScale='p2'
 			color='default'
 			{...props}

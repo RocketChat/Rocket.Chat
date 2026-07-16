@@ -32,7 +32,7 @@ const DefaultHomePage = () => {
 				<Box is='h3' fontScale='h3' marginBlock={16}>
 					{t('Some_ideas_to_get_you_started')}
 				</Box>
-				<Box mi='neg-x8'>
+				<Box marginInline='neg-x8'>
 					<CardGroup wrap stretch>
 						{canAddUsers && <AddUsersCard />}
 						{canCreateChannel && <CreateChannelsCard />}

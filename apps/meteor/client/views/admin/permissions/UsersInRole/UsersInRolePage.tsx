@@ -88,7 +88,7 @@ const UsersInRolePage = ({ role }: UsersInRolePageProps) => {
 				</ButtonGroup>
 			</PageHeader>
 			<PageContent>
-				<Box display='flex' flexDirection='column' width='full' mi='neg-x4'>
+				<Box display='flex' flexDirection='column' width='full' marginInline='neg-x4'>
 					<Margins inline={4}>
 						{role.scope !== 'Users' && (
 							<Field marginBlockEnd={4}>

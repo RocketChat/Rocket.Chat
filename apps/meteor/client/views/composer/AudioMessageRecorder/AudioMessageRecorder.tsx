@@ -108,7 +108,7 @@ const AudioMessageRecorder = ({ rid, isMicrophoneDenied }: AudioMessageRecorderP
 			{state === 'recording' && (
 				<>
 					<MessageComposerAction icon='circle-cross' title={t('Cancel_recording')} onClick={handleCancelButtonClick} />
-					<Box display='flex' alignItems='center' mi={4} justifyContent='center'>
+					<Box display='flex' alignItems='center' marginInline={4} justifyContent='center'>
 						<Icon name='rec' color='red' />
 						<Box fontScale='p2' mis={4} is='span' minWidth='x40'>
 							{time}

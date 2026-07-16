@@ -53,7 +53,7 @@ const MultiSelectCustomList = ({
 			{filteredOptions.map((option) => (
 				<Fragment key={option.id}>
 					{option.isGroupTitle || !option.hasOwnProperty('checked') ? (
-						<Box mi='x10' marginBlock={4} fontScale='p2b' color='default'>
+						<Box marginInline='x10' marginBlock={4} fontScale='p2b' color='default'>
 							{t(option.text as TranslationKey)}
 						</Box>
 					) : (

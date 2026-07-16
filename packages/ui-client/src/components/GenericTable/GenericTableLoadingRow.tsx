@@ -7,7 +7,7 @@ export const GenericTableLoadingRow = ({ cols }: GenericTableLoadingRowProps) =>
 		<TableCell>
 			<Box display='flex'>
 				<Skeleton variant='rect' height={40} width={40} />
-				<Box mi={8} flexGrow={1}>
+				<Box marginInline={8} flexGrow={1}>
 					<Skeleton width='100%' />
 					<Skeleton width='100%' />
 				</Box>

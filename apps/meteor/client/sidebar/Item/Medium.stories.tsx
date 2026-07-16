@@ -24,7 +24,7 @@ const Template: StoryFn<typeof Medium> = (args) => (
 	<Medium
 		{...args}
 		titleIcon={
-			<Box mi={4}>
+			<Box marginInline={4}>
 				<Status.Online />
 			</Box>
 		}

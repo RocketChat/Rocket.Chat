@@ -24,7 +24,7 @@ const CardList = ({
 		<Box
 			display='flex'
 			marginBlock={autoMargin ? 'auto' : undefined}
-			mi={marginInline}
+			marginInline={marginInline}
 			flexDirection={direction}
 			flexWrap={shouldWrapCards ? 'wrap' : 'nowrap'}
 			flexGrow={1}

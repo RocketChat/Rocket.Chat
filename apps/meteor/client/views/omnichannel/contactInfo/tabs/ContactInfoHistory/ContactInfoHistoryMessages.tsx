@@ -68,7 +68,7 @@ const ContactInfoHistoryMessages = ({ chatId, onBack, onOpenRoom }: ContactHisto
 					borderBlockEndColor='extra-light'
 					flexShrink={0}
 				>
-					<Box display='flex' alignItems='center' flexDirection='row' flexGrow={1} mi='neg-x4'>
+					<Box display='flex' alignItems='center' flexDirection='row' flexGrow={1} marginInline='neg-x4'>
 						<Margins inline={4}>
 							<TextInput
 								placeholder={t('Search')}

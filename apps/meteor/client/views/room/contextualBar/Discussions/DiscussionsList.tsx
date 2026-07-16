@@ -87,7 +87,7 @@ function DiscussionsList({
 					</Box>
 				)}
 				{error instanceof Error && (
-					<Callout mi={24} type='danger'>
+					<Callout marginInline={24} type='danger'>
 						{error.toString()}
 					</Callout>
 				)}

@@ -89,7 +89,7 @@ const AccessibilityPage = () => {
 					width='full'
 					alignSelf='center'
 					marginBlock={40}
-					mi={36}
+					marginInline={36}
 				>
 					<Box fontScale='p1' marginBlockEnd={24}>
 						<Box pb={16} is='p'>

@@ -104,7 +104,7 @@ const KeyboardShortcutsModal = ({ onClose }: KeyboardShortcutsModalProps) => {
 								return (
 									<Fragment key={comboIndex}>
 										{comboIndex > 0 && (
-											<Box is='span' mi={8} color='hint'>
+											<Box is='span' marginInline={8} color='hint'>
 												{t('or')}
 											</Box>
 										)}
@@ -112,7 +112,7 @@ const KeyboardShortcutsModal = ({ onClose }: KeyboardShortcutsModalProps) => {
 											{keys.map((token, tokenIndex) => (
 												<Fragment key={tokenIndex}>
 													{tokenIndex > 0 && (
-														<Box is='span' mi={4} aria-hidden='true'>
+														<Box is='span' marginInline={4} aria-hidden='true'>
 															+
 														</Box>
 													)}

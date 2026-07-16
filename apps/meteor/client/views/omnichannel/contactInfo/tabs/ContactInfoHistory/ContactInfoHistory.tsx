@@ -78,7 +78,7 @@ const ContactInfoHistory = ({ contact, setChatId }: ContactInfoHistoryProps) => 
 				borderBlockEndColor='extra-light'
 				flexShrink={0}
 			>
-				<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
+				<Box display='flex' flexDirection='row' flexGrow={1} marginInline='neg-x4'>
 					<Margins inline={4}>
 						<Select
 							value={type}

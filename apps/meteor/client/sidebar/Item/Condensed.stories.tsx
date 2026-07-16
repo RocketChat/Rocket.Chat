@@ -25,7 +25,7 @@ const Template: StoryFn<typeof Condensed> = (args) => (
 	<Condensed
 		{...args}
 		titleIcon={
-			<Box mi={4}>
+			<Box marginInline={4}>
 				<Status.Online />
 			</Box>
 		}

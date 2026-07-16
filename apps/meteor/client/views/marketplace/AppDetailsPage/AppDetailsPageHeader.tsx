@@ -60,13 +60,13 @@ const AppDetailsPageHeader = ({ app }: AppDetailsPageHeaderProps) => {
 				</Box>
 				<Box fontScale='c1' display='flex' flexDirection='row' color='hint' alignItems='center'>
 					{author?.name}
-					<Box mi={16} color='disabled'>
+					<Box marginInline={16} color='disabled'>
 						|
 					</Box>
 					<Box>{t('Version_version', { version: versioni18nKey(app) })}</Box>
 					{lastUpdated && (
 						<>
-							<Box mi={16} color='disabled'>
+							<Box marginInline={16} color='disabled'>
 								|
 							</Box>
 							<Box>
@@ -79,7 +79,7 @@ const AppDetailsPageHeader = ({ app }: AppDetailsPageHeaderProps) => {
 
 					{versionIncompatible && (
 						<>
-							<Box mi={16} color='disabled'>
+							<Box marginInline={16} color='disabled'>
 								|
 							</Box>
 

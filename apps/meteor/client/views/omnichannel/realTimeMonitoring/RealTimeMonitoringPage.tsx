@@ -60,7 +60,7 @@ const RealTimeMonitoringPage = () => {
 			<PageScrollableContentWithShadow>
 				<Margins block='x4'>
 					<Box flexDirection='row' display='flex' justifyContent='space-between' alignSelf='center' width='full'>
-						<Box maxWidth='50%' display='flex' mi={4} flexGrow={1} flexDirection='column'>
+						<Box maxWidth='50%' display='flex' marginInline={4} flexGrow={1} flexDirection='column'>
 							<Label marginBlock={4}>{t('Departments')}</Label>
 							<AutoCompleteDepartment
 								value={departmentId}
@@ -72,7 +72,7 @@ const RealTimeMonitoringPage = () => {
 								renderItem={({ label, ...props }) => <Option {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />}
 							/>
 						</Box>
-						<Box maxWidth='50%' display='flex' mi={4} flexGrow={1} flexDirection='column'>
+						<Box maxWidth='50%' display='flex' marginInline={4} flexGrow={1} flexDirection='column'>
 							<Label marginBlock={4}>{t('Update_every')}</Label>
 							<Select
 								options={reloadOptions}

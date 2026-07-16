@@ -7,7 +7,16 @@ export type GenericResourceUsageSkeletonProps = {
 
 const GenericResourceUsageSkeleton = ({ title, ...props }: GenericResourceUsageSkeletonProps) => {
 	return (
-		<Box width='x180' height='x40' mi={8} fontScale='c1' display='flex' flexDirection='column' justifyContent='space-around' {...props}>
+		<Box
+			width='x180'
+			height='x40'
+			marginInline={8}
+			fontScale='c1'
+			display='flex'
+			flexDirection='column'
+			justifyContent='space-around'
+			{...props}
+		>
 			{title ? <Box color='default'>{title}</Box> : <Skeleton width='full' />}
 			<Skeleton width='full' />
 		</Box>

@@ -12,7 +12,7 @@ const ContactInfoDetailsEntry = ({ icon, value, actions, ...props }: ContactInfo
 	<Box display='flex' alignItems='center' {...props}>
 		<Icon size='x18' mie={4} name={icon} />
 		<Box withTruncatedText display='flex' flexGrow={1} alignItems='center' justifyContent='space-between'>
-			<Box is='p' fontScale='p2' withTruncatedText mi={4}>
+			<Box is='p' fontScale='p2' withTruncatedText marginInline={4}>
 				{value}
 			</Box>
 			<Box display='flex' alignItems='center'>

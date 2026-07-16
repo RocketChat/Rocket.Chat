@@ -52,7 +52,7 @@ const TeamsInfo = ({ room, onClickClose, onClickEdit, onClickViewChannels }: Tea
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent p={24}>
 				<InfoPanel>
-					<InfoPanelSection maxWidth='x332' mi='auto'>
+					<InfoPanelSection maxWidth='x332' marginInline='auto'>
 						<InfoPanelAvatar>
 							<RoomAvatar size='x332' room={room} />
 						</InfoPanelAvatar>

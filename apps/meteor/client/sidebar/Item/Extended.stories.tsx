@@ -40,7 +40,7 @@ const Template: StoryFn<typeof Extended> = (args) => (
 			</Box>
 		}
 		titleIcon={
-			<Box mi={4}>
+			<Box marginInline={4}>
 				<Status.Online />
 			</Box>
 		}

@@ -301,7 +301,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 						/>
 					</FieldRow>
 					{statusDuration === 'custom' && (
-						<Box display='flex' mi='neg-x4' marginBlockStart={8}>
+						<Box display='flex' marginInline='neg-x4' marginBlockStart={8}>
 							<Margins inline={4}>
 								<Controller
 									control={control}

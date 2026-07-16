@@ -86,7 +86,7 @@ const CannedResponseList = ({
 			</ContextualbarHeader>
 			<ContextualbarContent paddingInline={0} ref={ref}>
 				<Box display='flex' flexDirection='row' p={24} flexShrink={0}>
-					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
+					<Box display='flex' flexDirection='row' flexGrow={1} marginInline='neg-x4'>
 						<Margins inline={4}>
 							<TextInput
 								placeholder={t('Search')}

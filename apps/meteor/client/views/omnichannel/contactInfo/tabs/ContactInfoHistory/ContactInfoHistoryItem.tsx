@@ -63,7 +63,7 @@ const ContactInfoHistoryItem = ({ source, lastMessage, verified, onClick }: Cont
 				<Box display='flex' alignItems='center'>
 					{source && <OmnichannelRoomIcon source={source} size='x18' placement='default' />}
 					{source && (
-						<Box mi={4} fontScale='p2b'>
+						<Box marginInline={4} fontScale='p2b'>
 							{getSourceName(source)}
 						</Box>
 					)}

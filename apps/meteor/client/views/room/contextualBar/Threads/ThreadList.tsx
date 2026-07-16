@@ -153,7 +153,7 @@ const ThreadList = () => {
 					</Box>
 				)}
 				{error && (
-					<Callout mi={24} type='danger'>
+					<Callout marginInline={24} type='danger'>
 						{getErrorMessage(error, t('Something_went_wrong'))}
 					</Callout>
 				)}

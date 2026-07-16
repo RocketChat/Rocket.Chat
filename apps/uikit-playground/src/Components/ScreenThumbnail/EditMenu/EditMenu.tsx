@@ -60,7 +60,7 @@ const EditMenu = ({
 			{isOpen && (
 				<Box position='absolute'>
 					<Box elevation='1' pb='10px' backgroundColor='white'>
-						<Box mi='10px'>
+						<Box marginInline='10px'>
 							<EditableLabel value={name} onChange={onChange} onBlur={onBlur} {...labelProps} />
 							<Box withTruncatedText marginBlockStart='2px' fontScale='p2'>
 								{formatDate(date)}

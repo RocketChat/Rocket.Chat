@@ -97,7 +97,7 @@ const ContactInfoChannelsItem = ({
 			<Box display='flex' alignItems='center'>
 				{details && <OmnichannelRoomIcon source={details} size='x18' placement='default' />}
 				{details && (
-					<Box mi={4} fontScale='p2b'>
+					<Box marginInline={4} fontScale='p2b'>
 						{getSourceName(details)} {blocked && `(${t('Blocked')})`}
 					</Box>
 				)}

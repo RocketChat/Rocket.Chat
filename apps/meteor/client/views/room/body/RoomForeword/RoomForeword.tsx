@@ -30,7 +30,7 @@ const RoomForeword = ({ user, room }: RoomForewordProps) => {
 			<FlexItem grow={1}>
 				<Box display='flex' alignItems='center' justifyContent='center'>
 					{usernames.map((username, index) => (
-						<Box is='span' mi={4} key={index}>
+						<Box is='span' marginInline={4} key={index}>
 							<UserAvatar size='x48' username={username} />
 						</Box>
 					))}

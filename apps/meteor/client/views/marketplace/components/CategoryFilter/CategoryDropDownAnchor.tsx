@@ -60,7 +60,7 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 			<Box is='span' display='flex' flexGrow={1} fontScale='p2' color={selectedCategoriesCount ? 'white' : 'hint'}>
 				{selectedCategoriesCount > 0 ? t('Categories') : t('All_categories')}
 			</Box>
-			<Box mi={4} display='flex' alignItems='center' justifyContent='center'>
+			<Box marginInline={4} display='flex' alignItems='center' justifyContent='center'>
 				<Icon name='chevron-down' size='x20' color={selectedCategoriesCount ? 'white' : 'hint'} />
 			</Box>
 		</Box>

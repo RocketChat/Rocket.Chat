@@ -28,7 +28,7 @@ const ContactManagerInfo = ({ userId }: ContactManagerInfoProps) => {
 			{isSuccess && (
 				<Box display='flex' alignItems='center'>
 					{data.user.username && <UserAvatar size='x18' username={data.user.username} />}
-					<Box mi={8}>
+					<Box marginInline={8}>
 						<UserStatus status={data.user.status} />
 					</Box>
 					<Box fontScale='p2'>{data.user.name}</Box>
