@@ -457,14 +457,19 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'channels.open',
 	{
 		authRequired: true,
-		validateParams: isChannelsOpenProps,
+		body: isChannelsOpenProps,
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
 	},
-	{
-		async post() {
+	async function action() {
+		try {
 			const { ...params } = this.bodyParams;
 
 			const findResult = await findChannelByIdOrName({
@@ -485,18 +490,26 @@ API.v1.addRoute(
 			await openRoom(this.userId, findResult._id);
 
 			return API.v1.success();
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'channels.setReadOnly',
 	{
 		authRequired: true,
-		validateParams: isChannelsSetReadOnlyProps,
+		body: isChannelsSetReadOnlyProps,
+		response: {
+			200: channelResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
 	},
-	{
-		async post() {
+	async function action() {
+		try {
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
 			if (findResult.ro === this.bodyParams.readOnly) {
@@ -508,18 +521,36 @@ API.v1.addRoute(
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
-API.v1.addRoute(
+const announcementResponseSchema = ajv.compile<{ announcement?: string }>({
+	type: 'object',
+	properties: {
+		announcement: { type: 'string' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['success'],
+	additionalProperties: false,
+});
+
+API.v1.post(
 	'channels.setAnnouncement',
 	{
 		authRequired: true,
-		validateParams: isChannelsSetAnnouncementProps,
+		body: isChannelsSetAnnouncementProps,
+		response: {
+			200: announcementResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
 	},
-	{
-		async post() {
+	async function action() {
+		try {
 			const { announcement, ...params } = this.bodyParams;
 
 			const findResult = await findChannelByIdOrName({ params });
@@ -529,7 +560,10 @@ API.v1.addRoute(
 			return API.v1.success({
 				announcement: this.bodyParams.announcement,
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
