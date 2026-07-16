@@ -665,11 +665,19 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'channels.addModerator',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: isChannelsModeratorsProps,
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
 			const user = await getUserFromParams(this.bodyParams);
@@ -677,15 +685,26 @@ API.v1.addRoute(
 			await addRoomModerator(this.userId, findResult._id, user._id);
 
 			return API.v1.success();
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'channels.addOwner',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: isChannelsModeratorsProps,
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
 			const user = await getUserFromParams(this.bodyParams);
@@ -693,7 +712,10 @@ API.v1.addRoute(
 			await addRoomOwner(this.userId, findResult._id, user._id);
 
 			return API.v1.success();
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
@@ -1299,11 +1321,19 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'channels.removeModerator',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: isChannelsModeratorsProps,
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
 			const user = await getUserFromParams(this.bodyParams);
@@ -1311,15 +1341,26 @@ API.v1.addRoute(
 			await removeRoomModerator(this.userId, findResult._id, user._id);
 
 			return API.v1.success();
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'channels.removeOwner',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: isChannelsModeratorsProps,
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
 			const user = await getUserFromParams(this.bodyParams);
@@ -1327,7 +1368,10 @@ API.v1.addRoute(
 			await removeRoomOwner(this.userId, findResult._id, user._id);
 
 			return API.v1.success();
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
@@ -1591,11 +1635,19 @@ API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'channels.addLeader',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: isChannelsModeratorsProps,
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
 			const user = await getUserFromParams(this.bodyParams);
@@ -1603,15 +1655,26 @@ API.v1.addRoute(
 			await addRoomLeader(this.userId, findResult._id, user._id);
 
 			return API.v1.success();
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'channels.removeLeader',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: isChannelsModeratorsProps,
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
 			const user = await getUserFromParams(this.bodyParams);
@@ -1619,7 +1682,10 @@ API.v1.addRoute(
 			await removeRoomLeader(this.userId, findResult._id, user._id);
 
 			return API.v1.success();
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
