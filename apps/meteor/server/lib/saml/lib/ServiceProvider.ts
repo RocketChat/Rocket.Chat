@@ -57,6 +57,26 @@ export class SAMLServiceProvider {
 		};
 	}
 
+	private async buildLogoutResponseUrl(response: string, relayState: string | undefined): Promise<string> {
+		const buffer = await util.promisify(zlib.deflateRaw)(response);
+		const base64 = buffer.toString('base64');
+		let target = this.serviceProviderOptions.idpSLORedirectURL;
+
+		if (target.indexOf('?') > 0) {
+			target += '&';
+		} else {
+			target += '?';
+		}
+
+		// The SAML spec requires the response RelayState to exactly match the value received on the request.
+		const samlResponse = this.maybeSignRequest({
+			SAMLResponse: base64,
+			...(relayState !== undefined && { RelayState: relayState }),
+		});
+
+		return target + querystring.stringify(samlResponse);
+	}
+
 	public generateAuthorizeRequest(credentialToken: string): string {
 		const identifiedRequest = AuthorizeRequest.generate(this.serviceProviderOptions, credentialToken);
 		return identifiedRequest.request;
@@ -86,34 +106,9 @@ export class SAMLServiceProvider {
 		relayState: string | undefined,
 		callback: (err: string | object | null, url?: string) => void,
 	): void {
-		zlib.deflateRaw(response, (err, buffer) => {
-			if (err) {
-				return callback(err);
-			}
-
-			try {
-				const base64 = buffer.toString('base64');
-				let target = this.serviceProviderOptions.idpSLORedirectURL;
-
-				if (target.indexOf('?') > 0) {
-					target += '&';
-				} else {
-					target += '?';
-				}
-
-				// The SAML spec requires the response RelayState to exactly match the value received on the request.
-				const samlResponse = this.maybeSignRequest({
-					SAMLResponse: base64,
-					...(relayState !== undefined && { RelayState: relayState }),
-				});
-
-				target += querystring.stringify(samlResponse);
-
-				return callback(null, target);
-			} catch (error) {
-				return callback(error instanceof Error ? error : String(error));
-			}
-		});
+		void this.buildLogoutResponseUrl(response, relayState)
+			.then((url) => callback(null, url))
+			.catch((error) => callback(error instanceof Error ? error : String(error)));
 	}
 
 	/*
