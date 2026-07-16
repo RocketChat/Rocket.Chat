@@ -5762,7 +5762,6 @@
   "VoIP_device_permission_required_description": "Nettleseren din stoppet {{workspaceUrl}} fra å bruke mikrofonen og/eller høyttaleren.\n\nTillat høyttaler- og mikrofontilgang i nettleserinnstillingene for å unngå å se denne meldingen igjen.",
   "VoIP_allow_and_call": "Tillat og ring",
   "VoIP_allow_and_accept": "Tillat og aksepter",
-  "VoIP_cancel_and_reject": "Avbryt og avvis",
   "Voice_Call": "Taleanrop",
   "Voice_Call_Extension": "Utvidelse for taleanrop",
   "Voice_and_omnichannel": "Tale og omnikanal",

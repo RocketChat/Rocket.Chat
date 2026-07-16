@@ -5753,7 +5753,6 @@
   "VoIP_device_permission_required_description": "您的浏览器阻止 {{workspaceUrl}} 使用您的麦克风和/或扬声器。\n\n请在浏览器设置中允许扬声器和麦克风访问，以避免再次看到此消息。",
   "VoIP_allow_and_call": "允许并呼叫",
   "VoIP_allow_and_accept": "允许并接听",
-  "VoIP_cancel_and_reject": "取消并拒绝",
   "Voice_Call": "语音通话",
   "Voice_Call_Extension": "语音通话分机",
   "Voice_and_omnichannel": "语音与 Omnichannel",

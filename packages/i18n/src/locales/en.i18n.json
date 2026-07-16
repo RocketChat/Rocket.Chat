@@ -5975,7 +5975,6 @@
   "VoIP_device_permission_required_description": "Your web browser stopped {{workspaceUrl}} from using your microphone and/or speaker.\n\nAllow speaker and microphone access in your browser settings to prevent seeing this message again.",
   "VoIP_allow_and_call": "Allow and call",
   "VoIP_allow_and_accept": "Allow and accept",
-  "VoIP_cancel_and_reject": "Cancel and reject",
   "Voice": "Voice",
   "Voice_Call": "Voice Call",
   "Voice_Call_Extension": "Voice Call Extension",
