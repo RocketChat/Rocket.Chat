@@ -165,6 +165,18 @@ const roomSettingBody = <T>(field: string, fieldSchema: Record<string, unknown>)
 		additionalProperties: false,
 	});
 
+// Body validator for POSTs targeting a single room (roomId or roomName) with no other required field.
+const roomTargetBody = <T>() =>
+	ajv.compile<T>({
+		type: 'object',
+		properties: {
+			roomId: { type: 'string' },
+			roomName: { type: 'string' },
+		},
+		anyOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
+		additionalProperties: false,
+	});
+
 // Query validator for GETs targeting a single room (roomId or roomName).
 const roomTargetQuery = ajvQuery.compile<{ roomId?: string; roomName?: string }>({
 	type: 'object',
@@ -853,11 +865,19 @@ API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'channels.close',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomTargetBody<{ roomId?: string; roomName?: string }>(),
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			const findResult = await findChannelByIdOrName({
 				params: this.bodyParams,
 				checkedArchived: false,
@@ -876,15 +896,60 @@ API.v1.addRoute(
 			await hideRoomMethod(this.userId, findResult._id);
 
 			return API.v1.success();
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
-API.v1.addRoute(
+const countersResponseSchema = ajv.compile<{
+	joined: boolean;
+	members: number | null;
+	unreads: number | null;
+	unreadsFrom: Date | null;
+	msgs: number | null;
+	latest: Date | null;
+	userMentions: number | null;
+}>({
+	type: 'object',
+	properties: {
+		joined: { type: 'boolean' },
+		members: { type: ['number', 'null'] },
+		unreads: { type: ['number', 'null'] },
+		unreadsFrom: { type: ['string', 'null'] },
+		msgs: { type: ['number', 'null'] },
+		latest: { type: ['string', 'null'] },
+		userMentions: { type: ['number', 'null'] },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['joined', 'members', 'unreads', 'unreadsFrom', 'msgs', 'latest', 'userMentions', 'success'],
+	additionalProperties: false,
+});
+
+API.v1.get(
 	'channels.counters',
-	{ authRequired: true },
 	{
-		async get() {
+		authRequired: true,
+		query: ajvQuery.compile<{ roomId?: string; roomName?: string; userId?: string }>({
+			type: 'object',
+			properties: {
+				roomId: { type: 'string' },
+				roomName: { type: 'string' },
+				userId: { type: 'string' },
+			},
+			anyOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
+			additionalProperties: false,
+		}),
+		response: {
+			200: countersResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			const access = await hasPermissionAsync(this.user, 'view-room-administration');
 			const { userId } = this.queryParams;
 			let user = this.userId;
@@ -930,7 +995,10 @@ API.v1.addRoute(
 				latest,
 				userMentions,
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
