@@ -12,24 +12,6 @@ import { callbacks } from '../../../../server/lib/callbacks';
 import { syncWorkspace } from '../../../../server/lib/cloud/syncWorkspace';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-const logOfflineLicense = (() => {
-	let logged = false;
-	return () => {
-		if (!License.hasOfflineLicense()) {
-			logged = false;
-			return;
-		}
-
-		if (!logged) {
-			// startup level so it is visible at the default Log_Level, like 'License installed'
-			SystemLogger.startup(
-				'Offline license detected: outbound connections to Rocket.Chat Cloud services and the Rocket.Chat Push Gateway are disabled',
-			);
-			logged = true;
-		}
-	};
-})();
-
 export const startLicense = async () => {
 	settings.watch<string>('Site_Url', (value) => {
 		if (value) {
@@ -144,12 +126,14 @@ export const startLicense = async () => {
 				}
 			}
 
-			logOfflineLicense();
-			License.onValidateLicense(logOfflineLicense);
-			// Also run on invalidate/remove so the once-per-activation flag resets and a
-			// subsequently re-applied offline license is logged again.
-			License.onInvalidateLicense(logOfflineLicense);
-			License.onRemoveLicense(logOfflineLicense);
+			License.onInstall(() => {
+				if (License.hasOfflineLicense()) {
+					// startup level so it is visible at the default Log_Level, like 'License installed'
+					SystemLogger.startup(
+						'Offline license detected: outbound connections to Rocket.Chat Cloud services and the Rocket.Chat Push Gateway are disabled',
+					);
+				}
+			});
 
 			// After the current license is already loaded, watch the setting value to react to new licenses being applied.
 			settings.change<string>('Enterprise_License', (license) => applyLicenseOrRemove(license, true));

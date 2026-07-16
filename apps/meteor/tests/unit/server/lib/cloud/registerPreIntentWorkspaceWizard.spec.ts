@@ -11,10 +11,10 @@ const buildRegistrationDataStub = sinon.stub();
 const { registerPreIntentWorkspaceWizard } = proxyquire
 	.noCallThru()
 	.load('../../../../../server/lib/cloud/registerPreIntentWorkspaceWizard.ts', {
+		'@rocket.chat/license': { License: { hasOfflineLicense: hasOfflineLicenseStub } },
 		'@rocket.chat/models': { Users: { getOldest: getOldestStub } },
 		'@rocket.chat/server-fetch': { serverFetch: fetchStub },
 		'./buildRegistrationData': { buildWorkspaceRegistrationData: buildRegistrationDataStub },
-		'./offlineLicense': { hasOfflineLicense: hasOfflineLicenseStub },
 		'../../../app/settings/server': { settings: { get: sinon.stub().returns('https://cloud.rocket.chat') } },
 		'../logger/system': { SystemLogger: { error: sinon.stub() } },
 	});

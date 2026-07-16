@@ -1,14 +1,14 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { buildWorkspaceRegistrationData } from './buildRegistrationData';
-import { hasOfflineLicense } from './offlineLicense';
 import { settings } from '../../../app/settings/server';
 import { SystemLogger } from '../logger/system';
 
 export async function registerPreIntentWorkspaceWizard(): Promise<boolean> {
-	if (hasOfflineLicense()) {
+	if (License.hasOfflineLicense()) {
 		return false;
 	}
 
@@ -23,7 +23,7 @@ export async function registerPreIntentWorkspaceWizard(): Promise<boolean> {
 
 	// Re-validated at dispatch time: an offline license applied while the
 	// registration data was being built must still suppress the request.
-	if (hasOfflineLicense()) {
+	if (License.hasOfflineLicense()) {
 		return false;
 	}
 
