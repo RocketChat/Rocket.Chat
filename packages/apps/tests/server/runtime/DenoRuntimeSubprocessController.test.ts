@@ -38,6 +38,8 @@ describe('DenoRuntimeSubprocessController', () => {
 			const appPackageBuffer = await fs.readFile(path.join(__dirname, '../../test-data/apps/hello-world-test_0.0.1.zip'));
 			appPackage = await manager.getParser().unpackageApp(appPackageBuffer);
 
+			await fs.unlink(path.join(manager.getTempFilePath(), 'deno-runtime')).catch(function noop() {});
+
 			appStorageItem = {
 				id: 'hello-world-test',
 				status: AppStatus.MANUALLY_ENABLED,
@@ -56,41 +58,12 @@ describe('DenoRuntimeSubprocessController', () => {
 	after(
 		async () => {
 			await controller?.stopApp();
+			await fs.unlink(path.join(manager.getTempFilePath(), 'deno-runtime')).catch((reason) => {
+				console.warn('Failed to delete temporary Deno runtime symlink', reason);
+			});
 		},
 		{ timeout: 30_000 },
 	);
-
-	it('generates the Deno config in the writable host temp directory', async () => {
-		// eslint-disable-next-line prefer-destructuring -- accessing a private field for testing
-		const runtimeTempPath = controller['runtimeTempPath'];
-		const configPath = path.join(runtimeTempPath, 'deno.runtime.jsonc');
-		const config = JSON.parse(await fs.readFile(configPath, 'utf8'));
-		const { args } = controller['buildProcessConfiguration']();
-		const packagePath = controller['packagePath'].split(path.sep).join(path.posix.sep);
-
-		assert.strictEqual(controller['denoEphemeralConfigPath'], configPath);
-		assert.strictEqual(path.dirname(runtimeTempPath), manager.getTempFilePath());
-		assert.strictEqual(config.imports['@rocket.chat/apps-engine/'], `${controller['appsEnginePath']}/`);
-		assert.strictEqual(config.imports['@rocket.chat/apps/base-runtime/'], `${packagePath}/base-runtime/src/`);
-		assert.strictEqual(config.imports['@rocket.chat/apps/'], `${packagePath}/`);
-		assert.strictEqual(config.imports['@std/io'], 'jsr:@std/io@^0.225.3');
-		assert.ok(args.includes(`--config=${configPath}`));
-	});
-
-	it('uses an isolated runtime directory for each controller and removes it on stop', async () => {
-		const secondController = new DenoRuntimeSubprocessController(manager, appPackage, appStorageItem);
-		// eslint-disable-next-line prefer-destructuring -- accessing a private field for testing
-		const runtimeTempPath = secondController['runtimeTempPath'];
-
-		try {
-			assert.notStrictEqual(runtimeTempPath, controller['runtimeTempPath']);
-			assert.strictEqual((await fs.stat(runtimeTempPath)).isDirectory(), true);
-		} finally {
-			await secondController.stopApp();
-		}
-
-		await assert.rejects(fs.stat(runtimeTempPath), { code: 'ENOENT' });
-	});
 
 	it('correctly identifies a call to the HTTP accessor', { timeout: 15_000 }, async () => {
 		const httpBridge = manager.getBridges().getHttpBridge();
