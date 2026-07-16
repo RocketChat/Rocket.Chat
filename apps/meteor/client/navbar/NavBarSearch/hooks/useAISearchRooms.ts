@@ -30,7 +30,7 @@ type AISearchRoomResult = {
 	uids?: string[];
 };
 
-export const useAISearchRooms = (filterText: string): { items: SubscriptionWithRoom[]; isLoading: boolean } => {
+export const useAISearchRooms = (filterText = ''): { items: SubscriptionWithRoom[]; isLoading: boolean } => {
 	const [, mention, name] = useMemo(() => filterText.match(/(@|#)?(.*)/i) || [], [filterText]);
 
 	const query = useMemo(() => {
