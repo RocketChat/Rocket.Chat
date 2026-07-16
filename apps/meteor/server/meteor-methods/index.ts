@@ -14,6 +14,7 @@ import './auth/refreshOAuthService';
 import './auth/regenerateCodes';
 import './auth/removeOAuthService';
 import './auth/removeRoleFromPermission';
+import './auth/samlLogout';
 import './auth/sendConfirmationEmail';
 import './auth/sendForgotPasswordEmail';
 import './auth/validateTempToken';
