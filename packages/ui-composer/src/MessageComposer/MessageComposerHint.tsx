@@ -9,7 +9,7 @@ export type MessageComposerHintProps = {
 };
 
 const MessageComposerHint = ({ icon, children, helperText }: MessageComposerHintProps) => (
-	<Box pbs={0} pbe={4} display='flex' flexDirection='row' justifyContent='space-between' alignItems='center'>
+	<Box paddingBlockStart={0} pbe={4} display='flex' flexDirection='row' justifyContent='space-between' alignItems='center'>
 		<Tag icon={icon ? <Icon marginInlineEnd={4} name={icon} size='x12' /> : undefined}>{children}</Tag>
 		{helperText && (
 			<Box fontScale='c1' color='hint'>

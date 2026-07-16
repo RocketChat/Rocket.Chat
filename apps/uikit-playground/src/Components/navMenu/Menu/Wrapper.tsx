@@ -5,7 +5,7 @@ export type WrapperProps = { children: ReactNode };
 
 const Wrapper = ({ children }: WrapperProps) => (
 	<Box
-		pbs='80px'
+		paddingBlockStart='80px'
 		pis='50px'
 		display='inline-flex'
 		flexDirection='column'

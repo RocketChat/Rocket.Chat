@@ -59,7 +59,7 @@ const ThreadListMessage = ({
 
 	return (
 		<Box className={className}>
-			<Box pbs={16} is={Message} {...props}>
+			<Box paddingBlockStart={16} is={Message} {...props}>
 				<MessageLeftContainer>
 					<MessageAvatar emoji={emoji ? <Emoji emojiHandle={emoji} fillContainer /> : undefined} username={username} size='x36' />
 				</MessageLeftContainer>

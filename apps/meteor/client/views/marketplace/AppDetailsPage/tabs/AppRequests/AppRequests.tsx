@@ -57,7 +57,7 @@ const AppRequests = ({ id, isAdminUser }: AppRequestsProps) => {
 
 	if (isLoading) {
 		return (
-			<Box width='full' maxWidth='x608' marginInline='auto' pbs={36}>
+			<Box width='full' maxWidth='x608' marginInline='auto' paddingBlockStart={36}>
 				<AppRequestsLoading />
 			</Box>
 		);
@@ -65,7 +65,7 @@ const AppRequests = ({ id, isAdminUser }: AppRequestsProps) => {
 
 	return (
 		<Box height='full' display='flex' flexDirection='column'>
-			<Box width='full' maxWidth='x608' marginInline='auto' pbs={36} flexGrow='1'>
+			<Box width='full' maxWidth='x608' marginInline='auto' paddingBlockStart={36} flexGrow='1'>
 				{isSuccess && paginatedAppRequests.data?.length ? (
 					paginatedAppRequests.data.map((request) => (
 						<AppRequestItem

@@ -94,7 +94,7 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 						</Trans>
 					</Box>
 					<Box is='p'>{t('RegisterWorkspace_Setup_Email_Verification')}</Box>
-					<Field pbs={10}>
+					<Field paddingBlockStart={10}>
 						<FieldLabel>{t('Security_code')}</FieldLabel>
 						<FieldRow>
 							<TextInput defaultValue={intentData.user_code} disabled />

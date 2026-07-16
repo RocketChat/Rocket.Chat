@@ -9,7 +9,7 @@ const CategoryDropDownList = ({ categories, onSelected }: CategoryDropDownListPr
 			{categories.map((category, index) => (
 				<Fragment key={index}>
 					{category.label && (
-						<Box pi={16} pbs={8} pbe={4} fontScale='micro' textTransform='uppercase' color='default'>
+						<Box pi={16} paddingBlockStart={8} pbe={4} fontScale='micro' textTransform='uppercase' color='default'>
 							{category.label}
 						</Box>
 					)}

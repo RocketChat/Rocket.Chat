@@ -5,7 +5,7 @@ import type { RadioDropDownProps } from '../definitions/RadioDropDownDefinitions
 const RadioButtonList = ({ group, onSelected }: RadioDropDownProps) => (
 	<Tile overflow='auto' paddingBlock={12} pi={0} elevation='2' width='full' backgroundColor='light' borderRadius='x2'>
 		{group.label && (
-			<Box pi={16} pbs={8} pbe={4} fontScale='micro' textTransform='uppercase' color='default'>
+			<Box pi={16} paddingBlockStart={8} pbe={4} fontScale='micro' textTransform='uppercase' color='default'>
 				{group.label}
 			</Box>
 		)}

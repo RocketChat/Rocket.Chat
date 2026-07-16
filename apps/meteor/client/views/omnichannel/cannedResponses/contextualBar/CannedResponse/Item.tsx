@@ -27,7 +27,7 @@ const Item = ({ data, allowUse, onClickItem, onClickUse }: ItemProps) => {
 
 	return (
 		<Box
-			pbs={16}
+			paddingBlockStart={16}
 			pbe={12}
 			pi={24}
 			color='default'

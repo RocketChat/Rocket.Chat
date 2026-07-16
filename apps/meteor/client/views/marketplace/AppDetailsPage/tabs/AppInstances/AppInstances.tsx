@@ -48,7 +48,7 @@ const AppInstances = ({ id }: AppInstanceProps) => {
 	};
 
 	return (
-		<Box height='full' width='full' marginInline='auto' color='default' pbs={24}>
+		<Box height='full' width='full' marginInline='auto' color='default' paddingBlockStart={24}>
 			{isLoading && <AccordionLoading />}
 			{isError && (
 				<Box maxWidth='x600' alignSelf='center'>

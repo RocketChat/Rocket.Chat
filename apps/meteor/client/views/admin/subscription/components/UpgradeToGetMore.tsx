@@ -64,7 +64,7 @@ const UpgradeToGetMore = ({ activeModules, children }: UpgradeToGetMoreProps) =>
 					return <GenericCard key={index} icon='check' type='success' height='full' {...card} />;
 				})}
 			</CardGrid>
-			<Box pbs={24}>
+			<Box paddingBlockStart={24}>
 				<ButtonGroup large vertical>
 					<Button icon='new-window' onClick={() => handleOpenLink(PRICING_LINK)} role='link'>
 						{t('Compare_plans')}
