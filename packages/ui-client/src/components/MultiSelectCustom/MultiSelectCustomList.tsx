@@ -39,7 +39,7 @@ const MultiSelectCustomList = ({
 	return (
 		<Tile overflow='auto' pb={12} pi={0} elevation='2' width='full' backgroundColor='light' borderRadius={2} maxHeight='50vh'>
 			{searchBarText && (
-				<Box pi={12} mbe={12}>
+				<Box pi={12} marginBlockEnd={12}>
 					<SearchInput
 						name='select-search'
 						placeholder={t(searchBarText as TranslationKey)}

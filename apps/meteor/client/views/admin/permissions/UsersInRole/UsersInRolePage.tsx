@@ -91,7 +91,7 @@ const UsersInRolePage = ({ role }: UsersInRolePageProps) => {
 				<Box display='flex' flexDirection='column' width='full' mi='neg-x4'>
 					<Margins inline={4}>
 						{role.scope !== 'Users' && (
-							<Field mbe={4}>
+							<Field marginBlockEnd={4}>
 								<FieldLabel htmlFor={roomFieldId}>{t('Choose_a_room')}</FieldLabel>
 								<FieldRow>
 									<Controller

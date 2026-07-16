@@ -57,7 +57,7 @@ const UserCard = ({
 				</Box>
 			</div>
 			<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} mis={16} width='1px'>
-				<Box mbe={4} withTruncatedText display='flex' alignItems='center'>
+				<Box marginBlockEnd={4} withTruncatedText display='flex' alignItems='center'>
 					<UserCardUsername status={status} name={name} />
 					{nickname && (
 						<Box flexGrow={1} flexShrink={1} flexBasis={0} title={nickname} color='hint' mis={4} fontScale='p2' withTruncatedText>
@@ -66,7 +66,7 @@ const UserCard = ({
 					)}
 				</Box>
 				{customStatus && (
-					<UserCardInfo mbe={16}>
+					<UserCardInfo marginBlockEnd={16}>
 						{typeof customStatus === 'string' ? (
 							<MarkdownText withTruncatedText variant='inlineWithoutBreaks' content={customStatus} parseEmoji={true} />
 						) : (

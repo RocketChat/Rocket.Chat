@@ -30,7 +30,7 @@ const RoomInfoABACSection = ({ room }: RoomInfoABACSectionProps) => {
 		<>
 			<Divider marginBlock={32} width='full' />
 			<InfoPanelField>
-				<Box display='flex' mbe={16}>
+				<Box display='flex' marginBlockEnd={16}>
 					<Tag medium>
 						<Box display='flex' alignItems='center'>
 							<RoomIcon room={room} />

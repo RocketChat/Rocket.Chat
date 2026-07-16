@@ -86,7 +86,7 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 					id: 'presence-disabled',
 					content: (
 						<Box fontScale='p2'>
-							<Box mbe={4} wordBreak='break-word' style={{ whiteSpace: 'normal' }}>
+							<Box marginBlockEnd={4} wordBreak='break-word' style={{ whiteSpace: 'normal' }}>
 								{t('User_status_disabled')}
 							</Box>
 							<Box is='a' color='info' onClick={handleStatusDisabledModal}>

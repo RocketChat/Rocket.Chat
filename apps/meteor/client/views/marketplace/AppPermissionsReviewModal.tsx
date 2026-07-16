@@ -23,7 +23,7 @@ const AppPermissionsReviewModal = ({ appPermissions, onCancel, onConfirm }: AppP
 			onClose={onCancel}
 			confirmText={t('Agree')}
 		>
-			<Box fontScale='p2' mbe={20}>
+			<Box fontScale='p2' marginBlockEnd={20}>
 				{t('Apps_Permissions_Review_Modal_Subtitle')}
 			</Box>
 			<Box is='ol' type='1' style={{ listStyleType: 'decimal' }} mis={24}>

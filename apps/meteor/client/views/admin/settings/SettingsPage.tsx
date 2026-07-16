@@ -24,7 +24,7 @@ const SettingsPage = () => {
 				<SearchInput value={filter} placeholder={t('Search')} onChange={handleChange} endAddon={<Icon name='magnifier' size='x20' />} />
 			</PageBlockWithBorder>
 
-			<PageScrollableContentWithShadow p={0} mi={24} mbe={16}>
+			<PageScrollableContentWithShadow p={0} mi={24} marginBlockEnd={16}>
 				<CardGrid
 					breakpoints={{
 						xs: 4,

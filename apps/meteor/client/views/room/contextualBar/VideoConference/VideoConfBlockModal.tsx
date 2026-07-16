@@ -31,7 +31,7 @@ const VideoConfBlockModal = ({ onClose, onConfirm }: { onClose: () => void; onCo
 			onClose={onClose}
 		>
 			<>
-				<Box mbe={24}>{t('Your_web_browser_blocked_Rocket_Chat_from_opening_tab')}</Box>
+				<Box marginBlockEnd={24}>{t('Your_web_browser_blocked_Rocket_Chat_from_opening_tab')}</Box>
 				<Box>
 					{t('To_prevent_seeing_this_message_again_allow_popups_from_workspace_URL')}
 					<Box is='span' fontWeight={700}>

@@ -20,7 +20,7 @@ const PopoutDockPrompt = ({ onClosePopout }: PopoutDockPromptProps) => {
 			alignItems='center'
 			flexGrow={1}
 		>
-			<Box is='h1' color='font-default' mbe={40}>
+			<Box is='h1' color='font-default' marginBlockEnd={40}>
 				{t('Call_open_separate_window')}
 			</Box>
 			<Button onClick={onClosePopout} icon='arrow-from-cross-box' large>

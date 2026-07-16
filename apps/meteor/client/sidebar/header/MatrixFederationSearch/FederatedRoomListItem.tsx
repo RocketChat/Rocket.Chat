@@ -25,7 +25,7 @@ const FederatedRoomListItem = ({
 
 	return (
 		<Box marginBlock={16} pi={24} is='li' display='flex' flexDirection='column' width='full' name={canonicalAlias}>
-			<Box display='flex' flexDirection='row' justifyContent='space-between' alignItems='center' mbe={4}>
+			<Box display='flex' flexDirection='row' justifyContent='space-between' alignItems='center' marginBlockEnd={4}>
 				<Box flexGrow={1} flexShrink={1} fontScale='p1' fontWeight='bold' title={name} withTruncatedText>
 					{name}
 				</Box>
@@ -52,7 +52,7 @@ const FederatedRoomListItem = ({
 			<Box marginBlockStart={4} fontScale='micro' fontWeight='bolder' verticalAlign='top'>
 				{canonicalAlias}{' '}
 				<Box color='hint' is='span' verticalAlign='top'>
-					<Icon name='user' size='x12' mbe={2} />
+					<Icon name='user' size='x12' marginBlockEnd={2} />
 					{joinedMembers}
 				</Box>
 			</Box>

@@ -365,7 +365,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							<PasswordFieldSkeleton />
 						) : (
 							<>
-								<FieldLabel htmlFor={passwordId} mbe={8}>
+								<FieldLabel htmlFor={passwordId} marginBlockEnd={8}>
 									{t('Password')}
 								</FieldLabel>
 								<AdminUserSetRandomPasswordRadios
@@ -433,7 +433,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							<Skeleton width='full' height={26} />
 						) : (
 							<>
-								<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1} mbe={8}>
+								<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1} marginBlockEnd={8}>
 									<FieldLabel htmlFor={sendWelcomeEmailId} disabled={!isSmtpEnabled}>
 										{t('Send_welcome_email')}
 									</FieldLabel>

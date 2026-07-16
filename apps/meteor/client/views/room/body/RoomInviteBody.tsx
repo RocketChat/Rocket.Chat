@@ -24,7 +24,7 @@ const RoomInviteBody = ({ inviter, infoLink, isLoading, onAccept, onReject }: Ro
 				<StatesIcon name='mail' />
 				<StatesTitle>{t('Message_request')}</StatesTitle>
 				<StatesSubtitle>
-					<Box mbe={8}>{t('You_have_been_invited_to_have_a_conversation_with')}</Box>
+					<Box marginBlockEnd={8}>{t('You_have_been_invited_to_have_a_conversation_with')}</Box>
 					<Chip>
 						<UserAvatar username={username} size='x16' /> {name || username}
 					</Chip>

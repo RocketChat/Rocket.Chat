@@ -1,7 +1,7 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
 
 const AppDetailsPageLoading = () => (
-	<Box display='flex' flexDirection='row' mbe={20} width='full'>
+	<Box display='flex' flexDirection='row' marginBlockEnd={20} width='full'>
 		<Skeleton variant='rect' width='x120' height='x120' mie={32} />
 		<Box display='flex' flexDirection='column' justifyContent='space-between' flexGrow={1}>
 			<Skeleton variant='rect' width='full' height='x32' />

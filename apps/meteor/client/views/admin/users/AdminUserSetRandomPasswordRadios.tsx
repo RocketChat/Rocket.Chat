@@ -33,7 +33,7 @@ const AdminUserSetRandomPasswordRadios = ({
 
 	return (
 		<>
-			<Box display='flex' flexDirection='row' alignItems='center' flexGrow={1} mbe={8}>
+			<Box display='flex' flexDirection='row' alignItems='center' flexGrow={1} marginBlockEnd={8}>
 				<FieldRow mie={8}>
 					<Controller
 						control={control}
@@ -56,7 +56,7 @@ const AdminUserSetRandomPasswordRadios = ({
 				</FieldLabel>
 			</Box>
 			{!isSmtpEnabled && (
-				<FieldHint id={`${setRandomPasswordId}-hint`} mbe={16} marginBlockStart={0}>
+				<FieldHint id={`${setRandomPasswordId}-hint`} marginBlockEnd={16} marginBlockStart={0}>
 					<Trans
 						i18nKey='Send_Email_SMTP_Warning'
 						components={{

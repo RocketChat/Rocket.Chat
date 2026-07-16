@@ -24,7 +24,7 @@ const AppLogsItem = ({ regionId, expanded, onExpand, ...props }: AppLogsItemProp
 				return (
 					<Box
 						lineHeight={20}
-						mbe={4}
+						marginBlockEnd={4}
 						fontFamily='mono'
 						key={`${index}-${severity}-${timestamp}-${caller}`}
 					>{`${timestamp} ${severity} ${caller} ${parsedArgs}`}</Box>

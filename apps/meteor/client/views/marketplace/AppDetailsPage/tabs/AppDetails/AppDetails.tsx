@@ -82,7 +82,7 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 					{isCarouselVisible && <ScreenshotCarouselAnchor screenshots={screenshots} />}
 
 					<Box is='section'>
-						<Box fontScale='h4' mbe={8} color='titles-labels'>
+						<Box fontScale='h4' marginBlockEnd={8} color='titles-labels'>
 							{t('Description')}
 						</Box>
 						<Box
@@ -96,7 +96,7 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 					</Box>
 
 					<Box is='section'>
-						<Box fontScale='h4' mbe={8} color='titles-labels'>
+						<Box fontScale='h4' marginBlockEnd={8} color='titles-labels'>
 							{t('Categories')}
 						</Box>
 						<Box display='flex' flexDirection='row' flexWrap='wrap' justifyContent='start' alignItems='center'>
@@ -109,10 +109,10 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 					</Box>
 
 					<Box is='section'>
-						<Box fontScale='h4' mbe={8}>
+						<Box fontScale='h4' marginBlockEnd={8}>
 							{t('Contact')}
 						</Box>
-						<Box display='flex' flexDirection='row' flexGrow={1} justifyContent='space-around' flexWrap='wrap' mbe={24}>
+						<Box display='flex' flexDirection='row' flexGrow={1} justifyContent='space-around' flexWrap='wrap' marginBlockEnd={24}>
 							<Box display='flex' flexDirection='column' mie={12} flexGrow={1}>
 								<Box fontScale='h4' color='hint'>
 									{t('Author_Site')}

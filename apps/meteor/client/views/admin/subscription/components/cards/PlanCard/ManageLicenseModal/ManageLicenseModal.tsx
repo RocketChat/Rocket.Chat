@@ -120,7 +120,7 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 			onConfirm={handleApply}
 			onCancel={onCancel}
 		>
-			<Box fontScale='p2' mbe={8}>
+			<Box fontScale='p2' marginBlockEnd={8}>
 				{t('Manage_license_description')}
 			</Box>
 			<Box
@@ -142,7 +142,7 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 				<FieldRow>
 					<TextAreaInput
 						withRichContent
-						mbe={8}
+						marginBlockEnd={8}
 						width='100%'
 						backgroundColor={isDragOver ? 'tint' : undefined}
 						borderStyle={isDragOver ? 'dashed' : 'solid'}

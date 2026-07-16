@@ -57,8 +57,8 @@ const OngoingCall = () => {
 			<WidgetInfo slots={slots} />
 			<WidgetFooter>
 				{open ? (
-					<Box display='flex' justifyContent='center' alignItems='center' width='100%' flexDirection='column' mbe={8}>
-						<Field mbe={8}>
+					<Box display='flex' justifyContent='center' alignItems='center' width='100%' flexDirection='column' marginBlockEnd={8}>
+						<Field marginBlockEnd={8}>
 							<FieldRow>
 								<TextInput value={inputValue} readOnly small mi={24} />
 							</FieldRow>

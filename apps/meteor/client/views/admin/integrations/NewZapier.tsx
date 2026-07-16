@@ -55,7 +55,7 @@ const NewZapier = ({ ...props }) => {
 				icon='warning'
 				title={t(!zapierAvailable ? 'Zapier_integration_is_not_available' : 'Zapier_integration_has_been_deprecated')}
 				marginBlockStart={16}
-				mbe={4}
+				marginBlockEnd={4}
 			>
 				{t(!zapierAvailable ? 'Install_Zapier_from_marketplace_new_workspaces' : 'Install_Zapier_from_marketplace')}
 			</Callout>

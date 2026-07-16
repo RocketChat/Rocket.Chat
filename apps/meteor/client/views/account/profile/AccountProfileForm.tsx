@@ -244,7 +244,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 						{!canChangeUsername && <FieldHint>{t('Username_Change_Disabled')}</FieldHint>}
 					</Field>
 				</Box>
-				<Divider marginBlockStart={24} mbe={0} />
+				<Divider marginBlockStart={24} marginBlockEnd={0} />
 				<Field>
 					<FieldLabel>{t('Status')}</FieldLabel>
 					<FieldRow>
@@ -338,7 +338,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 					{errors.statusDuration && <FieldError>{errors.statusDuration.message}</FieldError>}
 					<FieldHint>{t('Status_new_status_warning')}</FieldHint>
 				</Field>
-				<Divider marginBlockStart={24} mbe={0} />
+				<Divider marginBlockStart={24} marginBlockEnd={0} />
 				<Field>
 					<FieldLabel>{t('Nickname')}</FieldLabel>
 					<FieldRow>

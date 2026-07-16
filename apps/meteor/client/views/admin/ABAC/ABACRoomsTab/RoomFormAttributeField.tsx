@@ -76,7 +76,7 @@ const RoomFormAttributeField = ({
 					aria-invalid={keyFieldState.error ? 'true' : 'false'}
 					aria-describedby={keyFieldState.error ? `${keyField.name}-error` : undefined}
 					placeholder={t('ABAC_Search_Attribute')}
-					mbe={4}
+					marginBlockEnd={4}
 					error={keyFieldState.error?.message}
 					withTruncatedText
 					disabled={disabled}

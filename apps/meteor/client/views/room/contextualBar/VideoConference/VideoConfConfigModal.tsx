@@ -59,7 +59,7 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 				<Box fontScale='h3' marginBlockStart={24}>
 					{t('Required_action')}
 				</Box>
-				<Callout marginBlockStart={12} mbe={24} title={t('Missing_configuration')} type='warning'>
+				<Callout marginBlockStart={12} marginBlockEnd={24} title={t('Missing_configuration')} type='warning'>
 					{isAdmin
 						? t('An_app_needs_to_be_installed_and_configured')
 						: t('A_workspace_admin_needs_to_install_and_configure_a_conference_call_app')}

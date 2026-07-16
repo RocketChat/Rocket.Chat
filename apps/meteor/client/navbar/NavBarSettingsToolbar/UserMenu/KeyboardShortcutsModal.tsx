@@ -94,11 +94,11 @@ const KeyboardShortcutsModal = ({ onClose }: KeyboardShortcutsModalProps) => {
 		<GenericModal icon='keyboard' variant='info' title={t('Keyboard_Shortcuts_Title')} cancelText={t('Close')} onCancel={onClose}>
 			<Box is='dl' aria-label={t('Keyboard_Shortcuts_Title')} margin={0}>
 				{SHORTCUTS.map(({ id, descriptionKey, combos }) => (
-					<Box key={id} mbe={12}>
-						<Box is='dt' fontScale='p2m' fontWeight='700' mbe={4}>
+					<Box key={id} marginBlockEnd={12}>
+						<Box is='dt' fontScale='p2m' fontWeight='700' marginBlockEnd={4}>
 							{t(descriptionKey)}
 						</Box>
-						<Box is='dd' fontScale='p2' margin={0} mbe={8}>
+						<Box is='dd' fontScale='p2' margin={0} marginBlockEnd={8}>
 							{combos.map((combo, comboIndex) => {
 								const keys = isMac ? combo.mac : combo.other;
 								return (

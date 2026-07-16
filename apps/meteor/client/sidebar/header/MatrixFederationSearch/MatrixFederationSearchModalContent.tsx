@@ -56,7 +56,7 @@ const MatrixFederationSearchModalContent = ({ defaultSelectedServer, servers }: 
 					onChange={(e: ChangeEvent<HTMLInputElement>) => setRoomName(e.currentTarget.value)}
 				/>
 			</Box>
-			<Box is='a' display='flex' flexDirection='row' mbe={16} onClick={manageServers}>
+			<Box is='a' display='flex' flexDirection='row' marginBlockEnd={16} onClick={manageServers}>
 				{t('Manage_server_list')}
 			</Box>
 			<FederatedRoomListErrorBoundary>

@@ -54,7 +54,7 @@ const WorkspacePage = ({
 					{warningMultipleInstances && (
 						<Callout type='warning' title={t('Multiple_monolith_instances_alert')} marginBlockEnd={16}></Callout>
 					)}
-					<Box mbe={16}>
+					<Box marginBlockEnd={16}>
 						<VersionCard serverInfo={serverInfo} />
 					</Box>
 					<CardGrid breakpoints={{ lg: 4, xs: 4, p: 8 }}>

@@ -5,7 +5,7 @@ export type FormSkeletonProps = ComponentPropsWithoutRef<typeof Box>;
 
 export const FormSkeleton = (props: FormSkeletonProps) => (
 	<Box width='full' pb={24} {...props}>
-		<Skeleton mbe={8} />
-		<Skeleton mbe={4} />
+		<Skeleton marginBlockEnd={8} />
+		<Skeleton marginBlockEnd={4} />
 	</Box>
 );

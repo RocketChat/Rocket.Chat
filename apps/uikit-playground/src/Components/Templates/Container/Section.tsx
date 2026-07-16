@@ -7,12 +7,12 @@ export type SectionProps = { template: templateType; index: number };
 
 const Section = ({ template, index }: SectionProps) => (
 	<Box marginBlockStart='25px' width='100%' key={index}>
-		<Box mbe='5px'>
+		<Box marginBlockEnd='5px'>
 			<Label fontSize={24} fontWeight={800}>
 				{template.heading}
 			</Label>
 		</Box>
-		<Box mbe='15px'>
+		<Box marginBlockEnd='15px'>
 			<Label>{template.description}</Label>
 		</Box>
 		{template.payloads.map((payload, i) => (

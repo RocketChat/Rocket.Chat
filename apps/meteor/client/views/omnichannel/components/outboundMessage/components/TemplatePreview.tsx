@@ -35,7 +35,7 @@ const TemplatePreview = ({ template, parameters = {} }: TemplatePreviewProps) =>
 
 	return (
 		<Box marginBlockStart={12}>
-			<Box is='p' fontScale='p2m' mbe={2} id={previewId}>
+			<Box is='p' fontScale='p2m' marginBlockEnd={2} id={previewId}>
 				{t('Message_preview')}
 			</Box>
 			<Callout type='info' icon='balloon-text' title={content.header || ''} aria-labelledby={previewId}>

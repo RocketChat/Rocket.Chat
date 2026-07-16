@@ -17,7 +17,7 @@ const AppRequestItem = ({ seen, name, createdDate, message, username }: AppReque
 	const isAdminUser = usePermission('manage-apps');
 
 	return (
-		<Box display='flex' flexDirection='row' pb={12} pie={24} mbe={8} flexGrow='1'>
+		<Box display='flex' flexDirection='row' pb={12} pie={24} marginBlockEnd={8} flexGrow='1'>
 			<Box mie={8} marginBlockStart={2} display='flex' flexDirection='row' alignItems='flex-start' height='full'>
 				<Box mie={16} alignSelf='center' height='100%' width='x8'>
 					{!seen && isAdminUser && <Badge small variant='primary' />}
@@ -25,7 +25,7 @@ const AppRequestItem = ({ seen, name, createdDate, message, username }: AppReque
 				{username && <UserAvatar size='x36' username={username} />}
 			</Box>
 			<Box display='flex' flexDirection='column'>
-				<Box display='flex' flexDirection='row' alignItems='flex-start' mbe={4}>
+				<Box display='flex' flexDirection='row' alignItems='flex-start' marginBlockEnd={4}>
 					<Box fontScale='p2b' mie={4} lineHeight='initial' color='titles-labels'>
 						{name}
 					</Box>

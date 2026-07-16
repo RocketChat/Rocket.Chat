@@ -15,7 +15,7 @@ const UserCardSkeleton = (props: ComponentProps<typeof UserCardDialog>) => {
 				</Box>
 			</Box>
 			<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} mis={16} width='1px'>
-				<Box mbe={4} withTruncatedText display='flex' alignItems='center'>
+				<Box marginBlockEnd={4} withTruncatedText display='flex' alignItems='center'>
 					<Skeleton width='100%' />
 				</Box>
 				<Skeleton width='100%' />

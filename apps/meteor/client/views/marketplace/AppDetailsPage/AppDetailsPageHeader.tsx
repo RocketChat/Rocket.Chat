@@ -36,12 +36,12 @@ const AppDetailsPageHeader = ({ app }: AppDetailsPageHeaderProps) => {
 	const incompatibleStatus = versionIncompatible ? appIncompatibleStatusProps() : undefined;
 
 	return (
-		<Box color='default' display='flex' flexDirection='row' mbe={20} width='full'>
+		<Box color='default' display='flex' flexDirection='row' marginBlockEnd={20} width='full'>
 			<Box mie={32}>
 				<AppAvatar size='x124' iconFileContent={iconFileContent} iconFileData={iconFileData} />
 			</Box>
 			<Box display='flex' flexDirection='column'>
-				<Box display='flex' flexDirection='row' alignItems='center' mbe={8}>
+				<Box display='flex' flexDirection='row' alignItems='center' marginBlockEnd={8}>
 					<Box fontScale='h1' mie={8}>
 						{name}
 					</Box>
@@ -49,12 +49,12 @@ const AppDetailsPageHeader = ({ app }: AppDetailsPageHeaderProps) => {
 				</Box>
 
 				{shortDescription && (
-					<Box fontScale='p1' mbe={16}>
+					<Box fontScale='p1' marginBlockEnd={16}>
 						{shortDescription}
 					</Box>
 				)}
 
-				<Box display='flex' flexDirection='row' alignItems='center' mbe={16}>
+				<Box display='flex' flexDirection='row' alignItems='center' marginBlockEnd={16}>
 					<AppStatus app={app} installed={installed} isAppDetailsPage />
 					{(installed || isSubscribed) && <AppMenu app={app} isAppDetailsPage />}
 				</Box>

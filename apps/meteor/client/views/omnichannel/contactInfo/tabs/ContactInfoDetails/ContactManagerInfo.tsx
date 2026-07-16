@@ -23,7 +23,7 @@ const ContactManagerInfo = ({ userId }: ContactManagerInfoProps) => {
 
 	return (
 		<Box>
-			<Box mbe={4}>{t('Contact_Manager')}</Box>
+			<Box marginBlockEnd={4}>{t('Contact_Manager')}</Box>
 			{isLoading && <Skeleton />}
 			{isSuccess && (
 				<Box display='flex' alignItems='center'>

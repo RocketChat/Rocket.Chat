@@ -69,7 +69,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 				)}
 				{hasConflicts && (
 					<Callout
-						mbe={8}
+						marginBlockEnd={8}
 						alignItems='center'
 						icon='members'
 						actions={

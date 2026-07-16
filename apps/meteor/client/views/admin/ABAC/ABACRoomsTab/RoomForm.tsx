@@ -112,7 +112,7 @@ const RoomForm = ({ onClose, onSave, roomInfo, setSelectedRoomLabel, redacted = 
 					)}
 				</Field>
 				{redacted && (
-					<Box mbe={16}>
+					<Box marginBlockEnd={16}>
 						<Callout type='warning' title={t('ABAC_Attributes_Redacted')}>
 							{t('ABAC_Attributes_Redacted_Description')}
 						</Callout>

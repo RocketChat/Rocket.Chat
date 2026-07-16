@@ -91,7 +91,7 @@ const AccessibilityPage = () => {
 					marginBlock={40}
 					mi={36}
 				>
-					<Box fontScale='p1' mbe={24}>
+					<Box fontScale='p1' marginBlockEnd={24}>
 						<Box pb={16} is='p'>
 							{t('Accessibility_activation')}
 						</Box>
@@ -138,7 +138,7 @@ const AccessibilityPage = () => {
 									<legend>{t('Adjustable_layout')}</legend>
 								</VisuallyHidden>
 								<Field>
-									<FieldLabel mbe={12}>{t('Font_size')}</FieldLabel>
+									<FieldLabel marginBlockEnd={12}>{t('Font_size')}</FieldLabel>
 									<FieldRow>
 										<Controller control={control} name='fontSize' render={({ field }) => <Select {...field} options={fontSizes(t)} />} />
 									</FieldRow>

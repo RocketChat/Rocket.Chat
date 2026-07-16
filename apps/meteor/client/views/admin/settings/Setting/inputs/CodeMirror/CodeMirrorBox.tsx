@@ -28,7 +28,7 @@ const CodeMirrorBox = ({ label, children, error }: CodeMirrorBoxProps) => {
 				height='100%'
 				p={40}
 			>
-				<Box fontScale='p1' mbe={4}>
+				<Box fontScale='p1' marginBlockEnd={4}>
 					{label}
 				</Box>
 				<Box

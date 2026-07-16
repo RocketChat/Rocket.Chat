@@ -42,7 +42,7 @@ const ReportUserModal = ({ username, displayName, onConfirm, onClose }: ReportUs
 			onCancel={onClose}
 			confirmText={t('Report')}
 		>
-			<Box mbe={16} display='flex' alignItems='center'>
+			<Box marginBlockEnd={16} display='flex' alignItems='center'>
 				<UserAvatar username={username} />
 				<Box mis={8} fontScale='p2b'>
 					{displayName}
@@ -58,7 +58,7 @@ const ReportUserModal = ({ username, displayName, onConfirm, onClose }: ReportUs
 							rows={3}
 							{...register('reasonForReport', { required: t('Required_field', { field: t('Reason_for_report') }) })}
 							width='full'
-							mbe={4}
+							marginBlockEnd={4}
 							aria-required='true'
 							aria-describedby={`${reasonForReportId}-description ${reasonForReportId}-error`}
 						/>
