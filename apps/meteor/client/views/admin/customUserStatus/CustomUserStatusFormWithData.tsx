@@ -39,7 +39,7 @@ const CustomUserStatusFormWithData = ({ _id, onReload, onClose }: CustomUserStat
 	}
 
 	if (isPending) {
-		return <FormSkeleton pi={20} />;
+		return <FormSkeleton paddingInline={20} />;
 	}
 
 	if (error || !data || data.count < 1) {

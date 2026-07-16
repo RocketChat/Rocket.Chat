@@ -81,7 +81,7 @@ const ContactInfoHistoryMessages = ({ chatId, onBack, onOpenRoom }: ContactHisto
 					</Box>
 				</Box>
 				{isPending && (
-					<Box pi={24} paddingBlock={12}>
+					<Box paddingInline={24} paddingBlock={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}

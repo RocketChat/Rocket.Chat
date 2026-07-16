@@ -46,7 +46,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 				<ContextualbarTitle>{t('Contact')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
-			<Box display='flex' flexDirection='column' pi={24}>
+			<Box display='flex' flexDirection='column' paddingInline={24}>
 				{name && (
 					<Box width='100%' paddingBlock={16} display='flex' alignItems='center' justifyContent='space-between'>
 						<Box withTruncatedText display='flex'>

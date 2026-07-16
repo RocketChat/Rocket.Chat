@@ -24,7 +24,7 @@ const RoomFileItemWrapper = forwardRef(function RoomFileItemWrapper(
 			aria-label={item.name}
 			display='flex'
 			paddingBlock={12}
-			pi={24}
+			paddingInline={24}
 			borderRadius={4}
 			className={customClass}
 			{...props}

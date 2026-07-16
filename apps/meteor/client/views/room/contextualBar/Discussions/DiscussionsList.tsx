@@ -82,7 +82,7 @@ function DiscussionsList({
 			<ContextualbarContent paddingInline={0}>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
 				{isPending && (
-					<Box pi={24} paddingBlock={12}>
+					<Box paddingInline={24} paddingBlock={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}

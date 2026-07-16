@@ -29,7 +29,7 @@ const Item = ({ data, allowUse, onClickItem, onClickUse }: ItemProps) => {
 		<Box
 			paddingBlockStart={16}
 			paddingBlockEnd={12}
-			pi={24}
+			paddingInline={24}
 			color='default'
 			borderBlockEndWidth={1}
 			borderBlockEndColor='light'

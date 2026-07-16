@@ -32,7 +32,7 @@ const CustomUserStatusService = () => {
 
 	if (result.isPending || disablePresenceService.isPending || licenseIsLoading) {
 		return (
-			<Box pi={16} paddingBlock={8}>
+			<Box paddingInline={16} paddingBlock={8}>
 				<Skeleton />
 				<Skeleton />
 				<Skeleton />

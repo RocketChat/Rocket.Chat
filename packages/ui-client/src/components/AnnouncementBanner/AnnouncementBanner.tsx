@@ -29,7 +29,7 @@ const AnnouncementBanner = ({ children, className, onClick, ...props }: Announce
 		<Box
 			focusable
 			height='x40'
-			pi={24}
+			paddingInline={24}
 			alignItems='center'
 			display='flex'
 			fontScale='p2m'

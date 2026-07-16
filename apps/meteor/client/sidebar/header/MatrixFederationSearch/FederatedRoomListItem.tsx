@@ -24,7 +24,7 @@ const FederatedRoomListItem = ({
 	const { t } = useTranslation();
 
 	return (
-		<Box marginBlock={16} pi={24} is='li' display='flex' flexDirection='column' width='full' name={canonicalAlias}>
+		<Box marginBlock={16} paddingInline={24} is='li' display='flex' flexDirection='column' width='full' name={canonicalAlias}>
 			<Box display='flex' flexDirection='row' justifyContent='space-between' alignItems='center' marginBlockEnd={4}>
 				<Box flexGrow={1} flexShrink={1} fontScale='p1' fontWeight='bold' title={name} withTruncatedText>
 					{name}

@@ -46,7 +46,7 @@ function ConnectionStatusBar() {
 			rcx-connection-status-bar
 			insetBlockStart={0}
 			paddingBlock={4}
-			pi={12}
+			paddingInline={12}
 			width='100%'
 			borderBlockEndWidth={2}
 			role='alert'

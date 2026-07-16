@@ -40,7 +40,7 @@ const BannedUsers = ({ loading, error, bannedUsers, useRealName = false, onClick
 			</ContextualbarHeader>
 			<ContextualbarContent padding={0} paddingBlock={12}>
 				{loading && (
-					<Box pi={24} paddingBlock={12}>
+					<Box paddingInline={24} paddingBlock={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}

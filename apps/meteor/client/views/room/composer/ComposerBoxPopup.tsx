@@ -90,7 +90,7 @@ function ComposerBoxPopup<
 				name='ComposerBoxPopup'
 			>
 				{title && (
-					<Box backgroundColor='tint' pi={16} paddingBlock={8} id={id}>
+					<Box backgroundColor='tint' paddingInline={16} paddingBlock={8} id={id}>
 						{title}
 					</Box>
 				)}

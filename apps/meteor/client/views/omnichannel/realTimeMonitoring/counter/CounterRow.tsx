@@ -10,7 +10,7 @@ export type CounterRowProps = {
 const CounterRow = ({ children, ...props }: CounterRowProps) => (
 	<Box
 		paddingBlock={28}
-		pi={20}
+		paddingInline={20}
 		display='flex'
 		flexDirection='row'
 		justifyContent='space-around'

@@ -52,7 +52,7 @@ const CategoryDropDownAnchor = forwardRef<HTMLElement, CategoryDropDownAnchorPro
 					marginInlineEnd={6}
 					minWidth={22}
 					paddingBlock={4}
-					pi={0}
+					paddingInline={0}
 				>
 					{selectedCategoriesCount}
 				</Box>

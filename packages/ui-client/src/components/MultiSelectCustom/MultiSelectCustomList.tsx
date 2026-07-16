@@ -37,9 +37,18 @@ const MultiSelectCustomList = ({
 	const filteredOptions = useFilteredOptions(text, options);
 
 	return (
-		<Tile overflow='auto' paddingBlock={12} pi={0} elevation='2' width='full' backgroundColor='light' borderRadius={2} maxHeight='50vh'>
+		<Tile
+			overflow='auto'
+			paddingBlock={12}
+			paddingInline={0}
+			elevation='2'
+			width='full'
+			backgroundColor='light'
+			borderRadius={2}
+			maxHeight='50vh'
+		>
 			{searchBarText && (
-				<Box pi={12} marginBlockEnd={12}>
+				<Box paddingInline={12} marginBlockEnd={12}>
 					<SearchInput
 						name='select-search'
 						placeholder={t(searchBarText as TranslationKey)}
@@ -62,7 +71,13 @@ const MultiSelectCustomList = ({
 							<Box width='full' display='flex' justifyContent='space-between' is='label'>
 								{t(option.text as TranslationKey)}
 
-								<CheckBox checked={option.checked} pi={0} name={option.text} id={option.id} onChange={() => onSelected(option)} />
+								<CheckBox
+									checked={option.checked}
+									paddingInline={0}
+									name={option.text}
+									id={option.id}
+									onChange={() => onSelected(option)}
+								/>
 							</Box>
 						</Option>
 					)}

@@ -14,7 +14,7 @@ const CannedResponsesComposerPreview = ({ text }: CannedResponsesComposerPreview
 			display='flex'
 			flexDirection='column'
 			paddingBlock={0}
-			pi={12}
+			paddingInline={12}
 			rcx-box--animated
 			rcx-input-box__wrapper
 		>

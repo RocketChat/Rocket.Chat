@@ -80,7 +80,7 @@ const MessageForm = (props: MessageFormProps) => {
 	return (
 		<Form id={messageFormId} onSubmit={handleSubmit(submit)} noValidate>
 			<Scrollable vertical>
-				<FieldGroup justifyContent='start' pi={2}>
+				<FieldGroup justifyContent='start' paddingInline={2}>
 					<TemplateField control={control} templates={templates} onChange={() => setValue('templateParameters', {})} />
 
 					{parametersMetadata.map((metadata) => (

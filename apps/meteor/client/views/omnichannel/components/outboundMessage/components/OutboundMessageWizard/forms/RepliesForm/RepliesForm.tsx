@@ -118,7 +118,7 @@ const RepliesForm = (props: RepliesFormProps) => {
 	return (
 		<Form id={repliesFormId} onSubmit={handleSubmit(submit)} noValidate>
 			<Scrollable vertical>
-				<FieldGroup justifyContent='start' pi={2}>
+				<FieldGroup justifyContent='start' paddingInline={2}>
 					<DepartmentField
 						control={control}
 						onlyMyDepartments={!canAssignAllDepartments}

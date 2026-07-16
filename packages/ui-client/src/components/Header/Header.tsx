@@ -17,7 +17,7 @@ const Header = (props: HeaderProps) => (
 		flexShrink={0}
 	>
 		<Box
-			pi='x16'
+			paddingInline='x16'
 			height='x44'
 			display='flex'
 			flexGrow={1}

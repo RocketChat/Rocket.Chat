@@ -107,7 +107,7 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 		<Box position='relative'>
 			<Tile padding={0} role='menu' marginBlockEnd={8} overflow='hidden' aria-labelledby={id}>
 				{title && (
-					<Box backgroundColor='tint' pi={16} paddingBlock={8} id={id}>
+					<Box backgroundColor='tint' paddingInline={16} paddingBlock={8} id={id}>
 						{title}
 					</Box>
 				)}

@@ -26,7 +26,7 @@ export const SidebarFooterWatermark = () => {
 	}
 
 	return (
-		<Box pi={16} paddingBlockEnd={8}>
+		<Box paddingInline={16} paddingBlockEnd={8}>
 			<Box is='a' href={links.rocketChat} target='_blank' rel='noopener noreferrer'>
 				<Box fontScale='micro' color='hint' paddingBlockEnd={4}>
 					{t('Powered_by_RocketChat')}

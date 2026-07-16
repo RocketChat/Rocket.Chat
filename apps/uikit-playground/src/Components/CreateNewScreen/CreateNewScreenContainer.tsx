@@ -35,7 +35,7 @@ const CreateNewScreenContainer = () => {
 				height='250px'
 				borderBlockEnd='var(--default-border)'
 				position='fixed'
-				pi='40px'
+				paddingInline='40px'
 				className={css`
 					top: -255px;
 					left: 0;

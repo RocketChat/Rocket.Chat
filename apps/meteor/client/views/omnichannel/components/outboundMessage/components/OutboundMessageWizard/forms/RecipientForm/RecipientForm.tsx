@@ -186,7 +186,7 @@ const RecipientForm = (props: RecipientFormProps) => {
 	return (
 		<Form id={recipientFormId} onSubmit={handleSubmit(submit)} noValidate>
 			<Scrollable vertical>
-				<FieldGroup justifyContent='start' pi={2}>
+				<FieldGroup justifyContent='start' paddingInline={2}>
 					<ContactField
 						control={control}
 						isError={isErrorContact || isContactNotFound}
