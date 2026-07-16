@@ -8,7 +8,14 @@ import {
 	type UserStatus,
 } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
-import { isGroupsOnlineProps, isGroupsMessagesProps, isGroupsFilesProps } from '@rocket.chat/rest-typings';
+import {
+	isGroupsOnlineProps,
+	isGroupsMessagesProps,
+	isGroupsFilesProps,
+	ajv,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+} from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -131,11 +138,61 @@ async function findPrivateGroupByIdOrName({
 	};
 }
 
-API.v1.addRoute(
+const groupResponseSchema = ajv.compile<{ group: IRoom }>({
+	type: 'object',
+	properties: {
+		group: { $ref: '#/components/schemas/IRoom' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['group', 'success'],
+	additionalProperties: false,
+});
+
+const successResponseSchema = ajv.compile<void>({
+	type: 'object',
+	properties: { success: { type: 'boolean', enum: [true] } },
+	required: ['success'],
+	additionalProperties: false,
+});
+
+// getRoomFromParams / findPrivateGroupByIdOrName and the room methods throw for client errors. The typed router
+// does not map thrown errors to 400 (the legacy addRoute wrapper did), so handlers catch and return a failure.
+// Errors from core-services are not `instanceof Meteor.Error`, so extract message/errorType by shape.
+function errorToFailureArgs(error: unknown): [string, string | undefined] {
+	const e = error as { message?: unknown; error?: unknown };
+	return [typeof e?.message === 'string' ? e.message : String(error), typeof e?.error === 'string' ? e.error : undefined];
+}
+
+// Inline body validator: a room target (roomId or roomName) plus optional user/extra fields.
+const roomTargetBody = <T>(extra: Record<string, Record<string, unknown>> = {}, required: string[] = []) =>
+	ajv.compile<T>({
+		type: 'object',
+		properties: {
+			roomId: { type: 'string' },
+			roomName: { type: 'string' },
+			...extra,
+		},
+		required,
+		additionalProperties: false,
+	});
+
+const roomUserBody = <T>() => roomTargetBody<T>({ userId: { type: 'string' }, username: { type: 'string' }, user: { type: 'string' } });
+
+API.v1.post(
 	'groups.addAll',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomTargetBody<{ roomId?: string; roomName?: string; activeUsersOnly?: boolean | string | number }>({
+			activeUsersOnly: { type: ['boolean', 'string', 'number'] },
+		}),
+		response: {
+			200: groupResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			const { activeUsersOnly, ...params } = this.bodyParams;
 			const findResult = await findPrivateGroupByIdOrName({
 				params,
@@ -153,15 +210,26 @@ API.v1.addRoute(
 			return API.v1.success({
 				group: await composeRoomWithLastMessage(room, this.userId),
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'groups.addModerator',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomUserBody<{ roomId?: string; roomName?: string; userId?: string; username?: string; user?: string }>(),
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			const findResult = await findPrivateGroupByIdOrName({
 				params: this.bodyParams,
 				userId: this.userId,
@@ -172,15 +240,26 @@ API.v1.addRoute(
 			await addRoomModerator(this.userId, findResult.rid, user._id);
 
 			return API.v1.success();
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'groups.addOwner',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomUserBody<{ roomId?: string; roomName?: string; userId?: string; username?: string; user?: string }>(),
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			const findResult = await findPrivateGroupByIdOrName({
 				params: this.bodyParams,
 				userId: this.userId,
@@ -191,15 +270,26 @@ API.v1.addRoute(
 			await addRoomOwner(this.userId, findResult.rid, user._id);
 
 			return API.v1.success();
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'groups.addLeader',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomUserBody<{ roomId?: string; roomName?: string; userId?: string; username?: string; user?: string }>(),
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			const findResult = await findPrivateGroupByIdOrName({
 				params: this.bodyParams,
 				userId: this.userId,
@@ -209,16 +299,27 @@ API.v1.addRoute(
 			await addRoomLeader(this.userId, findResult.rid, user._id);
 
 			return API.v1.success();
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
 // Archives a private group only if it wasn't
-API.v1.addRoute(
+API.v1.post(
 	'groups.archive',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomTargetBody<{ roomId?: string; roomName?: string }>(),
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			const findResult = await findPrivateGroupByIdOrName({
 				params: this.bodyParams,
 				userId: this.userId,
@@ -227,15 +328,26 @@ API.v1.addRoute(
 			await executeArchiveRoom(this.userId, findResult.rid);
 
 			return API.v1.success();
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'groups.close',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomTargetBody<{ roomId?: string; roomName?: string }>(),
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			const findResult = await findPrivateGroupByIdOrName({
 				params: this.bodyParams,
 				userId: this.userId,
@@ -249,7 +361,10 @@ API.v1.addRoute(
 			await hideRoomMethod(this.userId, findResult.rid);
 
 			return API.v1.success();
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
