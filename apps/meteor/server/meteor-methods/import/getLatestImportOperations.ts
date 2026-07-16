@@ -1,6 +1,5 @@
 import { Imports } from '@rocket.chat/models';
 
-
 export const executeGetLatestImportOperations = async () => {
 	const data = Imports.find(
 		{},
