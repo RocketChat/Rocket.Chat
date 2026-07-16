@@ -57,7 +57,7 @@ const OutboundMessageModal = ({ defaultValues, onClose }: OutboundMessageModalPr
 					<ModalClose aria-label={t('Close')} onClick={() => setClosingConfirmation(true)} />
 				</ModalHeader>
 
-				<ModalContent pbe={16} height='100%'>
+				<ModalContent paddingBlockEnd={16} height='100%'>
 					<OutboundMessageWizard defaultValues={defaultValues} onSuccess={onClose} onError={onClose} />
 				</ModalContent>
 			</Modal>

@@ -141,7 +141,7 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 		<>
 			<ContextualbarScrollableContent id={formId} is='form' onSubmit={handleSubmit(handleSave)}>
 				{room.t !== 'd' && (
-					<Box pbe={24} display='flex' justifyContent='center'>
+					<Box paddingBlockEnd={24} display='flex' justifyContent='center'>
 						<Controller
 							name='roomAvatar'
 							control={control}

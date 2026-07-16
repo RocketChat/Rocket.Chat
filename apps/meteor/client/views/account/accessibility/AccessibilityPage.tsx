@@ -112,7 +112,11 @@ const AccessibilityPage = () => {
 						<AccordionItem defaultExpanded={true} title={t('Theme')}>
 							{themes.map(({ id, title, description }, index) => {
 								return (
-									<Field key={id} pbe={themes.length - 1 ? undefined : 'x28'} paddingBlockStart={index === 0 ? undefined : 'x28'}>
+									<Field
+										key={id}
+										paddingBlockEnd={themes.length - 1 ? undefined : 'x28'}
+										paddingBlockStart={index === 0 ? undefined : 'x28'}
+									>
 										<FieldRow>
 											<FieldLabel display='flex' alignItems='center'>
 												{t(title)}
