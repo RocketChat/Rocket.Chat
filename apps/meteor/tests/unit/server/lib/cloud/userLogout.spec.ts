@@ -11,12 +11,12 @@ const findOneByIdStub = sinon.stub();
 const settingsGetStub = sinon.stub();
 
 const { userLogout } = proxyquire.noCallThru().load('../../../../../server/lib/cloud/userLogout.ts', {
+	'@rocket.chat/license': { License: { hasOfflineLicense: hasOfflineLicenseStub } },
 	'@rocket.chat/models': { Users: { findOneById: findOneByIdStub } },
 	'@rocket.chat/server-fetch': { serverFetch: fetchStub },
-	'./offlineLicense': { hasOfflineLicense: hasOfflineLicenseStub },
 	'./retrieveRegistrationStatus': { retrieveRegistrationStatus: retrieveRegistrationStatusStub },
 	'./userLoggedOut': { userLoggedOut: userLoggedOutStub },
-	'../../../app/settings/server': { settings: { get: settingsGetStub } },
+	'../../settings': { settings: { get: settingsGetStub } },
 	'../logger/system': { SystemLogger: { error: sinon.stub() } },
 });
 

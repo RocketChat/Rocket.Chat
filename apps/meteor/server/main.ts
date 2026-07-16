@@ -31,9 +31,6 @@ await Promise.all([configureServer(settings), registerServices(), startup()]);
 
 await startRocketChat();
 
-// Cron jobs start only after startRocketChat() has applied the license, so jobs
-// that contact Rocket.Chat Cloud on boot (e.g. the usage report) respect the
-// offline license flag from their very first run.
 setImmediate(() => {
 	startCronJobs().catch((err) => {
 		SystemLogger.error({ msg: 'Failed to start cron jobs', err });

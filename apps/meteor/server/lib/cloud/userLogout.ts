@@ -1,7 +1,7 @@
+import { License } from '@rocket.chat/license';
 import { Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
-import { hasOfflineLicense } from './offlineLicense';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { userLoggedOut } from './userLoggedOut';
 import { settings } from '../../settings';
@@ -20,7 +20,7 @@ export async function userLogout(userId: string): Promise<string | boolean> {
 
 	// Offline (air-gapped) licenses forbid the outbound token-revocation call, but
 	// the local cloud credentials must still be destroyed on logout.
-	if (hasOfflineLicense()) {
+	if (License.hasOfflineLicense()) {
 		return userLoggedOut(userId);
 	}
 

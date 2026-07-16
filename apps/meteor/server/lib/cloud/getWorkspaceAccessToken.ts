@@ -1,9 +1,9 @@
 import type { IWorkspaceCredentials } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { WorkspaceCredentials } from '@rocket.chat/models';
 
 import { getWorkspaceAccessTokenWithScope } from './getWorkspaceAccessTokenWithScope';
 import { workspaceScopes } from './oauthScopes';
-import { hasOfflineLicense } from './offlineLicense';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { SystemLogger } from '../logger/system';
 
@@ -27,7 +27,7 @@ export async function getWorkspaceAccessToken(forceNew = false, scope = '', save
 		return '';
 	}
 
-	if (hasOfflineLicense()) {
+	if (License.hasOfflineLicense()) {
 		return '';
 	}
 

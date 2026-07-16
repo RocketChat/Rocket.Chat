@@ -1,10 +1,10 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import Gravatar from 'gravatar';
 import { check } from 'meteor/check';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import { hasOfflineLicense } from '../cloud/offlineLicense';
 import { settings } from '../../settings';
 
 const avatarProviders = {
@@ -107,7 +107,7 @@ const avatarProviders = {
 		// Offline (air-gapped) licenses suppress Gravatar lookups: every suggested
 		// URL is fetched server-side below, and gravatar.com is not admin-configured
 		// infrastructure (unlike OAuth provider avatars, which keep working).
-		if (hasOfflineLicense()) {
+		if (License.hasOfflineLicense()) {
 			return avatars;
 		}
 
