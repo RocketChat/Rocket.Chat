@@ -52,21 +52,33 @@ export class LocalBroker implements IBroker {
 		);
 	}
 
+	/**
+	 * Returns the names of the callable methods exposed by a service instance.
+	 *
+	 * Only data properties whose value is a function are considered methods.
+	 * Accessor properties (getters/setters) are skipped: reading them would
+	 * invoke the getter and yield a non-function value (e.g. an object or
+	 * `undefined`), which cannot be bound as an RPC method.
+	 */
+	private getServiceMethods(instance: IServiceClass | ServiceClass): string[] {
+		const target = instance.constructor?.name === 'Object' ? instance : Object.getPrototypeOf(instance);
+
+		return Object.getOwnPropertyNames(target).filter((method) => {
+			if (method === 'constructor') {
+				return false;
+			}
+
+			const descriptor = Object.getOwnPropertyDescriptor(target, method);
+			return typeof descriptor?.value === 'function';
+		});
+	}
+
 	async destroyService(instance: ServiceClass): Promise<void> {
 		const namespace = instance.getName();
 
 		instance.getEvents().forEach((event) => event.listeners.forEach((listener) => this.events.removeListener(event.eventName, listener)));
 
-		const methods =
-			instance.constructor?.name === 'Object'
-				? Object.getOwnPropertyNames(instance)
-				: Object.getOwnPropertyNames(Object.getPrototypeOf(instance));
-
-		for (const method of methods) {
-			if (method === 'constructor') {
-				continue;
-			}
-
+		for (const method of this.getServiceMethods(instance)) {
 			this.methods.delete(`${namespace}.${method}`);
 		}
 		instance.removeAllListeners();
@@ -98,15 +110,7 @@ export class LocalBroker implements IBroker {
 
 		instance.getEvents().forEach((event) => event.listeners.forEach((listener) => this.events.on(event.eventName, listener)));
 
-		const methods =
-			instance.constructor?.name === 'Object'
-				? Object.getOwnPropertyNames(instance)
-				: Object.getOwnPropertyNames(Object.getPrototypeOf(instance));
-
-		for (const method of methods) {
-			if (method === 'constructor') {
-				continue;
-			}
+		for (const method of this.getServiceMethods(instance)) {
 			const i = instance as any;
 			this.methods.set(`${serviceName}.${method}`, i[method].bind(i));
 		}
