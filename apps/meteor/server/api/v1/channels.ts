@@ -134,6 +134,34 @@ function errorToFailureArgs(error: unknown): [string, string | undefined] {
 	return [typeof e?.message === 'string' ? e.message : String(error), typeof e?.error === 'string' ? e.error : undefined];
 }
 
+const stringFieldResponseSchema = <T>(field: 'description' | 'purpose' | 'topic') =>
+	ajv.compile<T>({
+		type: 'object',
+		properties: {
+			[field]: { type: 'string' },
+			success: { type: 'boolean', enum: [true] },
+		},
+		required: [field, 'success'],
+		additionalProperties: false,
+	});
+
+const descriptionResponseSchema = stringFieldResponseSchema<{ description: string }>('description');
+const purposeResponseSchema = stringFieldResponseSchema<{ purpose: string }>('purpose');
+const topicResponseSchema = stringFieldResponseSchema<{ topic: string }>('topic');
+
+// Body validator for the `channels.set*` endpoints: a room target (roomId or roomName) plus the setting field.
+const roomSettingBody = <T>(field: string, fieldSchema: Record<string, unknown>) =>
+	ajv.compile<T>({
+		type: 'object',
+		properties: {
+			roomId: { type: 'string' },
+			roomName: { type: 'string' },
+			[field]: fieldSchema,
+		},
+		required: [field],
+		additionalProperties: false,
+	});
+
 API.v1.post(
 	'channels.addAll',
 	{
@@ -1303,11 +1331,19 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'channels.rename',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomSettingBody<{ roomId?: string; roomName?: string; name: string }>('name', { type: 'string' }),
+		response: {
+			200: channelResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			if (!this.bodyParams.name?.trim()) {
 				return API.v1.failure('The bodyParam "name" is required');
 			}
@@ -1326,15 +1362,28 @@ API.v1.addRoute(
 					userId: this.userId,
 				}),
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'channels.setCustomFields',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomSettingBody<{ roomId?: string; roomName?: string; customFields: Record<string, unknown> }>('customFields', {
+			type: 'object',
+		}),
+		response: {
+			200: channelResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			if (!this.bodyParams.customFields || !(typeof this.bodyParams.customFields === 'object')) {
 				return API.v1.failure('The bodyParam "customFields" is required with a type like object.');
 			}
@@ -1346,15 +1395,26 @@ API.v1.addRoute(
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'channels.setDefault',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomSettingBody<{ roomId?: string; roomName?: string; default: boolean | string }>('default', { type: ['boolean', 'string'] }),
+		response: {
+			200: channelResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			if (typeof this.bodyParams.default === 'undefined') {
 				return API.v1.failure('The bodyParam "default" is required', 'error-channels-setdefault-is-same');
 			}
@@ -1378,15 +1438,26 @@ API.v1.addRoute(
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'channels.setDescription',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomSettingBody<{ roomId?: string; roomName?: string; description: string }>('description', { type: 'string' }),
+		response: {
+			200: descriptionResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			if (!this.bodyParams.hasOwnProperty('description')) {
 				return API.v1.failure('The bodyParam "description" is required');
 			}
@@ -1402,15 +1473,26 @@ API.v1.addRoute(
 			return API.v1.success({
 				description: this.bodyParams.description || '',
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'channels.setPurpose',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomSettingBody<{ roomId?: string; roomName?: string; purpose: string }>('purpose', { type: 'string' }),
+		response: {
+			200: purposeResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			if (!this.bodyParams.hasOwnProperty('purpose')) {
 				return API.v1.failure('The bodyParam "purpose" is required');
 			}
@@ -1426,15 +1508,26 @@ API.v1.addRoute(
 			return API.v1.success({
 				purpose: this.bodyParams.purpose || '',
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'channels.setTopic',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomSettingBody<{ roomId?: string; roomName?: string; topic: string }>('topic', { type: 'string' }),
+		response: {
+			200: topicResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			if (!this.bodyParams.hasOwnProperty('topic')) {
 				return API.v1.failure('The bodyParam "topic" is required');
 			}
@@ -1450,15 +1543,26 @@ API.v1.addRoute(
 			return API.v1.success({
 				topic: this.bodyParams.topic || '',
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'channels.setType',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomSettingBody<{ roomId?: string; roomName?: string; type: string }>('type', { type: 'string' }),
+		response: {
+			200: channelResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			if (!this.bodyParams.type?.trim()) {
 				return API.v1.failure('The bodyParam "type" is required');
 			}
@@ -1480,7 +1584,10 @@ API.v1.addRoute(
 			return API.v1.success({
 				channel: await composeRoomWithLastMessage(room, this.userId),
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
