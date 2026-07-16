@@ -6275,6 +6275,27 @@ describe('[Users]', () => {
 					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
+
+		it('should filter results when using allowed $in operator', async () => {
+			const res = await request
+				.get(api('users.autocomplete'))
+				.set(credentials)
+				.query({
+					selector: JSON.stringify({
+						conditions: {
+							roles: {
+								$in: ['bot'],
+							},
+						},
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('items').and.to.be.an('array').with.lengthOf(1);
+			expect(res.body.items[0]).to.have.property('username', 'rocket.cat');
+		});
 	});
 
 	describe('[/users.getStatus]', () => {
