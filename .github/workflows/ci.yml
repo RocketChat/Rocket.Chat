@@ -360,38 +360,18 @@ jobs:
             [rocketchat],
           ]
         type:
-          # if running in a PR build with coverage
           - ${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'coverage' || 'production' }}
+          - fips
+        exclude:
+          - arch: arm64
+            type: fips
         include:
-          # if not, build with coverage for tests
           - arch: amd64
             service: [rocketchat]
             type: coverage
           - arch: arm64
             service: [rocketchat]
             type: coverage
-          # FIPS images: amd64 only, includes all microservices
-          - arch: amd64
-            service: [authorization-service]
-            type: fips
-          - arch: amd64
-            service: [queue-worker-service]
-            type: fips
-          - arch: amd64
-            service: [ddp-streamer-service]
-            type: fips
-          - arch: amd64
-            service: [account-service]
-            type: fips
-          - arch: amd64
-            service: [presence-service]
-            type: fips
-          - arch: amd64
-            service: [omnichannel-transcript-service]
-            type: fips
-          - arch: amd64
-            service: [rocketchat]
-            type: fips
 
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
