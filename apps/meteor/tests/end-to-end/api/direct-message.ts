@@ -4,7 +4,7 @@ import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
-import { getCredentials, api, request, credentials, apiUsername, apiEmail, methodCall } from '../../data/api-data';
+import { getCredentials, api, request, credentials, apiUsername, apiEmail } from '../../data/api-data';
 import { pinMessage, sendMessage, starMessage, updateMessage } from '../../data/chat.helper';
 import { updateSetting, updatePermission } from '../../data/permissions.helper';
 import { deleteRoom } from '../../data/rooms.helper';
@@ -1293,16 +1293,9 @@ describe('[Direct Messages]', () => {
 
 			it('should save user preferences', async () => {
 				await request
-					.post(methodCall('saveUserPreferences'))
+					.post(api('users.setPreferences'))
 					.set(userCredentials)
-					.send({
-						message: JSON.stringify({
-							id: 'id',
-							msg: 'method',
-							method: 'saveUserPreferences',
-							params: [{ emailNotificationMode: 'nothing' }],
-						}),
-					})
+					.send({ data: { emailNotificationMode: 'nothing' } })
 					.expect(200);
 			});
 

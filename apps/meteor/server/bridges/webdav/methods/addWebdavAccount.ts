@@ -12,7 +12,6 @@ declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		addWebdavAccount(formData: IWebdavAccountPayload): boolean;
-		addWebdavAccountByToken(data: IWebdavAccountPayload): boolean;
 	}
 }
 
@@ -139,15 +138,5 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 		return true;
-	},
-
-	async addWebdavAccountByToken(data) {
-		const userId = Meteor.userId();
-
-		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid User', { method: 'addWebdavAccount' });
-		}
-
-		return addWebdavAccountByToken(userId, data);
 	},
 });

@@ -1,7 +1,5 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages } from '@rocket.chat/models';
-import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
 
@@ -9,38 +7,6 @@ import { canAccessRoomIdAsync } from '../lib/authorization/canAccessRoom';
 import { getChannelHistory } from '../meteor-methods/messages/getChannelHistory';
 
 type CursorPaginationType = 'UPDATED' | 'DELETED';
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		'messages/get': (
-			rid: IRoom['_id'],
-			options: {
-				lastUpdate?: Date;
-				latestDate?: Date;
-				oldestDate?: Date;
-				inclusive?: boolean;
-				count?: number;
-				unreads?: boolean;
-				next?: string;
-				previous?: string;
-				type?: CursorPaginationType;
-			},
-		) => Promise<
-			| {
-					updated: IMessage[];
-					deleted: IMessage[];
-					cursor?: {
-						next: string | null;
-						previous: string | null;
-					};
-			  }
-			| boolean
-			| IMessage[]
-			| { messages: IMessage[]; firstUnread?: any; unreadNotLoaded?: number }
-		>;
-	}
-}
 
 export function extractTimestampFromCursor(cursor: string): Date {
 	const timestamp = parseInt(cursor, 10);
@@ -271,24 +237,3 @@ export const getMessageHistory = async (
 
 	return handleCursorPagination(type, rid, count, next, previous);
 };
-
-Meteor.methods<ServerMethods>({
-	async 'messages/get'(
-		rid,
-		{ lastUpdate, latestDate = new Date(), oldestDate, inclusive = false, count = 20, unreads = false, next, previous, type },
-	) {
-		check(rid, String);
-
-		const fromId = Meteor.userId();
-
-		if (!fromId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'messages/get' });
-		}
-
-		if (!rid) {
-			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'messages/get' });
-		}
-
-		return getMessageHistory(rid, fromId, { lastUpdate, latestDate, oldestDate, inclusive, count, unreads, next, previous, type });
-	},
-});
