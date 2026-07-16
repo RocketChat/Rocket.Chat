@@ -1,7 +1,7 @@
 import { Random } from '@rocket.chat/random';
 
 import { settingsRegistry } from '.';
-import { integerBoundOrDisabled, notAboveSetting, notBelowSetting } from './lib/validationRuleBuilders';
+import { positiveOrDisabled, notGreaterThanSetting, notLowerThanSetting } from './functions/validationRuleBuilders';
 
 export const createAccountSettings = () =>
 	settingsRegistry.addGroup('Accounts', async function () {
@@ -827,14 +827,14 @@ export const createAccountSettings = () =>
 				type: 'int',
 				public: true,
 				enableQuery,
-				validation: [integerBoundOrDisabled(), notAboveSetting('Accounts_Password_Policy_MaxLength')],
+				validation: [positiveOrDisabled(), notGreaterThanSetting('Accounts_Password_Policy_MaxLength')],
 			});
 
 			await this.add('Accounts_Password_Policy_MaxLength', -1, {
 				type: 'int',
 				public: true,
 				enableQuery,
-				validation: [integerBoundOrDisabled(), notBelowSetting('Accounts_Password_Policy_MinLength')],
+				validation: [positiveOrDisabled(), notLowerThanSetting('Accounts_Password_Policy_MinLength')],
 			});
 
 			await this.add('Accounts_Password_Policy_ForbidRepeatingCharacters', true, {

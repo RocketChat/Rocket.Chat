@@ -2,7 +2,11 @@ import { expect } from 'chai';
 import p from 'proxyquire';
 import sinon from 'sinon';
 
-import { integerBoundOrDisabled, notAboveSetting, notBelowSetting } from '../../../../server/settings/lib/validationRuleBuilders';
+import {
+	positiveOrDisabled,
+	notGreaterThanSetting,
+	notLowerThanSetting,
+} from '../../../../server/settings/functions/validationRuleBuilders';
 
 const settingsGetMock = sinon.stub();
 const settingsGetSettingMock = sinon.stub();
@@ -17,8 +21,8 @@ const { validateSettingRules, SettingValidationError } = p.noCallThru().load('..
 });
 
 const validationBySettingId: Record<string, unknown> = {
-	Accounts_Password_Policy_MinLength: [integerBoundOrDisabled(), notAboveSetting('Accounts_Password_Policy_MaxLength')],
-	Accounts_Password_Policy_MaxLength: [integerBoundOrDisabled(), notBelowSetting('Accounts_Password_Policy_MinLength')],
+	Accounts_Password_Policy_MinLength: [positiveOrDisabled(), notGreaterThanSetting('Accounts_Password_Policy_MaxLength')],
+	Accounts_Password_Policy_MaxLength: [positiveOrDisabled(), notLowerThanSetting('Accounts_Password_Policy_MinLength')],
 };
 
 describe('validateSettingRules', () => {
