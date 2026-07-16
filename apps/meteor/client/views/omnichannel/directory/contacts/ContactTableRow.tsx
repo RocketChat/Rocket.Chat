@@ -1,3 +1,4 @@
+import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { ILivechatContactWithManagerData } from '@rocket.chat/rest-typings';
@@ -9,6 +10,15 @@ import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useTimeFromNow } from '../../../../hooks/useTimeFromNow';
 import { useOmnichannelSource } from '../../hooks/useOmnichannelSource';
 import { useOmnichannelDirectoryRouter } from '../hooks/useOmnichannelDirectoryRouter';
+
+/**
+ * TODO: We should have a variant for aligning row cell instead of using custom CSS
+ **/
+const customAlignTop = css`
+	td {
+		vertical-align: top;
+	}
+`;
 
 const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILivechatContactWithManagerData) => {
 	const { getSourceLabel } = useOmnichannelSource();
@@ -33,13 +43,19 @@ const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILiv
 	);
 
 	return (
-		<GenericTableRow action key={_id} tabIndex={0} height='40px' rcx-show-call-button-on-hover onClick={() => onRowClick(_id)}>
-			<GenericTableCell withTruncatedText verticalAlign='top'>
-				<Box withTruncatedText fontScale='p2m' color='default'>
-					{name}
-				</Box>
+		<GenericTableRow
+			action
+			key={_id}
+			tabIndex={0}
+			height='40px'
+			rcx-show-call-button-on-hover
+			className={customAlignTop}
+			onClick={() => onRowClick(_id)}
+		>
+			<GenericTableCell fontScale='p2m' color='default' withTruncatedText>
+				{name}
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText verticalAlign='top'>
+			<GenericTableCell withTruncatedText>
 				{latestChannel?.details && (
 					<Box withTruncatedText display='flex' alignItems='center'>
 						<OmnichannelRoomIcon size='x20' source={latestChannel?.details} />
@@ -49,22 +65,18 @@ const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILiv
 					</Box>
 				)}
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText verticalAlign='top'>
-				{contactManager?.username}
-			</GenericTableCell>
-			<GenericTableCell withTruncatedText verticalAlign='top'>
+			<GenericTableCell withTruncatedText>{contactManager?.username}</GenericTableCell>
+			<GenericTableCell withTruncatedText>
 				{lastChat && (
 					<Box display='flex' flexDirection='column'>
-						<Box fontScale='p2m' withTruncatedText color='default' title={formatDate(lastChat.ts)}>
+						<Box fontScale='p2m' withTruncatedText color='default'>
 							{formatDate(lastChat.ts)}
 						</Box>
-						<Box color='hint' withTruncatedText>
-							{getTimeFromNow(lastChat.ts)}
-						</Box>
+						<Box withTruncatedText>{getTimeFromNow(lastChat.ts)}</Box>
 					</Box>
 				)}
 			</GenericTableCell>
-			<GenericTableCell verticalAlign='top'>
+			<GenericTableCell>
 				<ContactItemMenu _id={_id} name={name} channels={channels} />
 			</GenericTableCell>
 		</GenericTableRow>

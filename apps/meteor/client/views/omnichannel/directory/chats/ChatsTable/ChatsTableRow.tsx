@@ -1,4 +1,5 @@
 import type { IOmnichannelRoomWithDepartment } from '@rocket.chat/core-typings';
+import { css } from '@rocket.chat/css-in-js';
 import { Tag, Box } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
@@ -15,6 +16,15 @@ import { useOmnichannelPriorities } from '../../../hooks/useOmnichannelPrioritie
 import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
 import { PriorityIcon } from '../../../priorities/PriorityIcon';
 import { useOmnichannelDirectoryRouter } from '../../hooks/useOmnichannelDirectoryRouter';
+
+/**
+ * TODO: We should have a variant for aligning row cell instead of using custom CSS
+ **/
+const customAlignTop = css`
+	td {
+		vertical-align: top;
+	}
+`;
 
 const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 	const { t } = useTranslation();
@@ -48,8 +58,8 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 	);
 
 	return (
-		<GenericTableRow key={_id} tabIndex={0} onClick={() => onRowClick(_id)} action>
-			<GenericTableCell withTruncatedText verticalAlign='top'>
+		<GenericTableRow className={customAlignTop} key={_id} tabIndex={0} onClick={() => onRowClick(_id)} action>
+			<GenericTableCell withTruncatedText>
 				<Box display='flex' flexDirection='column'>
 					<Box withTruncatedText fontScale='p2m' color='default'>
 						{fname}
@@ -68,54 +78,46 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 				</Box>
 			</GenericTableCell>
 			{isPriorityEnabled && (
-				<GenericTableCell verticalAlign='top'>
+				<GenericTableCell>
 					<PriorityIcon level={priorityWeight} />
 				</GenericTableCell>
 			)}
-			<GenericTableCell withTruncatedText verticalAlign='top'>
+			<GenericTableCell withTruncatedText>
 				<Box display='flex' alignItems='center'>
 					<OmnichannelRoomIcon size='x20' source={source} />
 					<Box mis={8}>{getSourceLabel(source)}</Box>
 				</Box>
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText verticalAlign='top'>
-				{servedBy?.username}
-			</GenericTableCell>
-			<GenericTableCell verticalAlign='top'>
+			<GenericTableCell withTruncatedText>{servedBy?.username}</GenericTableCell>
+			<GenericTableCell>
 				<Box display='flex'>
 					<OmnichannelVerificationTag verified={verified} />
 				</Box>
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText verticalAlign='top'>
-				{department?.name}
-			</GenericTableCell>
-			<GenericTableCell withTruncatedText verticalAlign='top'>
+			<GenericTableCell withTruncatedText>{department?.name}</GenericTableCell>
+			<GenericTableCell withTruncatedText>
 				<Box display='flex' flexDirection='column'>
-					<Box fontScale='p2m' withTruncatedText color='default' title={formatDate(ts)}>
+					<Box fontScale='p2m' withTruncatedText color='default'>
 						{formatDate(ts)}
 					</Box>
-					<Box color='hint' withTruncatedText>
-						{getTimeFromNow(ts)}
-					</Box>
+					<Box withTruncatedText>{getTimeFromNow(ts)}</Box>
 				</Box>
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText verticalAlign='top'>
+			<GenericTableCell withTruncatedText>
 				{lm && (
 					<Box display='flex' flexDirection='column'>
-						<Box fontScale='p2m' withTruncatedText color='default' title={formatDate(lm)}>
+						<Box fontScale='p2m' withTruncatedText color='default'>
 							{formatDate(lm)}
 						</Box>
-						<Box color='hint' withTruncatedText>
-							{getTimeFromNow(lm)}
-						</Box>
+						<Box withTruncatedText>{getTimeFromNow(lm)}</Box>
 					</Box>
 				)}
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText verticalAlign='top'>
+			<GenericTableCell withTruncatedText>
 				<RoomActivityIcon room={room} />
 				{getStatusText(open, onHold)}
 			</GenericTableCell>
-			{canRemoveClosedChats && <GenericTableCell verticalAlign='top'>{!open && <RemoveChatButton _id={_id} />}</GenericTableCell>}
+			{canRemoveClosedChats && <GenericTableCell>{!open && <RemoveChatButton _id={_id} />}</GenericTableCell>}
 		</GenericTableRow>
 	);
 };
