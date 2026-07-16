@@ -288,14 +288,32 @@ API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+const channelsHistoryResponseSchema = ajv.compile<{ messages: IMessage[]; firstUnread?: IMessage; unreadNotLoaded?: number }>({
+	type: 'object',
+	properties: {
+		messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
+		firstUnread: { $ref: '#/components/schemas/IMessage' },
+		unreadNotLoaded: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['messages', 'success'],
+	additionalProperties: false,
+});
+
+API.v1.get(
 	'channels.history',
 	{
 		authRequired: true,
-		validateParams: isChannelsHistoryProps,
+		query: isChannelsHistoryProps,
+		response: {
+			200: channelsHistoryResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
 	},
-	{
-		async get() {
+	async function action() {
+		try {
 			const { unreads, oldest, latest, showThreadMessages, inclusive, ...params } = this.queryParams;
 			const findResult = await findChannelByIdOrName({
 				params,
@@ -316,12 +334,15 @@ API.v1.addRoute(
 				showThreadMessages: showThreadMessages === 'true',
 			});
 
-			if (!result) {
+			if (!result || typeof result !== 'object' || Array.isArray(result)) {
 				return API.v1.forbidden();
 			}
 
 			return API.v1.success(result);
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
@@ -520,7 +541,7 @@ API.v1.get(
 				rid: findResult._id,
 				...parseIds(mentionIds, 'mentions._id'),
 				...parseIds(starredIds, 'starred._id'),
-				...(pinned?.toLowerCase() === 'true' ? { pinned: true } : {}),
+				...(String(pinned).toLowerCase() === 'true' ? { pinned: true } : {}),
 				_hidden: { $ne: true },
 			};
 
@@ -668,14 +689,32 @@ API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+const channelsMentionsResponseSchema = ajv.compile<{ mentions: IMessage[]; count: number; offset: number; total: number }>({
+	type: 'object',
+	properties: {
+		mentions: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['mentions', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
+API.v1.get(
 	'channels.getAllUserMentionsByChannel',
 	{
 		authRequired: true,
-		validateParams: isChannelsGetAllUserMentionsByChannelProps,
+		query: isChannelsGetAllUserMentionsByChannelProps,
+		response: {
+			200: channelsMentionsResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
 	},
-	{
-		async get() {
+	async function action() {
+		try {
 			const { roomId } = this.queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
@@ -694,7 +733,10 @@ API.v1.addRoute(
 				offset,
 				total: allMentions.length,
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
