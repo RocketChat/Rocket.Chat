@@ -179,10 +179,8 @@ export const MessageList = function MessageList({
 		const handle = virtualizerRef.current;
 		const lastItemIndex = messages.length - 1;
 		if (shouldJumpToBottom === true) {
-			// When new messages arrive, this effect is triggered, but the latest message is not on the index, so it scrolls to the previous index
-			// TODO: Find if there is a better way to scroll to the latest message
-			handle?.scrollToIndex(lastItemIndex + 1, {
-				align: 'center',
+			handle?.scrollToIndex(messagesLength, {
+				align: 'end',
 			});
 		}
 		// If new messages arrive and is at bottom, scroll to keep at bottom.
@@ -195,6 +193,7 @@ export const MessageList = function MessageList({
 	}, [
 		isAtBottom,
 		messages,
+		messagesLength,
 		shouldJumpToBottom,
 		isJumpingToMessage,
 		isLoadingMoreMessages,

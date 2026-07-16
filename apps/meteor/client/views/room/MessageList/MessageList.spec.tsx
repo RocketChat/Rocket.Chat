@@ -151,7 +151,7 @@ describe('MessageList scroll position', () => {
 		expect(mockVirtualizerHandle.scrollToIndex).not.toHaveBeenCalled();
 	});
 
-	it('should jump to bottom if atBottom is true', () => {
+	it('should jump to the end when atBottom is true and the room foreword is visible', () => {
 		const store = {
 			scroll: 123,
 			atBottom: true,
@@ -161,7 +161,20 @@ describe('MessageList scroll position', () => {
 
 		render(<MessageList {...defaultProps} shouldJumpToBottom={true} />, { wrapper: root.build() });
 
-		expect(mockVirtualizerHandle.scrollToIndex).toHaveBeenCalledWith(2, { align: 'center' });
+		expect(mockVirtualizerHandle.scrollToIndex).toHaveBeenCalledWith(3, { align: 'end' });
+	});
+
+	it('should jump to the end when atBottom is true and the room foreword is hidden', () => {
+		const store = {
+			scroll: 123,
+			atBottom: true,
+			update: jest.fn(),
+		};
+		(RoomManager.getStore as jest.Mock).mockReturnValue(store);
+
+		render(<MessageList {...defaultProps} canPreview={false} shouldJumpToBottom={true} />, { wrapper: root.build() });
+
+		expect(mockVirtualizerHandle.scrollToIndex).toHaveBeenCalledWith(2, { align: 'end' });
 	});
 
 	it('should jump to bottom if unreads are present', () => {
