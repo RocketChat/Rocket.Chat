@@ -1,18 +1,12 @@
-import type { IMessage } from '@rocket.chat/core-typings';
-import { Emitter } from '@rocket.chat/emitter';
 import type { Options } from '@rocket.chat/message-parser';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { Accounts } from 'meteor/accounts-base';
 import type { RefObject } from 'react';
 
-import type { FormattingButton } from './messageBoxFormatting';
-import { formattingButtons } from './messageBoxFormatting';
+import { createComposerAPICore, triggerEvent, type SetText } from './createComposerAPICore';
 import { resolveComposerBox } from './messageStateHandler';
 import { getSelectionRange, setSelectionRange } from './selectionRange';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
-import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
-import { settings } from '../../../../client/lib/settings';
-import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
 export const createRichTextComposerAPI = (
 	input: HTMLDivElement,
@@ -21,58 +15,11 @@ export const createRichTextComposerAPI = (
 	composerRef: RefObject<HTMLElement | null>,
 	{ rid, tmid }: { rid: string; tmid?: string },
 ): ComposerAPI => {
-	const triggerEvent = (input: HTMLDivElement, evt: string): void => {
-		const event = new Event(evt, { bubbles: true });
-		// TODO: Remove this hack for react to trigger onChange
-		const tracker = (input as any)._valueTracker;
-		if (tracker) {
-			tracker.setValue(new Date().toString());
-		}
-		input.dispatchEvent(event);
+	const focus = (): void => {
+		input.focus();
 	};
 
-	const emitter = new Emitter<{
-		quotedMessagesUpdate: void;
-		editing: void;
-		recording: void;
-		recordingVideo: void;
-		formatting: void;
-		mircophoneDenied: void;
-	}>();
-
-	let _quotedMessages: IMessage[] = [];
-
-	const persist = withDebouncing({ wait: 300 })(() => {
-		// Store the value entirely as HTML with the DOM structure intact
-		if (input.innerHTML !== '<br>') {
-			Accounts.storageLocation.setItem(storageID, input.innerHTML);
-			return;
-		}
-
-		Accounts.storageLocation.removeItem(storageID);
-	});
-
-	const notifyQuotedMessagesUpdate = (): void => {
-		emitter.emit('quotedMessagesUpdate');
-	};
-
-	input.addEventListener('input', persist);
-	input.addEventListener('input', (event: Event) => {
-		resolveComposerBox(event, parseOptions);
-	});
-
-	const setText = (
-		text: string,
-		{
-			selection,
-			skipFocus,
-		}: {
-			selection?:
-				| { readonly start?: number; readonly end?: number }
-				| ((previous: { readonly start: number; readonly end: number }) => { readonly start?: number; readonly end?: number });
-			skipFocus?: boolean;
-		} = {},
-	): void => {
+	const setText: SetText = (text, { selection, skipFocus } = {}) => {
 		!skipFocus && focus();
 
 		// Use innerHTML to set the value in RichTextComposer instead of innerText
@@ -102,138 +49,29 @@ export const createRichTextComposerAPI = (
 		!skipFocus && focus();
 	};
 
-	const insertText = (text: string): void => {
-		setText(text, {
-			selection: ({ start, end }) => ({
-				start: start + text.length,
-				end: end + text.length,
-			}),
-		});
-	};
+	input.addEventListener('input', (event: Event) => {
+		resolveComposerBox(event, parseOptions);
+	});
 
-	const clear = (): void => {
-		setText('');
-	};
+	const core = createComposerAPICore({
+		input,
+		composerRef,
+		room: { rid, tmid },
+		initialValue: Accounts.storageLocation.getItem(storageID) ?? '',
+		save: () => {
+			// Store the value entirely as HTML with the DOM structure intact
+			if (input.innerHTML !== '<br>') {
+				Accounts.storageLocation.setItem(storageID, input.innerHTML);
+				return;
+			}
 
-	const focus = (): void => {
-		input.focus();
-	};
+			Accounts.storageLocation.removeItem(storageID);
+		},
+		setText,
+		focus,
+	});
 
-	const replyWith = async (text: string): Promise<void> => {
-		if (input) {
-			input.innerText = text;
-			input.focus();
-		}
-	};
-
-	const quoteMessage = async (message: IMessage): Promise<void> => {
-		_quotedMessages = [..._quotedMessages.filter((_message) => _message._id !== message._id), message];
-		notifyQuotedMessagesUpdate();
-		input.focus();
-	};
-
-	const dismissQuotedMessage = async (mid: IMessage['_id']): Promise<void> => {
-		_quotedMessages = _quotedMessages.filter((message) => message._id !== mid);
-		notifyQuotedMessagesUpdate();
-	};
-
-	const dismissAllQuotedMessages = async (): Promise<void> => {
-		_quotedMessages = [];
-		notifyQuotedMessagesUpdate();
-	};
-
-	const quotedMessages = {
-		get: () => _quotedMessages,
-		subscribe: (callback: () => void) => emitter.on('quotedMessagesUpdate', callback),
-	};
-
-	const [editing, setEditing] = (() => {
-		let editing = false;
-
-		return [
-			{
-				get: () => editing,
-				subscribe: (callback: () => void) => emitter.on('editing', callback),
-			},
-			(value: boolean) => {
-				editing = value;
-				emitter.emit('editing');
-			},
-		];
-	})();
-
-	const [recording, setRecordingMode] = (() => {
-		let recording = false;
-
-		return [
-			{
-				get: () => recording,
-				subscribe: (callback: () => void) => emitter.on('recording', callback),
-			},
-			(value: boolean) => {
-				recording = value;
-				emitter.emit('recording');
-			},
-		];
-	})();
-
-	const [recordingVideo, setRecordingVideo] = (() => {
-		let recordingVideo = false;
-
-		return [
-			{
-				get: () => recordingVideo,
-				subscribe: (callback: () => void) => emitter.on('recordingVideo', callback),
-			},
-			(value: boolean) => {
-				recordingVideo = value;
-				emitter.emit('recordingVideo');
-			},
-		];
-	})();
-
-	const [isMicrophoneDenied, setIsMicrophoneDenied] = (() => {
-		let isMicrophoneDenied = false;
-
-		return [
-			{
-				get: () => isMicrophoneDenied,
-				subscribe: (callback: () => void) => emitter.on('mircophoneDenied', callback),
-			},
-			(value: boolean) => {
-				isMicrophoneDenied = value;
-				emitter.emit('mircophoneDenied');
-			},
-		];
-	})();
-
-	const setEditingMode = (editing: boolean): void => {
-		setEditing(editing);
-	};
-
-	const [formatters, stopFormatterSubscription] = (() => {
-		let actions: FormattingButton[] = [];
-
-		const recompute = (): void => {
-			actions = formattingButtons.filter(({ condition }) => !condition || condition());
-			emitter.emit('formatting');
-		};
-		recompute();
-		const stop = settings.observe('*', recompute);
-
-		return [
-			{
-				get: () => actions,
-				subscribe: (callback: () => void) => emitter.on('formatting', callback),
-			},
-			stop,
-		];
-	})();
-
-	const release = (): void => {
-		input.removeEventListener('input', persist);
-		stopFormatterSubscription();
-	};
+	const { insertText } = core;
 
 	const wrapSelection = (pattern: string): { selectionStart: number; selectionEnd: number; value: string } => {
 		const { selectionStart, selectionEnd } = getSelectionRange(input);
@@ -299,12 +137,6 @@ export const createRichTextComposerAPI = (
 		return { selectionStart: newStart, selectionEnd: newEnd, value: input.innerText };
 	};
 
-	const insertNewLine = (): void => insertText('\n');
-
-	setText(Accounts.storageLocation.getItem(storageID) ?? '', {
-		skipFocus: true,
-	});
-
 	// Gets the text that is connected to the cursor and replaces it with the given text
 	const replaceText = (text: string, selection: { readonly start: number; readonly end: number }): void => {
 		const { selectionStart, selectionEnd } = getSelectionRange(input);
@@ -347,17 +179,24 @@ export const createRichTextComposerAPI = (
 		triggerEvent(input, 'change');
 	};
 
-	return {
-		replaceText,
-		insertNewLine,
-		blur: () => input.blur(),
+	const replyWith = async (text: string): Promise<void> => {
+		if (input) {
+			input.innerText = text;
+			input.focus();
+		}
+	};
 
+	return {
+		...core,
+		setText,
+		wrapSelection,
+		replaceText,
+		replyWith,
 		substring: (start: number, end?: number) => {
 			// Sanitize the innerText by reducing multiple instances of linebreaks
 			const cleanedInitText = input.innerText.replace(/\n{2,}/g, (match) => '\n'.repeat(match.length - 1));
 			return cleanedInitText.substring(start, end);
 		},
-
 		getCursorPosition: () => {
 			return getSelectionRange(input).selectionStart;
 		},
@@ -370,8 +209,6 @@ export const createRichTextComposerAPI = (
 			focus();
 			setSelectionRange(input, 0, 0);
 		},
-		release,
-		wrapSelection,
 		get text(): string {
 			return input.innerText;
 		},
@@ -382,26 +219,5 @@ export const createRichTextComposerAPI = (
 				end: selectionEnd,
 			};
 		},
-
-		editing,
-		setEditingMode,
-		recording,
-		setRecordingMode,
-		recordingVideo,
-		setRecordingVideo,
-		insertText,
-		setText,
-		clear,
-		focus,
-		replyWith,
-		quoteMessage,
-		dismissQuotedMessage,
-		dismissAllQuotedMessages,
-		quotedMessages,
-		formatters,
-		isMicrophoneDenied,
-		setIsMicrophoneDenied,
-		composerRef,
-		uploads: createUploadsAPI({ rid, tmid }),
 	};
 };
