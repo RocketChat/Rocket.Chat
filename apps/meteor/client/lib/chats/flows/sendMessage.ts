@@ -89,6 +89,7 @@ export const sendMessage = async (
 	}
 
 	if (text || hasFiles) {
+		const previousText = chat.composer?.text ?? '';
 		const message = await chat.data.composeMessage(text, {
 			sendToChannel: tshow,
 			quotedMessages: chat.composer?.quotedMessages.get() ?? [],
@@ -111,6 +112,12 @@ export const sendMessage = async (
 			chat.composer?.dismissAllQuotedMessages();
 			await afterSendMessageCallback(message, message.rid);
 		} catch (error) {
+			if (error?.errorType === 'Meteor.Error' && error?.reason === 'You must be logged in to do this.') {
+				if (previousText) {
+					chat.composer?.setText(previousText);
+				}
+			}
+
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 		return true;
