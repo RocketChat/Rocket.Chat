@@ -91,7 +91,7 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 			</GenericTableCell>
 			<GenericTableCell withTruncatedText verticalAlign='top'>
 				<Box display='flex' flexDirection='column'>
-					<Box fontScale='p2m' withTruncatedText>
+					<Box fontScale='p2m' withTruncatedText title={formatDate(ts)}>
 						{formatDate(ts)}
 					</Box>
 					<Box color='hint' withTruncatedText>

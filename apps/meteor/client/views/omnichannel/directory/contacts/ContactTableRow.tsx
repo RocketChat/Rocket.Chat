@@ -55,7 +55,7 @@ const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILiv
 			<GenericTableCell withTruncatedText verticalAlign='top'>
 				{lastChat && (
 					<Box display='flex' flexDirection='column'>
-						<Box fontScale='p2m' withTruncatedText>
+						<Box fontScale='p2m' withTruncatedText title={formatDate(lastChat.ts)}>
 							{formatDate(lastChat.ts)}
 						</Box>
 						<Box color='hint' withTruncatedText>
