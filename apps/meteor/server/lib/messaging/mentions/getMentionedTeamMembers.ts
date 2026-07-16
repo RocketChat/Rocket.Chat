@@ -1,7 +1,7 @@
 import { Team } from '@rocket.chat/core-services';
 import type { MessageMention } from '@rocket.chat/core-typings';
 
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../settings';
 import { callbacks } from '../../callbacks';
 
 const beforeGetMentions = async (mentionIds: string[], teamMentions: MessageMention[]): Promise<string[]> => {

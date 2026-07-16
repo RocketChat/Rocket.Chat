@@ -16,7 +16,7 @@ const { beforeNewRoomPatched } = proxyquire.noCallThru().load('../../../../../ee
 			findOneByIdOrName: findStub,
 		},
 	},
-	'../../../../app/livechat/server/lib/hooks': {
+	'../../../../server/lib/omnichannel/hooks': {
 		beforeNewRoom: { patch: sinon.stub() },
 	},
 });

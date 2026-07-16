@@ -6,8 +6,8 @@
 // }
 import { Uploads } from '@rocket.chat/models';
 
-import { settings } from '../../../../app/settings/server';
 import * as Mailer from '../../../lib/notifications/email/api';
+import { settings } from '../../../settings';
 import { UploadFS } from '../../../ufs';
 
 export const sendEmail = async (data: { files: string[]; subject: string; body: string }) => {

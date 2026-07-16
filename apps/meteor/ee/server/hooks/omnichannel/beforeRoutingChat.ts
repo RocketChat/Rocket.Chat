@@ -1,14 +1,14 @@
 import type { ILivechatInquiryRecord, SelectedAgent, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
-import { notifyOnLivechatInquiryChanged, notifyOnRoomChangedById } from '../../../../app/lib/server/lib/notifyListener';
-import { allowAgentSkipQueue } from '../../../../app/livechat/server/lib/Helper';
-import { saveQueueInquiry } from '../../../../app/livechat/server/lib/QueueManager';
-import { setDepartmentForGuest } from '../../../../app/livechat/server/lib/departmentsLib';
-import { beforeRouteChat } from '../../../../app/livechat/server/lib/hooks';
-import { online } from '../../../../app/livechat/server/lib/service-status';
-import { settings } from '../../../../app/settings/server';
-import { cbLogger } from '../../../app/livechat-enterprise/server/lib/logger';
+import { notifyOnLivechatInquiryChanged, notifyOnRoomChangedById } from '../../../../server/lib/notifyListener';
+import { allowAgentSkipQueue } from '../../../../server/lib/omnichannel/Helper';
+import { saveQueueInquiry } from '../../../../server/lib/omnichannel/QueueManager';
+import { setDepartmentForGuest } from '../../../../server/lib/omnichannel/departmentsLib';
+import { beforeRouteChat } from '../../../../server/lib/omnichannel/hooks';
+import { online } from '../../../../server/lib/omnichannel/service-status';
+import { settings } from '../../../../server/settings';
+import { cbLogger } from '../../lib/omnichannel/logger';
 
 beforeRouteChat.patch(
 	async (

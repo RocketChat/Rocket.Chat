@@ -1,8 +1,8 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import { afterAgentUserActivated, afterAgentAdded, afterRemoveAgent } from '../../../app/livechat/server/lib/hooks';
 import { callbacks } from '../../lib/callbacks';
+import { afterAgentUserActivated, afterAgentAdded, afterRemoveAgent } from '../../lib/omnichannel/hooks';
 
 type IAfterSaveUserProps = {
 	user: IUser;

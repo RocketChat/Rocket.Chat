@@ -1,8 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, VideoConference } from '@rocket.chat/models';
 
-import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
 import { callbacks } from '../../lib/callbacks';
+import { notifyOnMessageChange } from '../../lib/notifyListener';
 import { deleteRoom } from '../../lib/rooms/deleteRoom';
 
 const updateAndNotifyParentRoomWithParentMessage = async (room: IRoom): Promise<void> => {

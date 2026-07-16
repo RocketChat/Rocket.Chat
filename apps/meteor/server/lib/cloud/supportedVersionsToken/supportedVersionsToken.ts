@@ -6,11 +6,11 @@ import type { Response } from '@rocket.chat/server-fetch';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { supportedVersionsChooseLatest } from './supportedVersionsChooseLatest';
-import { notifyOnSettingChangedById } from '../../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../../app/settings/server';
 import { supportedVersions as supportedVersionsFromBuild } from '../../../../app/utils/rocketchat-supported-versions.info';
+import { settings } from '../../../settings';
 import { updateAuditedBySystem } from '../../../settings/lib/auditedSettingUpdates';
 import { SystemLogger } from '../../logger/system';
+import { notifyOnSettingChangedById } from '../../notifyListener';
 import { generateWorkspaceBearerHttpHeader } from '../getWorkspaceAccessToken';
 import { buildVersionUpdateMessage } from '../version-check/functions/buildVersionUpdateMessage';
 

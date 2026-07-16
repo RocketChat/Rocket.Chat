@@ -5,7 +5,7 @@ import { CloudWorkspaceAccessTokenError } from './getWorkspaceAccessToken';
 import { workspaceScopes } from './oauthScopes';
 import { removeWorkspaceRegistrationInfo } from './removeWorkspaceRegistrationInfo';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 import { SystemLogger } from '../logger/system';
 
 type WorkspaceAccessTokenWithScope = {

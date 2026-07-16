@@ -4,8 +4,8 @@ import { check } from 'meteor/check';
 
 import { API } from '../..';
 import { findAgents, findManagers } from './lib/users';
-import { addManager, addAgent, removeAgent, removeManager } from '../../../../app/livechat/server/lib/omni-users';
 import { hasAtLeastOnePermissionAsync } from '../../../lib/authorization/hasPermission';
+import { addManager, addAgent, removeAgent, removeManager } from '../../../lib/omnichannel/omni-users';
 import { getPaginationItems } from '../../lib/getPaginationItems';
 
 const emptyStringArray: string[] = [];
@@ -33,7 +33,7 @@ API.v1.addRoute(
 			const { text } = this.queryParams;
 
 			if (this.urlParams.type === 'agent') {
-				if (!(await hasAtLeastOnePermissionAsync(this.userId, ['transfer-livechat-guest', 'edit-omnichannel-contact']))) {
+				if (!(await hasAtLeastOnePermissionAsync(this.user, ['transfer-livechat-guest', 'edit-omnichannel-contact']))) {
 					return API.v1.forbidden();
 				}
 
@@ -53,7 +53,7 @@ API.v1.addRoute(
 				);
 			}
 			if (this.urlParams.type === 'manager') {
-				if (!(await hasAtLeastOnePermissionAsync(this.userId, ['view-livechat-manager']))) {
+				if (!(await hasAtLeastOnePermissionAsync(this.user, ['view-livechat-manager']))) {
 					return API.v1.forbidden();
 				}
 

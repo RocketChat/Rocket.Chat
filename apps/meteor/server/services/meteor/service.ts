@@ -7,20 +7,20 @@ import { wrapExceptions } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
 import { processOnChange, serviceConfigCallbacks } from './userReactivity';
-import { notifyGuestStatusChanged } from '../../../app/livechat/server/lib/guests';
-import { onlineAgents, monitorAgents } from '../../../app/livechat/server/lib/stream/agentStatus';
-import { settings } from '../../../app/settings/server';
-import { use } from '../../../app/settings/server/Middleware';
-import { setValue, updateValue } from '../../../app/settings/server/raw';
-import { getURL } from '../../../app/utils/server/getURL';
 import { configureEmailInboxes } from '../../features/EmailInbox/EmailInbox';
 import { isOutgoingIntegration } from '../../lib/integrations/lib/definition';
 import { triggerHandler } from '../../lib/integrations/lib/triggerHandler';
 import { metrics } from '../../lib/metrics';
 import notifications from '../../lib/notifications/core/lib/Notifications';
+import { notifyGuestStatusChanged } from '../../lib/omnichannel/guests';
+import { onlineAgents, monitorAgents } from '../../lib/omnichannel/stream/agentStatus';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import { getURL } from '../../lib/utils/getURL';
 import { ListenersModule } from '../../modules/listeners/listeners.module';
 import { invalidate as invalidatePublicationUserCache } from '../../modules/streamer/publication-user-cache';
+import { settings } from '../../settings';
+import { use } from '../../settings/Middleware';
+import { setValue, updateValue } from '../../settings/raw';
 
 const disableMsgRoundtripTracking = ['yes', 'true'].includes(String(process.env.DISABLE_MESSAGE_ROUNDTRIP_TRACKING).toLowerCase());
 

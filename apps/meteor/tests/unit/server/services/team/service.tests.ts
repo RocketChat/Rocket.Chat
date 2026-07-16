@@ -31,10 +31,10 @@ const { TeamService } = proxyquire.noCallThru().load('../../../../../server/serv
 	'@rocket.chat/string-helpers': {
 		escapeRegExp: (value: string) => value,
 	},
-	'../../../app/channel-settings/server': {
+	'../../lib/rooms/settings': {
 		saveRoomName: sinon.stub(),
 	},
-	'../../../app/channel-settings/server/functions/saveRoomType': {
+	'../../lib/rooms/settings/saveRoomType': {
 		saveRoomType: sinon.stub(),
 	},
 	'../../lib/rooms/addUserToRoom': {
@@ -49,11 +49,11 @@ const { TeamService } = proxyquire.noCallThru().load('../../../../../server/serv
 	'../../lib/rooms/removeUserFromRoom': {
 		removeUserFromRoom: sinon.stub(),
 	},
-	'../../../app/lib/server/lib/notifyListener': {
+	'../../lib/notifyListener': {
 		notifyOnSubscriptionChangedByRoomIdAndUserId: sinon.stub(),
 		notifyOnRoomChangedById: sinon.stub(),
 	},
-	'../../../app/settings/server': {
+	'../../settings': {
 		settings: { get: sinon.stub() },
 	},
 });

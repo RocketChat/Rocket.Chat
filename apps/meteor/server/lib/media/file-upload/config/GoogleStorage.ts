@@ -4,7 +4,7 @@ import https from 'node:https';
 import _ from 'underscore';
 
 import { forceDownload } from './helper';
-import { settings } from '../../../../../app/settings/server';
+import { settings } from '../../../../settings';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import '../ufs/GoogleStorage/server';
 

@@ -1,4 +1,4 @@
-import { settingsRegistry } from '../../../../app/settings/server';
+import { settingsRegistry } from '../../../../server/settings';
 
 const omnichannelEnabledQuery = { _id: 'Livechat_enabled', value: true };
 

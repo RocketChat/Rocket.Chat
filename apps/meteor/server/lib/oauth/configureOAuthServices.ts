@@ -6,8 +6,8 @@ import type { Profile, DoneCallback } from 'passport';
 import { allowPassportOAuthMiddleware } from './allowPassportOAuthMiddleware';
 import type { OAuthServiceConfig } from './createOAuthServiceConfig';
 import { passportOAuthCallback } from './passportOAuthCallback';
-import type { ICachedSettings } from '../../../app/settings/server/CachedSettings';
 import { oAuthRouter } from '../../configuration/configurePassport';
+import type { ICachedSettings } from '../../settings/CachedSettings';
 
 export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[], settings: ICachedSettings) => {
 	oauthServiceConfig.forEach((config) => {

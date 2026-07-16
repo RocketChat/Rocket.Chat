@@ -1,8 +1,0 @@
-# Phase 6b (EE mirror): hooks → ee/server/hooks/<domain>/
-# Format: old-path<TAB>new-path (relative to apps/meteor/)
-ee/app/livechat-enterprise/server/hooks	ee/server/hooks/omnichannel
-ee/app/canned-responses/server/hooks	ee/server/hooks/canned-responses
-ee/app/message-read-receipt/server/hooks/afterDeleteRoom.ts	ee/server/hooks/messages/afterDeleteRoom.ts
-ee/app/message-read-receipt/server/hooks/afterReadMessages.ts	ee/server/hooks/messages/afterReadMessages.ts
-ee/app/message-read-receipt/server/hooks/afterSaveMessage.ts	ee/server/hooks/messages/afterSaveMessage.ts
-ee/app/authorization/server/callback.ts	ee/server/hooks/auth/callback.ts

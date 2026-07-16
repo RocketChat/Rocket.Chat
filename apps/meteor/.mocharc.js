@@ -10,8 +10,9 @@ module.exports = {
 	...base, // see https://github.com/mochajs/mocha/issues/3916
 	exit: true,
 	// getUserInfo.spec.ts lives under server/api/lib but is a Jest test (run via jest.config.ts),
-	// so it must be excluded from the mocha `server/api/lib/**` glob below.
-	ignore: ['server/api/lib/getUserInfo.spec.ts'],
+	// so it must be excluded from the mocha `server/api/lib/**` glob below. Same for the
+	// business-hour spec under server/lib/omnichannel.
+	ignore: ['server/api/lib/getUserInfo.spec.ts', 'server/lib/omnichannel/business-hour/**/*.spec.ts'],
 	spec: [
 		'server/lib/callbacks.spec.ts',
 		'server/lib/cas/*.spec.ts',
@@ -37,8 +38,8 @@ module.exports = {
 		'server/lib/media/**/*.spec.ts',
 		'server/lib/statistics/**/*.spec.ts',
 		'server/meteor-methods/**/*.spec.ts',
-		'app/livechat/server/lib/**/*.spec.ts',
+		'server/lib/omnichannel/**/*.spec.ts',
 		'server/lib/notifications/push/**/*.spec.ts',
-		'app/utils/server/**/*.spec.ts',
+		'server/lib/utils/**/*.spec.ts',
 	],
 };

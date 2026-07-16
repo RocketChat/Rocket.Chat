@@ -2,7 +2,7 @@ import type { OAuthConfiguration } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import passport from 'passport';
 
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 import { addPassportCustomOAuth } from '../oauth/addPassportCustomOAuth';
 
 const config: Partial<OAuthConfiguration> = {

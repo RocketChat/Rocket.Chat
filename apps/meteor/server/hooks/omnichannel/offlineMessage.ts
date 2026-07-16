@@ -1,6 +1,6 @@
-import { sendRequest } from '../../../app/livechat/server/lib/webhooks';
-import { settings } from '../../../app/settings/server';
 import { callbacks } from '../../lib/callbacks';
+import { sendRequest } from '../../lib/omnichannel/webhooks';
+import { settings } from '../../settings';
 
 callbacks.add(
 	'livechat.offlineMessage',

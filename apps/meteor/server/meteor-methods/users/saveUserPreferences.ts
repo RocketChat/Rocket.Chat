@@ -5,14 +5,14 @@ import type { FontSize } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import {
 	notifyOnSubscriptionChangedByAutoTranslateAndUserId,
 	notifyOnSubscriptionChangedByUserId,
 	notifyOnSubscriptionChangedByUserPreferences,
 	notifyOnUserChange,
-} from '../../../app/lib/server/lib/notifyListener';
-import { settings as rcSettings } from '../../../app/settings/server';
+} from '../../lib/notifyListener';
+import { settings as rcSettings } from '../../settings';
 
 type UserPreferences = {
 	language: string;

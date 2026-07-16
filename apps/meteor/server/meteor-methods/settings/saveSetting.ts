@@ -5,10 +5,10 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { getSettingPermissionId } from '../../../app/authorization/lib';
-import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
-import { notifyOnSettingChanged } from '../../../app/lib/server/lib/notifyListener';
 import { twoFactorRequired } from '../../lib/2fa/twoFactorRequired';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../lib/authorization/hasPermission';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
+import { notifyOnSettingChanged } from '../../lib/notifyListener';
 import { disableCustomScripts } from '../../lib/shared/disableCustomScripts';
 import { updateAuditedByUser } from '../../settings/lib/auditedSettingUpdates';
 

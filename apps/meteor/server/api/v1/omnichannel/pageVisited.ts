@@ -2,7 +2,7 @@ import type { IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
 import { isPOSTLivechatPageVisitedParams } from '@rocket.chat/rest-typings';
 
 import { API } from '../..';
-import { savePageHistory } from '../../../../app/livechat/server/lib/tracking';
+import { savePageHistory } from '../../../lib/omnichannel/tracking';
 
 API.v1.addRoute(
 	'livechat/page.visited',

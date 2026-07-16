@@ -9,7 +9,7 @@ const settingsStub = { get: sinon.stub().returns('') };
 
 const { Push } = proxyquire.noCallThru().load('../../../../../../server/lib/notifications/push/push', {
 	'./logger': { logger: loggerStub },
-	'../../../../app/settings/server': { settings: settingsStub },
+	'../../../settings': { settings: settingsStub },
 	'@rocket.chat/tools': { pick, truncateString },
 	'meteor/check': {
 		check: sinon.stub(),

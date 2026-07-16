@@ -2,9 +2,9 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Subscriptions, ReadReceipts, ReadReceiptsArchive, Team } from '@rocket.chat/models';
 
 import type { SubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
-import { notifyOnSubscriptionChanged } from '../../../app/lib/server/lib/notifyListener';
 import { eraseRoomLooseValidation, eraseTeamOnRelinquishRoomOwnerships } from '../../api/lib/eraseTeam';
 import { FileUpload } from '../media/file-upload';
+import { notifyOnSubscriptionChanged } from '../notifyListener';
 import { addUserRolesAsync } from '../roles/addUserRoles';
 
 const bulkTeamCleanup = async (rids: IRoom['_id'][]) => {

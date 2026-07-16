@@ -9,11 +9,11 @@ import {
 	isAutotranslateGetSupportedLanguagesParamsGET,
 } from '@rocket.chat/rest-typings';
 
-import { canAccessRoomAsync } from '../../../app/authorization/server';
-import { settings } from '../../../app/settings/server';
+import { canAccessRoomAsync } from '../../lib/authorization';
 import { getSupportedLanguages } from '../../lib/autotranslate/functions/getSupportedLanguages';
 import { saveAutoTranslateSettings } from '../../lib/autotranslate/functions/saveSettings';
 import { translateMessage } from '../../lib/autotranslate/functions/translateMessage';
+import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 

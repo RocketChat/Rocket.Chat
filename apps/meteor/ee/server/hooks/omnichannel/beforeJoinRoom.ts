@@ -2,9 +2,9 @@ import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../server/lib/callbacks';
-import { isAgentWithinChatLimits } from '../../../app/livechat-enterprise/server/lib/Helper';
+import { settings } from '../../../../server/settings';
+import { isAgentWithinChatLimits } from '../../lib/omnichannel/Helper';
 
 callbacks.add(
 	'beforeJoinRoom',

@@ -3,7 +3,7 @@ import { Users } from '@rocket.chat/models';
 
 import { searchEventService } from './events';
 import { searchProviderService } from './service';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 
 class Search extends ServiceClassInternal {
 	protected name = 'search';

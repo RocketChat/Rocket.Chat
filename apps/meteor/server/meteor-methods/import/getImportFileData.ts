@@ -7,8 +7,8 @@ import { Imports } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { ProgressStep } from '../../../app/importer/lib/ImporterProgressStep';
-import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { Importers } from '../../lib/import';
 import { RocketChatImportFileInstance } from '../../lib/import/startup/store';
 

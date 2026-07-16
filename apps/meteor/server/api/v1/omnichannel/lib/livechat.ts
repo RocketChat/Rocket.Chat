@@ -4,9 +4,9 @@ import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms, Livechat
 import { makeFunction } from '@rocket.chat/patch-injection';
 import { Meteor } from 'meteor/meteor';
 
-import { normalizeAgent } from '../../../../../app/livechat/server/lib/Helper';
-import { getInitSettings } from '../../../../../app/livechat/server/lib/settings';
 import { callbacks } from '../../../../lib/callbacks';
+import { normalizeAgent } from '../../../../lib/omnichannel/Helper';
+import { getInitSettings } from '../../../../lib/omnichannel/settings';
 
 async function findTriggers(): Promise<Pick<ILivechatTrigger, '_id' | 'actions' | 'conditions' | 'runOnce'>[]> {
 	const triggers = await LivechatTrigger.findEnabled().toArray();

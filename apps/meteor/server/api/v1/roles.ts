@@ -14,13 +14,13 @@ import {
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { notifyOnRoleChanged } from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
 import { getUsersInRolePaginated } from '../../lib/authorization/getUsersInRole';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { hasRoleAsync, hasAnyRoleAsync } from '../../lib/authorization/hasRole';
+import { notifyOnRoleChanged } from '../../lib/notifyListener';
 import { removeUserFromRolesAsync } from '../../lib/roles/removeUserFromRoles';
 import { addUserToRole } from '../../meteor-methods/auth/addUserToRole';
+import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
@@ -189,7 +189,7 @@ const rolesRoutes = API.v1
 			if (!role) {
 				throw new Meteor.Error('error-param-not-provided', 'Query param "role" is required');
 			}
-			if (roomId && !(await hasPermissionAsync(this.userId, 'view-other-user-channels'))) {
+			if (roomId && !(await hasPermissionAsync(this.user, 'view-other-user-channels'))) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
 

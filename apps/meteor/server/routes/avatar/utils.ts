@@ -9,9 +9,9 @@ import sanitizeHtml from 'sanitize-html';
 import sharp from 'sharp';
 import { throttle } from 'underscore';
 
-import { settings } from '../../../app/settings/server';
-import { getAvatarColor } from '../../../app/utils/lib/getAvatarColor';
 import { FileUpload } from '../../lib/media/file-upload';
+import { getAvatarColor } from '../../lib/utils/lib/getAvatarColor';
+import { settings } from '../../settings';
 
 const FALLBACK_LAST_MODIFIED = 'Thu, 01 Jan 2015 00:00:00 GMT';
 
