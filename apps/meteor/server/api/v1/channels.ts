@@ -6,6 +6,8 @@ import {
 	type IMessage,
 	type IRoom,
 	type ISubscription,
+	type ITeam,
+	type IUploadWithUser,
 	type IUser,
 	type RoomType,
 	type UserStatus,
@@ -825,15 +827,31 @@ API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+const channelsConvertToTeamResponseSchema = ajv.compile<{ team: ITeam }>({
+	type: 'object',
+	properties: {
+		team: { $ref: '#/components/schemas/ITeam' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['team', 'success'],
+	additionalProperties: false,
+});
+
+API.v1.post(
 	'channels.convertToTeam',
 	{
 		authRequired: true,
-		validateParams: isChannelsConvertToTeamProps,
+		body: isChannelsConvertToTeamProps,
 		permissionsRequired: ['create-team'],
+		response: {
+			200: channelsConvertToTeamResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
 	},
-	{
-		async post() {
+	async function action() {
+		try {
 			const { channelId, channelName } = this.bodyParams;
 
 			if (!channelId && !channelName) {
@@ -874,7 +892,10 @@ API.v1.addRoute(
 			const team = await Team.create(this.userId, teamData);
 
 			return API.v1.success({ team });
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
@@ -1214,11 +1235,33 @@ API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+const channelsFilesResponseSchema = ajv.compile<{ files: IUploadWithUser[]; count: number; offset: number; total: number }>({
+	type: 'object',
+	properties: {
+		files: { type: 'array', items: { $ref: '#/components/schemas/IUploadWithUser' } },
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['files', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
+API.v1.get(
 	'channels.files',
-	{ authRequired: true, validateParams: isChannelsFilesListProps },
 	{
-		async get() {
+		authRequired: true,
+		query: isChannelsFilesListProps,
+		response: {
+			200: channelsFilesResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			const { typeGroup, name, roomId, roomName, onlyConfirmed } = this.queryParams;
 
 			const findResult = await findChannelByIdOrName({
@@ -1259,7 +1302,10 @@ API.v1.addRoute(
 				offset,
 				total,
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
