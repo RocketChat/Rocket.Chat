@@ -17,10 +17,6 @@ function getDenoConfigPath(): string {
 	return require.resolve('../../../../deno-runtime/deno.jsonc');
 }
 
-function getDenoEphemeralConfigPath(): string {
-	return fs.mkdtempSync("deno-runtimeXXXXX");
-}
-
 /**
  * Generates a runtime deno.jsonc at `<tempDir>/deno_runtime.jsonc` by reading
  * the static config and injecting the resolved absolute path for
@@ -71,7 +67,7 @@ export class DenoRuntimeSubprocessController extends BaseRuntimeSubprocessContro
 		this.denoDir = process.env.DENO_DIR ?? path.join(this.packagePath, '.deno-cache');
 
 		this.denoRuntimePath = path.join(this.tempFilePath, 'deno-runtime', 'main.ts');
-		this.denoEphemeralConfigPath = path.join(getDenoEphemeralConfigPath(), path.basename(this.denoConfigPath).replace('.jsonc', '.runtime.jsonc'));
+		this.denoEphemeralConfigPath = path.join(this.tempFilePath, path.basename(this.denoConfigPath).replace('.jsonc', '.runtime.jsonc'));
 
 		/**
 		 * Deno 2.x refuses to run scripts inside the node_modules, so we create a symlink to the deno runtime files in the temp directory
