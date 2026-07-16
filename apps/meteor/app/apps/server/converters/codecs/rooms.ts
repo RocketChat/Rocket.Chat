@@ -282,6 +282,16 @@ export async function appRoomToRocketChat(room: any, isPartial = false): Promise
 export function createRoomCodec(orch: IAppServerOrchestrator) {
 	return z.codec(z.custom<IRoom>(), z.custom<IAppsRoom | IAppsLivechatRoom>(), {
 		decode: async (originalRoom): Promise<IAppsRoom | IAppsLivechatRoom> => {
+			const readVisitor = (room: RoomData, { consume = false } = {}) => {
+				const { v } = room;
+
+				if (consume) {
+					delete room.v;
+				}
+
+				return v;
+			};
+
 			const map = {
 				id: '_id',
 				displayName: 'fname',
@@ -342,7 +352,7 @@ export function createRoomCodec(orch: IAppServerOrchestrator) {
 					return orch.getConverters().get('users').convertById(u._id);
 				},
 				visitor: (room: RoomData) => {
-					const { v } = room;
+					const v = readVisitor(room);
 
 					if (!v) {
 						return undefined;
@@ -357,6 +367,8 @@ export function createRoomCodec(orch: IAppServerOrchestrator) {
 						return undefined;
 					}
 
+					delete room.contactId;
+
 					return orch.getConverters().get('contacts').convertById(contactId);
 				},
 				// Note: room.v is not just visitor, it also contains channel related visitor data
@@ -366,7 +378,7 @@ export function createRoomCodec(orch: IAppServerOrchestrator) {
 				// then room.v.phoneNo would be X and correspondingly we'll store the timestamp of
 				// the last message from this visitor from X phone no on room.v.lastMessageTs
 				visitorChannelInfo: (room: RoomData) => {
-					const { v } = room;
+					const v = readVisitor(room, { consume: true });
 
 					if (!v) {
 						return undefined;

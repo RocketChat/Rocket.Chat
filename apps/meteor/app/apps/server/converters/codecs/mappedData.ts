@@ -106,8 +106,16 @@ export type AsyncFieldMap = Record<
  *
  * The result shape is caller-asserted via the `Result` type parameter, since it depends on the map's
  * function/nested entries in ways that are not worth expressing in the type system.
+ *
+ * `dropUnmapped` omits the `_unmappedProperties_` bucket at the root and every nested level, for
+ * callers (e.g. contacts) that map every attribute individually and must not let extra app data leak
+ * through. It defaults to `false`, preserving the "bucket the rest" behaviour for other callers.
  */
-export async function mappedDecodeAsync<Result = Loose>(data: Loose, map: AsyncFieldMap): Promise<Result> {
+export async function mappedDecodeAsync<Result = Loose>(
+	data: Loose,
+	map: AsyncFieldMap,
+	options: { dropUnmapped?: boolean } = {},
+): Promise<Result> {
 	const clone: Loose = structuredClone(data);
 	const result: Loose = {};
 
@@ -130,22 +138,26 @@ export async function mappedDecodeAsync<Result = Loose>(data: Loose, map: AsyncF
 			if (from.list) {
 				if (Array.isArray(clone[fromName])) {
 					if ('map' in from && from.map) {
-						result[to] = await Promise.all(clone[fromName].map((item: Loose) => mappedDecodeAsync(item, from.map as AsyncFieldMap)));
+						result[to] = await Promise.all(
+							clone[fromName].map((item: Loose) => mappedDecodeAsync(item, from.map as AsyncFieldMap, options)),
+						);
 					} else {
 						result[to] = [...clone[fromName]];
 					}
 				} else if (clone[fromName] !== undefined && clone[fromName] !== null) {
 					result[to] = [clone[fromName]];
 				}
-			} else {
-				result[to] = await mappedDecodeAsync(clone[fromName], from.map as AsyncFieldMap);
+			} else if (clone[fromName] !== undefined && clone[fromName] !== null) {
+				result[to] = await mappedDecodeAsync(clone[fromName], from.map as AsyncFieldMap, options);
 			}
 
 			delete clone[fromName];
 		}
 	}
 
-	result._unmappedProperties_ = clone;
+	if (!options.dropUnmapped) {
+		result._unmappedProperties_ = clone;
+	}
 
 	return result as Result;
 }

@@ -6,17 +6,8 @@ import { describe, it } from 'mocha';
 import { AppSettingsConverter } from '../../../../../app/apps/server/converters/settings';
 import { AppUsersConverter } from '../../../../../app/apps/server/converters/users';
 
-/*
- * Regression coverage for the lenient enum handling. The codecs must reproduce the pre-migration
- * behaviour of the `_convert*` switch helpers, which never validated their input: `undefined`/`null`
- * enum values fall back rather than throwing. A stricter Zod schema here would reject those values
- * and break real payloads (Livechat guests, rocket.cat, bots, app-created users without a status).
- */
-
 const orch: any = {};
 
-// The fixtures are intentionally minimal; cast to the real input types (rather than `any`) so the
-// correct converter overload is selected and the result stays typed.
 const asUser = (value: Record<string, unknown>) => value as unknown as IUser;
 const asAppUser = (value: Record<string, unknown>) => value as unknown as IAppsUser;
 const asSetting = (value: Record<string, unknown>) => value as unknown as ISetting;
@@ -46,6 +37,18 @@ describe('apps converters — lenient enum edge cases', () => {
 			const result = converter.convertToRocketChat(asAppUser({ id: 'u', username: 'a' }));
 
 			expect(result).to.deep.equal({ _id: 'u', username: 'a' });
+		});
+
+		it('falls back to the legacy utfOffset property when utcOffset is absent', () => {
+			const result = converter.convertToRocketChat(asAppUser({ id: 'u', username: 'a', utfOffset: -3 }));
+
+			expect(result).to.deep.equal({ _id: 'u', username: 'a', utcOffset: -3 });
+		});
+
+		it('prefers utcOffset over the legacy utfOffset when both are present', () => {
+			const result = converter.convertToRocketChat(asAppUser({ id: 'u', username: 'a', utcOffset: 5, utfOffset: -3 }));
+
+			expect(result).to.deep.equal({ _id: 'u', username: 'a', utcOffset: 5 });
 		});
 	});
 

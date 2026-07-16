@@ -111,6 +111,58 @@ describe('mappedDecodeAsync', () => {
 		});
 	});
 
+	it('omits a nested object whose source is missing without a property access error', async () => {
+		const result = await mappedDecodeAsync(
+			{ _id: 'c1', spare: true },
+			{
+				_id: '_id',
+				lastChat: { from: 'lastChat', map: { _id: '_id', ts: 'ts' } },
+				visitor: { from: 'visitor', map: { visitorId: 'visitorId' } },
+				details: { from: 'details', map: { type: 'type' } },
+			},
+		);
+
+		expect(result).to.deep.equal({ _id: 'c1', _unmappedProperties_: { spare: true } });
+		expect(result).to.not.have.property('lastChat');
+		expect(result).to.not.have.property('visitor');
+		expect(result).to.not.have.property('details');
+	});
+
+	it('omits a nested object whose source is null without a property access error', async () => {
+		const result = await mappedDecodeAsync(
+			{ _id: 'c1', lastChat: null, visitor: null, details: null, spare: true },
+			{
+				_id: '_id',
+				lastChat: { from: 'lastChat', map: { _id: '_id', ts: 'ts' } },
+				visitor: { from: 'visitor', map: { visitorId: 'visitorId' } },
+				details: { from: 'details', map: { type: 'type' } },
+			},
+		);
+
+		expect(result).to.deep.equal({ _id: 'c1', _unmappedProperties_: { spare: true } });
+		expect(result).to.not.have.property('lastChat');
+		expect(result).to.not.have.property('visitor');
+		expect(result).to.not.have.property('details');
+	});
+
+	it('drops the _unmappedProperties_ bucket at the root and every nested level when `dropUnmapped` is set', async () => {
+		const result = await mappedDecodeAsync(
+			{ _id: 'c1', visitor: { visitorId: 'v1', extra: 'drop' }, phones: [{ phoneNumber: '1', extra: 'x' }], spare: true },
+			{
+				_id: '_id',
+				visitor: { from: 'visitor', map: { visitorId: 'visitorId' } },
+				phones: { from: 'phones', list: true, map: { phoneNumber: 'phoneNumber' } },
+			},
+			{ dropUnmapped: true },
+		);
+
+		expect(result).to.deep.equal({
+			_id: 'c1',
+			visitor: { visitorId: 'v1' },
+			phones: [{ phoneNumber: '1' }],
+		});
+	});
+
 	it('maps a list of objects via `list` + `map`, bucketing each element', async () => {
 		const result = await mappedDecodeAsync(
 			{ phones: [{ phoneNumber: '1', extra: 'x' }, { phoneNumber: '2' }] },

@@ -272,10 +272,11 @@ known, which is what makes generic typing worthwhile in some cases and not other
   does take a `Result` type parameter — `mappedDecodeAsync<IAppsUpload>(data, map)` — so call sites
   assert the produced shape once instead of trailing every call with `as unknown as Promise<…>`.
 
-- **The apps-type boundary keeps a single, documented cast.** The Apps-Engine interfaces
+- **Each apps-type boundary keeps a single, documented cast.** The Apps-Engine interfaces
   (`IAppsVisitor`, …) are hand-authored and don't structurally equal the produced `Decoded`/mapped
-  shape, so exactly one `as unknown as <AppsType>` remains where the codec meets that interface. That
-  is the deliberate loose-validation seam (see design decision 7), not incidental looseness.
+  shape, so each affected codec boundary — supplied role, department, user and visitor — retains one
+  localized `as unknown as <AppsType>` where the codec meets that interface. Those casts are the
+  deliberate loose-validation seams (see design decision 7), not incidental looseness.
 
 ## Non-goals
 

@@ -76,6 +76,7 @@ export function createUploadsCodec(orch: IAppServerOrchestrator) {
 				description: (upload as { description?: string }).description,
 				store: upload.store,
 				etag: upload.etag,
+				path: upload.path,
 				complete: upload.complete,
 				uploading: upload.uploading,
 				progress: upload.progress,

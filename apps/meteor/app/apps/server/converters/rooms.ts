@@ -50,8 +50,6 @@ export class AppRoomsConverter implements IAppRoomsConverter {
 			return undefined;
 		}
 
-		// The codec's `encode` covers the full (non-partial) conversion; the partial variant cannot be
-		// expressed through the codec interface, so it calls the shared transform directly.
 		if (isPartial) {
 			return appRoomToRocketChat(room, true);
 		}
