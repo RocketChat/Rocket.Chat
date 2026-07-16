@@ -130,7 +130,6 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 			});
 		}
 
-		// Presets: Online / Away / Busy / Offline.
 		const isPresetSelected = (statusType: UserStatusEnum): boolean =>
 			!user?.statusText && !customStatusExpiration && user?.status === statusType;
 		const presetItems = (statuses ?? [])
