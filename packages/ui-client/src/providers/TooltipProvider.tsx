@@ -1,7 +1,7 @@
 import { useDebouncedState, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { TooltipContext } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import { useEffect, useMemo, useRef, memo, useCallback, useState } from 'react';
+import { useEffect, useMemo, useRef, memo, useState } from 'react';
 
 import { TooltipComponent } from '../components/TooltipComponent';
 
@@ -10,20 +10,27 @@ export type TooltipProviderProps = {
 	ownerDocument?: Document;
 };
 
+const stashAnchorTitle = (anchor: HTMLElement, title: string): void => {
+	anchor.setAttribute('data-title', title);
+	anchor.setAttribute('title', '');
+};
+
+const restoreAnchorTitle = (anchor: HTMLElement): void => {
+	if (!anchor.getAttribute('title')) {
+		anchor.setAttribute('title', anchor.getAttribute('data-title') ?? '');
+		anchor.removeAttribute('data-title');
+	}
+};
+
+const restoreAnchorTitleDeferred = (anchor: HTMLElement): void => {
+	setTimeout(() => restoreAnchorTitle(anchor), 0);
+};
+
 const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipProviderProps) => {
 	const lastAnchor = useRef<HTMLElement>(undefined);
 	const hasHover = !useMediaQuery('(hover: none)');
 
 	const [tooltip, setTooltip] = useDebouncedState<ReactNode>(null, 300);
-
-	const restoreTitle = useCallback((previousAnchor: HTMLElement | undefined): void => {
-		setTimeout(() => {
-			if (previousAnchor && !previousAnchor.getAttribute('title')) {
-				previousAnchor.setAttribute('title', previousAnchor.getAttribute('data-title') ?? '');
-				previousAnchor.removeAttribute('data-title');
-			}
-		}, 0);
-	}, []);
 
 	const contextValue = useMemo(
 		() => ({
@@ -32,7 +39,7 @@ const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipP
 				setTooltip(<TooltipComponent key={new Date().toISOString()} title={tooltip} anchor={anchor} />);
 				lastAnchor.current = anchor;
 				if (previousAnchor) {
-					restoreTitle(previousAnchor);
+					restoreAnchorTitleDeferred(previousAnchor);
 				}
 			},
 			close: (): void => {
@@ -41,7 +48,7 @@ const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipP
 				setTooltip.flush();
 				lastAnchor.current = undefined;
 				if (previousAnchor) {
-					restoreTitle(previousAnchor);
+					restoreAnchorTitleDeferred(previousAnchor);
 				}
 			},
 			dismiss: (): void => {
@@ -49,7 +56,7 @@ const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipP
 				setTooltip.flush();
 			},
 		}),
-		[setTooltip, restoreTitle],
+		[setTooltip],
 	);
 
 	useEffect(() => {
@@ -85,10 +92,7 @@ const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipP
 				const [state, setState] = useState(title);
 				useEffect(() => {
 					const close = (): void => contextValue.close();
-					// store the title in a data attribute
-					anchor.setAttribute('data-title', title);
-					// Removes the title attribute to prevent the browser's tooltip from showing
-					anchor.setAttribute('title', '');
+					stashAnchorTitle(anchor, title);
 
 					anchor.addEventListener('mouseleave', close);
 
@@ -99,11 +103,7 @@ const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipP
 							return;
 						}
 
-						// store the title in a data attribute
-						anchor.setAttribute('data-title', title);
-						// Removes the title attribute to prevent the browser's tooltip from showing
-						anchor.setAttribute('title', '');
-
+						stashAnchorTitle(anchor, title);
 						setState(title);
 					});
 
@@ -114,7 +114,9 @@ const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipP
 
 					return () => {
 						anchor.removeEventListener('mouseleave', close);
+						// the observer must be disconnected before restoring the title, otherwise it would stash it again
 						observer.disconnect();
+						restoreAnchorTitle(anchor);
 					};
 				}, []);
 				return <>{state}</>;
