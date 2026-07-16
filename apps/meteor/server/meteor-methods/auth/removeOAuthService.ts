@@ -4,8 +4,8 @@ import { capitalize } from '@rocket.chat/string-helpers';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
-import { notifyOnSettingChangedById } from '../../../app/lib/server/lib/notifyListener';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
+import { notifyOnSettingChangedById } from '../../lib/notifyListener';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 
 declare module '@rocket.chat/ddp-client' {
