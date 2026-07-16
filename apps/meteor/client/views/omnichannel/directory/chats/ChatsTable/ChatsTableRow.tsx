@@ -51,7 +51,7 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 		<GenericTableRow key={_id} tabIndex={0} onClick={() => onRowClick(_id)} action>
 			<GenericTableCell withTruncatedText verticalAlign='top'>
 				<Box display='flex' flexDirection='column'>
-					<Box withTruncatedText fontScale='p2m'>
+					<Box withTruncatedText fontScale='p2m' color='default'>
 						{fname}
 					</Box>
 					{tags && (
@@ -91,7 +91,7 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 			</GenericTableCell>
 			<GenericTableCell withTruncatedText verticalAlign='top'>
 				<Box display='flex' flexDirection='column'>
-					<Box fontScale='p2m' withTruncatedText title={formatDate(ts)}>
+					<Box fontScale='p2m' withTruncatedText color='default' title={formatDate(ts)}>
 						{formatDate(ts)}
 					</Box>
 					<Box color='hint' withTruncatedText>
@@ -102,7 +102,7 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 			<GenericTableCell withTruncatedText verticalAlign='top'>
 				{lm && (
 					<Box display='flex' flexDirection='column'>
-						<Box fontScale='p2m' withTruncatedText title={formatDate(lm)}>
+						<Box fontScale='p2m' withTruncatedText color='default' title={formatDate(lm)}>
 							{formatDate(lm)}
 						</Box>
 						<Box color='hint' withTruncatedText>

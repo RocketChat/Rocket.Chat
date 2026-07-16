@@ -35,7 +35,7 @@ const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILiv
 	return (
 		<GenericTableRow action key={_id} tabIndex={0} height='40px' rcx-show-call-button-on-hover onClick={() => onRowClick(_id)}>
 			<GenericTableCell withTruncatedText verticalAlign='top'>
-				<Box withTruncatedText fontScale='p2m'>
+				<Box withTruncatedText fontScale='p2m' color='default'>
 					{name}
 				</Box>
 			</GenericTableCell>
@@ -55,7 +55,7 @@ const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILiv
 			<GenericTableCell withTruncatedText verticalAlign='top'>
 				{lastChat && (
 					<Box display='flex' flexDirection='column'>
-						<Box fontScale='p2m' withTruncatedText title={formatDate(lastChat.ts)}>
+						<Box fontScale='p2m' withTruncatedText color='default' title={formatDate(lastChat.ts)}>
 							{formatDate(lastChat.ts)}
 						</Box>
 						<Box color='hint' withTruncatedText>
