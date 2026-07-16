@@ -7,9 +7,9 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import { logger } from './logger';
-import { notifyOnUserChange, notifyOnUserChangeById, notifyOnUserChangeAsync } from '../../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../settings';
 import { crowdIntervalValuesToCronMap } from '../../../settings/crowd';
+import { notifyOnUserChange, notifyOnUserChangeById, notifyOnUserChangeAsync } from '../../notifyListener';
 import { deleteUser } from '../../users/deleteUser';
 import { setRealName } from '../../users/setRealName';
 import { setUserActiveStatus } from '../../users/setUserActiveStatus';

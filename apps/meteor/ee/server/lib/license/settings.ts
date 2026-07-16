@@ -1,4 +1,4 @@
-import { settingsRegistry } from '../../../../app/settings/server';
+import { settingsRegistry } from '../../../../server/settings';
 
 // The proper name for this group is Premium, but we can't change it because it's already in use and we will break the settings
 // TODO: Keep this until next major updates

@@ -24,9 +24,6 @@ const { UserConverter } = proxyquire.noCallThru().load('../../../../../server/li
 	'../../../callbacks': {
 		callbacks,
 	},
-	'../../../settings/server': {
-		settings: { get: settingsStub },
-	},
 	'../../../rooms/addUserToDefaultChannels': {
 		addUserToDefaultChannels,
 	},
@@ -39,7 +36,7 @@ const { UserConverter } = proxyquire.noCallThru().load('../../../../../server/li
 	'../../../users/setUserActiveStatus': {
 		setUserActiveStatus: sinon.stub(),
 	},
-	'../../../../../app/lib/server/lib/notifyListener': {
+	'../../../notifyListener': {
 		notifyOnUserChange: sinon.stub(),
 	},
 	'./generateTempPassword': {

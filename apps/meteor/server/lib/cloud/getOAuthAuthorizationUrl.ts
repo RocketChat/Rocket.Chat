@@ -3,9 +3,9 @@ import { Random } from '@rocket.chat/random';
 
 import { getRedirectUri } from './getRedirectUri';
 import { userScopes } from './oauthScopes';
-import { notifyOnSettingChangedById } from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 import { updateAuditedBySystem } from '../../settings/lib/auditedSettingUpdates';
+import { notifyOnSettingChangedById } from '../notifyListener';
 
 export async function getOAuthAuthorizationUrl() {
 	const state = Random.id();

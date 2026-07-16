@@ -3,8 +3,8 @@ import { Rooms, Uploads } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomAsync } from '../../../app/authorization/server';
-import { settings } from '../../../app/settings/server';
+import { canAccessRoomAsync } from '../../lib/authorization';
+import { settings } from '../../settings';
 import { UploadFS } from '../../ufs';
 
 declare module '@rocket.chat/ddp-client' {

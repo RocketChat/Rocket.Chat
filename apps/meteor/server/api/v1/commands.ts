@@ -11,8 +11,8 @@ import {
 } from '@rocket.chat/rest-typings';
 import objectPath from 'object-path';
 
-import { slashCommands } from '../../../app/utils/server/slashCommand';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
+import { slashCommands } from '../../lib/utils/slashCommand';
 import { executeSlashCommandPreview } from '../../meteor-methods/messages/executeSlashCommandPreview';
 import { getSlashCommandPreviews } from '../../meteor-methods/messages/getSlashCommandPreviews';
 import type { ExtractRoutesFromAPI } from '../ApiClass';

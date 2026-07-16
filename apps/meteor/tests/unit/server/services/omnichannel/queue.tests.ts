@@ -43,17 +43,17 @@ const license = {
 };
 
 const { OmnichannelQueue } = p.noCallThru().load('../../../../../server/services/omnichannel/queue', {
-	'../../../app/livechat/server/lib/Helper': {
+	'../../lib/omnichannel/Helper': {
 		dispatchAgentDelegated,
 	},
-	'../../../app/livechat/server/lib/RoutingManager': {
+	'../../lib/omnichannel/RoutingManager': {
 		RoutingManager: {
 			getConfig,
 			delegateInquiry,
 		},
 	},
-	'../../../app/livechat/server/lib/settings': libSettings,
-	'../../../app/settings/server': { settings },
+	'../../lib/omnichannel/settings': libSettings,
+	'../../settings': { settings },
 	'./logger': { queueLogger },
 	'@rocket.chat/models': models,
 	'@rocket.chat/license': { License: license },

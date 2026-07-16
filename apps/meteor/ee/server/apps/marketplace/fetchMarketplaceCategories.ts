@@ -3,8 +3,8 @@ import * as z from 'zod';
 
 import { getMarketplaceHeaders } from './getMarketplaceHeaders';
 import { MarketplaceAppsError, MarketplaceConnectionError, MarketplaceUnsupportedVersionError } from './marketplaceErrors';
-import { settings } from '../../../../app/settings/server';
 import { getWorkspaceAccessToken } from '../../../../server/lib/cloud';
+import { settings } from '../../../../server/settings';
 import { Apps } from '../orchestrator';
 
 const fetchMarketplaceCategoriesSchema = z.array(

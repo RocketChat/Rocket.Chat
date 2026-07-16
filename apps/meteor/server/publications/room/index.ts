@@ -4,11 +4,11 @@ import { Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { canAccessRoomAsync } from '../../../app/authorization/server';
-import { settings } from '../../../app/settings/server';
 import { roomFields } from '../../../lib/publishFields';
+import { canAccessRoomAsync } from '../../lib/authorization';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import { settings } from '../../settings';
 
 type PublicRoomField = keyof typeof roomFields;
 type PublicRoom = Pick<IRoom, PublicRoomField & keyof IRoom> & Pick<IOmnichannelRoom, PublicRoomField & keyof IOmnichannelRoom>;

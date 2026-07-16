@@ -2,10 +2,10 @@ import { isEditedMessage, isMessageFromVisitor, isSystemMessage } from '@rocket.
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 
-import { isMessageFromBot } from '../../../app/livechat/server/lib/isMessageFromBot';
-import { settings } from '../../../app/settings/server';
-import { normalizeMessageFileUpload } from '../../../app/utils/server/functions/normalizeMessageFileUpload';
 import { callbacks } from '../../lib/callbacks';
+import { isMessageFromBot } from '../../lib/omnichannel/isMessageFromBot';
+import { normalizeMessageFileUpload } from '../../lib/utils/functions/normalizeMessageFileUpload';
+import { settings } from '../../settings';
 
 const getMetricValue = <T>(metric: T | undefined, defaultValue: T): T => metric ?? defaultValue;
 const calculateTimeDifference = <T extends Date | number>(startTime: T, now: Date): number =>

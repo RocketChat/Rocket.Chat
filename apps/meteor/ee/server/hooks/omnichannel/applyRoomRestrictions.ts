@@ -2,7 +2,7 @@ import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { FilterOperators } from 'mongodb';
 
 import { callbacks } from '../../../../server/lib/callbacks';
-import { restrictQuery } from '../../../app/livechat-enterprise/server/lib/restrictQuery';
+import { restrictQuery } from '../../lib/omnichannel/restrictQuery';
 
 callbacks.add(
 	'livechat.applyRoomRestrictions',

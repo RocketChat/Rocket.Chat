@@ -2,10 +2,10 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage, isMessageFromVisitor } from '@rocket.chat/core-typings';
 import moment from 'moment';
 
-import { settings } from '../../../../app/settings/server';
 import { markRoomResponded } from '../../../../server/hooks/omnichannel/markRoomResponded';
 import { callbacks } from '../../../../server/lib/callbacks';
-import { setPredictedVisitorAbandonmentTime } from '../../../app/livechat-enterprise/server/lib/Helper';
+import { settings } from '../../../../server/settings';
+import { setPredictedVisitorAbandonmentTime } from '../../lib/omnichannel/Helper';
 
 function shouldSaveInactivity(message: IMessage): boolean {
 	if (message.t || isEditedMessage(message) || isMessageFromVisitor(message)) {

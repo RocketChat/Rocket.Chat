@@ -28,7 +28,7 @@ jest.mock('@rocket.chat/models', () => ({
 
 const mockSettingsGet = jest.fn();
 
-jest.mock('../../../../../app/settings/server', () => ({
+jest.mock('../../../../settings', () => ({
 	settings: {
 		get: (key: string) => mockSettingsGet(key),
 	},
@@ -48,7 +48,7 @@ jest.mock('../../../../settings/lib/auditedSettingUpdates', () => ({
 	updateAuditedBySystem: jest.fn(() => () => Promise.resolve({ modifiedCount: 0 })),
 }));
 
-jest.mock('../../../../../app/lib/server/lib/notifyListener', () => ({
+jest.mock('../../../notifyListener', () => ({
 	notifyOnSettingChangedById: jest.fn(),
 }));
 

@@ -12,7 +12,7 @@ import { configureSMTP } from './configureSMTP';
 import { configureLDAP } from './ldap';
 import { configureOAuth } from './oauth';
 import { configurePushNotifications } from './pushNotification';
-import type { ICachedSettings } from '../../app/settings/server/CachedSettings';
+import type { ICachedSettings } from '../settings/CachedSettings';
 
 export async function configureServer(settings: ICachedSettings) {
 	await Promise.all([

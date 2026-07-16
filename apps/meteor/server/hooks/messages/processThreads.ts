@@ -5,11 +5,11 @@ import { Meteor } from 'meteor/meteor';
 
 import { updateThreadUsersSubscriptions, getMentions } from './notifyUsersOnMessage';
 import { sendMessageNotifications } from './sendNotificationsOnMessage';
-import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
 import { callbacks } from '../../lib/callbacks';
 import type { SendMessageOptions } from '../../lib/messages/sendMessage';
 import { reply } from '../../lib/messaging/threads/functions';
+import { notifyOnMessageChange } from '../../lib/notifyListener';
+import { settings } from '../../settings';
 
 async function notifyUsersOnReply(message: IMessage, replies: IUser['_id'][]) {
 	// skips this callback if the message was edited

@@ -4,8 +4,8 @@ import { Accounts } from 'meteor/accounts-base';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../app/settings/server';
 import { SystemLogger } from '../../lib/logger/system';
+import { settings } from '../../settings';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

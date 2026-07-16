@@ -2,7 +2,7 @@ import type { OauthConfig } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { CustomOAuth } from './custom-oauth/custom_oauth_server';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 
 // GitHub Enterprise Server CallBack URL needs to be http(s)://{rocketchat.server}[:port]/_oauth/github_enterprise
 // In RocketChat -> Administration the URL needs to be http(s)://{github.enterprise.server}/

@@ -42,13 +42,13 @@ const { FileUpload, FileUploadClass } = proxyquire.noCallThru().load('./FileUplo
 	'../../../rooms/roomCoordinator': { roomCoordinator: roomCoordinatorStub },
 	'../../../../ufs': sinon.stub(),
 	'../../../../ufs/ufs-methods': sinon.stub(),
-	'../../../../../app/settings/server': { settings: settingsStub },
+	'../../../../settings': { settings: settingsStub },
 	'../../../../../app/utils/lib/mimeTypes': sinon.stub(),
-	'../../../../../app/utils/server/lib/JWTHelper': {
+	'../../../utils/lib/JWTHelper': {
 		validateAndDecodeJWT: validateAndDecodeJWTStub,
 		generateJWT: sinon.stub(),
 	},
-	'../../../../../app/utils/server/restrictions': sinon.stub(),
+	'../../../utils/restrictions': sinon.stub(),
 	'../../../../api/lib/MultipartUploadHandler': sinon.stub(),
 	'@rocket.chat/account-utils': { hashLoginToken: sinon.stub().callsFake((token) => `hashed_${token}`) },
 });

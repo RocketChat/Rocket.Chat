@@ -4,7 +4,7 @@ import { isTruthy } from '@rocket.chat/tools';
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomAsync } from '../../../../app/authorization/server';
+import { canAccessRoomAsync } from '../../authorization';
 import { SearchLogger } from '../logger/logger';
 import type { IRawSearchResult, ISearchResult } from '../model/ISearchResult';
 

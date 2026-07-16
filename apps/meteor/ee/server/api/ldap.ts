@@ -1,9 +1,9 @@
 import { LDAPEnterprise } from '@rocket.chat/core-services';
 import { ajv, validateBadRequestErrorResponse, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
 
-import { settings } from '../../../app/settings/server';
 import { API } from '../../../server/api/api';
 import { hasPermissionAsync } from '../../../server/lib/authorization/hasPermission';
+import { settings } from '../../../server/settings';
 
 const ldapSyncNowResponseSchema = ajv.compile<{ message: string }>({
 	type: 'object',
@@ -32,7 +32,7 @@ API.v1.post(
 			throw new Error('error-invalid-user');
 		}
 
-		if (!(await hasPermissionAsync(this.userId, 'sync-auth-services-users'))) {
+		if (!(await hasPermissionAsync(this.user, 'sync-auth-services-users'))) {
 			throw new Error('error-not-authorized');
 		}
 

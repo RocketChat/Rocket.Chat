@@ -2,7 +2,7 @@ import type { IUser, IUserEmail } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 import { hasPermissionAsync } from '../authorization/hasPermission';
 
 const logger = new Logger('getFullUserData');

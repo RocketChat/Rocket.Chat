@@ -10,7 +10,6 @@ import {
 } from '@rocket.chat/rest-typings';
 import ExpiryMap from 'expiry-map';
 
-import { settings } from '../../../app/settings/server';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { handleSuggestedGroupKey } from '../../lib/e2e/functions/handleSuggestedGroupKey';
@@ -21,6 +20,7 @@ import { requestSubscriptionKeysMethod } from '../../meteor-methods/platform/req
 import { setRoomKeyIDMethod } from '../../meteor-methods/platform/setRoomKeyID';
 import { setUserPublicAndPrivateKeysMethod } from '../../meteor-methods/platform/setUserPublicAndPrivateKeys';
 import { updateGroupKey } from '../../meteor-methods/platform/updateGroupKey';
+import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 
@@ -438,7 +438,7 @@ const e2eEndpoints = API.v1
 
 		async function action() {
 			const { rid, e2eKey, e2eKeyId } = this.bodyParams;
-			if (!(await hasPermissionAsync(this.userId, 'toggle-room-e2e-encryption', rid))) {
+			if (!(await hasPermissionAsync(this.user, 'toggle-room-e2e-encryption', rid))) {
 				return API.v1.forbidden('error-not-allowed');
 			}
 			if (LockMap.has(rid)) {

@@ -2,8 +2,8 @@ import { Users } from '@rocket.chat/models';
 import { isLivechatAnalyticsAgentOverviewProps, isLivechatAnalyticsOverviewProps } from '@rocket.chat/rest-typings';
 
 import { API } from '../..';
-import { getAgentOverviewDataCached, getAnalyticsOverviewDataCached } from '../../../../app/livechat/server/lib/AnalyticsTyped';
-import { settings } from '../../../../app/settings/server';
+import { getAgentOverviewDataCached, getAnalyticsOverviewDataCached } from '../../../lib/omnichannel/AnalyticsTyped';
+import { settings } from '../../../settings';
 
 API.v1.addRoute(
 	'livechat/analytics/agent-overview',

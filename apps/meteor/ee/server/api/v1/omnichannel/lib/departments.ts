@@ -1,6 +1,6 @@
 import { LivechatDepartment, LivechatDepartmentAgents, LivechatUnit } from '@rocket.chat/models';
 
-import { helperLogger } from '../../../../../app/livechat-enterprise/server/lib/logger';
+import { helperLogger } from '../../../../lib/omnichannel/logger';
 
 export const getDepartmentsWhichUserCanAccess = async (userId: string, includeDisabled = false): Promise<string[]> => {
 	const departments = await LivechatDepartmentAgents.find(

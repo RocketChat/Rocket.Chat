@@ -1,11 +1,11 @@
 import { Users } from '@rocket.chat/models';
 
-import { allowAgentSkipQueue } from '../../../../app/livechat/server/lib/Helper';
-import { checkOnlineAgents } from '../../../../app/livechat/server/lib/service-status';
-import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../server/lib/callbacks';
-import { isAgentWithinChatLimits } from '../../../app/livechat-enterprise/server/lib/Helper';
-import { cbLogger } from '../../../app/livechat-enterprise/server/lib/logger';
+import { allowAgentSkipQueue } from '../../../../server/lib/omnichannel/Helper';
+import { checkOnlineAgents } from '../../../../server/lib/omnichannel/service-status';
+import { settings } from '../../../../server/settings';
+import { isAgentWithinChatLimits } from '../../lib/omnichannel/Helper';
+import { cbLogger } from '../../lib/omnichannel/logger';
 
 const validateMaxChats = async ({
 	agent,

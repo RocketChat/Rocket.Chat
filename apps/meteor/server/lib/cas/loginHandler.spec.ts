@@ -24,7 +24,7 @@ const { loginHandlerCAS: handler } = proxyquire.noCallThru().load('./loginHandle
 	'./findExistingCASUser': { findExistingCASUser },
 	'./logger': { logger: { debug: sinon.stub(), error: sinon.stub() } },
 	'../users/setRealName': { setRealName: sinon.stub().resolves() },
-	'../../../app/settings/server': { settings: { get: settingsGet } },
+	'../../settings': { settings: { get: settingsGet } },
 });
 
 describe('loginHandlerCAS', () => {

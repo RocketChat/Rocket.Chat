@@ -3,7 +3,7 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
 import { libreLogger } from './logger';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 import { i18n } from '../i18n';
 
 interface ILibreTranslateLanguage {

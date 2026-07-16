@@ -1,9 +1,9 @@
 import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import moment from 'moment';
 
-import { afterInquiryQueued } from '../../../../app/livechat/server/lib/hooks';
-import { settings } from '../../../../app/settings/server';
-import { OmnichannelQueueInactivityMonitor } from '../../../app/livechat-enterprise/server/lib/QueueInactivityMonitor';
+import { afterInquiryQueued } from '../../../../server/lib/omnichannel/hooks';
+import { settings } from '../../../../server/settings';
+import { OmnichannelQueueInactivityMonitor } from '../../lib/omnichannel/QueueInactivityMonitor';
 
 export const afterInquiryQueuedFunc = async (inquiry: ILivechatInquiryRecord) => {
 	const timer = settings.get<number>('Livechat_max_queue_wait_time');

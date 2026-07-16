@@ -3,8 +3,8 @@ import { isBannedSubscription } from '@rocket.chat/core-typings';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
-import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../../../app/lib/server/lib/notifyListener';
 import { afterBanFromRoomCallback } from '../callbacks/afterBanFromRoomCallback';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../notifyListener';
 import { removeUserFromRolesAsync } from '../roles/removeUserFromRoles';
 
 /**

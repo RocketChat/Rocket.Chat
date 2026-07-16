@@ -3,8 +3,8 @@ import { ServerEventType } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, ServerEvents, Users } from '@rocket.chat/models';
 
-import { settings } from '../../../app/settings/server';
 import { addMinutesToADate } from '../../../lib/utils/addMinutesToADate';
+import { settings } from '../../settings';
 import { getClientAddress } from '../getClientAddress';
 import type { ILoginAttempt } from './ILoginAttempt';
 import { sendMessage } from '../messages/sendMessage';

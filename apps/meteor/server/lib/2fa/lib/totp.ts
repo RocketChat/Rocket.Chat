@@ -3,7 +3,7 @@ import { Random } from '@rocket.chat/random';
 import { SHA256 } from '@rocket.chat/sha256';
 import speakeasy from 'speakeasy';
 
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../settings';
 
 export const TOTP = {
 	generateSecret(): speakeasy.GeneratedSecret {

@@ -9,9 +9,9 @@ import {
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { permissionsGetMethod } from '../../../app/authorization/server/streamer/permissions';
-import { notifyOnPermissionChangedById } from '../../../app/lib/server/lib/notifyListener';
 import { addPermissionToRoleMethod, removeRoleFromPermissionMethod } from '../../lib/authorization/permissionRole';
+import { permissionsGetMethod } from '../../lib/authorization/streamer/permissions';
+import { notifyOnPermissionChangedById } from '../../lib/notifyListener';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 

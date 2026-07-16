@@ -30,7 +30,7 @@ const { userAvatarById, userAvatarByUsername } = proxyquire.noCallThru().load('.
 			findOneByUserId: mocks.avatarFindOneByUserId,
 		},
 	},
-	'../../../app/settings/server': {
+	'../../settings': {
 		settings: {
 			get: mocks.settingsGet,
 		},

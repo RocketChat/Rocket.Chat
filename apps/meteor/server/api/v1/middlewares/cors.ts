@@ -1,6 +1,6 @@
 import type { MiddlewareHandler } from 'hono';
 
-import type { CachedSettings } from '../../../../app/settings/server/CachedSettings';
+import type { CachedSettings } from '../../../settings/CachedSettings';
 
 const defaultHeaders = {
 	'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, HEAD, PATCH',

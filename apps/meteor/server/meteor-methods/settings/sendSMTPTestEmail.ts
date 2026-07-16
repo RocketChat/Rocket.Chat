@@ -2,8 +2,8 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../app/settings/server';
 import * as Mailer from '../../lib/notifications/email/api';
+import { settings } from '../../settings';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

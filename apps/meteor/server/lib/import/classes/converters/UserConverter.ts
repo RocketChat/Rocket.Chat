@@ -7,8 +7,8 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { RecordConverter, type RecordConverterOptions } from './RecordConverter';
 import { generateTempPassword } from './generateTempPassword';
-import { notifyOnUserChange } from '../../../../../app/lib/server/lib/notifyListener';
 import { callbacks as systemCallbacks } from '../../../callbacks';
+import { notifyOnUserChange } from '../../../notifyListener';
 import { addUserToDefaultChannels } from '../../../rooms/addUserToDefaultChannels';
 import { generateUsernameSuggestion } from '../../../users/getUsernameSuggestion';
 import { saveUserIdentity } from '../../../users/saveUserIdentity';
