@@ -117,7 +117,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	}
 
 	public setMuted(muted: boolean): void {
-		if (this.stopped) {
+		if (this.stopped || muted === this._muted) {
 			return;
 		}
 
@@ -157,7 +157,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		if (this.stopped) {
 			throw new Error('WebRTC Processor has already been stopped.');
 		}
-		if (!this.inputTrack) {
+		if (!this.inputTrack && !this.config.call.hasFlag('internal')) {
 			throw new Error('no-input-track');
 		}
 
@@ -165,7 +165,8 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 		const transceivers = this.getTransceivers('audio');
 
-		if (!transceivers.length) {
+		// TODO: Not sure about this
+		if (!transceivers.length && !this.config.call.hasFlag('internal')) {
 			throw new Error('no-audio-transceiver');
 		}
 
@@ -326,10 +327,18 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.emitter.emit('internalStateChange', stateName);
 	}
 
+	private getDesiredAudioDirection() {
+		if (!this.inputTrack) {
+			return this.held ? 'inactive' : 'recvonly';
+		}
+
+		return this.held ? 'sendonly' : 'sendrecv';
+	}
+
 	private updateAudioDirectionBeforeNegotiation(): void {
 		// Before the negotiation, we set the direction based on our own state only
 		// We'll tell the SDK that we want to send audio and, depending on the "on hold" state, also receive it
-		const desiredDirection = this.held ? 'sendonly' : 'sendrecv';
+		const desiredDirection = this.getDesiredAudioDirection();
 
 		this.updateDirectionBeforeNegotiation('audio', desiredDirection);
 	}
@@ -341,7 +350,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 		// If we didn't do this, everything would still work, but the browser would trigger redundant renegotiations whenever the directions mismatch
 
-		const desiredDirection = this.held ? 'sendonly' : 'sendrecv';
+		const desiredDirection = this.getDesiredAudioDirection();
 		const acceptableDirection = this.held ? 'inactive' : 'recvonly';
 
 		this.updateDirectionAfterNegotiation('audio', desiredDirection, acceptableDirection);
@@ -438,7 +447,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			return;
 		}
 
-		const desiredDirection = this.held ? 'sendonly' : 'sendrecv';
+		const desiredDirection = this.getDesiredAudioDirection();
 		const acceptableDirection = this.held ? 'inactive' : 'recvonly';
 
 		const transceivers = this.getTransceivers('audio');

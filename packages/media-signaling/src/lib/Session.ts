@@ -169,6 +169,10 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		};
 	}
 
+	public hasInput(): boolean {
+		return Boolean(this.inputTrack);
+	}
+
 	private getMainCall(skipLocal = false): ClientMediaCall | null {
 		let ringingCall: ClientMediaCall | null = null;
 		let pendingCall: ClientMediaCall | null = null;
@@ -497,7 +501,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		}
 
 		for (const call of this.knownCalls.values()) {
-			if (call.needsInputTrack()) {
+			if (call.needsInputTrack() || (call.mayNeedInputTrack() && !call.hasInputTrack() && !call.muted)) {
 				return true;
 			}
 		}
@@ -541,12 +545,12 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		this.config.logger?.debug('MediaSignalingSession.startInputTrack.done', this.callsToGetUserMedia);
 
 		if (!userMedia) {
-			return this.hangupCallsThatNeedInput();
+			return this.hangupOrMuteCallsThatNeedInput();
 		}
 
 		const tracks = userMedia.getAudioTracks();
 		if (!tracks.length) {
-			return this.hangupCallsThatNeedInput();
+			return this.hangupOrMuteCallsThatNeedInput();
 		}
 
 		const inputTrack = tracks[0];
@@ -565,11 +569,23 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		return this.setInputTrack(inputTrack);
 	}
 
-	private hangupCallsThatNeedInput(): void {
+	public async forceInputTrackUpdate(): Promise<void> {
+		if (this.inputTrack || !this.mayNeedInputTrack()) {
+			return;
+		}
+
+		await this.startInputTrack();
+	}
+
+	/* Internal calls do not require input (listen only) and are marked as muted at this point */
+	private hangupOrMuteCallsThatNeedInput(): void {
 		this.config.logger?.debug('MediaSignalingSession.hangupCallsThatNeedInput');
 
 		for (const call of this.knownCalls.values()) {
 			if (!call.needsInputTrack()) {
+				if (call.mayNeedInputTrack()) {
+					call.setMuted(true);
+				}
 				continue;
 			}
 
@@ -755,7 +771,9 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 		this.lastState = { hasCall, hasVisibleCall, hasBusyCall };
 
-		if (mainCall && !hadCall) {
+		const isNewCall = mainCall && !hadCall;
+
+		if (isNewCall) {
 			this.emit('newCall', { call: mainCall });
 		}
 		if (mainCall && hasBusyCall && !hadBusyCall) {

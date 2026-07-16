@@ -482,6 +482,10 @@ export class ClientMediaCall implements IClientMediaCall {
 			return false;
 		}
 
+		if (this.hasFlag('internal')) {
+			return false;
+		}
+
 		if (this.role === 'caller') {
 			return this.hasRemoteData;
 		}
@@ -782,6 +786,9 @@ export class ClientMediaCall implements IClientMediaCall {
 			return;
 		}
 		if (!this.webrtcProcessor && !muted) {
+			return;
+		}
+		if (this.muted === muted) {
 			return;
 		}
 
