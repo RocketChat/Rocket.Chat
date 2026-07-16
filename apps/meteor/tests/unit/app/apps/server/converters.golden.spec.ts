@@ -685,6 +685,8 @@ describe('apps converters — decode golden snapshots (rooms/messages/threads)',
 				'parentRoom': { __converted: 'rooms', id: 'parent-1' },
 				'@@SecureFields': [{ permission: 'abac.read', name: 'abacAttributes', value: { level: 'secret' } }],
 				'_unmappedProperties_': {
+					v: { _id: 'visitor-1', phone: '+15550000', lastMessageTs: '2024-01-01T00:00:00.000Z' },
+					contactId: 'contact-1',
 					spare: 'keep',
 				},
 			});

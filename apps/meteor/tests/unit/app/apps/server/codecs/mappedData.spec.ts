@@ -163,6 +163,22 @@ describe('mappedDecodeAsync', () => {
 		});
 	});
 
+	it('copies a nested source verbatim when the descriptor has no `map`', async () => {
+		const result = await mappedDecodeAsync(
+			{ _id: 'c1', details: { type: 'sms', id: 'sms-1' }, spare: true },
+			{
+				_id: '_id',
+				details: { from: 'details' },
+			},
+		);
+
+		expect(result).to.deep.equal({
+			_id: 'c1',
+			details: { type: 'sms', id: 'sms-1' },
+			_unmappedProperties_: { spare: true },
+		});
+	});
+
 	it('maps a list of objects via `list` + `map`, bucketing each element', async () => {
 		const result = await mappedDecodeAsync(
 			{ phones: [{ phoneNumber: '1', extra: 'x' }, { phoneNumber: '2' }] },

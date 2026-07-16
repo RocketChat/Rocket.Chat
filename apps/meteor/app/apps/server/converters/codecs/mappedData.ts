@@ -100,8 +100,10 @@ export type AsyncFieldMap = Record<
  *   key from the bucket;
  * - function entries receive the clone and set the target only when they return a defined value
  *   (functions are responsible for deleting any source keys they consume);
- * - nested entries recurse (producing a `_unmappedProperties_` bucket at each level), and `list`
- *   entries map arrays element-by-element (or wrap a lone value into a single-element array);
+ * - nested entries recurse when they carry a `map` (producing a `_unmappedProperties_` bucket at each
+ *   level) or copy the cloned source value verbatim when they do not, and `list` entries map arrays
+ *   element-by-element (or wrap a lone value into a single-element array);
+ * - absent (`undefined`/`null`) nested sources are skipped, so the target stays unset;
  * - everything left in the clone becomes `_unmappedProperties_`.
  *
  * The result shape is caller-asserted via the `Result` type parameter, since it depends on the map's
@@ -148,7 +150,9 @@ export async function mappedDecodeAsync<Result = Loose>(
 					result[to] = [clone[fromName]];
 				}
 			} else if (clone[fromName] !== undefined && clone[fromName] !== null) {
-				result[to] = await mappedDecodeAsync(clone[fromName], from.map as AsyncFieldMap, options);
+				result[to] = from.map
+					? await mappedDecodeAsync(clone[fromName], from.map as AsyncFieldMap, options)
+					: structuredClone(clone[fromName]);
 			}
 
 			delete clone[fromName];
