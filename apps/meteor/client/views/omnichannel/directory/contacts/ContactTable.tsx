@@ -86,7 +86,7 @@ function ContactTable() {
 			>
 				{t('Last_Chat')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='spacer' w={40} />
+			<GenericTableHeaderCell key='spacer' width={40} />
 		</>
 	);
 
@@ -137,7 +137,7 @@ function ContactTable() {
 				</>
 			)}
 			{isError && (
-				<Box mbs={20}>
+				<Box marginBlockStart={20}>
 					<States>
 						<StatesIcon variation='danger' name='circle-exclamation' />
 						<StatesTitle>{t('Connection_error')}</StatesTitle>

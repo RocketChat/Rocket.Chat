@@ -9,10 +9,10 @@ export type VideoConfMessageSkeletonProps = Omit<AllHTMLAttributes<HTMLDivElemen
 const VideoConfMessageSkeleton = (props: VideoConfMessageSkeletonProps) => (
 	<VideoConfMessage {...props}>
 		<VideoConfMessageRow>
-			<Skeleton width='full' pb={4} />
+			<Skeleton width='full' paddingBlock={4} />
 		</VideoConfMessageRow>
 		<VideoConfMessageRow backgroundColor='tint'>
-			<Skeleton width='full' pb={4} />
+			<Skeleton width='full' paddingBlock={4} />
 		</VideoConfMessageRow>
 	</VideoConfMessage>
 );

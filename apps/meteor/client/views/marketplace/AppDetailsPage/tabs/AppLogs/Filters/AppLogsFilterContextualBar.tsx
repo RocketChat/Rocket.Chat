@@ -35,21 +35,21 @@ export const AppLogsFilterContextualBar = ({ appId, onClose = () => undefined }:
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent is='form'>
-				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
+				<Box display='flex' flexDirection='column' marginInlineEnd={10} flexGrow={1}>
 					<Label id='timeFilterLabel' htmlFor='timeFilter'>
 						{t('Time')}
 					</Label>
 					<TimeFilterSelect aria-labelledby='timeFilterLabel' id='timeFilter' compactView={true} />
 				</Box>
-				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
+				<Box display='flex' flexDirection='column' marginInlineEnd={10} flexGrow={1}>
 					<Label htmlFor='timeFilter'>{t('Logs_from')}</Label>
 					<DateTimeFilter control={control} type='start' />
 				</Box>
-				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
+				<Box display='flex' flexDirection='column' marginInlineEnd={10} flexGrow={1}>
 					<Label htmlFor='timeFilter'>{t('Until')}</Label>
 					<DateTimeFilter control={control} type='end' />
 				</Box>
-				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
+				<Box display='flex' flexDirection='column' marginInlineEnd={10} flexGrow={1}>
 					<Label id='instanceFilterLabel' htmlFor='instanceFilter'>
 						{t('Instance')}
 					</Label>
@@ -61,7 +61,7 @@ export const AppLogsFilterContextualBar = ({ appId, onClose = () => undefined }:
 						)}
 					/>
 				</Box>
-				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
+				<Box display='flex' flexDirection='column' marginInlineEnd={10} flexGrow={1}>
 					<Label id='severityFilterLabel' htmlFor='severityFilter'>
 						{t('Severity')}
 					</Label>
@@ -73,7 +73,7 @@ export const AppLogsFilterContextualBar = ({ appId, onClose = () => undefined }:
 				</Box>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
-				<Button secondary w='full' aria-label={t('Clear_filters')} onClick={() => reset()}>
+				<Button secondary width='full' aria-label={t('Clear_filters')} onClick={() => reset()}>
 					{t('Clear_filters')}
 				</Button>
 			</ContextualbarFooter>

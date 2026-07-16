@@ -33,7 +33,7 @@ const UsersInRoleTable = ({ isLoading, isSuccess, isError, total, users, onRemov
 		<>
 			<GenericTableHeaderCell>{t('Name')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell>{t('Email')}</GenericTableHeaderCell>
-			<GenericTableHeaderCell w='x80'>{t('Actions')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell width='x80'>{t('Actions')}</GenericTableHeaderCell>
 		</>
 	);
 

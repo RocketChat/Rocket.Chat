@@ -43,7 +43,7 @@ const PrivateAppInstallModal = ({ onClose, onProceed }: PrivateAppInstallModalPr
 			</ModalHeader>
 
 			<ModalContent>
-				<Box mbe={28}>{t('Private_app_install_modal_content')}</Box>
+				<Box marginBlockEnd={28}>{t('Private_app_install_modal_content')}</Box>
 				{t('Upgrade_subscription_to_enable_private_apps')}
 			</ModalContent>
 

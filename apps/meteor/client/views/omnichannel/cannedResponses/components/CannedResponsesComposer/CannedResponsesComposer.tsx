@@ -121,7 +121,7 @@ const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposer
 						}}
 					/>
 					<PositionAnimated visible={visible ? 'visible' : 'hidden'} anchor={ref}>
-						<Tile elevation='1' w='224px'>
+						<Tile elevation='1' width='224px'>
 							<InsertPlaceholderDropdown onChange={onChange} textAreaRef={textAreaRef} setVisible={setVisible} />
 						</Tile>
 					</PositionAnimated>

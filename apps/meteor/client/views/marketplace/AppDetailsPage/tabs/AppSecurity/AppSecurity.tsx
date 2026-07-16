@@ -16,7 +16,7 @@ const AppSecurity = ({ privacyPolicySummary, appPermissions, tosLink, privacyLin
 	const { t } = useTranslation();
 
 	return (
-		<Box maxWidth='x640' w='full' marginInline='auto' color='default'>
+		<Box maxWidth='x640' width='full' marginInline='auto' color='default'>
 			<Box display='flex' flexDirection='column'>
 				<Margins block={16}>
 					<Box is='section'>
@@ -28,7 +28,7 @@ const AppSecurity = ({ privacyPolicySummary, appPermissions, tosLink, privacyLin
 
 					<Box is='section'>
 						<AppSecurityLabel>{t('Permissions')}</AppSecurityLabel>
-						<Box is='ol' type='1' style={{ listStyleType: 'decimal' }} mis={24}>
+						<Box is='ol' type='1' style={{ listStyleType: 'decimal' }} marginInlineStart={24}>
 							<AppPermissionsList appPermissions={appPermissions} />
 						</Box>
 					</Box>

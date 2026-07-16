@@ -117,7 +117,7 @@ const OutgoingWebhookForm = () => {
 	const runOnEditsField = useId();
 
 	return (
-		<Box maxWidth='x600' alignSelf='center' w='full'>
+		<Box maxWidth='x600' alignSelf='center' width='full'>
 			<Accordion>
 				<AccordionItem defaultExpanded title={t('Settings')}>
 					<FieldGroup>

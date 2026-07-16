@@ -250,15 +250,21 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							</FieldError>
 						)}
 						{isLoadingSmtpStatus ? (
-							<Skeleton w='full' h={26} />
+							<Skeleton width='full' height={26} />
 						) : (
 							<>
-								<FieldRow mbs={12}>
+								<FieldRow marginBlockStart={12}>
 									<Box display='flex' alignItems='center'>
-										<FieldLabel htmlFor={verifiedId} p={0} disabled={!isSmtpEnabled || !isVerificationNeeded} m={0}>
+										<FieldLabel htmlFor={verifiedId} padding={0} disabled={!isSmtpEnabled || !isVerificationNeeded} margin={0}>
 											{t('Mark_email_as_verified')}
 										</FieldLabel>
-										<Icon name='info-circled' size='x20' mis={4} title={t('Enable_to_bypass_email_verification')} color='default' />
+										<Icon
+											name='info-circled'
+											size='x20'
+											marginInlineStart={4}
+											title={t('Enable_to_bypass_email_verification')}
+											color='default'
+										/>
 									</Box>
 									<Controller
 										control={control}
@@ -365,7 +371,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							<PasswordFieldSkeleton />
 						) : (
 							<>
-								<FieldLabel htmlFor={passwordId} mbe={8}>
+								<FieldLabel htmlFor={passwordId} marginBlockEnd={8}>
 									{t('Password')}
 								</FieldLabel>
 								<AdminUserSetRandomPasswordRadios
@@ -430,10 +436,10 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 					)}
 					<Field>
 						{isLoadingSmtpStatus ? (
-							<Skeleton w='full' h={26} />
+							<Skeleton width='full' height={26} />
 						) : (
 							<>
-								<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1} mbe={8}>
+								<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1} marginBlockEnd={8}>
 									<FieldLabel htmlFor={sendWelcomeEmailId} disabled={!isSmtpEnabled}>
 										{t('Send_welcome_email')}
 									</FieldLabel>
@@ -455,7 +461,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 									</FieldRow>
 								</Box>
 								{!isSmtpEnabled && (
-									<FieldHint id={`${sendWelcomeEmailId}-hint`} mbs={0}>
+									<FieldHint id={`${sendWelcomeEmailId}-hint`} marginBlockStart={0}>
 										<Trans
 											i18nKey='Send_Email_SMTP_Warning'
 											components={{
@@ -530,8 +536,8 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 						<>
 							<Button
 								fontScale='c2'
-								w='x140'
-								h='x28'
+								width='x140'
+								height='x28'
 								display='flex'
 								alignItems='center'
 								justifyContent='center'
@@ -545,7 +551,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 				</FieldGroup>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
-				<Button primary disabled={!isDirty} onClick={handleSubmit(handleSaveUser)} w='100%'>
+				<Button primary disabled={!isDirty} onClick={handleSubmit(handleSaveUser)} width='100%'>
 					{isNewUserPage ? t('Add_user') : t('Save_user')}
 				</Button>
 			</ContextualbarFooter>

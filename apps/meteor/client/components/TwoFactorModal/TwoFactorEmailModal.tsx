@@ -122,7 +122,7 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, invalidAttempt, emailOrUserna
 					{errors.code && <FieldError>{errors.code.message}</FieldError>}
 				</Field>
 			</FieldGroup>
-			<Button display='flex' justifyContent='end' onClick={onClickResendCode} small mbs={24}>
+			<Button display='flex' justifyContent='end' onClick={onClickResendCode} small marginBlockStart={24}>
 				{t('Cloud_resend_email')}
 			</Button>
 		</GenericModal>

@@ -40,17 +40,17 @@ const InsertPlaceholderDropdown = ({ onChange, textAreaRef, setVisible }: Insert
 			</Box>
 			<Box is='ul'>
 				<Box className={clickable} is='li' onClick={(): void => setPlaceholder('contact.name')}>
-					<Box mb='4px' style={{ width: '100%' }} fontScale='p2'>
+					<Box marginBlock='4px' style={{ width: '100%' }} fontScale='p2'>
 						{t('Name')}
 					</Box>
 				</Box>
 				<Box className={clickable} is='li' onClick={(): void => setPlaceholder('contact.email')}>
-					<Box mb='4px' style={{ width: '100%' }} fontScale='p2'>
+					<Box marginBlock='4px' style={{ width: '100%' }} fontScale='p2'>
 						{t('Email')}
 					</Box>
 				</Box>
 				<Box className={clickable} is='li' onClick={(): void => setPlaceholder('contact.phone')}>
-					<Box mb='4px' style={{ width: '100%' }} fontScale='p2'>
+					<Box marginBlock='4px' style={{ width: '100%' }} fontScale='p2'>
 						{t('Phone')}
 					</Box>
 				</Box>
@@ -61,12 +61,12 @@ const InsertPlaceholderDropdown = ({ onChange, textAreaRef, setVisible }: Insert
 			</Box>
 			<Box is='ul'>
 				<Box className={clickable} is='li' onClick={(): void => setPlaceholder('agent.name')}>
-					<Box mb='4px' style={{ width: '100%' }} fontScale='p2'>
+					<Box marginBlock='4px' style={{ width: '100%' }} fontScale='p2'>
 						{t('Name')}
 					</Box>
 				</Box>
 				<Box className={clickable} is='li' onClick={(): void => setPlaceholder('agent.email')}>
-					<Box mb='4px' style={{ width: '100%' }} fontScale='p2'>
+					<Box marginBlock='4px' style={{ width: '100%' }} fontScale='p2'>
 						{t('Email')}
 					</Box>
 				</Box>

@@ -5,7 +5,7 @@ export type VideoConfMessageProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is'
 
 const VideoConfMessage = (props: VideoConfMessageProps) => (
 	<Box
-		mbs={4}
+		marginBlockStart={4}
 		color='default'
 		maxWidth='345px'
 		backgroundColor='surface-light'

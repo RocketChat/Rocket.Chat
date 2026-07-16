@@ -15,8 +15,8 @@ const AppsUsageCardSection = ({ title, tip, appsCount, appsMaxCount, warningThre
 	const labelId = useId();
 
 	return (
-		<Box fontScale='c1' mb={12} title={tip} display='flex' flexDirection='column' width='100%'>
-			<Box display='flex' flexGrow='1' justifyContent='space-between' mbe={4}>
+		<Box fontScale='c1' marginBlock={12} title={tip} display='flex' flexDirection='column' width='100%'>
+			<Box display='flex' flexGrow='1' justifyContent='space-between' marginBlockEnd={4}>
 				<div id={labelId}>{title}</div>
 
 				<Box color={warningThresholdCrossed ? 'status-font-on-danger' : 'status-font-on-success'}>

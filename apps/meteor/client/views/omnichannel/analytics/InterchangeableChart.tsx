@@ -43,8 +43,8 @@ const InterchangeableChart = ({
 	dateRange: { start: string; end: string };
 	chartName: string;
 	flexShrink: number;
-	h: string;
-	w: string;
+	height: string;
+	width: string;
 	alignSelf: string;
 }) => {
 	const { t } = useTranslation();

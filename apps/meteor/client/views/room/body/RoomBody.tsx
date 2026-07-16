@@ -171,7 +171,7 @@ const RoomBody = () => {
 					<div className='messages-container-wrapper'>
 						<div className='messages-container-main' {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
-							<Box position='absolute' w='full'>
+							<Box position='absolute' width='full'>
 								{isUploading && <UploadProgressIndicator uploads={uploads} />}
 								{Boolean(unread) && (
 									<UnreadMessagesIndicator

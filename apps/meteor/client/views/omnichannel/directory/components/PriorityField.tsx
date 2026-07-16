@@ -20,7 +20,7 @@ const PriorityField = ({ id }: PriorityFieldProps) => {
 	}
 
 	if (isError || !data) {
-		return <Box mbs={16}>{t('Custom_Field_Not_Found')}</Box>;
+		return <Box marginBlockStart={16}>{t('Custom_Field_Not_Found')}</Box>;
 	}
 
 	const { dirty, name, i18n } = data;
