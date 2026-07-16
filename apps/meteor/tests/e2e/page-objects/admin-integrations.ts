@@ -33,7 +33,7 @@ export class AdminIntegrations extends Admin {
 
 	async selectPostAs(name: string) {
 		await this.inputPostAs.click();
-		await this.inputPostAs.fill('rocket.cat');
+		await this.inputPostAs.fill(name);
 		await this.listbox.selectOption(name);
 	}
 
