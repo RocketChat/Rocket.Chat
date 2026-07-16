@@ -2,7 +2,7 @@ import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
-import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../../lib/server/lib/notifyListener';
+import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../notifyListener';
 import { TOTP } from '../lib/totp';
 
 const requireUser = async (userId: string | null) => {
