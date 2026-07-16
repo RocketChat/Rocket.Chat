@@ -1185,10 +1185,54 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const channelsGetIntegrationsQuery = ajvQuery.compile<{
+	roomId?: string;
+	roomName?: string;
+	includeAllPublicChannels?: string;
+	offset?: number;
+	count?: number;
+	sort?: string;
+	query?: string;
+	fields?: string;
+}>({
+	type: 'object',
+	properties: {
+		roomId: { type: 'string' },
+		roomName: { type: 'string' },
+		includeAllPublicChannels: { type: 'string' },
+		offset: { type: 'number' },
+		count: { type: 'number' },
+		sort: { type: 'string' },
+		query: { type: 'string' },
+		fields: { type: 'string' },
+	},
+	anyOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
+	additionalProperties: false,
+});
+
+const channelsGetIntegrationsResponseSchema = ajv.compile<{
+	integrations: IIntegration[];
+	count: number;
+	offset: number;
+	total: number;
+}>({
+	type: 'object',
+	properties: {
+		integrations: { type: 'array', items: { $ref: '#/components/schemas/IIntegration' } },
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['integrations', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
+API.v1.get(
 	'channels.getIntegrations',
 	{
 		authRequired: true,
+		query: channelsGetIntegrationsQuery,
 		permissionsRequired: {
 			GET: {
 				permissions: [
@@ -1200,9 +1244,15 @@ API.v1.addRoute(
 				operation: 'hasAny',
 			},
 		},
+		response: {
+			200: channelsGetIntegrationsResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
 	},
-	{
-		async get() {
+	async function action() {
+		try {
 			const findResult = await findChannelByIdOrName({
 				params: this.queryParams,
 				checkedArchived: false,
@@ -1248,7 +1298,10 @@ API.v1.addRoute(
 				offset,
 				total,
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
@@ -1396,11 +1449,19 @@ API.v1.get(
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'channels.list.joined',
-	{ authRequired: true },
 	{
-		async get() {
+		authRequired: true,
+		query: isChannelsListProps,
+		response: {
+			200: channelsListResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields } = await this.parseJsonQuery();
 
@@ -1431,7 +1492,10 @@ API.v1.addRoute(
 				count: channels.length,
 				total,
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
@@ -1976,11 +2040,19 @@ API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'channels.setJoinCode',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomSettingBody<{ roomId?: string; roomName?: string; joinCode: string }>('joinCode', { type: 'string' }),
+		response: {
+			200: channelResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			if (!this.bodyParams.joinCode?.trim()) {
 				return API.v1.failure('The bodyParam "joinCode" is required');
 			}
@@ -1992,7 +2064,10 @@ API.v1.addRoute(
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
