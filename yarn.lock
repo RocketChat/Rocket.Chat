@@ -37353,7 +37353,7 @@ __metadata:
   linkType: hard
 
 "websocket-driver@npm:0.7.5, websocket-driver@npm:^0.7.5":
-  version: 0.7.4
+  version: 0.7.5
   resolution: "websocket-driver@npm:0.7.5"
   dependencies:
     http-parser-js: "npm:>=0.5.1"
