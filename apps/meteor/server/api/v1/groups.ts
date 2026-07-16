@@ -178,6 +178,22 @@ const roomTargetBody = <T>(extra: Record<string, Record<string, unknown>> = {}, 
 
 const roomUserBody = <T>() => roomTargetBody<T>({ userId: { type: 'string' }, username: { type: 'string' }, user: { type: 'string' } });
 
+const stringFieldResponseSchema = <T>(field: 'description' | 'purpose' | 'topic' | 'announcement') =>
+	ajv.compile<T>({
+		type: 'object',
+		properties: {
+			[field]: { type: 'string' },
+			success: { type: 'boolean', enum: [true] },
+		},
+		required: [field, 'success'],
+		additionalProperties: false,
+	});
+
+const descriptionResponseSchema = stringFieldResponseSchema<{ description: string }>('description');
+const purposeResponseSchema = stringFieldResponseSchema<{ purpose: string }>('purpose');
+const topicResponseSchema = stringFieldResponseSchema<{ topic: string }>('topic');
+const announcementResponseSchema = stringFieldResponseSchema<{ announcement: string }>('announcement');
+
 API.v1.post(
 	'groups.addAll',
 	{
@@ -1185,11 +1201,22 @@ API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'groups.setCustomFields',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomTargetBody<{ roomId?: string; roomName?: string; customFields: Record<string, unknown> }>(
+			{ customFields: { type: 'object' } },
+			['customFields'],
+		),
+		response: {
+			200: groupResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			if (!this.bodyParams.customFields || !(typeof this.bodyParams.customFields === 'object')) {
 				return API.v1.failure('The bodyParam "customFields" is required with a type like object.');
 			}
@@ -1210,15 +1237,26 @@ API.v1.addRoute(
 			return API.v1.success({
 				group: await composeRoomWithLastMessage(room, this.userId),
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'groups.setDescription',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomTargetBody<{ roomId?: string; roomName?: string; description: string }>({ description: { type: 'string' } }, ['description']),
+		response: {
+			200: descriptionResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			if (!this.bodyParams.hasOwnProperty('description')) {
 				return API.v1.failure('The bodyParam "description" is required');
 			}
@@ -1233,15 +1271,26 @@ API.v1.addRoute(
 			return API.v1.success({
 				description: this.bodyParams.description || '',
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'groups.setPurpose',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomTargetBody<{ roomId?: string; roomName?: string; purpose: string }>({ purpose: { type: 'string' } }, ['purpose']),
+		response: {
+			200: purposeResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			if (!this.bodyParams.hasOwnProperty('purpose')) {
 				return API.v1.failure('The bodyParam "purpose" is required');
 			}
@@ -1256,15 +1305,26 @@ API.v1.addRoute(
 			return API.v1.success({
 				purpose: this.bodyParams.purpose || '',
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'groups.setReadOnly',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomTargetBody<{ roomId?: string; roomName?: string; readOnly: boolean }>({ readOnly: { type: 'boolean' } }, ['readOnly']),
+		response: {
+			200: groupResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			if (typeof this.bodyParams.readOnly === 'undefined') {
 				return API.v1.failure('The bodyParam "readOnly" is required');
 			}
@@ -1289,15 +1349,26 @@ API.v1.addRoute(
 			return API.v1.success({
 				group: await composeRoomWithLastMessage(room, this.userId),
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'groups.setTopic',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomTargetBody<{ roomId?: string; roomName?: string; topic: string }>({ topic: { type: 'string' } }, ['topic']),
+		response: {
+			200: topicResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			if (!this.bodyParams.hasOwnProperty('topic')) {
 				return API.v1.failure('The bodyParam "topic" is required');
 			}
@@ -1312,15 +1383,26 @@ API.v1.addRoute(
 			return API.v1.success({
 				topic: this.bodyParams.topic || '',
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'groups.setType',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomTargetBody<{ roomId?: string; roomName?: string; type: string }>({ type: { type: 'string' } }, ['type']),
+		response: {
+			200: groupResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			if (!this.bodyParams.type?.trim()) {
 				return API.v1.failure('The bodyParam "type" is required');
 			}
@@ -1345,15 +1427,28 @@ API.v1.addRoute(
 			return API.v1.success({
 				group: await composeRoomWithLastMessage(room, this.userId),
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'groups.setAnnouncement',
-	{ authRequired: true },
 	{
-		async post() {
+		authRequired: true,
+		body: roomTargetBody<{ roomId?: string; roomName?: string; announcement: string }>({ announcement: { type: 'string' } }, [
+			'announcement',
+		]),
+		response: {
+			200: announcementResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		try {
 			if (!this.bodyParams.hasOwnProperty('announcement')) {
 				return API.v1.failure('The bodyParam "announcement" is required');
 			}
@@ -1368,7 +1463,10 @@ API.v1.addRoute(
 			return API.v1.success({
 				announcement: this.bodyParams.announcement || '',
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
