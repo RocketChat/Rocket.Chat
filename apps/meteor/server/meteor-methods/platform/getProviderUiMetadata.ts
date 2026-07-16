@@ -1,7 +1,7 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
-import { TranslationProviderRegistry } from '../../../app/autotranslate/server/autotranslate';
+import { TranslationProviderRegistry } from '../../lib/autotranslate/autotranslate';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

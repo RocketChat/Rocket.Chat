@@ -98,7 +98,7 @@ const RoomMembersItem = ({
 			</OptionContent>
 			{subscription?.status === 'INVITED' && (
 				<OptionColumn>
-					<InvitationBadge mbs={2} size='x20' invitationDate={subscription.ts} />
+					<InvitationBadge marginBlockStart={2} size='x20' invitationDate={subscription.ts} />
 				</OptionColumn>
 			)}
 			<OptionMenu onClick={preventPropagation}>

@@ -65,7 +65,7 @@ const Surface = () => {
 	};
 
 	return (
-		<Box w='100%' h='100%' padding='20px'>
+		<Box width='100%' height='100%' padding='20px'>
 			<UiKitContext.Provider
 				value={{
 					action: (a) => {

@@ -17,15 +17,15 @@ import {
 	findDepartmentAgents,
 	findArchivedDepartments,
 } from './lib/departments';
+import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
 import {
 	saveDepartment,
 	archiveDepartment,
 	unarchiveDepartment,
 	saveDepartmentAgents,
 	removeDepartment,
-} from '../../../../app/livechat/server/lib/departmentsLib';
-import { settings } from '../../../../app/settings/server';
-import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
+} from '../../../lib/omnichannel/departmentsLib';
+import { settings } from '../../../settings';
 import { getPaginationItems } from '../../lib/getPaginationItems';
 
 API.v1.addRoute(
@@ -140,8 +140,8 @@ API.v1.addRoute(
 			return API.v1.success({ department, agents });
 		},
 		async put() {
-			const permissionToSave = await hasPermissionAsync(this.userId, 'manage-livechat-departments');
-			const permissionToAddAgents = await hasPermissionAsync(this.userId, 'add-livechat-department-agents');
+			const permissionToSave = await hasPermissionAsync(this.user, 'manage-livechat-departments');
+			const permissionToAddAgents = await hasPermissionAsync(this.user, 'add-livechat-department-agents');
 
 			check(this.bodyParams, {
 				department: Object,

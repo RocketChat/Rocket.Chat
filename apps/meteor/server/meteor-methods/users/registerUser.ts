@@ -6,10 +6,12 @@ import { Match, check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
-import { validateInviteToken } from '../../../app/invites/server/functions/validateInviteToken';
-import { validateEmailDomain, passwordPolicy, RateLimiter } from '../../../app/lib/server';
-import { settings } from '../../../app/settings/server';
 import { trim } from '../../../lib/utils/stringUtils';
+import { RateLimiterClass as RateLimiter } from '../../lib/RateLimiter';
+import { passwordPolicy } from '../../lib/auth/passwordPolicy';
+import { validateInviteToken } from '../../lib/rooms/invites/validateInviteToken';
+import { validateEmailDomain } from '../../lib/validateEmailDomain';
+import { settings } from '../../settings';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

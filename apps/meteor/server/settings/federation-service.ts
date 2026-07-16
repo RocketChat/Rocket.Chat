@@ -1,6 +1,6 @@
 import { generateEd25519RandomSecretKey } from '@rocket.chat/federation-matrix';
 
-import { settingsRegistry } from '../../app/settings/server';
+import { settingsRegistry } from '.';
 
 export const createFederationServiceSettings = async (): Promise<void> => {
 	await settingsRegistry.addGroup('Federation', async function () {

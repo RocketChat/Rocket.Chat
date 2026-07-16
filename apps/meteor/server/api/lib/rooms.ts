@@ -3,9 +3,9 @@ import { Rooms, Subscriptions } from '@rocket.chat/models';
 import type { FindOptions, Sort } from 'mongodb';
 
 import { scopeAdminRoomsForAbac } from './scopeAdminRoomsForAbac';
-import { stripABACManagedFieldsForAdmin } from '../../../app/authorization/server/lib/isABACManagedRoom';
 import { adminFields } from '../../../lib/rooms/adminFields';
 import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { stripABACManagedFieldsForAdmin } from '../../lib/authorization/isABACManagedRoom';
 
 export async function findAdminRooms({
 	uid,

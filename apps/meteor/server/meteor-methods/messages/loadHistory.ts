@@ -4,10 +4,10 @@ import { Subscriptions, Rooms } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomAsync, roomAccessAttributes } from '../../../app/authorization/server';
-import { settings } from '../../../app/settings/server';
+import { canAccessRoomAsync, roomAccessAttributes } from '../../lib/authorization';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { loadMessageHistory } from '../../lib/messages/loadMessageHistory';
+import { settings } from '../../settings';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -54,7 +54,7 @@ Meteor.methods<ServerMethods>({
 			return loadMessageHistory({ rid, end, limit, ls, showThreadMessages, room });
 		}
 
-		const canPreview = await hasPermissionAsync(fromUser._id, 'preview-c-room');
+		const canPreview = await hasPermissionAsync(fromUser, 'preview-c-room');
 
 		if (room.t === 'c' && !canPreview && !(await Subscriptions.findOneByRoomIdAndUserId(rid, fromUser._id, { projection: { _id: 1 } }))) {
 			return false;

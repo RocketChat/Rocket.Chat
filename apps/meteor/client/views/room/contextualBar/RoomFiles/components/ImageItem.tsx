@@ -26,7 +26,7 @@ const ImageItem = ({ id, url, name, timestamp, username, alt = '' }: ImageItemPr
 					<Avatar objectFit='cover' size='x48' url={url} className='gallery-item' alt={alt} />
 				</Box>
 			)}
-			<Box mis={8} flexShrink={1} overflow='hidden' className='gallery-item' cursor='default'>
+			<Box marginInlineStart={8} flexShrink={1} overflow='hidden' className='gallery-item' cursor='default'>
 				{name && (
 					<Box withTruncatedText color='default' fontScale='p2m' className='gallery-item'>
 						{name}

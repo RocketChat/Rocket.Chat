@@ -15,7 +15,6 @@ export const isValidQuery: {
 			throw new Error('query must be an object');
 		}
 
-		// eslint-disable-next-line @typescript-eslint/no-use-before-define
 		return verifyQuery(query, allowedAttributes, allowedOperations);
 	},
 	{

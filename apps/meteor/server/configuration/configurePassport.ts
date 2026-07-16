@@ -8,10 +8,10 @@ import { MongoInternals } from 'meteor/mongo';
 import { WebApp } from 'meteor/webapp';
 import passport from 'passport';
 
-import type { ICachedSettings } from '../../app/settings/server/CachedSettings';
 import { configureOAuthServices } from '../lib/oauth/configureOAuthServices';
 import { createOAuthServiceConfig } from '../lib/oauth/createOAuthServiceConfig';
 import { getOAuthServices } from '../lib/oauth/getOAuthServices';
+import type { ICachedSettings } from '../settings/CachedSettings';
 
 const oAuthPaths = ['/oauth', '/_oauth'];
 

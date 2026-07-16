@@ -44,7 +44,7 @@ const OmnichannelDirectoryPage = () => {
 					</Tabs>
 					<PageContent>
 						{isWorkspaceOverMacLimit && (
-							<Box mbs={16}>
+							<Box marginBlockStart={16}>
 								<Callout type='danger' icon='warning' title={t('The_workspace_has_exceeded_the_monthly_limit_of_active_contacts')}>
 									{t('Talk_to_your_workspace_admin_to_address_this_issue')}
 								</Callout>

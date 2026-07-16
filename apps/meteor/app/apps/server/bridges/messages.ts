@@ -9,9 +9,9 @@ import { Users, Subscriptions } from '@rocket.chat/models';
 
 import { deleteMessage } from '../../../../server/lib/messages/deleteMessage';
 import { updateMessage } from '../../../../server/lib/messages/updateMessage';
+import { executeSetReaction } from '../../../../server/lib/messaging/reactions/setReaction';
+import notifications from '../../../../server/lib/notifications/core/lib/Notifications';
 import { executeSendMessage } from '../../../../server/meteor-methods/messages/sendMessage';
-import notifications from '../../../notifications/server/lib/Notifications';
-import { executeSetReaction } from '../../../reactions/server/setReaction';
 
 export class AppMessageBridge extends MessageBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {

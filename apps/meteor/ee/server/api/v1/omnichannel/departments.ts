@@ -9,6 +9,8 @@ import {
 	isLivechatAnalyticsDepartmentsPercentageAbandonedChatsProps,
 } from '@rocket.chat/rest-typings';
 
+import { API } from '../../../../../server/api';
+import { getPaginationItems } from '../../../../../server/api/lib/getPaginationItems';
 import {
 	findAllRoomsAsync,
 	findAllAverageServiceTimeAsync,
@@ -18,9 +20,7 @@ import {
 	findAllNumberOfAbandonedRoomsAsync,
 	findPercentageOfAbandonedRoomsAsync,
 	findAllAverageOfChatDurationTimeAsync,
-} from '../../../../../app/livechat/server/lib/analytics/departments';
-import { API } from '../../../../../server/api';
-import { getPaginationItems } from '../../../../../server/api/lib/getPaginationItems';
+} from '../../../../../server/lib/omnichannel/analytics/departments';
 
 API.v1.addRoute(
 	'livechat/analytics/departments/amount-of-chats',

@@ -43,7 +43,7 @@ const ContactField = ({ control, isError = false, isFetching = false, onRetry, .
 
 		return (
 			<Option {...props} avatar={<UserAvatar title={label} username={label} size='x20' />}>
-				<Box is={OptionContent} mie='auto' flexGrow={0} flexShrink={0} flexBasis={0}>
+				<Box is={OptionContent} marginInlineEnd='auto' flexGrow={0} flexShrink={0} flexBasis={0}>
 					{label}
 				</Box>
 				{phones?.length ? (

@@ -73,7 +73,7 @@ const OutboundMessagePreview = ({
 		<Box {...props} is='section'>
 			<ul>
 				<Margins blockStart={24}>
-					<Box is='li' mbs={0}>
+					<Box is='li' marginBlockStart={0}>
 						<PreviewItem icon='doc' label={t('Template')}>
 							{template?.name}
 						</PreviewItem>
@@ -97,7 +97,7 @@ const OutboundMessagePreview = ({
 			</ul>
 
 			{template ? (
-				<Box mbs={30}>
+				<Box marginBlockStart={30}>
 					<TemplatePreview template={template} parameters={templateParameters} />
 				</Box>
 			) : null}

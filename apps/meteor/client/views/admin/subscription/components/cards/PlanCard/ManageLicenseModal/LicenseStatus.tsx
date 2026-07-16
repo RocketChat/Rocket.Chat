@@ -12,7 +12,7 @@ const LicenseStatus = ({ isValidating, isValid, invalidMessage }: LicenseStatusP
 
 	if (isValidating) {
 		return (
-			<Callout icon='reload' type='info' title={`${t('Validating_license')}...`}>
+			<Callout role='status' icon='reload' type='info' title={`${t('Validating_license')}...`}>
 				<Skeleton width='x320' />
 			</Callout>
 		);
@@ -20,14 +20,14 @@ const LicenseStatus = ({ isValidating, isValid, invalidMessage }: LicenseStatusP
 
 	if (isValid) {
 		return (
-			<Callout type='success' title={t('Valid_license')}>
+			<Callout role='status' type='success' title={t('Valid_license')}>
 				{t('This_license_is_valid_and_ready_to_apply')}
 			</Callout>
 		);
 	}
 
 	return (
-		<Callout type='danger' title={t('Invalid_license')}>
+		<Callout role='alert' type='danger' title={t('Invalid_license')}>
 			{invalidMessage}
 		</Callout>
 	);

@@ -5,8 +5,8 @@ import escape from 'lodash.escape';
 
 import type { SaveUserData } from './saveUser';
 import { isUpdateUserData } from './saveUser';
-import { settings } from '../../../../app/settings/server';
 import { trim } from '../../../../lib/utils/stringUtils';
+import { settings } from '../../../settings';
 import { getRoleIds } from '../../authorization/getRoles';
 import { hasPermissionAsync } from '../../authorization/hasPermission';
 import { checkEmailAvailability } from '../checkEmailAvailability';
