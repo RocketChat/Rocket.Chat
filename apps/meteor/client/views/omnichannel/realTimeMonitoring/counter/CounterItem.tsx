@@ -9,7 +9,7 @@ const CounterItem = ({
 	title: ReactNode;
 	count: string | number;
 	flexShrink?: number;
-	pb?: number;
+	paddingBlock?: number;
 	flexBasis?: string;
 }) => (
 	<Box display='flex' flexDirection='column' justifyContent='space-between' alignItems='center' flexGrow={1} {...props}>
