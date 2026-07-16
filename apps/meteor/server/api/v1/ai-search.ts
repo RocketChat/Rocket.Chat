@@ -14,8 +14,8 @@ import type { AISearchResult, SearchAnswer } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { getSettingPermissionId } from '../../../app/authorization/lib';
-import { normalizeMessagesForUser } from '../../../app/utils/server/lib/normalizeMessagesForUser';
 import { hasAllPermissionAsync, hasAtLeastOnePermissionAsync } from '../../lib/authorization/hasPermission';
+import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
 import { API } from '../api';
 
 const aiSearchResponseSchema = ajv.compile<{
@@ -246,10 +246,7 @@ API.v1.get(
 	async function action() {
 		const query = this.queryParams.query.trim();
 		const requestedIntelligentCount = this.queryParams.intelligentCount ?? AI_SEARCH_PAGE_SIZE;
-		const intelligentLimit = Math.min(
-			Math.max(Math.floor(requestedIntelligentCount), 1),
-			MAX_INTELLIGENT_SEARCH_RESULTS,
-		);
+		const intelligentLimit = Math.min(Math.max(Math.floor(requestedIntelligentCount), 1), MAX_INTELLIGENT_SEARCH_RESULTS);
 		const rid = this.queryParams.rid || undefined;
 		const rids = parseCommaList(this.queryParams.rids);
 		const roomNames = parseCommaList(this.queryParams.roomNames);

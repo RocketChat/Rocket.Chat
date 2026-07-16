@@ -1,5 +1,4 @@
 import { MAX_AI_SERVICE_RESPONSE_SIZE } from './constants';
-import { getErrorType } from './utils';
 import type {
 	AIServiceFetch,
 	AIServiceLogger,
@@ -8,6 +7,7 @@ import type {
 	IntelligentSearchPipelineFilters,
 	IntelligentSearchPipelineRequest,
 } from './types';
+import { getErrorType } from './utils';
 
 const buildEndpointUrl = (baseUrl: string, path: string): string =>
 	new URL(path, baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`).toString();

@@ -1,6 +1,6 @@
 import { AI_LICENSE_MODULE } from '@rocket.chat/ai-search';
 
-import { settingsRegistry } from '../../app/settings/server';
+import { settingsRegistry } from '.';
 
 const AI_SETTINGS_GROUP = 'AI_Center';
 

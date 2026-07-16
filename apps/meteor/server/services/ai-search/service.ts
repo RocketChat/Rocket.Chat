@@ -29,7 +29,7 @@ import { Logger } from '@rocket.chat/logger';
 import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { serverFetch, type ExtendedFetchOptions } from '@rocket.chat/server-fetch';
 
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 
 const logger = new Logger('AISearchService');
 
