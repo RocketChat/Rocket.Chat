@@ -33,19 +33,19 @@ const AICenterOverview = (): ReactElement => {
 	}
 
 	return (
-		<Page bg='tint'>
+		<Page background='tint'>
 			<PageHeader title={t('AI_Center')} />
-			<PageScrollableContentWithShadow p={24}>
+			<PageScrollableContentWithShadow padding={24}>
 				<Box marginInline='auto' width='full'>
 					{hasAILicense === false && (
-						<Callout type='info' icon='stars' title={t('AI_Center_license_required_title')} mbe={24}>
+						<Callout type='info' icon='stars' title={t('AI_Center_license_required_title')} marginBlockEnd={24}>
 							<Box>{t('AI_Center_license_required_description')}</Box>
-							<Button is='a' href={subscriptionHref} small mbs={12}>
+							<Button is='a' href={subscriptionHref} small marginBlockStart={12}>
 								{t('View_options')}
 							</Button>
 						</Callout>
 					)}
-					<Box is='h2' fontScale='h3' mbe={16}>
+					<Box is='h2' fontScale='h3' marginBlockEnd={16}>
 						{t('Capabilities')}
 					</Box>
 					<CardGrid breakpoints={{ xs: 4, sm: 4, md: 6, lg: 6, xl: 6 }}>
