@@ -1,9 +1,9 @@
-import { getPino, type LoggerOptions, type MainLogger } from './getPino.js';
-import type { LogLevelSetting } from './logLevel.js';
-import { logLevel } from './logLevel.js';
+import { getPino, type LoggerOptions, type MainLogger } from './getPino';
+import type { LogLevelSetting } from './logLevel';
+import { logLevel } from './logLevel';
 
-export * from './getPino.js';
-export * from './logLevel.js';
+export * from './getPino';
+export * from './logLevel';
 
 const getLevel = (level: LogLevelSetting): string => {
 	switch (level) {
