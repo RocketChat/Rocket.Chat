@@ -311,14 +311,49 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const rolesResponseSchema = ajv.compile<{
+	roles: { rid: string; u: { _id: string; username: string; name?: string }; roles: string[] }[];
+}>({
+	type: 'object',
+	properties: {
+		roles: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					_id: { type: 'string' },
+					rid: { type: 'string' },
+					u: {
+						type: 'object',
+						properties: { _id: { type: 'string' }, username: { type: 'string' }, name: { type: 'string' } },
+						required: ['_id', 'username'],
+						additionalProperties: false,
+					},
+					roles: { type: 'array', items: { type: 'string' } },
+				},
+				required: ['_id', 'rid', 'u', 'roles'],
+				additionalProperties: false,
+			},
+		},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['roles', 'success'],
+	additionalProperties: false,
+});
+
+API.v1.get(
 	'channels.roles',
 	{
 		authRequired: true,
-		validateParams: isChannelsRolesProps,
+		query: isChannelsRolesProps,
+		response: {
+			200: rolesResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
 	},
-	{
-		async get() {
+	async function action() {
+		try {
 			const findResult = await findChannelByIdOrName({ params: this.queryParams });
 
 			const roles = await executeGetRoomRoles(findResult._id, this.user);
@@ -326,7 +361,10 @@ API.v1.addRoute(
 			return API.v1.success({
 				roles,
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
@@ -624,14 +662,38 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const moderatorsResponseSchema = ajv.compile<{ moderators: { _id: string; username?: string; name?: string }[] }>({
+	type: 'object',
+	properties: {
+		moderators: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: { _id: { type: 'string' }, username: { type: 'string' }, name: { type: 'string' } },
+				required: ['_id'],
+				additionalProperties: false,
+			},
+		},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['moderators', 'success'],
+	additionalProperties: false,
+});
+
+API.v1.get(
 	'channels.moderators',
 	{
 		authRequired: true,
-		validateParams: isChannelsModeratorsProps,
+		query: isChannelsModeratorsProps,
+		response: {
+			200: moderatorsResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
 	},
-	{
-		async get() {
+	async function action() {
+		try {
 			const { ...params } = this.queryParams;
 
 			const findResult = await findChannelByIdOrName({ params });
@@ -649,18 +711,26 @@ API.v1.addRoute(
 			return API.v1.success({
 				moderators,
 			});
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'channels.delete',
 	{
 		authRequired: true,
-		validateParams: isChannelsDeleteProps,
+		body: isChannelsDeleteProps,
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
 	},
-	{
-		async post() {
+	async function action() {
+		try {
 			const room = await findChannelByIdOrName({
 				params: this.bodyParams,
 				checkedArchived: false,
@@ -669,7 +739,10 @@ API.v1.addRoute(
 			await eraseRoom(room._id, this.user);
 
 			return API.v1.success();
-		},
+		} catch (error) {
+			const [message, errorType] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType);
+		}
 	},
 );
 
