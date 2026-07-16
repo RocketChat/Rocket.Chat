@@ -155,19 +155,34 @@ describe('buildClassificationBanner', () => {
 		expect(banner.text).toBe('SECRET');
 	});
 
-	it('ignores room values not covered by the config and uses the fallback color when the driver has no match', () => {
+	it('renders unmapped values of a configured attribute as raw text, after the mapped labels', () => {
+		const banner = buildClassificationBanner(config, [
+			{ key: 'clearance.level', values: ['TS'] },
+			{ key: 'dissem.relto', values: ['USA', 'ACGU'] },
+		]);
+
+		expect(banner.text).toBe('TOP SECRET // RELTO USA/ACGU');
+	});
+
+	it('sorts mapped and unmapped values together when sortAlpha is set and counts both toward groupThreshold', () => {
+		expect(buildClassificationBanner(config, [{ key: 'access.programs', values: ['SAP-3380', 'cherry'] }]).text).toBe('SAR-cherry/ORANGES');
+		expect(
+			buildClassificationBanner(config, [{ key: 'access.programs', values: ['SAP-1042', 'SAP-2271', 'SAP-3380', 'cherry'] }]).text,
+		).toBe('SAR-MULTIPLE PROGRAMS');
+	});
+
+	it('does not let unmapped values drive the color', () => {
 		const banner = buildClassificationBanner(config, [
 			{ key: 'clearance.level', values: ['X'] },
 			{ key: 'dissem.relto', values: ['USA'] },
 		]);
 
-		expect(banner.text).toBe('RELTO USA');
+		expect(banner.text).toBe('X // RELTO USA');
 		expect(banner.backgroundColor).toBe('#6C727A');
-		expect(banner.segments).toHaveLength(1);
 	});
 
-	it('renders the fallback banner when nothing matches', () => {
-		const banner = buildClassificationBanner(config, [{ key: 'clearance.level', values: ['X'] }]);
+	it('renders the fallback banner when the room only carries attributes not present in the config', () => {
+		const banner = buildClassificationBanner(config, [{ key: 'country', values: ['USA'] }]);
 
 		expect(banner).toMatchObject({
 			text: 'NO CLASSIFICATION DATA',

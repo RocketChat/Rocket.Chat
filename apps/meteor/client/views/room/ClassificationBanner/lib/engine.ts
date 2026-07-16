@@ -22,7 +22,10 @@ const buildSegment = (
 	roomAttributes: IAbacAttributeDefinition[],
 ): ClassificationBannerSegment | null => {
 	const roomValues = roomAttributes.find(({ key }) => key === attribute.source)?.values ?? [];
-	let matched = attribute.values.filter(({ source }) => roomValues.includes(source));
+	let matched = [
+		...attribute.values.filter(({ source }) => roomValues.includes(source)),
+		...roomValues.filter((value) => !attribute.values.some(({ source }) => source === value)).map((label) => ({ label })),
+	];
 	if (!matched.length) {
 		return null;
 	}
