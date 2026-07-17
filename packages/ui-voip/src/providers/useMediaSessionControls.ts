@@ -26,13 +26,17 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 			if (!instanceState || !instance) {
 				return;
 			}
-			if (!instance.hasInput()) {
-				void requestDevice({ actionType: 'device-change' }).then(() => {
-					void instance.forceInputTrackUpdate().then(() => {
-						if (instance.hasInput()) {
-							instanceState.localParticipant.setMuted(false);
-						}
-					});
+			if (instance.micless) {
+				void requestDevice({ actionType: 'device-change' }).then((stream: MediaStream) => {
+					const inputTrack = stream.getAudioTracks()[0];
+					if (!inputTrack) {
+						return;
+					}
+					const { deviceId } = inputTrack.getSettings();
+					if (!deviceId) {
+						return;
+					}
+					void changeDevice(deviceId);
 				});
 				return;
 			}
@@ -49,7 +53,7 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 
 		const endCall = getEndCall(instance);
 
-		const acceptCall = (options?: InitiateCallOptions) => {
+		const acceptCall = (_options?: InitiateCallOptions) => {
 			if (!instance) {
 				return;
 			}
@@ -57,15 +61,15 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 			if (!instanceState?.confirmed || instanceState.state !== 'ringing') {
 				return;
 			}
-			instanceState.call.accept(options);
+			instanceState.call.accept();
 		};
 
-		const startCall = async (id: string, kind: 'user' | 'sip', options?: InitiateCallOptions) => {
+		const startCall = async (id: string, kind: 'user' | 'sip', _options?: InitiateCallOptions) => {
 			if (!instance) {
 				return;
 			}
 			try {
-				await instance.startCall(kind, id, options);
+				await instance.startCall(kind, id);
 			} catch (error) {
 				console.error('Error starting call', error);
 			}
