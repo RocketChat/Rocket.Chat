@@ -33,9 +33,4 @@ export interface ILivechatCustomFieldModel extends IBaseModel<ILivechatCustomFie
 		visibility: ILivechatCustomField['visibility'],
 		extraData: any,
 	): Promise<ILivechatCustomField>;
-	findByIdsAndScope<T extends Document = ILivechatCustomField>(
-		ids: ILivechatCustomField['_id'][],
-		scope: ILivechatCustomField['scope'],
-		options?: FindOptions<ILivechatCustomField>,
-	): FindCursor<T>;
 }

@@ -32,7 +32,7 @@ export type RepliesFormRef = {
 	submit: () => Promise<RepliesFormSubmitPayload>;
 };
 
-type RepliesFormProps = {
+export type RepliesFormProps = {
 	defaultValues?: Partial<RepliesFormData>;
 	renderActions?(props: { isSubmitting: boolean }): ReactNode;
 	onSubmit: (data: RepliesFormSubmitPayload) => void;
@@ -118,7 +118,7 @@ const RepliesForm = (props: RepliesFormProps) => {
 	return (
 		<Form id={repliesFormId} onSubmit={handleSubmit(submit)} noValidate>
 			<Scrollable vertical>
-				<FieldGroup justifyContent='start' pi={2}>
+				<FieldGroup justifyContent='start' paddingInline={2}>
 					<DepartmentField
 						control={control}
 						onlyMyDepartments={!canAssignAllDepartments}
@@ -139,7 +139,7 @@ const RepliesForm = (props: RepliesFormProps) => {
 			</Scrollable>
 
 			{customActions ?? (
-				<Box mbs={24} display='flex' justifyContent='end'>
+				<Box marginBlockStart={24} display='flex' justifyContent='end'>
 					<Button type='submit' primary loading={isSubmitting}>
 						{t('Submit')}
 					</Button>

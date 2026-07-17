@@ -16,7 +16,7 @@ import InsertPlaceholderDropdown from './InsertPlaceholderDropdown';
 import { Backdrop } from '../../../../../components/Backdrop';
 import { useEmojiPicker } from '../../../../../contexts/EmojiPickerContext';
 
-type CannedResponsesComposerProps = Omit<ComponentProps<typeof MessageComposerInput>, 'onChange'> & {
+export type CannedResponsesComposerProps = Omit<ComponentProps<typeof MessageComposerInput>, 'onChange'> & {
 	onChange: (value: string) => void;
 };
 
@@ -121,7 +121,7 @@ const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposer
 						}}
 					/>
 					<PositionAnimated visible={visible ? 'visible' : 'hidden'} anchor={ref}>
-						<Tile elevation='1' w='224px'>
+						<Tile elevation='1' width='224px'>
 							<InsertPlaceholderDropdown onChange={onChange} textAreaRef={textAreaRef} setVisible={setVisible} />
 						</Tile>
 					</PositionAnimated>

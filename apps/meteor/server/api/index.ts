@@ -7,6 +7,7 @@ import './lib/isUserFromParams';
 import './lib/parseJsonQuery';
 import './default/info';
 import './v1/assets';
+import './v1/ai-search';
 import './v1/calendar';
 import './v1/call-history';
 import './v1/channels';
@@ -45,7 +46,8 @@ import './v1/mailer';
 import './v1/teams';
 import './v1/moderation';
 import './v1/uploads';
-
+import './v1/twoFactorChallenges';
+import './v1/loginCode';
 // This has to come last so all endpoints are registered before generating the OpenAPI documentation
 import './default/openApi';
 

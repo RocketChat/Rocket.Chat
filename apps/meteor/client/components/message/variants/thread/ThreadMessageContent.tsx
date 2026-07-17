@@ -20,7 +20,7 @@ import { useSubscriptionFromMessageQuery } from '../../hooks/useSubscriptionFrom
 import { useMessageListReadReceipts } from '../../list/MessageListContext';
 import UiKitMessageBlock from '../../uikit/UiKitMessageBlock';
 
-type ThreadMessageContentProps = {
+export type ThreadMessageContentProps = {
 	message: IThreadMessage | IThreadMainMessage;
 };
 

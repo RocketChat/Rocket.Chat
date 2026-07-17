@@ -116,7 +116,7 @@ const AdminUsersPage = () => {
 					<UsersPageHeaderContent isSeatsCapExceeded={isSeatsCapExceeded} seatsCap={seatsCap} />
 				</PageHeader>
 				{preventAction?.includes('activeUsers') && (
-					<Callout type='danger' title={t('subscription.callout.servicesDisruptionsOccurring')} mbe={19} mi={24}>
+					<Callout type='danger' title={t('subscription.callout.servicesDisruptionsOccurring')} marginBlockEnd={19} marginInline={24}>
 						<Trans
 							i18nKey='subscription.callout.description.limitsExceeded'
 							count={preventAction.length}
@@ -142,7 +142,7 @@ const AdminUsersPage = () => {
 					</TabsItem>
 					<TabsItem selected={tab === 'pending'} onClick={() => handleTabChange('pending')} display='flex' flexDirection='row'>
 						{`${t('Pending')} `}
-						{pendingUsersCount.isLoading && <Skeleton variant='circle' height='x16' width='x16' mis={8} />}
+						{pendingUsersCount.isLoading && <Skeleton variant='circle' height='x16' width='x16' marginInlineStart={8} />}
 						{pendingUsersCount.isSuccess && `(${pendingUsersCount.data})`}
 					</TabsItem>
 					<TabsItem selected={tab === 'active'} onClick={() => handleTabChange('active')}>

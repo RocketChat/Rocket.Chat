@@ -3,9 +3,9 @@ import mem from 'mem';
 
 import { API } from '../..';
 import { settings, findOpenRoom, getExtraConfigInfo, findAgent, findGuestWithoutActivity } from './lib/livechat';
-import { RoutingManager } from '../../../../app/livechat/server/lib/RoutingManager';
-import { online } from '../../../../app/livechat/server/lib/service-status';
-import { settings as serverSettings } from '../../../../app/settings/server';
+import { RoutingManager } from '../../../lib/omnichannel/RoutingManager';
+import { online } from '../../../lib/omnichannel/service-status';
+import { settings as serverSettings } from '../../../settings';
 import type { ExtractRoutesFromAPI } from '../../ApiClass';
 
 const cachedSettings = mem(settings, {

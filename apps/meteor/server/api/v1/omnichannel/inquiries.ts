@@ -15,8 +15,8 @@ import { Meteor } from 'meteor/meteor';
 
 import { API } from '../..';
 import { findInquiries, findOneInquiryByRoomId } from './lib/inquiries';
-import { returnRoomAsInquiry } from '../../../../app/livechat/server/lib/rooms';
-import { takeInquiry } from '../../../../app/livechat/server/lib/takeInquiry';
+import { returnRoomAsInquiry } from '../../../lib/omnichannel/rooms';
+import { takeInquiry } from '../../../lib/omnichannel/takeInquiry';
 import type { ExtractRoutesFromAPI } from '../../ApiClass';
 import { getPaginationItems } from '../../lib/getPaginationItems';
 

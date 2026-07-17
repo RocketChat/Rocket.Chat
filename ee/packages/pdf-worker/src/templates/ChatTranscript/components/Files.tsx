@@ -38,7 +38,9 @@ const styles = StyleSheet.create({
 	},
 });
 
-export const Files = ({ files, invalidMessage }: { files: PDFFile[]; invalidMessage: string }) => (
+export type FilesProps = { files: PDFFile[]; invalidMessage: string };
+
+export const Files = ({ files, invalidMessage }: FilesProps) => (
 	<View style={styles.container}>
 		{files?.map((file, index) => (
 			<View style={styles.file} key={index} wrap>

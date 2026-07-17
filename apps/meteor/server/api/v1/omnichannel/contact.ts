@@ -20,14 +20,14 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { API } from '../..';
-import { createContact } from '../../../../app/livechat/server/lib/contacts/createContact';
-import { disableContactById } from '../../../../app/livechat/server/lib/contacts/disableContact';
-import { getContactChannelsGrouped } from '../../../../app/livechat/server/lib/contacts/getContactChannelsGrouped';
-import { getContactHistory } from '../../../../app/livechat/server/lib/contacts/getContactHistory';
-import { getContacts } from '../../../../app/livechat/server/lib/contacts/getContacts';
-import { registerContact } from '../../../../app/livechat/server/lib/contacts/registerContact';
-import { resolveContactConflicts } from '../../../../app/livechat/server/lib/contacts/resolveContactConflicts';
-import { updateContact } from '../../../../app/livechat/server/lib/contacts/updateContact';
+import { createContact } from '../../../lib/omnichannel/contacts/createContact';
+import { disableContactById } from '../../../lib/omnichannel/contacts/disableContact';
+import { getContactChannelsGrouped } from '../../../lib/omnichannel/contacts/getContactChannelsGrouped';
+import { getContactHistory } from '../../../lib/omnichannel/contacts/getContactHistory';
+import { getContacts } from '../../../lib/omnichannel/contacts/getContacts';
+import { registerContact } from '../../../lib/omnichannel/contacts/registerContact';
+import { resolveContactConflicts } from '../../../lib/omnichannel/contacts/resolveContactConflicts';
+import { updateContact } from '../../../lib/omnichannel/contacts/updateContact';
 import type { ExtractRoutesFromAPI } from '../../ApiClass';
 import { getPaginationItems } from '../../lib/getPaginationItems';
 

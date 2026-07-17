@@ -6,7 +6,7 @@ import { createClassName } from '../../../helpers/createClassName';
 import { MessageBubble } from '../MessageBubble';
 import styles from './styles.scss';
 
-type VideoAttachmentProps = {
+export type VideoAttachmentProps = {
 	url: string;
 	className?: string;
 	t: TFunction;

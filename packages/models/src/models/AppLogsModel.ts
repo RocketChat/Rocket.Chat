@@ -1,5 +1,5 @@
 import type { IAppLogsModel } from '@rocket.chat/model-typings';
-import type { Db, DeleteResult, Filter, IndexDescription } from 'mongodb';
+import type { Db, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -54,9 +54,5 @@ export class AppsLogsModel extends BaseRaw<any> implements IAppLogsModel {
 			.toArray();
 
 		return { instanceIds, methods };
-	}
-
-	remove(query: Filter<any>): Promise<DeleteResult> {
-		return this.col.deleteMany(query);
 	}
 }

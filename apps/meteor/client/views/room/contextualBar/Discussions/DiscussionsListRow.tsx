@@ -6,7 +6,7 @@ import DiscussionsListItem from './components/DiscussionsListItem';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import { normalizeThreadMessage } from '../../../../lib/normalizeThreadMessage';
 
-type DiscussionListRowProps = {
+export type DiscussionListRowProps = {
 	discussion: IDiscussionMessage;
 	showRealNames: boolean;
 	onClick: (e: MouseEvent<HTMLElement>) => void;

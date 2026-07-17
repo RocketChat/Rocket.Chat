@@ -40,7 +40,9 @@ function expandedReducer(
 	}
 }
 
-const AppLogs = ({ id }: { id: string }) => {
+export type AppLogsProps = { id: string };
+
+const AppLogs = ({ id }: AppLogsProps) => {
 	const { t } = useTranslation();
 
 	const router = useRouter();
@@ -97,7 +99,7 @@ const AppLogs = ({ id }: { id: string }) => {
 
 	return (
 		<>
-			<Box pb={16}>
+			<Box paddingBlock={16}>
 				<AppLogsFilter
 					appId={id}
 					noResults={isFetching || !isSuccess || data?.logs?.length === 0}

@@ -25,7 +25,7 @@ function SlaEditWithData({ slaId, reload }: SlaEditProps) {
 
 	if (isError || !data) {
 		return (
-			<Callout m={16} type='danger'>
+			<Callout margin={16} type='danger'>
 				{t('Not_Available')}
 			</Callout>
 		);

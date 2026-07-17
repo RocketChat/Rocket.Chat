@@ -10,7 +10,7 @@ import {
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type AgentsTableProps = {
+export type AgentsTableProps = {
 	data: {
 		label: string;
 		value: number;

@@ -3,7 +3,7 @@ import OEmbedImagePreview from './OEmbedImagePreview';
 import OEmbedLinkPreview from './OEmbedLinkPreview';
 import type { OEmbedPreviewMetadata } from './OEmbedPreviewMetadata';
 
-type OEmbedResolverProps = {
+export type OEmbedResolverProps = {
 	meta: OEmbedPreviewMetadata;
 };
 

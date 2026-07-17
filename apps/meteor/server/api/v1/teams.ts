@@ -28,11 +28,11 @@ import {
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { canAccessRoomAsync } from '../../../app/authorization/server';
-import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
-import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
-import { settings } from '../../../app/settings/server';
+import { canAccessRoomAsync } from '../../lib/authorization';
+import { hasPermissionAsync, hasAtLeastOnePermissionAsync, hasAllPermissionAsync } from '../../lib/authorization/hasPermission';
 import { eraseRoom } from '../../lib/eraseRoom';
+import { removeUserFromRoom } from '../../lib/rooms/removeUserFromRoom';
+import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { eraseTeam } from '../lib/eraseTeam';
@@ -125,10 +125,15 @@ const teamsEndpoints = API.v1
 				}),
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
 			const { name, type, members, room, owner } = this.bodyParams;
+
+			if (room?.id && !(await hasAllPermissionAsync(this.user, ['create-team', 'edit-room'], room.id))) {
+				return API.v1.forbidden();
+			}
 
 			const team = await Team.create(this.userId, {
 				team: {
@@ -177,7 +182,7 @@ API.v1.post(
 			return API.v1.failure('team-does-not-exist');
 		}
 
-		if (!(await hasPermissionAsync(this.userId, 'convert-team', team.roomId))) {
+		if (!(await hasPermissionAsync(this.user, 'convert-team', team.roomId))) {
 			return API.v1.forbidden();
 		}
 
@@ -235,7 +240,7 @@ API.v1.post(
 			return API.v1.failure('team-does-not-exist');
 		}
 
-		if (!(await hasPermissionAsync(this.userId, 'move-room-to-team', team.roomId))) {
+		if (!(await hasPermissionAsync(this.user, 'move-room-to-team', team.roomId))) {
 			return API.v1.forbidden('error-no-permission-team-channel');
 		}
 
@@ -265,11 +270,11 @@ API.v1.post(
 			return API.v1.failure('team-does-not-exist');
 		}
 
-		if (!(await hasPermissionAsync(this.userId, 'remove-team-channel', team.roomId))) {
+		if (!(await hasPermissionAsync(this.user, 'remove-team-channel', team.roomId))) {
 			return API.v1.forbidden();
 		}
 
-		const canRemoveAny = !!(await hasPermissionAsync(this.userId, 'view-all-team-channels', team.roomId));
+		const canRemoveAny = !!(await hasPermissionAsync(this.user, 'view-all-team-channels', team.roomId));
 
 		const { roomId } = this.bodyParams;
 
@@ -299,10 +304,10 @@ API.v1.post(
 			return API.v1.failure('team-does-not-exist');
 		}
 
-		if (!(await hasPermissionAsync(this.userId, 'edit-team-channel', team.roomId))) {
+		if (!(await hasPermissionAsync(this.user, 'edit-team-channel', team.roomId))) {
 			return API.v1.forbidden();
 		}
-		const canUpdateAny = !!(await hasPermissionAsync(this.userId, 'view-all-team-channels', team.roomId));
+		const canUpdateAny = !!(await hasPermissionAsync(this.user, 'view-all-team-channels', team.roomId));
 
 		if (settings.get('ABAC_Enabled') && isDefault) {
 			const room = await Rooms.findOneByIdAndType(roomId, 'p', { projection: { abacAttributes: 1 } });
@@ -350,9 +355,9 @@ API.v1.get(
 			return API.v1.failure('team-does-not-exist');
 		}
 
-		const allowPrivateTeam: boolean = await hasPermissionAsync(this.userId, 'view-all-teams', team.roomId);
+		const allowPrivateTeam: boolean = await hasPermissionAsync(this.user, 'view-all-teams', team.roomId);
 
-		const getAllRooms = await hasPermissionAsync(this.userId, 'view-all-team-channels', team.roomId);
+		const getAllRooms = await hasPermissionAsync(this.user, 'view-all-team-channels', team.roomId);
 
 		const listFilter = {
 			name: filter ?? undefined,
@@ -395,11 +400,11 @@ API.v1.get(
 			return API.v1.failure('team-does-not-exist');
 		}
 
-		const allowPrivateTeam = await hasPermissionAsync(this.userId, 'view-all-teams', team.roomId);
+		const allowPrivateTeam = await hasPermissionAsync(this.user, 'view-all-teams', team.roomId);
 
 		const { userId, canUserDelete } = this.queryParams;
 
-		if (!(this.userId === userId || (await hasPermissionAsync(this.userId, 'view-all-team-channels', team.roomId)))) {
+		if (!(this.userId === userId || (await hasPermissionAsync(this.user, 'view-all-team-channels', team.roomId)))) {
 			return API.v1.forbidden();
 		}
 
@@ -506,7 +511,7 @@ API.v1.get(
 			return API.v1.failure('team-does-not-exist');
 		}
 
-		const canSeeAllMembers = await hasPermissionAsync(this.userId, 'view-all-teams', team.roomId);
+		const canSeeAllMembers = await hasPermissionAsync(this.user, 'view-all-teams', team.roomId);
 
 		const query: Record<string, unknown> = {};
 		if (username) {
@@ -551,7 +556,7 @@ API.v1.post(
 			return API.v1.failure('team-does-not-exist');
 		}
 
-		if (!(await hasAtLeastOnePermissionAsync(this.userId, ['add-team-member', 'edit-team-member'], team.roomId))) {
+		if (!(await hasAtLeastOnePermissionAsync(this.user, ['add-team-member', 'edit-team-member'], team.roomId))) {
 			return API.v1.forbidden();
 		}
 
@@ -582,7 +587,7 @@ API.v1.post(
 			return API.v1.failure('team-does-not-exist');
 		}
 
-		if (!(await hasAtLeastOnePermissionAsync(this.userId, ['edit-team-member'], team.roomId))) {
+		if (!(await hasAtLeastOnePermissionAsync(this.user, ['edit-team-member'], team.roomId))) {
 			return API.v1.forbidden();
 		}
 
@@ -613,7 +618,7 @@ API.v1.post(
 			return API.v1.failure('team-does-not-exist');
 		}
 
-		if (!(await hasAtLeastOnePermissionAsync(this.userId, ['edit-team-member'], team.roomId))) {
+		if (!(await hasAtLeastOnePermissionAsync(this.user, ['edit-team-member'], team.roomId))) {
 			return API.v1.forbidden();
 		}
 
@@ -707,7 +712,7 @@ API.v1.get(
 			return API.v1.failure('Room not found');
 		}
 
-		const canViewInfo = (await canAccessRoomAsync(room, { _id: this.userId })) || (await hasPermissionAsync(this.userId, 'view-all-teams'));
+		const canViewInfo = (await canAccessRoomAsync(room, { _id: this.userId })) || (await hasPermissionAsync(this.user, 'view-all-teams'));
 
 		if (!canViewInfo) {
 			return API.v1.forbidden();
@@ -738,7 +743,7 @@ API.v1.post(
 			return API.v1.failure('team-does-not-exist');
 		}
 
-		if (!(await hasPermissionAsync(this.userId, 'delete-team', team.roomId))) {
+		if (!(await hasPermissionAsync(this.user, 'delete-team', team.roomId))) {
 			return API.v1.forbidden();
 		}
 
@@ -796,7 +801,7 @@ API.v1.post(
 			return API.v1.failure('team-does-not-exist');
 		}
 
-		if (!(await hasPermissionAsync(this.userId, 'edit-team', team.roomId))) {
+		if (!(await hasPermissionAsync(this.user, 'edit-team', team.roomId))) {
 			return API.v1.forbidden();
 		}
 

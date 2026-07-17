@@ -9,7 +9,7 @@ import { useMemberExists } from '../../../hooks/useMemberExists';
 import type { UserInfoAction as UserInfoActionType } from '../../hooks/useUserInfoActions';
 import { useUserInfoActions } from '../../hooks/useUserInfoActions';
 
-type UserInfoActionsProps = {
+export type UserInfoActionsProps = {
 	user: Pick<IUser, '_id' | 'username' | 'name' | 'freeSwitchExtension'>;
 	rid: IRoom['_id'];
 	isInvited?: boolean;
@@ -66,7 +66,7 @@ const UserInfoActions = ({ user, rid, isInvited, backToList }: UserInfoActionsPr
 	}, [actionsDefinition, menu]);
 
 	if (isPending) {
-		return <Skeleton w='full' />;
+		return <Skeleton width='full' />;
 	}
 	return <ButtonGroup align='center'>{actions}</ButtonGroup>;
 };

@@ -15,7 +15,7 @@ import { useMemberExists } from '../../hooks/useMemberExists';
 import { useUserInfoActions } from '../hooks/useUserInfoActions';
 import type { UserInfoAction } from '../hooks/useUserInfoActions/useUserInfoActions';
 
-type UserCardWithDataProps = {
+export type UserCardWithDataProps = {
 	username: string;
 	rid: IRoom['_id'];
 	onOpenUserInfo: () => void;

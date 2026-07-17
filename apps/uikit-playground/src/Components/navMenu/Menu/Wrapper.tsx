@@ -1,10 +1,12 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-const Wrapper = ({ children }: { children: ReactNode }) => (
+export type WrapperProps = { children: ReactNode };
+
+const Wrapper = ({ children }: WrapperProps) => (
 	<Box
-		pbs='80px'
-		pis='50px'
+		paddingBlockStart='80px'
+		paddingInlineStart='50px'
 		display='inline-flex'
 		flexDirection='column'
 		alignItems='center'

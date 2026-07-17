@@ -18,7 +18,7 @@ import CustomSoundRow from './CustomSoundRow';
 import FilterByText from '../../../../components/FilterByText';
 import GenericNoResults from '../../../../components/GenericNoResults';
 
-type CustomSoundsTableProps = {
+export type CustomSoundsTableProps = {
 	onClick: (soundId: string) => () => void;
 	reload: MutableRefObject<() => void>;
 };
@@ -59,7 +59,7 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 				{t('Name')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell w='x40' key='action' />
+			<GenericTableHeaderCell width='x40' key='action' />
 		</>
 	);
 

@@ -8,7 +8,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import CurrentUserDisplay from './CurrentUserDisplay';
 import Layout from './Layout';
 
-type AuthorizationFormPageProps = {
+export type AuthorizationFormPageProps = {
 	oauthApp: IOAuthApps;
 	redirectUri: string;
 	user: IUser;

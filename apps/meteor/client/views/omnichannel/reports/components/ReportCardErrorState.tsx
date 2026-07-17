@@ -1,7 +1,7 @@
 import { States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-type ReportCardErrorStateProps = {
+export type ReportCardErrorStateProps = {
 	onRetry?: () => void;
 };
 

@@ -75,7 +75,7 @@ const NavBarSearch = () => {
 
 	return (
 		<FormProvider {...methods}>
-			<Box width='100%' maxWidth='x622' role='search' aria-label={t('Search_rooms')} mi={8} position='relative'>
+			<Box width='100%' maxWidth='x622' role='search' aria-label={t('Search_rooms')} marginInline={8} position='relative'>
 				<TextInput
 					{...rest}
 					{...triggerProps}
@@ -89,7 +89,7 @@ const NavBarSearch = () => {
 					aria-autocomplete='list'
 					aria-keyshortcuts='Control+K Meta+K Control+P Meta+P'
 					small
-					addon={
+					endAddon={
 						isDirty ? (
 							<IconButton mini icon='cross' aria-label={t('Clear')} onClick={handleClearText} />
 						) : (

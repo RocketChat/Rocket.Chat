@@ -129,11 +129,15 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 		}
 	}
 
-	private makeInstance(userId: string) {
+	private cleanupInstance() {
 		if (this.sessionInstance !== null) {
 			this.sessionInstance.endSession();
 			this.sessionInstance = null;
 		}
+	}
+
+	private makeInstance(userId: string) {
+		this.cleanupInstance();
 
 		this.failedScreenShareAttempts = 0;
 
@@ -167,7 +171,12 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 		return this.sessionInstance;
 	}
 
-	public getInstance(userId?: string) {
+	public getInstance(userId?: string, enabled = true) {
+		if (!enabled) {
+			this.cleanupInstance();
+			return null;
+		}
+
 		if (!userId) {
 			return null;
 		}
@@ -217,7 +226,7 @@ export const useSetPopoutWindow = (popoutWindow?: Window) => {
 	});
 };
 
-export const useMediaSessionInstance = (userId?: string) => {
+export const useMediaSessionInstance = (userId?: string, enabled = true) => {
 	const { t } = useTranslation();
 	const iceServers = useIceServers();
 	const iceGatheringTimeout = useSetting('VoIP_TeamCollab_Ice_Gathering_Timeout', 5000);
@@ -263,8 +272,8 @@ export const useMediaSessionInstance = (userId?: string) => {
 			return mediaSession.onChange(callback);
 		}, []),
 		useCallback(() => {
-			return mediaSession.getInstance(userId);
-		}, [userId]),
+			return mediaSession.getInstance(userId, enabled);
+		}, [userId, enabled]),
 	);
 
 	return instance ?? undefined;

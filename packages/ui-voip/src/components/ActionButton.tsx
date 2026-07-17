@@ -3,7 +3,7 @@ import type { Keys } from '@rocket.chat/icons';
 import type { ComponentProps } from 'react';
 import { forwardRef } from 'react';
 
-type ActionButtonProps = {
+export type ActionButtonProps = {
 	label: string;
 	icon: Keys;
 	disabled?: boolean;

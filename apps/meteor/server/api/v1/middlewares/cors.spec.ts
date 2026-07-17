@@ -4,7 +4,7 @@ import express from 'express';
 import request from 'supertest';
 
 import { cors } from './cors';
-import { CachedSettings } from '../../../../app/settings/server/CachedSettings';
+import { CachedSettings } from '../../../settings/CachedSettings';
 
 describe('Cors middleware', () => {
 	it('should return allow-origin header for GET if CORS enabled', async () => {

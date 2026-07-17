@@ -234,7 +234,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 										{...field}
 										aria-required={true}
 										disabled={!canChangeUsername}
-										addon={<Icon name='at' size='x20' />}
+										endAddon={<Icon name='at' size='x20' />}
 										error={errors.username?.message}
 									/>
 								)}
@@ -244,7 +244,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 						{!canChangeUsername && <FieldHint>{t('Username_Change_Disabled')}</FieldHint>}
 					</Field>
 				</Box>
-				<Divider mbs={24} mbe={0} />
+				<Divider marginBlockStart={24} marginBlockEnd={0} />
 				<Field>
 					<FieldLabel>{t('Status')}</FieldLabel>
 					<FieldRow>
@@ -301,7 +301,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 						/>
 					</FieldRow>
 					{statusDuration === 'custom' && (
-						<Box display='flex' mi='neg-x4' mbs={8}>
+						<Box display='flex' marginInline='neg-x4' marginBlockStart={8}>
 							<Margins inline={4}>
 								<Controller
 									control={control}
@@ -338,14 +338,14 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 					{errors.statusDuration && <FieldError>{errors.statusDuration.message}</FieldError>}
 					<FieldHint>{t('Status_new_status_warning')}</FieldHint>
 				</Field>
-				<Divider mbs={24} mbe={0} />
+				<Divider marginBlockStart={24} marginBlockEnd={0} />
 				<Field>
 					<FieldLabel>{t('Nickname')}</FieldLabel>
 					<FieldRow>
 						<Controller
 							control={control}
 							name='nickname'
-							render={({ field }) => <TextInput {...field} flexGrow={1} addon={<Icon name='edit' size='x20' alignSelf='center' />} />}
+							render={({ field }) => <TextInput {...field} flexGrow={1} endAddon={<Icon name='edit' size='x20' alignSelf='center' />} />}
 						/>
 					</FieldRow>
 				</Field>
@@ -364,7 +364,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 									rows={3}
 									flexGrow={1}
 									error={errors.bio?.message}
-									addon={<Icon name='edit' size='x20' alignSelf='center' />}
+									endAddon={<Icon name='edit' size='x20' alignSelf='center' />}
 								/>
 							)}
 						/>
@@ -395,7 +395,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 									aria-required={true}
 									flexGrow={1}
 									disabled={!allowEmailChange}
-									addon={<Icon name={isUserVerified ? 'circle-check' : 'mail'} size='x20' />}
+									endAddon={<Icon name={isUserVerified ? 'circle-check' : 'mail'} size='x20' />}
 									error={errors.email?.message}
 								/>
 							)}
