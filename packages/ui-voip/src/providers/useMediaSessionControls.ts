@@ -4,14 +4,12 @@ import { useMemo } from 'react';
 import { useDevicePermissionPrompt2 } from '../hooks';
 import { getEndCall } from '../utils/instanceControlsGetters';
 
-type InitiateCallOptions = { micless?: boolean };
-
 export type MediaSessionControls = {
 	toggleMute: () => void;
 	toggleHold: () => void;
 	endCall: () => void;
-	startCall: (id: string, kind: 'user' | 'sip', options?: InitiateCallOptions) => Promise<void>;
-	acceptCall: (options?: InitiateCallOptions) => void;
+	startCall: (id: string, kind: 'user' | 'sip') => Promise<void>;
+	acceptCall: () => void;
 	changeDevice: (deviceId: string) => Promise<void>;
 	forwardCall: (type: 'user' | 'sip', id: string) => void;
 	sendTone: (tone: string) => void;
@@ -53,7 +51,7 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 
 		const endCall = getEndCall(instance);
 
-		const acceptCall = (_options?: InitiateCallOptions) => {
+		const acceptCall = () => {
 			if (!instance) {
 				return;
 			}
@@ -64,7 +62,7 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 			instanceState.call.accept();
 		};
 
-		const startCall = async (id: string, kind: 'user' | 'sip', _options?: InitiateCallOptions) => {
+		const startCall = async (id: string, kind: 'user' | 'sip') => {
 			if (!instance) {
 				return;
 			}

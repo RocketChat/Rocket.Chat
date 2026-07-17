@@ -249,8 +249,7 @@ export class NegotiationManager {
 		}
 
 		// Wait for the input track before negotiating, to avoid potentially having to renegotiate immediately
-		// Unless the call is internal, in which case it's safe to proceed without it.
-		if (!this.webrtcProcessor.streams.hasAllRequiredTracks() && !this.call.micless) {
+		if (!this.webrtcProcessor.streams.hasAllRequiredTracks()) {
 			this.config.logger?.debug('Delaying WebRTC negotiations due to missing required track.');
 			return false;
 		}

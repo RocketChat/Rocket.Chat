@@ -66,14 +66,6 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 		this._active = tag === 'main';
 	}
 
-	/**
-	 * Creates a recvonly audio transceiver up front, so a peer connection can negotiate and receive
-	 * remote audio even before a local input track exists. Only meaningful for the local main stream.
-	 */
-	public preallocateAudioTransceiver(): void {
-		this.peer.addTransceiver('audio', { direction: 'recvonly', streams: [this.stream] });
-	}
-
 	public hasAudio(): boolean {
 		if (!this.audioTrack || this.audioTrack.ended) {
 			return false;

@@ -43,8 +43,6 @@ export interface IClientMediaCallConfig {
 	iceGatheringTimeout: number;
 	iceServers: RTCIceServer[];
 	supportedFeatures: CallFeature[];
-
-	micless?: boolean;
 }
 
 const TIMEOUT_TO_ACCEPT = 60000;
@@ -128,10 +126,6 @@ export class ClientMediaCall implements IClientMediaCall {
 	public get muted(): boolean {
 		if (!this.webrtcProcessor) {
 			return false;
-		}
-
-		if (!this.hasInputTrack()) {
-			return true;
 		}
 
 		return this.webrtcProcessor.muted;
@@ -234,18 +228,12 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private _flags: CallFlag[];
 
-	private _micless: boolean | undefined;
-
 	public get flags(): CallFlag[] {
 		return [...this._flags];
 	}
 
 	public get features(): CallFeature[] {
 		return [...(this.enabledFeatures || [])];
-	}
-
-	public get micless(): boolean {
-		return Boolean(this._micless);
 	}
 
 	public readonly localParticipant: IClientMediaCallLocalParticipant;
@@ -301,7 +289,6 @@ export class ClientMediaCall implements IClientMediaCall {
 		callId: string,
 		{ inputTrack }: { inputTrack?: MediaStreamTrack | null } = {},
 	) {
-		this._micless = config.micless;
 		this.emitter = new Emitter<CallEvents>();
 
 		this.config.transporter = config.transporter;
@@ -495,10 +482,6 @@ export class ClientMediaCall implements IClientMediaCall {
 			return false;
 		}
 
-		if (this._micless) {
-			return false;
-		}
-
 		if (this.role === 'caller') {
 			return this.hasRemoteData;
 		}
@@ -675,7 +658,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
-	public accept(options?: { micless?: boolean }): void {
+	public accept(): void {
 		this.config.logger?.debug('ClientMediaCall.accept');
 
 		if (!this.isPendingOurAcceptance()) {
@@ -686,7 +669,6 @@ export class ClientMediaCall implements IClientMediaCall {
 			this.throwError('missing-remote-data');
 		}
 
-		this._micless = options?.micless;
 		this.acceptedLocally = true;
 		// If the server already signed us into this call, go straight to the accepted state
 		if (this.acceptedRemotely) {
@@ -800,9 +782,6 @@ export class ClientMediaCall implements IClientMediaCall {
 			return;
 		}
 		if (!this.webrtcProcessor && !muted) {
-			return;
-		}
-		if (this.muted === muted) {
 			return;
 		}
 

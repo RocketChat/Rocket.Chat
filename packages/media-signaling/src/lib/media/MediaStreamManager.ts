@@ -19,13 +19,9 @@ export class MediaStreamManager implements IMediaStreamManager {
 	constructor(
 		protected readonly peer: RTCPeerConnection,
 		protected readonly logger?: IMediaSignalLogger,
-		protected readonly preallocateLocalTransceiver?: boolean,
 	) {
 		this.emitter = new Emitter();
 		this.mainLocal = this.createStream(false, 'main');
-		if (preallocateLocalTransceiver) {
-			this.mainLocal.preallocateAudioTransceiver();
-		}
 		this.screenShareLocal = this.createStream(false, 'screen-share');
 		this.mainRemote = this.createStream(true, 'main');
 		this.screenShareRemote = this.createStream(true, 'screen-share');

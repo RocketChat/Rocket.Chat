@@ -184,10 +184,6 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		};
 	}
 
-	public hasInput(): boolean {
-		return Boolean(this.inputTrack);
-	}
-
 	private getMainCall(skipLocal = false): ClientMediaCall | null {
 		let ringingCall: ClientMediaCall | null = null;
 		let pendingCall: ClientMediaCall | null = null;
@@ -278,20 +274,16 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		await this.startInputTrack();
 	}
 
-	public async startCall(
-		calleeType: CallActorType,
-		calleeId: string,
-		params: { contactInfo?: CallContact; micless?: boolean } = {},
-	): Promise<void> {
+	public async startCall(calleeType: CallActorType, calleeId: string, params: { contactInfo?: CallContact } = {}): Promise<void> {
 		this.config.logger?.debug('MediaSignalingSession.startCall', calleeId);
 		if (this.getMainCall(false)) {
 			throw new Error(`Already on a call.`);
 		}
 
-		const { contactInfo, micless } = params;
+		const { contactInfo } = params;
 
 		const callId = this.createTemporaryCallId();
-		const call = this.createCall(callId, micless);
+		const call = this.createCall(callId);
 
 		await call.requestCall({ type: calleeType, id: calleeId }, this.config.features, contactInfo);
 	}
@@ -588,15 +580,6 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		return this.setInputTrack(inputTrack);
 	}
 
-	public async forceInputTrackUpdate(): Promise<void> {
-		if (this.inputTrack || !this.mayNeedInputTrack()) {
-			return;
-		}
-
-		await this.startInputTrack();
-	}
-
-	/* Internal calls do not require input (listen only) and are marked as muted at this point */
 	private hangupCallsThatNeedInput(): void {
 		this.config.logger?.debug('MediaSignalingSession.hangupCallsThatNeedInput');
 
@@ -665,7 +648,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		await this.setScreenVideoTrack(track, call);
 	}
 
-	private createCall(callId: string, micless?: boolean): ClientMediaCall {
+	private createCall(callId: string): ClientMediaCall {
 		this.config.logger?.debug('MediaSignalingSession.createCall');
 		const config = {
 			userId: this.config.userId,
@@ -676,7 +659,6 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			iceServers: this.config.iceServers || [],
 			sessionId: this._sessionId,
 			supportedFeatures: this.config.features,
-			micless,
 		};
 
 		const call = new ClientMediaCall(config, callId, { inputTrack: this.inputTrack });
@@ -788,9 +770,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 		this.lastState = { hasCall, hasVisibleCall, hasBusyCall };
 
-		const isNewCall = mainCall && !hadCall;
-
-		if (isNewCall) {
+		if (mainCall && !hadCall) {
 			this.emit('newCall', { call: mainCall });
 		}
 		if (mainCall && hasBusyCall && !hadBusyCall) {

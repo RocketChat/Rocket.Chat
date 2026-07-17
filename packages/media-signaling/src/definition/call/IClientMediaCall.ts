@@ -91,7 +91,6 @@ export interface IClientMediaCall {
 	ignored: boolean;
 	signed: boolean;
 	hidden: boolean;
-	micless: boolean;
 	/* busy = state >= 'accepted' && state < 'hangup' */
 	busy: boolean;
 
@@ -105,7 +104,7 @@ export interface IClientMediaCall {
 
 	emitter: Emitter<CallEvents>;
 
-	accept(options?: { micless?: boolean }): void;
+	accept(): void;
 	reject(): void;
 	hangup(): void;
 	requestScreenShare(requested: boolean): void;
