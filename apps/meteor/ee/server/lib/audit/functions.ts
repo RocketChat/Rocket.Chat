@@ -42,7 +42,6 @@ const getRoomInfoByAuditParams = async ({
 	}
 
 	if (type === 'l') {
-		console.warn('Deprecation Warning! This method will be removed in the next version (4.0.0)');
 		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId });
 		const rooms: IRoom[] = await LivechatRooms.findByVisitorIdAndAgentId(
 			visitor,
