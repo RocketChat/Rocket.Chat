@@ -1,4 +1,4 @@
-import { getSelectionRange } from '../../../../../app/ui-message/client/messageBox/selectionRange';
+import { getSelectionRange, setSelectionRange } from '../../../../../app/ui-message/client/messageBox/selectionRange';
 import type { ChatAPI } from '../../../../lib/chats/ChatAPI';
 
 const wrapSelectionPatterns: Record<string, string> = {
@@ -96,7 +96,14 @@ export const handleRichTextSelectionWrapping = (event: InputEvent, chat: ChatAPI
 		return false;
 	}
 
-	composer.wrapSelection(pattern);
+	const selection = composer.wrapSelection(pattern);
+	if (event.isComposing) {
+		once(input, 'input', (event) => {
+			input.innerText = selection.value;
+			setSelectionRange(input, selection.selectionStart, selection.selectionEnd);
+			event.preventDefault();
+		});
+	}
 
 	event.preventDefault();
 	return true;
