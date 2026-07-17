@@ -6602,9 +6602,17 @@ describe('[Users]', () => {
 		before(async () => {
 			totpUser = await createUser({ username: Random.id(), email: `${Random.id()}@example.com`, verified: true });
 			totpCredentials = await login(totpUser.username, password);
+			// enable 2FA + password fallback so twoFactorRequired actually challenges (a prior suite disables it globally)
+			await Promise.all([
+				updateSetting('Accounts_TwoFactorAuthentication_Enabled', true),
+				updateSetting('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback', true),
+			]);
 		});
 
-		after(async () => deleteUser(totpUser));
+		after(async () => {
+			await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
+			await deleteUser(totpUser);
+		});
 
 		describe('[/users.enableTotp]', () => {
 			it('should fail when unauthenticated', () => request.post(api('users.enableTotp')).expect(401));
