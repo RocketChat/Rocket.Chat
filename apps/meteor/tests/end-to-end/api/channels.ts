@@ -849,10 +849,10 @@ describe('[Channels]', () => {
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
+						createdRoomId = res.body.channel?._id;
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('channel.t', 'c');
 						expect(res.body).to.not.have.nested.property('channel.encrypted', true);
-						createdRoomId = res.body.channel._id;
 					});
 			});
 		});

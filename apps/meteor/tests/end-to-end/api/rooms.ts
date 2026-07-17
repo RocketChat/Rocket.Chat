@@ -2003,10 +2003,10 @@ describe('[Rooms]', () => {
 					})
 					.expect(200)
 					.expect((res) => {
+						createdDiscussionId = res.body.discussion?._id;
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('discussion.t', 'p');
 						expect(res.body).to.have.nested.property('discussion.encrypted', true);
-						createdDiscussionId = res.body.discussion._id;
 					});
 			});
 		});

@@ -319,10 +319,12 @@ describe('[Groups]', () => {
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
+						if (res.body.group?._id) {
+							createdRoomIds.push(res.body.group._id);
+						}
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('group.t', 'p');
 						expect(res.body).to.have.nested.property('group.encrypted', true);
-						createdRoomIds.push(res.body.group._id);
 					});
 			});
 
@@ -339,10 +341,12 @@ describe('[Groups]', () => {
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
+						if (res.body.group?._id) {
+							createdRoomIds.push(res.body.group._id);
+						}
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('group.t', 'p');
 						expect(res.body).to.have.nested.property('group.encrypted', true);
-						createdRoomIds.push(res.body.group._id);
 					});
 			});
 		});
