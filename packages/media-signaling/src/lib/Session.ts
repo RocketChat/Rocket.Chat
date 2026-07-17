@@ -77,6 +77,10 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	private registration: SessionRegistration;
 
+	private _micless: boolean = false;
+
+	private shouldToggleMute = false;
+
 	public get sessionId(): string {
 		return this._sessionId;
 	}
@@ -87,6 +91,17 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	public get registered(): boolean {
 		return this.registration.registered;
+	}
+
+	public set micless(micless: boolean) {
+		if (this._micless !== micless) {
+			this.shouldToggleMute = true;
+		}
+		this._micless = micless;
+	}
+
+	public get micless() {
+		return this._micless;
 	}
 
 	constructor(private config: MediaSignalingSessionConfig) {
@@ -784,6 +799,12 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 		this.emit('sessionStateChange');
 		this.requestInputTrackUpdate();
+		if (mainCall && this.shouldToggleMute) {
+			this.shouldToggleMute = false;
+			if (this._micless !== mainCall.muted) {
+				mainCall.setMuted(this._micless);
+			}
+		}
 
 		if (hadCall && !hasCall) {
 			this.emit('endedCall');
