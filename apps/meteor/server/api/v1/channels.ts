@@ -138,8 +138,16 @@ const successResponseSchema = ajv.compile<void>({
 // errors to 400 (the legacy addRoute wrapper did), so handlers catch and return a failure. Errors coming from
 // core-services cross a boundary and are not `instanceof Meteor.Error`, so extract message/errorType by shape.
 function errorToFailureArgs(error: unknown): [string, string | undefined] {
-	const e = error as { message?: unknown; error?: unknown };
-	return [typeof e?.message === 'string' ? e.message : String(error), typeof e?.error === 'string' ? e.error : undefined];
+	const e = error as { reason?: unknown; message?: unknown; error?: unknown };
+	// Prefer `reason` so the `[error-code]` suffix that Meteor.Error appends to `message` does not leak to clients.
+	let message = String(error);
+	if (typeof e?.message === 'string') {
+		message = e.message;
+	}
+	if (typeof e?.reason === 'string') {
+		message = e.reason;
+	}
+	return [message, typeof e?.error === 'string' ? e.error : undefined];
 }
 
 const stringFieldResponseSchema = <T>(field: 'description' | 'purpose' | 'topic') =>
@@ -1235,10 +1243,21 @@ API.v1.post(
 	},
 );
 
+// Uploads accept a client-supplied `fields` projection and store `content: null` for non-e2ee files,
+// so items are partial and cannot be validated against $ref IUploadWithUser (required, non-null shape).
+// Validate the array container strictly; leave item props open (only _id is guaranteed).
 const channelsFilesResponseSchema = ajv.compile<{ files: IUploadWithUser[]; count: number; offset: number; total: number }>({
 	type: 'object',
 	properties: {
-		files: { type: 'array', items: { $ref: '#/components/schemas/IUploadWithUser' } },
+		files: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: { _id: { type: 'string' } },
+				required: ['_id'],
+				additionalProperties: true,
+			},
+		},
 		count: { type: 'number' },
 		offset: { type: 'number' },
 		total: { type: 'number' },
@@ -1677,10 +1696,29 @@ const channelsMembersQuery = ajvQuery.compile<{
 	additionalProperties: false,
 });
 
+// findUsersOfRoom returns a fixed projection (not a full IUser), so validate against the projected
+// shape rather than $ref IUser (which would require createdAt/roles/type/active and reject real data).
 const channelsMembersResponseSchema = ajv.compile<{ members: IUser[]; count: number; offset: number; total: number }>({
 	type: 'object',
 	properties: {
-		members: { type: 'array', items: { $ref: '#/components/schemas/IUser' } },
+		members: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					_id: { type: 'string' },
+					name: { type: 'string' },
+					username: { type: 'string' },
+					nickname: { type: 'string' },
+					status: { type: 'string' },
+					avatarETag: { type: 'string' },
+					federated: { type: 'boolean' },
+					_updatedAt: { type: 'string' },
+				},
+				required: ['_id'],
+				additionalProperties: false,
+			},
+		},
 		count: { type: 'number' },
 		offset: { type: 'number' },
 		total: { type: 'number' },
