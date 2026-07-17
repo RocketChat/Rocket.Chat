@@ -15,7 +15,6 @@ prepareCreateRoomCallback.add(({ type, extraData }) => {
 		extraData.encrypted = extraData.encrypted ?? true;
 	}
 	if (type === 'p' && extraData.federated !== true && settings.get<boolean>('E2E_Force_Encryption_For_Private_Rooms')) {
-	if (type === 'p' && extraData.federated !== true && settings.get<boolean>('E2E_Force_Encryption_For_Private_Rooms')) {
 		if (extraData.encrypted === false) {
 			throw new Meteor.Error('error-encrypted-private-rooms-enforced', 'Workspace policy requires all private rooms to be encrypted.');
 		}
