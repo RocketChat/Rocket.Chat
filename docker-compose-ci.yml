@@ -221,6 +221,7 @@ services:
       - '--serverstransport.maxidleconnsperhost=-1'
       - --accesslog=true
       - --accesslog.format=json
+      - --log.level=DEBUG
     ports:
       - 3000:80
     volumes:
