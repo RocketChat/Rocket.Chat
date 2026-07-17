@@ -3,9 +3,14 @@ import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 import { Fragment } from 'react';
 import flattenChildren from 'react-keyed-flatten-children';
 
+import type { AnalyticsGridItemProps } from '../AnalyticsLayoutProps';
+
+// Grid layout props (AnalyticsGridItemProps) plus the border/paddingBlock knobs
+// the analytics Overview uses to flatten the row. Bounded on purpose.
 export type CounterRowProps = {
 	children?: ReactNode[];
-} & ComponentPropsWithoutRef<typeof Box>;
+} & AnalyticsGridItemProps &
+	Pick<ComponentPropsWithoutRef<typeof Box>, 'border' | 'paddingBlock'>;
 
 const CounterRow = ({ children, ...props }: CounterRowProps) => (
 	<Box

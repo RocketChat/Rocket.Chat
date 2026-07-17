@@ -1,10 +1,9 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
-import type { Box } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ComponentPropsWithoutRef } from 'react';
 
 import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
+import type { AnalyticsGridItemProps } from '../AnalyticsLayoutProps';
 import CounterContainer from '../counter/CounterContainer';
 
 const defaultValue = { title: '', value: '00:00:00' };
@@ -14,7 +13,7 @@ const initialData = [defaultValue, defaultValue, defaultValue, defaultValue];
 export type ProductivityOverviewProps = {
 	departmentId: ILivechatDepartment['_id'];
 	dateRange: { start: string; end: string };
-} & ComponentPropsWithoutRef<typeof Box>;
+} & AnalyticsGridItemProps;
 
 const ProductivityOverview = ({ departmentId, dateRange, ...props }: ProductivityOverviewProps) => {
 	const getProductivityTotals = useEndpoint('GET', '/v1/livechat/analytics/dashboards/productivity-totalizers');

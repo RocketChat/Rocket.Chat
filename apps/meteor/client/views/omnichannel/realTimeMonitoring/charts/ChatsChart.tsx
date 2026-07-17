@@ -1,10 +1,9 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
-import type { Box } from '@rocket.chat/fuselage';
 import { useEndpoint, type TranslationKey } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type * as chartjs from 'chart.js';
 import type { TFunction } from 'i18next';
-import type { ComponentPropsWithoutRef, MutableRefObject } from 'react';
+import type { MutableRefObject } from 'react';
 import { useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -13,6 +12,7 @@ import { useChartContext } from './useChartContext';
 import { useUpdateChartData } from './useUpdateChartData';
 import { drawDoughnutChart } from '../../../../../app/livechat/client/lib/chartHandler';
 import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
+import type { AnalyticsGridItemProps } from '../AnalyticsLayoutProps';
 
 const labels = ['Open', 'Queued', 'On_Hold_Chats', 'Closed'];
 
@@ -35,7 +35,7 @@ const init = (canvas: HTMLCanvasElement, context: chartjs.Chart<'doughnut'> | un
 export type ChatsChartProps = {
 	departmentId: ILivechatDepartment['_id'];
 	dateRange: { start: string; end: string };
-} & ComponentPropsWithoutRef<typeof Box>;
+} & AnalyticsGridItemProps;
 
 const ChatsChart = ({ departmentId, dateRange, ...props }: ChatsChartProps) => {
 	const { t } = useTranslation();

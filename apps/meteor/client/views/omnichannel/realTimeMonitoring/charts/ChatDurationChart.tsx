@@ -1,10 +1,8 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
-import type { Box } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type * as chartjs from 'chart.js';
 import type { TFunction } from 'i18next';
-import type { ComponentPropsWithoutRef } from 'react';
 import { useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -16,6 +14,7 @@ import { useUpdateChartData } from './useUpdateChartData';
 import { drawLineChart } from '../../../../../app/livechat/client/lib/chartHandler';
 import { secondsToHHMMSS } from '../../../../../lib/utils/secondsToHHMMSS';
 import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
+import type { AnalyticsGridItemProps } from '../AnalyticsLayoutProps';
 
 const [labels, initialData] = getMomentChartLabelsAndData();
 const tooltipCallbacks = {
@@ -43,7 +42,7 @@ const init = (canvas: HTMLCanvasElement, context: chartjs.Chart<'line'> | undefi
 export type ChatDurationChartProps = {
 	departmentId: ILivechatDepartment['_id'];
 	dateRange: { start: string; end: string };
-} & ComponentPropsWithoutRef<typeof Box>;
+} & AnalyticsGridItemProps;
 
 const ChatDurationChart = ({ departmentId, dateRange, ...props }: ChatDurationChartProps) => {
 	const { t } = useTranslation();
