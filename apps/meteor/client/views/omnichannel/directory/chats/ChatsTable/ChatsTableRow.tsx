@@ -1,5 +1,4 @@
 import type { IOmnichannelRoomWithDepartment } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
 import { Tag, Box } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
@@ -20,11 +19,7 @@ import { useOmnichannelDirectoryRouter } from '../../hooks/useOmnichannelDirecto
 /**
  * TODO: We should have a variant for aligning row cell instead of using custom CSS
  **/
-const customAlignTop = css`
-	td {
-		vertical-align: top;
-	}
-`;
+
 
 const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 	const { t } = useTranslation();
@@ -58,7 +53,7 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 	);
 
 	return (
-		<GenericTableRow className={customAlignTop} key={_id} tabIndex={0} onClick={() => onRowClick(_id)} action>
+		<GenericTableRow cellVerticalAlign='top' key={_id} tabIndex={0} onClick={() => onRowClick(_id)} action>
 			<GenericTableCell withTruncatedText>
 				<Box display='flex' flexDirection='column'>
 					<Box withTruncatedText fontScale='p2m' color='default'>

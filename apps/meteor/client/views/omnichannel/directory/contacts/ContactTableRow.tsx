@@ -1,4 +1,3 @@
-import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { ILivechatContactWithManagerData } from '@rocket.chat/rest-typings';
@@ -49,7 +48,7 @@ const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILiv
 			tabIndex={0}
 			height='40px'
 			rcx-show-call-button-on-hover
-			className={customAlignTop}
+			cellVerticalAlign='top'
 			onClick={() => onRowClick(_id)}
 		>
 			<GenericTableCell fontScale='p2m' color='default' withTruncatedText>
