@@ -6,6 +6,7 @@ import type {
 	IRoom,
 	IStats,
 	IUser,
+	IVideoConference,
 	IVoIPVideoConference,
 	VideoConference,
 	VideoConferenceCapabilities,
@@ -53,12 +54,12 @@ export interface IVideoConfService {
 	assignDiscussionToConference(callId: VideoConference['_id'], rid: IRoom['_id'] | undefined): Promise<void>;
 	createConferenceDiscussionWithParticipants(
 		uid: IUser['_id'],
-		callId: VideoConference['_id'],
+		conference: AtLeast<IVideoConference, '_id' | 'rid' | 'discussionRid'>,
 		usernames: NonNullable<IUser['username']>[],
 	): Promise<IRoom['_id']>;
 	addUsersToConferenceRoom(
 		uid: IUser['_id'],
-		callId: VideoConference['_id'],
+		conference: AtLeast<IVideoConference, '_id' | 'rid' | 'discussionRid'>,
 		usernames: NonNullable<IUser['username']>[],
 	): Promise<IRoom['_id']>;
 	createVoIP(data: InsertionModel<IVoIPVideoConference>): Promise<IVoIPVideoConference['_id'] | undefined>;
