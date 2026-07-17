@@ -26,9 +26,9 @@ import _ from 'underscore';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../lib/notifyListener';
+import { refreshLoginServices } from '../../lib/refreshLoginServices';
 import { SettingValidationError, validateSettingRules } from '../../lib/settingValidationRules';
 import { disableCustomScripts } from '../../lib/shared/disableCustomScripts';
-import { refreshLoginServices } from '../../lib/refreshLoginServices';
 import { addOAuthServiceMethod } from '../../meteor-methods/auth/addOAuthService';
 import { removeCustomOAuthSettings } from '../../meteor-methods/auth/removeOAuthService';
 import { SettingsEvents, settings } from '../../settings';
