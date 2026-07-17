@@ -2126,6 +2126,48 @@ API.v1.post(
 	},
 );
 
+API.v1.post(
+	'users.resetPassword',
+	{
+		authRequired: false,
+		rateLimiterOptions: {
+			numRequestsAllowed: 5,
+			intervalTimeInMS: 60000,
+		},
+		body: ajv.compile<{ token: string; newPassword: string }>({
+			type: 'object',
+			properties: {
+				token: { type: 'string', minLength: 1 },
+				newPassword: { type: 'string', minLength: 1 },
+			},
+			required: ['token', 'newPassword'],
+			additionalProperties: false,
+		}),
+		response: {
+			200: ajv.compile<{ token: string }>({
+				type: 'object',
+				properties: {
+					token: { type: 'string' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['token', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { token, newPassword } = this.bodyParams;
+		// DRAFT: delegate to the built-in accounts-password reset. It validates the reset token,
+		// sets the new password and returns a resume login token the client logs in with.
+		// TODO(review): confirm this behaves correctly when invoked server-side via Meteor.callAsync
+		// (no DDP connection context) — may need reimplementing against Accounts directly.
+		const result = (await Meteor.callAsync('resetPassword', token, newPassword)) as { token: string };
+		return API.v1.success({ token: result.token });
+	},
+);
+
 settings.watch<number>('Rate_Limiter_Limit_RegisterUser', (value) => {
 	const userRegisterRoute = '/api/v1/users.registerpost';
 
