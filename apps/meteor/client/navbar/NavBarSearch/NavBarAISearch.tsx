@@ -24,15 +24,10 @@ const NavBarAISearch = () => {
 	const shortcut = getShortcutLabel();
 
 	const methods = useForm<NavBarSearchFormValues>({ defaultValues: { filterText: '', appliedFilters: emptySearchFilters() } });
-	const {
-		formState: { isDirty },
-		register,
-		reset,
-		setFocus,
-		setValue,
-		watch,
-	} = methods;
-	const { filterText, appliedFilters } = watch();
+	const { register, resetField, setFocus, setValue, watch } = methods;
+	const formValues = watch();
+	const filterText = formValues.filterText ?? '';
+	const appliedFilters = formValues.appliedFilters ?? emptySearchFilters();
 
 	const { ref: filterRef, ...rest } = register('filterText');
 
@@ -54,12 +49,13 @@ const NavBarAISearch = () => {
 	const placeholder = [searchLabel, shortcut].filter(Boolean).join(' ');
 
 	const handleEscSearch = useCallback(() => {
-		reset();
+		resetField('filterText');
+		setValue('appliedFilters', emptySearchFilters(), { shouldDirty: true });
 		state.close();
-	}, [reset, state]);
+	}, [resetField, setValue, state]);
 
 	const handleClearText = useStableCallback(() => {
-		reset();
+		resetField('filterText');
 		setFocus('filterText');
 	});
 
@@ -106,7 +102,7 @@ const NavBarAISearch = () => {
 							appliedFilterChips={appliedFilterChips}
 							aiSearchActive={aiSearchActive}
 							aiSearchButtonTooltip={aiSearchButtonTooltip}
-							isDirty={isDirty}
+							hasSearchText={Boolean(filterText)}
 							onClearText={handleClearText}
 							onRemoveFilter={handleRemoveFilter}
 							onToggleAISearch={handleToggleAISearch}

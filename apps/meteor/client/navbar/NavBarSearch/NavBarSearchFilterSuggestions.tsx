@@ -1,4 +1,5 @@
 import {
+	emptySearchFilters,
 	mergeSearchFilters,
 	parseSearchFilterText,
 	type NavBarSearchFormValues,
@@ -46,7 +47,8 @@ const NavBarSearchFilterSuggestions = ({ suggestions }: NavBarSearchFilterSugges
 			event.preventDefault();
 			event.stopPropagation();
 			const { searchText, filters } = parseSearchFilterText(value);
-			setValue('appliedFilters', mergeSearchFilters(getValues('appliedFilters'), filters), { shouldDirty: true });
+			const appliedFilters = getValues('appliedFilters') ?? emptySearchFilters();
+			setValue('appliedFilters', mergeSearchFilters(appliedFilters, filters), { shouldDirty: true });
 			setValue('filterText', searchText, { shouldDirty: true });
 			setFocus('filterText');
 		},
