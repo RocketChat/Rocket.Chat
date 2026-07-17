@@ -42,7 +42,7 @@ export const MediaCallWidgetManualTesting: Story = {
 		const { state } = sessionState;
 		return (
 			<>
-				<Button onClick={() => toggleWidget()} disabled={state !== 'new' && state !== 'closed'} mie={8}>
+				<Button onClick={() => toggleWidget()} disabled={state !== 'new' && state !== 'closed'} marginInlineEnd={8}>
 					Toggle widget
 				</Button>
 				<Button onClick={() => onCall()} disabled={state !== 'closed'}>

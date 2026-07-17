@@ -68,8 +68,8 @@ const WebdavFilePickerTable = ({ webdavNodes, sortBy, sortDirection, onSort, onN
 
 								return (
 									<GenericTableRow key={index} onClick={(): void => onNodeClick(webdavNode)} tabIndex={index} role='link' action>
-										<GenericTableCell fontScale='p2' color='default' w='x200' display='flex' alignItems='center'>
-											<Icon mie={4} size='x20' name={icon} />
+										<GenericTableCell fontScale='p2' color='default' width='x200' display='flex' alignItems='center'>
+											<Icon marginInlineEnd={4} size='x20' name={icon} />
 											<Box withTruncatedText>{webdavNode.basename}</Box>
 										</GenericTableCell>
 										<GenericTableCell fontScale='p2' color='default'>

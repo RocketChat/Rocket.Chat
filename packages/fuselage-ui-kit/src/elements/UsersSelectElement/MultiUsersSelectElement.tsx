@@ -36,9 +36,9 @@ const MultiUsersSelectElement = ({ block, context }: MultiUsersSelectElementProp
 			onChange={handleChange}
 			multiple
 			renderSelected={({ selected: { value, label }, onRemove, ...props }) => (
-				<Chip {...props} height='x20' value={value} onClick={onRemove} mie={4}>
+				<Chip {...props} height='x20' value={value} onClick={onRemove} marginInlineEnd={4}>
 					<UserAvatar size='x20' username={value} />
-					<Box is='span' margin='none' mis={4}>
+					<Box is='span' margin='none' marginInlineStart={4}>
 						{label}
 					</Box>
 				</Chip>

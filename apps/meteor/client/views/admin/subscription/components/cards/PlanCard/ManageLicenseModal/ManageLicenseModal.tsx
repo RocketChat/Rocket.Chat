@@ -120,7 +120,7 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 			onConfirm={handleApply}
 			onCancel={onCancel}
 		>
-			<Box fontScale='p2' mbe={8}>
+			<Box fontScale='p2' marginBlockEnd={8}>
 				{t('Manage_license_description')}
 			</Box>
 			<Box
@@ -142,9 +142,9 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 				<FieldRow>
 					<TextAreaInput
 						withRichContent
-						mbe={8}
+						marginBlockEnd={8}
 						width='100%'
-						bg={isDragOver ? 'tint' : undefined}
+						backgroundColor={isDragOver ? 'tint' : undefined}
 						borderStyle={isDragOver ? 'dashed' : 'solid'}
 						borderColor={isDragOver ? 'stroke-highlight' : 'stroke-light'}
 						style={{ fontFamily: 'monospace' }}
@@ -170,7 +170,7 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 				)}
 			</ButtonGroup>
 			{showStatus && (
-				<Box mbs={16}>
+				<Box marginBlockStart={16}>
 					<LicenseStatus isValidating={isValidating} isValid={isLicenseValid} invalidMessage={invalidMessage} />
 				</Box>
 			)}

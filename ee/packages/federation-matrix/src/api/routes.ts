@@ -1,10 +1,12 @@
 import { Router } from '@rocket.chat/http-router';
 
 import { getWellKnownRoutes } from './.well-known/server';
+import { getClientRoutes } from './_matrix/client';
 import { getMatrixInviteRoutes } from './_matrix/invite';
 import { getKeyServerRoutes } from './_matrix/key/server';
 import { getMatrixMakeLeaveRoutes } from './_matrix/make-leave';
 import { getMatrixMediaRoutes } from './_matrix/media';
+import { getMatrixMediaBridgeRoutes } from './_matrix/media-bridge';
 import { getMatrixProfilesRoutes } from './_matrix/profiles';
 import { getMatrixRoomsRoutes } from './_matrix/rooms';
 import { getMatrixSendJoinRoutes } from './_matrix/send-join';
@@ -24,6 +26,8 @@ export const getFederationRoutes = (version: string): { matrix: Router<'/_matrix
 		.use(isLicenseEnabledMiddleware)
 		.use(getKeyServerRoutes())
 		.use(getFederationVersionsRoutes(version))
+		.use(getClientRoutes())
+		.use(getMatrixMediaBridgeRoutes())
 		.use(isFederationDomainAllowedMiddleware)
 		.use(getMatrixInviteRoutes())
 		.use(getMatrixProfilesRoutes())

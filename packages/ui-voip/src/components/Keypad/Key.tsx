@@ -35,8 +35,8 @@ const Key = ({ primaryKey, alternativeKey, longPressKey, onLongKeyPress, onKeyPr
 	const buttonProps = longPressKey ? mergeProps(pressProps, longPressProps) : pressProps;
 
 	return (
-		<Button minWidth={52} w={52} h={40} p={0} m={4} {...buttonProps} className={dialPadButtonClass} borderRadius={8}>
-			<Box is='span' fontScale={large ? 'h1' : 'p1'} fontWeight={large ? 300 : 400} mb={-4}>
+		<Button minWidth={52} width={52} height={40} padding={0} margin={4} {...buttonProps} className={dialPadButtonClass} borderRadius={8}>
+			<Box is='span' fontScale={large ? 'h1' : 'p1'} fontWeight={large ? 300 : 400} marginBlock={-4}>
 				{primaryKey}
 			</Box>
 			<Box is='span' fontScale='c1' color='hint' aria-hidden minHeight={16} letterSpacing='0.15em'>

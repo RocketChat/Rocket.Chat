@@ -33,7 +33,7 @@ function RangeSettingInput({
 			</FieldRow>
 			{hint && (
 				<FieldRow>
-					<FieldHint mbe={4}>{hint}</FieldHint>
+					<FieldHint marginBlockEnd={4}>{hint}</FieldHint>
 				</FieldRow>
 			)}
 			<FieldRow>

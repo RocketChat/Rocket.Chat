@@ -136,7 +136,7 @@ const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
 					</Button>
 				</ButtonGroup>
 				{_id && (
-					<Box mbs={8}>
+					<Box marginBlockStart={8}>
 						<ButtonGroup stretch>
 							<Button icon='trash' danger onClick={() => handleDeleteTag(_id)}>
 								{t('Delete')}

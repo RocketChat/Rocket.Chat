@@ -56,12 +56,12 @@ const ChannelDesertionTable = ({
 	}, [rooms, sortBy, sortDirection]);
 
 	return (
-		<Box display='flex' flexDirection='column' height='x200' mbs={24}>
+		<Box display='flex' flexDirection='column' height='x200' marginBlockStart={24}>
 			<GenericTable fixed={false}>
 				<GenericTableHeader>
 					<GenericTableHeaderCell key='name' sort='name' onClick={setSort} direction={sortDirection} active={sortBy === 'name'}>
 						<CheckBox indeterminate={indeterminate} checked={checked} onChange={onToggleAllRooms} />
-						<Box mi={8}>{t('Channel_name')}</Box>
+						<Box marginInline={8}>{t('Channel_name')}</Box>
 					</GenericTableHeaderCell>
 					<GenericTableHeaderCell key='ts' sort='ts' onClick={setSort} direction={sortDirection} active={sortBy === 'ts'}>
 						<Box width='100%' textAlign='end'>

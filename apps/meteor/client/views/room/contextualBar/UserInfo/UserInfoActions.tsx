@@ -66,7 +66,7 @@ const UserInfoActions = ({ user, rid, isInvited, backToList }: UserInfoActionsPr
 	}, [actionsDefinition, menu]);
 
 	if (isPending) {
-		return <Skeleton w='full' />;
+		return <Skeleton width='full' />;
 	}
 	return <ButtonGroup align='center'>{actions}</ButtonGroup>;
 };

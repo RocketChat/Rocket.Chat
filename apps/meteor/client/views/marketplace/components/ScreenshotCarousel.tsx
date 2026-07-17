@@ -37,7 +37,15 @@ const ScreenshotCarousel = ({
 			return (
 				<Box style={screenshotWrapperStyle} key={currentScreenshot.id}>
 					{isCurrentImageOnScreen && (
-						<Box is='img' src={currentScreenshot.accessUrl} alt='Carousel image' maxWidth='x1200' maxHeight='x600' w='100%' height='100%' />
+						<Box
+							is='img'
+							src={currentScreenshot.accessUrl}
+							alt='Carousel image'
+							maxWidth='x1200'
+							maxHeight='x600'
+							width='100%'
+							height='100%'
+						/>
 					)}
 				</Box>
 			);
@@ -45,7 +53,7 @@ const ScreenshotCarousel = ({
 
 	return (
 		<>
-			<Box position='fixed' w='100%' h='100vh' bg='font-pure-black' opacity='0.7' marginBlock='-0.75px' zIndex='2' />
+			<Box position='fixed' width='100%' height='100vh' backgroundColor='font-pure-black' opacity='0.7' marginBlock='-0.75px' zIndex='2' />
 
 			{!isFirstSlide && (
 				<IconButton
@@ -78,7 +86,7 @@ const ScreenshotCarousel = ({
 				justifyContent='center'
 				alignItems='center'
 				zIndex='2'
-				mi={38}
+				marginInline={38}
 			>
 				{handleScreenshotRender()}
 			</Box>

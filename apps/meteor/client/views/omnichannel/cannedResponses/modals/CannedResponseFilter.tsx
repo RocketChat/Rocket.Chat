@@ -28,21 +28,21 @@ const CannedResponsesFilter = ({ createdBy, setCreatedBy, sharing, setSharing, t
 	];
 
 	return (
-		<Box mb={16} display='flex' flexDirection='row'>
-			<Box display='flex' mie={8} flexGrow={1} flexDirection='column'>
-				<Box mb={4}>{t('Search')}</Box>
+		<Box marginBlock={16} display='flex' flexDirection='row'>
+			<Box display='flex' marginInlineEnd={8} flexGrow={1} flexDirection='column'>
+				<Box marginBlock={4}>{t('Search')}</Box>
 				<TextInput
 					value={text}
 					onChange={(e: ChangeEvent<HTMLInputElement>) => setText(e.target.value)}
 					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
 			</Box>
-			<Box display='flex' mie={8} flexGrow={1} flexDirection='column'>
-				<Box mb={4}>{t('Sharing')}</Box>
+			<Box display='flex' marginInlineEnd={8} flexGrow={1} flexDirection='column'>
+				<Box marginBlock={4}>{t('Sharing')}</Box>
 				<Select value={sharing} onChange={(value) => setSharing(value as SharingValues)} options={sharingList} />
 			</Box>
-			<Box display='flex' mie={8} flexGrow={1} flexDirection='column'>
-				<Box mb={4}>{t('Created_by')}</Box>
+			<Box display='flex' marginInlineEnd={8} flexGrow={1} flexDirection='column'>
+				<Box marginBlock={4}>{t('Created_by')}</Box>
 				<AutoCompleteAgent value={createdBy} onChange={setCreatedBy} haveAll />
 			</Box>
 		</Box>

@@ -30,7 +30,13 @@ const TemplatePlaceholderInput = ({ contact, value = '', type, onChange, ...prop
 		<Box display='flex' width='100%'>
 			<TextInput {...props} ref={inputRef} value={value} endAddon={addon} onChange={handleChange as ChangeEventHandler<HTMLInputElement>} />
 
-			<PlaceholderSelector disabled={type !== 'text'} mis={12} contact={contact} onSelect={handleChange} onOpenChange={handleOpenToggle} />
+			<PlaceholderSelector
+				disabled={type !== 'text'}
+				marginInlineStart={12}
+				contact={contact}
+				onSelect={handleChange}
+				onOpenChange={handleOpenToggle}
+			/>
 		</Box>
 	);
 };

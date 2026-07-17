@@ -115,7 +115,7 @@ const CreateDiscussion = ({
 			cancelText={t('Cancel')}
 			confirmLoading={createDiscussionMutation.isPending}
 		>
-			<Box mbe={24}>{t('Discussion_description')}</Box>
+			<Box marginBlockEnd={24}>{t('Discussion_description')}</Box>
 			<FieldGroup>
 				<Field>
 					<FieldLabel required>{t('Discussion_target_channel')}</FieldLabel>

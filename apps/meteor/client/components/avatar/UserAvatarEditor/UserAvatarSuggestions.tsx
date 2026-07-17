@@ -19,7 +19,7 @@ function UserAvatarSuggestions({ disabled, onSelectOne }: UserAvatarSuggestionsP
 			{suggestions.map(
 				(suggestion) =>
 					suggestion.blob && (
-						<Button key={suggestion.service} square disabled={disabled} mi={4} onClick={handleClick(suggestion)}>
+						<Button key={suggestion.service} square disabled={disabled} marginInline={4} onClick={handleClick(suggestion)}>
 							<Avatar title={suggestion.service} url={suggestion.blob} />
 						</Button>
 					),

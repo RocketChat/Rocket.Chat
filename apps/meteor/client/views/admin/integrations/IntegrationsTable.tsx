@@ -67,7 +67,7 @@ const IntegrationsTable = ({ type }: IntegrationsTableProps) => {
 				active={sortBy === 'name'}
 				onClick={setSort}
 				sort='name'
-				{...(!isMobile && { w: 'x280' })}
+				{...(!isMobile && { width: 'x280' })}
 			>
 				{t('Name')}
 			</GenericTableHeaderCell>

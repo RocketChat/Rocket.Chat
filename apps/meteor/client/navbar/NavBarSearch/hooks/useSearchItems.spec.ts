@@ -5,6 +5,17 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { useSearchItems } from './useSearchItems';
 
 describe('useSearchItems', () => {
+	it('should treat an unset filter as an empty search', () => {
+		const wrapper = mockAppRoot()
+			.withSubscriptions([])
+			.withEndpoint('GET', '/v1/spotlight', () => ({ users: [], rooms: [] }))
+			.build();
+
+		const { result } = renderHook(() => useSearchItems(undefined), { wrapper });
+
+		expect(result.current.items).toEqual([]);
+	});
+
 	it('should deduplicate a user if they already exist in local subscriptions as a self-DM', async () => {
 		const myUserName = 'rocketchat.internal.admin.test';
 		const myUserId = 'user_id_456';

@@ -33,3 +33,11 @@ it('should return true if featurePreviewEnabled is true and feature is in userPr
 
 	expect(result.current).toBe(true);
 });
+
+it('should enable AI Search by default when feature preview is available', () => {
+	const { result } = renderHook(() => useFeaturePreview('aiSearch'), {
+		wrapper: mockAppRoot().withSetting('Accounts_AllowFeaturePreview', true).build(),
+	});
+
+	expect(result.current).toBe(true);
+});

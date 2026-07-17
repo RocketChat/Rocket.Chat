@@ -3,4 +3,4 @@ import type { ComponentProps } from 'react';
 
 export type BackdropProps = ComponentProps<typeof ModalBackdrop>;
 
-export const Backdrop = (props: BackdropProps) => <ModalBackdrop bg='transparent' {...props} />;
+export const Backdrop = (props: BackdropProps) => <ModalBackdrop backgroundColor='transparent' {...props} />;
