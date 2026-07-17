@@ -21,7 +21,7 @@ import useWidgetPositionTracker from './useWidgetPositionTracker';
 import { useMediaCallInstance } from '../context/MediaCallInstanceContext';
 import MediaCallViewContext from '../context/MediaCallViewContext';
 import type { PeerInfo } from '../context/definitions';
-import { stopTracks, useDevicePermissionPrompt2, PermissionRequestCancelledCallRejectedError } from '../hooks/useDevicePermissionPrompt';
+import { stopTracks, useDevicePermissionPrompt2 } from '../hooks/useDevicePermissionPrompt';
 import { isValidTone, useTonePlayer } from '../hooks/useTonePlayer';
 import TransferModal from '../views/TransferModal';
 
@@ -102,6 +102,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 			if ('number' in peerInfo) {
 				void controls.startCall(peerInfo.number, 'sip', { micless });
 			}
+			throw new Error('MediaCall - New call - something went wrong when trying to call. PeerInfo is missing userId and/or number.');
 		};
 
 		try {
@@ -110,13 +111,8 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 			startCall();
 		} catch (error) {
 			console.error('Media Call - Error requesting device', error);
-			if (error instanceof PermissionRequestCancelledCallRejectedError) {
-				startCall(true);
-			}
-			return;
+			startCall(true);
 		}
-
-		throw new Error('MediaCall - New call - something went wrong when trying to call. PeerInfo is missing userId and/or number.');
 	};
 
 	const onAccept = async () => {
@@ -129,9 +125,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 			const stream = await requestDevice({ actionType: 'incoming' });
 			stopTracks(stream);
 		} catch (error) {
-			if (error instanceof PermissionRequestCancelledCallRejectedError) {
-				controls.acceptCall({ micless: true });
-			}
+			controls.acceptCall({ micless: true });
 			return;
 		}
 
