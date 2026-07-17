@@ -15,12 +15,7 @@ const listen = (server: Server): Promise<number> =>
 // webapp configures) aborts the in-flight response via socketOnEnd -> socket.end()
 // instead of delivering the rest of it. A client that half-closes after fully
 // sending its request is entitled to the complete response.
-//
-// Skipped: the flake was neutralized in CI via traefik config (upstream
-// keep-alive restored, idleConnTimeout below the webapp 5s reaper), leaving
-// this server behavior in place. The two half-close cases fail by design —
-// unskip if hardening the server against half-closing clients.
-describe.skip('http server response delivery to half-closing clients', () => {
+describe('http server response delivery to half-closing clients', () => {
 	const startServer = async (): Promise<{ server: Server; port: number }> => {
 		const server = createServer((_req, res) => {
 			res.writeHead(200, { 'Content-Type': 'application/json' });
