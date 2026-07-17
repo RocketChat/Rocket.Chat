@@ -2131,6 +2131,8 @@ API.v1
 		'users.enableTotp',
 		{
 			authRequired: true,
+			twoFactorRequired: true,
+			twoFactorOptions: { disableRememberMe: true },
 			rateLimiterOptions: {
 				numRequestsAllowed: 5,
 				intervalTimeInMS: 60000,
@@ -2191,6 +2193,8 @@ API.v1
 		'users.validateTotp',
 		{
 			authRequired: true,
+			twoFactorRequired: true,
+			twoFactorOptions: { disableRememberMe: true },
 			rateLimiterOptions: {
 				numRequestsAllowed: 5,
 				intervalTimeInMS: 60000,

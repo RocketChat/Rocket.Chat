@@ -11,4 +11,6 @@ Adds five new REST endpoints covering the TOTP 2FA flows that previously only ex
 - `POST /v1/users.regenerateTotpCodes` body `{ code }` → `{ codes }` (replaces `2fa:regenerateCodes`)
 - `GET /v1/users.totpCodesRemaining` → `{ remaining }` (replaces `2fa:checkCodesRemaining`)
 
+`users.enableTotp` and `users.validateTotp` require two-factor verification (`twoFactorRequired`) so enrolling a new TOTP device confirms the account owner's identity first — closing a 2FA-enrollment bypass where a hijacked session could register an attacker-controlled TOTP without verifying the existing 2FA. All five endpoints are rate-limited.
+
 The legacy DDP methods stay registered with deprecation logs pointing at the new routes until 9.0.0 removes them.

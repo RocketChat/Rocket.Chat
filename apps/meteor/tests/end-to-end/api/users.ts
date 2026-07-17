@@ -6592,6 +6592,13 @@ describe('[Users]', () => {
 		// speakeasy verify is stateless, so the same code is accepted repeatedly within its window — safe to reuse across the flow
 		const totpCode = () => speakeasy.totp({ secret, encoding: 'base32' });
 
+		// enableTotp/validateTotp are twoFactorRequired: enrolling a new 2FA method must verify identity first.
+		// The fresh user has no active 2FA, so the password fallback satisfies the challenge.
+		const twoFactorHeader = {
+			'x-2fa-code': crypto.createHash('sha256').update(password, 'utf8').digest('hex'),
+			'x-2fa-method': 'password',
+		};
+
 		before(async () => {
 			totpUser = await createUser({ username: Random.id(), email: `${Random.id()}@example.com`, verified: true });
 			totpCredentials = await login(totpUser.username, password);
@@ -6602,10 +6609,21 @@ describe('[Users]', () => {
 		describe('[/users.enableTotp]', () => {
 			it('should fail when unauthenticated', () => request.post(api('users.enableTotp')).expect(401));
 
-			it('should return a secret and an otpauth url', () =>
+			it('should fail with totp-required when the 2FA challenge is not satisfied', () =>
 				request
 					.post(api('users.enableTotp'))
 					.set(totpCredentials)
+					.expect(400)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'totp-required');
+					}));
+
+			it('should return a secret and an otpauth url when the 2FA challenge is satisfied', () =>
+				request
+					.post(api('users.enableTotp'))
+					.set(totpCredentials)
+					.set(twoFactorHeader)
 					.expect(200)
 					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', true);
@@ -6621,13 +6639,25 @@ describe('[Users]', () => {
 		describe('[/users.validateTotp]', () => {
 			it('should fail when unauthenticated', () => request.post(api('users.validateTotp')).send({ code: '000000' }).expect(401));
 
+			it('should fail with totp-required when the 2FA challenge is not satisfied', () =>
+				request
+					.post(api('users.validateTotp'))
+					.set(totpCredentials)
+					.send({ code: totpCode() })
+					.expect(400)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'totp-required');
+					}));
+
 			it('should fail with 400 when the code is missing', () =>
-				request.post(api('users.validateTotp')).set(totpCredentials).send({}).expect(400));
+				request.post(api('users.validateTotp')).set(totpCredentials).set(twoFactorHeader).send({}).expect(400));
 
 			it('should enable totp and return backup codes for a valid code', () =>
 				request
 					.post(api('users.validateTotp'))
 					.set(totpCredentials)
+					.set(twoFactorHeader)
 					.send({ code: totpCode() })
 					.expect(200)
 					.expect((res: Response) => {
