@@ -1,6 +1,6 @@
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 export const useDraft = (rid: string, serverDraft?: string, tmid?: string, threadExists = true) => {
 	const storageKey = `messagebox_${rid}${tmid ? `-${tmid}` : ''}`;
@@ -9,6 +9,10 @@ export const useDraft = (rid: string, serverDraft?: string, tmid?: string, threa
 	const initialValueRef = useRef(serverDraft || localDraft);
 	const draftRef = useRef<string | null>(null);
 	const threadExistsRef = useRef(threadExists);
+
+	useEffect(() => {
+		threadExistsRef.current = threadExists;
+	}, [threadExists]);
 
 	const persistLocal = useCallback(
 		(value: string) => {
