@@ -5,8 +5,8 @@ import { Messages } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../../server/lib/deprecationWarningLogger';
 import { canAccessRoomIdAsync } from '../../../server/lib/authorization/canAccessRoom';
+import { methodDeprecationLogger } from '../../../server/lib/deprecationWarningLogger';
 import { ReadReceipt } from '../lib/message-read-receipt/ReadReceipt';
 
 declare module '@rocket.chat/ddp-client' {

@@ -13,10 +13,10 @@ import { RateLimiterClass as RateLimiter } from '../../lib/RateLimiter';
 import { canSendMessageAsync } from '../../lib/authorization/canSendMessage';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { applyAirGappedRestrictionsValidation } from '../../lib/cloud/license/airGappedRestrictionsWrapper';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { i18n } from '../../lib/i18n';
 import { SystemLogger } from '../../lib/logger/system';
 import { sendMessage } from '../../lib/messages/sendMessage';
-import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { metrics } from '../../lib/metrics';
 import { settings } from '../../settings';
 /**
