@@ -7,6 +7,7 @@ import { useEffect, useSyncExternalStore, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MediaCallLogger } from './MediaCallLogger';
+import { stopTracks } from '../hooks';
 import { useIceServers } from '../hooks/useIceServers';
 
 type SignalTransport = MediaSignalTransport<ClientMediaSignal>;
@@ -31,6 +32,35 @@ type MediaSessionStoreEventMap = {
 const MAX_FAILED_SCREEN_SHARE_ATTEMPTS = 3;
 const isNotAllowedError = (error: unknown): error is DOMException & { name: 'NotAllowedError' } => {
 	return error instanceof DOMException && error.name === 'NotAllowedError';
+};
+
+let fakeStream: { audioCtx: AudioContext; audioTrack: MediaStreamTrack; stream: MediaStream } | null = null;
+
+const getFakeStream = () => {
+	if (fakeStream) {
+		stopFakeStream();
+	}
+
+	const audioCtx = new AudioContext();
+	const { stream } = audioCtx.createMediaStreamDestination();
+	const audioTrack = stream.getAudioTracks()[0];
+
+	fakeStream = {
+		audioCtx,
+		audioTrack,
+		stream,
+	};
+
+	return fakeStream.stream;
+};
+
+const stopFakeStream = () => {
+	if (!fakeStream) {
+		return;
+	}
+	stopTracks(fakeStream.stream);
+	void fakeStream.audioCtx.close();
+	fakeStream = null;
 };
 
 class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
@@ -95,6 +125,27 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 		return oldSessionId;
 	}
 
+	private async getUserMedia(constraints: MediaStreamConstraints) {
+		try {
+			const stream = await navigator.mediaDevices.getUserMedia(constraints);
+			if (!stream) {
+				throw new Error();
+			}
+			// Wait a little to ensure the track switch happened.
+			// It's ok for the old stream/audioCtx to hang unused for a little
+			setTimeout(stopFakeStream, 1000);
+			if (this.sessionInstance) {
+				this.sessionInstance.micless = false;
+			}
+			return stream;
+		} catch (error) {
+			if (this.sessionInstance) {
+				this.sessionInstance.micless = true;
+			}
+			return getFakeStream();
+		}
+	}
+
 	private async getDisplayMedia(constraints: MediaStreamConstraints) {
 		try {
 			const actualWindow = this.popoutWindow || window;
@@ -154,7 +205,7 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 				webrtc: (config) => this.webrtcProcessorFactory(config),
 			},
 			displayMediaFactory: (...args) => this.getDisplayMedia(...args),
-			mediaStreamFactory: (...args) => navigator.mediaDevices.getUserMedia(...args),
+			mediaStreamFactory: (...args) => this.getUserMedia(...args),
 			randomStringFactory,
 			oldSessionId: this.getOldSessionId(userId),
 			logger: this.logger,
