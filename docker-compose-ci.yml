@@ -38,7 +38,12 @@ services:
       traefik.http.services.rocketchat.loadbalancer.server.port: 3000
       traefik.http.routers.rocketchat.service: rocketchat
       traefik.http.routers.rocketchat.rule: PathPrefix(`/`)
-      traefik.http.routers.rocketchat.middlewares: test-retry
+      # meteor webapp reaps idle sockets after 5s, so traefik's pooled upstream
+      # conns die server-side between bursts; buffering makes request bodies
+      # replayable so retry can transparently re-send on a fresh conn when it
+      # picks a reaped one (dead-conn reuse fails before response headers)
+      traefik.http.routers.rocketchat.middlewares: test-buffer,test-retry
+      traefik.http.middlewares.test-buffer.buffering.retryExpression: IsNetworkError() && Attempts() < 4
       traefik.http.middlewares.test-retry.retry.attempts: 4
     healthcheck:
       interval: 2s
@@ -231,9 +236,6 @@ services:
     image: traefik:v3.6.6
     command:
       - --providers.docker=true
-      # keep upstream keep-alive enabled, but drop idle conns before the
-      # meteor webapp 5s idle-socket reaper can kill one traefik would reuse
-      - --serverstransport.forwardingtimeouts.idleconntimeout=3s
       - --accesslog=true
       - --accesslog.format=json
       - --log.level=DEBUG
