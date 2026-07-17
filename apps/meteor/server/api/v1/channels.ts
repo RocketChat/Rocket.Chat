@@ -138,16 +138,8 @@ const successResponseSchema = ajv.compile<void>({
 // errors to 400 (the legacy addRoute wrapper did), so handlers catch and return a failure. Errors coming from
 // core-services cross a boundary and are not `instanceof Meteor.Error`, so extract message/errorType by shape.
 function errorToFailureArgs(error: unknown): [string, string | undefined] {
-	const e = error as { reason?: unknown; message?: unknown; error?: unknown };
-	// Prefer `reason` so the `[error-code]` suffix that Meteor.Error appends to `message` does not leak to clients.
-	let message = String(error);
-	if (typeof e?.message === 'string') {
-		message = e.message;
-	}
-	if (typeof e?.reason === 'string') {
-		message = e.reason;
-	}
-	return [message, typeof e?.error === 'string' ? e.error : undefined];
+	const e = error as { message?: unknown; error?: unknown };
+	return [typeof e?.message === 'string' ? e.message : String(error), typeof e?.error === 'string' ? e.error : undefined];
 }
 
 const stringFieldResponseSchema = <T>(field: 'description' | 'purpose' | 'topic') =>
