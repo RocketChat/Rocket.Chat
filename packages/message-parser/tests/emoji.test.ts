@@ -88,6 +88,31 @@ test.each([
 	['🫱🏿‍🫲🏻', [bigEmoji([emojiUnicode('🫱🏿‍🫲🏻')])]], // v14
 	['🫩', [bigEmoji([emojiUnicode('🫩')])]], // v16
 	['🇨🇶', [bigEmoji([emojiUnicode('🇨🇶')])]], // v16
+	// ZWJ sequences anchored by an Emoticon (U+1F600-U+1F64F)
+	['😶‍🌫️', [bigEmoji([emojiUnicode('😶‍🌫️')])]],
+	['😮‍💨', [bigEmoji([emojiUnicode('😮‍💨')])]],
+	['😵‍💫', [bigEmoji([emojiUnicode('😵‍💫')])]],
+	['Hi 😶‍🌫️', [paragraph([plain('Hi '), emojiUnicode('😶‍🌫️')])]],
+	['😶‍🌫️😮‍💨', [bigEmoji([emojiUnicode('😶‍🌫️'), emojiUnicode('😮‍💨')])]],
+	['🙋🏽‍♂️', [bigEmoji([emojiUnicode('🙋🏽‍♂️')])]],
+	['😀', [bigEmoji([emojiUnicode('😀')])]], // standalone emoticon still matches
+	// Emoji tag sequences — England/Scotland/Wales flags
+	['🏴󠁧󠁢󠁥󠁮󠁧󠁿', [bigEmoji([emojiUnicode('🏴󠁧󠁢󠁥󠁮󠁧󠁿')])]],
+	['🏴󠁧󠁢󠁳󠁣󠁴󠁿', [bigEmoji([emojiUnicode('🏴󠁧󠁢󠁳󠁣󠁴󠁿')])]],
+	['🏴󠁧󠁢󠁷󠁬󠁳󠁿', [bigEmoji([emojiUnicode('🏴󠁧󠁢󠁷󠁬󠁳󠁿')])]],
+	['Hi 🏴󠁧󠁢󠁥󠁮󠁧󠁿', [paragraph([plain('Hi '), emojiUnicode('🏴󠁧󠁢󠁥󠁮󠁧󠁿')])]],
+	['🏴', [bigEmoji([emojiUnicode('🏴')])]], // standalone black flag still matches
+	['🏴‍☠️', [bigEmoji([emojiUnicode('🏴‍☠️')])]], // pirate flag (ZWJ, not tag sequence) still matches
+	// Consecutive sequence emojis — each sequence must be consumed whole, without stealing from its neighbor
+	['🏴󠁧󠁢󠁥󠁮󠁧󠁿🏴󠁧󠁢󠁳󠁣󠁴󠁿🏴󠁧󠁢󠁷󠁬󠁳󠁿', [bigEmoji([emojiUnicode('🏴󠁧󠁢󠁥󠁮󠁧󠁿'), emojiUnicode('🏴󠁧󠁢󠁳󠁣󠁴󠁿'), emojiUnicode('🏴󠁧󠁢󠁷󠁬󠁳󠁿')])]],
+	['🏴🏴󠁧󠁢󠁥󠁮󠁧󠁿', [bigEmoji([emojiUnicode('🏴'), emojiUnicode('🏴󠁧󠁢󠁥󠁮󠁧󠁿')])]],
+	['🏴󠁧󠁢󠁥󠁮󠁧󠁿🏴', [bigEmoji([emojiUnicode('🏴󠁧󠁢󠁥󠁮󠁧󠁿'), emojiUnicode('🏴')])]],
+	['😶‍🌫️😮‍💨😵‍💫', [bigEmoji([emojiUnicode('😶‍🌫️'), emojiUnicode('😮‍💨'), emojiUnicode('😵‍💫')])]],
+	['😀😶‍🌫️', [bigEmoji([emojiUnicode('😀'), emojiUnicode('😶‍🌫️')])]],
+	['😶‍🌫️🏴󠁧󠁢󠁥󠁮󠁧󠁿🏴‍☠️', [bigEmoji([emojiUnicode('😶‍🌫️'), emojiUnicode('🏴󠁧󠁢󠁥󠁮󠁧󠁿'), emojiUnicode('🏴‍☠️')])]],
+	// More than 3 emojis: no BigEmoji, plain paragraph of emoji tokens
+	['😶‍🌫️😮‍💨😵‍💫👍', [paragraph([emojiUnicode('😶‍🌫️'), emojiUnicode('😮‍💨'), emojiUnicode('😵‍💫'), emojiUnicode('👍')])]],
+	['England 🏴󠁧󠁢󠁥󠁮󠁧󠁿 and Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿', [paragraph([plain('England '), emojiUnicode('🏴󠁧󠁢󠁥󠁮󠁧󠁿'), plain(' and Scotland '), emojiUnicode('🏴󠁧󠁢󠁳󠁣󠁴󠁿')])]],
 ])('parses %p', (input, output) => {
 	expect(parse(input)).toEqual(output);
 });
