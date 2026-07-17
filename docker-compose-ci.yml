@@ -233,7 +233,7 @@ services:
       - --providers.docker=true
       # keep upstream keep-alive enabled, but drop idle conns before the
       # meteor webapp 5s idle-socket reaper can kill one traefik would reuse
-      - --serverstransport.idleconntimeout=3s
+      - --serverstransport.forwardingtimeouts.idleconntimeout=3s
       - --accesslog=true
       - --accesslog.format=json
       - --log.level=DEBUG
