@@ -172,6 +172,9 @@ export const auditGetOmnichannelMessagesMethod = async (
 		...(user.avatarETag && { avatarETag: user.avatarETag }),
 	};
 
+	// No livechat.applyRoomRestrictions here (unlike the type 'l' path in getRoomInfoByAuditParams): this
+	// mirrors the original DDP auditGetOmnichannelMessages. Access is gated by the can-audit permission and
+	// audit is intended to span all omnichannel rooms, so unit/visibility restrictions are not applied.
 	const rooms: IRoom[] = await LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, {
 		projection: { _id: 1 },
 	}).toArray();
