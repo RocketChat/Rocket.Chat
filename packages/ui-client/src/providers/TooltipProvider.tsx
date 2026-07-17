@@ -11,19 +11,26 @@ export type TooltipProviderProps = {
 };
 
 const stashAnchorTitle = (anchor: HTMLElement, title: string): void => {
+	if (!anchor.hasAttribute('title')) {
+		return;
+	}
 	anchor.setAttribute('data-title', title);
 	anchor.setAttribute('title', '');
 };
 
 const restoreAnchorTitle = (anchor: HTMLElement): void => {
+	if (!anchor.hasAttribute('data-title')) {
+		return;
+	}
 	if (!anchor.getAttribute('title')) {
 		anchor.setAttribute('title', anchor.getAttribute('data-title') ?? '');
-		anchor.removeAttribute('data-title');
 	}
+	anchor.removeAttribute('data-title');
 };
 
 const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipProviderProps) => {
 	const lastAnchor = useRef<HTMLElement>(undefined);
+	const dismissedAnchor = useRef<HTMLElement>(undefined);
 	const hasHover = !useMediaQuery('(hover: none)');
 
 	const [tooltip, setTooltip] = useDebouncedState<ReactNode>(null, 300);
@@ -40,8 +47,23 @@ const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipP
 				lastAnchor.current = undefined;
 			},
 			dismiss: (): void => {
+				const anchor = lastAnchor.current;
 				setTooltip(null);
 				setTooltip.flush();
+
+				if (anchor?.hasAttribute('data-title')) {
+					dismissedAnchor.current = anchor;
+					const restoreOnLeave = (): void => {
+						restoreAnchorTitle(anchor);
+						if (dismissedAnchor.current === anchor) {
+							dismissedAnchor.current = undefined;
+						}
+						if (lastAnchor.current === anchor) {
+							lastAnchor.current = undefined;
+						}
+					};
+					anchor.addEventListener('mouseleave', restoreOnLeave, { once: true });
+				}
 			},
 		}),
 		[setTooltip],
@@ -104,7 +126,9 @@ const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipP
 						anchor.removeEventListener('mouseleave', close);
 						// the observer must be disconnected before restoring the title, otherwise it would stash it again
 						observer.disconnect();
-						restoreAnchorTitle(anchor);
+						if (dismissedAnchor.current !== anchor) {
+							restoreAnchorTitle(anchor);
+						}
 					};
 				}, []);
 				return <>{state}</>;
