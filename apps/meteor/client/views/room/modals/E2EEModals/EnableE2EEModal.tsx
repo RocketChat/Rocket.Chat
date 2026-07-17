@@ -20,7 +20,7 @@ const EnableE2EEModal = ({ onConfirm, onClose, roomType }: EnableE2EEModalProps)
 			onConfirm={onConfirm}
 			onCancel={onClose}
 		>
-			<Box mbe={16} is='p'>
+			<Box marginBlockEnd={16} is='p'>
 				{t('E2E_enable_encryption_description', { roomType })}
 			</Box>
 		</GenericModal>

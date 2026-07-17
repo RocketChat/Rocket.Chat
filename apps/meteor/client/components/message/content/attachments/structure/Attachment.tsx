@@ -14,7 +14,7 @@ const Attachment = (props: AttachmentProps) => {
 	return (
 		<Box
 			rcx-message-attachment
-			mb={4}
+			marginBlock={4}
 			maxWidth={width}
 			width='full'
 			display='flex'

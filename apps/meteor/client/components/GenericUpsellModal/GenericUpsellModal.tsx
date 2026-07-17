@@ -43,7 +43,7 @@ const GenericUpsellModal = ({
 				</Box>
 			)}
 			{description && (
-				<Box style={{ whiteSpace: 'break-spaces' }} fontScale='p2' mbs={16}>
+				<Box style={{ whiteSpace: 'break-spaces' }} fontScale='p2' marginBlockStart={16}>
 					{description}
 				</Box>
 			)}

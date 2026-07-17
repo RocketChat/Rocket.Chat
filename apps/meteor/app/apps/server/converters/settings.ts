@@ -1,18 +1,20 @@
+import type { IAppServerOrchestrator, IAppSettingsConverter, IAppsSetting } from '@rocket.chat/apps';
 import { SettingType } from '@rocket.chat/apps-engine/definition/settings';
+import type { ISetting } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 
-export class AppSettingsConverter {
-	constructor(orch) {
+export class AppSettingsConverter implements IAppSettingsConverter {
+	constructor(protected readonly orch: IAppServerOrchestrator) {
 		this.orch = orch;
 	}
 
-	async convertById(settingId) {
+	async convertById(settingId: ISetting['_id']): Promise<IAppsSetting> {
 		const setting = await Settings.findOneById(settingId);
 
-		return this.convertToApp(setting);
+		return this.convertToApp(setting as ISetting);
 	}
 
-	convertToApp(setting) {
+	convertToApp(setting: ISetting): IAppsSetting {
 		return {
 			id: setting._id,
 			type: this._convertTypeToApp(setting.type),
@@ -26,10 +28,10 @@ export class AppSettingsConverter {
 			i18nDescription: setting.i18nDescription,
 			createdAt: setting.ts,
 			updatedAt: setting._updatedAt,
-		};
+		} as unknown as IAppsSetting;
 	}
 
-	_convertTypeToApp(type) {
+	_convertTypeToApp(type: ISetting['type']): SettingType {
 		switch (type) {
 			case 'boolean':
 				return SettingType.BOOLEAN;
@@ -46,7 +48,7 @@ export class AppSettingsConverter {
 			case 'string':
 				return SettingType.STRING;
 			default:
-				return type;
+				return type as SettingType;
 		}
 	}
 }

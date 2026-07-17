@@ -26,15 +26,15 @@ const NavPanel = () => {
 			alignItems='center'
 			zIndex={1}
 			justifyContent={isMobile ? 'flex-end' : 'space-between'}
-			bg='alternative'
+			backgroundColor='alternative'
 			className={css`
 				user-select: none;
 			`}
 		>
 			{!isMobile && (
-				<Box display='flex' alignItems='center' flexGrow={0} pis={4}>
+				<Box display='flex' alignItems='center' flexGrow={0} paddingInlineStart={4}>
 					<SurfaceSelect />
-					<Button mis='10px' small warning height='max-content' onClick={() => dispatch(templatesToggleAction(true))}>
+					<Button marginInlineStart='10px' small warning height='max-content' onClick={() => dispatch(templatesToggleAction(true))}>
 						Templates
 					</Button>
 				</Box>

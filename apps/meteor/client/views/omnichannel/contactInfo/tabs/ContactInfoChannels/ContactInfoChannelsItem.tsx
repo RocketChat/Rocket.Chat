@@ -86,8 +86,8 @@ const ContactInfoChannelsItem = ({
 			borderBlockEndColor='stroke-extra-light'
 			borderBlockEndStyle='solid'
 			className={['rcx-box--animated', customClass]}
-			pi={24}
-			pb={12}
+			paddingInline={24}
+			paddingBlock={12}
 			display='flex'
 			flexDirection='column'
 			onFocus={() => setShowButton(true)}
@@ -97,17 +97,17 @@ const ContactInfoChannelsItem = ({
 			<Box display='flex' alignItems='center'>
 				{details && <OmnichannelRoomIcon source={details} size='x18' placement='default' />}
 				{details && (
-					<Box mi={4} fontScale='p2b'>
+					<Box marginInline={4} fontScale='p2b'>
 						{getSourceName(details)} {blocked && `(${t('Blocked')})`}
 					</Box>
 				)}
 				{lastChat && (
-					<Box mis={4} fontScale='c1'>
+					<Box marginInlineStart={4} fontScale='c1'>
 						{getTimeFromNow(lastChat.ts)}
 					</Box>
 				)}
 			</Box>
-			<Box minHeight='x24' alignItems='center' mbs={4} display='flex' justifyContent='space-between'>
+			<Box minHeight='x24' alignItems='center' marginBlockStart={4} display='flex' justifyContent='space-between'>
 				<Box>{channelLabel}</Box>
 				{showButton && <GenericMenu detached title={t('Options')} sections={[{ items: menuItems }]} tiny />}
 			</Box>

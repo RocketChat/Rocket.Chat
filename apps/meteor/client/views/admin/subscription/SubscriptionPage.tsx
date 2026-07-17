@@ -104,7 +104,7 @@ const SubscriptionPage = () => {
 	}, [handleSyncLicenseUpdate, router, subscriptionSuccess, syncLicenseUpdate.isIdle]);
 
 	return (
-		<Page bg='tint'>
+		<Page background='tint'>
 			<PageHeaderNoShadow title={t('Subscription')}>
 				<ButtonGroup>
 					{canViewRegistrationStatus && (
@@ -122,9 +122,9 @@ const SubscriptionPage = () => {
 					<UiKitSubscriptionLicense key='license' initialView={cloudSyncAnnouncement} />
 				</PageBlockWithBorder>
 			)}
-			<PageScrollableContentWithShadow p={16}>
+			<PageScrollableContentWithShadow padding={16}>
 				{(showSubscriptionCallout || syncLicenseUpdate.isPending) && (
-					<Callout type='info' title={t('Sync_license_update_Callout_Title')} m={8}>
+					<Callout type='info' title={t('Sync_license_update_Callout_Title')} margin={8}>
 						{t('Sync_license_update_Callout')}
 					</Callout>
 				)}
@@ -140,17 +140,17 @@ const SubscriptionPage = () => {
 							</Accordion>
 						)}
 						<Box marginBlock='none' marginInline='auto' width='full' color='default'>
-							<Grid m={0}>
-								<GridItem lg={4} xs={4} p={8} minHeight={260}>
+							<Grid margin={0}>
+								<GridItem lg={4} xs={4} padding={8} minHeight={260}>
 									<PlanCard license={license} licenseLimits={{ activeUsers: seatsLimit }} />
 								</GridItem>
 
-								<GridItem lg={8} xs={4} p={8} minHeight={260}>
+								<GridItem lg={8} xs={4} padding={8} minHeight={260}>
 									<FeaturesCard activeModules={activeModules} isEnterprise={isEnterprise} />
 								</GridItem>
 
 								{seatsLimit.value !== undefined && (
-									<GridItem lg={6} xs={4} p={8} minHeight={260}>
+									<GridItem lg={6} xs={4} padding={8} minHeight={260}>
 										{seatsLimit.max !== Infinity ? (
 											<SeatsCard value={seatsLimit.value} max={seatsLimit.max} hideManageSubscription={licensesData?.trial} />
 										) : (
@@ -160,7 +160,7 @@ const SubscriptionPage = () => {
 								)}
 
 								{macLimit.value !== undefined && (
-									<GridItem lg={6} xs={4} p={8} minHeight={260}>
+									<GridItem lg={6} xs={4} padding={8} minHeight={260}>
 										{macLimit.max !== Infinity ? (
 											<MACCard max={macLimit.max} value={macLimit.value} hideManageSubscription={licensesData?.trial} />
 										) : (
@@ -172,15 +172,15 @@ const SubscriptionPage = () => {
 								{!license && (
 									<>
 										{limits?.marketplaceApps !== undefined && (
-											<GridItem lg={4} xs={4} p={8} minHeight={260}>
+											<GridItem lg={4} xs={4} padding={8} minHeight={260}>
 												<AppsUsageCard privateAppsLimit={limits?.privateApps} marketplaceAppsLimit={limits.marketplaceApps} />
 											</GridItem>
 										)}
 
-										<GridItem lg={4} xs={4} p={8} minHeight={260}>
+										<GridItem lg={4} xs={4} padding={8} minHeight={260}>
 											<ActiveSessionsCard />
 										</GridItem>
-										<GridItem lg={4} xs={4} p={8} minHeight={260}>
+										<GridItem lg={4} xs={4} padding={8} minHeight={260}>
 											<ActiveSessionsPeakCard />
 										</GridItem>
 									</>

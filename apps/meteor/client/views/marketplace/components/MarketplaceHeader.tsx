@@ -44,7 +44,7 @@ const MarketplaceHeader = ({ title, unsupportedVersion }: MarketplaceHeaderProps
 
 	return (
 		<PageHeader title={title}>
-			{result.isLoading && <GenericResourceUsageSkeleton mi={16} />}
+			{result.isLoading && <GenericResourceUsageSkeleton marginInline={16} />}
 
 			{!unsupportedVersion && result.isSuccess && !result.data.hasUnlimitedApps && (
 				<Margins inline={16}>

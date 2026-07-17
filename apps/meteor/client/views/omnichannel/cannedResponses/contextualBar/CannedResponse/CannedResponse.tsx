@@ -51,40 +51,40 @@ const CannedResponse = ({
 				{onClose && <ContextualbarClose onClick={onClose} />}
 			</ContextualbarHeader>
 			<ContextualbarContent>
-				<Box pb='24px'>
-					<Box mbe='16px'>
-						<Box fontScale='p2m' mbe='8px'>
+				<Box paddingBlock='24px'>
+					<Box marginBlockEnd='16px'>
+						<Box fontScale='p2m' marginBlockEnd='8px'>
 							{t('Shortcut')}:
 						</Box>
 						<Box fontScale='c1' color='hint'>
 							!{shortcut}
 						</Box>
 					</Box>
-					<Box mbe='16px'>
-						<Box fontScale='p2m' mbe='8px'>
+					<Box marginBlockEnd='16px'>
+						<Box fontScale='p2m' marginBlockEnd='8px'>
 							{t('Content')}:
 						</Box>
 						<Box fontScale='c1' color='hint'>
 							"{text}"
 						</Box>
 					</Box>
-					<Box mbe='16px'>
-						<Box fontScale='p2m' mbe='8px'>
+					<Box marginBlockEnd='16px'>
+						<Box fontScale='p2m' marginBlockEnd='8px'>
 							{t('Sharing')}:
 						</Box>
 						<Box fontScale='c1' color='hint'>
 							{scope}
 						</Box>
 					</Box>
-					<Box mbe='16px'>
-						<Box fontScale='p2m' mbe='8px'>
+					<Box marginBlockEnd='16px'>
+						<Box fontScale='p2m' marginBlockEnd='8px'>
 							{t('Tags')}:
 						</Box>
 						<Box display='flex' flexDirection='row'>
 							{tags && tags.length > 0 ? (
-								<Box display='flex' w='full' flexDirection='row' mbs='8px' flexWrap='wrap'>
+								<Box display='flex' width='full' flexDirection='row' marginBlockStart='8px' flexWrap='wrap'>
 									{tags.map((tag: string, idx: number) => (
-										<Box key={idx} mie='4px' mbe='4px'>
+										<Box key={idx} marginInlineEnd='4px' marginBlockEnd='4px'>
 											<Tag>{tag}</Tag>
 										</Box>
 									))}

@@ -71,7 +71,7 @@ const BusinessHoursForm = ({ type }: BusinessHoursFormProps) => {
 						render={({ field }) => <Select id={timezoneField} {...field} options={timeZonesOptions} />}
 					/>
 				</FieldRow>
-				<Callout title={t('Daylight_savings_time')} type='info' mbs='x8'>
+				<Callout title={t('Daylight_savings_time')} type='info' marginBlockStart='x8'>
 					{t('Business_hours_will_update_automatically')}
 				</Callout>
 			</Field>
@@ -93,7 +93,7 @@ const BusinessHoursForm = ({ type }: BusinessHoursFormProps) => {
 								options={daysOptions}
 								value={value}
 								placeholder={t('Select_an_option')}
-								w='full'
+								width='full'
 							/>
 						)}
 					/>
@@ -103,14 +103,14 @@ const BusinessHoursForm = ({ type }: BusinessHoursFormProps) => {
 				<Field key={dayTime.id}>
 					<FieldLabel>{t(dayTime.day as TranslationKey)}</FieldLabel>
 					<FieldRow>
-						<Box display='flex' flexDirection='column' flexGrow={1} mie={2}>
+						<Box display='flex' flexDirection='column' flexGrow={1} marginInlineEnd={2}>
 							<FieldLabel htmlFor={`${daysTimeField + index}-start`}>{t('Open')}</FieldLabel>
 							<Controller
 								name={`daysTime.${index}.start.time`}
 								render={({ field }) => <InputBox id={`${daysTimeField + index}-start`} type='time' {...field} />}
 							/>
 						</Box>
-						<Box display='flex' flexDirection='column' flexGrow={1} mis={2}>
+						<Box display='flex' flexDirection='column' flexGrow={1} marginInlineStart={2}>
 							<FieldLabel htmlFor={`${daysTimeField + index}-finish`}>{t('Close')}</FieldLabel>
 							<Controller
 								name={`daysTime.${index}.finish.time`}

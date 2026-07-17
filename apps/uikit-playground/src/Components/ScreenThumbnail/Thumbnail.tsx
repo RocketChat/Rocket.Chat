@@ -23,7 +23,7 @@ const Thumbnail = ({ of, ...props }: ThumbnailProps) => {
 	return (
 		<Box overflow='hidden' position='relative' ref={parentRef} {...props}>
 			<Box
-				w='max-content'
+				width='max-content'
 				className={css`
 					transform: scale(${scale});
 					transform-origin: 0% 0%;

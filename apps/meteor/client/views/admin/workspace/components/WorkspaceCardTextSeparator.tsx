@@ -13,7 +13,7 @@ const WorkspaceCardTextSeparator = ({ icon, label, value, status }: WorkspaceCar
 	<TextSeparator
 		label={
 			<>
-				{icon && <Icon name={icon} size='x16' mie={4} />}
+				{icon && <Icon name={icon} size='x16' marginInlineEnd={4} />}
 				{status && (
 					<Box minWidth='x16' display='inline-flex' flexDirection='row' alignItems='flex-end' justifyContent='center'>
 						<StatusBullet status={status} />

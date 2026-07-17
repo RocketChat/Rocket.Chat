@@ -26,6 +26,10 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 		return this.updateOne({ _id: fileId }, { $set: { federation: info } });
 	}
 
+	setFederationRoomInfo(fileId: IUpload['_id'], rid: IRoom['_id'], mrid: string): Promise<UpdateResult> {
+		return this.updateOne({ _id: fileId }, { $set: { rid, 'federation.mrid': mrid } });
+	}
+
 	findPaginatedWithoutThumbs(query: Filter<IUpload> = {}, options?: FindOptions<IUpload>): FindPaginated<FindCursor<WithId<IUpload>>> {
 		return this.findPaginated(
 			{

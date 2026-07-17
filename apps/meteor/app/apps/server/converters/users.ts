@@ -1,25 +1,37 @@
+import type { IAppServerOrchestrator, IAppUsersConverter, IAppsUser } from '@rocket.chat/apps';
 import { UserStatusConnection, UserType } from '@rocket.chat/apps-engine/definition/users';
+import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { removeEmpty } from '@rocket.chat/tools';
 
-export class AppUsersConverter {
-	constructor(orch) {
+export class AppUsersConverter implements IAppUsersConverter {
+	constructor(protected readonly orch: IAppServerOrchestrator) {
 		this.orch = orch;
 	}
 
-	async convertById(userId) {
+	async convertById(userId: IUser['_id']): Promise<IAppsUser | undefined> {
 		const user = await Users.findOneById(userId);
 
 		return this.convertToApp(user);
 	}
 
-	async convertByUsername(username) {
+	async convertByUsername(username: IUser['username']): Promise<IAppsUser | undefined> {
+		if (!username) {
+			return undefined;
+		}
+
 		const user = await Users.findOneByUsername(username);
 
 		return this.convertToApp(user);
 	}
 
-	convertToApp(user) {
+	convertToApp(user: undefined | null): undefined;
+
+	convertToApp(user: IUser): IAppsUser;
+
+	convertToApp(user: IUser | undefined | null): IAppsUser | undefined;
+
+	convertToApp(user: IUser | undefined | null): IAppsUser | undefined {
 		if (!user) {
 			return undefined;
 		}
@@ -43,7 +55,7 @@ export class AppUsersConverter {
 			createdAt: user.createdAt,
 			updatedAt: user._updatedAt,
 			lastLoginAt: user.lastLogin,
-			appId: user.appId,
+			appId: (user as { appId?: string }).appId,
 			customFields: user.customFields,
 			isFederated: user.federated,
 			federation: user.federation,
@@ -53,10 +65,16 @@ export class AppUsersConverter {
 					...(user?.settings?.preferences?.language && { language: user.settings.preferences.language }),
 				},
 			},
-		};
+		} as unknown as IAppsUser;
 	}
 
-	convertToRocketChat(user) {
+	convertToRocketChat(user: undefined | null): undefined;
+
+	convertToRocketChat(user: IAppsUser): IUser;
+
+	convertToRocketChat(user: IAppsUser | undefined | null): IUser | undefined;
+
+	convertToRocketChat(user: IAppsUser | undefined | null): IUser | undefined {
 		if (!user) {
 			return undefined;
 		}
@@ -72,7 +90,8 @@ export class AppUsersConverter {
 			bio: user.bio,
 			status: user.status,
 			statusConnection: user.statusConnection,
-			utcOffset: user.utfOffset,
+			// Prefer the correct `utcOffset`; keep the historical `utfOffset` typo as a compatibility fallback.
+			utcOffset: user.utcOffset ?? (user as { utfOffset?: number }).utfOffset,
 			createdAt: user.createdAt,
 			_updatedAt: user.updatedAt,
 			lastLogin: user.lastLoginAt,
@@ -80,10 +99,10 @@ export class AppUsersConverter {
 			federated: user.isFederated,
 			federation: user.federation,
 			freeSwitchExtension: user.sipExtension,
-		});
+		}) as unknown as IUser;
 	}
 
-	_convertUserTypeToEnum(type) {
+	_convertUserTypeToEnum(type: IUser['type']): UserType {
 		switch (type) {
 			case 'user':
 				return UserType.USER;
@@ -96,11 +115,15 @@ export class AppUsersConverter {
 				return UserType.UNKNOWN;
 			default:
 				console.warn(`A new user type has been added that the Apps don't know about? "${type}"`);
-				return type.toUpperCase();
+				return type.toUpperCase() as UserType;
 		}
 	}
 
-	_convertStatusConnectionToEnum(username, userId, status) {
+	_convertStatusConnectionToEnum(
+		username: IUser['username'],
+		userId: IUser['_id'],
+		status: IUser['statusConnection'],
+	): UserStatusConnection {
 		switch (status) {
 			case 'offline':
 				return UserStatusConnection.OFFLINE;
@@ -117,7 +140,7 @@ export class AppUsersConverter {
 				console.warn(
 					`The user ${username} (${userId}) does not have a valid status (offline, online, away, or busy). It is currently: "${status}"`,
 				);
-				return !status ? UserStatusConnection.OFFLINE : status.toUpperCase();
+				return (!status ? UserStatusConnection.OFFLINE : status.toUpperCase()) as UserStatusConnection;
 		}
 	}
 }
