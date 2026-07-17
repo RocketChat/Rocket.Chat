@@ -1972,8 +1972,8 @@ describe('[Rooms]', () => {
 				await Promise.all([
 					updateSetting('E2E_Enable', false),
 					updateSetting('E2E_Force_Encryption_For_Private_Rooms', false),
-					deleteRoom({ type: 'p', roomId: unencryptedPrivateParent._id }),
-					deleteRoom({ type: 'p', roomId: encryptedPrivateParent._id }),
+					...(unencryptedPrivateParent?._id ? [deleteRoom({ type: 'p', roomId: unencryptedPrivateParent._id })] : []),
+					...(encryptedPrivateParent?._id ? [deleteRoom({ type: 'p', roomId: encryptedPrivateParent._id })] : []),
 					...(createdDiscussionId ? [deleteRoom({ type: 'p', roomId: createdDiscussionId })] : []),
 				]);
 			});

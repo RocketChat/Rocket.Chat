@@ -349,6 +349,34 @@ describe('[Groups]', () => {
 						expect(res.body).to.have.nested.property('group.encrypted', true);
 					});
 			});
+
+			it('should not enforce encryption on federated private rooms', async () => {
+				// Federated rooms do not support E2EE, so the forced-encryption policy exempts them.
+				// Depending on the environment the creation may still fail further down the pipeline
+				// (federation unavailable), but it must never fail with the forced-encryption error,
+				// and if it succeeds the room must not have been force-encrypted.
+				await request
+					.post(api('groups.create'))
+					.set(credentials)
+					.send({
+						name: `forced-federated-${apiPrivateChannelName}`,
+						extraData: {
+							broadcast: false,
+							encrypted: false,
+							federated: true,
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						if (res.body.group?._id) {
+							createdRoomIds.push(res.body.group._id);
+						}
+						expect(res.body).to.not.have.property('errorType', 'error-encrypted-private-rooms-enforced');
+						if (res.body.success) {
+							expect(res.body).to.not.have.nested.property('group.encrypted', true);
+						}
+					});
+			});
 		});
 
 		it(`should fail when trying to use an existing room's name`, async () => {
