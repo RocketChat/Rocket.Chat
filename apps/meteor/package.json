@@ -292,7 +292,7 @@
 		"react-i18next": "~13.2.2",
 		"react-is": "~19.2.7",
 		"react-keyed-flatten-children": "~5.1.2",
-		"react-stately": "~3.17.0",
+		"react-stately": "~3.35.0",
 		"react-virtuoso": "~4.18.10",
 		"reflect-metadata": "^0.2.2",
 		"sanitize-html": "~2.17.4",
