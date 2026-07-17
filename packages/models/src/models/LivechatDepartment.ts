@@ -1,19 +1,7 @@
 import type { ILivechatDepartment, LivechatDepartmentDTO, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILivechatDepartmentModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type {
-	Collection,
-	FindCursor,
-	Db,
-	Filter,
-	FindOptions,
-	UpdateResult,
-	Document,
-	IndexDescription,
-	DeleteResult,
-	UpdateFilter,
-	AggregationCursor,
-} from 'mongodb';
+import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, Document, IndexDescription, AggregationCursor } from 'mongodb';
 
 import { LivechatDepartmentAgents, LivechatUnitMonitors } from '../index';
 import { BaseRaw } from './BaseRaw';
@@ -21,26 +9,6 @@ import { BaseRaw } from './BaseRaw';
 export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implements ILivechatDepartmentModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatDepartment>>) {
 		super(db, 'livechat_department', trash);
-	}
-
-	unfilteredFind(_query: Filter<ILivechatDepartment>, _options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
-		throw new Error('Method not implemented.');
-	}
-
-	unfilteredFindOne(_query: Filter<ILivechatDepartment>, _options: FindOptions<ILivechatDepartment>): Promise<ILivechatDepartment | null> {
-		throw new Error('Method not implemented.');
-	}
-
-	unfilteredUpdate(
-		_query: Filter<ILivechatDepartment>,
-		_update: UpdateFilter<ILivechatDepartment>,
-		_options: FindOptions<ILivechatDepartment>,
-	): Promise<UpdateResult> {
-		throw new Error('Method not implemented.');
-	}
-
-	unfilteredRemove(_query: Filter<ILivechatDepartment>): Promise<DeleteResult> {
-		throw new Error('Method not implemented.');
 	}
 
 	removeParentAndAncestorById(_id: string): Promise<Document | UpdateResult> {
@@ -144,23 +112,6 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		const query = {
 			enabled: true,
 			businessHourId: { $exists: false },
-		};
-		return this.find(query, options);
-	}
-
-	findEnabledByListOfBusinessHourIdsAndDepartmentIds(
-		businessHourIds: string[],
-		departmentIds: string[],
-		options: FindOptions<ILivechatDepartment>,
-	): FindCursor<ILivechatDepartment> {
-		const query: Filter<ILivechatDepartment> = {
-			enabled: true,
-			businessHourId: {
-				$in: businessHourIds,
-			},
-			_id: {
-				$in: departmentIds,
-			},
 		};
 		return this.find(query, options);
 	}
@@ -450,7 +401,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.countDocuments({ archived: true });
 	}
 
-	findByParentId(_parentId: string, _options?: FindOptions<ILivechatDepartment> | undefined): FindCursor<ILivechatDepartment> {
+	findByParentId(_parentId: string, _options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
 		throw new Error('Method not implemented in CE');
 	}
 

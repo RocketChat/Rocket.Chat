@@ -3033,7 +3033,6 @@
   "Regexp_validation": "Validación por expresión regular",
   "Register": "Registrar",
   "RegisterWorkspace_Button": "Registrar espacio de trabajo",
-  "RegisterWorkspace_Connection_Error": "Un error ocurrió al conectarse",
   "RegisterWorkspace_Disconnect_Error": "Un error ocurrió durante la desconexión",
   "RegisterWorkspace_Disconnect_Subtitle": "Desconectar su espacio de trabajo resultará en perder lo siguiente",
   "RegisterWorkspace_Features_Marketplace_Title": "Marketplace",

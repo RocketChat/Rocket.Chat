@@ -1,4 +1,4 @@
-import { settingsRegistry } from '../../../app/settings/server';
+import { settingsRegistry } from '../../../server/settings';
 
 export function addSettings(): Promise<void> {
 	return settingsRegistry.addGroup('VoIP_TeamCollab', async function () {

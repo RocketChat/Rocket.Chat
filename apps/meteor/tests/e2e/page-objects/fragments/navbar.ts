@@ -147,6 +147,10 @@ export class Navbar {
 		return this.userMenu.getByRole('menuitemcheckbox', { name: 'Logout' });
 	}
 
+	get btnCustomStatus(): Locator {
+		return this.userMenu.getByRole('menuitemcheckbox', { name: 'Custom...' });
+	}
+
 	getUserProfileMenuOption(name: string): Locator {
 		return this.userMenu.getByRole('menuitemcheckbox', { name });
 	}
@@ -267,34 +271,42 @@ export class Navbar {
 	}
 
 	async changeUserCustomStatus(text?: string): Promise<void> {
-		await this.btnUserMenu.click();
-		await this.getUserProfileMenuOption('Custom Status').click();
+		await this.openEditStatusModal();
 		await this.modals.editStatus.changeStatusMessage(text);
 	}
 
+	get editStatusModal(): EditStatusModal {
+		return this.modals.editStatus;
+	}
+
+	async openEditStatusModal(): Promise<void> {
+		await this.btnUserMenu.click();
+		await this.btnCustomStatus.click();
+	}
+
+	async changeUserCustomStatusWithExpiration(options: {
+		message?: string;
+		statusType?: string;
+		duration: string;
+		customDate?: string;
+		customTime?: string;
+	}): Promise<void> {
+		await this.openEditStatusModal();
+		await this.modals.editStatus.setStatusWithExpiration(options);
+	}
+
 	async switchOmnichannelStatus(status: 'offline' | 'online') {
-		// button has a id of "omnichannel-status-toggle"
 		const toggleButton = this.btnSwitchOmnichannelStatus;
 		await expect(toggleButton).toBeVisible();
 
-		enum StatusTitleMap {
-			offline = 'Turn on answer chats',
-			online = 'Turn off answer chats',
-		}
+		const expectedTitle = status === 'offline' ? 'Turn on answer chats' : 'Turn off answer chats';
 
 		const currentStatus = await toggleButton.getAttribute('title');
-		if (status === 'offline') {
-			if (currentStatus === StatusTitleMap.online) {
-				await toggleButton.click();
-			}
-		} else if (currentStatus === StatusTitleMap.offline) {
+		if (currentStatus !== expectedTitle) {
 			await toggleButton.click();
 		}
 
-		await this.root.waitForTimeout(500);
-
-		const newStatus = await this.btnSwitchOmnichannelStatus.getAttribute('title');
-		expect(newStatus).toBe(status === 'offline' ? StatusTitleMap.offline : StatusTitleMap.online);
+		await expect(toggleButton).toHaveAttribute('title', expectedTitle);
 	}
 
 	getUserStatusBadge(status: 'online' | 'away' | 'busy' | 'offline'): Locator {

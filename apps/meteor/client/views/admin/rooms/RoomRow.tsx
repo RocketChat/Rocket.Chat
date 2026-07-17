@@ -21,7 +21,9 @@ const roomTypeI18nMap = {
 const getRoomDisplayName = (room: Pick<Serialized<IRoom>, RoomAdminFieldsType>): string | undefined =>
 	room.t === 'd' ? room.usernames?.join(' x ') : roomCoordinator.getRoomName(room.t, room as IRoom);
 
-const RoomRow = ({ room }: { room: Pick<Serialized<IRoom>, RoomAdminFieldsType> }) => {
+export type RoomRowProps = { room: Pick<Serialized<IRoom>, RoomAdminFieldsType> };
+
+const RoomRow = ({ room }: RoomRowProps) => {
 	const { t } = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 	const router = useRouter();
@@ -70,7 +72,7 @@ const RoomRow = ({ room }: { room: Pick<Serialized<IRoom>, RoomAdminFieldsType> 
 						alignItems='center'
 						withTruncatedText
 					>
-						{icon && <Icon mi={4} name={icon} fontScale='p2m' color='hint' />}
+						{icon && <Icon marginInline={4} name={icon} fontScale='p2m' color='hint' />}
 						<Box fontScale='p2m' withTruncatedText color='default' qa-room-name={roomName}>
 							{roomName}
 						</Box>

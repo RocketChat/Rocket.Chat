@@ -992,7 +992,8 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 			{ key: { createdAt: -1 } },
 			{ key: { loginAt: -1 } },
 			{ key: { searchTerm: 1 }, partialFilterExpression: { searchTerm: { $exists: true } }, background: true },
-			{ key: { ip: 1, loginAt: -1 } },
+			// TODO: remove this index in the next major release (8.0.0) - its only consumer (findLastLoginByIp) was removed
+			// { key: { ip: 1, loginAt: -1 } },
 			{ key: { userId: 1, sessionId: 1 } },
 			{ key: { type: 1, year: 1, month: 1, day: 1 } },
 			{ key: { sessionId: 1, instanceId: 1, year: 1, month: 1, day: 1 } },
@@ -1003,36 +1004,6 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 				background: true,
 			},
 		];
-	}
-
-	async getActiveUsersBetweenDates({ start, end }: DestructuredRange): Promise<ISession[]> {
-		return this.col
-			.aggregate<ISession>([
-				{
-					$match: {
-						...matchBasedOnDate(start, end),
-						type: 'user_daily',
-					},
-				},
-				{
-					$group: {
-						_id: '$userId',
-					},
-				},
-			])
-			.toArray();
-	}
-
-	async findLastLoginByIp(ip: string): Promise<ISession | null> {
-		return this.findOne(
-			{
-				ip,
-			},
-			{
-				sort: { loginAt: -1 },
-				limit: 1,
-			},
-		);
 	}
 
 	findOneBySessionId(sessionId: string): Promise<ISession | null> {
@@ -1485,28 +1456,6 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		return this.updateOne(query, update);
 	}
 
-	async updateActiveSessionsByDateAndInstanceIdAndIds(
-		{ year, month, day }: Partial<DestructuredDate> = {},
-		instanceId: string,
-		sessions: string[],
-		data: Record<string, any> = {},
-	): Promise<UpdateResult | Document> {
-		const query = {
-			instanceId,
-			year,
-			month,
-			day,
-			sessionId: { $in: sessions },
-			closedAt: { $exists: false },
-		};
-
-		const update = {
-			$set: data,
-		};
-
-		return this.updateMany(query, update);
-	}
-
 	async updateActiveSessionsByDate(
 		{ year, month, day }: DestructuredDate,
 		data: Record<string, any> = {},
@@ -1526,25 +1475,6 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 			},
 			update,
 		);
-	}
-
-	async logoutByInstanceIdAndSessionIdAndUserId(instanceId: string, sessionId: string, userId: string): Promise<UpdateResult> {
-		const query = {
-			instanceId,
-			sessionId,
-			userId,
-			logoutAt: { $exists: false },
-		};
-
-		const logoutAt = new Date();
-		const update = {
-			$set: {
-				logoutAt,
-				lastActivityAt: logoutAt,
-			},
-		};
-
-		return this.updateOne(query, update);
 	}
 
 	async logoutBySessionIdAndUserId({

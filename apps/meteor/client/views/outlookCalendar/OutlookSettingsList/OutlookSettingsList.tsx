@@ -14,7 +14,7 @@ import { useCallback } from 'react';
 import OutlookSettingItem from './OutlookSettingItem';
 import { useOutlookAuthentication, useOutlookAuthenticationMutationLogout } from '../hooks/useOutlookAuthentication';
 
-type OutlookSettingsListProps = {
+export type OutlookSettingsListProps = {
 	onClose: () => void;
 	changeRoute: () => void;
 };

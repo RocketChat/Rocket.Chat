@@ -3,7 +3,7 @@ import { Button } from '@rocket.chat/fuselage';
 import { forwardRef, type ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type TemplatePlaceholderButtonProps = Omit<ComponentProps<typeof IconButton>, 'color' | 'icon'> & {
+export type TemplatePlaceholderButtonProps = Omit<ComponentProps<typeof IconButton>, 'color' | 'icon'> & {
 	icon?: ComponentProps<typeof IconButton>['icon'];
 };
 

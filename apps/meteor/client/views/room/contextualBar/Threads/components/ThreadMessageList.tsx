@@ -50,7 +50,7 @@ const isMessageSequential = (current: IMessage, previous: IMessage | undefined, 
 	return differenceInSeconds(current.ts, previous.ts) < groupingRange && !isMessageNewDay(current, previous);
 };
 
-type ThreadMessageListProps = {
+export type ThreadMessageListProps = {
 	mainMessage: IThreadMainMessage;
 	shouldJumpToBottom: boolean;
 	setShouldJumpToBottom: (shouldJumpToBottom: boolean) => void;

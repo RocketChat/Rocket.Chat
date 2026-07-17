@@ -1,6 +1,7 @@
 import type { CloudRegistrationIntentData, CloudConfirmationPollData, CloudRegistrationStatus } from '@rocket.chat/core-typings';
 import {
 	isCloudConfirmationPollProps,
+	isCloudConnectWorkspaceProps,
 	isCloudCreateRegistrationIntentProps,
 	isCloudManualRegisterProps,
 	ajv,
@@ -9,19 +10,17 @@ import {
 	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
 
-import { getCheckoutUrl } from '../../../app/cloud/server/functions/getCheckoutUrl';
-import { getConfirmationPoll } from '../../../app/cloud/server/functions/getConfirmationPoll';
-import {
-	CloudWorkspaceAccessTokenEmptyError,
-	CloudWorkspaceAccessTokenError,
-} from '../../../app/cloud/server/functions/getWorkspaceAccessToken';
-import { registerPreIntentWorkspaceWizard } from '../../../app/cloud/server/functions/registerPreIntentWorkspaceWizard';
-import { removeLicense } from '../../../app/cloud/server/functions/removeLicense';
-import { retrieveRegistrationStatus } from '../../../app/cloud/server/functions/retrieveRegistrationStatus';
-import { saveRegistrationData, saveRegistrationDataManual } from '../../../app/cloud/server/functions/saveRegistrationData';
-import { startRegisterWorkspaceSetupWizard } from '../../../app/cloud/server/functions/startRegisterWorkspaceSetupWizard';
-import { syncWorkspace } from '../../../app/cloud/server/functions/syncWorkspace';
 import { CloudWorkspaceRegistrationError } from '../../../lib/errors/CloudWorkspaceRegistrationError';
+import { connectWorkspace } from '../../lib/cloud/connectWorkspace';
+import { getCheckoutUrl } from '../../lib/cloud/getCheckoutUrl';
+import { getConfirmationPoll } from '../../lib/cloud/getConfirmationPoll';
+import { CloudWorkspaceAccessTokenEmptyError, CloudWorkspaceAccessTokenError } from '../../lib/cloud/getWorkspaceAccessToken';
+import { registerPreIntentWorkspaceWizard } from '../../lib/cloud/registerPreIntentWorkspaceWizard';
+import { removeLicense } from '../../lib/cloud/removeLicense';
+import { retrieveRegistrationStatus } from '../../lib/cloud/retrieveRegistrationStatus';
+import { saveRegistrationData, saveRegistrationDataManual } from '../../lib/cloud/saveRegistrationData';
+import { startRegisterWorkspaceSetupWizard } from '../../lib/cloud/startRegisterWorkspaceSetupWizard';
+import { syncWorkspace } from '../../lib/cloud/syncWorkspace';
 import { SystemLogger } from '../../lib/logger/system';
 import { API } from '../api';
 
@@ -286,6 +285,28 @@ declare module '@rocket.chat/rest-typings' {
 		};
 	}
 }
+
+API.v1.post(
+	'cloud.connectWorkspace',
+	{
+		authRequired: true,
+		permissionsRequired: ['manage-cloud'],
+		body: isCloudConnectWorkspaceProps,
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		const connected = await connectWorkspace(this.bodyParams.token);
+		if (!connected) {
+			return API.v1.failure('Failed to connect the workspace with Rocket.Chat Cloud');
+		}
+		return API.v1.success();
+	},
+);
 
 API.v1.get(
 	'cloud.checkoutUrl',

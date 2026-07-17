@@ -184,7 +184,7 @@ const getLanguageName = (code: string, lng: string): string => {
 	}
 };
 
-type TranslationProviderProps = {
+export type TranslationProviderProps = {
 	children: ReactNode;
 };
 

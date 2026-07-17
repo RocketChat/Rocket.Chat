@@ -8,7 +8,7 @@ import { useTimeFromNow } from '../../../../../hooks/useTimeFromNow';
 import useOutboundProvidersList from '../hooks/useOutboundProvidersList';
 import { findLastChatFromChannel } from '../utils/findLastChatFromChannel';
 
-type AutoCompleteOutboundProviderProps = Omit<
+export type AutoCompleteOutboundProviderProps = Omit<
 	ComponentProps<typeof PaginatedSelectFiltered>,
 	'filter' | 'setFilter' | 'options' | 'endReached' | 'renderItem'
 > & {

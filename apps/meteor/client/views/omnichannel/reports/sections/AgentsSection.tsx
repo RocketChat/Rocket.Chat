@@ -20,7 +20,7 @@ export const AgentsSection = () => {
 		<ReportCard ref={ref} {...config}>
 			<Box display='flex' flexDirection={wrapped ? 'column' : 'row'}>
 				<Box flexGrow={1}>
-					<Box is='p' fontScale='p2' mbe={8}>
+					<Box is='p' fontScale='p2' marginBlockEnd={8}>
 						{t('Top_5_agents_with_the_most_conversations')}
 					</Box>
 					<BarChart
@@ -45,7 +45,7 @@ export const AgentsSection = () => {
 					/>
 				</Box>
 
-				<Box display='flex' h='x360' minWidth='50%' flexGrow={1}>
+				<Box display='flex' height='x360' minWidth='50%' flexGrow={1}>
 					<AgentsTable data={data} sortBy={sortBy} sortDirection={sortDirection} setSort={setSort} />
 				</Box>
 			</Box>

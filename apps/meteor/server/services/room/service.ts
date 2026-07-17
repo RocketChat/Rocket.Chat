@@ -14,33 +14,33 @@ import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { getNameForDMs } from './getNameForDMs';
 import { FederationActions } from './hooks/BeforeFederationActions';
-import { saveRoomName } from '../../../app/channel-settings/server';
-import { saveRoomTopic } from '../../../app/channel-settings/server/functions/saveRoomTopic';
-import { performAcceptRoomInvite } from '../../../app/lib/server/functions/acceptRoomInvite';
-import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
-import { performUserBan } from '../../../app/lib/server/functions/banUserFromRoom';
-import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
-import { executeUnbanUserFromRoom } from '../../../app/lib/server/functions/executeUnbanUserFromRoom';
-import { removeUserFromRoom, performUserRemoval } from '../../../app/lib/server/functions/removeUserFromRoom';
+import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
+import { getSubscriptionAutotranslateDefaultConfig } from '../../lib/getSubscriptionAutotranslateDefaultConfig';
+import { readThread } from '../../lib/messaging/threads/functions';
 import {
 	notifyOnSubscriptionChanged,
 	notifyOnSubscriptionChangedById,
 	notifyOnSubscriptionChangedByRoomIdAndUserId,
-} from '../../../app/lib/server/lib/notifyListener';
-import { readThread } from '../../../app/threads/server/functions';
-import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
-import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName';
-import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
-import { getSubscriptionAutotranslateDefaultConfig } from '../../lib/getSubscriptionAutotranslateDefaultConfig';
+} from '../../lib/notifyListener';
 import { readMessages } from '../../lib/readMessages';
+import { performAcceptRoomInvite } from '../../lib/rooms/acceptRoomInvite';
+import { addUserToRoom } from '../../lib/rooms/addUserToRoom';
+import { performUserBan } from '../../lib/rooms/banUserFromRoom';
+import { createRoom } from '../../lib/rooms/createRoom'; // TODO remove this import
+import { executeUnbanUserFromRoom } from '../../lib/rooms/executeUnbanUserFromRoom';
+import { removeUserFromRoom, performUserRemoval } from '../../lib/rooms/removeUserFromRoom';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
-import { addRoomLeader } from '../../methods/addRoomLeader';
-import { addRoomModerator } from '../../methods/addRoomModerator';
-import { addRoomOwner } from '../../methods/addRoomOwner';
-import { createDirectMessage } from '../../methods/createDirectMessage';
-import { removeRoomLeader } from '../../methods/removeRoomLeader';
-import { removeRoomModerator } from '../../methods/removeRoomModerator';
-import { removeRoomOwner } from '../../methods/removeRoomOwner';
+import { saveRoomName } from '../../lib/rooms/settings';
+import { saveRoomTopic } from '../../lib/rooms/settings/saveRoomTopic';
+import { getDefaultSubscriptionPref } from '../../lib/utils/lib/getDefaultSubscriptionPref';
+import { getValidRoomName } from '../../lib/utils/lib/getValidRoomName';
+import { createDirectMessage } from '../../meteor-methods/messages/createDirectMessage';
+import { addRoomLeader } from '../../meteor-methods/rooms/addRoomLeader';
+import { addRoomModerator } from '../../meteor-methods/rooms/addRoomModerator';
+import { addRoomOwner } from '../../meteor-methods/rooms/addRoomOwner';
+import { removeRoomLeader } from '../../meteor-methods/rooms/removeRoomLeader';
+import { removeRoomModerator } from '../../meteor-methods/rooms/removeRoomModerator';
+import { removeRoomOwner } from '../../meteor-methods/rooms/removeRoomOwner';
 
 export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';
@@ -153,12 +153,11 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	}
 
 	async revokeInvite(room: IRoom, user: IUser): Promise<void> {
-		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
-		if (subscription?.status !== 'INVITED') {
+		const subscription = await Subscriptions.removeInvitedByRoomIdAndUserId(room._id, user._id);
+		if (!subscription) {
 			return;
 		}
 
-		await Subscriptions.removeById(subscription._id);
 		void notifyOnSubscriptionChanged(subscription, 'removed');
 	}
 

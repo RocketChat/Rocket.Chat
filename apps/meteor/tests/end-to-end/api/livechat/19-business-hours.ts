@@ -25,7 +25,7 @@ import {
 	deleteDepartment,
 } from '../../../data/livechat/department';
 import { createAgent, createManager, makeAgentAvailable } from '../../../data/livechat/rooms';
-import { removeAgent } from '../../../data/livechat/users';
+import { createAnOnlineAgent, removeAgent } from '../../../data/livechat/users';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updateSetting, updateEESetting } from '../../../data/permissions.helper';
 import { password } from '../../../data/user';
 import type { TestUser } from '../../../data/users.helper';
@@ -303,6 +303,77 @@ describe('LIVECHAT - business hours', () => {
 			expect(latestAgent).to.be.an('object');
 			expect(latestAgent.openBusinessHours).to.be.an('array').of.length(0);
 			expect(latestAgent.statusLivechat).to.be.equal(ILivechatAgentStatus.AVAILABLE);
+		});
+	});
+
+	// Scenario: A BH is linked to departments and gets re-saved with a smaller (or empty) department list
+	// Expected result: the removed departments lose the link (and their agents lose the BH),
+	// while the remaining departments stay linked
+	(IS_EE ? describe : describe.skip)('[EE][BH] On Business Hour departments removed via save', () => {
+		before(async () => {
+			await updateSetting('Livechat_business_hour_type', LivechatBusinessHourBehaviors.MULTIPLE);
+			// wait for the callbacks to be registered
+			await sleep(1000);
+		});
+
+		const createdDepartments: Awaited<ReturnType<typeof createDepartmentWithAnOnlineAgent>>[] = [];
+		let keptDepartmentWithAgent: Awaited<ReturnType<typeof createDepartmentWithAnOnlineAgent>>;
+		let removedDepartmentWithAgent: Awaited<ReturnType<typeof createDepartmentWithAnOnlineAgent>>;
+
+		beforeEach(async () => {
+			await removeAllCustomBusinessHours();
+			await openOrCloseBusinessHour(await getDefaultBusinessHour(), false);
+			keptDepartmentWithAgent = await createDepartmentWithAnOnlineAgent();
+			removedDepartmentWithAgent = await createDepartmentWithAnOnlineAgent();
+			createdDepartments.push(keptDepartmentWithAgent, removedDepartmentWithAgent);
+		});
+
+		after(async () => {
+			await Promise.all(createdDepartments.map(({ department }) => deleteDepartment(department._id)));
+			await Promise.all(createdDepartments.map(({ agent }) => deleteUser(agent.user)));
+		});
+
+		const resaveWithDepartments = async (businessHour: ILivechatBusinessHour, departmentsToApplyBusinessHour: string) => {
+			const { _updatedAt, ts, departments, ...cleanedBusinessHour } = businessHour;
+			await saveBusinessHour({
+				...cleanedBusinessHour,
+				timezoneName: businessHour.timezone.name,
+				timezone: businessHour.timezone.name,
+				workHours: getWorkHours(true),
+				daysOpen: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+				departmentsToApplyBusinessHour,
+			} as any);
+		};
+
+		it('should unlink only the removed departments when re-saving with a smaller department list', async () => {
+			const { department: keptDepartment, agent: keptAgent } = keptDepartmentWithAgent;
+			const { department: removedDepartment, agent: removedAgent } = removedDepartmentWithAgent;
+			const customBusinessHour = await createCustomBusinessHour([keptDepartment._id, removedDepartment._id]);
+			await openOrCloseBusinessHour(customBusinessHour, true);
+
+			await resaveWithDepartments(customBusinessHour, keptDepartment._id);
+
+			const latestKeptDepartment = await getDepartmentById(keptDepartment._id);
+			expect(latestKeptDepartment.businessHourId).to.be.equal(customBusinessHour._id);
+			const latestRemovedDepartment = await getDepartmentById(removedDepartment._id);
+			expect(latestRemovedDepartment.businessHourId).to.be.undefined;
+
+			const latestKeptAgent = await getMe<ILivechatAgent>(keptAgent.credentials);
+			expect(latestKeptAgent.openBusinessHours).to.be.an('array').that.includes(customBusinessHour._id);
+
+			const latestRemovedAgent = await getMe<ILivechatAgent>(removedAgent.credentials);
+			expect(latestRemovedAgent.openBusinessHours).to.be.an('array').that.does.not.include(customBusinessHour._id);
+		});
+
+		it('should unlink all departments when re-saving with an empty department list', async () => {
+			const { department } = keptDepartmentWithAgent;
+			const customBusinessHour = await createCustomBusinessHour([department._id]);
+			await openOrCloseBusinessHour(customBusinessHour, true);
+
+			await resaveWithDepartments(customBusinessHour, '');
+
+			const latestDepartment = await getDepartmentById(department._id);
+			expect(latestDepartment.businessHourId).to.be.undefined;
 		});
 	});
 
@@ -727,6 +798,134 @@ describe('LIVECHAT - business hours', () => {
 
 		afterEach(async () => {
 			await deleteUser(agentLinkedToDept.user);
+		});
+	});
+	(IS_EE ? describe : describe.skip)('[EE][BH] On agent removed from department', () => {
+		let defaultBusinessHour: ILivechatBusinessHour;
+		let customBusinessHour: ILivechatBusinessHour;
+		let deptLinkedToCustomBH: ILivechatDepartment;
+		let agentLinkedToDept: Awaited<ReturnType<typeof createDepartmentWithAnOnlineAgent>>['agent'];
+
+		// the business hour recomputation runs on a fire-and-forget callback, so poll until it lands
+		const waitForAgentBusinessHours = async (agentCredentials: Credentials, expected: string[]): Promise<string[] | undefined> => {
+			const matches = (agent: ILivechatAgent) =>
+				JSON.stringify([...(agent.openBusinessHours || [])].sort()) === JSON.stringify([...expected].sort());
+
+			let latestAgent: ILivechatAgent = await getMe(agentCredentials);
+			for (let attempts = 0; attempts < 10 && !matches(latestAgent); attempts++) {
+				await sleep(500);
+				latestAgent = await getMe(agentCredentials);
+			}
+			return latestAgent.openBusinessHours;
+		};
+
+		before(async () => {
+			await updateSetting('Livechat_business_hour_type', LivechatBusinessHourBehaviors.MULTIPLE);
+			// wait for the callbacks to be registered
+			await sleep(1000);
+		});
+
+		beforeEach(async () => {
+			await removeAllCustomBusinessHours();
+
+			defaultBusinessHour = await getDefaultBusinessHour();
+			await openOrCloseBusinessHour(defaultBusinessHour, true);
+
+			const { department, agent } = await createDepartmentWithAnOnlineAgent();
+			deptLinkedToCustomBH = department;
+			agentLinkedToDept = agent;
+
+			customBusinessHour = await createCustomBusinessHour([department._id]);
+			await openOrCloseBusinessHour(customBusinessHour, true);
+		});
+
+		it('upon removing an agent from its only department, the agent should fall back to the default business hour', async () => {
+			const openBusinessHoursBefore = await waitForAgentBusinessHours(agentLinkedToDept.credentials, [customBusinessHour._id]);
+			expect(openBusinessHoursBefore).to.be.an('array').of.length(1);
+			expect(openBusinessHoursBefore?.[0]).to.be.equal(customBusinessHour._id);
+
+			await addOrRemoveAgentFromDepartment(
+				deptLinkedToCustomBH._id,
+				{
+					agentId: agentLinkedToDept.user._id,
+					username: agentLinkedToDept.user.username || '',
+				},
+				false,
+			);
+
+			const openBusinessHours = await waitForAgentBusinessHours(agentLinkedToDept.credentials, [defaultBusinessHour._id]);
+			expect(openBusinessHours).to.be.an('array').of.length(1);
+			expect(openBusinessHours?.[0]).to.be.equal(defaultBusinessHour._id);
+		});
+
+		it('upon removing an agent from one department, the agent should keep the business hour shared with its other department', async () => {
+			// link a second department (with its own agent) to the same business hour and make the first agent overlap
+			const { department, agent } = await createDepartmentWithAnOnlineAgent();
+			await removeAllCustomBusinessHours();
+			customBusinessHour = await createCustomBusinessHour([deptLinkedToCustomBH._id, department._id]);
+			await openOrCloseBusinessHour(customBusinessHour, true);
+
+			await addOrRemoveAgentFromDepartment(
+				department._id,
+				{
+					agentId: agentLinkedToDept.user._id,
+					username: agentLinkedToDept.user.username || '',
+				},
+				true,
+			);
+
+			// control agent: belongs only to the first department and is removed in the same request as the
+			// overlapping agent, so both are processed by the same recomputation callback. Observing the control
+			// agent fall back to the default business hour proves that callback ran — only then is asserting the
+			// overlapping agent's unchanged state meaningful (it equals the pre-removal state, so it can't
+			// distinguish "correctly kept" from "callback never ran" on its own)
+			const controlAgent = await createAnOnlineAgent();
+			await addOrRemoveAgentFromDepartment(
+				deptLinkedToCustomBH._id,
+				{
+					agentId: controlAgent.user._id,
+					username: controlAgent.user.username || '',
+				},
+				true,
+			);
+
+			const overlappingBefore = await waitForAgentBusinessHours(agentLinkedToDept.credentials, [customBusinessHour._id]);
+			expect(overlappingBefore).to.be.an('array').of.length(1);
+			const controlBefore = await waitForAgentBusinessHours(controlAgent.credentials, [customBusinessHour._id]);
+			expect(controlBefore).to.be.an('array').of.length(1);
+
+			await request
+				.post(api(`livechat/department/${deptLinkedToCustomBH._id}/agents`))
+				.set(credentials)
+				.send({
+					upsert: [],
+					remove: [
+						{ agentId: agentLinkedToDept.user._id, username: agentLinkedToDept.user.username || '' },
+						{ agentId: controlAgent.user._id, username: controlAgent.user.username || '' },
+					],
+				})
+				.expect(200);
+
+			const controlOpenBusinessHours = await waitForAgentBusinessHours(controlAgent.credentials, [defaultBusinessHour._id]);
+			expect(controlOpenBusinessHours).to.be.an('array').of.length(1);
+			expect(controlOpenBusinessHours?.[0]).to.be.equal(defaultBusinessHour._id);
+
+			const latestAgent: ILivechatAgent = await getMe(agentLinkedToDept.credentials);
+			expect(latestAgent.openBusinessHours).to.be.an('array').of.length(1);
+			expect(latestAgent?.openBusinessHours?.[0]).to.be.equal(customBusinessHour._id);
+
+			await deleteDepartment(department._id);
+			await deleteUser(agent.user);
+			await deleteUser(controlAgent.user);
+		});
+
+		afterEach(async () => {
+			await deleteDepartment(deptLinkedToCustomBH._id);
+			await deleteUser(agentLinkedToDept.user);
+		});
+
+		after(async () => {
+			await removeAllCustomBusinessHours();
 		});
 	});
 	describe('[CE][BH] On Agent created/removed', () => {

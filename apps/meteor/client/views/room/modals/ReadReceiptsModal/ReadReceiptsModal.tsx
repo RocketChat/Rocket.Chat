@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import ReadReceiptRow from './ReadReceiptRow';
 
-type ReadReceiptsModalProps = {
+export type ReadReceiptsModalProps = {
 	messageId: IMessage['_id'];
 	onClose: () => void;
 };

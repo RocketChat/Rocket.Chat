@@ -4,7 +4,7 @@ import { memo } from 'react';
 import AuditMessageList from './AuditMessageList';
 import GenericNoResults from '../../../components/GenericNoResults';
 
-type AuditResultProps = {
+export type AuditResultProps = {
 	className?: string;
 	messages: IMessage[];
 };

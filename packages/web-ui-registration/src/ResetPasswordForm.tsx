@@ -8,7 +8,9 @@ import { useTranslation } from 'react-i18next';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import { useSendForgotPassword } from './hooks/useSendForgotPassword';
 
-export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }) => {
+export type ResetPasswordFormProps = { setLoginRoute: DispatchLoginRouter };
+
+export const ResetPasswordForm = ({ setLoginRoute }: ResetPasswordFormProps) => {
 	const { t } = useTranslation();
 	const emailId = useId();
 	const formLabelId = useId();
@@ -77,7 +79,7 @@ export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 				</FieldGroup>
 				{isSuccess && (
 					<FieldGroup>
-						<Callout aria-live='assertive' role='status' mbs={24} icon='mail'>
+						<Callout aria-live='assertive' role='status' marginBlockStart={24} icon='mail'>
 							{t('registration.page.resetPassword.sent')}
 						</Callout>
 					</FieldGroup>

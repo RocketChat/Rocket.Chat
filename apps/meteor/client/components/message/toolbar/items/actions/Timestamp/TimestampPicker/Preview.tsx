@@ -7,7 +7,7 @@ import { dateToISOString, generateTimestampMarkup } from '../../../../../../../l
 import type { TimestampFormat, TimezoneKey } from '../../../../../../../lib/utils/timestamp/types';
 import GazzodownText from '../../../../../../GazzodownText';
 
-type PreviewProps = {
+export type PreviewProps = {
 	date: Date;
 	format: TimestampFormat;
 	timezone: TimezoneKey;
@@ -20,7 +20,7 @@ const Preview = ({ date, format, timezone }: PreviewProps) => {
 	const tokens = parse(markup);
 
 	return (
-		<Box mb='x16'>
+		<Box marginBlock='x16'>
 			<Field>
 				<FieldLabel>{t('Preview')}</FieldLabel>
 				<FieldRow>

@@ -8,7 +8,7 @@ import { Logger } from '@rocket.chat/logger';
 import type { ServerMediaSignal } from '@rocket.chat/media-signaling';
 import { parse } from '@rocket.chat/message-parser';
 
-import { settings } from '../../../app/settings/server/cached';
+import { settings } from '../../settings/cached';
 import type { NotificationsModule } from '../notifications/notifications.module';
 
 const isMessageParserDisabled = process.env.DISABLE_MESSAGE_PARSER === 'true';

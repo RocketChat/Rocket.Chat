@@ -13,7 +13,9 @@ class StreamerCentralClass<N extends keyof StreamerEvents> extends EventEmitter 
 	}
 }
 
-type ActivePublication = IPublication & { _session: NonNullable<IPublication['_session']> };
+type ActivePublication = IPublication & {
+	_session: NonNullable<IPublication['_session']> & { socket: NonNullable<NonNullable<IPublication['_session']>['socket']> };
+};
 
 export const StreamerCentral = new StreamerCentralClass();
 
@@ -294,7 +296,9 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 	}
 
 	static isPublicationActive(publication: IPublication): publication is ActivePublication {
-		return !publication._isDeactivated();
+		// After Meteor 3.5 the socket can become null independently of session deactivation
+		// (e.g. right after a disconnection), so "active" must also mean the socket is still there.
+		return !publication._isDeactivated() && publication._session?.socket != null;
 	}
 
 	async sendToManySubscriptions(

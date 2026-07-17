@@ -5,7 +5,9 @@ import { useUnreadOnlyToggle } from '../../contexts/RoomsNavigationContext';
 import SidePanel from '../SidePanel';
 import { useChannelsChildrenList } from '../hooks/useChannelsChildrenList';
 
-const SidePanelChannels = ({ parentRid, subscription }: { parentRid: string; subscription: ISubscription }) => {
+export type SidePanelChannelsProps = { parentRid: string; subscription: ISubscription };
+
+const SidePanelChannels = ({ parentRid, subscription }: SidePanelChannelsProps) => {
 	const isDirectSubscription = subscription?.t === 'd';
 
 	const username = useUserDisplayName({ name: subscription?.fname, username: subscription?.name });

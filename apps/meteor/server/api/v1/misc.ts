@@ -23,16 +23,16 @@ import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
-import { passwordPolicy } from '../../../app/lib/server';
-import { notifyOnSettingChangedById } from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
-import { getBaseUserFields } from '../../../app/utils/server/functions/getBaseUserFields';
-import { isSMTPConfigured } from '../../../app/utils/server/functions/isSMTPConfigured';
-import { getURL } from '../../../app/utils/server/getURL';
+import { passwordPolicy } from '../../lib/auth/passwordPolicy';
 import { i18n } from '../../lib/i18n';
 import { SystemLogger } from '../../lib/logger/system';
-import { browseChannelsMethod } from '../../methods/browseChannels';
+import { notifyOnSettingChangedById } from '../../lib/notifyListener';
+import { getBaseUserFields } from '../../lib/utils/functions/getBaseUserFields';
+import { isSMTPConfigured } from '../../lib/utils/functions/isSMTPConfigured';
+import { getURL } from '../../lib/utils/getURL';
+import { browseChannelsMethod } from '../../meteor-methods/rooms/browseChannels';
 import { spotlightMethod } from '../../publications/spotlight';
+import { settings } from '../../settings';
 import { resetAuditedSettingByUser, updateAuditedByUser } from '../../settings/lib/auditedSettingUpdates';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
@@ -467,7 +467,7 @@ API.v1.get(
 		const sortBy = sort ? Object.keys(sort)[0] : undefined;
 		const sortDirection = sort && Object.values(sort)[0] === 1 ? 'asc' : 'desc';
 
-		const user = await Users.findOneById(this.userId, { projection: { __rooms: 1 } });
+		const user = await Users.findOneById(this.userId, { projection: { __rooms: 1, roles: 1 } });
 		const result = await browseChannelsMethod(
 			{
 				...filter,

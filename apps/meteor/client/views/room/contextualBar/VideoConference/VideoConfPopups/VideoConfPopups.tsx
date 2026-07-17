@@ -14,7 +14,9 @@ import VideoConfPopupPortal from '../../../../../portals/VideoConfPopupPortal';
 
 const VideoConfPopup = lazy(() => import('./VideoConfPopup'));
 
-const VideoConfPopups = ({ children }: { children?: VideoConfPopupPayload }) => {
+export type VideoConfPopupsProps = { children?: VideoConfPopupPayload };
+
+const VideoConfPopups = ({ children }: VideoConfPopupsProps) => {
 	const { callSounds } = useCustomSound();
 	const incomingCalls = useVideoConfIncomingCalls();
 	const isRinging = useVideoConfIsRinging();

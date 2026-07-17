@@ -2,7 +2,7 @@ import { Tooltip, PositionAnimated, AnimatedVisibility } from '@rocket.chat/fuse
 import type { ReactNode } from 'react';
 import { useRef } from 'react';
 
-type TooltipComponentProps = {
+export type TooltipComponentProps = {
 	title: ReactNode;
 	anchor: Element;
 };
