@@ -4,6 +4,7 @@ import type {
 	ChangeStream,
 	ClientSession,
 	Collection,
+	CountDocumentsOptions,
 	DeleteOptions,
 	DeleteResult,
 	Document,
@@ -128,6 +129,6 @@ export interface IBaseModel<
 	): FindPaginated<FindCursor<WithId<TDeleted>>>;
 
 	watch(pipeline?: object[]): ChangeStream<T>;
-	countDocuments(query: Filter<T>): Promise<number>;
+	countDocuments(query: Filter<T>, options?: CountDocumentsOptions): Promise<number>;
 	estimatedDocumentCount(): Promise<number>;
 }
