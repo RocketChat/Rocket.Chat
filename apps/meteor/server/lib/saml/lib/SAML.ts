@@ -328,7 +328,11 @@ export class SAML {
 			}, 5000);
 
 			try {
-				const loggedOutUsers = await Users.findBySAMLNameIdOrIdpSession(result.nameID, result.idpSession).toArray();
+				// limit 2: only need to know whether the match is missing, unique, or ambiguous
+				const loggedOutUsers = await Users.findBySAMLNameIdOrIdpSession(result.nameID, result.idpSession, {
+					projection: { _id: 1 },
+					limit: 2,
+				}).toArray();
 				if (loggedOutUsers.length > 1) {
 					throw new Meteor.Error('Found multiple users matching SAML session');
 				}
@@ -380,7 +384,8 @@ export class SAML {
 			const logOutUser = async (inResponseTo: string): Promise<void> => {
 				SAMLUtils.log({ msg: 'Processing logout for inResponseTo', inResponseTo });
 
-				const loggedOutUsers = await Users.findBySAMLInResponseTo(inResponseTo).toArray();
+				// limit 2: only need to know whether the match is missing, unique, or ambiguous
+				const loggedOutUsers = await Users.findBySAMLInResponseTo(inResponseTo, { projection: { _id: 1 }, limit: 2 }).toArray();
 				if (loggedOutUsers.length > 1) {
 					throw new Meteor.Error('Found multiple users matching SAML inResponseTo fields');
 				}
