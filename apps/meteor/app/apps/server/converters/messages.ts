@@ -1,4 +1,6 @@
+import type { IAppMessagesConverter, IAppServerOrchestrator, IAppsMessage, IAppsMesssageRaw } from '@rocket.chat/apps';
 import { isMessageFromVisitor } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { removeEmpty } from '@rocket.chat/tools';
@@ -7,26 +9,36 @@ import { cachedFunction } from './cachedFunction';
 import { convertMessageFiles } from './convertMessageFiles';
 import { transformMappedData } from './transformMappedData';
 
-export class AppMessagesConverter {
-	mem = new WeakMap();
+// The stored message documents and the app-side payloads carry many optional/dynamic fields that are
+// awkward to express against the base `IMessage`/`IAppsMessage` types. The legacy converter accessed
+// them dynamically; until this converter is migrated to a codec we treat the transform inputs as
+// loosely-typed records to preserve that behaviour verbatim.
+type MessageData = Record<string, any>;
 
-	constructor(orch) {
+export class AppMessagesConverter implements IAppMessagesConverter {
+	private mem = new WeakMap<object, Map<string, any>>();
+
+	constructor(protected readonly orch: IAppServerOrchestrator) {
 		this.orch = orch;
 	}
 
-	async convertById(msgId) {
+	async convertById(msgId: IMessage['_id']): Promise<IAppsMessage | undefined> {
 		const msg = await Messages.findOneById(msgId);
 
 		return this.convertMessage(msg);
 	}
 
-	async convertMessageRaw(msgObj) {
+	convertMessageRaw(msgObj: IMessage): Promise<IAppsMesssageRaw>;
+
+	convertMessageRaw(msgObj: IMessage | undefined | null): Promise<IAppsMesssageRaw | undefined>;
+
+	async convertMessageRaw(msgObj: IMessage | undefined | null): Promise<IAppsMesssageRaw | undefined> {
 		if (!msgObj) {
 			return undefined;
 		}
 
 		const { attachments, ...message } = msgObj;
-		const getAttachments = async () => this._convertAttachmentsToApp(attachments, msgObj.file);
+		const getAttachments = async () => this._convertAttachmentsToApp(attachments, (msgObj as MessageData).file);
 
 		const map = {
 			id: '_id',
@@ -52,19 +64,28 @@ export class AppMessagesConverter {
 			sender: 'u',
 			threadMsgCount: 'tcount',
 			type: 't',
-		};
+		} as const;
 
-		return transformMappedData(message, map);
+		return transformMappedData(message, map) as unknown as Promise<IAppsMesssageRaw>;
 	}
 
-	async convertMessage(msgObj, cacheObj = msgObj) {
+	convertMessage(msgObj: undefined | null): Promise<undefined>;
+
+	convertMessage(msgObj: IMessage, cacheObj?: object): Promise<IAppsMessage>;
+
+	convertMessage(msgObj: IMessage | undefined | null, cacheObj?: object): Promise<IAppsMessage | undefined>;
+
+	async convertMessage(
+		msgObj: IMessage | undefined | null,
+		cacheObj: object | undefined = msgObj ?? undefined,
+	): Promise<IAppsMessage | undefined> {
 		if (!msgObj) {
 			return undefined;
 		}
 
 		const cache =
-			this.mem.get(cacheObj) ??
-			new Map([
+			this.mem.get(cacheObj as object) ??
+			new Map<string, any>([
 				['room', cachedFunction(this.orch.getConverters().get('rooms').convertById.bind(this.orch.getConverters().get('rooms')))],
 				[
 					'user.convertById',
@@ -76,9 +97,9 @@ export class AppMessagesConverter {
 				],
 			]);
 
-		this.mem.set(cacheObj, cache);
+		this.mem.set(cacheObj as object, cache);
 
-		const { attachments, file: mainFile } = msgObj;
+		const { attachments, file: mainFile } = msgObj as MessageData;
 
 		const map = {
 			id: '_id',
@@ -98,13 +119,13 @@ export class AppMessagesConverter {
 			token: 'token',
 			blocks: 'blocks',
 			type: 't',
-			files: async (message) => convertMessageFiles(message.files, attachments),
-			room: async (message) => {
+			files: async (message: MessageData) => convertMessageFiles(message.files, attachments),
+			room: async (message: MessageData) => {
 				const result = await cache.get('room')(message.rid);
 				delete message.rid;
 				return result;
 			},
-			editor: async (message) => {
+			editor: async (message: MessageData) => {
 				const { editedBy } = message;
 				delete message.editedBy;
 
@@ -114,20 +135,23 @@ export class AppMessagesConverter {
 
 				return cache.get('user.convertById')(editedBy._id);
 			},
-			attachments: async (message) => {
+			attachments: async (message: MessageData) => {
 				const result = await this._convertAttachmentsToApp(message.attachments, mainFile);
 				delete message.attachments;
 				return result;
 			},
-			sender: async (message) => {
-				if (!message.u || !message.u._id) {
+			sender: async (message: MessageData) => {
+				if (!message.u?._id) {
 					return undefined;
 				}
 
+				// Keep a reference to the original sender before it is deleted below, so the fallback still has it.
+				const sender = message.u;
+
 				// When the message contains token, means the message is from the visitor(omnichannel)
 				const user = await (isMessageFromVisitor(msgObj)
-					? cache.get('user.convertToApp')(message.u)
-					: cache.get('user.convertById')(message.u._id));
+					? cache.get('user.convertToApp')(sender)
+					: cache.get('user.convertById')(sender._id));
 
 				delete message.u;
 
@@ -136,14 +160,20 @@ export class AppMessagesConverter {
 				 * `sender` as undefined, so we need to add this fallback here.
 				 */
 
-				return user || cache.get('user.convertToApp')(message.u);
+				return user || cache.get('user.convertToApp')(sender);
 			},
-		};
+		} as const;
 
-		return transformMappedData(msgObj, map);
+		return transformMappedData(msgObj, map) as unknown as Promise<IAppsMessage>;
 	}
 
-	async convertAppMessage(message, isPartial = false) {
+	convertAppMessage(message: undefined | null): Promise<undefined>;
+
+	convertAppMessage(message: IAppsMessage): Promise<IMessage | undefined>;
+
+	convertAppMessage(message: IAppsMessage, isPartial: boolean): Promise<Partial<IMessage>>;
+
+	async convertAppMessage(message: any, isPartial = false): Promise<Partial<IMessage> | undefined> {
 		if (!message) {
 			return undefined;
 		}
@@ -180,10 +210,17 @@ export class AppMessagesConverter {
 		let editedBy;
 		if (message.editor) {
 			const editor = await Users.findOneById(message.editor.id);
-			editedBy = {
-				_id: editor._id,
-				username: editor.username,
-			};
+			// Fall back to the editor data carried on the app payload when the user no longer exists,
+			// mirroring the sender handling above instead of dereferencing a possibly-null lookup.
+			editedBy = editor
+				? {
+						_id: editor._id,
+						username: editor.username,
+					}
+				: {
+						_id: message.editor.id,
+						username: message.editor.username,
+					};
 		}
 
 		const attachments = this._convertAppAttachments(message.attachments);
@@ -201,7 +238,7 @@ export class AppMessagesConverter {
 			}
 		}
 
-		const newMessage = {
+		const newMessage: MessageData = {
 			_id,
 			...('threadId' in message && { tmid: message.threadId }),
 			rid,
@@ -233,10 +270,10 @@ export class AppMessagesConverter {
 			Object.assign(newMessage, message._unmappedProperties_);
 		}
 
-		return newMessage;
+		return newMessage as unknown as Partial<IMessage>;
 	}
 
-	_convertAppAttachments(attachments) {
+	_convertAppAttachments(attachments: any) {
 		if (typeof attachments === 'undefined' || !Array.isArray(attachments)) {
 			return undefined;
 		}
@@ -276,7 +313,7 @@ export class AppMessagesConverter {
 		);
 	}
 
-	async _convertAttachmentsToApp(attachments, mainFile) {
+	async _convertAttachmentsToApp(attachments: any, mainFile: any) {
 		if (typeof attachments === 'undefined' || !Array.isArray(attachments)) {
 			return undefined;
 		}
@@ -303,7 +340,7 @@ export class AppMessagesConverter {
 			actions: 'actions',
 			type: 'type',
 			description: 'description',
-			author: (attachment) => {
+			author: (attachment: MessageData) => {
 				const { author_name: name, author_link: link, author_icon: icon } = attachment;
 
 				delete attachment.author_name;
@@ -312,7 +349,7 @@ export class AppMessagesConverter {
 
 				return { name, link, icon };
 			},
-			title: (attachment) => {
+			title: (attachment: MessageData) => {
 				const { title: value, title_link: link, title_link_download: displayDownloadLink } = attachment;
 
 				delete attachment.title;
@@ -321,12 +358,12 @@ export class AppMessagesConverter {
 
 				return { value, link, displayDownloadLink };
 			},
-			timestamp: (attachment) => {
+			timestamp: (attachment: MessageData) => {
 				const result = new Date(attachment.ts);
 				delete attachment.ts;
 				return result;
 			},
-			fileId: (attachment) => {
+			fileId: (attachment: MessageData) => {
 				// If the attachment is missing the fileId, but there's only one file in the message, use that file's ID
 				if (!attachment.fileId && attachment.type === 'file' && mainFile?._id && attachments.length === 1) {
 					return mainFile._id;
@@ -334,7 +371,7 @@ export class AppMessagesConverter {
 
 				return attachment.fileId;
 			},
-		};
+		} as const;
 
 		return Promise.all(attachments.map(async (attachment) => transformMappedData(attachment, map)));
 	}
