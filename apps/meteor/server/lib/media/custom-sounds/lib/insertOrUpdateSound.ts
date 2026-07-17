@@ -28,9 +28,9 @@ export const insertOrUpdateSound = async (soundData: ICustomSoundData): Promise<
 		});
 	}
 
-	const matchingResults = await CustomSounds.findByName(soundData.name, soundData._id).toArray();
+	const conflictingSound = await CustomSounds.findOneByName(soundData.name, soundData._id, { projection: { _id: 1 } });
 
-	if (matchingResults.length > 0) {
+	if (conflictingSound) {
 		throw new Meteor.Error('Custom_Sound_Error_Name_Already_In_Use', 'The custom sound name is already in use', {
 			method: 'insertOrUpdateSound',
 		});

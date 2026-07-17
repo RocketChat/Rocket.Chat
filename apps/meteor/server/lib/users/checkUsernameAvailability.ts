@@ -5,6 +5,8 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { settings } from '../../settings';
+import type { UsernameAvailabilityCheckType } from '../callbacks/checkUsernameAvailabilityCallback';
+import { checkUsernameAvailabilityCallback } from '../callbacks/checkUsernameAvailabilityCallback';
 import { validateName } from '../shared/validateName';
 
 let usernameBlackList: RegExp[] = [];
@@ -39,7 +41,7 @@ export const checkUsernameAvailabilityWithValidation = async function (userId: s
 	return checkUsernameAvailability(username);
 };
 
-export const checkUsernameAvailability = async function (username: string): Promise<boolean> {
+export const checkUsernameAvailability = async function (username: string, type: UsernameAvailabilityCheckType = 'user'): Promise<boolean> {
 	if (usernameIsBlocked(username, usernameBlackList) || !validateName(username)) {
 		throw new Meteor.Error('error-blocked-username', `${_.escape(username)} is blocked and can't be used!`, {
 			method: 'checkUsernameAvailability',
@@ -61,5 +63,11 @@ export const checkUsernameAvailability = async function (username: string): Prom
 		return false;
 	}
 
-	return true;
+	try {
+		await checkUsernameAvailabilityCallback.run(username, type);
+
+		return true;
+	} catch (error) {
+		return false;
+	}
 };

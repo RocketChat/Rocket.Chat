@@ -85,8 +85,8 @@ const SearchSourceResult = ({ item }: SearchSourceResultProps): ReactElement => 
 			borderBlockEndWidth={1}
 			borderBlockEndStyle='solid'
 			borderBlockEndColor='extra-light'
-			pbs={16}
-			pbe={16}
+			paddingBlockStart={16}
+			paddingBlockEnd={16}
 		>
 			<Message clickable={Boolean(href)}>
 				<MessageLeftContainer>
