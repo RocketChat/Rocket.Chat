@@ -51,7 +51,7 @@ const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipP
 				setTooltip(null);
 				setTooltip.flush();
 
-				if (anchor?.hasAttribute('data-title')) {
+				if (anchor) {
 					dismissedAnchor.current = anchor;
 					const restoreOnLeave = (): void => {
 						restoreAnchorTitle(anchor);

@@ -182,4 +182,22 @@ describe('with a `data-tooltip`-only anchor', () => {
 		expect(screen.getByRole('tooltip', { hidden: true })).toHaveTextContent('World');
 		expect(anchor).not.toHaveAttribute('title');
 	});
+
+	it('should show the tooltip again after a click-dismiss and mouseleave cycle', () => {
+		const { anchor } = setupDataTooltip();
+
+		fireEvent.mouseOver(anchor);
+		waitForTooltipDebounce();
+		fireEvent.click(anchor);
+		fireEvent.mouseLeave(anchor);
+		act(() => {
+			jest.runOnlyPendingTimers();
+		});
+
+		fireEvent.mouseOver(anchor);
+		waitForTooltipDebounce();
+
+		expect(screen.getByRole('tooltip', { hidden: true })).toHaveTextContent('Hello');
+		expect(anchor).not.toHaveAttribute('title');
+	});
 });
