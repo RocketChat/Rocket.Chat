@@ -38,7 +38,6 @@ services:
       traefik.http.services.rocketchat.loadbalancer.server.port: 3000
       traefik.http.routers.rocketchat.service: rocketchat
       traefik.http.routers.rocketchat.rule: PathPrefix(`/`)
-      traefik.http.routers.rocketchat.middlewares: test-retry
       traefik.http.middlewares.test-retry.retry.attempts: 4
     healthcheck:
       interval: 2s
@@ -231,9 +230,7 @@ services:
     image: traefik:v3.6.6
     command:
       - --providers.docker=true
-      # keep upstream keep-alive enabled, but drop idle conns before the
-      # meteor webapp 5s idle-socket reaper can kill one traefik would reuse
-      - --serverstransport.idleconntimeout=3s
+      - '--serverstransport.maxidleconnsperhost=-1'
       - --accesslog=true
       - --accesslog.format=json
       - --log.level=DEBUG
