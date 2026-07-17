@@ -1623,11 +1623,36 @@ API.v1.get(
 	},
 );
 
+// list.joined lists the caller's joined channels and ignores any room target, but existing clients
+// still pass roomId/roomName, so accept (and ignore) them alongside the standard pagination params.
+const channelsListJoinedQuery = ajvQuery.compile<{
+	_id?: string;
+	roomId?: string;
+	roomName?: string;
+	query?: string;
+	count?: number;
+	offset?: number;
+	sort?: string;
+}>({
+	type: 'object',
+	properties: {
+		_id: { type: 'string' },
+		roomId: { type: 'string' },
+		roomName: { type: 'string' },
+		query: { type: 'string' },
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		sort: { type: 'string' },
+	},
+	required: [],
+	additionalProperties: false,
+});
+
 API.v1.get(
 	'channels.list.joined',
 	{
 		authRequired: true,
-		query: isChannelsListProps,
+		query: channelsListJoinedQuery,
 		response: {
 			200: channelsListResponseSchema,
 			400: validateBadRequestErrorResponse,
@@ -1716,7 +1741,7 @@ const channelsMembersResponseSchema = ajv.compile<{ members: IUser[]; count: num
 					_updatedAt: { type: 'string' },
 				},
 				required: ['_id'],
-				additionalProperties: false,
+				additionalProperties: true,
 			},
 		},
 		count: { type: 'number' },
