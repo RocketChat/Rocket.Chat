@@ -103,7 +103,10 @@ type UsersPresencePayload = {
 };
 
 export type UserPresence = Readonly<
-	Partial<Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag' | 'roles' | 'username'>> & Required<Pick<IUser, '_id'>>
+	Partial<
+		Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'avatarETag' | 'roles' | 'username'>
+	> &
+		Required<Pick<IUser, '_id'>>
 >;
 
 export type UserPersonalTokens = Pick<IPersonalAccessToken, 'name' | 'lastTokenPart' | 'bypassTwoFactor'> & { createdAt: string };
@@ -378,6 +381,10 @@ export type UsersEndpoints = {
 
 	'/v1/users.deleteOwnAccount': {
 		POST: (params: { password: string; confirmRelinquish?: boolean }) => void;
+	};
+
+	'/v1/users.verifyEmail': {
+		POST: (params: { token: string }) => void;
 	};
 };
 

@@ -54,6 +54,15 @@ import { validateLicenseLimits } from './validation/validateLicenseLimits';
 
 const globalLimitKinds: LicenseLimitKind[] = ['activeUsers', 'guestUsers', 'privateApps', 'marketplaceApps', 'monthlyActiveContacts'];
 
+// The behaviors that decide whether (and how) a license is installed. Shared between the actual
+// validation performed on apply and the dry-run preview so both stay in sync if a behavior is added.
+const licenseValidationBehaviors: LicenseBehavior[] = [
+	'invalidate_license',
+	'start_fair_policy',
+	'prevent_installation',
+	'disable_modules',
+];
+
 export abstract class LicenseManager extends Emitter<LicenseEvents> {
 	abstract validateFormat: typeof validateFormat;
 
@@ -283,7 +292,7 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 		}
 
 		const validationResult = await runValidation.call(this, this._license, {
-			behaviors: ['invalidate_license', 'start_fair_policy', 'prevent_installation', 'disable_modules'],
+			behaviors: licenseValidationBehaviors,
 			...options,
 		});
 
@@ -326,6 +335,48 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 		) {
 			this.emit('sync');
 		}
+	}
+
+	/**
+	 * Validates a license against the current workspace state without applying it.
+	 *
+	 * Runs the same validation pipeline used when a license is set (URL, periods and limits),
+	 * but does not store the license, change validity, replace modules/tags nor emit events.
+	 * It is meant to power a preview of whether a license would be accepted before committing
+	 * to it from the admin UI.
+	 *
+	 * Returns whether the license would be accepted and, when not, the behaviors that reject it.
+	 * A malformed string is reported as invalid with no reasons rather than thrown, so callers can
+	 * treat every rejected license uniformly. Mirrors the apply path in throwing
+	 * `NotReadyForValidation` while the workspace can't validate yet.
+	 */
+	public async validateLicenseForPreview(
+		encryptedLicense: string,
+	): Promise<{ valid: true } | { valid: false; reasons: BehaviorWithContext[] }> {
+		if (!isReadyForValidation.call(this)) {
+			throw new NotReadyForValidation();
+		}
+
+		let license: ILicenseV3;
+		try {
+			await validateFormat(encryptedLicense);
+
+			const decrypted = JSON.parse(await decrypt(encryptedLicense));
+			license = encryptedLicense.startsWith('RCV3_') ? decrypted : convertToV3(decrypted);
+		} catch (err) {
+			logger.error({ msg: 'Invalid raw license provided for validation preview', err });
+			return { valid: false, reasons: [] };
+		}
+
+		const validationResult = await runValidation.call(this, license, {
+			behaviors: licenseValidationBehaviors,
+			isNewLicense: true,
+			suppressLog: true,
+		});
+
+		const reasons = filterBehaviorsResult(validationResult, ['invalidate_license', 'prevent_installation']);
+
+		return reasons.length ? { valid: false, reasons } : { valid: true };
 	}
 
 	public async setLicense(encryptedLicense: string, isNewLicense = true): Promise<boolean> {
@@ -424,10 +475,10 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 
 		const items = await Promise.all(
 			keys.map(async (limit) => {
-				const cached = this.shouldPreventActionResults.get(limit as LicenseLimitKind);
+				const cached = this.shouldPreventActionResults.get(limit);
 
 				if (cached !== undefined) {
-					return [limit as LicenseLimitKind, cached];
+					return [limit, cached];
 				}
 
 				const fresh = license
@@ -442,9 +493,9 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 							'prevent_action',
 						]);
 
-				this.shouldPreventActionResults.set(limit as LicenseLimitKind, fresh);
+				this.shouldPreventActionResults.set(limit, fresh);
 
-				return [limit as LicenseLimitKind, fresh];
+				return [limit, fresh];
 			}),
 		);
 

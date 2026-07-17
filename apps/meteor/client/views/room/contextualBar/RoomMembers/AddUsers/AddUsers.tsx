@@ -23,7 +23,7 @@ import { useRoom } from '../../../contexts/RoomContext';
 
 const hasExternalUsers = (users: string[]): boolean => users.some((user) => user.startsWith('@'));
 
-type AddUsersProps = {
+export type AddUsersProps = {
 	rid: IRoom['_id'];
 	onClickBack: () => void;
 	reload: () => void;

@@ -5,7 +5,9 @@ import { createClassName } from '../../../../helpers/createClassName';
 import shortnameToUnicode from '../../../../lib/emoji/shortnameToUnicode';
 import MarkdownBlock from '../../../MarkdownBlock';
 
-const PlainText = ({ text, emoji = false }: { text: string; emoji?: boolean }) => {
+export type PlainTextProps = { text: string; emoji?: boolean };
+
+const PlainText = ({ text, emoji = false }: PlainTextProps) => {
 	return (
 		<span className={createClassName(styles, 'uikit-plain-text')} dir='auto'>
 			<MarkdownBlock text={shortnameToUnicode(text)} emoticons={emoji} />

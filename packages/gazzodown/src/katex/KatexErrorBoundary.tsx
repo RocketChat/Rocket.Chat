@@ -4,7 +4,7 @@ import type { PropsWithChildren } from 'react';
 import { useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-type KatexErrorBoundaryProps = PropsWithChildren<{ code: string }>;
+export type KatexErrorBoundaryProps = PropsWithChildren<{ code: string }>;
 
 const Fallback = styled('span')`
 	text-decoration: underline;
@@ -12,9 +12,9 @@ const Fallback = styled('span')`
 `;
 
 const KatexErrorBoundary = ({ children, code }: KatexErrorBoundaryProps) => {
-	const [error, setError] = useState<Error | null>(null);
+	const [error, setError] = useState<unknown>(null);
 	return (
-		<ErrorBoundary onError={setError} fallback={<Fallback title={error?.message}>{code}</Fallback>}>
+		<ErrorBoundary onError={setError} fallback={<Fallback title={(error as Error)?.message}>{code}</Fallback>}>
 			{children}
 		</ErrorBoundary>
 	);

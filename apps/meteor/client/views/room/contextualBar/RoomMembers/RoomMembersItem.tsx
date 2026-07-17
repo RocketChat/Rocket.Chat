@@ -1,3 +1,4 @@
+import { useFocusRing } from '@react-aria/focus';
 import type { IRoom } from '@rocket.chat/core-typings';
 import {
 	Option,
@@ -12,7 +13,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import type { MouseEvent } from 'react';
+import type { KeyboardEvent, MouseEvent } from 'react';
 import { useState } from 'react';
 
 import UserActions from './RoomMembersActions';
@@ -20,9 +21,10 @@ import { getUserDisplayNames } from '../../../../../lib/getUserDisplayNames';
 import InvitationBadge from '../../../../components/InvitationBadge';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
+import { useUserStatusTooltip } from '../../../../hooks/useUserStatusTooltip';
 import type { RoomMember } from '../../../hooks/useMembersList';
 
-type RoomMembersItemProps = Pick<RoomMember, 'federated' | 'username' | 'name' | '_id' | 'freeSwitchExtension' | 'subscription'> & {
+export type RoomMembersItemProps = Pick<RoomMember, 'federated' | 'username' | 'name' | '_id' | 'freeSwitchExtension' | 'subscription'> & {
 	rid: IRoom['_id'];
 	useRealName: boolean;
 	reload: () => void;
@@ -41,24 +43,49 @@ const RoomMembersItem = ({
 	reload,
 	useRealName,
 }: RoomMembersItemProps) => {
-	const [showButton, setShowButton] = useState();
+	const [showButton, setShowButton] = useState(false);
 	const isReduceMotionEnabled = usePrefersReducedMotion();
+	const { focusProps, isFocusVisible } = useFocusRing();
 	const isInvited = subscription?.status === 'INVITED';
 	const invitationDate = isInvited ? subscription?.ts : undefined;
-	const handleMenuEvent = {
-		[isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: setShowButton,
-	};
-
 	const preventPropagation = usePreventPropagation();
-
 	const [nameOrUsername, displayUsername] = getUserDisplayNames(name, username, useRealName);
+
+	const statusTooltipHandlers = useUserStatusTooltip(_id);
+
+	const handleMenuEvent = isReduceMotionEnabled
+		? {
+				...statusTooltipHandlers,
+				onMouseEnter: (e: MouseEvent<HTMLElement>) => {
+					setShowButton(true);
+					statusTooltipHandlers.onMouseEnter(e);
+				},
+			}
+		: {
+				...statusTooltipHandlers,
+				onTransitionEnd: () => setShowButton(true),
+			};
 
 	return (
 		<Option
+			{...focusProps}
+			aria-label={nameOrUsername}
+			onFocus={(e) => {
+				focusProps.onFocus?.(e);
+				setShowButton(true);
+			}}
+			focus={isFocusVisible}
 			data-username={username}
 			data-userid={_id}
 			data-invitationdate={invitationDate}
 			onClick={onClickView}
+			onKeyDown={(e: KeyboardEvent<HTMLElement>) => {
+				if (e.key === 'Enter' || e.key === ' ') {
+					e.preventDefault();
+					e.currentTarget.click();
+				}
+			}}
+			tabIndex={0}
 			style={{ paddingInline: 24 }}
 			{...handleMenuEvent}
 		>
@@ -71,7 +98,7 @@ const RoomMembersItem = ({
 			</OptionContent>
 			{subscription?.status === 'INVITED' && (
 				<OptionColumn>
-					<InvitationBadge mbs={2} size='x20' invitationDate={subscription.ts} />
+					<InvitationBadge marginBlockStart={2} size='x20' invitationDate={subscription.ts} />
 				</OptionColumn>
 			)}
 			<OptionMenu onClick={preventPropagation}>

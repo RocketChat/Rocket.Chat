@@ -5,7 +5,7 @@ import type { ChangeEventHandler } from 'react';
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type RelativeUrlSettingInputProps = SettingInputProps;
+export type RelativeUrlSettingInputProps = SettingInputProps;
 
 function RelativeUrlSettingInput({
 	_id,
@@ -35,15 +35,17 @@ function RelativeUrlSettingInput({
 				</FieldLabel>
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
-			<UrlInput
-				id={_id}
-				value={getAbsoluteUrl(value || '')}
-				placeholder={placeholder}
-				disabled={disabled}
-				readOnly={readonly}
-				autoComplete={autocomplete === false ? 'off' : undefined}
-				onChange={handleChange}
-			/>
+			<FieldRow>
+				<UrlInput
+					id={_id}
+					value={getAbsoluteUrl(value || '')}
+					placeholder={placeholder}
+					disabled={disabled}
+					readOnly={readonly}
+					autoComplete={autocomplete === false ? 'off' : undefined}
+					onChange={handleChange}
+				/>
+			</FieldRow>
 			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);

@@ -1,7 +1,7 @@
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
-type PlaceChatOnHoldModalProps = {
+export type PlaceChatOnHoldModalProps = {
 	onOnHoldChat: () => void;
 	confirm?: () => void;
 	onCancel: () => void;

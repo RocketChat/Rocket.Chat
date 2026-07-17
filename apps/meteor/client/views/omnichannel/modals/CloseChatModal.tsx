@@ -28,7 +28,7 @@ type CloseChatModalFormData = {
 	subject: string;
 };
 
-type CloseChatModalProps = {
+export type CloseChatModalProps = {
 	department?: Serialized<ILivechatDepartment | null>;
 	visitorEmail?: string;
 	onCancel: () => void;

@@ -14,7 +14,7 @@ type ReportMessageModalsFields = {
 	description: string;
 };
 
-type ReportMessageModalProps = {
+export type ReportMessageModalProps = {
 	onClose: () => void;
 	message: IMessage;
 };
@@ -59,7 +59,7 @@ const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps) => {
 			onCancel={onClose}
 			confirmText={t('Report')}
 		>
-			<Box mbe={24} className={wordBreak}>
+			<Box marginBlockEnd={24} className={wordBreak}>
 				{message.md ? <MessageContentBody md={message.md} /> : <MarkdownText variant='inline' parseEmoji content={message.msg} />}
 			</Box>
 			<FieldGroup>

@@ -52,7 +52,7 @@ type Operations = {
 		: never as TOperation['id']]: TOperation['fn'];
 };
 
-type ServerContextMockProps = Omit<Partial<ContextType<typeof ServerContext>>, 'callEndpoint' | 'callMethod'> & {
+export type ServerContextMockProps = Omit<Partial<ContextType<typeof ServerContext>>, 'callEndpoint' | 'callMethod'> & {
 	children: ReactNode;
 	baseURL?: string | URL;
 	callEndpoint?: {

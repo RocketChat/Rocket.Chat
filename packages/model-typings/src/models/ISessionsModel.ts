@@ -43,16 +43,16 @@ export interface ISessionsModel extends IBaseModel<ISession> {
 		search,
 		offset,
 		count,
+		currentLoginToken,
 	}: {
 		uid: string;
 		sort?: Record<CustomSortOp, 1 | -1>;
 		search?: string | null;
 		offset?: number;
 		count?: number;
+		currentLoginToken?: string;
 	}): Promise<{ sessions: Array<DeviceManagementSession>; count: number; offset: number; total: number }>;
 
-	getActiveUsersBetweenDates({ start, end }: DestructuredRange): Promise<ISession[]>;
-	findLastLoginByIp(ip: string): Promise<ISession | null>;
 	findOneBySessionId(sessionId: string): Promise<ISession | null>;
 	findOneBySessionIdAndUserId(sessionId: string, userId: string): Promise<ISession | null>;
 
@@ -115,16 +115,7 @@ export interface ISessionsModel extends IBaseModel<ISession> {
 
 	closeByInstanceIdAndSessionId(instanceId: string, sessionId: string): Promise<UpdateResult>;
 
-	updateActiveSessionsByDateAndInstanceIdAndIds(
-		params: Partial<DestructuredDate>,
-		instanceId: string,
-		sessions: string[],
-		data: Record<string, any>,
-	): Promise<UpdateResult | Document>;
-
 	updateActiveSessionsByDate({ year, month, day }: DestructuredDate, data: Record<string, any>): Promise<UpdateResult | Document>;
-
-	logoutByInstanceIdAndSessionIdAndUserId(instanceId: string, sessionId: string, userId: string): Promise<UpdateResult>;
 
 	logoutBySessionIdAndUserId({
 		loginToken,

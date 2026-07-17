@@ -5,7 +5,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import RoomLayout from './layout/RoomLayout';
 import { useJoinRoom } from '../../hooks/useJoinRoom';
 
-type NotSubscribedRoomProps = {
+export type NotSubscribedRoomProps = {
 	rid: IRoom['_id'];
 	reference: string;
 	type: IRoom['t'];
@@ -31,7 +31,7 @@ const NotSubscribedRoom = ({ rid, reference, type }: NotSubscribedRoomProps) => 
 								/>
 							</Box>
 						</StatesSubtitle>
-						<Box mbs={16}>
+						<Box marginBlockStart={16}>
 							<StatesActions>
 								<StatesAction disabled={handleJoinClick.isPending} onClick={() => handleJoinClick.mutate({ rid, reference, type })}>
 									{t('Join_channel')}

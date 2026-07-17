@@ -1,5 +1,15 @@
 # @rocket.chat/media-signaling
 
+## 1.1.0
+
+### Minor Changes
+
+- ([#40422](https://github.com/RocketChat/Rocket.Chat/pull/40422)) Fixes a soft lock issue where the call negotiation doesn't proceed if the call is accepted while still being initialized
+
+### Patch Changes
+
+- ([#41044](https://github.com/RocketChat/Rocket.Chat/pull/41044)) Fixes an issue where voice calls could fail if the user navigated between rooms during the initial connection
+
 ## 1.1.0-rc.1
 
 ### Patch Changes

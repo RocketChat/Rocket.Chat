@@ -4,7 +4,7 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type TranslateProps = {
+export type TranslateProps = {
 	room: IRoom;
 };
 

@@ -13,7 +13,9 @@ const ACTION_PRIORITY: Record<string, number> = {
 	[USER_ACTIVITIES.USER_PLAYING]: 3,
 };
 
-const ComposerUserActionIndicator = ({ rid, tmid }: { rid: string; tmid?: string }) => {
+export type ComposerUserActionIndicatorProps = { rid: string; tmid?: string };
+
+const ComposerUserActionIndicator = ({ rid, tmid }: ComposerUserActionIndicatorProps) => {
 	const { t } = useTranslation();
 	const roomAction = useSyncExternalStore(
 		UserAction.subscribe,
@@ -55,7 +57,7 @@ const ComposerUserActionIndicator = ({ rid, tmid }: { rid: string; tmid?: string
 	return (
 		<Box
 			role='status'
-			h='x20'
+			height='x20'
 			className='rc-message-box__activity-wrapper'
 			fontScale='c1'
 			color='annotation'

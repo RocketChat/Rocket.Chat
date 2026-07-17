@@ -2,7 +2,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 import { Spotlight } from '../lib/spotlight';
 
 type SpotlightType = {
@@ -61,10 +61,12 @@ export const spotlightMethod = async ({
 		text = text.slice(1);
 	}
 
-	return {
-		users: type.users ? await spotlight.searchUsers({ userId, rid, text, usernames, mentions }) : [],
-		rooms: type.rooms ? await spotlight.searchRooms({ userId, text, includeFederatedRooms }) : [],
-	};
+	const [users, rooms] = await Promise.all([
+		type.users ? spotlight.searchUsers({ userId, rid, text, usernames, mentions }) : [],
+		type.rooms ? spotlight.searchRooms({ userId, text, includeFederatedRooms }) : [],
+	]);
+
+	return { users, rooms };
 };
 
 Meteor.methods<ServerMethods>({

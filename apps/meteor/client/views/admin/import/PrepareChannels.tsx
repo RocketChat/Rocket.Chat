@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { ChannelDescriptor } from './ChannelDescriptor';
 
-type PrepareChannelsProps = {
+export type PrepareChannelsProps = {
 	channelsCount: number;
 	channels: ChannelDescriptor[];
 	setChannels: Dispatch<SetStateAction<ChannelDescriptor[]>>;

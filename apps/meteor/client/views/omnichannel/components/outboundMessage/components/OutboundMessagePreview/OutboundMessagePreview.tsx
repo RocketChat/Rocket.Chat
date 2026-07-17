@@ -15,7 +15,7 @@ import { formatPhoneNumber } from '../../../../../../lib/formatPhoneNumber';
 import type { TemplateParameters } from '../../types/template';
 import TemplatePreview from '../TemplatePreview';
 
-type OutboundMessagePreviewProps = ComponentProps<typeof Box> & {
+export type OutboundMessagePreviewProps = ComponentProps<typeof Box> & {
 	template?: IOutboundProviderTemplate;
 	contactName?: ILivechatContact['name'];
 	providerName?: IOutboundProviderMetadata['providerName'];
@@ -73,7 +73,7 @@ const OutboundMessagePreview = ({
 		<Box {...props} is='section'>
 			<ul>
 				<Margins blockStart={24}>
-					<Box is='li' mbs={0}>
+					<Box is='li' marginBlockStart={0}>
 						<PreviewItem icon='doc' label={t('Template')}>
 							{template?.name}
 						</PreviewItem>
@@ -97,7 +97,7 @@ const OutboundMessagePreview = ({
 			</ul>
 
 			{template ? (
-				<Box mbs={30}>
+				<Box marginBlockStart={30}>
 					<TemplatePreview template={template} parameters={templateParameters} />
 				</Box>
 			) : null}

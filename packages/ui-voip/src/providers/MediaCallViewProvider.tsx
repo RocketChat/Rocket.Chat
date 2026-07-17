@@ -25,7 +25,7 @@ import { stopTracks, useDevicePermissionPrompt2, PermissionRequestCancelledCallR
 import { isValidTone, useTonePlayer } from '../hooks/useTonePlayer';
 import TransferModal from '../views/TransferModal';
 
-type MediaCallViewProviderProps = {
+export type MediaCallViewProviderProps = {
 	children?: ReactNode;
 };
 

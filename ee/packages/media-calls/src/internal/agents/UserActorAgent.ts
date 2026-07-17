@@ -15,9 +15,7 @@ import { getStateNotification } from '../../server/signals/getStateNotification'
 
 export class UserActorAgent extends BaseMediaCallAgent {
 	public async processSignal(call: IMediaCall, signal: ClientMediaSignal, options?: SignalProcessingOptions): Promise<void> {
-		const channel = await this.getOrCreateChannel(call, signal.contractId);
-
-		const signalProcessor = new UserActorSignalProcessor(this, call, channel);
+		const signalProcessor = new UserActorSignalProcessor(this, call, signal.contractId);
 		return signalProcessor.processSignal(signal, options);
 	}
 
@@ -68,11 +66,6 @@ export class UserActorAgent extends BaseMediaCallAgent {
 	}
 
 	public async onCallCreated(call: IMediaCall): Promise<void> {
-		if (this.role === 'caller' && call.caller.contractId) {
-			// Pre-create the channel for the contractId that requested the call
-			await this.getOrCreateChannel(call, call.caller.contractId);
-		}
-
 		await this.sendSignal(getNewCallSignal(call, this.role));
 		if (this.role === 'callee') {
 			this.sendPushNotification({ callId: call._id, event: 'new' });

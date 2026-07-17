@@ -26,7 +26,7 @@ import { useTranslation } from 'react-i18next';
 import { useWebDAVAccountIntegrationsQuery } from '../../../hooks/webdav/useWebDAVAccountIntegrationsQuery';
 import { getWebdavServerName } from '../../../lib/getWebdavServerName';
 
-type SaveToWebdavModalProps = {
+export type SaveToWebdavModalProps = {
 	onClose: () => void;
 	data: {
 		attachment: MessageAttachment;
