@@ -129,7 +129,7 @@ const MessageBox = ({
 		});
 	});
 
-	const { hasUploads, isUploading, isProcessingUploads } = useFileUpload();
+	const { hasUploads, handleUploadFiles, isUploading, isProcessingUploads } = useFileUpload();
 
 	const handleSendMessage = useStableCallback(() => {
 		if (isUploading || isProcessingUploads) {
@@ -329,7 +329,7 @@ const MessageBox = ({
 
 		if (files.length) {
 			event.preventDefault();
-			onUploadFiles?.(files);
+			(onUploadFiles ?? handleUploadFiles)(files);
 		}
 	});
 
