@@ -189,7 +189,7 @@ jobs:
           TEST_MODE: ${{ startsWith(inputs.type, 'api') && 'api' || 'true' }}
         run: |
           # when we are testing CE, we only need to start the rocketchat container
-          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d rocketchat --wait
+          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d rocketchat tcpdump --wait
 
       - name: Start containers for EE
         if: inputs.release == 'ee'
@@ -323,6 +323,14 @@ jobs:
       - name: Show traefik logs if E2E test failed
         if: failure()
         run: docker compose -f docker-compose-ci.yml logs traefik
+
+      - name: Store network capture if E2E test failed
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: pcap-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
+          path: /tmp/pcap
+          include-hidden-files: true
 
       - name: Store coverage
         if: inputs.coverage == matrix.mongodb-version
