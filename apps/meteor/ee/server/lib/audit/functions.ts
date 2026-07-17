@@ -177,7 +177,8 @@ export const auditGetOmnichannelMessagesMethod = async (
 	const rooms: IRoom[] = await LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, {
 		projection: { _id: 1 },
 	}).toArray();
-	const rids = rooms?.length ? rooms.map(({ _id }) => _id) : undefined;
+	// keep rids an array — `$in: undefined` throws "$in needs an array" when no rooms match
+	const rids = rooms.map(({ _id }) => _id);
 	const name = i18n.t('Omnichannel');
 
 	const query: Filter<IMessage> = {
