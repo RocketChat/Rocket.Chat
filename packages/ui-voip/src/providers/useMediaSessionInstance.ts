@@ -34,7 +34,7 @@ const isNotAllowedError = (error: unknown): error is DOMException & { name: 'Not
 	return error instanceof DOMException && error.name === 'NotAllowedError';
 };
 
-let fakeStream: { audioCtx: AudioContext; audioTrack: MediaStreamTrack; stream: MediaStream } | null = null;
+let fakeStream: { audioCtx: AudioContext; stream: MediaStream } | null = null;
 
 const getFakeStream = () => {
 	if (fakeStream) {
@@ -43,11 +43,9 @@ const getFakeStream = () => {
 
 	const audioCtx = new AudioContext();
 	const { stream } = audioCtx.createMediaStreamDestination();
-	const audioTrack = stream.getAudioTracks()[0];
 
 	fakeStream = {
 		audioCtx,
-		audioTrack,
 		stream,
 	};
 
