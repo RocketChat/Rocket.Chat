@@ -46,7 +46,7 @@ class MediaCallDirector {
 	}
 
 	public async activate(call: IMediaCall, actorAgent: IMediaCallAgent): Promise<void> {
-		logger.debug({ msg: 'MediaCallDirector.activateCall' });
+		logger.debug({ msg: 'MediaCallDirector.activateCall', role: actorAgent.role });
 
 		const stateResult = await MediaCalls.activateCallById(call._id, this.getNewExpirationTime());
 		if (!stateResult.modifiedCount) {

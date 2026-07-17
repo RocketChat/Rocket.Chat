@@ -23,7 +23,7 @@ import UserProvider from './UserProvider';
 import VideoConfProvider from './VideoConfProvider';
 import { OmnichannelRoomIconProvider } from '../components/RoomIcon/OmnichannelRoomIcon/provider/OmnichannelRoomIconProvider';
 
-type MeteorProviderProps = {
+export type MeteorProviderProps = {
 	children?: ReactNode;
 };
 

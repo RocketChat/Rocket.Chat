@@ -10,7 +10,7 @@ import PreviewKatexBlock from './katex/PreviewKatexBlock';
 const isOnlyBigEmojiBlock = (tokens: MessageParser.Root): tokens is [MessageParser.BigEmoji] =>
 	tokens.length === 1 && tokens[0].type === 'BIG_EMOJI';
 
-type PreviewMarkupProps = {
+export type PreviewMarkupProps = {
 	tokens: MessageParser.Root;
 	/** Original message source, used to render the `fallback` of blocks without a dedicated renderer. */
 	source?: string;

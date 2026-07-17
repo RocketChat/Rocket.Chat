@@ -65,7 +65,7 @@ const RoomFormAttributeField = ({
 	}, [attributeList, keyField.value]);
 
 	return (
-		<Box display='flex' flexDirection='column' w='full'>
+		<Box display='flex' flexDirection='column' width='full'>
 			<FieldRow>
 				<SelectFiltered
 					{...keyField}
@@ -76,7 +76,7 @@ const RoomFormAttributeField = ({
 					aria-invalid={keyFieldState.error ? 'true' : 'false'}
 					aria-describedby={keyFieldState.error ? `${keyField.name}-error` : undefined}
 					placeholder={t('ABAC_Search_Attribute')}
-					mbe={4}
+					marginBlockEnd={4}
 					error={keyFieldState.error?.message}
 					withTruncatedText
 					disabled={disabled}
@@ -112,7 +112,7 @@ const RoomFormAttributeField = ({
 				</FieldError>
 			)}
 			{index !== 0 && (
-				<Button onClick={onRemove} title={t('Remove')} mbs={8} disabled={disabled}>
+				<Button onClick={onRemove} title={t('Remove')} marginBlockStart={8} disabled={disabled}>
 					{t('Remove')}
 				</Button>
 			)}

@@ -1,4 +1,4 @@
-import type { FederationLookup } from '../federation';
+import type { FederationUserLookup } from '../federation';
 import type { IUserEmail } from './IUserEmail';
 import type { IUserSettings } from './IUserSettings';
 import type { UserStatusConnection } from './UserStatusConnection';
@@ -28,6 +28,6 @@ export interface IUser {
 	appId?: string;
 	sipExtension?: string;
 	isFederated?: boolean;
-	federation?: FederationLookup;
+	federation?: FederationUserLookup;
 	customFields?: { [key: string]: any };
 }

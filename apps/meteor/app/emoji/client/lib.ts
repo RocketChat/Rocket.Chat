@@ -1,5 +1,4 @@
 import { Emitter } from '@rocket.chat/emitter';
-import emojione from 'emojione';
 
 import type { EmojiPackages } from '../lib/rocketchat';
 
@@ -14,7 +13,7 @@ export const emoji: EmojiPackages & { dispatchUpdate: () => void } = {
 				recent: [],
 			},
 			toneList: {},
-			render: emojione.toImage,
+			render: (message: string) => message,
 			renderPicker(emojiToRender) {
 				const correctPackage = emoji.list[emojiToRender].emojiPackage;
 				if (!correctPackage) {

@@ -14,30 +14,30 @@ import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
-import { canAccessRoomAsync, roomAccessAttributes } from '../../../app/authorization/server';
-import { hasAllPermissionAsync, hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
-import { saveRoomSettings } from '../../../app/channel-settings/server/methods/saveRoomSettings';
-import { mountIntegrationQueryBasedOnPermissions } from '../../../app/integrations/server/lib/mountQueriesBasedOnPermission';
-import { addUsersToRoomMethod } from '../../../app/lib/server/methods/addUsersToRoom';
-import { executeArchiveRoom } from '../../../app/lib/server/methods/archiveRoom';
-import { createPrivateGroupMethod } from '../../../app/lib/server/methods/createPrivateGroup';
-import { getChannelHistory } from '../../../app/lib/server/methods/getChannelHistory';
-import { executeGetRoomRoles } from '../../../app/lib/server/methods/getRoomRoles';
-import { leaveRoomMethod } from '../../../app/lib/server/methods/leaveRoom';
-import { executeUnarchiveRoom } from '../../../app/lib/server/methods/unarchiveRoom';
-import { normalizeMessagesForUser } from '../../../app/utils/server/lib/normalizeMessagesForUser';
+import { canAccessRoomAsync, roomAccessAttributes } from '../../lib/authorization';
+import { hasAllPermissionAsync, hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { eraseRoom } from '../../lib/eraseRoom';
 import { findUsersOfRoom } from '../../lib/findUsersOfRoom';
+import { mountIntegrationQueryBasedOnPermissions } from '../../lib/integrations/lib/mountQueriesBasedOnPermission';
 import { openRoom } from '../../lib/openRoom';
-import { addAllUserToRoomFn } from '../../methods/addAllUserToRoom';
-import { addRoomLeader } from '../../methods/addRoomLeader';
-import { addRoomModerator } from '../../methods/addRoomModerator';
-import { addRoomOwner } from '../../methods/addRoomOwner';
-import { hideRoomMethod } from '../../methods/hideRoom';
-import { removeRoomLeader } from '../../methods/removeRoomLeader';
-import { removeRoomModerator } from '../../methods/removeRoomModerator';
-import { removeRoomOwner } from '../../methods/removeRoomOwner';
-import { removeUserFromRoomMethod } from '../../methods/removeUserFromRoom';
+import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
+import { getChannelHistory } from '../../meteor-methods/messages/getChannelHistory';
+import { addAllUserToRoomFn } from '../../meteor-methods/rooms/addAllUserToRoom';
+import { addRoomLeader } from '../../meteor-methods/rooms/addRoomLeader';
+import { addRoomModerator } from '../../meteor-methods/rooms/addRoomModerator';
+import { addRoomOwner } from '../../meteor-methods/rooms/addRoomOwner';
+import { addUsersToRoomMethod } from '../../meteor-methods/rooms/addUsersToRoom';
+import { executeArchiveRoom } from '../../meteor-methods/rooms/archiveRoom';
+import { createPrivateGroupMethod } from '../../meteor-methods/rooms/createPrivateGroup';
+import { executeGetRoomRoles } from '../../meteor-methods/rooms/getRoomRoles';
+import { hideRoomMethod } from '../../meteor-methods/rooms/hideRoom';
+import { leaveRoomMethod } from '../../meteor-methods/rooms/leaveRoom';
+import { removeRoomLeader } from '../../meteor-methods/rooms/removeRoomLeader';
+import { removeRoomModerator } from '../../meteor-methods/rooms/removeRoomModerator';
+import { removeRoomOwner } from '../../meteor-methods/rooms/removeRoomOwner';
+import { removeUserFromRoomMethod } from '../../meteor-methods/rooms/removeUserFromRoom';
+import { saveRoomSettings } from '../../meteor-methods/rooms/saveRoomSettings';
+import { executeUnarchiveRoom } from '../../meteor-methods/rooms/unarchiveRoom';
 import { API } from '../api';
 import { addUserToFileObj } from '../lib/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../lib/composeRoomWithLastMessage';
@@ -258,7 +258,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const access = await hasPermissionAsync(this.userId, 'view-room-administration');
+			const access = await hasPermissionAsync(this.user, 'view-room-administration');
 			const params = this.queryParams;
 			let user = this.userId;
 			let room;
@@ -744,7 +744,7 @@ API.v1.addRoute(
 				userId: this.userId,
 			});
 
-			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult.rid))) {
+			if (findResult.broadcast && !(await hasPermissionAsync(this.user, 'view-broadcast-member-list', findResult.rid))) {
 				return API.v1.forbidden();
 			}
 
@@ -1288,7 +1288,7 @@ API.v1.addRoute(
 				return API.v1.failure('Private group not found');
 			}
 
-			if (!(await hasAllPermissionAsync(this.userId, ['create-team', 'edit-room'], room.rid))) {
+			if (!(await hasAllPermissionAsync(this.user, ['create-team', 'edit-room'], room.rid))) {
 				return API.v1.forbidden();
 			}
 

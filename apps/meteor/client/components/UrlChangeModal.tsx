@@ -3,7 +3,7 @@ import { GenericModal } from '@rocket.chat/ui-client';
 import DOMPurify from 'dompurify';
 import { useTranslation } from 'react-i18next';
 
-type UrlChangeModalProps = {
+export type UrlChangeModalProps = {
 	onConfirm: () => void;
 	siteUrl: string;
 	currentUrl: string;
@@ -16,7 +16,7 @@ const UrlChangeModal = ({ onConfirm, siteUrl, currentUrl, onClose }: UrlChangeMo
 		<GenericModal variant='warning' title={t('Warning')} onConfirm={onConfirm} onClose={onClose} onCancel={onClose} confirmText={t('Yes')}>
 			<Box
 				is='p'
-				mbe={16}
+				marginBlockEnd={16}
 				dangerouslySetInnerHTML={{
 					__html: DOMPurify.sanitize(
 						t('The_setting_s_is_configured_to_s_and_you_are_accessing_from_s', {

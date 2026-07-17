@@ -8,7 +8,7 @@ export const detectEmoji = (text: string): { name: string; className: string; im
 	div.innerHTML = html;
 	return Array.from(div.querySelectorAll('span')).map((span) => ({
 		name: span.title,
-		className: span.className,
+		className: `${span.className} ${span.style.backgroundImage ? 'rcx-message__emoji--custom' : ''}`,
 		image: span.style.backgroundImage || undefined,
 		content: span.innerText,
 	}));

@@ -1,30 +1,11 @@
 import type { ILivechatDepartment, RocketChatRecordDeleted, LivechatDepartmentDTO } from '@rocket.chat/core-typings';
 import type { ILivechatDepartmentModel } from '@rocket.chat/model-typings';
 import { LivechatDepartmentRaw } from '@rocket.chat/models';
-import type {
-	Collection,
-	DeleteResult,
-	Document,
-	Filter,
-	FindCursor,
-	FindOptions,
-	UpdateFilter,
-	UpdateResult,
-	Db,
-	AggregationCursor,
-} from 'mongodb';
+import type { Collection, Document, FindCursor, FindOptions, UpdateResult, Db, AggregationCursor } from 'mongodb';
 
 declare module '@rocket.chat/model-typings' {
 	interface ILivechatDepartmentModel {
 		removeDepartmentFromForwardListById(departmentId: string): Promise<void>;
-		unfilteredFind(query: Filter<ILivechatDepartment>, options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
-		unfilteredFindOne(query: Filter<ILivechatDepartment>, options: FindOptions<ILivechatDepartment>): Promise<ILivechatDepartment | null>;
-		unfilteredUpdate(
-			query: Filter<ILivechatDepartment>,
-			update: UpdateFilter<ILivechatDepartment>,
-			options: FindOptions<ILivechatDepartment>,
-		): Promise<UpdateResult>;
-		unfilteredRemove(query: Filter<ILivechatDepartment>): Promise<DeleteResult>;
 		removeParentAndAncestorById(id: string): Promise<UpdateResult | Document>;
 		findEnabledWithAgentsAndBusinessUnit<T extends Document = ILivechatDepartment>(
 			businessUnit?: string,
@@ -42,29 +23,6 @@ export class LivechatDepartmentEE extends LivechatDepartmentRaw implements ILive
 
 	override async removeDepartmentFromForwardListById(departmentId: string): Promise<void> {
 		await this.updateMany({ departmentsAllowedToForward: departmentId }, { $pull: { departmentsAllowedToForward: departmentId } });
-	}
-
-	override unfilteredFind(query: Filter<ILivechatDepartment>, options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
-		return this.col.find(query, options);
-	}
-
-	override unfilteredFindOne(
-		query: Filter<ILivechatDepartment>,
-		options: FindOptions<ILivechatDepartment>,
-	): Promise<ILivechatDepartment | null> {
-		return this.col.findOne(query, options);
-	}
-
-	override unfilteredUpdate(
-		query: Filter<ILivechatDepartment>,
-		update: UpdateFilter<ILivechatDepartment>,
-		options: FindOptions<ILivechatDepartment>,
-	): Promise<UpdateResult> {
-		return this.col.updateOne(query, update, options);
-	}
-
-	override unfilteredRemove(query: Filter<ILivechatDepartment>): Promise<DeleteResult> {
-		return this.col.deleteOne(query);
 	}
 
 	override createOrUpdateDepartment(_id: string | null, data: LivechatDepartmentDTO): Promise<ILivechatDepartment> {

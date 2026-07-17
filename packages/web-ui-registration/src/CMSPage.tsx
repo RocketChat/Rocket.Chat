@@ -4,7 +4,7 @@ import { useSetting, useTranslation, useAssetWithDarkModePath } from '@rocket.ch
 
 import { LoginPoweredBy } from './components/LoginPoweredBy';
 
-type CMSPageProps = {
+export type CMSPageProps = {
 	page: 'Layout_Terms_of_Service' | 'Layout_Privacy_Policy' | 'Layout_Legal_Notice';
 };
 
@@ -18,11 +18,11 @@ const CMSPage = ({ page }: CMSPageProps) => {
 	return (
 		<VerticalWizardLayout
 			background={customBackground}
-			logo={customLogo ? <Box is='img' maxHeight='x40' mi='neg-x8' src={customLogo} alt='Logo' /> : undefined}
+			logo={customLogo ? <Box is='img' maxHeight='x40' marginInline='neg-x8' src={customLogo} alt='Logo' /> : undefined}
 		>
 			<VerticalWizardLayoutTitle>{t(page)}</VerticalWizardLayoutTitle>
 			<VerticalWizardLayoutForm>
-				<Box p={32}>
+				<Box padding={32}>
 					<IconButton title={t('Back')} icon='arrow-back' onClick={() => window.history.back()} style={{ float: 'right' }} />
 					<Box withRichContent dangerouslySetInnerHTML={{ __html: pageContent }} />
 				</Box>

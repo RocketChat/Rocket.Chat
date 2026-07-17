@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import RoomAutoComplete from '../../../../components/RoomAutoComplete';
 import type { AuditFields } from '../../hooks/useAuditForm';
 
-type RoomsTabProps = {
+export type RoomsTabProps = {
 	form: UseFormReturn<AuditFields>;
 	setSelectedRoom: Dispatch<SetStateAction<IRoom | undefined>>;
 };

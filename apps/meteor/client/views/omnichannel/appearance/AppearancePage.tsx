@@ -40,7 +40,9 @@ const reduceAppearance = (settings: Serialized<ISetting>[]): AppearanceSettings 
 		return acc;
 	}, {});
 
-const AppearancePage = ({ settings }: { settings: Serialized<ISetting>[] }) => {
+export type AppearancePageProps = { settings: Serialized<ISetting>[] };
+
+const AppearancePage = ({ settings }: AppearancePageProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -80,7 +82,7 @@ const AppearancePage = ({ settings }: { settings: Serialized<ISetting>[] }) => {
 		<Page>
 			<PageHeader title={t('Appearance')} />
 			<PageScrollableContentWithShadow>
-				<Box maxWidth='x600' w='full' alignSelf='center'>
+				<Box maxWidth='x600' width='full' alignSelf='center'>
 					<FormProvider {...methods}>
 						<form id={formId} onSubmit={handleSubmit(handleSave)}>
 							<AppearanceForm />

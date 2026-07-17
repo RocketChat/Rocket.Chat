@@ -9,7 +9,7 @@ import PlainSpan from './PlainSpan';
 import StrikeSpan from './StrikeSpan';
 import { sanitizeUrl } from './sanitizeUrl';
 
-type LinkSpanProps = {
+export type LinkSpanProps = {
 	href: string;
 	label: MessageParser.Markup | MessageParser.Markup[];
 };

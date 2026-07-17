@@ -9,7 +9,9 @@ import { QuoteAttachment } from '../../../../components/message/content/attachme
 import AttachmentProvider from '../../../../providers/AttachmentProvider';
 import { useChat } from '../../contexts/ChatContext';
 
-const MessageBoxReply = ({ reply }: { reply: IMessage }) => {
+export type MessageBoxReplyProps = { reply: IMessage };
+
+const MessageBoxReply = ({ reply }: MessageBoxReplyProps) => {
 	const { t } = useTranslation();
 	const chat = useChat();
 

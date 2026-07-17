@@ -3,12 +3,21 @@ import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 import { Fragment } from 'react';
 import flattenChildren from 'react-keyed-flatten-children';
 
-type CounterRowProps = {
+export type CounterRowProps = {
 	children?: ReactNode[];
 } & ComponentPropsWithoutRef<typeof Box>;
 
 const CounterRow = ({ children, ...props }: CounterRowProps) => (
-	<Box pb={28} pi={20} display='flex' flexDirection='row' justifyContent='space-around' alignItems='center' flexGrow={1} {...props}>
+	<Box
+		paddingBlock={28}
+		paddingInline={20}
+		display='flex'
+		flexDirection='row'
+		justifyContent='space-around'
+		alignItems='center'
+		flexGrow={1}
+		{...props}
+	>
 		{children &&
 			flattenChildren(children).reduce(
 				(acc: ReactNode[], child, i) =>
@@ -16,7 +25,7 @@ const CounterRow = ({ children, ...props }: CounterRowProps) => (
 						? [
 								...acc,
 								<Fragment key={i}>{child}</Fragment>,
-								<Divider key={(i + 1) * children.length} width='x2' m='none' alignSelf='stretch' />,
+								<Divider key={(i + 1) * children.length} width='x2' margin='none' alignSelf='stretch' />,
 							]
 						: [...acc, child],
 				[],

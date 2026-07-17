@@ -3,7 +3,7 @@ import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode, ComponentProps } from 'react';
 import { useRef, useState, useEffect } from 'react';
 
-type ThumbnailProps = ComponentProps<typeof Box> & {
+export type ThumbnailProps = ComponentProps<typeof Box> & {
 	of: ReactNode;
 };
 
@@ -23,7 +23,7 @@ const Thumbnail = ({ of, ...props }: ThumbnailProps) => {
 	return (
 		<Box overflow='hidden' position='relative' ref={parentRef} {...props}>
 			<Box
-				w='max-content'
+				width='max-content'
 				className={css`
 					transform: scale(${scale});
 					transform-origin: 0% 0%;

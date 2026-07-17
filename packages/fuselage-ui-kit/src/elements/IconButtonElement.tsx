@@ -5,7 +5,7 @@ import type { MouseEventHandler } from 'react';
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
 
-type IconButtonElementProps = BlockProps<UiKit.IconButtonElement>;
+export type IconButtonElementProps = BlockProps<UiKit.IconButtonElement>;
 
 const IconButtonElement = ({ block, context }: IconButtonElementProps) => {
 	const [{ loading }, action] = useUiKitState(block, context);

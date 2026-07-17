@@ -7,7 +7,7 @@ import type { ChangeEvent, SubmitEvent } from 'react';
 import { useState, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type RemoveContactModalProps = {
+export type RemoveContactModalProps = {
 	_id: string;
 	name: string;
 	channelsCount: number;
@@ -60,10 +60,10 @@ const RemoveContactModal = ({ _id, name, channelsCount, onClose }: RemoveContact
 			variant='danger'
 			confirmDisabled={text !== confirmationText}
 		>
-			<Box is='p' id={`${contactDeleteModalId}-description`} mbe={16}>
+			<Box is='p' id={`${contactDeleteModalId}-description`} marginBlockEnd={16}>
 				{t('Are_you_sure_delete_contact', { contactName: name, channelsCount, confirmationText })}
 			</Box>
-			<Box mbe={16} display='flex' justifyContent='stretch'>
+			<Box marginBlockEnd={16} display='flex' justifyContent='stretch'>
 				<Input
 					value={text}
 					name='confirmContactRemoval'

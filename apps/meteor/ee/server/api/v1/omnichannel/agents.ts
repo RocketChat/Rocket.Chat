@@ -4,13 +4,13 @@ import {
 	isLivechatAnalyticsAgentsAvailableForServiceHistoryProps,
 } from '@rocket.chat/rest-typings';
 
+import { API } from '../../../../../server/api';
+import { getPaginationItems } from '../../../../../server/api/lib/getPaginationItems';
 import {
 	findAllAverageServiceTimeAsync,
 	findAllServiceTimeAsync,
 	findAvailableServiceTimeHistoryAsync,
-} from '../../../../../app/livechat/server/lib/analytics/agents';
-import { API } from '../../../../../server/api';
-import { getPaginationItems } from '../../../../../server/api/lib/getPaginationItems';
+} from '../../../../../server/lib/omnichannel/analytics/agents';
 
 API.v1.addRoute(
 	'livechat/analytics/agents/average-service-time',

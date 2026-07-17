@@ -5,7 +5,7 @@ import { HeaderIcon } from '@rocket.chat/ui-client';
 import { OmnichannelRoomIcon } from '../../../components/RoomIcon/OmnichannelRoomIcon';
 import { useRoomIcon } from '../../../hooks/useRoomIcon';
 
-type HeaderIconWithRoomProps = {
+export type HeaderIconWithRoomProps = {
 	room: IRoom;
 };
 

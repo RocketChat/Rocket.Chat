@@ -4,7 +4,7 @@ import EngagementDashboardCard from '../EngagementDashboardCard';
 import MessagesPerChannelSection from './MessagesPerChannelSection';
 import MessagesSentSection from './MessagesSentSection';
 
-type MessagesTabProps = {
+export type MessagesTabProps = {
 	timezone: 'utc' | 'local';
 };
 

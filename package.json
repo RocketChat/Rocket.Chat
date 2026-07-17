@@ -132,7 +132,6 @@
 		"create-hmac/sha.js": "2.4.12",
 		"@typescript-eslint/typescript-estree/minimatch": "10.2.5",
 		"depcheck/minimatch": "7.4.9",
-		"eslint-plugin-import/minimatch": "3.1.5",
 		"eslint-plugin-jsx-a11y/minimatch": "3.1.5",
 		"eslint-plugin-react/minimatch": "3.1.5",
 		"fork-ts-checker-webpack-plugin/minimatch": "3.1.5",

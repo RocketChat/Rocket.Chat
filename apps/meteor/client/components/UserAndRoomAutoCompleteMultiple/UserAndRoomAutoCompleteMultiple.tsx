@@ -10,7 +10,7 @@ import { memo, useMemo, useState } from 'react';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { Rooms } from '../../stores';
 
-type UserAndRoomAutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'> & {
+export type UserAndRoomAutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'> & {
 	limit?: number;
 };
 
@@ -81,9 +81,9 @@ const UserAndRoomAutoCompleteMultiple = ({ value, onChange, limit, ...props }: U
 			setFilter={setFilter}
 			multiple
 			renderSelected={({ selected: { value, label }, onRemove, ...props }) => (
-				<Chip {...props} height='x20' value={value} onClick={onRemove} mie={4}>
+				<Chip {...props} height='x20' value={value} onClick={onRemove} marginInlineEnd={4}>
 					<RoomAvatar size='x20' room={{ ...label, _id: value }} />
-					<Box is='span' margin='none' mis={4}>
+					<Box is='span' margin='none' marginInlineStart={4}>
 						{label.name}
 					</Box>
 				</Chip>

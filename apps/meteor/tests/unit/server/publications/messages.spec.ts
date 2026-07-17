@@ -33,7 +33,7 @@ const {
 	'meteor/check': {
 		check: sinon.stub(),
 	},
-	'../../app/lib/server/methods/getChannelHistory': {
+	'../meteor-methods/messages/getChannelHistory': {
 		getChannelHistory: sinon.stub(),
 	},
 	'meteor/meteor': {

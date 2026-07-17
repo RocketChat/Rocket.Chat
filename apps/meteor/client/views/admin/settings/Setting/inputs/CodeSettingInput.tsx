@@ -7,7 +7,7 @@ import CodeMirror from './CodeMirror';
 import CodeMirrorBox from './CodeMirror/CodeMirrorBox';
 import type { SettingInputProps } from './types';
 
-type CodeSettingInputProps = SettingInputProps & {
+export type CodeSettingInputProps = SettingInputProps & {
 	hint: string;
 	code: string;
 	readonly: boolean;

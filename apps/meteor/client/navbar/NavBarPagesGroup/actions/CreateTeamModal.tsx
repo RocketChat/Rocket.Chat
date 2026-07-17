@@ -40,7 +40,7 @@ type CreateTeamModalInputs = {
 	members?: string[];
 };
 
-type CreateTeamModalProps = { onClose: () => void };
+export type CreateTeamModalProps = { onClose: () => void };
 
 const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 	const t = useTranslation();
@@ -161,11 +161,11 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 				<ModalTitle id={`${createTeamFormId}-title`}>{t('Teams_New_Title')}</ModalTitle>
 				<ModalClose title={t('Close')} onClick={onClose} tabIndex={-1} />
 			</ModalHeader>
-			<ModalContent mbe={2}>
-				<Box fontScale='p2' mbe={16}>
+			<ModalContent marginBlockEnd={2}>
+				<Box fontScale='p2' marginBlockEnd={16}>
 					{t('Teams_new_description')}
 				</Box>
-				<FieldGroup mbe={24}>
+				<FieldGroup marginBlockEnd={24}>
 					<Field>
 						<FieldLabel required>{t('Teams_New_Name_Label')}</FieldLabel>
 						<FieldRow>
@@ -179,7 +179,7 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 								render={({ field }) => (
 									<TextInput
 										{...field}
-										addon={<Icon size='x20' name={isPrivate ? 'team-lock' : 'team'} />}
+										endAddon={<Icon size='x20' name={isPrivate ? 'team-lock' : 'team'} />}
 										error={errors.name?.message}
 										aria-required='true'
 									/>

@@ -2,7 +2,7 @@ import ChatIcon from '../../icons/chat.svg';
 import CloseIcon from '../../icons/close.svg';
 import { Button } from '../Button';
 
-type ChatButtonProps = {
+export type ChatButtonProps = {
 	text: string;
 	minimized: boolean;
 	badge: number | undefined;
