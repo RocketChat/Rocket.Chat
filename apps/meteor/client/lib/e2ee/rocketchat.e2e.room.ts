@@ -34,6 +34,15 @@ const log = createLogger('E2E:Room');
 const KEY_ID = Symbol('keyID');
 const PAUSED = Symbol('PAUSED');
 
+const isRoomKeyAlreadyExistsError = async (error: Response): Promise<boolean> => {
+	try {
+		const body = await error.clone().json();
+		return body?.errorType === 'error-room-e2e-key-already-exists';
+	} catch {
+		return false;
+	}
+};
+
 type Mutations = { [k in E2ERoomState]?: E2ERoomState[] };
 
 const permitedMutations: Mutations = {
@@ -331,7 +340,12 @@ export class E2ERoom extends Emitter {
 			span.set('room', room);
 			if (!room?.e2eKeyId) {
 				this.setState('CREATING_KEYS');
-				await this.createGroupKey();
+				const created = await this.createGroupKey();
+				if (!created) {
+					// another member won the race
+					this.setState('WAITING_KEYS');
+					return;
+				}
 				this.setState('READY');
 				return;
 			}
@@ -420,10 +434,26 @@ export class E2ERoom extends Emitter {
 		this.keyID = crypto.randomUUID();
 	}
 
-	async createGroupKey() {
+	private discardGroupKey() {
+		this.groupSessionKey = null;
+		this.sessionKeyExportedString = undefined;
+		this.keyID = undefined as unknown as string;
+	}
+
+	async createGroupKey(): Promise<boolean> {
+		const span = log.span('createGroupKey');
 		await this.createNewGroupKey();
 
-		await sdk.rest.post('/v1/e2e.setRoomKeyID', { rid: this.roomId, keyID: this.keyID });
+		try {
+			await sdk.rest.post('/v1/e2e.setRoomKeyID', { rid: this.roomId, keyID: this.keyID });
+		} catch (error) {
+			if (error instanceof Response && (await isRoomKeyAlreadyExistsError(error))) {
+				span.info('Room key already established by another member; discarding local key');
+				this.discardGroupKey();
+				return false;
+			}
+			throw error;
+		}
 		const myKey = await this.encryptGroupKeyForParticipant(e2e.publicKey!);
 		if (myKey) {
 			await sdk.rest.post('/v1/e2e.updateGroupKey', {
@@ -433,6 +463,7 @@ export class E2ERoom extends Emitter {
 			});
 			await this.encryptKeyForOtherParticipants();
 		}
+		return true;
 	}
 
 	async resetRoomKey() {

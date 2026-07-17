@@ -18,6 +18,7 @@ import type {
 	UpdateResult,
 	CountDocumentsOptions,
 	WithId,
+	FindOneAndUpdateOptions,
 } from 'mongodb';
 
 import type { Updater } from '../updater';
@@ -193,7 +194,11 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	setAvatarData(roomId: string, origin: string, etag: string): Promise<UpdateResult>;
 	unsetAvatarData(roomId: string): Promise<UpdateResult>;
 	setSystemMessagesById(roomId: string, systemMessages: IRoom['sysMes']): Promise<UpdateResult>;
-	setE2eKeyId(roomId: string, e2eKeyId: string, options?: FindOptions<IRoom>): Promise<UpdateResult>;
+	setE2eKeyId(
+		roomId: string,
+		e2eKeyId: string,
+		options?: Omit<FindOneAndUpdateOptions, 'returnDocument' | 'includeResultMetadata' | 'upsert'>,
+	): Promise<IRoom | null>;
 	findOneByImportId(importId: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 	findOneByNameAndNotId(name: string, rid: string): Promise<IRoom | null>;
 	findOneByIdAndType<T extends Document = IRoom>(roomId: IRoom['_id'], type: IRoom['t'], options?: FindOptions<T>): Promise<T | null>;
