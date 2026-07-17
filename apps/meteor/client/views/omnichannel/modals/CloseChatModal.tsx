@@ -144,6 +144,10 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 	if (commentRequired || tagRequired || canSendTranscript) {
 		return (
 			<GenericModal
+<<<<<<< Updated upstream
+=======
+				variant='warning'
+>>>>>>> Stashed changes
 				aria-label={t('Wrap_up_conversation')}
 				title={t('Wrap_up_conversation')}
 				icon='baloon-close-top-right'
