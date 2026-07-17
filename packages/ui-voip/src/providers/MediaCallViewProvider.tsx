@@ -93,14 +93,14 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 			return;
 		}
 
-		const startCall = (micless?: boolean) => {
+		const startCall = () => {
 			if ('userId' in peerInfo) {
-				void controls.startCall(peerInfo.userId, 'user', { micless });
+				void controls.startCall(peerInfo.userId, 'user');
 				return;
 			}
 
 			if ('number' in peerInfo) {
-				void controls.startCall(peerInfo.number, 'sip', { micless });
+				void controls.startCall(peerInfo.number, 'sip');
 			}
 			throw new Error('MediaCall - New call - something went wrong when trying to call. PeerInfo is missing userId and/or number.');
 		};
@@ -111,7 +111,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 			startCall();
 		} catch (error) {
 			console.error('Media Call - Error requesting device', error);
-			startCall(true);
+			startCall();
 		}
 	};
 
@@ -125,8 +125,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 			const stream = await requestDevice({ actionType: 'incoming' });
 			stopTracks(stream);
 		} catch (error) {
-			controls.acceptCall({ micless: true });
-			return;
+			console.error('MediaCall - onAccept - Failed to get device, procceeding without microphone', error);
 		}
 
 		controls.acceptCall();
