@@ -308,6 +308,9 @@ import { IS_EE } from '../../e2e/config/constants';
 		it('should fail with 400 when startDate/endDate are missing', () =>
 			request.get(api('audit.auditions')).set(auditorCredentials).query({}).expect(400));
 
+		it('should fail with 400 when a date is invalid', () =>
+			request.get(api('audit.auditions')).set(auditorCredentials).query({ startDate: 'not-a-date', endDate }).expect(400));
+
 		it('should fail with 403 when the user lacks the can-audit-log permission', async () => {
 			await updatePermission('can-audit-log', []);
 			await request.get(api('audit.auditions')).set(auditorCredentials).query({ startDate, endDate }).expect(403);
@@ -363,6 +366,19 @@ import { IS_EE } from '../../e2e/config/constants';
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').that.is.an('array');
 				}));
+
+		it('should persist an audit log entry', async () => {
+			// query auditions with a future endDate so the entry created by the request below (ts = now) is in range
+			const auditionsRange = { startDate, endDate: new Date(Date.now() + 60000).toISOString() };
+			const before = await request.get(api('audit.auditions')).set(auditorCredentials).query(auditionsRange);
+			await request
+				.post(api('audit.messages'))
+				.set(auditorCredentials)
+				.send({ startDate, endDate, users: [], msg: '', type: 'u' })
+				.expect(200);
+			const after = await request.get(api('audit.auditions')).set(auditorCredentials).query(auditionsRange);
+			expect(after.body.auditions.length).to.be.greaterThan(before.body.auditions.length);
+		});
 	});
 
 	describe('[/audit.omnichannelMessages]', () => {
@@ -374,6 +390,13 @@ import { IS_EE } from '../../e2e/config/constants';
 
 		it('should fail with 400 when required params are missing', () =>
 			request.post(api('audit.omnichannelMessages')).set(auditorCredentials).send({ startDate, endDate }).expect(400));
+
+		it('should fail with 400 when a date is invalid', () =>
+			request
+				.post(api('audit.omnichannelMessages'))
+				.set(auditorCredentials)
+				.send({ startDate: 'not-a-date', endDate, users: [], msg: '', type: 'l' })
+				.expect(400));
 
 		it('should fail with 403 when the user lacks the can-audit permission', async () => {
 			await updatePermission('can-audit', []);
@@ -395,5 +418,18 @@ import { IS_EE } from '../../e2e/config/constants';
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').that.is.an('array');
 				}));
+
+		it('should persist an audit log entry', async () => {
+			// query auditions with a future endDate so the entry created by the request below (ts = now) is in range
+			const auditionsRange = { startDate, endDate: new Date(Date.now() + 60000).toISOString() };
+			const before = await request.get(api('audit.auditions')).set(auditorCredentials).query(auditionsRange);
+			await request
+				.post(api('audit.omnichannelMessages'))
+				.set(auditorCredentials)
+				.send({ startDate, endDate, users: [], msg: '', type: 'l' })
+				.expect(200);
+			const after = await request.get(api('audit.auditions')).set(auditorCredentials).query(auditionsRange);
+			expect(after.body.auditions.length).to.be.greaterThan(before.body.auditions.length);
+		});
 	});
 });
