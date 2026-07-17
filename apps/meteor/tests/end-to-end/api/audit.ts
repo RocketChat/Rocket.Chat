@@ -26,8 +26,12 @@ import { IS_EE } from '../../e2e/config/constants';
 		auditor = await createUser({ roles: ['user', 'auditor'] });
 
 		auditorCredentials = await login(auditor.username, password);
+
+		// the auditor role has can-audit but not can-audit-log by default; grant it suite-wide for the audit.auditions cases
+		await updatePermission('can-audit-log', ['admin', 'auditor']);
 	});
 	after(async () => {
+		await updatePermission('can-audit-log', ['admin']);
 		await deleteRoom({ type: 'c', roomId: testChannel._id });
 		await deleteUser({ _id: dummyUser._id });
 		await deleteUser({ _id: auditor._id });
