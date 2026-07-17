@@ -704,18 +704,15 @@ describe('[Settings]', () => {
 			it('should fail when the "name" param is not provided', () =>
 				request.post(api('settings.addCustomOAuth')).set(credentials).send({}).expect(400));
 
-			// settings.addCustomOAuth still enforces the permission inside the shared method (no route-level
-			// `permissionsRequired`), so a permission failure surfaces as 400 rather than 403.
 			it('should fail when the user does not have the add-oauth-service permission', async () => {
 				await updatePermission('add-oauth-service', []);
 				await request
 					.post(api('settings.addCustomOAuth'))
 					.set(credentials)
 					.send({ name: oauthName })
-					.expect(400)
 					.expect((res) => {
+						expect(res.status).to.equal(403);
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
 					});
 			});
 
