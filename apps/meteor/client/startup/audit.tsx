@@ -30,7 +30,9 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
-const PermissionGuard = ({ children, permission }: { children: ReactNode; permission: string }) => {
+export type PermissionGuardProps = { children: ReactNode; permission: string };
+
+const PermissionGuard = ({ children, permission }: PermissionGuardProps) => {
 	const canView = hasAllPermission(permission);
 
 	return <>{canView ? children : <NotAuthorizedPage />}</>;

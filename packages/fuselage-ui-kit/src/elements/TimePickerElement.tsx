@@ -5,7 +5,7 @@ import { useStringFromTextObject } from '../hooks/useStringFromTextObject';
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
 
-type TimePickerElementProps = BlockProps<UiKit.TimePickerElement>;
+export type TimePickerElementProps = BlockProps<UiKit.TimePickerElement>;
 
 const TimePickerElement = ({ block, context }: TimePickerElementProps) => {
 	const [{ loading, value, error }, action] = useUiKitState(block, context);

@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useRoomToolboxActions } from './hooks/useRoomToolboxActions';
 
-type RoomToolboxProps = {
+export type RoomToolboxProps = {
 	className?: ComponentProps<typeof Box>['className'];
 };
 

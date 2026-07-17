@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import ParentRoomButton from '../ParentRoomButton';
 
-type ParentDiscussionProps = {
+export type ParentDiscussionProps = {
 	loading?: boolean;
 	room: Pick<IRoom, '_id' | 't' | 'name' | 'fname' | 'prid' | 'u'>;
 };

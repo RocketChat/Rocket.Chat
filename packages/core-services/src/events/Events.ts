@@ -296,7 +296,7 @@ export type EventSignatures = {
 	'watch.priorities'(data: { clientAction: ClientAction; id: ILivechatPriority['_id']; diff?: Record<string, string> }): void;
 	'apps.added'(appId: string): void;
 	'apps.removed'(appId: string): void;
-	'apps.updated'(appId: string): void;
+	'apps.updated'(appId: string, originInstanceId?: string): void;
 	'apps.statusUpdate'(appId: string, status: AppStatus): void;
 	'apps.settingUpdated'(appId: string, setting: AppsSetting): void;
 	'command.added'(command: string): void;

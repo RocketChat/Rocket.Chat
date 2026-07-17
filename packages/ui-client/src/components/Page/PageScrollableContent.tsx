@@ -5,7 +5,7 @@ import { forwardRef } from 'react';
 import type { OverlayScrollbars } from '../CustomScrollbars';
 import { CustomScrollbars } from '../CustomScrollbars';
 
-type PageScrollableContentProps = {
+export type PageScrollableContentProps = {
 	onScroll?: (args: OverlayScrollbars) => void;
 } & Omit<ComponentProps<typeof Box>, 'onScroll'>;
 

@@ -20,7 +20,7 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/logger": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"ajv": "^8.17.1",
+		"ajv": "^8.20.0",
 		"express": "^4.21.2",
 		"hono": "4.12.25",
 		"qs": "^6.15.2"

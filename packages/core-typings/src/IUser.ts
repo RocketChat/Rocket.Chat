@@ -189,11 +189,13 @@ export interface IUser extends IRocketChatRecord {
 	statusText?: string;
 	statusSource?: PresenceSource;
 	statusExpiresAt?: Date;
+	statusId?: string;
 	previousState?: {
 		statusDefault: UserStatus;
 		statusText: string;
 		statusSource: PresenceSource;
 		statusExpiresAt?: Date;
+		statusId?: string;
 	};
 	oauth?: {
 		authorizedClients: string[];
@@ -241,7 +243,7 @@ export interface IUser extends IRocketChatRecord {
 	isOAuthUser?: boolean; // client only field
 	__rooms?: string[];
 	inactiveReason?: 'deactivated' | 'pending_approval' | 'idle_too_long';
-
+	providerId?: string;
 	abacAttributes?: IAbacAttributeDefinition[];
 }
 
@@ -295,7 +297,10 @@ export type IUserInRole = Pick<
 >;
 
 export type UserPresence = Readonly<
-	Partial<Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag' | 'roles' | 'username'>> & Required<Pick<IUser, '_id'>>
+	Partial<
+		Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'avatarETag' | 'roles' | 'username'>
+	> &
+		Required<Pick<IUser, '_id'>>
 >;
 
 export type AvatarUrlObj = {

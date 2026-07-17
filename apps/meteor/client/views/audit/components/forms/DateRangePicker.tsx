@@ -117,7 +117,7 @@ const dateRangeReducer = (state: DateRange, action: DateRangeAction): DateRange 
 	}
 };
 
-type DateRangePickerProps = Omit<ComponentProps<typeof Box>, 'value' | 'onChange'> & {
+export type DateRangePickerProps = Omit<ComponentProps<typeof Box>, 'value' | 'onChange'> & {
 	value?: DateRange;
 	onChange?: (dateRange: DateRange) => void;
 };

@@ -27,7 +27,7 @@ import { useUiKitView } from '../../../../uikit/hooks/useUiKitView';
 import { getButtonStyle } from '../../../modal/uikit/getButtonStyle';
 import { useRoom } from '../../contexts/RoomContext';
 
-type UiKitContextualBarProps = {
+export type UiKitContextualBarProps = {
 	key: UiKit.ContextualBarView['id']; // force re-mount when viewId changes
 	initialView: UiKit.ContextualBarView;
 };

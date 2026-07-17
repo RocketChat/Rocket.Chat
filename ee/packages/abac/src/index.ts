@@ -231,7 +231,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		if (!(await License.hasModule('abac'))) {
 			return;
 		}
-		const { modifiedCount } = await Rooms.updateMany({ abacAttributes: { $exists: true } }, { $unset: { abacAttributes: '' } });
+		const { modifiedCount } = await Rooms.unsetAllAbacAttributes();
 		if (modifiedCount > 0) {
 			void Audit.attributeStoreSwitched(from, to, modifiedCount);
 		}

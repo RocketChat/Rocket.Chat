@@ -1,4 +1,5 @@
 import 'meteor/meteor';
+import type { IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import type { DDPCommon, IStreamerConstructor, IStreamer } from 'meteor/ddp-common';
 
@@ -47,6 +48,8 @@ declare module 'meteor/meteor' {
 		};
 
 		const runAsUser: <T>(userId: string, scope: () => T) => T;
+
+		function userAsync(): Promise<IUser | null>;
 
 		interface MethodThisType {
 			twoFactorChecked: boolean | undefined;

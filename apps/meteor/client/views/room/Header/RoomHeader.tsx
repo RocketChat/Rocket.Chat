@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import FederatedRoomOriginServer from './FederatedRoomOriginServer';
 import ParentRoom from './ParentRoom';
+import RoomMemberStatus from './RoomMemberStatus';
 import RoomTitle from './RoomTitle';
 import RoomToolbox from './RoomToolbox';
 import RoomTopic from './RoomTopic';
@@ -47,6 +48,7 @@ const RoomHeader = ({ room, slots = {} }: RoomHeaderProps) => {
 					<Encrypted room={room} />
 					<Translate room={room} />
 					<RoomTopic room={room} />
+					<RoomMemberStatus room={room} />
 					{slots?.insideContent}
 				</HeaderContentRow>
 			</HeaderContent>

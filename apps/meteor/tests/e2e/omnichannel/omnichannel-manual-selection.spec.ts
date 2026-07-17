@@ -92,6 +92,8 @@ test.describe('OC - Manual Selection', () => {
 		});
 
 		await test.step('expect chat to be back in queue', async () => {
+			// the returning agent can transiently see the room twice (queued inquiry + not-yet-removed subscription)
+			await expect(poOmnichannel.sidebar.getSidebarItemByName(room.fname)).toHaveCount(1);
 			await expect(poOmnichannel.sidebar.getSidebarItemByName(room.fname)).toBeVisible();
 			await expect(agentB.poHomeOmnichannel.sidebar.getSidebarItemByName(room.fname)).toBeVisible();
 

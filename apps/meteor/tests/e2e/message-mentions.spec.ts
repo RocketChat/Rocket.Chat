@@ -105,6 +105,7 @@ test.describe.serial('message-mentions', () => {
 		poHomeChannel = new HomeChannel(page);
 
 		await page.goto('/home');
+		await poHomeChannel.waitForHome();
 	});
 
 	test('expect show "all" and "here" options', async () => {

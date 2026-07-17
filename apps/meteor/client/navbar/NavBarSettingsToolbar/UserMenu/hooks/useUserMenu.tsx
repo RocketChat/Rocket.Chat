@@ -13,7 +13,7 @@ import { useUserDropdownAppsActionButtons } from '../../../../hooks/useUserDropd
 export const useUserMenu = (user: IUser) => {
 	const { t } = useTranslation();
 
-	const statusItems = useStatusItems();
+	const statusItems = useStatusItems(user);
 	const accountItems = useAccountItems();
 	const appBoxItems = useUserDropdownAppsActionButtons();
 	const handleKeyboardShortcuts = useKeyboardShortcutsModalHandler();

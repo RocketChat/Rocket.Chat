@@ -5,7 +5,7 @@ import type { IHttpResponse } from '@rocket.chat/apps-engine/definition/accessor
 import { serverFetch as fetch, type ExtendedFetchOptions } from '@rocket.chat/server-fetch';
 import { censorUrl } from '@rocket.chat/tools';
 
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../server/settings';
 
 const isGetOrHead = (method: string): boolean => ['GET', 'HEAD'].includes(method.toUpperCase());
 

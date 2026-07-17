@@ -1,6 +1,5 @@
 import type {
 	IMediaCall,
-	IMediaCallChannel,
 	MediaCallActorType,
 	MediaCallNegotiationStream,
 	MediaCallSignedActor,
@@ -18,7 +17,7 @@ import type {
 	ClientMediaSignalAnswer,
 	CallFeature,
 } from '@rocket.chat/media-signaling';
-import { MediaCallChannels, MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
+import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
 import { DEFAULT_CALL_FEATURES } from '../../constants';
 import type { IMediaCallAgent } from '../../definition/IMediaCallAgent';
@@ -29,24 +28,20 @@ import { getMediaCallServer } from '../../server/injection';
 import { stripSensitiveDataFromSignal } from '../../server/stripSensitiveData';
 
 export class UserActorSignalProcessor {
-	public get contractId(): string {
-		return this.channel.contractId;
-	}
-
 	public get callId(): string {
-		return this.channel.callId;
+		return this.call._id;
 	}
 
 	public get actorId(): string {
-		return this.channel.actorId;
+		return this.agent.actorId;
 	}
 
 	public get actorType(): MediaCallActorType {
-		return this.channel.actorType;
+		return this.agent.actorType;
 	}
 
 	public get role(): CallRole {
-		return this.channel.role;
+		return this.agent.role;
 	}
 
 	public get actor(): MediaCallSignedActor {
@@ -66,12 +61,12 @@ export class UserActorSignalProcessor {
 	constructor(
 		protected readonly agent: IMediaCallAgent,
 		protected readonly call: IMediaCall,
-		protected readonly channel: IMediaCallChannel,
+		public readonly contractId: string,
 	) {
-		const actor = call[channel.role];
+		const actor = call[this.role];
 
-		this.signed = Boolean(actor.contractId && actor.contractId === channel.contractId);
-		this.ignored = Boolean(actor.contractId && actor.contractId !== channel.contractId);
+		this.signed = Boolean(actor.contractId && actor.contractId === contractId);
+		this.ignored = Boolean(actor.contractId && actor.contractId !== contractId);
 		this.throwIfSkipped = false;
 	}
 
@@ -326,14 +321,6 @@ export class UserActorSignalProcessor {
 		await mediaCallDirector.acceptCall(this.call, this.agent, { calleeContractId: this.contractId, supportedFeatures });
 	}
 
-	protected async clientIsActive(): Promise<void> {
-		const result = await MediaCallChannels.setActiveById(this.channel._id);
-		if (result.modifiedCount) {
-			logger.info({ msg: 'Call Channel was flagged as active', callId: this.callId, role: this.role });
-			await mediaCallDirector.activate(this.call, this.agent);
-		}
-	}
-
 	protected async sendSignal(signal: ServerMediaSignal): Promise<void> {
 		getMediaCallServer().sendSignal(this.actorId, signal);
 	}
@@ -380,11 +367,9 @@ export class UserActorSignalProcessor {
 					.catch(() => null);
 			}
 
-			if (this.channel.state === 'active' || this.channel.activeAt) {
-				return;
+			if (!this.call.activatedAt) {
+				await mediaCallDirector.activate(this.call, this.agent);
 			}
-
-			await this.clientIsActive();
 		}
 	}
 }
