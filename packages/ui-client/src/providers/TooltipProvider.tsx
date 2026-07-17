@@ -22,10 +22,6 @@ const restoreAnchorTitle = (anchor: HTMLElement): void => {
 	}
 };
 
-const restoreAnchorTitleDeferred = (anchor: HTMLElement): void => {
-	setTimeout(() => restoreAnchorTitle(anchor), 0);
-};
-
 const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipProviderProps) => {
 	const lastAnchor = useRef<HTMLElement>(undefined);
 	const hasHover = !useMediaQuery('(hover: none)');
@@ -35,21 +31,13 @@ const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipP
 	const contextValue = useMemo(
 		() => ({
 			open: (tooltip: ReactNode, anchor: HTMLElement): void => {
-				const previousAnchor = lastAnchor.current;
 				setTooltip(<TooltipComponent key={new Date().toISOString()} title={tooltip} anchor={anchor} />);
 				lastAnchor.current = anchor;
-				if (previousAnchor) {
-					restoreAnchorTitleDeferred(previousAnchor);
-				}
 			},
 			close: (): void => {
-				const previousAnchor = lastAnchor.current;
 				setTooltip(null);
 				setTooltip.flush();
 				lastAnchor.current = undefined;
-				if (previousAnchor) {
-					restoreAnchorTitleDeferred(previousAnchor);
-				}
 			},
 			dismiss: (): void => {
 				setTooltip(null);
