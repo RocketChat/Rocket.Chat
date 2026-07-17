@@ -1,10 +1,12 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentPropsWithoutRef } from 'react';
+import type { ReactNode } from 'react';
 
-export type HeaderContentRowProps = ComponentPropsWithoutRef<typeof Box>;
+export type HeaderContentRowProps = { children?: ReactNode };
 
-const HeaderContentRow = (props: HeaderContentRowProps) => (
-	<Box alignItems='center' flexShrink={1} flexGrow={1} display='flex' width='full' {...props} />
+const HeaderContentRow = ({ children }: HeaderContentRowProps) => (
+	<Box alignItems='center' flexShrink={1} flexGrow={1} display='flex' width='full'>
+		{children}
+	</Box>
 );
 
 export default HeaderContentRow;

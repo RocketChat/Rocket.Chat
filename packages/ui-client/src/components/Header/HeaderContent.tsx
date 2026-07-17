@@ -1,10 +1,12 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentPropsWithoutRef } from 'react';
+import type { ReactNode } from 'react';
 
-export type HeaderContentProps = ComponentPropsWithoutRef<typeof Box>;
+export type HeaderContentProps = { children?: ReactNode };
 
-const HeaderContent = (props: HeaderContentProps) => (
-	<Box flexGrow={1} width={1} flexShrink={1} marginInline={4} display='flex' justifyContent='center' flexDirection='column' {...props} />
+const HeaderContent = ({ children }: HeaderContentProps) => (
+	<Box flexGrow={1} width={1} flexShrink={1} marginInline={4} display='flex' justifyContent='center' flexDirection='column'>
+		{children}
+	</Box>
 );
 
 export default HeaderContent;

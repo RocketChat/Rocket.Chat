@@ -1,8 +1,12 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentPropsWithoutRef } from 'react';
+import type { ReactNode } from 'react';
 
-export type HeaderAvatarProps = ComponentPropsWithoutRef<typeof Box>;
+export type HeaderAvatarProps = { children?: ReactNode };
 
-const HeaderAvatar = (props: HeaderAvatarProps) => <Box marginInline={4} display='flex' alignItems='center' {...props} />;
+const HeaderAvatar = ({ children }: HeaderAvatarProps) => (
+	<Box marginInline={4} display='flex' alignItems='center'>
+		{children}
+	</Box>
+);
 
 export default HeaderAvatar;

@@ -1,10 +1,12 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentPropsWithoutRef } from 'react';
+import type { ReactNode } from 'react';
 
-export type HeaderTitleProps = ComponentPropsWithoutRef<typeof Box>;
+export type HeaderTitleProps = { children?: ReactNode };
 
-const HeaderTitle = (props: HeaderTitleProps) => (
-	<Box color='titles-labels' marginInline={4} is='h1' fontScale='h4' withTruncatedText {...props} />
+const HeaderTitle = ({ children }: HeaderTitleProps) => (
+	<Box color='titles-labels' marginInline={4} is='h1' fontScale='h4' withTruncatedText>
+		{children}
+	</Box>
 );
 
 export default HeaderTitle;
