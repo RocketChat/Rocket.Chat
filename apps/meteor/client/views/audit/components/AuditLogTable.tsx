@@ -24,13 +24,26 @@ const AuditLogTable = () => {
 	const { data, isLoading, isSuccess } = useQuery({
 		queryKey: ['audits', dateRange],
 
-		queryFn: async () => {
+		queryFn: async (): Promise<IAuditLog[]> => {
 			const { start, end } = dateRange;
 			const { auditions } = await getAudits({
 				startDate: (start ?? new Date(0)).toISOString(),
 				endDate: (end ?? new Date()).toISOString(),
 			});
-			return auditions;
+			// the REST payload serializes Date fields to strings; deserialize back to Date so the entry
+			// components can keep their IAuditLog (Date) typings instead of force-casting per row
+			return auditions.map(
+				(audition): IAuditLog => ({
+					...audition,
+					ts: new Date(audition.ts),
+					_updatedAt: new Date(audition._updatedAt),
+					fields: {
+						...audition.fields,
+						startDate: audition.fields.startDate ? new Date(audition.fields.startDate) : undefined,
+						endDate: audition.fields.endDate ? new Date(audition.fields.endDate) : undefined,
+					},
+				}),
+			);
 		},
 		meta: {
 			apiErrorToastMessage: true,
@@ -69,7 +82,7 @@ const AuditLogTable = () => {
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						{data.map((auditLog) => (
-							<AuditLogEntry key={auditLog._id} value={auditLog as unknown as IAuditLog} />
+							<AuditLogEntry key={auditLog._id} value={auditLog} />
 						))}
 					</GenericTableBody>
 				</GenericTable>
