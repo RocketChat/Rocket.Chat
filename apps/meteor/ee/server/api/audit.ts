@@ -353,6 +353,14 @@ const auditErrorResponseSchema = ajv.compile({
 	required: ['success', 'error'],
 });
 
+const parseDateOrFail = (value: string, name: string): Date => {
+	const ts = Date.parse(value);
+	if (Number.isNaN(ts)) {
+		throw new Error(`The "${name}" parameter must be a valid date.`);
+	}
+	return new Date(ts);
+};
+
 API.v1.get(
 	'audit.auditions',
 	{
