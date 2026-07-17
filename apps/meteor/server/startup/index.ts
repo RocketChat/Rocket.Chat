@@ -8,6 +8,7 @@ import './coreApps';
 import { generateFederationKeys } from './generateKeys';
 import './presenceTroubleshoot';
 import './socketForensics';
+import './httpSocketTimeout';
 import '../hooks';
 import '../lib/rooms/roomTypes';
 import '../lib/settingsRegenerator';

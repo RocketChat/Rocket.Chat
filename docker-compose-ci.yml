@@ -30,6 +30,9 @@ services:
       - 'Federation_Service_Domain=rc.host'
       - HEAP_USAGE_PERCENT=99
       - SOCKET_FORENSICS=true
+      # keep server sockets alive longer than traefik's 90s idleConnTimeout so
+      # the proxy always closes pooled conns first and never reuses a dead one
+      - HTTP_SOCKET_TIMEOUT_MS=120000
     depends_on:
       - traefik
       - mongo
@@ -38,12 +41,7 @@ services:
       traefik.http.services.rocketchat.loadbalancer.server.port: 3000
       traefik.http.routers.rocketchat.service: rocketchat
       traefik.http.routers.rocketchat.rule: PathPrefix(`/`)
-      # meteor webapp reaps idle sockets after 5s, so traefik's pooled upstream
-      # conns die server-side between bursts; buffering makes request bodies
-      # replayable so retry can transparently re-send on a fresh conn when it
-      # picks a reaped one (dead-conn reuse fails before response headers)
-      traefik.http.routers.rocketchat.middlewares: test-buffer,test-retry
-      traefik.http.middlewares.test-buffer.buffering.retryExpression: IsNetworkError() && Attempts() < 4
+      traefik.http.routers.rocketchat.middlewares: test-retry
       traefik.http.middlewares.test-retry.retry.attempts: 4
     healthcheck:
       interval: 2s
