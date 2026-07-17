@@ -270,6 +270,15 @@ describe('useAISearchItems', () => {
 	});
 
 	describe('date filter suggestions', () => {
+		// freeze the clock so the hook's `new Date()` and the expected values below agree even across midnight
+		beforeEach(() => {
+			jest.useFakeTimers({ now: new Date('2026-07-15T12:00:00Z'), advanceTimers: true });
+		});
+
+		afterEach(() => {
+			jest.useRealTimers();
+		});
+
 		it('offers date suggestions for a trailing after: token', async () => {
 			const { wrapper } = setup();
 			const { result } = renderHook(() => useAISearchItems('after:', emptySearchFilters(), true), { wrapper });
