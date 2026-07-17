@@ -2,6 +2,37 @@ import rocketChatConfig from '@rocket.chat/eslint-config';
 import youDontNeedLodashUnderscorePlugin from 'eslint-plugin-you-dont-need-lodash-underscore';
 import globals from 'globals';
 
+// A component should own its styles and variations instead of re-exposing the
+// entire Fuselage `Box` style-prop surface as its public API. Typing props as
+// `ComponentProps<typeof Box>` (or intersecting/`Omit`-ing from it) leaks every
+// style prop, makes the underlying element part of the contract, and lets call
+// sites silently override the component's own look.
+const noBoxStylePropsMessage =
+	'Do not expose the full Fuselage `Box` style-prop surface via `ComponentProps<typeof Box>`. ' +
+	'Declare an explicit prop contract (children plus intentional props/variants). ' +
+	'If an escape hatch is genuinely needed, curate it, e.g. `Pick<ComponentPropsWithoutRef<typeof Box>, "className">`.';
+
+const noBoxStyleProps = [
+	// `type Props = ComponentProps<typeof Box>`
+	{
+		selector:
+			"TSTypeAliasDeclaration > TSTypeReference[typeName.name=/^ComponentProps(WithoutRef|WithRef)?$/]:has(TSTypeQuery > Identifier[name='Box'])",
+		message: noBoxStylePropsMessage,
+	},
+	// `type Props = Own & ComponentProps<typeof Box>`
+	{
+		selector:
+			"TSIntersectionType > TSTypeReference[typeName.name=/^ComponentProps(WithoutRef|WithRef)?$/]:has(TSTypeQuery > Identifier[name='Box'])",
+		message: noBoxStylePropsMessage,
+	},
+	// `type Props = Own & Omit<ComponentProps<typeof Box>, '...'>` (still ~the whole surface)
+	{
+		selector:
+			"TSTypeReference[typeName.name='Omit'] > TSTypeParameterInstantiation > TSTypeReference[typeName.name=/^ComponentProps(WithoutRef|WithRef)?$/]:has(TSTypeQuery > Identifier[name='Box'])",
+		message: noBoxStylePropsMessage,
+	},
+];
+
 /** @type {import('eslint').Linter.FlatConfig[]} */
 export default [
 	...rocketChatConfig,
@@ -471,6 +502,24 @@ export default [
 		files: ['ee/packages/federation-matrix/src/api/.well-known/server.ts'],
 		rules: {
 			'import-x/order': 'warn',
+		},
+	},
+	// Discourage components from re-exposing the full Fuselage `Box` style-prop
+	// surface. Starts as 'warn' because of the existing backlog; promote to
+	// 'error' once the backlog is migrated. A curated
+	// `Pick<ComponentPropsWithoutRef<typeof Box>, '...'>` is intentionally allowed.
+	{
+		files: [
+			'apps/meteor/client/**/*.@(ts|tsx)',
+			'apps/meteor/ee/client/**/*.@(ts|tsx)',
+			'packages/fuselage-ui-kit/**/*.@(ts|tsx)',
+			'packages/ui-client/**/*.@(ts|tsx)',
+			'packages/ui-voip/**/*.@(ts|tsx)',
+			'packages/web-ui-registration/**/*.@(ts|tsx)',
+		],
+		ignores: ['**/*.stories.@(ts|tsx)', '**/*.@(spec|test).@(ts|tsx)'],
+		rules: {
+			'no-restricted-syntax': ['warn', ...noBoxStyleProps],
 		},
 	},
 ];
