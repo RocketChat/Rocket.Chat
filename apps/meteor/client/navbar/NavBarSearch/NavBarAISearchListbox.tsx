@@ -31,9 +31,7 @@ const NavBarAISearchListBox = ({ state, overlayProps, aiSearchActive, aiSearchAv
 	useOutsideClick([containerRef], state.close);
 
 	const { resetField, setValue, watch } = useFormContext<NavBarSearchFormValues>();
-	const formValues = watch();
-	const filterText = formValues.filterText ?? '';
-	const appliedFilters = formValues.appliedFilters ?? emptySearchFilters();
+	const { filterText = '', appliedFilters = emptySearchFilters() } = watch();
 
 	const handleSelect = useStableCallback(() => {
 		state.close();

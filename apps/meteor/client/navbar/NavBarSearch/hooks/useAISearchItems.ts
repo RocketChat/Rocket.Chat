@@ -31,7 +31,7 @@ export type AISearchItems = {
 };
 
 export const useAISearchItems = (
-	filterText = '',
+	filterText: string,
 	appliedSearchFilters: SearchFilters = emptySearchFilters(),
 	aiSearchActive = false,
 ): { data: AISearchItems; isFetching: boolean } => {
