@@ -1,9 +1,15 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentPropsWithoutRef } from 'react';
+import type { ReactNode } from 'react';
 
-type AttachmentAuthorTimestampProps = ComponentPropsWithoutRef<typeof Box>;
+export type AttachmentAuthorTimestampProps = { children?: ReactNode; href?: string };
 
-const AttachmentAuthorTimestamp = ({ href, ...props }: AttachmentAuthorTimestampProps) =>
-	href ? <Box is='a' href={href} color='default' fontScale='c1' {...props} /> : <Box fontScale='c1' {...props} />;
+const AttachmentAuthorTimestamp = ({ href, children }: AttachmentAuthorTimestampProps) =>
+	href ? (
+		<Box is='a' href={href} color='default' fontScale='c1'>
+			{children}
+		</Box>
+	) : (
+		<Box fontScale='c1'>{children}</Box>
+	);
 
 export default AttachmentAuthorTimestamp;

@@ -1,21 +1,20 @@
-import type { Box } from '@rocket.chat/fuselage';
-import type { ComponentPropsWithoutRef } from 'react';
+import { css } from '@rocket.chat/css-in-js';
 
 import Title from './AttachmentTitle';
 import { useFormatMemorySize } from '../../../../../hooks/useFormatMemorySize';
 
-export type AttachmentSizeProps = ComponentPropsWithoutRef<typeof Box> & { size: number; wrapper?: boolean };
+export type AttachmentSizeProps = { size: number; wrapper?: boolean };
 
-const AttachmentSize = ({ size, wrapper = true, ...props }: AttachmentSizeProps) => {
+const noShrink = css`
+	flex-shrink: 0;
+`;
+
+const AttachmentSize = ({ size, wrapper = true }: AttachmentSizeProps) => {
 	const format = useFormatMemorySize();
 
 	const formattedSize = wrapper ? `(${format(size)})` : format(size);
 
-	return (
-		<Title flexShrink={0} {...props}>
-			{formattedSize}
-		</Title>
-	);
+	return <Title className={noShrink}>{formattedSize}</Title>;
 };
 
 export default AttachmentSize;

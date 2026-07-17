@@ -42,22 +42,11 @@ export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps) => {
 
 	return (
 		<>
-			<AttachmentContent className={quoteStyles} width='full'>
-				<AttachmentDetails
-					is='blockquote'
-					borderRadius='x4'
-					borderWidth='default'
-					borderStyle='solid'
-					borderColor='extra-light'
-					borderInlineStartColor='light'
-				>
+			<AttachmentContent className={quoteStyles}>
+				<AttachmentDetails>
 					<AttachmentAuthor>
 						{displayAvatarPreference && <AttachmentAuthorAvatar url={attachment.author_icon} />}
-						<AttachmentAuthorName
-							{...(attachment.author_link && { is: 'a', href: attachment.author_link, target: '_blank', color: 'default' })}
-						>
-							{attachment.author_name}
-						</AttachmentAuthorName>
+						<AttachmentAuthorName href={attachment.author_link}>{attachment.author_name}</AttachmentAuthorName>
 						{attachment.ts && (
 							<AttachmentAuthorTimestamp href={attachment.message_link}>{formatTime(attachment.ts)}</AttachmentAuthorTimestamp>
 						)}

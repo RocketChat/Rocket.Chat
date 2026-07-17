@@ -1,8 +1,15 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentPropsWithoutRef } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 
-export type AttachmentContentProps = ComponentPropsWithoutRef<typeof Box>;
+export type AttachmentContentProps = {
+	children?: ReactNode;
+	className?: ComponentProps<typeof Box>['className'];
+};
 
-const AttachmentContent = (props: AttachmentContentProps) => <Box rcx-attachment__content width='full' marginBlock={4} {...props} />;
+const AttachmentContent = ({ children, className }: AttachmentContentProps) => (
+	<Box rcx-attachment__content width='full' marginBlock={4} className={className}>
+		{children}
+	</Box>
+);
 
 export default AttachmentContent;

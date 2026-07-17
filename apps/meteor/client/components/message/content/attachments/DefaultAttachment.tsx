@@ -43,30 +43,12 @@ const DefaultAttachment = (attachment: DefaultAttachmentProps) => {
 				{attachment.author_name && (
 					<AttachmentAuthor>
 						{attachment.author_icon && <AttachmentAuthorAvatar url={attachment.author_icon} />}
-						<AttachmentAuthorName
-							{...(attachment.author_link && {
-								is: 'a',
-								href: attachment.author_link,
-								target: '_blank',
-								color: undefined,
-							})}
-						>
-							{attachment.author_name}
-						</AttachmentAuthorName>
+						<AttachmentAuthorName href={attachment.author_link}>{attachment.author_name}</AttachmentAuthorName>
 					</AttachmentAuthor>
 				)}
 				{attachment.title && (
 					<AttachmentRow>
-						<AttachmentTitle
-							{...(attachment.title_link && {
-								is: 'a',
-								href: attachment.title_link,
-								target: '_blank',
-								color: undefined,
-							})}
-						>
-							{attachment.title}
-						</AttachmentTitle>{' '}
+						<AttachmentTitle href={attachment.title_link}>{attachment.title}</AttachmentTitle>{' '}
 						<CollapsibleContent key='collapsible-content-action' collapsed={collapsed} onClick={toggleCollapse} />
 					</AttachmentRow>
 				)}

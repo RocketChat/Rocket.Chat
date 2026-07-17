@@ -1,10 +1,12 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentPropsWithoutRef } from 'react';
+import type { ReactNode } from 'react';
 
-export type AttachmentRowProps = ComponentPropsWithoutRef<typeof Box>;
+export type AttachmentRowProps = { children?: ReactNode };
 
-const AttachmentRow = (props: AttachmentRowProps) => (
-	<Box marginInline={-2} marginBlockEnd={2} rcx-message-attachment display='flex' alignItems='center' {...props} />
+const AttachmentRow = ({ children }: AttachmentRowProps) => (
+	<Box marginInline={-2} marginBlockEnd={2} rcx-message-attachment display='flex' alignItems='center'>
+		{children}
+	</Box>
 );
 
 export default AttachmentRow;

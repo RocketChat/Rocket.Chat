@@ -1,8 +1,17 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentPropsWithoutRef } from 'react';
+import type { ReactNode } from 'react';
 
-export type AttachmentAuthorNameProps = ComponentPropsWithoutRef<typeof Box>;
+export type AttachmentAuthorNameProps = { children?: ReactNode; href?: string };
 
-const AttachmentAuthorName = (props: AttachmentAuthorNameProps) => <Box withTruncatedText fontScale='p2m' marginInline={8} {...props} />;
+const AttachmentAuthorName = ({ href, children }: AttachmentAuthorNameProps) =>
+	href ? (
+		<Box is='a' href={href} target='_blank' withTruncatedText fontScale='p2m' marginInline={8}>
+			{children}
+		</Box>
+	) : (
+		<Box withTruncatedText fontScale='p2m' marginInline={8}>
+			{children}
+		</Box>
+	);
 
 export default AttachmentAuthorName;

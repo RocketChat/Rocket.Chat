@@ -1,8 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentPropsWithoutRef } from 'react';
+import type { ReactNode } from 'react';
 
-export type AttachmentInnerProps = ComponentPropsWithoutRef<typeof Box>;
+export type AttachmentInnerProps = { children?: ReactNode };
 
-const AttachmentInner = (props: AttachmentInnerProps) => <Box {...props} />;
+const AttachmentInner = ({ children }: AttachmentInnerProps) => <Box>{children}</Box>;
 
 export default AttachmentInner;

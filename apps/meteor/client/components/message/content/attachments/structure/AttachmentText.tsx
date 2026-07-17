@@ -1,10 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentPropsWithoutRef } from 'react';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export type AttachmentTextProps = ComponentPropsWithoutRef<typeof Box>;
+export type AttachmentTextProps = { children?: ReactNode };
 
-const AttachmentText = (props: AttachmentTextProps) => {
+const AttachmentText = ({ children }: AttachmentTextProps) => {
 	const { t } = useTranslation();
 	return (
 		<Box
@@ -14,8 +14,9 @@ const AttachmentText = (props: AttachmentTextProps) => {
 			marginInline={2}
 			fontScale='p2'
 			color='default'
-			{...props}
-		/>
+		>
+			{children}
+		</Box>
 	);
 };
 
