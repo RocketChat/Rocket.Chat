@@ -7,7 +7,7 @@ import { expect } from 'chai';
 import { afterEach, describe, it } from 'mocha';
 import sinon from 'sinon';
 
-import { attachSocketForensics, patchSocketDestroy } from '../../../../server/lib/socketForensics';
+import { attachSocketForensics, patchSocketDestroy, patchSocketEnd } from '../../../../server/lib/socketForensics';
 
 const listen = (server: Server): Promise<number> =>
 	new Promise((resolve) => server.listen(0, () => resolve((server.address() as AddressInfo).port)));
@@ -74,11 +74,32 @@ describe('socketForensics', () => {
 			server.close();
 			restore();
 
-			const call = consoleError.getCalls().find((c) => c.args[0] === '[socket-forensics] socket-destroyed-mid-response');
+			const call = consoleError.getCalls().find((c) => c.args[0] === '[socket-forensics] socket-destroy-mid-response');
 			expect(call).to.not.be.undefined;
 			const payload = JSON.parse(call?.args[1]);
 			expect(payload.url).to.equal('/killed');
-			expect(payload.destroyerStack).to.be.a('string');
+			expect(payload.callerStack).to.be.a('string');
+		});
+
+		it('should log the end call site when a socket with an in-flight response is ended', async () => {
+			const consoleError = sinon.stub(console, 'error');
+			const restore = patchSocketEnd();
+
+			const server = createServer((_req, res) => {
+				res.writeHead(200);
+				res.write('partial');
+				res.socket?.end();
+			});
+			const port = await listen(server);
+
+			await fetch(`http://127.0.0.1:${port}/ended`).catch(() => undefined);
+			await waitForCall(consoleError);
+			server.close();
+			restore();
+
+			const call = consoleError.getCalls().find((c) => c.args[0] === '[socket-forensics] socket-end-mid-response');
+			expect(call).to.not.be.undefined;
+			expect(JSON.parse(call?.args[1]).url).to.equal('/ended');
 		});
 
 		it('should restore the original destroy behavior', () => {

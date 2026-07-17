@@ -7,7 +7,33 @@ const log = (event: string, data: Record<string, unknown>): void => {
 
 const isInFlight = (res: ServerResponse): boolean => res.headersSent && !res.writableFinished;
 
+const responseOf = (socket: Socket): ServerResponse | undefined => (socket as unknown as { _httpMessage?: ServerResponse })._httpMessage;
+
+const connectedAt = new WeakMap<Socket, number>();
+
+const ageOf = (socket: Socket): number | undefined => {
+	const start = connectedAt.get(socket);
+	return start === undefined ? undefined : Date.now() - start;
+};
+
 export const attachSocketForensics = (server: Server): void => {
+	server.on('connection', (socket) => {
+		connectedAt.set(socket, Date.now());
+
+		socket.on('timeout', () => {
+			if (socket.bytesWritten === 0) {
+				return;
+			}
+			const res = responseOf(socket);
+			log('socket-timeout', {
+				ageMs: ageOf(socket),
+				bytesWritten: socket.bytesWritten,
+				pendingBytes: socket.writableLength,
+				inFlightUrl: res && isInFlight(res) ? res.req?.url : undefined,
+			});
+		});
+	});
+
 	server.on('request', (req, res) => {
 		res.on('error', (error: Error) => {
 			log('response-error', { method: req.method, url: req.url, message: error.message, stack: error.stack });
@@ -22,31 +48,39 @@ export const attachSocketForensics = (server: Server): void => {
 				url: req.url,
 				statusCode: res.statusCode,
 				bytesWritten: res.socket?.bytesWritten,
+				pendingBytes: res.socket?.writableLength,
+				ageMs: res.socket ? ageOf(res.socket) : undefined,
 				requestDestroyed: req.destroyed,
 			});
 		});
 	});
 };
 
-export const patchSocketDestroy = (): (() => void) => {
-	const originalDestroy = Socket.prototype.destroy;
+const patchInFlightTeardown = (method: 'end' | 'destroy'): (() => void) => {
+	const original = Socket.prototype[method];
 
-	Socket.prototype.destroy = function (this: Socket, error?: Error) {
-		const res = (this as unknown as { _httpMessage?: ServerResponse })._httpMessage;
+	Socket.prototype[method] = function (this: Socket, ...args: unknown[]) {
+		const res = responseOf(this);
 		if (res && isInFlight(res)) {
-			log('socket-destroyed-mid-response', {
+			log(`socket-${method}-mid-response`, {
 				method: res.req?.method,
 				url: res.req?.url,
 				statusCode: res.statusCode,
 				bytesWritten: this.bytesWritten,
-				error: error && { message: error.message, stack: error.stack },
-				destroyerStack: new Error('destroy call site').stack,
+				pendingBytes: this.writableLength,
+				ageMs: ageOf(this),
+				error: args[0] instanceof Error ? { message: args[0].message, stack: args[0].stack } : undefined,
+				callerStack: new Error(`${method} call site`).stack,
 			});
 		}
-		return originalDestroy.call(this, error);
-	} as typeof Socket.prototype.destroy;
+		return (original as (...a: unknown[]) => unknown).apply(this, args);
+	} as never;
 
 	return () => {
-		Socket.prototype.destroy = originalDestroy;
+		Socket.prototype[method] = original as never;
 	};
 };
+
+export const patchSocketDestroy = (): (() => void) => patchInFlightTeardown('destroy');
+
+export const patchSocketEnd = (): (() => void) => patchInFlightTeardown('end');
