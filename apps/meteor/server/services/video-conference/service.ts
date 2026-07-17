@@ -27,6 +27,7 @@ import type {
 	IVoIPVideoConference,
 	RequiredField,
 	IRegisterUser,
+	IVideoConference,
 } from '@rocket.chat/core-typings';
 import {
 	VideoConferenceStatus,
@@ -1769,29 +1770,41 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return name.includes('[date]') ? name.replace('[date]', date) : `${date} ${name}`;
 	}
 
+	private async getUsernamesFromSubscriptionsByRoomId(roomId: string): Promise<string[]> {
+		const cursor = Subscriptions.findByRoomIdWhenUsernameExists(roomId, { projection: { 'u.username': 1 } });
+		const usernames = (await cursor.toArray()).map((subscription) => subscription.u.username as string);
+
+		return usernames;
+	}
+
+	private async getUsernamesFromRoom(room: AtLeast<IRoom, '_id' | 't' | 'usernames'>): Promise<string[]> {
+		if (room.t === 'd') {
+			return room.usernames || [];
+		}
+
+		return this.getUsernamesFromSubscriptionsByRoomId(room._id);
+	}
+
 	// Creates a discussion off the conference's room and repoints the conference's `rid` at it so the
 	// chat continues there without exposing the parent room's history to the new participants. For a
 	// DM (which can't grow past two people) the discussion keeps the DM members; for other rooms it
 	// keeps the current conference participants. In both cases the newly selected users are added.
 	public async createConferenceDiscussionWithParticipants(
 		uid: IUser['_id'],
-		callId: VideoConference['_id'],
+		conference: AtLeast<IVideoConference, '_id' | 'rid' | 'discussionRid'>,
 		usernames: NonNullable<IUser['username']>[],
 	): Promise<IRoom['_id']> {
 		logger.debug({
 			msg: 'VideoConf.createConferenceDiscussionWithParticipants',
-			callId,
+			callId: conference._id,
+			rid: conference.rid,
+			discussionRid: conference.discussionRid,
 			uid,
 			usernames,
 		});
 
 		try {
-			const call = await VideoConferenceModel.findOneById(callId, { projection: { rid: 1 } });
-			if (!call) {
-				throw new Error('invalid-video-conference');
-			}
-
-			const baseRoom = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'usernames'>>(call.rid, {
+			const baseRoom = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'usernames'>>(conference.rid, {
 				projection: { t: 1, usernames: 1 },
 			});
 			if (!baseRoom) {
@@ -1813,13 +1826,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			// while channels/groups read them from the room's subscriptions (the conference's `users` list
 			// is only populated by app-based providers, so it's unreliable for the internal provider). The
 			// newly selected users are added on top.
-			const existingMembers =
-				baseRoom.t === 'd'
-					? baseRoom.usernames || []
-					: (await Subscriptions.findByRoomIdWhenUsernameExists(baseRoom._id, { projection: { 'u.username': 1 } }).toArray())
-							.map((subscription) => subscription.u.username)
-							.filter((username): username is string => !!username);
-			const members = [...new Set([...existingMembers, ...usernames])].filter(Boolean);
+			const existingMembers = await this.getUsernamesFromRoom(baseRoom);
+			const discussionMembers = conference.discussionRid ? await this.getUsernamesFromSubscriptionsByRoomId(conference.discussionRid) : [];
+
+			const members = [...new Set([...existingMembers, ...discussionMembers, ...usernames])].filter(Boolean);
 
 			const name = this.getDiscussionDisplayName();
 
@@ -1845,10 +1855,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 			// The conference's `rid` always stays the original room; the chat to display is driven by
 			// `discussionRid`. This sets it and broadcasts `discussionUpdated` so participants navigate.
-			await this.assignDiscussionToConference(callId, discussion._id);
+			await this.assignDiscussionToConference(conference._id, discussion._id);
 
 			// Let the newly invited users know with a desktop notification; clicking it opens the discussion.
-			await this.notifyUsersInvitedToConference(user, usernames, callId, discussion);
+			await this.notifyUsersInvitedToConference(user, usernames, conference._id, discussion);
 
 			return discussion._id;
 		} catch (err) {
@@ -1862,29 +1872,26 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	public async addUsersToConferenceRoom(
 		uid: IUser['_id'],
-		callId: VideoConference['_id'],
+		conference: AtLeast<IVideoConference, '_id' | 'rid' | 'discussionRid'>,
 		usernames: NonNullable<IUser['username']>[],
 	): Promise<IRoom['_id']> {
 		logger.debug({
 			msg: 'VideoConf.addUsersToConferenceRoom',
-			callId,
+			callId: conference._id,
+			rid: conference.rid,
+			discussionRid: conference.discussionRid,
 			uid,
 			usernames,
 		});
 
 		try {
-			const call = await VideoConferenceModel.findOneById(callId, { projection: { rid: 1, discussionRid: 1 } });
-			if (!call) {
-				throw new Error('invalid-video-conference');
-			}
-
 			const user = await Users.findOneById(uid);
 			if (!user) {
 				throw new Error('invalid-user');
 			}
 
 			// The active conference room is the discussion when one was created, otherwise the original room.
-			const rid = call.discussionRid || call.rid;
+			const rid = conference.discussionRid || conference.rid;
 
 			const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'name' | 'fname'>>(rid, {
 				projection: { t: 1, name: 1, fname: 1 },
@@ -1897,7 +1904,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			await addUsersToRoomMethod(uid, { rid, users: usernames }, user);
 
 			// Let the added users know with a desktop notification; clicking it opens the room.
-			await this.notifyUsersInvitedToConference(user, usernames, callId, room);
+			await this.notifyUsersInvitedToConference(user, usernames, conference._id, room);
 
 			return rid;
 		} catch (err) {

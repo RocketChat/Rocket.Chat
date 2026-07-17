@@ -1,5 +1,11 @@
 import { VideoConf } from '@rocket.chat/core-services';
-import type { VideoConference, VideoConferenceCapabilities, VideoConferenceInstructions } from '@rocket.chat/core-typings';
+import type {
+	IVideoConference,
+	VideoConference,
+	VideoConferenceCapabilities,
+	VideoConferenceInstructions,
+} from '@rocket.chat/core-typings';
+import { VideoConference as VideoConferenceModel } from '@rocket.chat/models';
 import {
 	ajv,
 	isVideoConfStartProps,
@@ -290,20 +296,32 @@ API.v1.post(
 		const { callId, users, keepHistory } = this.bodyParams;
 		const { userId } = this;
 
-		const call = await VideoConf.get(callId);
-		if (!call) {
+		if (!userId) {
+			return API.v1.unauthorized();
+		}
+
+		const conf = await VideoConferenceModel.findOneById<Pick<IVideoConference, '_id' | 'rid' | 'users' | 'discussionRid'>>(callId, {
+			projection: { rid: 1, users: 1, discussionRid: 1 },
+		});
+		if (!conf) {
 			return API.v1.failure('invalid-params');
 		}
 
-		if (!userId || !(await canAccessRoomIdAsync(call.rid, userId))) {
+		// If the conference was created on the external conference room and the user has joined the conference,
+		// then they don't need to have access to the room to add new users to its discussion
+		const externalConferenceRid = conf.discussionRid ? await VideoConf.getRidForExternalConference() : null;
+		const isExternalConference = Boolean(externalConferenceRid && externalConferenceRid === conf.rid);
+		const canSkipRoomAccessCheck = Boolean(isExternalConference && conf.users.find((user) => user._id === userId));
+
+		if (!canSkipRoomAccessCheck && !(await canAccessRoomIdAsync(conf.rid, userId))) {
 			return API.v1.failure('invalid-params');
 		}
 
 		// `keepHistory` adds the users to the conference's existing room (they keep its history);
 		// otherwise a fresh discussion is created so they don't get the room's history.
 		const rid = keepHistory
-			? await VideoConf.addUsersToConferenceRoom(userId, callId, users)
-			: await VideoConf.createConferenceDiscussionWithParticipants(userId, callId, users);
+			? await VideoConf.addUsersToConferenceRoom(userId, conf, users)
+			: await VideoConf.createConferenceDiscussionWithParticipants(userId, conf, users);
 		return API.v1.success({ rid });
 	},
 );
