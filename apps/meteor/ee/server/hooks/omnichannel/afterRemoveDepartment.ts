@@ -2,7 +2,7 @@ import type { AtLeast, ILivechatAgent, ILivechatDepartment } from '@rocket.chat/
 import { LivechatDepartment, LivechatUnit } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../server/lib/callbacks';
-import { cbLogger } from '../../../app/livechat-enterprise/server/lib/logger';
+import { cbLogger } from '../../lib/omnichannel/logger';
 
 const afterRemoveDepartment = async (options: {
 	department: AtLeast<ILivechatDepartment, '_id' | 'businessHourId' | 'parentId'>;

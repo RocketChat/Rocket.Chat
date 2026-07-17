@@ -1,10 +1,10 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 
-import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
-import { AutoCloseOnHoldScheduler } from '../../../app/livechat-enterprise/server/lib/AutoCloseOnHoldScheduler';
-import { cbLogger } from '../../../app/livechat-enterprise/server/lib/logger';
+import { settings } from '../../../../server/settings';
+import { AutoCloseOnHoldScheduler } from '../../lib/omnichannel/AutoCloseOnHoldScheduler';
+import { cbLogger } from '../../lib/omnichannel/logger';
 
 let autoCloseOnHoldChatTimeout = 0;
 

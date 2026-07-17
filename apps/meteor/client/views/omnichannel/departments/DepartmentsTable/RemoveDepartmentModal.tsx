@@ -43,8 +43,8 @@ const RemoveDepartmentModal = ({ _id = '', name, reset, onClose }: RemoveDepartm
 			variant='danger'
 			confirmDisabled={text !== name}
 		>
-			<Box mbe={16}>{t('Are_you_sure_delete_department')}</Box>
-			<Box mbe={16} display='flex' justifyContent='stretch'>
+			<Box marginBlockEnd={16}>{t('Are_you_sure_delete_department')}</Box>
+			<Box marginBlockEnd={16} display='flex' justifyContent='stretch'>
 				<Input
 					value={text}
 					aria-label={t('Department_name')}

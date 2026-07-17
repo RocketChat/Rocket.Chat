@@ -5,8 +5,8 @@ import { Meteor } from 'meteor/meteor';
 import type { WithId } from 'mongodb';
 
 import { getSettingPermissionId } from '../../../app/authorization/lib';
-import { SettingsEvents } from '../../../app/settings/server';
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../lib/authorization/hasPermission';
+import { SettingsEvents } from '../../settings';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

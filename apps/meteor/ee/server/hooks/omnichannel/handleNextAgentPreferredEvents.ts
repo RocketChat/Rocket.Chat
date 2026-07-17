@@ -1,12 +1,12 @@
 import type { IUser, SelectedAgent } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatContacts, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 
-import { notifyOnLivechatInquiryChanged } from '../../../../app/lib/server/lib/notifyListener';
-import { RoutingManager } from '../../../../app/livechat/server/lib/RoutingManager';
-import { migrateVisitorIfMissingContact } from '../../../../app/livechat/server/lib/contacts/migrateVisitorIfMissingContact';
-import { checkDefaultAgentOnNewRoom } from '../../../../app/livechat/server/lib/hooks';
-import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../server/lib/callbacks';
+import { notifyOnLivechatInquiryChanged } from '../../../../server/lib/notifyListener';
+import { RoutingManager } from '../../../../server/lib/omnichannel/RoutingManager';
+import { migrateVisitorIfMissingContact } from '../../../../server/lib/omnichannel/contacts/migrateVisitorIfMissingContact';
+import { checkDefaultAgentOnNewRoom } from '../../../../server/lib/omnichannel/hooks';
+import { settings } from '../../../../server/settings';
 
 const normalizeDefaultAgent = (agent?: Pick<IUser, '_id' | 'username'> | null): SelectedAgent | undefined => {
 	if (!agent) {

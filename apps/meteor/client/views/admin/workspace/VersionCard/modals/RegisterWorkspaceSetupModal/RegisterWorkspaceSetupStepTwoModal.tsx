@@ -94,7 +94,7 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 						</Trans>
 					</Box>
 					<Box is='p'>{t('RegisterWorkspace_Setup_Email_Verification')}</Box>
-					<Field pbs={10}>
+					<Field paddingBlockStart={10}>
 						<FieldLabel>{t('Security_code')}</FieldLabel>
 						<FieldRow>
 							<TextInput defaultValue={intentData.user_code} disabled />
@@ -103,14 +103,14 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 				</Box>
 			</ModalContent>
 			<ModalFooter>
-				<Box is='div' display='flex' justifyContent='start' fontSize='c1' w='full'>
+				<Box is='div' display='flex' justifyContent='start' fontSize='c1' width='full'>
 					<Trans i18nKey='RegisterWorkspace_Didnt_Receive_Email'>
 						Didn't receive email?{' '}
-						<Box is='a' pi={4} onClick={handleResendRegistrationEmail}>
+						<Box is='a' paddingInline={4} onClick={handleResendRegistrationEmail}>
 							Resend
 						</Box>{' '}
 						or{' '}
-						<Box is='a' pi={4} onClick={handleBackFromConfirmation}>
+						<Box is='a' paddingInline={4} onClick={handleBackFromConfirmation}>
 							change email
 						</Box>
 					</Trans>

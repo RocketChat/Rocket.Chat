@@ -1,6 +1,6 @@
 import _ from 'underscore';
 
-import { settings } from '../../../../../app/settings/server';
+import { settings } from '../../../../settings';
 import { UploadFS } from '../../../../ufs';
 import { SystemLogger } from '../../../logger/system';
 import './AmazonS3';

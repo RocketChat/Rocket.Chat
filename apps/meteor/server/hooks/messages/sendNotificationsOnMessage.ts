@@ -13,16 +13,16 @@ import type { RootFilterOperators } from 'mongodb';
 
 import { getMentions } from './notifyUsersOnMessage';
 import { shortnameToUnicode } from '../../../app/emoji-native/lib/shortnameToUnicode';
-import { parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../../../app/lib/server/functions/notifications';
-import { notifyDesktopUser, shouldNotifyDesktop } from '../../../app/lib/server/functions/notifications/desktop';
-import { getEmailData, shouldNotifyEmail } from '../../../app/lib/server/functions/notifications/email';
-import { messageContainsHighlight } from '../../../app/lib/server/functions/notifications/messageContainsHighlight';
-import { getPushData, shouldNotifyMobile } from '../../../app/lib/server/functions/notifications/mobile';
-import { settings } from '../../../app/settings/server';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
+import { parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../../lib/notifications/message';
+import { notifyDesktopUser, shouldNotifyDesktop } from '../../lib/notifications/message/desktop';
+import { getEmailData, shouldNotifyEmail } from '../../lib/notifications/message/email';
+import { messageContainsHighlight } from '../../lib/notifications/message/messageContainsHighlight';
+import { getPushData, shouldNotifyMobile } from '../../lib/notifications/message/mobile';
 import { Notification } from '../../lib/notifications/queue/NotificationQueue';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import { settings } from '../../settings';
 
 type SubscriptionAggregation = {
 	receiver: [Pick<IUser, 'active' | 'emails' | 'language' | 'status' | 'statusConnection' | 'username' | 'settings'> | null];

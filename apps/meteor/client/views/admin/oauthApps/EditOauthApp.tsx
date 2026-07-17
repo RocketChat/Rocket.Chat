@@ -105,8 +105,8 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps) => {
 	const tokenUrlField = useId();
 
 	return (
-		<ContextualbarScrollableContent w='full' {...props}>
-			<FieldGroup maxWidth='x600' alignSelf='center' w='full'>
+		<ContextualbarScrollableContent width='full' {...props}>
+			<FieldGroup maxWidth='x600' alignSelf='center' width='full'>
 				<Field>
 					<FieldRow>
 						<FieldLabel>{t('Active')}</FieldLabel>

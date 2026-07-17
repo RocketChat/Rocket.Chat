@@ -1,13 +1,13 @@
 import type { InquiryWithAgentInfo, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors } from '@rocket.chat/models';
 
-import { RoutingManager } from '../../../../app/livechat/server/lib/RoutingManager';
-import { afterTakeInquiry } from '../../../../app/livechat/server/lib/hooks';
-import { settings } from '../../../../app/settings/server';
-import { AutoTransferChatScheduler } from '../../../app/livechat-enterprise/server/lib/AutoTransferChatScheduler';
-import { debouncedDispatchWaitingQueueStatus } from '../../../app/livechat-enterprise/server/lib/Helper';
-import { OmnichannelQueueInactivityMonitor } from '../../../app/livechat-enterprise/server/lib/QueueInactivityMonitor';
-import { cbLogger } from '../../../app/livechat-enterprise/server/lib/logger';
+import { RoutingManager } from '../../../../server/lib/omnichannel/RoutingManager';
+import { afterTakeInquiry } from '../../../../server/lib/omnichannel/hooks';
+import { settings } from '../../../../server/settings';
+import { AutoTransferChatScheduler } from '../../lib/omnichannel/AutoTransferChatScheduler';
+import { debouncedDispatchWaitingQueueStatus } from '../../lib/omnichannel/Helper';
+import { OmnichannelQueueInactivityMonitor } from '../../lib/omnichannel/QueueInactivityMonitor';
+import { cbLogger } from '../../lib/omnichannel/logger';
 
 afterTakeInquiry.patch(
 	async (

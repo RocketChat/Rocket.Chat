@@ -5,11 +5,11 @@ import { removeEmpty } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../../../app/lib/server/lib/deprecationWarningLogger';
-import { notifyOnIntegrationChanged } from '../../../../app/lib/server/lib/notifyListener';
 import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
+import { methodDeprecationLogger } from '../../../lib/deprecationWarningLogger';
 import { validateOutgoingIntegration } from '../../../lib/integrations/lib/validateOutgoingIntegration';
 import { validateScriptEngine } from '../../../lib/integrations/lib/validateScriptEngine';
+import { notifyOnIntegrationChanged } from '../../../lib/notifyListener';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

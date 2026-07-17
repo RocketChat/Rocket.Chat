@@ -14,18 +14,14 @@ import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { getNameForDMs } from './getNameForDMs';
 import { FederationActions } from './hooks/BeforeFederationActions';
-import { saveRoomName } from '../../../app/channel-settings/server';
-import { saveRoomTopic } from '../../../app/channel-settings/server/functions/saveRoomTopic';
+import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
+import { getSubscriptionAutotranslateDefaultConfig } from '../../lib/getSubscriptionAutotranslateDefaultConfig';
+import { readThread } from '../../lib/messaging/threads/functions';
 import {
 	notifyOnSubscriptionChanged,
 	notifyOnSubscriptionChangedById,
 	notifyOnSubscriptionChangedByRoomIdAndUserId,
-} from '../../../app/lib/server/lib/notifyListener';
-import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
-import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName';
-import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
-import { getSubscriptionAutotranslateDefaultConfig } from '../../lib/getSubscriptionAutotranslateDefaultConfig';
-import { readThread } from '../../lib/messaging/threads/functions';
+} from '../../lib/notifyListener';
 import { readMessages } from '../../lib/readMessages';
 import { performAcceptRoomInvite } from '../../lib/rooms/acceptRoomInvite';
 import { addUserToRoom } from '../../lib/rooms/addUserToRoom';
@@ -34,6 +30,10 @@ import { createRoom } from '../../lib/rooms/createRoom'; // TODO remove this imp
 import { executeUnbanUserFromRoom } from '../../lib/rooms/executeUnbanUserFromRoom';
 import { removeUserFromRoom, performUserRemoval } from '../../lib/rooms/removeUserFromRoom';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import { saveRoomName } from '../../lib/rooms/settings';
+import { saveRoomTopic } from '../../lib/rooms/settings/saveRoomTopic';
+import { getDefaultSubscriptionPref } from '../../lib/utils/lib/getDefaultSubscriptionPref';
+import { getValidRoomName } from '../../lib/utils/lib/getValidRoomName';
 import { createDirectMessage } from '../../meteor-methods/messages/createDirectMessage';
 import { addRoomLeader } from '../../meteor-methods/rooms/addRoomLeader';
 import { addRoomModerator } from '../../meteor-methods/rooms/addRoomModerator';

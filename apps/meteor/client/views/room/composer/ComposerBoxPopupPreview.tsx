@@ -105,9 +105,9 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 
 	return (
 		<Box position='relative'>
-			<Tile padding={0} role='menu' mbe={8} overflow='hidden' aria-labelledby={id}>
+			<Tile padding={0} role='menu' marginBlockEnd={8} overflow='hidden' aria-labelledby={id}>
 				{title && (
-					<Box bg='tint' pi={16} pb={8} id={id}>
+					<Box backgroundColor='tint' paddingInline={16} paddingBlock={8} id={id}>
 						{title}
 					</Box>
 				)}
@@ -116,7 +116,7 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 						{isLoading &&
 							Array(5)
 								.fill(5)
-								.map((_, index) => <Skeleton variant='rect' h='100px' w='120px' m={2} key={index} />)}
+								.map((_, index) => <Skeleton variant='rect' height='100px' width='120px' margin={2} key={index} />)}
 
 						{!isLoading &&
 							itemsFlat.map((item) => (
@@ -126,11 +126,11 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 									className={['popup-item', item === focused && 'selected'].filter(Boolean).join(' ')}
 									id={`popup-item-${item._id}`}
 									key={item._id}
-									bg={item === focused ? 'selected' : undefined}
+									backgroundColor={item === focused ? 'selected' : undefined}
 									borderColor={item === focused ? 'highlight' : 'transparent'}
 									tabIndex={item === focused ? 0 : -1}
 									aria-selected={item === focused}
-									m={2}
+									margin={2}
 									borderWidth='default'
 									borderRadius='x4'
 								>

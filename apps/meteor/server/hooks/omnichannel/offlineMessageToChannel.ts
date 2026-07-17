@@ -2,10 +2,10 @@ import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatDepartment, Users, Rooms } from '@rocket.chat/models';
 
-import { settings } from '../../../app/settings/server';
 import { callbacks } from '../../lib/callbacks';
 import { i18n } from '../../lib/i18n';
 import { sendMessage } from '../../lib/messages/sendMessage';
+import { settings } from '../../settings';
 
 callbacks.add(
 	'livechat.offlineMessage',

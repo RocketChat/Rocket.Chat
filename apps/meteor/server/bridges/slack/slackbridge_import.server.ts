@@ -7,9 +7,9 @@ import { Random } from '@rocket.chat/random';
 import { Match } from 'meteor/check';
 
 import { SlackBridge } from './slackbridge';
-import { msgStream } from '../../../app/lib/server';
-import { slashCommands } from '../../../app/utils/server/slashCommand';
 import { i18n } from '../../lib/i18n';
+import { msgStream } from '../../lib/messaging/msgStream';
+import { slashCommands } from '../../lib/utils/slashCommand';
 
 async function SlackBridgeImport({ command, params, message, userId }) {
 	if (command !== 'slackbridge-import' || !Match.test(params, String)) {

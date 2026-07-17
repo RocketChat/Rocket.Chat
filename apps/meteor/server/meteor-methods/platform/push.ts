@@ -6,7 +6,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { logger } from '../../lib/notifications/push/logger';
 import { _matchToken } from '../../lib/notifications/push/push';
 

@@ -4,7 +4,7 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import { AppleCustomOAuth } from './AppleCustomOAuth';
 import { config } from '../../../../app/apple/lib/config';
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../settings';
 
 new AppleCustomOAuth('apple', config);
 

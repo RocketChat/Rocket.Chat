@@ -16,10 +16,10 @@ const ActionStrip = ({ children, leftSlot, rightSlot }: ActionStripProps) => {
 			flexDirection='row'
 			justifyContent='space-between'
 			flexShrink={0}
-			w='full'
+			width='full'
 			alignItems='center'
 			height={ACTION_STRIP_TOTAL_HEIGHT}
-			bg='surface-light'
+			backgroundColor='surface-light'
 			borderBlock='1px solid'
 			borderColor='stroke-extra-light'
 			paddingInline={20}

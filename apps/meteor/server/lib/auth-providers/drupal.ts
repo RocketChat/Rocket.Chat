@@ -5,7 +5,7 @@ import _ from 'underscore';
 
 import { addPassportCustomOAuth } from '../oauth/addPassportCustomOAuth';
 import { CustomOAuth } from './custom-oauth/custom_oauth_server';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 
 const config: Partial<OAuthConfiguration> = {
 	serverURL: '',

@@ -17,7 +17,7 @@ const options = {
 	limit: LIMIT,
 } as const;
 
-export const useSearchItems = (filterText: string): { items: SubscriptionWithRoom[]; isLoading: boolean } => {
+export const useSearchItems = (filterText = ''): { items: SubscriptionWithRoom[]; isLoading: boolean } => {
 	const [, mention, name] = useMemo(() => filterText.match(/(@|#)?(.*)/i) || [], [filterText]);
 
 	const query = useMemo(() => {

@@ -128,7 +128,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 										onChange={() => setSendToChannel((checked) => !checked)}
 										name='alsoSendThreadToChannel'
 									/>
-									<FieldLabel mis='x8' htmlFor={sendToChannelID} color='annotation' fontScale='p2'>
+									<FieldLabel marginInlineStart='x8' htmlFor={sendToChannelID} color='annotation' fontScale='p2'>
 										{t('Also_send_to_channel')}
 									</FieldLabel>
 								</FieldRow>

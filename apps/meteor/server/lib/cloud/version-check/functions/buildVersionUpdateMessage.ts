@@ -2,11 +2,11 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Settings, Users } from '@rocket.chat/models';
 import semver from 'semver';
 
-import { notifyOnSettingChangedById } from '../../../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../../../app/settings/server';
 import { Info } from '../../../../../app/utils/rocketchat.info';
+import { settings } from '../../../../settings';
 import { updateAuditedBySystem } from '../../../../settings/lib/auditedSettingUpdates';
 import { i18n } from '../../../i18n';
+import { notifyOnSettingChangedById } from '../../../notifyListener';
 import { sendMessagesToAdmins } from '../../../sendMessagesToAdmins';
 
 const cleanupOutdatedVersionUpdateBanners = async (): Promise<void> => {

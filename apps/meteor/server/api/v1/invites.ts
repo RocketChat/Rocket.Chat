@@ -9,12 +9,12 @@ import {
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 
-import { findOrCreateInvite } from '../../../app/invites/server/functions/findOrCreateInvite';
-import { listInvites } from '../../../app/invites/server/functions/listInvites';
-import { removeInvite } from '../../../app/invites/server/functions/removeInvite';
-import { sendInvitationEmail } from '../../../app/invites/server/functions/sendInvitationEmail';
-import { useInviteToken } from '../../../app/invites/server/functions/useInviteToken';
-import { validateInviteToken } from '../../../app/invites/server/functions/validateInviteToken';
+import { findOrCreateInvite } from '../../lib/rooms/invites/findOrCreateInvite';
+import { listInvites } from '../../lib/rooms/invites/listInvites';
+import { removeInvite } from '../../lib/rooms/invites/removeInvite';
+import { sendInvitationEmail } from '../../lib/rooms/invites/sendInvitationEmail';
+import { useInviteToken } from '../../lib/rooms/invites/useInviteToken';
+import { validateInviteToken } from '../../lib/rooms/invites/validateInviteToken';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 

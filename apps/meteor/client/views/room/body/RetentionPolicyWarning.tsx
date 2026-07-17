@@ -13,7 +13,7 @@ const RetentionPolicyWarning = ({ room }: RetentionPolicyWarningProps) => {
 	const message = usePruneWarningMessage(room);
 
 	return (
-		<Box display='flex' justifyContent='center' pi={20} mb={8}>
+		<Box display='flex' justifyContent='center' paddingInline={20} marginBlock={8}>
 			<Bubble role='alert' aria-live='polite' aria-label={t('Retention_policy_warning_banner')} small secondary>
 				{message}
 			</Bubble>

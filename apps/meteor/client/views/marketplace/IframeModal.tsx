@@ -36,7 +36,7 @@ const IframeModal = ({ url, confirm, cancel, wrapperHeight = 'x360', ...props }:
 
 	return (
 		<Modal height={wrapperHeight} {...props}>
-			<Box padding='x12' w='full' h='full' flexGrow={1} bg='white' borderRadius='x8'>
+			<Box padding='x12' width='full' height='full' flexGrow={1} backgroundColor='white' borderRadius='x8'>
 				<iframe title={t('Marketplace_apps')} style={{ border: 'none', height: '100%', width: '100%' }} src={url} />
 			</Box>
 		</Modal>

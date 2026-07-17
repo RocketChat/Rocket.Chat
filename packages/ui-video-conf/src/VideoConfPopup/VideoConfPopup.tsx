@@ -24,7 +24,7 @@ export type VideoConfPopupProps = {
 const VideoConfPopup = forwardRef<HTMLDivElement, VideoConfPopupProps>(function VideoConfPopup({ children, position, ...props }, ref) {
 	return (
 		<VideoConfPopupContainer role='dialog' ref={ref} position={position} {...props}>
-			<Box p={24} maxWidth='x276' color='default'>
+			<Box padding={24} maxWidth='x276' color='default'>
 				{children}
 			</Box>
 		</VideoConfPopupContainer>

@@ -3,9 +3,9 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomAsync } from '../../../app/authorization/server';
-import { methodDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
-import { settings } from '../../../app/settings/server';
+import { canAccessRoomAsync } from '../../lib/authorization';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
+import { settings } from '../../settings';
 
 const MAX_LIMIT = 100;
 

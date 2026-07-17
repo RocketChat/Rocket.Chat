@@ -81,7 +81,7 @@ const IncomingWebhookForm = ({ webhookData }: IncomingWebhookFormProps) => {
 	const curlField = useId();
 
 	return (
-		<Box maxWidth='x600' alignSelf='center' w='full'>
+		<Box maxWidth='x600' alignSelf='center' width='full'>
 			<Accordion>
 				<AccordionItem defaultExpanded={Boolean(webhookData?._id)} title={t('Instructions')}>
 					<FieldGroup>

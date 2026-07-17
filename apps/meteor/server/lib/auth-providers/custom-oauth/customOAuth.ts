@@ -10,10 +10,10 @@ import type { VerifyFunction, StrategyOptions } from 'passport-oauth2';
 import { Strategy } from 'passport-oauth2';
 
 import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
-import { notifyOnUserChange } from '../../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../../app/settings/server/cached';
 import { client } from '../../../database/utils';
+import { settings } from '../../../settings/cached';
 import { callbacks } from '../../callbacks';
+import { notifyOnUserChange } from '../../notifyListener';
 import { saveUserIdentity } from '../../users/saveUserIdentity';
 
 const logger = new Logger('CustomOAuth');

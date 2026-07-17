@@ -7,9 +7,9 @@ import {
 	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
 
-import { notifyOnSettingChangedById } from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
 import { RocketChatAssets, refreshClients } from '../../lib/media/assets';
+import { notifyOnSettingChangedById } from '../../lib/notifyListener';
+import { settings } from '../../settings';
 import { updateAuditedByUser } from '../../settings/lib/auditedSettingUpdates';
 import { API } from '../api';
 import { getUploadFormData } from '../lib/getUploadFormData';

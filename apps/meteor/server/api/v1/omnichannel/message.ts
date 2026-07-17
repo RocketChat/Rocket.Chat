@@ -13,11 +13,11 @@ import {
 
 import { API } from '../..';
 import { findGuest, findRoom, normalizeHttpHeaderData } from './lib/livechat';
-import { updateMessage, deleteMessage, sendMessage } from '../../../../app/livechat/server/lib/messages';
-import { settings } from '../../../../app/settings/server';
-import { normalizeMessageFileUpload } from '../../../../app/utils/server/functions/normalizeMessageFileUpload';
 import { callbacks } from '../../../lib/callbacks';
 import { loadMessageHistory } from '../../../lib/messages/loadMessageHistory';
+import { updateMessage, deleteMessage, sendMessage } from '../../../lib/omnichannel/messages';
+import { normalizeMessageFileUpload } from '../../../lib/utils/functions/normalizeMessageFileUpload';
+import { settings } from '../../../settings';
 import { getPaginationItems } from '../../lib/getPaginationItems';
 import { isWidget } from '../../lib/isWidget';
 

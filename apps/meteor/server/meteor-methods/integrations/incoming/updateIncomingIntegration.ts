@@ -4,11 +4,11 @@ import { Integrations, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../../../app/lib/server/lib/deprecationWarningLogger';
-import { notifyOnIntegrationChanged } from '../../../../app/lib/server/lib/notifyListener';
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../../lib/authorization/hasPermission';
+import { methodDeprecationLogger } from '../../../lib/deprecationWarningLogger';
 import { compileIntegrationScript } from '../../../lib/integrations/lib/compileIntegrationScript';
 import { isScriptEngineFrozen, validateScriptEngine } from '../../../lib/integrations/lib/validateScriptEngine';
+import { notifyOnIntegrationChanged } from '../../../lib/notifyListener';
 
 const validChannelChars = ['@', '#'];
 

@@ -16,11 +16,11 @@ const DeviceIcon = ({ deviceType }: DeviceIconProps) => (
 		display='inline-flex'
 		alignItems='center'
 		justifyContent='center'
-		p={4}
-		bg='selected'
+		padding={4}
+		backgroundColor='selected'
 		size='x24'
 		borderRadius='full'
-		mie={8}
+		marginInlineEnd={8}
 	>
 		<Icon name={iconMap[deviceType] || 'globe'} size='x16' color='hint' />
 	</Box>

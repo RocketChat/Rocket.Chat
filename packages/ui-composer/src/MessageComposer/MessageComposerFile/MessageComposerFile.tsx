@@ -80,7 +80,7 @@ const MessageComposerFile = ({
 			position='relative'
 			height='x58'
 			width='x234'
-			mie={8}
+			marginInlineEnd={8}
 			onClick={handleClick}
 			{...props}
 		>
@@ -95,7 +95,7 @@ const MessageComposerFile = ({
 			) : (
 				<FilePreviewIcon format={fileFormat} />
 			)}
-			<Box flexGrow={1} withTruncatedText mis={4} display='flex' flexDirection='column'>
+			<Box flexGrow={1} withTruncatedText marginInlineStart={4} display='flex' flexDirection='column'>
 				<Box {...buttonProps} fontScale='p2' color={disabled ? 'disabled' : 'info'} withTruncatedText>
 					{fileTitle}
 				</Box>

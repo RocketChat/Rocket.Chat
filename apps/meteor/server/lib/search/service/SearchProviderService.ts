@@ -1,5 +1,5 @@
-import { settings, settingsRegistry } from '../../../../app/settings/server';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
+import { settings, settingsRegistry } from '../../../settings';
 import { SearchLogger } from '../logger/logger';
 import type { SearchProvider } from '../model/SearchProvider';
 

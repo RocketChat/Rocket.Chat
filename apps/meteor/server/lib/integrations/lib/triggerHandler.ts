@@ -18,9 +18,9 @@ import type { OutgoingRequestData } from './ScriptEngine';
 import { IsolatedVMScriptEngine } from './isolated-vm/isolated-vm';
 import { updateHistory } from './updateHistory';
 import { outgoingEvents } from '../../../../app/integrations/lib/outgoingEvents';
-import { notifyOnIntegrationChangedById } from '../../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../../app/settings/server';
+import { settings } from '../../../settings';
 import { processWebhookMessage } from '../../messages/processWebhookMessage';
+import { notifyOnIntegrationChangedById } from '../../notifyListener';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../rooms/getRoomByNameOrIdWithOptionToJoin';
 import { outgoingLogger } from '../logger';
 

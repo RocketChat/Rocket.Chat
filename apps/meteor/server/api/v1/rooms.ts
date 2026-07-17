@@ -45,19 +45,18 @@ import {
 import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
-import { stripABACManagedFieldsForAdmin } from '../../../app/authorization/server/lib/isABACManagedRoom';
-import { notifyOnSubscriptionChanged } from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
 import { adminFields } from '../../../lib/rooms/adminFields';
 import { omit } from '../../../lib/utils/omit';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { stripABACManagedFieldsForAdmin } from '../../lib/authorization/isABACManagedRoom';
 import { banUserFromRoomMethod } from '../../lib/banUserFromRoom';
 import { applyAirGappedRestrictionsValidation } from '../../lib/cloud/license/airGappedRestrictionsWrapper';
 import * as dataExport from '../../lib/dataExport';
 import { eraseRoom } from '../../lib/eraseRoom';
 import { findUsersOfRoomOrderedByRole } from '../../lib/findUsersOfRoomOrderedByRole';
 import { FileUpload } from '../../lib/media/file-upload';
+import { notifyOnSubscriptionChanged } from '../../lib/notifyListener';
 import { openRoom } from '../../lib/openRoom';
 import type { RoomRoles } from '../../lib/roles/getRoomRoles';
 import { syncRolePrioritiesForRoomIfRequired } from '../../lib/rooms/syncRolePrioritiesForRoomIfRequired';
@@ -77,6 +76,7 @@ import { unmuteUserInRoom } from '../../meteor-methods/rooms/unmuteUserInRoom';
 import { saveNotificationSettingsMethod } from '../../meteor-methods/users/saveNotificationSettings';
 import type { NotificationFieldType } from '../../meteor-methods/users/saveNotificationSettings';
 import { roomsGetMethod } from '../../publications/room';
+import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { MultipartUploadHandler } from '../lib/MultipartUploadHandler';
@@ -1006,7 +1006,7 @@ API.v1.post(
 	async function action() {
 		const { rid, type } = this.bodyParams;
 
-		if (!(await hasPermissionAsync(this.userId, 'mail-messages', rid))) {
+		if (!(await hasPermissionAsync(this.user, 'mail-messages', rid))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Mailing is not allowed');
 		}
 
@@ -1151,7 +1151,7 @@ API.v1.get(
 			return API.v1.failure('error-room-type-not-supported');
 		}
 
-		if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult._id))) {
+		if (findResult.broadcast && !(await hasPermissionAsync(this.user, 'view-broadcast-member-list', findResult._id))) {
 			return API.v1.unauthorized();
 		}
 

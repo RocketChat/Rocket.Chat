@@ -1194,7 +1194,7 @@ describe('SAML', () => {
 				'../../rooms/createRoom': { createRoom: sinon.stub() },
 				'../../users/getUsernameSuggestion': { generateUsernameSuggestion: sinon.stub() },
 				'../../users/saveUserIdentity': { saveUserIdentity: sinon.stub() },
-				'../../../../app/settings/server': { settings: { get: sinon.stub() } },
+				'../../../settings': { settings: { get: sinon.stub() } },
 				'../../../../app/utils/lib/i18n': { i18n: { t: (s: string) => s, languages: [] } },
 			}).SAML;
 

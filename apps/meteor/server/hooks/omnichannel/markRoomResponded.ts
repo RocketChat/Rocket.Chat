@@ -4,10 +4,10 @@ import type { Updater } from '@rocket.chat/models';
 import { LivechatRooms, LivechatContacts, LivechatInquiry } from '@rocket.chat/models';
 import moment from 'moment';
 
-import { notifyOnLivechatInquiryChanged } from '../../../app/lib/server/lib/notifyListener';
-import { isMessageFromBot } from '../../../app/livechat/server/lib/isMessageFromBot';
-import { settings } from '../../../app/settings/server';
 import { callbacks } from '../../lib/callbacks';
+import { notifyOnLivechatInquiryChanged } from '../../lib/notifyListener';
+import { isMessageFromBot } from '../../lib/omnichannel/isMessageFromBot';
+import { settings } from '../../settings';
 
 export async function markRoomResponded(
 	message: IMessage,

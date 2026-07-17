@@ -4,8 +4,8 @@ import { Logger } from '@rocket.chat/logger';
 import { Roles } from '@rocket.chat/models';
 import { capitalize } from '@rocket.chat/string-helpers';
 
-import { settings } from '../../../app/settings/server';
 import { callbacks } from '../../../server/lib/callbacks';
+import { settings } from '../../../server/settings';
 import { OAuthEEManager } from '../lib/oauth/Manager';
 import { syncUserRoles } from '../lib/syncUserRoles';
 

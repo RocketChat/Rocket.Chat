@@ -29,7 +29,7 @@ const EditCustomEmojiWithData = ({ _id, onChange, close, ...props }: EditCustomE
 	});
 
 	if (isPending) {
-		return <FormSkeleton pi={20} />;
+		return <FormSkeleton paddingInline={20} />;
 	}
 
 	if (error || !data || !data.emojis || data.emojis.update.length < 1) {

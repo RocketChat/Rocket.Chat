@@ -63,7 +63,7 @@ const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
 				<ModalTitle id={`${createDMFormId}-title`}>{t('Create_direct_message')}</ModalTitle>
 				<ModalClose tabIndex={-1} onClick={onClose} />
 			</ModalHeader>
-			<ModalContent mbe={2}>
+			<ModalContent marginBlockEnd={2}>
 				<FieldGroup>
 					<Field>
 						<FieldLabel>{t('Direct_message_creation_description')}</FieldLabel>
