@@ -173,7 +173,11 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		association: ILivechatContactVisitorAssociation,
 		options?: FindOptions<IOmnichannelRoom>,
 	): Promise<IOmnichannelRoom | null>;
-	findOneOpenByVisitorToken(visitorToken: string, options?: FindOptions<IOmnichannelRoom>): Promise<IOmnichannelRoom | null>;
+	findOneOpenByVisitorToken(
+		visitorToken: string,
+		options?: FindOptions<IOmnichannelRoom>,
+		extraQuery?: Filter<IOmnichannelRoom>,
+	): Promise<IOmnichannelRoom | null>;
 	findOneOpenByVisitorTokenAndDepartmentIdAndSource(
 		visitorToken: string,
 		departmentId?: string,
