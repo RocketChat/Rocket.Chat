@@ -28,10 +28,10 @@ function DepartmentAgentsTable({ control, register, 'aria-labelledby': ariaLabel
 			<AddAgent aria-labelledby={ariaLabelledBy} agentList={agentList} onAdd={append} />
 			<GenericTable aria-label={t('Agents')}>
 				<GenericTableHeader>
-					<GenericTableHeaderCell w='x200'>{t('Name')}</GenericTableHeaderCell>
-					<GenericTableHeaderCell w='x140'>{t('Count')}</GenericTableHeaderCell>
-					<GenericTableHeaderCell w='x120'>{t('Order')}</GenericTableHeaderCell>
-					<GenericTableHeaderCell w='x40'>{t('Remove')}</GenericTableHeaderCell>
+					<GenericTableHeaderCell width='x200'>{t('Name')}</GenericTableHeaderCell>
+					<GenericTableHeaderCell width='x140'>{t('Count')}</GenericTableHeaderCell>
+					<GenericTableHeaderCell width='x120'>{t('Order')}</GenericTableHeaderCell>
+					<GenericTableHeaderCell width='x40'>{t('Remove')}</GenericTableHeaderCell>
 				</GenericTableHeader>
 				<GenericTableBody>
 					{page.map((agent, index) => (

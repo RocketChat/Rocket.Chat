@@ -1,4 +1,13 @@
 import { proxify } from './lib/proxify';
+import type {
+	IAISearchService,
+	AISearchAnswerMessage,
+	AISearchAnswerResult,
+	AISearchFilters,
+	AISearchModelOption,
+	AISearchResult,
+	AISearchStatus,
+} from './types/IAISearchService';
 import type { IAbacService } from './types/IAbacService';
 import type { IAccount, ILoginResult } from './types/IAccount';
 import type { IAnalyticsService } from './types/IAnalyticsService';
@@ -147,6 +156,13 @@ export type {
 	IUploadFileParams,
 	IUploadService,
 	ICalendarService,
+	IAISearchService,
+	AISearchAnswerMessage,
+	AISearchAnswerResult,
+	AISearchFilters,
+	AISearchModelOption,
+	AISearchResult,
+	AISearchStatus,
 	ICallHistoryService,
 	IOmnichannelTranscriptService,
 	IQueueWorkerService,
@@ -205,3 +221,4 @@ export const EnterpriseSettings = proxify<IEnterpriseSettings>('ee-settings');
 
 export const FederationMatrix = proxify<IFederationMatrixService>('federation-matrix');
 export const Abac = proxify<IAbacService>('abac');
+export const AISearch = proxify<IAISearchService>('ai-search');

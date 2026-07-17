@@ -1,4 +1,5 @@
 import { createAccountSettings } from './accounts';
+import { createAISettings } from './ai';
 import { createAnalyticsSettings } from './analytics';
 import { createAssetsSettings } from './assets';
 import { createBotsSettings } from './bots';
@@ -39,6 +40,7 @@ import { addMatrixBridgeFederationSettings } from '../services/federation/Settin
 await Promise.all([
 	createFederationServiceSettings(),
 	createAccountSettings(),
+	createAISettings(),
 	createAnalyticsSettings(),
 	createAssetsSettings(),
 	createBotsSettings(),

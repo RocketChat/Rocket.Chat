@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 export type VideoConfPopupContentProps = { children: ReactNode };
 
 const VideoConfPopupContent = ({ children }: VideoConfPopupContentProps) => (
-	<Box display='flex' flexDirection='column' mbs={8}>
+	<Box display='flex' flexDirection='column' marginBlockStart={8}>
 		{children}
 	</Box>
 );

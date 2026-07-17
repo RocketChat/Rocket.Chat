@@ -107,7 +107,7 @@ const ReviewContactModal = ({ contact, onCancel }: ReviewContactModalProps) => {
 							</FieldRow>
 							<FieldHint id={`${name}-hint`}>
 								<Box display='flex' alignItems='center'>
-									<Box mie={4}>{t('different_values_found', { number: values.length })}</Box>
+									<Box marginInlineEnd={4}>{t('different_values_found', { number: values.length })}</Box>
 									<Badge variant='primary' small />
 								</Box>
 							</FieldHint>

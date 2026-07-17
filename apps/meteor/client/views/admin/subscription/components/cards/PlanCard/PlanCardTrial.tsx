@@ -26,7 +26,7 @@ const PlanCardTrial = ({ licenseInformation }: PlanCardProps) => {
 			<CardBody flexDirection='column'>
 				{visualExpiration && (
 					<CardRow>
-						<Box fontScale='p2b' mie={8}>
+						<Box fontScale='p2b' marginInlineEnd={8}>
 							{t('Trial_active')}
 						</Box>
 						<Tag>{t('n_days_left', { n: differenceInDays(new Date(visualExpiration), new Date()) })}</Tag>
@@ -54,7 +54,13 @@ const PlanCardTrial = ({ licenseInformation }: PlanCardProps) => {
 				<PlanCardLicenseDetails />
 			</CardBody>
 			<CardControls>
-				<UpgradeButton target='plan_card_trial' action={isSalesAssisted ? 'finish_purchase' : 'contact_sales'} primary mbs='auto' w='full'>
+				<UpgradeButton
+					target='plan_card_trial'
+					action={isSalesAssisted ? 'finish_purchase' : 'contact_sales'}
+					primary
+					marginBlockStart='auto'
+					width='full'
+				>
 					{isSalesAssisted ? t('Finish_purchase') : t('Contact_sales')}
 				</UpgradeButton>
 			</CardControls>

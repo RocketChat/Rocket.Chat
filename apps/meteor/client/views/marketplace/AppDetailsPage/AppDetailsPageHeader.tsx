@@ -36,37 +36,37 @@ const AppDetailsPageHeader = ({ app }: AppDetailsPageHeaderProps) => {
 	const incompatibleStatus = versionIncompatible ? appIncompatibleStatusProps() : undefined;
 
 	return (
-		<Box color='default' display='flex' flexDirection='row' mbe={20} w='full'>
-			<Box mie={32}>
+		<Box color='default' display='flex' flexDirection='row' marginBlockEnd={20} width='full'>
+			<Box marginInlineEnd={32}>
 				<AppAvatar size='x124' iconFileContent={iconFileContent} iconFileData={iconFileData} />
 			</Box>
 			<Box display='flex' flexDirection='column'>
-				<Box display='flex' flexDirection='row' alignItems='center' mbe={8}>
-					<Box fontScale='h1' mie={8}>
+				<Box display='flex' flexDirection='row' alignItems='center' marginBlockEnd={8}>
+					<Box fontScale='h1' marginInlineEnd={8}>
 						{name}
 					</Box>
 					{bundledIn && Boolean(bundledIn.length) && <BundleChips bundledIn={bundledIn} />}
 				</Box>
 
 				{shortDescription && (
-					<Box fontScale='p1' mbe={16}>
+					<Box fontScale='p1' marginBlockEnd={16}>
 						{shortDescription}
 					</Box>
 				)}
 
-				<Box display='flex' flexDirection='row' alignItems='center' mbe={16}>
+				<Box display='flex' flexDirection='row' alignItems='center' marginBlockEnd={16}>
 					<AppStatus app={app} installed={installed} isAppDetailsPage />
 					{(installed || isSubscribed) && <AppMenu app={app} isAppDetailsPage />}
 				</Box>
 				<Box fontScale='c1' display='flex' flexDirection='row' color='hint' alignItems='center'>
 					{author?.name}
-					<Box mi={16} color='disabled'>
+					<Box marginInline={16} color='disabled'>
 						|
 					</Box>
 					<Box>{t('Version_version', { version: versioni18nKey(app) })}</Box>
 					{lastUpdated && (
 						<>
-							<Box mi={16} color='disabled'>
+							<Box marginInline={16} color='disabled'>
 								|
 							</Box>
 							<Box>
@@ -79,7 +79,7 @@ const AppDetailsPageHeader = ({ app }: AppDetailsPageHeaderProps) => {
 
 					{versionIncompatible && (
 						<>
-							<Box mi={16} color='disabled'>
+							<Box marginInline={16} color='disabled'>
 								|
 							</Box>
 

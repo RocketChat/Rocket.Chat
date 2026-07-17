@@ -24,7 +24,7 @@ const RoomFormAttributeFields = ({ fields, remove, disabled = false }: RoomFormA
 	return (
 		<>
 			{isExternalAttributeStore && (
-				<Box mbe={8} color='annotation' fontSize='p2'>
+				<Box marginBlockEnd={8} color='annotation' fontSize='p2'>
 					{t('ABAC_Picker_External_Store_Helper')}
 				</Box>
 			)}

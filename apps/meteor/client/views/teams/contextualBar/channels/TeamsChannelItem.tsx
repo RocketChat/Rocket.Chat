@@ -62,7 +62,7 @@ const TeamsChannelItem = ({ room, mainRoom, onClickView, reload }: TeamsChannelI
 				<Box display='inline-flex' alignItems='center'>
 					{roomCoordinator.getRoomName(room.t, room)}{' '}
 					{room.teamDefault ? (
-						<Box mi={4}>
+						<Box marginInline={4}>
 							<Tag>{t('Team_Auto-join')}</Tag>
 						</Box>
 					) : (

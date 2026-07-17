@@ -88,7 +88,7 @@ const CannedResponseEdit = ({ cannedResponseData, onDelete }: CannedResponseEdit
 			</PageHeader>
 			<PageScrollableContentWithShadow>
 				<FormProvider {...methods}>
-					<Box id={formId} onSubmit={handleSubmit(handleSave)} w='full' alignSelf='center' maxWidth='x600' is='form' autoComplete='off'>
+					<Box id={formId} onSubmit={handleSubmit(handleSave)} width='full' alignSelf='center' maxWidth='x600' is='form' autoComplete='off'>
 						<CannedResponseForm />
 					</Box>
 				</FormProvider>
