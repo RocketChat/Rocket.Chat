@@ -425,7 +425,7 @@ const saveDraftBodySchema = ajv.compile<{ rid: IRoom['_id']; draft: string; tmid
 	properties: {
 		rid: { type: 'string', minLength: 1 },
 		draft: { type: 'string' },
-		tmid: { type: 'string', minLength: 1, nullable: true },
+		tmid: { type: 'string', minLength: 1 },
 	},
 	required: ['rid', 'draft'],
 	additionalProperties: false,
