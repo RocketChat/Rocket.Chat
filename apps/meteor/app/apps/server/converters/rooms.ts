@@ -1,32 +1,43 @@
+import type { IAppRoomsConverter, IAppServerOrchestrator, IAppsRoom, IAppsLivechatRoom, IAppsRoomRaw } from '@rocket.chat/apps';
 import { secureFieldsMapper } from '@rocket.chat/apps/dist/lib/SecureFields';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Rooms, LivechatDepartment, Users, LivechatContacts } from '@rocket.chat/models';
 
 import { transformMappedData } from './transformMappedData';
 
-export class AppRoomsConverter {
-	constructor(orch) {
+// The stored room documents carry many optional/livechat-only fields that are not part of the base
+// `IRoom` union. The legacy converter accessed them dynamically; until this converter is migrated to
+// a codec we treat the transform inputs as loosely-typed records to preserve that behaviour verbatim.
+type RoomData = Record<string, any>;
+
+export class AppRoomsConverter implements IAppRoomsConverter {
+	constructor(protected readonly orch: IAppServerOrchestrator) {
 		this.orch = orch;
 	}
 
-	async convertById(roomId) {
+	async convertById(roomId: IRoom['_id']): Promise<IAppsRoom | undefined> {
 		const room = await Rooms.findOneById(roomId);
 
 		return this.convertRoom(room);
 	}
 
-	async convertByName(roomName) {
-		const room = await Rooms.findOneByName(roomName);
+	async convertByName(roomName: IRoom['name']): Promise<IAppsRoom | undefined> {
+		const room = await Rooms.findOneByName(roomName as string);
 
 		return this.convertRoom(room);
 	}
 
-	convertRoomRaw(room) {
+	convertRoomRaw(room: IRoom): Promise<IAppsRoomRaw>;
+
+	convertRoomRaw(room: IRoom | undefined | null): Promise<IAppsRoomRaw | undefined>;
+
+	convertRoomRaw(room: IRoom | undefined | null): Promise<IAppsRoomRaw | undefined> {
 		if (!room) {
-			return undefined;
+			return Promise.resolve(undefined);
 		}
 
-		const mapUserLookup = (user) =>
+		const mapUserLookup = (user: any) =>
 			user && {
 				_id: user._id ?? user.id,
 				...(user.username && { username: user.username }),
@@ -61,7 +72,7 @@ export class AppRoomsConverter {
 			parentRoomId: 'prid',
 			isFederated: 'federated',
 			federation: 'federation',
-			visitor: (data) => {
+			visitor: (data: RoomData) => {
 				const { v } = data;
 				if (!v) {
 					return undefined;
@@ -76,17 +87,17 @@ export class AppRoomsConverter {
 					...rest,
 				};
 			},
-			displaySystemMessages: (data) => {
+			displaySystemMessages: (data: RoomData) => {
 				const { sysMes } = data;
 				delete data.sysMes;
 				return typeof sysMes === 'undefined' ? true : sysMes;
 			},
-			type: (data) => {
+			type: (data: RoomData) => {
 				const result = this._convertTypeToApp(data.t);
 				delete data.t;
 				return result;
 			},
-			creator: (data) => {
+			creator: (data: RoomData) => {
 				if (!data.u) {
 					return undefined;
 				}
@@ -94,7 +105,7 @@ export class AppRoomsConverter {
 				delete data.u;
 				return creator;
 			},
-			closedBy: (data) => {
+			closedBy: (data: RoomData) => {
 				if (!data.closedBy) {
 					return undefined;
 				}
@@ -102,7 +113,7 @@ export class AppRoomsConverter {
 				delete data.closedBy;
 				return mapUserLookup(closedBy);
 			},
-			servedBy: (data) => {
+			servedBy: (data: RoomData) => {
 				if (!data.servedBy) {
 					return undefined;
 				}
@@ -110,7 +121,7 @@ export class AppRoomsConverter {
 				delete data.servedBy;
 				return mapUserLookup(servedBy);
 			},
-			responseBy: (data) => {
+			responseBy: (data: RoomData) => {
 				if (!data.responseBy) {
 					return undefined;
 				}
@@ -118,12 +129,12 @@ export class AppRoomsConverter {
 				delete data.responseBy;
 				return mapUserLookup(responseBy);
 			},
-		};
+		} as const;
 
-		return transformMappedData(room, map);
+		return transformMappedData(room, map) as unknown as Promise<IAppsRoomRaw>;
 	}
 
-	async __getCreator(user) {
+	async __getCreator(user: string | undefined) {
 		if (!user) {
 			return;
 		}
@@ -140,7 +151,7 @@ export class AppRoomsConverter {
 		};
 	}
 
-	async __getVisitor({ visitor: roomVisitor, visitorChannelInfo }) {
+	async __getVisitor({ visitor: roomVisitor, visitorChannelInfo }: any) {
 		if (!roomVisitor) {
 			return;
 		}
@@ -150,7 +161,7 @@ export class AppRoomsConverter {
 			return;
 		}
 
-		const { lastMessageTs, phone } = visitorChannelInfo;
+		const { lastMessageTs, phone } = visitorChannelInfo || {};
 
 		return {
 			_id: visitor._id,
@@ -163,7 +174,7 @@ export class AppRoomsConverter {
 		};
 	}
 
-	async __getUserIdAndUsername(userObj) {
+	async __getUserIdAndUsername(userObj: any) {
 		if (!userObj?.id) {
 			return;
 		}
@@ -179,7 +190,7 @@ export class AppRoomsConverter {
 		};
 	}
 
-	async __getRoomCloser(room, v) {
+	async __getRoomCloser(room: any, v: any) {
 		if (!room.closedBy) {
 			return;
 		}
@@ -205,7 +216,7 @@ export class AppRoomsConverter {
 	}
 
 	// TODO do we really need this?
-	async __getContactId({ contact }) {
+	async __getContactId({ contact }: any) {
 		if (!contact?._id) {
 			return;
 		}
@@ -214,7 +225,7 @@ export class AppRoomsConverter {
 	}
 
 	// TODO do we really need this?
-	async __getDepartment({ department }) {
+	async __getDepartment({ department }: any) {
 		if (!department) {
 			return;
 		}
@@ -222,7 +233,15 @@ export class AppRoomsConverter {
 		return dept?._id;
 	}
 
-	async convertAppRoom(room, isPartial = false) {
+	async convertAppRoom(room: undefined | null): Promise<undefined>;
+
+	async convertAppRoom(room: IAppsRoom): Promise<IRoom>;
+
+	async convertAppRoom(room: IAppsRoom, isPartial: boolean): Promise<Partial<IRoom>>;
+
+	async convertAppRoom(room: IAppsRoom | undefined | null, isPartial?: boolean): Promise<Partial<IRoom> | undefined>;
+
+	async convertAppRoom(room: any, isPartial = false): Promise<Partial<IRoom> | undefined> {
 		if (!room) {
 			return undefined;
 		}
@@ -279,12 +298,18 @@ export class AppRoomsConverter {
 			Object.assign(newRoom, room._unmappedProperties_);
 		}
 
-		return newRoom;
+		return newRoom as unknown as Partial<IRoom>;
 	}
 
-	async convertRoom(originalRoom) {
+	convertRoom(originalRoom: undefined | null): Promise<undefined>;
+
+	convertRoom(originalRoom: IRoom): Promise<IAppsRoom | IAppsLivechatRoom>;
+
+	convertRoom(originalRoom: IRoom | undefined | null): Promise<IAppsRoom | IAppsLivechatRoom | undefined>;
+
+	convertRoom(originalRoom: IRoom | undefined | null): Promise<IAppsRoom | IAppsLivechatRoom | undefined> {
 		if (!originalRoom) {
-			return undefined;
+			return Promise.resolve(undefined);
 		}
 
 		const map = {
@@ -310,17 +335,17 @@ export class AppRoomsConverter {
 			isTeamMain: 'teamMain',
 			isFederated: 'federated',
 			federation: 'federation',
-			isDefault: (room) => {
+			isDefault: (room: RoomData) => {
 				const result = !!room.default;
 				delete room.default;
 				return result;
 			},
-			isReadOnly: (room) => {
+			isReadOnly: (room: RoomData) => {
 				const result = !!room.ro;
 				delete room.ro;
 				return result;
 			},
-			displaySystemMessages: (room) => {
+			displaySystemMessages: (room: RoomData) => {
 				const { sysMes } = room;
 
 				if (typeof sysMes === 'undefined') {
@@ -330,12 +355,12 @@ export class AppRoomsConverter {
 				delete room.sysMes;
 				return sysMes;
 			},
-			type: (room) => {
+			type: (room: RoomData) => {
 				const result = this._convertTypeToApp(room.t);
 				delete room.t;
 				return result;
 			},
-			creator: async (room) => {
+			creator: async (room: RoomData) => {
 				const { u } = room;
 
 				if (!u) {
@@ -346,7 +371,7 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('users').convertById(u._id);
 			},
-			visitor: (room) => {
+			visitor: (room: RoomData) => {
 				const { v } = room;
 
 				if (!v) {
@@ -355,7 +380,7 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('visitors').convertById(v._id);
 			},
-			contact: (room) => {
+			contact: (room: RoomData) => {
 				const { contactId } = room;
 
 				if (!contactId) {
@@ -370,7 +395,7 @@ export class AppRoomsConverter {
 			// let's call X and Y. Then if the contact sends a message using X phone number,
 			// then room.v.phoneNo would be X and correspondingly we'll store the timestamp of
 			// the last message from this visitor from X phone no on room.v.lastMessageTs
-			visitorChannelInfo: (room) => {
+			visitorChannelInfo: (room: RoomData) => {
 				const { v } = room;
 
 				if (!v) {
@@ -384,7 +409,7 @@ export class AppRoomsConverter {
 					...(lastMessageTs && { lastMessageTs }),
 				};
 			},
-			department: async (room) => {
+			department: async (room: RoomData) => {
 				const { departmentId } = room;
 
 				if (!departmentId) {
@@ -395,7 +420,7 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('departments').convertById(departmentId);
 			},
-			closedBy: async (room) => {
+			closedBy: async (room: RoomData) => {
 				const { closedBy } = room;
 
 				if (!closedBy) {
@@ -403,13 +428,13 @@ export class AppRoomsConverter {
 				}
 
 				delete room.closedBy;
-				if (originalRoom.closer === 'user') {
+				if ((originalRoom as RoomData).closer === 'user') {
 					return this.orch.getConverters().get('users').convertById(closedBy._id);
 				}
 
 				return this.orch.getConverters().get('visitors').convertById(closedBy._id);
 			},
-			servedBy: async (room) => {
+			servedBy: async (room: RoomData) => {
 				const { servedBy } = room;
 
 				if (!servedBy) {
@@ -420,7 +445,7 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('users').convertById(servedBy._id);
 			},
-			responseBy: async (room) => {
+			responseBy: async (room: RoomData) => {
 				const { responseBy } = room;
 
 				if (!responseBy) {
@@ -431,7 +456,7 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('users').convertById(responseBy._id);
 			},
-			parentRoom: async (room) => {
+			parentRoom: async (room: RoomData) => {
 				const { prid } = room;
 
 				if (!prid) {
@@ -442,7 +467,7 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('rooms').convertById(prid);
 			},
-			...secureFieldsMapper((room) => {
+			...secureFieldsMapper((room: RoomData) => {
 				if (!room.abacAttributes) {
 					return undefined;
 				}
@@ -458,12 +483,12 @@ export class AppRoomsConverter {
 				delete room.abacAttributes;
 				return value;
 			}),
-		};
+		} as const;
 
-		return transformMappedData(originalRoom, map);
+		return transformMappedData(originalRoom, map) as unknown as Promise<IAppsRoom | IAppsLivechatRoom>;
 	}
 
-	_convertTypeToApp(typeChar) {
+	_convertTypeToApp(typeChar: IRoom['t']): RoomType | IRoom['t'] {
 		switch (typeChar) {
 			case 'c':
 				return RoomType.CHANNEL;
