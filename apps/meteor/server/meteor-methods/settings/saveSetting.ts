@@ -9,6 +9,7 @@ import { twoFactorRequired } from '../../lib/2fa/twoFactorRequired';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../lib/authorization/hasPermission';
 import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { notifyOnSettingChanged } from '../../lib/notifyListener';
+import { SettingValidationError, validateSettingRules } from '../../lib/settingValidationRules';
 import { disableCustomScripts } from '../../lib/shared/disableCustomScripts';
 import { updateAuditedByUser } from '../../settings/lib/auditedSettingUpdates';
 
@@ -67,6 +68,15 @@ Meteor.methods<ServerMethods>({
 			default:
 				check(value, String);
 				break;
+		}
+
+		try {
+			validateSettingRules([{ _id, value }]);
+		} catch (error) {
+			if (error instanceof SettingValidationError) {
+				throw new Meteor.Error('error-setting-validation-failed', error.message);
+			}
+			throw error;
 		}
 
 		const auditSettingOperation = updateAuditedByUser({
