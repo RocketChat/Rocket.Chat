@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { LegacyRoomManager } from '../../../app/ui-utils/client';
 import { UiTextContext } from '../../../definition/IRoomTypeConfig';
+import LeaveRoomWarning from '../../components/LeaveRoomWarning';
 import WarningModal from '../../components/WarningModal';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
@@ -55,14 +56,11 @@ export const useLeaveRoomAction = ({ rid, type, name, roomOpen }: LeaveRoomProps
 		setModal(
 			<WarningModal
 				text={
-					<>
-						{t(warnText as TranslationKey, { roomName: name })}
-						{subscription?.encrypted && (
-							<Box is='p' color='status-font-on-danger' mbs={16}>
-								{t('E2E_Leave_Room_Warning')}
-							</Box>
-						)}
-					</>
+					<LeaveRoomWarning
+						name={name}
+						warnText={warnText as TranslationKey}
+						isEncrypted={!!subscription?.encrypted}
+					/>
 				}
 				confirmText={t('Leave_room')}
 				close={() => setModal(null)}
