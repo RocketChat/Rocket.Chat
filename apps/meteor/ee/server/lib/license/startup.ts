@@ -8,6 +8,7 @@ import moment from 'moment';
 import { getAppCount } from './lib/getAppCount';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { syncWorkspace } from '../../../../server/lib/cloud/syncWorkspace';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { notifyOnSettingChangedById } from '../../../../server/lib/notifyListener';
 import { settings } from '../../../../server/settings';
 
@@ -124,6 +125,15 @@ export const startLicense = async () => {
 					await applyLicense(process.env.ROCKETCHAT_LICENSE, true);
 				}
 			}
+
+			License.onInstall(() => {
+				if (License.hasOfflineLicense()) {
+					// startup level so it is visible at the default Log_Level, like 'License installed'
+					SystemLogger.startup(
+						'Offline license detected: outbound connections to Rocket.Chat Cloud services and the Rocket.Chat Push Gateway are disabled',
+					);
+				}
+			});
 
 			// After the current license is already loaded, watch the setting value to react to new licenses being applied.
 			settings.change<string>('Enterprise_License', (license) => applyLicenseOrRemove(license, true));

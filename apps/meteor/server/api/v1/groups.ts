@@ -106,7 +106,7 @@ async function findPrivateGroupByIdOrName({
 }> {
 	const room = await getRoomFromParams(params);
 
-	const user = await Users.findOneById(userId, { projections: { username: 1 } });
+	const user = await Users.findOneById(userId, { projection: { username: 1, roles: 1, abacAttributes: 1 } });
 
 	if (!room || !user || !(await canAccessRoomAsync(room, user))) {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');

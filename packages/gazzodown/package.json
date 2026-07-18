@@ -24,14 +24,13 @@
 		"date-fns": "~4.1.0",
 		"dompurify": "~3.4.7",
 		"highlight.js": "11.8.0",
-		"react-error-boundary": "~6.1.2",
-		"react-stately": "~3.17.0"
+		"react-error-boundary": "~6.1.2"
 	},
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/css-in-js": "^0.33.0",
 		"@rocket.chat/emitter": "^0.33.0",
-		"@rocket.chat/fuselage": "^0.82.0",
+		"@rocket.chat/fuselage": "^0.83.0",
 		"@rocket.chat/fuselage-hooks": "~0.43.0",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
 		"@rocket.chat/icons": "^0.48.0",
