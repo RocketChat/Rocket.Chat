@@ -1,7 +1,6 @@
 import type { BrowserContext } from '@playwright/test';
 
 import { createFakeVisitor } from '../../mocks/data';
-import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
@@ -14,9 +13,7 @@ const secondVisitor = createFakeVisitor();
 
 test.use({ storageState: Users.user1.state });
 
-test.describe('OC - Livechat - Queue Management', () => {
-	test.skip(!IS_EE, 'Enterprise Only');
-
+test.describe('OC - Livechat - Queue Management', { tag: '@ee' }, () => {
 	let poHomeOmnichannel: HomeOmnichannel;
 	let poLiveChat: OmnichannelLiveChat;
 	let liveChatContext: BrowserContext;

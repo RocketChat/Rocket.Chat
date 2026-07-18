@@ -1,13 +1,11 @@
-import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLivechatAppearance } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.admin.state });
 
-test.describe.serial('OC - Livechat Appearance - EE', () => {
+test.describe.serial('OC - Livechat Appearance - EE', { tag: '@ee' }, () => {
 	let poLivechatAppearance: OmnichannelLivechatAppearance;
-	test.skip(!IS_EE, 'Enterprise Only');
 
 	test.beforeEach(async ({ page }) => {
 		poLivechatAppearance = new OmnichannelLivechatAppearance(page);

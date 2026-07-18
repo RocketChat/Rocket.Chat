@@ -1,7 +1,6 @@
 import type { Page } from '@playwright/test';
 
 import { createFakeVisitor } from '../../mocks/data';
-import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
@@ -14,14 +13,12 @@ const visitor = createFakeVisitor();
 
 test.use({ storageState: Users.user1.state });
 
-test.describe('OC - Livechat - Read Receipts', () => {
+test.describe('OC - Livechat - Read Receipts', { tag: '@ee' }, () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let poHomeOmnichannel: HomeOmnichannel;
 	let livechatPage: Page;
 	let agentPage: Page;
 	let agent: Awaited<ReturnType<typeof createAgent>>;
-
-	test.skip(!IS_EE, 'Enterprise Only');
 
 	test.beforeAll(async ({ api, browser }) => {
 		agent = await createAgent(api, 'user1');

@@ -1,16 +1,13 @@
 import type { Page } from '@playwright/test';
 
 import { createFakeVisitor } from '../../mocks/data';
-import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
 import { OmnichannelLiveChat } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
 
-test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
-	test.skip(!IS_EE, 'Enterprise Only');
-
+test.describe('omnichannel-auto-transfer-unanswered-chat', { tag: '@ee' }, () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let newVisitor: { email: string; name: string };
 

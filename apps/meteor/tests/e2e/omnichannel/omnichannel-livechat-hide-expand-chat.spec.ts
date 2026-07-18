@@ -1,15 +1,12 @@
-import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, OmnichannelLivechatAppearance } from '../page-objects/omnichannel';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { test, expect } from '../utils/test';
 
-test.skip(!IS_EE, 'Enterprise Only');
-
 test.use({ storageState: Users.admin.state });
 
-test.describe('OC - Livechat - Hide "Expand chat"', async () => {
+test.describe('OC - Livechat - Hide "Expand chat"', { tag: '@ee' }, async () => {
 	let agent: Awaited<ReturnType<typeof createAgent>>;
 	let poLiveChat: OmnichannelLiveChat;
 	let poLivechatAppearance: OmnichannelLivechatAppearance;

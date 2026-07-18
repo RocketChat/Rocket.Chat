@@ -1,5 +1,4 @@
 import { createFakeVisitor } from '../../mocks/data';
-import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
 import { createConversation } from '../utils/omnichannel/rooms';
@@ -10,11 +9,9 @@ const visitor = createFakeVisitor();
 const getPrioritySystemMessage = (username: string, priority: string) =>
 	`Priority changed: ${username} changed the priority to ${priority}`;
 
-test.skip(!IS_EE, 'Omnichannel Priorities > Enterprise Only');
-
 test.use({ storageState: Users.user1.state });
 
-test.describe.serial('OC - Priorities [Sidebar]', () => {
+test.describe.serial('OC - Priorities [Sidebar]', { tag: '@ee' }, () => {
 	let poHomeChannel: HomeOmnichannel;
 
 	test.beforeAll(async ({ api }) => {

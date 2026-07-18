@@ -1,6 +1,5 @@
 import type { Page } from 'playwright-core';
 
-import { IS_EE } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import injectInitialData from './fixtures/inject-initial-data';
 import { Users } from './fixtures/userStates';
@@ -8,8 +7,7 @@ import { HomeChannel, Login, Registration } from './page-objects';
 import { AdminDeviceManagement } from './page-objects/admin-device-management';
 import { test, expect } from './utils/test';
 
-test.describe('Admin Device Management Page', () => {
-	test.skip(!IS_EE);
+test.describe('Admin Device Management Page', { tag: '@ee' }, () => {
 	test.use({ storageState: Users.admin.state });
 
 	let page: Page;
@@ -110,8 +108,7 @@ test.describe('Admin Device Management Page', () => {
 	});
 });
 
-test.describe('Admin Device Management Page - unauthorized access', () => {
-	test.skip(!IS_EE);
+test.describe('Admin Device Management Page - unauthorized access', { tag: '@ee' }, () => {
 	test.use({ storageState: Users.user2.state });
 
 	test('should not access device-management when user has no view-device-management permission', async ({ page }) => {

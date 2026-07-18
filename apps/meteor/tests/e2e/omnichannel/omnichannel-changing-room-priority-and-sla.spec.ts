@@ -1,7 +1,7 @@
 import type { Page } from '@playwright/test';
 
 import { createFakeVisitor } from '../../mocks/data';
-import { ADMIN_CREDENTIALS, IS_EE } from '../config/constants';
+import { ADMIN_CREDENTIALS } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
@@ -21,9 +21,7 @@ const getRoomId = (page: Page): string => {
 	return rid;
 };
 
-test.describe.serial('omnichannel-changing-room-priority-and-sla', () => {
-	test.skip(!IS_EE, 'Enterprise Only');
-
+test.describe.serial('omnichannel-changing-room-priority-and-sla', { tag: '@ee' }, () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let newVisitor: { email: string; name: string };
 

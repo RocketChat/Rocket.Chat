@@ -1,6 +1,5 @@
 import type { Page } from '@playwright/test';
 
-import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { expect, test } from './utils/test';
 
@@ -79,9 +78,7 @@ test.describe.serial('homepage', () => {
 				});
 			});
 
-			test.describe('enterprise edition', () => {
-				test.skip(!IS_EE, 'Enterprise Only');
-
+			test.describe('enterprise edition', { tag: '@ee' }, () => {
 				test.beforeAll(async ({ api }) => {
 					await expect((await api.post('/settings/Layout_Home_Body', { value: 'Hello admin' })).status()).toBe(200);
 					await expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: true })).status()).toBe(200);
@@ -189,9 +186,7 @@ test.describe.serial('homepage', () => {
 				await expect(regularUserPage.locator('div >> text="Hello"')).toBeVisible();
 			});
 
-			test.describe('enterprise edition', () => {
-				test.skip(!IS_EE, 'Enterprise Only');
-
+			test.describe('enterprise edition', { tag: '@ee' }, () => {
 				test.beforeAll(async ({ api }) => {
 					expect((await api.post('/settings/Layout_Custom_Body_Only', { value: true })).status()).toBe(200);
 				});

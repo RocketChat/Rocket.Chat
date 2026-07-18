@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
 import { setSettingValueById } from '../utils';
@@ -21,9 +20,7 @@ const ROOM_D = faker.person.fullName();
 
 test.use({ storageState: Users.user3.state });
 
-test.describe('OC - Monitor Role', () => {
-	test.skip(!IS_EE, 'Enterprise Edition Only');
-
+test.describe('OC - Monitor Role', { tag: '@ee' }, () => {
 	let departments: Awaited<ReturnType<typeof createDepartment>>[];
 	let conversations: Awaited<ReturnType<typeof createConversation>>[];
 	let agents: Awaited<ReturnType<typeof createAgent>>[];

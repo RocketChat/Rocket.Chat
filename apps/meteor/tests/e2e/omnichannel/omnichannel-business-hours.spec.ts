@@ -1,6 +1,5 @@
 import type { Page } from '@playwright/test';
 
-import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelBusinessHours } from '../page-objects/omnichannel';
 import { setSettingValueById } from '../utils';
@@ -12,9 +11,7 @@ import { test, expect } from '../utils/test';
 test.use({ storageState: Users.admin.state });
 
 // TODO: These tests needs to be refactored to be independent from each other
-test.describe('OC - Business Hours', () => {
-	test.skip(!IS_EE, 'OC - Manage Business Hours > Enterprise Edition Only');
-
+test.describe('OC - Business Hours', { tag: '@ee' }, () => {
 	let poOmnichannelBusinessHours: OmnichannelBusinessHours;
 	let department: Awaited<ReturnType<typeof createDepartment>>;
 	let department2: Awaited<ReturnType<typeof createDepartment>>;

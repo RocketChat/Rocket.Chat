@@ -1,6 +1,5 @@
 import type { Page } from '@playwright/test';
 
-import { IS_EE } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
@@ -9,11 +8,9 @@ import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 
-test.describe.serial('read-receipts', () => {
+test.describe.serial('read-receipts', { tag: '@ee' }, () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
-
-	test.skip(!IS_EE, 'Enterprise Only');
 
 	test.beforeAll(async ({ api }) => {
 		targetChannel = await createTargetChannel(api);

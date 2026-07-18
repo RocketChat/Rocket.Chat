@@ -1,4 +1,3 @@
-import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
@@ -12,8 +11,7 @@ declare const window: Window & {
 };
 
 test.use({ storageState: Users.admin.state });
-test.describe('OC - Livechat Triggers - SetDepartment', () => {
-	test.skip(!IS_EE, 'Enterprise Only');
+test.describe('OC - Livechat Triggers - SetDepartment', { tag: '@ee' }, () => {
 	let poLiveChat: OmnichannelLiveChatEmbedded;
 	let departments: Awaited<ReturnType<typeof createDepartment>>[];
 	let departmentA: Awaited<ReturnType<typeof createDepartment>>['data'];

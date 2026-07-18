@@ -1,4 +1,3 @@
-import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeChannel, AccountSecurity } from './page-objects';
 import { createCustomRole, deleteCustomRole } from './utils/custom-role';
@@ -7,9 +6,7 @@ import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 
-test.describe('enforce two factor authentication', () => {
-	test.skip(!IS_EE, 'Enterprise Only');
-
+test.describe('enforce two factor authentication', { tag: '@ee' }, () => {
 	let poHomeChannel: HomeChannel;
 	let poAccountSecurity: AccountSecurity;
 	let customRoleId = '';

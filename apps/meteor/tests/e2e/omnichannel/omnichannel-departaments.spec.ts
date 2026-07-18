@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelDepartments } from '../page-objects/omnichannel';
 import { createAgent } from '../utils/omnichannel/agents';
@@ -16,9 +15,7 @@ const ERROR = {
 
 test.use({ storageState: Users.admin.state });
 
-test.describe('OC - Manage Departments', () => {
-	test.skip(!IS_EE, 'Enterprise Edition Only');
-
+test.describe('OC - Manage Departments', { tag: '@ee' }, () => {
 	let poOmnichannelDepartments: OmnichannelDepartments;
 	let agent: Awaited<ReturnType<typeof createAgent>>;
 

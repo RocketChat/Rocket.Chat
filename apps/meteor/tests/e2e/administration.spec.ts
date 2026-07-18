@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 
-import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { AdminUsers, AdminRoles, AdminRooms, AdminThirdPartyLogin, AdminIntegrations } from './page-objects';
 import { ToastMessages } from './page-objects/fragments';
@@ -26,15 +25,13 @@ test.describe.parallel('administration', () => {
 	});
 
 	test.describe('Engagement dashboard', () => {
-		test('Should show upsell modal', async ({ page }) => {
-			test.skip(IS_EE);
+		test('Should show upsell modal', { tag: '@ce' }, async ({ page }) => {
 			await page.goto('/admin/engagement/users');
 
 			await expect(page.locator('role=dialog[name="Engagement dashboard"]')).toBeVisible();
 		});
 
-		test('Should show engagement dashboard', async ({ page }) => {
-			test.skip(!IS_EE);
+		test('Should show engagement dashboard', { tag: '@ee' }, async ({ page }) => {
 			await page.goto('/admin/engagement/users');
 
 			await expect(page.locator('h1 >> text="Engagement"')).toBeVisible();
@@ -42,15 +39,13 @@ test.describe.parallel('administration', () => {
 	});
 
 	test.describe('Device management', () => {
-		test('Should show upsell modal', async ({ page }) => {
-			test.skip(IS_EE);
+		test('Should show upsell modal', { tag: '@ce' }, async ({ page }) => {
 			await page.goto('/admin/device-management');
 
 			await expect(page.locator('role=dialog[name="Device management"]')).toBeVisible();
 		});
 
-		test('Should show device management page', async ({ page }) => {
-			test.skip(!IS_EE);
+		test('Should show device management page', { tag: '@ee' }, async ({ page }) => {
 			await page.goto('/admin/device-management');
 
 			await expect(page.locator('h1 >> text="Device management"')).toBeVisible();
@@ -279,8 +274,7 @@ test.describe.parallel('administration', () => {
 			await page.goto('/admin/permissions');
 		});
 
-		test('expect open upsell modal if not enterprise', async ({ page }) => {
-			test.skip(IS_EE);
+		test('expect open upsell modal if not enterprise', { tag: '@ce' }, async ({ page }) => {
 			await poAdminRoles.btnCreateRole.click();
 			await expect(page.getByRole('dialog', { name: 'Custom roles' })).toBeVisible();
 		});

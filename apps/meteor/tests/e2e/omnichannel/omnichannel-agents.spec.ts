@@ -1,5 +1,4 @@
 import { createFakeDepartment } from '../../mocks/data';
-import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelAgents } from '../page-objects/omnichannel';
 import { setSettingValueById } from '../utils';
@@ -64,9 +63,7 @@ test.describe.serial('OC - Manage Agents', () => {
 		});
 	});
 
-	test('OC - Manage Agents [CE]- Edit and Remove', async () => {
-		test.skip(IS_EE, 'Community Edition Only');
-
+	test('OC - Manage Agents [CE]- Edit and Remove', { tag: '@ce' }, async () => {
 		await poOmnichannelAgents.selectUsername('user1');
 		await poOmnichannelAgents.btnAddAgent.click();
 
@@ -91,9 +88,7 @@ test.describe.serial('OC - Manage Agents', () => {
 		});
 	});
 
-	test('OC - Manage Agents [EE] - Edit ', async () => {
-		test.skip(!IS_EE, 'Enterprise Only');
-
+	test('OC - Manage Agents [EE] - Edit ', { tag: '@ee' }, async () => {
 		await poOmnichannelAgents.selectUsername('user1');
 		await poOmnichannelAgents.btnAddAgent.click();
 

@@ -2,7 +2,6 @@ import { faker } from '@faker-js/faker/locale/af_ZA';
 import type { Page } from '@playwright/test';
 
 import { createFakeVisitor } from '../../mocks/data';
-import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
@@ -231,9 +230,8 @@ test.describe('OC - Livechat API', () => {
 		});
 	});
 
-	test.describe('Complex Widget Interactions', () => {
+	test.describe('Complex Widget Interactions', { tag: '@ee' }, () => {
 		// Needs Departments to test this, so needs an EE license for multiple deps
-		test.skip(!IS_EE, 'Enterprise Only');
 		// Tests that requires interaction from an agent or more
 		let poAuxContext: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 		let poLiveChat: OmnichannelLiveChatEmbedded;

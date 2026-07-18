@@ -1,6 +1,5 @@
 import type { Page } from '@playwright/test';
 
-import { IS_EE } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import type { IUserState } from './fixtures/userStates';
 import { Users } from './fixtures/userStates';
@@ -12,7 +11,7 @@ import { createTestUser, loginTestUser } from './utils/user-helpers';
 
 test.use({ storageState: Users.admin.state });
 
-test.describe.serial('read-receipts-deactivated-users', () => {
+test.describe.serial('read-receipts-deactivated-users', { tag: '@ee' }, () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
 	let user1Context: { page: Page; poHomeChannel: HomeChannel } | undefined;
@@ -21,8 +20,6 @@ test.describe.serial('read-receipts-deactivated-users', () => {
 	let testUser2: ITestUser;
 	let testUser1State: IUserState;
 	let testUser2State: IUserState;
-
-	test.skip(!IS_EE, 'Enterprise Only');
 
 	test.beforeAll(async ({ api }) => {
 		[testUser1, testUser2] = await Promise.all([createTestUser(api), createTestUser(api)]);

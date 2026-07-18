@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelDepartments } from '../page-objects/omnichannel';
 import { setSettingValueById } from '../utils';
@@ -15,9 +14,7 @@ const MONITOR = 'user3';
 
 test.use({ storageState: Users.user3.state });
 
-test.describe.serial('OC - Monitor Role', () => {
-	test.skip(!IS_EE, 'Enterprise Edition Only');
-
+test.describe.serial('OC - Monitor Role', { tag: '@ee' }, () => {
 	let departments: Awaited<ReturnType<typeof createDepartment>>[];
 	let agents: Awaited<ReturnType<typeof createAgent>>[];
 	let monitor: Awaited<ReturnType<typeof createMonitor>>;

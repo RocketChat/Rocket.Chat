@@ -1,5 +1,4 @@
 import { createFakeVisitor } from '../../mocks/data';
-import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { Navbar } from '../page-objects/fragments';
 import { OmnichannelContactCenterChats } from '../page-objects/omnichannel';
@@ -19,11 +18,9 @@ const visitorA = createFakeVisitor().name;
 const visitorB = createFakeVisitor().name;
 const visitorC = createFakeVisitor().name;
 
-test.skip(!IS_EE, 'OC - Contact center Filters > Enterprise Only');
-
 test.use({ storageState: Users.admin.state });
 
-test.describe('OC - Contact Center', async () => {
+test.describe('OC - Contact Center', { tag: '@ee' }, async () => {
 	let departments: Awaited<ReturnType<typeof createDepartment>>[];
 	let conversations: Awaited<ReturnType<typeof createConversation>>[];
 	let agents: Awaited<ReturnType<typeof createAgent>>[];

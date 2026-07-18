@@ -1,6 +1,5 @@
 import type { Route } from '@playwright/test';
 
-import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelReports } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
@@ -13,11 +12,9 @@ const ENDPOINTS = {
 	BY_AGENT: /\/v1\/livechat\/analytics\/dashboards\/conversations-by-agent/,
 };
 
-test.skip(!IS_EE, 'Omnichannel Reports > Enterprise Only');
-
 test.use({ storageState: Users.user1.state });
 
-test.describe.serial('Omnichannel Reports', () => {
+test.describe.serial('Omnichannel Reports', { tag: '@ee' }, () => {
 	let poReports: OmnichannelReports;
 
 	test.beforeAll(async ({ api }) => {

@@ -1,5 +1,4 @@
 import { createFakeVisitor } from '../../mocks/data';
-import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
 import { setSettingValueById } from '../utils';
@@ -14,9 +13,7 @@ const visitorB = createFakeVisitor();
 
 test.use({ storageState: Users.user1.state });
 
-test.describe('OC - Tags Visibility', () => {
-	test.skip(!IS_EE, 'OC - Tags Visibility > Enterprise Edition Only');
-
+test.describe('OC - Tags Visibility', { tag: '@ee' }, () => {
 	let poOmnichannel: HomeOmnichannel;
 	let conversations: Awaited<ReturnType<typeof createConversation>>[] = [];
 	let departmentA: Awaited<ReturnType<typeof createDepartment>>;

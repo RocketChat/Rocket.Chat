@@ -1,6 +1,5 @@
 import type { Page } from '@playwright/test';
 
-import { IS_EE } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel, AccountProfile } from './page-objects';
@@ -8,10 +7,8 @@ import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.user1.state });
 
-test.describe('video conference ringing', () => {
+test.describe('video conference ringing', { tag: '@ee' }, () => {
 	let poHomeChannel: HomeChannel;
-
-	test.skip(!IS_EE, 'Enterprise Only');
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
