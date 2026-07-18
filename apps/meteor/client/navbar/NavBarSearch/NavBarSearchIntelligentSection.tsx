@@ -1,4 +1,4 @@
-import { serializeSearchQuery, type NavBarSearchFormValues } from '@rocket.chat/ai-search';
+import { emptySearchFilters, serializeSearchQuery, type NavBarSearchFormValues } from '@rocket.chat/ai-search';
 import { Box, Icon, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
 import type { AISearchResult } from '@rocket.chat/rest-typings';
 import { useRouter } from '@rocket.chat/ui-contexts';
@@ -19,7 +19,7 @@ const NavBarSearchIntelligentSection = ({ items, onSelect, onClose }: NavBarSear
 	const { t } = useTranslation();
 	const router = useRouter();
 	const { watch } = useFormContext<NavBarSearchFormValues>();
-	const { filterText, appliedFilters } = watch();
+	const { filterText = '', appliedFilters = emptySearchFilters() } = watch();
 
 	if (!items.length) {
 		return null;
