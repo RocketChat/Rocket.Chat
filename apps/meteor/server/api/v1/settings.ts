@@ -26,6 +26,7 @@ import _ from 'underscore';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../lib/notifyListener';
+import { SettingValidationError, validateSettingRules } from '../../lib/settingValidationRules';
 import { disableCustomScripts } from '../../lib/shared/disableCustomScripts';
 import { addOAuthServiceMethod } from '../../meteor-methods/auth/addOAuthService';
 import { SettingsEvents, settings } from '../../settings';
@@ -334,12 +335,7 @@ API.v1.post(
 		body: settingsUpdateBodySchema,
 		response: {
 			200: settingByIdPostResponseSchema,
-			400: ajv.compile({
-				type: 'object',
-				properties: { success: { type: 'boolean', enum: [false] } },
-				required: ['success'],
-				additionalProperties: true,
-			}),
+			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 			403: validateForbiddenErrorResponse,
 		},
@@ -393,7 +389,17 @@ API.v1.post(
 		}
 
 		if (isSettingsUpdatePropDefault(bodyParams)) {
+			// TODO(next major): unify both validations into one function with a common API error response
 			checkSettingValueBounds(setting, bodyParams.value);
+
+			try {
+				validateSettingRules([{ _id, value: bodyParams.value }]);
+			} catch (error) {
+				if (error instanceof SettingValidationError) {
+					return API.v1.failure(error.message, 'error-setting-validation-failed');
+				}
+				throw error;
+			}
 
 			const { matchedCount } = await auditSettingOperation(Settings.updateValueNotHiddenById, _id, bodyParams.value);
 
@@ -433,11 +439,18 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		await saveSettingsBulk(this.userId, this.bodyParams.settings, {
-			username: this.user.username ?? '',
-			ip: this.requestIp ?? '',
-			useragent: this.request.headers.get('user-agent') ?? '',
-		});
+		try {
+			await saveSettingsBulk(this.userId, this.bodyParams.settings, {
+				username: this.user.username ?? '',
+				ip: this.requestIp ?? '',
+				useragent: this.request.headers.get('user-agent') ?? '',
+			});
+		} catch (error) {
+			if (error instanceof SettingValidationError) {
+				return API.v1.failure(error.message, 'error-setting-validation-failed');
+			}
+			throw error;
+		}
 
 		return API.v1.success();
 	},

@@ -53,8 +53,8 @@ const ContactInfoHistoryItem = ({ source, lastMessage, verified, onClick }: Cont
 			borderBlockEndColor='stroke-extra-light'
 			borderBlockEndStyle='solid'
 			className={['rcx-box--animated', customClass]}
-			pi={24}
-			pb={12}
+			paddingInline={24}
+			paddingBlock={12}
 			display='flex'
 			flexDirection='column'
 			onClick={onClick}
@@ -63,19 +63,19 @@ const ContactInfoHistoryItem = ({ source, lastMessage, verified, onClick }: Cont
 				<Box display='flex' alignItems='center'>
 					{source && <OmnichannelRoomIcon source={source} size='x18' placement='default' />}
 					{source && (
-						<Box mi={4} fontScale='p2b'>
+						<Box marginInline={4} fontScale='p2b'>
 							{getSourceName(source)}
 						</Box>
 					)}
 					{lastMessage && (
-						<Box mis={4} fontScale='c1'>
+						<Box marginInlineStart={4} fontScale='c1'>
 							{getTimeFromNow(lastMessage.ts)}
 						</Box>
 					)}
 				</Box>
-				<Box mis={4} is='span' onClick={preventPropagation}>
+				<Box marginInlineStart={4} is='span' onClick={preventPropagation}>
 					{hasLicense && verified ? (
-						<Icon title={t('Verified')} mis={4} size='x16' name='success-circle' color='stroke-highlight' />
+						<Icon title={t('Verified')} marginInlineStart={4} size='x16' name='success-circle' color='stroke-highlight' />
 					) : (
 						<IconButton
 							title={t('Unverified')}
@@ -87,7 +87,7 @@ const ContactInfoHistoryItem = ({ source, lastMessage, verified, onClick }: Cont
 				</Box>
 			</Box>
 			{lastMessage?.msg.trim() && (
-				<Box width='full' mbs={8}>
+				<Box width='full' marginBlockStart={8}>
 					<MessageGenericPreview>
 						<MessageGenericPreviewContent>
 							<MessageGenericPreviewTitle>{t('Closing_chat_message')}:</MessageGenericPreviewTitle>

@@ -1896,11 +1896,12 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.findOne(query, options);
 	}
 
-	findOneOpenByVisitorToken(visitorToken: string, options: FindOptions<IOmnichannelRoom> = {}) {
+	findOneOpenByVisitorToken(visitorToken: string, options: FindOptions<IOmnichannelRoom> = {}, extraQuery: Filter<IOmnichannelRoom> = {}) {
 		const query: Filter<IOmnichannelRoom> = {
 			't': 'l',
 			'open': true,
 			'v.token': visitorToken,
+			...extraQuery,
 		};
 
 		return this.findOne(query, options);

@@ -19,7 +19,7 @@ const UnreadMessagesIndicator = ({ count, onJumpButtonClick, onMarkAsReadButtonC
 	const { t } = useTranslation();
 
 	return (
-		<Box className={indicatorStyle} mbs={8}>
+		<Box className={indicatorStyle} marginBlockStart={8}>
 			<Bubble
 				onClick={onJumpButtonClick}
 				onDismiss={onMarkAsReadButtonClick}

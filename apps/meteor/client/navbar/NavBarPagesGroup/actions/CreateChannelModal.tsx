@@ -200,8 +200,8 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 				<ModalTitle id={`${createChannelFormId}-title`}>{t('Create_channel')}</ModalTitle>
 				<ModalClose tabIndex={-1} title={t('Close')} onClick={onClose} />
 			</ModalHeader>
-			<ModalContent mbe={2}>
-				<FieldGroup mbe={24}>
+			<ModalContent marginBlockEnd={2}>
+				<FieldGroup marginBlockEnd={24}>
 					<Field>
 						<FieldLabel required>{t('Name')}</FieldLabel>
 						<FieldRow>

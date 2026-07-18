@@ -152,7 +152,7 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps) {
 							{t('Reset')}
 						</Button>
 					)}
-					<Button primary mie='none' type='submit' flexGrow={1} form={formId}>
+					<Button primary marginInlineEnd='none' type='submit' flexGrow={1} form={formId}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

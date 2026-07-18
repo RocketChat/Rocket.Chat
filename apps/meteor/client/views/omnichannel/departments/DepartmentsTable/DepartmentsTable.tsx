@@ -92,7 +92,7 @@ const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 			>
 				{t('Show_on_registration_page')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='spacer' w={40} />
+			<GenericTableHeaderCell key='spacer' width={40} />
 		</>
 	);
 

@@ -172,6 +172,11 @@ export class MockedLicenseBuilder {
 		return this;
 	}
 
+	public withOffline(offline = true): this {
+		this.information.offline = offline;
+		return this;
+	}
+
 	grantedModules: GrantedModules = [];
 
 	limits: {

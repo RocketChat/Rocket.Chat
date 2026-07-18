@@ -71,7 +71,7 @@ const AddExistingModal = ({ teamId, onClose, reload }: AddExistingModalProps) =>
 				<ModalClose onClick={onClose} />
 			</ModalHeader>
 			<ModalContent>
-				<Field mbe={24}>
+				<Field marginBlockEnd={24}>
 					<FieldLabel>{t('Channels')}</FieldLabel>
 					<Controller
 						control={control}

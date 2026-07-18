@@ -5073,4 +5073,135 @@ describe('[Rooms]', () => {
 				});
 		});
 	});
+
+	describe('/rooms.bannedUsers', () => {
+		let testChannel: IRoom;
+		let bannedUsers: TestUser<IUser>[];
+		let bannedUserIds: string[];
+
+		before(async () => {
+			const result = await createRoom({ type: 'c', name: `banned-users-list-${Date.now()}-${Math.random()}` });
+			testChannel = result.body.channel;
+
+			bannedUsers = await Promise.all([createUser(), createUser(), createUser()]);
+			bannedUserIds = bannedUsers.map((user) => user._id);
+
+			for (const user of bannedUsers) {
+				await request
+					.post(api('channels.invite'))
+					.set(credentials)
+					.send({
+						roomId: testChannel._id,
+						userId: user._id,
+					})
+					.expect(200);
+
+				await request
+					.post(api('rooms.banUser'))
+					.set(credentials)
+					.send({
+						roomId: testChannel._id,
+						userId: user._id,
+					})
+					.expect(200);
+			}
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'c', roomId: testChannel._id });
+			await Promise.all(bannedUsers.map((user) => deleteUser(user)));
+		});
+
+		it('should list every banned user of the room with only the projected fields', async () => {
+			const res = await request
+				.get(api('rooms.bannedUsers'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('total', bannedUsers.length);
+			expect(res.body).to.have.property('count', bannedUsers.length);
+			expect(res.body).to.have.property('offset', 0);
+			expect(res.body.bannedUsers).to.be.an('array').with.lengthOf(bannedUsers.length);
+			expect(res.body.bannedUsers.map((u: IUser) => u._id)).to.have.members(bannedUserIds);
+
+			res.body.bannedUsers.forEach((user: IUser) => {
+				expect(user).to.have.property('_id').that.is.a('string');
+				expect(user).to.have.property('username').that.is.a('string');
+				expect(Object.keys(user)).to.satisfy(
+					(keys: string[]) => keys.every((key) => ['_id', 'username', 'name'].includes(key)),
+					'response should only contain the projected fields (_id, username, name)',
+				);
+			});
+		});
+
+		it('should limit the number of banned users returned when count is provided', async () => {
+			const res = await request
+				.get(api('rooms.bannedUsers'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					count: 2,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('total', bannedUsers.length);
+			expect(res.body).to.have.property('count', 2);
+			expect(res.body).to.have.property('offset', 0);
+			expect(res.body.bannedUsers).to.be.an('array').with.lengthOf(2);
+		});
+
+		it('should skip banned users when offset is provided', async () => {
+			const res = await request
+				.get(api('rooms.bannedUsers'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					offset: 2,
+					count: 2,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('total', bannedUsers.length);
+			expect(res.body).to.have.property('offset', 2);
+			expect(res.body.bannedUsers)
+				.to.be.an('array')
+				.with.lengthOf(bannedUsers.length - 2);
+		});
+
+		it('should paginate through all banned users without overlapping results', async () => {
+			const firstPage = await request
+				.get(api('rooms.bannedUsers'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					count: 2,
+				})
+				.expect(200);
+
+			const secondPage = await request
+				.get(api('rooms.bannedUsers'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					offset: 2,
+					count: 2,
+				})
+				.expect(200);
+
+			const firstPageIds = firstPage.body.bannedUsers.map((u: IUser) => u._id);
+			const secondPageIds = secondPage.body.bannedUsers.map((u: IUser) => u._id);
+
+			expect(firstPageIds.filter((id: string) => secondPageIds.includes(id))).to.be.empty;
+			expect([...firstPageIds, ...secondPageIds]).to.have.members(bannedUserIds);
+		});
+	});
 });

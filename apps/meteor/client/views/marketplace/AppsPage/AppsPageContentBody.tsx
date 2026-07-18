@@ -43,7 +43,7 @@ const AppsPageContentBody = ({
 
 	return (
 		<>
-			<Box display='flex' flexDirection='column' overflow='hidden' height='100%' pi={24}>
+			<Box display='flex' flexDirection='column' overflow='hidden' height='100%' paddingInline={24}>
 				<Box overflowY='scroll' height='100%' ref={scrollableRef}>
 					{isMarketplace && !isFiltered && <FeaturedAppsSections appsListId={appsListId} appsResult={appsResult?.allApps || []} />}
 					<AppsList appsListId={appsListId} apps={appsResult?.items || []} title={isMarketplace ? t('All_Apps') : undefined} />

@@ -156,7 +156,7 @@ const RoomMembers = ({
 					onChange={setText}
 					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
-				<Box w='x144' mis={8}>
+				<Box width='x144' marginInlineStart={8}>
 					<Select
 						aria-controls={isSuccess ? membersListId : undefined}
 						options={options}
@@ -165,28 +165,28 @@ const RoomMembers = ({
 					/>
 				</Box>
 			</ContextualbarSection>
-			<ContextualbarContent p={0} pb={12}>
+			<ContextualbarContent padding={0} paddingBlock={12}>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={members.length} />
 				{isPending && (
-					<Box pi={24} pb={12}>
+					<Box paddingInline={24} paddingBlock={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}
 				{error && (
-					<Box pi={24} pb={12}>
+					<Box paddingInline={24} paddingBlock={12}>
 						<Callout type='danger'>{error.message}</Callout>
 					</Box>
 				)}
 				{isSuccess && (
 					<>
 						{members.length > 0 && (
-							<Box pi={24} pb={12}>
+							<Box paddingInline={24} paddingBlock={12}>
 								<Box is='span' color='hint' fontScale='p2'>
 									{t('Showing_current_of_total', { current: members.length, total })}
 								</Box>
 							</Box>
 						)}
-						<Box id={membersListId} w='full' h='full' overflow='hidden' flexShrink={1}>
+						<Box id={membersListId} width='full' height='full' overflow='hidden' flexShrink={1}>
 							{members.length <= 0 && <ContextualbarEmptyContent title={t('No_members_found')} />}
 							{members.length > 0 && (
 								<VirtualizedScrollbars>

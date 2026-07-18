@@ -34,13 +34,13 @@ const PlanCardPremium = ({ licenseInformation, licenseLimits }: PlanCardProps) =
 			<CardBody flexDirection='column'>
 				{licenseLimits?.activeUsers.max === Infinity && (
 					<Box display='flex' alignItems='center'>
-						<Icon name='lightning' size='x24' mie={12} />
+						<Icon name='lightning' size='x24' marginInlineEnd={12} />
 						{t('Unlimited_seats')}
 					</Box>
 				)}
 				{visualExpiration && (
 					<Box display='flex' alignItems='center'>
-						<Icon name='calendar' size='x24' mie={12} />
+						<Icon name='calendar' size='x24' marginInlineEnd={12} />
 						<span>
 							{isAutoRenew ? (
 								t('Renews_DATE', { date: formatDate(visualExpiration || '') })
@@ -54,7 +54,7 @@ const PlanCardPremium = ({ licenseInformation, licenseLimits }: PlanCardProps) =
 				)}
 				{!isLoading ? (
 					<Box display='flex' alignItems='center'>
-						<Icon name='cloud-plus' size='x24' mie={12} /> {isSelfHosted ? t('Self_managed_hosting') : t('Cloud_hosting')}
+						<Icon name='cloud-plus' size='x24' marginInlineEnd={12} /> {isSelfHosted ? t('Self_managed_hosting') : t('Cloud_hosting')}
 					</Box>
 				) : (
 					<Skeleton />

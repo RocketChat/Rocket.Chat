@@ -1,3 +1,5 @@
+import { License } from '@rocket.chat/license';
+
 import { CloudWorkspaceRegistrationError } from '../../../../lib/errors/CloudWorkspaceRegistrationError';
 import { SystemLogger } from '../../logger/system';
 import { CloudWorkspaceAccessTokenEmptyError, CloudWorkspaceAccessTokenError, isAbortError } from '../getWorkspaceAccessToken';
@@ -12,6 +14,12 @@ import { getCachedSupportedVersionsToken } from '../supportedVersionsToken/suppo
  * @throws {Error} - If there is an unexpected error during sync like a network error
  */
 export async function syncWorkspace() {
+	if (License.hasOfflineLicense()) {
+		SystemLogger.debug({ msg: 'Skipping cloud sync: workspace has an offline license', function: 'syncWorkspace' });
+		await getCachedSupportedVersionsToken.reset();
+		return;
+	}
+
 	try {
 		await announcementSync();
 		await syncCloudData();

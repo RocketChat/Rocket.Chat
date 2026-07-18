@@ -22,7 +22,7 @@ export const PrioritiesTable = ({ priorities, onRowClick, isLoading }: Prioritie
 
 	const headers = (
 		<>
-			<GenericTableHeaderCell key='icon' w='100px'>
+			<GenericTableHeaderCell key='icon' width='100px'>
 				{t('Icon')}
 			</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='name'>{t('Name')}</GenericTableHeaderCell>

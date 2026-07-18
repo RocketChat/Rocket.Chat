@@ -29,6 +29,9 @@ services:
       - Federation_Service_Enabled=true
       - 'Federation_Service_Domain=rc.host'
       - HEAP_USAGE_PERCENT=99
+      # keep server sockets alive longer than traefik's 90s idleConnTimeout so
+      # the proxy always closes pooled conns first and never reuses a dead one
+      - HTTP_SOCKET_TIMEOUT_MS=120000
     depends_on:
       - traefik
       - mongo
@@ -37,7 +40,17 @@ services:
       traefik.http.services.rocketchat.loadbalancer.server.port: 3000
       traefik.http.routers.rocketchat.service: rocketchat
       traefik.http.routers.rocketchat.rule: PathPrefix(`/`)
+      traefik.http.routers.rocketchat.middlewares: test-retry
       traefik.http.middlewares.test-retry.retry.attempts: 4
+      # dedicated route for dynamic-import: buffering coalesces the tiny POST
+      # into a single upstream write, closing the go-transport early-response
+      # race window (response beating the request-write bookkeeping kills the
+      # conn mid body copy); scoped here because suite-wide buffering broke
+      # 404/CORS response semantics
+      traefik.http.routers.rocketchat-dynimport.rule: PathPrefix(`/__meteor__/dynamic-import`)
+      traefik.http.routers.rocketchat-dynimport.service: rocketchat
+      traefik.http.routers.rocketchat-dynimport.middlewares: test-buffer,test-retry
+      traefik.http.middlewares.test-buffer.buffering.retryExpression: IsNetworkError() && Attempts() < 4
     healthcheck:
       interval: 2s
       timeout: 5s
@@ -217,7 +230,6 @@ services:
     image: traefik:v3.6.6
     command:
       - --providers.docker=true
-      - '--serverstransport.maxidleconnsperhost=-1'
     ports:
       - 3000:80
     volumes:

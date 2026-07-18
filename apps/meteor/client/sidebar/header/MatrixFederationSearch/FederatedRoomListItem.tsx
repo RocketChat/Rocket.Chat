@@ -24,8 +24,8 @@ const FederatedRoomListItem = ({
 	const { t } = useTranslation();
 
 	return (
-		<Box mb={16} pi={24} is='li' display='flex' flexDirection='column' w='full' name={canonicalAlias}>
-			<Box display='flex' flexDirection='row' justifyContent='space-between' alignItems='center' mbe={4}>
+		<Box marginBlock={16} paddingInline={24} is='li' display='flex' flexDirection='column' width='full' name={canonicalAlias}>
+			<Box display='flex' flexDirection='row' justifyContent='space-between' alignItems='center' marginBlockEnd={4}>
 				<Box flexGrow={1} flexShrink={1} fontScale='p1' fontWeight='bold' title={name} withTruncatedText>
 					{name}
 				</Box>
@@ -44,15 +44,15 @@ const FederatedRoomListItem = ({
 			</Box>
 
 			{topic && (
-				<Box is='p' fontScale='c1' mb={4} maxHeight='x120' overflow='hidden' withTruncatedText className={[clampLine]}>
+				<Box is='p' fontScale='c1' marginBlock={4} maxHeight='x120' overflow='hidden' withTruncatedText className={[clampLine]}>
 					{topic}
 				</Box>
 			)}
 
-			<Box mbs={4} fontScale='micro' fontWeight='bolder' verticalAlign='top'>
+			<Box marginBlockStart={4} fontScale='micro' fontWeight='bolder' verticalAlign='top'>
 				{canonicalAlias}{' '}
 				<Box color='hint' is='span' verticalAlign='top'>
-					<Icon name='user' size='x12' mbe={2} />
+					<Icon name='user' size='x12' marginBlockEnd={2} />
 					{joinedMembers}
 				</Box>
 			</Box>

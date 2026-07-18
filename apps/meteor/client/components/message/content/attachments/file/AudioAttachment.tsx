@@ -63,12 +63,12 @@ const AudioAttachment = ({
 					borderWidth='default'
 					borderStyle='solid'
 					borderColor='extra-light'
-					bg='tint'
-					pb={12}
-					pie={8}
-					pis={16}
+					backgroundColor='tint'
+					paddingBlock={12}
+					paddingInlineEnd={8}
+					paddingInlineStart={16}
 					borderRadius='x4'
-					w='100%'
+					width='100%'
 					maxWidth='x300'
 				>
 					<AudioPlayerControls
