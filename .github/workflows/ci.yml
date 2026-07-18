@@ -16,7 +16,9 @@ on:
       - '**.md'
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  # merge_group runs group by the merge-group ref so a recreated group cancels the stale run;
+  # push/release runs group by run_id on purpose (never cancel a deploy in progress)
+  group: ${{ github.workflow }}-${{ github.head_ref || (github.event_name == 'merge_group' && github.ref) || github.run_id }}
   cancel-in-progress: true
 
 env:
@@ -155,6 +157,7 @@ jobs:
     name: 🚀 Notify external services - draft
     runs-on: ubuntu-24.04-arm
     needs: [release-versions]
+    if: github.event_name == 'release'
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -195,7 +198,7 @@ jobs:
 
   packages-build:
     name: 📦 Build Packages
-    needs: [release-versions, notify-draft-services]
+    needs: [release-versions]
     runs-on: ubuntu-24.04-arm
     steps:
       - name: Cache build
@@ -327,12 +330,18 @@ jobs:
         type:
           # if running in a PR build with coverage
           - ${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'coverage' || 'production' }}
+        exclude:
+          # when images aren't published (merge queue, fork PRs) only amd64 tars are uploaded
+          # as artifacts, so arm64 builds would be discarded — skip them
+          - arch: ${{ (github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'arm64' || '' }}
         include:
           # if not, build with coverage for tests
           - arch: amd64
             service: [rocketchat]
             type: coverage
-          - arch: arm64
+          # resolves to amd64 when arm64 is excluded above, matching the entry before this
+          # one instead of re-adding an arm64 job (includes bypass exclude)
+          - arch: ${{ (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && 'arm64' || 'amd64' }}
             service: [rocketchat]
             type: coverage
 
