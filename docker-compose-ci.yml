@@ -29,7 +29,6 @@ services:
       - Federation_Service_Enabled=true
       - 'Federation_Service_Domain=rc.host'
       - HEAP_USAGE_PERCENT=99
-      - SOCKET_FORENSICS=true
       # keep server sockets alive longer than traefik's 90s idleConnTimeout so
       # the proxy always closes pooled conns first and never reuses a dead one
       - HTTP_SOCKET_TIMEOUT_MS=120000
@@ -227,25 +226,10 @@ services:
       timeout: 5s
       retries: 5
 
-  tcpdump:
-    image: nicolaka/netshoot:v0.14
-    network_mode: service:traefik
-    cap_add:
-      - NET_RAW
-      - NET_ADMIN
-    command: tcpdump -i any -s 96 -C 200 -W 3 -Z root -w /pcap/traefik.pcap tcp port 80 or tcp port 3000
-    volumes:
-      - /tmp/pcap:/pcap
-    depends_on:
-      - traefik
-
   traefik:
     image: traefik:v3.6.6
     command:
       - --providers.docker=true
-      - --accesslog=true
-      - --accesslog.format=json
-      - --log.level=DEBUG
     ports:
       - 3000:80
     volumes:
