@@ -1,12 +1,13 @@
 import type { IOmnichannelRoom, IRoom, RoomType } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { Rooms } from '@rocket.chat/models';
+import { Rooms, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { roomFields } from '../../../lib/publishFields';
 import { canAccessRoomAsync } from '../../lib/authorization';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { settings } from '../../settings';
 
@@ -45,55 +46,47 @@ export const roomsGetMethod = async (userId?: string | null, updatedAt?: Date): 
 	return (await Rooms.findBySubscriptionUserId(userId, options)).toArray();
 };
 
+export const getRoomByTypeAndNameMethod = async (userId: string | null, type: RoomType, name: string): Promise<PublicRoom> => {
+	if (!type || !name) {
+		throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getRoomByTypeAndName' });
+	}
+
+	const user = userId ? await Users.findOneById(userId) : null;
+	const isAnonymous = !user?._id;
+
+	if (isAnonymous) {
+		const allowAnon = settings.get('Accounts_AllowAnonymousRead');
+		if (!allowAnon || type !== 'c') {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getRoomByTypeAndName' });
+		}
+	}
+
+	const roomFind = roomCoordinator.getRoomFind(type);
+
+	const room = roomFind ? await roomFind(name) : await Rooms.findByTypeAndNameOrId(type, name);
+
+	if (!room) {
+		throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getRoomByTypeAndName' });
+	}
+
+	if (user && !(await canAccessRoomAsync(room, user, { includeInvitations: true }))) {
+		throw new Meteor.Error('error-no-permission', 'No permission', { method: 'getRoomByTypeAndName' });
+	}
+
+	if (settings.get('Store_Last_Message') && user && !(await hasPermissionAsync(user, 'preview-c-room'))) {
+		delete room.lastMessage;
+	}
+
+	return roomMap(room);
+};
+
 Meteor.methods<ServerMethods>({
 	async 'rooms/get'(updatedAt) {
 		return roomsGetMethod(Meteor.userId(), updatedAt);
 	},
 
 	async 'getRoomByTypeAndName'(type, name) {
-		if (!type || !name) {
-			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
-				method: 'getRoomByTypeAndName',
-			});
-		}
-
-		const user = await Meteor.userAsync();
-		const isAnonymous = !user?._id;
-
-		if (isAnonymous) {
-			const allowAnon = settings.get('Accounts_AllowAnonymousRead');
-			if (!allowAnon || type !== 'c') {
-				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-					method: 'getRoomByTypeAndName',
-				});
-			}
-		}
-
-		const roomFind = roomCoordinator.getRoomFind(type);
-
-		const room = roomFind ? await roomFind.call(this, name) : await Rooms.findByTypeAndNameOrId(type, name);
-
-		if (!room) {
-			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
-				method: 'getRoomByTypeAndName',
-			});
-		}
-
-		if (
-			user &&
-			!(await canAccessRoomAsync(room, user, {
-				includeInvitations: true,
-			}))
-		) {
-			throw new Meteor.Error('error-no-permission', 'No permission', {
-				method: 'getRoomByTypeAndName',
-			});
-		}
-
-		if (settings.get('Store_Last_Message') && user && !(await hasPermissionAsync(user, 'preview-c-room'))) {
-			delete room.lastMessage;
-		}
-
-		return roomMap(room);
+		methodDeprecationLogger.method('getRoomByTypeAndName', '9.0.0', '/v1/rooms.getByTypeAndName');
+		return getRoomByTypeAndNameMethod(Meteor.userId(), type, name);
 	},
 });

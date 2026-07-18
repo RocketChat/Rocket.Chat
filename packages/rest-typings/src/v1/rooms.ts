@@ -915,6 +915,10 @@ export type RoomsEndpoints = {
 		};
 	};
 
+	'/v1/rooms.getByTypeAndName': {
+		GET: (params: { type: string; name: string }) => { room: IRoom };
+	};
+
 	'/v1/rooms.info': {
 		GET: (params: RoomsInfoProps) => {
 			room: IRoom | undefined;
