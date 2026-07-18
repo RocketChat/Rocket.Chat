@@ -9,7 +9,7 @@ export async function findLivechatCustomFields({
 	pagination: { offset, count, sort },
 }: {
 	text?: string;
-	pagination: { offset: number; count: number; sort: Record<string, number> };
+	pagination: { offset: number; count: number; sort: Record<string, 1 | -1> };
 }): Promise<PaginatedResult<{ customFields: Array<ILivechatCustomField> }>> {
 	const query = {
 		...(text && {

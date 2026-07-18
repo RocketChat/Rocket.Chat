@@ -27,9 +27,9 @@ const logger = new Logger('UploadService');
 export class UploadService extends ServiceClassInternal implements IUploadService {
 	protected name = 'upload';
 
-	async uploadFile({ buffer, details }: IUploadFileParams): Promise<IUpload> {
+	async uploadFile({ buffer, details, federation }: IUploadFileParams): Promise<IUpload> {
 		const fileStore = FileUpload.getStore('Uploads');
-		return fileStore.insert(details, buffer);
+		return fileStore.insert({ ...details, ...(federation && { federation }) }, buffer);
 	}
 
 	async sendFileMessage({ roomId, file, userId, message }: ISendFileMessageParams): Promise<boolean | undefined> {

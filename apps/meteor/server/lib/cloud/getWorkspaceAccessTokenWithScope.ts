@@ -1,3 +1,4 @@
+import { License } from '@rocket.chat/license';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { getRedirectUri } from './getRedirectUri';
@@ -28,6 +29,10 @@ export async function getWorkspaceAccessTokenWithScope({
 	const tokenResponse = { token: '', expiresAt: new Date(), scope: '' };
 
 	if (!workspaceRegistered) {
+		return tokenResponse;
+	}
+
+	if (License.hasOfflineLicense()) {
 		return tokenResponse;
 	}
 

@@ -140,20 +140,22 @@ export const FileUpload = {
 	},
 
 	async validateFileUpload(file: IUpload, content?: Buffer | string) {
-		if (!Match.test(file.rid, String)) {
+		const isFederationUpload = Boolean(file.federation?.mxcUri);
+
+		if (!isFederationUpload && !Match.test(file.rid, String)) {
 			return false;
 		}
 
 		// livechat users can upload files but they don't have an userId
 		const user = (file.userId && (await Users.findOne(file.userId))) || undefined;
 
-		const room = await Rooms.findOneById(file.rid);
-		if (!room) {
+		const room = file.rid ? await Rooms.findOneById(file.rid) : undefined;
+		if (!isFederationUpload && !room) {
 			return false;
 		}
 		const directMessageAllowed = settings.get('FileUpload_Enabled_Direct');
 		const fileUploadAllowed = settings.get('FileUpload_Enabled');
-		if (user?.type !== 'app' && (await canAccessRoomAsync(room, user, file)) !== true) {
+		if (!isFederationUpload && room && user?.type !== 'app' && (await canAccessRoomAsync(room, user, file)) !== true) {
 			return false;
 		}
 		const language = user?.language || 'en';
@@ -162,7 +164,7 @@ export const FileUpload = {
 			throw new Meteor.Error('error-file-upload-disabled', reason);
 		}
 
-		if (!directMessageAllowed && room.t === 'd') {
+		if (room && !directMessageAllowed && room.t === 'd') {
 			const reason = i18n.t('File_not_allowed_direct_messages', { lng: language });
 			throw new Meteor.Error('error-direct-message-file-upload-not-allowed', reason);
 		}

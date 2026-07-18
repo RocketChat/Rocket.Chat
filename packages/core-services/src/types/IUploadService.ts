@@ -7,6 +7,7 @@ export interface IUploadFileParams {
 	userId: string;
 	buffer: Buffer;
 	details: IUploadDetails;
+	federation?: Required<IUpload>['federation'];
 }
 export interface ISendFileMessageParams {
 	roomId: string;
