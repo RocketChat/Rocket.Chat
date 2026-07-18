@@ -19,9 +19,7 @@ const NavBarSearchIntelligentSection = ({ items, onSelect, onClose }: NavBarSear
 	const { t } = useTranslation();
 	const router = useRouter();
 	const { watch } = useFormContext<NavBarSearchFormValues>();
-	const formValues = watch();
-	const filterText = formValues.filterText ?? '';
-	const appliedFilters = formValues.appliedFilters ?? emptySearchFilters();
+	const { filterText = '', appliedFilters = emptySearchFilters() } = watch();
 
 	if (!items.length) {
 		return null;

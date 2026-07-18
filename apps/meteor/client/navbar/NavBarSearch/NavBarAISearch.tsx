@@ -25,9 +25,7 @@ const NavBarAISearch = () => {
 
 	const methods = useForm<NavBarSearchFormValues>({ defaultValues: { filterText: '', appliedFilters: emptySearchFilters() } });
 	const { register, resetField, setFocus, setValue, watch } = methods;
-	const formValues = watch();
-	const filterText = formValues.filterText ?? '';
-	const appliedFilters = formValues.appliedFilters ?? emptySearchFilters();
+	const { filterText = '', appliedFilters = emptySearchFilters() } = watch();
 
 	const { ref: filterRef, ...rest } = register('filterText');
 
