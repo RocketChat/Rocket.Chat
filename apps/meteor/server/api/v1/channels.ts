@@ -127,6 +127,20 @@ const channelResponseSchema = ajv.compile<{ channel: IRoom }>({
 	additionalProperties: false,
 });
 
+// channels.info also serves omnichannel ('l') rooms (e.g. livechat test helpers call it), which lack the
+// owner `u` that IRoom requires. Accept a full IRoom or any room-shaped object so both types validate.
+const channelInfoResponseSchema = ajv.compile<{ channel: IRoom }>({
+	type: 'object',
+	properties: {
+		channel: {
+			anyOf: [{ $ref: '#/components/schemas/IRoom' }, { type: 'object', required: ['_id', 't'], additionalProperties: true }],
+		},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['channel', 'success'],
+	additionalProperties: false,
+});
+
 const successResponseSchema = ajv.compile<void>({
 	type: 'object',
 	properties: { success: { type: 'boolean', enum: [true] } },
@@ -1451,7 +1465,7 @@ API.v1.get(
 		authRequired: true,
 		query: roomTargetQuery,
 		response: {
-			200: channelResponseSchema,
+			200: channelInfoResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 			403: validateForbiddenErrorResponse,

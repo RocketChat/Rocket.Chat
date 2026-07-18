@@ -10,7 +10,9 @@ export type ChannelsCreateProps = {
 		broadcast?: boolean;
 		encrypted?: boolean;
 		teamId?: string;
-	};
+		topic?: string;
+		federated?: boolean;
+	} & Record<string, any>;
 	excludeSelf?: boolean;
 };
 
@@ -39,6 +41,8 @@ const channelsCreatePropsSchema = {
 			nullable: true,
 		},
 		extraData: {
+			// extraData is spread verbatim into createRoom, so it carries arbitrary room fields
+			// (the create modal sends topic/broadcast/encrypted/federated). Keep it open.
 			type: 'object',
 			properties: {
 				broadcast: {
@@ -50,8 +54,14 @@ const channelsCreatePropsSchema = {
 				teamId: {
 					type: 'string',
 				},
+				topic: {
+					type: 'string',
+				},
+				federated: {
+					type: 'boolean',
+				},
 			},
-			additionalProperties: false,
+			additionalProperties: true,
 			nullable: true,
 		},
 	},
