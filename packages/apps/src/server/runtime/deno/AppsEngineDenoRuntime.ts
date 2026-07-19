@@ -67,10 +67,11 @@ export class DenoRuntimeSubprocessController extends BaseRuntimeSubprocessContro
 		this.denoDir = process.env.DENO_DIR ?? path.join(this.packagePath, '.deno-cache');
 
 		this.denoRuntimePath = path.join(this.tempFilePath, 'deno-runtime', 'main.ts');
-	this.denoEphemeralConfigPath = path.join(
-	this.tempFilePath,
-	'deno-runtime',
-	'deno.runtime.jsonc',
+		this.denoEphemeralConfigPath = path.join(
+			this.tempFilePath,
+			'deno-runtime',
+			'deno.runtime.jsonc',
+		);
 );
 
 
