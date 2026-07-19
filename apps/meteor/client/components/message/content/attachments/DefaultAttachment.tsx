@@ -25,7 +25,7 @@ const applyMarkdownIfRequires = (
 	variant: ComponentProps<typeof MarkdownText>['variant'] = 'inline',
 ): ReactNode => (list?.includes(key) ? <MarkdownText parseEmoji variant={variant} content={text} /> : text);
 
-type DefaultAttachmentProps = MessageAttachmentDefault;
+export type DefaultAttachmentProps = MessageAttachmentDefault;
 
 const DefaultAttachment = (attachment: DefaultAttachmentProps) => {
 	const [collapsed, toggleCollapse] = useCollapse(!!attachment.collapsed);
@@ -91,7 +91,7 @@ const DefaultAttachment = (attachment: DefaultAttachmentProps) => {
 											<MarkdownText variant='inline' parseEmoji content={title.replace(/(.*)/g, (line: string) => `${line}  `)} />
 										) : null,
 										value: value ? (
-											<MarkdownText variant='inline' parseEmoji content={value.replace(/(.*)/g, (line: string) => `${line}  `)} />
+											<MarkdownText variant='inline' parseEmoji content={String(value).replace(/(.*)/g, (line: string) => `${line}  `)} />
 										) : null,
 									};
 								})}

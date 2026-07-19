@@ -4,7 +4,6 @@ import type { FindCursor, FindOptions } from 'mongodb';
 import type { IBaseModel } from './IBaseModel';
 
 export interface IUsersSessionsModel extends IBaseModel<IUserSession> {
-	clearConnectionsFromInstanceId(instanceId: string[]): ReturnType<IBaseModel<IUserSession>['updateMany']>;
 	updateConnectionStatusById(uid: string, connectionId: string, status: string): ReturnType<IBaseModel<IUserSession>['updateOne']>;
 	removeConnectionsFromInstanceId(instanceId: string): ReturnType<IBaseModel<IUserSession>['updateMany']>;
 	removeConnectionByConnectionId(connectionId: string): ReturnType<IBaseModel<IUserSession>['updateMany']>;

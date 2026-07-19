@@ -8,6 +8,7 @@ import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
+import { withTimeout } from '../../data/utils';
 import { IS_EE } from '../../e2e/config/constants';
 
 describe('[Calendar Events]', () => {
@@ -668,14 +669,29 @@ describe('[Calendar Events]', () => {
 
 	(IS_EE ? describe : describe.skip)('[Calendar Events Status Sync]', () => {
 		before(async () => {
-			await request.post('/api/v1/users.setStatus').set(userCredentials).send({ status: 'away' }).expect(200);
+			await request.post('/api/v1/users.setStatus').set(userCredentials).send({ status: 'online' }).expect(200);
 		});
 
-		it('should set user status to busy during event and restore manual status after event ends', async () => {
+		// claim apply/clear land asynchronously, so poll instead of asserting on a fixed sleep
+		const waitForStatusSource = (
+			predicate: (source: string | undefined) => boolean,
+			{ timeout = 15000, interval = 500 } = {},
+		): Promise<string | undefined> =>
+			withTimeout(async (signal) => {
+				for (;;) {
+					const res = await request.get('/api/v1/users.getStatus').set(userCredentials).expect(200);
+					const source = res.body.statusSource;
+					if (predicate(source) || signal.aborted) {
+						return source;
+					}
+					await sleep(interval);
+				}
+			}, timeout);
+
+		it('should apply a calendar (external) claim for an in-progress event and clear it when removed', async () => {
 			const now = new Date();
-			const startTime = new Date(now.getTime() + 1000);
-			// Event cannot be less than 5 secs in duration, otherwise `processStatusChangesAtTime` would trigger both start/end status changes at the same time, due to the 5s offset
-			const endTime = new Date(startTime.getTime() + 6000);
+			const startTime = new Date(now.getTime() - 1000);
+			const endTime = new Date(now.getTime() + 60 * 60 * 1000);
 
 			const eventPayload = {
 				startTime: startTime.toISOString(),
@@ -689,17 +705,16 @@ describe('[Calendar Events]', () => {
 			const createResponse = await request.post('/api/v1/calendar-events.create').set(userCredentials).send(eventPayload).expect(200);
 			const eventId = createResponse.body.id;
 
-			await sleep(3000);
+			// REST-only user has no DDP session, so assert the claim via statusSource, not display status
+			expect(await waitForStatusSource((source) => source === 'external')).to.equal('external');
 
-			const statusResponseDuring = await request.get('/api/v1/users.getStatus').set(userCredentials).expect(200);
-			expect(statusResponseDuring.body.status).to.equal('busy');
-
-			await sleep(5000);
-
-			const statusResponseAfter = await request.get('/api/v1/users.getStatus').set(userCredentials).expect(200);
-			expect(statusResponseAfter.body.status).to.equal('away');
+			// the claim must carry the event's endTime as its expiry, so the presence engine can auto-clear it
+			const status = await request.get('/api/v1/users.getStatus').set(userCredentials).expect(200);
+			expect(new Date(status.body.statusExpiresAt).getTime()).to.equal(endTime.getTime());
 
 			await request.post('/api/v1/calendar-events.delete').set(userCredentials).send({ eventId }).expect(200);
+
+			expect(await waitForStatusSource((source) => source === undefined)).to.be.undefined;
 		});
 	});
 });

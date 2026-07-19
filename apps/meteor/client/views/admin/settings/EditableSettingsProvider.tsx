@@ -9,7 +9,7 @@ import { EditableSettingsContext, performSettingQuery } from '../EditableSetting
 
 const defaultOmit: Array<ISetting['_id']> = ['Cloud_Workspace_AirGapped_Restrictions_Remaining_Days'];
 
-type EditableSettingsProviderProps = {
+export type EditableSettingsProviderProps = {
 	children?: ReactNode;
 };
 

@@ -230,7 +230,7 @@ exports[`renders Default without crashing 1`] = `
                         aria-haspopup="true"
                         aria-label="More_actions"
                         class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                        id="react-aria-:r0:"
+                        id="react-aria-_r_0_"
                         title="More_actions"
                         type="button"
                       >
@@ -320,7 +320,7 @@ exports[`renders Default without crashing 1`] = `
                         aria-haspopup="true"
                         aria-label="More_actions"
                         class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                        id="react-aria-:r2:"
+                        id="react-aria-_r_2_"
                         title="More_actions"
                         type="button"
                       >
@@ -407,7 +407,7 @@ exports[`renders Default without crashing 1`] = `
                         aria-haspopup="true"
                         aria-label="More_actions"
                         class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                        id="react-aria-:r4:"
+                        id="react-aria-_r_4_"
                         title="More_actions"
                         type="button"
                       >
@@ -494,7 +494,7 @@ exports[`renders Default without crashing 1`] = `
                         aria-haspopup="true"
                         aria-label="More_actions"
                         class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                        id="react-aria-:r6:"
+                        id="react-aria-_r_6_"
                         title="More_actions"
                         type="button"
                       >
@@ -579,7 +579,7 @@ exports[`renders Default without crashing 1`] = `
                         aria-haspopup="true"
                         aria-label="More_actions"
                         class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                        id="react-aria-:r8:"
+                        id="react-aria-_r_8_"
                         title="More_actions"
                         type="button"
                       >
@@ -632,12 +632,12 @@ exports[`renders Default without crashing 1`] = `
       >
         <span
           class="rcx-pagination__label"
-          id=":rb:"
+          id="_r_b_"
         >
           Items per page:
         </span>
         <ol
-          aria-labelledby=":rb:"
+          aria-labelledby="_r_b_"
           class="rcx-box rcx-box--full rcx-pagination__list"
         >
           <li
@@ -681,12 +681,12 @@ exports[`renders Default without crashing 1`] = `
       >
         <span
           class="rcx-pagination__label"
-          id=":ra:"
+          id="_r_a_"
         >
           Showing results 1 - 5 of 5
         </span>
         <ol
-          aria-labelledby=":ra:"
+          aria-labelledby="_r_a_"
           class="rcx-box rcx-box--full rcx-pagination__list"
         >
           <li

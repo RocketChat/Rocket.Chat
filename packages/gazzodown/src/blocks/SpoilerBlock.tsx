@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import ParagraphBlock from './ParagraphBlock';
 
-type SpoilerBlockProps = {
+export type SpoilerBlockProps = {
 	children: MessageParser.Paragraph[];
 };
 

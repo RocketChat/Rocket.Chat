@@ -10,7 +10,7 @@ import { MongoClient } from 'mongodb';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials, apiEmail, apiUsername, wait, reservedWords } from '../../data/api-data';
-import { imgURL } from '../../data/interactions';
+import { imgURL, tiffURL } from '../../data/interactions';
 import { createAgent, makeAgentAvailable } from '../../data/livechat/rooms';
 import { removeAgent, getAgent } from '../../data/livechat/users';
 import { updatePermission, updateSetting, restorePermissionToRoles, getSettingValueById } from '../../data/permissions.helper';
@@ -132,10 +132,11 @@ const preferences = {
 
 const getUserStatus = (userId: IUser['_id']) =>
 	new Promise<{
+		_id: string;
 		status: 'online' | 'offline' | 'away' | 'busy';
-		message?: string;
-		_id?: string;
 		connectionStatus?: 'online' | 'offline' | 'away' | 'busy';
+		statusSource?: string;
+		statusExpiresAt?: string;
 	}>((resolve) => {
 		void request
 			.get(api('users.getStatus'))
@@ -245,6 +246,22 @@ describe('[Users]', () => {
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error', 'Keys already set [error-keys-already-set]');
 			});
+	});
+
+	describe('[/e2e.requestSubscriptionKeys]', () => {
+		it('should return unauthorized when not authenticated', async () => {
+			await request.post(api('e2e.requestSubscriptionKeys')).expect(401);
+		});
+
+		it('should accept the request and return success for an authenticated user', async () => {
+			await request
+				.post(api('e2e.requestSubscriptionKeys'))
+				.set(userCredentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
 	});
 
 	describe('[/users.create]', () => {
@@ -1831,6 +1848,34 @@ describe('[Users]', () => {
 					})
 					.end(done);
 			});
+
+			it('should return an offline user that still carries a custom status (vacation text/expiration survives offline)', async () => {
+				const vacationUser = await createUser();
+				const vacationCredentials = await login(vacationUser.username, password);
+				const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+
+				await request
+					.post(api('users.setStatus'))
+					.set(vacationCredentials)
+					.send({ status: 'offline', message: 'On vacation', expiresAt })
+					.expect(200);
+
+				const res = await request
+					.get(api('users.presence'))
+					.query({ ids: vacationUser._id })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				const returned = (res.body.users as IUser[]).find((u) => u._id === vacationUser._id);
+				expect(returned, 'offline user with a custom status must be returned by users.presence').to.not.be.undefined;
+				expect(returned).to.have.property('status', 'offline');
+				expect(returned).to.have.property('statusText', 'On vacation');
+				expect(returned).to.have.property('statusExpiresAt');
+
+				await deleteUser(vacationUser);
+			});
 		});
 	});
 
@@ -2175,6 +2220,19 @@ describe('[Users]', () => {
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
+			it('should reject non-renderable image types (e.g. TIFF)', (done) => {
+				void request
+					.post(api('users.setAvatar'))
+					.set(userCredentials)
+					.attach('image', tiffURL)
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-invalid-file-type');
 					})
 					.end(done);
 			});
@@ -3573,14 +3631,23 @@ describe('[Users]', () => {
 		});
 
 		describe('[Password Policy]', () => {
+			let previousMinLength: Awaited<ReturnType<typeof getSettingValueById>>;
+			let previousMaxLength: Awaited<ReturnType<typeof getSettingValueById>>;
+
 			before(async () => {
 				await updateSetting('Accounts_AllowPasswordChange', true);
 				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
+				[previousMinLength, previousMaxLength] = await Promise.all([
+					getSettingValueById('Accounts_Password_Policy_MinLength'),
+					getSettingValueById('Accounts_Password_Policy_MaxLength'),
+				]);
 			});
 
 			after(async () => {
 				await updateSetting('Accounts_AllowPasswordChange', true);
 				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
+				await updateSetting('Accounts_Password_Policy_MaxLength', previousMaxLength);
+				await updateSetting('Accounts_Password_Policy_MinLength', previousMinLength);
 			});
 
 			it('should throw an error if the password length is less than the minimum length', async () => {
@@ -3609,6 +3676,8 @@ describe('[Users]', () => {
 			});
 
 			it('should throw an error if the password length is greater than the maximum length', async () => {
+				// max must stay >= min, so lower the minimum before capping the maximum at 5
+				await updateSetting('Accounts_Password_Policy_MinLength', 1);
 				await updateSetting('Accounts_Password_Policy_MaxLength', 5);
 
 				const expectedError = {
@@ -3904,6 +3973,40 @@ describe('[Users]', () => {
 					expect(res.body.user.settings.preferences).to.have.property('language', 'en');
 				})
 				.end(done);
+		});
+
+		it('should persist the utcOffset preference on the user document', async () => {
+			await request
+				.post(api('users.setPreferences'))
+				.set(credentials)
+				.send({ data: { utcOffset: 5 } })
+				.expect(200)
+				.expect('Content-Type', 'application/json')
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.get(api('me'))
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('utcOffset', 5);
+				});
+		});
+
+		it('should fail when utcOffset is not a number', async () => {
+			await request
+				.post(api('users.setPreferences'))
+				.set(credentials)
+				.send({ data: { utcOffset: 'not-a-number' } })
+				.expect(400)
+				.expect('Content-Type', 'application/json')
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
 		});
 
 		it('should return 401 when not authenticated', async () => {
@@ -5561,8 +5664,8 @@ describe('[Users]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('_id', credentials['X-User-Id']);
 					expect(res.body).to.have.property('status');
-					expect(res.body._id).to.be.equal(credentials['X-User-Id']);
 				})
 				.end(done);
 		});
@@ -5575,8 +5678,8 @@ describe('[Users]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('_id', 'rocket.cat');
 					expect(res.body).to.have.property('status');
-					expect(res.body._id).to.be.equal('rocket.cat');
 				})
 				.end(done);
 		});
@@ -5607,7 +5710,7 @@ describe('[Users]', () => {
 					.set(credentials)
 					.send({
 						status: 'busy',
-						message: '',
+						message: 'test',
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -5672,7 +5775,6 @@ describe('[Users]', () => {
 						expect(res.body).to.have.property('success', true);
 						void getUserStatus(credentials['X-User-Id']).then((status) => {
 							expect(status.status).to.be.equal('busy');
-							expect(status.message).to.be.equal('test');
 						});
 					})
 					.end(done);
@@ -5713,6 +5815,23 @@ describe('[Users]', () => {
 
 			await updateSetting('Accounts_AllowInvisibleStatusOption', true);
 		});
+		it('should reject a message-only update when status resolves to offline via statusDefault and "Accounts_AllowInvisibleStatusOption" is disabled', async () => {
+			await updateSetting('Accounts_AllowInvisibleStatusOption', true);
+			await request.post(api('users.setStatus')).set(credentials).send({ status: 'offline' }).expect(200);
+			await updateSetting('Accounts_AllowInvisibleStatusOption', false);
+
+			await request
+				.post(api('users.setStatus'))
+				.set(credentials)
+				.send({ message: 'still trying to stay invisible' })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-status-not-allowed');
+				});
+
+			await updateSetting('Accounts_AllowInvisibleStatusOption', true);
+		});
 		it('should return an error when the payload is missing all supported fields', (done) => {
 			void request
 				.post(api('users.setStatus'))
@@ -5735,6 +5854,82 @@ describe('[Users]', () => {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('status', 'error');
 				});
+		});
+
+		it('should set status with expiresAt and return statusSource and statusExpiresAt in getStatus', async () => {
+			const expiresAt = new Date(Date.now() + 3600_000).toISOString();
+
+			await request
+				.post(api('users.setStatus'))
+				.set(credentials)
+				.send({
+					status: 'busy',
+					message: 'focus time',
+					expiresAt,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const status = await getUserStatus(credentials['X-User-Id']);
+			// display status is offline because the test user has no active DDP session;
+			// the busy claim is persisted in statusDefault and takes effect on reconnect
+			expect(status.status).to.be.equal('offline');
+			expect(status).to.have.property('statusSource', 'manual');
+			expect(status).to.have.property('statusExpiresAt');
+			expect(new Date(status.statusExpiresAt!).getTime()).to.be.closeTo(new Date(expiresAt).getTime(), 2000);
+		});
+
+		it('should reject a past expiresAt date', async () => {
+			await request
+				.post(api('users.setStatus'))
+				.set(credentials)
+				.send({
+					status: 'busy',
+					expiresAt: '2020-01-01T00:00:00.000Z',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('error-invalid-date');
+					expect(res.body.error).to.be.equal('expiresAt must be a future date [error-invalid-date]');
+				});
+		});
+
+		it('should not return statusExpiresAt when expiresAt is not set', async () => {
+			await request
+				.post(api('users.setStatus'))
+				.set(credentials)
+				.send({
+					status: 'online',
+				})
+				.expect(200);
+
+			const status = await getUserStatus(credentials['X-User-Id']);
+			expect(status.status).to.be.equal('online');
+			expect(status).to.not.have.property('statusExpiresAt');
+		});
+
+		it('should update only the status message when no status is provided', async () => {
+			await updateSetting('Accounts_AllowUserStatusMessageChange', true);
+
+			await request
+				.post(api('users.setStatus'))
+				.set(credentials)
+				.send({
+					message: 'message only, no status',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const infoResponse = await request.get(api('users.info')).query({ userId: credentials['X-User-Id'] }).set(credentials).expect(200);
+			expect(infoResponse.body.user).to.have.property('statusText', 'message only, no status');
 		});
 	});
 
@@ -6384,5 +6579,18 @@ describe('[Users]', () => {
 					expect(res.body).to.have.property('success', false);
 				});
 		});
+	});
+
+	describe('[/users.verifyEmail]', () => {
+		it('should fail with 400 when the token is not provided', () => request.post(api('users.verifyEmail')).send({}).expect(400));
+
+		it('should fail with 404 when the token does not match any user', () =>
+			request
+				.post(api('users.verifyEmail'))
+				.send({ token: 'this-token-does-not-exist' })
+				.expect(404)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				}));
 	});
 });

@@ -4,7 +4,7 @@ exports[`renders Default without crashing 1`] = `
 <body>
   <div>
     <dialog
-      aria-labelledby=":r3:-title"
+      aria-labelledby="_r_3_-title"
       aria-modal="true"
       class="rcx-box rcx-box--full rcx-modal"
       open=""
@@ -23,7 +23,7 @@ exports[`renders Default without crashing 1`] = `
             >
               <h2
                 class="rcx-box rcx-box--full rcx-modal__title"
-                id=":r3:-title"
+                id="_r_3_-title"
               >
                 Forward_chat
               </h2>
@@ -45,7 +45,7 @@ exports[`renders Default without crashing 1`] = `
               >
                 <label
                   class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                  for=":r0:"
+                  for="_r_0_"
                 >
                   Forward_to_department
                 </label>
@@ -57,7 +57,7 @@ exports[`renders Default without crashing 1`] = `
                     aria-disabled="false"
                     aria-label="Forward_to_department"
                     class="rcx-box rcx-box--full rcx-select rcx-css-cjb8sk"
-                    id=":r0:"
+                    id="_r_0_"
                     name="department"
                   >
                     <div
@@ -104,7 +104,7 @@ exports[`renders Default without crashing 1`] = `
               >
                 <label
                   class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                  for=":r1:"
+                  for="_r_1_"
                 >
                   Forward_to_user
                 </label>
@@ -114,7 +114,7 @@ exports[`renders Default without crashing 1`] = `
                   <div
                     aria-label="Forward_to_user"
                     class="rcx-box rcx-box--full rcx-select rcx-css-ue04py"
-                    id=":r1:"
+                    id="_r_1_"
                     name="username"
                   >
                     <div
@@ -145,7 +145,7 @@ exports[`renders Default without crashing 1`] = `
               >
                 <label
                   class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                  for=":r2:"
+                  for="_r_2_"
                 >
                   Leave_a_comment
                   <span
@@ -162,7 +162,7 @@ exports[`renders Default without crashing 1`] = `
                   <textarea
                     class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-textarea rcx-input-box rcx-css-t3n91h"
                     cols="1"
-                    id=":r2:"
+                    id="_r_2_"
                     name="comment"
                     rows="8"
                     size="1"

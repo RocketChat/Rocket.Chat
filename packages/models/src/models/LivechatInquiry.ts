@@ -107,14 +107,6 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		];
 	}
 
-	findOneQueuedByRoomId(rid: string): Promise<(ILivechatInquiryRecord & { status: LivechatInquiryStatus.QUEUED }) | null> {
-		const query = {
-			rid,
-			status: LivechatInquiryStatus.QUEUED,
-		};
-		return this.findOne(query) as unknown as Promise<(ILivechatInquiryRecord & { status: LivechatInquiryStatus.QUEUED }) | null>;
-	}
-
 	findOneByRoomId<T extends Document = ILivechatInquiryRecord>(
 		rid: string,
 		options?: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
@@ -123,22 +115,6 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 			rid,
 		};
 		return this.findOne(query, options);
-	}
-
-	findOneReadyByRoomId<T extends Document = ILivechatInquiryRecord>(
-		rid: string,
-		options?: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
-	): Promise<T | null> {
-		const query = {
-			rid,
-			status: LivechatInquiryStatus.READY,
-		};
-
-		return this.findOne(query, options);
-	}
-
-	findIdsByVisitorToken(token: ILivechatInquiryRecord['v']['token']): FindCursor<ILivechatInquiryRecord> {
-		return this.find({ 'v.token': token }, { projection: { _id: 1 } });
 	}
 
 	findIdsByVisitorId(_id: ILivechatInquiryRecord['v']['_id']): FindCursor<ILivechatInquiryRecord> {
@@ -329,17 +305,6 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		);
 	}
 
-	openInquiry(inquiryId: string): Promise<UpdateResult> {
-		return this.updateOne(
-			{
-				_id: inquiryId,
-			},
-			{
-				$set: { status: LivechatInquiryStatus.OPEN },
-			},
-		);
-	}
-
 	async queueInquiry(
 		inquiryId: string,
 		lastMessage?: IMessage,
@@ -478,14 +443,6 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 				$unset: { defaultAgent: 1 },
 			},
 		);
-	}
-
-	async removeByVisitorToken(token: string): Promise<void> {
-		const query = {
-			'v.token': token,
-		};
-
-		await this.deleteMany(query);
 	}
 
 	async markInquiryActiveForPeriod(rid: ILivechatInquiryRecord['rid'], period: string): Promise<ILivechatInquiryRecord | null> {

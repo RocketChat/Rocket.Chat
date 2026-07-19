@@ -4,7 +4,7 @@ import { memo } from 'preact/compat';
 import styles from './styles.scss';
 import { createClassName } from '../../../../helpers/createClassName';
 
-type ImageElementProps = uikit.ImageElement & {
+export type ImageElementProps = uikit.ImageElement & {
 	context: uikit.BlockContext;
 };
 

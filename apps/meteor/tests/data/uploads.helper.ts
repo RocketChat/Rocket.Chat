@@ -325,6 +325,7 @@ export async function testFileUploads(
 				await addUserToRoom({
 					rid: testRoom._id,
 					usernames: [anotherUser.username!],
+					type: 'p',
 				});
 			}
 		});

@@ -1,4 +1,4 @@
-import { settingsRegistry } from '../../../app/settings/server';
+import { settingsRegistry } from '../../../server/settings';
 
 const abacEnabledQuery = { _id: 'ABAC_Enabled', value: true };
 const virtruPdpQuery = [abacEnabledQuery, { _id: 'ABAC_PDP_Type', value: 'virtru' }];
@@ -27,6 +27,7 @@ export function addSettings(): Promise<void> {
 						{ key: 'local', i18nLabel: 'ABAC_PDP_Type_Local' },
 						{ key: 'virtru', i18nLabel: 'ABAC_PDP_Type_Virtru' },
 					],
+					alert: 'ABAC_PDP_Type_Switch_Alert',
 					enableQuery: abacEnabledQuery,
 				});
 				await this.add('ABAC_Attribute_Store', 'local', {

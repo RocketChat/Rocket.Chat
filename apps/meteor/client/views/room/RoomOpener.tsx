@@ -19,7 +19,7 @@ const Room = lazy(() => import('./Room'));
 const RoomLayout = lazy(() => import('./layout/RoomLayout'));
 const NotAuthorizedPage = lazy(() => import('../notAuthorized/NotAuthorizedPage'));
 
-type RoomOpenerProps = {
+export type RoomOpenerProps = {
 	type: RoomType;
 	reference: string;
 };
@@ -29,7 +29,7 @@ const RoomOpener = ({ type, reference }: RoomOpenerProps) => {
 	const { t } = useTranslation();
 
 	return (
-		<Box display='flex' w='full' h='full'>
+		<Box display='flex' width='full' height='full'>
 			<Suspense fallback={<RoomSkeleton />}>
 				{isLoading && <RoomSkeleton />}
 				{isSuccess && (

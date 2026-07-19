@@ -9,6 +9,7 @@ import { retry } from './helpers/retry';
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials, apiUrl } from '../../data/api-data';
 import { followMessage, sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
+import { imgURL } from '../../data/interactions';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { addUserToRoom, createRoom, deleteRoom, getSubscriptionByRoomId } from '../../data/rooms.helper';
 import { password } from '../../data/user';
@@ -2336,6 +2337,79 @@ describe('[Chat]', () => {
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
+		});
+
+		describe('when deleting by fileId', () => {
+			const uploadFile = async (): Promise<string> => {
+				const { body } = await request
+					.post(api(`rooms.media/${testChannel._id}`))
+					.set(credentials)
+					.attach('file', imgURL)
+					.expect(200);
+				expect(body).to.have.property('success', true);
+				return body.file._id;
+			};
+
+			it('should delete the message associated with the provided fileId', async () => {
+				const fileId = await uploadFile();
+
+				let fileMsgId: string | undefined;
+				await request
+					.post(api(`rooms.mediaConfirm/${testChannel._id}/${fileId}`))
+					.set(credentials)
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						fileMsgId = res.body.message._id;
+					});
+
+				await request
+					.post(api('chat.delete'))
+					.set(credentials)
+					.send({ fileId })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				await request
+					.get(api('chat.getMessage'))
+					.set(credentials)
+					.query({ msgId: fileMsgId })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+					});
+			});
+
+			it('should fail when the uploaded file has no associated message', async () => {
+				const fileId = await uploadFile();
+
+				await request
+					.post(api('chat.delete'))
+					.set(credentials)
+					.send({ fileId })
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', `No message found with the file id: "${fileId}".`);
+					});
+			});
+
+			it('should fail when neither msgId/roomId nor fileId is provided', async () => {
+				await request
+					.post(api('chat.delete'))
+					.set(credentials)
+					.send({})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'invalid-params');
+					});
+			});
 		});
 
 		describe('when deleting a thread message', () => {

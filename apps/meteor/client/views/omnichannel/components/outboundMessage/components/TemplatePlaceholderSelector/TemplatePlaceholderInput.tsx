@@ -1,12 +1,12 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Box, Icon, TextInput } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRef, type ComponentProps, type FormEvent, type FormEventHandler } from 'react';
+import { useRef, type ChangeEventHandler, type ChangeEvent, type ComponentProps } from 'react';
 
 import PlaceholderSelector from './TemplatePlaceholderSelector';
 import type { TemplateParameter } from '../../types/template';
 
-type TemplatePlaceholderInputProps = Omit<ComponentProps<typeof TextInput>, 'value' | 'onChange'> & {
+export type TemplatePlaceholderInputProps = Omit<ComponentProps<typeof TextInput>, 'value' | 'onChange'> & {
 	type?: TemplateParameter['type'];
 	value: string;
 	contact?: Serialized<ILivechatContact>;
@@ -16,7 +16,7 @@ type TemplatePlaceholderInputProps = Omit<ComponentProps<typeof TextInput>, 'val
 const TemplatePlaceholderInput = ({ contact, value = '', type, onChange, ...props }: TemplatePlaceholderInputProps) => {
 	const inputRef = useRef<HTMLInputElement>(null);
 
-	const handleChange = (event: FormEvent<HTMLInputElement> | string) => {
+	const handleChange = (event: ChangeEvent<HTMLInputElement> | string) => {
 		onChange(typeof event === 'string' ? event : event.currentTarget.value);
 	};
 
@@ -28,9 +28,15 @@ const TemplatePlaceholderInput = ({ contact, value = '', type, onChange, ...prop
 
 	return (
 		<Box display='flex' width='100%'>
-			<TextInput {...props} ref={inputRef} value={value} addon={addon} onChange={handleChange as FormEventHandler<HTMLElement>} />
+			<TextInput {...props} ref={inputRef} value={value} endAddon={addon} onChange={handleChange as ChangeEventHandler<HTMLInputElement>} />
 
-			<PlaceholderSelector disabled={type !== 'text'} mis={12} contact={contact} onSelect={handleChange} onOpenChange={handleOpenToggle} />
+			<PlaceholderSelector
+				disabled={type !== 'text'}
+				marginInlineStart={12}
+				contact={contact}
+				onSelect={handleChange}
+				onOpenChange={handleOpenToggle}
+			/>
 		</Box>
 	);
 };

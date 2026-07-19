@@ -234,4 +234,38 @@ describe('[Cloud]', function () {
 				});
 		});
 	});
+
+	describe('[/cloud.connectWorkspace]', () => {
+		before(async () => {
+			return updatePermission('manage-cloud', ['admin']);
+		});
+
+		after(async () => {
+			return updatePermission('manage-cloud', ['admin']);
+		});
+
+		it('should fail if user is not authenticated', async () => {
+			return request
+				.post(api('cloud.connectWorkspace'))
+				.send({ token: 'invalid-token' })
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+
+		it('should fail when user does not have the manage-cloud permission', async () => {
+			await updatePermission('manage-cloud', []);
+			return request
+				.post(api('cloud.connectWorkspace'))
+				.set(credentials)
+				.send({ token: 'invalid-token' })
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+	});
 });
