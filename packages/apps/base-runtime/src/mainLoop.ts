@@ -115,19 +115,40 @@ async function handleIncomingMessage(message: unknown): Promise<void> {
 }
 
 /**
+ * How the main loop receives messages from - and detects the loss of - its host.
+ *
+ * The subprocess runtime is backed by Node's `child_process` IPC channel; the
+ * Watt runtime supplies a Worker Thread inter-thread channel instead.
+ */
+export type IncomingTransport = {
+	subscribe(handler: (message: unknown) => void): void;
+	onDisconnect(handler: () => void): void;
+};
+
+const processIncomingTransport: IncomingTransport = {
+	subscribe(handler) {
+		process.on('message', handler);
+	},
+	onDisconnect(handler) {
+		process.on('disconnect', handler);
+	},
+};
+
+/**
  * The platform-agnostic message loop shared by every runtime.
  *
  * Adapters are expected to wire up their platform seams — sandbox
- * `require`/globals, error listeners — during bootstrap and only then invoke
- * this loop. It receives messages from the host over the IPC channel and
- * dispatches them to the shared handlers.
+ * `require`/globals, error listeners, and the host transport — during bootstrap
+ * and only then invoke this loop. It receives messages from the host and
+ * dispatches them to the shared handlers. Defaults to the `child_process` IPC
+ * channel used by the subprocess runtime.
  */
-export function startMainLoop(): void {
-	process.on('message', (message) => void handleIncomingMessage(message));
+export function startMainLoop(incoming: IncomingTransport = processIncomingTransport): void {
+	incoming.subscribe((message) => void handleIncomingMessage(message));
 
-	// Without a connected IPC channel this process has no host to serve; exit
-	// instead of lingering as an orphan when the host dies or disconnects
-	process.on('disconnect', () => process.exit(0));
+	// Without a connected host this runtime has no one to serve; exit instead of
+	// lingering as an orphan when the host dies or disconnects
+	incoming.onDisconnect(() => process.exit(0));
 
 	// The host waits for this notification before sending any message
 	Messenger.sendNotification({ method: 'ready', params: [] });

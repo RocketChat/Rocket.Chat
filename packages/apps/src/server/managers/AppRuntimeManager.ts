@@ -2,6 +2,7 @@ import type { AppManager } from '../AppManager';
 import type { IParseAppPackageResult } from '../compiler';
 import type { IRuntimeController } from '../runtime/IRuntimeController';
 import { NodeRuntimeSubprocessController } from '../runtime/node/AppsEngineNodeRuntime';
+import { WattRuntimeController } from '../runtime/watt/WattRuntimeController';
 import type { IAppStorageItem } from '../storage';
 
 export type AppRuntimeParams = {
@@ -18,11 +19,30 @@ export type ExecRequestOptions = {
 	timeout?: number;
 };
 
-export const nodeRuntimeFactory = (manager: AppManager, appPackage: IParseAppPackageResult, storageItem: IAppStorageItem) =>
+export type RuntimeFactory = (
+	manager: AppManager,
+	appPackage: IParseAppPackageResult,
+	storageItem: IAppStorageItem,
+) => IRuntimeController;
+
+/**
+ * Default runtime: one Node `child_process` per app, supervised by the
+ * LivenessManager.
+ */
+export const nodeRuntimeFactory: RuntimeFactory = (manager, appPackage, storageItem) =>
 	new NodeRuntimeSubprocessController(manager, appPackage, storageItem);
 
-const defaultRuntimeFactory: (manager: AppManager, appPackage: IParseAppPackageResult, storageItem: IAppStorageItem) => IRuntimeController =
-	nodeRuntimeFactory;
+/**
+ * Opt-in runtime: every app runs as an application inside a single, shared
+ * Platformatic Watt runtime (one Worker Thread per app), with liveness, restarts
+ * and metrics handled by Watt instead of the LivenessManager.
+ *
+ * Requires the optional `@platformatic/runtime` dependency to be installed.
+ */
+export const wattRuntimeFactory: RuntimeFactory = (manager, appPackage, storageItem) =>
+	new WattRuntimeController(manager, appPackage, storageItem);
+
+const defaultRuntimeFactory: RuntimeFactory = nodeRuntimeFactory;
 
 export class AppRuntimeManager {
 	private readonly subprocesses: Record<string, IRuntimeController> = {};

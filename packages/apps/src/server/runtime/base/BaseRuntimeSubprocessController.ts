@@ -8,6 +8,7 @@ import type { AppMethod } from '@rocket.chat/apps-engine/definition/metadata';
 import debugFactory from 'debug';
 import * as jsonrpc from 'jsonrpc-lite';
 
+import { AppRequestRouter, ALLOWED_ACCESSOR_METHODS } from './AppRequestRouter';
 import { LivenessManager } from './LivenessManager';
 import { ProcessMessenger } from './ProcessMessenger';
 import { bundleLegacyApp } from './bundler';
@@ -21,28 +22,7 @@ import type { IRuntimeController } from '../IRuntimeController';
 
 const inspect = (value: unknown) => utilInspect(value, { depth: 10, compact: true, breakLength: Infinity });
 
-export const ALLOWED_ACCESSOR_METHODS = [
-	'getConfigurationExtend',
-	'getEnvironmentRead',
-	'getEnvironmentWrite',
-	'getConfigurationModify',
-	'getReader',
-	'getPersistence',
-	'getHttp',
-	'getModifier',
-] as Array<
-	keyof Pick<
-		AppAccessorManager,
-		| 'getConfigurationExtend'
-		| 'getEnvironmentRead'
-		| 'getEnvironmentWrite'
-		| 'getConfigurationModify'
-		| 'getReader'
-		| 'getPersistence'
-		| 'getHttp'
-		| 'getModifier'
-	>
->;
+export { ALLOWED_ACCESSOR_METHODS };
 
 const COMMAND_PONG = '_zPONG';
 
@@ -60,10 +40,6 @@ function getRuntimeTimeout() {
 	}
 
 	return envValue;
-}
-
-function isValidOrigin(accessor: string): accessor is (typeof ALLOWED_ACCESSOR_METHODS)[number] {
-	return ALLOWED_ACCESSOR_METHODS.includes(accessor as any);
 }
 
 /**
@@ -121,6 +97,8 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 
 	private readonly bridges: AppBridges;
 
+	private readonly router: AppRequestRouter;
+
 	private readonly messenger: ProcessMessenger;
 
 	private readonly livenessManager: LivenessManager;
@@ -156,6 +134,15 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 		this.api = manager.getApiManager();
 		this.logStorage = manager.getLogStorage();
 		this.bridges = manager.getBridges();
+
+		this.router = new AppRequestRouter({
+			appId: appPackage.info.id,
+			accessors: this.accessors,
+			api: this.api,
+			bridges: this.bridges,
+			debug: this.debug,
+			getState: () => this.state,
+		});
 	}
 
 	/**
@@ -426,139 +413,14 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 		this.once('ready', this.onReady.bind(this));
 	}
 
-	// Probable should extract this to a separate file
-	private async handleAccessorMessage({ payload: { method, id, params } }: jsonrpc.IParsedObjectRequest): Promise<jsonrpc.SuccessObject> {
-		const accessorMethods = method.substring(9).split(':'); // First 9 characters are always 'accessor:'
-
-		this.debug('Handling accessor message %s with params %s', inspect(accessorMethods), inspect(params));
-
-		const managerOrigin = accessorMethods.shift();
-		const tailMethodName = accessorMethods.pop();
-
-		// If we're restarting the app, we can't register resources again, so we
-		// hijack requests for the `ConfigurationExtend` accessor and don't let them through
-		// This needs to be refactored ASAP
-		if (this.state === 'restarting' && managerOrigin === 'getConfigurationExtend') {
-			return jsonrpc.success(id, null);
-		}
-
-		if (managerOrigin === 'api' && tailMethodName === 'listApis') {
-			const result = this.api.listApis(this.appPackage.info.id);
-
-			return jsonrpc.success(id, result);
-		}
-
-		/**
-		 * At this point, the accessorMethods array will contain the path to the accessor from the origin (AppAccessorManager)
-		 * The accessor is the one that contains the actual method the app wants to call
-		 *
-		 * Most of the times, it will take one step from origin to accessor
-		 * For example, for the call AppAccessorManager.getEnvironmentRead().getServerSettings().getValueById() we'll have
-		 * the following:
-		 *
-		 * ```
-		 * const managerOrigin = 'getEnvironmentRead'
-		 * const tailMethod = 'getValueById'
-		 * const accessorMethods = ['getServerSettings']
-		 * ```
-		 *
-		 * But sometimes there can be more steps, like in the following example:
-		 * AppAccessorManager.getReader().getEnvironmentReader().getEnvironmentVariables().getValueByName()
-		 * In this case, we'll have:
-		 *
-		 * ```
-		 * const managerOrigin = 'getReader'
-		 * const tailMethod = 'getValueByName'
-		 * const accessorMethods = ['getEnvironmentReader', 'getEnvironmentVariables']
-		 * ```
-		 **/
-		// Prevent app from trying to get properties from the manager that
-		// are not intended for public access
-		if (!isValidOrigin(managerOrigin)) {
-			throw new Error(`Invalid accessor namespace "${managerOrigin}"`);
-		}
-
-		// Need to fix typing of return value
-		const getAccessorForOrigin = (
-			accessorMethods: string[],
-			managerOrigin: (typeof ALLOWED_ACCESSOR_METHODS)[number],
-			accessorManager: AppAccessorManager,
-		) => {
-			const origin = accessorManager[managerOrigin](this.appPackage.info.id);
-
-			if (managerOrigin === 'getHttp' || managerOrigin === 'getPersistence') {
-				return origin;
-			}
-
-			if (managerOrigin === 'getConfigurationExtend' || managerOrigin === 'getConfigurationModify') {
-				return origin[accessorMethods[0] as keyof typeof origin];
-			}
-
-			let accessor = origin;
-
-			// Call all intermediary objects to "resolve" the accessor
-			accessorMethods.forEach((methodName) => {
-				const method = accessor[methodName as keyof typeof accessor] as unknown;
-
-				if (typeof method !== 'function') {
-					throw new Error(`Invalid accessor method "${methodName}"`);
-				}
-
-				accessor = method.apply(accessor);
-			});
-
-			return accessor;
-		};
-
-		const accessor = getAccessorForOrigin(accessorMethods, managerOrigin, this.accessors);
-
-		const tailMethod = accessor[tailMethodName as keyof typeof accessor] as unknown;
-
-		if (typeof tailMethod !== 'function') {
-			throw new Error(`Invalid accessor method "${tailMethodName}"`);
-		}
-
-		const result = await tailMethod.apply(accessor, params);
-
-		return jsonrpc.success(id, typeof result === 'undefined' ? null : result);
+	// Thin wrappers kept so the accessor/bridge dispatch is exercisable in isolation;
+	// the actual logic lives in the transport-agnostic AppRequestRouter.
+	private handleAccessorMessage(message: jsonrpc.IParsedObjectRequest): Promise<jsonrpc.SuccessObject> {
+		return this.router.handleAccessorMessage(message);
 	}
 
-	private async handleBridgeMessage({
-		payload: { method, id, params },
-	}: jsonrpc.IParsedObjectRequest): Promise<jsonrpc.SuccessObject | jsonrpc.ErrorObject> {
-		const [bridgeName, bridgeMethod] = method.substring(8).split(':');
-
-		this.debug('Handling bridge message %s().%s() with params %s', bridgeName, bridgeMethod, inspect(params));
-
-		const bridge = this.bridges[bridgeName as keyof typeof this.bridges];
-
-		if (!bridgeMethod.startsWith('do') || typeof bridge !== 'function' || !Array.isArray(params)) {
-			throw new Error('Invalid bridge request');
-		}
-
-		const bridgeInstance = bridge.call(this.bridges);
-
-		const methodRef = bridgeInstance[bridgeMethod as keyof typeof bridge] as unknown;
-
-		if (typeof methodRef !== 'function') {
-			throw new Error('Invalid bridge request');
-		}
-
-		let result;
-		try {
-			result = await methodRef.apply(
-				bridgeInstance,
-				// Should the protocol expect the placeholder APP_ID value or should the Deno process send the actual appId?
-				// If we do not expect the APP_ID, the Deno process will be able to impersonate other apps, potentially
-				params.map((value: unknown) => (value === 'APP_ID' ? this.appPackage.info.id : value)),
-			);
-		} catch (error) {
-			this.debug('Error executing bridge method %s().%s() %s', bridgeName, bridgeMethod, inspect(error.message));
-			const jsonRpcError = new jsonrpc.JsonRpcError(error.message, -32000, error);
-			return jsonrpc.error(id, jsonRpcError);
-		}
-
-		return jsonrpc.success(id, typeof result === 'undefined' ? null : result);
+	private handleBridgeMessage(message: jsonrpc.IParsedObjectRequest): Promise<jsonrpc.SuccessObject | jsonrpc.ErrorObject> {
+		return this.router.handleBridgeMessage(message);
 	}
 
 	private async handleIncomingMessage(message: jsonrpc.IParsedObjectNotification | jsonrpc.IParsedObjectRequest): Promise<void> {

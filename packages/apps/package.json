@@ -7,14 +7,16 @@
 	"files": [
 		"dist/",
 		"base-runtime/",
-		"node-runtime/"
+		"node-runtime/",
+		"watt-runtime/"
 	],
 	"scripts": {
-		"build": "run-s build:clean build:default build:base-runtime build:node-runtime",
-		"build:clean": "rimraf dist base-runtime/dist node-runtime/dist",
+		"build": "run-s build:clean build:default build:base-runtime build:node-runtime build:watt-runtime",
+		"build:clean": "rimraf dist base-runtime/dist node-runtime/dist watt-runtime/dist",
 		"build:default": "tsc -p tsconfig.json",
 		"build:base-runtime": "tsc -p base-runtime/tsconfig.json",
 		"build:node-runtime": "tsc -p node-runtime/tsconfig.json",
+		"build:watt-runtime": "tsc -p watt-runtime/tsconfig.json",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
 		"lint": "eslint .",
 		"test:node": "NODE_ENV=test node --require ts-node/register/transpile-only --test-reporter spec --test-concurrency=1 --test \"tests/**/*.test.ts\"",
@@ -23,7 +25,8 @@
 		"typecheck:default": "tsc -p tsconfig.json --noEmit",
 		"typecheck:base-runtime": "tsc -p base-runtime/tsconfig.json --noEmit",
 		"typecheck:node-runtime": "tsc -p node-runtime/tsconfig.json --noEmit",
-		"typecheck": "run-s typecheck:default typecheck:base-runtime typecheck:node-runtime"
+		"typecheck:watt-runtime": "tsc -p watt-runtime/tsconfig.json --noEmit",
+		"typecheck": "run-s typecheck:default typecheck:base-runtime typecheck:node-runtime typecheck:watt-runtime"
 	},
 	"dependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",

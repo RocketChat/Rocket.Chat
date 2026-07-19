@@ -32,15 +32,29 @@ const COMMAND_PONG = '_zPONG';
 
 export const RPCResponseObserver = new EventEmitter();
 
+export type HostMessage = jsonrpc.JsonRpc | typeof COMMAND_PONG;
+
 /**
- * The IPC channel connecting this runtime to the host process that spawned it.
+ * A transport carrying messages from this runtime back to the host process.
+ *
+ * The default transport is Node's `child_process` IPC channel, used by the
+ * subprocess runtime. Alternative runtimes - notably the Watt runtime, where the
+ * app runs inside a Worker Thread rather than a subprocess - inject their own
+ * transport via {@link setHostTransport}.
+ */
+export type HostTransport = {
+	send(message: HostMessage): Promise<void>;
+};
+
+/**
+ * The `child_process` IPC transport.
  *
  * The channel serializes messages with V8's structured clone algorithm, which
  * throws on functions and other non-cloneable values an app might return, so
  * every message is sanitized before being handed to Node.
  */
-export const ipcChannel = {
-	send(message: jsonrpc.JsonRpc | typeof COMMAND_PONG): Promise<void> {
+const processIpcTransport: HostTransport = {
+	send(message: HostMessage): Promise<void> {
 		return new Promise((resolve, reject) => {
 			if (typeof process.send !== 'function') {
 				reject(new Error('No IPC channel available to communicate with the host process'));
@@ -49,6 +63,26 @@ export const ipcChannel = {
 
 			process.send(sanitizeForIpc(message), undefined, undefined, (error) => (error ? reject(error) : resolve()));
 		});
+	},
+};
+
+let activeTransport: HostTransport = processIpcTransport;
+
+/**
+ * Swaps the transport used to reach the host. Runtimes that are not backed by a
+ * `child_process` (e.g. the Watt worker runtime) call this during bootstrap.
+ */
+export function setHostTransport(transport: HostTransport): void {
+	activeTransport = transport;
+}
+
+/**
+ * The channel connecting this runtime to its host. All outgoing messages funnel
+ * through here; the underlying transport is swappable via {@link setHostTransport}.
+ */
+export const ipcChannel = {
+	send(message: HostMessage): Promise<void> {
+		return activeTransport.send(message);
 	},
 };
 
