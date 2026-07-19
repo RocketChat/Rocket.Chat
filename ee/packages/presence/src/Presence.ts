@@ -112,7 +112,7 @@ export class Presence extends ServiceClass implements IPresence {
 		this.reaper.start();
 		this.lostConTimeout = setTimeout(async () => {
 			const lock = await this.api?.lock('presence.removeLostConnections', 5000);
-			if(!lock){
+			if (!lock) {
 				return;
 			}
 
