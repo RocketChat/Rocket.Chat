@@ -23,14 +23,13 @@ import {
 import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
 import _ from 'underscore';
-
+import { SettingValidationError } from '../../lib/settingValidationRules';
+import { validateSetting } from '../../settings/validateSetting';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../lib/notifyListener';
-import { SettingValidationError, validateSettingRules } from '../../lib/settingValidationRules';
 import { disableCustomScripts } from '../../lib/shared/disableCustomScripts';
 import { addOAuthServiceMethod } from '../../meteor-methods/auth/addOAuthService';
 import { SettingsEvents, settings } from '../../settings';
-import { checkSettingValueBounds } from '../../settings/checkSettingValueBonds';
 import { updateAuditedByUser } from '../../settings/lib/auditedSettingUpdates';
 import { saveSettingsBulk } from '../../settings/lib/saveSettingsBulk';
 import { setValue } from '../../settings/raw';
@@ -390,14 +389,18 @@ API.v1.post(
 
 		if (isSettingsUpdatePropDefault(bodyParams)) {
 			// TODO(next major): unify both validations into one function with a common API error response
-			checkSettingValueBounds(setting, bodyParams.value);
 
 			try {
-				validateSettingRules([{ _id, value: bodyParams.value }]);
+				validateSetting(setting, bodyParams.value);
 			} catch (error) {
 				if (error instanceof SettingValidationError) {
 					return API.v1.failure(error.message, 'error-setting-validation-failed');
 				}
+
+				if (error instanceof Meteor.Error && error.error === 'error-invalid-setting-value') {
+					return API.v1.failure(error.reason ?? error.message, 'error-setting-validation-failed');
+				}
+
 				throw error;
 			}
 
