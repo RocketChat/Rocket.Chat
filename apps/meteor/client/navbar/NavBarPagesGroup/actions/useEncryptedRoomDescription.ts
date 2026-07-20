@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 export const useEncryptedRoomDescription = (roomType: 'channel' | 'team' | 'discussion') => {
 	const { t } = useTranslation();
 	const e2eEnabled = useSetting('E2E_Enable');
-	const e2eEnforcedForPrivate = useSetting<boolean>('E2E_Force_Encryption_For_Private_Rooms') && e2eEnabled;
+	const e2eEnforcedForPrivate = Boolean(useSetting('E2E_Force_Encryption_For_Private_Rooms')) && Boolean(e2eEnabled);
 
 	return ({ isPrivate, encrypted }: { isPrivate: boolean; encrypted: boolean }) => {
 		if (!e2eEnabled) {

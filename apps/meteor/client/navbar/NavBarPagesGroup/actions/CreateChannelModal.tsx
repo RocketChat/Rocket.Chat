@@ -77,7 +77,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms') && e2eEnabled;
-	const e2eEnforcedForPrivate = useSetting<boolean>('E2E_Force_Encryption_For_Private_Rooms') && e2eEnabled;
+	const e2eEnforcedForPrivate = Boolean(useSetting('E2E_Force_Encryption_For_Private_Rooms')) && Boolean(e2eEnabled);
 
 	const getEncryptedHint = useEncryptedRoomDescription('channel');
 
