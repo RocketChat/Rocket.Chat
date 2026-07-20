@@ -1,9 +1,8 @@
 import type { UseInfiniteQueryResult } from '@tanstack/react-query';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
-import type { CSSProperties, HTMLAttributes, ReactNode } from 'react';
-import * as React from 'react';
-import { Children, forwardRef, isValidElement } from 'react';
+import type { CSSProperties, ElementType, HTMLAttributes, ReactNode, Ref } from 'react';
+import { Children, forwardRef, isValidElement, useImperativeHandle } from 'react';
 
 import PaginatedVirtualList from './PaginatedVirtualList';
 
@@ -21,20 +20,20 @@ type MockVListProps = {
 	children: ReactNode;
 	bufferSize?: number;
 	onScroll?: (offset: number) => void;
-	as?: React.ElementType;
-	item?: React.ElementType;
+	as?: ElementType;
+	item?: ElementType;
 	style?: CSSProperties;
 	className?: string;
 };
 
 jest.mock('virtua', () => {
 	return {
-		Virtualizer: React.forwardRef(
+		Virtualizer: forwardRef(
 			(
 				{ children, bufferSize, onScroll, as: asRoot = 'div', item: asItem = 'div', style, className }: MockVListProps,
-				ref: React.Ref<unknown>,
+				ref: Ref<unknown>,
 			) => {
-				React.useImperativeHandle(ref, () => (mockVirtualizerHasHandle ? mockVirtualizerHandle : null));
+				useImperativeHandle(ref, () => (mockVirtualizerHasHandle ? mockVirtualizerHandle : null));
 				const Root = asRoot;
 				const Item = asItem;
 				const wrapped = Children.map(children, (child, index) => {
