@@ -1187,33 +1187,39 @@ jobs:
 
             echo "Promoting $service"
 
-            if [[ "${service}" == 'rocketchat' ]]; then
-              IMAGE_NAME="${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat"
-            else
-              IMAGE_NAME="${{ needs.release-versions.outputs.lowercase-repo }}/${service}"
-            fi
-
+            # FIPS images publish to the same repo as their base service, distinguished by a
+            # '-fips' tag suffix (matching GHCR), not a separate '-fips' repository.
             # Get image name from docker-compose-ci.yml since rocketchat image is different from service name (rocket.chat)
+            TAG_SUFFIX=''
             if [[ "$service" == *"-fips" ]]; then
               base_service="${service%-fips}"
+              TAG_SUFFIX='-fips'
               SRC=$(docker compose -f docker-compose-ci.yml -f docker-compose-ci.fips.yml config --format json 2>/dev/null | jq -r --arg s "$base_service" '.services[$s].image')
             else
-              SRC=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "${service}" '.services[$s].image')
+              base_service="$service"
+              SRC=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "$service" '.services[$s].image')
             fi
+
+            if [[ "${base_service}" == 'rocketchat' ]]; then
+              IMAGE_NAME="${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat"
+            else
+              IMAGE_NAME="${{ needs.release-versions.outputs.lowercase-repo }}/${base_service}"
+            fi
+
             DEST_REPO="docker.io/${IMAGE_NAME}"
 
-            echo "Copying $SRC to ${DEST_REPO}:${PRIMARY}"
+            echo "Copying $SRC to ${DEST_REPO}:${PRIMARY}${TAG_SUFFIX}"
             skopeo copy --all \
               "docker://${SRC}" \
-              "docker://${DEST_REPO}:${PRIMARY}"
+              "docker://${DEST_REPO}:${PRIMARY}${TAG_SUFFIX}"
 
             # copy additional tags
             if (( ${#TAGS[@]} > 1 )); then
               for t in "${TAGS[@]:1}"; do
-                echo "Copying $SRC to ${DEST_REPO}:${t}"
+                echo "Copying $SRC to ${DEST_REPO}:${t}${TAG_SUFFIX}"
                 skopeo copy --all \
                   "docker://${SRC}" \
-                  "docker://${DEST_REPO}:${t}"
+                  "docker://${DEST_REPO}:${t}${TAG_SUFFIX}"
               done
             fi
 
