@@ -117,25 +117,9 @@ export const useDevicePermissionPrompt2 = () => {
 					audio: selectedDeviceId ? { deviceId: { exact: selectedDeviceId } } : true,
 				};
 
-				if (state === 'granted') {
-					void requestDevice({
-						onAccept: resolve,
-						onReject: (error) => {
-							if (isNoDeviceError(error)) {
-								setModal(<PermissionFlowModal type='noDevices' onCancel={onCancel} onConfirm={onCancel} />);
-								return;
-							}
-							reject(error);
-						},
-						constraints,
-					});
-					return;
-				}
-
 				const onConfirm = () => {
 					void requestDevice?.({
 						onReject: (...args) => {
-							reject(...args);
 							const [error] = args;
 							if (isNoDeviceError(error)) {
 								setModal(<PermissionFlowModal type='noDevices' onCancel={onCancel} onConfirm={onCancel} />);
@@ -151,13 +135,29 @@ export const useDevicePermissionPrompt2 = () => {
 					});
 				};
 
-				const modalType = getModalType(actionType, state);
-
 				const onCancel = () => {
 					reject(new PermissionRequestCancelledCallRejectedError('Permission request modal closed'));
 
 					setModal(null);
 				};
+
+				if (state === 'granted') {
+					void requestDevice({
+						onAccept: resolve,
+						onReject: (error) => {
+							if (isNoDeviceError(error)) {
+								setModal(<PermissionFlowModal type='noDevices' onCancel={onCancel} onConfirm={onCancel} />);
+								return;
+							}
+							reject(error);
+						},
+						constraints,
+					});
+					return;
+				}
+
+				const modalType = getModalType(actionType, state);
+
 				setModal(<PermissionFlowModal type={modalType} onCancel={onCancel} onConfirm={onConfirm} />);
 			});
 		},
