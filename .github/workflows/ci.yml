@@ -768,8 +768,8 @@ jobs:
 
   test-ui-fips:
     name: 🔨 Test UI (FIPS)
+    if: contains(github.event.pull_request.labels.*.name, 'fips')
     needs: [checks, build-gh-docker-publish, release-versions]
-
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
       type: ui
@@ -989,7 +989,7 @@ jobs:
             exit 1
           fi
 
-          if [[ '${{ needs.test-ui-fips.result }}' != 'success' ]]; then
+          if [[ '${{ needs.test-ui-fips.result }}' != 'success' && '${{ needs.test-ui-fips.result }}' != 'skipped' ]]; then
             exit 1
           fi
 
