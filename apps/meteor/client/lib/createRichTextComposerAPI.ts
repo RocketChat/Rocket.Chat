@@ -1,16 +1,18 @@
 import type { Options } from '@rocket.chat/message-parser';
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import { Accounts } from 'meteor/accounts-base';
 import type { RefObject } from 'react';
 
 import { createComposerAPICore, triggerEvent, type SetText } from './createComposerAPICore';
+import { limitQuoteChain } from './limitQuoteChain';
 import { resolveComposerBox } from './messageStateHandler';
 import { getSelectionRange, setSelectionRange } from './selectionRange';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 
 export const createRichTextComposerAPI = (
 	input: HTMLDivElement,
-	storageID: string,
+	persistDraft: (value: string) => void,
+	initialDraft: string,
+	quoteChainLimit: number,
 	parseOptions: Options,
 	composerRef: RefObject<HTMLElement | null>,
 	{ rid, tmid }: { rid: string; tmid?: string },
@@ -49,26 +51,19 @@ export const createRichTextComposerAPI = (
 		!skipFocus && focus();
 	};
 
-	input.addEventListener('input', (event: Event) => {
-		resolveComposerBox(event, parseOptions);
-	});
+	const rerender = (event: Event): void => resolveComposerBox(event, parseOptions);
+
+	input.addEventListener('input', rerender);
 
 	const core = createComposerAPICore({
 		input,
 		composerRef,
 		room: { rid, tmid },
-		initialValue: Accounts.storageLocation.getItem(storageID) ?? '',
-		save: () => {
-			// Store the value entirely as HTML with the DOM structure intact
-			if (input.innerHTML !== '<br>') {
-				Accounts.storageLocation.setItem(storageID, input.innerHTML);
-				return;
-			}
-
-			Accounts.storageLocation.removeItem(storageID);
-		},
+		initialValue: initialDraft,
+		save: () => persistDraft(input.innerText),
 		setText,
 		focus,
+		prepareQuotedMessage: (message) => limitQuoteChain(message, quoteChainLimit),
 	});
 
 	const { insertText } = core;
@@ -188,6 +183,10 @@ export const createRichTextComposerAPI = (
 
 	return {
 		...core,
+		release: () => {
+			core.release();
+			input.removeEventListener('input', rerender);
+		},
 		setText,
 		wrapSelection,
 		replaceText,
