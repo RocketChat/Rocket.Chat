@@ -6584,11 +6584,11 @@ describe('[Users]', () => {
 	describe('[/users.verifyEmail]', () => {
 		it('should fail with 400 when the token is not provided', () => request.post(api('users.verifyEmail')).send({}).expect(400));
 
-		it('should fail with 404 when the token does not match any user', () =>
+		it('should fail with 403 when the token does not match any user', () =>
 			request
 				.post(api('users.verifyEmail'))
 				.send({ token: 'this-token-does-not-exist' })
-				.expect(404)
+				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 				}));
