@@ -31,16 +31,20 @@ const E2EEWarningBanner = () => {
 				onClose: imperativeModal.close,
 				roomType: getRoomTypeTranslation(room)?.toLowerCase(),
 				onConfirm: async () => {
-					const { success } = await toggleE2E({ rid: room._id, encrypted: true });
-					if (!success) {
-						return;
-					}
+					try {
+						const { success } = await toggleE2E({ rid: room._id, encrypted: true });
+						if (!success) {
+							return;
+						}
 
-					imperativeModal.close();
-					dispatchToastMessage({ type: 'success', message: t('E2E_Encryption_enabled_for_room', { roomName: room.name }) });
+						imperativeModal.close();
+						dispatchToastMessage({ type: 'success', message: t('E2E_Encryption_enabled_for_room', { roomName: room.name }) });
 
-					if (subscription?.autoTranslate) {
-						dispatchToastMessage({ type: 'success', message: t('AutoTranslate_Disabled_for_room', { roomName: room.name }) });
+						if (subscription?.autoTranslate) {
+							dispatchToastMessage({ type: 'success', message: t('AutoTranslate_Disabled_for_room', { roomName: room.name }) });
+						}
+					} catch (error) {
+						dispatchToastMessage({ type: 'error', message: error });
 					}
 				},
 			},
