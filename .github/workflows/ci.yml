@@ -711,13 +711,13 @@ jobs:
       CR_PAT: ${{ secrets.CR_PAT }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  test-api-apps-node-ee:
-    name: 🔨 Test API Apps (node-runtime - EE)
+  test-api-apps-deno-ee:
+    name: 🔨 Test API Apps (deno-runtime - EE)
     needs: [checks, build-gh-docker-publish, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
-      type: api-apps-node
+      type: api-apps-deno
       release: ee
       transporter: 'nats://nats:4222'
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
