@@ -9591,6 +9591,7 @@ __metadata:
     postcss-scss: "npm:^4.0.9"
     postcss-selector-not: "npm:^8.0.1"
     preact: "npm:~10.25.4"
+    preact-render-to-string: "npm:~6.7.0"
     preact-router: "npm:^4.1.2"
     query-string: "npm:^7.1.3"
     react: "npm:~19.2.7"
@@ -31205,6 +31206,15 @@ __metadata:
   version: 2.2.0
   resolution: "postis@npm:2.2.0"
   checksum: 10/f7a872ad65a80b52f58b5217f917b6fc35dbd503019374cf813207c30e85b4fdf38e275a7faf1a393af554e258321bcda58b3b60c4a13c22d6c70527e16ba730
+  languageName: node
+  linkType: hard
+
+"preact-render-to-string@npm:~6.7.0":
+  version: 6.7.0
+  resolution: "preact-render-to-string@npm:6.7.0"
+  peerDependencies:
+    preact: ">=10 || >= 11.0.0-0"
+  checksum: 10/1596656221c36458b759b51b95cbf8b97a67da5c8f69e3a7d75ac1c1c0b3f7399f35e0b51c3772cf5e1b8f1d70c4e2da263e2732a11715b72e86a207bcd6abbd
   languageName: node
   linkType: hard
 
