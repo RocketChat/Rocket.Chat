@@ -99,6 +99,8 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	public set micless(micless: boolean) {
 		if (micless) {
 			this.shouldMuteMiclessCall = true;
+		} else {
+			this.shouldMuteMiclessCall = false;
 		}
 		this._micless = micless;
 	}
