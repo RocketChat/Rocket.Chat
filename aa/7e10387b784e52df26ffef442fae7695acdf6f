@@ -1,0 +1,22 @@
+apps/meteor/tests/end-to-end/api/users.ts
+  h_4c386397e672f4 6587,6591
+apps/meteor/server/lib/users/verifyEmail.ts
+  h_4c386397e672f4 1-26
+apps/meteor/server/api/v1/users.ts
+  h_4c386397e672f4 89,2108,2114,2116,2119
+packages/model-typings/src/models/IUsersModel.ts
+  h_4c386397e672f4 439-440
+packages/models/src/models/Users.ts
+  h_4c386397e672f4 3113-3130
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "aa7e10387b784e52df26ffef442fae7695acdf6f",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
