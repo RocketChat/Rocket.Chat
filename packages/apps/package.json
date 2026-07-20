@@ -36,7 +36,7 @@
 		"@rocket.chat/model-typings": "workspace:^",
 		"acorn": "8.17.0",
 		"acorn-walk": "8.3.5",
-		"adm-zip": "^0.5.16",
+		"adm-zip": "^0.6.0",
 		"astring": "1.8.6",
 		"debug": "^4.3.7",
 		"esbuild": "~0.28.1",
@@ -49,7 +49,6 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/tsconfig": "workspace:*",
-		"@types/adm-zip": "^0.5.7",
 		"@types/debug": "^4.1.12",
 		"@types/lodash.clonedeep": "^4.5.9",
 		"@types/node": "~22.16.5",
