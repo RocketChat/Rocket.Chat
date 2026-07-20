@@ -27,6 +27,10 @@ type IncomingPromptProps = {
 
 type UseDevicePermissionPromptProps = DeviceChangePromptProps | OutgoingPromptProps | IncomingPromptProps;
 
+const isNoDeviceError = (error: Error) => {
+	return ['NotFoundError', 'DevicesNotFoundError'].includes(error.name);
+};
+
 const getModalType = (
 	actionType: UseDevicePermissionPromptProps['actionType'],
 	state: Exclude<PermissionState, 'granted'>,
@@ -116,7 +120,13 @@ export const useDevicePermissionPrompt2 = () => {
 				if (state === 'granted') {
 					void requestDevice({
 						onAccept: resolve,
-						onReject: reject,
+						onReject: (error) => {
+							if (isNoDeviceError(error)) {
+								setModal(<PermissionFlowModal type='noDevices' onCancel={onCancel} onConfirm={onCancel} />);
+								return;
+							}
+							reject(error);
+						},
 						constraints,
 					});
 					return;
@@ -126,6 +136,11 @@ export const useDevicePermissionPrompt2 = () => {
 					void requestDevice?.({
 						onReject: (...args) => {
 							reject(...args);
+							const [error] = args;
+							if (['NotFoundError', 'DevicesNotFoundError'].includes(error.name)) {
+								setModal(<PermissionFlowModal type='noDevices' onCancel={onCancel} onConfirm={onCancel} />);
+								return;
+							}
 							setModal(<PermissionFlowModal type='denied' onCancel={onCancel} onConfirm={onCancel} />);
 						},
 						onAccept: (...args) => {

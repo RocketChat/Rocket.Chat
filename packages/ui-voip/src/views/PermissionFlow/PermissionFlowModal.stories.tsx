@@ -19,6 +19,9 @@ const meta = {
 				Cancel: 'Cancel',
 				VoIP_device_permission_required_description:
 					'Your web browser stopped {{workspaceUrl}} from using your microphone and/or speaker.\n\nAllow speaker and microphone access in your browser settings to prevent seeing this message again.',
+				VoIP_devices_not_found: 'Microphone not detected',
+				VoIP_devices_not_found_description:
+					'Your web browser did not list any eligible audio input for this call. Ensure you have at least one audio input connected to your device and enabled in the system settings.',
 			})
 			.buildStoryDecorator(),
 		(Story) => <Story />,
@@ -63,4 +66,13 @@ export const PermissionFlowModalDenied: Story = {
 		type: 'denied',
 	},
 	name: 'Permission denied',
+};
+
+export const PermissionFlowModalNoDevices: Story = {
+	args: {
+		onCancel: noop,
+		onConfirm: noop,
+		type: 'noDevices',
+	},
+	name: 'No devices found',
 };
