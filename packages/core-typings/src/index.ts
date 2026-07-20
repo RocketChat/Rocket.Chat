@@ -19,7 +19,6 @@ export type * from './IMatrixFederationStatistics';
 export type * from './IServerInfo';
 export type * from './IWorkspaceInfo';
 export type * from './IInstanceStatus';
-export type * from './IWebdavAccount';
 export type * from './IPermission';
 export type * from './IRole';
 export type * from './IIntegration';
