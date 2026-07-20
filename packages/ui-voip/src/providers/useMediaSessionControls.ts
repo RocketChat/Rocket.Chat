@@ -1,7 +1,7 @@
 import type { MediaSignalingSession } from '@rocket.chat/media-signaling';
 import { useMemo } from 'react';
 
-import { useDevicePermissionPrompt2 } from '../hooks';
+import { stopTracks, useDevicePermissionPrompt2 } from '../hooks';
 import { getEndCall } from '../utils/instanceControlsGetters';
 
 export type MediaSessionControls = {
@@ -25,17 +25,20 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 				return;
 			}
 			if (instance.micless) {
-				void requestDevice({ actionType: 'device-change' }).then((stream: MediaStream) => {
-					const inputTrack = stream.getAudioTracks()[0];
-					if (!inputTrack) {
-						return;
-					}
-					const { deviceId } = inputTrack.getSettings();
-					if (!deviceId) {
-						return;
-					}
-					void changeDevice(deviceId);
-				});
+				void requestDevice({ actionType: 'device-change' })
+					.then((stream: MediaStream) => {
+						stopTracks(stream);
+						const inputTrack = stream.getAudioTracks()[0];
+						if (!inputTrack) {
+							return;
+						}
+						const { deviceId } = inputTrack.getSettings();
+						if (!deviceId) {
+							return;
+						}
+						void changeDevice(deviceId);
+					})
+					.catch((e) => console.error('useMediaSessionControls - failed to enable microphone:', e));
 				return;
 			}
 			instanceState.localParticipant.setMuted(!instanceState.localParticipant.muted);
