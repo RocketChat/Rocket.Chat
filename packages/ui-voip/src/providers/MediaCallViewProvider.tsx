@@ -101,7 +101,9 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 
 			if ('number' in peerInfo) {
 				void controls.startCall(peerInfo.number, 'sip');
+				return;
 			}
+
 			throw new Error('MediaCall - New call - something went wrong when trying to call. PeerInfo is missing userId and/or number.');
 		};
 
