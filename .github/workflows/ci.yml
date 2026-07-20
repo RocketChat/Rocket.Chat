@@ -158,7 +158,6 @@ jobs:
     runs-on: ubuntu-24.04-arm
     permissions:
       checks: read
-      contents: read
     outputs:
       skip-tests: ${{ steps.check.outputs.skip-tests }}
     steps:
@@ -174,8 +173,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          # --paginate applies the jq filter per page, so emit names and count with
+          # wc -l to get a single integer across pages
           passed=$(gh api "repos/${{ github.repository }}/commits/${{ github.sha }}/check-runs" --paginate \
-            --jq '[.check_runs[] | select(.name == "✅ Tests Done" and .conclusion == "success")] | length')
+            --jq '.check_runs[] | select(.name == "✅ Tests Done" and .conclusion == "success") | .name' | wc -l)
 
           if [[ "$passed" -gt 0 ]]; then
             echo "Tests already passed for ${{ github.sha }} in the merge queue, skipping test jobs"
@@ -891,7 +892,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           # tests don't re-run on the develop push, so the merge queue run (same SHA
           # that lands on develop) provides the develop coverage baseline
-          override_branch: ${{ github.event_name == 'merge_group' && 'develop' || '' }}
+          override_branch: ${{ github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/develop' && 'develop' || '' }}
 
       - name: Report UI coverage
         uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
@@ -901,12 +902,12 @@ jobs:
           flags: e2e
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
-          override_branch: ${{ github.event_name == 'merge_group' && 'develop' || '' }}
+          override_branch: ${{ github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/develop' && 'develop' || '' }}
 
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-24.04-arm
-    needs: [test-guard, checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-api-livechat, test-api-livechat-ee, test-federation-matrix]
+    needs: [test-guard, checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-api-livechat, test-api-livechat-ee, test-api-apps-node-ee, test-federation-matrix]
     if: always() && needs.test-guard.outputs.skip-tests != 'true'
     steps:
       - name: Test finish aggregation
@@ -940,6 +941,10 @@ jobs:
           fi
 
           if [[ '${{ needs.test-api-livechat-ee.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-api-apps-node-ee.result }}' != 'success' ]]; then
             exit 1
           fi
 
