@@ -79,7 +79,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	private _micless: boolean = false;
 
-	private shouldToggleMute = false;
+	private shouldMuteMiclessCall = false;
 
 	public get sessionId(): string {
 		return this._sessionId;
@@ -93,9 +93,12 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		return this.registration.registered;
 	}
 
+	// FIXME: This state is controlled outside of this class. MediaSignalingSession should handle this fallback in another way so this information doesn't depend on the consumer
+	// FIXME: Consumers can still unmute the call even when this is set to true. That behaviour should be guarded at the call level to avoid representing incorrect states.
+	/* micless: used by the consumer to identify when a "fake stream" was used due to inability to retrieve a proper device. When set to true will mute the call once when it starts */
 	public set micless(micless: boolean) {
-		if (this._micless !== micless) {
-			this.shouldToggleMute = true;
+		if (micless) {
+			this.shouldMuteMiclessCall = true;
 		}
 		this._micless = micless;
 	}
@@ -779,10 +782,10 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 		this.emit('sessionStateChange');
 		this.requestInputTrackUpdate();
-		if (mainCall && this.shouldToggleMute) {
-			this.shouldToggleMute = false;
-			if (this._micless !== mainCall.muted) {
-				mainCall.setMuted(this._micless);
+		if (mainCall && this.shouldMuteMiclessCall) {
+			this.shouldMuteMiclessCall = false;
+			if (!mainCall.muted) {
+				mainCall.setMuted(true);
 			}
 		}
 

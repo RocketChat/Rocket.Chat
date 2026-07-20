@@ -8,8 +8,8 @@ export type MediaSessionControls = {
 	toggleMute: () => void;
 	toggleHold: () => void;
 	endCall: () => void;
-	startCall: (id: string, kind: 'user' | 'sip') => Promise<void>;
-	acceptCall: () => void;
+	startCall: (id: string, kind: 'user' | 'sip', micless: boolean) => Promise<void>;
+	acceptCall: (micless: boolean) => void;
 	changeDevice: (deviceId: string) => Promise<void>;
 	forwardCall: (type: 'user' | 'sip', id: string) => void;
 	sendTone: (tone: string) => void;
@@ -26,7 +26,7 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 			}
 			if (instance.micless) {
 				void requestDevice({ actionType: 'device-change' })
-					.then((stream: MediaStream) => {
+					.then(async (stream: MediaStream) => {
 						stopTracks(stream);
 						const inputTrack = stream.getAudioTracks()[0];
 						if (!inputTrack) {
@@ -36,7 +36,12 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 						if (!deviceId) {
 							return;
 						}
-						void changeDevice(deviceId);
+						await changeDevice(deviceId);
+					})
+					.then(() => {
+						if (!instance.micless) {
+							instance.getState()?.localParticipant.setMuted(false);
+						}
 					})
 					.catch((e) => console.error('useMediaSessionControls - failed to enable microphone:', e));
 				return;
@@ -54,7 +59,7 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 
 		const endCall = getEndCall(instance);
 
-		const acceptCall = () => {
+		const acceptCall = (micless: boolean) => {
 			if (!instance) {
 				return;
 			}
@@ -62,14 +67,16 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 			if (!instanceState?.confirmed || instanceState.state !== 'ringing') {
 				return;
 			}
+			instance.micless = micless;
 			instanceState.call.accept();
 		};
 
-		const startCall = async (id: string, kind: 'user' | 'sip') => {
+		const startCall = async (id: string, kind: 'user' | 'sip', micless: boolean) => {
 			if (!instance) {
 				return;
 			}
 			try {
+				instance.micless = micless;
 				await instance.startCall(kind, id);
 			} catch (error) {
 				console.error('Error starting call', error);
@@ -80,7 +87,7 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 			if (!instance) {
 				return;
 			}
-			void instance.setDeviceId({ exact: deviceId });
+			await instance.setDeviceId({ exact: deviceId });
 		};
 
 		const forwardCall = (type: 'user' | 'sip', id: string) => {

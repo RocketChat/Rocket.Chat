@@ -129,6 +129,9 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 
 	private async getUserMedia(constraints: MediaStreamConstraints) {
 		try {
+			if (this.sessionInstance?.micless) {
+				return getFakeStream();
+			}
 			const stream = await navigator.mediaDevices.getUserMedia(constraints);
 			if (!stream) {
 				throw new Error();
@@ -136,9 +139,6 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 			// Wait a little to ensure the track switch happened.
 			// It's ok for the old stream/audioCtx to hang unused for a little
 			fakeStreamTimeout = setTimeout(stopFakeStream, 1000);
-			if (this.sessionInstance) {
-				this.sessionInstance.micless = false;
-			}
 			return stream;
 		} catch (error) {
 			if (this.sessionInstance) {
