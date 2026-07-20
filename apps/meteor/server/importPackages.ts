@@ -88,7 +88,6 @@ import './bridges/smarsh';
 import './settings/theme';
 import './hooks/messages/processThreads';
 import './lib/ui-master';
-import './bridges/webdav';
 import './lib/auth-providers/wordpress';
 import './lib/saml/startup';
 import './lib/saml/loginHandler';

@@ -315,7 +315,6 @@
 		"underscore": "^1.13.8",
 		"universal-perf-hooks": "^1.0.1",
 		"virtua": "^0.49.3",
-		"webdav": "^4.11.5",
 		"xml-crypto": "~6.1.2",
 		"xml-encryption": "~4.0.1",
 		"xml2js": "~0.6.2",

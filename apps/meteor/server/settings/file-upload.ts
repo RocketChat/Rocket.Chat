@@ -102,10 +102,6 @@ export const createFileUploadSettings = () =>
 					i18nLabel: 'GoogleCloudStorage',
 				},
 				{
-					key: 'Webdav',
-					i18nLabel: 'WebDAV',
-				},
-				{
 					key: 'FileSystem',
 					i18nLabel: 'FileSystem',
 				},
@@ -290,61 +286,6 @@ export const createFileUploadSettings = () =>
 				enableQuery: {
 					_id: 'FileUpload_Storage_Type',
 					value: 'FileSystem',
-				},
-			});
-		});
-
-		await this.section('WebDAV', async function () {
-			await this.add('FileUpload_Webdav_Upload_Folder_Path', '', {
-				type: 'string',
-				enableQuery: {
-					_id: 'FileUpload_Storage_Type',
-					value: 'Webdav',
-				},
-			});
-			await this.add('FileUpload_Webdav_Server_URL', '', {
-				type: 'string',
-				enableQuery: {
-					_id: 'FileUpload_Storage_Type',
-					value: 'Webdav',
-				},
-			});
-			await this.add('FileUpload_Webdav_Username', '', {
-				type: 'string',
-				enableQuery: {
-					_id: 'FileUpload_Storage_Type',
-					value: 'Webdav',
-				},
-				secret: true,
-			});
-			await this.add('FileUpload_Webdav_Password', '', {
-				type: 'password',
-				private: true,
-				enableQuery: {
-					_id: 'FileUpload_Storage_Type',
-					value: 'Webdav',
-				},
-				secret: true,
-			});
-			await this.add('FileUpload_Webdav_Proxy_Avatars', false, {
-				type: 'boolean',
-				enableQuery: {
-					_id: 'FileUpload_Storage_Type',
-					value: 'Webdav',
-				},
-			});
-			await this.add('FileUpload_Webdav_Proxy_Uploads', false, {
-				type: 'boolean',
-				enableQuery: {
-					_id: 'FileUpload_Storage_Type',
-					value: 'Webdav',
-				},
-			});
-			await this.add('FileUpload_Webdav_Proxy_UserDataFiles', false, {
-				type: 'boolean',
-				enableQuery: {
-					_id: 'FileUpload_Storage_Type',
-					value: 'Webdav',
 				},
 			});
 		});
