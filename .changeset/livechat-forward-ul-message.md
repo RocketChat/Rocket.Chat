@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fixes an issue where the "user left" system message could be missing from an Omnichannel conversation after it was forwarded to another agent or department
+Fixes an issue where the "user left" system message could be added to an Omnichannel conversation only after the forwarding process had already finished, causing it to appear out of order in the conversation history
