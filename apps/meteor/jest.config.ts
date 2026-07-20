@@ -48,6 +48,7 @@ export default {
 				'<rootDir>/server/services/import/**/*.spec.ts',
 				'<rootDir>/server/services/upload/*.spec.ts',
 				'<rootDir>/server/settings/lib/**.spec.ts',
+				'<rootDir>/server/startup/migrations/**.spec.ts',
 				'<rootDir>/server/cron/**.spec.ts',
 				'<rootDir>/server/api/*.spec.ts',
 				'<rootDir>/server/api/lib/getUserInfo.spec.ts',

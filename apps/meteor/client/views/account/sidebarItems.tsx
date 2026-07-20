@@ -31,12 +31,6 @@ export const {
 			(settings.peek('Accounts_AllowPasswordChange') ?? true),
 	},
 	{
-		href: '/account/integrations',
-		i18nLabel: 'Integrations',
-		icon: 'code',
-		permissionGranted: (): boolean => settings.peek('Webdav_Integration_Enabled') ?? false,
-	},
-	{
 		href: '/account/tokens',
 		i18nLabel: 'Personal_Access_Tokens',
 		icon: 'key',
