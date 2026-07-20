@@ -146,9 +146,12 @@ describe('useDevicePermissionPrompt2 - Permission state: prompt', () => {
 
 		jest.clearAllMocks();
 
+		let rejectPromise!: Promise<MediaStream>;
 		act(() => {
-			void result.current({ actionType: 'outgoing' });
+			rejectPromise = result.current({ actionType: 'outgoing' });
 		});
+		// eslint-disable-next-line jest/valid-expect
+		const rejectionExpectation = expect(rejectPromise).rejects.toThrow(PermissionRequestCancelledCallRejectedError);
 
 		const cancel = await screen.findByText('Call without mic');
 
@@ -156,6 +159,7 @@ describe('useDevicePermissionPrompt2 - Permission state: prompt', () => {
 		expect(await screen.findByText('Allow and call')).toBeInTheDocument();
 
 		await userEvent.click(cancel);
+		await rejectionExpectation;
 
 		expect(cancel).not.toBeInTheDocument();
 	});
@@ -182,9 +186,12 @@ describe('useDevicePermissionPrompt2 - Permission state: prompt', () => {
 
 		jest.clearAllMocks();
 
+		let rejectPromise!: Promise<MediaStream>;
 		act(() => {
-			void result.current({ actionType: 'device-change' });
+			rejectPromise = result.current({ actionType: 'device-change' });
 		});
+		// eslint-disable-next-line jest/valid-expect
+		const rejectionExpectation = expect(rejectPromise).rejects.toThrow(PermissionRequestCancelledCallRejectedError);
 
 		const cancel = await screen.findByText('Cancel');
 
@@ -192,6 +199,7 @@ describe('useDevicePermissionPrompt2 - Permission state: prompt', () => {
 		expect(await screen.findByText('Allow')).toBeInTheDocument();
 
 		await userEvent.click(cancel);
+		await rejectionExpectation;
 
 		expect(cancel).not.toBeInTheDocument();
 	});

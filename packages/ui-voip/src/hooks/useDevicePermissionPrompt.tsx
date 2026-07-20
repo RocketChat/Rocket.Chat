@@ -137,7 +137,7 @@ export const useDevicePermissionPrompt2 = () => {
 						onReject: (...args) => {
 							reject(...args);
 							const [error] = args;
-							if (['NotFoundError', 'DevicesNotFoundError'].includes(error.name)) {
+							if (isNoDeviceError(error)) {
 								setModal(<PermissionFlowModal type='noDevices' onCancel={onCancel} onConfirm={onCancel} />);
 								return;
 							}
