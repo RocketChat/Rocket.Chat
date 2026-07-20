@@ -8864,7 +8864,7 @@ __metadata:
     "@types/uuid": "npm:~10.0.0"
     acorn: "npm:8.17.0"
     acorn-walk: "npm:8.3.5"
-    adm-zip: "npm:^0.5.16"
+    adm-zip: "npm:^0.6.0"
     astring: "npm:1.8.6"
     debug: "npm:^4.3.7"
     esbuild: "npm:~0.28.1"
@@ -9925,7 +9925,7 @@ __metadata:
     "@types/underscore": "npm:^1.13.0"
     "@types/xml-encryption": "npm:~1.2.4"
     "@xmldom/xmldom": "npm:~0.8.13"
-    adm-zip: "npm:0.5.17"
+    adm-zip: "npm:0.6.0"
     ajv: "npm:^8.20.0"
     ajv-formats: "npm:~3.0.1"
     archiver: "npm:^7.0.1"
@@ -16017,10 +16017,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"adm-zip@npm:0.5.9":
-  version: 0.5.9
-  resolution: "adm-zip@npm:0.5.9"
-  checksum: 10/4e7caa6c220079481192b852361eaa1a210351239911c04b37c8828f27cc7e8e4a7e6409066d9ceacee6ffbca9ae3218b6c6ec1d251cb070626ec644c4b017b0
+"adm-zip@npm:0.6.0":
+  version: 0.6.0
+  resolution: "adm-zip@npm:0.6.0"
+  checksum: 10/6a49ab39055d8f716958d3a2055491ab86fe3359c4afeed9b14bbce78fb847bcd3cbaa0ff4921aaa19824aaa29d06691def1f53263db5224d06c068f922c5ba2
   languageName: node
   linkType: hard
 
