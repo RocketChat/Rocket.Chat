@@ -1,6 +1,6 @@
 import type { OverlayTriggerAria } from '@react-aria/overlays';
 import type { OverlayTriggerState } from '@react-stately/overlays';
-import type { NavBarSearchFormValues } from '@rocket.chat/ai-search';
+import { emptySearchFilters, type NavBarSearchFormValues } from '@rocket.chat/ai-search';
 import { Tile } from '@rocket.chat/fuselage';
 import { useOutsideClick, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
@@ -30,12 +30,13 @@ const NavBarAISearchListBox = ({ state, overlayProps, aiSearchActive, aiSearchAv
 	const handleKeyDown = useListboxNavigation(state);
 	useOutsideClick([containerRef], state.close);
 
-	const { reset, watch } = useFormContext<NavBarSearchFormValues>();
-	const { filterText, appliedFilters } = watch();
+	const { resetField, setValue, watch } = useFormContext<NavBarSearchFormValues>();
+	const { filterText = '', appliedFilters = emptySearchFilters() } = watch();
 
 	const handleSelect = useStableCallback(() => {
 		state.close();
-		reset();
+		resetField('filterText');
+		setValue('appliedFilters', emptySearchFilters(), { shouldDirty: true });
 	});
 
 	const { data: aiItems, isFetching } = useAISearchItems(filterText, appliedFilters, aiSearchActive);

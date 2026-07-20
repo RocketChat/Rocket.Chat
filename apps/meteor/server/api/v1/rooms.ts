@@ -1301,7 +1301,7 @@ API.v1.post(
 			return API.v1.unauthorized();
 		}
 
-		const user = await Users.findOneById(this.userId, { projections: { _id: 1 } });
+		const user = await Users.findOneById(this.userId, { projection: { _id: 1 } });
 
 		if (!user) {
 			return API.v1.failure('error-invalid-user');
@@ -1706,7 +1706,10 @@ export const roomEndpoints = API.v1
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
-			const { cursor, totalCount } = Subscriptions.findPaginated({ rid: roomId, status: 'BANNED' as const }, { offset, count });
+			const { cursor, totalCount } = Subscriptions.findPaginated(
+				{ rid: roomId, status: 'BANNED' as const },
+				{ sort: { ts: 1 }, skip: offset, limit: count, projection: { 'u._id': 1 } },
+			);
 
 			const [bannedSubs, total] = await Promise.all([cursor.toArray(), totalCount]);
 

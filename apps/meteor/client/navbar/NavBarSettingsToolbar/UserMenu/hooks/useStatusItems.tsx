@@ -1,5 +1,4 @@
-import type { ICustomUserStatus, IUser } from '@rocket.chat/core-typings';
-import { UserStatus as UserStatusEnum } from '@rocket.chat/core-typings';
+import type { ICustomUserStatus, IUser, UserStatus as UserStatusEnum } from '@rocket.chat/core-typings';
 import { Box, Icon, RadioButton } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { clientCallbacks } from '@rocket.chat/ui-client';
@@ -131,12 +130,10 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 			});
 		}
 
-		// Presets: filter to Online / Busy / Offline. Keep Away only if user is currently on Away (legacy).
 		const isPresetSelected = (statusType: UserStatusEnum): boolean =>
 			!user?.statusText && !customStatusExpiration && user?.status === statusType;
 		const presetItems = (statuses ?? [])
 			.filter((s) => userStatuses.isValidType(s.id))
-			.filter((s) => s.statusType !== UserStatusEnum.AWAY || isPresetSelected(UserStatusEnum.AWAY))
 			.map(
 				(status): GenericMenuItemProps => ({
 					id: status.id,
