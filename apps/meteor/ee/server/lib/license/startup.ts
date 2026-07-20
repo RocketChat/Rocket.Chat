@@ -1,6 +1,6 @@
 import { api } from '@rocket.chat/core-services';
 import type { LicenseLimitKind } from '@rocket.chat/core-typings';
-import { applyLicense, applyLicenseOrRemove, License } from '@rocket.chat/license';
+import { applyLicense, applyLicenseOrRemove, applyNewestLicense, License } from '@rocket.chat/license';
 import { Subscriptions, Users, Settings, LivechatContacts } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
 import moment from 'moment';
@@ -11,6 +11,14 @@ import { syncWorkspace } from '../../../../server/lib/cloud/syncWorkspace';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { notifyOnSettingChangedById } from '../../../../server/lib/notifyListener';
 import { settings } from '../../../../server/settings';
+
+const applyStartupLicense = async (): Promise<void> => {
+	// Licenses can't be validated before the workspace URL is known; set it explicitly
+	// so the startup license is never left pending behind the Site_Url watcher.
+	await License.setWorkspaceUrl(settings.get<string>('Site_Url'));
+
+	await applyNewestLicense(License, settings.get<string>('Enterprise_License') ?? '', process.env.ROCKETCHAT_LICENSE ?? '');
+};
 
 export const startLicense = async () => {
 	settings.watch<string>('Site_Url', (value) => {
@@ -119,12 +127,7 @@ export const startLicense = async () => {
 		// When settings are loaded, apply the current license if there is one.
 		settings.onReady(async () => {
 			import('./airGappedRestrictions');
-			if (!(await applyLicense(settings.get<string>('Enterprise_License') ?? '', false))) {
-				// License from the envvar is always treated as new, because it would have been saved on the setting if it was already in use.
-				if (process.env.ROCKETCHAT_LICENSE && !License.hasValidLicense()) {
-					await applyLicense(process.env.ROCKETCHAT_LICENSE, true);
-				}
-			}
+			await applyStartupLicense();
 
 			License.onInstall(() => {
 				if (License.hasOfflineLicense()) {
