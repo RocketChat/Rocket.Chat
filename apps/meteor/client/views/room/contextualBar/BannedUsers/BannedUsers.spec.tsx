@@ -1,9 +1,8 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { composeStories } from '@storybook/react';
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
-import type { CSSProperties, ReactNode } from 'react';
-import * as React from 'react';
-import { Children, isValidElement } from 'react';
+import type { ComponentProps, CSSProperties, ElementType, ReactNode, Ref } from 'react';
+import { Children, forwardRef, isValidElement, useImperativeHandle } from 'react';
 
 import BannedUsers from './BannedUsers';
 import * as stories from './BannedUsers.stories';
@@ -22,20 +21,20 @@ type MockVListProps = {
 	children: ReactNode;
 	bufferSize?: number;
 	onScroll?: (offset: number) => void;
-	as?: React.ElementType;
-	item?: React.ElementType;
+	as?: ElementType;
+	item?: ElementType;
 	style?: CSSProperties;
 	className?: string;
 };
 
 jest.mock('virtua', () => {
 	return {
-		Virtualizer: React.forwardRef(
+		Virtualizer: forwardRef(
 			(
 				{ children, bufferSize, onScroll, as: asRoot = 'div', item: asItem = 'div', style, className }: MockVListProps,
-				ref: React.Ref<unknown>,
+				ref: Ref<unknown>,
 			) => {
-				React.useImperativeHandle(ref, () => (mockVirtualizerHasHandle ? mockVirtualizerHandle : null));
+				useImperativeHandle(ref, () => (mockVirtualizerHasHandle ? mockVirtualizerHandle : null));
 				const Root = asRoot;
 				const Item = asItem;
 				const wrapped = Children.map(children, (child, index) => {
@@ -82,7 +81,7 @@ const bannedUsers = [
 	},
 ];
 
-const renderBannedUsers = (props: Partial<React.ComponentProps<typeof BannedUsers>> = {}) =>
+const renderBannedUsers = (props: Partial<ComponentProps<typeof BannedUsers>> = {}) =>
 	render(
 		<BannedUsers
 			loading={false}
