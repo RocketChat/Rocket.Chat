@@ -57,3 +57,6 @@ jobs:
           flags: unit
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
+          # tests don't re-run on the develop push, so the merge queue run (same SHA
+          # that lands on develop) provides the develop coverage baseline
+          override_branch: ${{ github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/develop' && 'develop' || '' }}
