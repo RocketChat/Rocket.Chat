@@ -138,7 +138,7 @@ export class WattRuntimeController extends EventEmitter implements IRuntimeContr
 	 */
 	public async restartApp(): Promise<void> {
 		this.debug('Restarting app on Watt runtime');
-		const logger = new AppConsole('runtime:watt:restart');
+		const logger = new AppConsole('runtime:restart');
 
 		logger.info({ msg: 'Starting restart procedure for app worker...' });
 

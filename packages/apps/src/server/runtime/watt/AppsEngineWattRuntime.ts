@@ -95,10 +95,7 @@ export class AppsEngineWattRuntime {
 
 	private metricsTimer: NodeJS.Timeout | undefined;
 
-	private constructor(
-		private readonly manager: AppManager,
-		options: Partial<WattRuntimeOptions> = {},
-	) {
+	private constructor(manager: AppManager, options: Partial<WattRuntimeOptions> = {}) {
 		this.options = { ...defaultOptions, ...options };
 		this.logStorage = manager.getLogStorage();
 	}
@@ -220,7 +217,7 @@ export class AppsEngineWattRuntime {
 
 		const restartCount = this.restartCounts.get(appId) ?? 0;
 
-		const logger = new AppConsole('runtime:watt:restart');
+		const logger = new AppConsole('runtime:restart');
 
 		if (restartCount >= this.options.maxRestarts) {
 			logger.error({ msg: 'Limit of restarts reached. Giving up on app.', appId, reason, restartCount });
