@@ -53,13 +53,13 @@ const Extended = ({
 	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 
 	return (
-		<SidebarV2Item href={href} selected={selected} {...props} onFocus={mountNow} onPointerEnter={requestMount}>
-			{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
+		<SidebarV2Item level={2} href={href} selected={selected} {...props} onFocus={mountNow} onPointerEnter={requestMount}>
 			<SidebarV2ItemCol>
 				<SidebarV2ItemRow>
+					{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
 					{icon}
 					<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>
-					{time && <SidebarV2ItemTimestamp>{formatDate(time)}</SidebarV2ItemTimestamp>}
+					{time && <SidebarV2ItemTimestamp unread={unread}>{formatDate(time)}</SidebarV2ItemTimestamp>}
 				</SidebarV2ItemRow>
 				<SidebarV2ItemRow>
 					<SidebarV2ItemContent unread={unread}>{subtitle}</SidebarV2ItemContent>

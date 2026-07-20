@@ -21,7 +21,7 @@ export const useAvatarTemplate = (
 		const size = ((): 'x36' | 'x28' | 'x20' => {
 			switch (viewMode) {
 				case 'extended':
-					return 'x36';
+					return 'x20';
 				case 'medium':
 					return 'x28';
 				case 'condensed':
