@@ -227,6 +227,11 @@ services:
       - api
     ports:
       - 4000:8080
+    networks:
+      default:
+        # single-label hostnames fail server-fetch SSRF domain validation, so oembed tests reach it through this alias
+        aliases:
+          - mock-server.local
     healthcheck:
       test: ['CMD', '/mock-server', '-healthcheck']
       interval: 2s
