@@ -62,7 +62,6 @@ export * from './models/UserDataFiles';
 export * from './models/Users';
 export * from './models/UsersSessions';
 export * from './models/VideoConference';
-export * from './models/WebdavAccounts';
 export * from './models/CredentialTokens';
 export * from './models/MessageReads';
 export * from './models/CronHistoryModel';

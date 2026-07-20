@@ -34,7 +34,6 @@ import { createThreadSettings } from './threads';
 import { createTroubleshootSettings } from './troubleshoot';
 import { createUserDataSettings } from './userDataDownload';
 import { createVConfSettings } from './video-conference';
-import { createWebDavSettings } from './webdav';
 import { addMatrixBridgeFederationSettings } from '../services/federation/Settings';
 
 await Promise.all([
@@ -73,7 +72,6 @@ await Promise.all([
 	createTroubleshootSettings(),
 	createVConfSettings(),
 	createUserDataSettings(),
-	createWebDavSettings(),
 ]);
 
 // Run after all the other settings are created since it depends on some of them
