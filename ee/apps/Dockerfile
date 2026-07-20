@@ -1,4 +1,4 @@
-FROM node:22.22.3-alpine3.23 AS builder
+FROM node:24.15.0-alpine3.23 AS builder
 
 ARG SERVICE
 
@@ -50,7 +50,7 @@ RUN set -eu; cd /app; \
     done; \
     find packages ee/packages ee/apps \( -name '*.js.map' -o -name '*.d.ts' \) -delete
 
-FROM node:22.22.3-alpine3.23
+FROM node:24.15.0-alpine3.23
 
 ARG SERVICE
 

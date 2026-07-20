@@ -55,6 +55,18 @@ runs:
         echo "DENO_VERSION: ${DENO_VERSION}"
         echo "DENO_VERSION=${DENO_VERSION}" >> $GITHUB_ENV
 
+    - name: Configure bcrypt prebuild mirror
+      shell: bash
+      run: |
+        # Meteor's accounts-password bundles bcrypt 5.0.1, which has no linux-arm64
+        # prebuild and whose node-addon-api 3.x fails to compile on Node 24. Point
+        # node-pre-gyp at the prebuilt napi-v3 binaries committed under
+        # .github/prebuilds/bcrypt (built by build-bcrypt-prebuilds.yml). Trailing
+        # slash matters: url.resolve drops the last path segment without it.
+        SHA="${{ github.event.pull_request.head.sha || github.sha }}"
+        BASE="https://raw.githubusercontent.com/${{ github.repository }}/${SHA}/.github/prebuilds/bcrypt/"
+        echo "npm_config_bcrypt_lib_binary_host_mirror=${BASE}" >> $GITHUB_ENV
+
     # Turbo local cache: use rharkor/caching-for-turbo in workflows — not stored here to avoid huge redundant keys.
     - name: Cache Deno (apps-engine)
       if: inputs.cache-modules

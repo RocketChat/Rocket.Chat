@@ -29,7 +29,7 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "~0.32.0",
 		"@rocket.chat/tools": "workspace:^",
-		"@types/node": "~22.19.17",
+		"@types/node": "~24.13.2",
 		"date-fns": "~4.1.0",
 		"ejson": "^2.2.3",
 		"eventemitter3": "^5.0.4",
