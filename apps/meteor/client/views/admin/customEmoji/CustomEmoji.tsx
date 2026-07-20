@@ -29,7 +29,7 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 
 	const [text, setText] = useState('');
 	const { sortBy, sortDirection, setSort } = useSort<'name'>('name');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
+	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination(text);
 
 	const query = useDebouncedValue(
 		useMemo(
@@ -114,7 +114,7 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 					/>
 				</>
 			)}
-			{isSuccess && data && data.emojis.length === 0 && <GenericNoResults />}
+			{isSuccess && data?.emojis.length === 0 && <GenericNoResults />}
 			{isError && (
 				<States>
 					<StatesIcon name='warning' variation='danger' />
