@@ -259,7 +259,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		await call.processSignal(signal, oldCall);
 	}
 
-	public async setDeviceId(deviceId: ConstrainDOMString | null): Promise<void> {
+	public async setDeviceId(deviceId: ConstrainDOMString | null, force?: boolean): Promise<void> {
 		this.deviceId = deviceId;
 
 		if (this.switchingInputTrack) {
@@ -268,9 +268,9 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 		// do nothing if:
 		// 1. doesn't have any input track yet
-		// 2. it's the same device id
+		// 2. it's the same device id (force flag bypasses this)
 		// 3. has no restriction on which device to use
-		if (!this.inputTrack || !deviceId || isSameDeviceId(deviceId, this.currentDeviceId)) {
+		if (!this.inputTrack || !deviceId || (isSameDeviceId(deviceId, this.currentDeviceId) && !force)) {
 			return;
 		}
 

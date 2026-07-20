@@ -38,7 +38,7 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 						}
 
 						instance.micless = false;
-						await changeDevice(deviceId);
+						await changeDevice(deviceId, true);
 					})
 					.then(() => {
 						if (!instance.micless) {
@@ -88,11 +88,11 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 			}
 		};
 
-		const changeDevice = async (deviceId: string) => {
+		const changeDevice = async (deviceId: string, force?: boolean) => {
 			if (!instance) {
 				return;
 			}
-			await instance.setDeviceId({ exact: deviceId });
+			await instance.setDeviceId({ exact: deviceId }, force || false);
 		};
 
 		const forwardCall = (type: 'user' | 'sip', id: string) => {
