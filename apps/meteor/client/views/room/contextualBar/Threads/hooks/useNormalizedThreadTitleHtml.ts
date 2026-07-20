@@ -1,4 +1,5 @@
-import { isDeletedMessage, type IThreadMainMessage } from '@rocket.chat/core-typings';
+import { type IThreadMainMessage } from '@rocket.chat/core-typings';
+import { MessageTypes } from '@rocket.chat/message-types';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { useUser, useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
@@ -16,10 +17,7 @@ export const useNormalizedThreadTitleHtml = (mainMessage: IThreadMainMessage) =>
 
 	return useMemo((): string => {
 		const message = { ...mainMessage };
-
-		if (isDeletedMessage(message)) {
-			return t('Message_removed');
-		}
+		const messageType = MessageTypes.getType(message);
 
 		if (message.msg) {
 			const filteredMessage = filterMarkdown(escapeHTML(message.msg));
@@ -50,6 +48,10 @@ export const useNormalizedThreadTitleHtml = (mainMessage: IThreadMainMessage) =>
 			}
 		}
 
+		if (message.t && messageType) {
+			return messageType.text(t, message);
+		}
+
 		return '';
-	}, [mainMessage, me, pattern, useRealName]);
+	}, [mainMessage, me, pattern, useRealName, t]);
 };
