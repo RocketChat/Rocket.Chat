@@ -63,7 +63,6 @@ import type {
 	IUsersSessionsModel,
 	IUsersModel,
 	IVideoConferenceModel,
-	IWebdavAccountsModel,
 	ICalendarEventModel,
 	IOmnichannelServiceLevelAgreementsModel,
 	IAppsModel,
@@ -198,7 +197,6 @@ export const Uploads = proxify<IUploadsModel>('IUploadsModel');
 export const UserDataFiles = proxify<IUserDataFilesModel>('IUserDataFilesModel');
 export const UsersSessions = proxify<IUsersSessionsModel>('IUsersSessionsModel');
 export const VideoConference = proxify<IVideoConferenceModel>('IVideoConferenceModel');
-export const WebdavAccounts = proxify<IWebdavAccountsModel>('IWebdavAccountsModel');
 export const CalendarEvent = proxify<ICalendarEventModel>('ICalendarEventModel');
 export const OmnichannelServiceLevelAgreements = proxify<IOmnichannelServiceLevelAgreementsModel>(
 	'IOmnichannelServiceLevelAgreementsModel',

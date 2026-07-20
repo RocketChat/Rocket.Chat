@@ -24,7 +24,6 @@ import { useUnFollowMessageAction } from './useUnFollowMessageAction';
 import { useUnpinMessageAction } from './useUnpinMessageAction';
 import { useUnstarMessageAction } from './useUnstarMessageAction';
 import { useViewOriginalTranslationAction } from './useViewOriginalTranslationAction';
-import { useWebDAVMessageAction } from './useWebDAVMessageAction';
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 
 type MessageActionSection = {
@@ -44,7 +43,6 @@ export type MessageToolbarActionMenuProps = {
 const MessageToolbarActionMenu = ({ message, context, room, subscription, onChangeMenuVisibility }: MessageToolbarActionMenuProps) => {
 	// TODO: move this to another place
 	const menuItems = [
-		useWebDAVMessageAction(message, { subscription }),
 		useNewDiscussionMessageAction(message, { room, subscription }),
 		useUnpinMessageAction(message, { room, subscription }),
 		usePinMessageAction(message, { room, subscription }),

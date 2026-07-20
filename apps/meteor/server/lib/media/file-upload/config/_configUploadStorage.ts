@@ -7,7 +7,6 @@ import './AmazonS3';
 import './FileSystem';
 import './GoogleStorage';
 import './GridFS';
-import './Webdav';
 
 const configStore = _.debounce(() => {
 	const store = settings.get('FileUpload_Storage_Type');
