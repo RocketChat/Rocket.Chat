@@ -4,6 +4,7 @@ import { Palette } from '@rocket.chat/fuselage';
 import { useSetting, useUserId } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
 import { useCallback, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import ThreadListMessage from './ThreadListMessage';
 import { useDecryptedMessage } from '../../../../../hooks/useDecryptedMessage';
@@ -18,9 +19,10 @@ export type ThreadListItemProps = {
 };
 
 const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, onClick }: ThreadListItemProps) => {
+	const { t } = useTranslation();
 	const uid = useUserId();
 	const decryptedMsg = useDecryptedMessage(thread);
-	const msg = normalizeThreadMessage({ ...thread, msg: decryptedMsg });
+	const msg = normalizeThreadMessage({ ...thread, msg: decryptedMsg }, t);
 
 	const { name = thread.u.username } = thread.u;
 

@@ -1,19 +1,25 @@
-import type { IThreadMainMessage } from '@rocket.chat/core-typings';
+import { isDeletedMessage, type IThreadMainMessage } from '@rocket.chat/core-typings';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { useUser, useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { emojiParser } from '../../../../../../app/emoji/client/emojiParser';
 import { filterMarkdown } from '../../../../../../app/markdown/lib/markdown';
 import { MentionsParser } from '../../../../../../app/mentions/lib/MentionsParser';
 
 export const useNormalizedThreadTitleHtml = (mainMessage: IThreadMainMessage) => {
+	const { t } = useTranslation();
 	const me = useUser()?.username || '';
 	const pattern = useSetting('UTF8_User_Names_Validation', '[0-9a-zA-Z-_.]+');
 	const useRealName = useSetting('UI_Use_Real_Name', false);
 
 	return useMemo((): string => {
 		const message = { ...mainMessage };
+
+		if (isDeletedMessage(message)) {
+			return t('Message_removed');
+		}
 
 		if (message.msg) {
 			const filteredMessage = filterMarkdown(escapeHTML(message.msg));

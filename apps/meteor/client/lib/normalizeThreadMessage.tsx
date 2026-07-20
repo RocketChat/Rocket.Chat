@@ -1,7 +1,8 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import { isDeletedMessage, type IMessage } from '@rocket.chat/core-typings';
 import { Markup } from '@rocket.chat/gazzodown';
 import { parse } from '@rocket.chat/message-parser';
 import type { Root } from '@rocket.chat/message-parser';
+import type { TFunction } from 'i18next';
 
 import { getMarkdownParserLimit } from './getMarkdownParserLimit';
 import { filterMarkdown } from '../../app/markdown/lib/markdown';
@@ -21,7 +22,11 @@ const tryParseWithLimit = (text: string): Root | undefined => {
 	}
 };
 
-export function normalizeThreadMessage({ ...message }: Readonly<Pick<IMessage, 'msg' | 'mentions' | 'attachments'>>) {
+export function normalizeThreadMessage({ ...message }: Readonly<IMessage>, t: TFunction) {
+	if (isDeletedMessage(message)) {
+		return t('Message_removed');
+	}
+
 	if (message.msg) {
 		delete message.mentions;
 
