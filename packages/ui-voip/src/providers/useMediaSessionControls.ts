@@ -36,6 +36,8 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 						if (!deviceId) {
 							return;
 						}
+
+						instance.micless = false;
 						await changeDevice(deviceId);
 					})
 					.then(() => {
@@ -43,7 +45,10 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 							instance.getState()?.localParticipant.setMuted(false);
 						}
 					})
-					.catch((e) => console.error('useMediaSessionControls - failed to enable microphone:', e));
+					.catch((e) => {
+						console.error('useMediaSessionControls - failed to enable microphone:', e);
+						instance.micless = true;
+					});
 				return;
 			}
 			instanceState.localParticipant.setMuted(!instanceState.localParticipant.muted);
