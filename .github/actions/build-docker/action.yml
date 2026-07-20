@@ -51,7 +51,7 @@ runs:
 
     - name: Login to DockerHub
       # FIPS base image (rocketchat/dhi-node) lives in a private DockerHub repo and requires auth to pull.
-      if: inputs.type == 'fips' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+      if: inputs.type == 'fips' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.event_name == 'merge_group' || github.ref == 'refs/heads/develop')
       uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
       with:
         username: ${{ inputs.DOCKER_USER }}
