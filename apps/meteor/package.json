@@ -295,7 +295,7 @@
 		"react-stately": "~3.35.0",
 		"react-virtuoso": "~4.18.11",
 		"reflect-metadata": "^0.2.2",
-		"sanitize-html": "~2.17.4",
+		"sanitize-html": "~2.17.6",
 		"semver": "^7.6.3",
 		"sharp": "^0.33.5",
 		"sodium-native": "^4.3.3",
