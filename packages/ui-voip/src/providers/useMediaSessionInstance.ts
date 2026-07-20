@@ -35,6 +35,7 @@ const isNotAllowedError = (error: unknown): error is DOMException & { name: 'Not
 };
 
 let fakeStream: { audioCtx: AudioContext; stream: MediaStream } | null = null;
+let fakeStreamTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
 
 const getFakeStream = () => {
 	if (fakeStream) {
@@ -53,6 +54,9 @@ const getFakeStream = () => {
 };
 
 const stopFakeStream = () => {
+	if (fakeStreamTimeout) {
+		clearTimeout(fakeStreamTimeout);
+	}
 	if (!fakeStream) {
 		return;
 	}
@@ -131,7 +135,7 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 			}
 			// Wait a little to ensure the track switch happened.
 			// It's ok for the old stream/audioCtx to hang unused for a little
-			setTimeout(stopFakeStream, 1000);
+			fakeStreamTimeout = setTimeout(stopFakeStream, 1000);
 			if (this.sessionInstance) {
 				this.sessionInstance.micless = false;
 			}
