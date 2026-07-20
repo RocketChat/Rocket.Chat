@@ -17,7 +17,7 @@ const applyStartupLicense = async (): Promise<void> => {
 	// so the startup license is never left pending behind the Site_Url watcher.
 	await License.setWorkspaceUrl(settings.get<string>('Site_Url'));
 
-	await applyNewestLicense(settings.get<string>('Enterprise_License') ?? '', process.env.ROCKETCHAT_LICENSE ?? '');
+	await applyNewestLicense(License, settings.get<string>('Enterprise_License') ?? '', process.env.ROCKETCHAT_LICENSE ?? '');
 };
 
 export const startLicense = async () => {

@@ -14,9 +14,25 @@ describe('applyNewestLicense', () => {
 		const stored = await new MockedLicenseBuilder().withCreatedAt(OLDER).withGrantedModules(['auditing']).sign();
 		const provided = await new MockedLicenseBuilder().withCreatedAt(NEWER).withGrantedModules(['livechat-enterprise']).sign();
 
-		await expect(applyNewestLicense(stored, provided, manager)).resolves.toBe(true);
+		await expect(applyNewestLicense(manager, stored, provided)).resolves.toBe(true);
 
 		expect(manager.hasValidLicense()).toBe(true);
+		expect(manager.hasModule('livechat-enterprise')).toBe(true);
+		expect(manager.hasModule('auditing')).toBe(false);
+	});
+
+	it('should apply the dated provided license when the stored one has no issue date', async () => {
+		const manager = await getReadyLicenseManager();
+
+		// V2 licenses carry no signature-verified issue date, so they must sort as the oldest
+		const storedBuilder = new MockedLicenseBuilder().withGrantedModules(['auditing']);
+		storedBuilder.information.createdAt = 'not-a-date';
+		const stored = await storedBuilder.sign();
+
+		const provided = await new MockedLicenseBuilder().withCreatedAt(NEWER).withGrantedModules(['livechat-enterprise']).sign();
+
+		await expect(applyNewestLicense(manager, stored, provided)).resolves.toBe(true);
+
 		expect(manager.hasModule('livechat-enterprise')).toBe(true);
 		expect(manager.hasModule('auditing')).toBe(false);
 	});
@@ -26,7 +42,7 @@ describe('applyNewestLicense', () => {
 		const stored = await new MockedLicenseBuilder().withCreatedAt(NEWER).withGrantedModules(['auditing']).sign();
 		const provided = await new MockedLicenseBuilder().withCreatedAt(OLDER).withGrantedModules(['livechat-enterprise']).sign();
 
-		await expect(applyNewestLicense(stored, provided, manager)).resolves.toBe(true);
+		await expect(applyNewestLicense(manager, stored, provided)).resolves.toBe(true);
 
 		expect(manager.hasModule('auditing')).toBe(true);
 		expect(manager.hasModule('livechat-enterprise')).toBe(false);
@@ -36,7 +52,7 @@ describe('applyNewestLicense', () => {
 		const manager = await getReadyLicenseManager();
 		const provided = await new MockedLicenseBuilder().withCreatedAt(OLDER).withGrantedModules(['livechat-enterprise']).sign();
 
-		await expect(applyNewestLicense('', provided, manager)).resolves.toBe(true);
+		await expect(applyNewestLicense(manager, '', provided)).resolves.toBe(true);
 
 		expect(manager.hasModule('livechat-enterprise')).toBe(true);
 	});
@@ -46,7 +62,7 @@ describe('applyNewestLicense', () => {
 		const stored = await new MockedLicenseBuilder().withCreatedAt(NEWER).withExpiredDate().withGrantedModules(['auditing']).sign();
 		const provided = await new MockedLicenseBuilder().withCreatedAt(OLDER).withGrantedModules(['livechat-enterprise']).sign();
 
-		await expect(applyNewestLicense(stored, provided, manager)).resolves.toBe(true);
+		await expect(applyNewestLicense(manager, stored, provided)).resolves.toBe(true);
 
 		expect(manager.hasModule('livechat-enterprise')).toBe(true);
 	});
@@ -56,7 +72,7 @@ describe('applyNewestLicense', () => {
 		const stored = await new MockedLicenseBuilder().withCreatedAt(OLDER).withGrantedModules(['auditing']).sign();
 		const provided = `${await new MockedLicenseBuilder().withCreatedAt(NEWER).sign()}corrupted`;
 
-		await expect(applyNewestLicense(stored, provided, manager)).resolves.toBe(true);
+		await expect(applyNewestLicense(manager, stored, provided)).resolves.toBe(true);
 
 		expect(manager.hasModule('auditing')).toBe(true);
 	});
@@ -64,7 +80,7 @@ describe('applyNewestLicense', () => {
 	it('should return false when neither license is provided', async () => {
 		const manager = await getReadyLicenseManager();
 
-		await expect(applyNewestLicense('', '', manager)).resolves.toBe(false);
+		await expect(applyNewestLicense(manager, '', '')).resolves.toBe(false);
 
 		expect(manager.hasValidLicense()).toBe(false);
 	});

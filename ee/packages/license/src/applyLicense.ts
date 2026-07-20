@@ -39,42 +39,35 @@ export const applyLicenseOrRemove = async (license: string, isNewLicense: boolea
 };
 
 /**
- * Applies whichever of the two licenses was issued most recently, falling back to
- * the other one when the newest doesn't result in a valid license (note that
+ * Applies the most recently issued of the given licenses, falling back to the
+ * next one whenever the newest doesn't result in a valid license (note that
  * `setLicense` reports success even for licenses applied in an invalid/expired
  * state, so validity — not the apply result — drives the fallback).
  *
- * `storedLicense` is the license already known to the workspace (applied as not
- * new); `providedLicense` is externally supplied, e.g. through an environment
+ * The first license is the one already known to the workspace (applied as not
+ * new); the others are externally supplied, e.g. through an environment
  * variable (applied as new). Issue dates come from signature-verified payloads
- * only — licenses without one (V2, invalid or empty strings) sort as oldest, so
- * two undated licenses keep the traditional stored-first order.
+ * only — licenses without one (V2, invalid or empty strings) sort as oldest,
+ * preserving the given order among themselves.
  *
  * Returns whether the workspace ended up with a valid license.
  */
-export const applyNewestLicense = async (
-	storedLicense: string,
-	providedLicense: string,
-	manager: LicenseImp = License,
-): Promise<boolean> => {
-	const [storedCreatedAt, providedCreatedAt] = await Promise.all([
-		getLicenseCreatedAt(storedLicense),
-		getLicenseCreatedAt(providedLicense),
-	]);
+export const applyNewestLicense = async (manager: LicenseImp = License, ...licenses: Array<string>): Promise<boolean> => {
+	const candidates = licenses
+		.map((license, index) => ({ license: (license ?? '').trim(), isNewLicense: index > 0 }))
+		.filter(({ license }) => license);
 
-	const providedIsNewer = !!providedCreatedAt && (!storedCreatedAt || providedCreatedAt > storedCreatedAt);
+	const sortedLicenses = (
+		await Promise.all(candidates.map(async (candidate) => ({ ...candidate, createdAt: await getLicenseCreatedAt(candidate.license) })))
+	).sort((a, b) => (b.createdAt?.getTime() ?? 0) - (a.createdAt?.getTime() ?? 0));
 
-	const [first, second] = providedIsNewer
-		? [() => applyLicense(providedLicense, true, manager), () => applyLicense(storedLicense, false, manager)]
-		: [() => applyLicense(storedLicense, false, manager), () => applyLicense(providedLicense, true, manager)];
+	for (const { license, isNewLicense } of sortedLicenses) {
+		await applyLicense(license, isNewLicense, manager);
 
-	await first();
-
-	if (manager.hasValidLicense()) {
-		return true;
+		if (manager.hasValidLicense()) {
+			return true;
+		}
 	}
-
-	await second();
 
 	return manager.hasValidLicense();
 };
