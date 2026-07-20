@@ -14,10 +14,6 @@ export class InstanceStatusRaw extends BaseRaw<IInstanceStatus> implements IInst
 		});
 	}
 
-	async getActiveInstanceCount(): Promise<number> {
-		return this.countDocuments({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } });
-	}
-
 	watchActiveInstances(): ChangeStream<IInstanceStatus> {
 		return this.col.watch();
 	}

@@ -14,7 +14,7 @@ import { useFormatDate } from '../../../../hooks/useFormatDate';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 import { useNewUsers } from './useNewUsers';
 
-type NewUsersSectionProps = {
+export type NewUsersSectionProps = {
 	timezone: 'utc' | 'local';
 };
 
@@ -38,7 +38,7 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps) => {
 		const endDate = new Date(data.end);
 		const daysCount = differenceInDays(endDate, startDate) + 1;
 		const values = Array.from({ length: daysCount }, (_, i) => ({
-			date: format(addDays(startDate, i), 'yyyy-MM-dd'),
+			date: addDays(startDate, i).toISOString(),
 			newUsers: 0,
 		}));
 		for (const { day, users } of data.days) {

@@ -20,19 +20,19 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
 
-import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
-import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
-import { saveRoomSettings } from '../../../app/channel-settings/server/methods/saveRoomSettings';
-import { blockUserMethod } from '../../../app/lib/server/functions/blockUser';
-import { getRoomByNameOrIdWithOptionToJoin } from '../../../app/lib/server/functions/getRoomByNameOrIdWithOptionToJoin';
-import { unblockUserMethod } from '../../../app/lib/server/functions/unblockUser';
-import { getChannelHistory } from '../../../app/lib/server/methods/getChannelHistory';
-import { settings } from '../../../app/settings/server';
-import { normalizeMessagesForUser } from '../../../app/utils/server/lib/normalizeMessagesForUser';
+import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
+import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { eraseRoom } from '../../lib/eraseRoom';
 import { openRoom } from '../../lib/openRoom';
-import { createDirectMessage } from '../../methods/createDirectMessage';
-import { hideRoomMethod } from '../../methods/hideRoom';
+import { getRoomByNameOrIdWithOptionToJoin } from '../../lib/rooms/getRoomByNameOrIdWithOptionToJoin';
+import { blockUserMethod } from '../../lib/users/blockUser';
+import { unblockUserMethod } from '../../lib/users/unblockUser';
+import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
+import { createDirectMessage } from '../../meteor-methods/messages/createDirectMessage';
+import { getChannelHistory } from '../../meteor-methods/messages/getChannelHistory';
+import { hideRoomMethod } from '../../meteor-methods/rooms/hideRoom';
+import { saveRoomSettings } from '../../meteor-methods/rooms/saveRoomSettings';
+import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import type { TypedAction } from '../definition';
@@ -170,7 +170,7 @@ const dmDeleteAction = <Path extends string>(_path: Path): TypedAction<typeof dm
 		const { room } = await findDirectMessageRoom(this.bodyParams, this.userId);
 
 		const canAccess =
-			(await canAccessRoomIdAsync(room._id, this.userId)) || (await hasPermissionAsync(this.userId, 'view-room-administration'));
+			(await canAccessRoomIdAsync(room._id, this.userId)) || (await hasPermissionAsync(this.user, 'view-room-administration'));
 
 		if (!canAccess) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed');

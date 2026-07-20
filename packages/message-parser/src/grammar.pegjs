@@ -163,8 +163,9 @@ CodeLine
   / "\n" chunk:CodeChunk { return codeLine(chunk); }
   / "\n" !"```" { return codeLine(plain('')); }
 
-// Charclass avoids per-char lookahead; never consume start of "```"
-CodeChunkChar = [^\r\n`] / "`" [^`\r\n] / "`" "`" [^`\r\n]
+// Charclass avoids per-char lookahead; never consume start of "```".
+// Trailing 1-2 backticks before a line end (or EOF) are content, not a fence.
+CodeChunkChar = [^\r\n`] / "`" [^`\r\n] / "`" "`" [^`\r\n] / "`" "`" &("\r" / "\n" / !.) / "`" &("\r" / "\n" / !.)
 CodeChunk = text:$(CodeChunkChar)+ { return plain(text); }
 
 /**
@@ -793,23 +794,12 @@ EmoticonBackslash
 
 /* Unicode emojis */
 UnicodeEmoji
-  = UnicodeEmojiEmoticon
+  = UnicodeEmojiTagSequence
   / $(
-    UnicodeEmojiSupplementalSymbolsAndPictographs
-      (
-        UnicodeEmojiMiscellaneousSymbolsAndPictographs
-          ([\u200D] UnicodeEmojiMiscellaneousSymbolsAndPictographs)*
-      )?
+    (UnicodeEmojiZwjComponent [\u200D])*
+    UnicodeEmojiZwjComponent
   )
-  / $(
-    (
-        UnicodeEmojiMiscellaneousSymbolsAndPictographs
-          UnicodeEmojiMiscellaneousSymbolsAndPictographsFitzpatrickModifiers?
-          [\u200D]
-      )*
-      UnicodeEmojiMiscellaneousSymbolsAndPictographs
-      UnicodeEmojiMiscellaneousSymbolsAndPictographsFitzpatrickModifiers?
-  )
+  / UnicodeEmojiEmoticon
   / UnicodeEmojiTransportAndMapSymbols
   / UnicodeEmojiMiscellaneousTechnical
   / UnicodeEmojiMiscellaneousSymbols
@@ -818,7 +808,15 @@ UnicodeEmoji
 
 UnicodeEmojiEmoticon = $([\uD83D] [\uDE00-\uDE4F])
 
-UnicodeEmojiSupplementalSymbolsAndPictographs = $([\uD83E] [\uDD00-\uDDFF])
+UnicodeEmojiSupplementalSymbolsAndPictographs = $([\uD83E] [\uDD00-\uDFFF])
+
+UnicodeEmojiZwjComponent
+  = (UnicodeEmojiSupplementalSymbolsAndPictographs / UnicodeEmojiMiscellaneousSymbolsAndPictographs / UnicodeEmojiEmoticon) UnicodeEmojiMiscellaneousSymbolsAndPictographsFitzpatrickModifiers?
+  / UnicodeEmojiDingbats
+  / UnicodeEmojiMiscellaneousSymbols
+
+/* Emoji tag sequence: Black Flag + tag characters (U+E0020-U+E007E) + Cancel Tag (U+E007F), e.g. England/Scotland/Wales flags */
+UnicodeEmojiTagSequence = $([\uD83C] [\uDFF4] ([\uDB40] [\uDC20-\uDC7E])+ [\uDB40] [\uDC7F])
 
 UnicodeEmojiMiscellaneousSymbolsAndPictographs = $([\uD83C] [\uDF00-\uDFFF] [\uFE00-\uFE0F]?) / $([\uD83D] [\uDC00-\uDDFF] [\uFE00-\uFE0F]?)
 

@@ -3,7 +3,7 @@ import { Authorization } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 import type { Request, Response, NextFunction } from 'express';
 
-import { oAuth2ServerAuth } from '../../../../app/oauth2-server-config/server/oauth/oauth2-server';
+import { oAuth2ServerAuth } from '../../../lib/auth/oauth2-server/oauth2-server';
 
 type AuthenticationMiddlewareConfig = {
 	rejectUnauthorized?: boolean;

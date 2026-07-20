@@ -1,5 +1,6 @@
 import type { ILicenseV3 } from '@rocket.chat/core-typings';
 
+import PlanCardCommunity from './PlanCard/PlanCardCommunity';
 import PlanCardPremium from './PlanCard/PlanCardPremium';
 import PlanCardTrial from './PlanCard/PlanCardTrial';
 
@@ -7,18 +8,22 @@ type LicenseLimits = {
 	activeUsers: { max: number; value?: number };
 };
 
-type PlanCardProps = {
-	licenseInformation: ILicenseV3['information'];
+export type PlanCardProps = {
+	license?: ILicenseV3;
 	licenseLimits: LicenseLimits;
 };
 
-const PlanCard = ({ licenseInformation, licenseLimits }: PlanCardProps) => {
-	const isTrial = licenseInformation.trial;
+const PlanCard = ({ license, licenseLimits }: PlanCardProps) => {
+	const isTrial = license?.information.trial;
+
+	if (!license) {
+		return <PlanCardCommunity />;
+	}
 
 	return isTrial ? (
-		<PlanCardTrial licenseInformation={licenseInformation} />
+		<PlanCardTrial licenseInformation={license.information} />
 	) : (
-		<PlanCardPremium licenseInformation={licenseInformation} licenseLimits={licenseLimits} />
+		<PlanCardPremium licenseInformation={license.information} licenseLimits={licenseLimits} />
 	);
 };
 

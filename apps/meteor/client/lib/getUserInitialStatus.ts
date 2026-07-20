@@ -15,8 +15,7 @@ export const getUserStatusInitialValues = (user: IUser | null, initialStatusText
 
 	return {
 		statusText: user?.statusText ?? initialStatusText ?? '',
-		statusType:
-			user?.status === UserStatusType.AWAY ? (user?.statusDefault ?? UserStatusType.ONLINE) : (user?.status ?? UserStatusType.ONLINE),
+		statusType: user?.status ?? UserStatusType.ONLINE,
 		statusDuration: initialExpiration ? 'custom' : '',
 		statusCustomDate: initialDate.toLocaleDateString('en-CA'),
 		statusCustomTime: initialDate.toTimeString().slice(0, 5),

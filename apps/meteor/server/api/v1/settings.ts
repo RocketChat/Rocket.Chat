@@ -24,15 +24,16 @@ import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
 import _ from 'underscore';
 
-import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
-import { disableCustomScripts } from '../../../app/lib/server/functions/disableCustomScripts';
-import { saveSettingsBulk } from '../../../app/lib/server/functions/saveSettingsBulk';
-import { checkSettingValueBounds } from '../../../app/lib/server/lib/checkSettingValueBonds';
-import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../../app/lib/server/lib/notifyListener';
-import { addOAuthServiceMethod } from '../../../app/lib/server/methods/addOAuthService';
-import { SettingsEvents, settings } from '../../../app/settings/server';
-import { setValue } from '../../../app/settings/server/raw';
+import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../lib/notifyListener';
+import { SettingValidationError, validateSettingRules } from '../../lib/settingValidationRules';
+import { disableCustomScripts } from '../../lib/shared/disableCustomScripts';
+import { addOAuthServiceMethod } from '../../meteor-methods/auth/addOAuthService';
+import { SettingsEvents, settings } from '../../settings';
+import { checkSettingValueBounds } from '../../settings/checkSettingValueBonds';
 import { updateAuditedByUser } from '../../settings/lib/auditedSettingUpdates';
+import { saveSettingsBulk } from '../../settings/lib/saveSettingsBulk';
+import { setValue } from '../../settings/raw';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
 
@@ -181,6 +182,7 @@ API.v1.get(
 	},
 	async function action() {
 		const oAuthServicesEnabled = await LoginServiceConfigurationModel.find({}, { projection: { secret: 0 } }).toArray();
+		const isPassportFlowEnabled = settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow');
 
 		return API.v1.success({
 			services: oAuthServicesEnabled.map((service) => {
@@ -188,8 +190,17 @@ API.v1.get(
 					return service;
 				}
 
-				if ((service as OAuthConfiguration).custom || (service.service && ['saml', 'cas', 'wordpress'].includes(service.service))) {
-					return { ...service };
+				//	CAUTION: Never hide sign-in with apple button from mobile app.
+				if (service.service && ['apple'].includes(service.service)) {
+					return { ...service, hideButtonOnMobile: false };
+				}
+
+				if (service.service && ['saml', 'cas', 'ldap'].includes(service.service)) {
+					return { ...service, hideButtonOnMobile: false };
+				}
+
+				if ((service as OAuthConfiguration).custom || (service.service && service.service === 'wordpress')) {
+					return { ...service, hideButtonOnMobile: isPassportFlowEnabled };
 				}
 
 				return {
@@ -203,6 +214,7 @@ API.v1.get(
 					buttonColor: service.buttonColor || '',
 					buttonLabelColor: service.buttonLabelColor || '',
 					custom: false,
+					hideButtonOnMobile: isPassportFlowEnabled,
 				};
 			}),
 		});
@@ -262,7 +274,7 @@ API.v1.get(
 			hidden: { $ne: true },
 		};
 
-		if (!(await hasPermissionAsync(this.userId, 'view-privileged-setting'))) {
+		if (!(await hasPermissionAsync(this.user, 'view-privileged-setting'))) {
 			ourQuery.public = true;
 		}
 
@@ -323,12 +335,7 @@ API.v1.post(
 		body: settingsUpdateBodySchema,
 		response: {
 			200: settingByIdPostResponseSchema,
-			400: ajv.compile({
-				type: 'object',
-				properties: { success: { type: 'boolean', enum: [false] } },
-				required: ['success'],
-				additionalProperties: true,
-			}),
+			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 			403: validateForbiddenErrorResponse,
 		},
@@ -382,7 +389,17 @@ API.v1.post(
 		}
 
 		if (isSettingsUpdatePropDefault(bodyParams)) {
+			// TODO(next major): unify both validations into one function with a common API error response
 			checkSettingValueBounds(setting, bodyParams.value);
+
+			try {
+				validateSettingRules([{ _id, value: bodyParams.value }]);
+			} catch (error) {
+				if (error instanceof SettingValidationError) {
+					return API.v1.failure(error.message, 'error-setting-validation-failed');
+				}
+				throw error;
+			}
 
 			const { matchedCount } = await auditSettingOperation(Settings.updateValueNotHiddenById, _id, bodyParams.value);
 
@@ -422,11 +439,18 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		await saveSettingsBulk(this.userId, this.bodyParams.settings, {
-			username: this.user.username ?? '',
-			ip: this.requestIp ?? '',
-			useragent: this.request.headers.get('user-agent') ?? '',
-		});
+		try {
+			await saveSettingsBulk(this.userId, this.bodyParams.settings, {
+				username: this.user.username ?? '',
+				ip: this.requestIp ?? '',
+				useragent: this.request.headers.get('user-agent') ?? '',
+			});
+		} catch (error) {
+			if (error instanceof SettingValidationError) {
+				return API.v1.failure(error.message, 'error-setting-validation-failed');
+			}
+			throw error;
+		}
 
 		return API.v1.success();
 	},

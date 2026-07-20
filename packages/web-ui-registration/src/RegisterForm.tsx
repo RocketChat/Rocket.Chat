@@ -32,7 +32,9 @@ type LoginRegisterPayload = {
 	reason: string;
 };
 
-export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }) => {
+export type RegisterFormProps = { setLoginRoute: DispatchLoginRouter };
+
+export const RegisterForm = ({ setLoginRoute }: RegisterFormProps) => {
 	const { t } = useTranslation();
 
 	const requireNameForRegister = useSetting('Accounts_RequireNameForSignUp', true);

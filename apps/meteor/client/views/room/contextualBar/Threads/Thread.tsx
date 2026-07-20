@@ -29,7 +29,7 @@ import { useToggleFollowingThreadMutation } from './hooks/useToggleFollowingThre
 import { useGoToThreadList } from '../../hooks/useGoToThreadList';
 import ChatProvider from '../../providers/ChatProvider';
 
-type ThreadProps = {
+export type ThreadProps = {
 	tmid: IMessage['_id'];
 };
 

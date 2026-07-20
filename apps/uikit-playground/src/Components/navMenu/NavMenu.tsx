@@ -30,7 +30,7 @@ const NavMenu = () => {
 			width='100%'
 			height='100%'
 			zIndex={3}
-			bg={isOpen ? '#000000cc' : 'transparent'}
+			backgroundColor={isOpen ? '#000000cc' : 'transparent'}
 			className={css`
 				user-select: none;
 				transition: var(--animation-fast);

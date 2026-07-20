@@ -11,7 +11,7 @@ import RetryButton from '../../../components/RetryButton';
 import { cxp } from '../../../utils/cx';
 import type { RepliesFormData } from '../RepliesForm';
 
-type DepartmentFieldProps = ComponentProps<typeof Field> & {
+export type DepartmentFieldProps = ComponentProps<typeof Field> & {
 	control: Control<RepliesFormData>;
 	onlyMyDepartments?: boolean;
 	isError: boolean;

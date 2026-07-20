@@ -4,7 +4,7 @@ import { pick } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 
 import { logger } from './logger';
-import { createRoom } from '../../../app/lib/server/functions/createRoom';
+import { createRoom } from '../rooms/createRoom';
 
 type CASUserOptions = {
 	attributes: Record<string, string | undefined>;

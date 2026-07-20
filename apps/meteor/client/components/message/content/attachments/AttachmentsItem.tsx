@@ -7,7 +7,7 @@ import FileAttachment from './FileAttachment';
 import { QuoteAttachment } from './QuoteAttachment';
 import type { AudioAttachmentSource } from './file/AudioAttachment';
 
-type AttachmentsItemProps = {
+export type AttachmentsItemProps = {
 	attachment: MessageAttachmentBase;
 	id: string | undefined;
 	source?: AudioAttachmentSource;

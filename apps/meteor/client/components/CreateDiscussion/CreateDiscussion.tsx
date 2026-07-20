@@ -33,7 +33,7 @@ type CreateDiscussionFormValues = {
 	topic: string;
 };
 
-type CreateDiscussionProps = {
+export type CreateDiscussionProps = {
 	parentMessageId?: IMessage['_id'];
 	encryptedParentRoom?: boolean;
 	onClose: () => void;
@@ -115,7 +115,7 @@ const CreateDiscussion = ({
 			cancelText={t('Cancel')}
 			confirmLoading={createDiscussionMutation.isPending}
 		>
-			<Box mbe={24}>{t('Discussion_description')}</Box>
+			<Box marginBlockEnd={24}>{t('Discussion_description')}</Box>
 			<FieldGroup>
 				<Field>
 					<FieldLabel required>{t('Discussion_target_channel')}</FieldLabel>
@@ -156,7 +156,7 @@ const CreateDiscussion = ({
 							control={control}
 							rules={{ required: t('Required_field', { field: t('Name') }) }}
 							render={({ field }) => (
-								<TextInput {...field} aria-required='true' addon={<Icon name='baloons' size='x20' />} error={errors.name?.message} />
+								<TextInput {...field} aria-required='true' endAddon={<Icon name='baloons' size='x20' />} error={errors.name?.message} />
 							)}
 						/>
 					</FieldRow>

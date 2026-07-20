@@ -5,7 +5,7 @@ import { memo } from 'react';
 
 import { useRoomMenuActions } from '../hooks/useRoomMenuActions';
 
-type RoomMenuProps = {
+export type RoomMenuProps = {
 	rid: string;
 	unread?: boolean;
 	threadUnread?: boolean;

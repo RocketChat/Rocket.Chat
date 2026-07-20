@@ -9,9 +9,9 @@ import { CalendarEvent, Users } from '@rocket.chat/models';
 import type { UpdateResult, DeleteResult } from 'mongodb';
 
 import { getShiftedTime } from './utils/getShiftedTime';
-import { settings } from '../../../app/settings/server';
-import { getUserPreference } from '../../../app/utils/server/lib/getUserPreference';
 import { i18n } from '../../lib/i18n';
+import { getUserPreference } from '../../lib/utils/lib/getUserPreference';
+import { settings } from '../../settings';
 
 const logger = new Logger('Calendar');
 

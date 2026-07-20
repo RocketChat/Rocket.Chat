@@ -7,7 +7,7 @@ import SidebarItemTemplateWithData from './SidebarItemTemplateWithData';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import type { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 
-type RoomListRowProps = {
+export type RoomListRowProps = {
 	data: {
 		extended: boolean;
 		t: TFunction;

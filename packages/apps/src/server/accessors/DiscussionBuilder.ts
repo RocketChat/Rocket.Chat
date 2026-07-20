@@ -7,7 +7,7 @@ import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
 import { RoomBuilder } from './RoomBuilder';
 
 export class DiscussionBuilder extends RoomBuilder implements IDiscussionBuilder {
-	public kind: RocketChatAssociationModel.DISCUSSION;
+	public declare kind: RocketChatAssociationModel.DISCUSSION;
 
 	private reply: string;
 

@@ -11,15 +11,15 @@ import { Uploads, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import sharp from 'sharp';
 
-import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
-import { canDeleteMessageAsync } from '../../../app/authorization/server/functions/canDeleteMessage';
-import { FileUpload } from '../../../app/file-upload/server';
-import { parseFileIntoMessageAttachments, sendFileMessage } from '../../../app/file-upload/server/methods/sendFileMessage';
-import { setUserAvatar } from '../../../app/lib/server/functions/setUserAvatar';
-import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
-import { sendFileLivechatMessage } from '../../../app/livechat/server/methods/sendFileLivechatMessage';
 import { NOTIFICATION_ATTACHMENT_COLOR } from '../../../lib/constants';
+import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
+import { canDeleteMessageAsync } from '../../lib/authorization/canDeleteMessage';
 import { i18n } from '../../lib/i18n';
+import { FileUpload } from '../../lib/media/file-upload';
+import { updateMessage } from '../../lib/messages/updateMessage';
+import { setUserAvatar } from '../../lib/users/setUserAvatar';
+import { parseFileIntoMessageAttachments, sendFileMessage } from '../../meteor-methods/messages/sendFileMessage';
+import { sendFileLivechatMessage } from '../../meteor-methods/omnichannel/sendFileLivechatMessage';
 import { UploadFS } from '../../ufs';
 
 const logger = new Logger('UploadService');
@@ -27,9 +27,9 @@ const logger = new Logger('UploadService');
 export class UploadService extends ServiceClassInternal implements IUploadService {
 	protected name = 'upload';
 
-	async uploadFile({ buffer, details }: IUploadFileParams): Promise<IUpload> {
+	async uploadFile({ buffer, details, federation }: IUploadFileParams): Promise<IUpload> {
 		const fileStore = FileUpload.getStore('Uploads');
-		return fileStore.insert(details, buffer);
+		return fileStore.insert({ ...details, ...(federation && { federation }) }, buffer);
 	}
 
 	async sendFileMessage({ roomId, file, userId, message }: ISendFileMessageParams): Promise<boolean | undefined> {

@@ -6,7 +6,9 @@ import AppSetting from './AppSetting';
 import type { ISettings } from '../../../../../apps/@types/IOrchestrator';
 import { useAppTranslation } from '../../../hooks/useAppTranslation';
 
-const AppSettings = ({ settings }: { settings: ISettings }) => {
+export type AppSettingsProps = { settings: ISettings };
+
+const AppSettings = ({ settings }: AppSettingsProps) => {
 	const appId = useRouteParameter('id');
 	const tApp = useAppTranslation(appId || '');
 
@@ -27,7 +29,7 @@ const AppSettings = ({ settings }: { settings: ISettings }) => {
 	}, [settings]);
 
 	return (
-		<Box display='flex' flexDirection='column' maxWidth='x640' w='full' marginInline='auto'>
+		<Box display='flex' flexDirection='column' maxWidth='x640' width='full' marginInline='auto'>
 			<Accordion>
 				{groupedSettings.map(([section, sectionSettings], index) => (
 					<AccordionItem key={section} title={tApp(section)} defaultExpanded={index === 0}>

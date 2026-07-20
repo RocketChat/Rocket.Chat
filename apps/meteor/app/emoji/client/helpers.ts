@@ -5,6 +5,9 @@ import type { EmojiCategory, EmojiItem } from '.';
 import { emoji, emojiEmitter } from './lib';
 
 export const CUSTOM_CATEGORY = 'rocket';
+export const CUSTOM_CATEGORY_CLASSNAME = 'emojipicker--custom';
+
+const MIXED_TONE_SUFFIX = /_tone([1-5])-[1-5]$/;
 
 type RowItem = Array<EmojiItem & { category: string }>;
 type RowDivider = { category: string; i18n: TranslationKey };
@@ -66,11 +69,11 @@ export const createEmojiList = (
 	setRecentEmojis: (emojis: string[]) => void,
 ): (RowItem | LoadMoreItem)[] => {
 	const items: RowItem = [];
-	const emojiPackages = Object.values(emoji.packages);
+	const emojiPackages = Object.entries(emoji.packages);
 	let count = 0;
 	let limited = false;
 
-	emojiPackages.forEach((emojiPackage) => {
+	emojiPackages.forEach(([packageName, emojiPackage]) => {
 		if (!emojiPackage.emojisByCategory?.[category]) {
 			return;
 		}
@@ -83,12 +86,19 @@ export const createEmojiList = (
 
 			const emojiToRender = `:${current}${tone}:`;
 
-			if (!emoji.list[emojiToRender]) {
+			const actualEmoji = emoji.list[emojiToRender];
+			if (!actualEmoji) {
 				removeFromRecent(emojiToRender, recentEmojis, setRecentEmojis);
 				return;
 			}
 
-			const image = emojiPackage.renderPicker(emojiToRender);
+			// A custom emoji with the same name overrides the native one (including its tones), so skip the native duplicate
+			if (packageName === 'native' && emoji.list[`:${current}:`]?.emojiPackage === 'emojiCustom') {
+				continue;
+			}
+
+			const actualPackage = actualEmoji.emojiPackage;
+			const image = emoji.packages[actualPackage].renderPicker(emojiToRender);
 			if (!image) {
 				continue;
 			}
@@ -165,13 +175,19 @@ export const getEmojisBySearchTerm = (
 				tone = `_tone${actualTone}`;
 			}
 
+			const mixedTones = current.match(MIXED_TONE_SUFFIX);
+			const categoryName = current.replace(MIXED_TONE_SUFFIX, '');
+			if (mixedTones && !(actualTone > 0 && Number(mixedTones[1]) === actualTone)) {
+				continue;
+			}
+
 			let emojiFound = false;
 
 			for (const key in emoji.packages[emojiPackage].emojisByCategory) {
 				if (emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(key)) {
 					const contents = emoji.packages[emojiPackage].emojisByCategory[key];
 					const searchValArray = alias !== undefined ? alias.replace(/:/g, '').split('_') : alias;
-					if (contents.indexOf(current) !== -1 || searchValArray?.includes(searchTerm)) {
+					if (contents.indexOf(categoryName) !== -1 || searchValArray?.includes(searchTerm)) {
 						emojiFound = true;
 						break;
 					}
@@ -181,12 +197,15 @@ export const getEmojisBySearchTerm = (
 			if (emojiFound) {
 				const emojiToRender = `:${current}${tone}:`;
 
-				if (!emoji.list[emojiToRender]) {
+				const actualEmoji = emoji.list[emojiToRender];
+				if (!actualEmoji) {
 					removeFromRecent(emojiToRender, recentEmojis, setRecentEmojis);
 					break;
 				}
 
-				emojis.push({ emoji: current, image: emoji.packages[emojiPackage].renderPicker(emojiToRender) });
+				const actualPackage = actualEmoji.emojiPackage;
+
+				emojis.push({ emoji: current, image: emoji.packages[actualPackage].renderPicker(emojiToRender) });
 			}
 		}
 	}

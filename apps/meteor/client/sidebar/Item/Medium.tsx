@@ -4,7 +4,7 @@ import { memo } from 'react';
 
 import { useDeferredMenuMount } from './useDeferredMenuMount';
 
-type MediumProps = {
+export type MediumProps = {
 	title: ReactNode;
 	titleIcon?: ReactNode;
 	avatar: ReactNode;
