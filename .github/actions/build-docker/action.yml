@@ -51,7 +51,7 @@ runs:
 
     - name: Login to DockerHub
       # FIPS base image (rocketchat/dhi-node) lives in a private DockerHub repo and requires auth to pull.
-      if: inputs.type == 'fips' && github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+      if: inputs.type == 'fips' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
       uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
       with:
         username: ${{ inputs.DOCKER_USER }}
@@ -61,8 +61,6 @@ runs:
       if: inputs.service == 'rocketchat'
       uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
       with:
-        # Temporary: rocketchat fips reuses existing Meteor artifacts until build-fips exists.
-        # PR/merge queue runs only produce build-coverage, while release/develop produce build-production.
         name: build-${{ inputs.type == 'fips' && ((github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'coverage' || 'production') || inputs.type }}
         path: /tmp/build
 
