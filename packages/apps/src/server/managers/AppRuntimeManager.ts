@@ -19,7 +19,7 @@ export type ExecRequestOptions = {
 	timeout?: number;
 };
 
-const { APPS_ENGINE_RUNTIME_BACKEND = 'deno' } = process.env;
+const { APPS_ENGINE_RUNTIME_BACKEND = 'node' } = process.env;
 
 export const nodeRuntimeFactory = (manager: AppManager, appPackage: IParseAppPackageResult, storageItem: IAppStorageItem) =>
 	new NodeRuntimeSubprocessController(manager, appPackage, storageItem);
@@ -27,7 +27,7 @@ export const nodeRuntimeFactory = (manager: AppManager, appPackage: IParseAppPac
 export const denoRuntimeFactory = (manager: AppManager, appPackage: IParseAppPackageResult, storageItem: IAppStorageItem) =>
 	new DenoRuntimeSubprocessController(manager, appPackage, storageItem);
 
-const defaultRuntimeFactory = APPS_ENGINE_RUNTIME_BACKEND === 'node' ? nodeRuntimeFactory : denoRuntimeFactory;
+const defaultRuntimeFactory = APPS_ENGINE_RUNTIME_BACKEND === 'deno' ? denoRuntimeFactory : nodeRuntimeFactory;
 
 export class AppRuntimeManager {
 	private readonly subprocesses: Record<string, IRuntimeController> = {};
