@@ -956,7 +956,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	}
 
 	async canUserAccessFederation(user: IUser): Promise<boolean> {
-		if (!(await Authorization.hasPermission(user._id, 'access-federation'))) {
+		if (!(await Authorization.hasPermission({ _id: user._id, roles: user.roles }, 'access-federation'))) {
 			return false;
 		}
 
