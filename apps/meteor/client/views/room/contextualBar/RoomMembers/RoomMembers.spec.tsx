@@ -2,9 +2,8 @@ import { UserStatus } from '@rocket.chat/core-typings';
 import { composeStories } from '@storybook/react';
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { axe } from 'jest-axe';
-import type { ComponentProps, CSSProperties, HTMLAttributes, ReactNode } from 'react';
-import * as React from 'react';
-import { Children, forwardRef, isValidElement } from 'react';
+import type { ComponentProps, CSSProperties, ElementType, HTMLAttributes, ReactNode, Ref } from 'react';
+import { Children, forwardRef, isValidElement, useImperativeHandle } from 'react';
 
 import RoomMembers from './RoomMembers';
 import * as stories from './RoomMembers.stories';
@@ -32,19 +31,19 @@ type MockVirtualizerProps = {
 	bufferSize?: number;
 	keepMounted?: readonly number[];
 	onScroll?: (offset: number) => void;
-	as?: React.ElementType;
-	item?: React.ElementType;
+	as?: ElementType;
+	item?: ElementType;
 	style?: CSSProperties;
 	className?: string;
 };
 
 jest.mock('virtua', () => ({
-	Virtualizer: React.forwardRef(
+	Virtualizer: forwardRef(
 		(
 			{ children, bufferSize, keepMounted, onScroll, as: asRoot = 'div', item: asItem = 'div', style, className }: MockVirtualizerProps,
-			ref: React.Ref<unknown>,
+			ref: Ref<unknown>,
 		) => {
-			React.useImperativeHandle(ref, () => (mockVirtualizerHasHandle ? mockVirtualizerHandle : null));
+			useImperativeHandle(ref, () => (mockVirtualizerHasHandle ? mockVirtualizerHandle : null));
 			const Root = asRoot;
 			const Item = asItem;
 			const wrapped = Children.map(children, (child, index) => {
