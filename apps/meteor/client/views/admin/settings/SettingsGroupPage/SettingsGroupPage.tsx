@@ -9,8 +9,11 @@ import { useMemo, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { EditableSetting } from '../../EditableSettingsContext';
-import { useEditableSettingsDispatch, useEditableSettings } from '../../EditableSettingsContext';
+import { useEditableSettingsDispatch, useEditableSettings, useEditableSettingsGroupSections } from '../../EditableSettingsContext';
 import SettingsSectionsToc from '../SettingsSectionsToc';
+
+// width of the fixed section TOC (x248) plus the scrollbar gutter it is inset by
+const TOC_RESERVED_WIDTH = 260;
 
 export type SettingsGroupPageProps = {
 	children: ReactNode;
@@ -35,6 +38,9 @@ const SettingsGroupPage = ({
 	const { t } = useTranslation();
 	const dispatch = useSettingsDispatch();
 	const dispatchToastMessage = useToastMessageDispatch();
+
+	const groupSections = useEditableSettingsGroupSections(_id);
+	const hasToc = useMemo(() => groupSections.filter((name) => name).length >= 2, [groupSections]);
 
 	const changedEditableSettings = useEditableSettings(
 		useMemo(
@@ -149,12 +155,17 @@ const SettingsGroupPage = ({
 				<Box position='relative' display='flex' flexDirection='column' flexGrow={1} flexShrink={1} overflow='hidden' backgroundColor='tint'>
 					{/* rendered before the settings list so keyboard users reach the section navigation first; overlaid on
 					    the scroll area so the page scrollbar stays at the window edge (the inset keeps the gutter visible) */}
-					<Box position='absolute' insetBlockStart={0} insetBlockEnd={0} insetInlineEnd={12} zIndex={1}>
-						<SettingsSectionsToc groupId={_id} />
-					</Box>
+					{hasToc && (
+						<Box position='absolute' insetBlockStart={0} insetBlockEnd={0} insetInlineEnd={12} zIndex={1}>
+							<SettingsSectionsToc groupId={_id} />
+						</Box>
+					)}
 					<PageScrollableContentWithShadow backgroundColor='tint'>
-						<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
-							{children}
+						{/* the TOC width is reserved so the centered content never slides underneath it on narrow windows */}
+						<Box width='full' paddingInlineEnd={hasToc ? TOC_RESERVED_WIDTH : undefined}>
+							<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
+								{children}
+							</Box>
 						</Box>
 					</PageScrollableContentWithShadow>
 				</Box>
