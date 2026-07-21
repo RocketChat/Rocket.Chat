@@ -1,7 +1,6 @@
 import type {
 	Root,
 	Inlines,
-	Markup,
 	Bold,
 	Italic,
 	Strike,
@@ -19,6 +18,8 @@ import type {
 	CodeLine,
 	Paragraph,
 	ListItem,
+	Tasks,
+	Task,
 } from './definitions';
 import type { Options } from './index';
 import {
@@ -56,6 +57,8 @@ import {
 	emojiUnicode,
 	color,
 	image,
+	tasks,
+	task,
 } from './utils';
 import { Scanner } from './scanner';
 import {
@@ -183,6 +186,12 @@ export function parse(input: string, options: Options = {}) {
 		const blockquoteNode: Quote | null = tryBlockquote(scanner, options);
 		if (blockquoteNode !== null) {
 			root.push(blockquoteNode);
+			continue;
+		}
+
+		const tasksNode: Tasks | null = tryTasks(scanner, options);
+		if (tasksNode !== null) {
+			root.push(tasksNode);
 			continue;
 		}
 
@@ -1728,4 +1737,45 @@ function tryBigEmoji(input: string, options: Options): [BigEmoji] | null {
 		return null;
 	}
 	return [bigEmoji(emojis as BigEmoji['value'])];
+}
+
+function tryTasks(scanner: Scanner, options: Options): Tasks | null {
+	const start = scanner.position();
+	const items: Task[] = [];
+
+	while (scanner.matches('- [')) {
+		const lineStart = scanner.position();
+		scanner.consume(3); // consume '- ['
+
+		const flag = scanner.char();
+		if (flag !== 'x' && flag !== ' ') {
+			scanner.backtrack(lineStart);
+			break;
+		}
+		scanner.consume(); // consume the flag
+
+		if (scanner.char() !== ']') {
+			scanner.backtrack(lineStart);
+			break;
+		}
+		scanner.consume(); // consume ']'
+
+		if (!isSpace(scanner.char())) {
+			scanner.backtrack(lineStart);
+			break;
+		}
+		while (isSpace(scanner.char())) scanner.consume();
+
+		const inlines = parseInline(scanner, options);
+		items.push(task(inlines, flag === 'x'));
+
+		consumeEndOfLine(scanner);
+	}
+
+	if (items.length === 0) {
+		scanner.backtrack(start);
+		return null;
+	}
+
+	return tasks(items);
 }
