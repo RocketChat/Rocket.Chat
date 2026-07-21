@@ -35,6 +35,7 @@ function SelectTimezoneSettingInput({
 				</FieldLabel>
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
+			{hint && <FieldHint>{hint}</FieldHint>}
 			<FieldRow>
 				<Select
 					id={_id}
@@ -47,7 +48,6 @@ function SelectTimezoneSettingInput({
 					options={timezoneNames.map((key) => [key, key])}
 				/>
 			</FieldRow>
-			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

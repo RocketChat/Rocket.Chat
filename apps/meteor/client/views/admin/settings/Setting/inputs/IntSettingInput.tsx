@@ -34,6 +34,7 @@ function IntSettingInput({
 				</FieldLabel>
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
+			{hint && <FieldHint>{hint}</FieldHint>}
 			<FieldRow>
 				<InputBox
 					id={_id}
@@ -46,7 +47,6 @@ function IntSettingInput({
 					onChange={handleChange}
 				/>
 			</FieldRow>
-			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

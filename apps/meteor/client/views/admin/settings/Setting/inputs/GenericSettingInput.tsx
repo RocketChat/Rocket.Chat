@@ -34,6 +34,7 @@ function GenericSettingInput({
 				</FieldLabel>
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
+			{hint && <FieldHint>{hint}</FieldHint>}
 			<FieldRow>
 				<TextInput
 					id={_id}
@@ -45,7 +46,6 @@ function GenericSettingInput({
 					onChange={handleChange}
 				/>
 			</FieldRow>
-			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

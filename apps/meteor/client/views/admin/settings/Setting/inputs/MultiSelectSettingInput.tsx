@@ -40,6 +40,7 @@ function MultiSelectSettingInput({
 				</FieldLabel>
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
+			{hint && <FieldHint>{hint}</FieldHint>}
 			<FieldRow>
 				<Component
 					max-width='full'
@@ -54,7 +55,6 @@ function MultiSelectSettingInput({
 					aria-label={_id} // FIXME: Multiselect (fuselage) should be associating the FieldLabel automatically. This is a workaround for accessibility and test locators.
 				/>
 			</FieldRow>
-			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

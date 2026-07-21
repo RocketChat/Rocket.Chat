@@ -35,6 +35,7 @@ function RelativeUrlSettingInput({
 				</FieldLabel>
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
+			{hint && <FieldHint>{hint}</FieldHint>}
 			<FieldRow>
 				<UrlInput
 					id={_id}
@@ -46,7 +47,6 @@ function RelativeUrlSettingInput({
 					onChange={handleChange}
 				/>
 			</FieldRow>
-			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

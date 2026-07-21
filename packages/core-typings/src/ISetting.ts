@@ -65,6 +65,7 @@ export interface ISettingBase extends IRocketChatRecord {
 	// TODO: migrate settings with group and section with null to undefined
 	group?: string | null;
 	section?: string;
+	subsection?: string;
 	tab?: string;
 	i18nLabel: string;
 	value: SettingValue;

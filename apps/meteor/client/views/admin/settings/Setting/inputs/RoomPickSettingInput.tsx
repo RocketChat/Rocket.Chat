@@ -37,6 +37,7 @@ function RoomPickSettingInput({
 				</FieldLabel>
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
+			{hint && <FieldHint>{hint}</FieldHint>}
 			<FieldRow>
 				<RoomAutoCompleteMultiple
 					readOnly={readonly}
@@ -46,7 +47,6 @@ function RoomPickSettingInput({
 					onChange={handleChange}
 				/>
 			</FieldRow>
-			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

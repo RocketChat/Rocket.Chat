@@ -6,6 +6,7 @@ import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import type { EditableSetting } from '../../EditableSettingsContext';
 import { useEditableSettings, useEditableSettingsDispatch } from '../../EditableSettingsContext';
 import Setting from '../Setting';
 
@@ -21,7 +22,7 @@ export type SettingsSectionProps = {
 };
 
 function SettingsSection({ groupId, hasReset = true, sectionTitle, sectionName, currentTab, solo, help, children }: SettingsSectionProps) {
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 
 	const editableSettings = useEditableSettings(
 		useMemo(
@@ -35,6 +36,23 @@ function SettingsSection({ groupId, hasReset = true, sectionTitle, sectionName, 
 	);
 
 	const changed = useMemo(() => editableSettings.some(({ changed }) => changed), [editableSettings]);
+
+	// Group consecutive settings sharing the same `subsection` so each block can
+	// be rendered as a captioned card; settings without a subsection keep the
+	// plain layout.
+	const subsectionGroups = useMemo(() => {
+		const groups: { subsection: string; settings: EditableSetting[] }[] = [];
+		for (const setting of editableSettings) {
+			const subsection = setting.subsection ?? '';
+			const lastGroup = groups[groups.length - 1];
+			if (lastGroup?.subsection === subsection) {
+				lastGroup.settings.push(setting);
+			} else {
+				groups.push({ subsection, settings: [setting] });
+			}
+		}
+		return groups;
+	}, [editableSettings]);
 
 	const canReset = useMemo(
 		() => editableSettings.some(({ value, packageValue }) => JSON.stringify(value) !== JSON.stringify(packageValue)),
@@ -71,24 +89,49 @@ function SettingsSection({ groupId, hasReset = true, sectionTitle, sectionName, 
 		reset();
 	};
 
+	const sectionDescriptionKey = sectionName && `${sectionName}_Description`;
+	const sectionDescription =
+		sectionDescriptionKey && i18n.exists(sectionDescriptionKey) ? t(sectionDescriptionKey as TranslationKey) : undefined;
+
 	return (
 		<AccordionItem
 			data-qa-section={sectionName}
 			noncollapsible={solo || !sectionName}
 			title={sectionTitle || (sectionName && t(sectionName as TranslationKey))}
 		>
+			{sectionDescription && (
+				<Box is='p' color='hint' fontScale='p2' marginBlockEnd={16}>
+					{sectionDescription}
+				</Box>
+			)}
 			{help && (
 				<Box is='p' color='hint' fontScale='p2'>
 					{help}
 				</Box>
 			)}
-			<FieldGroup>
-				{editableSettings.map(
-					(setting) => isSetting(setting) && <Setting key={setting._id} settingId={setting._id} sectionChanged={changed} />,
-				)}
-
-				{children}
-			</FieldGroup>
+			{subsectionGroups.map(({ subsection, settings }, index) =>
+				subsection ? (
+					<Box key={subsection} marginBlockEnd={24}>
+						<Box fontScale='micro' textTransform='uppercase' color='hint' marginBlockEnd={8}>
+							{i18n.exists(subsection) ? t(subsection as TranslationKey) : subsection}
+						</Box>
+						<Box borderWidth='default' borderColor='extra-light' borderRadius='x4' padding={20}>
+							<FieldGroup>
+								{settings.map(
+									(setting) => isSetting(setting) && <Setting key={setting._id} settingId={setting._id} sectionChanged={changed} />,
+								)}
+							</FieldGroup>
+						</Box>
+					</Box>
+				) : (
+					<FieldGroup key={`ungrouped-${index}`} marginBlockEnd={24}>
+						{settings.map(
+							(setting) => isSetting(setting) && <Setting key={setting._id} settingId={setting._id} sectionChanged={changed} />,
+						)}
+					</FieldGroup>
+				),
+			)}
+			{children && <FieldGroup>{children}</FieldGroup>}
 			{hasReset && canReset && (
 				<Button secondary danger marginBlockStart={16} data-section={sectionName} onClick={handleResetSectionClick}>
 					{t('Reset_section_settings')}

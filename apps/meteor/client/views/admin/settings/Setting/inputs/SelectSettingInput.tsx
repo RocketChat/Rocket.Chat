@@ -38,6 +38,7 @@ function SelectSettingInput({
 				</FieldLabel>
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
+			{hint && <FieldHint>{hint}</FieldHint>}
 			<FieldRow>
 				<Select
 					id={_id}
@@ -50,7 +51,6 @@ function SelectSettingInput({
 					options={values.map(({ key, i18nLabel }) => [key, t(i18nLabel)])}
 				/>
 			</FieldRow>
-			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

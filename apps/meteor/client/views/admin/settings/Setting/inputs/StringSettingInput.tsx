@@ -39,6 +39,7 @@ function StringSettingInput({
 				</FieldLabel>
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
+			{hint && <FieldHint>{hint}</FieldHint>}
 			<FieldRow>
 				{multiline ? (
 					<TextAreaInput
@@ -67,7 +68,6 @@ function StringSettingInput({
 					/>
 				)}
 			</FieldRow>
-			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

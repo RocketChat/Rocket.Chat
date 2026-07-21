@@ -32,6 +32,7 @@ function PasswordSettingInput({
 				</FieldLabel>
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
+			{hint && <FieldHint>{hint}</FieldHint>}
 			<FieldRow>
 				<PasswordInput
 					id={_id}
@@ -43,7 +44,6 @@ function PasswordSettingInput({
 					onChange={handleChange}
 				/>
 			</FieldRow>
-			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

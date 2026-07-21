@@ -47,6 +47,7 @@ function LookupSettingInput({
 				</FieldLabel>
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
+			{hint && <FieldHint>{hint}</FieldHint>}
 			<FieldRow>
 				<Select
 					id={_id}
@@ -59,7 +60,6 @@ function LookupSettingInput({
 					options={values.map(({ key, label }) => [key, label])}
 				/>
 			</FieldRow>
-			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

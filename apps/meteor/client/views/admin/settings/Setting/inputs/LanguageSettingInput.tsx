@@ -34,6 +34,7 @@ function LanguageSettingInput({
 				</FieldLabel>
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
+			{hint && <FieldHint>{hint}</FieldHint>}
 			<FieldRow>
 				<Select
 					id={_id}
@@ -46,7 +47,6 @@ function LanguageSettingInput({
 					options={languages.map(({ key, name }) => [key, name])}
 				/>
 			</FieldRow>
-			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

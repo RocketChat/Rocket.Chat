@@ -90,6 +90,7 @@ function TimespanSettingInput({
 				</FieldLabel>
 				{hasResetButton && <ResetSettingButton onClick={handleResetButtonClick} />}
 			</FieldRow>
+			{hint && <FieldHint>{hint}</FieldHint>}
 			<FieldRow>
 				<InputBox
 					id={_id}
@@ -105,7 +106,6 @@ function TimespanSettingInput({
 			<FieldRow>
 				<Select value={timeUnit} disabled={disabled} options={timeUnitOptions} onChange={handleChangeTimeUnit} />
 			</FieldRow>
-			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }
