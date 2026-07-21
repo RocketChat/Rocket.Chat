@@ -139,7 +139,7 @@ const SettingsGroupPage = ({
 
 	return (
 		<Page is='form' action='#' method='post' onSubmit={handleSubmit}>
-			<PageHeader onClickBack={onClickBack} title={i18nLabel && isTranslationKey(i18nLabel) && t(i18nLabel)}>
+			<PageHeader backgroundColor='tint' onClickBack={onClickBack} title={i18nLabel && isTranslationKey(i18nLabel) && t(i18nLabel)}>
 				<ButtonGroup>{headerButtons}</ButtonGroup>
 			</PageHeader>
 			{tabs}
