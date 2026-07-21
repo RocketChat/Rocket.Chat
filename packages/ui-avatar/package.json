@@ -24,10 +24,10 @@
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@types/react": "~19.2.17",
 		"@types/react-dom": "~19.2.3",
-		"eslint": "~9.39.4",
+		"eslint": "~9.39.5",
 		"react": "~19.2.7",
 		"react-dom": "~19.2.7",
-		"react-virtuoso": "~4.18.10",
+		"react-virtuoso": "~4.18.11",
 		"typescript": "~5.9.3"
 	},
 	"peerDependencies": {
