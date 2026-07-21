@@ -94,6 +94,8 @@ test.describe('OC - Business Hours', () => {
 			await poOmnichannelBusinessHours.table.findRowByName(BHName).click();
 			await poOmnichannelBusinessHours.selectDepartment(department2.data.name);
 			await poOmnichannelBusinessHours.btnSave.click();
+			// wait for the form to be dismissed, otherwise the navigation after save can detach the reopened form
+			await expect(poOmnichannelBusinessHours.btnSave).not.toBeVisible();
 		});
 
 		await test.step('expect department to be in the chosen departments list', async () => {
@@ -108,6 +110,7 @@ test.describe('OC - Business Hours', () => {
 			await poOmnichannelBusinessHours.table.findRowByName(BHName).click();
 			await poOmnichannelBusinessHours.selectDepartment(department2.data.name);
 			await poOmnichannelBusinessHours.btnSave.click();
+			await expect(poOmnichannelBusinessHours.btnSave).not.toBeVisible();
 		});
 
 		await test.step('expect department to not be in the chosen departments list', async () => {

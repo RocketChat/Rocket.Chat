@@ -97,7 +97,8 @@ test.describe('OC - Manage Tags', () => {
 			await poOmnichannelTags.table.findRowByName(tag.name).click();
 			await expect(poOmnichannelTags.editTag.root).toBeVisible();
 			await poOmnichannelTags.editTag.selectDepartment(department2.data.name);
-			await poOmnichannelTags.editTag.btnSave.click();
+			// wait for dismissal, otherwise the contextual bar closing after save can detach the reopened panel
+			await poOmnichannelTags.editTag.save();
 		});
 
 		await test.step('expect department to be in the chosen departments list', async () => {
@@ -113,7 +114,7 @@ test.describe('OC - Manage Tags', () => {
 			await poOmnichannelTags.table.findRowByName(tag.name).click();
 			await expect(poOmnichannelTags.editTag.root).toBeVisible();
 			await poOmnichannelTags.editTag.selectDepartment(department2.data.name);
-			await poOmnichannelTags.editTag.btnSave.click();
+			await poOmnichannelTags.editTag.save();
 		});
 
 		await test.step('expect department to not be in the chosen departments list', async () => {
