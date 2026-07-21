@@ -57,12 +57,32 @@ import {
 	color,
 } from './utils';
 import { Scanner } from './scanner';
-import { isNewline, isPlainChar, isSpace, isAlpha, isAlphaNum, isDigit, EMOTICON_KEYS, EMOTICONS, isHexDigit } from './chars';
+import {
+	isNewline,
+	isPlainChar,
+	isSpace,
+	isAlpha,
+	isAlphaNum,
+	isDigit,
+	EMOTICON_KEYS,
+	EMOTICONS,
+	isHexDigit,
+	isEmojiStart,
+	isUrlStart,
+} from './chars';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const ESCAPABLE = new Set(['*', '_', '~', '`', '#', '.']);
 const UNICODE_EMOJI = new RegExp('^\\p{RGI_Emoji}\\uFE0F?', 'v');
+const OPTIONAL_TIMEZONE_OFFSET = '([+-]\\d{2}:\\d{2})?'; // optional "+00:00" style offset
+const UNIX_TIMESTAMP = /^\d{10}$/; // exactly 10 digits
+const ISO_TIMESTAMP_WITH_MILLISECONDS_REGEX = new RegExp(
+	`^(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2}):(\\d{2})\\.(\\d{3})${OPTIONAL_TIMEZONE_OFFSET}$`,
+);
+const ISO_TIMESTAMP_REGEX = new RegExp(`^(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2}):(\\d{2})${OPTIONAL_TIMEZONE_OFFSET}$`);
+const TIME_HOURS_MINUTES_SECONDS_REGEX = new RegExp(`^(\\d{2}):(\\d{2}):(\\d{2})${OPTIONAL_TIMEZONE_OFFSET}$`);
+const TIME_HOURS_MINUTES_REGEX = new RegExp(`^(\\d{2}):(\\d{2})${OPTIONAL_TIMEZONE_OFFSET}$`);
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -105,6 +125,18 @@ function isAnyText(ch: string): boolean {
 	);
 }
 
+function isEmailLocalChar(ch: string): boolean {
+	return isAlphaNum(ch) || ch.charCodeAt(0) > 127 || ch === '.' || ch === '_' || ch === '+' || ch === '-' || ch === "'";
+}
+
+function isEmailDomainChar(ch: string): boolean {
+	return isAlphaNum(ch) || ch.charCodeAt(0) > 127 || ch === '.' || ch === '-';
+}
+
+function isPhoneChar(ch: string): boolean {
+	return isDigit(ch) || ch === '(' || ch === ')' || ch === '-';
+}
+
 // ───  Re-entrancy guards ───────────────────────────────────────────────────
 
 let skipBold = false;
@@ -113,7 +145,7 @@ let skipStrike = false;
 
 // ───  Entry point ──────────────────────────────────────────────────────────
 
-export function parse(input: string, options: Options = {}): Root {
+export function parse(input: string, options: Options = {}) {
 	const bigEmojiRoot = tryBigEmoji(input, options);
 	if (bigEmojiRoot !== null) {
 		return bigEmojiRoot;
@@ -176,69 +208,61 @@ export function parse(input: string, options: Options = {}): Root {
 			root.push(paragraph(inlines));
 		}
 
-		consumeEndOfLine(scanner); // Skip newline character(s)
+		consumeEndOfLine(scanner); // Skip newline characters
 	}
 
 	return root;
 }
 
-function parseInline(scanner: Scanner, options: Options): Inlines[] {
+function parseInline(scanner: Scanner, options: Options) {
 	const nodes: Inlines[] = [];
-	let prevChar = '';
+	let prev = '';
 
 	while (!scanner.isEnd() && !isNewline(scanner.char())) {
 		const ch = scanner.char();
 
-		if (isSpace(ch)) {
-			const start = scanner.position();
-			while (!scanner.isEnd() && isSpace(scanner.char())) {
-				scanner.consume();
-			}
-			const text = scanner.sliceFrom(start);
-			nodes.push(plain(text));
-			prevChar = text[text.length - 1] ?? '';
-			continue;
-		}
-
-		// Emoticon — only at a word boundary (when emoticons are enabled)
-		if (options.emoticons && (prevChar === '' || isSpace(prevChar))) {
-			const result = tryEmoticon(scanner);
+		// Emoticons
+		if (options.emoticons) {
+			const result = tryEmoticon(scanner, prev);
 			if (result !== null) {
 				nodes.push(result);
-				prevChar = ')';
+				prev = '';
 				continue;
 			}
 		}
 
-		// KaTeX inline (must be before escape handler)
+		// KaTeX inline
 		if (ch === '$' || (ch === '\\' && scanner.charAt(1) === '(')) {
 			const result = tryKatexInline(scanner, options);
 			if (result !== null) {
 				nodes.push(result);
-				prevChar = ch;
+				prev = ch;
 				continue;
 			}
 		}
 
+		// Escape sequences
 		if (ch === '\\') {
 			const next = scanner.charAt(1);
 			if (next !== '' && ESCAPABLE.has(next)) {
-				scanner.consume(2);
 				nodes.push(plain(next));
-				prevChar = next;
+				scanner.consume(2);
+				prev = next;
 				continue;
 			}
-			nodes.push(plain('\\'));
+
+			nodes.push(plain(ch));
 			scanner.consume();
-			prevChar = '\\';
+			prev = ch;
 			continue;
 		}
 
+		// Inline code
 		if (ch === '`') {
 			const result = tryInlineCode(scanner);
 			if (result !== null) {
 				nodes.push(result);
-				prevChar = '`';
+				prev = ch;
 				continue;
 			}
 		}
@@ -248,17 +272,7 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			const result = tryBold(scanner, options);
 			if (result !== null) {
 				nodes.push(result);
-				prevChar = '*';
-				continue;
-			}
-		}
-
-		// Italic
-		if (ch === '_') {
-			const result = tryItalic(scanner, options, prevChar);
-			if (result !== null) {
-				nodes.push(result);
-				prevChar = '_';
+				prev = ch;
 				continue;
 			}
 		}
@@ -268,332 +282,37 @@ function parseInline(scanner: Scanner, options: Options): Inlines[] {
 			const result = tryStrike(scanner, options);
 			if (result !== null) {
 				nodes.push(result);
-				prevChar = '~';
-				continue;
-			}
-		}
-
-		if (ch === ':') {
-			const result = tryEmojiShortCode(scanner);
-			if (result !== null) {
-				nodes.push(result);
-				prevChar = ':';
-				continue;
-			}
-		}
-
-		// User mention
-		if (ch === '@') {
-			const result = tryUserMention(scanner, prevChar);
-			if (result !== null) {
-				nodes.push(result);
-				prevChar = ch;
-				continue;
-			}
-		}
-
-		// Mention channel
-		if (ch === '#') {
-			const result = tryChannelMention(scanner, prevChar);
-			if (result !== null) {
-				nodes.push(result);
-				prevChar = ch;
-				continue;
-			}
-		}
-
-		if (ch === '[') {
-			const result = tryMarkdownLink(scanner, options);
-			if (result !== null) {
-				nodes.push(result);
-				prevChar = ']';
-				continue;
-			}
-		}
-
-		if (ch === '<') {
-			const tsResult = tryTimestamp(scanner);
-			if (tsResult !== null) {
-				nodes.push(tsResult);
-				prevChar = '>';
-				continue;
-			}
-		}
-
-		if (ch === '<') {
-			const result = tryAngleBracketLink(scanner);
-			if (result !== null) {
-				nodes.push(result);
-				prevChar = '>';
-				continue;
-			}
-		}
-
-		if (ch === '|') {
-			const result = trySpoiler(scanner, options);
-			if (result !== null) {
-				nodes.push(result);
-				prevChar = '|';
-				continue;
-			}
-		}
-
-		// Phone (+number) — only at a word boundary
-		if (ch === '+' && (prevChar === '' || isSpace(prevChar))) {
-			const result = tryPhone(scanner);
-			if (result !== null) {
-				nodes.push(result);
-				prevChar = '';
-				continue;
-			}
-		}
-
-		// Unicode emoji (raw 😀 / ❤️ / ZWJ sequences) — before email/plain so it isn't eaten as text
-		if (ch.charCodeAt(0) > 0x7f) {
-			const result = tryUnicodeEmoji(scanner);
-			if (result !== null) {
-				nodes.push(result);
-				prevChar = '';
-				continue;
-			}
-		}
-
-		// Color (color:#rgb / rgba / rrggbb / rrggbbaa) — only when enabled
-		if (scanner.matches('color:#')) {
-			const result = tryColor(scanner, options);
-			if (result !== null) {
-				nodes.push(result);
-				prevChar = '';
-				continue;
-			}
-		}
-
-		// Email (local@domain)
-		if (isAlpha(ch) || isDigit(ch) || ch.charCodeAt(0) > 127) {
-			const result = tryEmail(scanner);
-			if (result !== null) {
-				nodes.push(result);
-				prevChar = '';
-				continue;
-			}
-		}
-
-		if (isAlpha(ch)) {
-			const result = tryBareUrl(scanner);
-			if (result !== null) {
-				nodes.push(result);
-				prevChar = ch;
-				continue;
-			}
-		}
-
-		if (isAlpha(ch) || isDigit(ch)) {
-			const result = tryAutoLinkUrl(scanner, options);
-			if (result !== null) {
-				nodes.push(result);
-				prevChar = '';
-				continue;
-			}
-		}
-
-		if (isPlainChar(ch) && ch !== '(' && ch !== ')') {
-			const start = scanner.position();
-			while (
-				!scanner.isEnd() &&
-				isPlainChar(scanner.char()) &&
-				!isSpace(scanner.char()) &&
-				scanner.char() !== '(' &&
-				scanner.char() !== ')'
-			) {
-				scanner.consume();
-			}
-			const text = scanner.sliceFrom(start);
-			nodes.push(plain(text));
-			prevChar = text[text.length - 1] ?? '';
-			continue;
-		}
-
-		nodes.push(plain(ch));
-		prevChar = ch;
-		scanner.consume();
-	}
-
-	return reducePlainTexts(nodes);
-}
-
-function parseInlineContent(scanner: Scanner, options: Options, stopChar: string): Inlines[] {
-	const nodes: Inlines[] = [];
-	let prevChar = '';
-
-	while (!scanner.isEnd() && !isNewline(scanner.char())) {
-		if (scanner.matches(stopChar)) break;
-		const ch = scanner.char();
-
-		if (isSpace(ch)) {
-			const start = scanner.position();
-			while (!scanner.isEnd() && isSpace(scanner.char()) && !scanner.matches(stopChar)) {
-				scanner.consume();
-			}
-			const text = scanner.sliceFrom(start);
-			nodes.push(plain(text));
-			prevChar = text[text.length - 1] ?? '';
-			continue;
-		}
-
-		// Emoticon — only at a word boundary (when emoticons are enabled)
-		if (options.emoticons && (prevChar === '' || isSpace(prevChar))) {
-			const result = tryEmoticon(scanner);
-			if (result !== null) {
-				nodes.push(result);
-				prevChar = ')';
-				continue;
-			}
-		}
-
-		// KaTeX inline (must be before escape handler)
-		if (ch === '$' || (ch === '\\' && scanner.charAt(1) === '(')) {
-			const result = tryKatexInline(scanner, options);
-			if (result !== null) {
-				nodes.push(result);
-				prevChar = ch;
-				continue;
-			}
-		}
-
-		if (ch === '\\') {
-			const next = scanner.charAt(1);
-			if (next !== '' && ESCAPABLE.has(next)) {
-				scanner.consume(2);
-				nodes.push(plain(next));
-				prevChar = next;
-				continue;
-			}
-			nodes.push(plain('\\'));
-			scanner.consume();
-			prevChar = '\\';
-			continue;
-		}
-
-		if (ch === '`') {
-			const result = tryInlineCode(scanner);
-			if (result !== null) {
-				nodes.push(result);
-				prevChar = '`';
-				continue;
-			}
-		}
-
-		// Bold
-		if (ch === '*') {
-			const result = tryBold(scanner, options);
-			if (result !== null) {
-				nodes.push(result);
-				prevChar = '*';
+				prev = ch;
 				continue;
 			}
 		}
 
 		// Italic
 		if (ch === '_') {
-			const result = tryItalic(scanner, options, prevChar);
+			const result = tryItalic(scanner, options, prev);
 			if (result !== null) {
 				nodes.push(result);
-				prevChar = '_';
+				prev = ch;
 				continue;
 			}
 		}
 
-		// Strike
-		if (ch === '~') {
-			const result = tryStrike(scanner, options);
-			if (result !== null) {
-				nodes.push(result);
-				prevChar = '~';
-				continue;
-			}
-		}
-
+		// Emoji shortcode (:smile:)
 		if (ch === ':') {
 			const result = tryEmojiShortCode(scanner);
 			if (result !== null) {
 				nodes.push(result);
-				prevChar = ':';
+				prev = ch;
 				continue;
 			}
 		}
 
-		// User mention
-		if (ch === '@') {
-			const result = tryUserMention(scanner, prevChar);
-			if (result !== null) {
-				nodes.push(result);
-				prevChar = ch;
-				continue;
-			}
-		}
-
-		// Mention channel
-		if (ch === '#') {
-			const result = tryChannelMention(scanner, prevChar);
-			if (result !== null) {
-				nodes.push(result);
-				prevChar = ch;
-				continue;
-			}
-		}
-
-		if (ch === '[') {
-			const result = tryMarkdownLink(scanner, options);
-			if (result !== null) {
-				nodes.push(result);
-				prevChar = ']';
-				continue;
-			}
-		}
-
-		if (ch === '<') {
-			const tsResult = tryTimestamp(scanner);
-			if (tsResult !== null) {
-				nodes.push(tsResult);
-				prevChar = '>';
-				continue;
-			}
-		}
-
-		if (ch === '<') {
-			const result = tryAngleBracketLink(scanner);
-			if (result !== null) {
-				nodes.push(result);
-				prevChar = '>';
-				continue;
-			}
-		}
-
-		if (ch === '|') {
-			const result = trySpoiler(scanner, options);
-			if (result !== null) {
-				nodes.push(result);
-				prevChar = '|';
-				continue;
-			}
-		}
-
-		// Phone (+number) — only at a word boundary
-		if (ch === '+' && (prevChar === '' || isSpace(prevChar))) {
-			const result = tryPhone(scanner);
-			if (result !== null) {
-				nodes.push(result);
-				prevChar = '';
-				continue;
-			}
-		}
-
-		// Unicode emoji (raw 😀 / ❤️ / ZWJ sequences) — before email/plain so it isn't eaten as text
-		if (ch.charCodeAt(0) > 0x7f) {
+		// Unicode raw emoji
+		if (isEmojiStart(ch)) {
 			const result = tryUnicodeEmoji(scanner);
 			if (result !== null) {
 				nodes.push(result);
-				prevChar = '';
+				prev = '';
 				continue;
 			}
 		}
@@ -603,59 +322,338 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			const result = tryColor(scanner, options);
 			if (result !== null) {
 				nodes.push(result);
-				prevChar = '';
+				prev = '';
+				continue;
+			}
+		}
+
+		// Phone (+number)
+		if (ch === '+') {
+			const result = tryPhone(scanner, prev);
+			if (result !== null) {
+				nodes.push(result);
+				prev = '';
+				continue;
+			}
+		}
+
+		// User mention
+		if (ch === '@') {
+			const mention = tryUserMention(scanner, prev);
+			if (mention !== null) {
+				nodes.push(mention);
+				prev = ch;
 				continue;
 			}
 		}
 
 		// Email (local@domain)
-		if (isAlpha(ch) || isDigit(ch) || ch.charCodeAt(0) > 127) {
-			const result = tryEmail(scanner);
-			if (result !== null) {
-				nodes.push(result);
-				prevChar = '';
+		if (isUrlStart(ch) || ch.charCodeAt(0) > 127) {
+			const email = tryEmail(scanner);
+			if (email !== null) {
+				nodes.push(email);
+				prev = '';
 				continue;
 			}
 		}
 
-		if (isAlpha(ch)) {
-			const result = tryBareUrl(scanner);
+		// Mention channel
+		if (ch === '#') {
+			const result = tryChannelMention(scanner, prev);
 			if (result !== null) {
 				nodes.push(result);
-				prevChar = ch;
+				prev = ch;
 				continue;
 			}
 		}
 
-		if (isAlpha(ch) || isDigit(ch)) {
+		// Markdown link
+		if (ch === '[') {
+			const result = tryMarkdownLink(scanner, options);
+			if (result !== null) {
+				nodes.push(result);
+				prev = ']';
+				continue;
+			}
+		}
+
+		// Angle bracket link or Timestamp
+		if (ch === '<') {
+			const ts = tryTimestamp(scanner);
+			if (ts !== null) {
+				nodes.push(ts);
+				prev = '';
+				continue;
+			}
+
+			const link = tryAngleBracketLink(scanner);
+			if (link !== null) {
+				nodes.push(link);
+				prev = '>';
+				continue;
+			}
+		}
+
+		// Inline spoiler
+		if (ch === '|') {
+			const result = trySpoiler(scanner, options);
+			if (result !== null) {
+				nodes.push(result);
+				prev = ch;
+				continue;
+			}
+		}
+
+		// Auto link
+		if (isUrlStart(ch)) {
 			const result = tryAutoLinkUrl(scanner, options);
 			if (result !== null) {
 				nodes.push(result);
-				prevChar = '';
+				prev = '';
 				continue;
 			}
 		}
 
-		if (isPlainChar(ch) && ch !== '(' && ch !== ')') {
+		// Plain run
+		if (isPlainChar(ch)) {
 			const start = scanner.position();
-			while (
-				!scanner.isEnd() &&
-				isPlainChar(scanner.char()) &&
-				!isSpace(scanner.char()) &&
-				!scanner.matches(stopChar) &&
-				scanner.char() !== '(' &&
-				scanner.char() !== ')'
-			) {
+			while (!scanner.isEnd() && isPlainChar(scanner.char())) {
 				scanner.consume();
 			}
+
 			const text = scanner.sliceFrom(start);
 			nodes.push(plain(text));
-			prevChar = text[text.length - 1] ?? '';
+			prev = text[text.length - 1] ?? '';
 			continue;
 		}
 
+		// Fallback to plain text
 		nodes.push(plain(ch));
-		prevChar = ch;
+		prev = ch;
+		scanner.consume();
+	}
+
+	return reducePlainTexts(nodes);
+}
+
+function parseInlineContent(scanner: Scanner, options: Options, stopChar: string) {
+	const nodes: Inlines[] = [];
+	let prev = '';
+
+	while (!scanner.isEnd() && !isNewline(scanner.char())) {
+		if (stopChar && scanner.matches(stopChar)) break;
+		const ch = scanner.char();
+
+		// Emoticons
+		if (options.emoticons) {
+			const result = tryEmoticon(scanner, prev);
+			if (result !== null) {
+				nodes.push(result);
+				prev = '';
+				continue;
+			}
+		}
+
+		// KaTeX inline
+		if (ch === '$' || (ch === '\\' && scanner.charAt(1) === '(')) {
+			const result = tryKatexInline(scanner, options);
+			if (result !== null) {
+				nodes.push(result);
+				prev = ch;
+				continue;
+			}
+		}
+
+		// Escape sequences
+		if (ch === '\\') {
+			const next = scanner.charAt(1);
+			if (next !== '' && ESCAPABLE.has(next)) {
+				nodes.push(plain(next));
+				scanner.consume(2);
+				prev = next;
+				continue;
+			}
+
+			nodes.push(plain(ch));
+			scanner.consume();
+			prev = ch;
+			continue;
+		}
+
+		// Inline code
+		if (ch === '`') {
+			const result = tryInlineCode(scanner);
+			if (result !== null) {
+				nodes.push(result);
+				prev = ch;
+				continue;
+			}
+		}
+
+		// Bold
+		if (ch === '*') {
+			const result = tryBold(scanner, options);
+			if (result !== null) {
+				nodes.push(result);
+				prev = ch;
+				continue;
+			}
+		}
+
+		// Strike
+		if (ch === '~') {
+			const result = tryStrike(scanner, options);
+			if (result !== null) {
+				nodes.push(result);
+				prev = ch;
+				continue;
+			}
+		}
+
+		// Italic
+		if (ch === '_') {
+			const result = tryItalic(scanner, options, prev);
+			if (result !== null) {
+				nodes.push(result);
+				prev = ch;
+				continue;
+			}
+		}
+
+		// Emoji shortcode (:smile:)
+		if (ch === ':') {
+			const result = tryEmojiShortCode(scanner);
+			if (result !== null) {
+				nodes.push(result);
+				prev = ch;
+				continue;
+			}
+		}
+
+		//  Unicode raw emoji
+		if (isEmojiStart(ch)) {
+			const result = tryUnicodeEmoji(scanner);
+			if (result !== null) {
+				nodes.push(result);
+				prev = '';
+				continue;
+			}
+		}
+
+		// Color (color:#rgb / rgba / rrggbb / rrggbbaa)
+		if (scanner.matches('color:#')) {
+			const result = tryColor(scanner, options);
+			if (result !== null) {
+				nodes.push(result);
+				prev = '';
+				continue;
+			}
+		}
+
+		// Phone (+number)
+		if (ch === '+') {
+			const result = tryPhone(scanner, prev);
+			if (result !== null) {
+				nodes.push(result);
+				prev = '';
+				continue;
+			}
+		}
+
+		// User mention
+		if (ch === '@') {
+			const mention = tryUserMention(scanner, prev);
+			if (mention !== null) {
+				nodes.push(mention);
+				prev = ch;
+				continue;
+			}
+		}
+
+		// Email (local@domain)
+		if (isUrlStart(ch) || ch.charCodeAt(0) > 127) {
+			const email = tryEmail(scanner);
+			if (email !== null) {
+				nodes.push(email);
+				prev = '';
+				continue;
+			}
+		}
+
+		// Mention channel
+		if (ch === '#') {
+			const result = tryChannelMention(scanner, prev);
+			if (result !== null) {
+				nodes.push(result);
+				prev = ch;
+				continue;
+			}
+		}
+
+		// Markdown link
+		if (ch === '[') {
+			const result = tryMarkdownLink(scanner, options);
+			if (result !== null) {
+				nodes.push(result);
+				prev = ']';
+				continue;
+			}
+		}
+
+		// Angle bracket link or Timestamp
+		if (ch === '<') {
+			const ts = tryTimestamp(scanner);
+			if (ts !== null) {
+				nodes.push(ts);
+				prev = '';
+				continue;
+			}
+
+			const link = tryAngleBracketLink(scanner);
+			if (link !== null) {
+				nodes.push(link);
+				prev = '>';
+				continue;
+			}
+		}
+
+		// Inline spoiler
+		if (ch === '|') {
+			const result = trySpoiler(scanner, options);
+			if (result !== null) {
+				nodes.push(result);
+				prev = ch;
+				continue;
+			}
+		}
+
+		// Auto link
+		if (isUrlStart(ch)) {
+			const result = tryAutoLinkUrl(scanner, options);
+			if (result !== null) {
+				nodes.push(result);
+				prev = '';
+				continue;
+			}
+		}
+
+		// Plain run
+		if (isPlainChar(ch)) {
+			const start = scanner.position();
+			while (!scanner.isEnd() && isPlainChar(scanner.char())) {
+				if (stopChar && scanner.matches(stopChar)) break;
+				scanner.consume();
+			}
+
+			const text = scanner.sliceFrom(start);
+			nodes.push(plain(text));
+			prev = text[text.length - 1] ?? '';
+			continue;
+		}
+
+		// Fallback to plain text
+		nodes.push(plain(ch));
+		prev = ch;
 		scanner.consume();
 	}
 
@@ -831,20 +829,15 @@ function tryInlineCode(scanner: Scanner): Inlines | null {
 
 function tryEmail(scanner: Scanner): Inlines | null {
 	const start = scanner.position();
-	const mailChar = 'mailto:';
+	const delimiter = 'mailto:';
 
-	if (scanner.matches(mailChar)) {
-		scanner.consume(mailChar.length);
+	if (scanner.matches(delimiter)) {
+		scanner.consume(delimiter.length);
 	}
 
 	const localStart = scanner.position();
-	while (!scanner.isEnd()) {
-		const ch = scanner.char();
-		if (isAlphaNum(ch) || ch.charCodeAt(0) > 127 || ch === '.' || ch === '_' || ch === '+' || ch === '-' || ch === "'") {
-			scanner.consume();
-		} else {
-			break;
-		}
+	while (!scanner.isEnd() && isEmailLocalChar(scanner.char())) {
+		scanner.consume();
 	}
 	const local = scanner.sliceFrom(localStart);
 
@@ -855,21 +848,18 @@ function tryEmail(scanner: Scanner): Inlines | null {
 	scanner.consume(); // consume '@'
 
 	const domainStart = scanner.position();
-	while (!scanner.isEnd()) {
-		const ch = scanner.char();
-		if (isAlphaNum(ch) || ch.charCodeAt(0) > 127 || ch === '.' || ch === '-') {
-			scanner.consume();
-		} else {
-			break;
-		}
+	while (!scanner.isEnd() && isEmailDomainChar(scanner.char())) {
+		scanner.consume();
 	}
 
-	// Trim trailing '.' / '-' back out of the domain (e.g. "joe.com." -> "joe.com")
+	// Trim trailing '.' / '-' back out of the domain ("joe.com." → "joe.com")
 	while (scanner.position() > domainStart && (scanner.charAt(-1) === '.' || scanner.charAt(-1) === '-')) {
 		scanner.consume(-1);
 	}
 
 	const domain = scanner.sliceFrom(domainStart);
+
+	// Domain must contain a dot that is not at the very start or end
 	const dotIdx = domain.indexOf('.');
 	if (dotIdx <= 0 || dotIdx === domain.length - 1) {
 		scanner.backtrack(start);
@@ -879,252 +869,116 @@ function tryEmail(scanner: Scanner): Inlines | null {
 	return autoEmail(local + '@' + domain);
 }
 
-function tryPhone(scanner: Scanner): Inlines | null {
+function tryPhone(scanner: Scanner, prev: string): Inlines | null {
+	if (prev !== '' && !isSpace(prev)) return null;
+
 	const start = scanner.position();
-	if (scanner.char() !== '+') {
-		return null;
-	}
 	scanner.consume(); // consume '+'
 
-	// Read a run of digits (or null if none here).
-	const digits = (): string | null => {
-		const s = scanner.position();
-		while (!scanner.isEnd() && isDigit(scanner.char())) {
-			scanner.consume();
-		}
-		const d = scanner.sliceFrom(s);
-		return d.length > 0 ? d : null;
-	};
-
-	// Prefix is either bare digits or "(" digits ")".
-	const prefix = (): { text: string; number: string } | null => {
-		if (scanner.char() === '(') {
-			const s = scanner.position();
-			scanner.consume();
-			const d = digits();
-			if (d !== null && scanner.char() === ')') {
-				scanner.consume();
-				return { text: '(' + d + ')', number: d };
-			}
-			scanner.backtrack(s);
-		}
-		const d = digits();
-		return d !== null ? { text: d, number: d } : null;
-	};
-
-	// PhoneNumber alternatives, in order: each backtracks on failure.
-	let pn: { text: string; number: string } | null = null;
-
-	// prefix "-" digits
-	{
-		const s = scanner.position();
-		const p = prefix();
-		if (p !== null && scanner.char() === '-') {
-			scanner.consume();
-			const d = digits();
-			if (d !== null) pn = { text: p.text + '-' + d, number: p.number + d };
-		}
-		if (pn === null) scanner.backtrack(s);
-	}
-	// prefix digits "-" digits
-	if (pn === null) {
-		const s = scanner.position();
-		const p = prefix();
-		if (p !== null) {
-			const d1 = digits();
-			if (d1 !== null && scanner.char() === '-') {
-				scanner.consume();
-				const d2 = digits();
-				if (d2 !== null) pn = { text: p.text + d1 + '-' + d2, number: p.number + d1 + d2 };
-			}
-		}
-		if (pn === null) scanner.backtrack(s);
-	}
-	// prefix digits
-	if (pn === null) {
-		const s = scanner.position();
-		const p = prefix();
-		if (p !== null) {
-			const d = digits();
-			if (d !== null) pn = { text: p.text + d, number: p.number + d };
-		}
-		if (pn === null) scanner.backtrack(s);
-	}
-	// digits
-	if (pn === null) {
-		const d = digits();
-		if (d !== null) pn = { text: d, number: d };
+	while (!scanner.isEnd() && isPhoneChar(scanner.char())) {
+		scanner.consume();
 	}
 
-	if (pn === null) {
+	const raw = scanner.sliceFrom(start); // includes the leading '+'
+
+	let digits = '';
+	for (const ch of raw) {
+		if (isDigit(ch)) digits += ch;
+	}
+
+	if (digits.length < 5) {
 		scanner.backtrack(start);
 		return null;
 	}
 
-	// phoneChecker returns a tel: LINK when the number has >= 5 digits,
-	// otherwise PLAIN_TEXT (the region is still consumed).
-	return phoneChecker('+' + pn.text, pn.number);
+	return phoneChecker(raw, digits);
 }
 
 function tryTimestamp(scanner: Scanner): Inlines | null {
 	const start = scanner.position();
-	if (!scanner.matches('<t:')) return null;
-	scanner.consume(3);
 
-	// Read exactly n digits, or backtrack and return null.
-	const exact = (n: number): string | null => {
-		const s = scanner.position();
-		for (let i = 0; i < n; i++) {
-			if (!isDigit(scanner.char())) {
-				scanner.backtrack(s);
-				return null;
-			}
-			scanner.consume();
-		}
-		return scanner.sliceFrom(s);
-	};
-
-	// Optional timezone "(+|-)HH:MM".
-	const timezone = (): string | undefined => {
-		const s = scanner.position();
-		const sign = scanner.char();
-		if (sign !== '+' && sign !== '-') return undefined;
-		scanner.consume();
-		const h = exact(2);
-		if (h === null || scanner.char() !== ':') {
-			scanner.backtrack(s);
-			return undefined;
-		}
-		scanner.consume();
-		const m = exact(2);
-		if (m === null) {
-			scanner.backtrack(s);
-			return undefined;
-		}
-		return sign + h + ':' + m;
-	};
-
-	// ISO 8601: YYYY-MM-DDTHH:MM:SS[.mmm][tz]
-	const iso = (withMs: boolean): string | null => {
-		const s = scanner.position();
-		const year = exact(4);
-		if (year === null || scanner.char() !== '-') {
-			scanner.backtrack(s);
-			return null;
-		}
-		scanner.consume();
-		const month = exact(2);
-		if (month === null || scanner.char() !== '-') {
-			scanner.backtrack(s);
-			return null;
-		}
-		scanner.consume();
-		const day = exact(2);
-		if (day === null || scanner.char() !== 'T') {
-			scanner.backtrack(s);
-			return null;
-		}
-		scanner.consume();
-		const hours = exact(2);
-		if (hours === null || scanner.char() !== ':') {
-			scanner.backtrack(s);
-			return null;
-		}
-		scanner.consume();
-		const minutes = exact(2);
-		if (minutes === null || scanner.char() !== ':') {
-			scanner.backtrack(s);
-			return null;
-		}
-		scanner.consume();
-		const seconds = exact(2);
-		if (seconds === null) {
-			scanner.backtrack(s);
-			return null;
-		}
-		let milliseconds: string | undefined;
-		if (withMs) {
-			if (scanner.char() !== '.') {
-				scanner.backtrack(s);
-				return null;
-			}
-			scanner.consume();
-			const ms = exact(3);
-			if (ms === null) {
-				scanner.backtrack(s);
-				return null;
-			}
-			milliseconds = ms;
-		}
-		return timestampFromIsoTime({ year, month, day, hours, minutes, seconds, milliseconds, timezone: timezone() });
-	};
-
-	// Relative time: HH:MM:SS or HH:MM, optional tz.
-	const relTime = (): string | null => {
-		{
-			const s = scanner.position();
-			const h = exact(2);
-			if (h !== null && scanner.char() === ':') {
-				scanner.consume();
-				const m = exact(2);
-				if (m !== null && scanner.char() === ':') {
-					scanner.consume();
-					const sec = exact(2);
-					if (sec !== null) return timestampFromHours(h, m, sec, timezone());
-				}
-			}
-			scanner.backtrack(s);
-		}
-		{
-			const s = scanner.position();
-			const h = exact(2);
-			if (h !== null && scanner.char() === ':') {
-				scanner.consume();
-				const m = exact(2);
-				if (m !== null) return timestampFromHours(h, m, undefined, timezone());
-			}
-			scanner.backtrack(s);
-		}
+	if (!scanner.matches('<t:')) {
 		return null;
-	};
+	}
 
-	// date = Unixtime(10) / ISO-with-ms / ISO-no-ms / relative
-	const date = exact(10) ?? iso(true) ?? iso(false) ?? relTime();
-	if (date === null) {
+	scanner.consume(3); // consume '<t:'
+
+	const contentStart = scanner.position();
+
+	while (!scanner.isEnd() && !isNewline(scanner.char()) && scanner.char() !== '>') {
+		scanner.consume();
+	}
+
+	if (scanner.char() !== '>') {
 		scanner.backtrack(start);
 		return null;
 	}
 
-	// "<t:" date ":" format ">"
-	if (scanner.char() === ':') {
-		scanner.consume();
-		const fmt = scanner.char();
-		if (fmt !== '' && 'tTdDfFR'.includes(fmt) && scanner.charAt(1) === '>') {
-			scanner.consume(2);
-			return timestamp(date, fmt as Timestamp['value']['format']);
-		}
+	const content = scanner.sliceFrom(contentStart);
+
+	let format: Timestamp['value']['format'] | undefined;
+	let timestampValue = content;
+
+	if (content.length >= 2 && content[content.length - 2] === ':' && 'tTdDfFR'.includes(content[content.length - 1])) {
+		format = content[content.length - 1] as Timestamp['value']['format'];
+		timestampValue = content.slice(0, -2);
+	}
+
+	let parsedTimestamp: string | null = null;
+	let match: RegExpExecArray | null;
+
+	if (UNIX_TIMESTAMP.test(timestampValue)) {
+		parsedTimestamp = timestampValue;
+	} else if ((match = ISO_TIMESTAMP_WITH_MILLISECONDS_REGEX.exec(timestampValue))) {
+		parsedTimestamp = timestampFromIsoTime({
+			year: match[1],
+			month: match[2],
+			day: match[3],
+			hours: match[4],
+			minutes: match[5],
+			seconds: match[6],
+			milliseconds: match[7],
+			timezone: match[8],
+		});
+	} else if ((match = ISO_TIMESTAMP_REGEX.exec(timestampValue))) {
+		parsedTimestamp = timestampFromIsoTime({
+			year: match[1],
+			month: match[2],
+			day: match[3],
+			hours: match[4],
+			minutes: match[5],
+			seconds: match[6],
+			timezone: match[7],
+		});
+	} else if ((match = TIME_HOURS_MINUTES_SECONDS_REGEX.exec(timestampValue))) {
+		parsedTimestamp = timestampFromHours(match[1], match[2], match[3], match[4]);
+	} else if ((match = TIME_HOURS_MINUTES_REGEX.exec(timestampValue))) {
+		parsedTimestamp = timestampFromHours(match[1], match[2], undefined, match[3]);
+	}
+
+	if (parsedTimestamp === null) {
 		scanner.backtrack(start);
 		return null;
 	}
 
-	// "<t:" date ">"
-	if (scanner.char() === '>') {
-		scanner.consume();
-		return timestamp(date);
-	}
+	scanner.consume(); // consume '>'
 
-	scanner.backtrack(start);
-	return null;
+	return timestamp(parsedTimestamp, format, [start, scanner.position()]);
 }
 
-function tryEmoticon(scanner: Scanner): Inlines | null {
+export function tryEmoticon(scanner: Scanner, prev: string): Inlines | null {
+	if (prev !== '' && !isSpace(prev)) return null;
+
 	const start = scanner.position();
+
 	const node = matchEmoticon(scanner);
 	if (node === null) return null;
+
 	const after = scanner.char();
 	if (after === '' || isSpace(after) || isNewline(after) || after === '*') {
 		return node;
 	}
+
 	scanner.backtrack(start);
 	return null;
 }
@@ -1209,126 +1063,20 @@ function trySpoiler(scanner: Scanner, options: Options): Inlines | null {
 
 function tryMarkdownLink(scanner: Scanner, options: Options): Inlines | null {
 	const start = scanner.position();
+
 	if (scanner.char() !== '[') {
 		return null;
 	}
-	scanner.consume();
+	scanner.consume(); // consume '['
 
-	// --- title (restricted: ws / escape / code / bold / italic / strike / plain) ---
-	const titleNodes: Inlines[] = [];
-	let prevChar = '';
-	let aborted = false;
+	const titleNodes = parseInlineContent(scanner, options, ']');
 
-	titleLoop: while (!scanner.isEnd() && !isNewline(scanner.char())) {
-		if (scanner.matches('](')) break;
-		const ch = scanner.char();
-
-		if (isSpace(ch)) {
-			const s = scanner.position();
-			while (!scanner.isEnd() && isSpace(scanner.char())) {
-				scanner.consume();
-			}
-			const text = scanner.sliceFrom(s);
-			titleNodes.push(plain(text));
-			prevChar = text[text.length - 1] ?? '';
-			continue;
-		}
-		if (ch === '\\') {
-			const next = scanner.charAt(1);
-			if (next !== '' && ESCAPABLE.has(next)) {
-				scanner.consume(2);
-				titleNodes.push(plain(next));
-				prevChar = next;
-				continue;
-			}
-			titleNodes.push(plain('\\'));
-			scanner.consume();
-			prevChar = '\\';
-			continue;
-		}
-		if (ch === '`') {
-			const r = tryInlineCode(scanner);
-			if (r !== null) {
-				titleNodes.push(r);
-				prevChar = '`';
-				continue;
-			}
-		}
-		if (ch === '*') {
-			const r = tryBold(scanner, options);
-			if (r !== null) {
-				titleNodes.push(r);
-				prevChar = '*';
-				continue;
-			}
-		}
-		if (ch === '_' && !isAlphaNum(prevChar)) {
-			const r = tryItalic(scanner, options, prevChar);
-			if (r !== null) {
-				titleNodes.push(r);
-				prevChar = '_';
-				continue;
-			}
-		}
-		if (ch === '~') {
-			const r = tryStrike(scanner, options);
-			if (r !== null) {
-				titleNodes.push(r);
-				prevChar = '~';
-				continue;
-			}
-		}
-
-		if (ch === ']') {
-			// abort on a "] [...](" boundary: bracketed text preceding a real link
-			if (scanner.charAt(1) === ' ' && scanner.charAt(2) === '[') {
-				let off = 3;
-				for (;;) {
-					const c = scanner.charAt(off);
-					if (c === '' || isNewline(c)) break;
-					if (c === ']') {
-						if (scanner.charAt(off + 1) === '(') aborted = true;
-						break;
-					}
-					off++;
-				}
-				if (aborted) break titleLoop;
-			}
-			titleNodes.push(plain(']'));
-			scanner.consume();
-			prevChar = ']';
-			continue;
-		}
-
-		// plain run
-		const s = scanner.position();
-		while (!scanner.isEnd() && !isNewline(scanner.char())) {
-			const c = scanner.char();
-			if (isSpace(c) || c === '*' || c === '_' || c === '~' || c === '`' || c === ']') break;
-			scanner.consume();
-		}
-		const text = scanner.sliceFrom(s);
-		if (text.length === 0) {
-			titleNodes.push(plain(ch));
-			scanner.consume();
-			prevChar = ch;
-		} else {
-			titleNodes.push(plain(text));
-			prevChar = text[text.length - 1];
-		}
-	}
-
-	if (aborted) {
-		scanner.consume(); // consume the ']' we stopped on
-		return plain(scanner.sliceFrom(start));
-	}
-
-	// --- "](", url, link ---
 	if (!scanner.matches('](')) {
 		scanner.backtrack(start);
 		return null;
 	}
-	scanner.consume(2);
+	scanner.consume(2); // consume ']('
+
 	const urlStart = scanner.position();
 	let depth = 1;
 	while (!scanner.isEnd() && !isNewline(scanner.char())) {
@@ -1339,117 +1087,81 @@ function tryMarkdownLink(scanner: Scanner, options: Options): Inlines | null {
 		}
 		scanner.consume();
 	}
+
 	if (!scanner.matches(')')) {
 		scanner.backtrack(start);
 		return null;
 	}
-	const url = scanner.sliceFrom(urlStart);
-	scanner.consume();
+
+	let url = scanner.sliceFrom(urlStart);
+	scanner.consume(); // consume ')'
+
 	if (url.length === 0) {
 		scanner.backtrack(start);
 		return null;
 	}
+
+	// A phone number in the URL position becomes a tel: link.
+	if (url[0] === '+') {
+		let digits = '';
+		for (const ch of url) {
+			if (isDigit(ch)) digits += ch;
+		}
+		if (digits.length >= 5) {
+			url = 'tel:' + digits;
+		}
+	}
+
 	const title = reducePlainTexts(titleNodes);
+
 	if (title.length === 0) {
 		return link(url);
 	}
-	return link(url, title as Markup[]);
+
+	return link(url, title as any);
 }
 
 function tryAngleBracketLink(scanner: Scanner): Inlines | null {
 	const start = scanner.position();
+
 	if (scanner.char() !== '<') {
 		return null;
 	}
-	scanner.consume();
+	scanner.consume(); // consume '<'
+
 	const urlStart = scanner.position();
 	while (!scanner.isEnd() && !isNewline(scanner.char())) {
 		if (scanner.char() === '|' || scanner.char() === '>') break;
 		scanner.consume();
 	}
+
 	const url = scanner.sliceFrom(urlStart);
+
 	if (url.length === 0) {
 		scanner.backtrack(start);
 		return null;
 	}
+
 	if (scanner.char() !== '|') {
 		scanner.backtrack(start);
 		return null;
 	}
-	scanner.consume();
+	scanner.consume(); // consume '|'
+
 	const titleStart = scanner.position();
 	while (!scanner.isEnd() && !isNewline(scanner.char()) && scanner.char() !== '>') {
 		scanner.consume();
 	}
+
 	if (scanner.char() !== '>') {
 		scanner.backtrack(start);
 		return null;
 	}
-	const title = scanner.sliceFrom(titleStart);
-	scanner.consume();
-	return link(url, [plain(title)]);
-}
 
-function tryBareUrl(scanner: Scanner): Inlines | null {
-	const start = scanner.position();
-	if (!isAlpha(scanner.char())) {
-		scanner.backtrack(start);
-		return null;
-	}
-	while (!scanner.isEnd() && (isAlphaNum(scanner.char()) || scanner.char() === '-')) {
-		scanner.consume();
-	}
-	if (scanner.isEnd() || scanner.char() !== '.') {
-		scanner.backtrack(start);
-		return null;
-	}
-	scanner.consume();
-	if (scanner.isEnd() || !isAlphaNum(scanner.char())) {
-		scanner.backtrack(start);
-		return null;
-	}
-	while (!scanner.isEnd() && !isNewline(scanner.char()) && !isSpace(scanner.char())) {
-		const ch = scanner.char();
-		if (
-			isAlphaNum(ch) ||
-			ch === '.' ||
-			ch === '-' ||
-			ch === '_' ||
-			ch === '/' ||
-			ch === '?' ||
-			ch === '#' ||
-			ch === '=' ||
-			ch === '&' ||
-			ch === ':' ||
-			ch === '@' ||
-			ch === '!' ||
-			ch === '+' ||
-			ch === ',' ||
-			ch === ';' ||
-			ch === '~' ||
-			ch === "'" ||
-			ch === '(' ||
-			ch === ')' ||
-			ch === '*' ||
-			ch === '$'
-		) {
-			scanner.consume();
-		} else {
-			break;
-		}
-	}
-	const raw = scanner.sliceFrom(start);
-	const dotIdx = raw.indexOf('.');
-	if (dotIdx <= 0 || dotIdx === raw.length - 1) {
-		scanner.backtrack(start);
-		return null;
-	}
-	const result = autoLink(raw);
-	if (result.type === 'PLAIN_TEXT') {
-		scanner.backtrack(start);
-		return null;
-	}
-	return result;
+	const title = scanner.sliceFrom(titleStart);
+	scanner.consume(); // consume '>'
+
+	return link(url, [plain(title)]);
 }
 
 function tryKatexInline(scanner: Scanner, options: Options): Inlines | null {
@@ -1490,65 +1202,84 @@ function tryKatexInline(scanner: Scanner, options: Options): Inlines | null {
 }
 
 function tryAutoLinkUrl(scanner: Scanner, options: Options): Inlines | null {
+	const ch = scanner.char();
+	if (!isAlpha(ch) && !isDigit(ch)) return null;
+
 	const start = scanner.position();
+
 	const tokenStart = scanner.position();
 	while (!scanner.isEnd() && !isNewline(scanner.char()) && !isSpace(scanner.char())) {
 		scanner.consume();
 	}
+
 	const token = scanner.sliceFrom(tokenStart);
 	if (token.length === 0) {
 		scanner.backtrack(start);
 		return null;
 	}
+
 	if (!token.includes('://') && !token.includes('.')) {
 		scanner.backtrack(start);
 		return null;
 	}
+
+	// e.g. "rocket.chat." → "rocket.chat"
 	let url = token;
 	while (url.length > 0 && '.,!?;:)'.includes(url[url.length - 1])) {
 		url = url.slice(0, -1);
 	}
+
 	if (url.length === 0) {
 		scanner.backtrack(start);
 		return null;
 	}
+
 	scanner.backtrack(tokenStart);
 	scanner.consume(url.length);
+
 	const result = autoLink(url, options.customDomains);
+
 	if (result.type === 'PLAIN_TEXT') {
 		scanner.backtrack(start);
 		return null;
 	}
+
 	return result;
 }
 
 function tryEmojiShortCode(scanner: Scanner): Inlines | null {
 	const start = scanner.position();
-	scanner.consume();
+	scanner.consume(); // consume opening ':'
+
 	const nameStart = scanner.position();
 	while (!scanner.isEnd() && isShortCodeChar(scanner.char())) {
 		scanner.consume();
 	}
+
 	const name = scanner.sliceFrom(nameStart);
 	if (name.length === 0 || scanner.char() !== ':') {
 		scanner.backtrack(start);
 		return null;
 	}
-	scanner.consume();
+
+	scanner.consume(); // consume closing ':'
 	return emoji(name);
 }
 
 function tryUnicodeEmoji(scanner: Scanner): Inlines | null {
 	const ch = scanner.char();
 	if (ch === '' || ch.charCodeAt(0) <= 127) return null; // fast-reject ASCII
+
 	let window = '';
 	for (let i = 0; i < 32; i++) {
 		const c = scanner.charAt(i);
 		if (c === '') break;
 		window += c;
 	}
+
 	const m = UNICODE_EMOJI.exec(window);
 	if (m === null) return null;
+
 	scanner.consume(m[0].length);
 	return emojiUnicode(m[0]);
 }

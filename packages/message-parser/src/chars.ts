@@ -23,11 +23,25 @@ export function isAlphaNum(ch: string): boolean {
 }
 
 export function isMarkupChar(ch: string): boolean {
-	return '*_~`#@:|\\[!<$+'.includes(ch);
+	return '*_~`#@:|\\[!<$+()'.includes(ch);
 }
 
 export function isPlainChar(ch: string): boolean {
-	return ch !== '' && !isNewline(ch) && !isMarkupChar(ch);
+	return ch !== '' && !isNewline(ch) && !isMarkupChar(ch) && !isSpace(ch);
+}
+
+export function isUrlStart(ch: string): boolean {
+	return isAlpha(ch) || isDigit(ch);
+}
+
+export function isEmojiStart(ch: string): boolean {
+	const code = ch.charCodeAt(0);
+	return (
+		(code >= 0xd800 && code <= 0xdbff) || // high surrogate → astral-plane emoji
+		(code >= 0x2300 && code <= 0x23ff) || // misc technical (⌚ ⏰)
+		(code >= 0x2600 && code <= 0x26ff) || // misc symbols (⚽ ☀)
+		(code >= 0x2700 && code <= 0x27bf) // dingbats (❤ ✂)
+	);
 }
 
 export function isHexDigit(ch: string): boolean {
