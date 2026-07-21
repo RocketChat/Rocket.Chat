@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useRoomRoute } from '@rocket.chat/ui-contexts';
+import { useRoomRoute } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import ParentRoomButton from '../ParentRoomButton';
