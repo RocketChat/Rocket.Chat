@@ -3,8 +3,6 @@ import type { ComponentPropsWithoutRef } from 'react';
 
 export type SidebarProps = ComponentPropsWithoutRef<typeof FuselageSidebar>;
 
-const Sidebar = (props: SidebarProps) => (
-		<FuselageSidebar {...props} />
-	);
+const Sidebar = (props: SidebarProps) => <FuselageSidebar {...props} />;
 
 export default Sidebar;

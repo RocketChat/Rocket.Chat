@@ -10,13 +10,7 @@ export type SidebarGenericItemProps = {
 };
 
 const SidebarGenericItem = ({ href, active, externalUrl, children, ...props }: SidebarGenericItemProps) => (
-	<SidebarV2Item
-		selected={active}
-		is='a'
-		href={href}
-		{...(externalUrl && { target: '_blank', rel: 'noopener noreferrer' })}
-		{...props}
-	>
+	<SidebarV2Item selected={active} is='a' href={href} {...(externalUrl && { target: '_blank', rel: 'noopener noreferrer' })} {...props}>
 		<Box display='flex' flexDirection='row' alignItems='center' paddingBlock={8} width='100%'>
 			{children}
 		</Box>
