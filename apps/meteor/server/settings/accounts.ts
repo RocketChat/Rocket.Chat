@@ -314,7 +314,9 @@ export const createAccountSettings = () =>
 				subsection: 'Accounts_Subsection_Two_Factor_Authentication',
 			});
 			await this.add('Accounts_TwoFactorAuthentication_RememberFor', 1800, {
-				type: 'int',
+				// stored in seconds; the timespan input converts for display
+				type: 'timespan',
+				timespanBaseUnit: 'seconds',
 				enableQuery: enable2FA,
 				sorter: 3008,
 				subsection: 'Accounts_Subsection_Two_Factor_Authentication',
@@ -698,7 +700,9 @@ export const createAccountSettings = () =>
 
 			// Caching & access
 			await this.add('Accounts_AvatarCacheTime', 3600, {
-				type: 'int',
+				// stored in seconds; the timespan input converts for display
+				type: 'timespan',
+				timespanBaseUnit: 'seconds',
 				sorter: 7005,
 				subsection: 'Accounts_Subsection_Caching_Access',
 			});
@@ -1072,7 +1076,9 @@ export const createAccountSettings = () =>
 				subsection: 'Accounts_Subsection_Activity_Other',
 			});
 			await this.add('Accounts_Default_User_Preferences_idleTimeLimit', 300, {
-				type: 'int',
+				// stored in seconds (user preference semantics); the timespan input converts for display
+				type: 'timespan',
+				timespanBaseUnit: 'seconds',
 				public: true,
 				sorter: 8035,
 				subsection: 'Accounts_Subsection_Activity_Other',
