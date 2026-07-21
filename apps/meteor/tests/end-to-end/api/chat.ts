@@ -1308,6 +1308,9 @@ describe('[Chat]', () => {
 				await mockServerReset();
 			});
 
+			// programmed responses queue per key and an infinite (times: 0) entry never expires, so each test starts from a clean mock
+			afterEach(() => mockServerReset());
+
 			before(() =>
 				Promise.all([
 					updateSetting('API_EmbedIgnoredHosts', ''),
@@ -1321,7 +1324,6 @@ describe('[Chat]', () => {
 					updateSetting('API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16'),
 					updateSetting('API_EmbedSafePorts', '80, 443'),
 					updateSetting('SSRF_Allowlist', ''),
-					mockServerReset(),
 				]),
 			);
 
