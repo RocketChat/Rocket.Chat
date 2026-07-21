@@ -37,7 +37,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 
 	const { instance, audioElement, openRoomId, registerView, unregisterView } = useMediaCallInstance();
 
-	const { sessionState, toggleWidget, selectPeer } = useMediaSession(instance);
+	const { sessionState, toggleWidget, openDialer, closeDialer, selectPeer } = useMediaSession(instance);
 	const controls = useMediaSessionControls(instance);
 
 	useDesktopNotifications(sessionState);
@@ -82,7 +82,8 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 	const onHold = () => controls.toggleHold();
 
 	const onCall = async () => {
-		if (sessionState.state !== 'new') {
+		// TODO: This is a workaround for the docked widget, which doesn't have a "closed" state.
+		if (sessionState.state !== 'new' && sessionState.state !== 'closed') {
 			console.error('Cannot start call in state', sessionState.state);
 			return;
 		}
@@ -226,6 +227,23 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 			},
 			[toggleWidget],
 		),
+	);
+
+	useWidgetExternalControlSignalListener(
+		'openDialer',
+		useCallback(
+			({ peerInfo }) => {
+				openDialer(peerInfo);
+			},
+			[openDialer],
+		),
+	);
+
+	useWidgetExternalControlSignalListener(
+		'closeDialer',
+		useCallback(() => {
+			closeDialer();
+		}, [closeDialer]),
 	);
 
 	const { onChangePosition, getRestorePosition } = useWidgetPositionTracker();
