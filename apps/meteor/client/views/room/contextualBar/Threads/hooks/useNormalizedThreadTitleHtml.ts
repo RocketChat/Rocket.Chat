@@ -49,7 +49,7 @@ export const useNormalizedThreadTitleHtml = (mainMessage: IThreadMainMessage) =>
 		}
 
 		if (message.t && messageType) {
-			return messageType.text(t, message, { capitalize: true });
+			return escapeHTML(messageType.text(t, message, { capitalize: true }));
 		}
 
 		return '';
