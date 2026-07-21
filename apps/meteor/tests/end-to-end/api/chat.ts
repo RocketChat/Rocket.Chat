@@ -5,7 +5,6 @@ import { expect } from 'chai';
 import { after, before, beforeEach, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
-import { retry } from './helpers/retry';
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials, apiUrl } from '../../data/api-data';
 import { followMessage, sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
@@ -1267,6 +1266,8 @@ describe('[Chat]', () => {
 			const mockVideoUrl = (id: string) => `http://mock-server.dev:8080/video/${id}`;
 			const mockPageUrl = (id: string) => `http://mock-server.dev:8080/page/${id}`;
 			const mockOembedEndpoint = { method: 'GET', path: '/oembed' };
+			// the whole oembed pipeline runs against the local mock-server, so a fixed wait suffices — exceeding it means a CI perf problem worth surfacing
+			const oembedProcessingMs = 500;
 
 			const youtubeOembedResponse = {
 				title: 'Rocket.Chat Demo',
@@ -1353,31 +1354,24 @@ describe('[Chat]', () => {
 			});
 
 			it('should have an iframe oembed with style max-width', async () => {
-				await retry(
-					'Oembed is generated async thats why the retry is required',
-					async () => {
-						await request
-							.get(api('chat.getMessage'))
-							.set(credentials)
-							.query({
-								msgId: ytEmbedMsgId,
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(200)
-							.expect((res) => {
-								expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.is.not.empty;
+				await sleep(oembedProcessingMs);
 
-								expect(res.body.message.urls[0])
-									.to.have.property('meta')
-									.to.have.property('oembedHtml')
-									.to.have.string('<iframe style="max-width: 100%;width:400px;height:225px"');
-							});
-					},
-					{
-						delayMs: 100,
-						retries: 5,
-					},
-				);
+				await request
+					.get(api('chat.getMessage'))
+					.set(credentials)
+					.query({
+						msgId: ytEmbedMsgId,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.is.not.empty;
+
+						expect(res.body.message.urls[0])
+							.to.have.property('meta')
+							.to.have.property('oembedHtml')
+							.to.have.string('<iframe style="max-width: 100%;width:400px;height:225px"');
+					});
 			});
 
 			it('should embed an image preview if message has an image url', (done) => {
@@ -1439,7 +1433,7 @@ describe('[Chat]', () => {
 				const chosenUrl = mockPageUrl('chosen-preview');
 				await mockServerSet('GET', '/page/chosen-preview', '<html><head><title>Chosen Preview Page</title></head><body></body></html>');
 
-				let msgId: IMessage['_id'];
+				let msgId;
 				await request
 					.post(api('chat.sendMessage'))
 					.set(credentials)
@@ -1460,29 +1454,22 @@ describe('[Chat]', () => {
 						msgId = res.body.message._id;
 					});
 
-				await retry(
-					'Oembed is generated async thats why the retry is required',
-					async () => {
-						await request
-							.get(api('chat.getMessage'))
-							.set(credentials)
-							.query({
-								msgId,
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(200)
-							.expect((res) => {
-								expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.has.lengthOf(2);
+				await sleep(oembedProcessingMs);
 
-								expect(res.body.message.urls[0]).to.have.property('meta').that.is.an('object').that.is.empty;
-								expect(res.body.message.urls[1]).to.have.property('meta').to.have.property('pageTitle', 'Chosen Preview Page');
-							});
-					},
-					{
-						delayMs: 100,
-						retries: 5,
-					},
-				);
+				await request
+					.get(api('chat.getMessage'))
+					.set(credentials)
+					.query({
+						msgId,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.has.lengthOf(2);
+
+						expect(res.body.message.urls[0]).to.have.property('meta').that.is.an('object').that.is.empty;
+						expect(res.body.message.urls[1]).to.have.property('meta').to.have.property('pageTitle', 'Chosen Preview Page');
+					});
 			});
 
 			it('should not generate previews if the message contains more than five external URL', async () => {
@@ -1535,7 +1522,7 @@ describe('[Chat]', () => {
 				await mockServerSet(mockOembedEndpoint.method, mockOembedEndpoint.path, spotifyOembedResponse);
 				const msg = mockVideoUrl('rich-provider');
 
-				let msgId: IMessage['_id'];
+				let msgId;
 				await request
 					.post(api('chat.sendMessage'))
 					.set(credentials)
@@ -1547,47 +1534,40 @@ describe('[Chat]', () => {
 						msgId = res.body.message._id;
 					});
 
-				await retry(
-					'Oembed is generated async thats why the retry is required',
-					async () => {
-						await request
-							.get(api('chat.getMessage'))
-							.set(credentials)
-							.query({
-								msgId,
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(200)
-							.expect((res) => {
-								expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.has.lengthOf(1);
+				await sleep(oembedProcessingMs);
 
-								const { meta } = res.body.message.urls[0];
-								expect(meta).to.have.property('oembedUrl', msg);
-								expect(meta).to.have.property('oembedTitle', 'Never Gonna Give You Up');
-								expect(meta).to.have.property('oembedType', 'rich');
-								expect(meta).to.have.property('oembedProviderName', 'Spotify');
-								expect(meta).to.have.property('oembedThumbnailUrl', spotifyOembedResponse.thumbnail_url);
-								expect(meta).to.have.property('oembedHtml').to.have.string('<iframe style="max-width: 100%;width:400px;height:225px"');
-								expect(meta, 'non-string oembed values must be dropped').to.not.have.any.keys(
-									'oembedWidth',
-									'oembedHeight',
-									'oembedThumbnailWidth',
-									'oembedThumbnailHeight',
-								);
-							});
-					},
-					{
-						delayMs: 100,
-						retries: 5,
-					},
-				);
+				await request
+					.get(api('chat.getMessage'))
+					.set(credentials)
+					.query({
+						msgId,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.has.lengthOf(1);
+
+						const { meta } = res.body.message.urls[0];
+						expect(meta).to.have.property('oembedUrl', msg);
+						expect(meta).to.have.property('oembedTitle', 'Never Gonna Give You Up');
+						expect(meta).to.have.property('oembedType', 'rich');
+						expect(meta).to.have.property('oembedProviderName', 'Spotify');
+						expect(meta).to.have.property('oembedThumbnailUrl', spotifyOembedResponse.thumbnail_url);
+						expect(meta).to.have.property('oembedHtml').to.have.string('<iframe style="max-width: 100%;width:400px;height:225px"');
+						expect(meta, 'non-string oembed values must be dropped').to.not.have.any.keys(
+							'oembedWidth',
+							'oembedHeight',
+							'oembedThumbnailWidth',
+							'oembedThumbnailHeight',
+						);
+					});
 			});
 
 			it('should embed only the oembed source url when the provider response has no string values', async () => {
 				await mockServerSet(mockOembedEndpoint.method, mockOembedEndpoint.path, { status: 404, ok: false });
 				const msg = mockVideoUrl('no-string-values');
 
-				let msgId: IMessage['_id'];
+				let msgId;
 				await request
 					.post(api('chat.sendMessage'))
 					.set(credentials)
@@ -1599,28 +1579,21 @@ describe('[Chat]', () => {
 						msgId = res.body.message._id;
 					});
 
-				await retry(
-					'Oembed is generated async thats why the retry is required',
-					async () => {
-						await request
-							.get(api('chat.getMessage'))
-							.set(credentials)
-							.query({
-								msgId,
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(200)
-							.expect((res) => {
-								expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.has.lengthOf(1);
+				await sleep(oembedProcessingMs);
 
-								expect(res.body.message.urls[0]).to.have.property('meta').that.deep.equals({ oembedUrl: msg });
-							});
-					},
-					{
-						delayMs: 100,
-						retries: 5,
-					},
-				);
+				await request
+					.get(api('chat.getMessage'))
+					.set(credentials)
+					.query({
+						msgId,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.has.lengthOf(1);
+
+						expect(res.body.message.urls[0]).to.have.property('meta').that.deep.equals({ oembedUrl: msg });
+					});
 			});
 
 			it('should not embed metadata when the oembed provider responds with an error', async () => {
@@ -1638,8 +1611,7 @@ describe('[Chat]', () => {
 						msgId = res.body.message._id;
 					});
 
-				// no observable marker for "processed without meta", so give the async parser time to run before asserting the absence
-				await sleep(500);
+				await sleep(oembedProcessingMs);
 
 				await request
 					.get(api('chat.getMessage'))
