@@ -112,7 +112,7 @@ export default (instance: MessageTypes) => {
 	instance.registerType({
 		id: 'rm',
 		system: true,
-		text: (t, _, capitalize) => (capitalize ? t('Message_HideType_rm') : t('Message_is_removed')),
+		text: (t, _, options) => (options?.capitalize ? t('Message_HideType_rm') : t('Message_is_removed')),
 	});
 
 	instance.registerType({
