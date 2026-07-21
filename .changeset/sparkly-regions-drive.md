@@ -3,4 +3,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fixes an issue where delete thread message display as empty in thread context
+Fixes an issue where deleted thread messages display as empty in thread context
