@@ -265,6 +265,12 @@ describe('createComposerHistory', () => {
 		typeInput(input, 'a');
 		history.release();
 
+		mockedGetSelectionRange.mockClear();
+
+		typeInput(input, 'ab', 'b');
+
+		expect(mockedGetSelectionRange).not.toHaveBeenCalled();
+
 		const undoEvent = new KeyboardEvent('keydown', { key: 'z', ctrlKey: true, bubbles: true, cancelable: true });
 		input.dispatchEvent(undoEvent);
 
