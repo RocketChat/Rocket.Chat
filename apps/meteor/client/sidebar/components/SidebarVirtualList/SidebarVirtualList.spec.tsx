@@ -29,7 +29,9 @@ jest.mock('virtua', () => {
 		) {
 			useImperativeHandle(ref, () => ({
 				cache: {} as VirtualizerHandle['cache'],
-				scrollOffset: mockScrollOffset,
+				get scrollOffset() {
+					return mockScrollOffset;
+				},
 				scrollSize: 0,
 				viewportSize: 0,
 				findItemIndex: (offset: number) => Math.max(0, Math.floor(offset / 100)),
