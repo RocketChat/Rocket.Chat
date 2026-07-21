@@ -115,7 +115,7 @@ function SettingsSection({ groupId, hasReset = true, sectionTitle, sectionName, 
 						<Box fontScale='micro' textTransform='uppercase' color='hint' marginBlockEnd={8}>
 							{i18n.exists(subsection) ? t(subsection as TranslationKey) : subsection}
 						</Box>
-						<Box borderWidth='default' borderColor='extra-light' borderRadius='x4' padding={20}>
+						<Box backgroundColor='light' borderRadius='x8' padding={20}>
 							<FieldGroup>
 								{settings.map(
 									(setting) => isSetting(setting) && <Setting key={setting._id} settingId={setting._id} sectionChanged={changed} />,

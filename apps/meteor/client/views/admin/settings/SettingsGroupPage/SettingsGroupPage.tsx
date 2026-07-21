@@ -146,7 +146,7 @@ const SettingsGroupPage = ({
 			{isCustom ? (
 				children
 			) : (
-				<PageScrollableContentWithShadow>
+				<PageScrollableContentWithShadow backgroundColor='tint'>
 					<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
 						{i18nDescription && isTranslationKey(i18nDescription) && i18n.exists(i18nDescription) && (
 							<Box is='p' color='hint' fontScale='p2'>
