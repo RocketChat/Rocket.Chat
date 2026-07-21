@@ -1,5 +1,29 @@
 # @rocket.chat/gazzodown
 
+## 33.0.0-rc.0
+
+### Minor Changes
+
+- ([#41113](https://github.com/RocketChat/Rocket.Chat/pull/41113)) Adds support for horizontal rules (thematic breaks) in the message parser. A line of 3 or more contiguous dashes (`---`, with nothing else on the line) is parsed into a new `HORIZONTAL_RULE` block node and rendered with Fuselage's `Divider`. The node carries an optional `fallback` — a `[start, end]` offset span into the original source — so renderers without horizontal-rule support can slice the source to show the raw markup instead of dropping it, without duplicating the text into the AST. Only `-` is accepted: CommonMark also allows `*` and `_`, but those collide with emphasis and with censored words (bad-words masks a term as a run of `*`), so a bare `***` / `_______` line stays text/emphasis instead of becoming a divider.
+
+- ([#41109](https://github.com/RocketChat/Rocket.Chat/pull/41109)) Adds GFM-style table support to the message parser and renders it in gazzodown.
+
+  Parser: tables require a leading and trailing pipe on every row, support column alignment via the delimiter row (`:---`, `:--:`, `---:`), and allow inline markup inside cells (a literal pipe must be escaped as `\|`). New `TABLE`, `TABLE_ROW`, and `TABLE_CELL` AST nodes are emitted. The `TABLE` node also carries an optional `fallback` — a `[start, end]` offset span into the original source — so renderers without table support can slice the source to show the raw markup instead of dropping it, without duplicating the text into the AST.
+
+  Rendering: gazzodown renders these tables using Fuselage's `Table` components with per-column alignment, and shows a compact single-row preview of the table header in message previews.
+
+### Patch Changes
+
+- ([#41110](https://github.com/RocketChat/Rocket.Chat/pull/41110)) Degrades blocks without a dedicated renderer to their raw markup instead of dropping them. When a block carries a `fallback` `[start, end]` offset span, `Markup`/`PreviewMarkup` slice the original message source (passed via the new optional `source` prop) and render that text. This avoids duplicating the markup into the AST while keeping unsupported blocks visible.
+
+- <details><summary>Updated dependencies [c7aff48a40a9a78924cbf27fd38930c536ee11e5, 5f92f9a27dca70d506d919351612bd32dc04241a, 13b4a7b2dc203959b77b3b0c5f154d3e34fe2058, eec6083bb88f0caa1bd0de28b93b926a11c17507, 4b34bd62f2ac8d51efd2f48caea7092e87f30ce7, adc15707128bc3fbe1ccd1cd57e9d30a702fa6ca, 1bf84cbe288df03fc622fbddbc0e434bda291c2f, 4b57346a59b5c9433c25845c886be11af1bf71d4, 8d8cd01d0a4e6872ed543320c966efd52140e884, 3cd7db677a72521439b564dca7a4ca6d6c3a1c07, 4117a1d3fb07905e8c9488a96f368747b48d528e, 615ae2bf74bba0402e0151d9c0b8e4f8dd04cb17, e5da5d016948c9bb5cfd784a65396e08e61264c4, 70c0ff0967cc50144dba4971fc7c3f3e996264a3]:</summary>
+
+  - @rocket.chat/core-typings@8.7.0-rc.0
+  - @rocket.chat/message-parser@0.32.0-rc.0
+  - @rocket.chat/ui-client@33.0.0-rc.0
+  - @rocket.chat/ui-contexts@33.0.0-rc.0
+  </details>
+
 ## 32.0.0
 
 ### Patch Changes

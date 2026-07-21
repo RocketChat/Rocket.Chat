@@ -3631,14 +3631,23 @@ describe('[Users]', () => {
 		});
 
 		describe('[Password Policy]', () => {
+			let previousMinLength: Awaited<ReturnType<typeof getSettingValueById>>;
+			let previousMaxLength: Awaited<ReturnType<typeof getSettingValueById>>;
+
 			before(async () => {
 				await updateSetting('Accounts_AllowPasswordChange', true);
 				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
+				[previousMinLength, previousMaxLength] = await Promise.all([
+					getSettingValueById('Accounts_Password_Policy_MinLength'),
+					getSettingValueById('Accounts_Password_Policy_MaxLength'),
+				]);
 			});
 
 			after(async () => {
 				await updateSetting('Accounts_AllowPasswordChange', true);
 				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
+				await updateSetting('Accounts_Password_Policy_MaxLength', previousMaxLength);
+				await updateSetting('Accounts_Password_Policy_MinLength', previousMinLength);
 			});
 
 			it('should throw an error if the password length is less than the minimum length', async () => {
@@ -3667,6 +3676,8 @@ describe('[Users]', () => {
 			});
 
 			it('should throw an error if the password length is greater than the maximum length', async () => {
+				// max must stay >= min, so lower the minimum before capping the maximum at 5
+				await updateSetting('Accounts_Password_Policy_MinLength', 1);
 				await updateSetting('Accounts_Password_Policy_MaxLength', 5);
 
 				const expectedError = {

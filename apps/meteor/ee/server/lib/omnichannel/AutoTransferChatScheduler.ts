@@ -78,13 +78,7 @@ export class AutoTransferChatSchedulerClass {
 
 	private async transferRoom(roomId: string): Promise<void> {
 		this.logger.debug({ msg: 'Transferring room', roomId });
-		const room = await LivechatRooms.findOneById(roomId, {
-			_id: 1,
-			v: 1,
-			servedBy: 1,
-			open: 1,
-			departmentId: 1,
-		});
+		const room = await LivechatRooms.findOneById(roomId);
 		if (!room?.open || !room?.servedBy?._id) {
 			throw new Error('Room is not open or is not being served by an agent');
 		}
