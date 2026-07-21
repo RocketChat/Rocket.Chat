@@ -47,11 +47,7 @@ const parseValidationRules = (settingId: ISetting['_id'], validation: NonNullabl
 const isSettingReference = (value: unknown): value is { $setting: ISetting['_id'] } =>
 	isRecord(value) && typeof value.$setting === 'string';
 
-/**
- * Validates the value being saved on a `code: application/json` setting against the JSON schema the setting
- * optionally registers in code, pre-compiled at registration. An empty value means the setting is unconfigured and
- * always passes.
- */
+// an empty value means the setting is unconfigured and always passes
 const validatesSchema = (setting: ISetting, value: unknown): boolean => {
 	const validate = getSettingSchemaValidator(setting._id);
 	if (!validate || !isSettingCode(setting) || setting.code !== 'application/json' || value === '') {

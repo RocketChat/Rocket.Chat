@@ -110,7 +110,7 @@ describe('buildClassificationBanner', () => {
 		expect(banner.text).toBe('TOP SECRET // SAR-APPLES/BANANAS/ORANGES // RELTO USA');
 		expect(banner.segments.map((s) => s.attrId)).toEqual(['classification', 'sar', 'relto']);
 		expect(banner.backgroundColor).toBe('#ff8c00');
-		expect(banner.color).toBe('#FFFFFF');
+		expect(banner.color).toBe('#1F2329');
 		expect(banner).toMatchObject({ style: 'classic', uppercase: true, monospace: false });
 	});
 
@@ -201,6 +201,10 @@ describe('readableTextColor', () => {
 		expect(readableTextColor('#FFFFFF')).toBe('#1F2329');
 		expect(readableTextColor('#c8102e')).toBe('#FFFFFF');
 		expect(readableTextColor('#0033a0')).toBe('#FFFFFF');
+	});
+
+	it('picks the higher-contrast ink on mid-range backgrounds', () => {
+		expect(readableTextColor('#999999')).toBe('#1F2329');
 	});
 });
 

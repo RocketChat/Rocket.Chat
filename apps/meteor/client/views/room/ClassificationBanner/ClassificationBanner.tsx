@@ -64,7 +64,7 @@ const ClassificationBanner = () => {
 		>
 			{banner.style === 'segmented' ? (
 				banner.segments.map((segment, index) => (
-					<Box key={segment.attrId} display='flex' alignItems='center'>
+					<Box key={`${segment.attrId}-${index}`} display='flex' alignItems='center'>
 						{index > 0 && <Box className={segmentRuleClass} />}
 						<span>{segment.text}</span>
 					</Box>

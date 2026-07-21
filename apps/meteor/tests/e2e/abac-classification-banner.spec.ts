@@ -1,4 +1,4 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { MongoClient } from 'mongodb';
 
 import { IS_EE, URL_MONGODB } from './config/constants';
@@ -73,8 +73,8 @@ test.describe.serial('abac-classification-banner', () => {
 		// so the admin gets them straight in the database before the room is tagged
 		await connection
 			.db()
-			.collection('users')
-			.updateOne({ username: Users.admin.data.username }, { $set: { abacAttributes: [{ key: attrKey, values: ['TS', 'U'] }] } });
+			.collection<IUser>('users')
+			.updateOne({ username: Users.admin.data.username }, { $push: { abacAttributes: { key: attrKey, values: ['TS', 'U'] } } });
 
 		({ group: room } = await createTargetGroupAndReturnFullRoom(api));
 		expect((await api.put(`/abac/rooms/${room._id}/attributes/${attrKey}`, { values: ['TS'] })).status()).toBe(200);
@@ -85,8 +85,8 @@ test.describe.serial('abac-classification-banner', () => {
 		await api.delete(`/abac/attributes/${attributeId}`);
 		await connection
 			.db()
-			.collection('users')
-			.updateOne({ username: Users.admin.data.username }, { $unset: { abacAttributes: 1 } });
+			.collection<IUser>('users')
+			.updateOne({ username: Users.admin.data.username }, { $pull: { abacAttributes: { key: attrKey } } });
 		await connection.close();
 
 		await Promise.all([
@@ -114,6 +114,6 @@ test.describe.serial('abac-classification-banner', () => {
 
 		await poHomeChannel.navbar.openChat(room.name as string);
 		await expect(poHomeChannel.composer.inputMessage).toBeVisible();
-		await expect(page.locator('[data-qa-id="classification-banner"]')).toHaveCount(0);
+		await expect(page.getByRole('note', { name: 'CLEARANCE-TOP SECRET' })).toHaveCount(0);
 	});
 });
