@@ -170,6 +170,8 @@
   "Login_Logs_ForwardedForIp_Description": "Include the X-Forwarded-For IP (behind a proxy).",
   "Login_Logs_UserAgent_Description": "Include the browser/device string.",
   "Login_Logs_Username_Description": "Include the username in each log entry.",
+  "Sections": "Sections",
+  "Settings_in_group": "Settings in {{group}}",
   "private": "private",
   "files": "files",
   "#channel": "#channel",

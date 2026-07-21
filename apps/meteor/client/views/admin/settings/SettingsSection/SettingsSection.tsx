@@ -1,5 +1,5 @@
 import { isSetting, isSettingColor } from '@rocket.chat/core-typings';
-import { AccordionItem, Box, Button, FieldGroup } from '@rocket.chat/fuselage';
+import { Box, Button, FieldGroup } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
@@ -21,7 +21,7 @@ export type SettingsSectionProps = {
 	children?: ReactNode;
 };
 
-function SettingsSection({ groupId, hasReset = true, sectionTitle, sectionName, currentTab, solo, help, children }: SettingsSectionProps) {
+function SettingsSection({ groupId, hasReset = true, sectionTitle, sectionName, currentTab, help, children }: SettingsSectionProps) {
 	const { t, i18n } = useTranslation();
 
 	const editableSettings = useEditableSettings(
@@ -93,12 +93,15 @@ function SettingsSection({ groupId, hasReset = true, sectionTitle, sectionName, 
 	const sectionDescription =
 		sectionDescriptionKey && i18n.exists(sectionDescriptionKey) ? t(sectionDescriptionKey as TranslationKey) : undefined;
 
+	const title = sectionTitle || (sectionName && t(sectionName as TranslationKey));
+
 	return (
-		<AccordionItem
-			data-qa-section={sectionName}
-			noncollapsible={solo || !sectionName}
-			title={sectionTitle || (sectionName && t(sectionName as TranslationKey))}
-		>
+		<Box is='section' data-qa-section={sectionName} marginBlockEnd={48}>
+			{title && (
+				<Box is='h2' fontScale='h3' color='titles-labels' marginBlockEnd={4}>
+					{title}
+				</Box>
+			)}
 			{sectionDescription && (
 				<Box is='p' color='hint' fontScale='p2' marginBlockEnd={16}>
 					{sectionDescription}
@@ -109,35 +112,29 @@ function SettingsSection({ groupId, hasReset = true, sectionTitle, sectionName, 
 					{help}
 				</Box>
 			)}
-			{subsectionGroups.map(({ subsection, settings }, index) =>
-				subsection ? (
-					<Box key={subsection} marginBlockEnd={24}>
+			{subsectionGroups.map(({ subsection, settings }, index) => (
+				<Box key={subsection || `ungrouped-${index}`} marginBlockEnd={24}>
+					{subsection && (
 						<Box fontScale='micro' textTransform='uppercase' color='hint' marginBlockEnd={8}>
 							{i18n.exists(subsection) ? t(subsection as TranslationKey) : subsection}
 						</Box>
-						<Box backgroundColor='light' borderRadius='x8' padding={20}>
-							<FieldGroup>
-								{settings.map(
-									(setting) => isSetting(setting) && <Setting key={setting._id} settingId={setting._id} sectionChanged={changed} />,
-								)}
-							</FieldGroup>
-						</Box>
+					)}
+					<Box backgroundColor='light' borderRadius='x8' padding={20}>
+						<FieldGroup>
+							{settings.map(
+								(setting) => isSetting(setting) && <Setting key={setting._id} settingId={setting._id} sectionChanged={changed} />,
+							)}
+						</FieldGroup>
 					</Box>
-				) : (
-					<FieldGroup key={`ungrouped-${index}`} marginBlockEnd={24}>
-						{settings.map(
-							(setting) => isSetting(setting) && <Setting key={setting._id} settingId={setting._id} sectionChanged={changed} />,
-						)}
-					</FieldGroup>
-				),
-			)}
+				</Box>
+			))}
 			{children && <FieldGroup>{children}</FieldGroup>}
 			{hasReset && canReset && (
 				<Button secondary danger marginBlockStart={16} data-section={sectionName} onClick={handleResetSectionClick}>
 					{t('Reset_section_settings')}
 				</Button>
 			)}
-		</AccordionItem>
+		</Box>
 	);
 }
 

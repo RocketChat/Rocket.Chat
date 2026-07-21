@@ -1,5 +1,5 @@
 import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
-import { Accordion, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { EditableSetting } from '../../EditableSettingsContext';
 import { useEditableSettingsDispatch, useEditableSettings } from '../../EditableSettingsContext';
+import SettingsSectionsToc from '../SettingsSectionsToc';
 
 export type SettingsGroupPageProps = {
 	children: ReactNode;
@@ -28,11 +29,10 @@ const SettingsGroupPage = ({
 	onClickBack,
 	_id,
 	i18nLabel,
-	i18nDescription = undefined,
 	tabs = undefined,
 	isCustom = false,
 }: SettingsGroupPageProps) => {
-	const { t, i18n } = useTranslation();
+	const { t } = useTranslation();
 	const dispatch = useSettingsDispatch();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -146,17 +146,18 @@ const SettingsGroupPage = ({
 			{isCustom ? (
 				children
 			) : (
-				<PageScrollableContentWithShadow backgroundColor='tint'>
-					<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
-						{i18nDescription && isTranslationKey(i18nDescription) && i18n.exists(i18nDescription) && (
-							<Box is='p' color='hint' fontScale='p2'>
-								{t(i18nDescription)}
-							</Box>
-						)}
-
-						<Accordion>{children}</Accordion>
+				<Box position='relative' display='flex' flexDirection='column' flexGrow={1} flexShrink={1} overflow='hidden' backgroundColor='tint'>
+					{/* rendered before the settings list so keyboard users reach the section navigation first; overlaid on
+					    the scroll area so the page scrollbar stays at the window edge (the inset keeps the gutter visible) */}
+					<Box position='absolute' insetBlockStart={0} insetBlockEnd={0} insetInlineEnd={12} zIndex={1}>
+						<SettingsSectionsToc groupId={_id} />
 					</Box>
-				</PageScrollableContentWithShadow>
+					<PageScrollableContentWithShadow backgroundColor='tint'>
+						<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
+							{children}
+						</Box>
+					</PageScrollableContentWithShadow>
+				</Box>
 			)}
 			<PageFooter isDirty={!(changedEditableSettings.length === 0)}>
 				<ButtonGroup>
