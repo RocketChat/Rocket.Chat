@@ -11,7 +11,7 @@ const asToken = process.env.AS_TOKEN || 'xmpp_as_token';
 const roomsByAlias = new Map();
 const roomCreationPromisesByAlias = new Map();
 const transactions = [];
-const registeredUsers = new Set();
+const registeredUsers = new Map();
 const failingAliases = new Map();
 
 function delay(ms) {
@@ -257,24 +257,36 @@ function isUserAlreadyRegisteredError(error) {
 
 async function ensureXmppUser(xmppId) {
 	const localpart = xmppLocalpart(xmppId);
-	const userId = buildUserId(localpart);
-	if (registeredUsers.has(userId)) {
-		return userId;
+	const appserviceUserId = buildUserId(localpart);
+	const cachedUserId = registeredUsers.get(appserviceUserId);
+	if (cachedUserId) {
+		return { appserviceUserId, userId: cachedUserId };
 	}
 
+	let userId;
 	try {
-		await requestToHomeserver('POST', '/_matrix/client/v3/register', {
+		const registration = await requestToHomeserver('POST', '/_matrix/client/v3/register', {
 			type: 'm.login.application_service',
 			username: localpart,
 		});
+		userId = registration.user_id;
 	} catch (error) {
 		if (!isUserAlreadyRegisteredError(error)) {
 			throw error;
 		}
+
+		const identity = await requestToHomeserver('GET', '/_matrix/client/v3/account/whoami', undefined, {
+			userId: appserviceUserId,
+		});
+		userId = identity.user_id;
 	}
 
-	registeredUsers.add(userId);
-	return userId;
+	if (typeof userId !== 'string' || !userId) {
+		throw new Error(`Homeserver did not return a user_id while registering ${appserviceUserId}`);
+	}
+
+	registeredUsers.set(appserviceUserId, userId);
+	return { appserviceUserId, userId };
 }
 
 async function updateXmppUserDisplayName(userId, displayName) {
@@ -307,9 +319,9 @@ async function sendXmppMessage(localAlias, sender, body, displayName) {
 		throw new Error(`No XMPP appservice test room for alias ${localAlias}`);
 	}
 
-	const userId = await ensureXmppUser(sender);
-	await updateXmppUserDisplayName(userId, displayName);
-	await ensureUserJoined(room, userId);
+	const { appserviceUserId, userId } = await ensureXmppUser(sender);
+	await updateXmppUserDisplayName(appserviceUserId, displayName);
+	await ensureUserJoined(room, appserviceUserId);
 
 	const result = await requestToHomeserver(
 		'PUT',
@@ -318,13 +330,14 @@ async function sendXmppMessage(localAlias, sender, body, displayName) {
 			msgtype: 'm.text',
 			body,
 		},
-		{ userId },
+		{ userId: appserviceUserId },
 	);
 
 	return {
 		eventId: result.event_id,
 		roomId: room.roomId,
 		userId,
+		appserviceUserId,
 	};
 }
 

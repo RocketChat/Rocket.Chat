@@ -24,12 +24,14 @@ const XMPP_FEDERATION_SETTINGS = [
 	'Federation_XMPP_Bridge_AS_Token',
 	'UI_Use_Real_Name',
 ] as const;
+const XMPP_JOIN_COMMAND = 'xmpp-join';
 const endpoints = {
 	commandsGet: '/api/v1/commands.get',
 	commandsRun: '/api/v1/commands.run',
 	permissionsUpdate: '/api/v1/permissions.update',
 	roomsGet: '/api/v1/rooms.get',
 	subscriptionsGetOne: '/api/v1/subscriptions.getOne',
+	usersCreate: '/api/v1/users.create',
 	usersInfo: '/api/v1/users.info',
 } as const;
 
@@ -61,6 +63,10 @@ function uniqueSuffix(): string {
 
 function safeLocalpart(value: string): string {
 	return value.replace(/[^A-Za-z0-9_=/.+-]/g, '_');
+}
+
+function expectedFederatedRoomName(matrixRoomId: string): string {
+	return matrixRoomId.replace(/^!/, '').replace(/[^0-9a-zA-Z-_.]/g, '_');
 }
 
 async function updateSetting({ setting, value, config }: { setting: string; value: unknown; config: IRequestConfig }) {
@@ -218,6 +224,10 @@ function registerAppserviceUser({
 	});
 }
 
+function getAppserviceIdentity({ config, runtimeConfig }: { config: IRequestConfig; runtimeConfig: XmppRuntimeConfig }) {
+	return config.request.get('/_matrix/client/v3/account/whoami').set('Authorization', `Bearer ${runtimeConfig.bridgeAsToken}`);
+}
+
 async function findRoomByMatrixId(matrixRoomId: string, config: IRequestConfig): Promise<IRoomNativeFederated | undefined> {
 	const roomsResponse = await config.request.get(endpoints.roomsGet).set(config.credentials).expect(200);
 	return roomsResponse.body.update.find((room: IRoomNativeFederated) => room.federation?.mrid === matrixRoomId);
@@ -336,11 +346,16 @@ async function waitForMessage(roomId: string, text: string, config: IRequestConf
 	});
 
 	describe('Configuration', () => {
-		it('expect to register the XMPP bridge with the Rocket.Chat Service API', async () => {
+		it('expect the XMPP appservice test bridge to use the configured homeserver', async () => {
 			const health = await testBridge.health();
 			expect(health.ok).toBe(true);
 			expect(health.homeserverUrl).toBe(runtimeConfig.bridgeHomeserverUrl);
 			expect(health.serverName).toBe(runtimeConfig.serverName);
+		});
+
+		it('expect to register and authenticate the XMPP appservice', async () => {
+			const response = await getAppserviceIdentity({ config: rc1AdminRequestConfig, runtimeConfig }).expect(200);
+			expect(response.body.user_id).toBe(`@xmpp:${runtimeConfig.serverName}`);
 		});
 
 		it('expect to enable XMPP bridge settings when federation service is enabled', async () => {
@@ -365,7 +380,7 @@ async function waitForMessage(roomId: string, text: string, config: IRequestConf
 			const transientLocalAlias = toXmppAppserviceLocalAlias(transientAlias);
 
 			const response = await executeSlashCommand({
-				cmd: 'xmpp',
+				cmd: XMPP_JOIN_COMMAND,
 				params: transientAlias,
 				rid: sourceRoomId,
 				config: rc1AdminRequestConfig,
@@ -377,21 +392,21 @@ async function waitForMessage(roomId: string, text: string, config: IRequestConf
 	});
 
 	describe('Join rooms', () => {
-		it('expect to expose the /xmpp slash command with the XMPP room alias parameter', async () => {
+		it('expect to expose the /xmpp-join slash command with the XMPP room alias parameter', async () => {
 			const response = await rc1AdminRequestConfig.request
 				.get(endpoints.commandsGet)
 				.set(rc1AdminRequestConfig.credentials)
-				.query({ command: 'xmpp' })
+				.query({ command: XMPP_JOIN_COMMAND })
 				.expect(200);
 
 			expect(response.body.success).toBe(true);
-			expect(response.body.command.command).toBe('xmpp');
+			expect(response.body.command.command).toBe(XMPP_JOIN_COMMAND);
 			expect(response.body.command.params).toBe('#channel');
 		});
 
-		it('expect to join an external XMPP room using /xmpp from a local user', async () => {
+		it('expect to join an external XMPP room using /xmpp-join from a local user', async () => {
 			const response = await executeSlashCommand({
-				cmd: 'xmpp',
+				cmd: XMPP_JOIN_COMMAND,
 				params: xmppRoomAlias,
 				rid: sourceRoomId,
 				config: rc1AdminRequestConfig,
@@ -407,15 +422,16 @@ async function waitForMessage(roomId: string, text: string, config: IRequestConf
 
 			expect(rcXmppRoom).toHaveProperty('federated', true);
 			expect(rcXmppRoom.federation.mrid).toBe(testBridgeRoomMatrixId);
-			expect(rcXmppRoom.name).toBe(xmppLocalAlias);
+			expect(rcXmppRoom.name).toBe(expectedFederatedRoomName(testBridgeRoomMatrixId));
+			expect(rcXmppRoom.fname).toBe(xmppLocalAlias);
 		});
 
-		it('expect to join an external XMPP room using /xmpp with the hinted #channel parameter', async () => {
+		it('expect to join an external XMPP room using /xmpp-join with the hinted #channel parameter', async () => {
 			const hintedRoomAlias = `xmpp-hinted-${testRunId}`;
 			const hintedLocalAlias = toXmppAppserviceLocalAlias(hintedRoomAlias);
 
 			const response = await executeSlashCommand({
-				cmd: 'xmpp',
+				cmd: XMPP_JOIN_COMMAND,
 				params: `#${hintedRoomAlias}`,
 				rid: sourceRoomId,
 				config: rc1AdminRequestConfig,
@@ -441,7 +457,7 @@ async function waitForMessage(roomId: string, text: string, config: IRequestConf
 				for (const params of ['', '   ']) {
 					ddpListener.clearMessages();
 					const response = await executeSlashCommand({
-						cmd: 'xmpp',
+						cmd: XMPP_JOIN_COMMAND,
 						params,
 						rid: sourceRoomId,
 						config: rc1AdminRequestConfig,
@@ -449,7 +465,7 @@ async function waitForMessage(roomId: string, text: string, config: IRequestConf
 
 					expect(response.body.success).toBe(true);
 					const ephemeralMessage = await ddpListener.waitForEphemeralMessage('Please provide a channel to join', 5000, sourceRoomId);
-					expect(ephemeralMessage.msg).toContain('Usage: `/xmpp #channel`');
+					expect(ephemeralMessage.msg).toContain('Usage: `/xmpp-join #channel`');
 					expect(ephemeralMessage.private).toBe(true);
 					expect(ephemeralMessage.rid).toBe(sourceRoomId);
 					expect(await testBridge.getRooms()).toHaveLength(roomsBefore.length);
@@ -459,15 +475,49 @@ async function waitForMessage(roomId: string, text: string, config: IRequestConf
 			}
 		});
 
+		it('expect to report a bridge rejection without creating a Rocket.Chat room', async () => {
+			const rejectedAlias = `xmpp-rejected-${testRunId}`;
+			const roomsBefore = await testBridge.getRooms();
+			const ddpListener = createDDPListener(runtimeConfig.rcUrl, rc1AdminRequestConfig);
+			await testBridge.setRoomJoinFailure(rejectedAlias, { statusCode: 502, error: 'Rejected by test bridge' });
+			await ddpListener.connect();
+
+			try {
+				const response = await executeSlashCommand({
+					cmd: XMPP_JOIN_COMMAND,
+					params: rejectedAlias,
+					rid: sourceRoomId,
+					config: rc1AdminRequestConfig,
+				});
+
+				expect(response.body.success).toBe(true);
+				const ephemeralMessage = await ddpListener.waitForEphemeralMessage('Could not join the XMPP channel', 5000, sourceRoomId);
+				expect(ephemeralMessage.msg).toBe('Could not join the XMPP channel. Please try again later.');
+				expect(await testBridge.getRooms()).toHaveLength(roomsBefore.length);
+
+				const roomsResponse = await rc1AdminRequestConfig.request
+					.get(endpoints.roomsGet)
+					.set(rc1AdminRequestConfig.credentials)
+					.expect(200);
+				expect(
+					roomsResponse.body.update.some((room: IRoomNativeFederated) => room.fname === toXmppAppserviceLocalAlias(rejectedAlias)),
+				).toBe(false);
+			} finally {
+				ddpListener.disconnect();
+				await testBridge.setRoomJoinFailure(rejectedAlias, { enabled: false });
+			}
+		});
+
 		it('expect to create a Rocket.Chat channel for the joined XMPP room', async () => {
 			expect(rcXmppRoom).toHaveProperty('federated', true);
-			expect(rcXmppRoom.name).toBe(xmppLocalAlias);
+			expect(rcXmppRoom.name).toBe(expectedFederatedRoomName(testBridgeRoomMatrixId));
+			expect(rcXmppRoom.fname).toBe(xmppLocalAlias);
 			expect(rcXmppRoom.t).toBe('c');
 		});
 
 		it('expect to reuse the existing Rocket.Chat channel when joining the same XMPP room again', async () => {
 			const response = await executeSlashCommand({
-				cmd: 'xmpp',
+				cmd: XMPP_JOIN_COMMAND,
 				params: xmppRoomAlias,
 				rid: sourceRoomId,
 				config: rc1AdminRequestConfig,
@@ -483,7 +533,7 @@ async function waitForMessage(roomId: string, text: string, config: IRequestConf
 
 		it('expect two local users joining the same XMPP room to share the same Rocket.Chat channel', async () => {
 			const response = await executeSlashCommand({
-				cmd: 'xmpp',
+				cmd: XMPP_JOIN_COMMAND,
 				params: xmppRoomAlias,
 				rid: sourceRoomId,
 				config: secondUserRequestConfig,
@@ -538,6 +588,8 @@ async function waitForMessage(roomId: string, text: string, config: IRequestConf
 			const message = await waitForMessage(rcXmppRoom._id, messageText, rc1AdminRequestConfig);
 			expect(message.federation?.eventId).toBe(result.eventId);
 			expect(message.u.username).toBe(result.userId);
+			expect(result.appserviceUserId).not.toBe(result.userId);
+			expect(result.appserviceUserId).toContain('=2f');
 		});
 
 		it('expect to render XMPP participant messages with the correct sender display name', async () => {
@@ -545,23 +597,24 @@ async function waitForMessage(roomId: string, text: string, config: IRequestConf
 			expect(user.name).toBe(xmppParticipantDisplayName);
 		});
 
-		it('expect to display a Bifrost XMPP JID as the mapped Rocket.Chat user real name', async () => {
+		it('expect to normalize a Bifrost XMPP occupant ID while preserving its display name', async () => {
 			const resource = `bifrost-user-${safeLocalpart(testRunId).toLowerCase()}`;
 			const jid = `${resource}/${xmppRoomAlias}@conference.example.test`;
 			const messageText = `Hello from Bifrost-style XMPP JID ${Date.now()}`;
 			const result = await testBridge.sendMessage(xmppRoomAlias, {
 				sender: jid,
+				displayName: resource,
 				body: messageText,
 			});
 
 			const message = await waitForMessage(rcXmppRoom._id, messageText, rc1AdminRequestConfig);
+			expect(result.userId).toBe(`@_xmpp_${resource}:${runtimeConfig.serverName}`);
+			expect(result.appserviceUserId).toContain('=2f');
+			expect(result.appserviceUserId).toContain('=40');
 			expect(message.u.username).toBe(result.userId);
 
 			const user = await waitForUserByUsername(result.userId, rc1AdminRequestConfig);
-			expect(user.name).toContain(resource);
-			expect(user.name).not.toMatch(/^@_xmpp_/);
-			expect(user.name).not.toContain('=40');
-			expect(user.name).not.toContain(`${xmppRoomAlias}@conference.example.test`);
+			expect(user.name).toBe(resource);
 		});
 	});
 
@@ -581,16 +634,56 @@ async function waitForMessage(roomId: string, text: string, config: IRequestConf
 	});
 
 	describe('Namespace security', () => {
-		it('expect to reserve the _xmpp_ namespace for federated identities', async () => {
+		it('expect the XMPP appservice to register users inside its namespace', async () => {
 			const localpart = `_xmpp_reserved_${safeLocalpart(testRunId)}`;
 			const response = await registerAppserviceUser({ localpart, config: rc1AdminRequestConfig, runtimeConfig }).expect(200);
 			const userId = response.body.user_id;
 
-			expect(userId).toEqual(expect.any(String));
+			expect(userId).toBe(`@${localpart}:${runtimeConfig.serverName}`);
 
 			const user = await waitForUserByUsername(userId, rc1AdminRequestConfig);
 			expect(user.federated).toBe(true);
 			expect(user.roles).toContain('federated-external');
+			expect(user).toHaveProperty('federation.asId', 'xmpp');
+		});
+
+		it('expect the XMPP appservice to reject registration outside its namespace', async () => {
+			const localpart = `outside-xmpp-${safeLocalpart(testRunId)}`;
+			const response = await registerAppserviceUser({ localpart, config: rc1AdminRequestConfig, runtimeConfig }).expect(400);
+
+			expect(response.body.errcode).toBe('M_EXCLUSIVE');
+			expect(response.body.error).toContain('outside this application service namespace');
+			expect(await getUserByUsername(`@${localpart}:${runtimeConfig.serverName}`, rc1AdminRequestConfig)).toBeUndefined();
+		});
+
+		it('expect to reject local user creation inside the exclusive XMPP namespace', async () => {
+			const username = `_xmpp_local_${safeLocalpart(testRunId)}`;
+			const response = await rc1AdminRequestConfig.request
+				.post(endpoints.usersCreate)
+				.set(rc1AdminRequestConfig.credentials)
+				.send({
+					email: `${username}@example.test`,
+					name: username,
+					username,
+					password,
+					roles: ['user'],
+					active: true,
+				})
+				.expect(400);
+
+			expect(response.body.success).toBe(false);
+			expect(response.body.errorType).toBe('error-username-reserved-by-bridge');
+			expect(response.body.error).toContain('Name is reserved by a federation bridge');
+			expect(await getUserByUsername(username, rc1AdminRequestConfig)).toBeUndefined();
+		});
+
+		it('expect to reject local channel creation inside the exclusive XMPP alias namespace', async () => {
+			const name = `_xmpp_local_room_${safeLocalpart(testRunId)}`;
+			const response = await createRoom({ type: 'c', name, config: rc1AdminRequestConfig }).expect(400);
+
+			expect(response.body.success).toBe(false);
+			expect(response.body.errorType).toBe('error-username-reserved-by-bridge');
+			expect(response.body.error).toContain('Name is reserved by a federation bridge');
 		});
 	});
 });

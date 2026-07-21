@@ -179,7 +179,7 @@ export class XmppAppserviceTestBridgeClient {
 	async sendMessage(
 		roomAlias: string,
 		message: { sender: string; body: string; displayName?: string },
-	): Promise<{ eventId: string; roomId: string; userId: string }> {
+	): Promise<{ eventId: string; roomId: string; userId: string; appserviceUserId: string }> {
 		const localAlias = toXmppAppserviceLocalAlias(roomAlias);
 		return requestJson(`${this.baseUrl}/__rooms/${encodeURIComponent(localAlias)}/messages`, {
 			method: 'POST',
