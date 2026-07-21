@@ -6,17 +6,36 @@ import { useTranslation } from 'react-i18next';
 
 import { useEditableSettingsGroupSections } from '../EditableSettingsContext';
 
+// pseudo states: default (hint) → hover (surface-hover + darker text) →
+// selected/anchored (surface-selected + medium titles-labels) → focus ring.
+// typography and background live here (not in Box props) so the state rules
+// are not overridden by the Box utility classes
 const tocItemStyle = css`
 	cursor: pointer;
+	appearance: none;
+	border: none;
 	border-radius: 4px;
+	background: transparent;
+	font-family: inherit;
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+	font-weight: 400;
+	color: ${Palette.text['font-hint']};
 
 	&:hover {
 		background: ${Palette.surface['surface-hover']};
+		color: ${Palette.text['font-default']};
 	}
 
 	&:focus-visible {
 		outline: 2px solid ${Palette.stroke['stroke-highlight']};
 		outline-offset: -2px;
+	}
+
+	&[aria-current='true'] {
+		background: ${Palette.surface['surface-selected']};
+		color: ${Palette.text['font-titles-labels']};
+		font-weight: 500;
 	}
 `;
 
@@ -124,10 +143,6 @@ function SettingsSectionsToc({ groupId, currentTab }: SettingsSectionsTocProps) 
 						textAlign='start'
 						paddingBlock={6}
 						paddingInline={10}
-						fontScale={active ? 'p2m' : 'p2'}
-						color={active ? 'default' : 'hint'}
-						backgroundColor='transparent'
-						borderWidth={0}
 						onClick={() => handleSectionClick(name)}
 					>
 						{i18n.exists(name) ? t(name as TranslationKey) : name}
