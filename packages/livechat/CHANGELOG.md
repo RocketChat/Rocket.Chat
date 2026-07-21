@@ -1,5 +1,15 @@
 # @rocket.chat/livechat Change Log
 
+## 2.1.6-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [70c0ff0967cc50144dba4971fc7c3f3e996264a3, eec6083bb88f0caa1bd0de28b93b926a11c17507, adc15707128bc3fbe1ccd1cd57e9d30a702fa6ca, 4117a1d3fb07905e8c9488a96f368747b48d528e, e5da5d016948c9bb5cfd784a65396e08e61264c4, 70c0ff0967cc50144dba4971fc7c3f3e996264a3]:</summary>
+
+  - @rocket.chat/gazzodown@33.0.0-rc.0
+  - @rocket.chat/message-parser@0.32.0-rc.0
+  </details>
+
 ## 2.1.5
 
 ### Patch Changes

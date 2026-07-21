@@ -1,5 +1,19 @@
 # @rocket.chat/ui-client
 
+## 33.0.0-rc.0
+
+### Minor Changes
+
+- ([#40890](https://github.com/RocketChat/Rocket.Chat/pull/40890)) Adds AI Search with semantic message results, optional OpenAI-compatible answers, and AI Center configuration.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@33.0.0-rc.0
+  - @rocket.chat/ui-avatar@29.0.0-rc.0
+  </details>
+
 ## 32.0.0
 
 ### Patch Changes

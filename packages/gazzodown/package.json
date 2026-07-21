@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/gazzodown",
-	"version": "32.0.0",
+	"version": "33.0.0-rc.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -70,7 +70,7 @@
 		"@rocket.chat/css-in-js": "*",
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/fuselage-tokens": "*",
-		"@rocket.chat/message-parser": "0.31.36",
+		"@rocket.chat/message-parser": "0.32.0-rc.0",
 		"@rocket.chat/styled": "*",
 		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",

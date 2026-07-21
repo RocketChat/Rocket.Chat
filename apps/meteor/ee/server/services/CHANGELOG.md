@@ -1,5 +1,21 @@
 # rocketchat-services
 
+## 2.0.50-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c7aff48a40a9a78924cbf27fd38930c536ee11e5, 5f92f9a27dca70d506d919351612bd32dc04241a, 13b4a7b2dc203959b77b3b0c5f154d3e34fe2058, eec6083bb88f0caa1bd0de28b93b926a11c17507, 4b34bd62f2ac8d51efd2f48caea7092e87f30ce7, adc15707128bc3fbe1ccd1cd57e9d30a702fa6ca, 1bf84cbe288df03fc622fbddbc0e434bda291c2f, 4b57346a59b5c9433c25845c886be11af1bf71d4, 8d8cd01d0a4e6872ed543320c966efd52140e884, ffe1b646226eeeda5a4d4697c831e568ec1eec64, 3cd7db677a72521439b564dca7a4ca6d6c3a1c07, 719e3db9734708e812ceb33483ffaa2e064b4d59, b2b5edf5b37be3ee070290553f6aec42c39c98f6, 4186deb7febee0aa653bb48b27022afa36529b21, 4117a1d3fb07905e8c9488a96f368747b48d528e, 73c3aec49bacdfb42e67b6cbf90dfffbb65e0658, 73c3aec49bacdfb42e67b6cbf90dfffbb65e0658, 73c3aec49bacdfb42e67b6cbf90dfffbb65e0658, 73c3aec49bacdfb42e67b6cbf90dfffbb65e0658, 615ae2bf74bba0402e0151d9c0b8e4f8dd04cb17, 1cc7bbdef9330899a8207d3d55130f48321d68f1, 6041285601ce6f9586f85cff72fb167642893245, e5da5d016948c9bb5cfd784a65396e08e61264c4, 70c0ff0967cc50144dba4971fc7c3f3e996264a3]:</summary>
+
+  - @rocket.chat/model-typings@2.4.0-rc.0
+  - @rocket.chat/core-typings@8.7.0-rc.0
+  - @rocket.chat/models@2.4.0-rc.0
+  - @rocket.chat/rest-typings@8.7.0-rc.0
+  - @rocket.chat/message-parser@0.32.0-rc.0
+  - @rocket.chat/core-services@0.15.0-rc.0
+  - @rocket.chat/apps-engine@1.64.1-rc.0
+  - @rocket.chat/network-broker@0.2.38-rc.0
+  </details>
+
 ## 2.0.49
 
 ### Patch Changes
