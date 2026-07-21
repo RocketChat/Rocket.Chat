@@ -77,7 +77,9 @@ const middleware = async function (req: express.Request, res: ServerResponse, ne
 };
 
 // Listen to incoming SAML http requests
-WebApp.connectHandlers.use(
+// In Meteor 3 connectHandlers is an express app (multi-middleware use), but
+// @types/meteor still types it as connect.Server (1-2 args).
+(WebApp.connectHandlers as unknown as express.Application).use(
 	/^\/_saml/,
 	bodyParser.json(),
 	express.urlencoded({
