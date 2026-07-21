@@ -30,13 +30,14 @@
 		"eslint-plugin-prettier": "~5.5.6",
 		"eslint-plugin-react": "~7.37.5",
 		"eslint-plugin-react-hooks": "~7.0.1",
-		"eslint-plugin-storybook": "~10.2.19",
+		"eslint-plugin-storybook": "~9.1.20",
 		"eslint-plugin-testing-library": "~7.16.2",
 		"globals": "~17.3.0",
 		"prettier": "~3.3.3",
 		"typescript-eslint": "~8.56.1"
 	},
 	"devDependencies": {
+		"storybook": "^9.1.20",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

@@ -32,6 +32,7 @@
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@rocket.chat/ui-client": "workspace:~",
 		"@storybook/react": "^9.1.20",
+		"@testing-library/dom": "~10.4.1",
 		"@testing-library/react": "~16.3.2",
 		"@testing-library/user-event": "~14.6.1",
 		"@types/jest": "~30.0.0",
