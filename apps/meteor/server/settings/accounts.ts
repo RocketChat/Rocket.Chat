@@ -149,7 +149,6 @@ export const createAccountSettings = () =>
 				type: 'code',
 				public: true,
 				sorter: 1021,
-				i18nLabel: 'Custom_Fields',
 			});
 
 			// Hidden internal settings/counters (not rendered in the UI)
@@ -203,19 +202,16 @@ export const createAccountSettings = () =>
 				type: 'string',
 				public: true,
 				sorter: 2002,
-				i18nLabel: 'Placeholder_for_email_or_username_login_field',
 			});
 			await this.add('Accounts_PasswordPlaceholder', '', {
 				type: 'string',
 				public: true,
 				sorter: 2003,
-				i18nLabel: 'Placeholder_for_password_login_field',
 			});
 			await this.add('Accounts_ConfirmPasswordPlaceholder', '', {
 				type: 'string',
 				public: true,
 				sorter: 2004,
-				i18nLabel: 'Placeholder_for_password_login_confirm_field',
 			});
 		});
 
@@ -279,8 +275,6 @@ export const createAccountSettings = () =>
 				type: 'int',
 				enableQuery: enable2FAByEmail,
 				sorter: 3007,
-				i18nLabel: 'Accounts_TwoFactorAuthentication_Max_Invalid_Email_Code_Attempts',
-				i18nDescription: 'Accounts_TwoFactorAuthentication_Max_Invalid_Email_Code_Attempts_Description',
 			});
 			await this.add('Accounts_TwoFactorAuthentication_RememberFor', 1800, {
 				type: 'int',
@@ -350,7 +344,6 @@ export const createAccountSettings = () =>
 			});
 			await this.add('Block_Multiple_Failed_Logins_Notify_Failed_Channel', '', {
 				type: 'string',
-				i18nDescription: 'Block_Multiple_Failed_Logins_Notify_Failed_Channel_Desc',
 				enableQuery: [enableQueryCollectData, { _id: 'Block_Multiple_Failed_Logins_Notify_Failed', value: true }],
 				sorter: 3019,
 			});
@@ -439,8 +432,6 @@ export const createAccountSettings = () =>
 			await this.add('Accounts_Password_History_Enabled', false, {
 				type: 'boolean',
 				sorter: 4009,
-				i18nLabel: 'Enable_Password_History',
-				i18nDescription: 'Enable_Password_History_Description',
 			});
 			await this.add('Accounts_Password_History_Amount', 5, {
 				type: 'int',
@@ -449,8 +440,6 @@ export const createAccountSettings = () =>
 					value: true,
 				},
 				sorter: 4010,
-				i18nLabel: 'Password_History_Amount',
-				i18nDescription: 'Password_History_Amount_Description',
 			});
 		});
 
@@ -525,7 +514,6 @@ export const createAccountSettings = () =>
 				type: 'boolean',
 				public: true,
 				sorter: 5010,
-				i18nLabel: 'Accounts_AllowInvisibleStatusOption',
 			});
 			await this.add('Accounts_AllowFeaturePreview', false, {
 				type: 'boolean',
@@ -536,7 +524,6 @@ export const createAccountSettings = () =>
 				type: 'string',
 				public: true,
 				sorter: 5012,
-				i18nDescription: 'Accounts_CustomFieldsToShowInUserInfo_Description',
 			});
 		});
 
@@ -615,7 +602,6 @@ export const createAccountSettings = () =>
 			await this.add('Accounts_AvatarCacheTime', 3600, {
 				type: 'int',
 				sorter: 7005,
-				i18nDescription: 'Accounts_AvatarCacheTime_description',
 			});
 			await this.add('Accounts_AvatarBlockUnauthenticatedAccess', true, {
 				type: 'boolean',
@@ -678,38 +664,31 @@ export const createAccountSettings = () =>
 					},
 				],
 				public: true,
-				i18nLabel: 'Email_Notification_Mode',
 			});
 			await this.add('Accounts_Default_User_Preferences_desktopNotificationRequireInteraction', false, {
 				type: 'boolean',
 				public: true,
 				sorter: 8003,
-				i18nLabel: 'Notification_RequireInteraction',
-				i18nDescription: 'Notification_RequireInteraction_Description',
 			});
 			await this.add('Accounts_Default_User_Preferences_desktopNotificationVoiceCalls', true, {
 				type: 'boolean',
 				public: true,
 				sorter: 8004,
-				i18nLabel: 'Notification_Desktop_show_voice_calls',
 			});
 			await this.add('Accounts_Default_User_Preferences_unreadAlert', true, {
 				type: 'boolean',
 				public: true,
 				sorter: 8005,
-				i18nLabel: 'Unread_Tray_Icon_Alert',
 			});
 			await this.add('Accounts_Default_User_Preferences_notifyCalendarEvents', true, {
 				type: 'boolean',
 				public: true,
 				sorter: 8006,
-				i18nLabel: 'Notify_Calendar_Events',
 			});
 			await this.add('Accounts_Default_User_Preferences_enableMobileRinging', true, {
 				type: 'boolean',
 				public: true,
 				sorter: 8007,
-				i18nLabel: 'VideoConf_Mobile_Ringing',
 			});
 
 			// Sounds
@@ -727,7 +706,6 @@ export const createAccountSettings = () =>
 					},
 				],
 				public: true,
-				i18nLabel: 'New_Room_Notification',
 			});
 			await this.add('Accounts_Default_User_Preferences_newMessageNotification', 'chime', {
 				type: 'select',
@@ -743,34 +721,26 @@ export const createAccountSettings = () =>
 					},
 				],
 				public: true,
-				i18nLabel: 'New_Message_Notification',
 			});
 			await this.add('Accounts_Default_User_Preferences_muteFocusedConversations', true, {
 				type: 'boolean',
 				public: true,
 				sorter: 8010,
-				i18nLabel: 'Mute_Focused_Conversations',
 			});
 			await this.add('Accounts_Default_User_Preferences_notificationsSoundVolume', 100, {
 				type: 'range',
 				public: true,
 				sorter: 8011,
-				i18nLabel: 'Notification_volume',
-				i18nDescription: 'Notification_volume_hint',
 			});
 			await this.add('Accounts_Default_User_Preferences_masterVolume', 100, {
 				type: 'range',
 				public: true,
 				sorter: 8012,
-				i18nLabel: 'Master_volume',
-				i18nDescription: 'Master_volume_hint',
 			});
 			await this.add('Accounts_Default_User_Preferences_voipRingerVolume', 100, {
 				type: 'range',
 				public: true,
 				sorter: 8013,
-				i18nLabel: 'Call_ringer_volume',
-				i18nDescription: 'Call_ringer_volume_hint',
 			});
 
 			// Appearance
@@ -792,7 +762,6 @@ export const createAccountSettings = () =>
 					},
 				],
 				public: true,
-				i18nLabel: 'Theme_Appearence',
 			});
 			await this.add('Accounts_Default_User_Preferences_sidebarViewMode', 'medium', {
 				type: 'select',
@@ -812,7 +781,6 @@ export const createAccountSettings = () =>
 					},
 				],
 				public: true,
-				i18nLabel: 'Sidebar_list_mode',
 			});
 			await this.add('Accounts_Default_User_Preferences_sidebarSortby', 'activity', {
 				type: 'select',
@@ -828,31 +796,26 @@ export const createAccountSettings = () =>
 					},
 				],
 				public: true,
-				i18nLabel: 'Sort_By',
 			});
 			await this.add('Accounts_Default_User_Preferences_sidebarDisplayAvatar', true, {
 				type: 'boolean',
 				public: true,
 				sorter: 8017,
-				i18nLabel: 'Display_Avatars_Sidebar',
 			});
 			await this.add('Accounts_Default_User_Preferences_sidebarGroupByType', true, {
 				type: 'boolean',
 				public: true,
 				sorter: 8018,
-				i18nLabel: 'Group_by_Type',
 			});
 			await this.add('Accounts_Default_User_Preferences_sidebarShowFavorites', true, {
 				type: 'boolean',
 				public: true,
 				sorter: 8019,
-				i18nLabel: 'Group_favorites',
 			});
 			await this.add('Accounts_Default_User_Preferences_sidebarShowUnread', false, {
 				type: 'boolean',
 				public: true,
 				sorter: 8020,
-				i18nLabel: 'Unread_on_top',
 			});
 
 			const defaultUserPreferencesSidebarSectionsOrder = [
@@ -875,32 +838,26 @@ export const createAccountSettings = () =>
 				public: true,
 				sorter: 8021,
 				values: defaultUserPreferencesSidebarSectionsOrder.map((key) => ({ key, i18nLabel: key })),
-				i18nLabel: 'Sidebar_Sections_Order',
-				i18nDescription: 'Sidebar_Sections_Order_Description',
 			});
 			await this.add('Accounts_Default_User_Preferences_displayAvatars', true, {
 				type: 'boolean',
 				public: true,
 				sorter: 8022,
-				i18nLabel: 'Display_avatars',
 			});
 			await this.add('Accounts_Default_User_Preferences_hideUsernames', false, {
 				type: 'boolean',
 				public: true,
 				sorter: 8023,
-				i18nLabel: 'Hide_usernames',
 			});
 			await this.add('Accounts_Default_User_Preferences_hideRoles', false, {
 				type: 'boolean',
 				public: true,
 				sorter: 8024,
-				i18nLabel: 'Hide_roles',
 			});
 			await this.add('Accounts_Default_User_Preferences_hideFlexTab', false, {
 				type: 'boolean',
 				public: true,
 				sorter: 8025,
-				i18nLabel: 'Hide_flextab',
 			});
 
 			// Messages & media
@@ -922,43 +879,36 @@ export const createAccountSettings = () =>
 					},
 				],
 				public: true,
-				i18nLabel: 'Enter_Behaviour',
 			});
 			await this.add('Accounts_Default_User_Preferences_useEmojis', true, {
 				type: 'boolean',
 				public: true,
 				sorter: 8027,
-				i18nLabel: 'Use_Emojis',
 			});
 			await this.add('Accounts_Default_User_Preferences_convertAsciiEmoji', true, {
 				type: 'boolean',
 				public: true,
 				sorter: 8028,
-				i18nLabel: 'Convert_Ascii_Emojis',
 			});
 			await this.add('Accounts_Default_User_Preferences_autoImageLoad', true, {
 				type: 'boolean',
 				public: true,
 				sorter: 8029,
-				i18nLabel: 'Auto_Load_Images',
 			});
 			await this.add('Accounts_Default_User_Preferences_saveMobileBandwidth', true, {
 				type: 'boolean',
 				public: true,
 				sorter: 8030,
-				i18nLabel: 'Save_Mobile_Bandwidth',
 			});
 			await this.add('Accounts_Default_User_Preferences_collapseMediaByDefault', false, {
 				type: 'boolean',
 				public: true,
 				sorter: 8031,
-				i18nLabel: 'Collapse_Embedded_Media_By_Default',
 			});
 			await this.add('Accounts_Default_User_Preferences_showThreadsInMainChannel', false, {
 				type: 'boolean',
 				public: true,
 				sorter: 8032,
-				i18nLabel: 'Always_show_thread_replies_in_main_channel',
 			});
 			await this.add('Accounts_Default_User_Preferences_alsoSendThreadToChannel', 'default', {
 				type: 'select',
@@ -978,7 +928,6 @@ export const createAccountSettings = () =>
 					},
 				],
 				public: true,
-				i18nLabel: 'Also_send_thread_message_to_channel_behavior',
 			});
 
 			// Activity & other
@@ -986,13 +935,11 @@ export const createAccountSettings = () =>
 				type: 'boolean',
 				public: true,
 				sorter: 8034,
-				i18nLabel: 'Enable_Auto_Away',
 			});
 			await this.add('Accounts_Default_User_Preferences_idleTimeLimit', 300, {
 				type: 'int',
 				public: true,
 				sorter: 8035,
-				i18nLabel: 'Idle_Time_Limit',
 				enableQuery: {
 					_id: 'Accounts_Default_User_Preferences_enableAutoAway',
 					value: true,
@@ -1002,7 +949,6 @@ export const createAccountSettings = () =>
 				type: 'boolean',
 				public: true,
 				sorter: 8036,
-				i18nLabel: 'Omnichannel_transcript_email',
 			});
 			await this.add('Accounts_Default_User_Preferences_featuresPreview', '[]', {
 				type: 'string',

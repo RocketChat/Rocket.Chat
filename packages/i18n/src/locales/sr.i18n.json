@@ -1478,8 +1478,6 @@
   "PiwikAnalytics_prependDomain_Description": "Припремите домен сајта на насловну страну приликом праћења",
   "PiwikAnalytics_siteId_Description": "ИД сајта ће се користити за идентификацију овај сајт. Пример: 17",
   "PiwikAnalytics_url_Description": "УРЛ адреса где борави Пивик је, обавезно укључују триалинг косу црту. Пример: //пивик.роцкет.цхат/",
-  "Placeholder_for_email_or_username_login_field": "Плацехолдер фор емаил или корисничко име за пријаву области",
-  "Placeholder_for_password_login_field": "Плацехолдер за лозинку за пријаву области",
   "Please_add_a_comment": "Додајте коментар",
   "Please_add_a_comment_to_close_the_room": "Молим вас, додајте коментар за затварање собу",
   "Please_answer_survey": "Одвојите мало времена да одговори брзо анкету о овом разговору",

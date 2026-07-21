@@ -32,7 +32,6 @@
   "Accounts_AllowedDomainsList": "Lubatud domeenide loend",
   "Accounts_AllowedDomainsList_Description": "Komadega eraldatud lubatud domeenide loend",
   "Accounts_AvatarCacheTime": "Avatari vahemälu aeg",
-  "Accounts_AvatarCacheTime_description": "Hüperprotokollide sekundite arv, mille jooksul avatari pilte vahemällu hoitakse.",
   "Additional_Feedback": "Täiendav tagasiside",
   "Appearance": "Välimus",
   "Cancel": "Tühista",

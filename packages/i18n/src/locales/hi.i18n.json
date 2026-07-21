@@ -33,7 +33,6 @@
   "Accounts_AllowedDomainsList_Description": "अनुमत डोमेन की कोमा-पृथक सूची",
   "Accounts_AvatarBlockUnauthenticatedAccess": "अपुष्ट एक्सेस को अवतारों से ब्लॉक करें",
   "Accounts_AvatarCacheTime": "अवतार कैश समय",
-  "Accounts_AvatarCacheTime_description": "HTTP प्रोटोकॉल को अवतार छवियों को कैश करने के लिए सेकंड की संख्या बताई गई है।",
   "Accounts_AvatarExternalProviderUrl": "अवतार बाहरी प्रदाता URL",
   "Accounts_AvatarExternalProviderUrl_Description": "उदाहरण: `https://acme.com/api/v1/ {उपयोगकर्ता नाम}`",
   "Accounts_AvatarResize": "अवतार का आकार बदलें",
