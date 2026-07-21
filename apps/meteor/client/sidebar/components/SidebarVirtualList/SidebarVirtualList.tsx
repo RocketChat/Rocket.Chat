@@ -1,14 +1,21 @@
 import { CustomVirtuaScrollbars } from '@rocket.chat/ui-client';
-import type { Key, ReactNode } from 'react';
-import { useCallback, useMemo } from 'react';
+import type { CSSProperties, Key, ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Virtualizer } from 'virtua';
-import type { VirtualizerProps } from 'virtua';
+import type { VirtualizerHandle, VirtualizerProps } from 'virtua';
 
 const scrollViewportStyle = {
 	height: '100%',
 	width: '100%',
 	overflow: 'auto',
 } as const;
+
+const activeStickyGroupStyle = {
+	position: 'sticky',
+	top: 0,
+	width: '100%',
+	zIndex: 1,
+} as const satisfies CSSProperties;
 
 export type SidebarVirtualListGroup<TGroup, TItem> = {
 	key: string;
@@ -49,6 +56,7 @@ function SidebarVirtualList<TGroup, TItem>({
 	overscan,
 	as,
 }: SidebarVirtualListProps<TGroup, TItem>) {
+	const virtualizerRef = useRef<VirtualizerHandle>(null);
 	const rows = useMemo(() => {
 		return groups.flatMap<SidebarVirtualListRow<TGroup, TItem>>(({ key, group, items }, groupIndex) => [
 			{
@@ -68,11 +76,55 @@ function SidebarVirtualList<TGroup, TItem>({
 		]);
 	}, [groups]);
 
+	const groupHeaderIndexes = useMemo(
+		() =>
+			rows.reduce<number[]>((indexes, row, index) => {
+				if (row.type === 'group') {
+					indexes.push(index);
+				}
+				return indexes;
+			}, []),
+		[rows],
+	);
+
+	const [activeStickyGroupIndex, setActiveStickyGroupIndex] = useState(() => groupHeaderIndexes[0] ?? 0);
+
+	const updateActiveStickyGroup = useCallback(() => {
+		const handle = virtualizerRef.current;
+		if (!handle || groupHeaderIndexes.length === 0) {
+			return;
+		}
+
+		const start = handle.findItemIndex(handle.scrollOffset);
+		const activeIndex = [...groupHeaderIndexes].reverse().find((index) => start >= index) ?? groupHeaderIndexes[0];
+
+		setActiveStickyGroupIndex((current) => (current === activeIndex ? current : activeIndex));
+	}, [groupHeaderIndexes]);
+
+	useEffect(() => {
+		updateActiveStickyGroup();
+	}, [groupHeaderIndexes, updateActiveStickyGroup]);
+
+	const handleScroll = useCallback(() => {
+		updateActiveStickyGroup();
+	}, [updateActiveStickyGroup]);
+
+	const keepMounted = useMemo(
+		() => (groupHeaderIndexes.length > 0 ? [activeStickyGroupIndex] : undefined),
+		[activeStickyGroupIndex, groupHeaderIndexes.length],
+	);
+
 	const renderRow = useCallback(
 		(row: SidebarVirtualListRow<TGroup, TItem>, rowIndex: number) => {
 			if (row.type === 'group') {
+				const isActiveStickyGroup = rowIndex === activeStickyGroupIndex;
+
 				return (
-					<div key={`group:${row.groupKey}`} data-testid='virtuoso-top-item-list'>
+					<div
+						key={`group:${row.groupKey}`}
+						{...(isActiveStickyGroup ? { 'data-testid': 'virtuoso-top-item-list' } : {})}
+						style={isActiveStickyGroup ? activeStickyGroupStyle : undefined}
+					>
 						{renderGroup(row.group, row.groupIndex)}
 					</div>
 				);
@@ -86,13 +138,13 @@ function SidebarVirtualList<TGroup, TItem>({
 				</div>
 			);
 		},
-		[getItemKey, renderGroup, renderItem],
+		[activeStickyGroupIndex, getItemKey, renderGroup, renderItem],
 	);
 
 	return (
 		<CustomVirtuaScrollbars>
 			<div style={scrollViewportStyle}>
-				<Virtualizer as={as} data={rows} bufferSize={overscan}>
+				<Virtualizer ref={virtualizerRef} as={as} data={rows} bufferSize={overscan} keepMounted={keepMounted} onScroll={handleScroll}>
 					{renderRow}
 				</Virtualizer>
 			</div>

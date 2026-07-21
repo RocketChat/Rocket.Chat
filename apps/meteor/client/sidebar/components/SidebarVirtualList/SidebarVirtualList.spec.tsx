@@ -1,13 +1,14 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
-import type { CSSProperties, ElementType, HTMLAttributes, ReactNode } from 'react';
-import { Children, createElement, forwardRef } from 'react';
-import type { CustomContainerComponentProps } from 'virtua';
+import type { CSSProperties, ElementType, HTMLAttributes, ReactNode, Ref } from 'react';
+import { Children, createElement, forwardRef, useImperativeHandle } from 'react';
+import type { CustomContainerComponentProps, VirtualizerHandle } from 'virtua';
 
 import SidebarVirtualList from './SidebarVirtualList';
 import type { SidebarVirtualListGroup } from './SidebarVirtualList';
 
 let mockVisibleIndexes: number[] | undefined;
+let mockScrollOffset = 0;
 
 type MockVirtualizerProps = {
 	children: ReactNode | ((item: unknown, index: number) => ReactNode);
@@ -16,24 +17,50 @@ type MockVirtualizerProps = {
 	as?: ElementType;
 	style?: CSSProperties;
 	className?: string;
+	keepMounted?: readonly number[];
+	onScroll?: (offset: number) => void;
 };
 
 jest.mock('virtua', () => {
 	return {
-		Virtualizer: ({ children, data, bufferSize, as: root = 'div', style, className }: MockVirtualizerProps) => {
+		Virtualizer: forwardRef(function MockVirtualizer(
+			{ children, data, bufferSize, as: root = 'div', style, className, keepMounted, onScroll }: MockVirtualizerProps,
+			ref: Ref<VirtualizerHandle>,
+		) {
+			useImperativeHandle(ref, () => ({
+				cache: {} as VirtualizerHandle['cache'],
+				scrollOffset: mockScrollOffset,
+				scrollSize: 0,
+				viewportSize: 0,
+				findItemIndex: (offset: number) => Math.max(0, Math.floor(offset / 100)),
+				getItemOffset: () => 0,
+				getItemSize: () => 0,
+				scrollToIndex: jest.fn(),
+				scrollTo: jest.fn(),
+				scrollBy: jest.fn(),
+			}));
+
+			const visibleIndexes = new Set(mockVisibleIndexes ?? Array.from({ length: data?.length ?? 0 }, (_, index) => index));
+			keepMounted?.forEach((index) => visibleIndexes.add(index));
+
 			const childrenToRender =
 				typeof children === 'function'
-					? (mockVisibleIndexes ?? Array.from({ length: data?.length ?? 0 }, (_, index) => index)).map((index) =>
-							children(data?.[index], index),
-						)
-					: Children.toArray(children).filter((_, index) => !mockVisibleIndexes || mockVisibleIndexes.includes(index));
+					? [...visibleIndexes].sort((a, b) => a - b).map((index) => children(data?.[index], index))
+					: Children.toArray(children).filter((_, index) => visibleIndexes.has(index));
 
 			return createElement(
 				root,
-				{ className, 'data-buffer-size': bufferSize, 'data-testid': 'virtual-list', 'style': style ?? { height: '100%' } },
+				{
+					className,
+					'data-buffer-size': bufferSize,
+					'data-keep-mounted': keepMounted?.join(','),
+					'data-testid': 'virtual-list',
+					'style': style ?? { height: '100%' },
+					'onScroll': () => onScroll?.(mockScrollOffset),
+				},
 				childrenToRender,
 			);
-		},
+		}),
 	};
 });
 
@@ -98,6 +125,7 @@ const renderVirtualList = (
 describe('SidebarVirtualList', () => {
 	beforeEach(() => {
 		mockVisibleIndexes = undefined;
+		mockScrollOffset = 0;
 	});
 
 	it('renders group rows and item rows in order', () => {
@@ -129,10 +157,39 @@ describe('SidebarVirtualList', () => {
 	it('exposes the legacy Virtuoso group row hook used by E2E locators', () => {
 		renderVirtualList();
 
-		expect(screen.getAllByTestId('virtuoso-top-item-list').map((row) => row.textContent)).toEqual([
-			'group:0:Channels',
-			'group:1:Direct Messages',
-		]);
+		expect(screen.getAllByTestId('virtuoso-top-item-list')).toHaveLength(1);
+		expect(screen.getByTestId('virtuoso-top-item-list')).toHaveTextContent('group:0:Channels');
+	});
+
+	it('keeps only the active group header mounted', () => {
+		mockVisibleIndexes = [3];
+
+		renderVirtualList();
+
+		expect(screen.getByTestId('virtual-list')).toHaveAttribute('data-keep-mounted', '0');
+	});
+
+	it('applies sticky positioning to the active group header only', () => {
+		renderVirtualList();
+
+		expect(screen.getByTestId('virtuoso-top-item-list')).toHaveStyle({
+			position: 'sticky',
+			top: '0px',
+			zIndex: '1',
+		});
+	});
+
+	it('updates the active sticky group header while scrolling', () => {
+		renderVirtualList();
+
+		expect(screen.getByTestId('virtuoso-top-item-list')).toHaveTextContent('group:0:Channels');
+
+		mockScrollOffset = 400;
+
+		fireEvent.scroll(screen.getByTestId('virtual-list'));
+
+		expect(screen.getByTestId('virtuoso-top-item-list')).toHaveTextContent('group:1:Direct Messages');
+		expect(screen.getByTestId('virtual-list')).toHaveAttribute('data-keep-mounted', '3');
 	});
 
 	it('defers item rendering until Virtua requests the row', () => {
