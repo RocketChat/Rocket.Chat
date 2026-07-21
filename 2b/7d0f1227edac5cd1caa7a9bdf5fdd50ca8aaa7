@@ -1,0 +1,19 @@
+apps/meteor/tests/end-to-end/api/users.ts
+  s_4823958c06c678::t_2f5d9bfa916a94 6595-6634
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "2b7d0f1227edac5cd1caa7a9bdf5fdd50ca8aaa7",
+  "prompts": {},
+  "sessions": {
+    "s_4823958c06c678": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d7a51f3e-b026-4d31-96ad-6406c1816852",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": null
+    }
+  }
+}
