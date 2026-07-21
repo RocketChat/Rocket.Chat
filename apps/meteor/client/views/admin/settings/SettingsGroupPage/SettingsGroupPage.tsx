@@ -1,6 +1,6 @@
 import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useMediaQuery, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useSettingsDispatch, useSettings } from '@rocket.chat/ui-contexts';
@@ -40,7 +40,9 @@ const SettingsGroupPage = ({
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const groupSections = useEditableSettingsGroupSections(_id);
-	const hasToc = useMemo(() => groupSections.filter((name) => name).length >= 2, [groupSections]);
+	// below the 1024px breakpoint the TOC is dropped entirely to give the room back to the content
+	const isLargeViewport = useMediaQuery('(min-width: 1024px)');
+	const hasToc = useMemo(() => isLargeViewport && groupSections.filter((name) => name).length >= 2, [isLargeViewport, groupSections]);
 
 	const changedEditableSettings = useEditableSettings(
 		useMemo(
