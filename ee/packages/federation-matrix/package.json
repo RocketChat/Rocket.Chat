@@ -14,9 +14,7 @@
 		"lint:fix": "eslint --fix .",
 		"test": "jest",
 		"test:integration": "./tests/scripts/run-integration-tests.sh",
-		"test:federation": "yarn test:federation:matrix && yarn test:federation:xmpp",
-		"test:federation:matrix": "jest --config jest.config.federation.ts --testPathIgnorePatterns tests/end-to-end/xmpp.spec.ts",
-		"test:federation:xmpp": "jest --config jest.config.federation.ts tests/end-to-end/xmpp.spec.ts --runInBand",
+		"test:federation": "jest --config jest.config.federation.ts",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit"
 	},

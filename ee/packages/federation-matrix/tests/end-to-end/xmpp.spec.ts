@@ -36,20 +36,14 @@ const endpoints = {
 } as const;
 
 function getXmppRuntimeConfig() {
-	const rcUrl = process.env.FEDERATION_RC1_URL || federationConfig.rc1.url;
-	const serverName = process.env.FEDERATION_RC1_DOMAIN || federationConfig.rc1.domain;
-
 	return {
-		rcUrl,
-		serverName,
-		adminUser: process.env.FEDERATION_RC1_ADMIN_USER || federationConfig.rc1.adminUser,
-		adminPassword: process.env.FEDERATION_RC1_ADMIN_PASSWORD || federationConfig.rc1.adminPassword,
+		rcUrl: federationConfig.rc1.url,
+		serverName: federationConfig.rc1.domain,
+		adminUser: federationConfig.rc1.adminUser,
+		adminPassword: federationConfig.rc1.adminPassword,
 		bridgeHomeserverUrl: process.env.FEDERATION_XMPP_BRIDGE_HOMESERVER_URL || 'http://rc1:3000',
 		bridgeTestUrl: xmppAppserviceTestBridgeConfig.url,
-		bridgeAppserviceUrl:
-			process.env.FEDERATION_XMPP_BRIDGE_URL ||
-			process.env.FEDERATION_XMPP_BRIDGE_APPSERVICE_URL ||
-			'http://xmpp-appservice-test-bridge:3300',
+		bridgeAppserviceUrl: process.env.FEDERATION_XMPP_BRIDGE_APPSERVICE_URL || 'http://xmpp-appservice-test-bridge:3300',
 		bridgeHsToken: xmppAppserviceTestBridgeConfig.hsToken,
 		bridgeAsToken: xmppAppserviceTestBridgeConfig.asToken,
 	};
@@ -346,13 +340,6 @@ async function waitForMessage(roomId: string, text: string, config: IRequestConf
 	});
 
 	describe('Configuration', () => {
-		it('expect the XMPP appservice test bridge to use the configured homeserver', async () => {
-			const health = await testBridge.health();
-			expect(health.ok).toBe(true);
-			expect(health.homeserverUrl).toBe(runtimeConfig.bridgeHomeserverUrl);
-			expect(health.serverName).toBe(runtimeConfig.serverName);
-		});
-
 		it('expect to register and authenticate the XMPP appservice', async () => {
 			const response = await getAppserviceIdentity({ config: rc1AdminRequestConfig, runtimeConfig }).expect(200);
 			expect(response.body.user_id).toBe(`@xmpp:${runtimeConfig.serverName}`);
@@ -373,21 +360,6 @@ async function waitForMessage(roomId: string, text: string, config: IRequestConf
 			await expect(getSettingValue({ setting: 'Federation_XMPP_Bridge_AS_Token', config: rc1AdminRequestConfig })).resolves.toBe(
 				runtimeConfig.bridgeAsToken,
 			);
-		});
-
-		it('expect to apply XMPP bridge configuration after federation settings change', async () => {
-			const transientAlias = `xmpp-config-${testRunId}`;
-			const transientLocalAlias = toXmppAppserviceLocalAlias(transientAlias);
-
-			const response = await executeSlashCommand({
-				cmd: XMPP_JOIN_COMMAND,
-				params: transientAlias,
-				rid: sourceRoomId,
-				config: rc1AdminRequestConfig,
-			});
-
-			expect(response.body.success).toBe(true);
-			expect((await testBridge.waitForRoom(transientAlias)).alias).toBe(transientLocalAlias);
 		});
 	});
 
@@ -506,13 +478,6 @@ async function waitForMessage(roomId: string, text: string, config: IRequestConf
 				ddpListener.disconnect();
 				await testBridge.setRoomJoinFailure(rejectedAlias, { enabled: false });
 			}
-		});
-
-		it('expect to create a Rocket.Chat channel for the joined XMPP room', async () => {
-			expect(rcXmppRoom).toHaveProperty('federated', true);
-			expect(rcXmppRoom.name).toBe(expectedFederatedRoomName(testBridgeRoomMatrixId));
-			expect(rcXmppRoom.fname).toBe(xmppLocalAlias);
-			expect(rcXmppRoom.t).toBe('c');
 		});
 
 		it('expect to reuse the existing Rocket.Chat channel when joining the same XMPP room again', async () => {

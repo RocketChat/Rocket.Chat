@@ -77,7 +77,7 @@ export const addAccountRoutes = (router: ClientRouter) => {
 
 				const serverName = federationSDK.getConfig('serverName');
 
-				const appService = c.get('appService') as ReturnType<typeof federationSDK.getRegistrationByAsToken>;
+				const appService = c.get('appService') as NonNullable<ReturnType<typeof federationSDK.getRegistrationByAsToken>>;
 				const requestedUsername = body.username as string;
 				const withSigil = requestedUsername.startsWith('@') ? requestedUsername : `@${requestedUsername}`;
 				const requestedUserId = withSigil.includes(':') ? withSigil : `${withSigil}:${serverName}`;
@@ -85,7 +85,7 @@ export const addAccountRoutes = (router: ClientRouter) => {
 				// Application services may only create users in their own namespace. This is
 				// independent of exclusivity: M_EXCLUSIVE is also the spec-mandated response
 				// when an appservice attempts to register an otherwise unclaimed localpart.
-				if (!appService || !federationSDK.isUserInAppServiceNamespace(requestedUserId, appService.registration._id)) {
+				if (!federationSDK.isUserInAppServiceNamespace(requestedUserId, appService.registration._id)) {
 					return {
 						statusCode: 400,
 						body: {
@@ -98,7 +98,7 @@ export const addAccountRoutes = (router: ClientRouter) => {
 				const isReservedByAnotherAppService = (candidate: string): boolean => {
 					const mxid = candidate.startsWith('@') ? candidate : `@${candidate}:${serverName}`;
 					const owner = federationSDK.isExclusiveNamespace('users', mxid);
-					return Boolean(owner && owner.registration._id !== appService?.registration._id);
+					return Boolean(owner && owner.registration._id !== appService.registration._id);
 				};
 
 				const decoded = decodeXmppUserId(requestedUsername);
@@ -121,7 +121,7 @@ export const addAccountRoutes = (router: ClientRouter) => {
 					await createOrUpdateFederatedUser({
 						username: userId,
 						origin: serverName,
-						asId: appService?.registration._id,
+						asId: appService.registration._id,
 					});
 
 					return {

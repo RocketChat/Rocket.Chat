@@ -50,11 +50,6 @@ function sendJson(res, statusCode, body = {}) {
 	res.end(payload);
 }
 
-function sendNoContent(res) {
-	res.writeHead(204);
-	res.end();
-}
-
 function getBearerToken(req) {
 	const auth = req.headers.authorization;
 	if (typeof auth !== 'string') {
@@ -500,11 +495,6 @@ async function handleRequest(req, res) {
 		const transactionMatch = pathname.match(/^\/_matrix\/app\/v1\/transactions\/([^/]+)$/);
 		if (req.method === 'PUT' && transactionMatch) {
 			await handleTransaction(req, res, decodeURIComponent(transactionMatch[1]));
-			return;
-		}
-
-		if (req.method === 'OPTIONS') {
-			sendNoContent(res);
 			return;
 		}
 

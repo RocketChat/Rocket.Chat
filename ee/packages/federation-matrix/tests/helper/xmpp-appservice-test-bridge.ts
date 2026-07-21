@@ -31,7 +31,6 @@ export type XmppAppserviceTestBridgeTransaction = {
 type WaitOptions = {
 	maxRetries?: number;
 	delay?: number;
-	initialDelay?: number;
 };
 
 type XmppAppserviceTestBridgeHealth = {
@@ -91,11 +90,7 @@ export class XmppAppserviceTestBridgeClient {
 		return requestJson(`${this.baseUrl}/__health`);
 	}
 
-	async waitUntilReady({ maxRetries = 30, delay = 1000, initialDelay = 0 }: WaitOptions = {}): Promise<void> {
-		if (initialDelay > 0) {
-			await wait(initialDelay);
-		}
-
+	async waitUntilReady({ maxRetries = 30, delay = 1000 }: WaitOptions = {}): Promise<void> {
 		let lastError: unknown;
 		for (let attempt = 1; attempt <= maxRetries; attempt++) {
 			try {
@@ -127,14 +122,7 @@ export class XmppAppserviceTestBridgeClient {
 		return rooms.find((room) => room.alias === localAlias);
 	}
 
-	async waitForRoom(
-		roomAlias: string,
-		{ maxRetries = 10, delay = 1000, initialDelay = 0 }: WaitOptions = {},
-	): Promise<XmppAppserviceTestBridgeRoom> {
-		if (initialDelay > 0) {
-			await wait(initialDelay);
-		}
-
+	async waitForRoom(roomAlias: string, { maxRetries = 10, delay = 1000 }: WaitOptions = {}): Promise<XmppAppserviceTestBridgeRoom> {
 		for (let attempt = 1; attempt <= maxRetries; attempt++) {
 			const room = await this.getRoom(roomAlias);
 			if (room) {
@@ -156,12 +144,8 @@ export class XmppAppserviceTestBridgeClient {
 
 	async waitForTransaction(
 		predicate: (transaction: XmppAppserviceTestBridgeTransaction) => boolean,
-		{ maxRetries = 10, delay = 1000, initialDelay = 0 }: WaitOptions = {},
+		{ maxRetries = 10, delay = 1000 }: WaitOptions = {},
 	): Promise<XmppAppserviceTestBridgeTransaction> {
-		if (initialDelay > 0) {
-			await wait(initialDelay);
-		}
-
 		for (let attempt = 1; attempt <= maxRetries; attempt++) {
 			const match = (await this.getTransactions()).find(predicate);
 			if (match) {
