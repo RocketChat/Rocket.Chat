@@ -77,36 +77,23 @@ export const addAccountRoutes = (router: ClientRouter) => {
 
 				const serverName = federationSDK.getConfig('serverName');
 
-				const appService = c.get('appService') as NonNullable<ReturnType<typeof federationSDK.getRegistrationByAsToken>>;
-				const requestedUsername = body.username as string;
-				const withSigil = requestedUsername.startsWith('@') ? requestedUsername : `@${requestedUsername}`;
-				const requestedUserId = withSigil.includes(':') ? withSigil : `${withSigil}:${serverName}`;
-
-				// Application services may only create users in their own namespace. This is
-				// independent of exclusivity: M_EXCLUSIVE is also the spec-mandated response
-				// when an appservice attempts to register an otherwise unclaimed localpart.
-				if (!federationSDK.isUserInAppServiceNamespace(requestedUserId, appService.registration._id)) {
-					return {
-						statusCode: 400,
-						body: {
-							errcode: 'M_EXCLUSIVE',
-							error: 'Username is outside this application service namespace',
-						},
-					};
-				}
+				// An application service may only register users that no *other* bridge exclusively claims.
+				// Registering within its own exclusive namespace is fine; another bridge's is M_EXCLUSIVE.
+				const appService = c.get('appService') as ReturnType<typeof federationSDK.getRegistrationByAsToken>;
 
 				const isReservedByAnotherAppService = (candidate: string): boolean => {
 					const mxid = candidate.startsWith('@') ? candidate : `@${candidate}:${serverName}`;
 					const owner = federationSDK.isExclusiveNamespace('users', mxid);
-					return Boolean(owner && owner.registration._id !== appService.registration._id);
+					return Boolean(owner && owner.registration._id !== appService?.registration._id);
 				};
 
-				const decoded = decodeXmppUserId(requestedUsername);
+				const decoded = decodeXmppUserId(body.username);
 
 				if (!isFullXmppUserId(decoded)) {
 					// The spec defines `username` as the desired localpart; normalize either form to the
 					// fully-qualified MXID, which is what gets stored and what `user_id` must carry.
-					const userId = requestedUserId;
+					const withSigil = body.username.startsWith('@') ? body.username : `@${body.username}`;
+					const userId = withSigil.includes(':') ? withSigil : `${withSigil}:${serverName}`;
 
 					if (isReservedByAnotherAppService(userId)) {
 						return {
@@ -121,7 +108,7 @@ export const addAccountRoutes = (router: ClientRouter) => {
 					await createOrUpdateFederatedUser({
 						username: userId,
 						origin: serverName,
-						asId: appService.registration._id,
+						asId: appService?.registration._id,
 					});
 
 					return {
