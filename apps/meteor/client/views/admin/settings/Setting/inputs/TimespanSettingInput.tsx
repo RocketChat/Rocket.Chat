@@ -9,6 +9,7 @@ import type { SettingInputProps } from './types';
 
 export type TimespanSettingInputProps = SettingInputProps<string, string | number> & {
 	value: string;
+	timespanBaseUnit?: 'milliseconds' | 'seconds';
 };
 
 export const getHighestTimeUnit = (value: number): TIMEUNIT => {
@@ -49,16 +50,20 @@ function TimespanSettingInput({
 	hasResetButton,
 	onResetButtonClick,
 	packageValue,
+	timespanBaseUnit = 'milliseconds',
 }: TimespanSettingInputProps) {
 	const { t, i18n } = useTranslation();
 
-	const [timeUnit, setTimeUnit] = useState<TIMEUNIT>(getHighestTimeUnit(Number(value)));
-	const [internalValue, setInternalValue] = useState<number>(msToTimeUnit(timeUnit, Number(value)));
+	// the conversion helpers work in milliseconds; settings may persist seconds instead
+	const baseUnitFactor = timespanBaseUnit === 'seconds' ? 1000 : 1;
+
+	const [timeUnit, setTimeUnit] = useState<TIMEUNIT>(getHighestTimeUnit(Number(value) * baseUnitFactor));
+	const [internalValue, setInternalValue] = useState<number>(msToTimeUnit(timeUnit, Number(value) * baseUnitFactor));
 
 	const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
 		const newValue = sanitizeInputValue(Number(event.currentTarget.value));
 
-		onChangeValue?.(timeUnitToMs(timeUnit, newValue));
+		onChangeValue?.(timeUnitToMs(timeUnit, newValue) / baseUnitFactor);
 
 		setInternalValue(newValue);
 	};
@@ -67,7 +72,7 @@ function TimespanSettingInput({
 		if (typeof nextTimeUnit !== 'string') {
 			return;
 		}
-		onChangeValue?.(timeUnitToMs(nextTimeUnit as TIMEUNIT, internalValue));
+		onChangeValue?.(timeUnitToMs(nextTimeUnit as TIMEUNIT, internalValue) / baseUnitFactor);
 		setTimeUnit(nextTimeUnit as TIMEUNIT);
 	};
 
@@ -77,9 +82,9 @@ function TimespanSettingInput({
 
 	const handleResetButtonClick = () => {
 		onResetButtonClick?.();
-		const newTimeUnit = getHighestTimeUnit(Number(packageValue));
+		const newTimeUnit = getHighestTimeUnit(Number(packageValue) * baseUnitFactor);
 		setTimeUnit(newTimeUnit);
-		setInternalValue(msToTimeUnit(newTimeUnit, Number(packageValue)));
+		setInternalValue(msToTimeUnit(newTimeUnit, Number(packageValue) * baseUnitFactor));
 	};
 
 	return (

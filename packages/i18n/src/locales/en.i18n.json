@@ -152,7 +152,7 @@
   "Accounts_Subsection_Visibility_Extras": "Visibility & extras",
   "Accounts_Subsection_What_Users_Can_Edit": "What users can edit",
   "Accounts_Subsection_Who_Can_Join": "Who can join",
-  "Accounts_TwoFactorAuthentication_By_Email_Code_Expiration_Description": "How long an emailed verification code stays valid, in seconds.",
+  "Accounts_TwoFactorAuthentication_By_Email_Code_Expiration_Description": "How long an emailed verification code stays valid.",
   "Accounts_UseDNSDomainCheck_Description": "Reject sign-ups whose email domain has no valid mail server.",
   "Accounts_UseDefaultBlockedDomainsList_Description": "Also block a maintained list of known disposable-email domains.",
   "Accounts_Verify_Email_For_External_Accounts_Description": "Also require email verification for users who signed up through an external provider.",

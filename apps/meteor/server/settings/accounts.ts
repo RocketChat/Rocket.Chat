@@ -300,7 +300,9 @@ export const createAccountSettings = () =>
 				},
 			});
 			await this.add('Accounts_TwoFactorAuthentication_By_Email_Code_Expiration', 3600, {
-				type: 'int',
+				// stored in seconds (see EmailCheck.ts); the timespan input converts for display
+				type: 'timespan',
+				timespanBaseUnit: 'seconds',
 				enableQuery: enable2FAByEmail,
 				sorter: 3006,
 				subsection: 'Accounts_Subsection_Two_Factor_Authentication',
