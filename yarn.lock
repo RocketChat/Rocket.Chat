@@ -13009,7 +13009,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tootallnate/once@npm:2.0.1":
+"@tootallnate/once@npm:2":
   version: 2.0.1
   resolution: "@tootallnate/once@npm:2.0.1"
   checksum: 10/487b59b5adb8458dc13394a5aae997bf9705c51fa1e2396c50cd967019d06b273faba3c4d9e7895a996b9e9b055f1c55e53d822e54b3e9c298bcb4f6967cd0d5
@@ -28107,7 +28107,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:3.1.5, minimatch@npm:^3.1.5":
+"minimatch@npm:3.1.5, minimatch@npm:^3.0.4, minimatch@npm:^3.1.5":
   version: 3.1.5
   resolution: "minimatch@npm:3.1.5"
   dependencies:
@@ -33546,7 +33546,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:5.7.2":
+"semver@npm:2 || 3 || 4 || 5, semver@npm:5.7.2, semver@npm:^5.6.0":
   version: 5.7.2
   resolution: "semver@npm:5.7.2"
   bin:
