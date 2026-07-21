@@ -82,25 +82,25 @@ describe('normalizeThreadMessage', () => {
 		expect(normalizeThreadMessage(message, t)).toBeNull();
 	});
 
-	it('should return the "Message_removed" translation for a deleted message, ignoring its content', () => {
+	it('should return the message type text for a removed message without content', () => {
 		const message = {
 			t: 'rm',
-			msg: 'this content should not be displayed',
+			msg: '',
 			editedAt: new Date(),
 			editedBy: { _id: 'uid', username: 'user' },
 			mentions: [],
 			attachments: [],
 		} as unknown as IMessage;
 
-		expect(normalizeThreadMessage(message, t)).toBe('Message_removed');
+		expect(normalizeThreadMessage(message, t)).toBe('Message_HideType_rm');
 		expect(mockedFilterMarkdown).not.toHaveBeenCalled();
 		expect(mockedParse).not.toHaveBeenCalled();
 	});
 
-	it('should not treat a message with `t: rm` as deleted when it is not edited', () => {
+	it('should render the message content when a `t: rm` message still has content', () => {
 		const message = { t: 'rm', msg: 'Hello world', mentions: [], attachments: [] } as unknown as IMessage;
 
-		expect(normalizeThreadMessage(message, t)).not.toBe('Message_removed');
+		expect(normalizeThreadMessage(message, t)).not.toBe('Message_HideType_rm');
 		expect(mockedParse).toHaveBeenCalledWith('Hello world', { emoticons: true });
 	});
 });

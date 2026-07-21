@@ -31,11 +31,11 @@ describe('useNormalizedThreadTitleHtml', () => {
 		jest.clearAllMocks();
 	});
 
-	it('should return the "Message_removed" translation for a deleted message, ignoring its content', () => {
+	it('should return the "Message_HideType_rm" translation for a removed message without content', () => {
 		const message = {
 			...baseMessage,
 			t: 'rm',
-			msg: 'this content should not be displayed',
+			msg: '',
 			editedAt: new Date(),
 			editedBy: { _id: 'uid', username: 'user' },
 		} as unknown as IThreadMainMessage;
@@ -44,7 +44,7 @@ describe('useNormalizedThreadTitleHtml', () => {
 			wrapper: mockAppRoot().build(),
 		});
 
-		expect(result.current).toBe('Message_removed');
+		expect(result.current).toBe('Message_HideType_rm');
 		expect(mockedFilterMarkdown).not.toHaveBeenCalled();
 	});
 
@@ -59,14 +59,14 @@ describe('useNormalizedThreadTitleHtml', () => {
 		expect(mockedFilterMarkdown).toHaveBeenCalledWith('Hello world');
 	});
 
-	it('should not treat a message with `t: rm` as deleted when it is not edited', () => {
+	it('should render the message content when a `t: rm` message still has content', () => {
 		const message = { ...baseMessage, t: 'rm', msg: 'Hello world' } as unknown as IThreadMainMessage;
 
 		const { result } = renderHook(() => useNormalizedThreadTitleHtml(message), {
 			wrapper: mockAppRoot().build(),
 		});
 
-		expect(result.current).not.toBe('Message_removed');
+		expect(result.current).not.toBe('Message_HideType_rm');
 		expect(result.current).toBe('Hello world');
 	});
 });
