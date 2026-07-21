@@ -5910,7 +5910,6 @@
   "VoIP_device_permission_required_description": "O navegador da Web impediu que o site {{workspaceUrl}} usasse o microfone e/ou o alto-falante.\n\nPermita o acesso ao alto-falante e ao microfone nas configurações do navegador para evitar ver essa mensagem novamente.",
   "VoIP_allow_and_call": "Permitir e chamar",
   "VoIP_allow_and_accept": "Permitir e aceitar",
-  "VoIP_cancel_and_reject": "Cancelar e rejeitar",
   "Voice": "Voz",
   "Voice_Call": "Chamada de voz",
   "Voice_Call_Extension": "Extensão de chamada de voz",
