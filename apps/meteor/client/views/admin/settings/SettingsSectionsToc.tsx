@@ -113,7 +113,15 @@ function SettingsSectionsToc({ groupId, currentTab }: SettingsSectionsTocProps) 
 		scrollTargetTimeoutRef.current = setTimeout(() => {
 			scrollTargetRef.current = null;
 		}, 2000);
-		document.querySelector(`[data-qa-section="${CSS.escape(name)}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		const target = document.querySelector(`[data-qa-section="${CSS.escape(name)}"]`);
+		target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		// heavy content (e.g. code editors) resizing mid-animation can cancel the
+		// smooth scroll — jump instantly if the section did not arrive
+		setTimeout(() => {
+			if (target && scrollTargetRef.current === name && Math.abs(target.getBoundingClientRect().top) > 200) {
+				target.scrollIntoView({ behavior: 'instant', block: 'start' });
+			}
+		}, 700);
 		setActiveSection(name);
 	};
 

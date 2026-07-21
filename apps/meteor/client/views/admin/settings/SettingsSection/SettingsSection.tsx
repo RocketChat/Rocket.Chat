@@ -1,14 +1,19 @@
+import type { LicenseModule } from '@rocket.chat/core-typings';
 import { isSetting, isSettingColor } from '@rocket.chat/core-typings';
-import { Box, Button, FieldGroup } from '@rocket.chat/fuselage';
+import { Box, Button, Callout, FieldGroup, Tag } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useLicenseBase } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import { useMemo } from 'react';
+import { Fragment, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { links } from '../../../../lib/links';
 import type { EditableSetting } from '../../EditableSettingsContext';
 import { useEditableSettings, useEditableSettingsDispatch } from '../../EditableSettingsContext';
 import Setting from '../Setting';
+
+const PRICING_URL = links.go.pricing;
 
 export type SettingsSectionProps = {
 	groupId: string;
@@ -36,6 +41,22 @@ function SettingsSection({ groupId, hasReset = true, sectionTitle, sectionName, 
 	);
 
 	const changed = useMemo(() => editableSettings.some(({ changed }) => changed), [editableSettings]);
+
+	// same semantics as useHasSettingModule, computed once for the whole section
+	const { data: license } = useLicenseBase({
+		select: (data) => ({ isEnterprise: Boolean(data?.license.license), activeModules: data?.license.activeModules ?? [] }),
+	});
+	const isPremiumLocked = useStableCallback((setting: EditableSetting): boolean => {
+		if (!setting.enterprise) {
+			return false;
+		}
+		const hasModules = Boolean(setting.modules?.length);
+		return !(
+			(license?.isEnterprise ?? false) &&
+			hasModules &&
+			(setting.modules ?? []).every((module) => license?.activeModules.includes(module as LicenseModule))
+		);
+	});
 
 	// Group consecutive settings sharing the same `subsection` so each block can
 	// be rendered as a captioned card; settings without a subsection keep the
@@ -113,22 +134,73 @@ function SettingsSection({ groupId, hasReset = true, sectionTitle, sectionName, 
 					{help}
 				</Box>
 			)}
-			{subsectionGroups.map(({ subsection, settings }, index) => (
-				<Box key={subsection || `ungrouped-${index}`} marginBlockEnd={24}>
-					{subsection && (
-						<Box fontScale='micro' textTransform='uppercase' color='hint' marginBlockEnd={8}>
-							{i18n.exists(subsection) ? t(subsection as TranslationKey) : subsection}
+			{subsectionGroups.map(({ subsection, settings }, index) => {
+				// premium gating: a fully-premium block gets one tag in the header plus a
+				// single upgrade callout; mixed blocks mark each consecutive premium run
+				// with a tag and each locked field advertises an inline upgrade link
+				const allLocked = settings.length > 0 && settings.every((setting) => isPremiumLocked(setting));
+				const runs: { locked: boolean; settings: EditableSetting[] }[] = [];
+				for (const setting of settings) {
+					const locked = isPremiumLocked(setting);
+					const lastRun = runs[runs.length - 1];
+					if (lastRun?.locked === locked) {
+						lastRun.settings.push(setting);
+					} else {
+						runs.push({ locked, settings: [setting] });
+					}
+				}
+
+				return (
+					<Box key={subsection || `ungrouped-${index}`} marginBlockEnd={24}>
+						{(subsection || allLocked) && (
+							<Box display='flex' alignItems='center' marginBlockEnd={8} style={{ gap: 8 }}>
+								{subsection && (
+									<Box fontScale='micro' textTransform='uppercase' color='hint'>
+										{i18n.exists(subsection) ? t(subsection as TranslationKey) : subsection}
+									</Box>
+								)}
+								{allLocked && <Tag variant='featured'>{t('Premium')}</Tag>}
+							</Box>
+						)}
+						{allLocked && (
+							<Box marginBlockEnd={8}>
+								<Callout type='info' title={t('Premium_feature')}>
+									{t('Premium_settings_callout_description')}
+									<Box marginBlockStart={8}>
+										<Button primary small is='a' href={PRICING_URL} target='_blank' rel='noopener noreferrer'>
+											{t('Upgrade_to_Premium')}
+										</Button>
+									</Box>
+								</Callout>
+							</Box>
+						)}
+						<Box backgroundColor='light' borderRadius='x8' padding={20}>
+							<FieldGroup>
+								{runs.map((run, runIndex) => (
+									<Fragment key={`run-${runIndex}`}>
+										{run.locked && !allLocked && (
+											<Box display='flex' justifyContent='flex-start'>
+												<Tag variant='featured'>{t('Premium')}</Tag>
+											</Box>
+										)}
+										{run.settings.map(
+											(setting) =>
+												isSetting(setting) && (
+													<Setting
+														key={setting._id}
+														settingId={setting._id}
+														sectionChanged={changed}
+														premiumCta={allLocked ? 'none' : 'link'}
+													/>
+												),
+										)}
+									</Fragment>
+								))}
+							</FieldGroup>
 						</Box>
-					)}
-					<Box backgroundColor='light' borderRadius='x8' padding={20}>
-						<FieldGroup>
-							{settings.map(
-								(setting) => isSetting(setting) && <Setting key={setting._id} settingId={setting._id} sectionChanged={changed} />,
-							)}
-						</FieldGroup>
 					</Box>
-				</Box>
-			))}
+				);
+			})}
 			{children && <FieldGroup>{children}</FieldGroup>}
 			{hasReset && canReset && (
 				<Button secondary danger marginBlockStart={16} data-section={sectionName} onClick={handleResetSectionClick}>

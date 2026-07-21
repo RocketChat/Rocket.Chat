@@ -65,7 +65,7 @@ export type MemoizedSettingProps = {
 	hasResetButton?: boolean;
 	disabled?: boolean;
 	required?: boolean;
-	showUpgradeButton?: ReactNode;
+	upgradeLink?: ReactNode;
 	actionText?: string;
 };
 
@@ -78,7 +78,7 @@ const MemoizedSetting = ({
 	onChangeValue,
 	onChangeEditor,
 	disabled,
-	showUpgradeButton,
+	upgradeLink,
 	className = undefined,
 	invisible = undefined,
 	...inputProps
@@ -106,7 +106,7 @@ const MemoizedSetting = ({
 						<Callout type='warning'>{callout}</Callout>
 					</Margins>
 				)}
-				{showUpgradeButton}
+				{upgradeLink}
 			</Box>
 		</Field>
 	);

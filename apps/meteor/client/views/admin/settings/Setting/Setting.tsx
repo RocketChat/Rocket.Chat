@@ -1,6 +1,6 @@
 import type { ISettingColor, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
 import { isSettingColor, isSetting, isSettingCode } from '@rocket.chat/core-typings';
-import { Box, Button, Tag } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useSettingStructure } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo, useState, useCallback } from 'react';
@@ -19,9 +19,12 @@ export type SettingProps = {
 	className?: string;
 	settingId: string;
 	sectionChanged?: boolean;
+	/** how a premium-locked setting advertises the upgrade: an inline link (default) or nothing
+	 * (when the surrounding block already renders a premium callout) */
+	premiumCta?: 'link' | 'none';
 };
 
-function Setting({ className = undefined, settingId, sectionChanged }: SettingProps) {
+function Setting({ className = undefined, settingId, sectionChanged, premiumCta = 'link' }: SettingProps) {
 	const setting = useEditableSetting(settingId);
 	const persistedSetting = useSettingStructure(settingId);
 	const hasSettingModule = useHasSettingModule(setting);
@@ -136,30 +139,30 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 
 	const shouldDisableEnterprise = setting.enterprise && !hasSettingModule;
 
-	const showUpgradeButton = useMemo(
+	// premium-locked settings advertise the upgrade with a discreet link under the
+	// field (the Premium tag and the callout live at the block level)
+	const upgradeLink = useMemo(
 		() =>
-			shouldDisableEnterprise ? (
-				<Button marginBlockStart={4} is='a' href={PRICING_URL} target='_blank'>
-					{t('See_Paid_Plan')}
-				</Button>
+			shouldDisableEnterprise && premiumCta === 'link' ? (
+				<Box
+					is='a'
+					href={PRICING_URL}
+					target='_blank'
+					rel='noopener noreferrer'
+					display='block'
+					textAlign='end'
+					fontScale='c1'
+					color='info'
+					textDecorationLine='underline'
+					marginBlockStart={4}
+				>
+					{t('Upgrade_to_unlock')}
+				</Box>
 			) : undefined,
-		[shouldDisableEnterprise, t],
+		[shouldDisableEnterprise, premiumCta, t],
 	);
 
-	const label = useMemo(() => {
-		if (!shouldDisableEnterprise) {
-			return labelText;
-		}
-
-		return (
-			<>
-				<Box is='span' marginInlineEnd={4}>
-					{labelText}
-				</Box>
-				<Tag variant='featured'>{t('Premium')}</Tag>
-			</>
-		);
-	}, [labelText, shouldDisableEnterprise, t]);
+	const label = labelText;
 
 	const hasResetButton =
 		!shouldDisableEnterprise &&
@@ -177,7 +180,7 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 			label={label}
 			hint={hint}
 			callout={callout}
-			showUpgradeButton={showUpgradeButton}
+			upgradeLink={upgradeLink}
 			sectionChanged={sectionChanged}
 			{...setting}
 			disabled={disabled || shouldDisableEnterprise}
