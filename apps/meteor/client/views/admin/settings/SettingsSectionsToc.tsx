@@ -6,10 +6,11 @@ import { useTranslation } from 'react-i18next';
 
 import { useEditableSettingsGroupSections } from '../EditableSettingsContext';
 
-// pseudo states: default (hint) → hover (surface-hover + darker text) →
-// selected/anchored (surface-selected + medium titles-labels) → focus ring.
-// typography and background live here (not in Box props) so the state rules
-// are not overridden by the Box utility classes
+// the items follow the secondary (ghost) button color lifecycle: transparent
+// default → secondary-default on hover → secondary-press while clicking →
+// secondary-hover held by the selected/anchored item, plus the keyboard focus
+// ring. typography and background live here (not in Box props) so the state
+// rules are not overridden by the Box utility classes
 const tocItemStyle = css`
 	cursor: pointer;
 	appearance: none;
@@ -20,11 +21,14 @@ const tocItemStyle = css`
 	font-size: 0.875rem;
 	line-height: 1.25rem;
 	font-weight: 400;
-	color: ${Palette.text['font-hint']};
+	color: var(--rcx-color-button-font-on-secondary, #1f2329);
 
 	&:hover {
-		background: ${Palette.surface['surface-hover']};
-		color: ${Palette.text['font-default']};
+		background: var(--rcx-color-button-background-secondary-default, #e4e7ea);
+	}
+
+	&:active {
+		background: var(--rcx-color-button-background-secondary-press, #9ea2a8);
 	}
 
 	&:focus-visible {
@@ -33,8 +37,7 @@ const tocItemStyle = css`
 	}
 
 	&[aria-current='true'] {
-		background: ${Palette.surface['surface-selected']};
-		color: ${Palette.text['font-titles-labels']};
+		background: var(--rcx-color-button-background-secondary-hover, #cbced1);
 		font-weight: 500;
 	}
 `;
