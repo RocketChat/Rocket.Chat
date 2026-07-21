@@ -40,6 +40,10 @@ const tocItemStyle = css`
 		background: var(--rcx-color-button-background-secondary-hover, #cbced1);
 		font-weight: 500;
 	}
+
+	& + & {
+		margin-block-start: 4px;
+	}
 `;
 
 type SettingsSectionsTocProps = {
@@ -129,7 +133,7 @@ function SettingsSectionsToc({ groupId, currentTab }: SettingsSectionsTocProps) 
 			paddingInlineEnd={16}
 			overflowY='auto'
 		>
-			<Box fontScale='c1' color='hint' paddingInline={10} marginBlockEnd={16}>
+			<Box fontScale='c1' color='hint' paddingInline={12} marginBlockEnd={24}>
 				{t('Settings_in_group', { group: i18n.exists(groupId) ? t(groupId as TranslationKey) : groupId })}
 			</Box>
 			{visibleSections.map((name) => {
@@ -144,8 +148,8 @@ function SettingsSectionsToc({ groupId, currentTab }: SettingsSectionsTocProps) 
 						display='block'
 						width='full'
 						textAlign='start'
-						paddingBlock={6}
-						paddingInline={10}
+						paddingBlock={8}
+						paddingInline={12}
 						onClick={() => handleSectionClick(name)}
 					>
 						{i18n.exists(name) ? t(name as TranslationKey) : name}
