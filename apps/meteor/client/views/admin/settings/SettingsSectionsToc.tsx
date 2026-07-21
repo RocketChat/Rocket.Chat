@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useEditableSettingsGroupSections } from '../EditableSettingsContext';
@@ -30,6 +30,11 @@ function SettingsSectionsToc({ groupId, currentTab }: SettingsSectionsTocProps) 
 	const sections = useEditableSettingsGroupSections(groupId, currentTab);
 	const [activeSection, setActiveSection] = useState<string | undefined>();
 
+	// while a click-initiated smooth scroll is running, the observer is muted so the
+	// highlight doesn't jump across the sections passing through the viewport
+	const scrollTargetRef = useRef<string | null>(null);
+	const scrollTargetTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+
 	const visibleSections = useMemo(() => sections.filter((name) => name), [sections]);
 
 	useEffect(() => {
@@ -43,6 +48,17 @@ function SettingsSectionsToc({ groupId, currentTab }: SettingsSectionsTocProps) 
 
 		const observer = new IntersectionObserver(
 			(entries) => {
+				if (scrollTargetRef.current) {
+					const targetArrived = entries.some(
+						(entry) => entry.isIntersecting && entry.target.getAttribute('data-qa-section') === scrollTargetRef.current,
+					);
+					if (targetArrived) {
+						scrollTargetRef.current = null;
+						clearTimeout(scrollTargetTimeoutRef.current);
+					}
+					return;
+				}
+
 				const intersecting = entries.filter((entry) => entry.isIntersecting);
 				if (intersecting.length > 0) {
 					setActiveSection(intersecting[0].target.getAttribute('data-qa-section') ?? undefined);
@@ -53,7 +69,10 @@ function SettingsSectionsToc({ groupId, currentTab }: SettingsSectionsTocProps) 
 
 		elements.forEach((element) => observer.observe(element));
 
-		return () => observer.disconnect();
+		return () => {
+			observer.disconnect();
+			clearTimeout(scrollTargetTimeoutRef.current);
+		};
 	}, [visibleSections]);
 
 	if (visibleSections.length < 2) {
@@ -61,6 +80,13 @@ function SettingsSectionsToc({ groupId, currentTab }: SettingsSectionsTocProps) 
 	}
 
 	const handleSectionClick = (name: string) => {
+		scrollTargetRef.current = name;
+		// safety net: if the user interrupts the smooth scroll the target may never
+		// intersect, so the observer is unmuted after a while regardless
+		clearTimeout(scrollTargetTimeoutRef.current);
+		scrollTargetTimeoutRef.current = setTimeout(() => {
+			scrollTargetRef.current = null;
+		}, 2000);
 		document.querySelector(`[data-qa-section="${CSS.escape(name)}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 		setActiveSection(name);
 	};
