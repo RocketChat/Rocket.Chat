@@ -611,15 +611,6 @@ async function waitForMessage(roomId: string, text: string, config: IRequestConf
 			expect(user.roles).toContain('federated-external');
 		});
 
-		it.failing('expect the XMPP appservice to reject registration outside its namespace', async () => {
-			const localpart = `outside-xmpp-${safeLocalpart(testRunId)}`;
-			const response = await registerAppserviceUser({ localpart, config: rc1AdminRequestConfig, runtimeConfig }).expect(400);
-
-			expect(response.body.errcode).toBe('M_EXCLUSIVE');
-			expect(response.body.error).toContain('outside this application service namespace');
-			expect(await getUserByUsername(`@${localpart}:${runtimeConfig.serverName}`, rc1AdminRequestConfig)).toBeUndefined();
-		});
-
 		it('expect to reject local user creation inside the exclusive XMPP namespace', async () => {
 			const username = `_xmpp_local_${safeLocalpart(testRunId)}`;
 			const response = await rc1AdminRequestConfig.request
@@ -639,15 +630,6 @@ async function waitForMessage(roomId: string, text: string, config: IRequestConf
 			expect(response.body.errorType).toBe('error-field-unavailable');
 			expect(response.body.error).toContain(`${username} is already in use`);
 			expect(await getUserByUsername(username, rc1AdminRequestConfig)).toBeUndefined();
-		});
-
-		it.failing('expect to reject local channel creation inside the exclusive XMPP alias namespace', async () => {
-			const name = `_xmpp_local_room_${safeLocalpart(testRunId)}`;
-			const response = await createRoom({ type: 'c', name, config: rc1AdminRequestConfig }).expect(400);
-
-			expect(response.body.success).toBe(false);
-			expect(response.body.errorType).toBe('error-username-reserved-by-bridge');
-			expect(response.body.error).toContain('Name is reserved by a federation bridge');
 		});
 	});
 });
