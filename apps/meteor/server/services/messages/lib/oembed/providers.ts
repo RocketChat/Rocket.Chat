@@ -103,8 +103,8 @@ providers.registerProvider({
 if (process.env.TEST_MODE) {
 	// resolves the oembed payload from the CI mock-server instead of a real provider — see the oembed suite in tests/end-to-end/api/chat.ts
 	providers.registerProvider({
-		urls: [new RegExp('https?://mock-server\\.local(:\\d+)?/video/\\S+')],
-		endPoint: 'http://mock-server.local:8080/oembed',
+		urls: [new RegExp('https?://mock-server\\.dev(:\\d+)?/video/\\S+')],
+		endPoint: 'http://mock-server.dev:8080/oembed',
 	});
 }
 

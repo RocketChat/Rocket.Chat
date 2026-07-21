@@ -1264,8 +1264,8 @@ describe('[Chat]', () => {
 
 		describe('oembed', () => {
 			// the TEST_MODE oembed provider (server/services/messages/lib/oembed/providers.ts) resolves /video/ URLs through GET /oembed on the mock-server
-			const mockVideoUrl = (id: string) => `http://mock-server.local:8080/video/${id}`;
-			const mockPageUrl = (id: string) => `http://mock-server.local:8080/page/${id}`;
+			const mockVideoUrl = (id: string) => `http://mock-server.dev:8080/video/${id}`;
+			const mockPageUrl = (id: string) => `http://mock-server.dev:8080/page/${id}`;
 			const mockOembedEndpoint = { method: 'GET', path: '/oembed' };
 
 			const youtubeOembedResponse = {
@@ -1312,7 +1312,7 @@ describe('[Chat]', () => {
 				Promise.all([
 					updateSetting('API_EmbedIgnoredHosts', ''),
 					updateSetting('API_EmbedSafePorts', '80, 443, 3000, 8080'),
-					updateSetting('SSRF_Allowlist', '127.0.0.1:3000, mock-server.local'),
+					updateSetting('SSRF_Allowlist', '127.0.0.1:3000, mock-server.dev'),
 				]),
 			);
 
