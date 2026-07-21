@@ -96,7 +96,8 @@ function SettingsSection({ groupId, hasReset = true, sectionTitle, sectionName, 
 	const title = sectionTitle || (sectionName && t(sectionName as TranslationKey));
 
 	return (
-		<Box is='section' data-qa-section={sectionName} marginBlockEnd={48}>
+		// scroll-margin keeps anchored sections clear of the page header when navigating via the TOC
+		<Box is='section' data-qa-section={sectionName} marginBlockEnd={48} style={{ scrollMarginBlockStart: '28px' }}>
 			{title && (
 				<Box is='h2' fontScale='h3' color='titles-labels' marginBlockEnd={4}>
 					{title}
