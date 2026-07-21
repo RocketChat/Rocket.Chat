@@ -55,7 +55,7 @@ export function normalizeThreadMessage({ ...message }: Readonly<IMessage>, t: TF
 	}
 
 	if (message.t) {
-		return messageType?.text(t, message);
+		return messageType?.text(t, message, true);
 	}
 
 	return null;

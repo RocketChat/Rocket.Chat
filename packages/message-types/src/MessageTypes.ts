@@ -4,7 +4,7 @@ import type { TFunction } from 'i18next';
 type MessageType = {
 	readonly id: MessageTypesValues;
 	readonly system: boolean;
-	readonly text: (t: TFunction, message: IMessage) => string;
+	readonly text: (t: TFunction, message: IMessage, capitalize?: boolean) => string;
 };
 
 export class MessageTypes {
