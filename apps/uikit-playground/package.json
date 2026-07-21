@@ -36,7 +36,7 @@
 		"react-dom": "~19.2.7",
 		"react-router-dom": "^6.30.4",
 		"react-split-pane": "^3.2.0",
-		"react-virtuoso": "~4.18.10",
+		"react-virtuoso": "~4.18.11",
 		"reactflow": "^11.11.4"
 	},
 	"devDependencies": {
@@ -45,8 +45,8 @@
 		"@types/lodash": "~4.17.24",
 		"@types/react": "~19.2.17",
 		"@types/react-dom": "~19.2.3",
-		"@vitejs/plugin-react": "~6.0.1",
-		"eslint": "~9.39.4",
+		"@vitejs/plugin-react": "~6.0.3",
+		"eslint": "~9.39.5",
 		"typescript": "~5.9.3",
 		"vite": "^8.0.16"
 	},
