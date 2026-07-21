@@ -58,16 +58,18 @@ export const findWeeklyUsersRegisteredData = async ({
 	const startOfLastWeek = moment(endOfLastWeek).clone().subtract(daysBetweenDates, 'days').toDate();
 	const today = convertDateToInt(end);
 	const yesterday = convertDateToInt(moment(end).clone().subtract(1, 'days').toDate());
-	const currentPeriodUsers = await Analytics.getTotalOfRegisteredUsersByDate({
-		start: convertDateToInt(start),
-		end: convertDateToInt(end),
-		options: { count: daysBetweenDates, sort: { _id: -1 } },
-	}).toArray();
-	const lastPeriodUsers = await Analytics.getTotalOfRegisteredUsersByDate({
-		start: convertDateToInt(startOfLastWeek),
-		end: convertDateToInt(endOfLastWeek),
-		options: { count: daysBetweenDates, sort: { _id: -1 } },
-	}).toArray();
+	const [currentPeriodUsers, lastPeriodUsers] = await Promise.all([
+		Analytics.getTotalOfRegisteredUsersByDate({
+			start: convertDateToInt(start),
+			end: convertDateToInt(end),
+			options: { count: daysBetweenDates, sort: { _id: -1 } },
+		}).toArray(),
+		Analytics.getTotalOfRegisteredUsersByDate({
+			start: convertDateToInt(startOfLastWeek),
+			end: convertDateToInt(endOfLastWeek),
+			options: { count: daysBetweenDates, sort: { _id: -1 } },
+		}).toArray(),
+	]);
 	const yesterdayUsers = currentPeriodUsers.find((item) => item._id === yesterday)?.users || 0;
 	const todayUsers = currentPeriodUsers.find((item) => item._id === today)?.users || 0;
 	const currentPeriodTotalUsers = getTotalOfWeekItems(currentPeriodUsers, 'users');

@@ -2,7 +2,7 @@ import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Messages, Users } from '@rocket.chat/models';
 import type { FindOptions } from 'mongodb';
 
-import { canAccessRoomAsync } from '../../lib/authorization/canAccessRoom';
+import { canAccessRoomAsync, roomAccessAttributes } from '../../lib/authorization/canAccessRoom';
 
 export async function findMentionedMessages({
 	uid,
@@ -18,11 +18,13 @@ export async function findMentionedMessages({
 	offset: number;
 	total: number;
 }> {
-	const room = await Rooms.findOneById(roomId);
+	const [room, user] = await Promise.all([
+		Rooms.findOneById(roomId, { projection: { ...roomAccessAttributes, t: 1, _id: 1 } }),
+		Users.findOneById<Pick<IUser, 'username'>>(uid, { projection: { username: 1 } }),
+	]);
 	if (!room || !(await canAccessRoomAsync(room, { _id: uid }))) {
 		throw new Error('error-not-allowed');
 	}
-	const user = await Users.findOneById<Pick<IUser, 'username'>>(uid, { projection: { username: 1 } });
 	if (!user) {
 		throw new Error('invalid-user');
 	}
@@ -57,11 +59,13 @@ export async function findStarredMessages({
 	offset: number;
 	total: number;
 }> {
-	const room = await Rooms.findOneById(roomId);
+	const [room, user] = await Promise.all([
+		Rooms.findOneById(roomId, { projection: { ...roomAccessAttributes, t: 1, _id: 1 } }),
+		Users.findOneById<Pick<IUser, 'username'>>(uid, { projection: { username: 1 } }),
+	]);
 	if (!room || !(await canAccessRoomAsync(room, { _id: uid }))) {
 		throw new Error('error-not-allowed');
 	}
-	const user = await Users.findOneById<Pick<IUser, 'username'>>(uid, { projection: { username: 1 } });
 	if (!user) {
 		throw new Error('invalid-user');
 	}

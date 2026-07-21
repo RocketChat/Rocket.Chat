@@ -4,11 +4,25 @@ import { Users } from '@rocket.chat/models';
 import type { Request, Response, NextFunction } from 'express';
 
 import { oAuth2ServerAuth } from '../../../../app/oauth2-server-config/server/oauth/oauth2-server';
+import { getDefaultUserFields } from '../../../../app/utils/server/functions/getDefaultUserFields';
 
 type AuthenticationMiddlewareConfig = {
 	rejectUnauthorized?: boolean;
 	cookies?: boolean;
 };
+
+// the default API fields plus everything the Apps-Engine user converter reads,
+// so consumers of req.user keep seeing the same data without fetching the whole document
+const getAuthenticatedUserFields = () => ({
+	...getDefaultUserFields(),
+	type: 1,
+	createdAt: 1,
+	lastLogin: 1,
+	appId: 1,
+	federated: 1,
+	federation: 1,
+	freeSwitchExtension: 1,
+});
 
 export function authenticationMiddleware(
 	config: AuthenticationMiddlewareConfig = {
@@ -25,12 +39,15 @@ export function authenticationMiddleware(
 		const { 'x-user-id': userId, 'x-auth-token': authToken } = req.headers;
 
 		if (userId && authToken) {
-			req.user = (await Users.findOneByIdAndLoginToken(userId as string, hashLoginToken(authToken as string))) || undefined;
+			req.user =
+				(await Users.findOneByIdAndLoginToken(userId as string, hashLoginToken(authToken as string), {
+					projection: getAuthenticatedUserFields(),
+				})) || undefined;
 		} else {
 			const { authorization } = req.headers;
 			const accessToken = typeof req.query.access_token === 'string' ? req.query.access_token : undefined;
 			delete req.query.access_token;
-			req.user = await oAuth2ServerAuth({ authorization, accessToken });
+			req.user = await oAuth2ServerAuth({ authorization, accessToken }, { projection: getAuthenticatedUserFields() });
 		}
 
 		if (config.rejectUnauthorized && !req.user) {

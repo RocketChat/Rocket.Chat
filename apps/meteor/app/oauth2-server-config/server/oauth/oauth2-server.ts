@@ -4,6 +4,7 @@ import type { Request, Response } from 'express';
 import type express from 'express';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
+import type { FindOptions } from 'mongodb';
 
 import { isPlainObject } from '../../../../lib/utils/isPlainObject';
 import { API } from '../../../../server/api';
@@ -19,7 +20,10 @@ async function getAccessToken(accessToken: string) {
 	return OAuthAccessTokens.findOneByAccessToken(accessToken);
 }
 
-export async function oAuth2ServerAuth(partialRequest: { authorization?: string; accessToken?: string }): Promise<IUser | undefined> {
+export async function oAuth2ServerAuth(
+	partialRequest: { authorization?: string; accessToken?: string },
+	options?: FindOptions<IUser>,
+): Promise<IUser | undefined> {
 	const headerToken = partialRequest.authorization?.replace('Bearer ', '');
 	const incomingToken = headerToken || partialRequest.accessToken;
 
@@ -34,7 +38,7 @@ export async function oAuth2ServerAuth(partialRequest: { authorization?: string;
 		return;
 	}
 
-	const user = await Users.findOneActiveById(accessToken.userId);
+	const user = await Users.findOneActiveById(accessToken.userId, options);
 
 	if (!user) {
 		return;

@@ -8,8 +8,10 @@ import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { getCachedSupportedVersionsToken, wrapPromise } from '../../lib/cloud/supportedVersionsToken/supportedVersionsToken';
 
 export async function getServerInfo(userId?: string): Promise<IWorkspaceInfo> {
-	const hasPermissionToViewStatistics = userId && (await hasPermissionAsync(userId, 'view-statistics'));
-	const supportedVersionsToken = await wrapPromise(getCachedSupportedVersionsToken());
+	const [hasPermissionToViewStatistics, supportedVersionsToken] = await Promise.all([
+		userId ? hasPermissionAsync(userId, 'view-statistics') : false,
+		wrapPromise(getCachedSupportedVersionsToken()),
+	]);
 	const cloudWorkspaceId = settings.get<string | undefined>('Cloud_Workspace_Id');
 
 	return {

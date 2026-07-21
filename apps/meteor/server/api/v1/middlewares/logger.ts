@@ -7,6 +7,10 @@ import { getRestPayload } from '../../../lib/logger/logPayloads';
 export const loggerMiddleware =
 	(logger: Logger): MiddlewareHandler =>
 	async (c, next) => {
+		if (!logger.logger.isLevelEnabled('http')) {
+			return next();
+		}
+
 		const startTime = Date.now();
 
 		const log = logger.logger.child(

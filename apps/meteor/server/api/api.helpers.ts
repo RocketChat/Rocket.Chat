@@ -40,7 +40,7 @@ const isPermissionsPayload = (permissionsPayload: PermissionsRequiredKey): permi
 };
 
 export async function checkPermissionsForInvocation(
-	userId: IUser['_id'],
+	user: IUser['_id'] | Pick<IUser, '_id' | 'roles'>,
 	permissionsPayload: PermissionsPayload,
 	requestMethod: RequestMethod,
 ): Promise<boolean> {
@@ -57,11 +57,11 @@ export async function checkPermissionsForInvocation(
 	}
 
 	if (permissions.operation === 'hasAll') {
-		return hasAllPermissionAsync(userId, permissions.permissions);
+		return hasAllPermissionAsync(user as IUser | string, permissions.permissions);
 	}
 
 	if (permissions.operation === 'hasAny') {
-		return hasAtLeastOnePermissionAsync(userId, permissions.permissions);
+		return hasAtLeastOnePermissionAsync(user as IUser | string, permissions.permissions);
 	}
 
 	return false;

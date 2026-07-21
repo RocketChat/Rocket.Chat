@@ -10,11 +10,9 @@ import { wrapExceptions } from '@rocket.chat/tools';
 import type { ValidateFunction } from 'ajv';
 import { Accounts } from 'meteor/accounts-base';
 import { DDP } from 'meteor/ddp';
-// eslint-disable-next-line import/no-duplicates
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
-// eslint-disable-next-line import/no-duplicates
 import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
 
@@ -415,12 +413,11 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		return rateLimiterDictionary[route];
 	}
 
-	protected async shouldVerifyRateLimit(route: string, userId?: string): Promise<boolean> {
+	protected async shouldVerifyRateLimit(route: string, _userId?: string): Promise<boolean> {
 		return (
 			rateLimiterDictionary.hasOwnProperty(route) &&
 			settings.get<boolean>('API_Enable_Rate_Limiter') === true &&
-			(process.env.NODE_ENV !== 'development' || settings.get<boolean>('API_Enable_Rate_Limiter_Dev') === true) &&
-			!(userId && (await hasPermissionAsync(userId, 'api-bypass-rate-limit')))
+			(process.env.NODE_ENV !== 'development' || settings.get<boolean>('API_Enable_Rate_Limiter_Dev') === true)
 		);
 	}
 
@@ -445,6 +442,11 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		response.headers.set('X-RateLimit-Reset', String(new Date().getTime() + attemptResult.timeToReset));
 
 		if (!attemptResult.allowed) {
+			// only pay for the permission lookup once the limit has actually been exceeded
+			if (userId && (await hasPermissionAsync(userId, 'api-bypass-rate-limit'))) {
+				return;
+			}
+
 			throw new Meteor.Error(
 				'error-too-many-requests',
 				`Error, too many requests. Please slow down. You must wait ${timeToResetAttempsInSeconds} seconds before trying this endpoint again.`,
@@ -843,7 +845,8 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 						this.logger = logger;
 
 						const authToken = this.request.headers.get('x-auth-token');
-						this.token = Accounts._hashLoginToken(String(authToken))!;
+						// don't waste a hash round on the literal string 'null' when the request is unauthenticated
+						this.token = authToken ? Accounts._hashLoginToken(authToken) : undefined;
 
 						const objectForRateLimitMatch = {
 							IPAddr: this.requestIp,

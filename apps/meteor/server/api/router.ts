@@ -44,13 +44,9 @@ export class RocketChatAPIRouter<
 		logger: Logger,
 	): (c: HonoContext) => Promise<ResponseSchema<TypedOptions>> {
 		return async (c: HonoContext): Promise<ResponseSchema<TypedOptions>> => {
-			const { req } = c;
-
-			const request = req.raw.clone();
-
 			const context = convertHonoContextToApiActionContext(c, { logger });
 
-			return action.apply(context, [request]);
+			return action.apply(context, [c.req.raw]);
 		};
 	}
 }

@@ -8,10 +8,17 @@ export const mountIntegrationQueryBasedOnPermissions = async (userId: string) =>
 	if (!userId) {
 		throw new Meteor.Error('You must provide the userId to the "mountIntegrationQueryBasedOnPermissions" function.');
 	}
-	const canViewAllOutgoingIntegrations = await hasPermissionAsync(userId, 'manage-outgoing-integrations');
-	const canViewAllIncomingIntegrations = await hasPermissionAsync(userId, 'manage-incoming-integrations');
-	const canViewOnlyOwnOutgoingIntegrations = await hasPermissionAsync(userId, 'manage-own-outgoing-integrations');
-	const canViewOnlyOwnIncomingIntegrations = await hasPermissionAsync(userId, 'manage-own-incoming-integrations');
+	const [
+		canViewAllOutgoingIntegrations,
+		canViewAllIncomingIntegrations,
+		canViewOnlyOwnOutgoingIntegrations,
+		canViewOnlyOwnIncomingIntegrations,
+	] = await Promise.all([
+		hasPermissionAsync(userId, 'manage-outgoing-integrations'),
+		hasPermissionAsync(userId, 'manage-incoming-integrations'),
+		hasPermissionAsync(userId, 'manage-own-outgoing-integrations'),
+		hasPermissionAsync(userId, 'manage-own-incoming-integrations'),
+	]);
 
 	const query: DeepWritable<Filter<any>> = {};
 
@@ -46,8 +53,10 @@ export const mountIntegrationHistoryQueryBasedOnPermissions = async (userId: str
 		throw new Meteor.Error('You must provide the integrationId to the "mountIntegrationHistoryQueryBasedOnPermissions" fucntion.');
 	}
 
-	const canViewOnlyOwnOutgoingIntegrations = await hasPermissionAsync(userId, 'manage-own-outgoing-integrations');
-	const canViewAllOutgoingIntegrations = await hasPermissionAsync(userId, 'manage-outgoing-integrations');
+	const [canViewOnlyOwnOutgoingIntegrations, canViewAllOutgoingIntegrations] = await Promise.all([
+		hasPermissionAsync(userId, 'manage-own-outgoing-integrations'),
+		hasPermissionAsync(userId, 'manage-outgoing-integrations'),
+	]);
 	if (!canViewAllOutgoingIntegrations && canViewOnlyOwnOutgoingIntegrations) {
 		return { 'integration._id': integrationId, 'integration._createdBy._id': userId };
 	}

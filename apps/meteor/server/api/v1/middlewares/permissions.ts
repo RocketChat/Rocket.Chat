@@ -31,8 +31,10 @@ export const permissionsMiddleware =
 
 		let hasPermission: boolean;
 		try {
+			// pass the roles the auth middleware already loaded so the authorization
+			// service doesn't re-fetch them from the database on every request
 			hasPermission = await checkPermissionsForInvocation(
-				user._id,
+				{ _id: user._id, roles: user.roles },
 				options.permissionsRequired as PermissionsPayload,
 				c.req.method as Method,
 			);

@@ -189,9 +189,7 @@ API.v1.post(
 		const rooms = await Team.getMatchingTeamRooms(team._id, roomsToRemove);
 
 		if (rooms.length) {
-			for (const room of rooms) {
-				await eraseRoom(room, this.user);
-			}
+			await Promise.all(rooms.map((room) => eraseRoom(room, this.user)));
 		}
 
 		await Promise.all([Team.unsetTeamIdOfRooms(this.user, team), Team.removeAllMembersFromTeam(team._id)]);
@@ -355,9 +353,10 @@ API.v1.get(
 			return API.v1.failure('team-does-not-exist');
 		}
 
-		const allowPrivateTeam: boolean = await hasPermissionAsync(this.userId, 'view-all-teams', team.roomId);
-
-		const getAllRooms = await hasPermissionAsync(this.userId, 'view-all-team-channels', team.roomId);
+		const [allowPrivateTeam, getAllRooms] = await Promise.all([
+			hasPermissionAsync(this.userId, 'view-all-teams', team.roomId),
+			hasPermissionAsync(this.userId, 'view-all-team-channels', team.roomId),
+		]);
 
 		const listFilter = {
 			name: filter ?? undefined,

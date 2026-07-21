@@ -542,16 +542,19 @@ API.v1.get(
 			return API.v1.failure('not-allowed', 'Not Allowed');
 		}
 
-		const discussionParent =
-			room.prid &&
-			(await Rooms.findOneById<Pick<IRoom, 'name' | 'fname' | 't' | 'prid' | 'u'>>(room.prid, {
-				projection: { name: 1, fname: 1, t: 1, prid: 1, u: 1 },
-			}));
-		const { team, parentRoom } = await Team.getRoomInfo(room);
+		const [discussionParent, { team, parentRoom }, projectedRoom] = await Promise.all([
+			room.prid
+				? Rooms.findOneById<Pick<IRoom, 'name' | 'fname' | 't' | 'prid' | 'u'>>(room.prid, {
+						projection: { name: 1, fname: 1, t: 1, prid: 1, u: 1 },
+					})
+				: null,
+			Team.getRoomInfo(room),
+			Rooms.findOneByIdOrName(room._id, { projection: fields }),
+		]);
 		const parent = discussionParent || parentRoom;
 
 		return API.v1.success({
-			room: await Rooms.findOneByIdOrName(room._id, { projection: fields }),
+			room: projectedRoom,
 			...(team && { team }),
 			...(parent && { parent }),
 		});

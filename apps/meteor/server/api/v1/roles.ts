@@ -103,10 +103,15 @@ const rolesRoutes = API.v1
 				throw new Meteor.Error('error-invalid-param', 'updatedSince must be a valid date string');
 			}
 
+			const [update, remove] = await Promise.all([
+				Roles.findByUpdatedDate(new Date(updatedSince || 0)).toArray(),
+				Roles.trashFindDeletedAfter(new Date(updatedSince || 0)).toArray(),
+			]);
+
 			return API.v1.success({
 				roles: {
-					update: await Roles.findByUpdatedDate(new Date(updatedSince || 0)).toArray(),
-					remove: await Roles.trashFindDeletedAfter(new Date(updatedSince || 0)).toArray(),
+					update,
+					remove,
 				},
 			});
 		},

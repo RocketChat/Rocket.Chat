@@ -77,16 +77,18 @@ export const findWeeklyMessagesSentData = async ({
 	const startOfLastWeek = moment(endOfLastWeek).clone().subtract(daysBetweenDates, 'days').toDate();
 	const today = convertDateToInt(end);
 	const yesterday = convertDateToInt(moment(end).clone().subtract(1, 'days').toDate());
-	const currentPeriodMessages = await Analytics.getMessagesSentTotalByDate({
-		start: convertDateToInt(start),
-		end: convertDateToInt(end),
-		options: { count: daysBetweenDates, sort: { _id: -1 } },
-	}).toArray();
-	const lastPeriodMessages = await Analytics.getMessagesSentTotalByDate({
-		start: convertDateToInt(startOfLastWeek),
-		end: convertDateToInt(endOfLastWeek),
-		options: { count: daysBetweenDates, sort: { _id: -1 } },
-	}).toArray();
+	const [currentPeriodMessages, lastPeriodMessages] = await Promise.all([
+		Analytics.getMessagesSentTotalByDate({
+			start: convertDateToInt(start),
+			end: convertDateToInt(end),
+			options: { count: daysBetweenDates, sort: { _id: -1 } },
+		}).toArray(),
+		Analytics.getMessagesSentTotalByDate({
+			start: convertDateToInt(startOfLastWeek),
+			end: convertDateToInt(endOfLastWeek),
+			options: { count: daysBetweenDates, sort: { _id: -1 } },
+		}).toArray(),
+	]);
 	const yesterdayMessages = currentPeriodMessages.find((item) => item._id === yesterday)?.messages || 0;
 	const todayMessages = currentPeriodMessages.find((item) => item._id === today)?.messages || 0;
 	const currentPeriodTotalOfMessages = getTotalOfWeekItems(currentPeriodMessages, 'messages');
@@ -143,7 +145,7 @@ export const findTopFivePopularChannelsByMessageSentQuantity = async ({
 	channels: {
 		t: IRoom['t'];
 		messages: number;
-		name: IRoom['name'] | IRoom['fname'];
+		name: IRoom['name'];
 		usernames?: IDirectMessageRoom['usernames'];
 	}[];
 }> => {

@@ -301,12 +301,11 @@ const pushGetInfoEndpoints = API.v1
 		async function action() {
 			const { id } = this.queryParams;
 
-			const receiver = await Users.findOneById(this.userId);
+			const [receiver, message] = await Promise.all([Users.findOneById(this.userId), Messages.findOneById(id)]);
 			if (!receiver) {
 				throw new Error('error-user-not-found');
 			}
 
-			const message = await Messages.findOneById(id);
 			if (!message) {
 				throw new Error('error-message-not-found');
 			}
