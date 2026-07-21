@@ -135,8 +135,6 @@ export const setSelectionRange = (input: HTMLDivElement, selectionStart: number,
 				runningOffset += 1;
 			}
 
-			// A <br> counts as one offset just like getSelectionRange, except when it is the sole
-			// child of its block (an empty line), where the block itself already accounts for it.
 			if (isBr && !isEmptyBlockBr) {
 				runningOffset += 1;
 			}
