@@ -91,6 +91,24 @@ describe('createComposerHistory', () => {
 		expect(applyState).toHaveBeenLastCalledWith(expect.objectContaining({ text: '' }));
 	});
 
+	it('restores the caret to the edit location after an edit at a moved caret', () => {
+		const input = makeInput();
+		const applyState = jest.fn();
+		const history = createComposerHistory({ input, applyState, now });
+
+		typeInput(input, 'abc');
+
+		// Move the caret to the start (caret moves do not fire input), then edit there.
+		mockedGetSelectionRange.mockReturnValue({ selectionStart: 0, selectionEnd: 0 });
+		input.dispatchEvent(new InputEvent('beforeinput', { inputType: 'insertText', data: 'x', bubbles: true }));
+
+		setState(input, 'xabc', 1);
+		input.dispatchEvent(new InputEvent('input', { inputType: 'insertText', data: 'x', bubbles: true }));
+
+		history.undo();
+		expect(applyState).toHaveBeenLastCalledWith(expect.objectContaining({ text: 'abc', selectionStart: 0, selectionEnd: 0 }));
+	});
+
 	it('breaks the undo step on whitespace boundaries', () => {
 		const input = makeInput();
 		const applyState = jest.fn();

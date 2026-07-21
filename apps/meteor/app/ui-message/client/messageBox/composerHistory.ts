@@ -188,6 +188,7 @@ export const createComposerHistory = ({
 
 		const { selectionStart, selectionEnd } = getSelectionRange(input);
 		if (selectionStart !== current.selectionStart || selectionEnd !== current.selectionEnd) {
+			current = { ...current, selectionStart, selectionEnd };
 			pendingBoundary = true;
 		}
 	};
