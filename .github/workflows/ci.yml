@@ -742,8 +742,8 @@ jobs:
       release: ee
       transporter: 'nats://nats:4222'
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
-      shard: '[1, 2, 3, 4, 5]'
-      total-shard: 5
+      shard: '[1, 2, 3, 4, 5, 6]'
+      total-shard: 6
       mongodb-version: "['8.0']"
       coverage: '8.0'
       node-version: ${{ needs.release-versions.outputs.node-version }}
@@ -814,8 +814,8 @@ jobs:
       fips: true
       transporter: 'nats://nats:4222'
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
-      shard: '[1, 2, 3, 4, 5]'
-      total-shard: 5
+      shard: '[1, 2, 3, 4, 5, 6]'
+      total-shard: 6
       mongodb-version: "['8.0']"
       node-version: ${{ needs.release-versions.outputs.node-version }}
       deno-version: ${{ needs.release-versions.outputs.deno-version }}

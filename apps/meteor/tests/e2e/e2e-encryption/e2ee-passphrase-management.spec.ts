@@ -282,8 +282,7 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 		await expect(poHomeChannel.bannerEnterE2EEPassword).not.toBeVisible();
 
 		await poHomeChannel.composer.inputMessage.waitFor();
-		// For E2EE to complete init setup
-		await page.waitForTimeout(300);
+		await expect(page.getByText("You're sending an unencrypted message")).not.toBeVisible();
 
 		await poHomeChannel.content.sendMessage('hello world');
 

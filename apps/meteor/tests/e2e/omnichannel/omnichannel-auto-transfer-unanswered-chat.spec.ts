@@ -60,9 +60,8 @@ test.describe('omnichannel-auto-transfer-unanswered-chat', { tag: '@ee' }, () =>
 
 		await agent2.poHomeChannel.navbar.switchOmnichannelStatus('online');
 
-		// wait for the chat to be closed automatically for 5 seconds
-		await agent1.page.waitForTimeout(7000);
-
-		await agent2.poHomeChannel.navbar.openChat(newVisitor.name);
+		// the transfer fires server-side after 5s without a reply
+		await expect(agent2.poHomeChannel.sidebar.getSidebarItemByName(newVisitor.name)).toBeVisible({ timeout: 15_000 });
+		await agent2.poHomeChannel.sidebar.getSidebarItemByName(newVisitor.name).click();
 	});
 });

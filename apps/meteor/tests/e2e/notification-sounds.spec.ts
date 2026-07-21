@@ -63,7 +63,7 @@ test.describe.serial('Notification Sounds', () => {
 		await poHomeChannel.navbar.btnHome.click();
 		await user1PoHomeChannel.content.sendMessage(`Hello @${Users.admin.data.username} from User 1`);
 
-		await page.waitForTimeout(100); // wait for the sound to play
+		await page.waitForFunction(() => window.__audioCalls?.played);
 
 		const audioCalls = await page.evaluate(() => window.__audioCalls);
 		expect(audioCalls).toHaveProperty('src');
@@ -91,7 +91,7 @@ test.describe.serial('Notification Sounds', () => {
 			await poHomeChannel.navbar.btnHome.click();
 			await user1PoHomeChannel.content.sendMessage(`Hello @${Users.admin.data.username} from User 1`);
 
-			await page.waitForTimeout(100); // wait for the sound to play
+			await page.waitForFunction(() => window.__audioCalls?.played);
 
 			const audioCalls = await page.evaluate(() => window.__audioCalls);
 			expect(audioCalls).toHaveProperty('src');
@@ -117,7 +117,7 @@ test.describe.serial('Notification Sounds', () => {
 			await poHomeChannel.navbar.btnHome.click();
 			await user1PoHomeChannel.content.sendMessage(`Hello @${Users.admin.data.username} from User 1`);
 
-			await page.waitForTimeout(100); // wait for the sound to play
+			await page.waitForFunction(() => window.__audioCalls?.played);
 
 			const audioCalls = await page.evaluate(() => window.__audioCalls);
 			expect(audioCalls).toHaveProperty('src');

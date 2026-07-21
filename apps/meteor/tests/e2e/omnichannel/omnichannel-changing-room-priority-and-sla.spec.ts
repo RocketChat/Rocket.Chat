@@ -74,8 +74,6 @@ test.describe.serial('omnichannel-changing-room-priority-and-sla', { tag: '@ee' 
 		await test.step('change priority of room to the new priority', async () => {
 			const status = (await api.post(`/livechat/room/${getRoomId(agent.page)}/priority`, { priorityId: priority._id })).status();
 			await expect(status).toBe(200);
-
-			await agent.page.waitForTimeout(1000);
 		});
 
 		await expect(agent.poHomeChannel.content.lastSystemMessageBody).toHaveText(
@@ -89,7 +87,6 @@ test.describe.serial('omnichannel-changing-room-priority-and-sla', { tag: '@ee' 
 		await test.step('change SLA of room to the new SLA', async () => {
 			const status = (await api.put(`/livechat/inquiry.setSLA`, { sla: sla.name, roomId: getRoomId(agent.page) })).status();
 			expect(status).toBe(200);
-			await agent.page.waitForTimeout(1000);
 		});
 
 		await expect(agent.poHomeChannel.content.lastSystemMessageBody).toHaveText(
