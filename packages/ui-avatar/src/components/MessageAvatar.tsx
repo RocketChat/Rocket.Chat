@@ -12,8 +12,15 @@ export type MessageAvatarProps = {
 } & Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
 const styleMessageAvatar = css`
+	overflow: hidden;
+	min-width: 0;
 	font-size: 2.25rem;
 	line-height: 1;
+
+	.emoji {
+		font-size: inherit;
+		line-height: inherit;
+	}
 `;
 
 const MessageAvatar = ({ emoji, avatarUrl, username, size = 'x36', ...props }: MessageAvatarProps) => {
