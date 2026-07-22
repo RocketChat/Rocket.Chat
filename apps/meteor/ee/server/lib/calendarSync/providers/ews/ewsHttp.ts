@@ -96,7 +96,6 @@ export class EwsHttpClient {
 			? new https.Agent({
 					keepAlive: true,
 					maxSockets: 1,
-					...(config.allowSelfSignedCerts && { rejectUnauthorized: false }),
 				})
 			: new http.Agent({ keepAlive: true, maxSockets: 1 });
 		this.timeoutMs = config.timeoutMs ?? DEFAULT_TIMEOUT_MS;
