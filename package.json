@@ -36,6 +36,7 @@
 	},
 	"resolutions": {
 		"file-type@npm:^16.5.4": "patch:file-type@npm%3A16.5.4#~/.yarn/patches/file-type-npm-16.5.4-d653e66a40.patch",
+		"postcss-svgo/svgo": "4.0.2",
 		"external-editor/tmp": "0.2.7",
 		"@sematext/gc-stats@npm:^1.5.9": "patch:@sematext/gc-stats@npm%3A1.5.9#~/.yarn/patches/@sematext-gc-stats-npm-1.5.9-01e77be4d0.patch",
 		"adm-zip": "0.6.0",
@@ -44,7 +45,7 @@
 		"axios@npm:^1.7.8": "1.18.0",
 		"axios@npm:^1.11.0": "1.18.0",
 		"axios@npm:^1.13.2": "1.18.0",
-		"sass/immutable": "5.1.5",
+		"sass/immutable": "5.1.8",
 		"jws@npm:^3.2.2": "3.2.3",
 		"jws@npm:^4.0.0": "4.0.1",
 		"tar-fs@npm:^2.0.0": "2.1.4",
