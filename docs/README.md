@@ -92,10 +92,6 @@ Deeper references: [API endpoint migration](./api-endpoint-migration.md) ·
   Meteor's DDP mergebox, and why new client-server calls go through REST instead
   of DDP. **Read before writing any real-time or client-server code.**
 
-> The line-by-line migration tracker (`ddp-remaining-methods.md`) still lives in
-> this folder for reference, but is intentionally not linked here — it is a
-> transient work log, not onboarding material.
-
 ## Examples / features
 
 - [features/](./features/) — feature implementation examples.

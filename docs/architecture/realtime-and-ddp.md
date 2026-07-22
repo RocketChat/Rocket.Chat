@@ -82,7 +82,3 @@ New client-server interactions are built as **REST endpoints**, not DDP
   migrating it to REST over extending it.
 - Real-time *notifications* still flow through the **streamer** (events), which
   is separate from the REST request/response path.
-
-> The line-by-line migration tracker lives at `../ddp-remaining-methods.md`. It's
-> a transient work log (intentionally unlinked from the docs index), not
-> onboarding material — but useful if you're actively migrating a method.
