@@ -31,7 +31,7 @@ describe('useNormalizedThreadTitleHtml', () => {
 		jest.clearAllMocks();
 	});
 
-	it('should return the "Message_HideType_rm" translation for a removed message without content', () => {
+	it('should return the "Message_removed" translation for a removed message without content', () => {
 		const message = {
 			...baseMessage,
 			t: 'rm',
@@ -44,7 +44,7 @@ describe('useNormalizedThreadTitleHtml', () => {
 			wrapper: mockAppRoot().build(),
 		});
 
-		expect(result.current).toBe('Message_HideType_rm');
+		expect(result.current).toBe('Message_removed');
 		expect(mockedFilterMarkdown).not.toHaveBeenCalled();
 	});
 
@@ -66,7 +66,7 @@ describe('useNormalizedThreadTitleHtml', () => {
 			wrapper: mockAppRoot().build(),
 		});
 
-		expect(result.current).not.toBe('Message_HideType_rm');
+		expect(result.current).not.toBe('Message_removed');
 		expect(result.current).toBe('Hello world');
 	});
 });

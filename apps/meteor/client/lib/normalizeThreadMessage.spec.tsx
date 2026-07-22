@@ -92,7 +92,7 @@ describe('normalizeThreadMessage', () => {
 			attachments: [],
 		} as unknown as IMessage;
 
-		expect(normalizeThreadMessage(message, t)).toBe('Message_HideType_rm');
+		expect(normalizeThreadMessage(message, t)).toBe('Message_removed');
 		expect(mockedFilterMarkdown).not.toHaveBeenCalled();
 		expect(mockedParse).not.toHaveBeenCalled();
 	});
@@ -100,7 +100,7 @@ describe('normalizeThreadMessage', () => {
 	it('should render the message content when a `t: rm` message still has content', () => {
 		const message = { t: 'rm', msg: 'Hello world', mentions: [], attachments: [] } as unknown as IMessage;
 
-		expect(normalizeThreadMessage(message, t)).not.toBe('Message_HideType_rm');
+		expect(normalizeThreadMessage(message, t)).not.toBe('Message_removed');
 		expect(mockedParse).toHaveBeenCalledWith('Hello world', { emoticons: true });
 	});
 });
