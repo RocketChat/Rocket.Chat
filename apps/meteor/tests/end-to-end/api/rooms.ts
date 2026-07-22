@@ -2764,6 +2764,17 @@ describe('[Rooms]', () => {
 			]),
 		);
 
+		const expectSubscriptionFieldToEqual = async (field: 'name' | 'fname', expected: string) => {
+			for (let attempt = 0; ; attempt++) {
+				const { body } = await request.get(api('subscriptions.getOne')).set(credentials).query({ roomId });
+				if (body.subscription?.[field] === expected || attempt >= 20) {
+					expect(body.subscription?.[field]).to.equal(expected);
+					return;
+				}
+				await sleep(250);
+			}
+		};
+
 		it('should update group name if user changes username', async () => {
 			await updateSetting('UI_Use_Real_Name', false);
 			await request
@@ -2776,18 +2787,7 @@ describe('[Rooms]', () => {
 					},
 				});
 
-			// need to wait for the username update finish
-			await sleep(300);
-
-			await request
-				.get(api('subscriptions.getOne'))
-				.set(credentials)
-				.query({ roomId })
-				.send()
-				.expect((res) => {
-					const { subscription } = res.body;
-					expect(subscription.name).to.equal(`changed.username.${testUser.username},${testUser2.username}`);
-				});
+			await expectSubscriptionFieldToEqual('name', `changed.username.${testUser.username},${testUser2.username}`);
 		});
 
 		describe('use real name', () => {
@@ -2810,18 +2810,7 @@ describe('[Rooms]', () => {
 						},
 					});
 
-				// need to wait for the name update finish
-				await sleep(300);
-
-				await request
-					.get(api('subscriptions.getOne'))
-					.set(credentials)
-					.query({ roomId })
-					.send()
-					.expect((res) => {
-						const { subscription } = res.body;
-						expect(subscription.fname).to.equal(`changed.name.${testUser.username}, ${testUser2.name}`);
-					});
+				await expectSubscriptionFieldToEqual('fname', `changed.name.${testUser.username}, ${testUser2.name}`);
 			});
 		});
 	});
