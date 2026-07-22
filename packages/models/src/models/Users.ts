@@ -3110,4 +3110,22 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		}
 		return this.countDocuments({ _id: { $in: room.uids }, active: true });
 	}
+
+	verifyEmailByAddress(_id: IUser['_id'], emailAddress: string) {
+		return this.updateOne(
+			{ _id, 'emails.address': emailAddress },
+			{
+				$set: { 'emails.$.verified': true },
+				$pull: { 'services.email.verificationTokens': { address: emailAddress } },
+			},
+		);
+	}
+
+	findOneByEmailVerificationToken<T extends Document = IUser>(token: string, options?: FindOptions<T>) {
+		const query = {
+			'services.email.verificationTokens.token': token,
+		};
+
+		return this.findOne(query, options);
+	}
 }

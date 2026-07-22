@@ -6584,13 +6584,53 @@ describe('[Users]', () => {
 	describe('[/users.verifyEmail]', () => {
 		it('should fail with 400 when the token is not provided', () => request.post(api('users.verifyEmail')).send({}).expect(400));
 
-		it('should fail with 404 when the token does not match any user', () =>
+		it('should fail with 403 when the token does not match any user', () =>
 			request
 				.post(api('users.verifyEmail'))
 				.send({ token: 'this-token-does-not-exist' })
-				.expect(404)
+				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 				}));
+
+		describe('when a valid token is provided', () => {
+			let user: TestUser<IUser>;
+			const email = `verify.email.${Date.now()}@rocket.chat`;
+			const token = `valid-verification-token-${Date.now()}`;
+
+			before(async () => {
+				user = await createUser({ email, verified: false });
+				// The verification token is never exposed by any endpoint, so seed a known one directly.
+				await updateUserInDb(user._id, {
+					'emails.0.verified': false,
+					'services.email.verificationTokens': [{ token, address: email, when: new Date() }],
+				} as unknown as Partial<IUser>);
+			});
+
+			after(() => deleteUser(user));
+
+			it('should verify the email and consume the token', async () => {
+				await request
+					.post(api('users.verifyEmail'))
+					.send({ token })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				const updatedUser = await getUserByUsername<IUser>(user.username);
+				expect(updatedUser.emails[0]).to.have.property('verified', true);
+
+				// The token was pulled on success, so reusing it must now be rejected.
+				await request
+					.post(api('users.verifyEmail'))
+					.send({ token })
+					.expect(403)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', false);
+					});
+			});
+		});
 	});
 });
