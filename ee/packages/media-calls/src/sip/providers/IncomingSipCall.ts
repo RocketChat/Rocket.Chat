@@ -21,11 +21,7 @@ import { SipError, SipErrorCodes } from '../errorCodes';
 import { parseDiversionHeader } from '../utils/parseDiversionHeader';
 
 export class IncomingSipCall extends BaseSipCall {
-	private sipDialog: Srf.Dialog | null;
-
 	protected inboundRenegotiations: Map<string, SipCallNegotiation>;
-
-	private processedTransfer: boolean;
 
 	constructor(
 		session: SipServerSession,
@@ -40,6 +36,9 @@ export class IncomingSipCall extends BaseSipCall {
 		this.sipDialog = null;
 		this.inboundRenegotiations = new Map();
 		this.processedTransfer = false;
+		this.processedEscalation = false;
+
+		this.checkIfCallComesFromEscalatedPexipConference();
 	}
 
 	public static async processInvite(session: SipServerSession, srf: Srf, req: SrfRequest, res: SrfResponse): Promise<IncomingSipCall> {
@@ -139,7 +138,7 @@ export class IncomingSipCall extends BaseSipCall {
 
 		if (!uas) {
 			logger.error({ msg: 'IncomingSipCall.createDialog - dialog creation failed', callId: this.callId });
-			void mediaCallDirector.hangupByServer(this.call, 'signaling-error');
+			this.hangupCall('signaling-error');
 			return;
 		}
 
@@ -147,11 +146,7 @@ export class IncomingSipCall extends BaseSipCall {
 			void this.handleDialogModify(req, res);
 		});
 
-		uas.on('destroy', () => {
-			logger.debug({ msg: 'IncomingSipCall - uas.destroy' });
-			this.sipDialog = null;
-			void mediaCallDirector.hangup(this.call, this.agent, 'remote');
-		});
+		uas.on('destroy', () => this.onDialogDestroyed());
 
 		this.sipDialog = uas;
 	}
@@ -160,7 +155,7 @@ export class IncomingSipCall extends BaseSipCall {
 		logger.debug({ msg: 'IncomingSipCall.cancel', res: this.session.stripDrachtioServerDetails(res) });
 
 		logger.info({ msg: 'The incoming SIP call was canceled by the caller', callId: this.callId });
-		void mediaCallDirector.hangup(this.call, this.agent, 'remote').catch(() => null);
+		this.hangupCall('remote');
 	}
 
 	protected async reflectCall(call: IMediaCall, params: { dtmf?: ClientMediaSignalBody<'dtmf'> }): Promise<void> {
@@ -172,6 +167,10 @@ export class IncomingSipCall extends BaseSipCall {
 			return this.processTransferredCall(call);
 		}
 
+		if (call.escalatedAt) {
+			return this.processEscalatedCall(call);
+		}
+
 		if (call.ended) {
 			return this.processEndedCall(call);
 		}
@@ -181,51 +180,6 @@ export class IncomingSipCall extends BaseSipCall {
 		}
 
 		logger.debug({ msg: 'no changes detected', method: 'IncomingSipCall.reflectCall' });
-	}
-
-	protected async processTransferredCall(call: IMediaCall): Promise<void> {
-		if (this.lastCallState === 'hangup' || !call.transferredTo || !call.transferredBy) {
-			return;
-		}
-
-		if (!this.sipDialog || this.processedTransfer) {
-			if (call.ended) {
-				return this.processEndedCall(call);
-			}
-			return;
-		}
-
-		logger.debug({ msg: 'IncomingSipCall.processTransferredCall', callId: call._id, lastCallState: this.lastCallState });
-		this.processedTransfer = true;
-
-		try {
-			// Sip targets can only be referred to other sip users
-			const newCallee = await mediaCallDirector.cast.getContactForActor(call.transferredTo, { requiredType: 'sip' });
-			if (!newCallee) {
-				throw new Error('invalid-transfer');
-			}
-
-			const referTo = this.session.geContactUri(newCallee);
-			const referredBy = this.session.geContactUri(call.transferredBy);
-
-			const res = await this.sipDialog.request({
-				method: 'REFER',
-				headers: {
-					'Refer-To': referTo,
-					'Referred-By': referredBy,
-				},
-			});
-
-			if (res.status === 202) {
-				logger.debug({ msg: 'REFER was accepted', method: 'IncomingSipCall.processTransferredCall' });
-			}
-		} catch (err) {
-			logger.error({ msg: 'REFER failed', method: 'IncomingSipCall.processTransferredCall', err });
-			if (!call.ended) {
-				void mediaCallDirector.hangupByServer(call, 'sip-refer-failed');
-			}
-			return this.processEndedCall(call);
-		}
 	}
 
 	protected async processEndedCall(call: IMediaCall): Promise<void> {
@@ -378,7 +332,25 @@ export class IncomingSipCall extends BaseSipCall {
 		logger.debug('IncomingSipCall.hangupPendingCall');
 
 		this.cancelPendingInvites(errorCode);
-		void mediaCallDirector.hangupByServer(this.call, `sip-error-${errorCode}`);
+		this.hangupCall('signaling-error');
+	}
+
+	private checkIfCallComesFromEscalatedPexipConference(): void {
+		const { callingNumber } = this.req;
+		if (!callingNumber) {
+			return;
+		}
+		const header = this.req.has('p-asserted-identity') ? this.req.get('p-asserted-identity') : this.req.get('from');
+		if (!header || !this.session.isPexipIdentity(header)) {
+			return;
+		}
+
+		void this.processEscalatedRemotely(callingNumber).catch((err) => {
+			logger.error({
+				msg: 'Unexpected error checking if new incoming call originates from an escalated conference',
+				err,
+			});
+		});
 	}
 
 	private static async getCalleeFromInvite(req: SrfRequest): Promise<MediaCallContact> {

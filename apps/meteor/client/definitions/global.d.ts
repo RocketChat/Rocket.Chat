@@ -1,9 +1,17 @@
 import type { IRocketChatDesktop } from '@rocket.chat/desktop-api';
 
 declare global {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Window {
 		RocketChatDesktop?: IRocketChatDesktop;
+
+		// Bridge injected into the desktop app's internal video-chat window (separate from
+		// `RocketChatDesktop`, which is only present in the main app webview).
+		videoCallWindow?: {
+			// Navigate the main app window to an in-app route (e.g. "/channel/general") and focus it.
+			openInMainWindow?: (path: string) => void;
+			// Close the conference window (renderer `window.close()` can't close a main-process window).
+			close?: () => void;
+		};
 
 		/** @deprecated use `window.RTCPeerConnection` */
 		mozRTCPeerConnection?: RTCPeerConnection;
@@ -70,7 +78,6 @@ declare global {
 		addStream(stream: MediaStream): void;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface MediaTrackConstraints {
 		/** @deprecated */
 		mozMediaSource?: string;
