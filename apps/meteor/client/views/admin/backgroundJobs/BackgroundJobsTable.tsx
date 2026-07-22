@@ -90,7 +90,7 @@ const BackgroundJobsTable = ({ tab }: BackgroundJobsTableProps) => {
 				<GenericTable>
 					<GenericTableHeader>
 						<GenericTableHeaderCell>{t('Name')}</GenericTableHeaderCell>
-						<GenericTableHeaderCell w='x120'>{t('Status')}</GenericTableHeaderCell>
+						<GenericTableHeaderCell width='x120'>{t('Status')}</GenericTableHeaderCell>
 						{isDesktopOrLarger && (
 							<>
 								<GenericTableHeaderCell>{t('Last_Run')}</GenericTableHeaderCell>
@@ -109,7 +109,7 @@ const BackgroundJobsTable = ({ tab }: BackgroundJobsTableProps) => {
 					<GenericTable>
 						<GenericTableHeader>
 							<GenericTableHeaderCell>{t('Name')}</GenericTableHeaderCell>
-							<GenericTableHeaderCell w='x120'>{t('Status')}</GenericTableHeaderCell>
+							<GenericTableHeaderCell width='x120'>{t('Status')}</GenericTableHeaderCell>
 							{isDesktopOrLarger && (
 								<>
 									<GenericTableHeaderCell>{t('Last_Run')}</GenericTableHeaderCell>

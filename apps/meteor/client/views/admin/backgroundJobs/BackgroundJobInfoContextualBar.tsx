@@ -87,12 +87,12 @@ const BackgroundJobInfoContextualBar = ({ jobName, tab, onClose }: BackgroundJob
 	});
 
 	if (isLoadingHistory || isLoadingJob) {
-		return <FormSkeleton pi={20} />;
+		return <FormSkeleton paddingInline={20} />;
 	}
 
 	if (isError) {
 		return (
-			<Box p={20}>
+			<Box padding={20}>
 				<Callout type='danger'>{t('Something_went_wrong')}</Callout>
 			</Box>
 		);
@@ -108,17 +108,17 @@ const BackgroundJobInfoContextualBar = ({ jobName, tab, onClose }: BackgroundJob
 	return (
 		<>
 			<ContextualbarScrollableContent>
-				<Box fontScale='h3' mbs={16} mbe={8} fontWeight={700}>
+				<Box fontScale='h3' marginBlockStart={16} marginBlockEnd={8} fontWeight={700}>
 					{jobName}
 				</Box>
 
-				<Box mbe={16} display='flex'>
+				<Box marginBlockEnd={16} display='flex'>
 					<Tag variant={statusVariant(currentJob?.status)}>
 						{currentJob?.status ? t(`Background_Job_Status_${currentJob.status}` as TranslationKey) : t('Unknown')}
 					</Tag>
 				</Box>
 
-				<Box fontScale='h4' mbs={16} mbe={8}>
+				<Box fontScale='h4' marginBlockStart={16} marginBlockEnd={8}>
 					{t('History')}
 				</Box>
 
@@ -129,7 +129,7 @@ const BackgroundJobInfoContextualBar = ({ jobName, tab, onClose }: BackgroundJob
 				)}
 
 				{history.length > 0 && (
-					<Box display='flex' flexDirection='column' pbs='x8' gap='x16'>
+					<Box display='flex' flexDirection='column' paddingBlockStart={8} gap={16}>
 						{history.map((entry) => (
 							<BackgroundJobHistoryCard key={entry._id} entry={entry} formatDateAndTime={formatDateAndTime} />
 						))}

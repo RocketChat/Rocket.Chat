@@ -7,6 +7,10 @@ import { CronJobs, CronHistory, AppScheduler } from '@rocket.chat/models';
 import { deriveStatus } from './deriveStatus';
 
 const resolveStatus = (job: ICronJobItem) => {
+	if (job.disabled) {
+		return 'disabled';
+	}
+
 	if (job.status === 'running') {
 		const derived = deriveStatus(job);
 		if (derived !== 'running') {
