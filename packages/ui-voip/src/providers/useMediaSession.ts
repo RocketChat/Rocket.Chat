@@ -102,7 +102,7 @@ const reducer = (
 		if (reducerState.state === 'closed') {
 			// Only the sidebar call panel uses openDialer; mark the dialer docked so it renders
 			// inside the panel slot and never floats once the panel unmounts.
-			return { ...reducerState, state: 'new', peerInfo: action.payload?.peerInfo, docked: true };
+			return { ...reducerState, state: 'new', peerInfo: action.payload?.peerInfo || reducerState.peerInfo, docked: true };
 		}
 
 		if (reducerState.state === 'new' && action.payload?.peerInfo) {
