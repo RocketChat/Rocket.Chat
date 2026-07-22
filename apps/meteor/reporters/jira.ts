@@ -134,6 +134,8 @@ ${this.run_url}
 		const search = await fetch(
 			`${this.url}/rest/api/3/search/jql?${new URLSearchParams({
 				jql: `project = FLAKY AND summary ~ '${payload.name.replace(/[()[\]-]/g, '')}'`,
+				// the /search/jql endpoint returns only issue ids unless fields are requested
+				fields: 'summary',
 			})}`,
 			{
 				method: 'GET',
