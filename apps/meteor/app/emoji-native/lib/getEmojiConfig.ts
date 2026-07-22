@@ -1,3 +1,6 @@
+import { asciiList } from '@rocket.chat/message-parser';
+import { escapeHTML, escapeRegExp, unescapeHTML } from '@rocket.chat/string-helpers';
+
 import type { EmojiEntry } from './generateEmojiData';
 import { getEmojiData } from './generateEmojiData';
 import { legacyEmojioneMap } from './legacyEmojioneMap';
@@ -46,12 +49,40 @@ function getEmojiRegex(): RegExp {
 	return emojiRegex;
 }
 
+// HTML-escaped variants are needed because the renderer receives escaped HTML (e.g. `>:(` arrives as `&gt;:(`)
+const asciiPattern = [...new Set(Object.keys(asciiList).flatMap((ascii) => [escapeHTML(ascii), ascii]))]
+	.sort((a, b) => b.length - a.length)
+	.map(escapeRegExp)
+	.join('|');
+
+// `>` and `<` count as boundaries so emoticons touching tags still convert (e.g. `<p>hello :D</p>`)
+const asciiRegex = new RegExp(
+	`<object[^>]*>.*?</object>|<span[^>]*>.*?</span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(?<=^|\\s|>)(${asciiPattern})(?=\\s|$|[!,.?<])`,
+	'g',
+);
+
+function renderAsciiEmoji(text: string): string {
+	return text.replace(asciiRegex, (entire, ascii) => {
+		if (ascii === undefined) {
+			return entire;
+		}
+
+		const unescaped = unescapeHTML(ascii);
+		const unicode = asciiList[unescaped];
+		if (!unicode) {
+			return entire;
+		}
+
+		return `<span class="emoji" title="${escapeHTML(unescaped)}">${unicode}</span>`;
+	});
+}
+
 function renderEmoji(text: string, emojiPackages: EmojiPackages): string {
 	const { emojiList } = getEmojiData();
 	const unicodeMap = getUnicodeToShortcodeMap();
 	const pattern = getEmojiRegex();
 
-	return text.replace(pattern, (match, shortcodeGroup, shortcodeName, unicodeGroup) => {
+	const rendered = text.replace(pattern, (match, shortcodeGroup, shortcodeName, unicodeGroup) => {
 		// If it's a shortcode pattern (:emoji:)
 		if (shortcodeGroup) {
 			if (emojiPackages.list[`:${shortcodeName}:`]?.emojiPackage === 'emojiCustom') {
@@ -82,6 +113,8 @@ function renderEmoji(text: string, emojiPackages: EmojiPackages): string {
 
 		return match;
 	});
+
+	return emojiPackages.packages.native?.ascii ? renderAsciiEmoji(rendered) : rendered;
 }
 
 function renderPicker(emojiToRender: string): string | undefined {
