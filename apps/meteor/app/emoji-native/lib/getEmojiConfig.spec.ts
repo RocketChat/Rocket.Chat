@@ -38,6 +38,7 @@ describe('native emoji render', () => {
 		const { render } = getEmojiConfig(buildEmojiPackages(true));
 
 		expect(render('https://rocket.chat')).toBe('https://rocket.chat');
+		expect(render('hello:)')).toBe('hello:)');
 	});
 
 	it('does not convert ascii sequences inside HTML tags', () => {
