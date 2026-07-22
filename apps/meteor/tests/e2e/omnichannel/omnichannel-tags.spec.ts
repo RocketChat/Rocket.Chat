@@ -97,7 +97,6 @@ test.describe('OC - Manage Tags', () => {
 			await poOmnichannelTags.table.findRowByName(tag.name).click();
 			await expect(poOmnichannelTags.editTag.root).toBeVisible();
 			await poOmnichannelTags.editTag.selectDepartment(department2.data.name);
-			// wait for dismissal, otherwise the contextual bar closing after save can detach the reopened panel
 			await poOmnichannelTags.editTag.save();
 		});
 

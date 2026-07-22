@@ -2764,7 +2764,6 @@ describe('[Rooms]', () => {
 			]),
 		);
 
-		// renaming a user propagates to subscriptions asynchronously, so poll instead of relying on a fixed delay
 		const expectSubscriptionFieldToEqual = async (field: 'name' | 'fname', expected: string) => {
 			for (let attempt = 0; ; attempt++) {
 				const { body } = await request.get(api('subscriptions.getOne')).set(credentials).query({ roomId });

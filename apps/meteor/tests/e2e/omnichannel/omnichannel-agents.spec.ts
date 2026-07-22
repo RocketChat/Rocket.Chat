@@ -81,7 +81,6 @@ test.describe.serial('OC - Manage Agents', () => {
 		await test.step('expect update "user1" information', async () => {
 			await poOmnichannelAgents.editAgent.selectStatus('Not Available');
 			await poOmnichannelAgents.editAgent.selectDepartment(department.data.name);
-			// wait for dismissal, otherwise the contextual bar closing after save can detach the reopened panel
 			await poOmnichannelAgents.editAgent.save();
 		});
 

@@ -1,6 +1,5 @@
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
-import { EncryptedRoomPage } from '../page-objects/encrypted-room';
 import { createTargetGroupAndReturnFullRoom } from '../utils';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
@@ -51,8 +50,18 @@ test.describe('E2EE File Encryption', () => {
 		await page.goto(`/group/${group.name}`);
 		await page.locator('#main-content').waitFor();
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
-		// wait for the room key to be ready, otherwise messages are sent unencrypted (E2E_Allow_Unencrypted_Messages is on)
-		await expect(new EncryptedRoomPage(page).encryptionNotReadyIndicator).not.toBeVisible();
+		await expect
+			.poll(
+				() =>
+					page.evaluate(async (rid) => {
+						// eslint-disable-next-line import-x/no-absolute-path
+						const { e2e } = require('/client/lib/e2ee/rocketchat.e2e.ts') as typeof import('../../../client/lib/e2ee/rocketchat.e2e');
+						const room = await e2e.getInstanceByRoomId(rid);
+						return room?.getState();
+					}, group._id),
+				{ message: 'expect room encryption key to be ready before sending messages' },
+			)
+			.toBe('READY');
 	});
 
 	test.afterEach(async ({ api }) => {
