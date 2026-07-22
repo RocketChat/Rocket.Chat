@@ -8,6 +8,7 @@ import {
 	TextInput,
 	TextAreaInput,
 	MultiSelectFiltered,
+	CheckOption,
 	Box,
 	ToggleSwitch,
 	Icon,
@@ -411,6 +412,9 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 											flexGrow={1}
 											placeholder={t('Select_role')}
 											options={availableRoles}
+											renderItem={({ label, value: optionValue, ...props }) => (
+												<CheckOption {...props} label={label} selected={optionValue ? value?.includes(optionValue) : false} />
+											)}
 										/>
 									)}
 								/>
