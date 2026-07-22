@@ -26,7 +26,6 @@ export const useDeviceLogout = (
 
 	const { mutate: logoutDevice } = useMutation({
 		mutationFn: logoutEndpoint,
-		// logging out the current session terminates it mid-request, so an error is expected there
 		onSettled: () => {
 			if (isCurrentSession) {
 				setModal(null);
