@@ -22,6 +22,10 @@ class OmnichannelEditTagFlexTab extends FlexTab {
 		await this.inputDepartments.fill(name);
 		await this.listbox.selectOption(name);
 	}
+
+	findSelectedDepartment(name: string) {
+		return this.root.getByLabel('Departments').getByRole('option', { name });
+	}
 }
 
 class OmnichannelTagsTable extends Table {

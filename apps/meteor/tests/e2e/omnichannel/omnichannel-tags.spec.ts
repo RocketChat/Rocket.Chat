@@ -97,6 +97,7 @@ test.describe('OC - Manage Tags', () => {
 			await poOmnichannelTags.table.findRowByName(tag.name).click();
 			await expect(poOmnichannelTags.editTag.root).toBeVisible();
 			await poOmnichannelTags.editTag.selectDepartment(department2.data.name);
+			await expect(poOmnichannelTags.editTag.findSelectedDepartment(department2.data.name)).toBeVisible();
 			await poOmnichannelTags.editTag.save();
 		});
 
@@ -113,6 +114,7 @@ test.describe('OC - Manage Tags', () => {
 			await poOmnichannelTags.table.findRowByName(tag.name).click();
 			await expect(poOmnichannelTags.editTag.root).toBeVisible();
 			await poOmnichannelTags.editTag.selectDepartment(department2.data.name);
+			await expect(poOmnichannelTags.editTag.findSelectedDepartment(department2.data.name)).not.toBeVisible();
 			await poOmnichannelTags.editTag.save();
 		});
 
