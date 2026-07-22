@@ -1,5 +1,6 @@
 import type { ICronHistoryItem, Serialized } from '@rocket.chat/core-typings';
-import { Box, Card, CardBody, Tag } from '@rocket.chat/fuselage';
+import { Box, Card, CardBody, Icon, Tag } from '@rocket.chat/fuselage';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { formatDuration, statusVariant } from './helpers';
@@ -13,6 +14,7 @@ const BackgroundJobHistoryCard = ({ entry, formatDateAndTime }: BackgroundJobHis
 	const { t } = useTranslation();
 	const hasError = !!entry.error;
 	const isRunning = !entry.finishedAt;
+	const [showError, setShowError] = useState(false);
 
 	let status: 'running' | 'failed' | 'completed' = 'completed';
 	let statusText = t('Background_Job_Status_completed');
@@ -27,34 +29,39 @@ const BackgroundJobHistoryCard = ({ entry, formatDateAndTime }: BackgroundJobHis
 	const duration = formatDuration(entry.startedAt, entry.finishedAt);
 
 	return (
-		<Card>
-			<CardBody>
-				<Box display='flex' flexDirection='column' flexGrow={1}>
-					<Box display='flex' justifyContent='space-between' alignItems='flex-start' mbe='x4'>
-						{entry.startedAt && (
-							<Box fontScale='p2' color='default'>
-								{formatDateAndTime(entry.startedAt)}
+		<Box onClick={hasError ? () => setShowError((prev) => !prev) : undefined} style={hasError ? { cursor: 'pointer' } : undefined}>
+			<Card>
+				<CardBody>
+					<Box display='flex' flexDirection='column' flexGrow={1}>
+						<Box display='flex' justifyContent='space-between' alignItems='flex-start' marginBlockEnd={4}>
+							{entry.startedAt && (
+								<Box fontScale='p2' color='default'>
+									{formatDateAndTime(entry.startedAt)}
+								</Box>
+							)}
+							<Box display='flex' alignItems='center'>
+								<Tag variant={statusVariant(status)}>{statusText}</Tag>
+								{hasError && <Icon name={showError ? 'chevron-up' : 'chevron-down'} size='x20' color='hint' />}
+							</Box>
+						</Box>
+
+						{duration && (
+							<Box fontScale='c1' color='hint' marginBlockEnd={hasError && showError ? 8 : 0}>
+								{t('Duration')}: {duration}
 							</Box>
 						)}
-						<Tag variant={statusVariant(status)}>{statusText}</Tag>
+
+						{hasError && showError && (
+							<Box withRichContent width='full' marginBlockStart={8}>
+								<pre>
+									<code>{typeof entry.error === 'object' ? JSON.stringify(entry.error, null, 2) : String(entry.error)}</code>
+								</pre>
+							</Box>
+						)}
 					</Box>
-
-					{duration && (
-						<Box fontScale='c1' color='hint' mbe={hasError ? 'x8' : 'none'}>
-							{t('Duration')}: {duration}
-						</Box>
-					)}
-
-					{hasError && (
-						<Box withRichContent w='full' mbs='x8'>
-							<pre>
-								<code>{typeof entry.error === 'object' ? JSON.stringify(entry.error, null, 2) : String(entry.error)}</code>
-							</pre>
-						</Box>
-					)}
-				</Box>
-			</CardBody>
-		</Card>
+				</CardBody>
+			</Card>
+		</Box>
 	);
 };
 

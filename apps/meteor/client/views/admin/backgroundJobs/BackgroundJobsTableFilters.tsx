@@ -25,7 +25,7 @@ const BackgroundJobsTableFilters = ({ setSearchTerm }: BackgroundJobsTableFilter
 
 	return (
 		<Box
-			mb={16}
+			marginBlock={16}
 			is='form'
 			onSubmit={(event) => {
 				event.preventDefault();
@@ -37,7 +37,7 @@ const BackgroundJobsTableFilters = ({ setSearchTerm }: BackgroundJobsTableFilter
 			<Margins inlineEnd={isLargeScreenOrBigger ? 16 : 0}>
 				<TextInput
 					placeholder={t('Search')}
-					addon={<Icon name='magnifier' size='x20' />}
+					endAddon={<Icon name='magnifier' size='x20' />}
 					onChange={handleSearchTextChange}
 					value={text}
 					flexGrow={2}
