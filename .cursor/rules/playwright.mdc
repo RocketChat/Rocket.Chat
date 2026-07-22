@@ -46,6 +46,15 @@ You are a Senior QA Automation Engineer with deep expertise in:
 - Use `page.waitFor()` with specific conditions instead of hardcoded timeouts
 - Implement proper wait strategies for dynamic content
 
+### Anti-Flake Rules
+- **Never use fixed sleeps** (`sleep(300)`, `waitForTimeout`) to wait for async propagation — poll with `expect.poll` or use an auto-waiting assertion; fixed delays fail on slower runners
+- **Wait for dismissal after actions that close UI asynchronously** — saving through a contextual bar closes it when the request resolves; use the page-object `save()` helper (click + `waitForDismissal`) instead of a raw `btnSave.click()` before reopening or interacting again
+- **Never use element absence as a readiness signal** — `not.toBeVisible()` passes when the element hasn't mounted yet; wait for a positive signal (an element that only exists when ready, or client state via `expect.poll` + `page.evaluate`)
+- **Confirm the effect of every action** — after selecting an option in a multi-select, assert the chip/value is registered in the form before proceeding; a click alone can be silently lost
+- **Guarantee form dirtiness before saving** — forms using dirty-check submission (`useFormSubmitWithDirtyCheck`) silently no-op when nothing changed, leaving the contextual bar open
+- **Assert the outcome of the final action** — a save/remove as the last line of a test passes even when the operation fails
+- **Wait for the loading state to finish after opening a data-loading panel** — panels that fetch data (threads, member lists) can exceed the default 5s expect timeout on coverage-instrumented runners; wait for the loading indicator to disappear or for a positive content signal before asserting. Raising the assertion `timeout` is a last resort for exceptional, justified cases — never the default fix
+
 ### Architecture Patterns
 - Follow Page Object Model pattern consistently
 - Maintain test isolation between test cases
