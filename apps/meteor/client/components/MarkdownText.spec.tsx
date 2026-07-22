@@ -4,6 +4,7 @@ import dompurify from 'dompurify';
 
 import MarkdownText, { supportedURISchemes } from './MarkdownText';
 import '@testing-library/jest-dom';
+import { emoji } from '../../app/emoji/client/lib';
 import { getMarkdownParserLimit } from '../lib/getMarkdownParserLimit';
 
 jest.mock('../lib/getMarkdownParserLimit');
@@ -547,5 +548,67 @@ describe('parser limit handling', () => {
 		const parsedText = screen.getByText('hi');
 		expect(parsedText).toBeInTheDocument();
 		expect(parsedText.tagName).toBe('STRONG');
+	});
+});
+
+describe('emoji parsing', () => {
+	// Minimal stand-in for the native emoji package that turns the `:smile:`
+	// shortcode into the same markup the real renderer produces.
+	const renderSmile = (text: string): string => text.replace(/:smile:/g, '<span class="emoji" title=":smile:">😄</span>');
+
+	beforeAll(() => {
+		emoji.packages.native = {
+			emojiCategories: [],
+			emojisByCategory: {},
+			toneList: {},
+			render: renderSmile,
+			renderPicker: () => undefined,
+		};
+	});
+
+	afterAll(() => {
+		delete emoji.packages.native;
+	});
+
+	beforeEach(() => {
+		getMarkdownParserLimitMock.mockReturnValue(Infinity);
+	});
+
+	it('should render emoji shortcodes that appear in visible text', () => {
+		const { container } = render(<MarkdownText content='hello :smile:' variant='document' parseEmoji />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		const emojiElement = container.querySelector('.emoji');
+		expect(emojiElement).toBeInTheDocument();
+		expect(emojiElement).toHaveAttribute('title', ':smile:');
+		expect(emojiElement).toHaveTextContent('😄');
+		expect(container).not.toHaveTextContent(':smile:');
+	});
+
+	it('should not corrupt a link whose href contains an emoji shortcode', () => {
+		render(<MarkdownText content='[docs](https://example.test/:smile:)' variant='document' parseEmoji />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		const anchorElement = screen.getByText('docs');
+		expect(anchorElement.tagName).toBe('A');
+		// The shortcode inside the href must stay untouched instead of being replaced by an emoji span
+		expect(anchorElement).toHaveAttribute('href', 'https://example.test/:smile:');
+		expect(anchorElement.querySelector('.emoji')).toBeNull();
+	});
+
+	it('should render emoji in text while keeping a shortcode inside an href intact', () => {
+		const { container } = render(<MarkdownText content=':smile: [docs](https://example.test/:smile:)' variant='document' parseEmoji />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		const anchorElement = screen.getByText('docs');
+		expect(anchorElement).toHaveAttribute('href', 'https://example.test/:smile:');
+		expect(anchorElement.querySelector('.emoji')).toBeNull();
+
+		const emojiElement = container.querySelector('.emoji');
+		expect(emojiElement).toBeInTheDocument();
+		expect(emojiElement).toHaveTextContent('😄');
 	});
 });
