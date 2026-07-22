@@ -8,7 +8,6 @@ export type EmojiPackage = {
 	render: (message: string) => string;
 	renderPicker: (emojiToRender: string) => string | undefined;
 	sprites?: unknown;
-	ascii?: boolean;
 	list?: string[];
 	_regexpSignature?: string | null;
 	_regexp?: RegExp | null;

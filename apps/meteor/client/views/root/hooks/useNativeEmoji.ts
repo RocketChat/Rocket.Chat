@@ -2,7 +2,7 @@ import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useLayoutEffect } from 'react';
 
 import { emoji } from '../../../../app/emoji/client';
-import { getEmojiConfig } from '../../../../app/emoji-native/lib/getEmojiConfig';
+import { getEmojiConfig, setConvertAsciiEmoji } from '../../../../app/emoji-native/lib/getEmojiConfig';
 import { legacyEmojioneMap } from '../../../../app/emoji-native/lib/legacyEmojioneMap';
 
 const config = getEmojiConfig(emoji);
@@ -52,11 +52,7 @@ export const useNativeEmoji = () => {
 	}, []);
 
 	useLayoutEffect(() => {
-		if (!emoji.packages.native) {
-			return;
-		}
-
-		emoji.packages.native.ascii = convertAsciiToEmoji ?? true;
+		setConvertAsciiEmoji(convertAsciiToEmoji ?? true);
 		emoji.dispatchUpdate();
 	}, [convertAsciiToEmoji]);
 };
