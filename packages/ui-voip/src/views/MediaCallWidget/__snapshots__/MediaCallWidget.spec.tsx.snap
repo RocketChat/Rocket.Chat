@@ -9,7 +9,7 @@ exports[`renders IncomingCall without crashing 1`] = `
     />
     <div
       aria-labelledby="rcx-media-call-widget-title-prefix rcx-media-call-widget-title rcx-media-call-widget-caller-info"
-      class="rcx-css-1rau14i"
+      class="rcx-css-186fl58"
       role="dialog"
     >
       <div
@@ -175,7 +175,7 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
     />
     <div
       aria-labelledby="rcx-media-call-widget-title-prefix rcx-media-call-widget-title rcx-media-call-widget-caller-info"
-      class="rcx-css-1rau14i"
+      class="rcx-css-186fl58"
       role="dialog"
     >
       <div
@@ -378,7 +378,7 @@ exports[`renders NewCall without crashing 1`] = `
     />
     <div
       aria-labelledby="rcx-media-call-widget-title-prefix rcx-media-call-widget-title rcx-media-call-widget-caller-info"
-      class="rcx-css-1rau14i"
+      class="rcx-css-186fl58"
       role="dialog"
     >
       <div
@@ -583,7 +583,7 @@ exports[`renders OngoingCall without crashing 1`] = `
     />
     <div
       aria-labelledby="rcx-media-call-widget-title-prefix rcx-media-call-widget-title rcx-media-call-widget-caller-info"
-      class="rcx-css-1rau14i"
+      class="rcx-css-186fl58"
       role="dialog"
     >
       <div
@@ -810,7 +810,7 @@ exports[`renders OutgoingCall without crashing 1`] = `
     />
     <div
       aria-labelledby="rcx-media-call-widget-title-prefix rcx-media-call-widget-title rcx-media-call-widget-caller-info"
-      class="rcx-css-1rau14i"
+      class="rcx-css-186fl58"
       role="dialog"
     >
       <div
@@ -959,7 +959,7 @@ exports[`renders OutgoingCallTransfer without crashing 1`] = `
     />
     <div
       aria-labelledby="rcx-media-call-widget-title-prefix rcx-media-call-widget-title rcx-media-call-widget-caller-info"
-      class="rcx-css-1rau14i"
+      class="rcx-css-186fl58"
       role="dialog"
     >
       <div

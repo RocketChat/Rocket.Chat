@@ -29,6 +29,11 @@ export const Meteor = {
 	users: {},
 };
 
+export const DDPCommon = {
+	parseDDP: () => undefined,
+	stringifyDDP: () => '',
+};
+
 export const Tracker = {
 	autorun: () => ({
 		stop: () => {},
@@ -94,5 +99,3 @@ export const Session = {
 	get: () => {},
 	set: () => {},
 };
-
-export const DDPCommon = {};
