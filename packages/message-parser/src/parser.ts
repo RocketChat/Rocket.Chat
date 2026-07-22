@@ -261,6 +261,13 @@ function parseInline(scanner: Scanner, options: Options) {
 
 		// Escape sequences
 		if (ch === '\\') {
+			const ts = tryTimestamp(scanner);
+			if (ts !== null) {
+				nodes.push(ts);
+				prev = '>';
+				continue;
+			}
+
 			const next = scanner.charAt(1);
 			if (next !== '' && ESCAPABLE.has(next)) {
 				nodes.push(plain(next));
@@ -268,11 +275,6 @@ function parseInline(scanner: Scanner, options: Options) {
 				prev = next;
 				continue;
 			}
-
-			nodes.push(plain(ch));
-			scanner.consume();
-			prev = ch;
-			continue;
 		}
 
 		// Inline code
@@ -494,6 +496,13 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 
 		// Escape sequences
 		if (ch === '\\') {
+			const ts = tryTimestamp(scanner);
+			if (ts !== null) {
+				nodes.push(ts);
+				prev = '>';
+				continue;
+			}
+
 			const next = scanner.charAt(1);
 			if (next !== '' && ESCAPABLE.has(next)) {
 				nodes.push(plain(next));
@@ -501,11 +510,6 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 				prev = next;
 				continue;
 			}
-
-			nodes.push(plain(ch));
-			scanner.consume();
-			prev = ch;
-			continue;
 		}
 
 		// Inline code
@@ -936,10 +940,15 @@ function tryTimestamp(scanner: Scanner): Inlines | null {
 	const start = scanner.position();
 	const delimiter = '<t:';
 
+	const escaped = scanner.char() === '\\';
+	if (escaped) scanner.consume(); // drop the backslash
+
 	if (!scanner.matches(delimiter)) {
+		scanner.backtrack(start);
 		return null;
 	}
 
+	const rawStart = scanner.position();
 	scanner.consume(delimiter.length); // consume '<t:'
 
 	const contentStart = scanner.position();
@@ -1001,6 +1010,8 @@ function tryTimestamp(scanner: Scanner): Inlines | null {
 	}
 
 	scanner.consume(); // consume '>'
+
+	if (escaped) return plain(scanner.sliceFrom(rawStart));
 
 	return timestamp(parsedTimestamp, format, [start, scanner.position()]);
 }
@@ -1149,6 +1160,13 @@ function tryMarkdownLink(scanner: Scanner, options: Options): Inlines | null {
 		if (digits.length >= 5) {
 			url = 'tel:' + digits;
 		}
+	}
+
+	// "[text](/foo)" is not a link — a target needs a scheme ("https:") or a domain ("rocket.chat")
+	const host = url.split('/')[0];
+	if (!host.includes(':') && !host.includes('.')) {
+		scanner.backtrack(start);
+		return null;
 	}
 
 	const title = reducePlainTexts(titleNodes);
