@@ -64,7 +64,7 @@ function renderEmoji(text: string, emojiPackages: EmojiPackages): string {
 			}
 
 			// Fallback to legacy emojione shortcodes for backward compatibility
-			const legacy = legacyEmojioneMap[shortcodeName];
+			const legacy = Object.hasOwn(legacyEmojioneMap, shortcodeName) ? legacyEmojioneMap[shortcodeName] : undefined;
 			if (legacy) {
 				return `<span class="emoji" title="${shortcodeGroup}">${legacy}</span>`;
 			}
