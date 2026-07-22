@@ -1,0 +1,29 @@
+# Version control
+.git
+.gitignore
+
+# Dependencies - all nested instances
+node_modules
+**/node_modules
+**/.npm
+
+# Build outputs
+dist
+build
+.meteor/local
+**/dist
+**/build
+.turbo
+**/.turbo
+
+# Dev environment
+.vscode
+.idea
+*.log
+
+# Testing
+coverage
+.nyc_output
+
+# Environment variables
+.env*
