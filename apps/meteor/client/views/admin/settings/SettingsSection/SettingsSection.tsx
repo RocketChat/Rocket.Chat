@@ -135,31 +135,35 @@ function SettingsSection({ groupId, hasReset = true, sectionTitle, sectionName, 
 				</Box>
 			)}
 			{subsectionGroups.map(({ subsection, settings }, index) => {
-				// premium gating: a fully-premium block gets one tag in the header plus a
-				// single upgrade callout; mixed blocks mark each consecutive premium run
-				// with a tag and each locked field advertises an inline upgrade link
+				// premium gating: the Premium tag marks every enterprise setting regardless
+				// of the license — a fully-premium block carries one tag in the header and
+				// mixed blocks tag each consecutive premium run. Locking is a separate
+				// concern: when the license does not cover a fully-locked block a single
+				// upgrade callout is shown, and individually locked fields advertise an
+				// inline upgrade link; unlocked premium settings stay fully editable.
+				const allPremium = settings.length > 0 && settings.every((setting) => Boolean(setting.enterprise));
 				const allLocked = settings.length > 0 && settings.every((setting) => isPremiumLocked(setting));
-				const runs: { locked: boolean; settings: EditableSetting[] }[] = [];
+				const runs: { premium: boolean; settings: EditableSetting[] }[] = [];
 				for (const setting of settings) {
-					const locked = isPremiumLocked(setting);
+					const premium = Boolean(setting.enterprise);
 					const lastRun = runs[runs.length - 1];
-					if (lastRun?.locked === locked) {
+					if (lastRun?.premium === premium) {
 						lastRun.settings.push(setting);
 					} else {
-						runs.push({ locked, settings: [setting] });
+						runs.push({ premium, settings: [setting] });
 					}
 				}
 
 				return (
 					<Box key={subsection || `ungrouped-${index}`} marginBlockEnd={24}>
-						{(subsection || allLocked) && (
+						{(subsection || allPremium) && (
 							<Box display='flex' alignItems='center' marginBlockEnd={8} style={{ gap: 8 }}>
 								{subsection && (
 									<Box fontScale='micro' textTransform='uppercase' color='hint'>
 										{i18n.exists(subsection) ? t(subsection as TranslationKey) : subsection}
 									</Box>
 								)}
-								{allLocked && <Tag variant='featured'>{t('Premium')}</Tag>}
+								{allPremium && <Tag variant='featured'>{t('Premium')}</Tag>}
 							</Box>
 						)}
 						{allLocked && (
@@ -178,7 +182,7 @@ function SettingsSection({ groupId, hasReset = true, sectionTitle, sectionName, 
 							<FieldGroup>
 								{runs.map((run, runIndex) => (
 									<Fragment key={`run-${runIndex}`}>
-										{run.locked && !allLocked && (
+										{run.premium && !allPremium && (
 											<Box display='flex' justifyContent='flex-start'>
 												<Tag variant='featured'>{t('Premium')}</Tag>
 											</Box>
