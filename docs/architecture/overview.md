@@ -15,7 +15,7 @@ Rocket.Chat is a **Meteor monolith** (`apps/meteor`) surrounded by a set of
 **workspace packages** (`packages/*`, `ee/packages/*`). Data lives in
 **MongoDB**, accessed through a proxied models layer.
 
-```
+```text
                         ┌─────────────────────────────┐
         Browser / ─────▶│      Meteor monolith         │
         Mobile / Desktop│        (apps/meteor)         │
@@ -36,7 +36,8 @@ Rocket.Chat is a **Meteor monolith** (`apps/meteor`) surrounded by a set of
                         │   presence · authorization ·  │
                         │   account · ddp-streamer ·    │
                         │   stream-hub · queue-worker · │
-                        │   federation · omni-transcript│
+                        │   federation ·                │
+                        │   omnichannel-transcript      │
                         └───────────────────────────────┘
 ```
 

@@ -58,7 +58,8 @@ Deeper references: [API endpoint migration](./api-endpoint-migration.md) ·
 ## Extending the system
 
 - [Callbacks (in-repo hooks)](./extending/callbacks.md) — `before*/after*`
-  lifecycle hooks and priorities.
+  lifecycle hooks and priorities. Discouraged for new code — prefer explicit
+  function calls except for enterprise/extension points.
 - [Slash commands](./extending/slash-commands.md) — adding a `/command`.
 - [Apps-Engine](./extending/apps-engine.md) — marketplace apps; events &
   fire-and-forget gotcha. Deep dive: [migration](./apps-engine-migration.md).

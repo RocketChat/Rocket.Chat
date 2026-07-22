@@ -20,7 +20,7 @@ in the global `components/` or `hooks/`.
 Folders mirror the app's UI tree (room → header / contextualbar / sidebar → …),
 not technical layers. A feature folder is typically:
 
-```
+```text
 <feature>/
 ├── index.tsx               # entry
 ├── <Feature>.tsx           # container component

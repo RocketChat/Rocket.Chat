@@ -47,7 +47,7 @@ transporter). See `packages/core-services/src/index.ts`.
   **waits** for its service to come online, so a misconfigured/missing service
   can make calls hang rather than error loudly.
 
-```
+```text
 apps/meteor ──calls──▶ core-services interface (proxify)
                           │
             ┌─────────────┴──────────────┐

@@ -8,6 +8,12 @@ reading:** you can register a callback correctly and pick the right priority.
 > use [apps-engine](./apps-engine.md) instead — different system, fired at
 > overlapping points.
 
+> **Use sparingly.** Callbacks are not unrestricted: we prefer calling functions
+> **explicitly**, reserving callbacks for enterprise features and other extension
+> points. In theory they are discouraged — they remain in use only because the
+> complexity they introduced makes them hard to remove. Don't reach for a
+> callback when a direct function call works.
+
 ---
 
 ## The API

@@ -12,7 +12,7 @@ Never touch a Mongo collection directly. Import the typed model:
 ```ts
 import { Messages, Rooms, Users } from '@rocket.chat/models';
 
-const room = await Rooms.findOneById(rid);   // all model calls are async
+const room = await Rooms.findOneById(rid);   // queries return promises (find/getUpdater are sync)
 ```
 
 - Types/interfaces: `@rocket.chat/model-typings` (`IBaseModel`, per-model
@@ -24,10 +24,10 @@ const room = await Rooms.findOneById(rid);   // all model calls are async
 Models are exposed as **proxies** (`packages/models/src/proxify.ts`); the call
 resolves to the real implementation at runtime.
 
-> **Gotcha:** a proxied call **waits** for its implementation to be registered.
-> If a model/service isn't available, calls can **hang** rather than throw. If a
-> data call seems to stall, suspect an unregistered model or an offline service,
-> not a slow query.
+> **Gotcha:** a proxied call **throws immediately** (`Model X not found`) if the
+> implementation hasn't been registered yet. If you see that error, the model's
+> registration (`registerModel`) hasn't run — usually an import-order problem or
+> code running before startup finished, not a missing collection.
 
 ## Atomic multi-field updates: use the updater
 

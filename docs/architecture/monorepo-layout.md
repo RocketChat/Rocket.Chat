@@ -19,7 +19,7 @@ lives* or *where new code should go*. **After reading:** you can navigate
 
 ## Top level
 
-```
+```text
 Rocket.Chat/
 ├── apps/            # runnable applications
 │   ├── meteor/      # THE main app (monolith) — most code lives here
@@ -44,7 +44,7 @@ The monolith is the biggest place you'll work. Key directories:
 | `app/` | ~100 feature modules (api, authentication, authorization, livechat, omnichannel, integrations, settings, slashcommands-*, …) |
 | `server/` | Server bootstrap & cross-cutting libs: `startup/`, `methods/`, `publications/`, `routes/`, `cron/`, `lib/` (incl. `callbacks.ts`), `modules/streamer/` |
 | `client/` | React client (current UI) |
-| `imports/` | Additional client code (views, components, hooks, stores) |
+| `imports/` | Legacy Meteor dir; kept mainly to force Meteor to bundle these deps — don't add new code here |
 | `ee/` | Enterprise features, incl. `ee/server/services/` (services workspace) |
 | `definition/` | Ambient TypeScript types |
 | `tests/` | e2e (Playwright) and test infra |

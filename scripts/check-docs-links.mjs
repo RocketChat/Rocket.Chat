@@ -33,22 +33,29 @@ const slug = (text) =>
 
 /** Lines that are inside a fenced code block (``` or ~~~) don't render. */
 const stripFences = (content) => {
-	let inFence = false;
+	let fence = null; // the marker that opened the current fence, or null
 	return content.split('\n').map((line) => {
-		if (/^\s*(```|~~~)/.test(line)) {
-			inFence = !inFence;
+		const m = /^\s*(```+|~~~+)/.exec(line);
+		if (m) {
+			if (!fence) fence = m[1][0];
+			else if (m[1][0] === fence) fence = null; // only the same marker closes it
 			return '';
 		}
-		return inFence ? '' : line;
+		return fence ? '' : line;
 	});
 };
 
-/** Extract heading anchors from a markdown file (ignoring code fences). */
+/** Extract heading anchors from a markdown file (ignoring code fences).
+ * Duplicate headings get GitHub-style numbered variants (slug, slug-1, ...). */
 const anchorsOf = (file) => {
 	const set = new Set();
 	for (const line of stripFences(readFileSync(file, 'utf8'))) {
 		const m = /^#{1,6}\s+(.*)$/.exec(line);
-		if (m) set.add(slug(m[1]));
+		if (!m) continue;
+		const base = slug(m[1]);
+		let candidate = base;
+		for (let n = 1; set.has(candidate); n++) candidate = `${base}-${n}`;
+		set.add(candidate);
 	}
 	return set;
 };

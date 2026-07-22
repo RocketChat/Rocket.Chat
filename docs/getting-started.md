@@ -58,7 +58,7 @@ yarn dev
 This runs `turbo run dev`, which builds the required packages and starts the
 Meteor app in `apps/meteor`. Once you see the server listening, open:
 
-```
+```text
 http://localhost:3000
 ```
 

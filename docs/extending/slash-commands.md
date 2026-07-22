@@ -11,7 +11,8 @@ Registry: `apps/meteor/app/utils/server/slashCommand.ts`
 (`slashCommands.add({...})`).
 
 ```ts
-import { slashCommands } from '../../../utils/server/slashCommand';
+// from apps/meteor/app/slashcommands-<name>/server/
+import { slashCommands } from '../../utils/server/slashCommand';
 
 slashCommands.add({
   command: 'mycommand',

@@ -11,7 +11,7 @@ context.
 Errors carry a stable, machine-readable **code** in `kebab-case`, prefixed with
 `error-`:
 
-```
+```text
 error-invalid-params
 error-room-not-found
 error-not-allowed
@@ -43,10 +43,12 @@ human-readable message is secondary.
 
 ## Gotcha: `invalid-params` → `error-invalid-params`
 
-When endpoints/methods are migrated to the typed pattern, the validation error
-code becomes **`error-invalid-params`** (not the bare `invalid-params`). Tests
-asserting the old string must be updated to the prefixed code. If a migrated
-endpoint's test suddenly fails on the error string, this is usually why.
+When an endpoint is migrated to the typed pattern, **query-parameter**
+validation failures return **`error-invalid-params`** instead of the bare
+`invalid-params` (body validation still returns `invalid-params` — see
+`packages/http-router/src/Router.ts`). Tests asserting the old string on query
+validation must be updated to the prefixed code. If a migrated endpoint's test
+suddenly fails on the error string, this is usually why.
 
 ## Don't
 
