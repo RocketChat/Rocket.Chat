@@ -215,6 +215,22 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 		return transceiver;
 	}
 
+	private setCurrentTransceiver(kind: MediaStreamTrack['kind'], transceiver: RTCRtpTransceiver | null) {
+		const oldTransceiver = kind === 'audio' ? this.audioTransceiver : this.videoTransceiver;
+		if ((!oldTransceiver && !transceiver) || oldTransceiver === transceiver) {
+			return;
+		}
+
+		const action = transceiver ? 'Changed' : 'Removed';
+
+		this.logger?.debug(`${action} current ${kind} transceiver for ${this.tag} stream`);
+		if (kind === 'audio') {
+			this.audioTransceiver = transceiver;
+		} else {
+			this.videoTransceiver = transceiver;
+		}
+	}
+
 	private async syncTrackChange(kind: MediaStreamTrack['kind'], track: MediaStreamTrack | null): Promise<void> {
 		if (this.remote) {
 			return;
@@ -230,10 +246,12 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 			this.logger?.debug('MediaStreamWrapper.setPeerTrack.replaceTrack', kind);
 			try {
 				await currentTransceiver.sender.replaceTrack(track);
+				// Only return early if the track was successfully replaced on a transceiver - otherwise we add it to a new one
+				return;
 			} catch (err) {
 				this.logger?.error('MediaStreamWrapper.setPeerTrack.replaceTrack failed', kind, err);
+				this.setCurrentTransceiver(kind, null);
 			}
-			return;
 		}
 
 		if (!track) {
@@ -245,14 +263,7 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 		this.peer.addTrack(track, this.stream);
 
 		const transceiver = this.peer.getTransceivers().find((t) => t.sender.track === track);
-		if (transceiver) {
-			this.logger?.debug(`Changed active ${kind} transceiver for ${this.tag} stream`);
-			if (kind === 'audio') {
-				this.audioTransceiver = transceiver;
-			} else {
-				this.videoTransceiver = transceiver;
-			}
-		}
+		this.setCurrentTransceiver(kind, transceiver ?? null);
 	}
 
 	private wrapTrack(kind: MediaStreamTrack['kind'], track: MediaStreamTrack | null) {
