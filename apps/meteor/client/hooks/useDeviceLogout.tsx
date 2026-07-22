@@ -26,18 +26,30 @@ export const useDeviceLogout = (
 
 	const { mutate: logoutDevice } = useMutation({
 		mutationFn: logoutEndpoint,
+		// logging out the current session terminates it mid-request, so an error is expected there
 		onSettled: () => {
 			if (isCurrentSession) {
 				setModal(null);
 				logout();
-			} else {
-				queryClient.invalidateQueries({ queryKey: deviceManagementQueryKeys.all });
-				if (isContextualBarOpen) {
-					handleCloseContextualBar();
-				}
-				dispatchToastMessage({ type: 'success', message: t('Device_Logged_Out') });
-				setModal(null);
 			}
+		},
+		onSuccess: () => {
+			if (isCurrentSession) {
+				return;
+			}
+			queryClient.invalidateQueries({ queryKey: deviceManagementQueryKeys.all });
+			if (isContextualBarOpen) {
+				handleCloseContextualBar();
+			}
+			dispatchToastMessage({ type: 'success', message: t('Device_Logged_Out') });
+			setModal(null);
+		},
+		onError: (error) => {
+			if (isCurrentSession) {
+				return;
+			}
+			dispatchToastMessage({ type: 'error', message: error });
+			setModal(null);
 		},
 		throwOnError: false,
 	});
