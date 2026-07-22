@@ -49,12 +49,6 @@ function getEmojiRegex(): RegExp {
 	return emojiRegex;
 }
 
-let convertAsciiEmoji = true;
-
-export const setConvertAsciiEmoji = (enabled: boolean): void => {
-	convertAsciiEmoji = enabled;
-};
-
 // HTML-escaped variants are needed because the renderer receives escaped HTML (e.g. `>:(` arrives as `&gt;:(`)
 const asciiPattern = [...new Set(Object.keys(asciiList).flatMap((ascii) => [escapeHTML(ascii), ascii]))]
 	.sort((a, b) => b.length - a.length)
@@ -120,7 +114,7 @@ function renderEmoji(text: string, emojiPackages: EmojiPackages): string {
 		return match;
 	});
 
-	return convertAsciiEmoji ? renderAsciiEmoji(rendered) : rendered;
+	return emojiPackages.packages.native?.ascii ? renderAsciiEmoji(rendered) : rendered;
 }
 
 function renderPicker(emojiToRender: string): string | undefined {
