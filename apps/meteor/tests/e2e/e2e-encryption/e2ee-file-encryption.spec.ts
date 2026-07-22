@@ -1,5 +1,6 @@
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
+import { EncryptedRoomPage } from '../page-objects/encrypted-room';
 import { createTargetGroupAndReturnFullRoom } from '../utils';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
@@ -50,6 +51,8 @@ test.describe('E2EE File Encryption', () => {
 		await page.goto(`/group/${group.name}`);
 		await page.locator('#main-content').waitFor();
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+		// wait for the room key to be ready, otherwise messages are sent unencrypted (E2E_Allow_Unencrypted_Messages is on)
+		await expect(new EncryptedRoomPage(page).encryptionNotReadyIndicator).not.toBeVisible();
 	});
 
 	test.afterEach(async ({ api }) => {
