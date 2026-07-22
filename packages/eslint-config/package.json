@@ -16,11 +16,11 @@
 	},
 	"dependencies": {
 		"@babel/core": "~7.29.7",
-		"@babel/eslint-parser": "~7.28.6",
-		"@eslint/js": "~9.39.5",
-		"@types/eslint": "~8.44.9",
+		"@babel/eslint-parser": "~7.29.7",
+		"@eslint/js": "~10.0.1",
+		"@types/eslint": "~9.6.1",
 		"@types/prettier": "^2.7.3",
-		"eslint": "~9.39.5",
+		"eslint": "~10.7.0",
 		"eslint-config-prettier": "~10.1.8",
 		"eslint-import-resolver-typescript": "~4.4.5",
 		"eslint-plugin-anti-trojan-source": "~1.1.7",
@@ -28,13 +28,13 @@
 		"eslint-plugin-jest": "~29.15.5",
 		"eslint-plugin-jsx-a11y": "~6.10.2",
 		"eslint-plugin-prettier": "~5.5.6",
-		"eslint-plugin-react": "~7.37.5",
-		"eslint-plugin-react-hooks": "~7.0.1",
-		"eslint-plugin-storybook": "~10.2.19",
+		"eslint-plugin-react": "patch:eslint-plugin-react@npm%3A7.37.5#~/.yarn/patches/eslint-plugin-react-npm-7.37.5-d03f6b6543.patch",
+		"eslint-plugin-react-hooks": "~7.1.1",
+		"eslint-plugin-storybook": "~10.5.2",
 		"eslint-plugin-testing-library": "~7.16.2",
-		"globals": "~17.3.0",
+		"globals": "~17.7.0",
 		"prettier": "~3.3.3",
-		"typescript-eslint": "~8.56.1"
+		"typescript-eslint": "~8.64.0"
 	},
 	"devDependencies": {
 		"typescript": "~5.9.3"
