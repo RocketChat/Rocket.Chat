@@ -1,5 +1,7 @@
 # @rocket.chat/core-typings
 
+## 8.7.0-rc.1
+
 ## 8.7.0-rc.0
 
 ### Minor Changes
@@ -41,6 +43,7 @@
 
   - @rocket.chat/message-parser@0.32.0-rc.0
   </details>
+
 ## 8.6.1
 
 ### Patch Changes
