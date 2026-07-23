@@ -811,9 +811,12 @@ UnicodeEmojiEmoticon = $([\uD83D] [\uDE00-\uDE4F])
 UnicodeEmojiSupplementalSymbolsAndPictographs = $([\uD83E] [\uDD00-\uDFFF])
 
 UnicodeEmojiZwjComponent
-  = (UnicodeEmojiSupplementalSymbolsAndPictographs / UnicodeEmojiMiscellaneousSymbolsAndPictographs / UnicodeEmojiEmoticon) UnicodeEmojiMiscellaneousSymbolsAndPictographsFitzpatrickModifiers?
-  / UnicodeEmojiDingbats
-  / UnicodeEmojiMiscellaneousSymbols
+  = ( UnicodeEmojiSupplementalSymbolsAndPictographs
+    / UnicodeEmojiMiscellaneousSymbolsAndPictographs
+    / UnicodeEmojiEmoticon
+    / UnicodeEmojiDingbats
+    / UnicodeEmojiMiscellaneousSymbols
+    ) UnicodeEmojiMiscellaneousSymbolsAndPictographsFitzpatrickModifiers?
 
 /* Emoji tag sequence: Black Flag + tag characters (U+E0020-U+E007E) + Cancel Tag (U+E007F), e.g. England/Scotland/Wales flags */
 UnicodeEmojiTagSequence = $([\uD83C] [\uDFF4] ([\uDB40] [\uDC20-\uDC7E])+ [\uDB40] [\uDC7F])

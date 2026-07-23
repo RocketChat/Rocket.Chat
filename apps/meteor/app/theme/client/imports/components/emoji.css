@@ -2,6 +2,7 @@
 .emoji {
 	font-size: 1.375rem;
 	line-height: 1.5rem;
+	vertical-align: middle;
 
 	/* custom emojis */
 	&--custom {

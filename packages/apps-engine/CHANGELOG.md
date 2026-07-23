@@ -5,6 +5,11 @@
 ### Patch Changes
 
 - ([#41304](https://github.com/RocketChat/Rocket.Chat/pull/41304)) Fixes wrong FederationLookup type assigned to IUser in apps. The correct data is there, but the type does not represent it.
+## 1.64.1
+
+### Patch Changes
+
+- ([#41308](https://github.com/RocketChat/Rocket.Chat/pull/41308) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes wrong FederationLookup type assigned to IUser in apps. The correct data is there, but the type does not represent it.
 
 ## 1.64.0
 

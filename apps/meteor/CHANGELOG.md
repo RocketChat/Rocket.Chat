@@ -1,5 +1,29 @@
 # @rocket.chat/meteor
 
+## 8.7.0-rc.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.7.0-rc.2
+  - @rocket.chat/rest-typings@8.7.0-rc.2
+  </details>
+
+## 8.7.0-rc.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.7.0-rc.1
+  - @rocket.chat/rest-typings@8.7.0-rc.1
+  </details>
+
 ## 8.7.0-rc.0
 
 ### Minor Changes
@@ -167,6 +191,33 @@
   - @rocket.chat/server-cloud-communication@0.0.3
   - @rocket.chat/ui-avatar@29.0.0-rc.0
   - @rocket.chat/ui-video-conf@33.0.0-rc.0
+  </details>
+
+## 8.6.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#41234](https://github.com/RocketChat/Rocket.Chat/pull/41234) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#41243](https://github.com/RocketChat/Rocket.Chat/pull/41243) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#41308](https://github.com/RocketChat/Rocket.Chat/pull/41308) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes wrong FederationLookup type assigned to IUser in apps. The correct data is there, but the type does not represent it.
+
+- ([#41292](https://github.com/RocketChat/Rocket.Chat/pull/41292) by [@dionisio-bot](https://github.com/dionisio-bot)) Ensures the `users.CreateToken` endpoint checks for the `user-generate-access-token` permission when generating a login token for another user
+
+- ([#41276](https://github.com/RocketChat/Rocket.Chat/pull/41276) by [@dionisio-bot](https://github.com/dionisio-bot)) Ensures room permission checks are applied consistently regardless of how the room is identified when converting a channel to a team or creating a team from an existing room
+
+- <details><summary>Updated dependencies [89ab75ca9121feb289a0f5744a526361364b8867, c86d933c267e375b0b32585450cf513b6483c245]:</summary>
+
+  - @rocket.chat/core-typings@8.6.1
+  - @rocket.chat/model-typings@2.3.2
+  - @rocket.chat/models@2.3.2
+  - @rocket.chat/apps-engine@1.64.1
+  - @rocket.chat/rest-typings@8.6.1
   </details>
 
 ## 8.6.0

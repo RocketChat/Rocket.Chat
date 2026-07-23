@@ -11,6 +11,7 @@ import {
 	validateBadRequestErrorResponse,
 	isDmBlockUserProps,
 	isDmFileProps,
+	isDmLeaveProps,
 	isDmMemberProps,
 	isDmMessagesProps,
 	isDmCreateProps,
@@ -31,6 +32,7 @@ import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesF
 import { createDirectMessage } from '../../meteor-methods/messages/createDirectMessage';
 import { getChannelHistory } from '../../meteor-methods/messages/getChannelHistory';
 import { hideRoomMethod } from '../../meteor-methods/rooms/hideRoom';
+import { leaveRoomMethod } from '../../meteor-methods/rooms/leaveRoom';
 import { saveRoomSettings } from '../../meteor-methods/rooms/saveRoomSettings';
 import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
@@ -927,6 +929,35 @@ const dmCreateAction = <Path extends string>(_path: Path): TypedAction<typeof dm
 		});
 	};
 
+const dmLeaveEndpointsProps = {
+	authRequired: true,
+	body: isDmLeaveProps,
+	response: {
+		400: validateBadRequestErrorResponse,
+		401: validateUnauthorizedErrorResponse,
+		200: ajv.compile<void>({
+			type: 'object',
+			properties: {
+				success: { type: 'boolean', enum: [true] },
+			},
+			required: ['success'],
+			additionalProperties: false,
+		}),
+	},
+} as const;
+
+const dmLeaveAction = <Path extends string>(_path: Path): TypedAction<typeof dmLeaveEndpointsProps, Path> =>
+	async function action() {
+		const { room } = await findDirectMessageRoom(
+			'roomId' in this.bodyParams ? { roomId: this.bodyParams.roomId } : { username: this.bodyParams.roomName },
+			this.userId,
+		);
+
+		await leaveRoomMethod(this.user, room._id);
+
+		return API.v1.success();
+	};
+
 const dmBlockUserEndpointsProps = {
 	authRequired: true,
 	body: isDmBlockUserProps,
@@ -990,7 +1021,10 @@ const dmEndpoints = API.v1
 	.get('im.list', dmListEndpointsProps, dmListAction('im.list'))
 	.get('dm.list.everyone', dmListEveryoneEndpointsProps, dmListEveryoneAction('dm.list.everyone'))
 	.get('im.list.everyone', dmListEveryoneEndpointsProps, dmListEveryoneAction('im.list.everyone'))
-	.post('im.blockUser', dmBlockUserEndpointsProps, dmBlockUserAction('im.blockUser'));
+	.post('im.leave', dmLeaveEndpointsProps, dmLeaveAction('im.leave'))
+	.post('dm.leave', dmLeaveEndpointsProps, dmLeaveAction('dm.leave'))
+	.post('im.blockUser', dmBlockUserEndpointsProps, dmBlockUserAction('im.blockUser'))
+	.post('dm.blockUser', dmBlockUserEndpointsProps, dmBlockUserAction('dm.blockUser'));
 
 export type DmEndpoints = ExtractRoutesFromAPI<typeof dmEndpoints>;
 
