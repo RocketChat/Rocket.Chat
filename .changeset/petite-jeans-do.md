@@ -2,4 +2,4 @@
 '@rocket.chat/message-parser': patch
 ---
 
-Allow colons in user mentions for matrix federation
+Improve mention parsing to support colons and dots in federated usernames (e.g., `@user:server.org`), and normalize leading-@ handling to avoid duplicate `@` characters during fallback parsing.
