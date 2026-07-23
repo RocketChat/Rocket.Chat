@@ -21,6 +21,8 @@ import type {
 	Tasks,
 	Task,
 	HorizontalRule,
+	Table,
+	TableCellAlignment,
 } from './definitions';
 import type { Options } from './index';
 import {
@@ -61,6 +63,7 @@ import {
 	tasks,
 	task,
 	horizontalRule,
+	table,
 } from './utils';
 import { Scanner } from './scanner';
 import {
@@ -197,6 +200,12 @@ export function parse(input: string, options: Options = {}) {
 			continue;
 		}
 
+		const tableNode: Table | null = tryTable(scanner, options);
+		if (tableNode !== null) {
+			root.push(tableNode);
+			continue;
+		}
+
 		const tasksNode: Tasks | null = tryTasks(scanner, options);
 		if (tasksNode !== null) {
 			root.push(tasksNode);
@@ -261,17 +270,10 @@ function parseInline(scanner: Scanner, options: Options) {
 
 		// Escape sequences
 		if (ch === '\\') {
-			const ts = tryTimestamp(scanner);
-			if (ts !== null) {
-				nodes.push(ts);
-				prev = '>';
-				continue;
-			}
-
 			const next = scanner.charAt(1);
 			if (next !== '' && ESCAPABLE.has(next)) {
 				nodes.push(plain(next));
-				scanner.consume(2);
+				scanner.consume(2); // consume the backslash and the escaped char
 				prev = next;
 				continue;
 			}
@@ -407,19 +409,22 @@ function parseInline(scanner: Scanner, options: Options) {
 			}
 		}
 
-		// Angle bracket link or Timestamp
-		if (ch === '<') {
+		// Timestamp
+		if (ch === '\\' || ch === '<') {
 			const ts = tryTimestamp(scanner);
 			if (ts !== null) {
 				nodes.push(ts);
 				prev = '';
 				continue;
 			}
+		}
 
-			const link = tryAngleBracketLink(scanner);
-			if (link !== null) {
-				nodes.push(link);
-				prev = '>';
+		// Angle bracket link
+		if (ch === '<') {
+			const ts = tryAngleBracketLink(scanner);
+			if (ts !== null) {
+				nodes.push(ts);
+				prev = '';
 				continue;
 			}
 		}
@@ -496,17 +501,10 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 
 		// Escape sequences
 		if (ch === '\\') {
-			const ts = tryTimestamp(scanner);
-			if (ts !== null) {
-				nodes.push(ts);
-				prev = '>';
-				continue;
-			}
-
 			const next = scanner.charAt(1);
 			if (next !== '' && ESCAPABLE.has(next)) {
 				nodes.push(plain(next));
-				scanner.consume(2);
+				scanner.consume(2); // consume the backslash and the escaped char
 				prev = next;
 				continue;
 			}
@@ -642,19 +640,22 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 			}
 		}
 
-		// Angle bracket link or Timestamp
-		if (ch === '<') {
+		// Timestamp
+		if (ch === '\\' || ch === '<') {
 			const ts = tryTimestamp(scanner);
 			if (ts !== null) {
 				nodes.push(ts);
 				prev = '';
 				continue;
 			}
+		}
 
-			const link = tryAngleBracketLink(scanner);
-			if (link !== null) {
-				nodes.push(link);
-				prev = '>';
+		// Angle bracket link
+		if (ch === '<') {
+			const ts = tryAngleBracketLink(scanner);
+			if (ts !== null) {
+				nodes.push(ts);
+				prev = '';
 				continue;
 			}
 		}
@@ -1832,4 +1833,114 @@ function tryHorizontalRule(scanner: Scanner): HorizontalRule | null {
 
 	consumeEndOfLine(scanner);
 	return horizontalRule([dashStart, dashEnd]);
+}
+
+// ------------- Table -----------------------------------------------------------------------
+
+// One table row "| a | b |" → its cells, or null if not a valid row.
+function parseTableRow(scanner: Scanner, options: Options): Inlines[][] | null {
+	const start = scanner.position();
+	if (scanner.char() !== '|') return null;
+	scanner.consume(); // opening '|'
+
+	const cells: Inlines[][] = [];
+	while (true) {
+		// Collect raw cell text up to an unescaped '|' or end of line.
+		let text = '';
+		let closed = false;
+		while (!scanner.isEnd() && !isNewline(scanner.char())) {
+			if (scanner.char() === '\\' && scanner.charAt(1) === '|') {
+				text += '|'; // escaped pipe stays literal
+				scanner.consume(2);
+				continue;
+			}
+			if (scanner.char() === '|') {
+				closed = true;
+				break;
+			}
+			text += scanner.char();
+			scanner.consume();
+		}
+
+		if (!closed) {
+			scanner.backtrack(start); // no closing '|' -> not a valid row
+			return null;
+		}
+		scanner.consume(); // consume '|'
+
+		cells.push(parseInline(new Scanner(text), options));
+
+		if (scanner.isEnd() || isNewline(scanner.char())) break; // trailing '|' reached
+	}
+
+	consumeEndOfLine(scanner);
+	return cells;
+}
+
+// The separator line "| --- | :--: |" → each column's alignment, or null.
+function parseTableDelimiter(scanner: Scanner): TableCellAlignment[] | null {
+	const start = scanner.position();
+	if (scanner.char() !== '|') return null;
+	scanner.consume();
+
+	const aligns: TableCellAlignment[] = [];
+	while (true) {
+		while (isSpace(scanner.char())) scanner.consume();
+
+		const left = scanner.char() === ':';
+		if (left) scanner.consume();
+
+		let dashes = 0;
+		while (scanner.char() === '-') {
+			scanner.consume();
+			dashes++;
+		}
+		if (dashes === 0) {
+			scanner.backtrack(start);
+			return null;
+		}
+
+		const right = scanner.char() === ':';
+		if (right) scanner.consume();
+
+		while (isSpace(scanner.char())) scanner.consume();
+		if (scanner.char() !== '|') {
+			scanner.backtrack(start);
+			return null;
+		}
+		scanner.consume(); // consume '|'
+
+		let align: TableCellAlignment;
+		if (left && right) align = 'center';
+		else if (right) align = 'right';
+		else if (left) align = 'left';
+		aligns.push(align);
+
+		if (scanner.isEnd() || isNewline(scanner.char())) break;
+	}
+
+	consumeEndOfLine(scanner);
+	return aligns;
+}
+
+function tryTable(scanner: Scanner, options: Options): Table | null {
+	const start = scanner.position();
+
+	const header = parseTableRow(scanner, options);
+	if (header === null) return null;
+
+	const aligns = parseTableDelimiter(scanner);
+	if (aligns === null) {
+		scanner.backtrack(start); // a header row with no delimiter row isn't a table
+		return null;
+	}
+
+	const rows: Inlines[][][] = [];
+	while (true) {
+		const row = parseTableRow(scanner, options);
+		if (row === null) break;
+		rows.push(row);
+	}
+
+	return table(header, aligns, rows, [start, scanner.position()]);
 }
