@@ -1787,10 +1787,12 @@ describe('LIVECHAT - rooms', () => {
 				expect(inquiry).to.have.property('department', targetDepartment._id);
 				expect(inquiry).to.have.property('status', 'queued');
 
+				// the room ends queued (never taken), so close it as the visitor — room.closeByUser rejects a room that is not being served
+				await request.post(api('livechat/room.close')).send({ rid: newRoom._id, token: newVisitor.token }).expect(200);
+
 				await Promise.all([
 					deleteDepartment(initialDepartment._id),
 					deleteDepartment(targetDepartment._id),
-					closeOmnichannelRoom(newRoom._id),
 					deleteVisitor(newVisitor.token),
 					deleteUser(manager),
 					updateSetting('Livechat_waiting_queue', false),
