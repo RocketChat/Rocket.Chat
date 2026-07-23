@@ -31,17 +31,7 @@ import { password } from '../../../data/user';
 import type { TestUser } from '../../../data/users.helper';
 import { setUserActiveStatus, createUser, deleteUser, getMe, getUserByUsername, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
-
-const waitForAgent = async (creds: Credentials, predicate: (agent: ILivechatAgent) => boolean, attempts = 20): Promise<void> => {
-	for (let i = 0; i < attempts; i++) {
-		const current: ILivechatAgent = await getMe(creds);
-		if (predicate(current)) {
-			return;
-		}
-		await sleep(250);
-	}
-	throw new Error('timed out waiting for agent business hours to update');
-};
+import { retry } from '../helpers/retry';
 
 describe('LIVECHAT - business hours', () => {
 	before((done) => getCredentials(done));
@@ -973,9 +963,16 @@ describe('LIVECHAT - business hours', () => {
 		it('should create a new agent and verify if it is assigned to the default business hour which is closed', async () => {
 			await openOrCloseBusinessHour(defaultBH, false);
 
-			// wait for the close to propagate (existing agent loses the BH assignment) before creating the new agent,
-			// otherwise the new agent can be created while the BH still counts as open and comes up available
-			await waitForAgent(agentCredentials, (a) => (a.openBusinessHours?.length ?? 0) === 0);
+			// the BH close recalculates agent statuses asynchronously; wait for it to propagate (existing agent loses the
+			// BH assignment) before creating the new agent, otherwise it is created while the BH still counts as open
+			await retry(
+				'BH close propagation is async, so the existing agent may still be assigned on the first fetch',
+				async () => {
+					const current: ILivechatAgent = await getMe(agentCredentials);
+					expect(current.openBusinessHours ?? []).to.have.lengthOf(0);
+				},
+				{ retries: 20, delayMs: 250 },
+			);
 
 			const newUser: ILivechatAgent = await createUser();
 			const newUserCredentials = await login(newUser.username, password);
