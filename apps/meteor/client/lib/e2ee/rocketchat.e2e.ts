@@ -736,13 +736,12 @@ class E2E extends Emitter {
 					return;
 				}
 
-				const msgIds = urlObj.searchParams.getAll('msg');
+				const [msgId, ...extraMsgIds] = urlObj.searchParams.getAll('msg');
 
-				if (msgIds.length !== 1) {
+				// skip if the msg param is missing, empty, or duplicated
+				if (!msgId || extraMsgIds.length) {
 					return;
 				}
-
-				const [msgId] = msgIds;
 
 				let quotedMessage: Serialized<IMessage>;
 				try {
