@@ -4,6 +4,11 @@
 
 Draft
 
+> **Depends on** [A unified `Decision` return type for apps-engine pre-events](./apps-engine-decision-return-type.md).
+> The confirmation hook below returns that proposal's `Decision` type; requesting
+> confirmation is the `Decision.prompt` variant. This proposal is the first
+> consumer of `Decision` and its `prompt` variant, not a parallel mechanism.
+
 ## Summary
 
 Rocket.Chat already has a well-established pattern for **interrupting an HTTP/DDP
@@ -228,23 +233,31 @@ export async function checkUploadConfirmation({
     }
 
     // 3. Ask apps whether this upload needs confirmation.
-    //    Returns the *first* app that requests it, with its prompt payload.
-    const request = await Apps.self?.triggerEvent(
+    //    The manager short-circuits on the *first* app that returns a
+    //    Decision.prompt, returning that decision (with the requesting appId);
+    //    apps that return Decision.pass are skipped.
+    const decision = await Apps.self?.triggerEvent(
         AppEvents.IPreFileUploadConfirmation, { file, content });
 
-    if (!request) {
+    if (!decision || decision.type === 'pass') {
         return; // no app wants confirmation → allow (like no 2FA method → allow)
     }
 
-    // 4. No valid token yet → issue the challenge (mirror of index.ts:232)
-    const newConfirmationId = issueConfirmation(file._id, userId, request);
+    // decision.type === 'prompt' here (the only other variant this event allows;
+    // a disallowed variant would have been logged + treated as pass by the manager)
+
+    // 4. No valid token yet → issue the challenge (mirror of index.ts:232).
+    //    The prompt payload IS the challenge detail.
+    const newConfirmationId = issueConfirmation(file._id, userId, decision);
     throw new Meteor.Error('upload-confirmation-required', 'Upload confirmation required', {
         confirmationId: newConfirmationId,
-        appId: request.appId,
-        appName: request.appName,
-        title: request.title,
-        text: request.text,
-        blocks: request.blocks, // optional UIKit blocks for a rich prompt
+        appId: decision.appId,      // stamped by the manager with the deciding app
+        appName: decision.appName,
+        title: decision.title,      // @rocket.chat/ui-kit TextObject (PlainText | Markdown)
+        text: decision.text,        // @rocket.chat/ui-kit TextObject
+        blocks: decision.blocks,    // optional UIKit blocks for a rich prompt
+        confirmLabel: decision.confirmLabel,
+        cancelLabel: decision.cancelLabel,
     });
 }
 ```
@@ -257,8 +270,10 @@ cannot fabricate acceptance by simply re-sending with an arbitrary header.
 
 ### App-facing API: a new interactive hook
 
-`IPreFileUpload` stays block-only. We add a sibling hook whose return value
-*requests* confirmation instead of throwing:
+`IPreFileUpload` stays block-only. We add a sibling hook that returns a
+`Decision` (from the unified-`Decision` proposal), restricted to the
+`pass | prompt` subset — `Decision.prompt(...)` *requests* confirmation instead
+of throwing, `Decision.pass()` allows:
 
 ```ts
 // packages/apps-engine/src/definition/uploads/IPreFileUploadConfirmation.ts
@@ -268,26 +283,43 @@ export interface IPreFileUploadConfirmation {
         read: IRead,
         http: IHttp,
         persis: IPersistence,
-    ): Promise<IUploadConfirmationRequest | undefined>;
-    //   undefined  → no confirmation needed, allow
-    //   {…}        → prompt the user with this content before finalizing
+        modify: IModify,
+    ): Promise<UploadConfirmationDecision>;
+    //   Decision.pass()        → no confirmation needed, allow
+    //   Decision.prompt({…})   → prompt the user with this content before finalizing
 }
 
-export interface IUploadConfirmationRequest {
-    title: string;
-    text: string;
-    blocks?: Block[];        // optional UIKit blocks, rendered in the modal
-    acceptLabel?: string;    // default "Send"
-    rejectLabel?: string;    // default "Cancel"
-}
+// Restricted per-event union (see the Decision proposal's capability matrix):
+//   type UploadConfirmationDecision = PassDecision | PromptDecision;
 ```
+
+The confirmation UI is carried by the `prompt` variant's **rich** payload —
+which is exactly the shape this proposal previously called
+`IUploadConfirmationRequest`:
+
+```ts
+Decision.prompt({
+    title?: TextObject;      // @rocket.chat/ui-kit TextObject: PlainText | Markdown
+    text?: TextObject;
+    blocks?: Block[];        // optional UIKit blocks, rendered in the modal
+    confirmLabel?: string;   // default "Send"
+    cancelLabel?: string;    // default "Cancel"
+});
+```
+
+(The `prompt` variant also has a simple `{ message }` / `{ i18n: { key, args? } }`
+form for prompts that don't need a title or custom labels. Both forms support
+i18n: the simple form via the explicit `i18n` channel, and the rich form because
+ui-kit `TextObject` text is resolved through the app-translation-aware renderer at
+render time.)
 
 This reuses the existing `IFileUploadContext` (`{ file, content }`,
 `packages/apps-engine/src/definition/uploads/IFileUploadContext.ts`) and the
 existing listener-dispatch machinery in
 `apps/meteor/app/apps/server/bridges/listeners.ts` (the `IPreFileUpload` case at
 `listeners.ts:284` is the template). Rejection is still available via the old
-hook; the new hook is strictly additive.
+block-only hook (which is where upload's `prevent` lives, at the `rooms.media`
+pre-stage); the new hook is strictly additive and carries only `pass`/`prompt`.
 
 ### Client handling (mirror of `process2faReturn`)
 
@@ -348,7 +380,7 @@ POST rooms.media/:rid                     → 200 { file:{ _id, url } }   (temp,
 POST rooms.mediaConfirm/:rid/:fileId
       │
       ├─ checkUploadConfirmation()
-      │     └─ IPreFileUploadConfirmation hook → app returns { title, text, blocks }
+      │     └─ IPreFileUploadConfirmation hook → app returns Decision.prompt({ title, text, blocks })
       │
       └─ throws 400 upload-confirmation-required
              { confirmationId, appId, appName, title, text, blocks }
