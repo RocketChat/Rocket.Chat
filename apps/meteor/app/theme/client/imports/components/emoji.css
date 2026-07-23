@@ -10,6 +10,7 @@
 		width: 1.375rem;
 		overflow: hidden;
 		position: relative;
+		white-space: nowrap;
 		text-indent: 100%;
 		vertical-align: bottom;
 		display: inline-block;
