@@ -9514,7 +9514,6 @@ __metadata:
     npm-run-all: "npm:^4.1.5"
     path-to-regexp: "npm:^6.3.0"
     postcss: "npm:8.5.20"
-    postcss-css-variables: "npm:^0.19.0"
     postcss-dir-pseudo-class: "npm:^9.0.1"
     postcss-flexbugs-fixes: "npm:^5.0.2"
     postcss-loader: "npm:^8.1.1"
@@ -22338,7 +22337,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"extend@npm:^3.0.0, extend@npm:^3.0.1, extend@npm:^3.0.2":
+"extend@npm:^3.0.0, extend@npm:^3.0.2":
   version: 3.0.2
   resolution: "extend@npm:3.0.2"
   checksum: 10/59e89e2dc798ec0f54b36d82f32a27d5f6472c53974f61ca098db5d4648430b725387b53449a34df38fd0392045434426b012f302b3cc049a6500ccf82877e4e
@@ -30844,19 +30843,6 @@ __metadata:
   peerDependencies:
     postcss: ^8.5.13
   checksum: 10/c32c4bd56d53b313b3d9b73fc5efffb29912123a0905f68dba66ab18e65ac668deddb2fd9e6eeaaf65b710ba603d79fea01cf9b177b84f51d7966108634387a6
-  languageName: node
-  linkType: hard
-
-"postcss-css-variables@npm:^0.19.0":
-  version: 0.19.0
-  resolution: "postcss-css-variables@npm:0.19.0"
-  dependencies:
-    balanced-match: "npm:^1.0.0"
-    escape-string-regexp: "npm:^1.0.3"
-    extend: "npm:^3.0.1"
-  peerDependencies:
-    postcss: ^8.2.6
-  checksum: 10/4f72d74ee9708c9343fe91f8a0f135aad5c88ce56061d8c5f2b9b957c0467b68a246e9f24726b23c338d1ef0244abab4eac56f0cae1618c47a81dcd66f14f53d
   languageName: node
   linkType: hard
 
