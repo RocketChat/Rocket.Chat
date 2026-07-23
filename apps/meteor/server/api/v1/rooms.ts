@@ -425,7 +425,7 @@ const saveDraftBodySchema = ajv.compile<{ rid: IRoom['_id']; draft: string; tmid
 	properties: {
 		rid: { type: 'string', minLength: 1 },
 		draft: { type: 'string' },
-		tmid: { type: 'string', minLength: 1 },
+		tmid: { type: 'string', minLength: 1, pattern: '^[^.$]+$' },
 	},
 	required: ['rid', 'draft'],
 	additionalProperties: false,
@@ -456,13 +456,6 @@ const roomsSaveDraftEndpoint = API.v1.post(
 
 		if (draft.length > (settings.get<number>('Message_MaxAllowedSize') ?? 0)) {
 			return API.v1.failure('error-message-size-exceeded');
-		}
-
-		if (tmid && draft) {
-			const thread = await Messages.findOneByRoomIdAndMessageId(rid, tmid, { projection: { _id: 1 } });
-			if (!thread) {
-				return API.v1.failure('error-invalid-message');
-			}
 		}
 
 		const subscription = await Subscriptions.updateDraftByRoomIdAndUserId(rid, this.userId, draft || undefined, tmid);
