@@ -182,6 +182,45 @@ describe('createComposerHistory', () => {
 		expect(applyState).toHaveBeenLastCalledWith(expect.objectContaining({ text: 'a' }));
 	});
 
+	it('does not create a ghost step for a re-selection after a formatting change', () => {
+		const input = makeInput();
+		const applyState = jest.fn();
+		const history = createComposerHistory({ input, applyState, now });
+
+		typeInput(input, 'bold');
+
+		// Select all ('bold' -> range 0..4), then apply bold. The execCommand replacement fires
+		// beforeinput with the pre-edit range still live (marks a replace boundary), then two input
+		// events with identical text but different selections (caret at end, then 'bold' reselected).
+		mockedGetSelectionRange.mockReturnValue({ selectionStart: 0, selectionEnd: 4 });
+		input.dispatchEvent(new InputEvent('beforeinput', { inputType: 'insertText', bubbles: true }));
+		setState(input, '*bold*', 6, 6);
+		input.dispatchEvent(new InputEvent('input', { inputType: 'insertText', data: '*bold*', bubbles: true }));
+		setState(input, '*bold*', 1, 5);
+		input.dispatchEvent(new Event('input', { bubbles: true }));
+
+		history.undo();
+		expect(applyState).toHaveBeenCalledTimes(1);
+		expect(applyState).toHaveBeenLastCalledWith(expect.objectContaining({ text: 'bold' }));
+	});
+
+	it('starts a new undo step when typing replaces a selected range', () => {
+		const input = makeInput();
+		const applyState = jest.fn();
+		const history = createComposerHistory({ input, applyState, now });
+
+		typeInput(input, 'foo');
+
+		// Select all via keyboard, then type over the selection. The keydown fires on the document
+		// capture phase with the range still live, marking a replace boundary.
+		mockedGetSelectionRange.mockReturnValue({ selectionStart: 0, selectionEnd: 3 });
+		input.dispatchEvent(new KeyboardEvent('keydown', { key: 'x', bubbles: true }));
+		typeInput(input, 'x', 'x');
+
+		history.undo();
+		expect(applyState).toHaveBeenLastCalledWith(expect.objectContaining({ text: 'foo' }));
+	});
+
 	it('clears the redo stack when a new change is recorded after an undo', () => {
 		const input = makeInput();
 		const applyState = jest.fn();

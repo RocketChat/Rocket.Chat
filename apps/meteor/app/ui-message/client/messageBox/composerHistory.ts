@@ -70,7 +70,10 @@ export const createComposerHistory = ({
 	let breakNext = true;
 	let applying = false;
 	let composing = false;
-	let pendingBoundary = false;
+	// The selection captured just before an edit (from keydown/beforeinput, while the pre-edit
+	// selection is still live). Used to detect discontinuous edits — a moved caret or a replaced
+	// range — which start a new undo step, and to anchor the undo entry at the edit location.
+	let preEditSelection: { start: number; end: number } | null = null;
 
 	const sameState = (a: ComposerHistoryEntry, b: ComposerHistoryEntry): boolean =>
 		normalize(a.text) === normalize(b.text) && a.selectionStart === b.selectionStart && a.selectionEnd === b.selectionEnd;
@@ -94,7 +97,7 @@ export const createComposerHistory = ({
 		lastKind = null;
 		lastAt = now();
 		breakNext = true;
-		pendingBoundary = false;
+		preEditSelection = null;
 	};
 
 	const undo = (): void => {
@@ -125,15 +128,33 @@ export const createComposerHistory = ({
 			return;
 		}
 
+		// A change that only moves the caret (same text, different selection) is not its own undo
+		// step. Absorb the new selection into the current entry. This prevents a ghost step when an
+		// operation re-selects text after editing it, e.g. wrapSelection inserting '*bold*' and then
+		// re-selecting 'bold' fires two input events with identical text but different selections.
+		if (normalize(next.text) === normalize(current.text)) {
+			current = next;
+			return;
+		}
+
 		const pause = now() - lastAt > coalesceTimeout;
 		const kindChanged = lastKind !== null && kind !== lastKind;
 		const alwaysBreak = kind === 'paste' || kind === 'newline';
 
-		if (breakNext || kindChanged || alwaysBreak || pause || pendingBoundary) {
+		// A discontinuous edit — the caret moved away from where the last edit left it, or a range was
+		// selected and replaced — starts a new undo step. Anchor the committed entry at the edit
+		// location so undo restores the caret there.
+		const preSel = preEditSelection;
+		preEditSelection = null;
+		const discontinuous = !!preSel && (preSel.start !== current.selectionStart || preSel.end !== current.selectionEnd);
+		if (preSel) {
+			current = { ...current, selectionStart: preSel.start, selectionEnd: preSel.end };
+		}
+
+		if (breakNext || kindChanged || alwaysBreak || pause || discontinuous) {
 			commit();
 		}
 
-		pendingBoundary = false;
 		current = next;
 		lastKind = kind;
 		lastAt = now();
@@ -142,6 +163,26 @@ export const createComposerHistory = ({
 		// undo step. Paste/newline/programmatic changes are always their own step.
 		const whitespaceInsert = kind === 'insert' && /\s/.test((event as InputEvent).data ?? '');
 		breakNext = alwaysBreak || kind === 'programmatic' || whitespaceInsert;
+	};
+
+	// Capture the selection just before an edit, while it is still the pre-edit selection.
+	const capturePreEditSelection = (): void => {
+		if (applying || composing) {
+			return;
+		}
+		const { selectionStart, selectionEnd } = getSelectionRange(input);
+		preEditSelection = { start: selectionStart, end: selectionEnd };
+	};
+
+	// Runs on the capture phase (document) so it fires before the composer's own keydown handler
+	// triggers execCommand (e.g. the Cmd+B formatting shortcut) synchronously, capturing the range
+	// that is about to be replaced.
+	const onDocumentKeyDownCapture = (event: KeyboardEvent): void => {
+		const target = event.target as Node | null;
+		if (target !== input && !(target && input.contains(target))) {
+			return;
+		}
+		capturePreEditSelection();
 	};
 
 	const onKeyDown = (event: KeyboardEvent): void => {
@@ -182,15 +223,9 @@ export const createComposerHistory = ({
 			return;
 		}
 
-		if (applying || composing) {
-			return;
-		}
-
-		const { selectionStart, selectionEnd } = getSelectionRange(input);
-		if (selectionStart !== current.selectionStart || selectionEnd !== current.selectionEnd) {
-			current = { ...current, selectionStart, selectionEnd };
-			pendingBoundary = true;
-		}
+		// beforeinput fires before the DOM mutation with the pre-edit selection still live, covering
+		// programmatic edits (execCommand) that have no preceding keydown, e.g. the formatting toolbar.
+		capturePreEditSelection();
 	};
 
 	const onCompositionStart = (): void => {
@@ -209,9 +244,10 @@ export const createComposerHistory = ({
 		lastKind = null;
 		lastAt = now();
 		breakNext = true;
-		pendingBoundary = false;
+		preEditSelection = null;
 	};
 
+	document.addEventListener('keydown', onDocumentKeyDownCapture, true);
 	input.addEventListener('input', onInput);
 	input.addEventListener('keydown', onKeyDown);
 	input.addEventListener('beforeinput', onBeforeInput as EventListener);
@@ -219,6 +255,7 @@ export const createComposerHistory = ({
 	input.addEventListener('compositionend', onCompositionEnd);
 
 	const release = (): void => {
+		document.removeEventListener('keydown', onDocumentKeyDownCapture, true);
 		input.removeEventListener('input', onInput);
 		input.removeEventListener('keydown', onKeyDown);
 		input.removeEventListener('beforeinput', onBeforeInput as EventListener);
