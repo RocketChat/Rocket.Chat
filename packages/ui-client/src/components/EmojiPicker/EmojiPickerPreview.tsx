@@ -8,7 +8,9 @@ export type EmojiPickerPreviewProps = { emoji: string; name: string } & Omit<All
 const EmojiPickerPreview = ({ emoji, name, ...props }: EmojiPickerPreviewProps) => {
 	const previewEmojiClass = css`
 		span {
-			font-size: 1.375rem;
+			width: 2.5rem;
+			height: 2.5rem;
+			font-size: 2.5rem;
 		}
 	`;
 
