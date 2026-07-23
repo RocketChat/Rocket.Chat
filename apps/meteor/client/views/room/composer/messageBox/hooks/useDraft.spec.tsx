@@ -3,17 +3,13 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 
 import { useDraft } from './useDraft';
 
-// `useLocalStorage` from fuselage-hooks namespaces keys and serializes values as JSON
-const storageKey = (rid: string, tmid?: string) => `fuselage-localStorage-messagebox_${rid}${tmid ? `-${tmid}` : ''}`;
+const storageKey = (rid: string, tmid?: string) => `messagebox_${rid}${tmid ? `-${tmid}` : ''}`;
 
 const seedLocalDraft = (value: string, rid: string, tmid?: string) => {
-	localStorage.setItem(storageKey(rid, tmid), JSON.stringify(value));
+	localStorage.setItem(storageKey(rid, tmid), value);
 };
 
-const readLocalDraft = (rid: string, tmid?: string) => {
-	const item = localStorage.getItem(storageKey(rid, tmid));
-	return item === null ? null : JSON.parse(item);
-};
+const readLocalDraft = (rid: string, tmid?: string) => localStorage.getItem(storageKey(rid, tmid));
 
 type RenderUseDraftProps = {
 	serverDraft?: string;
@@ -142,6 +138,18 @@ describe('persistLocal', () => {
 		expect(readLocalDraft('rid')).toBe('second');
 	});
 
+	it('should remove the local entry instead of storing an empty string', () => {
+		seedLocalDraft('local draft', 'rid');
+
+		const { result } = renderUseDraft();
+
+		act(() => {
+			result.current.persistLocal('');
+		});
+
+		expect(readLocalDraft('rid')).toBe(null);
+	});
+
 	it('should not call the save draft endpoint', () => {
 		const { result, endpointHandler } = renderUseDraft();
 
@@ -188,6 +196,17 @@ describe('flushDraft', () => {
 		expect(endpointHandler).toHaveBeenCalledWith({ rid: 'rid', draft: 'typed message' });
 	});
 
+	it('should remove the local copy once the draft is saved to the server', async () => {
+		const { result } = renderUseDraft();
+
+		act(() => {
+			result.current.persistLocal('typed message');
+			result.current.flushDraft();
+		});
+
+		await waitFor(() => expect(readLocalDraft('rid')).toBe(null));
+	});
+
 	it('should include the tmid when flushing a thread draft', async () => {
 		const { result, endpointHandler } = renderUseDraft({ tmid: 'tmid' });
 
@@ -213,8 +232,8 @@ describe('flushDraft', () => {
 		expect(endpointHandler).toHaveBeenCalledWith({ rid: 'rid', draft: 'second' });
 	});
 
-	it('should flush an empty draft so the server draft can be cleared', async () => {
-		const { result, endpointHandler } = renderUseDraft();
+	it('should flush an empty draft to clear an existing server draft', async () => {
+		const { result, endpointHandler } = renderUseDraft({ serverDraft: 'server draft' });
 
 		act(() => {
 			result.current.persistLocal('');
@@ -223,6 +242,28 @@ describe('flushDraft', () => {
 
 		await waitFor(() => expect(endpointHandler).toHaveBeenCalledTimes(1));
 		expect(endpointHandler).toHaveBeenCalledWith({ rid: 'rid', draft: '' });
+	});
+
+	it('should not call the endpoint when flushing an empty draft with no existing server draft', () => {
+		const { result, endpointHandler } = renderUseDraft();
+
+		act(() => {
+			result.current.persistLocal('');
+			result.current.flushDraft();
+		});
+
+		expect(endpointHandler).not.toHaveBeenCalled();
+	});
+
+	it('should not re-save a restored server draft that was not edited', () => {
+		const { result, endpointHandler } = renderUseDraft({ serverDraft: 'server draft' });
+
+		act(() => {
+			result.current.persistLocal('server draft');
+			result.current.flushDraft();
+		});
+
+		expect(endpointHandler).not.toHaveBeenCalled();
 	});
 
 	it('should not flush the same draft twice', async () => {
@@ -252,7 +293,7 @@ describe('flushDraft', () => {
 		expect(endpointHandler).toHaveBeenNthCalledWith(2, { rid: 'rid', draft: 'second' });
 	});
 
-	it('should discard the draft instead of saving it when the thread does not exist', () => {
+	it('should not save the draft to the server when the thread does not exist', () => {
 		const { result, endpointHandler } = renderUseDraft({ tmid: 'tmid', threadExists: false });
 
 		act(() => {
@@ -261,6 +302,17 @@ describe('flushDraft', () => {
 		});
 
 		expect(endpointHandler).not.toHaveBeenCalled();
+	});
+
+	it('should keep the draft in local storage when the thread does not exist', () => {
+		const { result } = renderUseDraft({ tmid: 'tmid', threadExists: false });
+
+		act(() => {
+			result.current.persistLocal('typed in deleted thread');
+			result.current.flushDraft();
+		});
+
+		expect(readLocalDraft('rid', 'tmid')).toBe('typed in deleted thread');
 	});
 
 	it('should keep discarding drafts persisted after a flush while the thread does not exist', () => {
@@ -276,7 +328,7 @@ describe('flushDraft', () => {
 		expect(endpointHandler).not.toHaveBeenCalled();
 	});
 
-	it('should discard the draft when the thread stops existing after mount', () => {
+	it('should not save the draft when the thread stops existing after mount', () => {
 		const { result, rerender, endpointHandler } = renderUseDraft({ tmid: 'tmid', threadExists: true });
 
 		act(() => {
