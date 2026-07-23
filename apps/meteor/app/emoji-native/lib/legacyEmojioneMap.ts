@@ -2,7 +2,7 @@
 // These shortcodes existed in emojione but are not in emojibase.
 // They are used to ensure backward compatibility with old stored messages.
 
-export const legacyEmojioneMap: Record<string, string> = {
+const legacyEmojioneMapData: Record<string, string> = {
 	'ac': '🇦🇨',
 	'ad': '🇦🇩',
 	'adult_dark_skin_tone': '🧑🏿',
@@ -1425,3 +1425,5 @@ export const legacyEmojioneMap: Record<string, string> = {
 	'tone4': '🏾',
 	'tone5': '🏿',
 };
+
+export const legacyEmojioneMap: Record<string, string> = Object.assign(Object.create(null), legacyEmojioneMapData);

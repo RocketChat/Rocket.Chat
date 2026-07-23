@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { describe, it } from 'mocha';
 
 import { getEmojiData } from '../../../../app/emoji-native/lib/generateEmojiData';
+import { getEmojiConfig } from '../../../../app/emoji-native/lib/getEmojiConfig';
 import { shortnameToUnicode } from '../../../../app/emoji-native/lib/shortnameToUnicode';
 
 describe('emoji-native shortcode resolution', () => {
@@ -36,6 +37,19 @@ describe('emoji-native shortcode resolution', () => {
 
 		it('resolves multiple shortcodes within a single string', () => {
 			expect(shortnameToUnicode('hi :thumbsup_tone3: and :regional_indicator_a:')).to.equal('hi 👍🏽 and 🇦');
+		});
+	});
+
+	describe('render', () => {
+		const { render } = getEmojiConfig({ list: {}, packages: {} });
+
+		it('renders a known shortcode as an emoji span', () => {
+			expect(render(':smile:')).to.contain('class="emoji"');
+		});
+
+		it('leaves prototype property names untouched', () => {
+			expect(render(':toString:')).to.equal(':toString:');
+			expect(render('topic :toString: end')).to.equal('topic :toString: end');
 		});
 	});
 
