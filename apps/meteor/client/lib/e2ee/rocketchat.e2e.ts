@@ -728,9 +728,11 @@ class E2E extends Emitter {
 					return;
 				}
 
-				const urlObj = new URL(url);
-				// if the URL doesn't have query params (doesn't reference message) skip
-				if (!urlObj?.searchParams) {
+				// URLs come from regex-matched message content, so they may be malformed; skip those instead of throwing
+				let urlObj: URL;
+				try {
+					urlObj = new URL(url);
+				} catch (error) {
 					return;
 				}
 
