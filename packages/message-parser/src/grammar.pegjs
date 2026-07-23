@@ -654,7 +654,7 @@ UserMentionDirect
 
 // Full form: includes text@user fallback, used by SlowPath
 UserMention
-  = t:Text "@" user:AlphaNumericChar {
+  = !"@" t:Text "@" user:AlphaNumericChar {
       return reducePlainTexts([t, plain('@' + user)])[0];
     }
   / UserMentionDirect
