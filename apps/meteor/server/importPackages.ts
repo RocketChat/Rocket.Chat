@@ -53,6 +53,7 @@ import './lib/auth-providers/oauth/twitter';
 import './hooks/messages/mentionUserNotInChannel';
 import './hooks/afterUserActions';
 import './hooks/messages/notifyUsersOnMessage';
+import './hooks/messages/notifyAuthorOnReaction';
 import './lib/auth-providers/meteor-developer';
 import './lib/auth-providers/linkedin';
 import './lib/auth/token-login';

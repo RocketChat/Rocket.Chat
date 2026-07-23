@@ -464,6 +464,11 @@ export const createAccountSettings = () =>
 				public: true,
 				i18nLabel: 'Notification_Desktop_show_voice_calls',
 			});
+			await this.add('Accounts_Default_User_Preferences_receiveReactionNotifications', true, {
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'Receive_Reaction_Notifications',
+			});
 			await this.add('Accounts_Default_User_Preferences_pushNotifications', 'all', {
 				type: 'select',
 				values: [
