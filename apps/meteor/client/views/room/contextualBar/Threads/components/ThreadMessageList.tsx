@@ -77,10 +77,12 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 	const messages = useMemo(() => data?.messages ?? [], [data?.messages]);
 
 	const userInteractedRef = useRef(false);
+	const isJumpingToMessageRef = useRef(false);
+	const isPrependRef = useRef(false);
 
 	const loadMoreMessages = useDebouncedCallback(
 		() => {
-			if (userInteractedRef.current && hasNextPage && !isFetchingNextPage) {
+			if (userInteractedRef.current && !isJumpingToMessageRef.current && hasNextPage && !isFetchingNextPage) {
 				void fetchNextPage();
 			}
 		},
@@ -94,11 +96,13 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		() => {
 			if (
 				userInteractedRef.current &&
+				!isJumpingToMessageRef.current &&
 				initialScrollDoneRef.current &&
 				isAtBottom.current !== true &&
 				hasPreviousPage &&
 				!isFetchingPreviousPage
 			) {
+				isPrependRef.current = true;
 				void fetchPreviousPage();
 			}
 		},
@@ -124,7 +128,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 	const messagesLength = messages.length;
 	useEffect(() => {
 		setKeepAtBottom(() => {
-			if (virtualizerRef.current && !msgJumpParam) {
+			if (virtualizerRef.current && !msgJumpParam && !isJumpingToMessageRef.current) {
 				virtualizerRef.current.scrollToIndex(messagesLength + 1, {
 					align: 'end',
 				});
@@ -152,6 +156,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 			if (loadingWindowKeyRef.current === windowKey) {
 				loadingWindowKeyRef.current = undefined;
 			}
+			isJumpingToMessageRef.current = false;
 		});
 	}, [loading, isFetchingNextPage, isFetchingPreviousPage, msgJumpParam, messages, mainMessage._id, loadMessageAround, hasPreviousPage]);
 
@@ -188,16 +193,11 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		return showMainMessage ? [mainMessage, ...messages] : messages;
 	}, [loading, showMainMessage, mainMessage, messages]);
 
-	const firstItemId = items[0]?._id;
-	const prevFirstItemIdRef = useRef<string | undefined>(undefined);
 	const prevItemsCountRef = useRef(0);
-	const isPrepend =
-		prevItemsCountRef.current > 0 &&
-		items.length > prevItemsCountRef.current &&
-		firstItemId !== undefined &&
-		firstItemId !== prevFirstItemIdRef.current;
 	useLayoutEffect(() => {
-		prevFirstItemIdRef.current = firstItemId;
+		if (isPrependRef.current && items.length !== prevItemsCountRef.current) {
+			isPrependRef.current = false;
+		}
 		prevItemsCountRef.current = items.length;
 	});
 
@@ -225,7 +225,18 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		prevItemsLengthRef.current = 0;
 		initialScrollDoneRef.current = false;
 		userInteractedRef.current = false;
+		isJumpingToMessageRef.current = false;
+		isPrependRef.current = false;
 	}, [mainMessage._id]);
+
+	useEffect(() => {
+		if (!msgJumpParam) {
+			isJumpingToMessageRef.current = false;
+			return;
+		}
+		isJumpingToMessageRef.current = true;
+		isAtBottom.current = false;
+	}, [msgJumpParam]);
 
 	useEffect(() => {
 		const handle = virtualizerRef.current;
@@ -294,10 +305,14 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 		const highlightTimeout = setTimeout(() => {
 			clearHighlightMessage();
 		}, 2000);
+		const settleTimeout = setTimeout(() => {
+			isJumpingToMessageRef.current = false;
+		}, 500);
 
 		return () => {
 			cancelAnimationFrame(rafId);
 			clearTimeout(highlightTimeout);
+			clearTimeout(settleTimeout);
 		};
 	}, [threadMsgTargetIndex, msgJumpParam, mainMessage._id, setShouldJumpToBottom]);
 
@@ -345,7 +360,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 				<MessageListProvider>
 					<VList
 						ref={virtualizerRef}
-						shift={isPrepend}
+						shift={isPrependRef.current}
 						style={{ height: '100%' }}
 						aria-label={t('Thread_message_list')}
 						aria-busy={loading || isFetchingNextPage || isFetchingPreviousPage}
@@ -355,7 +370,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 							const handle = virtualizerRef.current;
 							if (!handle) return;
 
-							if (offset < 200 && hasPreviousPage) {
+							if (offset < 200 && hasPreviousPage && !isJumpingToMessageRef.current) {
 								loadPreviousMessages();
 							}
 
@@ -364,6 +379,10 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 								isAtBottom.current = true;
 							}
 							isAtBottom.current = offset - handle.scrollSize + handle.viewportSize >= -20;
+
+							if (hasNextPage && !isJumpingToMessageRef.current && offset - handle.scrollSize + handle.viewportSize >= -200) {
+								loadMoreMessages();
+							}
 
 							const topMessage = items[handle.findItemIndex(handle.scrollOffset)];
 							handleDateScroll(topMessage, offset);

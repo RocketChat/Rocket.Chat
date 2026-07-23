@@ -118,10 +118,6 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 			const currentQueryKey = roomsQueryKeys.threadMessages(roomId, tmid);
 
 			await queryClient.cancelQueries({ queryKey: currentQueryKey });
-			queryClient.setQueryData<ThreadMessagesInfiniteData>(currentQueryKey, {
-				pages: [],
-				pageParams: [],
-			});
 
 			const { messages, total, offset } = await getThreadMessages({
 				tmid,
@@ -203,6 +199,7 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 				itemCount: pages.at(-1)?.itemCount ?? 0,
 			};
 		},
+		refetchOnWindowFocus: false,
 	});
 
 	return { ...query, loadMessageAround };
