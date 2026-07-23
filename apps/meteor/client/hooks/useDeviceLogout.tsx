@@ -26,29 +26,25 @@ export const useDeviceLogout = (
 
 	const { mutate: logoutDevice } = useMutation({
 		mutationFn: logoutEndpoint,
-		onSettled: () => {
-			if (isCurrentSession) {
-				setModal(null);
-				logout();
-			}
-		},
 		onSuccess: () => {
-			if (isCurrentSession) {
-				return;
-			}
+			if (isCurrentSession) return;
+
 			queryClient.invalidateQueries({ queryKey: deviceManagementQueryKeys.all });
 			if (isContextualBarOpen) {
 				handleCloseContextualBar();
 			}
 			dispatchToastMessage({ type: 'success', message: t('Device_Logged_Out') });
-			setModal(null);
 		},
 		onError: (error) => {
-			if (isCurrentSession) {
-				return;
-			}
+			if (isCurrentSession) return;
 			dispatchToastMessage({ type: 'error', message: error });
+		},
+		onSettled: () => {
 			setModal(null);
+
+			if (isCurrentSession) {
+				logout();
+			}
 		},
 		throwOnError: false,
 	});
