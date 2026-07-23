@@ -4,6 +4,32 @@
 
 Draft — design decided (see [Design decisions](#design-decisions))
 
+## TL;DR
+
+- **What:** one uniform `Decision<T>` return type for apps-engine pre-events —
+  `pass` / `patch` / `prevent` / `prompt` — replacing today's five inconsistent
+  return contracts (boolean, entity-object, `IEmailDescriptor`, void+throw).
+- **Why:** the [file-upload confirmation proposal](./app-file-upload-confirmation.md)
+  needs a handler to say *"prompt the user and proceed only if they accept."*
+  No pre-event can express that today. `prompt` is the one genuinely new
+  capability; `pass`/`patch`/`prevent` just unify mechanisms that already exist.
+- **Verdict:** feasible, worthwhile, **moderate effort**. `patch` is already what
+  the Modify chain does; the risk is that it touches hot paths (message send,
+  room create).
+- **Non-breaking:** a reserved `kind: 'Decision'` marker + an `isDecision()` guard
+  that runs *before* every legacy branch. Apps that never return a `Decision`
+  behave exactly as before; `return true` ≡ `Decision.prevent`, `return message`
+  ≡ a full `Decision.patch`.
+- **How it ships:** bootstrap on a **new** upload handler (Strategy A, unblocks
+  the companion proposal), then **widen existing handlers** to their restricted
+  `Decision` union per event (Strategy B, the destination) — semantics unchanged.
+- **Authoring:** `Decision.*` factories (`Decision.prevent({ i18n: { key } })`);
+  the author-facing type is marker-free; each handler's return-type alias narrows
+  which variants are legal (no new accessor, no generic `IModify`).
+- **Key rules:** `patch` chains the *patched subject* (shallow-merge, builder-
+  surface allow-list, validate once at end); `prevent`/`prompt` short-circuit;
+  disallowed variant at runtime → log + treat as `pass`.
+
 ## Context
 
 This document is a **prerequisite feasibility study** for
