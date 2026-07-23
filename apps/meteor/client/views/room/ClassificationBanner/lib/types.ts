@@ -20,7 +20,7 @@ export type ClassificationBannerAttribute = {
 	values: ClassificationBannerValue[];
 };
 
-export type ClassificationBannerStyle = 'classic' | 'segmented' | 'edge';
+export type ClassificationBannerStyle = 'classic';
 
 export type ClassificationBannersConfig = {
 	version: 1;

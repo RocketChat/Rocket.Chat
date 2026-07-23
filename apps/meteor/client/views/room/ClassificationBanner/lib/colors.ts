@@ -21,15 +21,3 @@ export const readableTextColor = (hex: string): '#1F2329' | '#FFFFFF' => {
 
 	return contrastWith('#1F2329') >= contrastWith('#FFFFFF') ? '#1F2329' : '#FFFFFF';
 };
-
-/**
- * Darkens a hex color by multiplying each RGB channel by `factor` (0–1, lower = darker).
- *
- * Used by the `edge` banner style to draw its top/bottom rules: on dark backgrounds (white text)
- * a plain black overlay would be invisible, so the rules use a darkened shade of the background
- * color instead.
- */
-export const shade = (hex: string, factor: number): string => {
-	const [r, g, b] = [0, 2, 4].map((offset) => Math.round(parseInt(hex.replace('#', '').slice(offset, offset + 2), 16) * factor));
-	return `rgb(${r}, ${g}, ${b})`;
-};
