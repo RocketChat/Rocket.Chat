@@ -1,0 +1,1 @@
+{ "compilerOptions": { "target":"es2018","module":"esnext","moduleResolution":"bundler","lib":["esnext","dom"],"skipLibCheck":true,"strict":true,"noEmit":true,"esModuleInterop":true,"jsx":"react-jsx","paths":{"meteor/*":["./node_modules/@types/meteor/*","./.meteor/local/types/packages.d.ts"]} }, "files":["./__eratest.ts"] }

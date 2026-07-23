@@ -1,0 +1,6 @@
+{
+  "name": "babel-plugin-box-atomic",
+  "version": "0.0.0",
+  "main": "plugin.cjs",
+  "private": true
+}
