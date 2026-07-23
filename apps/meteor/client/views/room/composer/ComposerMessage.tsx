@@ -88,7 +88,7 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps) => {
 		return <ComposerSkeleton />;
 	}
 
-	return <MessageBox key={room._id} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />;
+	return <MessageBox key={tmid ? `${room._id}-${tmid}` : room._id} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />;
 };
 
 export default memo(ComposerMessage);
