@@ -138,9 +138,11 @@ export const setSelectionRange = (input: HTMLDivElement, selectionStart: number,
 	const clamp = (n: number): number => Math.max(0, Math.min(n, length));
 
 	const locate = (target: number): { node: Node; offset: number } => {
-		// Prefer landing inside the text node that spans the offset.
+		// Prefer landing inside the text node that spans the offset. End is exclusive so a boundary
+		// offset resolves to the start of the following node (e.g. inside a <strong>) rather than the
+		// end of the preceding one, keeping the caret within the formatting the user is extending.
 		for (const entry of entries) {
-			if (entry.node.nodeType === Node.TEXT_NODE && target >= entry.start && target <= entry.end) {
+			if (entry.node.nodeType === Node.TEXT_NODE && target >= entry.start && target < entry.end) {
 				return { node: entry.node, offset: target - entry.start };
 			}
 		}
@@ -160,6 +162,15 @@ export const setSelectionRange = (input: HTMLDivElement, selectionStart: number,
 			const parent = best.node.parentNode;
 			const index = Array.prototype.indexOf.call(parent.childNodes, best.node);
 			return { node: parent, offset: index };
+		}
+
+		// Final fallback: a text node ending exactly at the offset. The exclusive primary lookup skips
+		// these so boundaries can prefer the following node, but at a true end-of-content position this
+		// is the only valid landing spot.
+		for (const entry of entries) {
+			if (entry.node.nodeType === Node.TEXT_NODE && target === entry.end) {
+				return { node: entry.node, offset: entry.node.nodeValue?.length ?? 0 };
+			}
 		}
 
 		const texts = entries.filter((e) => e.node.nodeType === Node.TEXT_NODE);

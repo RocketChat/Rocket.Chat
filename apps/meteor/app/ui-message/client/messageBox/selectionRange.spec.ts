@@ -150,5 +150,13 @@ describe('cross-DOM caret mapping (typing DOM -> rendered DOM)', () => {
 		setSelectionRange(rendered, selectionStart, selectionStart);
 
 		expect(getSelectionRange(rendered)).toEqual({ selectionStart: 4, selectionEnd: 4 });
+
+		// The caret must land inside the <strong> (start of "bar"), not at the end of the preceding
+		// "foo " text node, so typing at the boundary extends the bold run.
+		const strong = rendered.querySelector('strong') as HTMLElement;
+		const { anchorNode, anchorOffset } = window.getSelection() as Selection;
+		expect(strong.contains(anchorNode)).toBe(true);
+		expect(anchorNode).toBe(strong.firstChild);
+		expect(anchorOffset).toBe(0);
 	});
 });

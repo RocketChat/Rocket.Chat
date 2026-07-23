@@ -36,12 +36,14 @@ export const createRichTextComposerAPI = (
 			setSelectionRange(input, selectionStart, selectionEnd);
 
 			// execCommand can report success while inserting nothing (empty composer) or insert into a
-			// different focused element (e.g. the emoji picker search box). Detect that the composer text
-			// did not actually change and fall back to editing it directly.
+			// different focused element (e.g. the emoji picker search box). Fall back to editing directly
+			// only when the composer text is not already the expected splice, so a successful insert keeps
+			// its rendered markup instead of being flattened to innerText.
 			const before = input.innerText;
-			const inserted = document.execCommand?.('insertText', false, text) ?? false;
-			if (!inserted || input.innerText === before) {
-				input.innerText = before.substring(0, selectionStart) + text + before.substring(selectionEnd);
+			const expected = before.substring(0, selectionStart) + text + before.substring(selectionEnd);
+			document.execCommand?.('insertText', false, text);
+			if (input.innerText !== expected) {
+				input.innerText = expected;
 				!skipFocus && focus();
 			}
 			setSelectionRange(input, selection.start ?? 0, selection.end ?? text.length);
@@ -146,10 +148,11 @@ export const createRichTextComposerAPI = (
 		setSelectionRange(input, selection.start ?? 0, selection.end ?? text.length);
 		focus();
 		const textAreaTxt = input.innerText;
+		const expected = textAreaTxt.substring(0, selection.start) + text + textAreaTxt.substring(selection.end);
 
-		const inserted = document.execCommand?.('insertText', false, text) ?? false;
-		if (!inserted || input.innerText === textAreaTxt) {
-			input.innerText = textAreaTxt.substring(0, selection.start) + text + textAreaTxt.substring(selection.end);
+		document.execCommand?.('insertText', false, text);
+		if (input.innerText !== expected) {
+			input.innerText = expected;
 		}
 
 		const newStart = selection.start + text.length;

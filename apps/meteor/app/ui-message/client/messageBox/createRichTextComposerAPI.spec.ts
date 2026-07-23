@@ -117,7 +117,7 @@ describe('RichText Composer API - insertText', () => {
 	});
 
 	it('still inserts when execCommand reports success but changes nothing', () => {
-		const execCommand = (document as unknown as { execCommand: () => boolean }).execCommand;
+		const { execCommand } = document as unknown as { execCommand: () => boolean };
 		(document as unknown as { execCommand: () => boolean }).execCommand = () => true;
 
 		try {
