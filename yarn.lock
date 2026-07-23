@@ -9485,6 +9485,7 @@ __metadata:
     "@storybook/preact": "npm:9.0.0-alpha.11"
     "@storybook/preact-webpack5": "npm:9.0.0-alpha.11"
     "@types/crypto-js": "npm:~4.2.2"
+    "@types/emoji-mart": "npm:~3.0.14"
     "@types/mini-css-extract-plugin": "npm:~2.5.1"
     "@types/react": "npm:~19.2.17"
     "@types/webpack-env": "npm:~1.18.8"
@@ -13752,6 +13753,15 @@ __metadata:
   version: 2.2.2
   resolution: "@types/ejson@npm:2.2.2"
   checksum: 10/3f2eb25d98f93821156b071e647bca626563900ecb34bb81cdba33721ee7d046bb66db7d6de664312b9480821821a1d177cf5e146dc1f10adcf43cbd2e387bbe
+  languageName: node
+  linkType: hard
+
+"@types/emoji-mart@npm:~3.0.14":
+  version: 3.0.14
+  resolution: "@types/emoji-mart@npm:3.0.14"
+  dependencies:
+    "@types/react": "npm:*"
+  checksum: 10/60ebd9d19cbb499a19dec440f85c7ab0d021b9a25f95fcd86c4e4d55c3376d75ead45a30b98ba1054899999897c165a1ffa00441bcecacf85688b333e1b6f76d
   languageName: node
   linkType: hard
 

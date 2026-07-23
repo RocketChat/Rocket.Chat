@@ -1,3 +1,6 @@
+import type { EmojiData } from 'emoji-mart';
+import type { TFunction } from 'i18next';
+import type { RefObject } from 'preact';
 import { Component, createRef } from 'preact';
 import { Suspense, lazy } from 'preact/compat';
 import { withTranslation } from 'react-i18next';
@@ -10,13 +13,16 @@ import { FooterOptions, CharCounter } from '../../components/Footer';
 import { MenuGroup, MenuItem } from '../../components/Menu';
 import { MessageList } from '../../components/Messages';
 import { Screen, ScreenContent, ScreenFooter } from '../../components/Screen';
+import type { ScreenTheme } from '../../components/Screen/ScreenProvider';
 import { createClassName } from '../../helpers/createClassName';
+import type { formatAgent } from '../../helpers/formatAgent';
 import ChangeIcon from '../../icons/change.svg';
 import FinishIcon from '../../icons/finish.svg';
 import PlusIcon from '../../icons/plus.svg';
 import RemoveIcon from '../../icons/remove.svg';
 import SendIcon from '../../icons/send.svg';
 import EmojiIcon from '../../icons/smile.svg';
+import type { Dispatch, StoreState } from '../../store';
 
 import 'emoji-mart/css/emoji-mart.css';
 
@@ -25,50 +31,99 @@ const Picker = lazy(async () => {
 	return Picker;
 });
 
-class Chat extends Component {
-	state = {
+type QueueInfo = {
+	spot?: number;
+	estimatedWaitTimeSeconds?: number;
+	message?: { text?: string; user?: unknown };
+};
+
+export type ChatProps = {
+	title?: string;
+	uid?: string;
+	agent?: ReturnType<typeof formatAgent>;
+	typingUsernames?: string[];
+	avatarResolver?: (username?: string) => string | undefined;
+	conversationFinishedMessage?: string;
+	loading?: boolean;
+	onUpload?: (files: (File | null)[]) => void;
+	messages?: StoreState['messages'];
+	uploads?: boolean;
+	options?: boolean;
+	onChangeDepartment?: (() => void) | null;
+	onFinishChat?: (() => void) | null;
+	onRemoveUserData?: (() => void) | null;
+	lastReadMessageId?: string;
+	queueInfo?: QueueInfo;
+	registrationRequired?: boolean;
+	onRegisterUser?: () => void;
+	limitTextLength?: number;
+	unread?: number;
+	dispatch?: Dispatch;
+	theme?: ScreenTheme;
+	onTop?: () => void;
+	onBottom?: () => void;
+	onSubmit?: (text: string) => void;
+	onChangeText?: (text: string) => void;
+	onSoundStop?: () => void;
+	t: TFunction;
+};
+
+type ChatState = {
+	atBottom: boolean;
+	text: string;
+	emojiPickerActive: boolean;
+};
+
+class Chat extends Component<ChatProps, ChatState> {
+	override state: ChatState = {
 		atBottom: true,
 		text: '',
 		emojiPickerActive: false,
 	};
 
-	inputRef = createRef(null);
+	inputRef: RefObject<HTMLInputElement> = createRef();
 
-	handleFilesDropTargetRef = (ref) => {
+	filesDropTarget: unknown = null;
+
+	messagesContainer: HTMLElement | null = null;
+
+	notifyEmojiSelect?: (native: string) => void;
+
+	handleFilesDropTargetRef = (ref: unknown) => {
 		this.filesDropTarget = ref;
 	};
 
-	handleMessagesContainerRef = (messagesContainer) => {
-		this.messagesContainer = messagesContainer ? messagesContainer.base : null;
+	handleMessagesContainerRef = (messagesContainer: { base?: HTMLElement } | null) => {
+		this.messagesContainer = messagesContainer ? (messagesContainer.base ?? null) : null;
 	};
 
-	handleScrollTo = (region) => {
+	handleScrollTo = (region: string) => {
 		const { onTop, onBottom } = this.props;
 
 		if (region === MessageList.SCROLL_AT_BOTTOM) {
 			this.setState({ atBottom: true });
-			onBottom && onBottom();
+			onBottom?.();
 			return;
 		}
 
 		this.setState({ atBottom: false });
 
 		if (region === MessageList.SCROLL_AT_TOP) {
-			onTop && onTop();
+			onTop?.();
 		}
 	};
 
-	handleUploadClick = (event) => {
-		event.preventDefault();
+	handleUploadClick = (event?: Event) => {
+		event?.preventDefault();
 		this.inputRef?.current?.click();
 	};
 
-	handleSendClick = (event) => {
-		event.preventDefault();
+	handleSendClick = (event?: Event) => {
+		event?.preventDefault();
 		this.handleSubmit(this.state.text);
 	};
 
-	handleSubmit = (text) => {
+	handleSubmit = (text: string) => {
 		if (this.props.onSubmit) {
 			this.props.onSubmit(text);
 			this.setState({ text: '' });
@@ -76,23 +131,25 @@ class Chat extends Component {
 		}
 	};
 
-	handleChangeText = (text) => {
+	handleChangeText = (text: string) => {
 		let value = text;
 		const { onChangeText, limitTextLength } = this.props;
 		if (limitTextLength && limitTextLength < text.length) {
 			value = value.substring(0, limitTextLength);
 		}
 		this.setState({ text: value });
-		onChangeText && onChangeText(value);
+		onChangeText?.(value);
 	};
 
 	toggleEmojiPickerState = () => {
 		this.setState({ emojiPickerActive: !this.state.emojiPickerActive });
 	};
 
-	handleEmojiSelect = (emoji) => {
+	handleEmojiSelect = (emoji: EmojiData) => {
 		this.toggleEmojiPickerState();
-		this.notifyEmojiSelect(emoji.native);
+		if ('native' in emoji) {
+			this.notifyEmojiSelect?.(emoji.native);
+		}
 	};
 
 	handleEmojiClick = () => {
@@ -127,26 +184,20 @@ class Chat extends Component {
 			onRegisterUser,
 			limitTextLength,
 			t,
-			incomingCallAlert,
-			ongoingCall,
 			dispatch,
 			theme,
-			...props
-		},
-		{ atBottom = true, text },
+			unread,
+			onSoundStop,
+		}: ChatProps,
+		{ atBottom = true, text }: ChatState,
 	) => (
 		<Screen
 			title={title || t('need_help')}
 			agent={agent || null}
 			queueInfo={queueInfo}
-			nopadding
-			onChangeDepartment={onChangeDepartment}
-			onFinishChat={onFinishChat}
-			onRemoveUserData={onRemoveUserData}
 			className={createClassName(styles, 'chat')}
-			handleEmojiClick={this.handleEmojiClick}
-			theme={theme}
-			{...props}
+			unread={unread}
+			onSoundStop={onSoundStop}
 		>
 			<FilesDropTarget inputRef={this.inputRef} overlayed overlayText={t('drop_here_to_upload_a_file')} onUpload={onUpload}>
 				<ScreenContent nopadding>
@@ -216,13 +267,17 @@ class Chat extends Component {
 							onChange={this.handleChangeText}
 							placeholder={t('type_your_message_here')}
 							value={text}
-							notifyEmojiSelect={(click) => {
+							notifyEmojiSelect={(click: (native: string) => void) => {
 								this.notifyEmojiSelect = click;
 							}}
 							handleEmojiClick={this.handleEmojiClick}
 							pre={
 								<ComposerActions>
-									<ComposerAction className={createClassName(styles, 'emoji-picker-icon')} onClick={this.toggleEmojiPickerState}>
+									<ComposerAction
+										text='Add emoji'
+										className={createClassName(styles, 'emoji-picker-icon')}
+										onClick={this.toggleEmojiPickerState}
+									>
 										<EmojiIcon width={20} height={20} />
 									</ComposerAction>
 								</ComposerActions>
@@ -230,12 +285,12 @@ class Chat extends Component {
 							post={
 								<ComposerActions>
 									{text.length === 0 && uploads && (
-										<ComposerAction onClick={this.handleUploadClick}>
+										<ComposerAction text='Add attachment' onClick={this.handleUploadClick}>
 											<PlusIcon width={20} height={20} />
 										</ComposerAction>
 									)}
 									{text.length > 0 && (
-										<ComposerAction onClick={this.handleSendClick}>
+										<ComposerAction text='Send' onClick={this.handleSendClick}>
 											<SendIcon width={20} height={20} />
 										</ComposerAction>
 									)}

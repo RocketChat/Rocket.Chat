@@ -1,3 +1,6 @@
+import type i18next from 'i18next';
+import type { TFunction } from 'i18next';
+import type { ComponentChildren, Ref } from 'preact';
 import { Component } from 'preact';
 import { route } from 'preact-router';
 import { withTranslation } from 'react-i18next';
@@ -5,9 +8,11 @@ import { withTranslation } from 'react-i18next';
 import Chat from './component';
 import { Livechat } from '../../api';
 import { ModalManager } from '../../components/Modal';
+import type { ScreenContextValue } from '../../components/Screen/ScreenProvider';
 import { getAvatarUrl } from '../../helpers/baseUrl';
 import { canRenderMessage } from '../../helpers/canRenderMessage';
 import { debounce } from '../../helpers/debounce';
+import type { formatAgent } from '../../helpers/formatAgent';
 import { throttle } from '../../helpers/throttle';
 import { upsert } from '../../helpers/upsert';
 import {
@@ -24,10 +29,62 @@ import { getLastReadMessage, loadConfig, processUnread, shouldMarkAsUnread } fro
 import { parentCall, runCallbackEventEmitter } from '../../lib/parentCall';
 import { createToken } from '../../lib/random';
 import { initRoom, loadMessages, loadMoreMessages, defaultRoomParams, getGreetingMessages } from '../../lib/room';
+import type { Dispatch, StoreState } from '../../store';
 import store from '../../store';
 
-const ChatWrapper = ({ children, rid }) => {
-	useRoomMessagesSubscription(rid);
+type QueueInfo = {
+	spot?: number;
+	estimatedWaitTimeSeconds?: number;
+	message?: { text?: string; user?: unknown };
+};
+
+export type ChatContainerProps = {
+	ref?: Ref<any>;
+	title?: string;
+	sound: StoreState['sound'];
+	token: StoreState['token'];
+	user?: StoreState['user'];
+	agent?: ReturnType<typeof formatAgent>;
+	room?: StoreState['room'];
+	messages?: StoreState['messages'];
+	noMoreMessages?: boolean;
+	emoji?: boolean;
+	uploads?: boolean;
+	typingUsernames?: string[];
+	loading?: boolean;
+	showConnecting?: boolean;
+	connecting?: boolean;
+	dispatch: Dispatch;
+	departments?: StoreState['config']['departments'];
+	allowSwitchingDepartments?: boolean;
+	conversationFinishedMessage?: string;
+	allowRemoveUserData?: boolean;
+	alerts: StoreState['alerts'];
+	visible?: boolean;
+	unread?: StoreState['unread'];
+	lastReadMessageId?: StoreState['lastReadMessageId'];
+	guest?: StoreState['iframe']['guest'];
+	triggerAgent?: StoreState['triggerAgent'];
+	queueInfo?: QueueInfo;
+	registrationFormEnabled?: boolean;
+	nameFieldRegistrationForm?: boolean;
+	emailFieldRegistrationForm?: boolean;
+	limitTextLength?: number;
+	messageListPosition?: StoreState['messageListPosition'];
+	theme: ScreenContextValue['theme'];
+	visitorsCanCloseChat?: boolean;
+	t: TFunction;
+	i18n: typeof i18next;
+};
+
+type ChatWrapperProps = {
+	children: ComponentChildren;
+	token: string;
+	rid?: string;
+};
+
+const ChatWrapper = ({ children, token, rid = '' }: ChatWrapperProps) => {
+	useRoomMessagesSubscription(rid, token);
 
 	useUserActivitySubscription(rid);
 
@@ -42,8 +99,16 @@ const ChatWrapper = ({ children, rid }) => {
 	return children;
 };
 
-class ChatContainer extends Component {
-	innerState = {
+type InnerState = {
+	room: StoreState['room'] | null;
+	connectingAgent: boolean;
+	queueSpot: number;
+	triggerQueueMessage: boolean;
+	estimatedWaitTime: number | null | undefined;
+};
+
+class ChatContainer extends Component<ChatContainerProps> {
+	innerState: InnerState = {
 		room: null,
 		connectingAgent: false,
 		queueSpot: 0,
@@ -55,15 +120,15 @@ class ChatContainer extends Component {
 		const { connecting, queueInfo } = this.props;
 		const { connectingAgent, queueSpot, estimatedWaitTime } = this.innerState;
 
-		const newConnecting = connecting;
-		const newQueueSpot = (queueInfo && queueInfo.spot) || 0;
-		const newEstimatedWaitTime = queueInfo && queueInfo.estimatedWaitTimeSeconds;
+		const newConnecting = !!connecting;
+		const newQueueSpot = queueInfo?.spot || 0;
+		const newEstimatedWaitTime = queueInfo?.estimatedWaitTimeSeconds;
 
 		if (newConnecting !== connectingAgent || newQueueSpot !== queueSpot || newEstimatedWaitTime !== estimatedWaitTime) {
 			this.innerState.connectingAgent = newConnecting;
 			this.innerState.queueSpot = newQueueSpot;
 			this.innerState.estimatedWaitTime = newEstimatedWaitTime;
-			await this.handleQueueMessage(connecting, queueInfo);
+			await this.handleQueueMessage(newConnecting, queueInfo);
 			await this.handleConnectingAgentAlert(newConnecting, await normalizeQueueAlert(queueInfo));
 		}
 	};
@@ -81,14 +146,14 @@ class ChatContainer extends Component {
 		const { token, user, guest, dispatch } = this.props;
 
 		if (user) {
-			return user;
+			return;
 		}
 
 		const {
 			iframe: { defaultDepartment },
 		} = store.state;
 
-		if (!guest?.department && defaultDepartment) {
+		if (!guest?.department && defaultDepartment && guest) {
 			guest.department = defaultDepartment;
 		}
 
@@ -108,13 +173,13 @@ class ChatContainer extends Component {
 		await dispatch({ loading: true });
 		try {
 			const params = defaultRoomParams();
-			const newRoom = await Livechat.room(params);
+			const newRoom = await Livechat.room(params as Parameters<typeof Livechat.room>[0]);
 			await dispatch({ room: newRoom, messages: previousMessages, noMoreMessages: false });
 			await initRoom();
 
 			parentCall('callback', 'chat-started');
 			return newRoom;
-		} catch (error) {
+		} catch (error: any) {
 			const reason = error ? error.error : '';
 			const alert = {
 				id: createToken(),
@@ -124,7 +189,7 @@ class ChatContainer extends Component {
 			};
 			await dispatch({ loading: false, alerts: (alerts.push(alert), alerts) });
 
-			runCallbackEventEmitter(reason);
+			runCallbackEventEmitter(reason, undefined);
 			throw error;
 		} finally {
 			await dispatch({ loading: false });
@@ -132,28 +197,28 @@ class ChatContainer extends Component {
 	};
 
 	handleTop = () => {
-		loadMoreMessages();
+		void loadMoreMessages();
 	};
 
-	startTyping = throttle(async ({ rid, username }) => {
+	startTyping = throttle(async ({ rid, username }: { rid: string; username: string }) => {
 		await Livechat.notifyVisitorActivity(rid, username, ['user-typing']);
 		this.stopTypingDebounced({ rid, username });
 	}, 4500);
 
-	stopTyping = ({ rid, username }) => Livechat.notifyVisitorActivity(rid, username, []);
+	stopTyping = ({ rid, username }: { rid: string; username: string }) => Livechat.notifyVisitorActivity(rid, username, []);
 
 	stopTypingDebounced = debounce(this.stopTyping, 5000);
 
 	handleChangeText = async () => {
 		const { user, room } = this.props;
-		if (!(user && user.username && room && room._id)) {
+		if (!(user?.username && room?._id)) {
 			return;
 		}
 
 		this.startTyping({ rid: room._id, username: user.username });
 	};
 
-	handleSubmit = async (msg) => {
+	handleSubmit = async (msg: string) => {
 		if (msg.trim() === '') {
 			return;
 		}
@@ -164,21 +229,21 @@ class ChatContainer extends Component {
 
 		try {
 			this.stopTypingDebounced.stop();
-			await Promise.all([this.stopTyping({ rid, username: user.username }), Livechat.sendMessage({ msg, token, rid })]);
-		} catch (error) {
+			await Promise.all([this.stopTyping({ rid, username: user?.username ?? '' }), Livechat.sendMessage({ msg, token, rid })]);
+		} catch (error: any) {
 			const reason = error?.error ?? error.message;
 			const alert = { id: createToken(), children: reason, error: true, timeout: 5000 };
 			await dispatch({ alerts: (alerts.push(alert), alerts) });
 		}
-		await Livechat.notifyVisitorActivity(rid, user.username, []);
+		await Livechat.notifyVisitorActivity(rid, user?.username ?? '', []);
 	};
 
-	doFileUpload = async (rid, file) => {
+	doFileUpload = async (rid: string, file: File) => {
 		const { alerts, dispatch, i18n } = this.props;
 
 		try {
 			await Livechat.uploadFile(rid, file);
-		} catch (error) {
+		} catch (error: any) {
 			const {
 				data: { reason, sizeAllowed },
 			} = error;
@@ -197,7 +262,7 @@ class ChatContainer extends Component {
 		}
 	};
 
-	handleUpload = async (files) => {
+	handleUpload = async (files: (File | null)[]) => {
 		const {
 			config: {
 				settings: { fileUpload },
@@ -215,11 +280,15 @@ class ChatContainer extends Component {
 		await this.grantUser();
 		const { _id: rid } = await this.getRoom();
 
-		files.forEach((file) => this.doFileUpload(rid, file));
+		files.forEach((file) => {
+			if (file) {
+				void this.doFileUpload(rid, file);
+			}
+		});
 	};
 
 	handleSoundStop = async () => {
-		const { dispatch, sound = {} } = this.props;
+		const { dispatch, sound } = this.props;
 		await dispatch({ sound: { ...sound, play: false } });
 	};
 
@@ -284,24 +353,24 @@ class ChatContainer extends Component {
 	};
 
 	canSwitchDepartment = () => {
-		const { allowSwitchingDepartments, departments = {} } = this.props;
-		return allowSwitchingDepartments && departments.filter((dept) => dept.showOnRegistration).length > 1;
+		const { allowSwitchingDepartments, departments = [] } = this.props;
+		return !!allowSwitchingDepartments && departments.filter((dept) => dept.showOnRegistration).length > 1;
 	};
 
 	canFinishChat = () => {
 		const { room, connecting, visitorsCanCloseChat } = this.props;
-		return visitorsCanCloseChat && (room?._id !== undefined || connecting);
+		return !!visitorsCanCloseChat && (room?._id !== undefined || !!connecting);
 	};
 
 	canRemoveUserData = () => {
 		const { allowRemoveUserData } = this.props;
-		return allowRemoveUserData;
+		return !!allowRemoveUserData;
 	};
 
 	registrationRequired = () => {
 		const { registrationFormEnabled, nameFieldRegistrationForm, emailFieldRegistrationForm, departments = [], user } = this.props;
 
-		if (user && user.token) {
+		if (user?.token) {
 			return false;
 		}
 
@@ -310,14 +379,14 @@ class ChatContainer extends Component {
 		}
 
 		const showDepartment = departments.filter((dept) => dept.showOnRegistration).length > 0;
-		return nameFieldRegistrationForm || emailFieldRegistrationForm || showDepartment;
+		return !!(nameFieldRegistrationForm || emailFieldRegistrationForm || showDepartment);
 	};
 
 	onRegisterUser = () => route('/register');
 
 	showOptionsMenu = () => this.canSwitchDepartment() || this.canFinishChat() || this.canRemoveUserData();
 
-	async handleConnectingAgentAlert(connecting, message) {
+	async handleConnectingAgentAlert(connecting: boolean, message?: string | false) {
 		const { alerts: oldAlerts, dispatch, i18n } = this.props;
 		const { connectingAgentAlertId } = constants;
 		const alerts = oldAlerts.filter((item) => item.id !== connectingAgentAlertId);
@@ -334,7 +403,7 @@ class ChatContainer extends Component {
 		await dispatch({ alerts });
 	}
 
-	async handleQueueMessage(connecting, queueInfo) {
+	async handleQueueMessage(connecting: boolean, queueInfo?: QueueInfo) {
 		if (!queueInfo) {
 			return;
 		}
@@ -363,19 +432,19 @@ class ChatContainer extends Component {
 		});
 	}
 
-	async componentDidMount() {
+	override async componentDidMount() {
 		await this.checkConnectingAgent();
 		await loadMessages();
-		processUnread();
+		void processUnread();
 	}
 
-	async componentDidUpdate(prevProps) {
+	override async componentDidUpdate(prevProps: ChatContainerProps) {
 		const { messages, dispatch, user } = this.props;
 		const { messages: prevMessages, alerts: prevAlerts } = prevProps;
 
-		const renderedMessages = messages.filter((message) => canRenderMessage(message));
+		const renderedMessages = (messages ?? []).filter((message) => canRenderMessage(message));
 		const lastRenderedMessage = renderedMessages[renderedMessages.length - 1];
-		const prevRenderedMessages = prevMessages.filter((message) => canRenderMessage(message));
+		const prevRenderedMessages = (prevMessages ?? []).filter((message) => canRenderMessage(message));
 
 		const shouldMarkUnread = shouldMarkAsUnread();
 
@@ -396,16 +465,16 @@ class ChatContainer extends Component {
 		this.checkRoom();
 	}
 
-	componentWillUnmount() {
-		this.handleConnectingAgentAlert(false);
+	override componentWillUnmount() {
+		void this.handleConnectingAgentAlert(false);
 	}
 
-	render = ({ user, ...props }) => (
+	render = ({ user, ...props }: ChatContainerProps) => (
 		<ChatWrapper token={props.token} rid={props.room?._id}>
 			<Chat
 				{...props}
 				avatarResolver={getAvatarUrl}
-				uid={user && user._id}
+				uid={user?._id}
 				onTop={this.handleTop}
 				onChangeText={this.handleChangeText}
 				onSubmit={this.handleSubmit}
