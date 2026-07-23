@@ -1,3 +1,4 @@
+import type { ILivechatTrigger, ILivechatTriggerAction, ILivechatTriggerCondition } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 
 import { Livechat } from '../api';
@@ -7,24 +8,22 @@ import { conditions } from './triggerConditions';
 import { hasTriggerCondition, isInIframe } from './triggerUtils';
 
 class IgnoredScheduledTriggerError extends Error {
-	constructor(message) {
+	constructor(message: string) {
 		super(message);
 		this.name = 'IgnoredScheduledTriggerError';
 	}
 }
 
 class Triggers {
-	/** @property {Triggers} instance*/
+	static instance: Triggers;
 
-	/** @property {boolean} _started */
+	private _started!: boolean;
 
-	/** @property {Array} _requests */
+	private _triggers!: ILivechatTrigger[];
 
-	/** @property {Array} _triggers */
+	private _enabled!: boolean;
 
-	/** @property {boolean} _enabled */
-
-	/** @property {import('@rocket.chat/emitter').Emitter} callbacks */
+	callbacks!: Emitter;
 
 	constructor() {
 		if (!Triggers.instance) {
@@ -38,11 +37,11 @@ class Triggers {
 		return Triggers.instance;
 	}
 
-	set triggers(newTriggers) {
+	set triggers(newTriggers: ILivechatTrigger[]) {
 		this._triggers = [...newTriggers];
 	}
 
-	set enabled(value) {
+	set enabled(value: boolean) {
 		this._enabled = value;
 	}
 
@@ -74,7 +73,7 @@ class Triggers {
 		this._listenParentUrlChanges();
 	}
 
-	async when(id, condition) {
+	async when(id: string, condition: ILivechatTriggerCondition) {
 		const { user } = store.state;
 
 		if (!this._enabled) {
@@ -98,20 +97,26 @@ class Triggers {
 		});
 
 		try {
-			return await conditions[condition.name](condition);
+			const runCondition = conditions[condition.name] as (condition: ILivechatTriggerCondition) => Promise<void>;
+			return await runCondition(condition);
 		} catch (error) {
 			this._updateRecord(id, { status: 'error', error });
 			throw error;
 		}
 	}
 
-	async fire(id, action, params) {
+	async fire(id: string, action: ILivechatTriggerAction, params: ILivechatTriggerCondition) {
 		if (!this._enabled) {
 			return Promise.reject('Triggers disabled');
 		}
 
 		try {
-			await actions[action.name](id, action, params);
+			const runAction = actions[action.name] as (
+				id: string,
+				action: ILivechatTriggerAction,
+				condition: ILivechatTriggerCondition,
+			) => Promise<void>;
+			await runAction(id, action, params);
 			this._updateRecord(id, { status: 'fired', action: action.name });
 		} catch (error) {
 			this._updateRecord(id, { status: 'error', error });
@@ -119,7 +124,7 @@ class Triggers {
 		}
 	}
 
-	schedule(trigger) {
+	schedule(trigger: ILivechatTrigger) {
 		const id = trigger._id;
 		const [condition] = trigger.conditions;
 		const [action] = trigger.actions;
@@ -135,15 +140,15 @@ class Triggers {
 			});
 	}
 
-	scheduleAll(triggers) {
-		triggers.map((trigger) => this.schedule(trigger));
+	scheduleAll(triggers: ILivechatTrigger[]) {
+		triggers.forEach((trigger) => void this.schedule(trigger));
 	}
 
-	async processTrigger(id) {
-		this.processTriggers({ force: true, filter: (trigger) => trigger.conditions.some(({ name }) => name === id) });
+	async processTrigger(id: string) {
+		await this.processTriggers({ force: true, filter: (trigger) => trigger.conditions.some(({ name }) => name === id) });
 	}
 
-	async processTriggers({ force = false, filter = () => true } = {}) {
+	async processTriggers({ force = false, filter = () => true }: { force?: boolean; filter?: (trigger: ILivechatTrigger) => boolean } = {}) {
 		const triggers = this._triggers.filter((trigger) => force || this._isValid(trigger)).filter(filter);
 		this.scheduleAll(triggers);
 	}
@@ -160,17 +165,17 @@ class Triggers {
 	_listenParentUrlChanges() {
 		store.on('change', ([state, prevState]) => {
 			if (prevState.parentUrl !== state.parentUrl) {
-				this.processTriggers({ force: true, filter: hasTriggerCondition('page-url') });
+				void this.processTriggers({ force: true, filter: hasTriggerCondition('page-url') });
 			}
 		});
 	}
 
-	_isValid(trigger) {
+	_isValid(trigger: ILivechatTrigger) {
 		const record = this._findRecordById(trigger._id);
-		return !trigger.runOnce || !record?.status === 'fired';
+		return !trigger.runOnce || record?.status !== 'fired';
 	}
 
-	_updateRecord(id, data) {
+	_updateRecord(id: string, data: Record<string, any>) {
 		const { triggersRecords = {} } = store.state;
 		const oldRecord = this._findRecordById(id);
 		const newRecord = { ...oldRecord, id, ...data };
@@ -178,14 +183,14 @@ class Triggers {
 		store.setState({ triggersRecords: { ...triggersRecords, [id]: newRecord } });
 	}
 
-	_findRecordsByStatus(status) {
+	_findRecordsByStatus(status: string[]) {
 		const { triggersRecords = {} } = store.state;
-		const records = Object.values(triggersRecords);
+		const records: any[] = Object.values(triggersRecords);
 
 		return records.filter((e) => status.includes(e.status));
 	}
 
-	_findRecordById(id) {
+	_findRecordById(id: string) {
 		const { triggersRecords = {} } = store.state;
 
 		return triggersRecords[id];
@@ -195,9 +200,9 @@ class Triggers {
 		const { triggersRecords = {} } = store.state;
 
 		const syncedTriggerRecords = this._triggers
-			.filter((trigger) => trigger.id in triggersRecords)
-			.reduce((acc, trigger) => {
-				acc[trigger.id] = triggersRecords[trigger.id];
+			.filter((trigger) => trigger._id in triggersRecords)
+			.reduce<Record<string, any>>((acc, trigger) => {
+				acc[trigger._id] = triggersRecords[trigger._id];
 				return acc;
 			}, {});
 
