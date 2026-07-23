@@ -1,10 +1,15 @@
 {
 	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
-		"lib": ["dom", "dom.iterable"],
+		"lib": ["es2023", "dom", "dom.iterable"],
 		"declaration": true,
 		"rootDir": "./src",
 		"outDir": "./dist",
+		// ttsc/TS7 build: the shared base still targets es5 / moduleResolution node,
+		// and TS7 no longer auto-includes ambient @types, so name node explicitly.
+		"target": "es2022",
+		"moduleResolution": "bundler",
+		"types": ["node"],
 		"plugins": [{ "transform": "typia/lib/transform" }]
 	},
 	"include": ["./src/**/*"]
