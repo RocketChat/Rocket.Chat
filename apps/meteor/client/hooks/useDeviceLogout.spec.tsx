@@ -78,7 +78,7 @@ describe('useDeviceLogout', () => {
 		it('should log the device out, show a success toast and close the modal on success', async () => {
 			const { result, dispatchToastMessage, logout, invalidateQueries } = setup({ endpoint: '/v1/sessions/logout' });
 
-			openModalAndConfirm(result.current);
+			await openModalAndConfirm(result.current);
 
 			await waitFor(() => {
 				expect(dispatchToastMessage).toHaveBeenCalledWith({ type: 'success', message: 'Device_Logged_Out' });
@@ -94,7 +94,7 @@ describe('useDeviceLogout', () => {
 		it('should call the endpoint with the session id', async () => {
 			const { result, logoutEndpoint } = setup({ endpoint: '/v1/sessions/logout' });
 
-			openModalAndConfirm(result.current);
+			await openModalAndConfirm(result.current);
 
 			await waitFor(() => {
 				expect(logoutEndpoint).toHaveBeenCalledWith({ sessionId: SESSION_ID });
@@ -104,7 +104,7 @@ describe('useDeviceLogout', () => {
 		it('should close the contextual bar when it is open for the logged out session', async () => {
 			const { result, navigate } = setup({ endpoint: '/v1/sessions/logout', openContextualBar: true });
 
-			openModalAndConfirm(result.current);
+			await openModalAndConfirm(result.current);
 
 			await waitFor(() => {
 				expect(navigate).toHaveBeenCalledWith(expect.objectContaining({ name: 'device-management', params: {} }), expect.anything());
@@ -117,7 +117,7 @@ describe('useDeviceLogout', () => {
 				shouldFail: true,
 			});
 
-			openModalAndConfirm(result.current);
+			await openModalAndConfirm(result.current);
 
 			await waitFor(() => {
 				expect(dispatchToastMessage).toHaveBeenCalledWith(expect.objectContaining({ type: 'error' }));
@@ -139,7 +139,7 @@ describe('useDeviceLogout', () => {
 				isCurrentSession: true,
 			});
 
-			openModalAndConfirm(result.current);
+			await openModalAndConfirm(result.current);
 
 			await waitFor(() => {
 				expect(logout).toHaveBeenCalledTimes(1);
@@ -158,7 +158,7 @@ describe('useDeviceLogout', () => {
 				shouldFail: true,
 			});
 
-			openModalAndConfirm(result.current);
+			await openModalAndConfirm(result.current);
 
 			await waitFor(() => {
 				expect(logout).toHaveBeenCalledTimes(1);
