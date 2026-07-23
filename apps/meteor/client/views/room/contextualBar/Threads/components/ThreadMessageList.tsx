@@ -199,6 +199,9 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 			isPrependRef.current = false;
 		}
 		prevItemsCountRef.current = items.length;
+		if (hasNextPage) {
+			isAtBottom.current = false;
+		}
 	});
 
 	const threadMsgTargetIndex = useMemo(() => {
@@ -259,7 +262,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 			}
 		}
 
-		if (isAtBottom.current === true && lastScrollSizeRef.current !== handle?.scrollSize) {
+		if (isAtBottom.current === true && !isFetchingPreviousPage && !isFetchingNextPage && lastScrollSizeRef.current !== handle?.scrollSize) {
 			lastScrollSizeRef.current = handle?.scrollSize ?? 0;
 			setShouldJumpToBottom(true);
 		}
@@ -272,7 +275,17 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 			setShouldJumpToBottom(false);
 			initialScrollDoneRef.current = true;
 		}
-	}, [items, loading, msgJumpParam, threadMsgTargetIndex, shouldJumpToBottom, setShouldJumpToBottom, uid]);
+	}, [
+		items,
+		loading,
+		msgJumpParam,
+		threadMsgTargetIndex,
+		shouldJumpToBottom,
+		setShouldJumpToBottom,
+		uid,
+		isFetchingPreviousPage,
+		isFetchingNextPage,
+	]);
 
 	useEffect(() => {
 		if (threadMsgTargetIndex < 0 || !msgJumpParam) {
@@ -375,10 +388,14 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 							}
 
 							// Copied from messageList, I'm unsure why this is necessary, but it seems to be needed to properly set the isAtBottom state
-							if (handle.scrollSize >= handle.viewportSize) {
-								isAtBottom.current = true;
+							if (hasNextPage) {
+								isAtBottom.current = false;
+							} else {
+								if (handle.scrollSize >= handle.viewportSize) {
+									isAtBottom.current = true;
+								}
+								isAtBottom.current = offset - handle.scrollSize + handle.viewportSize >= -20;
 							}
-							isAtBottom.current = offset - handle.scrollSize + handle.viewportSize >= -20;
 
 							if (hasNextPage && !isJumpingToMessageRef.current && offset - handle.scrollSize + handle.viewportSize >= -200) {
 								loadMoreMessages();
