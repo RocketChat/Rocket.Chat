@@ -458,6 +458,13 @@ const roomsSaveDraftEndpoint = API.v1.post(
 			return API.v1.failure('error-message-size-exceeded');
 		}
 
+		if (tmid && draft) {
+			const thread = await Messages.findOneByRoomIdAndMessageId(rid, tmid, { projection: { _id: 1 } });
+			if (!thread) {
+				return API.v1.failure('error-invalid-message');
+			}
+		}
+
 		const subscription = await Subscriptions.updateDraftByRoomIdAndUserId(rid, this.userId, draft || undefined, tmid);
 		if (!subscription) {
 			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription');

@@ -107,6 +107,7 @@ describe('[Rooms]', () => {
 
 	describe('[/rooms.saveDraft]', () => {
 		let testChannel: IRoom;
+		let threadId: IMessage['_id'];
 		let userWithoutSubscription: TestUser<IUser>;
 		let userWithoutSubscriptionCredentials: Credentials;
 
@@ -114,6 +115,10 @@ describe('[Rooms]', () => {
 			testChannel = (await createRoom({ type: 'c', name: `rooms.saveDraft.test.${Date.now()}-${Math.random()}` })).body.channel;
 			userWithoutSubscription = await createUser({ joinDefaultChannels: false });
 			userWithoutSubscriptionCredentials = await login(userWithoutSubscription.username, password);
+
+			const rootMessage = (await sendSimpleMessage({ roomId: testChannel._id, text: 'thread root' })).body.message;
+			threadId = rootMessage._id;
+			await sendSimpleMessage({ roomId: testChannel._id, text: 'thread reply', tmid: threadId });
 		});
 
 		after(() => Promise.all([deleteRoom({ type: 'c', roomId: testChannel._id }), deleteUser(userWithoutSubscription)]));
@@ -182,13 +187,12 @@ describe('[Rooms]', () => {
 		});
 
 		it('should save a thread draft keyed by tmid without touching the main draft', async () => {
-			const tmid = `tmid-${Date.now()}`;
 			const draft = `thread-draft-${Date.now()}`;
 
 			await request
 				.post(api('rooms.saveDraft'))
 				.set(credentials)
-				.send({ rid: testChannel._id, draft, tmid })
+				.send({ rid: testChannel._id, draft, tmid: threadId })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -203,18 +207,42 @@ describe('[Rooms]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body.subscription).to.have.nested.property(`threadDrafts.${tmid}`, draft);
+					expect(res.body.subscription).to.have.nested.property(`threadDrafts.${threadId}`, draft);
 					expect(res.body.subscription).to.not.have.property('draft');
 				});
 		});
 
+		it('should reject a thread draft when the tmid is not a thread in the room', async () => {
+			await request
+				.post(api('rooms.saveDraft'))
+				.set(credentials)
+				.send({ rid: testChannel._id, draft: 'malicious draft', tmid: `non-existent-thread-${Date.now()}` })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'error-invalid-message');
+				});
+		});
+
+		it('should allow clearing a thread draft even when the tmid is not a thread in the room', async () => {
+			await request
+				.post(api('rooms.saveDraft'))
+				.set(credentials)
+				.send({ rid: testChannel._id, draft: '', tmid: `non-existent-thread-${Date.now()}` })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
 		it('should clear a thread draft when saving an empty draft for the tmid', async () => {
-			const tmid = `tmid-to-clear-${Date.now()}`;
 			const draft = `thread-draft-${Date.now()}`;
 
-			await request.post(api('rooms.saveDraft')).set(credentials).send({ rid: testChannel._id, draft, tmid }).expect(200);
+			await request.post(api('rooms.saveDraft')).set(credentials).send({ rid: testChannel._id, draft, tmid: threadId }).expect(200);
 
-			await request.post(api('rooms.saveDraft')).set(credentials).send({ rid: testChannel._id, draft: '', tmid }).expect(200);
+			await request.post(api('rooms.saveDraft')).set(credentials).send({ rid: testChannel._id, draft: '', tmid: threadId }).expect(200);
 
 			await request
 				.get(api('subscriptions.getOne'))
@@ -224,7 +252,7 @@ describe('[Rooms]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body.subscription).to.not.have.nested.property(`threadDrafts.${tmid}`);
+					expect(res.body.subscription).to.not.have.nested.property(`threadDrafts.${threadId}`);
 				});
 		});
 
