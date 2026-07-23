@@ -21,6 +21,15 @@ export class CustomUserStatusRaw extends BaseRaw<ICustomUserStatus> implements I
 		return options ? this.findOne({ name }, options) : this.findOne({ name });
 	}
 
+	findOneByNameExceptId(name: string, except: string, options?: FindOptions<ICustomUserStatus>): Promise<ICustomUserStatus | null> {
+		const query = {
+			_id: { $nin: [except] },
+			name,
+		};
+
+		return this.findOne(query, options);
+	}
+
 	// find
 	findByName(name: string, options?: FindOptions<ICustomUserStatus>): FindCursor<ICustomUserStatus> {
 		const query = {

@@ -1,12 +1,13 @@
 ---
-'@rocket.chat/web-ui-registration': major
-'@rocket.chat/model-typings': major
-'@rocket.chat/core-typings': major
-'@rocket.chat/rest-typings': major
-'@rocket.chat/passport-x': major
-'@rocket.chat/models': major
-'@rocket.chat/i18n': major
-'@rocket.chat/meteor': major
+'@rocket.chat/web-ui-registration': minor
+'@rocket.chat/model-typings': minor
+'@rocket.chat/core-typings': minor
+'@rocket.chat/rest-typings': minor
+'@rocket.chat/passport-x': minor
+'@rocket.chat/desktop-api': minor
+'@rocket.chat/models': minor
+'@rocket.chat/i18n': minor
+'@rocket.chat/meteor': minor
 ---
 
 ## Phishing-Resistant Multi-Factor Authentication

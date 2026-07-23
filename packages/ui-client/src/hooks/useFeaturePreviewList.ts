@@ -33,7 +33,7 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		i18n: 'Intelligent_Search',
 		description: 'Intelligent_Search_upsell_description',
 		group: 'AI',
-		value: true,
+		value: false,
 		enabled: true,
 	},
 ];
