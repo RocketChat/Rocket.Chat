@@ -35,7 +35,7 @@ test.describe.serial('message-composer-history', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 		await poHomeChannel.gotoChannel(targetChannel);
-		await expect(poHomeChannel.composer.inputMessage).toBeEnabled();
+		await expect(poHomeChannel.composer.inputMessage).toBeVisible();
 		await poHomeChannel.composer.inputMessage.click();
 	});
 
@@ -92,7 +92,7 @@ test.describe.serial('message-composer-history', () => {
 		await expect(inputMessage).toContainText('draft in first room');
 
 		await poHomeChannel.gotoChannel(otherChannel);
-		await expect(poHomeChannel.composer.inputMessage).toBeEnabled();
+		await expect(poHomeChannel.composer.inputMessage).toBeVisible();
 		await poHomeChannel.composer.inputMessage.click();
 
 		await page.keyboard.press('ControlOrMeta+z');
