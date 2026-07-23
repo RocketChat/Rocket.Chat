@@ -1,5 +1,5 @@
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 
 export async function getWorkspaceKey() {
 	const { workspaceRegistered } = await retrieveRegistrationStatus();

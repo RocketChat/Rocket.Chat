@@ -128,7 +128,7 @@ const ForwardChatModal = ({ room, onCancel }: ForwardChatModalProps) => {
 						/>
 					</FieldRow>
 				</Field>
-				<Divider p={0}>{t('or')}</Divider>
+				<Divider padding={0}>{t('or')}</Divider>
 				<Field>
 					<FieldLabel htmlFor={userFieldId}>{t('Forward_to_user')}</FieldLabel>
 					<FieldRow>
@@ -154,7 +154,7 @@ const ForwardChatModal = ({ room, onCancel }: ForwardChatModalProps) => {
 				<Field marginBlock={15}>
 					<FieldLabel htmlFor={commentFieldId}>
 						{t('Leave_a_comment')}
-						<Box mis={4} is='span' color='annotation'>
+						<Box marginInlineStart={4} is='span' color='annotation'>
 							({t('Optional')})
 						</Box>
 					</FieldLabel>

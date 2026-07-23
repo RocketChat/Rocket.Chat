@@ -4,7 +4,7 @@ import express from 'express';
 import request from 'supertest';
 
 import { metricsMiddleware } from './metrics';
-import { CachedSettings } from '../../../../app/settings/server/CachedSettings';
+import { CachedSettings } from '../../../settings/CachedSettings';
 
 describe('Metrics middleware', () => {
 	it('should handle metrics', async () => {

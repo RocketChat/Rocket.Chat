@@ -5,10 +5,10 @@ import type { IRoom, IUser, MessageTypesValues } from '@rocket.chat/core-typings
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 import { afterLeaveRoomCallback } from '../callbacks/afterLeaveRoomCallback';
 import { beforeLeaveRoomCallback } from '../callbacks/beforeLeaveRoomCallback';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../notifyListener';
 
 /**
  * Removes a user from a room when triggered by federation or other external events.

@@ -1,7 +1,16 @@
 import type { IIntegration, IUser } from '@rocket.chat/core-typings';
-import type { FindCursor, FindOptions } from 'mongodb';
+import type { AggregateOptions, FindCursor, FindOptions } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
+
+export type IntegrationsStatistics = {
+	totalIntegrations: number;
+	totalIncoming: number;
+	totalIncomingActive: number;
+	totalOutgoing: number;
+	totalOutgoingActive: number;
+	totalWithScriptEnabled: number;
+};
 
 export interface IIntegrationsModel extends IBaseModel<IIntegration> {
 	disableByUserId(userId: IIntegration['userId']): ReturnType<IBaseModel<IIntegration>['updateMany']>;
@@ -16,4 +25,5 @@ export interface IIntegrationsModel extends IBaseModel<IIntegration> {
 		token: string,
 		options?: FindOptions<P>,
 	): Promise<P | null>;
+	getStatistics(options?: AggregateOptions): Promise<IntegrationsStatistics>;
 }

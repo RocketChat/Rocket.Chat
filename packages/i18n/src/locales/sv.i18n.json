@@ -5893,7 +5893,6 @@
   "VoIP_device_permission_required_description": "Din webbläsare hindrade {{workspaceUrl}} från att använda mikrofonen och/eller högtalaren.\n\nTillåt högtalar- och mikrofonåtkomst i webbläsarens inställningar för att förhindra att detta meddelande visas igen.",
   "VoIP_allow_and_call": "Tillåt och ring",
   "VoIP_allow_and_accept": "Tillåt och acceptera",
-  "VoIP_cancel_and_reject": "Avbryt och avvisa",
   "Voice": "Röstsamtal",
   "Voice_Call": "Röstsamtal",
   "Voice_Call_Extension": "Röstsamtal anknytning",

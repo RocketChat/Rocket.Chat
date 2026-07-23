@@ -6,12 +6,12 @@ import { Meteor } from 'meteor/meteor';
 
 import { API } from '../..';
 import { findGuest, normalizeHttpHeaderData } from './lib/livechat';
-import { setMultipleVisitorCustomFields } from '../../../../app/livechat/server/lib/custom-fields';
-import { notifyGuestStatusChanged, removeContactsByVisitorId } from '../../../../app/livechat/server/lib/guests';
-import { livechatLogger } from '../../../../app/livechat/server/lib/logger';
-import { saveRoomInfo } from '../../../../app/livechat/server/lib/rooms';
-import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../lib/callbacks';
+import { setMultipleVisitorCustomFields } from '../../../lib/omnichannel/custom-fields';
+import { notifyGuestStatusChanged, removeContactsByVisitorId } from '../../../lib/omnichannel/guests';
+import { livechatLogger } from '../../../lib/omnichannel/logger';
+import { saveRoomInfo } from '../../../lib/omnichannel/rooms';
+import { settings } from '../../../settings';
 
 API.v1.addRoute(
 	'livechat/visitor',

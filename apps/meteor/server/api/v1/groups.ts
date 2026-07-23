@@ -14,13 +14,13 @@ import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
-import { canAccessRoomAsync, roomAccessAttributes } from '../../../app/authorization/server';
-import { mountIntegrationQueryBasedOnPermissions } from '../../../app/integrations/server/lib/mountQueriesBasedOnPermission';
-import { normalizeMessagesForUser } from '../../../app/utils/server/lib/normalizeMessagesForUser';
+import { canAccessRoomAsync, roomAccessAttributes } from '../../lib/authorization';
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { eraseRoom } from '../../lib/eraseRoom';
 import { findUsersOfRoom } from '../../lib/findUsersOfRoom';
+import { mountIntegrationQueryBasedOnPermissions } from '../../lib/integrations/lib/mountQueriesBasedOnPermission';
 import { openRoom } from '../../lib/openRoom';
+import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
 import { getChannelHistory } from '../../meteor-methods/messages/getChannelHistory';
 import { addAllUserToRoomFn } from '../../meteor-methods/rooms/addAllUserToRoom';
 import { addRoomLeader } from '../../meteor-methods/rooms/addRoomLeader';
@@ -106,7 +106,7 @@ async function findPrivateGroupByIdOrName({
 }> {
 	const room = await getRoomFromParams(params);
 
-	const user = await Users.findOneById(userId, { projections: { username: 1 } });
+	const user = await Users.findOneById(userId, { projection: { username: 1, roles: 1, abacAttributes: 1 } });
 
 	if (!room || !user || !(await canAccessRoomAsync(room, user))) {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
@@ -258,7 +258,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const access = await hasPermissionAsync(this.userId, 'view-room-administration');
+			const access = await hasPermissionAsync(this.user, 'view-room-administration');
 			const params = this.queryParams;
 			let user = this.userId;
 			let room;
@@ -744,7 +744,7 @@ API.v1.addRoute(
 				userId: this.userId,
 			});
 
-			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult.rid))) {
+			if (findResult.broadcast && !(await hasPermissionAsync(this.user, 'view-broadcast-member-list', findResult.rid))) {
 				return API.v1.forbidden();
 			}
 
@@ -1288,7 +1288,7 @@ API.v1.addRoute(
 				return API.v1.failure('Private group not found');
 			}
 
-			if (!(await hasAllPermissionAsync(this.userId, ['create-team', 'edit-room'], room.rid))) {
+			if (!(await hasAllPermissionAsync(this.user, ['create-team', 'edit-room'], room.rid))) {
 				return API.v1.forbidden();
 			}
 

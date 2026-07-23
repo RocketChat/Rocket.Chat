@@ -18,11 +18,11 @@ const AppDetailsAPIs = ({ apis }: AppDetailsAPIsProps) => {
 	return (
 		<>
 			<Box display='flex' flexDirection='column'>
-				<Box fontScale='h4' mb={12}>
+				<Box fontScale='h4' marginBlock={12}>
 					{t('APIs')}
 				</Box>
 				{apis.map((api) => (
-					<Box key={api.path} mb={8}>
+					<Box key={api.path} marginBlock={8}>
 						<Box fontScale='p2m'>
 							{api.methods.join(' | ').toUpperCase()} {api.path}
 						</Box>

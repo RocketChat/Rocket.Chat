@@ -5,12 +5,12 @@ import { useTranslation } from 'react-i18next';
 
 export type MessageNotificationProps = {
 	label: TranslationKey;
-	bg: keyof (typeof Palette)['badge'];
+	backgroundColor: keyof (typeof Palette)['badge'];
 };
 
-const MessageNotification = ({ label, bg }: MessageNotificationProps) => {
+const MessageNotification = ({ label, backgroundColor }: MessageNotificationProps) => {
 	const { t } = useTranslation();
-	return <Box width='x8' aria-label={t(label)} borderRadius='full' height='x8' bg={bg} />;
+	return <Box width='x8' aria-label={t(label)} borderRadius='full' height='x8' backgroundColor={backgroundColor} />;
 };
 
 export default MessageNotification;

@@ -96,7 +96,7 @@ const MatrixFederationAddServerModal = ({ onClickClose }: MatrixFederationAddSer
 									setErrorKey(undefined);
 								}
 							}}
-							mie={4}
+							marginInlineEnd={4}
 						/>
 						<Button onClick={() => addServer()} primary loading={isPending}>
 							{t('Add')}
@@ -105,7 +105,7 @@ const MatrixFederationAddServerModal = ({ onClickClose }: MatrixFederationAddSer
 					{isError && errorKey && <FieldError>{t(errorKey)}</FieldError>}
 					<FieldHint>{t('Federation_Example_matrix_server')}</FieldHint>
 				</Field>
-				<Divider mb={16} />
+				<Divider marginBlock={16} />
 				{!isLoadingServerList && data?.servers && <MatrixFederationRemoveServerList servers={data.servers} />}
 			</ModalContent>
 			<ModalFooter>

@@ -1,7 +1,7 @@
 import { useDebouncedState, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { TooltipContext } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import { useEffect, useMemo, useRef, memo, useCallback, useState } from 'react';
+import { useEffect, useMemo, useRef, memo, useState } from 'react';
 
 import { TooltipComponent } from '../components/TooltipComponent';
 
@@ -10,46 +10,63 @@ export type TooltipProviderProps = {
 	ownerDocument?: Document;
 };
 
+const stashAnchorTitle = (anchor: HTMLElement, title: string): void => {
+	if (!anchor.hasAttribute('title')) {
+		return;
+	}
+	anchor.setAttribute('data-title', title);
+	anchor.setAttribute('title', '');
+};
+
+const restoreAnchorTitle = (anchor: HTMLElement): void => {
+	if (!anchor.hasAttribute('data-title')) {
+		return;
+	}
+	if (!anchor.getAttribute('title')) {
+		anchor.setAttribute('title', anchor.getAttribute('data-title') ?? '');
+	}
+	anchor.removeAttribute('data-title');
+};
+
 const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipProviderProps) => {
 	const lastAnchor = useRef<HTMLElement>(undefined);
+	const dismissedAnchor = useRef<HTMLElement>(undefined);
 	const hasHover = !useMediaQuery('(hover: none)');
 
 	const [tooltip, setTooltip] = useDebouncedState<ReactNode>(null, 300);
 
-	const restoreTitle = useCallback((previousAnchor: HTMLElement | undefined): void => {
-		setTimeout(() => {
-			if (previousAnchor && !previousAnchor.getAttribute('title')) {
-				previousAnchor.setAttribute('title', previousAnchor.getAttribute('data-title') ?? '');
-				previousAnchor.removeAttribute('data-title');
-			}
-		}, 0);
-	}, []);
-
 	const contextValue = useMemo(
 		() => ({
 			open: (tooltip: ReactNode, anchor: HTMLElement): void => {
-				const previousAnchor = lastAnchor.current;
 				setTooltip(<TooltipComponent key={new Date().toISOString()} title={tooltip} anchor={anchor} />);
 				lastAnchor.current = anchor;
-				if (previousAnchor) {
-					restoreTitle(previousAnchor);
-				}
 			},
 			close: (): void => {
-				const previousAnchor = lastAnchor.current;
 				setTooltip(null);
 				setTooltip.flush();
 				lastAnchor.current = undefined;
-				if (previousAnchor) {
-					restoreTitle(previousAnchor);
-				}
 			},
 			dismiss: (): void => {
+				const anchor = lastAnchor.current;
 				setTooltip(null);
 				setTooltip.flush();
+
+				if (anchor) {
+					dismissedAnchor.current = anchor;
+					const restoreOnLeave = (): void => {
+						restoreAnchorTitle(anchor);
+						if (dismissedAnchor.current === anchor) {
+							dismissedAnchor.current = undefined;
+						}
+						if (lastAnchor.current === anchor) {
+							lastAnchor.current = undefined;
+						}
+					};
+					anchor.addEventListener('mouseleave', restoreOnLeave, { once: true });
+				}
 			},
 		}),
-		[setTooltip, restoreTitle],
+		[setTooltip],
 	);
 
 	useEffect(() => {
@@ -85,10 +102,7 @@ const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipP
 				const [state, setState] = useState(title);
 				useEffect(() => {
 					const close = (): void => contextValue.close();
-					// store the title in a data attribute
-					anchor.setAttribute('data-title', title);
-					// Removes the title attribute to prevent the browser's tooltip from showing
-					anchor.setAttribute('title', '');
+					stashAnchorTitle(anchor, title);
 
 					anchor.addEventListener('mouseleave', close);
 
@@ -99,11 +113,7 @@ const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipP
 							return;
 						}
 
-						// store the title in a data attribute
-						anchor.setAttribute('data-title', title);
-						// Removes the title attribute to prevent the browser's tooltip from showing
-						anchor.setAttribute('title', '');
-
+						stashAnchorTitle(anchor, title);
 						setState(title);
 					});
 
@@ -114,7 +124,11 @@ const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipP
 
 					return () => {
 						anchor.removeEventListener('mouseleave', close);
+						// the observer must be disconnected before restoring the title, otherwise it would stash it again
 						observer.disconnect();
+						if (dismissedAnchor.current !== anchor) {
+							restoreAnchorTitle(anchor);
+						}
 					};
 				}, []);
 				return <>{state}</>;

@@ -6,13 +6,13 @@ import type { Response } from '@rocket.chat/server-fetch';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { supportedVersionsChooseLatest } from './supportedVersionsChooseLatest';
-import { notifyOnSettingChangedById } from '../../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../../app/settings/server';
 import { supportedVersions as supportedVersionsFromBuild } from '../../../../app/utils/rocketchat-supported-versions.info';
-import { buildVersionUpdateMessage } from '../../../../app/version-check/server/functions/buildVersionUpdateMessage';
+import { settings } from '../../../settings';
 import { updateAuditedBySystem } from '../../../settings/lib/auditedSettingUpdates';
 import { SystemLogger } from '../../logger/system';
+import { notifyOnSettingChangedById } from '../../notifyListener';
 import { generateWorkspaceBearerHttpHeader } from '../getWorkspaceAccessToken';
+import { buildVersionUpdateMessage } from '../version-check/functions/buildVersionUpdateMessage';
 
 declare module '@rocket.chat/core-typings' {
 	interface ILicenseV3 {
@@ -114,6 +114,12 @@ const getSupportedVersionsFromCloud = async () => {
 
 	const headers = await generateWorkspaceBearerHttpHeader();
 
+	// Re-validated at dispatch time: an offline license applied while this async
+	// operation was in flight must still suppress the request.
+	if (License.hasOfflineLicense()) {
+		return { success: true, result: undefined } as const;
+	}
+
 	const response = await handleResponse<SupportedVersions>(
 		fetch(releaseEndpoint, {
 			headers,
@@ -141,7 +147,10 @@ const getSupportedVersionsToken = async (retry = 0) => {
 	 * Gets the latest version
 	 * return the token
 	 */
-	const [versionsFromLicense, cloudResponse] = await Promise.all([License.getLicense(), getSupportedVersionsFromCloud()]);
+	const [versionsFromLicense, cloudResponse] = await Promise.all([
+		License.getLicense(),
+		License.hasOfflineLicense() ? ({ success: true, result: undefined } as const) : getSupportedVersionsFromCloud(),
+	]);
 
 	const supportedVersions = await supportedVersionsChooseLatest(
 		supportedVersionsFromBuild,

@@ -72,7 +72,7 @@ const FileUploadModal = ({ onClose, file, fileName, fileAltText = '', onSubmit }
 					<ModalClose tabIndex={-1} onClick={onClose} />
 				</ModalHeader>
 				<ModalContent>
-					<Box display='flex' maxHeight='x360' w='full' justifyContent='center' alignContent='center' mbe={16}>
+					<Box display='flex' maxHeight='x360' width='full' justifyContent='center' alignContent='center' marginBlockEnd={16}>
 						<FilePreview file={file} altText={fileAltText} />
 					</Box>
 					<FieldGroup>

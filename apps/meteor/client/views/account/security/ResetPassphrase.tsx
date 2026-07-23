@@ -8,10 +8,10 @@ export const ResetPassphrase = () => {
 	const resetE2EPassword = useResetE2EPasswordMutation();
 	return (
 		<>
-			<Box is='h4' fontScale='h4' mbe={12}>
+			<Box is='h4' fontScale='h4' marginBlockEnd={12}>
 				{t('Reset_E2EE_password')}
 			</Box>
-			<Box is='p' fontScale='p1' mbe={12}>
+			<Box is='p' fontScale='p1' marginBlockEnd={12}>
 				{t('Reset_E2EE_password_description')}
 			</Box>
 			<Button onClick={() => resetE2EPassword.mutate()}>{t('Reset_E2EE_password')}</Button>

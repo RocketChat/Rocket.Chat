@@ -18,7 +18,7 @@ const MessageBoxReplies = () => {
 	}
 
 	return (
-		<Box mbe={8} position='relative' overflowY='auto' maxHeight='x256'>
+		<Box marginBlockEnd={8} position='relative' overflowY='auto' maxHeight='x256'>
 			{replies.map((reply) => (
 				<MessageBoxReply key={reply._id} reply={reply} />
 			))}

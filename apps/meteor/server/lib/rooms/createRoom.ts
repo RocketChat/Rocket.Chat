@@ -7,15 +7,15 @@ import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { createDirectRoom } from './createDirectRoom';
-import { notifyOnRoomChanged, notifyOnSubscriptionChangedById } from '../../../app/lib/server/lib/notifyListener';
-import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
-import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName';
 import { calculateRoomRolePriorityFromRoles } from '../../../lib/roles/calculateRoomRolePriorityFromRoles';
 import { callbacks } from '../callbacks';
 import { beforeAddUserToRoom } from '../callbacks/beforeAddUserToRoom';
 import { beforeCreateRoomCallback, prepareCreateRoomCallback } from '../callbacks/beforeCreateRoomCallback';
 import { getSubscriptionAutotranslateDefaultConfig } from '../getSubscriptionAutotranslateDefaultConfig';
+import { notifyOnRoomChanged, notifyOnSubscriptionChangedById } from '../notifyListener';
 import { syncRoomRolePriorityForUserAndRoom } from '../roles/syncRoomRolePriority';
+import { getDefaultSubscriptionPref } from '../utils/lib/getDefaultSubscriptionPref';
+import { getValidRoomName } from '../utils/lib/getValidRoomName';
 
 const isValidName = (name: unknown): name is string => {
 	return typeof name === 'string' && name.trim().length > 0;

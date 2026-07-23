@@ -3,6 +3,6 @@ import type { ComponentPropsWithoutRef } from 'react';
 
 export type AuditModalLabelProps = ComponentPropsWithoutRef<typeof Box>;
 
-const AuditModalLabel = (props: AuditModalLabelProps) => <Box mbe={4} fontScale='p2m' color='titles-labels' {...props} />;
+const AuditModalLabel = (props: AuditModalLabelProps) => <Box marginBlockEnd={4} fontScale='p2m' color='titles-labels' {...props} />;
 
 export default AuditModalLabel;

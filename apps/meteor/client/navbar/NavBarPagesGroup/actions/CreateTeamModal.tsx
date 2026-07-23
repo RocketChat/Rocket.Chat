@@ -161,11 +161,11 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 				<ModalTitle id={`${createTeamFormId}-title`}>{t('Teams_New_Title')}</ModalTitle>
 				<ModalClose title={t('Close')} onClick={onClose} tabIndex={-1} />
 			</ModalHeader>
-			<ModalContent mbe={2}>
-				<Box fontScale='p2' mbe={16}>
+			<ModalContent marginBlockEnd={2}>
+				<Box fontScale='p2' marginBlockEnd={16}>
 					{t('Teams_new_description')}
 				</Box>
-				<FieldGroup mbe={24}>
+				<FieldGroup marginBlockEnd={24}>
 					<Field>
 						<FieldLabel required>{t('Teams_New_Name_Label')}</FieldLabel>
 						<FieldRow>

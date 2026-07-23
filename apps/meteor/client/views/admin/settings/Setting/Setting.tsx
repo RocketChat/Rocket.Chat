@@ -139,7 +139,7 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 	const showUpgradeButton = useMemo(
 		() =>
 			shouldDisableEnterprise ? (
-				<Button mbs={4} is='a' href={PRICING_URL} target='_blank'>
+				<Button marginBlockStart={4} is='a' href={PRICING_URL} target='_blank'>
 					{t('See_Paid_Plan')}
 				</Button>
 			) : undefined,
@@ -153,7 +153,7 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 
 		return (
 			<>
-				<Box is='span' mie={4}>
+				<Box is='span' marginInlineEnd={4}>
 					{labelText}
 				</Box>
 				<Tag variant='featured'>{t('Premium')}</Tag>

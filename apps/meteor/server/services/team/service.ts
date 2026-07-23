@@ -27,20 +27,20 @@ import { Team, Rooms, Subscriptions, Users, TeamMember } from '@rocket.chat/mode
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Document, FindOptions, Filter } from 'mongodb';
 
-import { saveRoomName } from '../../../app/channel-settings/server';
-import { saveRoomType } from '../../../app/channel-settings/server/functions/saveRoomType';
-import { notifyOnSubscriptionChangedByRoomIdAndUserId, notifyOnRoomChangedById } from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
+import { notifyOnSubscriptionChangedByRoomIdAndUserId, notifyOnRoomChangedById } from '../../lib/notifyListener';
 import { addUserToRoom } from '../../lib/rooms/addUserToRoom';
 import { getSubscribedRoomsForUserWithDetails } from '../../lib/rooms/getRoomsWithSingleOwner';
 import { removeUserFromRoom } from '../../lib/rooms/removeUserFromRoom';
+import { saveRoomName } from '../../lib/rooms/settings';
+import { saveRoomType } from '../../lib/rooms/settings/saveRoomType';
 import { checkUsernameAvailability } from '../../lib/users/checkUsernameAvailability';
+import { settings } from '../../settings';
 
 export class TeamService extends ServiceClassInternal implements ITeamService {
 	protected name = 'team';
 
 	async create(uid: string, { team, room = { name: team.name, extraData: {} }, members, owner }: ITeamCreateParams): Promise<ITeam> {
-		if (!(await checkUsernameAvailability(team.name))) {
+		if (!(await checkUsernameAvailability(team.name, 'room'))) {
 			throw new Error('team-name-already-exists');
 		}
 

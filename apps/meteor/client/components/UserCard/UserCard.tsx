@@ -52,21 +52,30 @@ const UserCard = ({
 		<UserCardDialog aria-label={t('User_card')} {...props}>
 			<div>
 				{username && <UserAvatar username={username} etag={etag} size='x124' />}
-				<Box flexGrow={0} display='flex' mbs={12} alignItems='center' justifyContent='center'>
+				<Box flexGrow={0} display='flex' marginBlockStart={12} alignItems='center' justifyContent='center'>
 					<UserCardActions aria-label={t('User_card_actions')}>{actions}</UserCardActions>
 				</Box>
 			</div>
-			<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} mis={16} width='1px'>
-				<Box mbe={4} withTruncatedText display='flex' alignItems='center'>
+			<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} marginInlineStart={16} width='1px'>
+				<Box marginBlockEnd={4} withTruncatedText display='flex' alignItems='center'>
 					<UserCardUsername status={status} name={name} />
 					{nickname && (
-						<Box flexGrow={1} flexShrink={1} flexBasis={0} title={nickname} color='hint' mis={4} fontScale='p2' withTruncatedText>
+						<Box
+							flexGrow={1}
+							flexShrink={1}
+							flexBasis={0}
+							title={nickname}
+							color='hint'
+							marginInlineStart={4}
+							fontScale='p2'
+							withTruncatedText
+						>
 							({nickname})
 						</Box>
 					)}
 				</Box>
 				{customStatus && (
-					<UserCardInfo mbe={16}>
+					<UserCardInfo marginBlockEnd={16}>
 						{typeof customStatus === 'string' ? (
 							<MarkdownText withTruncatedText variant='inlineWithoutBreaks' content={customStatus} parseEmoji={true} />
 						) : (
@@ -89,7 +98,7 @@ const UserCard = ({
 					</div>
 				)}
 			</Box>
-			{onClose && <IconButton mis={16} small aria-label={t('Close')} icon='cross' onClick={onClose} />}
+			{onClose && <IconButton marginInlineStart={16} small aria-label={t('Close')} icon='cross' onClick={onClose} />}
 		</UserCardDialog>
 	);
 };

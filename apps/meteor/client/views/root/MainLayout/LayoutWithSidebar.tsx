@@ -58,7 +58,7 @@ const LayoutWithSidebar = ({ children }: LayoutWithSidebarProps) => {
 			<AccessibilityShortcut />
 			{!embeddedLayout && <NavBar />}
 			<Box
-				bg='surface-light'
+				backgroundColor='surface-light'
 				id='rocket-chat'
 				className={[embeddedLayout ? 'embedded-view' : undefined, 'menu-nav'].filter(Boolean).join(' ')}
 			>

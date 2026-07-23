@@ -56,7 +56,7 @@ const RegisterWorkspaceModal = ({ onClose, onStatusChange, ...props }: RegisterW
 						{bulletFeatures.map((features) => (
 							<li key={features.key}>
 								<strong>{features.title}</strong>
-								<Box is='p' mbs={4}>
+								<Box is='p' marginBlockStart={4}>
 									{features.description}
 								</Box>
 							</li>
@@ -68,7 +68,7 @@ const RegisterWorkspaceModal = ({ onClose, onStatusChange, ...props }: RegisterW
 				</Box>
 			</ModalContent>
 			<ModalFooter>
-				<Box is='div' display='flex' justifyContent='space-between' alignItems='center' w='full'>
+				<Box is='div' display='flex' justifyContent='space-between' alignItems='center' width='full'>
 					<ExternalLink to={documentationLink}>{t('Learn_more')}</ExternalLink>
 					<ButtonGroup align='end'>
 						<Button onClick={handleTokenModal}>{t('Use_token')}</Button>

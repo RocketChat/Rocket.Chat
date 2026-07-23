@@ -62,13 +62,13 @@ const ContactInfoHistoryMessages = ({ chatId, onBack, onOpenRoom }: ContactHisto
 				<Box
 					display='flex'
 					flexDirection='row'
-					p={24}
+					padding={24}
 					borderBlockEndWidth='default'
 					borderBlockEndStyle='solid'
 					borderBlockEndColor='extra-light'
 					flexShrink={0}
 				>
-					<Box display='flex' alignItems='center' flexDirection='row' flexGrow={1} mi='neg-x4'>
+					<Box display='flex' alignItems='center' flexDirection='row' flexGrow={1} marginInline='neg-x4'>
 						<Margins inline={4}>
 							<TextInput
 								placeholder={t('Search')}
@@ -81,7 +81,7 @@ const ContactInfoHistoryMessages = ({ chatId, onBack, onOpenRoom }: ContactHisto
 					</Box>
 				</Box>
 				{isPending && (
-					<Box pi={24} pb={12}>
+					<Box paddingInline={24} paddingBlock={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}

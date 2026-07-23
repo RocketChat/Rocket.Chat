@@ -11,7 +11,7 @@ const AttachmentBlock = ({ pre, color = 'annotation', children }: AttachmentBloc
 		<Box
 			display='flex'
 			flexDirection='row'
-			pis={16}
+			paddingInlineStart={16}
 			borderRadius={2}
 			borderInlineStartStyle='solid'
 			borderInlineStartWidth='default'

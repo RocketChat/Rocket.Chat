@@ -29,7 +29,7 @@ const ContactInfoChannels = ({ contact }: ContactInfoChannelsProps) => {
 	if (isPending) {
 		return (
 			<ContextualbarContent>
-				<Box pb={12}>
+				<Box paddingBlock={12}>
 					<Throbber size='x12' />
 				</Box>
 			</ContextualbarContent>
@@ -54,7 +54,7 @@ const ContactInfoChannels = ({ contact }: ContactInfoChannelsProps) => {
 			)}
 			{data.channels && data.channels.length > 0 && (
 				<>
-					<Box is='span' fontScale='p2' pbs={24} pis={24} mbe={8}>
+					<Box is='span' fontScale='p2' paddingBlockStart={24} paddingInlineStart={24} marginBlockEnd={8}>
 						{t('Last_contacts')}
 					</Box>
 					<Box role='list' flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>

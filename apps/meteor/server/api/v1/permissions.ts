@@ -9,9 +9,9 @@ import {
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { permissionsGetMethod } from '../../../app/authorization/server/streamer/permissions';
-import { notifyOnPermissionChangedById } from '../../../app/lib/server/lib/notifyListener';
 import { addPermissionToRoleMethod, removeRoleFromPermissionMethod } from '../../lib/authorization/permissionRole';
+import { permissionsGetMethod } from '../../lib/authorization/streamer/permissions';
+import { notifyOnPermissionChangedById } from '../../lib/notifyListener';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 
@@ -180,17 +180,17 @@ const permissionsEndpoints = API.v1
 			}
 
 			const permissionKeys = bodyParams.permissions.map(({ _id }) => _id);
-			const permissions = await Permissions.find({ _id: { $in: permissionKeys } }).toArray();
+			const permissionsCount = await Permissions.countDocuments({ _id: { $in: permissionKeys } });
 
-			if (permissions.length !== bodyParams.permissions.length) {
+			if (permissionsCount !== bodyParams.permissions.length) {
 				return API.v1.failure('Invalid permission', 'error-invalid-permission');
 			}
 
 			const roleKeys = [...new Set(bodyParams.permissions.flatMap((p) => p.roles))];
 
-			const roles = await Roles.find({ _id: { $in: roleKeys } }).toArray();
+			const rolesCount = await Roles.countDocuments({ _id: { $in: roleKeys } });
 
-			if (roles.length !== roleKeys.length) {
+			if (rolesCount !== roleKeys.length) {
 				return API.v1.failure('Invalid role', 'error-invalid-role');
 			}
 

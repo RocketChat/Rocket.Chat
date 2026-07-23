@@ -2,7 +2,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 import { Spotlight } from '../lib/spotlight';
 
 type SpotlightType = {

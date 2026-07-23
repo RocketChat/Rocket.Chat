@@ -22,7 +22,7 @@ const FormatSelector = ({ value, onChange }: FormatSelectorProps) => {
 	);
 
 	return (
-		<Box mb='x16'>
+		<Box marginBlock='x16'>
 			<Field>
 				<FieldLabel>{t('Format')}</FieldLabel>
 				<FieldRow>

@@ -610,6 +610,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 		return this.updateMany(query, {
 			$set: {
+				'_hidden': false,
 				'_importFile.rocketChatUrl': rocketChatUrl,
 				'_importFile.downloaded': true,
 			},
@@ -1397,20 +1398,13 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			query.tcount = { $exists: false };
 		}
 
-		const notCountedMessages = (
-			await this.find(
-				{
-					...query,
-					$or: [{ _hidden: true }, { editedAt: { $exists: true }, editedBy: { $exists: true }, t: 'rm' }],
-				},
-				{
-					projection: {
-						_id: 1,
-					},
-					limit,
-				},
-			).toArray()
-		).length;
+		const notCountedMessages = await this.countDocuments(
+			{
+				...query,
+				$or: [{ _hidden: true }, { editedAt: { $exists: true }, editedBy: { $exists: true }, t: 'rm' }],
+			},
+			{ ...(limit ? { limit } : {}) },
+		);
 
 		if (!limit) {
 			const count = (await this.deleteMany(query)).deletedCount - notCountedMessages;

@@ -11,8 +11,8 @@ import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typing
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
-import { deleteCustomUserStatus } from '../../../app/user-status/server/methods/deleteCustomUserStatus';
-import { insertOrUpdateUserStatus } from '../../../app/user-status/server/methods/insertOrUpdateUserStatus';
+import { deleteCustomUserStatus } from '../../meteor-methods/users/deleteCustomUserStatus';
+import { insertOrUpdateUserStatus } from '../../meteor-methods/users/insertOrUpdateUserStatus';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';

@@ -67,7 +67,13 @@ Allow speaker and microphone access in your browser settings to prevent seeing t
               <span
                 class="rcx-button--content"
               >
-                Cancel
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-mic-off rcx-icon rcx-css-1hdf9ok"
+                >
+                  
+                </i>
+                Continue without mic
               </span>
             </button>
           </div>
@@ -227,7 +233,7 @@ Allow speaker and microphone access in your browser settings to prevent seeing t
             role="group"
           >
             <button
-              class="rcx-box rcx-box--full rcx-button--danger rcx-button"
+              class="rcx-box rcx-box--full rcx-button"
               type="button"
             >
               <span
@@ -235,11 +241,11 @@ Allow speaker and microphone access in your browser settings to prevent seeing t
               >
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-1hdf9ok"
+                  class="rcx-box rcx-box--full rcx-icon--name-mic-off rcx-icon rcx-css-1hdf9ok"
                 >
-                  
+                  
                 </i>
-                Cancel and reject
+                Accept without mic
               </span>
             </button>
             <button
@@ -266,7 +272,7 @@ Allow speaker and microphone access in your browser settings to prevent seeing t
 </body>
 `;
 
-exports[`renders PermissionFlowModalOutgoingPrompt without crashing 1`] = `
+exports[`renders PermissionFlowModalNoDevices without crashing 1`] = `
 <body>
   <div>
     <dialog
@@ -287,6 +293,88 @@ exports[`renders PermissionFlowModalOutgoingPrompt without crashing 1`] = `
             <h2
               class="rcx-box rcx-box--full rcx-modal__title rcx-css-trljwa rcx-css-lma364"
               id="_r_3_"
+            >
+              Microphone not detected
+            </h2>
+            <button
+              aria-label="Close"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-trljwa rcx-css-lma364"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </header>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-56vo9k"
+          >
+            <span
+              class="rcx-box rcx-box--full rcx-css-1ntdv01 rcx-css-1gd28qh"
+            >
+              Your web browser did not list any eligible audio input for this call. Ensure you have at least one audio input connected to your device and enabled in the system settings.
+            </span>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--align-end"
+            role="group"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-button"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-mic-off rcx-icon rcx-css-1hdf9ok"
+                >
+                  
+                </i>
+                Continue without mic
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+  </div>
+</body>
+`;
+
+exports[`renders PermissionFlowModalOutgoingPrompt without crashing 1`] = `
+<body>
+  <div>
+    <dialog
+      aria-labelledby="_r_4_"
+      aria-modal="true"
+      class="rcx-box rcx-box--full rcx-modal"
+      open=""
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1euli2f"
+      >
+        <header
+          class="rcx-box rcx-box--full rcx-modal__header"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__header-inner"
+          >
+            <h2
+              class="rcx-box rcx-box--full rcx-modal__title rcx-css-trljwa rcx-css-lma364"
+              id="_r_4_"
             >
               Mic/speaker access required
             </h2>
@@ -333,7 +421,13 @@ Allow speaker and microphone access in your browser settings to prevent seeing t
               <span
                 class="rcx-button--content"
               >
-                Cancel
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-mic-off rcx-icon rcx-css-1hdf9ok"
+                >
+                  
+                </i>
+                Call without mic
               </span>
             </button>
             <button

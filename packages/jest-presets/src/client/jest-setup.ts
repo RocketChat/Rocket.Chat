@@ -68,7 +68,7 @@ globalThis.IntersectionObserver = class IntersectionObserver {
 	unobserve() {
 		return null;
 	}
-};
+} as unknown as typeof IntersectionObserver;
 
 globalThis.TextEncoder = TextEncoder as any;
 globalThis.TextDecoder = TextDecoder as any;

@@ -7,7 +7,7 @@ export type WizardActionsProps = {
 
 const WizardActions = ({ children }: WizardActionsProps) => {
 	return (
-		<Box is={ButtonGroup} mbs={24} display='flex' justifyContent='end'>
+		<Box is={ButtonGroup} marginBlockStart={24} display='flex' justifyContent='end'>
 			{children}
 		</Box>
 	);
