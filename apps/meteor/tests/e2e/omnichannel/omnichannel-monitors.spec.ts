@@ -32,7 +32,7 @@ test.describe.serial('OC - Manage Monitors', () => {
 
 		await page.goto('/omnichannel');
 		await page.locator('#main-content').waitFor();
-		await poMonitors.sidebar.linkMonitors.click();
+		await poMonitors.sidebar.open(poMonitors.sidebar.linkMonitors);
 	});
 
 	test('OC - Manager Monitors - Add monitor', async () => {

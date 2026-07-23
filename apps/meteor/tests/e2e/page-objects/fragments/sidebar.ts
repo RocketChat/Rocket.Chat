@@ -149,8 +149,18 @@ export class AccountSidebar extends Sidebar {
 }
 
 export class OmnichannelSidebar extends Sidebar {
-	constructor(page: Page) {
+	constructor(protected page: Page) {
 		super(page.getByRole('navigation', { name: 'Omnichannel' }));
+	}
+
+	// SPA sidebar links can be clicked before the router finishes hydrating, which swallows the click and leaves the
+	// current view mounted; retry the click until the URL actually lands on the target route
+	async open(link: Locator): Promise<void> {
+		const href = await link.getAttribute('href');
+		await expect(async () => {
+			await link.click();
+			await this.page.waitForURL(`**${href}`, { timeout: 5000 });
+		}).toPass({ timeout: 30000 });
 	}
 
 	get linkDepartments(): Locator {
