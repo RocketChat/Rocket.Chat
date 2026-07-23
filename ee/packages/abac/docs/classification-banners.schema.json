@@ -14,7 +14,7 @@
       "required": ["style", "uppercase", "monospace", "delimiter", "colorMode", "fallbackText", "fallbackColor"],
       "additionalProperties": false,
       "properties": {
-        "style": { "enum": ["classic", "segmented", "edge"] },
+        "style": { "enum": ["classic"] },
         "uppercase": { "type": "boolean" },
         "monospace": { "type": "boolean" },
         "delimiter": { "type": "string", "minLength": 1, "maxLength": 8 },
