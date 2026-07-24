@@ -20,6 +20,7 @@ import {
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
@@ -464,6 +465,7 @@ const dmFilesAction = <Path extends string>(_path: Path): TypedAction<typeof dmF
 		}
 
 		const { typeGroup, name, roomId, username, onlyConfirmed } = this.queryParams;
+		const searchName = name?.trim();
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
 		const { sort, fields, query } = await this.parseJsonQuery();
@@ -478,7 +480,12 @@ const dmFilesAction = <Path extends string>(_path: Path): TypedAction<typeof dmF
 		const filter = {
 			...query,
 			rid: room._id,
-			...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
+			...(searchName && {
+				name: {
+					$regex: escapeRegExp(searchName),
+					$options: 'i',
+				},
+			}),
 			...(typeGroup ? { typeGroup } : {}),
 			...(onlyConfirmed && { expiresAt: { $exists: false } }),
 		};

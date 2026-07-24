@@ -332,6 +332,63 @@ export async function testFileUploads(
 
 		after(() => Promise.all([deleteUser(anotherUser), deleteRoom({ type: roomType, roomId: extraRoom._id })]));
 
+		it('should properly filter files with regex special characters and trimmed whitespace', async () => {
+			let fileId: string;
+			const fileName = 'file(1).txt';
+
+			await request
+				.post(api(`rooms.media/${testRoom._id}`))
+				.set(credentials)
+				.attach('file', imgURL, { filename: fileName })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					fileId = res.body.file._id;
+				});
+
+			await request
+				.post(api(`rooms.mediaConfirm/${testRoom._id}/${fileId}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			await request
+				.get(api(filesEndpoint))
+				.set(credentials)
+				.query({
+					roomId: testRoom._id,
+					name: 'file(1)',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('files').and.to.be.an('array').with.lengthOf(1);
+
+					const { files } = res.body;
+
+					expect(files[0].name).to.equal(fileName);
+				});
+
+			await request
+				.get(api(filesEndpoint))
+				.set(credentials)
+				.query({
+					roomId: testRoom._id,
+					name: '  file(1)  ',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('files').and.to.be.an('array').with.lengthOf(1);
+
+					const { files } = res.body;
+
+					expect(files[0].name).to.equal(fileName);
+				});
+		});
 		it('should not allow to confirm a file from another user', async function () {
 			if (roomType === 'd') {
 				this.skip();

@@ -9,6 +9,7 @@ import {
 } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import { isGroupsOnlineProps, isGroupsMessagesProps, isGroupsFilesProps } from '@rocket.chat/rest-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { isTruthy } from '@rocket.chat/tools';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -399,6 +400,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { typeGroup, name, roomId, roomName, onlyConfirmed } = this.queryParams;
+			const searchName = name?.trim();
 
 			const findResult = await findPrivateGroupByIdOrName({
 				params: roomId ? { roomId } : { roomName },
@@ -412,7 +414,12 @@ API.v1.addRoute(
 			const filter = {
 				...query,
 				rid: findResult.rid,
-				...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
+				...(searchName && {
+					name: {
+						$regex: escapeRegExp(searchName),
+						$options: 'i',
+					},
+				}),
 				...(typeGroup ? { typeGroup } : {}),
 				...(onlyConfirmed && { expiresAt: { $exists: false } }),
 			};

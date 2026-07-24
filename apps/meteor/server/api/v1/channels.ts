@@ -9,6 +9,7 @@ import {
 	type UserStatus,
 } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import {
 	isChannelsAddAllProps,
 	isChannelsArchiveProps,
@@ -815,6 +816,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { typeGroup, name, roomId, roomName, onlyConfirmed } = this.queryParams;
+			const searchName = name?.trim();
 
 			const findResult = await findChannelByIdOrName({
 				params: {
@@ -834,7 +836,12 @@ API.v1.addRoute(
 			const filter = {
 				rid: findResult._id,
 				...query,
-				...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
+				...(searchName && {
+					name: {
+						$regex: escapeRegExp(searchName),
+						$options: 'i',
+					},
+				}),
 				...(typeGroup ? { typeGroup } : {}),
 				...(onlyConfirmed && { expiresAt: { $exists: false } }),
 			};
