@@ -7,6 +7,7 @@ import type { IGetRoomRoles, PaginatedResult, DefaultUserInfo } from '@rocket.ch
 import { assert, expect } from 'chai';
 import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
+import speakeasy from 'speakeasy';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials, apiEmail, apiUsername, wait, reservedWords } from '../../data/api-data';
@@ -6631,6 +6632,122 @@ describe('[Users]', () => {
 						expect(res.body).to.have.property('success', false);
 					});
 			});
+		});
+	});
+
+	describe('[TOTP endpoints]', () => {
+		let totpUser: TestUser<IUser>;
+		let totpCredentials: Credentials;
+		let secret: string;
+
+		// speakeasy verify is stateless, so the same code is accepted repeatedly within its window — safe to reuse across the flow
+		const totpCode = () => speakeasy.totp({ secret, encoding: 'base32' });
+
+		// enableTotp/validateTotp carry `twoFactorRequired` to protect users with an existing 2FA method, but the
+		// API e2e suite runs with TEST_MODE which bypasses the 2FA challenge (see checkCodeForUser), so these tests
+		// exercise the endpoint logic for a fresh user without a challenge.
+		before(async () => {
+			totpUser = await createUser({ username: Random.id(), email: `${Random.id()}@example.com`, verified: true });
+			totpCredentials = await login(totpUser.username, password);
+		});
+
+		after(async () => deleteUser(totpUser));
+
+		describe('[/users.enableTotp]', () => {
+			it('should fail when unauthenticated', () => request.post(api('users.enableTotp')).expect(401));
+
+			it('should return a secret and an otpauth url', () =>
+				request
+					.post(api('users.enableTotp'))
+					.set(totpCredentials)
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('secret').that.is.a('string');
+						expect(res.body)
+							.to.have.property('url')
+							.that.is.a('string')
+							.and.match(/^otpauth:\/\//);
+						secret = res.body.secret;
+					}));
+		});
+
+		describe('[/users.validateTotp]', () => {
+			it('should fail when unauthenticated', () => request.post(api('users.validateTotp')).send({ code: '000000' }).expect(401));
+
+			it('should fail with 400 when the code is missing', () =>
+				request.post(api('users.validateTotp')).set(totpCredentials).send({}).expect(400));
+
+			it('should enable totp and return backup codes for a valid code', () =>
+				request
+					.post(api('users.validateTotp'))
+					.set(totpCredentials)
+					.send({ code: totpCode() })
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('codes').that.is.an('array');
+					}));
+		});
+
+		describe('[/users.totpCodesRemaining]', () => {
+			it('should fail when unauthenticated', () => request.get(api('users.totpCodesRemaining')).expect(401));
+
+			it('should return the number of remaining backup codes', () =>
+				request
+					.get(api('users.totpCodesRemaining'))
+					.set(totpCredentials)
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('remaining').that.is.a('number');
+					}));
+		});
+
+		describe('[/users.regenerateTotpCodes]', () => {
+			it('should fail when unauthenticated', () => request.post(api('users.regenerateTotpCodes')).send({ code: '000000' }).expect(401));
+
+			it('should fail with 400 when the code is missing', () =>
+				request.post(api('users.regenerateTotpCodes')).set(totpCredentials).send({}).expect(400));
+
+			it('should fail with 400 when the code is invalid', () =>
+				request
+					.post(api('users.regenerateTotpCodes'))
+					.set(totpCredentials)
+					.send({ code: '000000' })
+					.expect(400)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', false);
+					}));
+
+			it('should return a fresh set of backup codes for a valid code', () =>
+				request
+					.post(api('users.regenerateTotpCodes'))
+					.set(totpCredentials)
+					.send({ code: totpCode() })
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('codes').that.is.an('array');
+					}));
+		});
+
+		describe('[/users.disableTotp]', () => {
+			it('should fail when unauthenticated', () => request.post(api('users.disableTotp')).send({ code: '000000' }).expect(401));
+
+			it('should fail with 400 when the code is missing', () =>
+				request.post(api('users.disableTotp')).set(totpCredentials).send({}).expect(400));
+
+			it('should disable totp for a valid code', () =>
+				request
+					.post(api('users.disableTotp'))
+					.set(totpCredentials)
+					.send({ code: totpCode() })
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('disabled', true);
+					}));
 		});
 	});
 });
