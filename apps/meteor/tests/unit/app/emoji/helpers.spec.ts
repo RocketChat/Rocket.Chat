@@ -29,6 +29,20 @@ const registerNativeEmojis = () => {
 	}
 };
 
+const registerCustomEmoji = (name: string) => {
+	if (!emoji.packages.emojiCustom) {
+		emoji.packages.emojiCustom = {
+			emojiCategories: [{ key: 'rocket', i18n: 'Custom' as any }],
+			emojisByCategory: { rocket: [] },
+			toneList: {},
+			render: (html: string) => html,
+			renderPicker: () => '<span class="emoji-custom" />',
+		} as any;
+	}
+	emoji.packages.emojiCustom.emojisByCategory.rocket.push(name);
+	emoji.list[`:${name}:`] = { emojiPackage: 'emojiCustom', name } as any;
+};
+
 describe('Emoji Client Helpers', () => {
 	beforeEach(() => {
 		emoji.packages.base.emojisByCategory.recent = [];
@@ -72,6 +86,11 @@ describe('Emoji Client Helpers', () => {
 			expect(result).to.exist;
 			expect(result?.image).to.include('👍🏼');
 			expect(result?.emoji).to.equal('thumbsup_tone2');
+		});
+
+		it('finds a custom emoji whose name ends in a mixed skin-tone suffix (CORE-2473)', () => {
+			registerCustomEmoji('mycustom_tone1-2');
+			expect(names('mycustom_tone1-2')).to.include('mycustom_tone1-2');
 		});
 	});
 

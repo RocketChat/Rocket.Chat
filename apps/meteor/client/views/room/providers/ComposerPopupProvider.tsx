@@ -38,6 +38,18 @@ const getToneRegexes = () => {
 	return [exactFinalTone, colorBlind, seeColor];
 };
 
+const matchesEmojiSuggestion = (id: string, key: string, filterRegex: RegExp, [exactFinalTone, colorBlind, seeColor]: RegExp[]) => {
+	if (!filterRegex.test(id)) {
+		return false;
+	}
+
+	if (emoji.list[id]?.emojiPackage === 'emojiCustom') {
+		return true;
+	}
+
+	return exactFinalTone.test(id.substring(key.length)) || seeColor.test(key) || !colorBlind.test(id);
+};
+
 export type CannedResponse = { _id: string; shortcut: string; text: string };
 
 export type ComposerPopupProviderProps = {
@@ -209,7 +221,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 					title: t('Emoji'),
 					triggerLength: 2,
 					getItemsFromLocal: async (filter: string) => {
-						const [exactFinalTone, colorBlind, seeColor] = getToneRegexes();
+						const toneRegexes = getToneRegexes();
 
 						const emojiSort = (recents: string[]) => (a: { _id: string }, b: { _id: string }) => {
 							const aExact = a._id === key ? 2 : 0;
@@ -247,10 +259,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 								const data = collection[key];
 								return { _id, data };
 							})
-							.filter(
-								({ _id }) =>
-									filterRegex.test(_id) && (exactFinalTone.test(_id.substring(key.length)) || seeColor.test(key) || !colorBlind.test(_id)),
-							)
+							.filter(({ _id }) => matchesEmojiSuggestion(_id, key, filterRegex, toneRegexes))
 							.sort(emojiSort(recents))
 							.slice(0, 10);
 					},
@@ -270,7 +279,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 				suffix: ' ',
 				triggerAnywhere: false,
 				getItemsFromLocal: async (filter: string) => {
-					const [exactFinalTone, colorBlind, seeColor] = getToneRegexes();
+					const toneRegexes = getToneRegexes();
 
 					const emojiSort = (recents: string[]) => (a: { _id: string }, b: { _id: string }) => {
 						let idA = a._id;
@@ -305,10 +314,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 							const data = collection[key];
 							return { _id, data };
 						})
-						.filter(
-							({ _id }) =>
-								filterRegex.test(_id) && (exactFinalTone.test(_id.substring(key.length)) || seeColor.test(key) || !colorBlind.test(_id)),
-						)
+						.filter(({ _id }) => matchesEmojiSuggestion(_id, key, filterRegex, toneRegexes))
 						.sort(emojiSort(recents))
 						.slice(0, 10);
 				},
