@@ -134,12 +134,15 @@ export const auditGetMessagesMethod = async (userId: string | null, params: Audi
 
 	const messages = await Messages.find(query).toArray();
 
-	await AuditLog.insertOne({
-		ts: new Date(),
-		results: messages.length,
-		u: userFields,
-		fields: { msg, users: usernames, rids, room: name, startDate, endDate, type, visitor, agent },
-	});
+	await AuditLog.insertOne(
+		{
+			ts: new Date(),
+			results: messages.length,
+			u: userFields,
+			fields: { msg, users: usernames, rids, room: name, startDate, endDate, type, visitor, agent },
+		},
+		{ ignoreUndefined: true },
+	);
 
 	updateCounter({ settingsId: 'Message_Auditing_Panel_Load_Count' });
 
@@ -196,12 +199,15 @@ export const auditGetOmnichannelMessagesMethod = async (
 
 	const messages = await Messages.find(query).toArray();
 
-	await AuditLog.insertOne({
-		ts: new Date(),
-		results: messages.length,
-		u: userFields,
-		fields: { msg, users: usernames, rids, room: name, startDate, endDate, type, visitor, agent },
-	});
+	await AuditLog.insertOne(
+		{
+			ts: new Date(),
+			results: messages.length,
+			u: userFields,
+			fields: { msg, users: usernames, rids, room: name, startDate, endDate, type, visitor, agent },
+		},
+		{ ignoreUndefined: true },
+	);
 
 	return messages;
 };
