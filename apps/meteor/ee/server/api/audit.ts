@@ -68,7 +68,7 @@ const auditMessagesSchema = {
 		rid: { type: 'string' },
 		startDate: { type: 'string', minLength: 1 },
 		endDate: { type: 'string', minLength: 1 },
-		users: { type: ['array', 'null'], items: { type: 'string' } },
+		users: { type: 'array', items: { type: 'string' } },
 		msg: { type: ['string', 'null'] },
 		type: { type: 'string' },
 		visitor: { type: ['string', 'null'] },
@@ -95,7 +95,7 @@ const auditOmnichannelMessagesSchema = {
 	properties: {
 		startDate: { type: 'string', minLength: 1 },
 		endDate: { type: 'string', minLength: 1 },
-		users: { type: ['array', 'null'], items: { type: 'string' } },
+		users: { type: 'array', items: { type: 'string' } },
 		msg: { type: ['string', 'null'] },
 		type: { type: 'string' },
 		visitor: { type: ['string', 'null'] },
