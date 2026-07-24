@@ -82,3 +82,10 @@ New client-server interactions are built as **REST endpoints**, not DDP
   migrating it to REST over extending it.
 - Real-time *notifications* still flow through the **streamer** (events), which
   is separate from the REST request/response path.
+
+> **`method.call` / `method.callAnon`:** legacy Meteor methods can also be
+> invoked over plain HTTP via `POST /api/v1/method.call/:method` (and
+> `method.callAnon` for anonymous-allowed methods) — see
+> `apps/meteor/app/api/server/v1/misc.ts`. That's how method traffic shows up in
+> the network tab without a WebSocket. It's a transport bridge for the legacy
+> surface, **not** an API to build on — new code gets a typed REST endpoint.

@@ -59,6 +59,8 @@ suddenly fails on the error string, this is usually why.
   schema (see [rest-endpoints](./rest-endpoints.md)).
 - Don't leak internal details in the message; put structured context in the
   third arg, not the human string.
+- Don't annotate catch variables as `any`. With `strict` mode they are already
+  `unknown` — narrow (`instanceof Error`, check the `error` field) before using.
 
 ---
 

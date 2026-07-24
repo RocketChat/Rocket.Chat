@@ -44,8 +44,10 @@ const endpoints = API.v1.get(
 ## Rules
 
 1. **Validate at runtime with AJV.** TypeScript types are compile-time only.
-   Compile a validator (`ajv.compile` / `ajvQuery.compile`) and pass it in
-   `query` / `body`. Types and validators both live in
+   Compile a validator and pass it in `query` / `body`: use `ajv.compile` for
+   **body** schemas and `ajvQuery.compile` for **query** schemas (the query
+   instance coerces `"50"` → `50` etc. — see
+   [AJV instances](../../ajv-instances.md)). Types and validators both live in
    `@rocket.chat/rest-typings`.
 2. **Declare response schemas per status code** (`200`, `400`, `401`, `403`, …).
    Reuse the shared `validate*ErrorResponse` helpers from `rest-typings`.
