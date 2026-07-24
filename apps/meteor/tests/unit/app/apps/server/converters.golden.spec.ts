@@ -560,7 +560,6 @@ describe('apps converters — golden snapshots (pre-codec behaviour)', () => {
 				description: 'a file',
 				store: 'GridFS',
 				etag: 'etag-1',
-				path: '/path',
 				complete: true,
 				uploading: false,
 				progress: 1,
