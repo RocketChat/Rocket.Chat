@@ -6,6 +6,7 @@ import gazzoAvatar from './assets/gazzo.jpg';
 import martinAvatar from './assets/martin.jpg';
 import tassoAvatar from './assets/tasso.jpg';
 import { ScreenContext } from '../src/components/Screen/ScreenProvider';
+import store, { StoreContext, type StoreState } from '../src/store';
 
 export const screenDecorator: Decorator = (storyFn) => (
 	<div style={{ display: 'flex', width: 365, height: 500 }}>
@@ -28,6 +29,22 @@ export const screenProps = () => ({
 	onRestore: action('restore'),
 	onOpenWindow: action('openWindow'),
 });
+
+// Feeds arbitrary store data from a story's args into StoreContext, so container components that
+// read from `useStore()` render against it. Args are treated as a partial store state override.
+export const storeDecorator: Decorator<Partial<StoreState>> = (storyFn, { args }) => (
+	<StoreContext.Provider
+		value={{
+			...store.state,
+			...args,
+			dispatch: store.setState.bind(store),
+			on: store.on.bind(store),
+			off: store.off.bind(store),
+		}}
+	>
+		{storyFn()}
+	</StoreContext.Provider>
+);
 
 export const avatarResolver = (username: string) =>
 	({
