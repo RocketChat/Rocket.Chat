@@ -213,7 +213,7 @@ test.describe('OC - Manager Role', () => {
 
 	test('OC - Manager Role - Add/remove monitors', async ({ page }) => {
 		const poOmnichannelMonitors = new OmnichannelMonitors(page);
-		await poOmnichannelMonitors.sidebar.linkMonitors.click();
+		await poOmnichannelMonitors.goTo();
 
 		await test.step('expect to add agent as monitor', async () => {
 			await expect(poOmnichannelMonitors.table.findRowByName('user1')).not.toBeVisible();

@@ -20,6 +20,14 @@ export abstract class OmnichannelAdmin {
 		this.deleteModal = new ConfirmDeleteModal(page.getByRole('dialog', { name: 'Are you sure?' }));
 	}
 
+	protected async goToRoute(route: 'monitors' | 'agents' | 'departments') {
+		await this.page.goto(`/omnichannel/${route}`);
+	}
+
+	protected getPageHeader(title: string): Locator {
+		return this.page.locator('main').getByRole('heading', { name: title, exact: true });
+	}
+
 	get inputSearch() {
 		return this.page.getByRole('main').getByRole('textbox', { name: 'Search' });
 	}
