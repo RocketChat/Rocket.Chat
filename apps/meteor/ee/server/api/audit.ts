@@ -372,6 +372,8 @@ API.v1.get(
 		response: {
 			200: auditAuditionsResponseSchema,
 			400: auditErrorResponseSchema,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 	},
 	async function action() {
@@ -394,6 +396,8 @@ API.v1.post(
 		response: {
 			200: auditMessagesResponseSchema,
 			400: auditErrorResponseSchema,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 	},
 	async function action() {
@@ -427,6 +431,8 @@ API.v1.post(
 		response: {
 			200: auditMessagesResponseSchema,
 			400: auditErrorResponseSchema,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 	},
 	async function action() {
