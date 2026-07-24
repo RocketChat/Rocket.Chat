@@ -1,0 +1,20 @@
+apps/meteor/ee/server/api/audit.ts
+  s_cebff2a8b0b9f8::t_0219838a8b18bc 98
+  s_cebff2a8b0b9f8::t_37eab562c8b969 71
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "29ff63a9925fd4e0a48f168a9d195a37cffca1a7",
+  "prompts": {},
+  "sessions": {
+    "s_cebff2a8b0b9f8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "26830f49-bfa5-4bd8-a165-637b399ddea6",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
