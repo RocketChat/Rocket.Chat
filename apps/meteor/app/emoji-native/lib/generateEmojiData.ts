@@ -17,6 +17,7 @@ const groupToCategory: Record<number, string> = {
 };
 
 export type EmojiEntry = {
+	name: string;
 	uc_base: string;
 	uc_output: string;
 	uc_match: string;
@@ -73,6 +74,7 @@ function buildEmojiData() {
 		const hex = hexFromEmoji(emojiData.emoji);
 
 		const entry: EmojiEntry = {
+			name: primaryShortcode,
 			uc_base: hex,
 			uc_output: hex,
 			uc_match: hex,
@@ -108,6 +110,7 @@ function buildEmojiData() {
 				const skinHex = hexFromEmoji(skin.emoji);
 
 				const skinEntry: EmojiEntry = {
+					name: primaryShortcode,
 					uc_base: skinHex,
 					uc_output: skinHex,
 					uc_match: skinHex,
