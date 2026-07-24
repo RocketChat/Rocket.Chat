@@ -57,8 +57,4 @@ export class OmnichannelSlaPolicies extends OmnichannelAdmin {
 	async createNew() {
 		await this.getButtonByType('SLA policy').click();
 	}
-
-	get txtEmptyState() {
-		return this.page.locator('div >> text="No results found"');
-	}
 }

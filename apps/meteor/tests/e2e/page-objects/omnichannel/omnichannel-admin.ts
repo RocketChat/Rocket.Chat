@@ -70,8 +70,8 @@ export abstract class OmnichannelAdmin {
 		await this.inputSearch.fill('');
 	}
 
-	protected get emptyState() {
-		return this.page.getByRole('status', { name: 'No results found' });
+	get emptyState() {
+		return this.page.getByRole('group', { name: 'No results found', exact: true });
 	}
 
 	waitForEmptyState() {
