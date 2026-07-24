@@ -7508,6 +7508,7 @@
   "No_background_jobs_found": "No background jobs found",
   "No_history_available": "No history available",
   "Run_now": "Run now",
+  "Background_Job_Run_now_confirm": "Are you sure you want to run the job \"{{jobName}}\" now?",
   "Background_Job_Status_running": "Running",
   "Background_Job_Status_scheduled": "Scheduled",
   "Background_Job_Status_completed": "Completed",
