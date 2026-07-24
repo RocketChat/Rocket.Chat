@@ -664,11 +664,14 @@ describe('LIVECHAT - rooms', () => {
 			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;
 			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom2._id)).to.be.true;
 
-			await closeOmnichannelRoom(expectedRoom._id);
-			await closeOmnichannelRoom(expectedRoom2._id);
-			await deleteVisitor(expectedVisitor.token);
-			await deleteVisitor(expectedVisitor2.token);
-			await Promise.all([deleteDepartment(department._id), deleteDepartment(department2._id)]);
+			// close both rooms before removing visitors/departments (deleting a department with an open room fails)
+			await Promise.all([closeOmnichannelRoom(expectedRoom._id), closeOmnichannelRoom(expectedRoom2._id)]);
+			await Promise.all([
+				deleteVisitor(expectedVisitor.token),
+				deleteVisitor(expectedVisitor2.token),
+				deleteDepartment(department._id),
+				deleteDepartment(department2._id),
+			]);
 		});
 		(IS_EE ? it : it.skip)('should return only rooms with the given tags', async () => {
 			const tag = await saveTags();
