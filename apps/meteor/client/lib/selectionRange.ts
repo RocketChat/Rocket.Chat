@@ -46,7 +46,7 @@ export const getSelectionRange = (input: HTMLDivElement): { selectionStart: numb
 			// Special case: <br> inside an empty block subtract 1
 			if (tag === 'br') {
 				const parent = currentNode.parentNode;
-				if (parent && parent.childNodes.length === 1 && parent.firstChild === currentNode) {
+				if (parent?.childNodes.length === 1 && parent.firstChild === currentNode) {
 					runningOffset -= 1;
 				}
 			}
@@ -119,11 +119,7 @@ export const setSelectionRange = (input: HTMLDivElement, selectionStart: number,
 			const isInline =
 				['b', 'i', 'u', 'span', 'strong', 'em', 'small', 'abbr', 'sub', 'sup', 'mark', 'code', 'del'].includes(tag) && node !== input;
 			const isBr = tag === 'br';
-
-			// Check for <div><br></div> to count as one offset unit
-			if (isBr && node.parentNode?.nodeName === 'DIV' && node.parentNode.childNodes.length === 1) {
-				runningOffset -= 0; // Do Nothing!
-			}
+			const isEmptyBlockBr = isBr && node.parentNode?.childNodes.length === 1 && node.parentNode?.firstChild === node;
 
 			if (!isInline && !isBr) {
 				if (!startNode && runningOffset + 1 > selectionStart) {
@@ -136,6 +132,10 @@ export const setSelectionRange = (input: HTMLDivElement, selectionStart: number,
 					endOffset = 0;
 				}
 
+				runningOffset += 1;
+			}
+
+			if (isBr && !isEmptyBlockBr) {
 				runningOffset += 1;
 			}
 

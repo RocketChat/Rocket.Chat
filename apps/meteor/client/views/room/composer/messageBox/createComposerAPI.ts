@@ -134,11 +134,7 @@ export const createComposerAPI = (
 	};
 
 	const replyWith = async (text: string): Promise<void> => {
-	if (input) {
 		setText(text);
-		input.focus();
-	}
-
 	};
 
 	return {

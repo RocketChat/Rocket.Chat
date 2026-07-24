@@ -11,6 +11,7 @@ import { memo, useRef, useReducer, useCallback, useSyncExternalStore, useState, 
 
 import MessageBoxBase from './MessageBoxBase';
 import MessageComposerFiles from './MessageComposerFiles';
+import { useComposerHistory } from './hooks/useComposerHistory';
 import { useDraft } from './hooks/useDraft';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
@@ -469,6 +470,8 @@ const RichTextMessageBox = ({
 		),
 	);
 
+	const composerHistoryRef = useComposerHistory(parseOptions);
+
 	const newMergedRefs = useMessageComposerMergedRefs(
 		popup.callbackRef,
 		contentEditableRef,
@@ -476,6 +479,7 @@ const RichTextMessageBox = ({
 		autofocusRef,
 		keyDownHandlerCallbackRef,
 		beforeInputHandlerCallbackRef,
+		composerHistoryRef,
 	);
 
 	const shouldPopupPreview = useEnablePopupPreview(popup.filter, popup.option);
