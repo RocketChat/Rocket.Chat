@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { processRoomActions } from './processRoomActions';
 import type { RoomToolboxBaseAction, RoomToolboxLayoutConfig } from './processRoomActions';
+import { useRoom } from '../../../contexts/RoomContext';
 
 type MenuSection = {
 	id: string;
@@ -72,13 +73,28 @@ const actionToMenuItem = (
 export const useRoomToolboxActions = ({ actions, openTab }: Pick<RoomToolboxContextValue, 'actions' | 'openTab'>) => {
 	const { t } = useTranslation();
 	const { roomToolboxExpanded } = useLayout();
-	const layoutConfigJSON = useSetting('Room_Toolbox_Layout', '');
+	const room = useRoom();
 	const isLayoutPreviewEnabled = useFeaturePreview('roomToolboxLayout');
 
-	const layoutConfig = useMemo(
-		() => (isLayoutPreviewEnabled ? parseLayoutConfig(layoutConfigJSON) : null),
-		[isLayoutPreviewEnabled, layoutConfigJSON],
-	);
+	const layoutPublicJSON = useSetting('Room_Toolbox_Layout_Public', '');
+	const layoutPrivateJSON = useSetting('Room_Toolbox_Layout_Private', '');
+	const layoutDirectJSON = useSetting('Room_Toolbox_Layout_Direct', '');
+
+	const layoutConfig = useMemo(() => {
+		if (!isLayoutPreviewEnabled) {
+			return null;
+		}
+		const roomType = room.t as string;
+		let raw = '';
+		if (roomType === 'c') {
+			raw = layoutPublicJSON;
+		} else if (roomType === 'p') {
+			raw = layoutPrivateJSON;
+		} else if (roomType === 'd') {
+			raw = layoutDirectJSON;
+		}
+		return parseLayoutConfig(raw);
+	}, [isLayoutPreviewEnabled, room.t, layoutPublicJSON, layoutPrivateJSON, layoutDirectJSON]);
 
 	if (isLayoutPreviewEnabled && layoutConfig) {
 		const { featuredActions, visibleActions: engineVisible, hiddenActions: engineSections } = processRoomActions(actions, layoutConfig);

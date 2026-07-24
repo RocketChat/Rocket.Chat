@@ -20,6 +20,20 @@ export type RoomToolboxHiddenSection = {
 	items: RoomToolboxBaseAction[];
 };
 
+const groupActionsByType = (actions: RoomToolboxBaseAction[]): RoomToolboxHiddenSection[] => {
+	const sectionsMap = new Map<string, RoomToolboxHiddenSection>();
+	for (const action of actions) {
+		const group = action.type ?? '';
+		const existing = sectionsMap.get(group);
+		if (existing) {
+			existing.items.push(action);
+		} else {
+			sectionsMap.set(group, { id: group, items: [action] });
+		}
+	}
+	return Array.from(sectionsMap.values());
+};
+
 export const processRoomActions = (actionsBase: RoomToolboxBaseAction[], config: RoomToolboxLayoutConfig | null) => {
 	const appActions = actionsBase.filter((a) => a.type === 'apps');
 	const nonAppActions = actionsBase.filter((a) => a.type !== 'apps');
@@ -66,9 +80,7 @@ export const processRoomActions = (actionsBase: RoomToolboxBaseAction[], config:
 		hiddenActions.push({ id: 'apps', items: appActions });
 	}
 
-	if (overflowNormalActions.length > 0) {
-		hiddenActions.push({ id: 'overflow', items: overflowNormalActions });
-	}
+	hiddenActions.push(...groupActionsByType(overflowNormalActions));
 
 	return {
 		featuredActions: featuredWithOrder.map((n) => n.action),
