@@ -276,7 +276,7 @@ describe('PaginatedVirtualList', () => {
 
 	it('does not call onEndReached again while a previous load is pending', async () => {
 		jest.useFakeTimers();
-		let resolveLoad = () => undefined;
+		let resolveLoad: () => void = () => undefined;
 		const pendingLoad = new Promise<void>((resolve) => {
 			resolveLoad = resolve;
 		});
