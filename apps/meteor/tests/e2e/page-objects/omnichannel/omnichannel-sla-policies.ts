@@ -19,8 +19,8 @@ class OmnichannelManageSlaPolicyFlexTab extends FlexTab {
 }
 
 class OmnichannelSlaPoliciesTable extends Table {
-	constructor(page: Page) {
-		super(page.getByRole('table', { name: 'SLA Policies' }));
+	constructor(page: Page, fallback: Locator) {
+		super(page.getByRole('table', { name: 'SLA Policies' }), fallback);
 	}
 }
 
@@ -32,7 +32,17 @@ export class OmnichannelSlaPolicies extends OmnichannelAdmin {
 	constructor(page: Page) {
 		super(page);
 		this.manageSlaPolicy = new OmnichannelManageSlaPolicyFlexTab(page);
-		this.table = new OmnichannelSlaPoliciesTable(page);
+		this.table = new OmnichannelSlaPoliciesTable(page, this.emptyState);
+	}
+
+	async goTo() {
+		await this.goToRoute('sla-policies');
+		await this.waitForPage();
+	}
+
+	private async waitForPage() {
+		await this.getPageHeader('SLA Policies').waitFor({ state: 'visible' });
+		await this.table.waitForDisplay();
 	}
 
 	btnRemove(name: string) {

@@ -23,8 +23,8 @@ class OmnichannelManageCustomFieldsFlexTab extends FlexTab {
 }
 
 class OmnichannelCustomFieldsTable extends Table {
-	constructor(page: Page) {
-		super(page.getByRole('table', { name: 'Custom Fields' }));
+	constructor(page: Page, fallback: Locator) {
+		super(page.getByRole('table', { name: 'Custom Fields' }), fallback);
 	}
 }
 
@@ -36,7 +36,17 @@ export class OmnichannelCustomFields extends OmnichannelAdmin {
 	constructor(page: Page) {
 		super(page);
 		this.manageCustomFields = new OmnichannelManageCustomFieldsFlexTab(page);
-		this.table = new OmnichannelCustomFieldsTable(page);
+		this.table = new OmnichannelCustomFieldsTable(page, this.emptyState);
+	}
+
+	async goTo() {
+		await this.goToRoute('customfields');
+		await this.waitForPage();
+	}
+
+	private async waitForPage() {
+		await this.getPageHeader('Custom Fields').waitFor({ state: 'visible' });
+		await this.table.waitForDisplay();
 	}
 
 	async createNew() {

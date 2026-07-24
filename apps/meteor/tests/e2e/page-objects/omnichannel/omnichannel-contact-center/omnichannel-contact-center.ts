@@ -10,4 +10,8 @@ export abstract class OmnichannelContactCenter extends OmnichannelAdmin {
 	get tabChats(): Locator {
 		return this.page.getByRole('tab', { name: 'Chats' });
 	}
+
+	get pageHeader(): Locator {
+		return this.getPageHeader('Omnichannel Contact Center');
+	}
 }

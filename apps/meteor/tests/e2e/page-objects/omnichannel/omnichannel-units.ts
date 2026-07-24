@@ -65,8 +65,8 @@ export class OmnichannelUnitFlexTab extends FlexTab {
 }
 
 class OmnichannelUnitsTable extends Table {
-	constructor(page: Locator) {
-		super(page);
+	constructor(page: Locator, fallback: Locator) {
+		super(page, fallback);
 	}
 
 	deleteUnitByName(name: string) {
@@ -82,7 +82,17 @@ export class OmnichannelUnits extends OmnichannelAdmin {
 	constructor(page: Page) {
 		super(page);
 		this.manageUnit = new OmnichannelUnitFlexTab(page);
-		this.table = new OmnichannelUnitsTable(page.getByRole('table', { name: 'Units' }));
+		this.table = new OmnichannelUnitsTable(page.getByRole('table', { name: 'Units' }), this.emptyState);
+	}
+
+	async goTo() {
+		await this.goToRoute('units');
+		await this.waitForPage();
+	}
+
+	private async waitForPage() {
+		await this.getPageHeader('Units').waitFor({ state: 'visible' });
+		await this.table.waitForDisplay();
 	}
 
 	async createNew() {

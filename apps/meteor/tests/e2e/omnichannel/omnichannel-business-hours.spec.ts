@@ -44,9 +44,8 @@ test.describe('OC - Business Hours', () => {
 		poOmnichannelBusinessHours = new OmnichannelBusinessHours(page);
 	});
 
-	test('OC - Manage Business Hours - Create Business Hours', async ({ page }) => {
-		await page.goto('/omnichannel');
-		await poOmnichannelBusinessHours.sidebar.linkBusinessHours.click();
+	test('OC - Manage Business Hours - Create Business Hours', async () => {
+		await poOmnichannelBusinessHours.goTo();
 
 		await test.step('expect correct form default state', async () => {
 			await poOmnichannelBusinessHours.btnCreateBusinessHour.click();
@@ -76,7 +75,7 @@ test.describe('OC - Business Hours', () => {
 		});
 	});
 
-	test('OC - Business hours - Edit BH departments', async ({ api, page }) => {
+	test('OC - Business hours - Edit BH departments', async ({ api }) => {
 		await test.step('expect to create new businessHours', async () => {
 			const createBH = await createBusinessHour(api, {
 				name: BHName,
@@ -86,8 +85,7 @@ test.describe('OC - Business Hours', () => {
 			expect(createBH.status()).toBe(200);
 		});
 
-		await page.goto('/omnichannel');
-		await poOmnichannelBusinessHours.sidebar.linkBusinessHours.click();
+		await poOmnichannelBusinessHours.goTo();
 
 		await test.step('expect to add business hours departments', async () => {
 			await poOmnichannelBusinessHours.search(BHName);
@@ -124,7 +122,7 @@ test.describe('OC - Business Hours', () => {
 		});
 	});
 
-	test('OC - Business hours - Toggle BH active status', async ({ api, page }) => {
+	test('OC - Business hours - Toggle BH active status', async ({ api }) => {
 		await test.step('expect to create new businessHours', async () => {
 			const createBH = await createBusinessHour(api, {
 				name: BHName,
@@ -134,8 +132,7 @@ test.describe('OC - Business Hours', () => {
 			expect(createBH.status()).toBe(200);
 		});
 
-		await page.goto('/omnichannel');
-		await poOmnichannelBusinessHours.sidebar.linkBusinessHours.click();
+		await poOmnichannelBusinessHours.goTo();
 
 		await test.step('expect to disable business hours', async () => {
 			await poOmnichannelBusinessHours.search(BHName);

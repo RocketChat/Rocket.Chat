@@ -29,8 +29,8 @@ class OmnichannelEditTagFlexTab extends FlexTab {
 }
 
 class OmnichannelTagsTable extends Table {
-	constructor(page: Page) {
-		super(page.getByRole('table', { name: 'Tags' }));
+	constructor(page: Page, fallback: Locator) {
+		super(page.getByRole('table', { name: 'Tags' }), fallback);
 	}
 }
 
@@ -42,7 +42,17 @@ export class OmnichannelTags extends OmnichannelAdmin {
 	constructor(page: Page) {
 		super(page);
 		this.editTag = new OmnichannelEditTagFlexTab(page);
-		this.table = new OmnichannelTagsTable(page);
+		this.table = new OmnichannelTagsTable(page, this.emptyState);
+	}
+
+	async goTo() {
+		await this.goToRoute('tags');
+		await this.waitForPage();
+	}
+
+	private async waitForPage() {
+		await this.getPageHeader('Tags').waitFor({ state: 'visible' });
+		await this.table.waitForDisplay();
 	}
 
 	async createNew() {

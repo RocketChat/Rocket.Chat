@@ -7,8 +7,8 @@ import { OmnichannelUpsellDepartmentsModal, ConfirmDeleteDepartmentModal } from 
 import { Table } from '../fragments/table';
 
 class OmnichannelDepartmentsTable extends Table {
-	constructor(page: Page) {
-		super(page.getByRole('table', { name: 'Departments' }));
+	constructor(page: Page, fallback: Locator) {
+		super(page.getByRole('table', { name: 'Departments' }), fallback);
 	}
 }
 
@@ -33,12 +33,22 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 
 	constructor(page: Page) {
 		super(page);
-		this.departmentsTable = new OmnichannelDepartmentsTable(page);
+		this.departmentsTable = new OmnichannelDepartmentsTable(page, this.emptyState);
 		this.agentsTable = new OmnichannelDepartmentAgentsTable(page);
 		this.upsellDepartmentsModal = new OmnichannelUpsellDepartmentsModal(page);
 		this.listbox = new Listbox(page);
 		this.menOptions = new MenuOptions(page);
 		this.deleteModal = new ConfirmDeleteDepartmentModal(page);
+	}
+
+	async goTo() {
+		await this.goToRoute('departments');
+		await this.waitForPage();
+	}
+
+	private async waitForPage() {
+		await this.getPageHeader('Departments').waitFor({ state: 'visible' });
+		await this.departmentsTable.waitForDisplay();
 	}
 
 	async createNew() {

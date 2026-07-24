@@ -36,9 +36,7 @@ test.describe('Omnichannel SLA Policies', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poOmnichannelSlaPolicies = new OmnichannelSlaPolicies(page);
-
-		await page.goto('/omnichannel');
-		await poOmnichannelSlaPolicies.sidebar.linkSlaPolicies.click();
+		await poOmnichannelSlaPolicies.goTo();
 	});
 
 	test.afterAll(async ({ api }) => {

@@ -4,6 +4,28 @@ import { expect } from '../../utils/test';
 import { OmnichannelSidebar, ToastMessages } from '../fragments';
 import { ConfirmDeleteModal } from '../fragments/modals';
 
+type OmnichannelAdminRoutes =
+	| 'monitors'
+	| 'agents'
+	| 'departments'
+	| 'managers'
+	| 'customfields'
+	| 'current/chats'
+	| 'current/contacts'
+	| 'sla-policies'
+	| 'priorities'
+	| 'triggers'
+	| 'tags'
+	| 'analytics'
+	| 'reports'
+	| 'canned-responses'
+	| 'units'
+	| 'appearance'
+	| 'businessHours'
+	| 'livechat-appearance'
+	| 'realtime-monitoring'
+	| 'security-privacy';
+
 export abstract class OmnichannelAdmin {
 	protected readonly page: Page;
 
@@ -20,7 +42,7 @@ export abstract class OmnichannelAdmin {
 		this.deleteModal = new ConfirmDeleteModal(page.getByRole('dialog', { name: 'Are you sure?' }));
 	}
 
-	protected async goToRoute(route: 'monitors' | 'agents' | 'departments') {
+	protected async goToRoute(route: OmnichannelAdminRoutes) {
 		await this.page.goto(`/omnichannel/${route}`);
 	}
 
@@ -48,7 +70,11 @@ export abstract class OmnichannelAdmin {
 		await this.inputSearch.fill('');
 	}
 
+	protected get emptyState() {
+		return this.page.getByRole('status', { name: 'No results found' });
+	}
+
 	waitForEmptyState() {
-		return expect(this.page.locator('h3 >> text="No results found"')).toBeVisible();
+		return expect(this.emptyState).toBeVisible();
 	}
 }

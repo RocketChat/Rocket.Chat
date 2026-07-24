@@ -63,8 +63,8 @@ class OmnichannelAgentInfoFlexTab extends FlexTab {
 }
 
 class OmnichannelAgentsTable extends Table {
-	constructor(page: Page) {
-		super(page.getByRole('table', { name: 'Agents' }));
+	constructor(page: Page, fallback: Locator) {
+		super(page.getByRole('table', { name: 'Agents' }), fallback);
 	}
 }
 
@@ -81,8 +81,18 @@ export class OmnichannelAgents extends OmnichannelAdmin {
 		super(page);
 		this.editAgent = new OmnichannelEditAgentFlexTab(page);
 		this.agentInfo = new OmnichannelAgentInfoFlexTab(page);
-		this.table = new OmnichannelAgentsTable(page);
+		this.table = new OmnichannelAgentsTable(page, this.emptyState);
 		this.listbox = new Listbox(page);
+	}
+
+	async goTo() {
+		await this.goToRoute('agents');
+		await this.waitForPage();
+	}
+
+	private async waitForPage() {
+		await this.getPageHeader('Agents').waitFor({ state: 'visible' });
+		await this.table.waitForDisplay();
 	}
 
 	get inputUsername(): Locator {

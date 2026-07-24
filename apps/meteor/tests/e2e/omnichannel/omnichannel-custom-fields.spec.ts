@@ -7,11 +7,10 @@ test.use({ storageState: Users.admin.state });
 test.describe('omnichannel-customFields', () => {
 	let poOmnichannelCustomFields: OmnichannelCustomFields;
 	const newField = 'any_field';
+
 	test.beforeEach(async ({ page }) => {
 		poOmnichannelCustomFields = new OmnichannelCustomFields(page);
-
-		await page.goto('/omnichannel');
-		await poOmnichannelCustomFields.sidebar.linkCustomFields.click();
+		await poOmnichannelCustomFields.goTo();
 	});
 
 	test('expect add new "custom field"', async ({ page }) => {

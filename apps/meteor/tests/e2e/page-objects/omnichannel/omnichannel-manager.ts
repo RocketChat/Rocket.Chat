@@ -5,8 +5,8 @@ import { Listbox } from '../fragments/listbox';
 import { Table } from '../fragments/table';
 
 class OmnichannelManagersTable extends Table {
-	constructor(page: Page) {
-		super(page.getByRole('table', { name: 'Managers' }));
+	constructor(page: Page, fallback: Locator) {
+		super(page.getByRole('table', { name: 'Managers' }), fallback);
 	}
 }
 
@@ -17,13 +17,18 @@ export class OmnichannelManager extends OmnichannelAdmin {
 
 	constructor(page: Page) {
 		super(page);
-		this.table = new OmnichannelManagersTable(page);
+		this.table = new OmnichannelManagersTable(page, this.emptyState);
 		this.listbox = new Listbox(page);
 	}
 
-	async goto() {
-		await this.page.goto('/omnichannel/managers');
-		await this.btnAddManager.waitFor({ state: 'visible' });
+	async goTo() {
+		await this.goToRoute('managers');
+		await this.waitForPage();
+	}
+
+	private async waitForPage() {
+		await this.getPageHeader('Managers').waitFor({ state: 'visible' });
+		await this.table.waitForDisplay();
 	}
 
 	get inputUsername(): Locator {

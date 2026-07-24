@@ -5,8 +5,8 @@ import { Listbox } from '../fragments/listbox';
 import { Table } from '../fragments/table';
 
 class OmnichannelMonitorsTable extends Table {
-	constructor(page: Page) {
-		super(page.getByRole('table', { name: 'Monitors' }));
+	constructor(page: Page, fallback: Locator) {
+		super(page.getByRole('table', { name: 'Monitors' }), fallback);
 	}
 }
 
@@ -17,7 +17,7 @@ export class OmnichannelMonitors extends OmnichannelAdmin {
 
 	constructor(page: Page) {
 		super(page);
-		this.table = new OmnichannelMonitorsTable(page);
+		this.table = new OmnichannelMonitorsTable(page, this.emptyState);
 		this.listbox = new Listbox(page);
 	}
 

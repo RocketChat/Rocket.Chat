@@ -3,9 +3,15 @@ import type { Locator, Page } from '@playwright/test';
 import { expect } from '../../utils/test';
 
 export abstract class Table {
-	constructor(protected root: Locator) {}
+	constructor(
+		protected root: Locator,
+		protected fallback?: Locator,
+	) {}
 
 	waitForDisplay() {
+		if (this.fallback) {
+			return expect(this.root.or(this.fallback)).toBeVisible();
+		}
 		return expect(this.root).toBeVisible();
 	}
 

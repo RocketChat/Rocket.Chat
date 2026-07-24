@@ -116,8 +116,8 @@ export class OmnichannelChatsFilters extends FlexTab {
 }
 
 class OmnichannelContactCenterChatsTable extends Table {
-	constructor(page: Page) {
-		super(page.getByRole('table', { name: 'Omnichannel Contact Center Chats' }));
+	constructor(page: Page, fallback: Locator) {
+		super(page.getByRole('table', { name: 'Omnichannel Contact Center Chats' }), fallback);
 	}
 
 	btnRemoveByName(name: string): Locator {
@@ -139,7 +139,17 @@ export class OmnichannelContactCenterChats extends OmnichannelContactCenter {
 		this.filters = new OmnichannelChatsFilters(page);
 		this.confirmRemoveChatModal = new OmnichannelConfirmRemoveChat(page);
 		this.conversation = new OmnichannelConversationFlexTab(page);
-		this.table = new OmnichannelContactCenterChatsTable(page);
+		this.table = new OmnichannelContactCenterChatsTable(page, this.emptyState);
+	}
+
+	async goTo() {
+		await this.goToRoute('current/chats');
+		await this.waitForPage();
+	}
+
+	private async waitForPage() {
+		await this.pageHeader.waitFor({ state: 'visible' });
+		await this.table.waitForDisplay();
 	}
 
 	async removeChatByName(name: string) {
