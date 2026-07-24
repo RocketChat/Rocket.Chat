@@ -2,33 +2,17 @@ import type { Locator, Page } from '@playwright/test';
 
 import { OmnichannelAdmin } from './omnichannel-admin';
 import { Listbox } from '../fragments/listbox';
-import { Table } from '../fragments/table';
-
-class OmnichannelManagersTable extends Table {
-	constructor(page: Page, fallback: Locator) {
-		super(page.getByRole('table', { name: 'Managers' }), fallback);
-	}
-}
 
 export class OmnichannelManager extends OmnichannelAdmin {
-	readonly table: OmnichannelManagersTable;
+	protected readonly route = 'managers';
+
+	protected readonly title = 'Managers';
 
 	readonly listbox: Listbox;
 
 	constructor(page: Page) {
 		super(page);
-		this.table = new OmnichannelManagersTable(page, this.emptyState);
 		this.listbox = new Listbox(page);
-	}
-
-	async goTo() {
-		await this.goToRoute('managers');
-		await this.waitForPage();
-	}
-
-	private async waitForPage() {
-		await this.getPageHeader('Managers').waitFor({ state: 'visible' });
-		await this.table.waitForDisplay();
 	}
 
 	get inputUsername(): Locator {

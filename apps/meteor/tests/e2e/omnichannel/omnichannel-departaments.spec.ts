@@ -87,7 +87,7 @@ test.describe('OC - Manage Departments', () => {
 			await test.step('expect create new department', async () => {
 				await poOmnichannelDepartments.btnSave.click();
 				await poOmnichannelDepartments.search(departmentName);
-				await expect(poOmnichannelDepartments.departmentsTable.findRowByName(departmentName)).toBeVisible();
+				await expect(poOmnichannelDepartments.table.findRowByName(departmentName)).toBeVisible();
 			});
 
 			await test.step('expect to delete department', async () => {
@@ -112,7 +112,7 @@ test.describe('OC - Manage Departments', () => {
 
 				await test.step('expect department to have been deleted', async () => {
 					await poOmnichannelDepartments.search(departmentName);
-					await expect(poOmnichannelDepartments.departmentsTable.findRowByName(departmentName)).toHaveCount(0);
+					await expect(poOmnichannelDepartments.table.findRowByName(departmentName)).toHaveCount(0);
 				});
 			});
 		});
@@ -135,7 +135,7 @@ test.describe('OC - Manage Departments', () => {
 		test('Edit department', async () => {
 			await test.step('expect create new department', async () => {
 				await poOmnichannelDepartments.search(department.name);
-				await expect(poOmnichannelDepartments.departmentsTable.findRowByName(department.name)).toBeVisible();
+				await expect(poOmnichannelDepartments.table.findRowByName(department.name)).toBeVisible();
 
 				return department;
 			});
@@ -149,24 +149,24 @@ test.describe('OC - Manage Departments', () => {
 				await poOmnichannelDepartments.btnSave.click();
 
 				await poOmnichannelDepartments.search(`edited-${department.name}`);
-				await expect(poOmnichannelDepartments.departmentsTable.findRowByName(`edited-${department.name}`)).toBeVisible();
+				await expect(poOmnichannelDepartments.table.findRowByName(`edited-${department.name}`)).toBeVisible();
 			});
 		});
 
 		test('Archive department', async () => {
 			await test.step('expect create new department', async () => {
 				await poOmnichannelDepartments.search(department.name);
-				await expect(poOmnichannelDepartments.departmentsTable.findRowByName(department.name)).toBeVisible();
+				await expect(poOmnichannelDepartments.table.findRowByName(department.name)).toBeVisible();
 			});
 
 			await test.step('expect archive department', async () => {
 				await poOmnichannelDepartments.search(department.name);
-				await expect(poOmnichannelDepartments.departmentsTable.findRowByName(department.name)).toBeVisible();
+				await expect(poOmnichannelDepartments.table.findRowByName(department.name)).toBeVisible();
 
 				await poOmnichannelDepartments.archiveDepartmentByName(department.name);
 				await poOmnichannelDepartments.tabArchivedDepartments.click();
 				await poOmnichannelDepartments.search(department.name);
-				await expect(poOmnichannelDepartments.departmentsTable.findRowByName(department.name)).toBeVisible();
+				await expect(poOmnichannelDepartments.table.findRowByName(department.name)).toBeVisible();
 			});
 
 			await test.step('expect archived department to not be editable', async () => {
@@ -176,14 +176,14 @@ test.describe('OC - Manage Departments', () => {
 
 			await test.step('expect unarchive department', async () => {
 				await poOmnichannelDepartments.menuUnarchiveOption.click();
-				await expect(poOmnichannelDepartments.departmentsTable.findRowByName(department.name)).toHaveCount(0);
+				await expect(poOmnichannelDepartments.table.findRowByName(department.name)).toHaveCount(0);
 			});
 		});
 
 		test('Request tag(s) before closing conversation', async () => {
 			await test.step('should create new department', async () => {
 				await poOmnichannelDepartments.search(department.name);
-				await expect(poOmnichannelDepartments.departmentsTable.findRowByName(department.name)).toBeVisible();
+				await expect(poOmnichannelDepartments.table.findRowByName(department.name)).toBeVisible();
 			});
 
 			const tagName = faker.string.sample(5);
@@ -220,7 +220,7 @@ test.describe('OC - Manage Departments', () => {
 		test('Toggle department removal', async ({ api, page }) => {
 			await test.step('expect create new department', async () => {
 				await poOmnichannelDepartments.search(department.name);
-				await expect(poOmnichannelDepartments.departmentsTable.findRowByName(department.name)).toBeVisible();
+				await expect(poOmnichannelDepartments.table.findRowByName(department.name)).toBeVisible();
 			});
 
 			await test.step('expect to be able to delete department', async () => {

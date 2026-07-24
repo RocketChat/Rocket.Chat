@@ -3,7 +3,6 @@ import type { Locator, Page } from '@playwright/test';
 import { OmnichannelAdmin } from './omnichannel-admin';
 import { FlexTab } from '../fragments/flextabs/flextab';
 import { Listbox } from '../fragments/listbox';
-import { Table } from '../fragments/table';
 
 class OmnichannelEditTagFlexTab extends FlexTab {
 	readonly listbox: Listbox;
@@ -28,31 +27,16 @@ class OmnichannelEditTagFlexTab extends FlexTab {
 	}
 }
 
-class OmnichannelTagsTable extends Table {
-	constructor(page: Page, fallback: Locator) {
-		super(page.getByRole('table', { name: 'Tags' }), fallback);
-	}
-}
-
 export class OmnichannelTags extends OmnichannelAdmin {
-	readonly editTag: OmnichannelEditTagFlexTab;
+	protected readonly route = 'tags';
 
-	readonly table: OmnichannelTagsTable;
+	protected readonly title = 'Tags';
+
+	readonly editTag: OmnichannelEditTagFlexTab;
 
 	constructor(page: Page) {
 		super(page);
 		this.editTag = new OmnichannelEditTagFlexTab(page);
-		this.table = new OmnichannelTagsTable(page, this.emptyState);
-	}
-
-	async goTo() {
-		await this.goToRoute('tags');
-		await this.waitForPage();
-	}
-
-	private async waitForPage() {
-		await this.getPageHeader('Tags').waitFor({ state: 'visible' });
-		await this.table.waitForDisplay();
 	}
 
 	async createNew() {

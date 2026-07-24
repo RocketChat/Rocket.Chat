@@ -1,31 +1,11 @@
-import type { Locator, Page } from '@playwright/test';
+import type { Locator } from '@playwright/test';
 
 import { OmnichannelAdmin } from './omnichannel-admin';
-import { Table } from '../fragments/table';
-
-class OmnichannelCannedResponsesTable extends Table {
-	constructor(page: Page, fallback: Locator) {
-		super(page.getByRole('table', { name: 'Canned Responses' }), fallback);
-	}
-}
 
 export class OmnichannelCannedResponses extends OmnichannelAdmin {
-	readonly table: OmnichannelCannedResponsesTable;
+	protected readonly route = 'canned-responses';
 
-	constructor(page: Page) {
-		super(page);
-		this.table = new OmnichannelCannedResponsesTable(page, this.emptyState);
-	}
-
-	async goTo() {
-		await this.goToRoute('canned-responses');
-		await this.waitForPage();
-	}
-
-	private async waitForPage() {
-		await this.getPageHeader('Canned Responses').waitFor({ state: 'visible' });
-		await this.table.waitForDisplay();
-	}
+	protected readonly title = 'Canned Responses';
 
 	get inputShortcut() {
 		return this.page.getByRole('textbox', { name: 'Shortcut', exact: true });

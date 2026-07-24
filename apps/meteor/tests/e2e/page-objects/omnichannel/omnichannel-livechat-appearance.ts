@@ -3,13 +3,12 @@ import type { Locator } from '@playwright/test';
 import { OmnichannelAdmin } from './omnichannel-admin';
 
 export class OmnichannelLivechatAppearance extends OmnichannelAdmin {
-	async goTo() {
-		await this.goToRoute('appearance');
-		await this.waitForPage();
-	}
+	protected readonly route = 'appearance';
 
-	private async waitForPage() {
-		await this.getPageHeader('Appearance').waitFor({ state: 'visible' });
+	protected readonly title = 'Appearance';
+
+	protected override async waitForPage() {
+		await this.pageHeader.waitFor({ state: 'visible' });
 	}
 
 	get inputHideSystemMessages(): Locator {

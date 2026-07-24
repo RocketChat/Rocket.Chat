@@ -6,22 +6,12 @@ import { Listbox } from '../fragments/listbox';
 import { OmnichannelUpsellDepartmentsModal, ConfirmDeleteDepartmentModal } from '../fragments/modals';
 import { Table } from '../fragments/table';
 
-class OmnichannelDepartmentsTable extends Table {
-	constructor(page: Page, fallback: Locator) {
-		super(page.getByRole('table', { name: 'Departments' }), fallback);
-	}
-}
-
-class OmnichannelDepartmentAgentsTable extends Table {
-	constructor(page: Page) {
-		super(page.getByRole('table', { name: 'Agents' }));
-	}
-}
-
 export class OmnichannelDepartments extends OmnichannelAdmin {
-	readonly departmentsTable: OmnichannelDepartmentsTable;
+	protected readonly route = 'departments';
 
-	readonly agentsTable: OmnichannelDepartmentAgentsTable;
+	protected readonly title = 'Departments';
+
+	readonly agentsTable: Table;
 
 	readonly upsellDepartmentsModal: OmnichannelUpsellDepartmentsModal;
 
@@ -33,22 +23,11 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 
 	constructor(page: Page) {
 		super(page);
-		this.departmentsTable = new OmnichannelDepartmentsTable(page, this.emptyState);
-		this.agentsTable = new OmnichannelDepartmentAgentsTable(page);
+		this.agentsTable = new Table(page.getByRole('table', { name: 'Agents' }));
 		this.upsellDepartmentsModal = new OmnichannelUpsellDepartmentsModal(page);
 		this.listbox = new Listbox(page);
 		this.menOptions = new MenuOptions(page);
 		this.deleteModal = new ConfirmDeleteDepartmentModal(page);
-	}
-
-	async goTo() {
-		await this.goToRoute('departments');
-		await this.waitForPage();
-	}
-
-	private async waitForPage() {
-		await this.getPageHeader('Departments').waitFor({ state: 'visible' });
-		await this.departmentsTable.waitForDisplay();
 	}
 
 	async createNew() {
@@ -84,7 +63,7 @@ export class OmnichannelDepartments extends OmnichannelAdmin {
 	}
 
 	getDepartmentMenuByName(name: string) {
-		return this.departmentsTable.findRowByName(name).getByRole('button', { name: 'Options' });
+		return this.table.findRowByName(name).getByRole('button', { name: 'Options' });
 	}
 
 	get menuEditOption() {

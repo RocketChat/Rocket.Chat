@@ -2,33 +2,17 @@ import type { Locator, Page } from '@playwright/test';
 
 import { OmnichannelAdmin } from './omnichannel-admin';
 import { Listbox } from '../fragments/listbox';
-import { Table } from '../fragments/table';
-
-class OmnichannelBusinessHoursTable extends Table {
-	constructor(page: Page, fallback: Locator) {
-		super(page.getByRole('table', { name: 'Business Hours' }), fallback);
-	}
-}
 
 export class OmnichannelBusinessHours extends OmnichannelAdmin {
-	readonly table: OmnichannelBusinessHoursTable;
+	protected readonly route = 'businessHours';
+
+	protected readonly title = 'Business Hours';
 
 	readonly listbox: Listbox;
 
 	constructor(page: Page) {
 		super(page);
-		this.table = new OmnichannelBusinessHoursTable(page, this.emptyState);
 		this.listbox = new Listbox(page);
-	}
-
-	async goTo() {
-		await this.goToRoute('businessHours');
-		await this.waitForPage();
-	}
-
-	private async waitForPage() {
-		await this.getPageHeader('Business Hours').waitFor({ state: 'visible' });
-		await this.table.waitForDisplay();
 	}
 
 	get btnCreateBusinessHour(): Locator {
