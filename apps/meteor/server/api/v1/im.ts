@@ -590,8 +590,10 @@ const dmMembersAction = <Path extends string>(_path: Path): TypedAction<typeof d
 			{ projection: { u: 1, status: 1, ts: 1, roles: 1 } },
 		).toArray();
 
+		const subsByUserId = new Map(subs.map((sub) => [sub.u._id, sub]));
+
 		const membersWithSubscriptionInfo = members.map((member) => {
-			const sub = subs.find((sub) => sub.u._id === member._id);
+			const sub = subsByUserId.get(member._id);
 
 			const { u: _u, ...subscription } = sub || {};
 

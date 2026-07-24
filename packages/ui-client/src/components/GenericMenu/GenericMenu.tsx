@@ -36,7 +36,7 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 	const sections = 'sections' in props && props.sections;
 	const items = 'items' in props && props.items;
 
-	const itemsList = sections ? sections.reduce((acc, { items }) => [...acc, ...items], [] as GenericMenuItemProps[]) : items || [];
+	const itemsList = sections ? sections.flatMap(({ items }) => items) : items || [];
 
 	const disabledKeys = itemsList.filter(({ disabled }) => disabled).map(({ id }) => id);
 	const handleAction = useHandleMenuAction(itemsList || [], callbackAction);
