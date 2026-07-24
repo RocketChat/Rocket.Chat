@@ -3,11 +3,6 @@ import { parse, type Options, type Root } from '@rocket.chat/message-parser';
 import { renderComposerMarkup } from './renderComposerMarkup';
 import { getSelectionRange, setSelectionRange } from './selectionRange';
 
-export type CursorHistory = {
-	undoStack: number[];
-	redoStack: number[];
-};
-
 // Return an array of strings representing each line of the Composer
 export const getTextLines = (str: string, delimiter: string): string[] => {
 	const result = [];
@@ -68,18 +63,14 @@ const restoreLinks = (html: string, matches: string[]): string => {
 	return html.replace(/\[\[\[LINK_(\d+)\]\]\]/g, (_, i) => matches[parseInt(i, 10)] || '');
 };
 
-// Resolve the Composer after the user modifies text
-export const resolveComposerBox = (event: Event, parseOptions: Options) => {
-	if (!event.isTrusted) return;
-
-	const target = event.target as HTMLDivElement;
+// Parse the composer's raw text into markup and render it into the contenteditable,
+// restoring the caret to the given flat-offset selection afterwards.
+export const renderComposerContent = (
+	target: HTMLDivElement,
+	parseOptions: Options,
+	{ selectionStart, selectionEnd }: { selectionStart: number; selectionEnd: number },
+): void => {
 	const text = target.innerText;
-
-	// Get the position of the cursor after text modification
-	// This is so that after parsing and rendering inside the editor
-	// the cursor is restored to the correct position
-	const selection = getSelectionRange(target);
-	const { selectionStart, selectionEnd } = selection;
 
 	// Extract the URL and substitue with a safe template
 	const { output: safeText, matches } = protectLinks(text === '' ? '\n' : text);
@@ -101,15 +92,20 @@ export const resolveComposerBox = (event: Event, parseOptions: Options) => {
 		.replace(/<\/h4><br\s*\/?>/gi, '</h4>');
 
 	// Rendering pipeline
-	target.innerHTML = finalHtml; // This works but it destroys the undo history
-
-	// Select the entire composer
-	// setSelectionRange(target, 0, text.length);
-
-	// This execCommand is supposed to work, while preserving edit history
-	// However it explodes because insertHTML itself fires the input event
-	// document.execCommand('insertHTML', false, finalHtml);
+	target.innerHTML = finalHtml;
 
 	// Restore the cursor to the correct position
 	setSelectionRange(target, selectionStart, selectionEnd);
+};
+
+// Resolve the Composer after the user modifies text
+export const resolveComposerBox = (event: Event, parseOptions: Options) => {
+	if (!event.isTrusted) return;
+
+	const target = event.target as HTMLDivElement;
+
+	// Get the position of the cursor after text modification
+	// This is so that after parsing and rendering inside the editor
+	// the cursor is restored to the correct position
+	renderComposerContent(target, parseOptions, getSelectionRange(target));
 };
