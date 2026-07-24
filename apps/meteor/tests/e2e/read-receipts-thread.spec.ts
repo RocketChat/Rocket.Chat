@@ -50,6 +50,9 @@ test.describe.serial('read-receipts-thread', () => {
 		await auxContext.poHomeChannel.navbar.openChat(targetChannel);
 		await auxContext.poHomeChannel.content.openReplyInThread();
 
+		// the read receipt only flips once user1 has actually read the reply, so wait for it to render on their side first
+		await expect(auxContext.poHomeChannel.content.lastUserThreadMessage).toContainText('first thread reply');
+
 		await expect(poHomeChannel.content.lastUserThreadMessage.getByRole('status', { name: 'Message viewed' })).toBeVisible();
 	});
 
