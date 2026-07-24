@@ -28,7 +28,6 @@ export class OmnichannelMonitors extends OmnichannelAdmin {
 
 	private async waitForPage() {
 		await this.getPageHeader('Monitors').waitFor({ state: 'visible' });
-		await this.table.waitForDisplay();
 	}
 
 	private get btnAddMonitor(): Locator {

@@ -25,7 +25,7 @@ export abstract class OmnichannelAdmin {
 	}
 
 	protected getPageHeader(title: string): Locator {
-		return this.page.locator('main').getByRole('heading', { name: title });
+		return this.page.locator('main').getByRole('heading', { name: title, exact: true });
 	}
 
 	get inputSearch() {
