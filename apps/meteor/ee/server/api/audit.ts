@@ -326,13 +326,58 @@ API.v1.get(
 const auditAuditionsResponseSchema = ajv.compile<{ auditions: IAuditLog[] }>({
 	type: 'object',
 	properties: {
-		auditions: { type: 'array', items: { type: 'object' } },
+		auditions: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					_id: { type: 'string' },
+					_updatedAt: { type: 'string', format: 'date-time' },
+					ts: { type: 'string', format: 'date-time' },
+					results: { type: 'number' },
+					u: {
+						type: 'object',
+						properties: {
+							_id: { type: 'string' },
+							username: { type: 'string' },
+							name: { type: 'string' },
+							avatarETag: { type: 'string' },
+						},
+						required: ['_id'],
+						additionalProperties: false,
+					},
+					fields: {
+						type: 'object',
+						properties: {
+							type: { type: 'string' },
+							msg: { type: 'string' },
+							startDate: { type: 'string', format: 'date-time' },
+							endDate: { type: 'string', format: 'date-time' },
+							rids: { type: 'array', items: { type: 'string' } },
+							room: { type: 'string' },
+							users: { type: 'array', items: { type: 'string' } },
+							visitor: { type: 'string' },
+							agent: { type: 'string' },
+							filters: { type: 'string' },
+						},
+						required: ['type'],
+						additionalProperties: false,
+					},
+				},
+				required: ['_id', 'ts', 'results', 'u', 'fields'],
+				additionalProperties: false,
+			},
+		},
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['auditions', 'success'],
 	additionalProperties: false,
 });
 
+// `messages` items are full IMessage documents. A strict `$ref` to IMessage fails response
+// validation because its attachment union is a `oneOf` whose branches overlap on file/quote
+// attachments (AJV `passingSchemas: 0,1`), so real audit results with attachments would 400.
+// Kept relaxed until the IMessage attachment schema gains discriminators.
 const auditMessagesResponseSchema = ajv.compile<{ messages: IMessage[] }>({
 	type: 'object',
 	properties: {
