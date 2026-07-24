@@ -134,7 +134,9 @@ const BackgroundJobsTable = ({ tab }: BackgroundJobsTableProps) => {
 									{isDesktopOrLarger && (
 										<>
 											<GenericTableCell withTruncatedText>{job.lastRunAt ? timeAgo(job.lastRunAt) : ''}</GenericTableCell>
-											<GenericTableCell withTruncatedText>{job.nextRunAt ? formatDateAndTime(job.nextRunAt) : ''}</GenericTableCell>
+											<GenericTableCell withTruncatedText>
+												{job.status !== 'disabled' && job.nextRunAt ? formatDateAndTime(job.nextRunAt) : ''}
+											</GenericTableCell>
 										</>
 									)}
 									<GenericTableCell withTruncatedText>{translateInterval(job.repeatInterval)}</GenericTableCell>

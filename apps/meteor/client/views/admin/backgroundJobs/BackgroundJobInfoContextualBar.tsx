@@ -1,8 +1,9 @@
 import { Box, Button, ButtonGroup, Callout, Tag } from '@rocket.chat/fuselage';
-import { ContextualbarFooter, ContextualbarScrollableContent } from '@rocket.chat/ui-client';
+import { ContextualbarFooter, ContextualbarScrollableContent, GenericModal } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import BackgroundJobHistoryCard from './BackgroundJobHistoryCard';
@@ -22,6 +23,7 @@ const BackgroundJobInfoContextualBar = ({ jobName, tab, onClose }: BackgroundJob
 	const formatDateAndTime = useFormatDateAndTime();
 	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const setModal = useSetModal();
 
 	const getHistory = useEndpoint('GET', '/v1/cron.history');
 	const getJob = useEndpoint('GET', '/v1/cron.job');
@@ -86,6 +88,28 @@ const BackgroundJobInfoContextualBar = ({ jobName, tab, onClose }: BackgroundJob
 		},
 	});
 
+	const handleRunNow = useCallback(() => {
+		const closeModal = (): void => setModal();
+
+		setModal(
+			<GenericModal
+				variant='danger'
+				title={t('Run_now')}
+				confirmText={t('Run_now')}
+				onConfirm={async () => {
+					try {
+						await triggerMutation.mutateAsync();
+					} finally {
+						closeModal();
+					}
+				}}
+				onCancel={closeModal}
+			>
+				{t('Background_Job_Run_now_confirm', { jobName })}
+			</GenericModal>,
+		);
+	}, [jobName, setModal, t, triggerMutation]);
+
 	if (isLoadingHistory || isLoadingJob) {
 		return <FormSkeleton paddingInline={20} />;
 	}
@@ -139,7 +163,7 @@ const BackgroundJobInfoContextualBar = ({ jobName, tab, onClose }: BackgroundJob
 			{tab === 'system' && (
 				<ContextualbarFooter>
 					<ButtonGroup stretch>
-						<Button disabled={isPending} onClick={() => triggerMutation.mutate()}>
+						<Button disabled={isPending} onClick={handleRunNow}>
 							{t('Run_now')}
 						</Button>
 						{isDisabled ? (
