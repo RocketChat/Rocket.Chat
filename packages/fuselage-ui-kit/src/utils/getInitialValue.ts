@@ -18,7 +18,7 @@ const hasInitialOptions = (element: UiKit.ActionableElement): element is UiKit.A
 	'initialOptions' in element;
 
 export const getInitialValue = (element: UiKit.ActionableElement) => {
-	if (hasInitialValue(element)) {
+	if (hasInitialValue(element) && element.initialValue !== undefined) {
 		return element.initialValue;
 	}
 	if (hasInitialTime(element)) {
