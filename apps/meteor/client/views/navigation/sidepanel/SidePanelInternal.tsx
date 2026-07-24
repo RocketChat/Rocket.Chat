@@ -22,11 +22,11 @@ type SidePanelVirtualItemProps = {
 } & ComponentProps<typeof SidepanelListItem>;
 
 const sidePanelVirtualItem = forwardRef<HTMLDivElement, SidePanelVirtualItemProps>(function sidePanelVirtualItem(
-	{ children, index: _index, style, ...props },
+	{ children, index, style, ...props },
 	ref,
 ) {
 	return (
-		<SidepanelListItem ref={ref} style={style} {...props}>
+		<SidepanelListItem ref={ref} data-item-index={index} style={style} {...props}>
 			{children}
 		</SidepanelListItem>
 	);
