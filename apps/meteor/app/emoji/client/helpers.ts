@@ -205,7 +205,7 @@ export const getEmojisBySearchTerm = (
 
 		const actualPackage = actualEmoji.emojiPackage;
 
-		emojis.push({ emoji: current, image: emoji.packages[actualPackage].renderPicker(emojiToRender) });
+		emojis.push({ emoji: `${current}${tone}`, image: emoji.packages[actualPackage].renderPicker(emojiToRender) });
 	}
 
 	return emojis;

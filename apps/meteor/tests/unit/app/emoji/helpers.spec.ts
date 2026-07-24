@@ -71,6 +71,7 @@ describe('Emoji Client Helpers', () => {
 
 			expect(result).to.exist;
 			expect(result?.image).to.include('👍🏼');
+			expect(result?.emoji).to.equal('thumbsup_tone2');
 		});
 	});
 
