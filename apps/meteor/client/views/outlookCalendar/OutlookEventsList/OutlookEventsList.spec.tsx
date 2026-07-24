@@ -5,6 +5,7 @@ import type { CSSProperties, ElementType, HTMLAttributes, ReactNode, Ref } from 
 import { Children, forwardRef, isValidElement, useImperativeHandle } from 'react';
 
 import OutlookEventsList from './OutlookEventsList';
+import { createFakeUser } from '../../../../tests/mocks/data';
 
 const mockChangeRoute = jest.fn();
 const mockOnClose = jest.fn();
@@ -131,7 +132,15 @@ beforeEach(() => {
 it('renders calendar events through PaginatedVirtualList', () => {
 	render(<OutlookEventsList onClose={mockOnClose} changeRoute={mockChangeRoute} />, {
 		wrapper: mockAppRoot()
-			.withUser({ settings: { calendar: { outlook: { Outlook_Url: 'https://outlook.example.com' } } } })
+			.withUser(
+				createFakeUser({
+					settings: {
+						calendar: {
+							outlook: { Enabled: true, Exchange_Url: 'https://exchange.example.com', Outlook_Url: 'https://outlook.example.com' },
+						},
+					},
+				}),
+			)
 			.build(),
 	});
 
