@@ -14,11 +14,17 @@ jest.mock('../../../../../contexts/EmojiPickerContext', () => ({
 	useEmojiPicker: jest.fn(),
 }));
 
+jest.mock('react-i18next', () => ({
+	useTranslation: () => ({
+		t: (key: string) => key,
+	}),
+}));
+
 const mockedUseUserPreference = useUserPreference as jest.Mock;
 const mockedUseEmojiPicker = useEmojiPicker as jest.Mock;
 
 describe('CannedResponsesComposer emoji insertion', () => {
-	beforeEach(() => {
+	beforeAll(() => {
 		mockedUseUserPreference.mockReturnValue(true);
 
 		emoji.list = {
