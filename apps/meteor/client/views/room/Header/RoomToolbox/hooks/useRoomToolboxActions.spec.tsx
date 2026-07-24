@@ -2,14 +2,16 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { LayoutContext } from '@rocket.chat/ui-contexts';
 import type { LayoutContextValue, RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import { renderHook } from '@testing-library/react';
-import React from 'react';
 
 import { useRoomToolboxActions } from './useRoomToolboxActions';
+import FakeRoomProvider from '../../../../../../tests/mocks/client/FakeRoomProvider';
 
 describe('useRoomToolboxActions', () => {
 	it('should return an empty array if there are no actions', () => {
 		const { result } = renderHook(() => useRoomToolboxActions({ actions: [], openTab: () => undefined }), {
-			wrapper: mockAppRoot().build(),
+			wrapper: mockAppRoot()
+				.wrap((children) => <FakeRoomProvider roomOverrides={{ t: 'c' }}>{children}</FakeRoomProvider>)
+				.build(),
 		});
 		expect(result.current.featuredActions).toEqual([]);
 		expect(result.current.hiddenActions).toEqual([]);
@@ -18,7 +20,9 @@ describe('useRoomToolboxActions', () => {
 
 	it('should return apps actions only inside hiddenActions', () => {
 		const { result } = renderHook(() => useRoomToolboxActions({ actions: appsActions, openTab: () => undefined }), {
-			wrapper: mockAppRoot().build(),
+			wrapper: mockAppRoot()
+				.wrap((children) => <FakeRoomProvider roomOverrides={{ t: 'c' }}>{children}</FakeRoomProvider>)
+				.build(),
 		});
 		const appsSection = result.current.hiddenActions[0];
 		const appsItems = appsSection.items;
@@ -30,7 +34,9 @@ describe('useRoomToolboxActions', () => {
 
 	it('should return max of 6 items on visibleActions and the rest items inside hiddenActions', () => {
 		const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
-			wrapper: mockAppRoot().build(),
+			wrapper: mockAppRoot()
+				.wrap((children) => <FakeRoomProvider roomOverrides={{ t: 'c' }}>{children}</FakeRoomProvider>)
+				.build(),
 		});
 		expect(result.current.hiddenActions.length).toBeGreaterThan(0);
 		expect(result.current.visibleActions.length).toBe(6);
@@ -38,7 +44,9 @@ describe('useRoomToolboxActions', () => {
 
 	it('should return featured items inside featuredActions', () => {
 		const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
-			wrapper: mockAppRoot().build(),
+			wrapper: mockAppRoot()
+				.wrap((children) => <FakeRoomProvider roomOverrides={{ t: 'c' }}>{children}</FakeRoomProvider>)
+				.build(),
 		});
 		expect(result.current.featuredActions).toMatchObject(actions.filter((action) => action.featured));
 	});
@@ -54,12 +62,13 @@ describe('useRoomToolboxActions', () => {
 			],
 		});
 
-		it('should respect custom featured and visible ordering', () => {
+		it('should respect custom featured and visible ordering for public channels', () => {
 			const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
 				wrapper: mockAppRoot()
 					.withSetting('Accounts_AllowFeaturePreview', true)
 					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
-					.withSetting('Room_Toolbox_Layout', mockLayoutConfig)
+					.withSetting('Room_Toolbox_Layout_Public', mockLayoutConfig)
+					.wrap((children) => <FakeRoomProvider roomOverrides={{ t: 'c' }}>{children}</FakeRoomProvider>)
 					.build(),
 			});
 
@@ -69,6 +78,38 @@ describe('useRoomToolboxActions', () => {
 
 			const hiddenIds = result.current.hiddenActions.flatMap((s) => s.items.map((i) => i.id));
 			expect(hiddenIds).toContain('rocket-search');
+		});
+
+		it('should use the private layout config for private rooms', () => {
+			const privateConfig = JSON.stringify({
+				maxVisibleNormal: 1,
+				items: [{ id: 'thread', featured: true, order: 1 }],
+			});
+			const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
+				wrapper: mockAppRoot()
+					.withSetting('Accounts_AllowFeaturePreview', true)
+					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
+					.withSetting('Room_Toolbox_Layout_Private', privateConfig)
+					.wrap((children) => <FakeRoomProvider roomOverrides={{ t: 'p' }}>{children}</FakeRoomProvider>)
+					.build(),
+			});
+			expect(result.current.featuredActions.map((a) => a.id)).toEqual(['thread']);
+		});
+
+		it('should use the direct layout config for direct message rooms', () => {
+			const directConfig = JSON.stringify({
+				maxVisibleNormal: 1,
+				items: [{ id: 'discussions', featured: false, order: 1 }],
+			});
+			const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
+				wrapper: mockAppRoot()
+					.withSetting('Accounts_AllowFeaturePreview', true)
+					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
+					.withSetting('Room_Toolbox_Layout_Direct', directConfig)
+					.wrap((children) => <FakeRoomProvider roomOverrides={{ t: 'd' }}>{children}</FakeRoomProvider>)
+					.build(),
+			});
+			expect(result.current.visibleActions.map((a) => a.id)).toEqual(['discussions']);
 		});
 
 		it.each([
@@ -81,7 +122,8 @@ describe('useRoomToolboxActions', () => {
 				wrapper: mockAppRoot()
 					.withSetting('Accounts_AllowFeaturePreview', true)
 					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
-					.withSetting('Room_Toolbox_Layout', layoutConfigValue)
+					.withSetting('Room_Toolbox_Layout_Public', layoutConfigValue)
+					.wrap((children) => <FakeRoomProvider roomOverrides={{ t: 'c' }}>{children}</FakeRoomProvider>)
 					.build(),
 			});
 
@@ -95,7 +137,8 @@ describe('useRoomToolboxActions', () => {
 				wrapper: mockAppRoot()
 					.withSetting('Accounts_AllowFeaturePreview', true)
 					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: false }])
-					.withSetting('Room_Toolbox_Layout', mockLayoutConfig)
+					.withSetting('Room_Toolbox_Layout_Public', mockLayoutConfig)
+					.wrap((children) => <FakeRoomProvider roomOverrides={{ t: 'c' }}>{children}</FakeRoomProvider>)
 					.build(),
 			});
 
@@ -144,18 +187,16 @@ describe('useRoomToolboxActions', () => {
 			};
 
 			const { result } = renderHook(() => useRoomToolboxActions({ actions, openTab: () => undefined }), {
-				wrapper: ({ children }) => {
-					const Parent = mockAppRoot()
-						.withSetting('Accounts_AllowFeaturePreview', true)
-						.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
-						.withSetting('Room_Toolbox_Layout', mockLayoutConfig)
-						.build();
-					return React.createElement(
-						Parent,
-						null,
-						React.createElement(LayoutContext.Provider, { value: mockLayoutContextValue }, children),
-					);
-				},
+				wrapper: mockAppRoot()
+					.withSetting('Accounts_AllowFeaturePreview', true)
+					.withUserPreference('featuresPreview', [{ name: 'roomToolboxLayout', value: true }])
+					.withSetting('Room_Toolbox_Layout_Public', mockLayoutConfig)
+					.wrap((children) => (
+						<LayoutContext.Provider value={mockLayoutContextValue}>
+							<FakeRoomProvider roomOverrides={{ t: 'c' }}>{children}</FakeRoomProvider>
+						</LayoutContext.Provider>
+					))
+					.build(),
 			});
 
 			expect(result.current.featuredActions.map((a) => a.id)).toEqual(['thread']);
