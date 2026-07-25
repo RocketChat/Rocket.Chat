@@ -43,7 +43,7 @@ const useFilteredUsers = ({ searchTerm, prevSearchTerm, sortData, paginationData
 
 		return {
 			...listUsersPayload[tab],
-			searchTerm,
+			searchTerm: searchTerm.trim(),
 			roles: selectedRoles,
 			sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 			count: itemsPerPage,
