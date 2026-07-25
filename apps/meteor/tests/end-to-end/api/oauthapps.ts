@@ -383,6 +383,24 @@ describe('[OAuthApps]', () => {
 				});
 		});
 
+		it('should trim and normalize the redirectUri when updating an app', async () => {
+			await request
+				.post(api(`oauth-apps.update`))
+				.set(credentials)
+				.send({
+					appId,
+					name: `new app ${Date.now()}`,
+					redirectUri: ' http://localhost:3000 \n\n http://localhost:4000 \n',
+					active: false,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('redirectUri', 'http://localhost:3000,http://localhost:4000');
+				});
+		});
+
 		it('should fail updating an app if user does NOT have the manage-oauth-apps permission', async () => {
 			const name = `new app ${Date.now()}`;
 			const redirectUri = 'http://localhost:3000';
