@@ -1,4 +1,5 @@
 import { Team, Room } from '@rocket.chat/core-services';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { TeamType, type IRoom, type ISubscription, type IUser, type RoomType, type UserStatus } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import {
@@ -825,7 +826,7 @@ API.v1.addRoute(
 			const filter = {
 				rid: findResult._id,
 				...query,
-				...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
+				...(name ? { name: { $regex: escapeRegExp(name.trim()), $options: 'i' } } : {}),
 				...(typeGroup ? { typeGroup } : {}),
 				...(onlyConfirmed && { expiresAt: { $exists: false } }),
 			};

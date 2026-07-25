@@ -1,4 +1,5 @@
 import { Team, isMeteorError } from '@rocket.chat/core-services';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { IIntegration, IUser, IRoom, RoomType, UserStatus } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import { isGroupsOnlineProps, isGroupsMessagesProps, isGroupsFilesProps } from '@rocket.chat/rest-typings';
@@ -405,7 +406,7 @@ API.v1.addRoute(
 			const filter = {
 				...query,
 				rid: findResult.rid,
-				...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
+				...(name ? { name: { $regex: escapeRegExp(name.trim()), $options: 'i' } } : {}),
 				...(typeGroup ? { typeGroup } : {}),
 				...(onlyConfirmed && { expiresAt: { $exists: false } }),
 			};

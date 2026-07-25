@@ -2,6 +2,7 @@
  * Docs: https://github.com/RocketChat/developer-docs/blob/master/reference/api/rest-api/endpoints/team-collaboration-endpoints/im-endpoints
  */
 import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Subscriptions, Uploads, Messages, Rooms, Users } from '@rocket.chat/models';
 import {
 	ajv,
@@ -476,7 +477,7 @@ const dmFilesAction = <Path extends string>(_path: Path): TypedAction<typeof dmF
 		const filter = {
 			...query,
 			rid: room._id,
-			...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
+			...(name ? { name: { $regex: escapeRegExp(name.trim()), $options: 'i' } } : {}),
 			...(typeGroup ? { typeGroup } : {}),
 			...(onlyConfirmed && { expiresAt: { $exists: false } }),
 		};
