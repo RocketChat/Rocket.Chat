@@ -517,7 +517,7 @@ class RocketChatIntegrationHandler {
 			if (trigger.triggerWords && trigger.triggerWords.length > 0) {
 				for (const triggerWord of trigger.triggerWords) {
 					const variants = getTriggerWordVariants(triggerWord);
-					if (!trigger.triggerWordAnywhere && variants.some((variant) => message?.msg.indexOf(variant) === 0)) {
+					if (!trigger.triggerWordAnywhere && variants.some((variant) => message?.msg.startsWith(variant))) {
 						word = triggerWord;
 						break;
 					} else if (trigger.triggerWordAnywhere && variants.some((variant) => message?.msg.includes(variant))) {
