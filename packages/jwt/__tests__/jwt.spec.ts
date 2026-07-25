@@ -117,10 +117,19 @@ describe('jwt package', () => {
 		await expect(getPairs()).rejects.toThrow('This function should only be used in tests');
 	});
 
-	it('should throw an error when verifying a tampered or invalid token', async () => {
+	it('should throw an error when verifying a malformed token', async () => {
 		const [spki] = await getPairs();
 		const invalidToken = 'invalid.jwt.token';
 		await expect(verify(invalidToken, spki)).rejects.toThrow();
+	});
+
+	it('should throw an error when verifying a token with a tampered signature', async () => {
+		const [spki, pkcs8] = await getPairs();
+		const payload = { data: 'secret' };
+		const token = await sign(payload, pkcs8);
+
+		const tamperedToken = `${token}tampered`;
+		await expect(verify(tamperedToken, spki)).rejects.toThrow();
 	});
 
 	it('should throw an error when verifying with an incorrect public key', async () => {
