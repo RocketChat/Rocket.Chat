@@ -6,11 +6,13 @@ import sinon from 'sinon';
 
 const loggerStub = { debug: sinon.stub(), warn: sinon.stub(), error: sinon.stub(), info: sinon.stub(), log: sinon.stub() };
 const settingsStub = { get: sinon.stub().returns('') };
+const fetchStub = sinon.stub();
 
 const { Push } = proxyquire.noCallThru().load('../../../../../../server/lib/notifications/push/push', {
 	'./logger': { logger: loggerStub },
 	'../../../settings': { settings: settingsStub },
 	'@rocket.chat/tools': { pick, truncateString },
+	'@rocket.chat/server-fetch': { serverFetch: fetchStub },
 	'meteor/check': {
 		check: sinon.stub(),
 		Match: {
@@ -107,6 +109,31 @@ describe('Push Notifications [PushClass]', () => {
 			await expect(Push.send(options)).to.be.rejectedWith('No userId found');
 
 			expect(sendNotificationStub.called).to.be.false;
+		});
+	});
+
+	describe('sendGatewayPush()', () => {
+		afterEach(() => {
+			fetchStub.reset();
+			loggerStub.debug.reset();
+		});
+
+		it('should log the gateway response at debug level when the push is accepted (200)', async () => {
+			fetchStub.resolves({ status: 200, ok: true, text: sinon.stub().resolves('') });
+
+			await Push.sendGatewayPush('https://gateway.rocket.chat', 'apn', 'token123', {
+				createdAt: new Date(),
+			});
+
+			expect(fetchStub.calledOnce).to.be.true;
+
+			const debugCall = loggerStub.debug
+				.getCalls()
+				.map((call) => call.args[0])
+				.find((arg) => arg?.msg === 'push sent to gateway');
+
+			expect(debugCall).to.not.be.undefined;
+			expect(debugCall).to.include({ service: 'apn', status: 200, response: '' });
 		});
 	});
 });
