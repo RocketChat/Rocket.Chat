@@ -467,6 +467,15 @@ export async function getMessageToBroadcast({ id, data }: { id: IMessage['_id'];
 				}
 			}
 		}
+
+		if (message.reactions) {
+			const allUsernames = [...new Set(Object.values(message.reactions).flatMap((r) => r.usernames))];
+			const users = await Users.findByUsernames(allUsernames, { projection: { username: 1, name: 1 } }).toArray();
+			const nameByUsername = new Map(users.filter((u): u is IUser & { username: string } => !!u.username).map((u) => [u.username, u.name]));
+			for (const reaction of Object.values(message.reactions)) {
+				reaction.names = reaction.usernames.map((username) => nameByUsername.get(username) || username);
+			}
+		}
 	}
 
 	return message;
