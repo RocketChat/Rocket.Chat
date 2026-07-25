@@ -109,7 +109,7 @@ describe('Message Broadcast Tests', () => {
 					t: undefined,
 					reactions: {
 						':smile:': { usernames: ['user1', 'user2'] },
-						':heart:': { usernames: ['user3'] },
+						':heart:': { usernames: ['user1', 'user3'] },
 					},
 				},
 				hideSystemMessages: [],
@@ -120,7 +120,7 @@ describe('Message Broadcast Tests', () => {
 					u: { ...sampleMessage.u, name: 'Real User' },
 					reactions: {
 						':smile:': { usernames: ['user1', 'user2'], names: ['Real User', 'Name for user2'] },
-						':heart:': { usernames: ['user3'], names: ['Name for user3'] },
+						':heart:': { usernames: ['user1', 'user3'], names: ['Real User', 'Name for user3'] },
 					},
 				},
 			},
@@ -230,6 +230,12 @@ describe('Message Broadcast Tests', () => {
 				const result = await getMessageToBroadcast({ id: '123' });
 
 				expect(result).to.deep.equal(expectedResult);
+
+				if (useRealName && message.reactions) {
+					const deduplicated = [...new Set(Object.values(message.reactions).flatMap((r) => r.usernames))];
+					expect(usersFindByUsernamesStub.calledOnce).to.be.true;
+					expect(usersFindByUsernamesStub.calledWith(deduplicated, { projection: { username: 1, name: 1 } })).to.be.true;
+				}
 			});
 		});
 	});
