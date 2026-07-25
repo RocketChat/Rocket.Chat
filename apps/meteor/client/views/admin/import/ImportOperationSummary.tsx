@@ -106,7 +106,7 @@ function ImportOperationSummary({
 					<TableCell align='center'>{contacts}</TableCell>
 					<TableCell align='center'>{channels}</TableCell>
 					<TableCell align='center'>{messages}</TableCell>
-					<TableCell align='center'>{total}</TableCell>
+					<TableCell align='center'>{typeof total === 'object'?JSON.stringify(total):total}</TableCell>
 				</>
 			)}
 		</TableRow>
