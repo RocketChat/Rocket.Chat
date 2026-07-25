@@ -3,7 +3,7 @@ import type { ICannedResponseModel } from '@rocket.chat/model-typings';
 import { BaseRaw } from '@rocket.chat/models';
 import type { Db, DeleteResult, FindCursor, FindOptions, IndexDescription, UpdateFilter } from 'mongodb';
 
-// TODO need to define type for CannedResponse object
+
 export class CannedResponseRaw extends BaseRaw<IOmnichannelCannedResponse> implements ICannedResponseModel {
 	constructor(db: Db) {
 		super(db, 'canned_response');
