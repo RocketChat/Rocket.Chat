@@ -18,8 +18,6 @@ export const createOrUpdateProtectedRoleAsync = async (
 			roleData.mandatory2fa || role.mandatory2fa,
 		);
 
-		await Roles.updateOne({ _id: roleId, protected: { $ne: true } }, { $set: { protected: true } });
-
 		return;
 	}
 
