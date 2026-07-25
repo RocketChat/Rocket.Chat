@@ -368,11 +368,14 @@ it('probe resolves false when no pong arrives before the timeout', async () => {
 	await handleConnection(server, connection.connect());
 	expect(connection.status).toBe('connected');
 
-	jest.useFakeTimers();
-	const probePromise = connection.probe(100);
-	await jest.advanceTimersByTimeAsync(100);
-	await expect(probePromise).resolves.toBe(false);
-	jest.useRealTimers();
+	try {
+		jest.useFakeTimers();
+		const probePromise = connection.probe(100);
+		await jest.advanceTimersByTimeAsync(100);
+		await expect(probePromise).resolves.toBe(false);
+	} finally {
+		jest.useRealTimers();
+	}
 });
 
 it('forceReopen closes the socket and re-establishes the connection', async () => {
