@@ -101,6 +101,8 @@ export class ConnectionImpl
 
 	private reopenInFlight: Promise<boolean> | null = null;
 
+	private onConnectionOff?: RemoveListener;
+
 	constructor(
 		url: string,
 		private WS: WebSocketConstructor,
@@ -215,7 +217,8 @@ export class ConnectionImpl
 				// If the server is willing to speak the version of the protocol specified in the connect message, it sends back a connected message.
 				// Otherwise the server sends back a failed message with a version of DDP it would rather speak, informed by the connect message's support field, and closes the underlying transport.
 
-				this.client.onConnection((payload) => {
+				this.onConnectionOff?.();
+				this.onConnectionOff = this.client.onConnection((payload) => {
 					if (payload.msg === 'connected') {
 						this.status = 'connected';
 						// Reset the retry budget on successful connection so a future
@@ -293,6 +296,8 @@ export class ConnectionImpl
 
 	close() {
 		this.status = 'closed';
+		this.onConnectionOff?.();
+		this.onConnectionOff = undefined;
 		if (this.ws) {
 			// Sever all handlers before closing so the dying socket cannot deliver
 			// late messages or fire `onclose` on the live connection (e.g. a replaced
@@ -315,6 +320,7 @@ export class ConnectionImpl
 			let settled = false;
 			let off: RemoveListener | undefined;
 			let timer: ReturnType<typeof setTimeout>;
+			const id = Math.random().toString(36).slice(2);
 
 			const finish = (alive: boolean) => {
 				if (settled) {
@@ -328,11 +334,11 @@ export class ConnectionImpl
 
 			timer = setTimeout(() => finish(false), timeoutMs);
 			off = this.client.onMessage((payload) => {
-				if (payload.msg === 'pong') {
+				if (payload.msg === 'pong' && payload.id === id) {
 					finish(true);
 				}
 			});
-			this.client.ping();
+			this.client.ping(id);
 		});
 	}
 

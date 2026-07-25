@@ -355,8 +355,9 @@ it('probe resolves true when the server answers the ping with a pong', async () 
 	const probePromise = connection.probe();
 
 	await server.nextMessage.then((message) => {
-		expect(message).toBe('{"msg":"ping"}');
-		server.send('{"msg":"pong"}');
+		const { id } = JSON.parse(message);
+		expect(id).toEqual(expect.any(String));
+		server.send(JSON.stringify({ msg: 'pong', id }));
 	});
 
 	await expect(probePromise).resolves.toBe(true);
@@ -418,8 +419,9 @@ it('checkAndReopen probes and returns true without a forced reopen when alive', 
 	const resultPromise = connection.checkAndReopen();
 
 	await server.nextMessage.then((message) => {
-		expect(message).toBe('{"msg":"ping"}');
-		server.send('{"msg":"pong"}');
+		const { id } = JSON.parse(message);
+		expect(id).toEqual(expect.any(String));
+		server.send(JSON.stringify({ msg: 'pong', id }));
 	});
 
 	await expect(resultPromise).resolves.toBe(true);
