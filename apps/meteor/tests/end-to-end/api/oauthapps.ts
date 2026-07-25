@@ -145,6 +145,42 @@ describe('[OAuthApps]', () => {
 					createdAppsIds.push(res.body.application._id);
 				});
 		});
+
+		it('should trim surrounding whitespace from the redirectUri', async () => {
+			await request
+				.post(api('oauth-apps.create'))
+				.set(credentials)
+				.send({
+					name: `new app ${Date.now()}`,
+					redirectUri: '  http://localhost:3000  ',
+					active: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('application.redirectUri', 'http://localhost:3000');
+					createdAppsIds.push(res.body.application._id);
+				});
+		});
+
+		it('should trim and normalize a list of redirectUris', async () => {
+			await request
+				.post(api('oauth-apps.create'))
+				.set(credentials)
+				.send({
+					name: `new app ${Date.now()}`,
+					redirectUri: ' http://localhost:3000 \n\n http://localhost:4000 \n',
+					active: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('application.redirectUri', 'http://localhost:3000,http://localhost:4000');
+					createdAppsIds.push(res.body.application._id);
+				});
+		});
 	});
 
 	describe('[/oauth-apps.get]', () => {
