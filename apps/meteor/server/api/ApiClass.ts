@@ -1135,7 +1135,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				},
 			);
 
-			await Sessions.logoutByloginTokenAndUserId({ loginToken: hashedToken, userId: this.userId });
+			await Sessions.logoutBySessionIdAndUserId({ loginToken: hashedToken, userId: this.userId });
 			void notifyOnUserChangeAsync(async () => {
 				const userTokens = await Users.findOneById(this.userId, { projection: { [tokenPath]: 1 } });
 				if (!userTokens) {
