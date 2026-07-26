@@ -11,7 +11,7 @@ export async function findLivechatTransferHistory({
 	pagination: { offset, count, sort },
 }: {
 	rid: string;
-	pagination: { offset: number; count: number; sort: Record<string, number> };
+	pagination: { offset: number; count: number; sort: Record<string, 1 | -1> };
 }): Promise<PaginatedResult<{ history: IOmnichannelSystemMessage['transferData'][] }>> {
 	const { cursor, totalCount } = Messages.findPaginated(
 		{ rid, t: 'livechat_transfer_history' },

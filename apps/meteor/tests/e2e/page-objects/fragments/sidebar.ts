@@ -181,10 +181,6 @@ export class OmnichannelSidebar extends Sidebar {
 		return this.root.locator('a[href="/omnichannel/priorities"]');
 	}
 
-	get linkMonitors(): Locator {
-		return this.root.locator('a[href="/omnichannel/monitors"]');
-	}
-
 	get linkBusinessHours(): Locator {
 		return this.root.locator('a[href="/omnichannel/businessHours"]');
 	}

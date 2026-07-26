@@ -1,4 +1,5 @@
 import { log } from 'console';
+import crypto from 'node:crypto';
 import os from 'node:os';
 
 import { Analytics, Team, VideoConf, Presence } from '@rocket.chat/core-services';
@@ -345,6 +346,8 @@ export const statistics = {
 			platform: process.env.DEPLOY_PLATFORM || 'selfinstall',
 		};
 
+		statistics.fips = !!crypto.getFips();
+
 		statistics.readReceiptsEnabled = settings.get('Message_Read_Receipt_Enabled');
 		statistics.readReceiptsDetailed = settings.get('Message_Read_Receipt_Store_Users');
 
@@ -447,35 +450,9 @@ export const statistics = {
 		);
 
 		statsPms.push(
-			Integrations.find(
-				{},
-				{
-					projection: {
-						_id: 0,
-						type: 1,
-						enabled: 1,
-						scriptEnabled: 1,
-					},
-					readPreference,
-				},
-			)
-				.toArray()
-				.then((found) => {
-					const integrations = found;
-
-					statistics.integrations = {
-						totalIntegrations: integrations.length,
-						totalIncoming: integrations.filter((integration) => integration.type === 'webhook-incoming').length,
-						totalIncomingActive: integrations.filter(
-							(integration) => integration.enabled === true && integration.type === 'webhook-incoming',
-						).length,
-						totalOutgoing: integrations.filter((integration) => integration.type === 'webhook-outgoing').length,
-						totalOutgoingActive: integrations.filter(
-							(integration) => integration.enabled === true && integration.type === 'webhook-outgoing',
-						).length,
-						totalWithScriptEnabled: integrations.filter((integration) => integration.scriptEnabled === true).length,
-					};
-				}),
+			Integrations.getStatistics({ readPreference }).then((integrations) => {
+				statistics.integrations = integrations;
+			}),
 		);
 
 		statsPms.push(

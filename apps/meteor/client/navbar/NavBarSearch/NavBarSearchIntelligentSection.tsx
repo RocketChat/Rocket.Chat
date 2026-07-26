@@ -1,4 +1,4 @@
-import { serializeSearchQuery, type NavBarSearchFormValues } from '@rocket.chat/ai-search';
+import { emptySearchFilters, serializeSearchQuery, type NavBarSearchFormValues } from '@rocket.chat/ai-search';
 import { Box, Icon, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
 import type { AISearchResult } from '@rocket.chat/rest-typings';
 import { useRouter } from '@rocket.chat/ui-contexts';
@@ -19,7 +19,7 @@ const NavBarSearchIntelligentSection = ({ items, onSelect, onClose }: NavBarSear
 	const { t } = useTranslation();
 	const router = useRouter();
 	const { watch } = useFormContext<NavBarSearchFormValues>();
-	const { filterText, appliedFilters } = watch();
+	const { filterText = '', appliedFilters = emptySearchFilters() } = watch();
 
 	if (!items.length) {
 		return null;
@@ -32,11 +32,11 @@ const NavBarSearchIntelligentSection = ({ items, onSelect, onClose }: NavBarSear
 	});
 
 	return (
-		<Box display='flex' flexDirection='column' pbs={8} pbe={12}>
-			<Box color='titles-labels' fontScale='c2' pi={16} mbe={4} role='presentation' aria-hidden>
+		<Box display='flex' flexDirection='column' paddingBlockStart={8} paddingBlockEnd={12}>
+			<Box color='titles-labels' fontScale='c2' paddingInline={16} marginBlockEnd={4} role='presentation' aria-hidden>
 				{t('Intelligent_Search')}
 			</Box>
-			<Box color='hint' fontScale='c1' pi={12} mbe={4}>
+			<Box color='hint' fontScale='c1' paddingInline={12} marginBlockEnd={4}>
 				{t('AI_Search_related_messages', { count: items.length })}
 			</Box>
 			{items.map((item) => (

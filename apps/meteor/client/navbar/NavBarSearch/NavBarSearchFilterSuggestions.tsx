@@ -1,4 +1,5 @@
 import {
+	emptySearchFilters,
 	mergeSearchFilters,
 	parseSearchFilterText,
 	type NavBarSearchFormValues,
@@ -46,7 +47,8 @@ const NavBarSearchFilterSuggestions = ({ suggestions }: NavBarSearchFilterSugges
 			event.preventDefault();
 			event.stopPropagation();
 			const { searchText, filters } = parseSearchFilterText(value);
-			setValue('appliedFilters', mergeSearchFilters(getValues('appliedFilters'), filters), { shouldDirty: true });
+			const appliedFilters = getValues('appliedFilters') ?? emptySearchFilters();
+			setValue('appliedFilters', mergeSearchFilters(appliedFilters, filters), { shouldDirty: true });
 			setValue('filterText', searchText, { shouldDirty: true });
 			setFocus('filterText');
 		},
@@ -60,8 +62,8 @@ const NavBarSearchFilterSuggestions = ({ suggestions }: NavBarSearchFilterSugges
 	return (
 		<>
 			{filterSuggestionGroups.map(([group, groupSuggestions]) => (
-				<Box key={group} display='flex' flexDirection='column' pbs={8}>
-					<Box color='titles-labels' fontScale='c1' fontWeight='bold' pi={12} mbe={4} role='presentation' aria-hidden>
+				<Box key={group} display='flex' flexDirection='column' paddingBlockStart={8}>
+					<Box color='titles-labels' fontScale='c1' fontWeight='bold' paddingInline={12} marginBlockEnd={4} role='presentation' aria-hidden>
 						{t(filterSuggestionGroupLabels[group])}
 					</Box>
 					{groupSuggestions.map((item) => (

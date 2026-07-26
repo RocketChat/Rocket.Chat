@@ -1,28 +1,20 @@
-import { Box, SidebarItem } from '@rocket.chat/fuselage';
+import { Box, SidebarV2Item } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { memo } from 'react';
 
 export type SidebarGenericItemProps = {
 	href?: string;
 	active?: boolean;
-	featured?: boolean;
 	children: ReactNode;
 	externalUrl?: boolean;
 };
 
 const SidebarGenericItem = ({ href, active, externalUrl, children, ...props }: SidebarGenericItemProps) => (
-	<SidebarItem
-		selected={active}
-		clickable
-		is='a'
-		href={href}
-		{...(externalUrl && { target: '_blank', rel: 'noopener noreferrer' })}
-		{...props}
-	>
+	<SidebarV2Item selected={active} is='a' href={href} {...(externalUrl && { target: '_blank', rel: 'noopener noreferrer' })} {...props}>
 		<Box display='flex' flexDirection='row' alignItems='center' paddingBlock={8} width='100%'>
 			{children}
 		</Box>
-	</SidebarItem>
+	</SidebarV2Item>
 );
 
 export default memo(SidebarGenericItem);

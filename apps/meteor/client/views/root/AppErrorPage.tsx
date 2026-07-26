@@ -17,12 +17,12 @@ const AppErrorPage = () => {
 						<StatesAction
 							onClick={() => {
 								const result = indexedDB.deleteDatabase('MeteorDynamicImportCache');
-								result.onsuccess = () => {
+								const reload = () => {
 									window.location.reload();
 								};
-								result.onerror = () => {
-									window.location.reload();
-								};
+								result.onsuccess = reload;
+								result.onerror = reload;
+								result.onblocked = reload;
 							}}
 						>
 							Reload Application

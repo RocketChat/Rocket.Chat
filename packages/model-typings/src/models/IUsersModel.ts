@@ -436,4 +436,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findOneByIdAndRole(userId: IUser['_id'], role: string, options: FindOptions<IUser>): Promise<IUser | null>;
 	countActiveUsersInNonDMRoom(rid: string): Promise<number>;
 	countActiveUsersInDMRoom(rid: string): Promise<number>;
+	verifyEmailByAddress(_id: IUser['_id'], emailAddress: string): Promise<UpdateResult>;
+	findOneByEmailVerificationToken<T extends Document = IUser>(token: string, options?: FindOptions<T>): Promise<T | null>;
 }

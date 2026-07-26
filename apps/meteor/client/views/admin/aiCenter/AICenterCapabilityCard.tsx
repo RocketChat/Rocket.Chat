@@ -19,7 +19,7 @@ const AICenterCapabilityCard = ({ icon, title, description, status, actionLabel,
 		<Card height='full' role='region' aria-labelledby={titleId} aria-describedby={descriptionId}>
 			<CardHeader>
 				<FramedIcon icon={icon} />
-				{status && <Box mis='auto'>{status}</Box>}
+				{status && <Box marginInlineStart='auto'>{status}</Box>}
 			</CardHeader>
 			<CardTitle id={titleId}>{title}</CardTitle>
 			<CardBody id={descriptionId} flexDirection='column'>

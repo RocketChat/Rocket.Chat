@@ -7,7 +7,7 @@ import { MediaStreamManager } from '../../media/MediaStreamManager';
 import { getExternalWaiter, type PromiseWaiterData } from '../../utils/getExternalWaiter';
 
 const DATA_CHANNEL_LABEL = 'rocket.chat';
-type P2PCommand = 'mute' | 'unmute' | 'end' | 'screen-share.start' | 'screen-share.stop';
+type P2PCommand = 'mute' | 'unmute' | 'end';
 
 export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	public readonly emitter: Emitter<WebRTCProcessorEvents>;
@@ -94,8 +94,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 		this.screenVideoTrack = newVideoTrack;
 		await this.loadScreenVideoTrack();
-
-		this.updateDirectionForVideoTrackChanged();
 	}
 
 	public async createOffer({ iceRestart }: { iceRestart?: boolean }): Promise<RTCSessionDescriptionInit> {
@@ -272,9 +270,21 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	}
 
 	public async waitForIceGathering(): Promise<void> {
-		if (this.stopped || this.peer.iceGatheringState === 'complete') {
+		if (this.stopped) {
 			return;
 		}
+
+		if (this.peer.iceGatheringState === 'complete') {
+			// If the peer state is 'complete', wait long enough for a macrotask to complete to ensure this state is not outdated
+			await new Promise((resolve) => {
+				setTimeout(resolve, 1);
+			});
+
+			if (this.stopped || this.peer.iceGatheringState === 'complete') {
+				return;
+			}
+		}
+
 		this.config.logger?.debug('MediaCallWebRTCProcessor.waitForIceGathering');
 		await this.initialization;
 
@@ -477,7 +487,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 		channel.onopen = (_event) => {
 			this.config.logger?.debug('Data Channel Open', channel.label);
-			if (!this._dataChannel || this._dataChannel.readyState !== 'open') {
+			if (this._dataChannel?.readyState !== 'open') {
 				this._dataChannel = channel;
 			}
 
@@ -528,7 +538,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	}
 
 	private isValidCommand(command: string): command is P2PCommand {
-		return ['mute', 'unmute', 'end', 'screen-share.start', 'screen-share.stop'].includes(command);
+		return ['mute', 'unmute', 'end'].includes(command);
 	}
 
 	private getCommandFromDataChannelMessage(message: string): P2PCommand | null {
@@ -555,12 +565,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 				break;
 			case 'end':
 				this._dataChannelEnded = true;
-				break;
-			case 'screen-share.start':
-				this.streams.screenShareRemote.setActive(true);
-				break;
-			case 'screen-share.stop':
-				this.streams.screenShareRemote.setActive(false);
 				break;
 		}
 	}
@@ -598,14 +602,11 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.updateAudioDirectionAfterNegotiation();
 		this.updateVideoDirectionAfterNegotiation();
 		this.updateRemoteHeld();
+		this.updateRemoteScreenShare();
 	}
 
 	private updateRemoteHeld(): void {
-		if (this.stopped) {
-			return;
-		}
-
-		if (['closed', 'failed', 'new'].includes(this.peer.connectionState)) {
+		if (!this.isActiveConnection()) {
 			return;
 		}
 
@@ -626,6 +627,30 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 
 		this.setRemoteHeld(anyTransceiverNotSending);
+	}
+
+	private updateRemoteScreenShare(): void {
+		if (!this.isActiveConnection()) {
+			return;
+		}
+
+		const transceivers = this.getTransceivers('video');
+		for (const transceiver of transceivers) {
+			if (!transceiver.currentDirection || transceiver.currentDirection === 'stopped') {
+				continue;
+			}
+
+			if (transceiver.currentDirection.includes('recv')) {
+				this.config.logger?.debug(`Video Transceiver is receiving; enabling screen-share`);
+				this.streams.screenShareRemote.setActive(true);
+				return;
+			}
+		}
+
+		if (this.streams.screenShareRemote.active) {
+			this.config.logger?.debug(`No video Transceiver is receiving, disabling screen-share`);
+			this.streams.screenShareRemote.setActive(false);
+		}
 	}
 
 	private registerPeerEvents() {
@@ -668,6 +693,10 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	private canRenegotiate(): boolean {
 		return !this.stopped && this.peer.signalingState === 'stable';
+	}
+
+	private isActiveConnection(): boolean {
+		return !this.stopped && !['new', 'closed', 'failed'].includes(this.peer.connectionState);
 	}
 
 	private onIceCandidate(event: RTCPeerConnectionIceEvent) {
@@ -760,11 +789,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 		this.streams.screenShareLocal.setActive(Boolean(this.screenVideoTrack));
 
-		if (this.screenVideoTrack) {
-			this.sendP2PCommand('screen-share.start');
-		} else {
-			this.sendP2PCommand('screen-share.stop');
-		}
+		this.updateDirectionForVideoTrackChanged();
 	}
 
 	private onIceGatheringComplete() {

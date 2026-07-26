@@ -1,5 +1,7 @@
+import type { IMessage } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 import { render } from '@testing-library/react';
+import type { TFunction } from 'i18next';
 
 import { getMarkdownParserLimit } from './getMarkdownParserLimit';
 import { normalizeThreadMessage } from './normalizeThreadMessage';
@@ -14,6 +16,8 @@ const mockedGetMarkdownParserLimit = jest.mocked(getMarkdownParserLimit);
 const mockedFilterMarkdown = jest.mocked(filterMarkdown);
 const mockedParse = jest.mocked(parse);
 
+const t = ((key: string) => key) as TFunction;
+
 describe('normalizeThreadMessage', () => {
 	beforeEach(() => {
 		mockedGetMarkdownParserLimit.mockReturnValue(Infinity);
@@ -26,8 +30,8 @@ describe('normalizeThreadMessage', () => {
 	});
 
 	it('should parse message through filterMarkdown and parse when within limit', () => {
-		const message = { msg: 'Hello world', mentions: [], attachments: [] };
-		normalizeThreadMessage(message);
+		const message = { msg: 'Hello world', mentions: [], attachments: [] } as unknown as IMessage;
+		normalizeThreadMessage(message, t);
 
 		expect(mockedFilterMarkdown).toHaveBeenCalledWith('Hello world');
 		expect(mockedParse).toHaveBeenCalledWith('Hello world', { emoticons: true });
@@ -36,8 +40,8 @@ describe('normalizeThreadMessage', () => {
 	it('should skip filterMarkdown and parse when message exceeds limit', () => {
 		mockedGetMarkdownParserLimit.mockReturnValue(5);
 
-		const message = { msg: 'This message is longer than the limit', mentions: [], attachments: [] };
-		const result = normalizeThreadMessage(message);
+		const message = { msg: 'This message is longer than the limit', mentions: [], attachments: [] } as unknown as IMessage;
+		const result = normalizeThreadMessage(message, t);
 
 		expect(mockedFilterMarkdown).not.toHaveBeenCalled();
 		expect(mockedParse).not.toHaveBeenCalled();
@@ -49,21 +53,21 @@ describe('normalizeThreadMessage', () => {
 	});
 
 	it('should return null when msg is empty and no attachments', () => {
-		const message = { msg: '', mentions: [], attachments: undefined } as any;
-		expect(normalizeThreadMessage(message)).toBeNull();
+		const message = { msg: '', mentions: [], attachments: undefined } as unknown as IMessage;
+		expect(normalizeThreadMessage(message, t)).toBeNull();
 	});
 
 	it('should return attachment title when msg is empty but attachment has title', () => {
-		const message = { msg: '', mentions: [], attachments: [{ title: 'file.pdf' }] } as any;
-		const result = normalizeThreadMessage(message);
+		const message = { msg: '', mentions: [], attachments: [{ title: 'file.pdf' }] } as unknown as IMessage;
+		const result = normalizeThreadMessage(message, t);
 
 		const { container } = render(<>{result}</>);
 		expect(container.textContent).toBe('file.pdf');
 	});
 
 	it('should return attachment description when msg is empty and attachments have no title', () => {
-		const message = { msg: '', mentions: [], attachments: [{ description: 'desc' }] } as any;
-		const result = normalizeThreadMessage(message);
+		const message = { msg: '', mentions: [], attachments: [{ description: 'desc' }] } as unknown as IMessage;
+		const result = normalizeThreadMessage(message, t);
 
 		const { container } = render(<>{result}</>);
 		expect(container.textContent).toBe('desc');
@@ -74,7 +78,29 @@ describe('normalizeThreadMessage', () => {
 			throw new Error('parse error');
 		});
 
-		const message = { msg: 'test', mentions: [], attachments: [] };
-		expect(normalizeThreadMessage(message)).toBeNull();
+		const message = { msg: 'test', mentions: [], attachments: [] } as unknown as IMessage;
+		expect(normalizeThreadMessage(message, t)).toBeNull();
+	});
+
+	it('should return the message type text for a removed message without content', () => {
+		const message = {
+			t: 'rm',
+			msg: '',
+			editedAt: new Date(),
+			editedBy: { _id: 'uid', username: 'user' },
+			mentions: [],
+			attachments: [],
+		} as unknown as IMessage;
+
+		expect(normalizeThreadMessage(message, t)).toBe('Message_removed');
+		expect(mockedFilterMarkdown).not.toHaveBeenCalled();
+		expect(mockedParse).not.toHaveBeenCalled();
+	});
+
+	it('should render the message content when a `t: rm` message still has content', () => {
+		const message = { t: 'rm', msg: 'Hello world', mentions: [], attachments: [] } as unknown as IMessage;
+
+		expect(normalizeThreadMessage(message, t)).not.toBe('Message_removed');
+		expect(mockedParse).toHaveBeenCalledWith('Hello world', { emoticons: true });
 	});
 });
