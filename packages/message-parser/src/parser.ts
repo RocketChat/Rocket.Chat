@@ -146,6 +146,12 @@ function isPhoneChar(ch: string): boolean {
 	return isDigit(ch) || ch === '(' || ch === ')' || ch === '-';
 }
 
+// Confirm the token is shaped like a URL
+function isValidUrlStructure(url: string): boolean {
+	if (url.includes('://')) return /^[A-Za-z0-9+-]{1,32}:\/\/./.test(url); // scheme://host
+	return !url.includes(':/') && /^[A-Za-z0-9][^/:?#]*\.[^/:?#]+/.test(url); // bare domain
+}
+
 // ───  Re-entrancy guards ───────────────────────────────────────────────────
 
 let skipBold = false;
@@ -1283,11 +1289,11 @@ function tryAutoLinkUrl(scanner: Scanner, options: Options): Inlines | null {
 
 	// e.g. "rocket.chat." → "rocket.chat"
 	let url = token;
-	while (url.length > 0 && '.,!?;:)'.includes(url[url.length - 1])) {
+	while (url.length > 0 && '.,!;:)'.includes(url[url.length - 1])) {
 		url = url.slice(0, -1);
 	}
 
-	if (url.length === 0) {
+	if (url.length === 0 || !isValidUrlStructure(url)) {
 		scanner.backtrack(start);
 		return null;
 	}
