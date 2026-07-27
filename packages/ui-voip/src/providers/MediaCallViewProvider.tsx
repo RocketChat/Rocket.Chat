@@ -1,4 +1,4 @@
-import { AnchorPortal, useGoToDirectMessage } from '@rocket.chat/ui-client';
+import { useGoToDirectMessage } from '@rocket.chat/ui-client';
 import type { Device } from '@rocket.chat/ui-contexts';
 import {
 	useSetOutputMediaDevice,
@@ -21,12 +21,11 @@ import useWidgetPositionTracker from './useWidgetPositionTracker';
 import { useMediaCallInstance } from '../context/MediaCallInstanceContext';
 import MediaCallViewContext from '../context/MediaCallViewContext';
 import type { PeerInfo } from '../context/definitions';
-import { stopTracks, useDevicePermissionPrompt2, PermissionRequestCancelledCallRejectedError } from '../hooks/useDevicePermissionPrompt';
+import { stopTracks, useDevicePermissionPrompt2 } from '../hooks/useDevicePermissionPrompt';
 import { isValidTone, useTonePlayer } from '../hooks/useTonePlayer';
-import { MediaCallWidget } from '../views';
 import TransferModal from '../views/TransferModal';
 
-type MediaCallViewProviderProps = {
+export type MediaCallViewProviderProps = {
 	children?: ReactNode;
 };
 
@@ -36,7 +35,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 
 	const setModal = useSetModal();
 
-	const { instance, audioElement, openRoomId } = useMediaCallInstance();
+	const { instance, audioElement, openRoomId, registerView, unregisterView } = useMediaCallInstance();
 
 	const { sessionState, toggleWidget, selectPeer } = useMediaSession(instance);
 	const controls = useMediaSessionControls(instance);
@@ -57,7 +56,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 
 	useEffect(() => {
 		if (audioInput?.id && !sessionState.hidden) {
-			void controls.changeDevice(audioInput.id);
+			void controls.changeDevice(audioInput.id).catch((e) => console.error('Media Call - failed to change input device', e));
 		}
 	}, [audioInput?.id, controls, sessionState.hidden]);
 
@@ -94,25 +93,28 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 			return;
 		}
 
+		const startCall = (micless: boolean) => {
+			if ('userId' in peerInfo) {
+				void controls.startCall(peerInfo.userId, 'user', micless);
+				return;
+			}
+
+			if ('number' in peerInfo) {
+				void controls.startCall(peerInfo.number, 'sip', micless);
+				return;
+			}
+
+			throw new Error('MediaCall - New call - something went wrong when trying to call. PeerInfo is missing userId and/or number.');
+		};
+
 		try {
 			const stream = await requestDevice({ actionType: 'outgoing' });
 			stopTracks(stream);
+			startCall(false);
 		} catch (error) {
 			console.error('Media Call - Error requesting device', error);
-			return;
+			startCall(true);
 		}
-
-		if ('userId' in peerInfo) {
-			void controls.startCall(peerInfo.userId, 'user');
-			return;
-		}
-
-		if ('number' in peerInfo) {
-			void controls.startCall(peerInfo.number, 'sip');
-			return;
-		}
-
-		throw new Error('MediaCall - New call - something went wrong when trying to call. PeerInfo is missing userId and/or number.');
 	};
 
 	const onAccept = async () => {
@@ -124,14 +126,11 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		try {
 			const stream = await requestDevice({ actionType: 'incoming' });
 			stopTracks(stream);
+			controls.acceptCall(false);
 		} catch (error) {
-			if (error instanceof PermissionRequestCancelledCallRejectedError) {
-				controls.endCall();
-			}
-			return;
+			console.error('MediaCall - onAccept - Failed to get device, procceeding without microphone', error);
+			controls.acceptCall(true);
 		}
-
-		controls.acceptCall();
 	};
 
 	const onDeviceChange = (device: Device) => {
@@ -209,6 +208,14 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		controls.toggleScreenSharing();
 	};
 
+	const onOpenPopout = useCallback(() => {
+		registerView('popout');
+	}, [registerView]);
+
+	const onClosePopout = useCallback(() => {
+		unregisterView('popout');
+	}, [unregisterView]);
+
 	const streams = useScreenShareStreams(instance);
 
 	useWidgetExternalControlSignalListener(
@@ -242,6 +249,8 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		onAccept,
 		onSelectPeer,
 		onToggleScreenSharing,
+		onOpenPopout,
+		onClosePopout,
 		streams,
 		widgetPositionTracker: {
 			onChangePosition,
@@ -249,14 +258,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		},
 	};
 
-	return (
-		<MediaCallViewContext.Provider value={contextValue}>
-			<AnchorPortal id='rcx-media-call-widget-portal'>
-				<MediaCallWidget />
-			</AnchorPortal>
-			{children}
-		</MediaCallViewContext.Provider>
-	);
+	return <MediaCallViewContext.Provider value={contextValue}>{children}</MediaCallViewContext.Provider>;
 };
 
 export default MediaCallViewProvider;

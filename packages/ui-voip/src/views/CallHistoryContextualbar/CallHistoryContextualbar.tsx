@@ -17,20 +17,10 @@ import { useTranslation } from 'react-i18next';
 import type { HistoryActionCallbacks } from './CallHistoryActions';
 import CallHistoryActions from './CallHistoryActions';
 import { useFullStartDate } from './useFullStartDate';
-import { CallHistoryExternalUser, CallHistoryInternalUser } from '../../components';
+import CallHistoryUser from '../../components/CallHistoryUser';
 import { usePeekMediaSessionState } from '../../context/usePeekMediaSessionState';
+import { isCallHistoryInternalContact, type CallHistoryContact } from '../../definitions';
 import { getHistoryMessagePayload } from '../../ui-kit/getHistoryMessagePayload';
-
-export type InternalCallHistoryContact = {
-	_id: string;
-	name?: string;
-	username: string;
-	voiceCallExtension?: string;
-};
-
-export type ExternalCallHistoryContact = {
-	number: string;
-};
 
 export type CallHistoryData = {
 	callId: string;
@@ -41,17 +31,11 @@ export type CallHistoryData = {
 	messageId?: string;
 };
 
-type CallHistoryContextualBarProps = {
+export type CallHistoryContextualBarProps = {
 	onClose: () => void;
 	actions: HistoryActionCallbacks;
-	contact: InternalCallHistoryContact | ExternalCallHistoryContact;
+	contact: CallHistoryContact;
 	data: CallHistoryData;
-};
-
-const isInternalCallHistoryContact = (
-	contact: InternalCallHistoryContact | ExternalCallHistoryContact,
-): contact is InternalCallHistoryContact => {
-	return '_id' in contact;
 };
 
 const contextValue = {
@@ -78,15 +62,11 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 			<ContextualbarScrollableContent>
 				<InfoPanel>
 					<InfoPanelSection fontScale='p1b'>
-						{isInternalCallHistoryContact(contact) ? (
-							<CallHistoryInternalUser username={contact.username} name={contact.name} _id={contact._id} />
-						) : (
-							<CallHistoryExternalUser number={contact.number} />
-						)}
+						<CallHistoryUser contact={contact} />
 					</InfoPanelSection>
 					<InfoPanelSection>
 						<Box display='flex' flexDirection='row' alignItems='center' fontScale='p1b'>
-							<Icon name={direction === 'inbound' ? 'arrow-down-left' : 'arrow-up-right'} size={24} mie={8} />
+							<Icon name={direction === 'inbound' ? 'arrow-down-left' : 'arrow-up-right'} size={24} marginInlineEnd={8} />
 							{direction === 'inbound' ? t('Incoming_voice_call') : t('Outgoing_voice_call')}
 						</Box>
 					</InfoPanelSection>
@@ -96,13 +76,13 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 								<UiKitComponent render={UiKitMessageSurfaceRender} blocks={getHistoryMessagePayload(data.state, duration).blocks} />
 							</UiKitContext.Provider>
 						</MessageBlock>
-						<Box mbs={-8}>{date}</Box>
+						<Box marginBlockStart={-8}>{date}</Box>
 					</InfoPanelSection>
 					<InfoPanelSection>
 						<InfoPanelLabel>{t('Call_ID')}</InfoPanelLabel>
 						<InfoPanelText>{callId}</InfoPanelText>
 					</InfoPanelSection>
-					{isInternalCallHistoryContact(contact) && contact.voiceCallExtension && (
+					{isCallHistoryInternalContact(contact) && contact.voiceCallExtension && (
 						<InfoPanelSection>
 							<InfoPanelLabel>{t('Voice_call_extension')}</InfoPanelLabel>
 							<InfoPanelText>{contact.voiceCallExtension}</InfoPanelText>
@@ -112,9 +92,9 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					{isInternalCallHistoryContact(contact) && directMessage && (
+					{isCallHistoryInternalContact(contact) && directMessage && (
 						<Button onClick={directMessage}>
-							<Icon name='balloon' size='x20' mie='x4' />
+							<Icon name='balloon' size='x20' marginInlineEnd='x4' />
 							{t('Direct_message')}
 						</Button>
 					)}
@@ -125,7 +105,7 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 							disabled={state !== 'available'}
 							title={state !== 'available' ? t('Call_in_progress') : undefined}
 						>
-							<Icon name='phone' size='x20' mie='x4' />
+							<Icon name='phone' size='x20' marginInlineEnd='x4' />
 							{t('Call')}
 						</Button>
 					)}

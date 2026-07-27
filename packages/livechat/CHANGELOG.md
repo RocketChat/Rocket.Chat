@@ -1,5 +1,53 @@
 # @rocket.chat/livechat Change Log
 
+## 2.1.6-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [70c0ff0967cc50144dba4971fc7c3f3e996264a3, eec6083bb88f0caa1bd0de28b93b926a11c17507, adc15707128bc3fbe1ccd1cd57e9d30a702fa6ca, 4117a1d3fb07905e8c9488a96f368747b48d528e, e5da5d016948c9bb5cfd784a65396e08e61264c4, 70c0ff0967cc50144dba4971fc7c3f3e996264a3]:</summary>
+
+  - @rocket.chat/gazzodown@33.0.0-rc.0
+  - @rocket.chat/message-parser@0.32.0-rc.0
+  </details>
+
+## 2.1.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@32.0.0
+  </details>
+
+## 2.1.5-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@32.0.0-rc.0
+  </details>
+
+## 2.1.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [90f15e32ae843ed146ccf711ee3201408d1e8731, d427b808c1f79d9d1baa05bb5b5ef805b6ef5f6d, 0b7a76367d650793c271160e01798ebbb5fe0d26, 90f15e32ae843ed146ccf711ee3201408d1e8731]:</summary>
+
+  - @rocket.chat/ui-kit@1.1.0
+  - @rocket.chat/gazzodown@31.0.0
+  </details>
+
+## 2.1.4-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [90f15e32ae843ed146ccf711ee3201408d1e8731, d427b808c1f79d9d1baa05bb5b5ef805b6ef5f6d, 0b7a76367d650793c271160e01798ebbb5fe0d26, 90f15e32ae843ed146ccf711ee3201408d1e8731]:</summary>
+
+  - @rocket.chat/ui-kit@1.1.0-rc.0
+  - @rocket.chat/gazzodown@31.0.0-rc.0
+  </details>
+
 ## 2.1.3
 
 ### Patch Changes

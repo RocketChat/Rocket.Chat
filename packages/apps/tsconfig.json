@@ -4,6 +4,7 @@
 		"declaration": true,
 		"rootDir": "./src",
 		"outDir": "./dist",
+		"lib": ["es2023", "dom"],
 		"strict": false,
 		"noUnusedParameters": false,
 		"noImplicitOverride": false,

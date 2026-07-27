@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useLicense } from '@rocket.chat/ui-client';
 import { useRole, useSetModal } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
@@ -12,8 +12,8 @@ export const useOutboundMessageUpsellModal = () => {
 	const license = useLicense();
 	const { data: hasModule = false } = useHasLicenseModule('outbound-messaging');
 
-	const close = useEffectEvent(() => setModal(null));
-	const open = useEffectEvent(() =>
+	const close = useStableCallback(() => setModal(null));
+	const open = useStableCallback(() =>
 		setModal(<OutboundMessageUpsellModal isCommunity={!license.data?.license} isAdmin={isAdmin} hasModule={hasModule} onClose={close} />),
 	);
 

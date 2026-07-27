@@ -1,8 +1,7 @@
 import { ResponsiveBar } from '@nivo/bar';
-import { Box, Flex, Skeleton, Tooltip } from '@rocket.chat/fuselage';
+import { Box, FlexContainer, FlexItem, Skeleton, Tooltip } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { differenceInDays, addDays, format } from 'date-fns';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -15,11 +14,11 @@ import { useFormatDate } from '../../../../hooks/useFormatDate';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 import { useNewUsers } from './useNewUsers';
 
-type NewUsersSectionProps = {
+export type NewUsersSectionProps = {
 	timezone: 'utc' | 'local';
 };
 
-const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
+const NewUsersSection = ({ timezone }: NewUsersSectionProps) => {
 	const [period, periodSelectorProps] = usePeriodSelectorState('last 7 days', 'last 30 days', 'last 90 days');
 	const periodLabel = usePeriodLabel(period);
 
@@ -39,7 +38,7 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 		const endDate = new Date(data.end);
 		const daysCount = differenceInDays(endDate, startDate) + 1;
 		const values = Array.from({ length: daysCount }, (_, i) => ({
-			date: format(addDays(startDate, i), 'yyyy-MM-dd'),
+			date: addDays(startDate, i).toISOString(),
 			newUsers: 0,
 		}));
 		for (const { day, users } of data.days) {
@@ -78,10 +77,10 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 					},
 				]}
 			/>
-			<Flex.Container>
+			<FlexContainer>
 				{values ? (
 					<Box style={{ height: 300 }}>
-						<Flex.Item align='stretch' grow={1} shrink={0}>
+						<FlexItem align='stretch' grow={1} shrink={0}>
 							<Box style={{ position: 'relative' }}>
 								<Box
 									style={{
@@ -151,14 +150,14 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 									/>
 								</Box>
 							</Box>
-						</Flex.Item>
+						</FlexItem>
 					</Box>
 				) : (
 					<Box>
 						<Skeleton variant='rect' height={240} />
 					</Box>
 				)}
-			</Flex.Container>
+			</FlexContainer>
 		</>
 	);
 };

@@ -9,6 +9,8 @@ import { retry } from './helpers/retry';
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials, apiUrl } from '../../data/api-data';
 import { followMessage, sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
+import { imgURL } from '../../data/interactions';
+import { mockServerHealthy, mockServerReset, mockServerSet } from '../../data/mock-server.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { addUserToRoom, createRoom, deleteRoom, getSubscriptionByRoomId } from '../../data/rooms.helper';
 import { password } from '../../data/user';
@@ -1261,14 +1263,61 @@ describe('[Chat]', () => {
 		});
 
 		describe('oembed', () => {
+			// the TEST_MODE oembed provider (server/services/messages/lib/oembed/providers.ts) resolves /video/ URLs through GET /oembed on the mock-server
+			const mockVideoUrl = (id: string) => `http://mock-server.dev:8080/video/${id}`;
+			const mockPageUrl = (id: string) => `http://mock-server.dev:8080/page/${id}`;
+			const mockOembedEndpoint = { method: 'GET', path: '/oembed' };
+			// the whole oembed pipeline runs against the local mock-server, so a fixed wait suffices — exceeding it means a CI perf problem worth surfacing
+			const oembedProcessingMs = 500;
+
+			const youtubeOembedResponse = {
+				title: 'Rocket.Chat Demo',
+				author_name: 'Rocket.Chat',
+				author_url: 'https://www.youtube.com/@RocketChatApp',
+				type: 'video',
+				height: 150,
+				width: 200,
+				version: '1.0',
+				provider_name: 'YouTube',
+				provider_url: 'https://www.youtube.com/',
+				thumbnail_height: 360,
+				thumbnail_width: 480,
+				thumbnail_url: 'https://i.ytimg.com/vi/T2v29gK8fP4/hqdefault.jpg',
+				html: '<iframe width="200" height="150" src="https://www.youtube.com/embed/T2v29gK8fP4?feature=oembed" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen title="Rocket.Chat Demo"></iframe>',
+			};
+
+			const spotifyOembedResponse = {
+				html: '<iframe style="border-radius: 12px" width="100%" height="152" title="Spotify Embed: Never Gonna Give You Up" frameborder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" src="https://open.spotify.com/embed/track/4cOdK2wGLETKBW3PvgPWqT?utm_source=oembed"></iframe>',
+				iframe_url: 'https://open.spotify.com/embed/track/4cOdK2wGLETKBW3PvgPWqT?utm_source=oembed',
+				width: 456,
+				height: 152,
+				version: '1.0',
+				provider_name: 'Spotify',
+				provider_url: 'https://spotify.com',
+				type: 'rich',
+				title: 'Never Gonna Give You Up',
+				thumbnail_url: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e0215ebbedaacef61af244262a8',
+				thumbnail_width: 300,
+				thumbnail_height: 300,
+			};
+
 			let ytEmbedMsgId: IMessage['_id'];
 			let imgUrlMsgId: IMessage['_id'];
+
+			before(async () => {
+				const healthy = await mockServerHealthy();
+				expect(healthy, 'mock-server is not reachable — ensure it is running').to.be.true;
+				await mockServerReset();
+			});
+
+			// programmed responses queue per key and an infinite (times: 0) entry never expires, so each test starts from a clean mock
+			afterEach(() => mockServerReset());
 
 			before(() =>
 				Promise.all([
 					updateSetting('API_EmbedIgnoredHosts', ''),
-					updateSetting('API_EmbedSafePorts', '80, 443, 3000'),
-					updateSetting('SSRF_Allowlist', '127.0.0.1:3000'),
+					updateSetting('API_EmbedSafePorts', '80, 443, 3000, 8080'),
+					updateSetting('SSRF_Allowlist', '127.0.0.1:3000, mock-server.dev'),
 				]),
 			);
 
@@ -1281,10 +1330,11 @@ describe('[Chat]', () => {
 			);
 
 			before(async () => {
+				await mockServerSet(mockOembedEndpoint.method, mockOembedEndpoint.path, youtubeOembedResponse);
 				const ytEmbedMsgPayload = {
 					_id: `id-${Date.now()}`,
 					rid: testChannel._id,
-					msg: 'https://www.youtube.com/watch?v=T2v29gK8fP4',
+					msg: mockVideoUrl('embed-max-width'),
 					emoji: ':smirk:',
 				};
 				const ytPostResponse = await request.post(api('chat.sendMessage')).set(credentials).send({ message: ytEmbedMsgPayload });
@@ -1359,7 +1409,7 @@ describe('[Chat]', () => {
 					.send({
 						message: {
 							rid: testChannel._id,
-							msg: 'https://www.youtube.com/watch?v=T2v29gK8fP4',
+							msg: mockVideoUrl('empty-preview-urls'),
 						},
 						previewUrls: [],
 					})
@@ -1388,6 +1438,9 @@ describe('[Chat]', () => {
 			});
 
 			it('should generate previews of chosen URL when the previewUrls array is provided', async () => {
+				const chosenUrl = mockPageUrl('chosen-preview');
+				await mockServerSet('GET', '/page/chosen-preview', '<html><head><title>Chosen Preview Page</title></head><body></body></html>');
+
 				let msgId;
 				await request
 					.post(api('chat.sendMessage'))
@@ -1395,9 +1448,9 @@ describe('[Chat]', () => {
 					.send({
 						message: {
 							rid: testChannel._id,
-							msg: 'https://www.youtube.com/watch?v=T2v29gK8fP4 https://www.rocket.chat/',
+							msg: `${mockVideoUrl('not-chosen-preview')} ${chosenUrl}`,
 						},
-						previewUrls: ['https://www.rocket.chat/'],
+						previewUrls: [chosenUrl],
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -1409,8 +1462,7 @@ describe('[Chat]', () => {
 						msgId = res.body.message._id;
 					});
 
-				// process is async now so wait for a sec
-				await sleep(1000);
+				await sleep(oembedProcessingMs);
 
 				await request
 					.get(api('chat.getMessage'))
@@ -1424,19 +1476,19 @@ describe('[Chat]', () => {
 						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.has.lengthOf(2);
 
 						expect(res.body.message.urls[0]).to.have.property('meta').that.is.an('object').that.is.empty;
-						expect(res.body.message.urls[1]).to.have.property('meta').that.is.an('object').that.is.not.empty;
+						expect(res.body.message.urls[1]).to.have.property('meta').to.have.property('pageTitle', 'Chosen Preview Page');
 					});
 			});
 
 			it('should not generate previews if the message contains more than five external URL', async () => {
 				let msgId;
 				const urls = [
-					'https://www.youtube.com/watch?v=no050HN4ojo',
-					'https://www.youtube.com/watch?v=9iaSd13mqXA',
-					'https://www.youtube.com/watch?v=MW_qsbgt1KQ',
-					'https://www.youtube.com/watch?v=hLF1XwH5rd4',
-					'https://www.youtube.com/watch?v=Eo-F9hRBbTk',
-					'https://www.youtube.com/watch?v=08ms3W7adFI',
+					mockVideoUrl('over-limit-1'),
+					mockVideoUrl('over-limit-2'),
+					mockVideoUrl('over-limit-3'),
+					mockVideoUrl('over-limit-4'),
+					mockVideoUrl('over-limit-5'),
+					mockVideoUrl('over-limit-6'),
 				];
 				await request
 					.post(api('chat.sendMessage'))
@@ -1471,6 +1523,116 @@ describe('[Chat]', () => {
 							expect(url).to.not.have.property('ignoreParse');
 							expect(url).to.have.property('meta').that.is.an('object').that.is.empty;
 						});
+					});
+			});
+
+			it('should embed the metadata of a rich oembed provider response', async () => {
+				await mockServerSet(mockOembedEndpoint.method, mockOembedEndpoint.path, spotifyOembedResponse);
+				const msg = mockVideoUrl('rich-provider');
+
+				let msgId;
+				await request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({ message: { rid: testChannel._id, msg } })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						msgId = res.body.message._id;
+					});
+
+				await sleep(oembedProcessingMs);
+
+				await request
+					.get(api('chat.getMessage'))
+					.set(credentials)
+					.query({
+						msgId,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.has.lengthOf(1);
+
+						const { meta } = res.body.message.urls[0];
+						expect(meta).to.have.property('oembedUrl', msg);
+						expect(meta).to.have.property('oembedTitle', 'Never Gonna Give You Up');
+						expect(meta).to.have.property('oembedType', 'rich');
+						expect(meta).to.have.property('oembedProviderName', 'Spotify');
+						expect(meta).to.have.property('oembedThumbnailUrl', spotifyOembedResponse.thumbnail_url);
+						expect(meta).to.have.property('oembedHtml').to.have.string('<iframe style="max-width: 100%;width:400px;height:225px"');
+						expect(meta, 'non-string oembed values must be dropped').to.not.have.any.keys(
+							'oembedWidth',
+							'oembedHeight',
+							'oembedThumbnailWidth',
+							'oembedThumbnailHeight',
+						);
+					});
+			});
+
+			it('should embed only the oembed source url when the provider response has no string values', async () => {
+				await mockServerSet(mockOembedEndpoint.method, mockOembedEndpoint.path, { status: 404, ok: false });
+				const msg = mockVideoUrl('no-string-values');
+
+				let msgId;
+				await request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({ message: { rid: testChannel._id, msg } })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						msgId = res.body.message._id;
+					});
+
+				await sleep(oembedProcessingMs);
+
+				await request
+					.get(api('chat.getMessage'))
+					.set(credentials)
+					.query({
+						msgId,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.has.lengthOf(1);
+
+						expect(res.body.message.urls[0]).to.have.property('meta').that.deep.equals({ oembedUrl: msg });
+					});
+			});
+
+			it('should not embed metadata when the oembed provider responds with an error', async () => {
+				await mockServerSet(mockOembedEndpoint.method, mockOembedEndpoint.path, {}, 500);
+
+				let msgId;
+				await request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({ message: { rid: testChannel._id, msg: mockVideoUrl('error-response') } })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						msgId = res.body.message._id;
+					});
+
+				await sleep(oembedProcessingMs);
+
+				await request
+					.get(api('chat.getMessage'))
+					.set(credentials)
+					.query({
+						msgId,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.has.lengthOf(1);
+
+						expect(res.body.message.urls[0]).to.have.property('meta').that.is.an('object').that.is.empty;
 					});
 			});
 		});
@@ -2338,6 +2500,79 @@ describe('[Chat]', () => {
 				.end(done);
 		});
 
+		describe('when deleting by fileId', () => {
+			const uploadFile = async (): Promise<string> => {
+				const { body } = await request
+					.post(api(`rooms.media/${testChannel._id}`))
+					.set(credentials)
+					.attach('file', imgURL)
+					.expect(200);
+				expect(body).to.have.property('success', true);
+				return body.file._id;
+			};
+
+			it('should delete the message associated with the provided fileId', async () => {
+				const fileId = await uploadFile();
+
+				let fileMsgId: string | undefined;
+				await request
+					.post(api(`rooms.mediaConfirm/${testChannel._id}/${fileId}`))
+					.set(credentials)
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						fileMsgId = res.body.message._id;
+					});
+
+				await request
+					.post(api('chat.delete'))
+					.set(credentials)
+					.send({ fileId })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				await request
+					.get(api('chat.getMessage'))
+					.set(credentials)
+					.query({ msgId: fileMsgId })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+					});
+			});
+
+			it('should fail when the uploaded file has no associated message', async () => {
+				const fileId = await uploadFile();
+
+				await request
+					.post(api('chat.delete'))
+					.set(credentials)
+					.send({ fileId })
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', `No message found with the file id: "${fileId}".`);
+					});
+			});
+
+			it('should fail when neither msgId/roomId nor fileId is provided', async () => {
+				await request
+					.post(api('chat.delete'))
+					.set(credentials)
+					.send({})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'invalid-params');
+					});
+			});
+		});
+
 		describe('when deleting a thread message', () => {
 			let otherUser: TestUser<IUser>;
 			let otherUserCredentials: Credentials;
@@ -2539,6 +2774,7 @@ describe('[Chat]', () => {
 			await sendMessage('msg1');
 			await sendMessage('msg1');
 			await sendMessage('msg1');
+			await sendMessage('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!');
 		});
 
 		it('should return a list of messages when execute successfully', (done) => {
@@ -2613,6 +2849,70 @@ describe('[Chat]', () => {
 					expect(res.body.messages.length).to.equal(0);
 				})
 				.end(done);
+		});
+
+		it('should return an empty array of messages with status 200 if the regexp starts with an invalid quantifier', async () => {
+			await request
+				.get(api('chat.search'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					searchText: '/*test/',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.deep.equal([]);
+				});
+		});
+
+		it('should return an empty array of messages with status 200 if the regexp has an unclosed parenthesis', async () => {
+			await request
+				.get(api('chat.search'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					searchText: '/(test/',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.deep.equal([]);
+				});
+		});
+
+		it('should return an empty array of messages with status 200 if the regexp has an unclosed character class', async () => {
+			await request
+				.get(api('chat.search'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					searchText: '/[a-z/',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.deep.equal([]);
+				});
+		});
+
+		it('should not cause catastrophic backtracking when using a malicious regexp', async () => {
+			await request
+				.get(api('chat.search'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+					searchText: '/(a+)+$/',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.deep.equal([]);
+				});
 		});
 	});
 

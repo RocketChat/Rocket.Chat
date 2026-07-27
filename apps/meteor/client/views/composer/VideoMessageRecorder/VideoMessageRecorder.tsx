@@ -1,7 +1,7 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, ButtonGroup, Button, Icon, PositionAnimated } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes, RefObject } from 'react';
 import { useRef, useEffect, useState } from 'react';
@@ -10,10 +10,10 @@ import { UserAction, USER_ACTIVITIES } from '../../../../app/ui/client/lib/UserA
 import { VideoRecorder, useVideoRecorderCameraStarted } from '../../../../app/ui/client/lib/recorderjs/videoRecorder';
 import { useChat } from '../../room/contexts/ChatContext';
 
-type VideoMessageRecorderProps = {
+export type VideoMessageRecorderProps = {
 	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
-	reference: RefObject<HTMLElement>;
+	reference: RefObject<HTMLElement | null>;
 } & Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
 
 const videoContainerClass = css`
@@ -94,7 +94,7 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 		stopVideoRecording(rid, tmid);
 	};
 
-	const handleCancel = useEffectEvent(() => {
+	const handleCancel = useStableCallback(() => {
 		VideoRecorder.stop();
 		chat?.composer?.setRecordingVideo(false);
 		setTime(undefined);
@@ -114,15 +114,15 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 	}, [dispatchToastMessage, handleCancel, t]);
 
 	return (
-		<PositionAnimated visible='visible' anchor={reference} placement='top-end'>
-			<Box role='dialog' aria-label={t('Video_record')} bg='light' padding={4} borderRadius={4} elevation='2'>
+		<PositionAnimated visible='visible' anchor={reference as RefObject<HTMLElement>} placement='top-end'>
+			<Box role='dialog' aria-label={t('Video_record')} backgroundColor='light' padding={4} borderRadius={4} elevation='2'>
 				<Box className={videoContainerClass} overflow='hidden' height={240} borderRadius={4}>
 					<video muted autoPlay playsInline ref={videoRef} width={320} height={240} />
 				</Box>
-				<Box mbs={4} display='flex' justifyContent='space-between'>
+				<Box marginBlockStart={4} display='flex' justifyContent='space-between'>
 					<Button aria-label={isRecording ? t('Stop_Recording') : t('Record')} small onClick={handleRecord}>
 						<Box is='span' display='flex' alignItems='center'>
-							<Icon size='x16' mie={time ? 4 : undefined} name={isRecording ? 'stop-unfilled' : 'rec'} />
+							<Icon size='x16' marginInlineEnd={time ? 4 : undefined} name={isRecording ? 'stop-unfilled' : 'rec'} />
 							{time && <span>{time}</span>}
 						</Box>
 					</Button>

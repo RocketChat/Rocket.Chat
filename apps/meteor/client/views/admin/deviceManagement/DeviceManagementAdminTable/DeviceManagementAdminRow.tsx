@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useMediaQuery, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useMediaQuery, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericMenu, GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
 import { useRoute } from '@rocket.chat/ui-contexts';
@@ -39,7 +39,7 @@ const DeviceManagementAdminRow = ({
 
 	const handleDeviceLogout = useDeviceLogout(_id, '/v1/sessions/logout');
 
-	const handleClick = useEffectEvent((): void => {
+	const handleClick = useStableCallback((): void => {
 		deviceManagementRouter.push({
 			context: 'info',
 			id: _id,

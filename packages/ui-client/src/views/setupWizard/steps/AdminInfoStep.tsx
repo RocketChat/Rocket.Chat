@@ -1,7 +1,7 @@
 import { AdminInfoPage } from '@rocket.chat/onboarding-ui';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useSetting, useVerifyPassword, usePasswordPolicy, usePasswordPolicyOptions } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
 import { useMemo } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 
@@ -12,9 +12,9 @@ const usernameBlackList = ['all', 'here', 'admin'].map(toRegExp);
 const hasBlockedName = (username: string): boolean =>
 	!!usernameBlackList.length && usernameBlackList.some((restrictedUsername) => restrictedUsername.test(escapeRegExp(username).trim()));
 
-const AdminInfoStep = (): ReactElement => {
+const AdminInfoStep = () => {
 	const { t, i18n } = useTranslation();
-	const regexpForUsernameValidation = useSetting('UTF8_User_Names_Validation');
+	const regexpForUsernameValidation = useSetting('UTF8_User_Names_Validation', '[0-9a-zA-Z-_.]+');
 	const usernameRegExp = new RegExp(`^${regexpForUsernameValidation}$`);
 
 	const { currentStep, validateEmail, registerAdminUser, maxSteps } = useSetupWizardContext();

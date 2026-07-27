@@ -15,6 +15,8 @@ declare module 'meteor/accounts-base' {
 			callback?: (error?: Error | Meteor.Error | Meteor.TypedError) => void,
 		): string;
 
+		function _expireTokens(oldestValidDate?: Date, userId?: string): Promise<void>;
+
 		function _bcryptRounds(): number;
 
 		function _getLoginToken(connectionId: string): string | undefined;

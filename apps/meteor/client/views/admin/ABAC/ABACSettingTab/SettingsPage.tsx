@@ -14,10 +14,11 @@ const SettingsPage = () => {
 	const pdpType = useSetting('ABAC_PDP_Type', 'local');
 
 	return (
-		<Box maxWidth='x600' w='full' alignSelf='center' overflow='auto' mb={24}>
+		<Box maxWidth='x600' width='full' alignSelf='center' overflow='auto' marginBlock={24}>
 			<FieldGroup>
 				<AbacEnabledToggle hasABAC={hasABAC} />
 				<SettingField settingId='ABAC_PDP_Type' />
+				{pdpType !== 'local' && <SettingField settingId='ABAC_Attribute_Store' />}
 				<SettingField settingId='ABAC_ShowAttributesInRooms' />
 				<SettingField settingId='Abac_Cache_Decision_Time_Seconds' />
 

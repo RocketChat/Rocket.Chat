@@ -1,5 +1,55 @@
 # @rocket.chat/mock-providers
 
+## 0.4.19-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [13b4a7b2dc203959b77b3b0c5f154d3e34fe2058, 4b57346a59b5c9433c25845c886be11af1bf71d4, 115dfe8f7e0ac788a2ef92c6ca298cf37b61b136, 376c9d862f63cb7dd4995842a23340e581056eee, b2b5edf5b37be3ee070290553f6aec42c39c98f6]:</summary>
+
+  - @rocket.chat/i18n@3.3.0-rc.0
+  - @rocket.chat/ui-contexts@33.0.0-rc.0
+  </details>
+
+## 0.4.18
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [6ae500ab8983b334d0df3e07925b610d0ff9d38c, 4319d3eda1df3cd45b8e2b7b2b193ae9798a9ade, 25722dbb970665c66d0acfee415650f96e52cd50, ff751747f8a0637888364bde42ae18ac92a38768]:</summary>
+
+  - @rocket.chat/i18n@3.2.0
+  - @rocket.chat/ui-contexts@32.0.0
+  </details>
+
+## 0.4.18-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [6ae500ab8983b334d0df3e07925b610d0ff9d38c, 4319d3eda1df3cd45b8e2b7b2b193ae9798a9ade, 25722dbb970665c66d0acfee415650f96e52cd50, ff751747f8a0637888364bde42ae18ac92a38768]:</summary>
+
+  - @rocket.chat/i18n@3.2.0-rc.0
+  - @rocket.chat/ui-contexts@32.0.0-rc.0
+  </details>
+
+## 0.4.17
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [cdb264fec803e234a6ad2000018b31d4b2074e99, ad7d42400ea36f1eb0aaf7cc3361c77fdabf9ebc, 4704bf81ca370f120af32185a7c55407a26f8514, d427b808c1f79d9d1baa05bb5b5ef805b6ef5f6d, ebc9babf55dd26613027c28dcacf77909116b342, fac64728505b312d5da786e92d3134450ce4a7c1, 12897e25d0dc25b7373f5264d38f38a5a7444257]:</summary>
+
+  - @rocket.chat/i18n@3.1.0
+  - @rocket.chat/ui-contexts@31.0.0
+  </details>
+
+## 0.4.17-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [cdb264fec803e234a6ad2000018b31d4b2074e99, ae9f740d6af20557eac61b4af902c868b4132b49, ad7d42400ea36f1eb0aaf7cc3361c77fdabf9ebc, 4704bf81ca370f120af32185a7c55407a26f8514, d427b808c1f79d9d1baa05bb5b5ef805b6ef5f6d, ebc9babf55dd26613027c28dcacf77909116b342, fac64728505b312d5da786e92d3134450ce4a7c1, 12897e25d0dc25b7373f5264d38f38a5a7444257]:</summary>
+
+  - @rocket.chat/i18n@3.1.0-rc.0
+  - @rocket.chat/ui-contexts@31.0.0-rc.0
+  </details>
+
 ## 0.4.16
 
 ### Patch Changes

@@ -8,10 +8,10 @@ import { MongoInternals } from 'meteor/mongo';
 import { WebApp } from 'meteor/webapp';
 import passport from 'passport';
 
-import type { ICachedSettings } from '../../app/settings/server/CachedSettings';
 import { configureOAuthServices } from '../lib/oauth/configureOAuthServices';
 import { createOAuthServiceConfig } from '../lib/oauth/createOAuthServiceConfig';
 import { getOAuthServices } from '../lib/oauth/getOAuthServices';
+import type { ICachedSettings } from '../settings/CachedSettings';
 
 const oAuthPaths = ['/oauth', '/_oauth'];
 
@@ -20,7 +20,7 @@ const { Router: router } = express;
 export const oAuthRouter = router();
 
 const oAuthApp = express();
-oAuthApp.set('trust proxy', true);
+oAuthApp.set('trust proxy', 1);
 
 export const configurePassport = (settings: ICachedSettings) => {
 	const { client } = MongoInternals.defaultRemoteCollectionDriver().mongo;
@@ -52,23 +52,30 @@ export const configurePassport = (settings: ICachedSettings) => {
 	oAuthApp.use(oAuthPaths, passport.session());
 	oAuthApp.use(oAuthPaths, bodyParser.urlencoded({ extended: true }));
 
-	const oauthRateLimiter = rateLimit({
-		windowMs: settings.get<number>('API_Enable_Rate_Limiter_Limit_Time_Default'),
-		max: settings.get<number>('API_Enable_Rate_Limiter_Limit_Calls_Default'),
-		skip: () =>
-			process.env.TEST_MODE === 'true' ||
-			process.env.TEST_MODE === 'api' ||
-			settings.get<boolean>('API_Enable_Rate_Limiter') !== true ||
-			(process.env.NODE_ENV === 'development' && settings.get<boolean>('API_Enable_Rate_Limiter_Dev') !== true),
-		handler: (_req, res) => {
-			res.status(429).json({
-				success: false,
-				error: 'Too many requests. Please try again later.',
-			});
-		},
+	const createOAuthRateLimiter = () =>
+		rateLimit({
+			windowMs: settings.get<number>('API_Enable_Rate_Limiter_Limit_Time_Default'),
+			max: settings.get<number>('API_Enable_Rate_Limiter_Limit_Calls_Default'),
+			skip: () =>
+				process.env.TEST_MODE === 'true' ||
+				process.env.TEST_MODE === 'api' ||
+				settings.get<boolean>('API_Enable_Rate_Limiter') !== true ||
+				(process.env.NODE_ENV === 'development' && settings.get<boolean>('API_Enable_Rate_Limiter_Dev') !== true),
+			handler: (_req, res) => {
+				res.status(429).json({
+					success: false,
+					error: 'Too many requests. Please try again later.',
+				});
+			},
+		});
+
+	let oauthRateLimiter = createOAuthRateLimiter();
+
+	settings.watchMultiple(['API_Enable_Rate_Limiter_Limit_Time_Default', 'API_Enable_Rate_Limiter_Limit_Calls_Default'], () => {
+		oauthRateLimiter = createOAuthRateLimiter();
 	});
 
-	oAuthRouter.use(oAuthPaths, oauthRateLimiter);
+	oAuthRouter.use(oAuthPaths, (req, res, next) => oauthRateLimiter(req, res, next));
 
 	// Register OAuth Routes
 	oAuthApp.use(oAuthRouter);
@@ -78,12 +85,16 @@ export const configurePassport = (settings: ICachedSettings) => {
 	});
 
 	passport.deserializeUser(async (id, done) => {
-		const user = await Users.findOneById(id as string);
+		const user = await Users.findOneById(id as string, { projection: { __rooms: 0 } });
 		// we don’t actually use this user later
 		done(null, user);
 	});
 
-	settings.watchByRegex(/^(Accounts_OAuth_)[a-z0-9_]+$/i, () => {
+	settings.watchByRegex(/^(Accounts_OAuth_[a-z0-9_]+|API_GitHub_Enterprise_URL)$/i, () => {
+		if (!settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow')) {
+			return;
+		}
+
 		const services = getOAuthServices(settings);
 		const oauthServiceConfigs = createOAuthServiceConfig(settings, services);
 		configureOAuthServices(oauthServiceConfigs, settings);

@@ -218,11 +218,16 @@ const ChatSyncThreadsListSchema = {
 
 export const isChatSyncThreadsListProps = ajv.compile<ChatSyncThreadsList>(ChatSyncThreadsListSchema);
 
-type ChatDelete = {
-	msgId: IMessage['_id'];
-	roomId: IRoom['_id'];
-	asUser?: boolean;
-};
+type ChatDelete =
+	| {
+			msgId: IMessage['_id'];
+			roomId: IRoom['_id'];
+			asUser?: boolean;
+	  }
+	| {
+			fileId: string;
+			asUser?: boolean;
+	  };
 
 const ChatDeleteSchema = {
 	type: 'object',
@@ -233,12 +238,15 @@ const ChatDeleteSchema = {
 		roomId: {
 			type: 'string',
 		},
+		fileId: {
+			type: 'string',
+		},
 		asUser: {
 			type: 'boolean',
 			nullable: true,
 		},
 	},
-	required: ['msgId', 'roomId'],
+	anyOf: [{ required: ['msgId', 'roomId'] }, { required: ['fileId'] }],
 	additionalProperties: false,
 };
 
@@ -675,6 +683,7 @@ export const isChatSyncThreadMessagesProps = ajvQuery.compile<ChatSyncThreadMess
 
 type ChatGetThreadMessages = PaginatedRequest<{
 	tmid: string;
+	aroundId?: string;
 }>;
 
 const ChatGetThreadMessagesSchema = {
@@ -683,6 +692,11 @@ const ChatGetThreadMessagesSchema = {
 		tmid: {
 			type: 'string',
 			minLength: 1,
+		},
+		aroundId: {
+			type: 'string',
+			minLength: 1,
+			nullable: true,
 		},
 		count: {
 			type: 'number',
@@ -922,9 +936,9 @@ export type ChatEndpoints = {
 	};
 	'/v1/chat.delete': {
 		POST: (params: ChatDelete) => {
-			_id: string;
-			ts: string;
-			message: Pick<IMessage, '_id' | 'rid' | 'u'>;
+			_id?: string;
+			ts?: string;
+			message?: Pick<IMessage, '_id' | 'rid' | 'u'>;
 		};
 	};
 	'/v1/chat.react': {

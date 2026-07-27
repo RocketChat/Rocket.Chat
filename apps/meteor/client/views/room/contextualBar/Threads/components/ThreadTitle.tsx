@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 
 import { useNormalizedThreadTitleHtml } from '../hooks/useNormalizedThreadTitleHtml';
 
-type ThreadTitleProps = {
+export type ThreadTitleProps = {
 	mainMessage: IThreadMainMessage;
 };
 

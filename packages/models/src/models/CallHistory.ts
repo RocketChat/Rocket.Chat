@@ -1,6 +1,7 @@
-import type { CallHistoryItem, IRegisterUser } from '@rocket.chat/core-typings';
-import type { ICallHistoryModel } from '@rocket.chat/model-typings';
-import type { Db, FindOptions, IndexDescription } from 'mongodb';
+import type { CallHistoryItem, IRegisterUser, IUser } from '@rocket.chat/core-typings';
+import type { FindPaginated, ICallHistoryModel } from '@rocket.chat/model-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { Db, Filter, FindCursor, FindOptions, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -45,5 +46,44 @@ export class CallHistoryRaw extends BaseRaw<CallHistoryItem> implements ICallHis
 				},
 			},
 		);
+	}
+
+	public findAllByUserIdAndSearchFilters(
+		uid: IUser['_id'],
+		filters: {
+			type?: CallHistoryItem['type'];
+			searchTerm?: string;
+			direction?: CallHistoryItem['direction'];
+			inStates?: CallHistoryItem['state'][];
+		},
+		options: FindOptions<CallHistoryItem>,
+	): FindPaginated<FindCursor<CallHistoryItem>> {
+		const { type, direction, inStates, searchTerm } = filters;
+
+		const textSearch = searchTerm ? { $regex: escapeRegExp(searchTerm), $options: 'i' } : null;
+
+		const query: Filter<CallHistoryItem> = {
+			uid,
+			...(type && { type }),
+			...(direction && { direction }),
+			...(inStates?.length && { state: { $in: inStates } }),
+			...(textSearch && {
+				$or: [
+					{
+						contactName: textSearch,
+					},
+					{
+						external: false,
+						contactUsername: textSearch,
+					},
+					{
+						external: true,
+						contactExtension: textSearch,
+					},
+				],
+			}),
+		};
+
+		return this.findPaginated(query, options);
 	}
 }

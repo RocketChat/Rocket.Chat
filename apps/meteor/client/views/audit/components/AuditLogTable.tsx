@@ -1,8 +1,8 @@
+import type { IAuditLog } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { GenericTable, GenericTableHeaderCell, GenericTableBody, GenericTableLoadingRow, GenericTableHeader } from '@rocket.chat/ui-client';
-import { useTranslation, useMethod } from '@rocket.chat/ui-contexts';
+import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useState } from 'react';
 
 import AuditLogEntry from './AuditLogEntry';
@@ -11,7 +11,7 @@ import { createEndOfToday, createStartOfToday } from '../utils/dateRange';
 import type { DateRange } from '../utils/dateRange';
 import DateRangePicker from './forms/DateRangePicker';
 
-const AuditLogTable = (): ReactElement => {
+const AuditLogTable = () => {
 	const t = useTranslation();
 
 	const [dateRange, setDateRange] = useState<DateRange>(() => ({
@@ -19,14 +19,31 @@ const AuditLogTable = (): ReactElement => {
 		end: createEndOfToday(),
 	}));
 
-	const getAudits = useMethod('auditGetAuditions');
+	const getAudits = useEndpoint('GET', '/v1/audit.auditions');
 
 	const { data, isLoading, isSuccess } = useQuery({
 		queryKey: ['audits', dateRange],
 
-		queryFn: async () => {
+		queryFn: async (): Promise<IAuditLog[]> => {
 			const { start, end } = dateRange;
-			return getAudits({ startDate: start ?? new Date(0), endDate: end ?? new Date() });
+			const { auditions } = await getAudits({
+				startDate: (start ?? new Date(0)).toISOString(),
+				endDate: (end ?? new Date()).toISOString(),
+			});
+			// the REST payload serializes Date fields to strings; deserialize back to Date so the entry
+			// components can keep their IAuditLog (Date) typings instead of force-casting per row
+			return auditions.map(
+				(audition): IAuditLog => ({
+					...audition,
+					ts: new Date(audition.ts),
+					_updatedAt: new Date(audition._updatedAt),
+					fields: {
+						...audition.fields,
+						startDate: audition.fields.startDate ? new Date(audition.fields.startDate) : undefined,
+						endDate: audition.fields.endDate ? new Date(audition.fields.endDate) : undefined,
+					},
+				}),
+			);
 		},
 		meta: {
 			apiErrorToastMessage: true,

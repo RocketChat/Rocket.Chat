@@ -11,7 +11,7 @@ import {
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import { useRoomToolbox } from '@rocket.chat/ui-contexts';
-import type { Dispatch, FormEventHandler, MouseEvent, ReactElement, SetStateAction } from 'react';
+import type { Dispatch, ChangeEventHandler, MouseEvent, SetStateAction } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
@@ -20,14 +20,14 @@ import Item from './Item';
 import WrapCannedResponse from './WrapCannedResponse';
 import { useCanCreateCannedResponse } from '../../hooks/useCanCreateCannedResponse';
 
-type CannedResponseListProps = {
+export type CannedResponseListProps = {
 	loadMoreItems: () => void;
 	cannedItems: (IOmnichannelCannedResponse & { departmentName?: ILivechatDepartment['name'] })[];
 	itemCount: number;
 	onClose: () => void;
 	options: [string, string][];
 	text: string;
-	setText: FormEventHandler<HTMLInputElement>;
+	setText: ChangeEventHandler<HTMLInputElement>;
 	type: string;
 	setType: Dispatch<SetStateAction<string>>;
 	isRoomOverMacLimit: boolean;
@@ -85,17 +85,17 @@ const CannedResponseList = ({
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 			<ContextualbarContent paddingInline={0} ref={ref}>
-				<Box display='flex' flexDirection='row' p={24} flexShrink={0}>
-					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
+				<Box display='flex' flexDirection='row' padding={24} flexShrink={0}>
+					<Box display='flex' flexDirection='row' flexGrow={1} marginInline='neg-x4'>
 						<Margins inline={4}>
 							<TextInput
 								placeholder={t('Search')}
 								value={text}
 								onChange={setText}
-								addon={<Icon name='magnifier' size='x20' />}
+								endAddon={<Icon name='magnifier' size='x20' />}
 								ref={inputRef}
 							/>
-							<Box w='x144'>
+							<Box width='x144'>
 								<Select aria-label={t('Type')} onChange={(value) => setType(String(value))} value={type} options={options} />
 							</Box>
 						</Margins>
@@ -111,7 +111,7 @@ const CannedResponseList = ({
 								endReached={loadMoreItems}
 								overscan={25}
 								data={cannedItems}
-								itemContent={(_index, data): ReactElement => (
+								itemContent={(_index, data) => (
 									<Item
 										data={data}
 										allowUse={!isRoomOverMacLimit}

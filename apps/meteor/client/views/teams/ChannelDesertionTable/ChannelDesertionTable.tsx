@@ -1,13 +1,12 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Box, CheckBox } from '@rocket.chat/fuselage';
 import { GenericTable, GenericTableHeaderCell, GenericTableHeader, GenericTableBody, useSort } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ChannelDesertionTableRow from './ChannelDesertionTableRow';
 
-type ChannelDesertionTableProps = {
+export type ChannelDesertionTableProps = {
 	lastOwnerWarning?: string;
 	rooms?: (Serialized<IRoom> & { isLastOwner?: boolean })[];
 	eligibleRoomsLength: number | undefined;
@@ -40,19 +39,29 @@ const ChannelDesertionTable = ({
 
 		const direction = sortDirection === 'asc' ? 1 : -1;
 
-		return rooms.sort((a, b) =>
-			// eslint-disable-next-line no-nested-ternary
-			a[sortBy] && b[sortBy] ? (a[sortBy]?.localeCompare(b[sortBy] ?? '') ?? 1) * direction : direction,
-		);
+		return rooms.toSorted((a, b) => {
+			const aValue = a[sortBy] ?? '';
+			const bValue = b[sortBy] ?? '';
+			if (!aValue && !bValue) {
+				return 0;
+			}
+			if (!aValue) {
+				return 1;
+			}
+			if (!bValue) {
+				return -1;
+			}
+			return aValue.localeCompare(bValue) * direction;
+		});
 	}, [rooms, sortBy, sortDirection]);
 
 	return (
-		<Box display='flex' flexDirection='column' height='x200' mbs={24}>
+		<Box display='flex' flexDirection='column' height='x200' marginBlockStart={24}>
 			<GenericTable fixed={false}>
 				<GenericTableHeader>
 					<GenericTableHeaderCell key='name' sort='name' onClick={setSort} direction={sortDirection} active={sortBy === 'name'}>
 						<CheckBox indeterminate={indeterminate} checked={checked} onChange={onToggleAllRooms} />
-						<Box mi={8}>{t('Channel_name')}</Box>
+						<Box marginInline={8}>{t('Channel_name')}</Box>
 					</GenericTableHeaderCell>
 					<GenericTableHeaderCell key='ts' sort='ts' onClick={setSort} direction={sortDirection} active={sortBy === 'ts'}>
 						<Box width='100%' textAlign='end'>
@@ -61,17 +70,15 @@ const ChannelDesertionTable = ({
 					</GenericTableHeaderCell>
 				</GenericTableHeader>
 				<GenericTableBody>
-					{results?.map(
-						(room, key): ReactElement => (
-							<ChannelDesertionTableRow
-								key={key}
-								room={room}
-								onChange={onChangeRoomSelection}
-								selected={'_id' in room && room._id ? !!selectedRooms[room._id] : false}
-								lastOwnerWarning={lastOwnerWarning}
-							/>
-						),
-					)}
+					{results?.map((room, key) => (
+						<ChannelDesertionTableRow
+							key={key}
+							room={room}
+							onChange={onChangeRoomSelection}
+							selected={'_id' in room && room._id ? !!selectedRooms[room._id] : false}
+							lastOwnerWarning={lastOwnerWarning}
+						/>
+					))}
 				</GenericTableBody>
 			</GenericTable>
 		</Box>

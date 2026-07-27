@@ -1,6 +1,3 @@
-import QueryString from 'querystring';
-import URL from 'url';
-
 import type { IE2EEMessage, IMessage, IRoom, IUser, IUploadWithUser, Serialized, IE2EEPinnedMessage } from '@rocket.chat/core-typings';
 import { isE2EEMessage, isEncryptedMessageContent } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
@@ -513,7 +510,7 @@ class E2E extends Emitter {
 	}
 
 	async requestSubscriptionKeys(): Promise<void> {
-		await sdk.call('e2e.requestSubscriptionKeys');
+		await sdk.rest.post('/v1/e2e.requestSubscriptionKeys');
 	}
 
 	async createRandomPassword(): Promise<string> {
@@ -524,6 +521,9 @@ class E2E extends Emitter {
 
 	openEnterE2EEPasswordModal(onEnterE2EEPassword: (password: string) => Promise<void>) {
 		const close = () => {
+			imperativeModal.close();
+		};
+		const dismiss = () => {
 			this.closeAlert();
 			imperativeModal.close();
 		};
@@ -534,12 +534,12 @@ class E2E extends Emitter {
 				onCancel: () => {
 					failedToDecodeKey = false;
 					dispatchToastMessage({ type: 'info', message: t('End_To_End_Encryption_Not_Enabled') });
-					close();
+					dismiss();
 				},
 				onConfirm: async (password) => {
 					await onEnterE2EEPassword(password);
 					dispatchToastMessage({ type: 'success', message: t('E2E_encryption_enabled') });
-					close();
+					dismiss();
 				},
 			},
 		});
@@ -728,15 +728,18 @@ class E2E extends Emitter {
 					return;
 				}
 
-				const urlObj = URL.parse(url);
-				// if the URL doesn't have query params (doesn't reference message) skip
-				if (!urlObj.query) {
+				// URLs come from regex-matched message content, so they may be malformed; skip those instead of throwing
+				let urlObj: URL;
+				try {
+					urlObj = new URL(url);
+				} catch (error) {
 					return;
 				}
 
-				const { msg: msgId } = QueryString.parse(urlObj.query);
+				const [msgId, ...extraMsgIds] = urlObj.searchParams.getAll('msg');
 
-				if (!msgId || Array.isArray(msgId)) {
+				// skip if the msg param is missing, empty, or duplicated
+				if (!msgId || extraMsgIds.length) {
 					return;
 				}
 

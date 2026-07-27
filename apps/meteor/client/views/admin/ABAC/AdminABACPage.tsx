@@ -1,5 +1,5 @@
 import { Box, Button, ButtonGroup, Callout } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { ContextualbarDialog, Page, PageContent, PageHeader } from '@rocket.chat/ui-client';
 import { useSetting, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { Trans, useTranslation } from 'react-i18next';
@@ -19,7 +19,7 @@ import { useExternalLink } from '../../../hooks/useExternalLink';
 import { useLdapSync } from '../../../hooks/useLdapSync';
 import { links } from '../../../lib/links';
 
-type AdminABACPageProps = {
+export type AdminABACPageProps = {
 	shouldShowWarning: boolean;
 };
 
@@ -37,7 +37,7 @@ const AdminABACPage = ({ shouldShowWarning }: AdminABACPageProps) => {
 	const isSyncDisabled = !ldapEnabled || !abacEnabled;
 	const tabPermissions = useABACTabPermissions();
 
-	const handleCloseContextualbar = useEffectEvent((): void => {
+	const handleCloseContextualbar = useStableCallback((): void => {
 		if (!context) {
 			return;
 		}
@@ -69,7 +69,7 @@ const AdminABACPage = ({ shouldShowWarning }: AdminABACPageProps) => {
 					</ButtonGroup>
 				</PageHeader>
 				{shouldShowWarning && (
-					<Box mi={24} mb={16}>
+					<Box marginInline={24} marginBlock={16}>
 						<Callout type='warning' title={t('ABAC_automatically_disabled_callout')}>
 							<Trans
 								i18nKey='ABAC_automatically_disabled_callout_description'

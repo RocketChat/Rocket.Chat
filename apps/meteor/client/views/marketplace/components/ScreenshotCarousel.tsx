@@ -1,8 +1,7 @@
 import type { AppScreenshot } from '@rocket.chat/core-typings';
 import { Box, IconButton } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 
-type ScreenshotCarouselProps = {
+export type ScreenshotCarouselProps = {
 	AppScreenshots: Array<AppScreenshot>;
 	setViewCarousel: (state: boolean) => void;
 	handleNextSlide: () => void;
@@ -20,8 +19,8 @@ const ScreenshotCarousel = ({
 	isFirstSlide,
 	isLastSlide,
 	currentSlideIndex,
-}: ScreenshotCarouselProps): ReactElement => {
-	const handleScreenshotRender = (): JSX.Element[] =>
+}: ScreenshotCarouselProps) => {
+	const handleScreenshotRender = () =>
 		AppScreenshots.map((currentScreenshot, index) => {
 			const isCurrentImageOnScreen = index === currentSlideIndex;
 			const screenshotWrapperStyle = isCurrentImageOnScreen
@@ -38,7 +37,15 @@ const ScreenshotCarousel = ({
 			return (
 				<Box style={screenshotWrapperStyle} key={currentScreenshot.id}>
 					{isCurrentImageOnScreen && (
-						<Box is='img' src={currentScreenshot.accessUrl} alt='Carousel image' maxWidth='x1200' maxHeight='x600' w='100%' height='100%' />
+						<Box
+							is='img'
+							src={currentScreenshot.accessUrl}
+							alt='Carousel image'
+							maxWidth='x1200'
+							maxHeight='x600'
+							width='100%'
+							height='100%'
+						/>
 					)}
 				</Box>
 			);
@@ -46,7 +53,7 @@ const ScreenshotCarousel = ({
 
 	return (
 		<>
-			<Box position='fixed' w='100%' h='100vh' bg='font-pure-black' opacity='0.7' marginBlock='-0.75px' zIndex='2' />
+			<Box position='fixed' width='100%' height='100vh' backgroundColor='font-pure-black' opacity='0.7' marginBlock='-0.75px' zIndex='2' />
 
 			{!isFirstSlide && (
 				<IconButton
@@ -79,7 +86,7 @@ const ScreenshotCarousel = ({
 				justifyContent='center'
 				alignItems='center'
 				zIndex='2'
-				mi={38}
+				marginInline={38}
 			>
 				{handleScreenshotRender()}
 			</Box>

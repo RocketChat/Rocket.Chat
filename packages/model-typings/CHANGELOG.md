@@ -1,5 +1,155 @@
 # @rocket.chat/model-typings
 
+## 2.4.0-rc.0
+
+### Minor Changes
+
+- ([#40351](https://github.com/RocketChat/Rocket.Chat/pull/40351)) Adds `current` field to `DeviceManagementSession` type and `currentLoginToken` parameter to `aggregateSessionsByUserId`, allowing the sessions endpoint to identify and flag the caller's active session.
+
+- ([#40721](https://github.com/RocketChat/Rocket.Chat/pull/40721)) ## Phishing-Resistant Multi-Factor Authentication
+
+  Introduces a more secure and reliable server-side OAuth authentication flow.
+
+  ### What’s New
+
+  - **Improved OAuth login security**
+    OAuth authentication now happens fully on the server, reducing the risk of token theft, phishing attacks, and client-side credential interception.
+  - **Built-in CSRF, state validation, and PKCE protection**
+    OAuth logins now include stronger protection against CSRF attacks, request tampering, and authorization code interception through secure state validation and PKCE support.
+  - **Improved two-step verification with OAuth logins**
+    Users with email or TOTP two-factor authentication enabled will now be asked to complete 2FA even when signing in with providers like Google, GitHub, GitLab, and others.
+  - **Improved mobile & desktop app login**
+    Mobile and desktop apps now support a smoother and more secure deep-link OAuth login flow.
+  - **A new setting to enable/disable new OAuth Flow**
+    Enable this new setting `Accounts_OAuth_Use_Modern_Flow` to use all of the above mentioned features.
+
+### Patch Changes
+
+- ([#41174](https://github.com/RocketChat/Rocket.Chat/pull/41174)) Fixes race conditions in several check-then-write database flows by collapsing them into single atomic operations: CAS login tokens can no longer be consumed by two concurrent logins, revoking a room invite no longer emits duplicate removal notifications, and deleting an integration now enforces the creator-only permission scope in the delete itself
+
+- ([#41169](https://github.com/RocketChat/Rocket.Chat/pull/41169)) Fixes a race condition that left messages permanently undecryptable ("incorrect encryption key") in rooms created with encryption enabled. When several members opened such a room at the same time, each client could independently generate and distribute a different group key. Establishing the room key is now atomic (first-write-wins) on the server, and a client that loses the race discards its locally generated key and adopts the established one instead of encrypting with a divergent key.
+
+- ([#41069](https://github.com/RocketChat/Rocket.Chat/pull/41069)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#41402](https://github.com/RocketChat/Rocket.Chat/pull/41402)) Fixes broken pagination on `rooms.bannedUsers` and on omnichannel department listing endpoints, which ignored the `offset` parameter and always returned results from the first page. Also reduces payload over-fetching on several endpoints that unintentionally loaded full documents (`rooms.hide`, private group lookups, direct email replies, omnichannel auto-transfer), and removes the permissive model query typings that allowed these invalid find options to compile unnoticed.
+
+- <details><summary>Updated dependencies [c7aff48a40a9a78924cbf27fd38930c536ee11e5, 5f92f9a27dca70d506d919351612bd32dc04241a, 13b4a7b2dc203959b77b3b0c5f154d3e34fe2058, 4b34bd62f2ac8d51efd2f48caea7092e87f30ce7, 1bf84cbe288df03fc622fbddbc0e434bda291c2f, 8d8cd01d0a4e6872ed543320c966efd52140e884, 3cd7db677a72521439b564dca7a4ca6d6c3a1c07, 615ae2bf74bba0402e0151d9c0b8e4f8dd04cb17]:</summary>
+
+  - @rocket.chat/core-typings@8.7.0-rc.0
+## 2.3.2
+
+### Patch Changes
+
+- ([#41243](https://github.com/RocketChat/Rocket.Chat/pull/41243) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- <details><summary>Updated dependencies [89ab75ca9121feb289a0f5744a526361364b8867]:</summary>
+
+  - @rocket.chat/core-typings@8.6.1
+  </details>
+
+## 2.3.1
+
+### Patch Changes
+
+- ([#40992](https://github.com/RocketChat/Rocket.Chat/pull/40992)) Fixes auto-translate not activating for users who set their language preference after joining rooms
+
+- ([#40274](https://github.com/RocketChat/Rocket.Chat/pull/40274)) Adds the backend foundation for a unified presence engine with a priority-based claim system (internal > manual > external), status expiration, and previous state restore.
+
+- <details><summary>Updated dependencies [7380c44c751eff9ee624d80bf26370411ffed78b, 6bd9182ae1d914a55e70866db43e8d2038f7be28, 6fa5378a940cbc809800b3c7d7c0639810bb0ab8, f63b965f82b0ddc590c633706f7c31c8c5251b53]:</summary>
+
+  - @rocket.chat/core-typings@8.6.0
+  </details>
+
+## 2.3.1-rc.0
+
+### Patch Changes
+
+- ([#40992](https://github.com/RocketChat/Rocket.Chat/pull/40992)) Fixes auto-translate not activating for users who set their language preference after joining rooms
+
+- ([#40274](https://github.com/RocketChat/Rocket.Chat/pull/40274)) Adds the backend foundation for a unified presence engine with a priority-based claim system (internal > manual > external), status expiration, and previous state restore.
+
+- <details><summary>Updated dependencies [7380c44c751eff9ee624d80bf26370411ffed78b, 6bd9182ae1d914a55e70866db43e8d2038f7be28, f63b965f82b0ddc590c633706f7c31c8c5251b53]:</summary>
+
+  - @rocket.chat/core-typings@8.6.0-rc.0
+  </details>
+
+## 2.3.0
+
+### Minor Changes
+
+- ([#39617](https://github.com/RocketChat/Rocket.Chat/pull/39617)) Adds new API endpoints `custom-sounds.create` and `custom-sounds.update` to manage custom sounds with strict file validation for size and specific MIME types to ensure system compatibility.
+
+### Patch Changes
+
+- ([#40524](https://github.com/RocketChat/Rocket.Chat/pull/40524)) Ensures OAuth tokens are cleaned up after user deactivation
+
+- ([#40496](https://github.com/RocketChat/Rocket.Chat/pull/40496)) Ensures that deactivated users have their login tokens cleaned up in users.deactivateidle
+
+- ([#40405](https://github.com/RocketChat/Rocket.Chat/pull/40405)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- <details><summary>Updated dependencies [12897e25d0dc25b7373f5264d38f38a5a7444257]:</summary>
+
+  - @rocket.chat/core-typings@8.5.0
+  </details>
+
+## 2.3.0-rc.0
+
+### Minor Changes
+
+- ([#39760](https://github.com/RocketChat/Rocket.Chat/pull/39760)) ## Phishing-Resistant Multi-Factor Authentication
+
+  Introduces a more secure and reliable server-side OAuth authentication flow.
+
+  ### What’s New
+
+  - **Improved OAuth login security**
+    OAuth authentication now happens fully on the server, reducing the risk of token theft, phishing attacks, and client-side credential interception.
+  - **Built-in CSRF, state validation, and PKCE protection**
+    OAuth logins now include stronger protection against CSRF attacks, request tampering, and authorization code interception through secure state validation and PKCE support.
+  - **Improved two-step verification with OAuth logins**
+    Users with email or TOTP two-factor authentication enabled will now be asked to complete 2FA even when signing in with providers like Google, GitHub, GitLab, and others.
+  - **Improved mobile & desktop app login**
+    Mobile and desktop apps now support a smoother and more secure deep-link OAuth login flow.
+
+- ([#39617](https://github.com/RocketChat/Rocket.Chat/pull/39617)) Adds new API endpoints `custom-sounds.create` and `custom-sounds.update` to manage custom sounds with strict file validation for size and specific MIME types to ensure system compatibility.
+
+### Patch Changes
+
+- ([#40524](https://github.com/RocketChat/Rocket.Chat/pull/40524)) Ensures OAuth tokens are cleaned up after user deactivation
+
+- ([#40496](https://github.com/RocketChat/Rocket.Chat/pull/40496)) Ensures that deactivated users have their login tokens cleaned up in users.deactivateidle
+
+- ([#40405](https://github.com/RocketChat/Rocket.Chat/pull/40405)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- <details><summary>Updated dependencies [ae9f740d6af20557eac61b4af902c868b4132b49, 12897e25d0dc25b7373f5264d38f38a5a7444257]:</summary>
+
+  - @rocket.chat/core-typings@8.5.0-rc.0
+  </details>
+
+## 2.2.2
+
+### Patch Changes
+
+- ([#40627](https://github.com/RocketChat/Rocket.Chat/pull/40627) by [@dionisio-bot](https://github.com/dionisio-bot)) Ensures OAuth tokens are cleaned up after user deactivation
+
+- ([#40559](https://github.com/RocketChat/Rocket.Chat/pull/40559) by [@dionisio-bot](https://github.com/dionisio-bot)) Ensures that deactivated users have their login tokens cleaned up in users.deactivateidle
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.4.2
+  </details>
+
+## 2.2.1
+
+### Patch Changes
+
+- ([#40410](https://github.com/RocketChat/Rocket.Chat/pull/40410) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- <details><summary>Updated dependencies [5b291c38600757482aaf261a02487abdf5f14007]:</summary>
+
+  - @rocket.chat/core-typings@8.4.1
+  </details>
+
 ## 2.2.0
 
 ### Minor Changes

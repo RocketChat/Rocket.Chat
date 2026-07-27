@@ -1,5 +1,65 @@
 # @rocket.chat/uikit-playground
 
+## 0.7.15-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c7aff48a40a9a78924cbf27fd38930c536ee11e5, 5f92f9a27dca70d506d919351612bd32dc04241a, 13b4a7b2dc203959b77b3b0c5f154d3e34fe2058, 4b34bd62f2ac8d51efd2f48caea7092e87f30ce7, 1bf84cbe288df03fc622fbddbc0e434bda291c2f, 8d8cd01d0a4e6872ed543320c966efd52140e884, 3cd7db677a72521439b564dca7a4ca6d6c3a1c07, 615ae2bf74bba0402e0151d9c0b8e4f8dd04cb17]:</summary>
+
+  - @rocket.chat/core-typings@8.7.0-rc.0
+  - @rocket.chat/fuselage-ui-kit@33.0.0-rc.0
+  - @rocket.chat/ui-contexts@33.0.0-rc.0
+  - @rocket.chat/ui-avatar@29.0.0-rc.0
+  </details>
+
+## 0.7.14
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [7380c44c751eff9ee624d80bf26370411ffed78b, 6bd9182ae1d914a55e70866db43e8d2038f7be28, 6fa5378a940cbc809800b3c7d7c0639810bb0ab8, f63b965f82b0ddc590c633706f7c31c8c5251b53]:</summary>
+
+  - @rocket.chat/core-typings@8.6.0
+  - @rocket.chat/fuselage-ui-kit@32.0.0
+  - @rocket.chat/ui-avatar@28.0.0
+  - @rocket.chat/ui-contexts@32.0.0
+  </details>
+
+## 0.7.14-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [7380c44c751eff9ee624d80bf26370411ffed78b, 6bd9182ae1d914a55e70866db43e8d2038f7be28, f63b965f82b0ddc590c633706f7c31c8c5251b53]:</summary>
+
+  - @rocket.chat/core-typings@8.6.0-rc.0
+  - @rocket.chat/ui-contexts@32.0.0-rc.0
+  - @rocket.chat/fuselage-ui-kit@32.0.0-rc.0
+  - @rocket.chat/ui-avatar@28.0.0-rc.0
+  </details>
+
+## 0.7.13
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [12897e25d0dc25b7373f5264d38f38a5a7444257]:</summary>
+
+  - @rocket.chat/core-typings@8.5.0
+  - @rocket.chat/fuselage-ui-kit@31.0.0
+  - @rocket.chat/ui-avatar@27.0.0
+  - @rocket.chat/ui-contexts@31.0.0
+  </details>
+
+## 0.7.13-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ae9f740d6af20557eac61b4af902c868b4132b49, 12897e25d0dc25b7373f5264d38f38a5a7444257]:</summary>
+
+  - @rocket.chat/core-typings@8.5.0-rc.0
+  - @rocket.chat/fuselage-ui-kit@31.0.0-rc.0
+  - @rocket.chat/ui-contexts@31.0.0-rc.0
+  - @rocket.chat/ui-avatar@27.0.0-rc.0
+  </details>
+
 ## 0.7.12
 
 ### Patch Changes

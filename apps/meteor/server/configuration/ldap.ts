@@ -1,8 +1,8 @@
 import { LDAP } from '@rocket.chat/core-services';
 import { Accounts } from 'meteor/accounts-base';
 
-import type { ICachedSettings } from '../../app/settings/server/CachedSettings';
 import { callbacks } from '../lib/callbacks';
+import type { ICachedSettings } from '../settings/CachedSettings';
 
 export async function configureLDAP(settings: ICachedSettings): Promise<void> {
 	// Register ldap login handler

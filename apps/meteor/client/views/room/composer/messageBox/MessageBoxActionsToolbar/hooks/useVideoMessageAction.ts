@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo } from 'react';
@@ -40,7 +40,7 @@ export const useVideoMessageAction = (disabled: boolean): GenericMenuItemProps =
 		}
 	};
 
-	const handleDenyVideo = useEffectEvent((isDenied: boolean) => {
+	const handleDenyVideo = useStableCallback((isDenied: boolean) => {
 		if (isDenied) {
 			chat?.composer?.setRecordingVideo(false);
 		}

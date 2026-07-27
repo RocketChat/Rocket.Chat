@@ -1,6 +1,5 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
-import { getBaseURI, isExternal } from '@rocket.chat/ui-client/dist/helpers/getBaseURI';
-import type { ReactElement } from 'react';
+import { getBaseURI, isExternal } from '@rocket.chat/ui-client';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -10,12 +9,12 @@ import PlainSpan from './PlainSpan';
 import StrikeSpan from './StrikeSpan';
 import { sanitizeUrl } from './sanitizeUrl';
 
-type LinkSpanProps = {
+export type LinkSpanProps = {
 	href: string;
 	label: MessageParser.Markup | MessageParser.Markup[];
 };
 
-const LinkSpan = ({ href, label }: LinkSpanProps): ReactElement => {
+const LinkSpan = ({ href, label }: LinkSpanProps) => {
 	// Should sanitize 'href' if any of the insecure prefixes are present - see DSK-34 on Jira
 	const sanitizedHref = sanitizeUrl(href);
 

@@ -7,6 +7,7 @@ import type {
 	AbacAuditServerEventKey,
 	AbacAttributeDefinitionChangeType,
 	AbacAuditReason,
+	AbacAttributeStoreType,
 	AbacPdpType,
 	MinimalRoom,
 	MinimalUser,
@@ -147,5 +148,8 @@ export const Audit = {
 			},
 			{ type: 'system' },
 		);
+	},
+	attributeStoreSwitched: async (from: AbacAttributeStoreType, to: AbacAttributeStoreType, roomsAffected: number) => {
+		return audit('abac.attribute.store.switched', { from, to, reason: 'attribute-store-switch', roomsAffected }, { type: 'system' });
 	},
 };

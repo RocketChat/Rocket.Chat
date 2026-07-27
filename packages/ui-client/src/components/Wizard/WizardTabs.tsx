@@ -3,7 +3,7 @@ import { Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { useWizardContext } from './useWizardContext';
 import { useWizardSteps } from './useWizardSteps';
 
-type WizardTabsProps = {
+export type WizardTabsProps = {
 	ordered?: boolean;
 };
 

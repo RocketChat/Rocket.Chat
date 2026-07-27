@@ -2,14 +2,15 @@ import type { IThreadMainMessage } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Palette } from '@rocket.chat/fuselage';
 import { useSetting, useUserId } from '@rocket.chat/ui-contexts';
-import type { MouseEvent, ReactElement } from 'react';
+import type { MouseEvent } from 'react';
 import { useCallback, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import ThreadListMessage from './ThreadListMessage';
 import { useDecryptedMessage } from '../../../../../hooks/useDecryptedMessage';
 import { normalizeThreadMessage } from '../../../../../lib/normalizeThreadMessage';
 
-type ThreadListItemProps = {
+export type ThreadListItemProps = {
 	thread: IThreadMainMessage;
 	unread: string[];
 	unreadUser: string[];
@@ -17,10 +18,11 @@ type ThreadListItemProps = {
 	onClick: (tmid: IThreadMainMessage['_id']) => void;
 };
 
-const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, onClick }: ThreadListItemProps): ReactElement => {
+const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, onClick }: ThreadListItemProps) => {
+	const { t } = useTranslation();
 	const uid = useUserId();
 	const decryptedMsg = useDecryptedMessage(thread);
-	const msg = normalizeThreadMessage({ ...thread, msg: decryptedMsg });
+	const msg = normalizeThreadMessage({ ...thread, msg: decryptedMsg }, t);
 
 	const { name = thread.u.username } = thread.u;
 

@@ -7,6 +7,7 @@ export * from './useFeaturePreviewList';
 export * from './useGoToDirectMessage';
 export * from './useLicense';
 export * from './usePreferenceFeaturePreviewList';
+export * from './useRoomRoute';
 export * from './useThemeMode';
 export * from './useUserDisplayName';
 export * from './useValidatePassword';

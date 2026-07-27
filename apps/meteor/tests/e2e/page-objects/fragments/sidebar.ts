@@ -94,7 +94,7 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	getCollapseGroupByName(name: string): Locator {
-		return this.channelsList.getByRole('button').filter({ has: this.page.getByRole('heading', { name, exact: true }) });
+		return this.root.getByRole('button').filter({ has: this.page.getByRole('heading', { name, exact: true }) });
 	}
 
 	getItemUnreadBadge(item: Locator): Locator {
@@ -179,10 +179,6 @@ export class OmnichannelSidebar extends Sidebar {
 
 	get linkPriorities(): Locator {
 		return this.root.locator('a[href="/omnichannel/priorities"]');
-	}
-
-	get linkMonitors(): Locator {
-		return this.root.locator('a[href="/omnichannel/monitors"]');
 	}
 
 	get linkBusinessHours(): Locator {

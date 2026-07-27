@@ -16,6 +16,7 @@ import type {
 import type { IClientMediaCall, CallActorType, CallContact, CallFeature, AnyMediaCallData } from '../definition/call';
 import type { IMediaSignalLogger } from '../definition/logger';
 import { SessionRegistration } from './components/SessionRegistration';
+import { isSameDeviceId } from './utils/isSameDeviceId';
 
 export type MediaSignalingEvents = {
 	sessionStateChange: void;
@@ -60,7 +61,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	private inputTrack: MediaStreamTrack | null;
 
-	private updatingInputTrack: boolean;
+	private switchingInputTrack: boolean;
 
 	private deviceId: ConstrainDOMString | null;
 
@@ -76,6 +77,10 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	private registration: SessionRegistration;
 
+	private _micless: boolean = false;
+
+	private shouldMuteMiclessCall = false;
+
 	public get sessionId(): string {
 		return this._sessionId;
 	}
@@ -88,6 +93,22 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		return this.registration.registered;
 	}
 
+	// FIXME: This state is controlled outside of this class. MediaSignalingSession should handle this fallback in another way so this information doesn't depend on the consumer
+	// FIXME: Consumers can still unmute the call even when this is set to true. That behaviour should be guarded at the call level to avoid representing incorrect states.
+	/* micless: used by the consumer to identify when a "fake stream" was used due to inability to retrieve a proper device. When set to true will mute the call once when it starts */
+	public set micless(micless: boolean) {
+		if (micless) {
+			this.shouldMuteMiclessCall = true;
+		} else {
+			this.shouldMuteMiclessCall = false;
+		}
+		this._micless = micless;
+	}
+
+	public get micless() {
+		return this._micless;
+	}
+
 	constructor(private config: MediaSignalingSessionConfig) {
 		super();
 		this._userId = config.userId;
@@ -96,7 +117,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		this.knownCalls = new Map<string, ClientMediaCall>();
 		this.ignoredCalls = new Set<string>();
 		this.inputTrack = null;
-		this.updatingInputTrack = false;
+		this.switchingInputTrack = false;
 		this.deviceId = null;
 		this.currentDeviceId = null;
 		this.callsToGetUserMedia = 0;
@@ -173,7 +194,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		let pendingCall: ClientMediaCall | null = null;
 
 		for (const call of this.knownCalls.values()) {
-			if (call.state === 'hangup' || call.ignored) {
+			if (call.state === 'hangup' || call.ignored || !call.initialized) {
 				continue;
 			}
 			if (skipLocal && !call.confirmed) {
@@ -238,13 +259,18 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		await call.processSignal(signal, oldCall);
 	}
 
-	public async setDeviceId(deviceId: ConstrainDOMString | null): Promise<void> {
+	public async setDeviceId(deviceId: ConstrainDOMString | null, force?: boolean): Promise<void> {
 		this.deviceId = deviceId;
+
+		if (this.switchingInputTrack) {
+			this.config.logger?.warn('Audio Device was changed while the input track was being actively switched.');
+		}
+
 		// do nothing if:
 		// 1. doesn't have any input track yet
-		// 2. it's the same device id
+		// 2. it's the same device id (force flag bypasses this)
 		// 3. has no restriction on which device to use
-		if (!this.inputTrack || deviceId === this.currentDeviceId || !deviceId) {
+		if (!this.inputTrack || !deviceId || (isSameDeviceId(deviceId, this.currentDeviceId) && !force)) {
 			return;
 		}
 
@@ -430,40 +456,81 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		}
 	}
 
-	private requestInputTrackUpdate(): void {
-		if (this.updatingInputTrack || this.callsToGetUserMedia > 0) {
+	public requestInputTrackUpdate(): void {
+		// Don't do anything if we don't need to switch the track now
+		// This extra check here ensures that requestInputTrackUpdate can be called multiple times even though switchInputTrack can't
+		if (!this.shouldSwitchInputTrack()) {
 			return;
 		}
 
-		this.updateInputTrack().catch(() => null);
+		this.switchInputTrack().catch(() => null);
 	}
 
-	private async updateInputTrack(): Promise<void> {
-		this.config.logger?.debug('MediaSignalingSession.updatingInputTrack', this.callsToGetUserMedia);
-		this.updatingInputTrack = true;
+	/**
+	 * Switch ON/OFF the use of an audio input track
+	 * If there's one already in use, remove it; Otherwise, request and use a new one.
+	 * This function assumes the current state needs to change and doesn't check anything before starting the switch process
+	 * Switching OFF is straightforward: the current track is removed and stopped
+	 * Switching ON is a multi-step process:
+	 * 1. We request a new track from the media stream factory
+	 * 2. Once the media stream factory returns a valid track, we double check that we still need it
+	 * 2.1. If the track is still needed, we set it to all active calls
+	 * 2.2. If the track is no longer needed by then, we stop it and keep no reference to it
+	 *
+	 * The track state only changes by the end of the whole process, so there's no point in calling this function twice and we guard against it --
+	 * but we don't guard against external changes to the track (for example, calling setDeviceId will also change the track state)
+	 * */
+	private async switchInputTrack(): Promise<void> {
+		this.config.logger?.debug('MediaSignalingSession.switchInputTrack', this.callsToGetUserMedia);
+
+		if (this.switchingInputTrack) {
+			this.config.logger?.warn('MediaSignalingSession.switchInputTrack', 'Input Track Switcher was called twice');
+			return;
+		}
+		if (!this.shouldSwitchInputTrack()) {
+			this.config.logger?.warn('MediaSignalingSession.switchInputTrack', 'Input Track Switcher was called but is no longer needed');
+			return;
+		}
+
+		this.switchingInputTrack = true;
 
 		try {
 			if (this.inputTrack) {
-				await this.maybeStopInputTrack();
+				await this.setInputTrack(null);
 				return;
 			}
 
-			await this.maybeStartInputTrack();
+			await this.startInputTrack();
 		} finally {
-			this.updatingInputTrack = false;
-			this.config.logger?.debug('MediaSignalingSession.updatingInputTrack.finally', this.callsToGetUserMedia);
+			this.switchingInputTrack = false;
+			this.config.logger?.debug('MediaSignalingSession.switchInputTrack.finally', this.callsToGetUserMedia);
 		}
 	}
 
-	private async maybeStartInputTrack(): Promise<void> {
-		this.config.logger?.debug('MediaSignalingSession.maybeStartInputTrack');
-		for (const call of this.knownCalls.values()) {
-			if (!call.needsInputTrack()) {
-				continue;
-			}
-
-			return this.startInputTrack();
+	private shouldStartInputTrack(): boolean {
+		if (this.inputTrack) {
+			return false;
 		}
+
+		if (this.callsToGetUserMedia > 0) {
+			return false;
+		}
+
+		for (const call of this.knownCalls.values()) {
+			if (call.needsInputTrack()) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private shouldSwitchInputTrack(): boolean {
+		if (this.inputTrack) {
+			return !this.mayNeedInputTrack();
+		}
+
+		return this.shouldStartInputTrack();
 	}
 
 	private getAudioConstraints(): boolean | MediaTrackConstraints {
@@ -476,10 +543,9 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	private async startInputTrack(): Promise<void> {
 		this.config.logger?.debug('MediaSignalingSession.startInputTrack', this.callsToGetUserMedia);
-
 		this.currentDeviceId = this.deviceId;
 
-		let userMedia: MediaStream | null = null;
+		let userMedia: MediaStream | null;
 		this.callsToGetUserMedia++;
 		try {
 			userMedia = await this.config.mediaStreamFactory({ audio: this.getAudioConstraints() }).catch(() => null);
@@ -487,12 +553,12 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			this.callsToGetUserMedia--;
 		}
 
-		this.config.logger?.debug('MediaSignalingSession.startInputTrack.done', this.callsToGetUserMedia);
-
 		// If there's multiple simultaneous attempts to get the track, only process the output of the last one
 		if (this.callsToGetUserMedia > 0) {
+			this.config.logger?.debug('MediaSignalingSession.startInputTrack.skipped', this.callsToGetUserMedia);
 			return;
 		}
+		this.config.logger?.debug('MediaSignalingSession.startInputTrack.done', this.callsToGetUserMedia);
 
 		if (!userMedia) {
 			return this.hangupCallsThatNeedInput();
@@ -543,15 +609,6 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		}
 
 		return false;
-	}
-
-	private async maybeStopInputTrack(): Promise<void> {
-		this.config.logger?.debug('MediaSignalingSession.maybeStopInputTrack');
-		if (this.mayNeedInputTrack()) {
-			return;
-		}
-
-		await this.setInputTrack(null);
 	}
 
 	private async setScreenVideoTrack(newVideoTrack: MediaStreamTrack | null, call: ClientMediaCall): Promise<void> {
@@ -727,6 +784,12 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 		this.emit('sessionStateChange');
 		this.requestInputTrackUpdate();
+		if (mainCall && this.shouldMuteMiclessCall) {
+			this.shouldMuteMiclessCall = false;
+			if (!mainCall.muted) {
+				mainCall.setMuted(true);
+			}
+		}
 
 		if (hadCall && !hasCall) {
 			this.emit('endedCall');

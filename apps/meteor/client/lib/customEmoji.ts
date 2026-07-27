@@ -45,7 +45,12 @@ export const updateEmojiCustom = (emojiData: IEmoji) => {
 		emoji.packages.emojiCustom.emojisByCategory.rocket.push(`${emojiData.name}`);
 		emoji.packages.emojiCustom.list?.push(`:${emojiData.name}:`);
 	}
-	emoji.list[`:${emojiData.name}:`] = Object.assign({ emojiPackage: 'emojiCustom' }, emoji.list[`:${emojiData.name}:`], emojiData);
+	// Don't inherit fields from a native emoji being overridden (e.g. its unicode), or the pick would output the native emoji
+	// TODO: Fix the IEmoji type and standardize the emoji packs types
+	emoji.list[`:${emojiData.name}:`] = {
+		...emojiData,
+		emojiPackage: 'emojiCustom',
+	} as unknown as (typeof emoji.list)[keyof typeof emoji.list];
 	if (currentAliases) {
 		for (const alias of emojiData.aliases) {
 			emoji.packages.emojiCustom.list?.push(`:${alias}:`);
@@ -119,7 +124,7 @@ export const customRender = (html: string) => {
 			dataCheck = emoji.list[`:${emojiAlias}:`];
 		}
 
-		return `<span class="emoji" style="background-image:url(${getEmojiUrlFromName(
+		return `<span class="emoji emoji--custom" style="background-image:url(${getEmojiUrlFromName(
 			emojiAlias,
 			dataCheck.extension!,
 			dataCheck.etag,

@@ -2,7 +2,7 @@
 
 exports[`renders should render a modal without crashing 1`] = `
 <dialog
-  aria-labelledby=":r0:-title"
+  aria-labelledby="_r_0_-title"
   aria-modal="true"
   class="rcx-box rcx-box--full rcx-modal"
   open=""
@@ -31,7 +31,7 @@ exports[`renders should render a modal without crashing 1`] = `
         >
           <h2
             class="rcx-box rcx-box--full rcx-modal__title"
-            id=":r0:-title"
+            id="_r_0_-title"
           >
             Modal
           </h2>

@@ -76,7 +76,7 @@ export class TestInfastructureSetup {
 	private runtimeManager: AppRuntimeManager;
 
 	constructor() {
-		this.appStorage = TestsAppStorage.getInstance();
+		this.appStorage = new TestsAppStorage();
 		this.logStorage = new TestsAppLogStorage();
 		this.bridges = new TestsAppBridges();
 		this.sourceStorage = new TestSourceStorage();

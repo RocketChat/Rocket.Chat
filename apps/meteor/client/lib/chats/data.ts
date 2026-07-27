@@ -274,7 +274,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	const isSubscribedToRoom = async (): Promise<boolean> => !!Subscriptions.state.find((record) => record.rid === rid);
 
 	const joinRoom = async (): Promise<void> => {
-		await sdk.call('joinRoom', rid);
+		await sdk.rest.post('/v1/rooms.join', { roomId: rid });
 	};
 
 	const findDiscussionByID = async (drid: IRoom['_id']): Promise<IRoom | undefined> =>

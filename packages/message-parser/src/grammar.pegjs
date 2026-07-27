@@ -14,6 +14,7 @@
     image,
     inlineCode,
     inlineKatex,
+    horizontalRule,
     italic,
     katex,
     lineBreak,
@@ -30,6 +31,7 @@
     spoiler,
     spoilerBlock,
     strike,
+    table,
     task,
     tasks,
     unorderedList,
@@ -57,6 +59,8 @@ Blocks
   = Blockquote
   / BlockSpoiler
   / Code
+  / HorizontalRule
+  / Table
   / Heading
   / Tasks
   / OrderedList
@@ -86,6 +90,37 @@ BlockquoteLine
  */
 BlockSpoiler = "||" EndOfLine first:(&(! "||") @Paragraph) rest:(&(! "||") @Paragraph)* EndOfLine? "||" { return spoilerBlock([first, ...rest]); }
 
+/**
+ *
+ * Table (GFM)
+ * e.g:
+ * | Header 1 | Header 2 |
+ * | -------- | :------: |
+ * | Cell 1   | Cell 2   |
+ *
+ * v1 requires a leading and trailing pipe on every row. Alignment comes from
+ * the delimiter row: `:---` left, `:--:` center, `---:` right, `---` none.
+ * A literal pipe inside a cell must be escaped as `\|`.
+ */
+Table = header:TableRowLine aligns:TableDelimiterRow body:TableRowLine* { return table(header, aligns, body, [range().start, range().end]); }
+
+TableRowLine = "|" cells:(@TableCell "|")+ EndOfLine? { return cells; }
+
+TableCell = items:TableCellItem* { return reducePlainTexts(items); }
+
+TableCellItem
+  = "\\|" { return plain('|'); }
+  / !"|" !EndOfLine @(InlineItemPattern / Any)
+
+TableDelimiterRow = "|" aligns:(@TableDelimiterCell "|")+ EndOfLine? { return aligns; }
+
+TableDelimiterCell = [ \t]* left:":"? "-"+ right:":"? [ \t]* {
+    if (left && right) { return 'center'; }
+    if (right) { return 'right'; }
+    if (left) { return 'left'; }
+    return undefined;
+  }
+
 // <t:1630360800:?{format}>
 // <t:2025-07-22T10:00:00.000Z?:?{format}>
 // <t:2025-07-22T10:00:00:?{format}>
@@ -109,7 +144,7 @@ ISO8601Date = year:$(Digit |4|) "-" month:$(Digit |2|) "-" day:$(Digit |2|) "T" 
 ISO8601DateWithoutMilliseconds = year:$(Digit |4|) "-" month:$(Digit |2|) "-" day:$(Digit |2|) "T" hours:$(Digit |2|) ":" minutes:$(Digit |2|) ":" seconds:$(Digit |2|) tz:Timezone? { return timestampFromIsoTime({ year, month, day, hours, minutes, seconds, timezone: tz }); }
 
 
-TimestampRules = "<t:" date:(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ":" format:TimestampType ">" { return timestamp(date, format); } / "<t:" date:(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ">" { return timestamp(date); }
+TimestampRules = "<t:" date:(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ":" format:TimestampType ">" { return timestamp(date, format, [range().start, range().end]); } / "<t:" date:(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ">" { return timestamp(date, undefined, [range().start, range().end]); }
 
 /**
  *
@@ -128,8 +163,9 @@ CodeLine
   / "\n" chunk:CodeChunk { return codeLine(chunk); }
   / "\n" !"```" { return codeLine(plain('')); }
 
-// Charclass avoids per-char lookahead; never consume start of "```"
-CodeChunkChar = [^\r\n`] / "`" [^`\r\n] / "`" "`" [^`\r\n]
+// Charclass avoids per-char lookahead; never consume start of "```".
+// Trailing 1-2 backticks before a line end (or EOF) are content, not a fence.
+CodeChunkChar = [^\r\n`] / "`" [^`\r\n] / "`" "`" [^`\r\n] / "`" "`" &("\r" / "\n" / !.) / "`" &("\r" / "\n" / !.)
 CodeChunk = text:$(CodeChunkChar)+ { return plain(text); }
 
 /**
@@ -238,6 +274,23 @@ KatexInlineEnd
  *
 */
 LineBreak = Space* EndOfLine { return lineBreak(); }
+
+/**
+ *
+ * Horizontal Rule (thematic break)
+ * e.g: ---, ----------
+ *
+ * A line made up of 3+ contiguous dashes, with nothing else on the line
+ * (leading/trailing spaces allowed). Only `-` is accepted: CommonMark also
+ * allows `*` and `_`, but those collide with emphasis and with censored words
+ * (bad-words masks a term as a run of `*`), so a bare `***` / `_______` line
+ * stays as text/emphasis instead of turning into a divider.
+ *
+*/
+HorizontalRule = [ \t]* loc:HorizontalRuleMarkers [ \t]* (EndOfLine / !.) { return horizontalRule(loc); }
+
+HorizontalRuleMarkers
+  = "-" |3..| { return [range().start, range().end]; }
 
 /**
  *
@@ -741,23 +794,12 @@ EmoticonBackslash
 
 /* Unicode emojis */
 UnicodeEmoji
-  = UnicodeEmojiEmoticon
+  = UnicodeEmojiTagSequence
   / $(
-    UnicodeEmojiSupplementalSymbolsAndPictographs
-      (
-        UnicodeEmojiMiscellaneousSymbolsAndPictographs
-          ([\u200D] UnicodeEmojiMiscellaneousSymbolsAndPictographs)*
-      )?
+    (UnicodeEmojiZwjComponent [\u200D])*
+    UnicodeEmojiZwjComponent
   )
-  / $(
-    (
-        UnicodeEmojiMiscellaneousSymbolsAndPictographs
-          UnicodeEmojiMiscellaneousSymbolsAndPictographsFitzpatrickModifiers?
-          [\u200D]
-      )*
-      UnicodeEmojiMiscellaneousSymbolsAndPictographs
-      UnicodeEmojiMiscellaneousSymbolsAndPictographsFitzpatrickModifiers?
-  )
+  / UnicodeEmojiEmoticon
   / UnicodeEmojiTransportAndMapSymbols
   / UnicodeEmojiMiscellaneousTechnical
   / UnicodeEmojiMiscellaneousSymbols
@@ -766,7 +808,18 @@ UnicodeEmoji
 
 UnicodeEmojiEmoticon = $([\uD83D] [\uDE00-\uDE4F])
 
-UnicodeEmojiSupplementalSymbolsAndPictographs = $([\uD83E] [\uDD00-\uDDFF])
+UnicodeEmojiSupplementalSymbolsAndPictographs = $([\uD83E] [\uDD00-\uDFFF])
+
+UnicodeEmojiZwjComponent
+  = ( UnicodeEmojiSupplementalSymbolsAndPictographs
+    / UnicodeEmojiMiscellaneousSymbolsAndPictographs
+    / UnicodeEmojiEmoticon
+    / UnicodeEmojiDingbats
+    / UnicodeEmojiMiscellaneousSymbols
+    ) UnicodeEmojiMiscellaneousSymbolsAndPictographsFitzpatrickModifiers?
+
+/* Emoji tag sequence: Black Flag + tag characters (U+E0020-U+E007E) + Cancel Tag (U+E007F), e.g. England/Scotland/Wales flags */
+UnicodeEmojiTagSequence = $([\uD83C] [\uDFF4] ([\uDB40] [\uDC20-\uDC7E])+ [\uDB40] [\uDC7F])
 
 UnicodeEmojiMiscellaneousSymbolsAndPictographs = $([\uD83C] [\uDF00-\uDFFF] [\uFE00-\uFE0F]?) / $([\uD83D] [\uDC00-\uDDFF] [\uFE00-\uFE0F]?)
 

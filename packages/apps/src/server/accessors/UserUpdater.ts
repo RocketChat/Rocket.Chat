@@ -29,4 +29,15 @@ export class UserUpdater implements IUserUpdater {
 	public async deactivate(userId: IUser['id'], confirmRelinquish: boolean) {
 		return this.bridges.getUserBridge().doDeactivate(userId, confirmRelinquish, this.appId);
 	}
+
+	public async setActiveState(
+		userId: IUser['id'],
+		state: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt' | 'statusId'>,
+	) {
+		return this.bridges.getUserBridge().doSetActiveState(userId, state, this.appId);
+	}
+
+	public async endActiveState(userId: IUser['id'], statusId?: string) {
+		return this.bridges.getUserBridge().doEndActiveState(userId, this.appId, statusId);
+	}
 }

@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import type { IRouterPaths } from '@rocket.chat/ui-contexts';
 import { useLayout, useSetting, useCurrentRoutePath, useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useEffect, useRef } from 'react';
 
 import AccessibilityShortcut from './AccessibilityShortcut';
@@ -15,7 +15,9 @@ import RoomsNavigationProvider from '../../navigation/providers/RoomsNavigationP
 
 const INVALID_ROOM_NAME_PREFIXES = ['#', '?'] as const;
 
-const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement => {
+export type LayoutWithSidebarProps = { children: ReactNode };
+
+const LayoutWithSidebar = ({ children }: LayoutWithSidebarProps) => {
 	const { isEmbedded: embeddedLayout } = useLayout();
 
 	const currentRoutePath = useCurrentRoutePath();
@@ -56,7 +58,7 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 			<AccessibilityShortcut />
 			{!embeddedLayout && <NavBar />}
 			<Box
-				bg='surface-light'
+				backgroundColor='surface-light'
 				id='rocket-chat'
 				className={[embeddedLayout ? 'embedded-view' : undefined, 'menu-nav'].filter(Boolean).join(' ')}
 			>

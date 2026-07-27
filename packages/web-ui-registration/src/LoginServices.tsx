@@ -1,6 +1,6 @@
 import { Button, ButtonGroup, Divider } from '@rocket.chat/fuselage';
 import { useLoginServices, useSetting } from '@rocket.chat/ui-contexts';
-import { useMemo, type Dispatch, type ReactElement, type SetStateAction } from 'react';
+import { useMemo, type Dispatch, type SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { LoginErrorState } from './LoginForm';
@@ -8,18 +8,15 @@ import LoginServicesButton from './LoginServicesButton';
 
 const servicesToBeShownOnDesktop = ['saml', 'cas', 'ldap'];
 
-const LoginServices = ({
-	disabled,
-	setError,
-}: {
-	disabled?: boolean;
-	setError: Dispatch<SetStateAction<LoginErrorState>>;
-}): ReactElement | null => {
+export type LoginServicesProps = { disabled?: boolean; setError: Dispatch<SetStateAction<LoginErrorState>> };
+
+const LoginServices = ({ disabled, setError }: LoginServicesProps) => {
 	const { t } = useTranslation();
 	const services = useLoginServices();
 	const showFormLogin = useSetting('Accounts_ShowFormLogin');
+	const enableModernOAuthFlow = useSetting('Accounts_OAuth_Use_Modern_Flow', true);
 
-	const isDesktopApp = !!window.RocketChatDesktop?.openInBrowser;
+	const isDesktopApp = !!window.RocketChatDesktop?.openInBrowser && enableModernOAuthFlow;
 
 	const servicesToShow = useMemo(
 		() => (isDesktopApp ? services.filter(({ service }) => servicesToBeShownOnDesktop.includes(service)) : services),
@@ -44,7 +41,7 @@ const LoginServices = ({
 	return (
 		<>
 			{showFormLogin && (
-				<Divider mb={24} p={0}>
+				<Divider marginBlock={24} padding={0}>
 					{t('registration.component.form.divider')}
 				</Divider>
 			)}
@@ -52,7 +49,13 @@ const LoginServices = ({
 			{servicesToShow.length > 0 && (
 				<ButtonGroup vertical stretch small>
 					{servicesToShow.map((service) => (
-						<LoginServicesButton disabled={disabled} key={service.service} {...service} setError={setError} />
+						<LoginServicesButton
+							disabled={disabled}
+							key={service.service}
+							{...service}
+							setError={setError}
+							enableModernOAuthFlow={enableModernOAuthFlow}
+						/>
 					))}
 				</ButtonGroup>
 			)}

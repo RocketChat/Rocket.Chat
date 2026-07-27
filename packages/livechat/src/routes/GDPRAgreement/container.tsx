@@ -7,7 +7,7 @@ import { withTranslation } from 'react-i18next';
 import GDPRAgreement from './component';
 import { StoreContext } from '../../store';
 
-type GDPRContainerProps = {
+export type GDPRContainerProps = {
 	t: TFunction;
 	ref?: Ref<any>;
 };

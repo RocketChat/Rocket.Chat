@@ -1,6 +1,6 @@
 import { isDirectMessageRoom, isDiscussion, isOmnichannelRoom, isPrivateRoom, isPublicRoom, isTeamRoom } from '@rocket.chat/core-typings';
 import type { ILivechatInquiryRecord, IRoom } from '@rocket.chat/core-typings';
-import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useUserPreference, useUserSubscriptions, useLayout } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
@@ -151,7 +151,9 @@ const useRoomsGroups = (): [RoomsNavigationGroup, UnreadGroupDataMap] => {
 	);
 };
 
-const RoomsNavigationContextProvider = ({ children }: { children: ReactNode }) => {
+export type RoomsNavigationContextProviderProps = { children: ReactNode };
+
+const RoomsNavigationContextProvider = ({ children }: RoomsNavigationContextProviderProps) => {
 	const {
 		sidePanel: { openSidePanel },
 	} = useLayout();
@@ -159,7 +161,7 @@ const RoomsNavigationContextProvider = ({ children }: { children: ReactNode }) =
 
 	const [currentFilter, unread, , setCurrentFilter] = useSidePanelFilter();
 
-	const setFilter = useEffectEvent((filter: AllGroupsKeys, unread: boolean, parentRid?: IRoom['_id']) => {
+	const setFilter = useStableCallback((filter: AllGroupsKeys, unread: boolean, parentRid?: IRoom['_id']) => {
 		openSidePanel();
 		setCurrentFilter(getFilterKey(filter, unread));
 		setParentRoom(filter, parentRid);
@@ -167,7 +169,7 @@ const RoomsNavigationContextProvider = ({ children }: { children: ReactNode }) =
 
 	const [groups, unreadGroupData] = useRoomsGroups();
 
-	const handleRoomOpened = useEffectEvent((rid: string) => {
+	const handleRoomOpened = useStableCallback((rid: string) => {
 		const room = Rooms.use.getState().find((r) => r._id === rid);
 
 		if (!room) {

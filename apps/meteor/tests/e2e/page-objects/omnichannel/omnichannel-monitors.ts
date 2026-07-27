@@ -21,6 +21,15 @@ export class OmnichannelMonitors extends OmnichannelAdmin {
 		this.listbox = new Listbox(page);
 	}
 
+	async goTo() {
+		await this.goToRoute('monitors');
+		await this.waitForPage();
+	}
+
+	private async waitForPage() {
+		await this.getPageHeader('Monitors').waitFor({ state: 'visible' });
+	}
+
 	private get btnAddMonitor(): Locator {
 		return this.page.getByRole('button', { name: 'Add monitor' });
 	}

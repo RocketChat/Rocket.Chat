@@ -12,13 +12,12 @@ import {
 } from '@rocket.chat/fuselage';
 import { ContextualbarScrollableContent } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useId } from 'react';
 import { useController, useForm } from 'react-hook-form';
 
 import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 
-type SlaEditProps = {
+export type SlaEditProps = {
 	isNew?: boolean;
 	slaId?: string;
 	reload: () => void;
@@ -31,7 +30,7 @@ type SlaEditFormData = {
 	dueTimeInMinutes: number;
 };
 
-function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactElement {
+function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps) {
 	const slasRoute = useRoute('omnichannel-sla-policies');
 	const saveSLA = useEndpoint('POST', '/v1/livechat/sla');
 	const updateSLA = useEndpoint('PUT', `/v1/livechat/sla/:slaId`, { slaId: slaId || '' });
@@ -153,7 +152,7 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 							{t('Reset')}
 						</Button>
 					)}
-					<Button primary mie='none' type='submit' flexGrow={1} form={formId}>
+					<Button primary marginInlineEnd='none' type='submit' flexGrow={1} form={formId}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

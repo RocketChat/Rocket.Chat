@@ -3,7 +3,7 @@ import { isTruthy } from '@rocket.chat/tools';
 import type { Strategy } from 'passport';
 
 import { OAuthConfigs } from './oauthConfigs';
-import { type ICachedSettings } from '../../../app/settings/server/CachedSettings';
+import { type ICachedSettings } from '../../settings/CachedSettings';
 
 export type OAuthServiceConfig = {
 	provider: string;

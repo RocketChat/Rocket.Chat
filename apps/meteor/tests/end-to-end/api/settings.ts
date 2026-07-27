@@ -1,6 +1,6 @@
 import type { IServerEvents, LoginServiceConfiguration } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, describe, it, after } from 'mocha';
+import { before, describe, it, after, afterEach } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission, updateSetting, getSettingValueById } from '../../data/permissions.helper';
@@ -114,6 +114,111 @@ describe('[Settings]', () => {
 					expect(res.body).to.have.property('count');
 					expect(res.body.settings[0]).to.have.property('packageValue');
 				});
+		});
+
+		describe('POST (bulk)', () => {
+			before(async () => {
+				await updatePermission('edit-privileged-setting', ['admin']);
+			});
+
+			after(async () => {
+				await updatePermission('edit-privileged-setting', ['admin']);
+			});
+
+			it('should return unauthorized when not authenticated', async () => {
+				await request
+					.post(api('settings'))
+					.send({ settings: [{ _id: 'LDAP_Enable', value: false }] })
+					.expect(401);
+			});
+
+			it('should return bad request when settings is missing', async () => {
+				await request.post(api('settings')).set(credentials).send({}).expect(400);
+			});
+
+			it('should return bad request when settings is empty', async () => {
+				await request.post(api('settings')).set(credentials).send({ settings: [] }).expect(400);
+			});
+
+			it('should return bad request when an item is missing value', async () => {
+				await request
+					.post(api('settings'))
+					.set(credentials)
+					.send({ settings: [{ _id: 'LDAP_Enable' }] })
+					.expect(400);
+			});
+
+			it('should successfully update multiple settings in a single request', async () => {
+				await request
+					.post(api('settings'))
+					.set(credentials)
+					.send({
+						settings: [
+							{ _id: 'LDAP_Enable', value: false },
+							{ _id: 'Accounts_Default_User_Preferences_masterVolume', value: 50 },
+						],
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				await request
+					.get(api('settings/LDAP_Enable'))
+					.set(credentials)
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('value', false);
+					});
+
+				await request
+					.get(api('settings/Accounts_Default_User_Preferences_masterVolume'))
+					.set(credentials)
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('value', 50);
+					});
+			});
+
+			it('should accept an optional editor for a setting', async () => {
+				await request
+					.post(api('settings'))
+					.set(credentials)
+					.send({ settings: [{ _id: 'Livechat_title_color', value: '#000000', editor: 'color' }] })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				await request
+					.get(api('settings/Livechat_title_color'))
+					.set(credentials)
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('value', '#000000');
+					});
+			});
+
+			it('should return bad request when editor is an empty string', async () => {
+				await request
+					.post(api('settings'))
+					.set(credentials)
+					.send({ settings: [{ _id: 'Livechat_title_color', value: '#C1272D', editor: '' }] })
+					.expect(400);
+			});
+
+			it('should fail when the user does not have edit-privileged-setting permission', async () => {
+				await updatePermission('edit-privileged-setting', []);
+				await request
+					.post(api('settings'))
+					.set(credentials)
+					.send({ settings: [{ _id: 'LDAP_Enable', value: false }] })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.match(/error-action-not-allowed/);
+					});
+			});
 		});
 	});
 
@@ -573,6 +678,126 @@ describe('[Settings]', () => {
 				expect(response.body).to.have.property('success', true);
 				expect(response.body.events).to.have.length.greaterThanOrEqual(2);
 				expect(isSortedDescending(response.body.events)).to.be.true;
+			});
+		});
+	});
+
+	describe('Custom OAuth admin endpoints', () => {
+		const oauthName = 'apitest';
+		const enableSettingId = 'Accounts_OAuth_Custom-Apitest';
+
+		before(() => updatePermission('add-oauth-service', ['admin']));
+
+		// guarantee the permission is restored even if a permission-denied assertion fails mid-test,
+		// so a failure cannot cascade into the following cases
+		afterEach(() => updatePermission('add-oauth-service', ['admin']));
+
+		after(async () => {
+			await updatePermission('add-oauth-service', ['admin']);
+			// best-effort cleanup in case a test left the custom service behind
+			await request.post(api('settings.removeCustomOAuth')).set(credentials).send({ name: oauthName });
+		});
+
+		describe('[/settings.addCustomOAuth]', () => {
+			it('should fail when unauthenticated', () => request.post(api('settings.addCustomOAuth')).send({ name: oauthName }).expect(401));
+
+			it('should fail when the "name" param is not provided', () =>
+				request.post(api('settings.addCustomOAuth')).set(credentials).send({}).expect(400));
+
+			it('should fail when the user does not have the add-oauth-service permission', async () => {
+				await updatePermission('add-oauth-service', []);
+				await request
+					.post(api('settings.addCustomOAuth'))
+					.set(credentials)
+					.send({ name: oauthName })
+					.expect((res) => {
+						expect(res.status).to.equal(403);
+						expect(res.body).to.have.property('success', false);
+					});
+			});
+
+			it('should add a custom oauth service', async () => {
+				await request
+					.post(api('settings.addCustomOAuth'))
+					.set(credentials)
+					.send({ name: oauthName })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				const value = await getSettingValueById(enableSettingId);
+				expect(value).to.be.a('boolean');
+			});
+		});
+
+		describe('[/settings.refreshOAuthServices]', () => {
+			it('should fail when unauthenticated', () => request.post(api('settings.refreshOAuthServices')).expect(401));
+
+			it('should fail when the user does not have the add-oauth-service permission', async () => {
+				await updatePermission('add-oauth-service', []);
+				await request
+					.post(api('settings.refreshOAuthServices'))
+					.set(credentials)
+					.expect((res) => {
+						expect(res.status).to.equal(403);
+						expect(res.body).to.have.property('success', false);
+					});
+			});
+
+			it('should refresh the oauth services', () =>
+				request
+					.post(api('settings.refreshOAuthServices'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					}));
+		});
+
+		describe('[/settings.removeCustomOAuth]', () => {
+			it('should fail when unauthenticated', () => request.post(api('settings.removeCustomOAuth')).send({ name: oauthName }).expect(401));
+
+			it('should fail when the "name" param is not provided', () =>
+				request.post(api('settings.removeCustomOAuth')).set(credentials).send({}).expect(400));
+
+			it('should fail when the "name" normalizes to an empty string', () =>
+				request
+					.post(api('settings.removeCustomOAuth'))
+					.set(credentials)
+					.send({ name: '!!!' })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+					}));
+
+			it('should fail when the user does not have the add-oauth-service permission', async () => {
+				await updatePermission('add-oauth-service', []);
+				await request
+					.post(api('settings.removeCustomOAuth'))
+					.set(credentials)
+					.send({ name: oauthName })
+					.expect((res) => {
+						expect(res.status).to.equal(403);
+						expect(res.body).to.have.property('success', false);
+					});
+			});
+
+			it('should remove a custom oauth service', async () => {
+				await request
+					.post(api('settings.removeCustomOAuth'))
+					.set(credentials)
+					.send({ name: oauthName })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				// the provider settings should be gone: settings/:_id answers 400 for an unknown id
+				await request.get(`/api/v1/settings/${enableSettingId}`).set(credentials).expect(400);
 			});
 		});
 	});

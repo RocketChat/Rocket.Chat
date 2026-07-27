@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useUserSubscriptionByName, useRouter } from '@rocket.chat/ui-contexts';
 
 // TODO: Routes type definitions are declared in-file for most places, so this route doesn't exist in this package
@@ -26,7 +26,7 @@ export const useGoToDirectMessage = (targetUser: { username?: string }, openRoom
 	const alreadyOpen = openRoomId && usernameSubscription?.rid === openRoomId;
 	const shouldOpen = targetUser.username && hasPermissionOrSubscription && !alreadyOpen;
 
-	const openDirectMessage = useEffectEvent(
+	const openDirectMessage = useStableCallback(
 		() =>
 			targetUser.username &&
 			router.navigate({

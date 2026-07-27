@@ -13,13 +13,12 @@ import {
 } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 
 import InviteRow from './InviteRow';
 import GenericNoResults from '../../../components/GenericNoResults';
 
-const InvitesPage = (): ReactElement => {
+const InvitesPage = () => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -72,13 +71,13 @@ const InvitesPage = (): ReactElement => {
 	const headers = useMemo(
 		() => (
 			<>
-				<GenericTableHeaderCell w={notSmall ? '20%' : '80%'}>{t('Token')}</GenericTableHeaderCell>
+				<GenericTableHeaderCell width={notSmall ? '20%' : '80%'}>{t('Token')}</GenericTableHeaderCell>
 				{notSmall && (
 					<>
-						<GenericTableHeaderCell w='35%'>{t('Created_at')}</GenericTableHeaderCell>
-						<GenericTableHeaderCell w='20%'>{t('Expiration')}</GenericTableHeaderCell>
-						<GenericTableHeaderCell w='10%'>{t('Uses')}</GenericTableHeaderCell>
-						<GenericTableHeaderCell w='10%'>{t('Uses_left')}</GenericTableHeaderCell>
+						<GenericTableHeaderCell width='35%'>{t('Created_at')}</GenericTableHeaderCell>
+						<GenericTableHeaderCell width='20%'>{t('Expiration')}</GenericTableHeaderCell>
+						<GenericTableHeaderCell width='10%'>{t('Uses')}</GenericTableHeaderCell>
+						<GenericTableHeaderCell width='10%'>{t('Uses_left')}</GenericTableHeaderCell>
 						<GenericTableHeaderCell />
 					</>
 				)}
@@ -111,7 +110,7 @@ const InvitesPage = (): ReactElement => {
 							</GenericTableBody>
 						</GenericTable>
 					)}
-					{isSuccess && data && data.length === 0 && <GenericNoResults />}
+					{isSuccess && data?.length === 0 && <GenericNoResults />}
 					{isError && (
 						<States>
 							<StatesIcon name='warning' variation='danger' />

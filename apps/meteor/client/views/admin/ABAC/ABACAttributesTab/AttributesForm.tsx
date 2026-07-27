@@ -10,7 +10,7 @@ import {
 	IconButton,
 	TextInput,
 } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { ContextualbarScrollableContent } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useId, useMemo, Fragment, useState } from 'react';
@@ -25,7 +25,7 @@ export type AttributesFormFormData = {
 	lockedAttributes: { value: string }[];
 };
 
-type AttributesFormProps = {
+export type AttributesFormProps = {
 	onSave: (data: AttributesFormFormData) => void;
 	onCancel: () => void;
 	description: string;
@@ -74,7 +74,7 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 	const [showDisclaimer, setShowDisclaimer] = useState<number[]>([]);
 	const viewRoomsAction = useViewRoomsAction();
 
-	const removeLockedAttribute = useEffectEvent(async (index: number) => {
+	const removeLockedAttribute = useStableCallback(async (index: number) => {
 		const isInUse = await isAttributeUsed();
 		if (showDisclaimer.includes(index)) {
 			return;
@@ -144,7 +144,13 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 									})}
 								/>
 								{index !== 0 && (
-									<IconButton mis={8} small title={t('ABAC_Remove_attribute')} icon='trash' onClick={() => removeLockedAttribute(index)} />
+									<IconButton
+										marginInlineStart={8}
+										small
+										title={t('ABAC_Remove_attribute')}
+										icon='trash'
+										onClick={() => removeLockedAttribute(index)}
+									/>
 								)}
 							</FieldRow>
 							{errors.lockedAttributes?.[index]?.value && (
@@ -189,7 +195,7 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 									})}
 								/>
 								{(index !== 0 || lockedAttributesFields.length > 0) && (
-									<IconButton mis={8} small title={t('ABAC_Remove_attribute')} icon='trash' onClick={() => remove(index)} />
+									<IconButton marginInlineStart={8} small title={t('ABAC_Remove_attribute')} icon='trash' onClick={() => remove(index)} />
 								)}
 							</FieldRow>
 							{errors.attributeValues?.[index]?.value && (
@@ -200,7 +206,7 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 						</Fragment>
 					))}
 					<Button
-						mb={8}
+						marginBlock={8}
 						onClick={() => append({ value: '' })}
 						// Checking for values since rhf does consider the newly added field as dirty after an append() call
 						disabled={!!getAttributeValuesError() || attributeValues?.some((value: { value: string }) => value?.value === '')}

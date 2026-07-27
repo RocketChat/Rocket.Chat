@@ -15,7 +15,6 @@ import {
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { Fragment, useId } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -70,7 +69,7 @@ const getInitialValues = (data: ContactNewEditProps['contactData']): ContactForm
 
 const validateMultipleFields = (fieldsLength: number, hasLicense: boolean) => fieldsLength >= 1 && !hasLicense;
 
-const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps): ReactElement => {
+const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 
@@ -232,13 +231,13 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 									}}
 									render={({ field }) => <TextInput {...field} error={errors.emails?.[index]?.address?.message} aria-required='true' />}
 								/>
-								<IconButton title={t('Remove_email')} small onClick={() => removeEmail(index)} mis={8} icon='trash' />
+								<IconButton title={t('Remove_email')} small onClick={() => removeEmail(index)} marginInlineStart={8} icon='trash' />
 							</FieldRow>
 							{errors.emails?.[index]?.address && <FieldError>{errors.emails?.[index]?.address?.message}</FieldError>}
 						</Fragment>
 					))}
 					<Button
-						mbs={8}
+						marginBlockStart={8}
 						onClick={validateMultipleFields(emailFields.length, hasLicense) ? handleOpenUpSellModal : () => appendEmail({ address: '' })}
 					>
 						{t('Add_email')}
@@ -258,13 +257,13 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 									}}
 									render={({ field }) => <TextInput {...field} error={errors.phones?.[index]?.phoneNumber?.message} aria-required='true' />}
 								/>
-								<IconButton title={t('Remove_phone')} small onClick={() => removePhone(index)} mis={8} icon='trash' />
+								<IconButton title={t('Remove_phone')} small onClick={() => removePhone(index)} marginInlineStart={8} icon='trash' />
 							</FieldRow>
 							{errors.phones?.[index]?.phoneNumber && <FieldError>{errors.phones?.[index]?.phoneNumber?.message}</FieldError>}
 						</Fragment>
 					))}
 					<Button
-						mbs={8}
+						marginBlockStart={8}
 						onClick={
 							validateMultipleFields(phoneFields.length, hasLicense) ? handleOpenUpSellModal : () => appendPhone({ phoneNumber: '' })
 						}

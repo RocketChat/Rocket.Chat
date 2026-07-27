@@ -28,6 +28,13 @@ export interface IGetDecisionBulkResponse {
 	}>;
 }
 
+export type ReevaluationUser = Pick<IUser, '_id' | 'emails' | 'username' | '__rooms'>;
+
+export type NonCompliantPair = {
+	user: Pick<IUser, '_id' | 'emails' | 'username'>;
+	room: AtLeast<IRoom, '_id' | 'abacAttributes'>;
+};
+
 export interface IPolicyDecisionPoint {
 	isAvailable(): Promise<boolean>;
 
@@ -52,7 +59,9 @@ export interface IPolicyDecisionPoint {
 			user: Pick<IUser, '_id' | 'emails' | 'username'>;
 			rooms: AtLeast<IRoom, '_id' | 'abacAttributes'>[];
 		}>,
-	): Promise<Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }>>;
+	): Promise<NonCompliantPair[]>;
+
+	reevaluateUsers(users: ReevaluationUser[]): Promise<void | NonCompliantPair[]>;
 }
 
 export interface IVirtruPDPConfig {
@@ -67,4 +76,22 @@ export interface IVirtruPDPConfig {
 export interface ITokenCache {
 	accessToken: string;
 	expiresAt: number;
+}
+
+export interface IGetEntitlementsRequest {
+	entityIdentifier: {
+		entityChain: {
+			entities: IEntityIdentifier[];
+		};
+	};
+	withComprehensiveHierarchy: boolean;
+}
+
+export interface IEntityEntitlements {
+	ephemeralId?: string;
+	actionsPerAttributeValueFqn: Record<string, unknown>;
+}
+
+export interface IGetEntitlementsResponse {
+	entitlements?: IEntityEntitlements[];
 }

@@ -1,14 +1,13 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, SidebarDivider, Palette, SidebarFooter as Footer } from '@rocket.chat/fuselage';
+import { Box, SidebarV2Divider, Palette, SidebarV2Footer as Footer } from '@rocket.chat/fuselage';
 import { useThemeMode } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
-import type { ReactElement } from 'react';
 
 import { SidebarFooterWatermark } from './SidebarFooterWatermark';
 
-const SidebarFooterDefault = (): ReactElement => {
-	const [, , theme] = useThemeMode();
+const SidebarFooterDefault = () => {
+	const theme = useThemeMode();
 	const logo = useSetting(theme === 'dark' ? 'Layout_Sidenav_Footer_Dark' : 'Layout_Sidenav_Footer', '').trim();
 
 	const sidebarFooterStyle = css`
@@ -24,11 +23,9 @@ const SidebarFooterDefault = (): ReactElement => {
 
 	return (
 		<Footer>
-			<SidebarDivider />
+			<SidebarV2Divider />
 			<Box
-				is='footer'
-				pb={12}
-				pi={16}
+				paddingBlock={12}
 				height='x48'
 				width='auto'
 				className={sidebarFooterStyle}
