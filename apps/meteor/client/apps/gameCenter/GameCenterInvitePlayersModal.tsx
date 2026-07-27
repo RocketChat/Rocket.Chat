@@ -34,7 +34,7 @@ const GameCenterInvitePlayersModal = ({ game, onClose }: IGameCenterInvitePlayer
 			roomCoordinator.openRouteLink(group.t, { rid: group._id, name: group.name });
 
 			if (openedRoom === group._id) {
-				void sdk.rest.post('/v1/chat.sendMessage', {
+				await sdk.rest.post('/v1/chat.sendMessage', {
 					message: {
 						_id: Random.id(),
 						rid: group._id,

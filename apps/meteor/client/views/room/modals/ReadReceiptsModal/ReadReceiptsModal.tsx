@@ -15,6 +15,8 @@ type ReadReceiptsModalProps = {
 	onClose: () => void;
 };
 
+const readReceiptsQueryKey = (messageId: IMessage['_id']) => ['read-receipts', messageId] as const;
+
 const ReadReceiptsModal = ({ messageId, rid, onClose }: ReadReceiptsModalProps): ReactElement => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -23,10 +25,8 @@ const ReadReceiptsModal = ({ messageId, rid, onClose }: ReadReceiptsModalProps):
 
 	const getReadReceipts = useEndpoint('GET', '/v1/chat.getMessageReadReceipts');
 
-	const queryKey = ['read-receipts', messageId];
-
 	const readReceiptsResult = useQuery({
-		queryKey,
+		queryKey: readReceiptsQueryKey(messageId),
 		queryFn: async () => (await getReadReceipts({ messageId })).receipts.map(mapReadReceiptFromApi),
 	});
 
@@ -35,9 +35,9 @@ const ReadReceiptsModal = ({ messageId, rid, onClose }: ReadReceiptsModalProps):
 			return;
 		}
 		return subscribeToNotifyRoom(`${rid}/messagesRead`, () => {
-			queryClient.invalidateQueries({ queryKey });
+			queryClient.invalidateQueries({ queryKey: readReceiptsQueryKey(messageId) });
 		});
-	}, [rid, queryClient, queryKey, subscribeToNotifyRoom]);
+	}, [rid, messageId, queryClient, subscribeToNotifyRoom]);
 
 	useEffect(() => {
 		if (readReceiptsResult.isError) {
