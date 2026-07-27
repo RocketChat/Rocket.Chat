@@ -16,11 +16,11 @@ const UserCardDialog = (props: UserCardDialogProps) => {
 			rcx-user-card
 			backgroundColor='surface'
 			elevation='2'
-			padding={24}
+			padding='x24'
 			display='flex'
 			flexDirection='column'
 			borderRadius='x8'
-			width='400px'
+			width='x400'
 			{...props}
 			{...dialogProps}
 		/>

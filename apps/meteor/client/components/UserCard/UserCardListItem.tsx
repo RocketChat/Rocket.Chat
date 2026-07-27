@@ -25,7 +25,7 @@ const UserCardListItem = ({ icon, label, children, ...props }: UserCardListItemP
 	const content = (
 		<>
 			{icon ? <Icon name={icon} size='x20' flexShrink={0} aria-hidden /> : <Box width='x20' flexShrink={0} aria-hidden />}
-			<Box flexGrow={1} flexShrink={1} width='1px' marginInlineStart={4}>
+			<Box flexGrow={1} flexShrink={1} width='1px' marginInlineStart='x4'>
 				{children}
 			</Box>
 		</>
@@ -33,7 +33,7 @@ const UserCardListItem = ({ icon, label, children, ...props }: UserCardListItemP
 
 	if (!label) {
 		return (
-			<Box display='flex' alignItems='flex-start' fontScale='p2' color='default' marginBlock={2} {...props}>
+			<Box display='flex' alignItems='flex-start' fontScale='p2' color='default' marginBlock='x2' {...props}>
 				{content}
 			</Box>
 		);
@@ -44,7 +44,7 @@ const UserCardListItem = ({ icon, label, children, ...props }: UserCardListItemP
 			<Box is='dt' className={srOnly}>
 				{label}
 			</Box>
-			<Box is='dd' display='flex' alignItems='flex-start' fontScale='p2' color='default' marginBlock={2} {...props}>
+			<Box is='dd' display='flex' alignItems='flex-start' fontScale='p2' color='default' marginBlock='x2' {...props}>
 				{content}
 			</Box>
 		</>

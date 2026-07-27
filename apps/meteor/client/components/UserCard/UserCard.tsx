@@ -60,7 +60,7 @@ const UserCard = ({
 			<Box display='flex' alignItems='flex-start'>
 				<Box display='flex' flexGrow={1} flexShrink={1} alignItems='center' withTruncatedText>
 					{username && <UserAvatar username={username} etag={etag} size='x36' />}
-					<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} marginInlineStart={4} withTruncatedText>
+					<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} marginInlineStart='x4' withTruncatedText>
 						<Box display='flex' alignItems='center' withTruncatedText>
 							<UserCardUsername is='h2' status={status} name={name} />
 							{nickname && (
@@ -70,7 +70,7 @@ const UserCard = ({
 									flexBasis={0}
 									title={nickname}
 									color='hint'
-									marginInlineStart={4}
+									marginInlineStart='x4'
 									fontScale='p2'
 									withTruncatedText
 								>
@@ -79,7 +79,7 @@ const UserCard = ({
 							)}
 						</Box>
 						{customStatus && (
-							<Box fontScale='p2' color='default' paddingInlineStart={4} withTruncatedText>
+							<Box fontScale='p2' color='default' paddingInlineStart='x4' withTruncatedText>
 								{typeof customStatus === 'string' ? (
 									<MarkdownText withTruncatedText variant='inlineWithoutBreaks' content={customStatus} parseEmoji={true} />
 								) : (
@@ -89,9 +89,9 @@ const UserCard = ({
 						)}
 					</Box>
 				</Box>
-				{onClose && <IconButton marginInlineStart={8} small title={t('Close')} aria-label={t('Close')} icon='cross' onClick={onClose} />}
+				{onClose && <IconButton marginInlineStart='x8' small title={t('Close')} aria-label={t('Close')} icon='cross' onClick={onClose} />}
 			</Box>
-			<Box display='flex' flexDirection='column' marginBlockStart={18}>
+			<Box display='flex' flexDirection='column' marginBlockStart='x18'>
 				{(roles || localTime || bio) && (
 					<Box is='dl' display='flex' flexDirection='column' margin={0}>
 						{roles && (
@@ -127,7 +127,7 @@ const UserCard = ({
 				)}
 			</Box>
 			{actions && (
-				<Box display='flex' flexDirection='column' marginBlockStart={24}>
+				<Box display='flex' flexDirection='column' marginBlockStart='x24'>
 					<UserCardActions aria-label={t('User_card_actions')}>{actions}</UserCardActions>
 				</Box>
 			)}
