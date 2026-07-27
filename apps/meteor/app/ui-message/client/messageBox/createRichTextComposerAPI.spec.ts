@@ -132,3 +132,35 @@ describe('RichText Composer API - insertText', () => {
 		}
 	});
 });
+
+describe('RichText Composer API - wrapSelection', () => {
+	afterEach(() => {
+		window.getSelection()?.removeAllRanges();
+		document.body.innerHTML = '';
+	});
+
+	it('wraps a selection with the given pattern', () => {
+		const { composer, input } = setupComposer('test', { start: 0, end: 4 });
+
+		composer.wrapSelection('*{{text}}*');
+
+		expect(input.textContent).toBe('*test*');
+	});
+
+	it('keeps the closing marker on the same line when the selection includes a trailing newline', () => {
+		// A double-click on the last word of a line selects the trailing paragraph newline too.
+		const { composer, input } = setupComposer('test\n', { start: 0, end: 5 });
+
+		composer.wrapSelection('*{{text}}*');
+
+		expect(input.textContent).toBe('*test*\n');
+	});
+
+	it('does not pull following-line text into the wrap for the last word of a line', () => {
+		const { composer, input } = setupComposer('test\nfoo', { start: 0, end: 5 });
+
+		composer.wrapSelection('*{{text}}*');
+
+		expect(input.textContent).toBe('*test*\nfoo');
+	});
+});

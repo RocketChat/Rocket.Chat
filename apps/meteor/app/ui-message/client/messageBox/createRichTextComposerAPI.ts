@@ -81,9 +81,14 @@ export const createRichTextComposerAPI = (
 		// Sanitize the innerText by reducing multiple instances of linebreaks
 		const cleanedInitText = input.innerText.replace(/\n{2,}/g, (match) => '\n'.repeat(match.length - 1));
 
+		// Double-clicking the last word of a line selects the trailing paragraph newline too; keep any
+		// trailing newlines out of the wrapped range so the closing marker stays on the same line.
+		const rawSelected = cleanedInitText.slice(selectionStart, selectionEnd);
+		const selectedText = rawSelected.replace(/\n+$/, '');
+		const selEnd = selectionEnd - (rawSelected.length - selectedText.length);
+
 		const initText = cleanedInitText.slice(0, selectionStart);
-		const selectedText = cleanedInitText.slice(selectionStart, selectionEnd);
-		const finalText = cleanedInitText.slice(selectionEnd, input.innerText.length);
+		const finalText = cleanedInitText.slice(selEnd, input.innerText.length);
 
 		focus();
 
@@ -94,7 +99,7 @@ export const createRichTextComposerAPI = (
 
 		if (startPatternFound) {
 			const endPattern = pattern.slice(pattern.indexOf('{{text}}') + '{{text}}'.length);
-			const endPatternFound = [...endPattern].every((char, index) => input.innerText.slice(selectionEnd + index, 1) === char);
+			const endPatternFound = [...endPattern].every((char, index) => input.innerText.slice(selEnd + index, 1) === char);
 
 			if (endPatternFound) {
 				insertText(selectedText);
@@ -120,7 +125,7 @@ export const createRichTextComposerAPI = (
 
 		// Explicitly set the selection range and send focus back to the editor again
 		// This ensures the execCommand works properly when pressing buttons instead of hotkeys
-		setSelectionRange(input, selectionStart, selectionEnd);
+		setSelectionRange(input, selectionStart, selEnd);
 		focus();
 
 		if (!document.execCommand?.('insertText', false, pattern.replace('{{text}}', selectedText))) {
