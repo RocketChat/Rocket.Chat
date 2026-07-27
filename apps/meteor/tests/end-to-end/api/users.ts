@@ -5494,7 +5494,7 @@ describe('[Users]', () => {
 			expect(meRes.statusCode).to.equal(401);
 		});
 
-		it('should remove the session from the list after logout', async () => {
+		(IS_EE ? it : it.skip)('should remove the session from the list after logout', async () => {
 			const credentials = await login(user.username, password);
 			const authToken = credentials['X-Auth-Token'];
 
