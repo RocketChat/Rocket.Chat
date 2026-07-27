@@ -34,6 +34,7 @@ export type EmojiPackages = {
 					extension?: string;
 					etag?: string;
 					unicode?: string;
+					legacy?: boolean;
 			  }
 			| {
 					name?: undefined;
@@ -43,6 +44,7 @@ export type EmojiPackages = {
 					aliases?: undefined;
 					shortnames?: undefined;
 					etag?: string;
+					legacy?: boolean;
 			  };
 	};
 };

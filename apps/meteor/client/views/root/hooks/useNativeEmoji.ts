@@ -45,6 +45,7 @@ export const useNativeEmoji = () => {
 				category: '',
 				emojiPackage: 'native',
 				unicode,
+				legacy: true,
 			};
 		}
 
