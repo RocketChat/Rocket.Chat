@@ -1,10 +1,40 @@
+@font-face {
+	font-family: rc-emoji;
+	src: local('Segoe UI Emoji');
+	ascent-override: 90%;
+	descent-override: 25%;
+	size-adjust: 85%;
+}
+
+@font-face {
+	font-family: rc-emoji;
+	src: local('Apple Color Emoji');
+}
+
+@font-face {
+	font-family: rc-emoji;
+	src: local('Noto Color Emoji');
+}
+
+@font-face {
+	font-family: rc-emoji;
+	src: local('Twemoji Mozilla');
+}
+
+@font-face {
+	font-family: rc-emoji;
+	src: local('Android Emoji');
+}
+
 /* Global emoji styles */
 .emoji {
+	font-family: rc-emoji, sans-serif;
 	font-size: 1.375rem;
 
-	/* Must exceed the emoji fonts' ink height (~1.13em on Noto Color Emoji), otherwise
-	the glyph paints outside the line box and gets cut by overflow: hidden ancestors
-	(message body, announcement banner). */
+	/* Must exceed the emoji fonts' ink height — ~1.13em on Noto Color Emoji and on
+	size-adjusted Segoe UI Emoji (rc-emoji face) — otherwise the glyph paints outside
+	the line box and gets cut by overflow: hidden ancestors (message body, announcement
+	banner). */
 	line-height: 1.2;
 	vertical-align: middle;
 
@@ -34,13 +64,17 @@
 .rcx-message {
 	/* emojis on messages */
 	&__emoji {
-		font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Twemoji Mozilla', 'Android Emoji', sans-serif;
+		font-family: rc-emoji, sans-serif;
 
-		/* Fuselage fixes this box at 1.5rem, sized for image emojis. Native glyphs on
-		Segoe UI Emoji/Noto Color Emoji paint taller and wider than that box, and the
-		overhang gets clipped by the message body's overflow: hidden. Let the box grow
-		to the glyph instead. */
+		/* Fuselage fixes this box at 1.5rem inline-block, sized for image emojis. Native
+		glyphs on Segoe UI Emoji/Noto Color Emoji paint taller and wider than that box, and
+		the overhang gets clipped by the message body's overflow: hidden — so let the box
+		grow to the glyph. inline-block also aligns by geometric box while the announcement
+		banner's .emoji span (plain inline) aligns by font metrics; Segoe UI Emoji's
+		asymmetric metrics make those disagree by ~2px, leaving message glyphs off-center.
+		Use the same inline model everywhere. */
 		&:not(&--custom) {
+			display: inline;
 			width: auto;
 			height: auto;
 			line-height: 1.2;
