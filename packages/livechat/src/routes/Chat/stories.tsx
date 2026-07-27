@@ -3,7 +3,7 @@ import type { ComponentProps } from 'preact';
 import { action } from 'storybook/actions';
 
 import Chat from './component';
-import { avatarResolver, beepAudio, screenDecorator } from '../../../.storybook/helpers';
+import { avatarResolver, screenDecorator } from '../../../.storybook/helpers';
 
 const now = new Date(Date.parse('2021-01-01T00:00:00.000Z'));
 
@@ -18,15 +18,19 @@ export default {
 	component: Chat,
 	args: {
 		title: '',
-		sound: { src: beepAudio, play: false },
 		avatarResolver,
-		uid: 1,
+		uid: '1',
 		agent: {
+			_id: '1',
 			name: 'Guilherme Gazzo',
 			status: 'online',
 			email: 'guilherme.gazzo@rocket.chat',
 			phone: '+55 99 99999 9999',
 			username: 'guilherme.gazzo',
+			avatar: {
+				src: avatarResolver('guilherme.gazzo')!,
+				description: 'Guilherme Gazzo',
+			},
 		},
 		messages: normalizeMessages([
 			{
@@ -44,7 +48,6 @@ export default {
 			{ _id: 9, u: { _id: 1, username: 'tasso.evangelista' }, msg: 'Veri soluta suscipit mel no' },
 		]),
 		typingUsernames: [],
-		emoji: false,
 		uploads: false,
 		loading: false,
 		limitTextLength: 0,
@@ -56,7 +59,7 @@ export default {
 	},
 	decorators: [screenDecorator],
 	parameters: {
-		layout: 'fullscreen',
+		layout: 'centered',
 	},
 } satisfies Meta<ComponentProps<typeof Chat>>;
 
@@ -85,6 +88,6 @@ WithTriggerMessages.args = {
 		{ _id: 1, u: { _id: 2, username: 'guilherme.gazzo' }, msg: 'Putent appareat te sea, dico recusabo pri te' },
 		{ _id: 2, u: { _id: 2, username: 'guilherme.gazzo' }, msg: 'Iudico utinam volutpat eos eu, sadipscing repudiandae pro te' },
 	]),
-	lastReadMessageId: 8,
+	lastReadMessageId: '8',
 	registrationRequired: true,
 };

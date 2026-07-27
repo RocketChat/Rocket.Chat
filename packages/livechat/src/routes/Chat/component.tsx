@@ -42,7 +42,7 @@ export type ChatProps = {
 	uid?: string;
 	agent?: ReturnType<typeof formatAgent>;
 	typingUsernames?: string[];
-	avatarResolver?: (username?: string) => string | undefined;
+	avatarResolver?: (username: string) => string | null | undefined;
 	conversationFinishedMessage?: string;
 	loading?: boolean;
 	onUpload?: (files: (File | null)[]) => void;

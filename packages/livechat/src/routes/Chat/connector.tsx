@@ -1,22 +1,18 @@
-import type { TFunction } from 'i18next';
-import type { Ref } from 'preact';
 import { useContext } from 'preact/hooks';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import ChatContainer from './container';
 import { ScreenContext } from '../../components/Screen/ScreenProvider';
 import { canRenderMessage } from '../../helpers/canRenderMessage';
 import { formatAgent } from '../../helpers/formatAgent';
-import { StoreContext } from '../../store';
+import { useStore } from '../../store';
 
-export type ChatConnectorProps = {
-	path: string;
-	default: boolean;
-	t: TFunction;
-	ref?: Ref<any>;
+export type ChatProps = {
+	path?: string;
+	default?: boolean;
 };
 
-export const ChatConnector = ({ ref, t }: ChatConnectorProps) => {
+const Chat = (_: ChatProps) => {
 	const { theme } = useContext(ScreenContext);
 	const {
 		config: {
@@ -33,7 +29,7 @@ export const ChatConnector = ({ ref, t }: ChatConnectorProps) => {
 			},
 			messages: { conversationFinishedMessage },
 			theme: { title = '' } = {},
-			departments = {},
+			departments = [],
 		},
 		iframe: { theme: { title: customTitle = '' } = {}, guest = {} },
 		token,
@@ -53,11 +49,14 @@ export const ChatConnector = ({ ref, t }: ChatConnectorProps) => {
 		triggerAgent,
 		queueInfo,
 		messageListPosition,
-	} = useContext(StoreContext);
+	} = useStore();
+
+	const { t, i18n } = useTranslation();
 
 	return (
 		<ChatContainer
-			ref={ref}
+			t={t}
+			i18n={i18n}
 			title={customTitle || title || t('need_help')}
 			sound={sound}
 			token={token}
@@ -103,4 +102,4 @@ export const ChatConnector = ({ ref, t }: ChatConnectorProps) => {
 	);
 };
 
-export default withTranslation()(ChatConnector);
+export default Chat;

@@ -3,9 +3,9 @@ import type { TFunction } from 'i18next';
 import type { ComponentChildren, Ref } from 'preact';
 import { Component } from 'preact';
 import { route } from 'preact-router';
-import { withTranslation } from 'react-i18next';
 
 import Chat from './component';
+import { useChatSubscriptions } from './useChatSubscriptions';
 import { Livechat } from '../../api';
 import { ModalManager } from '../../components/Modal';
 import type { ScreenContextValue } from '../../components/Screen/ScreenProvider';
@@ -15,14 +15,6 @@ import { debounce } from '../../helpers/debounce';
 import type { formatAgent } from '../../helpers/formatAgent';
 import { throttle } from '../../helpers/throttle';
 import { upsert } from '../../helpers/upsert';
-import {
-	useAgentChangeSubscription,
-	useAgentStatusChangeSubscription,
-	useQueuePositionChangeSubscription,
-} from '../../hooks/livechatRoomSubscriptionHooks';
-import { useDeleteMessageSubscription } from '../../hooks/useDeleteMessageSubscription';
-import { useRoomMessagesSubscription } from '../../hooks/useRoomMessagesSubscription';
-import { useUserActivitySubscription } from '../../hooks/useUserActivitySubscription';
 import { normalizeQueueAlert } from '../../lib/api';
 import constants from '../../lib/constants';
 import { getLastReadMessage, loadConfig, processUnread, shouldMarkAsUnread } from '../../lib/main';
@@ -79,22 +71,10 @@ export type ChatContainerProps = {
 
 type ChatWrapperProps = {
 	children: ComponentChildren;
-	token: string;
-	rid?: string;
 };
 
-const ChatWrapper = ({ children, token, rid = '' }: ChatWrapperProps) => {
-	useRoomMessagesSubscription(rid, token);
-
-	useUserActivitySubscription(rid);
-
-	useDeleteMessageSubscription(rid);
-
-	useAgentChangeSubscription(rid);
-
-	useAgentStatusChangeSubscription(rid);
-
-	useQueuePositionChangeSubscription(rid);
+const ChatWrapper = ({ children }: ChatWrapperProps) => {
+	useChatSubscriptions();
 
 	return children;
 };
@@ -470,7 +450,7 @@ class ChatContainer extends Component<ChatContainerProps> {
 	}
 
 	render = ({ user, ...props }: ChatContainerProps) => (
-		<ChatWrapper token={props.token} rid={props.room?._id}>
+		<ChatWrapper>
 			<Chat
 				{...props}
 				avatarResolver={getAvatarUrl}
@@ -491,4 +471,4 @@ class ChatContainer extends Component<ChatContainerProps> {
 	);
 }
 
-export default withTranslation()(ChatContainer);
+export default ChatContainer;
