@@ -4,6 +4,7 @@ import { describe, it, beforeEach, before } from 'mocha';
 import { getEmojisBySearchTerm, updateRecent, removeFromRecent, replaceEmojiInRecent } from '../../../../app/emoji/client/helpers';
 import { emoji } from '../../../../app/emoji/client/lib';
 import { getEmojiConfig } from '../../../../app/emoji-native/lib/getEmojiConfig';
+import { legacyEmojioneMap } from '../../../../app/emoji-native/lib/legacyEmojioneMap';
 
 const registerNativeEmojis = () => {
 	const config = getEmojiConfig(emoji);
@@ -26,6 +27,27 @@ const registerNativeEmojis = () => {
 				emoji.list[shortname] = currentEmoji as any;
 			});
 		}
+	}
+
+	//Add legacy emojis to mimic how client currently works.
+	for (const [shortcode, unicode] of Object.entries(legacyEmojioneMap)) {
+		const key = `:${shortcode}:`;
+
+		if (emoji.list[key]) {
+			continue; // already registered by emojibase
+		}
+
+		emoji.list[key] = {
+			uc_base: '',
+			uc_output: '',
+			uc_match: '',
+			uc_greedy: '',
+			shortnames: [],
+			category: '',
+			legacy: true,
+			emojiPackage: 'native',
+			unicode,
+		};
 	}
 };
 
@@ -64,6 +86,23 @@ describe('Emoji Client Helpers', () => {
 
 		it('excludes skin-tone variants from the results', () => {
 			expect(names('+1').some((name) => /_tone[1-5]/.test(name))).to.be.false;
+		});
+
+		it('excludes legacy-only names from the results', () => {
+			expect(names('dog2')).to.be.empty;
+		});
+
+		it('excludes legacy-only names from partial matches', () => {
+			expect(names('dog')).to.not.include('dog2');
+		});
+
+		it('keeps the emojibase name for the same emoji searchable', () => {
+			expect(names('dog')).to.include('dog');
+			expect(names('dog')).to.include('dog_face');
+		});
+
+		it('still renders a legacy shortcode entered manually', () => {
+			expect(emoji.packages.native.render(':dog2:')).to.include(legacyEmojioneMap.dog2);
 		});
 
 		it('applies the selected skin tone when searching by an alias', () => {
