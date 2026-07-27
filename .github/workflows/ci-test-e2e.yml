@@ -207,7 +207,7 @@ jobs:
           TRANSPORTER: ${{ inputs.transporter }}
           COMPOSE_PROFILES: ${{ inputs.type == 'api' && 'api' || '' }}
           TEST_MODE: ${{ startsWith(inputs.type, 'api') && 'api' || 'true' }}
-          APPS_ENGINE_RUNTIME_BACKEND: ${{ inputs.type == 'api-apps-node' && 'node' || '' }}
+          APPS_ENGINE_RUNTIME_BACKEND: ${{ inputs.type == 'api-apps-deno' && 'deno' || '' }}
           FIPS_OVERRIDE: ${{ inputs.fips && '-f docker-compose-ci.fips.yml' || '' }}
         run: |
           read -r -a fips_override <<< "$FIPS_OVERRIDE"
@@ -247,8 +247,8 @@ jobs:
           exit "${s:-0}"
 
       # This step should be temporary, only here until we remove the deno-runtime
-      - name: E2E Test API (apps + node-runtime)
-        if: (inputs.type == 'api-apps-node' && inputs.release == 'ee')
+      - name: E2E Test API (apps + deno-runtime)
+        if: (inputs.type == 'api-apps-deno' && inputs.release == 'ee')
         working-directory: ./apps/meteor
         env:
           WEBHOOK_TEST_URL: 'http://httpbin'

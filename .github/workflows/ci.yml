@@ -711,13 +711,13 @@ jobs:
       CR_PAT: ${{ secrets.CR_PAT }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  test-api-apps-node-ee:
-    name: 🔨 Test API Apps (node-runtime - EE)
+  test-api-apps-deno-ee:
+    name: 🔨 Test API Apps (deno-runtime - EE)
     needs: [checks, build-gh-docker-publish, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
-      type: api-apps-node
+      type: api-apps-deno
       release: ee
       transporter: 'nats://nats:4222'
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
@@ -985,7 +985,7 @@ jobs:
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-24.04-arm
-    needs: [test-guard, checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-api-livechat, test-api-livechat-ee, test-api-apps-node-ee, test-api-fips, test-api-livechat-fips, test-ui-fips, test-federation-matrix]
+    needs: [test-guard, checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-api-livechat, test-api-livechat-ee, test-api-apps-deno-ee, test-api-fips, test-api-livechat-fips, test-ui-fips, test-federation-matrix]
     if: always() && needs.test-guard.outputs.skip-tests != 'true'
     steps:
       - name: Test finish aggregation
@@ -1022,7 +1022,7 @@ jobs:
             exit 1
           fi
 
-          if [[ '${{ needs.test-api-apps-node-ee.result }}' != 'success' ]]; then
+          if [[ '${{ needs.test-api-apps-deno-ee.result }}' != 'success' ]]; then
             exit 1
           fi
 
