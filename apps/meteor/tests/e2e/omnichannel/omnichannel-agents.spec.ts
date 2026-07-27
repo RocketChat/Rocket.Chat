@@ -17,12 +17,9 @@ test.describe.serial('OC - Manage Agents', () => {
 		department = await createDepartment(api);
 	});
 
-	// Create page object and redirect to home
 	test.beforeEach(async ({ page }) => {
 		poOmnichannelAgents = new OmnichannelAgents(page);
-
-		await page.goto('/omnichannel');
-		await poOmnichannelAgents.sidebar.linkAgents.click();
+		await poOmnichannelAgents.goTo();
 	});
 
 	test.beforeAll(async ({ api }) => {

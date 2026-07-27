@@ -1092,7 +1092,9 @@ exports[`renders withNoResults without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-9x4qdd"
     >
       <div
+        aria-label="No_results_found"
         class="rcx-box rcx-box--full rcx-css-1wg1u9h"
+        role="group"
       >
         <div
           class="rcx-states"
