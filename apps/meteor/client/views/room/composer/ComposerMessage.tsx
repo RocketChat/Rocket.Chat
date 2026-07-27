@@ -96,7 +96,13 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps) => {
 				<MessageBox key={tmid ? `${room._id}-${tmid}` : room._id} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />
 			</FeaturePreviewOff>
 			<FeaturePreviewOn>
-				<RichTextMessageBox key={tmid ? `${room._id}-${tmid}` : room._id} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />
+				<RichTextMessageBox
+					key={tmid ? `${room._id}-${tmid}` : room._id}
+					tmid={tmid}
+					{...composerProps}
+					showFormattingTips={true}
+					{...props}
+				/>
 			</FeaturePreviewOn>
 		</FeaturePreview>
 	);
