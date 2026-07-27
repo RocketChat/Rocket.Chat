@@ -44,13 +44,6 @@ not technical layers. A feature folder is typically:
 | `stores/`, `cachedStores/` | client-side state/caches |
 | `uikit/` | UIKit (Apps) rendering on the client |
 
-## Blaze bridge (legacy)
-
-The UI is mostly React, but some spots still render inside the legacy **Blaze**
-environment. The migration is ongoing; when you must render a React component
-under Blaze, use the project's Blaze→React bridge helper (see
-`apps/meteor/client/README.md`). Don't add new Blaze templates.
-
 ---
 
 **Next:** [components-and-styling](./components-and-styling.md) ·

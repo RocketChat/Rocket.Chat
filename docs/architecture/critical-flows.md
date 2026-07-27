@@ -10,7 +10,7 @@ flows and the order in which hooks fire.
 
 ## REST request lifecycle
 
-Entry: `apps/meteor/app/api/server/` — `ApiClass.ts` (the API class) and
+Entry: `apps/meteor/server/api/` — `ApiClass.ts` (the API class) and
 `router.ts` (routing). Response helpers and types: `definition.ts`.
 
 A request to `/api/v1/<endpoint>` passes through, in order:
@@ -34,7 +34,7 @@ and [api-endpoint-migration](../api-endpoint-migration.md).
 
 ## Message send
 
-Entry: `apps/meteor/app/lib/server/functions/sendMessage.ts`. Order of the
+Entry: `apps/meteor/server/lib/messages/sendMessage.ts`. Order of the
 important steps (verified against the source):
 
 1. `prepareMessageObject(...)` — build the message (user, timestamp, …).
@@ -61,14 +61,16 @@ re-querying. The streamer emits an **event**; subscribed clients apply it to
 local state.
 
 - Implementation: `apps/meteor/server/modules/streamer/streamer.module.ts`.
-- App streams: `apps/meteor/app/notifications/server/lib/Notifications.ts`.
+- App streams: `apps/meteor/server/modules/notifications/notifications.module.ts`
+  (`streamAll`, `streamRoom`, `streamRoomMessage`, …).
 - Why it isn't a DDP collection mirror, and the per-connection consequence:
   [realtime-and-ddp](./realtime-and-ddp.md).
 
 ## Authentication / login
 
-Entry: `apps/meteor/app/authentication/server/` (and the `/api/v1/login` REST
-route). Shape of the flow:
+Entry: `apps/meteor/server/hooks/auth/` and
+`apps/meteor/server/lib/auth-providers/` (and the `/api/v1/login` REST route).
+Shape of the flow:
 
 1. **Validate credentials** — password, LDAP, OAuth/custom-oauth, SAML, CAS, …
 2. `onValidateLogin` callback runs.

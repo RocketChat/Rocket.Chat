@@ -15,7 +15,7 @@ Before writing a new component or raw markup:
 2. For app-specific composites, check `@rocket.chat/ui-client` and
    `@rocket.chat/fuselage-ui-kit` (UIKit blocks).
 3. Hooks: `@rocket.chat/fuselage-hooks` (`useDebouncedValue`,
-   `useMutableCallback`, `useUniqueId`, …).
+   `useMutableCallback`, …). For generated ids use React's native `useId`.
 4. Icons: `@rocket.chat/icons` via Fuselage's `<Icon />`.
 
 Only build a bespoke component when nothing fits — and put it at the right level
@@ -27,8 +27,8 @@ Only build a bespoke component when nothing fits — and put it at the right lev
   takes spacing/color/layout props backed by `@rocket.chat/fuselage-tokens`.
 - Avoid raw `.css` for component styling. Existing CSS is linted
   (`yarn stylelint`); don't add hardcoded colors/sizes — use tokens.
-- Theming (light/dark) comes from Fuselage + `ui-theming`; don't hardcode colors
-  that break a theme.
+- Theming (light/dark) comes from Fuselage + `useThemeMode` in
+  `@rocket.chat/ui-client`; don't hardcode colors that break a theme.
 
 ## Markdown / message rendering
 

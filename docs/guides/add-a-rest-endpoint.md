@@ -6,7 +6,7 @@ project conventions.
 
 This is the hands-on companion to
 [conventions/rest-endpoints](../conventions/backend/rest-endpoints.md). Reference
-implementation to copy from: `apps/meteor/app/api/server/v1/custom-user-status.ts`.
+implementation to copy from: `apps/meteor/server/api/v1/custom-user-status.ts`.
 
 ---
 
@@ -39,7 +39,7 @@ const MyResourceListSchema = {
 Wire the route into the endpoint typing so `@rocket.chat/api-client` and the
 frontend get full types. Follow the existing entries in that folder.
 
-## 2. Implement the endpoint (`apps/meteor/app/api/server/v1/`)
+## 2. Implement the endpoint (`apps/meteor/server/api/v1/`)
 
 ```ts
 import { ajvQuery, ajv } from '@rocket.chat/rest-typings';
@@ -70,6 +70,10 @@ API.v1.get(
 Rules recap (full list in [conventions](../conventions/backend/rest-endpoints.md)):
 runtime AJV validation, response schema per status code, guards in the options,
 `API.v1.success/failure` for the envelope, `error-<domain>-<issue>` codes.
+
+> **Register the file or nothing mounts.** Add a side-effect import to
+> `apps/meteor/server/api/index.ts` (e.g. `import './v1/my-resource';`).
+> Without it the endpoint silently never exists — no error, just 404.
 
 ## 3. Add permission / 2FA if needed
 

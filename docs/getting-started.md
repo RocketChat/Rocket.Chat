@@ -16,7 +16,7 @@ reload.
 | Tool | Version | How to get it |
 |-----------|--------|-----------|
 | Node.js | **22.22.3** | `nvm use` (reads `.node-version`) or [Volta](https://volta.sh) (automatic) |
-| Yarn | **4.12.0** | Ships via Corepack: `corepack enable` |
+| Yarn | **4.17.1** | Ships via Corepack: `corepack enable` |
 | Meteor | **3.4.1** | `npx meteor@3.4.1` or the [installer](https://docs.meteor.com/about/install.html) |
 | Git | any recent | — |
 
@@ -146,10 +146,11 @@ docker run -d --name rc-mongo -p 27017:27017 \
 docker exec rc-mongo mongosh --eval "rs.initiate()"
 ```
 
-Then point the app at it in `apps/meteor/.env`:
+Then point the app at it by **exporting in your shell** before `yarn dev`
+(Meteor does not load a `.env` file):
 
 ```bash
-MONGO_URL=mongodb://localhost:27017/rocketchat?replicaSet=rs0
+export MONGO_URL='mongodb://localhost:27017/rocketchat?replicaSet=rs0'
 ```
 
 ---

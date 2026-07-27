@@ -15,7 +15,7 @@ through review. For a hands-on build, see
 
 New endpoints use the typed `API.v1.get/post/put/delete(...)` form, **not** the
 legacy `API.v1.addRoute(...)`. Real example:
-`apps/meteor/app/api/server/v1/custom-user-status.ts`.
+`apps/meteor/server/api/v1/custom-user-status.ts`.
 
 ```ts
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
@@ -63,8 +63,9 @@ const endpoints = API.v1.get(
 
 ## Where endpoints live
 
-`apps/meteor/app/api/server/v1/<resource>.ts`. The API framework itself is in
-`apps/meteor/app/api/server/` (`ApiClass.ts`, `router.ts`, `definition.ts`).
+`apps/meteor/server/api/v1/<resource>.ts`, registered via a side-effect import
+in `apps/meteor/server/api/index.ts`. The API framework itself is in
+`apps/meteor/server/api/` (`ApiClass.ts`, `router.ts`, `definition.ts`).
 
 > A feature may still expose a **legacy Meteor method** alongside or instead of
 > REST. New work should be REST (DDP is legacy — see

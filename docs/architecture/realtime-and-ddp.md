@@ -47,7 +47,7 @@ Key code:
 
 - `apps/meteor/server/modules/streamer/streamer.module.ts` — the `Streamer`
   implementation (subscriptions, allow/deny rules, emit).
-- `apps/meteor/app/notifications/server/lib/Notifications.ts` — defines the
+- `apps/meteor/server/modules/notifications/notifications.module.ts` — defines the
   application streams built on top of it.
 
 > **Mental model:** a streamer subscription is a *firehose of events you opted
@@ -89,6 +89,6 @@ New client-server interactions are built as **REST endpoints**, not DDP
 > **`method.call` / `method.callAnon`:** legacy Meteor methods can also be
 > invoked over plain HTTP via `POST /api/v1/method.call/:method` (and
 > `method.callAnon` for anonymous-allowed methods) — see
-> `apps/meteor/app/api/server/v1/misc.ts`. That's how method traffic shows up in
+> `apps/meteor/server/api/v1/misc.ts`. That's how method traffic shows up in
 > the network tab without a WebSocket. It's a transport bridge for the legacy
 > surface, **not** an API to build on — new code gets a typed REST endpoint.

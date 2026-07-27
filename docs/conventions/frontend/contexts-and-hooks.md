@@ -15,7 +15,7 @@ components testable (the contexts are mockable, see
 
 | Need | Hook |
 |------|------|
-| Translate text | `useTranslation` |
+| Translate text | `useTranslation` from **`react-i18next`** (the `ui-contexts` one is deprecated) |
 | Read a setting | `useSetting(id)` |
 | Check a permission | `usePermission(p)` / `useAtLeastOnePermission` / `useAllPermissions` |
 | Current user | `useUserId`, `useUser` |
@@ -28,9 +28,14 @@ components testable (the contexts are mockable, see
 ## Translations
 
 ```ts
-const t = useTranslation();
+import { useTranslation } from 'react-i18next';
+
+const { t } = useTranslation();
 t('My_i18n_Key');
 ```
+
+Import from **`react-i18next`** — `ui-contexts` also exports a `useTranslation`
+(returning a bare `t`), but it is `@deprecated`.
 
 Keys live in `@rocket.chat/i18n` (`packages/i18n`). **Never hardcode
 user-visible strings** — add a key and translate. Settings, slash commands, and

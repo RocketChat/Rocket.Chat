@@ -60,12 +60,12 @@ partial cache causes strange errors later.
 ## Wrong Node/Yarn version
 
 Obscure build errors are usually a version mismatch. The project pins
-**Node 22.22.3** and **Yarn 4.12.0** (`package.json` → `engines`/`volta`, and
+**Node 22.22.3** and **Yarn 4.17.1** (`package.json` → `engines`/`volta`, and
 `.node-version`).
 
 ```bash
 node -v        # should be v22.22.3
-yarn -v        # should be 4.12.0
+yarn -v        # should be 4.17.1
 nvm use        # aligns Node with .node-version
 corepack enable
 ```
@@ -74,12 +74,14 @@ Volta aligns automatically if installed.
 
 ---
 
-## Mongo: real-time doesn't work / oplog errors
+## Mongo: real-time doesn't work / replica-set errors
 
-Meteor's bundled Mongo works for the first run, but some real-time features need
-a **replica set** (oplog). Run an external Mongo with a replica set and set
-`MONGO_URL`/`MONGO_OPLOG_URL` — see section 5 of
-[getting-started](../getting-started.md).
+Rocket.Chat needs Mongo running as a **replica set** — for change streams, not
+the Meteor oplog (oplog tailing is disabled; real-time goes through the
+streamer). The bundled dev Mongo already runs as a single-node replica set; if
+you use an external Mongo, initiate a replica set and export `MONGO_URL` — see
+section 5 of [getting-started](../getting-started.md). (`MONGO_OPLOG_URL` only
+matters for production/microservices deployments.)
 
 Check that the replica set was initiated:
 

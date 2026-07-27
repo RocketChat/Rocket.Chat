@@ -35,8 +35,7 @@ Rocket.Chat is a **Meteor monolith** (`apps/meteor`) surrounded by a set of
                         │   Microservices (ee/apps/*)   │
                         │   presence · authorization ·  │
                         │   account · ddp-streamer ·    │
-                        │   stream-hub · queue-worker · │
-                        │   federation ·                │
+                        │   queue-worker ·              │
                         │   omnichannel-transcript      │
                         └───────────────────────────────┘
 ```

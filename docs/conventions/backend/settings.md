@@ -9,7 +9,7 @@ avoiding the cache gotcha.
 ## Register at startup
 
 Settings are declared through the **settings registry**
-(`apps/meteor/app/settings/server/SettingsRegistry.ts`). Signature:
+(`apps/meteor/server/settings/SettingsRegistry.ts`). Signature:
 
 ```ts
 settingsRegistry.add(id, defaultValue, options);
@@ -37,7 +37,8 @@ await settingsRegistry.add('My_Feature_Enabled', false, {
 ## Read a setting
 
 ```ts
-import { settings } from '../../settings/server';
+// relative to apps/meteor/server/api/v1/ — exported from apps/meteor/server/settings
+import { settings } from '../../settings';
 
 const enabled = settings.get('My_Feature_Enabled');   // cached, fast, sync-ish
 ```

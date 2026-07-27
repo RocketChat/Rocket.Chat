@@ -29,10 +29,13 @@ Terms are grouped roughly by area. Many encode a deliberate design choice — th
 - **Models** — the typed MongoDB accessors in `@rocket.chat/models`
   (`Messages`, `Rooms`, `Users`, …). All **async**.
 - **Proxify** — models and `core-services` are exposed as lazy **proxies**; a
-  call resolves to the real implementation at runtime
-  (`packages/models/src/proxify.ts`).
-  *Gotcha:* a proxied call **waits** for its backing implementation/service to be
-  available — a missing/misconfigured service makes calls hang rather than throw.
+  call resolves to the real implementation at runtime. Two implementations with
+  **different failure modes**:
+  *models* (`packages/models/src/proxify.ts`) **throws immediately**
+  (`Model X not found`) if the model isn't registered;
+  *core-services* (`packages/core-services/src/lib/proxify.ts`) routes over the
+  broker and **waits** — a missing/misconfigured service makes those calls hang
+  rather than throw.
 - **Updater** — pattern for atomic multi-field updates: accumulate changes with
   `Model.getUpdater()` then apply with `updateFromUpdater(query, updater)`
   (`IBaseModel`, `packages/models/src/updater.ts`). Prefer this over scattered
@@ -43,7 +46,7 @@ Terms are grouped roughly by area. Many encode a deliberate design choice — th
 ## API & validation
 
 - **Typed API / `addRoute`** — REST endpoints are defined on the API class
-  (`apps/meteor/app/api/server/ApiClass.ts`). New code uses the typed
+  (`apps/meteor/server/api/ApiClass.ts`). New code uses the typed
   `.get()/.post()/...` pattern; older code uses `API.v1.addRoute()`. See
   [api-endpoint-migration](../api-endpoint-migration.md).
 - **rest-typings** — `@rocket.chat/rest-typings`: per-endpoint request/response
@@ -65,14 +68,15 @@ Terms are grouped roughly by area. Many encode a deliberate design choice — th
   *Gotcha:* post-events are often dispatched **fire-and-forget** (`void
   triggerEvent(...)`) so an app crash can't block core flows.
 - **Settings registry** — admin-configurable settings registered at startup
-  (`apps/meteor/app/settings/server/SettingsRegistry.ts`).
+  (`apps/meteor/server/settings/SettingsRegistry.ts`).
   *Gotcha:* `settings.get()` reads a fast **cache** that can lag the DB; use the
   model read when you need a guaranteed-fresh value.
-- **Slash commands** — `/command` handlers
-  (`apps/meteor/app/utils/server/slashCommand.ts`,
-  `app/slashcommands-*/`).
+- **Slash commands** — `/command` handlers. Server registry:
+  `apps/meteor/server/lib/utils/slashCommand.ts`; implementations in
+  `apps/meteor/server/slashcommands/*` (client side: `app/slashcommands-*/client`).
 - **Integrations / webhooks** — incoming/outgoing HTTP hooks with sandboxed
-  scripts (`apps/meteor/app/integrations/server/`).
+  scripts (`apps/meteor/server/lib/integrations/`, incoming route in
+  `apps/meteor/server/api/webhooks.ts`).
 
 ## Build & platform
 

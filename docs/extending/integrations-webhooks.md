@@ -9,15 +9,17 @@ and the sandbox constraint.
 ## Two directions
 
 - **Incoming webhook** — an external system `POST`s to a generated URL; the
-  integration turns the payload into a message. Entry:
-  `apps/meteor/app/integrations/server/api/api.ts`.
+  integration turns the payload into a message. Route (`hooks/`):
+  `apps/meteor/server/api/webhooks.ts`.
 - **Outgoing webhook** — a room event (new message, join, leave, …) triggers an
   HTTP request to an external URL. Dispatch:
-  `apps/meteor/app/integrations/server/lib/triggerHandler.ts`; event wiring in
-  `.../server/triggers.ts`.
+  `apps/meteor/server/lib/integrations/lib/triggerHandler.ts`; event wiring in
+  `apps/meteor/server/lib/integrations/triggers.ts`.
 
-Layout: `apps/meteor/app/integrations/server/` → `api/`, `lib/`, `methods/`,
-`triggers.ts`. Persistence via the `Integrations` model.
+Layout: `apps/meteor/server/lib/integrations/` → `lib/`, `functions/`,
+`triggers.ts`, `startup.ts`; Meteor methods in
+`apps/meteor/server/meteor-methods/integrations/`. Persistence via the
+`Integrations` model.
 
 ## Trigger scripts run sandboxed
 

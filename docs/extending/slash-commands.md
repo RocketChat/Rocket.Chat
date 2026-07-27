@@ -7,12 +7,13 @@ reading:** you can register one with the real API and know where built-ins live.
 
 ## Register
 
-Registry: `apps/meteor/app/utils/server/slashCommand.ts`
-(`slashCommands.add({...})`).
+Two registries — **server**: `apps/meteor/server/lib/utils/slashCommand.ts`;
+**client**: `apps/meteor/app/utils/client/slashCommand.ts` (what determines
+`clientOnly` behavior). Both expose `slashCommands.add({...})`.
 
 ```ts
-// from apps/meteor/app/slashcommands-<name>/server/
-import { slashCommands } from '../../utils/server/slashCommand';
+// from apps/meteor/server/slashcommands/<name>/server.ts
+import { slashCommands } from '../../lib/utils/slashCommand';
 
 slashCommands.add({
   command: 'mycommand',
@@ -35,10 +36,10 @@ Param object fields (from `ISlashCommandAddParams`): `command`, `callback`,
 
 ## Convention: one module per command
 
-Built-ins live in `apps/meteor/app/slashcommands-<name>/`, split into
-`server/` (the handler) and often `client/`. Follow that layout for a new
-command rather than piling into a shared file. Examples:
-`app/slashcommands-me/`, `app/slashcommands-msg/`.
+Built-in **server handlers** live in `apps/meteor/server/slashcommands/<name>/`
+(e.g. `kick/`, `join/`, `msg/`); **client registrations** remain in
+`apps/meteor/app/slashcommands-<name>/client/`. Follow that layout for a new
+command rather than piling into a shared file.
 
 ## Notes
 

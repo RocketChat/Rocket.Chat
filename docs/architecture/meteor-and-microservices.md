@@ -25,13 +25,14 @@ separate Node processes. They live in `ee/apps/*`:
 | `authorization-service` | Permission/role checks (RBAC) |
 | `account-service` | Account/user operations |
 | `ddp-streamer` | Holds client WebSocket connections; serves `/websocket` & `/sockjs` |
-| `stream-hub-service` | Fan-out hub for real-time streams |
 | `queue-worker` | Background job processing |
-| `federation-service` | Matrix federation |
 | `omnichannel-transcript` | Omnichannel transcript generation |
 
 Each is built on **Moleculer**. They are **optional**: the monolith provides the
-same capabilities in-process when a service isn't running.
+same capabilities in-process when a service isn't running. Most `core-services`
+implementations actually live in-process at `apps/meteor/server/services/`
+(messages, room, team, video-conference, federation, …) — Matrix federation,
+for example, runs there, not as a separate service.
 
 ## How they communicate: `core-services` + transporter
 
@@ -61,7 +62,7 @@ apps/meteor ──calls──▶ core-services interface (proxify)
 |---------|------|-------|
 | `yarn dev` (root or `apps/meteor`) | Monolith | **default** for feature work |
 | `yarn ms` (`apps/meteor`) | Microservices | uses `TRANSPORTER` (default TCP); needs the services + broker up |
-| `docker compose -f docker-compose-local.yml up` | Full stack from prebuilt images | Mongo replica set + NATS + Traefik + services; see [getting-started §6](../getting-started.md#6-run-modes) |
+| `docker compose -f docker-compose-local.yml up` (from `apps/meteor/`) | Full stack from prebuilt images | Mongo replica set + NATS + Traefik + services; see [getting-started §6](../getting-started.md#6-run-modes) |
 
 The docker stack puts **Traefik** in front: it routes `/websocket` & `/sockjs`
 to `ddp-streamer` and everything else to the main app — mirroring how requests
