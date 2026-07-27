@@ -106,7 +106,7 @@ test.describe('OC - Manager Role', () => {
 		await test.step('expect agent to not have access to omnichannel administration', async () => {
 			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Contact Center')).toBeVisible();
 			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Analytics')).toBeVisible();
-			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Real-Time Monitoring')).toBeVisible();
+			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Real-time Monitoring')).toBeVisible();
 			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Agents')).toBeVisible();
 			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Departments')).toBeVisible();
 			await expect(poOmnichannel.omnisidenav.getSidebarLinkByName('Business Hours')).toBeVisible();

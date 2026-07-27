@@ -154,6 +154,6 @@ export class OmnichannelSidebar extends Sidebar {
 	}
 
 	getSidebarLinkByName(name: string): Locator {
-		return this.root.getByRole('link', { name });
+		return this.root.getByRole('link', { name, exact: true });
 	}
 }
