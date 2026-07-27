@@ -15,7 +15,7 @@ import Hooks from '../../lib/hooks';
 import { parentCall } from '../../lib/parentCall';
 import Triggers from '../../lib/triggers';
 import userPresence from '../../lib/userPresence';
-import { ChatConnector } from '../../routes/Chat';
+import Chat from '../../routes/Chat';
 import ChatFinished from '../../routes/ChatFinished';
 import GDPRAgreement from '../../routes/GDPRAgreement';
 import LeaveMessage from '../../routes/LeaveMessage';
@@ -205,7 +205,7 @@ export class App extends Component<AppProps, AppState> {
 		return (
 			<ScreenProvider>
 				<Router history={history} onChange={this.handleRoute}>
-					<ChatConnector path='/' default />
+					<Chat path='/' default />
 					<ChatFinished path='/chat-finished' />
 					<GDPRAgreement path='/gdpr' />
 					<LeaveMessage path='/leave-message' />

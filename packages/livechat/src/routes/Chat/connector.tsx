@@ -3,7 +3,7 @@ import type { Ref } from 'preact';
 import { useContext } from 'preact/hooks';
 import { withTranslation } from 'react-i18next';
 
-import { ChatContainer } from '.';
+import ChatContainer from './container';
 import { ScreenContext } from '../../components/Screen/ScreenProvider';
 import { canRenderMessage } from '../../helpers/canRenderMessage';
 import { formatAgent } from '../../helpers/formatAgent';
