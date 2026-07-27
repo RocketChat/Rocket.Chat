@@ -2,9 +2,10 @@ import type { EmojiData } from 'emoji-mart';
 import type { TFunction } from 'i18next';
 import type { RefObject } from 'preact';
 import { Component, createRef } from 'preact';
-import { Suspense, lazy } from 'preact/compat';
+import { Suspense } from 'preact/compat';
 import { withTranslation } from 'react-i18next';
 
+import Picker from './Picker';
 import styles from './styles.scss';
 import { Button } from '../../components/Button';
 import { Composer, ComposerAction, ComposerActions } from '../../components/Composer';
@@ -23,13 +24,6 @@ import RemoveIcon from '../../icons/remove.svg';
 import SendIcon from '../../icons/send.svg';
 import EmojiIcon from '../../icons/smile.svg';
 import type { Dispatch, StoreState } from '../../store';
-
-import 'emoji-mart/css/emoji-mart.css';
-
-const Picker = lazy(async () => {
-	const { Picker } = await import('emoji-mart');
-	return Picker;
-});
 
 type QueueInfo = {
 	spot?: number;
@@ -80,23 +74,11 @@ class Chat extends Component<ChatProps, ChatState> {
 		emojiPickerActive: false,
 	};
 
-	inputRef: RefObject<HTMLInputElement> = createRef();
+	private inputRef: RefObject<HTMLInputElement> = createRef();
 
-	filesDropTarget: unknown = null;
+	private notifyEmojiSelectRef: RefObject<(native: string) => void> = createRef();
 
-	messagesContainer: HTMLElement | null = null;
-
-	notifyEmojiSelect?: (native: string) => void;
-
-	handleFilesDropTargetRef = (ref: unknown) => {
-		this.filesDropTarget = ref;
-	};
-
-	handleMessagesContainerRef = (messagesContainer: { base?: HTMLElement } | null) => {
-		this.messagesContainer = messagesContainer ? (messagesContainer.base ?? null) : null;
-	};
-
-	handleScrollTo = (region: string) => {
+	private handleScrollTo = (region: string) => {
 		const { onTop } = this.props;
 
 		if (region === MessageList.SCROLL_AT_BOTTOM) {
@@ -111,27 +93,30 @@ class Chat extends Component<ChatProps, ChatState> {
 		}
 	};
 
-	handleUploadClick = (event?: Event) => {
+	private handleUploadClick = (event?: Event) => {
 		event?.preventDefault();
 		this.inputRef?.current?.click();
 	};
 
-	handleSendClick = (event?: Event) => {
+	private handleSendClick = (event?: Event) => {
 		event?.preventDefault();
 		this.handleSubmit(this.state.text);
 	};
 
-	handleSubmit = (text: string) => {
-		if (this.props.onSubmit) {
-			this.props.onSubmit(text);
-			this.setState({ text: '' });
-			this.turnOffEmojiPicker();
-		}
+	private handleSubmit = (text: string) => {
+		const { onSubmit } = this.props;
+
+		if (!onSubmit) return;
+
+		onSubmit(text);
+		this.setState({ text: '' });
+		this.turnOffEmojiPicker();
 	};
 
-	handleChangeText = (text: string) => {
-		let value = text;
+	private handleChangeText = (text: string) => {
 		const { onChangeText, limitTextLength } = this.props;
+
+		let value = text;
 		if (limitTextLength && limitTextLength < text.length) {
 			value = value.substring(0, limitTextLength);
 		}
@@ -139,22 +124,22 @@ class Chat extends Component<ChatProps, ChatState> {
 		onChangeText?.(value);
 	};
 
-	toggleEmojiPickerState = () => {
+	private toggleEmojiPickerState = () => {
 		this.setState({ emojiPickerActive: !this.state.emojiPickerActive });
 	};
 
-	handleEmojiSelect = (emoji: EmojiData) => {
+	private handleEmojiSelect = (emoji: EmojiData) => {
 		this.toggleEmojiPickerState();
 		if ('native' in emoji) {
-			this.notifyEmojiSelect?.(emoji.native);
+			this.notifyEmojiSelectRef.current?.(emoji.native);
 		}
 	};
 
-	handleEmojiClick = () => {
+	private handleEmojiClick = () => {
 		this.turnOffEmojiPicker();
 	};
 
-	turnOffEmojiPicker = () => {
+	private turnOffEmojiPicker = () => {
 		if (this.state.emojiPickerActive) {
 			this.setState({ emojiPickerActive: !this.state.emojiPickerActive });
 		}
@@ -201,7 +186,6 @@ class Chat extends Component<ChatProps, ChatState> {
 				<ScreenContent nopadding>
 					<div className={createClassName(styles, 'chat__messages', { atBottom, loading })}>
 						<MessageList
-							ref={this.handleMessagesContainerRef}
 							avatarResolver={avatarResolver}
 							uid={uid}
 							messages={messages}
@@ -266,7 +250,7 @@ class Chat extends Component<ChatProps, ChatState> {
 							placeholder={t('type_your_message_here')}
 							value={text}
 							notifyEmojiSelect={(click: (native: string) => void) => {
-								this.notifyEmojiSelect = click;
+								this.notifyEmojiSelectRef.current = click;
 							}}
 							handleEmojiClick={this.handleEmojiClick}
 							pre={

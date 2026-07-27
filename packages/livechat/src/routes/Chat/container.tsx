@@ -1,4 +1,3 @@
-import type i18next from 'i18next';
 import type { TFunction } from 'i18next';
 import type { ComponentChildren, RefObject } from 'preact';
 import { Component } from 'preact';
@@ -65,7 +64,6 @@ export type ChatContainerProps = {
 	theme: ScreenContextValue['theme'];
 	visitorsCanCloseChat?: boolean;
 	t: TFunction;
-	i18n: typeof i18next;
 };
 
 type ChatWrapperProps = {
@@ -144,7 +142,7 @@ class ChatContainer extends Component<ChatContainerProps> {
 	};
 
 	private getRoom = async () => {
-		const { alerts, dispatch, room, messages, i18n } = this.props;
+		const { alerts, dispatch, room, messages, t } = this.props;
 		const previousMessages = getGreetingMessages(messages);
 
 		if (room) {
@@ -164,7 +162,7 @@ class ChatContainer extends Component<ChatContainerProps> {
 			const reason = error ? error.error : '';
 			const alert = {
 				id: createToken(),
-				children: i18n.t('error_starting_a_new_conversation_reason', { reason }),
+				children: t('error_starting_a_new_conversation_reason', { reason }),
 				error: true,
 				timeout: 10000,
 			};
@@ -200,13 +198,14 @@ class ChatContainer extends Component<ChatContainerProps> {
 	};
 
 	private handleSubmit = async (msg: string) => {
+		const { alerts, dispatch, token, user } = this.props;
+
 		if (msg.trim() === '') {
 			return;
 		}
 
 		await this.grantUser();
 		const { _id: rid } = await this.getRoom();
-		const { alerts, dispatch, token, user } = this.props;
 
 		try {
 			this.stopTypingDebounced.stop();
@@ -220,7 +219,7 @@ class ChatContainer extends Component<ChatContainerProps> {
 	};
 
 	private doFileUpload = async (rid: string, file: File) => {
-		const { alerts, dispatch, i18n } = this.props;
+		const { alerts, dispatch, t } = this.props;
 
 		try {
 			await Livechat.uploadFile(rid, file);
@@ -229,13 +228,13 @@ class ChatContainer extends Component<ChatContainerProps> {
 				data: { reason, sizeAllowed },
 			} = error;
 
-			let message = i18n.t('fileupload_error');
+			let message = t('fileupload_error');
 			switch (reason) {
 				case 'error-type-not-allowed':
-					message = i18n.t('media_types_not_accepted');
+					message = t('media_types_not_accepted');
 					break;
 				case 'error-size-not-allowed':
-					message = i18n.t('file_exceeds_allowed_size_of_size', { size: sizeAllowed });
+					message = t('file_exceeds_allowed_size_of_size', { size: sizeAllowed });
 			}
 
 			const alert = { id: createToken(), children: message, error: true, timeout: 5000 };
@@ -244,16 +243,10 @@ class ChatContainer extends Component<ChatContainerProps> {
 	};
 
 	private handleUpload = async (files: (File | null)[]) => {
-		const {
-			config: {
-				settings: { fileUpload },
-			},
-		} = store.state;
+		const { dispatch, alerts, t, uploads } = this.props;
 
-		const { dispatch, alerts, i18n } = this.props;
-
-		if (!fileUpload) {
-			const alert = { id: createToken(), children: i18n.t('file_upload_disabled'), error: true, timeout: 5000 };
+		if (!uploads) {
+			const alert = { id: createToken(), children: t('file_upload_disabled'), error: true, timeout: 5000 };
 			dispatch({ alerts: (alerts.push(alert), alerts) });
 			return;
 		}
@@ -278,17 +271,16 @@ class ChatContainer extends Component<ChatContainerProps> {
 	};
 
 	private onFinishChat = async () => {
-		const { i18n } = this.props;
+		const { t, alerts, dispatch, room } = this.props;
 
 		const { success } = await ModalManager.confirm({
-			text: i18n.t('are_you_sure_you_want_to_finish_this_chat'),
+			text: t('are_you_sure_you_want_to_finish_this_chat'),
 		});
 
 		if (!success) {
 			return;
 		}
 
-		const { alerts, dispatch, room } = this.props;
 		const { _id: rid } = room || {};
 
 		dispatch({ loading: true });
@@ -300,7 +292,7 @@ class ChatContainer extends Component<ChatContainerProps> {
 			await Livechat.closeChat({ rid });
 		} catch (error) {
 			console.error(error);
-			const alert = { id: createToken(), children: i18n.t('error_closing_chat'), error: true, timeout: 0 };
+			const alert = { id: createToken(), children: t('error_closing_chat'), error: true, timeout: 0 };
 			dispatch({ alerts: (alerts.push(alert), alerts) });
 		} finally {
 			dispatch({ loading: false });
@@ -308,23 +300,21 @@ class ChatContainer extends Component<ChatContainerProps> {
 	};
 
 	private onRemoveUserData = async () => {
-		const { i18n } = this.props;
+		const { t, alerts, dispatch } = this.props;
 		const { success } = await ModalManager.confirm({
-			text: i18n.t('are_you_sure_you_want_to_remove_all_of_your_person'),
+			text: t('are_you_sure_you_want_to_remove_all_of_your_person'),
 		});
 
 		if (!success) {
 			return;
 		}
 
-		const { alerts, dispatch } = this.props;
-
 		dispatch({ loading: true });
 		try {
 			await Livechat.deleteVisitor();
 		} catch (error) {
 			console.error(error);
-			const alert = { id: createToken(), children: i18n.t('error_removing_user_data'), error: true, timeout: 0 };
+			const alert = { id: createToken(), children: t('error_removing_user_data'), error: true, timeout: 0 };
 			dispatch({ alerts: (alerts.push(alert), alerts) });
 		} finally {
 			await loadConfig();
@@ -368,13 +358,13 @@ class ChatContainer extends Component<ChatContainerProps> {
 	private showOptionsMenu = () => this.canSwitchDepartment() || this.canFinishChat() || this.canRemoveUserData();
 
 	private async handleConnectingAgentAlert(connecting: boolean, message?: string | false) {
-		const { alerts: oldAlerts, dispatch, i18n } = this.props;
+		const { alerts: oldAlerts, dispatch, t } = this.props;
 		const { connectingAgentAlertId } = constants;
 		const alerts = oldAlerts.filter((item) => item.id !== connectingAgentAlertId);
 		if (connecting) {
 			alerts.push({
 				id: connectingAgentAlertId,
-				children: message || i18n.t('please_wait_for_the_next_available_agent'),
+				children: message || t('please_wait_for_the_next_available_agent'),
 				warning: true,
 				hideCloseButton: true,
 				timeout: 0,
@@ -385,6 +375,8 @@ class ChatContainer extends Component<ChatContainerProps> {
 	}
 
 	private async handleQueueMessage(connecting: boolean, queueInfo?: QueueInfo) {
+		const { room, dispatch, messages } = this.props;
+
 		if (!queueInfo) {
 			return;
 		}
@@ -393,14 +385,12 @@ class ChatContainer extends Component<ChatContainerProps> {
 		const { message: { text: msg, user: u } = {} } = queueInfo;
 		const { triggerQueueMessage } = this.innerStateRef.current!;
 
-		const { room } = this.props;
 		if (!room || !connecting || !msg || !triggerQueueMessage) {
 			return;
 		}
 
 		this.innerStateRef.current!.triggerQueueMessage = false;
 
-		const { dispatch, messages } = this.props;
 		const ts = new Date();
 		const message = { _id: livechatQueueMessageId, msg, u, ts: ts.toISOString() };
 		dispatch({

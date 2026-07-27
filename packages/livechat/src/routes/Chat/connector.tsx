@@ -51,12 +51,11 @@ const Chat = (_: ChatProps) => {
 		messageListPosition,
 	} = useStore();
 
-	const { t, i18n } = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<ChatContainer
 			t={t}
-			i18n={i18n}
 			title={customTitle || title || t('need_help')}
 			sound={sound}
 			token={token}
