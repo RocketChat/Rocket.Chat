@@ -98,7 +98,7 @@ const processMessage = async (message: any) => {
 		await closeChat(message);
 	} else if (message.t === 'command') {
 		const command = (commands as unknown as Record<string, (() => void) | undefined>)[message.msg];
-		command && command();
+		command?.();
 	} else if (isVideoCallMessage(message)) {
 		await processIncomingCallMessage(message);
 	}
@@ -115,7 +115,7 @@ const doPlaySound = async (message: any) => {
 };
 
 export const onAgentChange = async (agent: any) => {
-	await store.setState({ agent, queueInfo: null });
+	await store.setState({ agent, queueInfo: undefined });
 	parentCall('callback', ['assign-agent', normalizeAgent(agent)]);
 };
 
@@ -144,7 +144,7 @@ export const initRoom = async () => {
 	if (!roomAgent) {
 		if (servedBy) {
 			roomAgent = await Livechat.agent(rid);
-			await store.setState({ agent: roomAgent, queueInfo: null });
+			await store.setState({ agent: roomAgent, queueInfo: undefined });
 			parentCall('callback', 'assign-agent', normalizeAgent(roomAgent));
 		}
 	}
@@ -175,11 +175,11 @@ export const onUserActivity = (username: string, activities: string[]) => {
 	const isTyping = activities.includes('user-typing');
 	const { typing, user, agent } = store.state;
 
-	if (user && user.username && user.username === username) {
+	if (user?.username && user.username === username) {
 		return;
 	}
 
-	if (agent && agent.hiddenInfo) {
+	if (agent?.hiddenInfo) {
 		return;
 	}
 
@@ -232,8 +232,8 @@ export const onMessage = async (originalMessage: any) => {
 	await doPlaySound(message);
 };
 
-export const getGreetingMessages = (messages?: any[]) => messages && messages.filter((msg) => msg.trigger);
-export const getLatestCallMessage = (messages?: any[]) => messages && messages.filter((msg) => isVideoCallMessage(msg)).pop();
+export const getGreetingMessages = (messages?: any[]) => messages?.filter((msg) => msg.trigger);
+export const getLatestCallMessage = (messages?: any[]) => messages?.filter((msg) => isVideoCallMessage(msg)).pop();
 
 export const loadMessages = async () => {
 	const { messages: storedMessages, room, renderedTriggers } = store.state;

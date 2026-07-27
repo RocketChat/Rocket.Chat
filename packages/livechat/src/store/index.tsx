@@ -114,7 +114,11 @@ export type StoreState = {
 	loading?: boolean;
 	lastReadMessageId?: any;
 	triggerAgent?: any;
-	queueInfo?: any;
+	queueInfo?: {
+		spot?: number;
+		estimatedWaitTimeSeconds?: number;
+		message?: { text?: string; user?: unknown };
+	};
 	defaultAgent?: Agent;
 	parentUrl?: string;
 	connecting?: boolean;

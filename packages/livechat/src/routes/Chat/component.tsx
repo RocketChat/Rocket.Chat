@@ -3,7 +3,6 @@ import type { TFunction } from 'i18next';
 import type { RefObject } from 'preact';
 import { Component, createRef } from 'preact';
 import { Suspense } from 'preact/compat';
-import { withTranslation } from 'react-i18next';
 
 import Picker from './Picker';
 import styles from './styles.scss';
@@ -25,12 +24,6 @@ import SendIcon from '../../icons/send.svg';
 import EmojiIcon from '../../icons/smile.svg';
 import type { Dispatch, StoreState } from '../../store';
 
-type QueueInfo = {
-	spot?: number;
-	estimatedWaitTimeSeconds?: number;
-	message?: { text?: string; user?: unknown };
-};
-
 export type ChatProps = {
 	title?: string;
 	uid?: string;
@@ -47,7 +40,7 @@ export type ChatProps = {
 	onFinishChat?: (() => void) | null;
 	onRemoveUserData?: (() => void) | null;
 	lastReadMessageId?: string;
-	queueInfo?: QueueInfo;
+	queueInfo?: StoreState['queueInfo'];
 	registrationRequired?: boolean;
 	onRegisterUser?: () => void;
 	limitTextLength?: number;
@@ -94,23 +87,29 @@ class Chat extends Component<ChatProps, ChatState> {
 	};
 
 	private handleUploadClick = (event?: Event) => {
+		const { inputRef } = this;
+
 		event?.preventDefault();
-		this.inputRef?.current?.click();
+		inputRef.current?.click();
 	};
 
 	private handleSendClick = (event?: Event) => {
+		const { text } = this.state;
+		const { handleSubmit } = this;
+
 		event?.preventDefault();
-		this.handleSubmit(this.state.text);
+		handleSubmit(text);
 	};
 
 	private handleSubmit = (text: string) => {
 		const { onSubmit } = this.props;
+		const { turnOffEmojiPicker } = this;
 
 		if (!onSubmit) return;
 
 		onSubmit(text);
 		this.setState({ text: '' });
-		this.turnOffEmojiPicker();
+		turnOffEmojiPicker();
 	};
 
 	private handleChangeText = (text: string) => {
@@ -125,24 +124,26 @@ class Chat extends Component<ChatProps, ChatState> {
 	};
 
 	private toggleEmojiPickerState = () => {
-		this.setState({ emojiPickerActive: !this.state.emojiPickerActive });
+		this.setState(({ emojiPickerActive }) => ({ emojiPickerActive: !emojiPickerActive }));
 	};
 
 	private handleEmojiSelect = (emoji: EmojiData) => {
-		this.toggleEmojiPickerState();
+		const { notifyEmojiSelectRef, toggleEmojiPickerState } = this;
+
+		toggleEmojiPickerState();
 		if ('native' in emoji) {
-			this.notifyEmojiSelectRef.current?.(emoji.native);
+			notifyEmojiSelectRef.current?.(emoji.native);
 		}
 	};
 
 	private handleEmojiClick = () => {
-		this.turnOffEmojiPicker();
+		const { turnOffEmojiPicker } = this;
+
+		turnOffEmojiPicker();
 	};
 
 	private turnOffEmojiPicker = () => {
-		if (this.state.emojiPickerActive) {
-			this.setState({ emojiPickerActive: !this.state.emojiPickerActive });
-		}
+		this.setState({ emojiPickerActive: false });
 	};
 
 	render = (
@@ -166,125 +167,140 @@ class Chat extends Component<ChatProps, ChatState> {
 			registrationRequired,
 			onRegisterUser,
 			limitTextLength,
-			t,
+			t = ((key: string) => key) as TFunction,
 			dispatch,
 			theme,
 			unread,
 			onSoundStop,
 		}: ChatProps,
-		{ atBottom = true, text }: ChatState,
-	) => (
-		<Screen
-			title={title || t('need_help')}
-			agent={agent || null}
-			queueInfo={queueInfo}
-			className={createClassName(styles, 'chat')}
-			unread={unread}
-			onSoundStop={onSoundStop}
-		>
-			<FilesDropTarget inputRef={this.inputRef} overlayed overlayText={t('drop_here_to_upload_a_file')} onUpload={onUpload}>
-				<ScreenContent nopadding>
-					<div className={createClassName(styles, 'chat__messages', { atBottom, loading })}>
-						<MessageList
-							avatarResolver={avatarResolver}
-							uid={uid}
-							messages={messages}
-							typingUsernames={typingUsernames}
-							conversationFinishedMessage={conversationFinishedMessage}
-							lastReadMessageId={lastReadMessageId}
-							handleEmojiClick={this.handleEmojiClick}
-							dispatch={dispatch}
-							hideSenderAvatar={theme?.hideGuestAvatar}
-							hideReceiverAvatar={theme?.hideAgentAvatar}
-							onScrollTo={this.handleScrollTo}
-						/>
-						{this.state.emojiPickerActive && (
-							<Suspense fallback={null}>
-								<Picker
-									style={{ position: 'absolute', zIndex: 10, bottom: 0, maxWidth: '90%', left: 20, maxHeight: '90%' }}
-									showPreview={false}
-									showSkinTones={false}
-									sheetSize={64}
-									onSelect={this.handleEmojiSelect}
-									autoFocus={true}
-								/>
-							</Suspense>
+		{ atBottom = true, text, emojiPickerActive }: ChatState,
+	) => {
+		const {
+			inputRef,
+			notifyEmojiSelectRef,
+			handleEmojiClick,
+			handleScrollTo,
+			handleEmojiSelect,
+			handleSubmit,
+			handleChangeText,
+			toggleEmojiPickerState,
+			handleUploadClick,
+			handleSendClick,
+		} = this;
+
+		return (
+			<Screen
+				title={title || t('need_help')}
+				agent={agent || null}
+				queueInfo={queueInfo}
+				className={createClassName(styles, 'chat')}
+				unread={unread}
+				onSoundStop={onSoundStop}
+			>
+				<FilesDropTarget inputRef={inputRef} overlayed overlayText={t('drop_here_to_upload_a_file')} onUpload={onUpload}>
+					<ScreenContent nopadding>
+						<div className={createClassName(styles, 'chat__messages', { atBottom, loading })}>
+							<MessageList
+								avatarResolver={avatarResolver}
+								uid={uid}
+								messages={messages}
+								typingUsernames={typingUsernames}
+								conversationFinishedMessage={conversationFinishedMessage}
+								lastReadMessageId={lastReadMessageId}
+								handleEmojiClick={handleEmojiClick}
+								dispatch={dispatch}
+								hideSenderAvatar={theme?.hideGuestAvatar}
+								hideReceiverAvatar={theme?.hideAgentAvatar}
+								onScrollTo={handleScrollTo}
+							/>
+							{emojiPickerActive && (
+								<Suspense fallback={null}>
+									<Picker
+										style={{ position: 'absolute', zIndex: 10, bottom: 0, maxWidth: '90%', left: 20, maxHeight: '90%' }}
+										showPreview={false}
+										showSkinTones={false}
+										sheetSize={64}
+										onSelect={handleEmojiSelect}
+										autoFocus={true}
+									/>
+								</Suspense>
+							)}
+						</div>
+					</ScreenContent>
+					<ScreenFooter
+						options={
+							options && !registrationRequired ? (
+								<FooterOptions>
+									<MenuGroup>
+										{onChangeDepartment && (
+											<MenuItem onClick={onChangeDepartment} icon={ChangeIcon}>
+												{t('change_department')}
+											</MenuItem>
+										)}
+										{onRemoveUserData && (
+											<MenuItem onClick={onRemoveUserData} icon={RemoveIcon}>
+												{t('forget_remove_my_data')}
+											</MenuItem>
+										)}
+										{onFinishChat && (
+											<MenuItem danger onClick={onFinishChat} icon={FinishIcon}>
+												{t('finish_this_chat')}
+											</MenuItem>
+										)}
+									</MenuGroup>
+								</FooterOptions>
+							) : null
+						}
+						limit={limitTextLength ? <CharCounter limitTextLength={limitTextLength} textLength={text.length} /> : null}
+					>
+						{registrationRequired ? (
+							<Button loading={loading} disabled={loading} onClick={onRegisterUser} stack>
+								{t('chat_now')}
+							</Button>
+						) : (
+							<Composer
+								onUpload={onUpload}
+								onSubmit={handleSubmit}
+								onChange={handleChangeText}
+								placeholder={t('type_your_message_here')}
+								value={text}
+								notifyEmojiSelect={(click: (native: string) => void) => {
+									notifyEmojiSelectRef.current = click;
+								}}
+								handleEmojiClick={handleEmojiClick}
+								pre={
+									<ComposerActions>
+										<ComposerAction
+											text='Add emoji'
+											className={createClassName(styles, 'emoji-picker-icon')}
+											onClick={toggleEmojiPickerState}
+										>
+											<EmojiIcon width={20} height={20} />
+										</ComposerAction>
+									</ComposerActions>
+								}
+								post={
+									<ComposerActions>
+										{text.length === 0 && uploads && (
+											<ComposerAction text='Add attachment' onClick={handleUploadClick}>
+												<PlusIcon width={20} height={20} />
+											</ComposerAction>
+										)}
+										{text.length > 0 && (
+											<ComposerAction text='Send' onClick={handleSendClick}>
+												<SendIcon width={20} height={20} />
+											</ComposerAction>
+										)}
+									</ComposerActions>
+								}
+								limitTextLength={limitTextLength}
+							/>
 						)}
-					</div>
-				</ScreenContent>
-				<ScreenFooter
-					options={
-						options && !registrationRequired ? (
-							<FooterOptions>
-								<MenuGroup>
-									{onChangeDepartment && (
-										<MenuItem onClick={onChangeDepartment} icon={ChangeIcon}>
-											{t('change_department')}
-										</MenuItem>
-									)}
-									{onRemoveUserData && (
-										<MenuItem onClick={onRemoveUserData} icon={RemoveIcon}>
-											{t('forget_remove_my_data')}
-										</MenuItem>
-									)}
-									{onFinishChat && (
-										<MenuItem danger onClick={onFinishChat} icon={FinishIcon}>
-											{t('finish_this_chat')}
-										</MenuItem>
-									)}
-								</MenuGroup>
-							</FooterOptions>
-						) : null
-					}
-					limit={limitTextLength ? <CharCounter limitTextLength={limitTextLength} textLength={text.length} /> : null}
-				>
-					{registrationRequired ? (
-						<Button loading={loading} disabled={loading} onClick={onRegisterUser} stack>
-							{t('chat_now')}
-						</Button>
-					) : (
-						<Composer
-							onUpload={onUpload}
-							onSubmit={this.handleSubmit}
-							onChange={this.handleChangeText}
-							placeholder={t('type_your_message_here')}
-							value={text}
-							notifyEmojiSelect={(click: (native: string) => void) => {
-								this.notifyEmojiSelectRef.current = click;
-							}}
-							handleEmojiClick={this.handleEmojiClick}
-							pre={
-								<ComposerActions>
-									<ComposerAction
-										text='Add emoji'
-										className={createClassName(styles, 'emoji-picker-icon')}
-										onClick={this.toggleEmojiPickerState}
-									>
-										<EmojiIcon width={20} height={20} />
-									</ComposerAction>
-								</ComposerActions>
-							}
-							post={
-								<ComposerActions>
-									{text.length === 0 && uploads && (
-										<ComposerAction text='Add attachment' onClick={this.handleUploadClick}>
-											<PlusIcon width={20} height={20} />
-										</ComposerAction>
-									)}
-									{text.length > 0 && (
-										<ComposerAction text='Send' onClick={this.handleSendClick}>
-											<SendIcon width={20} height={20} />
-										</ComposerAction>
-									)}
-								</ComposerActions>
-							}
-							limitTextLength={limitTextLength}
-						/>
-					)}
-				</ScreenFooter>
-			</FilesDropTarget>
-		</Screen>
-	);
+					</ScreenFooter>
+				</FilesDropTarget>
+			</Screen>
+		);
+	};
 }
 
-export default withTranslation()(Chat);
+export default Chat;

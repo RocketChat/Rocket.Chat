@@ -1,10 +1,9 @@
 import type { TFunction } from 'i18next';
-import type { ComponentChildren, RefObject } from 'preact';
+import type { RefObject } from 'preact';
 import { Component } from 'preact';
 import { route } from 'preact-router';
 
 import Chat from './component';
-import { useChatSubscriptions } from './useChatSubscriptions';
 import { Livechat } from '../../api';
 import { ModalManager } from '../../components/Modal';
 import type { ScreenContextValue } from '../../components/Screen/ScreenProvider';
@@ -22,12 +21,6 @@ import { createToken } from '../../lib/random';
 import { initRoom, loadMessages, loadMoreMessages, defaultRoomParams, getGreetingMessages } from '../../lib/room';
 import type { Dispatch, StoreState } from '../../store';
 import store from '../../store';
-
-type QueueInfo = {
-	spot?: number;
-	estimatedWaitTimeSeconds?: number;
-	message?: { text?: string; user?: unknown };
-};
 
 export type ChatContainerProps = {
 	title?: string;
@@ -55,7 +48,7 @@ export type ChatContainerProps = {
 	lastReadMessageId?: StoreState['lastReadMessageId'];
 	guest?: StoreState['iframe']['guest'];
 	triggerAgent?: StoreState['triggerAgent'];
-	queueInfo?: QueueInfo;
+	queueInfo?: StoreState['queueInfo'];
 	registrationFormEnabled?: boolean;
 	nameFieldRegistrationForm?: boolean;
 	emailFieldRegistrationForm?: boolean;
@@ -64,16 +57,8 @@ export type ChatContainerProps = {
 	theme: ScreenContextValue['theme'];
 	visitorsCanCloseChat?: boolean;
 	t: TFunction;
-};
-
-type ChatWrapperProps = {
-	children: ComponentChildren;
-};
-
-const ChatWrapper = ({ children }: ChatWrapperProps) => {
-	useChatSubscriptions();
-
-	return children;
+	onRegisterUser: () => void;
+	onChangeDepartment: () => void;
 };
 
 type InnerState = {
@@ -97,26 +82,30 @@ class ChatContainer extends Component<ChatContainerProps> {
 
 	private checkConnectingAgent = async () => {
 		const { connecting, queueInfo } = this.props;
-		const { connectingAgent, queueSpot, estimatedWaitTime } = this.innerStateRef.current!;
+		const { innerStateRef, handleQueueMessage, handleConnectingAgentAlert } = this;
+
+		const { connectingAgent, queueSpot, estimatedWaitTime } = innerStateRef.current!;
 
 		const newConnecting = !!connecting;
 		const newQueueSpot = queueInfo?.spot || 0;
 		const newEstimatedWaitTime = queueInfo?.estimatedWaitTimeSeconds;
 
 		if (newConnecting !== connectingAgent || newQueueSpot !== queueSpot || newEstimatedWaitTime !== estimatedWaitTime) {
-			this.innerStateRef.current!.connectingAgent = newConnecting;
-			this.innerStateRef.current!.queueSpot = newQueueSpot;
-			this.innerStateRef.current!.estimatedWaitTime = newEstimatedWaitTime;
-			await this.handleQueueMessage(newConnecting, queueInfo);
-			await this.handleConnectingAgentAlert(newConnecting, await normalizeQueueAlert(queueInfo));
+			innerStateRef.current!.connectingAgent = newConnecting;
+			innerStateRef.current!.queueSpot = newQueueSpot;
+			innerStateRef.current!.estimatedWaitTime = newEstimatedWaitTime;
+			await handleQueueMessage(newConnecting, queueInfo);
+			await handleConnectingAgentAlert(newConnecting, await normalizeQueueAlert(queueInfo));
 		}
 	};
 
 	private checkRoom = () => {
 		const { room } = this.props;
-		const { room: stateRoom } = this.innerStateRef.current!;
+		const { innerStateRef } = this;
+
+		const { room: stateRoom } = innerStateRef.current!;
 		if (room && (!stateRoom || room._id !== stateRoom._id)) {
-			this.innerStateRef.current!.room = room;
+			innerStateRef.current!.room = room;
 			setTimeout(loadMessages, 500);
 		}
 	};
@@ -266,10 +255,6 @@ class ChatContainer extends Component<ChatContainerProps> {
 		dispatch({ sound: { ...sound, play: false } });
 	};
 
-	private onChangeDepartment = () => {
-		route('/switch-department');
-	};
-
 	private onFinishChat = async () => {
 		const { t, alerts, dispatch, room } = this.props;
 
@@ -353,11 +338,9 @@ class ChatContainer extends Component<ChatContainerProps> {
 		return !!(nameFieldRegistrationForm || emailFieldRegistrationForm || showDepartment);
 	};
 
-	private onRegisterUser = () => route('/register');
-
 	private showOptionsMenu = () => this.canSwitchDepartment() || this.canFinishChat() || this.canRemoveUserData();
 
-	private async handleConnectingAgentAlert(connecting: boolean, message?: string | false) {
+	private handleConnectingAgentAlert = async (connecting: boolean, message?: string | false) => {
 		const { alerts: oldAlerts, dispatch, t } = this.props;
 		const { connectingAgentAlertId } = constants;
 		const alerts = oldAlerts.filter((item) => item.id !== connectingAgentAlertId);
@@ -372,9 +355,9 @@ class ChatContainer extends Component<ChatContainerProps> {
 		}
 
 		dispatch({ alerts });
-	}
+	};
 
-	private async handleQueueMessage(connecting: boolean, queueInfo?: QueueInfo) {
+	private handleQueueMessage = async (connecting: boolean, queueInfo?: StoreState['queueInfo']) => {
 		const { room, dispatch, messages } = this.props;
 
 		if (!queueInfo) {
@@ -401,17 +384,25 @@ class ChatContainer extends Component<ChatContainerProps> {
 				({ ts }) => ts,
 			),
 		});
-	}
+	};
 
 	override async componentDidMount() {
-		await this.checkConnectingAgent();
+		const { checkConnectingAgent } = this;
+
+		await checkConnectingAgent();
 		await loadMessages();
 		void processUnread();
 	}
 
-	override async componentDidUpdate(prevProps: ChatContainerProps) {
+	override componentWillUnmount() {
+		const { handleConnectingAgentAlert } = this;
+
+		void handleConnectingAgentAlert(false);
+	}
+
+	override async componentDidUpdate({ messages: prevMessages, alerts: prevAlerts }: ChatContainerProps) {
 		const { messages, dispatch, user } = this.props;
-		const { messages: prevMessages, alerts: prevAlerts } = prevProps;
+		const { checkConnectingAgent, checkRoom } = this;
 
 		const renderedMessages = (messages ?? []).filter((message) => canRenderMessage(message));
 		const lastRenderedMessage = renderedMessages[renderedMessages.length - 1];
@@ -432,34 +423,46 @@ class ChatContainer extends Component<ChatContainerProps> {
 			}
 		}
 
-		await this.checkConnectingAgent();
-		this.checkRoom();
+		await checkConnectingAgent();
+		checkRoom();
 	}
 
-	override componentWillUnmount() {
-		void this.handleConnectingAgentAlert(false);
-	}
+	render = ({ title, user, onRegisterUser, onChangeDepartment, ...props }: ChatContainerProps) => {
+		const {
+			handleTop,
+			handleChangeText,
+			handleSubmit,
+			handleUpload,
+			showOptionsMenu,
+			canSwitchDepartment,
+			canFinishChat,
+			onFinishChat,
+			canRemoveUserData,
+			onRemoveUserData,
+			handleSoundStop,
+			registrationRequired,
+		} = this;
 
-	render = ({ user, ...props }: ChatContainerProps) => (
-		<ChatWrapper>
+		return (
 			<Chat
+				title={title}
 				{...props}
 				avatarResolver={getAvatarUrl}
 				uid={user?._id}
-				onTop={this.handleTop}
-				onChangeText={this.handleChangeText}
-				onSubmit={this.handleSubmit}
-				onUpload={this.handleUpload}
-				options={this.showOptionsMenu()}
-				onChangeDepartment={(this.canSwitchDepartment() && this.onChangeDepartment) || null}
-				onFinishChat={(this.canFinishChat() && this.onFinishChat) || null}
-				onRemoveUserData={(this.canRemoveUserData() && this.onRemoveUserData) || null}
-				onSoundStop={this.handleSoundStop}
-				registrationRequired={this.registrationRequired()}
-				onRegisterUser={this.onRegisterUser}
+				onTop={handleTop}
+				onChangeText={handleChangeText}
+				onSubmit={handleSubmit}
+				onUpload={handleUpload}
+				options={showOptionsMenu()}
+				onChangeDepartment={canSwitchDepartment() ? onChangeDepartment : undefined}
+				onFinishChat={canFinishChat() ? onFinishChat : undefined}
+				onRemoveUserData={canRemoveUserData() ? onRemoveUserData : undefined}
+				onSoundStop={handleSoundStop}
+				registrationRequired={registrationRequired()}
+				onRegisterUser={onRegisterUser}
 			/>
-		</ChatWrapper>
-	);
+		);
+	};
 }
 
 export default ChatContainer;

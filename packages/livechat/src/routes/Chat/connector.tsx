@@ -1,7 +1,9 @@
-import { useContext } from 'preact/hooks';
+import { useCallback, useContext } from 'preact/hooks';
+import { route } from 'preact-router';
 import { useTranslation } from 'react-i18next';
 
 import ChatContainer from './container';
+import { useChatSubscriptions } from './useChatSubscriptions';
 import { ScreenContext } from '../../components/Screen/ScreenProvider';
 import { canRenderMessage } from '../../helpers/canRenderMessage';
 import { formatAgent } from '../../helpers/formatAgent';
@@ -53,6 +55,16 @@ const Chat = (_: ChatProps) => {
 
 	const { t } = useTranslation();
 
+	useChatSubscriptions();
+
+	const onRegisterUser = useCallback(() => {
+		route('/register');
+	}, []);
+
+	const onChangeDepartment = useCallback(() => {
+		route('/switch-department');
+	}, []);
+
 	return (
 		<ChatContainer
 			t={t}
@@ -97,6 +109,8 @@ const Chat = (_: ChatProps) => {
 			messageListPosition={messageListPosition}
 			theme={theme}
 			visitorsCanCloseChat={visitorsCanCloseChat}
+			onRegisterUser={onRegisterUser}
+			onChangeDepartment={onChangeDepartment}
 		/>
 	);
 };
