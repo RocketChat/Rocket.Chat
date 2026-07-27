@@ -5500,11 +5500,7 @@ describe('[Users]', () => {
 
 			await request.post(api('login')).send({ resume: authToken }).expect(200);
 
-			const sessionsBefore = await request
-				.get(api('sessions/list'))
-				.set(credentials)
-				.query({ count: 25, offset: 0, sort: '{"loginAt":1}' })
-				.expect(200);
+			const sessionsBefore = await request.get(api('sessions/list')).set(credentials).expect(200);
 			expect(sessionsBefore.body.sessions).to.have.lengthOf(1);
 
 			await request.post(api('logout')).set(credentials).expect(200);
@@ -5514,11 +5510,7 @@ describe('[Users]', () => {
 
 			await request.post(api('login')).send({ resume: newAuthToken }).expect(200);
 
-			const sessionsAfter = await request
-				.get(api('sessions/list'))
-				.set(newCredentials)
-				.query({ count: 25, offset: 0, sort: '{"loginAt":1}' })
-				.expect(200);
+			const sessionsAfter = await request.get(api('sessions/list')).set(newCredentials).expect(200);
 			expect(sessionsAfter.body.sessions).to.have.lengthOf(1);
 		});
 
