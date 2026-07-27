@@ -157,7 +157,7 @@ function Setting({ className = undefined, settingId, sectionChanged, premiumCta 
 	// rendered inside the Field so the FieldGroup sibling spacing stays intact
 	const premiumRow =
 		setting.enterprise && premiumCta === 'link' ? (
-			<Box display='flex' alignItems='center' marginBlockEnd={8} style={{ gap: 8 }}>
+			<Box display='flex' alignItems='center' style={{ gap: '0.5rem' }}>
 				<Tag variant='featured'>{t('Premium')}</Tag>
 				{shouldDisableEnterprise && (
 					<Box
