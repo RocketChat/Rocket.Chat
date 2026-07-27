@@ -151,12 +151,37 @@ function Setting({ className = undefined, settingId, sectionChanged, premiumCta 
 
 	// @todo: type check props based on setting type
 
-	const memoizedSetting = (
+	// every isolated premium setting carries its own tag row above the field; the
+	// upgrade link only shows while the license does not cover it (blocks that are
+	// fully premium advertise once at the block level instead — premiumCta 'none').
+	// rendered inside the Field so the FieldGroup sibling spacing stays intact
+	const premiumRow =
+		setting.enterprise && premiumCta === 'link' ? (
+			<Box display='flex' alignItems='center' marginBlockEnd={8} style={{ gap: 8 }}>
+				<Tag variant='featured'>{t('Premium')}</Tag>
+				{shouldDisableEnterprise && (
+					<Box
+						is='a'
+						href={PRICING_URL}
+						target='_blank'
+						rel='noopener noreferrer'
+						fontScale='c1'
+						color='info'
+						textDecorationLine='underline'
+					>
+						{t('Upgrade_to_unlock')}
+					</Box>
+				)}
+			</Box>
+		) : undefined;
+
+	return (
 		<MemoizedSetting
 			className={className}
 			label={label}
 			hint={hint}
 			callout={callout}
+			premiumRow={premiumRow}
 			sectionChanged={sectionChanged}
 			{...setting}
 			disabled={disabled || shouldDisableEnterprise}
@@ -169,35 +194,6 @@ function Setting({ className = undefined, settingId, sectionChanged, premiumCta 
 			invisible={invisible}
 		/>
 	);
-
-	// every isolated premium setting carries its own tag row above the field; the
-	// upgrade link only shows while the license does not cover it (blocks that are
-	// fully premium advertise once at the block level instead — premiumCta 'none')
-	if (setting.enterprise && premiumCta === 'link' && !invisible) {
-		return (
-			<Box>
-				<Box display='flex' alignItems='center' marginBlockEnd={8} style={{ gap: 8 }}>
-					<Tag variant='featured'>{t('Premium')}</Tag>
-					{shouldDisableEnterprise && (
-						<Box
-							is='a'
-							href={PRICING_URL}
-							target='_blank'
-							rel='noopener noreferrer'
-							fontScale='c1'
-							color='info'
-							textDecorationLine='underline'
-						>
-							{t('Upgrade_to_unlock')}
-						</Box>
-					)}
-				</Box>
-				{memoizedSetting}
-			</Box>
-		);
-	}
-
-	return memoizedSetting;
 }
 
 export default Setting;
