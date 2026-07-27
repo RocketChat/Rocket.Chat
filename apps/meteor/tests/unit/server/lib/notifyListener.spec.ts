@@ -125,6 +125,22 @@ describe('Message Broadcast Tests', () => {
 				},
 			},
 			{
+				description: 'should return the message with empty reactions without querying users if useRealName is true',
+				message: {
+					...sampleMessage,
+					t: undefined,
+					reactions: {},
+				},
+				hideSystemMessages: [],
+				useRealName: true,
+				expectedResult: {
+					...sampleMessage,
+					t: undefined,
+					u: { ...sampleMessage.u, name: 'Real User' },
+					reactions: {},
+				},
+			},
+			{
 				description: 'should return the message with mentions real name if useRealName is true',
 				message: {
 					...sampleMessage,
@@ -231,10 +247,14 @@ describe('Message Broadcast Tests', () => {
 
 				expect(result).to.deep.equal(expectedResult);
 
-				if (useRealName && message.reactions) {
+				if (useRealName && message.reactions && Object.keys(message.reactions).length) {
 					const deduplicated = [...new Set(Object.values(message.reactions).flatMap((r) => r.usernames))];
 					expect(usersFindByUsernamesStub.calledOnce).to.be.true;
 					expect(usersFindByUsernamesStub.calledWith(deduplicated, { projection: { username: 1, name: 1 } })).to.be.true;
+				}
+
+				if (useRealName && message.reactions && !Object.keys(message.reactions).length) {
+					expect(usersFindByUsernamesStub.called).to.be.false;
 				}
 			});
 		});
