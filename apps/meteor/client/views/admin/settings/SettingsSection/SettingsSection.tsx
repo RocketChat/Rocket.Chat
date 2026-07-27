@@ -5,7 +5,7 @@ import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useLicenseBase } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import { Fragment, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { links } from '../../../../lib/links';
@@ -135,24 +135,13 @@ function SettingsSection({ groupId, hasReset = true, sectionTitle, sectionName, 
 				</Box>
 			)}
 			{subsectionGroups.map(({ subsection, settings }, index) => {
-				// premium gating: the Premium tag marks every enterprise setting regardless
-				// of the license — a fully-premium block carries one tag in the header and
-				// mixed blocks tag each consecutive premium run. Locking is a separate
-				// concern: when the license does not cover a fully-locked block a single
-				// upgrade callout is shown, and individually locked fields advertise an
-				// inline upgrade link; unlocked premium settings stay fully editable.
+				// premium gating (v3): a fully-premium block advertises once — Premium tag
+				// in the block header plus, while the license does not cover it, a single
+				// upgrade callout — and its rows stay clean; anywhere else each premium
+				// setting carries its own tag (+ upgrade link when locked) above the field,
+				// with no grouping wrapper for consecutive premium rows.
 				const allPremium = settings.length > 0 && settings.every((setting) => Boolean(setting.enterprise));
 				const allLocked = settings.length > 0 && settings.every((setting) => isPremiumLocked(setting));
-				const runs: { premium: boolean; settings: EditableSetting[] }[] = [];
-				for (const setting of settings) {
-					const premium = Boolean(setting.enterprise);
-					const lastRun = runs[runs.length - 1];
-					if (lastRun?.premium === premium) {
-						lastRun.settings.push(setting);
-					} else {
-						runs.push({ premium, settings: [setting] });
-					}
-				}
 
 				return (
 					<Box key={subsection || `ungrouped-${index}`} marginBlockEnd={24}>
@@ -180,26 +169,17 @@ function SettingsSection({ groupId, hasReset = true, sectionTitle, sectionName, 
 						)}
 						<Box backgroundColor='light' borderRadius='x8' padding={20}>
 							<FieldGroup>
-								{runs.map((run, runIndex) => (
-									<Fragment key={`run-${runIndex}`}>
-										{run.premium && !allPremium && (
-											<Box display='flex' justifyContent='flex-start'>
-												<Tag variant='featured'>{t('Premium')}</Tag>
-											</Box>
-										)}
-										{run.settings.map(
-											(setting) =>
-												isSetting(setting) && (
-													<Setting
-														key={setting._id}
-														settingId={setting._id}
-														sectionChanged={changed}
-														premiumCta={allLocked ? 'none' : 'link'}
-													/>
-												),
-										)}
-									</Fragment>
-								))}
+								{settings.map(
+									(setting) =>
+										isSetting(setting) && (
+											<Setting
+												key={setting._id}
+												settingId={setting._id}
+												sectionChanged={changed}
+												premiumCta={allPremium ? 'none' : 'link'}
+											/>
+										),
+								)}
 							</FieldGroup>
 						</Box>
 					</Box>

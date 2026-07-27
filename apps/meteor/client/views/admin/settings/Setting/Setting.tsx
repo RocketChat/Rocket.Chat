@@ -1,6 +1,6 @@
 import type { ISettingColor, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
 import { isSettingColor, isSetting, isSettingCode } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Tag } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useSettingStructure } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo, useState, useCallback } from 'react';
@@ -139,29 +139,6 @@ function Setting({ className = undefined, settingId, sectionChanged, premiumCta 
 
 	const shouldDisableEnterprise = setting.enterprise && !hasSettingModule;
 
-	// premium-locked settings advertise the upgrade with a discreet link under the
-	// field (the Premium tag and the callout live at the block level)
-	const upgradeLink = useMemo(
-		() =>
-			shouldDisableEnterprise && premiumCta === 'link' ? (
-				<Box
-					is='a'
-					href={PRICING_URL}
-					target='_blank'
-					rel='noopener noreferrer'
-					display='block'
-					textAlign='end'
-					fontScale='c1'
-					color='info'
-					textDecorationLine='underline'
-					marginBlockStart={4}
-				>
-					{t('Upgrade_to_unlock')}
-				</Box>
-			) : undefined,
-		[shouldDisableEnterprise, premiumCta, t],
-	);
-
 	const label = labelText;
 
 	const hasResetButton =
@@ -174,13 +151,12 @@ function Setting({ className = undefined, settingId, sectionChanged, premiumCta 
 
 	// @todo: type check props based on setting type
 
-	return (
+	const memoizedSetting = (
 		<MemoizedSetting
 			className={className}
 			label={label}
 			hint={hint}
 			callout={callout}
-			upgradeLink={upgradeLink}
 			sectionChanged={sectionChanged}
 			{...setting}
 			disabled={disabled || shouldDisableEnterprise}
@@ -193,6 +169,35 @@ function Setting({ className = undefined, settingId, sectionChanged, premiumCta 
 			invisible={invisible}
 		/>
 	);
+
+	// every isolated premium setting carries its own tag row above the field; the
+	// upgrade link only shows while the license does not cover it (blocks that are
+	// fully premium advertise once at the block level instead — premiumCta 'none')
+	if (setting.enterprise && premiumCta === 'link' && !invisible) {
+		return (
+			<Box>
+				<Box display='flex' alignItems='center' marginBlockEnd={8} style={{ gap: 8 }}>
+					<Tag variant='featured'>{t('Premium')}</Tag>
+					{shouldDisableEnterprise && (
+						<Box
+							is='a'
+							href={PRICING_URL}
+							target='_blank'
+							rel='noopener noreferrer'
+							fontScale='c1'
+							color='info'
+							textDecorationLine='underline'
+						>
+							{t('Upgrade_to_unlock')}
+						</Box>
+					)}
+				</Box>
+				{memoizedSetting}
+			</Box>
+		);
+	}
+
+	return memoizedSetting;
 }
 
 export default Setting;
