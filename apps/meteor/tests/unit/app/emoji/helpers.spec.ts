@@ -49,8 +49,8 @@ describe('Emoji Client Helpers', () => {
 			expect(rendersThumbsUp('thumbsup')).to.be.true;
 		});
 
-		it('finds an emoji by a secondary alias (yes -> 👍)', () => {
-			expect(rendersThumbsUp('yes')).to.be.true;
+		it('finds an emoji by a secondary alias (thumbup -> 👍)', () => {
+			expect(rendersThumbsUp('thumbup')).to.be.true;
 		});
 
 		it('matches aliases partially (thumb -> thumbsup)', () => {

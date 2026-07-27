@@ -75,4 +75,20 @@ describe('native emoji render', () => {
 		expect(render('™')).toBe('™');
 		expect(render('©\u{FE0F}')).toBe('<span class="emoji" title=":copyright:">©\u{FE0F}</span>');
 	});
+
+	it('renders shortcodes contested with emojibase using their emojione meaning', () => {
+		const { render } = getEmojiConfig(buildEmojiPackages(false));
+
+		expect(render(':up:')).toBe('<span class="emoji" title=":up:">🆙</span>');
+		expect(render(':arrow_up_small:')).toBe('<span class="emoji" title=":arrow_up_small:">🔼</span>');
+		expect(render(':cat:')).toBe('<span class="emoji" title=":cat:">🐱</span>');
+		expect(render(':cat2:')).toBe('<span class="emoji" title=":cat2:">🐈️</span>');
+	});
+
+	it('renders picker entries for contested shortcodes', () => {
+		const { renderPicker } = getEmojiConfig(buildEmojiPackages(false));
+
+		expect(renderPicker(':up:')).toBe('<span class="emoji" title=":up:">🆙</span>');
+		expect(renderPicker(':cat2:')).toBe('<span class="emoji" title=":cat2:">🐈️</span>');
+	});
 });
