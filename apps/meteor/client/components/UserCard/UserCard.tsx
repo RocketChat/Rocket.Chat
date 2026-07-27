@@ -62,7 +62,7 @@ const UserCard = ({
 					{username && <UserAvatar username={username} etag={etag} size='x36' />}
 					<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} marginInlineStart={4} withTruncatedText>
 						<Box display='flex' alignItems='center' withTruncatedText>
-							<UserCardUsername status={status} name={name} />
+							<UserCardUsername is='h2' status={status} name={name} />
 							{nickname && (
 								<Box
 									flexGrow={1}
@@ -92,20 +92,24 @@ const UserCard = ({
 				{onClose && <IconButton marginInlineStart={8} small aria-label={t('Close')} icon='cross' onClick={onClose} />}
 			</Box>
 			<Box display='flex' flexDirection='column' marginBlockStart={18}>
-				{roles && (
-					<UserCardListItem icon='user' aria-label={t('Roles')}>
-						<UserCardRoles>{roles}</UserCardRoles>
-					</UserCardListItem>
-				)}
-				{localTime && (
-					<UserCardListItem icon='clock' aria-label={t('Local_Time')}>
-						{localTime}
-					</UserCardListItem>
-				)}
-				{bio && (
-					<UserCardListItem>
-						<Box className={clampStyle}>{typeof bio === 'string' ? <MarkdownText variant='inline' content={bio} /> : bio}</Box>
-					</UserCardListItem>
+				{(roles || localTime || bio) && (
+					<Box is='dl' display='flex' flexDirection='column' margin={0}>
+						{roles && (
+							<UserCardListItem icon='user' label={t('Roles')}>
+								<UserCardRoles>{roles}</UserCardRoles>
+							</UserCardListItem>
+						)}
+						{localTime && (
+							<UserCardListItem icon='clock' label={t('Local_Time')}>
+								{localTime}
+							</UserCardListItem>
+						)}
+						{bio && (
+							<UserCardListItem label={t('Bio')}>
+								<Box className={clampStyle}>{typeof bio === 'string' ? <MarkdownText variant='inline' content={bio} /> : bio}</Box>
+							</UserCardListItem>
+						)}
+					</Box>
 				)}
 				{onOpenUserInfo && !isLayoutEmbedded && (
 					<UserCardListItem icon='link'>
