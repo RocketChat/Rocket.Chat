@@ -165,6 +165,11 @@ export const createMessageSettings = () =>
 			type: 'int',
 			public: true,
 		});
+		await this.add('Message_ConfirmGroupMentions', true, {
+			type: 'boolean',
+			public: true,
+			i18nDescription: 'Message_ConfirmGroupMentions_Description',
+		});
 		await this.add('Message_MaxAllowedSize', 5000, {
 			type: 'int',
 			public: true,
