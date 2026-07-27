@@ -1,4 +1,4 @@
-import { Field, FieldHint, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
+import { Field, FieldDescription, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import { useLanguages } from '@rocket.chat/ui-contexts';
 
 import ResetSettingButton from '../ResetSettingButton';
@@ -34,7 +34,7 @@ function LanguageSettingInput({
 				</FieldLabel>
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
-			{hint && <FieldHint>{hint}</FieldHint>}
+			{hint && <FieldDescription>{hint}</FieldDescription>}
 			<FieldRow>
 				<Select
 					id={_id}

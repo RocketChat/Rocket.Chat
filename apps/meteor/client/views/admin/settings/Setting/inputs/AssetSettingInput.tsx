@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Button, Field, FieldHint, FieldLabel, FieldRow, Icon, Palette } from '@rocket.chat/fuselage';
+import { Box, Button, Field, FieldDescription, FieldLabel, FieldRow, Icon, Palette } from '@rocket.chat/fuselage';
 import { Random } from '@rocket.chat/random';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useUpload } from '@rocket.chat/ui-contexts';
 import type { ChangeEventHandler, DragEvent, SyntheticEvent } from 'react';
@@ -125,7 +125,7 @@ function AssetSettingInput({ _id, label, value, hint, asset, required, disabled,
 					</div>
 				</Box>
 			</FieldRow>
-			{hint && <FieldHint>{hint}</FieldHint>}
+			{hint && <FieldDescription>{hint}</FieldDescription>}
 		</Field>
 	);
 }

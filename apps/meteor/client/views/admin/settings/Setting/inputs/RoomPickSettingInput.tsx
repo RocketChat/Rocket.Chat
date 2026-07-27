@@ -1,5 +1,5 @@
 import type { SettingValueRoomPick } from '@rocket.chat/core-typings';
-import { Field, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { Field, FieldDescription, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 
 import RoomAutoCompleteMultiple from '../../../../../components/RoomAutoCompleteMultiple';
 import ResetSettingButton from '../ResetSettingButton';
@@ -37,7 +37,7 @@ function RoomPickSettingInput({
 				</FieldLabel>
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
-			{hint && <FieldHint>{hint}</FieldHint>}
+			{hint && <FieldDescription>{hint}</FieldDescription>}
 			<FieldRow>
 				<RoomAutoCompleteMultiple
 					readOnly={readonly}

@@ -1,4 +1,4 @@
-import { Field, FieldHint, FieldLabel, FieldRow, InputBox, Select } from '@rocket.chat/fuselage';
+import { Field, FieldDescription, FieldLabel, FieldRow, InputBox, Select } from '@rocket.chat/fuselage';
 import type { ChangeEventHandler, Key } from 'react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -95,7 +95,7 @@ function TimespanSettingInput({
 				</FieldLabel>
 				{hasResetButton && <ResetSettingButton onClick={handleResetButtonClick} />}
 			</FieldRow>
-			{hint && <FieldHint>{hint}</FieldHint>}
+			{hint && <FieldDescription>{hint}</FieldDescription>}
 			<FieldRow>
 				<InputBox
 					id={_id}

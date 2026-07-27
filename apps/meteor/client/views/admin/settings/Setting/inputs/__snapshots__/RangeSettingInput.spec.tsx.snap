@@ -180,7 +180,7 @@ exports[`renders WithHint without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-field__row"
         >
           <span
-            class="rcx-box rcx-box--full rcx-field__hint rcx-css-18q594f"
+            class="rcx-box rcx-box--full rcx-field__description rcx-css-18q594f"
           >
             This is a hint for the slider
           </span>

@@ -1,4 +1,4 @@
-import { Field, FieldHint, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
+import { Field, FieldDescription, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import { canonicalizeTimezone } from '@rocket.chat/tools';
 
 import { useTimezoneNameList } from '../../../../../hooks/useTimezoneNameList';
@@ -35,7 +35,7 @@ function SelectTimezoneSettingInput({
 				</FieldLabel>
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
-			{hint && <FieldHint>{hint}</FieldHint>}
+			{hint && <FieldDescription>{hint}</FieldDescription>}
 			<FieldRow>
 				<Select
 					id={_id}
