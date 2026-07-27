@@ -38,7 +38,9 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 	}, []);
 	const setAudioRef = useMergedRefs(audioCallback, mediaRef);
 
-	const play = useStableCallback((next: PersistentAudioTrack) => {
+	const pendingSeekRef = useRef<number | null>(null);
+
+	const play = useStableCallback((next: PersistentAudioTrack, at?: number) => {
 		const audio = audioRef.current;
 		if (!audio) {
 			return;
@@ -48,8 +50,11 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 			setTrack(next);
 			setCurrentTime(0);
 			setDuration(0);
+			pendingSeekRef.current = at ?? null;
 			audio.src = next.url;
 			audio.load();
+		} else if (at !== undefined) {
+			audio.currentTime = at;
 		}
 
 		audio.playbackRate = playbackRate;
@@ -118,7 +123,13 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 				onPause={() => setPlaying(false)}
 				onEnded={() => close()}
 				onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
-				onLoadedMetadata={(e) => setDuration(e.currentTarget.duration || 0)}
+				onLoadedMetadata={(e) => {
+					setDuration(e.currentTarget.duration || 0);
+					if (pendingSeekRef.current !== null) {
+						e.currentTarget.currentTime = pendingSeekRef.current;
+						pendingSeekRef.current = null;
+					}
+				}}
 				onDurationChange={(e) => setDuration(e.currentTarget.duration || 0)}
 				onRateChange={(e) => setPlaybackRate(e.currentTarget.playbackRate)}
 			>
