@@ -1,5 +1,5 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
-import { isEditedMessage } from '@rocket.chat/core-typings';
+import { isEditedMessage, isThreadMainMessage } from '@rocket.chat/core-typings';
 import { Box, CheckBox, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { clientCallbacks, ContextualbarContent } from '@rocket.chat/ui-client';
 import { useMethod, useTranslation, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
@@ -113,6 +113,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 					<RoomComposer aria-label={t('Thread_composer')}>
 						<ComposerContainer
 							tmid={mainMessage._id}
+							threadExists={isThreadMainMessage(mainMessage)}
 							subscription={subscription}
 							onSend={handleSend}
 							onEscape={handleComposerEscape}

@@ -5,8 +5,14 @@ import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 
 import { normalizeMessagePreview } from './normalizeMessagePreview';
+import { getSubscriptionDraft } from '../getSubscriptionDraft';
 
 export const getMessagePreview = (room: SubscriptionWithRoom, lastMessage: IMessage | undefined, t: TFunction): string | undefined => {
+	const draft = getSubscriptionDraft(room);
+	if (draft) {
+		return `${t('Draft')}: ${escapeHTML(draft)}`;
+	}
+
 	if (!lastMessage) {
 		return t('No_messages_yet');
 	}

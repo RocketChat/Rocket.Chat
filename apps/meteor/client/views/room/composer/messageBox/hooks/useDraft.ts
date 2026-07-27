@@ -1,13 +1,29 @@
-import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
-export const useDraft = (rid: string, serverDraft?: string, tmid?: string) => {
+export const useDraft = (rid: string, serverDraft?: string, tmid?: string, threadExists = true) => {
 	const storageKey = `messagebox_${rid}${tmid ? `-${tmid}` : ''}`;
-	const [localDraft, setLocalDraft] = useLocalStorage<string>(storageKey, '');
 	const saveDraft = useEndpoint('POST', '/v1/rooms.saveDraft');
-	const initialValueRef = useRef(serverDraft || localDraft);
+
+	const setLocalDraft = useCallback(
+		(value?: string) => {
+			if (value) {
+				localStorage.setItem(storageKey, value);
+			} else {
+				localStorage.removeItem(storageKey);
+			}
+		},
+		[storageKey],
+	);
+
+	const initialValueRef = useRef(serverDraft || localStorage.getItem(storageKey) || '');
 	const draftRef = useRef<string | null>(null);
+	const threadExistsRef = useRef(threadExists);
+	const serverValueRef = useRef(serverDraft ?? '');
+
+	useEffect(() => {
+		threadExistsRef.current = threadExists;
+	}, [threadExists]);
 
 	const persistLocal = useCallback(
 		(value: string) => {
@@ -18,13 +34,25 @@ export const useDraft = (rid: string, serverDraft?: string, tmid?: string) => {
 	);
 
 	const flushDraft = useCallback(() => {
-		if (draftRef.current === null || tmid) {
+		if (draftRef.current === null) {
 			return;
 		}
 
-		void saveDraft({ rid, draft: draftRef.current });
+		const draft = draftRef.current;
 		draftRef.current = null;
-	}, [saveDraft, rid, tmid]);
+
+		if (tmid && !threadExistsRef.current && draft) {
+			return;
+		}
+
+		if (draft === serverValueRef.current) {
+			return;
+		}
+
+		serverValueRef.current = draft;
+
+		void saveDraft({ rid, draft, ...(tmid && { tmid }) }).then(() => setLocalDraft());
+	}, [saveDraft, rid, tmid, setLocalDraft]);
 
 	return {
 		initialValue: initialValueRef.current,

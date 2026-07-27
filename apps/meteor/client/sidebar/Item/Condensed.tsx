@@ -19,7 +19,7 @@ export type CondensedProps = {
 	clickable?: boolean;
 } & Omit<HTMLAttributes<HTMLAnchorElement>, 'is'>;
 
-const Condensed = ({ icon, title, avatar, actions, unread, menu, badges, ...props }: CondensedProps) => {
+const Condensed = ({ icon, title, titleIcon, avatar, actions, unread, menu, badges, ...props }: CondensedProps) => {
 	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 
 	return (
@@ -27,6 +27,7 @@ const Condensed = ({ icon, title, avatar, actions, unread, menu, badges, ...prop
 			{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
 			{icon}
 			<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>
+			{titleIcon}
 			{badges}
 			{actions}
 			{menu && (
