@@ -5531,7 +5531,7 @@ describe('[Users]', () => {
 				const session = await db.collection('rocketchat_sessions').findOne({ _id: insertedId });
 				console.log(session)
 				expect(session).to.not.be.null;
-				expect(session?.logoutAt).to.not.be.null;
+				expect(session?.logoutAt).to.be.instanceOf(Date);
 				expect(session?.logoutBy).to.equal(user._id);
 			} finally {
 				await client.close();
