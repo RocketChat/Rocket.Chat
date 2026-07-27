@@ -77,7 +77,7 @@ import { saveNotificationSettingsMethod } from '../../meteor-methods/users/saveN
 import type { NotificationFieldType } from '../../meteor-methods/users/saveNotificationSettings';
 import { roomsGetMethod } from '../../publications/room';
 import { settings } from '../../settings';
-import { applyBreakingChanges, type ExtractRoutesFromAPI } from '../ApiClass';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { MultipartUploadHandler } from '../lib/MultipartUploadHandler';
 import { composeRoomWithLastMessage } from '../lib/composeRoomWithLastMessage';
@@ -1153,8 +1153,7 @@ API.v1.get(
 		}
 
 		if (findResult.broadcast && !(await hasPermissionAsync(this.user, 'view-broadcast-member-list', findResult._id))) {
-			// TODO: MAJOR drop the 401 branch — an authorization failure is 403
-			return applyBreakingChanges ? API.v1.forbidden() : API.v1.unauthorized();
+			return API.v1.forbidden();
 		}
 
 		// Ensures that role priorities for the specified room are synchronized correctly.
@@ -1301,8 +1300,7 @@ API.v1.post(
 		const { roomId } = this.bodyParams;
 
 		if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
-			// TODO: MAJOR drop the 401 branch — an authorization failure is 403
-			return applyBreakingChanges ? API.v1.forbidden() : API.v1.unauthorized();
+			return API.v1.forbidden();
 		}
 
 		const user = await Users.findOneById(this.userId, { projection: { _id: 1 } });
@@ -1706,8 +1704,7 @@ export const roomEndpoints = API.v1
 			const { roomId } = this.queryParams;
 
 			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
-				// TODO: MAJOR drop the 401 branch — an authorization failure is 403
-				return applyBreakingChanges ? API.v1.forbidden() : API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);

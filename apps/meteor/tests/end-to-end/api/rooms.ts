@@ -4663,8 +4663,7 @@ describe('[Rooms]', () => {
 				.set(nonMemberCredentials)
 				.send({ roomId: roomB._id })
 				.expect('Content-Type', 'application/json')
-				// TODO: MAJOR 403 — currently 401 until the 9.0.0 breaking changes are applied
-				.expect(401)
+				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 				});
@@ -5113,8 +5112,7 @@ describe('[Rooms]', () => {
 					.set(nonMemberCredentials)
 					.query({ roomId: privateRoom._id })
 					.expect('Content-Type', 'application/json')
-					// TODO: MAJOR 403 — currently 401 until the 9.0.0 breaking changes are applied
-					.expect(401)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 					});
