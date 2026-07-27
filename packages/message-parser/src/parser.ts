@@ -247,237 +247,7 @@ export function parse(input: string, options: Options = {}) {
 	return root;
 }
 
-function parseInline(scanner: Scanner, options: Options) {
-	const nodes: Inlines[] = [];
-	let prev = '';
-
-	while (!scanner.isEnd() && !isNewline(scanner.char())) {
-		const ch = scanner.char();
-
-		// Emoticons
-		if (options.emoticons) {
-			const result = tryEmoticon(scanner, prev);
-			if (result !== null) {
-				nodes.push(result);
-				prev = '';
-				continue;
-			}
-		}
-
-		// KaTeX inline
-		if (ch === '$' || (ch === '\\' && scanner.charAt(1) === '(')) {
-			const result = tryKatexInline(scanner, options);
-			if (result !== null) {
-				nodes.push(result);
-				prev = ch;
-				continue;
-			}
-		}
-
-		// Escape sequences
-		if (ch === '\\') {
-			const next = scanner.charAt(1);
-			if (next !== '' && ESCAPABLE.has(next)) {
-				nodes.push(plain(next));
-				scanner.consume(2); // consume the backslash and the escaped char
-				prev = next;
-				continue;
-			}
-		}
-
-		// Inline code
-		if (ch === '`') {
-			const result = tryInlineCode(scanner);
-			if (result !== null) {
-				nodes.push(result);
-				prev = ch;
-				continue;
-			}
-		}
-
-		// Bold
-		if (ch === '*') {
-			const result = tryBold(scanner, options);
-			if (result !== null) {
-				nodes.push(result);
-				prev = ch;
-				continue;
-			}
-		}
-
-		// Strike
-		if (ch === '~') {
-			const result = tryStrike(scanner, options);
-			if (result !== null) {
-				nodes.push(result);
-				prev = ch;
-				continue;
-			}
-		}
-
-		// Italic
-		if (ch === '_') {
-			const result = tryItalic(scanner, options, prev);
-			if (result !== null) {
-				nodes.push(result);
-				prev = ch;
-				continue;
-			}
-		}
-
-		// Emoji shortcode (:smile:)
-		if (ch === ':') {
-			const result = tryEmojiShortCode(scanner);
-			if (result !== null) {
-				nodes.push(result);
-				prev = ch;
-				continue;
-			}
-		}
-
-		// Unicode raw emoji
-		if (isEmojiStart(ch)) {
-			const result = tryUnicodeEmoji(scanner);
-			if (result !== null) {
-				nodes.push(result);
-				prev = '';
-				continue;
-			}
-		}
-
-		// Color (color:#rgb / rgba / rrggbb / rrggbbaa)
-		if (scanner.matches('color:#')) {
-			const result = tryColor(scanner, options);
-			if (result !== null) {
-				nodes.push(result);
-				prev = '';
-				continue;
-			}
-		}
-
-		// Phone (+number)
-		if (ch === '+') {
-			const result = tryPhone(scanner, prev);
-			if (result !== null) {
-				nodes.push(result);
-				prev = '';
-				continue;
-			}
-		}
-
-		// User mention
-		if (ch === '@') {
-			const mention = tryUserMention(scanner, prev);
-			if (mention !== null) {
-				nodes.push(mention);
-				prev = ch;
-				continue;
-			}
-		}
-
-		// Email (local@domain)
-		if (isUrlStart(ch) || ch.charCodeAt(0) > 127) {
-			const email = tryEmail(scanner);
-			if (email !== null) {
-				nodes.push(email);
-				prev = '';
-				continue;
-			}
-		}
-
-		// Mention channel
-		if (ch === '#') {
-			const result = tryChannelMention(scanner, prev);
-			if (result !== null) {
-				nodes.push(result);
-				prev = ch;
-				continue;
-			}
-		}
-
-		// Image
-		if (ch === '!') {
-			const result = tryImage(scanner);
-			if (result !== null) {
-				nodes.push(result);
-				prev = '';
-				continue;
-			}
-		}
-
-		// Markdown link
-		if (ch === '[') {
-			const result = tryMarkdownLink(scanner, options);
-			if (result !== null) {
-				nodes.push(result);
-				prev = ']';
-				continue;
-			}
-		}
-
-		// Timestamp
-		if (ch === '\\' || ch === '<') {
-			const ts = tryTimestamp(scanner);
-			if (ts !== null) {
-				nodes.push(ts);
-				prev = '';
-				continue;
-			}
-		}
-
-		// Angle bracket link
-		if (ch === '<') {
-			const ts = tryAngleBracketLink(scanner);
-			if (ts !== null) {
-				nodes.push(ts);
-				prev = '';
-				continue;
-			}
-		}
-
-		// Inline spoiler
-		if (ch === '|') {
-			const result = trySpoiler(scanner, options);
-			if (result !== null) {
-				nodes.push(result);
-				prev = ch;
-				continue;
-			}
-		}
-
-		// Auto link
-		if (isUrlStart(ch)) {
-			const result = tryAutoLinkUrl(scanner, options);
-			if (result !== null) {
-				nodes.push(result);
-				prev = '';
-				continue;
-			}
-		}
-
-		// Plain run
-		if (isPlainChar(ch)) {
-			const start = scanner.position();
-			while (!scanner.isEnd() && isPlainChar(scanner.char())) {
-				scanner.consume();
-			}
-
-			const text = scanner.sliceFrom(start);
-			nodes.push(plain(text));
-			prev = text[text.length - 1] ?? '';
-			continue;
-		}
-
-		// Fallback to plain text
-		nodes.push(plain(ch));
-		prev = ch;
-		scanner.consume();
-	}
-
-	return reducePlainTexts(nodes);
-}
-
-function parseInlineContent(scanner: Scanner, options: Options, stopChar: string) {
+function parseInline(scanner: Scanner, options: Options, stopChar = '') {
 	const nodes: Inlines[] = [];
 	let prev = '';
 
@@ -706,7 +476,7 @@ function parseInlineContent(scanner: Scanner, options: Options, stopChar: string
 		scanner.consume();
 	}
 
-	return nodes;
+	return stopChar ? nodes : reducePlainTexts(nodes);
 }
 
 // ─── Inline methods ──────────────────────────────────────────────────────────────
@@ -735,7 +505,7 @@ function tryBold(scanner: Scanner, options: Options): Inlines | null {
 	}
 
 	skipBold = true;
-	const content = parseInlineContent(scanner, options, delimiter);
+	const content = parseInline(scanner, options, delimiter);
 	skipBold = false;
 
 	if (!scanner.matches(delimiter)) {
@@ -778,7 +548,7 @@ function tryItalic(scanner: Scanner, options: Options, prevChar: string): Inline
 	}
 
 	skipItalic = true;
-	const content = parseInlineContent(scanner, options, delimiter);
+	const content = parseInline(scanner, options, delimiter);
 	skipItalic = false;
 
 	if (!scanner.matches(delimiter)) {
@@ -829,7 +599,7 @@ function tryStrike(scanner: Scanner, options: Options): Inlines | null {
 	}
 
 	skipStrike = true;
-	const content = parseInlineContent(scanner, options, delimiter);
+	const content = parseInline(scanner, options, delimiter);
 	skipStrike = false;
 
 	if (!scanner.matches(delimiter)) {
@@ -1102,7 +872,7 @@ function trySpoiler(scanner: Scanner, options: Options): Inlines | null {
 	}
 	scanner.consume(delimiter.length); // consume opening "||"
 
-	const content = parseInlineContent(scanner, options, delimiter);
+	const content = parseInline(scanner, options, delimiter);
 
 	if (!scanner.matches(delimiter)) {
 		scanner.backtrack(start);
@@ -1118,6 +888,62 @@ function trySpoiler(scanner: Scanner, options: Options): Inlines | null {
 	return spoiler(reducePlainTexts(content) as Spoiler['value']);
 }
 
+function parseLinkLabel(scanner: Scanner, options: Options): Inlines[] {
+	const nodes: Inlines[] = [];
+	let depth = 0;
+	let prev = '';
+
+	while (!scanner.isEnd() && !isNewline(scanner.char())) {
+		const ch = scanner.char();
+
+		if (ch === ']' && depth === 0) break; // top-level ']' ends the label
+
+		if (ch === '*') {
+			const r = tryBold(scanner, options);
+			if (r !== null) {
+				nodes.push(r);
+				prev = ch;
+				continue;
+			}
+		}
+		if (ch === '~') {
+			const r = tryStrike(scanner, options);
+			if (r !== null) {
+				nodes.push(r);
+				prev = ch;
+				continue;
+			}
+		}
+		if (ch === '_') {
+			const r = tryItalic(scanner, options, prev);
+			if (r !== null) {
+				nodes.push(r);
+				prev = ch;
+				continue;
+			}
+		}
+
+		if (ch === '\\') {
+			const next = scanner.charAt(1);
+			if (next !== '' && ESCAPABLE.has(next)) {
+				nodes.push(plain(next));
+				scanner.consume(2);
+				prev = next;
+				continue;
+			}
+		}
+
+		if (ch === '[') depth++;
+		else if (ch === ']') depth--;
+
+		nodes.push(plain(ch));
+		prev = ch;
+		scanner.consume();
+	}
+
+	return reducePlainTexts(nodes);
+}
+
 function tryMarkdownLink(scanner: Scanner, options: Options): Inlines | null {
 	const start = scanner.position();
 
@@ -1126,7 +952,7 @@ function tryMarkdownLink(scanner: Scanner, options: Options): Inlines | null {
 	}
 	scanner.consume(); // consume '['
 
-	const titleNodes = parseInlineContent(scanner, options, ']');
+	const titleNodes = parseLinkLabel(scanner, options);
 
 	if (!scanner.matches('](')) {
 		scanner.backtrack(start);
@@ -1529,6 +1355,7 @@ function tryBlockquote(scanner: Scanner, options: Options): Quote | null {
 	}
 
 	const paragraphs: Paragraph[] = [];
+	let hasContent = false;
 
 	while (!scanner.isEnd() && scanner.char() === '>') {
 		scanner.consume(); // consume '>'
@@ -1543,12 +1370,13 @@ function tryBlockquote(scanner: Scanner, options: Options): Quote | null {
 		} else {
 			const inlines = parseInline(scanner, options);
 			paragraphs.push(paragraph(inlines));
+			hasContent = true;
 		}
 
 		consumeEndOfLine(scanner); // Consume newline
 	}
 
-	if (paragraphs.length === 0) {
+	if (paragraphs.length === 0 || !hasContent) {
 		scanner.backtrack(start);
 		return null;
 	}
