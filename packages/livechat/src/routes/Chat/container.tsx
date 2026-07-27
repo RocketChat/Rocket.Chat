@@ -1,6 +1,6 @@
 import type { TFunction } from 'i18next';
-import type { RefObject } from 'preact';
 import { Component } from 'preact';
+import type { MutableRef } from 'preact/hooks';
 import { route } from 'preact-router';
 
 import Chat from './component';
@@ -23,6 +23,13 @@ import type { Dispatch, StoreState } from '../../store';
 import store from '../../store';
 
 export type ChatContainerProps = {
+	innerStateRef: MutableRef<{
+		room: StoreState['room'] | null;
+		connectingAgent: boolean;
+		queueSpot: number;
+		triggerQueueMessage: boolean;
+		estimatedWaitTime: number | null | undefined;
+	}>;
 	title?: string;
 	sound: StoreState['sound'];
 	token: StoreState['token'];
@@ -61,51 +68,32 @@ export type ChatContainerProps = {
 	onChangeDepartment: () => void;
 };
 
-type InnerState = {
-	room: StoreState['room'] | null;
-	connectingAgent: boolean;
-	queueSpot: number;
-	triggerQueueMessage: boolean;
-	estimatedWaitTime: number | null | undefined;
-};
-
 class ChatContainer extends Component<ChatContainerProps> {
-	private innerStateRef: RefObject<InnerState> = {
-		current: {
-			room: null,
-			connectingAgent: false,
-			queueSpot: 0,
-			triggerQueueMessage: true,
-			estimatedWaitTime: null,
-		},
-	};
-
 	private checkConnectingAgent = async () => {
-		const { connecting, queueInfo } = this.props;
-		const { innerStateRef, handleQueueMessage, handleConnectingAgentAlert } = this;
+		const { connecting, queueInfo, innerStateRef } = this.props;
+		const { handleQueueMessage, handleConnectingAgentAlert } = this;
 
-		const { connectingAgent, queueSpot, estimatedWaitTime } = innerStateRef.current!;
+		const { connectingAgent, queueSpot, estimatedWaitTime } = innerStateRef.current;
 
 		const newConnecting = !!connecting;
 		const newQueueSpot = queueInfo?.spot || 0;
 		const newEstimatedWaitTime = queueInfo?.estimatedWaitTimeSeconds;
 
 		if (newConnecting !== connectingAgent || newQueueSpot !== queueSpot || newEstimatedWaitTime !== estimatedWaitTime) {
-			innerStateRef.current!.connectingAgent = newConnecting;
-			innerStateRef.current!.queueSpot = newQueueSpot;
-			innerStateRef.current!.estimatedWaitTime = newEstimatedWaitTime;
+			innerStateRef.current.connectingAgent = newConnecting;
+			innerStateRef.current.queueSpot = newQueueSpot;
+			innerStateRef.current.estimatedWaitTime = newEstimatedWaitTime;
 			await handleQueueMessage(newConnecting, queueInfo);
 			await handleConnectingAgentAlert(newConnecting, await normalizeQueueAlert(queueInfo));
 		}
 	};
 
 	private checkRoom = () => {
-		const { room } = this.props;
-		const { innerStateRef } = this;
+		const { room, innerStateRef } = this.props;
 
-		const { room: stateRoom } = innerStateRef.current!;
+		const { room: stateRoom } = innerStateRef.current;
 		if (room && (!stateRoom || room._id !== stateRoom._id)) {
-			innerStateRef.current!.room = room;
+			innerStateRef.current.room = room;
 			setTimeout(loadMessages, 500);
 		}
 	};
@@ -358,7 +346,7 @@ class ChatContainer extends Component<ChatContainerProps> {
 	};
 
 	private handleQueueMessage = async (connecting: boolean, queueInfo?: StoreState['queueInfo']) => {
-		const { room, dispatch, messages } = this.props;
+		const { room, dispatch, messages, innerStateRef } = this.props;
 
 		if (!queueInfo) {
 			return;
@@ -366,13 +354,13 @@ class ChatContainer extends Component<ChatContainerProps> {
 
 		const { livechatQueueMessageId } = constants;
 		const { message: { text: msg, user: u } = {} } = queueInfo;
-		const { triggerQueueMessage } = this.innerStateRef.current!;
+		const { triggerQueueMessage } = innerStateRef.current;
 
 		if (!room || !connecting || !msg || !triggerQueueMessage) {
 			return;
 		}
 
-		this.innerStateRef.current!.triggerQueueMessage = false;
+		innerStateRef.current.triggerQueueMessage = false;
 
 		const ts = new Date();
 		const message = { _id: livechatQueueMessageId, msg, u, ts: ts.toISOString() };
@@ -427,7 +415,25 @@ class ChatContainer extends Component<ChatContainerProps> {
 		checkRoom();
 	}
 
-	render = ({ title, user, onRegisterUser, onChangeDepartment, ...props }: ChatContainerProps) => {
+	render = ({
+		title,
+		user,
+		onRegisterUser,
+		onChangeDepartment,
+		dispatch,
+		t,
+		theme,
+		agent,
+		conversationFinishedMessage,
+		lastReadMessageId,
+		limitTextLength,
+		loading,
+		messages,
+		queueInfo,
+		typingUsernames,
+		unread,
+		uploads,
+	}: ChatContainerProps) => {
 		const {
 			handleTop,
 			handleChangeText,
@@ -446,7 +452,19 @@ class ChatContainer extends Component<ChatContainerProps> {
 		return (
 			<Chat
 				title={title}
-				{...props}
+				dispatch={dispatch}
+				t={t}
+				theme={theme}
+				agent={agent}
+				conversationFinishedMessage={conversationFinishedMessage}
+				lastReadMessageId={lastReadMessageId}
+				limitTextLength={limitTextLength}
+				loading={loading}
+				messages={messages}
+				queueInfo={queueInfo}
+				typingUsernames={typingUsernames}
+				unread={unread}
+				uploads={uploads}
 				avatarResolver={getAvatarUrl}
 				uid={user?._id}
 				onTop={handleTop}

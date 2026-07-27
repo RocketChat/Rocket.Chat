@@ -1,4 +1,4 @@
-import { useCallback, useContext } from 'preact/hooks';
+import { useCallback, useContext, useRef } from 'preact/hooks';
 import { route } from 'preact-router';
 import { useTranslation } from 'react-i18next';
 
@@ -7,7 +7,7 @@ import { useChatSubscriptions } from './useChatSubscriptions';
 import { ScreenContext } from '../../components/Screen/ScreenProvider';
 import { canRenderMessage } from '../../helpers/canRenderMessage';
 import { formatAgent } from '../../helpers/formatAgent';
-import { useStore } from '../../store';
+import { type StoreState, useStore } from '../../store';
 
 export type ChatProps = {
 	path?: string;
@@ -65,8 +65,23 @@ const Chat = (_: ChatProps) => {
 		route('/switch-department');
 	}, []);
 
+	const innerStateRef = useRef<{
+		room: StoreState['room'] | null;
+		connectingAgent: boolean;
+		queueSpot: number;
+		triggerQueueMessage: boolean;
+		estimatedWaitTime: number | null | undefined;
+	}>({
+		room: null,
+		connectingAgent: false,
+		queueSpot: 0,
+		triggerQueueMessage: true,
+		estimatedWaitTime: null,
+	});
+
 	return (
 		<ChatContainer
+			innerStateRef={innerStateRef}
 			t={t}
 			title={customTitle || title || t('need_help')}
 			sound={sound}
