@@ -1,7 +1,7 @@
 import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
-import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
 import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
@@ -9,6 +9,7 @@ import { useMemo } from 'react';
 import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../views/omnichannel/hooks/useQueuedInquiries';
+import type { SidebarCategory } from '../categories/SidebarCategoriesStore';
 
 const query = { open: { $ne: false } };
 
@@ -32,13 +33,21 @@ const order = [
 type useRoomListReturnType = {
 	roomList: Array<SubscriptionWithRoom>;
 	groupsCount: number[];
-	groupsList: TranslationKey[];
+	groupsList: string[];
 	groupedUnreadInfo: Pick<
 		SubscriptionWithRoom,
 		'userMentions' | 'groupMentions' | 'unread' | 'tunread' | 'tunreadUser' | 'tunreadGroup' | 'alert' | 'hideUnreadStatus'
 	>[];
+	/** Metadata for the user-defined category groups, keyed by their group key. */
+	categoriesByKey: Record<string, { id: string; name: string }>;
 };
-export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] }): useRoomListReturnType => {
+export const useRoomList = ({
+	collapsedGroups,
+	categories = [],
+}: {
+	collapsedGroups?: string[];
+	categories?: SidebarCategory[];
+}): useRoomListReturnType => {
 	const showOmnichannel = useOmnichannelEnabled();
 	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
 	const favoritesEnabled = useUserPreference('sidebarShowFavorites');
@@ -57,7 +66,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 	const queue = inquiries.enabled ? inquiries.queue : emptyQueue;
 
-	const { groupsCount, groupsList, roomList, groupedUnreadInfo } = useDebouncedValue(
+	const { groupsCount, groupsList, roomList, groupedUnreadInfo, categoriesByKey } = useDebouncedValue(
 		useMemo(() => {
 			const isCollapsed = (groupTitle: string) => collapsedGroups?.includes(groupTitle);
 
@@ -73,6 +82,15 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			const conversation = new Set();
 			const onHold = new Set();
 
+			// User-defined categories. Each category gets its own bucket; a room that belongs
+			// to a category is rendered there and removed from every other group.
+			const categoryByRoom = new Map<string, string>();
+			const categorySets = new Map<string, Set<any>>();
+			categories.forEach((category) => {
+				categorySets.set(category._id, new Set());
+				category.rooms.forEach((rid) => categoryByRoom.set(rid, category._id));
+			});
+
 			rooms.forEach((room) => {
 				if (room.archived) {
 					return;
@@ -80,6 +98,11 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 				if (incomingCalls.find((call) => call.rid === room.rid)) {
 					return incomingCall.add(room);
+				}
+
+				const categoryId = categoryByRoom.get(room.rid);
+				if (categoryId) {
+					return categorySets.get(categoryId)?.add(room);
 				}
 
 				if (sidebarShowUnread && (room.alert || room.unread || room.tunread?.length) && !room.hideUnreadStatus) {
@@ -144,7 +167,19 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 			!sidebarGroupByType && groups.set('Conversations', conversation);
 
-			const { groupsCount, groupsList, roomList, groupedUnreadInfo } = sidebarOrder.reduce(
+			// Categories render at the top of the list, in the order the user created them.
+			// They are always shown (even when empty) so the user can still reach the
+			// "add channels" action from the category menu.
+			const categoriesByKey: Record<string, { id: string; name: string }> = {};
+			const orderWithCategories: string[] = [...sidebarOrder];
+			for (let i = categories.length - 1; i >= 0; i--) {
+				const category = categories[i];
+				groups.set(category._id, categorySets.get(category._id) ?? new Set());
+				categoriesByKey[category._id] = { id: category._id, name: category.name };
+				orderWithCategories.unshift(category._id);
+			}
+
+			const { groupsCount, groupsList, roomList, groupedUnreadInfo } = orderWithCategories.reduce(
 				(acc, key) => {
 					const value = groups.get(key);
 
@@ -152,7 +187,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 						return acc;
 					}
 
-					acc.groupsList.push(key as TranslationKey);
+					acc.groupsList.push(key);
 
 					const groupedUnreadInfoAcc = {
 						userMentions: 0,
@@ -186,6 +221,19 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 					}
 
 					acc.groupedUnreadInfo.push(groupedUnreadInfoAcc);
+
+					const categoryMeta = categoriesByKey[key];
+					if (categoryMeta && value.size === 0) {
+						// Empty, expanded category: render a single hint row prompting the user to add channels.
+						acc.groupsCount.push(1);
+						acc.roomList.push({
+							_id: `${key}__empty-hint`,
+							rid: `${key}__empty-hint`,
+							categoryEmptyHint: categoryMeta,
+						} as unknown as SubscriptionWithRoom);
+						return acc;
+					}
+
 					acc.groupsCount.push(value.size);
 					acc.roomList.push(...value);
 					return acc;
@@ -195,10 +243,10 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 					groupsList: [],
 					roomList: [],
 					groupedUnreadInfo: [],
-				} as useRoomListReturnType,
+				} as Omit<useRoomListReturnType, 'categoriesByKey'>,
 			);
 
-			return { groupsCount, groupsList, roomList, groupedUnreadInfo };
+			return { groupsCount, groupsList, roomList, groupedUnreadInfo, categoriesByKey };
 		}, [
 			rooms,
 			showOmnichannel,
@@ -212,6 +260,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			sidebarOrder,
 			collapsedGroups,
 			incomingCalls,
+			categories,
 		]),
 		50,
 	);
@@ -221,5 +270,12 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 		groupsCount,
 		groupsList,
 		groupedUnreadInfo,
+		categoriesByKey,
 	};
 };
+
+export type CategoryEmptyHintItem = { _id: string; rid: string; categoryEmptyHint: { id: string; name: string } };
+
+/** Sentinel rows are injected into `roomList` for empty categories (see useRoomList). */
+export const isCategoryEmptyHint = (item: unknown): item is CategoryEmptyHintItem =>
+	typeof item === 'object' && item !== null && 'categoryEmptyHint' in item;
