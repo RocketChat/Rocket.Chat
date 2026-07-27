@@ -5488,11 +5488,7 @@ describe('[Users]', () => {
 		it('should logout the current user and invalidate the session', async () => {
 			const userCredentials = await login(user.username, password);
 
-			await request
-				.post(api('logout'))
-				.set(userCredentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+			await request.post(api('logout')).set(userCredentials).expect('Content-Type', 'application/json').expect(200);
 
 			const meRes = await request.get(api('me')).set(userCredentials);
 			expect(meRes.statusCode).to.equal(401);
@@ -5501,7 +5497,10 @@ describe('[Users]', () => {
 		it('should set logoutAt on the session document', async () => {
 			const userCredentials = await login(user.username, password);
 			const authToken = userCredentials['X-Auth-Token'];
-			const hashedToken = crypto.createHash('sha256').update(authToken as string).digest('base64');
+			const hashedToken = crypto
+				.createHash('sha256')
+				.update(authToken as string)
+				.digest('base64');
 
 			const client = new MongoClient(URL_MONGODB);
 			try {
