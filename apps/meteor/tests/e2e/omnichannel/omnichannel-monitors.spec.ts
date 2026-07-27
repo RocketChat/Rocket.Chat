@@ -1,13 +1,10 @@
-import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelMonitors } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.user1.state });
 
-test.skip(!IS_EE, 'OC - Manage Monitors > Enterprise Only');
-
-test.describe.serial('OC - Manage Monitors', () => {
+test.describe.serial('OC - Manage Monitors', { tag: '@ee' }, () => {
 	let poMonitors: OmnichannelMonitors;
 
 	test.beforeAll(async ({ api }) => {

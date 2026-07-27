@@ -149,7 +149,9 @@ export async function restoreState(page: Page, user: IUserState, options: { exce
 		items.forEach(({ name, value }) => {
 			window.localStorage.setItem(name, value);
 		});
+
+		require('meteor/accounts-base').Accounts._pollStoredLoginToken();
 	}, ls);
 
-	await page.waitForTimeout(2000); // Wait for the login to be completed
+	await page.getByRole('main').waitFor();
 }

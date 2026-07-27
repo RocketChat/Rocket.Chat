@@ -1,16 +1,13 @@
 import type { Page } from '@playwright/test';
 
 import { createFakeVisitor } from '../../mocks/data';
-import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
 import { OmnichannelLiveChat } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
 
-test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
-	test.skip(!IS_EE, 'Enterprise Only');
-
+test.describe('omnichannel-auto-transfer-unanswered-chat', { tag: '@ee' }, () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let newVisitor: { email: string; name: string };
 
@@ -63,9 +60,8 @@ test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 
 		await agent2.poHomeChannel.navbar.switchOmnichannelStatus('online');
 
-		// wait for the chat to be closed automatically for 5 seconds
-		await agent1.page.waitForTimeout(7000);
-
-		await agent2.poHomeChannel.navbar.openChat(newVisitor.name);
+		// the transfer fires server-side after 5s without a reply
+		await expect(agent2.poHomeChannel.sidebar.getSidebarItemByName(newVisitor.name)).toBeVisible({ timeout: 15_000 });
+		await agent2.poHomeChannel.sidebar.getSidebarItemByName(newVisitor.name).click();
 	});
 });

@@ -64,6 +64,8 @@ export default {
 	].filter(Boolean) as unknown as PlaywrightTestConfig['reporter'],
 	testDir: 'tests/e2e',
 	testIgnore: 'tests/e2e/federation/**',
+	// Filter edition-specific tests at collection time so shards are balanced over tests that actually run
+	grepInvert: constants.IS_EE ? /@ce/ : /@ee/,
 	workers: 1,
 	timeout: 60 * 1000,
 	globalTimeout: (process.env.IS_EE === 'true' ? 50 : 40) * 60 * 1000,

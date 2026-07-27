@@ -1,6 +1,5 @@
 import type { Page } from '@playwright/test';
 
-import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
@@ -17,9 +16,7 @@ const wrapSession = async ({ page }: { page: Page }) => ({ page, poHomeOmnichann
 
 test.use({ storageState: Users.user3.state });
 
-test.skip(!IS_EE, 'Enterprise Edition Only');
-
-test.describe('OC - Chat transfers [Monitor role]', () => {
+test.describe('OC - Chat transfers [Monitor role]', { tag: '@ee' }, () => {
 	let departments: Awaited<ReturnType<typeof createDepartment>>[];
 	let conversations: Awaited<ReturnType<typeof createConversation>>[];
 	let agents: Awaited<ReturnType<typeof createAgent>>[];
@@ -288,7 +285,7 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 	});
 });
 
-test.describe('OC - Chat transfers [Manager role]', () => {
+test.describe('OC - Chat transfers [Manager role]', { tag: '@ee' }, () => {
 	let departments: Awaited<ReturnType<typeof createDepartment>>[];
 	let conversations: Awaited<ReturnType<typeof createConversation>>[];
 	let agents: Awaited<ReturnType<typeof createAgent>>[];

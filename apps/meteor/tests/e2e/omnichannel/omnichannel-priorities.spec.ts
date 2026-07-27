@@ -1,6 +1,5 @@
 import { faker } from '@faker-js/faker';
 
-import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelPriorities } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
@@ -11,11 +10,9 @@ const ERROR = {
 	fieldNameRequired: 'Name required',
 };
 
-test.skip(!IS_EE, 'Omnichannel Priorities > Enterprise Only');
-
 test.use({ storageState: Users.user1.state });
 
-test.describe.serial('Omnichannel Priorities', () => {
+test.describe.serial('Omnichannel Priorities', { tag: '@ee' }, () => {
 	let poOmnichannelPriorities: OmnichannelPriorities;
 
 	test.beforeAll(async ({ api }) => {

@@ -5,7 +5,6 @@ import {
 } from '@rocket.chat/core-typings';
 
 import { createFakeVisitor } from '../../mocks/data';
-import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
 import { createConversation } from '../utils/omnichannel/rooms';
@@ -16,11 +15,9 @@ const visitorA = createFakeVisitor();
 const visitorB = createFakeVisitor();
 const visitorC = createFakeVisitor();
 
-test.skip(!IS_EE, 'Omnichannel SLAs > Enterprise Only');
-
 test.use({ storageState: Users.user1.state });
 
-test.describe('OC - SLA Policies [Sidebar]', () => {
+test.describe('OC - SLA Policies [Sidebar]', { tag: '@ee' }, () => {
 	let poHomeChannel: HomeOmnichannel;
 	let conversations: Awaited<ReturnType<typeof createConversation>>[] = [];
 	let slas: Serialized<Omit<IOmnichannelServiceLevelAgreements, '_updatedAt'>>[] = [];

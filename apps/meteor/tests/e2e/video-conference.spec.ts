@@ -1,4 +1,3 @@
-import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import {
@@ -14,8 +13,7 @@ import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.user1.state });
 
-test.describe('video conference', () => {
-	test.skip(!IS_EE, 'Premium Only');
+test.describe('video conference', { tag: '@ee' }, () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
 	let targetReadOnlyChannel: string;

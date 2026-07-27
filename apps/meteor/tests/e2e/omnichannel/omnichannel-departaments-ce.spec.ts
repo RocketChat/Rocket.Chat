@@ -1,14 +1,12 @@
 import { faker } from '@faker-js/faker';
 
-import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelDepartments } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.admin.state });
 
-test.describe.serial('OC - Manage Departments (CE)', () => {
-	test.skip(IS_EE, 'Community Edition Only');
+test.describe.serial('OC - Manage Departments (CE)', { tag: '@ce' }, () => {
 	let poOmnichannelDepartments: OmnichannelDepartments;
 	let departmentName: string;
 

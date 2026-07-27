@@ -1,4 +1,3 @@
-import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { Marketplace } from '../page-objects';
 import { expect, test } from '../utils/test';
@@ -14,9 +13,7 @@ test.describe.serial('Private apps upload', () => {
 		await page.goto('/marketplace/private');
 	});
 
-	test.describe('Premium', () => {
-		test.skip(!IS_EE, 'Premium Only');
-
+	test.describe('Premium', { tag: '@ee' }, () => {
 		test('expect to allow admin to upload a private app in EE, which should be enabled by default', async ({ page }) => {
 			const fileChooserPromise = page.waitForEvent('filechooser');
 
@@ -84,9 +81,7 @@ test.describe.serial('Private apps upload', () => {
 		});
 	});
 
-	test.describe('Community Edition', () => {
-		test.skip(IS_EE, 'CE Only');
-
+	test.describe('Community Edition', { tag: '@ce' }, () => {
 		test('expect to allow admin to upload a private app in CE, but it should be disabled by default', async ({ page }) => {
 			const fileChooserPromise = page.waitForEvent('filechooser');
 

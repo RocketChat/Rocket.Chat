@@ -1,16 +1,13 @@
 import type { Page } from '@playwright/test';
 
 import { createFakeVisitor } from '../../mocks/data';
-import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
 import { OmnichannelLiveChat } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
 
-test.skip(!IS_EE, 'Export transcript as PDF > Enterprie Only');
-
-test.describe('omnichannel- export chat transcript as PDF', () => {
+test.describe('omnichannel- export chat transcript as PDF', { tag: '@ee' }, () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let newVisitor: { email: string; name: string };
 
@@ -45,7 +42,7 @@ test.describe('omnichannel- export chat transcript as PDF', () => {
 		});
 
 		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
-			await new Promise((resolve) => setTimeout(resolve, 5000));
+			await expect(agent.poHomeChannel.sidebar.getSidebarItemByName(newVisitor.name)).toBeVisible({ timeout: 15_000 });
 			await agent.poHomeChannel.navbar.openChat(newVisitor.name);
 		});
 
@@ -61,9 +58,10 @@ test.describe('omnichannel- export chat transcript as PDF', () => {
 
 		// Exported PDF can be downloaded from rocket.cat room
 		await test.step('Expect to have exported PDF in rocket.cat', async () => {
-			await page.waitForTimeout(3000);
 			await agent.poHomeChannel.navbar.openChat('rocket.cat');
-			await expect(agent.poHomeChannel.content.lastUserMessage.getByText('PDF Transcript successfully generated')).toBeVisible();
+			await expect(agent.poHomeChannel.content.lastUserMessage.getByText('PDF Transcript successfully generated')).toBeVisible({
+				timeout: 15_000,
+			});
 			await expect(agent.poHomeChannel.content.lastUserMessage.getByRole('link', { name: 'Transcript' })).toBeVisible();
 		});
 
@@ -72,7 +70,7 @@ test.describe('omnichannel- export chat transcript as PDF', () => {
 			await agent.poHomeChannel.navbar.btnContactCenter.click();
 			await agent.poHomeChannel.transcript.contactCenterChats.click();
 			await agent.poHomeChannel.transcript.contactCenterSearch.type(newVisitor.name);
-			await page.waitForTimeout(3000);
+			await expect(agent.poHomeChannel.transcript.firstRow).toContainText(newVisitor.name);
 			await agent.poHomeChannel.transcript.firstRow.click();
 			await agent.poHomeChannel.transcript.btnOpenChat.click();
 			await agent.poHomeChannel.content.btnSendTranscript.click();

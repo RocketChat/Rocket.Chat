@@ -1,6 +1,5 @@
 import { faker } from '@faker-js/faker';
 
-import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelSlaPolicies } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
@@ -22,11 +21,9 @@ const EDITED_SLA = {
 	estimatedWaitTime: faker.string.numeric({ length: 1, exclude: '0' }),
 };
 
-test.skip(!IS_EE, 'Omnichannel SLA Policies > Enterprise Only');
-
 test.use({ storageState: Users.user1.state });
 
-test.describe('Omnichannel SLA Policies', () => {
+test.describe('Omnichannel SLA Policies', { tag: '@ee' }, () => {
 	let poOmnichannelSlaPolicies: OmnichannelSlaPolicies;
 
 	test.beforeAll(async ({ api }) => {

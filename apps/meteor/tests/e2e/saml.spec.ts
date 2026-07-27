@@ -480,9 +480,7 @@ test.describe('SAML', () => {
 		});
 	});
 
-	test('User Mapping - Custom Role', async ({ page, api }) => {
-		test.skip(!constants.IS_EE);
-
+	test('User Mapping - Custom Role', { tag: '@ee' }, async ({ page, api }) => {
 		await doLoginStep(page, 'samluser4');
 
 		await test.step('expect users role to have been mapped correctly', async () => {

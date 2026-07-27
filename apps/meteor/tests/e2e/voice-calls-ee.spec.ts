@@ -1,14 +1,12 @@
 import type { Page } from '@playwright/test';
 
-import { IS_EE } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { setSettingValueById } from './utils';
 import { expect, test } from './utils/test';
 
-test.describe('Internal Voice Calls - Enterprise Edition', () => {
-	test.skip(!IS_EE, 'Enterprise Edition Only');
+test.describe('Internal Voice Calls - Enterprise Edition', { tag: '@ee' }, () => {
 	let sessions: { page: Page; poHomeChannel: HomeChannel }[];
 
 	test.beforeAll(async ({ api }) => {
@@ -156,8 +154,7 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 	});
 });
 
-test.describe('Internal Voice Calls - In-room view - Enterprise Edition', () => {
-	test.skip(!IS_EE, 'Enterprise Edition Only');
+test.describe('Internal Voice Calls - In-room view - Enterprise Edition', { tag: '@ee' }, () => {
 	let sessions: { page: Page; poHomeChannel: HomeChannel }[];
 
 	test.beforeAll(async ({ api }) => {
@@ -319,8 +316,7 @@ test.describe('Internal Voice Calls - In-room view - Enterprise Edition', () => 
 	});
 });
 
-test.describe('Internal Voice Calls - Popout view - Enterprise Edition', () => {
-	test.skip(!IS_EE, 'Enterprise Edition Only');
+test.describe('Internal Voice Calls - Popout view - Enterprise Edition', { tag: '@ee' }, () => {
 	let sessions: { page: Page; poHomeChannel: HomeChannel }[];
 
 	test.beforeAll(async ({ api }) => {

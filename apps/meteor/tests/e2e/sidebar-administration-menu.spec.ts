@@ -1,4 +1,3 @@
-import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeDiscussion } from './page-objects';
 import { test, expect } from './utils/test';
@@ -14,8 +13,7 @@ test.describe.serial('sidebar-administration-menu', () => {
 		await page.goto('/home');
 	});
 
-	test.describe('admin user', () => {
-		test.skip(!IS_EE, 'Enterprise only');
+	test.describe('admin user', { tag: '@ee' }, () => {
 		test('should open workspace page', async ({ page }) => {
 			await poHomeDiscussion.navbar.openManageMenuItem('Workspace');
 			await expect(page).toHaveURL('admin/info');

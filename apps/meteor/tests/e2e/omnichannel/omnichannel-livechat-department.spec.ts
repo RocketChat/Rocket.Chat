@@ -1,5 +1,4 @@
 import { createFakeVisitor } from '../../mocks/data';
-import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
@@ -10,10 +9,8 @@ import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.user1.state });
 
-test.describe('OC - Livechat - Department Flow', () => {
+test.describe('OC - Livechat - Department Flow', { tag: '@ee' }, () => {
 	// Needs Departments to test this, so needs an EE license for multiple deps
-	test.skip(!IS_EE, 'Enterprise Only');
-
 	let poLiveChat: OmnichannelLiveChat;
 	let poHomeOmnichannelAgent1: HomeOmnichannel;
 	let poHomeOmnichannelAgent2: HomeOmnichannel;

@@ -1,5 +1,4 @@
 import { createFakeVisitor } from '../../mocks/data';
-import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, OmnichannelSettings } from '../page-objects/omnichannel';
@@ -8,11 +7,9 @@ import { test, expect } from '../utils/test';
 
 const visitor = createFakeVisitor();
 
-test.skip(!IS_EE, 'Enterprise Only');
-
 test.use({ storageState: Users.admin.state });
 
-test.describe('OC - Livechat - Hide watermark', async () => {
+test.describe('OC - Livechat - Hide watermark', { tag: '@ee' }, async () => {
 	let agent: Awaited<ReturnType<typeof createAgent>>;
 	let poLiveChat: OmnichannelLiveChat;
 	let poOmnichannelSettings: OmnichannelSettings;

@@ -1,6 +1,5 @@
 import { faker } from '@faker-js/faker';
 
-import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
 import { preserveSettings } from '../utils/preserveSettings';
@@ -33,8 +32,7 @@ test.describe('E2EE Server Settings', () => {
 		await page.goto('/home');
 	});
 
-	test('expect slash commands to be enabled in an e2ee room', async ({ page }) => {
-		test.skip(!IS_EE, 'Premium Only');
+	test('expect slash commands to be enabled in an e2ee room', { tag: '@ee' }, async ({ page }) => {
 		const channelName = faker.string.uuid();
 
 		await poHomeChannel.navbar.createEncryptedChannel(channelName);
@@ -59,8 +57,7 @@ test.describe('E2EE Server Settings', () => {
 		await expect(poHomeChannel.btnContextualbarClose).toBeHidden();
 	});
 
-	test.describe('un-encrypted messages not allowed in e2ee rooms', () => {
-		test.skip(!IS_EE, 'Premium Only');
+	test.describe('un-encrypted messages not allowed in e2ee rooms', { tag: '@ee' }, () => {
 		let poHomeChannel: HomeChannel;
 
 		test.beforeEach(async ({ page }) => {

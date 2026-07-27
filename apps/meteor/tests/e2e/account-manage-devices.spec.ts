@@ -1,6 +1,5 @@
 import type { Page } from 'playwright-core';
 
-import { IS_EE } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import injectInitialData from './fixtures/inject-initial-data';
 import { Users } from './fixtures/userStates';
@@ -8,8 +7,7 @@ import { Login } from './page-objects';
 import { AccountManageDevices } from './page-objects/account.manage-devices';
 import { test, expect } from './utils/test';
 
-test.describe('Account Manage Devices Page', () => {
-	test.skip(!IS_EE);
+test.describe('Account Manage Devices Page', { tag: '@ee' }, () => {
 	test.use({ storageState: Users.user1.state });
 
 	let page: Page;

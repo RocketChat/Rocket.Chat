@@ -1,5 +1,4 @@
 import { appUiKitRoomTest } from '../../data/apps/app-packages';
-import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
 import { getAppLogs, installLocalTestPackage, uninstallApp } from '../utils/apps';
@@ -7,8 +6,7 @@ import { expect, test } from '../utils/test';
 
 test.use({ storageState: Users.user1.state });
 
-test.describe.serial('Apps > UIKit interactions data', () => {
-	test.skip(!IS_EE, 'Premium Only');
+test.describe.serial('Apps > UIKit interactions data', { tag: '@ee' }, () => {
 	let poHomeChannel: HomeChannel;
 	let appId: string;
 

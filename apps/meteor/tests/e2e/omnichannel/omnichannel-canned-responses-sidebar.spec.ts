@@ -2,16 +2,13 @@ import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
 import { createFakeVisitor } from '../../mocks/data';
-import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
 import { OmnichannelLiveChat } from '../page-objects/omnichannel';
 import { test } from '../utils/test';
 
-test.describe.serial('OC - Canned Responses Sidebar', () => {
-	test.skip(!IS_EE, 'Enterprise Only');
-
+test.describe.serial('OC - Canned Responses Sidebar', { tag: '@ee' }, () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let newVisitor: { email: string; name: string };
 

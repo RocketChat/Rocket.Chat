@@ -1,5 +1,4 @@
 import { createFakeVisitor } from '../../mocks/data';
-import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChatEmbedded } from '../page-objects/omnichannel';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
@@ -15,9 +14,7 @@ declare const window: Window & {
 
 test.use({ storageState: Users.admin.state });
 
-test.skip(!IS_EE, 'Enterprise Only');
-
-test.describe('OC - Livechat - Message list background', async () => {
+test.describe('OC - Livechat - Message list background', { tag: '@ee' }, async () => {
 	let agent: Awaited<ReturnType<typeof createAgent>>;
 	let poLiveChat: OmnichannelLiveChatEmbedded;
 

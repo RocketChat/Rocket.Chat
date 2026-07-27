@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
 import { OmnichannelContactCenterChats } from '../page-objects/omnichannel';
@@ -16,11 +15,9 @@ const visitorA = `${faker.person.firstName()}-${faker.database.mongodbObjectId()
 const visitorB = `${faker.person.firstName()}-${faker.database.mongodbObjectId()}`;
 const visitorC = `${faker.person.firstName()}-${faker.database.mongodbObjectId()}`;
 
-test.skip(!IS_EE, 'OC - Contact Center Chats > Enterprise Only');
-
 test.use({ storageState: Users.admin.state });
 
-test.describe('OC - Contact Center Chats [Auto Selection]', async () => {
+test.describe('OC - Contact Center Chats [Auto Selection]', { tag: '@ee' }, async () => {
 	let poOmnichats: OmnichannelContactCenterChats;
 	let poHomeOmnichannel: HomeOmnichannel;
 	let departments: Awaited<ReturnType<typeof createDepartment>>[];
@@ -177,7 +174,7 @@ test.describe('OC - Contact Center Chats [Auto Selection]', async () => {
 	});
 });
 
-test.describe('OC - Contact Center [Manual Selection]', () => {
+test.describe('OC - Contact Center [Manual Selection]', { tag: '@ee' }, () => {
 	let queuedConversation: Awaited<ReturnType<typeof createConversation>>;
 	let poHomeOmnichannel: HomeOmnichannel;
 	let poCurrentChats: OmnichannelContactCenterChats;

@@ -1,7 +1,7 @@
 import type { Page } from '@playwright/test';
 
 import { createFakeVisitor } from '../../mocks/data';
-import { ADMIN_CREDENTIALS, IS_EE } from '../config/constants';
+import { ADMIN_CREDENTIALS } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
@@ -21,9 +21,7 @@ const getRoomId = (page: Page): string => {
 	return rid;
 };
 
-test.describe.serial('omnichannel-changing-room-priority-and-sla', () => {
-	test.skip(!IS_EE, 'Enterprise Only');
-
+test.describe.serial('omnichannel-changing-room-priority-and-sla', { tag: '@ee' }, () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let newVisitor: { email: string; name: string };
 
@@ -76,8 +74,6 @@ test.describe.serial('omnichannel-changing-room-priority-and-sla', () => {
 		await test.step('change priority of room to the new priority', async () => {
 			const status = (await api.post(`/livechat/room/${getRoomId(agent.page)}/priority`, { priorityId: priority._id })).status();
 			await expect(status).toBe(200);
-
-			await agent.page.waitForTimeout(1000);
 		});
 
 		await expect(agent.poHomeChannel.content.lastSystemMessageBody).toHaveText(
@@ -91,7 +87,6 @@ test.describe.serial('omnichannel-changing-room-priority-and-sla', () => {
 		await test.step('change SLA of room to the new SLA', async () => {
 			const status = (await api.put(`/livechat/inquiry.setSLA`, { sla: sla.name, roomId: getRoomId(agent.page) })).status();
 			expect(status).toBe(200);
-			await agent.page.waitForTimeout(1000);
 		});
 
 		await expect(agent.poHomeChannel.content.lastSystemMessageBody).toHaveText(

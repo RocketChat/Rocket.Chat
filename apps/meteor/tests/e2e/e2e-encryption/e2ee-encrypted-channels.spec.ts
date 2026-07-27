@@ -56,7 +56,7 @@ test.describe('E2EE Encrypted Channels', () => {
 		await expect(page.getByRole('dialog', { name: 'Disable encryption' })).toBeVisible();
 		await page.getByRole('button', { name: 'Disable encryption' }).click();
 		await poHomeChannel.toastMessage.dismissToast();
-		await page.waitForTimeout(1000);
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).not.toBeVisible();
 
 		await poHomeChannel.content.sendMessage('hello world not encrypted');
 
@@ -69,7 +69,8 @@ test.describe('E2EE Encrypted Channels', () => {
 		await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
 		await page.getByRole('button', { name: 'Enable encryption' }).click();
 		await poHomeChannel.toastMessage.dismissToast();
-		await page.waitForTimeout(1000);
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+		await expect(page.getByText("You're sending an unencrypted message")).not.toBeVisible();
 
 		await poHomeChannel.content.sendMessage('hello world encrypted again');
 
@@ -148,9 +149,9 @@ test.describe('E2EE Encrypted Channels', () => {
 		await poHomeChannel.roomToolbar.menuItemEnableE2EEncryption.click();
 		await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
 		await page.getByRole('button', { name: 'Enable encryption' }).click();
-		await page.waitForTimeout(1000);
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+		await expect(page.getByText("You're sending an unencrypted message")).not.toBeVisible();
 
 		await poHomeChannel.content.sendMessage('hello world');
 
@@ -246,8 +247,8 @@ test.describe('E2EE Encrypted Channels', () => {
 		await poHomeChannel.roomToolbar.menuItemEnableE2EEncryption.click();
 		await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
 		await page.getByRole('button', { name: 'Enable encryption' }).click();
-		await page.waitForTimeout(1000);
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+		await expect(page.getByText("You're sending an unencrypted message")).not.toBeVisible();
 
 		// Send Encrypted Messages
 		const encriptedMessage1 = 'first ENCRYPTED message';

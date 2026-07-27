@@ -1,7 +1,6 @@
 import type { Page } from '@playwright/test';
 
 import { createFakeVisitor } from '../../mocks/data';
-import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
@@ -12,9 +11,7 @@ import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.user1.state });
 
-test.describe('OC - Routing to Idle Agents', () => {
-	test.skip(!IS_EE, 'Enterprise Edition Only');
-
+test.describe('OC - Routing to Idle Agents', { tag: '@ee' }, () => {
 	let poHomeOmnichannel: HomeOmnichannel;
 	let poLivechat: OmnichannelLiveChat;
 

@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker';
 
 import { createFakeVisitor } from '../../mocks/data';
-import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
 import { createCustomField } from '../utils/omnichannel/custom-field';
@@ -10,11 +9,9 @@ import { test, expect } from '../utils/test';
 
 const visitor = createFakeVisitor();
 
-test.skip(!IS_EE, 'Omnichannel Contact Review > Enterprise Only');
-
 test.use({ storageState: Users.user1.state });
 
-test.describe.serial('OC - Contact Review', () => {
+test.describe.serial('OC - Contact Review', { tag: '@ee' }, () => {
 	let poHomeChannel: HomeOmnichannel;
 
 	const customFieldName = faker.string.uuid();

@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 
-import { ADMIN_CREDENTIALS, IS_EE } from '../config/constants';
+import { ADMIN_CREDENTIALS } from '../config/constants';
 import injectInitialData from '../fixtures/inject-initial-data';
 import { test, expect } from '../utils/test';
 
@@ -22,8 +22,7 @@ test.describe('OC - Enterprise Menu Items After Relogin', () => {
 		await injectInitialData();
 	});
 
-	test('OC - Enterprise Menu Items - Logout & Login', async ({ page }) => {
-		test.skip(!IS_EE);
+	test('OC - Enterprise Menu Items - Logout & Login', { tag: '@ee' }, async ({ page }) => {
 		await test.step('expect EE menu items to be visible', async () => {
 			await expect(page.locator('a[href="/omnichannel/tags"]')).toBeVisible();
 		});
