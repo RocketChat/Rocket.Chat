@@ -8,12 +8,11 @@ import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { links } from '../../../../lib/links';
 import type { EditableSetting } from '../../EditableSettingsContext';
 import { useEditableSettings, useEditableSettingsDispatch } from '../../EditableSettingsContext';
 import Setting from '../Setting';
 
-const PRICING_URL = links.go.pricing;
+const PLANS_URL = 'https://www.rocket.chat/plans';
 
 export type SettingsSectionProps = {
 	groupId: string;
@@ -160,7 +159,7 @@ function SettingsSection({ groupId, hasReset = true, sectionTitle, sectionName, 
 								<Callout type='info' title={t('Premium_feature')}>
 									{t('Premium_settings_callout_description')}
 									<Box marginBlockStart='x8'>
-										<Button primary small is='a' href={PRICING_URL} target='_blank' rel='noopener noreferrer'>
+										<Button primary small is='a' href={PLANS_URL} target='_blank' rel='noopener noreferrer'>
 											{t('Upgrade_to_Premium')}
 										</Button>
 									</Box>

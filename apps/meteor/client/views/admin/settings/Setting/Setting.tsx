@@ -8,12 +8,11 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import MemoizedSetting from './MemoizedSetting';
 import MarkdownText from '../../../../components/MarkdownText';
-import { links } from '../../../../lib/links';
 import { getCodeSettingError } from '../../../../lib/utils/getCodeSettingError';
 import { useEditableSetting, useEditableSettingsDispatch, useEditableSettingVisibilityQuery } from '../../EditableSettingsContext';
 import { useHasSettingModule } from '../hooks/useHasSettingModule';
 
-const PRICING_URL = links.go.pricing;
+const PLANS_URL = 'https://www.rocket.chat/plans';
 
 export type SettingProps = {
 	className?: string;
@@ -162,7 +161,7 @@ function Setting({ className = undefined, settingId, sectionChanged, premiumCta 
 				{shouldDisableEnterprise && (
 					<Box
 						is='a'
-						href={PRICING_URL}
+						href={PLANS_URL}
 						target='_blank'
 						rel='noopener noreferrer'
 						fontScale='c1'
