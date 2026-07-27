@@ -5494,46 +5494,32 @@ describe('[Users]', () => {
 			expect(meRes.statusCode).to.equal(401);
 		});
 
-		it('should set logoutAt on the session document', async () => {
-			const userCredentials = await login(user.username, password);
-			const authToken = userCredentials['X-Auth-Token'];
-			const hashedToken = crypto
-				.createHash('sha256')
-				.update(authToken as string)
-				.digest('base64');
+		it('should remove the session from the list after logout', async () => {
+			const credentials = await login(user.username, password);
+			const authToken = credentials['X-Auth-Token'];
 
-			const client = new MongoClient(URL_MONGODB);
-			try {
-				await client.connect();
-				const db = client.db();
+			await request.post(api('login')).send({ resume: authToken }).expect(200);
 
-				const { insertedId } = await db.collection('rocketchat_sessions').insertOne({
-					userId: user._id,
-					loginToken: hashedToken,
-					type: 'session',
-					sessionId: Random.id(),
-					instanceId: 'test',
-					createdAt: new Date(),
-					loginAt: new Date(),
-					lastActivityAt: new Date(),
-					ip: '127.0.0.1',
-					host: 'localhost',
-					year: new Date().getFullYear(),
-					month: new Date().getMonth() + 1,
-					day: new Date().getDate(),
-					searchTerm: '',
-					roles: [],
-				});
+			const sessionsBefore = await request
+				.get(api('sessions/list'))
+				.set(credentials)
+				.query({ count: 25, offset: 0, sort: '{"loginAt":1}' })
+				.expect(200);
+			expect(sessionsBefore.body.sessions).to.have.lengthOf(1);
 
-				await request.post(api('logout')).set(userCredentials).expect(200);
+			await request.post(api('logout')).set(credentials).expect(200);
 
-				const session = await db.collection('rocketchat_sessions').findOne({ _id: insertedId });
-				expect(session).to.not.be.null;
-				expect(session?.logoutAt).to.be.instanceOf(Date);
-				expect(session?.logoutBy).to.equal(user._id);
-			} finally {
-				await client.close();
-			}
+			const newCredentials = await login(user.username, password);
+			const newAuthToken = newCredentials['X-Auth-Token'];
+
+			await request.post(api('login')).send({ resume: newAuthToken }).expect(200);
+
+			const sessionsAfter = await request
+				.get(api('sessions/list'))
+				.set(newCredentials)
+				.query({ count: 25, offset: 0, sort: '{"loginAt":1}' })
+				.expect(200);
+			expect(sessionsAfter.body.sessions).to.have.lengthOf(1);
 		});
 
 		it('should return 401 when not authenticated', async () => {
