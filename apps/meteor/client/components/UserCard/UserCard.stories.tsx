@@ -25,10 +25,12 @@ export default {
 		user,
 		actions: (
 			<>
-				<UserCardAction icon='message' />
-				<UserCardAction icon='phone' />
+				<UserCardAction label='Direct message' />
+				<UserCardAction label='Call' />
 			</>
 		),
+		onOpenUserInfo: () => undefined,
+		onClose: () => undefined,
 	},
 } satisfies Meta<typeof UserCard>;
 

@@ -53,9 +53,8 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMe
 						avatarUrl={message.avatar}
 						username={message.u.username}
 						size='x36'
-						onClick={(e) => openUserCard(e, message.u.username)}
+						onMouseEnter={(e) => openUserCard(e, message.u.username)}
 						style={{ cursor: 'pointer' }}
-						role='button'
 						{...triggerProps}
 					/>
 				)}

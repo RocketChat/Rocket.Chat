@@ -13,14 +13,14 @@ const UserCardDialog = (props: UserCardDialogProps) => {
 	return (
 		<Box
 			ref={ref}
-			minHeight='x214'
 			rcx-user-card
 			backgroundColor='surface'
 			elevation='2'
 			padding={24}
 			display='flex'
-			borderRadius='x4'
-			width='439px'
+			flexDirection='column'
+			borderRadius='x8'
+			width='400px'
 			{...props}
 			{...dialogProps}
 		/>

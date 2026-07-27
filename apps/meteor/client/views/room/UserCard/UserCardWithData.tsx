@@ -75,7 +75,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions({
 		rid,
 		user: { _id: user._id ?? '', username: user.username, name: user.name, freeSwitchExtension: user.freeSwitchExtension },
-		size: 3,
+		size: 2,
 		isMember,
 		reload: refetch,
 	});
@@ -89,8 +89,8 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	}, [menuOptions, onClose, t]);
 
 	const actions = useMemo(() => {
-		const mapAction = ([key, { content, title, icon, onClick, disabled }]: [string, UserInfoAction]) => (
-			<UserCardAction key={key} label={content || title} aria-label={content || title} onClick={onClick} icon={icon!} disabled={disabled} />
+		const mapAction = ([key, { content, title, onClick, disabled }]: [string, UserInfoAction]) => (
+			<UserCardAction key={key} label={content || title} onClick={onClick} disabled={disabled} />
 		);
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);

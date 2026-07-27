@@ -11,7 +11,6 @@ import {
 	MessageUsername,
 	MessageNameContainer,
 } from '@rocket.chat/fuselage';
-import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
@@ -62,7 +61,6 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	const toggleSelected = useToggleSelect(message._id);
 	const isSelected = useIsSelectedMessage(message._id);
 	useCountSelected();
-	const buttonProps = useButtonPattern((e) => openUserCard(e, user.username));
 
 	const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
 		if (!isSelecting) return;
@@ -92,7 +90,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
 				<MessageSystemBlock>
-					<MessageNameContainer style={{ cursor: 'pointer' }} {...buttonProps} {...triggerProps}>
+					<MessageNameContainer style={{ cursor: 'pointer' }} onMouseEnter={(e) => openUserCard(e, user.username)} {...triggerProps}>
 						<MessageSystemName>{displayName}</MessageSystemName>
 						{showUsername && (
 							<>
