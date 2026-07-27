@@ -56,7 +56,7 @@ export class MediaService extends ServiceClassInternal implements IMediaService 
 		enlarge: boolean,
 		fit?: keyof FitEnum | undefined,
 	): Promise<ResizeResult> {
-		const transformer = sharp().resize({ width, height, fit, withoutEnlargement: !enlarge });
+		const transformer = sharp({ limitInputChannels: 8 }).resize({ width, height, fit, withoutEnlargement: !enlarge });
 
 		if (!keepType) {
 			transformer.jpeg();
