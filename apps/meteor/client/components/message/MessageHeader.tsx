@@ -78,7 +78,7 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 					)}
 				</Box>
 			</MessageNameContainer>
-			{shouldShowRolesList && <MessageRoles roles={roles} isBot={!!message.bot} />}
+			{shouldShowRolesList && <MessageRoles roles={roles} isBot={!!message.bot} onClick={(e) => openUserCard(e, message.u.username)} />}
 			<MessageTimestamp id={`${message._id}-time`} title={formatDateAndTime(message.ts)}>
 				{formatTime(message.ts)}
 			</MessageTimestamp>

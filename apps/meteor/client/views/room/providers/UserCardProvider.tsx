@@ -33,8 +33,8 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 	const { triggerProps, overlayProps } = useOverlayTrigger({ type: 'dialog' }, state, triggerRef);
 	delete triggerProps.onPress;
 
-	const openTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>();
-	const closeTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>();
+	const openTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+	const closeTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
 	const clearTimers = useCallback(() => {
 		clearTimeout(openTimerRef.current);
@@ -81,8 +81,8 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 			const trigger = (e.currentTarget ?? e.target) as Element | null;
 
 			clearTimers();
-			trigger?.addEventListener('mouseleave', handleTriggerLeave, { once: true });
-			openTimerRef.current = setTimeout(() => {
+
+			const open = () => {
 				triggerRef.current = trigger;
 				state.open();
 				setUserCardData({
@@ -91,7 +91,15 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 					onOpenUserInfo: () => openUserInfo(username),
 					onClose: closeUserCard,
 				});
-			}, HOVER_OPEN_DELAY);
+			};
+
+			if (e.type === 'click') {
+				open();
+				return;
+			}
+
+			trigger?.addEventListener('mouseleave', handleTriggerLeave, { once: true });
+			openTimerRef.current = setTimeout(open, HOVER_OPEN_DELAY);
 		},
 		[clearTimers, handleTriggerLeave, closeUserCard, openUserInfo, room._id, state],
 	);
