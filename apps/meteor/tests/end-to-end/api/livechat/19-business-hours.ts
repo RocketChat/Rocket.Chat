@@ -31,6 +31,7 @@ import { password } from '../../../data/user';
 import type { TestUser } from '../../../data/users.helper';
 import { setUserActiveStatus, createUser, deleteUser, getMe, getUserByUsername, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
+import { retry } from '../helpers/retry';
 
 describe('LIVECHAT - business hours', () => {
 	before((done) => getCredentials(done));
@@ -961,6 +962,17 @@ describe('LIVECHAT - business hours', () => {
 
 		it('should create a new agent and verify if it is assigned to the default business hour which is closed', async () => {
 			await openOrCloseBusinessHour(defaultBH, false);
+
+			// the BH close recalculates agent statuses asynchronously; wait for it to propagate (existing agent loses the
+			// BH assignment) before creating the new agent, otherwise it is created while the BH still counts as open
+			await retry(
+				'BH close propagation is async, so the existing agent may still be assigned on the first fetch',
+				async () => {
+					const current: ILivechatAgent = await getMe(agentCredentials);
+					expect(current.openBusinessHours ?? []).to.have.lengthOf(0);
+				},
+				{ retries: 20, delayMs: 250 },
+			);
 
 			const newUser: ILivechatAgent = await createUser();
 			const newUserCredentials = await login(newUser.username, password);
