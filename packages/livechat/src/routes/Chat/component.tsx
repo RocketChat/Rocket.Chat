@@ -61,7 +61,6 @@ export type ChatProps = {
 	dispatch?: Dispatch;
 	theme?: ScreenTheme;
 	onTop?: () => void;
-	onBottom?: () => void;
 	onSubmit?: (text: string) => void;
 	onChangeText?: (text: string) => void;
 	onSoundStop?: () => void;
@@ -98,11 +97,10 @@ class Chat extends Component<ChatProps, ChatState> {
 	};
 
 	handleScrollTo = (region: string) => {
-		const { onTop, onBottom } = this.props;
+		const { onTop } = this.props;
 
 		if (region === MessageList.SCROLL_AT_BOTTOM) {
 			this.setState({ atBottom: true });
-			onBottom?.();
 			return;
 		}
 

@@ -53,7 +53,6 @@ export default {
 		limitTextLength: 0,
 		registrationRequired: false,
 		onTop: action('top'),
-		onBottom: action('bottom'),
 		onUpload: action('upload'),
 		onSubmit: action('submit'),
 	},
