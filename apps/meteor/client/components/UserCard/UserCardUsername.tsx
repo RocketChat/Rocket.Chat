@@ -17,7 +17,7 @@ const UserCardUsername = ({ name, status = <UserStatus.Offline />, ...props }: U
 		flexBasis={0}
 		alignItems='center'
 		fontScale='h4'
-		color='default'
+		color='titles-labels'
 		withTruncatedText
 		{...props}
 	>
