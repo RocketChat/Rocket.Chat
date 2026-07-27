@@ -75,6 +75,29 @@ route). Shape of the flow:
 3. **Create a login token** and serialize the user to the client.
 4. `afterValidateLogin` callback runs.
 
+### Client handshake: login over REST, resume over DDP
+
+The web client authenticates in **two steps** — HTTP and the WebSocket are
+authenticated separately, with the same token
+(`apps/meteor/client/meteor/overrides/ddpOverREST.ts`):
+
+1. **Credentials go over REST.** The `login` method call (password, SAML,
+   OAuth, …) is intercepted and sent as `POST /api/v1/method.callAnon/login`
+   instead of the WebSocket. It must be the anonymous endpoint — the auth
+   middleware would otherwise 401 the very call that is trying to establish
+   auth. (External API consumers use `POST /api/v1/login` + `X-Auth-Token`
+   headers instead.)
+2. **The token resumes the WebSocket.** On success the client calls
+   `Meteor.loginWithToken(token)`, which sends `login({ resume: token })`
+   **over the DDP connection** — this is what authenticates the event stream.
+   In microservices mode, `ddp-streamer` handles this resume shape natively;
+   non-resume logins would be rejected there, which is why step 1 never goes
+   through the WebSocket.
+
+The SDK connection (`packages/ddp-client`, `Account.loginWithToken`) follows
+the same pattern: credentials produce a token, the token authenticates the
+socket.
+
 Authorization (what a logged-in user *may do*) is separate: permission checks
 flow through `app/authorization/server`, optionally backed by the
 `authorization-service` microservice.

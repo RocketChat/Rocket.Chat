@@ -58,6 +58,9 @@ Key code:
 
 - Streamer subscriptions are tracked **per connection, not per user** — one user
   with multiple tabs/clients has multiple subscriptions.
+- Each connection is authenticated separately: login happens over REST and the
+  resulting token **resumes** the WebSocket via `login({ resume: token })` —
+  see [critical-flows: client handshake](./critical-flows.md#authentication--login).
 - The client is responsible for applying events to its local state. If it misses
   an event or starts cold, it reconciles via REST/initial load, not via a
   mergebox resync.
