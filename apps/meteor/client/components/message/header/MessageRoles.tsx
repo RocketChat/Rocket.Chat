@@ -22,7 +22,18 @@ const MessageRoles = ({ roles, isBot, onClick }: MessageRolesProps) => {
 				<MessageRole key={index}>{role}</MessageRole>
 			))}
 			{hiddenRoles.length > 0 && (
-				<MessageRole title={hiddenRoles.join(', ')}>{t('Plus_count_roles', { count: hiddenRoles.length })}</MessageRole>
+				<MessageRole
+					title={t('See_all_roles')}
+					onClick={
+						onClick &&
+						((e) => {
+							e.stopPropagation();
+							onClick(e);
+						})
+					}
+				>
+					{t('Plus_count_roles', { count: hiddenRoles.length })}
+				</MessageRole>
 			)}
 		</FuselageMessageRoles>
 	);
