@@ -8,6 +8,7 @@ import {
 	MessageUsername,
 	MessageStatusPrivateIndicator,
 	MessageNameContainer,
+	Palette,
 } from '@rocket.chat/fuselage';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
@@ -26,9 +27,13 @@ import {
 } from './list/MessageListContext';
 import { normalizeUsername } from '../../../lib/utils/normalizeUsername';
 
-const hoverUnderlineStyle = css`
+const nameStyle = css`
 	&:hover {
 		text-decoration: underline;
+	}
+
+	& .rcx-message-header__name {
+		color: ${Palette.text['font-titles-labels']};
 	}
 `;
 
@@ -63,7 +68,7 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 				onMouseEnter={(e) => openUserCard(e, message.u.username)}
 				{...triggerProps}
 			>
-				<Box is='span' className={hoverUnderlineStyle}>
+				<Box is='span' className={nameStyle}>
 					<MessageName
 						title={!showUsername && !usernameAndRealNameAreSame ? `@${normalizedUsername}` : undefined}
 						data-username={normalizedUsername}
