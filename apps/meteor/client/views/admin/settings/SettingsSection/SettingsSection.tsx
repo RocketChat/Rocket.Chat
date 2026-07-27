@@ -118,14 +118,14 @@ function SettingsSection({ groupId, hasReset = true, sectionTitle, sectionName, 
 
 	return (
 		// scroll-margin keeps anchored sections clear of the page header when navigating via the TOC
-		<Box is='section' data-qa-section={sectionName} marginBlockEnd={48} style={{ scrollMarginBlockStart: '28px' }}>
+		<Box is='section' data-qa-section={sectionName} marginBlockEnd='x48' style={{ scrollMarginBlockStart: '1.75rem' }}>
 			{title && (
-				<Box is='h2' fontScale='h3' color='titles-labels' marginBlockEnd={4}>
+				<Box is='h2' fontScale='h3' color='titles-labels' marginBlockEnd='x4'>
 					{title}
 				</Box>
 			)}
 			{sectionDescription && (
-				<Box is='p' color='hint' fontScale='p2' marginBlockEnd={16}>
+				<Box is='p' color='hint' fontScale='p2' marginBlockEnd='x16'>
 					{sectionDescription}
 				</Box>
 			)}
@@ -144,9 +144,9 @@ function SettingsSection({ groupId, hasReset = true, sectionTitle, sectionName, 
 				const allLocked = settings.length > 0 && settings.every((setting) => isPremiumLocked(setting));
 
 				return (
-					<Box key={subsection || `ungrouped-${index}`} marginBlockEnd={24}>
+					<Box key={subsection || `ungrouped-${index}`} marginBlockEnd='x24'>
 						{(subsection || allPremium) && (
-							<Box display='flex' alignItems='center' marginBlockEnd={8} style={{ gap: 8 }}>
+							<Box display='flex' alignItems='center' marginBlockEnd='x8' style={{ gap: '0.5rem' }}>
 								{subsection && (
 									<Box fontScale='micro' textTransform='uppercase' color='hint'>
 										{i18n.exists(subsection) ? t(subsection as TranslationKey) : subsection}
@@ -156,10 +156,10 @@ function SettingsSection({ groupId, hasReset = true, sectionTitle, sectionName, 
 							</Box>
 						)}
 						{allLocked && (
-							<Box marginBlockEnd={8}>
+							<Box marginBlockEnd='x8'>
 								<Callout type='info' title={t('Premium_feature')}>
 									{t('Premium_settings_callout_description')}
-									<Box marginBlockStart={8}>
+									<Box marginBlockStart='x8'>
 										<Button primary small is='a' href={PRICING_URL} target='_blank' rel='noopener noreferrer'>
 											{t('Upgrade_to_Premium')}
 										</Button>
@@ -167,7 +167,7 @@ function SettingsSection({ groupId, hasReset = true, sectionTitle, sectionName, 
 								</Callout>
 							</Box>
 						)}
-						<Box backgroundColor='light' borderRadius='x8' padding={20}>
+						<Box backgroundColor='light' borderRadius='x8' padding='x20'>
 							<FieldGroup>
 								{settings.map(
 									(setting) =>
@@ -187,7 +187,7 @@ function SettingsSection({ groupId, hasReset = true, sectionTitle, sectionName, 
 			})}
 			{children && <FieldGroup>{children}</FieldGroup>}
 			{hasReset && canReset && (
-				<Button secondary danger marginBlockStart={16} data-section={sectionName} onClick={handleResetSectionClick}>
+				<Button secondary danger marginBlockStart='x16' data-section={sectionName} onClick={handleResetSectionClick}>
 					{t('Reset_section_settings')}
 				</Button>
 			)}

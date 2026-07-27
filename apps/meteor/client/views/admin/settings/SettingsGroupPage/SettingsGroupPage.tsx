@@ -13,7 +13,7 @@ import { useEditableSettingsDispatch, useEditableSettings, useEditableSettingsGr
 import SettingsSectionsToc from '../SettingsSectionsToc';
 
 // width of the fixed section TOC (x248) plus the scrollbar gutter it is inset by
-const TOC_RESERVED_WIDTH = 260;
+const TOC_RESERVED_WIDTH = 'x260';
 
 export type SettingsGroupPageProps = {
 	children: ReactNode;
@@ -158,7 +158,7 @@ const SettingsGroupPage = ({
 					{/* rendered before the settings list so keyboard users reach the section navigation first; overlaid on
 					    the scroll area so the page scrollbar stays at the window edge (the inset keeps the gutter visible) */}
 					{hasToc && (
-						<Box position='absolute' insetBlockStart={0} insetBlockEnd={0} insetInlineEnd={12} zIndex={1}>
+						<Box position='absolute' insetBlockStart={0} insetBlockEnd={0} insetInlineEnd='x12' zIndex={1}>
 							<SettingsSectionsToc groupId={_id} />
 						</Box>
 					)}

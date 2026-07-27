@@ -15,7 +15,7 @@ const tocItemStyle = css`
 	cursor: pointer;
 	appearance: none;
 	border: none;
-	border-radius: 4px;
+	border-radius: 0.25rem;
 	background: transparent;
 	font-family: inherit;
 	font-size: 0.875rem;
@@ -32,8 +32,8 @@ const tocItemStyle = css`
 	}
 
 	&:focus-visible {
-		outline: 2px solid ${Palette.stroke['stroke-highlight']};
-		outline-offset: -2px;
+		outline: 0.125rem solid ${Palette.stroke['stroke-highlight']};
+		outline-offset: -0.125rem;
 	}
 
 	&[aria-current='true'] {
@@ -42,7 +42,7 @@ const tocItemStyle = css`
 	}
 
 	& + & {
-		margin-block-start: 4px;
+		margin-block-start: 0.25rem;
 	}
 `;
 
@@ -135,13 +135,13 @@ function SettingsSectionsToc({ groupId, currentTab }: SettingsSectionsTocProps) 
 			height='full'
 			flexShrink={0}
 			backgroundColor='tint'
-			paddingBlockStart={24}
-			paddingBlockEnd={36}
-			paddingInlineStart={8}
-			paddingInlineEnd={16}
+			paddingBlockStart='x24'
+			paddingBlockEnd='x36'
+			paddingInlineStart='x8'
+			paddingInlineEnd='x16'
 			overflowY='auto'
 		>
-			<Box fontScale='c1' color='hint' paddingInline={12} marginBlockEnd={24}>
+			<Box fontScale='c1' color='hint' paddingInline='x12' marginBlockEnd='x24'>
 				{t('Settings_in_group', { group: i18n.exists(groupId) ? t(groupId as TranslationKey) : groupId })}
 			</Box>
 			{visibleSections.map((name) => {
@@ -156,8 +156,8 @@ function SettingsSectionsToc({ groupId, currentTab }: SettingsSectionsTocProps) 
 						display='block'
 						width='full'
 						textAlign='start'
-						paddingBlock={8}
-						paddingInline={12}
+						paddingBlock='x8'
+						paddingInline='x12'
 						onClick={() => handleSectionClick(name)}
 					>
 						{i18n.exists(name) ? t(name as TranslationKey) : name}
