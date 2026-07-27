@@ -24,6 +24,8 @@ const mockedUseUserPreference = useUserPreference as jest.Mock;
 const mockedUseEmojiPicker = useEmojiPicker as jest.Mock;
 
 describe('CannedResponsesComposer emoji insertion', () => {
+	const originalEmojiList = emoji.list;
+
 	beforeAll(() => {
 		mockedUseUserPreference.mockReturnValue(true);
 
@@ -48,6 +50,14 @@ describe('CannedResponsesComposer emoji insertion', () => {
 				uc_output: '',
 			},
 		};
+	});
+
+	afterAll(() => {
+		emoji.list = originalEmojiList;
+	});
+
+	afterEach(() => {
+		jest.clearAllMocks();
 	});
 
 	const renderWithPickedEmoji = (pickedEmojiName: string) => {
