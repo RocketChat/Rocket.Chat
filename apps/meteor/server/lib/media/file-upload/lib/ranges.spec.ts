@@ -53,6 +53,10 @@ describe('getFileRange', () => {
 		expect(getFileRange(file(1000), req('bytes=1500-1600'))).to.deep.equal({ outOfRange: true, start: 1500, stop: 999 });
 	});
 
+	it('flags an inverted closed range as out of range', () => {
+		expect(getFileRange(file(1000), req('bytes=200-100'))).to.deep.equal({ outOfRange: true, start: 200, stop: 100 });
+	});
+
 	it('serves the final byte of the file', () => {
 		expect(getFileRange(file(1000), req('bytes=999-'))).to.deep.equal({ outOfRange: false, start: 999, stop: 999 });
 	});

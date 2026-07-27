@@ -8,7 +8,6 @@ function parseByteRange(header?: string): ByteRange | undefined {
 	if (!header) {
 		return;
 	}
-	// Either bound may be omitted: `bytes=500-` (open-ended) or `bytes=-500` (suffix).
 	const matches = header.match(/^bytes=(\d*)-(\d*)$/);
 	if (!matches) {
 		return;
@@ -37,7 +36,6 @@ export function getFileRange(file: IUpload, req: http.IncomingMessage) {
 	let { start, stop } = parsed;
 
 	if (start === undefined) {
-		// Suffix range `bytes=-N`: the last N bytes.
 		if (!stop) {
 			return { outOfRange: true, start: 0, stop: size - 1 };
 		}
@@ -63,8 +61,6 @@ export const setRangeHeaders = function (
 	if (!range) {
 		return;
 	}
-
-	res.setHeader('Accept-Ranges', 'bytes');
 
 	if (range.outOfRange) {
 		// out of range request, return 416
