@@ -1,5 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { css } from '@rocket.chat/css-in-js';
 import {
+	Box,
 	MessageSystem,
 	MessageSystemBody,
 	MessageSystemContainer,
@@ -36,6 +38,12 @@ import {
 	useMessageListFormatDateAndTime,
 	useMessageListFormatTime,
 } from '../list/MessageListContext';
+
+const hoverUnderlineStyle = css`
+	&:hover {
+		text-decoration: underline;
+	}
+`;
 
 export type SystemMessageProps = {
 	message: IMessage;
@@ -91,13 +99,15 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 			<MessageSystemContainer>
 				<MessageSystemBlock>
 					<MessageNameContainer style={{ cursor: 'pointer' }} onMouseEnter={(e) => openUserCard(e, user.username)} {...triggerProps}>
-						<MessageSystemName>{displayName}</MessageSystemName>
-						{showUsername && (
-							<>
-								{' '}
-								<MessageUsername data-username={normalizedUsername}>@{normalizedUsername}</MessageUsername>
-							</>
-						)}
+						<Box is='span' className={hoverUnderlineStyle}>
+							<MessageSystemName>{displayName}</MessageSystemName>
+							{showUsername && (
+								<>
+									{' '}
+									<MessageUsername data-username={normalizedUsername}>@{normalizedUsername}</MessageUsername>
+								</>
+							)}
+						</Box>
 					</MessageNameContainer>
 					{messageType && (
 						<MessageSystemBody role='document' aria-roledescription={t('system_message_body')}>

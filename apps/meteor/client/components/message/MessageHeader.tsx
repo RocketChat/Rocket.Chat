@@ -1,5 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { css } from '@rocket.chat/css-in-js';
 import {
+	Box,
 	MessageHeader as FuselageMessageHeader,
 	MessageName,
 	MessageTimestamp,
@@ -23,6 +25,12 @@ import {
 	useMessageListFormatTime,
 } from './list/MessageListContext';
 import { normalizeUsername } from '../../../lib/utils/normalizeUsername';
+
+const hoverUnderlineStyle = css`
+	&:hover {
+		text-decoration: underline;
+	}
+`;
 
 export type MessageHeaderProps = {
 	message: IMessage;
@@ -55,18 +63,20 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 				onMouseEnter={(e) => openUserCard(e, message.u.username)}
 				{...triggerProps}
 			>
-				<MessageName
-					title={!showUsername && !usernameAndRealNameAreSame ? `@${normalizedUsername}` : undefined}
-					data-username={normalizedUsername}
-				>
-					{message.alias || displayName}
-				</MessageName>
-				{showUsername && (
-					<>
-						{' '}
-						<MessageUsername data-username={normalizedUsername}>@{normalizedUsername}</MessageUsername>
-					</>
-				)}
+				<Box is='span' className={hoverUnderlineStyle}>
+					<MessageName
+						title={!showUsername && !usernameAndRealNameAreSame ? `@${normalizedUsername}` : undefined}
+						data-username={normalizedUsername}
+					>
+						{message.alias || displayName}
+					</MessageName>
+					{showUsername && (
+						<>
+							{' '}
+							<MessageUsername data-username={normalizedUsername}>@{normalizedUsername}</MessageUsername>
+						</>
+					)}
+				</Box>
 			</MessageNameContainer>
 			{shouldShowRolesList && <MessageRoles roles={roles} isBot={!!message.bot} />}
 			<MessageTimestamp id={`${message._id}-time`} title={formatDateAndTime(message.ts)}>
