@@ -5476,6 +5476,79 @@ describe('[Users]', () => {
 		});
 	});
 
+	describe('[/api/v1/logout]', () => {
+		let user: TestUser<IUser>;
+
+		before(async () => {
+			user = await createUser();
+		});
+
+		after(() => deleteUser(user));
+
+		it('should logout the current user and invalidate the session', async () => {
+			const userCredentials = await login(user.username, password);
+
+			await request
+				.post(api('logout'))
+				.set(userCredentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			const meRes = await request.get(api('me')).set(userCredentials);
+			expect(meRes.statusCode).to.equal(401);
+		});
+
+		it('should set logoutAt on the session document', async () => {
+			const userCredentials = await login(user.username, password);
+			const authToken = userCredentials['X-Auth-Token'];
+			const hashedToken = crypto.createHash('sha256').update(authToken as string).digest('base64');
+
+			const client = new MongoClient(URL_MONGODB);
+			try {
+				await client.connect();
+				const db = client.db();
+
+				const { insertedId } = await db.collection('rocketchat_sessions').insertOne({
+					userId: user._id,
+					loginToken: hashedToken,
+					type: 'session',
+					sessionId: Random.id(),
+					instanceId: 'test',
+					createdAt: new Date(),
+					loginAt: new Date(),
+					lastActivityAt: new Date(),
+					ip: '127.0.0.1',
+					host: 'localhost',
+					year: new Date().getFullYear(),
+					month: new Date().getMonth() + 1,
+					day: new Date().getDate(),
+					searchTerm: '',
+					roles: [],
+				});
+
+				await request.post(api('logout')).set(userCredentials).expect(200);
+
+				const session = await db.collection('rocketchat_sessions').findOne({ _id: insertedId });
+				console.log(session)
+				expect(session).to.not.be.null;
+				expect(session?.logoutAt).to.not.be.null;
+				expect(session?.logoutBy).to.equal(user._id);
+			} finally {
+				await client.close();
+			}
+		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('logout'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+	});
+
 	describe('[/users.autocomplete]', () => {
 		after(() => updatePermission('view-outside-room', ['admin', 'owner', 'moderator', 'user']));
 
