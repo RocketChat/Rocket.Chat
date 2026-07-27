@@ -37,6 +37,7 @@
   "Accounts_AllowedDomainsList_Description": "Lista de dominios permitidos separada por comas",
   "Accounts_AvatarBlockUnauthenticatedAccess": "Bloquear o acceso non autenticado aos avatares",
   "Accounts_AvatarCacheTime": "Tempo de caché de avatar",
+  "Accounts_AvatarCacheTime_description": "Número de segundos que o protocolo http almacena en caché as imaxes do avatar.",
   "Accounts_AvatarSize": "Tamaño do avatar",
   "Accounts_BlockedDomainsList": "Lista de dominios bloqueados",
   "Accounts_BlockedDomainsList_Description": "Lista de dominios bloqueados separados por comas",
