@@ -13,6 +13,11 @@ const UserCard = lazy(() => import('../UserCard'));
 const HOVER_OPEN_DELAY = 500;
 const HOVER_CLOSE_DELAY = 300;
 
+// Anchored elements sit 0.25rem (4px at the default root font size) away
+// from their trigger. The positioning engine takes px, so the offset is
+// derived from the current root font size to stay rem-based.
+const getPopoverOffset = () => 0.25 * parseFloat(window.getComputedStyle(document.documentElement).fontSize || '16');
+
 const isPointInside = (el: Element | null, x: number, y: number): boolean => {
 	if (!el) {
 		return false;
@@ -165,7 +170,7 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 			{children}
 			{isOpen && userCardData && (
 				<Suspense fallback={null}>
-					<Popover placement='top left' triggerRef={triggerRef} state={state}>
+					<Popover placement='top left' offset={getPopoverOffset()} triggerRef={triggerRef} state={state}>
 						<Box ref={cardRef}>
 							<UserCard {...userCardData} {...overlayProps} />
 						</Box>
