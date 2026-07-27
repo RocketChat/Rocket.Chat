@@ -39,16 +39,24 @@ APIClient.handleTwoFactorChallenge(invokeTwoFactorModal);
  * */
 
 APIClient.use(async (request, next) => {
+	const tokenAtSend = getStoredItem(STORAGE_KEYS.LOGIN_TOKEN);
+
 	try {
 		return await next(...request);
 	} catch (error) {
 		if (error instanceof Response) {
-			// A 401 means the stored session token is no longer valid (expired or revoked
-			// server-side). DDP-routed calls cleared credentials via ddpOverREST; direct REST
-			// calls must do the same so the router falls through to the login page instead of
-			// leaving the user wedged. Only 401 (unauthenticated) — never 403 (authenticated but
-			// lacking permission), which must not log the user out.
-			if (error.status === 401) {
+			// A 401 on a request that carried the *current* token means that token is no longer
+			// valid (expired or revoked server-side). DDP-routed calls cleared credentials via
+			// ddpOverREST; direct REST calls must do the same so the router falls through to the
+			// login page instead of leaving the user wedged. Only 401 (unauthenticated) — never
+			// 403 (authenticated but lacking permission), which must not log the user out.
+			//
+			// The token comparison is what keeps this from logging out a healthy session: an
+			// authRequired call fired before login completes (OmnichannelProvider's
+			// livechat/config/routing, custom-sounds.list) 401s with no token at send time, and a
+			// request still in flight across a re-login 401s carrying the previous session's token.
+			// Neither says anything about the credentials currently stored.
+			if (error.status === 401 && tokenAtSend && tokenAtSend === getStoredItem(STORAGE_KEYS.LOGIN_TOKEN)) {
 				clearStoredCredentials();
 			}
 			const e = await error.json();
