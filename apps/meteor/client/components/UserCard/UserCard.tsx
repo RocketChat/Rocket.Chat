@@ -89,7 +89,7 @@ const UserCard = ({
 						)}
 					</Box>
 				</Box>
-				{onClose && <IconButton marginInlineStart={8} small aria-label={t('Close')} icon='cross' onClick={onClose} />}
+				{onClose && <IconButton marginInlineStart={8} small title={t('Close')} aria-label={t('Close')} icon='cross' onClick={onClose} />}
 			</Box>
 			<Box display='flex' flexDirection='column' marginBlockStart={18}>
 				{(roles || localTime || bio) && (
