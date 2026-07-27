@@ -144,7 +144,7 @@ describe('RichText Composer API - wrapSelection', () => {
 
 		composer.wrapSelection('*{{text}}*');
 
-		expect(input.textContent).toBe('*test*');
+		expect(input.textContent).toBe('*test*\n');
 	});
 
 	it('keeps the closing marker on the same line when the selection includes a trailing newline', () => {
@@ -161,6 +161,24 @@ describe('RichText Composer API - wrapSelection', () => {
 
 		composer.wrapSelection('*{{text}}*');
 
-		expect(input.textContent).toBe('*test*\nfoo');
+		expect(input.textContent).toBe('*test*\nfoo\n');
+	});
+
+	it('preserves internal newlines and does not duplicate the last character', () => {
+		const { composer, input } = setupComposer('foo\nbar', { start: 0, end: 7 });
+
+		composer.wrapSelection('*{{text}}*');
+
+		expect(input.textContent).toContain('*foo\nbar*');
+		expect(input.textContent).not.toContain('bar*r');
+	});
+
+	it('preserves blank lines (does not collapse consecutive newlines)', () => {
+		const { composer, input } = setupComposer('123\n456\n\n789', { start: 0, end: 12 });
+
+		composer.wrapSelection('*{{text}}*');
+
+		expect(input.textContent).toContain('*123\n456\n\n789*');
+		expect(input.textContent).not.toContain('456\n789');
 	});
 });

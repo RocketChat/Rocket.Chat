@@ -4,7 +4,7 @@ import type { RefObject } from 'react';
 
 import { createComposerAPICore, triggerEvent, type SetText } from './createComposerAPICore';
 import { limitQuoteChain } from './limitQuoteChain';
-import { resolveComposerBox } from './messageStateHandler';
+import { renderComposerContent, resolveComposerBox } from './messageStateHandler';
 import { getSelectionRange, setSelectionRange } from './selectionRange';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 
@@ -78,8 +78,7 @@ export const createRichTextComposerAPI = (
 
 	const wrapSelection = (pattern: string): { selectionStart: number; selectionEnd: number; value: string } => {
 		const { selectionStart, selectionEnd } = getSelectionRange(input);
-		// Sanitize the innerText by reducing multiple instances of linebreaks
-		const cleanedInitText = input.innerText.replace(/\n{2,}/g, (match) => '\n'.repeat(match.length - 1));
+		const cleanedInitText = input.innerText;
 
 		// Double-clicking the last word of a line selects the trailing paragraph newline too; keep any
 		// trailing newlines out of the wrapped range so the closing marker stays on the same line.
@@ -128,14 +127,19 @@ export const createRichTextComposerAPI = (
 		setSelectionRange(input, selectionStart, selEnd);
 		focus();
 
-		if (!document.execCommand?.('insertText', false, pattern.replace('{{text}}', selectedText))) {
-			input.innerText = initText + pattern.replace('{{text}}', selectedText) + finalText;
+		const replacement = pattern.replace('{{text}}', selectedText);
+		const newStart = selectionStart + pattern.indexOf('{{text}}');
+		const newEnd = newStart + selectedText.length;
+
+		// execCommand('insertText') mangles embedded newlines (drops them and duplicates the last
+		// character across the caret), so for multi-line selections rebuild the text directly and
+		// re-render the markup ourselves.
+		if (replacement.includes('\n') || !document.execCommand?.('insertText', false, replacement)) {
+			input.innerText = initText + replacement + finalText;
+			renderComposerContent(input, parseOptions, { selectionStart: newStart, selectionEnd: newEnd });
 		}
 
 		focus();
-
-		const newStart = selectionStart + pattern.indexOf('{{text}}');
-		const newEnd = newStart + selectedText.length;
 
 		setSelectionRange(input, newStart, newEnd);
 
@@ -191,9 +195,7 @@ export const createRichTextComposerAPI = (
 		replaceText,
 		replyWith,
 		substring: (start: number, end?: number) => {
-			// Sanitize the innerText by reducing multiple instances of linebreaks
-			const cleanedInitText = input.innerText.replace(/\n{2,}/g, (match) => '\n'.repeat(match.length - 1));
-			return cleanedInitText.substring(start, end);
+			return input.innerText.substring(start, end);
 		},
 		getCursorPosition: () => {
 			return getSelectionRange(input).selectionStart;
