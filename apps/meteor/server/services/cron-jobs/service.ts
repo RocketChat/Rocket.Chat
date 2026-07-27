@@ -3,8 +3,16 @@ import type { ICronJobsService } from '@rocket.chat/core-services';
 import type { ICronJobItem, ICronHistoryItem } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 import { CronJobs, CronHistory, AppScheduler } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { Filter } from 'mongodb';
 
 import { deriveStatus } from './deriveStatus';
+
+type JobsListOptions = {
+	offset?: number;
+	count?: number;
+	searchTerm?: string;
+};
 
 const resolveStatus = (job: ICronJobItem) => {
 	if (job.disabled) {
@@ -23,18 +31,12 @@ const resolveStatus = (job: ICronJobItem) => {
 export class CronJobsService extends ServiceClassInternal implements ICronJobsService {
 	protected name = 'cron-jobs';
 
-	async getCoreJobs(pagination?: {
-		offset?: number;
-		count?: number;
-	}): Promise<{ jobs: ICronJobItem[]; count: number; offset: number; total: number }> {
-		const { cursor, totalCount } = CronJobs.findPaginated(
-			{},
-			{
-				sort: { name: 1 },
-				skip: pagination?.offset,
-				limit: pagination?.count,
-			},
-		);
+	async getCoreJobs(pagination?: JobsListOptions): Promise<{ jobs: ICronJobItem[]; count: number; offset: number; total: number }> {
+		const { cursor, totalCount } = CronJobs.findPaginated(this.buildJobQuery(pagination?.searchTerm), {
+			sort: { name: 1 },
+			skip: pagination?.offset,
+			limit: pagination?.count,
+		});
 
 		const [allJobs, total] = await Promise.all([cursor.toArray(), totalCount]);
 
@@ -68,18 +70,12 @@ export class CronJobsService extends ServiceClassInternal implements ICronJobsSe
 		};
 	}
 
-	async getAppJobs(pagination?: {
-		offset?: number;
-		count?: number;
-	}): Promise<{ jobs: ICronJobItem[]; count: number; offset: number; total: number }> {
-		const { cursor, totalCount } = AppScheduler.findPaginated(
-			{},
-			{
-				sort: { name: 1 },
-				skip: pagination?.offset,
-				limit: pagination?.count,
-			},
-		);
+	async getAppJobs(pagination?: JobsListOptions): Promise<{ jobs: ICronJobItem[]; count: number; offset: number; total: number }> {
+		const { cursor, totalCount } = AppScheduler.findPaginated(this.buildJobQuery(pagination?.searchTerm), {
+			sort: { name: 1 },
+			skip: pagination?.offset,
+			limit: pagination?.count,
+		});
 
 		const [allJobs, total] = await Promise.all([cursor.toArray(), totalCount]);
 
@@ -130,5 +126,16 @@ export class CronJobsService extends ServiceClassInternal implements ICronJobsSe
 
 	async trigger(jobName: string): Promise<boolean> {
 		return cronJobs.trigger(jobName);
+	}
+
+	private buildJobQuery(searchTerm?: string): Filter<ICronJobItem> {
+		const term = searchTerm?.trim();
+		if (!term) {
+			return {};
+		}
+
+		return {
+			name: { $regex: escapeRegExp(term), $options: 'i' },
+		};
 	}
 }

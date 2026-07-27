@@ -9,11 +9,13 @@ import { getPaginationItems } from '../lib/getPaginationItems';
 const isCronJobsListParams = ajvQuery.compile<{
 	offset?: number;
 	count?: number;
+	searchTerm?: string;
 }>({
 	type: 'object',
 	properties: {
 		offset: { type: 'number', nullable: true },
 		count: { type: 'number', nullable: true },
+		searchTerm: { type: 'string', nullable: true },
 	},
 	additionalProperties: false,
 });
@@ -110,7 +112,12 @@ const cronJobsEndpoints = API.v1
 		},
 		async function action() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { jobs, total } = await CronJobs.getCoreJobs({ offset, count });
+			const searchTerm = this.queryParams.searchTerm?.trim();
+			const { jobs, total } = await CronJobs.getCoreJobs({
+				offset,
+				count,
+				...(searchTerm && { searchTerm }),
+			});
 
 			return API.v1.success({
 				jobs,
@@ -134,7 +141,12 @@ const cronJobsEndpoints = API.v1
 		},
 		async function action() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { jobs, total } = await CronJobs.getAppJobs({ offset, count });
+			const searchTerm = this.queryParams.searchTerm?.trim();
+			const { jobs, total } = await CronJobs.getAppJobs({
+				offset,
+				count,
+				...(searchTerm && { searchTerm }),
+			});
 
 			return API.v1.success({
 				jobs,
