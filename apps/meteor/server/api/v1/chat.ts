@@ -1131,7 +1131,7 @@ const chatEndpoints = API.v1
 			},
 		},
 		async function action() {
-			const { tmid } = this.queryParams;
+			const { tmid, aroundId } = this.queryParams;
 			const { query, fields, sort } = await this.parseJsonQuery();
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
@@ -1149,11 +1149,28 @@ const chatEndpoints = API.v1
 			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
+
+			let resolvedOffset = offset;
+			let resolvedSort = sort || { ts: 1 };
+			if (aroundId) {
+				resolvedSort = { ts: 1 };
+				if (aroundId === tmid) {
+					resolvedOffset = 0;
+				} else {
+					const target = await Messages.findOneById(aroundId, { projection: { ts: 1, tmid: 1 } });
+					if (target?.tmid !== tmid || !target.ts) {
+						throw new Meteor.Error('error-invalid-message', 'The provided "aroundId" does not belong to the thread');
+					}
+					const before = await Messages.countDocuments({ ...query, tmid, ts: { $lt: target.ts } });
+					resolvedOffset = Math.max(0, before - Math.floor(count / 2));
+				}
+			}
+
 			const { cursor, totalCount } = Messages.findPaginated(
 				{ ...query, tmid },
 				{
-					sort: sort || { ts: 1 },
-					skip: offset,
+					sort: resolvedSort,
+					skip: resolvedOffset,
 					limit: count,
 					projection: fields,
 				},
@@ -1164,7 +1181,7 @@ const chatEndpoints = API.v1
 			return API.v1.success({
 				messages,
 				count: messages.length,
-				offset,
+				offset: resolvedOffset,
 				total,
 			});
 		},

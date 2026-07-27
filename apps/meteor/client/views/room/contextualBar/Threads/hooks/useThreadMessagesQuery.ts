@@ -1,15 +1,20 @@
-import { isThreadMessage, type IMessage, type IRoom, type IThreadMainMessage, type IThreadMessage } from '@rocket.chat/core-typings';
-import { useMethod, useStream } from '@rocket.chat/ui-contexts';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useRef } from 'react';
+import type { IRoom, IMessage, IThreadMainMessage, IThreadMessage, Serialized } from '@rocket.chat/core-typings';
+import { isThreadMessage } from '@rocket.chat/core-typings';
+import { useEndpoint, useMethod, useStream } from '@rocket.chat/ui-contexts';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { onClientMessageReceived } from '../../../../../lib/onClientMessageReceived';
 import { roomsQueryKeys } from '../../../../../lib/queryKeys';
+import { getConfig } from '../../../../../lib/utils/getConfig';
+import { mapMessageFromApi } from '../../../../../lib/utils/mapMessageFromApi';
 import { modifyMessageOnFilesDelete } from '../../../../../lib/utils/modifyMessageOnFilesDelete';
 import {
 	createDeleteCriteria,
 	markThreadMessagesAsRead,
 	mergeThreadMessages,
+	mutateThreadMessagesInfiniteData,
+	type ThreadMessagesInfiniteData,
 	upsertThreadMessageInCache,
 } from '../../../../../lib/utils/threadMessageUtils';
 import { useRoom } from '../../../contexts/RoomContext';
@@ -18,18 +23,30 @@ const processMessages = async (messages: IMessage[]): Promise<IMessage[]> => {
 	return Promise.all(messages.map((msg) => onClientMessageReceived(msg)));
 };
 
+const filterThreadMessages = (messages: Serialized<IMessage>[], tmid: IThreadMainMessage['_id']): IThreadMessage[] => {
+	return messages
+		.map((m) => mapMessageFromApi(m))
+		.filter((msg): msg is IThreadMessage => isThreadMessage(msg) && msg.tmid === tmid && msg._id !== tmid && msg._hidden !== true);
+};
+
 export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IRoom['_id']) => {
 	const room = useRoom();
 	const roomId = rid ?? room._id;
 
 	const queryClient = useQueryClient();
 	const queryKey = roomsQueryKeys.threadMessages(roomId, tmid);
-	const getThreadMessages = useMethod('getThreadMessages');
+	const getThreadMessages = useEndpoint('GET', '/v1/chat.getThreadMessages');
+	// REST has no per-thread read-marker endpoint yet; fall back to the
+	// `readThreads` DDP method so the side effect that DDP getThreadMessages
+	// used to do server-side keeps happening for callers.
+	const readThreads = useMethod('readThreads');
 
 	const subscribeToRoomMessages = useStream('room-messages');
 	const subscribeToNotifyRoom = useStream('notify-room');
 
 	const unprocessedReadMessagesEvent = useRef<{ tmid: string; until: Date } | null>(null);
+
+	const count = parseInt(`${getConfig('threadMessagesSize', 50)}`, 10);
 
 	useEffect(() => {
 		const currentQueryKey = roomsQueryKeys.threadMessages(roomId, tmid);
@@ -44,32 +61,30 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 		});
 
 		const unsubscribeFromDeleteMessage = subscribeToNotifyRoom(`${roomId}/deleteMessage`, (event) => {
-			queryClient.setQueryData<IThreadMessage[]>(currentQueryKey, (old) => {
-				if (!old) {
-					return old;
+			mutateThreadMessagesInfiniteData(queryClient, currentQueryKey, (messages) => {
+				const index = messages.findIndex((m) => m._id === event._id);
+				if (index !== -1) {
+					messages.splice(index, 1);
 				}
-				return old.filter((m) => m._id !== event._id);
 			});
 		});
 
 		const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom(`${roomId}/deleteMessageBulk`, (bulkParams) => {
 			const matchDeleteCriteria = createDeleteCriteria(bulkParams);
 
-			queryClient.setQueryData<IThreadMessage[]>(currentQueryKey, (old) => {
-				if (!old) {
-					return old;
-				}
-
+			mutateThreadMessagesInfiniteData(queryClient, currentQueryKey, (messages) => {
 				if (bulkParams.filesOnly) {
-					return old.map((msg) => {
+					for (let index = 0; index < messages.length; index++) {
+						const msg = messages[index];
 						if (matchDeleteCriteria(msg)) {
-							return modifyMessageOnFilesDelete(msg, bulkParams.replaceFileAttachmentsWith);
+							messages[index] = modifyMessageOnFilesDelete(msg, bulkParams.replaceFileAttachmentsWith);
 						}
-						return msg;
-					});
+					}
+					return;
 				}
 
-				return old.filter((msg) => !matchDeleteCriteria(msg));
+				const filtered = messages.filter((msg) => !matchDeleteCriteria(msg));
+				messages.splice(0, messages.length, ...filtered);
 			});
 		});
 
@@ -84,11 +99,9 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 				return;
 			}
 
-			queryClient.setQueryData<IThreadMessage[]>(currentQueryKey, (old) => {
-				if (!old) {
-					return old;
-				}
-				return markThreadMessagesAsRead(old, until);
+			mutateThreadMessagesInfiniteData(queryClient, currentQueryKey, (messages) => {
+				const updated = markThreadMessagesAsRead(messages, until);
+				messages.splice(0, messages.length, ...updated);
 			});
 		});
 
@@ -100,23 +113,94 @@ export const useThreadMessagesQuery = (tmid: IThreadMainMessage['_id'], rid?: IR
 		};
 	}, [tmid, roomId, queryClient, subscribeToRoomMessages, subscribeToNotifyRoom]);
 
-	return useQuery({
+	const loadMessageAround = useCallback(
+		async (messageId: string) => {
+			const currentQueryKey = roomsQueryKeys.threadMessages(roomId, tmid);
+
+			await queryClient.cancelQueries({ queryKey: currentQueryKey });
+
+			const { messages, total, offset } = await getThreadMessages({
+				tmid,
+				aroundId: messageId,
+				count,
+				sort: JSON.stringify({ ts: 1 }),
+			});
+
+			const filtered = filterThreadMessages(messages, tmid);
+			const processed = (await processMessages(filtered)) as IThreadMessage[];
+
+			const pageParam = Math.max(0, total - offset - count);
+
+			queryClient.setQueryData<ThreadMessagesInfiniteData>(currentQueryKey, {
+				pages: [{ items: processed, itemCount: total }],
+				pageParams: [pageParam],
+			});
+		},
+		[queryClient, getThreadMessages, roomId, tmid, count],
+	);
+
+	const query = useInfiniteQuery({
 		queryKey,
-		queryFn: async () => {
-			const cachedMessages = queryClient.getQueryData<IThreadMessage[]>(queryKey) || [];
+		queryFn: async ({ pageParam: offset }) => {
+			if (offset === 0) {
+				void Promise.resolve(readThreads(tmid)).catch(() => undefined);
+			}
 
-			const messages = await getThreadMessages({ tmid });
-			const filtered = messages.filter(
-				(msg): msg is IThreadMessage => isThreadMessage(msg) && msg.tmid === tmid && msg._id !== tmid && msg._hidden !== true,
-			);
+			const cachedData = offset === 0 ? queryClient.getQueryData<ThreadMessagesInfiniteData>(queryKey) : undefined;
+			const cachedMessages = cachedData?.pages.at(-1)?.items ?? [];
 
-			const sorted = mergeThreadMessages(cachedMessages, filtered);
-			if (unprocessedReadMessagesEvent.current) {
+			const { messages, total } = await getThreadMessages({
+				tmid,
+				offset,
+				count,
+				sort: JSON.stringify({ ts: -1 }),
+			});
+
+			let filtered = filterThreadMessages(messages, tmid);
+			if (offset === 0) {
+				filtered = mergeThreadMessages(cachedMessages, filtered);
+			}
+
+			if (offset === 0 && unprocessedReadMessagesEvent.current?.tmid === tmid) {
 				const { until } = unprocessedReadMessagesEvent.current;
 				unprocessedReadMessagesEvent.current = null;
-				return processMessages(markThreadMessagesAsRead(sorted, until)) as Promise<Array<IThreadMessage>>;
+				filtered = markThreadMessagesAsRead(filtered, until);
 			}
-			return processMessages(sorted) as Promise<Array<IThreadMessage>>;
+
+			const processed = (await processMessages(filtered)) as IThreadMessage[];
+
+			return {
+				items: processed,
+				itemCount: total,
+			};
 		},
+		initialPageParam: 0,
+		getNextPageParam: (_lastPage, _allPages, lastPageParam) => {
+			return lastPageParam > 0 ? Math.max(0, lastPageParam - count) : undefined;
+		},
+		getPreviousPageParam: (firstPage, _allPages, firstPageParam) => {
+			const pageSize = Math.min(firstPage.items.length, count);
+			if (pageSize <= 0) {
+				return undefined;
+			}
+			const next = firstPageParam + pageSize;
+			return next < firstPage.itemCount ? next : undefined;
+		},
+		select: ({ pages }) => {
+			const byId = new Map<string, IThreadMessage>();
+			for (const page of pages) {
+				for (const item of page.items) {
+					byId.set(item._id, item);
+				}
+			}
+			const messages = Array.from(byId.values()).sort((a, b) => new Date(a.ts).getTime() - new Date(b.ts).getTime());
+			return {
+				messages,
+				itemCount: pages.at(-1)?.itemCount ?? 0,
+			};
+		},
+		refetchOnWindowFocus: false,
 	});
+
+	return { ...query, loadMessageAround };
 };
