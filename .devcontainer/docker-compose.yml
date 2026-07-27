@@ -1,0 +1,37 @@
+services:
+  app:
+    build:
+      # Build context is the repo root so the Dockerfile can COPY package.json
+      # and .tool-versions to pin the toolchain versions.
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    volumes:
+      - ..:/workspaces/rocket.chat:cached
+      # Keep node_modules/meteor caches off the host bind mount for speed.
+      - rc-node-modules:/workspaces/rocket.chat/node_modules
+      # .meteor/local must NOT be shared with the host: Meteor writes absolute
+      # paths into it (notably the dev_bundle symlink, which points into the
+      # running user's ~/.meteor). A host-written dev_bundle dangles in here —
+      # /home/<hostuser> does not exist in the container — and Meteor then spins
+      # on any in-project command, burning CPU and printing nothing. It also
+      # holds db/, the mongod data dir that `meteor` populates in dev, which the
+      # two sides must not share.
+      #
+      # No mongo service is defined here on purpose: `meteor` starts its own
+      # bundled mongod (127.0.0.1:3001) and only does so while MONGO_URL is
+      # UNSET. Do not add MONGO_URL to this file or devcontainer.json — setting
+      # it makes Meteor skip its local mongod and connect out instead.
+      - rc-meteor-local:/workspaces/rocket.chat/apps/meteor/.meteor/local
+    # Required by init-firewall.sh to manage iptables/ipset inside the container.
+    ports:
+      - 3000:3000
+      - 3001:3001
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    # Keep the container running so VS Code / the CLI can attach into it.
+    command: sleep infinity
+
+volumes:
+  rc-node-modules:
+  rc-meteor-local:

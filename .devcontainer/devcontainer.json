@@ -1,12 +1,51 @@
 {
-	"name": "Rocket.Chat Gitpod",
-	"build": {
-        "context": "..",
-        "dockerfile": "./Dockerfile"
-    },
+	"name": "Rocket.Chat Dev",
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "app",
+	"workspaceFolder": "/workspaces/rocket.chat",
+	// Non-root user is required for `claude --dangerously-skip-permissions`,
+	// and its uid (1000) matches the host user so bind-mounted files stay writable.
+	"remoteUser": "vscode",
 	"features": {
-        "ghcr.io/devcontainers/features/docker-in-docker:2": {}
-    },
+		// Installs the Claude Code CLI (and its VS Code extension) into the container.
+		"ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
+	},
+	// Persist Claude Code auth/settings/history across container rebuilds.
+	// Scoped per-devcontainer so different projects don't share credentials.
+	"mounts": [
+		"source=claude-code-config-${devcontainerId},target=/home/vscode/.claude,type=volume",
+		// Your host Neovim config, read-only so the container can't modify it.
+		"source=${localEnv:HOME}/.config/nvim,target=/home/vscode/.config/nvim,type=bind,readonly",
+		// Plugins/treesitter parsers stay container-side (arch-specific) and persist.
+		"source=nvim-data-${devcontainerId},target=/home/vscode/.local/share/nvim,type=volume"
+	],
+	// Named volumes mount as root, and Docker also creates any *missing parent*
+	// dirs of a mount target as root before the container runs — .local and
+	// .local/share are not in the base image, so they exist only because of the
+	// nvim volume nested under them. Chown from .local down, or the vscode user
+	// cannot create ~/.local/state (nvim's shada/undo/logs) or ~/.local/bin.
+	// Deliberately targeted rather than all of /home/vscode: a recursive chown
+	// there would walk into the .config/nvim bind mount and rewrite ownership of
+	// the host's files.
+	//
+	// The rc-node-modules and rc-meteor-local volumes are the same story: the
+	// image has nothing at those paths to seed ownership from (the workspace only
+	// exists as a bind mount at runtime), so they land as root:root and
+	// yarn/meteor — running as vscode — get EACCES creating anything under them.
+	// These target the volumes, NOT the host repo: each named volume is mounted
+	// over the bind mount at its path, so the host's own node_modules and
+	// .meteor/local are shadowed and untouched.
+	// Not recursive: yarn and meteor create everything below as vscode, so only
+	// the mount points themselves need fixing, and a recursive walk of a
+	// populated node_modules would add minutes to every container create.
+	"postCreateCommand": "sudo chown -R vscode:vscode /home/vscode/.claude /home/vscode/.local && sudo chown vscode:vscode /workspaces/rocket.chat/node_modules /workspaces/rocket.chat/apps/meteor/.meteor/local",
+	// Re-apply the egress firewall on every start (iptables state is not persisted).
+	// This is what makes `claude --dangerously-skip-permissions` safe to run here:
+	// egress is default-deny except for the allowlist in init-firewall.sh.
+	// The script is baked into the image, so editing it requires a rebuild.
+	// Deliberately rc-prefixed: the claude-code feature installs its own
+	// /usr/local/bin/init-firewall.sh over ours (see the Dockerfile).
+	"postStartCommand": "sudo /usr/local/bin/rc-init-firewall.sh",
 	"forwardPorts": [3000],
 	"customizations": {
 		"vscode": {
