@@ -125,38 +125,34 @@ exports[`renders Default without crashing 1`] = `
                         Roles
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-9vcs0o"
+                        class="rcx-box rcx-box--full rcx-css-1fksvtu"
                       >
-                        <span
-                          class="rcx-box rcx-box--full rcx-css-1sut473"
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1i2tyln"
                         >
-                          <div
-                            class="rcx-box rcx-box--full rcx-css-1i2tyln"
+                          <span
+                            class="rcx-box rcx-box--full rcx-tag "
                           >
                             <span
-                              class="rcx-box rcx-box--full rcx-tag "
+                              class="rcx-tag__inner"
                             >
-                              <span
-                                class="rcx-tag__inner"
-                              >
-                                admin
-                              </span>
+                              admin
                             </span>
-                          </div>
-                          <div
-                            class="rcx-box rcx-box--full rcx-css-1i2tyln"
+                          </span>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1i2tyln"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-tag "
                           >
                             <span
-                              class="rcx-box rcx-box--full rcx-tag "
+                              class="rcx-tag__inner"
                             >
-                              <span
-                                class="rcx-tag__inner"
-                              >
-                                user
-                              </span>
+                              user
                             </span>
-                          </div>
-                        </span>
+                          </span>
+                        </div>
                       </div>
                     </div>
                     <dl
@@ -416,38 +412,34 @@ exports[`renders InvitedUser without crashing 1`] = `
                         Roles
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-9vcs0o"
+                        class="rcx-box rcx-box--full rcx-css-1fksvtu"
                       >
-                        <span
-                          class="rcx-box rcx-box--full rcx-css-1sut473"
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1i2tyln"
                         >
-                          <div
-                            class="rcx-box rcx-box--full rcx-css-1i2tyln"
+                          <span
+                            class="rcx-box rcx-box--full rcx-tag "
                           >
                             <span
-                              class="rcx-box rcx-box--full rcx-tag "
+                              class="rcx-tag__inner"
                             >
-                              <span
-                                class="rcx-tag__inner"
-                              >
-                                admin
-                              </span>
+                              admin
                             </span>
-                          </div>
-                          <div
-                            class="rcx-box rcx-box--full rcx-css-1i2tyln"
+                          </span>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1i2tyln"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-tag "
                           >
                             <span
-                              class="rcx-box rcx-box--full rcx-tag "
+                              class="rcx-tag__inner"
                             >
-                              <span
-                                class="rcx-tag__inner"
-                              >
-                                user
-                              </span>
+                              user
                             </span>
-                          </div>
-                        </span>
+                          </span>
+                        </div>
                       </div>
                     </div>
                     <dl
@@ -721,38 +713,34 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                         Roles
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-9vcs0o"
+                        class="rcx-box rcx-box--full rcx-css-1fksvtu"
                       >
-                        <span
-                          class="rcx-box rcx-box--full rcx-css-1sut473"
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1i2tyln"
                         >
-                          <div
-                            class="rcx-box rcx-box--full rcx-css-1i2tyln"
+                          <span
+                            class="rcx-box rcx-box--full rcx-tag "
                           >
                             <span
-                              class="rcx-box rcx-box--full rcx-tag "
+                              class="rcx-tag__inner"
                             >
-                              <span
-                                class="rcx-tag__inner"
-                              >
-                                admin
-                              </span>
+                              admin
                             </span>
-                          </div>
-                          <div
-                            class="rcx-box rcx-box--full rcx-css-1i2tyln"
+                          </span>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1i2tyln"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-tag "
                           >
                             <span
-                              class="rcx-box rcx-box--full rcx-tag "
+                              class="rcx-tag__inner"
                             >
-                              <span
-                                class="rcx-tag__inner"
-                              >
-                                user
-                              </span>
+                              user
                             </span>
-                          </div>
-                        </span>
+                          </span>
+                        </div>
                       </div>
                     </div>
                     <dl
@@ -1072,38 +1060,34 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                         Roles
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-9vcs0o"
+                        class="rcx-box rcx-box--full rcx-css-1fksvtu"
                       >
-                        <span
-                          class="rcx-box rcx-box--full rcx-css-1sut473"
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1i2tyln"
                         >
-                          <div
-                            class="rcx-box rcx-box--full rcx-css-1i2tyln"
+                          <span
+                            class="rcx-box rcx-box--full rcx-tag "
                           >
                             <span
-                              class="rcx-box rcx-box--full rcx-tag "
+                              class="rcx-tag__inner"
                             >
-                              <span
-                                class="rcx-tag__inner"
-                              >
-                                admin
-                              </span>
+                              admin
                             </span>
-                          </div>
-                          <div
-                            class="rcx-box rcx-box--full rcx-css-1i2tyln"
+                          </span>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1i2tyln"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-tag "
                           >
                             <span
-                              class="rcx-box rcx-box--full rcx-tag "
+                              class="rcx-tag__inner"
                             >
-                              <span
-                                class="rcx-tag__inner"
-                              >
-                                user
-                              </span>
+                              user
                             </span>
-                          </div>
-                        </span>
+                          </span>
+                        </div>
                       </div>
                     </div>
                     <dl
