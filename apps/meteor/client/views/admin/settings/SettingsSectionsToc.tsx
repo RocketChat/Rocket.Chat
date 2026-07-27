@@ -59,7 +59,7 @@ function SettingsSectionsToc({ groupId, currentTab }: SettingsSectionsTocProps) 
 	// while a click-initiated smooth scroll is running, the observer is muted so the
 	// highlight doesn't jump across the sections passing through the viewport
 	const scrollTargetRef = useRef<string | null>(null);
-	const scrollTargetTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+	const scrollTargetTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
 	const visibleSections = useMemo(() => sections.filter((name) => name), [sections]);
 
