@@ -233,33 +233,16 @@ const RichTextMessageBox = ({
 		}
 
 		const text = chat.composer?.text ?? '';
-		// Sanitize the innerText by reducing multiple instances of linebreaks
-		const cleanedText = text.replace(/\n{2,}/g, (match) => '\n'.repeat((match.length + 1) / 2));
 		chat.composer?.clear();
 		popup.clear();
 		setMdLines(['']);
 
-		const isFirefox = typeof navigator !== 'undefined' && /Firefox\/\d+/.test(navigator.userAgent);
-		const isEditingMessage = Boolean(chat.currentEditingMessage.getMID());
-
-		/* TODO: Develop the parser function that will render inside the RichTextComposer component */
-		// This if-else block temporarily solves the problem of editing a message
-		// When a message is being edited, it is a flat text structure without any DOM tree
-		if (isEditingMessage || isFirefox) {
-			onSend?.({
-				value: text,
-				tshow,
-				previewUrls,
-				isSlashCommandAllowed,
-			});
-		} else {
-			onSend?.({
-				value: cleanedText,
-				tshow,
-				previewUrls,
-				isSlashCommandAllowed,
-			});
-		}
+		onSend?.({
+			value: text,
+			tshow,
+			previewUrls,
+			isSlashCommandAllowed,
+		});
 	});
 
 	const closeEditing = (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
