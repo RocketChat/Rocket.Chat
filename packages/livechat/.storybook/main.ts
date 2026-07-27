@@ -13,7 +13,27 @@ const config: StorybookConfig = {
 			options: {
 				rules: [
 					{
-						test: /\.s?css$/,
+						test: /\.css$/,
+						sideEffects: true,
+						use: [
+							'style-loader',
+							{
+								loader: 'css-loader',
+								options: {
+									importLoaders: 1,
+									sourceMap: true,
+								},
+							},
+							{
+								loader: 'postcss-loader',
+								options: {
+									implementation: 'postcss',
+								},
+							},
+						],
+					},
+					{
+						test: /\.scss$/,
 						sideEffects: true,
 						use: [
 							'style-loader',
