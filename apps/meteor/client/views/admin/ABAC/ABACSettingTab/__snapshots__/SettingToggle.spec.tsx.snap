@@ -43,7 +43,7 @@ exports[`AbacEnabledToggle should be disabled when abac license is not installed
             </div>
           </span>
           <span
-            class="rcx-box rcx-box--full rcx-field__hint"
+            class="rcx-box rcx-box--full rcx-field__description"
           >
             Enable Attribute-Based Access Control
           </span>
@@ -108,7 +108,7 @@ exports[`AbacEnabledToggle should render the setting toggle when setting exists 
             </div>
           </span>
           <span
-            class="rcx-box rcx-box--full rcx-field__hint"
+            class="rcx-box rcx-box--full rcx-field__description"
           >
             Enable Attribute-Based Access Control
           </span>
