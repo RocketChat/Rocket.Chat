@@ -1,5 +1,5 @@
 import { Tag, Box, Pagination } from '@rocket.chat/fuselage';
-import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
 	GenericTableBody,
@@ -13,12 +13,12 @@ import {
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { BackgroundJobsTab } from './BackgroundJobsPage';
-import BackgroundJobsTableFilters from './BackgroundJobsTableFilters';
 import { statusVariant, useTranslateInterval } from './helpers';
+import FilterByText from '../../../components/FilterByText';
 import GenericNoResults from '../../../components/GenericNoResults';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
@@ -30,12 +30,24 @@ type BackgroundJobsTableProps = {
 const BackgroundJobsTable = ({ tab }: BackgroundJobsTableProps) => {
 	const { t } = useTranslation();
 	const router = useRouter();
-	const [, setSearchTerm] = useState('');
+	const [text, setText] = useState('');
 	const formatDateAndTime = useFormatDateAndTime();
 	const timeAgo = useTimeAgo();
 	const translateInterval = useTranslateInterval();
 	const isDesktopOrLarger = useMediaQuery('(min-width: 1024px)');
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
+
+	const query = useDebouncedValue(
+		useMemo(
+			() => ({
+				searchTerm: text.trim(),
+				count: itemsPerPage,
+				offset: current,
+			}),
+			[text, itemsPerPage, current],
+		),
+		500,
+	);
 
 	const handleClick = (jobName: string): void => {
 		router.navigate({
@@ -49,22 +61,21 @@ const BackgroundJobsTable = ({ tab }: BackgroundJobsTableProps) => {
 
 	useEffect(() => {
 		setCurrent(0);
-	}, [tab, setCurrent]);
+	}, [tab, setCurrent, text]);
 
 	const getCoreJobs = useEndpoint('GET', '/v1/cron.jobs');
 	const getAppJobs = useEndpoint('GET', '/v1/cron.appjobs');
 
 	const { data, isLoading, isSuccess, isError } = useQuery({
-		queryKey: ['cron-jobs', tab, current, itemsPerPage],
+		queryKey: ['cron-jobs', tab, query],
 		queryFn: async () => {
-			const params = { offset: current, count: itemsPerPage };
 			if (tab === 'apps') {
-				return getAppJobs(params);
+				return getAppJobs(query);
 			}
 			if (tab === 'omnichannel') {
 				return { jobs: [], total: 0 };
 			}
-			return getCoreJobs(params);
+			return getCoreJobs(query);
 		},
 		meta: {
 			apiErrorToastMessage: true,
@@ -75,7 +86,7 @@ const BackgroundJobsTable = ({ tab }: BackgroundJobsTableProps) => {
 
 	return (
 		<>
-			<BackgroundJobsTableFilters setSearchTerm={setSearchTerm} />
+			<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			{isError && (
 				<Box display='flex' justifyContent='center' height='full'>
 					<GenericNoResults icon='warning' title={t('Something_went_wrong')} />
