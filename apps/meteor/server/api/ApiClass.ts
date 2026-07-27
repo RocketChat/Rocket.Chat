@@ -898,12 +898,17 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 								switch (e.error) {
 									case 'error-too-many-requests':
 										return api.tooManyRequests(typeof e === 'string' ? e : e.message);
+									// every `error-unauthorized`/`error-not-authorized` throw in the codebase follows an authorization check,
+									// so they map to 403; 401 is reserved for a missing or invalid session
 									case 'unauthorized':
 									case 'error-unauthorized':
-										if (applyBreakingChanges) {
-											return api.unauthorized(typeof e === 'string' ? e : e.message);
-										}
 										return api.forbidden(typeof e === 'string' ? e : e.message);
+									case 'not-authorized':
+									case 'error-not-authorized':
+										if (applyBreakingChanges) {
+											return api.forbidden(typeof e === 'string' ? e : e.message);
+										}
+										return api.failure(typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
 									case 'forbidden':
 									case 'error-forbidden':
 										if (applyBreakingChanges) {

@@ -4663,6 +4663,7 @@ describe('[Rooms]', () => {
 				.set(nonMemberCredentials)
 				.send({ roomId: roomB._id })
 				.expect('Content-Type', 'application/json')
+				// TODO: MAJOR 403 — currently 401 until the 9.0.0 breaking changes are applied
 				.expect(401)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
@@ -5099,6 +5100,28 @@ describe('[Rooms]', () => {
 		after(async () => {
 			await deleteRoom({ type: 'c', roomId: testChannel._id });
 			await Promise.all(bannedUsers.map((user) => deleteUser(user)));
+		});
+
+		it('should return forbidden if user does not have access to the room', async () => {
+			const privateRoom = (await createRoom({ type: 'p', name: `banned-users-private-${Date.now()}-${Math.random()}` })).body.group;
+			const nonMember = await createUser({ joinDefaultChannels: false });
+			const nonMemberCredentials = await login(nonMember.username, password);
+
+			try {
+				await request
+					.get(api('rooms.bannedUsers'))
+					.set(nonMemberCredentials)
+					.query({ roomId: privateRoom._id })
+					.expect('Content-Type', 'application/json')
+					// TODO: MAJOR 403 — currently 401 until the 9.0.0 breaking changes are applied
+					.expect(401)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+					});
+			} finally {
+				await deleteRoom({ type: 'p', roomId: privateRoom._id });
+				await deleteUser(nonMember);
+			}
 		});
 
 		it('should list every banned user of the room with only the projected fields', async () => {
