@@ -16,7 +16,9 @@ const UserCardDialog = (props: UserCardDialogProps) => {
 			rcx-user-card
 			backgroundColor='surface'
 			elevation='2'
-			padding='x24'
+			paddingBlockStart='x24'
+			paddingBlockEnd='x16'
+			paddingInline='x16'
 			display='flex'
 			flexDirection='column'
 			borderRadius='x8'

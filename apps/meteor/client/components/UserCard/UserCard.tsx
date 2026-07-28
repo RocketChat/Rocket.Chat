@@ -61,10 +61,10 @@ const UserCard = ({
 			{workspaceRoles && (
 				<Box
 					marginBlockStart='neg-x24'
-					marginInline='neg-x24'
+					marginInline='neg-x16'
 					marginBlockEnd='x16'
 					paddingBlock='x8'
-					paddingInline='x24'
+					paddingInline='x16'
 					backgroundColor='tint'
 					fontScale='c1'
 					color='default'
