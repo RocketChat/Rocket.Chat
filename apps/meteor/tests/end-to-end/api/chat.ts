@@ -4805,6 +4805,98 @@ describe('Threads', () => {
 		});
 	});
 
+	describe('[/chat.readThread]', () => {
+		let testChannel: IRoom;
+		let parentMessage: IMessage;
+		let replier: TestUser<IUser>;
+		let replierCredentials: Credentials;
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `channel.test.readThread.${Date.now()}` })).body.channel;
+			parentMessage = (await sendSimpleMessage({ roomId: testChannel._id, text: 'Message to create thread' })).body.message;
+
+			replier = await createUser();
+			replierCredentials = await login(replier.username, password);
+			await addUserToRoom({ usernames: [replier.username], rid: testChannel._id });
+		});
+
+		after(() =>
+			Promise.all([updateSetting('Threads_enabled', true), deleteRoom({ type: 'c', roomId: testChannel._id }), deleteUser(replier)]),
+		);
+
+		it('should fail when threads are disabled', async () => {
+			await updateSetting('Threads_enabled', false);
+
+			try {
+				await request
+					.post(api('chat.readThread'))
+					.set(credentials)
+					.send({ tmid: parentMessage._id })
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-not-allowed');
+					});
+			} finally {
+				await updateSetting('Threads_enabled', true);
+			}
+		});
+
+		it('should fail when tmid does not match any message', async () => {
+			await request
+				.post(api('chat.readThread'))
+				.set(credentials)
+				.send({ tmid: 'invalid-message-id' })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-message');
+				});
+		});
+
+		it('should fail when tmid is missing', async () => {
+			await request
+				.post(api('chat.readThread'))
+				.set(credentials)
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
+		});
+
+		it('should clear the unread thread flag of the caller subscription', async () => {
+			await sendSimpleMessage({
+				roomId: testChannel._id,
+				text: 'Thread reply',
+				tmid: parentMessage._id,
+				userCredentials: replierCredentials,
+			});
+
+			await retry('caller subscription has the thread as unread', async () => {
+				const subscription = await getSubscriptionByRoomId(testChannel._id);
+				expect(subscription.tunread).to.include(parentMessage._id);
+			});
+
+			await request
+				.post(api('chat.readThread'))
+				.set(credentials)
+				.send({ tmid: parentMessage._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const subscription = await getSubscriptionByRoomId(testChannel._id);
+			expect(subscription.tunread ?? []).to.not.include(parentMessage._id);
+		});
+	});
+
 	describe('[/chat.syncThreadMessages]', () => {
 		let testChannel: IRoom;
 		let threadMessage: IThreadMessage;

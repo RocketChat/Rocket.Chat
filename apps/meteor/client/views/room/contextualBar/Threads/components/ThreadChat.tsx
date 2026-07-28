@@ -2,7 +2,7 @@ import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage, isThreadMainMessage } from '@rocket.chat/core-typings';
 import { Box, CheckBox, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { clientCallbacks, ContextualbarContent } from '@rocket.chat/ui-client';
-import { useMethod, useTranslation, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTranslation, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useState, useEffect, useCallback, useId } from 'react';
 
 import ThreadMessageList from './ThreadMessageList';
@@ -62,7 +62,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 	}, [chat?.messageEditing]);
 
 	const room = useRoom();
-	const readThreads = useMethod('readThreads');
+	const readThread = useEndpoint('POST', '/v1/chat.readThread');
 	useEffect(() => {
 		clientCallbacks.add(
 			'streamNewMessage',
@@ -71,7 +71,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 					return;
 				}
 
-				readThreads(mainMessage._id);
+				void Promise.resolve(readThread({ tmid: mainMessage._id })).catch(() => undefined);
 			},
 			clientCallbacks.priority.MEDIUM,
 			`thread-${room._id}`,
@@ -80,7 +80,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 		return () => {
 			clientCallbacks.remove('streamNewMessage', `thread-${room._id}`);
 		};
-	}, [mainMessage._id, readThreads, room._id]);
+	}, [mainMessage._id, readThread, room._id]);
 
 	const subscription = useRoomSubscription();
 	const sendToChannelID = useId();
