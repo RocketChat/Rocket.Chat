@@ -451,7 +451,16 @@ If you need a `$ref` for a type that is not yet registered:
 
 ## Chaining Endpoints and Type Augmentation
 
-Migrated endpoints **must always be chained** when a file registers multiple endpoints. Store the result in a variable, then use `ExtractRoutesFromAPI` to extract the route types and augment the `Endpoints` interface in `rest-typings`. This is what makes the endpoints fully typed across the entire codebase (SDK, client, tests).
+Chaining endpoints and augmenting the `Endpoints` interface is what makes the routes fully typed across the entire codebase (SDK, client, tests) — **but only do it for endpoints that are not already declared.**
+
+### Decision rule: augment or not?
+
+Check `packages/rest-typings/src/v1/*.ts` for the route keys you are migrating:
+
+- **Route keys ALREADY declared in `Endpoints`** (e.g. `channels.*`, `groups.*`, most `omnichannel/livechat.*`): do **NOT** augment. A second `declare module '@rocket.chat/rest-typings'` for the same key is a duplicate declaration and fails to compile (`TS2717`). Keep the existing manual entry and only convert the registration to `API.v1.get/post/...` plus add the `response` schemas. This is the **moderation pattern**.
+- **Route keys with NO existing manual entry**: chain the calls, extract with `ExtractRoutesFromAPI`, and augment `Endpoints` as shown below. This is the **invites / custom-sounds pattern**.
+
+When you do chain (the second case), store the chained result in a variable, then use `ExtractRoutesFromAPI` to extract the route types and augment the `Endpoints` interface in `rest-typings`.
 
 ### Full example
 
@@ -518,7 +527,7 @@ Source: `apps/meteor/app/api/server/v1/invites.ts`
 
 ### Rules
 
-1. **Always chain**: Every `.get()` / `.post()` / `.put()` / `.delete()` call in the same file should be chained on the same variable (e.g., `const myEndpoints = API.v1.get(...).post(...).get(...)`).
+1. **Chain the file's own new endpoints**: When a file registers multiple endpoints that need augmentation (see the decision rule above), chain every `.get()` / `.post()` / `.put()` / `.delete()` call on the same variable (e.g., `const myEndpoints = API.v1.get(...).post(...).get(...)`). Skip this entirely for endpoints already declared in `Endpoints`.
 2. **Store in a `const`**: The chained result must be stored in a variable so `typeof` can extract its type.
 3. **Extract with `ExtractRoutesFromAPI`**: Use `type MyEndpoints = ExtractRoutesFromAPI<typeof myEndpoints>` to get the typed route definitions.
 4. **Augment `Endpoints`**: Use `declare module '@rocket.chat/rest-typings'` to merge the extracted types into the global `Endpoints` interface. This is what makes `useEndpoint('listInvites')` and similar SDK calls type-safe.
@@ -558,6 +567,29 @@ API.v1.post('endpoint', {
 }, async function action() { ... });
 ```
 
+## Error Handling (thrown errors)
+
+Every route registered through `API.v1.get/post/put/delete` delegates to `addRoute` and runs inside `ApiClass`'s internal handler (`_internalRouteActionHandler`, `apps/meteor/server/api/ApiClass.ts`), which wraps the action in a `try/catch`. A thrown `Meteor.Error` (or any core-services error carrying `error`/`message` by shape) is mapped to the matching HTTP failure:
+
+- `error-too-many-requests` → `429`
+- `unauthorized` / `error-unauthorized` → `401` (or `403` pre-breaking-changes)
+- `forbidden` / `error-forbidden` → `403`
+- anything else → `API.v1.failure(message, errorType, stack, details)` → `400`
+
+So a migrated handler should **just throw** a `Meteor.Error` to signal a client error — exactly as the legacy DDP methods and `addRoute` handlers did. Do **not** wrap every handler in a `try/catch` that returns `API.v1.failure(...)` (nor route it through an `errorToFailureArgs`-style helper): it is redundant with the global wrapper and, worse, flattens `401`/`403`/`429` into `400`.
+
+```typescript
+async function action() {
+	const room = await findChannelByIdOrName({ params: this.bodyParams }); // throws error-room-not-found
+	// ...
+	return API.v1.success({ channel: room });
+}
+```
+
+Declare in the `response` block every error status the handler (or the wrapper) can produce, so response validation under `TEST_MODE` accepts them — `400: validateBadRequestErrorResponse` for thrown/failure errors, plus `401`/`403` when `authRequired`/`permissionsRequired` are set.
+
+Add an explicit `catch` only when you need behaviour the global wrapper does not provide (e.g. returning a specific `API.v1.failure(...)` payload for a known condition, or mapping a status differently); otherwise let the error propagate.
+
 ## Test Changes
 
 Migrating an endpoint changes how validation errors are returned. Tests must be updated accordingly.
@@ -595,6 +627,80 @@ When migrating an endpoint, search for its tests and update:
 1. `errorType` from `'invalid-params'` to `'error-invalid-params'` (for query params only)
 2. Remove `' [invalid-params]'` suffix from `error` message assertions
 3. Verify that status codes remain the same (400 for validation errors)
+
+## Security and Schema Rules
+
+Rules learned from migration reviews. Each is cheap to follow and expensive to miss.
+
+### Query-override ordering
+
+When merging `parseJsonQuery().query` into a Mongo filter, spread the **user** query FIRST and overlay trusted keys (permission scope, `rid`, `_id`) LAST:
+
+```typescript
+const filter = { ...userQuery, rid: allowedRid };
+```
+
+_Rationale_: a user-supplied `rid` (or `$where`, `$expr`, etc.) must never override the trusted scope, or it becomes a NoSQL / authz bypass.
+
+### `additionalProperties` boundary
+
+Set `additionalProperties: false` on request bodies whose fields are spread into DB writes (e.g. `extraData` → `createRoom`). Keep response-item schemas and tolerant query schemas **open**.
+
+_Rationale_: an open request body lets a client mass-assign arbitrary fields into the DB write; response/query schemas stay open so they don't reject harmless extra keys.
+
+### Request arrays need `items`
+
+Every array in a request schema must declare its element type, e.g. `members` / `teams`: `{ type: 'array', items: { type: 'string' } }`.
+
+_Rationale_: without `items`, AJV accepts arrays of anything, so malformed elements bypass validation.
+
+### `oneOf` vs `anyOf`
+
+Use `oneOf` only when the variants are provably disjoint — i.e. a required discriminator enum picks exactly one (e.g. `IIntegration` `type: 'webhook-incoming' | 'webhook-outgoing'`). Use `anyOf` when a value can validly match more than one shape (e.g. `channels.info` returning livechat rooms that lack `IRoom.u`).
+
+_Rationale_: `oneOf` requires **exactly one** match and fails (`passingSchemas: 0,1`) when a value satisfies several branches; `anyOf` allows overlap.
+
+### Keep the `[error-code]` suffix in thrown messages
+
+Throw `new Meteor.Error('error-foo', 'message [error-foo]')` — keep the `[error-code]` suffix in the message; do not "clean up" to `.reason`.
+
+_Rationale_: e2e tests assert the code appears in the response `error` field.
+
+### No-payload POST needs an explicit empty body schema
+
+For a POST/PUT that takes no body, declare it explicitly:
+
+```typescript
+body: ajv.compile<undefined>({ type: 'object', additionalProperties: false });
+```
+
+_Rationale_: omitting it makes the generated client type a required `never`, which is unusable from callers.
+
+### Remove now-unreachable manual guards
+
+When a body schema adds `required: ['x']`, DELETE the now-dead `if (!bodyParams.hasOwnProperty('x')) return API.v1.failure(...)` branch.
+
+_Rationale_: the schema 400s first, so the manual guard is unreachable.
+
+### Changing a `$ref`-referenced type requires a rebuild
+
+If you change a TypeScript type that is referenced via `$ref`, rebuild core-typings so the generated schema updates:
+
+```bash
+yarn workspace @rocket.chat/core-typings run build
+```
+
+_Rationale_: the AJV schemas are generated at build time; without a rebuild, `$ref` validation runs against the stale shape.
+
+### Diff refactored helpers against develop, not by eye
+
+When a migration touches a shared helper, compare it against the base:
+
+```bash
+git show origin/develop:<path/to/helper.ts>
+```
+
+_Rationale_: silent projection or behaviour changes (dropped fields, flipped defaults) hide in "refactors" and are invisible on a visual skim.
 
 ## Reference Files
 
