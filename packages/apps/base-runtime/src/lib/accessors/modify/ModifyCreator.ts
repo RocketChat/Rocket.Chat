@@ -1,6 +1,5 @@
 import { randomBytes } from 'node:crypto';
 
-import { UIHelper } from '@rocket.chat/apps/dist/server/misc/UIHelper';
 import type { IContactCreator } from '@rocket.chat/apps-engine/definition/accessors/IContactCreator';
 import type { IDiscussionBuilder } from '@rocket.chat/apps-engine/definition/accessors/IDiscussionBuilder';
 import type { IEmailCreator } from '@rocket.chat/apps-engine/definition/accessors/IEmailCreator';
@@ -21,6 +20,8 @@ import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
 import { UserType } from '@rocket.chat/apps-engine/definition/users/UserType';
 
 import { AppObjectRegistry } from '../../../AppObjectRegistry';
+import { UIHelper } from '../../UIHelper';
+import { RemoteBridges } from '../../bridges/RemoteBridges';
 import type * as Messenger from '../../messenger';
 import { BlockBuilder } from '../builders/BlockBuilder';
 import { DiscussionBuilder } from '../builders/DiscussionBuilder';
@@ -34,7 +35,13 @@ import { VideoConferenceBuilder } from '../builders/VideoConferenceBuilder';
 import { formatErrorResponse } from '../formatResponseErrorHandler';
 
 export class ModifyCreator implements IModifyCreator {
-	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}
+	private readonly bridges: RemoteBridges;
+
+	constructor(private readonly senderFn: typeof Messenger.sendRequest) {
+		// The facade reads `this.senderFn` at call time (rather than capturing it) so
+		// that tests which swap out `senderFn` after construction remain intercepted.
+		this.bridges = new RemoteBridges((request) => this.senderFn(request));
+	}
 
 	getLivechatCreator(): ILivechatCreator {
 		return new Proxy(
@@ -218,14 +225,7 @@ export class ModifyCreator implements IModifyCreator {
 		delete result.id;
 
 		if (!result.sender?.id) {
-			const response = await this.senderFn({
-				method: 'bridges:getUserBridge:doGetAppUser',
-				params: ['APP_ID'],
-			}).catch((err) => {
-				throw formatErrorResponse(err);
-			});
-
-			const appUser = response.result;
+			const appUser = await this.bridges.getUserBridge().doGetAppUser('APP_ID');
 
 			if (!appUser) {
 				throw new Error('Invalid sender assigned to the message.');
@@ -239,14 +239,9 @@ export class ModifyCreator implements IModifyCreator {
 			result.blocks = UIHelper.assignIds(result.blocks, AppObjectRegistry.get('id') || '');
 		}
 
-		const response = await this.senderFn({
-			method: 'bridges:getMessageBridge:doCreate',
-			params: [result, AppObjectRegistry.get('id')],
-		}).catch((err) => {
-			throw formatErrorResponse(err);
-		});
+		const createdMessageId = (await this.bridges.getMessageBridge().doCreate(result, 'APP_ID')) as string;
 
-		return String(response.result);
+		return String(createdMessageId);
 	}
 
 	private async _finishLivechatMessage(builder: ILivechatMessageBuilder): Promise<string> {
@@ -263,14 +258,9 @@ export class ModifyCreator implements IModifyCreator {
 
 		result.token = result.visitor ? result.visitor.token : result.token;
 
-		const response = await this.senderFn({
-			method: 'bridges:getLivechatBridge:doCreateMessage',
-			params: [result, AppObjectRegistry.get('id')],
-		}).catch((err) => {
-			throw formatErrorResponse(err);
-		});
+		const createdMessageId = (await this.bridges.getLivechatBridge().doCreateMessage(result, 'APP_ID')) as string;
 
-		return String(response.result);
+		return String(createdMessageId);
 	}
 
 	private async _finishRoom(builder: IRoomBuilder): Promise<string> {
@@ -299,14 +289,9 @@ export class ModifyCreator implements IModifyCreator {
 			}
 		}
 
-		const response = await this.senderFn({
-			method: 'bridges:getRoomBridge:doCreate',
-			params: [result, builder.getMembersToBeAddedUsernames(), AppObjectRegistry.get('id')],
-		}).catch((err) => {
-			throw formatErrorResponse(err);
-		});
+		const createdRoomId = (await this.bridges.getRoomBridge().doCreate(result, builder.getMembersToBeAddedUsernames(), 'APP_ID')) as string;
 
-		return String(response.result);
+		return String(createdRoomId);
 	}
 
 	private async _finishDiscussion(builder: DiscussionBuilder): Promise<string> {
@@ -330,14 +315,17 @@ export class ModifyCreator implements IModifyCreator {
 			throw new Error('Invalid parentRoom assigned to the discussion.');
 		}
 
-		const response = await this.senderFn({
-			method: 'bridges:getRoomBridge:doCreateDiscussion',
-			params: [room, builder.getParentMessage(), builder.getReply(), builder.getMembersToBeAddedUsernames(), AppObjectRegistry.get('id')],
-		}).catch((err) => {
-			throw formatErrorResponse(err);
-		});
+		const createdDiscussionId = (await this.bridges
+			.getRoomBridge()
+			.doCreateDiscussion(
+				room,
+				builder.getParentMessage(),
+				builder.getReply(),
+				builder.getMembersToBeAddedUsernames(),
+				'APP_ID',
+			)) as string;
 
-		return String(response.result);
+		return String(createdDiscussionId);
 	}
 
 	private async _finishVideoConference(builder: IVideoConferenceBuilder): Promise<string> {
@@ -355,26 +343,16 @@ export class ModifyCreator implements IModifyCreator {
 			throw new Error('Invalid roomId assigned to the video conference.');
 		}
 
-		const response = await this.senderFn({
-			method: 'bridges:getVideoConferenceBridge:doCreate',
-			params: [videoConference, AppObjectRegistry.get('id')],
-		}).catch((err) => {
-			throw formatErrorResponse(err);
-		});
+		const createdCallId = (await this.bridges.getVideoConferenceBridge().doCreate(videoConference, 'APP_ID')) as string;
 
-		return String(response.result);
+		return String(createdCallId);
 	}
 
 	private async _finishUser(builder: IUserBuilder): Promise<string> {
 		const user = builder.getUser();
 
-		const response = await this.senderFn({
-			method: 'bridges:getUserBridge:doCreate',
-			params: [user, AppObjectRegistry.get('id')],
-		}).catch((err) => {
-			throw formatErrorResponse(err);
-		});
+		const createdUserId = (await this.bridges.getUserBridge().doCreate(user, 'APP_ID')) as string;
 
-		return String(response.result);
+		return String(createdUserId);
 	}
 }

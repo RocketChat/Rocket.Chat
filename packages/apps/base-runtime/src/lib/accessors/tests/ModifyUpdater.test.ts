@@ -42,7 +42,7 @@ describe('ModifyUpdater', () => {
 		assert.deepStrictEqual(_spy.mock.calls[0].arguments, [
 			{
 				method: 'bridges:getMessageBridge:doGetById',
-				params: ['123', 'deno-test'],
+				params: ['123', 'APP_ID'],
 			},
 		]);
 
@@ -61,7 +61,7 @@ describe('ModifyUpdater', () => {
 		assert.deepStrictEqual(_spy.mock.calls[1].arguments, [
 			{
 				method: 'bridges:getMessageBridge:doUpdate',
-				params: [{ id: '123', ...(messageBuilder as any).getChanges() }, 'deno-test'],
+				params: [{ id: '123', ...(messageBuilder as any).getChanges() }, 'APP_ID'],
 			},
 		]);
 
@@ -76,7 +76,7 @@ describe('ModifyUpdater', () => {
 		assert.deepStrictEqual(_spy.mock.calls[0].arguments, [
 			{
 				method: 'bridges:getRoomBridge:doGetById',
-				params: ['123', 'deno-test'],
+				params: ['123', 'APP_ID'],
 			},
 		]);
 
@@ -98,7 +98,7 @@ describe('ModifyUpdater', () => {
 		assert.deepStrictEqual(_spy.mock.calls[1].arguments, [
 			{
 				method: 'bridges:getRoomBridge:doUpdate',
-				params: [{ id: '123', ...roomBuilder.getChanges() }, roomBuilder.getMembersToBeAddedUsernames(), 'deno-test'],
+				params: [{ id: '123', ...roomBuilder.getChanges() }, roomBuilder.getMembersToBeAddedUsernames(), 'APP_ID'],
 			},
 		]);
 	});
