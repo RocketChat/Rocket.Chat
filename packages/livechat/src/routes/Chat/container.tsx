@@ -39,12 +39,9 @@ export type ChatContainerProps = {
 	agent?: StoreState['agent'];
 	room?: StoreState['room'];
 	messages?: StoreState['messages'];
-	noMoreMessages?: boolean;
-	emoji?: boolean;
 	uploads?: boolean;
 	typingUsernames?: string[];
 	loading?: boolean;
-	showConnecting?: boolean;
 	connecting?: boolean;
 	dispatch: Dispatch;
 	departments?: StoreState['config']['departments'];
@@ -52,17 +49,14 @@ export type ChatContainerProps = {
 	conversationFinishedMessage?: string;
 	allowRemoveUserData?: boolean;
 	alerts: StoreState['alerts'];
-	visible?: boolean;
 	unread?: StoreState['unread'];
 	lastReadMessageId?: StoreState['lastReadMessageId'];
 	guest?: StoreState['iframe']['guest'];
-	triggerAgent?: StoreState['triggerAgent'];
 	queueInfo?: StoreState['queueInfo'];
 	registrationFormEnabled?: boolean;
 	nameFieldRegistrationForm?: boolean;
 	emailFieldRegistrationForm?: boolean;
 	limitTextLength?: number;
-	messageListPosition?: StoreState['messageListPosition'];
 	theme: ScreenContextValue['theme'];
 	visitorsCanCloseChat?: boolean;
 	t: TFunction;
@@ -159,8 +153,9 @@ class ChatContainer extends Component<ChatContainerProps> {
 	};
 
 	private startTyping = throttle(async ({ rid, username }: { rid: string; username: string }) => {
+		const { stopTypingDebounced } = this;
 		await Livechat.notifyVisitorActivity(rid, username, ['user-typing']);
-		this.stopTypingDebounced({ rid, username });
+		stopTypingDebounced({ rid, username });
 	}, 4500);
 
 	private stopTyping = ({ rid, username }: { rid: string; username: string }) => Livechat.notifyVisitorActivity(rid, username, []);
@@ -169,26 +164,29 @@ class ChatContainer extends Component<ChatContainerProps> {
 
 	private onChangeText = async () => {
 		const { user, room } = this.props;
+		const { startTyping } = this;
+
 		if (!(user?.username && room?._id)) {
 			return;
 		}
 
-		this.startTyping({ rid: room._id, username: user.username });
+		startTyping({ rid: room._id, username: user.username });
 	};
 
 	private onSubmit = async (msg: string) => {
 		const { alerts, dispatch, token, user } = this.props;
+		const { grantUser, getRoom, stopTypingDebounced, stopTyping } = this;
 
 		if (msg.trim() === '') {
 			return;
 		}
 
-		await this.grantUser();
-		const { _id: rid } = await this.getRoom();
+		await grantUser();
+		const { _id: rid } = await getRoom();
 
 		try {
-			this.stopTypingDebounced.stop();
-			await Promise.all([this.stopTyping({ rid, username: user?.username ?? '' }), Livechat.sendMessage({ msg, token, rid })]);
+			stopTypingDebounced.stop();
+			await Promise.all([stopTyping({ rid, username: user?.username ?? '' }), Livechat.sendMessage({ msg, token, rid })]);
 		} catch (error: any) {
 			const reason = error?.error ?? error.message;
 			const alert = { id: createToken(), children: reason, error: true, timeout: 5000 };
@@ -223,6 +221,7 @@ class ChatContainer extends Component<ChatContainerProps> {
 
 	private onUpload = async (files: (File | null)[]) => {
 		const { dispatch, alerts, t, uploads } = this.props;
+		const { grantUser, getRoom, doFileUpload } = this;
 
 		if (!uploads) {
 			const alert = { id: createToken(), children: t('file_upload_disabled'), error: true, timeout: 5000 };
@@ -230,12 +229,12 @@ class ChatContainer extends Component<ChatContainerProps> {
 			return;
 		}
 
-		await this.grantUser();
-		const { _id: rid } = await this.getRoom();
+		await grantUser();
+		const { _id: rid } = await getRoom();
 
 		files.forEach((file) => {
 			if (file) {
-				void this.doFileUpload(rid, file);
+				void doFileUpload(rid, file);
 			}
 		});
 	};
@@ -442,7 +441,7 @@ class ChatContainer extends Component<ChatContainerProps> {
 
 		const uid = user?._id;
 
-		const options = this.canSwitchDepartment() || this.canFinishChat() || this.canRemoveUserData();
+		const options = canSwitchDepartment() || canFinishChat() || canRemoveUserData();
 
 		const onChangeDepartment = canSwitchDepartment() ? handleChangeDepartment : undefined;
 		const onFinishChat = canFinishChat() ? handleFinishChat : undefined;

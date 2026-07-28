@@ -53,17 +53,13 @@ const Chat = (_: ChatProps) => {
 		sound,
 		user,
 		room,
-		noMoreMessages,
 		typing,
 		loading,
 		dispatch,
 		alerts,
-		visible,
 		unread,
 		lastReadMessageId,
-		triggerAgent,
 		queueInfo,
-		messageListPosition,
 	} = useStore();
 
 	const { t } = useTranslation();
@@ -113,12 +109,9 @@ const Chat = (_: ChatProps) => {
 			agent={agent}
 			room={room}
 			messages={messages}
-			noMoreMessages={noMoreMessages}
-			emoji={true}
 			uploads={uploads}
 			typingUsernames={typingUsernames}
 			loading={loading}
-			showConnecting={showConnecting}
 			connecting={connecting}
 			dispatch={dispatch}
 			departments={departments}
@@ -126,17 +119,14 @@ const Chat = (_: ChatProps) => {
 			conversationFinishedMessage={conversationFinishedMessage}
 			allowRemoveUserData={allowRemoveUserData}
 			alerts={alerts}
-			visible={visible}
 			unread={unread}
 			lastReadMessageId={lastReadMessageId}
 			guest={guest}
-			triggerAgent={triggerAgent}
 			queueInfo={queueInfo}
 			registrationFormEnabled={registrationFormEnabled}
 			nameFieldRegistrationForm={nameFieldRegistrationForm}
 			emailFieldRegistrationForm={emailFieldRegistrationForm}
 			limitTextLength={limitTextLength}
-			messageListPosition={messageListPosition}
 			theme={theme}
 			visitorsCanCloseChat={visitorsCanCloseChat}
 			onRegisterUser={onRegisterUser}
