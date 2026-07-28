@@ -34,30 +34,23 @@ const requestTranscriptEndpoints = API.v1.post(
 		},
 	},
 	async function action() {
-		// The typed router does not turn thrown errors into 400s (the legacy addRoute wrapper did), so the
-		// invalid-room / access / requestPdfTranscript (room-still-open, improper-room-state) failures are
-		// caught here and returned as 400 to preserve the previous behavior.
-		try {
-			const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'open' | 'v' | 't' | 'pdfTranscriptFileId'>>(
-				this.urlParams.rid,
-				{
-					projection: { _id: 1, open: 1, v: 1, t: 1, pdfTranscriptFileId: 1 },
-				},
-			);
-			if (!room) {
-				return API.v1.failure('error-invalid-room');
-			}
-
-			if (!(await canAccessRoomAsync(room, { _id: this.userId }))) {
-				return API.v1.failure('error-not-allowed');
-			}
-
-			await requestPdfTranscript(room, this.userId);
-
-			return API.v1.success();
-		} catch (e) {
-			return API.v1.failure(e instanceof Error ? e.message : String(e));
+		const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'open' | 'v' | 't' | 'pdfTranscriptFileId'>>(
+			this.urlParams.rid,
+			{
+				projection: { _id: 1, open: 1, v: 1, t: 1, pdfTranscriptFileId: 1 },
+			},
+		);
+		if (!room) {
+			return API.v1.failure('error-invalid-room');
 		}
+
+		if (!(await canAccessRoomAsync(room, { _id: this.userId }))) {
+			return API.v1.failure('error-not-allowed');
+		}
+
+		await requestPdfTranscript(room, this.userId);
+
+		return API.v1.success();
 	},
 );
 
