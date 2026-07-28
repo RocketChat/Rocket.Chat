@@ -3,6 +3,7 @@ import { AudioPlayerControls, Box } from '@rocket.chat/fuselage';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
+import { useMediaDuration } from './hooks/useMediaDuration';
 import { useMediaPlayer } from '../../../../../providers/MediaPlayerProvider';
 import type { PersistentAudioTrack } from '../../../../../providers/MediaPlayerProvider';
 import MarkdownText from '../../../../MarkdownText';
@@ -54,6 +55,7 @@ const AudioAttachment = ({
 	);
 
 	const active = isActive(track.id);
+	const resolvedDuration = useMediaDuration(src);
 
 	return (
 		<>
@@ -74,7 +76,7 @@ const AudioAttachment = ({
 					<AudioPlayerControls
 						isPlaying={active && playing}
 						currentTime={active ? currentTime : 0}
-						durationTime={active ? duration : 0}
+						durationTime={active && duration ? duration : resolvedDuration}
 						playbackSpeed={playbackRate}
 						onTogglePlay={() => (active ? toggle() : play(track))}
 						onSeek={(time) => (active ? seek(time) : play(track))}
