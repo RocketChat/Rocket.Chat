@@ -109,7 +109,7 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 
 	//For hard message delete, when Message Message_ShowDeletedStatus is off
 	useEffect(() => {
-		if (!track || !playing) {
+		if (!track) {
 			return;
 		}
 
@@ -135,11 +135,11 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 			unsubscribeFromDeleteMessage();
 			unsubscribeFromDeleteMessageBulk();
 		};
-	}, [track, subscribeToNotifyRoom, close, playing]);
+	}, [track, subscribeToNotifyRoom, close]);
 
 	//For soft message delete, when Message_ShowDeletedStatus is on and server updates message.t to rm
 	useEffect(() => {
-		if (!track || !playing) {
+		if (!track) {
 			return;
 		}
 
@@ -157,10 +157,10 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 		});
 
 		return unsub;
-	}, [track, close, playing]);
+	}, [track, close]);
 
 	useEffect(() => {
-		if (!track || !playing || !userId) {
+		if (!track || !userId) {
 			return;
 		}
 
@@ -175,7 +175,7 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 				close();
 			}
 		});
-	}, [userId, subscribeToNotifyUser, track, playing, close]);
+	}, [userId, subscribeToNotifyUser, track, close]);
 
 	const value = useMemo<MediaPlayerContextValue>(
 		() => ({ track, playing, currentTime, duration, playbackRate, play, toggle, seek, cyclePlaybackRate, close, isActive }),
