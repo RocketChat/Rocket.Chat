@@ -9,8 +9,8 @@ describe('emoji-native shortcode resolution', () => {
 	describe('shortnameToUnicode', () => {
 		it('resolves skin-tone variants stored under emojione alternate names', () => {
 			expect(shortnameToUnicode(':thumbsup_tone3:')).to.equal('👍🏽');
-			expect(shortnameToUnicode(':yes_tone3:')).to.equal('👍🏽');
-			expect(shortnameToUnicode(':clapping_hands_tone2:')).to.equal('👏🏼');
+			expect(shortnameToUnicode(':thumbup_tone3:')).to.equal('👍🏽');
+			expect(shortnameToUnicode(':clap_tone2:')).to.equal('👏🏼');
 			expect(shortnameToUnicode(':pray_tone4:')).to.equal('🙏🏾');
 		});
 
@@ -63,7 +63,7 @@ describe('emoji-native shortcode resolution', () => {
 		it('registers alternate skin-tone shortnames alongside the primary', () => {
 			const { emojiList } = getEmojiData();
 			expect(emojiList[':thumbsup_tone3:']?.unicode).to.equal('👍🏽');
-			expect(emojiList[':yes_tone3:']?.unicode).to.equal('👍🏽');
+			expect(emojiList[':thumbup_tone3:']?.unicode).to.equal('👍🏽');
 			expect(emojiList[':+1_tone3:']?.unicode).to.equal('👍🏽');
 		});
 	});

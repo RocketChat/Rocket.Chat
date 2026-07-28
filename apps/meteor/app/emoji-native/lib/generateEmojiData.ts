@@ -1,5 +1,6 @@
 import data from 'emojibase-data/en/data.json';
-import shortcodes from 'emojibase-data/en/shortcodes/emojibase.json';
+import emojibaseShortcodes from 'emojibase-data/en/shortcodes/emojibase.json';
+import joypixelsShortcodes from 'emojibase-data/en/shortcodes/joypixels.json';
 
 // Map emojibase group numbers to our category keys
 const groupToCategory: Record<number, string> = {
@@ -38,7 +39,9 @@ function isRegionalIndicator(hexcode: string): boolean {
 }
 
 function getShortcodes(hexcode: string): string[] {
-	const entry = (shortcodes as Record<string, string | string[]>)[hexcode];
+	const entry =
+		(joypixelsShortcodes as Record<string, string | string[]>)[hexcode] ??
+		(emojibaseShortcodes as Record<string, string | string[]>)[hexcode];
 	if (!entry) return [];
 	return Array.isArray(entry) ? entry : [entry];
 }
