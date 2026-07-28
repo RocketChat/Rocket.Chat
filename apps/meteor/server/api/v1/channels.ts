@@ -151,9 +151,14 @@ const successResponseSchema = ajv.compile<void>({
 // findChannelByIdOrName and the room methods throw for client errors. The typed router does not map thrown
 // errors to 400 (the legacy addRoute wrapper did), so handlers catch and return a failure. Errors coming from
 // core-services cross a boundary and are not `instanceof Meteor.Error`, so extract message/errorType by shape.
-function errorToFailureArgs(error: unknown): [string, string | undefined] {
-	const e = error as { message?: unknown; error?: unknown };
-	return [typeof e?.message === 'string' ? e.message : String(error), typeof e?.error === 'string' ? e.error : undefined];
+function errorToFailureArgs(error: unknown): [string, string | undefined, string | undefined, unknown] {
+	const e = error as { message?: unknown; error?: unknown; stack?: unknown; details?: unknown };
+	return [
+		typeof e?.message === 'string' ? e.message : String(error),
+		typeof e?.error === 'string' ? e.error : undefined,
+		process.env.TEST_MODE && typeof e?.stack === 'string' ? e.stack : undefined,
+		e?.details,
+	];
 }
 
 const stringFieldResponseSchema = <T>(field: 'description' | 'purpose' | 'topic') =>
@@ -242,8 +247,8 @@ API.v1.post(
 				channel: await findChannelByIdOrName({ params, userId: this.userId }),
 			});
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -267,8 +272,8 @@ API.v1.post(
 
 			return API.v1.success();
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -299,8 +304,8 @@ API.v1.post(
 
 			return API.v1.success();
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -357,8 +362,8 @@ API.v1.get(
 
 			return API.v1.success(result);
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -414,8 +419,8 @@ API.v1.get(
 				roles,
 			});
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -442,8 +447,8 @@ API.v1.post(
 				channel: await findChannelByIdOrName({ params, userId: this.userId }),
 			});
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -475,8 +480,8 @@ API.v1.post(
 				channel: await findChannelByIdOrName({ params, userId: this.userId }),
 			});
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -507,8 +512,8 @@ API.v1.post(
 				channel: await findChannelByIdOrName({ params, userId: this.userId }),
 			});
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -590,8 +595,8 @@ API.v1.get(
 				total,
 			});
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -630,8 +635,8 @@ API.v1.post(
 
 			return API.v1.success();
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -661,8 +666,8 @@ API.v1.post(
 				channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
 			});
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -700,8 +705,8 @@ API.v1.post(
 				announcement: this.bodyParams.announcement,
 			});
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -751,8 +756,8 @@ API.v1.get(
 				total: allMentions.length,
 			});
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -807,8 +812,8 @@ API.v1.get(
 				moderators,
 			});
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -835,8 +840,8 @@ API.v1.post(
 
 			return API.v1.success();
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -907,8 +912,8 @@ API.v1.post(
 
 			return API.v1.success({ team });
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -934,8 +939,8 @@ API.v1.post(
 
 			return API.v1.success();
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -961,8 +966,8 @@ API.v1.post(
 
 			return API.v1.success();
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -999,8 +1004,8 @@ API.v1.post(
 
 			return API.v1.success();
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -1098,8 +1103,8 @@ API.v1.get(
 				userMentions,
 			});
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -1243,8 +1248,8 @@ API.v1.post(
 
 			return API.v1.success(result);
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -1305,8 +1310,8 @@ API.v1.get(
 			const { sort, fields, query } = await this.parseJsonQuery();
 
 			const filter = {
-				rid: findResult._id,
 				...query,
+				rid: findResult._id,
 				...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
 				...(typeGroup ? { typeGroup } : {}),
 				...(onlyConfirmed && { expiresAt: { $exists: false } }),
@@ -1328,8 +1333,8 @@ API.v1.get(
 				total,
 			});
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -1435,7 +1440,9 @@ API.v1.get(
 			const { offset, count } = await getPaginationItems(params);
 			const { sort, fields: projection, query } = await this.parseJsonQuery();
 
-			ourQuery = Object.assign(await mountIntegrationQueryBasedOnPermissions(this.userId), query, ourQuery);
+			// Apply the user-supplied query first, then overlay the trusted filters so a crafted `query`
+			// cannot override the permission scope (mountIntegrationQueryBasedOnPermissions) or the channel filter.
+			ourQuery = Object.assign({}, query, ourQuery, await mountIntegrationQueryBasedOnPermissions(this.userId));
 
 			const { cursor, totalCount } = await Integrations.findPaginated(ourQuery, {
 				sort: sort || { _createdAt: 1 },
@@ -1453,8 +1460,8 @@ API.v1.get(
 				total,
 			});
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -1487,8 +1494,8 @@ API.v1.get(
 				channel: findResult,
 			});
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -1547,8 +1554,8 @@ API.v1.post(
 				channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
 			});
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -1698,8 +1705,8 @@ API.v1.get(
 				total,
 			});
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -1809,8 +1816,8 @@ API.v1.get(
 				total,
 			});
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -1890,8 +1897,8 @@ API.v1.get(
 				online: onlineInRoom.filter(isTruthy),
 			});
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -1917,8 +1924,8 @@ API.v1.post(
 
 			return API.v1.success();
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -1944,8 +1951,8 @@ API.v1.post(
 
 			return API.v1.success();
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -1982,8 +1989,8 @@ API.v1.post(
 				}),
 			});
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -2015,8 +2022,8 @@ API.v1.post(
 				channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
 			});
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -2058,8 +2065,8 @@ API.v1.post(
 				channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
 			});
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -2077,10 +2084,6 @@ API.v1.post(
 	},
 	async function action() {
 		try {
-			if (!this.bodyParams.hasOwnProperty('description')) {
-				return API.v1.failure('The bodyParam "description" is required');
-			}
-
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
 			if (findResult.description === this.bodyParams.description) {
@@ -2093,8 +2096,8 @@ API.v1.post(
 				description: this.bodyParams.description || '',
 			});
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -2112,10 +2115,6 @@ API.v1.post(
 	},
 	async function action() {
 		try {
-			if (!this.bodyParams.hasOwnProperty('purpose')) {
-				return API.v1.failure('The bodyParam "purpose" is required');
-			}
-
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
 			if (findResult.description === this.bodyParams.purpose) {
@@ -2128,8 +2127,8 @@ API.v1.post(
 				purpose: this.bodyParams.purpose || '',
 			});
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -2147,10 +2146,6 @@ API.v1.post(
 	},
 	async function action() {
 		try {
-			if (!this.bodyParams.hasOwnProperty('topic')) {
-				return API.v1.failure('The bodyParam "topic" is required');
-			}
-
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
 			if (findResult.topic === this.bodyParams.topic) {
@@ -2163,8 +2158,8 @@ API.v1.post(
 				topic: this.bodyParams.topic || '',
 			});
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -2204,8 +2199,8 @@ API.v1.post(
 				channel: await composeRoomWithLastMessage(room, this.userId),
 			});
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -2231,8 +2226,8 @@ API.v1.post(
 
 			return API.v1.success();
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -2258,8 +2253,8 @@ API.v1.post(
 
 			return API.v1.success();
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -2289,8 +2284,8 @@ API.v1.post(
 				channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
 			});
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );
@@ -2373,8 +2368,8 @@ API.v1.get(
 				total,
 			});
 		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+			const [message, errorType, stack, details] = errorToFailureArgs(error);
+			return API.v1.failure(message, errorType, stack, details);
 		}
 	},
 );

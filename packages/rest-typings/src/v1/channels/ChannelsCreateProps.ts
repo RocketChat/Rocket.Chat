@@ -12,7 +12,7 @@ export type ChannelsCreateProps = {
 		teamId?: string;
 		topic?: string;
 		federated?: boolean;
-	} & Record<string, any>;
+	};
 	excludeSelf?: boolean;
 };
 
@@ -24,25 +24,25 @@ const channelsCreatePropsSchema = {
 		},
 		members: {
 			type: 'array',
+			items: { type: 'string' },
 		},
 		teams: {
 			type: 'array',
+			items: { type: 'string' },
 		},
 		readOnly: {
 			type: 'boolean',
-			nullable: true,
 		},
 		customFields: {
 			type: 'object',
-			nullable: true,
 		},
 		excludeSelf: {
 			type: 'boolean',
-			nullable: true,
 		},
 		extraData: {
-			// extraData is spread verbatim into createRoom, so it carries arbitrary room fields
-			// (the create modal sends topic/broadcast/encrypted/federated). Keep it open.
+			// extraData is spread verbatim into createRoom. Keep it closed (additionalProperties: false)
+			// so callers can't inject arbitrary room fields (default/featured/retention/abacAttributes/...).
+			// The create modal only sends the fields declared below.
 			type: 'object',
 			properties: {
 				broadcast: {
@@ -61,8 +61,7 @@ const channelsCreatePropsSchema = {
 					type: 'boolean',
 				},
 			},
-			additionalProperties: true,
-			nullable: true,
+			additionalProperties: false,
 		},
 	},
 	required: ['name'],
