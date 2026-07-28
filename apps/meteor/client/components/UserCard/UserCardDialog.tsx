@@ -20,6 +20,7 @@ const UserCardDialog = (props: UserCardDialogProps) => {
 			display='flex'
 			flexDirection='column'
 			borderRadius='x8'
+			overflow='hidden'
 			width='x400'
 			{...props}
 			{...dialogProps}
