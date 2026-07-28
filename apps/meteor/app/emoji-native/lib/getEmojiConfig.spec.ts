@@ -56,15 +56,16 @@ describe('native emoji render', () => {
 	it('renders bare (non-VS16) emoji-default characters', () => {
 		const { render } = getEmojiConfig(buildEmojiPackages(false));
 
-		expect(render('🐕')).toBe('<span class="emoji" title=":dog:">🐕</span>');
+		expect(render('🐕')).toBe('<span class="emoji" title=":dog2:">🐕</span>');
+		expect(render('🐶')).toBe('<span class="emoji" title=":dog:">🐶</span>');
 		expect(render('⭐')).toBe('<span class="emoji" title=":star:">⭐</span>');
-		expect(render('👍')).toBe('<span class="emoji" title=":+1:">👍</span>');
+		expect(render('👍')).toBe('<span class="emoji" title=":thumbsup:">👍</span>');
 	});
 
 	it('resolves the VS16-qualified form to the same shortcode', () => {
 		const { render } = getEmojiConfig(buildEmojiPackages(false));
 
-		expect(render('🐕\u{FE0F}')).toBe('<span class="emoji" title=":dog:">🐕\u{FE0F}</span>');
+		expect(render('🐕\u{FE0F}')).toBe('<span class="emoji" title=":dog2:">🐕\u{FE0F}</span>');
 		expect(render('⭐\u{FE0F}')).toBe('<span class="emoji" title=":star:">⭐\u{FE0F}</span>');
 	});
 
