@@ -155,14 +155,6 @@ const successResponseSchema = ajv.compile<void>({
 	additionalProperties: false,
 });
 
-// getRoomFromParams / findPrivateGroupByIdOrName and the room methods throw for client errors. The typed router
-// does not map thrown errors to 400 (the legacy addRoute wrapper did), so handlers catch and return a failure.
-// Errors from core-services are not `instanceof Meteor.Error`, so extract message/errorType by shape.
-function errorToFailureArgs(error: unknown): [string, string | undefined] {
-	const e = error as { message?: unknown; error?: unknown };
-	return [typeof e?.message === 'string' ? e.message : String(error), typeof e?.error === 'string' ? e.error : undefined];
-}
-
 // Inline body validator: a room target (roomId or roomName) plus optional user/extra fields.
 const roomTargetBody = <T>(extra: Record<string, Record<string, unknown>> = {}, required: string[] = []) =>
 	ajv.compile<T>({
@@ -173,6 +165,7 @@ const roomTargetBody = <T>(extra: Record<string, Record<string, unknown>> = {}, 
 			...extra,
 		},
 		required,
+		anyOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
 		additionalProperties: false,
 	});
 
@@ -208,28 +201,23 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const { activeUsersOnly, ...params } = this.bodyParams;
-			const findResult = await findPrivateGroupByIdOrName({
-				params,
-				userId: this.userId,
-			});
+		const { activeUsersOnly, ...params } = this.bodyParams;
+		const findResult = await findPrivateGroupByIdOrName({
+			params,
+			userId: this.userId,
+		});
 
-			await addAllUserToRoomFn(this.userId, findResult.rid, activeUsersOnly === 'true' || activeUsersOnly === 1);
+		await addAllUserToRoomFn(this.userId, findResult.rid, activeUsersOnly === 'true' || activeUsersOnly === 1);
 
-			const room = await Rooms.findOneById(findResult.rid, { projection: API.v1.defaultFieldsToExclude });
+		const room = await Rooms.findOneById(findResult.rid, { projection: API.v1.defaultFieldsToExclude });
 
-			if (!room) {
-				throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
-			}
-
-			return API.v1.success({
-				group: await composeRoomWithLastMessage(room, this.userId),
-			});
-		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+		if (!room) {
+			throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 		}
+
+		return API.v1.success({
+			group: await composeRoomWithLastMessage(room, this.userId),
+		});
 	},
 );
 
@@ -245,21 +233,16 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.bodyParams,
-				userId: this.userId,
-			});
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.bodyParams,
+			userId: this.userId,
+		});
 
-			const user = await getUserFromParams(this.bodyParams);
+		const user = await getUserFromParams(this.bodyParams);
 
-			await addRoomModerator(this.userId, findResult.rid, user._id);
+		await addRoomModerator(this.userId, findResult.rid, user._id);
 
-			return API.v1.success();
-		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
-		}
+		return API.v1.success();
 	},
 );
 
@@ -275,21 +258,16 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.bodyParams,
-				userId: this.userId,
-			});
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.bodyParams,
+			userId: this.userId,
+		});
 
-			const user = await getUserFromParams(this.bodyParams);
+		const user = await getUserFromParams(this.bodyParams);
 
-			await addRoomOwner(this.userId, findResult.rid, user._id);
+		await addRoomOwner(this.userId, findResult.rid, user._id);
 
-			return API.v1.success();
-		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
-		}
+		return API.v1.success();
 	},
 );
 
@@ -305,20 +283,15 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.bodyParams,
-				userId: this.userId,
-			});
-			const user = await getUserFromParams(this.bodyParams);
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.bodyParams,
+			userId: this.userId,
+		});
+		const user = await getUserFromParams(this.bodyParams);
 
-			await addRoomLeader(this.userId, findResult.rid, user._id);
+		await addRoomLeader(this.userId, findResult.rid, user._id);
 
-			return API.v1.success();
-		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
-		}
+		return API.v1.success();
 	},
 );
 
@@ -335,19 +308,14 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.bodyParams,
-				userId: this.userId,
-			});
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.bodyParams,
+			userId: this.userId,
+		});
 
-			await executeArchiveRoom(this.userId, findResult.rid);
+		await executeArchiveRoom(this.userId, findResult.rid);
 
-			return API.v1.success();
-		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
-		}
+		return API.v1.success();
 	},
 );
 
@@ -363,24 +331,19 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.bodyParams,
-				userId: this.userId,
-				checkedArchived: false,
-			});
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.bodyParams,
+			userId: this.userId,
+			checkedArchived: false,
+		});
 
-			if (!findResult.open) {
-				return API.v1.failure(`The private group, ${findResult.name}, is already closed to the sender`);
-			}
-
-			await hideRoomMethod(this.userId, findResult.rid);
-
-			return API.v1.success();
-		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+		if (!findResult.open) {
+			return API.v1.failure(`The private group, ${findResult.name}, is already closed to the sender`);
 		}
+
+		await hideRoomMethod(this.userId, findResult.rid);
+
+		return API.v1.success();
 	},
 );
 
@@ -769,21 +732,16 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const room = await getRoomFromParams(this.bodyParams);
+		const room = await getRoomFromParams(this.bodyParams);
 
-			const user = await getUserFromParams(this.bodyParams);
-			if (!user?.username) {
-				return API.v1.failure('Invalid user');
-			}
-
-			await removeUserFromRoomMethod(this.userId, { rid: room._id, username: user.username });
-
-			return API.v1.success();
-		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+		const user = await getUserFromParams(this.bodyParams);
+		if (!user?.username) {
+			return API.v1.failure('Invalid user');
 		}
+
+		await removeUserFromRoomMethod(this.userId, { rid: room._id, username: user.username });
+
+		return API.v1.success();
 	},
 );
 
@@ -799,23 +757,18 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.bodyParams,
-				userId: this.userId,
-			});
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.bodyParams,
+			userId: this.userId,
+		});
 
-			const user = await Users.findOneById(this.userId);
-			if (!user) {
-				return API.v1.failure('Invalid user');
-			}
-			await leaveRoomMethod(user, findResult.rid);
-
-			return API.v1.success();
-		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+		const user = await Users.findOneById(this.userId);
+		if (!user) {
+			return API.v1.failure('Invalid user');
 		}
+		await leaveRoomMethod(user, findResult.rid);
+
+		return API.v1.success();
 	},
 );
 
@@ -1050,24 +1003,19 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.bodyParams,
-				userId: this.userId,
-				checkedArchived: false,
-			});
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.bodyParams,
+			userId: this.userId,
+			checkedArchived: false,
+		});
 
-			if (findResult.open) {
-				return API.v1.failure(`The private group, ${findResult.name}, is already open for the sender`);
-			}
-
-			await openRoom(this.userId, findResult.rid);
-
-			return API.v1.success();
-		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+		if (findResult.open) {
+			return API.v1.failure(`The private group, ${findResult.name}, is already open for the sender`);
 		}
+
+		await openRoom(this.userId, findResult.rid);
+
+		return API.v1.success();
 	},
 );
 
@@ -1083,21 +1031,16 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.bodyParams,
-				userId: this.userId,
-			});
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.bodyParams,
+			userId: this.userId,
+		});
 
-			const user = await getUserFromParams(this.bodyParams);
+		const user = await getUserFromParams(this.bodyParams);
 
-			await removeRoomModerator(this.userId, findResult.rid, user._id);
+		await removeRoomModerator(this.userId, findResult.rid, user._id);
 
-			return API.v1.success();
-		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
-		}
+		return API.v1.success();
 	},
 );
 
@@ -1113,21 +1056,16 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.bodyParams,
-				userId: this.userId,
-			});
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.bodyParams,
+			userId: this.userId,
+		});
 
-			const user = await getUserFromParams(this.bodyParams);
+		const user = await getUserFromParams(this.bodyParams);
 
-			await removeRoomOwner(this.userId, findResult.rid, user._id);
+		await removeRoomOwner(this.userId, findResult.rid, user._id);
 
-			return API.v1.success();
-		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
-		}
+		return API.v1.success();
 	},
 );
 
@@ -1143,21 +1081,16 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.bodyParams,
-				userId: this.userId,
-			});
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.bodyParams,
+			userId: this.userId,
+		});
 
-			const user = await getUserFromParams(this.bodyParams);
+		const user = await getUserFromParams(this.bodyParams);
 
-			await removeRoomLeader(this.userId, findResult.rid, user._id);
+		await removeRoomLeader(this.userId, findResult.rid, user._id);
 
-			return API.v1.success();
-		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
-		}
+		return API.v1.success();
 	},
 );
 
@@ -1173,31 +1106,26 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			if (!this.bodyParams.name?.trim()) {
-				return API.v1.failure('The bodyParam "name" is required');
-			}
-
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.bodyParams,
-				userId: this.userId,
-			});
-
-			await saveRoomSettings(this.userId, findResult.rid, 'roomName', this.bodyParams.name);
-
-			const room = await Rooms.findOneById(findResult.rid, { projection: API.v1.defaultFieldsToExclude });
-
-			if (!room) {
-				throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
-			}
-
-			return API.v1.success({
-				group: await composeRoomWithLastMessage(room, this.userId),
-			});
-		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+		if (!this.bodyParams.name?.trim()) {
+			return API.v1.failure('The bodyParam "name" is required');
 		}
+
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.bodyParams,
+			userId: this.userId,
+		});
+
+		await saveRoomSettings(this.userId, findResult.rid, 'roomName', this.bodyParams.name);
+
+		const room = await Rooms.findOneById(findResult.rid, { projection: API.v1.defaultFieldsToExclude });
+
+		if (!room) {
+			throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+		}
+
+		return API.v1.success({
+			group: await composeRoomWithLastMessage(room, this.userId),
+		});
 	},
 );
 
@@ -1216,31 +1144,22 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			if (!this.bodyParams.customFields || !(typeof this.bodyParams.customFields === 'object')) {
-				return API.v1.failure('The bodyParam "customFields" is required with a type like object.');
-			}
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.bodyParams,
+			userId: this.userId,
+		});
 
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.bodyParams,
-				userId: this.userId,
-			});
+		await saveRoomSettings(this.userId, findResult.rid, 'roomCustomFields', this.bodyParams.customFields);
 
-			await saveRoomSettings(this.userId, findResult.rid, 'roomCustomFields', this.bodyParams.customFields);
+		const room = await Rooms.findOneById(findResult.rid, { projection: API.v1.defaultFieldsToExclude });
 
-			const room = await Rooms.findOneById(findResult.rid, { projection: API.v1.defaultFieldsToExclude });
-
-			if (!room) {
-				throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
-			}
-
-			return API.v1.success({
-				group: await composeRoomWithLastMessage(room, this.userId),
-			});
-		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+		if (!room) {
+			throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 		}
+
+		return API.v1.success({
+			group: await composeRoomWithLastMessage(room, this.userId),
+		});
 	},
 );
 
@@ -1256,25 +1175,16 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			if (!this.bodyParams.hasOwnProperty('description')) {
-				return API.v1.failure('The bodyParam "description" is required');
-			}
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.bodyParams,
+			userId: this.userId,
+		});
 
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.bodyParams,
-				userId: this.userId,
-			});
+		await saveRoomSettings(this.userId, findResult.rid, 'roomDescription', this.bodyParams.description || '');
 
-			await saveRoomSettings(this.userId, findResult.rid, 'roomDescription', this.bodyParams.description || '');
-
-			return API.v1.success({
-				description: this.bodyParams.description || '',
-			});
-		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
-		}
+		return API.v1.success({
+			description: this.bodyParams.description || '',
+		});
 	},
 );
 
@@ -1290,25 +1200,16 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			if (!this.bodyParams.hasOwnProperty('purpose')) {
-				return API.v1.failure('The bodyParam "purpose" is required');
-			}
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.bodyParams,
+			userId: this.userId,
+		});
 
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.bodyParams,
-				userId: this.userId,
-			});
+		await saveRoomSettings(this.userId, findResult.rid, 'roomDescription', this.bodyParams.purpose || '');
 
-			await saveRoomSettings(this.userId, findResult.rid, 'roomDescription', this.bodyParams.purpose || '');
-
-			return API.v1.success({
-				purpose: this.bodyParams.purpose || '',
-			});
-		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
-		}
+		return API.v1.success({
+			purpose: this.bodyParams.purpose || '',
+		});
 	},
 );
 
@@ -1324,35 +1225,26 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			if (typeof this.bodyParams.readOnly === 'undefined') {
-				return API.v1.failure('The bodyParam "readOnly" is required');
-			}
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.bodyParams,
+			userId: this.userId,
+		});
 
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.bodyParams,
-				userId: this.userId,
-			});
-
-			if (findResult.ro === this.bodyParams.readOnly) {
-				return API.v1.failure('The private group read only setting is the same as what it would be changed to.');
-			}
-
-			await saveRoomSettings(this.userId, findResult.rid, 'readOnly', this.bodyParams.readOnly);
-
-			const room = await Rooms.findOneById(findResult.rid, { projection: API.v1.defaultFieldsToExclude });
-
-			if (!room) {
-				throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
-			}
-
-			return API.v1.success({
-				group: await composeRoomWithLastMessage(room, this.userId),
-			});
-		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+		if (findResult.ro === this.bodyParams.readOnly) {
+			return API.v1.failure('The private group read only setting is the same as what it would be changed to.');
 		}
+
+		await saveRoomSettings(this.userId, findResult.rid, 'readOnly', this.bodyParams.readOnly);
+
+		const room = await Rooms.findOneById(findResult.rid, { projection: API.v1.defaultFieldsToExclude });
+
+		if (!room) {
+			throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+		}
+
+		return API.v1.success({
+			group: await composeRoomWithLastMessage(room, this.userId),
+		});
 	},
 );
 
@@ -1368,25 +1260,16 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			if (!this.bodyParams.hasOwnProperty('topic')) {
-				return API.v1.failure('The bodyParam "topic" is required');
-			}
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.bodyParams,
+			userId: this.userId,
+		});
 
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.bodyParams,
-				userId: this.userId,
-			});
+		await saveRoomSettings(this.userId, findResult.rid, 'roomTopic', this.bodyParams.topic || '');
 
-			await saveRoomSettings(this.userId, findResult.rid, 'roomTopic', this.bodyParams.topic || '');
-
-			return API.v1.success({
-				topic: this.bodyParams.topic || '',
-			});
-		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
-		}
+		return API.v1.success({
+			topic: this.bodyParams.topic || '',
+		});
 	},
 );
 
@@ -1402,35 +1285,30 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			if (!this.bodyParams.type?.trim()) {
-				return API.v1.failure('The bodyParam "type" is required');
-			}
-
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.bodyParams,
-				userId: this.userId,
-			});
-
-			if (findResult.t === this.bodyParams.type) {
-				return API.v1.failure('The private group type is the same as what it would be changed to.');
-			}
-
-			await saveRoomSettings(this.userId, findResult.rid, 'roomType', this.bodyParams.type as RoomType);
-
-			const room = await Rooms.findOneById(findResult.rid, { projection: API.v1.defaultFieldsToExclude });
-
-			if (!room) {
-				throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
-			}
-
-			return API.v1.success({
-				group: await composeRoomWithLastMessage(room, this.userId),
-			});
-		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+		if (!this.bodyParams.type?.trim()) {
+			return API.v1.failure('The bodyParam "type" is required');
 		}
+
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.bodyParams,
+			userId: this.userId,
+		});
+
+		if (findResult.t === this.bodyParams.type) {
+			return API.v1.failure('The private group type is the same as what it would be changed to.');
+		}
+
+		await saveRoomSettings(this.userId, findResult.rid, 'roomType', this.bodyParams.type as RoomType);
+
+		const room = await Rooms.findOneById(findResult.rid, { projection: API.v1.defaultFieldsToExclude });
+
+		if (!room) {
+			throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+		}
+
+		return API.v1.success({
+			group: await composeRoomWithLastMessage(room, this.userId),
+		});
 	},
 );
 
@@ -1448,25 +1326,16 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			if (!this.bodyParams.hasOwnProperty('announcement')) {
-				return API.v1.failure('The bodyParam "announcement" is required');
-			}
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.bodyParams,
+			userId: this.userId,
+		});
 
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.bodyParams,
-				userId: this.userId,
-			});
+		await saveRoomSettings(this.userId, findResult.rid, 'roomAnnouncement', this.bodyParams.announcement || '');
 
-			await saveRoomSettings(this.userId, findResult.rid, 'roomAnnouncement', this.bodyParams.announcement || '');
-
-			return API.v1.success({
-				announcement: this.bodyParams.announcement || '',
-			});
-		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
-		}
+		return API.v1.success({
+			announcement: this.bodyParams.announcement || '',
+		});
 	},
 );
 
@@ -1482,20 +1351,15 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.bodyParams,
-				userId: this.userId,
-				checkedArchived: false,
-			});
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.bodyParams,
+			userId: this.userId,
+			checkedArchived: false,
+		});
 
-			await executeUnarchiveRoom(this.userId, findResult.rid);
+		await executeUnarchiveRoom(this.userId, findResult.rid);
 
-			return API.v1.success();
-		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
-		}
+		return API.v1.success();
 	},
 );
 
@@ -1553,32 +1417,24 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			if (!Match.test(this.bodyParams, Match.ObjectIncluding({ encrypted: Boolean }))) {
-				return API.v1.failure('The bodyParam "encrypted" is required');
-			}
-			const { encrypted, ...params } = this.bodyParams;
+		const { encrypted, ...params } = this.bodyParams;
 
-			const findResult = await findPrivateGroupByIdOrName({
-				params,
-				userId: this.userId,
-			});
+		const findResult = await findPrivateGroupByIdOrName({
+			params,
+			userId: this.userId,
+		});
 
-			await saveRoomSettings(this.userId, findResult.rid, 'encrypted', encrypted);
+		await saveRoomSettings(this.userId, findResult.rid, 'encrypted', encrypted);
 
-			const room = await Rooms.findOneById(findResult.rid, { projection: API.v1.defaultFieldsToExclude });
+		const room = await Rooms.findOneById(findResult.rid, { projection: API.v1.defaultFieldsToExclude });
 
-			if (!room) {
-				throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
-			}
-
-			return API.v1.success({
-				group: await composeRoomWithLastMessage(room, this.userId),
-			});
-		} catch (error) {
-			const [message, errorType] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType);
+		if (!room) {
+			throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 		}
+
+		return API.v1.success({
+			group: await composeRoomWithLastMessage(room, this.userId),
+		});
 	},
 );
 
