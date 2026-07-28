@@ -15,7 +15,6 @@ import { useChangeOwnerAction } from './actions/useChangeOwnerAction';
 import { useDirectMessageAction } from './actions/useDirectMessageAction';
 import { useIgnoreUserAction } from './actions/useIgnoreUserAction';
 import { useMuteUserAction } from './actions/useMuteUserAction';
-import { useRedirectModerationConsole } from './actions/useRedirectModerationConsole';
 import { useRemoveUserAction } from './actions/useRemoveUserAction';
 import { useReportUser } from './actions/useReportUser';
 import { useUserMediaCallAction } from './actions/useUserMediaCallAction';
@@ -77,7 +76,6 @@ export const useUserInfoActions = ({
 	const blockUser = useBlockUserAction(user, rid);
 	const changeLeader = useChangeLeaderAction(user, rid);
 	const changeModerator = useChangeModeratorAction(user, rid);
-	const openModerationConsole = useRedirectModerationConsole(user._id);
 	const changeOwner = useChangeOwnerAction(user, rid);
 	const openDirectMessage = useDirectMessageAction(user, rid);
 	const ignoreUser = useIgnoreUserAction(user, rid);
@@ -93,15 +91,14 @@ export const useUserInfoActions = ({
 	const userinfoActions = useMemo(
 		() => ({
 			...(openDirectMessage && !isLayoutEmbedded && { openDirectMessage }),
+			...(isMember && muteUser && { muteUser }),
 			...(videoCall && { videoCall }),
 			...(userMediaCall && { userMediaCall }),
 			...(!isMember && addUser && { addUser }),
 			...(isMember && changeOwner && { changeOwner }),
 			...(isMember && changeLeader && { changeLeader }),
 			...(isMember && changeModerator && { changeModerator }),
-			...(isMember && openModerationConsole && { openModerationConsole }),
 			...(isMember && ignoreUser && { ignoreUser }),
-			...(isMember && muteUser && { muteUser }),
 			...(blockUser && { toggleBlock: blockUser }),
 			...((isMember || isInvited) && removeUser && { removeUser }),
 			...((isMember || isInvited) && banUser && { banUser }),
@@ -120,7 +117,6 @@ export const useUserInfoActions = ({
 			blockUser,
 			removeUser,
 			reportUserOption,
-			openModerationConsole,
 			addUser,
 			banUser,
 			isMember,
@@ -149,7 +145,8 @@ export const useUserInfoActions = ({
 				return acc;
 			}
 
-			const newSection = { id: group, title: '', items: [newItem] };
+			// GenericMenu translates section titles that are i18n keys
+			const newSection = { id: group, title: group === 'privileges' ? 'Manage_room_roles' : '', items: [newItem] };
 			acc.push(newSection);
 
 			return acc;
