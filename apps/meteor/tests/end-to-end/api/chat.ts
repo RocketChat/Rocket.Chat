@@ -4827,18 +4827,20 @@ describe('Threads', () => {
 		it('should fail when threads are disabled', async () => {
 			await updateSetting('Threads_enabled', false);
 
-			await request
-				.post(api('chat.readThread'))
-				.set(credentials)
-				.send({ tmid: parentMessage._id })
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-not-allowed');
-				});
-
-			await updateSetting('Threads_enabled', true);
+			try {
+				await request
+					.post(api('chat.readThread'))
+					.set(credentials)
+					.send({ tmid: parentMessage._id })
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-not-allowed');
+					});
+			} finally {
+				await updateSetting('Threads_enabled', true);
+			}
 		});
 
 		it('should fail when tmid does not match any message', async () => {
@@ -4855,11 +4857,19 @@ describe('Threads', () => {
 		});
 
 		it('should fail when tmid is missing', async () => {
-			await request.post(api('chat.readThread')).set(credentials).send({}).expect(400);
+			await request
+				.post(api('chat.readThread'))
+				.set(credentials)
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
 		});
 
 		it('should clear the unread thread flag of the caller subscription', async () => {
-			// The reply lands on the thread the caller owns, so it shows up as unread for the caller.
 			await sendSimpleMessage({
 				roomId: testChannel._id,
 				text: 'Thread reply',

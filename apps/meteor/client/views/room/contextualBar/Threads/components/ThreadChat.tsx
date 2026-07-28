@@ -71,7 +71,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 					return;
 				}
 
-				void readThread({ tmid: mainMessage._id });
+				void Promise.resolve(readThread({ tmid: mainMessage._id })).catch(() => undefined);
 			},
 			clientCallbacks.priority.MEDIUM,
 			`thread-${room._id}`,
