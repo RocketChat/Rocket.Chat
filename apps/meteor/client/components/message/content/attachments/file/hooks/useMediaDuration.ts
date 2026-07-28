@@ -6,13 +6,10 @@ export const useMediaDuration = (src: string): number => {
 	const [duration, setDuration] = useState(() => durationCache.get(src) ?? 0);
 
 	useEffect(() => {
-		if (!src) {
-			return;
-		}
+		const cached = src ? durationCache.get(src) : undefined;
+		setDuration(cached ?? 0);
 
-		const cached = durationCache.get(src);
-		if (cached !== undefined) {
-			setDuration(cached);
+		if (!src || cached !== undefined) {
 			return;
 		}
 
