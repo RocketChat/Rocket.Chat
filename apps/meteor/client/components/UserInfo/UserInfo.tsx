@@ -1,5 +1,5 @@
 import type { IUser, Serialized } from '@rocket.chat/core-typings';
-import { Box, Margins, Tag } from '@rocket.chat/fuselage';
+import { Box, IconButton, Margins, Tag } from '@rocket.chat/fuselage';
 import {
 	useUserDisplayName,
 	ContextualbarScrollableContent,
@@ -17,6 +17,7 @@ import type { ReactNode } from 'react';
 import { memo, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import useClipboardWithToast from '../../hooks/useClipboardWithToast';
 import { useTimeAgo } from '../../hooks/useTimeAgo';
 import { useUserCustomFields } from '../../hooks/useUserCustomFields';
 import MarkdownText from '../MarkdownText';
@@ -83,6 +84,7 @@ const UserInfo = ({
 	const timeAgo = useTimeAgo();
 	const userDisplayName = useUserDisplayName({ name, username });
 	const userCustomFields = useUserCustomFields(customFields);
+	const { copy: copyEmail } = useClipboardWithToast(email ?? '');
 
 	const usernameId = useId();
 
@@ -179,6 +181,7 @@ const UserInfo = ({
 								<Box is='a' withTruncatedText href={`mailto:${email}`}>
 									{email}
 								</Box>
+								<IconButton mini icon='copy' title={t('Copy')} aria-label={t('Copy')} onClick={() => copyEmail()} />
 								<Margins inline={4}>
 									<Tag>{verified ? t('Verified') : t('Not_verified')}</Tag>
 								</Margins>
