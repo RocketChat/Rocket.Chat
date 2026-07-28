@@ -37,6 +37,13 @@ const nameStyle = css`
 	}
 `;
 
+const timestampStyle = css`
+	& .rcx-message-header__time {
+		font-size: 0.625rem;
+		color: ${Palette.text['font-secondary-info']};
+	}
+`;
+
 export type MessageHeaderProps = {
 	message: IMessage;
 };
@@ -95,9 +102,11 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 				</Box>
 			</MessageNameContainer>
 			{shouldShowRolesList && <MessageRoles roles={roles} isBot={!!message.bot} onClick={(e) => openUserCard(e, message.u.username)} />}
-			<MessageTimestamp id={`${message._id}-time`} title={formatDateAndTime(message.ts)}>
-				{formatTime(message.ts)}
-			</MessageTimestamp>
+			<Box is='span' className={timestampStyle}>
+				<MessageTimestamp id={`${message._id}-time`} title={formatDateAndTime(message.ts)}>
+					{formatTime(message.ts)}
+				</MessageTimestamp>
+			</Box>
 			{message.private && <MessageStatusPrivateIndicator>{t('Only_you_can_see_this_message')}</MessageStatusPrivateIndicator>}
 			<StatusIndicators message={message} />
 		</FuselageMessageHeader>
