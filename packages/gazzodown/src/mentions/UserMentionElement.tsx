@@ -45,6 +45,18 @@ const UserMentionElement = ({ mention }: UserMentionElementProps) => {
 			title={resolved._id === ownUserId ? t('Mentions_you') : t('Mentions_user')}
 			clickable
 			onMouseEnter={handleMouseEnter}
+			role={handleMouseEnter ? 'button' : undefined}
+			tabIndex={handleMouseEnter ? 0 : undefined}
+			aria-haspopup={handleMouseEnter ? 'dialog' : undefined}
+			onKeyDown={
+				handleMouseEnter &&
+				((e) => {
+					if (e.key === 'Enter' || e.key === ' ') {
+						e.preventDefault();
+						handleMouseEnter(e);
+					}
+				})
+			}
 			{...triggerProps}
 			data-uid={resolved._id}
 		>

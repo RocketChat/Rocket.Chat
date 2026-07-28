@@ -98,7 +98,20 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
 				<MessageSystemBlock>
-					<MessageNameContainer style={{ cursor: 'pointer' }} onMouseEnter={(e) => openUserCard(e, user.username)} {...triggerProps}>
+					<MessageNameContainer
+						role='button'
+						tabIndex={0}
+						aria-haspopup='dialog'
+						style={{ cursor: 'pointer' }}
+						onMouseEnter={(e) => openUserCard(e, user.username)}
+						onKeyDown={(e) => {
+							if (e.key === 'Enter' || e.key === ' ') {
+								e.preventDefault();
+								openUserCard(e, user.username);
+							}
+						}}
+						{...triggerProps}
+					>
 						<Box is='span' className={hoverUnderlineStyle}>
 							<MessageSystemName>{displayName}</MessageSystemName>
 							{showUsername && (

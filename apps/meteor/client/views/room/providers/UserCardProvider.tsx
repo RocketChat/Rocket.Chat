@@ -34,6 +34,7 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 
 	const triggerRef = useRef<Element | null>(null);
 	const cardRef = useRef<HTMLElement | null>(null);
+	const openedViaKeyboardRef = useRef(false);
 	const state = useOverlayTriggerState({});
 	const { triggerProps, overlayProps } = useOverlayTrigger({ type: 'dialog' }, state, triggerRef);
 	delete triggerProps.onPress;
@@ -72,6 +73,10 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 		clearTimers();
 		setUserCardData(null);
 		state.close();
+		if (openedViaKeyboardRef.current) {
+			openedViaKeyboardRef.current = false;
+			(triggerRef.current as HTMLElement | null)?.focus?.();
+		}
 	});
 
 	const handleTriggerLeave = useStableCallback(() => {
@@ -98,11 +103,13 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 				});
 			};
 
-			if (e.type === 'click') {
+			if (e.type === 'click' || e.type === 'keydown') {
+				openedViaKeyboardRef.current = e.type === 'keydown';
 				open();
 				return;
 			}
 
+			openedViaKeyboardRef.current = false;
 			trigger?.addEventListener('mouseleave', handleTriggerLeave, { once: true });
 			openTimerRef.current = setTimeout(open, HOVER_OPEN_DELAY);
 		},
@@ -110,6 +117,15 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 	);
 
 	const isOpen = state.isOpen && !!userCardData;
+
+	// The card content is lazy-loaded, so focus is moved on mount via a ref
+	// callback rather than an effect (which could run before Suspense resolves).
+	const handleCardRef = useCallback((node: HTMLElement | null) => {
+		cardRef.current = node;
+		if (node && openedViaKeyboardRef.current) {
+			node.focus();
+		}
+	}, []);
 
 	useEffect(() => {
 		if (!isOpen) {
@@ -130,6 +146,9 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 		};
 
 		const handleMouseMove = (e: MouseEvent) => {
+			// A keyboard-opened card must not be dismissed by stray pointer
+			// movement; it closes via Escape, the close button or an action.
+			if (openedViaKeyboardRef.current) return;
 			if (isPointerOverCard(e.clientX, e.clientY)) {
 				clearTimeout(closeTimerRef.current);
 				closeTimerRef.current = undefined;
@@ -171,7 +190,7 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 			{isOpen && userCardData && (
 				<Suspense fallback={null}>
 					<Popover placement='top left' offset={getPopoverOffset()} triggerRef={triggerRef} state={state}>
-						<Box ref={cardRef}>
+						<Box ref={handleCardRef} tabIndex={-1}>
 							<UserCard {...userCardData} {...overlayProps} />
 						</Box>
 					</Popover>

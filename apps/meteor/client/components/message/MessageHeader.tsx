@@ -66,8 +66,17 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 			<MessageNameContainer
 				id={`${message._id}-displayName`}
 				aria-label={displayName}
+				role='button'
+				tabIndex={0}
+				aria-haspopup='dialog'
 				style={{ cursor: 'pointer' }}
 				onMouseEnter={(e) => openUserCard(e, message.u.username)}
+				onKeyDown={(e) => {
+					if (e.key === 'Enter' || e.key === ' ') {
+						e.preventDefault();
+						openUserCard(e, message.u.username);
+					}
+				}}
 				{...triggerProps}
 			>
 				<Box is='span' className={nameStyle}>
