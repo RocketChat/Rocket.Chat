@@ -1,18 +1,6 @@
-import {
-	Button,
-	Modal,
-	Box,
-	ModalHeader,
-	ModalHeaderText,
-	ModalTagline,
-	ModalTitle,
-	ModalClose,
-	ModalContent,
-	ModalHeroImage,
-	ModalFooter,
-	ModalFooterControllers,
-} from '@rocket.chat/fuselage';
+import { Box, ModalHeroImage } from '@rocket.chat/fuselage';
 import { useOutsideClick } from '@rocket.chat/fuselage-hooks';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 import { useCheckoutUrl } from '../../admin/subscription/hooks/useCheckoutUrl';
 
-// TODO: use `GenericModal` instead of creating a new modal from scratch
 // This seems a upSell modal for enterprise feature
 const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }) => {
 	const { t } = useTranslation();
@@ -43,30 +30,24 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }) 
 	useOutsideClick([ref], onClose);
 
 	return (
-		<Modal aria-label={t('Departments')} ref={ref}>
-			<ModalHeader>
-				<ModalHeaderText>
-					<ModalTagline>{t('Premium_capability')}</ModalTagline>
-					<ModalTitle>{t('Departments')}</ModalTitle>
-				</ModalHeaderText>
-				<ModalClose onClick={onClose} />
-			</ModalHeader>
-			<ModalContent fontScale='p2'>
+		<GenericModal
+			variant='upsell'
+			title={t('Departments')}
+			tagline={t('Premium_capability')}
+			onClose={onClose}
+			onCancel={onClose}
+			onConfirm={goToManageSubscriptionPage}
+			cancelText={t('Cancel')}
+			confirmText={t('Upgrade')}
+		>
+			<div ref={ref}>
 				<ModalHeroImage src='/images/departments.svg' />
 				<Box fontScale='h3' marginBlockEnd={28}>
 					{t('Premium_Departments_title')}
 				</Box>
 				{t('Premium_Departments_description_upgrade')}
-			</ModalContent>
-			<ModalFooter>
-				<ModalFooterControllers>
-					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button onClick={goToManageSubscriptionPage} primary>
-						{t('Upgrade')}
-					</Button>
-				</ModalFooterControllers>
-			</ModalFooter>
-		</Modal>
+			</div>
+		</GenericModal>
 	);
 };
 
