@@ -74,8 +74,6 @@ export const createRichTextComposerAPI = (
 		prepareQuotedMessage: (message) => limitQuoteChain(message, quoteChainLimit),
 	});
 
-	const { insertText } = core;
-
 	const wrapSelection = (pattern: string): { selectionStart: number; selectionEnd: number; value: string } => {
 		const { selectionStart, selectionEnd } = getSelectionRange(input);
 		const cleanedInitText = input.innerText;
@@ -92,34 +90,34 @@ export const createRichTextComposerAPI = (
 		focus();
 
 		const startPattern = pattern.slice(0, pattern.indexOf('{{text}}'));
-		const startPatternFound = [...startPattern]
-			.reverse()
-			.every((char, index) => input.innerText.slice(selectionStart - index - 1, 1) === char);
+		const endPattern = pattern.slice(pattern.indexOf('{{text}}') + '{{text}}'.length);
 
-		if (startPatternFound) {
-			const endPattern = pattern.slice(pattern.indexOf('{{text}}') + '{{text}}'.length);
-			const endPatternFound = [...endPattern].every((char, index) => input.innerText.slice(selEnd + index, 1) === char);
+		const startPatternFound =
+			startPattern.length > 0 &&
+			selectionStart >= startPattern.length &&
+			cleanedInitText.slice(selectionStart - startPattern.length, selectionStart) === startPattern;
+		const endPatternFound = endPattern.length > 0 && cleanedInitText.slice(selEnd, selEnd + endPattern.length) === endPattern;
 
-			if (endPatternFound) {
-				insertText(selectedText);
+		if (startPatternFound && endPatternFound) {
+			const unwrapStart = selectionStart - startPattern.length;
+			const unwrapEnd = unwrapStart + selectedText.length;
 
-				const { selectionStart: newSelStart } = getSelectionRange(input);
+			setSelectionRange(input, unwrapStart, selEnd + endPattern.length);
+			focus();
 
-				if (!document.execCommand?.('insertText', false, selectedText)) {
-					input.innerText = initText.slice(0, initText.length - startPattern.length) + selectedText + finalText.slice(endPattern.length);
-				}
-
-				const newStart = newSelStart - startPattern.length;
-				const newEnd = newStart + selectedText.length;
-
-				setSelectionRange(input, newStart, newEnd);
-
-				triggerEvent(input, 'input');
-				triggerEvent(input, 'change');
-
-				focus();
-				return { selectionStart: newStart, selectionEnd: newEnd, value: input.innerText };
+			if (selectedText.includes('\n') || !document.execCommand?.('insertText', false, selectedText)) {
+				input.innerText = initText.slice(0, unwrapStart) + selectedText + finalText.slice(endPattern.length);
+				renderComposerContent(input, parseOptions, { selectionStart: unwrapStart, selectionEnd: unwrapEnd });
 			}
+
+			focus();
+
+			setSelectionRange(input, unwrapStart, unwrapEnd);
+
+			triggerEvent(input, 'input');
+			triggerEvent(input, 'change');
+
+			return { selectionStart: unwrapStart, selectionEnd: unwrapEnd, value: input.innerText };
 		}
 
 		// Explicitly set the selection range and send focus back to the editor again

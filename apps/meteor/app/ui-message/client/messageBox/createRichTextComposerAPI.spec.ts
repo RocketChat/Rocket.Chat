@@ -181,6 +181,32 @@ describe('RichText Composer API - wrapSelection', () => {
 		expect(input.textContent).not.toContain('bar*r');
 	});
 
+	it('unwraps a selection that is already wrapped with the given pattern', () => {
+		const { composer, input } = setupComposer('*test*', { start: 1, end: 5 });
+
+		composer.wrapSelection('*{{text}}*');
+
+		expect(input.textContent).toBe('test\n');
+		expect(getSelectionRange(input)).toEqual({ selectionStart: 0, selectionEnd: 4 });
+	});
+
+	it('unwraps a multi-line selection that is already wrapped', () => {
+		const { composer, input } = setupComposer('*foo\nbar*', { start: 1, end: 8 });
+
+		composer.wrapSelection('*{{text}}*');
+
+		expect(input.textContent).toContain('foo\nbar');
+		expect(input.textContent).not.toContain('*');
+	});
+
+	it('does not unwrap when only the start marker is present', () => {
+		const { composer, input } = setupComposer('*test', { start: 1, end: 5 });
+
+		composer.wrapSelection('*{{text}}*');
+
+		expect(input.textContent).toBe('**test*\n');
+	});
+
 	it('preserves blank lines (does not collapse consecutive newlines)', () => {
 		const { composer, input } = setupComposer('123\n456\n\n789', { start: 0, end: 12 });
 
