@@ -30,5 +30,13 @@
 	/* emojis on messages */
 	&__emoji {
 		font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Twemoji Mozilla', 'Android Emoji', sans-serif;
+
+		/* fuselage's fixed-size inline-block box (meant for image-based custom emojis) is too small for native glyphs on fonts with wider metrics (e.g. Linux), so they overflow the box and crowd the surrounding text; :not(--custom) outranks its specificity to override reliably */
+		&:not(&--custom) {
+			display: inline;
+			width: auto;
+			height: auto;
+			margin: 0 .15em;
+		}
 	}
 }
