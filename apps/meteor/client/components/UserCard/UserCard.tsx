@@ -85,7 +85,7 @@ const UserCard = ({
 					color='default'
 					withTruncatedText
 				>
-					<Box is='span' className={srOnly}>{`${t('Roles')}: `}</Box>
+					<Box is='span' className={srOnly}>{`${t('Workspace_roles')}: `}</Box>
 					{workspaceRoles}
 				</Box>
 			)}

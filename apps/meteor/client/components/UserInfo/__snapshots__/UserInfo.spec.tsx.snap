@@ -128,10 +128,10 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1fksvtu"
                       >
                         <div
-                          class="rcx-box rcx-box--full rcx-css-1i2tyln"
+                          class="rcx-box rcx-box--full rcx-css-zy9xaq"
                         >
                           <span
-                            class="rcx-box rcx-box--full rcx-tag "
+                            class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
                           >
                             <span
                               class="rcx-tag__inner"
@@ -141,10 +141,10 @@ exports[`renders Default without crashing 1`] = `
                           </span>
                         </div>
                         <div
-                          class="rcx-box rcx-box--full rcx-css-1i2tyln"
+                          class="rcx-box rcx-box--full rcx-css-zy9xaq"
                         >
                           <span
-                            class="rcx-box rcx-box--full rcx-tag "
+                            class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
                           >
                             <span
                               class="rcx-tag__inner"
@@ -415,10 +415,10 @@ exports[`renders InvitedUser without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1fksvtu"
                       >
                         <div
-                          class="rcx-box rcx-box--full rcx-css-1i2tyln"
+                          class="rcx-box rcx-box--full rcx-css-zy9xaq"
                         >
                           <span
-                            class="rcx-box rcx-box--full rcx-tag "
+                            class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
                           >
                             <span
                               class="rcx-tag__inner"
@@ -428,10 +428,10 @@ exports[`renders InvitedUser without crashing 1`] = `
                           </span>
                         </div>
                         <div
-                          class="rcx-box rcx-box--full rcx-css-1i2tyln"
+                          class="rcx-box rcx-box--full rcx-css-zy9xaq"
                         >
                           <span
-                            class="rcx-box rcx-box--full rcx-tag "
+                            class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
                           >
                             <span
                               class="rcx-tag__inner"
@@ -716,10 +716,10 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1fksvtu"
                       >
                         <div
-                          class="rcx-box rcx-box--full rcx-css-1i2tyln"
+                          class="rcx-box rcx-box--full rcx-css-zy9xaq"
                         >
                           <span
-                            class="rcx-box rcx-box--full rcx-tag "
+                            class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
                           >
                             <span
                               class="rcx-tag__inner"
@@ -729,10 +729,10 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                           </span>
                         </div>
                         <div
-                          class="rcx-box rcx-box--full rcx-css-1i2tyln"
+                          class="rcx-box rcx-box--full rcx-css-zy9xaq"
                         >
                           <span
-                            class="rcx-box rcx-box--full rcx-tag "
+                            class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
                           >
                             <span
                               class="rcx-tag__inner"
@@ -1063,10 +1063,10 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-css-1fksvtu"
                       >
                         <div
-                          class="rcx-box rcx-box--full rcx-css-1i2tyln"
+                          class="rcx-box rcx-box--full rcx-css-zy9xaq"
                         >
                           <span
-                            class="rcx-box rcx-box--full rcx-tag "
+                            class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
                           >
                             <span
                               class="rcx-tag__inner"
@@ -1076,10 +1076,10 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                           </span>
                         </div>
                         <div
-                          class="rcx-box rcx-box--full rcx-css-1i2tyln"
+                          class="rcx-box rcx-box--full rcx-css-zy9xaq"
                         >
                           <span
-                            class="rcx-box rcx-box--full rcx-tag "
+                            class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
                           >
                             <span
                               class="rcx-tag__inner"
