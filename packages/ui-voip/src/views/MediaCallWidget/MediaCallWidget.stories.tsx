@@ -18,6 +18,7 @@ const mockedContexts = mockAppRoot()
 	.buildStoryDecorator();
 
 const meta = {
+	title: 'Views/MediaCallWidget/Draggable Widget',
 	component: MediaCallWidget,
 	args: {
 		state: 'closed',
