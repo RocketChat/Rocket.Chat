@@ -2,11 +2,13 @@ import { useCallback, useContext, useMemo, useRef } from 'preact/hooks';
 import { route } from 'preact-router';
 import { useTranslation } from 'react-i18next';
 
+import ChatComponent from './component';
 import ChatContainer from './container';
 import { useChatSubscriptions } from './useChatSubscriptions';
 import { Livechat } from '../../api';
 import { ModalManager } from '../../components/Modal';
 import { ScreenContext } from '../../components/Screen/ScreenProvider';
+import { getAvatarUrl } from '../../helpers/baseUrl';
 import { canRenderMessage } from '../../helpers/canRenderMessage';
 import { debounce } from '../../helpers/debounce';
 import { throttle } from '../../helpers/throttle';
@@ -361,62 +363,72 @@ const Chat = (_: ChatProps) => {
 		}
 	});
 
+	const avatarResolver = getAvatarUrl;
+
+	const uid = user?._id;
+
+	const options = canSwitchDepartment || canFinishChat || canRemoveUserData;
+
+	const onChangeDepartment = canSwitchDepartment ? handleChangeDepartment : undefined;
+	const onFinishChat = canFinishChat ? handleFinishChat : undefined;
+	const onRemoveUserData = canRemoveUserData ? handleRemoveUserData : undefined;
+
+	const registrationRequired = useMemo(() => {
+		if (user?.token) {
+			return false;
+		}
+
+		if (!registrationFormEnabled) {
+			return false;
+		}
+
+		const showDepartment = departments.filter((dept) => dept.showOnRegistration).length > 0;
+		return !!(nameFieldRegistrationForm || emailFieldRegistrationForm || showDepartment);
+	}, [user?.token, registrationFormEnabled, departments, nameFieldRegistrationForm, emailFieldRegistrationForm]);
+
 	return (
-		<ChatContainer
-			innerStateRef={innerStateRef}
-			inputRef={inputRef}
-			notifyEmojiSelectRef={notifyEmojiSelectRef}
-			t={t}
-			title={title}
-			sound={sound}
-			token={token}
-			user={user}
-			agent={agent}
-			room={room}
-			messages={messages}
-			uploads={uploads}
-			typingUsernames={typingUsernames}
-			loading={loading}
-			connecting={connecting}
-			dispatch={dispatch}
-			departments={departments}
-			allowSwitchingDepartments={allowSwitchingDepartments}
-			conversationFinishedMessage={conversationFinishedMessage}
-			allowRemoveUserData={allowRemoveUserData}
-			alerts={alerts}
-			unread={unread}
-			lastReadMessageId={lastReadMessageId}
-			guest={guest}
-			queueInfo={queueInfo}
-			registrationFormEnabled={registrationFormEnabled}
-			nameFieldRegistrationForm={nameFieldRegistrationForm}
-			emailFieldRegistrationForm={emailFieldRegistrationForm}
-			limitTextLength={limitTextLength}
-			theme={theme}
-			visitorsCanCloseChat={visitorsCanCloseChat}
-			onRegisterUser={onRegisterUser}
-			handleChangeDepartment={handleChangeDepartment}
-			checkRoom={checkRoom}
-			grantUser={grantUser}
-			getRoom={getRoom}
-			onTop={onTop}
-			startTyping={startTyping}
-			stopTyping={stopTyping}
-			stopTypingDebounced={stopTypingDebounced}
-			onChangeText={onChangeText}
-			onSubmit={onSubmit}
-			doFileUpload={doFileUpload}
-			onUpload={onUpload}
-			onSoundStop={onSoundStop}
-			handleFinishChat={handleFinishChat}
-			handleRemoveUserData={handleRemoveUserData}
-			canSwitchDepartment={canSwitchDepartment}
-			canFinishChat={canFinishChat}
-			canRemoveUserData={canRemoveUserData}
-			handleConnectingAgentAlert={handleConnectingAgentAlert}
-			handleQueueMessage={handleQueueMessage}
-			checkConnectingAgent={checkConnectingAgent}
-		/>
+		<>
+			<ChatContainer
+				user={user}
+				messages={messages}
+				dispatch={dispatch}
+				alerts={alerts}
+				checkRoom={checkRoom}
+				handleConnectingAgentAlert={handleConnectingAgentAlert}
+				checkConnectingAgent={checkConnectingAgent}
+			/>
+			<ChatComponent
+				inputRef={inputRef}
+				notifyEmojiSelectRef={notifyEmojiSelectRef}
+				title={title}
+				dispatch={dispatch}
+				t={t}
+				theme={theme}
+				agent={agent}
+				conversationFinishedMessage={conversationFinishedMessage}
+				lastReadMessageId={lastReadMessageId}
+				limitTextLength={limitTextLength}
+				loading={loading}
+				messages={messages}
+				queueInfo={queueInfo}
+				typingUsernames={typingUsernames}
+				unread={unread}
+				uploads={uploads}
+				avatarResolver={avatarResolver}
+				uid={uid}
+				onTop={onTop}
+				onChangeText={onChangeText}
+				onSubmit={onSubmit}
+				onUpload={onUpload}
+				options={options}
+				onChangeDepartment={onChangeDepartment}
+				onFinishChat={onFinishChat}
+				onRemoveUserData={onRemoveUserData}
+				onSoundStop={onSoundStop}
+				registrationRequired={registrationRequired}
+				onRegisterUser={onRegisterUser}
+			/>
+		</>
 	);
 };
 
