@@ -7,6 +7,8 @@ import { useAudioStream } from './useAudioStream';
 import useAvailableViewTracker from './useAvailableViewTracker';
 import { useGetAutocompleteOptions } from './useGetAutocompleteOptions';
 import { useMediaSessionInstance } from './useMediaSessionInstance';
+import { useMediaSessionStateSubscription } from './useMediaSessionStateSubscription';
+import { usePersistedSessionState } from './usePersistedSessionState';
 import { MediaCallInstanceContext } from '../context/MediaCallInstanceContext';
 import type { Signals } from '../context/MediaCallInstanceContext';
 
@@ -21,6 +23,10 @@ const MediaCallInstanceProvider = ({ children, enabled = true }: MediaCallInstan
 	const user = useUser();
 	const instance = useMediaSessionInstance(user?._id, enabled);
 	const [signalEmitter] = useState(() => new Emitter<Signals>());
+
+	const stateSubscription = useMediaSessionStateSubscription();
+	const { openWidget, closeWidget, targetPeer, setTargetPeer, widgetVisibility } = usePersistedSessionState(stateSubscription, instance);
+	const { subscribe, getSnapshot } = stateSubscription;
 
 	const [remoteStreamRefCallback, audioElement] = useAudioStream(instance);
 
@@ -37,8 +43,33 @@ const MediaCallInstanceProvider = ({ children, enabled = true }: MediaCallInstan
 			currentViews,
 			registerView,
 			unregisterView,
+			stateSubscription: {
+				subscribe,
+				getSnapshot,
+			},
+			openWidget,
+			closeWidget,
+			setTargetPeer,
+			targetPeer,
+			widgetVisibility,
 		}),
-		[instance, signalEmitter, audioElement, openRoomId, setOpenRoomId, getAutocompleteOptions, currentViews, registerView, unregisterView],
+		[
+			instance,
+			signalEmitter,
+			audioElement,
+			openRoomId,
+			getAutocompleteOptions,
+			currentViews,
+			registerView,
+			unregisterView,
+			subscribe,
+			getSnapshot,
+			openWidget,
+			closeWidget,
+			setTargetPeer,
+			targetPeer,
+			widgetVisibility,
+		],
 	);
 
 	return (

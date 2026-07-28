@@ -12,6 +12,7 @@ export type MediaCallStreams = {
 
 type MediaCallViewContextValue = {
 	sessionState: SessionState;
+	targetPeer?: PeerInfo;
 	onClickDirectMessage?: () => void;
 	onMute: () => void;
 	onHold: () => void;
@@ -33,7 +34,7 @@ type MediaCallViewContextValue = {
 };
 
 const defaultSessionState: SessionState = {
-	state: 'closed',
+	state: 'none',
 	connectionState: 'CONNECTED',
 	peerInfo: undefined,
 	transferredBy: undefined,
@@ -48,6 +49,7 @@ const defaultSessionState: SessionState = {
 
 export const defaultMediaCallContextValue: MediaCallViewContextValue = {
 	sessionState: defaultSessionState,
+	targetPeer: undefined,
 	onMute: () => undefined,
 	onHold: () => undefined,
 	onDeviceChange: () => undefined,

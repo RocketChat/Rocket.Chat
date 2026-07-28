@@ -5,13 +5,17 @@ import type { PeerInfo } from './definitions';
 import { getEndCall } from '../utils/instanceControlsGetters';
 
 export const useWidgetExternalControls = () => {
-	const { signalEmitter, instance } = useMediaCallInstance();
+	const { instance, openWidget, closeWidget, widgetVisibility } = useMediaCallInstance();
 
 	const toggleWidget = useCallback(
 		(peerInfo?: PeerInfo) => {
-			signalEmitter.emit('toggleWidget', { peerInfo });
+			if (widgetVisibility === 'closed') {
+				openWidget(peerInfo);
+				return;
+			}
+			closeWidget();
 		},
-		[signalEmitter],
+		[closeWidget, openWidget, widgetVisibility],
 	);
 
 	const endCall = useCallback(() => getEndCall(instance)(), [instance]);

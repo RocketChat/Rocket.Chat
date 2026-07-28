@@ -19,11 +19,11 @@ import { useWidgetExternalControls } from '../../context/useWidgetExternalContro
 const NewCall = () => {
 	const { t } = useTranslation();
 
-	const { sessionState, onCall, onSelectPeer } = useMediaCallView();
+	const { sessionState, onCall, onSelectPeer, targetPeer } = useMediaCallView();
 	const { peerInfo } = sessionState;
 	const { toggleWidget } = useWidgetExternalControls();
 
-	const autocomplete = usePeerAutocomplete(onSelectPeer, peerInfo);
+	const autocomplete = usePeerAutocomplete(onSelectPeer, targetPeer);
 
 	return (
 		<Widget>

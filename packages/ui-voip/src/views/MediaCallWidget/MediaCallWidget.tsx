@@ -1,19 +1,17 @@
 import MediaCallWidgetViewRouter from './MediaCallWidgetViewRouter';
 import WidgetDraggableProvider from '../../components/Widget/WidgetDraggableProvider';
+import { useMediaCallInstance } from '../../context';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import useRegisterView from '../../context/useRegisterView';
 
 const MediaCallWidget = () => {
+	const { widgetVisibility } = useMediaCallInstance();
 	const currentViews = useRegisterView('widget');
 	const {
-		sessionState: { state, hidden },
+		sessionState: { hidden },
 	} = useMediaCallView();
 
-	if (hidden || !currentViews.includes('widget')) {
-		return null;
-	}
-
-	if (state === 'closed') {
+	if (hidden || !currentViews.includes('widget') || widgetVisibility === 'closed') {
 		return null;
 	}
 
