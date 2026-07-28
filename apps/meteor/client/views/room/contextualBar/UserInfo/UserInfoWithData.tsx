@@ -9,7 +9,7 @@ import {
 	ContextualbarContent,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import { useEndpoint, useRolesDescription } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -36,7 +36,6 @@ export type UserInfoWithDataProps = {
 
 const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClickBack }: UserInfoWithDataProps) => {
 	const { t } = useTranslation();
-	const getRoles = useRolesDescription();
 
 	const getUserInfo = useEndpoint('GET', '/v1/users.info');
 	const { isPending, isError, data } = useQuery({
@@ -48,7 +47,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 		},
 	});
 
-	const { roomRoles } = useUserRolesByScope(data?.user?._id, rid);
+	const { workspaceRoles, roomRoles } = useUserRolesByScope(data?.user?._id, rid);
 
 	const user = useMemo(() => {
 		if (!data?.user) {
@@ -59,7 +58,6 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			_id,
 			name,
 			username,
-			roles = [],
 			bio,
 			utcOffset,
 			lastLogin,
@@ -79,7 +77,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			/**
 			 * TODO: We shouldn't use UserCard components outside UserCard
 			 */
-			roles: roles && getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
+			roles: workspaceRoles.map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			roomRoles: roomRoles.map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			bio,
 			canViewAllInfo,
@@ -94,7 +92,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			nickname,
 			freeSwitchExtension,
 		};
-	}, [data, getRoles, roomRoles]);
+	}, [data, workspaceRoles, roomRoles]);
 
 	return (
 		<ContextualbarDialog>
