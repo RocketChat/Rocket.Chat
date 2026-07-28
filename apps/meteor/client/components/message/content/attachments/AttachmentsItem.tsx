@@ -19,7 +19,7 @@ const AttachmentsItem = ({ attachment, id, source }: AttachmentsItemProps) => {
 	}
 
 	if (isQuoteAttachment(attachment)) {
-		return <QuoteAttachment attachment={attachment} />;
+		return <QuoteAttachment attachment={attachment} source={source} />;
 	}
 
 	return <DefaultAttachment {...(attachment as any)} />;
