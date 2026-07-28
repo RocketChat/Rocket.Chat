@@ -4,17 +4,19 @@ import { useTranslation } from 'react-i18next';
 
 import ChatContainer from './container';
 import { useChatSubscriptions } from './useChatSubscriptions';
+import { Livechat } from '../../api';
 import { ScreenContext } from '../../components/Screen/ScreenProvider';
 import { canRenderMessage } from '../../helpers/canRenderMessage';
+import { loadMessages } from '../../lib/room';
 import { type StoreState, useStore } from '../../store';
 
-// const useStableCallback = <TFunction extends (...args: any[]) => any>(callback: TFunction): TFunction => {
-// 	const callbackRef = useRef<TFunction>(callback);
+const useStableCallback = <TFunction extends (...args: any[]) => any>(callback: TFunction): TFunction => {
+	const callbackRef = useRef<TFunction>(callback);
 
-// 	callbackRef.current = callback;
+	callbackRef.current = callback;
 
-// 	return useCallback(((...args) => callbackRef.current(...args)) as TFunction, []);
-// };
+	return useCallback(((...args) => callbackRef.current(...args)) as TFunction, []);
+};
 
 const useChatTitle = () => {
 	const {
@@ -47,7 +49,7 @@ const Chat = (_: ChatProps) => {
 			},
 			departments = [],
 		},
-		iframe: { guest = {} },
+		iframe: { guest = {}, defaultDepartment },
 		token,
 		agent,
 		sound,
@@ -96,6 +98,28 @@ const Chat = (_: ChatProps) => {
 	const connecting = !!(room && !agent && (showConnecting || queueInfo));
 	const conversationFinishedMessage = useStore().config.messages.conversationFinishedMessage || t('conversation_finished');
 
+	const checkRoom = useStableCallback(() => {
+		const { room: stateRoom } = innerStateRef.current;
+		if (room && room._id !== stateRoom?._id) {
+			innerStateRef.current.room = room;
+			setTimeout(loadMessages, 500);
+		}
+	});
+
+	const grantUser = useStableCallback(async () => {
+		if (user) {
+			return;
+		}
+
+		if (!guest?.department && defaultDepartment && guest) {
+			guest.department = defaultDepartment;
+		}
+
+		const visitor = { token, ...guest };
+		const { visitor: newUser } = await Livechat.grantVisitor({ visitor });
+		dispatch({ user: newUser });
+	});
+
 	return (
 		<ChatContainer
 			innerStateRef={innerStateRef}
@@ -131,6 +155,8 @@ const Chat = (_: ChatProps) => {
 			visitorsCanCloseChat={visitorsCanCloseChat}
 			onRegisterUser={onRegisterUser}
 			handleChangeDepartment={handleChangeDepartment}
+			checkRoom={checkRoom}
+			grantUser={grantUser}
 		/>
 	);
 };

@@ -20,7 +20,6 @@ import { parentCall, runCallbackEventEmitter } from '../../lib/parentCall';
 import { createToken } from '../../lib/random';
 import { initRoom, loadMessages, loadMoreMessages, defaultRoomParams, getGreetingMessages } from '../../lib/room';
 import type { Dispatch, StoreState } from '../../store';
-import store from '../../store';
 
 export type ChatContainerProps = {
 	innerStateRef: MutableRef<{
@@ -62,6 +61,8 @@ export type ChatContainerProps = {
 	t: TFunction;
 	onRegisterUser: () => void;
 	handleChangeDepartment: () => void;
+	checkRoom: () => void;
+	grantUser: () => Promise<void>;
 };
 
 class ChatContainer extends Component<ChatContainerProps> {
@@ -82,36 +83,6 @@ class ChatContainer extends Component<ChatContainerProps> {
 			await handleQueueMessage(newConnecting, queueInfo);
 			await handleConnectingAgentAlert(newConnecting, await normalizeQueueAlert(queueInfo));
 		}
-	};
-
-	private checkRoom = () => {
-		const { room, innerStateRef } = this.props;
-
-		const { room: stateRoom } = innerStateRef.current;
-		if (room && (!stateRoom || room._id !== stateRoom._id)) {
-			innerStateRef.current.room = room;
-			setTimeout(loadMessages, 500);
-		}
-	};
-
-	private grantUser = async () => {
-		const { token, user, guest, dispatch } = this.props;
-
-		if (user) {
-			return;
-		}
-
-		const {
-			iframe: { defaultDepartment },
-		} = store.state;
-
-		if (!guest?.department && defaultDepartment && guest) {
-			guest.department = defaultDepartment;
-		}
-
-		const visitor = { token, ...guest };
-		const { visitor: newUser } = await Livechat.grantVisitor({ visitor });
-		dispatch({ user: newUser });
 	};
 
 	private getRoom = async () => {
@@ -174,8 +145,8 @@ class ChatContainer extends Component<ChatContainerProps> {
 	};
 
 	private onSubmit = async (msg: string) => {
-		const { alerts, dispatch, token, user } = this.props;
-		const { grantUser, getRoom, stopTypingDebounced, stopTyping } = this;
+		const { alerts, grantUser, dispatch, token, user } = this.props;
+		const { getRoom, stopTypingDebounced, stopTyping } = this;
 
 		if (msg.trim() === '') {
 			return;
@@ -220,8 +191,8 @@ class ChatContainer extends Component<ChatContainerProps> {
 	};
 
 	private onUpload = async (files: (File | null)[]) => {
-		const { dispatch, alerts, t, uploads } = this.props;
-		const { grantUser, getRoom, doFileUpload } = this;
+		const { grantUser, dispatch, alerts, t, uploads } = this.props;
+		const { getRoom, doFileUpload } = this;
 
 		if (!uploads) {
 			const alert = { id: createToken(), children: t('file_upload_disabled'), error: true, timeout: 5000 };
@@ -373,8 +344,8 @@ class ChatContainer extends Component<ChatContainerProps> {
 	}
 
 	override async componentDidUpdate({ messages: prevMessages, alerts: prevAlerts }: ChatContainerProps) {
-		const { messages, dispatch, user } = this.props;
-		const { checkConnectingAgent, checkRoom } = this;
+		const { messages, dispatch, user, checkRoom } = this.props;
+		const { checkConnectingAgent } = this;
 
 		const renderedMessages = (messages ?? []).filter((message) => canRenderMessage(message));
 		const lastRenderedMessage = renderedMessages[renderedMessages.length - 1];
