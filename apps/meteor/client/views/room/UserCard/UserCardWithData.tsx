@@ -6,11 +6,11 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useUserCardRoles } from './useUserCardRoles';
 import LocalTime from '../../../components/LocalTime';
 import { UserCard, UserCardAction, UserCardRole, UserCardSkeleton } from '../../../components/UserCard';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
 import { ReactiveUserStatusText } from '../../../components/UserStatusText';
-import { useMessageRoles } from '../../../components/message/header/hooks/useMessageRoles';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
 import { useMemberExists } from '../../hooks/useMemberExists';
 import { useUserInfoActions } from '../hooks/useUserInfoActions';
@@ -28,7 +28,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	const showRealNames = useSetting('UI_Use_Real_Name', false);
 
 	const { data, isLoading: isUserInfoLoading } = useUserInfoQuery({ username });
-	const roleDescriptions = useMessageRoles(data?.user?._id, rid, true);
+	const { workspaceRoles, roomRoles } = useUserCardRoles(data?.user?._id, rid);
 	const {
 		data: isMemberData,
 		refetch,
@@ -48,7 +48,8 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			_id,
 			name: getUserDisplayName(name, username, showRealNames),
 			username,
-			roles: roleDescriptions.length > 0 && roleDescriptions.map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
+			roles: roomRoles.length > 0 && roomRoles.map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
+			workspaceRoles: workspaceRoles.length > 0 && workspaceRoles.join(', '),
 			bio,
 			etag: avatarETag,
 			localTime: utcOffset && Number.isInteger(utcOffset) && <LocalTime utcOffset={utcOffset} />,
@@ -57,7 +58,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			nickname,
 			freeSwitchExtension,
 		};
-	}, [data, username, showRealNames, isLoading, roleDescriptions]);
+	}, [data, username, showRealNames, isLoading, workspaceRoles, roomRoles]);
 
 	const handleOpenUserInfo = useStableCallback(() => {
 		onOpenUserInfo();

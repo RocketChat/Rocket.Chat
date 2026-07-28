@@ -36,6 +36,7 @@ export type UserCardProps = {
 		etag?: string;
 		customStatus?: ReactNode;
 		roles?: ReactNode;
+		workspaceRoles?: ReactNode;
 		bio?: ReactNode;
 		status?: ReactNode;
 		localTime?: ReactNode;
@@ -46,7 +47,7 @@ export type UserCardProps = {
 } & ComponentProps<typeof UserCardDialog>;
 
 const UserCard = ({
-	user: { name, username, etag, customStatus, roles, bio, status = <Status.Offline />, localTime, nickname } = {},
+	user: { name, username, etag, customStatus, roles, workspaceRoles, bio, status = <Status.Offline />, localTime, nickname } = {},
 	actions,
 	onOpenUserInfo,
 	onClose,
@@ -57,6 +58,24 @@ const UserCard = ({
 
 	return (
 		<UserCardDialog aria-label={t('User_card')} {...props}>
+			{workspaceRoles && (
+				<Box
+					marginBlockStart='neg-x24'
+					marginInline='neg-x24'
+					marginBlockEnd='x16'
+					paddingBlock='x8'
+					paddingInline='x24'
+					backgroundColor='tint'
+					borderBlockEndWidth='default'
+					borderBlockEndColor='extra-light'
+					fontScale='c1'
+					color='default'
+					withTruncatedText
+					aria-label={t('Roles')}
+				>
+					{workspaceRoles}
+				</Box>
+			)}
 			<Box display='flex' alignItems='flex-start'>
 				<Box display='flex' flexGrow={1} flexShrink={1} alignItems='center' withTruncatedText>
 					{username && <UserAvatar username={username} etag={etag} size='x36' />}
