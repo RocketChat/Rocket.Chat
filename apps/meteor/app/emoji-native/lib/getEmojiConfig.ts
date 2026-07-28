@@ -24,13 +24,19 @@ let emojiRegex: RegExp | null = null;
 
 function getUnicodeToShortcodeMap(): Map<string, string> {
 	if (!unicodeToShortcodeMap) {
-		const { emojiList } = getEmojiData();
+		const { emojiList, bareAliases } = getEmojiData();
 		unicodeToShortcodeMap = new Map();
 
 		for (const [shortcode, entry] of Object.entries(emojiList)) {
 			const emojiEntry = entry;
 			if (emojiEntry.unicode && !unicodeToShortcodeMap.has(emojiEntry.unicode)) {
 				unicodeToShortcodeMap.set(emojiEntry.unicode, shortcode);
+			}
+		}
+
+		for (const [bare, shortcode] of bareAliases) {
+			if (!unicodeToShortcodeMap.has(bare)) {
+				unicodeToShortcodeMap.set(bare, shortcode);
 			}
 		}
 	}

@@ -52,4 +52,27 @@ describe('native emoji render', () => {
 
 		expect(render(':smiley:')).toContain('<span class="emoji" title=":smiley:">');
 	});
+
+	it('renders bare (non-VS16) emoji-default characters', () => {
+		const { render } = getEmojiConfig(buildEmojiPackages(false));
+
+		expect(render('🐕')).toBe('<span class="emoji" title=":dog:">🐕</span>');
+		expect(render('⭐')).toBe('<span class="emoji" title=":star:">⭐</span>');
+		expect(render('👍')).toBe('<span class="emoji" title=":+1:">👍</span>');
+	});
+
+	it('resolves the VS16-qualified form to the same shortcode', () => {
+		const { render } = getEmojiConfig(buildEmojiPackages(false));
+
+		expect(render('🐕\u{FE0F}')).toBe('<span class="emoji" title=":dog:">🐕\u{FE0F}</span>');
+		expect(render('⭐\u{FE0F}')).toBe('<span class="emoji" title=":star:">⭐\u{FE0F}</span>');
+	});
+
+	it('only treats text-default symbols as emoji when VS16 is present', () => {
+		const { render } = getEmojiConfig(buildEmojiPackages(false));
+
+		expect(render('©')).toBe('©');
+		expect(render('™')).toBe('™');
+		expect(render('©\u{FE0F}')).toBe('<span class="emoji" title=":copyright:">©\u{FE0F}</span>');
+	});
 });

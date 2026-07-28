@@ -1,4 +1,3 @@
-import type { Emoji } from 'emojibase';
 import data from 'emojibase-data/en/data.json';
 import shortcodes from 'emojibase-data/en/shortcodes/emojibase.json';
 
@@ -57,8 +56,9 @@ function buildEmojiData() {
 		flags: [],
 	};
 	const toneList: Record<string, number> = {};
+	const bareAliases: [string, string][] = [];
 
-	for (const emojiData of data as Emoji[]) {
+	for (const emojiData of data) {
 		// Skip component group (skin tones, hair styles)
 		if (emojiData.group === 2) continue;
 
@@ -72,6 +72,7 @@ function buildEmojiData() {
 		const primaryShortcode = codes[0];
 		const altShortcodes = codes.slice(1).map((s) => `:${s}:`);
 		const hex = hexFromEmoji(emojiData.emoji);
+		const bare = emojiData.emoji.replace(/\uFE0F/g, '');
 
 		const entry: EmojiEntry = {
 			name: primaryShortcode,
@@ -87,6 +88,10 @@ function buildEmojiData() {
 
 		const key = `:${primaryShortcode}:`;
 		emojiList[key] = entry;
+
+		if (emojiData.type === 1 && bare !== emojiData.emoji) {
+			bareAliases.push([bare, key]);
+		}
 
 		// Only add to category if it's NOT a skin tone variant
 		if (!emojiData.tone && !isRegional) {
@@ -130,7 +135,7 @@ function buildEmojiData() {
 		}
 	}
 
-	return { emojiList, emojisByCategory, toneList };
+	return { emojiList, emojisByCategory, toneList, bareAliases };
 }
 
 // Build once and cache
