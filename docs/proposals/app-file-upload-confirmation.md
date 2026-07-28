@@ -4,10 +4,10 @@
 
 Draft
 
-> **Depends on** [A unified `Decision` return type for apps-engine pre-events](./apps-engine-decision-return-type.md).
-> The confirmation hook below returns that proposal's `Decision` type; requesting
-> confirmation is the `Decision.prompt` variant. This proposal is the first
-> consumer of `Decision` and its `prompt` variant, not a parallel mechanism.
+> **Depends on** [A unified `EventResult` return type for apps-engine pre-events](./apps-engine-event-result-return-type.md).
+> The confirmation hook below returns that proposal's `EventResult` type; requesting
+> confirmation is the `EventResult.prompt` variant. This proposal is the first
+> consumer of `EventResult` and its `prompt` variant, not a parallel mechanism.
 
 ## Summary
 
@@ -234,8 +234,8 @@ export async function checkUploadConfirmation({
 
     // 3. Ask apps whether this upload needs confirmation.
     //    The manager short-circuits on the *first* app that returns a
-    //    Decision.prompt, returning that decision (with the requesting appId);
-    //    apps that return Decision.pass are skipped.
+    //    EventResult.prompt, returning that decision (with the requesting appId);
+    //    apps that return EventResult.pass are skipped.
     const decision = await Apps.self?.triggerEvent(
         AppEvents.IPreFileUploadConfirmation, { file, content });
 
@@ -271,9 +271,9 @@ cannot fabricate acceptance by simply re-sending with an arbitrary header.
 ### App-facing API: a new interactive hook
 
 `IPreFileUpload` stays block-only. We add a sibling hook that returns a
-`Decision` (from the unified-`Decision` proposal), restricted to the
-`pass | prompt` subset — `Decision.prompt(...)` *requests* confirmation instead
-of throwing, `Decision.pass()` allows:
+`EventResult` (from the unified-`EventResult` proposal), restricted to the
+`pass | prompt` subset — `EventResult.prompt(...)` *requests* confirmation instead
+of throwing, `EventResult.pass()` allows:
 
 ```ts
 // packages/apps-engine/src/definition/uploads/IPreFileUploadConfirmation.ts
@@ -284,13 +284,13 @@ export interface IPreFileUploadConfirmation {
         http: IHttp,
         persis: IPersistence,
         modify: IModify,
-    ): Promise<UploadConfirmationDecision>;
-    //   Decision.pass()        → no confirmation needed, allow
-    //   Decision.prompt({…})   → prompt the user with this content before finalizing
+    ): Promise<UploadConfirmationEventResult>;
+    //   EventResult.pass()        → no confirmation needed, allow
+    //   EventResult.prompt({…})   → prompt the user with this content before finalizing
 }
 
-// Restricted per-event union (see the Decision proposal's capability matrix):
-//   type UploadConfirmationDecision = PassDecision | PromptDecision;
+// Restricted per-event union (see the EventResult proposal's capability matrix):
+//   type UploadConfirmationEventResult = PassEventResult | PromptEventResult;
 ```
 
 The confirmation UI is carried by the `prompt` variant's **rich** payload —
@@ -298,7 +298,7 @@ which is exactly the shape this proposal previously called
 `IUploadConfirmationRequest`:
 
 ```ts
-Decision.prompt({
+EventResult.prompt({
     title?: TextObject;      // @rocket.chat/ui-kit TextObject: PlainText | Markdown
     text?: TextObject;
     blocks?: Block[];        // optional UIKit blocks, rendered in the modal
@@ -380,7 +380,7 @@ POST rooms.media/:rid                     → 200 { file:{ _id, url } }   (temp,
 POST rooms.mediaConfirm/:rid/:fileId
       │
       ├─ checkUploadConfirmation()
-      │     └─ IPreFileUploadConfirmation hook → app returns Decision.prompt({ title, text, blocks })
+      │     └─ IPreFileUploadConfirmation hook → app returns EventResult.prompt({ title, text, blocks })
       │
       └─ throws 400 upload-confirmation-required
              { confirmationId, appId, appName, title, text, blocks }

@@ -1,4 +1,4 @@
-# Proposal: A unified `Decision` return type for apps-engine pre-events
+# Proposal: A unified `EventResult` return type for apps-engine pre-events
 
 ## Status
 
@@ -6,7 +6,7 @@ Draft — design decided (see [Design decisions](#design-decisions))
 
 ## TL;DR
 
-- **What:** one uniform `Decision<T>` return type for apps-engine pre-events —
+- **What:** one uniform `EventResult<T>` return type for apps-engine pre-events —
   `pass` / `patch` / `prevent` / `prompt` — replacing today's five inconsistent
   return contracts (boolean, entity-object, `IEmailDescriptor`, void+throw).
 - **Why:** the [file-upload confirmation proposal](./app-file-upload-confirmation.md)
@@ -16,14 +16,14 @@ Draft — design decided (see [Design decisions](#design-decisions))
 - **Verdict:** feasible, worthwhile, **moderate effort**. `patch` is already what
   the Modify chain does; the risk is that it touches hot paths (message send,
   room create).
-- **Non-breaking:** a reserved `kind: 'Decision'` marker + an `isDecision()` guard
-  that runs *before* every legacy branch. Apps that never return a `Decision`
-  behave exactly as before; `return true` ≡ `Decision.prevent`, `return message`
-  ≡ a full `Decision.patch`.
+- **Non-breaking:** a reserved `kind: 'EventResult'` marker + an `isEventResult()` guard
+  that runs *before* every legacy branch. Apps that never return a `EventResult`
+  behave exactly as before; `return true` ≡ `EventResult.prevent`, `return message`
+  ≡ a full `EventResult.patch`.
 - **How it ships:** bootstrap on a **new** upload handler (Strategy A, unblocks
   the companion proposal), then **widen existing handlers** to their restricted
-  `Decision` union per event (Strategy B, the destination) — semantics unchanged.
-- **Authoring:** `Decision.*` factories (`Decision.prevent({ i18n: { key } })`);
+  `EventResult` union per event (Strategy B, the destination) — semantics unchanged.
+- **Authoring:** `EventResult.*` factories (`EventResult.prevent({ i18n: { key } })`);
   the author-facing type is marker-free; each handler's return-type alias narrows
   which variants are legal (no new accessor, no generic `IModify`).
 - **Key rules:** `patch` chains the *patched subject* (shallow-merge, builder-
@@ -37,7 +37,7 @@ This document is a **prerequisite feasibility study** for
 That proposal needs a pre-event handler to be able to say *"prompt the user and
 proceed only if they accept."* Today no pre-event can express that. Rather than
 bolt a one-off "prompt" onto the upload hook, this study evaluates introducing a
-single, uniform `Decision` return type for **all** apps-engine pre-events, of
+single, uniform `EventResult` return type for **all** apps-engine pre-events, of
 which "prompt" is one variant.
 
 The **author-facing** shape is a marker-free discriminated union (the reserved
@@ -45,7 +45,7 @@ The **author-facing** shape is a marker-free discriminated union (the reserved
 app authors):
 
 ```ts
-type Decision<T> =
+type EventResult<T> =
   | { type: 'pass' }                                   // allow unchanged
   | { type: 'patch'; patch: Partial<T> }               // patch the subject (message/room/upload/…)
   | { type: 'prevent'; reason: string }                // literal, pre-formatted
@@ -74,7 +74,7 @@ and simple `prompt` `i18n: { key, args? }` form is the *explicit* translation
 channel for the non-UIKit paths (a thrown `Meteor.Error`, a plain modal).
 
 Requirements taken as given: **must not break existing apps**, and **different
-events may allow different subsets** of `Decision` (e.g. upload may allow
+events may allow different subsets** of `EventResult` (e.g. upload may allow
 `prompt`, a login pre-event may not).
 
 **Verdict up front:** feasible and worthwhile, at **moderate effort**. The
@@ -94,7 +94,7 @@ These were settled during design review and drive the rest of the document.
    unwraps a `patch` decision, applies it to the subject, and feeds the
    **patched subject** to the next app — identical to today's Modify chain
    (`msg = await app.call(…, msg)`). What must never flow to the next app is the
-   raw `Decision` wrapper object. "Break the chain" only ever means "don't
+   raw `EventResult` wrapper object. "Break the chain" only ever means "don't
    forward the wrapper."
 2. **Short-circuit execution.** `prevent` stops the listener loop immediately
    (matching today's "first truthy prevents"). `prompt` suspends the operation
@@ -104,17 +104,17 @@ These were settled during design review and drive the rest of the document.
    app before resolving) forfeits short-circuiting on hot paths. `prevent`
    still beats `prompt` *within one app's decision* and *across a resume*.
 3. **Strategy B is the destination; Strategy A is the bootstrap.** Existing
-   handlers are ultimately re-typed to return their restricted `Decision` union
+   handlers are ultimately re-typed to return their restricted `EventResult` union
    (semantics unchanged), with consumption sites accepting **both** legacy shapes
-   *and* `Decision` behind the guard. We bootstrap with the guard + a new upload
-   handler (Strategy A), then widen existing events to `Decision` per event.
-4. **Reserved discriminator `kind: 'Decision'`.** A single `isDecision(x)` guard
+   *and* `EventResult` behind the guard. We bootstrap with the guard + a new upload
+   handler (Strategy A), then widen existing events to `EventResult` per event.
+4. **Reserved discriminator `kind: 'EventResult'`.** A single `isEventResult(x)` guard
    checks `kind` and runs **before** any legacy `typeof === 'object'` /
    truthiness branch. Authors never write `kind`; factories stamp it.
-5. **`Decision.*` companion-object factories.** `Decision` is simultaneously the
+5. **`EventResult.*` companion-object factories.** `EventResult` is simultaneously the
    marker-free union *type* and a *value* namespace of factory functions
-   (`Decision.pass()`, `Decision.prevent({ i18n: { key } })`, `Decision.patch(p)`,
-   `Decision.prompt({ … })`). Factories stamp the marker and return **branded
+   (`EventResult.pass()`, `EventResult.prevent({ i18n: { key } })`, `EventResult.patch(p)`,
+   `EventResult.prompt({ … })`). Factories stamp the marker and return **branded
    per-variant types**. Per-event narrowing comes from **each handler
    interface's restricted return-type alias** — not from a new accessor and not
    from a generic `IModify`.
@@ -127,7 +127,7 @@ These were settled during design review and drive the rest of the document.
    two mutually exclusive union members, so an app returns one or the other.
    `i18n` translation is **client-side** via the `error-app-prevented` error
    `details`. Surfacing is standardized across **all** call sites.
-9. **Upload confirmation is `Decision.prompt`** from a new upload handler
+9. **Upload confirmation is `EventResult.prompt`** from a new upload handler
    (see the companion proposal), superseding the standalone
    `IUploadConfirmationRequest`.
 10. **Disallowed variant at runtime → log + treat as `pass`** (fail-open); the
@@ -162,7 +162,7 @@ the type contracts are already loosely enforced):
   `result: unknown`; `IPreEmailSent` is typed `IUIKitResponse` but the
   implementation returns `IEmailDescriptor`.
 - Prevention exists in **three** forms today (boolean return, thrown
-  exception, and — for email — either). A `Decision.prevent` would unify them.
+  exception, and — for email — either). A `EventResult.prevent` would unify them.
 - `prevent` reasons are surfaced **inconsistently**: `createRoom.ts:267`,
   `FileUpload.ts:202`, `addUserToRoom.ts:75` throw the app's `error.message`,
   but `updateMessage.ts:34` and `deleteMessage.ts:42` throw a **canned generic
@@ -209,10 +209,10 @@ three tiers:
 - The **`patch` variant is not new machinery** — `sendMessage.ts:252` and
   `createRoom.ts` already do `Object.assign(subject, result)` (shallow) with the
   object an app returns from Modify/Extend, and re-validate once afterward.
-  `Decision.patch` simply formalizes and makes explicit what the "object-chain"
+  `EventResult.patch` simply formalizes and makes explicit what the "object-chain"
   pattern already does implicitly.
 - **The interpretation points are few and centralized** (the manager executors,
-  two bridge duck-type sites, and ~6 call sites). A `Decision` can be recognized
+  two bridge duck-type sites, and ~6 call sites). A `EventResult` can be recognized
   and dispatched at these known choke points.
 
 ---
@@ -227,39 +227,39 @@ App handlers run in a sandboxed runtime; `ProxiedApp.call`
 JSON-serializable. This has a useful corollary for the DX choice: because the
 return is JSON-serialized in the sandbox and deserialized on the RC side, a
 class *instance* would arrive **stripped of its prototype/methods** — the
-manager always sees plain data (`{ kind: 'Decision', type: 'prevent', … }`)
+manager always sees plain data (`{ kind: 'EventResult', type: 'prevent', … }`)
 regardless of how the author constructed it. So the construction API is purely
-an authoring-ergonomics choice. `Decision` is a plain object, and `Block[]`
+an authoring-ergonomics choice. `EventResult` is a plain object, and `Block[]`
 already crosses this boundary for UIKit interactions and for `IMessage.blocks`
 in Modify/Extend. So `pass`/`patch`/`prevent`/`prompt` (including `blocks`)
 serialize with no new work.
 
 Corollary: today's "throw to prevent" relies on `AppsEngineException` crossing
-back as a JSON-RPC error (`ProxiedApp.ts:70`). `Decision.prevent` gives a
+back as a JSON-RPC error (`ProxiedApp.ts:70`). `EventResult.prevent` gives a
 **non-exceptional** prevention channel, which is cleaner and removes the
 `error.name === AppsEngineException.name` string-matching at call sites.
 
-### 2. The discriminator — reserved `kind: 'Decision'`
+### 2. The discriminator — reserved `kind: 'EventResult'`
 
 The naïve design (discriminate on `.type`) has a concrete collision: **`IMessage`
 has a top-level `type?: MessageType` field** (`IMessage.ts:37`), and `IRoom`
 similarly carries a `type`. So `'type' in result` cannot distinguish a
-`Decision` from a legitimate message/room, and a value allow-list
+`EventResult` from a legitimate message/room, and a value allow-list
 (`result.type in {pass,patch,prevent,prompt}`) is fragile — a future
 `MessageType` value or an app that sets a custom `type` could collide and cause
-`Object.assign` to merge a `Decision`'s fields onto a real message on a hot path.
+`Object.assign` to merge a `EventResult`'s fields onto a real message on a hot path.
 
-**Decision:** a **reserved marker** the entities never carry — `kind: 'Decision'`
-— checked by a single `isDecision(x)` type guard used everywhere, running
+**Decision:** a **reserved marker** the entities never carry — `kind: 'EventResult'`
+— checked by a single `isEventResult(x)` type guard used everywhere, running
 **before** any legacy branch. Zero overlap with
 `IMessage`/`IRoom`/`IEmailDescriptor`. Authors never hand-write the marker; the
-`Decision.*` factories stamp it (§"Authoring API"). Internally the manager uses a
-`MarkedDecision` type carrying `kind`; the public `Decision<T>` type authors
+`EventResult.*` factories stamp it (§"Authoring API"). Internally the manager uses a
+`MarkedEventResult` type carrying `kind`; the public `EventResult<T>` type authors
 annotate against omits it.
 
-### 3. Would a `Decision` be misinterpreted if returned today? — YES (hence the guard-before-legacy ordering)
+### 3. Would a `EventResult` be misinterpreted if returned today? — YES (hence the guard-before-legacy ordering)
 
-If an app returned a `Decision` object from an existing handler *without* the
+If an app returned a `EventResult` object from an existing handler *without* the
 consumers being updated:
 - from a **Modify/Extend** handler it would be chained forward as the new
   message and pushed through `convertAppMessage` and `Object.assign` — corrupting
@@ -269,8 +269,8 @@ consumers being updated:
 - from a **void** handler it would be silently dropped.
 
 This confirms the two ordering rules of the non-breaking guarantee below: the
-`isDecision()` guard must run *before* the existing `typeof === 'object'` /
-truthiness branches, and consumers must be taught about `Decision` before any
+`isEventResult()` guard must run *before* the existing `typeof === 'object'` /
+truthiness branches, and consumers must be taught about `EventResult` before any
 handler is allowed to return one.
 
 ### 4. Non-breaking guarantee
@@ -278,31 +278,31 @@ handler is allowed to return one.
 Existing apps return `boolean` / `IMessage` / `IRoom` / `IEmailDescriptor` /
 `void` / throw. As long as:
 
-1. the `isDecision()` guard is checked **before** the legacy `typeof === 'object'`
+1. the `isEventResult()` guard is checked **before** the legacy `typeof === 'object'`
    / truthiness branches at every consumption site, and
 2. legacy return shapes are left flowing down the unchanged path,
 
-then apps that never return a `Decision` behave exactly as before.
+then apps that never return a `EventResult` behave exactly as before.
 
-**Legacy ↔ `Decision` mapping (mechanical, at each guarded site):**
+**Legacy ↔ `EventResult` mapping (mechanical, at each guarded site):**
 
-- Legacy `boolean true` from a Prevent handler ≡ `Decision.prevent`.
+- Legacy `boolean true` from a Prevent handler ≡ `EventResult.prevent`.
 - A legacy returned entity from a Modify/Extend handler ≡ a full `patch`: both
   funnel through the same shallow `Object.assign(subject, x)` + single
   end-of-pass validate, and the **accumulated subject** is what chains forward
   (a `patch` merges its `Partial<T>` onto the subject; a legacy return replaces
   it — mechanically identical under `Object.assign`).
 
-This mapping is what lets an app migrate `return true` → `Decision.prevent(…)`
-or `return message` → `Decision.patch(…)` with **identical** runtime behavior.
+This mapping is what lets an app migrate `return true` → `EventResult.prevent(…)`
+or `return message` → `EventResult.patch(…)` with **identical** runtime behavior.
 
 ---
 
 ## Rollout strategy: bootstrap with A, converge on B
 
-**Strategy A — `Decision` on new, additive handler interfaces (the bootstrap).**
+**Strategy A — `EventResult` on new, additive handler interfaces (the bootstrap).**
 Introduce, per subject that needs it first, a new handler interface whose
-`execute` returns a restricted `Decision<T>`, with its own `AppInterface` +
+`execute` returns a restricted `EventResult<T>`, with its own `AppInterface` +
 `AppMethod` enum entries and its own executor in `AppListenerManager`. The legacy
 triad interfaces remain and keep working unchanged.
 
@@ -311,25 +311,25 @@ triad interfaces remain and keep working unchanged.
 export interface IPreFileUploadConfirmation {
     [AppMethod.EXECUTE_PRE_FILE_UPLOAD_CONFIRMATION](
         context: IFileUploadContext, read, http, persis, modify,
-    ): Promise<UploadConfirmationDecision>;   // = Decision<IUploadDetails> restricted to pass | prompt
+    ): Promise<UploadConfirmationEventResult>;   // = EventResult<IUploadDetails> restricted to pass | prompt
 }
 ```
 
 - **Non-breaking by construction** — new method key, new executor, return type is
-  only `Decision`. Nothing to disambiguate; no hot-path `typeof` edits.
-- **Incremental** — ship `Decision` for uploads first (unblocks the confirmation
+  only `EventResult`. Nothing to disambiguate; no hot-path `typeof` edits.
+- **Incremental** — ship `EventResult` for uploads first (unblocks the confirmation
   proposal), then add message/room/email variants.
 
-**Strategy B — widen the existing handlers to return `Decision` (the
+**Strategy B — widen the existing handlers to return `EventResult` (the
 destination).** Re-type each existing `execute*` to return its **restricted**
-`Decision` union (`IPreMessageSentPrevent` → `pass | prevent`;
-`IPreMessageSentModify`/`Extend` → `pass | patch`; …), add `isDecision()` guards
+`EventResult` union (`IPreMessageSentPrevent` → `pass | prevent`;
+`IPreMessageSentModify`/`Extend` → `pass | patch`; …), add `isEventResult()` guards
 ahead of every consumption branch, and accept **both** legacy shapes and
-`Decision`.
+`EventResult`.
 
 - The Prevent pass still short-circuits on the first `prevent`; the Modify/Extend
   pass still chains the patched subject. **Runtime semantics are unchanged** —
-  `Decision` is only a uniform return *vocabulary* layered on the existing
+  `EventResult` is only a uniform return *vocabulary* layered on the existing
   (still-separate) passes.
 - **Con** — must edit the manager's blind casts (`AppListenerManager.ts:498/547/
   621/728/771/821`), both bridge duck-type sites (`listeners.ts:369/414`), and
@@ -338,7 +338,7 @@ ahead of every consumption branch, and accept **both** legacy shapes and
   paths; the guard-before-legacy ordering (§3) is what keeps them safe.
 
 **Why not "A forever."** Keeping existing handlers frozen on legacy types and
-only ever adding parallel `Decision` interfaces leaves two ways to do the same
+only ever adding parallel `EventResult` interfaces leaves two ways to do the same
 thing indefinitely and makes the capability matrix aspirational rather than
 honest. B makes each event express its real (restricted) capability in one
 vocabulary. Because the restricted unions preserve the exact short-circuit/chain
@@ -347,30 +347,30 @@ apps — it is simply higher-touch, so it is sequenced *after* the bootstrap.
 
 ---
 
-## Authoring API — `Decision.*` factories
+## Authoring API — `EventResult.*` factories
 
-`Decision` is a **companion object**: the same name is both the marker-free union
+`EventResult` is a **companion object**: the same name is both the marker-free union
 *type* and a *value* namespace of factories. This gives one discoverable entry
-point (`Decision.`), keeps the marker an implementation detail, and lets
+point (`EventResult.`), keeps the marker an implementation detail, and lets
 per-event restriction come from the **handler's return type** rather than a new
 accessor.
 
 ```ts
 // definition — author-facing type, NO marker
-type Decision<T> =
+type EventResult<T> =
   | { type: 'pass' }
   | { type: 'patch';   patch: Partial<T> }
   | { type: 'prevent'; reason: string }
   | { type: 'prevent'; i18n: { key: string; args?: { [key: string]: string | number } } }
-  | PromptDecision;   // simple + rich forms, see the Context section
+  | PromptEventResult;   // simple + rich forms, see the Context section
 
-// value namespace (declaration-merged) stamps kind:'Decision' and returns
+// value namespace (declaration-merged) stamps kind:'EventResult' and returns
 // BRANDED per-variant types so disallowed variants fail to typecheck.
-export const Decision = {
-  pass:    (): PassDecision                    => ({ kind: 'Decision', type: 'pass' }),
-  prevent: (o): PreventDecision                => ({ kind: 'Decision', type: 'prevent', ...o }),
-  patch:   <T>(p: Partial<T>): PatchDecision<T>=> ({ kind: 'Decision', type: 'patch', patch: p }),
-  prompt:  (o): PromptDecision                 => ({ kind: 'Decision', type: 'prompt', ...o }),
+export const EventResult = {
+  pass:    (): PassEventResult                    => ({ kind: 'EventResult', type: 'pass' }),
+  prevent: (o): PreventEventResult                => ({ kind: 'EventResult', type: 'prevent', ...o }),
+  patch:   <T>(p: Partial<T>): PatchEventResult<T>=> ({ kind: 'EventResult', type: 'patch', patch: p }),
+  prompt:  (o): PromptEventResult                 => ({ kind: 'EventResult', type: 'prompt', ...o }),
 };
 ```
 
@@ -379,18 +379,18 @@ its allowed union as its return type; the branded factory returns then enforce
 the subset at the `return` statement:
 
 ```ts
-type MessageModifyDecision  = PassDecision | PatchDecision<IMessage>;
-type MessagePreventDecision = PassDecision | PreventDecision;
+type MessageModifyEventResult  = PassEventResult | PatchEventResult<IMessage>;
+type MessagePreventEventResult = PassEventResult | PreventEventResult;
 
 interface IPreMessageSentModify {
-  executePreMessageSentModify(msg, builder, read, http, persis): Promise<MessageModifyDecision>;
+  executePreMessageSentModify(msg, builder, read, http, persis): Promise<MessageModifyEventResult>;
 }
 
 // app author:
-async executePreMessageSentModify(msg, builder): Promise<MessageModifyDecision> {
-  return Decision.prompt({ message: 'ok?' });   // ❌ PromptDecision ∉ pass | patch
-  return Decision.patch({ text: 'redacted' });  // ✅  (patch checked as Partial<IMessage>)
-  return Decision.pass();                        // ✅
+async executePreMessageSentModify(msg, builder): Promise<MessageModifyEventResult> {
+  return EventResult.prompt({ message: 'ok?' });   // ❌ PromptEventResult ∉ pass | patch
+  return EventResult.patch({ text: 'redacted' });  // ✅  (patch checked as Partial<IMessage>)
+  return EventResult.pass();                        // ✅
 }
 ```
 
@@ -399,9 +399,9 @@ async executePreMessageSentModify(msg, builder): Promise<MessageModifyDecision> 
   putting `decide` there would give the same unrestricted union everywhere. The
   event identity already lives in *which interface the author implements* and
   *what that interface returns*.
-- The restricted return type also gives `Decision.patch(...)` correct
+- The restricted return type also gives `EventResult.patch(...)` correct
   `Partial<T>` checking via contextual typing.
-- **Tradeoff accepted:** typing `Decision.` lists all four variants in
+- **Tradeoff accepted:** typing `EventResult.` lists all four variants in
   autocomplete; disallowed ones simply fail to typecheck at the `return`. A truly
   narrowed accessor (hiding invalid variants from autocomplete) would require a
   generic `IModify<Event>` or a new per-event accessor and is deliberately *not*
@@ -439,7 +439,7 @@ after the user answers, without losing work or double-applying side effects.
   non-interactive or server-side flows with no user to prompt (or no request to
   suspend). `prompt` is **disallowed** for these.
 
-This is why `Decision` is **event-parameterized**: each event's handler return
+This is why `EventResult` is **event-parameterized**: each event's handler return
 type is a *subset* union, and the manager, as a runtime backstop, **logs and
 treats as `pass`** any variant an event does not permit (§"Runtime enforcement").
 
@@ -448,7 +448,7 @@ treats as `pass`** any variant an event does not permit (§"Runtime enforcement"
 ## Multi-app composition & precedence
 
 Today Prevent short-circuits on the first `true`, and Modify/Extend chain. With
-`Decision`:
+`EventResult`:
 
 1. **Precedence:** `prevent` > `prompt` > `patch` > `pass`. Any `prevent` wins
    immediately (short-circuit, matching today). Absent a `prevent`, a `prompt`
@@ -507,20 +507,20 @@ union) and **at runtime** (the executor logs + treats unsupported variants as
 
 ## Rollout / migration
 
-1. Land the `Decision` type + `Decision.*` factories + `isDecision()` guard +
+1. Land the `EventResult` type + `EventResult.*` factories + `isEventResult()` guard +
    precedence helper in `@rocket.chat/apps-engine` (`definition/`) and
    `@rocket.chat/apps` (runtime) — both in-repo, so no external package release is
    required (the engine runtime now lives at `packages/apps/`, only the
    definitions are published, `files: ["definition/**"]`).
 2. Implement Strategy A for **uploads** first: the new confirmation handler
-   returning `Decision` (`pass | prompt`), wiring the `prompt` round-trip per the
+   returning `EventResult` (`pass | prompt`), wiring the `prompt` round-trip per the
    companion proposal. This is the minimum that unblocks it.
-3. Widen the existing events to `Decision` (Strategy B) per event, reusing the
+3. Widen the existing events to `EventResult` (Strategy B) per event, reusing the
    guard/precedence from step 1: re-type each `execute*` to its restricted union,
    add the guard ahead of every legacy branch, and standardize `prevent` reason
    surfacing (fixing `updateMessage`/`deleteMessage`).
 4. (Optional, later) Deprecate the throw-to-prevent exceptions in favor of
-   `Decision.prevent`.
+   `EventResult.prevent`.
 
 Backward compatibility holds at every step because new handlers use new
 `AppMethod` keys, and widened handlers accept legacy shapes behind the
