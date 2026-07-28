@@ -176,10 +176,9 @@ export const createRichTextComposerAPI = (
 	};
 
 	const replyWith = async (text: string): Promise<void> => {
-		if (input) {
-			input.innerText = text;
-			input.focus();
-		}
+		setText(text);
+		const end = input.innerText.length;
+		renderComposerContent(input, parseOptions, { selectionStart: end, selectionEnd: end });
 	};
 
 	return {

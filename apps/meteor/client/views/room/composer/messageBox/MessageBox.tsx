@@ -9,11 +9,15 @@ import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'rea
 
 import MessageBoxBase from './MessageBoxBase';
 import MessageComposerFiles from './MessageComposerFiles';
+import { useDraft } from './hooks/useDraft';
+import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
+import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 import { emptySubscribe, getEmptyFalse, getEmptyArray, handleFormattingShortcut } from './messageBoxHelpers';
 import { handleSelectionWrapping } from './wrapSelection';
 import { emoji } from '../../../../../app/emoji/client';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
+import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
@@ -27,13 +31,9 @@ import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
-import { useDraft } from './hooks/useDraft';
-import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
-import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
-import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
 
 const reducer = (_: unknown, event: ChangeEvent<HTMLInputElement>): boolean => {
-	const target = event.target as HTMLInputElement;
+	const { target } = event;
 
 	return Boolean(target.value.trim());
 };
@@ -44,7 +44,6 @@ export type MessageBoxProps = {
 	onJoin?: () => Promise<void>;
 	onResize?: () => void;
 	onTyping?: () => void;
-	onUploadFiles?: (files: File[]) => void;
 	onEscape?: () => void;
 	onNavigateToPreviousMessage?: () => void;
 	onNavigateToNextMessage?: () => void;
@@ -62,7 +61,6 @@ const MessageBox = ({
 	onJoin,
 	onNavigateToNextMessage,
 	onNavigateToPreviousMessage,
-	onUploadFiles,
 	onEscape,
 	onTyping,
 	tshow,
@@ -336,7 +334,7 @@ const MessageBox = ({
 
 		if (files.length) {
 			event.preventDefault();
-			(onUploadFiles ?? handleUploadFiles)(files);
+			handleUploadFiles?.(files);
 		}
 	});
 

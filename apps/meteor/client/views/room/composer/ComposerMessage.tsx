@@ -27,7 +27,6 @@ export type ComposerMessageProps = {
 };
 
 const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps) => {
-	// true: enables contenteditable <div>; false: uses classic <textarea> composer
 	const chat = useChat();
 	const room = useRoom();
 	const dispatchToastMessage = useToastMessageDispatch();
