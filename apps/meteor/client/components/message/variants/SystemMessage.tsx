@@ -12,6 +12,7 @@ import {
 	CheckBox,
 	MessageUsername,
 	MessageNameContainer,
+	Palette,
 } from '@rocket.chat/fuselage';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
@@ -42,6 +43,17 @@ import {
 const hoverUnderlineStyle = css`
 	&:hover {
 		text-decoration: underline;
+	}
+
+	& .rcx-message-system__name {
+		color: ${Palette.text['font-titles-labels']};
+	}
+`;
+
+const timestampStyle = css`
+	& .rcx-message-system__time {
+		font-size: 0.625rem;
+		color: ${Palette.text['font-secondary-info']};
 	}
 `;
 
@@ -127,7 +139,9 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 							{messageType.text(t, message)}
 						</MessageSystemBody>
 					)}
-					<MessageSystemTimestamp title={formatDateAndTime(message.ts)}>{formatTime(message.ts)}</MessageSystemTimestamp>
+					<Box is='span' className={timestampStyle}>
+						<MessageSystemTimestamp title={formatDateAndTime(message.ts)}>{formatTime(message.ts)}</MessageSystemTimestamp>
+					</Box>
 				</MessageSystemBlock>
 				{message.attachments && (
 					<MessageSystemBlock>
