@@ -49,4 +49,5 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 	): Promise<UpdateResult>;
 	flagAsEscalatedByCallId(callId: string): Promise<UpdateResult>;
 	flagAsRemotelyEscalatedByCallId(callId: string): Promise<UpdateResult>;
+	findAllNotOverByCallIds<T extends Document = IMediaCall>(callIds: string[], options?: FindOptions<IMediaCall>): FindCursor<T>;
 }

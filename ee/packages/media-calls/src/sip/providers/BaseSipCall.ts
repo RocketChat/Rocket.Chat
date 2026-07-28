@@ -1,4 +1,4 @@
-import type { IMediaCall, IMediaCallChannel, MediaCallContact } from '@rocket.chat/core-typings';
+import type { AtLeast, IMediaCall, IMediaCallChannel, IVideoConference, MediaCallContact } from '@rocket.chat/core-typings';
 import type { CallHangupReason, ClientMediaSignalBody } from '@rocket.chat/media-signaling';
 import { MediaCalls, VideoConference as VideoConferenceModel } from '@rocket.chat/models';
 import type Srf from 'drachtio-srf';
@@ -330,31 +330,20 @@ export abstract class BaseSipCall extends BaseCallProvider {
 		}
 
 		if (!this.sipDialog || this.processedEscalation || call.escalatedByPeerAt) {
-			if (call.ended || call.escalatedByPeerAt) {
+			if (call.ended) {
 				return this.processEndedCall(call);
 			}
 			return;
 		}
 
-		const conference = await VideoConferenceModel.findOneByMediaCallId(call._id, { projection: { sipAlias: 1, mediaCallIds: 1 } });
+		const conference = await VideoConferenceModel.findOneByMediaCallId(call._id, {
+			projection: { sipAlias: 1, mediaCallIds: 1, webrtcParticipantCount: 1 },
+		});
 		if (!conference) {
 			logger.debug({
 				msg: 'Could not find Conference for escalated voice call',
 				method: 'processEscalatedCall',
 				callId: call._id,
-				type: this.constructor.name,
-			});
-			return;
-		}
-
-		const { sipAlias: conferenceAlias, mediaCallIds } = conference;
-
-		if (!conferenceAlias || !mediaCallIds) {
-			logger.debug({
-				msg: 'Escalated Conference does not have a SIP Alias',
-				method: 'processEscalatedCall',
-				callId: call._id,
-				conferenceId: conference._id,
 				type: this.constructor.name,
 			});
 			return;
@@ -372,15 +361,7 @@ export abstract class BaseSipCall extends BaseCallProvider {
 		this.processedEscalation = true;
 
 		try {
-			// If the conference is already associated with two voice calls, then the remote SIP leg is already in it, do not refer
-			if (mediaCallIds.length >= 2) {
-				if (!call.ended) {
-					this.hangupCall('conference-escalation');
-				}
-				return;
-			}
-
-			await this.session.sendReferRequest(this.sipDialog, { conferenceAlias });
+			await this.sendEscalationRefer(conference, call._id);
 		} catch (err) {
 			logger.error({ msg: 'REFER failed', method: 'processEscalatedCall', err, type: this.constructor.name });
 			if (!call.ended) {
@@ -395,5 +376,51 @@ export abstract class BaseSipCall extends BaseCallProvider {
 		void mediaCallDirector.hangup(this.call, agent, hangupReason).catch((err) => {
 			logger.debug({ msg: 'Unexpected error ending call', err, type: this.constructor.name, hangupReason });
 		});
+	}
+
+	protected async sendEscalationRefer(
+		conference: AtLeast<IVideoConference, '_id' | 'sipAlias' | 'webrtcParticipantCount'>,
+		callId: IMediaCall['_id'],
+	): Promise<void> {
+		// Typeguard only. Can't happen.
+		if (!this.sipDialog) {
+			return;
+		}
+
+		const { sipAlias: conferenceAlias, mediaCallIds, webrtcParticipantCount } = conference;
+
+		if (!conferenceAlias || !mediaCallIds) {
+			logger.debug({
+				msg: 'Escalated Conference does not have a SIP Alias',
+				method: 'sendEscalationRefer',
+				callId,
+				conferenceId: conference._id,
+				type: this.constructor.name,
+				conferenceAlias,
+				mediaCallIds,
+			});
+			return;
+		}
+
+		// If the conference is already associated with two voice calls, then our peer is already in it, no need to refer
+		if (mediaCallIds.length >= 2) {
+			return;
+		}
+
+		// If nobody has joined the webrtc conference yet
+		if (!webrtcParticipantCount) {
+			// So far this seems to still work fine, but if turns into a problem we'll need to delay the initial refer just like we delay the hangup for the second user
+			logger.warn({
+				msg: 'Sending REFER without any webrtcParticipantCount',
+				method: 'sendEscalationRefer',
+				callId,
+				conferenceId: conference._id,
+				type: this.constructor.name,
+				conferenceAlias,
+				mediaCallIds,
+			});
+		}
+
+		await this.session.sendReferRequest(this.sipDialog, { conferenceAlias });
 	}
 }

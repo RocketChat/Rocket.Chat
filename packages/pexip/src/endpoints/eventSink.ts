@@ -1,5 +1,7 @@
 import { VideoConf } from '@rocket.chat/core-services';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
+import { callServer } from '@rocket.chat/media-calls';
+import { MediaCalls, VideoConference as VideoConferenceModel } from '@rocket.chat/models';
 
 import type { ConferenceEndedEventData, EventSinkRequest, ParticipantStatusEventData } from '../definition';
 import { logger } from '../logger';
@@ -29,22 +31,91 @@ export class EventSinkEndpoint extends PexipEndpoint {
 		logger.debug({ msg: 'Pexip Participant Connected', data });
 
 		const { destination_alias: conferenceUri, source_alias: participantUri, protocol, call_direction: direction } = data;
-		if (protocol !== 'SIP' || !conferenceUri || !participantUri || direction !== 'in') {
+		if (!conferenceUri || direction !== 'in') {
 			return;
 		}
 
-		void this.detectVoiceCallEscalation(conferenceUri, participantUri).catch(() => null);
+		const identification = this.getIdentificationFromAlias(conferenceUri);
+		if (!identification) {
+			return;
+		}
+
+		void this.confirmParticipantConnected(identification, protocol, participantUri).catch((err) => {
+			logger.error({
+				msg: 'Unexpected error while confirming call participant connected',
+				err,
+				method: 'EventSinkEndpoint.processParticipantConnected',
+				identification,
+				protocol,
+				participantUri,
+			});
+		});
 	}
 
-	private async detectVoiceCallEscalation(conferenceUri: string, participantUri: string): Promise<void> {
-		const conferenceSipAlias = this.getIdentificationFromAlias(conferenceUri);
-		const participantSipExtension = this.getIdentificationFromAlias(participantUri);
+	protected async confirmParticipantConnected(
+		identification: string,
+		protocol: ParticipantStatusEventData['protocol'],
+		participantUri: string,
+	): Promise<void> {
+		switch (protocol) {
+			case 'WebRTC':
+				return this.confirmWebRTCParticipantConnected(identification);
+			case 'SIP':
+				return this.confirmSipParticipantConnected(identification, participantUri);
+		}
+	}
 
-		if (!conferenceSipAlias || !participantSipExtension) {
-			logger.debug({ msg: 'Someone connected to a Pexip Conference via SIP, but we could not identify them.' });
+	protected async confirmWebRTCParticipantConnected(identification: string): Promise<void> {
+		const call = await VideoConferenceModel.increaseWebRTCParticipantCount(identification);
+		if (!call) {
+			logger.error({
+				msg: 'Failed to register WebRTC participant on conference',
+				identification,
+				method: 'EventSinkEndpoint.confirmWebRTCParticipantConnected',
+			});
 			return;
 		}
 
-		logger.debug({ msg: 'Pexip Participant joined via SIP', conferenceSipAlias, participantSipExtension });
+		// Conference hasn't been escalated from two sides yet
+		if (!call.mediaCallIds?.length || call.mediaCallIds.length < 2) {
+			return;
+		}
+
+		if (!call.sipParticipantCount) {
+			logger.warn({
+				msg: 'Conference escalated from media call on both sides but no sip participant has connected to it',
+				method: 'EventSinkEndpoint.confirmWebRTCParticipantConnected',
+			});
+			return;
+		}
+
+		if (!call.webrtcParticipantCount || call.webrtcParticipantCount < 2) {
+			return;
+		}
+
+		const mediaCalls = await MediaCalls.findAllNotOverByCallIds(call.mediaCallIds).toArray();
+		for (const mediaCall of mediaCalls) {
+			if (mediaCall.escalatedAt && mediaCall.escalatedByPeerAt) {
+				await callServer.hangupEscalatedCall(mediaCall).catch((err) => {
+					logger.error({
+						msg: 'Unexpected error while hanging up a fully escalated voice call',
+						err,
+						method: 'EventSinkEndpoint.confirmWebRTCParticipantConnected',
+					});
+				});
+			}
+		}
+	}
+
+	protected async confirmSipParticipantConnected(identification: string, participantUri: string): Promise<void> {
+		const call = await VideoConferenceModel.increaseSipParticipantCount(identification);
+		if (!call) {
+			logger.error({
+				msg: 'Failed to register SIP participant on conference',
+				identification,
+				participantUri,
+				method: 'EventSinkEndpoint.confirmSipParticipantConnected',
+			});
+		}
 	}
 }

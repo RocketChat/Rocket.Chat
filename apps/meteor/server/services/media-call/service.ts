@@ -507,13 +507,6 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 
 			const url = await this.escalateVoiceCallToConference(user, call);
 
-			// If the peer has also escalated this call, then we can hangup as we join the conference
-			if (call.escalatedByPeerAt) {
-				void callServer.hangupEscalatedCall(call, { type: 'user', id: user._id }).catch((err) => {
-					logger.error({ msg: 'Unexpected error while hanging up a fully escalated voice call', err });
-				});
-			}
-
 			logger.debug({ msg: 'Voice Call escalated', uid, callId, url });
 
 			return url;
@@ -536,7 +529,18 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 
 		await VideoConf.joinCall(conference, user, { mic: true, cam: false });
 
-		return VideoConf.makePersistentChatUrlForConference(conference._id);
+		const url = await VideoConf.makePersistentChatUrlForConference(conference._id);
+
+		// If the peer has also escalated this call, then we can hangup as we join the conference
+		// but only if the peer has joined the call via web already
+		// otherwise this hangup could disconnect the only conference participant, making it end
+		if (call.escalatedByPeerAt && conference.webrtcParticipantCount) {
+			void callServer.hangupEscalatedCall(call, { type: 'user', id: user._id }).catch((err) => {
+				logger.error({ msg: 'Unexpected error while hanging up a fully escalated voice call', err });
+			});
+		}
+
+		return url;
 	}
 
 	private async getOrCreateConferenceForEscalatingCall(call: IMediaCall, user: IUser): Promise<VideoConference | null> {

@@ -92,4 +92,8 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 	): Promise<T | null>;
 
 	addMediaCallIdByConferenceId(conferenceId: string, mediaCallId: string): Promise<UpdateResult>;
+
+	increaseSipParticipantCount(sipAlias: string): Promise<VideoConference | null>;
+
+	increaseWebRTCParticipantCount(conferenceId: string): Promise<VideoConference | null>;
 }

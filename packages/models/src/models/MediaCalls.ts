@@ -335,4 +335,14 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 			},
 		});
 	}
+
+	public findAllNotOverByCallIds<T extends Document = IMediaCall>(callIds: string[], options?: FindOptions<IMediaCall>): FindCursor<T> {
+		return this.find<T>(
+			{
+				ended: false,
+				_id: { $in: callIds },
+			},
+			options,
+		);
+	}
 }

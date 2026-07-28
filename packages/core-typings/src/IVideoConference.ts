@@ -82,6 +82,9 @@ export interface IVideoConference extends IRocketChatRecord {
 
 	mediaCallIds?: string[];
 	sipAlias?: string;
+
+	sipParticipantCount?: number;
+	webrtcParticipantCount?: number;
 }
 
 export interface IDirectVideoConference extends IVideoConference {

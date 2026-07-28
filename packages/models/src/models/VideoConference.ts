@@ -412,4 +412,32 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			options || {},
 		);
 	}
+
+	public async increaseSipParticipantCount(sipAlias: string): Promise<VideoConference | null> {
+		return this.findOneAndUpdate(
+			{
+				sipAlias,
+			},
+			{
+				$inc: { sipParticipantCount: 1 },
+			},
+			{
+				returnDocument: 'after',
+			},
+		);
+	}
+
+	public async increaseWebRTCParticipantCount(conferenceId: string): Promise<VideoConference | null> {
+		return this.findOneAndUpdate(
+			{
+				_id: conferenceId,
+			},
+			{
+				$inc: { webrtcParticipantCount: 1 },
+			},
+			{
+				returnDocument: 'after',
+			},
+		);
+	}
 }
