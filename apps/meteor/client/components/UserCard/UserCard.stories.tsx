@@ -31,7 +31,6 @@ export default {
 			</>
 		),
 		onOpenUserInfo: () => undefined,
-		onClose: () => undefined,
 	},
 } satisfies Meta<typeof UserCard>;
 

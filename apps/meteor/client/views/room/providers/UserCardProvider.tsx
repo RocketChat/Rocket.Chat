@@ -35,9 +35,6 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 	const triggerRef = useRef<Element | null>(null);
 	const cardRef = useRef<HTMLElement | null>(null);
 	const openedViaKeyboardRef = useRef(false);
-	const state = useOverlayTriggerState({});
-	const { triggerProps, overlayProps } = useOverlayTrigger({ type: 'dialog' }, state, triggerRef);
-	delete triggerProps.onPress;
 
 	const openTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 	const closeTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -48,6 +45,22 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 		openTimerRef.current = undefined;
 		closeTimerRef.current = undefined;
 	}, []);
+
+	// Single close path for every dismissal (Escape, outside interaction,
+	// hover-out tracking and programmatic closes all funnel through here).
+	const handleOpenChange = useStableCallback((open: boolean) => {
+		if (open) return;
+		clearTimers();
+		setUserCardData(null);
+		if (openedViaKeyboardRef.current) {
+			openedViaKeyboardRef.current = false;
+			(triggerRef.current as HTMLElement | null)?.focus?.();
+		}
+	});
+
+	const state = useOverlayTriggerState({ onOpenChange: handleOpenChange });
+	const { triggerProps, overlayProps } = useOverlayTrigger({ type: 'dialog' }, state, triggerRef);
+	delete triggerProps.onPress;
 
 	useEffect(() => clearTimers, [clearTimers]);
 
@@ -70,13 +83,7 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 	});
 
 	const closeUserCard = useStableCallback(() => {
-		clearTimers();
-		setUserCardData(null);
 		state.close();
-		if (openedViaKeyboardRef.current) {
-			openedViaKeyboardRef.current = false;
-			(triggerRef.current as HTMLElement | null)?.focus?.();
-		}
 	});
 
 	const handleTriggerLeave = useStableCallback(() => {

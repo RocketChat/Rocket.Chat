@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, IconButton } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useEmbeddedLayout } from '@rocket.chat/ui-client';
 import type { ReactNode, ComponentProps } from 'react';
@@ -43,14 +43,12 @@ export type UserCardProps = {
 	};
 	actions?: ReactNode;
 	onOpenUserInfo?: () => void;
-	onClose?: () => void;
 } & ComponentProps<typeof UserCardDialog>;
 
 const UserCard = ({
 	user: { name, username, etag, customStatus, roles, workspaceRoles, bio, status = <Status.Offline />, localTime, nickname } = {},
 	actions,
 	onOpenUserInfo,
-	onClose,
 	...props
 }: UserCardProps) => {
 	const { t } = useTranslation();
@@ -106,7 +104,6 @@ const UserCard = ({
 						)}
 					</Box>
 				</Box>
-				{onClose && <IconButton marginInlineStart='x8' small title={t('Close')} aria-label={t('Close')} icon='cross' onClick={onClose} />}
 			</Box>
 			<Box display='flex' flexDirection='column' marginBlockStart='x18'>
 				{(roles || localTime || bio) && (

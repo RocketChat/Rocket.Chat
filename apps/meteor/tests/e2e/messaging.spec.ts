@@ -116,11 +116,9 @@ test.describe('Messaging', () => {
 				await expect(channelPage.userCardToolbar).toBeVisible();
 			});
 
-			await test.step('close UserCard with button', async () => {
+			await test.step('close UserCard with Esc while focus is within the card', async () => {
 				await page.keyboard.press('Tab');
-				await page.keyboard.press('Tab');
-				await page.keyboard.press('Tab');
-				await page.keyboard.press('Space');
+				await page.keyboard.press('Escape');
 				await expect(channelPage.userCardToolbar).not.toBeVisible();
 			});
 		});
