@@ -1,3 +1,4 @@
+import type { EmojiData } from 'emoji-mart';
 import { useCallback, useContext, useMemo, useRef, useState } from 'preact/hooks';
 import { route } from 'preact-router';
 import { useTranslation } from 'react-i18next';
@@ -433,6 +434,17 @@ const Chat = (_: ChatProps) => {
 		setEmojiPickerActive((emojiPickerActive) => !emojiPickerActive);
 	});
 
+	const handleEmojiSelect = useStableCallback((emoji: EmojiData) => {
+		toggleEmojiPickerState();
+		if ('native' in emoji) {
+			notifyEmojiSelectRef.current?.(emoji.native);
+		}
+	});
+
+	const handleEmojiClick = useStableCallback(() => {
+		setEmojiPickerActive(false);
+	});
+
 	return (
 		<>
 			<ChatContainer
@@ -463,9 +475,6 @@ const Chat = (_: ChatProps) => {
 				uploads={uploads}
 				avatarResolver={avatarResolver}
 				uid={uid}
-				onTop={onTop}
-				onChangeText={onChangeText}
-				onSubmit={onSubmit}
 				onUpload={onUpload}
 				options={options}
 				onChangeDepartment={onChangeDepartment}
@@ -486,6 +495,8 @@ const Chat = (_: ChatProps) => {
 				handleSendClick={handleSendClick}
 				handleChangeText={handleChangeText}
 				toggleEmojiPickerState={toggleEmojiPickerState}
+				handleEmojiSelect={handleEmojiSelect}
+				handleEmojiClick={handleEmojiClick}
 			/>
 		</>
 	);
