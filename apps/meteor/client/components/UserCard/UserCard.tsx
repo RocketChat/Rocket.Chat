@@ -13,14 +13,6 @@ import UserCardListItem from './UserCardListItem';
 import UserCardRoles from './UserCardRoles';
 import UserCardUsername from './UserCardUsername';
 
-const clampStyle = css`
-	display: -webkit-box;
-	overflow: hidden;
-	-webkit-line-clamp: 2;
-	-webkit-box-orient: vertical;
-	word-break: break-word;
-`;
-
 const linkButtonStyle = css`
 	padding: 0;
 	border: none;
@@ -54,7 +46,6 @@ export type UserCardProps = {
 		customStatus?: ReactNode;
 		roles?: ReactNode;
 		workspaceRoles?: ReactNode;
-		bio?: ReactNode;
 		status?: ReactNode;
 		localTime?: ReactNode;
 	};
@@ -63,7 +54,7 @@ export type UserCardProps = {
 } & ComponentProps<typeof UserCardDialog>;
 
 const UserCard = ({
-	user: { name, username, etag, customStatus, roles, workspaceRoles, bio, status = <Status.Offline />, localTime, nickname } = {},
+	user: { name, username, etag, customStatus, roles, workspaceRoles, status = <Status.Offline />, localTime, nickname } = {},
 	actions,
 	onOpenUserInfo,
 	...props
@@ -123,7 +114,7 @@ const UserCard = ({
 				</Box>
 			</Box>
 			<Box display='flex' flexDirection='column' marginBlockStart='x18'>
-				{(roles || localTime || bio) && (
+				{(roles || localTime || username) && (
 					<Box is='dl' display='flex' flexDirection='column' margin={0}>
 						{roles && (
 							<UserCardListItem icon='user' label={t('Roles')}>
@@ -135,9 +126,9 @@ const UserCard = ({
 								{localTime}
 							</UserCardListItem>
 						)}
-						{bio && (
-							<UserCardListItem label={t('Bio')}>
-								<Box className={clampStyle}>{typeof bio === 'string' ? <MarkdownText variant='inline' content={bio} /> : bio}</Box>
+						{username && name !== username && (
+							<UserCardListItem icon='at' label={t('Username')}>
+								{username}
 							</UserCardListItem>
 						)}
 					</Box>
