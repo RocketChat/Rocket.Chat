@@ -11,7 +11,7 @@ import {
 	Palette,
 } from '@rocket.chat/fuselage';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
-import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
+import { useUserPresence, useUserCard, useUserPreference } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -54,6 +54,8 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 	const showUsername = useMessageListShowUsername() && showRealName && !usernameAndRealNameAreSame;
 	const displayName = useUserDisplayName(user);
 	const normalizedUsername = normalizeUsername(user.username);
+	const mentionsWithSymbol = useUserPreference<boolean>('mentionsWithSymbol');
+	const usernameTooltip = mentionsWithSymbol ? `@${normalizedUsername}` : normalizedUsername;
 
 	const showRoles = useMessageListShowRoles();
 	const roles = useMessageRoles(message.u._id, message.rid, showRoles);
@@ -70,7 +72,7 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 			>
 				<Box is='span' className={nameStyle}>
 					<MessageName
-						title={!showUsername && !usernameAndRealNameAreSame ? `@${normalizedUsername}` : undefined}
+						title={!showUsername && !usernameAndRealNameAreSame ? usernameTooltip : undefined}
 						data-username={normalizedUsername}
 					>
 						{message.alias || displayName}
