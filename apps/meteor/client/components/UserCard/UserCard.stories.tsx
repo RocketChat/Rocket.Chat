@@ -25,8 +25,8 @@ export default {
 		user,
 		actions: (
 			<>
-				<UserCardAction label='Direct message' />
-				<UserCardAction label='Call' />
+				<UserCardAction icon='balloon' label='Direct message' />
+				<UserCardAction icon='phone' label='Call' />
 			</>
 		),
 		onOpenUserInfo: () => undefined,
