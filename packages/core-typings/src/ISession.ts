@@ -8,7 +8,7 @@ export interface ISessionDevice {
 	longVersion: string;
 	os: {
 		name: string;
-		version: string;
+		version?: string;
 	};
 	version: string;
 }
@@ -80,5 +80,5 @@ export type DeviceManagementSession = Pick<ISession, '_id' | 'sessionId' | 'devi
 };
 
 export type DeviceManagementPopulatedSession = DeviceManagementSession & {
-	_user: Pick<IUser, 'name' | 'username' | 'avatarETag' | 'avatarOrigin'>;
+	_user?: Pick<IUser, 'name' | 'username' | 'avatarETag' | 'avatarOrigin'>;
 };

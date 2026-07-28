@@ -3,7 +3,14 @@ import type { IUser, ISession, DeviceManagementSession, DeviceManagementPopulate
 import { License } from '@rocket.chat/license';
 import { Users, Sessions } from '@rocket.chat/models';
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
-import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
+import {
+	ajv,
+	ajvQuery,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
+	validateNotFoundErrorResponse,
+} from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { API } from '../../../server/api/api';
@@ -54,6 +61,74 @@ const validateSortKeys = (sortKeys: string[]): boolean => {
 	return sortKeys.every((s) => validSortKeys.includes(s));
 };
 
+const sessionsListResponseSchema = ajv.compile<PaginatedResult<{ sessions: DeviceManagementSession[] }>>({
+	type: 'object',
+	properties: {
+		sessions: {
+			type: 'array',
+			items: { $ref: '#/components/schemas/DeviceManagementSession' },
+		},
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['sessions', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
+const sessionsListAllResponseSchema = ajv.compile<PaginatedResult<{ sessions: DeviceManagementPopulatedSession[] }>>({
+	type: 'object',
+	properties: {
+		sessions: {
+			type: 'array',
+			items: { $ref: '#/components/schemas/DeviceManagementPopulatedSession' },
+		},
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['sessions', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
+const sessionsInfoResponseSchema = ajv.compile<DeviceManagementSession>({
+	allOf: [
+		{ $ref: '#/components/schemas/DeviceManagementSession' },
+		{
+			type: 'object',
+			properties: {
+				success: { type: 'boolean', enum: [true] },
+			},
+			required: ['success'],
+		},
+	],
+});
+
+const sessionsInfoAdminResponseSchema = ajv.compile<DeviceManagementPopulatedSession>({
+	allOf: [
+		{ $ref: '#/components/schemas/DeviceManagementPopulatedSession' },
+		{
+			type: 'object',
+			properties: {
+				success: { type: 'boolean', enum: [true] },
+			},
+			required: ['success'],
+		},
+	],
+});
+
+const sessionsLogoutResponseSchema = ajv.compile<Pick<ISession, 'sessionId'>>({
+	type: 'object',
+	properties: {
+		sessionId: { type: 'string' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['sessionId', 'success'],
+	additionalProperties: false,
+});
+
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
@@ -78,184 +153,224 @@ declare module '@rocket.chat/rest-typings' {
 	}
 }
 
-API.v1.addRoute(
+API.v1.get(
 	'sessions/list',
-	{ authRequired: true, validateParams: isSessionsPaginateProps, license: ['device-management'] },
 	{
-		async get() {
-			if (!License.hasModule('device-management')) {
-				return API.v1.forbidden();
-			}
-
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort = { loginAt: -1 } } = await this.parseJsonQuery();
-			const search = escapeRegExp(this.queryParams?.filter || '');
-
-			if (!validateSortKeys(Object.keys(sort))) {
-				return API.v1.failure('error-invalid-sort-keys');
-			}
-
-			const sessions = await Sessions.aggregateSessionsByUserId({
-				uid: this.userId,
-				search,
-				sort,
-				offset,
-				count,
-				currentLoginToken: this.token,
-			});
-			return API.v1.success(sessions);
+		authRequired: true,
+		query: isSessionsPaginateProps,
+		license: ['device-management'],
+		response: {
+			200: sessionsListResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		if (!License.hasModule('device-management')) {
+			return API.v1.forbidden();
+		}
+
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort = { loginAt: -1 } } = await this.parseJsonQuery();
+		const search = escapeRegExp(this.queryParams?.filter || '');
+
+		if (!validateSortKeys(Object.keys(sort))) {
+			return API.v1.failure('error-invalid-sort-keys');
+		}
+
+		const sessions = await Sessions.aggregateSessionsByUserId({
+			uid: this.userId,
+			search,
+			sort,
+			offset,
+			count,
+			currentLoginToken: this.token,
+		});
+		return API.v1.success(sessions);
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'sessions/info',
-	{ authRequired: true, validateParams: isSessionsProps, license: ['device-management'] },
 	{
-		async get() {
-			if (!License.hasModule('device-management')) {
-				return API.v1.forbidden();
-			}
-
-			const { sessionId } = this.queryParams;
-			const sessions = await Sessions.findOneBySessionIdAndUserId(sessionId, this.userId);
-			if (!sessions) {
-				return API.v1.notFound('Session not found');
-			}
-			return API.v1.success(sessions);
+		authRequired: true,
+		query: isSessionsProps,
+		license: ['device-management'],
+		response: {
+			200: sessionsInfoResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+			404: validateNotFoundErrorResponse,
 		},
+	},
+	async function action() {
+		if (!License.hasModule('device-management')) {
+			return API.v1.forbidden();
+		}
+
+		const { sessionId } = this.queryParams;
+		const sessions: DeviceManagementSession | null = await Sessions.findOneBySessionIdAndUserId(sessionId, this.userId);
+		if (!sessions) {
+			return API.v1.notFound('Session not found');
+		}
+		return API.v1.success(sessions);
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'sessions/logout.me',
-	{ authRequired: true, validateParams: isSessionsProps, license: ['device-management'] },
 	{
-		async post() {
-			if (!License.hasModule('device-management')) {
-				return API.v1.forbidden();
-			}
-
-			const { sessionId } = this.bodyParams;
-			const sessionObj = await Sessions.findOneBySessionIdAndUserId(sessionId, this.userId);
-
-			if (!sessionObj?.loginToken) {
-				return API.v1.notFound('Session not found');
-			}
-
-			await api.broadcast('user.forceLogout', sessionObj.userId, sessionId);
-
-			await Promise.all([
-				Users.unsetOneLoginToken(this.userId, sessionObj.loginToken),
-				Sessions.logoutByloginTokenAndUserId({ loginToken: sessionObj.loginToken, userId: this.userId }),
-			]);
-
-			return API.v1.success({ sessionId });
+		authRequired: true,
+		body: isSessionsProps,
+		license: ['device-management'],
+		response: {
+			200: sessionsLogoutResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+			404: validateNotFoundErrorResponse,
 		},
+	},
+	async function action() {
+		if (!License.hasModule('device-management')) {
+			return API.v1.forbidden();
+		}
+
+		const { sessionId } = this.bodyParams;
+		const sessionObj = await Sessions.findOneBySessionIdAndUserId(sessionId, this.userId);
+
+		if (!sessionObj?.loginToken) {
+			return API.v1.notFound('Session not found');
+		}
+
+		await api.broadcast('user.forceLogout', sessionObj.userId, sessionId);
+
+		await Promise.all([
+			Users.unsetOneLoginToken(this.userId, sessionObj.loginToken),
+			Sessions.logoutByloginTokenAndUserId({ loginToken: sessionObj.loginToken, userId: this.userId }),
+		]);
+
+		return API.v1.success({ sessionId });
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'sessions/list.all',
 	{
 		authRequired: true,
 		twoFactorRequired: true,
-		validateParams: isSessionsPaginateProps,
+		query: isSessionsPaginateProps,
 		permissionsRequired: ['view-device-management'],
 		license: ['device-management'],
-	},
-	{
-		async get() {
-			if (!License.hasModule('device-management')) {
-				return API.v1.forbidden();
-			}
-
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort = { loginAt: -1 } } = await this.parseJsonQuery();
-			const filter = escapeRegExp(this.queryParams?.filter || '');
-
-			if (!validateSortKeys(Object.keys(sort))) {
-				return API.v1.failure('error-invalid-sort-keys');
-			}
-
-			const search: string[] = [];
-
-			if (filter) {
-				search.push(filter);
-
-				search.push(
-					...(await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions<Pick<IUser, '_id'>>(
-						{ $regex: filter, $options: 'i' },
-						[],
-						{},
-						{ projection: { _id: 1 }, limit: 5 },
-					)
-						.map((el) => el._id)
-						.toArray()),
-				);
-			}
-
-			const sessions = await Sessions.aggregateSessionsAndPopulate({ search: search.join('|'), sort, offset, count });
-			return API.v1.success(sessions);
+		response: {
+			200: sessionsListAllResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		if (!License.hasModule('device-management')) {
+			return API.v1.forbidden();
+		}
+
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort = { loginAt: -1 } } = await this.parseJsonQuery();
+		const filter = escapeRegExp(this.queryParams?.filter || '');
+
+		if (!validateSortKeys(Object.keys(sort))) {
+			return API.v1.failure('error-invalid-sort-keys');
+		}
+
+		const search: string[] = [];
+
+		if (filter) {
+			search.push(filter);
+
+			search.push(
+				...(await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions<Pick<IUser, '_id'>>(
+					{ $regex: filter, $options: 'i' },
+					[],
+					{},
+					{ projection: { _id: 1 }, limit: 5 },
+				)
+					.map((el) => el._id)
+					.toArray()),
+			);
+		}
+
+		const sessions = await Sessions.aggregateSessionsAndPopulate({ search: search.join('|'), sort, offset, count });
+		return API.v1.success(sessions);
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'sessions/info.admin',
 	{
 		authRequired: true,
 		twoFactorRequired: true,
-		validateParams: isSessionsProps,
+		query: isSessionsProps,
 		permissionsRequired: ['view-device-management'],
 		license: ['device-management'],
-	},
-	{
-		async get() {
-			if (!License.hasModule('device-management')) {
-				return API.v1.forbidden();
-			}
-
-			const sessionId = this.queryParams?.sessionId;
-			const { sessions } = await Sessions.aggregateSessionsAndPopulate({ search: sessionId, count: 1 });
-			if (!sessions?.length) {
-				return API.v1.notFound('Session not found');
-			}
-			return API.v1.success(sessions[0]);
+		response: {
+			200: sessionsInfoAdminResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+			404: validateNotFoundErrorResponse,
 		},
+	},
+	async function action() {
+		if (!License.hasModule('device-management')) {
+			return API.v1.forbidden();
+		}
+
+		const sessionId = this.queryParams?.sessionId;
+		const { sessions } = await Sessions.aggregateSessionsAndPopulate({ search: sessionId, count: 1 });
+		if (!sessions?.length) {
+			return API.v1.notFound('Session not found');
+		}
+		return API.v1.success(sessions[0]);
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'sessions/logout',
 	{
 		authRequired: true,
 		twoFactorRequired: true,
-		validateParams: isSessionsProps,
+		body: isSessionsProps,
 		permissionsRequired: ['logout-device-management'],
 		license: ['device-management'],
-	},
-	{
-		async post() {
-			if (!License.hasModule('device-management')) {
-				return API.v1.forbidden();
-			}
-
-			const { sessionId } = this.bodyParams;
-			const sessionObj = await Sessions.findOneBySessionId(sessionId);
-
-			if (!sessionObj?.loginToken) {
-				return API.v1.notFound('Session not found');
-			}
-
-			await api.broadcast('user.forceLogout', sessionObj.userId, sessionId);
-
-			await Promise.all([
-				Users.unsetOneLoginToken(sessionObj.userId, sessionObj.loginToken),
-				Sessions.logoutByloginTokenAndUserId({ loginToken: sessionObj.loginToken, userId: sessionObj.userId, logoutBy: this.userId }),
-			]);
-
-			return API.v1.success({ sessionId });
+		response: {
+			200: sessionsLogoutResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+			404: validateNotFoundErrorResponse,
 		},
+	},
+	async function action() {
+		if (!License.hasModule('device-management')) {
+			return API.v1.forbidden();
+		}
+
+		const { sessionId } = this.bodyParams;
+		const sessionObj = await Sessions.findOneBySessionId(sessionId);
+
+		if (!sessionObj?.loginToken) {
+			return API.v1.notFound('Session not found');
+		}
+
+		await api.broadcast('user.forceLogout', sessionObj.userId, sessionId);
+
+		await Promise.all([
+			Users.unsetOneLoginToken(sessionObj.userId, sessionObj.loginToken),
+			Sessions.logoutByloginTokenAndUserId({ loginToken: sessionObj.loginToken, userId: sessionObj.userId, logoutBy: this.userId }),
+		]);
+
+		return API.v1.success({ sessionId });
 	},
 );
