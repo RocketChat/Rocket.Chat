@@ -79,9 +79,14 @@ const Chat = (_: ChatProps) => {
 		estimatedWaitTime: null,
 	});
 
+	const inputRef = useRef<HTMLInputElement>(null);
+	const notifyEmojiSelectRef = useRef<(native: string) => void>();
+
 	return (
 		<ChatContainer
 			innerStateRef={innerStateRef}
+			inputRef={inputRef}
+			notifyEmojiSelectRef={notifyEmojiSelectRef}
 			t={t}
 			title={customTitle || title || t('need_help')}
 			sound={sound}
@@ -125,7 +130,7 @@ const Chat = (_: ChatProps) => {
 			theme={theme}
 			visitorsCanCloseChat={visitorsCanCloseChat}
 			onRegisterUser={onRegisterUser}
-			onChangeDepartment={onChangeDepartment}
+			handleChangeDepartment={onChangeDepartment}
 		/>
 	);
 };

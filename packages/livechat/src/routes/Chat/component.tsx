@@ -1,8 +1,9 @@
 import type { EmojiData } from 'emoji-mart';
 import type { TFunction } from 'i18next';
 import type { RefObject } from 'preact';
-import { Component, createRef } from 'preact';
+import { Component } from 'preact';
 import { Suspense } from 'preact/compat';
+import type { MutableRef } from 'preact/hooks';
 
 import Picker from './Picker';
 import styles from './styles.scss';
@@ -25,6 +26,8 @@ import EmojiIcon from '../../icons/smile.svg';
 import type { Dispatch, StoreState } from '../../store';
 
 export type ChatProps = {
+	inputRef: RefObject<HTMLInputElement>;
+	notifyEmojiSelectRef: MutableRef<((native: string) => void) | undefined>;
 	title?: string;
 	uid?: string;
 	agent?: ReturnType<typeof formatAgent>;
@@ -67,10 +70,6 @@ class Chat extends Component<ChatProps, ChatState> {
 		emojiPickerActive: false,
 	};
 
-	private inputRef: RefObject<HTMLInputElement> = createRef();
-
-	private notifyEmojiSelectRef: RefObject<(native: string) => void> = createRef();
-
 	private handleScrollTo = (region: string) => {
 		const { onTop } = this.props;
 
@@ -87,7 +86,7 @@ class Chat extends Component<ChatProps, ChatState> {
 	};
 
 	private handleUploadClick = (event?: Event) => {
-		const { inputRef } = this;
+		const { inputRef } = this.props;
 
 		event?.preventDefault();
 		inputRef.current?.click();
@@ -103,13 +102,12 @@ class Chat extends Component<ChatProps, ChatState> {
 
 	private handleSubmit = (text: string) => {
 		const { onSubmit } = this.props;
-		const { turnOffEmojiPicker } = this;
 
 		if (!onSubmit) return;
 
 		onSubmit(text);
 		this.setState({ text: '' });
-		turnOffEmojiPicker();
+		this.setState({ emojiPickerActive: false });
 	};
 
 	private handleChangeText = (text: string) => {
@@ -128,7 +126,8 @@ class Chat extends Component<ChatProps, ChatState> {
 	};
 
 	private handleEmojiSelect = (emoji: EmojiData) => {
-		const { notifyEmojiSelectRef, toggleEmojiPickerState } = this;
+		const { notifyEmojiSelectRef } = this.props;
+		const { toggleEmojiPickerState } = this;
 
 		toggleEmojiPickerState();
 		if ('native' in emoji) {
@@ -137,17 +136,13 @@ class Chat extends Component<ChatProps, ChatState> {
 	};
 
 	private handleEmojiClick = () => {
-		const { turnOffEmojiPicker } = this;
-
-		turnOffEmojiPicker();
-	};
-
-	private turnOffEmojiPicker = () => {
 		this.setState({ emojiPickerActive: false });
 	};
 
 	render = (
 		{
+			inputRef,
+			notifyEmojiSelectRef,
 			title,
 			uid,
 			agent,
@@ -176,8 +171,6 @@ class Chat extends Component<ChatProps, ChatState> {
 		{ atBottom = true, text, emojiPickerActive }: ChatState,
 	) => {
 		const {
-			inputRef,
-			notifyEmojiSelectRef,
 			handleEmojiClick,
 			handleScrollTo,
 			handleEmojiSelect,

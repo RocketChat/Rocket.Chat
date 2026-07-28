@@ -1,4 +1,5 @@
 import type { TFunction } from 'i18next';
+import type { RefObject } from 'preact';
 import { Component } from 'preact';
 import type { MutableRef } from 'preact/hooks';
 import { route } from 'preact-router';
@@ -30,6 +31,8 @@ export type ChatContainerProps = {
 		triggerQueueMessage: boolean;
 		estimatedWaitTime: number | null | undefined;
 	}>;
+	inputRef: RefObject<HTMLInputElement>;
+	notifyEmojiSelectRef: MutableRef<((native: string) => void) | undefined>;
 	title?: string;
 	sound: StoreState['sound'];
 	token: StoreState['token'];
@@ -65,7 +68,7 @@ export type ChatContainerProps = {
 	visitorsCanCloseChat?: boolean;
 	t: TFunction;
 	onRegisterUser: () => void;
-	onChangeDepartment: () => void;
+	handleChangeDepartment: () => void;
 };
 
 class ChatContainer extends Component<ChatContainerProps> {
@@ -152,7 +155,7 @@ class ChatContainer extends Component<ChatContainerProps> {
 		}
 	};
 
-	private handleTop = () => {
+	private onTop = () => {
 		void loadMoreMessages();
 	};
 
@@ -165,7 +168,7 @@ class ChatContainer extends Component<ChatContainerProps> {
 
 	private stopTypingDebounced = debounce(this.stopTyping, 5000);
 
-	private handleChangeText = async () => {
+	private onChangeText = async () => {
 		const { user, room } = this.props;
 		if (!(user?.username && room?._id)) {
 			return;
@@ -174,7 +177,7 @@ class ChatContainer extends Component<ChatContainerProps> {
 		this.startTyping({ rid: room._id, username: user.username });
 	};
 
-	private handleSubmit = async (msg: string) => {
+	private onSubmit = async (msg: string) => {
 		const { alerts, dispatch, token, user } = this.props;
 
 		if (msg.trim() === '') {
@@ -219,7 +222,7 @@ class ChatContainer extends Component<ChatContainerProps> {
 		}
 	};
 
-	private handleUpload = async (files: (File | null)[]) => {
+	private onUpload = async (files: (File | null)[]) => {
 		const { dispatch, alerts, t, uploads } = this.props;
 
 		if (!uploads) {
@@ -238,12 +241,12 @@ class ChatContainer extends Component<ChatContainerProps> {
 		});
 	};
 
-	private handleSoundStop = async () => {
+	private onSoundStop = async () => {
 		const { dispatch, sound } = this.props;
 		dispatch({ sound: { ...sound, play: false } });
 	};
 
-	private onFinishChat = async () => {
+	private handleFinishChat = async () => {
 		const { t, alerts, dispatch, room } = this.props;
 
 		const { success } = await ModalManager.confirm({
@@ -272,7 +275,7 @@ class ChatContainer extends Component<ChatContainerProps> {
 		}
 	};
 
-	private onRemoveUserData = async () => {
+	private handleRemoveUserData = async () => {
 		const { t, alerts, dispatch } = this.props;
 		const { success } = await ModalManager.confirm({
 			text: t('are_you_sure_you_want_to_remove_all_of_your_person'),
@@ -310,23 +313,6 @@ class ChatContainer extends Component<ChatContainerProps> {
 		const { allowRemoveUserData } = this.props;
 		return !!allowRemoveUserData;
 	};
-
-	private registrationRequired = () => {
-		const { registrationFormEnabled, nameFieldRegistrationForm, emailFieldRegistrationForm, departments = [], user } = this.props;
-
-		if (user?.token) {
-			return false;
-		}
-
-		if (!registrationFormEnabled) {
-			return false;
-		}
-
-		const showDepartment = departments.filter((dept) => dept.showOnRegistration).length > 0;
-		return !!(nameFieldRegistrationForm || emailFieldRegistrationForm || showDepartment);
-	};
-
-	private showOptionsMenu = () => this.canSwitchDepartment() || this.canFinishChat() || this.canRemoveUserData();
 
 	private handleConnectingAgentAlert = async (connecting: boolean, message?: string | false) => {
 		const { alerts: oldAlerts, dispatch, t } = this.props;
@@ -416,10 +402,12 @@ class ChatContainer extends Component<ChatContainerProps> {
 	}
 
 	render = ({
+		inputRef,
+		notifyEmojiSelectRef,
 		title,
 		user,
 		onRegisterUser,
-		onChangeDepartment,
+		handleChangeDepartment,
 		dispatch,
 		t,
 		theme,
@@ -433,24 +421,51 @@ class ChatContainer extends Component<ChatContainerProps> {
 		typingUsernames,
 		unread,
 		uploads,
+		registrationFormEnabled,
+		departments = [],
+		nameFieldRegistrationForm,
+		emailFieldRegistrationForm,
 	}: ChatContainerProps) => {
 		const {
-			handleTop,
-			handleChangeText,
-			handleSubmit,
-			handleUpload,
-			showOptionsMenu,
+			onTop,
+			onChangeText,
+			onSubmit,
+			onUpload,
 			canSwitchDepartment,
 			canFinishChat,
-			onFinishChat,
+			handleFinishChat,
 			canRemoveUserData,
-			onRemoveUserData,
-			handleSoundStop,
-			registrationRequired,
+			handleRemoveUserData,
+			onSoundStop,
 		} = this;
+
+		const avatarResolver = getAvatarUrl;
+
+		const uid = user?._id;
+
+		const options = this.canSwitchDepartment() || this.canFinishChat() || this.canRemoveUserData();
+
+		const onChangeDepartment = canSwitchDepartment() ? handleChangeDepartment : undefined;
+		const onFinishChat = canFinishChat() ? handleFinishChat : undefined;
+		const onRemoveUserData = canRemoveUserData() ? handleRemoveUserData : undefined;
+
+		const registrationRequired = (() => {
+			if (user?.token) {
+				return false;
+			}
+
+			if (!registrationFormEnabled) {
+				return false;
+			}
+
+			const showDepartment = departments.filter((dept) => dept.showOnRegistration).length > 0;
+			return !!(nameFieldRegistrationForm || emailFieldRegistrationForm || showDepartment);
+		})();
 
 		return (
 			<Chat
+				inputRef={inputRef}
+				notifyEmojiSelectRef={notifyEmojiSelectRef}
 				title={title}
 				dispatch={dispatch}
 				t={t}
@@ -465,18 +480,18 @@ class ChatContainer extends Component<ChatContainerProps> {
 				typingUsernames={typingUsernames}
 				unread={unread}
 				uploads={uploads}
-				avatarResolver={getAvatarUrl}
-				uid={user?._id}
-				onTop={handleTop}
-				onChangeText={handleChangeText}
-				onSubmit={handleSubmit}
-				onUpload={handleUpload}
-				options={showOptionsMenu()}
-				onChangeDepartment={canSwitchDepartment() ? onChangeDepartment : undefined}
-				onFinishChat={canFinishChat() ? onFinishChat : undefined}
-				onRemoveUserData={canRemoveUserData() ? onRemoveUserData : undefined}
-				onSoundStop={handleSoundStop}
-				registrationRequired={registrationRequired()}
+				avatarResolver={avatarResolver}
+				uid={uid}
+				onTop={onTop}
+				onChangeText={onChangeText}
+				onSubmit={onSubmit}
+				onUpload={onUpload}
+				options={options}
+				onChangeDepartment={onChangeDepartment}
+				onFinishChat={onFinishChat}
+				onRemoveUserData={onRemoveUserData}
+				onSoundStop={onSoundStop}
+				registrationRequired={registrationRequired}
 				onRegisterUser={onRegisterUser}
 			/>
 		);
