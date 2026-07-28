@@ -2,7 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
-import { useUserId, useUserCard } from '@rocket.chat/ui-contexts';
+import { useUserId, useUserCard, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, KeyboardEvent } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -78,6 +78,7 @@ const RoomMessage = ({
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
 	const ignored = (ignoredUser || message.ignored) && !displayIgnoredMessage;
 	const { openUserCard, triggerProps } = useUserCard();
+	const mentionsWithSymbol = useUserPreference<boolean>('mentionsWithSymbol');
 
 	const selecting = useIsSelecting();
 
@@ -126,6 +127,7 @@ const RoomMessage = ({
 						emoji={message.emoji ? <Emoji emojiHandle={message.emoji} fillContainer /> : undefined}
 						avatarUrl={message.avatar}
 						username={message.u.username}
+						title={mentionsWithSymbol ? `@${message.u.username}` : message.u.username}
 						size='x36'
 						onMouseEnter={(e) => openUserCard(e, message.u.username)}
 						style={{ cursor: 'pointer' }}
