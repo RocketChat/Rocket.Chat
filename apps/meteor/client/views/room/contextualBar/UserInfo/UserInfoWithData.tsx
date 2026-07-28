@@ -21,6 +21,7 @@ import { UserCardRole } from '../../../../components/UserCard';
 import { UserInfo } from '../../../../components/UserInfo';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import { ReactiveUserStatusText } from '../../../../components/UserStatusText';
+import { useUserRolesByScope } from '../../../../hooks/useUserRolesByScope';
 import { usersQueryKeys } from '../../../../lib/queryKeys';
 import { getUserEmailVerified } from '../../../../lib/utils/getUserEmailVerified';
 
@@ -46,6 +47,8 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			throw new Error('userId or username is required');
 		},
 	});
+
+	const { roomRoles } = useUserRolesByScope(data?.user?._id, rid);
 
 	const user = useMemo(() => {
 		if (!data?.user) {
@@ -77,6 +80,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			 * TODO: We shouldn't use UserCard components outside UserCard
 			 */
 			roles: roles && getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
+			roomRoles: roomRoles.map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			bio,
 			canViewAllInfo,
 			phone,
@@ -90,7 +94,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			nickname,
 			freeSwitchExtension,
 		};
-	}, [data, getRoles]);
+	}, [data, getRoles, roomRoles]);
 
 	return (
 		<ContextualbarDialog>

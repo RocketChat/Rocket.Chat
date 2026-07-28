@@ -122,7 +122,7 @@ exports[`renders Default without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-1n8o8rn"
                       >
-                        Roles
+                        Workspace_roles
                       </div>
                       <div
                         class="rcx-box rcx-box--full rcx-css-1fksvtu"
@@ -206,6 +206,19 @@ exports[`renders Default without crashing 1`] = `
                         >
                           rocketchat@rocket.chat
                         </a>
+                        <button
+                          aria-label="Copy"
+                          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                          title="Copy"
+                          type="button"
+                        >
+                          <i
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1tg7yd0"
+                          >
+                            
+                          </i>
+                        </button>
                         <span
                           class="rcx-box rcx-box--full rcx-tag  rcx-css-1dtwr38 rcx-css-1eogw2f"
                         >
@@ -409,7 +422,7 @@ exports[`renders InvitedUser without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-1n8o8rn"
                       >
-                        Roles
+                        Workspace_roles
                       </div>
                       <div
                         class="rcx-box rcx-box--full rcx-css-1fksvtu"
@@ -493,6 +506,19 @@ exports[`renders InvitedUser without crashing 1`] = `
                         >
                           rocketchat@rocket.chat
                         </a>
+                        <button
+                          aria-label="Copy"
+                          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                          title="Copy"
+                          type="button"
+                        >
+                          <i
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1tg7yd0"
+                          >
+                            
+                          </i>
+                        </button>
                         <span
                           class="rcx-box rcx-box--full rcx-tag  rcx-css-1dtwr38 rcx-css-1eogw2f"
                         >
@@ -710,7 +736,7 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-1n8o8rn"
                       >
-                        Roles
+                        Workspace_roles
                       </div>
                       <div
                         class="rcx-box rcx-box--full rcx-css-1fksvtu"
@@ -794,6 +820,19 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                         >
                           rocketchat@rocket.chat
                         </a>
+                        <button
+                          aria-label="Copy"
+                          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                          title="Copy"
+                          type="button"
+                        >
+                          <i
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1tg7yd0"
+                          >
+                            
+                          </i>
+                        </button>
                         <span
                           class="rcx-box rcx-box--full rcx-tag  rcx-css-1dtwr38 rcx-css-1eogw2f"
                         >
@@ -1057,7 +1096,7 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-1n8o8rn"
                       >
-                        Roles
+                        Workspace_roles
                       </div>
                       <div
                         class="rcx-box rcx-box--full rcx-css-1fksvtu"
@@ -1141,6 +1180,19 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                         >
                           rocketchat@rocket.chat
                         </a>
+                        <button
+                          aria-label="Copy"
+                          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                          title="Copy"
+                          type="button"
+                        >
+                          <i
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1tg7yd0"
+                          >
+                            
+                          </i>
+                        </button>
                         <span
                           class="rcx-box rcx-box--full rcx-tag  rcx-css-1dtwr38 rcx-css-1eogw2f"
                         >
