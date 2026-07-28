@@ -148,19 +148,6 @@ const successResponseSchema = ajv.compile<void>({
 	additionalProperties: false,
 });
 
-// findChannelByIdOrName and the room methods throw for client errors. The typed router does not map thrown
-// errors to 400 (the legacy addRoute wrapper did), so handlers catch and return a failure. Errors coming from
-// core-services cross a boundary and are not `instanceof Meteor.Error`, so extract message/errorType by shape.
-function errorToFailureArgs(error: unknown): [string, string | undefined, string | undefined, unknown] {
-	const e = error as { message?: unknown; error?: unknown; stack?: unknown; details?: unknown };
-	return [
-		typeof e?.message === 'string' ? e.message : String(error),
-		typeof e?.error === 'string' ? e.error : undefined,
-		process.env.TEST_MODE && typeof e?.stack === 'string' ? e.stack : undefined,
-		e?.details,
-	];
-}
-
 const stringFieldResponseSchema = <T>(field: 'description' | 'purpose' | 'topic') =>
 	ajv.compile<T>({
 		type: 'object',
@@ -237,19 +224,14 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const { activeUsersOnly, ...params } = this.bodyParams;
-			const findResult = await findChannelByIdOrName({ params, userId: this.userId });
+		const { activeUsersOnly, ...params } = this.bodyParams;
+		const findResult = await findChannelByIdOrName({ params, userId: this.userId });
 
-			await addAllUserToRoomFn(this.userId, findResult._id, activeUsersOnly === 'true' || activeUsersOnly === 1);
+		await addAllUserToRoomFn(this.userId, findResult._id, activeUsersOnly === 'true' || activeUsersOnly === 1);
 
-			return API.v1.success({
-				channel: await findChannelByIdOrName({ params, userId: this.userId }),
-			});
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
-		}
+		return API.v1.success({
+			channel: await findChannelByIdOrName({ params, userId: this.userId }),
+		});
 	},
 );
 
@@ -265,16 +247,11 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
+		const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			await executeArchiveRoom(this.userId, findResult._id);
+		await executeArchiveRoom(this.userId, findResult._id);
 
-			return API.v1.success();
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
-		}
+		return API.v1.success();
 	},
 );
 
@@ -290,23 +267,18 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findChannelByIdOrName({
-				params: this.bodyParams,
-				checkedArchived: false,
-			});
+		const findResult = await findChannelByIdOrName({
+			params: this.bodyParams,
+			checkedArchived: false,
+		});
 
-			if (!findResult.archived) {
-				return API.v1.failure(`The channel, ${findResult.name}, is not archived`);
-			}
-
-			await executeUnarchiveRoom(this.userId, findResult._id);
-
-			return API.v1.success();
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
+		if (!findResult.archived) {
+			return API.v1.failure(`The channel, ${findResult.name}, is not archived`);
 		}
+
+		await executeUnarchiveRoom(this.userId, findResult._id);
+
+		return API.v1.success();
 	},
 );
 
@@ -335,36 +307,31 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		try {
-			const { unreads, oldest, latest, showThreadMessages, inclusive, ...params } = this.queryParams;
-			const findResult = await findChannelByIdOrName({
-				params,
-				checkedArchived: false,
-			});
+		const { unreads, oldest, latest, showThreadMessages, inclusive, ...params } = this.queryParams;
+		const findResult = await findChannelByIdOrName({
+			params,
+			checkedArchived: false,
+		});
 
-			const { count = 20, offset = 0 } = await getPaginationItems(this.queryParams);
+		const { count = 20, offset = 0 } = await getPaginationItems(this.queryParams);
 
-			const result = await getChannelHistory({
-				rid: findResult._id,
-				fromUserId: this.userId,
-				latest: latest ? new Date(latest) : new Date(),
-				oldest: oldest ? new Date(oldest) : undefined,
-				inclusive: inclusive === 'true',
-				offset,
-				count,
-				unreads: unreads === 'true',
-				showThreadMessages: showThreadMessages === 'true',
-			});
+		const result = await getChannelHistory({
+			rid: findResult._id,
+			fromUserId: this.userId,
+			latest: latest ? new Date(latest) : new Date(),
+			oldest: oldest ? new Date(oldest) : undefined,
+			inclusive: inclusive === 'true',
+			offset,
+			count,
+			unreads: unreads === 'true',
+			showThreadMessages: showThreadMessages === 'true',
+		});
 
-			if (!result || typeof result !== 'object' || Array.isArray(result)) {
-				return API.v1.forbidden();
-			}
-
-			return API.v1.success(result);
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
+		if (!result || typeof result !== 'object' || Array.isArray(result)) {
+			return API.v1.forbidden();
 		}
+
+		return API.v1.success(result);
 	},
 );
 
@@ -410,18 +377,13 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findChannelByIdOrName({ params: this.queryParams });
+		const findResult = await findChannelByIdOrName({ params: this.queryParams });
 
-			const roles = await executeGetRoomRoles(findResult._id, this.user);
+		const roles = await executeGetRoomRoles(findResult._id, this.user);
 
-			return API.v1.success({
-				roles,
-			});
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
-		}
+		return API.v1.success({
+			roles,
+		});
 	},
 );
 
@@ -437,19 +399,14 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const { joinCode, ...params } = this.bodyParams;
-			const findResult = await findChannelByIdOrName({ params });
+		const { joinCode, ...params } = this.bodyParams;
+		const findResult = await findChannelByIdOrName({ params });
 
-			await Room.join({ room: findResult, user: this.user, joinCode });
+		await Room.join({ room: findResult, user: this.user, joinCode });
 
-			return API.v1.success({
-				channel: await findChannelByIdOrName({ params, userId: this.userId }),
-			});
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
-		}
+		return API.v1.success({
+			channel: await findChannelByIdOrName({ params, userId: this.userId }),
+		});
 	},
 );
 
@@ -465,24 +422,19 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const { ...params /* userId */ } = this.bodyParams;
-			const findResult = await findChannelByIdOrName({ params });
+		const { ...params /* userId */ } = this.bodyParams;
+		const findResult = await findChannelByIdOrName({ params });
 
-			const user = await getUserFromParams(this.bodyParams);
-			if (!user?.username) {
-				return API.v1.failure('Invalid user');
-			}
-
-			await removeUserFromRoomMethod(this.userId, { rid: findResult._id, username: user.username });
-
-			return API.v1.success({
-				channel: await findChannelByIdOrName({ params, userId: this.userId }),
-			});
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
+		const user = await getUserFromParams(this.bodyParams);
+		if (!user?.username) {
+			return API.v1.failure('Invalid user');
 		}
+
+		await removeUserFromRoomMethod(this.userId, { rid: findResult._id, username: user.username });
+
+		return API.v1.success({
+			channel: await findChannelByIdOrName({ params, userId: this.userId }),
+		});
 	},
 );
 
@@ -498,23 +450,18 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const { ...params } = this.bodyParams;
-			const findResult = await findChannelByIdOrName({ params });
+		const { ...params } = this.bodyParams;
+		const findResult = await findChannelByIdOrName({ params });
 
-			const user = await Users.findOneById(this.userId);
-			if (!user) {
-				return API.v1.failure('Invalid user');
-			}
-			await leaveRoomMethod(user, findResult._id);
-
-			return API.v1.success({
-				channel: await findChannelByIdOrName({ params, userId: this.userId }),
-			});
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
+		const user = await Users.findOneById(this.userId);
+		if (!user) {
+			return API.v1.failure('Invalid user');
 		}
+		await leaveRoomMethod(user, findResult._id);
+
+		return API.v1.success({
+			channel: await findChannelByIdOrName({ params, userId: this.userId }),
+		});
 	},
 );
 
@@ -545,59 +492,54 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		try {
-			const { roomId, mentionIds, starredIds, pinned } = this.queryParams;
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
+		const { roomId, mentionIds, starredIds, pinned } = this.queryParams;
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort, fields, query } = await this.parseJsonQuery();
 
-			const findResult = await findChannelByIdOrName({
-				params: { roomId },
-				checkedArchived: false,
-			});
+		const findResult = await findChannelByIdOrName({
+			params: { roomId },
+			checkedArchived: false,
+		});
 
-			const parseIds = (ids: string | undefined, field: string) =>
-				typeof ids === 'string' && ids ? { [field]: { $in: ids.split(',').map((id) => id.trim()) } } : {};
+		const parseIds = (ids: string | undefined, field: string) =>
+			typeof ids === 'string' && ids ? { [field]: { $in: ids.split(',').map((id) => id.trim()) } } : {};
 
-			const ourQuery = {
-				...query,
-				rid: findResult._id,
-				...parseIds(mentionIds, 'mentions._id'),
-				...parseIds(starredIds, 'starred._id'),
-				...(String(pinned).toLowerCase() === 'true' ? { pinned: true } : {}),
-				_hidden: { $ne: true },
-			};
+		const ourQuery = {
+			...query,
+			rid: findResult._id,
+			...parseIds(mentionIds, 'mentions._id'),
+			...parseIds(starredIds, 'starred._id'),
+			...(String(pinned).toLowerCase() === 'true' ? { pinned: true } : {}),
+			_hidden: { $ne: true },
+		};
 
-			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
-				return API.v1.forbidden();
-			}
-
-			// Special check for the permissions
-			if (
-				(await hasPermissionAsync(this.user, 'view-joined-room')) &&
-				!(await Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId, { projection: { _id: 1 } }))
-			) {
-				return API.v1.forbidden();
-			}
-
-			const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
-				sort: sort || { ts: -1 },
-				skip: offset,
-				limit: count,
-				projection: fields,
-			});
-
-			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				messages: await normalizeMessagesForUser(messages, this.userId),
-				count: messages.length,
-				offset,
-				total,
-			});
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
+		if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
+			return API.v1.forbidden();
 		}
+
+		// Special check for the permissions
+		if (
+			(await hasPermissionAsync(this.user, 'view-joined-room')) &&
+			!(await Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId, { projection: { _id: 1 } }))
+		) {
+			return API.v1.forbidden();
+		}
+
+		const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
+			sort: sort || { ts: -1 },
+			skip: offset,
+			limit: count,
+			projection: fields,
+		});
+
+		const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return API.v1.success({
+			messages: await normalizeMessagesForUser(messages, this.userId),
+			count: messages.length,
+			offset,
+			total,
+		});
 	},
 );
 
@@ -613,31 +555,26 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const { ...params } = this.bodyParams;
+		const { ...params } = this.bodyParams;
 
-			const findResult = await findChannelByIdOrName({
-				params,
-				checkedArchived: false,
-			});
+		const findResult = await findChannelByIdOrName({
+			params,
+			checkedArchived: false,
+		});
 
-			const sub = await Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId);
+		const sub = await Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId);
 
-			if (!sub) {
-				return API.v1.failure(`The user/callee is not in the channel "${findResult.name}".`);
-			}
-
-			if (sub.open) {
-				return API.v1.failure(`The channel, ${findResult.name}, is already open to the sender`);
-			}
-
-			await openRoom(this.userId, findResult._id);
-
-			return API.v1.success();
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
+		if (!sub) {
+			return API.v1.failure(`The user/callee is not in the channel "${findResult.name}".`);
 		}
+
+		if (sub.open) {
+			return API.v1.failure(`The channel, ${findResult.name}, is already open to the sender`);
+		}
+
+		await openRoom(this.userId, findResult._id);
+
+		return API.v1.success();
 	},
 );
 
@@ -653,22 +590,17 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
+		const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			if (findResult.ro === this.bodyParams.readOnly) {
-				return API.v1.failure('The channel read only setting is the same as what it would be changed to.');
-			}
-
-			await saveRoomSettings(this.userId, findResult._id, 'readOnly', this.bodyParams.readOnly);
-
-			return API.v1.success({
-				channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
-			});
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
+		if (findResult.ro === this.bodyParams.readOnly) {
+			return API.v1.failure('The channel read only setting is the same as what it would be changed to.');
 		}
+
+		await saveRoomSettings(this.userId, findResult._id, 'readOnly', this.bodyParams.readOnly);
+
+		return API.v1.success({
+			channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
+		});
 	},
 );
 
@@ -694,20 +626,15 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const { announcement, ...params } = this.bodyParams;
+		const { announcement, ...params } = this.bodyParams;
 
-			const findResult = await findChannelByIdOrName({ params });
+		const findResult = await findChannelByIdOrName({ params });
 
-			await saveRoomSettings(this.userId, findResult._id, 'roomAnnouncement', announcement);
+		await saveRoomSettings(this.userId, findResult._id, 'roomAnnouncement', announcement);
 
-			return API.v1.success({
-				announcement: this.bodyParams.announcement,
-			});
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
-		}
+		return API.v1.success({
+			announcement: this.bodyParams.announcement,
+		});
 	},
 );
 
@@ -736,29 +663,24 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		try {
-			const { roomId } = this.queryParams;
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort } = await this.parseJsonQuery();
+		const { roomId } = this.queryParams;
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort } = await this.parseJsonQuery();
 
-			const mentions = await getUserMentionsByChannel(this.userId, roomId, {
-				sort: sort || { ts: 1 },
-				skip: offset,
-				limit: count,
-			});
+		const mentions = await getUserMentionsByChannel(this.userId, roomId, {
+			sort: sort || { ts: 1 },
+			skip: offset,
+			limit: count,
+		});
 
-			const allMentions = await getUserMentionsByChannel(this.userId, roomId, {});
+		const allMentions = await getUserMentionsByChannel(this.userId, roomId, {});
 
-			return API.v1.success({
-				mentions,
-				count: mentions.length,
-				offset,
-				total: allMentions.length,
-			});
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
-		}
+		return API.v1.success({
+			mentions,
+			count: mentions.length,
+			offset,
+			total: allMentions.length,
+		});
 	},
 );
 
@@ -793,28 +715,23 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		try {
-			const { ...params } = this.queryParams;
+		const { ...params } = this.queryParams;
 
-			const findResult = await findChannelByIdOrName({ params });
+		const findResult = await findChannelByIdOrName({ params });
 
-			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
-				return API.v1.forbidden();
-			}
-
-			const moderators = await Subscriptions.findByRoomIdAndRoles(findResult._id, ['moderator'], {
-				projection: { u: 1, _id: 0 },
-			})
-				.map((sub) => sub.u)
-				.toArray();
-
-			return API.v1.success({
-				moderators,
-			});
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
+		if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
+			return API.v1.forbidden();
 		}
+
+		const moderators = await Subscriptions.findByRoomIdAndRoles(findResult._id, ['moderator'], {
+			projection: { u: 1, _id: 0 },
+		})
+			.map((sub) => sub.u)
+			.toArray();
+
+		return API.v1.success({
+			moderators,
+		});
 	},
 );
 
@@ -830,19 +747,14 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const room = await findChannelByIdOrName({
-				params: this.bodyParams,
-				checkedArchived: false,
-			});
+		const room = await findChannelByIdOrName({
+			params: this.bodyParams,
+			checkedArchived: false,
+		});
 
-			await eraseRoom(room._id, this.user);
+		await eraseRoom(room._id, this.user);
 
-			return API.v1.success();
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
-		}
+		return API.v1.success();
 	},
 );
 
@@ -870,51 +782,46 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const { channelId, channelName } = this.bodyParams;
+		const { channelId, channelName } = this.bodyParams;
 
-			if (!channelId && !channelName) {
-				return API.v1.failure('The parameter "channelId" or "channelName" is required');
-			}
-
-			const room = await findChannelByIdOrName({
-				params: channelId !== undefined ? { roomId: channelId } : { roomName: channelName },
-				userId: this.userId,
-			});
-
-			if (!room) {
-				return API.v1.failure('Channel not found');
-			}
-
-			if (!(await hasAllPermissionAsync(this.user, ['create-team', 'edit-room'], room._id))) {
-				return API.v1.forbidden();
-			}
-
-			const subscriptions = await Subscriptions.findByRoomId(room._id, {
-				projection: { 'u._id': 1 },
-			});
-
-			const members = (await subscriptions.toArray()).map((s: ISubscription) => s.u?._id);
-
-			const teamData = {
-				team: {
-					name: room.name ?? '',
-					type: room.t === 'c' ? 0 : 1,
-				},
-				members,
-				room: {
-					name: room.name,
-					id: room._id,
-				},
-			};
-
-			const team = await Team.create(this.userId, teamData);
-
-			return API.v1.success({ team });
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
+		if (!channelId && !channelName) {
+			return API.v1.failure('The parameter "channelId" or "channelName" is required');
 		}
+
+		const room = await findChannelByIdOrName({
+			params: channelId !== undefined ? { roomId: channelId } : { roomName: channelName },
+			userId: this.userId,
+		});
+
+		if (!room) {
+			return API.v1.failure('Channel not found');
+		}
+
+		if (!(await hasAllPermissionAsync(this.user, ['create-team', 'edit-room'], room._id))) {
+			return API.v1.forbidden();
+		}
+
+		const subscriptions = await Subscriptions.findByRoomId(room._id, {
+			projection: { 'u._id': 1 },
+		});
+
+		const members = (await subscriptions.toArray()).map((s: ISubscription) => s.u?._id);
+
+		const teamData = {
+			team: {
+				name: room.name ?? '',
+				type: room.t === 'c' ? 0 : 1,
+			},
+			members,
+			room: {
+				name: room.name,
+				id: room._id,
+			},
+		};
+
+		const team = await Team.create(this.userId, teamData);
+
+		return API.v1.success({ team });
 	},
 );
 
@@ -930,18 +837,13 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
+		const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			const user = await getUserFromParams(this.bodyParams);
+		const user = await getUserFromParams(this.bodyParams);
 
-			await addRoomModerator(this.userId, findResult._id, user._id);
+		await addRoomModerator(this.userId, findResult._id, user._id);
 
-			return API.v1.success();
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
-		}
+		return API.v1.success();
 	},
 );
 
@@ -957,18 +859,13 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
+		const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			const user = await getUserFromParams(this.bodyParams);
+		const user = await getUserFromParams(this.bodyParams);
 
-			await addRoomOwner(this.userId, findResult._id, user._id);
+		await addRoomOwner(this.userId, findResult._id, user._id);
 
-			return API.v1.success();
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
-		}
+		return API.v1.success();
 	},
 );
 
@@ -984,29 +881,24 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findChannelByIdOrName({
-				params: this.bodyParams,
-				checkedArchived: false,
-			});
+		const findResult = await findChannelByIdOrName({
+			params: this.bodyParams,
+			checkedArchived: false,
+		});
 
-			const sub = await Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId);
+		const sub = await Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId);
 
-			if (!sub) {
-				return API.v1.failure(`The user/callee is not in the channel "${findResult.name}.`);
-			}
-
-			if (!sub.open) {
-				return API.v1.failure(`The channel, ${findResult.name}, is already closed to the sender`);
-			}
-
-			await hideRoomMethod(this.userId, findResult._id);
-
-			return API.v1.success();
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
+		if (!sub) {
+			return API.v1.failure(`The user/callee is not in the channel "${findResult.name}.`);
 		}
+
+		if (!sub.open) {
+			return API.v1.failure(`The channel, ${findResult.name}, is already closed to the sender`);
+		}
+
+		await hideRoomMethod(this.userId, findResult._id);
+
+		return API.v1.success();
 	},
 );
 
@@ -1056,56 +948,51 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		try {
-			const access = await hasPermissionAsync(this.user, 'view-room-administration');
-			const { userId } = this.queryParams;
-			let user = this.userId;
-			let unreads = null;
-			let userMentions = null;
-			let unreadsFrom = null;
-			let joined = false;
-			let msgs = null;
-			let latest = null;
-			let members = null;
+		const access = await hasPermissionAsync(this.user, 'view-room-administration');
+		const { userId } = this.queryParams;
+		let user = this.userId;
+		let unreads = null;
+		let userMentions = null;
+		let unreadsFrom = null;
+		let joined = false;
+		let msgs = null;
+		let latest = null;
+		let members = null;
 
-			if (userId) {
-				if (!access) {
-					return API.v1.forbidden();
-				}
-				user = userId;
+		if (userId) {
+			if (!access) {
+				return API.v1.forbidden();
 			}
-			const room = await findChannelByIdOrName({
-				params: this.queryParams,
-			});
-			const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user);
-			const lm = room.lm ? room.lm : room._updatedAt;
-
-			if (subscription?.open) {
-				unreads = await Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls ?? subscription.ts, lm);
-				unreadsFrom = subscription.ls || subscription.ts;
-				userMentions = subscription.userMentions;
-				joined = true;
-			}
-
-			if (access || joined) {
-				msgs = room.msgs;
-				latest = lm;
-				members = await Users.countActiveUsersInNonDMRoom(room._id);
-			}
-
-			return API.v1.success({
-				joined,
-				members,
-				unreads,
-				unreadsFrom,
-				msgs,
-				latest,
-				userMentions,
-			});
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
+			user = userId;
 		}
+		const room = await findChannelByIdOrName({
+			params: this.queryParams,
+		});
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user);
+		const lm = room.lm ? room.lm : room._updatedAt;
+
+		if (subscription?.open) {
+			unreads = await Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls ?? subscription.ts, lm);
+			unreadsFrom = subscription.ls || subscription.ts;
+			userMentions = subscription.userMentions;
+			joined = true;
+		}
+
+		if (access || joined) {
+			msgs = room.msgs;
+			latest = lm;
+			members = await Users.countActiveUsersInNonDMRoom(room._id);
+		}
+
+		return API.v1.success({
+			joined,
+			members,
+			unreads,
+			unreadsFrom,
+			msgs,
+			latest,
+			userMentions,
+		});
 	},
 );
 
@@ -1222,35 +1109,30 @@ API.v1.post(
 			return API.v1.failure(e.message);
 		}
 
-		try {
-			if (bodyParams.teams) {
-				const canSeeAllTeams = await hasPermissionAsync(this.user, 'view-all-teams');
-				const teams = await Team.listByNames(bodyParams.teams, { projection: { _id: 1 } });
-				const teamMembers = [];
+		if (bodyParams.teams) {
+			const canSeeAllTeams = await hasPermissionAsync(this.user, 'view-all-teams');
+			const teams = await Team.listByNames(bodyParams.teams, { projection: { _id: 1 } });
+			const teamMembers = [];
 
-				for (const team of teams) {
-					const { records: members } = await Team.members(this.userId, team._id, canSeeAllTeams, {
-						offset: 0,
-						count: Number.MAX_SAFE_INTEGER,
-					});
-					const uids = members.map((member) => member.user.username);
-					teamMembers.push(...uids);
-				}
-
-				const membersToAdd = new Set([...teamMembers, ...(bodyParams.members || [])]);
-				bodyParams.members = [...membersToAdd].filter(Boolean) as string[];
+			for (const team of teams) {
+				const { records: members } = await Team.members(this.userId, team._id, canSeeAllTeams, {
+					offset: 0,
+					count: Number.MAX_SAFE_INTEGER,
+				});
+				const uids = members.map((member) => member.user.username);
+				teamMembers.push(...uids);
 			}
 
-			const result = await API.channels?.create.execute(userId, bodyParams);
-			if (!result) {
-				return API.v1.failure('Failed to create channel');
-			}
-
-			return API.v1.success(result);
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
+			const membersToAdd = new Set([...teamMembers, ...(bodyParams.members || [])]);
+			bodyParams.members = [...membersToAdd].filter(Boolean) as string[];
 		}
+
+		const result = await API.channels?.create.execute(userId, bodyParams);
+		if (!result) {
+			return API.v1.failure('Failed to create channel');
+		}
+
+		return API.v1.success(result);
 	},
 );
 
@@ -1291,51 +1173,46 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		try {
-			const { typeGroup, name, roomId, roomName, onlyConfirmed } = this.queryParams;
+		const { typeGroup, name, roomId, roomName, onlyConfirmed } = this.queryParams;
 
-			const findResult = await findChannelByIdOrName({
-				params: {
-					...(roomId ? { roomId } : {}),
-					...(roomName ? { roomName } : {}),
-				},
-				checkedArchived: false,
-			});
+		const findResult = await findChannelByIdOrName({
+			params: {
+				...(roomId ? { roomId } : {}),
+				...(roomName ? { roomName } : {}),
+			},
+			checkedArchived: false,
+		});
 
-			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
-				return API.v1.forbidden();
-			}
-
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
-
-			const filter = {
-				...query,
-				rid: findResult._id,
-				...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
-				...(typeGroup ? { typeGroup } : {}),
-				...(onlyConfirmed && { expiresAt: { $exists: false } }),
-			};
-
-			const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(filter, {
-				sort: sort || { name: 1 },
-				skip: offset,
-				limit: count,
-				projection: fields,
-			});
-
-			const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				files: await addUserToFileObj(files),
-				count: files.length,
-				offset,
-				total,
-			});
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
+		if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
+			return API.v1.forbidden();
 		}
+
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort, fields, query } = await this.parseJsonQuery();
+
+		const filter = {
+			...query,
+			rid: findResult._id,
+			...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
+			...(typeGroup ? { typeGroup } : {}),
+			...(onlyConfirmed && { expiresAt: { $exists: false } }),
+		};
+
+		const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(filter, {
+			sort: sort || { name: 1 },
+			skip: offset,
+			limit: count,
+			projection: fields,
+		});
+
+		const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return API.v1.success({
+			files: await addUserToFileObj(files),
+			count: files.length,
+			offset,
+			total,
+		});
 	},
 );
 
@@ -1411,58 +1288,53 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findChannelByIdOrName({
-				params: this.queryParams,
-				checkedArchived: false,
-			});
+		const findResult = await findChannelByIdOrName({
+			params: this.queryParams,
+			checkedArchived: false,
+		});
 
-			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
-				return API.v1.forbidden();
-			}
-
-			let includeAllPublicChannels = true;
-			if (typeof this.queryParams.includeAllPublicChannels !== 'undefined') {
-				includeAllPublicChannels = this.queryParams.includeAllPublicChannels === 'true';
-			}
-
-			let ourQuery: { channel: string | { $in: string[] } } = {
-				channel: `#${findResult.name}`,
-			};
-
-			if (includeAllPublicChannels) {
-				ourQuery.channel = {
-					$in: [ourQuery.channel as string, 'all_public_channels'],
-				};
-			}
-
-			const params = this.queryParams;
-			const { offset, count } = await getPaginationItems(params);
-			const { sort, fields: projection, query } = await this.parseJsonQuery();
-
-			// Apply the user-supplied query first, then overlay the trusted filters so a crafted `query`
-			// cannot override the permission scope (mountIntegrationQueryBasedOnPermissions) or the channel filter.
-			ourQuery = Object.assign({}, query, ourQuery, await mountIntegrationQueryBasedOnPermissions(this.userId));
-
-			const { cursor, totalCount } = await Integrations.findPaginated(ourQuery, {
-				sort: sort || { _createdAt: 1 },
-				skip: offset,
-				limit: count,
-				projection,
-			});
-
-			const [integrations, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				integrations,
-				count: integrations.length,
-				offset,
-				total,
-			});
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
+		if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
+			return API.v1.forbidden();
 		}
+
+		let includeAllPublicChannels = true;
+		if (typeof this.queryParams.includeAllPublicChannels !== 'undefined') {
+			includeAllPublicChannels = this.queryParams.includeAllPublicChannels === 'true';
+		}
+
+		let ourQuery: { channel: string | { $in: string[] } } = {
+			channel: `#${findResult.name}`,
+		};
+
+		if (includeAllPublicChannels) {
+			ourQuery.channel = {
+				$in: [ourQuery.channel as string, 'all_public_channels'],
+			};
+		}
+
+		const params = this.queryParams;
+		const { offset, count } = await getPaginationItems(params);
+		const { sort, fields: projection, query } = await this.parseJsonQuery();
+
+		// Apply the user-supplied query first, then overlay the trusted filters so a crafted `query`
+		// cannot override the permission scope (mountIntegrationQueryBasedOnPermissions) or the channel filter.
+		ourQuery = Object.assign({}, query, ourQuery, await mountIntegrationQueryBasedOnPermissions(this.userId));
+
+		const { cursor, totalCount } = await Integrations.findPaginated(ourQuery, {
+			sort: sort || { _createdAt: 1 },
+			skip: offset,
+			limit: count,
+			projection,
+		});
+
+		const [integrations, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return API.v1.success({
+			integrations,
+			count: integrations.length,
+			offset,
+			total,
+		});
 	},
 );
 
@@ -1479,24 +1351,19 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findChannelByIdOrName({
-				params: this.queryParams,
-				checkedArchived: false,
-				userId: this.userId,
-			});
+		const findResult = await findChannelByIdOrName({
+			params: this.queryParams,
+			checkedArchived: false,
+			userId: this.userId,
+		});
 
-			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
-				return API.v1.forbidden();
-			}
-
-			return API.v1.success({
-				channel: findResult,
-			});
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
+		if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
+			return API.v1.forbidden();
 		}
+
+		return API.v1.success({
+			channel: findResult,
+		});
 	},
 );
 
@@ -1527,36 +1394,31 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
+		const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			// Federated rooms invite by raw username: the federated user record is created
-			// lazily inside addUsersToRoomMethod, so we must not require it to exist locally yet.
-			if (isRoomNativeFederated(findResult)) {
-				const users = await getUsernameListFromParams(this.bodyParams);
+		// Federated rooms invite by raw username: the federated user record is created
+		// lazily inside addUsersToRoomMethod, so we must not require it to exist locally yet.
+		if (isRoomNativeFederated(findResult)) {
+			const users = await getUsernameListFromParams(this.bodyParams);
 
-				await addUsersToRoomMethod(this.userId, { rid: findResult._id, users }, this.user);
-
-				return API.v1.success({
-					channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
-				});
-			}
-
-			const users = await getUserListFromParams(this.bodyParams);
-
-			if (!users.length) {
-				return API.v1.failure('invalid-user-invite-list', 'Cannot invite if no users are provided');
-			}
-
-			await addUsersToRoomMethod(this.userId, { rid: findResult._id, users: users.map((u) => u.username).filter(isTruthy) }, this.user);
+			await addUsersToRoomMethod(this.userId, { rid: findResult._id, users }, this.user);
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
 			});
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
 		}
+
+		const users = await getUserListFromParams(this.bodyParams);
+
+		if (!users.length) {
+			return API.v1.failure('invalid-user-invite-list', 'Cannot invite if no users are provided');
+		}
+
+		await addUsersToRoomMethod(this.userId, { rid: findResult._id, users: users.map((u) => u.username).filter(isTruthy) }, this.user);
+
+		return API.v1.success({
+			channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
+		});
 	},
 );
 
@@ -1673,41 +1535,36 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		try {
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields } = await this.parseJsonQuery();
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort, fields } = await this.parseJsonQuery();
 
-			const subs = await Subscriptions.findByUserIdAndTypes(this.userId, ['c'], { projection: { rid: 1 } }).toArray();
-			const rids = subs.map(({ rid }) => rid).filter(Boolean);
+		const subs = await Subscriptions.findByUserIdAndTypes(this.userId, ['c'], { projection: { rid: 1 } }).toArray();
+		const rids = subs.map(({ rid }) => rid).filter(Boolean);
 
-			if (rids.length === 0) {
-				return API.v1.success({
-					channels: [],
-					offset,
-					count: 0,
-					total: 0,
-				});
-			}
-
-			const { cursor, totalCount } = Rooms.findPaginatedByTypeAndIds('c', rids, {
-				sort: sort || { name: 1 },
-				skip: offset,
-				limit: count,
-				projection: fields,
-			});
-
-			const [channels, total] = await Promise.all([cursor.toArray(), totalCount]);
-
+		if (rids.length === 0) {
 			return API.v1.success({
-				channels: await Promise.all(channels.map((room) => composeRoomWithLastMessage(room, this.userId))),
+				channels: [],
 				offset,
-				count: channels.length,
-				total,
+				count: 0,
+				total: 0,
 			});
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
 		}
+
+		const { cursor, totalCount } = Rooms.findPaginatedByTypeAndIds('c', rids, {
+			sort: sort || { name: 1 },
+			skip: offset,
+			limit: count,
+			projection: fields,
+		});
+
+		const [channels, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return API.v1.success({
+			channels: await Promise.all(channels.map((room) => composeRoomWithLastMessage(room, this.userId))),
+			offset,
+			count: channels.length,
+			total,
+		});
 	},
 );
 
@@ -1779,46 +1636,41 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findChannelByIdOrName({
-				params: this.queryParams,
-				checkedArchived: false,
-			});
+		const findResult = await findChannelByIdOrName({
+			params: this.queryParams,
+			checkedArchived: false,
+		});
 
-			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
-				return API.v1.forbidden();
-			}
-
-			if (findResult.broadcast && !(await hasPermissionAsync(this.user, 'view-broadcast-member-list', findResult._id))) {
-				return API.v1.forbidden();
-			}
-
-			const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
-			const { sort = {} } = await this.parseJsonQuery();
-
-			const { status, filter } = this.queryParams;
-
-			const { cursor, totalCount } = await findUsersOfRoom({
-				rid: findResult._id,
-				...(status && { status: { $in: status as UserStatus[] } }),
-				skip,
-				limit,
-				filter,
-				...(sort?.username && { sort: { username: sort.username } }),
-			});
-
-			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				members,
-				count: members.length,
-				offset: skip,
-				total,
-			});
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
+		if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
+			return API.v1.forbidden();
 		}
+
+		if (findResult.broadcast && !(await hasPermissionAsync(this.user, 'view-broadcast-member-list', findResult._id))) {
+			return API.v1.forbidden();
+		}
+
+		const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
+		const { sort = {} } = await this.parseJsonQuery();
+
+		const { status, filter } = this.queryParams;
+
+		const { cursor, totalCount } = await findUsersOfRoom({
+			rid: findResult._id,
+			...(status && { status: { $in: status as UserStatus[] } }),
+			skip,
+			limit,
+			filter,
+			...(sort?.username && { sort: { username: sort.username } }),
+		});
+
+		const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return API.v1.success({
+			members,
+			count: members.length,
+			offset: skip,
+			total,
+		});
 	},
 );
 
@@ -1852,54 +1704,49 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		try {
-			const { query } = await this.parseJsonQuery();
-			const { _id } = this.queryParams;
+		const { query } = await this.parseJsonQuery();
+		const { _id } = this.queryParams;
 
-			if ((!query || Object.keys(query).length === 0) && !_id) {
-				return API.v1.failure('Invalid query');
-			}
-
-			const filter = {
-				...query,
-				...(_id ? { _id } : {}),
-				t: 'c',
-			};
-
-			const room = await Rooms.findOne(filter as Record<string, any>);
-			if (!room) {
-				return API.v1.failure('Channel does not exists');
-			}
-
-			if (!(await canAccessRoomAsync(room, this.user))) {
-				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
-			}
-
-			const online: Pick<IUser, '_id' | 'username'>[] = await Users.findUsersNotOffline({
-				projection: { username: 1 },
-			}).toArray();
-
-			const onlineInRoom = await Promise.all(
-				online.map(async (user) => {
-					const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
-						projection: { _id: 1, username: 1 },
-					});
-					if (subscription) {
-						return {
-							_id: user._id,
-							username: user.username,
-						};
-					}
-				}),
-			);
-
-			return API.v1.success({
-				online: onlineInRoom.filter(isTruthy),
-			});
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
+		if ((!query || Object.keys(query).length === 0) && !_id) {
+			return API.v1.failure('Invalid query');
 		}
+
+		const filter = {
+			...query,
+			...(_id ? { _id } : {}),
+			t: 'c',
+		};
+
+		const room = await Rooms.findOne(filter as Record<string, any>);
+		if (!room) {
+			return API.v1.failure('Channel does not exists');
+		}
+
+		if (!(await canAccessRoomAsync(room, this.user))) {
+			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+		}
+
+		const online: Pick<IUser, '_id' | 'username'>[] = await Users.findUsersNotOffline({
+			projection: { username: 1 },
+		}).toArray();
+
+		const onlineInRoom = await Promise.all(
+			online.map(async (user) => {
+				const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
+					projection: { _id: 1, username: 1 },
+				});
+				if (subscription) {
+					return {
+						_id: user._id,
+						username: user.username,
+					};
+				}
+			}),
+		);
+
+		return API.v1.success({
+			online: onlineInRoom.filter(isTruthy),
+		});
 	},
 );
 
@@ -1915,18 +1762,13 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
+		const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			const user = await getUserFromParams(this.bodyParams);
+		const user = await getUserFromParams(this.bodyParams);
 
-			await removeRoomModerator(this.userId, findResult._id, user._id);
+		await removeRoomModerator(this.userId, findResult._id, user._id);
 
-			return API.v1.success();
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
-		}
+		return API.v1.success();
 	},
 );
 
@@ -1942,18 +1784,13 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
+		const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			const user = await getUserFromParams(this.bodyParams);
+		const user = await getUserFromParams(this.bodyParams);
 
-			await removeRoomOwner(this.userId, findResult._id, user._id);
+		await removeRoomOwner(this.userId, findResult._id, user._id);
 
-			return API.v1.success();
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
-		}
+		return API.v1.success();
 	},
 );
 
@@ -1969,29 +1806,24 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			if (!this.bodyParams.name?.trim()) {
-				return API.v1.failure('The bodyParam "name" is required');
-			}
-
-			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
-
-			if (findResult.name === this.bodyParams.name) {
-				return API.v1.failure('The channel name is the same as what it would be renamed to.');
-			}
-
-			await saveRoomSettings(this.userId, findResult._id, 'roomName', this.bodyParams.name);
-
-			return API.v1.success({
-				channel: await findChannelByIdOrName({
-					params: this.bodyParams,
-					userId: this.userId,
-				}),
-			});
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
+		if (!this.bodyParams.name?.trim()) {
+			return API.v1.failure('The bodyParam "name" is required');
 		}
+
+		const findResult = await findChannelByIdOrName({ params: this.bodyParams });
+
+		if (findResult.name === this.bodyParams.name) {
+			return API.v1.failure('The channel name is the same as what it would be renamed to.');
+		}
+
+		await saveRoomSettings(this.userId, findResult._id, 'roomName', this.bodyParams.name);
+
+		return API.v1.success({
+			channel: await findChannelByIdOrName({
+				params: this.bodyParams,
+				userId: this.userId,
+			}),
+		});
 	},
 );
 
@@ -2009,22 +1841,17 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			if (!this.bodyParams.customFields || !(typeof this.bodyParams.customFields === 'object')) {
-				return API.v1.failure('The bodyParam "customFields" is required with a type like object.');
-			}
-
-			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
-
-			await saveRoomSettings(this.userId, findResult._id, 'roomCustomFields', this.bodyParams.customFields);
-
-			return API.v1.success({
-				channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
-			});
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
+		if (!this.bodyParams.customFields || !(typeof this.bodyParams.customFields === 'object')) {
+			return API.v1.failure('The bodyParam "customFields" is required with a type like object.');
 		}
+
+		const findResult = await findChannelByIdOrName({ params: this.bodyParams });
+
+		await saveRoomSettings(this.userId, findResult._id, 'roomCustomFields', this.bodyParams.customFields);
+
+		return API.v1.success({
+			channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
+		});
 	},
 );
 
@@ -2040,34 +1867,29 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			if (typeof this.bodyParams.default === 'undefined') {
-				return API.v1.failure('The bodyParam "default" is required', 'error-channels-setdefault-is-same');
-			}
-
-			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
-
-			if (findResult.default === this.bodyParams.default) {
-				return API.v1.failure(
-					'The channel default setting is the same as what it would be changed to.',
-					'error-channels-setdefault-missing-default-param',
-				);
-			}
-
-			await saveRoomSettings(
-				this.userId,
-				findResult._id,
-				'default',
-				['true', '1'].includes(this.bodyParams.default.toString().toLowerCase()),
-			);
-
-			return API.v1.success({
-				channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
-			});
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
+		if (typeof this.bodyParams.default === 'undefined') {
+			return API.v1.failure('The bodyParam "default" is required', 'error-channels-setdefault-is-same');
 		}
+
+		const findResult = await findChannelByIdOrName({ params: this.bodyParams });
+
+		if (findResult.default === this.bodyParams.default) {
+			return API.v1.failure(
+				'The channel default setting is the same as what it would be changed to.',
+				'error-channels-setdefault-missing-default-param',
+			);
+		}
+
+		await saveRoomSettings(
+			this.userId,
+			findResult._id,
+			'default',
+			['true', '1'].includes(this.bodyParams.default.toString().toLowerCase()),
+		);
+
+		return API.v1.success({
+			channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
+		});
 	},
 );
 
@@ -2083,22 +1905,17 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
+		const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			if (findResult.description === this.bodyParams.description) {
-				return API.v1.failure('The channel description is the same as what it would be changed to.');
-			}
-
-			await saveRoomSettings(this.userId, findResult._id, 'roomDescription', this.bodyParams.description || '');
-
-			return API.v1.success({
-				description: this.bodyParams.description || '',
-			});
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
+		if (findResult.description === this.bodyParams.description) {
+			return API.v1.failure('The channel description is the same as what it would be changed to.');
 		}
+
+		await saveRoomSettings(this.userId, findResult._id, 'roomDescription', this.bodyParams.description || '');
+
+		return API.v1.success({
+			description: this.bodyParams.description || '',
+		});
 	},
 );
 
@@ -2114,22 +1931,17 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
+		const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			if (findResult.description === this.bodyParams.purpose) {
-				return API.v1.failure('The channel purpose (description) is the same as what it would be changed to.');
-			}
-
-			await saveRoomSettings(this.userId, findResult._id, 'roomDescription', this.bodyParams.purpose || '');
-
-			return API.v1.success({
-				purpose: this.bodyParams.purpose || '',
-			});
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
+		if (findResult.description === this.bodyParams.purpose) {
+			return API.v1.failure('The channel purpose (description) is the same as what it would be changed to.');
 		}
+
+		await saveRoomSettings(this.userId, findResult._id, 'roomDescription', this.bodyParams.purpose || '');
+
+		return API.v1.success({
+			purpose: this.bodyParams.purpose || '',
+		});
 	},
 );
 
@@ -2145,22 +1957,17 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
+		const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			if (findResult.topic === this.bodyParams.topic) {
-				return API.v1.failure('The channel topic is the same as what it would be changed to.');
-			}
-
-			await saveRoomSettings(this.userId, findResult._id, 'roomTopic', this.bodyParams.topic || '');
-
-			return API.v1.success({
-				topic: this.bodyParams.topic || '',
-			});
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
+		if (findResult.topic === this.bodyParams.topic) {
+			return API.v1.failure('The channel topic is the same as what it would be changed to.');
 		}
+
+		await saveRoomSettings(this.userId, findResult._id, 'roomTopic', this.bodyParams.topic || '');
+
+		return API.v1.success({
+			topic: this.bodyParams.topic || '',
+		});
 	},
 );
 
@@ -2176,32 +1983,27 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			if (!this.bodyParams.type?.trim()) {
-				return API.v1.failure('The bodyParam "type" is required');
-			}
-
-			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
-
-			if (findResult.t === this.bodyParams.type) {
-				return API.v1.failure('The channel type is the same as what it would be changed to.');
-			}
-
-			await saveRoomSettings(this.userId, findResult._id, 'roomType', this.bodyParams.type as RoomType);
-
-			const room = await Rooms.findOneById(findResult._id, { projection: API.v1.defaultFieldsToExclude });
-
-			if (!room) {
-				return API.v1.failure('The channel does not exist');
-			}
-
-			return API.v1.success({
-				channel: await composeRoomWithLastMessage(room, this.userId),
-			});
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
+		if (!this.bodyParams.type?.trim()) {
+			return API.v1.failure('The bodyParam "type" is required');
 		}
+
+		const findResult = await findChannelByIdOrName({ params: this.bodyParams });
+
+		if (findResult.t === this.bodyParams.type) {
+			return API.v1.failure('The channel type is the same as what it would be changed to.');
+		}
+
+		await saveRoomSettings(this.userId, findResult._id, 'roomType', this.bodyParams.type as RoomType);
+
+		const room = await Rooms.findOneById(findResult._id, { projection: API.v1.defaultFieldsToExclude });
+
+		if (!room) {
+			return API.v1.failure('The channel does not exist');
+		}
+
+		return API.v1.success({
+			channel: await composeRoomWithLastMessage(room, this.userId),
+		});
 	},
 );
 
@@ -2217,18 +2019,13 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
+		const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			const user = await getUserFromParams(this.bodyParams);
+		const user = await getUserFromParams(this.bodyParams);
 
-			await addRoomLeader(this.userId, findResult._id, user._id);
+		await addRoomLeader(this.userId, findResult._id, user._id);
 
-			return API.v1.success();
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
-		}
+		return API.v1.success();
 	},
 );
 
@@ -2244,18 +2041,13 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
+		const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			const user = await getUserFromParams(this.bodyParams);
+		const user = await getUserFromParams(this.bodyParams);
 
-			await removeRoomLeader(this.userId, findResult._id, user._id);
+		await removeRoomLeader(this.userId, findResult._id, user._id);
 
-			return API.v1.success();
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
-		}
+		return API.v1.success();
 	},
 );
 
@@ -2271,22 +2063,17 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		try {
-			if (!this.bodyParams.joinCode?.trim()) {
-				return API.v1.failure('The bodyParam "joinCode" is required');
-			}
-
-			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
-
-			await saveRoomSettings(this.userId, findResult._id, 'joinCode', this.bodyParams.joinCode);
-
-			return API.v1.success({
-				channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
-			});
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
+		if (!this.bodyParams.joinCode?.trim()) {
+			return API.v1.failure('The bodyParam "joinCode" is required');
 		}
+
+		const findResult = await findChannelByIdOrName({ params: this.bodyParams });
+
+		await saveRoomSettings(this.userId, findResult._id, 'joinCode', this.bodyParams.joinCode);
+
+		return API.v1.success({
+			channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
+		});
 	},
 );
 
@@ -2326,50 +2113,45 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		try {
-			const findResult = await findChannelByIdOrName({
-				params: this.queryParams,
-				checkedArchived: false,
+		const findResult = await findChannelByIdOrName({
+			params: this.queryParams,
+			checkedArchived: false,
+		});
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort, fields, query } = await this.parseJsonQuery();
+
+		const ourQuery = Object.assign({}, query, { rid: findResult._id });
+
+		if (!settings.get<boolean>('Accounts_AllowAnonymousRead')) {
+			throw new Meteor.Error('error-not-allowed', 'Enable "Allow Anonymous Read"', {
+				method: 'channels.anonymousread',
 			});
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
+		}
 
-			const ourQuery = Object.assign({}, query, { rid: findResult._id });
-
-			if (!settings.get<boolean>('Accounts_AllowAnonymousRead')) {
-				throw new Meteor.Error('error-not-allowed', 'Enable "Allow Anonymous Read"', {
-					method: 'channels.anonymousread',
-				});
-			}
-
-			// Public rooms of private teams should be accessible only by team members
-			if (findResult.teamId) {
-				const team = await Team.getOneById(findResult.teamId);
-				if (team?.type === TeamType.PRIVATE) {
-					if (!this.userId || !(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
-						return API.v1.notFound('Room not found');
-					}
+		// Public rooms of private teams should be accessible only by team members
+		if (findResult.teamId) {
+			const team = await Team.getOneById(findResult.teamId);
+			if (team?.type === TeamType.PRIVATE) {
+				if (!this.userId || !(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
+					return API.v1.notFound('Room not found');
 				}
 			}
-
-			const { cursor, totalCount } = await Messages.findPaginated(ourQuery, {
-				sort: sort || { ts: -1 },
-				skip: offset,
-				limit: count,
-				projection: fields,
-			});
-
-			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				messages: await normalizeMessagesForUser(messages, this.userId || ''),
-				count: messages.length,
-				offset,
-				total,
-			});
-		} catch (error) {
-			const [message, errorType, stack, details] = errorToFailureArgs(error);
-			return API.v1.failure(message, errorType, stack, details);
 		}
+
+		const { cursor, totalCount } = await Messages.findPaginated(ourQuery, {
+			sort: sort || { ts: -1 },
+			skip: offset,
+			limit: count,
+			projection: fields,
+		});
+
+		const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return API.v1.success({
+			messages: await normalizeMessagesForUser(messages, this.userId || ''),
+			count: messages.length,
+			offset,
+			total,
+		});
 	},
 );
