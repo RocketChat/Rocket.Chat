@@ -1,4 +1,4 @@
-import { useCallback, useContext, useMemo, useRef } from 'preact/hooks';
+import { useCallback, useContext, useMemo, useRef, useState } from 'preact/hooks';
 import { route } from 'preact-router';
 import { useTranslation } from 'react-i18next';
 
@@ -6,6 +6,7 @@ import ChatComponent from './component';
 import ChatContainer from './container';
 import { useChatSubscriptions } from './useChatSubscriptions';
 import { Livechat } from '../../api';
+import { MessageList } from '../../components/Messages';
 import { ModalManager } from '../../components/Modal';
 import { ScreenContext } from '../../components/Screen/ScreenProvider';
 import { getAvatarUrl } from '../../helpers/baseUrl';
@@ -386,6 +387,52 @@ const Chat = (_: ChatProps) => {
 		return !!(nameFieldRegistrationForm || emailFieldRegistrationForm || showDepartment);
 	}, [user?.token, registrationFormEnabled, departments, nameFieldRegistrationForm, emailFieldRegistrationForm]);
 
+	const [atBottom, setAtBottom] = useState(true);
+	const [text, setText] = useState('');
+	const [emojiPickerActive, setEmojiPickerActive] = useState(false);
+
+	const handleScrollTo = useStableCallback((region: string) => {
+		if (region === MessageList.SCROLL_AT_BOTTOM) {
+			setAtBottom(true);
+			return;
+		}
+
+		setAtBottom(false);
+
+		if (region === MessageList.SCROLL_AT_TOP) {
+			onTop?.();
+		}
+	});
+
+	const handleUploadClick = useStableCallback((event?: Event) => {
+		event?.preventDefault();
+		inputRef.current?.click();
+	});
+
+	const handleSubmit = useStableCallback((text: string) => {
+		void onSubmit(text);
+		setText('');
+		setEmojiPickerActive(false);
+	});
+
+	const handleSendClick = useStableCallback((event?: Event) => {
+		event?.preventDefault();
+		handleSubmit(text);
+	});
+
+	const handleChangeText = useStableCallback((text: string) => {
+		let value = text;
+		if (limitTextLength && limitTextLength < text.length) {
+			value = value.substring(0, limitTextLength);
+		}
+		setText(value);
+		void onChangeText?.();
+	});
+
+	const toggleEmojiPickerState = useStableCallback(() => {
+		setEmojiPickerActive((emojiPickerActive) => !emojiPickerActive);
+	});
+
 	return (
 		<>
 			<ChatContainer
@@ -427,6 +474,18 @@ const Chat = (_: ChatProps) => {
 				onSoundStop={onSoundStop}
 				registrationRequired={registrationRequired}
 				onRegisterUser={onRegisterUser}
+				atBottom={atBottom}
+				text={text}
+				emojiPickerActive={emojiPickerActive}
+				setAtBottom={setAtBottom}
+				setText={setText}
+				setEmojiPickerActive={setEmojiPickerActive}
+				handleScrollTo={handleScrollTo}
+				handleUploadClick={handleUploadClick}
+				handleSubmit={handleSubmit}
+				handleSendClick={handleSendClick}
+				handleChangeText={handleChangeText}
+				toggleEmojiPickerState={toggleEmojiPickerState}
 			/>
 		</>
 	);

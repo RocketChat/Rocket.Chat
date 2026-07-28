@@ -3,7 +3,7 @@ import type { TFunction } from 'i18next';
 import type { RefObject } from 'preact';
 import { Component } from 'preact';
 import { Suspense } from 'preact/compat';
-import type { MutableRef } from 'preact/hooks';
+import type { MutableRef, StateUpdater, Dispatch as StoreDispatch } from 'preact/hooks';
 
 import Picker from './Picker';
 import styles from './styles.scss';
@@ -55,79 +55,23 @@ export type ChatProps = {
 	onChangeText?: (text: string) => void;
 	onSoundStop?: () => void;
 	t: TFunction;
-};
-
-type ChatState = {
 	atBottom: boolean;
 	text: string;
 	emojiPickerActive: boolean;
+	setAtBottom: StoreDispatch<StateUpdater<boolean>>;
+	setText: StoreDispatch<StateUpdater<string>>;
+	setEmojiPickerActive: StoreDispatch<StateUpdater<boolean>>;
+	handleScrollTo: (region: string) => void;
+	handleUploadClick: (event?: Event) => void;
+	handleSubmit: (text: string) => void;
+	handleSendClick: (event?: Event) => void;
+	handleChangeText: (text: string) => void;
+	toggleEmojiPickerState: () => void;
 };
 
-class Chat extends Component<ChatProps, ChatState> {
-	override state: ChatState = {
-		atBottom: true,
-		text: '',
-		emojiPickerActive: false,
-	};
-
-	private handleScrollTo = (region: string) => {
-		const { onTop } = this.props;
-
-		if (region === MessageList.SCROLL_AT_BOTTOM) {
-			this.setState({ atBottom: true });
-			return;
-		}
-
-		this.setState({ atBottom: false });
-
-		if (region === MessageList.SCROLL_AT_TOP) {
-			onTop?.();
-		}
-	};
-
-	private handleUploadClick = (event?: Event) => {
-		const { inputRef } = this.props;
-
-		event?.preventDefault();
-		inputRef.current?.click();
-	};
-
-	private handleSendClick = (event?: Event) => {
-		const { text } = this.state;
-		const { handleSubmit } = this;
-
-		event?.preventDefault();
-		handleSubmit(text);
-	};
-
-	private handleSubmit = (text: string) => {
-		const { onSubmit } = this.props;
-
-		if (!onSubmit) return;
-
-		onSubmit(text);
-		this.setState({ text: '' });
-		this.setState({ emojiPickerActive: false });
-	};
-
-	private handleChangeText = (text: string) => {
-		const { onChangeText, limitTextLength } = this.props;
-
-		let value = text;
-		if (limitTextLength && limitTextLength < text.length) {
-			value = value.substring(0, limitTextLength);
-		}
-		this.setState({ text: value });
-		onChangeText?.(value);
-	};
-
-	private toggleEmojiPickerState = () => {
-		this.setState(({ emojiPickerActive }) => ({ emojiPickerActive: !emojiPickerActive }));
-	};
-
+class Chat extends Component<ChatProps> {
 	private handleEmojiSelect = (emoji: EmojiData) => {
-		const { notifyEmojiSelectRef } = this.props;
-		const { toggleEmojiPickerState } = this;
+		const { notifyEmojiSelectRef, toggleEmojiPickerState } = this.props;
 
 		toggleEmojiPickerState();
 		if ('native' in emoji) {
@@ -136,49 +80,51 @@ class Chat extends Component<ChatProps, ChatState> {
 	};
 
 	private handleEmojiClick = () => {
-		this.setState({ emojiPickerActive: false });
+		const { setEmojiPickerActive } = this.props;
+		setEmojiPickerActive(false);
 	};
 
-	render = (
-		{
-			inputRef,
-			notifyEmojiSelectRef,
-			title,
-			uid,
-			agent,
-			typingUsernames,
-			avatarResolver,
-			conversationFinishedMessage,
-			loading,
-			onUpload,
-			messages,
-			uploads = false,
-			options,
-			onChangeDepartment,
-			onFinishChat,
-			onRemoveUserData,
-			lastReadMessageId,
-			queueInfo,
-			registrationRequired,
-			onRegisterUser,
-			limitTextLength,
-			t = ((key: string) => key) as TFunction,
-			dispatch,
-			theme,
-			unread,
-			onSoundStop,
-		}: ChatProps,
-		{ atBottom = true, text, emojiPickerActive }: ChatState,
-	) => {
+	render = ({
+		inputRef,
+		notifyEmojiSelectRef,
+		title,
+		uid,
+		agent,
+		typingUsernames,
+		avatarResolver,
+		conversationFinishedMessage,
+		loading,
+		onUpload,
+		messages,
+		uploads = false,
+		options,
+		onChangeDepartment,
+		onFinishChat,
+		onRemoveUserData,
+		lastReadMessageId,
+		queueInfo,
+		registrationRequired,
+		onRegisterUser,
+		limitTextLength,
+		t = ((key: string) => key) as TFunction,
+		dispatch,
+		theme,
+		unread,
+		onSoundStop,
+		atBottom,
+		text,
+		emojiPickerActive,
+		handleScrollTo,
+		handleUploadClick,
+		handleSubmit,
+		handleChangeText,
+		handleSendClick,
+		toggleEmojiPickerState,
+	}: ChatProps) => {
 		const {
 			handleEmojiClick,
-			handleScrollTo,
+
 			handleEmojiSelect,
-			handleSubmit,
-			handleChangeText,
-			toggleEmojiPickerState,
-			handleUploadClick,
-			handleSendClick,
 		} = this;
 
 		return (
