@@ -1,17 +1,17 @@
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useUTCClock } from '../hooks/useUTCClock';
+import { useTimezoneTime } from '../hooks/useTimezoneTime';
 
 export type LocalTimeProps = {
 	utcOffset: number;
 };
 
 const LocalTime = ({ utcOffset }: LocalTimeProps) => {
-	const time = useUTCClock(utcOffset);
+	const time = useTimezoneTime(utcOffset, 10000);
 	const { t } = useTranslation();
 
-	return <>{t('Local_Time_time', { time })}</>;
+	return <>{t('__time__local_time', { time })}</>;
 };
 
 export default memo(LocalTime);

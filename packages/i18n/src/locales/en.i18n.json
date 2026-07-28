@@ -7369,6 +7369,7 @@
   "your_message_optional": "your message (optional)",
   "__agents__agents_and__count__conversations__period__": "{{agents}} agents and {{count}} conversations, {{period}}",
   "__count__conversations__period__": "{{count}} conversations, {{period}}",
+  "__time__local_time": "{{time}} local time",
   "__count__empty_rooms_will_be_removed_automatically": "{{count}} empty rooms will be removed automatically.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "<bold>{{count}}</bold> empty rooms will be removed automatically:<br/> {{rooms}}.",
   "__count__file_pruned": {
