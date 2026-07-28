@@ -180,11 +180,15 @@ export const getEmojisBySearchTerm = (
 			tone = `_tone${actualTone}`;
 		}
 
-		const mixedTones = current.match(MIXED_TONE_SUFFIX);
-		const categoryName = current.replace(MIXED_TONE_SUFFIX, '');
-		if (mixedTones && !(actualTone > 0 && Number(mixedTones[1]) === actualTone)) {
-			continue;
+		const isNative = emojiPackage === 'native';
+		if (isNative) {
+			const mixedTones = current.match(MIXED_TONE_SUFFIX);
+			if (mixedTones && !(actualTone > 0 && Number(mixedTones[1]) === actualTone)) {
+				continue;
+			}
 		}
+
+		const categoryName = isNative ? current.replace(MIXED_TONE_SUFFIX, '') : current;
 
 		const isCategoryEmoji = Object.values(emoji.packages[emojiPackage].emojisByCategory).some(
 			(contents) => contents.indexOf(categoryName) !== -1,
