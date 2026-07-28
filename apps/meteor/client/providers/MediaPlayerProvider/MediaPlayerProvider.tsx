@@ -1,5 +1,5 @@
 import { useMergedRefs, useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { useStream } from '@rocket.chat/ui-contexts';
+import { useStream, useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -29,6 +29,7 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 	const [currentTime, setCurrentTime] = useState(0);
 	const [duration, setDuration] = useState(0);
 	const [playbackRate, setPlaybackRate] = useState<number>(1);
+	const userId = useUserId();
 
 	const trackRef = useRef<PersistentAudioTrack | null>(null);
 	trackRef.current = track;
@@ -104,6 +105,7 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 
 	const isActive = useCallback((id: string) => trackRef.current?.id === id, []);
 	const subscribeToNotifyRoom = useStream('notify-room');
+	const subscribeToNotifyUser = useStream('notify-user');
 
 	//For hard message delete, when Message Message_ShowDeletedStatus is off
 	useEffect(() => {
@@ -156,6 +158,24 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 
 		return unsub;
 	}, [track, close, playing]);
+
+	useEffect(() => {
+		if (!track || !playing || !userId) {
+			return;
+		}
+
+		const { rid } = track;
+
+		if (!rid) {
+			return;
+		}
+
+		return subscribeToNotifyUser(`${userId}/subscriptions-changed`, (event, subscription) => {
+			if (event === 'removed' && subscription.rid === rid) {
+				close();
+			}
+		});
+	}, [userId, subscribeToNotifyUser, track, playing, close]);
 
 	const value = useMemo<MediaPlayerContextValue>(
 		() => ({ track, playing, currentTime, duration, playbackRate, play, toggle, seek, cyclePlaybackRate, close, isActive }),
