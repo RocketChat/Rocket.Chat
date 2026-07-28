@@ -1,13 +1,22 @@
-import { useCallback, useContext, useRef } from 'preact/hooks';
+import { useCallback, useContext, useMemo, useRef } from 'preact/hooks';
 import { route } from 'preact-router';
 import { useTranslation } from 'react-i18next';
 
 import ChatContainer from './container';
 import { useChatSubscriptions } from './useChatSubscriptions';
 import { Livechat } from '../../api';
+import { ModalManager } from '../../components/Modal';
 import { ScreenContext } from '../../components/Screen/ScreenProvider';
 import { canRenderMessage } from '../../helpers/canRenderMessage';
-import { loadMessages } from '../../lib/room';
+import { debounce } from '../../helpers/debounce';
+import { throttle } from '../../helpers/throttle';
+import { upsert } from '../../helpers/upsert';
+import { normalizeQueueAlert } from '../../lib/api';
+import constants from '../../lib/constants';
+import { loadConfig } from '../../lib/main';
+import { parentCall, runCallbackEventEmitter } from '../../lib/parentCall';
+import { createToken } from '../../lib/random';
+import { defaultRoomParams, getGreetingMessages, initRoom, loadMessages, loadMoreMessages } from '../../lib/room';
 import { type StoreState, useStore } from '../../store';
 
 const useStableCallback = <TFunction extends (...args: any[]) => any>(callback: TFunction): TFunction => {
@@ -26,6 +35,15 @@ const useChatTitle = () => {
 
 	return customTitle || title;
 };
+
+const startTyping = throttle(async ({ rid, username }: { rid: string; username: string }) => {
+	await Livechat.notifyVisitorActivity(rid, username, ['user-typing']);
+	stopTypingDebounced({ rid, username });
+}, 4500);
+
+const stopTyping = ({ rid, username }: { rid: string; username: string }) => Livechat.notifyVisitorActivity(rid, username, []);
+
+const stopTypingDebounced = debounce(stopTyping, 5000);
 
 export type ChatProps = {
 	path?: string;
@@ -120,6 +138,229 @@ const Chat = (_: ChatProps) => {
 		dispatch({ user: newUser });
 	});
 
+	const getRoom = useStableCallback(async () => {
+		const previousMessages = getGreetingMessages(messages);
+
+		if (room) {
+			return room;
+		}
+
+		dispatch({ loading: true });
+		try {
+			const params = defaultRoomParams();
+			const newRoom = await Livechat.room(params as Parameters<typeof Livechat.room>[0]);
+			dispatch({ room: newRoom, messages: previousMessages, noMoreMessages: false });
+			await initRoom();
+
+			parentCall('callback', 'chat-started');
+			return newRoom;
+		} catch (error: any) {
+			const reason = error ? error.error : '';
+			const alert = {
+				id: createToken(),
+				children: t('error_starting_a_new_conversation_reason', { reason }),
+				error: true,
+				timeout: 10000,
+			};
+			dispatch({ loading: false, alerts: (alerts.push(alert), alerts) });
+
+			runCallbackEventEmitter(reason, undefined);
+			throw error;
+		} finally {
+			dispatch({ loading: false });
+		}
+	});
+
+	const onTop = useCallback(() => {
+		void loadMoreMessages();
+	}, []);
+
+	const onChangeText = useStableCallback(async () => {
+		if (!(user?.username && room?._id)) {
+			return;
+		}
+
+		startTyping({ rid: room._id, username: user.username });
+	});
+
+	const onSubmit = useStableCallback(async (msg: string) => {
+		if (msg.trim() === '') {
+			return;
+		}
+
+		await grantUser();
+		const { _id: rid } = await getRoom();
+
+		try {
+			stopTypingDebounced.stop();
+			await Promise.all([stopTyping({ rid, username: user?.username ?? '' }), Livechat.sendMessage({ msg, token, rid })]);
+		} catch (error: any) {
+			const reason = error?.error ?? error.message;
+			const alert = { id: createToken(), children: reason, error: true, timeout: 5000 };
+			dispatch({ alerts: (alerts.push(alert), alerts) });
+		}
+		await Livechat.notifyVisitorActivity(rid, user?.username ?? '', []);
+	});
+
+	const doFileUpload = useStableCallback(async (rid: string, file: File) => {
+		try {
+			await Livechat.uploadFile(rid, file);
+		} catch (error: any) {
+			const {
+				data: { reason, sizeAllowed },
+			} = error;
+
+			let message = t('fileupload_error');
+			switch (reason) {
+				case 'error-type-not-allowed':
+					message = t('media_types_not_accepted');
+					break;
+				case 'error-size-not-allowed':
+					message = t('file_exceeds_allowed_size_of_size', { size: sizeAllowed });
+			}
+
+			const alert = { id: createToken(), children: message, error: true, timeout: 5000 };
+			dispatch({ alerts: (alerts.push(alert), alerts) });
+		}
+	});
+
+	const onUpload = useStableCallback(async (files: (File | null)[]) => {
+		if (!uploads) {
+			const alert = { id: createToken(), children: t('file_upload_disabled'), error: true, timeout: 5000 };
+			dispatch({ alerts: (alerts.push(alert), alerts) });
+			return;
+		}
+
+		await grantUser();
+		const { _id: rid } = await getRoom();
+
+		files.forEach((file) => {
+			if (file) {
+				void doFileUpload(rid, file);
+			}
+		});
+	});
+
+	const onSoundStop = useStableCallback(async () => {
+		dispatch({ sound: { ...sound, play: false } });
+	});
+
+	const handleFinishChat = useStableCallback(async () => {
+		const { success } = await ModalManager.confirm({
+			text: t('are_you_sure_you_want_to_finish_this_chat'),
+		});
+
+		if (!success) {
+			return;
+		}
+
+		const { _id: rid } = room || {};
+
+		dispatch({ loading: true });
+		try {
+			if (!rid) {
+				throw new Error('error-room-not-found');
+			}
+
+			await Livechat.closeChat({ rid });
+		} catch (error) {
+			console.error(error);
+			const alert = { id: createToken(), children: t('error_closing_chat'), error: true, timeout: 0 };
+			dispatch({ alerts: (alerts.push(alert), alerts) });
+		} finally {
+			dispatch({ loading: false });
+		}
+	});
+
+	const handleRemoveUserData = useStableCallback(async () => {
+		const { success } = await ModalManager.confirm({
+			text: t('are_you_sure_you_want_to_remove_all_of_your_person'),
+		});
+
+		if (!success) {
+			return;
+		}
+
+		dispatch({ loading: true });
+		try {
+			await Livechat.deleteVisitor();
+		} catch (error) {
+			console.error(error);
+			const alert = { id: createToken(), children: t('error_removing_user_data'), error: true, timeout: 0 };
+			dispatch({ alerts: (alerts.push(alert), alerts) });
+		} finally {
+			await loadConfig();
+			dispatch({ loading: false });
+			route('/chat-finished');
+		}
+	});
+
+	const canSwitchDepartment = useMemo(
+		() => !!allowSwitchingDepartments && departments.filter((dept) => dept.showOnRegistration).length > 1,
+		[allowSwitchingDepartments, departments],
+	);
+
+	const canFinishChat = !!visitorsCanCloseChat && (room?._id !== undefined || !!connecting);
+
+	const canRemoveUserData = !!allowRemoveUserData;
+
+	const handleConnectingAgentAlert = useStableCallback(async (connecting: boolean, message?: string | false) => {
+		const { connectingAgentAlertId } = constants;
+		const newAlerts = alerts.filter((item) => item.id !== connectingAgentAlertId);
+		if (connecting) {
+			newAlerts.push({
+				id: connectingAgentAlertId,
+				children: message || t('please_wait_for_the_next_available_agent'),
+				warning: true,
+				hideCloseButton: true,
+				timeout: 0,
+			});
+		}
+
+		dispatch({ alerts: newAlerts });
+	});
+
+	const handleQueueMessage = useStableCallback(async (connecting: boolean, queueInfo?: StoreState['queueInfo']) => {
+		if (!queueInfo) return;
+
+		const { livechatQueueMessageId } = constants;
+		const { message: { text: msg, user: u } = {} } = queueInfo;
+		const { triggerQueueMessage } = innerStateRef.current;
+
+		if (!room || !connecting || !msg || !triggerQueueMessage) {
+			return;
+		}
+
+		innerStateRef.current.triggerQueueMessage = false;
+
+		const ts = new Date();
+		const message = { _id: livechatQueueMessageId, msg, u, ts: ts.toISOString() };
+		dispatch({
+			messages: upsert(
+				messages,
+				message,
+				({ _id }) => _id === message._id,
+				({ ts }) => ts,
+			),
+		});
+	});
+
+	const checkConnectingAgent = useStableCallback(async () => {
+		const { connectingAgent, queueSpot, estimatedWaitTime } = innerStateRef.current;
+
+		const newConnecting = !!connecting;
+		const newQueueSpot = queueInfo?.spot || 0;
+		const newEstimatedWaitTime = queueInfo?.estimatedWaitTimeSeconds;
+
+		if (newConnecting !== connectingAgent || newQueueSpot !== queueSpot || newEstimatedWaitTime !== estimatedWaitTime) {
+			innerStateRef.current.connectingAgent = newConnecting;
+			innerStateRef.current.queueSpot = newQueueSpot;
+			innerStateRef.current.estimatedWaitTime = newEstimatedWaitTime;
+			await handleQueueMessage(newConnecting, queueInfo);
+			await handleConnectingAgentAlert(newConnecting, await normalizeQueueAlert(queueInfo));
+		}
+	});
+
 	return (
 		<ChatContainer
 			innerStateRef={innerStateRef}
@@ -157,6 +398,24 @@ const Chat = (_: ChatProps) => {
 			handleChangeDepartment={handleChangeDepartment}
 			checkRoom={checkRoom}
 			grantUser={grantUser}
+			getRoom={getRoom}
+			onTop={onTop}
+			startTyping={startTyping}
+			stopTyping={stopTyping}
+			stopTypingDebounced={stopTypingDebounced}
+			onChangeText={onChangeText}
+			onSubmit={onSubmit}
+			doFileUpload={doFileUpload}
+			onUpload={onUpload}
+			onSoundStop={onSoundStop}
+			handleFinishChat={handleFinishChat}
+			handleRemoveUserData={handleRemoveUserData}
+			canSwitchDepartment={canSwitchDepartment}
+			canFinishChat={canFinishChat}
+			canRemoveUserData={canRemoveUserData}
+			handleConnectingAgentAlert={handleConnectingAgentAlert}
+			handleQueueMessage={handleQueueMessage}
+			checkConnectingAgent={checkConnectingAgent}
 		/>
 	);
 };
