@@ -6,12 +6,12 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useUserCardRoles } from './useUserCardRoles';
 import LocalTime from '../../../components/LocalTime';
 import { UserCard, UserCardAction, UserCardRole, UserCardSkeleton } from '../../../components/UserCard';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
 import { ReactiveUserStatusText } from '../../../components/UserStatusText';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
+import { useUserRolesByScope } from '../../../hooks/useUserRolesByScope';
 import { useMemberExists } from '../../hooks/useMemberExists';
 import { useUserInfoActions } from '../hooks/useUserInfoActions';
 import type { UserInfoAction } from '../hooks/useUserInfoActions/useUserInfoActions';
@@ -28,7 +28,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	const showRealNames = useSetting('UI_Use_Real_Name', false);
 
 	const { data, isLoading: isUserInfoLoading } = useUserInfoQuery({ username });
-	const { workspaceRoles, roomRoles } = useUserCardRoles(data?.user?._id, rid);
+	const { workspaceRoles, roomRoles } = useUserRolesByScope(data?.user?._id, rid);
 	const {
 		data: isMemberData,
 		refetch,
@@ -42,7 +42,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	const user = useMemo(() => {
 		const defaultValue = isLoading ? undefined : null;
 
-		const { _id, name, bio = defaultValue, utcOffset = defaultValue, nickname, avatarETag, freeSwitchExtension } = data?.user || {};
+		const { _id, name, utcOffset = defaultValue, nickname, avatarETag, freeSwitchExtension } = data?.user || {};
 
 		return {
 			_id,
@@ -50,7 +50,6 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			username,
 			roles: roomRoles.length > 0 && roomRoles.map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			workspaceRoles: workspaceRoles.length > 0 && workspaceRoles.join(', '),
-			bio,
 			etag: avatarETag,
 			localTime: utcOffset && Number.isInteger(utcOffset) && <LocalTime utcOffset={utcOffset} />,
 			status: _id && <ReactiveUserStatus uid={_id} />,
@@ -83,11 +82,17 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 
 	const actions = useMemo(() => {
 		const mapAction = ([key, { content, title, icon, onClick, disabled }]: [string, UserInfoAction]) => (
-			<UserCardAction key={key} label={content || title} icon={icon} onClick={onClick} disabled={disabled} />
+			<UserCardAction
+				key={key}
+				label={key === 'openDirectMessage' ? t('Message') : content || title}
+				icon={icon}
+				onClick={onClick}
+				disabled={disabled}
+			/>
 		);
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
-	}, [actionsDefinition, menu]);
+	}, [actionsDefinition, menu, t]);
 
 	if (isLoading) {
 		return <UserCardSkeleton />;
