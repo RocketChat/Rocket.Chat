@@ -14,11 +14,6 @@ const mountMarkup = (text: string): HTMLDivElement => {
 	return input;
 };
 
-const flatLength = (input: HTMLDivElement): number => {
-	setSelectionRange(input, Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);
-	return getSelectionRange(input).selectionStart;
-};
-
 afterEach(() => {
 	window.getSelection()?.removeAllRanges();
 	document.body.innerHTML = '';
@@ -26,15 +21,18 @@ afterEach(() => {
 
 describe('caret round-trip on real rendered markup', () => {
 	it.each([
-		['plain text', 'hello world'],
-		['bold', 'a *bold* b'],
-		['italic', 'a _em_ b'],
-		['inline code', 'a `code` b'],
-		['heading', '# Title'],
-		['multiline', 'first\nsecond\nthird'],
-	])('preserves every caret offset for %s', (_label, text) => {
+		['plain text', 'hello world', 'hello world\n'],
+		['bold', 'a *bold* b', 'a *bold* b\n'],
+		['italic', 'a _em_ b', 'a _em_ b\n'],
+		['inline code', 'a `code` b', 'a `code` b\n'],
+		['heading', '# Title', '# Title\n'],
+		['multiline', 'first\nsecond\nthird', 'first\nsecond\nthird\n'],
+	])('preserves every caret offset for %s', (_label, text, rendered) => {
 		const input = mountMarkup(text);
-		const length = flatLength(input);
+
+		expect(input.textContent).toBe(rendered);
+
+		const { length } = rendered;
 
 		for (let n = 0; n <= length; n++) {
 			setSelectionRange(input, n, n);

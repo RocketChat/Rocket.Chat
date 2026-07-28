@@ -106,9 +106,11 @@ describe('RichText Composer API - insertText', () => {
 	it('inserts into a composer holding only the placeholder <br>', () => {
 		const input = document.createElement('div');
 		input.contentEditable = 'true';
-		input.innerHTML = '<br>';
 		document.body.appendChild(input);
 		const composer = createRichTextComposerAPI(input, jest.fn(), '', Number.MAX_SAFE_INTEGER, {}, { current: null }, { rid: 'GENERAL' });
+
+		input.innerHTML = '<br>';
+		expect(input.firstChild?.nodeName).toBe('BR');
 
 		composer.insertText('hi');
 
