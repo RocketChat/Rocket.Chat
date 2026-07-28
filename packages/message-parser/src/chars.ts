@@ -34,6 +34,10 @@ export function isUrlStart(ch: string): boolean {
 	return isAlpha(ch) || isDigit(ch);
 }
 
+export function isEmailStart(ch: string): boolean {
+	return isUrlStart(ch) || ch.charCodeAt(0) > 127;
+}
+
 export function isEmojiStart(ch: string): boolean {
 	const code = ch.charCodeAt(0);
 	return (

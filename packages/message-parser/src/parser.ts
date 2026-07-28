@@ -23,6 +23,7 @@ import type {
 	HorizontalRule,
 	Table,
 	TableCellAlignment,
+	Markup,
 } from './definitions';
 import type { Options } from './index';
 import {
@@ -78,6 +79,7 @@ import {
 	isHexDigit,
 	isEmojiStart,
 	isUrlStart,
+	isEmailStart,
 } from './chars';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -128,8 +130,7 @@ function isAnyText(ch: string): boolean {
 	return (
 		(ch >= ' ' && ch <= "'") || // space ! " # $ % & '
 		(ch >= '+' && ch <= '@') || // + , - . / 0-9 : ; < = > ? @
-		(ch >= 'A' && ch <= 'Z') || // A-Z
-		(ch >= 'a' && ch <= 'z') || // a-z
+		isAlpha(ch) || // A-Z or a-z
 		ch.charCodeAt(0) > 127 // any non-ASCII character
 	);
 }
@@ -146,10 +147,19 @@ function isPhoneChar(ch: string): boolean {
 	return isDigit(ch) || ch === '(' || ch === ')' || ch === '-';
 }
 
-// Confirm the token is shaped like a URL
 function isValidUrlStructure(url: string): boolean {
 	if (url.includes('://')) return /^[A-Za-z0-9+-]{1,32}:\/\/./.test(url); // scheme://host
 	return !url.includes(':/') && /^[A-Za-z0-9][^/:?#]*\.[^/:?#]+/.test(url); // bare domain
+}
+
+// True when a `]` begins a `] [label](url)` link that follows, marking the end of the current label.
+function isReferenceContinuation(scanner: Scanner): boolean {
+	if (!scanner.matches('] [')) return false;
+	for (let i = 3; ; i++) {
+		const c = scanner.charAt(i);
+		if (c === '' || isNewline(c)) return false;
+		if (c === ']') return scanner.charAt(i + 1) === '(';
+	}
 }
 
 // ───  Re-entrancy guards ───────────────────────────────────────────────────
@@ -157,6 +167,7 @@ function isValidUrlStructure(url: string): boolean {
 let skipBold = false;
 let skipItalic = false;
 let skipStrike = false;
+let skipReferences = false;
 
 // ───  Entry point ──────────────────────────────────────────────────────────
 
@@ -257,7 +268,7 @@ function parseInline(scanner: Scanner, options: Options, stopChar = '') {
 
 		// Emoticons
 		if (options.emoticons) {
-			const result = tryEmoticon(scanner, prev);
+			const result = tryEmoticon(scanner, prev, stopChar);
 			if (result !== null) {
 				nodes.push(result);
 				prev = '';
@@ -377,7 +388,7 @@ function parseInline(scanner: Scanner, options: Options, stopChar = '') {
 		}
 
 		// Email (local@domain)
-		if (isUrlStart(ch) || ch.charCodeAt(0) > 127) {
+		if (isEmailStart(ch)) {
 			const email = tryEmail(scanner);
 			if (email !== null) {
 				nodes.push(email);
@@ -431,7 +442,7 @@ function parseInline(scanner: Scanner, options: Options, stopChar = '') {
 			const ts = tryAngleBracketLink(scanner);
 			if (ts !== null) {
 				nodes.push(ts);
-				prev = '';
+				prev = '>';
 				continue;
 			}
 		}
@@ -448,7 +459,7 @@ function parseInline(scanner: Scanner, options: Options, stopChar = '') {
 
 		// Auto link
 		if (isUrlStart(ch)) {
-			const result = tryAutoLinkUrl(scanner, options);
+			const result = tryAutoLinkUrl(scanner, options, prev);
 			if (result !== null) {
 				nodes.push(result);
 				prev = '';
@@ -672,7 +683,7 @@ function tryEmail(scanner: Scanner): Inlines | null {
 	}
 
 	// Trim trailing '.' / '-' back out of the domain ("joe.com." → "joe.com")
-	while (scanner.position() > domainStart && (scanner.charAt(-1) === '.' || scanner.charAt(-1) === '-')) {
+	while (scanner.position() > domainStart && scanner.charAt(-1) === '.') {
 		scanner.consume(-1);
 	}
 
@@ -793,16 +804,18 @@ function tryTimestamp(scanner: Scanner): Inlines | null {
 	return timestamp(parsedTimestamp, format, [start, scanner.position()]);
 }
 
-export function tryEmoticon(scanner: Scanner, prev: string): Inlines | null {
-	if (prev !== '' && !isSpace(prev)) return null;
+export function tryEmoticon(scanner: Scanner, prev: string, stopChar: string): Inlines | null {
+	if (isAlphaNum(prev)) return null;
 
 	const start = scanner.position();
 
 	const node = matchEmoticon(scanner);
 	if (node === null) return null;
 
+	// Must be followed by whitespace, end of text, `*`, or the emphasis closer (stopChar).
 	const after = scanner.char();
-	if (after === '' || isSpace(after) || isNewline(after) || after === '*') {
+	const beforeCloser = stopChar !== '' && after === stopChar[0];
+	if (after === '' || isSpace(after) || isNewline(after) || after === '*' || beforeCloser) {
 		return node;
 	}
 
@@ -866,7 +879,6 @@ function trySpoiler(scanner: Scanner, options: Options): Inlines | null {
 	const start = scanner.position();
 	const delimiter = '||';
 
-	// Must start with "||"
 	if (!scanner.matches(delimiter)) {
 		return null;
 	}
@@ -890,13 +902,12 @@ function trySpoiler(scanner: Scanner, options: Options): Inlines | null {
 
 function parseLinkLabel(scanner: Scanner, options: Options): Inlines[] {
 	const nodes: Inlines[] = [];
-	let depth = 0;
 	let prev = '';
 
 	while (!scanner.isEnd() && !isNewline(scanner.char())) {
-		const ch = scanner.char();
+		if (scanner.matches('](') || isReferenceContinuation(scanner)) break;
 
-		if (ch === ']' && depth === 0) break; // top-level ']' ends the label
+		const ch = scanner.char();
 
 		if (ch === '*') {
 			const r = tryBold(scanner, options);
@@ -918,7 +929,7 @@ function parseLinkLabel(scanner: Scanner, options: Options): Inlines[] {
 			const r = tryItalic(scanner, options, prev);
 			if (r !== null) {
 				nodes.push(r);
-				prev = ch;
+				prev = '_';
 				continue;
 			}
 		}
@@ -933,9 +944,6 @@ function parseLinkLabel(scanner: Scanner, options: Options): Inlines[] {
 			}
 		}
 
-		if (ch === '[') depth++;
-		else if (ch === ']') depth--;
-
 		nodes.push(plain(ch));
 		prev = ch;
 		scanner.consume();
@@ -945,6 +953,7 @@ function parseLinkLabel(scanner: Scanner, options: Options): Inlines[] {
 }
 
 function tryMarkdownLink(scanner: Scanner, options: Options): Inlines | null {
+	if (skipReferences) return null;
 	const start = scanner.position();
 
 	if (scanner.char() !== '[') {
@@ -952,7 +961,9 @@ function tryMarkdownLink(scanner: Scanner, options: Options): Inlines | null {
 	}
 	scanner.consume(); // consume '['
 
+	skipReferences = true;
 	const titleNodes = parseLinkLabel(scanner, options);
+	skipReferences = false;
 
 	if (!scanner.matches('](')) {
 		scanner.backtrack(start);
@@ -1008,7 +1019,7 @@ function tryMarkdownLink(scanner: Scanner, options: Options): Inlines | null {
 		return link(url);
 	}
 
-	return link(url, title as any);
+	return link(url, title as Markup[]);
 }
 
 function tryAngleBracketLink(scanner: Scanner): Inlines | null {
@@ -1091,9 +1102,11 @@ function tryKatexInline(scanner: Scanner, options: Options): Inlines | null {
 	return inlineKatex(content);
 }
 
-function tryAutoLinkUrl(scanner: Scanner, options: Options): Inlines | null {
+function tryAutoLinkUrl(scanner: Scanner, options: Options, prev: string): Inlines | null {
+	if (prev === '_') return null;
+
 	const ch = scanner.char();
-	if (!isAlpha(ch) && !isDigit(ch)) return null;
+	if (!isAlphaNum(ch)) return null;
 
 	const start = scanner.position();
 
@@ -1203,7 +1216,6 @@ function tryColor(scanner: Scanner, options: Options): Inlines | null {
 		rgba = [n[0], n[1], n[2], n[3] ?? 255];
 	}
 
-	// Invalid digit count, or color is immediately followed by text -> not a color.
 	if (rgba === null || isAnyText(scanner.char())) {
 		scanner.backtrack(startPos);
 		return null;
@@ -1332,7 +1344,6 @@ function tryHeading(scanner: Scanner, options: Options): Heading | null {
 		return null;
 	}
 
-	// Skip all leading spaces/tabs
 	while (isSpace(scanner.char())) {
 		scanner.consume();
 	}
@@ -1446,7 +1457,6 @@ function tryUnorderedList(scanner: Scanner, options: Options): UnorderedList | n
 		const ch = scanner.char();
 		const itemStart = scanner.position();
 
-		// Stop if marker changes or line is no longer a list item
 		if (ch !== marker) break;
 		if (!isSpace(scanner.charAt(1))) break;
 
@@ -1502,7 +1512,6 @@ function tryOrderedList(scanner: Scanner, options: Options): OrderedList | null 
 		}
 		const numStr = scanner.sliceFrom(numStart);
 
-		// Must be followed by '.' then a space
 		if (scanner.char() !== '.') {
 			scanner.backtrack(start);
 			return null;
@@ -1550,7 +1559,6 @@ function tryKatexBlock(scanner: Scanner, options: Options): KaTeX | null {
 
 	scanner.consume(openDelim.length);
 
-	// Collect content until closing delimiter
 	const contentStart = scanner.position();
 	while (!scanner.isEnd()) {
 		if (scanner.matches(closeDelim)) break;
