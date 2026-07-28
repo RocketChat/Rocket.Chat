@@ -66,8 +66,6 @@ const UserCard = ({
 					paddingBlock='x8'
 					paddingInline='x24'
 					backgroundColor='tint'
-					borderBlockEndWidth='default'
-					borderBlockEndColor='extra-light'
 					fontScale='c1'
 					color='default'
 					withTruncatedText
