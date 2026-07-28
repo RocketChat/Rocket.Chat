@@ -1245,7 +1245,7 @@ const channelsGetIntegrationsResponseSchema = ajv.compile<{
 		integrations: {
 			type: 'array',
 			items: {
-				anyOf: [{ $ref: '#/components/schemas/IIncomingIntegration' }, { $ref: '#/components/schemas/IOutgoingIntegration' }],
+				oneOf: [{ $ref: '#/components/schemas/IIncomingIntegration' }, { $ref: '#/components/schemas/IOutgoingIntegration' }],
 			},
 		},
 		count: { type: 'number' },
