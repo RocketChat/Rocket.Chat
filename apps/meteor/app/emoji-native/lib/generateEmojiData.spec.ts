@@ -194,3 +194,33 @@ describe('native emoji shortcodes', () => {
 		expect(stale).toEqual([]);
 	});
 });
+
+describe('emojione shortcodes dropped by the migration', () => {
+	it.each([
+		[':red_haired:', '🦰'],
+		[':curly_haired:', '🦱'],
+		[':bald:', '🦲'],
+		[':white_haired:', '🦳'],
+	])('still converts the hair-style shortcode %s', (shortcode, unicode) => {
+		expect(shortnameToUnicode(shortcode)).toBe(unicode);
+	});
+
+	it('still converts :iphone: (emojibase alias shadowed by the joypixels-only lookup)', () => {
+		expect(shortnameToUnicode(':iphone:')).toBe('📱');
+	});
+});
+
+describe('shortnameToUnicode adjacent to timestamp-like text', () => {
+	it('converts a shortcode that directly follows an unknown :token:', () => {
+		expect(shortnameToUnicode('12:30:fire:')).toBe('12:30🔥');
+	});
+});
+
+describe('bare (unqualified) unicode aliases', () => {
+	it.each([
+		['❤', ':heart:'],
+		['☺', ':relaxed:'],
+	])('registers the bare form %s of a text-presentation emoji', (bare, key) => {
+		expect(getEmojiData().bareAliases).toContainEqual([bare, key]);
+	});
+});

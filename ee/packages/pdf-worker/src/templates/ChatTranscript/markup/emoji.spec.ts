@@ -16,4 +16,14 @@ describe('unicodeToShortname', () => {
 	it('returns the input unchanged when no shortname exists', () => {
 		expect(unicodeToShortname('not an emoji')).toBe('not an emoji');
 	});
+
+	describe('joypixels-first shortnames (parity with the app emoji list)', () => {
+		it('names 👍 :thumbsup: like the transcript did before the native emoji migration', () => {
+			expect(unicodeToShortname('\u{1F44D}')).toBe(':thumbsup:');
+		});
+
+		it('names 😃 :smiley: instead of the emojibase-only primary', () => {
+			expect(unicodeToShortname('😃')).toBe(':smiley:');
+		});
+	});
 });
