@@ -525,7 +525,7 @@ PlainUnderscoreThenDomain = "_" d:DomainName &(EndOfLine / !. / [^\x5F]) { retur
 AutolinkedURL = &([^ \t\r\n:./@]* ("://" / ".")) u:AutoLinkURL { return autoLink(u, options.customDomains); }
 
 AutoLinkURL
-  = head:($(URLScheme URLAuthority) / $(URLAuthorityHost)) tail:$(AutoLinkURLBody*) { return head + tail; }
+  = head:($(URLScheme URLAuthority) / $(URLAuthorityHostNoLocalhost)) tail:$(AutoLinkURLBody*) { return head + tail; }
 
 AutoLinkURLBody
   = [^ \t\r\n.,!%~*\"':;()=~]
