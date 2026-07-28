@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Palette } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useEmbeddedLayout } from '@rocket.chat/ui-client';
 import type { ReactNode, ComponentProps } from 'react';
@@ -26,6 +26,23 @@ const linkButtonStyle = css`
 	border: none;
 	background: none;
 	cursor: pointer;
+
+	&:focus-visible {
+		outline: 0.125rem solid ${Palette.stroke['stroke-highlight']};
+		outline-offset: 0.125rem;
+	}
+`;
+
+const srOnly = css`
+	position: absolute;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	border: 0;
+	margin: -1px;
+	white-space: nowrap;
 `;
 
 export type UserCardProps = {
@@ -67,8 +84,8 @@ const UserCard = ({
 					fontScale='c1'
 					color='default'
 					withTruncatedText
-					aria-label={t('Roles')}
 				>
+					<Box is='span' className={srOnly}>{`${t('Roles')}: `}</Box>
 					{workspaceRoles}
 				</Box>
 			)}
