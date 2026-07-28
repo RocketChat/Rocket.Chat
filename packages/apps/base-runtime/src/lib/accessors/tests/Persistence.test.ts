@@ -55,4 +55,40 @@ describe('Persistence (base-runtime)', () => {
 			params: [[assoc], 'APP_ID'],
 		});
 	});
+
+	it('createWithAssociations forwards the associations array as-is', async () => {
+		const { rec, bridges } = setup();
+		const assocs = [{ type: 1, id: 'x' } as any, { type: 2, id: 'y' } as any];
+		await new Persistence(bridges).createWithAssociations({ a: 1 }, assocs);
+		assert.deepStrictEqual(rec.emitted()[0], {
+			method: 'bridges:getPersistenceBridge:doCreateWithAssociations',
+			params: [{ a: 1 }, assocs, 'APP_ID'],
+		});
+	});
+
+	it('updateByAssociations forwards the associations array and defaults upsert to false', async () => {
+		const { rec, bridges } = setup();
+		const assocs = [{ type: 1, id: 'x' } as any, { type: 2, id: 'y' } as any];
+		await new Persistence(bridges).updateByAssociations(assocs, { a: 1 });
+		assert.deepStrictEqual(rec.emitted()[0], {
+			method: 'bridges:getPersistenceBridge:doUpdateByAssociations',
+			params: [assocs, { a: 1 }, false, 'APP_ID'],
+		});
+	});
+
+	it('remove forwards the id with the APP_ID sentinel', async () => {
+		const { rec, bridges } = setup();
+		await new Persistence(bridges).remove('id1');
+		assert.deepStrictEqual(rec.emitted()[0], { method: 'bridges:getPersistenceBridge:doRemove', params: ['id1', 'APP_ID'] });
+	});
+
+	it('removeByAssociations forwards the associations array as-is', async () => {
+		const { rec, bridges } = setup();
+		const assocs = [{ type: 1, id: 'x' } as any, { type: 2, id: 'y' } as any];
+		await new Persistence(bridges).removeByAssociations(assocs);
+		assert.deepStrictEqual(rec.emitted()[0], {
+			method: 'bridges:getPersistenceBridge:doRemoveByAssociations',
+			params: [assocs, 'APP_ID'],
+		});
+	});
 });

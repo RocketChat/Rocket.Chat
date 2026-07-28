@@ -63,7 +63,9 @@ describe('ModifyCreator', () => {
 	});
 
 	it('sends the correct payload in the request to upload a buffer (defaults user to the app user, then creates the upload)', async () => {
-		const spying = mock.fn(senderFn);
+		// Resolve the app-user lookup to a real user so we can assert it is propagated as the uploader.
+		const appUserSender = (req: any) => senderFn(req.method === 'bridges:getUserBridge:doGetAppUser' ? { id: 'app-user' } : req);
+		const spying = mock.fn(appUserSender);
 		const modifyCreator = new ModifyCreator(spying);
 		const buffer = Buffer.from([1, 2, 3, 4]);
 
@@ -71,14 +73,14 @@ describe('ModifyCreator', () => {
 
 		// No `user`/`visitorToken` on the descriptor, so the app user is fetched first...
 		assert.deepStrictEqual(spying.mock.calls[0].arguments, [{ method: 'bridges:getUserBridge:doGetAppUser', params: ['APP_ID'] }]);
-		// ...then the upload is created with the derived details.
+		// ...then the upload is created with the derived details, carrying the fetched app user's id.
 		const [createCall] = spying.mock.calls[1].arguments as any[];
 		assert.strictEqual(createCall.method, 'bridges:getUploadBridge:doCreateUpload');
 		assert.deepStrictEqual(createCall.params[0], {
 			name: 'testfile',
 			size: 4,
 			rid: 'r1',
-			userId: undefined,
+			userId: 'app-user',
 			visitorToken: undefined,
 		});
 		assert.deepStrictEqual(createCall.params[1], buffer);

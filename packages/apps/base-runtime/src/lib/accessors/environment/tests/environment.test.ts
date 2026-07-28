@@ -20,9 +20,14 @@ describe('Environment accessors (base-runtime)', () => {
 			assert.strictEqual(await new ServerSettingRead(bridges).getValueById('s1'), 'v');
 		});
 
-		it('getValueById falls back to packageValue when value is null/undefined', async () => {
+		it('getValueById falls back to packageValue when value is null', async () => {
 			const nullVal = setup({ 'bridges:getServerSettingBridge:doGetOneById': { value: null, packageValue: 'pv' } });
 			assert.strictEqual(await new ServerSettingRead(nullVal.bridges).getValueById('s1'), 'pv');
+		});
+
+		it('getValueById falls back to packageValue when value is undefined', async () => {
+			const undefinedVal = setup({ 'bridges:getServerSettingBridge:doGetOneById': { value: undefined, packageValue: 'pv' } });
+			assert.strictEqual(await new ServerSettingRead(undefinedVal.bridges).getValueById('s1'), 'pv');
 		});
 
 		it('getValueById throws when the setting is not found', async () => {

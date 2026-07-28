@@ -12,7 +12,8 @@ export class ModifyDeleter implements IModifyDeleter {
 	}
 
 	// `appId` here is an app-supplied argument identifying which app's users to delete, not caller
-	// identity, so it is forwarded raw (see docs/base-runtime-app-id-exceptions.md, bucket B).
+	// identity, so it is forwarded raw (see
+	// docs/proposals/apps-accessor-consolidation/base-runtime-app-id-exceptions.md, bucket B).
 	public async deleteUsers(appId: Exclude<IUser['appId'], undefined>, userType: UserType.APP | UserType.BOT): Promise<boolean> {
 		return this.bridges.getUserBridge().doDeleteUsersCreatedByApp(appId, userType) as Promise<boolean>;
 	}

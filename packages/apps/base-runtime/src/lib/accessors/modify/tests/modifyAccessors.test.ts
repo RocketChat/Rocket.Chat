@@ -32,10 +32,14 @@ describe('Modify accessors (base-runtime)', () => {
 		it('deleteRoom/deleteMessage/removeUsersFromRoom use the APP_ID sentinel', async () => {
 			const { rec, bridges } = setup();
 			const deleter = new ModifyDeleter(bridges);
+			const message = { id: 'm1' } as any;
+			const user = { id: 'u1' } as any;
 			await deleter.deleteRoom('r1');
+			await deleter.deleteMessage(message, user);
 			await deleter.removeUsersFromRoom('r1', ['a', 'b']);
 			assert.deepStrictEqual(rec.emitted(), [
 				{ method: 'bridges:getRoomBridge:doDelete', params: ['r1', 'APP_ID'] },
+				{ method: 'bridges:getMessageBridge:doDelete', params: [message, user, 'APP_ID'] },
 				{ method: 'bridges:getRoomBridge:doRemoveUsers', params: ['r1', ['a', 'b'], 'APP_ID'] },
 			]);
 		});
