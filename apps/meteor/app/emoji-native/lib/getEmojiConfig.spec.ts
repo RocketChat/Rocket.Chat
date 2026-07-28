@@ -77,6 +77,14 @@ describe('native emoji render', () => {
 		expect(render('©\u{FE0F}')).toBe('<span class="emoji" title=":copyright:">©\u{FE0F}</span>');
 	});
 
+	it('renders bare (unqualified) pictographic emojis without VS16', () => {
+		const { render } = getEmojiConfig(buildEmojiPackages(false));
+
+		// unlike the ©/™ symbols above, pictographs pasted without VS16 rendered as emojis before the migration
+		expect(render('❤')).toBe('<span class="emoji" title=":heart:">❤</span>');
+		expect(render('☺')).toBe('<span class="emoji" title=":relaxed:">☺</span>');
+	});
+
 	it('renders shortcodes contested with emojibase using their emojione meaning', () => {
 		const { render } = getEmojiConfig(buildEmojiPackages(false));
 

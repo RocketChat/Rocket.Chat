@@ -215,12 +215,3 @@ describe('shortnameToUnicode adjacent to timestamp-like text', () => {
 		expect(shortnameToUnicode('12:30:fire:')).toBe('12:30🔥');
 	});
 });
-
-describe('bare (unqualified) unicode aliases', () => {
-	it.each([
-		['❤', ':heart:'],
-		['☺', ':relaxed:'],
-	])('registers the bare form %s of a text-presentation emoji', (bare, key) => {
-		expect(getEmojiData().bareAliases).toContainEqual([bare, key]);
-	});
-});

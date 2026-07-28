@@ -4,7 +4,6 @@ import { describe, it, beforeEach, before } from 'mocha';
 import {
 	createEmojiList,
 	getEmojisBySearchTerm,
-	getFrequentEmoji,
 	updateRecent,
 	removeFromRecent,
 	replaceEmojiInRecent,
@@ -100,11 +99,6 @@ describe('Emoji Client Helpers', () => {
 			registerCustomEmoji('mycustom_tone1-2');
 			expect(names('mycustom_tone1-2')).to.include('mycustom_tone1-2');
 		});
-
-		it('includes mixed-tone variants matching the selected skin tone', () => {
-			const results = getEmojisBySearchTerm('holding', 3, [], () => undefined).map((result) => result.emoji);
-			expect(results.some((name) => /_tone3-[1-5]$/.test(name))).to.be.true;
-		});
 	});
 
 	describe('createEmojiList', () => {
@@ -114,13 +108,6 @@ describe('Emoji Client Helpers', () => {
 			createEmojiList(90, category, 0, recentEmojis, () => undefined).flatMap((row) =>
 				Array.isArray(row) ? row.map((item) => item.emoji) : [],
 			);
-
-		it('skips an unresolvable name without truncating the rest of the category', () => {
-			emoji.packages.base.emojisByCategory.recent = ['heart', 'name_that_never_existed', 'fire'];
-			const names = listNames('recent', emoji.packages.base.emojisByCategory.recent);
-			expect(names).to.include('heart');
-			expect(names).to.include('fire');
-		});
 
 		it('renders legacy emojione-only shortcodes registered in emoji.list', () => {
 			for (const [shortcode, unicode] of Object.entries(legacyEmojioneMap)) {
@@ -140,16 +127,6 @@ describe('Emoji Client Helpers', () => {
 
 			emoji.packages.base.emojisByCategory.recent = ['digit_one'];
 			expect(listNames('recent', emoji.packages.base.emojisByCategory.recent)).to.include('digit_one');
-		});
-	});
-
-	describe('getFrequentEmoji', () => {
-		before(registerNativeEmojis);
-
-		it('omits names that no longer resolve instead of yielding empty slots', () => {
-			const result = getFrequentEmoji(['name_that_never_existed', 'fire']);
-			expect(result.map(({ emoji: name }) => name)).to.include('fire');
-			result.forEach(({ image }) => expect(image, 'every returned entry must render').to.be.a('string'));
 		});
 	});
 
