@@ -17,21 +17,12 @@ const MessageRoles = ({ roles, isBot, onClick }: MessageRolesProps) => {
 	const hiddenRoles = collapsed ? allRoles.slice(1) : [];
 
 	return (
-		<FuselageMessageRoles onClick={onClick} style={onClick ? { cursor: 'pointer' } : undefined}>
+		<FuselageMessageRoles>
 			{visibleRoles.map((role, index) => (
 				<MessageRole key={index}>{role}</MessageRole>
 			))}
 			{hiddenRoles.length > 0 && (
-				<MessageRole
-					title={t('See_all_roles')}
-					onClick={
-						onClick &&
-						((e) => {
-							e.stopPropagation();
-							onClick(e);
-						})
-					}
-				>
+				<MessageRole title={t('See_all_roles')} onClick={onClick}>
 					{t('Plus_count_roles', { count: hiddenRoles.length })}
 				</MessageRole>
 			)}
