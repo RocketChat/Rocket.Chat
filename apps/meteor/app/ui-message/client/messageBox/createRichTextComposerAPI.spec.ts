@@ -10,6 +10,7 @@ jest.mock('../../../../client/lib/utils/renderEmoji', () => ({
 }));
 
 let innerTextDescriptor: PropertyDescriptor | undefined;
+let originalExecCommand: typeof document.execCommand | undefined;
 
 beforeAll(() => {
 	innerTextDescriptor = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'innerText');
@@ -22,13 +23,21 @@ beforeAll(() => {
 			this.textContent = value;
 		},
 	});
-	// Force the innerText fallback path in replaceText/setText (jsdom lacks execCommand anyway).
+	originalExecCommand = (document as unknown as { execCommand?: typeof document.execCommand }).execCommand;
 	(document as unknown as { execCommand: () => boolean }).execCommand = () => false;
 });
 
 afterAll(() => {
 	if (innerTextDescriptor) {
 		Object.defineProperty(HTMLElement.prototype, 'innerText', innerTextDescriptor);
+	} else {
+		delete (HTMLElement.prototype as unknown as { innerText?: unknown }).innerText;
+	}
+
+	if (originalExecCommand) {
+		(document as unknown as { execCommand: typeof document.execCommand }).execCommand = originalExecCommand;
+	} else {
+		delete (document as unknown as { execCommand?: unknown }).execCommand;
 	}
 });
 
@@ -148,7 +157,6 @@ describe('RichText Composer API - wrapSelection', () => {
 	});
 
 	it('keeps the closing marker on the same line when the selection includes a trailing newline', () => {
-		// A double-click on the last word of a line selects the trailing paragraph newline too.
 		const { composer, input } = setupComposer('test\n', { start: 0, end: 5 });
 
 		composer.wrapSelection('*{{text}}*');

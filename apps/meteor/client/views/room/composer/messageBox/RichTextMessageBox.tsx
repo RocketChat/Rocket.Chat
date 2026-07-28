@@ -50,9 +50,6 @@ type TypingState = {
 	hideplaceholder: boolean;
 };
 
-// We store the last known cursor position for each contenteditable div using a WeakMap keyed by the element.
-// This allows us to restore the caret position when the user refocuses the editor,
-// preventing the cursor from jumping to the start and improving typing experience in multiple composer instances.
 const cursorMap = new WeakMap<
 	HTMLElement,
 	{
