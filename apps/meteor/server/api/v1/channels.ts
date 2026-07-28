@@ -1011,7 +1011,7 @@ async function createChannelValidator(params: {
 		(!teamId && !(await hasPermissionAsync(params.user.value, 'create-c'))) ||
 		(teamId && team && !(await hasPermissionAsync(params.user.value, 'create-team-channel', team.roomId)))
 	) {
-		throw new Error('unauthorized');
+		throw new Meteor.Error('unauthorized', 'Not allowed to create channels');
 	}
 
 	if (!params.name?.value) {
@@ -1080,34 +1080,27 @@ API.v1.post(
 	async function action() {
 		const { userId, bodyParams } = this;
 
-		try {
-			await API.channels?.create.validate({
-				user: {
-					value: userId,
-				},
-				name: {
-					value: bodyParams.name,
-					key: 'name',
-				},
-				members: {
-					value: bodyParams.members,
-					key: 'members',
-				},
-				teams: {
-					value: bodyParams.teams,
-					key: 'teams',
-				},
-				teamId: {
-					value: bodyParams.extraData?.teamId,
-					key: 'teamId',
-				},
-			});
-		} catch (e: any) {
-			if (e.message === 'unauthorized') {
-				return API.v1.forbidden();
-			}
-			return API.v1.failure(e.message);
-		}
+		await API.channels?.create.validate({
+			user: {
+				value: userId,
+			},
+			name: {
+				value: bodyParams.name,
+				key: 'name',
+			},
+			members: {
+				value: bodyParams.members,
+				key: 'members',
+			},
+			teams: {
+				value: bodyParams.teams,
+				key: 'teams',
+			},
+			teamId: {
+				value: bodyParams.extraData?.teamId,
+				key: 'teamId',
+			},
+		});
 
 		if (bodyParams.teams) {
 			const canSeeAllTeams = await hasPermissionAsync(this.user, 'view-all-teams');

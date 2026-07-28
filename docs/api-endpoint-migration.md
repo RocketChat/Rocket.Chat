@@ -560,37 +560,26 @@ API.v1.post('endpoint', {
 
 ## Error Handling (thrown errors)
 
-The typed router does **not** convert thrown errors into HTTP error responses the way the legacy `addRoute` wrapper did. `addRoute` wrapped every handler in a `try/catch` that turned a thrown `Meteor.Error` into a `400` failure (with `error`/`errorType`). The typed router has **no global error handler** — an uncaught throw propagates and becomes a **500 Internal Server Error**.
+Every route registered through `API.v1.get/post/put/delete` is wrapped by `ApiClass`'s internal handler (`_internalRouteActionHandler`), which runs the action inside a `try/catch`. A thrown `Meteor.Error` (or any core-services error carrying `error`/`message` by shape) is mapped to the matching HTTP failure:
 
-So when migrating a handler (or a helper it calls, e.g. `findChannelByIdOrName`, `Room.join`, `requestPdfTranscript`) that throws to signal a client error, you must catch it and return an explicit failure to preserve the previous status:
+- `error-too-many-requests` → `429`
+- `unauthorized` / `error-unauthorized` → `401` (or `403` pre-breaking-changes)
+- `forbidden` / `error-forbidden` → `403`
+- anything else → `API.v1.failure(message, errorType, stack, details)` → `400`
+
+So a migrated handler should **just throw** to signal a client error — exactly as the legacy DDP methods and `addRoute` handlers did. Do **not** wrap every handler in a `try/catch` that returns `API.v1.failure(...)`: it is redundant with the global wrapper and, worse, flattens `401`/`403`/`429` into `400`.
 
 ```typescript
 async function action() {
-	try {
-		const room = await findChannelByIdOrName({ params: this.bodyParams });
-		// ...
-		return API.v1.success({ channel: room });
-	} catch (error) {
-		const [message, errorType] = errorToFailureArgs(error);
-		return API.v1.failure(message, errorType);
-	}
+	const room = await findChannelByIdOrName({ params: this.bodyParams }); // throws error-room-not-found
+	// ...
+	return API.v1.success({ channel: room });
 }
 ```
 
-Remember to declare `400: validateBadRequestErrorResponse` in the `response` block (any handler that can return `API.v1.failure()` needs it).
+Declare in the `response` block every error status the handler (or the wrapper) can produce, so response validation under `TEST_MODE` accepts them — `400: validateBadRequestErrorResponse` for thrown/failure errors, plus `401`/`403` when `authRequired`/`permissionsRequired` are set.
 
-### Extract `errorType` by shape, not `instanceof`
-
-Errors thrown by **`@rocket.chat/core-services`** calls (e.g. `Room.join`, `Team.*`) cross a service boundary and are **not** `instanceof` the local `Meteor.Error`, so an `error instanceof Meteor.Error` check silently drops their `error`/`errorType`. Extract them by shape (matching the legacy `addRoute` behavior), otherwise e2e assertions like `expect(res.body).to.have.property('errorType', ...)` fail:
-
-```typescript
-function errorToFailureArgs(error: unknown): [string, string | undefined] {
-	const e = error as { message?: unknown; error?: unknown };
-	return [typeof e?.message === 'string' ? e.message : String(error), typeof e?.error === 'string' ? e.error : undefined];
-}
-```
-
-Keep the `API.v1.failure(...)` call **inline** in the `catch` (a helper that itself returns `API.v1.failure(...)` breaks `TypedAction` return-type inference); factor out only the argument extraction.
+Add an explicit `catch` only when you need behaviour the global wrapper does not provide (e.g. returning a specific `API.v1.failure(...)` payload for a known condition, or mapping a status differently); otherwise let the error propagate.
 
 ## Test Changes
 
