@@ -38,6 +38,7 @@ type RoomSettings = {
 	systemMessages: MessageTypesValues[];
 	default: boolean;
 	joinCode: string;
+    disableLinkPreviews: boolean;
 	retentionEnabled: boolean;
 	retentionMaxAge: number;
 	retentionExcludePinned: boolean;
@@ -348,6 +349,11 @@ const settingSavers: RoomSettingsSavers = {
 	async retentionEnabled({ value, rid }) {
 		await Rooms.saveRetentionEnabledById(rid, value);
 	},
+
+    async disableLinkPreviews({ value, rid }) {
+	await Rooms.saveDisableLinkPreviewsById(rid, value);
+    },
+
 	async retentionMaxAge({ value, rid }) {
 		await Rooms.saveRetentionMaxAgeById(rid, value);
 	},
@@ -400,6 +406,7 @@ const fields: (keyof RoomSettings)[] = [
 	'systemMessages',
 	'default',
 	'joinCode',
+	'disableLinkPreviews',
 	'retentionEnabled',
 	'retentionMaxAge',
 	'retentionExcludePinned',
