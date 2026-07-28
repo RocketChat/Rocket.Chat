@@ -6,8 +6,24 @@ import ChatContainer from './container';
 import { useChatSubscriptions } from './useChatSubscriptions';
 import { ScreenContext } from '../../components/Screen/ScreenProvider';
 import { canRenderMessage } from '../../helpers/canRenderMessage';
-import { formatAgent } from '../../helpers/formatAgent';
 import { type StoreState, useStore } from '../../store';
+
+// const useStableCallback = <TFunction extends (...args: any[]) => any>(callback: TFunction): TFunction => {
+// 	const callbackRef = useRef<TFunction>(callback);
+
+// 	callbackRef.current = callback;
+
+// 	return useCallback(((...args) => callbackRef.current(...args)) as TFunction, []);
+// };
+
+const useChatTitle = () => {
+	const {
+		config: { theme: { title = '' } = {} },
+		iframe: { theme: { title: customTitle = '' } = {} },
+	} = useStore();
+
+	return customTitle || title;
+};
 
 export type ChatProps = {
 	path?: string;
@@ -23,23 +39,20 @@ const Chat = (_: ChatProps) => {
 				allowSwitchingDepartments,
 				forceAcceptDataProcessingConsent: allowRemoveUserData,
 				showConnecting,
-				registrationForm,
+				registrationForm: registrationFormEnabled,
 				nameFieldRegistrationForm,
 				emailFieldRegistrationForm,
 				limitTextLength,
 				visitorsCanCloseChat,
 			},
-			messages: { conversationFinishedMessage },
-			theme: { title = '' } = {},
 			departments = [],
 		},
-		iframe: { theme: { title: customTitle = '' } = {}, guest = {} },
+		iframe: { guest = {} },
 		token,
 		agent,
 		sound,
 		user,
 		room,
-		messages,
 		noMoreMessages,
 		typing,
 		loading,
@@ -61,7 +74,7 @@ const Chat = (_: ChatProps) => {
 		route('/register');
 	}, []);
 
-	const onChangeDepartment = useCallback(() => {
+	const handleChangeDepartment = useCallback(() => {
 		route('/switch-department');
 	}, []);
 
@@ -81,6 +94,11 @@ const Chat = (_: ChatProps) => {
 
 	const inputRef = useRef<HTMLInputElement>(null);
 	const notifyEmojiSelectRef = useRef<(native: string) => void>();
+	const title = useChatTitle() || t('need_help');
+	const messages = useStore().messages?.filter(canRenderMessage);
+	const typingUsernames = Array.isArray(typing) ? typing : [];
+	const connecting = !!(room && !agent && (showConnecting || queueInfo));
+	const conversationFinishedMessage = useStore().config.messages.conversationFinishedMessage || t('conversation_finished');
 
 	return (
 		<ChatContainer
@@ -88,24 +106,24 @@ const Chat = (_: ChatProps) => {
 			inputRef={inputRef}
 			notifyEmojiSelectRef={notifyEmojiSelectRef}
 			t={t}
-			title={customTitle || title || t('need_help')}
+			title={title}
 			sound={sound}
 			token={token}
 			user={user}
-			agent={formatAgent(agent)}
+			agent={agent}
 			room={room}
-			messages={messages?.filter(canRenderMessage)}
+			messages={messages}
 			noMoreMessages={noMoreMessages}
 			emoji={true}
 			uploads={uploads}
-			typingUsernames={Array.isArray(typing) ? typing : []}
+			typingUsernames={typingUsernames}
 			loading={loading}
-			showConnecting={showConnecting} // setting from server that tells if app needs to show "connecting" sometimes
-			connecting={!!(room && !agent && (showConnecting || queueInfo))}
+			showConnecting={showConnecting}
+			connecting={connecting}
 			dispatch={dispatch}
 			departments={departments}
 			allowSwitchingDepartments={allowSwitchingDepartments}
-			conversationFinishedMessage={conversationFinishedMessage || t('conversation_finished')}
+			conversationFinishedMessage={conversationFinishedMessage}
 			allowRemoveUserData={allowRemoveUserData}
 			alerts={alerts}
 			visible={visible}
@@ -113,16 +131,8 @@ const Chat = (_: ChatProps) => {
 			lastReadMessageId={lastReadMessageId}
 			guest={guest}
 			triggerAgent={triggerAgent}
-			queueInfo={
-				queueInfo
-					? {
-							spot: queueInfo.spot,
-							estimatedWaitTimeSeconds: queueInfo.estimatedWaitTimeSeconds,
-							message: queueInfo.message,
-						}
-					: undefined
-			}
-			registrationFormEnabled={registrationForm}
+			queueInfo={queueInfo}
+			registrationFormEnabled={registrationFormEnabled}
 			nameFieldRegistrationForm={nameFieldRegistrationForm}
 			emailFieldRegistrationForm={emailFieldRegistrationForm}
 			limitTextLength={limitTextLength}
@@ -130,7 +140,7 @@ const Chat = (_: ChatProps) => {
 			theme={theme}
 			visitorsCanCloseChat={visitorsCanCloseChat}
 			onRegisterUser={onRegisterUser}
-			handleChangeDepartment={onChangeDepartment}
+			handleChangeDepartment={handleChangeDepartment}
 		/>
 	);
 };

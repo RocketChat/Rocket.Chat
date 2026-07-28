@@ -16,7 +16,7 @@ import { MessageList } from '../../components/Messages';
 import { Screen, ScreenContent, ScreenFooter } from '../../components/Screen';
 import type { ScreenTheme } from '../../components/Screen/ScreenProvider';
 import { createClassName } from '../../helpers/createClassName';
-import type { formatAgent } from '../../helpers/formatAgent';
+import { formatAgent } from '../../helpers/formatAgent';
 import ChangeIcon from '../../icons/change.svg';
 import FinishIcon from '../../icons/finish.svg';
 import PlusIcon from '../../icons/plus.svg';
@@ -30,7 +30,7 @@ export type ChatProps = {
 	notifyEmojiSelectRef: MutableRef<((native: string) => void) | undefined>;
 	title?: string;
 	uid?: string;
-	agent?: ReturnType<typeof formatAgent>;
+	agent?: StoreState['agent'];
 	typingUsernames?: string[];
 	avatarResolver?: (username: string) => string | null | undefined;
 	conversationFinishedMessage?: string;
@@ -184,7 +184,7 @@ class Chat extends Component<ChatProps, ChatState> {
 		return (
 			<Screen
 				title={title || t('need_help')}
-				agent={agent || null}
+				agent={formatAgent(agent)}
 				queueInfo={queueInfo}
 				className={createClassName(styles, 'chat')}
 				unread={unread}

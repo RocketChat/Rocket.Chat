@@ -11,7 +11,6 @@ import type { ScreenContextValue } from '../../components/Screen/ScreenProvider'
 import { getAvatarUrl } from '../../helpers/baseUrl';
 import { canRenderMessage } from '../../helpers/canRenderMessage';
 import { debounce } from '../../helpers/debounce';
-import type { formatAgent } from '../../helpers/formatAgent';
 import { throttle } from '../../helpers/throttle';
 import { upsert } from '../../helpers/upsert';
 import { normalizeQueueAlert } from '../../lib/api';
@@ -37,7 +36,7 @@ export type ChatContainerProps = {
 	sound: StoreState['sound'];
 	token: StoreState['token'];
 	user?: StoreState['user'];
-	agent?: ReturnType<typeof formatAgent>;
+	agent?: StoreState['agent'];
 	room?: StoreState['room'];
 	messages?: StoreState['messages'];
 	noMoreMessages?: boolean;
