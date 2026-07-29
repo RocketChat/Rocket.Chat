@@ -4,8 +4,6 @@ import type { ComponentProps } from 'react';
 import { forwardRef } from 'react';
 
 const RichTextComposerInputStyle = css`
-	resize: none;
-
 	&::-webkit-scrollbar-thumb {
 		background-color: ${Palette.stroke['stroke-dark']};
 		border-radius: 4px;
@@ -18,9 +16,6 @@ type RichTextComposerInputProps = ComponentProps<typeof Box> & {
 };
 
 const RichTextComposerInput = forwardRef<HTMLDivElement, RichTextComposerInputProps>(function RichTextComposerInput(props, ref) {
-	// The whitespace pre-wrap style is passed into the div contenteditable as without it, additional whitespace gets collapsed
-	// This would then interfere with .innerText a LOT and should now be fixed
-
 	// Supress warnings related to hideplaceholder being invalid DOM prop
 	const { placeholder, hideplaceholder, ...rest } = props;
 
@@ -32,7 +27,6 @@ const RichTextComposerInput = forwardRef<HTMLDivElement, RichTextComposerInputPr
 				width='full'
 				minHeight={20}
 				maxHeight={155}
-				rows={1}
 				fontScale='p2'
 				paddingInline={12}
 				marginBlock={16}
@@ -43,7 +37,6 @@ const RichTextComposerInput = forwardRef<HTMLDivElement, RichTextComposerInputPr
 					pointerEvents: 'none',
 					opacity: hideplaceholder ? 0 : 1,
 				}}
-				{...rest}
 			>
 				{placeholder}
 			</Box>
@@ -53,7 +46,6 @@ const RichTextComposerInput = forwardRef<HTMLDivElement, RichTextComposerInputPr
 				width='full'
 				minHeight={20}
 				maxHeight={155}
-				rows={1}
 				fontScale='p2'
 				ref={ref}
 				paddingInline={12}

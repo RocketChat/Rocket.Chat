@@ -1,26 +1,13 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import type { ReactElement } from 'react';
-import { memo, useContext, useMemo } from 'react';
+import { memo, useContext } from 'react';
 
 import { ComposerMarkupContext } from './ComposerMarkupContext';
 
 type ComposerEmojiElementProps = MessageParser.Emoji;
 
 const ComposerEmojiElement = (emoji: ComposerEmojiElementProps): ReactElement => {
-	const { convertAsciiToEmoji, useEmoji, detectEmoji } = useContext(ComposerMarkupContext);
-
-	const asciiEmoji = useMemo(
-		() => ('shortCode' in emoji && emoji.value.value !== emoji.shortCode ? emoji.value.value : undefined),
-		[emoji],
-	);
-
-	if (!useEmoji && 'shortCode' in emoji) {
-		return <>{emoji.shortCode === emoji.value.value ? `:${emoji.shortCode}:` : emoji.value.value}</>;
-	}
-
-	if (!convertAsciiToEmoji && asciiEmoji) {
-		return <>{asciiEmoji}</>;
-	}
+	const { detectEmoji } = useContext(ComposerMarkupContext);
 
 	const fallback = 'unicode' in emoji ? emoji.unicode : `:${('shortCode' in emoji && emoji.shortCode) || ''}:`;
 

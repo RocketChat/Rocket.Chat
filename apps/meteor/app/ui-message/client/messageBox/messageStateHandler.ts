@@ -1,30 +1,7 @@
-import { parse, type Options, type Root } from '@rocket.chat/message-parser';
+import { parse, type Options } from '@rocket.chat/message-parser';
 
 import { renderComposerMarkup } from './renderComposerMarkup';
 import { getSelectionRange, setSelectionRange } from './selectionRange';
-
-// Return an array of strings representing each line of the Composer
-export const getTextLines = (str: string, delimiter: string): string[] => {
-	const result = [];
-	let start = 0;
-	let index;
-
-	while ((index = str.indexOf(delimiter, start)) !== -1) {
-		result.push(str.slice(start, index));
-		start = index + delimiter.length;
-	}
-
-	// Only push final part if it's not empty OR string didn't end with delimiter
-	if (!(start === str.length && delimiter === str[str.length - 1])) {
-		result.push(str.slice(start));
-	}
-
-	return result;
-};
-
-const parseMessage = (text: string, parseOptions: Options): Root => {
-	return parse(text, parseOptions);
-};
 
 // TODO: Investigate an issue where Slack style links are not working properly
 // This might have to do with the symbols < and > not resolving into websafe characters
@@ -76,10 +53,10 @@ export const renderComposerContent = (
 	const { output: safeText, matches } = protectLinks(text === '' ? '\n' : text);
 
 	// Parse the safetext
-	const ast = parseMessage(safeText, parseOptions);
+	const ast = parse(safeText, parseOptions);
 
 	// Render the AST through the gazzodown-alt WYSIWYG components
-	const html = renderComposerMarkup(ast, parseOptions);
+	const html = renderComposerMarkup(ast);
 
 	// Restore the substituted links
 	const finalHtml = restoreLinks(html, matches);
