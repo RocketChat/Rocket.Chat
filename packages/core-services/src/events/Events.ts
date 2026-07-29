@@ -29,7 +29,6 @@ import type {
 	ILivechatVisitor,
 	LicenseLimitKind,
 	ICustomUserStatus,
-	IWebdavAccount,
 	MessageAttachment,
 } from '@rocket.chat/core-typings';
 import type { ClientMediaSignalBody, ServerMediaSignal } from '@rocket.chat/media-signaling';
@@ -78,18 +77,6 @@ export type EventSignatures = {
 	'notify.uiInteraction'(uid: string, data: UiKit.ServerInteraction): void;
 	'notify.updateInvites'(uid: string, data: { invite: Omit<IInvite, '_updatedAt'> }): void;
 	'notify.ephemeralMessage'(uid: string, rid: string, message: AtLeast<IMessage, 'msg'>): void;
-	'notify.webdav'(
-		uid: string,
-		data:
-			| {
-					type: 'changed';
-					account: Partial<IWebdavAccount>;
-			  }
-			| {
-					type: 'removed';
-					account: { _id: IWebdavAccount['_id'] };
-			  },
-	): void;
 	'notify.e2e.keyRequest'(rid: string, data: IRoom['e2eKeyId']): void;
 	'notify.deleteMessage'(rid: string, data: { _id: string }): void;
 	'notify.deleteMessageBulk'(
@@ -158,7 +145,7 @@ export type EventSignatures = {
 		};
 	}): void;
 	'presence.status'(data: {
-		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'name' | 'roles'>;
+		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'name' | 'roles'>;
 		previousStatus: UserStatus | undefined;
 	}): void;
 	'watch.messages'(data: { message: IMessage }): void;
@@ -254,7 +241,7 @@ export type EventSignatures = {
 			  }
 			| {
 					clientAction: 'updated';
-					diff: Record<string, number>;
+					diff: Record<string, any>;
 					unset: Record<string, number>;
 			  }
 		),
@@ -296,7 +283,7 @@ export type EventSignatures = {
 	'watch.priorities'(data: { clientAction: ClientAction; id: ILivechatPriority['_id']; diff?: Record<string, string> }): void;
 	'apps.added'(appId: string): void;
 	'apps.removed'(appId: string): void;
-	'apps.updated'(appId: string): void;
+	'apps.updated'(appId: string, originInstanceId?: string): void;
 	'apps.statusUpdate'(appId: string, status: AppStatus): void;
 	'apps.settingUpdated'(appId: string, setting: AppsSetting): void;
 	'command.added'(command: string): void;

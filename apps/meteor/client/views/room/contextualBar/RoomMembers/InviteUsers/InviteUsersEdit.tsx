@@ -1,7 +1,7 @@
 import EditInviteLink from './EditInviteLink';
 import InviteUsersWrapper from './InviteUsersWrapper';
 
-type InviteUsersEditProps = {
+export type InviteUsersEditProps = {
 	onClickBackLink?: () => void;
 	onClickNewLink: (daysAndMaxUses: { days: string; maxUses: string }) => void;
 	onClose: () => void;

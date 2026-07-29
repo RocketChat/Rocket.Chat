@@ -1,11 +1,11 @@
 import { Authorization, MediaCall, VideoConf, Settings } from '@rocket.chat/core-services';
-import type { ISubscription, IOmnichannelRoom, IUser, IUserDataEvent, PresenceStatusCode } from '@rocket.chat/core-typings';
+import type { ISubscription, IOmnichannelRoom, IUser, IUserDataEvent, PresenceSource, PresenceStatusCode } from '@rocket.chat/core-typings';
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ddp-client';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
-import type { ImporterProgress } from '../../../app/importer/server/classes/ImporterProgress';
-import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
+import type { ImporterProgress } from '../../lib/import/classes/ImporterProgress';
 import { SystemLogger } from '../../lib/logger/system';
+import { emit, StreamPresence } from '../../lib/notifications/core/lib/Presence';
 import { getCachedUserForPublication } from '../streamer/publication-user-cache';
 import { Streamer as StreamerModule } from '../streamer/streamer.module';
 import type { IStreamer, IStreamerConstructor } from '../streamer/types';
@@ -298,7 +298,7 @@ export class NotificationsModule {
 				return false;
 			}
 
-			return Boolean(this.userId);
+			return false;
 		});
 		this.streamUser.allowRead(async function (eventName) {
 			const [userId] = eventName.split('/');
@@ -512,7 +512,10 @@ export class NotificationsModule {
 		return this.streamUser.emitWithoutBroadcast(`${userId}/${eventName}`, ...args);
 	}
 
-	sendPresence(uid: string, ...args: [username: string, status?: PresenceStatusCode, statusText?: string]): void {
+	sendPresence(
+		uid: string,
+		...args: [username: string, status?: PresenceStatusCode, statusText?: string, statusSource?: PresenceSource, statusExpiresAt?: Date]
+	): void {
 		emit(uid, [args]);
 		return this.streamPresence.emitWithoutBroadcast(uid, args);
 	}

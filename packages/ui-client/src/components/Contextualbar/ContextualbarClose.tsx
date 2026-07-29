@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import ContextualbarAction from './ContextualbarAction';
 
-type ContextualbarCloseProps = Partial<ComponentProps<typeof ContextualbarAction>>;
+export type ContextualbarCloseProps = Partial<ComponentProps<typeof ContextualbarAction>>;
 
 const ContextualbarClose = (props: ContextualbarCloseProps) => {
 	const { t } = useTranslation();

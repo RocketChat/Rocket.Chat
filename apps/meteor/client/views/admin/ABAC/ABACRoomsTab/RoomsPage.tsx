@@ -72,12 +72,12 @@ const RoomsPage = () => {
 			<Margins block={24}>
 				<Box display='flex'>
 					<TextInput
-						addon={<Icon name='magnifier' size='x20' />}
+						endAddon={<Icon name='magnifier' size='x20' />}
 						placeholder={t('ABAC_Search_rooms')}
 						value={text}
 						onChange={(e) => setText((e.target as HTMLInputElement).value)}
 					/>
-					<Box pis={8} maxWidth={200}>
+					<Box paddingInlineStart={8} maxWidth={200}>
 						<Select
 							options={[
 								['all', t('All'), true],
@@ -89,7 +89,7 @@ const RoomsPage = () => {
 							onChange={(value) => setFilterType(value as 'all' | 'roomName' | 'attribute' | 'value')}
 						/>
 					</Box>
-					<Button onClick={handleNewAttribute} primary mis={8} disabled={isABACAvailable !== true}>
+					<Button onClick={handleNewAttribute} primary marginInlineStart={8} disabled={isABACAvailable !== true}>
 						{t('Add_room')}
 					</Button>
 				</Box>
@@ -106,7 +106,7 @@ const RoomsPage = () => {
 							<GenericTableHeaderCell>{t('Members')}</GenericTableHeaderCell>
 							<GenericTableHeaderCell>{t('ABAC_Attributes')}</GenericTableHeaderCell>
 							<GenericTableHeaderCell>{t('ABAC_Attribute_Values')}</GenericTableHeaderCell>
-							<GenericTableHeaderCell key='spacer' w={40} />
+							<GenericTableHeaderCell key='spacer' width={40} />
 						</GenericTableHeader>
 						<GenericTableBody>
 							{data?.rooms?.map((room) => (

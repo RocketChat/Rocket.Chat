@@ -19,7 +19,6 @@ export type * from './IMatrixFederationStatistics';
 export type * from './IServerInfo';
 export type * from './IWorkspaceInfo';
 export type * from './IInstanceStatus';
-export type * from './IWebdavAccount';
 export type * from './IPermission';
 export type * from './IRole';
 export type * from './IIntegration';
@@ -54,6 +53,8 @@ export type * from './IEmojiCustom';
 export type * from './ICustomEmojiDescriptor';
 export type * from './IAnalytics';
 export type * from './ICredentialToken';
+export type * from './ILoginCode';
+export type * from './ISamlUsedAssertions';
 export type * from './IAvatar';
 export type * from './ICustomUserStatus';
 export type * from './IEmailMessageHistory';
@@ -135,3 +136,5 @@ export type * from './ServerAudit/IAuditServerAbacAction';
 export type * from './ServerAudit/IAuditUserChangedEvent';
 
 export { schemas } from './Ajv';
+
+export type * from './ITwoFactorChallenge';

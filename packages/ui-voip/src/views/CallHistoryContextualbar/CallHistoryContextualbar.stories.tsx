@@ -7,7 +7,6 @@ import MockedMediaCallProvider from '../../providers/MockedMediaCallProvider';
 const noop = () => undefined;
 
 const meta = {
-	title: 'V2/Views/CallHistoryContextualbar',
 	component: CallHistoryContextualbar,
 	decorators: [
 		mockAppRoot()

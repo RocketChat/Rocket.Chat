@@ -1,3 +1,5 @@
+import { dirname, join } from 'path';
+
 import type { StorybookConfig } from '@storybook/preact-webpack5';
 import type { RuleSetRule } from 'webpack';
 
@@ -5,7 +7,7 @@ const config: StorybookConfig = {
 	stories: ['../src/**/{*.story,story,*.stories,stories}.tsx'],
 
 	addons: [
-		'@storybook/addon-essentials',
+		'@storybook/addon-docs',
 		{
 			name: '@storybook/addon-styling-webpack',
 			options: {
@@ -56,11 +58,16 @@ const config: StorybookConfig = {
 	typescript: {},
 
 	webpackFinal: async (config) => {
+		const dateFnsRoot = dirname(require.resolve('date-fns/package.json'));
 		config.resolve = {
 			...config.resolve,
 			alias: {
 				...config.resolve?.alias,
 				[require.resolve('../src/lib/uiKit')]: require.resolve('./mocks/uiKit.ts'),
+				// date-fns v4's `exports` map doesn't expose the `./locale` directory
+				// for enumeration, so webpack's dynamic `import()` context fails. Alias
+				// to the on-disk folder to bypass `exports`.
+				'date-fns/locale$': join(dateFnsRoot, 'locale'),
 			},
 		};
 

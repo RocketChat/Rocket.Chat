@@ -1,5 +1,5 @@
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
-import { memo, useState } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -7,20 +7,18 @@ import {
 	Timer,
 	DevicePicker,
 	ActionButton,
-	CardListContainer,
-	CardListSection,
-	PeerCard,
-	StreamCard,
 	useShouldWrapCards,
 	CARD_LIST_SECTION_MAX_HEIGHT,
 	ActionStrip,
 	ActionToggleChat,
 } from '../../components';
+import { useMediaCallInstance } from '../../context/MediaCallInstanceContext';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
-import useRoomView from '../../context/useRoomView';
-import { usePlayMediaStream } from '../../providers/usePlayMediaStream';
+import useRegisterView from '../../context/useRegisterView';
+import MediaCallCardList from '../MediaCallCardList';
+import PopoutDockPrompt from '../PopoutDockPrompt';
 
-type MediaCallRoomSectionProps = {
+export type MediaCallRoomSectionProps = {
 	showChat: boolean;
 	onToggleChat: () => void;
 	user: {
@@ -47,7 +45,6 @@ const getSplitStyles = (showChat?: boolean) => {
 const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }: MediaCallRoomSectionProps) => {
 	const { t } = useTranslation();
 
-	const [focusedCard, setFocusedCard] = useState<'remote' | 'local' | null>('remote');
 	const {
 		sessionState,
 		onMute,
@@ -55,84 +52,57 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 		onForward,
 		onEndCall,
 		onToggleScreenSharing,
-		streams: { remoteScreen, localScreen },
+		onOpenPopout,
+		onClosePopout,
+		streams: { localScreen },
 	} = useMediaCallView();
+	const { currentViews } = useMediaCallInstance();
 
-	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt } = sessionState;
+	const isPopout = currentViews.includes('popout');
+
+	const { muted, held, peerInfo, connectionState, startedAt } = sessionState;
 
 	const shouldWrapCards = useShouldWrapCards(showChat, containerHeight);
 
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
-	const [remoteStreamRefCallback] = usePlayMediaStream(remoteScreen?.stream ?? null);
-	const [localStreamRefCallback] = usePlayMediaStream(localScreen?.stream ?? null);
-
-	useRoomView();
-
-	const onClickFocusRemoteCard = () => {
-		setFocusedCard((prev) => (prev === 'remote' ? null : 'remote'));
-	};
-
-	const onClickFocusLocalCard = () => {
-		setFocusedCard((prev) => (prev === 'local' ? null : 'local'));
-	};
+	useRegisterView('room');
 
 	if (!peerInfo || 'number' in peerInfo) {
 		return null;
 	}
 
-	const remoteStreamCard = remoteScreen?.active ? (
-		<StreamCard onClickFocusStream={onClickFocusRemoteCard} focused={focusedCard === 'remote'}>
-			<video preload='metadata' style={{ objectFit: 'contain', height: '100%', width: '100%' }} ref={remoteStreamRefCallback}>
-				<track kind='captions' />
-			</video>
-		</StreamCard>
-	) : null;
-
-	const localStreamCard = localScreen?.active ? (
-		<StreamCard
-			own
-			onClickFocusStream={onClickFocusLocalCard}
-			onClickStopSharing={onToggleScreenSharing}
-			focused={focusedCard === 'local'}
-			showStopSharingOnHover
-		>
-			<video preload='metadata' style={{ objectFit: 'contain', height: '100%', width: '100%' }} ref={localStreamRefCallback}>
-				<track kind='captions' />
-			</video>
-		</StreamCard>
-	) : null;
-
-	const focusedCardElement = focusedCard === 'remote' ? remoteStreamCard : localStreamCard;
-
 	return (
 		<Box
 			id='outer-element'
-			w='full'
-			bg='surface-tint'
+			width='full'
+			backgroundColor='surface-tint'
 			overflow='hidden'
 			display='flex'
 			flexDirection='column'
+			is='section'
+			aria-label={t('Voice_call')}
 			{...getSplitStyles(showChat)}
 		>
-			<CardListSection>
-				<CardListContainer focusedCard={focusedCard ? focusedCardElement : undefined} shouldWrapCards={shouldWrapCards}>
-					<PeerCard displayName={user.displayName} avatarUrl={user.avatarUrl} muted={muted} held={held} />
-					<PeerCard displayName={peerInfo.displayName} avatarUrl={peerInfo.avatarUrl} muted={remoteMuted} held={remoteHeld} />
-					{focusedCard !== 'remote' && remoteStreamCard}
-					{focusedCard !== 'local' && localStreamCard}
-				</CardListContainer>
-			</CardListSection>
+			{isPopout ? <PopoutDockPrompt onClosePopout={onClosePopout} /> : <MediaCallCardList user={user} shouldWrapCards={shouldWrapCards} />}
 			<ActionStrip
 				leftSlot={
-					<Box color='default' alignContent='center' pis={16}>
+					<Box color='default' alignContent='center' paddingInlineStart={16}>
 						<Timer startAt={startedAt} />
 					</Box>
 				}
 				rightSlot={
 					<ButtonGroup>
 						<ActionToggleChat pressed={showChat} onClick={onToggleChat} />
+						<ToggleButton
+							label={t('Open_in_new_window')}
+							titles={[t('Open_in_new_window'), t('Return_to_main_window')]}
+							icons={['arrow-to-square-box', 'arrow-from-cross-box']}
+							pressed={isPopout}
+							onToggle={isPopout ? onClosePopout : onOpenPopout}
+							danger={false}
+						/>
 						<DevicePicker secondary />
 					</ButtonGroup>
 				}

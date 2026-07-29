@@ -23,6 +23,15 @@ export class CustomSoundsRaw extends BaseRaw<ICustomSound> implements ICustomSou
 		return this.find(query, options);
 	}
 
+	findOneByName(name: string, exceptId?: string, options?: FindOptions<ICustomSound>): Promise<ICustomSound | null> {
+		const query = {
+			name,
+			...(exceptId && { _id: { $nin: [exceptId] } }),
+		};
+
+		return this.findOne(query, options);
+	}
+
 	// INSERT
 	create(data: Omit<ICustomSound, '_id' | '_updatedAt'>): Promise<InsertOneResult<WithId<ICustomSound>>> {
 		return this.insertOne(data);

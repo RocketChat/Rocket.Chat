@@ -13,7 +13,7 @@ export type MessageAttachmentDefault = {
 	fields?: {
 		short?: boolean;
 		title: string;
-		value: string;
+		value: string | number | boolean;
 	}[];
 
 	// footer

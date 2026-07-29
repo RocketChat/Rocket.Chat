@@ -764,6 +764,45 @@ const roomsOpenSchema = {
 
 export const isRoomsOpenProps = ajv.compile<RoomsOpenProps>(roomsOpenSchema);
 
+export type RoomsJoinProps = { roomId: string; joinCode?: string } | { roomName: string; joinCode?: string };
+
+const roomsJoinSchema = {
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				roomId: {
+					type: 'string',
+					minLength: 1,
+				},
+				joinCode: {
+					type: 'string',
+					nullable: true,
+				},
+			},
+			required: ['roomId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				roomName: {
+					type: 'string',
+					minLength: 1,
+				},
+				joinCode: {
+					type: 'string',
+					nullable: true,
+				},
+			},
+			required: ['roomName'],
+			additionalProperties: false,
+		},
+	],
+};
+
+export const isRoomsJoinProps = ajv.compile<RoomsJoinProps>(roomsJoinSchema);
+
 type MembersOrderedByRoleProps = {
 	roomId?: IRoom['_id'];
 	roomName?: IRoom['name'];
@@ -998,6 +1037,12 @@ export type RoomsEndpoints = {
 
 	'/v1/rooms.open': {
 		POST: (params: RoomsOpenProps) => void;
+	};
+
+	'/v1/rooms.join': {
+		POST: (params: RoomsJoinProps) => {
+			room: IRoom;
+		};
 	};
 
 	'/v1/rooms.membersOrderedByRole': {

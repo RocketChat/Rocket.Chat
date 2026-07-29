@@ -5,7 +5,7 @@ import { useContext } from 'react';
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
 import InlineElements from '../elements/InlineElements';
 
-type TaskListBlockProps = {
+export type TaskListBlockProps = {
 	tasks: MessageParser.Task[];
 };
 

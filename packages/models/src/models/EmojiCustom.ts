@@ -1,6 +1,6 @@
 import type { IEmojiCustom, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IEmojiCustomModel, InsertionModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, FindOptions, IndexDescription, InsertOneResult, UpdateResult, WithId } from 'mongodb';
+import type { Collection, Filter, FindCursor, Db, FindOptions, IndexDescription, InsertOneResult, UpdateResult, WithId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -26,6 +26,15 @@ export class EmojiCustomRaw extends BaseRaw<IEmojiCustom> implements IEmojiCusto
 		};
 
 		return this.find(query, options);
+	}
+
+	findOneByNamesOrAliases(names: string[], exceptId?: string, options?: FindOptions<IEmojiCustom>): Promise<IEmojiCustom | null> {
+		const query: Filter<IEmojiCustom> = {
+			...(exceptId && { _id: { $nin: [exceptId] } }),
+			$or: [{ name: { $in: names } }, { aliases: { $in: names } }],
+		};
+
+		return this.findOne(query, options);
 	}
 
 	findByNameOrAliasExceptID(name: string, except: string, options?: FindOptions<IEmojiCustom>): FindCursor<IEmojiCustom> {

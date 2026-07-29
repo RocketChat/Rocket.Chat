@@ -11,7 +11,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-type PlaceChatOnHoldModalProps = {
+export type PlaceChatOnHoldModalProps = {
 	onOnHoldChat: () => void;
 	confirm?: () => void;
 	onCancel: () => void;

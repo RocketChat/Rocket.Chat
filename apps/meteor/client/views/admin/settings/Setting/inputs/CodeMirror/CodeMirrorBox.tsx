@@ -1,12 +1,18 @@
-import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, FieldError } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
-import type { ReactNode } from 'react';
+import { useId, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
-const CodeMirrorBox = ({ label, children }: { label: ReactNode; children: ReactNode }) => {
+// A constant 2px border is always reserved so toggling the error state only changes the color, avoiding a layout reflow.
+const editorBorderProps = { borderWidth: 2, borderStyle: 'solid', borderRadius: 4 } as const;
+
+export type CodeMirrorBoxProps = { label: ReactNode; children: ReactNode; error?: string };
+
+const CodeMirrorBox = ({ label, children, error }: CodeMirrorBoxProps) => {
 	const { t } = useTranslation();
 	const [fullScreen, toggleFullScreen] = useToggle(false);
+	const errorId = useId();
 
 	if (fullScreen) {
 		return createPortal(
@@ -20,15 +26,29 @@ const CodeMirrorBox = ({ label, children }: { label: ReactNode; children: ReactN
 				flexDirection='column'
 				width='100%'
 				height='100%'
-				p={40}
+				padding={40}
 			>
-				<Box fontScale='p1' mbe={4}>
+				<Box fontScale='p1' marginBlockEnd={4}>
 					{label}
 				</Box>
-				<Box display='flex' flexDirection='column' height='100%' role='code' aria-label={typeof label === 'string' ? label : undefined}>
+				<Box
+					display='flex'
+					flexDirection='column'
+					height='100%'
+					role='code'
+					aria-label={typeof label === 'string' ? label : undefined}
+					aria-describedby={error ? errorId : undefined}
+					{...editorBorderProps}
+					borderColor={error ? 'error' : 'transparent'}
+				>
 					{children}
 				</Box>
-				<Box mbs={8}>
+				{error && (
+					<FieldError id={errorId} role='alert' marginBlockStart={4}>
+						{error}
+					</FieldError>
+				)}
+				<Box marginBlockStart={8}>
 					<ButtonGroup>
 						<Button primary onClick={(): void => toggleFullScreen()}>
 							{t('Exit_Full_Screen')}
@@ -42,10 +62,24 @@ const CodeMirrorBox = ({ label, children }: { label: ReactNode; children: ReactN
 
 	return (
 		<Box className='code-mirror-box'>
-			<Box display='flex' flexDirection='column' height='100%' role='code' aria-label={typeof label === 'string' ? label : undefined}>
+			<Box
+				display='flex'
+				flexDirection='column'
+				height='100%'
+				role='code'
+				aria-label={typeof label === 'string' ? label : undefined}
+				aria-describedby={error ? errorId : undefined}
+				{...editorBorderProps}
+				borderColor={error ? 'error' : 'transparent'}
+			>
 				{children}
 			</Box>
-			<Box mbs={8}>
+			{error && (
+				<FieldError id={errorId} role='alert' marginBlockStart={4}>
+					{error}
+				</FieldError>
+			)}
+			<Box marginBlockStart={8}>
 				<ButtonGroup>
 					<Button primary onClick={(): void => toggleFullScreen()}>
 						{t('Full_Screen')}

@@ -6,7 +6,6 @@ import PermissionFlowModal from './PermissionFlowModal';
 const noop = () => undefined;
 
 const meta = {
-	title: 'Components/Permission Flow',
 	component: PermissionFlowModal,
 	decorators: [
 		mockAppRoot()

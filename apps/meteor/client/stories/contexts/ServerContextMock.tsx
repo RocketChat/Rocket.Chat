@@ -3,9 +3,9 @@ import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } fro
 import type { Method, OperationParams, OperationResult, PathFor, PathPattern } from '@rocket.chat/rest-typings';
 import type { UploadResult } from '@rocket.chat/ui-contexts';
 import { ServerContext } from '@rocket.chat/ui-contexts';
-import { action } from '@storybook/addon-actions';
 import type { ContextType, ReactNode } from 'react';
 import { useContext, useMemo } from 'react';
+import { action } from 'storybook/actions';
 
 const logAction = action('ServerContext');
 
@@ -52,7 +52,7 @@ type Operations = {
 		: never as TOperation['id']]: TOperation['fn'];
 };
 
-type ServerContextMockProps = Omit<Partial<ContextType<typeof ServerContext>>, 'callEndpoint' | 'callMethod'> & {
+export type ServerContextMockProps = Omit<Partial<ContextType<typeof ServerContext>>, 'callEndpoint' | 'callMethod'> & {
 	children: ReactNode;
 	baseURL?: string | URL;
 	callEndpoint?: {

@@ -190,10 +190,9 @@ test.describe.parallel('register', () => {
 				await page.goto('/register/invalid_secret');
 			});
 
-			test('should expect a invalid page informing that the secret password is invalid', async ({ page }) => {
-				await expect(page.locator('role=heading[level=2][name="The URL provided is invalid."]')).toBeVisible({
-					timeout: 10000,
-				});
+			test('should expect a invalid page informing that the secret password is invalid', async () => {
+				await poRegistration.waitForCalloutPage();
+				await expect(poRegistration.registrationInvalidUrlCallout).toBeVisible();
 			});
 		});
 
@@ -219,8 +218,8 @@ test.describe.parallel('register', () => {
 
 		test('should show an invalid page informing that the url is not valid', async ({ page }) => {
 			await page.goto('/register/secret');
-			await page.waitForSelector('role=heading[level=2]');
-			await expect(page.locator('role=heading[level=2][name="The URL provided is invalid."]')).toBeVisible();
+			await poRegistration.waitForCalloutPage();
+			await expect(poRegistration.registrationInvalidUrlCallout).toBeVisible();
 		});
 	});
 });

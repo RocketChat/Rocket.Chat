@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { Box } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { WizardContext, StepsLinkedList } from '@rocket.chat/ui-client';
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryObj } from '@storybook/react';
+import { action } from 'storybook/actions';
 
 import RecipientStep from './RecipientStep';
 import { createFakeContact, createFakeContactChannel, createFakeContactWithManagerData } from '../../../../../../../../tests/mocks/data';

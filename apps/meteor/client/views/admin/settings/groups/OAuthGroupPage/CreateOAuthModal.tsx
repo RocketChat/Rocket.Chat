@@ -4,7 +4,7 @@ import { useId } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-type CreateOAuthModalProps = {
+export type CreateOAuthModalProps = {
 	onConfirm: (text: string) => Promise<void>;
 	onClose: () => void;
 };

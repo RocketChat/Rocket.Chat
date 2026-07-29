@@ -4,9 +4,9 @@ import { Roles } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { API } from '../../../app/api/server/api';
-import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
-import { settings } from '../../../app/settings/server/index';
+import { API } from '../../../server/api/api';
+import { hasPermissionAsync } from '../../../server/lib/authorization/hasPermission';
+import { settings } from '../../../server/settings';
 import { insertRoleAsync } from '../lib/roles/insertRole';
 import { updateRole } from '../lib/roles/updateRole';
 
@@ -141,7 +141,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-role-properties', 'The role properties are invalid.');
 			}
 
-			if (!(await hasPermissionAsync(this.userId, 'access-permissions'))) {
+			if (!(await hasPermissionAsync(this.user, 'access-permissions'))) {
 				throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed');
 			}
 

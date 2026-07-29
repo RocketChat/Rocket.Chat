@@ -1,5 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { StoryObj, Meta } from '@storybook/react';
 import type { ComponentProps } from 'react';
 
 import ThreadMessagePreviewBody from './ThreadMessagePreviewBody';
@@ -25,4 +25,4 @@ export default {
 	},
 } satisfies Meta<typeof ThreadMessagePreviewBody>;
 
-export const Default: StoryFn<ComponentProps<typeof ThreadMessagePreviewBody>> = (args) => <ThreadMessagePreviewBody {...args} />;
+export const Default: StoryObj<ComponentProps<typeof ThreadMessagePreviewBody>> = {};

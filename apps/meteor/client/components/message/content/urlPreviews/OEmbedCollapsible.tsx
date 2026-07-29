@@ -6,7 +6,7 @@ import OEmbedPreviewContent from './OEmbedPreviewContent';
 import type { OEmbedPreviewMetadata } from './OEmbedPreviewMetadata';
 import MessageCollapsible from '../../MessageCollapsible';
 
-type OEmbedCollapsibleProps = { children?: ReactNode } & OEmbedPreviewMetadata;
+export type OEmbedCollapsibleProps = { children?: ReactNode } & OEmbedPreviewMetadata;
 
 const OEmbedCollapsible = ({ children, ...props }: OEmbedCollapsibleProps) => {
 	const { t } = useTranslation();

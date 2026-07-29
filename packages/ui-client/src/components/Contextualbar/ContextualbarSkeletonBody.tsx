@@ -7,8 +7,8 @@ const ContextualbarSkeletonBody = () => (
 		<ContextualbarHeader>
 			<Skeleton width='100%' />
 		</ContextualbarHeader>
-		<Box p={24}>
-			<Skeleton mbe={4} width='x32' height='x32' variant='rect' />
+		<Box padding={24}>
+			<Skeleton marginBlockEnd={4} width='x32' height='x32' variant='rect' />
 			{Array(5)
 				.fill(5)
 				.map((_, index) => (

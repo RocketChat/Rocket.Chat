@@ -1,6 +1,6 @@
 import 'katex/dist/katex.css';
 
-type PreviewKatexBlockProps = {
+export type PreviewKatexBlockProps = {
 	code: string;
 };
 

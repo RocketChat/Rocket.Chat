@@ -322,6 +322,16 @@ test.describe('SAML', () => {
 		});
 	};
 
+	const expectLoggedOutAfterLogoutRequest = async (page: Page) => {
+		await test.step('expect user to be logged out from Rocket.Chat', async () => {
+			// The logout response echoes back the RelayState from the request (per the SAML spec), so the browser
+			// lands on the IdP after SLO instead of returning here; navigate back to confirm the session ended.
+			await page.goto('/home');
+			await expect(page.getByRole('button', { name: 'User menu' })).not.toBeVisible();
+			await expect(poRegistration.btnLoginWithSaml).toBeVisible();
+		});
+	};
+
 	test('Logout - Rocket.Chat only', async ({ page, api }) => {
 		await test.step('Configure logout to only logout from Rocket.Chat', async () => {
 			await expect((await setSettingValueById(api, 'SAML_Custom_Default_logout_behaviour', 'Local')).status()).toBe(200);
@@ -666,11 +676,7 @@ test.describe('SAML', () => {
 
 				await page.goto(`${logoutRequest}&Signature=${logoutRequestSignature}`);
 
-				await test.step('expect user to be logged out from Rocket.Chat', async () => {
-					await expect(page).toHaveURL('/home');
-					await expect(page.getByRole('button', { name: 'User menu' })).not.toBeVisible();
-					await expect(poRegistration.btnLoginWithSaml).toBeVisible();
-				});
+				await expectLoggedOutAfterLogoutRequest(page);
 			});
 		});
 
@@ -685,11 +691,7 @@ test.describe('SAML', () => {
 
 				await page.goto(`${logoutRequest}&Signature=invalid`);
 
-				await test.step('expect user to be logged out from Rocket.Chat', async () => {
-					await expect(page).toHaveURL('/home');
-					await expect(page.getByRole('button', { name: 'User menu' })).not.toBeVisible();
-					await expect(poRegistration.btnLoginWithSaml).toBeVisible();
-				});
+				await expectLoggedOutAfterLogoutRequest(page);
 			});
 
 			test('Ignore Missing Signature on Logout Request', async ({ page }) => {
@@ -698,11 +700,7 @@ test.describe('SAML', () => {
 
 				await page.goto(logoutRequest);
 
-				await test.step('expect user to be logged out from Rocket.Chat', async () => {
-					await expect(page).toHaveURL('/home');
-					await expect(page.getByRole('button', { name: 'User menu' })).not.toBeVisible();
-					await expect(poRegistration.btnLoginWithSaml).toBeVisible();
-				});
+				await expectLoggedOutAfterLogoutRequest(page);
 			});
 		});
 	});

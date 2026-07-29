@@ -513,7 +513,7 @@ class E2E extends Emitter {
 	}
 
 	async requestSubscriptionKeys(): Promise<void> {
-		await sdk.call('e2e.requestSubscriptionKeys');
+		await sdk.rest.post('/v1/e2e.requestSubscriptionKeys');
 	}
 
 	async createRandomPassword(): Promise<string> {

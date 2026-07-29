@@ -19,14 +19,18 @@ on:
 env:
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
 
+permissions: {}
+
 jobs:
   test:
     runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
 
     name: Test Storybook
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -37,7 +41,7 @@ jobs:
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - uses: rharkor/caching-for-turbo@5d14fba18e450c09393333cfd4242e8b3cb455a6 # v2.4.2
+      - uses: rharkor/caching-for-turbo@75f8ebf4a43d2c60b23bc2a27082cfea94ffdad9 # v2.5.0
 
       - uses: ./.github/actions/restore-packages
 
@@ -48,8 +52,11 @@ jobs:
         env:
           STORYBOOK_DISABLE_TELEMETRY: 1
 
-      - uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
+      - uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         with:
           flags: unit
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
+          # tests don't re-run on the develop push, so the merge queue run (same SHA
+          # that lands on develop) provides the develop coverage baseline
+          override_branch: ${{ github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/develop' && 'develop' || '' }}
