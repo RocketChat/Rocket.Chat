@@ -44,7 +44,6 @@ export type MessageBoxProps = {
 	onJoin?: () => Promise<void>;
 	onResize?: () => void;
 	onTyping?: () => void;
-	onUploadFiles?: (files: File[]) => void;
 	onEscape?: () => void;
 	onNavigateToPreviousMessage?: () => void;
 	onNavigateToNextMessage?: () => void;
@@ -62,7 +61,6 @@ const MessageBox = ({
 	onJoin,
 	onNavigateToNextMessage,
 	onNavigateToPreviousMessage,
-	onUploadFiles,
 	onEscape,
 	onTyping,
 	tshow,
@@ -341,7 +339,7 @@ const MessageBox = ({
 
 		if (files.length) {
 			event.preventDefault();
-			(onUploadFiles ?? handleUploadFiles)(files);
+			handleUploadFiles?.(files);
 		}
 	});
 
