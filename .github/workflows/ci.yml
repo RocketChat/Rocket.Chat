@@ -362,9 +362,6 @@ jobs:
         type:
           - ${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'coverage' || 'production' }}
           - fips
-        exclude:
-          - arch: arm64
-            type: fips
         include:
           - arch: amd64
             service: [rocketchat]
@@ -791,6 +788,7 @@ jobs:
       type: api-livechat
       release: ee
       fips: true
+      arch: arm64
       transporter: 'nats://nats:4222'
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
       mongodb-version: "['8.0']"
