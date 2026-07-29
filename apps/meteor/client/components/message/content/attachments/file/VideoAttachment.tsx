@@ -27,7 +27,7 @@ const VideoAttachment = ({
 	return (
 		<>
 			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
-			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed}>
+			<MessageCollapsible id={link || url || title} title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed}>
 				<MessageGenericPreview style={{ maxWidth: 368, width: '100%' }}>
 					<Box is='video' controls preload='metadata' ref={mediaRef} position='relative'>
 						<source src={getURL(url)} type={userAgentMIMETypeFallback(type)} />

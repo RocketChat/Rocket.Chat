@@ -7,6 +7,7 @@ import CollapsibleContent from './content/collapsible/CollapsibleContent';
 import { useCollapse } from './hooks/useCollapse';
 
 export type MessageCollapsibleProps = {
+	id?: string;
 	children?: ReactNode;
 	title?: string;
 	hasDownload?: boolean;
@@ -15,8 +16,8 @@ export type MessageCollapsibleProps = {
 	isCollapsed?: boolean;
 };
 
-const MessageCollapsible = ({ children, title, hasDownload, link, size, isCollapsed }: MessageCollapsibleProps) => {
-	const [collapsed, toggleCollapse] = useCollapse(isCollapsed, link || title);
+const MessageCollapsible = ({ id, children, title, hasDownload, link, size, isCollapsed }: MessageCollapsibleProps) => {
+	const [collapsed, toggleCollapse] = useCollapse(isCollapsed, id || link || title);
 
 	return (
 		<>
