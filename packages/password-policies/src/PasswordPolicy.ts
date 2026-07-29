@@ -79,11 +79,18 @@ export class PasswordPolicy {
 		mustContainAtLeastOneSpecialCharacter = false,
 		throwError = true,
 	}: PasswordPolicyOptions) {
+		const safeForbidRepeatingCharactersCount =
+			typeof forbidRepeatingCharactersCount === 'number' &&
+			Number.isSafeInteger(forbidRepeatingCharactersCount) &&
+			forbidRepeatingCharactersCount >= 1
+				? forbidRepeatingCharactersCount
+				: 3;
+
 		this.enabled = enabled;
 		this.minLength = minLength;
 		this.maxLength = maxLength;
 		this.forbidRepeatingCharacters = forbidRepeatingCharacters;
-		this.forbidRepeatingCharactersCount = forbidRepeatingCharactersCount;
+		this.forbidRepeatingCharactersCount = safeForbidRepeatingCharactersCount;
 		this.mustContainAtLeastOneLowercase = mustContainAtLeastOneLowercase;
 		this.mustContainAtLeastOneUppercase = mustContainAtLeastOneUppercase;
 		this.mustContainAtLeastOneNumber = mustContainAtLeastOneNumber;
@@ -91,7 +98,7 @@ export class PasswordPolicy {
 		this.throwError = throwError;
 
 		this.regex = {
-			forbiddingRepeatingCharacters: new RegExp(`(.)\\1{${forbidRepeatingCharactersCount},}`),
+			forbiddingRepeatingCharacters: new RegExp(`(.)\\1{${safeForbidRepeatingCharactersCount},}`),
 			mustContainAtLeastOneLowercase: new RegExp('[a-z]'),
 			mustContainAtLeastOneUppercase: new RegExp('[A-Z]'),
 			mustContainAtLeastOneNumber: new RegExp('[0-9]'),
