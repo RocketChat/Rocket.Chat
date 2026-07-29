@@ -165,7 +165,7 @@ const roomTargetBody = <T>(extra: Record<string, Record<string, unknown>> = {}, 
 			...extra,
 		},
 		required,
-		anyOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
+		oneOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
 		additionalProperties: false,
 	});
 
@@ -207,7 +207,7 @@ API.v1.post(
 			userId: this.userId,
 		});
 
-		await addAllUserToRoomFn(this.userId, findResult.rid, activeUsersOnly === 'true' || activeUsersOnly === 1);
+		await addAllUserToRoomFn(this.userId, findResult.rid, activeUsersOnly === true || activeUsersOnly === 'true' || activeUsersOnly === 1);
 
 		const room = await Rooms.findOneById(findResult.rid, { projection: API.v1.defaultFieldsToExclude });
 
