@@ -31,6 +31,10 @@ export class Scanner {
 		return this.pos;
 	}
 
+	public previous(): string {
+		return this.input[this.pos - 1] ?? '';
+	}
+
 	public backtrack(savedPos: number): void {
 		this.pos = savedPos;
 	}

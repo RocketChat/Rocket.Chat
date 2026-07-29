@@ -331,8 +331,8 @@ function parseInline(scanner: Scanner, options: Options, stopChar = '') {
 		if (ch === '_') {
 			const result = tryItalic(scanner, options, prev);
 			if (result !== null) {
-				nodes.push(result);
-				prev = ch;
+				nodes.push(...result);
+				prev = scanner.previous();
 				continue;
 			}
 		}
@@ -538,15 +538,21 @@ function tryBold(scanner: Scanner, options: Options): Inlines | null {
 	return bold(reducePlainTexts(content) as Bold['value']);
 }
 
-function tryItalic(scanner: Scanner, options: Options, prevChar: string): Inlines | null {
-	if (isAlphaNum(prevChar)) return null;
-
+function tryItalic(scanner: Scanner, options: Options, prevChar: string): Inlines[] | null {
 	if (skipItalic) return null;
 	const start = scanner.position();
 
+	// A word glued to underscores is plain text: `word_`, `word__`.
+	if (isAlphaNum(prevChar)) {
+		scanner.consume(1);
+		if (scanner.matches('_')) scanner.consume(1);
+		return [plain(scanner.sliceFrom(start))];
+	}
+
+	// Content can't start with `_`, so peel one `_` and retry (`___x___` -> _ + __x__ + _).
 	if (scanner.matches('___')) {
 		scanner.consume(1);
-		return plain('_');
+		return [plain('_')];
 	}
 
 	const isDouble = scanner.matches('__');
@@ -562,33 +568,23 @@ function tryItalic(scanner: Scanner, options: Options, prevChar: string): Inline
 	const content = parseInline(scanner, options, delimiter);
 	skipItalic = false;
 
-	if (!scanner.matches(delimiter)) {
+	if (!scanner.matches(delimiter) || content.length === 0 || isWhitespaceOnly(content)) {
 		scanner.backtrack(start);
 		return null;
 	}
-
-	if (content.length === 0) {
-		scanner.backtrack(start);
-		return null;
-	}
-
-	if (isWhitespaceOnly(content)) {
-		scanner.backtrack(start);
-		return null;
-	}
-
-	if (isDouble && isAlphaNum(scanner.charAt(delimiter.length))) {
-		scanner.backtrack(start);
-		return null;
-	}
-
-	if (!isDouble && isAlpha(scanner.charAt(delimiter.length))) {
-		scanner.backtrack(start);
-		return null;
-	}
-
 	scanner.consume(delimiter.length);
-	return italic(reducePlainTexts(content) as Italic['value']);
+
+	// Followed by a word (`__x__word`, `_x_word`): delimiters are plain, inner nodes kept.
+	const isTrail = isDouble ? isAlphaNum : isAlpha;
+	if (isTrail(scanner.char())) {
+		const trailStart = scanner.position();
+		while (isTrail(scanner.char())) scanner.consume();
+		const trail = scanner.sliceFrom(trailStart);
+		return reducePlainTexts([plain(delimiter), ...content, plain(delimiter), plain(trail)]);
+	}
+
+	// Real italic.
+	return [italic(reducePlainTexts(content) as Italic['value'])];
 }
 
 function tryStrike(scanner: Scanner, options: Options): Inlines | null {
@@ -928,8 +924,8 @@ function parseLinkLabel(scanner: Scanner, options: Options): Inlines[] {
 		if (ch === '_') {
 			const r = tryItalic(scanner, options, prev);
 			if (r !== null) {
-				nodes.push(r);
-				prev = '_';
+				nodes.push(...r);
+				prev = scanner.previous();
 				continue;
 			}
 		}
