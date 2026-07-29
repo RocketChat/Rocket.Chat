@@ -82,14 +82,7 @@ export const renderComposerContent = (
 	const html = renderComposerMarkup(ast, parseOptions);
 
 	// Restore the substituted links
-	let finalHtml = restoreLinks(html, matches);
-
-	// Prevent newline explosion after every end of heading updation
-	finalHtml = finalHtml
-		.replace(/<\/h1><br\s*\/?>/gi, '</h1>')
-		.replace(/<\/h2><br\s*\/?>/gi, '</h2>')
-		.replace(/<\/h3><br\s*\/?>/gi, '</h3>')
-		.replace(/<\/h4><br\s*\/?>/gi, '</h4>');
+	const finalHtml = restoreLinks(html, matches);
 
 	// Rendering pipeline
 	target.innerHTML = finalHtml;
