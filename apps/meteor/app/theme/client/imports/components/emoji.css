@@ -1,19 +1,9 @@
+/* Faces sharing a family with equal descriptors resolve last-declared-first
+(css-fonts-4 font matching), so these are in reverse priority order: Segoe UI
+Emoji must be declared last to win on Windows. */
 @font-face {
 	font-family: rc-emoji;
-	src: local('Segoe UI Emoji');
-	ascent-override: 90%;
-	descent-override: 25%;
-	size-adjust: 85%;
-}
-
-@font-face {
-	font-family: rc-emoji;
-	src: local('Apple Color Emoji');
-}
-
-@font-face {
-	font-family: rc-emoji;
-	src: local('Noto Color Emoji');
+	src: local('Android Emoji');
 }
 
 @font-face {
@@ -23,7 +13,20 @@
 
 @font-face {
 	font-family: rc-emoji;
-	src: local('Android Emoji');
+	src: local('Noto Color Emoji');
+}
+
+@font-face {
+	font-family: rc-emoji;
+	src: local('Apple Color Emoji');
+}
+
+@font-face {
+	font-family: rc-emoji;
+	src: local('Segoe UI Emoji');
+	ascent-override: 90%;
+	descent-override: 25%;
+	size-adjust: 85%;
 }
 
 /* Global emoji styles */
