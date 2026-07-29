@@ -9,7 +9,7 @@ jest.mock('../../../../client/lib/utils/renderEmoji', () => ({
 
 const mountMarkup = (text: string): HTMLDivElement => {
 	const input = document.createElement('div');
-	input.innerHTML = renderComposerMarkup(parse(text, {}), {});
+	input.innerHTML = renderComposerMarkup(parse(text, {}));
 	document.body.appendChild(input);
 	return input;
 };
