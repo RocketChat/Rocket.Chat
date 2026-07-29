@@ -56,7 +56,7 @@ export const useOAuthPopupCommands = () => {
 
 			const { oauthPopupCommand } = event.data as { oauthPopupCommand?: unknown };
 
-			if (typeof oauthPopupCommand !== 'string' || !(oauthPopupCommand in commands)) {
+			if (typeof oauthPopupCommand !== 'string' || !Object.hasOwn(commands, oauthPopupCommand)) {
 				return;
 			}
 
