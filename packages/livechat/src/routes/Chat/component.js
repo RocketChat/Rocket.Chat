@@ -24,6 +24,7 @@ import EmojiIcon from '../../icons/smile.svg';
 import store from "../../store";
 
 import 'emoji-mart/css/emoji-mart.css';
+import { parse } from 'query-string';
 
 const Picker = lazy(async () => {
 	const { Picker } = await import('emoji-mart');
