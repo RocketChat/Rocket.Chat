@@ -232,7 +232,59 @@ const RichTextMessageBox = ({
 		});
 	};
 
+	const isEditing = useSyncExternalStore(chat.composer?.editing.subscribe ?? emptySubscribe, chat.composer?.editing.get ?? getEmptyFalse);
+
+	const isRecordingAudio = useSyncExternalStore(
+		chat.composer?.recording.subscribe ?? emptySubscribe,
+		chat.composer?.recording.get ?? getEmptyFalse,
+	);
+
+	const isMicrophoneDenied = useSyncExternalStore(
+		chat.composer?.isMicrophoneDenied.subscribe ?? emptySubscribe,
+		chat.composer?.isMicrophoneDenied.get ?? getEmptyFalse,
+	);
+
+	const isRecordingVideo = useSyncExternalStore(
+		chat.composer?.recordingVideo.subscribe ?? emptySubscribe,
+		chat.composer?.recordingVideo.get ?? getEmptyFalse,
+	);
+
+	const formatters = useSyncExternalStore(
+		chat.composer?.formatters.subscribe ?? emptySubscribe,
+		chat.composer?.formatters.get ?? getEmptyArray,
+	);
+
+	const isRecording = isRecordingAudio || isRecordingVideo;
+
+	const federationMatrixEnabled = useIsFederationEnabled();
+	const subscribeSubscriptions = useCallback((onStoreChange: () => void) => Subscriptions.use.subscribe(onStoreChange), []);
+	const canSend = useSyncExternalStore(subscribeSubscriptions, () => {
+		if (!room.t) {
+			return false;
+		}
+
+		if (!roomCoordinator.getRoomDirectives(room.t).canSendMessage(room)) {
+			return false;
+		}
+
+		if (isRoomFederated(room)) {
+			if (!isRoomNativeFederated(room)) {
+				return false;
+			}
+			return federationMatrixEnabled;
+		}
+		return true;
+	});
+
+	// A contenteditable ignores `disabled`, so the handlers have to bail out themselves: the browser
+	// keeps firing keydown on an already-focused node after it stops being editable.
+	const disabled = isRecording || !canSend || isProcessingUploads;
+
 	const keyboardEventHandler = useStableCallback((event: KeyboardEvent) => {
+		if (disabled) {
+			return;
+		}
+
 		const { which: keyCode } = event;
 
 		const input = event.target as HTMLDivElement;
@@ -303,50 +355,6 @@ const RichTextMessageBox = ({
 		onTyping?.();
 	});
 
-	const isEditing = useSyncExternalStore(chat.composer?.editing.subscribe ?? emptySubscribe, chat.composer?.editing.get ?? getEmptyFalse);
-
-	const isRecordingAudio = useSyncExternalStore(
-		chat.composer?.recording.subscribe ?? emptySubscribe,
-		chat.composer?.recording.get ?? getEmptyFalse,
-	);
-
-	const isMicrophoneDenied = useSyncExternalStore(
-		chat.composer?.isMicrophoneDenied.subscribe ?? emptySubscribe,
-		chat.composer?.isMicrophoneDenied.get ?? getEmptyFalse,
-	);
-
-	const isRecordingVideo = useSyncExternalStore(
-		chat.composer?.recordingVideo.subscribe ?? emptySubscribe,
-		chat.composer?.recordingVideo.get ?? getEmptyFalse,
-	);
-
-	const formatters = useSyncExternalStore(
-		chat.composer?.formatters.subscribe ?? emptySubscribe,
-		chat.composer?.formatters.get ?? getEmptyArray,
-	);
-
-	const isRecording = isRecordingAudio || isRecordingVideo;
-
-	const federationMatrixEnabled = useIsFederationEnabled();
-	const subscribeSubscriptions = useCallback((onStoreChange: () => void) => Subscriptions.use.subscribe(onStoreChange), []);
-	const canSend = useSyncExternalStore(subscribeSubscriptions, () => {
-		if (!room.t) {
-			return false;
-		}
-
-		if (!roomCoordinator.getRoomDirectives(room.t).canSendMessage(room)) {
-			return false;
-		}
-
-		if (isRoomFederated(room)) {
-			if (!isRoomNativeFederated(room)) {
-				return false;
-			}
-			return federationMatrixEnabled;
-		}
-		return true;
-	});
-
 	const newSizes = useContentBoxSize(contentEditableRef);
 
 	const format = useFormatDateAndTime();
@@ -356,6 +364,11 @@ const RichTextMessageBox = ({
 	});
 
 	const handlePaste = useStableCallback((event: ClipboardEvent<HTMLDivElement>) => {
+		if (disabled) {
+			event.preventDefault();
+			return;
+		}
+
 		const files = extractImageFilesFromClipboard(event, format);
 
 		if (files.length) {
@@ -450,10 +463,11 @@ const RichTextMessageBox = ({
 					ref={newMergedRefs}
 					aria-label={composerPlaceholder}
 					name='msg'
-					disabled={isRecording || !canSend || isProcessingUploads}
+					disabled={disabled}
 					onInput={setTyping}
 					placeholder={composerPlaceholder}
 					hideplaceholder={hideplaceholder}
+					hidetext={isRecordingAudio}
 					onPaste={handlePaste}
 					aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
 					onBlur={setLastCursorPosition}
