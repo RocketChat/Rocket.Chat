@@ -9,7 +9,7 @@ import CollapsibleContent from '../collapsible/CollapsibleContent';
 
 const UrlPreview = (props: UrlPreviewMetadata) => {
 	const autoLoadMedia = useAttachmentAutoLoadEmbedMedia();
-	const [collapsed, toggleCollapse] = useCollapse(!autoLoadMedia);
+	const [collapsed, toggleCollapse] = useCollapse(!autoLoadMedia, props.url);
 	const { t } = useTranslation();
 
 	return (
