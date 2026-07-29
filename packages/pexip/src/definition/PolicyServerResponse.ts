@@ -25,7 +25,7 @@ const policyServerResponseSchema = {
 		},
 	},
 	required: ['status', 'result'],
-	additionalProperties: false,
+	additionalProperties: true,
 };
 
 export const isPolicyServerResponse = ajvQuery.compile<PolicyServerResponse>(policyServerResponseSchema);
