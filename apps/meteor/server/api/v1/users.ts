@@ -44,6 +44,7 @@ import { getUserForCheck, emailCheck } from '../../lib/2fa/code';
 import { resetTOTP } from '../../lib/2fa/functions/resetTOTP';
 import { UserChangedAuditStore } from '../../lib/auditServerEvents/userChanged';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { passwordPolicy } from '../../lib/auth/passwordPolicy';
 import { i18n } from '../../lib/i18n';
 import { SystemLogger } from '../../lib/logger/system';
 import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../lib/notifyListener';
@@ -2159,12 +2160,40 @@ API.v1.post(
 	},
 	async function action() {
 		const { token, newPassword } = this.bodyParams;
-		// DRAFT: delegate to the built-in accounts-password reset. It validates the reset token,
-		// sets the new password and returns a resume login token the client logs in with.
-		// TODO(review): confirm this behaves correctly when invoked server-side via Meteor.callAsync
-		// (no DDP connection context) — may need reimplementing against Accounts directly.
-		const result = (await Meteor.callAsync('resetPassword', token, newPassword)) as { token: string };
-		return API.v1.success({ token: result.token });
+
+		// Server-side reimplementation of the core accounts-password `resetPassword` method: the DDP
+		// method issues the login token through the connection, which isn't available over REST.
+		const user = (await Users.findOne({ 'services.password.reset.token': token } as Filter<IUser>, {
+			projection: { services: 1, emails: 1 },
+		})) as (Pick<IUser, '_id' | 'emails'> & { services?: { password?: { reset?: { when: Date; email: string } } } }) | null;
+
+		const reset = user?.services?.password?.reset;
+		if (!user || !reset) {
+			return API.v1.failure('error-token-expired');
+		}
+
+		if (Date.now() - new Date(reset.when).getTime() > Accounts._getPasswordResetTokenLifetimeMs()) {
+			return API.v1.failure('error-token-expired');
+		}
+
+		if (!user.emails?.some((e) => e.address === reset.email)) {
+			return API.v1.failure('error-token-invalid-email');
+		}
+
+		passwordPolicy.validate(newPassword);
+
+		// logout: true clears all existing login tokens, mirroring the core method invalidating sessions on reset.
+		await Accounts.setPasswordAsync(user._id, newPassword, { logout: true });
+
+		await Users.updateOne(
+			{ _id: user._id, 'emails.address': reset.email } as Filter<IUser>,
+			{ $set: { 'emails.$.verified': true }, $unset: { 'services.password.reset': 1 } },
+		);
+
+		const stampedToken = Accounts._generateStampedLoginToken();
+		await Accounts._insertLoginToken(user._id, stampedToken);
+
+		return API.v1.success({ token: stampedToken.token });
 	},
 );
 
