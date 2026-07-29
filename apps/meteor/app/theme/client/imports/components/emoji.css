@@ -1,28 +1,9 @@
-/* Faces sharing a family with equal descriptors resolve last-declared-first
-(css-fonts-4 font matching), so these are in reverse priority order: Segoe UI
-Emoji must be declared last to win on Windows. */
+/* Wrapper for Segoe UI Emoji correcting its metrics: it paints its ink low
+relative to its metric midpoint (so vertical-align: middle sits glyphs ~2px
+below the text center) and ~15% larger than the other platform emoji fonts.
+Only exists on Windows, so other platforms skip it in the fallback list. */
 @font-face {
-	font-family: rc-emoji;
-	src: local('Android Emoji');
-}
-
-@font-face {
-	font-family: rc-emoji;
-	src: local('Twemoji Mozilla');
-}
-
-@font-face {
-	font-family: rc-emoji;
-	src: local('Noto Color Emoji');
-}
-
-@font-face {
-	font-family: rc-emoji;
-	src: local('Apple Color Emoji');
-}
-
-@font-face {
-	font-family: rc-emoji;
+	font-family: rc-emoji-segoe;
 	src: local('Segoe UI Emoji');
 	ascent-override: 90%;
 	descent-override: 25%;
@@ -31,11 +12,11 @@ Emoji must be declared last to win on Windows. */
 
 /* Global emoji styles */
 .emoji {
-	font-family: rc-emoji, sans-serif;
+	font-family: 'Apple Color Emoji', rc-emoji-segoe, 'Noto Color Emoji', 'Twemoji Mozilla', 'Android Emoji', sans-serif;
 	font-size: 1.375rem;
 
 	/* Must exceed the emoji fonts' ink height — ~1.13em on Noto Color Emoji and on
-	size-adjusted Segoe UI Emoji (rc-emoji face) — otherwise the glyph paints outside
+	size-adjusted Segoe UI Emoji (rc-emoji-segoe) — otherwise the glyph paints outside
 	the line box and gets cut by overflow: hidden ancestors (message body, announcement
 	banner). */
 	line-height: 1.2;
@@ -67,7 +48,7 @@ Emoji must be declared last to win on Windows. */
 .rcx-message {
 	/* emojis on messages */
 	&__emoji {
-		font-family: rc-emoji, sans-serif;
+		font-family: 'Apple Color Emoji', rc-emoji-segoe, 'Noto Color Emoji', 'Twemoji Mozilla', 'Android Emoji', sans-serif;
 
 		/* Fuselage fixes this box at 1.5rem inline-block, sized for image emojis. Native
 		glyphs on Segoe UI Emoji/Noto Color Emoji paint taller and wider than that box, and
