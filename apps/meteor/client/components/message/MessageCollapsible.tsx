@@ -16,7 +16,7 @@ export type MessageCollapsibleProps = {
 };
 
 const MessageCollapsible = ({ children, title, hasDownload, link, size, isCollapsed }: MessageCollapsibleProps) => {
-	const [collapsed, toggleCollapse] = useCollapse(isCollapsed);
+	const [collapsed, toggleCollapse] = useCollapse(isCollapsed, link || title);
 
 	return (
 		<>

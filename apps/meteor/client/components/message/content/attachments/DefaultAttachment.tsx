@@ -28,7 +28,7 @@ const applyMarkdownIfRequires = (
 export type DefaultAttachmentProps = MessageAttachmentDefault;
 
 const DefaultAttachment = (attachment: DefaultAttachmentProps) => {
-	const [collapsed, toggleCollapse] = useCollapse(!!attachment.collapsed);
+	const [collapsed, toggleCollapse] = useCollapse(!!attachment.collapsed, attachment.title_link || attachment.title);
 
 	return (
 		<AttachmentBlock
