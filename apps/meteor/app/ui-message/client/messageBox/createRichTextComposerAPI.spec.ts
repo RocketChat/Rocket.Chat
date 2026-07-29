@@ -5,10 +5,6 @@ jest.mock('../../../../client/lib/chats/uploads', () => ({
 	createUploadsAPI: () => ({}),
 }));
 
-jest.mock('../../../../client/lib/utils/renderEmoji', () => ({
-	getEmojiClassNameAndDataTitle: () => ({}),
-}));
-
 let innerTextDescriptor: PropertyDescriptor | undefined;
 let originalExecCommand: typeof document.execCommand | undefined;
 

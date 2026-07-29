@@ -134,11 +134,12 @@ const RichTextMessageBox = ({
 	// Get parse options and pass it as prop to the RichTextComposer API
 	// Colors and KaTeX are intentionally left out: gazzodown-alt has no renderer for those nodes,
 	// so enabling them would make the typed text disappear.
+	// Emoticons are left out as well: the composer keeps them as the typed text.
 	const customDomains = useAutoLinkDomains();
 
 	const parseOptions = useMemo<Options>(
 		() => ({
-			emoticons: true,
+			emoticons: false,
 			customDomains,
 		}),
 		[customDomains],

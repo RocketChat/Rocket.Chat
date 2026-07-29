@@ -1,7 +1,11 @@
 import { parse, type Options } from '@rocket.chat/message-parser';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { renderComposerMarkup } from './renderComposerMarkup';
 import { getSelectionRange, setSelectionRange } from './selectionRange';
+
+// Paragraphs render with a trailing '\n' the source does not have.
+const sameText = (rendered: string, source: string): boolean => rendered.replace(/\n$/, '') === source.replace(/\n$/, '');
 
 // Parse the composer's raw text into markup and render it into the contenteditable,
 // restoring the caret to the given flat-offset selection afterwards.
@@ -11,12 +15,16 @@ export const renderComposerContent = (
 	{ selectionStart, selectionEnd }: { selectionStart: number; selectionEnd: number },
 ): void => {
 	const text = target.innerText;
+	const source = text === '' ? '\n' : text;
 
-	// Parse the raw text
-	const ast = parse(text === '' ? '\n' : text, parseOptions);
+	// Parse the raw text and render the AST through the gazzodown-alt WYSIWYG components
+	target.innerHTML = renderComposerMarkup(parse(source, parseOptions), source);
 
-	// Render the AST through the gazzodown-alt WYSIWYG components
-	target.innerHTML = renderComposerMarkup(ast);
+	// Caret offsets are flat character counts over the rendered text, so a node without a renderer
+	// would both lose the user's text and shift the caret. Fall back to the raw text instead.
+	if (!sameText(target.textContent ?? '', source)) {
+		target.innerHTML = escapeHTML(text);
+	}
 
 	// Restore the cursor to the correct position
 	setSelectionRange(target, selectionStart, selectionEnd);
