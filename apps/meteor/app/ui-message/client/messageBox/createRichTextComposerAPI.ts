@@ -4,7 +4,7 @@ import type { RefObject } from 'react';
 
 import { createComposerAPICore, triggerEvent, type SetText } from './createComposerAPICore';
 import { limitQuoteChain } from './limitQuoteChain';
-import { resolveComposerBox } from './messageStateHandler';
+import { renderComposerContent, resolveComposerBox } from './messageStateHandler';
 import { getSelectionRange, setSelectionRange } from './selectionRange';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 
@@ -24,18 +24,26 @@ export const createRichTextComposerAPI = (
 	const setText: SetText = (text, { selection, skipFocus } = {}) => {
 		!skipFocus && focus();
 
-		// Use innerHTML to set the value in RichTextComposer instead of innerText
-		// Here, text is the variable holding the text to be inserted to the composer
 		const { selectionStart, selectionEnd } = getSelectionRange(input);
-		const textAreaTxt = input.innerHTML;
 
 		if (typeof selection === 'function') {
 			selection = selection({ start: selectionStart, end: selectionEnd });
 		}
 
 		if (selection) {
-			if (!document.execCommand?.('insertText', false, text)) {
-				input.innerHTML = escapeHTML(textAreaTxt.substring(0, selectionStart) + text + textAreaTxt.substring(selectionStart));
+			// Establish the caret inside the input before execCommand. Focusing alone does not create a
+			// selection range on an empty/blurred composer, so without this the insert is a silent no-op.
+			setSelectionRange(input, selectionStart, selectionEnd);
+
+			// execCommand can report success while inserting nothing (empty composer) or insert into a
+			// different focused element (e.g. the emoji picker search box). Fall back to editing directly
+			// only when the composer text is not already the expected splice, so a successful insert keeps
+			// its rendered markup instead of being flattened to innerText.
+			const before = input.innerText;
+			const expected = before.substring(0, selectionStart) + text + before.substring(selectionEnd);
+			document.execCommand?.('insertText', false, text);
+			if (input.innerText !== expected) {
+				input.innerText = expected;
 				!skipFocus && focus();
 			}
 			setSelectionRange(input, selection.start ?? 0, selection.end ?? text.length);
@@ -66,63 +74,70 @@ export const createRichTextComposerAPI = (
 		prepareQuotedMessage: (message) => limitQuoteChain(message, quoteChainLimit),
 	});
 
-	const { insertText } = core;
-
 	const wrapSelection = (pattern: string): { selectionStart: number; selectionEnd: number; value: string } => {
 		const { selectionStart, selectionEnd } = getSelectionRange(input);
-		// Sanitize the innerText by reducing multiple instances of linebreaks
-		const cleanedInitText = input.innerText.replace(/\n{2,}/g, (match) => '\n'.repeat(match.length - 1));
+		const cleanedInitText = input.innerText;
+
+		// Double-clicking the last word of a line selects the trailing paragraph newline too; keep any
+		// trailing newlines out of the wrapped range so the closing marker stays on the same line.
+		const rawSelected = cleanedInitText.slice(selectionStart, selectionEnd);
+		const selectedText = rawSelected.replace(/\n+$/, '');
+		const selEnd = selectionEnd - (rawSelected.length - selectedText.length);
 
 		const initText = cleanedInitText.slice(0, selectionStart);
-		const selectedText = cleanedInitText.slice(selectionStart, selectionEnd);
-		const finalText = cleanedInitText.slice(selectionEnd, input.innerText.length);
+		const finalText = cleanedInitText.slice(selEnd, input.innerText.length);
 
 		focus();
 
 		const startPattern = pattern.slice(0, pattern.indexOf('{{text}}'));
-		const startPatternFound = [...startPattern]
-			.reverse()
-			.every((char, index) => input.innerText.slice(selectionStart - index - 1, 1) === char);
+		const endPattern = pattern.slice(pattern.indexOf('{{text}}') + '{{text}}'.length);
 
-		if (startPatternFound) {
-			const endPattern = pattern.slice(pattern.indexOf('{{text}}') + '{{text}}'.length);
-			const endPatternFound = [...endPattern].every((char, index) => input.innerText.slice(selectionEnd + index, 1) === char);
+		const startPatternFound =
+			startPattern.length > 0 &&
+			selectionStart >= startPattern.length &&
+			cleanedInitText.slice(selectionStart - startPattern.length, selectionStart) === startPattern;
+		const endPatternFound = endPattern.length > 0 && cleanedInitText.slice(selEnd, selEnd + endPattern.length) === endPattern;
 
-			if (endPatternFound) {
-				insertText(selectedText);
+		if (startPatternFound && endPatternFound) {
+			const unwrapStart = selectionStart - startPattern.length;
+			const unwrapEnd = unwrapStart + selectedText.length;
 
-				const { selectionStart: newSelStart } = getSelectionRange(input);
+			setSelectionRange(input, unwrapStart, selEnd + endPattern.length);
+			focus();
 
-				if (!document.execCommand?.('insertText', false, selectedText)) {
-					input.innerText = initText.slice(0, initText.length - startPattern.length) + selectedText + finalText.slice(endPattern.length);
-				}
-
-				const newStart = newSelStart - startPattern.length;
-				const newEnd = newStart + selectedText.length;
-
-				setSelectionRange(input, newStart, newEnd);
-
-				triggerEvent(input, 'input');
-				triggerEvent(input, 'change');
-
-				focus();
-				return { selectionStart: newStart, selectionEnd: newEnd, value: input.innerText };
+			if (selectedText.includes('\n') || !document.execCommand?.('insertText', false, selectedText)) {
+				input.innerText = initText.slice(0, unwrapStart) + selectedText + finalText.slice(endPattern.length);
+				renderComposerContent(input, parseOptions, { selectionStart: unwrapStart, selectionEnd: unwrapEnd });
 			}
+
+			focus();
+
+			setSelectionRange(input, unwrapStart, unwrapEnd);
+
+			triggerEvent(input, 'input');
+			triggerEvent(input, 'change');
+
+			return { selectionStart: unwrapStart, selectionEnd: unwrapEnd, value: input.innerText };
 		}
 
 		// Explicitly set the selection range and send focus back to the editor again
 		// This ensures the execCommand works properly when pressing buttons instead of hotkeys
-		setSelectionRange(input, selectionStart, selectionEnd);
+		setSelectionRange(input, selectionStart, selEnd);
 		focus();
 
-		if (!document.execCommand?.('insertText', false, pattern.replace('{{text}}', selectedText))) {
-			input.innerText = initText + pattern.replace('{{text}}', selectedText) + finalText;
+		const replacement = pattern.replace('{{text}}', selectedText);
+		const newStart = selectionStart + pattern.indexOf('{{text}}');
+		const newEnd = newStart + selectedText.length;
+
+		// execCommand('insertText') mangles embedded newlines (drops them and duplicates the last
+		// character across the caret), so for multi-line selections rebuild the text directly and
+		// re-render the markup ourselves.
+		if (replacement.includes('\n') || !document.execCommand?.('insertText', false, replacement)) {
+			input.innerText = initText + replacement + finalText;
+			renderComposerContent(input, parseOptions, { selectionStart: newStart, selectionEnd: newEnd });
 		}
 
 		focus();
-
-		const newStart = selectionStart + pattern.indexOf('{{text}}');
-		const newEnd = newStart + selectedText.length;
 
 		setSelectionRange(input, newStart, newEnd);
 
@@ -136,33 +151,19 @@ export const createRichTextComposerAPI = (
 	const replaceText = (text: string, selection: { readonly start: number; readonly end: number }): void => {
 		const { selectionStart, selectionEnd } = getSelectionRange(input);
 
-		// Selects the text that is connected to the cursor
+		// Selects the text that is connected to the cursor, then focus so execCommand has an active target
 		setSelectionRange(input, selection.start ?? 0, selection.end ?? text.length);
-		const textAreaTxt = input.innerText;
-
-		if (!document.execCommand?.('insertText', false, text)) {
-			input.innerText = textAreaTxt.substring(0, selection.start) + text + textAreaTxt.substring(selection.end);
-		}
-
 		focus();
+		const textAreaTxt = input.innerText;
+		const expected = textAreaTxt.substring(0, selection.start) + text + textAreaTxt.substring(selection.end);
 
-		// Check if the text starts and ends with a colon symbol (:) - Used for emoji detection
-		const emoji = /^:.*:$/.test(text.trim());
-
-		let newStart;
-		let newEnd;
-
-		// selectionStart is the current cursor position whereas
-		// selection.start is cursor starting position from where replaceText takes into consideration
-		// if emoji is true then increment cursor position by 1
-		// else increment by the length of the text
-		if (emoji) {
-			newStart = selection.start + 1;
-			newEnd = selection.start + 1;
-		} else {
-			newStart = selectionStart + text.length;
-			newEnd = selectionStart + text.length;
+		document.execCommand?.('insertText', false, text);
+		if (input.innerText !== expected) {
+			input.innerText = expected;
 		}
+
+		const newStart = selection.start + text.length;
+		const newEnd = selection.start + text.length;
 
 		if (selectionStart !== selectionEnd) {
 			setSelectionRange(input, selectionStart, selectionStart);
@@ -192,9 +193,7 @@ export const createRichTextComposerAPI = (
 		replaceText,
 		replyWith,
 		substring: (start: number, end?: number) => {
-			// Sanitize the innerText by reducing multiple instances of linebreaks
-			const cleanedInitText = input.innerText.replace(/\n{2,}/g, (match) => '\n'.repeat(match.length - 1));
-			return cleanedInitText.substring(start, end);
+			return input.innerText.substring(start, end);
 		},
 		getCursorPosition: () => {
 			return getSelectionRange(input).selectionStart;

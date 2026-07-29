@@ -50,6 +50,14 @@ type TypingState = {
 	hideplaceholder: boolean;
 };
 
+const cursorMap = new WeakMap<
+	HTMLElement,
+	{
+		selectionStart: number;
+		selectionEnd: number;
+	}
+>();
+
 const reducer = (_: unknown, event: FormEvent<HTMLElement>): TypingState => {
 	const target = event.target as HTMLDivElement;
 	const { childNodes } = target;
@@ -118,38 +126,22 @@ const RichTextMessageBox = ({
 		throw new Error('Chat context not found');
 	}
 
-	// We store the last known cursor position for each contenteditable div using a WeakMap keyed by the element.
-	// This allows us to restore the caret position when the user refocuses the editor,
-	// preventing the cursor from jumping to the start and improving typing experience in multiple composer instances.
-	const cursorMap = new WeakMap<
-		HTMLElement,
-		{
-			selectionStart: number;
-			selectionEnd: number;
-		}
-	>();
-
 	// This state will update every time the input is updated
 	const [, setMdLines] = useState<string[]>([]);
 
 	const setLastCursorPosition = (e: React.FocusEvent<HTMLElement>) => {
 		const node = e.currentTarget as HTMLDivElement;
 		cursorMap.set(node, getSelectionRange(node));
-		console.log('Saved cursor position for:', node);
 	};
 
 	const getLastCursorPosition = (e: React.FocusEvent<HTMLElement>) => {
 		const node = e.currentTarget as HTMLDivElement;
 		const savedPosition = cursorMap.get(node);
 		if (savedPosition === undefined) {
-			console.log('There is no savedPosition for current node');
 			return;
-		} // no saved cursor position
+		}
 
-		// Retrieve the value onFocus
 		setSelectionRange(node, savedPosition.selectionStart, savedPosition.selectionEnd);
-
-		console.log('Restored cursor position for:', node);
 	};
 
 	/* const textareaRef = useRef<HTMLTextAreaElement>(null); */
@@ -238,33 +230,16 @@ const RichTextMessageBox = ({
 		}
 
 		const text = chat.composer?.text ?? '';
-		// Sanitize the innerText by reducing multiple instances of linebreaks
-		const cleanedText = text.replace(/\n{2,}/g, (match) => '\n'.repeat((match.length + 1) / 2));
 		chat.composer?.clear();
 		popup.clear();
 		setMdLines(['']);
 
-		const isFirefox = typeof navigator !== 'undefined' && /Firefox\/\d+/.test(navigator.userAgent);
-		const isEditingMessage = Boolean(chat.currentEditingMessage.getMID());
-
-		/* TODO: Develop the parser function that will render inside the RichTextComposer component */
-		// This if-else block temporarily solves the problem of editing a message
-		// When a message is being edited, it is a flat text structure without any DOM tree
-		if (isEditingMessage || isFirefox) {
-			onSend?.({
-				value: text,
-				tshow,
-				previewUrls,
-				isSlashCommandAllowed,
-			});
-		} else {
-			onSend?.({
-				value: cleanedText,
-				tshow,
-				previewUrls,
-				isSlashCommandAllowed,
-			});
-		}
+		onSend?.({
+			value: text,
+			tshow,
+			previewUrls,
+			isSlashCommandAllowed,
+		});
 	});
 
 	const closeEditing = (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
