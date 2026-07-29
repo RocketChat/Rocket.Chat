@@ -53,7 +53,7 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 	}, [searchText]);
 
 	const convertAsciiToEmoji = useUserPreference<boolean>('convertAsciiEmoji', true);
-	const useEmoji = Boolean(useUserPreference('useEmojis'));
+	const useEmoji = useUserPreference<boolean>('useEmojis', true);
 	const useRealName = useMessageListShowRealName();
 	const ownUserId = useUserId();
 	const showMentionSymbol = Boolean(useUserPreference<boolean>('mentionsWithSymbol'));
