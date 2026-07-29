@@ -8,6 +8,7 @@ import { useLeaveRoomAction } from './menuActions/useLeaveRoom';
 import { useToggleFavoriteAction } from './menuActions/useToggleFavoriteAction';
 import { useToggleReadAction } from './menuActions/useToggleReadAction';
 import { useHideRoomAction } from './useHideRoomAction';
+import { useUnhideRoomAction } from './useUnhideRoomAction';
 import { useOmnichannelPrioritiesMenu } from '../views/omnichannel/hooks/useOmnichannelPrioritiesMenu';
 
 type RoomMenuActionsProps = {
@@ -48,6 +49,7 @@ export const useRoomMenuActions = ({
 	})();
 
 	const handleHide = useHideRoomAction({ rid, type, name }, { redirect: false });
+	const handleUnhide = useUnhideRoomAction({ rid, type });
 	const handleToggleFavorite = useToggleFavoriteAction({ rid, isFavorite });
 	const handleToggleRead = useToggleReadAction({ rid, isUnread, subscription });
 	const handleLeave = useLeaveRoomAction({ rid, type, name, roomOpen });
@@ -60,10 +62,10 @@ export const useRoomMenuActions = ({
 			!hideDefaultOptions
 				? ([
 						!isOmnichannelRoom && {
-							id: 'hideRoom',
-							icon: 'eye-off',
-							content: t('Hide'),
-							onClick: handleHide,
+							id: subscription?.open === false ? 'unhideRoom' : 'hideRoom',
+							icon: subscription?.open === false ? 'eye' : 'eye-off',
+							content: subscription?.open === false ? t('Unhide') : t('Hide'),
+							onClick: subscription?.open === false ? handleUnhide : handleHide,
 						},
 						{
 							id: 'toggleRead',
