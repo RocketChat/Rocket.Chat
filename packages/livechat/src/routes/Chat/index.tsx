@@ -1,11 +1,10 @@
 import type { EmojiData } from 'emoji-mart';
 import { Suspense } from 'preact/compat';
-import { useCallback, useContext, useMemo, useRef, useState } from 'preact/hooks';
+import { useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { route } from 'preact-router';
 import { useTranslation } from 'react-i18next';
 
 import Picker from './Picker';
-import ChatContainer from './container';
 import styles from './styles.scss';
 import { useChatSubscriptions } from './useChatSubscriptions';
 import { Livechat } from '../../api';
@@ -33,7 +32,7 @@ import SendIcon from '../../icons/send.svg';
 import EmojiIcon from '../../icons/smile.svg';
 import { normalizeQueueAlert } from '../../lib/api';
 import constants from '../../lib/constants';
-import { loadConfig } from '../../lib/main';
+import { getLastReadMessage, loadConfig, processUnread, shouldMarkAsUnread } from '../../lib/main';
 import { parentCall, runCallbackEventEmitter } from '../../lib/parentCall';
 import { createToken } from '../../lib/random';
 import { defaultRoomParams, getGreetingMessages, initRoom, loadMessages, loadMoreMessages } from '../../lib/room';
@@ -45,6 +44,16 @@ const useStableCallback = <TFunction extends (...args: any[]) => any>(callback: 
 	callbackRef.current = callback;
 
 	return useCallback(((...args) => callbackRef.current(...args)) as TFunction, []);
+};
+
+const usePrevious = <TValue,>(value: TValue): TValue | undefined => {
+	const ref = useRef<TValue>();
+
+	useEffect(() => {
+		ref.current = value;
+	}, [value]);
+
+	return ref.current;
 };
 
 const useChatTitle = () => {
@@ -461,128 +470,173 @@ const Chat = (_: ChatProps) => {
 		setEmojiPickerActive(false);
 	});
 
+	const componentDidMount = useStableCallback(async () => {
+		await checkConnectingAgent();
+		await loadMessages();
+		void processUnread();
+	});
+
+	const componentWillUnmount = useStableCallback(() => {
+		void handleConnectingAgentAlert(false);
+	});
+
+	useEffect(() => {
+		void componentDidMount();
+
+		return () => {
+			componentWillUnmount();
+		};
+	}, [componentDidMount, componentWillUnmount]);
+
+	const prevMessages = usePrevious(messages) ?? [];
+	const prevAlerts = usePrevious(alerts) ?? [];
+
+	const componentDidUpdate = useStableCallback(async () => {
+		const renderedMessages = messages.filter((message) => canRenderMessage(message));
+		const lastRenderedMessage = renderedMessages[renderedMessages.length - 1];
+		const prevRenderedMessages = prevMessages.filter((message) => canRenderMessage(message));
+
+		const shouldMarkUnread = shouldMarkAsUnread();
+
+		if (
+			(lastRenderedMessage && lastRenderedMessage.u?._id === user?._id) ||
+			(!shouldMarkUnread && renderedMessages?.length !== prevRenderedMessages?.length)
+		) {
+			const nextLastMessage = lastRenderedMessage;
+			const lastReadMessage = getLastReadMessage();
+
+			if (nextLastMessage && nextLastMessage._id !== lastReadMessage?._id) {
+				const newAlerts = prevAlerts.filter((item) => item.id !== constants.unreadMessagesAlertId);
+				dispatch({ alerts: newAlerts, unread: null, lastReadMessageId: nextLastMessage._id });
+			}
+		}
+
+		await checkConnectingAgent();
+		checkRoom();
+	});
+
+	const firstRenderRef = useRef(true);
+
+	useLayoutEffect(() => {
+		if (firstRenderRef.current) {
+			firstRenderRef.current = false;
+			return;
+		}
+
+		void componentDidUpdate();
+	});
+
 	return (
-		<>
-			<ChatContainer
-				user={user}
-				messages={messages}
-				dispatch={dispatch}
-				alerts={alerts}
-				checkRoom={checkRoom}
-				handleConnectingAgentAlert={handleConnectingAgentAlert}
-				checkConnectingAgent={checkConnectingAgent}
-			/>
-			<Screen
-				title={title || t('need_help')}
-				agent={formatAgent(agent)}
-				queueInfo={queueInfo}
-				className={createClassName(styles, 'chat')}
-				unread={unread}
-				onSoundStop={onSoundStop}
-			>
-				<FilesDropTarget inputRef={inputRef} overlayed overlayText={t('drop_here_to_upload_a_file')} onUpload={onUpload}>
-					<ScreenContent nopadding>
-						<div className={createClassName(styles, 'chat__messages', { atBottom, loading })}>
-							<MessageList
-								avatarResolver={avatarResolver}
-								uid={uid}
-								messages={messages}
-								typingUsernames={typingUsernames}
-								conversationFinishedMessage={conversationFinishedMessage}
-								lastReadMessageId={lastReadMessageId}
-								handleEmojiClick={handleEmojiClick}
-								dispatch={dispatch}
-								hideSenderAvatar={theme?.hideGuestAvatar}
-								hideReceiverAvatar={theme?.hideAgentAvatar}
-								onScrollTo={handleScrollTo}
-							/>
-							{emojiPickerActive && (
-								<Suspense fallback={null}>
-									<Picker
-										style={{ position: 'absolute', zIndex: 10, bottom: 0, maxWidth: '90%', left: 20, maxHeight: '90%' }}
-										showPreview={false}
-										showSkinTones={false}
-										sheetSize={64}
-										onSelect={handleEmojiSelect}
-										autoFocus={true}
-									/>
-								</Suspense>
-							)}
-						</div>
-					</ScreenContent>
-					<ScreenFooter
-						options={
-							options && !registrationRequired ? (
-								<FooterOptions>
-									<MenuGroup>
-										{onChangeDepartment && (
-											<MenuItem onClick={onChangeDepartment} icon={ChangeIcon}>
-												{t('change_department')}
-											</MenuItem>
-										)}
-										{onRemoveUserData && (
-											<MenuItem onClick={onRemoveUserData} icon={RemoveIcon}>
-												{t('forget_remove_my_data')}
-											</MenuItem>
-										)}
-										{onFinishChat && (
-											<MenuItem danger onClick={onFinishChat} icon={FinishIcon}>
-												{t('finish_this_chat')}
-											</MenuItem>
-										)}
-									</MenuGroup>
-								</FooterOptions>
-							) : null
-						}
-						limit={limitTextLength ? <CharCounter limitTextLength={limitTextLength} textLength={text.length} /> : null}
-					>
-						{registrationRequired ? (
-							<Button loading={loading} disabled={loading} onClick={onRegisterUser} stack>
-								{t('chat_now')}
-							</Button>
-						) : (
-							<Composer
-								onUpload={onUpload}
-								onSubmit={handleSubmit}
-								onChange={handleChangeText}
-								placeholder={t('type_your_message_here')}
-								value={text}
-								notifyEmojiSelect={(click: (native: string) => void) => {
-									notifyEmojiSelectRef.current = click;
-								}}
-								handleEmojiClick={handleEmojiClick}
-								pre={
-									<ComposerActions>
-										<ComposerAction
-											text='Add emoji'
-											className={createClassName(styles, 'emoji-picker-icon')}
-											onClick={toggleEmojiPickerState}
-										>
-											<EmojiIcon width={20} height={20} />
-										</ComposerAction>
-									</ComposerActions>
-								}
-								post={
-									<ComposerActions>
-										{text.length === 0 && uploads && (
-											<ComposerAction text='Add attachment' onClick={handleUploadClick}>
-												<PlusIcon width={20} height={20} />
-											</ComposerAction>
-										)}
-										{text.length > 0 && (
-											<ComposerAction text='Send' onClick={handleSendClick}>
-												<SendIcon width={20} height={20} />
-											</ComposerAction>
-										)}
-									</ComposerActions>
-								}
-								limitTextLength={limitTextLength}
-							/>
+		<Screen
+			title={title || t('need_help')}
+			agent={formatAgent(agent)}
+			queueInfo={queueInfo}
+			className={createClassName(styles, 'chat')}
+			unread={unread}
+			onSoundStop={onSoundStop}
+		>
+			<FilesDropTarget inputRef={inputRef} overlayed overlayText={t('drop_here_to_upload_a_file')} onUpload={onUpload}>
+				<ScreenContent nopadding>
+					<div className={createClassName(styles, 'chat__messages', { atBottom, loading })}>
+						<MessageList
+							avatarResolver={avatarResolver}
+							uid={uid}
+							messages={messages}
+							typingUsernames={typingUsernames}
+							conversationFinishedMessage={conversationFinishedMessage}
+							lastReadMessageId={lastReadMessageId}
+							handleEmojiClick={handleEmojiClick}
+							dispatch={dispatch}
+							hideSenderAvatar={theme?.hideGuestAvatar}
+							hideReceiverAvatar={theme?.hideAgentAvatar}
+							onScrollTo={handleScrollTo}
+						/>
+						{emojiPickerActive && (
+							<Suspense fallback={null}>
+								<Picker
+									style={{ position: 'absolute', zIndex: 10, bottom: 0, maxWidth: '90%', left: 20, maxHeight: '90%' }}
+									showPreview={false}
+									showSkinTones={false}
+									sheetSize={64}
+									onSelect={handleEmojiSelect}
+									autoFocus={true}
+								/>
+							</Suspense>
 						)}
-					</ScreenFooter>
-				</FilesDropTarget>
-			</Screen>
-		</>
+					</div>
+				</ScreenContent>
+				<ScreenFooter
+					options={
+						options && !registrationRequired ? (
+							<FooterOptions>
+								<MenuGroup>
+									{onChangeDepartment && (
+										<MenuItem onClick={onChangeDepartment} icon={ChangeIcon}>
+											{t('change_department')}
+										</MenuItem>
+									)}
+									{onRemoveUserData && (
+										<MenuItem onClick={onRemoveUserData} icon={RemoveIcon}>
+											{t('forget_remove_my_data')}
+										</MenuItem>
+									)}
+									{onFinishChat && (
+										<MenuItem danger onClick={onFinishChat} icon={FinishIcon}>
+											{t('finish_this_chat')}
+										</MenuItem>
+									)}
+								</MenuGroup>
+							</FooterOptions>
+						) : null
+					}
+					limit={limitTextLength ? <CharCounter limitTextLength={limitTextLength} textLength={text.length} /> : null}
+				>
+					{registrationRequired ? (
+						<Button loading={loading} disabled={loading} onClick={onRegisterUser} stack>
+							{t('chat_now')}
+						</Button>
+					) : (
+						<Composer
+							onUpload={onUpload}
+							onSubmit={handleSubmit}
+							onChange={handleChangeText}
+							placeholder={t('type_your_message_here')}
+							value={text}
+							notifyEmojiSelect={(click: (native: string) => void) => {
+								notifyEmojiSelectRef.current = click;
+							}}
+							handleEmojiClick={handleEmojiClick}
+							pre={
+								<ComposerActions>
+									<ComposerAction
+										text='Add emoji'
+										className={createClassName(styles, 'emoji-picker-icon')}
+										onClick={toggleEmojiPickerState}
+									>
+										<EmojiIcon width={20} height={20} />
+									</ComposerAction>
+								</ComposerActions>
+							}
+							post={
+								<ComposerActions>
+									{text.length === 0 && uploads && (
+										<ComposerAction text='Add attachment' onClick={handleUploadClick}>
+											<PlusIcon width={20} height={20} />
+										</ComposerAction>
+									)}
+									{text.length > 0 && (
+										<ComposerAction text='Send' onClick={handleSendClick}>
+											<SendIcon width={20} height={20} />
+										</ComposerAction>
+									)}
+								</ComposerActions>
+							}
+							limitTextLength={limitTextLength}
+						/>
+					)}
+				</ScreenFooter>
+			</FilesDropTarget>
+		</Screen>
 	);
 };
 
