@@ -1,21 +1,14 @@
-import { Queue } from './messenger';
+import * as Messenger from './messenger';
 
 export function collectMetrics() {
 	return {
 		pid: process.pid,
-		queueSize: Queue.getCurrentSize(),
 	};
 }
 
-const encoder = new TextEncoder();
-
 /**
- * Sends metrics collected from the system via stderr
+ * Sends metrics collected from the system to the host over the IPC channel
  */
-export async function sendMetrics() {
-	const metrics = collectMetrics();
-
-	await new Promise<void>((resolve, reject) => {
-		process.stderr.write(encoder.encode(JSON.stringify(metrics)), (err) => (err ? reject(err) : resolve()));
-	});
+export function sendMetrics(): void {
+	Messenger.sendNotification({ method: 'metrics', params: [collectMetrics()] });
 }

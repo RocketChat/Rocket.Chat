@@ -5217,13 +5217,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@msgpack/msgpack@npm:3.0.0-beta2":
-  version: 3.0.0-beta2
-  resolution: "@msgpack/msgpack@npm:3.0.0-beta2"
-  checksum: 10/d02f9221aa152cbd2977d1f56dc591baa2a37420a694cbc7e54ff0724f56ac0523e94de010e56bb845d67a1f2226c1761064b5777e63e9fc26884f4144d391a7
-  languageName: node
-  linkType: hard
-
 "@napi-rs/pinyin-android-arm-eabi@npm:1.7.0":
   version: 1.7.0
   resolution: "@napi-rs/pinyin-android-arm-eabi@npm:1.7.0"
@@ -8769,7 +8762,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/apps@workspace:packages/apps"
   dependencies:
-    "@msgpack/msgpack": "npm:3.0.0-beta2"
     "@rocket.chat/apps-engine": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/model-typings": "workspace:^"
