@@ -4,7 +4,6 @@ import type { ReactElement } from 'react';
 import ComposerBoldSpan from './ComposerBoldSpan';
 import ComposerCodeElement from './ComposerCodeElement';
 import ComposerEmojiElement from './ComposerEmojiElement';
-import ComposerLinkSpan from './ComposerLinkSpan';
 import ComposerMentionChannel from './ComposerMentionChannel';
 import ComposerMentionUser from './ComposerMentionUser';
 import ComposerPlainSpan from './ComposerPlainSpan';
@@ -41,9 +40,6 @@ const renderBlockComponent = (block: MessageBlock, index: number): ReactElement 
 
 		case 'PLAIN_TEXT':
 			return <ComposerPlainSpan key={index} text={block.value} />;
-
-		case 'LINK':
-			return <ComposerLinkSpan key={index} href={block.value.src.value} label={block.value.label} />;
 
 		case 'STRIKE':
 			return <ComposerStrikeSpan key={index}>{block.value}</ComposerStrikeSpan>;

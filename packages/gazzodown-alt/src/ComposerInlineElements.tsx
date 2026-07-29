@@ -5,7 +5,6 @@ import ComposerBoldSpan from './ComposerBoldSpan';
 import ComposerCodeElement from './ComposerCodeElement';
 import ComposerEmojiElement from './ComposerEmojiElement';
 import ComposerItalicSpan from './ComposerItalicSpan';
-import ComposerLinkSpan from './ComposerLinkSpan';
 import ComposerMentionChannel from './ComposerMentionChannel';
 import ComposerMentionUser from './ComposerMentionUser';
 import ComposerPlainSpan from './ComposerPlainSpan';
@@ -31,15 +30,6 @@ const ComposerInlineElements = ({ children }: ComposerInlineElementsProps): Reac
 
 				case 'SPOILER':
 					return <ComposerSpoilerSpan key={index}>{child.value}</ComposerSpoilerSpan>;
-
-				case 'LINK':
-					return (
-						<ComposerLinkSpan
-							key={index}
-							href={child.value.src.value}
-							label={Array.isArray(child.value.label) ? child.value.label : [child.value.label]}
-						/>
-					);
 
 				case 'PLAIN_TEXT':
 					return <ComposerPlainSpan key={index} text={child.value} />;
