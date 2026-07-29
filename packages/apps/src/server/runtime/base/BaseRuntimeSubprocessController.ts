@@ -14,6 +14,7 @@ import { bundleLegacyApp } from './bundler';
 import { newDecoder } from './codec';
 import type { AppManager } from '../../AppManager';
 import type { AppBridges } from '../../bridges';
+import { AppResourceBridge } from '../../bridges/AppResourceBridge';
 import type { IParseAppPackageResult } from '../../compiler';
 import { AppConsole, type ILoggerStorageEntry } from '../../logging';
 import type { AppAccessorManager, AppApiManager } from '../../managers';
@@ -122,6 +123,8 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 
 	private readonly bridges: AppBridges;
 
+	private readonly appResourceBridge: AppResourceBridge;
+
 	private readonly messenger: ProcessMessenger;
 
 	private readonly livenessManager: LivenessManager;
@@ -157,6 +160,7 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 		this.api = manager.getApiManager();
 		this.logStorage = manager.getLogStorage();
 		this.bridges = manager.getBridges();
+		this.appResourceBridge = new AppResourceBridge(manager);
 	}
 
 	/**
@@ -525,15 +529,32 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 
 		this.debug('Handling bridge message %s().%s() with params %s', bridgeName, bridgeMethod, inspect(params));
 
-		const bridge = this.bridges[bridgeName as keyof typeof this.bridges];
-
-		if (!bridgeMethod.startsWith('do') || typeof bridge !== 'function' || !Array.isArray(params)) {
+		if (!bridgeMethod.startsWith('do') || !Array.isArray(params)) {
 			throw new Error('Invalid bridge request');
 		}
 
-		const bridgeInstance = bridge.call(this.bridges);
+		let bridgeInstance: unknown;
 
-		const methodRef = bridgeInstance[bridgeMethod as keyof typeof bridge] as unknown;
+		// The internal AppResourceBridge is not part of the app-facing `AppBridges` surface; it is
+		// resolved through its own reference. Registration methods are suppressed while the process
+		// is restarting so that re-running `app:initialize` does not re-register host resources.
+		if (bridgeName === 'getAppResourceBridge') {
+			if (this.state === 'restarting' && AppResourceBridge.REGISTRATION_METHODS.has(bridgeMethod)) {
+				return jsonrpc.success(id, null);
+			}
+
+			bridgeInstance = this.appResourceBridge;
+		} else {
+			const bridge = this.bridges[bridgeName as keyof typeof this.bridges];
+
+			if (typeof bridge !== 'function') {
+				throw new Error('Invalid bridge request');
+			}
+
+			bridgeInstance = bridge.call(this.bridges);
+		}
+
+		const methodRef = (bridgeInstance as Record<string, unknown>)[bridgeMethod] as unknown;
 
 		if (typeof methodRef !== 'function') {
 			throw new Error('Invalid bridge request');

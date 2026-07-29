@@ -1,5 +1,3 @@
-import { randomBytes } from 'node:crypto';
-
 import type { IContactCreator } from '@rocket.chat/apps-engine/definition/accessors/IContactCreator';
 import type { IDiscussionBuilder } from '@rocket.chat/apps-engine/definition/accessors/IDiscussionBuilder';
 import type { IEmailCreator } from '@rocket.chat/apps-engine/definition/accessors/IEmailCreator';
@@ -19,6 +17,10 @@ import type { IBotUser } from '@rocket.chat/apps-engine/definition/users/IBotUse
 import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
 import { UserType } from '@rocket.chat/apps-engine/definition/users/UserType';
 
+import { ContactCreator } from './ContactCreator';
+import { EmailCreator } from './EmailCreator';
+import { LivechatCreator } from './LivechatCreator';
+import { UploadCreator } from './UploadCreator';
 import { AppObjectRegistry } from '../../../AppObjectRegistry';
 import { UIHelper } from '../../UIHelper';
 import { RemoteBridges } from '../../bridges/RemoteBridges';
@@ -32,7 +34,6 @@ import { RoomBuilder } from '../builders/RoomBuilder';
 import { UserBuilder } from '../builders/UserBuilder';
 import type { AppVideoConference } from '../builders/VideoConferenceBuilder';
 import { VideoConferenceBuilder } from '../builders/VideoConferenceBuilder';
-import { formatErrorResponse } from '../formatResponseErrorHandler';
 
 export class ModifyCreator implements IModifyCreator {
 	private readonly bridges: RemoteBridges;
@@ -44,94 +45,19 @@ export class ModifyCreator implements IModifyCreator {
 	}
 
 	getLivechatCreator(): ILivechatCreator {
-		return new Proxy(
-			{ __kind: 'getLivechatCreator' },
-			{
-				get: (_target: unknown, prop: string) => {
-					// It's not worthwhile to make an asynchronous request for such a simple method
-					if (prop === 'createToken') {
-						return () => randomBytes(16).toString('hex');
-					}
-
-					if (prop === 'toJSON') {
-						return () => ({});
-					}
-
-					return (...params: unknown[]) =>
-						this.senderFn({
-							method: `accessor:getModifier:getCreator:getLivechatCreator:${prop}`,
-							params,
-						})
-							.then((response) => response.result)
-							.catch((err) => {
-								throw formatErrorResponse(err);
-							});
-				},
-			},
-		) as ILivechatCreator;
+		return new LivechatCreator(this.bridges);
 	}
 
 	getUploadCreator(): IUploadCreator {
-		return new Proxy(
-			{ __kind: 'getUploadCreator' },
-			{
-				get:
-					(_target: unknown, prop: string) =>
-					(...params: unknown[]) =>
-						prop === 'toJSON'
-							? {}
-							: this.senderFn({
-									method: `accessor:getModifier:getCreator:getUploadCreator:${prop}`,
-									params,
-								})
-									.then((response) => response.result)
-									.catch((err) => {
-										throw formatErrorResponse(err);
-									}),
-			},
-		) as IUploadCreator;
+		return new UploadCreator(this.bridges);
 	}
 
 	getEmailCreator(): IEmailCreator {
-		return new Proxy(
-			{ __kind: 'getEmailCreator' },
-			{
-				get:
-					(_target: unknown, prop: string) =>
-					(...params: unknown[]) =>
-						prop === 'toJSON'
-							? {}
-							: this.senderFn({
-									method: `accessor:getModifier:getCreator:getEmailCreator:${prop}`,
-									params,
-								})
-									.then((response) => response.result)
-									.catch((err) => {
-										throw formatErrorResponse(err);
-									}),
-			},
-		) as IEmailCreator;
+		return new EmailCreator(this.bridges);
 	}
 
 	getContactCreator(): IContactCreator {
-		return new Proxy(
-			{ __kind: 'getContactCreator' },
-			{
-				get:
-					(_target: unknown, prop: string) =>
-					(...params: unknown[]) =>
-						prop === 'toJSON'
-							? {}
-							: this.senderFn({
-									method: `accessor:getModifier:getCreator:getContactCreator:${prop}`,
-									params,
-								})
-									.then((response) => response.result)
-									.catch((err) => {
-										throw formatErrorResponse(err);
-									}),
-			},
-		) as IContactCreator;
+		return new ContactCreator(this.bridges);
 	}
 
 	getBlockBuilder() {

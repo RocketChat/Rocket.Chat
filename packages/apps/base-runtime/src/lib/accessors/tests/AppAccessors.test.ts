@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion -- acceptable in this test file */
 /* eslint-disable testing-library/no-await-sync-queries */
 import * as assert from 'node:assert';
-import { after, beforeEach, describe, it } from 'node:test';
+import { after, beforeEach, describe, it, mock } from 'node:test';
 
 import type { IRead, IModify, IHttp, IPersistence } from '@rocket.chat/apps-engine/definition/accessors';
 import type { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands';
@@ -31,44 +31,60 @@ describe('AppAccessors', () => {
 		AppObjectRegistry.clear();
 	});
 
+	// The Reader family, Persistence and server-side Environment accessors now run locally in the
+	// subprocess (Phase 1): they emit `bridges:*` messages with the 'APP_ID' sentinel instead of the
+	// old host-resolved `accessor:*` messages. We spy on the sender to assert the emitted bridge call,
+	// which is robust for the accessors that transform their result or return void.
 	it('creates the correct format for IRead calls', async () => {
-		const roomRead = appAccessors.getReader()!.getRoomReader();
-		const room = await roomRead.getById('123');
+		const spy = mock.fn(senderFn);
+		const roomRead = new AppAccessors(spy).getReader()!.getRoomReader();
+		await roomRead.getById('123');
 
-		assert.deepStrictEqual(room, {
-			params: ['123'],
-			method: 'accessor:getReader:getRoomReader:getById',
-		});
+		assert.deepStrictEqual(spy.mock.calls[0].arguments, [
+			{
+				params: ['123', 'APP_ID'],
+				method: 'bridges:getRoomBridge:doGetById',
+			},
+		]);
 	});
 
 	it('creates the correct format for IEnvironmentRead calls from IRead', async () => {
-		const reader = appAccessors.getReader()!.getEnvironmentReader().getEnvironmentVariables();
-		const room = await reader.getValueByName('NODE_ENV');
+		const spy = mock.fn(senderFn);
+		const reader = new AppAccessors(spy).getReader()!.getEnvironmentReader().getEnvironmentVariables();
+		await reader.getValueByName('NODE_ENV');
 
-		assert.deepStrictEqual(room, {
-			params: ['NODE_ENV'],
-			method: 'accessor:getReader:getEnvironmentReader:getEnvironmentVariables:getValueByName',
-		});
+		assert.deepStrictEqual(spy.mock.calls[0].arguments, [
+			{
+				params: ['NODE_ENV', 'APP_ID'],
+				method: 'bridges:getEnvironmentalVariableBridge:doGetValueByName',
+			},
+		]);
 	});
 
 	it('creates the correct format for IEvironmentRead calls', async () => {
-		const envRead = appAccessors.getEnvironmentRead();
-		const env = await envRead.getServerSettings().getValueById('123');
+		const spy = mock.fn(senderFn);
+		const envRead = new AppAccessors(spy).getEnvironmentRead();
+		await envRead.getServerSettings().getOneById('123');
 
-		assert.deepStrictEqual(env, {
-			params: ['123'],
-			method: 'accessor:getEnvironmentRead:getServerSettings:getValueById',
-		});
+		assert.deepStrictEqual(spy.mock.calls[0].arguments, [
+			{
+				params: ['123', 'APP_ID'],
+				method: 'bridges:getServerSettingBridge:doGetOneById',
+			},
+		]);
 	});
 
 	it('creates the correct format for IEvironmentWrite calls', async () => {
-		const envRead = appAccessors.getEnvironmentWrite();
-		const env = await envRead.getServerSettings().incrementValue('123', 6);
+		const spy = mock.fn(senderFn);
+		const envWrite = new AppAccessors(spy).getEnvironmentWrite();
+		await envWrite.getServerSettings().incrementValue('123', 6);
 
-		assert.deepStrictEqual(env, {
-			params: ['123', 6],
-			method: 'accessor:getEnvironmentWrite:getServerSettings:incrementValue',
-		});
+		assert.deepStrictEqual(spy.mock.calls[0].arguments, [
+			{
+				params: ['123', 6, 'APP_ID'],
+				method: 'bridges:getServerSettingBridge:doIncrementValue',
+			},
+		]);
 	});
 
 	it('creates the correct format for IConfigurationModify calls', async () => {
@@ -94,8 +110,9 @@ describe('AppAccessors', () => {
 					i18nParamsExample: 'test',
 					providesPreview: true,
 				},
+				'APP_ID',
 			],
-			method: 'accessor:getConfigurationModify:slashCommands:modifySlashCommand',
+			method: 'bridges:getAppResourceBridge:doModifySlashCommand',
 		});
 	});
 
@@ -120,7 +137,7 @@ describe('AppAccessors', () => {
 		delete (result as any).params[0].executor;
 
 		assert.deepStrictEqual(result, {
-			method: 'accessor:getConfigurationExtend:slashCommands:provideSlashCommand',
+			method: 'bridges:getAppResourceBridge:doProvideSlashCommand',
 			params: [
 				{
 					command: 'test',
@@ -128,6 +145,7 @@ describe('AppAccessors', () => {
 					i18nParamsExample: 'test',
 					providesPreview: true,
 				},
+				'APP_ID',
 			],
 		});
 	});

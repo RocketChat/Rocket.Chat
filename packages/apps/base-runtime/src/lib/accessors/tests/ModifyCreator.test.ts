@@ -62,38 +62,54 @@ describe('ModifyCreator', () => {
 		]);
 	});
 
-	it('sends the correct payload in the request to upload a buffer', async () => {
-		const modifyCreator = new ModifyCreator(senderFn);
+	it('sends the correct payload in the request to upload a buffer (defaults user to the app user, then creates the upload)', async () => {
+		// Resolve the app-user lookup to a real user so we can assert it is propagated as the uploader.
+		const appUserSender = (req: any) => senderFn(req.method === 'bridges:getUserBridge:doGetAppUser' ? { id: 'app-user' } : req);
+		const spying = mock.fn(appUserSender);
+		const modifyCreator = new ModifyCreator(spying);
+		const buffer = Buffer.from([1, 2, 3, 4]);
 
-		const result = await modifyCreator
-			.getUploadCreator()
-			.uploadBuffer(Buffer.from([1, 2, 3, 4]), { filename: 'testfile' } as IUploadDescriptor);
+		await modifyCreator.getUploadCreator().uploadBuffer(buffer, { filename: 'testfile', room: { id: 'r1' } } as IUploadDescriptor);
 
-		assert.deepStrictEqual(result, {
-			method: 'accessor:getModifier:getCreator:getUploadCreator:uploadBuffer',
-			params: [Buffer.from([1, 2, 3, 4]), { filename: 'testfile' }],
+		// No `user`/`visitorToken` on the descriptor, so the app user is fetched first...
+		assert.deepStrictEqual(spying.mock.calls[0].arguments, [{ method: 'bridges:getUserBridge:doGetAppUser', params: ['APP_ID'] }]);
+		// ...then the upload is created with the derived details, carrying the fetched app user's id.
+		const [createCall] = spying.mock.calls[1].arguments as any[];
+		assert.strictEqual(createCall.method, 'bridges:getUploadBridge:doCreateUpload');
+		assert.deepStrictEqual(createCall.params[0], {
+			name: 'testfile',
+			size: 4,
+			rid: 'r1',
+			userId: 'app-user',
+			visitorToken: undefined,
 		});
+		assert.deepStrictEqual(createCall.params[1], buffer);
+		assert.strictEqual(createCall.params[2], 'APP_ID');
 	});
 
 	it('sends the correct payload in the request to create a visitor', async () => {
-		const modifyCreator = new ModifyCreator(senderFn);
+		const spying = mock.fn(senderFn);
+		const modifyCreator = new ModifyCreator(spying);
 
-		const result = (await modifyCreator.getLivechatCreator().createVisitor({
+		await modifyCreator.getLivechatCreator().createVisitor({
 			token: 'random token',
 			username: 'random username for visitor',
 			name: 'Random Visitor',
-		})) as any; // We modified the send function so it changed the original return type of the function
-
-		assert.deepStrictEqual(result, {
-			method: 'accessor:getModifier:getCreator:getLivechatCreator:createVisitor',
-			params: [
-				{
-					token: 'random token',
-					username: 'random username for visitor',
-					name: 'Random Visitor',
-				},
-			],
 		});
+
+		assert.deepStrictEqual(spying.mock.calls[0].arguments, [
+			{
+				method: 'bridges:getLivechatBridge:doCreateVisitor',
+				params: [
+					{
+						token: 'random token',
+						username: 'random username for visitor',
+						name: 'Random Visitor',
+					},
+					'APP_ID',
+				],
+			},
+		]);
 	});
 
 	// This test is important because if we return a promise we break API compatibility

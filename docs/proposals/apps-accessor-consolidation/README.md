@@ -493,6 +493,50 @@ since consolidating more logic into the runtime makes the assumption more load-b
    hand-rolled message strings and per-param normalization judgment with a declared contract. A
    phase *after* this migration, not a prerequisite; this work should produce the explicit list, the
    SDK formalizes it.
+6. **`createProcessorId` suffix check** (`SchedulerModify`) — the job-id namespacing uses
+   `includes` (substring match) to decide whether an id is already namespaced; it should be
+   `endsWith` (suffix match), since an appId substring in the *middle* of a job id makes the function
+   skip the suffix, risking namespace collisions and jobs that `cancelJob` can't reach. Flagged in review of
+   the migration PRs (CodeRabbit + cubic). **Not fixed inside the migration** because the runtime port
+   is a faithful copy of the host `SchedulerModify`, which has the same `includes` — changing only the
+   runtime copy re-introduces host↔runtime drift, the exact thing this migration removes. Fix both
+   copies together (or land it after the host copy is deleted in Phase 4) as a standalone behavior
+   change with its own test.
+7. **Parity-preserving review findings deferred out of the migration** — automated reviewers
+   (CodeRabbit, cubic) flagged the items below on the ported runtime accessors. In every case the
+   ported code is **byte-identical to its host original**, so the flag (where valid) is a *pre-existing*
+   behavior, not a regression introduced here. They are deferred for the same reason as #6: fixing
+   only the runtime copy re-introduces host↔runtime drift. Land each — where a change is actually
+   wanted — as a standalone change touching **both** copies, or after the host copy is deleted in
+   Phase 4. Split into "latent behavior" (a real edge case, fix eventually) and "type/cosmetic" (no
+   runtime change; align only if the interface contract is worth tightening).
+
+   *Latent behavior (identical in host):*
+   - `UploadCreator.uploadBuffer` uses `Object.hasOwn(descriptor, 'user')` to decide whether to fetch
+     the app user; with `{ user: null }` (nullable per `IUploadDescriptor`) and no visitor token this
+     treats the user as present, skips the app-user lookup, and sends `userId: undefined`. A value
+     check (`!descriptor.user`) would fall back to the app user. Host uses `Object.hasOwn` identically.
+   - `RoomRead.getMessages` accepts `0`/negative `limit` — the guard only rejects `> 100`, unlike the
+     sibling `1–100` checks (`getAllRooms`, `getUnreadByUser`). Host has the same `>100`-only check.
+   - `RoomRead.getMessages` mutates the caller's `options` in place (`options.limit ??= 100`,
+     `options.showThreadMessages ??= true`); a reused options object is observably changed after the
+     call. Host mutates identically. Fix = copy before defaulting.
+   - `ServerSettingRead.getOneById` casts the bridge result to `ISetting` with no null/undefined
+     guard, so a missing setting returns `null`/`undefined` despite the typed return; the sibling
+     `getValueById` guards and throws. Host's `getOneById` also has no guard.
+   - `UIController` deprecated surface APIs (`openModalView`, `updateModalView`,
+     `openContextualBarView`, `updateContextualBarView`) call the serializers directly, skipping the
+     `UIHelper.assignIds` block-ID scoping that `openSurfaceView`/`updateSurfaceView` apply, so legacy
+     modal/contextual-bar interactions can emit un-scoped block IDs. Host's deprecated methods skip
+     `assignIds` too.
+
+   *Type/cosmetic (no runtime change):*
+   - `ContactRead.getById` returns `Promise<ILivechatContact | undefined>` while `IContactRead`
+     declares `| null`. The host original also returns `| undefined` and compiles, so this is a
+     pre-existing annotation mismatch, not a behavior difference.
+   - `MessageRead.getSenderUser`/`getRoom` and `ThreadRead.getThreadById` use raw casts that don't
+     surface the optional (`undefined`/`null`) bridge result in their return/argument types. Runtime
+     behavior is identical to host; purely a cast/typing nitpick.
 
 ---
 
@@ -540,46 +584,93 @@ tests are deleted in that same PR — gated, for MOVE accessors, on the parity c
    Phase 0 is an internal, behavior-preserving refactor, so no changeset is added — this document and
    `base-runtime-app-id-exceptions.md` are the recorded contract.
 
-### Phase 1 — Reader family + Persistence + Environment (server-side settings)
+### Phase 1 — Reader family + Persistence + Environment (server-side settings) — ✅ runtime port landed
 
-*Landed as one PR per accessor (or tight group); each PR ports the accessor, flips its `mod.ts`
-proxy entry to local, passes the §6 parity check, then deletes the host class + its tests.*
-
-1. Port to base-runtime: `MessageRead`, `RoomRead`, `UserRead`, `PersistenceRead`, `LivechatRead`,
-   `UploadRead`, `CloudWorkspaceRead`, `VideoConferenceRead`, `OAuthAppsReader`, `ContactRead`,
-   `ThreadRead`, `RoleRead`, `ExperimentalRead`, `ServerSettingRead`, `EnvironmentalVariableRead`,
+1. ✅ Ported to base-runtime (`accessors/read/*`, `accessors/environment/*`, `accessors/Persistence.ts`):
+   `MessageRead`, `RoomRead`, `UserRead`, `PersistenceRead`, `LivechatRead`, `UploadRead`,
+   `CloudWorkspaceRead`, `VideoConferenceRead`, `OAuthAppsReader`, `ContactRead`, `ThreadRead`,
+   `RoleRead`, `ExperimentalRead`, `ServerSettingRead`, `EnvironmentalVariableRead`,
    `ServerSettingUpdater`, `ServerSettingsModify`, `Persistence`, and the `Reader` /
-   `EnvironmentRead` / `EnvironmentWrite` facades (except the app-settings members, which stay
-   proxied until Phase 3).
-2. Replace the corresponding `proxify(...)` entries in `mod.ts` (`getReader`, `getPersistence`,
+   `EnvironmentRead` / `EnvironmentWrite` facades. App-settings members (`getSettings` on
+   `EnvironmentRead`/`EnvironmentWrite`) stay proxied until Phase 3. Each class takes a `RemoteBridges`
+   and sends `bridges:*` with the `'APP_ID'` sentinel; all portable validation/defaulting logic
+   (limit/sort caps, option defaults, arg-array wrapping, `getValueById` fallback, the `getAppUser`
+   argument-appId exception) moved verbatim. Tests: `read/tests/readers.test.ts`,
+   `environment/tests/environment.test.ts`, `accessors/tests/Persistence.test.ts`, and the updated
+   `AppAccessors.test.ts`.
+2. ✅ Flipped the corresponding `mod.ts` entries to local (`getReader`, `getPersistence`,
    `getEnvironmentRead`/`getEnvironmentWrite` server-settings/env-var members,
-   `getConfigurationModify:serverSettings`).
-3. Delete the host classes + prune `AppAccessorManager` construction accordingly; port tests.
+   `getConfigurationModify:serverSettings`). No `accessor:*` traffic remains for these paths.
+3. **Host-class deletion + `AppAccessorManager` pruning deferred to Phase 4 teardown** (deviation from
+   the original per-PR plan, taken deliberately). `AppAccessorManager.getReader()` constructs the
+   whole Reader family and is still called on the host by `AppListenerManager.executePostMessageSent`
+   (the `getAppUser` bot gate) and to build not-yet-migrated sub-accessors; deleting e.g. `RoomRead`
+   now would require pulling the Phase-4 `AppListenerManager` refactor and manager surgery forward
+   mid-phase. Keeping the host classes in place (dead for subprocess apps, still unit-tested and
+   green) keeps this step small and reviewable. The two implementations coexist transiently, which is
+   exactly what the §6 parity harness guards against — the runtime port's emitted bridge traffic is
+   pinned by tests against the documented host bridge calls.
 
-### Phase 2 — Modify family completion
+**One RPC-boundary adaptation (documented drift):** `ServerSettingRead.getValueById` checked
+`typeof set === 'undefined'` on the host; across the RPC boundary an absent host return arrives as
+`null`, so the runtime treats `null` and `undefined` alike as "not found". Behaviorally identical for
+apps (the host bridge only ever returns a setting or nothing).
 
-*Same cadence as Phase 1: one PR per accessor (or tight group), parity-checked before the host class
-is deleted. RECONCILE members (`ModifyCreator`/`ModifyUpdater`/`ModifyExtender`/`Notifier`) follow §3
-+ the direction-aware merge rule instead of the parity check.*
+### Phase 2 — Modify family completion — ✅ runtime port landed
 
-1. Port: `ModifyDeleter`, `MessageUpdater`, `LivechatUpdater`, `UserUpdater`, `LivechatCreator`,
-   `UploadCreator`, `EmailCreator`, `ContactCreator`, `UIController`, `SchedulerModify`,
-   `OAuthAppsModify`, `ModerationModify`, `Modify` facade.
-2. Remove the remaining `proxify` entries in `getModifier` and the sub-creator/sub-updater proxies
-   inside runtime `ModifyCreator`/`ModifyUpdater`.
-3. Delete host classes; port tests. After this phase, `getReader`/`getModifier`/`getPersistence`/
+1. ✅ Ported to base-runtime (`accessors/modify/*`): `ModifyDeleter`, `MessageUpdater`,
+   `LivechatUpdater`, `UserUpdater`, `LivechatCreator` (local `createToken`), `UploadCreator`
+   (default-user fetch), `EmailCreator`, `ContactCreator`, `UIController` (local `UIHelper.assignIds`
+   + UIKit interaction formatting), `SchedulerModify` (local `createProcessorId` id-namespacing),
+   `OAuthAppsModify`, `ModerationModify`. Each takes a `RemoteBridges`; caller-identity params use the
+   `'APP_ID'` sentinel, while the `ModerationModify`/`ModifyDeleter.deleteUsers` argument-appIds stay
+   raw (bucket B) and `UIController`/`SchedulerModify` read the real id from `AppObjectRegistry` for
+   their non-identity uses (block/interaction stamping, job-id suffix). Tests:
+   `modify/tests/modifyAccessors.test.ts` + updated `ModifyCreator.test.ts` / `ModifyUpdater.test.ts`.
+2. ✅ Removed the remaining `proxify` entries in `getModifier` (`getDeleter`/`getUiController`/
+   `getScheduler`/`getOAuthAppsModifier`/`getModerationModifier`) and the `accessor:*` sub-creator
+   (`getLivechatCreator`/`getUploadCreator`/`getEmailCreator`/`getContactCreator`) and sub-updater
+   (`getLivechatUpdater`/`getUserUpdater`/`getMessageUpdater`) proxies inside the runtime
+   `ModifyCreator`/`ModifyUpdater`. After this phase, `getReader`/`getModifier`/`getPersistence`/
    `getHttp` generate **zero** `accessor:*` traffic.
+3. Host-class deletion + `AppAccessorManager` pruning again deferred to the Phase 4 teardown, for the
+   same reason as Phase 1 (keeps each step small and green; parity harness guards the transient
+   duplication). The RECONCILE members (`ModifyCreator`/`ModifyUpdater`/`ModifyExtender`/`Notifier`)
+   were already runtime-canonical from Phase 0; their sub-accessors are now local too.
 
-### Phase 3 — Registration surface via `AppResourceBridge`
+**RPC-boundary note:** the sub-accessor methods that returned typed host-bridge results now flow
+through `RemoteBridges` (`Promise<unknown>`) and are cast to their interface return types;
+`void`-returning methods (`setActiveState`, `endActiveState`, reactions, deletes) `await` instead of
+returning the bridge value, matching the interface.
 
-1. Host: implement `AppResourceBridge` (§4) + internal-bridge lookup in `handleBridgeMessage` +
-   `restarting` guard for registration methods. Unit-test the guard and throw-vs-silent permission
-   behaviors.
-2. Runtime: rewrite `getConfigurationExtend` / `getConfigurationModify:slashCommands` /
-   `SettingRead` / `SettingUpdater` / `SettingsExtend` members as local classes calling
-   `RemoteBridges.getAppResourceBridge()`, preserving the `AppObjectRegistry` stash-then-forward
-   wrappers; replace `accessor:api:listApis` with `doListApis`.
-3. Delete the host `*Extend`/`SlashCommandsModify`/`SettingRead`/`SettingUpdater` accessors; port tests.
+### Phase 3 — Registration surface via `AppResourceBridge` — ✅ landed
+
+1. ✅ Host: added the concrete `AppResourceBridge` (`src/server/bridges/AppResourceBridge.ts`)
+   delegating to the managers (`AppSlashCommandManager`, `AppApiManager`, `AppSchedulerManager`,
+   `UIActionButtonManager`, `AppExternalComponentManager`, `AppVideoConfProviderManager`,
+   `AppOutboundCommunicationProviderManager`) and the app's `ProxiedApp` storage item +
+   `AppSettingsManager` for settings. Wired into `BaseRuntimeSubprocessController.handleBridgeMessage`
+   via a dedicated `getAppResourceBridge` lookup (resolved from a controller field, not `AppBridges`)
+   + the `restarting` guard keyed on `AppResourceBridge.REGISTRATION_METHODS`. Permission/conflict
+   semantics are unchanged because each method calls the same manager the host accessor used (the
+   video-conf/outbound `PermissionDeniedError` throw and the UI log-and-refuse both propagate as
+   before). The `AppManager` instance is passed to the bridge in the controller constructor — no
+   `apps/meteor` orchestrator changes needed.
+2. ✅ Runtime: rewrote `getConfigurationExtend` (ui/settings/externalComponents/api/scheduler/
+   videoConfProviders/outboundCommunication/slashCommands), `getConfigurationModify`
+   (slashCommands → modify/enable/disable; scheduler → local `SchedulerModify`), and the app-settings
+   `SettingRead`/`SettingUpdater`/`SettingsExtend` members to call `getAppResourceBridge().do*`,
+   preserving the `AppObjectRegistry` stash-then-forward. `accessor:api:listApis` is replaced by
+   `doListApis`. `registerButton` stays a synchronous `void` (fire-and-forget) per its interface. The
+   now-dead `proxify` machinery and `WithProxy` type were removed from `mod.ts` — **the runtime no
+   longer emits any `accessor:*` message at all.**
+3. Host accessor deletion (`*Extend`/`SlashCommandsModify`/`SettingRead`/`SettingUpdater`) + the rest
+   of the teardown are deferred to Phase 4, consistent with Phases 1–2. Tests:
+   `accessors/tests/configuration.test.ts` + updated `AppAccessors.test.ts`; the host
+   `DenoRuntimeSubprocessController` test validates the controller wiring.
+
+**RPC-boundary note:** `SettingRead.getValueById` treats `null` and `undefined` alike as "does not
+exist" (undefined serializes to null across the boundary), same adaptation as `ServerSettingRead`.
 
 ### Phase 4 — Teardown
 

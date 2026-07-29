@@ -10,13 +10,15 @@ import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType.js';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
 
+import { LivechatUpdater } from './LivechatUpdater';
+import { MessageUpdater } from './MessageUpdater';
+import { UserUpdater } from './UserUpdater';
 import { AppObjectRegistry } from '../../../AppObjectRegistry';
 import { UIHelper } from '../../UIHelper';
 import { RemoteBridges } from '../../bridges/RemoteBridges';
 import type * as Messenger from '../../messenger';
 import { MessageBuilder } from '../builders/MessageBuilder';
 import { RoomBuilder } from '../builders/RoomBuilder';
-import { formatErrorResponse } from '../formatResponseErrorHandler';
 
 export class ModifyUpdater implements IModifyUpdater {
 	private readonly livechatUpdater: ILivechatUpdater;
@@ -31,32 +33,9 @@ export class ModifyUpdater implements IModifyUpdater {
 		// The facade reads `this.senderFn` at call time (rather than capturing it) so
 		// that tests which swap out `senderFn` after construction remain intercepted.
 		this.bridges = new RemoteBridges((request) => this.senderFn(request));
-		this.livechatUpdater = this.proxify('getLivechatUpdater');
-		this.userUpdater = this.proxify('getUserUpdater');
-		this.messageUpdater = this.proxify('getMessageUpdater');
-	}
-
-	private proxify<T extends ILivechatUpdater | IUserUpdater | IMessageUpdater>(
-		target: 'getLivechatUpdater' | 'getUserUpdater' | 'getMessageUpdater',
-	): T {
-		return new Proxy(
-			{ __kind: target },
-			{
-				get:
-					(_target: unknown, prop: string) =>
-					(...params: unknown[]) =>
-						prop === 'toJSON'
-							? {}
-							: this.senderFn({
-									method: `accessor:getModifier:getUpdater:${target}:${prop}`,
-									params,
-								})
-									.then((response) => response.result)
-									.catch((err) => {
-										throw formatErrorResponse(err);
-									}),
-			},
-		) as T;
+		this.livechatUpdater = new LivechatUpdater(this.bridges);
+		this.userUpdater = new UserUpdater(this.bridges);
+		this.messageUpdater = new MessageUpdater(this.bridges);
 	}
 
 	public getLivechatUpdater(): ILivechatUpdater {

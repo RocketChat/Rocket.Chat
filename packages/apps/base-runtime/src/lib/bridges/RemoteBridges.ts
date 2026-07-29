@@ -153,4 +153,14 @@ export class RemoteBridges {
 	public getUiInteractionBridge(): RemoteBridge {
 		return this.buildBridge('getUiInteractionBridge');
 	}
+
+	/**
+	 * The internal bridge that fronts host manager registries and the app's settings storage
+	 * (slash commands, APIs, scheduler, UI buttons, providers, external components, app settings).
+	 * It is not part of the app-facing `AppBridges` surface; the host resolves it via a dedicated
+	 * lookup in `handleBridgeMessage`. See docs/base-runtime-accessor-consolidation.md §4.
+	 */
+	public getAppResourceBridge(): RemoteBridge {
+		return this.buildBridge('getAppResourceBridge');
+	}
 }
