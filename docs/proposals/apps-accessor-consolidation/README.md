@@ -502,6 +502,41 @@ since consolidating more logic into the runtime makes the assumption more load-b
    runtime copy re-introduces host↔runtime drift, the exact thing this migration removes. Fix both
    copies together (or land it after the host copy is deleted in Phase 4) as a standalone behavior
    change with its own test.
+7. **Parity-preserving review findings deferred out of the migration** — automated reviewers
+   (CodeRabbit, cubic) flagged the items below on the ported runtime accessors. In every case the
+   ported code is **byte-identical to its host original**, so the flag (where valid) is a *pre-existing*
+   behavior, not a regression introduced here. They are deferred for the same reason as #6: fixing
+   only the runtime copy re-introduces host↔runtime drift. Land each — where a change is actually
+   wanted — as a standalone change touching **both** copies, or after the host copy is deleted in
+   Phase 4. Split into "latent behavior" (a real edge case, fix eventually) and "type/cosmetic" (no
+   runtime change; align only if the interface contract is worth tightening).
+
+   *Latent behavior (identical in host):*
+   - `UploadCreator.uploadBuffer` uses `Object.hasOwn(descriptor, 'user')` to decide whether to fetch
+     the app user; with `{ user: null }` (nullable per `IUploadDescriptor`) and no visitor token this
+     treats the user as present, skips the app-user lookup, and sends `userId: undefined`. A value
+     check (`!descriptor.user`) would fall back to the app user. Host uses `Object.hasOwn` identically.
+   - `RoomRead.getMessages` accepts `0`/negative `limit` — the guard only rejects `> 100`, unlike the
+     sibling `1–100` checks (`getAllRooms`, `getUnreadByUser`). Host has the same `>100`-only check.
+   - `RoomRead.getMessages` mutates the caller's `options` in place (`options.limit ??= 100`,
+     `options.showThreadMessages ??= true`); a reused options object is observably changed after the
+     call. Host mutates identically. Fix = copy before defaulting.
+   - `ServerSettingRead.getOneById` casts the bridge result to `ISetting` with no null/undefined
+     guard, so a missing setting returns `null`/`undefined` despite the typed return; the sibling
+     `getValueById` guards and throws. Host's `getOneById` also has no guard.
+   - `UIController` deprecated surface APIs (`openModalView`, `updateModalView`,
+     `openContextualBarView`, `updateContextualBarView`) call the serializers directly, skipping the
+     `UIHelper.assignIds` block-ID scoping that `openSurfaceView`/`updateSurfaceView` apply, so legacy
+     modal/contextual-bar interactions can emit un-scoped block IDs. Host's deprecated methods skip
+     `assignIds` too.
+
+   *Type/cosmetic (no runtime change):*
+   - `ContactRead.getById` returns `Promise<ILivechatContact | undefined>` while `IContactRead`
+     declares `| null`. The host original also returns `| undefined` and compiles, so this is a
+     pre-existing annotation mismatch, not a behavior difference.
+   - `MessageRead.getSenderUser`/`getRoom` and `ThreadRead.getThreadById` use raw casts that don't
+     surface the optional (`undefined`/`null`) bridge result in their return/argument types. Runtime
+     behavior is identical to host; purely a cast/typing nitpick.
 
 ---
 
