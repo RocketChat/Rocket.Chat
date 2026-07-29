@@ -11,6 +11,7 @@ import type { Options, Root } from '@rocket.chat/message-parser';
 import { parse } from '@rocket.chat/message-parser';
 
 import { getMarkdownParserLimit } from './getMarkdownParserLimit';
+import { toPlainTextRoot } from './toPlainTextRoot';
 import type { AutoTranslateOptions } from '../views/room/MessageList/hooks/useAutoTranslate';
 import { isParsedMessage } from '../views/room/MessageList/lib/isParsedMessage';
 
@@ -137,7 +138,7 @@ const textToMessageToken = (textOrRoot: string | Root, parseOptions: Options): R
 	}
 
 	if (textOrRoot.length > getMarkdownParserLimit()) {
-		return [{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: textOrRoot }] }];
+		return toPlainTextRoot(textOrRoot);
 	}
 
 	const parsedMessage = parse(textOrRoot, parseOptions);
