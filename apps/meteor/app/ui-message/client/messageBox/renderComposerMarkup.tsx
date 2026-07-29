@@ -1,5 +1,5 @@
 import { ComposerMarkup, ComposerMarkupContext, type ComposerMarkupContextValue } from '@rocket.chat/gazzodown-alt';
-import type { Options, Root } from '@rocket.chat/message-parser';
+import type { Root } from '@rocket.chat/message-parser';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
@@ -17,12 +17,8 @@ const detectEmoji: ComposerMarkupContextValue['detectEmoji'] = (text) => {
 	return [{ name, className: className ?? '', image: rawImage, content: children ?? '' }];
 };
 
-export const renderComposerMarkup = (tokens: Root, parseOptions: Options): string => {
-	const context: ComposerMarkupContextValue = {
-		detectEmoji,
-		useEmoji: true,
-		convertAsciiToEmoji: Boolean(parseOptions.emoticons),
-	};
+export const renderComposerMarkup = (tokens: Root): string => {
+	const context: ComposerMarkupContextValue = { detectEmoji };
 
 	return renderToStaticMarkup(createElement(ComposerMarkupContext.Provider, { value: context }, createElement(ComposerMarkup, { tokens })));
 };

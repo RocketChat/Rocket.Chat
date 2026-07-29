@@ -1,14 +1,15 @@
 /* eslint-disable complexity */
 // TODO: CRITICAL fix the race condition between the room composer and thread composer
-import { isRoomFederated, isRoomNativeFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
+import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { useContentBoxSize, useMediaQuery, useSafeRefCallback, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { Options } from '@rocket.chat/message-parser';
 import { MessageComposerHint, RichTextComposerInputExpandable } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
-import { memo, useRef, useReducer, useCallback, useSyncExternalStore, useState, useEffect, useMemo } from 'react';
+import { memo, useRef, useReducer, useCallback, useSyncExternalStore, useMemo } from 'react';
 
+import type { MessageBoxProps } from './MessageBox';
 import MessageBoxBase from './MessageBoxBase';
 import MessageComposerFiles from './MessageComposerFiles';
 import { useComposerHistory } from './hooks/useComposerHistory';
@@ -26,9 +27,7 @@ import { handleRichTextSelectionWrapping } from './wrapSelection';
 import { emoji } from '../../../../../app/emoji/client';
 import { createRichTextComposerAPI } from '../../../../../app/ui-message/client/messageBox/createRichTextComposerAPI';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
-import { getTextLines } from '../../../../../app/ui-message/client/messageBox/messageStateHandler';
 import { getSelectionRange, setSelectionRange } from '../../../../../app/ui-message/client/messageBox/selectionRange';
-import { useMessageListKatex, useMessageListShowColors } from '../../../../components/message/list/MessageListContext';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
@@ -79,22 +78,6 @@ const reducer = (_: unknown, event: FormEvent<HTMLElement>): TypingState => {
 	};
 };
 
-type MessageBoxProps = {
-	tmid?: IMessage['_id'];
-	onSend?: (params: { value: string; tshow?: boolean; previewUrls?: string[]; isSlashCommandAllowed?: boolean }) => Promise<void>;
-	onJoin?: () => Promise<void>;
-	onResize?: () => void;
-	onTyping?: () => void;
-	onEscape?: () => void;
-	onNavigateToPreviousMessage?: () => void;
-	onNavigateToNextMessage?: () => void;
-	tshow?: IMessage['tshow'];
-	previewUrls?: string[];
-	subscription?: ISubscription;
-	showFormattingTips: boolean;
-	isEmbedded?: boolean;
-};
-
 const RichTextMessageBox = ({
 	tmid,
 	onSend,
@@ -126,9 +109,6 @@ const RichTextMessageBox = ({
 		throw new Error('Chat context not found');
 	}
 
-	// This state will update every time the input is updated
-	const [, setMdLines] = useState<string[]>([]);
-
 	const setLastCursorPosition = (e: React.FocusEvent<HTMLElement>) => {
 		const node = e.currentTarget as HTMLDivElement;
 		cursorMap.set(node, getSelectionRange(node));
@@ -144,9 +124,6 @@ const RichTextMessageBox = ({
 		setSelectionRange(node, savedPosition.selectionStart, savedPosition.selectionEnd);
 	};
 
-	/* const textareaRef = useRef<HTMLTextAreaElement>(null); */
-
-	/* NEW: contenteditableRef */
 	const contentEditableRef = useRef<HTMLDivElement>(null);
 
 	const messageComposerRef = useRef<HTMLElement>(null);
@@ -154,31 +131,17 @@ const RichTextMessageBox = ({
 	const subscription = useRoomSubscription();
 	const { initialValue, persistLocal, flushDraft } = useDraft(room._id, tmid ? undefined : subscription?.draft, tmid);
 
-	// Update the state of the raw markdown lines when room changes
-	useEffect(() => {
-		const input = contentEditableRef.current as HTMLDivElement;
-		setMdLines(getTextLines(input.innerText, '\n'));
-	}, [room._id, tmid]);
-
 	// Get parse options and pass it as prop to the RichTextComposer API
-	const katex = useMessageListKatex();
-	const katexEnabled = !!katex;
+	// Colors and KaTeX are intentionally left out: gazzodown-alt has no renderer for those nodes,
+	// so enabling them would make the typed text disappear.
 	const customDomains = useAutoLinkDomains();
-	const showColors = useMessageListShowColors();
 
 	const parseOptions = useMemo<Options>(
 		() => ({
-			colors: showColors,
 			emoticons: true,
 			customDomains,
-			...(katexEnabled && {
-				katex: {
-					dollarSyntax: katex.dollarSyntaxEnabled,
-					parenthesisSyntax: katex.parenthesisSyntaxEnabled,
-				},
-			}),
 		}),
-		[showColors, customDomains, katexEnabled, katex?.dollarSyntaxEnabled, katex?.parenthesisSyntaxEnabled],
+		[customDomains],
 	);
 
 	const callbackRef = useCallback(
@@ -232,7 +195,6 @@ const RichTextMessageBox = ({
 		const text = chat.composer?.text ?? '';
 		chat.composer?.clear();
 		popup.clear();
-		setMdLines(['']);
 
 		onSend?.({
 			value: text,
@@ -342,14 +304,6 @@ const RichTextMessageBox = ({
 
 	const isEditing = useSyncExternalStore(chat.composer?.editing.subscribe ?? emptySubscribe, chat.composer?.editing.get ?? getEmptyFalse);
 
-	// Update the state of the raw markdown lines when message is being edited
-	useEffect(() => {
-		setTimeout(() => {
-			const input = contentEditableRef.current as HTMLDivElement;
-			setMdLines(getTextLines(input.innerText, '\n'));
-		}, 0);
-	}, [isEditing]);
-
 	const isRecordingAudio = useSyncExternalStore(
 		chat.composer?.recording.subscribe ?? emptySubscribe,
 		chat.composer?.recording.get ?? getEmptyFalse,
@@ -391,8 +345,6 @@ const RichTextMessageBox = ({
 		}
 		return true;
 	});
-
-	/* const sizes = useContentBoxSize(textareaRef); */
 
 	const newSizes = useContentBoxSize(contentEditableRef);
 
@@ -488,7 +440,7 @@ const RichTextMessageBox = ({
 			closeEditing={closeEditing}
 			hint={
 				<MessageComposerHint icon='flask' helperText=''>
-					Experiment: Real Time Composer
+					{t('Experiment_Realtime_message_composer')}
 				</MessageComposerHint>
 			}
 			input={
@@ -499,7 +451,6 @@ const RichTextMessageBox = ({
 					name='msg'
 					disabled={isRecording || !canSend || isProcessingUploads}
 					onInput={setTyping}
-					/* style={textAreaStyle} */
 					placeholder={composerPlaceholder}
 					hideplaceholder={hideplaceholder}
 					onPaste={handlePaste}
