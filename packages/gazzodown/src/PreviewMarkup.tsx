@@ -21,7 +21,9 @@ const PreviewMarkup = ({ tokens, source }: PreviewMarkupProps) => {
 		return <PreviewBigEmojiBlock emoji={tokens[0].value} />;
 	}
 
-	const firstBlock = tokens.find((block) => block.type !== 'LINE_BREAK');
+	const firstBlock =
+		tokens.find((block) => block.type !== 'LINE_BREAK' && block.type !== 'HORIZONTAL_RULE') ??
+		tokens.find((block) => block.type !== 'LINE_BREAK');
 
 	if (!firstBlock) {
 		return null;
