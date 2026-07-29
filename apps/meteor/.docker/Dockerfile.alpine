@@ -38,7 +38,7 @@ ENV LANG=C.UTF-8
 # and more complex or security conscious daemons run as dedicated users.
 # The daemon user is also handy for locally installed daemons.
 # """
-RUN apk add --no-cache shadow deno ttf-dejavu \
+RUN apk add --no-cache shadow ttf-dejavu \
     # Update OpenSSL
     # CVE -> https://scout.docker.com/vulnerabilities/id/CVE-2025-9230?s=alpine&n=openssl&ns=alpine&t=apk&osn=alpine&osv=3.22
     && apk upgrade --no-cache openssl \
