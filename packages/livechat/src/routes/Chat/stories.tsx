@@ -1,7 +1,7 @@
 import type { Meta, StoryFn } from '@storybook/preact';
 
-import type { ChatProps } from './connector';
-import Chat from './connector';
+import type { ChatProps } from './index';
+import Chat from './index';
 import { screenDecorator, storeDecorator } from '../../../.storybook/helpers';
 import store, { type StoreState } from '../../store';
 
