@@ -328,15 +328,15 @@ export const FileUpload = {
 		const store = FileUpload.getStore('Uploads');
 		const image = await store._store.getReadStream(file._id, file);
 
-		let transformer = sharp().resize({ width, height, fit: 'inside' });
+		let transformer = sharp({ animated: file.type === 'image/gif' }).resize({ width, height, fit: 'inside' });
 
 		if (file.type === 'image/svg+xml') {
 			transformer = transformer.png();
 		}
-		const result = transformer.toBuffer({ resolveWithObject: true }).then(({ data, info: { width, height, format } }) => ({
+		const result = transformer.toBuffer({ resolveWithObject: true }).then(({ data, info: { width, height, pageHeight, format } }) => ({
 			data,
 			width,
-			height,
+			height: pageHeight ?? height,
 			thumbFileType: (mime.lookup(format) as string) || '',
 			thumbFileName: file?.name as string,
 			originalFileId: file?._id as string,
