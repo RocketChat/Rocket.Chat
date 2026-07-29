@@ -170,6 +170,14 @@ const validators: RoomSettingsValidators = {
 	async roomTopic({ room, value }) {
 		guardABACManagedField(room, value, room.topic, 'topic');
 	},
+	async disableLinkPreviews({ value }) {
+	if (!Match.test(value, Boolean)) {
+		throw new Meteor.Error(
+			'error-invalid-parameter',
+			'disableLinkPreviews must be a boolean',
+		  );
+	    }
+    },
 	async roomDescription({ room, value }) {
 		guardABACManagedField(room, value, room.description, 'description');
 	},
@@ -351,7 +359,7 @@ const settingSavers: RoomSettingsSavers = {
 	},
 
     async disableLinkPreviews({ value, rid }) {
-	await Rooms.saveDisableLinkPreviewsById(rid, value);
+	    await Rooms.saveDisableLinkPreviewsById(rid, value);
     },
 
 	async retentionMaxAge({ value, rid }) {
