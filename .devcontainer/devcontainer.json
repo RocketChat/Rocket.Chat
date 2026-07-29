@@ -55,7 +55,6 @@
 	// Deliberately rc-prefixed: the claude-code feature installs its own
 	// /usr/local/bin/init-firewall.sh over ours (see the Dockerfile).
 	"postStartCommand": "sudo /usr/local/bin/rc-init-firewall.sh",
-	"forwardPorts": [3000],
 	"customizations": {
 		"vscode": {
 			"extensions": [

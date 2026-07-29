@@ -22,10 +22,10 @@ services:
       # UNSET. Do not add MONGO_URL to this file or devcontainer.json — setting
       # it makes Meteor skip its local mongod and connect out instead.
       - rc-meteor-local:/workspaces/rocket.chat/apps/meteor/.meteor/local
-    # Required by init-firewall.sh to manage iptables/ipset inside the container.
     ports:
-      - 3000:3000
-      - 3001:3001
+      - ${PORT:-3000}:3000
+      - ${DB_PORT:-}:3001
+    # Required by init-firewall.sh to manage iptables/ipset inside the container.
     cap_add:
       - NET_ADMIN
       - NET_RAW
