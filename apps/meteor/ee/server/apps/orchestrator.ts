@@ -2,9 +2,15 @@ import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
 
+import type { AppBridges, AppEvents, IAppConvertersMap, IAppServerNotifier, IAppServerOrchestrator } from '@rocket.chat/apps';
 import { registerOrchestrator } from '@rocket.chat/apps';
 import { AppManager } from '@rocket.chat/apps/dist/server/AppManager';
+import type { IGetAppsFilter } from '@rocket.chat/apps/dist/server/IGetAppsFilter';
+import type { ProxiedApp } from '@rocket.chat/apps/dist/server/ProxiedApp';
+import type { IMarketplaceInfo } from '@rocket.chat/apps/dist/server/marketplace/IMarketplaceInfo';
+import { AppInstallationSource } from '@rocket.chat/apps/dist/server/storage/IAppStorageItem';
 import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/definition/exceptions';
+import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
 import { Logger } from '@rocket.chat/logger';
 import { AppLogs, Apps as AppsModel, AppsPersistence, Statistics } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -15,6 +21,7 @@ import { MarketplaceAPIClient } from './marketplace/MarketplaceAPIClient';
 import { isTesting } from './marketplace/isTesting';
 import { AppRealLogStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
 import { RealAppBridges } from '../../../app/apps/server/bridges';
+import type { HandleEvent } from '../../../app/apps/server/bridges/listeners';
 import {
 	AppMessagesConverter,
 	AppRoomsConverter,
@@ -33,14 +40,52 @@ import { canEnableApp } from '../lib/license/canEnableApp';
 
 const DISABLED_PRIVATE_APP_INSTALLATION = ['yes', 'true'].includes(String(process.env.DISABLE_PRIVATE_APP_INSTALLATION).toLowerCase());
 
-export class AppServerOrchestrator {
+type AppCommunicators = {
+	notifier: AppServerNotifier;
+	restapi: AppsRestApi;
+	uikit: AppUIKitInteractionApi;
+};
+
+interface IAppCommunicatorsMap extends Map<keyof AppCommunicators, AppCommunicators[keyof AppCommunicators]> {
+	get<T extends keyof AppCommunicators>(key: T): AppCommunicators[T];
+}
+
+export class AppServerOrchestrator implements IAppServerOrchestrator {
+	private _isInitialized: boolean;
+
+	private readonly marketplaceClient: MarketplaceAPIClient;
+
+	private _rocketchatLogger: Logger;
+
+	private _model: typeof AppsModel;
+
+	private _logModel: typeof AppLogs;
+
+	private _persistModel: typeof AppsPersistence;
+
+	private _statisticsModel: typeof Statistics;
+
+	private _storage: AppRealStorage;
+
+	private _logStorage: AppRealLogStorage;
+
+	private _appSourceStorage: ConfigurableAppSourceStorage;
+
+	private _converters: IAppConvertersMap;
+
+	private _bridges: RealAppBridges;
+
+	private _manager: AppManager;
+
+	private _communicators: IAppCommunicatorsMap;
+
 	constructor() {
 		this._isInitialized = false;
 
 		this.marketplaceClient = new MarketplaceAPIClient();
 	}
 
-	initialize() {
+	initialize(): void {
 		if (this._isInitialized) {
 			return;
 		}
@@ -54,22 +99,22 @@ export class AppServerOrchestrator {
 		this._storage = new AppRealStorage(this._model);
 		this._logStorage = new AppRealLogStorage(this._logModel);
 		this._appSourceStorage = new ConfigurableAppSourceStorage(
-			settings.get('Apps_Framework_Source_Package_Storage_Type'),
-			settings.get('Apps_Framework_Source_Package_Storage_FileSystem_Path'),
+			settings.get<string>('Apps_Framework_Source_Package_Storage_Type'),
+			settings.get<string>('Apps_Framework_Source_Package_Storage_FileSystem_Path'),
 		);
 
-		this._converters = new Map();
+		this._converters = new Map() as IAppConvertersMap;
 		this._converters.set('messages', new AppMessagesConverter(this));
 		this._converters.set('rooms', new AppRoomsConverter(this));
 		this._converters.set('settings', new AppSettingsConverter(this));
 		this._converters.set('users', new AppUsersConverter(this));
 		this._converters.set('visitors', new AppVisitorsConverter(this));
-		this._converters.set('contacts', new AppContactsConverter(this));
+		this._converters.set('contacts', new AppContactsConverter());
 		this._converters.set('departments', new AppDepartmentsConverter(this));
 		this._converters.set('uploads', new AppUploadsConverter(this));
 		this._converters.set('videoConferences', new AppVideoConferencesConverter());
 		this._converters.set('threads', new AppThreadsConverter(this));
-		this._converters.set('roles', new AppRolesConverter(this));
+		this._converters.set('roles', new AppRolesConverter());
 
 		this._bridges = new RealAppBridges(this);
 
@@ -80,7 +125,7 @@ export class AppServerOrchestrator {
 			fs.mkdirSync(tempFilePath);
 		} catch (err) {
 			// If the temp directory already exists, we can continue
-			if (err.code !== 'EEXIST') {
+			if ((err as NodeJS.ErrnoException).code !== 'EEXIST') {
 				throw new Error('Failed to initialize the Apps-Engine', { cause: err });
 			}
 		}
@@ -88,12 +133,12 @@ export class AppServerOrchestrator {
 		this._manager = new AppManager({
 			metadataStorage: this._storage,
 			logStorage: this._logStorage,
-			bridges: this._bridges,
+			bridges: this.getBridges(),
 			sourceStorage: this._appSourceStorage,
 			tempFilePath,
 		});
 
-		this._communicators = new Map();
+		this._communicators = new Map() as IAppCommunicatorsMap;
 		this._communicators.set('notifier', new AppServerNotifier(this));
 		this._communicators.set('restapi', new AppsRestApi(this, this._manager));
 		this._communicators.set('uikit', new AppUIKitInteractionApi(this));
@@ -101,30 +146,27 @@ export class AppServerOrchestrator {
 		this._isInitialized = true;
 	}
 
-	getMarketplaceClient() {
+	getMarketplaceClient(): MarketplaceAPIClient {
 		return this.marketplaceClient;
 	}
 
-	getModel() {
+	getModel(): typeof AppsModel {
 		return this._model;
 	}
 
-	/**
-	 * @returns {AppsPersistenceModel}
-	 */
-	getPersistenceModel() {
+	getPersistenceModel(): typeof AppsPersistence {
 		return this._persistModel;
 	}
 
-	getStatisticsModel() {
+	getStatisticsModel(): typeof Statistics {
 		return this._statisticsModel;
 	}
 
-	getStorage() {
+	getStorage(): AppRealStorage {
 		return this._storage;
 	}
 
-	getLogStorage() {
+	getLogStorage(): AppRealLogStorage {
 		if (!this._logStorage) {
 			throw new Error('Apps-Engine not yet fully initialized');
 		}
@@ -132,60 +174,62 @@ export class AppServerOrchestrator {
 		return this._logStorage;
 	}
 
-	getConverters() {
+	getConverters(): IAppConvertersMap {
 		return this._converters;
 	}
 
-	getBridges() {
-		return this._bridges;
+	getBridges(): AppBridges {
+		// `RealAppBridges` does extend `AppBridges`, but its listener bridge takes a single event object
+		// instead of the positional arguments `IListenerBridge` declares, so the structural check on the
+		// bridge collection has to be bypassed. Internal callers use `this._bridges` to keep the real types.
+		return this._bridges as unknown as AppBridges;
 	}
 
-	getNotifier() {
+	getNotifier(): IAppServerNotifier {
 		return this._communicators.get('notifier');
 	}
 
-	getManager() {
+	getManager(): AppManager {
 		return this._manager;
 	}
 
-	getProvidedComponents() {
+	getProvidedComponents(): IExternalComponent[] {
 		return this._manager.getExternalComponentManager().getProvidedComponents();
 	}
 
-	getAppSourceStorage() {
+	getAppSourceStorage(): ConfigurableAppSourceStorage {
 		return this._appSourceStorage;
 	}
 
-	isInitialized() {
+	isInitialized(): boolean {
 		return this._isInitialized;
 	}
 
-	isLoaded() {
+	isLoaded(): boolean {
 		return this.getManager().areAppsLoaded();
 	}
 
-	isDebugging() {
+	isDebugging(): boolean {
 		return !isTesting();
 	}
 
-	shouldDisablePrivateAppInstallation() {
+	shouldDisablePrivateAppInstallation(): boolean {
 		return DISABLED_PRIVATE_APP_INSTALLATION;
 	}
 
-	/**
-	 * @returns {Logger}
-	 */
-	getRocketChatLogger() {
+	getRocketChatLogger(): Logger {
 		return this._rocketchatLogger;
 	}
 
-	debugLog(...args) {
+	debugLog(...args: any[]): void {
 		if (this.isDebugging()) {
-			this.getRocketChatLogger().debug(...args);
+			// The logger only declares a single message parameter, but callers have always relied on
+			// the extra arguments being forwarded to the underlying pino instance.
+			this.getRocketChatLogger().debug(...(args as [object | string]));
 		}
 	}
 
-	async load() {
+	async load(): Promise<void> {
 		// Don't try to load it again if it has
 		// already been loaded
 		if (this.isLoaded()) {
@@ -198,7 +242,7 @@ export class AppServerOrchestrator {
 		const apps = await this.getManager().get();
 
 		// This needs to happen sequentially to keep track of app limits
-		for await (const app of apps) {
+		for (const app of apps) {
 			try {
 				await canEnableApp(app.getStorageItem());
 
@@ -212,7 +256,7 @@ export class AppServerOrchestrator {
 			}
 		}
 
-		await this.getBridges().getSchedulerBridge().startScheduler();
+		await this._bridges.getSchedulerBridge().startScheduler();
 
 		const appCount = (await this.getManager().get({ enabled: true })).length;
 
@@ -222,15 +266,15 @@ export class AppServerOrchestrator {
 		});
 	}
 
-	async migratePrivateApps() {
-		const apps = await this.getManager().get({ installationSource: 'private' });
+	async migratePrivateApps(): Promise<void> {
+		const apps = await this.getManager().get({ installationSource: AppInstallationSource.PRIVATE });
 
 		await Promise.all(apps.map((app) => this.getManager().migrate(app.getID())));
 		await Promise.all(apps.map((app) => this.getNotifier().appUpdated(app.getID())));
 	}
 
-	async findMajorVersionUpgradeDate(targetVersion = 7) {
-		let upgradeToV7Date = null;
+	async findMajorVersionUpgradeDate(targetVersion = 7): Promise<Date | null> {
+		let upgradeToV7Date: Date | null = null;
 		let hadPreTargetVersion = false;
 
 		try {
@@ -240,7 +284,9 @@ export class AppServerOrchestrator {
 				return upgradeToV7Date;
 			}
 
-			const statsAscendingByInstallDate = statistics.sort((a, b) => new Date(a.installedAt) - new Date(b.installedAt));
+			const statsAscendingByInstallDate = statistics.sort(
+				(a, b) => new Date(a.installedAt ?? NaN).getTime() - new Date(b.installedAt ?? NaN).getTime(),
+			);
 			for (const stat of statsAscendingByInstallDate) {
 				const version = stat.version || '';
 
@@ -258,7 +304,7 @@ export class AppServerOrchestrator {
 				}
 
 				if (hadPreTargetVersion && majorVersion >= targetVersion) {
-					upgradeToV7Date = new Date(stat.installedAt);
+					upgradeToV7Date = new Date(stat.installedAt ?? NaN);
 					this._rocketchatLogger.info({
 						msg: 'Found upgrade to target version date',
 						targetVersion,
@@ -277,26 +323,26 @@ export class AppServerOrchestrator {
 		return upgradeToV7Date;
 	}
 
-	async disableMarketplaceApps() {
-		return this.disableApps('marketplace', false, 5);
+	async disableMarketplaceApps(): Promise<void> {
+		return this.disableApps(AppInstallationSource.MARKETPLACE, false, 5);
 	}
 
-	async disablePrivateApps() {
-		return this.disableApps('private', true, 0);
+	async disablePrivateApps(): Promise<void> {
+		return this.disableApps(AppInstallationSource.PRIVATE, true, 0);
 	}
 
-	async disableApps(installationSource, grandfatherApps, maxApps) {
+	async disableApps(installationSource: AppInstallationSource, grandfatherApps: boolean, maxApps: number): Promise<void> {
 		const upgradeToV7Date = await this.findMajorVersionUpgradeDate();
 		const apps = await this.getManager().get({ installationSource });
 
-		const grandfathered = [];
-		const toKeep = [];
-		const toDisable = [];
+		const grandfathered: ProxiedApp[] = [];
+		const toKeep: ProxiedApp[] = [];
+		const toDisable: ProxiedApp[] = [];
 
 		for (const app of apps) {
 			const storageItem = app.getStorageItem();
 			const isEnabled = ['enabled', 'manually_enabled', 'auto_enabled'].includes(storageItem.status);
-			const marketplaceInfo = storageItem.marketplaceInfo && storageItem.marketplaceInfo[0];
+			const marketplaceInfo = storageItem.marketplaceInfo?.[0];
 
 			const wasInstalledBeforeV7 = upgradeToV7Date && storageItem.createdAt && new Date(storageItem.createdAt) < upgradeToV7Date;
 
@@ -305,7 +351,7 @@ export class AppServerOrchestrator {
 				continue;
 			}
 
-			if (marketplaceInfo?.isEnterpriseOnly === true && installationSource === 'marketplace') {
+			if (marketplaceInfo?.isEnterpriseOnly === true && installationSource === AppInstallationSource.MARKETPLACE) {
 				toDisable.push(app);
 				continue;
 			}
@@ -315,7 +361,7 @@ export class AppServerOrchestrator {
 			}
 		}
 
-		toKeep.sort((a, b) => new Date(a.getStorageItem().createdAt || 0) - new Date(b.getStorageItem().createdAt || 0));
+		toKeep.sort((a, b) => new Date(a.getStorageItem().createdAt || 0).getTime() - new Date(b.getStorageItem().createdAt || 0).getTime());
 
 		if (toKeep.length > maxApps) {
 			toDisable.push(...toKeep.splice(maxApps));
@@ -346,7 +392,7 @@ export class AppServerOrchestrator {
 		}
 	}
 
-	async unload() {
+	async unload(): Promise<void> {
 		// Don't try to unload it if it's already been
 		// unlaoded or wasn't unloaded to start with
 		if (!this.isLoaded()) {
@@ -354,7 +400,7 @@ export class AppServerOrchestrator {
 		}
 
 		return this._manager
-			.unload()
+			.unload(false)
 			.then(() => this._rocketchatLogger.info('Unloaded the Apps Framework.'))
 			.catch((err) =>
 				this._rocketchatLogger.error({
@@ -364,7 +410,7 @@ export class AppServerOrchestrator {
 			);
 	}
 
-	async updateAppsMarketplaceInfo(apps = []) {
+	async updateAppsMarketplaceInfo(apps: Array<{ latest: IMarketplaceInfo }> = []): Promise<ProxiedApp[] | undefined> {
 		if (!this.isLoaded()) {
 			return;
 		}
@@ -372,7 +418,7 @@ export class AppServerOrchestrator {
 		return this._manager.updateAppsMarketplaceInfo(apps).then(() => this._manager.get());
 	}
 
-	async installedApps(filter = {}) {
+	async installedApps(filter: IGetAppsFilter = {}): Promise<ProxiedApp[] | undefined> {
 		if (!this.isLoaded()) {
 			return;
 		}
@@ -380,15 +426,15 @@ export class AppServerOrchestrator {
 		return this._manager.get(filter);
 	}
 
-	async triggerEvent(event, ...payload) {
+	async triggerEvent(event: AppEvents, ...payload: any[]): Promise<any> {
 		if (!this.isLoaded()) {
 			return;
 		}
 
-		return this.getBridges()
+		return this._bridges
 			.getListenerBridge()
-			.handleEvent({ event, payload })
-			.catch((error) => {
+			.handleEvent({ event, payload } as HandleEvent)
+			.catch((error: unknown) => {
 				if (error instanceof EssentialAppDisabledException) {
 					throw new Meteor.Error('error-essential-app-disabled');
 				}
