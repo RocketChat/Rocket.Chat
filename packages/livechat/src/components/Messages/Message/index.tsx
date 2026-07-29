@@ -1,7 +1,7 @@
 import type { TFunction } from 'i18next';
 import type { CSSProperties } from 'preact/compat';
 import { memo } from 'preact/compat';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import { getAttachmentUrl } from '../../../helpers/baseUrl';
 import { normalizeTransferHistoryMessage } from '../../../helpers/normalizeTransferHistoryMessage';
@@ -101,7 +101,6 @@ type MessageProps = {
 	compact?: boolean;
 	className?: string;
 	style?: CSSProperties;
-	t: TFunction;
 	hideAvatar?: boolean;
 	[key: string]: any;
 };
@@ -114,30 +113,33 @@ const Message = ({
 	compact,
 	className,
 	style = {},
-	t,
 	hideAvatar,
 	...message
-}: MessageProps) => (
-	<MessageContainer id={message._id} compact={compact} reverse={me} use={use} className={className} style={style} system={!!message.type}>
-		{!message.type && !hideAvatar && (
-			<MessageAvatars avatarResolver={avatarResolver ?? (() => undefined)} usernames={getMessageUsernames(compact, message)} />
-		)}
-		<MessageContent reverse={me}>
-			{renderContent({
-				text: message.type ? getSystemMessageText(message, t) : message.msg,
-				system: !!message.type,
-				me,
-				attachments: message.attachments,
-				blocks: message.blocks,
-				mid: message._id,
-				rid: message.rid,
-				attachmentResolver,
-			})}
-		</MessageContent>
+}: MessageProps) => {
+	const { t } = useTranslation();
 
-		{/* NOTE: the original passed `inverse={me}`, which MessageTime ignores (its prop is `inverted`); dropped to keep behavior identical. */}
-		{!compact && !message.type && <MessageTime normal={!me} ts={message.ts} />}
-	</MessageContainer>
-);
+	return (
+		<MessageContainer id={message._id} compact={compact} reverse={me} use={use} className={className} style={style} system={!!message.type}>
+			{!message.type && !hideAvatar && (
+				<MessageAvatars avatarResolver={avatarResolver ?? (() => undefined)} usernames={getMessageUsernames(compact, message)} />
+			)}
+			<MessageContent reverse={me}>
+				{renderContent({
+					text: message.type ? getSystemMessageText(message, t) : message.msg,
+					system: !!message.type,
+					me,
+					attachments: message.attachments,
+					blocks: message.blocks,
+					mid: message._id,
+					rid: message.rid,
+					attachmentResolver,
+				})}
+			</MessageContent>
 
-export default withTranslation()(memo(Message));
+			{/* NOTE: the original passed `inverse={me}`, which MessageTime ignores (its prop is `inverted`); dropped to keep behavior identical. */}
+			{!compact && !message.type && <MessageTime normal={!me} ts={message.ts} />}
+		</MessageContainer>
+	);
+};
+
+export default memo(Message);

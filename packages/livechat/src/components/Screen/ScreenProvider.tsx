@@ -8,6 +8,7 @@ import { loadConfig } from '../../lib/main';
 import { parentCall } from '../../lib/parentCall';
 import { loadMessages } from '../../lib/room';
 import Triggers from '../../lib/triggers';
+import type { StoreState } from '../../store';
 import { StoreContext } from '../../store';
 
 export type ScreenTheme = {
@@ -34,7 +35,7 @@ export type ScreenContextValue = {
 		src: string;
 		play: boolean;
 	};
-	alerts: unknown;
+	alerts: StoreState['alerts'];
 	modal: unknown;
 	nameDefault: string;
 	emailDefault: string;
