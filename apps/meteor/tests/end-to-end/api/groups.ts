@@ -667,7 +667,7 @@ describe('[Groups]', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'invalid-params');
+						expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					});
 			} finally {
 				await Promise.all([deleteGroup({ roomName: secondGroup.name }), deleteGroup({ roomName: thirdGroup.name })]);
