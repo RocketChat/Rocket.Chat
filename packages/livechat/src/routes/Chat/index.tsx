@@ -1,12 +1,13 @@
 import type { EmojiData } from 'emoji-mart';
 import { Suspense } from 'preact/compat';
-import { useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { useCallback, useContext, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { route } from 'preact-router';
 import { useTranslation } from 'react-i18next';
 
 import Picker from './Picker';
 import styles from './styles.scss';
 import { useChatSubscriptions } from './useChatSubscriptions';
+import { useStableCallback } from './useStableCallback';
 import { Livechat } from '../../api';
 import { Button } from '../../components/Button';
 import { Composer, ComposerAction, ComposerActions } from '../../components/Composer';
@@ -38,22 +39,152 @@ import { createToken } from '../../lib/random';
 import { defaultRoomParams, getGreetingMessages, initRoom, loadMessages, loadMoreMessages } from '../../lib/room';
 import { type StoreState, useStore } from '../../store';
 
-const useStableCallback = <TFunction extends (...args: any[]) => any>(callback: TFunction): TFunction => {
-	const callbackRef = useRef<TFunction>(callback);
+const useChatEffects = () => {
+	const {
+		config: {
+			settings: { showConnecting },
+		},
+		agent,
+		user,
+		room,
+		dispatch,
+		alerts,
+		queueInfo,
+	} = useStore();
 
-	callbackRef.current = callback;
+	const { t } = useTranslation();
 
-	return useCallback(((...args) => callbackRef.current(...args)) as TFunction, []);
-};
+	const innerStateRef = useRef<{
+		room: StoreState['room'] | null;
+		connectingAgent: boolean;
+		queueSpot: number;
+		triggerQueueMessage: boolean;
+		estimatedWaitTime: number | null | undefined;
+	}>({
+		room: null,
+		connectingAgent: false,
+		queueSpot: 0,
+		triggerQueueMessage: true,
+		estimatedWaitTime: null,
+	});
 
-const usePrevious = <TValue,>(value: TValue): TValue | undefined => {
-	const ref = useRef<TValue>();
+	const messages = useStore().messages?.filter(canRenderMessage) ?? [];
 
-	useEffect(() => {
-		ref.current = value;
-	}, [value]);
+	const checkRoom = useStableCallback(() => {
+		const { room: stateRoom } = innerStateRef.current;
+		if (room && room._id !== stateRoom?._id) {
+			innerStateRef.current.room = room;
+			setTimeout(loadMessages, 500);
+		}
+	});
 
-	return ref.current;
+	const handleConnectingAgentAlert = useStableCallback(async (connecting: boolean, message?: string | false) => {
+		const { connectingAgentAlertId } = constants;
+		const newAlerts = alerts.filter((item) => item.id !== connectingAgentAlertId);
+		if (connecting) {
+			newAlerts.push({
+				id: connectingAgentAlertId,
+				children: message || t('please_wait_for_the_next_available_agent'),
+				warning: true,
+				hideCloseButton: true,
+				timeout: 0,
+			});
+		}
+
+		dispatch({ alerts: newAlerts });
+	});
+
+	const handleQueueMessage = useStableCallback(async (connecting: boolean, queueInfo?: StoreState['queueInfo']) => {
+		if (!queueInfo) return;
+
+		const { livechatQueueMessageId } = constants;
+		const { message: { text: msg, user: u } = {} } = queueInfo;
+		const { triggerQueueMessage } = innerStateRef.current;
+
+		if (!room || !connecting || !msg || !triggerQueueMessage) {
+			return;
+		}
+
+		innerStateRef.current.triggerQueueMessage = false;
+
+		const ts = new Date();
+		const message = { _id: livechatQueueMessageId, msg, u, ts: ts.toISOString() };
+		dispatch({
+			messages: upsert(
+				messages,
+				message,
+				({ _id }) => _id === message._id,
+				({ ts }) => ts,
+			),
+		});
+	});
+
+	const checkConnectingAgent = useStableCallback(async () => {
+		const { connectingAgent, queueSpot, estimatedWaitTime } = innerStateRef.current;
+
+		const newConnecting = !!(room && !agent && (showConnecting || queueInfo));
+		const newQueueSpot = queueInfo?.spot || 0;
+		const newEstimatedWaitTime = queueInfo?.estimatedWaitTimeSeconds;
+
+		if (newConnecting !== connectingAgent || newQueueSpot !== queueSpot || newEstimatedWaitTime !== estimatedWaitTime) {
+			innerStateRef.current.connectingAgent = newConnecting;
+			innerStateRef.current.queueSpot = newQueueSpot;
+			innerStateRef.current.estimatedWaitTime = newEstimatedWaitTime;
+			await handleQueueMessage(newConnecting, queueInfo);
+			await handleConnectingAgentAlert(newConnecting, await normalizeQueueAlert(queueInfo));
+		}
+	});
+
+	useLayoutEffect(() => {
+		void (async () => {
+			await checkConnectingAgent();
+			await loadMessages();
+			void processUnread();
+		})();
+
+		return () => {
+			void handleConnectingAgentAlert(false);
+		};
+	}, [checkConnectingAgent, handleConnectingAgentAlert]);
+
+	const firstRenderRef = useRef(true);
+	const messagesRef = useRef(messages);
+	const alertsRef = useRef(alerts);
+
+	useLayoutEffect(() => {
+		if (firstRenderRef.current) {
+			firstRenderRef.current = false;
+			return;
+		}
+
+		const prevRenderedMessages = messagesRef.current.filter(canRenderMessage);
+		messagesRef.current = messages;
+		const renderedMessages = messages.filter(canRenderMessage);
+		const lastRenderedMessage = renderedMessages.at(-1);
+
+		const prevAlerts = alertsRef.current;
+		alertsRef.current = alerts;
+
+		const shouldMarkUnread = shouldMarkAsUnread();
+
+		if (
+			(lastRenderedMessage && lastRenderedMessage.u?._id === user?._id) ||
+			(!shouldMarkUnread && renderedMessages?.length !== prevRenderedMessages?.length)
+		) {
+			const nextLastMessage = lastRenderedMessage;
+			const lastReadMessage = getLastReadMessage();
+
+			if (nextLastMessage && nextLastMessage._id !== lastReadMessage?._id) {
+				const newAlerts = prevAlerts.filter((item) => item.id !== constants.unreadMessagesAlertId);
+				dispatch({ alerts: newAlerts, unread: null, lastReadMessageId: nextLastMessage._id });
+			}
+		}
+
+		void (async () => {
+			await checkConnectingAgent();
+			checkRoom();
+		})();
+	});
 };
 
 const useChatTitle = () => {
@@ -80,6 +211,8 @@ export type ChatProps = {
 };
 
 const Chat = (_: ChatProps) => {
+	useChatEffects();
+
 	const { theme } = useContext(ScreenContext);
 	const {
 		config: {
@@ -123,20 +256,6 @@ const Chat = (_: ChatProps) => {
 		route('/switch-department');
 	}, []);
 
-	const innerStateRef = useRef<{
-		room: StoreState['room'] | null;
-		connectingAgent: boolean;
-		queueSpot: number;
-		triggerQueueMessage: boolean;
-		estimatedWaitTime: number | null | undefined;
-	}>({
-		room: null,
-		connectingAgent: false,
-		queueSpot: 0,
-		triggerQueueMessage: true,
-		estimatedWaitTime: null,
-	});
-
 	const inputRef = useRef<HTMLInputElement>(null);
 	const notifyEmojiSelectRef = useRef<(native: string) => void>();
 	const title = useChatTitle() || t('need_help');
@@ -144,14 +263,6 @@ const Chat = (_: ChatProps) => {
 	const typingUsernames = Array.isArray(typing) ? typing : [];
 	const connecting = !!(room && !agent && (showConnecting || queueInfo));
 	const conversationFinishedMessage = useStore().config.messages.conversationFinishedMessage || t('conversation_finished');
-
-	const checkRoom = useStableCallback(() => {
-		const { room: stateRoom } = innerStateRef.current;
-		if (room && room._id !== stateRoom?._id) {
-			innerStateRef.current.room = room;
-			setTimeout(loadMessages, 500);
-		}
-	});
 
 	const grantUser = useStableCallback(async () => {
 		if (user) {
@@ -333,63 +444,6 @@ const Chat = (_: ChatProps) => {
 
 	const canRemoveUserData = !!allowRemoveUserData;
 
-	const handleConnectingAgentAlert = useStableCallback(async (connecting: boolean, message?: string | false) => {
-		const { connectingAgentAlertId } = constants;
-		const newAlerts = alerts.filter((item) => item.id !== connectingAgentAlertId);
-		if (connecting) {
-			newAlerts.push({
-				id: connectingAgentAlertId,
-				children: message || t('please_wait_for_the_next_available_agent'),
-				warning: true,
-				hideCloseButton: true,
-				timeout: 0,
-			});
-		}
-
-		dispatch({ alerts: newAlerts });
-	});
-
-	const handleQueueMessage = useStableCallback(async (connecting: boolean, queueInfo?: StoreState['queueInfo']) => {
-		if (!queueInfo) return;
-
-		const { livechatQueueMessageId } = constants;
-		const { message: { text: msg, user: u } = {} } = queueInfo;
-		const { triggerQueueMessage } = innerStateRef.current;
-
-		if (!room || !connecting || !msg || !triggerQueueMessage) {
-			return;
-		}
-
-		innerStateRef.current.triggerQueueMessage = false;
-
-		const ts = new Date();
-		const message = { _id: livechatQueueMessageId, msg, u, ts: ts.toISOString() };
-		dispatch({
-			messages: upsert(
-				messages,
-				message,
-				({ _id }) => _id === message._id,
-				({ ts }) => ts,
-			),
-		});
-	});
-
-	const checkConnectingAgent = useStableCallback(async () => {
-		const { connectingAgent, queueSpot, estimatedWaitTime } = innerStateRef.current;
-
-		const newConnecting = !!connecting;
-		const newQueueSpot = queueInfo?.spot || 0;
-		const newEstimatedWaitTime = queueInfo?.estimatedWaitTimeSeconds;
-
-		if (newConnecting !== connectingAgent || newQueueSpot !== queueSpot || newEstimatedWaitTime !== estimatedWaitTime) {
-			innerStateRef.current.connectingAgent = newConnecting;
-			innerStateRef.current.queueSpot = newQueueSpot;
-			innerStateRef.current.estimatedWaitTime = newEstimatedWaitTime;
-			await handleQueueMessage(newConnecting, queueInfo);
-			await handleConnectingAgentAlert(newConnecting, await normalizeQueueAlert(queueInfo));
-		}
-	});
-
 	const avatarResolver = getAvatarUrl;
 
 	const uid = user?._id;
@@ -468,62 +522,6 @@ const Chat = (_: ChatProps) => {
 
 	const handleEmojiClick = useStableCallback(() => {
 		setEmojiPickerActive(false);
-	});
-
-	const componentDidMount = useStableCallback(async () => {
-		await checkConnectingAgent();
-		await loadMessages();
-		void processUnread();
-	});
-
-	const componentWillUnmount = useStableCallback(() => {
-		void handleConnectingAgentAlert(false);
-	});
-
-	useEffect(() => {
-		void componentDidMount();
-
-		return () => {
-			componentWillUnmount();
-		};
-	}, [componentDidMount, componentWillUnmount]);
-
-	const prevMessages = usePrevious(messages) ?? [];
-	const prevAlerts = usePrevious(alerts) ?? [];
-
-	const componentDidUpdate = useStableCallback(async () => {
-		const renderedMessages = messages.filter((message) => canRenderMessage(message));
-		const lastRenderedMessage = renderedMessages[renderedMessages.length - 1];
-		const prevRenderedMessages = prevMessages.filter((message) => canRenderMessage(message));
-
-		const shouldMarkUnread = shouldMarkAsUnread();
-
-		if (
-			(lastRenderedMessage && lastRenderedMessage.u?._id === user?._id) ||
-			(!shouldMarkUnread && renderedMessages?.length !== prevRenderedMessages?.length)
-		) {
-			const nextLastMessage = lastRenderedMessage;
-			const lastReadMessage = getLastReadMessage();
-
-			if (nextLastMessage && nextLastMessage._id !== lastReadMessage?._id) {
-				const newAlerts = prevAlerts.filter((item) => item.id !== constants.unreadMessagesAlertId);
-				dispatch({ alerts: newAlerts, unread: null, lastReadMessageId: nextLastMessage._id });
-			}
-		}
-
-		await checkConnectingAgent();
-		checkRoom();
-	});
-
-	const firstRenderRef = useRef(true);
-
-	useLayoutEffect(() => {
-		if (firstRenderRef.current) {
-			firstRenderRef.current = false;
-			return;
-		}
-
-		void componentDidUpdate();
 	});
 
 	return (
