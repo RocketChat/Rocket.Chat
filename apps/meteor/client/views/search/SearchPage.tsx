@@ -14,7 +14,7 @@ import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
 const SearchPage = (): ReactElement => {
 	const { t } = useTranslation();
-	const queryParam = useSearchParameter('q') ?? '';
+	const queryParam = (useSearchParameter('q') ?? '').trim();
 	const aiSearchFeatureEnabled = useFeaturePreview('aiSearch');
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
 	const { data: hasIntelligentSearchLicense } = useHasLicenseModule(AI_LICENSE_MODULE);
