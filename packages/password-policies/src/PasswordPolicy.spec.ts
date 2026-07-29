@@ -116,6 +116,10 @@ describe('Password tests with options', () => {
 			isValid: false,
 			limit: 3,
 		});
+		expect(passwordPolicy.getPasswordPolicy().policy).toContainEqual([
+			'get-password-policy-forbidRepeatingCharactersCount',
+			{ forbidRepeatingCharactersCount: 3 },
+		]);
 	});
 
 	it('should contain one lowercase', () => {
