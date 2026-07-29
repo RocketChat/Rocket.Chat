@@ -1,19 +1,56 @@
-import { isGETLivechatAgentsAgentIdDepartmentsParams } from '@rocket.chat/rest-typings';
+import type { ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
+import {
+	ajv,
+	isGETLivechatAgentsAgentIdDepartmentsParams,
+	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
+	validateUnauthorizedErrorResponse,
+} from '@rocket.chat/rest-typings';
 
 import { API } from '../..';
 import { findAgentDepartments } from './lib/agents';
 
-API.v1.addRoute(
-	'livechat/agents/:agentId/departments',
-	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isGETLivechatAgentsAgentIdDepartmentsParams },
-	{
-		async get() {
-			const departments = await findAgentDepartments({
-				enabledDepartmentsOnly: this.queryParams.enabledDepartmentsOnly && this.queryParams.enabledDepartmentsOnly === 'true',
-				agentId: this.urlParams.agentId,
-			});
-
-			return API.v1.success(departments);
+const agentDepartmentsResponseSchema = ajv.compile<{ departments: (ILivechatDepartmentAgents & { departmentName: string })[] }>({
+	type: 'object',
+	properties: {
+		departments: {
+			type: 'array',
+			items: {
+				allOf: [
+					{ $ref: '#/components/schemas/ILivechatDepartmentAgents' },
+					{
+						type: 'object',
+						properties: { departmentName: { type: 'string' } },
+						required: ['departmentName'],
+					},
+				],
+			},
 		},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['departments', 'success'],
+	additionalProperties: false,
+});
+
+API.v1.get(
+	'livechat/agents/:agentId/departments',
+	{
+		authRequired: true,
+		permissionsRequired: ['view-l-room'],
+		query: isGETLivechatAgentsAgentIdDepartmentsParams,
+		response: {
+			200: agentDepartmentsResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		const departments = await findAgentDepartments({
+			enabledDepartmentsOnly: this.queryParams.enabledDepartmentsOnly && this.queryParams.enabledDepartmentsOnly === 'true',
+			agentId: this.urlParams.agentId,
+		});
+
+		return API.v1.success(departments);
 	},
 );

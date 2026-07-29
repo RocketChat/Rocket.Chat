@@ -1,4 +1,4 @@
-import { GETLivechatConfigRouting, isGETLivechatConfigParams } from '@rocket.chat/rest-typings';
+import { ajv, GETLivechatConfigRouting, isGETLivechatConfigParams, validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
 import mem from 'mem';
 
 import { API } from '../..';
@@ -13,34 +13,54 @@ const cachedSettings = mem(settings, {
 	cacheKey: JSON.stringify,
 });
 
-API.v1.addRoute(
+// TODO: `config` is the full Livechat widget config assembled at runtime (enabled, a nested
+// `settings` object, `theme`, `triggers`, `departments`, `resources`, plus optional `guest`/`room`/`agent`).
+// The manual `Endpoints` entry types it as `{ [k]: string | boolean } & { room?; agent? }`, which does
+// not match the actual nested shape, so neither that type nor a simple `additionalProperties` schema is
+// faithful. Left as a relaxed `object` until the return type is corrected in rest-typings and a full
+// schema (or a registered core-typings type) is written for it.
+const livechatConfigResponseSchema = ajv.compile<{ config: Record<string, unknown> }>({
+	type: 'object',
+	properties: {
+		config: { type: 'object' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['config', 'success'],
+	additionalProperties: false,
+});
+
+API.v1.get(
 	'livechat/config',
-	{ validateParams: isGETLivechatConfigParams },
 	{
-		async get() {
-			const enabled = serverSettings.get<boolean>('Livechat_enabled');
-
-			if (!enabled) {
-				return API.v1.success({ config: { enabled: false } });
-			}
-
-			const { token, department, businessUnit } = this.queryParams;
-			const [config, status, guest] = await Promise.all([
-				cachedSettings({ businessUnit }),
-				online(department),
-				token ? findGuestWithoutActivity(token) : null,
-			]);
-
-			const room = guest ? await findOpenRoom(guest.token, undefined, this.userId) : undefined;
-			const agentPromise = room?.servedBy ? findAgent(room.servedBy._id) : null;
-			const extraInfoPromise = getExtraConfigInfo({ room });
-
-			const [agent, extraInfo] = await Promise.all([agentPromise, extraInfoPromise]);
-
-			return API.v1.success({
-				config: { ...config, online: status, ...extraInfo, ...(guest && { guest }), ...(room && { room }), ...(agent && { agent }) },
-			});
+		query: isGETLivechatConfigParams,
+		response: {
+			200: livechatConfigResponseSchema,
+			400: validateBadRequestErrorResponse,
 		},
+	},
+	async function action() {
+		const enabled = serverSettings.get<boolean>('Livechat_enabled');
+
+		if (!enabled) {
+			return API.v1.success({ config: { enabled: false } });
+		}
+
+		const { token, department, businessUnit } = this.queryParams;
+		const [config, status, guest] = await Promise.all([
+			cachedSettings({ businessUnit }),
+			online(department),
+			token ? findGuestWithoutActivity(token) : null,
+		]);
+
+		const room = guest ? await findOpenRoom(guest.token, undefined, this.userId) : undefined;
+		const agentPromise = room?.servedBy ? findAgent(room.servedBy._id) : null;
+		const extraInfoPromise = getExtraConfigInfo({ room });
+
+		const [agent, extraInfo] = await Promise.all([agentPromise, extraInfoPromise]);
+
+		return API.v1.success({
+			config: { ...config, online: status, ...extraInfo, ...(guest && { guest }), ...(room && { room }), ...(agent && { agent }) },
+		});
 	},
 );
 

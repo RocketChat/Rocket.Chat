@@ -37,7 +37,7 @@ API.v1.addRoute(
 );
 ```
 
-Source: `apps/meteor/app/api/server/v1/channels.ts`
+Source: `apps/meteor/server/api/v1/channels.ts`
 
 ## New Pattern (AFTER)
 
@@ -123,7 +123,7 @@ API.v1.get(
 );
 ```
 
-Source: `apps/meteor/app/api/server/v1/moderation.ts`
+Source: `apps/meteor/server/api/v1/moderation.ts`
 
 ## Step-by-Step Migration
 
@@ -254,7 +254,7 @@ For response fields that use complex types already defined in `@rocket.chat/core
    >();
    ```
 
-2. **`apps/meteor/app/api/server/ajv.ts`** registers all generated schemas into the shared AJV instance:
+2. **`apps/meteor/server/api/validation/ajv.ts`** registers all generated schemas into the shared AJV instance:
 
    ```typescript
    import { schemas } from '@rocket.chat/core-typings';
@@ -290,7 +290,7 @@ For response fields that use complex types already defined in `@rocket.chat/core
    });
    ```
 
-Source: `apps/meteor/app/api/server/v1/custom-sounds.ts`
+Source: `apps/meteor/server/api/v1/custom-sounds.ts`
 
 ### Available `$ref` schemas
 
@@ -313,6 +313,9 @@ These types are already registered and available via `$ref`:
 - `#/components/schemas/IModerationAudit`
 - `#/components/schemas/IModerationReport`
 - `#/components/schemas/IBanner`
+- `#/components/schemas/ILivechatBusinessHour`
+- `#/components/schemas/ILivechatDepartmentAgents`
+- `#/components/schemas/ISettingBase` (and the other `ISetting*` variants — `ISetting` is a union, so typia emits one schema per variant). ⚠️ Do not `$ref` these to validate settings responses: `ISettingBase.value` is a `SettingValue` union whose typia `oneOf` (Date `date-time` vs `string`) overlaps and fails AJV validation — the same class as the [`Date | string` pitfall](#known-pitfall-date--string-unions). Leave `value`/whole setting items relaxed until that union is reworked.
 - `#/components/schemas/CallHistoryItem`
 - `#/components/schemas/ICustomUserStatus`
 - `#/components/schemas/SlashCommand`
@@ -447,7 +450,7 @@ If you need a `$ref` for a type that is not yet registered:
 1. Edit `packages/core-typings/src/Ajv.ts`
 2. Import the type and add it to the `typia.json.schemas<[...]>()` type parameter list
 3. Rebuild `core-typings`: `yarn workspace @rocket.chat/core-typings run build`
-4. The new schema will be automatically registered at startup via `apps/meteor/app/api/server/ajv.ts`
+4. The new schema will be automatically registered at startup via `apps/meteor/server/api/validation/ajv.ts`
 
 ## Chaining Endpoints and Type Augmentation
 
@@ -514,7 +517,7 @@ declare module '@rocket.chat/rest-typings' {
 }
 ```
 
-Source: `apps/meteor/app/api/server/v1/invites.ts`
+Source: `apps/meteor/server/api/v1/invites.ts`
 
 ### Rules
 
@@ -532,6 +535,85 @@ Once the `Endpoints` interface is augmented, the entire stack benefits:
 - **REST client**: `api.get('/v1/listInvites')` is type-checked
 - **Tests**: response shape is inferred from the endpoint definition
 - **OpenAPI**: routes appear in the generated documentation
+
+## Migrating an Endpoint Already Declared in `Endpoints`
+
+The chaining + augmentation pattern above is for **new** endpoints that have no type yet (e.g. `invites.ts`, `custom-sounds.ts`). Many legacy `addRoute` endpoints, however, are **already** declared manually in `packages/rest-typings/src/v1/*.ts` (e.g. the `OmnichannelEndpoints` type). For those, **do not** also augment via `ExtractRoutesFromAPI`.
+
+Two declarations of the same route key in the `Endpoints` interface produce:
+
+```
+TS2717: Subsequent property declarations must have the same type.
+```
+
+So when the route already has a manual entry, migrate it the way `apps/meteor/server/api/v1/moderation.ts` does:
+
+1. Convert `addRoute` → `API.v1.get/post/put/delete` (a plain statement, **not** chained into a `const`).
+2. Move `validateParams` → `query` / `body`.
+3. Add the `response` schemas.
+4. **Leave the manual `rest-typings` entry untouched** — no `ExtractRoutesFromAPI`, no `declare module`.
+
+### How to decide
+
+```
+Is the route key already present in packages/rest-typings/src/v1/*.ts?
+  ├─ yes → keep the manual entry, DO NOT augment (moderation pattern)
+  └─ no  → chain + augment with ExtractRoutesFromAPI (invites pattern)
+```
+
+Quick check: `git grep "'/v1/<route>'" -- packages/rest-typings`.
+
+## Common Type Errors When Migrating
+
+### `success` is missing / `SuccessResult` mismatch
+
+`SuccessResult<T>` merges the `success: true` flag into the body **only when `T extends Record<string, unknown>`**:
+
+```typescript
+body: T extends Record<string, unknown> ? { success: true } & T : T;
+```
+
+Object literals and type aliases (e.g. `PaginatedResult<T>`) satisfy that constraint, but a named **`interface` does not** (interfaces have no implicit index signature). So returning a lib function whose return type is an `interface` fails:
+
+```
+Type 'IResponse' is not assignable to type '{ success: true } & { ... }'.
+  Property 'success' is missing in type 'IResponse'.
+```
+
+**Fix:** spread the result into an object literal so it satisfies `Record<string, unknown>`:
+
+```typescript
+// fails when findBusinessHours(): Promise<IResponse> (an interface)
+return API.v1.success(await findBusinessHours(...));
+
+// works
+return API.v1.success({ ...(await findBusinessHours(...)) });
+```
+
+Passing an inline object literal or a `PaginatedResult<T>`-typed value works directly.
+
+### `this.user.username` / `this.requestIp` are `string | undefined`
+
+The new `TypedAction` `this` types these request-context fields as optional (they were effectively `string` under `addRoute`). Use `?? ''` when a callee expects `string` (precedent: `assets.ts`, `misc.ts` feeding `updateAuditedByUser`):
+
+```typescript
+username: this.user.username ?? '',
+ip: this.requestIp ?? '',
+```
+
+### `API.v1.failure(...)` requires `400` in the `response` block
+
+If the handler can call `API.v1.failure(...)`, the action's return type is not assignable to `TypedAction` unless `400: validateBadRequestErrorResponse` is declared, because `failure()` resolves to a `400` response.
+
+### Method-scoped permissions (`hasAny` / OR semantics)
+
+`permissionsRequired` as an array is AND (all required). To keep OR semantics or per-method permissions, the object form is supported in the new API too:
+
+```typescript
+permissionsRequired: {
+  PUT: { permissions: ['view-l-room', 'manage-livechat-sla'], operation: 'hasAny' },
+},
+```
 
 ## Endpoints with Multiple HTTP Methods
 
@@ -598,17 +680,20 @@ When migrating an endpoint, search for its tests and update:
 
 ## Reference Files
 
-| Pattern                          | File                                             |
-| -------------------------------- | ------------------------------------------------ |
-| Chaining + augmentation          | `apps/meteor/app/api/server/v1/invites.ts`       |
-| Chaining + augmentation + `$ref` | `apps/meteor/app/api/server/v1/custom-sounds.ts` |
-| GET with `$ref` to typia schemas | `apps/meteor/app/api/server/v1/custom-sounds.ts` |
-| GET with pagination              | `apps/meteor/app/api/server/v1/moderation.ts`    |
-| POST endpoint                    | `apps/meteor/app/api/server/v1/import.ts`        |
-| Multiple endpoints (misc)        | `apps/meteor/app/api/server/v1/misc.ts`          |
-| GET with permissions             | `apps/meteor/app/api/server/v1/permissions.ts`   |
-| Typia schema generation          | `packages/core-typings/src/Ajv.ts`               |
-| AJV schema registration          | `apps/meteor/app/api/server/ajv.ts`              |
-| Error response validators        | `packages/rest-typings/src/v1/Ajv.ts`            |
-| Request validators (examples)    | `packages/rest-typings/src/v1/moderation/`       |
-| Router implementation            | `packages/http-router/src/Router.ts`             |
+> Paths below reflect the backend reorganization (#41126): REST endpoints now live under `apps/meteor/server/api/` (and `apps/meteor/ee/server/api/`), not the old `apps/meteor/app/api/server/`.
+
+| Pattern                                         | File                                         |
+| ----------------------------------------------- | -------------------------------------------- |
+| Chaining + augmentation (new endpoint)          | `apps/meteor/server/api/v1/invites.ts`       |
+| Chaining + augmentation + `$ref`                | `apps/meteor/server/api/v1/custom-sounds.ts` |
+| GET with `$ref` to typia schemas                | `apps/meteor/server/api/v1/custom-sounds.ts` |
+| GET with pagination                             | `apps/meteor/server/api/v1/moderation.ts`    |
+| Pre-existing typed endpoint (keep manual entry) | `apps/meteor/server/api/v1/moderation.ts`    |
+| POST endpoint                                   | `apps/meteor/server/api/v1/import.ts`        |
+| Multiple endpoints (misc)                       | `apps/meteor/server/api/v1/misc.ts`          |
+| GET with permissions                            | `apps/meteor/server/api/v1/permissions.ts`   |
+| Typia schema generation                         | `packages/core-typings/src/Ajv.ts`           |
+| AJV schema registration                         | `apps/meteor/server/api/validation/ajv.ts`   |
+| Error response validators                       | `packages/rest-typings/src/v1/Ajv.ts`        |
+| Request validators (examples)                   | `packages/rest-typings/src/v1/moderation/`   |
+| Router implementation                           | `packages/http-router/src/Router.ts`         |

@@ -11,6 +11,8 @@ import type { IEmojiCustom } from './IEmojiCustom';
 import type { IIntegration } from './IIntegration';
 import type { IIntegrationHistory } from './IIntegrationHistory';
 import type { IInvite } from './IInvite';
+import type { ILivechatBusinessHour } from './ILivechatBusinessHour';
+import type { ILivechatDepartmentAgents } from './ILivechatDepartmentAgents';
 import type { IMeApiUser } from './IMeApiUser';
 import type { IMessage } from './IMessage';
 import type { IModerationAudit, IModerationReport } from './IModerationReport';
@@ -19,6 +21,7 @@ import type { IPermission } from './IPermission';
 import type { IReadReceiptWithUser } from './IReadReceipt';
 import type { IRole } from './IRole';
 import type { IRoom, IDirectoryChannelResult, IRoomAdmin } from './IRoom';
+import type { ISetting } from './ISetting';
 import type { ISubscription } from './ISubscription';
 import type { IUser, IDirectoryUserResult } from './IUser';
 import type { VideoConference, VideoConferenceInstructions } from './IVideoConference';
@@ -60,6 +63,9 @@ export const schemas = typia.json.schemas<
 			| IIntegrationHistory
 			| IMeApiUser
 			| IReadReceiptWithUser
+			| ILivechatBusinessHour
+			| ILivechatDepartmentAgents
+			| ISetting
 		),
 		CallHistoryItem,
 		ICustomUserStatus,

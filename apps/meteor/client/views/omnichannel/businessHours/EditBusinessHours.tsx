@@ -27,7 +27,7 @@ const getInitialData = (businessHourData: Serialized<ILivechatBusinessHour> | un
 		})),
 	departmentsToApplyBusinessHour: '',
 	active: businessHourData?.active ?? true,
-	departments: businessHourData?.departments?.map(({ _id, name }) => ({ value: _id, label: name })) || [],
+	departments: businessHourData?.departments?.map(({ _id, name }) => ({ value: _id, label: name ?? '' })) || [],
 });
 
 export type EditBusinessHoursProps = {

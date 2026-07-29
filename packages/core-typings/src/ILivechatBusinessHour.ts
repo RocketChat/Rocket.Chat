@@ -22,7 +22,7 @@ export interface IBusinessHourWorkHour {
 	start: IBusinessHourTime;
 	finish: IBusinessHourTime;
 	open: boolean;
-	code: unknown;
+	code?: unknown;
 }
 
 export interface IBusinessHourTimezone {
@@ -37,5 +37,6 @@ export interface ILivechatBusinessHour extends IRocketChatRecord {
 	timezone: IBusinessHourTimezone;
 	ts: Date;
 	workHours: IBusinessHourWorkHour[];
-	departments?: ILivechatDepartment[];
+	// Populated as a projection: default business hours attach `{ _id }`, custom ones `{ _id, name }`.
+	departments?: (Pick<ILivechatDepartment, '_id'> & { name?: string })[];
 }
