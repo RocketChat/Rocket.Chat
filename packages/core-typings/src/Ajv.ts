@@ -20,6 +20,8 @@ import type { IReadReceiptWithUser } from './IReadReceipt';
 import type { IRole } from './IRole';
 import type { IRoom, IDirectoryChannelResult, IRoomAdmin } from './IRoom';
 import type { ISubscription } from './ISubscription';
+import type { ITeam } from './ITeam';
+import type { IUploadWithUser } from './IUpload';
 import type { IUser, IDirectoryUserResult } from './IUser';
 import type { VideoConference, VideoConferenceInstructions } from './IVideoConference';
 import type { SlashCommand } from './SlashCommands';
@@ -60,6 +62,8 @@ export const schemas = typia.json.schemas<
 			| IIntegrationHistory
 			| IMeApiUser
 			| IReadReceiptWithUser
+			| ITeam
+			| IUploadWithUser
 		),
 		CallHistoryItem,
 		ICustomUserStatus,
