@@ -8,16 +8,25 @@
 	"remoteUser": "vscode",
 	"features": {
 		// Installs the Claude Code CLI (and its VS Code extension) into the container.
-		"ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
+		"ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {},
+		// Installs the GitHub CLI (gh).
+		"ghcr.io/devcontainers/features/github-cli:1": {},
+		// Optional features for DX - uncomment the ones you want
+		// "ghcr.io/devcontainer-community/devcontainer-features/neovim.io:1": {},
+		"ghcr.io/devcontainers-extra/features/npm-packages:1": {
+			"packages": [
+				"gitnexus"
+			]
+		}
 	},
 	// Persist Claude Code auth/settings/history across container rebuilds.
 	// Scoped per-devcontainer so different projects don't share credentials.
 	"mounts": [
-		"source=claude-code-config-${devcontainerId},target=/home/vscode/.claude,type=volume",
 		// Your host Neovim config, read-only so the container can't modify it.
-		"source=${localEnv:HOME}/.config/nvim,target=/home/vscode/.config/nvim,type=bind,readonly",
+		// "source=${localEnv:HOME}/.config/nvim,target=/home/vscode/.config/nvim,type=bind,readonly",
 		// Plugins/treesitter parsers stay container-side (arch-specific) and persist.
-		"source=nvim-data-${devcontainerId},target=/home/vscode/.local/share/nvim,type=volume"
+		// "source=nvim-data-${devcontainerId},target=/home/vscode/.local/share/nvim,type=volume",
+		"source=claude-code-config-${devcontainerId},target=/home/vscode/.claude,type=volume"
 	],
 	// Named volumes mount as root, and Docker also creates any *missing parent*
 	// dirs of a mount target as root before the container runs — .local and
@@ -38,7 +47,7 @@
 	// Not recursive: yarn and meteor create everything below as vscode, so only
 	// the mount points themselves need fixing, and a recursive walk of a
 	// populated node_modules would add minutes to every container create.
-	"postCreateCommand": "sudo chown -R vscode:vscode /home/vscode/.claude /home/vscode/.local && sudo chown vscode:vscode /workspaces/rocket.chat/node_modules /workspaces/rocket.chat/apps/meteor/.meteor/local",
+	"postCreateCommand": "sudo chown -R vscode:vscode /home/vscode/.claude && sudo chown vscode:vscode /workspaces/rocket.chat/node_modules /workspaces/rocket.chat/apps/meteor/.meteor/local",
 	// Re-apply the egress firewall on every start (iptables state is not persisted).
 	// This is what makes `claude --dangerously-skip-permissions` safe to run here:
 	// egress is default-deny except for the allowlist in init-firewall.sh.

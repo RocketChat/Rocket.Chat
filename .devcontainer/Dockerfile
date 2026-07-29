@@ -31,20 +31,17 @@ ENV PATH="$VOLTA_HOME/bin:$PATH"
 RUN mkdir -p $VOLTA_HOME && \
     curl https://get.volta.sh | bash -s -- --skip-setup && \
     volta install node@$(jq -r '.volta.node' /tmp/package.json) && \
-    volta install yarn@$(jq -r '.volta.yarn' /tmp/package.json)
-
-RUN echo 'export VOLTA_HOME="/usr/local/volta"' >> /etc/bash.bashrc && \
-    echo 'export PATH="$VOLTA_HOME/bin:$PATH"' >> /etc/bash.bashrc
+    volta install yarn@$(jq -r '.volta.yarn' /tmp/package.json) && \
+    volta install gitnexus@latest && \
+    echo 'export VOLTA_HOME="/usr/local/volta"\nexport PATH="$VOLTA_HOME/bin:$PATH"' >> /etc/profile.d/volta.sh
 
 # --- Deno (pinned) ------------------------------------------------------------
 ENV DENO_INSTALL="/usr/local/deno"
 ENV PATH="$DENO_INSTALL/bin:$PATH"
 RUN mkdir -p $DENO_INSTALL && \
     curl -fsSL https://deno.land/install.sh | \
-    sh -s "v$(awk '$1=="deno"{ print $2 }' /tmp/.tool-versions)"
-
-RUN echo 'export DENO_INSTALL="/usr/local/deno"' >> /etc/bash.bashrc && \
-    echo 'export PATH="$DENO_INSTALL/bin:$PATH"' >> /etc/bash.bashrc
+    sh -s "v$(awk '$1=="deno"{ print $2 }' /tmp/.tool-versions)" && \
+    echo 'export DENO_INSTALL="/usr/local/deno"\nexport PATH="$DENO_INSTALL/bin:$PATH"' >> /etc/profile.d/deno.sh
 
 # --- Meteor -------------------------------------------------------------------
 # The launcher (/usr/local/bin/meteor, already on PATH) resolves its warehouse as
@@ -65,16 +62,8 @@ ENV METEOR_WAREHOUSE_DIR="/usr/local/meteor"
 # a separate RUN would copy the entire ~1GB warehouse into a second layer.
 RUN curl "https://install.meteor.com/?release=$(sed 's/^METEOR@//' /tmp/meteor-release)" | sh && \
     mv ~/.meteor "$METEOR_WAREHOUSE_DIR" && \
-    chown -R vscode:vscode "$METEOR_WAREHOUSE_DIR"
-
-RUN echo 'export METEOR_WAREHOUSE_DIR="/usr/local/meteor"' >> /etc/bash.bashrc
-
-# --- Neovim -------------------------------------------------------------------
-# Installed at build time (no egress firewall yet) from the official release.
-ARG NVIM_VERSION=v0.12.4
-RUN curl -fsSL "https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/nvim-linux-x86_64.tar.gz" \
-      | tar -xz -C /opt && \
-    ln -s /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
+    chown -R vscode:vscode "$METEOR_WAREHOUSE_DIR" && \
+    echo 'export METEOR_WAREHOUSE_DIR="/usr/local/meteor"' >> /etc/profile.d/meteor.sh
 
 # --- Egress firewall ----------------------------------------------------------
 # Applied at container start via the devcontainer postStartCommand (as sudo).
