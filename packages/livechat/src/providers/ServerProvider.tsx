@@ -9,7 +9,7 @@ import type {
 } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 import type { Method, PathFor, OperationParams, OperationResult, UrlParams, PathPattern } from '@rocket.chat/rest-typings';
-import type { UploadResult } from '@rocket.chat/ui-contexts';
+import type { ServerContextValue, UploadResult } from '@rocket.chat/ui-contexts';
 import { ServerContext } from '@rocket.chat/ui-contexts';
 import { compile } from 'path-to-regexp';
 import type { ComponentChildren } from 'preact';
@@ -155,7 +155,7 @@ const ServerProvider = ({ children, serverURL: host }: ServerProviderProps) => {
 			getStream,
 			getSingleStream,
 			reconnect: () => sdk.connection.reconnect(),
-		};
+		} as unknown as ServerContextValue; // FIXME
 
 		return contextValue;
 	}, [host, sdk, status, token]);
