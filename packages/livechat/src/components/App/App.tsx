@@ -56,6 +56,7 @@ type AppProps = {
 
 export const App = ({ config, gdpr, user, dispatch, minimized, undocked, iframe }: AppProps) => {
 	const { t } = useTranslation();
+
 	const [initialized, setInitialized] = useState(false);
 
 	const handleRoute = async ({ url }: { url: string }) => {
