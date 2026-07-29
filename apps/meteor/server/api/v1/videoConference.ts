@@ -1,12 +1,20 @@
 import { VideoConf } from '@rocket.chat/core-services';
-import type { VideoConference, VideoConferenceCapabilities, VideoConferenceInstructions } from '@rocket.chat/core-typings';
+import type {
+	IVideoConference,
+	VideoConference,
+	VideoConferenceCapabilities,
+	VideoConferenceInstructions,
+} from '@rocket.chat/core-typings';
+import { VideoConference as VideoConferenceModel } from '@rocket.chat/models';
 import {
 	ajv,
 	isVideoConfStartProps,
 	isVideoConfJoinProps,
+	isVideoConfJoinScheduledProps,
 	isVideoConfCancelProps,
 	isVideoConfInfoProps,
 	isVideoConfListProps,
+	isVideoConfAddParticipantsProps,
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
 	validateBadRequestErrorResponse,
@@ -52,10 +60,30 @@ const joinResponseSchema = ajv.compile<{ url: string; providerName: string }>({
 	additionalProperties: false,
 });
 
+const joinScheduledResponseSchema = ajv.compile<{ callId: string }>({
+	type: 'object',
+	properties: {
+		callId: { type: 'string' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['callId', 'success'],
+	additionalProperties: false,
+});
+
 const cancelResponseSchema = ajv.compile<void>({
 	type: 'object',
 	properties: { success: { type: 'boolean', enum: [true] } },
 	required: ['success'],
+	additionalProperties: false,
+});
+
+const addParticipantsResponseSchema = ajv.compile<{ rid: string }>({
+	type: 'object',
+	properties: {
+		rid: { type: 'string' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['rid', 'success'],
 	additionalProperties: false,
 });
 
@@ -189,7 +217,12 @@ API.v1.post(
 			return API.v1.failure('invalid-params');
 		}
 
-		if (!(await canAccessRoomIdAsync(call.rid, userId))) {
+		// Users invited to a conference only belong to its discussion (`discussionRid`), not the parent
+		// room the conference originated in — accept access to either so they can join from the banner.
+		const canAccess =
+			(await canAccessRoomIdAsync(call.rid, userId)) || (!!call.discussionRid && (await canAccessRoomIdAsync(call.discussionRid, userId)));
+
+		if (!canAccess) {
 			return API.v1.failure('invalid-params');
 		}
 
@@ -247,6 +280,79 @@ API.v1.post(
 	},
 );
 
+API.v1.post(
+	'video-conference.add-participants',
+	{
+		authRequired: true,
+		body: isVideoConfAddParticipantsProps,
+		rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 60000 },
+		response: {
+			200: addParticipantsResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { callId, users, keepHistory } = this.bodyParams;
+		const { userId } = this;
+
+		if (!userId) {
+			return API.v1.unauthorized();
+		}
+
+		const conf = await VideoConferenceModel.findOneById<Pick<IVideoConference, '_id' | 'rid' | 'users' | 'discussionRid'>>(callId, {
+			projection: { rid: 1, users: 1, discussionRid: 1 },
+		});
+		if (!conf) {
+			return API.v1.failure('invalid-params');
+		}
+
+		// If the conference was created on the external conference room and the user has joined the conference,
+		// then they don't need to have access to the room to add new users to its discussion
+		const externalConferenceRid = conf.discussionRid ? await VideoConf.getRidForExternalConference() : null;
+		const isExternalConference = Boolean(externalConferenceRid && externalConferenceRid === conf.rid);
+		const canSkipRoomAccessCheck = Boolean(isExternalConference && conf.users.find((user) => user._id === userId));
+
+		if (!canSkipRoomAccessCheck && !(await canAccessRoomIdAsync(conf.rid, userId))) {
+			return API.v1.failure('invalid-params');
+		}
+
+		// `keepHistory` adds the users to the conference's existing room (they keep its history);
+		// otherwise a fresh discussion is created so they don't get the room's history.
+		const rid = keepHistory
+			? await VideoConf.addUsersToConferenceRoom(userId, conf, users)
+			: await VideoConf.createConferenceDiscussionWithParticipants(userId, conf, users);
+		return API.v1.success({ rid });
+	},
+);
+
+API.v1.post(
+	'video-conference.join-scheduled',
+	{
+		authRequired: true,
+		body: isVideoConfJoinScheduledProps,
+		rateLimiterOptions: { numRequestsAllowed: 15, intervalTimeInMS: 3000 },
+		response: {
+			200: joinScheduledResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { sipAlias } = this.bodyParams;
+		const { userId } = this;
+
+		let callId: string;
+		try {
+			callId = await VideoConf.initializeOrJoinScheduledConference(sipAlias, userId);
+		} catch {
+			return API.v1.failure('invalid-params');
+		}
+
+		return API.v1.success({ callId });
+	},
+);
+
 API.v1.get(
 	'video-conference.info',
 	{
@@ -268,7 +374,13 @@ API.v1.get(
 			return API.v1.failure('invalid-params');
 		}
 
-		if (!userId || !(await canAccessRoomIdAsync(call.rid, userId))) {
+		// Invited users only belong to the conference's discussion (`discussionRid`), not the parent
+		// room it originated in — accept access to either so they can open the conference page.
+		const canAccess =
+			!!userId &&
+			((await canAccessRoomIdAsync(call.rid, userId)) ||
+				(!!call.discussionRid && (await canAccessRoomIdAsync(call.discussionRid, userId))));
+		if (!canAccess) {
 			return API.v1.failure('invalid-params');
 		}
 

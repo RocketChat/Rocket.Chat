@@ -1,4 +1,4 @@
-import type { AvatarObject, IUser } from '@rocket.chat/core-typings';
+import type { AvatarObject, IUser, IUserPhoneNumber } from '@rocket.chat/core-typings';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import type { UserStatusInitialValues } from '../../../lib/getUserInitialStatus';
@@ -13,6 +13,7 @@ export type AccountProfileFormValues = {
 	bio: string;
 	customFields: Record<string, string>;
 	nickname: string;
+	phones: IUserPhoneNumber[];
 } & UserStatusInitialValues;
 
 export const getProfileInitialValues = (user: IUser | null): AccountProfileFormValues => {
@@ -26,5 +27,6 @@ export const getProfileInitialValues = (user: IUser | null): AccountProfileFormV
 		customFields: user?.customFields ?? {},
 		nickname: user?.nickname ?? '',
 		...getUserStatusInitialValues(user),
+		phones: user?.phones ?? (user?.phone ? [{ number: user.phone }] : []),
 	};
 };

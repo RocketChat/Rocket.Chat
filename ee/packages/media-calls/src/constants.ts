@@ -1,4 +1,5 @@
 import type { CallFeature } from '@rocket.chat/media-signaling';
 
 export const DEFAULT_CALL_FEATURES: CallFeature[] = ['audio'];
-export const SIP_CALL_FEATURES: CallFeature[] = ['audio', 'transfer', 'hold'];
+export const SIP_CALL_FEATURES: CallFeature[] = ['audio', 'transfer', 'hold', 'screen-share', 'conference-escalation'];
+export const ESCALATED_CALL_FEATURES: CallFeature[] = ['audio', 'conference-escalation'];

@@ -55,6 +55,10 @@ export const saveNewUser = async function (userData: SaveUserData, sendPassword:
 		updater.set('freeSwitchExtension', userData.freeSwitchExtension);
 	}
 
+	if (Array.isArray(userData.phones) && userData.phones.length > 0) {
+		updater.set('phones', userData.phones);
+	}
+
 	handleBio(updater, userData.bio);
 	handleNickname(updater, userData.nickname);
 

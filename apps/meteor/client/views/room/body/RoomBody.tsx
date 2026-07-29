@@ -1,3 +1,4 @@
+import { isDiscussion } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { isTruthy } from '@rocket.chat/tools';
 import { CustomVirtuaScrollbars, useEmbeddedLayout } from '@rocket.chat/ui-client';
@@ -12,6 +13,7 @@ import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
+import OngoingConferenceBanner from '../OngoingConferenceBanner/OngoingConferenceBanner';
 import RoomAnnouncement from '../RoomAnnouncement';
 import UploadProgressIndicator from './UploadProgress';
 import ComposerContainer from '../composer/ComposerContainer';
@@ -161,6 +163,7 @@ const RoomBody = () => {
 	return (
 		<>
 			{!isLayoutEmbedded && room.announcement && <RoomAnnouncement announcement={room.announcement} />}
+			{!isLayoutEmbedded && isDiscussion(room) && <OngoingConferenceBanner />}
 			<Box key={room._id} className={['main-content-flex', listStyle]}>
 				<section
 					role='presentation'

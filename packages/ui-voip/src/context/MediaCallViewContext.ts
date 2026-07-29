@@ -10,8 +10,10 @@ export type MediaCallStreams = {
 	localScreen?: IMediaStreamWrapper;
 };
 
-type MediaCallViewContextValue = {
+export type MediaCallViewContextValue = {
 	sessionState: SessionState;
+	isRequestingVideoCall: boolean;
+	onRequestVideoCall: () => void;
 	onClickDirectMessage?: () => void;
 	onMute: () => void;
 	onHold: () => void;
@@ -43,11 +45,14 @@ const defaultSessionState: SessionState = {
 	remoteMuted: false,
 	remoteHeld: false,
 	callId: undefined,
+	escalated: false,
 	supportedFeatures: ['audio', 'transfer', 'hold'],
 };
 
 export const defaultMediaCallContextValue: MediaCallViewContextValue = {
 	sessionState: defaultSessionState,
+	isRequestingVideoCall: false,
+	onRequestVideoCall: () => undefined,
 	onMute: () => undefined,
 	onHold: () => undefined,
 	onDeviceChange: () => undefined,

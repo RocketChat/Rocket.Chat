@@ -8,6 +8,8 @@ import type { PeerInfo } from './definitions';
 
 export type Signals = {
 	toggleWidget: { peerInfo?: PeerInfo };
+	openDialer: { peerInfo?: PeerInfo };
+	closeDialer: undefined;
 };
 
 export type AvailableViews = 'room' | 'popout' | 'widget';
