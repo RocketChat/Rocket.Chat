@@ -41,10 +41,22 @@ export function isEmailStart(ch: string): boolean {
 export function isEmojiStart(ch: string): boolean {
 	const code = ch.charCodeAt(0);
 	return (
-		(code >= 0xd800 && code <= 0xdbff) || // high surrogate → astral-plane emoji
-		(code >= 0x2300 && code <= 0x23ff) || // misc technical (⌚ ⏰)
-		(code >= 0x2600 && code <= 0x26ff) || // misc symbols (⚽ ☀)
-		(code >= 0x2700 && code <= 0x27bf) // dingbats (❤ ✂)
+		code === 0xa9 ||
+		code === 0xae ||
+		code === 0x203c ||
+		code === 0x2049 ||
+		code === 0x2122 ||
+		code === 0x2139 ||
+		(code >= 0x2194 && code <= 0x21aa) || // Arrows
+		(code >= 0x231a && code <= 0x23fa) || // Misc Technical
+		code === 0x24c2 ||
+		(code >= 0x25aa && code <= 0x27bf) || // Geometric Shapes, Symbols, Dingbats
+		(code >= 0x2934 && code <= 0x2b55) || // Supplemental Arrows
+		code === 0x3030 ||
+		code === 0x303d ||
+		code === 0x3297 ||
+		code === 0x3299 ||
+		(code >= 0xd800 && code <= 0xdbff) // High surrogates (U+10000+ emoji)
 	);
 }
 

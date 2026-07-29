@@ -1,5 +1,6 @@
 export class Scanner {
 	private pos: number;
+
 	private readonly input: string;
 
 	constructor(input: string, startPos = 0) {

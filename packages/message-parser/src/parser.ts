@@ -1,3 +1,17 @@
+import {
+	isNewline,
+	isPlainChar,
+	isSpace,
+	isAlpha,
+	isAlphaNum,
+	isDigit,
+	EMOTICON_KEYS,
+	EMOTICONS,
+	isHexDigit,
+	isEmojiStart,
+	isUrlStart,
+	isEmailStart,
+} from './chars';
 import type {
 	Root,
 	Inlines,
@@ -26,6 +40,7 @@ import type {
 	Markup,
 } from './definitions';
 import type { Options } from './index';
+import { Scanner } from './scanner';
 import {
 	paragraph,
 	plain,
@@ -66,21 +81,6 @@ import {
 	horizontalRule,
 	table,
 } from './utils';
-import { Scanner } from './scanner';
-import {
-	isNewline,
-	isPlainChar,
-	isSpace,
-	isAlpha,
-	isAlphaNum,
-	isDigit,
-	EMOTICON_KEYS,
-	EMOTICONS,
-	isHexDigit,
-	isEmojiStart,
-	isUrlStart,
-	isEmailStart,
-} from './chars';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -679,7 +679,7 @@ function tryEmail(scanner: Scanner): Inlines | null {
 	}
 
 	// Trim trailing '.' / '-' back out of the domain ("joe.com." → "joe.com")
-	while (scanner.position() > domainStart && scanner.charAt(-1) === '.') {
+	while (scanner.position() > domainStart && (scanner.charAt(-1) === '.' || scanner.charAt(-1) === '-')) {
 		scanner.consume(-1);
 	}
 
@@ -692,7 +692,7 @@ function tryEmail(scanner: Scanner): Inlines | null {
 		return null;
 	}
 
-	return autoEmail(local + '@' + domain);
+	return autoEmail(`${local}@${domain}`);
 }
 
 function tryPhone(scanner: Scanner, prev: string): Inlines | null {
@@ -998,7 +998,7 @@ function tryMarkdownLink(scanner: Scanner, options: Options): Inlines | null {
 			if (isDigit(ch)) digits += ch;
 		}
 		if (digits.length >= 5) {
-			url = 'tel:' + digits;
+			url = `tel:${digits}`;
 		}
 	}
 
@@ -1296,7 +1296,7 @@ function tryCodeFence(scanner: Scanner): Code | null {
 	while (!scanner.isEnd()) {
 		if (scanner.matches(fence)) {
 			scanner.consume(fence.length);
-			while (!scanner.isEnd() && !isNewline(scanner.char())) scanner.consume();
+			while (isSpace(scanner.char())) scanner.consume(); // allow trailing spaces; keep other text
 			closed = true;
 			break;
 		}
@@ -1509,12 +1509,20 @@ function tryOrderedList(scanner: Scanner, options: Options): OrderedList | null 
 		const numStr = scanner.sliceFrom(numStart);
 
 		if (scanner.char() !== '.') {
+			if (items.length > 0) {
+				scanner.backtrack(numStart);
+				break;
+			}
 			scanner.backtrack(start);
 			return null;
 		}
 		scanner.consume(); // consume '.'
 
 		if (!isSpace(scanner.char())) {
+			if (items.length > 0) {
+				scanner.backtrack(numStart);
+				break;
+			}
 			scanner.backtrack(start);
 			return null;
 		}
