@@ -1,15 +1,5 @@
 import { oAuthRouter } from '../../configuration/configurePassport';
 
-type RouterLayer = {
-	route?: {
-		path: string;
-	};
-};
-
-type RouterWithStack = {
-	stack: RouterLayer[];
-};
-
 /**
  * Removes every route previously registered for an OAuth service from the OAuth router.
  *
@@ -22,7 +12,7 @@ type RouterWithStack = {
 export const removeOAuthRoutes = (serviceName: string): void => {
 	const paths = [`/oauth/${serviceName}`, `/_oauth/${serviceName}`];
 
-	const router = oAuthRouter as unknown as RouterWithStack;
+	const router = oAuthRouter;
 
 	// Only route layers are dropped; middleware layers registered via `router.use`
 	router.stack = router.stack.filter((layer) => !layer.route || !paths.includes(layer.route.path));
