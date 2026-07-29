@@ -493,6 +493,15 @@ since consolidating more logic into the runtime makes the assumption more load-b
    hand-rolled message strings and per-param normalization judgment with a declared contract. A
    phase *after* this migration, not a prerequisite; this work should produce the explicit list, the
    SDK formalizes it.
+6. **`createProcessorId` suffix check** (`SchedulerModify`) — the job-id namespacing uses
+   `includes` (substring match) to decide whether an id is already namespaced; it should be
+   `endsWith` (suffix match), since an appId substring in the *middle* of a job id makes the function
+   skip the suffix, risking namespace collisions and jobs that `cancelJob` can't reach. Flagged in review of
+   the migration PRs (CodeRabbit + cubic). **Not fixed inside the migration** because the runtime port
+   is a faithful copy of the host `SchedulerModify`, which has the same `includes` — changing only the
+   runtime copy re-introduces host↔runtime drift, the exact thing this migration removes. Fix both
+   copies together (or land it after the host copy is deleted in Phase 4) as a standalone behavior
+   change with its own test.
 
 ---
 
