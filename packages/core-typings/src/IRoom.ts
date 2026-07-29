@@ -28,6 +28,8 @@ export interface IRoom extends IRocketChatRecord {
 	topic?: string;
 
 	reactWhenReadOnly?: boolean;
+	disableLinkPreviews?: boolean;
+
 
 	// TODO: this boolean might be an accident
 	sysMes?: MessageTypesValues[] | boolean;
