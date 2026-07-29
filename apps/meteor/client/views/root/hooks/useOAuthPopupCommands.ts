@@ -1,5 +1,5 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { type LocationPathname, useLoginWithToken } from '@rocket.chat/ui-contexts';
+import { type LocationPathname, useLoginWithToken, useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 import { ltrim, rtrim } from '../../../../lib/utils/stringUtils';
@@ -9,8 +9,13 @@ import { router } from '../../../providers/RouterProvider';
 
 export const useOAuthPopupCommands = () => {
 	const loginWithToken = useLoginWithToken();
+	const enableModernOAuthFlow = useSetting('Accounts_OAuth_Use_Modern_Flow', true);
 
 	useEffect(() => {
+		if (!enableModernOAuthFlow) {
+			return;
+		}
+
 		const commands = {
 			//Used for the 2FA challenge and for handing the session over to the desktop/mobile clients.
 			'redirect'(data: { path: string }) {
@@ -64,5 +69,5 @@ export const useOAuthPopupCommands = () => {
 		return () => {
 			window.removeEventListener('message', messageListener);
 		};
-	}, [loginWithToken]);
+	}, [loginWithToken, enableModernOAuthFlow]);
 };
