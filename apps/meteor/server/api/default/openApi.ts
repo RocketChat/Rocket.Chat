@@ -1,5 +1,6 @@
 import { schemas } from '@rocket.chat/core-typings';
 import type { Route } from '@rocket.chat/http-router';
+import { openAPIErrorComponents, withOperationIds } from '@rocket.chat/http-router';
 import { ajv, isOpenAPIJSONEndpoint } from '@rocket.chat/rest-typings';
 import express from 'express';
 import { WebApp } from 'meteor/webapp';
@@ -41,18 +42,42 @@ const getTypedRoutes = (
 	);
 };
 
+const TAG_DESCRIPTIONS: Record<string, string> = {
+	'Missing Documentation': 'Endpoints that are not typed yet; their request and response shapes are not described.',
+};
+
+const getTags = (paths: Record<string, Record<string, Route>>) => {
+	const names = new Set(
+		Object.values(paths)
+			.flatMap((methods) => Object.values(methods))
+			.flatMap((route) => route.tags ?? []),
+	);
+
+	return [...names].sort().map((name) => ({
+		name,
+		...(TAG_DESCRIPTIONS[name] && { description: TAG_DESCRIPTIONS[name] }),
+	}));
+};
+
 const makeOpenAPIResponse = (paths: Record<string, Record<string, Route>>) => ({
 	openapi: '3.0.3',
 	info: {
 		title: 'Rocket.Chat API',
-		description: 'Rocket.Chat API',
+		description:
+			'REST API of this Rocket.Chat workspace. Authenticate by sending the `X-User-Id` and `X-Auth-Token` headers obtained from `/api/v1/login`.',
 		version: getTrimmedServerVersion(),
+	},
+	externalDocs: {
+		url: 'https://developer.rocket.chat/apidocs',
+		description: 'Rocket.Chat developer documentation',
 	},
 	servers: [
 		{
 			url: settings.get('Site_Url'),
 		},
 	],
+	tags: getTags(paths),
+	paths: withOperationIds(paths),
 	components: {
 		securitySchemes: {
 			userId: {
@@ -66,10 +91,11 @@ const makeOpenAPIResponse = (paths: Record<string, Record<string, Route>>) => ({
 				name: 'X-Auth-Token',
 			},
 		},
-		schemas: schemas.components.schemas,
+		schemas: {
+			...schemas.components.schemas,
+			...openAPIErrorComponents,
+		},
 	},
-	schemas: schemas.components.schemas,
-	paths,
 });
 
 const openApiResponseSchema = ajv.compile<Record<string, unknown>>({
@@ -77,10 +103,11 @@ const openApiResponseSchema = ajv.compile<Record<string, unknown>>({
 	properties: {
 		openapi: { type: 'string' },
 		info: { type: 'object' },
+		externalDocs: { type: 'object' },
 		servers: { type: 'array' },
+		tags: { type: 'array' },
 		components: { type: 'object' },
 		paths: { type: 'object' },
-		schemas: { type: 'object' },
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['openapi', 'info', 'paths', 'success'],
