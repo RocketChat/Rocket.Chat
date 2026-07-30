@@ -104,7 +104,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 		<ContextualbarDialog>
 			<ContextualbarHeader>
 				{onClickBack ? <ContextualbarBack onClick={onClickBack} /> : <ContextualbarIcon name='user' />}
-				<ContextualbarTitle>{t('Profile')}</ContextualbarTitle>
+				<ContextualbarTitle>{t('Full_profile')}</ContextualbarTitle>
 				{onClose && <ContextualbarClose onClick={onClose} />}
 			</ContextualbarHeader>
 
