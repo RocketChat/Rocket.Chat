@@ -28,8 +28,8 @@ export class ModifyUpdater implements IModifyUpdater {
 	private readonly messageUpdater: IMessageUpdater;
 
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {
-		// The sub-accessors read `this.senderFn` at call time (rather than capturing it) so
-		// that tests which swap out `senderFn` after construction remain intercepted.
+		// Thunks, not `this.senderFn` directly: these sub-accessors are built eagerly, so capturing
+		// the function here would pin them to it before a test could swap it out.
 		this.livechatUpdater = new LivechatUpdater((request) => this.senderFn(request));
 		this.userUpdater = new UserUpdater((request) => this.senderFn(request));
 		this.messageUpdater = new MessageUpdater((request) => this.senderFn(request));

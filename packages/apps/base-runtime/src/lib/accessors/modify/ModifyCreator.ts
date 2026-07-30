@@ -39,19 +39,19 @@ export class ModifyCreator implements IModifyCreator {
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}
 
 	getLivechatCreator(): ILivechatCreator {
-		return new LivechatCreator(this.senderFn);
+		return new LivechatCreator((request) => this.senderFn(request));
 	}
 
 	getUploadCreator(): IUploadCreator {
-		return new UploadCreator(this.senderFn);
+		return new UploadCreator((request) => this.senderFn(request));
 	}
 
 	getEmailCreator(): IEmailCreator {
-		return new EmailCreator(this.senderFn);
+		return new EmailCreator((request) => this.senderFn(request));
 	}
 
 	getContactCreator(): IContactCreator {
-		return new ContactCreator(this.senderFn);
+		return new ContactCreator((request) => this.senderFn(request));
 	}
 
 	getBlockBuilder() {
