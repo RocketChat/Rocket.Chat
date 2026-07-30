@@ -42,7 +42,26 @@ import { fileUploadIsValidContentType } from '../../../utils/restrictions';
 const cookie = new Cookies();
 
 // Bounds per-frame GIF decode cost; sharp's limitInputPixels alone doesn't catch a huge frame count with tiny per-frame dimensions.
-const MAX_ANIMATED_THUMBNAIL_PAGES = 50;
+const MAX_ANIMATED_THUMBNAIL_PAGES = 100;
+
+// FileUpload.getBuffer never settles if the underlying store read errors (e.g. a network blip on S3/GCS/WebDAV),
+// which would otherwise hang the sendFileMessage method call indefinitely.
+const GET_BUFFER_TIMEOUT_MS = 30_000;
+
+async function getBufferWithTimeout(file: IUpload): Promise<Buffer> {
+	let timer: ReturnType<typeof setTimeout>;
+	try {
+		return await Promise.race([
+			FileUpload.getBuffer(file),
+			new Promise<never>((_, reject) => {
+				timer = setTimeout(() => reject(new Error('Timed out reading file buffer for thumbnail generation')), GET_BUFFER_TIMEOUT_MS);
+			}),
+		]);
+	} finally {
+		clearTimeout(timer!);
+	}
+}
+
 let maxFileSize = 0;
 
 settings.watch('FileUpload_MaxFileSize', async (value: string) => {
@@ -332,7 +351,7 @@ export const FileUpload = {
 
 		let transformer: Sharp;
 		if (file.type === 'image/gif') {
-			const buffer = await FileUpload.getBuffer(file);
+			const buffer = await getBufferWithTimeout(file);
 			const { pages: totalPages } = await sharp(buffer).metadata();
 			const pages = Math.min(totalPages ?? 1, MAX_ANIMATED_THUMBNAIL_PAGES);
 			transformer = sharp(buffer, { pages }).resize({ width, height, fit: 'inside' });
