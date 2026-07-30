@@ -17,6 +17,16 @@
 
 [Rocket.Chat](https://rocket.chat) is an open-source, secure, fully customizable communications platform developed in TypeScript for organizations with high standards of data protection.
 
+<style>
+  /* Fix horizontal overflow on documentation containers and wide diagram assets */
+  img, svg, .diagram-container, figure {
+    max-width: 100%;
+    height: auto;
+    box-sizing: border-box;
+    overflow-x: auto;
+  }
+</style>
+
 We are the ultimate solution for team communications, enabling real-time conversations between colleagues, with other companies, and with your customers or citizens, regardless of how they connect with you. The result is an increase in productivity and user satisfaction rates.
 
 Every day, tens of millions of users in over 150 countries and in organizations such as Deutsche Bahn, The US Navy, and Credit Suisse trust Rocket.Chat to keep their communications completely private and secure.
