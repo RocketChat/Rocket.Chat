@@ -2468,22 +2468,40 @@ describe('[Groups]', () => {
 		});
 
 		it('/groups.invite', async () => {
-			await request.post(api('groups.invite')).set(credentials).send({
-				roomId: testGroup._id,
-				userId: 'rocket.cat',
-			});
+			const res = await request
+				.post(api('groups.invite'))
+				.set(credentials)
+				.send({
+					roomId: testGroup._id,
+					userId: 'rocket.cat',
+				})
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
 		it('/groups.addModerator', async () => {
-			await request.post(api('groups.addModerator')).set(credentials).send({
-				roomId: testGroup._id,
-				userId: 'rocket.cat',
-			});
+			const res = await request
+				.post(api('groups.addModerator'))
+				.set(credentials)
+				.send({
+					roomId: testGroup._id,
+					userId: 'rocket.cat',
+				})
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
 		it('/groups.addLeader', async () => {
-			await request.post(api('groups.addLeader')).set(credentials).send({
-				roomId: testGroup._id,
-				userId: 'rocket.cat',
-			});
+			const res = await request
+				.post(api('groups.addLeader'))
+				.set(credentials)
+				.send({
+					roomId: testGroup._id,
+					userId: 'rocket.cat',
+				})
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
 		it('should return an array of roles <-> user relationships in a private group', async () => {
 			const res = await request
@@ -2542,16 +2560,28 @@ describe('[Groups]', () => {
 		});
 
 		it('/groups.invite', async () => {
-			await request.post(api('groups.invite')).set(credentials).send({
-				roomId: testGroup._id,
-				userId: 'rocket.cat',
-			});
+			const res = await request
+				.post(api('groups.invite'))
+				.set(credentials)
+				.send({
+					roomId: testGroup._id,
+					userId: 'rocket.cat',
+				})
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
 		it('/groups.addModerator', async () => {
-			await request.post(api('groups.addModerator')).set(credentials).send({
-				roomId: testGroup._id,
-				userId: 'rocket.cat',
-			});
+			const res = await request
+				.post(api('groups.addModerator'))
+				.set(credentials)
+				.send({
+					roomId: testGroup._id,
+					userId: 'rocket.cat',
+				})
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
 		it('should return an array of moderators with rocket.cat as a moderator', async () => {
 			const res = await request

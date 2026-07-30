@@ -3255,22 +3255,40 @@ describe('[Channels]', () => {
 		});
 
 		it('/channels.invite', async () => {
-			await request.post(api('channels.invite')).set(credentials).send({
-				roomId: testChannel._id,
-				userId: 'rocket.cat',
-			});
+			const res = await request
+				.post(api('channels.invite'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					userId: 'rocket.cat',
+				})
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
 		it('/channels.addModerator', async () => {
-			await request.post(api('channels.addModerator')).set(credentials).send({
-				roomId: testChannel._id,
-				userId: 'rocket.cat',
-			});
+			const res = await request
+				.post(api('channels.addModerator'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					userId: 'rocket.cat',
+				})
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
 		it('/channels.addLeader', async () => {
-			await request.post(api('channels.addLeader')).set(credentials).send({
-				roomId: testChannel._id,
-				userId: 'rocket.cat',
-			});
+			const res = await request
+				.post(api('channels.addLeader'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					userId: 'rocket.cat',
+				})
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
 		it('should return an array of role <-> user relationships in a channel', async () => {
 			const res = await request
@@ -3313,16 +3331,28 @@ describe('[Channels]', () => {
 		});
 
 		it('/channels.invite', async () => {
-			await request.post(api('channels.invite')).set(credentials).send({
-				roomId: testChannel._id,
-				userId: 'rocket.cat',
-			});
+			const res = await request
+				.post(api('channels.invite'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					userId: 'rocket.cat',
+				})
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
 		it('/channels.addModerator', async () => {
-			await request.post(api('channels.addModerator')).set(credentials).send({
-				roomId: testChannel._id,
-				userId: 'rocket.cat',
-			});
+			const res = await request
+				.post(api('channels.addModerator'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					userId: 'rocket.cat',
+				})
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
 		it('should return an array of moderators with rocket.cat as a moderator', async () => {
 			const res = await request
