@@ -5,10 +5,6 @@ jest.mock('../../../../client/lib/chats/uploads', () => ({
 	createUploadsAPI: () => ({}),
 }));
 
-jest.mock('../../../../client/lib/utils/renderEmoji', () => ({
-	getEmojiClassNameAndDataTitle: () => ({}),
-}));
-
 let innerTextDescriptor: PropertyDescriptor | undefined;
 let originalExecCommand: typeof document.execCommand | undefined;
 
@@ -114,7 +110,7 @@ describe('RichText Composer API - insertText', () => {
 
 		composer.insertText('hi');
 
-		expect(input.textContent).toBe('hi');
+		expect(input.textContent).toBe('hi\n');
 		expect(getSelectionRange(input)).toEqual({ selectionStart: 2, selectionEnd: 2 });
 	});
 
@@ -123,8 +119,26 @@ describe('RichText Composer API - insertText', () => {
 
 		composer.insertText('b');
 
-		expect(input.textContent).toBe('abc');
+		expect(input.textContent).toBe('abc\n');
 		expect(getSelectionRange(input)).toEqual({ selectionStart: 2, selectionEnd: 2 });
+	});
+
+	it('renders the markup instead of leaving it raw until the next keystroke', () => {
+		const { composer, input } = setupComposer('', { start: 0, end: 0 });
+
+		composer.insertText('*bold*');
+
+		expect(input.querySelector('strong')).not.toBeNull();
+		expect(input.textContent).toBe('*bold*\n');
+	});
+
+	it('keeps the surrounding markup rendered when inserting at the end', () => {
+		const { composer, input } = setupComposer('*bold*', { start: 6, end: 6 });
+
+		composer.insertText(' 😄');
+
+		expect(input.querySelector('strong')).not.toBeNull();
+		expect(input.textContent).toBe('*bold* 😄\n');
 	});
 
 	it('still inserts when execCommand reports success but changes nothing', () => {
@@ -141,6 +155,35 @@ describe('RichText Composer API - insertText', () => {
 		} finally {
 			(document as unknown as { execCommand: () => boolean }).execCommand = execCommand;
 		}
+	});
+});
+
+describe('RichText Composer API - draft restore', () => {
+	afterEach(() => {
+		window.getSelection()?.removeAllRanges();
+		document.body.innerHTML = '';
+	});
+
+	it('renders the restored draft markup without waiting for a keystroke', () => {
+		const input = document.createElement('div');
+		input.contentEditable = 'true';
+		document.body.appendChild(input);
+
+		createRichTextComposerAPI(input, jest.fn(), '*bold*', Number.MAX_SAFE_INTEGER, {}, { current: null }, { rid: 'GENERAL' });
+
+		expect(input.querySelector('strong')).not.toBeNull();
+		expect(input.textContent).toBe('*bold*\n');
+	});
+
+	it('leaves the composer empty when there is no draft', () => {
+		const input = document.createElement('div');
+		input.contentEditable = 'true';
+		document.body.appendChild(input);
+
+		const composer = createRichTextComposerAPI(input, jest.fn(), '', Number.MAX_SAFE_INTEGER, {}, { current: null }, { rid: 'GENERAL' });
+
+		expect(input.textContent).toBe('');
+		expect(composer.text).toBe('');
 	});
 });
 

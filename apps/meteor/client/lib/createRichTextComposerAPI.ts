@@ -53,6 +53,14 @@ export const createRichTextComposerAPI = (
 			input.innerHTML = escapeHTML(text);
 		}
 
+		// The events below are synthetic, so resolveComposerBox ignores them and the markup would stay
+		// unrendered. Skip it while empty: rendering '' yields the renderer's trailing newline, which would
+		// leave `clear()` with a composer that is no longer empty.
+		if (input.innerText !== '') {
+			const { selectionStart: caretStart, selectionEnd: caretEnd } = getSelectionRange(input);
+			renderComposerContent(input, parseOptions, { selectionStart: caretStart, selectionEnd: caretEnd });
+		}
+
 		triggerEvent(input, 'input');
 		triggerEvent(input, 'change');
 

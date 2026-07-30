@@ -1,44 +1,11 @@
 import { parse, type Options } from '@rocket.chat/message-parser';
+import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { renderComposerMarkup } from './renderComposerMarkup';
 import { getSelectionRange, setSelectionRange } from './selectionRange';
 
-// TODO: Investigate an issue where Slack style links are not working properly
-// This might have to do with the symbols < and > not resolving into websafe characters
-const protectLinks = (text: string): { output: string; matches: string[] } => {
-	const matches: string[] = [];
-	let idx = 0;
-
-	const patterns = [
-		// Markdown reference links
-		/\[([^\]]*)\]\((https?:\/\/[^\)]+)\)/g,
-
-		// Slack-style links
-		/<([^>|]+)\|([^>]+)>/g,
-
-		// Emails
-		/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g,
-
-		// Bare domains / URLs (not after @ so we don't eat mentions)
-		/(?<!@)\b[a-z0-9-]+(?:\.[a-z0-9-]+)+(?:\/[^\s]*)?/gi,
-	];
-
-	let output = text;
-
-	patterns.forEach((regex) => {
-		output = output.replace(regex, (full) => {
-			const placeholder = `[[[LINK_${idx}]]]`;
-			matches[idx++] = full;
-			return placeholder;
-		});
-	});
-
-	return { output, matches };
-};
-
-const restoreLinks = (html: string, matches: string[]): string => {
-	return html.replace(/\[\[\[LINK_(\d+)\]\]\]/g, (_, i) => matches[parseInt(i, 10)] || '');
-};
+// Paragraphs render with a trailing '\n' the source does not have.
+const sameText = (rendered: string, source: string): boolean => rendered.replace(/\n$/, '') === source.replace(/\n$/, '');
 
 // Parse the composer's raw text into markup and render it into the contenteditable,
 // restoring the caret to the given flat-offset selection afterwards.
@@ -48,21 +15,16 @@ export const renderComposerContent = (
 	{ selectionStart, selectionEnd }: { selectionStart: number; selectionEnd: number },
 ): void => {
 	const text = target.innerText;
+	const source = text === '' ? '\n' : text;
 
-	// Extract the URL and substitue with a safe template
-	const { output: safeText, matches } = protectLinks(text === '' ? '\n' : text);
+	// Parse the raw text and render the AST through the gazzodown-alt WYSIWYG components
+	target.innerHTML = renderComposerMarkup(parse(source, parseOptions), source);
 
-	// Parse the safetext
-	const ast = parse(safeText, parseOptions);
-
-	// Render the AST through the gazzodown-alt WYSIWYG components
-	const html = renderComposerMarkup(ast);
-
-	// Restore the substituted links
-	const finalHtml = restoreLinks(html, matches);
-
-	// Rendering pipeline
-	target.innerHTML = finalHtml;
+	// Caret offsets are flat character counts over the rendered text, so a node without a renderer
+	// would both lose the user's text and shift the caret. Fall back to the raw text instead.
+	if (!sameText(target.textContent ?? '', source)) {
+		target.innerHTML = escapeHTML(text);
+	}
 
 	// Restore the cursor to the correct position
 	setSelectionRange(target, selectionStart, selectionEnd);
