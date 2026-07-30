@@ -3,7 +3,6 @@ import { Callout } from '@rocket.chat/fuselage';
 import {
 	ContextualbarHeader,
 	ContextualbarBack,
-	ContextualbarIcon,
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarContent,
@@ -104,8 +103,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 		<ContextualbarDialog>
 			<ContextualbarHeader>
 				{onClickBack && <ContextualbarBack onClick={onClickBack} />}
-				{!onClickBack && <ContextualbarIcon name='user' />}
-				<ContextualbarTitle>{t('User_Info')}</ContextualbarTitle>
+				<ContextualbarTitle>{t('Profile')}</ContextualbarTitle>
 				{onClose && <ContextualbarClose onClick={onClose} />}
 			</ContextualbarHeader>
 

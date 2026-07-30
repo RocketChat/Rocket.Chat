@@ -5,7 +5,6 @@ import {
 	ContextualbarScrollableContent,
 	InfoPanel,
 	InfoPanelActionGroup,
-	InfoPanelAvatar,
 	InfoPanelField,
 	InfoPanelLabel,
 	InfoPanelSection,
@@ -104,19 +103,23 @@ const UserInfo = ({
 	return (
 		<ContextualbarScrollableContent padding={24} {...props}>
 			<InfoPanel>
-				{username && (
-					<InfoPanelAvatar>
-						<UserInfoAvatar username={username} etag={avatarETag} />
-					</InfoPanelAvatar>
-				)}
+				<InfoPanelSection display='flex' flexDirection='column' alignItems='center'>
+					{username && <UserInfoAvatar username={username} etag={avatarETag} size='x124' />}
+
+					{userDisplayName && (
+						<Box marginBlockStart='x12' display='flex' justifyContent='center' withTruncatedText maxWidth='100%'>
+							<InfoPanelTitle icon={status} title={userDisplayName} />
+						</Box>
+					)}
+
+					{customStatus && (
+						<Box marginBlockStart='x4' color='hint' fontScale='p2' textAlign='center' withTruncatedText maxWidth='100%'>
+							{customStatus}
+						</Box>
+					)}
+				</InfoPanelSection>
 
 				{actions && <InfoPanelActionGroup>{actions}</InfoPanelActionGroup>}
-
-				<InfoPanelSection>
-					{userDisplayName && <InfoPanelTitle icon={status} title={userDisplayName} />}
-
-					{customStatus && <InfoPanelText>{customStatus}</InfoPanelText>}
-				</InfoPanelSection>
 
 				<InfoPanelSection>
 					{username && username !== name && (
