@@ -54,13 +54,18 @@ type AppProps = {
 	iframe: StoreState['iframe'];
 };
 
-export const App = ({ config, gdpr, user, dispatch }: AppProps) => {
+export const App = ({ dispatch }: AppProps) => {
 	const { t } = useTranslation();
 
 	const [initialized, setInitialized] = useState(false);
 
 	const handleRoute = async ({ url }: { url: string }) => {
 		setTimeout(() => {
+			// Read the current store state, not the render-closure props: route('/')
+			// fires synchronously from the room store subscription before this
+			// component re-renders, so the closure would still hold the pre-login
+			// user and wrongly redirect a token-logged-in guest to /register.
+			const { config, gdpr, user } = store.state;
 			const {
 				settings: {
 					registrationForm,
