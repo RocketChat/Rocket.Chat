@@ -88,6 +88,7 @@ const RichTextMessageBox = ({
 	onTyping,
 	tshow,
 	previewUrls,
+	threadExists,
 }: MessageBoxProps): ReactElement => {
 	const chat = useChat();
 	const room = useRoom();
@@ -129,7 +130,12 @@ const RichTextMessageBox = ({
 	const messageComposerRef = useRef<HTMLElement>(null);
 
 	const subscription = useRoomSubscription();
-	const { initialValue, persistLocal, flushDraft } = useDraft(room._id, tmid ? undefined : subscription?.draft, tmid);
+	const { initialValue, persistLocal, flushDraft } = useDraft(
+		room._id,
+		tmid ? subscription?.threadDrafts?.[tmid] : subscription?.draft,
+		tmid,
+		threadExists,
+	);
 
 	// Get parse options and pass it as prop to the RichTextComposer API
 	// Colors and KaTeX are intentionally left out: gazzodown-alt has no renderer for those nodes,
