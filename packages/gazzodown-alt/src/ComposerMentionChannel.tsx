@@ -7,11 +7,7 @@ type ComposerMentionChannelProps = {
 	mention: string;
 };
 
-const mentionStyle = {
-	fontWeight: 'bold' as const,
-	color: 'var(--rcx-color-font-info, #156FF5)',
-	cursor: 'default',
-};
+const className = 'rcx-message__highlight rcx-message__highlight--link';
 
 const ComposerMentionChannel = ({ mention }: ComposerMentionChannelProps): ReactElement => {
 	const { resolveChannelMention } = useContext(ComposerMarkupContext);
@@ -19,10 +15,10 @@ const ComposerMentionChannel = ({ mention }: ComposerMentionChannelProps): React
 	const resolved = useMemo(() => resolveChannelMention?.(mention), [mention, resolveChannelMention]);
 
 	if (!resolved) {
-		return <span style={mentionStyle}>#{mention}</span>;
+		return <span className={className}>#{mention}</span>;
 	}
 
-	return <span style={mentionStyle}>#{resolved.fname ?? mention}</span>;
+	return <span className={className}>#{resolved.fname ?? mention}</span>;
 };
 
 export default memo(ComposerMentionChannel);

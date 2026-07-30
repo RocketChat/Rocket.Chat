@@ -8,14 +8,9 @@ type ComposerCodeBlockProps = {
 };
 
 const codeBlockStyle = {
-	fontFamily: 'var(--rcx-font-family-mono, monospace)',
-	backgroundColor: 'var(--rcx-color-surface-tint, rgba(0, 0, 0, 0.05))',
-	borderRadius: '4px',
-	padding: '4px 8px',
 	display: 'inline-block',
+	width: '100%',
 	verticalAlign: 'top',
-	maxWidth: '100%',
-	whiteSpace: 'pre-wrap' as const,
 } as const;
 
 const ComposerCodeBlock = ({ language, lines }: ComposerCodeBlockProps): ReactElement => {
@@ -25,7 +20,11 @@ const ComposerCodeBlock = ({ language, lines }: ComposerCodeBlockProps): ReactEl
 		return `${fence}\n${code}\n\`\`\``;
 	}, [language, lines]);
 
-	return <code style={codeBlockStyle}>{text}</code>;
+	return (
+		<code className='code-colors' style={codeBlockStyle}>
+			{text}
+		</code>
+	);
 };
 
 export default ComposerCodeBlock;
