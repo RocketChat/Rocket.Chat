@@ -119,6 +119,15 @@ const UserInfo = ({
 				</InfoPanelSection>
 
 				<InfoPanelSection>
+					{username && username !== name && (
+						<InfoPanelField is='dl'>
+							<InfoPanelLabel is='dt' id={usernameId}>
+								{t('Username')}
+							</InfoPanelLabel>
+							<UserInfoCopyableText is='dd' aria-labelledby={usernameId} text={username} />
+						</InfoPanelField>
+					)}
+
 					{reason && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Reason_for_joining')}</InfoPanelLabel>
@@ -154,15 +163,6 @@ const UserInfo = ({
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Room_roles')}</InfoPanelLabel>
 							<UserCardRoles>{roomRoles}</UserCardRoles>
-						</InfoPanelField>
-					)}
-
-					{username && username !== name && (
-						<InfoPanelField is='dl'>
-							<InfoPanelLabel is='dt' id={usernameId}>
-								{t('Username')}
-							</InfoPanelLabel>
-							<UserInfoCopyableText is='dd' aria-labelledby={usernameId} text={username} />
 						</InfoPanelField>
 					)}
 

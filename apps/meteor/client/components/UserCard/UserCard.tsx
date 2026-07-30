@@ -123,7 +123,7 @@ const UserCard = ({
 							</UserCardListItem>
 						)}
 						{title && (
-							<UserCardListItem icon='card' label={t('Title')}>
+							<UserCardListItem icon='business' label={t('Title')}>
 								{title}
 							</UserCardListItem>
 						)}

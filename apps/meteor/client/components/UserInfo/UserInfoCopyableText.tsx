@@ -28,10 +28,18 @@ const UserInfoCopyableText = ({ text, children, ...props }: UserInfoCopyableText
 
 	return (
 		<InfoPanelText display='flex' flexDirection='row' alignItems='center' className={revealOnHoverStyle} {...props}>
-			<Box flexShrink={1} withTruncatedText={props.withTruncatedText ?? true}>
+			<Box display='flex' flexDirection='row' alignItems='center' flexShrink={1} withTruncatedText={props.withTruncatedText ?? true}>
 				{children ?? text}
 			</Box>
-			<IconButton className='rcx-user-info-copy' mini icon='copy' title={t('Copy')} aria-label={t('Copy')} onClick={() => copy()} />
+			<IconButton
+				className='rcx-user-info-copy'
+				marginInlineStart='x4'
+				tiny
+				icon='copy'
+				title={t('Copy')}
+				aria-label={t('Copy')}
+				onClick={() => copy()}
+			/>
 		</InfoPanelText>
 	);
 };
