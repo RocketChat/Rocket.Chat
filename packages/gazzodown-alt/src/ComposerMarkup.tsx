@@ -6,6 +6,7 @@ import ComposerCodeBlock from './ComposerCodeBlock';
 import ComposerInlineElements from './ComposerInlineElements';
 import { ComposerMarkupContext } from './ComposerMarkupContext';
 import ComposerPlainSpan from './ComposerPlainSpan';
+import ComposerUnorderedList from './ComposerUnorderedList';
 import { sourceOf } from './sourceOf';
 
 type ComposerMarkupProps = {
@@ -88,17 +89,7 @@ const ComposerMarkup = ({ tokens }: ComposerMarkupProps): ReactElement => {
 						return <ComposerCodeBlock key={index} language={block.language} lines={block.value} />;
 
 					case 'UNORDERED_LIST':
-						return (
-							<span key={index}>
-								{block.value.map((item, iidx) => (
-									<span key={iidx}>
-										{'- '}
-										<ComposerInlineElements>{item.value}</ComposerInlineElements>
-										{'\n'}
-									</span>
-								))}
-							</span>
-						);
+						return <ComposerUnorderedList key={index} items={block.value} />;
 
 					case 'ORDERED_LIST':
 						return (

@@ -52,6 +52,10 @@ describe('text exactness and caret round-trip on real rendered markup', () => {
 		['horizontal rule between paragraphs', 'a\n---\nb'],
 		['table', '|a|b|\n|-|-|\n|1|2|'],
 		['hyphen list', '- one\n- two'],
+		['list item with inline markup', '- *bold* one'],
+		['list followed by a paragraph', '- one\ntext after'],
+		['paragraph followed by a list', 'text before\n- one'],
+		['lone hyphen marker', '- '],
 		['ordered list', '1. one\n2. two'],
 		['tasks', '- [x] done\n- [ ] todo'],
 		['emoji shortcode', 'hi :smile: there'],
@@ -67,6 +71,18 @@ describe('text exactness and caret round-trip on real rendered markup', () => {
 		for (let n = 0; n <= rendered.length; n++) {
 			setSelectionRange(input, n, n);
 			expect(getSelectionRange(input)).toEqual({ selectionStart: n, selectionEnd: n });
+		}
+	});
+});
+
+describe('unordered list styling', () => {
+	it('emphasizes every item marker like the message list does', () => {
+		const markers = Array.from(mountMarkup('- one\n- two').querySelectorAll('span')).filter((span) => span.textContent === '- ');
+
+		expect(markers).toHaveLength(2);
+
+		for (const marker of markers) {
+			expect(marker.getAttribute('style')).toBe('font-weight:700;padding-inline-start:0.5rem');
 		}
 	});
 });
