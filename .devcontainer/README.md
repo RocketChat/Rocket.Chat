@@ -65,6 +65,9 @@ don't see that line, the container is not firewalled.
 | `docker-compose.yml` | Service definition, volumes, `NET_ADMIN`/`NET_RAW` capabilities |
 | `Dockerfile` | Base image and toolchain, pinned from `package.json`, `.tool-versions`, `.meteor/release` |
 | `init-firewall.sh` | Default-deny egress firewall; installed as `/usr/local/bin/rc-init-firewall.sh` |
+| `init-worktree.sh` | Host-side; exposes the real git dir when the checkout is a linked worktree |
+| `turbo-cache/docker-compose.yml` | Standalone [Turborepo remote cache](https://ducktors.github.io/turborepo-remote-cache) shared by every worktree |
+| `scripts/ensure-turbo-cache.sh` | Host-side; brings that stack up before the container is created |
 
 ## Things worth knowing
 
@@ -84,6 +87,26 @@ scoped by `${devcontainerId}`, so they survive rebuilds but aren't shared across
 projects. `node_modules` and `apps/meteor/.meteor/local` are also named volumes —
 they shadow the bind mount, so your host copies are untouched (and Meteor's
 absolute paths don't leak between host and container).
+
+**Turborepo remote cache.** `turbo` in here writes to a self-hosted
+[remote cache](https://ducktors.github.io/turborepo-remote-cache) running as its own
+compose project on the host, so a package built in one worktree replays as a cache
+hit in all the others (`>>> FULL TURBO`). It starts automatically via
+`initializeCommand`; if Docker is unavailable the script warns and builds simply run
+uncached.
+
+- Reached at `http://turbo-cache:3000` over the shared external `turbo-cache`
+  network (`TURBO_API`/`TURBO_TEAM`/`TURBO_TOKEN` in `devcontainer.json`), and at
+  `http://127.0.0.1:3399` from the host for `yarn build` outside the container.
+- The network is pinned to `172.30.0.0/24` because the egress firewall allowlists
+  that CIDR — the automatic host-network rule only covers the devcontainer's own
+  bridge. Change one, change both.
+- Artifacts live in the `turbo-cache_turbo-cache-data` volume, keyed by team, and
+  survive rebuilds of every devcontainer. To wipe:
+  `docker compose -f .devcontainer/turbo-cache/docker-compose.yml down -v`.
+- `TURBO_TOKEN` is a fixed local-dev value, not a secret; if you change it, change
+  it in both `devcontainer.json` and the cache's compose file, or every request
+  401s.
 
 **Neovim.** Your host `~/.config/nvim` is bind-mounted read-only; plugins and
 treesitter parsers stay container-side in a volume. If you don't have that

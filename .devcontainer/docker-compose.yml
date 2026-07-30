@@ -22,6 +22,14 @@ services:
       # UNSET. Do not add MONGO_URL to this file or devcontainer.json — setting
       # it makes Meteor skip its local mongod and connect out instead.
       - rc-meteor-local:/workspaces/rocket.chat/apps/meteor/.meteor/local
+    # `default` must be listed explicitly: naming any network here drops the
+    # implicit default, which is what carries the forwarded ports below.
+    # turbo-cache is the shared cache's network — see turbo-cache/docker-compose.yml.
+    # It resolves the `turbo-cache` container by name, so TURBO_API
+    # (devcontainer.json) needs no host-specific address.
+    networks:
+      - default
+      - turbo-cache
     ports:
       - ${PORT:-3000}:3000
       - ${DB_PORT:-}:3001
@@ -35,3 +43,11 @@ services:
 volumes:
   rc-node-modules:
   rc-meteor-local:
+
+networks:
+  # Created by the standalone turbo-cache project, not by this one — it has to
+  # outlive any single devcontainer and be shared by every worktree.
+  # .devcontainer/scripts/ensure-turbo-cache.sh (initializeCommand) guarantees it
+  # exists before this file is used; without it compose errors out on create.
+  turbo-cache:
+    external: true

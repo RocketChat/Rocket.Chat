@@ -8,9 +8,12 @@
 		"docker-compose.yml",
 		"docker-compose.worktree.yml"
 	],
-	// Must run before the container is created: it writes the override file that
-	// the line above depends on. See the script for what breaks without it.
-	"initializeCommand": "bash '${localWorkspaceFolder}/.devcontainer/init-worktree.sh'",
+	// Must run before the container is created: init-worktree.sh writes the
+	// override file that the line above depends on, and ensure-turbo-cache.sh
+	// brings up the shared remote cache, whose network this compose project
+	// attaches to as external (so it must exist first). See both scripts for
+	// what breaks without them.
+	"initializeCommand": "bash '${localWorkspaceFolder}/.devcontainer/init-worktree.sh' && bash '${localWorkspaceFolder}/.devcontainer/scripts/ensure-turbo-cache.sh'",
 	"service": "app",
 	"workspaceFolder": "/workspaces/rocket.chat",
 	// Non-root user is required for `claude --dangerously-skip-permissions`,
@@ -29,6 +32,17 @@
 				"gitnexus"
 			]
 		}
+	},
+	// Point turbo at the shared remote cache (turbo-cache/docker-compose.yml).
+	// Resolved by container name over the shared turbo-cache network, so the same
+	// three values work from every worktree with no host-specific address.
+	// TURBO_TOKEN must match the server's; TURBO_TEAM is only a namespace key for
+	// artifacts and needs no `team_` prefix. TURBO_* vars are excluded from
+	// turbo's task hashes, so setting them does not invalidate anything.
+	"containerEnv": {
+		"TURBO_API": "http://turbo-cache:3000",
+		"TURBO_TEAM": "rocketchat",
+		"TURBO_TOKEN": "rocketchat-local-dev"
 	},
 	// Persist Claude Code auth/settings/history across container rebuilds.
 	// Scoped per-devcontainer so different projects don't share credentials.

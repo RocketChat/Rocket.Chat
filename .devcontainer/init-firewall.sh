@@ -192,6 +192,14 @@ fi
 # Phase 2 — build the allowlist (nothing here touches iptables).
 # ---------------------------------------------------------------------------
 
+# The shared Turborepo remote cache. It lives on a second docker network, which
+# the host-network /24 rule in apply_firewall does NOT cover — that one is
+# derived from the default route, i.e. the devcontainer's own bridge. Pinned to
+# this CIDR in .devcontainer/turbo-cache/docker-compose.yml; keep the two in sync.
+# Without this, turbo's cache requests are REJECTed and every build falls back to
+# local execution (slow, but not broken).
+echo "172.30.0.0/24" >>"$ALLOWED_CIDRS"
+
 # GitHub's stable published prefixes, used when api.github.com/meta is
 # unreachable. The hostnames in ALLOWED_DOMAINS below cover the Azure-hosted
 # endpoints (api.github.com et al.) that live outside these blocks.
