@@ -32,7 +32,7 @@ RUN mkdir -p $VOLTA_HOME && \
     curl https://get.volta.sh | bash -s -- --skip-setup && \
     volta install node@$(jq -r '.volta.node' /tmp/package.json) && \
     volta install yarn@$(jq -r '.volta.yarn' /tmp/package.json) && \
-    echo 'export VOLTA_HOME="/usr/local/volta"\nexport PATH="$VOLTA_HOME/bin:$PATH"' >> /etc/profile.d/volta.sh
+    printf 'export VOLTA_HOME="/usr/local/volta"\nexport PATH="$VOLTA_HOME/bin:$PATH"' >> /etc/profile.d/volta.sh
 
 # --- Deno (pinned) ------------------------------------------------------------
 ENV DENO_INSTALL="/usr/local/deno"
@@ -40,7 +40,7 @@ ENV PATH="$DENO_INSTALL/bin:$PATH"
 RUN mkdir -p $DENO_INSTALL && \
     curl -fsSL https://deno.land/install.sh | \
     sh -s "v$(awk '$1=="deno"{ print $2 }' /tmp/.tool-versions)" && \
-    echo 'export DENO_INSTALL="/usr/local/deno"\nexport PATH="$DENO_INSTALL/bin:$PATH"' >> /etc/profile.d/deno.sh
+    printf 'export DENO_INSTALL="/usr/local/deno"\nexport PATH="$DENO_INSTALL/bin:$PATH"' >> /etc/profile.d/deno.sh
 
 # --- Meteor -------------------------------------------------------------------
 # The launcher (/usr/local/bin/meteor, already on PATH) resolves its warehouse as
@@ -62,7 +62,7 @@ ENV METEOR_WAREHOUSE_DIR="/usr/local/meteor"
 RUN curl "https://install.meteor.com/?release=$(sed 's/^METEOR@//' /tmp/meteor-release)" | sh && \
     mv ~/.meteor "$METEOR_WAREHOUSE_DIR" && \
     chown -R vscode:vscode "$METEOR_WAREHOUSE_DIR" && \
-    echo 'export METEOR_WAREHOUSE_DIR="/usr/local/meteor"' >> /etc/profile.d/meteor.sh
+    printf 'export METEOR_WAREHOUSE_DIR="/usr/local/meteor"' >> /etc/profile.d/meteor.sh
 
 # --- Egress firewall ----------------------------------------------------------
 # Applied at container start via the devcontainer postStartCommand (as sudo).
