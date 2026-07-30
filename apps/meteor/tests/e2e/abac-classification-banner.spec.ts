@@ -104,8 +104,9 @@ test.describe.serial('abac-classification-banner', () => {
 	test('should show the classification banner built from the config in an ABAC room', async ({ page }) => {
 		await poHomeChannel.navbar.openChat(room.name as string);
 
-		const banner = page.getByRole('note', { name: 'CLEARANCE-TOP SECRET' });
+		const banner = page.getByRole('region', { name: 'Room Attributes' });
 		await expect(banner).toBeVisible();
+		await expect(banner).toHaveText('CLEARANCE-TOP SECRET');
 		await expect(banner).toHaveCSS('background-color', convertHexToRGB('#ff8c00'));
 	});
 
@@ -114,6 +115,6 @@ test.describe.serial('abac-classification-banner', () => {
 
 		await poHomeChannel.navbar.openChat(room.name as string);
 		await expect(poHomeChannel.composer.inputMessage).toBeVisible();
-		await expect(page.getByRole('note', { name: 'CLEARANCE-TOP SECRET' })).toHaveCount(0);
+		await expect(page.getByRole('region', { name: 'Room Attributes' })).toHaveCount(0);
 	});
 });
