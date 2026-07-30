@@ -21,7 +21,7 @@ import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import { Cookies } from 'meteor/ostrio:cookies';
 import type { ClientSession, OptionalId } from 'mongodb';
-import sharp, { type Sharp } from 'sharp';
+import sharp from 'sharp';
 import type { WritableStreamBuffer } from 'stream-buffers';
 import streamBuffers from 'stream-buffers';
 
@@ -41,26 +41,8 @@ import { fileUploadIsValidContentType } from '../../../utils/restrictions';
 
 const cookie = new Cookies();
 
-// Bounds per-frame GIF decode cost; sharp's limitInputPixels alone doesn't catch a huge frame count with tiny per-frame dimensions.
+// Caps GIF frames decoded per thumbnail; limitInputPixels doesn't bound frame count.
 const MAX_ANIMATED_THUMBNAIL_PAGES = 100;
-
-// FileUpload.getBuffer never settles if the underlying store read errors (e.g. a network blip on S3/GCS/WebDAV),
-// which would otherwise hang the sendFileMessage method call indefinitely.
-const GET_BUFFER_TIMEOUT_MS = 30_000;
-
-async function getBufferWithTimeout(file: IUpload): Promise<Buffer> {
-	let timer: ReturnType<typeof setTimeout>;
-	try {
-		return await Promise.race([
-			FileUpload.getBuffer(file),
-			new Promise<never>((_, reject) => {
-				timer = setTimeout(() => reject(new Error('Timed out reading file buffer for thumbnail generation')), GET_BUFFER_TIMEOUT_MS);
-			}),
-		]);
-	} finally {
-		clearTimeout(timer!);
-	}
-}
 
 let maxFileSize = 0;
 
@@ -348,22 +330,17 @@ export const FileUpload = {
 
 		file = FileUpload.addExtensionTo(file);
 		const store = FileUpload.getStore('Uploads');
+		const image = await store._store.getReadStream(file._id, file);
 
-		let transformer: Sharp;
-		if (file.type === 'image/gif') {
-			const buffer = await getBufferWithTimeout(file);
-			const { pages: totalPages } = await sharp(buffer).metadata();
-			const pages = Math.min(totalPages ?? 1, MAX_ANIMATED_THUMBNAIL_PAGES);
-			transformer = sharp(buffer, { pages }).resize({ width, height, fit: 'inside' });
-		} else {
-			const image = await store._store.getReadStream(file._id, file);
-			transformer = sharp().resize({ width, height, fit: 'inside' });
-			image.pipe(transformer);
-		}
+		// GIFs need `pages` to stay animated (capped via Math.min); `sharp()` bare is required so non-GIFs still stream.
+		let transformer = (
+			file.type === 'image/gif' ? sharp({ pages: Math.min(file.identify?.pages ?? 1, MAX_ANIMATED_THUMBNAIL_PAGES) }) : sharp()
+		).resize({ width, height, fit: 'inside' });
 
 		if (file.type === 'image/svg+xml') {
 			transformer = transformer.png();
 		}
+		// pageHeight is the per-frame height; info.height is the full stacked height for animated input.
 		const result = transformer.toBuffer({ resolveWithObject: true }).then(({ data, info: { width, height, pageHeight, format } }) => ({
 			data,
 			width,
@@ -372,6 +349,7 @@ export const FileUpload = {
 			thumbFileName: file?.name as string,
 			originalFileId: file?._id as string,
 		}));
+		image.pipe(transformer);
 
 		return result;
 	},
@@ -421,6 +399,8 @@ export const FileUpload = {
 							height,
 						}
 					: undefined,
+			// Lets thumbnail generation cap frames without re-reading the file.
+			pages: metadata.pages,
 		};
 
 		const shouldRotate = settings.get<boolean>('FileUpload_RotateImages');
@@ -656,7 +636,9 @@ export const FileUpload = {
 			initialSize: file.size,
 		});
 
-		return new Promise((resolve, reject) => {
+		return new Promise<Buffer>((resolve, reject) => {
+			// Settle on write failure instead of hanging.
+			buffer.on('error', reject);
 			buffer.on('finish', () => {
 				const contents = buffer.getContents();
 				if (contents === false) {
