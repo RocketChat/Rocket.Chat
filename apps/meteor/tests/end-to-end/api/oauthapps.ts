@@ -22,31 +22,22 @@ describe('[OAuthApps]', () => {
 	);
 
 	describe('[/oauth-apps.list]', () => {
-		it('should return an error when the user does not have the necessary permission', (done) => {
-			void updatePermission('manage-oauth-apps', []).then(() => {
-				void request
-					.get(api('oauth-apps.list'))
-					.set(credentials)
-					.expect(403)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
-					})
-					.end(done);
-			});
+		it('should return an error when the user does not have the necessary permission', async () => {
+			await updatePermission('manage-oauth-apps', []);
+
+			const res = await request.get(api('oauth-apps.list')).set(credentials).expect(403);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
 		});
-		it('should return an array of oauth apps', (done) => {
-			void updatePermission('manage-oauth-apps', ['admin']).then(() => {
-				void request
-					.get(api('oauth-apps.list'))
-					.set(credentials)
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('oauthApps').and.to.be.an('array');
-					})
-					.end(done);
-			});
+
+		it('should return an array of oauth apps', async () => {
+			await updatePermission('manage-oauth-apps', ['admin']);
+
+			const res = await request.get(api('oauth-apps.list')).set(credentials).expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('oauthApps').and.to.be.an('array');
 		});
 	});
 
