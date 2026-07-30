@@ -4,6 +4,7 @@ import type { IConfigurationExtend } from '@rocket.chat/apps-engine/definition/a
 import type { IConfigurationModify } from '@rocket.chat/apps-engine/definition/accessors/IConfigurationModify';
 import type { IEnvironmentRead } from '@rocket.chat/apps-engine/definition/accessors/IEnvironmentRead';
 import type { IEnvironmentWrite } from '@rocket.chat/apps-engine/definition/accessors/IEnvironmentWrite';
+import type { IExternalComponentsExtend } from '@rocket.chat/apps-engine/definition/accessors/IExternalComponentsExtend';
 import type { IHttp, IHttpExtend } from '@rocket.chat/apps-engine/definition/accessors/IHttp';
 import type { IModify } from '@rocket.chat/apps-engine/definition/accessors/IModify';
 import type { INotifier } from '@rocket.chat/apps-engine/definition/accessors/INotifier';
@@ -11,8 +12,10 @@ import type { IOutboundCommunicationProviderExtend } from '@rocket.chat/apps-eng
 import type { IPersistence } from '@rocket.chat/apps-engine/definition/accessors/IPersistence';
 import type { IRead } from '@rocket.chat/apps-engine/definition/accessors/IRead';
 import type { ISchedulerExtend } from '@rocket.chat/apps-engine/definition/accessors/ISchedulerExtend';
+import type { ISettingsExtend } from '@rocket.chat/apps-engine/definition/accessors/ISettingsExtend';
 import type { ISlashCommandsExtend } from '@rocket.chat/apps-engine/definition/accessors/ISlashCommandsExtend';
 import type { ISlashCommandsModify } from '@rocket.chat/apps-engine/definition/accessors/ISlashCommandsModify';
+import type { IUIExtend } from '@rocket.chat/apps-engine/definition/accessors/IUIExtend';
 import type { IVideoConfProvidersExtend } from '@rocket.chat/apps-engine/definition/accessors/IVideoConfProvidersExtend';
 import type { IApi } from '@rocket.chat/apps-engine/definition/api/IApi';
 import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api/IApiEndpointMetadata';
@@ -24,18 +27,43 @@ import type { IProcessor } from '@rocket.chat/apps-engine/definition/scheduler/I
 import type { ISlashCommand } from '@rocket.chat/apps-engine/definition/slashcommands/ISlashCommand';
 import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders/IVideoConfProvider';
 
+import { Persistence } from './Persistence';
 import { HttpExtend } from './extenders/HttpExtender';
-import { formatErrorResponse } from './formatResponseErrorHandler';
 import { Http } from './http';
 import { AppObjectRegistry } from '../../AppObjectRegistry';
+import { RemoteBridges } from '../bridges/RemoteBridges';
 import * as Messenger from '../messenger';
+import { EnvironmentRead } from './environment/EnvironmentRead';
+import { EnvironmentWrite } from './environment/EnvironmentWrite';
+import { EnvironmentalVariableRead } from './environment/EnvironmentalVariableRead';
+import { ServerSettingRead } from './environment/ServerSettingRead';
+import { ServerSettingUpdater } from './environment/ServerSettingUpdater';
+import { ServerSettingsModify } from './environment/ServerSettingsModify';
+import { SettingRead } from './environment/SettingRead';
+import { SettingUpdater } from './environment/SettingUpdater';
+import { ModerationModify } from './modify/ModerationModify';
 import { ModifyCreator } from './modify/ModifyCreator';
+import { ModifyDeleter } from './modify/ModifyDeleter';
 import { ModifyExtender } from './modify/ModifyExtender';
 import { ModifyUpdater } from './modify/ModifyUpdater';
+import { OAuthAppsModify } from './modify/OAuthAppsModify';
+import { SchedulerModify } from './modify/SchedulerModify';
+import { UIController } from './modify/UIController';
 import { Notifier } from './notifier';
-
-/** Helper: extends T with an internal _proxy property used for delegation. */
-type WithProxy<T> = T & { _proxy: T };
+import { CloudWorkspaceRead } from './read/CloudWorkspaceRead';
+import { ContactRead } from './read/ContactRead';
+import { ExperimentalRead } from './read/ExperimentalRead';
+import { LivechatRead } from './read/LivechatRead';
+import { MessageRead } from './read/MessageRead';
+import { OAuthAppsReader } from './read/OAuthAppsReader';
+import { PersistenceRead } from './read/PersistenceRead';
+import { Reader } from './read/Reader';
+import { RoleRead } from './read/RoleRead';
+import { RoomRead } from './read/RoomRead';
+import { ThreadRead } from './read/ThreadRead';
+import { UploadRead } from './read/UploadRead';
+import { UserRead } from './read/UserRead';
+import { VideoConferenceRead } from './read/VideoConferenceRead';
 
 const httpMethods = ['get', 'post', 'put', 'delete', 'head', 'options', 'patch'] as const;
 
@@ -73,37 +101,10 @@ export class AppAccessors {
 
 	private notifier?: INotifier;
 
-	private proxify: <T>(namespace: string, overrides?: Record<string, (...args: unknown[]) => unknown>) => T;
+	private readonly bridges: RemoteBridges;
 
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {
-		this.proxify = <T>(namespace: string, overrides: Record<string, (...args: unknown[]) => unknown> = {}): T =>
-			new Proxy(
-				{ __kind: `accessor:${namespace}` },
-				{
-					get:
-						(_target: unknown, prop: string) =>
-						(...params: unknown[]) => {
-							// We don't want to send a request for this prop
-							if (prop === 'toJSON') {
-								return {};
-							}
-
-							// If the prop is inteded to be overriden by the caller
-							if (prop in overrides) {
-								return overrides[prop].apply(undefined, params);
-							}
-
-							return senderFn({
-								method: `accessor:${namespace}:${prop}`,
-								params,
-							})
-								.then((response) => response.result)
-								.catch((err) => {
-									throw formatErrorResponse(err);
-								});
-						},
-				},
-			) as T;
+		this.bridges = new RemoteBridges(senderFn);
 
 		this.http = new Http(this.getReader(), this.getPersistence(), this.httpExtend, this.getSenderFn());
 		this.notifier = new Notifier(this.getSenderFn());
@@ -115,11 +116,13 @@ export class AppAccessors {
 
 	public getEnvironmentRead(): IEnvironmentRead {
 		if (!this.environmentRead) {
-			this.environmentRead = {
-				getSettings: () => this.proxify('getEnvironmentRead:getSettings'),
-				getServerSettings: () => this.proxify('getEnvironmentRead:getServerSettings'),
-				getEnvironmentVariables: () => this.proxify('getEnvironmentRead:getEnvironmentVariables'),
-			};
+			// App settings, server settings and environment variables all run locally now; app
+			// settings reach the host ProxiedApp storage item through the internal AppResourceBridge.
+			this.environmentRead = new EnvironmentRead(
+				new SettingRead(this.bridges),
+				new ServerSettingRead(this.bridges),
+				new EnvironmentalVariableRead(this.bridges),
+			);
 		}
 
 		return this.environmentRead;
@@ -127,10 +130,7 @@ export class AppAccessors {
 
 	public getEnvironmentWrite() {
 		if (!this.environmentWriter) {
-			this.environmentWriter = {
-				getSettings: () => this.proxify('getEnvironmentWrite:getSettings'),
-				getServerSettings: () => this.proxify('getEnvironmentWrite:getServerSettings'),
-			};
+			this.environmentWriter = new EnvironmentWrite(new SettingUpdater(this.bridges), new ServerSettingUpdater(this.bridges));
 		}
 
 		return this.environmentWriter;
@@ -138,26 +138,27 @@ export class AppAccessors {
 
 	public getConfigurationModify() {
 		if (!this.configModifier) {
-			const slashCommandsModify: WithProxy<ISlashCommandsModify> = {
-				_proxy: this.proxify('getConfigurationModify:slashCommands'),
+			const resourceBridge = this.bridges.getAppResourceBridge();
+
+			const slashCommandsModify: ISlashCommandsModify = {
 				modifySlashCommand(slashcommand: ISlashCommand) {
 					// Store the slashcommand instance to use when the Apps-Engine calls the slashcommand
 					AppObjectRegistry.set(`slashcommand:${slashcommand.command}`, slashcommand);
 
-					return this._proxy.modifySlashCommand(slashcommand);
+					return resourceBridge.doModifySlashCommand(slashcommand, 'APP_ID') as Promise<void>;
 				},
 				disableSlashCommand(command: string) {
-					return this._proxy.disableSlashCommand(command);
+					return resourceBridge.doDisableSlashCommand(command, 'APP_ID') as Promise<void>;
 				},
 				enableSlashCommand(command: string) {
-					return this._proxy.enableSlashCommand(command);
+					return resourceBridge.doEnableSlashCommand(command, 'APP_ID') as Promise<void>;
 				},
 			};
 
 			this.configModifier = {
-				scheduler: this.proxify('getConfigurationModify:scheduler'),
+				scheduler: new SchedulerModify(this.bridges),
 				slashCommands: slashCommandsModify,
-				serverSettings: this.proxify('getConfigurationModify:serverSettings'),
+				serverSettings: new ServerSettingsModify(this.bridges),
 			};
 		}
 
@@ -166,10 +167,9 @@ export class AppAccessors {
 
 	public getConfigurationExtend() {
 		if (!this.configExtender) {
-			const { senderFn } = this;
+			const resourceBridge = this.bridges.getAppResourceBridge();
 
-			const apiExtend: WithProxy<IApiExtend> = {
-				_proxy: this.proxify('getConfigurationExtend:api'),
+			const apiExtend: IApiExtend = {
 				async provideApi(api: IApi) {
 					const apiEndpoints = AppObjectRegistry.get<IApiEndpointMetadata[]>('apiEndpoints')!;
 
@@ -180,67 +180,83 @@ export class AppAccessors {
 						AppObjectRegistry.set(`api:${endpoint.path}`, endpoint);
 					});
 
-					const result = await this._proxy.provideApi(api);
+					await resourceBridge.doProvideApi(api, 'APP_ID');
 
 					// Let's call the listApis method to cache the info from the endpoints
 					// Also, since this is a side-effect, we do it async so we can return to the caller
-					senderFn({ method: 'accessor:api:listApis' })
-						.then((response) => apiEndpoints.push(...(response.result as IApiEndpointMetadata[])))
-						.catch((err) => err.error);
-
-					return result;
+					resourceBridge
+						.doListApis('APP_ID')
+						.then((endpoints) => apiEndpoints.push(...(endpoints as IApiEndpointMetadata[])))
+						.catch(() => undefined);
 				},
 			};
 
-			const schedulerExtend: WithProxy<ISchedulerExtend> = {
-				_proxy: this.proxify('getConfigurationExtend:scheduler'),
+			const schedulerExtend: ISchedulerExtend = {
 				registerProcessors(processors: IProcessor[]) {
 					// Store the processor instance to use when the Apps-Engine calls the processor
 					processors.forEach((processor) => {
 						AppObjectRegistry.set(`scheduler:${processor.id}`, processor);
 					});
 
-					return this._proxy.registerProcessors(processors);
+					return resourceBridge.doRegisterProcessors(processors, 'APP_ID') as Promise<void | Array<string>>;
 				},
 			};
 
-			const videoConfProviders: WithProxy<IVideoConfProvidersExtend> = {
-				_proxy: this.proxify('getConfigurationExtend:videoConfProviders'),
+			const videoConfProviders: IVideoConfProvidersExtend = {
 				provideVideoConfProvider(provider: IVideoConfProvider) {
 					// Store the videoConfProvider instance to use when the Apps-Engine calls the videoConfProvider
 					AppObjectRegistry.set(`videoConfProvider:${provider.name}`, provider);
 
-					return this._proxy.provideVideoConfProvider(provider);
+					return resourceBridge.doProvideVideoConfProvider(provider, 'APP_ID') as Promise<void>;
 				},
 			};
 
-			const outboundCommunication: WithProxy<IOutboundCommunicationProviderExtend> = {
-				_proxy: this.proxify('getConfigurationExtend:outboundCommunication'),
+			const outboundCommunication: IOutboundCommunicationProviderExtend = {
 				registerEmailProvider(provider: IOutboundEmailMessageProvider) {
 					AppObjectRegistry.set(`outboundCommunication:${provider.name}-${provider.type}`, provider);
-					return this._proxy.registerEmailProvider(provider);
+					return resourceBridge.doRegisterOutboundProvider(provider, 'APP_ID') as Promise<void>;
 				},
 				registerPhoneProvider(provider: IOutboundPhoneMessageProvider) {
 					AppObjectRegistry.set(`outboundCommunication:${provider.name}-${provider.type}`, provider);
-					return this._proxy.registerPhoneProvider(provider);
+					return resourceBridge.doRegisterOutboundProvider(provider, 'APP_ID') as Promise<void>;
 				},
 			};
 
-			const slashCommandsExtend: WithProxy<ISlashCommandsExtend> = {
-				_proxy: this.proxify('getConfigurationExtend:slashCommands'),
+			const slashCommandsExtend: ISlashCommandsExtend = {
 				provideSlashCommand(slashcommand: ISlashCommand) {
 					// Store the slashcommand instance to use when the Apps-Engine calls the slashcommand
 					AppObjectRegistry.set(`slashcommand:${slashcommand.command}`, slashcommand);
 
-					return this._proxy.provideSlashCommand(slashcommand);
+					return resourceBridge.doProvideSlashCommand(slashcommand, 'APP_ID') as Promise<void>;
+				},
+			};
+
+			const ui: IUIExtend = {
+				// `registerButton` is a synchronous `void` in the interface, but the host registration
+				// is async over the bridge; fire-and-forget matches the contract. The host manager
+				// logs-and-refuses rather than throwing, so there is no rejection to surface here.
+				registerButton(button) {
+					void resourceBridge.doRegisterActionButton(button, 'APP_ID').catch(() => undefined);
+				},
+			};
+
+			const settings: ISettingsExtend = {
+				provideSetting(setting) {
+					return resourceBridge.doProvideSetting(setting, 'APP_ID') as Promise<void>;
+				},
+			};
+
+			const externalComponents: IExternalComponentsExtend = {
+				register(externalComponent) {
+					return resourceBridge.doRegisterExternalComponent(externalComponent, 'APP_ID') as Promise<void>;
 				},
 			};
 
 			this.configExtender = {
-				ui: this.proxify('getConfigurationExtend:ui'),
+				ui,
 				http: this.httpExtend,
-				settings: this.proxify('getConfigurationExtend:settings'),
-				externalComponents: this.proxify('getConfigurationExtend:externalComponents'),
+				settings,
+				externalComponents,
 				api: apiExtend,
 				scheduler: schedulerExtend,
 				videoConfProviders,
@@ -268,27 +284,29 @@ export class AppAccessors {
 
 	public getReader() {
 		if (!this.reader) {
-			this.reader = {
-				getEnvironmentReader: () => ({
-					getSettings: () => this.proxify('getReader:getEnvironmentReader:getSettings'),
-					getServerSettings: () => this.proxify('getReader:getEnvironmentReader:getServerSettings'),
-					getEnvironmentVariables: () => this.proxify('getReader:getEnvironmentReader:getEnvironmentVariables'),
-				}),
-				getMessageReader: () => this.proxify('getReader:getMessageReader'),
-				getPersistenceReader: () => this.proxify('getReader:getPersistenceReader'),
-				getRoomReader: () => this.proxify('getReader:getRoomReader'),
-				getUserReader: () => this.proxify('getReader:getUserReader'),
-				getNotifier: () => this.getNotifier(),
-				getLivechatReader: () => this.proxify('getReader:getLivechatReader'),
-				getUploadReader: () => this.proxify('getReader:getUploadReader'),
-				getCloudWorkspaceReader: () => this.proxify('getReader:getCloudWorkspaceReader'),
-				getVideoConferenceReader: () => this.proxify('getReader:getVideoConferenceReader'),
-				getOAuthAppsReader: () => this.proxify('getReader:getOAuthAppsReader'),
-				getThreadReader: () => this.proxify('getReader:getThreadReader'),
-				getRoleReader: () => this.proxify('getReader:getRoleReader'),
-				getContactReader: () => this.proxify('getReader:getContactReader'),
-				getExperimentalReader: () => this.proxify('getReader:getExperimentalReader'),
-			};
+			const environmentReader = new EnvironmentRead(
+				new SettingRead(this.bridges),
+				new ServerSettingRead(this.bridges),
+				new EnvironmentalVariableRead(this.bridges),
+			);
+
+			this.reader = new Reader(
+				environmentReader,
+				new MessageRead(this.bridges),
+				new PersistenceRead(this.bridges),
+				new RoomRead(this.bridges),
+				new UserRead(this.bridges),
+				this.getNotifier(),
+				new LivechatRead(this.bridges),
+				new UploadRead(this.bridges),
+				new CloudWorkspaceRead(this.bridges),
+				new VideoConferenceRead(this.bridges),
+				new ContactRead(this.bridges),
+				new OAuthAppsReader(this.bridges),
+				new ThreadRead(this.bridges),
+				new RoleRead(this.bridges),
+				new ExperimentalRead(this.bridges),
+			);
 		}
 
 		return this.reader;
@@ -300,12 +318,12 @@ export class AppAccessors {
 				getCreator: this.getCreator.bind(this),
 				getUpdater: this.getUpdater.bind(this),
 				getExtender: this.getExtender.bind(this),
-				getDeleter: () => this.proxify('getModifier:getDeleter'),
+				getDeleter: () => new ModifyDeleter(this.bridges),
 				getNotifier: () => this.getNotifier(),
-				getUiController: () => this.proxify('getModifier:getUiController'),
-				getScheduler: () => this.proxify('getModifier:getScheduler'),
-				getOAuthAppsModifier: () => this.proxify('getModifier:getOAuthAppsModifier'),
-				getModerationModifier: () => this.proxify('getModifier:getModerationModifier'),
+				getUiController: () => new UIController(this.bridges),
+				getScheduler: () => new SchedulerModify(this.bridges),
+				getOAuthAppsModifier: () => new OAuthAppsModify(this.bridges),
+				getModerationModifier: () => new ModerationModify(this.bridges),
 			};
 		}
 
@@ -314,7 +332,7 @@ export class AppAccessors {
 
 	public getPersistence() {
 		if (!this.persistence) {
-			this.persistence = this.proxify('getPersistence');
+			this.persistence = new Persistence(this.bridges);
 		}
 
 		return this.persistence;

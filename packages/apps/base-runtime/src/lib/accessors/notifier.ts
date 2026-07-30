@@ -5,36 +5,40 @@ import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 
-import { MessageBuilder } from './builders/MessageBuilder';
-import { AppObjectRegistry } from '../../AppObjectRegistry';
 import type * as Messenger from '../messenger';
-import { formatErrorResponse } from './formatResponseErrorHandler';
+import { MessageBuilder } from './builders/MessageBuilder';
+import { RemoteBridges } from '../bridges/RemoteBridges';
 
 export class Notifier implements INotifier {
-	private senderFn: typeof Messenger.sendRequest;
+	private readonly senderFn: typeof Messenger.sendRequest;
+
+	private readonly bridges: RemoteBridges;
 
 	constructor(senderFn: typeof Messenger.sendRequest) {
 		this.senderFn = senderFn;
+		// The facade reads `this.senderFn` at call time (rather than capturing it) so
+		// that tests which swap out `senderFn` after construction remain intercepted.
+		this.bridges = new RemoteBridges((request) => this.senderFn(request));
 	}
 
 	public async notifyUser(user: IUser, message: IMessage): Promise<void> {
 		if (!message.sender?.id) {
 			const appUser = await this.getAppUser();
 
-			message.sender = appUser;
+			message.sender = appUser as IUser;
 		}
 
-		await this.callMessageBridge('doNotifyUser', [user, message, AppObjectRegistry.get<string>('id')]);
+		await this.bridges.getMessageBridge().doNotifyUser(user, message, 'APP_ID');
 	}
 
 	public async notifyRoom(room: IRoom, message: IMessage): Promise<void> {
 		if (!message.sender?.id) {
 			const appUser = await this.getAppUser();
 
-			message.sender = appUser;
+			message.sender = appUser as IUser;
 		}
 
-		await this.callMessageBridge('doNotifyRoom', [room, message, AppObjectRegistry.get<string>('id')]);
+		await this.bridges.getMessageBridge().doNotifyRoom(room, message, 'APP_ID');
 	}
 
 	public async typing(options: ITypingOptions): Promise<() => Promise<void>> {
@@ -42,15 +46,13 @@ export class Notifier implements INotifier {
 
 		if (!options.username) {
 			const appUser = await this.getAppUser();
-			options.username = (appUser && appUser.name) || '';
+			options.username = appUser?.name || '';
 		}
 
-		const appId = AppObjectRegistry.get<string>('id');
-
-		await this.callMessageBridge('doTyping', [{ ...options, isTyping: true }, appId]);
+		await this.bridges.getMessageBridge().doTyping({ ...options, isTyping: true }, 'APP_ID');
 
 		return async () => {
-			await this.callMessageBridge('doTyping', [{ ...options, isTyping: false }, appId]);
+			await this.bridges.getMessageBridge().doTyping({ ...options, isTyping: false }, 'APP_ID');
 		};
 	}
 
@@ -58,23 +60,7 @@ export class Notifier implements INotifier {
 		return new MessageBuilder();
 	}
 
-	private async callMessageBridge(method: string, params: Array<unknown>): Promise<void> {
-		await this.senderFn({
-			method: `bridges:getMessageBridge:${method}`,
-			params,
-		}).catch((err) => {
-			throw formatErrorResponse(err);
-		});
-	}
-
 	private async getAppUser(): Promise<IUser | undefined> {
-		const response = await this.senderFn({
-			method: 'bridges:getUserBridge:doGetAppUser',
-			params: [AppObjectRegistry.get<string>('id')],
-		}).catch((err) => {
-			throw formatErrorResponse(err);
-		});
-
-		return response.result as IUser | undefined;
+		return this.bridges.getUserBridge().doGetAppUser('APP_ID') as Promise<IUser | undefined>;
 	}
 }

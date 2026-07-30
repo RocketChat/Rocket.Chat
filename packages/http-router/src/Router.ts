@@ -159,7 +159,7 @@ export class Router<
 			const contentType = request.header('content-type') || '';
 
 			if (contentType.includes('application/json')) {
-				return await request.raw.clone().json();
+				return (await request.raw.clone().json()) as NonNullable<unknown>;
 			}
 
 			if (contentType.includes('application/x-www-form-urlencoded')) {

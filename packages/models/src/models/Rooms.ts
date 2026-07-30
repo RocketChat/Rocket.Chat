@@ -26,6 +26,7 @@ import type {
 	UpdateResult,
 	WithId,
 	CountDocumentsOptions,
+	FindOneAndUpdateOptions,
 } from 'mongodb';
 
 import { Subscriptions } from '../index';
@@ -1013,9 +1014,12 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	setE2eKeyId(_id: IRoom['_id'], e2eKeyId: IRoom['e2eKeyId'], options: UpdateOptions = {}): Promise<UpdateResult> {
+	setE2eKeyId(_id: IRoom['_id'], e2eKeyId: IRoom['e2eKeyId'], options: FindOneAndUpdateOptions = {}): Promise<IRoom | null> {
 		const query: Filter<IRoom> = {
 			_id,
+			e2eKeyId: {
+				$exists: false,
+			},
 		};
 
 		const update: UpdateFilter<IRoom> = {
@@ -1024,7 +1028,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			},
 		};
 
-		return this.updateOne(query, update, options);
+		return this.findOneAndUpdate(query, update, { returnDocument: 'after', ...options });
 	}
 
 	findOneByImportId(_id: IRoom['_id'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {

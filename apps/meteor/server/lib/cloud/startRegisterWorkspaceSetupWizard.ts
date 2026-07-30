@@ -2,10 +2,13 @@ import type { CloudRegistrationIntentData } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { buildWorkspaceRegistrationData } from './buildRegistrationData';
+import { assertNotOfflineLicense } from './offlineLicense';
 import { settings } from '../../settings';
 import { SystemLogger } from '../logger/system';
 
 export async function startRegisterWorkspaceSetupWizard(resend = false, email: string): Promise<CloudRegistrationIntentData> {
+	assertNotOfflineLicense();
+
 	const regInfo = await buildWorkspaceRegistrationData(email);
 
 	let payload;

@@ -7,6 +7,7 @@ import type { IGetRoomRoles, PaginatedResult, DefaultUserInfo } from '@rocket.ch
 import { assert, expect } from 'chai';
 import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
+import speakeasy from 'speakeasy';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials, apiEmail, apiUsername, wait, reservedWords } from '../../data/api-data';
@@ -3631,14 +3632,23 @@ describe('[Users]', () => {
 		});
 
 		describe('[Password Policy]', () => {
+			let previousMinLength: Awaited<ReturnType<typeof getSettingValueById>>;
+			let previousMaxLength: Awaited<ReturnType<typeof getSettingValueById>>;
+
 			before(async () => {
 				await updateSetting('Accounts_AllowPasswordChange', true);
 				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
+				[previousMinLength, previousMaxLength] = await Promise.all([
+					getSettingValueById('Accounts_Password_Policy_MinLength'),
+					getSettingValueById('Accounts_Password_Policy_MaxLength'),
+				]);
 			});
 
 			after(async () => {
 				await updateSetting('Accounts_AllowPasswordChange', true);
 				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
+				await updateSetting('Accounts_Password_Policy_MaxLength', previousMaxLength);
+				await updateSetting('Accounts_Password_Policy_MinLength', previousMinLength);
 			});
 
 			it('should throw an error if the password length is less than the minimum length', async () => {
@@ -3667,6 +3677,8 @@ describe('[Users]', () => {
 			});
 
 			it('should throw an error if the password length is greater than the maximum length', async () => {
+				// max must stay >= min, so lower the minimum before capping the maximum at 5
+				await updateSetting('Accounts_Password_Policy_MinLength', 1);
 				await updateSetting('Accounts_Password_Policy_MaxLength', 5);
 
 				const expectedError = {
@@ -6573,13 +6585,169 @@ describe('[Users]', () => {
 	describe('[/users.verifyEmail]', () => {
 		it('should fail with 400 when the token is not provided', () => request.post(api('users.verifyEmail')).send({}).expect(400));
 
-		it('should fail with 404 when the token does not match any user', () =>
+		it('should fail with 403 when the token does not match any user', () =>
 			request
 				.post(api('users.verifyEmail'))
 				.send({ token: 'this-token-does-not-exist' })
-				.expect(404)
+				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 				}));
+
+		describe('when a valid token is provided', () => {
+			let user: TestUser<IUser>;
+			const email = `verify.email.${Date.now()}@rocket.chat`;
+			const token = `valid-verification-token-${Date.now()}`;
+
+			before(async () => {
+				user = await createUser({ email, verified: false });
+				// The verification token is never exposed by any endpoint, so seed a known one directly.
+				await updateUserInDb(user._id, {
+					'emails.0.verified': false,
+					'services.email.verificationTokens': [{ token, address: email, when: new Date() }],
+				} as unknown as Partial<IUser>);
+			});
+
+			after(() => deleteUser(user));
+
+			it('should verify the email and consume the token', async () => {
+				await request
+					.post(api('users.verifyEmail'))
+					.send({ token })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				const updatedUser = await getUserByUsername<IUser>(user.username);
+				expect(updatedUser.emails[0]).to.have.property('verified', true);
+
+				// The token was pulled on success, so reusing it must now be rejected.
+				await request
+					.post(api('users.verifyEmail'))
+					.send({ token })
+					.expect(403)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', false);
+					});
+			});
+		});
+	});
+
+	describe('[TOTP endpoints]', () => {
+		let totpUser: TestUser<IUser>;
+		let totpCredentials: Credentials;
+		let secret: string;
+
+		// speakeasy verify is stateless, so the same code is accepted repeatedly within its window — safe to reuse across the flow
+		const totpCode = () => speakeasy.totp({ secret, encoding: 'base32' });
+
+		// enableTotp/validateTotp carry `twoFactorRequired` to protect users with an existing 2FA method, but the
+		// API e2e suite runs with TEST_MODE which bypasses the 2FA challenge (see checkCodeForUser), so these tests
+		// exercise the endpoint logic for a fresh user without a challenge.
+		before(async () => {
+			totpUser = await createUser({ username: Random.id(), email: `${Random.id()}@example.com`, verified: true });
+			totpCredentials = await login(totpUser.username, password);
+		});
+
+		after(async () => deleteUser(totpUser));
+
+		describe('[/users.enableTotp]', () => {
+			it('should fail when unauthenticated', () => request.post(api('users.enableTotp')).expect(401));
+
+			it('should return a secret and an otpauth url', () =>
+				request
+					.post(api('users.enableTotp'))
+					.set(totpCredentials)
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('secret').that.is.a('string');
+						expect(res.body)
+							.to.have.property('url')
+							.that.is.a('string')
+							.and.match(/^otpauth:\/\//);
+						secret = res.body.secret;
+					}));
+		});
+
+		describe('[/users.validateTotp]', () => {
+			it('should fail when unauthenticated', () => request.post(api('users.validateTotp')).send({ code: '000000' }).expect(401));
+
+			it('should fail with 400 when the code is missing', () =>
+				request.post(api('users.validateTotp')).set(totpCredentials).send({}).expect(400));
+
+			it('should enable totp and return backup codes for a valid code', () =>
+				request
+					.post(api('users.validateTotp'))
+					.set(totpCredentials)
+					.send({ code: totpCode() })
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('codes').that.is.an('array');
+					}));
+		});
+
+		describe('[/users.totpCodesRemaining]', () => {
+			it('should fail when unauthenticated', () => request.get(api('users.totpCodesRemaining')).expect(401));
+
+			it('should return the number of remaining backup codes', () =>
+				request
+					.get(api('users.totpCodesRemaining'))
+					.set(totpCredentials)
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('remaining').that.is.a('number');
+					}));
+		});
+
+		describe('[/users.regenerateTotpCodes]', () => {
+			it('should fail when unauthenticated', () => request.post(api('users.regenerateTotpCodes')).send({ code: '000000' }).expect(401));
+
+			it('should fail with 400 when the code is missing', () =>
+				request.post(api('users.regenerateTotpCodes')).set(totpCredentials).send({}).expect(400));
+
+			it('should fail with 400 when the code is invalid', () =>
+				request
+					.post(api('users.regenerateTotpCodes'))
+					.set(totpCredentials)
+					.send({ code: '000000' })
+					.expect(400)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', false);
+					}));
+
+			it('should return a fresh set of backup codes for a valid code', () =>
+				request
+					.post(api('users.regenerateTotpCodes'))
+					.set(totpCredentials)
+					.send({ code: totpCode() })
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('codes').that.is.an('array');
+					}));
+		});
+
+		describe('[/users.disableTotp]', () => {
+			it('should fail when unauthenticated', () => request.post(api('users.disableTotp')).send({ code: '000000' }).expect(401));
+
+			it('should fail with 400 when the code is missing', () =>
+				request.post(api('users.disableTotp')).set(totpCredentials).send({}).expect(400));
+
+			it('should disable totp for a valid code', () =>
+				request
+					.post(api('users.disableTotp'))
+					.set(totpCredentials)
+					.send({ code: totpCode() })
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('disabled', true);
+					}));
+		});
 	});
 });

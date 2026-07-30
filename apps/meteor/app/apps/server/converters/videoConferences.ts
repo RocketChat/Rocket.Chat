@@ -1,6 +1,9 @@
 import type { IAppVideoConferencesConverter, AppsVideoConference } from '@rocket.chat/apps';
 import { VideoConf } from '@rocket.chat/core-services';
 import type { VideoConference } from '@rocket.chat/core-typings';
+import * as z from 'zod';
+
+import { VideoConferenceCodec } from './codecs';
 
 export class AppVideoConferencesConverter implements IAppVideoConferencesConverter {
 	async convertById(callId: string): Promise<AppsVideoConference | undefined> {
@@ -20,14 +23,10 @@ export class AppVideoConferencesConverter implements IAppVideoConferencesConvert
 			return;
 		}
 
-		return {
-			...call,
-		} as AppsVideoConference;
+		return z.decode(VideoConferenceCodec, call);
 	}
 
 	convertAppVideoConference(call: AppsVideoConference): VideoConference {
-		return {
-			...call,
-		} as VideoConference;
+		return z.encode(VideoConferenceCodec, call);
 	}
 }

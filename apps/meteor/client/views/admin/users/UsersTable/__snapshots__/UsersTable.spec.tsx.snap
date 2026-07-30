@@ -1521,7 +1521,9 @@ exports[`renders NoResults without crashing 1`] = `
       </div>
     </form>
     <div
+      aria-label="No_results_found"
       class="rcx-box rcx-box--full rcx-css-16js560"
+      role="group"
     >
       <div
         class="rcx-states"

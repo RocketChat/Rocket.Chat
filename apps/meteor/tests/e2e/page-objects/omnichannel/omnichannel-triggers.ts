@@ -3,7 +3,6 @@ import type { Locator, Page } from '@playwright/test';
 import { OmnichannelAdmin } from './omnichannel-admin';
 import { FlexTab } from '../fragments/flextabs/flextab';
 import { Listbox } from '../fragments/listbox';
-import { Table } from '../fragments/table';
 
 type TriggerConditions = 'Visitor page URL' | 'Visitor time on site' | 'Chat opened by the visitor' | 'After guest registration';
 
@@ -79,21 +78,16 @@ class OmnichannelEditTriggerFlexTab extends FlexTab {
 	}
 }
 
-class OmnichannelTriggersTable extends Table {
-	constructor(page: Page) {
-		super(page.getByRole('table', { name: 'Livechat Triggers' }));
-	}
-}
-
 export class OmnichannelTriggers extends OmnichannelAdmin {
-	readonly editTrigger: OmnichannelEditTriggerFlexTab;
+	protected readonly route = 'triggers';
 
-	readonly table: OmnichannelTriggersTable;
+	protected readonly title = 'Livechat Triggers';
+
+	readonly editTrigger: OmnichannelEditTriggerFlexTab;
 
 	constructor(page: Page) {
 		super(page);
 		this.editTrigger = new OmnichannelEditTriggerFlexTab(page);
-		this.table = new OmnichannelTriggersTable(page);
 	}
 
 	async removeTrigger(name: string) {

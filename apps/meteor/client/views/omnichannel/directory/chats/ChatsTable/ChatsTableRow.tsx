@@ -1,4 +1,5 @@
 import type { IOmnichannelRoomWithDepartment } from '@rocket.chat/core-typings';
+import { css } from '@rocket.chat/css-in-js';
 import { Tag, Box } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
@@ -15,6 +16,15 @@ import { useOmnichannelPriorities } from '../../../hooks/useOmnichannelPrioritie
 import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
 import { PriorityIcon } from '../../../priorities/PriorityIcon';
 import { useOmnichannelDirectoryRouter } from '../../hooks/useOmnichannelDirectoryRouter';
+
+/**
+ * TODO: We should have a variant for aligning row cell instead of using custom CSS
+ **/
+const customAlignTop = css`
+	td {
+		vertical-align: top;
+	}
+`;
 
 const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 	const { t } = useTranslation();
@@ -48,10 +58,12 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 	);
 
 	return (
-		<GenericTableRow key={_id} tabIndex={0} onClick={() => onRowClick(_id)} action>
+		<GenericTableRow className={customAlignTop} key={_id} tabIndex={0} onClick={() => onRowClick(_id)} action>
 			<GenericTableCell withTruncatedText>
 				<Box display='flex' flexDirection='column'>
-					<Box withTruncatedText>{fname}</Box>
+					<Box withTruncatedText fontScale='p2m' color='default'>
+						{fname}
+					</Box>
 					{tags && (
 						<Box color='hint' display='flex' flex-direction='row'>
 							{tags.map((tag: string) => (
@@ -83,11 +95,23 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 				</Box>
 			</GenericTableCell>
 			<GenericTableCell withTruncatedText>{department?.name}</GenericTableCell>
-			<GenericTableCell withTruncatedText title={getTimeFromNow(ts)}>
-				{formatDate(ts)}
+			<GenericTableCell withTruncatedText>
+				<Box display='flex' flexDirection='column'>
+					<Box fontScale='p2m' withTruncatedText color='default'>
+						{formatDate(ts)}
+					</Box>
+					<Box withTruncatedText>{getTimeFromNow(ts)}</Box>
+				</Box>
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText title={lm ? getTimeFromNow(lm) : undefined}>
-				{lm ? formatDate(lm) : undefined}
+			<GenericTableCell withTruncatedText>
+				{lm && (
+					<Box display='flex' flexDirection='column'>
+						<Box fontScale='p2m' withTruncatedText color='default'>
+							{formatDate(lm)}
+						</Box>
+						<Box withTruncatedText>{getTimeFromNow(lm)}</Box>
+					</Box>
+				)}
 			</GenericTableCell>
 			<GenericTableCell withTruncatedText>
 				<RoomActivityIcon room={room} />

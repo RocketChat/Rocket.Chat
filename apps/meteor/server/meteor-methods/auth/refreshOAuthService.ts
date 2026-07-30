@@ -2,6 +2,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { refreshLoginServices } from '../../lib/refreshLoginServices';
 
 declare module '@rocket.chat/ddp-client' {
@@ -13,6 +14,8 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async refreshOAuthService() {
+		methodDeprecationLogger.method('refreshOAuthService', '9.0.0', '/v1/settings.refreshOAuthServices');
+
 		const userId = Meteor.userId();
 
 		if (!userId) {

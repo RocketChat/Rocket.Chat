@@ -1,10 +1,13 @@
 import type { CloudConfirmationPollData } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
+import { assertNotOfflineLicense } from './offlineLicense';
 import { settings } from '../../settings';
 import { SystemLogger } from '../logger/system';
 
 export async function getConfirmationPoll(deviceCode: string): Promise<CloudConfirmationPollData> {
+	assertNotOfflineLicense();
+
 	try {
 		const cloudUrl = settings.get<string>('Cloud_Url');
 		const response = await fetch(`${cloudUrl}/api/v2/register/workspace/poll`, {
