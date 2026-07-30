@@ -16,14 +16,10 @@ export default [
 					include: [resolve('./src')],
 					exclude: [resolve('./tests')],
 				},
-				{
-					test: /\.pegjs$/,
-					use: ['@rocket.chat/peggy-loader'],
-				},
 			],
 		},
 		resolve: {
-			extensions: ['.ts', '.js', '.pegjs'],
+			extensions: ['.ts', '.js'],
 		},
 		mode: 'production',
 		experiments: {
