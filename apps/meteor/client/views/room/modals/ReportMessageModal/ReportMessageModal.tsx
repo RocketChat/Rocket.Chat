@@ -7,7 +7,9 @@ import { useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import MarkdownText from '../../../../components/MarkdownText';
 import MessageContentBody from '../../../../components/message/MessageContentBody';
+import { getMarkdownParserLimit } from '../../../../lib/getMarkdownParserLimit';
 import { toPlainTextRoot } from '../../../../lib/toPlainTextRoot';
 
 type ReportMessageModalsFields = {
@@ -40,6 +42,8 @@ const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps) => {
 
 	const { _id } = message;
 
+	const md = message.md ?? (message.msg.length > getMarkdownParserLimit() ? toPlainTextRoot(message.msg) : undefined);
+
 	const handleReportMessage = async ({ description }: ReportMessageModalsFields): Promise<void> => {
 		try {
 			await reportMessage({ messageId: _id, description });
@@ -60,7 +64,7 @@ const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps) => {
 			confirmText={t('Report')}
 		>
 			<Box marginBlockEnd={24} className={wordBreak}>
-				<MessageContentBody md={message.md ?? toPlainTextRoot(message.msg)} />
+				{md ? <MessageContentBody md={md} /> : <MarkdownText variant='inline' parseEmoji content={message.msg} />}
 			</Box>
 			<FieldGroup>
 				<Field>
