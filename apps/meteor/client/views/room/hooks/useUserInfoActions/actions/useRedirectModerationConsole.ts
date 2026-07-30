@@ -22,6 +22,6 @@ export const useRedirectModerationConsole = (uid: IUser['_id']): UserInfoAction 
 		content: t('Moderation_Action_View_reports'),
 		icon: 'warning',
 		onClick: redirectModerationConsoleAction,
-		type: 'admin' as UserInfoActionType,
+		type: 'communication' as UserInfoActionType,
 	};
 };

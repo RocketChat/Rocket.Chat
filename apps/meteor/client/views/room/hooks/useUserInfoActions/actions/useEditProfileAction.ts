@@ -19,7 +19,7 @@ export const useEditProfileAction = (user: Pick<IUser, '_id' | 'username'>): Use
 			content: t('Edit'),
 			icon: 'pencil' as const,
 			onClick: () => router.navigate('/account/profile'),
-			type: 'management',
+			type: 'communication',
 		} as const;
 	}, [user._id, ownUserId, router, t]);
 
