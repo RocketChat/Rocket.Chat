@@ -137,6 +137,9 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 			statusCustomTime,
 			nickname,
 			bio,
+			title,
+			nationality,
+			languages,
 			customFields,
 		} = values;
 
@@ -161,6 +164,12 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 					username,
 					nickname,
 					bio,
+					title,
+					nationality,
+					languages: languages
+						.split(',')
+						.map((language) => language.trim())
+						.filter(Boolean),
 				},
 				customFields,
 			});
@@ -369,6 +378,25 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 							)}
 						/>
 					</FieldRow>
+				</Field>
+				<Field>
+					<FieldLabel>{t('Title')}</FieldLabel>
+					<FieldRow>
+						<Controller control={control} name='title' render={({ field }) => <TextInput {...field} flexGrow={1} />} />
+					</FieldRow>
+				</Field>
+				<Field>
+					<FieldLabel>{t('Nationality')}</FieldLabel>
+					<FieldRow>
+						<Controller control={control} name='nationality' render={({ field }) => <TextInput {...field} flexGrow={1} />} />
+					</FieldRow>
+				</Field>
+				<Field>
+					<FieldLabel>{t('Languages')}</FieldLabel>
+					<FieldRow>
+						<Controller control={control} name='languages' render={({ field }) => <TextInput {...field} flexGrow={1} />} />
+					</FieldRow>
+					<FieldHint>{t('Languages_hint')}</FieldHint>
 					{errors.bio && <FieldError>{errors.bio.message}</FieldError>}
 				</Field>
 				<Field>
