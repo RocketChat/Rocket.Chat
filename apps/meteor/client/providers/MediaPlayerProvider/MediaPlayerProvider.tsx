@@ -1,7 +1,6 @@
 import { useMergedRefs, useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { useOnLogout } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 
 import type { MediaPlayerContextValue, PersistentAudioTrack } from './MediaPlayerContext';
 import { MediaPlayerContext } from './MediaPlayerContext';
@@ -28,7 +27,6 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 	const [currentTime, setCurrentTime] = useState(0);
 	const [duration, setDuration] = useState(0);
 	const [playbackRate, setPlaybackRate] = useState<number>(1);
-	const onLogout = useOnLogout();
 
 	const trackRef = useRef<PersistentAudioTrack | null>(null);
 	trackRef.current = track;
@@ -101,8 +99,6 @@ const MediaPlayerProvider = ({ children }: MediaPlayerProviderProps) => {
 		setCurrentTime(0);
 		setDuration(0);
 	});
-
-	useEffect(() => onLogout(close), [onLogout, close]);
 
 	const isActive = useCallback((id: string) => trackRef.current?.id === id, []);
 
