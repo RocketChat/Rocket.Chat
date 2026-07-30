@@ -42,12 +42,13 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	const user = useMemo(() => {
 		const defaultValue = isLoading ? undefined : null;
 
-		const { _id, name, utcOffset = defaultValue, nickname, avatarETag, freeSwitchExtension } = data?.user || {};
+		const { _id, name, title, utcOffset = defaultValue, nickname, avatarETag, freeSwitchExtension } = data?.user || {};
 
 		return {
 			_id,
 			name: getUserDisplayName(name, username, showRealNames),
 			username,
+			title,
 			roles: roomRoles.length > 0 && roomRoles.map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			workspaceRoles: workspaceRoles.length > 0 && workspaceRoles.join(', '),
 			etag: avatarETag,
@@ -82,17 +83,11 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 
 	const actions = useMemo(() => {
 		const mapAction = ([key, { content, title, icon, onClick, disabled }]: [string, UserInfoAction]) => (
-			<UserCardAction
-				key={key}
-				label={key === 'openDirectMessage' ? t('Message') : content || title}
-				icon={icon}
-				onClick={onClick}
-				disabled={disabled}
-			/>
+			<UserCardAction key={key} label={content || title} icon={icon} onClick={onClick} disabled={disabled} />
 		);
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
-	}, [actionsDefinition, menu, t]);
+	}, [actionsDefinition, menu]);
 
 	if (isLoading) {
 		return <UserCardSkeleton />;

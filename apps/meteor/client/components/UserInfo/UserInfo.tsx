@@ -1,5 +1,5 @@
 import type { IUser, Serialized } from '@rocket.chat/core-typings';
-import { Box, IconButton, Margins, Tag } from '@rocket.chat/fuselage';
+import { Box, Margins, Tag } from '@rocket.chat/fuselage';
 import {
 	useUserDisplayName,
 	ContextualbarScrollableContent,
@@ -17,7 +17,6 @@ import type { ReactNode } from 'react';
 import { memo, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import useClipboardWithToast from '../../hooks/useClipboardWithToast';
 import { useTimeAgo } from '../../hooks/useTimeAgo';
 import { useUserCustomFields } from '../../hooks/useUserCustomFields';
 import MarkdownText from '../MarkdownText';
@@ -25,6 +24,7 @@ import UTCClock from '../UTCClock';
 import { UserCardRoles } from '../UserCard';
 import UserInfoABACAttributes from './UserInfoABACAttributes';
 import UserInfoAvatar from './UserInfoAvatar';
+import UserInfoCopyableText from './UserInfoCopyableText';
 
 type UserInfoDataProps = Serialized<
 	Pick<
@@ -33,6 +33,9 @@ type UserInfoDataProps = Serialized<
 		| 'username'
 		| 'nickname'
 		| 'bio'
+		| 'title'
+		| 'nationality'
+		| 'languages'
 		| 'lastLogin'
 		| 'avatarETag'
 		| 'utcOffset'
@@ -63,6 +66,9 @@ const UserInfo = ({
 	lastLogin,
 	nickname,
 	bio,
+	title,
+	nationality,
+	languages,
 	avatarETag,
 	roles,
 	roomRoles,
@@ -86,9 +92,14 @@ const UserInfo = ({
 	const timeAgo = useTimeAgo();
 	const userDisplayName = useUserDisplayName({ name, username });
 	const userCustomFields = useUserCustomFields(customFields);
-	const { copy: copyEmail } = useClipboardWithToast(email ?? '');
 
 	const usernameId = useId();
+
+	const profileDetails = [
+		{ label: t('Title'), text: title },
+		{ label: t('Nationality'), text: nationality },
+		{ label: t('Languages'), text: languages?.join(', ') },
+	];
 
 	return (
 		<ContextualbarScrollableContent padding={24} {...props}>
@@ -111,15 +122,25 @@ const UserInfo = ({
 					{reason && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Reason_for_joining')}</InfoPanelLabel>
-							<InfoPanelText>{reason}</InfoPanelText>
+							<UserInfoCopyableText text={reason} />
 						</InfoPanelField>
 					)}
 
 					{nickname && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Nickname')}</InfoPanelLabel>
-							<InfoPanelText>{nickname}</InfoPanelText>
+							<UserInfoCopyableText text={nickname} />
 						</InfoPanelField>
+					)}
+
+					{profileDetails.map(
+						({ label, text }) =>
+							text && (
+								<InfoPanelField key={label}>
+									<InfoPanelLabel>{label}</InfoPanelLabel>
+									<UserInfoCopyableText text={text} />
+								</InfoPanelField>
+							),
 					)}
 
 					{roles?.length !== 0 && (
@@ -141,9 +162,7 @@ const UserInfo = ({
 							<InfoPanelLabel is='dt' id={usernameId}>
 								{t('Username')}
 							</InfoPanelLabel>
-							<InfoPanelText is='dd' aria-labelledby={usernameId}>
-								{username}
-							</InfoPanelText>
+							<UserInfoCopyableText is='dd' aria-labelledby={usernameId} text={username} />
 						</InfoPanelField>
 					)}
 
@@ -159,9 +178,9 @@ const UserInfo = ({
 					{bio && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Bio')}</InfoPanelLabel>
-							<InfoPanelText withTruncatedText={false}>
+							<UserInfoCopyableText text={bio} withTruncatedText={false}>
 								<MarkdownText variant='inline' content={bio} />
-							</InfoPanelText>
+							</UserInfoCopyableText>
 						</InfoPanelField>
 					)}
 
@@ -175,33 +194,32 @@ const UserInfo = ({
 					{phone && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Phone')}</InfoPanelLabel>
-							<InfoPanelText display='flex' flexDirection='row' alignItems='center'>
+							<UserInfoCopyableText text={phone}>
 								<Box is='a' withTruncatedText href={`tel:${phone}`}>
 									{phone}
 								</Box>
-							</InfoPanelText>
+							</UserInfoCopyableText>
 						</InfoPanelField>
 					)}
 
 					{email && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Email')}</InfoPanelLabel>
-							<InfoPanelText display='flex' flexDirection='row' alignItems='center'>
+							<UserInfoCopyableText text={email}>
 								<Box is='a' withTruncatedText href={`mailto:${email}`}>
 									{email}
 								</Box>
-								<IconButton mini icon='copy' title={t('Copy')} aria-label={t('Copy')} onClick={() => copyEmail()} />
 								<Margins inline={4}>
 									<Tag>{verified ? t('Verified') : t('Not_verified')}</Tag>
 								</Margins>
-							</InfoPanelText>
+							</UserInfoCopyableText>
 						</InfoPanelField>
 					)}
 
 					{freeSwitchExtension && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Voice_call_extension')}</InfoPanelLabel>
-							<InfoPanelText>{freeSwitchExtension}</InfoPanelText>
+							<UserInfoCopyableText text={freeSwitchExtension} />
 						</InfoPanelField>
 					)}
 
@@ -216,9 +234,9 @@ const UserInfo = ({
 							customField?.value && (
 								<InfoPanelField key={customField.value}>
 									<InfoPanelLabel>{t(customField.label as TranslationKey)}</InfoPanelLabel>
-									<InfoPanelText>
+									<UserInfoCopyableText text={customField.value}>
 										<MarkdownText content={customField.value} variant='inline' />
-									</InfoPanelText>
+									</UserInfoCopyableText>
 								</InfoPanelField>
 							),
 					)}

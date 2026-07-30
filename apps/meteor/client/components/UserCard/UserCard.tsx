@@ -42,6 +42,7 @@ export type UserCardProps = {
 		nickname?: string;
 		name?: string;
 		username?: string;
+		title?: string;
 		etag?: string;
 		customStatus?: ReactNode;
 		roles?: ReactNode;
@@ -54,7 +55,7 @@ export type UserCardProps = {
 } & ComponentProps<typeof UserCardDialog>;
 
 const UserCard = ({
-	user: { name, username, etag, customStatus, roles, workspaceRoles, status = <Status.Offline />, localTime, nickname } = {},
+	user: { name, username, title, etag, customStatus, roles, workspaceRoles, status = <Status.Offline />, localTime, nickname } = {},
 	actions,
 	onOpenUserInfo,
 	...props
@@ -114,21 +115,26 @@ const UserCard = ({
 				</Box>
 			</Box>
 			<Box display='flex' flexDirection='column' marginBlockStart='x18'>
-				{(roles || localTime || username) && (
+				{(roles || localTime || username || title) && (
 					<Box is='dl' display='flex' flexDirection='column' margin={0}>
+						{username && name !== username && (
+							<UserCardListItem icon='at' label={t('Username')}>
+								{username}
+							</UserCardListItem>
+						)}
+						{title && (
+							<UserCardListItem icon='card' label={t('Title')}>
+								{title}
+							</UserCardListItem>
+						)}
 						{roles && (
-							<UserCardListItem icon='user' label={t('Roles')}>
+							<UserCardListItem icon='shield-blank' label={t('Room_roles')}>
 								<UserCardRoles>{roles}</UserCardRoles>
 							</UserCardListItem>
 						)}
 						{localTime && (
 							<UserCardListItem icon='clock' label={t('Local_Time')}>
 								{localTime}
-							</UserCardListItem>
-						)}
-						{username && name !== username && (
-							<UserCardListItem icon='at' label={t('Username')}>
-								{username}
 							</UserCardListItem>
 						)}
 					</Box>

@@ -15,12 +15,13 @@ import { useChangeOwnerAction } from './actions/useChangeOwnerAction';
 import { useDirectMessageAction } from './actions/useDirectMessageAction';
 import { useIgnoreUserAction } from './actions/useIgnoreUserAction';
 import { useMuteUserAction } from './actions/useMuteUserAction';
+import { useRedirectModerationConsole } from './actions/useRedirectModerationConsole';
 import { useRemoveUserAction } from './actions/useRemoveUserAction';
 import { useReportUser } from './actions/useReportUser';
 import { useUserMediaCallAction } from './actions/useUserMediaCallAction';
 import { useVideoCallAction } from './actions/useVideoCallAction';
 
-export type UserInfoActionType = 'communication' | 'privileges' | 'management' | 'moderation';
+export type UserInfoActionType = 'communication' | 'privileges' | 'management' | 'moderation' | 'admin';
 
 type UserInfoActionWithOnlyIcon = {
 	type?: UserInfoActionType;
@@ -76,6 +77,7 @@ export const useUserInfoActions = ({
 	const blockUser = useBlockUserAction(user, rid);
 	const changeLeader = useChangeLeaderAction(user, rid);
 	const changeModerator = useChangeModeratorAction(user, rid);
+	const openModerationConsole = useRedirectModerationConsole(user._id);
 	const changeOwner = useChangeOwnerAction(user, rid);
 	const openDirectMessage = useDirectMessageAction(user, rid);
 	const ignoreUser = useIgnoreUserAction(user, rid);
@@ -103,6 +105,7 @@ export const useUserInfoActions = ({
 			...((isMember || isInvited) && removeUser && { removeUser }),
 			...((isMember || isInvited) && banUser && { banUser }),
 			...(reportUserOption && { reportUser: reportUserOption }),
+			...(isMember && openModerationConsole && { openModerationConsole }),
 		}),
 		[
 			openDirectMessage,
@@ -117,6 +120,7 @@ export const useUserInfoActions = ({
 			blockUser,
 			removeUser,
 			reportUserOption,
+			openModerationConsole,
 			addUser,
 			banUser,
 			isMember,

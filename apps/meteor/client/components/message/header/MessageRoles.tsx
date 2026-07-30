@@ -17,7 +17,7 @@ const MessageRoles = ({ workspaceRoles, roomRoles, isBot, onClick }: MessageRole
 			return null;
 		}
 
-		const extra = roles.length > 1 ? ` (${t('Plus_count_roles', { count: roles.length - 1 })})` : '';
+		const extra = roles.length > 1 ? ` +${roles.length - 1}` : '';
 
 		return (
 			<MessageRole title={`${label}: ${roles.join(', ')}`} onClick={onClick}>

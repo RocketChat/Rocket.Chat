@@ -24,7 +24,7 @@ export type UserCardListItemProps = {
 const UserCardListItem = ({ icon, label, children, ...props }: UserCardListItemProps) => {
 	const content = (
 		<>
-			{icon ? <Icon name={icon} size='x20' flexShrink={0} aria-hidden /> : <Box width='x20' flexShrink={0} aria-hidden />}
+			{icon ? <Icon name={icon} size='x20' flexShrink={0} title={label} aria-hidden /> : <Box width='x20' flexShrink={0} aria-hidden />}
 			<Box flexGrow={1} flexShrink={1} width='1px' marginInlineStart='x4'>
 				{children}
 			</Box>

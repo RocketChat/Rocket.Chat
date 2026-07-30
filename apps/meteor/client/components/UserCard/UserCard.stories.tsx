@@ -5,6 +5,7 @@ import { UserCard, UserCardRole, UserCardAction } from '.';
 const user = {
 	name: 'Guilherme Gazzo',
 	username: 'guilherme.gazzo',
+	title: 'VP of People',
 	customStatus: '🛴 currently working on User Card',
 	workspaceRoles: 'Admin, Livechat Agent',
 	roles: (
