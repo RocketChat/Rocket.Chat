@@ -71,7 +71,7 @@ const InvitesPage = () => {
 	const headers = useMemo(
 		() => (
 			<>
-				<GenericTableHeaderCell width={notSmall ? '20%' : '80%'}>{t('Invite')}</GenericTableHeaderCell>
+				<GenericTableHeaderCell width={notSmall ? '20%' : '80%'}>{t('Room')}</GenericTableHeaderCell>
 				{notSmall && (
 					<>
 						<GenericTableHeaderCell width='35%'>{t('Created_at')}</GenericTableHeaderCell>
