@@ -77,7 +77,7 @@ const RoomMessage = ({
 	const editing = useIsMessageHighlight(message._id);
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
 	const ignored = (ignoredUser || message.ignored) && !displayIgnoredMessage;
-	const { openUserCard, triggerProps } = useUserCard();
+	const { openUserCard, openUserInfo, triggerProps } = useUserCard();
 	const mentionsWithSymbol = useUserPreference<boolean>('mentionsWithSymbol');
 
 	const selecting = useIsSelecting();
@@ -130,6 +130,7 @@ const RoomMessage = ({
 						title={mentionsWithSymbol ? `@${message.u.username}` : message.u.username}
 						size='x36'
 						onMouseEnter={(e) => openUserCard(e, message.u.username)}
+						onClick={() => openUserInfo(message.u.username)}
 						style={{ cursor: 'pointer' }}
 						{...triggerProps}
 					/>

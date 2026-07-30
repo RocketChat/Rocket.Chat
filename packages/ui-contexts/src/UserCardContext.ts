@@ -5,6 +5,7 @@ import { createContext } from 'react';
 
 export type UserCardContextValue = {
 	openUserCard: (e: UIEvent, username: string) => void;
+	openUserInfo: (username: string) => void;
 	closeUserCard: () => void;
 	triggerProps: AriaButtonProps<'button'>;
 	triggerRef: MutableRefObject<Element | null>;
@@ -13,6 +14,7 @@ export type UserCardContextValue = {
 
 export const UserCardContext = createContext<UserCardContextValue>({
 	openUserCard: () => undefined,
+	openUserInfo: () => undefined,
 	closeUserCard: () => undefined,
 	triggerProps: {},
 	triggerRef: { current: null },

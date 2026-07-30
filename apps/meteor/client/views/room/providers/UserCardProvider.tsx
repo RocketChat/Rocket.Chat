@@ -86,6 +86,14 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 		state.close();
 	});
 
+	// Opens the full profile straight from a message trigger (avatar/name
+	// click), dismissing any pending or open card on the way.
+	const handleOpenUserInfo = useStableCallback((username?: string) => {
+		clearTimers();
+		state.close();
+		openUserInfo(username);
+	});
+
 	const handleTriggerLeave = useStableCallback(() => {
 		// Only cancels a pending open; once the card is open, closing is
 		// handled by the document mousemove tracking below.
@@ -183,12 +191,13 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 	const contextValue = useMemo(
 		() => ({
 			openUserCard: handleSetUserCard,
+			openUserInfo: handleOpenUserInfo,
 			closeUserCard,
 			triggerProps,
 			triggerRef,
 			state,
 		}),
-		[handleSetUserCard, closeUserCard, state, triggerProps],
+		[handleSetUserCard, handleOpenUserInfo, closeUserCard, state, triggerProps],
 	);
 
 	return (

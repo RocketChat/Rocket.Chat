@@ -46,7 +46,7 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 
 	const formatTime = useMessageListFormatTime();
 	const formatDateAndTime = useMessageListFormatDateAndTime();
-	const { triggerProps, openUserCard } = useUserCard();
+	const { triggerProps, openUserCard, openUserInfo } = useUserCard();
 
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
 	const usernameAndRealNameAreSame = !user.name || user.username === user.name;
@@ -69,10 +69,11 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 				aria-haspopup='dialog'
 				style={{ cursor: 'pointer' }}
 				onMouseEnter={(e) => openUserCard(e, message.u.username)}
+				onClick={() => openUserInfo(message.u.username)}
 				onKeyDown={(e) => {
 					if (e.key === 'Enter' || e.key === ' ') {
 						e.preventDefault();
-						openUserCard(e, message.u.username);
+						openUserInfo(message.u.username);
 					}
 				}}
 				{...triggerProps}

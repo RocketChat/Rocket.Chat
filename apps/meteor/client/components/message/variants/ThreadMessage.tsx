@@ -26,7 +26,7 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMe
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
 	const [ignored, toggleIgnoring] = useToggle((message as { ignored?: boolean }).ignored);
-	const { openUserCard, triggerProps } = useUserCard();
+	const { openUserCard, openUserInfo, triggerProps } = useUserCard();
 	const mentionsWithSymbol = useUserPreference<boolean>('mentionsWithSymbol');
 
 	// Checks if is videoconf message to limit toolbox actions
@@ -56,6 +56,7 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMe
 						title={mentionsWithSymbol ? `@${message.u.username}` : message.u.username}
 						size='x36'
 						onMouseEnter={(e) => openUserCard(e, message.u.username)}
+						onClick={() => openUserInfo(message.u.username)}
 						style={{ cursor: 'pointer' }}
 						{...triggerProps}
 					/>

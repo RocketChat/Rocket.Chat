@@ -59,7 +59,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	const { t } = useTranslation();
 	const formatTime = useMessageListFormatTime();
 	const formatDateAndTime = useMessageListFormatDateAndTime();
-	const { triggerProps, openUserCard } = useUserCard();
+	const { triggerProps, openUserCard, openUserInfo } = useUserCard();
 
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
 	const displayName = useUserDisplayName(user);
@@ -105,10 +105,11 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 						aria-haspopup='dialog'
 						style={{ cursor: 'pointer' }}
 						onMouseEnter={(e) => openUserCard(e, user.username)}
+						onClick={() => openUserInfo(user.username)}
 						onKeyDown={(e) => {
 							if (e.key === 'Enter' || e.key === ' ') {
 								e.preventDefault();
-								openUserCard(e, user.username);
+								openUserInfo(user.username);
 							}
 						}}
 						{...triggerProps}
