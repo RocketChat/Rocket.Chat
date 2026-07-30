@@ -3765,7 +3765,7 @@
   "Mobile_Push_Notifications_Default_Alert": "Push Notifications Default Alert",
   "Mobile_apps": "Mobile apps",
   "Moderation": "Moderation",
-  "Moderation_Action_View_reports": "View reported messages",
+  "Moderation_Action_View_reports": "Reported messages",
   "Moderation_Are_you_sure_you_want_to_deactivate_this_user": "User will be unable to log in unless reactivated. All reported messages will be permanently deleted from their respective room.",
   "Moderation_Are_you_sure_you_want_to_delete_all_reported_messages_from_this_user": "All reported messages from this user will be permanently deleted from their respective room and the report will be dismissed.",
   "Moderation_Are_you_sure_you_want_to_delete_this_message": "This message will be permanently deleted from its respective room and the report will be dismissed.",
