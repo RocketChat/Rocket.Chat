@@ -137,11 +137,7 @@ const textToMessageToken = (textOrRoot: string | Root, parseOptions: Options): R
 		return textOrRoot;
 	}
 
-	if (textOrRoot.length > getMarkdownParserLimit()) {
-		return toPlainTextRoot(textOrRoot);
-	}
-
-	const parsedMessage = parse(textOrRoot, parseOptions);
+	const parsedMessage = textOrRoot.length > getMarkdownParserLimit() ? toPlainTextRoot(textOrRoot) : parse(textOrRoot, parseOptions);
 
 	const parsedMessageCleaned = parsedMessage[0].type !== 'LINE_BREAK' ? parsedMessage : (parsedMessage.slice(1) as Root);
 
