@@ -31,8 +31,16 @@ export async function findUsersOfRoomOrderedByRole({
 	extraQuery = [],
 }: FindUsersParam): Promise<{ members: UserWithRoleAndSubscriptionData[]; total: number }> {
 	const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',');
-	const termRegex = new RegExp(escapeRegExp(filter), 'i');
-	const orStmt = filter && searchFields.length ? searchFields.map((field) => ({ [field.trim()]: termRegex })) : [];
+	const normalizedFilter = filter.trim();
+
+	const termRegex = new RegExp(escapeRegExp(normalizedFilter), 'i');
+
+	const orStmt =
+		normalizedFilter && searchFields.length
+			? searchFields.map((field) => ({
+				[field.trim()]: termRegex,
+			}))
+			: [];
 
 	const { rolePriority: rolePrioritySort, username: usernameSort } = sort;
 
@@ -42,8 +50,8 @@ export async function findUsersOfRoomOrderedByRole({
 		...(usernameSort
 			? { username: usernameSort }
 			: {
-					...(settings.get('UI_Use_Real_Name') ? { name: 1 } : { username: 1 }),
-				}),
+				...(settings.get('UI_Use_Real_Name') ? { name: 1 } : { username: 1 }),
+			}),
 	};
 
 	const matchUserFilter = {
@@ -56,7 +64,7 @@ export async function findUsersOfRoomOrderedByRole({
 					...(exceptions.length > 0 && { $nin: exceptions }),
 				},
 				...(status && { status }),
-				...(filter && orStmt.length > 0 && { $or: orStmt }),
+				...(normalizedFilter && orStmt.length > 0 && { $or: orStmt }),
 			},
 			...extraQuery,
 		],
