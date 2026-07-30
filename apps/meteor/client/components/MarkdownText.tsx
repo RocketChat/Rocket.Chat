@@ -30,8 +30,8 @@ const MarkdownText = ({ content, withTruncatedText = false, variant, preserveHtm
 		return (
 			<Box
 				withTruncatedText={withTruncatedText}
-				className={[boxProps.className, keepLineBreaks && preserveLineBreaks].flat()}
 				{...boxProps}
+				className={[boxProps.className, keepLineBreaks && preserveLineBreaks].flat()}
 			>
 				{content}
 			</Box>
