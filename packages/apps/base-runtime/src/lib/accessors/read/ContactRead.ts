@@ -7,7 +7,7 @@ import type * as Messenger from '../../messenger';
 export class ContactRead implements IContactRead {
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}
 
-	public getById(contactId: ILivechatContact['_id']): Promise<ILivechatContact | undefined> {
-		return bridgeCall<ILivechatContact | undefined>(this.senderFn, 'getContactBridge', 'doGetById', contactId, 'APP_ID');
+	public getById(contactId: ILivechatContact['_id']): Promise<ILivechatContact | null> {
+		return bridgeCall<ILivechatContact | null>(this.senderFn, 'getContactBridge', 'doGetById', contactId, 'APP_ID');
 	}
 }

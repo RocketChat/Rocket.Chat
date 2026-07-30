@@ -7,7 +7,9 @@ import type * as Messenger from '../../messenger';
 export class ThreadRead implements IThreadRead {
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}
 
-	public getThreadById(id: string): Promise<Array<IMessage>> {
-		return bridgeCall<Array<IMessage>>(this.senderFn, 'getThreadBridge', 'doGetById', id, 'APP_ID');
+	public async getThreadById(id: string): Promise<Array<IMessage> | undefined> {
+		const messages = await bridgeCall<Array<IMessage> | null>(this.senderFn, 'getThreadBridge', 'doGetById', id, 'APP_ID');
+
+		return messages ?? undefined;
 	}
 }
