@@ -146,7 +146,7 @@ export const _setUsername = async function (
 
 		// If it's the first username and the user has an invite Token, then join the invite room
 		if (!previousUsername && user.inviteToken) {
-			const inviteData = await Invites.findOneById(user.inviteToken);
+			const inviteData = await Invites.findOneByInviteToken(user.inviteToken);
 			if (inviteData?.rid) {
 				await addUserToRoom(inviteData.rid, user);
 			}

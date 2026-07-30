@@ -69,7 +69,7 @@ const invites = API.v1
 		{
 			authRequired: true,
 			response: {
-				200: ajv.compile<Omit<IInvite, 'inviteToken'>[]>({
+				200: ajv.compile<(Omit<IInvite, 'inviteToken'> & { roomName?: string })[]>({
 					additionalProperties: false,
 					type: 'array',
 					items: {
@@ -87,6 +87,10 @@ const invites = API.v1
 							},
 							rid: {
 								type: 'string',
+							},
+							roomName: {
+								type: 'string',
+								nullable: true,
 							},
 							userId: {
 								type: 'string',

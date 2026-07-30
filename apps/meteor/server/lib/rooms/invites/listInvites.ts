@@ -1,5 +1,5 @@
 import type { IInvite } from '@rocket.chat/core-typings';
-import { Invites } from '@rocket.chat/models';
+import { Invites, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../authorization/hasPermission';
@@ -26,9 +26,13 @@ export const listInvites = async (userId: string) => {
 		}
 	}
 
+	const rids = [...new Set(invites.map((invite) => invite.rid))];
+	const rooms = await Rooms.findByIds(rids, { projection: { name: 1, fname: 1 } }).toArray();
+	const roomNameByRid = new Map(rooms.map((room) => [room._id, room.fname || room.name]));
+
 	// Remove inviteToken from the response
 	return invites.map((invite) => {
 		const { inviteToken, ...inviteWithoutToken } = invite as IInvite & { inviteToken?: string };
-		return inviteWithoutToken;
+		return { ...inviteWithoutToken, roomName: roomNameByRid.get(invite.rid) };
 	});
 };
