@@ -17,8 +17,8 @@ export class UserCard {
 		return expect(this.root).not.toBeVisible();
 	}
 
-	get btnSeeMemberProfile(): Locator {
-		return this.root.getByRole('button', { name: 'See member profile', exact: true });
+	get btnFullProfile(): Locator {
+		return this.root.getByRole('button', { name: 'Full profile', exact: true });
 	}
 
 	get imgUserCard(): Locator {
@@ -26,6 +26,6 @@ export class UserCard {
 	}
 
 	async openUserInfo() {
-		await this.btnSeeMemberProfile.click();
+		await this.btnFullProfile.click();
 	}
 }

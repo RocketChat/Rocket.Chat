@@ -141,7 +141,7 @@ const UserCard = ({
 							textDecorationLine='underline'
 							onClick={onOpenUserInfo}
 						>
-							{t('See_member_profile')}
+							{t('Full_profile')}
 						</Box>
 					</UserCardListItem>
 				)}

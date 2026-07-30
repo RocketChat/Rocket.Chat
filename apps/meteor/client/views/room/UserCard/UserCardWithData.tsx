@@ -1,5 +1,6 @@
 import { getUserDisplayName } from '@rocket.chat/core-typings';
 import type { IRoom } from '@rocket.chat/core-typings';
+import { IconButton } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
@@ -78,7 +79,16 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			return null;
 		}
 
-		return <GenericMenu title={t('More')} key='menu' sections={menuOptions} placement='bottom-start' callbackAction={onClose} />;
+		return (
+			<GenericMenu
+				button={<IconButton icon='kebab' secondary small />}
+				title={t('More')}
+				key='menu'
+				sections={menuOptions}
+				placement='bottom-start'
+				callbackAction={onClose}
+			/>
+		);
 	}, [menuOptions, onClose, t]);
 
 	const actions = useMemo(() => {
