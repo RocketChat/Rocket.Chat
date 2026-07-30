@@ -4,15 +4,15 @@ import type { ReactElement } from 'react';
 import ComposerInlineElements from './ComposerInlineElements';
 import { listMarkerStyle } from './listMarkerStyle';
 
-type ComposerUnorderedListProps = {
+type ComposerOrderedListProps = {
 	items: MessageParser.ListItem[];
 };
 
-const ComposerUnorderedList = ({ items }: ComposerUnorderedListProps): ReactElement => (
+const ComposerOrderedList = ({ items }: ComposerOrderedListProps): ReactElement => (
 	<span>
 		{items.map((item, index) => (
 			<span key={index}>
-				<span style={listMarkerStyle}>{'- '}</span>
+				<span style={listMarkerStyle}>{`${item.number}. `}</span>
 				<ComposerInlineElements>{item.value}</ComposerInlineElements>
 				{'\n'}
 			</span>
@@ -20,4 +20,4 @@ const ComposerUnorderedList = ({ items }: ComposerUnorderedListProps): ReactElem
 	</span>
 );
 
-export default ComposerUnorderedList;
+export default ComposerOrderedList;

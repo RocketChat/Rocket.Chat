@@ -5,6 +5,7 @@ import { memo, useContext } from 'react';
 import ComposerCodeBlock from './ComposerCodeBlock';
 import ComposerInlineElements from './ComposerInlineElements';
 import { ComposerMarkupContext } from './ComposerMarkupContext';
+import ComposerOrderedList from './ComposerOrderedList';
 import ComposerPlainSpan from './ComposerPlainSpan';
 import ComposerUnorderedList from './ComposerUnorderedList';
 import { sourceOf } from './sourceOf';
@@ -92,17 +93,7 @@ const ComposerMarkup = ({ tokens }: ComposerMarkupProps): ReactElement => {
 						return <ComposerUnorderedList key={index} items={block.value} />;
 
 					case 'ORDERED_LIST':
-						return (
-							<span key={index}>
-								{block.value.map((item, iidx) => (
-									<span key={iidx}>
-										{`${item.number}. `}
-										<ComposerInlineElements>{item.value}</ComposerInlineElements>
-										{'\n'}
-									</span>
-								))}
-							</span>
-						);
+						return <ComposerOrderedList key={index} items={block.value} />;
 
 					case 'TASKS':
 						return (
