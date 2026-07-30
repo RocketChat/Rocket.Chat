@@ -7,8 +7,8 @@ import { useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import MarkdownText from '../../../../components/MarkdownText';
 import MessageContentBody from '../../../../components/message/MessageContentBody';
+import { toPlainTextRoot } from '../../../../lib/toPlainTextRoot';
 
 type ReportMessageModalsFields = {
 	description: string;
@@ -60,7 +60,7 @@ const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps) => {
 			confirmText={t('Report')}
 		>
 			<Box marginBlockEnd={24} className={wordBreak}>
-				{message.md ? <MessageContentBody md={message.md} /> : <MarkdownText variant='inline' parseEmoji content={message.msg} />}
+				<MessageContentBody md={message.md ?? toPlainTextRoot(message.msg)} />
 			</Box>
 			<FieldGroup>
 				<Field>
