@@ -71,10 +71,11 @@ const reducer = (_: unknown, event: FormEvent<HTMLElement>): TypingState => {
 		target.innerHTML = '<br>';
 	}
 
+	const text = target.innerText.replace(/\n$/, '');
+
 	return {
-		isTyping: Boolean(target.innerText.trim()),
-		// Show placeholder only if there's exactly one <br> and nothing else
-		hideplaceholder: Boolean(childNodes.length !== 1 || childNodes[0].nodeName !== 'BR'),
+		isTyping: Boolean(text.trim()),
+		hideplaceholder: Boolean(text),
 	};
 };
 
