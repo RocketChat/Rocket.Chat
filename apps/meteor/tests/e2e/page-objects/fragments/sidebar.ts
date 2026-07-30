@@ -116,6 +116,66 @@ export class RoomSidebar extends Sidebar {
 	getSidebarListItemByName(name: string): Locator {
 		return this.channelsList.getByRole('listitem').filter({ has: this.getSidebarItemByName(name) });
 	}
+
+	getCategoryCollapser(name: string): Locator {
+		return this.channelsList.getByRole('region', { name: `Collapse ${name}` });
+	}
+
+	getCategoryKebab(name: string): Locator {
+		return this.getCategoryCollapser(name).getByRole('button', { name: 'Options', exact: true });
+	}
+
+	async openCategoryMenu(name: string): Promise<void> {
+		await this.getCategoryCollapser(name).hover();
+		await this.getCategoryKebab(name).click();
+	}
+
+	async openRoomMenu(name: string): Promise<void> {
+		const item = this.getSidebarItemByName(name);
+		await item.hover();
+		await item.focus();
+		await item.getByRole('button', { name: 'Options', exact: true }).click();
+	}
+
+	/** Move a room into a custom category (or to "Favorites") through the kebab "Move to ▸" submenu. */
+	async moveRoomToCategory(roomName: string, categoryName: string): Promise<void> {
+		await this.openRoomMenu(roomName);
+		await this.page.getByRole('menuitem', { name: 'Move to' }).hover();
+		await this.page.getByRole('menuitem', { name: categoryName, exact: true }).click();
+	}
+
+	async removeRoomFromCategory(roomName: string, categoryName: string): Promise<void> {
+		await this.openRoomMenu(roomName);
+		await this.page.getByRole('menuitem', { name: 'Move to' }).hover();
+		await this.page.getByRole('menuitem', { name: `Remove from ${categoryName}` }).click();
+	}
+
+	async createCategoryFromRoom(roomName: string): Promise<void> {
+		await this.openRoomMenu(roomName);
+		await this.page.getByRole('menuitem', { name: 'Move to' }).hover();
+		await this.page.getByRole('menuitem', { name: 'New category', exact: true }).click();
+	}
+
+	async moveRoomToFavorites(roomName: string): Promise<void> {
+		await this.openRoomMenu(roomName);
+		await this.page.getByRole('menuitem', { name: 'Move to' }).hover();
+		await this.page.getByRole('menuitem', { name: 'Favorites', exact: true }).click();
+	}
+
+	async removeRoomFromFavorites(roomName: string): Promise<void> {
+		await this.openRoomMenu(roomName);
+		await this.page.getByRole('menuitem', { name: 'Move to' }).hover();
+		await this.page.getByRole('menuitem', { name: 'Remove from Favorites' }).click();
+	}
+
+	roomMenuMoveToItem(name: string | RegExp): Locator {
+		return this.page.getByRole('menuitem', { name });
+	}
+
+	async openRoomMoveToSubmenu(roomName: string): Promise<void> {
+		await this.openRoomMenu(roomName);
+		await this.page.getByRole('menuitem', { name: 'Move to' }).hover();
+	}
 }
 
 export class AdminSidebar extends Sidebar {

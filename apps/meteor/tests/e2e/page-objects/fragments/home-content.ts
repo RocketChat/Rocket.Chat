@@ -30,6 +30,23 @@ export class HomeContent {
 		return this.page.locator('main header');
 	}
 
+	get headerGroupingButton(): Locator {
+		return this.channelHeader.getByRole('button', { name: 'Move to' });
+	}
+
+	headerGroupingIcon(name: 'star' | 'star-filled' | 'folder'): Locator {
+		return this.headerGroupingButton.locator(`.rcx-icon--name-${name}`);
+	}
+
+	async openHeaderGroupingMenu(): Promise<void> {
+		await this.headerGroupingButton.click();
+	}
+
+	async pickHeaderGroupingTarget(name: string | RegExp): Promise<void> {
+		await this.openHeaderGroupingMenu();
+		await this.page.getByRole('menuitem', { name }).click();
+	}
+
 	get burgerButton(): Locator {
 		return this.channelHeader.getByRole('button', { name: 'Open sidebar' });
 	}

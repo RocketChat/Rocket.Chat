@@ -1,10 +1,14 @@
-import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
+import type { ILivechatInquiryRecord, ISidebarCustomCategory } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
 import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
+import { useAllGroupsOrder } from './useAllGroupsOrder';
+import { useCustomCategories } from './useCustomCategories';
+import { useKeepUnreadsOnTopGroups } from './useKeepUnreadsOnTopGroups';
+import { useShowUnreadsGroups } from './useShowUnreadsGroups';
 import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../views/omnichannel/hooks/useQueuedInquiries';
@@ -27,22 +31,55 @@ const order = [
 	'Conversations',
 ] as const;
 
-type useRoomListReturnType = {
-	roomList: Array<SubscriptionWithRoom>;
-	groupsCount: number[];
-	groupsList: TranslationKey[];
-	groupedUnreadInfo: Pick<
-		SubscriptionWithRoom,
-		'userMentions' | 'groupMentions' | 'unread' | 'tunread' | 'tunreadUser' | 'tunreadGroup' | 'alert' | 'hideUnreadStatus'
-	>[];
+type GroupUnreadInfo = {
+	userMentions: number;
+	groupMentions: number;
+	tunread: string[];
+	tunreadUser: string[];
+	unread: number;
 };
+
+export type SidebarRoomListGroup = {
+	/** Collapse/show-unreads identity: translation key for system groups, category id for custom ones. */
+	key: string;
+	/** Raw title — a translation key for system groups (translate it), the category name for custom ones. */
+	title: string;
+	translateTitle: boolean;
+	category?: ISidebarCustomCategory;
+	showUnreads: boolean;
+	/** When opened, whether unread rooms are sorted to the top of the category. */
+	keepUnreadsOnTop: boolean;
+	collapsed: boolean;
+	/** Rooms to render — already filtered for collapse + "Show unreads". */
+	rooms: SubscriptionWithRoom[];
+	unreadInfo: GroupUnreadInfo;
+	/** A custom category with no rooms (renders the empty placeholder). */
+	empty: boolean;
+};
+
+type useRoomListReturnType = {
+	groups: SidebarRoomListGroup[];
+	groupsCount: number[];
+	totalCount: number;
+};
+
+export const isUnreadRoom = (room: SubscriptionWithRoom): boolean =>
+	!room.hideUnreadStatus && Boolean(room.alert || room.unread || room.tunread?.length);
+
 export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] }): useRoomListReturnType => {
 	const showOmnichannel = useOmnichannelEnabled();
+	// "Types" grouping toggle: on = Teams/Channels/Discussions/DMs; off = everything in "Conversations".
 	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
-	const favoritesEnabled = useUserPreference('sidebarShowFavorites');
+	// "Group by" checkboxes: group favorites into a "Favorites" group / unread rooms into an "Unread" group.
+	const favoritesEnabled = useUserPreference<boolean>('sidebarShowFavorites', true);
 	const sidebarOrder = useUserPreference<typeof order>('sidebarSectionsOrder') ?? order;
 	const isDiscussionEnabled = useSetting('Discussion_enabled');
-	const sidebarShowUnread = useUserPreference('sidebarShowUnread');
+	const sidebarShowUnread = useUserPreference<boolean>('sidebarShowUnread', false);
+
+	const { categories: customCategories } = useCustomCategories();
+	const { isShowUnreads } = useShowUnreadsGroups();
+	const { isKeepUnreadsOnTop } = useKeepUnreadsOnTopGroups();
+	const { sortGroups: sortAllGroups } = useAllGroupsOrder();
 
 	const options = useSortQueryOptions();
 
@@ -54,20 +91,28 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 	const queue = inquiries.enabled ? inquiries.queue : emptyQueue;
 
-	const { groupsCount, groupsList, roomList, groupedUnreadInfo } = useDebouncedValue(
+	const unsortedGroups = useDebouncedValue(
 		useMemo(() => {
-			const isCollapsed = (groupTitle: string) => collapsedGroups?.includes(groupTitle);
+			const isCollapsed = (key: string) => collapsedGroups?.includes(key) ?? false;
 
-			const incomingCall = new Set();
-			const favorite = new Set();
-			const team = new Set();
-			const omnichannel = new Set();
-			const unread = new Set();
-			const channels = new Set();
-			const direct = new Set();
-			const discussion = new Set();
-			const conversation = new Set();
-			const onHold = new Set();
+			const incomingCall = new Set<SubscriptionWithRoom>();
+			const unread = new Set<SubscriptionWithRoom>();
+			const favorite = new Set<SubscriptionWithRoom>();
+			const team = new Set<SubscriptionWithRoom>();
+			const omnichannel = new Set<SubscriptionWithRoom>();
+			const channels = new Set<SubscriptionWithRoom>();
+			const direct = new Set<SubscriptionWithRoom>();
+			const discussion = new Set<SubscriptionWithRoom>();
+			const conversation = new Set<SubscriptionWithRoom>();
+			const onHold = new Set<SubscriptionWithRoom>();
+
+			// Map assigned rooms to their custom category, seeding an (initially empty) set per category.
+			const roomToCategory = new Map<string, string>();
+			const customSets = new Map<string, Set<SubscriptionWithRoom>>();
+			customCategories.forEach((category) => {
+				customSets.set(category._id, new Set<SubscriptionWithRoom>());
+				category.rooms?.forEach((rid) => roomToCategory.set(rid, category._id));
+			});
 
 			rooms.forEach((room) => {
 				if (room.archived) {
@@ -78,10 +123,21 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 					return incomingCall.add(room);
 				}
 
-				if (sidebarShowUnread && (room.alert || room.unread || room.tunread?.length) && !room.hideUnreadStatus) {
+				// A room in a custom category is shown only there (exclusive with everything below). An explicit
+				// category assignment wins over the Unread/Favorites groupings; "keep unreads on top" handles
+				// unread emphasis within the category. When custom categories are hidden, the room falls through.
+				const categoryId = roomToCategory.get(room.rid);
+				if (categoryId && customSets.has(categoryId)) {
+					customSets.get(categoryId)?.add(room);
+					return;
+				}
+
+				// "Unread" grouping: pull unread rooms to a dedicated group when the toggle is on.
+				if (sidebarShowUnread && isUnreadRoom(room)) {
 					return unread.add(room);
 				}
 
+				// "Favorites" grouping: gated by its own "Group by" checkbox.
 				if (favoritesEnabled && room.f) {
 					return favorite.add(room);
 				}
@@ -99,11 +155,11 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 				}
 
 				if (room.t === 'l' && room.onHold) {
-					return showOmnichannel && onHold.add(room);
+					return void (showOmnichannel && onHold.add(room));
 				}
 
 				if (room.t === 'l') {
-					return showOmnichannel && omnichannel.add(room);
+					return void (showOmnichannel && omnichannel.add(room));
 				}
 
 				if (room.t === 'd') {
@@ -113,102 +169,127 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 				conversation.add(room);
 			});
 
-			const groups = new Map<string, Set<any>>();
+			const groups = new Map<string, Set<SubscriptionWithRoom>>();
 			incomingCall.size && groups.set('Incoming_Calls', incomingCall);
 
-			showOmnichannel && inquiries.enabled && queue.length && groups.set('Incoming_Livechats', new Set(queue));
+			showOmnichannel &&
+				inquiries.enabled &&
+				queue.length &&
+				groups.set('Incoming_Livechats', new Set(queue) as unknown as Set<SubscriptionWithRoom>);
 			showOmnichannel && omnichannel.size && groups.set('Open_Livechats', omnichannel);
 			showOmnichannel && onHold.size && groups.set('On_Hold_Chats', onHold);
 
+			// "Unread" grouping renders only when the toggle is on and there are unread rooms.
 			sidebarShowUnread && unread.size && groups.set('Unread', unread);
 
-			favoritesEnabled && favorite.size && groups.set('Favorites', favorite);
+			// Favorites is a pre-created grouping: when its toggle is on it stays visible even when empty.
+			favoritesEnabled && groups.set('Favorites', favorite);
 
-			sidebarGroupByType && team.size && groups.set('Teams', team);
+			// System type categories always render (even when empty) so a room can be moved back to them.
+			sidebarGroupByType && groups.set('Teams', team);
 
-			sidebarGroupByType && isDiscussionEnabled && discussion.size && groups.set('Discussions', discussion);
+			sidebarGroupByType && isDiscussionEnabled && groups.set('Discussions', discussion);
 
-			sidebarGroupByType && channels.size && groups.set('Channels', channels);
+			sidebarGroupByType && groups.set('Channels', channels);
 
-			sidebarGroupByType && direct.size && groups.set('Direct_Messages', direct);
+			sidebarGroupByType && groups.set('Direct_Messages', direct);
 
 			!sidebarGroupByType && groups.set('Conversations', conversation);
 
-			const { groupsCount, groupsList, roomList, groupedUnreadInfo } = sidebarOrder.reduce(
-				(acc, key) => {
-					const value = groups.get(key);
+			const emptyUnreadInfo = (): GroupUnreadInfo => ({ userMentions: 0, groupMentions: 0, tunread: [], tunreadUser: [], unread: 0 });
 
-					if (!value) {
-						return acc;
+			const buildUnreadInfo = (set: Set<SubscriptionWithRoom>): GroupUnreadInfo =>
+				[...set].reduce<GroupUnreadInfo>((counter, room) => {
+					if (room.hideUnreadStatus) {
+						return counter;
 					}
+					counter.userMentions += room.userMentions || 0;
+					counter.groupMentions += room.groupMentions || 0;
+					counter.tunread = [...counter.tunread, ...(room.tunread || [])];
+					counter.tunreadUser = [...counter.tunreadUser, ...(room.tunreadUser || [])];
+					counter.unread += room.unread || 0;
+					!room.unread && !room.tunread?.length && room.alert && (counter.unread += 1);
+					return counter;
+				}, emptyUnreadInfo());
 
-					acc.groupsList.push(key as TranslationKey);
+			const makeGroup = (
+				key: string,
+				title: string,
+				translateTitle: boolean,
+				set: Set<SubscriptionWithRoom>,
+				category?: ISidebarCustomCategory,
+			): SidebarRoomListGroup => {
+				const collapsed = isCollapsed(key);
+				const showUnreads = category ? category.showUnreads !== false : isShowUnreads(key);
+				const keepUnreadsOnTop = category ? Boolean(category.keepUnreadsOnTop) : isKeepUnreadsOnTop(key);
+				const allRooms = [...set];
+				// When collapsed, keep unread rooms visible if "Show unreads" is enabled.
+				const collapsedRooms = allRooms.filter((room) => showUnreads && isUnreadRoom(room));
+				let displayRooms = collapsed ? collapsedRooms : allRooms;
 
-					const groupedUnreadInfoAcc = {
-						userMentions: 0,
-						groupMentions: 0,
-						tunread: [],
-						tunreadUser: [],
-						unread: 0,
-					};
+				// "Keep unreads on top": stable-partition so unread rooms come first, each partition keeping the
+				// configured sort (activity / a-z) it already has from the subscription query.
+				if (keepUnreadsOnTop) {
+					displayRooms = [...displayRooms.filter(isUnreadRoom), ...displayRooms.filter((room) => !isUnreadRoom(room))];
+				}
 
-					if (isCollapsed(key)) {
-						const groupedUnreadInfo = [...value].reduce(
-							(counter, { userMentions, groupMentions, tunread, tunreadUser, unread, alert, hideUnreadStatus }) => {
-								if (hideUnreadStatus) {
-									return counter;
-								}
+				return {
+					key,
+					title,
+					translateTitle,
+					category,
+					showUnreads,
+					keepUnreadsOnTop,
+					collapsed,
+					rooms: displayRooms,
+					// The header total badge is only useful when the unread rooms are hidden — i.e. collapsed AND
+					// "Show unreads" off. With "Show unreads" on, the unread rooms stay visible (with their own
+					// counters) even collapsed, so the header acts as when open and shows no badge.
+					unreadInfo: collapsed && !showUnreads ? buildUnreadInfo(set) : emptyUnreadInfo(),
+					empty: allRooms.length === 0,
+				};
+			};
 
-								counter.userMentions += userMentions || 0;
-								counter.groupMentions += groupMentions || 0;
-								counter.tunread = [...counter.tunread, ...(tunread || [])];
-								counter.tunreadUser = [...counter.tunreadUser, ...(tunreadUser || [])];
-								counter.unread += unread || 0;
-								!unread && !tunread?.length && alert && (counter.unread += 1);
-								return counter;
-							},
-							groupedUnreadInfoAcc,
-						);
-
-						acc.groupedUnreadInfo.push(groupedUnreadInfo);
-						acc.groupsCount.push(0);
-						return acc;
-					}
-
-					acc.groupedUnreadInfo.push(groupedUnreadInfoAcc);
-					acc.groupsCount.push(value.size);
-					acc.roomList.push(...value);
-					return acc;
-				},
-				{
-					groupsCount: [],
-					groupsList: [],
-					roomList: [],
-					groupedUnreadInfo: [],
-				} as useRoomListReturnType,
+			// Custom categories render above the system groups and persist even when empty — unless hidden.
+			const customGroups = customCategories.map((category) =>
+				makeGroup(category._id, category.name, false, customSets.get(category._id) ?? new Set<SubscriptionWithRoom>(), category),
 			);
+			const systemGroups = sidebarOrder.reduce<SidebarRoomListGroup[]>((acc, key) => {
+				const set = groups.get(key);
+				if (set) {
+					acc.push(makeGroup(key, key, true, set));
+				}
+				return acc;
+			}, []);
 
-			return { groupsCount, groupsList, roomList, groupedUnreadInfo };
+			return [...customGroups, ...systemGroups];
 		}, [
 			rooms,
 			showOmnichannel,
 			inquiries.enabled,
 			queue,
-			sidebarShowUnread,
 			favoritesEnabled,
+			sidebarShowUnread,
 			sidebarGroupByType,
 			isDiscussionEnabled,
 			sidebarOrder,
 			collapsedGroups,
 			incomingCalls,
+			customCategories,
+			isShowUnreads,
+			isKeepUnreadsOnTop,
 		]),
 		50,
 	);
 
+	// Group ordering is applied AFTER the debounce so that "Move up / Move down"
+	// takes effect immediately rather than waiting for the 50 ms settling period.
+	const allGroups = sortAllGroups(unsortedGroups);
+	const groupsCount = allGroups.map((group) => (group.empty ? 0 : group.rooms.length));
+
 	return {
-		roomList,
+		groups: allGroups,
 		groupsCount,
-		groupsList,
-		groupedUnreadInfo,
+		totalCount: groupsCount.reduce((acc, count) => acc + count, 0),
 	};
 };
