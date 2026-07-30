@@ -96,9 +96,9 @@ export const useUserInfoActions = ({
 		() => ({
 			...(openDirectMessage && !isLayoutEmbedded && { openDirectMessage }),
 			...(editProfile && { editProfile }),
-			...(isMember && muteUser && { muteUser }),
 			...(videoCall && { videoCall }),
 			...(userMediaCall && { userMediaCall }),
+			...(isMember && muteUser && { muteUser }),
 			...(!isMember && addUser && { addUser }),
 			...(isMember && changeOwner && { changeOwner }),
 			...(isMember && changeLeader && { changeLeader }),
