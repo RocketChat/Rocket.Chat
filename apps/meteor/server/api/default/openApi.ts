@@ -135,7 +135,9 @@ app.use(
 	swaggerUi.serve,
 	swaggerUi.setup(null, {
 		swaggerOptions: {
-			url: `${settings.get('Site_Url')}/api/docs/json`,
+			// Relative on purpose: this runs at import time, before settings are loaded, so
+			// `Site_Url` would render as "undefined" here.
+			url: '/api/docs/json',
 		},
 	}),
 );
