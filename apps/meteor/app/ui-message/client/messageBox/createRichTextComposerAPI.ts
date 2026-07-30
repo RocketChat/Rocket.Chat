@@ -229,7 +229,7 @@ export const createRichTextComposerAPI = (
 			setSelectionRange(input, 0, 0);
 		},
 		get text(): string {
-			return input.innerText;
+			return input.innerText.replace(/\n$/, '');
 		},
 		get selection(): { start: number; end: number } {
 			const { selectionStart, selectionEnd } = getSelectionRange(input);
