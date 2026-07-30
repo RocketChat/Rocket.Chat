@@ -10,7 +10,6 @@ import type { VideoConference } from '@rocket.chat/apps-engine/definition/videoC
 import type { IVideoConferenceUser } from '@rocket.chat/apps-engine/definition/videoConferences/IVideoConferenceUser';
 
 import type { ProxiedApp } from '../ProxiedApp';
-import type { AppAccessorManager } from './AppAccessorManager';
 import { JSONRPC_METHOD_NOT_FOUND } from '../runtime/base/BaseRuntimeSubprocessController';
 import type { AppLogStorage } from '../storage';
 
@@ -31,12 +30,12 @@ export class AppVideoConfProvider {
 		this.isRegistered = true;
 	}
 
-	public async runIsFullyConfigured(logStorage: AppLogStorage, accessors: AppAccessorManager): Promise<boolean> {
-		return !!(await this.runTheCode(AppMethod._VIDEOCONF_IS_CONFIGURED, logStorage, accessors, []));
+	public async runIsFullyConfigured(logStorage: AppLogStorage): Promise<boolean> {
+		return !!(await this.runTheCode(AppMethod._VIDEOCONF_IS_CONFIGURED, logStorage, []));
 	}
 
-	public async runGenerateUrl(call: VideoConfData, logStorage: AppLogStorage, accessors: AppAccessorManager): Promise<string> {
-		return (await this.runTheCode(AppMethod._VIDEOCONF_GENERATE_URL, logStorage, accessors, [call])) as string;
+	public async runGenerateUrl(call: VideoConfData, logStorage: AppLogStorage): Promise<string> {
+		return (await this.runTheCode(AppMethod._VIDEOCONF_GENERATE_URL, logStorage, [call])) as string;
 	}
 
 	public async runCustomizeUrl(
@@ -44,35 +43,28 @@ export class AppVideoConfProvider {
 		user: IVideoConferenceUser | undefined,
 		options: IVideoConferenceOptions = {},
 		logStorage: AppLogStorage,
-		accessors: AppAccessorManager,
 	): Promise<string> {
-		return (await this.runTheCode(AppMethod._VIDEOCONF_CUSTOMIZE_URL, logStorage, accessors, [call, user, options])) as string;
+		return (await this.runTheCode(AppMethod._VIDEOCONF_CUSTOMIZE_URL, logStorage, [call, user, options])) as string;
 	}
 
-	public async runOnNewVideoConference(call: VideoConference, logStorage: AppLogStorage, accessors: AppAccessorManager): Promise<void> {
-		await this.runTheCode(AppMethod._VIDEOCONF_NEW, logStorage, accessors, [call]);
+	public async runOnNewVideoConference(call: VideoConference, logStorage: AppLogStorage): Promise<void> {
+		await this.runTheCode(AppMethod._VIDEOCONF_NEW, logStorage, [call]);
 	}
 
-	public async runOnVideoConferenceChanged(call: VideoConference, logStorage: AppLogStorage, accessors: AppAccessorManager): Promise<void> {
-		await this.runTheCode(AppMethod._VIDEOCONF_CHANGED, logStorage, accessors, [call]);
+	public async runOnVideoConferenceChanged(call: VideoConference, logStorage: AppLogStorage): Promise<void> {
+		await this.runTheCode(AppMethod._VIDEOCONF_CHANGED, logStorage, [call]);
 	}
 
-	public async runOnUserJoin(
-		call: VideoConference,
-		user: IVideoConferenceUser | undefined,
-		logStorage: AppLogStorage,
-		accessors: AppAccessorManager,
-	): Promise<void> {
-		await this.runTheCode(AppMethod._VIDEOCONF_USER_JOINED, logStorage, accessors, [call, user]);
+	public async runOnUserJoin(call: VideoConference, user: IVideoConferenceUser | undefined, logStorage: AppLogStorage): Promise<void> {
+		await this.runTheCode(AppMethod._VIDEOCONF_USER_JOINED, logStorage, [call, user]);
 	}
 
 	public async runGetVideoConferenceInfo(
 		call: VideoConference,
 		user: IVideoConferenceUser | undefined,
 		logStorage: AppLogStorage,
-		accessors: AppAccessorManager,
 	): Promise<Array<IBlock> | undefined> {
-		return (await this.runTheCode(AppMethod._VIDEOCONF_GET_INFO, logStorage, accessors, [call, user])) as Array<IBlock> | undefined;
+		return (await this.runTheCode(AppMethod._VIDEOCONF_GET_INFO, logStorage, [call, user])) as Array<IBlock> | undefined;
 	}
 
 	private async runTheCode(
@@ -85,7 +77,6 @@ export class AppVideoConfProvider {
 			| AppMethod._VIDEOCONF_GET_INFO
 			| AppMethod._VIDEOCONF_USER_JOINED,
 		_logStorage: AppLogStorage,
-		_accessors: AppAccessorManager,
 		runContextArgs: Array<any>,
 	): Promise<string | boolean | Array<IBlock> | undefined> {
 		const provider = this.provider.name;
