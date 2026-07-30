@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/vscode/devcontainers/base:ubuntu
+FROM mcr.microsoft.com/vscode/devcontainers/base:ubuntu-24.04
 
 # Pinned versions are read from the repo so the image stays in sync with CI:
 #   - package.json               -> engines.node / volta.node, packageManager (yarn)
@@ -32,7 +32,6 @@ RUN mkdir -p $VOLTA_HOME && \
     curl https://get.volta.sh | bash -s -- --skip-setup && \
     volta install node@$(jq -r '.volta.node' /tmp/package.json) && \
     volta install yarn@$(jq -r '.volta.yarn' /tmp/package.json) && \
-    volta install gitnexus@latest && \
     echo 'export VOLTA_HOME="/usr/local/volta"\nexport PATH="$VOLTA_HOME/bin:$PATH"' >> /etc/profile.d/volta.sh
 
 # --- Deno (pinned) ------------------------------------------------------------
