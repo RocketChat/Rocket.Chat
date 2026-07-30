@@ -21,7 +21,7 @@ import LeaveMessage from '../../routes/LeaveMessage';
 import Register from '../../routes/Register';
 import SwitchDepartment from '../../routes/SwitchDepartment';
 import TriggerMessage from '../../routes/TriggerMessage';
-import type { Dispatch, StoreState } from '../../store';
+import store, { type Dispatch, type StoreState } from '../../store';
 import { ScreenProvider } from '../Screen/ScreenProvider';
 
 type AppProps = {
@@ -54,7 +54,7 @@ type AppProps = {
 	iframe: StoreState['iframe'];
 };
 
-export const App = ({ config, gdpr, user, dispatch, minimized, undocked, iframe }: AppProps) => {
+export const App = ({ config, gdpr, user, dispatch }: AppProps) => {
 	const { t } = useTranslation();
 
 	const [initialized, setInitialized] = useState(false);
@@ -104,7 +104,11 @@ export const App = ({ config, gdpr, user, dispatch, minimized, undocked, iframe 
 			dispatch({ visible: !visibility.hidden });
 		};
 
+		// Reads from the store at call time (after Connection.init has loaded the
+		// config), not from the mount-render closure whose config is still the
+		// initial empty state — otherwise Triggers.init() never runs.
 		const handleTriggers = () => {
+			const { config } = store.state;
 			if (config.online && config.enabled) {
 				Triggers.init();
 			}
@@ -113,6 +117,7 @@ export const App = ({ config, gdpr, user, dispatch, minimized, undocked, iframe 
 		};
 
 		const initWidget = () => {
+			const { config, minimized, iframe, undocked } = store.state;
 			if (!undocked) {
 				parentCall(minimized ? 'minimizeWindow' : 'restoreWindow');
 				parentCall(iframe.visible ? 'showWidget' : 'hideWidget');
