@@ -19,7 +19,7 @@ type UnregisterView = (view: AvailableViews) => void;
 
 type WidgetVisibility = 'open' | 'closed';
 
-type MediaCallInstanceContextValue = {
+export type MediaCallInstanceContextValue = {
 	instance: MediaSignalingSession | undefined;
 	signalEmitter: Emitter<Signals>;
 	audioElement: RefObject<HTMLAudioElement | null> | undefined;

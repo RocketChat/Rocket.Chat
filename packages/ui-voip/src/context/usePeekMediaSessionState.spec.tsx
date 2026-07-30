@@ -3,9 +3,8 @@ import type { CallRole, CallState } from '@rocket.chat/media-signaling';
 import { renderHook, act } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
-import type { Signals } from './MediaCallInstanceContext';
-import { MediaCallInstanceContext } from './MediaCallInstanceContext';
 import { usePeekMediaSessionState } from './usePeekMediaSessionState';
+import MockedInstanceProvider from '../providers/MockedInstanceProvider';
 
 type MockInstance = {
 	getState: () => { state: CallState; localParticipant: { role: CallRole } } | null;
@@ -14,21 +13,7 @@ type MockInstance = {
 
 const createWrapper = (instance: MockInstance | undefined) => {
 	const wrapper = ({ children }: { children?: ReactNode }) => (
-		<MediaCallInstanceContext.Provider
-			value={{
-				currentViews: [],
-				registerView: () => undefined,
-				unregisterView: () => undefined,
-				instance: instance as any,
-				signalEmitter: new Emitter<Signals>(),
-				audioElement: undefined,
-				openRoomId: undefined,
-				setOpenRoomId: () => undefined,
-				getAutocompleteOptions: () => Promise.resolve([]),
-			}}
-		>
-			{children}
-		</MediaCallInstanceContext.Provider>
+		<MockedInstanceProvider instance={instance as any}>{children}</MockedInstanceProvider>
 	);
 	return wrapper;
 };
