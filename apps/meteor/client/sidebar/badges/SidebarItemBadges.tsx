@@ -3,7 +3,6 @@ import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
 import UnreadBadge from './UnreadBadge';
 import InvitationBadge from '../../components/InvitationBadge';
-import ReactionBadge from './ReactionBadge';
 import OmnichannelBadges from '../../views/omnichannel/components/OmnichannelBadges';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
@@ -18,7 +17,6 @@ const SidebarItemBadges = ({ room, roomTitle }: SidebarItemBadgesProps) => {
 	return (
 		<>
 			{showUnread && <UnreadBadge title={unreadTitle} roomTitle={roomTitle} variant={unreadVariant} total={unreadCount.total} />}
-			{unreadCount.reactions > 0 && <ReactionBadge title={unreadTitle} roomTitle={roomTitle} total={unreadCount.reactions} />}
 			{isOmnichannelRoom(room) && <OmnichannelBadges room={room} />}
 			{isInviteSubscription(room) && <InvitationBadge mbs={2} invitationDate={room.ts} />}
 		</>

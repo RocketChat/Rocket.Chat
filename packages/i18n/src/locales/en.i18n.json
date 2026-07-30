@@ -4373,6 +4373,8 @@
   "React_with__reaction__": "Reacted with {{reaction}}",
   "Reacted_with": "Reacted with",
   "Reaction_Notification": "{{name}} reacted with {{reaction}} to your message: {{message}}",
+  "Reaction_Notifications_Enabled": "Enable reaction notifications",
+  "Reaction_Notifications_Enabled_Description": "Master switch for notifying message authors when someone reacts to their message. Users can still opt out individually in their notification preferences.",
   "Reactions": "Reactions",
   "Read_Receipts": "Read receipts",
   "Read_by": "Read by",
@@ -6659,10 +6661,6 @@
   "mentions_counter": {
     "one": "{{count}} mention",
     "other": "{{count}} mentions"
-  },
-  "reactions_counter": {
-    "one": "{{count}} reaction",
-    "other": "{{count}} reactions"
   },
   "message": "message",
   "message-impersonate": "Impersonate Other Users",
