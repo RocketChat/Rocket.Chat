@@ -20,6 +20,11 @@ const ajvQuery = new Ajv({
 addFormats(ajv);
 addFormats(ajvQuery);
 
+// `example` is an OpenAPI annotation, not a validation keyword — declaring it lets schemas carry
+// their own documentation without tripping AJV's strict mode.
+ajv.addVocabulary(['example']);
+ajvQuery.addVocabulary(['example']);
+
 ajv.addFormat('basic_email', /^[^@]+@[^@]+$/);
 ajv.addFormat(
 	'rfc_email',
