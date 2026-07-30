@@ -75,6 +75,7 @@ const UserCard = ({
 					backgroundColor='tint'
 					fontScale='c1'
 					color='default'
+					title={t('Workspace_roles')}
 					withTruncatedText
 				>
 					<Box is='span' className={srOnly}>{`${t('Workspace_roles')}: `}</Box>
@@ -86,18 +87,9 @@ const UserCard = ({
 					{username && <UserAvatar username={username} etag={etag} size='x36' />}
 					<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} marginInlineStart='x4' withTruncatedText>
 						<Box display='flex' alignItems='center' withTruncatedText>
-							<UserCardUsername is='h2' status={status} name={name} />
+							<UserCardUsername is='h2' flexGrow={0} flexBasis='auto' status={status} name={name} />
 							{nickname && (
-								<Box
-									flexGrow={1}
-									flexShrink={1}
-									flexBasis={0}
-									title={nickname}
-									color='hint'
-									marginInlineStart='x4'
-									fontScale='p2'
-									withTruncatedText
-								>
+								<Box flexShrink={1} title={nickname} color='hint' marginInlineStart='x4' fontScale='p1' withTruncatedText>
 									({nickname})
 								</Box>
 							)}
