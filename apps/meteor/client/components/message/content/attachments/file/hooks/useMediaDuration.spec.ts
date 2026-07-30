@@ -51,10 +51,13 @@ describe('useMediaDuration', () => {
 	it('ignores a non-finite or zero duration', () => {
 		const { result } = renderHook(() => useMediaDuration('/audio-b.mp3'));
 
+		resolveMetadata(created[0], 90);
+		expect(result.current).toBe(90);
+
 		resolveMetadata(created[0], Infinity);
 		resolveMetadata(created[0], 0);
 
-		expect(result.current).toBe(0);
+		expect(result.current).toBe(90);
 	});
 
 	it('serves a cached duration without a new metadata request', () => {
