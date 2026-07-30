@@ -954,10 +954,17 @@ describe('LIVECHAT - business hours', () => {
 		it('should create a new agent and verify if it is assigned to the default business hour which is open', async () => {
 			agent = await createAgent(agent.username);
 
-			const latestAgent: ILivechatAgent = await getMe(agentCredentials);
-			expect(latestAgent).to.be.an('object');
-			expect(latestAgent.openBusinessHours).to.be.an('array').of.length(1);
-			expect(latestAgent?.openBusinessHours?.[0]).to.be.equal(defaultBH._id);
+			// the BH assignment runs on a fire-and-forget callback, so the create-agent request returns before it lands
+			await retry(
+				'agent BH assignment is async, so openBusinessHours may still be unset on the first fetch',
+				async () => {
+					const latestAgent: ILivechatAgent = await getMe(agentCredentials);
+					expect(latestAgent).to.be.an('object');
+					expect(latestAgent.openBusinessHours).to.be.an('array').of.length(1);
+					expect(latestAgent?.openBusinessHours?.[0]).to.be.equal(defaultBH._id);
+				},
+				{ retries: 20, delayMs: 250 },
+			);
 		});
 
 		it('should create a new agent and verify if it is assigned to the default business hour which is closed', async () => {
@@ -978,10 +985,18 @@ describe('LIVECHAT - business hours', () => {
 			const newUserCredentials = await login(newUser.username, password);
 			await createAgent(newUser.username);
 
-			const latestAgent: ILivechatAgent = await getMe(newUserCredentials);
-			expect(latestAgent).to.be.an('object');
-			expect(latestAgent.openBusinessHours).to.be.undefined;
-			expect(latestAgent.statusLivechat).to.be.equal(ILivechatAgentStatus.NOT_AVAILABLE);
+			// createAgent sets the agent as available first and the async callback moves it to not-available, so the
+			// first fetch can still show the intermediate available state
+			await retry(
+				'agent BH assignment is async, so statusLivechat may still be available on the first fetch',
+				async () => {
+					const latestAgent: ILivechatAgent = await getMe(newUserCredentials);
+					expect(latestAgent).to.be.an('object');
+					expect(latestAgent.openBusinessHours).to.be.undefined;
+					expect(latestAgent.statusLivechat).to.be.equal(ILivechatAgentStatus.NOT_AVAILABLE);
+				},
+				{ retries: 20, delayMs: 250 },
+			);
 
 			// cleanup
 			await deleteUser(newUser);
