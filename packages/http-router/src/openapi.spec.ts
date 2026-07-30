@@ -30,6 +30,8 @@ describe('toOpenAPIPath', () => {
 		expect(toOpenAPIPath('/api/v1/rooms/:rid/:fileId')).toBe('/api/v1/rooms/{rid}/{fileId}');
 		expect(toOpenAPIPath('/api/v1/settings/:_id?')).toBe('/api/v1/settings/{_id}');
 		expect(toOpenAPIPath('/api/v1/banners')).toBe('/api/v1/banners');
+		expect(toOpenAPIPath('/api//docs/json')).toBe('/api/docs/json');
+		expect(toOpenAPIPath('/api/apps//{id}/export-logs')).toBe('/api/apps/{id}/export-logs');
 	});
 });
 
@@ -202,9 +204,68 @@ describe('buildOperation', () => {
 		expect(build('GET', '/api/v1/me', { authRequired: true }).security).toEqual([{ userId: [], authToken: [] }]);
 	});
 
-	it('should generate a unique operation id per method and path', () => {
-		expect(buildOperationId('GET', '/api/v1/banners/{id}')).toBe('getApiV1BannersId');
-		expect(buildOperationId('POST', '/api/v1/banners.dismiss')).toBe('postApiV1BannersDismiss');
+	it('should generate the operation id published at developer.rocket.chat', () => {
+		expect(buildOperationId('GET', '/api/v1/banners/{id}')).toBe('get-api-v1-banners-id');
+		expect(buildOperationId('POST', '/api/v1/banners.dismiss')).toBe('post-api-v1-banners.dismiss');
+	});
+	it('should render named scenarios as an examples map', () => {
+		const operation = build('GET', '/api/v1/rooms.info', {
+			response: { 200: okSchema, 400: okSchema },
+			examples: {
+				response: {
+					200: {
+						byId: { summary: 'Looked up by id', value: { success: true } },
+						byName: { value: { success: true } },
+					},
+					400: { success: false, error: 'error-room-not-found' },
+				},
+			},
+		});
+
+		expect(operation.responses[200].content?.['application/json'].examples).toEqual({
+			byId: { summary: 'Looked up by id', value: { success: true } },
+			byName: { value: { success: true } },
+		});
+		expect(operation.responses[200].content?.['application/json'].example).toBeUndefined();
+		expect(operation.responses[400].content?.['application/json'].example).toEqual({ success: false, error: 'error-room-not-found' });
+	});
+
+	it('should render named scenarios for the request body too', () => {
+		const body = ajv.compile({ type: 'object', properties: { roomId: { type: 'string' } } });
+		const operation = build('POST', '/api/v1/chat.postMessage', {
+			body,
+			examples: { body: { minimal: { value: { roomId: 'GENERAL' } }, withAttachment: { value: { roomId: 'GENERAL' } } } },
+		});
+
+		expect(Object.keys(operation.requestBody?.content['application/json'].examples ?? {})).toEqual(['minimal', 'withAttachment']);
+	});
+
+	it('should treat a payload that merely has a "value" key as a single example', () => {
+		const operation = build('GET', '/api/v1/settings/{_id}', { examples: { response: { 200: { value: 'a setting value' } } } });
+
+		expect(operation.responses[200].content?.['application/json'].example).toEqual({ value: 'a setting value' });
+		expect(operation.responses[200].content?.['application/json'].examples).toBeUndefined();
+	});
+
+	it('should honor a per-status content type', () => {
+		const operation = build('GET', '/api/v1/shield.svg', { responseContentType: { 200: 'image/svg+xml' } });
+
+		expect(Object.keys(operation.responses[200].content ?? {})).toEqual(['image/svg+xml']);
+		expect(Object.keys(operation.responses[400].content ?? {})).toEqual(['application/json']);
+	});
+
+	it('should merge declared response headers with the rate limit ones', () => {
+		const operation = build('GET', '/api/v1/rooms.media/{rid}', {
+			responseHeaders: { 200: { 'Content-Disposition': { description: 'Attachment file name', schema: { type: 'string' } } } },
+		});
+
+		expect(Object.keys(operation.responses[200].headers ?? {})).toEqual([
+			'X-RateLimit-Limit',
+			'X-RateLimit-Remaining',
+			'X-RateLimit-Reset',
+			'Content-Disposition',
+		]);
+		expect(build('GET', '/api/v1/x', { rateLimiterOptions: false }).responses[200].headers).toBeUndefined();
 	});
 });
 
@@ -215,7 +276,7 @@ describe('withOperationIds', () => {
 			'/api/v1/banners': { get: build('GET', '/v1/banners', { operationId: 'listBanners' }) },
 		});
 
-		expect(paths['/api/v1/banners/{id}'].get.operationId).toBe('getApiV1BannersId');
+		expect(paths['/api/v1/banners/{id}'].get.operationId).toBe('get-api-v1-banners-id');
 		expect(paths['/api/v1/banners'].get.operationId).toBe('listBanners');
 	});
 });
