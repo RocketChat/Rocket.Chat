@@ -24,7 +24,7 @@ describe('setUsername', () => {
 			broadcast: sinon.stub(),
 		},
 		Invites: {
-			findOneById: sinon.stub(),
+			findOneByInviteToken: sinon.stub(),
 		},
 		callbacks: {
 			run: sinon.stub(),
@@ -77,7 +77,7 @@ describe('setUsername', () => {
 		stubs.Accounts.sendEnrollmentEmail.reset();
 		stubs.settings.get.reset();
 		stubs.api.broadcast.reset();
-		stubs.Invites.findOneById.reset();
+		stubs.Invites.findOneByInviteToken.reset();
 		stubs.callbacks.run.reset();
 		stubs.checkUsernameAvailability.reset();
 		stubs.validateUsername.reset();
@@ -302,7 +302,7 @@ describe('setUsername', () => {
 			stubs.checkUsernameAvailability.resolves(true);
 			stubs.settings.get.withArgs('Accounts_SetDefaultAvatar').returns(true);
 			stubs.getAvatarSuggestionForUser.resolves({ gravatar: { blob: 'blobData', contentType: 'image/png' } });
-			stubs.Invites.findOneById.resolves({ rid: 'room id' });
+			stubs.Invites.findOneByInviteToken.resolves({ rid: 'room id' });
 
 			await _setUsername(userId, username, mockUser);
 

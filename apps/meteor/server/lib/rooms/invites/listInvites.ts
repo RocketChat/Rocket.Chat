@@ -1,4 +1,5 @@
-import { Invites } from '@rocket.chat/models';
+import type { IInvite } from '@rocket.chat/core-typings';
+import { Invites, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../authorization/hasPermission';
@@ -12,5 +13,26 @@ export const listInvites = async (userId: string) => {
 		throw new Meteor.Error('not_authorized');
 	}
 
-	return Invites.find({}).toArray();
+	const invites = await Invites.find({}).toArray();
+
+	// Ensure all invites have inviteToken (for legacy invites that might not have it)
+	for (const invite of invites) {
+		const inviteWithToken = invite as IInvite & { inviteToken?: string };
+		if (!inviteWithToken.inviteToken) {
+			const inviteToken = crypto.randomUUID();
+			// eslint-disable-next-line no-await-in-loop
+			await Invites.updateOne({ _id: invite._id }, { $set: { inviteToken } });
+			inviteWithToken.inviteToken = inviteToken;
+		}
+	}
+
+	const rids = [...new Set(invites.map((invite) => invite.rid))];
+	const rooms = await Rooms.findByIds(rids, { projection: { name: 1, fname: 1 } }).toArray();
+	const roomNameByRid = new Map(rooms.map((room) => [room._id, room.fname || room.name]));
+
+	// Remove inviteToken from the response
+	return invites.map((invite) => {
+		const { inviteToken, ...inviteWithoutToken } = invite as IInvite & { inviteToken?: string };
+		return { ...inviteWithoutToken, roomName: roomNameByRid.get(invite.rid) };
+	});
 };

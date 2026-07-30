@@ -5,6 +5,8 @@ import type { IBaseModel } from './IBaseModel';
 
 export interface IInvitesModel extends IBaseModel<IInvite> {
 	findOneByUserRoomMaxUsesAndExpiration(userId: string, rid: string, maxUses: number, daysToExpire: number): Promise<IInvite | null>;
+	findOneByInviteToken(inviteToken: string): Promise<IInvite | null>;
 	increaseUsageById(_id: string, uses: number): Promise<UpdateResult>;
 	countUses(): Promise<number>;
+	ensureInviteToken(_id: string): Promise<string>;
 }
