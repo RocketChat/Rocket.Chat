@@ -21,7 +21,7 @@ import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import { Cookies } from 'meteor/ostrio:cookies';
 import type { ClientSession, OptionalId } from 'mongodb';
-import sharp from 'sharp';
+import sharp, { type Sharp } from 'sharp';
 import type { WritableStreamBuffer } from 'stream-buffers';
 import streamBuffers from 'stream-buffers';
 
@@ -40,6 +40,9 @@ import { validateAndDecodeJWT, generateJWT } from '../../../utils/lib/JWTHelper'
 import { fileUploadIsValidContentType } from '../../../utils/restrictions';
 
 const cookie = new Cookies();
+
+// Bounds per-frame GIF decode cost; sharp's limitInputPixels alone doesn't catch a huge frame count with tiny per-frame dimensions.
+const MAX_ANIMATED_THUMBNAIL_PAGES = 50;
 let maxFileSize = 0;
 
 settings.watch('FileUpload_MaxFileSize', async (value: string) => {
@@ -326,9 +329,18 @@ export const FileUpload = {
 
 		file = FileUpload.addExtensionTo(file);
 		const store = FileUpload.getStore('Uploads');
-		const image = await store._store.getReadStream(file._id, file);
 
-		let transformer = sharp({ animated: file.type === 'image/gif' }).resize({ width, height, fit: 'inside' });
+		let transformer: Sharp;
+		if (file.type === 'image/gif') {
+			const buffer = await FileUpload.getBuffer(file);
+			const { pages: totalPages } = await sharp(buffer).metadata();
+			const pages = Math.min(totalPages ?? 1, MAX_ANIMATED_THUMBNAIL_PAGES);
+			transformer = sharp(buffer, { pages }).resize({ width, height, fit: 'inside' });
+		} else {
+			const image = await store._store.getReadStream(file._id, file);
+			transformer = sharp().resize({ width, height, fit: 'inside' });
+			image.pipe(transformer);
+		}
 
 		if (file.type === 'image/svg+xml') {
 			transformer = transformer.png();
@@ -341,7 +353,6 @@ export const FileUpload = {
 			thumbFileName: file?.name as string,
 			originalFileId: file?._id as string,
 		}));
-		image.pipe(transformer);
 
 		return result;
 	},
