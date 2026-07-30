@@ -1,6 +1,16 @@
 {
 	"name": "Rocket.Chat Dev",
-	"dockerComposeFile": "docker-compose.yml",
+	// The second file is generated on the host by initializeCommand (below) and
+	// is gitignored. It carries the git-dir bind mount needed when this checkout
+	// is a linked worktree, and is an empty stub otherwise. Listed
+	// unconditionally because compose file lists cannot be computed.
+	"dockerComposeFile": [
+		"docker-compose.yml",
+		"docker-compose.worktree.yml"
+	],
+	// Must run before the container is created: it writes the override file that
+	// the line above depends on. See the script for what breaks without it.
+	"initializeCommand": "bash '${localWorkspaceFolder}/.devcontainer/init-worktree.sh'",
 	"service": "app",
 	"workspaceFolder": "/workspaces/rocket.chat",
 	// Non-root user is required for `claude --dangerously-skip-permissions`,
@@ -15,6 +25,7 @@
 		// "ghcr.io/devcontainer-community/devcontainer-features/neovim.io:1": {},
 		"ghcr.io/devcontainers-extra/features/npm-packages:1": {
 			"packages": [
+				"@rocket.chat/apps-cli",
 				"gitnexus"
 			]
 		}
@@ -47,7 +58,30 @@
 	// Not recursive: yarn and meteor create everything below as vscode, so only
 	// the mount points themselves need fixing, and a recursive walk of a
 	// populated node_modules would add minutes to every container create.
-	"postCreateCommand": "sudo chown -R vscode:vscode /home/vscode/.claude && sudo chown vscode:vscode /workspaces/rocket.chat/node_modules /workspaces/rocket.chat/apps/meteor/.meteor/local",
+	//
+	// This is onCreate rather than postCreate because updateContentCommand runs
+	// *between* the two, and it needs the volumes to already be writable.
+	//
+	// The git config is a safety belt for the worktree setup: the container can
+	// see the shared git dir but not the *other* worktrees' host paths, so from
+	// in here they all look like they "point to a non-existent location" and
+	// become prune candidates once past gc.worktreePruneExpire (default 3
+	// months). A routine `git gc` inside the container would then unregister
+	// worktrees that are perfectly healthy on the host — verified: it really
+	// does list all of them as removable.
+	//
+	// This covers `git gc`/`gc --auto`, which pass this value through as
+	// --expire. It does NOT cover an explicit `git worktree prune`: that
+	// defaults to expiring everything and ignores the config. Don't run it in
+	// here.
+	"onCreateCommand": "sudo chown -R vscode:vscode /home/vscode/.claude && sudo chown vscode:vscode /workspaces/rocket.chat/node_modules /workspaces/rocket.chat/apps/meteor/.meteor/local && git config --global gc.worktreePruneExpire never",
+	// Dependencies and build artifacts are content, not image: they live in the
+	// rc-node-modules volume and in each package's dist/, so they survive restarts
+	// and only need rebuilding when the repo content changes. Running here (rather
+	// than postCreate) also means prebuilds can bake the result into the image.
+	// Note this runs before postStartCommand, i.e. before the egress firewall is
+	// applied — which is what lets yarn reach the npm registry unimpeded.
+	"updateContentCommand": "yarn install && yarn build",
 	// Re-apply the egress firewall on every start (iptables state is not persisted).
 	// This is what makes `claude --dangerously-skip-permissions` safe to run here:
 	// egress is default-deny except for the allowlist in init-firewall.sh.
