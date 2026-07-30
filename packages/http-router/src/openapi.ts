@@ -13,6 +13,7 @@ export type OpenAPIParameter = {
 export type OpenAPIMediaType = {
 	schema: AnySchema;
 	example?: unknown;
+	examples?: Record<string, { summary?: string; description?: string; value: unknown }>;
 };
 
 export type OpenAPIResponse = {
@@ -59,7 +60,7 @@ type PermissionsRequired = string[] | Record<string, string[] | { operation: TOp
 export type OpenAPIDocumentation = {
 	summary?: string;
 	description?: string;
-	/** Defaults to `<method><PascalCasePath>`; set it only to keep a published id stable. */
+	/** Defaults to `<method>-<path>`, matching the ids published at developer.rocket.chat. */
 	operationId?: string;
 	deprecated?: boolean;
 	externalDocs?: OpenAPIExternalDocs;
@@ -70,14 +71,25 @@ export type OpenAPIDocumentation = {
 	params?: ValidateFunction;
 	/** Defaults to `application/json`; use for `multipart/form-data` uploads and friends. */
 	bodyContentType?: string;
+	/** Defaults to `application/json`; per status code, for endpoints answering images, text or files. */
+	responseContentType?: Partial<Record<number, string>>;
 	responseDescriptions?: Partial<Record<number, string>>;
+	/** Response headers worth documenting, per status code. Rate limit headers are added on their own. */
+	responseHeaders?: Partial<Record<number, Record<string, { description?: string; schema: AnySchema }>>>;
 	examples?: {
 		query?: Record<string, unknown>;
 		params?: Record<string, unknown>;
-		body?: unknown;
-		response?: Partial<Record<number, unknown>>;
+		/** A single unnamed example, or named scenarios when a payload has several shapes. */
+		body?: unknown | NamedExamples;
+		response?: Partial<Record<number, unknown | NamedExamples>>;
 	};
 };
+
+/**
+ * Named scenarios for a payload, rendered as OpenAPI Example Objects — the shape used to document
+ * alternatives ("room not found" vs "not a member") in a single response.
+ */
+export type NamedExamples = Record<string, { summary?: string; description?: string; value: unknown }>;
 
 /**
  * Documentation-relevant slice of a route's options. Both `TypedOptions` flavors (http-router and
@@ -210,8 +222,11 @@ const collectProperties = (schema: unknown): CollectedProperties | undefined => 
 	return { properties, required };
 };
 
-/** `/api/v1/rooms/:rid/:fileId` -> `/api/v1/rooms/{rid}/{fileId}` */
-export const toOpenAPIPath = (path: string): string => path.replace(/:([A-Za-z0-9_]+)\??/g, '{$1}');
+/**
+ * `/api/v1/rooms/:rid/:fileId` -> `/api/v1/rooms/{rid}/{fileId}`, collapsing the duplicate slashes
+ * that show up when a router prefixes a subpath that already starts with one.
+ */
+export const toOpenAPIPath = (path: string): string => path.replace(/:([A-Za-z0-9_]+)\??/g, '{$1}').replace(/\/{2,}/g, '/');
 
 const extractPathParameterNames = (path: string): { name: string; required: boolean }[] =>
 	[...path.matchAll(/:([A-Za-z0-9_]+)(\?)?/g)].map(([, name, optional]) => ({ name, required: !optional }));
@@ -310,12 +325,7 @@ const buildDescription = (method: string, options: OpenAPIDocsOptions): string |
  * prefixes them — so ids are filled in by `withOperationIds`, not at registration time.
  */
 export const buildOperationId = (method: string, path: string): string =>
-	`${method.toLowerCase()}${toOpenAPIPath(path)
-		.replace(/[{}]/g, '')
-		.split(/[^A-Za-z0-9]+/)
-		.filter(Boolean)
-		.map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-		.join('')}`;
+	[method.toLowerCase(), ...toOpenAPIPath(path).replace(/[{}]/g, '').split('/').filter(Boolean)].join('-');
 
 const implicitErrorStatuses = (method: string, options: OpenAPIDocsOptions): number[] => {
 	const statuses = [400, 500];
@@ -338,6 +348,33 @@ const implicitErrorStatuses = (method: string, options: OpenAPIDocsOptions): num
 const describeStatus = (status: number, options: OpenAPIDocsOptions): string =>
 	options.responseDescriptions?.[status] ?? STATUS_DESCRIPTIONS[status] ?? `Response with status ${status}`;
 
+const isNamedExamples = (examples: unknown): examples is NamedExamples =>
+	Boolean(examples) &&
+	typeof examples === 'object' &&
+	!Array.isArray(examples) &&
+	Object.values(examples as Record<string, unknown>).every(
+		(entry) => Boolean(entry) && typeof entry === 'object' && !Array.isArray(entry) && 'value' in (entry as object),
+	) &&
+	Object.keys(examples as object).length > 0;
+
+const buildResponseHeaders = (status: number, options: OpenAPIDocsOptions, rateLimited: boolean): Pick<OpenAPIResponse, 'headers'> => {
+	const headers = {
+		...(rateLimited && RATE_LIMIT_HEADERS),
+		...options.responseHeaders?.[status],
+	};
+
+	return Object.keys(headers).length ? { headers } : {};
+};
+
+/** Named scenarios become an `examples` map; anything else is a single unnamed `example`. */
+const buildMediaExamples = (examples: unknown): Pick<OpenAPIMediaType, 'example' | 'examples'> => {
+	if (examples === undefined) {
+		return {};
+	}
+
+	return isNamedExamples(examples) ? { examples } : { example: examples };
+};
+
 /** Builds the OpenAPI operation object for a single route. */
 export const buildOperation = (method: string, path: string, options: OpenAPIDocsOptions): Route => {
 	const rateLimited = options.rateLimiterOptions !== false;
@@ -349,17 +386,16 @@ export const buildOperation = (method: string, path: string, options: OpenAPIDoc
 		}
 
 		const code = Number(status);
-		const example = options.examples?.response?.[code];
 
 		responses[code] = {
 			description: describeStatus(code, options),
 			content: {
-				'application/json': {
+				[options.responseContentType?.[code] ?? 'application/json']: {
 					schema: getSchema(validator),
-					...(example !== undefined && { example }),
+					...buildMediaExamples(options.examples?.response?.[code]),
 				},
 			},
-			...(rateLimited && { headers: RATE_LIMIT_HEADERS }),
+			...buildResponseHeaders(code, options, rateLimited),
 		};
 	}
 
@@ -368,7 +404,7 @@ export const buildOperation = (method: string, path: string, options: OpenAPIDoc
 		responses[200] = {
 			description: describeStatus(200, options),
 			content: { 'application/json': { schema: SUCCESS_RESPONSE_REF } },
-			...(rateLimited && { headers: RATE_LIMIT_HEADERS }),
+			...buildResponseHeaders(200, options, rateLimited),
 		};
 	}
 
@@ -405,7 +441,7 @@ export const buildOperation = (method: string, path: string, options: OpenAPIDoc
 				content: {
 					[options.bodyContentType ?? 'application/json']: {
 						schema: bodySchema,
-						...(options.examples?.body !== undefined && { example: options.examples.body }),
+						...buildMediaExamples(options.examples?.body),
 					},
 				},
 			},

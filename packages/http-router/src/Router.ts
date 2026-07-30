@@ -338,7 +338,9 @@ export class Router<
 		if (innerRouter instanceof Router) {
 			this.typedRoutes = {
 				...this.typedRoutes,
-				...Object.fromEntries(Object.entries(innerRouter.typedRoutes).map(([path, routes]) => [`${this.base}${path}`, routes])),
+				...Object.fromEntries(
+					Object.entries(innerRouter.typedRoutes).map(([path, routes]) => [toOpenAPIPath(`${this.base}${path}`), routes]),
+				),
 			};
 
 			this.innerRouter.route(innerRouter.base, innerRouter.innerRouter);
