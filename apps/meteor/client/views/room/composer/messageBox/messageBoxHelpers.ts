@@ -1,6 +1,5 @@
 import type { ClipboardEvent } from 'react';
 
-import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
 import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
 import type { FormattingButton } from '../../../../lib/messageBoxFormatting';

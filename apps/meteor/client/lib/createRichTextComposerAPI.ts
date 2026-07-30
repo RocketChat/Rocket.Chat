@@ -1,12 +1,12 @@
 import type { Options } from '@rocket.chat/message-parser';
-import { escapeHTML } from '@rocket.chat/string-helpers';
+import { escapeHTML } from '@rocket.chat/tools';
 import type { RefObject } from 'react';
 
+import type { ComposerAPI } from './chats/ChatAPI';
 import { createComposerAPICore, triggerEvent, type SetText } from './createComposerAPICore';
 import { limitQuoteChain } from './limitQuoteChain';
 import { renderComposerContent, resolveComposerBox } from './messageStateHandler';
 import { getSelectionRange, setSelectionRange } from './selectionRange';
-import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 
 export const createRichTextComposerAPI = (
 	input: HTMLDivElement,
@@ -51,6 +51,14 @@ export const createRichTextComposerAPI = (
 
 		if (!selection) {
 			input.innerHTML = escapeHTML(text);
+		}
+
+		// The events below are synthetic, so resolveComposerBox ignores them and the markup would stay
+		// unrendered. Skip it while empty: rendering '' yields the renderer's trailing newline, which would
+		// leave `clear()` with a composer that is no longer empty.
+		if (input.innerText !== '') {
+			const { selectionStart: caretStart, selectionEnd: caretEnd } = getSelectionRange(input);
+			renderComposerContent(input, parseOptions, { selectionStart: caretStart, selectionEnd: caretEnd });
 		}
 
 		triggerEvent(input, 'input');

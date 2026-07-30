@@ -13,14 +13,16 @@ const RichTextComposerInputStyle = css`
 type RichTextComposerInputProps = ComponentProps<typeof Box> & {
 	placeholder?: string;
 	hideplaceholder?: boolean;
+	hidetext?: boolean;
 };
 
 const RichTextComposerInput = forwardRef<HTMLDivElement, RichTextComposerInputProps>(function RichTextComposerInput(props, ref) {
-	// Supress warnings related to hideplaceholder being invalid DOM prop
-	const { placeholder, hideplaceholder, ...rest } = props;
+	// Supress warnings related to hideplaceholder/hidetext being invalid DOM props.
+	// `disabled` is inert on a contenteditable, so it drives contentEditable instead of reaching the DOM.
+	const { placeholder, hideplaceholder, hidetext, disabled, ...rest } = props;
 
 	return (
-		<Box is='div' width='full'>
+		<Box is='div' width='full' style={hidetext ? { visibility: 'hidden' } : undefined}>
 			<Box
 				className={['rc-message-box__placeholder']}
 				color='font-annotation'
@@ -52,12 +54,13 @@ const RichTextComposerInput = forwardRef<HTMLDivElement, RichTextComposerInputPr
 				paddingBlock={16}
 				borderWidth={0}
 				is='span'
-				contentEditable
+				contentEditable={!disabled}
+				aria-disabled={disabled}
 				suppressContentEditableWarning
 				style={{
 					display: 'block',
 					whiteSpace: 'pre-wrap',
-					cursor: 'text',
+					cursor: disabled ? 'default' : 'text',
 					overflowY: 'scroll',
 				}}
 				{...rest}

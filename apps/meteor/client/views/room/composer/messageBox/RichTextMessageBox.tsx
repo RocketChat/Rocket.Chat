@@ -24,13 +24,13 @@ import {
 	extractImageFilesFromClipboard,
 } from './messageBoxHelpers';
 import { handleRichTextSelectionWrapping } from './wrapSelection';
-import { emoji } from '../../../../../app/emoji/client';
-import { createRichTextComposerAPI } from '../../../../../app/ui-message/client/messageBox/createRichTextComposerAPI';
-import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
-import { getSelectionRange, setSelectionRange } from '../../../../../app/ui-message/client/messageBox/selectionRange';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
+import { createRichTextComposerAPI } from '../../../../lib/createRichTextComposerAPI';
+import { emoji } from '../../../../lib/emoji';
+import { formattingButtons } from '../../../../lib/messageBoxFormatting';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
+import { getSelectionRange, setSelectionRange } from '../../../../lib/selectionRange';
 import { keyCodes } from '../../../../lib/utils/keyCodes';
 import { Subscriptions } from '../../../../stores';
 import { useAutoLinkDomains } from '../../MessageList/hooks/useAutoLinkDomains';
@@ -71,10 +71,11 @@ const reducer = (_: unknown, event: FormEvent<HTMLElement>): TypingState => {
 		target.innerHTML = '<br>';
 	}
 
+	const text = target.innerText.replace(/\n$/, '');
+
 	return {
-		isTyping: Boolean(target.innerText.trim()),
-		// Show placeholder only if there's exactly one <br> and nothing else
-		hideplaceholder: Boolean(childNodes.length !== 1 || childNodes[0].nodeName !== 'BR'),
+		isTyping: Boolean(text.trim()),
+		hideplaceholder: Boolean(text),
 	};
 };
 
@@ -88,6 +89,7 @@ const RichTextMessageBox = ({
 	onTyping,
 	tshow,
 	previewUrls,
+	threadExists,
 }: MessageBoxProps): ReactElement => {
 	const chat = useChat();
 	const room = useRoom();
@@ -129,16 +131,22 @@ const RichTextMessageBox = ({
 	const messageComposerRef = useRef<HTMLElement>(null);
 
 	const subscription = useRoomSubscription();
-	const { initialValue, persistLocal, flushDraft } = useDraft(room._id, tmid ? undefined : subscription?.draft, tmid);
+	const { initialValue, persistLocal, flushDraft } = useDraft(
+		room._id,
+		tmid ? subscription?.threadDrafts?.[tmid] : subscription?.draft,
+		tmid,
+		threadExists,
+	);
 
 	// Get parse options and pass it as prop to the RichTextComposer API
 	// Colors and KaTeX are intentionally left out: gazzodown-alt has no renderer for those nodes,
 	// so enabling them would make the typed text disappear.
+	// Emoticons are left out as well: the composer keeps them as the typed text.
 	const customDomains = useAutoLinkDomains();
 
 	const parseOptions = useMemo<Options>(
 		() => ({
-			emoticons: true,
+			emoticons: false,
 			customDomains,
 		}),
 		[customDomains],
@@ -204,7 +212,7 @@ const RichTextMessageBox = ({
 		});
 	});
 
-	const closeEditing = (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
+	const closeEditing = async (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
 		const input = contentEditableRef.current as HTMLDivElement;
 		const mid = chat.currentEditingMessage.getMID();
 
@@ -215,23 +223,74 @@ const RichTextMessageBox = ({
 		event.preventDefault();
 		event.stopPropagation();
 
-		chat.currentEditingMessage.reset().then((reset) => {
-			// NOTE: if the message was reset (i.e. content changed), we just update the popup (to re-apply/remove the preview)
-			if (reset) {
-				popup.update();
-			} else {
-				chat.currentEditingMessage.cancel();
-				chat.currentEditingMessage.stop();
-				popup.clear();
-			}
+		// NOTE: if the message was reset (i.e. content changed), we keep the editing mode on
+		const reset = await chat.currentEditingMessage.reset();
 
-			// Sets the cursor position to the end after resetting an edited message
-			setSelectionRange(input, input.innerText.length, input.innerText.length);
-			input.focus();
-		});
+		if (!reset) {
+			await chat.currentEditingMessage.cancel();
+			await chat.currentEditingMessage.stop();
+		}
+
+		popup.clear();
+
+		// Sets the cursor position to the end after resetting an edited message
+		setSelectionRange(input, input.innerText.length, input.innerText.length);
+		input.focus();
 	};
 
+	const isEditing = useSyncExternalStore(chat.composer?.editing.subscribe ?? emptySubscribe, chat.composer?.editing.get ?? getEmptyFalse);
+
+	const isRecordingAudio = useSyncExternalStore(
+		chat.composer?.recording.subscribe ?? emptySubscribe,
+		chat.composer?.recording.get ?? getEmptyFalse,
+	);
+
+	const isMicrophoneDenied = useSyncExternalStore(
+		chat.composer?.isMicrophoneDenied.subscribe ?? emptySubscribe,
+		chat.composer?.isMicrophoneDenied.get ?? getEmptyFalse,
+	);
+
+	const isRecordingVideo = useSyncExternalStore(
+		chat.composer?.recordingVideo.subscribe ?? emptySubscribe,
+		chat.composer?.recordingVideo.get ?? getEmptyFalse,
+	);
+
+	const formatters = useSyncExternalStore(
+		chat.composer?.formatters.subscribe ?? emptySubscribe,
+		chat.composer?.formatters.get ?? getEmptyArray,
+	);
+
+	const isRecording = isRecordingAudio || isRecordingVideo;
+
+	const federationMatrixEnabled = useIsFederationEnabled();
+	const subscribeSubscriptions = useCallback((onStoreChange: () => void) => Subscriptions.use.subscribe(onStoreChange), []);
+	const canSend = useSyncExternalStore(subscribeSubscriptions, () => {
+		if (!room.t) {
+			return false;
+		}
+
+		if (!roomCoordinator.getRoomDirectives(room.t).canSendMessage(room)) {
+			return false;
+		}
+
+		if (isRoomFederated(room)) {
+			if (!isRoomNativeFederated(room)) {
+				return false;
+			}
+			return federationMatrixEnabled;
+		}
+		return true;
+	});
+
+	// A contenteditable ignores `disabled`, so the handlers have to bail out themselves: the browser
+	// keeps firing keydown on an already-focused node after it stops being editable.
+	const disabled = isRecording || !canSend || isProcessingUploads;
+
 	const keyboardEventHandler = useStableCallback((event: KeyboardEvent) => {
+		if (disabled) {
+			return;
+		}
+
 		const { which: keyCode } = event;
 
 		const input = event.target as HTMLDivElement;
@@ -302,50 +361,6 @@ const RichTextMessageBox = ({
 		onTyping?.();
 	});
 
-	const isEditing = useSyncExternalStore(chat.composer?.editing.subscribe ?? emptySubscribe, chat.composer?.editing.get ?? getEmptyFalse);
-
-	const isRecordingAudio = useSyncExternalStore(
-		chat.composer?.recording.subscribe ?? emptySubscribe,
-		chat.composer?.recording.get ?? getEmptyFalse,
-	);
-
-	const isMicrophoneDenied = useSyncExternalStore(
-		chat.composer?.isMicrophoneDenied.subscribe ?? emptySubscribe,
-		chat.composer?.isMicrophoneDenied.get ?? getEmptyFalse,
-	);
-
-	const isRecordingVideo = useSyncExternalStore(
-		chat.composer?.recordingVideo.subscribe ?? emptySubscribe,
-		chat.composer?.recordingVideo.get ?? getEmptyFalse,
-	);
-
-	const formatters = useSyncExternalStore(
-		chat.composer?.formatters.subscribe ?? emptySubscribe,
-		chat.composer?.formatters.get ?? getEmptyArray,
-	);
-
-	const isRecording = isRecordingAudio || isRecordingVideo;
-
-	const federationMatrixEnabled = useIsFederationEnabled();
-	const subscribeSubscriptions = useCallback((onStoreChange: () => void) => Subscriptions.use.subscribe(onStoreChange), []);
-	const canSend = useSyncExternalStore(subscribeSubscriptions, () => {
-		if (!room.t) {
-			return false;
-		}
-
-		if (!roomCoordinator.getRoomDirectives(room.t).canSendMessage(room)) {
-			return false;
-		}
-
-		if (isRoomFederated(room)) {
-			if (!isRoomNativeFederated(room)) {
-				return false;
-			}
-			return federationMatrixEnabled;
-		}
-		return true;
-	});
-
 	const newSizes = useContentBoxSize(contentEditableRef);
 
 	const format = useFormatDateAndTime();
@@ -355,6 +370,11 @@ const RichTextMessageBox = ({
 	});
 
 	const handlePaste = useStableCallback((event: ClipboardEvent<HTMLDivElement>) => {
+		if (disabled) {
+			event.preventDefault();
+			return;
+		}
+
 		const files = extractImageFilesFromClipboard(event, format);
 
 		if (files.length) {
@@ -449,10 +469,11 @@ const RichTextMessageBox = ({
 					ref={newMergedRefs}
 					aria-label={composerPlaceholder}
 					name='msg'
-					disabled={isRecording || !canSend || isProcessingUploads}
+					disabled={disabled}
 					onInput={setTyping}
 					placeholder={composerPlaceholder}
 					hideplaceholder={hideplaceholder}
+					hidetext={isRecordingAudio}
 					onPaste={handlePaste}
 					aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
 					onBlur={setLastCursorPosition}

@@ -1,5 +1,5 @@
-import { getSelectionRange, setSelectionRange } from '../../../../../app/ui-message/client/messageBox/selectionRange';
 import type { ChatAPI } from '../../../../lib/chats/ChatAPI';
+import { getSelectionRange, setSelectionRange } from '../../../../lib/selectionRange';
 
 const wrapSelectionPatterns: Record<string, string> = {
 	'`': '`{{text}}`',
