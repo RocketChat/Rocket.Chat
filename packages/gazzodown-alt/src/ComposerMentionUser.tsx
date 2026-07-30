@@ -7,23 +7,21 @@ type ComposerMentionUserProps = {
 	mention: string;
 };
 
-const mentionStyle = {
-	fontWeight: 'bold' as const,
-	color: 'var(--rcx-color-font-info, #156FF5)',
-	cursor: 'default',
-};
+const highlightClassName = (variant: 'relevant' | 'other'): string => `rcx-message__highlight rcx-message__highlight--${variant}`;
 
 const ComposerMentionUser = ({ mention }: ComposerMentionUserProps): ReactElement => {
 	const { resolveUserMention } = useContext(ComposerMarkupContext);
 
 	const resolved = useMemo(() => resolveUserMention?.(mention), [mention, resolveUserMention]);
 
+	const className = highlightClassName(mention === 'all' || mention === 'here' ? 'relevant' : 'other');
+
 	if (!resolved) {
-		return <span style={mentionStyle}>@{mention}</span>;
+		return <span className={className}>@{mention}</span>;
 	}
 
 	return (
-		<span style={mentionStyle} data-uid={resolved._id}>
+		<span className={className} data-uid={resolved._id}>
 			@{resolved.username ?? mention}
 		</span>
 	);
