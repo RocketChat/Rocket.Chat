@@ -716,9 +716,10 @@ plan already carved out as a separate, behavior-neutral change. Rather than refa
 core at the tail of this work for zero behavior benefit, the now-**unreachable** host accessor
 classes + `AppAccessorManager` are left in place (dead code — nothing on the subprocess path reaches
 them) and their removal is done in follow-up #4 together with the threading cleanup. The host
-`src/server/misc/UIHelper.ts` copy and the parity harness stay for the same reason (the harness has
-also become a genuine, permanent test utility that the Phase 1–3 tests depend on, so it is retained
-rather than removed).
+`src/server/misc/UIHelper.ts` copy is deferred for the same reason — it is imported only by those
+same dead accessors, so it is deleted alongside them in Phase 5 rather than kept. The parity harness
+is a separate case: it stays permanently, having become a genuine test utility that the Phase 1–3
+tests depend on.
 
 **End state (primary objectives met):** `BaseRuntimeSubprocessController` handles exactly one
 app-originated RPC category — `bridges:*` — with a single dispatcher and a single permission model,

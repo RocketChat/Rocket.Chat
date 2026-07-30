@@ -16,8 +16,9 @@ import type * as Messenger from '../../../messenger';
  * be pinned against the exact message sequence documented for its host
  * counterpart.
  *
- * It is throwaway infrastructure: it is removed in the Phase 4 teardown once the
- * host accessor classes (and the `accessor:*` channel) no longer exist.
+ * Introduced as throwaway migration infrastructure, it is retained past the Phase
+ * 4/5 teardown: the Phase 1-3 accessor suites depend on it, so it is now a
+ * permanent test utility.
  */
 
 export type RecordedCall = {

@@ -14,10 +14,12 @@ export class LivechatRead implements ILivechatRead {
 	 * @deprecated please use the `isOnlineAsync` method instead.
 	 * In the next major, this method will be `async`
 	 *
-	 * NOTE: the underlying bridge call is asynchronous, so unlike the (formerly
-	 * synchronous, host-resolved) accessor this returns a Promise. This matches
-	 * how every other bridge call behaves from inside the subprocess and preserves
-	 * the deprecation warning.
+	 * NOTE: this really returns a Promise - the declared `boolean` comes from
+	 * `ILivechatRead`, which cannot change before that major. Calls of the form
+	 * `read.getLivechatReader().isOnline(...)` are rewritten to `await` it at load time by
+	 * `fixLivechatIsOnlineCalls` (see `lib/ast/operations.ts`, reached via
+	 * `sanitizeDeprecatedUsage`). A stored reference (`const r = read.getLivechatReader()`)
+	 * is not rewritten and will observe the raw Promise.
 	 */
 	public isOnline(departmentId?: string): boolean {
 		console.warn(
