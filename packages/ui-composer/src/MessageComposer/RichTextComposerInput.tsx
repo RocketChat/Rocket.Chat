@@ -12,7 +12,7 @@ const RichTextComposerInputStyle = css`
 
 // Links only open on Cmd/Ctrl+click, so the pointer is offered while that modifier is held.
 const RichTextComposerLinkModifierStyle = css`
-	a:not([href='#']) {
+	a[href] {
 		cursor: pointer;
 	}
 `;

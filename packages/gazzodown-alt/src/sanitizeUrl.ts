@@ -1,21 +1,16 @@
-const dangerousProtocols = ['javascript:', 'data:', 'vbscript:'];
+const allowedProtocols = ['http:', 'https:', 'mailto:', 'tel:'];
 
-export const sanitizeUrl = (href: string): string => {
+export const sanitizeUrl = (href: string): string | undefined => {
 	if (!href) {
-		return '#';
+		return undefined;
 	}
 
 	try {
 		const hasProtocol = /^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(href);
+		const url = hasProtocol ? new URL(href) : new URL(`https://${href.replace(/^\/+/, '')}`);
 
-		if (hasProtocol) {
-			const url = new URL(href);
-
-			return dangerousProtocols.includes(url.protocol.toLowerCase()) ? '#' : url.href;
-		}
-
-		return href.startsWith('//') ? href : `//${href}`;
+		return allowedProtocols.includes(url.protocol.toLowerCase()) ? url.href : undefined;
 	} catch {
-		return '#';
+		return undefined;
 	}
 };

@@ -1,3 +1,4 @@
+import { sanitizeUrl } from '@rocket.chat/gazzodown-alt';
 import type { ClipboardEvent, MouseEvent } from 'react';
 
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -15,16 +16,21 @@ export const isCmdOrCtrlPressed = (event: { metaKey: boolean; ctrlKey: boolean }
 	return (isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey);
 };
 
+export const getClickedLink = (event: MouseEvent<HTMLElement>): HTMLAnchorElement | null => (event.target as HTMLElement).closest('a');
+
 // A contenteditable swallows link navigation, so Cmd/Ctrl+click has to be resolved by hand.
 export const getModifierClickHref = (event: MouseEvent<HTMLElement>): string | undefined => {
 	if (!isCmdOrCtrlPressed(event)) {
 		return undefined;
 	}
 
-	const href = (event.target as HTMLElement).closest('a')?.getAttribute('href');
+	const href = getClickedLink(event)?.getAttribute('href');
 
-	// Links the renderer could not trust are rendered with a '#' href.
-	return href && href !== '#' ? href : undefined;
+	if (!href || !sanitizeUrl(href)) {
+		return undefined;
+	}
+
+	return href;
 };
 
 export const handleFormattingShortcut = (
@@ -51,6 +57,18 @@ export const handleFormattingShortcut = (
 
 	composer.wrapSelection(formatter.pattern);
 	return true;
+};
+
+// The composer renders its own markup from plain text, so a paste carrying HTML must never reach the
+// contenteditable: the browser would insert that markup verbatim.
+export const extractPastedPlainText = (event: ClipboardEvent<HTMLElement>): string | undefined => {
+	const { clipboardData } = event;
+
+	if (!clipboardData || !Array.from(clipboardData.types).includes('text/html')) {
+		return undefined;
+	}
+
+	return clipboardData.getData('text/plain');
 };
 
 export const extractImageFilesFromClipboard = (event: ClipboardEvent<HTMLElement>, format: (date: Date) => string): File[] => {

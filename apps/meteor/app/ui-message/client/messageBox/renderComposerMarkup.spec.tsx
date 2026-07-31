@@ -86,7 +86,7 @@ describe('link styling', () => {
 
 	it.each([
 		['markdown link', 'see [the docs](https://rocket.chat/docs)', '[the docs](https://rocket.chat/docs)', 'https://rocket.chat/docs'],
-		['bare domain', 'see rocket.chat/docs now', 'rocket.chat/docs', '//rocket.chat/docs'],
+		['bare domain', 'see rocket.chat/docs now', 'rocket.chat/docs', 'https://rocket.chat/docs'],
 		['email', 'mail me@rocket.chat now', 'me@rocket.chat', 'mailto:me@rocket.chat'],
 	])('keeps the %s markup as the anchor text and only adds the href', (_label, text, expectedText, expectedHref) => {
 		const anchors = anchorsOf(text);
@@ -119,7 +119,7 @@ describe('link styling', () => {
 		const anchors = Array.from(input.querySelectorAll('a'));
 
 		expect(anchors).toHaveLength(1);
-		expect(anchors[0].getAttribute('href')).toBe('#');
+		expect(anchors[0].getAttribute('href')).toBeNull();
 		expect(stripLineEnd(input.textContent ?? '')).toBe(stripLineEnd(text));
 	});
 
@@ -132,12 +132,12 @@ describe('link styling', () => {
 });
 
 describe('link scheme policy', () => {
-	const hrefOf = (text: string): string => {
+	const hrefOf = (text: string): string | null => {
 		const anchors = Array.from(mountMarkup(text).querySelectorAll('a'));
 
 		expect(anchors).toHaveLength(1);
 
-		return anchors[0].getAttribute('href') ?? '';
+		return anchors[0].getAttribute('href');
 	};
 
 	it.each([
@@ -161,7 +161,7 @@ describe('link scheme policy', () => {
 		['intent', 'see [x](intent://evil.example)'],
 		['jar', 'see [x](jar:http://evil.example/a.jar)'],
 	])('refuses the href of a %s link', (_label, text) => {
-		expect(hrefOf(text)).toBe('#');
+		expect(hrefOf(text)).toBeNull();
 	});
 
 	it.each([
