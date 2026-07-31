@@ -1,5 +1,6 @@
-import type { MouseEvent } from 'react';
+import type { ClipboardEvent, MouseEvent } from 'react';
 
+import * as messageBoxHelpers from './messageBoxHelpers';
 import { getModifierClickHref } from './messageBoxHelpers';
 
 const setPlatform = (platform: string): void => {
@@ -60,5 +61,63 @@ describe('getModifierClickHref', () => {
 		setPlatform('Linux x86_64');
 
 		expect(clickOn('<a href="#">[x](javascript:alert(1))</a>', { ctrlKey: true })).toBeUndefined();
+	});
+});
+
+describe('getModifierClickHref on anchors the renderer did not produce', () => {
+	beforeEach(() => {
+		setPlatform('Linux x86_64');
+	});
+
+	it.each([
+		['javascript', 'javascript:alert(1)'],
+		['data', 'data:text/html,<script>alert(1)</script>'],
+		['vbscript', 'vbscript:msgbox(1)'],
+		['file', 'file:///etc/passwd'],
+		['smb', 'smb://attacker.example/share'],
+		['ms-msdt', 'ms-msdt:/id'],
+	])('refuses a %s href that entered the composer outside the renderer', (_label, href) => {
+		expect(clickOn(`<a href="${href}">x</a>`, { ctrlKey: true })).toBeUndefined();
+	});
+
+	it.each([
+		['http', 'http://rocket.chat/docs'],
+		['https', 'https://rocket.chat/docs'],
+		['mailto', 'mailto:me@rocket.chat'],
+	])('still resolves a %s href', (_label, href) => {
+		expect(clickOn(`<a href="${href}">x</a>`, { ctrlKey: true })).toBe(href);
+	});
+});
+
+describe('pasting into the composer', () => {
+	// The paste guard has no home yet; this is the surface the fix has to expose.
+	const extractPastedPlainText = (messageBoxHelpers as Record<string, unknown>).extractPastedPlainText as
+		| ((event: ClipboardEvent<HTMLElement>) => string | undefined)
+		| undefined;
+
+	const clipboardEvent = (data: Record<string, string>): ClipboardEvent<HTMLElement> =>
+		({
+			clipboardData: {
+				types: Object.keys(data),
+				items: Object.keys(data).map((type) => ({ kind: 'string', type })),
+				files: [],
+				getData: (type: string) => data[type] ?? '',
+			},
+		}) as unknown as ClipboardEvent<HTMLElement>;
+
+	it('exposes a helper deciding what a paste is allowed to insert', () => {
+		expect(typeof extractPastedPlainText).toBe('function');
+	});
+
+	it.each([
+		['an anchor', '<a href="javascript:alert(1)">docs</a>', 'docs'],
+		['an image with an inline handler', '<img src=x onerror="alert(1)">', ''],
+		['a styled fragment', '<b style="color:red">bold</b>', 'bold'],
+	])('intercepts a paste carrying %s and yields only its plain text', (_label, html, plain) => {
+		expect(extractPastedPlainText?.(clipboardEvent({ 'text/html': html, 'text/plain': plain }))).toBe(plain);
+	});
+
+	it('lets a plain-text-only paste reach the browser default', () => {
+		expect(extractPastedPlainText?.(clipboardEvent({ 'text/plain': 'see rocket.chat/docs' }))).toBeUndefined();
 	});
 });
