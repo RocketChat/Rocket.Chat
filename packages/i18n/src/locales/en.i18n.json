@@ -2582,6 +2582,7 @@
   "Full_Name": "Full Name",
   "Full_log": "Full log",
   "Full_Screen": "Full Screen",
+  "Full_profile": "Full profile",
   "Fully_integrated_voip_receive_internal_external_calls_without_switching_between_apps_external_systems": "Fully-integrated Rocket.Chat VoIP allows your team to make and receive internal and external calls without switching between apps or external systems.",
   "Gaming": "Gaming",
   "General": "General",
@@ -7373,6 +7374,8 @@
   "your_message_optional": "your message (optional)",
   "__agents__agents_and__count__conversations__period__": "{{agents}} agents and {{count}} conversations, {{period}}",
   "__count__conversations__period__": "{{count}} conversations, {{period}}",
+  "__time__local_time": "{{time}} local time",
+  "__time__local_time_utc__utcOffset__": "{{time}} local time (UTC {{utcOffset}})",
   "__count__empty_rooms_will_be_removed_automatically": "{{count}} empty rooms will be removed automatically.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "<bold>{{count}}</bold> empty rooms will be removed automatically:<br/> {{rooms}}.",
   "__count__file_pruned": {

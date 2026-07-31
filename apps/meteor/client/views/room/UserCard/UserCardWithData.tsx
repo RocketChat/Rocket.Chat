@@ -1,8 +1,9 @@
 import { getUserDisplayName } from '@rocket.chat/core-typings';
 import type { IRoom } from '@rocket.chat/core-typings';
+import { IconButton } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import { useSetting, useRolesDescription } from '@rocket.chat/ui-contexts';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -11,6 +12,7 @@ import { UserCard, UserCardAction, UserCardRole, UserCardSkeleton } from '../../
 import { ReactiveUserStatus } from '../../../components/UserStatus';
 import { ReactiveUserStatusText } from '../../../components/UserStatusText';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
+import { useUserRolesByScope } from '../../../hooks/useUserRolesByScope';
 import { useMemberExists } from '../../hooks/useMemberExists';
 import { useUserInfoActions } from '../hooks/useUserInfoActions';
 import type { UserInfoAction } from '../hooks/useUserInfoActions/useUserInfoActions';
@@ -24,10 +26,10 @@ export type UserCardWithDataProps = {
 
 const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWithDataProps) => {
 	const { t } = useTranslation();
-	const getRoles = useRolesDescription();
 	const showRealNames = useSetting('UI_Use_Real_Name', false);
 
 	const { data, isLoading: isUserInfoLoading } = useUserInfoQuery({ username });
+	const { workspaceRoles, roomRoles } = useUserRolesByScope(data?.user?._id, rid);
 	const {
 		data: isMemberData,
 		refetch,
@@ -41,23 +43,15 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	const user = useMemo(() => {
 		const defaultValue = isLoading ? undefined : null;
 
-		const {
-			_id,
-			name,
-			roles = defaultValue,
-			bio = defaultValue,
-			utcOffset = defaultValue,
-			nickname,
-			avatarETag,
-			freeSwitchExtension,
-		} = data?.user || {};
+		const { _id, name, title, utcOffset = defaultValue, nickname, avatarETag, freeSwitchExtension } = data?.user || {};
 
 		return {
 			_id,
 			name: getUserDisplayName(name, username, showRealNames),
 			username,
-			roles: roles && getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
-			bio,
+			title,
+			roles: roomRoles.length > 0 && roomRoles.map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
+			workspaceRoles: workspaceRoles.length > 0 && workspaceRoles.join(', '),
 			etag: avatarETag,
 			localTime: utcOffset && Number.isInteger(utcOffset) && <LocalTime utcOffset={utcOffset} />,
 			status: _id && <ReactiveUserStatus uid={_id} />,
@@ -65,7 +59,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			nickname,
 			freeSwitchExtension,
 		};
-	}, [data, username, showRealNames, isLoading, getRoles]);
+	}, [data, username, showRealNames, isLoading, workspaceRoles, roomRoles]);
 
 	const handleOpenUserInfo = useStableCallback(() => {
 		onOpenUserInfo();
@@ -75,7 +69,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions({
 		rid,
 		user: { _id: user._id ?? '', username: user.username, name: user.name, freeSwitchExtension: user.freeSwitchExtension },
-		size: 3,
+		size: 2,
 		isMember,
 		reload: refetch,
 	});
@@ -85,12 +79,21 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			return null;
 		}
 
-		return <GenericMenu title={t('More')} key='menu' sections={menuOptions} placement='bottom-start' callbackAction={onClose} />;
+		return (
+			<GenericMenu
+				button={<IconButton icon='kebab' secondary small />}
+				title={t('More')}
+				key='menu'
+				sections={menuOptions}
+				placement='bottom-start'
+				callbackAction={onClose}
+			/>
+		);
 	}, [menuOptions, onClose, t]);
 
 	const actions = useMemo(() => {
 		const mapAction = ([key, { content, title, icon, onClick, disabled }]: [string, UserInfoAction]) => (
-			<UserCardAction key={key} label={content || title} aria-label={content || title} onClick={onClick} icon={icon!} disabled={disabled} />
+			<UserCardAction key={key} label={content || title} icon={icon} onClick={onClick} disabled={disabled} />
 		);
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
@@ -100,7 +103,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 		return <UserCardSkeleton />;
 	}
 
-	return <UserCard user={user} onClose={onClose} onOpenUserInfo={handleOpenUserInfo} actions={actions} />;
+	return <UserCard user={user} onOpenUserInfo={handleOpenUserInfo} actions={actions} />;
 };
 
 export default UserCardWithData;
