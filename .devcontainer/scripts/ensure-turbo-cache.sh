@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
-# Runs on the HOST from devcontainer.json's initializeCommand, before the
-# container is created.
+# Runs on the HOST from initialize.sh (devcontainer.json's initializeCommand),
+# before the container is created.
 #
 # Brings up the shared Turborepo remote cache (../turbo-cache/docker-compose.yml)
 # if it is not already running. Must happen before container create for two

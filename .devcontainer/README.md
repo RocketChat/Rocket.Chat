@@ -65,9 +65,11 @@ don't see that line, the container is not firewalled.
 | `docker-compose.yml` | Service definition, volumes, `NET_ADMIN`/`NET_RAW` capabilities |
 | `Dockerfile` | Base image and toolchain, pinned from `package.json`, `.tool-versions`, `.meteor/release` |
 | `init-firewall.sh` | Default-deny egress firewall; installed as `/usr/local/bin/rc-init-firewall.sh` |
-| `init-worktree.sh` | Host-side; exposes the real git dir when the checkout is a linked worktree |
 | `turbo-cache/docker-compose.yml` | Standalone [Turborepo remote cache](https://ducktors.github.io/turborepo-remote-cache) shared by every worktree |
-| `scripts/ensure-turbo-cache.sh` | Host-side; brings that stack up before the container is created |
+| `scripts/initialize.sh` | Host-side; the `initializeCommand` entry point, runs the two below |
+| `scripts/init-worktree.sh` | Host-side; exposes the real git dir when the checkout is a linked worktree |
+| `scripts/ensure-turbo-cache.sh` | Host-side; brings the cache stack up before the container is created |
+| `scripts/on-create.sh` | Container-side; the `onCreateCommand` entry point, fixes volume ownership and git gc |
 
 ## Things worth knowing
 
@@ -107,6 +109,14 @@ uncached.
 - `TURBO_TOKEN` is a fixed local-dev value, not a secret; if you change it, change
   it in both `devcontainer.json` and the cache's compose file, or every request
   401s.
+- **No `turbo login` / `turbo link` step is needed, and none is possible.** Those
+  three env vars are the hookup — the env equivalent of what login/link persist to
+  disk. Both commands are TTY-only prompts with no non-interactive flag, so they
+  fail with `IO error: not a terminal` from any lifecycle hook (even under a pty
+  wrapper), and `turbo` isn't installed until `updateContentCommand` anyway. To
+  confirm the cache is live, run a cacheable task twice with `.turbo/cache` removed
+  in between: turbo prints `Remote caching enabled` and then `cache hit, replaying
+  logs`.
 
 **Neovim.** Your host `~/.config/nvim` is bind-mounted read-only; plugins and
 treesitter parsers stay container-side in a volume. If you don't have that

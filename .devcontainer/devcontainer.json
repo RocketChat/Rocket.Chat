@@ -8,12 +8,11 @@
 		"docker-compose.yml",
 		"docker-compose.worktree.yml"
 	],
-	// Must run before the container is created: init-worktree.sh writes the
-	// override file that the line above depends on, and ensure-turbo-cache.sh
-	// brings up the shared remote cache, whose network this compose project
-	// attaches to as external (so it must exist first). See both scripts for
-	// what breaks without them.
-	"initializeCommand": "bash '${localWorkspaceFolder}/.devcontainer/init-worktree.sh' && bash '${localWorkspaceFolder}/.devcontainer/scripts/ensure-turbo-cache.sh'",
+	// Generates the override file the line above depends on, and brings up the
+	// shared remote cache whose network this compose project attaches to as
+	// external. Both must happen before the container is created — see the
+	// script for what breaks without them.
+	"initializeCommand": "bash '${localWorkspaceFolder}/.devcontainer/scripts/initialize.sh'",
 	"service": "app",
 	"workspaceFolder": "/workspaces/rocket.chat",
 	// Non-root user is required for `claude --dangerously-skip-permissions`,
@@ -39,6 +38,20 @@
 	// TURBO_TOKEN must match the server's; TURBO_TEAM is only a namespace key for
 	// artifacts and needs no `team_` prefix. TURBO_* vars are excluded from
 	// turbo's task hashes, so setting them does not invalidate anything.
+	//
+	// These three ARE the hookup — they are the env equivalent of what
+	// `turbo login` / `turbo link` persist to disk, and no lifecycle hook runs
+	// them. Don't try to: both are TTY-only prompts with no non-interactive
+	// flag (`--manual` literally means "type the token at a prompt"), so they
+	// fail with "IO error: not a terminal" from any hook, and turbo isn't even
+	// installed until updateContentCommand's yarn install. Verified working as
+	// they stand: with the local cache wiped, turbo reports `Remote caching
+	// enabled` and a remote `cache hit, replaying logs`.
+	//
+	// If you ever do write turbo's own config instead, set only `apiurl` and
+	// `teamslug` in .turbo/config.json — adding `teamid` makes turbo request
+	// ?teamId=...&slug=..., a different artifact namespace on the cache server,
+	// which 404s against everything uploaded so far.
 	"containerEnv": {
 		"TURBO_API": "http://turbo-cache:3000",
 		"TURBO_TEAM": "rocketchat",
@@ -53,42 +66,10 @@
 		// "source=nvim-data-${devcontainerId},target=/home/vscode/.local/share/nvim,type=volume",
 		"source=claude-code-config-${devcontainerId},target=/home/vscode/.claude,type=volume"
 	],
-	// Named volumes mount as root, and Docker also creates any *missing parent*
-	// dirs of a mount target as root before the container runs — .local and
-	// .local/share are not in the base image, so they exist only because of the
-	// nvim volume nested under them. Chown from .local down, or the vscode user
-	// cannot create ~/.local/state (nvim's shada/undo/logs) or ~/.local/bin.
-	// Deliberately targeted rather than all of /home/vscode: a recursive chown
-	// there would walk into the .config/nvim bind mount and rewrite ownership of
-	// the host's files.
-	//
-	// The rc-node-modules and rc-meteor-local volumes are the same story: the
-	// image has nothing at those paths to seed ownership from (the workspace only
-	// exists as a bind mount at runtime), so they land as root:root and
-	// yarn/meteor — running as vscode — get EACCES creating anything under them.
-	// These target the volumes, NOT the host repo: each named volume is mounted
-	// over the bind mount at its path, so the host's own node_modules and
-	// .meteor/local are shadowed and untouched.
-	// Not recursive: yarn and meteor create everything below as vscode, so only
-	// the mount points themselves need fixing, and a recursive walk of a
-	// populated node_modules would add minutes to every container create.
-	//
-	// This is onCreate rather than postCreate because updateContentCommand runs
-	// *between* the two, and it needs the volumes to already be writable.
-	//
-	// The git config is a safety belt for the worktree setup: the container can
-	// see the shared git dir but not the *other* worktrees' host paths, so from
-	// in here they all look like they "point to a non-existent location" and
-	// become prune candidates once past gc.worktreePruneExpire (default 3
-	// months). A routine `git gc` inside the container would then unregister
-	// worktrees that are perfectly healthy on the host — verified: it really
-	// does list all of them as removable.
-	//
-	// This covers `git gc`/`gc --auto`, which pass this value through as
-	// --expire. It does NOT cover an explicit `git worktree prune`: that
-	// defaults to expiring everything and ignores the config. Don't run it in
-	// here.
-	"onCreateCommand": "sudo chown -R vscode:vscode /home/vscode/.claude && sudo chown vscode:vscode /workspaces/rocket.chat/node_modules /workspaces/rocket.chat/apps/meteor/.meteor/local && git config --global gc.worktreePruneExpire never",
+	// Fixes ownership of the named volumes (which mount as root) and stops
+	// `git gc` from pruning the other worktrees, which are invisible from in
+	// here. See the script for why each step is needed.
+	"onCreateCommand": "bash ${containerWorkspaceFolder}/.devcontainer/scripts/on-create.sh",
 	// Dependencies and build artifacts are content, not image: they live in the
 	// rc-node-modules volume and in each package's dist/, so they survive restarts
 	// and only need rebuilding when the repo content changes. Running here (rather
