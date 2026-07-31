@@ -635,7 +635,6 @@ export const FileUpload = {
 		});
 
 		return new Promise<Buffer>((resolve, reject) => {
-			// Settle on write failure instead of hanging.
 			buffer.on('error', reject);
 			buffer.on('finish', () => {
 				const contents = buffer.getContents();
