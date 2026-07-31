@@ -30,6 +30,7 @@ import {
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
+import { chatExamples } from './chat.examples';
 import { roomAccessAttributes } from '../../lib/authorization';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
@@ -187,6 +188,15 @@ const chatEndpoints = API.v1
 	.post(
 		'chat.pinMessage',
 		{
+			summary: 'Pin Message',
+			description: `<a href='https://docs.rocket.chat/docs/message-actions#pin-messages' target='_blank'>Pin</a> a chat message to the channel.
+
+### Changelog
+| Version      | Description | 
+| ------------ | ------------|
+| 0.59.0       | Added       |`,
+			examples: chatExamples['chat.pinMessage'],
+			tags: ['Chat'],
 			authRequired: true,
 			body: isChatPinMessageProps,
 			response: {
@@ -225,6 +235,15 @@ const chatEndpoints = API.v1
 	.post(
 		'chat.unPinMessage',
 		{
+			summary: 'Unpin a message',
+			description: `Remove a pinned message from the channel.
+
+### Changelog
+| Version      | Description | 
+| -------------| ------------|
+| 0.59.0       | Added       |`,
+			examples: chatExamples['chat.unPinMessage'],
+			tags: ['Chat'],
 			authRequired: true,
 			body: isChatUnpinMessageProps,
 			response: {
@@ -311,6 +330,17 @@ const chatEndpoints = API.v1
 	.post(
 		'chat.update',
 		{
+			summary: 'Update Message',
+			description: `Update a specific message.
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+| 6.12.0           | Fixed \`customFields\` not updating if \`text\` was unchanged |
+| 6.4.0            | Add previewUrls param       |        
+| 0.49.0           | Added       |`,
+			examples: chatExamples['chat.update'],
+			tags: ['Chat'],
 			authRequired: true,
 			body: isChatUpdateProps,
 			response: {
@@ -382,6 +412,15 @@ const chatEndpoints = API.v1
 	.post(
 		'chat.starMessage',
 		{
+			summary: 'Star Message',
+			description: `<a href='https://docs.rocket.chat/docs/message-actions#star-messages' target='_blank'>Star</a> a message.
+
+### Changelog
+| Version      | Description | 
+| ------------ | ------------|
+| 0.59.0       | Added       |`,
+			examples: chatExamples['chat.starMessage'],
+			tags: ['Chat'],
 			authRequired: true,
 			body: isChatStarMessageLocalProps,
 			response: {
@@ -419,6 +458,15 @@ const chatEndpoints = API.v1
 	.post(
 		'chat.unStarMessage',
 		{
+			summary: 'Unstar Message',
+			description: `Unstar a message.
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+| 0.59.0           | Added       |`,
+			examples: chatExamples['chat.unStarMessage'],
+			tags: ['Chat'],
 			authRequired: true,
 			body: isChatUnstarMessageLocalProps,
 			response: {
@@ -456,6 +504,15 @@ const chatEndpoints = API.v1
 	.post(
 		'chat.followMessage',
 		{
+			summary: 'Follow Message',
+			description: `Follow a message to receive notifications.
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+| 1.0.0            | Added       |`,
+			examples: chatExamples['chat.followMessage'],
+			tags: ['Chat'],
 			authRequired: true,
 			body: isChatFollowMessageLocalProps,
 			response: {
@@ -489,6 +546,15 @@ const chatEndpoints = API.v1
 	.post(
 		'chat.unfollowMessage',
 		{
+			summary: 'Unfollow Message',
+			description: `Unfollow a message.
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+| 1.0.0            | Added       |`,
+			examples: chatExamples['chat.unfollowMessage'],
+			tags: ['Chat'],
 			authRequired: true,
 			body: isChatUnfollowMessageLocalProps,
 			response: {
@@ -522,6 +588,17 @@ const chatEndpoints = API.v1
 	.post(
 		'chat.react',
 		{
+			summary: 'React to Message',
+			description: `React or unreact to a chat message.
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|0.64.0            | Added parameter "shouldReact" to make endpoint work like a setter|
+|0.63.0            | Emoji has to exist                                               |
+|0.62.2            |Added                                                             |`,
+			examples: chatExamples['chat.react'],
+			tags: ['Chat'],
 			authRequired: true,
 			body: isChatReactProps,
 			response: {
@@ -561,6 +638,15 @@ const chatEndpoints = API.v1
 	.post(
 		'chat.reportMessage',
 		{
+			summary: 'Report Message',
+			description: `<a href='https://docs.rocket.chat/docs/message-actions#report-a-message-or-user' target='_blank'>Report</a> a specific message.
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+| 0.64.0           | Added       |`,
+			examples: chatExamples['chat.reportMessage'],
+			tags: ['Chat'],
 			authRequired: true,
 			body: isChatReportMessageProps,
 			response: {
@@ -590,6 +676,23 @@ const chatEndpoints = API.v1
 	.post(
 		'chat.delete',
 		{
+			summary: 'Delete Chat Message',
+			description: `Delete a chat message. Users can delete messages only in the following cases:
+  * The **Allow Message Deleting** setting is enabled in the workspace's **Message** settings.
+  * If the **Block Message Deleting After (n) Minutes** message setting has a non-zero value, the \`bypass-time-limit-edit-and-delete\` permission is required to delete messages after the defined time limit.
+  * In read-only rooms, the \`post-readonly\` permission is required to delete messages, or the user must be unmuted.
+  * The \`delete-own-message\` permission is required to delete users' own messages.
+  * The \`delete-message\` permission is required for users to delete messages from other users.
+
+You can delete a message by its \`roomId\` and \`msgId\`, or delete a message by its \`fileId\` to remove the message that holds an uploaded file.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+| 8.6.0            | Added \`fileId\` to delete a message by the file it contains. |
+| 0.48.0           | Added       |`,
+			examples: chatExamples['chat.delete'],
+			tags: ['Chat'],
 			authRequired: true,
 			body: isChatDeleteProps,
 			response: {
@@ -660,6 +763,14 @@ const chatEndpoints = API.v1
 	.get(
 		'chat.syncMessages',
 		{
+			summary: 'Sync Messages',
+			description: `List the messages in a room along with any data updates from a specified date.
+### Changelog
+| Version      | Description | 
+| ------------ | ------------|
+| 1.0.0        | Added       |`,
+			examples: chatExamples['chat.syncMessages'],
+			tags: ['Chat'],
 			authRequired: true,
 			query: isChatSyncMessagesProps,
 			response: {
@@ -756,6 +867,15 @@ const chatEndpoints = API.v1
 	.get(
 		'chat.getMessage',
 		{
+			summary: 'Get Message',
+			description: `Get a single chat message. You must have permission to access the room where the message resides.
+
+### Changelog
+| Version      | Description | 
+| ------------ | ------------|
+| 0.47.0       | Added       |`,
+			examples: chatExamples['chat.getMessage'],
+			tags: ['Chat'],
 			authRequired: true,
 			query: isChatGetMessageProps,
 			response: {
@@ -793,6 +913,24 @@ const chatEndpoints = API.v1
 	.post(
 		'chat.postMessage',
 		{
+			summary: 'Post Message',
+			description: `Send messages to channels or users on your workspace.
+
+**Note**: You can only send alias and avatar properties if your user has the \`message-impersonate permission\`. We implemented this rule to avoid users impersonating other users. By default, only the bot role has this permission, but that can be changed in **Manage** -> **Permissions** -> **message-impersonate**. 
+
+### Change Log
+| Version | Description |
+| ------- |---------------------------------------------------------------------------- |
+| 6.8.0   | Allow custom fields in messages                                              | 
+| 2.4.1   | Document existing method to post reply/threaded messages                     |
+| 2.4.0   | Added validation on user's identity                                          |
+| 0.49.0  | The \`channel\` can now be a room's id.                                        |
+| 0.48.0  | Information about the sent message is now returned.                          |
+| 0.17.0  | Messages aren't always processed as from BOT and urls are parsed by default. |
+| 0.14.0  | Internally using \`processWebhookMessage\` which enabled more features.        |
+| 0.13.0  | Added                                                                        |`,
+			examples: chatExamples['chat.postMessage'],
+			tags: ['Chat'],
 			authRequired: true,
 			body: isChatPostMessageProps,
 			response: {
@@ -845,6 +983,16 @@ const chatEndpoints = API.v1
 	.get(
 		'chat.search',
 		{
+			summary: 'Search Message',
+			description: `Search for messages by room ID and text message. 
+
+### Changelog
+| Version      | Description | 
+| -------------| ------------|
+| 0.67.0       | Changed limit query parameter to count|
+| 0.60.0       | Added       |`,
+			examples: chatExamples['chat.search'],
+			tags: ['Chat'],
 			authRequired: true,
 			query: isChatSearchProps,
 			response: {
@@ -893,6 +1041,20 @@ const chatEndpoints = API.v1
 	.post(
 		'chat.sendMessage',
 		{
+			summary: 'Send Message',
+			description: `The difference between \`chat.postMessage\` and \`chat.sendMessage\` is that \`chat.sendMessage\` allows for passing a value for \`_id\` and the other one doesn't. Also, \`chat.sendMessage\` only sends it to one channel whereas the other one allows for sending to more than one channel at a time.<br />
+
+**Note**: You can only send alias and avatar properties if your user has the \`message-impersonate permission\`. We implemented this rule to avoid users impersonating other users. By default, only the bot role has this permission, but that can be changed in **Manage** -> **Permissions** -> **message-impersonate**.
+
+### Change Log
+| Version | Description                         |
+| ------- | ----------------------------------- |
+| 6.8.0   | Allow custom fields in messages     |      
+| 6.4.0   | Add \`previewUrls\` param             |
+| 2.4.0   | Added validation on user's identity |
+| 0.60.0  | Added                               |`,
+			examples: chatExamples['chat.sendMessage'],
+			tags: ['Chat'],
 			authRequired: true,
 			body: isChatSendMessageProps,
 			response: {
@@ -927,6 +1089,16 @@ const chatEndpoints = API.v1
 	.get(
 		'chat.ignoreUser',
 		{
+			summary: 'Ignore User',
+			description: `Ignore or unignore a user in chat.
+
+
+### Changelog
+| Version      | Description | 
+| ------------ | ------------|
+| 0.64.0       | Added       |`,
+			examples: chatExamples['chat.ignoreUser'],
+			tags: ['Chat'],
 			authRequired: true,
 			query: isChatIgnoreUserProps,
 			response: {
@@ -964,6 +1136,15 @@ const chatEndpoints = API.v1
 	.get(
 		'chat.getDeletedMessages',
 		{
+			summary: 'Get Deleted Messages',
+			description: `Get deleted messages from a specific date.
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+| 0.73.0           | Added       |`,
+			examples: chatExamples['chat.getDeletedMessages'],
+			tags: ['Chat'],
 			authRequired: true,
 			query: isChatGetDeletedMessagesProps,
 			response: {
@@ -1010,6 +1191,15 @@ const chatEndpoints = API.v1
 	.get(
 		'chat.getPinnedMessages',
 		{
+			summary: 'Get Pinned Messages',
+			description: `Get the <a href='https://docs.rocket.chat/docs/message-actions#pin-messages' target='_blank'>pinned messages</a> of a room. 
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+| 2.0.0           | Added       |`,
+			examples: chatExamples['chat.getPinnedMessages'],
+			tags: ['Chat'],
 			authRequired: true,
 			query: isChatGetPinnedMessagesProps,
 			response: {
@@ -1055,6 +1245,15 @@ const chatEndpoints = API.v1
 	.get(
 		'chat.getThreadsList',
 		{
+			summary: 'List Threads',
+			description: `Get a list of the <a href='https://docs.rocket.chat/docs/threads' target='_blank'>thread</a> conversations in a room.
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|1.0.0             | Added       |`,
+			examples: chatExamples['chat.getThreadsList'],
+			tags: ['Chat'],
 			authRequired: true,
 			query: isChatGetThreadsListProps,
 			response: {
@@ -1118,6 +1317,15 @@ const chatEndpoints = API.v1
 	.get(
 		'chat.syncThreadsList',
 		{
+			summary: 'Sync Thread List',
+			description: `List the threads of a room along with any data updates from a specified date.
+
+### Changelog
+| Version      | Description | 
+| ------------ | ------------|
+| 1.0.0        | Added       |`,
+			examples: chatExamples['chat.syncThreadsList'],
+			tags: ['Chat'],
 			authRequired: true,
 			query: isChatSyncThreadsListProps,
 			response: {
@@ -1183,6 +1391,18 @@ const chatEndpoints = API.v1
 	.get(
 		'chat.getThreadMessages',
 		{
+			summary: 'Get Thread Messages',
+			description: `Get <a href='https://docs.rocket.chat/docs/threads' target='_blank'>thread</a> messages.
+
+
+### Changelog
+| Version      | Description | 
+| ------------ | ------------|
+| 1.2.0        | Remove \`tlm\` field which is not supported |
+| 1.1.0        | Update example results - original message in thread is not returned |
+| 1.0.0        | Added       |`,
+			examples: chatExamples['chat.getThreadMessages'],
+			tags: ['Chat'],
 			authRequired: true,
 			query: isChatGetThreadMessagesProps,
 			response: {
@@ -1261,6 +1481,15 @@ const chatEndpoints = API.v1
 	.get(
 		'chat.syncThreadMessages',
 		{
+			summary: 'Sync Thread Messages',
+			description: `List the messages in a thread along with any data updates from a specified date.
+
+### Changelog
+| Version      | Description | 
+| ------------ | ------------|
+| 1.0.0        | Added       |`,
+			examples: chatExamples['chat.syncThreadMessages'],
+			tags: ['Chat'],
 			authRequired: true,
 			query: isChatSyncThreadMessagesProps,
 			response: {
@@ -1321,6 +1550,15 @@ const chatEndpoints = API.v1
 	.get(
 		'chat.getMentionedMessages',
 		{
+			summary: 'Get Mentioned Messages',
+			description: `Get the messages in which you are mentioned (users are mentioned with the \`@\` symbol). Visit the [Messages](https://docs.rocket.chat/docs/messages#mention-users) user guide to learn more.
+
+### Changelog
+| Version      | Description | 
+| ------------ | ------------|
+| 2.2.0        | Added       |`,
+			examples: chatExamples['chat.getMentionedMessages'],
+			tags: ['Chat'],
 			authRequired: true,
 			query: isChatGetMentionedMessagesProps,
 			response: {
@@ -1361,6 +1599,15 @@ const chatEndpoints = API.v1
 	.get(
 		'chat.getStarredMessages',
 		{
+			summary: 'Get Starred Messages',
+			description: `Get the <a href='https://docs.rocket.chat/docs/message-actions#star-messages' target='_blank'>starred messages</a> of the authenticated user in a room. 
+
+### Changelog
+| Version      | Description | 
+| ------------ | ------------|
+| 2.2.0        | Added       |`,
+			examples: chatExamples['chat.getStarredMessages'],
+			tags: ['Chat'],
 			authRequired: true,
 			query: isChatGetStarredMessagesProps,
 			response: {
@@ -1403,6 +1650,15 @@ const chatEndpoints = API.v1
 	.get(
 		'chat.getDiscussions',
 		{
+			summary: 'Get Discussions of A Room',
+			description: `Gets the <a href='https://docs.rocket.chat/docs/discussions' target='_blank'>discussions</a> in a room. 
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+| 2.4.0            | Added       |`,
+			examples: chatExamples['chat.getDiscussions'],
+			tags: ['Chat'],
 			authRequired: true,
 			query: isChatGetDiscussionsProps,
 			response: {
@@ -1441,6 +1697,10 @@ const chatEndpoints = API.v1
 	.get(
 		'chat.getURLPreview',
 		{
+			summary: 'Get URL Preview',
+			description: `Use this endpoint to get a URL preview that can be used in the send and update message endpoints.`,
+			examples: chatExamples['chat.getURLPreview'],
+			tags: ['Chat'],
 			authRequired: true,
 			query: isChatGetURLPreviewProps,
 			response: {

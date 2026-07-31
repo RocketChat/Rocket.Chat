@@ -9,6 +9,7 @@ import {
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
+import { permissionsExamples } from './permissions.examples';
 import { addPermissionToRoleMethod, removeRoleFromPermissionMethod } from '../../lib/authorization/permissionRole';
 import { permissionsGetMethod } from '../../lib/authorization/streamer/permissions';
 import { notifyOnPermissionChangedById } from '../../lib/notifyListener';
@@ -86,6 +87,15 @@ const permissionsEndpoints = API.v1
 	.get(
 		'permissions.listAll',
 		{
+			summary: 'List All Permissions',
+			description: `Returns the list of <a href='https://docs.rocket.chat/docs/permissions' target='_blank'>permissions</a> from the workspace.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|0.73.0            | Added       |`,
+			examples: permissionsExamples['permissions.listAll'],
+			tags: ['Permissions'],
 			authRequired: true,
 			query: isPermissionsListAll,
 			response: {
@@ -145,6 +155,15 @@ const permissionsEndpoints = API.v1
 	.post(
 		'permissions.update',
 		{
+			summary: 'Update Permissions',
+			description: `Update the <a href='https://docs.rocket.chat/docs/permissions' target='_blank'>permissions</a> on the workspace.
+Permission required: \`access-permissions\`
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|0.66.0            | Added       |`,
+			examples: permissionsExamples['permissions.update'],
+			tags: ['Permissions'],
 			authRequired: true,
 			permissionsRequired: ['access-permissions'],
 			body: isBodyParamsValidPermissionUpdate,
@@ -209,6 +228,19 @@ const permissionsEndpoints = API.v1
 	.post(
 		'permissions.addRole',
 		{
+			summary: 'Add Permission to a Role',
+			description: `Grant a <a href='https://docs.rocket.chat/docs/permissions' target='_blank'>permission</a> to a role. 
+
+Permission required: \`access-permissions\`. 
+
+To modify a setting-level permission, the \`access-setting-permissions\` permission is also required.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|8.7.0            | Added       |`,
+			examples: permissionsExamples['permissions.addRole'],
+			tags: ['Permissions'],
 			authRequired: true,
 			permissionsRequired: ['access-permissions'],
 			body: isPermissionRolePayload,
@@ -228,6 +260,19 @@ const permissionsEndpoints = API.v1
 	.post(
 		'permissions.removeRole',
 		{
+			summary: 'Remove Role from Permission',
+			description: `Revoke a <a href='https://docs.rocket.chat/docs/permissions' target='_blank'>permission</a> from a role. 
+
+Permission required: \`access-permissions\`. 
+
+To modify a setting-level permission, the \`access-setting-permissions\` permission is also required.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|8.7.0            | Added       |`,
+			examples: permissionsExamples['permissions.removeRole'],
+			tags: ['Permissions'],
 			authRequired: true,
 			permissionsRequired: ['access-permissions'],
 			body: isPermissionRolePayload,

@@ -45,6 +45,7 @@ import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
+import { channelsExamples } from './channels.examples';
 import { canAccessRoomAsync } from '../../lib/authorization';
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { eraseRoom } from '../../lib/eraseRoom';
@@ -223,6 +224,17 @@ const channelsListResponseSchema = ajv.compile<{ channels: IRoom[]; count: numbe
 API.v1.post(
 	'channels.addAll',
 	{
+		summary: 'Add all Users to a Channel',
+		description: `Adds all users in the workspace to a public room. Permission required: \`add-all-to-room\`.
+The maximum number of users you can add at once depends on your workspace's REST API settings. To access this setting, go to **Manage** > **Workspace** > **Settings** > **General** > **REST API** > **User Limit for Adding All Users to Channel**.
+
+### Changelog
+| Version | Description               |
+| ------- | ------------------------- |
+|0.55.0   | Added \`activeUsersOnly\` param |
+|0.48.0   | Renamed to \`channels.addAll\` from \`channel.addAll\`|`,
+		examples: channelsExamples['channels.addAll'],
+		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsAddAllProps,
 		response: {
@@ -246,6 +258,14 @@ API.v1.post(
 API.v1.post(
 	'channels.archive',
 	{
+		summary: 'Archive Channel',
+		description: `Archive a channel. Permission required: \`archive-room\`
+### Changelog
+| Version | Description               |
+| ------- | ------------------------- |
+| 0.48.0  | Added                    |`,
+		examples: channelsExamples['channels.archive'],
+		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsArchiveProps,
 		response: {
@@ -266,6 +286,14 @@ API.v1.post(
 API.v1.post(
 	'channels.unarchive',
 	{
+		summary: 'Unarchive a Channel',
+		description: `Unarchive a channel. Permission required: \`unarchive-room\`
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+|0.48.0   | Added       |`,
+		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsUnarchiveProps,
 		response: {
@@ -305,6 +333,16 @@ const channelsHistoryResponseSchema = ajv.compile<{ messages: IMessage[]; firstU
 API.v1.get(
 	'channels.history',
 	{
+		summary: 'Get Channel History',
+		description: `Retrieves the history of a channel. You must be a member of the channel or have the \`preview-c-room\` permission.
+
+### Changelog
+| Version | Description               |
+| ------- | ------------------------- |
+| 0.75.0 | Added offset property      |
+| 0.47.0  | Added                     |`,
+		examples: channelsExamples['channels.history'],
+		tags: ['Channels'],
 		authRequired: true,
 		query: isChannelsHistoryProps,
 		response: {
@@ -376,6 +414,16 @@ const rolesResponseSchema = ajv.compile<{
 API.v1.get(
 	'channels.roles',
 	{
+		summary: 'Get Channel Roles',
+		description: `Lists all user's roles in the channel.
+
+### Changelog
+
+| Version | Description |
+| ------- | ----------- |
+|0.65.0  | Added        |`,
+		examples: channelsExamples['channels.roles'],
+		tags: ['Channels'],
 		authRequired: true,
 		query: isChannelsRolesProps,
 		response: {
@@ -398,6 +446,15 @@ API.v1.get(
 API.v1.post(
 	'channels.join',
 	{
+		summary: 'Join a Channel',
+		description: `Join a public channel.
+
+### Changelog
+| Version | Description               |
+| ------- | ------------------------- |
+| 0.49.0  | Added                  |`,
+		examples: channelsExamples['channels.join'],
+		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsJoinProps,
 		response: {
@@ -421,6 +478,19 @@ API.v1.post(
 API.v1.post(
 	'channels.kick',
 	{
+		summary: 'Remove User from Channel',
+		description: `Remove a user from the channel.
+
+Permissions required:
+* \`remove-user\`: To remove a user from any room.
+* \`kick-user-from-any-c-room\`: To remove a user from a public channel. You also need the \`remove-user\` permission.
+
+### Changelog
+| Version | Description               |
+| ------- | ------------------------- |
+| 0.48.0  | Added                     |`,
+		examples: channelsExamples['channels.kick'],
+		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsKickProps,
 		response: {
@@ -449,6 +519,14 @@ API.v1.post(
 API.v1.post(
 	'channels.leave',
 	{
+		summary: 'Leave  Channel',
+		description: `Leave a public channel. Permission required: \`leave-c\`
+### Changelog
+| Version | Description               |
+| ------- | ------------------------- |
+| 0.48.0  | Added                  |`,
+		examples: channelsExamples['channels.leave'],
+		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsLeaveProps,
 		response: {
@@ -489,6 +567,17 @@ const channelsMessagesResponseSchema = ajv.compile<{ messages: IMessage[]; count
 API.v1.get(
 	'channels.messages',
 	{
+		summary: 'Get Channel Messages',
+		description: `Lists all the channel's messages. Permissions required: \`view-c-room\`, \`view-joined-room\`
+
+### Changelog
+
+| Version | Description                                  |
+| ------- | -------------------------------------------- |
+| 7.0.0  | Added \`mentionIds\`, \`starredIds\`, \`pinned\` query parameters.|        
+| 0.59.0  | Added                                        |`,
+		examples: channelsExamples['channels.messages'],
+		tags: ['Channels'],
 		authRequired: true,
 		query: isChannelsMessagesProps,
 		permissionsRequired: ['view-c-room'],
@@ -554,6 +643,15 @@ API.v1.get(
 API.v1.post(
 	'channels.open',
 	{
+		summary: 'Add Channel to User List',
+		description: `Add a channel back to the user's list of channels in the workspace's sidebar.
+### Changelog
+
+| Version | Description |
+| ------- | ----------- |
+|0.48.0   | Added       |`,
+		examples: channelsExamples['channels.open'],
+		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsOpenProps,
 		response: {
@@ -589,6 +687,15 @@ API.v1.post(
 API.v1.post(
 	'channels.setReadOnly',
 	{
+		summary: 'Set Channel ReadOnly',
+		description: `Set a channel to be read-only or not. Permission required: \`edit-room\`
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+|0.49.0  | Added        |`,
+		examples: channelsExamples['channels.setReadOnly'],
+		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsSetReadOnlyProps,
 		response: {
@@ -625,6 +732,15 @@ const announcementResponseSchema = ajv.compile<{ announcement?: string }>({
 API.v1.post(
 	'channels.setAnnouncement',
 	{
+		summary: 'Set Channel Announcement',
+		description: `Set an announcement for the channel. Permission required: \`edit-room\`
+### Changelog
+
+| Version | Description |
+| ------- | ----------- |
+|0.63.0  | Added        |`,
+		examples: channelsExamples['channels.setAnnouncement'],
+		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsSetAnnouncementProps,
 		response: {
@@ -662,6 +778,15 @@ const channelsMentionsResponseSchema = ajv.compile<{ mentions: IMessage[]; count
 API.v1.get(
 	'channels.getAllUserMentionsByChannel',
 	{
+		summary: 'Get User Mentions in a Channel',
+		description: `Get all the mentions of the authenticated user in a channel.
+
+### Changelog
+| Version | Description|
+| ------- | -----------|
+|0.63.0  | Added       |`,
+		examples: channelsExamples['channels.getAllUserMentionsByChannel'],
+		tags: ['Channels'],
 		authRequired: true,
 		query: isChannelsGetAllUserMentionsByChannelProps,
 		response: {
@@ -713,6 +838,16 @@ const moderatorsResponseSchema = ajv.compile<{ moderators: { _id: string; userna
 API.v1.get(
 	'channels.moderators',
 	{
+		summary: 'Get Channel Moderators',
+		description: `
+List all the moderators in a channel.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 0.70.0 | Added        |`,
+		examples: channelsExamples['channels.moderators'],
+		tags: ['Channels'],
 		authRequired: true,
 		query: isChannelsModeratorsProps,
 		response: {
@@ -746,6 +881,18 @@ API.v1.get(
 API.v1.post(
 	'channels.delete',
 	{
+		summary: 'Delete Channel',
+		description: `Delete a channel. Any of the permssions are required:
+* \`delete-c\`: Delete a public channel.
+* \`delete-team-channel\`: Delete a channel part of a team. You also need the \`delete-c\` permission.
+
+### Changelog
+
+| Version | Description               |
+| ------- | ------------------------- |
+| 0.71.0  | Removed \`channel\` property|
+| 0.49.0  | Added                     |`,
+		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsDeleteProps,
 		response: {
@@ -779,6 +926,18 @@ const channelsConvertToTeamResponseSchema = ajv.compile<{ team: ITeam }>({
 API.v1.post(
 	'channels.convertToTeam',
 	{
+		summary: 'Convert Channel to Team',
+		description: `Convert a channel to a team.
+
+Permissions required: \`create-team\`, \`edit-room\`. Both permissions are checked against the target channel, whether you identify it by \`channelId\` or \`channelName\`.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 8.7.0   | Enforced room permission checks regardless of whether the channel is identified by ID or name. |
+| 3.13.0  | Added |`,
+		examples: channelsExamples['channels.convertToTeam'],
+		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsConvertToTeamProps,
 		permissionsRequired: ['create-team'],
@@ -836,6 +995,17 @@ API.v1.post(
 API.v1.post(
 	'channels.addModerator',
 	{
+		summary: 'Add Channel Moderator',
+		description: `Assign the \`moderator\` role to a channel member. See <a href='https://docs.rocket.chat/docs/room-roles' target='_blank'>Room Roles</a> for details about the roles.
+
+Permission required: \`set-moderator\`
+
+### Changelog
+| Version | Description               |
+| ------- | ------------------------- |
+| 0.49.4  | Added                     |`,
+		examples: channelsExamples['channels.addModerator'],
+		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsModeratorsProps,
 		response: {
@@ -858,6 +1028,16 @@ API.v1.post(
 API.v1.post(
 	'channels.addOwner',
 	{
+		summary: 'Add Channel Owner',
+		description: `Assign the \`owner\` role to a channel member. See <a href='https://docs.rocket.chat/docs/room-roles' target='_blank'>Room Roles</a> for details about the roles.
+
+Permission required:  \`set-owner\`
+### Changelog
+| Version | Description               |
+| ------- | ------------------------- |
+| 0.49.4   | Added                    |`,
+		examples: channelsExamples['channels.addOwner'],
+		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsModeratorsProps,
 		response: {
@@ -880,6 +1060,14 @@ API.v1.post(
 API.v1.post(
 	'channels.close',
 	{
+		summary: 'Close Channel',
+		description: `Remove a channel from the user's list of channels in the workspace sidebar. You can access it again from the **Directory**.
+### Changelog
+| Version | Description               |
+| ------- | ------------------------- |
+| 0.48.0  | Added                     |`,
+		examples: channelsExamples['channels.close'],
+		tags: ['Channels'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string }>(),
 		response: {
@@ -937,6 +1125,16 @@ const countersResponseSchema = ajv.compile<{
 API.v1.get(
 	'channels.counters',
 	{
+		summary: 'Get Channel Counters',
+		description: `Gets channel counter for the authenticated user.
+
+Permission required: \`view-room-administration\`
+### Changelog
+| Version | Description               |
+| ------- | ------------------------- |
+| 0.65.0  | Added                     |`,
+		examples: channelsExamples['channels.counters'],
+		tags: ['Channels'],
 		authRequired: true,
 		query: ajvQuery.compile<{ roomId?: string; roomName?: string; userId?: string }>({
 			type: 'object',
@@ -1076,6 +1274,18 @@ API.channels = {
 API.v1.post(
 	'channels.create',
 	{
+		summary: 'Create Channel',
+		description: `Create a public channel. Optionally, include specified users. The channel creator is included as a member by default. Permission required: \`create-c\`.
+Channel naming has restraints following the regex filter \`[0-9a-zA-Z-_.]+\` by default. See <a href="https://docs.rocket.chat/docs/general#utf8" target="_blank">UTF8 Settings</a> to modify regex filter for channel names. Channel names must not allow for any whitespaces.
+
+### Changelog
+
+| Version | Description               |
+| ------- | ------------------------- |
+| 6.4.1   | Added \`excludeSelf\` param |
+| 0.13.0  | Added                     |`,
+		examples: channelsExamples['channels.create'],
+		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsCreateProps,
 		response: {
@@ -1174,6 +1384,16 @@ const channelsFilesResponseSchema = ajv.compile<{ files: IUploadWithUser[]; coun
 API.v1.get(
 	'channels.files',
 	{
+		summary: 'Get Channel Files',
+		description: `Retrieves all the media files from a channel.
+
+### Changelog
+| Version | Description               |
+| ------- | ------------------------- |
+| 0.64.0 | Change userId to user object in response                    |
+| 0.59.0  | Added                  |`,
+		examples: channelsExamples['channels.files'],
+		tags: ['Channels'],
 		authRequired: true,
 		query: isChannelsFilesListProps,
 		response: {
@@ -1278,6 +1498,23 @@ const channelsGetIntegrationsResponseSchema = ajv.compile<{
 API.v1.get(
 	'channels.getIntegrations',
 	{
+		summary: 'Get Channel Integrations',
+		description: `Retrieves the integrations that the channel has.
+The endpoint requires at least one of the following integration permissions: 
+- \`manage-incoming-integrations\`
+- \`manage-own-incoming-integrations\`
+- \`manage-outgoing-integrations\`
+- \`manage-own-outgoing-integrations\`. 
+
+It will return the integrations based on the user's permission. 
+
+### Changelog
+| Version | Description                                     |
+| ------- | -------------------------------------------------- |
+| 1.1.0   | Separate permissions in \`incoming\` and \`outgoing\`. |
+| 0.49.0  | Added                                              |`,
+		examples: channelsExamples['channels.getIntegrations'],
+		tags: ['Channels'],
 		authRequired: true,
 		query: channelsGetIntegrationsQuery,
 		permissionsRequired: {
@@ -1352,6 +1589,15 @@ API.v1.get(
 API.v1.get(
 	'channels.info',
 	{
+		summary: 'Get Channel Information',
+		description: `Retrieves the information about the channel. This does not include archived channels. You must be a member of the channel.
+
+### Changelog
+| Version | Description               |
+| ------- | ------------------------- |
+| 0.48.0  | Added                  |`,
+		examples: channelsExamples['channels.info'],
+		tags: ['Channels'],
 		authRequired: true,
 		query: roomTargetQuery,
 		response: {
@@ -1396,6 +1642,21 @@ const channelsInviteBody = ajv.compile<({ roomId: string } | { roomName: string 
 API.v1.post(
 	'channels.invite',
 	{
+		summary: 'Add Users to Channel',
+		description: `Add a user or bulk users to a channel.
+
+For a user to invite other users, they must match at least one of the following premises:
+- The user is part of a room of any type and has the \`add-user-to-joined-room\` permission.
+- The user is part of a public room \`(t: 'c')\` and has the \`add-user-to-any-c-room\` permission.
+- The user is part of a private room \`(t: 'p')\` and has the \`add-user-to-any-p-room\` permission.
+
+### Changelog
+
+| Version | Description               |
+| ------- | ------------------------- |
+| 0.48.0  | Added                  |`,
+		examples: channelsExamples['channels.invite'],
+		tags: ['Channels'],
 		authRequired: true,
 		body: channelsInviteBody,
 		response: {
@@ -1436,6 +1697,18 @@ API.v1.post(
 API.v1.get(
 	'channels.list',
 	{
+		summary: 'Get Channel List',
+		description: `Lists all the channels in the workspace. Any of the following permissions are required:
+* \`view-c-room\`
+* \`view-joined-room\`
+
+### Changelog
+| Version | Description                                  |
+| ------- | -------------------------------------------- |
+| 0.49.0  | Count and offset query parameters supported. |
+| 0.48.0  | Added                                        |`,
+		examples: channelsExamples['channels.list'],
+		tags: ['Channels'],
 		authRequired: true,
 		permissionsRequired: {
 			GET: { permissions: ['view-c-room', 'view-joined-room'], operation: 'hasAny' },
@@ -1537,6 +1810,16 @@ const channelsListJoinedQuery = ajvQuery.compile<{
 API.v1.get(
 	'channels.list.joined',
 	{
+		summary: 'Get List of Joined Channels',
+		description: `Lists all the channels the authenticated user has joined. 
+### Changelog
+| Version | Description                                  |
+| ------- | -------------------------------------------- |
+| 0.62.0  | Add \`query\` parameter support.               |
+| 0.49.0  | Count and offset query parameters supported. |
+| 0.48.0  | Added                                        |`,
+		examples: channelsExamples['channels.list.joined'],
+		tags: ['Channels'],
 		authRequired: true,
 		query: channelsListJoinedQuery,
 		response: {
@@ -1637,6 +1920,17 @@ const channelsMembersResponseSchema = ajv.compile<{ members: IUser[]; count: num
 API.v1.get(
 	'channels.members',
 	{
+		summary: 'Get Members of a Channel',
+		description: `Lists all channel users. The list of elements a user can use to sort the list is limited. The current sortable element is: \`username\`.
+
+If the channel is a broadcast channel, you need the \`view-broadcast-member-list\` permission.
+
+### Changelog
+| Version | Description                                  |
+| ------- | -------------------------------------------- |
+| 0.59.0  | Added                                        |`,
+		examples: channelsExamples['channels.members'],
+		tags: ['Channels'],
 		authRequired: true,
 		query: channelsMembersQuery,
 		response: {
@@ -1706,6 +2000,15 @@ const channelsOnlineResponseSchema = ajv.compile<{ online: Pick<IUser, '_id' | '
 API.v1.get(
 	'channels.online',
 	{
+		summary: 'List Online Users in a Channel',
+		description: `List all online users in a particular channel. 
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+|0.52.0   | Added       |
+|7.0.0   | Replaced \`query\` parameter with \`_id\` parameter       |`,
+		examples: channelsExamples['channels.online'],
+		tags: ['Channels'],
 		authRequired: true,
 		query: isChannelsOnlineProps,
 		response: {
@@ -1764,6 +2067,18 @@ API.v1.get(
 API.v1.post(
 	'channels.removeModerator',
 	{
+		summary: 'Remove Channel Moderator',
+		description: `Remove the \`moderator\` role from a user in a channel.
+
+Permission required: \`set-moderator\`.
+
+### Changelog
+
+| Version | Description |
+| ------- | ----------- |
+|0.49.4  | Added       |`,
+		examples: channelsExamples['channels.removeModerator'],
+		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsModeratorsProps,
 		response: {
@@ -1786,6 +2101,18 @@ API.v1.post(
 API.v1.post(
 	'channels.removeOwner',
 	{
+		summary: 'Remove Channel Owner',
+		description: `Remove the \`owner\` role from a user in a channel. 
+
+Permission required:\`set-owner\`.
+
+### Changelog
+
+| Version | Description |
+| ------- | ----------- |
+|0.49.4  | Added       |`,
+		examples: channelsExamples['channels.removeOwner'],
+		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsModeratorsProps,
 		response: {
@@ -1808,6 +2135,15 @@ API.v1.post(
 API.v1.post(
 	'channels.rename',
 	{
+		summary: 'Rename a Channel',
+		description: `Change the name of a channel. Permission required: \`edit-room\`
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+|0.48.0  | Added        |`,
+		examples: channelsExamples['channels.rename'],
+		tags: ['Channels'],
 		authRequired: true,
 		body: roomSettingBody<{ roomId?: string; roomName?: string; name: string }>('name', { type: 'string' }),
 		response: {
@@ -1841,6 +2177,17 @@ API.v1.post(
 API.v1.post(
 	'channels.setCustomFields',
 	{
+		summary: 'Set Channel Custom Fields',
+		description: `Sets the custom fields for a channel. Permission required: \`edit-room\`.
+
+See the <a href='https://docs.rocket.chat/docs/custom-fields' target='_blank'>Configure Custom Fields for Users</a> document for configuration information.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+|0.62.0  | Added        |`,
+		examples: channelsExamples['channels.setCustomFields'],
+		tags: ['Channels'],
 		authRequired: true,
 		body: roomSettingBody<{ roomId?: string; roomName?: string; customFields: Record<string, unknown> }>('customFields', {
 			type: 'object',
@@ -1869,6 +2216,15 @@ API.v1.post(
 API.v1.post(
 	'channels.setDefault',
 	{
+		summary: 'Set Default Channel',
+		description: `Set whether the channel is a default channel or not. All new users will automatically join this channel. Permission required: \`edit-room\`
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+|0.66.0  | Added        |`,
+		examples: channelsExamples['channels.setDefault'],
+		tags: ['Channels'],
 		authRequired: true,
 		body: roomSettingBody<{ roomId?: string; roomName?: string; default: boolean | string }>('default', { type: ['boolean', 'string'] }),
 		response: {
@@ -1907,6 +2263,15 @@ API.v1.post(
 API.v1.post(
 	'channels.setDescription',
 	{
+		summary: 'Set Channel Description',
+		description: `Set the description for a channel. Permission required: \`edit-room\`.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+|0.48.4  | Added        |`,
+		examples: channelsExamples['channels.setDescription'],
+		tags: ['Channels'],
 		authRequired: true,
 		body: roomSettingBody<{ roomId?: string; roomName?: string; description: string }>('description', { type: 'string' }),
 		response: {
@@ -1933,6 +2298,16 @@ API.v1.post(
 API.v1.post(
 	'channels.setPurpose',
 	{
+		summary: 'Set Channel Purpose',
+		description: `Set the purpose or description of the channel.
+It is the same as Set Channel Description. Permission required: \`edit-room\`
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+|0.48.0  | Added        |`,
+		examples: channelsExamples['channels.setPurpose'],
+		tags: ['Channels'],
 		authRequired: true,
 		body: roomSettingBody<{ roomId?: string; roomName?: string; purpose: string }>('purpose', { type: 'string' }),
 		response: {
@@ -1959,6 +2334,15 @@ API.v1.post(
 API.v1.post(
 	'channels.setTopic',
 	{
+		summary: 'Set Channel Topic',
+		description: `Set the topic for a channel. Permission required: \`edit-room\`.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+|0.13.0  | Added        |`,
+		examples: channelsExamples['channels.setTopic'],
+		tags: ['Channels'],
 		authRequired: true,
 		body: roomSettingBody<{ roomId?: string; roomName?: string; topic: string }>('topic', { type: 'string' }),
 		response: {
@@ -1985,6 +2369,21 @@ API.v1.post(
 API.v1.post(
 	'channels.setType',
 	{
+		summary: 'Set Channel Type',
+		description: `Set the channel type. The channel type can be either \`c\` (public) or \`p\` (private). The following permissions are required:
+* \`create-c\`: To change a private group to a public channel.
+* \`create-p\`: To change a public channel to a private room.
+
+For ABAC-managed private rooms, changing the type from \`p\` to \`c\` is rejected with \`error-action-not-allowed\`.
+When the type changes to \`c\` (public) and the room has ABAC attributes, all ABAC attributes on the room are cleared as part of the conversion.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 8.5.0   | Added ABAC behavior for \`p\` -> \`c\`: ABAC-managed private rooms are rejected, and successful conversions to public clear room ABAC attributes. |
+| 0.49.0  | Added       |`,
+		examples: channelsExamples['channels.setType'],
+		tags: ['Channels'],
 		authRequired: true,
 		body: roomSettingBody<{ roomId?: string; roomName?: string; type: string }>('type', { type: 'string' }),
 		response: {
@@ -2021,6 +2420,16 @@ API.v1.post(
 API.v1.post(
 	'channels.addLeader',
 	{
+		summary: 'Add Channel Leader',
+		description: `Assign the role of \`leader\` to a channel member. See <a href='https://docs.rocket.chat/docs/room-roles' target='_blank'>Room Roles</a> for details about the roles.
+
+Permission required: \`set-leader\`
+### Changelog
+| Version | Description               |
+| ------- | ------------------------- |
+| 0.75.0   | Added                    |`,
+		examples: channelsExamples['channels.addLeader'],
+		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsModeratorsProps,
 		response: {
@@ -2043,6 +2452,18 @@ API.v1.post(
 API.v1.post(
 	'channels.removeLeader',
 	{
+		summary: 'Remove Channel  Leader',
+		description: `Remove the \`leader\` role from a user in a channel. 
+
+Permission required: \`set-leader\` .
+
+### Changelog
+
+| Version | Description |
+| ------- | ----------- |
+|0.75.0  | Added       |`,
+		examples: channelsExamples['channels.removeLeader'],
+		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsModeratorsProps,
 		response: {
@@ -2065,6 +2486,15 @@ API.v1.post(
 API.v1.post(
 	'channels.setJoinCode',
 	{
+		summary: 'Set Channel Join Code',
+		description: `Set the code required to join the channel. If it is set, users must use the join code to successfully join the channel. Permission required: \`edit-room\`
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+|0.49.0  | Added        |`,
+		examples: channelsExamples['channels.setJoinCode'],
+		tags: ['Channels'],
 		authRequired: true,
 		body: roomSettingBody<{ roomId?: string; roomName?: string; joinCode: string }>('joinCode', { type: 'string' }),
 		response: {
@@ -2114,6 +2544,15 @@ const channelsAnonymousReadQuery = ajvQuery.compile<{
 API.v1.get(
 	'channels.anonymousread',
 	{
+		summary: 'Read Channel Messages Anonymously',
+		description: `Fetch the messages in a public channel to an anonymous user. You must enable \`Accounts_AllowAnonymousRead\` <a href="https://docs.rocket.chat/docs/accounts" target="_blank">setting</a> in the workspace.
+
+### Changelog
+| Version | Description               |
+| ------- | ------------------------- |
+| 1.2.0   | Added                     |`,
+		examples: channelsExamples['channels.anonymousread'],
+		tags: ['Channels'],
 		authOrAnonRequired: true,
 		query: channelsAnonymousReadQuery,
 		response: {

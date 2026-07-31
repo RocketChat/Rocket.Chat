@@ -12,6 +12,7 @@ import {
 	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
 
+import { videoConferenceExamples } from './videoConference.examples';
 import { availabilityErrors } from '../../../lib/videoConference/constants';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { canSendMessageAsync } from '../../lib/authorization/canSendMessage';
@@ -119,6 +120,10 @@ const capabilitiesResponseSchema = ajv.compile<{ providerName: string; capabilit
 API.v1.post(
 	'video-conference.start',
 	{
+		summary: 'Start Video Conference',
+		description: `Use this endpoint to begin a video call in a specific room. Rate limiting: 3 requests per 60000ms. Permission required: \`call-management\`.`,
+		examples: videoConferenceExamples['video-conference.start'],
+		tags: ['Video Conference'],
 		authRequired: true,
 		body: isVideoConfStartProps,
 		rateLimiterOptions: { numRequestsAllowed: 3, intervalTimeInMS: 60000 },
@@ -171,6 +176,10 @@ API.v1.post(
 API.v1.post(
 	'video-conference.join',
 	{
+		summary: 'Join a Video Conference',
+		description: `Join a specific video conference. Rate limiting: 2 requests per 5000ms. This endpoint also allows anonymous access for guest users.`,
+		examples: videoConferenceExamples['video-conference.join'],
+		tags: ['Video Conference'],
 		authOrAnonRequired: true,
 		body: isVideoConfJoinProps,
 		rateLimiterOptions: { numRequestsAllowed: 2, intervalTimeInMS: 5000 },
@@ -220,6 +229,10 @@ API.v1.post(
 API.v1.post(
 	'video-conference.cancel',
 	{
+		summary: 'Cancel Video Conference',
+		description: `Cancel a specific video conference call. You can only cancel a call that is in the calling state. Rate limiting: 3 requests per 60 seconds.`,
+		examples: videoConferenceExamples['video-conference.cancel'],
+		tags: ['Video Conference'],
 		authRequired: true,
 		body: isVideoConfCancelProps,
 		rateLimiterOptions: { numRequestsAllowed: 3, intervalTimeInMS: 60000 },
@@ -250,6 +263,10 @@ API.v1.post(
 API.v1.get(
 	'video-conference.info',
 	{
+		summary: 'Get Video Conference Details',
+		description: `Get details about a specific video conference. Rate limiting: 15 requests per 3000ms.`,
+		examples: videoConferenceExamples['video-conference.info'],
+		tags: ['Video Conference'],
 		authRequired: true,
 		query: isVideoConfInfoProps,
 		rateLimiterOptions: { numRequestsAllowed: 15, intervalTimeInMS: 3000 },
@@ -284,6 +301,10 @@ API.v1.get(
 API.v1.get(
 	'video-conference.list',
 	{
+		summary: 'Get List of Video Conferences',
+		description: `Use this endpoint to get the list of video calls for a specific room. Rate limiting: 3 requests per 1000ms.`,
+		examples: videoConferenceExamples['video-conference.list'],
+		tags: ['Video Conference'],
 		authRequired: true,
 		query: isVideoConfListProps,
 		rateLimiterOptions: { numRequestsAllowed: 3, intervalTimeInMS: 1000 },
@@ -312,6 +333,10 @@ API.v1.get(
 API.v1.get(
 	'video-conference.providers',
 	{
+		summary: 'Get Video Conference Providers',
+		description: `Get the list of available video conference providers in your workspace, regardless of their active status. Rate limiting: 3 requests per 1000ms.`,
+		examples: videoConferenceExamples['video-conference.providers'],
+		tags: ['Video Conference'],
 		authRequired: true,
 		rateLimiterOptions: { numRequestsAllowed: 3, intervalTimeInMS: 1000 },
 		response: {
@@ -329,6 +354,12 @@ API.v1.get(
 API.v1.get(
 	'video-conference.capabilities',
 	{
+		summary: 'Get Video Conference Capabilities',
+		description: `Get details on the video call capabilities, such as the name of the provider, and whether Rocket.Chat can control the microphone and camera state. This endpoint is used for the video conference system to dynamically adapt the UI based on provider capabilities, ensuring users only see controls that are actually supported by the configured video conference provider.
+
+Rate limiting: 3 requests per 1000ms`,
+		examples: videoConferenceExamples['video-conference.capabilities'],
+		tags: ['Video Conference'],
 		authRequired: true,
 		rateLimiterOptions: { numRequestsAllowed: 3, intervalTimeInMS: 1000 },
 		response: {

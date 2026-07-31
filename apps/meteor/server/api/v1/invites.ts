@@ -9,6 +9,7 @@ import {
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 
+import { invitesExamples } from './invites.examples';
 import { findOrCreateInvite } from '../../lib/rooms/invites/findOrCreateInvite';
 import { listInvites } from '../../lib/rooms/invites/listInvites';
 import { removeInvite } from '../../lib/rooms/invites/removeInvite';
@@ -67,6 +68,12 @@ const invites = API.v1
 	.get(
 		'listInvites',
 		{
+			summary: 'List Invites',
+			description: `Lists all of the invites on the workspace. 
+
+<a href="https://docs.rocket.chat/docs/permissions" target="_blank">Permission</a> required: \`create-invite-links\``,
+			examples: invitesExamples.listInvites,
+			tags: ['Room Invites'],
 			authRequired: true,
 			response: {
 				200: ajv.compile<IInvite[]>({
@@ -108,6 +115,12 @@ const invites = API.v1
 	.post(
 		'findOrCreateInvite',
 		{
+			summary: 'Find or Create Invite',
+			description: `Creates or return an existing invite with the specified parameters. 
+
+<a href="https://docs.rocket.chat/docs/permissions" target="_blank">Permission</a> required: \`create-invite-links\``,
+			examples: invitesExamples.findOrCreateInvite,
+			tags: ['Room Invites'],
 			authRequired: true,
 			body: isFindOrCreateInviteParams,
 			response: {
@@ -220,6 +233,12 @@ const invites = API.v1
 	.delete(
 		'removeInvite/:_id',
 		{
+			summary: 'Delete Invite by ID',
+			description: `Deletes an invite from the workspace.
+
+<a href='https://docs.rocket.chat/docs/permissions' target='_blank'>Permission</a> required: \`create-invite-links\``,
+			examples: invitesExamples['removeInvite/:_id'],
+			tags: ['Room Invites'],
 			authRequired: true,
 			response: {
 				200: removeInviteResponseSchema,
@@ -240,6 +259,19 @@ const invites = API.v1
 	.post(
 		'useInviteToken',
 		{
+			summary: 'Use Invite Token',
+			description: `Uses an invite token to join a channel or room.
+
+This endpoint also checks whether the user is banned from the target room before
+allowing them to use the invite link. A banned user must be unbanned first
+before they can join via an invite token.
+
+### Changelog
+| Version | Change |
+|---------|--------|
+| 8.4.0   | Added ban check — banned users can no longer join via invite token |`,
+			examples: invitesExamples.useInviteToken,
+			tags: ['Room Invites'],
 			authRequired: true,
 			body: isUseInviteTokenProps,
 			response: {
@@ -275,6 +307,10 @@ const invites = API.v1
 	.post(
 		'sendInvitationEmail',
 		{
+			summary: 'Send Invitation Email',
+			description: `Send workspace invitation emails using this endpoint.`,
+			examples: invitesExamples.sendInvitationEmail,
+			tags: ['Users'],
 			authRequired: true,
 			body: isSendInvitationEmailParams,
 			response: {

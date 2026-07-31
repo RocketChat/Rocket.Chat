@@ -30,6 +30,7 @@ import { isPOSTLivechatVisitorDepartmentTransferParams } from '@rocket.chat/rest
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { roomExamples } from './room.examples';
 import { API } from '../..';
 import { findGuest, findRoom, settings, findAgent, onCheckRoomParams } from './lib/livechat';
 import { canAccessRoomAsync } from '../../../lib/authorization';
@@ -334,6 +335,10 @@ API.v1.addRoute(
 const livechatVisitorDepartmentTransfer = API.v1.post(
 	'livechat/visitor/department.transfer',
 	{
+		summary: 'Visitor Transfer Room',
+		description: `This endpoint can be used by visitors to transfer an ongoing chat to another department.`,
+		examples: roomExamples['livechat/visitor/department.transfer'],
+		tags: ['Omnichannel Rooms'],
 		response: {
 			200: ajv.compile<void>({
 				type: 'object',
@@ -481,6 +486,15 @@ const livechatRoomsEndpoints = API.v1
 	.post(
 		'livechat/rooms.delete',
 		{
+			summary: 'Remove a Closed Omnichannel Room',
+			description: `Use this endpoint to delete a specific closed Omnichannel room from the workspace. Permission required: \`remove-closed-livechat-room\`
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|7.12.0            | Added       |`,
+			examples: roomExamples['livechat/rooms.delete'],
+			tags: ['Omnichannel Rooms'],
 			response: {
 				200: POSTLivechatRemoveRoomSuccess,
 				400: validateBadRequestErrorResponse,
@@ -509,6 +523,17 @@ const livechatRoomsEndpoints = API.v1
 	.post(
 		'livechat/rooms.removeAllClosedRooms',
 		{
+			summary: 'Remove Closed Omnichannel Rooms',
+			description: `Use this endpoint to remove closed Omnichannel rooms. 
+
+Permission required: \`remove-closed-livechat-rooms\`. (On the workspace UI, go to **Manage** > **Workspace** > **Permissions**. Search for the \`Remove All Closed Omnichannel Rooms\` permission. By default, livechat managers and monitors have this permission.)
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|7.11.0            | Added       |`,
+			examples: roomExamples['livechat/rooms.removeAllClosedRooms'],
+			tags: ['Omnichannel Rooms'],
 			response: {
 				200: isPOSTLivechatRoomsCloseAllSuccessResponse,
 			},

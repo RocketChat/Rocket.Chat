@@ -12,6 +12,7 @@ import {
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
 import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
 
+import { auditExamples } from './audit.examples';
 import { API } from '../../../server/api/api';
 import { getPaginationItems } from '../../../server/api/lib/getPaginationItems';
 import { findUsersOfRoom } from '../../../server/lib/findUsersOfRoom';
@@ -165,6 +166,19 @@ const auditRoomMembersResponseSchema = ajv.compile<
 API.v1.get(
 	'audit/rooms.members',
 	{
+		summary: 'Audit and Get Room Members',
+		description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/premium.svg" alt="Premium tag" style="display: block; margin: auto;"></div>
+
+Audit any public or private room and view the room members. You don't need to be a member of the room.
+
+Permission required: \`view-members-list-all-rooms\`
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 6.12.0   | Added       |`,
+		examples: auditExamples['audit/rooms.members'],
+		tags: ['Rooms'],
 		authRequired: true,
 		permissionsRequired: ['view-members-list-all-rooms'],
 		query: isAuditRoomMembersProps,

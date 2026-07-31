@@ -11,6 +11,7 @@ import {
 import { Meteor } from 'meteor/meteor';
 
 import { findMonitors, findMonitorByUsername } from './lib/monitors';
+import { monitorsExamples } from './monitors.examples';
 import { API } from '../../../../../server/api';
 import type { ExtractRoutesFromAPI } from '../../../../../server/api/ApiClass';
 import { getPaginationItems } from '../../../../../server/api/lib/getPaginationItems';
@@ -67,6 +68,12 @@ const livechatMonitorsEndpoints = API.v1
 	.post(
 		'livechat/monitors.create',
 		{
+			summary: 'Create a Monitor',
+			description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/Enterprise%20tag.svg" alt="Enterprise" style="display: block; margin: auto;"></div>
+
+Add a user as monitor. Permission required: \`manage-livechat-monitors\``,
+			examples: monitorsExamples['livechat/monitors.create'],
+			tags: ['Omnichannel Monitors'],
 			response: {
 				200: POSTLivechatMonitorsCreateSuccessResponse,
 				400: validateBadRequestErrorResponse,
@@ -89,6 +96,12 @@ const livechatMonitorsEndpoints = API.v1
 	.post(
 		'livechat/monitors.delete',
 		{
+			summary: 'Delete a Monitor',
+			description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/Enterprise%20tag.svg" alt="Enterprise" style="display: block; margin: auto;"></div>
+
+Delete an Omnichannel monitor. Permission required: \`manage-livechat-monitors\``,
+			examples: monitorsExamples['livechat/monitors.delete'],
+			tags: ['Omnichannel Monitors'],
 			response: {
 				200: POSTLivechatMonitorsDeleteSuccessResponse,
 				400: validateBadRequestErrorResponse,

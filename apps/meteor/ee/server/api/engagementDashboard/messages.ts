@@ -7,6 +7,7 @@ import {
 } from '@rocket.chat/rest-typings';
 import { check, Match } from 'meteor/check';
 
+import { messagesExamples } from './messages.examples';
 import { API } from '../../../../server/api';
 import { isDateISOString, transformDatesForAPI } from '../../lib/engagementDashboard/date';
 import {
@@ -149,6 +150,19 @@ declare module '@rocket.chat/rest-typings' {
 API.v1.get(
 	'engagement-dashboard/messages/messages-sent',
 	{
+		summary: 'Get Number of Sent Messages',
+		description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/premium.svg" alt="Premium tag" style="display: block; margin: auto;"></div>
+
+Retrieve the number of messages sent daily during a specific period.
+
+Permission required: \`view-engagement-dashboard\` 
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|3.1.0            | Added       |`,
+		examples: messagesExamples['engagement-dashboard/messages/messages-sent'],
+		tags: ['Messages Engagement'],
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],
@@ -178,6 +192,19 @@ API.v1.get(
 API.v1.get(
 	'engagement-dashboard/messages/origin',
 	{
+		summary: 'Get Origin of Message Sent',
+		description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/premium.svg" alt="Premium tag" style="display: block; margin: auto;"></div>
+
+Get the origin of messages sent during a specific period. It highlights the number of messages sent in private channels, private chats, and public channels.
+
+Permission required: \`view-engagement-dashboard\` 
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|3.1.0            | Added       |`,
+		examples: messagesExamples['engagement-dashboard/messages/origin'],
+		tags: ['Messages Engagement'],
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],
@@ -207,6 +234,19 @@ API.v1.get(
 API.v1.get(
 	'engagement-dashboard/messages/top-five-popular-channels',
 	{
+		summary: 'Get the Most Popular Channels',
+		description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/premium.svg" alt="Premium tag" style="display: block; margin: auto;"></div>
+
+Retrieves the top 5 popular channels in your workspace by the number of messages sent. It highlights the number of messages sent in private channels, private chats, and public channels. 
+
+Permission required: \`view-engagement-dashboard\` 
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|3.1.0            | Added       |`,
+		examples: messagesExamples['engagement-dashboard/messages/top-five-popular-channels'],
+		tags: ['Messages Engagement'],
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],

@@ -7,6 +7,7 @@ import {
 } from '@rocket.chat/rest-typings';
 import { check, Match } from 'meteor/check';
 
+import { usersExamples } from './users.examples';
 import { API } from '../../../../server/api';
 import { isDateISOString, transformDatesForAPI } from '../../lib/engagementDashboard/date';
 import {
@@ -220,6 +221,19 @@ declare module '@rocket.chat/rest-typings' {
 API.v1.get(
 	'engagement-dashboard/users/new-users',
 	{
+		summary: 'Get New Users',
+		description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/premium.svg" alt="Premium tag" style="display: block; margin: auto;"></div>
+
+Retrieve the metrics of newly registered users during a specific period.
+
+Permission required: \`view-engagement-dashboard\`
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|3.1.0            | Added       |`,
+		examples: usersExamples['engagement-dashboard/users/new-users'],
+		tags: ['Users Engagement'],
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],
@@ -249,6 +263,19 @@ API.v1.get(
 API.v1.get(
 	'engagement-dashboard/users/active-users',
 	{
+		summary: 'Get Active Users',
+		description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/premium.svg" alt="Premium tag" style="display: block; margin: auto;"></div>
+
+Retrieve the metrics of active users in the workspace during a specific period.
+
+Permission required: \`view-engagement-dashboard\` 
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|3.1.0            | Added       |`,
+		examples: usersExamples['engagement-dashboard/users/active-users'],
+		tags: ['Users Engagement'],
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],
@@ -278,6 +305,19 @@ API.v1.get(
 API.v1.get(
 	'engagement-dashboard/users/chat-busier/hourly-data',
 	{
+		summary: 'Get Hourly Data When Chat is Busier',
+		description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/premium.svg" alt="Premium tag" style="display: block; margin: auto;"></div>
+
+Retrieve hourly data when chat is busier.
+
+Permission required: \`view-engagement-dashboard\` 
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|3.1.0            | Added       |`,
+		examples: usersExamples['engagement-dashboard/users/chat-busier/hourly-data'],
+		tags: ['Users Engagement'],
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],
@@ -306,6 +346,19 @@ API.v1.get(
 API.v1.get(
 	'engagement-dashboard/users/chat-busier/weekly-data',
 	{
+		summary: 'Get Weekly Data When Chat is Busier',
+		description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/premium.svg" alt="Premium tag" style="display: block; margin: auto;"></div>
+
+Retrieves weekly data when chat is busier. 
+
+Permission required: \`view-engagement-dashboard\` 
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|3.1.0            | Added       |`,
+		examples: usersExamples['engagement-dashboard/users/chat-busier/weekly-data'],
+		tags: ['Users Engagement'],
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],
@@ -334,6 +387,19 @@ API.v1.get(
 API.v1.get(
 	'engagement-dashboard/users/users-by-time-of-the-day-in-a-week',
 	{
+		summary: 'Get User By Time of the Day',
+		description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/premium.svg" alt="Premium tag" style="display: block; margin: auto;"></div>
+
+Retrieve users by hours at a particular time of the day in a week.
+
+Permission required: \`view-engagement-dashboard\`  
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|3.1.0            | Added       |`,
+		examples: usersExamples['engagement-dashboard/users/users-by-time-of-the-day-in-a-week'],
+		tags: ['Users Engagement'],
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],

@@ -24,6 +24,7 @@ import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
 import _ from 'underscore';
 
+import { settingsExamples } from './settings.examples';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../lib/notifyListener';
 import { refreshLoginServices } from '../../lib/refreshLoginServices';
@@ -143,6 +144,16 @@ const serviceConfigurationsResponseSchema = ajv.compile<{ configurations: LoginS
 API.v1.get(
 	'settings.public',
 	{
+		summary: 'Get Public Settings',
+		description: `List all public settings. Learn how this can be used in configuring your workspace in this <a href="https://docs.rocket.chat/docs/manage-settings-using-environmental-variables" target="_blank">guide</a>.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|7.0.0            | Added the \`_id\` query parameter for filtering.|
+|7.0.0            | Removed the \`query\` parameter.      |`,
+		examples: settingsExamples['settings.public'],
+		tags: ['Settings'],
 		authRequired: false,
 		query: isSettingsPublicWithPaginationProps,
 		response: {
@@ -177,6 +188,15 @@ API.v1.get(
 API.v1.get(
 	'settings.oauth',
 	{
+		summary: 'Get OAuth Settings',
+		description: `List all the <a href="https://docs.rocket.chat/docs/oauth" target="_blank"> OAuth services</a>. enabled in the workspace.
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|0.64.0            | Renamed field \`appId\` to \`clientId\` and added flag \`custom\` to indicate whether the OAuth service is customized and fix \`id\` inconsistence (set all cases to \`_id\`)       |
+|0.63.0            | Added       |`,
+		examples: settingsExamples['settings.oauth'],
+		tags: ['Settings'],
 		authRequired: false,
 		response: {
 			200: settingsOAuthResponseSchema,
@@ -226,6 +246,10 @@ API.v1.get(
 API.v1.post(
 	'settings.addCustomOAuth',
 	{
+		summary: 'Add Custom OAuth',
+		description: `Add a <a href=" https://docs.rocket.chat/docs/oauth#add-custom-oauth" target="_blank">custom OAuth integration</a> to your workspace.`,
+		examples: settingsExamples['settings.addCustomOAuth'],
+		tags: ['Settings'],
 		authRequired: true,
 		twoFactorRequired: true,
 		permissionsRequired: {
@@ -318,6 +342,10 @@ API.v1.post(
 API.v1.get(
 	'settings',
 	{
+		summary: 'Get Private Settings',
+		description: `List all private settings. Learn how this can be used in configuring your server in this <a href="https://docs.rocket.chat/docs/deployment-environment-variables" target="_blank">guide</a>.`,
+		examples: settingsExamples.settings,
+		tags: ['Settings'],
 		authRequired: true,
 		query: isSettingsGetParams,
 		response: {
@@ -358,6 +386,15 @@ API.v1.get(
 API.v1.get(
 	'settings/:_id',
 	{
+		summary: 'Get Setting',
+		description: `Get details of a setting by ID.
+Permission required: \`view-privileged-setting\`
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|0.42.0            | Added       |`,
+		examples: settingsExamples['settings/:_id'],
+		tags: ['Settings'],
 		authRequired: true,
 		permissionsRequired: {
 			GET: { permissions: ['view-privileged-setting'], operation: 'hasAll' },
@@ -387,6 +424,35 @@ API.v1.get(
 API.v1.post(
 	'settings/:_id',
 	{
+		summary: 'Update Setting',
+		description: `Permission required: \`edit-privileged-setting\`
+
+The \`_id\` of a setting is the first argument of the \`RocketChat.settings.add\` method used in \`Rocket.Chat/packages/rocketchat-lib/server/startup/settings.js\` (among other files).
+
+For example, the following code in \`settings.js\` file:
+  \`\`\`json
+  this.add('Accounts_AllowAnonymousRead', false, {
+    type: 'boolean',
+    public: true  });
+  \`\`\`
+  This means that the setting labeled \`Allow anonymous read\` in the section \`Accounts\` has \`_id\` equal to \`Accounts_AllowAnonymousRead\`. The second argument is the default value (false). The third argument specifies the variable's type and whether it is public, hidden, and so on.
+
+  To set a color, you can send:
+  \`\`\`json
+  { value: '<color-code>',
+    editor: 'color' }
+  \`\`\`
+
+  And also to trigger a action-button, use:
+  \`\`\`json
+  { execute: true }
+  \`\`\`
+  ### Changelog
+  | Version      | Description |
+  | ---------------- | ------------|
+  |0.65.0            | Added option to set a color and trigger an action       |
+  |0.42.0            | Added       |`,
+		tags: ['Settings'],
 		authRequired: true,
 		permissionsRequired: {
 			POST: { permissions: ['edit-privileged-setting'], operation: 'hasAll' },
@@ -487,6 +553,17 @@ API.v1.post(
 API.v1.post(
 	'settings',
 	{
+		summary: 'Update Settings in Bulk',
+		description: `Updates multiple private workspace settings in a single request. 
+
+Permission required: \`edit-privileged-setting\`
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|8.6.0            | Added       |`,
+		examples: settingsExamples.settings,
+		tags: ['Settings'],
 		authRequired: true,
 		twoFactorRequired: true,
 		twoFactorOptions: { disableRememberMe: true },
@@ -519,6 +596,10 @@ API.v1.post(
 API.v1.get(
 	'service.configurations',
 	{
+		summary: 'Get OAuth Service Configuration',
+		description: `List out all the active OAuth services configured with details.`,
+		examples: settingsExamples['service.configurations'],
+		tags: ['Settings'],
 		authRequired: false,
 		response: {
 			200: serviceConfigurationsResponseSchema,

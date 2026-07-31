@@ -10,6 +10,7 @@ import {
 } from '@rocket.chat/rest-typings';
 import ExpiryMap from 'expiry-map';
 
+import { e2eExamples } from './e2e.examples';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { handleSuggestedGroupKey } from '../../lib/e2e/functions/handleSuggestedGroupKey';
@@ -178,6 +179,9 @@ const e2eEndpoints = API.v1
 	.post(
 		'e2e.setRoomKeyID',
 		{
+			summary: 'Set Room E2E Key',
+			examples: e2eExamples['e2e.setRoomKeyID'],
+			tags: ['E2E'],
 			authRequired: true,
 			body: isE2eSetRoomKeyIdProps,
 			response: {
@@ -200,6 +204,14 @@ const e2eEndpoints = API.v1
 	.post(
 		'e2e.requestSubscriptionKeys',
 		{
+			summary: 'Request Subscription Keys',
+			description: `Requests the E2E encryption keys for the rooms the authenticated user is subscribed to. Other room members are notified to share their keys with the requesting user. This endpoint replaces the deprecated \`e2e.requestSubscriptionKeys\` DDP method. 
+
+### Changelog
+| Version | Description |
+| ------- | ------------|
+| 8.6.0   | Added       |`,
+			tags: ['E2E'],
 			authRequired: true,
 			response: {
 				401: validateUnauthorizedErrorResponse,
@@ -218,6 +230,10 @@ const e2eEndpoints = API.v1
 	.get(
 		'e2e.fetchMyKeys',
 		{
+			summary: 'Get E2E Keys',
+			description: `Retrieves E2E keys of logged in user.`,
+			examples: e2eExamples['e2e.fetchMyKeys'],
+			tags: ['E2E'],
 			authRequired: true,
 			query: undefined,
 			response: {
@@ -241,6 +257,10 @@ const e2eEndpoints = API.v1
 	.get(
 		'e2e.getUsersOfRoomWithoutKey',
 		{
+			summary: 'Get Users of Room Without E2E key',
+			description: `Retrieves user IDs Of room without E2E key.`,
+			examples: e2eExamples['e2e.getUsersOfRoomWithoutKey'],
+			tags: ['E2E'],
 			authRequired: true,
 			query: ise2eGetUsersOfRoomWithoutKeyParamsGET,
 			response: {
@@ -378,6 +398,9 @@ const e2eEndpoints = API.v1
 	.post(
 		'e2e.updateGroupKey',
 		{
+			summary: 'Update User E2E Key in Room',
+			examples: e2eExamples['e2e.updateGroupKey'],
+			tags: ['E2E'],
 			authRequired: true,
 			body: ise2eUpdateGroupKeyParamsPOST,
 			response: {
@@ -465,6 +488,9 @@ const e2eEndpoints = API.v1
 	.post(
 		'e2e.setUserPublicAndPrivateKeys',
 		{
+			summary: 'Set User Key',
+			examples: e2eExamples['e2e.setUserPublicAndPrivateKeys'],
+			tags: ['E2E'],
 			authRequired: true,
 			body: ise2eSetUserPublicAndPrivateKeysParamsPOST,
 			response: {

@@ -35,6 +35,7 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
+import { usersExamples } from './users.examples';
 import { generatePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/generateToken';
 import { regeneratePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/regenerateToken';
 import { removePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/removeToken';
@@ -130,6 +131,21 @@ const userObjectResponse = ajv.compile<{ user: object }>({
 API.v1.post(
 	'users.update',
 	{
+		summary: 'Update User Details',
+		description: `Use this endpoint to update the details of an existing user. This endpoint requires 2FA.<br>
+**Permissions required**:
+- \`edit-other-user-password\`: Permission to modify other user's passwords
+- \`edit-other-user-info_description\`: Permission to change other user's name, username or email address
+- \`edit-other-user-active-status\`: Permission to enable or disable other accounts
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|7.0.0             | Removed upsert behaviour and stopped allowing \`joinDefaultChannels\` param|
+|0.48.0            | Renamed to \`users.update\`       |
+|0.35.0            | Added       |`,
+		examples: usersExamples['users.update'],
+		tags: ['Users'],
 		authRequired: true,
 		twoFactorRequired: true,
 		body: isUsersUpdateParamsPOST,
@@ -178,6 +194,18 @@ API.v1
 	.post(
 		'users.updateOwnBasicInfo',
 		{
+			summary: 'Update Own Basic Information',
+			description: `Update your account information using this endpoint.
+* To change your email or password, you must confirm it using TOTP. If you don't have 2FA enabled in your account (token code or email), TOTP will require the current password method. Note that if 2FA is not enabled in the workspace, the 2FA headers are not required.
+* If you add the \`currentPassword\` encrypted in SHA256 to the request body, the request won't require TOTP again.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|6.4.0            | Add \`bio\` and \`statusType\` parameters.       |
+|0.62.2            | Added       |`,
+			examples: usersExamples['users.updateOwnBasicInfo'],
+			tags: ['Users'],
 			authRequired: true,
 			userWithoutUsername: true,
 			body: isUsersUpdateOwnBasicInfoParamsPOST,
@@ -226,6 +254,15 @@ API.v1
 	.post(
 		'users.setPreferences',
 		{
+			summary: 'Set User Preferences',
+			description: `Set preferences for your account. If you want to edit another user's preferences, you need the permission \`edit-other-user-info\`.
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|8.6.0            | Added \`utcOffset\` property.       |
+|2.3.0            | Added \`desktopNotificationRequireInteraction\` property.       |`,
+			examples: usersExamples['users.setPreferences'],
+			tags: ['Users'],
 			authRequired: true,
 			body: isUsersSetPreferencesParamsPOST,
 			response: {
@@ -275,6 +312,18 @@ API.v1
 	.post(
 		'users.setAvatar',
 		{
+			summary: 'Set User Avatar',
+			description: `Use this endpoint to change your or another user's avatar. You can change avatars only if the \`AllowUserAvatarChange\` setting under **Accounts** is enabled. To change another user's avatar, you need the permission: \`edit-other-user-avatar\`.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|8.7.0             | Added optional \`service\` multipart field (stored as \`avatarOrigin\`)       |
+|0.56.0            | Add support for \`username\` argument.       |
+|0.48.0            | Set other users avatars if the callee has permission.       |
+|0.46.0            | Added       |`,
+			examples: usersExamples['users.setAvatar'],
+			tags: ['Users'],
 			authRequired: true,
 			body: isUsersSetAvatarProps,
 			response: {
@@ -360,6 +409,21 @@ API.v1
 	.post(
 		'users.create',
 		{
+			summary: 'Create User',
+			description: `Create a new user in your workspace. This endpoint is typically used by admins to create user accounts in the workspace.
+<br>Permissions required:
+- \`create-user\`: Permission to create users
+- \`edit-other-user-active-status\`: Permission to enable or disable other accounts
+
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|0.48.0            | \`role\` property is now \`roles\` which is an array of strings for the roles to create the user with.       |
+|0.45.0            | Users created via this now join the default channels.       |
+|0.40.0            | Added       |`,
+			examples: usersExamples['users.create'],
+			tags: ['Users'],
 			authRequired: true,
 			body: isUserCreateParamsPOST,
 			response: {
@@ -411,6 +475,16 @@ API.v1
 API.v1.post(
 	'users.delete',
 	{
+		summary: 'Delete User',
+		description: `Permanently deletes an existing user from your workspace. Permission required: \`delete-user\`
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|3.7.0            | Added \`confirmRelinquish\` to the payload.       |
+|0.35.0            | Added       |`,
+		examples: usersExamples['users.delete'],
+		tags: ['Users'],
 		authRequired: true,
 		permissionsRequired: ['delete-user'],
 		body: ajv.compile<{ userId?: string; username?: string; user?: string; confirmRelinquish?: boolean }>({
@@ -451,6 +525,16 @@ API.v1.post(
 API.v1.post(
 	'users.deleteOwnAccount',
 	{
+		summary: 'Delete Own Account',
+		description: `Deletes your own user account. Requires the \`Allow Users to Delete Own Account\` setting enabled. Access this setting from **Manage** > **Workspace** > **Settings** > **Accounts**.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|3.7.0            | Added \`confirmRelinquish\` to the payload.       |
+|0.67.0            | Added       |`,
+		examples: usersExamples['users.deleteOwnAccount'],
+		tags: ['Users'],
 		authRequired: true,
 		body: ajv.compile<{ password: string; confirmRelinquish?: boolean }>({
 			type: 'object',
@@ -490,6 +574,23 @@ API.v1.post(
 API.v1.post(
 	'users.setActiveStatus',
 	{
+		summary: "Set User's Status Active",
+		description: `Activate or deactivate a user in the workspace.
+
+Any one of the following permissions is required:
+* \`edit-other-user-active-status\`: Change another user's active status.
+* \`manage-moderation-actions\`: Manage moderation actions on reported users.
+
+When a user is deactivated (\`activeStatus=false\`), Rocket.Chat revokes all of the user's login tokens and OAuth access tokens, refresh tokens, and authorization codes. The user can no longer call the REST API with previously issued OAuth credentials.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|8.5.0            | Added OAuth access token, refresh token, and authorization code revocation on deactivation. |
+|3.7.0            | Added \`confirmRelinquish\` to the payload.       |
+|0.75.0            | Added       |`,
+		examples: usersExamples['users.setActiveStatus'],
+		tags: ['Users'],
 		authRequired: true,
 		body: isUserSetActiveStatusParamsPOST,
 		permissionsRequired: {
@@ -534,6 +635,20 @@ API.v1.post(
 API.v1.post(
 	'users.deactivateIdle',
 	{
+		summary: 'Deactivate Idle Users',
+		description: `Automatically deactivate idle users in your workspace based on the number of days and roles.
+
+For every user that this endpoint deactivates, Rocket.Chat clears the user's login tokens and revokes their OAuth access tokens, refresh tokens, and authorization codes. Deactivated users can no longer call the REST API with previously issued OAuth credentials.
+
+Permission required: \`edit-other-user-active-status\`
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|8.5.0            | Added login and OAuth token revocation for users deactivated by this endpoint. |
+|3.1.0            | Added       |`,
+		examples: usersExamples['users.deactivateIdle'],
+		tags: ['Users'],
 		authRequired: true,
 		body: isUserDeactivateIdleParamsPOST,
 		permissionsRequired: ['edit-other-user-active-status'],
@@ -586,6 +701,24 @@ API.v1.post(
 API.v1.get(
 	'users.info',
 	{
+		summary: "Get User's Info",
+		description: `- Retrieves information about a user. The result is limited only to what you have access to view.
+- This endpoint supports lookup by \`userId\`, \`username\`, \`importId\`, \`email\`, or \`freeSwitchExtension\`. Provide exactly one of these parameters per request.
+- From version \`7.0.0\`, this endpoint no longer supports the \`fields\` parameter, even when the \`ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS: true\` environment variable is set. Instead, use the \`includeUserRooms\` parameter.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|8.5.0             | Added \`freeSwitchExtension\` query parameter for user lookup |
+|8.4.0             | Added \`email\` query parameter for user lookup |
+|7.0.0             | Removed the \`fields\` query parameter       |
+|3.4.0             | Added \`unread\` property inside \`rooms\` object       |
+|0.70.0            | Added \`rooms\` property to response if the user request it and has the \`view-other-user-channels\` permission       |
+|0.49.0            | Updated to support \`userId\` or \`username\`       |
+|0.48.0            | Renamed to \`users.info\`       |
+|0.35.0            | Added       |`,
+		examples: usersExamples['users.info'],
+		tags: ['Users'],
 		authRequired: true,
 		query: isUsersInfoParamsGetProps,
 		response: {
@@ -776,6 +909,18 @@ API.v1.addRoute(
 API.v1.get(
 	'users.listByStatus',
 	{
+		summary: 'List Users by Status',
+		description: `Returns a list of filtered users based on activation status, first-time log-in, and type of users to be returned. 
+<br> **Permissions required**: 
+- \`view-d-room\`: Required to view direct message 
+- \`view-outside-room\`: (Only required if the setting \`Apply_permission_view-outside-room\` is enabled on under **Settings** > **General** > **Rest API**). Required to view rooms outside of which the request sender is a member of
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|6.8.0            | Added       |`,
+		examples: usersExamples['users.listByStatus'],
+		tags: ['Users'],
 		authRequired: true,
 		query: isUsersListStatusProps,
 		permissionsRequired: ['view-d-room'],
@@ -830,6 +975,17 @@ API.v1.get(
 API.v1.post(
 	'users.sendWelcomeEmail',
 	{
+		summary: 'Send Welcome Email to User',
+		description: `Ensure that you have configured the <a href='https://docs.rocket.chat/docs/email' target='_blank'>email settings</a> in your workspace to send emails. 
+
+Permission required: \`send-mail\`
+
+### Changelog
+| Version      | Description |
+| ------------ | ------------|
+|6.8.0         | Added       |`,
+		examples: usersExamples['users.sendWelcomeEmail'],
+		tags: ['Users'],
 		authRequired: true,
 		body: isUsersSendWelcomeEmailProps,
 		permissionsRequired: ['send-mail'],
@@ -872,6 +1028,16 @@ API.v1.post(
 API.v1.post(
 	'users.register',
 	{
+		summary: 'Register User',
+		description: `* An external member can use this endpoint to create an account on the workspace.
+* The number of requests you can make and the interval between each request depends on the workspace's rate limiter settings. You can find the settings from **Manage** > **Workspace** > **Settings** > **Rate Limiter** > **API Rate Limiter**.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|0.50.0            | Added       |`,
+		examples: usersExamples['users.register'],
+		tags: ['Users'],
 		authRequired: false,
 		rateLimiterOptions: {
 			numRequestsAllowed: settings.get('Rate_Limiter_Limit_RegisterUser') ?? 1,
@@ -942,6 +1108,18 @@ API.v1.post(
 API.v1.post(
 	'users.resetAvatar',
 	{
+		summary: 'Reset Avatar',
+		description: `Reset a user's avatar to the default icon. By default, icons contain the user's initials.
+Permissions required, if the setting \`AllowUserAvatarChange\` is enabled: 
+  * \`edit-other-user-avatar\`: Permission to change other user's avatar
+  * \`manage-moderation-actions\`: Permission to manage moderation actions, perform actions on reported users
+  
+  ### Changelog
+  | Version      | Description |
+  | ---------------- | ------------|
+  |0.55.0            | Added       |`,
+		examples: usersExamples['users.resetAvatar'],
+		tags: ['Users'],
 		authRequired: true,
 		body: ajv.compile<{ userId?: string; username?: string; user?: string }>({
 			type: 'object',
@@ -982,6 +1160,22 @@ const usersEndpoints = API.v1
 	.post(
 		'users.createToken',
 		{
+			summary: 'Create Users Token',
+			description: `As a workspace admin, you can create temporary authentication tokens for users. This is the same type of session authentication token a user gets via <a href="https://developer.rocket.chat/apidocs/login-with-username-and-password" target="_blank">login</a> and expires the same way.
+* To use this endpoint, you must set a secret with the \`CREATE_TOKENS_FOR_USERS_SECRET\` <a href="https://docs.rocket.chat/docs/deployment-environment-variables" target="_blank">environment variable</a> in your deployment configuration. This secret will be used to authorize all requests made to this endpoint.
+* For SaaS workspaces, <a href="https://desk.rocket.chat/portal/en/signin" target="_blank">contact</a> support to set this variable.
+* Permission required: \`user-generate-access-token\`. This permission is required only when you generate a token for another user; it is not required when you generate a token for your own account.
+* The maximum number of login tokens per user is 50. See this <a href='https://github.com/RocketChat/Rocket.Chat/pull/32216' target='_blank'>GitHub PR</a> for details.
+  
+### Changelog
+  | Version      | Description |
+  | ---------------- | ------------|
+  |8.7.0             | Enforced the \`user-generate-access-token\` permission when generating a token for another user.|
+  |8.0.0             | Added \`CREATE_TOKENS_FOR_USERS_SECRET\` <a href="https://docs.rocket.chat/docs/deployment-environment-variables" target="_blank">environment variable</a> to define a shared secret that will be used to authorize this endpoint.|
+  |2.1.0            | Added ENV VAR to be able to use this endpoint (process.env.CREATE_TOKENS_FOR_USERS).       |
+  |0.56.0            | Added       |`,
+			examples: usersExamples['users.createToken'],
+			tags: ['Users'],
 			authRequired: true,
 			body: ajv.compile<{ userId: string; secret: string }>({
 				type: 'object',
@@ -1048,6 +1242,10 @@ const usersEndpoints = API.v1
 	.get(
 		'users.getAvatarSuggestion',
 		{
+			summary: 'Get Avatar Suggestion',
+			description: `Use this endpoint to get suggestions for your workspace avatar image. The endpoint may return an empty string if no images associated with your email ID are found.`,
+			examples: usersExamples['users.getAvatarSuggestion'],
+			tags: ['Users'],
 			authRequired: true,
 			response: {
 				400: validateBadRequestErrorResponse,
@@ -1108,6 +1306,10 @@ const usersEndpoints = API.v1
 API.v1.get(
 	'users.getPreferences',
 	{
+		summary: "Get User's Preferences",
+		description: `Gets all the preferences of the authenticated user in the workspace.`,
+		examples: usersExamples['users.getPreferences'],
+		tags: ['Users'],
 		authRequired: true,
 		response: {
 			200: ajv.compile<{ preferences: Record<string, unknown> }>({
@@ -1142,6 +1344,16 @@ API.v1
 	.post(
 		'users.forgotPassword',
 		{
+			summary: 'Forgot Password',
+			description: `Send an email to reset your password. Ensure that you have completed the configuration of the email; otherwise, your users will not receive the mail normally. Access this from **Manage** > **Workspace** > **Settings** > **Email**. <br>
+To use this endpoint, the \`PasswordReset\` setting must be enabled in **Settings** > **Accounts** > **Registration** > **Password Reset**.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|0.64.0            | Added       |`,
+			examples: usersExamples['users.forgotPassword'],
+			tags: ['Users'],
 			authRequired: false,
 			body: ajv.compile<{ email: string }>({
 				type: 'object',
@@ -1177,6 +1389,15 @@ API.v1
 	.get(
 		'users.getUsernameSuggestion',
 		{
+			summary: 'Get Username Suggestion',
+			description: `Get a username suggestion for the authenticated user.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|0.65.0            | Added       |`,
+			examples: usersExamples['users.getUsernameSuggestion'],
+			tags: ['Users'],
 			authRequired: true,
 			userWithoutUsername: true,
 			response: {
@@ -1228,6 +1449,10 @@ API.v1
 	.get(
 		'users.checkUsernameAvailability',
 		{
+			summary: 'Check Username Availability',
+			description: `Check if the username is available or used by another user`,
+			examples: usersExamples['users.checkUsernameAvailability'],
+			tags: ['Users'],
 			authRequired: true,
 			query: isUsersCheckUsernameAvailabilityParamsGET,
 			response: {
@@ -1255,6 +1480,22 @@ API.v1
 	.post(
 		'users.generatePersonalAccessToken',
 		{
+			summary: 'Generate Personal Access Token',
+			description: `Permission required: \`create-personal-access-tokens\`. 
+
+* This endpoint requires <a href="https://developer.rocket.chat/apidocs/introduction-to-two-factor-authentication" target="_blank">two-factor authentication</a>.
+
+* Note that the generated access tokens are irrecoverable, so storing them safely is essential. If a token is lost or forgotten, it can be regenerated or deleted.
+* When making calls to the API that mandate authentication, include the generated token in the \`X-Auth-Token\` header and your user ID in the \`X-User-Id\` header to authenticate the requests.
+Visit the <a href="https://docs.rocket.chat/docs/manage-personal-access-tokens" target="_blank"> Personal Access Token user guide</a> for more details.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|3.1.0            | Added \`bypassTwoFactor\` param       |
+|0.69.0            | Added       |`,
+			examples: usersExamples['users.generatePersonalAccessToken'],
+			tags: ['Users'],
 			authRequired: true,
 			twoFactorRequired: true,
 			body: tokenNameBodySchema,
@@ -1274,6 +1515,16 @@ API.v1
 	.post(
 		'users.regeneratePersonalAccessToken',
 		{
+			summary: 'Regenerate Personal Access Token',
+			description: `Permission required: \`create-personal-access-tokens\`.
+This endpoint requires 2FA.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|0.69.0            | Added       |`,
+			examples: usersExamples['users.regeneratePersonalAccessToken'],
+			tags: ['Users'],
 			authRequired: true,
 			twoFactorRequired: true,
 			body: ajv.compile<{ tokenName: string }>({
@@ -1300,6 +1551,15 @@ API.v1
 	.get(
 		'users.getPersonalAccessTokens',
 		{
+			summary: 'Get Personal Access Tokens',
+			description: `Permission required: \`create-personal-access-tokens\`
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|0.69.0            | Added       |`,
+			examples: usersExamples['users.getPersonalAccessTokens'],
+			tags: ['Users'],
 			authRequired: true,
 			permissionsRequired: ['create-personal-access-tokens'],
 			response: {
@@ -1348,6 +1608,15 @@ API.v1
 	.post(
 		'users.removePersonalAccessToken',
 		{
+			summary: 'Remove Personal Access Token',
+			description: `This endpoint requires 2FA and the \`create-personal-access-tokens\` permission.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|0.69.0            | Added       |`,
+			examples: usersExamples['users.removePersonalAccessToken'],
+			tags: ['Users'],
 			authRequired: true,
 			twoFactorRequired: true,
 			body: ajv.compile<{ tokenName: string }>({
@@ -1375,6 +1644,9 @@ API.v1
 	.post(
 		'users.2fa.enableEmail',
 		{
+			summary: 'Enable 2FA via Email',
+			description: `Enable email two-factor authentication for your account. This endpoint only works if the user has at least one verified email.`,
+			tags: ['Two-Factor Authentication'],
 			authRequired: true,
 			response: {
 				200: voidSuccessResponse,
@@ -1423,6 +1695,10 @@ API.v1
 	.post(
 		'users.2fa.disableEmail',
 		{
+			summary: 'Disable 2FA via Email',
+			description: `Disable two-factor authentication via email. The 2FA code is required.`,
+			examples: usersExamples['users.2fa.disableEmail'],
+			tags: ['Two-Factor Authentication'],
 			authRequired: true,
 			twoFactorRequired: true,
 			twoFactorOptions: { disableRememberMe: true },
@@ -1454,6 +1730,9 @@ API.v1
 	.post(
 		'users.2fa.sendEmailCode',
 		{
+			summary: 'Send 2FA Email Code',
+			examples: usersExamples['users.2fa.sendEmailCode'],
+			tags: ['Two-Factor Authentication'],
 			body: ajv.compile<{ emailOrUsername: string }>({
 				type: 'object',
 				properties: {
@@ -1492,6 +1771,15 @@ API.v1
 API.v1.post(
 	'users.sendConfirmationEmail',
 	{
+		summary: 'Send Email Verification',
+		description: `Send an email to verify a user's email address. The user receives the email and they must click the confirmation button to confirm their email address. Rate limit applies: One request can be sent every 60000ms. This endpoint does not require authentication. An unverified user can call it from the login screen to resend their own verification email.
+
+### Changelog
+ | Version    | Description                            |
+ | ---------- | -------------------------------------- |
+ | 8.6.0 | Authentication is no longer required.  |`,
+		examples: usersExamples['users.sendConfirmationEmail'],
+		tags: ['Users'],
 		authRequired: false,
 		body: isUsersSendConfirmationEmailParamsPOST,
 		rateLimiterOptions: {
@@ -1512,6 +1800,18 @@ API.v1.post(
 API.v1.get(
 	'users.presence',
 	{
+		summary: 'Get Users Presence',
+		description: `Get presence of multiple workspace users. You can filter by date and user IDs.
+If the \`Presence_broadcast_disabled\` setting is true, the endpoint returns an empty array. You can find this setting under **Manage** > **Workspace** > **Settings** > **Troubleshoot**.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|8.6.0            | Added \`statusSource\` and \`statusExpiresAt\` to returned user objects. |
+|8.5.0            | Restored comma-separated \`ids\` query parameter support.       |
+|1.1.0            | Added       |`,
+		examples: usersExamples['users.presence'],
+		tags: ['Users'],
 		authRequired: true,
 		query: isUsersPresenceParamsGET,
 		response: {
@@ -1583,6 +1883,15 @@ API.v1
 	.get(
 		'users.requestDataDownload',
 		{
+			summary: 'Request Data Download',
+			description: `Request download of your personal data using this endpoint. The <a href='https://docs.rocket.chat/v1/docs/user-data-download' target='_blank'>User Data Download</a> feature must be configured in the workspace by the admin. The exported file is available in the configured directory.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|1.2.0            | Added as \`users.requestDataDownload\`       |`,
+			examples: usersExamples['users.requestDataDownload'],
+			tags: ['Users'],
 			authRequired: true,
 			query: isUsersRequestDataDownloadParamsGET,
 			response: {
@@ -1622,6 +1931,10 @@ API.v1
 	.post(
 		'users.logoutOtherClients',
 		{
+			summary: 'Logout Other Clients',
+			description: `Logs out of user sessions in other clients while keeping the current session active. The response the current token and its expiration date. Requires the \`LoginExpiration\` settings enabled in **Accounts** > **Login Expiration in Days** which defines how long a login token remains valid before expiration.`,
+			examples: usersExamples['users.logoutOtherClients'],
+			tags: ['Users'],
 			authRequired: true,
 			response: {
 				200: ajv.compile<{ token: string; tokenExpires: string }>({
@@ -1673,6 +1986,10 @@ API.v1
 API.v1.get(
 	'users.autocomplete',
 	{
+		summary: 'Autocomplete User',
+		description: `List the users whose names match a given pattern.`,
+		examples: usersExamples['users.autocomplete'],
+		tags: ['Users'],
 		authRequired: true,
 		query: isUsersAutocompleteProps,
 		response: {
@@ -1721,6 +2038,14 @@ API.v1
 	.post(
 		'users.removeOtherTokens',
 		{
+			summary: 'Remove Other Tokens',
+			description: `Remove user's login tokens. This endpoint is primarily used when a user changes their password and they need to log in to the workspace again on other devices.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|3.1.0            | Added       |`,
+			tags: ['Users'],
 			authRequired: true,
 			response: {
 				200: voidSuccessResponse,
@@ -1735,6 +2060,17 @@ API.v1
 	.post(
 		'users.resetE2EKey',
 		{
+			summary: 'Reset Users E2E Key',
+			description: `<a href="https://docs.rocket.chat/docs/manage-your-account-settings#endtoend-encryption" target="_blank">Reset the E2E key</a> for your account or another user in the workspace.
+* To reset other users' E2EE key, you need the \`edit-other-user-e2ee\` permission.
+* This endpoint requires 2FA, if 2FA is enabled and configured on your workspace.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|3.6.0            | Added       |`,
+			examples: usersExamples['users.resetE2EKey'],
+			tags: ['Users'],
 			authRequired: true,
 			twoFactorRequired: true,
 			twoFactorOptions: { disableRememberMe: true },
@@ -1777,6 +2113,17 @@ API.v1
 	.post(
 		'users.resetTOTP',
 		{
+			summary: 'Reset Users TOTP',
+			description: `Reset 2FA via TOTP for a user in the workspace. Make sure that the \`Enable Two Factor Authentication\` setting is enabled under **Manage** > **Workspace** > **Settings** > **Accounts** > **Two Factor Authentication**.
+* Permission required: \`edit-other-user-totp\`.
+* It requires two-factor authentication, if 2FA is enabled and configured in your workspace.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|3.6.0            | Added       |`,
+			examples: usersExamples['users.resetTOTP'],
+			tags: ['Users'],
 			authRequired: true,
 			twoFactorRequired: true,
 			twoFactorOptions: { disableRememberMe: true },
@@ -1823,6 +2170,10 @@ API.v1
 	.get(
 		'users.listTeams',
 		{
+			summary: "List User's Teams",
+			description: `Get the list of teams that a specific user is a member of. The teams returned by the endpoint depend on your permissions. To view all teams, you need the \`view-all-teams\` permission.`,
+			examples: usersExamples['users.listTeams'],
+			tags: ['Users'],
 			authRequired: true,
 			query: isUsersListTeamsProps,
 			response: {
@@ -1862,6 +2213,10 @@ API.v1
 	.post(
 		'users.logout',
 		{
+			summary: 'Logout User',
+			description: `Log out of your account. You can also log out of another user's session. You will need the \`logout-other-user\` permission.`,
+			examples: usersExamples['users.logout'],
+			tags: ['Users'],
 			authRequired: true,
 			body: isUserLogoutParamsPOST,
 			response: {
@@ -1913,6 +2268,17 @@ API.v1
 	.get(
 		'users.getPresence',
 		{
+			summary: "Get Specific User's Presence",
+			description: `Get a user's presence in the workspace (offline, busy, active, or away).
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|0.49.0            | Updated to support \`userId\` or \`username\`       |
+|0.48.0            | Renamed to \`users.getPresence\`       |
+|0.35.0            | Added       |`,
+			examples: usersExamples['users.getPresence'],
+			tags: ['Users'],
 			authRequired: true,
 			query: isUsersGetPresenceParamsGET,
 			response: {
@@ -1951,6 +2317,18 @@ API.v1
 	.post(
 		'users.setStatus',
 		{
+			summary: 'Set User Status',
+			description: `* You can set the status for yourself or another user. The \`AllowUserStatusMessageChange\` setting must be enabled in the \`Accounts\` workspace settings.
+* To change another user's status, you must have the \`edit-other-user-info\` permission.
+* According to your workspace settings (under **Accounts**), you will only be able to set the invisible or \`offline\` status if the \`Allow Invisible status option\` setting is enabled.
+  
+  ### Changelog
+  | Version      | Description |
+  | ---------------- | ------------|
+  |8.6.0            | Added \`expiresAt\` request parameter for timed status expiration. |
+  |1.2.0            | Added       |`,
+			examples: usersExamples['users.setStatus'],
+			tags: ['Users'],
 			authRequired: true,
 			rateLimiterOptions: {
 				numRequestsAllowed: 5,
@@ -2049,6 +2427,16 @@ API.v1
 	.get(
 		'users.getStatus',
 		{
+			summary: 'Get Status',
+			description: `Gets a user's status in your workspace.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|8.6.0            | Added \`statusSource\` and \`statusExpiresAt\` response fields. |
+|1.2.0            | Added       |`,
+			examples: usersExamples['users.getStatus'],
+			tags: ['Users'],
 			authRequired: true,
 			query: isUsersGetStatusParamsGET,
 			response: {
@@ -2094,6 +2482,15 @@ API.v1
 API.v1.post(
 	'users.verifyEmail',
 	{
+		summary: 'Verify User Email',
+		description: `Verifies a user's email address using the token embedded in the verification sent to thier email. If the user has the \`anonymous\` role, it is replaced with the \`user\` role as part of the verification.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|8.7.0            | Added       |`,
+		examples: usersExamples['users.verifyEmail'],
+		tags: ['Users'],
 		authRequired: false,
 		body: ajv.compile<{ token: string }>({
 			type: 'object',

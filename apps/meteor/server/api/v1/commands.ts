@@ -11,6 +11,7 @@ import {
 } from '@rocket.chat/rest-typings';
 import objectPath from 'object-path';
 
+import { commandsExamples } from './commands.examples';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { slashCommands } from '../../lib/utils/slashCommand';
 import { executeSlashCommandPreview } from '../../meteor-methods/messages/executeSlashCommandPreview';
@@ -79,6 +80,14 @@ const commandsEndpoints = API.v1
 	.get(
 		'commands.get',
 		{
+			summary: 'Get Slash Command',
+			description: `Get details of a specific slash command.
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|0.60.2       | Added       |`,
+			examples: commandsExamples['commands.get'],
+			tags: ['Commands'],
 			authRequired: true,
 			query: isCommandsGetParams,
 			response: {
@@ -136,6 +145,14 @@ const commandsEndpoints = API.v1
 	.get(
 		'commands.list',
 		{
+			summary: 'List Slash Commands',
+			description: `Lists all available slash commands.
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|0.60.2      | Added       |`,
+			examples: commandsExamples['commands.list'],
+			tags: ['Commands'],
 			authRequired: true,
 			query: isCommandsListParams,
 			response: {
@@ -378,6 +395,16 @@ const commandsPreviewPostResponseSchema = ajv.compile<void>({
 API.v1.post(
 	'commands.run',
 	{
+		summary: 'Execute a Slash Command',
+		description: `Execute a slash command in the specified room.
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|3.0.0      | Added \`triggerId\` property       |
+|2.0.0      | Added \`tmid\` property      |
+|0.60.2      | Added        |`,
+		examples: commandsExamples['commands.run'],
+		tags: ['Commands'],
 		authRequired: true,
 		body: isCommandsRunProps,
 		response: {
@@ -426,6 +453,10 @@ API.v1.post(
 API.v1.get(
 	'commands.preview',
 	{
+		summary: "Get Command's Preview Data",
+		description: `Fetches the command's preview data or executes the preview item`,
+		examples: commandsExamples['commands.preview'],
+		tags: ['Commands'],
 		authRequired: true,
 		query: isCommandsPreviewGetProps,
 		response: {
@@ -464,6 +495,14 @@ API.v1.get(
 API.v1.post(
 	'commands.preview',
 	{
+		summary: "Execute command's preview item",
+		description: `### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|3.0.0      | Added \`tmid\` and \`triggerId\` fields       |
+|0.65.0      | Added|`,
+		examples: commandsExamples['commands.preview'],
+		tags: ['Commands'],
 		authRequired: true,
 		body: isCommandsPreviewPostProps,
 		response: {

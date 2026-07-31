@@ -23,6 +23,7 @@ import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
+import { miscExamples } from './misc.examples';
 import { passwordPolicy } from '../../lib/auth/passwordPolicy';
 import { i18n } from '../../lib/i18n';
 import { SystemLogger } from '../../lib/logger/system';
@@ -178,6 +179,16 @@ import { getUserInfo } from '../lib/getUserInfo';
 API.v1.get(
 	'me',
 	{
+		summary: 'Get Profile Information',
+		description: `Quick information about the authenticated user.
+### Changelog
+ | Version      | Description | 
+ | ---------------- | ------------|
+ |1.0.0            | Added \`avatarUrl\` property to response       |
+ |0.68.0            | Added \`customFields\` property.      |
+ |0.48.0            | Added      |`,
+		examples: miscExamples.me,
+		tags: ['Authentication'],
 		authRequired: true,
 		userWithoutUsername: true,
 		response: {
@@ -205,6 +216,14 @@ const shieldSvgResponseSchema = ajv.compile<string>({
 API.v1.get(
 	'shield.svg',
 	{
+		summary: 'Shield SVG',
+		description: `A simple method, requires no authentication, that returns the shield svg(badge) to add in your website. It must have \`API_Enable_Shields\` enabled.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|0.55.0        | Added       |`,
+		examples: miscExamples['shield.svg'],
 		authRequired: false,
 		rateLimiterOptions: {
 			numRequestsAllowed: 60,
@@ -389,6 +408,18 @@ const spotlightResponseSchema = ajv.compile<{
 API.v1.get(
 	'spotlight',
 	{
+		summary: 'Spotlight',
+		description: `Searches for users or rooms that are visible to the user. It will only return rooms that user didn't join yet.
+
+If the  <a href="https://docs.rocket.chat/docs/accounts" target="_blank">\`Allow Anonymous Read\` setting</a> is enabled, anonymous callers can use this endpoint to resolve public channels through the navbar search.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|8.6.0       | Added \`usernames\`, \`type\`, and \`rid\` query parameters, and allowed anonymous read when \`Allow Anonymous Read\` is enabled. |
+|0.64.0       | Added support to '#' and '@' searches, for channels and users respectively.       |
+|0.61.0      | Added       |`,
+		examples: miscExamples.spotlight,
 		// DDP `spotlight` accepts anonymous calls (Accounts_AllowAnonymousRead).
 		// Keep parity so anonymous-user / embedded-layout flows can still
 		// resolve a public channel through the navbar search.
@@ -441,6 +472,18 @@ const directoryResponseSchema = ajv.compile<{
 API.v1.get(
 	'directory',
 	{
+		summary: 'Directory',
+		description: `Search workspace directory for users, channels and teams. 
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 7.0.0   | Added \`type\`, \`workspace\` and \`text\` query parameters |
+| 1.0.0   | Added workspace query param |
+| 0.65.0  | Added Pagination fields: count, total, offset |
+| 0.64.0  | Added |`,
+		examples: miscExamples.directory,
+		tags: ['Directory'],
 		authRequired: true,
 		query: isDirectoryProps,
 		response: {
@@ -503,6 +546,11 @@ const pwGetPolicyResponseSchema = ajv.compile<{ enabled: boolean; policy: [strin
 API.v1.get(
 	'pw.getPolicy',
 	{
+		summary: 'Get Password Policy',
+		description: `Get the current [password policy](https://docs.rocket.chat/v1/docs/accounts#password-policy) for users in your workspace.
+The \`pw.getPolicyReset\` endpoint has been removed from 7.0. Use this endpoint instead.`,
+		examples: miscExamples['pw.getPolicy'],
+		tags: ['Password policy'],
 		authRequired: false,
 		response: {
 			200: pwGetPolicyResponseSchema,
@@ -618,6 +666,9 @@ const mountResult = ({
 API.v1.post(
 	'method.call/:method',
 	{
+		summary: 'Execute a Meteor method call',
+		description: `Execute a [realtime API method](https://developer.rocket.chat/apidocs/realtime-method-calls).`,
+		examples: miscExamples['method.call/:method'],
 		authRequired: true,
 		userWithoutUsername: true,
 		rateLimiterOptions: false,
@@ -756,6 +807,9 @@ const smtpCheckResponseSchema = ajv.compile<{ isSMTPConfigured: boolean }>({
 API.v1.get(
 	'smtp.check',
 	{
+		summary: 'Check SMTP',
+		description: `Use this endpoint to verify whether or not SMTP has been configured in the workspace.`,
+		examples: miscExamples['smtp.check'],
 		authRequired: true,
 		response: {
 			200: smtpCheckResponseSchema,
@@ -810,6 +864,26 @@ const fingerprintResponseSchema = ajv.compile<void>({
 API.v1.post(
 	'fingerprint',
 	{
+		summary: 'Update Fingerprint',
+		description: `Confirms how the workspace deployment should be handled after Rocket.Chat detects a change to its deployment fingerprint.
+
+On startup, Rocket.Chat generates a deployment fingerprint based on the configured Site_Url and MongoDB connection string. If the generated fingerprint differs from the stored value, Rocket.Chat assumes the workspace may have been duplicated, migrated, or reconfigured.
+
+Use this endpoint to confirm how the deployment should be treated:
+
+- \`new-workspace\`: Treats the deployment as a new workspace. This clears the existing Rocket.Chat Cloud registration data and related credentials so the workspace can register again as a new instance. Use this option for cloned environments, staging instances created from production backups, or other duplicated deployments.
+
+- \`updated-configuration\`: Confirms that the deployment is the same workspace and that only its configuration has changed. This preserves the existing Rocket.Chat Cloud registration and is intended for legitimate migrations, infrastructure changes, or Site_Url updates.
+
+After processing either option, Rocket.Chat marks the deployment fingerprint as verified and dismisses the fingerprint verification prompt.
+
+Permission required: \`manage-cloud\`
+  
+### Changelog
+| Version | Description | 
+| ------- | ----------- | 
+| 8.6.0 | Added an authorization check. Callers without the \`manage-cloud\` permission now receive a \`403\` error instead of a successful response. |`,
+		examples: miscExamples.fingerprint,
 		authRequired: true,
 		permissionsRequired: ['manage-cloud'],
 		body: isFingerprintProps,

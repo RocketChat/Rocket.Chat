@@ -2,6 +2,7 @@ import { GETLivechatConfigRouting, isGETLivechatConfigParams } from '@rocket.cha
 import mem from 'mem';
 
 import { API } from '../..';
+import { configExamples } from './config.examples';
 import { settings, findOpenRoom, getExtraConfigInfo, findAgent, findGuestWithoutActivity } from './lib/livechat';
 import { RoutingManager } from '../../../lib/omnichannel/RoutingManager';
 import { online } from '../../../lib/omnichannel/service-status';
@@ -47,6 +48,15 @@ API.v1.addRoute(
 const livechatConfigEndpoints = API.v1.get(
 	'livechat/config/routing',
 	{
+		summary: 'Get Livechat Routing Configuration',
+		description: `This endpoint returns the livechat routing configuration. It is called automatically when logging into the application to make the Omnichannel/livechat features available in the client.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|7.11.0            | Added       |`,
+		examples: configExamples['livechat/config/routing'],
+		tags: ['Livechat'],
 		response: {
 			200: GETLivechatConfigRouting,
 		},

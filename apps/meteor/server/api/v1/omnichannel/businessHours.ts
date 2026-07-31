@@ -12,6 +12,7 @@ import {
 import { API } from '../..';
 import { businessHourManager } from '../../../lib/omnichannel/business-hour';
 import type { ExtractRoutesFromAPI } from '../../ApiClass';
+import { businessHoursExamples } from './businessHours.examples';
 import { findLivechatBusinessHour } from './lib/businessHours';
 
 API.v1.addRoute(
@@ -32,6 +33,10 @@ const livechatBusinessHoursEndpoints = API.v1
 	.post(
 		'livechat/business-hours.save',
 		{
+			summary: 'Create a Business Hour',
+			description: `Use this endpoint to create a new Omnichannel business hour.`,
+			examples: businessHoursExamples['livechat/business-hours.save'],
+			tags: ['Omnichannel Business Hours'],
 			response: {
 				200: POSTLivechatBusinessHoursSaveSuccessResponse,
 				400: validateBadRequestErrorResponse,
@@ -52,6 +57,10 @@ const livechatBusinessHoursEndpoints = API.v1
 	.post(
 		'livechat/business-hours.remove',
 		{
+			summary: 'Remove Business Hour',
+			description: `Remove an Omnichannel business hour.`,
+			examples: businessHoursExamples['livechat/business-hours.remove'],
+			tags: ['Omnichannel Business Hours'],
 			response: {
 				200: POSTLivechatBusinessHoursRemoveSuccessResponse,
 				400: validateBadRequestErrorResponse,

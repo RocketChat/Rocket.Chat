@@ -9,6 +9,7 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { findTags, findTagById } from './lib/tags';
+import { tagsExamples } from './tags.examples';
 import { API } from '../../../../../server/api';
 import type { ExtractRoutesFromAPI } from '../../../../../server/api/ApiClass';
 import { getPaginationItems } from '../../../../../server/api/lib/getPaginationItems';
@@ -73,6 +74,12 @@ const livechatTagsEndpoints = API.v1
 	.post(
 		'livechat/tags.save',
 		{
+			summary: 'Create a Tag',
+			description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/Enterprise%20tag.svg" alt="Enterprise" style="display: block; margin: auto"></div>
+
+Use this endpoint to create an Omnichannel tag. Permission required: \`manage-livechat-tags\``,
+			examples: tagsExamples['livechat/tags.save'],
+			tags: ['Omnichannel Tags'],
 			response: {
 				200: POSTLivechatTagsSaveSuccessResponse,
 				400: validateBadRequestErrorResponse,
@@ -95,6 +102,17 @@ const livechatTagsEndpoints = API.v1
 	.post(
 		'livechat/tags.delete',
 		{
+			summary: 'Delete a tag',
+			description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/Enterprise%20tag.svg" alt="Enterprise" style="display: block; margin: auto;"></div>
+
+This endpoint is used to delete an Omnichannel tag from the workspace. Permission required: \`manage-livechat-tags\`
+
+### Changelog
+| Version      | Description |
+| ------------ | ------------|
+|7.12.0         | Added       |`,
+			examples: tagsExamples['livechat/tags.delete'],
+			tags: ['Omnichannel Tags'],
 			response: {
 				200: POSTLivechatTagsDeleteSuccessResponse,
 				400: validateBadRequestErrorResponse,

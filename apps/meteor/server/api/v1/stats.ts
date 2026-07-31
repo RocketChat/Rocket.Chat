@@ -7,6 +7,7 @@ import {
 	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
 
+import { statsExamples } from './stats.examples';
 import { getStatistics, getLastStatistics } from '../../lib/statistics';
 import telemetryEvent from '../../lib/statistics/lib/telemetryEvents';
 import { API } from '../api';
@@ -46,6 +47,17 @@ const statisticsTelemetryResponseSchema = ajv.compile<void>({
 API.v1.get(
 	'statistics',
 	{
+		summary: 'Get Last Statistics',
+		description: `Statistics about the Rocket.Chat workspace. 
+
+Permission required: \`view-statistics\` 
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|0.51.0            | Added       |`,
+		examples: statsExamples.statistics,
+		tags: ['Statistics'],
 		authRequired: true,
 		response: {
 			200: statisticsResponseSchema,
@@ -69,6 +81,17 @@ API.v1.get(
 API.v1.get(
 	'statistics.list',
 	{
+		summary: 'Get Statistics List',
+		description: `Get statistics about the Rocket.Chat workspace. 
+
+Permission required: \`view-statistics\` 
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|0.51.0            | Added       |`,
+		examples: statsExamples['statistics.list'],
+		tags: ['Statistics'],
 		authRequired: true,
 		response: {
 			200: statisticsListResponseSchema,

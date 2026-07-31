@@ -15,6 +15,7 @@ import {
 import { API } from '../..';
 import { setCustomFields, setMultipleCustomFields } from '../../../lib/omnichannel/custom-fields';
 import type { ExtractRoutesFromAPI } from '../../ApiClass';
+import { customFieldExamples } from './customField.examples';
 import { findLivechatCustomFields, findCustomFieldById } from './lib/customFields';
 import { findGuest } from './lib/livechat';
 import { getPaginationItems } from '../../lib/getPaginationItems';
@@ -98,6 +99,17 @@ const livechatCustomFieldsEndpoints = API.v1
 	.post(
 		'livechat/custom-fields.save',
 		{
+			summary: 'Create Omnichannel Custom Field',
+			description: `Create a new Omnichannel custom field or update an existing custom field. You can refer to the <a href='https://docs.rocket.chat/docs/omnichannel-custom-fields' target='_blank'>Omnichannel Custom Fields</a> user guide for details.
+
+Permission required: \`view-livechat-manager\`
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|7.11.0            | Added       |`,
+			examples: customFieldExamples['livechat/custom-fields.save'],
+			tags: ['Omnichannel Custom Fields'],
 			response: {
 				200: POSTLivechatSaveCustomFieldSuccess,
 				400: validateBadRequestErrorResponse,
@@ -136,6 +148,15 @@ const livechatCustomFieldsEndpoints = API.v1
 	.post(
 		'livechat/custom-fields.delete',
 		{
+			summary: 'Delete Omnichannel Custom Field',
+			description: `Delete an Omnichannel custom field entry. Permission required: \`view-livechat-manager\`. (On the workspace UI, go to **Manage** > **Workspace** > **Permissions**. Search for the \`View Omnichannel Manager\` permission. By default, livechat managers and agents have this permission.)
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|7.11.0            | Added       |`,
+			examples: customFieldExamples['livechat/custom-fields.delete'],
+			tags: ['Omnichannel Custom Fields'],
 			response: {
 				200: POSTLivechatRemoveCustomFieldSuccess,
 				400: validateBadRequestErrorResponse,
