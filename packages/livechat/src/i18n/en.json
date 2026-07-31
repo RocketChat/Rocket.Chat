@@ -59,6 +59,8 @@
     "message": "Message",
     "messages": "Messages",
     "message_separator_date": "{{val, datetime}}",
+    "today": "Today",
+    "yesterday": "Yesterday",
     "message_time": "{{val, datetime}}",
     "minimize_chat": "Minimize chat",
     "name": "Name",
