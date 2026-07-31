@@ -47,7 +47,7 @@ const UserInfoActions = ({ user, rid, isInvited, backToList }: UserInfoActionsPr
 
 		return (
 			<GenericMenu
-				button={<IconButton icon='kebab' secondary />}
+				button={<IconButton icon='kebab' secondary flexGrow={0} flexShrink={0} />}
 				title={t('More')}
 				key='menu'
 				sections={menuOptions}
@@ -59,7 +59,7 @@ const UserInfoActions = ({ user, rid, isInvited, backToList }: UserInfoActionsPr
 
 	const actions = useMemo(() => {
 		const mapAction = ([key, action]: [string, UserInfoActionType]) => (
-			<UserInfoAction key={key} title={action.title} label={action.content} onClick={action.onClick} icon={action.icon ?? 'kebab'} />
+			<UserInfoAction key={key} label={action.content ?? action.title} onClick={action.onClick} icon={action.icon ?? 'kebab'} />
 		);
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
@@ -68,7 +68,7 @@ const UserInfoActions = ({ user, rid, isInvited, backToList }: UserInfoActionsPr
 	if (isPending) {
 		return <Skeleton width='full' />;
 	}
-	return <ButtonGroup align='center'>{actions}</ButtonGroup>;
+	return <ButtonGroup stretch>{actions}</ButtonGroup>;
 };
 
 export default UserInfoActions;

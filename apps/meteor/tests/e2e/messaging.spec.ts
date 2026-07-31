@@ -97,31 +97,20 @@ test.describe('Messaging', () => {
 			});
 		});
 
-		test('should navigate properly on the user card', async ({ page }) => {
-			await test.step('open UserCard', async () => {
+		test('should open the full profile from the message author name', async ({ page }) => {
+			const fullProfile = page.getByRole('dialog', { name: 'Full profile' });
+
+			await test.step('open the full profile with Space', async () => {
 				await page.keyboard.press('Shift+Tab');
 				await page.keyboard.press('ArrowUp');
 				await page.keyboard.press('Tab');
 				await page.keyboard.press('Space');
-				await expect(channelPage.userCardToolbar).toBeVisible();
+				await expect(fullProfile).toBeVisible();
 			});
 
-			await test.step('close UserCard with Esc', async () => {
+			await test.step('close the full profile with Esc', async () => {
 				await page.keyboard.press('Escape');
-				await expect(channelPage.userCardToolbar).not.toBeVisible();
-			});
-
-			await test.step('with focus restored reopen toolbar', async () => {
-				await page.keyboard.press('Space');
-				await expect(channelPage.userCardToolbar).toBeVisible();
-			});
-
-			await test.step('close UserCard with button', async () => {
-				await page.keyboard.press('Tab');
-				await page.keyboard.press('Tab');
-				await page.keyboard.press('Tab');
-				await page.keyboard.press('Space');
-				await expect(channelPage.userCardToolbar).not.toBeVisible();
+				await expect(fullProfile).not.toBeVisible();
 			});
 		});
 
