@@ -41,6 +41,27 @@ services:
         target: /home/vscode/.ssh
         volume:
           subpath: ssh
+      # Claude Code's config dir — auth, settings, history — shared by every
+      # worktree for exactly the same reasons as the two mounts above, and set up
+      # the same way: one external volume, mounted through a subpath that
+      # scripts/ensure-claude-config.sh creates on the host.
+      - type: volume
+        source: claude-config
+        target: /home/vscode/.claude
+        volume:
+          subpath: claude
+      # Yarn's global folder — the downloaded package zips plus its metadata
+      # index — shared by every worktree, again for the same reasons and set up
+      # the same way. Mounted at the default `globalFolder` path so nothing has
+      # to be pointed at it; the only setting involved is
+      # YARN_ENABLE_GLOBAL_CACHE (devcontainer.json), which makes yarn treat
+      # this as THE cache instead of writing a second copy into the project's
+      # .yarn/cache on the bind mount.
+      - type: volume
+        source: yarn-cache
+        target: /home/vscode/.yarn/berry
+        volume:
+          subpath: berry
     # `default` must be listed explicitly: naming any network here drops the
     # implicit default, which is what carries the forwarded ports below.
     # turbo-cache is the shared cache's network — see turbo-cache/docker-compose.yml.
@@ -70,17 +91,43 @@ volumes:
   # worktrees mount the same volume and one login covers them all. Being external
   # also puts it out of reach of `docker compose down -v`.
   #
-  # It cannot be a devcontainer.json `mounts` entry: those are folded into a
-  # generated compose override as ordinary volumes and come out prefixed too
-  # (`<worktree>_devcontainer_claude-code-config-…` in `docker volume ls` is the
-  # proof), which for the ~/.claude mount is deliberate and here would defeat
-  # the point.
+  # It cannot be a devcontainer.json `mounts` entry either: those are folded into
+  # a generated compose override as ordinary volumes and come out prefixed too
+  # (`<worktree>_devcontainer_<name>` in `docker volume ls` is the proof), which
+  # would defeat the point.
   #
   # Created on the host by scripts/ensure-gh-auth.sh (initializeCommand);
   # compose does not create missing external volumes, it errors out on create.
   gh-auth:
     external: true
     name: rc-gh-auth
+  # Claude Code's ~/.claude: credentials, settings, history, installed skills.
+  # External and fixed-name for the same reason as gh-auth — sign in once, in any
+  # worktree, rather than once per checkout — and mounted through a `claude/`
+  # subpath so the volume root can hold a sibling later without moving it.
+  #
+  # This used to be a `mounts` entry in devcontainer.json scoped by
+  # ${devcontainerId}, i.e. deliberately one volume per checkout. If you still
+  # have those around they are now unused: `docker volume ls | grep claude-code-config`.
+  #
+  # Created on the host by scripts/ensure-claude-config.sh (initializeCommand),
+  # which also creates the subdirectory — a subpath mount fails if the path is
+  # not already in the volume.
+  claude-config:
+    external: true
+    name: rc-claude-config
+  # Yarn's ~/.yarn/berry: the package cache (~650MB once warm) and metadata
+  # index. External and fixed-name for the same reason as the two above, except
+  # what it saves is bandwidth and disk rather than a login — a per-worktree
+  # volume would re-download every package for every checkout. Nothing in here is
+  # secret, and it is pure cache: `docker volume rm rc-yarn-cache` costs one
+  # slow install, nothing more.
+  #
+  # Created on the host by scripts/ensure-yarn-cache.sh (initializeCommand),
+  # which also creates the berry/ subdirectory.
+  yarn-cache:
+    external: true
+    name: rc-yarn-cache
 
 networks:
   # Created by the standalone turbo-cache project, not by this one — it has to

@@ -63,20 +63,39 @@
 	// Sharing is the remote cache's job in this container anyway.
 	// Relative, so it resolves to whatever the repo root is (/workspaces/
 	// rocket.chat) and stays correct in every worktree.
+	//
+	// YARN_ENABLE_GLOBAL_CACHE points yarn at the shared rc-yarn-cache volume
+	// mounted at ~/.yarn/berry (docker-compose.yml). The repo's .yarnrc.yml sets
+	// `enableGlobalCache: false`, i.e. the cache belongs to the project — that is
+	// right on a host, wrong in here: the project cache sits in the bind mount, so
+	// every worktree writes its own ~350MB of zips through it and none of them
+	// share. Env wins over .yarnrc.yml, so this overrides the setting for the
+	// container only and leaves the checked-in config (and CI) alone.
+	// Confirm with `yarn config get cacheFolder` — it should print
+	// /home/vscode/.yarn/berry/cache, not a path under /workspaces.
+	//
+	// Note this is not the same as yarn's mirror: with the global cache off, yarn
+	// still keeps a copy in ~/.yarn/berry (enableMirror, on by default), which the
+	// mount alone would already share — but it would then *also* copy everything
+	// into the project cache. Enabling the global cache skips that second copy.
 	"containerEnv": {
 		"TURBO_API": "http://turbo-cache:3000",
 		"TURBO_TEAM": "rocketchat",
 		"TURBO_TOKEN": "rocketchat-local-dev",
-		"TURBO_CACHE_DIR": ".turbo/cache"
+		"TURBO_CACHE_DIR": ".turbo/cache",
+		"YARN_ENABLE_GLOBAL_CACHE": "true"
 	},
-	// Persist Claude Code auth/settings/history across container rebuilds.
-	// Scoped per-devcontainer so different projects don't share credentials.
+	// Claude Code's ~/.claude is NOT here: it is a subpath of the external
+	// rc-claude-config volume, declared in docker-compose.yml, so that one login
+	// covers every worktree. A `mounts` entry cannot do that — the devcontainer
+	// CLI folds these into a generated compose override, where they become
+	// ordinary volumes namespaced per compose project (i.e. per worktree). Same
+	// story as the shared gh/ssh mounts.
 	"mounts": [
 		// Your host Neovim config, read-only so the container can't modify it.
 		// "source=${localEnv:HOME}/.config/nvim,target=/home/vscode/.config/nvim,type=bind,readonly",
 		// Plugins/treesitter parsers stay container-side (arch-specific) and persist.
 		// "source=nvim-data-${devcontainerId},target=/home/vscode/.local/share/nvim,type=volume",
-		"source=claude-code-config-${devcontainerId},target=/home/vscode/.claude,type=volume"
 	],
 	// Fixes ownership of the named volumes (which mount as root) and stops
 	// `git gc` from pruning the other worktrees, which are invisible from in

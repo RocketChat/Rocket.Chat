@@ -43,8 +43,9 @@ or the [`devcontainer` CLI](https://github.com/devcontainers/cli).
    If the browser callback never reaches the container, paste the code shown in
    the browser at the `Paste code here if prompted` prompt.
 
-   Run `gh auth login` here too, in the container and not on the host — once for
-   all worktrees, key included (see **Your GitHub login is shared** below).
+   Run `gh auth login` here too, in the container and not on the host. Both
+   logins are once for **all** worktrees, SSH key included — see **Your logins
+   are shared across worktrees** below.
 3. Install dependencies and start the app:
 
    ```bash
@@ -74,6 +75,8 @@ don't see that line, the container is not firewalled.
 | `scripts/init-worktree.sh` | Host-side; exposes the real git dir when the checkout is a linked worktree |
 | `scripts/ensure-turbo-cache.sh` | Host-side; brings the cache stack up before the container is created |
 | `scripts/ensure-gh-auth.sh` | Host-side; creates the `rc-gh-auth` volume holding the shared `gh` login and SSH key |
+| `scripts/ensure-claude-config.sh` | Host-side; creates the `rc-claude-config` volume holding the shared `~/.claude` (auth, settings, history) |
+| `scripts/ensure-yarn-cache.sh` | Host-side; creates the `rc-yarn-cache` volume holding the shared Yarn package cache (`~/.yarn/berry`) |
 | `scripts/stage-skills.sh` | Host-side; copies your user-level Claude Code skills into `.host-skills/`, unless opted out |
 | `scripts/on-create.sh` | Container-side; the `onCreateCommand` entry point, fixes volume ownership and git gc |
 | `scripts/install-skills.sh` | Container-side; installs the staged skills into the container's `~/.claude/skills`, then clears the staging dir |
@@ -92,48 +95,63 @@ only re-applied by `postStartCommand`. Confirm the change with
 [network access requirements](https://code.claude.com/docs/en/network-config#network-access-requirements)
 list the domains Claude Code itself needs.
 
-**Persistence.** Claude Code's auth, settings, and history live in a named volume
-scoped by `${devcontainerId}`, so they survive rebuilds but aren't shared across
-projects. `node_modules` and `apps/meteor/.meteor/local` are also named volumes —
-they shadow the bind mount, so your host copies are untouched (and Meteor's
-absolute paths don't leak between host and container).
+**Persistence.** `node_modules` and `apps/meteor/.meteor/local` are named volumes
+— they shadow the bind mount, so your host copies are untouched (and Meteor's
+absolute paths don't leak between host and container). Both are namespaced per
+worktree. The two auth volumes and the Yarn cache below deliberately are not.
 
-**Your GitHub login is shared across worktrees.** Run `gh auth login` **inside a
-container** once — pick SSH when it offers to generate a key — and every worktree
-is authenticated, for both `gh` and `git` over SSH. Do it in here rather than on
-the host: `~/.config/gh` and `~/.ssh` are two subdirectories of the shared
-`rc-gh-auth` volume mounted at exactly the paths `gh` and `ssh` read by default,
-so the login and the key it generates land in the volume with **nothing to
-configure and nothing to copy** — including on the next rebuild.
+**Your logins are shared across worktrees.** Sign in **inside a container** once
+— `claude`, and `gh auth login` picking SSH when it offers to generate a key —
+and every worktree of this repo is authenticated: Claude Code, `gh`, and `git`
+over SSH. Do it in here rather than on the host, because what carries the state
+is two shared volumes mounted at exactly the paths the tools read by default,
+so a login lands in the volume with **nothing to configure and nothing to copy**
+— including on the next rebuild.
 
 ```bash
+claude          # browser auth prompt
 gh auth login   # GitHub.com › SSH › generate a new key › browser
 ```
 
-- One volume, two subpath mounts (`gh/` → `~/.config/gh`, `ssh/` → `~/.ssh`).
-  Canonical paths are the point: pointing `ssh` elsewhere is a one-line
-  `IdentityFile`, but `gh`'s key generation is hardcoded to `$HOME/.ssh` with no
-  flag or env var to move it, so anything else means re-linking a key by hand
-  after every login.
-- The volume is declared `external` with a **fixed name**, which is the trick that
-  makes it shared: each worktree runs its own compose project, so an ordinary
-  volume gets namespaced per worktree (`<worktree>_devcontainer_<name>` — exactly
-  what the `${devcontainerId}` scoping of the `~/.claude` volume relies on) and
-  each copy would start empty. External also keeps it out of reach of
-  `compose down -v`.
-- For the same reason it can't be a `mounts` entry in `devcontainer.json`: those
-  become ordinary volumes in a generated compose override and get prefixed too.
-- `scripts/ensure-gh-auth.sh` creates it from `initializeCommand`, with both
-  subdirectories `0700` and owned by uid 1000. Both parts have to happen on the
-  host before create: compose fails the create on a missing external volume, and
-  a subpath mount fails if that path isn't already in the volume. It also seeds
-  `known_hosts` with github.com's keys from `api.github.com/meta` (HTTPS-verified,
-  rather than trusting ssh-keyscan on first use), so `git push` doesn't open with
-  a host-key prompt.
+| Volume | Subpath | Mounted at | Holds |
+| --- | --- | --- | --- |
+| `rc-claude-config` | `claude/` | `~/.claude` | Claude Code credentials, settings, history, installed skills |
+| `rc-gh-auth` | `gh/` | `~/.config/gh` | `hosts.yml`, i.e. the GitHub OAuth token |
+| `rc-gh-auth` | `ssh/` | `~/.ssh` | The SSH key `gh auth login` generates, plus `known_hosts` |
+
+- Canonical paths are the point, and for `gh` there is no alternative: pointing
+  `ssh` elsewhere is a one-line `IdentityFile`, but `gh`'s key generation is
+  hardcoded to `$HOME/.ssh` with no flag or env var to move it, so anything else
+  means re-linking a key by hand after every login.
+- Both volumes are declared `external` with a **fixed name**, which is the trick
+  that makes them shared: each worktree runs its own compose project, so an
+  ordinary volume gets namespaced per worktree (`<worktree>_devcontainer_<name>`
+  in `docker volume ls`) and each copy would start empty — one login per
+  checkout, forever. External also keeps them out of reach of `compose down -v`.
+- For the same reason neither can be a `mounts` entry in `devcontainer.json`:
+  those become ordinary volumes in a generated compose override and get prefixed
+  too. `~/.claude` used to be exactly that, scoped by `${devcontainerId}`; if you
+  ran this setup before the switch, those volumes are now unused
+  (`docker volume ls | grep claude-code-config`) and you sign in once more to
+  populate the shared one.
+- `scripts/ensure-gh-auth.sh` and `scripts/ensure-claude-config.sh` create them
+  from `initializeCommand`, with every subdirectory `0700` and owned by uid 1000.
+  Both parts have to happen on the host before create: compose fails the create
+  on a missing external volume, and a subpath mount fails if that path isn't
+  already in the volume. The gh one also seeds `known_hosts` with github.com's
+  keys from `api.github.com/meta` (HTTPS-verified, rather than trusting
+  ssh-keyscan on first use), so `git push` doesn't open with a host-key prompt.
 - Needs Compose ≥ 2.26 / Engine ≥ 25 for `subpath`.
-- To log out everywhere: `gh auth logout`, or `docker volume rm rc-gh-auth` with
-  no devcontainer running.
-- Both the token and the private key are only as protected as the container is —
+- The subpaths are what let one volume carry two mounts (`gh/`, `ssh/`), and
+  `rc-claude-config` follows the same shape with a single `claude/` entry so a
+  sibling can be added later without moving what's already stored.
+- **`~/.claude` is shared state, not just credentials.** Every worktree mounts at
+  `/workspaces/rocket.chat`, so they all resolve to the *same* entry under
+  `~/.claude/projects/` — `claude --resume` in one worktree lists sessions started
+  in another. Settings, todos and installed skills are shared the same way.
+- To log out everywhere: `claude /logout` and `gh auth logout`, or
+  `docker volume rm rc-claude-config rc-gh-auth` with no devcontainer running.
+- Credentials, token and private key are only as protected as the container is —
   see the warning at the top about what `--dangerously-skip-permissions` reaches.
 
 **Turborepo remote cache.** `turbo` in here writes to a self-hosted
@@ -169,6 +187,36 @@ uncached.
   confirm the cache is live, run a cacheable task twice with `.turbo/cache` removed
   in between: turbo prints `Remote caching enabled` and then `cache hit, replaying
   logs`.
+
+**Yarn cache.** `yarn install` in here downloads into the shared `rc-yarn-cache`
+volume instead of the checkout, so the first install fills it (~650MB) and every
+later one — in this worktree or any other, before or after a rebuild — installs
+from disk. Same shape as the two auth volumes: external, fixed name, mounted
+through a subpath created on the host by `initializeCommand`.
+
+| Volume | Subpath | Mounted at | Holds |
+| --- | --- | --- | --- |
+| `rc-yarn-cache` | `berry/` | `~/.yarn/berry` | Yarn's package cache (the registry zips) and metadata index |
+
+- Canonical path again: `globalFolder` already defaults to `~/.yarn/berry`
+  (`yarn config get globalFolder`), so the mount alone is the hookup.
+- `YARN_ENABLE_GLOBAL_CACHE=true` (`devcontainer.json`) is the other half. The
+  repo's `.yarnrc.yml` sets `enableGlobalCache: false` — the cache belongs to the
+  project — which is right on a host and wrong in here, because the project cache
+  lives in the bind mount: ~350MB of zips written through it per worktree, shared
+  with no one. Env beats `.yarnrc.yml`, so this applies to the container only and
+  the checked-in config and CI are untouched. Check it with
+  `yarn config get cacheFolder`: `/home/vscode/.yarn/berry/cache`, not a path
+  under `/workspaces`.
+- The mount is not redundant with yarn's mirror. With the global cache off, yarn
+  keeps a copy in `~/.yarn/berry` anyway (`enableMirror`, default on) and would
+  populate the project cache from it without hitting the network — so the volume
+  would already help. Enabling the global cache is what removes the second copy.
+- Pure cache, nothing secret, no 0700: `docker volume rm rc-yarn-cache` (with no
+  devcontainer running) costs one slow install and nothing else. Deps themselves
+  live in the per-worktree `node_modules` volume, not here.
+- Two worktrees installing at once is fine — the cache is content-addressed and
+  yarn writes each entry atomically.
 
 **Your skills come along.** Every container start copies your user-level Claude
 Code skills from the host into the container, so `/my-skill` works in here too.
