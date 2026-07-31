@@ -2,7 +2,7 @@ import { type IThreadMessage, type IThreadMainMessage, isVideoConfMessage } from
 import { Message, MessageLeftContainer, MessageContainer } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation, useUserId, useUserCard, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserId, useUserCard } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
@@ -27,7 +27,6 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMe
 	const editing = useIsMessageHighlight(message._id);
 	const [ignored, toggleIgnoring] = useToggle((message as { ignored?: boolean }).ignored);
 	const { openUserCard, openUserInfo, triggerProps } = useUserCard();
-	const mentionsWithSymbol = useUserPreference<boolean>('mentionsWithSymbol');
 
 	// Checks if is videoconf message to limit toolbox actions
 	const messageContext: MessageActionContext = isVideoConfMessage(message) ? 'videoconf-threads' : 'threads';
@@ -53,7 +52,6 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMe
 						emoji={message.emoji ? <Emoji emojiHandle={message.emoji} fillContainer /> : undefined}
 						avatarUrl={message.avatar}
 						username={message.u.username}
-						title={mentionsWithSymbol ? `@${message.u.username}` : message.u.username}
 						size='x36'
 						onMouseEnter={(e) => openUserCard(e, message.u.username)}
 						onClick={() => openUserInfo(message.u.username)}

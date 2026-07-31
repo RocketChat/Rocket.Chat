@@ -10,7 +10,7 @@ import {
 	Palette,
 } from '@rocket.chat/fuselage';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
-import { useUserPresence, useUserCard, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -21,6 +21,10 @@ import { normalizeUsername } from '../../../lib/utils/normalizeUsername';
 import { useUserRolesByScope } from '../../hooks/useUserRolesByScope';
 
 const nameStyle = css`
+	/* The underline is painted with the wrapper's color, so it must match
+	   the name's color token to not look washed out. */
+	color: ${Palette.text['font-titles-labels']};
+
 	&:hover {
 		text-decoration: underline;
 	}
@@ -49,11 +53,8 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 	const { triggerProps, openUserCard, openUserInfo } = useUserCard();
 
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
-	const usernameAndRealNameAreSame = !user.name || user.username === user.name;
 	const displayName = useUserDisplayName(user);
 	const normalizedUsername = normalizeUsername(user.username);
-	const mentionsWithSymbol = useUserPreference<boolean>('mentionsWithSymbol');
-	const usernameTooltip = mentionsWithSymbol ? `@${normalizedUsername}` : normalizedUsername;
 
 	const showRoles = useMessageListShowRoles();
 	const { workspaceRoles, roomRoles } = useUserRolesByScope(message.u._id, message.rid, showRoles);
@@ -79,9 +80,7 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 				{...triggerProps}
 			>
 				<Box is='span' className={nameStyle}>
-					<MessageName title={!usernameAndRealNameAreSame ? usernameTooltip : undefined} data-username={normalizedUsername}>
-						{message.alias || displayName}
-					</MessageName>
+					<MessageName data-username={normalizedUsername}>{message.alias || displayName}</MessageName>
 				</Box>
 			</MessageNameContainer>
 			{shouldShowRolesList && (
