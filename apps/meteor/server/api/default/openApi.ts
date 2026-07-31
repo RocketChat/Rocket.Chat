@@ -105,13 +105,12 @@ const openApiResponseSchema = ajv.compile<Record<string, unknown>>({
 		openapi: { type: 'string' },
 		info: { type: 'object' },
 		externalDocs: { type: 'object' },
-		servers: { type: 'array' },
-		tags: { type: 'array' },
+		servers: { type: 'array', items: {} },
+		tags: { type: 'array', items: {} },
 		components: { type: 'object' },
 		paths: { type: 'object' },
-		success: { type: 'boolean', enum: [true] },
 	},
-	required: ['openapi', 'info', 'paths', 'success'],
+	required: ['openapi', 'info', 'paths'],
 	additionalProperties: false,
 });
 
@@ -127,7 +126,9 @@ API.default.get(
 	function action() {
 		const { withUndocumented = false } = this.queryParams;
 
-		return API.default.success(makeOpenAPIResponse(getTypedRoutes(API.api.typedRoutes, { withUndocumented })));
+		// deliberately not wrapped in `API.default.success`: the envelope would add a `success` key to
+		// the document root, which is not an OpenAPI field and fails validation
+		return { statusCode: 200 as const, body: makeOpenAPIResponse(getTypedRoutes(API.api.typedRoutes, { withUndocumented })) };
 	},
 );
 
