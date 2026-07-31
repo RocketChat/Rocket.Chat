@@ -3,7 +3,7 @@ import type { IPersistence } from '@rocket.chat/apps-engine/definition/accessors
 import type { IRead } from '@rocket.chat/apps-engine/definition/accessors/IRead';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry';
-import { RemoteBridges } from '../bridges/RemoteBridges';
+import { bridgeCall } from '../bridges/bridgeCall';
 import type * as Messenger from '../messenger';
 
 type RequestMethod = 'get' | 'post' | 'put' | 'head' | 'delete' | 'patch';
@@ -17,17 +17,11 @@ export class Http implements IHttp {
 
 	private senderFn: typeof Messenger.sendRequest;
 
-	private readonly bridges: RemoteBridges;
-
 	constructor(read: IRead, persistence: IPersistence, httpExtender: IHttpExtend, senderFn: typeof Messenger.sendRequest) {
 		this.read = read;
 		this.persistence = persistence;
 		this.httpExtender = httpExtender;
 		this.senderFn = senderFn;
-		// The facade reads `this.senderFn` at call time (rather than capturing it) so
-		// that tests which swap out `senderFn` after construction remain intercepted.
-		this.bridges = new RemoteBridges((request) => this.senderFn(request));
-		// this.httpExtender = new HttpExtend();
 	}
 
 	public get(url: string, options?: IHttpRequest): Promise<IHttpResponse> {
@@ -80,7 +74,7 @@ export class Http implements IHttp {
 		// `appId` here is a field inside the payload object, not a top-level positional
 		// param, so the host's `'APP_ID'` sentinel substitution cannot reach it - we send
 		// the resolved id. See docs/proposals/apps-accessor-consolidation/base-runtime-app-id-exceptions.md (bucket C).
-		let response = await this.bridges.getHttpBridge().doCall({
+		let response = await bridgeCall(this.senderFn, 'getHttpBridge', 'doCall', {
 			appId: AppObjectRegistry.get<string>('id'),
 			method,
 			url,

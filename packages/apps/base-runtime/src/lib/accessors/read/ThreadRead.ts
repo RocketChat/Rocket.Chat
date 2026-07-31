@@ -1,12 +1,15 @@
 import type { IThreadRead } from '@rocket.chat/apps-engine/definition/accessors/IThreadRead';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 
-import type { RemoteBridges } from '../../bridges/RemoteBridges';
+import { bridgeCall } from '../../bridges/bridgeCall';
+import type * as Messenger from '../../messenger';
 
 export class ThreadRead implements IThreadRead {
-	constructor(private readonly bridges: RemoteBridges) {}
+	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}
 
-	public getThreadById(id: string): Promise<Array<IMessage>> {
-		return this.bridges.getThreadBridge().doGetById(id, 'APP_ID') as Promise<Array<IMessage>>;
+	public async getThreadById(id: string): Promise<Array<IMessage> | undefined> {
+		const messages = await bridgeCall<Array<IMessage> | null>(this.senderFn, 'getThreadBridge', 'doGetById', id, 'APP_ID');
+
+		return messages ?? undefined;
 	}
 }

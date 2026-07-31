@@ -2,16 +2,14 @@ import type { AppManager } from '@rocket.chat/apps/dist/server/AppManager';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
 
 import type { AppAccessors } from './accessors/mod';
-import { RemoteBridges } from './bridges/RemoteBridges';
+import { bridgeCall } from './bridges/bridgeCall';
 import { Room } from './room';
 
 const getMockAppManager = (senderFn: AppAccessors['senderFn']) => {
-	const bridges = new RemoteBridges(senderFn);
-
 	return {
 		getBridges: () => ({
 			getInternalBridge: () => ({
-				doGetUsernamesOfRoomById: (roomId: string) => bridges.getInternalBridge().doGetUsernamesOfRoomById(roomId),
+				doGetUsernamesOfRoomById: (roomId: string) => bridgeCall(senderFn, 'getInternalBridge', 'doGetUsernamesOfRoomById', roomId),
 			}),
 		}),
 	};

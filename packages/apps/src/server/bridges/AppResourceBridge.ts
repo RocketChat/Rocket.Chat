@@ -18,7 +18,7 @@ import type { AppManager } from '../AppManager';
  * through the same `bridges:*` channel as any other bridge; `BaseRuntimeSubprocessController`
  * resolves the `getAppResourceBridge` name via a dedicated lookup rather than through `AppBridges`.
  *
- * This is the compromise described in docs/base-runtime-accessor-consolidation.md §4: the
+ * This is the compromise described in docs/proposals/apps-accessor-consolidation/README.md §4: the
  * registration/configuration surface cannot move into the sandbox (the registries are host state,
  * read by the host UI/event/dispatch layers and used to arbitrate cross-app conflicts), so the
  * accessor *behavior* (validation/shaping/stashing) lives in the runtime while the *state and

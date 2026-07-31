@@ -9,25 +9,26 @@ import {
 } from '@rocket.chat/apps-engine/definition/rooms/IGetMessagesOptions';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 
-import type { RemoteBridges } from '../../bridges/RemoteBridges';
+import { bridgeCall } from '../../bridges/bridgeCall';
+import type * as Messenger from '../../messenger';
 
 export class RoomRead implements IRoomRead {
-	constructor(private readonly bridges: RemoteBridges) {}
+	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}
 
 	public getById(id: string): Promise<IRoom> {
-		return this.bridges.getRoomBridge().doGetById(id, 'APP_ID') as Promise<IRoom>;
+		return bridgeCall<IRoom>(this.senderFn, 'getRoomBridge', 'doGetById', id, 'APP_ID');
 	}
 
 	public getCreatorUserById(id: string): Promise<IUser> {
-		return this.bridges.getRoomBridge().doGetCreatorById(id, 'APP_ID') as Promise<IUser>;
+		return bridgeCall<IUser>(this.senderFn, 'getRoomBridge', 'doGetCreatorById', id, 'APP_ID');
 	}
 
 	public getByName(name: string): Promise<IRoom> {
-		return this.bridges.getRoomBridge().doGetByName(name, 'APP_ID') as Promise<IRoom>;
+		return bridgeCall<IRoom>(this.senderFn, 'getRoomBridge', 'doGetByName', name, 'APP_ID');
 	}
 
 	public getCreatorUserByName(name: string): Promise<IUser> {
-		return this.bridges.getRoomBridge().doGetCreatorByName(name, 'APP_ID') as Promise<IUser>;
+		return bridgeCall<IUser>(this.senderFn, 'getRoomBridge', 'doGetCreatorByName', name, 'APP_ID');
 	}
 
 	public getMessages(roomId: string, options: Partial<GetMessagesOptions> = {}): Promise<IMessageRaw[]> {
@@ -42,11 +43,11 @@ export class RoomRead implements IRoomRead {
 			this.validateSort(options.sort);
 		}
 
-		return this.bridges.getRoomBridge().doGetMessages(roomId, options as GetMessagesOptions, 'APP_ID') as Promise<IMessageRaw[]>;
+		return bridgeCall<IMessageRaw[]>(this.senderFn, 'getRoomBridge', 'doGetMessages', roomId, options as GetMessagesOptions, 'APP_ID');
 	}
 
 	public getMembers(roomId: string): Promise<Array<IUser>> {
-		return this.bridges.getRoomBridge().doGetMembers(roomId, 'APP_ID') as Promise<Array<IUser>>;
+		return bridgeCall<Array<IUser>>(this.senderFn, 'getRoomBridge', 'doGetMembers', roomId, 'APP_ID');
 	}
 
 	public getAllRooms(filters: GetRoomsFilters = {}, { limit = 100, skip = 0 }: GetRoomsOptions = {}): Promise<Array<IRoomRaw> | undefined> {
@@ -58,23 +59,23 @@ export class RoomRead implements IRoomRead {
 			throw new Error(`Invalid skip provided. Expected number >= 0, got ${skip}`);
 		}
 
-		return this.bridges.getRoomBridge().doGetAllRooms(filters, { limit, skip }, 'APP_ID') as Promise<Array<IRoomRaw> | undefined>;
+		return bridgeCall<Array<IRoomRaw> | undefined>(this.senderFn, 'getRoomBridge', 'doGetAllRooms', filters, { limit, skip }, 'APP_ID');
 	}
 
 	public getDirectByUsernames(usernames: Array<string>): Promise<IRoom> {
-		return this.bridges.getRoomBridge().doGetDirectByUsernames(usernames, 'APP_ID') as Promise<IRoom>;
+		return bridgeCall<IRoom>(this.senderFn, 'getRoomBridge', 'doGetDirectByUsernames', usernames, 'APP_ID');
 	}
 
 	public getModerators(roomId: string): Promise<Array<IUser>> {
-		return this.bridges.getRoomBridge().doGetModerators(roomId, 'APP_ID') as Promise<Array<IUser>>;
+		return bridgeCall<Array<IUser>>(this.senderFn, 'getRoomBridge', 'doGetModerators', roomId, 'APP_ID');
 	}
 
 	public getOwners(roomId: string): Promise<Array<IUser>> {
-		return this.bridges.getRoomBridge().doGetOwners(roomId, 'APP_ID') as Promise<Array<IUser>>;
+		return bridgeCall<Array<IUser>>(this.senderFn, 'getRoomBridge', 'doGetOwners', roomId, 'APP_ID');
 	}
 
 	public getLeaders(roomId: string): Promise<Array<IUser>> {
-		return this.bridges.getRoomBridge().doGetLeaders(roomId, 'APP_ID') as Promise<Array<IUser>>;
+		return bridgeCall<Array<IUser>>(this.senderFn, 'getRoomBridge', 'doGetLeaders', roomId, 'APP_ID');
 	}
 
 	public async getUnreadByUser(roomId: string, uid: string, options: Partial<GetMessagesOptions> = {}): Promise<IMessageRaw[]> {
@@ -92,11 +93,11 @@ export class RoomRead implements IRoomRead {
 
 		const completeOptions: GetMessagesOptions = { limit, sort, skip, showThreadMessages };
 
-		return this.bridges.getRoomBridge().doGetUnreadByUser(roomId, uid, completeOptions, 'APP_ID') as Promise<IMessageRaw[]>;
+		return bridgeCall<IMessageRaw[]>(this.senderFn, 'getRoomBridge', 'doGetUnreadByUser', roomId, uid, completeOptions, 'APP_ID');
 	}
 
 	public getUserUnreadMessageCount(roomId: string, uid: string): Promise<number> {
-		return this.bridges.getRoomBridge().doGetUserUnreadMessageCount(roomId, uid, 'APP_ID') as Promise<number>;
+		return bridgeCall<number>(this.senderFn, 'getRoomBridge', 'doGetUserUnreadMessageCount', roomId, uid, 'APP_ID');
 	}
 
 	// If there are any invalid fields or values, throw

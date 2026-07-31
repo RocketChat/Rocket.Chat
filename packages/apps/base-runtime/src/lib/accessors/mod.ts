@@ -31,7 +31,7 @@ import { Persistence } from './Persistence';
 import { HttpExtend } from './extenders/HttpExtender';
 import { Http } from './http';
 import { AppObjectRegistry } from '../../AppObjectRegistry';
-import { RemoteBridges } from '../bridges/RemoteBridges';
+import { bridgeCall } from '../bridges/bridgeCall';
 import * as Messenger from '../messenger';
 import { EnvironmentRead } from './environment/EnvironmentRead';
 import { EnvironmentWrite } from './environment/EnvironmentWrite';
@@ -101,11 +101,7 @@ export class AppAccessors {
 
 	private notifier?: INotifier;
 
-	private readonly bridges: RemoteBridges;
-
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {
-		this.bridges = new RemoteBridges(senderFn);
-
 		this.http = new Http(this.getReader(), this.getPersistence(), this.httpExtend, this.getSenderFn());
 		this.notifier = new Notifier(this.getSenderFn());
 	}
@@ -119,9 +115,9 @@ export class AppAccessors {
 			// App settings, server settings and environment variables all run locally now; app
 			// settings reach the host ProxiedApp storage item through the internal AppResourceBridge.
 			this.environmentRead = new EnvironmentRead(
-				new SettingRead(this.bridges),
-				new ServerSettingRead(this.bridges),
-				new EnvironmentalVariableRead(this.bridges),
+				new SettingRead(this.senderFn),
+				new ServerSettingRead(this.senderFn),
+				new EnvironmentalVariableRead(this.senderFn),
 			);
 		}
 
@@ -130,7 +126,7 @@ export class AppAccessors {
 
 	public getEnvironmentWrite() {
 		if (!this.environmentWriter) {
-			this.environmentWriter = new EnvironmentWrite(new SettingUpdater(this.bridges), new ServerSettingUpdater(this.bridges));
+			this.environmentWriter = new EnvironmentWrite(new SettingUpdater(this.senderFn), new ServerSettingUpdater(this.senderFn));
 		}
 
 		return this.environmentWriter;
@@ -138,27 +134,27 @@ export class AppAccessors {
 
 	public getConfigurationModify() {
 		if (!this.configModifier) {
-			const resourceBridge = this.bridges.getAppResourceBridge();
+			const { senderFn } = this;
 
 			const slashCommandsModify: ISlashCommandsModify = {
 				modifySlashCommand(slashcommand: ISlashCommand) {
 					// Store the slashcommand instance to use when the Apps-Engine calls the slashcommand
 					AppObjectRegistry.set(`slashcommand:${slashcommand.command}`, slashcommand);
 
-					return resourceBridge.doModifySlashCommand(slashcommand, 'APP_ID') as Promise<void>;
+					return bridgeCall<void>(senderFn, 'getAppResourceBridge', 'doModifySlashCommand', slashcommand, 'APP_ID');
 				},
 				disableSlashCommand(command: string) {
-					return resourceBridge.doDisableSlashCommand(command, 'APP_ID') as Promise<void>;
+					return bridgeCall<void>(senderFn, 'getAppResourceBridge', 'doDisableSlashCommand', command, 'APP_ID');
 				},
 				enableSlashCommand(command: string) {
-					return resourceBridge.doEnableSlashCommand(command, 'APP_ID') as Promise<void>;
+					return bridgeCall<void>(senderFn, 'getAppResourceBridge', 'doEnableSlashCommand', command, 'APP_ID');
 				},
 			};
 
 			this.configModifier = {
-				scheduler: new SchedulerModify(this.bridges),
+				scheduler: new SchedulerModify(this.senderFn),
 				slashCommands: slashCommandsModify,
-				serverSettings: new ServerSettingsModify(this.bridges),
+				serverSettings: new ServerSettingsModify(this.senderFn),
 			};
 		}
 
@@ -167,7 +163,7 @@ export class AppAccessors {
 
 	public getConfigurationExtend() {
 		if (!this.configExtender) {
-			const resourceBridge = this.bridges.getAppResourceBridge();
+			const { senderFn } = this;
 
 			const apiExtend: IApiExtend = {
 				async provideApi(api: IApi) {
@@ -180,12 +176,11 @@ export class AppAccessors {
 						AppObjectRegistry.set(`api:${endpoint.path}`, endpoint);
 					});
 
-					await resourceBridge.doProvideApi(api, 'APP_ID');
+					await bridgeCall(senderFn, 'getAppResourceBridge', 'doProvideApi', api, 'APP_ID');
 
 					// Let's call the listApis method to cache the info from the endpoints
 					// Also, since this is a side-effect, we do it async so we can return to the caller
-					resourceBridge
-						.doListApis('APP_ID')
+					bridgeCall(senderFn, 'getAppResourceBridge', 'doListApis', 'APP_ID')
 						.then((endpoints) => apiEndpoints.push(...(endpoints as IApiEndpointMetadata[])))
 						.catch(() => undefined);
 				},
@@ -198,7 +193,7 @@ export class AppAccessors {
 						AppObjectRegistry.set(`scheduler:${processor.id}`, processor);
 					});
 
-					return resourceBridge.doRegisterProcessors(processors, 'APP_ID') as Promise<void | Array<string>>;
+					return bridgeCall<void | Array<string>>(senderFn, 'getAppResourceBridge', 'doRegisterProcessors', processors, 'APP_ID');
 				},
 			};
 
@@ -207,18 +202,18 @@ export class AppAccessors {
 					// Store the videoConfProvider instance to use when the Apps-Engine calls the videoConfProvider
 					AppObjectRegistry.set(`videoConfProvider:${provider.name}`, provider);
 
-					return resourceBridge.doProvideVideoConfProvider(provider, 'APP_ID') as Promise<void>;
+					return bridgeCall<void>(senderFn, 'getAppResourceBridge', 'doProvideVideoConfProvider', provider, 'APP_ID');
 				},
 			};
 
 			const outboundCommunication: IOutboundCommunicationProviderExtend = {
 				registerEmailProvider(provider: IOutboundEmailMessageProvider) {
 					AppObjectRegistry.set(`outboundCommunication:${provider.name}-${provider.type}`, provider);
-					return resourceBridge.doRegisterOutboundProvider(provider, 'APP_ID') as Promise<void>;
+					return bridgeCall<void>(senderFn, 'getAppResourceBridge', 'doRegisterOutboundProvider', provider, 'APP_ID');
 				},
 				registerPhoneProvider(provider: IOutboundPhoneMessageProvider) {
 					AppObjectRegistry.set(`outboundCommunication:${provider.name}-${provider.type}`, provider);
-					return resourceBridge.doRegisterOutboundProvider(provider, 'APP_ID') as Promise<void>;
+					return bridgeCall<void>(senderFn, 'getAppResourceBridge', 'doRegisterOutboundProvider', provider, 'APP_ID');
 				},
 			};
 
@@ -227,7 +222,7 @@ export class AppAccessors {
 					// Store the slashcommand instance to use when the Apps-Engine calls the slashcommand
 					AppObjectRegistry.set(`slashcommand:${slashcommand.command}`, slashcommand);
 
-					return resourceBridge.doProvideSlashCommand(slashcommand, 'APP_ID') as Promise<void>;
+					return bridgeCall<void>(senderFn, 'getAppResourceBridge', 'doProvideSlashCommand', slashcommand, 'APP_ID');
 				},
 			};
 
@@ -236,19 +231,19 @@ export class AppAccessors {
 				// is async over the bridge; fire-and-forget matches the contract. The host manager
 				// logs-and-refuses rather than throwing, so there is no rejection to surface here.
 				registerButton(button) {
-					void resourceBridge.doRegisterActionButton(button, 'APP_ID').catch(() => undefined);
+					void bridgeCall(senderFn, 'getAppResourceBridge', 'doRegisterActionButton', button, 'APP_ID').catch(() => undefined);
 				},
 			};
 
 			const settings: ISettingsExtend = {
 				provideSetting(setting) {
-					return resourceBridge.doProvideSetting(setting, 'APP_ID') as Promise<void>;
+					return bridgeCall<void>(senderFn, 'getAppResourceBridge', 'doProvideSetting', setting, 'APP_ID');
 				},
 			};
 
 			const externalComponents: IExternalComponentsExtend = {
 				register(externalComponent) {
-					return resourceBridge.doRegisterExternalComponent(externalComponent, 'APP_ID') as Promise<void>;
+					return bridgeCall<void>(senderFn, 'getAppResourceBridge', 'doRegisterExternalComponent', externalComponent, 'APP_ID');
 				},
 			};
 
@@ -285,27 +280,27 @@ export class AppAccessors {
 	public getReader() {
 		if (!this.reader) {
 			const environmentReader = new EnvironmentRead(
-				new SettingRead(this.bridges),
-				new ServerSettingRead(this.bridges),
-				new EnvironmentalVariableRead(this.bridges),
+				new SettingRead(this.senderFn),
+				new ServerSettingRead(this.senderFn),
+				new EnvironmentalVariableRead(this.senderFn),
 			);
 
 			this.reader = new Reader(
 				environmentReader,
-				new MessageRead(this.bridges),
-				new PersistenceRead(this.bridges),
-				new RoomRead(this.bridges),
-				new UserRead(this.bridges),
+				new MessageRead(this.senderFn),
+				new PersistenceRead(this.senderFn),
+				new RoomRead(this.senderFn),
+				new UserRead(this.senderFn),
 				this.getNotifier(),
-				new LivechatRead(this.bridges),
-				new UploadRead(this.bridges),
-				new CloudWorkspaceRead(this.bridges),
-				new VideoConferenceRead(this.bridges),
-				new ContactRead(this.bridges),
-				new OAuthAppsReader(this.bridges),
-				new ThreadRead(this.bridges),
-				new RoleRead(this.bridges),
-				new ExperimentalRead(this.bridges),
+				new LivechatRead(this.senderFn),
+				new UploadRead(this.senderFn),
+				new CloudWorkspaceRead(this.senderFn),
+				new VideoConferenceRead(this.senderFn),
+				new ContactRead(this.senderFn),
+				new OAuthAppsReader(this.senderFn),
+				new ThreadRead(this.senderFn),
+				new RoleRead(this.senderFn),
+				new ExperimentalRead(this.senderFn),
 			);
 		}
 
@@ -318,12 +313,12 @@ export class AppAccessors {
 				getCreator: this.getCreator.bind(this),
 				getUpdater: this.getUpdater.bind(this),
 				getExtender: this.getExtender.bind(this),
-				getDeleter: () => new ModifyDeleter(this.bridges),
+				getDeleter: () => new ModifyDeleter(this.senderFn),
 				getNotifier: () => this.getNotifier(),
-				getUiController: () => new UIController(this.bridges),
-				getScheduler: () => new SchedulerModify(this.bridges),
-				getOAuthAppsModifier: () => new OAuthAppsModify(this.bridges),
-				getModerationModifier: () => new ModerationModify(this.bridges),
+				getUiController: () => new UIController(this.senderFn),
+				getScheduler: () => new SchedulerModify(this.senderFn),
+				getOAuthAppsModifier: () => new OAuthAppsModify(this.senderFn),
+				getModerationModifier: () => new ModerationModify(this.senderFn),
 			};
 		}
 
@@ -332,7 +327,7 @@ export class AppAccessors {
 
 	public getPersistence() {
 		if (!this.persistence) {
-			this.persistence = new Persistence(this.bridges);
+			this.persistence = new Persistence(this.senderFn);
 		}
 
 		return this.persistence;
