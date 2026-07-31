@@ -130,7 +130,7 @@ const CategoryMenu = ({
 			]
 		: [];
 
-	const whenClosedItems: GenericMenuItemProps[] = [
+	const collapsedItems: GenericMenuItemProps[] = [
 		{
 			id: 'show-unreads',
 			icon: 'flag',
@@ -140,7 +140,7 @@ const CategoryMenu = ({
 		},
 	];
 
-	const whenOpenedItems: GenericMenuItemProps[] = [
+	const expandedItems: GenericMenuItemProps[] = [
 		{
 			id: 'keep-unreads-on-top',
 			icon: 'sort-amount-down',
@@ -153,8 +153,8 @@ const CategoryMenu = ({
 	const sections = [
 		{ items: orderItems },
 		...(category ? [{ title: t('Manage'), items: manageItems }] : []),
-		{ title: t('When_closed'), items: whenClosedItems },
-		{ title: t('When_opened'), items: whenOpenedItems },
+		{ title: t('When_collapsed'), items: collapsedItems },
+		{ title: t('When_expanded'), items: expandedItems },
 	];
 
 	return (
