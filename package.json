@@ -218,14 +218,14 @@
 		"turbo": "2.9.14",
 		"typescript": "~5.9.3"
 	},
-	"packageManager": "yarn@4.17.1",
+	"packageManager": "yarn@4.18.0",
 	"engines": {
 		"node": "22.22.3",
-		"yarn": "4.17.1"
+		"yarn": "4.18.0"
 	},
 	"volta": {
 		"node": "22.22.3",
-		"yarn": "4.17.1"
+		"yarn": "4.18.0"
 	},
 	"houston": {
 		"minTag": "0.55.0-rc.0",
