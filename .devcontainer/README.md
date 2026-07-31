@@ -21,8 +21,9 @@ runs. Three properties of this container bound the blast radius:
 
 What it does **not** protect: the workspace itself is a bind mount, so any file
 Claude writes lands directly in your host checkout. And anything reachable through
-the allowlist — including your Claude Code credentials in `~/.claude` — is still
-reachable. Use it on repositories you trust.
+the allowlist — including your Claude Code credentials in `~/.claude` and the
+GitHub token and SSH key in `~/.config/gh` and `~/.ssh` — is still reachable. Use
+it on repositories you trust.
 
 ## Getting started
 
@@ -41,6 +42,9 @@ or the [`devcontainer` CLI](https://github.com/devcontainers/cli).
 
    If the browser callback never reaches the container, paste the code shown in
    the browser at the `Paste code here if prompted` prompt.
+
+   Run `gh auth login` here too, in the container and not on the host — once for
+   all worktrees, key included (see **Your GitHub login is shared** below).
 3. Install dependencies and start the app:
 
    ```bash
@@ -66,9 +70,10 @@ don't see that line, the container is not firewalled.
 | `Dockerfile` | Base image and toolchain, pinned from `package.json`, `.tool-versions`, `.meteor/release` |
 | `init-firewall.sh` | Default-deny egress firewall; run from the workspace by `postStartCommand` |
 | `turbo-cache/docker-compose.yml` | Standalone [Turborepo remote cache](https://ducktors.github.io/turborepo-remote-cache) shared by every worktree |
-| `scripts/initialize.sh` | Host-side; the `initializeCommand` entry point, runs the two below |
+| `scripts/initialize.sh` | Host-side; the `initializeCommand` entry point, runs the three below |
 | `scripts/init-worktree.sh` | Host-side; exposes the real git dir when the checkout is a linked worktree |
 | `scripts/ensure-turbo-cache.sh` | Host-side; brings the cache stack up before the container is created |
+| `scripts/ensure-gh-auth.sh` | Host-side; creates the `rc-gh-auth` volume holding the shared `gh` login and SSH key |
 | `scripts/stage-skills.sh` | Host-side; copies your user-level Claude Code skills into `.host-skills/`, unless opted out |
 | `scripts/on-create.sh` | Container-side; the `onCreateCommand` entry point, fixes volume ownership and git gc |
 | `scripts/install-skills.sh` | Container-side; installs the staged skills into the container's `~/.claude/skills`, then clears the staging dir |
@@ -92,6 +97,44 @@ scoped by `${devcontainerId}`, so they survive rebuilds but aren't shared across
 projects. `node_modules` and `apps/meteor/.meteor/local` are also named volumes —
 they shadow the bind mount, so your host copies are untouched (and Meteor's
 absolute paths don't leak between host and container).
+
+**Your GitHub login is shared across worktrees.** Run `gh auth login` **inside a
+container** once — pick SSH when it offers to generate a key — and every worktree
+is authenticated, for both `gh` and `git` over SSH. Do it in here rather than on
+the host: `~/.config/gh` and `~/.ssh` are two subdirectories of the shared
+`rc-gh-auth` volume mounted at exactly the paths `gh` and `ssh` read by default,
+so the login and the key it generates land in the volume with **nothing to
+configure and nothing to copy** — including on the next rebuild.
+
+```bash
+gh auth login   # GitHub.com › SSH › generate a new key › browser
+```
+
+- One volume, two subpath mounts (`gh/` → `~/.config/gh`, `ssh/` → `~/.ssh`).
+  Canonical paths are the point: pointing `ssh` elsewhere is a one-line
+  `IdentityFile`, but `gh`'s key generation is hardcoded to `$HOME/.ssh` with no
+  flag or env var to move it, so anything else means re-linking a key by hand
+  after every login.
+- The volume is declared `external` with a **fixed name**, which is the trick that
+  makes it shared: each worktree runs its own compose project, so an ordinary
+  volume gets namespaced per worktree (`<worktree>_devcontainer_<name>` — exactly
+  what the `${devcontainerId}` scoping of the `~/.claude` volume relies on) and
+  each copy would start empty. External also keeps it out of reach of
+  `compose down -v`.
+- For the same reason it can't be a `mounts` entry in `devcontainer.json`: those
+  become ordinary volumes in a generated compose override and get prefixed too.
+- `scripts/ensure-gh-auth.sh` creates it from `initializeCommand`, with both
+  subdirectories `0700` and owned by uid 1000. Both parts have to happen on the
+  host before create: compose fails the create on a missing external volume, and
+  a subpath mount fails if that path isn't already in the volume. It also seeds
+  `known_hosts` with github.com's keys from `api.github.com/meta` (HTTPS-verified,
+  rather than trusting ssh-keyscan on first use), so `git push` doesn't open with
+  a host-key prompt.
+- Needs Compose ≥ 2.26 / Engine ≥ 25 for `subpath`.
+- To log out everywhere: `gh auth logout`, or `docker volume rm rc-gh-auth` with
+  no devcontainer running.
+- Both the token and the private key are only as protected as the container is —
+  see the warning at the top about what `--dangerously-skip-permissions` reaches.
 
 **Turborepo remote cache.** `turbo` in here writes to a self-hosted
 [remote cache](https://ducktors.github.io/turborepo-remote-cache) running as its own

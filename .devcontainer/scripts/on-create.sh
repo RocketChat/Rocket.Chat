@@ -20,6 +20,16 @@ log() { printf '\033[1;34m[on-create]\033[0m %s\n' "$1"; }
 log "claiming ~/.claude"
 sudo chown -R vscode:vscode /home/vscode/.claude
 
+# The shared GitHub auth volume (docker-compose.yml) arrives already owned by
+# uid 1000 — ensure-gh-auth.sh sets that up on the host, because the subpath
+# directories have to exist before the container starts anyway. This is the
+# belt-and-braces pass for a volume seeded some other way (restored, copied in
+# by hand): both dirs hold secrets, and ssh outright refuses a private key whose
+# permissions are too open. Cheap — a couple of small files each.
+log "claiming ~/.config/gh and ~/.ssh"
+sudo chown -R vscode:vscode /home/vscode/.config/gh /home/vscode/.ssh
+sudo chmod 700 /home/vscode/.config/gh /home/vscode/.ssh
+
 # The rc-node-modules and rc-meteor-local volumes are the same story: the
 # image has nothing at those paths to seed ownership from (the workspace only
 # exists as a bind mount at runtime), so they land as root:root and
