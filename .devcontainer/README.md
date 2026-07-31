@@ -109,6 +109,12 @@ uncached.
 - `TURBO_TOKEN` is a fixed local-dev value, not a secret; if you change it, change
   it in both `devcontainer.json` and the cache's compose file, or every request
   401s.
+- `TURBO_CACHE_DIR=.turbo/cache` is **required in a worktree**, not cosmetic. turbo
+  2.9 is worktree-aware and otherwise writes the local cache into the *main*
+  worktree — a host path whose parent exists in here only as a root-owned
+  auto-created mount parent, so `yarn build` fails with
+  `failed to create directory .../main/.turbo/cache: Permission denied`. Cross-worktree
+  sharing is the remote cache's job in the container.
 - **No `turbo login` / `turbo link` step is needed, and none is possible.** Those
   three env vars are the hookup — the env equivalent of what login/link persist to
   disk. Both commands are TTY-only prompts with no non-interactive flag, so they

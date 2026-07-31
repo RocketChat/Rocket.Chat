@@ -52,10 +52,22 @@
 	// `teamslug` in .turbo/config.json — adding `teamid` makes turbo request
 	// ?teamId=...&slug=..., a different artifact namespace on the cache server,
 	// which 404s against everything uploaded so far.
+	//
+	// TURBO_CACHE_DIR pins the *local* cache to this checkout, and is required
+	// in a linked worktree. turbo 2.9 is worktree-aware: run from a linked
+	// worktree it deliberately puts the local cache in the MAIN worktree, so
+	// every worktree on a machine shares one directory. That path is a HOST
+	// path, and in here only the main checkout's .git is bind-mounted — Docker
+	// auto-creates its parent dirs as root, so turbo dies with
+	// "failed to create directory .../main/.turbo/cache: Permission denied".
+	// Sharing is the remote cache's job in this container anyway.
+	// Relative, so it resolves to whatever the repo root is (/workspaces/
+	// rocket.chat) and stays correct in every worktree.
 	"containerEnv": {
 		"TURBO_API": "http://turbo-cache:3000",
 		"TURBO_TEAM": "rocketchat",
-		"TURBO_TOKEN": "rocketchat-local-dev"
+		"TURBO_TOKEN": "rocketchat-local-dev",
+		"TURBO_CACHE_DIR": ".turbo/cache"
 	},
 	// Persist Claude Code auth/settings/history across container rebuilds.
 	// Scoped per-devcontainer so different projects don't share credentials.
