@@ -10,16 +10,24 @@ const RichTextComposerInputStyle = css`
 	}
 `;
 
+// Links only open on Cmd/Ctrl+click, so the pointer is offered while that modifier is held.
+const RichTextComposerLinkModifierStyle = css`
+	a:not([href='#']) {
+		cursor: pointer;
+	}
+`;
+
 type RichTextComposerInputProps = ComponentProps<typeof Box> & {
 	placeholder?: string;
 	hideplaceholder?: boolean;
 	hidetext?: boolean;
+	linkmodifier?: boolean;
 };
 
 const RichTextComposerInput = forwardRef<HTMLDivElement, RichTextComposerInputProps>(function RichTextComposerInput(props, ref) {
 	// Supress warnings related to hideplaceholder/hidetext being invalid DOM props.
 	// `disabled` is inert on a contenteditable, so it drives contentEditable instead of reaching the DOM.
-	const { placeholder, hideplaceholder, hidetext, disabled, ...rest } = props;
+	const { placeholder, hideplaceholder, hidetext, linkmodifier, disabled, ...rest } = props;
 
 	return (
 		<Box is='div' width='full' style={hidetext ? { visibility: 'hidden' } : undefined}>
@@ -43,7 +51,11 @@ const RichTextComposerInput = forwardRef<HTMLDivElement, RichTextComposerInputPr
 				{placeholder}
 			</Box>
 			<Box
-				className={[RichTextComposerInputStyle, 'rc-message-box__divcontenteditable js-input-message']}
+				className={[
+					RichTextComposerInputStyle,
+					...(linkmodifier ? [RichTextComposerLinkModifierStyle] : []),
+					'rc-message-box__divcontenteditable js-input-message',
+				]}
 				color='default'
 				width='full'
 				minHeight={20}

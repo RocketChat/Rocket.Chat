@@ -7,7 +7,7 @@ import { MessageComposerHint, RichTextComposerInputExpandable } from '@rocket.ch
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
-import { memo, useRef, useReducer, useCallback, useSyncExternalStore, useMemo } from 'react';
+import { memo, useRef, useReducer, useCallback, useState, useSyncExternalStore, useMemo } from 'react';
 
 import type { MessageBoxProps } from './MessageBox';
 import MessageBoxBase from './MessageBoxBase';
@@ -23,8 +23,10 @@ import {
 	handleFormattingShortcut,
 	extractImageFilesFromClipboard,
 	getModifierClickHref,
+	isCmdOrCtrlPressed,
 } from './messageBoxHelpers';
 import { handleRichTextSelectionWrapping } from './wrapSelection';
+import { useExternalLink } from '../../../../hooks/useExternalLink';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
 import { createRichTextComposerAPI } from '../../../../lib/createRichTextComposerAPI';
@@ -386,6 +388,8 @@ const RichTextMessageBox = ({
 		}
 	});
 
+	const openExternalLink = useExternalLink();
+
 	const handleClick = useStableCallback((event: MouseEvent<HTMLDivElement>) => {
 		const href = getModifierClickHref(event);
 
@@ -394,8 +398,14 @@ const RichTextMessageBox = ({
 		}
 
 		event.preventDefault();
-		window.open(href, '_blank', 'noopener,noreferrer');
+		openExternalLink(href);
 	});
+
+	const [linkModifier, setLinkModifier] = useState(false);
+
+	const handleMouseMove = useStableCallback((event: MouseEvent<HTMLDivElement>) => setLinkModifier(isCmdOrCtrlPressed(event)));
+
+	const handleMouseLeave = useStableCallback(() => setLinkModifier(false));
 
 	const popupOptions = useComposerPopupOptions();
 	const popup = useComposerBoxPopup(popupOptions);
@@ -430,7 +440,6 @@ const RichTextMessageBox = ({
 			[chat],
 		),
 	);
-
 	const composerHistoryRef = useComposerHistory(parseOptions);
 
 	const newMergedRefs = useMessageComposerMergedRefs(
@@ -490,6 +499,9 @@ const RichTextMessageBox = ({
 					hidetext={isRecordingAudio}
 					onPaste={handlePaste}
 					onClick={handleClick}
+					onMouseMove={handleMouseMove}
+					onMouseLeave={handleMouseLeave}
+					linkmodifier={linkModifier}
 					aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
 					onBlur={setLastCursorPosition}
 					onFocus={getLastCursorPosition}
