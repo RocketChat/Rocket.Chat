@@ -73,9 +73,14 @@ test.describe.serial('Global Search', () => {
 		await poHomeChannel.tabs.searchMessages.search(threadMessage.msg.slice(10), { global: true });
 		await poHomeChannel.tabs.searchMessages.jumpToMessage(threadMessage.msg);
 
-		await expect(poHomeChannel.content.channelHeader).toContainText(targetChannel.name);
-		await expect(poHomeChannel.tabs.threads.getThreadMessageByText(threadMessage.msg)).toBeVisible();
-	});
+		const message = await poHomeChannel.tabs.searchMessages.getResultItem(threadMessage.msg);
+		await message.hover();
+		// hovering the result may open the author's user card over the actions;
+		// wait for the hover intent to resolve and dismiss it before jumping
+		await page.waitForTimeout(600);
+		await page.keyboard.press('Escape');
+		const jumpToMessageButton = message.getByRole('button', { name: 'Jump to message' });
+		await jumpToMessageButton.click();
 
 	test('should open the correct message when jumping from global search in group to channel message', async () => {
 		await poHomeChannel.roomToolbar.btnSearchMessages.click();

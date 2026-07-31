@@ -77,7 +77,7 @@ const RoomMessage = ({
 	const editing = useIsMessageHighlight(message._id);
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
 	const ignored = (ignoredUser || message.ignored) && !displayIgnoredMessage;
-	const { openUserCard, openUserInfo } = useUserCard();
+	const { openUserCard, openUserInfo, triggerProps } = useUserCard();
 
 	const selecting = useIsSelecting();
 
@@ -131,8 +131,7 @@ const RoomMessage = ({
 						onMouseEnter={(e) => openUserCard(e, message.u.username)}
 						onClick={() => openUserInfo(message.u.username)}
 						style={{ cursor: 'pointer' }}
-						// Redundant pointer-only shortcut for the accessible name button next to it
-						aria-hidden='true'
+						{...triggerProps}
 					/>
 				)}
 				{selecting && <CheckBox checked={selected} onChange={toggleSelected} aria-label={checkboxLabel} />}

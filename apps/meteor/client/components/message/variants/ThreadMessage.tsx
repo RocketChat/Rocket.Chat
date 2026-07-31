@@ -26,9 +26,8 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar, ignoredUse
 	const t = useTranslation();
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
-	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
-	const ignored = ignoredUser && !displayIgnoredMessage;
-	const { openUserCard, openUserInfo } = useUserCard();
+	const [ignored, toggleIgnoring] = useToggle((message as { ignored?: boolean }).ignored);
+	const { openUserCard, openUserInfo, triggerProps } = useUserCard();
 
 	// Checks if is videoconf message to limit toolbox actions
 	const messageContext: MessageActionContext = isVideoConfMessage(message) ? 'videoconf-threads' : 'threads';
@@ -59,8 +58,7 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar, ignoredUse
 						onMouseEnter={(e) => openUserCard(e, message.u.username)}
 						onClick={() => openUserInfo(message.u.username)}
 						style={{ cursor: 'pointer' }}
-						// Redundant pointer-only shortcut for the accessible name button next to it
-						aria-hidden='true'
+						{...triggerProps}
 					/>
 				)}
 				{sequential && <StatusIndicators message={message} />}
