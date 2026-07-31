@@ -131,6 +131,72 @@ describe('link styling', () => {
 	});
 });
 
+describe('link scheme policy', () => {
+	const hrefOf = (text: string): string => {
+		const anchors = Array.from(mountMarkup(text).querySelectorAll('a'));
+
+		expect(anchors).toHaveLength(1);
+
+		return anchors[0].getAttribute('href') ?? '';
+	};
+
+	it.each([
+		['http', 'see [x](http://rocket.chat/docs)', 'http://rocket.chat/docs'],
+		['https', 'see [x](https://rocket.chat/docs)', 'https://rocket.chat/docs'],
+		['mailto', 'see [x](mailto:me@rocket.chat)', 'mailto:me@rocket.chat'],
+		['tel', 'see [x](tel:+15551234567)', 'tel:+15551234567'],
+	])('keeps the href of a %s link', (_label, text, expected) => {
+		expect(hrefOf(text)).toBe(expected);
+	});
+
+	it.each([
+		['javascript', 'see [x](javascript:alert(1))'],
+		['data', 'see [x](data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==)'],
+		['vbscript', 'see [x](vbscript:msgbox(1))'],
+		['file', 'see [x](file:///etc/passwd)'],
+		['smb', 'see [x](smb://attacker.example/share)'],
+		['blob', 'see [x](blob:https://rocket.chat/2b1f)'],
+		['vscode', 'see [x](vscode://file/etc/passwd)'],
+		['ms-msdt', 'see [x](ms-msdt:/id)'],
+		['intent', 'see [x](intent://evil.example)'],
+		['jar', 'see [x](jar:http://evil.example/a.jar)'],
+	])('refuses the href of a %s link', (_label, text) => {
+		expect(hrefOf(text)).toBe('#');
+	});
+
+	it.each([
+		['javascript', 'see [x](javascript:alert(1))'],
+		['file', 'see [x](file:///etc/passwd)'],
+		['smb', 'see [x](smb://attacker.example/share)'],
+	])('keeps the typed text of a refused %s link', (_label, text) => {
+		expect(stripLineEnd(mountMarkup(text).textContent ?? '')).toBe(stripLineEnd(text));
+	});
+});
+
+describe('schemeless links', () => {
+	const hrefOf = (text: string): string => {
+		const anchors = Array.from(mountMarkup(text).querySelectorAll('a'));
+
+		expect(anchors).toHaveLength(1);
+
+		return anchors[0].getAttribute('href') ?? '';
+	};
+
+	it('resolves a bare domain to an explicit scheme instead of inheriting the page scheme', () => {
+		const href = hrefOf('see rocket.chat/docs now');
+
+		expect(() => new URL(href)).not.toThrow();
+		expect(new URL(href).protocol).toBe('https:');
+	});
+
+	it('normalizes a schemeless target so a backslash cannot disguise the real host', () => {
+		const href = hrefOf('see [x](evil.example\\@rocket.chat)');
+
+		expect(() => new URL(href)).not.toThrow();
+		expect(new URL(href).hostname).toBe('evil.example');
+	});
+});
+
 describe('list styling', () => {
 	it.each([
 		['unordered', '- one\n- two', /^- $/],
