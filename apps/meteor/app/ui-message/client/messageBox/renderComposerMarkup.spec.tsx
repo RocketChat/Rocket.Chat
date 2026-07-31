@@ -46,6 +46,8 @@ describe('text exactness and caret round-trip on real rendered markup', () => {
 		['bare domain', 'see rocket.chat/docs now'],
 		['email', 'mail me@rocket.chat now'],
 		['link inside bold', 'a *see rocket.chat* b'],
+		['markdown link inside bold', 'a *[docs](https://rocket.chat)* b'],
+		['link with an unsafe scheme', 'see [x](javascript:alert(1))'],
 		['image', 'look ![alt](https://rocket.chat/a.png)'],
 		['timestamp', 'at <t:1700000000:t> ok'],
 		['horizontal rule', '---'],
@@ -79,6 +81,56 @@ describe('text exactness and caret round-trip on real rendered markup', () => {
 	});
 });
 
+describe('link styling', () => {
+	const anchorsOf = (text: string): HTMLAnchorElement[] => Array.from(mountMarkup(text).querySelectorAll('a'));
+
+	it.each([
+		['markdown link', 'see [the docs](https://rocket.chat/docs)', '[the docs](https://rocket.chat/docs)', 'https://rocket.chat/docs'],
+		['bare domain', 'see rocket.chat/docs now', 'rocket.chat/docs', '//rocket.chat/docs'],
+		['email', 'mail me@rocket.chat now', 'me@rocket.chat', 'mailto:me@rocket.chat'],
+	])('keeps the %s markup as the anchor text and only adds the href', (_label, text, expectedText, expectedHref) => {
+		const anchors = anchorsOf(text);
+
+		expect(anchors).toHaveLength(1);
+		expect(anchors[0].textContent).toBe(expectedText);
+		expect(anchors[0].getAttribute('href')).toBe(expectedHref);
+	});
+
+	it('styles every link like the message list does', () => {
+		const [anchor] = anchorsOf('see [the docs](https://rocket.chat/docs)');
+
+		expect(anchor.getAttribute('style')).toBe('color:var(--rcx-color-font-info, #095ad2);text-decoration:underline');
+		expect(anchor.getAttribute('rel')).toBe('noopener noreferrer');
+	});
+
+	it('renders a link nested in other markup inside it', () => {
+		const [anchor] = anchorsOf('a *[docs](https://rocket.chat)* b');
+
+		expect(anchor.closest('strong')).not.toBeNull();
+		expect(anchor.textContent).toBe('[docs](https://rocket.chat)');
+	});
+
+	it.each([
+		['javascript', 'see [x](javascript:alert(1))'],
+		['data', 'see [x](data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==)'],
+		['vbscript', 'see [x](vbscript:msgbox(1))'],
+	])('drops a %s href while keeping the typed text', (_label, text) => {
+		const input = mountMarkup(text);
+		const anchors = Array.from(input.querySelectorAll('a'));
+
+		expect(anchors).toHaveLength(1);
+		expect(anchors[0].getAttribute('href')).toBe('#');
+		expect(stripLineEnd(input.textContent ?? '')).toBe(stripLineEnd(text));
+	});
+
+	it('never renders an element the composer cannot emit', () => {
+		const input = mountMarkup('see [<img src=x onerror=alert(1)>](https://rocket.chat/<script>alert(2)</script>)');
+
+		expect(input.querySelector('img')).toBeNull();
+		expect(input.querySelector('script')).toBeNull();
+	});
+});
+
 describe('list styling', () => {
 	it.each([
 		['unordered', '- one\n- two', /^- $/],
@@ -108,6 +160,7 @@ const lossy: [string, string][] = [
 	['ordered list with a leading zero', '01. one'],
 	['ordered list with extra spacing', '1.  one'],
 	['slack-style link', '<https://rocket.chat|docs>'],
+	['phone link', 'call +15551234567 now'],
 	['padded horizontal rule', '  ---'],
 	['several big emoji', '😄 😄'],
 ];
