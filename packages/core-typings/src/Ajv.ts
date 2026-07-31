@@ -19,6 +19,7 @@ import type { IPermission } from './IPermission';
 import type { IReadReceiptWithUser } from './IReadReceipt';
 import type { IRole } from './IRole';
 import type { IRoom, IDirectoryChannelResult, IRoomAdmin } from './IRoom';
+import type { DeviceManagementSession, DeviceManagementPopulatedSession } from './ISession';
 import type { ISubscription } from './ISubscription';
 import type { ITeam } from './ITeam';
 import type { IUploadWithUser } from './IUpload';
@@ -64,6 +65,8 @@ export const schemas = typia.json.schemas<
 			| IReadReceiptWithUser
 			| ITeam
 			| IUploadWithUser
+			| DeviceManagementSession
+			| DeviceManagementPopulatedSession
 		),
 		CallHistoryItem,
 		ICustomUserStatus,
