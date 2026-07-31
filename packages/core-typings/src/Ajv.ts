@@ -69,5 +69,5 @@ export const schemas = typia.json.schemas<
 		ICustomUserStatus,
 		SlashCommand,
 	],
-	'3.0'
+	'3.1'
 >();
