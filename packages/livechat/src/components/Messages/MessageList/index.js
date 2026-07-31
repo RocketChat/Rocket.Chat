@@ -82,9 +82,10 @@ export class MessageList extends MemoizedComponent {
 	};
 
 	componentWillUpdate() {
-		if (this.scrollPosition === MessageList.SCROLL_AT_TOP) {
-			this.previousScrollHeight = this.base.scrollHeight;
-		}
+		// Capture the scroll height before the new message renders into the DOM.
+		
+		this.previousScrollHeight = this.base.scrollHeight;
+		
 	}
 
 	componentDidUpdate(prevProps) {
@@ -99,10 +100,21 @@ export class MessageList extends MemoizedComponent {
 			}
 		}
 
+		
 		if (this.scrollPosition === MessageList.SCROLL_AT_BOTTOM) {
-			this.base.scrollTop = this.base.scrollHeight;
-			return;
-		}
+            // Calculate exactly how tall the new incoming message is
+            const newMessageHeight = this.base.scrollHeight - this.previousScrollHeight;
+            
+            // If the message is taller than the user's visible screen...
+            if (newMessageHeight > this.base.clientHeight) {
+                // Scroll to where the top of the new message begins
+                this.base.scrollTop = this.previousScrollHeight;
+            } else {
+                // Otherwise, it's a normal short message, just stick to the bottom
+                this.base.scrollTop = this.base.scrollHeight;
+            }
+            return;
+        }
 
 		if (this.scrollPosition === MessageList.SCROLL_AT_TOP) {
 			const delta = this.base.scrollHeight - this.previousScrollHeight;
