@@ -60,7 +60,7 @@ const getTags = (paths: Record<string, Record<string, Route>>) => {
 };
 
 const makeOpenAPIResponse = (paths: Record<string, Record<string, Route>>) => ({
-	openapi: '3.0.3',
+	openapi: '3.1.0',
 	info: {
 		title: 'Rocket.Chat API',
 		description:
