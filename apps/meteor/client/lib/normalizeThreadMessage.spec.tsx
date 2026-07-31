@@ -1,5 +1,5 @@
 import { parse } from '@rocket.chat/message-parser';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
 import { getMarkdownParserLimit } from './getMarkdownParserLimit';
 import { normalizeThreadMessage } from './normalizeThreadMessage';
@@ -46,6 +46,24 @@ describe('normalizeThreadMessage', () => {
 		expect(result).not.toBeNull();
 		const { container } = render(<>{result}</>);
 		expect(container.textContent).toContain('This message is longer than the limit');
+	});
+
+	it('should render one block per line when the message exceeds the limit', () => {
+		mockedGetMarkdownParserLimit.mockReturnValue(5);
+
+		const message = { msg: 'line one\nline two', mentions: [], attachments: [] };
+		const result = normalizeThreadMessage(message);
+
+		expect(mockedParse).not.toHaveBeenCalled();
+
+		render(<>{result}</>);
+
+		// `getByText` matches an element whose own text equals the query, so these only pass if each
+		// line got its own block. A single text node holding the `\n` would normalize to
+		// "line one line two" and neither query would match, which is exactly the collapsed rendering
+		// this guards against.
+		expect(screen.getByText('line one')).toBeInTheDocument();
+		expect(screen.getByText('line two')).toBeInTheDocument();
 	});
 
 	it('should return null when msg is empty and no attachments', () => {
