@@ -27,6 +27,8 @@ export type OpenAPIExternalDocs = {
 	description?: string;
 };
 
+type SecurityRequirement = { userId: []; authToken: [] } | Record<string, never>;
+
 export type Route = {
 	'summary'?: string;
 	'description'?: string;
@@ -39,10 +41,7 @@ export type Route = {
 		required: true;
 		content: Record<string, OpenAPIMediaType>;
 	};
-	'security'?: {
-		userId: [];
-		authToken: [];
-	}[];
+	'security'?: SecurityRequirement[];
 	'tags'?: string[];
 	'x-permissions'?: string[];
 	'x-license'?: string[];
@@ -101,6 +100,8 @@ export type OpenAPIDocsOptions = OpenAPIDocumentation & {
 	body?: unknown;
 	response?: Record<string | number, unknown>;
 	authRequired?: boolean;
+	/** The endpoint works with or without credentials — anonymous read, mostly. */
+	authOrAnonRequired?: boolean;
 	twoFactorRequired?: boolean;
 	permissionsRequired?: PermissionsRequired;
 	license?: readonly string[];
@@ -397,6 +398,16 @@ const implicitErrorStatuses = (method: string, options: OpenAPIDocsOptions): num
 	return statuses;
 };
 
+const AUTH_HEADERS: SecurityRequirement = { userId: [] as [], authToken: [] as [] };
+
+const buildSecurity = (options: OpenAPIDocsOptions): SecurityRequirement[] => {
+	if (options.authOrAnonRequired) {
+		return [AUTH_HEADERS, {}];
+	}
+
+	return options.authRequired ? [AUTH_HEADERS] : [];
+};
+
 const describeStatus = (status: number, options: OpenAPIDocsOptions): string =>
 	options.responseDescriptions?.[status] ?? STATUS_DESCRIPTIONS[status] ?? `Response with status ${status}`;
 
@@ -498,14 +509,9 @@ export const buildOperation = (method: string, path: string, options: OpenAPIDoc
 				},
 			},
 		}),
-		...(options.authRequired && {
-			security: [
-				{
-					userId: [] as [],
-					authToken: [] as [],
-				},
-			],
-		}),
+		// spelled out even when empty: the document declares security schemes, so an operation without
+		// a requirement is indistinguishable from one that forgot to declare it
+		security: buildSecurity(options),
 		...(permissions.length && { 'x-permissions': permissions }),
 		...(options.license?.length && { 'x-license': [...options.license] }),
 		...(options.twoFactorRequired && { 'x-two-factor-required': true }),
