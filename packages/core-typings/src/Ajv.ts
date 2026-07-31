@@ -29,7 +29,7 @@ import type { VideoConferenceCapabilities } from './VideoConferenceCapabilities'
 import type { IImport } from './import/IImport';
 import type { IMediaCall } from './mediaCalls/IMediaCall';
 
-export const schemas = typia.json.schemas<
+const generatedSchemas = typia.json.schemas<
 	[
 		(
 			| ISubscription
@@ -71,3 +71,31 @@ export const schemas = typia.json.schemas<
 	],
 	'3.1'
 >();
+
+/**
+ * typia mixes dialects on tuples: it emits `prefixItems` (JSON Schema 2020) alongside
+ * `additionalItems`, a keyword 2020 removed in favour of `items` applied after `prefixItems`. AJV
+ * runs in 2020 and refuses the unknown keyword, so the fix happens once, here, and both the runtime
+ * validation and the OpenAPI document get schemas in a single dialect. `minItems` comes along
+ * because a closed tuple has a known length, and AJV asks for it.
+ */
+const toDraft2020 = <T>(node: T): T => {
+	if (Array.isArray(node)) {
+		return node.map(toDraft2020) as T;
+	}
+
+	if (!node || typeof node !== 'object') {
+		return node;
+	}
+
+	const entries = Object.entries(node).map(([key, value]) => [key === 'additionalItems' ? 'items' : key, toDraft2020(value)]);
+	const schema = Object.fromEntries(entries) as Record<string, unknown>;
+
+	if (Array.isArray(schema.prefixItems) && schema.items === false && schema.minItems === undefined) {
+		schema.minItems = schema.prefixItems.length;
+	}
+
+	return schema as T;
+};
+
+export const schemas = toDraft2020(generatedSchemas);

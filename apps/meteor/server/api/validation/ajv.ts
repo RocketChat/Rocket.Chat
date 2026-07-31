@@ -24,19 +24,44 @@ if (components) {
 		}
 		const schema = components[key] as { properties?: Record<string, unknown> };
 		const props = schema?.properties;
-		const typeEnum = (props?.type as { enum?: unknown[] } | undefined)?.enum;
-		const isFileBranch = Array.isArray(typeEnum) && typeEnum.length === 1 && typeEnum[0] === 'file';
+		// typia writes single valued types as `enum: ['file']` for OpenAPI 3.0 and as `const: 'file'`
+		// for 3.1, so both spellings have to be recognized
+		const typeSchema = props?.type as { enum?: unknown[]; const?: unknown } | undefined;
+		const typeValues = typeSchema?.enum ?? (typeSchema && 'const' in typeSchema ? [typeSchema.const] : undefined);
+		const isFileBranch = Array.isArray(typeValues) && typeValues.length === 1 && typeValues[0] === 'file';
 		const hasMediaUrl = !!props && ('image_url' in props || 'video_url' in props || 'audio_url' in props);
 		if (isFileBranch && !hasMediaUrl) {
 			(schema as Record<string, unknown>).additionalProperties = false;
 		}
 	}
 
+	// AJV implements `discriminator` but refuses its `mapping`, which typia emits for OpenAPI 3.1.
+	// The mapping is only useful to documentation tools, so it is dropped from the copy AJV compiles
+	// and kept in the one the OpenAPI document serializes.
+	const forValidation = (schema: unknown): unknown => {
+		if (Array.isArray(schema)) {
+			return schema.map(forValidation);
+		}
+
+		if (!schema || typeof schema !== 'object') {
+			return schema;
+		}
+
+		return Object.fromEntries(
+			Object.entries(schema).map(([key, value]) => [
+				key,
+				key === 'discriminator' && value && typeof value === 'object'
+					? Object.fromEntries(Object.entries(value).filter(([name]) => name !== 'mapping'))
+					: forValidation(value),
+			]),
+		);
+	};
+
 	for (const key in components) {
 		if (Object.prototype.hasOwnProperty.call(components, key)) {
 			const uri = `#/components/schemas/${key}`;
-			ajv.addSchema(components[key], uri);
-			ajvQuery.addSchema(components[key], uri);
+			ajv.addSchema(forValidation(components[key]), uri);
+			ajvQuery.addSchema(forValidation(components[key]), uri);
 		}
 	}
 }
