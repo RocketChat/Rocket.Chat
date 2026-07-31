@@ -392,7 +392,16 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		acceptableDirection: RTCRtpTransceiverDirection,
 	): void {
 		const transceivers = this.getTransceivers(kind);
+		let hasAnyValidTransceiver = false;
+		let hasAnyStoppedTransceiver = false;
 		for (const transceiver of transceivers) {
+			if (transceiver.currentDirection === 'stopped') {
+				hasAnyStoppedTransceiver = true;
+				continue;
+			}
+
+			hasAnyValidTransceiver = true;
+
 			if (transceiver.direction !== desiredDirection) {
 				continue;
 			}
@@ -404,6 +413,19 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 				this.config.logger?.debug(`Changing ${kind} direction from ${transceiver.direction} to match ${transceiver.currentDirection}.`);
 				transceiver.direction = transceiver.currentDirection;
 			}
+		}
+
+		if (desiredDirection.includes('send') && !hasAnyValidTransceiver && hasAnyStoppedTransceiver) {
+			this.reactToStoppedTransceiver(kind);
+		}
+	}
+
+	private reactToStoppedTransceiver(kind: 'audio' | 'video') {
+		this.config.logger?.error(`The ${kind} transceiver has stopped`);
+		if (kind === 'video' && this.screenVideoTrack) {
+			void this.streams.screenShareLocal.setTrack(kind, null).catch((err) => {
+				this.config.logger?.error('Failed to remove track from screen share media stream', err);
+			});
 		}
 	}
 
