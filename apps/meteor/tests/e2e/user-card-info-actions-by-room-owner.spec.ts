@@ -1,7 +1,30 @@
+import type { Page } from '@playwright/test';
+
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel, deleteChannel } from './utils';
 import { expect, test } from './utils/test';
+
+// Actions may render as fixed buttons or inside the "More" kebab menu,
+// depending on how many fit — collect both before asserting.
+const getAvailableUserCardActions = async (page: Page): Promise<string[]> => {
+	const userCard = page.getByRole('dialog', { name: 'User card' });
+	const toolbar = userCard.getByRole('toolbar', { name: 'User card actions' });
+	await expect(toolbar).toBeVisible();
+
+	const actions = await toolbar.getByRole('button').allInnerTexts();
+
+	const moreButton = toolbar.getByRole('button', { name: 'More' });
+	if (await moreButton.isVisible()) {
+		await moreButton.click();
+		const menu = page.getByRole('menu', { name: 'More' });
+		await expect(menu).toBeVisible();
+		actions.push(...(await menu.getByRole('menuitem').allInnerTexts()));
+		await page.keyboard.press('Escape');
+	}
+
+	return actions.map((action) => action.trim()).filter(Boolean);
+};
 
 test.use({ storageState: Users.admin.state });
 test.describe.parallel('Mention User Card [To Room Owner]', () => {
@@ -27,64 +50,25 @@ test.describe.parallel('Mention User Card [To Room Owner]', () => {
 
 	test('should show correct userinfo actions for a member of the room to the room owner', async ({ page }) => {
 		await poHomeChannel.navbar.openChat(targetChannel);
-		const mentionSpan = page.locator(`span[title="Mentions user"][data-uid="${Users.user1.data.username}"]`);
-		await mentionSpan.click();
+		await page.locator(`span[title="Mentions user"][data-uid="${Users.user1.data.username}"]`).click();
 
-		await expect(page.locator('div[aria-label="User card actions"]')).toBeVisible();
-		const moreButton = await page.locator('div[aria-label="User card actions"] button[title="More"]');
+		const actions = await getAvailableUserCardActions(page);
 
-		if (await moreButton.isVisible()) {
-			await moreButton.click();
-		}
-
-		const isAddToRoomVisible =
-			(await page.locator('button[title="Add to room"]').isVisible()) || (await page.locator('label[data-key="Add to room"]').isVisible());
-		await expect(isAddToRoomVisible).toBeFalsy();
-
-		const isRemoveFromRoomVisible =
-			(await page.locator('button[title="Remove from room"]').isVisible()) ||
-			(await page.locator('label[data-key="Remove from room"]').isVisible());
-		await expect(isRemoveFromRoomVisible).toBeTruthy();
-
-		const isSetAsLeaderVisible =
-			(await page.locator('button[title="Set as leader"]').isVisible()) ||
-			(await page.locator('label[data-key="Set as leader"]').isVisible());
-		await expect(isSetAsLeaderVisible).toBeTruthy();
-
-		const isSetAsModeratorVisible =
-			(await page.locator('button[title="Set as moderator"]').isVisible()) ||
-			(await page.locator('label[data-key="Set as moderator"]').isVisible());
-		await expect(isSetAsModeratorVisible).toBeTruthy();
+		expect(actions).not.toContain('Add to room');
+		expect(actions).toContain('Remove from room');
+		expect(actions).toContain('Set as leader');
+		expect(actions).toContain('Set as moderator');
 	});
 
 	test('should show correct userinfo actions for a non-member of the room to the room owner', async ({ page }) => {
 		await poHomeChannel.navbar.openChat(targetChannel);
-		const mentionSpan = page.locator(`span[title="Mentions user"][data-uid="${Users.user2.data.username}"]`);
-		await mentionSpan.click();
+		await page.locator(`span[title="Mentions user"][data-uid="${Users.user2.data.username}"]`).click();
 
-		await expect(page.locator('div[aria-label="User card actions"]')).toBeVisible();
-		const moreButton = await page.locator('div[aria-label="User card actions"] button[title="More"]');
-		if (await moreButton.isVisible()) {
-			await moreButton.click();
-		}
+		const actions = await getAvailableUserCardActions(page);
 
-		const isAddToRoomVisible =
-			(await page.locator('button[title="Add to room"]').isVisible()) || (await page.locator('label[data-key="Add to room"]').isVisible());
-		await expect(isAddToRoomVisible).toBeTruthy();
-
-		const isRemoveFromRoomVisible =
-			(await page.locator('button[title="Remove from room"]').isVisible()) ||
-			(await page.locator('label[data-key="Remove from room"]').isVisible());
-		await expect(isRemoveFromRoomVisible).toBeFalsy();
-
-		const isSetAsLeaderVisible =
-			(await page.locator('button[title="Set as leader"]').isVisible()) ||
-			(await page.locator('label[data-key="Set as leader"]').isVisible());
-		await expect(isSetAsLeaderVisible).toBeFalsy();
-
-		const isSetAsModeratorVisible =
-			(await page.locator('button[title="Set as moderator"]').isVisible()) ||
-			(await page.locator('label[data-key="Set as moderator"]').isVisible());
-		await expect(isSetAsModeratorVisible).toBeFalsy();
+		expect(actions).toContain('Add to room');
+		expect(actions).not.toContain('Remove from room');
+		expect(actions).not.toContain('Set as leader');
+		expect(actions).not.toContain('Set as moderator');
 	});
 });

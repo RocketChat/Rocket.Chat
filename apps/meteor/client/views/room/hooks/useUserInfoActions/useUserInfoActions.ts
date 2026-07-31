@@ -13,6 +13,7 @@ import { useChangeLeaderAction } from './actions/useChangeLeaderAction';
 import { useChangeModeratorAction } from './actions/useChangeModeratorAction';
 import { useChangeOwnerAction } from './actions/useChangeOwnerAction';
 import { useDirectMessageAction } from './actions/useDirectMessageAction';
+import { useEditProfileAction } from './actions/useEditProfileAction';
 import { useIgnoreUserAction } from './actions/useIgnoreUserAction';
 import { useMuteUserAction } from './actions/useMuteUserAction';
 import { useRedirectModerationConsole } from './actions/useRedirectModerationConsole';
@@ -21,7 +22,7 @@ import { useReportUser } from './actions/useReportUser';
 import { useUserMediaCallAction } from './actions/useUserMediaCallAction';
 import { useVideoCallAction } from './actions/useVideoCallAction';
 
-export type UserInfoActionType = 'communication' | 'privileges' | 'management' | 'moderation';
+export type UserInfoActionType = 'communication' | 'privileges' | 'management' | 'moderation' | 'admin';
 
 type UserInfoActionWithOnlyIcon = {
 	type?: UserInfoActionType;
@@ -80,6 +81,7 @@ export const useUserInfoActions = ({
 	const openModerationConsole = useRedirectModerationConsole(user._id);
 	const changeOwner = useChangeOwnerAction(user, rid);
 	const openDirectMessage = useDirectMessageAction(user, rid);
+	const editProfile = useEditProfileAction(user);
 	const ignoreUser = useIgnoreUserAction(user, rid);
 	const muteUser = useMuteUserAction(user, rid);
 	const removeUser = useRemoveUserAction(user, rid, reload, isInvited);
@@ -93,22 +95,24 @@ export const useUserInfoActions = ({
 	const userinfoActions = useMemo(
 		() => ({
 			...(openDirectMessage && !isLayoutEmbedded && { openDirectMessage }),
+			...(editProfile && { editProfile }),
 			...(videoCall && { videoCall }),
 			...(userMediaCall && { userMediaCall }),
+			...(isMember && muteUser && { muteUser }),
 			...(!isMember && addUser && { addUser }),
 			...(isMember && changeOwner && { changeOwner }),
 			...(isMember && changeLeader && { changeLeader }),
 			...(isMember && changeModerator && { changeModerator }),
-			...(isMember && openModerationConsole && { openModerationConsole }),
 			...(isMember && ignoreUser && { ignoreUser }),
-			...(isMember && muteUser && { muteUser }),
 			...(blockUser && { toggleBlock: blockUser }),
 			...((isMember || isInvited) && removeUser && { removeUser }),
 			...((isMember || isInvited) && banUser && { banUser }),
 			...(reportUserOption && { reportUser: reportUserOption }),
+			...(isMember && openModerationConsole && { openModerationConsole }),
 		}),
 		[
 			openDirectMessage,
+			editProfile,
 			isLayoutEmbedded,
 			videoCall,
 			userMediaCall,
@@ -149,7 +153,8 @@ export const useUserInfoActions = ({
 				return acc;
 			}
 
-			const newSection = { id: group, title: '', items: [newItem] };
+			// GenericMenu translates section titles that are i18n keys
+			const newSection = { id: group, title: group === 'privileges' ? 'Manage_room_roles' : '', items: [newItem] };
 			acc.push(newSection);
 
 			return acc;
