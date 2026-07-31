@@ -35,33 +35,11 @@ if (components) {
 		}
 	}
 
-	// AJV implements `discriminator` but refuses its `mapping`, which typia emits for OpenAPI 3.1.
-	// The mapping is only useful to documentation tools, so it is dropped from the copy AJV compiles
-	// and kept in the one the OpenAPI document serializes.
-	const forValidation = (schema: unknown): unknown => {
-		if (Array.isArray(schema)) {
-			return schema.map(forValidation);
-		}
-
-		if (!schema || typeof schema !== 'object') {
-			return schema;
-		}
-
-		return Object.fromEntries(
-			Object.entries(schema).map(([key, value]) => [
-				key,
-				key === 'discriminator' && value && typeof value === 'object'
-					? Object.fromEntries(Object.entries(value).filter(([name]) => name !== 'mapping'))
-					: forValidation(value),
-			]),
-		);
-	};
-
 	for (const key in components) {
 		if (Object.prototype.hasOwnProperty.call(components, key)) {
 			const uri = `#/components/schemas/${key}`;
-			ajv.addSchema(forValidation(components[key]), uri);
-			ajvQuery.addSchema(forValidation(components[key]), uri);
+			ajv.addSchema(components[key], uri);
+			ajvQuery.addSchema(components[key], uri);
 		}
 	}
 }

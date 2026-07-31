@@ -78,6 +78,10 @@ const generatedSchemas = typia.json.schemas<
  * runs in 2020 and refuses the unknown keyword, so the fix happens once, here, and both the runtime
  * validation and the OpenAPI document get schemas in a single dialect. `minItems` comes along
  * because a closed tuple has a known length, and AJV asks for it.
+ *
+ * The `mapping` of a discriminator goes away for the same reason: AJV rejects it, and a validator
+ * that chokes on `IMessage` leaves every schema referencing it unresolvable. What it described is
+ * already in the `const` of each branch.
  */
 const toDraft2020 = <T>(node: T): T => {
 	if (Array.isArray(node)) {
@@ -88,7 +92,9 @@ const toDraft2020 = <T>(node: T): T => {
 		return node;
 	}
 
-	const entries = Object.entries(node).map(([key, value]) => [key === 'additionalItems' ? 'items' : key, toDraft2020(value)]);
+	const entries = Object.entries(node)
+		.filter(([key]) => key !== 'mapping')
+		.map(([key, value]) => [key === 'additionalItems' ? 'items' : key, toDraft2020(value)]);
 	const schema = Object.fromEntries(entries) as Record<string, unknown>;
 
 	if (Array.isArray(schema.prefixItems) && schema.items === false && schema.minItems === undefined) {
