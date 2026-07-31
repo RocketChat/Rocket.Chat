@@ -168,8 +168,9 @@ const withExamplesImport = (source: string, name: string, path: string): string 
 };
 
 const operations = loadOperations();
-// `.get('x', {` rather than `API.v1.get('x', {`: registrations are often chained
-const callSite = /\.(get|post|put|delete)\(\s*'([^']+)',\s*\n?\s*\{/g;
+// `.get('x', ...)` rather than `API.v1.get('x', ...)`: registrations are often chained, and the
+// options are sometimes a shared object - the `dm.*` and `im.*` twins declare theirs once
+const callSite = /\.(get|post|put|delete)\(\s*'([^']+)',\s*\n?\s*(\{|[A-Za-z_$][\w$]*)/g;
 
 /** Tells a route registration from any other two argument call that happens to take an object. */
 const isRouteOptions = (options: string): boolean => /^\s*(response|authRequired|query|body|permissionsRequired|tags):/m.test(options);
@@ -187,9 +188,21 @@ for (const target of targets) {
 	let imported = 0;
 	let skipped = 0;
 
+	const documented = new Set<number>();
+
 	for (const match of source.matchAll(callSite)) {
-		const [, method, subpath] = match;
-		const openBrace = match.index + match[0].length - 1;
+		const [, method, subpath, target] = match;
+		const declaration = target === '{' ? undefined : new RegExp(`\\bconst ${target}\\s*=\\s*\\{`).exec(source);
+
+		if (target !== '{' && !declaration) {
+			continue;
+		}
+
+		const openBrace = declaration ? declaration.index + declaration[0].length - 1 : match.index + match[0].length - 1;
+
+		if (documented.has(openBrace)) {
+			continue;
+		}
 		const bodyIndent = `${indentationOf(source, openBrace)}\t`;
 		const closeBrace = findClosingBrace(source, openBrace);
 		const options = source.slice(openBrace, closeBrace + 1);
@@ -198,7 +211,11 @@ for (const target of targets) {
 			continue;
 		}
 
-		const operation = operations.get(`${method} ${normalizePath(`/api/v1/${subpath}`)}`);
+		const path = normalizePath(`/api/v1/${subpath}`);
+		// `dm.*` and `im.*` are the same endpoint under two names, and the definitions repository
+		// describes only one of the two
+		const twin = path.includes('/dm.') ? path.replace('/dm.', '/im.') : path.replace('/im.', '/dm.');
+		const operation = operations.get(`${method} ${path}`) ?? operations.get(`${method} ${twin}`);
 
 		if (!operation?.summary && !operation?.description) {
 			skipped++;
@@ -235,6 +252,7 @@ for (const target of targets) {
 		}
 
 		edits.push({ start: openBrace, end: closeBrace + 1, text: patchedOptions });
+		documented.add(openBrace);
 		imported++;
 	}
 
@@ -243,8 +261,10 @@ for (const target of targets) {
 		continue;
 	}
 
+	// last edit first, so earlier offsets stay valid — shared options objects are declared before the
+	// call sites that use them, so the edits do not come out in order
 	let patched = source;
-	for (const { start, end, text } of edits.reverse()) {
+	for (const { start, end, text } of [...edits].sort((first, second) => second.start - first.start)) {
 		patched = patched.slice(0, start) + text + patched.slice(end);
 	}
 
