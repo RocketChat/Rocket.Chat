@@ -199,9 +199,13 @@ describe('buildOperation', () => {
 		expect(build('GET', '/api/v1/banners', { operationId: 'listBanners' }).operationId).toBe('listBanners');
 	});
 
-	it('should only require authentication headers when the route requires auth', () => {
-		expect(build('GET', '/api/v1/info').security).toBeUndefined();
+	it('should spell out the security requirement, empty included', () => {
+		expect(build('GET', '/api/v1/info').security).toEqual([]);
 		expect(build('GET', '/api/v1/me', { authRequired: true }).security).toEqual([{ userId: [], authToken: [] }]);
+		expect(build('GET', '/api/v1/channels.anonymousread', { authOrAnonRequired: true }).security).toEqual([
+			{ userId: [], authToken: [] },
+			{},
+		]);
 	});
 
 	it('should generate the operation id published at developer.rocket.chat', () => {
