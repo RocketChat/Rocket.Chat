@@ -9,7 +9,6 @@ import {
 	InfoPanelLabel,
 	InfoPanelSection,
 	InfoPanelText,
-	InfoPanelTitle,
 } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
@@ -20,7 +19,7 @@ import { useTimeAgo } from '../../hooks/useTimeAgo';
 import { useUserCustomFields } from '../../hooks/useUserCustomFields';
 import MarkdownText from '../MarkdownText';
 import UTCClock from '../UTCClock';
-import { UserCardRoles } from '../UserCard';
+import { UserCardRoles, UserCardUsername } from '../UserCard';
 import UserInfoABACAttributes from './UserInfoABACAttributes';
 import UserInfoAvatar from './UserInfoAvatar';
 import UserInfoCopyableText from './UserInfoCopyableText';
@@ -103,20 +102,16 @@ const UserInfo = ({
 	return (
 		<ContextualbarScrollableContent padding={24} {...props}>
 			<InfoPanel>
-				<InfoPanelSection display='flex' flexDirection='column' alignItems='center'>
-					{username && <UserInfoAvatar username={username} etag={avatarETag} size='x124' />}
-
-					{userDisplayName && (
-						<Box marginBlockStart='x12' display='flex' justifyContent='center' withTruncatedText maxWidth='100%'>
-							<InfoPanelTitle icon={status} title={userDisplayName} />
-						</Box>
-					)}
-
-					{customStatus && (
-						<Box marginBlockStart='x4' color='hint' fontScale='p2' textAlign='center' withTruncatedText maxWidth='100%'>
-							{customStatus}
-						</Box>
-					)}
+				<InfoPanelSection display='flex' alignItems='center'>
+					{username && <UserInfoAvatar username={username} etag={avatarETag} size='x48' />}
+					<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} marginInlineStart='x8' withTruncatedText>
+						{userDisplayName && <UserCardUsername is='h2' flexGrow={0} flexBasis='auto' status={status} name={userDisplayName} />}
+						{customStatus && (
+							<Box color='hint' fontScale='p2' paddingInlineStart='x4' withTruncatedText>
+								{customStatus}
+							</Box>
+						)}
+					</Box>
 				</InfoPanelSection>
 
 				{actions && <InfoPanelActionGroup>{actions}</InfoPanelActionGroup>}
