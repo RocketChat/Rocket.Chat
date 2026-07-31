@@ -125,6 +125,7 @@ const MockedMediaCallProvider = ({
 
 	const contextValue = {
 		sessionState,
+		targetPeer: peerInfo,
 		onClickDirectMessage,
 		onMute,
 		onHold,
