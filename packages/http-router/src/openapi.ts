@@ -194,6 +194,27 @@ const getSchema = (carrier: unknown): AnySchema => {
 	return carrier as AnySchema;
 };
 
+const sharedSchemas = new Map<string, AnySchema>();
+
+/** Schemas hoisted out of the operations because they carry an `$id`; merge into `components.schemas`. */
+export const getSharedSchemas = (): Record<string, AnySchema> => Object.fromEntries(sharedSchemas);
+
+/**
+ * A schema with an `$id` is shared by many routes — the error payloads, mostly — so it is hoisted
+ * into `components.schemas` and referenced, instead of being inlined in every operation.
+ */
+const referenceSchema = (schema: AnySchema): AnySchema => {
+	if (!schema || typeof schema !== 'object' || !('$id' in schema) || typeof schema.$id !== 'string' || /[#/]/.test(schema.$id)) {
+		return schema;
+	}
+
+	const { $id, ...definition } = schema;
+
+	sharedSchemas.set($id, definition as AnySchema);
+
+	return { $ref: `#/components/schemas/${$id}` };
+};
+
 const collectProperties = (schema: unknown): CollectedProperties | undefined => {
 	if (!schema || typeof schema !== 'object') {
 		return undefined;
@@ -391,7 +412,7 @@ export const buildOperation = (method: string, path: string, options: OpenAPIDoc
 			description: describeStatus(code, options),
 			content: {
 				[options.responseContentType?.[code] ?? 'application/json']: {
-					schema: getSchema(validator),
+					schema: referenceSchema(getSchema(validator)),
 					...buildMediaExamples(options.examples?.response?.[code]),
 				},
 			},
@@ -440,7 +461,7 @@ export const buildOperation = (method: string, path: string, options: OpenAPIDoc
 				required: true as const,
 				content: {
 					[options.bodyContentType ?? 'application/json']: {
-						schema: bodySchema,
+						schema: referenceSchema(bodySchema),
 						...buildMediaExamples(options.examples?.body),
 					},
 				},

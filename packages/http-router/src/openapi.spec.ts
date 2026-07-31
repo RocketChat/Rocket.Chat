@@ -1,7 +1,7 @@
 import Ajv from 'ajv/dist/2020';
 
 import type { OpenAPIDocsOptions } from './openapi';
-import { buildOperation, buildOperationId, toOpenAPIPath, withOperationIds } from './openapi';
+import { buildOperation, buildOperationId, getSharedSchemas, toOpenAPIPath, withOperationIds } from './openapi';
 
 const ajv = new Ajv();
 ajv.addVocabulary(['example']);
@@ -266,6 +266,27 @@ describe('buildOperation', () => {
 			'Content-Disposition',
 		]);
 		expect(build('GET', '/api/v1/x', { rateLimiterOptions: false }).responses[200].headers).toBeUndefined();
+	});
+	it('should hoist schemas that carry an $id into components and reference them', () => {
+		const shared = ajv.compile({
+			$id: 'BadRequestError',
+			type: 'object',
+			properties: { success: { type: 'boolean', enum: [false] }, error: { type: 'string' } },
+			required: ['success'],
+		});
+
+		const operation = build('POST', '/api/v1/rooms.create', { response: { 200: okSchema, 400: shared }, body: shared });
+
+		expect(operation.responses[400].content?.['application/json'].schema).toEqual({ $ref: '#/components/schemas/BadRequestError' });
+		expect(operation.requestBody?.content['application/json'].schema).toEqual({ $ref: '#/components/schemas/BadRequestError' });
+		// inlined once in components, without the `$id` that put it there
+		expect(getSharedSchemas().BadRequestError).toEqual({
+			type: 'object',
+			properties: { success: { type: 'boolean', enum: [false] }, error: { type: 'string' } },
+			required: ['success'],
+		});
+		// schemas without an $id stay inline
+		expect(operation.responses[200].content?.['application/json'].schema).toBe(okSchema.schema);
 	});
 });
 

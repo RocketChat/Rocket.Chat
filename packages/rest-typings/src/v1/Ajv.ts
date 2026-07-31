@@ -56,13 +56,16 @@ type BadRequestErrorResponse = {
 };
 
 const BadRequestErrorResponseSchema = {
+	$id: 'BadRequestError',
 	type: 'object',
 	properties: {
 		success: { type: 'boolean', enum: [false] },
 		stack: { type: 'string' },
 		error: { type: 'string' },
 		errorType: { type: 'string' },
-		details: { anyOf: [{ type: 'string' }, { type: 'object' }, { type: 'array' }] },
+		// `items` is empty on purpose: the spec requires the keyword on arrays, and the payload can
+		// hold anything the endpoint chose to attach
+		details: { anyOf: [{ type: 'string' }, { type: 'object' }, { type: 'array', items: {} }] },
 	},
 	required: ['success'],
 	additionalProperties: false,
@@ -79,6 +82,7 @@ type UnauthorizedErrorResponse = {
 };
 
 const UnauthorizedErrorResponseSchema = {
+	$id: 'UnauthorizedError',
 	type: 'object',
 	properties: {
 		success: { type: 'boolean', enum: [false] },
@@ -102,6 +106,7 @@ type ForbiddenErrorResponse = {
 };
 
 const ForbiddenErrorResponseSchema = {
+	$id: 'ForbiddenError',
 	type: 'object',
 	properties: {
 		success: { type: 'boolean', enum: [false] },
@@ -122,6 +127,7 @@ type NotFoundErrorResponse = {
 };
 
 const NotFoundErrorResponseSchema = {
+	$id: 'NotFoundError',
 	type: 'object',
 	properties: {
 		success: { type: 'boolean', enum: [false] },
