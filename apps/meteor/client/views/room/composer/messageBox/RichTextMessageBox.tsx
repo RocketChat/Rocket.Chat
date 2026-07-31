@@ -22,6 +22,8 @@ import {
 	getEmptyArray,
 	handleFormattingShortcut,
 	extractImageFilesFromClipboard,
+	extractPastedPlainText,
+	getClickedLink,
 	getModifierClickHref,
 	isCmdOrCtrlPressed,
 } from './messageBoxHelpers';
@@ -385,20 +387,32 @@ const RichTextMessageBox = ({
 		if (files.length) {
 			event.preventDefault();
 			handleUploadFiles?.(files);
+			return;
+		}
+
+		const pastedText = extractPastedPlainText(event);
+
+		if (pastedText !== undefined) {
+			event.preventDefault();
+			chat.composer?.insertText(pastedText);
 		}
 	});
 
 	const openExternalLink = useExternalLink();
 
 	const handleClick = useStableCallback((event: MouseEvent<HTMLDivElement>) => {
-		const href = getModifierClickHref(event);
-
-		if (!href) {
+		if (!getClickedLink(event)) {
 			return;
 		}
 
+		// Claim the event before the router's document listener turns a composer link into a navigation.
 		event.preventDefault();
-		openExternalLink(href);
+
+		const href = getModifierClickHref(event);
+
+		if (href) {
+			openExternalLink(href);
+		}
 	});
 
 	const [linkModifier, setLinkModifier] = useState(false);

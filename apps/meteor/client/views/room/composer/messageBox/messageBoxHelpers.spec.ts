@@ -1,7 +1,7 @@
 import type { ClipboardEvent, MouseEvent } from 'react';
 
 import * as messageBoxHelpers from './messageBoxHelpers';
-import { getModifierClickHref } from './messageBoxHelpers';
+import { getClickedLink, getModifierClickHref } from './messageBoxHelpers';
 
 const setPlatform = (platform: string): void => {
 	Object.defineProperty(window.navigator, 'platform', { value: platform, configurable: true });
@@ -62,6 +62,12 @@ describe('getModifierClickHref', () => {
 
 		expect(clickOn('<a href="#">[x](javascript:alert(1))</a>', { ctrlKey: true })).toBeUndefined();
 	});
+
+	it('ignores a link the renderer left without an href', () => {
+		setPlatform('Linux x86_64');
+
+		expect(clickOn('<a>[x](javascript:alert(1))</a>', { ctrlKey: true })).toBeUndefined();
+	});
 });
 
 describe('getModifierClickHref on anchors the renderer did not produce', () => {
@@ -86,6 +92,34 @@ describe('getModifierClickHref on anchors the renderer did not produce', () => {
 		['mailto', 'mailto:me@rocket.chat'],
 	])('still resolves a %s href', (_label, href) => {
 		expect(clickOn(`<a href="${href}">x</a>`, { ctrlKey: true })).toBe(href);
+	});
+});
+
+describe('getClickedLink', () => {
+	const linkOn = (html: string): HTMLAnchorElement | null => {
+		const container = document.createElement('div');
+		container.innerHTML = html;
+		document.body.appendChild(container);
+
+		const target = (container.querySelector('[data-target]') ?? container.firstElementChild ?? container) as HTMLElement;
+
+		return getClickedLink({ metaKey: false, ctrlKey: false, target } as unknown as MouseEvent<HTMLElement>);
+	};
+
+	it('reports the link of an unmodified click so the router cannot navigate away', () => {
+		expect(linkOn('<a href="#">[x](javascript:alert(1))</a>')?.getAttribute('href')).toBe('#');
+	});
+
+	it('reports a link pointing at the server itself', () => {
+		expect(linkOn('<a href="https://rocket.chat/admin/rooms">x</a>')?.getAttribute('href')).toBe('https://rocket.chat/admin/rooms');
+	});
+
+	it('reports the link when the click lands on markup nested in it', () => {
+		expect(linkOn('<a href="//rocket.chat/docs"><strong data-target>docs</strong></a>')?.getAttribute('href')).toBe('//rocket.chat/docs');
+	});
+
+	it('reports nothing for a click outside a link', () => {
+		expect(linkOn('<span data-target>plain text</span>')).toBeNull();
 	});
 });
 
