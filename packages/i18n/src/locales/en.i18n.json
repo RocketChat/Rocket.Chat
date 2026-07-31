@@ -37,6 +37,12 @@
     "one": "{{count}} room affected",
     "other": "{{count}} rooms affected"
   },
+  "ABAC_Classification_Banners": "Classification banners",
+  "ABAC_Classification_Banners_Enabled": "Enable classification banners",
+  "ABAC_Classification_Banners_Enabled_Description": "Show a classification banner in rooms managed by ABAC.",
+  "ABAC_Classification_Banners_Config": "Classification banners configuration (JSON)",
+  "ABAC_Classification_Banners_Config_Description": "JSON document describing which room attributes appear in the banner, their labels and colors. See the classification banners documentation for the schema and examples.",
+  "ABAC_Classification_Banners_Config_Invalid": "Classification banners configuration must be valid JSON matching the documented schema.",
   "Abac_Cache_Decision_Time_Seconds": "ABAC Cache Decision Time (seconds)",
   "Abac_Cache_Decision_Time_Seconds_Description": "Time in seconds to cache access control decisions. Setting this value to 0 will disable caching.",
   "ABAC_Virtru_PDP_Configuration": "Virtru PDP Configuration",

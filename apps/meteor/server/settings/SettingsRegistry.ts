@@ -8,6 +8,7 @@ import type { ICachedSettings } from './CachedSettings';
 import { getSettingDefaults } from './functions/getSettingDefaults';
 import { overrideSetting } from './functions/overrideSetting';
 import { overwriteSetting } from './functions/overwriteSetting';
+import { registerSettingSchema } from './functions/settingSchemas';
 import { validateSetting } from './functions/validateSetting';
 import { SystemLogger } from '../lib/logger/system';
 
@@ -64,7 +65,7 @@ type addGroupCallback = (this: {
 	with(options: ISettingAddOptions, cb: addGroupCallback): Promise<void>;
 }) => Promise<void>;
 
-type ISettingAddOptions = Partial<ISetting>;
+type ISettingAddOptions = Partial<ISetting> & { schema?: Record<string, unknown> };
 
 const compareSettingsIgnoringKeys =
 	(keys: Array<keyof ISetting>) =>
@@ -103,9 +104,13 @@ export class SettingsRegistry {
 	/*
 	 * Add a setting
 	 */
-	async add(_id: string, value: SettingValue, { sorter, section, group, ...options }: ISettingAddOptions = {}): Promise<void> {
+	async add(_id: string, value: SettingValue, { sorter, section, group, schema, ...options }: ISettingAddOptions = {}): Promise<void> {
 		if (!_id || value == null) {
 			throw new Error('Invalid arguments');
+		}
+
+		if (schema) {
+			registerSettingSchema(_id, schema);
 		}
 
 		const sorterKey = group && section ? `${group}_${section}` : group;
