@@ -332,7 +332,6 @@ export const FileUpload = {
 		const store = FileUpload.getStore('Uploads');
 		const image = await store._store.getReadStream(file._id, file);
 
-		// GIFs need `pages` to stay animated (capped via Math.min); `sharp()` bare is required so non-GIFs still stream.
 		let transformer = (
 			file.type === 'image/gif' ? sharp({ pages: Math.min(file.identify?.pages ?? 1, MAX_ANIMATED_THUMBNAIL_PAGES) }) : sharp()
 		).resize({ width, height, fit: 'inside' });
@@ -399,7 +398,6 @@ export const FileUpload = {
 							height,
 						}
 					: undefined,
-			// Lets thumbnail generation cap frames without re-reading the file.
 			pages: metadata.pages,
 		};
 
