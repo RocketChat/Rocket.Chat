@@ -1,20 +1,21 @@
 import i18next from 'i18next';
 
 import { Livechat } from '../api';
+import constants from './constants';
 import { canRenderMessage } from '../helpers/canRenderMessage';
 import store from '../store';
-import constants from './constants';
 
-export const updateBusinessUnit = async (newBusinessUnit) => {
+export const updateBusinessUnit = async (newBusinessUnit?: string) => {
 	const { token, config: existingConfig } = store.state;
 	if (!token) {
 		throw new Error('Error! no livechat token found. please make sure you initialize widget first before setting business unit');
 	}
 
-	const { departments } = await Livechat.config({
+	// The SDK's config response is typed from the REST schema, which doesn't line up with the store's config shape.
+	const { departments } = (await Livechat.config({
 		token,
 		...(newBusinessUnit && { businessUnit: newBusinessUnit }),
-	});
+	})) as any;
 
 	if (newBusinessUnit) {
 		return store.setState({
@@ -47,15 +48,15 @@ export const loadConfig = async () => {
 		resources: { sound: src = null } = {},
 		queueInfo,
 		...config
-	} = await Livechat.config({
+	} = (await Livechat.config({
 		token,
 		...(businessUnit && { businessUnit }),
 		...(department && { department }),
-	});
+	})) as any;
 
 	await store.setState({
 		config,
-		agent: agent && agent.hiddenInfo ? { hiddenInfo: true } : agent, // TODO: revert it when the API is updated
+		agent: agent?.hiddenInfo ? { hiddenInfo: true } : agent, // TODO: revert it when the API is updated
 		room,
 		user,
 		queueInfo,

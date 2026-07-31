@@ -1,44 +1,73 @@
 import { parseISO, isSameDay } from 'date-fns';
 import i18next from 'i18next';
+import type { VNode } from 'preact';
+import type { CSSProperties } from 'preact/compat';
 import { Suspense } from 'preact/compat';
 
 import { MemoizedComponent } from '../../../helpers/MemoizedComponent';
 import { getAttachmentUrl } from '../../../helpers/baseUrl';
 import { createClassName } from '../../../helpers/createClassName';
+import type { Dispatch } from '../../../store';
 import store from '../../../store';
 import Message from '../Message';
 import MessageSeparator from '../MessageSeparator';
 import { TypingIndicator } from '../TypingIndicator';
 import styles from './styles.scss';
 
-export class MessageList extends MemoizedComponent {
-	static defaultProps = {
+type ScrollPosition = 'top' | 'bottom' | 'free';
+
+type MessageListProps = {
+	messages: any[];
+	uid?: string | number;
+	avatarResolver?: (username: string) => string | undefined;
+	attachmentResolver?: (url: string) => string;
+	conversationFinishedMessage?: string;
+	lastReadMessageId?: string | number;
+	typingUsernames?: string[];
+	hideSenderAvatar?: boolean;
+	hideReceiverAvatar?: boolean;
+	onScrollTo?: (position: ScrollPosition) => void;
+	handleEmojiClick?: () => void;
+	dispatch?: Dispatch;
+	className?: string;
+	style?: CSSProperties;
+	[key: string]: unknown;
+};
+
+export class MessageList extends MemoizedComponent<MessageListProps, unknown> {
+	static override defaultProps = {
 		typingUsernames: [],
 	};
 
-	static SCROLL_AT_TOP = 'top';
+	static readonly SCROLL_AT_TOP = 'top';
 
-	static SCROLL_AT_BOTTOM = 'bottom';
+	static readonly SCROLL_AT_BOTTOM = 'bottom';
 
-	static SCROLL_FREE = 'free';
+	static readonly SCROLL_FREE = 'free';
 
-	static SCROLL_AT_BOTTOM_AREA = 128;
+	static readonly SCROLL_AT_BOTTOM_AREA = 128;
 
-	scrollPosition = MessageList.SCROLL_AT_BOTTOM;
+	scrollPosition: ScrollPosition = MessageList.SCROLL_AT_BOTTOM;
+
+	isResizingFromBottom?: boolean;
+
+	previousScrollHeight?: number;
 
 	handleScroll = () => {
+		const base = this.base as HTMLElement;
+
 		if (this.isResizingFromBottom) {
-			this.base.scrollTop = this.base.scrollHeight;
+			base.scrollTop = base.scrollHeight;
 			delete this.isResizingFromBottom;
 			return;
 		}
 
-		let scrollPosition;
-		const scrollBottom = this.base.scrollHeight - (this.base.clientHeight + this.base.scrollTop);
+		let scrollPosition: ScrollPosition;
+		const scrollBottom = base.scrollHeight - (base.clientHeight + base.scrollTop);
 
-		if (this.base.scrollHeight <= this.base.clientHeight) {
+		if (base.scrollHeight <= base.clientHeight) {
 			scrollPosition = MessageList.SCROLL_AT_BOTTOM;
-		} else if (this.base.scrollTop === 0) {
+		} else if (base.scrollTop === 0) {
 			scrollPosition = MessageList.SCROLL_AT_TOP;
 		} else if (scrollBottom <= MessageList.SCROLL_AT_BOTTOM_AREA) {
 			// TODO: Once we convert these classes to functional components we should use refs to check if the last message is within the viewport
@@ -58,18 +87,20 @@ export class MessageList extends MemoizedComponent {
 		const { messageListPosition } = store.state;
 
 		if (messageListPosition !== this.scrollPosition) {
-			dispatch({ messageListPosition: this.scrollPosition });
+			dispatch?.({ messageListPosition: this.scrollPosition });
 		}
 	};
 
 	handleResize = () => {
+		const base = this.base as HTMLElement;
+
 		if (this.scrollPosition === MessageList.SCROLL_AT_BOTTOM) {
-			this.base.scrollTop = this.base.scrollHeight;
+			base.scrollTop = base.scrollHeight;
 			this.isResizingFromBottom = true;
 			return;
 		}
 
-		if (this.base.scrollHeight <= this.base.clientHeight) {
+		if (base.scrollHeight <= base.clientHeight) {
 			const { onScrollTo } = this.props;
 			this.scrollPosition = MessageList.SCROLL_AT_BOTTOM;
 			onScrollTo && onScrollTo(MessageList.SCROLL_AT_BOTTOM);
@@ -81,13 +112,14 @@ export class MessageList extends MemoizedComponent {
 		handleEmojiClick && handleEmojiClick();
 	};
 
-	componentWillUpdate() {
+	override componentWillUpdate() {
 		if (this.scrollPosition === MessageList.SCROLL_AT_TOP) {
-			this.previousScrollHeight = this.base.scrollHeight;
+			this.previousScrollHeight = (this.base as HTMLElement).scrollHeight;
 		}
 	}
 
-	componentDidUpdate(prevProps) {
+	override componentDidUpdate(prevProps: MessageListProps) {
+		const base = this.base as HTMLElement;
 		const { messages, uid } = this.props;
 		const { messages: prevMessages } = prevProps;
 
@@ -100,33 +132,33 @@ export class MessageList extends MemoizedComponent {
 		}
 
 		if (this.scrollPosition === MessageList.SCROLL_AT_BOTTOM) {
-			this.base.scrollTop = this.base.scrollHeight;
+			base.scrollTop = base.scrollHeight;
 			return;
 		}
 
 		if (this.scrollPosition === MessageList.SCROLL_AT_TOP) {
-			const delta = this.base.scrollHeight - this.previousScrollHeight;
+			const delta = base.scrollHeight - (this.previousScrollHeight ?? 0);
 			if (delta > 0) {
-				this.base.scrollTop = delta;
+				base.scrollTop = delta;
 			}
 			delete this.previousScrollHeight;
 		}
 	}
 
-	componentDidMount() {
+	override componentDidMount() {
 		this.handleResize();
 		window.addEventListener('resize', this.handleResize);
 	}
 
-	componentWillUnmount() {
+	override componentWillUnmount() {
 		window.removeEventListener('resize', this.handleResize);
 	}
 
-	isVideoConfMessage(message) {
+	isVideoConfMessage(message: any) {
 		return Boolean(
 			message.blocks
-				?.find(({ appId, type }) => appId === 'videoconf-core' && type === 'actions')
-				?.elements?.find(({ actionId }) => actionId === 'joinLivechat'),
+				?.find(({ appId, type }: any) => appId === 'videoconf-core' && type === 'actions')
+				?.elements?.find(({ actionId }: any) => actionId === 'joinLivechat'),
 		);
 	}
 
@@ -138,8 +170,8 @@ export class MessageList extends MemoizedComponent {
 		uid,
 		conversationFinishedMessage,
 		typingUsernames,
-	}) => {
-		const items = [];
+	}: MessageListProps) => {
+		const items: VNode[] = [];
 		const { hideSenderAvatar = false, hideReceiverAvatar = false } = this.props || {};
 
 		for (let i = 0; i < messages.length; ++i) {
@@ -178,14 +210,20 @@ export class MessageList extends MemoizedComponent {
 		if (typingUsernames && typingUsernames.length) {
 			const indicatorLabel = `${typingUsernames.join(', ')} ${typingUsernames.length > 1 ? i18next.t('are_typing') : i18next.t('is_typing')}`;
 			items.push(
-				<TypingIndicator key='typing' use='li' avatarResolver={avatarResolver} usernames={typingUsernames} text={indicatorLabel} />,
+				<TypingIndicator
+					key='typing'
+					use='li'
+					avatarResolver={avatarResolver ?? (() => undefined)}
+					usernames={typingUsernames}
+					text={indicatorLabel}
+				/>,
 			);
 		}
 
 		return items;
 	};
 
-	render = ({ className, style = {} }) => (
+	render = ({ className, style = {} }: MessageListProps) => (
 		// eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
 		<div
 			data-qa='message-list'

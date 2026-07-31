@@ -21,24 +21,24 @@ export const UIKitIncomingInteractionContainerType = {
 
 const TRIGGER_TIMEOUT = 5000;
 
-const triggersId = new Map();
+const triggersId = new Map<string, string>();
 
 // const instances = new Map();
 
-const invalidateTriggerId = (id) => {
+const invalidateTriggerId = (id: string) => {
 	const appId = triggersId.get(id);
 	triggersId.delete(id);
 	return appId;
 };
 
-const generateTriggerId = (appId) => {
+const generateTriggerId = (appId: string) => {
 	const triggerId = createRandomId();
 	triggersId.set(triggerId, appId);
 	setTimeout(invalidateTriggerId, TRIGGER_TIMEOUT, triggerId);
 	return triggerId;
 };
 
-const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) => {
+const handlePayloadUserInteraction = (type: string, { /* appId,*/ triggerId, ...data }: Record<string, any>) => {
 	if (!triggersId.has(triggerId)) {
 		return;
 	}
@@ -96,10 +96,21 @@ const handlePayloadUserInteraction = (type, { /* appId,*/ triggerId, ...data }) 
 		return UIKitInteractionType.MODAL_OPEN;
 	}
 
-	return UIKitInteractionType.MODAL_ClOSE;
+	return UIKitInteractionType.MODAL_CLOSE;
 };
 
-export const triggerAction = async ({ appId, type, actionId, rid, mid, viewId, container, payload }) => {
+type TriggerActionParams = {
+	appId: string;
+	type: string;
+	actionId?: string;
+	rid?: string;
+	mid?: string;
+	viewId?: string | null;
+	container?: unknown;
+	payload?: unknown;
+};
+
+export const triggerAction = async ({ appId, type, actionId, rid, mid, viewId, container, payload }: TriggerActionParams) => {
 	const triggerId = generateTriggerId(appId);
 
 	try {
@@ -114,7 +125,7 @@ export const triggerAction = async ({ appId, type, actionId, rid, mid, viewId, c
 					container,
 					triggerId,
 					payload,
-				},
+				} as Parameters<typeof Livechat.sendUiInteraction>[0],
 				appId,
 			),
 
@@ -125,7 +136,7 @@ export const triggerAction = async ({ appId, type, actionId, rid, mid, viewId, c
 			}),
 		]);
 
-		const { type: interactionType, ...data } = result;
+		const { type: interactionType, ...data } = result as Record<string, any>;
 
 		return handlePayloadUserInteraction(interactionType, data);
 	} catch (error) {

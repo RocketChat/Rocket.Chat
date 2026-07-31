@@ -5,6 +5,7 @@ import { Livechat } from '../api';
 import { canRenderMessage } from '../helpers/canRenderMessage';
 import { setCookies } from '../helpers/cookies';
 import { upsert } from '../helpers/upsert';
+import type { StoreState } from '../store';
 import { store, initialState } from '../store';
 import { normalizeAgent } from './api';
 import Commands from './commands';
@@ -17,12 +18,14 @@ import Triggers from './triggers';
 
 const commands = new Commands();
 
-export const closeChat = async ({ transcriptRequested } = {}) => {
+export const closeChat = async ({ transcriptRequested }: { transcriptRequested?: boolean } = {}) => {
 	if (!transcriptRequested) {
 		await handleTranscript();
 	}
 
-	const { department, config: { settings: { clearLocalStorageWhenChatEnded } = {} } = {} } = store.state;
+	const { department, config: { settings: { clearLocalStorageWhenChatEnded } = {} } = {} } = store.state as StoreState & {
+		department?: string;
+	};
 
 	await store.setState({ room: null, renderedTriggers: [] });
 
@@ -30,8 +33,7 @@ export const closeChat = async ({ transcriptRequested } = {}) => {
 		// exclude UI-affecting flags
 		const { iframe: currentIframe } = store.state;
 		const { minimized, visible, undocked, expanded, businessUnit, config, iframe, ...initial } = initialState();
-		initial.iframe = { ...currentIframe, guest: { department } };
-		await store.setState(initial);
+		await store.setState({ ...initial, iframe: { ...currentIframe, guest: { department } } });
 	}
 
 	await Triggers.processTrigger('after-guest-registration');
@@ -41,12 +43,12 @@ export const closeChat = async ({ transcriptRequested } = {}) => {
 	route('/chat-finished');
 };
 
-const getVideoConfMessageData = (message) =>
+const getVideoConfMessageData = (message: any) =>
 	message.blocks
-		?.find(({ appId, type }) => appId === 'videoconf-core' && type === 'actions')
-		?.elements?.find(({ actionId }) => actionId === 'joinLivechat');
+		?.find(({ appId, type }: any) => appId === 'videoconf-core' && type === 'actions')
+		?.elements?.find(({ actionId }: any) => actionId === 'joinLivechat');
 
-const isVideoCallMessage = (message) => {
+const isVideoCallMessage = (message: any) => {
 	if (getVideoConfMessageData(message)) {
 		return true;
 	}
@@ -54,7 +56,7 @@ const isVideoCallMessage = (message) => {
 	return false;
 };
 
-const findCallData = (message) => {
+const findCallData = (message: any) => {
 	const videoConfJoinBlock = getVideoConfMessageData(message);
 	if (videoConfJoinBlock) {
 		return {
@@ -68,7 +70,7 @@ const findCallData = (message) => {
 };
 
 // TODO: use a separate event to listen to call start event. Listening on the message type isn't a good solution
-export const processIncomingCallMessage = async (message) => {
+export const processIncomingCallMessage = async (message: any) => {
 	const { alerts } = store.state;
 	try {
 		const { callId, url, callProvider } = findCallData(message);
@@ -91,17 +93,18 @@ export const processIncomingCallMessage = async (message) => {
 	}
 };
 
-const processMessage = async (message) => {
+const processMessage = async (message: any) => {
 	if (message.t === 'livechat-close') {
 		await closeChat(message);
 	} else if (message.t === 'command') {
-		commands[message.msg] && commands[message.msg]();
+		const command = (commands as unknown as Record<string, (() => void) | undefined>)[message.msg];
+		command?.();
 	} else if (isVideoCallMessage(message)) {
 		await processIncomingCallMessage(message);
 	}
 };
 
-const doPlaySound = async (message) => {
+const doPlaySound = async (message: any) => {
 	const { sound, user } = store.state;
 
 	if (!sound.enabled || (user && message.u && message.u._id === user._id)) {
@@ -111,42 +114,37 @@ const doPlaySound = async (message) => {
 	await store.setState({ sound: { ...sound, play: true } });
 };
 
-export const onAgentChange = async (agent) => {
-	await store.setState({ agent, queueInfo: null });
+export const onAgentChange = async (agent: any) => {
+	await store.setState({ agent, queueInfo: undefined });
 	parentCall('callback', ['assign-agent', normalizeAgent(agent)]);
 };
 
-export const onAgentStatusChange = (status) => {
+export const onAgentStatusChange = (status: any) => {
 	const { agent } = store.state;
 	agent && store.setState({ agent: { ...agent, status } });
 	parentCall('callback', ['agent-status-change', normalizeAgent(agent)]);
 };
 
-export const onQueuePositionChange = async (queueInfo) => {
+export const onQueuePositionChange = async (queueInfo: any) => {
 	await store.setState({ queueInfo });
 	parentCall('callback', ['queue-position-change', queueInfo]);
 };
 
 export const initRoom = async () => {
-	const { state } = store;
-	const { room } = state;
+	const { room } = store.state;
 
 	if (!room) {
 		return;
 	}
 
-	const {
-		token,
-		agent,
-		queueInfo,
-		room: { _id: rid, servedBy },
-	} = state;
+	const { token, agent, queueInfo } = store.state;
+	const { _id: rid, servedBy } = room;
 
 	let roomAgent = agent;
 	if (!roomAgent) {
 		if (servedBy) {
 			roomAgent = await Livechat.agent(rid);
-			await store.setState({ agent: roomAgent, queueInfo: null });
+			await store.setState({ agent: roomAgent, queueInfo: undefined });
 			parentCall('callback', 'assign-agent', normalizeAgent(roomAgent));
 		}
 	}
@@ -164,7 +162,7 @@ const isAgentHidden = () => {
 	return !!agentHiddenInfo;
 };
 
-const transformAgentInformationOnMessage = (message) => {
+const transformAgentInformationOnMessage = (message: any) => {
 	const { user } = store.state;
 	if (message && user && message.u && message.u._id !== user._id && isAgentHidden()) {
 		return { ...message, u: { _id: message.u._id } };
@@ -173,15 +171,15 @@ const transformAgentInformationOnMessage = (message) => {
 	return message;
 };
 
-export const onUserActivity = (username, activities) => {
+export const onUserActivity = (username: string, activities: string[]) => {
 	const isTyping = activities.includes('user-typing');
 	const { typing, user, agent } = store.state;
 
-	if (user && user.username && user.username === username) {
+	if (user?.username && user.username === username) {
 		return;
 	}
 
-	if (agent && agent.hiddenInfo) {
+	if (agent?.hiddenInfo) {
 		return;
 	}
 
@@ -195,7 +193,7 @@ export const onUserActivity = (username, activities) => {
 	}
 };
 
-export const onMessage = async (originalMessage) => {
+export const onMessage = async (originalMessage: any) => {
 	let message = JSON.parse(JSON.stringify(originalMessage));
 
 	if (message.ts instanceof Date) {
@@ -234,8 +232,8 @@ export const onMessage = async (originalMessage) => {
 	await doPlaySound(message);
 };
 
-export const getGreetingMessages = (messages) => messages && messages.filter((msg) => msg.trigger);
-export const getLatestCallMessage = (messages) => messages && messages.filter((msg) => isVideoCallMessage(msg)).pop();
+export const getGreetingMessages = (messages?: any[]) => messages?.filter((msg) => msg.trigger);
+export const getLatestCallMessage = (messages?: any[]) => messages?.filter((msg) => isVideoCallMessage(msg)).pop();
 
 export const loadMessages = async () => {
 	const { messages: storedMessages, room, renderedTriggers } = store.state;
@@ -245,10 +243,10 @@ export const loadMessages = async () => {
 	}
 
 	const { _id: rid } = room;
-	const previousMessages = getGreetingMessages(storedMessages);
+	const previousMessages = getGreetingMessages(storedMessages) ?? [];
 	await store.setState({ loading: true });
 
-	const rawMessages = (await Livechat.loadMessages(rid)) ?? [];
+	const rawMessages: any[] = (await Livechat.loadMessages(rid, {} as Parameters<typeof Livechat.loadMessages>[1])) ?? [];
 
 	if (rawMessages?.length < 20) {
 		const triggers = previousMessages.length === 0 ? renderedTriggers : previousMessages;
@@ -286,12 +284,14 @@ export const loadMoreMessages = async () => {
 
 	await store.setState({ loading: true });
 
-	const rawMessages = await Livechat.loadMessages(rid, { limit: messages.length + 10 });
+	const rawMessages = await Livechat.loadMessages(rid, {
+		limit: messages.length + 10,
+	} as Parameters<typeof Livechat.loadMessages>[1]);
 	const moreMessages = (await normalizeMessages(rawMessages)).map(transformAgentInformationOnMessage);
 
 	const newNoMoreMessages = messages.length + 10 > moreMessages.length;
 	const triggers = newNoMoreMessages ? [...renderedTriggers] : [];
-	const newMessages = ([...moreMessages, ...triggers] || []).reverse();
+	const newMessages = [...moreMessages, ...triggers].reverse();
 
 	await store.setState({
 		messages: newMessages,
@@ -301,11 +301,11 @@ export const loadMoreMessages = async () => {
 };
 
 export const defaultRoomParams = () => {
-	const params = {};
+	const params: Record<string, unknown> = {};
 
-	const { defaultAgent: agent = {} } = store.state;
-	if (agent && agent._id) {
-		Object.assign(params, { agentId: agent._id });
+	const { defaultAgent } = store.state;
+	if (defaultAgent?._id) {
+		Object.assign(params, { agentId: defaultAgent._id });
 	}
 
 	return params;
