@@ -69,7 +69,9 @@ don't see that line, the container is not firewalled.
 | `scripts/initialize.sh` | Host-side; the `initializeCommand` entry point, runs the two below |
 | `scripts/init-worktree.sh` | Host-side; exposes the real git dir when the checkout is a linked worktree |
 | `scripts/ensure-turbo-cache.sh` | Host-side; brings the cache stack up before the container is created |
+| `scripts/stage-skills.sh` | Host-side; copies your user-level Claude Code skills into `.host-skills/`, unless opted out |
 | `scripts/on-create.sh` | Container-side; the `onCreateCommand` entry point, fixes volume ownership and git gc |
+| `scripts/install-skills.sh` | Container-side; installs the staged skills into the container's `~/.claude/skills`, then clears the staging dir |
 
 ## Things worth knowing
 
@@ -124,6 +126,34 @@ uncached.
   confirm the cache is live, run a cacheable task twice with `.turbo/cache` removed
   in between: turbo prints `Remote caching enabled` and then `cache hit, replaying
   logs`.
+
+**Your skills come along.** Every container start copies your user-level Claude
+Code skills from the host into the container, so `/my-skill` works in here too.
+The source is `$CLAUDE_CONFIG_DIR/skills`, falling back to `~/.claude/skills`,
+and it lands at the same path (same env var) inside the container.
+
+- **To turn it off**, create `.devcontainer/.skip-skills` (gitignored) and
+  restart — or set `DEVCONTAINER_SKIP_SKILLS=1` for the process that launches the
+  container, if you drive it from the CLI. Skills copied in by an earlier start
+  are removed on the next one; skills you wrote *inside* the container are not.
+- Two scripts, because the container's `~/.claude` is a named volume that shares
+  nothing with the host: `scripts/stage-skills.sh` copies the skills into the
+  gitignored `.devcontainer/.host-skills/` on the host (via `initializeCommand`),
+  and `scripts/install-skills.sh` installs them from there (via
+  `postStartCommand`) and then deletes the staging directory, so nothing is left
+  sitting in your checkout.
+- Symlinked skills are **dereferenced on the host**, which is the reason for the
+  staging step. If a skill points at another checkout (`~/.agents/skills/…`),
+  that target isn't mounted into the container and the link would dangle.
+- Editing or adding a skill on the host only needs a container **restart**, no
+  rebuild. Deleting one on the host removes the container copy too — pruning is
+  driven by `~/.claude/.host-skills.manifest`, so a skill you write *inside* the
+  container is left alone.
+- Copies, not mounts: nothing Claude does in here can write back to your host
+  skills. The flip side is that changes made in the container are overwritten on
+  the next start.
+- Project-level skills (`.claude/skills/` in the repo) need none of this — the
+  workspace bind mount already carries them.
 
 **Neovim.** Your host `~/.config/nvim` is bind-mounted read-only; plugins and
 treesitter parsers stay container-side in a volume. If you don't have that

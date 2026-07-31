@@ -97,7 +97,16 @@
 	// because the exec bit comes from the host checkout and can't be relied on.
 	// Note this is our own script, not the /usr/local/bin/init-firewall.sh that
 	// the claude-code feature installs — that one is unused here.
-	"postStartCommand": "sudo bash ${containerWorkspaceFolder}/.devcontainer/init-firewall.sh",
+	//
+	// Object form runs the entries in parallel; they are independent (one touches
+	// iptables, the other only copies files under ~/.claude).
+	"postStartCommand": {
+		"firewall": "sudo bash ${containerWorkspaceFolder}/.devcontainer/init-firewall.sh",
+		// Installs the host's user-level skills, staged into the workspace by
+		// initializeCommand. Here rather than onCreate so editing a skill on the
+		// host takes effect on a restart.
+		"skills": "bash ${containerWorkspaceFolder}/.devcontainer/scripts/install-skills.sh"
+	},
 	"customizations": {
 		"vscode": {
 			"extensions": [
