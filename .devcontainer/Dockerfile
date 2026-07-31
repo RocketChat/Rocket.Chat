@@ -64,13 +64,9 @@ RUN curl "https://install.meteor.com/?release=$(sed 's/^METEOR@//' /tmp/meteor-r
     chown -R vscode:vscode "$METEOR_WAREHOUSE_DIR" && \
     printf 'export METEOR_WAREHOUSE_DIR="/usr/local/meteor"' >> /etc/profile.d/meteor.sh
 
-# --- Egress firewall ----------------------------------------------------------
-# Applied at container start via the devcontainer postStartCommand (as sudo).
-#
-# NOT installed as /usr/local/bin/init-firewall.sh: the claude-code devcontainer
-# feature unconditionally copies its own script to that exact path, and features
-# are layered on top of this Dockerfile — so that name is silently overwritten.
-COPY .devcontainer/init-firewall.sh /usr/local/bin/rc-init-firewall.sh
-RUN chmod +x /usr/local/bin/rc-init-firewall.sh
+# The egress firewall (.devcontainer/init-firewall.sh) is NOT copied into the
+# image: .devcontainer is part of the bind-mounted workspace, so postStartCommand
+# runs it straight from there and edits take effect on a restart, no rebuild.
+# Its tooling is installed above (iptables, ipset, dnsutils, aggregate).
 
 CMD ["bash"]

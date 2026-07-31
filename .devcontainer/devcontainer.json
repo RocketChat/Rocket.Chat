@@ -92,10 +92,12 @@
 	// Re-apply the egress firewall on every start (iptables state is not persisted).
 	// This is what makes `claude --dangerously-skip-permissions` safe to run here:
 	// egress is default-deny except for the allowlist in init-firewall.sh.
-	// The script is baked into the image, so editing it requires a rebuild.
-	// Deliberately rc-prefixed: the claude-code feature installs its own
-	// /usr/local/bin/init-firewall.sh over ours (see the Dockerfile).
-	"postStartCommand": "sudo /usr/local/bin/rc-init-firewall.sh",
+	// Run from the workspace bind mount rather than a copy in the image, so
+	// editing the allowlist only needs a container restart. Invoked via `bash`
+	// because the exec bit comes from the host checkout and can't be relied on.
+	// Note this is our own script, not the /usr/local/bin/init-firewall.sh that
+	// the claude-code feature installs — that one is unused here.
+	"postStartCommand": "sudo bash ${containerWorkspaceFolder}/.devcontainer/init-firewall.sh",
 	"customizations": {
 		"vscode": {
 			"extensions": [

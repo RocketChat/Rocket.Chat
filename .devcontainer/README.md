@@ -64,7 +64,7 @@ don't see that line, the container is not firewalled.
 | `devcontainer.json` | User, mounts, features, post-create/post-start hooks |
 | `docker-compose.yml` | Service definition, volumes, `NET_ADMIN`/`NET_RAW` capabilities |
 | `Dockerfile` | Base image and toolchain, pinned from `package.json`, `.tool-versions`, `.meteor/release` |
-| `init-firewall.sh` | Default-deny egress firewall; installed as `/usr/local/bin/rc-init-firewall.sh` |
+| `init-firewall.sh` | Default-deny egress firewall; run from the workspace by `postStartCommand` |
 | `turbo-cache/docker-compose.yml` | Standalone [Turborepo remote cache](https://ducktors.github.io/turborepo-remote-cache) shared by every worktree |
 | `scripts/initialize.sh` | Host-side; the `initializeCommand` entry point, runs the two below |
 | `scripts/init-worktree.sh` | Host-side; exposes the real git dir when the checkout is a linked worktree |
@@ -78,8 +78,9 @@ separate `mongo` service on purpose — `meteor` starts its own mongod, and only
 does so while `MONGO_URL` is unset. Don't set it.
 
 **Adding an allowed domain.** Edit the `ALLOWED_DOMAINS` array in
-`init-firewall.sh`, then **rebuild** — the script is baked into the image, so
-editing it alone does nothing until the image is rebuilt. Confirm the change with
+`init-firewall.sh`, then **restart the container** — the script runs from the
+bind-mounted `.devcontainer` folder, so no rebuild is needed, but the firewall is
+only re-applied by `postStartCommand`. Confirm the change with
 `sudo ipset list allowed-domains`. Anthropic's
 [network access requirements](https://code.claude.com/docs/en/network-config#network-access-requirements)
 list the domains Claude Code itself needs.
