@@ -187,11 +187,42 @@ type ObjectSchemaLike = {
 
 type CollectedProperties = { properties: Record<string, Record<string, unknown>>; required: Set<string> };
 
+/**
+ * `nullable` is how OpenAPI 3.0 spelled it; 3.1, being JSON Schema 2020, spells it as a `null` member
+ * of `type`. AJV understands `nullable`, so the schemas keep it and the conversion happens here, on a
+ * copy, while the operation is built — once per route, at startup.
+ */
+const toOpenAPI31 = <T>(schema: T): T => {
+	if (Array.isArray(schema)) {
+		return schema.map(toOpenAPI31) as T;
+	}
+
+	if (!schema || typeof schema !== 'object') {
+		return schema;
+	}
+
+	const { nullable, ...rest } = Object.fromEntries(Object.entries(schema).map(([key, value]) => [key, toOpenAPI31(value)])) as Record<
+		string,
+		unknown
+	> & { nullable?: unknown };
+
+	if (nullable !== true) {
+		return rest as T;
+	}
+
+	if (typeof rest.type === 'string') {
+		return { ...rest, type: [rest.type, 'null'] } as T;
+	}
+
+	// AJV refuses `nullable` without `type`, so there is always one to extend
+	return { ...rest, type: Array.isArray(rest.type) && rest.type.includes('null') ? rest.type : [...(rest.type as string[]), 'null'] } as T;
+};
+
 const getSchema = (carrier: unknown): AnySchema => {
 	if (carrier && (typeof carrier === 'object' || typeof carrier === 'function') && 'schema' in carrier) {
-		return (carrier as { schema: AnySchema }).schema;
+		return toOpenAPI31((carrier as { schema: AnySchema }).schema);
 	}
-	return carrier as AnySchema;
+	return toOpenAPI31(carrier as AnySchema);
 };
 
 const sharedSchemas = new Map<string, AnySchema>();
