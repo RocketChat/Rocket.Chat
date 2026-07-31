@@ -8,6 +8,7 @@ import swaggerUi from 'swagger-ui-express';
 
 import { settings } from '../../settings';
 import { API } from '../api';
+import type { SuccessResult } from '../definition';
 import { getTrimmedServerVersion } from '../lib/getTrimmedServerVersion';
 
 const app = express();
@@ -127,9 +128,13 @@ API.default.get(
 	function action() {
 		const { withUndocumented = false } = this.queryParams;
 
-		// deliberately not wrapped in `API.default.success`: the envelope would add a `success` key to
-		// the document root, which is not an OpenAPI field and fails validation
-		return { statusCode: 200 as const, body: makeOpenAPIResponse(getTypedRoutes(API.api.typedRoutes, { withUndocumented })) };
+		// The document is served as it is: `API.default.success` would add a `success` key to its root,
+		// which is not an OpenAPI field and fails validation. The cast is the price of saying so - every
+		// 2xx body is typed as `{ success: true } & T`, and this one is the exception.
+		return {
+			statusCode: 200 as const,
+			body: makeOpenAPIResponse(getTypedRoutes(API.api.typedRoutes, { withUndocumented })),
+		} as unknown as SuccessResult<Record<string, unknown>>;
 	},
 );
 
