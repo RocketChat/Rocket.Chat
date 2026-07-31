@@ -103,10 +103,22 @@
 	"onCreateCommand": "bash ${containerWorkspaceFolder}/.devcontainer/scripts/on-create.sh",
 	// Dependencies and build artifacts are content, not image: they live in the
 	// rc-node-modules volume and in each package's dist/, so they survive restarts
-	// and only need rebuilding when the repo content changes. Running here (rather
-	// than postCreate) also means prebuilds can bake the result into the image.
-	// Note this runs before postStartCommand, i.e. before the egress firewall is
-	// applied — which is what lets yarn reach the npm registry unimpeded.
+	// and only need rebuilding when the repo content changes.
+	//
+	// Placed here for the ordering: it runs after onCreateCommand, which is what
+	// makes the rc-node-modules and rc-meteor-local mount points writable by
+	// `vscode` (see scripts/on-create.sh), and before postStartCommand, i.e.
+	// before the egress firewall is applied — which is what lets yarn reach the
+	// npm registry unimpeded.
+	//
+	// Do NOT expect a published/prebuilt image to carry the result of this. Both
+	// of its outputs are unreachable from an image build: the rc-node-modules
+	// volume, and dist/ on the bind mount. /workspaces/rocket.chat exists only as
+	// a runtime bind mount, so there is nothing at those paths in any image layer
+	// — the same fact on-create.sh relies on when it explains why those volumes
+	// land root-owned. Baking this step works only where the *container disk
+	// state* is snapshotted (Codespaces prebuilds), not for a plain
+	// `devcontainer build --push` to a registry.
 	"updateContentCommand": "yarn install && yarn build",
 	// Re-apply the egress firewall on every start (iptables state is not persisted).
 	// This is what makes `claude --dangerously-skip-permissions` safe to run here:
