@@ -99,6 +99,23 @@ describe('Message Converter', () => {
 			});
 		});
 
+		// Records staged on the database come back with `null` on every attribute the imported message doesn't have.
+		// The room's message list filters threads out with `tmid: { $exists: false }`, so keeping those keys around makes
+		// every imported message invisible - and nothing fails while importing.
+		it('should not include the thread attributes when the imported message has none', async () => {
+			const converter = new MessageConverter({ workInMemory: true });
+
+			const converted = await converter.buildMessageObject(
+				{ ...messageToImport, tmid: null, tcount: null, tlm: null },
+				'general',
+				{ _id: 'rocket.cat', username: 'rocket.cat' },
+			);
+
+			expect(converted).to.not.have.property('tmid');
+			expect(converted).to.not.have.property('tcount');
+			expect(converted).to.not.have.property('tlm');
+		});
+
 		// #TODO: Validate all message attributes
 
 		it('should include _hidden field when present', async () => {

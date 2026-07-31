@@ -85,6 +85,8 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 		const mentions = data.mentions && (await this.convertMessageMentions(data));
 		const channels = data.channels && (await this.convertMessageChannels(data));
 
+		// Attributes the imported message doesn't have must be absent from the document, not stored as `null`: the message
+		// list filters threads out with `tmid: { $exists: false }`, so a `tmid: null` hides the message from the room.
 		return removeEmpty({
 			rid,
 			u: {

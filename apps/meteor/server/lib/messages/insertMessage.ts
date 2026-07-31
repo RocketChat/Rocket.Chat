@@ -4,6 +4,10 @@ import { Messages, Rooms } from '@rocket.chat/models';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 import { validateMessage, prepareMessageObject } from './sendMessage';
 
+// Imported messages are assembled from optional attributes, and our mongo connection is configured with
+// `ignoreUndefined: false` - which would store every attribute the imported message doesn't have as `null`.
+const writeOptions = { ignoreUndefined: true };
+
 // TODO: remove and move to Message.Service
 export const insertMessage = async function (
 	user: Pick<IUser, '_id' | 'username'>,
@@ -29,17 +33,21 @@ export const insertMessage = async function (
 					'u._id': message.u._id,
 				},
 				{ $set: rest },
+				writeOptions,
 			);
 		} else {
-			await Messages.insertOne({
-				_id,
-				...rest,
-			});
+			await Messages.insertOne(
+				{
+					_id,
+					...rest,
+				},
+				writeOptions,
+			);
 			await Rooms.incMsgCountById(rid, 1);
 		}
 		message._id = _id;
 	} else {
-		const result = await Messages.insertOne(message);
+		const result = await Messages.insertOne(message, writeOptions);
 		message._id = result.insertedId;
 		await Rooms.incMsgCountById(rid, 1);
 	}
