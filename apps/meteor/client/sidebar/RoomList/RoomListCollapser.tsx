@@ -27,7 +27,7 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 	return (
 		<SidebarV2CollapseGroup
 			title={title}
-			expanded={!group.empty && !group.collapsed}
+			expanded={!group.collapsed}
 			badge={
 				showUnread ? (
 					<Badge variant={unreadVariant} title={unreadTitle} aria-label={unreadTitle} role='status'>
