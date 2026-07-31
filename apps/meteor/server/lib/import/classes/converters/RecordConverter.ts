@@ -153,13 +153,18 @@ export class RecordConverter<R extends IImportRecord, T extends RecordConverterO
 	}
 
 	protected async addObjectToDatabase(data: R['data'], options: R['options'] = {}): Promise<void> {
-		await ImportData.col.insertOne({
-			_id: new ObjectId().toHexString(),
-			data,
-			dataType: this.getDataType(),
-			options,
-			_updatedAt: new Date(),
-		});
+		await ImportData.col.insertOne(
+			{
+				_id: new ObjectId().toHexString(),
+				data,
+				dataType: this.getDataType(),
+				options,
+				_updatedAt: new Date(),
+			},
+			// The global mongo connection is configured with `ignoreUndefined: false`, so any attribute the importers
+			// assigned no value to would be stored as `null` instead of being omitted from the record.
+			{ ignoreUndefined: true },
+		);
 	}
 
 	public addObjectToMemory(data: R['data'], options: R['options'] = {}): void {

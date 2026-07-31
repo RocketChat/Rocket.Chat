@@ -54,6 +54,15 @@ describe('Record Converter', () => {
 				expect(modelsMock.ImportData.col.insertOne.getCall(0)).to.not.be.null;
 			});
 
+			it('should not store attributes with undefined values', async () => {
+				const converter = new TestConverter(false);
+
+				await converter.addObject({ ...userToImport, utcOffset: undefined });
+
+				// The global mongo connection is configured to store undefined values as null, so the insert must override it
+				expect(modelsMock.ImportData.col.insertOne.getCall(0).args[1]).to.deep.equal({ ignoreUndefined: true });
+			});
+
 			it('should read objects from the collection', async () => {
 				const converter = new TestConverter(false);
 				await converter.addObject(userToImport);
