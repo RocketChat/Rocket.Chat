@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+const MAX_CACHE_ENTRIES = 256;
 const durationCache = new Map<string, number>();
 
 export const useMediaDuration = (src: string): number => {
@@ -19,6 +20,12 @@ export const useMediaDuration = (src: string): number => {
 		const handleDuration = () => {
 			if (Number.isFinite(audio.duration) && audio.duration > 0) {
 				durationCache.set(src, audio.duration);
+				if (durationCache.size > MAX_CACHE_ENTRIES) {
+					const oldest = durationCache.keys().next().value;
+					if (oldest !== undefined) {
+						durationCache.delete(oldest);
+					}
+				}
 				setDuration(audio.duration);
 			}
 		};
