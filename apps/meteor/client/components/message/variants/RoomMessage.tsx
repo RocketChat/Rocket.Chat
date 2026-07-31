@@ -77,7 +77,7 @@ const RoomMessage = ({
 	const editing = useIsMessageHighlight(message._id);
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
 	const ignored = (ignoredUser || message.ignored) && !displayIgnoredMessage;
-	const { openUserCard, triggerProps } = useUserCard();
+	const { openUserCard, openUserInfo, triggerProps } = useUserCard();
 
 	const selecting = useIsSelecting();
 
@@ -126,10 +126,11 @@ const RoomMessage = ({
 						emoji={message.emoji ? <Emoji emojiHandle={message.emoji} fillContainer /> : undefined}
 						avatarUrl={message.avatar}
 						username={message.u.username}
+						title=''
 						size='x36'
-						onClick={(e) => openUserCard(e, message.u.username)}
+						onMouseEnter={(e) => openUserCard(e, message.u.username)}
+						onClick={() => openUserInfo(message.u.username)}
 						style={{ cursor: 'pointer' }}
-						role='button'
 						{...triggerProps}
 					/>
 				)}

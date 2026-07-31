@@ -69,6 +69,10 @@ test.describe.serial('Global Search', () => {
 
 		const message = await poHomeChannel.tabs.searchMessages.getResultItem(threadMessage.msg);
 		await message.hover();
+		// hovering the result may open the author's user card over the actions;
+		// wait for the hover intent to resolve and dismiss it before jumping
+		await page.waitForTimeout(600);
+		await page.keyboard.press('Escape');
 		const jumpToMessageButton = message.getByRole('button', { name: 'Jump to message' });
 		await jumpToMessageButton.click();
 

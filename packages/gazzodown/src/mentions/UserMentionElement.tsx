@@ -1,5 +1,4 @@
 import { MessageHighlight } from '@rocket.chat/fuselage';
-import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { memo, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -18,8 +17,7 @@ const UserMentionElement = ({ mention }: UserMentionElementProps) => {
 		useContext(MarkupInteractionContext);
 
 	const resolved = useMemo(() => resolveUserMention?.(mention), [mention, resolveUserMention]);
-	const handleClick = useMemo(() => (resolved ? onUserMentionClick?.(resolved) : undefined), [resolved, onUserMentionClick]);
-	const buttonProps = useButtonPattern((e) => handleClick?.(e));
+	const handleMouseEnter = useMemo(() => (resolved ? onUserMentionClick?.(resolved) : undefined), [resolved, onUserMentionClick]);
 
 	if (mention === 'all') {
 		return (
@@ -46,7 +44,19 @@ const UserMentionElement = ({ mention }: UserMentionElementProps) => {
 			variant={resolved._id === ownUserId ? 'critical' : 'other'}
 			title={resolved._id === ownUserId ? t('Mentions_you') : t('Mentions_user')}
 			clickable
-			{...buttonProps}
+			onMouseEnter={handleMouseEnter}
+			role={handleMouseEnter ? 'button' : undefined}
+			tabIndex={handleMouseEnter ? 0 : undefined}
+			aria-haspopup={handleMouseEnter ? 'dialog' : undefined}
+			onKeyDown={
+				handleMouseEnter &&
+				((e) => {
+					if (e.key === 'Enter' || e.key === ' ') {
+						e.preventDefault();
+						handleMouseEnter(e);
+					}
+				})
+			}
 			{...triggerProps}
 			data-uid={resolved._id}
 		>

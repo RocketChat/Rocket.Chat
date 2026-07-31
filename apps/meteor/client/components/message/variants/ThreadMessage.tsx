@@ -26,7 +26,7 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMe
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
 	const [ignored, toggleIgnoring] = useToggle((message as { ignored?: boolean }).ignored);
-	const { openUserCard, triggerProps } = useUserCard();
+	const { openUserCard, openUserInfo, triggerProps } = useUserCard();
 
 	// Checks if is videoconf message to limit toolbox actions
 	const messageContext: MessageActionContext = isVideoConfMessage(message) ? 'videoconf-threads' : 'threads';
@@ -52,10 +52,11 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMe
 						emoji={message.emoji ? <Emoji emojiHandle={message.emoji} fillContainer /> : undefined}
 						avatarUrl={message.avatar}
 						username={message.u.username}
+						title=''
 						size='x36'
-						onClick={(e) => openUserCard(e, message.u.username)}
+						onMouseEnter={(e) => openUserCard(e, message.u.username)}
+						onClick={() => openUserInfo(message.u.username)}
 						style={{ cursor: 'pointer' }}
-						role='button'
 						{...triggerProps}
 					/>
 				)}
