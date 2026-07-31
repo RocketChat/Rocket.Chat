@@ -7,6 +7,9 @@ export type UsersUpdateOwnBasicInfoParamsPOST = {
 		username?: string;
 		nickname?: string;
 		bio?: string;
+		title?: string;
+		nationality?: string;
+		languages?: string[];
 		statusText?: string;
 		statusType?: string;
 		currentPassword?: string;
@@ -39,6 +42,21 @@ const UsersUpdateOwnBasicInfoParamsPostSchema = {
 				},
 				bio: {
 					type: 'string',
+					nullable: true,
+				},
+				title: {
+					type: 'string',
+					nullable: true,
+				},
+				nationality: {
+					type: 'string',
+					nullable: true,
+				},
+				languages: {
+					type: 'array',
+					items: {
+						type: 'string',
+					},
 					nullable: true,
 				},
 				statusType: {

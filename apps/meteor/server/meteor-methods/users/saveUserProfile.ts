@@ -34,6 +34,9 @@ async function saveUserProfile(
 		statusType?: string;
 		bio?: string;
 		nickname?: string;
+		title?: string;
+		nationality?: string;
+		languages?: string[];
 	},
 	customFields: Record<string, unknown>,
 	..._: unknown[]
@@ -112,6 +115,35 @@ async function saveUserProfile(
 			});
 		}
 		await Users.setNickname(user._id, settings.nickname.trim());
+	}
+
+	const MAX_PROFILE_FIELD_LENGTH = 260;
+	for await (const field of ['title', 'nationality'] as const) {
+		const value = settings[field];
+		if (!user || value === undefined) {
+			continue;
+		}
+		if (typeof value !== 'string') {
+			throw new Meteor.Error('error-invalid-field', field, { method: 'saveUserProfile' });
+		}
+		if (value.length > MAX_PROFILE_FIELD_LENGTH) {
+			throw new Meteor.Error('error-field-size-exceeded', `${field} size exceeds ${MAX_PROFILE_FIELD_LENGTH} characters`, {
+				method: 'saveUserProfile',
+			});
+		}
+		const trimmed = value.trim();
+		await Users.updateOne({ _id: user._id }, trimmed ? { $set: { [field]: trimmed } } : { $unset: { [field]: 1 } });
+	}
+
+	if (user && settings.languages !== undefined) {
+		if (!Array.isArray(settings.languages) || settings.languages.some((language) => typeof language !== 'string')) {
+			throw new Meteor.Error('error-invalid-field', 'languages', { method: 'saveUserProfile' });
+		}
+		const languages = settings.languages.map((language) => language.trim()).filter(Boolean);
+		if (languages.length > 20 || languages.some((language) => language.length > MAX_PROFILE_FIELD_LENGTH)) {
+			throw new Meteor.Error('error-field-size-exceeded', 'languages size exceeded', { method: 'saveUserProfile' });
+		}
+		await Users.updateOne({ _id: user._id }, languages.length ? { $set: { languages } } : { $unset: { languages: 1 } });
 	}
 
 	if (user && settings.email) {

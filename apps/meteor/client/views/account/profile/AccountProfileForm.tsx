@@ -149,6 +149,9 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 			statusCustomTime,
 			nickname,
 			bio,
+			title,
+			nationality,
+			languages,
 			customFields,
 			statusVisibilityDenied,
 		} = values;
@@ -179,17 +182,22 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 		const basicInfoDirty = Object.keys(basicInfoData).length > 0 || customFieldsDirty;
 
 		try {
-			if (basicInfoDirty) {
-				await updateOwnBasicInfo({
-					data: basicInfoData,
-					...(customFieldsDirty && { customFields }),
-				});
-				await refreshUserViews();
-			}
-
-			if (dirtyFields.statusVisibilityDenied) {
-				await setPreferences({ data: { statusVisibilityDenied } });
-			}
+			await updateOwnBasicInfo({
+				data: {
+					name,
+					...(user ? getUserEmailAddress(user) !== email && { email } : {}),
+					username,
+					nickname,
+					bio,
+					title,
+					nationality,
+					languages: languages
+						.split(',')
+						.map((language) => language.trim())
+						.filter(Boolean),
+				},
+				customFields,
+			});
 
 			if (statusDirty) {
 				await setUserStatus({
@@ -420,6 +428,25 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 							)}
 						/>
 					</FieldRow>
+				</Field>
+				<Field>
+					<FieldLabel>{t('Title')}</FieldLabel>
+					<FieldRow>
+						<Controller control={control} name='title' render={({ field }) => <TextInput {...field} flexGrow={1} />} />
+					</FieldRow>
+				</Field>
+				<Field>
+					<FieldLabel>{t('Nationality')}</FieldLabel>
+					<FieldRow>
+						<Controller control={control} name='nationality' render={({ field }) => <TextInput {...field} flexGrow={1} />} />
+					</FieldRow>
+				</Field>
+				<Field>
+					<FieldLabel>{t('Languages')}</FieldLabel>
+					<FieldRow>
+						<Controller control={control} name='languages' render={({ field }) => <TextInput {...field} flexGrow={1} />} />
+					</FieldRow>
+					<FieldHint>{t('Languages_hint')}</FieldHint>
 					{errors.bio && <FieldError>{errors.bio.message}</FieldError>}
 				</Field>
 				<Field>
