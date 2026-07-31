@@ -75,7 +75,7 @@ const AudioAttachment = ({
 					<AudioPlayerControls
 						isPlaying={active && playing}
 						currentTime={active ? currentTime : 0}
-						durationTime={active ? duration : previewDuration}
+						durationTime={active && duration ? duration : previewDuration}
 						playbackSpeed={playbackRate}
 						onTogglePlay={() => (active ? toggle() : play(track))}
 						onSeek={(time) => (active ? seek(time) : play(track))}
