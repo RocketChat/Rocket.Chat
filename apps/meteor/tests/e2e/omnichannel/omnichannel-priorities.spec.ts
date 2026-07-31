@@ -27,10 +27,7 @@ test.describe.serial('Omnichannel Priorities', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poOmnichannelPriorities = new OmnichannelPriorities(page);
-
-		await page.goto('/omnichannel');
-		await page.locator('#main-content').waitFor();
-		await poOmnichannelPriorities.sidebar.linkPriorities.click();
+		await poOmnichannelPriorities.goTo();
 	});
 
 	test.afterAll(async ({ api }) => {

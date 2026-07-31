@@ -14,36 +14,13 @@ import { bundleLegacyApp } from './bundler';
 import { newDecoder } from './codec';
 import type { AppManager } from '../../AppManager';
 import type { AppBridges } from '../../bridges';
+import { AppResourceBridge } from '../../bridges/AppResourceBridge';
 import type { IParseAppPackageResult } from '../../compiler';
 import { AppConsole, type ILoggerStorageEntry } from '../../logging';
-import type { AppAccessorManager, AppApiManager } from '../../managers';
 import type { AppLogStorage, IAppStorageItem } from '../../storage';
 import type { IRuntimeController } from '../IRuntimeController';
 
 const inspect = (value: unknown) => utilInspect(value, { depth: 10, compact: true, breakLength: Infinity });
-
-export const ALLOWED_ACCESSOR_METHODS = [
-	'getConfigurationExtend',
-	'getEnvironmentRead',
-	'getEnvironmentWrite',
-	'getConfigurationModify',
-	'getReader',
-	'getPersistence',
-	'getHttp',
-	'getModifier',
-] as Array<
-	keyof Pick<
-		AppAccessorManager,
-		| 'getConfigurationExtend'
-		| 'getEnvironmentRead'
-		| 'getEnvironmentWrite'
-		| 'getConfigurationModify'
-		| 'getReader'
-		| 'getPersistence'
-		| 'getHttp'
-		| 'getModifier'
-	>
->;
 
 const COMMAND_PONG = '_zPONG';
 
@@ -61,10 +38,6 @@ function getRuntimeTimeout() {
 	}
 
 	return envValue;
-}
-
-function isValidOrigin(accessor: string): accessor is (typeof ALLOWED_ACCESSOR_METHODS)[number] {
-	return ALLOWED_ACCESSOR_METHODS.includes(accessor as any);
 }
 
 /**
@@ -89,8 +62,8 @@ export type ProcessConfiguration = {
 
 /**
  * Holds the platform-agnostic logic for controlling an app subprocess: spawning,
- * killing, restarting, liveness, and the full JSON-RPC message loop (accessor,
- * bridge, result and error handling).
+ * killing, restarting, liveness, and the full JSON-RPC message loop (bridge,
+ * result and error handling).
  *
  * The only platform-specific concern - how to actually launch the subprocess for
  * a given runtime (Deno, Node, ...) - is delegated to {@link buildProcessConfiguration},
@@ -114,13 +87,11 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 		timeout: getRuntimeTimeout(),
 	};
 
-	private readonly accessors: AppAccessorManager;
-
-	private readonly api: AppApiManager;
-
 	private readonly logStorage: AppLogStorage;
 
 	private readonly bridges: AppBridges;
+
+	private readonly appResourceBridge: AppResourceBridge;
 
 	private readonly messenger: ProcessMessenger;
 
@@ -153,10 +124,11 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 
 		this.state = 'uninitialized';
 
-		this.accessors = manager.getAccessorManager();
-		this.api = manager.getApiManager();
 		this.logStorage = manager.getLogStorage();
 		this.bridges = manager.getBridges();
+		// Shared, engine-owned instance (stateless, keyed by appId per call) - one AppResourceBridge
+		// serves every subprocess controller rather than each controller owning its own.
+		this.appResourceBridge = manager.getAppResourceBridge();
 	}
 
 	/**
@@ -421,103 +393,6 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 		void this.parseStdout(this.process.stdout);
 	}
 
-	// Probable should extract this to a separate file
-	private async handleAccessorMessage({ payload: { method, id, params } }: jsonrpc.IParsedObjectRequest): Promise<jsonrpc.SuccessObject> {
-		const accessorMethods = method.substring(9).split(':'); // First 9 characters are always 'accessor:'
-
-		this.debug('Handling accessor message %s with params %s', inspect(accessorMethods), inspect(params));
-
-		const managerOrigin = accessorMethods.shift();
-		const tailMethodName = accessorMethods.pop();
-
-		// If we're restarting the app, we can't register resources again, so we
-		// hijack requests for the `ConfigurationExtend` accessor and don't let them through
-		// This needs to be refactored ASAP
-		if (this.state === 'restarting' && managerOrigin === 'getConfigurationExtend') {
-			return jsonrpc.success(id, null);
-		}
-
-		if (managerOrigin === 'api' && tailMethodName === 'listApis') {
-			const result = this.api.listApis(this.appPackage.info.id);
-
-			return jsonrpc.success(id, result);
-		}
-
-		/**
-		 * At this point, the accessorMethods array will contain the path to the accessor from the origin (AppAccessorManager)
-		 * The accessor is the one that contains the actual method the app wants to call
-		 *
-		 * Most of the times, it will take one step from origin to accessor
-		 * For example, for the call AppAccessorManager.getEnvironmentRead().getServerSettings().getValueById() we'll have
-		 * the following:
-		 *
-		 * ```
-		 * const managerOrigin = 'getEnvironmentRead'
-		 * const tailMethod = 'getValueById'
-		 * const accessorMethods = ['getServerSettings']
-		 * ```
-		 *
-		 * But sometimes there can be more steps, like in the following example:
-		 * AppAccessorManager.getReader().getEnvironmentReader().getEnvironmentVariables().getValueByName()
-		 * In this case, we'll have:
-		 *
-		 * ```
-		 * const managerOrigin = 'getReader'
-		 * const tailMethod = 'getValueByName'
-		 * const accessorMethods = ['getEnvironmentReader', 'getEnvironmentVariables']
-		 * ```
-		 **/
-		// Prevent app from trying to get properties from the manager that
-		// are not intended for public access
-		if (!isValidOrigin(managerOrigin)) {
-			throw new Error(`Invalid accessor namespace "${managerOrigin}"`);
-		}
-
-		// Need to fix typing of return value
-		const getAccessorForOrigin = (
-			accessorMethods: string[],
-			managerOrigin: (typeof ALLOWED_ACCESSOR_METHODS)[number],
-			accessorManager: AppAccessorManager,
-		) => {
-			const origin = accessorManager[managerOrigin](this.appPackage.info.id);
-
-			if (managerOrigin === 'getHttp' || managerOrigin === 'getPersistence') {
-				return origin;
-			}
-
-			if (managerOrigin === 'getConfigurationExtend' || managerOrigin === 'getConfigurationModify') {
-				return origin[accessorMethods[0] as keyof typeof origin];
-			}
-
-			let accessor = origin;
-
-			// Call all intermediary objects to "resolve" the accessor
-			accessorMethods.forEach((methodName) => {
-				const method = accessor[methodName as keyof typeof accessor] as unknown;
-
-				if (typeof method !== 'function') {
-					throw new Error(`Invalid accessor method "${methodName}"`);
-				}
-
-				accessor = method.apply(accessor);
-			});
-
-			return accessor;
-		};
-
-		const accessor = getAccessorForOrigin(accessorMethods, managerOrigin, this.accessors);
-
-		const tailMethod = accessor[tailMethodName as keyof typeof accessor] as unknown;
-
-		if (typeof tailMethod !== 'function') {
-			throw new Error(`Invalid accessor method "${tailMethodName}"`);
-		}
-
-		const result = await tailMethod.apply(accessor, params);
-
-		return jsonrpc.success(id, typeof result === 'undefined' ? null : result);
-	}
-
 	private async handleBridgeMessage({
 		payload: { method, id, params },
 	}: jsonrpc.IParsedObjectRequest): Promise<jsonrpc.SuccessObject | jsonrpc.ErrorObject> {
@@ -525,15 +400,32 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 
 		this.debug('Handling bridge message %s().%s() with params %s', bridgeName, bridgeMethod, inspect(params));
 
-		const bridge = this.bridges[bridgeName as keyof typeof this.bridges];
-
-		if (!bridgeMethod.startsWith('do') || typeof bridge !== 'function' || !Array.isArray(params)) {
+		if (!bridgeMethod.startsWith('do') || !Array.isArray(params)) {
 			throw new Error('Invalid bridge request');
 		}
 
-		const bridgeInstance = bridge.call(this.bridges);
+		let bridgeInstance: unknown;
 
-		const methodRef = bridgeInstance[bridgeMethod as keyof typeof bridge] as unknown;
+		// The internal AppResourceBridge is not part of the app-facing `AppBridges` surface; it is
+		// resolved through its own reference. Registration methods are suppressed while the process
+		// is restarting so that re-running `app:initialize` does not re-register host resources.
+		if (bridgeName === 'getAppResourceBridge') {
+			if (this.state === 'restarting' && AppResourceBridge.REGISTRATION_METHODS.has(bridgeMethod)) {
+				return jsonrpc.success(id, null);
+			}
+
+			bridgeInstance = this.appResourceBridge;
+		} else {
+			const bridge = this.bridges[bridgeName as keyof typeof this.bridges];
+
+			if (typeof bridge !== 'function') {
+				throw new Error('Invalid bridge request');
+			}
+
+			bridgeInstance = bridge.call(this.bridges);
+		}
+
+		const methodRef = (bridgeInstance as Record<string, unknown>)[bridgeMethod] as unknown;
 
 		if (typeof methodRef !== 'function') {
 			throw new Error('Invalid bridge request');
@@ -558,20 +450,6 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 
 	private async handleIncomingMessage(message: jsonrpc.IParsedObjectNotification | jsonrpc.IParsedObjectRequest): Promise<void> {
 		const { method } = message.payload;
-
-		if (method.startsWith('accessor:')) {
-			let result: jsonrpc.SuccessObject | jsonrpc.ErrorObject;
-
-			try {
-				result = await this.handleAccessorMessage(message as jsonrpc.IParsedObjectRequest);
-			} catch (e) {
-				result = jsonrpc.error((message.payload as jsonrpc.RequestObject).id, new jsonrpc.JsonRpcError(e.message, 1000));
-			}
-
-			this.messenger.send(result);
-
-			return;
-		}
 
 		if (method.startsWith('bridges:')) {
 			let result: jsonrpc.SuccessObject | jsonrpc.ErrorObject;

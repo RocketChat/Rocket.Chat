@@ -27,7 +27,6 @@ import {
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
-	validateNotFoundErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { getLoginExpirationInMs } from '@rocket.chat/tools';
@@ -42,6 +41,7 @@ import { removePersonalAccessTokenOfUser } from '../../../imports/personal-acces
 import { runUserLogoutCleanUp } from '../../hooks/userLogoutCleanUp';
 import { getUserForCheck, emailCheck } from '../../lib/2fa/code';
 import { resetTOTP } from '../../lib/2fa/functions/resetTOTP';
+import { codesRemainingTotp, disableTotp, enableTotp, regenerateTotpCodes, validateTotpTempToken } from '../../lib/2fa/functions/totp';
 import { UserChangedAuditStore } from '../../lib/auditServerEvents/userChanged';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { i18n } from '../../lib/i18n';
@@ -65,6 +65,7 @@ import { setUserAvatar } from '../../lib/users/setUserAvatar';
 import { setUsernameWithValidation } from '../../lib/users/setUsername';
 import { validateCustomFields } from '../../lib/users/validateCustomFields';
 import { validateUsername } from '../../lib/users/validateUsername';
+import { verifyEmail } from '../../lib/users/verifyEmail';
 import { isSMTPConfigured } from '../../lib/utils/functions/isSMTPConfigured';
 import { getURL } from '../../lib/utils/getURL';
 import { generateAccessToken } from '../../meteor-methods/auth/createToken';
@@ -2105,26 +2106,184 @@ API.v1.post(
 		response: {
 			200: voidSuccessResponse,
 			400: validateBadRequestErrorResponse,
-			404: validateNotFoundErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 	},
 	async function action() {
 		const { token } = this.bodyParams;
 
-		// the token is looked up before verifyEmail runs because the method consumes (removes) it on success
-		const user = await Users.findOne<Pick<IUser, '_id'>>({ 'services.email.verificationTokens.token': token }, { projection: { _id: 1 } });
-
+		const user = await Users.findOneByEmailVerificationToken<Pick<IUser, '_id' | 'services' | 'emails'>>(token);
 		if (!user) {
-			return API.v1.notFound();
+			return API.v1.forbidden('Verify email link expired');
 		}
 
-		await Meteor.callAsync('verifyEmail', token);
+		await verifyEmail(user, token);
 
 		await runAfterVerifyEmail(user._id);
 
 		return API.v1.success();
 	},
 );
+API.v1
+	.post(
+		'users.enableTotp',
+		{
+			authRequired: true,
+			twoFactorRequired: true,
+			twoFactorOptions: { disableRememberMe: true },
+			rateLimiterOptions: {
+				numRequestsAllowed: 5,
+				intervalTimeInMS: 60000,
+			},
+			response: {
+				200: ajv.compile<{ secret: string; url: string }>({
+					type: 'object',
+					properties: {
+						secret: { type: 'string' },
+						url: { type: 'string' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['secret', 'url', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			return API.v1.success(await enableTotp(this.userId));
+		},
+	)
+	.post(
+		'users.disableTotp',
+		{
+			authRequired: true,
+			rateLimiterOptions: {
+				numRequestsAllowed: 5,
+				intervalTimeInMS: 60000,
+			},
+			body: ajv.compile<{ code: string }>({
+				type: 'object',
+				properties: { code: { type: 'string', minLength: 1 } },
+				required: ['code'],
+				additionalProperties: false,
+			}),
+			response: {
+				200: ajv.compile<{ disabled: boolean }>({
+					type: 'object',
+					properties: {
+						disabled: { type: 'boolean' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['disabled', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const disabled = await disableTotp(this.userId, this.bodyParams.code);
+			return API.v1.success({ disabled });
+		},
+	)
+	.post(
+		'users.validateTotp',
+		{
+			authRequired: true,
+			twoFactorRequired: true,
+			twoFactorOptions: { disableRememberMe: true },
+			rateLimiterOptions: {
+				numRequestsAllowed: 5,
+				intervalTimeInMS: 60000,
+			},
+			body: ajv.compile<{ code: string }>({
+				type: 'object',
+				properties: { code: { type: 'string', minLength: 1 } },
+				required: ['code'],
+				additionalProperties: false,
+			}),
+			response: {
+				200: ajv.compile<{ codes: string[] }>({
+					type: 'object',
+					properties: {
+						codes: { type: 'array', items: { type: 'string' } },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['codes', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const result = await validateTotpTempToken(this.userId, this.bodyParams.code, this.request.headers.get('x-auth-token') ?? undefined);
+			return API.v1.success(result);
+		},
+	)
+	.post(
+		'users.regenerateTotpCodes',
+		{
+			authRequired: true,
+			rateLimiterOptions: {
+				numRequestsAllowed: 5,
+				intervalTimeInMS: 60000,
+			},
+			body: ajv.compile<{ code: string }>({
+				type: 'object',
+				properties: { code: { type: 'string', minLength: 1 } },
+				required: ['code'],
+				additionalProperties: false,
+			}),
+			response: {
+				200: ajv.compile<{ codes: string[] }>({
+					type: 'object',
+					properties: {
+						codes: { type: 'array', items: { type: 'string' } },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['codes', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const result = await regenerateTotpCodes(this.userId, this.bodyParams.code);
+			if (!result) {
+				return API.v1.failure('invalid-totp');
+			}
+			return API.v1.success(result);
+		},
+	)
+	.get(
+		'users.totpCodesRemaining',
+		{
+			authRequired: true,
+			rateLimiterOptions: {
+				numRequestsAllowed: 5,
+				intervalTimeInMS: 60000,
+			},
+			response: {
+				200: ajv.compile<{ remaining: number }>({
+					type: 'object',
+					properties: {
+						remaining: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['remaining', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			return API.v1.success(await codesRemainingTotp(this.userId));
+		},
+	);
 
 settings.watch<number>('Rate_Limiter_Limit_RegisterUser', (value) => {
 	const userRegisterRoute = '/api/v1/users.registerpost';

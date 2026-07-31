@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import p from 'proxyquire';
 import sinon from 'sinon';
 
+import { registerSettingSchema } from '../../../../server/settings/functions/settingSchemas';
 import {
 	positiveOrDisabled,
 	notGreaterThanSetting,
@@ -147,5 +148,50 @@ describe('validateSettingRules', () => {
 		settingsGetMock.withArgs('Accounts_Password_Policy_MaxLength').returns(10);
 
 		expect(() => validateSettingRules([{ _id: 'Accounts_Password_Policy_MinLength', value: 5.5 }])).to.not.throw();
+	});
+
+	describe('JSON settings with a schema', () => {
+		const schema = {
+			type: 'object',
+			required: ['version'],
+			additionalProperties: false,
+			properties: { version: { const: 1 } },
+		};
+
+		beforeEach(() => {
+			registerSettingSchema('Json_Config', schema);
+			settingsGetSettingMock.withArgs('Json_Config').returns({
+				_id: 'Json_Config',
+				type: 'code',
+				code: 'application/json',
+			});
+		});
+
+		it('accepts a JSON document matching the schema', () => {
+			expect(() => validateSettingRules([{ _id: 'Json_Config', value: '{"version":1}' }])).to.not.throw();
+		});
+
+		it('rejects a JSON document violating the schema', () => {
+			expect(() => validateSettingRules([{ _id: 'Json_Config', value: '{"version":2}' }])).to.throw('Json_Config_Invalid');
+		});
+
+		it('rejects a value that is not parseable JSON', () => {
+			expect(() => validateSettingRules([{ _id: 'Json_Config', value: 'not json {' }])).to.throw('Json_Config_Invalid');
+		});
+
+		it('accepts an empty value, meaning the setting is unconfigured', () => {
+			expect(() => validateSettingRules([{ _id: 'Json_Config', value: '' }])).to.not.throw();
+		});
+
+		it('ignores a schema registered for a code setting that is not application/json', () => {
+			registerSettingSchema('Js_Code', schema);
+			settingsGetSettingMock.withArgs('Js_Code').returns({
+				_id: 'Js_Code',
+				type: 'code',
+				code: 'text/javascript',
+			});
+
+			expect(() => validateSettingRules([{ _id: 'Js_Code', value: 'not json {' }])).to.not.throw();
+		});
 	});
 });

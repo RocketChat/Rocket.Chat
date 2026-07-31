@@ -148,7 +148,7 @@ const CannedResponsesTable = () => {
 			)}
 			{isSuccess && data?.cannedResponses.length > 0 && (
 				<>
-					<GenericTable aria-busy={text !== debouncedText}>
+					<GenericTable aria-label={t('Canned_Responses')} aria-busy={text !== debouncedText}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data?.cannedResponses.map(({ _id, shortcut, scope, createdBy, _createdAt, tags = [] }) => (

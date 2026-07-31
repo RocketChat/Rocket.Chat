@@ -107,6 +107,7 @@ describe('[Rooms]', () => {
 
 	describe('[/rooms.saveDraft]', () => {
 		let testChannel: IRoom;
+		let threadId: IMessage['_id'];
 		let userWithoutSubscription: TestUser<IUser>;
 		let userWithoutSubscriptionCredentials: Credentials;
 
@@ -114,6 +115,10 @@ describe('[Rooms]', () => {
 			testChannel = (await createRoom({ type: 'c', name: `rooms.saveDraft.test.${Date.now()}-${Math.random()}` })).body.channel;
 			userWithoutSubscription = await createUser({ joinDefaultChannels: false });
 			userWithoutSubscriptionCredentials = await login(userWithoutSubscription.username, password);
+
+			const rootMessage = (await sendSimpleMessage({ roomId: testChannel._id, text: 'thread root' })).body.message;
+			threadId = rootMessage._id;
+			await sendSimpleMessage({ roomId: testChannel._id, text: 'thread reply', tmid: threadId });
 		});
 
 		after(() => Promise.all([deleteRoom({ type: 'c', roomId: testChannel._id }), deleteUser(userWithoutSubscription)]));
@@ -178,6 +183,140 @@ describe('[Rooms]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.subscription).to.not.have.property('draft');
+				});
+		});
+
+		it('should save a thread draft keyed by tmid without touching the main draft', async () => {
+			const draft = `thread-draft-${Date.now()}`;
+
+			await request
+				.post(api('rooms.saveDraft'))
+				.set(credentials)
+				.send({ rid: testChannel._id, draft, tmid: threadId })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.query({ roomId: testChannel._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.subscription).to.have.nested.property(`threadDrafts.${threadId}`, draft);
+					expect(res.body.subscription).to.not.have.property('draft');
+				});
+		});
+
+		it('should never write a nested key to the subscription when the tmid contains a mongo path separator', async () => {
+			for (const tmid of ['threadDrafts.polluted', '__proto__.polluted', 'foo.bar.baz', '$set.x']) {
+				await request
+					.post(api('rooms.saveDraft'))
+					.set(credentials)
+					.send({ rid: testChannel._id, draft: 'polluted', tmid })
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+					});
+
+				await request.post(api('rooms.saveDraft')).set(credentials).send({ rid: testChannel._id, draft: '', tmid }).expect(400);
+			}
+
+			await request
+				.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.query({ roomId: testChannel._id })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.subscription).to.not.have.nested.property('threadDrafts.polluted');
+					expect(res.body.subscription).to.not.have.nested.property('threadDrafts.__proto__');
+					expect(res.body.subscription).to.not.have.nested.property('threadDrafts.foo');
+				});
+		});
+
+		it('should accept a thread draft for a message whose _id is non-alphanumeric (e.g. imported threads)', async () => {
+			const importedRootId = `slack-C1-${Date.now()}-000001`;
+
+			await request
+				.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({ message: { _id: importedRootId, rid: testChannel._id, msg: 'imported thread root' } })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.message).to.have.property('_id', importedRootId);
+				});
+
+			const draft = `imported-thread-draft-${Date.now()}`;
+
+			await request
+				.post(api('rooms.saveDraft'))
+				.set(credentials)
+				.send({ rid: testChannel._id, draft, tmid: importedRootId })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.query({ roomId: testChannel._id })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.subscription.threadDrafts).to.have.property(importedRootId, draft);
+				});
+		});
+
+		it('should allow clearing a thread draft even when the tmid is not a thread in the room', async () => {
+			await request
+				.post(api('rooms.saveDraft'))
+				.set(credentials)
+				.send({ rid: testChannel._id, draft: '', tmid: `nonExistentThread${Date.now()}` })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('should return the same error for a subscribed and an unsubscribed room regardless of tmid existence', async () => {
+			for (const tmid of [threadId, `nonExistentThread${Date.now()}`]) {
+				await request
+					.post(api('rooms.saveDraft'))
+					.set(userWithoutSubscriptionCredentials)
+					.send({ rid: testChannel._id, draft: 'probe', tmid })
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-invalid-subscription');
+					});
+			}
+		});
+
+		it('should clear a thread draft when saving an empty draft for the tmid', async () => {
+			const draft = `thread-draft-${Date.now()}`;
+
+			await request.post(api('rooms.saveDraft')).set(credentials).send({ rid: testChannel._id, draft, tmid: threadId }).expect(200);
+
+			await request.post(api('rooms.saveDraft')).set(credentials).send({ rid: testChannel._id, draft: '', tmid: threadId }).expect(200);
+
+			await request
+				.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.query({ roomId: testChannel._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.subscription).to.not.have.nested.property(`threadDrafts.${threadId}`);
 				});
 		});
 
@@ -2764,6 +2903,17 @@ describe('[Rooms]', () => {
 			]),
 		);
 
+		const expectSubscriptionFieldToEqual = async (field: 'name' | 'fname', expected: string) => {
+			for (let attempt = 0; ; attempt++) {
+				const { body } = await request.get(api('subscriptions.getOne')).set(credentials).query({ roomId });
+				if (body.subscription?.[field] === expected || attempt >= 20) {
+					expect(body.subscription?.[field]).to.equal(expected);
+					return;
+				}
+				await sleep(250);
+			}
+		};
+
 		it('should update group name if user changes username', async () => {
 			await updateSetting('UI_Use_Real_Name', false);
 			await request
@@ -2776,18 +2926,7 @@ describe('[Rooms]', () => {
 					},
 				});
 
-			// need to wait for the username update finish
-			await sleep(300);
-
-			await request
-				.get(api('subscriptions.getOne'))
-				.set(credentials)
-				.query({ roomId })
-				.send()
-				.expect((res) => {
-					const { subscription } = res.body;
-					expect(subscription.name).to.equal(`changed.username.${testUser.username},${testUser2.username}`);
-				});
+			await expectSubscriptionFieldToEqual('name', `changed.username.${testUser.username},${testUser2.username}`);
 		});
 
 		describe('use real name', () => {
@@ -2810,18 +2949,7 @@ describe('[Rooms]', () => {
 						},
 					});
 
-				// need to wait for the name update finish
-				await sleep(300);
-
-				await request
-					.get(api('subscriptions.getOne'))
-					.set(credentials)
-					.query({ roomId })
-					.send()
-					.expect((res) => {
-						const { subscription } = res.body;
-						expect(subscription.fname).to.equal(`changed.name.${testUser.username}, ${testUser2.name}`);
-					});
+				await expectSubscriptionFieldToEqual('fname', `changed.name.${testUser.username}, ${testUser2.name}`);
 			});
 		});
 	});

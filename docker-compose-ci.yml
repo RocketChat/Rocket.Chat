@@ -227,6 +227,12 @@ services:
       - api
     ports:
       - 4000:8080
+    networks:
+      default:
+        # single-label hostnames fail server-fetch SSRF domain validation and message-parser only links TLDs
+        # from its whitelist (.local/.test/.internal are not in it), so oembed tests reach it through this alias
+        aliases:
+          - mock-server.dev
     healthcheck:
       test: ['CMD', '/mock-server', '-healthcheck']
       interval: 2s

@@ -3,6 +3,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { addOAuthService } from '../../lib/oauth/addOAuthService';
 
 declare module '@rocket.chat/ddp-client' {
@@ -25,6 +26,7 @@ export const addOAuthServiceMethod = async (userId: string, name: string): Promi
 
 Meteor.methods<ServerMethods>({
 	async addOAuthService(name) {
+		methodDeprecationLogger.method('addOAuthService', '9.0.0', '/v1/settings.addCustomOAuth');
 		check(name, String);
 
 		const userId = Meteor.userId();

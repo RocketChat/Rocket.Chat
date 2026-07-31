@@ -133,7 +133,7 @@ exports[`AttributesForm renders NewAttribute without crashing 1`] = `
         </div>
       </div>
       <div
-        class="rcx-box rcx-box--full rcx-css-m843eh"
+        class="rcx-box rcx-box--full rcx-css-f51umh"
       >
         <div
           class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
@@ -353,7 +353,7 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
         </div>
       </div>
       <div
-        class="rcx-box rcx-box--full rcx-css-m843eh"
+        class="rcx-box rcx-box--full rcx-css-f51umh"
       >
         <div
           class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
