@@ -126,6 +126,7 @@ const RoomMessage = ({
 						emoji={message.emoji ? <Emoji emojiHandle={message.emoji} fillContainer /> : undefined}
 						avatarUrl={message.avatar}
 						username={message.u.username}
+						title=''
 						size='x36'
 						onMouseEnter={(e) => openUserCard(e, message.u.username)}
 						onClick={() => openUserInfo(message.u.username)}

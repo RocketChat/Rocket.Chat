@@ -94,7 +94,17 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 			{...props}
 		>
 			<MessageSystemLeftContainer>
-				{!isSelecting && showUserAvatar && <UserAvatar username={message.u.username} size='x18' />}
+				{!isSelecting && showUserAvatar && (
+					<UserAvatar
+						username={message.u.username}
+						size='x18'
+						title=''
+						style={{ cursor: 'pointer' }}
+						onMouseEnter={(e) => openUserCard(e, message.u.username)}
+						onClick={() => openUserInfo(message.u.username)}
+						{...triggerProps}
+					/>
+				)}
 				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} aria-label={checkboxLabel} />}
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
