@@ -1,4 +1,4 @@
-import type { ClipboardEvent } from 'react';
+import type { ClipboardEvent, MouseEvent } from 'react';
 
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
 import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
@@ -15,16 +15,25 @@ export const isCmdOrCtrlPressed = (event: { metaKey: boolean; ctrlKey: boolean }
 	return (isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey);
 };
 
+// A contenteditable swallows link navigation, so Cmd/Ctrl+click has to be resolved by hand.
+export const getModifierClickHref = (event: MouseEvent<HTMLElement>): string | undefined => {
+	if (!isCmdOrCtrlPressed(event)) {
+		return undefined;
+	}
+
+	const href = (event.target as HTMLElement).closest('a')?.getAttribute('href');
+
+	// Links the renderer could not trust are rendered with a '#' href.
+	return href && href !== '#' ? href : undefined;
+};
+
 export const handleFormattingShortcut = (
 	event: KeyboardEvent,
 	formattingButtons: FormattingButton[],
 	composer: ComposerAPI,
 	preventDefault = false,
 ) => {
-	const isMacOS = navigator.platform.indexOf('Mac') !== -1;
-	const isCmdOrCtrlPressed = (isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey);
-
-	if (!isCmdOrCtrlPressed) {
+	if (!isCmdOrCtrlPressed(event)) {
 		return false;
 	}
 
