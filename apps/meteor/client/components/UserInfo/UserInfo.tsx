@@ -21,8 +21,8 @@ import MarkdownText from '../MarkdownText';
 import UTCClock from '../UTCClock';
 import { UserCardRoles, UserCardUsername } from '../UserCard';
 import UserInfoABACAttributes from './UserInfoABACAttributes';
-import UserInfoAvatar from './UserInfoAvatar';
 import UserInfoCopyableText from './UserInfoCopyableText';
+import UserInfoZoomableAvatar from './UserInfoZoomableAvatar';
 
 type UserInfoDataProps = Serialized<
 	Pick<
@@ -90,7 +90,6 @@ const UserInfo = ({
 	const timeAgo = useTimeAgo();
 	const userDisplayName = useUserDisplayName({ name, username });
 	const userCustomFields = useUserCustomFields(customFields);
-
 	const usernameId = useId();
 
 	const profileDetails = [
@@ -103,7 +102,7 @@ const UserInfo = ({
 		<ContextualbarScrollableContent padding={24} {...props}>
 			<InfoPanel>
 				<InfoPanelSection display='flex' alignItems='center'>
-					{username && <UserInfoAvatar username={username} etag={avatarETag} size='x48' />}
+					{username && <UserInfoZoomableAvatar username={username} etag={avatarETag} />}
 					<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} marginInlineStart='x8' withTruncatedText>
 						{userDisplayName && <UserCardUsername is='h2' flexGrow={0} flexBasis='auto' status={status} name={userDisplayName} />}
 						{customStatus && (
