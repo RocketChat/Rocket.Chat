@@ -119,7 +119,7 @@ describe('buildOperation', () => {
 
 		const operation = build('GET', '/api/v1/weird', { query });
 
-		expect(operation.parameters).toEqual([{ name: 'query', in: 'query', required: false, schema: query.schema }]);
+		expect(operation.parameters).toEqual([{ name: 'query', in: 'query', required: false, schema: { type: 'string' } }]);
 	});
 
 	it('should inject the error responses implied by the route options', () => {
@@ -139,7 +139,7 @@ describe('buildOperation', () => {
 		});
 
 		expect(operation.responses[400].description).toBe('Custom bad request');
-		expect(operation.responses[400].content?.['application/json'].schema).toBe(okSchema.schema);
+		expect(operation.responses[400].content?.['application/json'].schema).toEqual(okSchema.schema);
 	});
 
 	it('should not offer rate limit headers when rate limiting is disabled', () => {
@@ -286,7 +286,25 @@ describe('buildOperation', () => {
 			required: ['success'],
 		});
 		// schemas without an $id stay inline
-		expect(operation.responses[200].content?.['application/json'].schema).toBe(okSchema.schema);
+		expect(operation.responses[200].content?.['application/json'].schema).toEqual(okSchema.schema);
+	});
+	it('should convert `nullable` to the 3.1 spelling', () => {
+		const schema = ajv.compile({
+			type: 'object',
+			properties: {
+				name: { type: 'string', nullable: true },
+				count: { type: ['number', 'null'], nullable: true },
+				plain: { type: 'string' },
+			},
+		});
+
+		const operation = build('GET', '/api/v1/rooms.info', { response: { 200: schema } });
+		const properties = (operation.responses[200].content?.['application/json'].schema as any).properties;
+
+		expect(properties.name).toEqual({ type: ['string', 'null'] });
+		expect(properties.count).toEqual({ type: ['number', 'null'] });
+		expect(properties.plain).toEqual({ type: 'string' });
+		expect(JSON.stringify(operation)).not.toContain('nullable');
 	});
 });
 

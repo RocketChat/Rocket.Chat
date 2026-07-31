@@ -73,7 +73,8 @@ const makeOpenAPIResponse = (paths: Record<string, Record<string, Route>>) => ({
 	},
 	servers: [
 		{
-			url: settings.get('Site_Url'),
+			// trailing slash would make every path in the document resolve with a double one
+			url: settings.get<string>('Site_Url')?.replace(/\/$/, ''),
 		},
 	],
 	tags: getTags(paths),
