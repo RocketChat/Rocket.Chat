@@ -10,10 +10,10 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { API } from '../..';
-import { businessHourManager } from '../../../lib/omnichannel/business-hour';
-import type { ExtractRoutesFromAPI } from '../../ApiClass';
 import { businessHoursExamples } from './businessHours.examples';
 import { findLivechatBusinessHour } from './lib/businessHours';
+import { businessHourManager } from '../../../lib/omnichannel/business-hour';
+import type { ExtractRoutesFromAPI } from '../../ApiClass';
 
 API.v1.addRoute(
 	'livechat/business-hour',
