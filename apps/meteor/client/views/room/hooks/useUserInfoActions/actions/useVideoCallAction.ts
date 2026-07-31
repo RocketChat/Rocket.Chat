@@ -52,27 +52,10 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserI
 			}
 
 			try {
+				const rid = room?._id ?? (await createDirectMessage({ username: user.username })).room.rid;
 				await loadCapabilities();
 				closeUserCard();
-
-				// The popup, as before. `room` is always present here — the guard above returned otherwise — and is
-				// re-tested only so its type says so.
-				if (!conferenceWindowEnabled) {
-					if (room) {
-						dispatchPopup({ rid: room._id });
-					}
-					return;
-				}
-
-				// The call window asks for itself, and a call placed from a card is about the person, not the room —
-				// so a direct room is created for one that doesn't exist yet, rather than hiding the entry.
-				let rid = room?._id;
-				if (!rid) {
-					const { room: newRoom } = await createDirectMessage({ usernames: user.username ?? '' });
-					rid = newRoom._id;
-				}
-
-				startCall(rid);
+				dispatchPopup({ rid });
 			} catch (error: any) {
 				dispatchWarning(error.error);
 			}
@@ -85,7 +68,12 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserI
 		const hasCallableRoom = room ? !isRoomFederated(room) : conferenceWindowEnabled && !!user.username;
 
 		const shouldShowStartCall =
-			hasCallableRoom && user._id !== ownUserId && enabledForDMs && permittedToCallManagement && !isCalling && !isRinging;
+			(room ? !isRoomFederated(room) : canCreateDirectMessage) &&
+			user._id !== ownUserId &&
+			enabledForDMs &&
+			permittedToCallManagement &&
+			!isCalling &&
+			!isRinging;
 
 		return shouldShowStartCall
 			? {
@@ -99,6 +87,8 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserI
 		room,
 		user._id,
 		user.username,
+		canCreateDirectMessage,
+		createDirectMessage,
 		ownUserId,
 		enabledForDMs,
 		permittedToCallManagement,
