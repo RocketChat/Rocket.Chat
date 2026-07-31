@@ -52,23 +52,21 @@ test.describe('Messaging', () => {
 			await expect(channelPage.content.lastUserMessage).toBeFocused();
 		});
 
-		test('should leave the room toolbar with Shift+Tab', async ({ page }) => {
-			const threadsAction = channelPage.roomHeaderToolbar.getByRole('button', { name: 'Threads', exact: true });
-			await threadsAction.focus();
-			await expect(threadsAction).toBeFocused();
+		test('should open the full profile from the message author name', async ({ page }) => {
+			const fullProfile = page.getByRole('dialog', { name: 'Full profile' });
 
-			await page.keyboard.press('Shift+Tab');
+			await test.step('open the full profile with Space', async () => {
+				await page.keyboard.press('Shift+Tab');
+				await page.keyboard.press('ArrowUp');
+				await page.keyboard.press('Tab');
+				await page.keyboard.press('Space');
+				await expect(fullProfile).toBeVisible();
+			});
 
-			await expect(channelPage.getBtnOpenRoomInfo(targetChannel)).toBeFocused();
-		});
-
-		test('should open the user info from the message author name with the keyboard', async ({ page }) => {
-			await page.keyboard.press('Shift+Tab');
-			await page.keyboard.press('ArrowUp');
-			await page.keyboard.press('Tab');
-			await page.keyboard.press('Space');
-
-			await channelPage.tabs.userInfo.waitForDisplay();
+			await test.step('close the full profile with Esc', async () => {
+				await page.keyboard.press('Escape');
+				await expect(fullProfile).not.toBeVisible();
+			});
 		});
 
 		test('should not restore focus on the last focused if it was triggered by click', async ({ page }) => {

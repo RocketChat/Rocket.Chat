@@ -44,53 +44,53 @@ exports[`renders Default without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-15qq8ie"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-13kmycs"
+                    class="rcx-box rcx-box--full rcx-css-14d0dip"
                   >
                     <figure
-                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x332"
+                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x124"
                     >
                       <img
                         alt="Avatar"
                         aria-hidden="true"
-                        class="rcx-avatar__element rcx-avatar__element--x332"
+                        class="rcx-avatar__element rcx-avatar__element--x124"
                         data-username="guilherme.gazzo"
                         src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
                         title="guilherme.gazzo"
                       />
                     </figure>
-                  </div>
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-6jv9ad"
-                  >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-i67e8e"
+                      class="rcx-box rcx-box--full rcx-css-1m9ekgz"
                     >
-                      <svg
-                        aria-hidden="true"
-                        class="rcx-status-bullet rcx-status-bullet--offline undefined "
-                        fill="none"
-                        height="12"
-                        viewBox="0 0 12 12"
-                        width="12"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <circle
-                          class="rcx-status-bullet rcx-status-bullet--offline"
-                          cx="6"
-                          cy="6"
-                          r="5"
-                          stroke-width="2"
-                        />
-                      </svg>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-dredvr"
-                        title="guilherme.gazzo"
+                        class="rcx-box rcx-box--full rcx-css-902tla"
                       >
-                        guilherme.gazzo
+                        <svg
+                          aria-hidden="true"
+                          class="rcx-status-bullet rcx-status-bullet--offline undefined "
+                          fill="none"
+                          height="12"
+                          viewBox="0 0 12 12"
+                          width="12"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <circle
+                            class="rcx-status-bullet rcx-status-bullet--offline"
+                            cx="6"
+                            cy="6"
+                            r="5"
+                            stroke-width="2"
+                          />
+                        </svg>
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-dredvr"
+                          title="guilherme.gazzo"
+                        >
+                          guilherme.gazzo
+                        </div>
                       </div>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
+                      class="rcx-box rcx-box--full rcx-css-ih19h2"
                     >
                       🛴 currently working on User Card
                     </div>
@@ -98,63 +98,6 @@ exports[`renders Default without crashing 1`] = `
                   <div
                     class="rcx-box rcx-box--full rcx-css-6jv9ad"
                   >
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-1jagyun"
-                    >
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
-                      >
-                        Nickname
-                      </div>
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
-                      >
-                        gazzo
-                      </div>
-                    </div>
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-1jagyun"
-                    >
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
-                      >
-                        Roles
-                      </div>
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-9vcs0o"
-                      >
-                        <span
-                          class="rcx-box rcx-box--full rcx-css-1ooaf8a"
-                        >
-                          <div
-                            class="rcx-box rcx-box--full rcx-css-1i2tyln"
-                          >
-                            <span
-                              class="rcx-box rcx-box--full rcx-tag "
-                            >
-                              <span
-                                class="rcx-tag__inner"
-                              >
-                                admin
-                              </span>
-                            </span>
-                          </div>
-                          <div
-                            class="rcx-box rcx-box--full rcx-css-1i2tyln"
-                          >
-                            <span
-                              class="rcx-box rcx-box--full rcx-tag "
-                            >
-                              <span
-                                class="rcx-tag__inner"
-                              >
-                                user
-                              </span>
-                            </span>
-                          </div>
-                        </span>
-                      </div>
-                    </div>
                     <dl
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
@@ -166,9 +109,26 @@ exports[`renders Default without crashing 1`] = `
                       </dt>
                       <dd
                         aria-labelledby="_r_1_"
-                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
                       >
-                        guilherme.gazzo
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1aewkgk"
+                        >
+                          guilherme.gazzo
+                        </div>
+                        <button
+                          aria-label="Copy"
+                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          title="Copy"
+                          type="button"
+                        >
+                          <i
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                          >
+                            
+                          </i>
+                        </button>
                       </dd>
                     </dl>
                     <div
@@ -177,16 +137,103 @@ exports[`renders Default without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-1po16l8"
                       >
+                        Nickname
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1aewkgk"
+                        >
+                          gazzo
+                        </div>
+                        <button
+                          aria-label="Copy"
+                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          title="Copy"
+                          type="button"
+                        >
+                          <i
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                          >
+                            
+                          </i>
+                        </button>
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
+                        Workspace_roles
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1fksvtu"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-zy9xaq"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
+                          >
+                            <span
+                              class="rcx-tag__inner"
+                            >
+                              admin
+                            </span>
+                          </span>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-zy9xaq"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
+                          >
+                            <span
+                              class="rcx-tag__inner"
+                            >
+                              user
+                            </span>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
                         Bio
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
                       >
                         <div
-                          class="rcx-box rcx-box--full"
+                          class="rcx-box rcx-box--full rcx-css-1y6rh01"
                         >
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
+                          <div
+                            class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
+                          >
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
+                          </div>
                         </div>
+                        <button
+                          aria-label="Copy"
+                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          title="Copy"
+                          type="button"
+                        >
+                          <i
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                          >
+                            
+                          </i>
+                        </button>
                       </div>
                     </div>
                     <div
@@ -198,23 +245,40 @@ exports[`renders Default without crashing 1`] = `
                         Email
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
                       >
-                        <a
-                          class="rcx-box rcx-box--full rcx-css-1te28na"
-                          href="mailto:rocketchat@rocket.chat"
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1aewkgk"
                         >
-                          rocketchat@rocket.chat
-                        </a>
-                        <span
-                          class="rcx-box rcx-box--full rcx-tag  rcx-css-1dtwr38 rcx-css-1eogw2f"
-                        >
-                          <span
-                            class="rcx-tag__inner"
+                          <a
+                            class="rcx-box rcx-box--full rcx-css-1te28na"
+                            href="mailto:rocketchat@rocket.chat"
                           >
-                            Not_verified
+                            rocketchat@rocket.chat
+                          </a>
+                          <span
+                            class="rcx-box rcx-box--full rcx-tag  rcx-css-1dtwr38 rcx-css-1eogw2f"
+                          >
+                            <span
+                              class="rcx-tag__inner"
+                            >
+                              Not_verified
+                            </span>
                           </span>
-                        </span>
+                        </div>
+                        <button
+                          aria-label="Copy"
+                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          title="Copy"
+                          type="button"
+                        >
+                          <i
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                          >
+                            
+                          </i>
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -331,53 +395,53 @@ exports[`renders InvitedUser without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-15qq8ie"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-13kmycs"
+                    class="rcx-box rcx-box--full rcx-css-14d0dip"
                   >
                     <figure
-                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x332"
+                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x124"
                     >
                       <img
                         alt="Avatar"
                         aria-hidden="true"
-                        class="rcx-avatar__element rcx-avatar__element--x332"
+                        class="rcx-avatar__element rcx-avatar__element--x124"
                         data-username="guilherme.gazzo"
                         src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
                         title="guilherme.gazzo"
                       />
                     </figure>
-                  </div>
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-6jv9ad"
-                  >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-i67e8e"
+                      class="rcx-box rcx-box--full rcx-css-1m9ekgz"
                     >
-                      <svg
-                        aria-hidden="true"
-                        class="rcx-status-bullet rcx-status-bullet--offline undefined "
-                        fill="none"
-                        height="12"
-                        viewBox="0 0 12 12"
-                        width="12"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <circle
-                          class="rcx-status-bullet rcx-status-bullet--offline"
-                          cx="6"
-                          cy="6"
-                          r="5"
-                          stroke-width="2"
-                        />
-                      </svg>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-dredvr"
-                        title="guilherme.gazzo"
+                        class="rcx-box rcx-box--full rcx-css-902tla"
                       >
-                        guilherme.gazzo
+                        <svg
+                          aria-hidden="true"
+                          class="rcx-status-bullet rcx-status-bullet--offline undefined "
+                          fill="none"
+                          height="12"
+                          viewBox="0 0 12 12"
+                          width="12"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <circle
+                            class="rcx-status-bullet rcx-status-bullet--offline"
+                            cx="6"
+                            cy="6"
+                            r="5"
+                            stroke-width="2"
+                          />
+                        </svg>
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-dredvr"
+                          title="guilherme.gazzo"
+                        >
+                          guilherme.gazzo
+                        </div>
                       </div>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
+                      class="rcx-box rcx-box--full rcx-css-ih19h2"
                     >
                       🛴 currently working on User Card
                     </div>
@@ -385,63 +449,6 @@ exports[`renders InvitedUser without crashing 1`] = `
                   <div
                     class="rcx-box rcx-box--full rcx-css-6jv9ad"
                   >
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-1jagyun"
-                    >
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
-                      >
-                        Nickname
-                      </div>
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
-                      >
-                        gazzo
-                      </div>
-                    </div>
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-1jagyun"
-                    >
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
-                      >
-                        Roles
-                      </div>
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-9vcs0o"
-                      >
-                        <span
-                          class="rcx-box rcx-box--full rcx-css-1ooaf8a"
-                        >
-                          <div
-                            class="rcx-box rcx-box--full rcx-css-1i2tyln"
-                          >
-                            <span
-                              class="rcx-box rcx-box--full rcx-tag "
-                            >
-                              <span
-                                class="rcx-tag__inner"
-                              >
-                                admin
-                              </span>
-                            </span>
-                          </div>
-                          <div
-                            class="rcx-box rcx-box--full rcx-css-1i2tyln"
-                          >
-                            <span
-                              class="rcx-box rcx-box--full rcx-tag "
-                            >
-                              <span
-                                class="rcx-tag__inner"
-                              >
-                                user
-                              </span>
-                            </span>
-                          </div>
-                        </span>
-                      </div>
-                    </div>
                     <dl
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
@@ -453,9 +460,26 @@ exports[`renders InvitedUser without crashing 1`] = `
                       </dt>
                       <dd
                         aria-labelledby="_r_3_"
-                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
                       >
-                        guilherme.gazzo
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1aewkgk"
+                        >
+                          guilherme.gazzo
+                        </div>
+                        <button
+                          aria-label="Copy"
+                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          title="Copy"
+                          type="button"
+                        >
+                          <i
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                          >
+                            
+                          </i>
+                        </button>
                       </dd>
                     </dl>
                     <div
@@ -464,16 +488,103 @@ exports[`renders InvitedUser without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-1po16l8"
                       >
+                        Nickname
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1aewkgk"
+                        >
+                          gazzo
+                        </div>
+                        <button
+                          aria-label="Copy"
+                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          title="Copy"
+                          type="button"
+                        >
+                          <i
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                          >
+                            
+                          </i>
+                        </button>
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
+                        Workspace_roles
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1fksvtu"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-zy9xaq"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
+                          >
+                            <span
+                              class="rcx-tag__inner"
+                            >
+                              admin
+                            </span>
+                          </span>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-zy9xaq"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
+                          >
+                            <span
+                              class="rcx-tag__inner"
+                            >
+                              user
+                            </span>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
                         Bio
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
                       >
                         <div
-                          class="rcx-box rcx-box--full"
+                          class="rcx-box rcx-box--full rcx-css-1y6rh01"
                         >
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
+                          <div
+                            class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
+                          >
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
+                          </div>
                         </div>
+                        <button
+                          aria-label="Copy"
+                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          title="Copy"
+                          type="button"
+                        >
+                          <i
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                          >
+                            
+                          </i>
+                        </button>
                       </div>
                     </div>
                     <div
@@ -485,23 +596,40 @@ exports[`renders InvitedUser without crashing 1`] = `
                         Email
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
                       >
-                        <a
-                          class="rcx-box rcx-box--full rcx-css-1te28na"
-                          href="mailto:rocketchat@rocket.chat"
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1aewkgk"
                         >
-                          rocketchat@rocket.chat
-                        </a>
-                        <span
-                          class="rcx-box rcx-box--full rcx-tag  rcx-css-1dtwr38 rcx-css-1eogw2f"
-                        >
-                          <span
-                            class="rcx-tag__inner"
+                          <a
+                            class="rcx-box rcx-box--full rcx-css-1te28na"
+                            href="mailto:rocketchat@rocket.chat"
                           >
-                            Not_verified
+                            rocketchat@rocket.chat
+                          </a>
+                          <span
+                            class="rcx-box rcx-box--full rcx-tag  rcx-css-1dtwr38 rcx-css-1eogw2f"
+                          >
+                            <span
+                              class="rcx-tag__inner"
+                            >
+                              Not_verified
+                            </span>
                           </span>
-                        </span>
+                        </div>
+                        <button
+                          aria-label="Copy"
+                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          title="Copy"
+                          type="button"
+                        >
+                          <i
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                          >
+                            
+                          </i>
+                        </button>
                       </div>
                     </div>
                     <div
@@ -632,53 +760,53 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-15qq8ie"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-13kmycs"
+                    class="rcx-box rcx-box--full rcx-css-14d0dip"
                   >
                     <figure
-                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x332"
+                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x124"
                     >
                       <img
                         alt="Avatar"
                         aria-hidden="true"
-                        class="rcx-avatar__element rcx-avatar__element--x332"
+                        class="rcx-avatar__element rcx-avatar__element--x124"
                         data-username="guilherme.gazzo"
                         src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
                         title="guilherme.gazzo"
                       />
                     </figure>
-                  </div>
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-6jv9ad"
-                  >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-i67e8e"
+                      class="rcx-box rcx-box--full rcx-css-1m9ekgz"
                     >
-                      <svg
-                        aria-hidden="true"
-                        class="rcx-status-bullet rcx-status-bullet--offline undefined "
-                        fill="none"
-                        height="12"
-                        viewBox="0 0 12 12"
-                        width="12"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <circle
-                          class="rcx-status-bullet rcx-status-bullet--offline"
-                          cx="6"
-                          cy="6"
-                          r="5"
-                          stroke-width="2"
-                        />
-                      </svg>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-dredvr"
-                        title="guilherme.gazzo"
+                        class="rcx-box rcx-box--full rcx-css-902tla"
                       >
-                        guilherme.gazzo
+                        <svg
+                          aria-hidden="true"
+                          class="rcx-status-bullet rcx-status-bullet--offline undefined "
+                          fill="none"
+                          height="12"
+                          viewBox="0 0 12 12"
+                          width="12"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <circle
+                            class="rcx-status-bullet rcx-status-bullet--offline"
+                            cx="6"
+                            cy="6"
+                            r="5"
+                            stroke-width="2"
+                          />
+                        </svg>
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-dredvr"
+                          title="guilherme.gazzo"
+                        >
+                          guilherme.gazzo
+                        </div>
                       </div>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
+                      class="rcx-box rcx-box--full rcx-css-ih19h2"
                     >
                       🛴 currently working on User Card
                     </div>
@@ -686,63 +814,6 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                   <div
                     class="rcx-box rcx-box--full rcx-css-6jv9ad"
                   >
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-1jagyun"
-                    >
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
-                      >
-                        Nickname
-                      </div>
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
-                      >
-                        gazzo
-                      </div>
-                    </div>
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-1jagyun"
-                    >
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
-                      >
-                        Roles
-                      </div>
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-9vcs0o"
-                      >
-                        <span
-                          class="rcx-box rcx-box--full rcx-css-1ooaf8a"
-                        >
-                          <div
-                            class="rcx-box rcx-box--full rcx-css-1i2tyln"
-                          >
-                            <span
-                              class="rcx-box rcx-box--full rcx-tag "
-                            >
-                              <span
-                                class="rcx-tag__inner"
-                              >
-                                admin
-                              </span>
-                            </span>
-                          </div>
-                          <div
-                            class="rcx-box rcx-box--full rcx-css-1i2tyln"
-                          >
-                            <span
-                              class="rcx-box rcx-box--full rcx-tag "
-                            >
-                              <span
-                                class="rcx-tag__inner"
-                              >
-                                user
-                              </span>
-                            </span>
-                          </div>
-                        </span>
-                      </div>
-                    </div>
                     <dl
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
@@ -754,9 +825,26 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                       </dt>
                       <dd
                         aria-labelledby="_r_5_"
-                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
                       >
-                        guilherme.gazzo
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1aewkgk"
+                        >
+                          guilherme.gazzo
+                        </div>
+                        <button
+                          aria-label="Copy"
+                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          title="Copy"
+                          type="button"
+                        >
+                          <i
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                          >
+                            
+                          </i>
+                        </button>
                       </dd>
                     </dl>
                     <div
@@ -765,16 +853,103 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-1po16l8"
                       >
+                        Nickname
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1aewkgk"
+                        >
+                          gazzo
+                        </div>
+                        <button
+                          aria-label="Copy"
+                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          title="Copy"
+                          type="button"
+                        >
+                          <i
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                          >
+                            
+                          </i>
+                        </button>
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
+                        Workspace_roles
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1fksvtu"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-zy9xaq"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
+                          >
+                            <span
+                              class="rcx-tag__inner"
+                            >
+                              admin
+                            </span>
+                          </span>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-zy9xaq"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
+                          >
+                            <span
+                              class="rcx-tag__inner"
+                            >
+                              user
+                            </span>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
                         Bio
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
                       >
                         <div
-                          class="rcx-box rcx-box--full"
+                          class="rcx-box rcx-box--full rcx-css-1y6rh01"
                         >
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
+                          <div
+                            class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
+                          >
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
+                          </div>
                         </div>
+                        <button
+                          aria-label="Copy"
+                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          title="Copy"
+                          type="button"
+                        >
+                          <i
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                          >
+                            
+                          </i>
+                        </button>
                       </div>
                     </div>
                     <div
@@ -786,23 +961,40 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                         Email
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
                       >
-                        <a
-                          class="rcx-box rcx-box--full rcx-css-1te28na"
-                          href="mailto:rocketchat@rocket.chat"
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1aewkgk"
                         >
-                          rocketchat@rocket.chat
-                        </a>
-                        <span
-                          class="rcx-box rcx-box--full rcx-tag  rcx-css-1dtwr38 rcx-css-1eogw2f"
-                        >
-                          <span
-                            class="rcx-tag__inner"
+                          <a
+                            class="rcx-box rcx-box--full rcx-css-1te28na"
+                            href="mailto:rocketchat@rocket.chat"
                           >
-                            Not_verified
+                            rocketchat@rocket.chat
+                          </a>
+                          <span
+                            class="rcx-box rcx-box--full rcx-tag  rcx-css-1dtwr38 rcx-css-1eogw2f"
+                          >
+                            <span
+                              class="rcx-tag__inner"
+                            >
+                              Not_verified
+                            </span>
                           </span>
-                        </span>
+                        </div>
+                        <button
+                          aria-label="Copy"
+                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          title="Copy"
+                          type="button"
+                        >
+                          <i
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                          >
+                            
+                          </i>
+                        </button>
                       </div>
                     </div>
                     <div
@@ -979,53 +1171,53 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-15qq8ie"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-13kmycs"
+                    class="rcx-box rcx-box--full rcx-css-14d0dip"
                   >
                     <figure
-                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x332"
+                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x124"
                     >
                       <img
                         alt="Avatar"
                         aria-hidden="true"
-                        class="rcx-avatar__element rcx-avatar__element--x332"
+                        class="rcx-avatar__element rcx-avatar__element--x124"
                         data-username="guilherme.gazzo"
                         src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
                         title="guilherme.gazzo"
                       />
                     </figure>
-                  </div>
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-6jv9ad"
-                  >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-i67e8e"
+                      class="rcx-box rcx-box--full rcx-css-1m9ekgz"
                     >
-                      <svg
-                        aria-hidden="true"
-                        class="rcx-status-bullet rcx-status-bullet--offline undefined "
-                        fill="none"
-                        height="12"
-                        viewBox="0 0 12 12"
-                        width="12"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <circle
-                          class="rcx-status-bullet rcx-status-bullet--offline"
-                          cx="6"
-                          cy="6"
-                          r="5"
-                          stroke-width="2"
-                        />
-                      </svg>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-dredvr"
-                        title="guilherme.gazzo"
+                        class="rcx-box rcx-box--full rcx-css-902tla"
                       >
-                        guilherme.gazzo
+                        <svg
+                          aria-hidden="true"
+                          class="rcx-status-bullet rcx-status-bullet--offline undefined "
+                          fill="none"
+                          height="12"
+                          viewBox="0 0 12 12"
+                          width="12"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <circle
+                            class="rcx-status-bullet rcx-status-bullet--offline"
+                            cx="6"
+                            cy="6"
+                            r="5"
+                            stroke-width="2"
+                          />
+                        </svg>
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-dredvr"
+                          title="guilherme.gazzo"
+                        >
+                          guilherme.gazzo
+                        </div>
                       </div>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
+                      class="rcx-box rcx-box--full rcx-css-ih19h2"
                     >
                       🛴 currently working on User Card
                     </div>
@@ -1033,63 +1225,6 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                   <div
                     class="rcx-box rcx-box--full rcx-css-6jv9ad"
                   >
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-1jagyun"
-                    >
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
-                      >
-                        Nickname
-                      </div>
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
-                      >
-                        gazzo
-                      </div>
-                    </div>
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-1jagyun"
-                    >
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
-                      >
-                        Roles
-                      </div>
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-9vcs0o"
-                      >
-                        <span
-                          class="rcx-box rcx-box--full rcx-css-1ooaf8a"
-                        >
-                          <div
-                            class="rcx-box rcx-box--full rcx-css-1i2tyln"
-                          >
-                            <span
-                              class="rcx-box rcx-box--full rcx-tag "
-                            >
-                              <span
-                                class="rcx-tag__inner"
-                              >
-                                admin
-                              </span>
-                            </span>
-                          </div>
-                          <div
-                            class="rcx-box rcx-box--full rcx-css-1i2tyln"
-                          >
-                            <span
-                              class="rcx-box rcx-box--full rcx-tag "
-                            >
-                              <span
-                                class="rcx-tag__inner"
-                              >
-                                user
-                              </span>
-                            </span>
-                          </div>
-                        </span>
-                      </div>
-                    </div>
                     <dl
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
@@ -1101,9 +1236,26 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                       </dt>
                       <dd
                         aria-labelledby="_r_7_"
-                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
                       >
-                        guilherme.gazzo
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1aewkgk"
+                        >
+                          guilherme.gazzo
+                        </div>
+                        <button
+                          aria-label="Copy"
+                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          title="Copy"
+                          type="button"
+                        >
+                          <i
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                          >
+                            
+                          </i>
+                        </button>
                       </dd>
                     </dl>
                     <div
@@ -1112,16 +1264,103 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-1po16l8"
                       >
+                        Nickname
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1aewkgk"
+                        >
+                          gazzo
+                        </div>
+                        <button
+                          aria-label="Copy"
+                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          title="Copy"
+                          type="button"
+                        >
+                          <i
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                          >
+                            
+                          </i>
+                        </button>
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
+                        Workspace_roles
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1fksvtu"
+                      >
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-zy9xaq"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
+                          >
+                            <span
+                              class="rcx-tag__inner"
+                            >
+                              admin
+                            </span>
+                          </span>
+                        </div>
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-zy9xaq"
+                        >
+                          <span
+                            class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
+                          >
+                            <span
+                              class="rcx-tag__inner"
+                            >
+                              user
+                            </span>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1jagyun"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+                      >
                         Bio
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
                       >
                         <div
-                          class="rcx-box rcx-box--full"
+                          class="rcx-box rcx-box--full rcx-css-1y6rh01"
                         >
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
+                          <div
+                            class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements"
+                          >
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tempus, eros convallis vulputate cursus, nisi neque eleifend libero, eget lacinia justo purus nec est. In at sodales ipsum. Sed lacinia quis purus eget pulvinar. Aenean eu pretium nunc, at aliquam magna. Praesent dignissim, tortor sed volutpat mattis, mauris diam pulvinar leo, porta commodo risus est non purus.
+                          </div>
                         </div>
+                        <button
+                          aria-label="Copy"
+                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          title="Copy"
+                          type="button"
+                        >
+                          <i
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                          >
+                            
+                          </i>
+                        </button>
                       </div>
                     </div>
                     <div
@@ -1133,23 +1372,40 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                         Email
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
                       >
-                        <a
-                          class="rcx-box rcx-box--full rcx-css-1te28na"
-                          href="mailto:rocketchat@rocket.chat"
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1aewkgk"
                         >
-                          rocketchat@rocket.chat
-                        </a>
-                        <span
-                          class="rcx-box rcx-box--full rcx-tag  rcx-css-1dtwr38 rcx-css-1eogw2f"
-                        >
-                          <span
-                            class="rcx-tag__inner"
+                          <a
+                            class="rcx-box rcx-box--full rcx-css-1te28na"
+                            href="mailto:rocketchat@rocket.chat"
                           >
-                            Not_verified
+                            rocketchat@rocket.chat
+                          </a>
+                          <span
+                            class="rcx-box rcx-box--full rcx-tag  rcx-css-1dtwr38 rcx-css-1eogw2f"
+                          >
+                            <span
+                              class="rcx-tag__inner"
+                            >
+                              Not_verified
+                            </span>
                           </span>
-                        </span>
+                        </div>
+                        <button
+                          aria-label="Copy"
+                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          title="Copy"
+                          type="button"
+                        >
+                          <i
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                          >
+                            
+                          </i>
+                        </button>
                       </div>
                     </div>
                     <div
@@ -1161,9 +1417,26 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                         Voice_call_extension
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
+                        class="rcx-box rcx-box--full rcx-css-qokha6 rcx-css-m9tmgj"
                       >
-                        1234567890
+                        <div
+                          class="rcx-box rcx-box--full rcx-css-1aewkgk"
+                        >
+                          1234567890
+                        </div>
+                        <button
+                          aria-label="Copy"
+                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          title="Copy"
+                          type="button"
+                        >
+                          <i
+                            aria-hidden="true"
+                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                          >
+                            
+                          </i>
+                        </button>
                       </div>
                     </div>
                   </div>
