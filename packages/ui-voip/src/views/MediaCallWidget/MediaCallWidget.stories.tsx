@@ -26,7 +26,7 @@ const meta = {
 	decorators: [
 		mockedContexts,
 		(Story, options) => (
-			<MockedMediaCallProvider instanceProps={{ widgetVisibility: 'open' }} {...options.args}>
+			<MockedMediaCallProvider instanceProps={{ targetWidgetVisibility: 'open' }} {...options.args}>
 				<Story />
 			</MockedMediaCallProvider>
 		),
@@ -38,10 +38,10 @@ type Story = StoryObj<typeof meta>;
 
 export const MediaCallWidgetManualTesting: Story = {
 	args: {
-		instanceProps: undefined,
+		instanceProps: {},
 	},
 	render: () => {
-		const { widgetVisibility } = useMediaCallInstance();
+		const { targetWidgetVisibility } = useMediaCallInstance();
 		const { sessionState, onCall } = useMediaCallView();
 		const { toggleWidget } = useWidgetExternalControls();
 		const { state } = sessionState;
@@ -50,7 +50,7 @@ export const MediaCallWidgetManualTesting: Story = {
 				<Button onClick={() => toggleWidget()} disabled={state !== 'none'} marginInlineEnd={8}>
 					Toggle widget
 				</Button>
-				<Button onClick={() => onCall()} disabled={widgetVisibility !== 'closed'}>
+				<Button onClick={() => onCall()} disabled={targetWidgetVisibility !== 'closed'}>
 					Receive call
 				</Button>
 				<MediaCallWidget />

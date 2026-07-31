@@ -1,16 +1,13 @@
-import { Emitter } from '@rocket.chat/emitter';
 import { useUser } from '@rocket.chat/ui-contexts';
-import { useMemo, useState, type ReactNode } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
 import { useAudioStream } from './useAudioStream';
 import useAvailableViewTracker from './useAvailableViewTracker';
 import { useGetAutocompleteOptions } from './useGetAutocompleteOptions';
+import { useInstanceState } from './useInstanceState';
 import { useMediaSessionInstance } from './useMediaSessionInstance';
-import { useMediaSessionStateSubscription } from './useMediaSessionStateSubscription';
-import { usePersistedSessionState } from './usePersistedSessionState';
 import { MediaCallInstanceContext } from '../context/MediaCallInstanceContext';
-import type { Signals } from '../context/MediaCallInstanceContext';
 
 export type MediaCallInstanceProviderProps = {
 	children: ReactNode;
@@ -18,15 +15,12 @@ export type MediaCallInstanceProviderProps = {
 };
 
 const MediaCallInstanceProvider = ({ children, enabled = true }: MediaCallInstanceProviderProps) => {
-	const [openRoomId, setOpenRoomId] = useState<string | undefined>(undefined);
 	const { currentViews, registerView, unregisterView } = useAvailableViewTracker();
 	const user = useUser();
 	const instance = useMediaSessionInstance(user?._id, enabled);
-	const [signalEmitter] = useState(() => new Emitter<Signals>());
 
-	const stateSubscription = useMediaSessionStateSubscription();
-	const { openWidget, closeWidget, targetPeer, setTargetPeer, widgetVisibility } = usePersistedSessionState(stateSubscription, instance);
-	const { subscribe, getSnapshot } = stateSubscription;
+	const { openWidget, closeWidget, targetPeer, setTargetPeer, targetWidgetVisibility, openRoomId, setOpenRoomId } =
+		useInstanceState(instance);
 
 	const [remoteStreamRefCallback, audioElement] = useAudioStream(instance);
 
@@ -35,7 +29,6 @@ const MediaCallInstanceProvider = ({ children, enabled = true }: MediaCallInstan
 	const value = useMemo(
 		() => ({
 			instance,
-			signalEmitter,
 			audioElement,
 			openRoomId,
 			setOpenRoomId,
@@ -43,32 +36,26 @@ const MediaCallInstanceProvider = ({ children, enabled = true }: MediaCallInstan
 			currentViews,
 			registerView,
 			unregisterView,
-			stateSubscription: {
-				subscribe,
-				getSnapshot,
-			},
 			openWidget,
 			closeWidget,
 			setTargetPeer,
 			targetPeer,
-			widgetVisibility,
+			targetWidgetVisibility,
 		}),
 		[
 			instance,
-			signalEmitter,
 			audioElement,
 			openRoomId,
+			setOpenRoomId,
 			getAutocompleteOptions,
 			currentViews,
 			registerView,
 			unregisterView,
-			subscribe,
-			getSnapshot,
 			openWidget,
 			closeWidget,
 			setTargetPeer,
 			targetPeer,
-			widgetVisibility,
+			targetWidgetVisibility,
 		],
 	);
 

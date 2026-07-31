@@ -8,11 +8,12 @@ import {
 	useToastMessageDispatch,
 } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import { useCallback, useEffect, useSyncExternalStore } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCallSounds } from './useCallSounds';
 import { useDesktopNotifications } from './useDesktopNotifications';
+import { useMediaSession } from './useMediaSession';
 import { useMediaSessionControls } from './useMediaSessionControls';
 import { useScreenShareStreams } from './useScreenShareStreams';
 import useWidgetPositionTracker from './useWidgetPositionTracker';
@@ -33,10 +34,9 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 
 	const setModal = useSetModal();
 
-	const { instance, audioElement, openRoomId, registerView, unregisterView, stateSubscription, setTargetPeer, targetPeer } =
-		useMediaCallInstance();
+	const { instance, audioElement, openRoomId, registerView, unregisterView, setTargetPeer, targetPeer } = useMediaCallInstance();
 
-	const sessionState = useSyncExternalStore(stateSubscription.subscribe, stateSubscription.getSnapshot);
+	const sessionState = useMediaSession(instance);
 	const controls = useMediaSessionControls(instance);
 
 	useDesktopNotifications(sessionState);
@@ -215,7 +215,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 
 	const streams = useScreenShareStreams(instance);
 
-	const { onChangePosition, getRestorePosition } = useWidgetPositionTracker();
+	const { onChangePosition, lastKnownPosition } = useWidgetPositionTracker();
 
 	useEffect(() => {
 		return instance?.on('endedCall', () => {
@@ -242,7 +242,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		streams,
 		widgetPositionTracker: {
 			onChangePosition,
-			getRestorePosition,
+			lastKnownPosition,
 		},
 	};
 

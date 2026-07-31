@@ -38,7 +38,7 @@ const OngoingCall = () => {
 	} = useMediaCallView();
 	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt } = sessionState;
 	const { currentViews } = useMediaCallInstance();
-	const isPopout = currentViews.includes('popout');
+	const isPopout = currentViews.has('popout');
 
 	const { localScreen, remoteScreen } = streams;
 

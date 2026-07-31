@@ -9,7 +9,6 @@ const testCases = Object.values(composeStories(stories)).map((Story) => [Story.s
 
 test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
 	const view = render(<Story />, { wrapper: mockAppRoot().build() });
-	await new Promise((resolve) => setTimeout(resolve, 500));
 	expect(view.baseElement).toMatchSnapshot();
 });
 

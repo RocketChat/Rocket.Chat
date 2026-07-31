@@ -19,8 +19,7 @@ import { useWidgetExternalControls } from '../../context/useWidgetExternalContro
 const NewCall = () => {
 	const { t } = useTranslation();
 
-	const { sessionState, onCall, onSelectPeer, targetPeer } = useMediaCallView();
-	const { peerInfo } = sessionState;
+	const { onCall, onSelectPeer, targetPeer } = useMediaCallView();
 	const { toggleWidget } = useWidgetExternalControls();
 
 	const autocomplete = usePeerAutocomplete(onSelectPeer, targetPeer);
@@ -33,9 +32,9 @@ const NewCall = () => {
 			</WidgetHeader>
 			<WidgetContent>
 				<PeerAutocomplete {...autocomplete} />
-				{peerInfo && (
+				{targetPeer && (
 					<Box marginBlock={8}>
-						<PeerInfo {...peerInfo} />
+						<PeerInfo {...targetPeer} />
 					</Box>
 				)}
 			</WidgetContent>

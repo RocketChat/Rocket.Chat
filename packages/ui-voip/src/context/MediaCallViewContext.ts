@@ -29,13 +29,13 @@ type MediaCallViewContextValue = {
 	streams: MediaCallStreams;
 	widgetPositionTracker?: {
 		onChangePosition: (position: LastKnownPosition | null) => void;
-		getRestorePosition: () => LastKnownPosition | null;
+		lastKnownPosition: LastKnownPosition | null;
 	};
 };
 
-const defaultSessionState: SessionState = {
+export const defaultSessionState: SessionState = {
 	state: 'none',
-	connectionState: 'CONNECTED',
+	connectionState: 'CONNECTING',
 	peerInfo: undefined,
 	transferredBy: undefined,
 	hidden: false,
@@ -44,6 +44,7 @@ const defaultSessionState: SessionState = {
 	remoteMuted: false,
 	remoteHeld: false,
 	callId: undefined,
+	startedAt: undefined,
 	supportedFeatures: ['audio', 'transfer', 'hold'],
 };
 

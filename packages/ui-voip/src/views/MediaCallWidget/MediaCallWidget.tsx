@@ -5,13 +5,15 @@ import { useMediaCallView } from '../../context/MediaCallViewContext';
 import useRegisterView from '../../context/useRegisterView';
 
 const MediaCallWidget = () => {
-	const { widgetVisibility } = useMediaCallInstance();
+	const { targetWidgetVisibility } = useMediaCallInstance();
 	const currentViews = useRegisterView('widget');
 	const {
-		sessionState: { hidden },
+		sessionState: { hidden, state },
 	} = useMediaCallView();
 
-	if (hidden || !currentViews.includes('widget') || widgetVisibility === 'closed') {
+	const widgetVisible = targetWidgetVisibility === 'open' || state !== 'none';
+
+	if (hidden || !currentViews.has('widget') || !widgetVisible) {
 		return null;
 	}
 
