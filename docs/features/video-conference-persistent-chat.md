@@ -227,7 +227,7 @@ The provider's URL is embedded in an iframe, so it must permit framing (no restr
 
 ## Roadmap: membership-based conferences
 
-> **Status: in progress.** Phases 1, 1b and 2 have landed; 3–5 are still planned. This section is the
+> **Status: in progress.** Phases 1, 1b, 2 and 3 have landed; 4–5 are still planned. This section is the
 > agreed design and the progress tracker — update the checkboxes as work lands, and move prose up into the
 > sections above once a phase ships.
 
@@ -291,9 +291,9 @@ places rely on that. Miss one and added-but-absent people render as if they were
 
 ### Phase 3 — decline
 
-- [ ] Persist the decline flag on the member's `users[]` entry.
-- [ ] Move decline **server-side**. It is currently client-published to `notify-user/${uid}/video-conference`, so any client can publish it on another user's behalf; persisting a claim like that is a soft spoofing vector.
-- [ ] Regression test: a decline from one member leaves the conference running for everyone else. This holds today only because `onDirectCallRejected` bails when `params.callId !== currentCallData?.callId`, and the `video-conference.cancel` teardown sits behind that same guard plus `!joined`. Nothing stops that guard being widened later.
+- [x] Persist the decline on the member's `users[]` entry (`declined` / `declinedAt`). Someone rung as a room member has no entry yet, so declining creates one — otherwise there is nowhere to record it. Declining is not exclusive with joining: a member can decline and join later.
+- [x] Moved the *record* server-side, via `POST /v1/video-conference.decline`, which takes no target user and writes only against the caller's own membership. The client-published `rejected` stays, because the 1:1 flow depends on it (the caller's client is waiting on that message) — but it is a claim one client makes about another user's call, so it is no longer what gets stored.
+- [x] Regression test in `client/lib/VideoConfManager.spec.ts`: a `rejected` for a call we are not placing never reaches `video-conference.cancel`. This holds only because `onDirectCallRejected` bails when `params.callId !== currentCallData?.callId`, and the teardown sits behind that guard plus `!joined` — so it is pinned, since widening that guard would silently let one decline end everybody's call. The spec also covers `ring` and `call` both registering an incoming call.
 
 ### Phase 4 — conference call history
 
@@ -318,7 +318,7 @@ The largest remaining piece, and independently shippable. Gives the "rejoin from
   wanted later. `IVideoConferenceUser extends Pick<Required<IUser>, '_id' | 'username' | 'name'>` — required
   `username` *and* `name` — so that constraint has to relax when it happens. Adding a nullable `source`
   discriminator to the entry while Phase 1 is being written costs nothing and avoids a migration later.
-- **A call members panel.** Decision 4 persists declines, but there is deliberately nowhere to *see* one in
+- **A call members panel.** Declines are persisted, but there is deliberately nowhere to *see* one in
   this scope. The intended home is a members panel listing the call's members and their state — added,
   joined, declined, external. Until it exists, a decline is recorded but invisible to the adder.
 - **Docking the ringing widget.** Decision 5 keeps the current floating overlay for every case. Docking it

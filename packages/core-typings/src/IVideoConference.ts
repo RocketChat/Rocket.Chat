@@ -67,6 +67,12 @@ export interface IVideoConferenceUser extends Pick<Required<IUser>, '_id' | 'use
 	ts: Date;
 	joined?: boolean;
 	joinedAt?: Date;
+	/**
+	 * Set when the member dismissed the call rather than joining. It records what happened; it never ends the
+	 * call for anyone else. A member can decline and still join later, so this is not exclusive with `joined`.
+	 */
+	declined?: boolean;
+	declinedAt?: Date;
 }
 
 /**

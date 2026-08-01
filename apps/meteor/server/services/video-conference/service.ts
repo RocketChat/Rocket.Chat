@@ -1143,6 +1143,36 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		return added;
 	}
 
+	/**
+	 * Records that a user dismissed the call instead of joining.
+	 *
+	 * This only writes to the member's entry — it never ends the conference, which is what separates
+	 * declining a conference from rejecting a 1:1 call. A member who declines can still join afterwards.
+	 *
+	 * Someone rung as a room member has no entry yet, so one is created for them: without it there would be
+	 * nowhere to record the decline.
+	 */
+	public async declineCall(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void> {
+		const call = await VideoConferenceModel.findOneById(callId, { projection: { rid: 1, users: 1 } });
+		if (!call) {
+			throw new Error('invalid-video-conference');
+		}
+
+		if (!call.users.some(({ _id }) => _id === uid)) {
+			const user = await Users.findOneById<Required<Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'>>>(uid, {
+				projection: { username: 1, name: 1, avatarETag: 1 },
+			});
+			if (!user) {
+				throw new Error('invalid-user');
+			}
+
+			await VideoConferenceModel.addMemberById(callId, { ...user, joined: false });
+		}
+
+		await VideoConferenceModel.setUserDeclinedById(callId, uid);
+		this.notifyVideoConfUpdate(call.rid, callId);
+	}
+
 	private async addAnonymousUser(call: Optional<IGroupVideoConference, 'providerData'>): Promise<void> {
 		await VideoConferenceModel.increaseAnonymousCount(call._id);
 	}

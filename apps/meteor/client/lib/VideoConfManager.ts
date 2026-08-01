@@ -224,6 +224,11 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			return;
 		}
 
+		// Record the decline on the server against our own membership. The client-published `rejected` below
+		// is what drives the 1:1 flow (the caller's client is waiting on it), but it's a claim one client makes
+		// about another user's call, so it can't be trusted as the record of what happened.
+		void sdk.rest.post('/v1/video-conference.decline', { callId });
+
 		this.userId && this.notifyUser(callData.uid, 'rejected', { callId, uid: this.userId, rid: callData.rid });
 		this.loseIncomingCall(callId);
 	}

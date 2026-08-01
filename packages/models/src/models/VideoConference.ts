@@ -272,6 +272,15 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		);
 	}
 
+	/** Records that an existing member dismissed the call, mutating their entry in place. */
+	public async setUserDeclinedById(callId: string, uid: IUser['_id'], declinedAt = new Date()): Promise<void> {
+		await this.updateOne(
+			{ _id: callId },
+			{ $set: { 'users.$[user].declined': true, 'users.$[user].declinedAt': declinedAt } },
+			{ arrayFilters: [{ 'user._id': uid }] },
+		);
+	}
+
 	public async setMessageById(callId: string, messageType: keyof VideoConference['messages'], messageId: string): Promise<void> {
 		await this.updateOneById(callId, {
 			$set: {

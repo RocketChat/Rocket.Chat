@@ -7,6 +7,7 @@ import type {
 
 import type { VideoConfAddParticipantsProps } from './VideoConfAddParticipantsProps';
 import type { VideoConfCancelProps } from './VideoConfCancelProps';
+import type { VideoConfDeclineProps } from './VideoConfDeclineProps';
 import type { VideoConfInfoProps } from './VideoConfInfoProps';
 import type { VideoConfJoinProps } from './VideoConfJoinProps';
 import type { VideoConfListProps } from './VideoConfListProps';
@@ -19,6 +20,7 @@ export * from './VideoConfStartProps';
 export * from './VideoConfJoinProps';
 export * from './VideoConfCancelProps';
 export * from './VideoConfAddParticipantsProps';
+export * from './VideoConfDeclineProps';
 
 export type VideoConferenceEndpoints = {
 	'/v1/video-conference.start': {
@@ -31,6 +33,10 @@ export type VideoConferenceEndpoints = {
 
 	'/v1/video-conference.cancel': {
 		POST: (params: VideoConfCancelProps) => void;
+	};
+
+	'/v1/video-conference.decline': {
+		POST: (params: VideoConfDeclineProps) => void;
 	};
 
 	'/v1/video-conference.add-participants': {
