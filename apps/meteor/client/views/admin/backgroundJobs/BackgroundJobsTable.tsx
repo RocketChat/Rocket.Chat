@@ -1,4 +1,5 @@
-import { Tag, Box, Pagination } from '@rocket.chat/fuselage';
+import { Box, Pagination, Select, Tag } from '@rocket.chat/fuselage';
+import type { SelectOption } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -27,15 +28,29 @@ type BackgroundJobsTableProps = {
 	tab: BackgroundJobsTab;
 };
 
+type CronJobStatus = 'running' | 'scheduled' | 'failed' | 'disabled';
+
 const BackgroundJobsTable = ({ tab }: BackgroundJobsTableProps) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const [text, setText] = useState('');
+	const [status, setStatus] = useState<CronJobStatus | 'all'>('all');
 	const formatDateAndTime = useFormatDateAndTime();
 	const timeAgo = useTimeAgo();
 	const translateInterval = useTranslateInterval();
 	const isDesktopOrLarger = useMediaQuery('(min-width: 1024px)');
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
+
+	const statusOptions: SelectOption[] = useMemo(
+		() => [
+			['all', t('All')],
+			['running', t('Background_Job_Status_running')],
+			['scheduled', t('Background_Job_Status_scheduled')],
+			['failed', t('Background_Job_Status_failed')],
+			['disabled', t('Background_Job_Status_disabled')],
+		],
+		[t],
+	);
 
 	const query = useDebouncedValue(
 		useMemo(
@@ -43,8 +58,9 @@ const BackgroundJobsTable = ({ tab }: BackgroundJobsTableProps) => {
 				searchTerm: text.trim(),
 				count: itemsPerPage,
 				offset: current,
+				...(status === 'all' ? {} : { status }),
 			}),
-			[text, itemsPerPage, current],
+			[text, itemsPerPage, current, status],
 		),
 		500,
 	);
@@ -61,7 +77,7 @@ const BackgroundJobsTable = ({ tab }: BackgroundJobsTableProps) => {
 
 	useEffect(() => {
 		setCurrent(0);
-	}, [tab, setCurrent, text]);
+	}, [tab, setCurrent, text, status]);
 
 	const getCoreJobs = useEndpoint('GET', '/v1/cron.jobs');
 	const getAppJobs = useEndpoint('GET', '/v1/cron.appjobs');
@@ -86,7 +102,18 @@ const BackgroundJobsTable = ({ tab }: BackgroundJobsTableProps) => {
 
 	return (
 		<>
-			<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
+			<FilterByText value={text} onChange={(event) => setText(event.target.value)}>
+				<Box flexGrow={0}>
+					<Select
+						options={statusOptions}
+						value={status}
+						onChange={(value) => setStatus(value as CronJobStatus | 'all')}
+						placeholder={t('Status')}
+						aria-label={t('Status')}
+						width='100%'
+					/>
+				</Box>
+			</FilterByText>
 			{isError && (
 				<Box display='flex' justifyContent='center' height='full'>
 					<GenericNoResults icon='warning' title={t('Something_went_wrong')} />
