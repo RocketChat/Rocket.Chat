@@ -1,5 +1,5 @@
 import { CronJobs } from '@rocket.chat/core-services';
-import type { ICronJobItem, ICronHistoryItem } from '@rocket.chat/core-typings';
+import type { CronJobStatus, ICronJobItem, ICronHistoryItem } from '@rocket.chat/core-typings';
 import { ajv, ajvQuery, validateUnauthorizedErrorResponse, validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
 
 import type { ExtractRoutesFromAPI } from '../ApiClass';
@@ -10,12 +10,18 @@ const isCronJobsListParams = ajvQuery.compile<{
 	offset?: number;
 	count?: number;
 	searchTerm?: string;
+	status?: CronJobStatus;
 }>({
 	type: 'object',
 	properties: {
 		offset: { type: 'number', nullable: true },
 		count: { type: 'number', nullable: true },
 		searchTerm: { type: 'string', nullable: true },
+		status: {
+			type: 'string',
+			enum: ['running', 'scheduled', 'failed', 'disabled'],
+			nullable: true,
+		},
 	},
 	additionalProperties: false,
 });
@@ -113,10 +119,12 @@ const cronJobsEndpoints = API.v1
 		async function action() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const searchTerm = this.queryParams.searchTerm?.trim();
+			const { status } = this.queryParams;
 			const { jobs, total } = await CronJobs.getCoreJobs({
 				offset,
 				count,
 				...(searchTerm && { searchTerm }),
+				...(status && { status }),
 			});
 
 			return API.v1.success({
@@ -142,10 +150,12 @@ const cronJobsEndpoints = API.v1
 		async function action() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const searchTerm = this.queryParams.searchTerm?.trim();
+			const { status } = this.queryParams;
 			const { jobs, total } = await CronJobs.getAppJobs({
 				offset,
 				count,
 				...(searchTerm && { searchTerm }),
+				...(status && { status }),
 			});
 
 			return API.v1.success({
@@ -277,6 +287,6 @@ const cronJobsEndpoints = API.v1
 export type CronJobsEndpoints = ExtractRoutesFromAPI<typeof cronJobsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	interface Endpoints extends CronJobsEndpoints {}
 }
