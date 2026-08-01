@@ -7,6 +7,8 @@ import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { VideoConfManager } from '../lib/VideoConfManager';
+import { getRemoteCallState, sendCallCommand } from '../views/videoConference/livekit/callBarChannel';
+import SwitchCallModal from '../views/room/contextualBar/VideoConference/SwitchCallModal';
 import VideoConfBlockModal from '../views/room/contextualBar/VideoConference/VideoConfBlockModal';
 import VideoConfPopups from '../views/room/contextualBar/VideoConference/VideoConfPopups';
 import { useVideoConfOpenCall } from '../views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
@@ -34,7 +36,11 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 	// Embedded providers (LiveKit) are opened in a dedicated /conference/:id
 	// window with the persistent chat on the left, instead of mounting inline
 	// in the room. The conference page takes over the embedded provider context.
-	const openConference = useCallback(
+	const [switchTarget, setSwitchTarget] = useState<{ callId: string; preferences: CallPreferences; currentRoomName: string } | null>(
+		null,
+	);
+
+	const doOpenConference = useCallback(
 		(callId: string, preferences: CallPreferences = {}) => {
 			const url = new URL(`/conference/${callId}`, window.location.href);
 			url.searchParams.set('mic', String(preferences.mic ?? true));
@@ -47,6 +53,25 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 			}
 		},
 		[setConferenceBlockUrl],
+	);
+
+	// One call at a time: joining while another call runs in the pop-out
+	// window asks stay-vs-switch here, where the click happened. Clicking
+	// the call the user is already in just refocuses its window.
+	const openConference = useCallback(
+		(callId: string, preferences: CallPreferences = {}) => {
+			const activeRemoteCall = getRemoteCallState();
+			if (activeRemoteCall?.callId === callId) {
+				sendCallCommand(callId, 'focus');
+				return;
+			}
+			if (activeRemoteCall) {
+				setSwitchTarget({ callId, preferences, currentRoomName: activeRemoteCall.roomName });
+				return;
+			}
+			doOpenConference(callId, preferences);
+		},
+		[doOpenConference],
 	);
 
 	useEffect(
@@ -97,6 +122,23 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 	return (
 		<VideoConfContext.Provider value={contextValue}>
 			{children}
+			{switchTarget && (
+				<SwitchCallModal
+					currentCallRoomName={switchTarget.currentRoomName}
+					onStay={() => setSwitchTarget(null)}
+					onSwitch={() => {
+						const target = switchTarget;
+						setSwitchTarget(null);
+						const activeRemoteCall = getRemoteCallState();
+						if (activeRemoteCall) {
+							sendCallCommand(activeRemoteCall.callId, 'hangup');
+						}
+						// small grace so the old window leaves before the new
+						// one joins (server allows one active call per user)
+						setTimeout(() => doOpenConference(target.callId, target.preferences), 500);
+					}}
+				/>
+			)}
 			{conferenceBlockUrl && (
 				<VideoConfBlockModal
 					onClose={() => setConferenceBlockUrl(null)}

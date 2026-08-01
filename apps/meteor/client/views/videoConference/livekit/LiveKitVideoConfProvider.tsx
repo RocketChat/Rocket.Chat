@@ -23,6 +23,7 @@ import type { ComponentProps, ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
 import FloatingGroupCallWidget from './FloatingGroupCallWidget';
+import RemoteCallBar from './RemoteCallBar';
 import { useLiveKitVideoConf } from './LiveKitVideoConfContext';
 
 const headersOf = () => ({
@@ -869,6 +870,9 @@ const LiveKitVideoConfBridge = ({ children }: { children: ReactNode }) => {
 			    (MediaCallRoomSection.useRegisterView('room') keeps the room view registered) or when
 			    no group call is active. */}
 			<FloatingGroupCallWidget />
+			{/* Persistent bottom call bar when the call runs in the pop-out
+			    conference window (state arrives over the BroadcastChannel). */}
+			<RemoteCallBar />
 			<LiveKitPopout container={container} ownUser={ownUser} />
 			{lkActive && creds && callId && lkPortalTarget
 				? createPortal(

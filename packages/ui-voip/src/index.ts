@@ -48,6 +48,10 @@ export type { PreFlightProps, PreFlightJoinPreferences } from './views/PreFlight
 // Post-leave state of the call window: Rejoin + timed auto-close.
 export { default as CallLeftScreen } from './views/CallLeft/CallLeftScreen';
 
+// Persistent in-app call bar shown while the call runs in the pop-out window.
+export { default as CallBar } from './views/CallBar/CallBar';
+export type { CallBarProps } from './views/CallBar/CallBar';
+
 // In-call notification chimes used by the Video Conference (LiveKit) UI —
 // recording started/stopped and remote-participant joined. Synthesized via
 // Web Audio so no asset files are needed. The legacy VoIP call sounds

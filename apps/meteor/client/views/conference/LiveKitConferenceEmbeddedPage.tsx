@@ -13,6 +13,7 @@ import { CallLeftScreen, MediaCallRoomSection, PreFlight, useMediaCallView } fro
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import ConferenceCallBarBridge from './ConferenceCallBarBridge';
 import ConferenceChat from './ConferenceChat';
 import ConferencePageError from './ConferencePageError';
 import ConferenceUnauthorizedPage from './ConferenceUnauthorizedPage';
@@ -221,6 +222,7 @@ const LiveKitConferenceEmbeddedPage = () => {
 
 	return (
 		<Box bg='surface-light' w='full' h='full' display='flex' overflow='hidden'>
+			<ConferenceCallBarBridge callId={callId} rid={room.rid} roomName={subscription?.fname || subscription?.name || ''} />
 			<MediaCallRoomSection showChat={showChat} onToggleChat={toggleChat} user={ownUser} unreadCount={unreadCount}>
 				<ConferenceChat rid={room.rid} loading={room.loading} onClose={closeChat} />
 			</MediaCallRoomSection>
