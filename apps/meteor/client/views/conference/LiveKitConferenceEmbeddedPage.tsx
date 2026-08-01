@@ -29,8 +29,11 @@ const LiveKitConferenceEmbeddedPage = () => {
 	const callId = useRouteParameter('id') ?? '';
 	const micParam = useSearchParameter('mic');
 	const camParam = useSearchParameter('cam');
+	// accepted incoming call: skip the pre-flight and join muted right away —
+	// the callee never goes live blind, unmuting is the first deliberate act
+	const autoJoin = useSearchParameter('autojoin') === 'true';
 
-	const initialMic = micParam !== 'false';
+	const initialMic = autoJoin ? false : micParam !== 'false';
 	const initialCam = camParam === 'true';
 
 	const { joinCall: joinEmbeddedCall, leaveCall } = useLiveKitVideoConf();
@@ -41,7 +44,9 @@ const LiveKitConferenceEmbeddedPage = () => {
 	// Pre-flight state: the join REST call (which marks this user as joined
 	// server-side) and the LK connection only happen after the user clicks
 	// Join. Until then the window shows the pre-flight screen.
-	const [joinPreferences, setJoinPreferences] = useState<PreFlightJoinPreferences | null>(null);
+	const [joinPreferences, setJoinPreferences] = useState<PreFlightJoinPreferences | null>(
+		autoJoin ? { mic: false, cam: initialCam } : null,
+	);
 	const joinRequested = joinPreferences !== null;
 	const [joinNonce, setJoinNonce] = useState(0);
 

@@ -37,6 +37,10 @@ type CurrentEmbeddedCallParams = {
 	// embedded provider can connect with the right initial track state
 	// instead of always defaulting to "mic on, cam off".
 	preferences?: { mic?: boolean; cam?: boolean };
+	// The user explicitly accepted an incoming call: the conference window
+	// skips the pre-flight screen and joins muted (the callee never goes
+	// live blind — unmuting is the first deliberate act).
+	accepted?: boolean;
 };
 
 type VideoConfEvents = {
@@ -356,7 +360,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		this._logLevel = Math.max(0, Math.min(level, 2));
 	}
 
-	public async joinCall(callId: string, providerName?: string, rid?: string): Promise<void> {
+	public async joinCall(callId: string, providerName?: string, rid?: string, options?: { accepted?: boolean }): Promise<void> {
 		this.debugLog(`[VideoConf] Joining call ${callId}.`);
 
 		if (this.incomingDirectCalls.has(callId)) {
@@ -368,11 +372,15 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			this.removeIncomingCall(callId);
 		}
 
+		// Accepted incoming calls always join muted — the callee never goes
+		// live blind; unmuting is the first deliberate act.
+		const preferences = options?.accepted ? { ...this._preferences, mic: false } : { ...this._preferences };
+
 		const params = {
 			callId,
 			state: {
-				...(this._preferences.mic !== undefined ? { mic: this._preferences.mic } : {}),
-				...(this._preferences.cam !== undefined ? { cam: this._preferences.cam } : {}),
+				...(preferences.mic !== undefined ? { mic: preferences.mic } : {}),
+				...(preferences.cam !== undefined ? { cam: preferences.cam } : {}),
 			},
 		};
 
@@ -388,7 +396,8 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 				// Forward the same prefs the server received so the
 				// embedded provider can publish/skip mic + camera tracks
 				// according to the preflight popup's toggle state.
-				preferences: { ...this._preferences },
+				preferences,
+				accepted: options?.accepted,
 			});
 			return;
 		}
@@ -417,7 +426,8 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 				// Forward the same prefs the server received so the
 				// embedded provider can publish/skip mic + camera tracks
 				// according to the preflight popup's toggle state.
-				preferences: { ...this._preferences },
+				preferences,
+				accepted: options?.accepted,
 			});
 			return;
 		}
@@ -745,7 +755,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			return;
 		}
 
-		this.joinCall(params.callId);
+		void this.joinCall(params.callId, undefined, undefined, { accepted: true });
 	}
 
 	private onDirectCallJoined(params: DirectCallParams): void {

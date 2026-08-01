@@ -97,6 +97,23 @@ export const useConferenceEmbedded = (
 		});
 	}, [callId, queryClient, subscribeToVideoConference, uid]);
 
+	// Any call update broadcast to the room (users joining/leaving, status
+	// changes) refreshes the info — keeps the pre-flight's "who's in this
+	// call" and the DM ringing state live.
+	const subscribeToRoomVideoConf = useStream('notify-room');
+	const rid = info?.discussionRid || info?.rid;
+	useEffect(() => {
+		if (!rid || !callId || !uid) {
+			return;
+		}
+
+		return subscribeToRoomVideoConf(`${rid}/videoconf`, (id) => {
+			if (id === callId) {
+				void queryClient.invalidateQueries({ queryKey: ['conference-embedded', 'info', callId, uid] });
+			}
+		});
+	}, [rid, callId, uid, queryClient, subscribeToRoomVideoConf]);
+
 	return useMemo(
 		() => ({
 			room: {

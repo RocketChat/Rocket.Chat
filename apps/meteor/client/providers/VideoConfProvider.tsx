@@ -7,11 +7,11 @@ import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { VideoConfManager } from '../lib/VideoConfManager';
-import { getRemoteCallState, sendCallCommand } from '../views/videoConference/livekit/callBarChannel';
 import SwitchCallModal from '../views/room/contextualBar/VideoConference/SwitchCallModal';
 import VideoConfBlockModal from '../views/room/contextualBar/VideoConference/VideoConfBlockModal';
 import VideoConfPopups from '../views/room/contextualBar/VideoConference/VideoConfPopups';
 import { useVideoConfOpenCall } from '../views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
+import { getRemoteCallState, sendCallCommand } from '../views/videoConference/livekit/callBarChannel';
 
 export type VideoConfContextProviderProps = { children: ReactNode };
 
@@ -36,15 +36,17 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 	// Embedded providers (LiveKit) are opened in a dedicated /conference/:id
 	// window with the persistent chat on the left, instead of mounting inline
 	// in the room. The conference page takes over the embedded provider context.
-	const [switchTarget, setSwitchTarget] = useState<{ callId: string; preferences: CallPreferences; currentRoomName: string } | null>(
-		null,
-	);
+	const [switchTarget, setSwitchTarget] = useState<{ callId: string; preferences: CallPreferences; currentRoomName: string } | null>(null);
 
 	const doOpenConference = useCallback(
-		(callId: string, preferences: CallPreferences = {}) => {
+		(callId: string, preferences: CallPreferences = {}, accepted = false) => {
 			const url = new URL(`/conference/${callId}`, window.location.href);
 			url.searchParams.set('mic', String(preferences.mic ?? true));
 			url.searchParams.set('cam', String(preferences.cam ?? false));
+			if (accepted) {
+				// accepted incoming call: skip the pre-flight, join muted
+				url.searchParams.set('autojoin', 'true');
+			}
 
 			const urlString = url.toString();
 			const popup = window.open(urlString, '_blank', 'width=1280,height=800,resizable=yes');
@@ -59,7 +61,7 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 	// window asks stay-vs-switch here, where the click happened. Clicking
 	// the call the user is already in just refocuses its window.
 	const openConference = useCallback(
-		(callId: string, preferences: CallPreferences = {}) => {
+		(callId: string, preferences: CallPreferences = {}, accepted = false) => {
 			const activeRemoteCall = getRemoteCallState();
 			if (activeRemoteCall?.callId === callId) {
 				sendCallCommand(callId, 'focus');
@@ -69,16 +71,16 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 				setSwitchTarget({ callId, preferences, currentRoomName: activeRemoteCall.roomName });
 				return;
 			}
-			doOpenConference(callId, preferences);
+			doOpenConference(callId, preferences, accepted);
 		},
 		[doOpenConference],
 	);
 
 	useEffect(
 		() =>
-			VideoConfManager.on('call/joinEmbedded', ({ callId, providerName, preferences }) => {
+			VideoConfManager.on('call/joinEmbedded', ({ callId, providerName, preferences, accepted }) => {
 				if (providerName === 'livekit') {
-					openConference(callId, preferences);
+					openConference(callId, preferences, accepted);
 				}
 			}),
 		[openConference],
