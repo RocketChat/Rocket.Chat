@@ -52,10 +52,28 @@ export type LivechatInstructions = {
 
 export type VideoConferenceType = DirectCallInstructions['type'] | ConferenceInstructions['type'] | LivechatInstructions['type'] | 'voip';
 
+/**
+ * Someone associated with a conference — a **member**, which is not the same as someone currently in the
+ * call. Membership is what authorizes joining (alongside access to the conference's room), and it never
+ * expires.
+ *
+ * `joined` is optional because every entry written before it existed represents someone who had joined, so
+ * readers must treat an absent flag as joined. Use the `hasJoinedVideoConference` helper rather than
+ * testing the field directly.
+ */
 export interface IVideoConferenceUser extends Pick<Required<IUser>, '_id' | 'username' | 'name'> {
 	avatarETag: string | null;
+	/** When the user became a member of the conference. */
 	ts: Date;
+	joined?: boolean;
+	joinedAt?: Date;
 }
+
+/**
+ * Whether a member is actually in the call. Absent `joined` means the entry predates the flag, and back then
+ * entries were only written on join — so absent reads as joined.
+ */
+export const hasJoinedVideoConference = (user: Pick<IVideoConferenceUser, 'joined'>): boolean => user.joined !== false;
 
 export interface IVideoConference extends IRocketChatRecord {
 	type: VideoConferenceType;

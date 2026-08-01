@@ -27,6 +27,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import {
 	VideoConferenceStatus,
+	hasJoinedVideoConference,
 	isDirectVideoConference,
 	isGroupVideoConference,
 	isLivechatVideoConference,
@@ -41,7 +42,7 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 
-import { availabilityErrors } from '../../../lib/videoConference/constants';
+import { availabilityErrors, shouldRingVideoConference } from '../../../lib/videoConference/constants';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { callbacks } from '../../lib/callbacks';
@@ -1077,11 +1078,17 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			await this.addUserToDiscussion(call.discussionRid, _id);
 		}
 
-		if (call.users.find((user) => user._id === _id)) {
+		// Already in the call — nothing to record.
+		const member = call.users.find((user) => user._id === _id);
+		if (member && hasJoinedVideoConference(member)) {
 			return;
 		}
 
-		await VideoConferenceModel.addUserById(call._id, { _id, username, name, avatarETag, ts });
+		// Both writes are idempotent, and both are needed: the first covers someone who wasn't a member yet
+		// (it no-ops for an existing member), the second covers a member who had been added but hadn't joined.
+		// Running both also closes the race where two joins land between the read above and the write.
+		await VideoConferenceModel.addMemberById(call._id, { _id, username, name, avatarETag, ts, joined: true, joinedAt: ts });
+		await VideoConferenceModel.setUserJoinedById(call._id, _id, ts);
 
 		if (call.type === 'direct') {
 			return this.updateDirectCall(call, _id);
@@ -1090,13 +1097,60 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		this.notifyVideoConfUpdate(call.rid, call._id);
 	}
 
+	/**
+	 * Registers users as members of the conference without touching any room. Membership is what authorizes
+	 * joining the call, so this is how someone outside the conference's room gets in — reading the chat is a
+	 * separate concern, surfaced in the UI rather than decided here.
+	 */
+	public async addMembers(
+		uid: IUser['_id'],
+		callId: VideoConference['_id'],
+		usernames: NonNullable<IUser['username']>[],
+	): Promise<IUser['_id'][]> {
+		const call = await VideoConferenceModel.findOneById(callId, { projection: { rid: 1, users: 1 } });
+		if (!call) {
+			throw new Error('invalid-video-conference');
+		}
+
+		const users = await Users.find<Required<Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'>>>(
+			{ username: { $in: usernames } },
+			{ projection: { username: 1, name: 1, avatarETag: 1 } },
+		).toArray();
+
+		const added: IUser['_id'][] = [];
+		const ts = new Date();
+
+		for (const user of users) {
+			// Already associated with the call — leave their entry (and any `joinedAt`) untouched.
+			if (call.users.some(({ _id }) => _id === user._id)) {
+				continue;
+			}
+
+			await VideoConferenceModel.addMemberById(callId, { ...user, ts, joined: false });
+			added.push(user._id);
+		}
+
+		if (added.length) {
+			this.notifyVideoConfUpdate(call.rid, callId);
+		}
+
+		// The list being rung is just the people added, and the endpoint caps a single add at the ringing
+		// limit — so unlike starting a call in a large room, an add always rings.
+		if (shouldRingVideoConference(added.length)) {
+			added.forEach((memberId) => this.notifyUser(memberId, 'ring', { callId, rid: call.rid, uid }));
+		}
+
+		return added;
+	}
+
 	private async addAnonymousUser(call: Optional<IGroupVideoConference, 'providerData'>): Promise<void> {
 		await VideoConferenceModel.increaseAnonymousCount(call._id);
 	}
 
 	private async updateDirectCall(call: IDirectVideoConference, newUserId: IUser['_id']): Promise<void> {
-		// If it's an user that hasn't joined yet
-		if (call.ringing && !call.users.find(({ _id }) => _id === newUserId)) {
+		// If it's an user that hasn't joined yet — a member who was added but never joined still counts as not
+		// having joined, so the ring must keep going for them.
+		if (call.ringing && !call.users.some(({ _id, joined }) => _id === newUserId && hasJoinedVideoConference({ joined }))) {
 			this.notifyUser(call.createdBy._id, 'join', { rid: call.rid, uid: newUserId, callId: call._id });
 			if (newUserId !== call.createdBy._id) {
 				this.notifyUser(newUserId, 'join', { rid: call.rid, uid: newUserId, callId: call._id });
@@ -1379,7 +1433,14 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		try {
 			if (room) {
-				await Promise.all(call.users.map(({ _id }) => this.addUserToDiscussion(room._id, _id)));
+				// Everyone involved with the call should land in the new discussion: the conference's members
+				// (including any added from outside the room) plus the original room's members, who were part of
+				// the conversation before the chat moved. Members who never joined the call are included on
+				// purpose — the discussion is where they catch up.
+				const roomMemberIds = (await Subscriptions.findByRoomId(call.rid, { projection: { 'u._id': 1 } }).toArray()).map(({ u }) => u._id);
+				const recipients = new Set([...call.users.map(({ _id }) => _id), ...roomMemberIds]);
+
+				await Promise.all([...recipients].map((uid) => this.addUserToDiscussion(room._id, uid)));
 			}
 		} finally {
 			// Tell every participant's client that the conference's chat moved, so an open conference view

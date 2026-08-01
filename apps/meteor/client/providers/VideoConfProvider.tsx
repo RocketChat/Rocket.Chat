@@ -64,7 +64,7 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 			abortCall: () => VideoConfManager.abortCall(),
 			setPreferences: (prefs) => VideoConfManager.setPreferences(prefs),
 			loadCapabilities: () => VideoConfManager.loadCapabilities(),
-			queryIncomingCalls: () => [(cb) => VideoConfManager.on('incoming/changed', cb), () => VideoConfManager.getIncomingDirectCalls()],
+			queryIncomingCalls: () => [(cb) => VideoConfManager.on('incoming/changed', cb), () => VideoConfManager.getIncomingCalls()],
 			queryRinging: () => [(cb) => VideoConfManager.on('ringing/changed', cb), () => VideoConfManager.isRinging()],
 			queryCalling: () => [(cb) => VideoConfManager.on('calling/changed', cb), () => VideoConfManager.isCalling()],
 			queryCapabilities: () => [(cb) => VideoConfManager.on('capabilities/changed', cb), () => VideoConfManager.capabilities],

@@ -34,7 +34,7 @@ export type VideoConferenceEndpoints = {
 	};
 
 	'/v1/video-conference.add-participants': {
-		POST: (params: VideoConfAddParticipantsProps) => { rid: string };
+		POST: (params: VideoConfAddParticipantsProps) => { added: string[] };
 	};
 
 	'/v1/video-conference.info': {

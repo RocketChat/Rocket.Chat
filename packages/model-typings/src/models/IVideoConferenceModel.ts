@@ -56,7 +56,12 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 
 	setProviderDataById(callId: string, providerData: Record<string, any> | undefined): Promise<void>;
 
-	addUserById(callId: string, user: Required<Pick<IUser, '_id' | 'name' | 'username' | 'avatarETag'>> & { ts?: Date }): Promise<void>;
+	addMemberById(
+		callId: string,
+		user: Required<Pick<IUser, '_id' | 'name' | 'username' | 'avatarETag'>> & { ts?: Date; joined?: boolean; joinedAt?: Date },
+	): Promise<void>;
+
+	setUserJoinedById(callId: string, uid: IUser['_id'], joinedAt?: Date): Promise<void>;
 
 	setMessageById(callId: string, messageType: keyof VideoConference['messages'], messageId: string): Promise<void>;
 

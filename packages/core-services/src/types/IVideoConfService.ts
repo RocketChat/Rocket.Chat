@@ -47,6 +47,7 @@ export interface IVideoConfService {
 		params: { callId: VideoConference['_id']; uid: IUser['_id']; rid: IRoom['_id'] },
 	): Promise<boolean>;
 	assignDiscussionToConference(callId: VideoConference['_id'], rid: IRoom['_id'] | undefined): Promise<void>;
+	addMembers(uid: IUser['_id'], callId: VideoConference['_id'], usernames: NonNullable<IUser['username']>[]): Promise<IUser['_id'][]>;
 	createConferenceDiscussionWithParticipants(
 		uid: IUser['_id'],
 		callId: VideoConference['_id'],

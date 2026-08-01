@@ -227,9 +227,9 @@ The provider's URL is embedded in an iframe, so it must permit framing (no restr
 
 ## Roadmap: membership-based conferences
 
-> **Status: planned — none of this section is implemented yet.** Everything above describes shipped
-> behaviour. This section is the agreed design and the progress tracker; update the checkboxes as work
-> lands, and move prose up into the sections above once a phase ships.
+> **Status: in progress.** Phases 1, 1b and 2 have landed; 3–5 are still planned. This section is the
+> agreed design and the progress tracker — update the checkboxes as work lands, and move prose up into the
+> sections above once a phase ships.
 
 ### Why
 
@@ -260,34 +260,34 @@ The target model separates them:
 
 ### Phase 1 — `users[]` becomes the membership list
 
-- [ ] Add `joined: boolean` and `joinedAt?: Date` to `IVideoConferenceUser`; `ts` stays "added at".
-- [ ] Make the array update safe. `addUserById` currently uses `$addToSet` with a **whole document**, which compares entire objects — adding a member as `{…, joined: false}` and later marking them joined would append a *duplicate* entry instead of updating. Replace with two operations:
-  - `addMemberById` — a `$push` guarded by `{ _id: callId, 'users._id': { $ne: uid } }`, which is atomic and idempotent in a single document update (and fixes the racy in-memory `call.users.find(...)` dedup in `addUserToCall`).
-  - `setUserJoinedById` — `$set` on `users.$[u].joined` / `users.$[u].joinedAt` via `arrayFilters: [{ 'u._id': uid }]`, mutating the existing entry in place.
-- [ ] `VideoConf.addUser` (called by the apps bridge and the EE `onJoinVideoConference` callback) becomes: ensure member exists, then mark joined.
-- [ ] `POST /v1/video-conference.add-participants` registers members instead of touching rooms; drop `keepHistory`.
-- [ ] `video-conference.join` / `.info` authorize on **room access OR conference membership**, replacing `canAccessConference`'s body. This also fixes the `add-participants` authorization inconsistency noted under [Access Control](#access-control).
-- [ ] **Decide how existing records read.** Every `users[]` entry already in the database predates the flag and represents someone who *joined*, so a reader filtering `joined === true` would show every historical conference as having no participants. Either treat absent as joined (`joined !== false`) or backfill with a migration alongside the existing ones in `server/startup/migrations/`. Default-true reading is the safer of the two and works without a deploy-order dependency; a backfill can follow.
-- [ ] Confirm the REST response schemas carry the new fields through. `infoResponseSchema` is `additionalProperties: true` so it should be fine, but `listResponseSchema` refs `#/components/schemas/IGroupVideoConference` and friends, and those refs are not registered on the `ajv` instance in `packages/rest-typings/src/v1/Ajv.ts` — worth confirming rather than assuming.
+- [x] Add `joined: boolean` and `joinedAt?: Date` to `IVideoConferenceUser`; `ts` stays "added at".
+- [x] Made the array update safe. `addUserById` used `$addToSet` with a **whole document**, which compares entire objects — adding a member as `{…, joined: false}` and later marking them joined would have appended a *duplicate* entry instead of updating. Replaced by two operations:
+  - `addMemberById` — a `$push` guarded by `{ _id: callId, 'users._id': { $ne: uid } }`, atomic and idempotent in a single document update, which also removed the racy in-memory `call.users.find(...)` dedup in `addUserToCall`.
+  - `setUserJoinedById` — `$set` on `users.$[user].joined` / `users.$[user].joinedAt` via `arrayFilters`, mutating the existing entry in place.
+- [x] `VideoConf.addUser` (called by the apps bridge and the EE `onJoinVideoConference` callback) becomes: ensure member exists, then mark joined.
+- [x] `POST /v1/video-conference.add-participants` registers members instead of touching rooms; drop `keepHistory`.
+- [x] `video-conference.join` / `.info` authorize on **room access OR conference membership**, replacing `canAccessConference`'s body. This also fixes the `add-participants` authorization inconsistency noted under [Access Control](#access-control).
+- [x] **Existing records read as joined.** Decided in favour of default-true reading over a backfill: Every `users[]` entry already in the database predates the flag and represents someone who *joined*, so a reader filtering `joined === true` would show every historical conference as having no participants. `hasJoinedVideoConference` in `@rocket.chat/core-typings` is the single place that decides, so no reader tests the field directly and no deploy-order dependency exists. A backfill migration can still follow later.
+- [x] REST response schemas carry the new fields through — confirmed, though `joinedAt` needed deserializing in `useVideoConfList` (it arrives as a string, exactly like `ts`), which the typecheck caught.
 
 ### Phase 1b — teach every reader the difference
 
 The risk in Phase 1 is not the write path, it's the readers: `users[]` currently means "joined", and several
 places rely on that. Miss one and added-but-absent people render as if they were in the call.
 
-- [ ] `VideoConferenceBlock` — `usersCount`, `joinedNamesOrUsernames`, `VideoConfMessageUserStack`, "Be the first to join" → **joined only**
-- [ ] `VideoConfListItem` — participant avatars → **joined only**
-- [ ] `updateDirectCall` ring-stop check → **joined only**
-- [ ] `addUserToCall` dedup → **membership**, then mark joined
-- [ ] `video-conference` stream `allowRead` → **membership**, so an added user can follow `discussionUpdated` before joining. This is a behaviour fix over today.
-- [ ] `assignDiscussionToConference` → union of room members and conference members (decision 7)
+- [x] `VideoConferenceBlock` — `usersCount`, `joinedNamesOrUsernames`, `VideoConfMessageUserStack`, "Be the first to join" → **joined only**
+- [x] `VideoConfListItem` — participant avatars → **joined only**
+- [x] `updateDirectCall` ring-stop check → **joined only**
+- [x] `addUserToCall` dedup → **membership**, then mark joined
+- [x] `video-conference` stream `allowRead` → **membership**, so an added user can follow `discussionUpdated` before joining. This is a behaviour fix over today.
+- [x] `assignDiscussionToConference` → union of room members and conference members (decision 7)
 
 ### Phase 2 — ringing as a per-event list
 
-- [ ] Extract the cap into a shared helper taking the list to ring. It currently lives as `Subscriptions.countByRoomId(rid) > 10` inside the EE `videoconference` type-registration condition, which decides `ringing` at *creation* time and can't be reused as-is.
-- [ ] Ring on add via `notifyUser(uid, 'ring', …)` per added user, bypassing `notifyUsersOfRoom`.
-- [ ] Cap the add action itself at 10 users, so the same helper always permits the ring.
-- [ ] Rename `incomingDirectCalls` → `incomingCalls` in `VideoConfManager`; it is already keyed by `callId` and driven by the `ring` action, not by directness.
+- [x] Extracted the cap into `shouldRingVideoConference(count)` in `lib/videoConference/constants.ts`, taking the size of the list being rung. It had been inlined as `Subscriptions.countByRoomId(rid) > 10` inside the EE `videoconference` type-registration condition, which decides `ringing` at *creation* time and could not be reused.
+- [x] Ring on add via `notifyUser(uid, 'ring', …)` per added user, bypassing `notifyUsersOfRoom`.
+- [x] Cap the add action itself at 10 users, so the same helper always permits the ring.
+- [x] Renamed `incomingDirectCalls` → `incomingCalls` and `getIncomingDirectCalls` → `getIncomingCalls`; both are keyed by `callId` and now driven by the `ring` action too, not by directness. The `IncomingDirectCall` *type* keeps its name — it still describes the `DirectCallParams`-shaped payload.
 
 ### Phase 3 — decline
 

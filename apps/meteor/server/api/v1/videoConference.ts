@@ -60,11 +60,25 @@ const cancelResponseSchema = ajv.compile<void>({
 	additionalProperties: false,
 });
 
-// Users invited to a conference may only belong to its discussion (`discussionRid`), not the parent room
-// the conference originated in — accept access to either so they can still reach the call.
-const canAccessConference = async (call: Pick<VideoConference, 'rid' | 'discussionRid'>, userId: string | undefined): Promise<boolean> => {
+/**
+ * Being in the call and being able to read its chat are separate things, so authorization accepts either:
+ * membership of the conference, or access to a room the conference lives in.
+ *
+ * Membership covers people added from outside the room — they were added to the *call*, not to a room, so
+ * there is no subscription to check. The room checks cover everyone who can already see the conversation:
+ * `rid` is the room the call started in, and `discussionRid` the discussion its chat may have moved to,
+ * whose members may have no access to the parent room.
+ */
+const canAccessConference = async (
+	call: Pick<VideoConference, 'rid' | 'discussionRid' | 'users'>,
+	userId: string | undefined,
+): Promise<boolean> => {
 	if (!userId) {
 		return false;
+	}
+
+	if (call.users.some(({ _id }) => _id === userId)) {
+		return true;
 	}
 
 	if (await canAccessRoomIdAsync(call.rid, userId)) {
@@ -74,13 +88,13 @@ const canAccessConference = async (call: Pick<VideoConference, 'rid' | 'discussi
 	return !!call.discussionRid && canAccessRoomIdAsync(call.discussionRid, userId);
 };
 
-const addParticipantsResponseSchema = ajv.compile<{ rid: string }>({
+const addParticipantsResponseSchema = ajv.compile<{ added: string[] }>({
 	type: 'object',
 	properties: {
-		rid: { type: 'string' },
+		added: { type: 'array', items: { type: 'string' }, description: 'Ids of the users newly added as members.' },
 		success: { type: 'boolean', enum: [true] },
 	},
-	required: ['rid', 'success'],
+	required: ['added', 'success'],
 	additionalProperties: false,
 });
 
@@ -285,7 +299,7 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		const { callId, users, keepHistory } = this.bodyParams;
+		const { callId, users } = this.bodyParams;
 		const { userId } = this;
 
 		const call = await VideoConf.get(callId);
@@ -293,17 +307,15 @@ API.v1.post(
 			return API.v1.failure('invalid-params');
 		}
 
-		if (!userId || !(await canAccessRoomIdAsync(call.rid, userId))) {
+		if (!(await canAccessConference(call, userId))) {
 			return API.v1.failure('invalid-params');
 		}
 
-		// `keepHistory` adds the users to the conference's existing room (so they keep its history);
-		// otherwise a fresh discussion is created so they don't get the room's history.
-		const rid = keepHistory
-			? await VideoConf.addUsersToConferenceRoom(userId, callId, users)
-			: await VideoConf.createConferenceDiscussionWithParticipants(userId, callId, users);
+		// Registers the users as conference members — it deliberately does not put them in any room. Being a
+		// member authorizes joining the call; whether they can read the chat is surfaced separately.
+		const added = await VideoConf.addMembers(userId, callId, users);
 
-		return API.v1.success({ rid });
+		return API.v1.success({ added });
 	},
 );
 

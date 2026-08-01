@@ -233,21 +233,43 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		});
 	}
 
-	public async addUserById(
+	/**
+	 * Adds a member to the conference, doing nothing if they are already one.
+	 *
+	 * The guard lives in the *query*, not in a read-then-write: `$addToSet` compares whole documents, so once
+	 * an entry can be mutated (by `setUserJoinedById` below) it would no longer match and a second call would
+	 * append a duplicate. Filtering on `users._id` makes this atomic and idempotent in one update, which also
+	 * removes the race in a caller that checks membership in memory first.
+	 */
+	public async addMemberById(
 		callId: string,
-		user: Required<Pick<IUser, '_id' | 'name' | 'username' | 'avatarETag'>> & { ts?: Date },
+		user: Required<Pick<IUser, '_id' | 'name' | 'username' | 'avatarETag'>> & { ts?: Date; joined?: boolean; joinedAt?: Date },
 	): Promise<void> {
-		await this.updateOneById(callId, {
-			$addToSet: {
-				users: {
-					_id: user._id,
-					username: user.username,
-					name: user.name,
-					avatarETag: user.avatarETag,
-					ts: user.ts || new Date(),
+		await this.updateOne(
+			{ _id: callId, 'users._id': { $ne: user._id } },
+			{
+				$push: {
+					users: {
+						_id: user._id,
+						username: user.username,
+						name: user.name,
+						avatarETag: user.avatarETag,
+						ts: user.ts || new Date(),
+						joined: user.joined ?? false,
+						...(user.joinedAt && { joinedAt: user.joinedAt }),
+					},
 				},
 			},
-		});
+		);
+	}
+
+	/** Marks an existing member as being in the call, mutating their entry in place. */
+	public async setUserJoinedById(callId: string, uid: IUser['_id'], joinedAt = new Date()): Promise<void> {
+		await this.updateOne(
+			{ _id: callId },
+			{ $set: { 'users.$[user].joined': true, 'users.$[user].joinedAt': joinedAt } },
+			{ arrayFilters: [{ 'user._id': uid }] },
+		);
 	}
 
 	public async setMessageById(callId: string, messageType: keyof VideoConference['messages'], messageId: string): Promise<void> {

@@ -33,9 +33,10 @@ export const useVideoConfList = ({ roomId }: { roomId: IRoom['_id'] }) => {
 						_updatedAt: new Date(videoConf._updatedAt),
 						createdAt: new Date(videoConf.createdAt),
 						endedAt: videoConf.endedAt ? new Date(videoConf.endedAt) : undefined,
-						users: videoConf.users.map((user) => ({
+						users: videoConf.users.map(({ joinedAt, ...user }) => ({
 							...user,
 							ts: new Date(user.ts),
+							...(joinedAt && { joinedAt: new Date(joinedAt) }),
 						})),
 						...(discussionLastMessage && { discussionLastMessage: mapMessageFromApi(discussionLastMessage) }),
 					}),
