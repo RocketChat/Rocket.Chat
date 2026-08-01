@@ -14,7 +14,25 @@ Gated by the EE setting `VideoConf_Enable_Persistent_Chat` (requires `Discussion
 2. `VideoConfProvider` handles `call/join`:
    - **Persistent chat enabled** — opens `/conference/:id` (absolute URL) instead of the provider URL.
    - **Disabled** — opens the provider URL directly, the pre-existing behavior.
-3. `useVideoConfOpenCall` opens the tab. Same-origin (in-product) conferences share a named window (`rocketchat-conference`) so repeated joins focus the existing tab rather than stacking duplicates; if the tab is already showing that conference it is focused without reloading. External provider URLs still get a plain new tab. On desktop, `openInternalVideoChatWindow` takes over.
+3. `useVideoConfOpenCall` opens the call window. On desktop, `openInternalVideoChatWindow` takes over.
+
+### How the call window is opened
+
+A call opens as a **popout** — a dedicated window sized to 1280×800 (capped to the available screen) and centred — mirroring the desktop app's dedicated video window and keeping the call visible while the user works in the main app. If the popout is refused, it falls back to an ordinary **tab**; some browsers and extensions block popup-shaped windows while still allowing a plain one. Only if both are blocked does `VideoConfBlockModal` ask the user to allow it.
+
+`noopener` is deliberately **never** in the features string. The conference page posts navigation requests back to its opener (see [Confined Navigation](#confined-navigation)), and `noopener` would both sever that link and make `window.open` return `null` — which would look identical to a blocked popup.
+
+Same-origin (in-product) conferences share a named window, `rocketchat-conference`, so repeated joins reuse it instead of stacking duplicates:
+
+| State of the shared window | Behaviour |
+|---|---|
+| already showing this conference | focused without reloading (empty URL) and **without features**, so a window the user has arranged is not resized or recentred |
+| showing a different conference | navigated to the new one |
+| closed, or never opened | opened fresh as a popout |
+
+Whether it is showing this conference is decided by reading the window's actual `location.pathname`, not the URL we last passed — those differ in string form between the start and join paths.
+
+External provider URLs (persistent chat off) get their own popout each time, unnamed.
 
 ## Layout
 
@@ -23,6 +41,8 @@ The conference renders **standalone**, without the app's navigation chrome.
 `LayoutWithSidebar` (NavBar + Sidebar + `MainContent`) is applied by `MainLayout`, not by the authentication chain. This matters: `AuthenticationCheck → LoggedInArea → UsernameCheck → PasswordChangeCheck → TwoFactorAuthSetupCheck` is shared by every authenticated route, so anything it renders would also appear on the conference page. `TwoFactorAuthSetupCheck` therefore returns `children` directly.
 
 The conference route is the only consumer of `AuthenticationCheck` outside `MainLayout`; every other route (including dynamic admin/account/room/audit groups) wraps in `MainLayout` and keeps the chrome.
+
+The same applies to the chain's *loading placeholder*. `UsernameCheck` shows `HomeSkeleton` — a sidebar list, room and composer skeleton — while it resolves the user, which would flash a whole fake app shell in a conference window that never shows one. `AuthenticationCheck` and `UsernameCheck` therefore take an optional `loading` node; it still defaults to `HomeSkeleton` (so no existing route changes), and the conference route passes `PageLoading` instead. A plain spinner also matches what the conference itself shows while joining, making startup one continuous state rather than two.
 
 Because it has no `MainContent` ancestor to inherit height from, `ConferenceViewport` establishes the `100dvh`/`100%` box the conference fills. The route is also wrapped with `appLayout.wrap(..., { embedded: true })`, which drops the global banner and cloud-announcement regions.
 
@@ -55,6 +75,10 @@ The conference page renders one room outside the main app, so the cached stores 
 - `useOpenRoomById` is the by-rid counterpart to the router-driven `useOpenRoom`. It fetches via `GET /v1/rooms.info` (hence `mapRoomFromApi` to deserialize dates) and falls back to fetching the subscription directly, since `Subscriptions.state` may be empty here.
 
 `LegacyRoomManager.open` is what starts the message stream the composer waits on. It resolves rooms by **name** for channels/groups but by **rid** for DMs — passing the wrong identifier leaves the composer stuck loading.
+
+`ConferenceRoom` also carries `narrowRoomStyle`, which reclaims horizontal space for the 400px panel: it restores the composer's inline padding (the embedded layout zeroes it, sized for the tiny `?layout=embedded` iframe) and trims the message start padding and avatar gutter margin. It is scoped to that subtree, so the room's normal full-width appearance and every external embed are untouched. Only the *start* padding is trimmed — the message toolbar and timestamp column sit against the end padding and need the room.
+
+The call iframe is named with `aria-label` rather than `title`: a `title` on a full-viewport iframe also renders as a hover tooltip, floating a label over the call for as long as the pointer is inside it.
 
 Video conference message blocks inside the panel have their join/call-back actions disabled (`videoConfJoinDisabled`, set when the current route is `conference`) — joining another conference from inside a conference would replace the call the user is in.
 
