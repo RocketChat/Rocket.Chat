@@ -6,10 +6,12 @@ import type {
 	IRoom,
 	RocketChatRecordDeleted,
 	IVoIPVideoConference,
+	VideoConferenceWithDiscussion,
 } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import type { FindPaginated, InsertionModel, IVideoConferenceModel } from '@rocket.chat/model-typings';
 import type {
+	AggregationCursor,
 	FindCursor,
 	UpdateOptions,
 	UpdateFilter,
@@ -31,27 +33,49 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		return [
 			{ key: { rid: 1, createdAt: 1 }, unique: false },
 			{ key: { type: 1, status: 1 }, unique: false },
-			{ key: { discussionRid: 1 }, unique: false },
+			// `createdAt` is part of the key so the `$or: [{ rid }, { discussionRid }]` listing below can be
+			// served by an index-ordered merge instead of a blocking in-memory sort of the whole room history.
+			{ key: { discussionRid: 1, createdAt: 1 }, unique: false },
 		];
 	}
 
 	public findPaginatedByRoomId(
 		rid: IRoom['_id'],
 		{ offset, count }: { offset?: number; count?: number } = {},
-	): FindPaginated<FindCursor<VideoConference>> {
-		// No data is lost — `providerData` is optional — but `Omit` over the `VideoConference` union collapses it into a single
-		// object type, so the explicit type argument opts out of projection inference to preserve the discriminated union.
-		return this.findPaginated<VideoConference>(
-			{ rid },
+	): FindPaginated<AggregationCursor<VideoConferenceWithDiscussion>> {
+		// Match conferences started in this room (`rid`) and those whose discussion is this room
+		// (`discussionRid`), so a discussion room resolves the conference it belongs to — its members may not
+		// have access to the parent room the conference originated in.
+		const matchFilter = { $or: [{ rid }, { discussionRid: rid }] };
+		const pipeline: object[] = [
+			{ $match: matchFilter },
+			{ $sort: { createdAt: -1 } },
+			...(offset ? [{ $skip: offset }] : []),
+			...(count ? [{ $limit: count }] : []),
 			{
-				sort: { createdAt: -1 },
-				skip: offset,
-				limit: count,
-				projection: {
-					providerData: 0,
+				$lookup: {
+					from: 'rocketchat_room',
+					localField: 'discussionRid',
+					foreignField: '_id',
+					as: 'discussionRoom',
+					pipeline: [{ $project: { fname: 1, name: 1, lastMessage: 1 } }],
 				},
 			},
-		);
+			{
+				$addFields: {
+					discussionTitle: {
+						$ifNull: [{ $first: '$discussionRoom.fname' }, { $first: '$discussionRoom.name' }],
+					},
+					discussionLastMessage: { $first: '$discussionRoom.lastMessage' },
+				},
+			},
+			{ $project: { providerData: 0, discussionRoom: 0 } },
+		];
+
+		return {
+			cursor: this.col.aggregate<VideoConferenceWithDiscussion>(pipeline),
+			totalCount: this.col.countDocuments(matchFilter),
+		};
 	}
 
 	public async findAllLongRunning(minDate: Date): Promise<FindCursor<Pick<VideoConference, '_id'>>> {

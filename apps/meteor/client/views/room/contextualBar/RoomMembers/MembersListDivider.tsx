@@ -16,7 +16,7 @@ export const MembersListDivider = ({ title, count }: MembersListDividerProps) =>
 			backgroundColor='room'
 			height={36}
 			fontScale='p2m'
-			color='defaut'
+			color='default'
 			paddingBlock={8}
 			paddingInline={24}
 			display='flex'

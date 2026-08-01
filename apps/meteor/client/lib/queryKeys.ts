@@ -190,6 +190,8 @@ export const marketplaceQueryKeys = {
 export const videoConferenceQueryKeys = {
 	all: ['video-conference'] as const,
 	fromRoom: (roomId: IRoom['_id']) => [...videoConferenceQueryKeys.all, 'rooms', roomId] as const,
+	conference: (callId: string) => [...videoConferenceQueryKeys.all, callId] as const,
+	join: (callId: string) => [...videoConferenceQueryKeys.conference(callId), 'join'] as const,
 } as const;
 
 export const messagesQueryKeys = {
