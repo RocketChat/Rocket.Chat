@@ -2,11 +2,11 @@ import { composeStories } from '@storybook/react';
 import { render } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
-import * as stories from './SideRail.stories';
+import * as stories from './CallBar.stories';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story] as const);
 
-describe('SideRail', () => {
+describe('CallBar', () => {
 	test.each(testCases)('renders %s without crashing', (_storyName, Story) => {
 		const { baseElement } = render(<Story />);
 		expect(baseElement).toMatchSnapshot();

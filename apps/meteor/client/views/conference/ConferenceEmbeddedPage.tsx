@@ -1,15 +1,17 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
-import { useState } from 'react';
+import { useUserSubscription } from '@rocket.chat/ui-contexts';
+import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ConferenceChat from './ConferenceChat';
 import ConferenceIframe from './ConferenceIframe';
 import ConferencePageError from './ConferencePageError';
 import ConferenceUnauthorizedPage from './ConferenceUnauthorizedPage';
-import { SideRail, SideRailActions, SideRailAction, SideRailPanel } from './components';
+import { CallBar, CallBarActions, CallBarAction, CallPanel } from './components';
 import { useConferenceEmbedded } from './hooks/useConferenceEmbedded';
 import { useConfinedNavigation } from './hooks/useConfinedNavigation';
+import { useProviderCallBridge } from './hooks/useProviderCallBridge';
 import PageLoading from '../root/PageLoading';
 
 type ConferenceEmbeddedPageProps = {
@@ -17,8 +19,8 @@ type ConferenceEmbeddedPageProps = {
 };
 
 /**
- * Renders a conference as a split view: the provider's call in an iframe, with the conference's
- * persistent chat in a collapsible panel beside it.
+ * Renders a conference as the call plus a bottom control bar, with the conference's persistent chat in a
+ * panel that opens beside the call — above the bar, so toggling it never reflows the controls.
  */
 const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	const { room, conference } = useConferenceEmbedded(callId);
@@ -28,12 +30,16 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	// down the call. Keep this window pinned to the conference — those go to the opener or a new tab.
 	useConfinedNavigation();
 
+	// A provider rendering its own toolbar can hide our bar and drive the chat panel from its own controls.
+	const iframeRef = useRef<HTMLIFrameElement>(null);
+	const { callBarVisible, chatVisible, toggleChat } = useProviderCallBridge(iframeRef);
+
 	// On narrow viewports the panel floats over the call instead of squeezing it.
 	const breakpoints = useBreakpoints();
 	const overlayPanel = !breakpoints.includes('md');
 
-	const [chatVisible, setChatVisible] = useState(true);
-	const toggleChat = () => setChatVisible((visible) => !visible);
+	const subscription = useUserSubscription(room.rid ?? '');
+	const unreadCount = chatVisible ? 0 : (subscription?.unread ?? 0);
 
 	// No access to the conference's room — show the unauthorized screen for the whole page rather than a
 	// broken split with a "not found" chat panel.
@@ -50,20 +56,24 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	}
 
 	return (
-		<Box display='flex' flexGrow={1} minHeight={0}>
-			<SideRail>
-				<SideRailActions>
-					<SideRailAction icon='message' label={t('Chat')} pressed={chatVisible} onClick={toggleChat} />
-				</SideRailActions>
+		<Box display='flex' flexDirection='column' flexGrow={1} minHeight={0}>
+			<Box display='flex' flexGrow={1} minHeight={0} position='relative'>
+				<Box flexGrow={1} display='flex' flexDirection='column' position='relative'>
+					<ConferenceIframe ref={iframeRef} url={conference.url} />
+				</Box>
 
-				<SideRailPanel visible={chatVisible} overlay={overlayPanel}>
+				<CallPanel visible={chatVisible} overlay={overlayPanel}>
 					<ConferenceChat callId={callId} rid={room.rid} loading={room.loading} onClose={toggleChat} />
-				</SideRailPanel>
-			</SideRail>
-
-			<Box flexGrow={1} display='flex' flexDirection='column' position='relative'>
-				<ConferenceIframe url={conference.url} />
+				</CallPanel>
 			</Box>
+
+			{callBarVisible && (
+				<CallBar>
+					<CallBarActions placement='end'>
+						<CallBarAction icon='balloon' label={t('Chat')} pressed={chatVisible} badgeCount={unreadCount} onClick={toggleChat} />
+					</CallBarActions>
+				</CallBar>
+			)}
 		</Box>
 	);
 };
