@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, ButtonGroup, Icon } from '@rocket.chat/fuselage';
+import { Banner, Box, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -9,7 +9,7 @@ import { useMediaCallInstance } from '../../context/MediaCallInstanceContext';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import useRegisterView from '../../context/useRegisterView';
 import { useAudioLevel } from '../../providers/useAudioLevel';
-import { playRecordingChime, playRecordingStopChime } from '../../utils/callChimes';
+import { playReconnectedTone, playReconnectingTone, playRecordingChime, playRecordingStopChime } from '../../utils/callChimes';
 import { CALL_LANGUAGES, DEFAULT_CALL_LANGUAGE } from '../../utils/callLanguages';
 import PopoutDockPrompt from '../PopoutDockPrompt';
 
@@ -547,6 +547,30 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle, ch
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
+	// Reconnecting is a window-level condition → DS Banner pinned to the top
+	// of the call window (never an app toast). Dismissible; re-arms on the
+	// next reconnect. Audio: one alert tone at onset, silence during retries,
+	// a soft confirm on recovery — never loop error sounds.
+	const [reconnectBannerDismissed, setReconnectBannerDismissed] = useState(false);
+	const wasReconnectingRef = useRef(false);
+	useEffect(() => {
+		if (isPopout) {
+			return;
+		}
+		if (reconnecting && !wasReconnectingRef.current) {
+			wasReconnectingRef.current = true;
+			setReconnectBannerDismissed(false);
+			playReconnectingTone();
+			return;
+		}
+		if (!reconnecting && wasReconnectingRef.current) {
+			wasReconnectingRef.current = false;
+			if (connectionState === 'CONNECTED') {
+				playReconnectedTone();
+			}
+		}
+	}, [reconnecting, connectionState, isPopout]);
+
 	const localParticipant = {
 		id: user.id || 'local',
 		displayName: user.displayName,
@@ -652,6 +676,17 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle, ch
 			flexDirection='column'
 			minHeight={0}
 		>
+			{reconnecting && !reconnectBannerDismissed && (
+				<Banner
+					variant='danger'
+					icon={<Icon name='ban' size='x24' />}
+					title={t('Connection_lost')}
+					closeable
+					onClose={() => setReconnectBannerDismissed(true)}
+				>
+					{t('Trying_to_reconnect_your_devices_stay_as_they_were')}
+				</Banner>
+			)}
 			<Box className={callHeaderStyles}>
 				<Box className={callHeaderTimerStyles}>
 					<Timer startAt={startedAt} />

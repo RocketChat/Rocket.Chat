@@ -1,19 +1,19 @@
-import type { CallPreferences } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import {
+	useLanguage,
 	useRouteParameter,
 	useSearchParameter,
-	useSetModal,
 	useUser,
 	useUserAvatarPath,
 	useUserSubscription,
 } from '@rocket.chat/ui-contexts';
-import { MediaCallRoomSection, useMediaCallView } from '@rocket.chat/ui-voip';
+import type { PreFlightJoinPreferences } from '@rocket.chat/ui-voip';
+import { CallLeftScreen, MediaCallRoomSection, PreFlight, useMediaCallView } from '@rocket.chat/ui-voip';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import ConferenceChat from './ConferenceChat';
-import ConferenceDisconnectedModal from './ConferenceDisconnectedModal';
 import ConferencePageError from './ConferencePageError';
 import ConferenceUnauthorizedPage from './ConferenceUnauthorizedPage';
 import PageLoading from '../root/PageLoading';
@@ -22,61 +22,69 @@ import { useConfinedNavigation } from './hooks/useConfinedNavigation';
 import { useLiveKitVideoConf } from '../videoConference/livekit/LiveKitVideoConfContext';
 
 const LiveKitConferenceEmbeddedPage = () => {
-	const setModal = useSetModal();
+	const { t } = useTranslation();
+	const language = useLanguage();
 
 	const callId = useRouteParameter('id') ?? '';
 	const micParam = useSearchParameter('mic');
 	const camParam = useSearchParameter('cam');
 
-	const preferences = useMemo<CallPreferences>(
-		() => ({
-			mic: micParam !== 'false',
-			cam: camParam === 'true',
-		}),
-		[micParam, camParam],
-	);
+	const initialMic = micParam !== 'false';
+	const initialCam = camParam === 'true';
 
 	const { joinCall: joinEmbeddedCall, leaveCall } = useLiveKitVideoConf();
 	const { sessionState } = useMediaCallView();
 
 	useConfinedNavigation();
 
-	const { room, conference } = useConferenceEmbedded(callId, preferences);
+	// Pre-flight state: the join REST call (which marks this user as joined
+	// server-side) and the LK connection only happen after the user clicks
+	// Join. Until then the window shows the pre-flight screen.
+	const [joinPreferences, setJoinPreferences] = useState<PreFlightJoinPreferences | null>(null);
+	const joinRequested = joinPreferences !== null;
+	const [joinNonce, setJoinNonce] = useState(0);
 
-	const [disconnected, setDisconnected] = useState(false);
-	const wasConnected = useRef(false);
+	const restPreferences = useMemo(
+		() => ({ mic: joinPreferences?.mic ?? initialMic, cam: joinPreferences?.cam ?? initialCam }),
+		[joinPreferences, initialMic, initialCam],
+	);
+
+	const { room, call, conference } = useConferenceEmbedded(callId, restPreferences, { join: joinRequested, joinNonce });
+
+	// "You left" state: the window survives for ~10s with a Rejoin action,
+	// then closes itself (never a modal — edge states live in the window).
+	const [leftCall, setLeftCall] = useState(false);
 	const hasJoined = useRef(false);
+	const previousSessionState = useRef(sessionState.state);
 
 	const [showChat, setShowChat] = useState(false);
 	const toggleChat = useCallback(() => setShowChat((prev) => !prev), []);
 	const closeChat = useCallback(() => setShowChat(false), []);
 
 	useEffect(() => {
-		if (sessionState.state === 'ongoing') {
-			wasConnected.current = true;
+		if (previousSessionState.current === 'ongoing' && sessionState.state === 'closed') {
+			setLeftCall(true);
 		}
+		previousSessionState.current = sessionState.state;
+	}, [sessionState.state]);
 
-		if (!disconnected && wasConnected.current && sessionState.state === 'closed') {
-			setDisconnected(true);
-			setModal(
-				<ConferenceDisconnectedModal
-					onCancel={() => setModal(null)}
-					onClose={() => {
-						setModal(null);
-						leaveCall();
-						if (window.videoCallWindow?.close) {
-							window.videoCallWindow.close();
-							return;
-						}
-						window.close();
-					}}
-				/>,
-			);
+	const closeWindow = useCallback(() => {
+		leaveCall();
+		if (window.videoCallWindow?.close) {
+			window.videoCallWindow.close();
+			return;
 		}
-	}, [disconnected, leaveCall, sessionState.state, setModal]);
+		window.close();
+	}, [leaveCall]);
+
+	const handleRejoin = useCallback(() => {
+		hasJoined.current = false;
+		setLeftCall(false);
+		setJoinNonce((nonce) => nonce + 1);
+	}, []);
 
 	useEffect(() => {
-		if (hasJoined.current) {
+		if (!joinRequested || hasJoined.current) {
 			return;
 		}
 
@@ -89,8 +97,27 @@ const LiveKitConferenceEmbeddedPage = () => {
 		}
 
 		hasJoined.current = true;
-		joinEmbeddedCall({ callId, rid: room.rid, preferences });
-	}, [callId, conference.loading, conference.providerName, joinEmbeddedCall, preferences, room.loading, room.rid, sessionState.state]);
+		joinEmbeddedCall({
+			callId,
+			rid: room.rid,
+			preferences: {
+				mic: joinPreferences?.mic,
+				cam: joinPreferences?.cam,
+				audioDeviceId: joinPreferences?.audioDeviceId,
+				videoDeviceId: joinPreferences?.videoDeviceId,
+			},
+		});
+	}, [
+		callId,
+		conference.loading,
+		conference.providerName,
+		joinEmbeddedCall,
+		joinPreferences,
+		joinRequested,
+		room.loading,
+		room.rid,
+		sessionState.state,
+	]);
 
 	const user = useUser();
 	const displayName = useUserDisplayName({ name: user?.name, username: user?.username });
@@ -107,7 +134,54 @@ const LiveKitConferenceEmbeddedPage = () => {
 	const subscription = useUserSubscription(room.rid ?? '');
 	const unreadCount = subscription?.unread ?? 0;
 
-	if (conference.error || (conference.providerName && conference.providerName !== 'livekit')) {
+	// Who's currently in the call: LiveKit tracks joins/leaves in
+	// `participants`; `users` (everyone who ever joined) is the fallback.
+	const activeParticipantNames = useMemo(() => {
+		const others = call.participants
+			? call.participants.filter((p) => !p.leftAt && p.id !== user?._id).map((p) => p.displayName || p.username || '')
+			: call.users.filter((u) => u._id !== user?._id).map((u) => u.name || u.username);
+		return others.filter(Boolean);
+	}, [call.participants, call.users, user?._id]);
+
+	const nameList = useMemo(() => {
+		try {
+			return new Intl.ListFormat(language, { style: 'long', type: 'conjunction' }).format(activeParticipantNames);
+		} catch {
+			return activeParticipantNames.join(', ');
+		}
+	}, [activeParticipantNames, language]);
+
+	// DM caller variant: nobody in the call yet and it's a direct call — the
+	// window is about to become the ringing window (see "DM call flow").
+	const isDirect = call.type === 'direct';
+	const dmPeerName = subscription?.fname || subscription?.name || '';
+	const isDmCaller = isDirect && activeParticipantNames.length === 0;
+
+	const statusText = (() => {
+		if (joinRequested) {
+			return activeParticipantNames.length > 0 ? t('Connecting_you_to_users', { users: nameList }) : t('Joining_call');
+		}
+		if (isDmCaller) {
+			return t('User_will_be_notified_when_you_start_the_call', { user: dmPeerName });
+		}
+		if (activeParticipantNames.length === 0) {
+			return t('No_one_else_is_here_yet');
+		}
+		if (activeParticipantNames.length === 1) {
+			return t('User_is_in_this_call', { user: nameList });
+		}
+		return t('Users_are_in_this_call', { users: nameList });
+	})();
+
+	const joinLabel = isDmCaller && dmPeerName ? t('Call_user', { user: dmPeerName }) : t('Join_call');
+
+	// Role policy forbids devices entirely: pre-flight hides the device strip
+	// and explains that the call is listen-only.
+	const devicesForbidden = call.capabilities ? call.capabilities.mic === false && call.capabilities.cam === false : false;
+
+	const providerName = call.providerName ?? conference.providerName;
+
+	if ((joinRequested && conference.error) || (providerName && providerName !== 'livekit')) {
 		return <ConferencePageError />;
 	}
 
@@ -115,8 +189,34 @@ const LiveKitConferenceEmbeddedPage = () => {
 		return <ConferenceUnauthorizedPage />;
 	}
 
-	if (conference.loading || room.loading || !room.rid || (!disconnected && sessionState.state !== 'ongoing')) {
+	if (room.loading || !room.rid) {
 		return <PageLoading />;
+	}
+
+	if (leftCall) {
+		return (
+			<Box bg='surface-light' w='full' h='full' display='flex' overflow='hidden'>
+				<CallLeftScreen participantCount={activeParticipantNames.length} onRejoin={handleRejoin} onClose={closeWindow} />
+			</Box>
+		);
+	}
+
+	if (sessionState.state !== 'ongoing') {
+		return (
+			<Box bg='surface-light' w='full' h='full' display='flex' overflow='hidden'>
+				<PreFlight
+					statusText={statusText}
+					helperText={devicesForbidden ? t('Calls_are_listen_only_for_your_role') : undefined}
+					joinLabel={joinLabel}
+					joining={joinRequested}
+					devicesForbidden={devicesForbidden}
+					initialMic={initialMic}
+					initialCam={initialCam}
+					user={ownUser}
+					onJoin={setJoinPreferences}
+				/>
+			</Box>
+		);
 	}
 
 	return (

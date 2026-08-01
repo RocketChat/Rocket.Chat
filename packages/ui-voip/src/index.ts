@@ -41,6 +41,13 @@ export type { RemoteParticipantInfo, MediaCallStreams } from './context/MediaCal
 export { usePopoutWindow } from './views/usePopoutWindow';
 export type { PopoutContainer } from './views/usePopoutWindow';
 
+// Pre-call screen shown inside the pop-out call window before joining.
+export { PreFlight } from './views/PreFlight';
+export type { PreFlightProps, PreFlightJoinPreferences } from './views/PreFlight';
+
+// Post-leave state of the call window: Rejoin + timed auto-close.
+export { default as CallLeftScreen } from './views/CallLeft/CallLeftScreen';
+
 // In-call notification chimes used by the Video Conference (LiveKit) UI —
 // recording started/stopped and remote-participant joined. Synthesized via
 // Web Audio so no asset files are needed. The legacy VoIP call sounds

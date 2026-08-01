@@ -62,6 +62,19 @@ const requestLeaveGroup = (callId: string, opts?: { keepalive?: boolean }) => {
 	}
 };
 
+// LiveKit ConnectionState → MediaCallViewContext connectionState. String
+// comparison on purpose: livekit-client ships a string enum while the view
+// context contract is our own union.
+const mapRoomConnectionState = (state: string): 'CONNECTED' | 'CONNECTING' | 'RECONNECTING' => {
+	if (state === 'connected') {
+		return 'CONNECTED';
+	}
+	if (state === 'reconnecting' || state === 'signalReconnecting') {
+		return 'RECONNECTING';
+	}
+	return 'CONNECTING';
+};
+
 /**
  * Inner bridge: lives inside <LiveKitRoom> as a sibling of children. Reads LK
  * hooks every render, computes the MediaCallViewContext value, and pushes it
@@ -603,7 +616,7 @@ const InnerProvider = ({
 		() => ({
 			sessionState: {
 				state: 'ongoing' as const,
-				connectionState: room.state === 'connected' ? 'CONNECTED' : 'CONNECTING',
+				connectionState: mapRoomConnectionState(room.state),
 				peerInfo: undefined,
 				transferredBy: undefined,
 				hidden: false,
@@ -812,6 +825,25 @@ const LiveKitVideoConfBridge = ({ children }: { children: ReactNode }) => {
 
 	const lkActive = Boolean(callId && creds);
 
+	// Initial capture options from the pre-flight choices: a plain boolean
+	// unless a specific device was picked there. Defaults match the legacy
+	// behaviour: mic on, camera off.
+	const audioCapture = useMemo(() => {
+		if (!(activeCall?.preferences?.mic ?? true)) {
+			return false;
+		}
+		const deviceId = activeCall?.preferences?.audioDeviceId;
+		return deviceId ? { deviceId } : true;
+	}, [activeCall?.preferences?.mic, activeCall?.preferences?.audioDeviceId]);
+
+	const videoCapture = useMemo(() => {
+		if (!(activeCall?.preferences?.cam ?? false)) {
+			return false;
+		}
+		const deviceId = activeCall?.preferences?.videoDeviceId;
+		return deviceId ? { deviceId } : true;
+	}, [activeCall?.preferences?.cam, activeCall?.preferences?.videoDeviceId]);
+
 	// The LK Room mounts into a hidden, app-lifetime detached node so it isn't
 	// part of any per-room DOM that might unmount on navigation. The React tree
 	// position of children above stays untouched.
@@ -840,17 +872,17 @@ const LiveKitVideoConfBridge = ({ children }: { children: ReactNode }) => {
 			<LiveKitPopout container={container} ownUser={ownUser} />
 			{lkActive && creds && callId && lkPortalTarget
 				? createPortal(
-						// Apply preflight mic/cam preferences from the VC
-						// popup as the initial `audio` / `video` flags so the
-						// LiveKitRoom publishes (or skips) tracks according
-						// to what the user chose. Defaults match the legacy
+						// Apply the pre-flight preferences (mic/cam toggle state
+						// and the devices picked there) as the initial `audio` /
+						// `video` capture options so the LiveKitRoom publishes
+						// (or skips) the right tracks. Defaults match the legacy
 						// behaviour: mic on, camera off.
 						<LiveKitRoom
 							token={creds.token}
 							serverUrl={creds.serverUrl}
 							connect={true}
-							audio={activeCall?.preferences?.mic ?? true}
-							video={activeCall?.preferences?.cam ?? false}
+							audio={audioCapture}
+							video={videoCapture}
 							onDisconnected={onLeave}
 						>
 							<InnerProvider

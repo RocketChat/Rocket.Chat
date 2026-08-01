@@ -5,12 +5,12 @@ export type ActiveLiveKitCall = {
 	callId: string;
 	rid: string;
 	/**
-	 * Preflight preferences from the start-call popup (mic/cam toggle
-	 * state). The LK bridge applies these as the initial track state on
-	 * connect so the room reflects the user's choice instead of always
-	 * defaulting to "mic on, cam off".
+	 * Preferences chosen in the pre-flight screen (mic/cam toggle state and
+	 * selected devices). The LK bridge applies these as the initial track
+	 * state on connect so the room reflects the user's choice instead of
+	 * always defaulting to "mic on, cam off".
 	 */
-	preferences?: { mic?: boolean; cam?: boolean };
+	preferences?: { mic?: boolean; cam?: boolean; audioDeviceId?: string; videoDeviceId?: string };
 };
 
 type LiveKitVideoConfContextValue = {

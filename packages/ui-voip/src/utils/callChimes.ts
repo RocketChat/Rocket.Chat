@@ -79,3 +79,29 @@ export const playRecordingStopChime = (): void => {
 export const playJoinChime = (): void => {
 	playTone(880, 0, 0.09);
 };
+
+/**
+ * Played once at the onset of a reconnection attempt — a single low alert
+ * tone. Per the edge-states audio spec, retries are silent: never loop
+ * error sounds while the transport recovers.
+ */
+export const playReconnectingTone = (): void => {
+	playTone(392, 0, 0.25);
+};
+
+/**
+ * Soft confirmation when the connection recovers after a reconnect —
+ * a single mid note, quieter in character than the join chime.
+ */
+export const playReconnectedTone = (): void => {
+	playTone(587.33, 0, 0.18);
+};
+
+/**
+ * Short end tone when the local user leaves (or is dropped from) the call.
+ * Single descending-feel low note; used by the "you left" window state.
+ */
+export const playCallEndTone = (): void => {
+	playTone(440, 0, 0.12);
+	playTone(329.63, 0.1, 0.2);
+};
