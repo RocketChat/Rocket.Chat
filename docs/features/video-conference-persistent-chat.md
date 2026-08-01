@@ -2,7 +2,7 @@
 
 ## Overview
 
-Persistent chat gives a video conference a Rocket.Chat room that lives alongside the call, so the conversation survives after the call ends. Instead of handing the user off to the provider's own page, joining a conference opens an in-product page at `/conference/:id` — a split view with the provider's call in an iframe and the conference's chat in a collapsible panel beside it.
+Persistent chat gives a video conference a Rocket.Chat room that lives alongside the call, so the conversation survives after the call ends. Instead of handing the user off to the provider's own page, joining a conference opens an in-product page at `/conference/:id` — the provider's call in an iframe, a control bar along the bottom, and the conference's chat in a collapsible panel docked to the inline end.
 
 The chat room is resolved from the conference record: `discussionRid` when a discussion exists, otherwise the conference's `rid` (the room the call was started in). A conference's `rid` never changes; only `discussionRid` moves.
 
@@ -24,7 +24,17 @@ The conference renders **standalone**, without the app's navigation chrome.
 
 The conference route is the only consumer of `AuthenticationCheck` outside `MainLayout`; every other route (including dynamic admin/account/room/audit groups) wraps in `MainLayout` and keeps the chrome.
 
-Because it has no `MainContent` ancestor to inherit height from, `ConferenceViewport` establishes the `100vh`/`100vw` box the conference fills. The route is also wrapped with `appLayout.wrap(..., { embedded: true })`, which drops the global banner and cloud-announcement regions.
+Because it has no `MainContent` ancestor to inherit height from, `ConferenceViewport` establishes the `100dvh`/`100%` box the conference fills. The route is also wrapped with `appLayout.wrap(..., { embedded: true })`, which drops the global banner and cloud-announcement regions.
+
+### Call chrome
+
+The conference is a column: a row holding the call and the chat panel, then `CallBar` beneath it.
+
+`CallBar` is the in-call control bar pinned along the bottom — the position third-party providers put their own toolbar in, so an embedded provider and the future native conference read the same. It is `relative`, and `CallBarActions placement='end'` is taken out of flow and anchored to the inline end, so adding or removing end actions never pulls the centred controls off-centre. Today the bar holds only the chat toggle (with an unread badge while the panel is closed); the native conference will fill the centre group with mic/camera/screen-share/hang-up.
+
+`CallPanel` is a **sibling of the call area, not a child of the bar**. That is what makes toggling the chat animate its own width without ever reflowing the bar — the bar stays full width and fixed in place by construction, not by careful sizing. Its inner box keeps full width while the outer collapses, so content slides instead of reflowing mid-animation. On viewports narrower than `md` it floats over the call instead of taking width from it.
+
+The panel is docked to the inline end, so its close button sits at the far end of its header — matching every other closable surface in the product.
 
 ## Route Behavior (`/conference/:id`)
 
@@ -81,6 +91,20 @@ Existing members are carried over from the room doc for DMs (`usernames`) and fr
 Both paths notify each added user with a desktop notification (`requireInteraction`, plus a "Join call" action on desktop that joins directly via `conferenceId`).
 
 The modal does not refetch the conference afterwards — `assignDiscussionToConference` broadcasts `discussionUpdated`, and every participant's panel (including the one that triggered the add) follows that single signal.
+
+## Provider → Parent Bridge
+
+A provider embedded in the conference iframe usually renders its own in-call toolbar, including a chat toggle. Rather than showing two competing sets of controls, it can drive ours by posting to the parent window:
+
+```js
+parent.postMessage({ type: 'rocketchat:conference', command: 'set-call-bar-visible', visible: false }, '*');
+parent.postMessage({ type: 'rocketchat:conference', command: 'set-chat-visible', visible: true }, '*');
+parent.postMessage({ type: 'rocketchat:conference', command: 'toggle-chat' }, '*');
+```
+
+`useProviderCallBridge` owns both pieces of chrome state, so our own bar button and the provider's messages drive one source of truth rather than fighting over two.
+
+**Trust model:** the iframe is cross-origin, so `event.origin` cannot be allow-listed against our own origin. Instead every message must have come from `iframeRef.current.contentWindow` — the exact window we embedded, which no other frame or tab can forge. Messages failing that check, carrying an unknown `command`, or with a non-boolean `visible`, are ignored. `useProviderCallBridge.spec.ts` covers each rejection path.
 
 ## Realtime Updates
 
@@ -152,9 +176,10 @@ The provider's URL is embedded in an iframe, so it must permit framing (no restr
 | Stream typings | `packages/ddp-client/src/types/streams.ts` |
 | Conference model | `packages/models/src/models/VideoConference.ts` |
 | Route + viewport | `apps/meteor/client/views/conference/ConferenceRoute.tsx`, `ConferenceViewport.tsx` |
-| Split view | `apps/meteor/client/views/conference/ConferenceEmbeddedPage.tsx`, `ConferenceIframe.tsx`, `components/SideRail/` |
+| Call chrome | `apps/meteor/client/views/conference/ConferenceEmbeddedPage.tsx`, `ConferenceIframe.tsx`, `components/CallBar/`, `components/CallPanel/` |
 | Chat panel | `apps/meteor/client/views/conference/ConferenceChat.tsx`, `ConferenceRoom.tsx`, `ConferenceRoomPreload.tsx` |
 | Conference data | `apps/meteor/client/views/conference/hooks/useConferenceEmbedded.tsx`, `useConferenceCallUrl.ts` |
+| Provider bridge | `apps/meteor/client/views/conference/hooks/useProviderCallBridge.ts` (+ `.spec.ts`) |
 | Confined navigation | `apps/meteor/client/views/conference/hooks/useConfinedNavigation.ts` (+ `.spec.ts`), `client/views/root/hooks/useExternalRouteNavigation.ts` |
 | Add participants | `apps/meteor/client/views/conference/AddParticipantsModal.tsx` |
 | Join routing | `apps/meteor/client/providers/VideoConfProvider.tsx`, `client/views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall.tsx` |

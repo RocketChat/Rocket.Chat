@@ -40,18 +40,20 @@ const ConferenceChat = ({ callId, rid, loading, onClose }: ConferenceChatProps) 
 					borderBlockEndWidth={1}
 					borderBlockEndColor='stroke-extra-light'
 				>
-					<Box display='flex' alignItems='center'>
-						{onClose && <IconButton marginInlineEnd={8} small icon='cross' title={t('Close')} onClick={onClose} />}
-						<Box is='h1' fontScale='h2' color='default'>
-							{t('Chat')}
-						</Box>
+					<Box is='h1' fontScale='h2' color='default'>
+						{t('Chat')}
 					</Box>
-					<Button
-						icon='user-plus'
-						onClick={() => setModal(<AddParticipantsModal callId={callId} rid={rid} onClose={() => setModal(null)} />)}
-					>
-						{t('Add_people')}
-					</Button>
+					{/* The panel is docked to the inline end of the call, so dismissal sits at the far end — the
+					    same place every other closable surface in the product puts it. */}
+					<Box display='flex' alignItems='center'>
+						<Button
+							icon='user-plus'
+							onClick={() => setModal(<AddParticipantsModal callId={callId} rid={rid} onClose={() => setModal(null)} />)}
+						>
+							{t('Add_people')}
+						</Button>
+						{onClose && <IconButton marginInlineStart={8} small icon='cross' title={t('Close')} onClick={onClose} />}
+					</Box>
 				</Box>
 
 				<ConferenceRoom rid={rid} />

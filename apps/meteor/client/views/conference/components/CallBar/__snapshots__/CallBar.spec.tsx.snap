@@ -1,0 +1,466 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`CallBar renders Default without crashing 1`] = `
+<body>
+  <div>
+    <div
+      style="display: flex; flex-direction: column; height: 400px;"
+    >
+      <div
+        style="display: flex; flex-grow: 1; min-height: 0; position: relative;"
+      >
+        <div
+          style="flex-grow: 1; background: rgb(31, 35, 41);"
+        />
+      </div>
+      <footer
+        class="rcx-box rcx-box--full rcx-css-9m8agq"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-hgt8mu"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--align-start"
+            role="group"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-1a10lko"
+            >
+              <button
+                aria-label="Chat"
+                class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--square rcx-button--icon rcx-button"
+                title="Chat"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-balloon rcx-icon rcx-css-f8dsuo"
+                >
+                  
+                </i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`CallBar renders WithCallControls without crashing 1`] = `
+<body>
+  <div>
+    <div
+      style="display: flex; flex-direction: column; height: 400px;"
+    >
+      <div
+        style="display: flex; flex-grow: 1; min-height: 0; position: relative;"
+      >
+        <div
+          style="flex-grow: 1; background: rgb(31, 35, 41);"
+        />
+        <div
+          class="rcx-box rcx-box--full rcx-css-587o8t"
+          style="transition: width 200ms ease, min-width 200ms ease;"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-18bsh3t"
+          >
+            <div
+              style="padding: 16px;"
+            >
+              <p>
+                Panel content
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer
+        class="rcx-box rcx-box--full rcx-css-9m8agq"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-127j9mz"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--align-start"
+            role="group"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-1a10lko"
+            >
+              <button
+                aria-label="Mute"
+                class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--square rcx-button--icon rcx-button"
+                title="Mute"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-f8dsuo"
+                >
+                  
+                </i>
+              </button>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-1a10lko"
+            >
+              <button
+                aria-label="Camera"
+                class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--square rcx-button--icon rcx-button"
+                title="Camera"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-f8dsuo"
+                >
+                  ❲
+                </i>
+              </button>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-1a10lko"
+            >
+              <button
+                aria-label="Share screen"
+                class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--square rcx-button--icon rcx-button"
+                title="Share screen"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-desktop rcx-icon rcx-css-f8dsuo"
+                >
+                  
+                </i>
+              </button>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-1a10lko"
+            >
+              <button
+                aria-label="Leave"
+                class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--square rcx-button--icon rcx-button"
+                title="Leave"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-f8dsuo"
+                >
+                  
+                </i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-hgt8mu"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--align-start"
+            role="group"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-1a10lko"
+            >
+              <button
+                aria-label="Chat"
+                class="rcx-box rcx-box--full rcx-button--icon-pressed rcx-button--medium-square rcx-button--icon--pressed rcx-button--square rcx-button--icon rcx-button"
+                title="Chat"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-balloon rcx-icon rcx-css-f8dsuo"
+                >
+                  
+                </i>
+              </button>
+              <div
+                class="rcx-box rcx-box--full rcx-css-cus5t2"
+                pointer-events="none"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-badge rcx-badge--danger"
+                >
+                  2
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`CallBar renders WithClosedPanel without crashing 1`] = `
+<body>
+  <div>
+    <div
+      style="display: flex; flex-direction: column; height: 400px;"
+    >
+      <div
+        style="display: flex; flex-grow: 1; min-height: 0; position: relative;"
+      >
+        <div
+          style="flex-grow: 1; background: rgb(31, 35, 41);"
+        />
+        <div
+          class="rcx-box rcx-box--full rcx-css-d4hzxb"
+          style="transition: width 200ms ease, min-width 200ms ease;"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-18bsh3t"
+          >
+            <div
+              style="padding: 16px;"
+            >
+              <p>
+                Panel content
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer
+        class="rcx-box rcx-box--full rcx-css-9m8agq"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-hgt8mu"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--align-start"
+            role="group"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-1a10lko"
+            >
+              <button
+                aria-label="Chat"
+                class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--square rcx-button--icon rcx-button"
+                title="Chat"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-balloon rcx-icon rcx-css-f8dsuo"
+                >
+                  
+                </i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`CallBar renders WithOpenPanel without crashing 1`] = `
+<body>
+  <div>
+    <div
+      style="display: flex; flex-direction: column; height: 400px;"
+    >
+      <div
+        style="display: flex; flex-grow: 1; min-height: 0; position: relative;"
+      >
+        <div
+          style="flex-grow: 1; background: rgb(31, 35, 41);"
+        />
+        <div
+          class="rcx-box rcx-box--full rcx-css-587o8t"
+          style="transition: width 200ms ease, min-width 200ms ease;"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-18bsh3t"
+          >
+            <div
+              style="padding: 16px;"
+            >
+              <p>
+                Panel content
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer
+        class="rcx-box rcx-box--full rcx-css-9m8agq"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-hgt8mu"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--align-start"
+            role="group"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-1a10lko"
+            >
+              <button
+                aria-label="Chat"
+                class="rcx-box rcx-box--full rcx-button--icon-pressed rcx-button--medium-square rcx-button--icon--pressed rcx-button--square rcx-button--icon rcx-button"
+                title="Chat"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-balloon rcx-icon rcx-css-f8dsuo"
+                >
+                  
+                </i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`CallBar renders WithOverlayPanel without crashing 1`] = `
+<body>
+  <div>
+    <div
+      style="display: flex; flex-direction: column; height: 400px;"
+    >
+      <div
+        style="display: flex; flex-grow: 1; min-height: 0; position: relative;"
+      >
+        <div
+          style="flex-grow: 1; background: rgb(31, 35, 41);"
+        />
+        <div
+          class="rcx-box rcx-box--full rcx-css-142krmn"
+          style="transition: width 200ms ease, min-width 200ms ease;"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-18bsh3t"
+          >
+            <div
+              style="padding: 16px;"
+            >
+              <p>
+                Panel content
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer
+        class="rcx-box rcx-box--full rcx-css-9m8agq"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-hgt8mu"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--align-start"
+            role="group"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-1a10lko"
+            >
+              <button
+                aria-label="Chat"
+                class="rcx-box rcx-box--full rcx-button--icon-pressed rcx-button--medium-square rcx-button--icon--pressed rcx-button--square rcx-button--icon rcx-button"
+                title="Chat"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-balloon rcx-icon rcx-css-f8dsuo"
+                >
+                  
+                </i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`CallBar renders WithUnreadBadge without crashing 1`] = `
+<body>
+  <div>
+    <div
+      style="display: flex; flex-direction: column; height: 400px;"
+    >
+      <div
+        style="display: flex; flex-grow: 1; min-height: 0; position: relative;"
+      >
+        <div
+          style="flex-grow: 1; background: rgb(31, 35, 41);"
+        />
+        <div
+          class="rcx-box rcx-box--full rcx-css-d4hzxb"
+          style="transition: width 200ms ease, min-width 200ms ease;"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-18bsh3t"
+          >
+            <div
+              style="padding: 16px;"
+            >
+              <p>
+                Panel content
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer
+        class="rcx-box rcx-box--full rcx-css-9m8agq"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-hgt8mu"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--align-start"
+            role="group"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-1a10lko"
+            >
+              <button
+                aria-label="Chat"
+                class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--square rcx-button--icon rcx-button"
+                title="Chat"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-balloon rcx-icon rcx-css-f8dsuo"
+                >
+                  
+                </i>
+              </button>
+              <div
+                class="rcx-box rcx-box--full rcx-css-cus5t2"
+                pointer-events="none"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-badge rcx-badge--danger"
+                >
+                  2
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+</body>
+`;
