@@ -7,6 +7,7 @@ import {
 	isVideoConfCancelProps,
 	isVideoConfInfoProps,
 	isVideoConfListProps,
+	isVideoConfAddParticipantsProps,
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
 	validateBadRequestErrorResponse,
@@ -56,6 +57,30 @@ const cancelResponseSchema = ajv.compile<void>({
 	type: 'object',
 	properties: { success: { type: 'boolean', enum: [true] } },
 	required: ['success'],
+	additionalProperties: false,
+});
+
+// Users invited to a conference may only belong to its discussion (`discussionRid`), not the parent room
+// the conference originated in — accept access to either so they can still reach the call.
+const canAccessConference = async (call: Pick<VideoConference, 'rid' | 'discussionRid'>, userId: string | undefined): Promise<boolean> => {
+	if (!userId) {
+		return false;
+	}
+
+	if (await canAccessRoomIdAsync(call.rid, userId)) {
+		return true;
+	}
+
+	return !!call.discussionRid && canAccessRoomIdAsync(call.discussionRid, userId);
+};
+
+const addParticipantsResponseSchema = ajv.compile<{ rid: string }>({
+	type: 'object',
+	properties: {
+		rid: { type: 'string' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['rid', 'success'],
 	additionalProperties: false,
 });
 
@@ -189,7 +214,7 @@ API.v1.post(
 			return API.v1.failure('invalid-params');
 		}
 
-		if (!(await canAccessRoomIdAsync(call.rid, userId))) {
+		if (!(await canAccessConference(call, userId))) {
 			return API.v1.failure('invalid-params');
 		}
 
@@ -247,6 +272,41 @@ API.v1.post(
 	},
 );
 
+API.v1.post(
+	'video-conference.add-participants',
+	{
+		authRequired: true,
+		body: isVideoConfAddParticipantsProps,
+		rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 60000 },
+		response: {
+			200: addParticipantsResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { callId, users, keepHistory } = this.bodyParams;
+		const { userId } = this;
+
+		const call = await VideoConf.get(callId);
+		if (!call) {
+			return API.v1.failure('invalid-params');
+		}
+
+		if (!userId || !(await canAccessRoomIdAsync(call.rid, userId))) {
+			return API.v1.failure('invalid-params');
+		}
+
+		// `keepHistory` adds the users to the conference's existing room (so they keep its history);
+		// otherwise a fresh discussion is created so they don't get the room's history.
+		const rid = keepHistory
+			? await VideoConf.addUsersToConferenceRoom(userId, callId, users)
+			: await VideoConf.createConferenceDiscussionWithParticipants(userId, callId, users);
+
+		return API.v1.success({ rid });
+	},
+);
+
 API.v1.get(
 	'video-conference.info',
 	{
@@ -268,7 +328,7 @@ API.v1.get(
 			return API.v1.failure('invalid-params');
 		}
 
-		if (!userId || !(await canAccessRoomIdAsync(call.rid, userId))) {
+		if (!(await canAccessConference(call, userId))) {
 			return API.v1.failure('invalid-params');
 		}
 

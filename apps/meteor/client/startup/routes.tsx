@@ -210,7 +210,7 @@ router.defineRoutes([
 	{
 		path: '/conference/:id',
 		id: 'conference',
-		element: appLayout.wrap(<ConferenceRoute />),
+		element: appLayout.wrap(<ConferenceRoute />, { embedded: true }),
 	},
 	{
 		path: '/setup-wizard/:step?',

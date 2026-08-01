@@ -120,6 +120,15 @@ type InternalVideoConference = IVoIPVideoConference;
 
 export type VideoConference = ExternalVideoConference | InternalVideoConference;
 
+/**
+ * A conference joined with the details of its persistent chat discussion, so a listing can render the
+ * discussion's name and latest message without a second round trip per conference.
+ */
+export type VideoConferenceWithDiscussion = VideoConference & {
+	discussionTitle?: string;
+	discussionLastMessage?: IMessage;
+};
+
 export type VideoConferenceInstructions = DirectCallInstructions | ConferenceInstructions | LivechatInstructions;
 
 export const isDirectVideoConference = (call: VideoConference | undefined | null): call is IDirectVideoConference => {

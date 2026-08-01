@@ -20,6 +20,7 @@ import { useDesktopFavicon } from './hooks/useDesktopFavicon';
 import { useDesktopTitle } from './hooks/useDesktopTitle';
 import { useDesktopUserRoles } from './hooks/useDesktopUserRoles';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
+import { useExternalRouteNavigation } from './hooks/useExternalRouteNavigation';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useIframeCommands } from './hooks/useIframeCommands';
 import { useIframeLoginListener } from './hooks/useIframeLoginListener';
@@ -81,6 +82,7 @@ const AppLayout = () => {
 	useDesktopFavicon();
 	useDesktopTitle();
 	useDesktopUserRoles();
+	useExternalRouteNavigation();
 	useStartupEvent();
 	useIframeCommands();
 

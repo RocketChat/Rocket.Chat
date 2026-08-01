@@ -1,4 +1,4 @@
-import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
+import { useRouter, useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import type { VideoConfPopupPayload, VideoConfContextValue } from '@rocket.chat/ui-video-conf';
 import { VideoConfContext } from '@rocket.chat/ui-video-conf';
 import type { ReactNode } from 'react';
@@ -6,6 +6,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { VideoConfManager } from '../lib/VideoConfManager';
+import { absoluteUrl } from '../lib/absoluteUrl';
 import VideoConfPopups from '../views/room/contextualBar/VideoConference/VideoConfPopups';
 import { useVideoConfOpenCall } from '../views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
 
@@ -15,17 +16,26 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 	const [outgoing, setOutgoing] = useState<VideoConfPopupPayload | undefined>();
 	const handleOpenCall = useVideoConfOpenCall();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const router = useRouter();
 	const { t } = useTranslation();
 	const logLevel = useSetting<number>('Log_Level', 0);
+	const persistentChatEnabled = useSetting('VideoConf_Enable_Persistent_Chat', false);
 
 	useEffect(() => VideoConfManager.setLogLevel(logLevel), [logLevel]);
 
 	useEffect(
 		() =>
-			VideoConfManager.on('call/join', (props) => {
-				handleOpenCall(props.url, props.providerName);
+			VideoConfManager.on('call/join', ({ url, callId, providerName }) => {
+				// With persistent chat on, open the in-product conference page — the provider's call embedded
+				// beside the conference's chat — instead of handing the user off to the provider's own URL.
+				if (persistentChatEnabled) {
+					handleOpenCall(absoluteUrl(router.buildRoutePath({ name: 'conference', params: { id: callId } })), providerName);
+					return;
+				}
+
+				handleOpenCall(url, providerName);
 			}),
-		[handleOpenCall],
+		[handleOpenCall, router, persistentChatEnabled],
 	);
 
 	useEffect(

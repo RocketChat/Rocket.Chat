@@ -1,4 +1,4 @@
-import type { VideoConference } from '@rocket.chat/core-typings';
+import type { VideoConferenceWithDiscussion } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import {
@@ -11,16 +11,19 @@ import {
 	ContextualbarEmptyContent,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Virtuoso } from 'react-virtuoso';
+import { GroupedVirtuoso } from 'react-virtuoso';
 
 import VideoConfListItem from './VideoConfListItem';
+import InfiniteListAnchor from '../../../../../components/InfiniteListAnchor';
 import { getErrorMessage } from '../../../../../lib/errorHandling';
+import { MembersListDivider } from '../../RoomMembers/MembersListDivider';
 
 export type VideoConfListProps = {
 	onClose: () => void;
 	total: number;
-	videoConfs: VideoConference[];
+	videoConfs: VideoConferenceWithDiscussion[];
 	loading: boolean;
 	error?: Error;
 	reload: () => void;
@@ -34,11 +37,30 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 		debounceDelay: 200,
 	});
 
+	// Ongoing calls first, so the joinable ones are always at the top of the history. `groupCounts` is
+	// memoized alongside the groups because Virtuoso republishes its whole list state when that array
+	// changes identity.
+	const { groups, groupCounts, flatItems } = useMemo(() => {
+		const ongoingCalls = videoConfs.filter((call) => !call.endedAt);
+		const pastCalls = videoConfs.filter((call) => call.endedAt);
+
+		const groups = [
+			...(ongoingCalls.length > 0 ? [{ titleKey: 'Ongoing_calls' as const, items: ongoingCalls }] : []),
+			...(pastCalls.length > 0 ? [{ titleKey: 'Past_calls' as const, items: pastCalls }] : []),
+		];
+
+		return {
+			groups,
+			groupCounts: groups.map((group) => group.items.length),
+			flatItems: groups.flatMap((group) => group.items),
+		};
+	}, [videoConfs]);
+
 	return (
 		<ContextualbarDialog>
 			<ContextualbarHeader>
-				<ContextualbarIcon name='phone' />
-				<ContextualbarTitle>{t('Calls')}</ContextualbarTitle>
+				<ContextualbarIcon name='history' />
+				<ContextualbarTitle>{t('Conference_call_history')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 			<ContextualbarContent paddingInline={0} ref={ref}>
@@ -47,7 +69,7 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 						<Throbber size='x12' />
 					</Box>
 				)}
-				{(total === 0 || error) && (
+				{total === 0 && (
 					<Box display='flex' flexDirection='column' justifyContent='center' height='100%'>
 						{error && (
 							<States>
@@ -56,7 +78,7 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 								<StatesSubtitle>{getErrorMessage(error)}</StatesSubtitle>
 							</States>
 						)}
-						{!loading && total === 0 && (
+						{!error && !loading && (
 							<ContextualbarEmptyContent
 								icon='phone'
 								title={t('No_history')}
@@ -66,18 +88,18 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 					</Box>
 				)}
 				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
-					{videoConfs.length > 0 && (
+					{flatItems.length > 0 && (
 						<VirtualizedScrollbars>
-							<Virtuoso
+							<GroupedVirtuoso
 								style={{
 									height: blockSize,
 									width: inlineSize,
 								}}
-								totalCount={total}
-								endReached={loadMoreItems}
-								overscan={25}
-								data={videoConfs}
-								itemContent={(_index, data) => <VideoConfListItem videoConfData={data} reload={reload} />}
+								groupCounts={groupCounts}
+								groupContent={(index) => <MembersListDivider title={groups[index].titleKey} count={groupCounts[index]} />}
+								// eslint-disable-next-line react/no-multi-comp
+								components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreItems} /> }}
+								itemContent={(index) => <VideoConfListItem videoConfData={flatItems[index]} reload={reload} />}
 							/>
 						</VirtualizedScrollbars>
 					)}
