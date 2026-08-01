@@ -15,9 +15,14 @@ import UsernameCheck from './UsernameCheck';
  * Guest is only for certain locations, it shows a form asking if the user wants to stay as guest and if so
  * renders the page, without creating an user (not even an anonymous user)
  */
-export type AuthenticationCheckProps = { children: ReactNode; guest?: boolean };
+export type AuthenticationCheckProps = {
+	children: ReactNode;
+	guest?: boolean;
+	/** Placeholder shown while the user is resolved — see `UsernameCheck`. */
+	loading?: ReactNode;
+};
 
-const AuthenticationCheck = ({ children, guest }: AuthenticationCheckProps) => {
+const AuthenticationCheck = ({ children, guest, loading }: AuthenticationCheckProps) => {
 	const user = useUser();
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 	const forceLogin = useSession('forceLogin');
@@ -25,7 +30,7 @@ const AuthenticationCheck = ({ children, guest }: AuthenticationCheckProps) => {
 	if (user) {
 		return (
 			<LoggedInArea>
-				<UsernameCheck>{children}</UsernameCheck>
+				<UsernameCheck loading={loading}>{children}</UsernameCheck>
 			</LoggedInArea>
 		);
 	}
@@ -35,7 +40,7 @@ const AuthenticationCheck = ({ children, guest }: AuthenticationCheckProps) => {
 	}
 
 	if (!forceLogin && allowAnonymousRead) {
-		return <UsernameCheck>{children}</UsernameCheck>;
+		return <UsernameCheck loading={loading}>{children}</UsernameCheck>;
 	}
 
 	return <LoginPage />;
