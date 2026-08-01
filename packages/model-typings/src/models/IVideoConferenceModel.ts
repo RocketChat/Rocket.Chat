@@ -63,6 +63,8 @@ export interface IVideoConferenceModel extends IBaseModel<VideoConference> {
 
 	setUserJoinedById(callId: string, uid: IUser['_id'], joinedAt?: Date): Promise<void>;
 
+	setUserDeclinedById(callId: string, uid: IUser['_id'], declinedAt?: Date): Promise<void>;
+
 	setMessageById(callId: string, messageType: keyof VideoConference['messages'], messageId: string): Promise<void>;
 
 	updateUserReferences(userId: IUser['_id'], username: IUser['username'], name: IUser['name']): Promise<void>;
