@@ -6,7 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { PreFlightAudioMenu, PreFlightCameraMenu } from './PreFlightDeviceMenus';
 import type { PreFlightJoinPreferences, PreFlightMedia } from './usePreFlightMedia';
 import { usePreFlightMedia } from './usePreFlightMedia';
-import { ToggleButton, ActionStrip } from '../../components';
+import { ActionStrip, JoinedButtonGroup } from '../../components';
+import type { JoinedButtonGroupState } from '../../components';
 import { playJoinChime } from '../../utils/callChimes';
 
 export type { PreFlightJoinPreferences };
@@ -28,17 +29,6 @@ const previewTileStyles = css`
 		object-fit: cover;
 		transform: scaleX(-1);
 	}
-`;
-
-// mirrors the in-call toolbar's split groups so controls don't jump on join
-const controlGroupStyles = css`
-	display: inline-flex;
-	align-items: center;
-	gap: 0;
-`;
-
-const chevronWrapStyles = css`
-	margin-inline-start: -2px;
 `;
 
 const micMeterTrackStyles = css`
@@ -127,6 +117,13 @@ const PreFlight = ({
 		return media.camEnabled ? t('Stop_camera') : t('Start_camera');
 	})();
 
+	// device-off rule: off/blocked → danger split button; absent → single
+	// danger button with no chevron (nothing to pick)
+	const micState: JoinedButtonGroupState =
+		(!media.hasMicDevice && 'unavailable') || (micBlocked && 'off') || (media.micEnabled ? 'on' : 'off');
+	const camState: JoinedButtonGroupState =
+		(!media.hasCamDevice && 'unavailable') || (camBlocked && 'off') || (media.camEnabled ? 'on' : 'off');
+
 	const handleJoin = () => {
 		// pre-flight is otherwise silent; clicking Join plays a soft local
 		// confirm (the room hears its own single join blip)
@@ -160,46 +157,42 @@ const PreFlight = ({
 			<ActionStrip>
 				{!devicesForbidden && (
 					<>
-						<Box className={controlGroupStyles}>
-							<Box className={micMeterTrackStyles}>
-								<ToggleButton
-									label={t('Mute')}
-									icons={['mic', 'mic-off']}
-									titles={[micTitle, micTitle]}
-									pressed={!media.micEnabled}
-									onToggle={media.toggleMic}
-								/>
-								{media.micEnabled && media.micLevel > 0 && (
-									<Box className={micMeterStyles} style={{ transform: `scaleX(${Math.min(1, media.micLevel)})` }} />
-								)}
-							</Box>
-							<Box className={chevronWrapStyles}>
-								<PreFlightAudioMenu
-									audioInputs={media.audioInputs}
-									audioOutputs={media.audioOutputs}
-									selectedInputId={media.selectedAudioInputId}
-									selectedOutputId={media.selectedAudioOutputId}
-									onSelectInput={media.selectAudioInput}
-									onSelectOutput={media.selectAudioOutput}
-								/>
-							</Box>
-						</Box>
-						<Box className={controlGroupStyles}>
-							<ToggleButton
-								label={t('Camera')}
-								icons={['video', 'video-off']}
-								titles={[camTitle, camTitle]}
-								pressed={!media.camEnabled}
-								onToggle={media.toggleCam}
+						<Box className={micMeterTrackStyles}>
+							<JoinedButtonGroup
+								state={micState}
+								label={t('Mute')}
+								icons={['mic', 'mic-off']}
+								title={micTitle}
+								onToggle={media.toggleMic}
+								menu={
+									<PreFlightAudioMenu
+										audioInputs={media.audioInputs}
+										audioOutputs={media.audioOutputs}
+										selectedInputId={media.selectedAudioInputId}
+										selectedOutputId={media.selectedAudioOutputId}
+										onSelectInput={media.selectAudioInput}
+										onSelectOutput={media.selectAudioOutput}
+									/>
+								}
 							/>
-							<Box className={chevronWrapStyles}>
+							{media.micEnabled && media.micLevel > 0 && (
+								<Box className={micMeterStyles} style={{ transform: `scaleX(${Math.min(1, media.micLevel)})` }} />
+							)}
+						</Box>
+						<JoinedButtonGroup
+							state={camState}
+							label={t('Camera')}
+							icons={['video', 'video-off']}
+							title={camTitle}
+							onToggle={media.toggleCam}
+							menu={
 								<PreFlightCameraMenu
 									videoInputs={media.videoInputs}
 									selectedId={media.selectedVideoInputId}
 									onSelect={media.selectVideoInput}
 								/>
-							</Box>
-						</Box>
+							}
+						/>
 					</>
 				)}
 			</ActionStrip>

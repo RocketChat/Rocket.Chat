@@ -1,10 +1,19 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Banner, Box, ButtonGroup, Icon } from '@rocket.chat/fuselage';
+import { Banner, Box, ButtonGroup, Icon, IconButton } from '@rocket.chat/fuselage';
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CallStage from './CallStage';
-import { ToggleButton, Timer, DevicePicker, CameraPicker, ActionButton, ActionStrip, ActionToggleChat } from '../../components';
+import {
+	ToggleButton,
+	Timer,
+	DevicePicker,
+	CameraPicker,
+	ActionButton,
+	ActionStrip,
+	ActionToggleChat,
+	JoinedButtonGroup,
+} from '../../components';
 import { useMediaCallInstance } from '../../context/MediaCallInstanceContext';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import useRegisterView from '../../context/useRegisterView';
@@ -127,130 +136,11 @@ const callHeaderTimerStyles = css`
 	font-variant-numeric: tabular-nums;
 `;
 
-// Shared "pill" styling for the recording + take-notes header actions. The
-// active-state colour is supplied via the --active-bg / --active-bg-hover
-// CSS variables on the consuming element. The hover-label swap (e.g.
-// "Recording…" → "Stop recording") is purely CSS — the parent renders both
-// the active and hover labels in sibling <span> elements and `:hover`
-// toggles which is visible. Avoids two pieces of React state.
-const pillStyles = css`
-	display: inline-flex;
-	align-items: center;
-	gap: 6px;
-	height: 28px;
-	padding: 0 12px;
-	border-radius: 14px;
-	border: 1px solid rgba(255, 255, 255, 0.2);
-	background-color: transparent;
-	color: rgba(255, 255, 255, 0.9);
-	font-size: 12px;
-	line-height: 1;
-	cursor: pointer;
-	transition:
-		background-color 120ms ease,
-		color 120ms ease,
-		border-color 120ms ease;
-
-	&:hover {
-		background-color: rgba(255, 255, 255, 0.08);
-		color: white;
-	}
-
-	&:disabled {
-		opacity: 0.55;
-		cursor: not-allowed;
-	}
-
-	&.active {
-		background-color: var(--rcx-pill-active-bg);
-		border-color: var(--rcx-pill-active-bg);
-		color: white;
-	}
-
-	&.active:hover:not(:disabled) {
-		background-color: var(--rcx-pill-active-bg-hover);
-		border-color: var(--rcx-pill-active-bg-hover);
-	}
-
-	/* Hover-label swap: parent renders both the idle and hover labels as
-	   children of [data-hover-swap]; CSS toggles which is visible. */
-	[data-hover-swap] > [data-hover] {
-		display: none;
-	}
-	&:hover [data-hover-swap] > [data-hover] {
-		display: inline;
-	}
-	&:hover [data-hover-swap] > [data-idle] {
-		display: none;
-	}
-`;
-
-// Visual grouping for "toggle + its device chevron": tightens the gap
-// between the toggle button and its adjacent device picker so they read
-// as one composite control rather than two unrelated buttons. The
-// chevron also nudges left slightly so it sits flush against the toggle.
-const controlGroupStyles = css`
-	display: inline-flex;
-	align-items: center;
-	gap: 0;
-`;
-
-const chevronWrapStyles = css`
-	margin-inline-start: -2px;
-`;
-
-// Fullscreen toggle in the call header — small icon-only button styled
-// to read as "header action" rather than a primary control. White-on-
-// transparent with a subtle hover background, matching the recording
-// pill's chrome.
+// Right-hand cluster of DS icon buttons in the call header.
 const headerActionsRowStyles = css`
 	display: inline-flex;
 	align-items: center;
 	gap: 8px;
-`;
-
-const fullscreenButtonStyles = css`
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 28px;
-	height: 28px;
-	border-radius: 14px;
-	border: 1px solid rgba(255, 255, 255, 0.2);
-	background-color: transparent;
-	color: rgba(255, 255, 255, 0.9);
-	cursor: pointer;
-	transition:
-		background-color 120ms ease,
-		color 120ms ease;
-
-	&:hover {
-		background-color: rgba(255, 255, 255, 0.08);
-		color: white;
-	}
-`;
-
-const recordDotStyles = css`
-	width: 10px;
-	height: 10px;
-	border-radius: 50%;
-	background-color: rgb(200 54 45);
-	flex-shrink: 0;
-
-	&.recording {
-		background-color: white;
-		animation: rcx-record-blink 1.2s ease-in-out infinite;
-	}
-
-	@keyframes rcx-record-blink {
-		0%,
-		100% {
-			opacity: 1;
-		}
-		50% {
-			opacity: 0.25;
-		}
-	}
 `;
 
 // Tolerance for natural inter-word pauses. As long as we hear speech again
@@ -691,96 +581,70 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle, ch
 				<Box className={callHeaderTimerStyles}>
 					<Timer startAt={startedAt} />
 				</Box>
+				{/* Header Actions cluster (Figma): DS icon buttons only — active
+				    tool state is lit Primary, recording flips to danger. The
+				    red call Timer on the left stays the persistent indicator. */}
 				<Box className={headerActionsRowStyles}>
 					{/* Recording is a Video Conference (LiveKit) feature — the
-					    pill only renders when the upstream provider supplies a
-					    broadcastRecordingState. 1:1 VoIP calls (which have no
-					    recording backend in this branch) skip it. */}
+					    button only renders when the upstream provider supplies
+					    a broadcastRecordingState. */}
 					{broadcastRecordingState && (
-						<Box
-							is='button'
-							type='button'
-							className={[pillStyles, isRecording ? 'active' : null]}
-							style={{ '--rcx-pill-active-bg': 'rgb(200 54 45)', '--rcx-pill-active-bg-hover': 'rgb(168 41 33)' } as React.CSSProperties}
-							onClick={onToggleRecording}
-							disabled={recordingBusy}
+						<IconButton
+							small
+							secondary
+							danger={isRecording}
+							icon={<Icon size={16} name='rec' />}
+							label={isRecording ? t('Stop_recording') : t('Start_recording')}
+							aria-label={isRecording ? t('Stop_recording') : t('Start_recording')}
 							title={isRecording ? t('Stop_recording') : t('Start_recording')}
-						>
-							<Box is='span' aria-hidden className={[recordDotStyles, isRecording ? 'recording' : null]} />
-							{isRecording ? (
-								<Box is='span' data-hover-swap>
-									<Box is='span' data-idle>{`${t('Recording')}…`}</Box>
-									<Box is='span' data-hover>
-										{t('Stop_recording')}
-									</Box>
-								</Box>
-							) : (
-								<Box is='span'>{t('Start_recording')}</Box>
-							)}
-						</Box>
+							aria-pressed={isRecording}
+							disabled={recordingBusy}
+							onClick={onToggleRecording}
+						/>
 					)}
 					{notesAvailable && (
-						<Box
-							is='button'
-							type='button'
-							className={[pillStyles, notesEnabled ? 'active' : null]}
-							style={{ '--rcx-pill-active-bg': 'rgb(38 102 200)', '--rcx-pill-active-bg-hover': 'rgb(28 80 165)' } as React.CSSProperties}
-							onClick={onToggleTakeNotes}
+						<IconButton
+							small
+							secondary={!notesEnabled}
+							primary={notesEnabled}
+							icon={<Icon size={16} name='pencil' />}
+							label={notesEnabled ? t('Stop_taking_notes') : t('Take_notes')}
+							aria-label={notesEnabled ? t('Stop_taking_notes') : t('Take_notes')}
+							title={notesEnabled ? t('Stop_taking_notes') : t('Take_notes')}
+							aria-pressed={notesEnabled}
 							disabled={notesBusy}
-							title={notesEnabled ? 'Stop taking notes' : 'Take notes'}
-						>
-							<Icon name='edit' size='x14' />
-							{notesEnabled ? (
-								<Box is='span' data-hover-swap>
-									<Box is='span' data-idle>
-										Taking notes…
-									</Box>
-									<Box is='span' data-hover>
-										Stop taking notes
-									</Box>
-								</Box>
-							) : (
-								<Box is='span'>Take notes</Box>
-							)}
-						</Box>
+							onClick={onToggleTakeNotes}
+						/>
 					)}
-					{/* Captions toggle — per-user opt-in. Off by default; when
-					    the local user turns it on, the LiveKit provider also
-					    broadcasts a captions-request signal so the agent
-					    starts transcribing (and stops once nobody wants
-					    captions). Other participants stay unaffected. */}
+					{/* Captions toggle — per-user opt-in; lit Primary = active
+					    tool state, same language as sharing. */}
 					{onToggleCaptions && (
-						<Box
-							is='button'
-							type='button'
-							className={[pillStyles, captionsEnabledLocally ? 'active' : null]}
-							style={{ '--rcx-pill-active-bg': 'rgb(67 122 178)', '--rcx-pill-active-bg-hover': 'rgb(50 96 142)' } as React.CSSProperties}
+						<IconButton
+							small
+							secondary={!captionsEnabledLocally}
+							primary={captionsEnabledLocally}
+							icon={<Icon size={16} name='quote' />}
+							label={captionsEnabledLocally ? t('Hide_captions') : t('Show_captions')}
+							aria-label={captionsEnabledLocally ? t('Hide_captions') : t('Show_captions')}
+							title={captionsEnabledLocally ? t('Hide_captions') : t('Show_captions')}
+							aria-pressed={captionsEnabledLocally}
 							onClick={onToggleCaptions}
-							title={captionsEnabledLocally ? 'Hide captions' : 'Show captions'}
-						>
-							<Icon name='quote' size='x14' />
-							<Box is='span'>{captionsEnabledLocally ? 'Captions on' : 'Captions'}</Box>
-						</Box>
+						/>
 					)}
-					{/* Call-language pill — abbreviation only ("US", "BR", …) to
-					    save space; full label in the dropdown. Broadcasts the
-					    choice over the LK data channel so the agent restarts
-					    active Gemini sessions with the new language. Hidden
-					    on 1:1 VoIP (provider doesn't supply
-					    onChangeCallLanguage). */}
+					{/* Call-language menu — broadcasts the choice over the LK
+					    data channel so the agent restarts transcription with
+					    the new language. */}
 					{onChangeCallLanguage && (
 						<Box className={languagePickerWrapStyles} ref={languagePickerRef}>
-							<Box
-								is='button'
-								type='button'
-								className={pillStyles}
+							<IconButton
+								small
+								secondary
+								icon={<Icon size={16} name='globe' />}
+								label={`${t('Call_language')}: ${currentLanguage.label}`}
+								aria-label={`${t('Call_language')}: ${currentLanguage.label}`}
+								title={`${t('Call_language')}: ${currentLanguage.label}`}
 								onClick={() => setLanguagePickerOpen((p) => !p)}
-								title={`Call language: ${currentLanguage.label}`}
-								aria-label={`Call language: ${currentLanguage.label}`}
-							>
-								<Icon name='globe' size='x14' />
-								<Box is='span'>{currentLanguage.abbr}</Box>
-							</Box>
+							/>
 							{languagePickerOpen && (
 								<Box className={languagePickerMenuStyles}>
 									{CALL_LANGUAGES.map((lang) => (
@@ -804,16 +668,15 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle, ch
 							)}
 						</Box>
 					)}
-					<Box
-						is='button'
-						type='button'
-						className={fullscreenButtonStyles}
+					<IconButton
+						small
+						secondary
+						icon={<Icon size={16} name={isFullscreen ? 'arrow-collapse' : 'arrow-expand'} />}
+						label={isFullscreen ? t('Exit_fullscreen') : t('Enter_fullscreen')}
+						aria-label={isFullscreen ? t('Exit_fullscreen') : t('Enter_fullscreen')}
+						title={isFullscreen ? t('Exit_fullscreen') : t('Enter_fullscreen')}
 						onClick={onToggleFullscreen}
-						title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-						aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-					>
-						<Icon name={isFullscreen ? 'arrow-collapse' : 'arrow-expand'} size='x16' />
-					</Box>
+					/>
 				</Box>
 			</Box>
 			<Box display='flex' flexDirection='row' flexGrow={1} minWidth={0} minHeight={0} overflow='hidden'>
@@ -851,25 +714,23 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle, ch
 					) : undefined
 				}
 			>
-				<Box className={controlGroupStyles}>
-					<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
-					<Box className={chevronWrapStyles}>
-						<DevicePicker chevron />
-					</Box>
-				</Box>
+				<JoinedButtonGroup
+					state={muted ? 'off' : 'on'}
+					label={t('Mute')}
+					icons={['mic', 'mic-off']}
+					title={muted ? t('Unmute') : t('Mute')}
+					onToggle={onMute}
+					menu={<DevicePicker chevron />}
+				/>
 				{onToggleCamera && (
-					<Box className={controlGroupStyles}>
-						<ToggleButton
-							label={t('Camera')}
-							icons={['video', 'video-off']}
-							titles={[t('Stop_camera'), t('Start_camera')]}
-							pressed={!(localCamera?.active ?? false)}
-							onToggle={onToggleCamera}
-						/>
-						<Box className={chevronWrapStyles}>
-							<CameraPicker />
-						</Box>
-					</Box>
+					<JoinedButtonGroup
+						state={(localCamera?.active ?? false) ? 'on' : 'off'}
+						label={t('Camera')}
+						icons={['video', 'video-off']}
+						title={(localCamera?.active ?? false) ? t('Stop_camera') : t('Start_camera')}
+						onToggle={onToggleCamera}
+						menu={<CameraPicker />}
+					/>
 				)}
 				{!isLiveKitCall && (
 					<ToggleButton
@@ -880,11 +741,13 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle, ch
 						onToggle={onHold}
 					/>
 				)}
-				<ToggleButton
+				{/* sharing is an active TOOL state (lit Primary), not danger —
+				    red is reserved for leaving the call */}
+				<JoinedButtonGroup
+					state={(localScreen?.active ?? false) ? 'active' : 'on'}
 					label={t('Share_screen')}
-					icons={['desktop-arrow-up', 'desktop-cross']}
-					titles={[t('Share_screen'), t('Stop_sharing_screen')]}
-					pressed={localScreen?.active ?? false}
+					icons={['desktop-arrow-up', 'desktop-arrow-up']}
+					title={(localScreen?.active ?? false) ? t('Stop_sharing_screen') : t('Share_screen')}
 					onToggle={onToggleScreenSharing}
 				/>
 				{onToggleHand && (
