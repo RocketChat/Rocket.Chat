@@ -1,4 +1,4 @@
-import { getUserDisplayName, VideoConferenceStatus } from '@rocket.chat/core-typings';
+import { getUserDisplayName, hasJoinedVideoConference, VideoConferenceStatus } from '@rocket.chat/core-typings';
 import { useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import {
@@ -95,8 +95,13 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 		}
 	};
 
+	// `users` is the conference's membership list, not who's currently in the call — a member can be added
+	// without ever joining, so this must be filtered down to those who actually joined before it's counted
+	// or displayed anywhere below.
+	const joinedUsers = useMemo(() => result.data?.users.filter(hasJoinedVideoConference) ?? [], [result.data?.users]);
+
 	const messageFooterText = useMemo(() => {
-		const usersCount = result.data?.users.length;
+		const usersCount = joinedUsers.length;
 
 		if (!displayAvatars) {
 			return t('__usersCount__joined', {
@@ -109,7 +114,7 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 					count: usersCount - MAX_USERS,
 				})
 			: t('joined');
-	}, [displayAvatars, t, result.data?.users.length]);
+	}, [displayAvatars, t, joinedUsers.length]);
 
 	if (result.isPending || result.isError) {
 		// TODO: error handling
@@ -119,16 +124,16 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 	const { data } = result;
 	const isUserCaller = data.createdBy._id === userId;
 
-	const joinedNamesOrUsernames = [...data.users]
+	const joinedNamesOrUsernames = [...joinedUsers]
 		.splice(0, MAX_USERS)
 		.map(({ name, username }) => getUserDisplayName(name, username, showRealName))
 		.join(', ');
 
 	const title =
-		data.users.length > MAX_USERS
+		joinedUsers.length > MAX_USERS
 			? t('__usernames__and__count__more_joined', {
 					usernames: joinedNamesOrUsernames,
-					count: data.users.length - MAX_USERS,
+					count: joinedUsers.length - MAX_USERS,
 				})
 			: t('__usernames__joined', { usernames: joinedNamesOrUsernames });
 
@@ -161,9 +166,9 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 						</>
 					)}
 					{data.type !== 'direct' &&
-						(data.users.length ? (
+						(joinedUsers.length ? (
 							<>
-								<VideoConfMessageUserStack users={data.users} />
+								<VideoConfMessageUserStack users={joinedUsers} />
 								<VideoConfMessageFooterText title={title}>{messageFooterText}</VideoConfMessageFooterText>
 							</>
 						) : (
@@ -206,9 +211,9 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 				<VideoConfMessageButton primary disabled={videoConfJoinDisabled} onClick={joinHandler}>
 					{t('Join')}
 				</VideoConfMessageButton>
-				{Boolean(data.users.length) && (
+				{Boolean(joinedUsers.length) && (
 					<>
-						<VideoConfMessageUserStack users={data.users} />
+						<VideoConfMessageUserStack users={joinedUsers} />
 						<VideoConfMessageFooterText title={title}>{messageFooterText}</VideoConfMessageFooterText>
 					</>
 				)}

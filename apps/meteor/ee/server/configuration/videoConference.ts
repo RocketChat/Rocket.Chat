@@ -5,6 +5,7 @@ import { License } from '@rocket.chat/license';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { shouldRingVideoConference } from '../../../lib/videoConference/constants';
 import { callbacks } from '../../../server/lib/callbacks';
 import { videoConfTypes } from '../../../server/lib/videoConfTypes';
 import { addSettings } from '../settings/video-conference';
@@ -38,11 +39,8 @@ Meteor.startup(async () => {
 				}
 			}
 
-			if ((await Subscriptions.countByRoomId(_id)) > 10) {
-				return false;
-			}
-
-			return true;
+			// Starting a call rings the whole room, so the room's size is the list being rung.
+			return shouldRingVideoConference(await Subscriptions.countByRoomId(_id));
 		});
 
 		callbacks.add('onJoinVideoConference', async (callId: VideoConference['_id'], userId?: IUser['_id']) =>

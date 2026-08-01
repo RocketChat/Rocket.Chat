@@ -2,12 +2,12 @@ import type { JSONSchemaType } from 'ajv';
 
 import { ajv } from '../Ajv';
 
+/** How many users a single add action may ring, which is also the cap on the action itself. */
+export const VIDEO_CONF_ADD_PARTICIPANTS_LIMIT = 10;
+
 export type VideoConfAddParticipantsProps = {
 	callId: string;
 	users: string[];
-	// When true, add the users to the conference's existing room (keeping its history) instead of
-	// spinning up a new discussion for them.
-	keepHistory?: boolean;
 };
 
 const videoConfAddParticipantsPropsSchema: JSONSchemaType<VideoConfAddParticipantsProps> = {
@@ -22,10 +22,10 @@ const videoConfAddParticipantsPropsSchema: JSONSchemaType<VideoConfAddParticipan
 			items: {
 				type: 'string',
 			},
-		},
-		keepHistory: {
-			type: 'boolean',
-			nullable: true,
+			minItems: 1,
+			// Adding is capped so the whole batch can always be rung — see the ringing rules in the
+			// video-conference persistent chat docs.
+			maxItems: VIDEO_CONF_ADD_PARTICIPANTS_LIMIT,
 		},
 	},
 	required: ['callId', 'users'],
