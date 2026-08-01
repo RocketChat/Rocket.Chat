@@ -33,7 +33,7 @@ const DevicePickerButton = forwardRef<HTMLButtonElement, DevicePickerButtonProps
 			flexGrow={0}
 			{...props}
 			label={chevron ? 'Device options' : 'customize'}
-			icon={chevron ? 'chevron-down' : 'customize'}
+			icon={chevron ? 'chevron-up' : 'customize'}
 			ref={ref}
 		/>
 	);

@@ -7,6 +7,7 @@ export * from './Actions';
 export { default as ToggleButton } from './ToggleButton';
 export { default as ActionButton } from './ActionButton';
 export { default as JoinedButtonGroup } from './JoinedButtonGroup';
+export { default as CaptionsLanguageMenu } from './CaptionsLanguageMenu';
 export type { JoinedButtonGroupState, JoinedButtonGroupProps } from './JoinedButtonGroup';
 export { default as Keypad } from './Keypad/Keypad';
 export { useInfoSlots } from './PeerInfo/useInfoSlots';

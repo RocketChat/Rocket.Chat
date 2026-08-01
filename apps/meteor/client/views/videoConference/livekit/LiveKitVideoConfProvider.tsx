@@ -1,30 +1,23 @@
 /* eslint-disable react/no-multi-comp */
 import { LiveKitRoom, RoomAudioRenderer, useLocalParticipant, useParticipants, useRoomContext, useTracks } from '@livekit/components-react';
-import { useUserDisplayName } from '@rocket.chat/ui-client';
-import { useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
+import { useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import {
-	MediaCallInstanceInertProvider,
-	MediaCallRoomSection,
 	MediaCallViewContext,
 	defaultMediaCallContextValue,
 	playJoinChime,
-	useMediaCallInstance,
-	usePopoutWindow,
 	DEFAULT_CALL_LANGUAGE,
 	findCallLanguage,
 	type CallLanguage,
-	type PopoutContainer,
 	type RemoteParticipantInfo,
 } from '@rocket.chat/ui-voip';
 import type { LocalAudioTrack, RemoteParticipant } from 'livekit-client';
 import { ParticipantKind, RoomEvent, Track } from 'livekit-client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { ComponentProps, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
-import FloatingGroupCallWidget from './FloatingGroupCallWidget';
-import RemoteCallBar from './RemoteCallBar';
 import { useLiveKitVideoConf } from './LiveKitVideoConfContext';
+import RemoteCallBar from './RemoteCallBar';
 
 const headersOf = () => ({
 	'X-Auth-Token': localStorage.getItem('Meteor.loginToken') || '',
@@ -212,7 +205,7 @@ const InnerProvider = ({
 				console.debug('[Krisp] supported?', supported);
 				if (!supported) return;
 				console.debug('[Krisp] attaching processor to track', audioTrack.sid);
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-call, new-cap
+				// eslint-disable-next-line new-cap
 				await audioTrack.setProcessor(mod.KrispNoiseFilter());
 				console.info('[Krisp] processor attached');
 			} catch (err) {
@@ -706,33 +699,15 @@ const InnerProvider = ({
 	return null;
 };
 
-const LiveKitPopout = ({
-	container,
-	ownUser,
-}: {
-	container: PopoutContainer | null;
-	ownUser: ComponentProps<typeof MediaCallRoomSection>['user'];
-}) => {
-	if (!container) {
-		return null;
-	}
-
-	return createPortal(
-		<MediaCallInstanceInertProvider>
-			<MediaCallRoomSection showChat={false} onToggleChat={() => undefined} user={ownUser} hideChatToggle />
-		</MediaCallInstanceInertProvider>,
-		container.root,
-	);
-};
-
 /**
  * App-level bridge for the LiveKit group-call connection. Always renders
  * children in the same React tree position (no remount on call start/end).
- * When a group call is active (per `useLiveKitVideoConf().activeCall`), the
- * LK Room mounts into a sibling portal and an inner bridge pushes the
- * populated MediaCallViewContext value upward via state. The result: the
- * per-room MediaCallRoomActivity (rendered with provider={null}) sees the
- * live LK context, and navigating between channels doesn't tear down LK.
+ * When a call is active (per `useLiveKitVideoConf().activeCall` — in
+ * practice only inside the /conference/:id window, which is the sole call
+ * surface), the LK Room mounts into a sibling portal and an inner bridge
+ * pushes the populated MediaCallViewContext value upward via state.
+ * In main app windows this bridge renders only the RemoteCallBar, driven
+ * by the BroadcastChannel state from the conference window.
  *
  * Note: this is a Video Conference feature and has zero dependency on the
  * VoIP MediaSignalingSession. Active-call state is owned by the sibling
@@ -744,50 +719,12 @@ const LiveKitVideoConfBridge = ({ children }: { children: ReactNode }) => {
 	const [creds, setCreds] = useState<LKCreds | null>(null);
 	const [ctxValue, setCtxValue] = useState<unknown>(defaultMediaCallContextValue);
 
-	const user = useUser();
-	const displayName = useUserDisplayName({ name: user?.name, username: user?.username });
-	const getUserAvatarPath = useUserAvatarPath();
-	const ownUser = useMemo(
-		() => ({
-			id: user?._id || 'local',
-			displayName: displayName || '',
-			avatarUrl: getUserAvatarPath({ userId: user?._id || '' }),
-		}),
-		[displayName, getUserAvatarPath, user?._id],
-	);
-
-	const { registerView, unregisterView } = useMediaCallInstance();
-	const openPopoutWindowRef = useRef<((callId: string) => Promise<void>) | undefined>(undefined);
-	const closePopoutWindowRef = useRef<(() => void) | undefined>(undefined);
-	const onClosePopoutRef = useRef<() => void>(() => undefined);
-
-	const handleBeforeUnload = useCallback(() => {
-		onClosePopoutRef.current();
-	}, []);
-
-	const { container, openPopoutWindow, closePopoutWindow } = usePopoutWindow(handleBeforeUnload);
-	openPopoutWindowRef.current = openPopoutWindow;
-	closePopoutWindowRef.current = closePopoutWindow;
-
-	const onOpenPopout = useCallback(() => {
-		registerView('popout');
-		if (callId) {
-			void openPopoutWindowRef.current?.(callId);
-		}
-	}, [callId, registerView]);
-
-	const onClosePopout = useCallback(() => {
-		unregisterView('popout');
-		closePopoutWindowRef.current?.();
-	}, [unregisterView]);
-
-	onClosePopoutRef.current = onClosePopout;
-
-	useEffect(() => {
-		if (!callId) {
-			onClosePopoutRef.current();
-		}
-	}, [callId]);
+	// LiveKit calls live exclusively in the pop-out /conference/:id window —
+	// there is no ui-voip popout portal, floating widget or in-room surface
+	// for them. The context still expects the popout callbacks, so they're
+	// wired to no-ops.
+	const onOpenPopout = useCallback(() => undefined, []);
+	const onClosePopout = useCallback(() => undefined, []);
 
 	useEffect(() => {
 		if (!callId) {
@@ -865,15 +802,10 @@ const LiveKitVideoConfBridge = ({ children }: { children: ReactNode }) => {
 	return (
 		<MediaCallViewContext.Provider value={ctxValue as any}>
 			{children}
-			{/* Floating mini-view of the call, shown when the user has navigated
-			    away from the call's room. Renders nothing while in the call room
-			    (MediaCallRoomSection.useRegisterView('room') keeps the room view registered) or when
-			    no group call is active. */}
-			<FloatingGroupCallWidget />
 			{/* Persistent bottom call bar when the call runs in the pop-out
-			    conference window (state arrives over the BroadcastChannel). */}
+			    conference window (state arrives over the BroadcastChannel) —
+			    the ONLY in-app representation of an active LK call. */}
 			<RemoteCallBar />
-			<LiveKitPopout container={container} ownUser={ownUser} />
 			{lkActive && creds && callId && lkPortalTarget
 				? createPortal(
 						// Apply the pre-flight preferences (mic/cam toggle state

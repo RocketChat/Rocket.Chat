@@ -11,6 +11,7 @@ import {
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { VideoConfManager } from '../../lib/VideoConfManager';
 import { useRoom } from '../../views/room/contexts/RoomContext';
 import { useVideoConfWarning } from '../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
 
@@ -60,6 +61,14 @@ export const useVideoCallRoomAction = () => {
 
 		try {
 			await loadCapabilities();
+			// LiveKit channel calls skip the start-call popup: the pre-flight
+			// inside the pop-out window owns mic/cam choices (Figma: "trigger
+			// opens the pop-out chrome directly, not a modal in the chat app").
+			// DMs keep the popup for now — it drives the legacy ringing flow.
+			if (VideoConfManager.providerName === 'livekit' && room.t !== 'd') {
+				await VideoConfManager.startCall(room._id);
+				return;
+			}
 			dispatchPopup({ rid: room._id });
 		} catch (error: any) {
 			dispatchWarning(error.error);

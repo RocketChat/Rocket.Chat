@@ -20,7 +20,7 @@ const CameraPickerButton = forwardRef<HTMLButtonElement, CameraPickerButtonProps
 	{ secondary = false, small: _small, ...props },
 	ref,
 ) {
-	return <ActionButton secondary={secondary} flexShrink={1} flexGrow={0} {...props} label='Camera options' icon='chevron-down' ref={ref} />;
+	return <ActionButton secondary={secondary} flexShrink={1} flexGrow={0} {...props} label='Camera options' icon='chevron-up' ref={ref} />;
 });
 
 // Lightweight in-component enumeration: ui-contexts' useAvailableDevices only

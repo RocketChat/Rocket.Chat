@@ -11,7 +11,6 @@ import {
 import type { ReactNode } from 'react';
 import { memo } from 'react';
 
-import { useLiveKitVideoConf } from '../../videoConference/livekit/LiveKitVideoConfContext';
 import { useRoom } from '../contexts/RoomContext';
 
 const isOneToOneDirectCallRoom = (room: IRoom, peerInfo?: PeerInfo) => {
@@ -27,13 +26,12 @@ export type MediaCallRoomProps = {
 
 /**
  * Decides whether to render the call activity (top-half call view + chat below)
- * in the current room. Three modes:
- *  - 1:1 DM call: MediaCallRoomActivity with the default session-driven provider
- *  - Group call in this room: MediaCallRoomActivity reading from the app-level
- *    LiveKitVideoConfBridge (mounted in MeteorProvider.tsx). The LK connection
- *    lives above the room router so it survives navigation to other channels —
- *    without that, switching channels mid-call disconnects.
+ * in the current room. Two modes:
+ *  - 1:1 DM VoIP call: MediaCallRoomActivity with the session-driven provider
  *  - No call: pass-through
+ *
+ * LiveKit calls never render in-room: the pop-out /conference/:id window is
+ * the call surface and the bottom call bar is the only in-app signifier.
  */
 const MediaCallRoom = ({ children }: MediaCallRoomProps) => {
 	const state = usePeekMediaSessionState();
@@ -41,7 +39,6 @@ const MediaCallRoom = ({ children }: MediaCallRoomProps) => {
 	const features = usePeekMediaSessionFeatures();
 	const room = useRoom();
 	const { isEmbedded } = useLayout();
-	const { activeCall: activeLkCall } = useLiveKitVideoConf();
 
 	const screenShareEnabled = features.includes('screen-share');
 
@@ -49,14 +46,6 @@ const MediaCallRoom = ({ children }: MediaCallRoomProps) => {
 	// panel, so the room should only render the chat stream.
 	if (isEmbedded) {
 		return <>{children}</>;
-	}
-
-	// Group-call detection: the LiveKit context owns the active LK call's rid
-	// (set by useGroupCallRoomAction.joinCall). Decoupled from VoIP entirely.
-	const isGroupCallHere = activeLkCall?.rid === room?._id;
-
-	if (isGroupCallHere) {
-		return <MediaCallRoomActivity provider={null}>{children}</MediaCallRoomActivity>;
 	}
 
 	if (!screenShareEnabled) {

@@ -108,6 +108,8 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 	private _capabilities: ProviderCapabilities;
 
+	private _providerName?: string;
+
 	private _logLevel: number;
 
 	public get preferences(): CallPreferences {
@@ -116,6 +118,11 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 	public get capabilities(): ProviderCapabilities {
 		return this._capabilities;
+	}
+
+	/** default provider reported by video-conference.capabilities (set after loadCapabilities) */
+	public get providerName(): string | undefined {
+		return this._providerName;
 	}
 
 	constructor() {
@@ -258,7 +265,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	}
 
 	public async loadCapabilities(): Promise<void> {
-		const { capabilities } = await sdk.rest.get('/v1/video-conference.capabilities').catch((e: any) => {
+		const { providerName, capabilities } = await sdk.rest.get('/v1/video-conference.capabilities').catch((e: any) => {
 			console.error(`[VideoConf] Failed to load video conference capabilities`, e);
 			this.emitError();
 
@@ -266,6 +273,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		});
 
 		this._capabilities = capabilities || {};
+		this._providerName = providerName;
 		this.emit('capabilities/changed');
 	}
 

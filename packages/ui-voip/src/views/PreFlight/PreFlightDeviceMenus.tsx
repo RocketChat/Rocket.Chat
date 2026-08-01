@@ -14,7 +14,7 @@ type ChevronButtonProps = {
 // Same wrapper trick as DevicePicker: strip the rogue `small: true` that
 // GenericMenu passes when disabled and stamp the chevron icon.
 const ChevronButton = forwardRef<HTMLButtonElement, ChevronButtonProps>(function ChevronButton({ small: _small, ...props }, ref) {
-	return <ActionButton flexShrink={1} flexGrow={0} {...props} label='Device options' icon='chevron-down' tiny ref={ref} />;
+	return <ActionButton flexShrink={1} flexGrow={0} {...props} label='Device options' icon='chevron-up' tiny ref={ref} />;
 });
 
 const deviceItem = (

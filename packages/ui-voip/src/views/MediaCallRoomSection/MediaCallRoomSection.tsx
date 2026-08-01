@@ -13,6 +13,7 @@ import {
 	ActionStrip,
 	ActionToggleChat,
 	JoinedButtonGroup,
+	CaptionsLanguageMenu,
 } from '../../components';
 import { useMediaCallInstance } from '../../context/MediaCallInstanceContext';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
@@ -69,50 +70,6 @@ const reactionButtonStyles = css`
 	}
 `;
 
-// Language picker popover — anchored to its pill in the header. `top: 100%`
-// puts it just below the pill; `right: 0` aligns its right edge to the
-// pill so the menu hangs left into the call surface (the pill sits near
-// the right end of the header).
-const languagePickerWrapStyles = css`
-	position: relative;
-`;
-
-const languagePickerMenuStyles = css`
-	position: absolute;
-	top: calc(100% + 6px);
-	right: 0;
-	min-width: 180px;
-	padding: 4px;
-	background-color: rgba(20, 20, 25, 0.97);
-	border-radius: 8px;
-	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-	z-index: 5;
-	display: flex;
-	flex-direction: column;
-`;
-
-const languageMenuItemStyles = css`
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	padding: 6px 10px;
-	border-radius: 6px;
-	border: none;
-	background: transparent;
-	color: white;
-	font-size: 13px;
-	line-height: 1.2;
-	cursor: pointer;
-	text-align: left;
-
-	&:hover {
-		background-color: rgba(255, 255, 255, 0.08);
-	}
-
-	&.selected {
-		background-color: rgba(255, 255, 255, 0.12);
-	}
-`;
 // Header bar above the tiles: transparent strip carrying the call elapsed
 // timer on the left and a row of "session-scope" controls (recording etc.)
 // on the right. Visually independent of the action strip below the tiles,
@@ -221,8 +178,6 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle, ch
 	const [reactionPickerOpen, setReactionPickerOpen] = useState(false);
 	const reactionPickerRef = useRef<HTMLDivElement>(null);
 
-	const [languagePickerOpen, setLanguagePickerOpen] = useState(false);
-	const languagePickerRef = useRef<HTMLDivElement>(null);
 	const currentLanguage = callLanguage
 		? (CALL_LANGUAGES.find((l) => l.code === callLanguage.code) ?? DEFAULT_CALL_LANGUAGE)
 		: DEFAULT_CALL_LANGUAGE;
@@ -295,19 +250,6 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle, ch
 		document.addEventListener('pointerdown', onPointerDown);
 		return () => document.removeEventListener('pointerdown', onPointerDown);
 	}, [reactionPickerOpen]);
-
-	// Same click-outside dismissal for the language picker.
-	useEffect(() => {
-		if (!languagePickerOpen) return undefined;
-		const onPointerDown = (e: PointerEvent) => {
-			const node = languagePickerRef.current;
-			if (node && !node.contains(e.target as Node)) {
-				setLanguagePickerOpen(false);
-			}
-		};
-		document.addEventListener('pointerdown', onPointerDown);
-		return () => document.removeEventListener('pointerdown', onPointerDown);
-	}, [languagePickerOpen]);
 
 	// One-shot fetch on call join to seed the recording state. After that,
 	// changes propagate over the LK data channel (see liveRecordingActive
@@ -616,58 +558,6 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle, ch
 							onClick={onToggleTakeNotes}
 						/>
 					)}
-					{/* Captions toggle — per-user opt-in; lit Primary = active
-					    tool state, same language as sharing. */}
-					{onToggleCaptions && (
-						<IconButton
-							small
-							secondary={!captionsEnabledLocally}
-							primary={captionsEnabledLocally}
-							icon={<Icon size={16} name='quote' />}
-							label={captionsEnabledLocally ? t('Hide_captions') : t('Show_captions')}
-							aria-label={captionsEnabledLocally ? t('Hide_captions') : t('Show_captions')}
-							title={captionsEnabledLocally ? t('Hide_captions') : t('Show_captions')}
-							aria-pressed={captionsEnabledLocally}
-							onClick={onToggleCaptions}
-						/>
-					)}
-					{/* Call-language menu — broadcasts the choice over the LK
-					    data channel so the agent restarts transcription with
-					    the new language. */}
-					{onChangeCallLanguage && (
-						<Box className={languagePickerWrapStyles} ref={languagePickerRef}>
-							<IconButton
-								small
-								secondary
-								icon={<Icon size={16} name='globe' />}
-								label={`${t('Call_language')}: ${currentLanguage.label}`}
-								aria-label={`${t('Call_language')}: ${currentLanguage.label}`}
-								title={`${t('Call_language')}: ${currentLanguage.label}`}
-								onClick={() => setLanguagePickerOpen((p) => !p)}
-							/>
-							{languagePickerOpen && (
-								<Box className={languagePickerMenuStyles}>
-									{CALL_LANGUAGES.map((lang) => (
-										<Box
-											key={lang.code}
-											is='button'
-											type='button'
-											className={[languageMenuItemStyles, lang.code === currentLanguage.code ? 'selected' : null]}
-											onClick={() => {
-												onChangeCallLanguage(lang.code);
-												setLanguagePickerOpen(false);
-											}}
-										>
-											<Box is='span' style={{ width: 28, opacity: 0.7, fontSize: 11 }}>
-												{lang.abbr}
-											</Box>
-											<Box is='span'>{lang.label}</Box>
-										</Box>
-									))}
-								</Box>
-							)}
-						</Box>
-					)}
 					<IconButton
 						small
 						secondary
@@ -701,15 +591,22 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle, ch
 					!hideChatToggle ? (
 						<ButtonGroup>
 							<ActionToggleChat pressed={showChat} onClick={onToggleChat} unreadCount={unreadCount} />
-							<ToggleButton
-								label={t('Open_in_new_window')}
-								titles={[t('Open_in_new_window'), t('Return_to_main_window')]}
-								icons={['arrow-to-square-box', 'arrow-from-cross-box']}
-								pressed={isPopout}
-								onToggle={isPopout ? onClosePopout : onOpenPopout}
-								danger={false}
-							/>
-							<DevicePicker secondary />
+							{/* LK calls live exclusively in the pop-out window — no
+							    in-app popout toggle, and device switching happens via
+							    the toolbar chevrons. VoIP 1:1 keeps both. */}
+							{!isLiveKitCall && (
+								<>
+									<ToggleButton
+										label={t('Open_in_new_window')}
+										titles={[t('Open_in_new_window'), t('Return_to_main_window')]}
+										icons={['arrow-to-square-box', 'arrow-from-cross-box']}
+										pressed={isPopout}
+										onToggle={isPopout ? onClosePopout : onOpenPopout}
+										danger={false}
+									/>
+									<DevicePicker secondary />
+								</>
+							)}
 						</ButtonGroup>
 					) : undefined
 				}
@@ -750,11 +647,26 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, hideChatToggle, ch
 					title={(localScreen?.active ?? false) ? t('Stop_sharing_screen') : t('Share_screen')}
 					onToggle={onToggleScreenSharing}
 				/>
+				{/* CC split group: lit Primary while captions are on; the chevron
+				    holds the transcription-language menu, same pattern as the
+				    device pickers. */}
+				{onToggleCaptions && (
+					<JoinedButtonGroup
+						state={captionsEnabledLocally ? 'active' : 'on'}
+						label={captionsEnabledLocally ? t('Hide_captions') : t('Show_captions')}
+						icons={['quote', 'quote']}
+						title={captionsEnabledLocally ? t('Hide_captions') : t('Show_captions')}
+						onToggle={onToggleCaptions}
+						menu={
+							onChangeCallLanguage ? <CaptionsLanguageMenu currentCode={currentLanguage.code} onChange={onChangeCallLanguage} /> : undefined
+						}
+					/>
+				)}
 				{onToggleHand && (
 					<ToggleButton
-						label='Raise hand'
+						label={t('Raise_hand')}
 						icons={['hand-pointer', 'hand-pointer']}
-						titles={['Raise hand', 'Lower hand']}
+						titles={[t('Raise_hand'), t('Lower_hand')]}
 						pressed={Boolean(localHandRaised)}
 						onToggle={onToggleHand}
 					/>
