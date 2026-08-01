@@ -105,16 +105,52 @@ External (cross-origin) links always open in a `noopener` new tab.
 
 > Dial-out (typing a raw phone/SIP destination into the same field) is **not** wired up. No provider on this branch exposes a dial-out channel, so the affordance would have silently discarded the input; it was removed rather than left as dead UI. Restoring it means passing a provider-supplied `onDialOut` down to the modal.
 
-`POST /v1/video-conference.add-participants` with `keepHistory`:
+`POST /v1/video-conference.add-participants` takes `keepHistory` and branches:
 
-- **`true`** → `addUsersToConferenceRoom` adds the users to the conference's active room (`discussionRid || rid`), so they get its history.
-- **`false`** → `createConferenceDiscussionWithParticipants` creates a discussion off the conference's room carrying over the current members plus the new ones, leaves a `discussion-created` pointer in the parent room, and repoints `discussionRid`.
+- **`true`** → `addUsersToConferenceRoom` invites the users into the conference's **active** room (`discussionRid || rid`), so they get its history. `discussionRid` is left alone.
+- **`false`** → `createConferenceDiscussionWithParticipants` creates a fresh discussion, carries members over, leaves a `discussion-created` pointer in the parent room, and repoints `discussionRid` at it.
 
-Existing members are carried over from the room doc for DMs (`usernames`) and from subscriptions for channels/groups. The conference's own `users` list is **not** used — it only holds people who already joined the call.
+Existing members are carried over from the room doc for DMs (`usernames`) and from subscriptions for channels/groups. The conference's own `users` list is **not** used as the member source — it only holds people who actually joined the call.
 
 Both paths notify each added user with a desktop notification (`requireInteraction`, plus a "Join call" action on desktop that joins directly via `conferenceId`).
 
 The modal does not refetch the conference afterwards — `assignDiscussionToConference` broadcasts `discussionUpdated`, and every participant's panel (including the one that triggered the add) follows that single signal.
+
+### Verified behaviour per room type
+
+What the code actually does, confirmed end-to-end against the endpoint. "Active room" means `discussionRid || rid`.
+
+| Conference is in | `keepHistory` | Result | New `discussionRid` |
+|---|---|---|---|
+| **DM** (`t: 'd'`) | `false` — the only value the client sends for a DM | Discussion `t: 'p'`, `prid` = the DM, members = both DM members + invitees | the new discussion |
+| **DM** | `true` | **Rejected**: `400 error-cant-invite-for-direct-room` | unchanged |
+| **Channel** (`t: 'c'`) | `true` | Invitees added to the channel itself | unchanged |
+| **Channel** (`t: 'c'`) | `false` | Discussion `t: 'c'`, `prid` = the channel, members = channel members + invitees | the new discussion |
+| **Private group** (`t: 'p'`) | `false` | Same, but `t: 'p'` (the default discussion type) | the new discussion |
+| **A discussion the conference *started* in** | `false` | New discussion, `prid` **walked up to the top-level room** (not nested under the current discussion), members = the current discussion's members + invitees | the new discussion |
+| **A discussion the conference *moved* into** | `true` | Invitees added to that discussion | unchanged |
+| **A discussion the conference *moved* into** | `false` | New discussion built from the **original room**, not the current discussion — see below | the new discussion |
+
+The discussion type comes from `roomCoordinator.getRoomDirectives(parent.t).getDiscussionType(parent)`: `'c'` for a public channel (`'p'` if it belongs to a private team), and `'p'` for everything else including DMs. Nesting is always flattened — `getRoomForDiscussion` walks `prid` up to the top-level room, so discussions never nest inside discussions.
+
+The DM rule is enforced in two places for different reasons: the client never offers the checkbox for a DM, and the server's invite path rejects it outright because a DM cannot take new members. So there is no way to widen a DM — but the server-side refusal surfaces as a raw `error-cant-invite-for-direct-room`, not a friendly message, because nothing guards it explicitly before `addUsersToRoomMethod` runs.
+
+### Known divergence: repeated "don't keep history" loses earlier invitees
+
+`addUsersToConferenceRoom` reads `{ rid, discussionRid }` and acts on `discussionRid || rid`. `createConferenceDiscussionWithParticipants` reads only `{ rid }` and acts on `call.rid` — so once the conference has already moved into a discussion, a second "don't keep history" add **rebuilds from the original room** instead of the discussion the chat is currently in.
+
+Confirmed:
+
+1. Channel with `[rodrigo, bob]`; start a conference.
+2. Add `alice`, `keepHistory: false` → discussion **D1** `[alice, bob, rodrigo]`; `discussionRid` = D1.
+3. Add `don`, `keepHistory: false` → discussion **D2** `[bob, rodrigo, don]`, `prid` = the channel. **`alice` is gone.**
+
+`assignDiscussionToConference` partly masks this in practice: it adds every entry of `call.users` to the new discussion, so anyone who actually *joined the call* is re-added. Anyone invited but not yet joined is dropped. In the run above `call.users` was empty, so nothing masked it.
+
+If the intent is "a discussion with all current participants plus the invitee", the fix is to make the two methods agree — project `discussionRid` and use `discussionRid || rid` as the base room. `parent` resolution is unaffected, since `getRoomForDiscussion` walks up to the same top-level room either way.
+
+> This is largely superseded by [Roadmap: membership-based conferences](#roadmap-membership-based-conferences), which removes the keep-history choice from the add flow entirely. The fix above is still wanted for the discussion *remedy* that replaces it.
+
 
 ## Provider → Parent Bridge
 
@@ -188,6 +224,105 @@ The provider's URL is embedded in an iframe, so it must permit framing (no restr
 | Stream | Event | Payload | Authorized for |
 |--------|-------|---------|----------------|
 | `video-conference` | `<callId>/discussionUpdated` | `{ discussionRid }` | conference participants |
+
+## Roadmap: membership-based conferences
+
+> **Status: planned — none of this section is implemented yet.** Everything above describes shipped
+> behaviour. This section is the agreed design and the progress tracker; update the checkboxes as work
+> lands, and move prose up into the sections above once a phase ships.
+
+### Why
+
+Today, adding someone to a conference *puts them in a room* — either the conference's room (keeping its
+history) or a fresh discussion. Authorization to join the call is then derived from room membership. That
+conflates two separate things: **being in the call** and **being able to read the chat**.
+
+The target model separates them:
+
+- Being added to a conference makes you a **member of the conference**. It does not put you in any room.
+- Authorization to join is *room access **or** conference membership*.
+- Members who can't see the chat are surfaced in the UI, with a remedy offered — rather than the decision
+  being forced up-front, before anyone knows whether it matters.
+- Being added **rings** you, and you accept or decline from the call widget.
+
+### Decisions on record
+
+| # | Decision |
+|---|---|
+| 1 | Conference membership lives on the existing `users[]`, with a per-entry `joined` flag — not a second array. Keeps one list of "who is associated with this call" and leaves room for future participant kinds. |
+| 2 | `ts` keeps its current meaning (added to the conference). A separate `joinedAt` records when they actually joined. |
+| 3 | Ringing is decided **per call event** against the list being rung, capped at 10. At start the list is the room's subscribers (so a >10-person room still rings nobody). On add, the list is the added users, capped at 10 per action — so an add always rings. |
+| 4 | A decline is recorded as a flag on the member's `users[]` entry. It must never end the call for anyone else. |
+| 5 | The ringing widget is **not** changed for now — the current floating overlay stays for every case. Revisit later. |
+| 6 | Membership never expires, and is additive-only. |
+| 7 | `assignDiscussionToConference` subscribes the **union of the original room's members and the conference's members**, so a newly created discussion contains everyone involved rather than only those who joined the call. |
+| 8 | "External" (a member with no access to the chat) is **derived**, not stored — see [Future work](#future-work-not-in-scope). |
+
+### Phase 1 — `users[]` becomes the membership list
+
+- [ ] Add `joined: boolean` and `joinedAt?: Date` to `IVideoConferenceUser`; `ts` stays "added at".
+- [ ] Make the array update safe. `addUserById` currently uses `$addToSet` with a **whole document**, which compares entire objects — adding a member as `{…, joined: false}` and later marking them joined would append a *duplicate* entry instead of updating. Replace with two operations:
+  - `addMemberById` — a `$push` guarded by `{ _id: callId, 'users._id': { $ne: uid } }`, which is atomic and idempotent in a single document update (and fixes the racy in-memory `call.users.find(...)` dedup in `addUserToCall`).
+  - `setUserJoinedById` — `$set` on `users.$[u].joined` / `users.$[u].joinedAt` via `arrayFilters: [{ 'u._id': uid }]`, mutating the existing entry in place.
+- [ ] `VideoConf.addUser` (called by the apps bridge and the EE `onJoinVideoConference` callback) becomes: ensure member exists, then mark joined.
+- [ ] `POST /v1/video-conference.add-participants` registers members instead of touching rooms; drop `keepHistory`.
+- [ ] `video-conference.join` / `.info` authorize on **room access OR conference membership**, replacing `canAccessConference`'s body. This also fixes the `add-participants` authorization inconsistency noted under [Access Control](#access-control).
+- [ ] **Decide how existing records read.** Every `users[]` entry already in the database predates the flag and represents someone who *joined*, so a reader filtering `joined === true` would show every historical conference as having no participants. Either treat absent as joined (`joined !== false`) or backfill with a migration alongside the existing ones in `server/startup/migrations/`. Default-true reading is the safer of the two and works without a deploy-order dependency; a backfill can follow.
+- [ ] Confirm the REST response schemas carry the new fields through. `infoResponseSchema` is `additionalProperties: true` so it should be fine, but `listResponseSchema` refs `#/components/schemas/IGroupVideoConference` and friends, and those refs are not registered on the `ajv` instance in `packages/rest-typings/src/v1/Ajv.ts` — worth confirming rather than assuming.
+
+### Phase 1b — teach every reader the difference
+
+The risk in Phase 1 is not the write path, it's the readers: `users[]` currently means "joined", and several
+places rely on that. Miss one and added-but-absent people render as if they were in the call.
+
+- [ ] `VideoConferenceBlock` — `usersCount`, `joinedNamesOrUsernames`, `VideoConfMessageUserStack`, "Be the first to join" → **joined only**
+- [ ] `VideoConfListItem` — participant avatars → **joined only**
+- [ ] `updateDirectCall` ring-stop check → **joined only**
+- [ ] `addUserToCall` dedup → **membership**, then mark joined
+- [ ] `video-conference` stream `allowRead` → **membership**, so an added user can follow `discussionUpdated` before joining. This is a behaviour fix over today.
+- [ ] `assignDiscussionToConference` → union of room members and conference members (decision 7)
+
+### Phase 2 — ringing as a per-event list
+
+- [ ] Extract the cap into a shared helper taking the list to ring. It currently lives as `Subscriptions.countByRoomId(rid) > 10` inside the EE `videoconference` type-registration condition, which decides `ringing` at *creation* time and can't be reused as-is.
+- [ ] Ring on add via `notifyUser(uid, 'ring', …)` per added user, bypassing `notifyUsersOfRoom`.
+- [ ] Cap the add action itself at 10 users, so the same helper always permits the ring.
+- [ ] Rename `incomingDirectCalls` → `incomingCalls` in `VideoConfManager`; it is already keyed by `callId` and driven by the `ring` action, not by directness.
+
+### Phase 3 — decline
+
+- [ ] Persist the decline flag on the member's `users[]` entry.
+- [ ] Move decline **server-side**. It is currently client-published to `notify-user/${uid}/video-conference`, so any client can publish it on another user's behalf; persisting a claim like that is a soft spoofing vector.
+- [ ] Regression test: a decline from one member leaves the conference running for everyone else. This holds today only because `onDirectCallRejected` bails when `params.callId !== currentCallData?.callId`, and the `video-conference.cancel` teardown sits behind that same guard plus `!joined`. Nothing stops that guard being widened later.
+
+### Phase 4 — conference call history
+
+The largest remaining piece, and independently shippable. Gives the "rejoin from a past call" entry point.
+
+- [ ] New `type: 'video-conference'` variant on the `CallHistoryItem` union. The union is the intended extension point (`ICallHistoryItem` is deliberately separate from `IMediaCallHistoryItem`), but today's payload is 1:1-contact-shaped (`contactId`, `contactExtension`, `duration`) and a conference item is room-and-many-participants shaped.
+- [ ] Write the item on conference end.
+- [ ] New row component — all three existing rows (`CallHistoryRowInternalUser`, `…External`, `…UnknownUser`) are contact-shaped.
+- [ ] Extend `call-history.list` filters and `CallHistoryService.search`.
+
+### Phase 5 — surface who can't see the chat
+
+- [ ] Derive "members with no chat access" = conference members − room members, exposed via `video-conference.info`.
+- [ ] Banner in the conference page and in the chat panel, with a remedy button.
+- [ ] Remedy by room type: channel/group → invite to the room; DM → can't grow, so create a discussion. Reuses `addUsersToConferenceRoom` / `createConferenceDiscussionWithParticipants` as *remedies* rather than an up-front choice.
+- [ ] Fix `createConferenceDiscussionWithParticipants` to read `discussionRid || rid` (see [Known divergence](#known-divergence-repeated-dont-keep-history-loses-earlier-invitees)).
+
+### Future work (not in scope)
+
+- **Non-user participants.** Members are registered Rocket.Chat users only, for now. Representing SIP
+  extensions, phone numbers, external email addresses, or participants derived from a calendar event is
+  wanted later. `IVideoConferenceUser extends Pick<Required<IUser>, '_id' | 'username' | 'name'>` — required
+  `username` *and* `name` — so that constraint has to relax when it happens. Adding a nullable `source`
+  discriminator to the entry while Phase 1 is being written costs nothing and avoids a migration later.
+- **A call members panel.** Decision 4 persists declines, but there is deliberately nowhere to *see* one in
+  this scope. The intended home is a members panel listing the call's members and their state — added,
+  joined, declined, external. Until it exists, a decline is recorded but invisible to the adder.
+- **Docking the ringing widget.** Decision 5 keeps the current floating overlay for every case. Docking it
+  over the room list, with a floating fallback when the list isn't visible, was considered and deferred.
 
 ## Key Files
 
