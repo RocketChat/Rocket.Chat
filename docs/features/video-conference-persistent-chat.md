@@ -559,6 +559,43 @@ fresh as the last read. A member removed from the room *during* a call still see
 `ConferenceRoomPreload`'s not-found fallback until the next refetch. Rare, and self-correcting.
 
 
+## Planned changes
+
+Deliberate changes to make later, as opposed to the audit findings above.
+
+### Move the "calling" state into the popout
+
+Today the two call types open the window at different moments, and only one of them is safe:
+
+| | When the popout opens |
+|---|---|
+| **Group** conference | On the click — `startCall` goes straight to `joinCall`, still inside the browser's user-activation window |
+| **Direct** call | After the callee answers — `onDirectCallAccepted` calls `joinCall` from a stream event, arbitrarily far from any click |
+
+Clicking the camera button opens the pre-call widget, and clicking Call keeps the caller in that widget in a
+"calling" state while the popout waits on the answer. So for a direct call `window.open` runs with no user
+activation behind it, which is the reason `VideoConfBlockModal` exists at all: the browser is entitled to refuse,
+and the user has to click again to get the window they already asked for.
+
+The change is to make the direct path behave like the group one — open the popout on the click and host the
+calling state *inside* it. That removes the blocked-popup case for the flow that actually suffers from it, and it
+gives the caller somewhere to set up mic and camera while the other side is still ringing, instead of a widget
+that only offers a spinner.
+
+Open questions:
+
+- **What the popout shows while ringing.** The caller can be in the provider's room already, as they are for a
+  group call, with the callee's state layered over it. Whether the 1:1 `accepted`/`confirmed` handshake still
+  earns its keep once the caller is joined before the answer is worth revisiting at the same time — see
+  [Accepting a server ring](#accepting-a-server-ring-joins-it-doesnt-negotiate).
+- **What happens when the call is turned down.** Auto-closing a window the user is sitting in is abrupt, and it
+  discards a call they may want to retry. The current thinking is to keep the window and show a modal — "everyone
+  else declined" — with a button that closes it, which also covers a group conference where the last other member
+  declines. A decline must not close the window for anyone still in the call.
+- **No answer versus declined.** A ring that simply times out should read differently from an explicit decline,
+  and today neither reaches the caller's window because there is no window yet.
+
+
 ## Key Files
 
 | Layer | File |
