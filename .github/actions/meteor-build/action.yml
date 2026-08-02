@@ -125,7 +125,7 @@ runs:
         meteor node -v
         git version
 
-    - uses: rharkor/caching-for-turbo@00a0515f175df9fd2e15c4560144ad5fdbebb0c7 # v2.3.13
+    - uses: rharkor/caching-for-turbo@75f8ebf4a43d2c60b23bc2a27082cfea94ffdad9 # v2.5.0
 
     - name: Reset Meteor
       shell: bash
