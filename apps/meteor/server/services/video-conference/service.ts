@@ -46,6 +46,7 @@ import { MongoInternals } from 'meteor/mongo';
 
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { buildConferenceCallHistoryItems } from '../../../lib/videoConference/callHistory';
+import { resolveChatAccessMode } from '../../../lib/videoConference/chatAccess';
 import { availabilityErrors, shouldRingVideoConference } from '../../../lib/videoConference/constants';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
@@ -1162,6 +1163,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		// limit — so unlike starting a call in a large room, an add always rings.
 		if (shouldRingVideoConference(added.length)) {
 			added.forEach((memberId) => this.notifyUser(memberId, 'ring', { callId, rid: call.rid, uid }));
+
+			// The ring only reaches a client that is on screen, and it is one-shot. A desktop notification is
+			// what reaches someone who isn't looking at the app.
+			await this.notifyUsersAddedToConference(uid, added, callId, call.rid);
 		}
 
 		return added;
@@ -1242,12 +1247,13 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		callId: VideoConference['_id'],
 		mode?: VideoConferenceChatAccessMode,
 	): Promise<IRoom['_id']> {
-		const { rid, membersWithoutAccess, canInvite } = await this.getChatAccess(uid, callId);
+		const { rid, membersWithoutAccess, canInvite, type } = await this.getChatAccess(uid, callId);
 		if (!membersWithoutAccess.length) {
 			return rid;
 		}
 
-		if (mode === 'invite' && !canInvite) {
+		const resolved = resolveChatAccessMode({ mode, canInvite, type });
+		if (!resolved) {
 			throw new Error('error-not-allowed');
 		}
 
@@ -1262,7 +1268,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			.map(({ username }) => username)
 			.filter((username): username is string => !!username);
 
-		if (!(mode ? mode === 'invite' : canInvite)) {
+		if (resolved === 'discussion') {
 			// Moving the chat to a discussion broadcasts `discussionUpdated` on its own, which is what makes every
 			// participant's panel follow the chat to its new room.
 			return this.createConferenceDiscussionWithParticipants(uid, callId, usernames);
@@ -1454,6 +1460,50 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await this.notifyUsersInvitedToConference(user, usernames, callId, room);
 
 		return rid;
+	}
+
+	/**
+	 * Tells the users just added to a conference that it is ringing for them, for the case where the in-product
+	 * ring can't: a backgrounded tab, or no client open at all.
+	 *
+	 * Unlike `notifyUsersInvitedToConference` this carries **no room name**, which is what stops the click from
+	 * navigating: membership grants no room access, so the room behind the call may be one they can't open.
+	 * Clicking focuses the app, where the ring is; the "Join call" action joins the conference itself.
+	 */
+	private async notifyUsersAddedToConference(
+		adderId: IUser['_id'],
+		memberIds: IUser['_id'][],
+		callId: VideoConference['_id'],
+		rid: IRoom['_id'],
+	): Promise<void> {
+		const [adder, members] = await Promise.all([
+			Users.findOneById<Pick<IUser, '_id' | 'username' | 'name'>>(adderId, { projection: { username: 1, name: 1 } }),
+			Users.find<Pick<IUser, '_id' | 'language'>>({ _id: { $in: memberIds } }, { projection: { language: 1 } }).toArray(),
+		]);
+
+		if (!adder) {
+			return;
+		}
+
+		for (const member of members) {
+			const text = i18n.t('You_were_invited_to_a_conference', { lng: member.language });
+
+			void api.broadcast('notify.desktop', member._id, {
+				title: adder.name || adder.username || '',
+				text,
+				// Keep it on screen until acted on — a call is worth interrupting for.
+				requireInteraction: true,
+				actions: [{ action: 'join', title: i18n.t('Join_call', { lng: member.language }) }],
+				payload: {
+					_id: callId,
+					rid,
+					sender: { _id: adder._id, username: adder.username as string, name: adder.name },
+					conferenceId: callId,
+					message: { msg: text },
+					audioNotificationValue: '',
+				},
+			});
+		}
 	}
 
 	// Sends every added user a desktop notification about the conference; clicking it opens the room, and

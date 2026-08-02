@@ -67,8 +67,10 @@ export interface INotificationDesktop {
 		rid: IMessage['rid'];
 		tmid?: IMessage['tmid'];
 		sender: IMessage['u'];
-		type: IRoom['t'];
-		name: IRoom['name'];
+		// Omitted by notifications that aren't about a room the recipient can open — a conference ring, for
+		// one. Without a name the click doesn't navigate anywhere, which is the point.
+		type?: IRoom['t'];
+		name?: IRoom['name'];
 		// When set, the notification can offer a "Join" action that opens this conference directly.
 		conferenceId?: string;
 		message: {
