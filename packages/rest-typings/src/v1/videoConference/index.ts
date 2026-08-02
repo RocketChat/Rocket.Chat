@@ -11,6 +11,7 @@ import type { VideoConfDeclineProps } from './VideoConfDeclineProps';
 import type { VideoConfInfoProps } from './VideoConfInfoProps';
 import type { VideoConfJoinProps } from './VideoConfJoinProps';
 import type { VideoConfListProps } from './VideoConfListProps';
+import type { VideoConfShareChatProps } from './VideoConfShareChatProps';
 import type { VideoConfStartProps } from './VideoConfStartProps';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 
@@ -21,6 +22,7 @@ export * from './VideoConfJoinProps';
 export * from './VideoConfCancelProps';
 export * from './VideoConfAddParticipantsProps';
 export * from './VideoConfDeclineProps';
+export * from './VideoConfShareChatProps';
 
 export type VideoConferenceEndpoints = {
 	'/v1/video-conference.start': {
@@ -43,8 +45,16 @@ export type VideoConferenceEndpoints = {
 		POST: (params: VideoConfAddParticipantsProps) => { added: string[] };
 	};
 
+	'/v1/video-conference.share-chat': {
+		POST: (params: VideoConfShareChatProps) => { rid: string };
+	};
+
 	'/v1/video-conference.info': {
-		GET: (params: VideoConfInfoProps) => VideoConference & { capabilities: VideoConferenceCapabilities };
+		GET: (params: VideoConfInfoProps) => VideoConference & {
+			capabilities: VideoConferenceCapabilities;
+			/** Members who cannot read the conference's chat, since membership grants no room access. */
+			membersWithoutChatAccess: string[];
+		};
 	};
 
 	'/v1/video-conference.list': {

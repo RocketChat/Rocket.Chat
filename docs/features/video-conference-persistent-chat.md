@@ -149,7 +149,7 @@ Confirmed:
 
 If the intent is "a discussion with all current participants plus the invitee", the fix is to make the two methods agree — project `discussionRid` and use `discussionRid || rid` as the base room. `parent` resolution is unaffected, since `getRoomForDiscussion` walks up to the same top-level room either way.
 
-> This is largely superseded by [Roadmap: membership-based conferences](#roadmap-membership-based-conferences), which removes the keep-history choice from the add flow entirely. The fix above is still wanted for the discussion *remedy* that replaces it.
+> **Fixed.** The keep-history choice is gone from the add flow entirely (see the roadmap below), and `createConferenceDiscussionWithParticipants` — now reached as a *remedy* rather than an up-front choice — builds from `discussionRid || rid`, so a second discussion no longer drops everyone added since the first.
 
 
 ## Provider → Parent Bridge
@@ -243,9 +243,9 @@ The provider's URL is embedded in an iframe, so it must permit framing (no restr
 
 ## Roadmap: membership-based conferences
 
-> **Status: in progress.** Phases 1, 1b, 2, 3 and 4 have landed; 5 is still planned. This section is the
-> agreed design and the progress tracker — update the checkboxes as work lands, and move prose up into the
-> sections above once a phase ships.
+> **Status: complete.** All phases have landed. The prose above describes the shipped behaviour; this section
+> is kept as the record of the design and the decisions behind it, plus the follow-up work deliberately left
+> out.
 
 ### Why
 
@@ -323,10 +323,10 @@ Gives the "rejoin from a past call" entry point. Landed; see [Personal Call Hist
 
 ### Phase 5 — surface who can't see the chat
 
-- [ ] Derive "members with no chat access" = conference members − room members, exposed via `video-conference.info`.
-- [ ] Banner in the conference page and in the chat panel, with a remedy button.
-- [ ] Remedy by room type: channel/group → invite to the room; DM → can't grow, so create a discussion. Reuses `addUsersToConferenceRoom` / `createConferenceDiscussionWithParticipants` as *remedies* rather than an up-front choice.
-- [ ] Fix `createConferenceDiscussionWithParticipants` to read `discussionRid || rid` (see [Known divergence](#known-divergence-repeated-dont-keep-history-loses-earlier-invitees)).
+- [x] Derived on `video-conference.info` as `membersWithoutChatAccess`. Access is asked per member with `canAccessRoomIdAsync` rather than derived from subscriptions, because reading a room doesn't always need one — a public channel is readable by anyone unless it belongs to a private team. Conferences are small, and getting that case wrong is worse than the extra reads.
+- [x] `ChatAccessNotice` renders inside the chat panel, where the remedy is in context, and moves up to the conference page while the panel is closed — so it can't be missed, and is never shown twice.
+- [x] `POST /v1/video-conference.share-chat` applies the remedy, reusing `addUsersToConferenceRoom` / `createConferenceDiscussionWithParticipants`. It asks the room whether it can take new members — `allowMemberAction(room, RoomMemberActions.INVITE)` — rather than testing for a DM: the room type owns that rule, and it covers cases a `t === 'd'` check misses, such as a federated DM that *can* grow.
+- [x] Fixed `createConferenceDiscussionWithParticipants` to build from `discussionRid || rid`, closing the divergence documented above.
 
 ### Future work (not in scope)
 
