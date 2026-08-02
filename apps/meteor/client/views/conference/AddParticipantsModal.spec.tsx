@@ -1,0 +1,132 @@
+import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
+import AddParticipantsModal from './AddParticipantsModal';
+import { createFakeRoom } from '../../../tests/mocks/data';
+import { Rooms } from '../../stores';
+
+// The mocked app root leaves its toast provider commented out, so what the modal reports has to be observed
+// at the dispatch instead of in the DOM.
+const dispatchToastMessage = jest.fn();
+jest.mock('@rocket.chat/ui-contexts', () => ({
+	...jest.requireActual('@rocket.chat/ui-contexts'),
+	useToastMessageDispatch: () => dispatchToastMessage,
+}));
+
+const outsider = { _id: 'outsider-id', username: 'outsider', name: 'Outsider Person', nickname: '', status: 'online', avatarETag: '' };
+const memberUser = { _id: 'member-id', username: 'member', name: 'Room Member', nickname: '', status: 'online', avatarETag: '' };
+
+const autocomplete = jest.fn((_params: { selector: string }) => ({ items: [outsider, memberUser] }) as any);
+const channelMembers = jest.fn(() => ({ members: [{ _id: 'member-id', username: 'member' }] }) as any);
+const addParticipants = jest.fn(() => ({ added: [outsider._id], success: true }) as any);
+
+const renderModal = (props: Partial<{ callId: string; rid: string }> = {}) =>
+	render(<AddParticipantsModal callId='call-id' rid='room-id' onClose={jest.fn()} {...props} />, {
+		wrapper: mockAppRoot()
+			.withEndpoint('GET', '/v1/users.autocomplete', autocomplete)
+			.withEndpoint('GET', '/v1/channels.members', channelMembers)
+			.withEndpoint('POST', '/v1/video-conference.add-participants', addParticipants)
+			.withJohnDoe()
+			.build(),
+	});
+
+const selectOutsider = async () => {
+	const input = screen.getByRole('textbox');
+	await userEvent.type(input, 'outsider');
+	await userEvent.click(await screen.findByText('Outsider Person'));
+};
+
+beforeEach(() => {
+	autocomplete.mockClear();
+	channelMembers.mockClear();
+	addParticipants.mockClear();
+	dispatchToastMessage.mockClear();
+	// The room-absent scenario (a conference member with no chat access) must be genuinely absent, not
+	// left over from a previous test that seeded it.
+	Rooms.state.replaceAll([]);
+});
+
+it('adds the selected user to the conference', async () => {
+	renderModal();
+
+	await selectOutsider();
+	await userEvent.click(screen.getByRole('button', { name: 'Add' }));
+
+	await waitFor(() => expect(addParticipants).toHaveBeenCalledWith({ callId: 'call-id', users: ['outsider'] }));
+});
+
+it('disables the Add button until a user is selected', async () => {
+	renderModal();
+
+	expect(screen.getByRole('button', { name: 'Add' })).toBeDisabled();
+
+	await selectOutsider();
+
+	expect(screen.getByRole('button', { name: 'Add' })).toBeEnabled();
+});
+
+it('excludes the room members from the autocomplete when the room is in the store', async () => {
+	Rooms.state.store(createFakeRoom({ _id: 'room-id', t: 'c' }));
+
+	renderModal();
+
+	const input = screen.getByRole('textbox');
+	await userEvent.type(input, 'outsider');
+
+	await waitFor(() => expect(autocomplete).toHaveBeenCalled());
+
+	const lastCall = autocomplete.mock.calls.at(-1);
+	expect(JSON.parse(lastCall![0].selector)).toMatchObject({ exceptions: ['member'] });
+});
+
+// This is the regression that matters: a conference member added from outside the room has no room in
+// this store, and the autocomplete used to be gated on `enabled: !!room`, which left it permanently
+// empty for exactly the people this modal exists to serve.
+it('still fetches and offers users when the room is not in the store', async () => {
+	renderModal();
+
+	const input = screen.getByRole('textbox');
+	await userEvent.type(input, 'outsider');
+
+	await waitFor(() => expect(autocomplete).toHaveBeenCalled());
+	expect(await screen.findByText('Outsider Person')).toBeInTheDocument();
+});
+
+// The server skips anyone already associated with the call, so a selection can come back having added
+// nobody. Reporting that as success would claim people were called who never were.
+it('says so when everyone selected was already in the call', async () => {
+	addParticipants.mockReturnValueOnce({ added: [], success: true } as any);
+
+	renderModal();
+
+	await selectOutsider();
+	await userEvent.click(screen.getByRole('button', { name: 'Add' }));
+
+	await waitFor(() =>
+		expect(dispatchToastMessage).toHaveBeenCalledWith({ type: 'info', message: 'Selected_users_are_already_in_the_call' }),
+	);
+});
+
+it('reports the users it did add', async () => {
+	renderModal();
+
+	await selectOutsider();
+	await userEvent.click(screen.getByRole('button', { name: 'Add' }));
+
+	await waitFor(() => expect(dispatchToastMessage).toHaveBeenCalledWith({ type: 'success', message: 'Users_added' }));
+});
+
+it('allows removing a selected user before adding', async () => {
+	renderModal();
+
+	await selectOutsider();
+	expect(screen.getByText('Outsider Person')).toBeInTheDocument();
+
+	await userEvent.click(screen.getByRole('button', { name: 'Remove' }));
+
+	// The dropdown stays open and the removed user reappears as an option (they're no longer excluded as
+	// "already selected"), so assert on the selected-participants row, not on the name text itself.
+	expect(screen.queryByRole('button', { name: 'Remove' })).not.toBeInTheDocument();
+	expect(screen.getByRole('button', { name: 'Add' })).toBeDisabled();
+});

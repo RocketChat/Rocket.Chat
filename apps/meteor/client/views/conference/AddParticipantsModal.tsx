@@ -44,7 +44,8 @@ const AddParticipantsModal = ({ callId, rid, onClose }: AddParticipantsModalProp
 	const [adding, setAdding] = useState(false);
 	const debouncedFilter = useDebouncedValue(filter, 300);
 
-	// The room is already loaded into the store by the conference chat panel (ConferenceRoomPreload).
+	// Seeded by the conference chat panel (ConferenceRoomPreload) — but only for participants who can read the
+	// chat. A member added from outside the room has no room here, and must still be able to add people.
 	const room = Rooms.use((state) => state.get(rid));
 	const isPrivate = room?.t === 'p';
 	const isDirect = room?.t === 'd';
@@ -72,7 +73,6 @@ const AddParticipantsModal = ({ callId, rid, onClose }: AddParticipantsModalProp
 	// Only the room's members go into the query key — already-selected users are local state, so they are
 	// filtered out of the options below instead of refetching once per selection.
 	const usersQuery = useQuery({
-		enabled: !!room,
 		queryKey: ['conference', 'add-participants', 'autocomplete', debouncedFilter, memberUsernames],
 		queryFn: async () => {
 			const { items } = await getUsers({ selector: JSON.stringify({ term: debouncedFilter, exceptions: memberUsernames }) });
@@ -118,9 +118,15 @@ const AddParticipantsModal = ({ callId, rid, onClose }: AddParticipantsModalProp
 		}
 		setAdding(true);
 		try {
-			await addParticipants({ callId, users: selected.map((participant) => participant.username) });
+			const { added } = await addParticipants({ callId, users: selected.map((participant) => participant.username) });
 
-			dispatchToastMessage({ type: 'success', message: t('Users_added') });
+			// Anyone already associated with the call is skipped server-side, so a selection can come back empty.
+			// Reporting that as success would claim people were called who never were.
+			dispatchToastMessage(
+				added.length
+					? { type: 'success', message: t('Users_added') }
+					: { type: 'info', message: t('Selected_users_are_already_in_the_call') },
+			);
 			onClose();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
