@@ -20,3 +20,17 @@ test('should render video conference incoming popup', async () => {
 
 	expect(await screen.findByRole('dialog')).toBeInTheDocument();
 });
+
+// Conference membership grants no room access, so a member added from outside the room gets rung for a room
+// they can't see. The popup used to be built entirely around that room, and rendered nothing without it.
+test('should render video conference incoming popup for a call in an inaccessible room', async () => {
+	render(<VideoConfPopups />, {
+		wrapper: mockAppRoot()
+			.withEndpoint('GET', '/v1/video-conference.info', () => fakeDirectVideoConfCall as any)
+			.withIncomingCalls([fakeIncomingCall])
+			.build(),
+	});
+
+	expect(await screen.findByRole('dialog')).toBeInTheDocument();
+	expect(await screen.findByText(fakeDirectVideoConfCall.createdBy.username)).toBeInTheDocument();
+});
