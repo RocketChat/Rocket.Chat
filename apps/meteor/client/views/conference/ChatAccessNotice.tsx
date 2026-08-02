@@ -1,53 +1,52 @@
+import { css } from '@rocket.chat/css-in-js';
 import { Box, Button } from '@rocket.chat/fuselage';
-import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useMutation } from '@tanstack/react-query';
+import { AnnouncementBanner } from '@rocket.chat/ui-client';
+import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
+
+import ChatAccessModal from './ChatAccessModal';
+import type { ConferenceChatAccess } from './hooks/useConferenceEmbedded';
 
 type ChatAccessNoticeProps = {
 	callId: string;
-	/** Ids of members who cannot read the chat; the notice hides itself when there are none. */
-	memberIds: string[];
+	access: ConferenceChatAccess;
 };
+
+// The banner itself isn't the control here — the Review button is — so undo the affordances
+// `AnnouncementBanner` shows for the clickable case.
+const notInteractive = css`
+	cursor: default;
+	&:hover {
+		text-decoration: none;
+	}
+`;
 
 /**
  * Being added to a conference grants no room access, so some members can be in the call without being able
  * to read its chat. Rather than forcing that choice on whoever adds them, it is surfaced here once it
- * matters, with a single action — the server picks the only mechanism the room allows.
+ * matters, with the ways to resolve it and their consequences a click away.
  */
-const ChatAccessNotice = ({ callId, memberIds }: ChatAccessNoticeProps) => {
+const ChatAccessNotice = ({ callId, access }: ChatAccessNoticeProps) => {
 	const { t } = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
-	const shareChat = useEndpoint('POST', '/v1/video-conference.share-chat');
+	const setModal = useSetModal();
 
-	// The conference's own `discussionUpdated` broadcast is what moves everyone's chat panel, so there is
-	// nothing to refetch here on success.
-	const { mutate, isPending } = useMutation({
-		mutationFn: () => shareChat({ callId }),
-		onError: (error) => dispatchToastMessage({ type: 'error', message: error }),
-	});
-
-	if (!memberIds.length) {
+	if (!access.members.length) {
 		return null;
 	}
 
 	return (
-		<Box
-			display='flex'
-			alignItems='center'
-			justifyContent='space-between'
-			paddingInline={12}
-			paddingBlock={8}
-			backgroundColor='status-background-warning'
-			borderBlockEndWidth={1}
-			borderBlockEndColor='stroke-extra-light'
-		>
-			<Box fontScale='c1' color='default' marginInlineEnd={8}>
-				{t('__count__participants_cannot_see_the_chat', { count: memberIds.length })}
+		<AnnouncementBanner className={notInteractive}>
+			<Box display='flex' alignItems='center' justifyContent='space-between'>
+				<Box withTruncatedText>{t('__count__participants_cannot_see_the_chat', { count: access.members.length })}</Box>
+				<Button
+					small
+					flexShrink={0}
+					onClick={() => setModal(<ChatAccessModal callId={callId} access={access} onClose={() => setModal(null)} />)}
+				>
+					{t('Review')}
+				</Button>
 			</Box>
-			<Button small loading={isPending} onClick={() => mutate()}>
-				{t('Give_access')}
-			</Button>
-		</Box>
+		</AnnouncementBanner>
 	);
 };
 

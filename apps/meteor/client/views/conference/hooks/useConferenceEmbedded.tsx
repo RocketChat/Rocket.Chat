@@ -1,9 +1,15 @@
+import type { IVideoConferenceUser, VideoConferenceChatAccess } from '@rocket.chat/core-typings';
 import { useEndpoint, useStream } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { useConferenceCallUrl } from './useConferenceCallUrl';
 import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
+
+/** Chat access with the members it concerns resolved, since the UI has to name the people it is about. */
+export type ConferenceChatAccess = VideoConferenceChatAccess & {
+	members: Pick<IVideoConferenceUser, '_id' | 'username' | 'name'>[];
+};
 
 export const useConferenceEmbedded = (callId: string) => {
 	const joinConference = useEndpoint('POST', '/v1/video-conference.join');
@@ -34,6 +40,16 @@ export const useConferenceEmbedded = (callId: string) => {
 		[callId, subscribeToVideoConference, queryClient],
 	);
 
+	// Members who are in the call but can't read its chat — membership grants no room access.
+	const chatAccess = useMemo((): ConferenceChatAccess | undefined => {
+		if (!info) {
+			return undefined;
+		}
+
+		const missing = new Set(info.chatAccess.membersWithoutAccess);
+		return { ...info.chatAccess, members: info.users.filter(({ _id }) => missing.has(_id)) };
+	}, [info]);
+
 	const { data, isPending, error } = useQuery({
 		queryKey: videoConferenceQueryKeys.join(callId),
 		queryFn: async () => joinConference({ callId, state: { mic: true, cam: false } }),
@@ -44,8 +60,7 @@ export const useConferenceEmbedded = (callId: string) => {
 			rid: info?.discussionRid || info?.rid,
 			loading: isInfoPending,
 			error: infoError,
-			// Members who are in the call but can't read its chat — membership grants no room access.
-			membersWithoutChatAccess: info?.membersWithoutChatAccess ?? [],
+			chatAccess,
 		} as const,
 		conference: {
 			url: data?.url ? getConferenceCallUrl(data.url) : undefined,

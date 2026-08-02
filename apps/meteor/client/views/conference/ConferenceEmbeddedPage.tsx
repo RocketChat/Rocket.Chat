@@ -60,7 +60,7 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 		<Box display='flex' flexDirection='column' flexGrow={1} minHeight={0}>
 			{/* With the chat open the notice belongs in the panel, next to the conversation it is about. With it
 			    closed there would be nowhere to see it, so it moves up here rather than being shown twice. */}
-			{!chatVisible && <ChatAccessNotice callId={callId} memberIds={room.membersWithoutChatAccess} />}
+			{!chatVisible && room.chatAccess && <ChatAccessNotice callId={callId} access={room.chatAccess} />}
 
 			<Box display='flex' flexGrow={1} minHeight={0} position='relative'>
 				<Box flexGrow={1} display='flex' flexDirection='column' position='relative'>
@@ -68,13 +68,7 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 				</Box>
 
 				<CallPanel visible={chatVisible} overlay={overlayPanel}>
-					<ConferenceChat
-						callId={callId}
-						rid={room.rid}
-						loading={room.loading}
-						membersWithoutChatAccess={room.membersWithoutChatAccess}
-						onClose={toggleChat}
-					/>
+					<ConferenceChat callId={callId} rid={room.rid} loading={room.loading} chatAccess={room.chatAccess} onClose={toggleChat} />
 				</CallPanel>
 			</Box>
 

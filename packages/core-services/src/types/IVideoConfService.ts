@@ -5,6 +5,8 @@ import type {
 	IVoIPVideoConference,
 	VideoConference,
 	VideoConferenceCapabilities,
+	VideoConferenceChatAccess,
+	VideoConferenceChatAccessMode,
 	VideoConferenceCreateData,
 	VideoConferenceInstructions,
 	VideoConferenceWithDiscussion,
@@ -49,8 +51,8 @@ export interface IVideoConfService {
 	assignDiscussionToConference(callId: VideoConference['_id'], rid: IRoom['_id'] | undefined): Promise<void>;
 	addMembers(uid: IUser['_id'], callId: VideoConference['_id'], usernames: NonNullable<IUser['username']>[]): Promise<IUser['_id'][]>;
 	declineCall(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void>;
-	listMembersWithoutChatAccess(callId: VideoConference['_id']): Promise<IUser['_id'][]>;
-	shareChatWithMembers(uid: IUser['_id'], callId: VideoConference['_id']): Promise<IRoom['_id']>;
+	getChatAccess(uid: IUser['_id'], callId: VideoConference['_id']): Promise<VideoConferenceChatAccess>;
+	shareChatWithMembers(uid: IUser['_id'], callId: VideoConference['_id'], mode?: VideoConferenceChatAccessMode): Promise<IRoom['_id']>;
 	createConferenceDiscussionWithParticipants(
 		uid: IUser['_id'],
 		callId: VideoConference['_id'],

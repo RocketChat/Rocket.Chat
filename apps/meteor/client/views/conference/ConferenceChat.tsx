@@ -6,6 +6,7 @@ import AddParticipantsModal from './AddParticipantsModal';
 import ChatAccessNotice from './ChatAccessNotice';
 import ConferenceRoom from './ConferenceRoom';
 import ConferenceRoomPreload from './ConferenceRoomPreload';
+import type { ConferenceChatAccess } from './hooks/useConferenceEmbedded';
 import NotFoundPage from '../notFound/NotFoundPage';
 import PageLoading from '../root/PageLoading';
 
@@ -13,11 +14,11 @@ type ConferenceChatProps = {
 	callId: string;
 	rid?: string;
 	loading: boolean;
-	membersWithoutChatAccess: string[];
+	chatAccess?: ConferenceChatAccess;
 	onClose?: () => void;
 };
 
-const ConferenceChat = ({ callId, rid, loading, membersWithoutChatAccess, onClose }: ConferenceChatProps) => {
+const ConferenceChat = ({ callId, rid, loading, chatAccess, onClose }: ConferenceChatProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 
@@ -59,7 +60,7 @@ const ConferenceChat = ({ callId, rid, loading, membersWithoutChatAccess, onClos
 					</Box>
 				</Box>
 
-				<ChatAccessNotice callId={callId} memberIds={membersWithoutChatAccess} />
+				{chatAccess && <ChatAccessNotice callId={callId} access={chatAccess} />}
 
 				<ConferenceRoom rid={rid} />
 			</ConferenceRoomPreload>

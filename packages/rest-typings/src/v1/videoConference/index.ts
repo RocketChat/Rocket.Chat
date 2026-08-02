@@ -2,6 +2,7 @@ import type {
 	VideoConferenceInstructions,
 	VideoConference,
 	VideoConferenceCapabilities,
+	VideoConferenceChatAccess,
 	VideoConferenceWithDiscussion,
 } from '@rocket.chat/core-typings';
 
@@ -52,8 +53,8 @@ export type VideoConferenceEndpoints = {
 	'/v1/video-conference.info': {
 		GET: (params: VideoConfInfoProps) => VideoConference & {
 			capabilities: VideoConferenceCapabilities;
-			/** Members who cannot read the conference's chat, since membership grants no room access. */
-			membersWithoutChatAccess: string[];
+			/** Where the chat lives, who among the members cannot read it, and how that can be resolved. */
+			chatAccess: VideoConferenceChatAccess;
 		};
 	};
 
