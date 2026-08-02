@@ -384,6 +384,17 @@ The notice itself is `AnnouncementBanner` — the same banner rooms use for anno
 readable contrast instead of hand-rolled colours. It is passed no `onClick`: the Review button is the only
 control, which keeps one interactive element rather than nesting a button inside a `role='button'` bar.
 
+### A member who can't read the chat is told so, not shown an error
+
+The panel used to let the room fetch fail and fall back to `NotFoundPage` — *"The page does not exist or you
+may not have access permission"* — which reads as something being broken. The server already works out who
+can't read the chat, so `ConferenceChat` checks whether the current user is one of them and renders
+`ConferenceChatNotShared` instead, without attempting a fetch that is known to fail.
+
+`ChatAccessNotice` hides itself from those same members for the same reason: it offers to share the chat, and
+they are the ones it would be shared with — `share-chat` would fail for them anyway, since they can't add
+anyone to a room they can't see.
+
 ### The incoming-call popup assumed the callee was in the room
 
 Ringing on add is the first case where a call rings someone who has no access to the room it belongs to, and
@@ -417,6 +428,7 @@ and package-level jest.
 | The share-chat `mode` contract | `apps/meteor/tests/unit/definition/rest/v1/video-conference/VideoConfShareChatProps.spec.ts` |
 | Which action leads, and that a DM only offers the discussion | `apps/meteor/client/views/conference/ChatAccessModal.spec.tsx` |
 | The incoming popup renders for a room the member can't see | `apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfPopups/VideoConfPopups.spec.tsx` |
+| Which side of the chat-access split each participant sees | `apps/meteor/client/views/conference/ConferenceChat.spec.tsx` |
 | The membership update *shapes* — the `$addToSet` trap | `packages/models/src/models/VideoConference.spec.ts` |
 
 `packages/models/src/models/VideoConference.spec.ts` stubs `BaseRaw`, which participates in a circular
@@ -431,8 +443,6 @@ import that leaves it uninitialized when the module is loaded directly by jest.
   loaded" panel.
 - **`getChatAccess` costs one access check per member**, on every `video-conference.info`. Fine
   at conference scale; revisit if membership ever grows large.
-- **The chat panel shows "page not found" to a member who can't read the chat.** It reads as an error rather
-  than as the situation it is. Tracked as a follow-up.
 - **`video-conference.add-participants` is capped at 10 users per call**, which is what guarantees an add
   always rings. Adding more means several requests.
 
@@ -454,7 +464,7 @@ import that leaves it uninitialized when the module is loaded directly by jest.
 | Provider bridge | `apps/meteor/client/views/conference/hooks/useProviderCallBridge.ts` (+ `.spec.ts`) |
 | Confined navigation | `apps/meteor/client/views/conference/hooks/useConfinedNavigation.ts` (+ `.spec.ts`), `client/views/root/hooks/useExternalRouteNavigation.ts` |
 | Add participants | `apps/meteor/client/views/conference/AddParticipantsModal.tsx` |
-| Chat access | `apps/meteor/client/views/conference/ChatAccessNotice.tsx`, `ChatAccessModal.tsx`, `ChatAccessMember.tsx` |
+| Chat access | `apps/meteor/client/views/conference/ChatAccessNotice.tsx`, `ChatAccessModal.tsx`, `ChatAccessMember.tsx`, `ConferenceChatNotShared.tsx` |
 | Ringing popups | `apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfPopups/VideoConfPopup/` |
 | Join routing | `apps/meteor/client/providers/VideoConfProvider.tsx`, `client/views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall.tsx` |
 | Room opening | `apps/meteor/client/views/room/hooks/useOpenRoomById.tsx`, `client/lib/utils/mapRoomFromApi.ts` |

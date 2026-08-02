@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button } from '@rocket.chat/fuselage';
 import { AnnouncementBanner } from '@rocket.chat/ui-client';
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import { useSetModal, useUserId } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import ChatAccessModal from './ChatAccessModal';
@@ -29,8 +29,10 @@ const notInteractive = css`
 const ChatAccessNotice = ({ callId, access }: ChatAccessNoticeProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
+	const uid = useUserId();
 
-	if (!access.members.length) {
+	// Only shown to participants who can act on it: a member who can't read the chat can't share it either.
+	if (!access.members.length || (uid && access.membersWithoutAccess.includes(uid))) {
 		return null;
 	}
 
