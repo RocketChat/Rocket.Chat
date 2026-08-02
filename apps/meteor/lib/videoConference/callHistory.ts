@@ -1,6 +1,24 @@
-import type { IGroupVideoConference, IVideoConferenceHistoryItem } from '@rocket.chat/core-typings';
-import { hasJoinedVideoConference } from '@rocket.chat/core-typings';
+import type { IGroupVideoConference, IVideoConferenceHistoryItem, VideoConference } from '@rocket.chat/core-typings';
+import { hasJoinedVideoConference, isGroupVideoConference } from '@rocket.chat/core-typings';
 import type { InsertionModel } from '@rocket.chat/model-typings';
+
+/**
+ * Whether a conference that just stopped should leave call-history items.
+ *
+ * Both ways a conference stops lead here — it was ended, or it was expired by the cron for having run past its
+ * TTL — because from a member's point of view both are a call that happened. Expiry is not an edge case: a
+ * provider that never reports the end back (the bundled Jitsi app, for one) leaves *every* conference to be
+ * expired, so writing history only on end writes it almost never.
+ *
+ * Each path is reachable more than once for the same call — an app can send `ENDED` repeatedly, and the cron
+ * runs every three hours — so this must be given the call as it was read *before* `endedAt` was set, and
+ * refuses once it is set. Otherwise every member collects a duplicate entry per attempt.
+ *
+ * Direct and livechat conferences are out of scope: they have no `title` and aren't the many-participants case
+ * this covers.
+ */
+export const shouldWriteConferenceHistory = (call: VideoConference): call is IGroupVideoConference =>
+	isGroupVideoConference(call) && !call.endedAt;
 
 /**
  * Builds one call-history item per conference member, so ending a group conference leaves a record in every

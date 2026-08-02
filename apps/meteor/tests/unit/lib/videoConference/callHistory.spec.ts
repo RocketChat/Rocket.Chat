@@ -1,7 +1,7 @@
 import type { IGroupVideoConference, IVideoConferenceUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { buildConferenceCallHistoryItems } from '../../../../lib/videoConference/callHistory';
+import { buildConferenceCallHistoryItems, shouldWriteConferenceHistory } from '../../../../lib/videoConference/callHistory';
 
 const createdBy = { _id: 'creator', username: 'creator.user', name: 'Creator User' };
 
@@ -112,5 +112,24 @@ describe('buildConferenceCallHistoryItems', () => {
 		const [item] = buildConferenceCallHistoryItems(call);
 
 		expect(item.ts).to.equal(startedAt);
+	});
+});
+
+describe('shouldWriteConferenceHistory', () => {
+	const groupCall = { type: 'videoconference', title: 'standup' } as any;
+
+	it('writes for a group conference that has not been recorded yet', () => {
+		expect(shouldWriteConferenceHistory(groupCall)).to.be.true;
+	});
+
+	// Both stopping paths are reachable repeatedly for one call — an app can resend `ENDED`, and the expiry
+	// cron runs every three hours — so a call that already carries `endedAt` must not be written again.
+	it('refuses a conference that already stopped, so members collect no duplicates', () => {
+		expect(shouldWriteConferenceHistory({ ...groupCall, endedAt: new Date() })).to.be.false;
+	});
+
+	it('refuses conference types that are not the many-participants case', () => {
+		expect(shouldWriteConferenceHistory({ type: 'direct' } as any)).to.be.false;
+		expect(shouldWriteConferenceHistory({ type: 'livechat' } as any)).to.be.false;
 	});
 });
