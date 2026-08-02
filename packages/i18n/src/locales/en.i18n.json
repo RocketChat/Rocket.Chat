@@ -1226,6 +1226,8 @@
   "Chat_closed": "Chat closed",
   "Chat_closed_by_agent": "Chat closed by agent",
   "Chat_closed_successfully": "Chat closed successfully",
+  "Chat_not_shared_with_you": "This chat has not been shared with you",
+  "Chat_not_shared_with_you_description": "You're in the call, but not in the conversation it belongs to. Any participant who is can give you access to it.",
   "Chat_opened_by_visitor": "Chat opened by the visitor",
   "Chat_queued": "Chat Queued",
   "Chat_removed": "Chat Removed",

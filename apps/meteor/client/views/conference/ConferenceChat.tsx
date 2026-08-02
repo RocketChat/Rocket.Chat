@@ -1,9 +1,10 @@
 import { Box, Button, IconButton } from '@rocket.chat/fuselage';
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import { useSetModal, useUserId } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import AddParticipantsModal from './AddParticipantsModal';
 import ChatAccessNotice from './ChatAccessNotice';
+import ConferenceChatNotShared from './ConferenceChatNotShared';
 import ConferenceRoom from './ConferenceRoom';
 import ConferenceRoomPreload from './ConferenceRoomPreload';
 import type { ConferenceChatAccess } from './hooks/useConferenceEmbedded';
@@ -21,6 +22,7 @@ type ConferenceChatProps = {
 const ConferenceChat = ({ callId, rid, loading, chatAccess, onClose }: ConferenceChatProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
+	const uid = useUserId();
 
 	if (loading) {
 		return <PageLoading />;
@@ -30,40 +32,48 @@ const ConferenceChat = ({ callId, rid, loading, chatAccess, onClose }: Conferenc
 		return <NotFoundPage />;
 	}
 
+	// Membership grants no room access, so the chat may be a room this user can't read. The server already
+	// worked out who those members are, which beats letting the room fetch fail and calling it a missing page.
+	const shared = !uid || !chatAccess?.membersWithoutAccess.includes(uid);
+
 	return (
 		<Box position='relative' display='flex' flexDirection='column' flexGrow={1} height='full'>
-			<ConferenceRoomPreload rid={rid}>
-				<Box
-					is='header'
-					display='flex'
-					alignItems='center'
-					justifyContent='space-between'
-					paddingInline={12}
-					paddingBlock={8}
-					borderBlockEndWidth={1}
-					borderBlockEndColor='stroke-extra-light'
-				>
-					<Box is='h5' fontScale='h5' color='default'>
-						{t('Chat')}
-					</Box>
-					{/* The panel is docked to the inline end of the call, so dismissal sits at the far end — the
-					    same place every other closable surface in the product puts it. */}
-					<Box display='flex' alignItems='center'>
-						<Button
-							small
-							icon='user-plus'
-							onClick={() => setModal(<AddParticipantsModal callId={callId} rid={rid} onClose={() => setModal(null)} />)}
-						>
-							{t('Add_people')}
-						</Button>
-						{onClose && <IconButton marginInlineStart={8} small icon='cross' title={t('Close')} onClick={onClose} />}
-					</Box>
+			<Box
+				is='header'
+				display='flex'
+				alignItems='center'
+				justifyContent='space-between'
+				paddingInline={12}
+				paddingBlock={8}
+				borderBlockEndWidth={1}
+				borderBlockEndColor='stroke-extra-light'
+			>
+				<Box is='h5' fontScale='h5' color='default'>
+					{t('Chat')}
 				</Box>
+				{/* The panel is docked to the inline end of the call, so dismissal sits at the far end — the
+				    same place every other closable surface in the product puts it. */}
+				<Box display='flex' alignItems='center'>
+					<Button
+						small
+						icon='user-plus'
+						onClick={() => setModal(<AddParticipantsModal callId={callId} rid={rid} onClose={() => setModal(null)} />)}
+					>
+						{t('Add_people')}
+					</Button>
+					{onClose && <IconButton marginInlineStart={8} small icon='cross' title={t('Close')} onClick={onClose} />}
+				</Box>
+			</Box>
 
-				{chatAccess && <ChatAccessNotice callId={callId} access={chatAccess} />}
+			{!shared && <ConferenceChatNotShared />}
 
-				<ConferenceRoom rid={rid} />
-			</ConferenceRoomPreload>
+			{shared && (
+				<ConferenceRoomPreload rid={rid}>
+					{chatAccess && <ChatAccessNotice callId={callId} access={chatAccess} />}
+
+					<ConferenceRoom rid={rid} />
+				</ConferenceRoomPreload>
+			)}
 		</Box>
 	);
 };
