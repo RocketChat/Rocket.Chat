@@ -163,6 +163,8 @@ export type EventSignatures = {
 		previousStatus: UserStatus | undefined;
 	}): void;
 	'video-conference.discussionUpdated'(data: { callId: VideoConference['_id']; discussionRid: IRoom['_id'] | undefined }): void;
+	/** Who can read the conference's chat changed, without the chat itself moving. */
+	'video-conference.chatAccessUpdated'(data: { callId: VideoConference['_id'] }): void;
 	'watch.messages'(data: { message: IMessage }): void;
 	'watch.roles'(
 		data:

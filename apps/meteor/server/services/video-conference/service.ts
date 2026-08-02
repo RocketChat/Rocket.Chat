@@ -1262,9 +1262,19 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			.map(({ username }) => username)
 			.filter((username): username is string => !!username);
 
-		return (mode ? mode === 'invite' : canInvite)
-			? this.addUsersToConferenceRoom(uid, callId, usernames)
-			: this.createConferenceDiscussionWithParticipants(uid, callId, usernames);
+		if (!(mode ? mode === 'invite' : canInvite)) {
+			// Moving the chat to a discussion broadcasts `discussionUpdated` on its own, which is what makes every
+			// participant's panel follow the chat to its new room.
+			return this.createConferenceDiscussionWithParticipants(uid, callId, usernames);
+		}
+
+		const invitedRid = await this.addUsersToConferenceRoom(uid, callId, usernames);
+
+		// Inviting leaves the conference record untouched — only who can read the chat changed — so nothing else
+		// tells the participants to look again. Without this their notice stays up until a reload.
+		void api.broadcast('video-conference.chatAccessUpdated', { callId });
+
+		return invitedRid;
 	}
 
 	private async addAnonymousUser(call: Optional<IGroupVideoConference, 'providerData'>): Promise<void> {

@@ -554,7 +554,6 @@ export class NotificationsModule {
 		event: E extends ExtractNotifyUserEventName<'video-conference', P> ? E : never,
 		...args: `${P}/${E}` extends StreamKeys<'video-conference'> ? StreamerCallbackArgs<'video-conference', `${P}/${E}`> : never
 	): void {
-		// @ts-expect-error - as we currently only have one event for the 'video-conference' stream, typescript doesn't like the destructuring
 		return this.streamVideoConference.emit(`${callId}/${event}`, ...args);
 	}
 }

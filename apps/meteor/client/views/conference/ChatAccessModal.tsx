@@ -12,12 +12,13 @@ import {
 	ModalTitle,
 } from '@rocket.chat/fuselage';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useId } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import ChatAccessMember from './ChatAccessMember';
 import type { ConferenceChatAccess } from './hooks/useConferenceEmbedded';
+import { videoConferenceQueryKeys } from '../../lib/queryKeys';
 
 type ChatAccessModalProps = {
 	callId: string;
@@ -39,12 +40,16 @@ const ChatAccessModal = ({ callId, access, onClose }: ChatAccessModalProps) => {
 	const titleId = useId();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const shareChat = useEndpoint('POST', '/v1/video-conference.share-chat');
+	const queryClient = useQueryClient();
 
-	// The conference's own `discussionUpdated` broadcast is what moves everyone's chat panel, so there is
-	// nothing to refetch here on success.
+	// The server broadcasts the change to every participant, but don't make the one who asked for it wait for
+	// the round trip to see their own notice go away.
 	const { mutate, isPending, variables } = useMutation({
 		mutationFn: (mode: VideoConferenceChatAccessMode) => shareChat({ callId, mode }),
-		onSuccess: () => onClose(),
+		onSuccess: () => {
+			void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) });
+			onClose();
+		},
 		onError: (error) => dispatchToastMessage({ type: 'error', message: error }),
 	});
 
