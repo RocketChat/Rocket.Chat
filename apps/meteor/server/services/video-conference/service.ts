@@ -19,6 +19,8 @@ import type {
 	IStats,
 	VideoConference,
 	VideoConferenceCapabilities,
+	VideoConferenceChatAccess,
+	VideoConferenceChatAccessMode,
 	VideoConferenceCreateData,
 	VideoConferenceWithDiscussion,
 	Optional,
@@ -1196,58 +1198,71 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	/**
-	 * Conference members who can't read the conference's chat, because membership deliberately grants no room
-	 * access. Surfacing them is the point: the choice of how to fix it is offered once it actually matters,
-	 * rather than being forced on whoever adds a participant.
+	 * Where the conference's chat lives and which members can't read it, because membership deliberately grants
+	 * no room access. Surfacing them is the point: the choice of how to fix it is offered once it actually
+	 * matters, rather than being forced on whoever adds a participant — so this also reports what that choice
+	 * is, since it depends on the room and on who is asking.
 	 *
 	 * Access is asked per member rather than derived from subscriptions, because reading a room doesn't always
 	 * require one — a public channel is readable by anyone, unless it belongs to a private team. Conferences
 	 * are small, and getting a public-channel-in-a-private-team case wrong is worse than the extra reads.
 	 */
-	public async listMembersWithoutChatAccess(callId: VideoConference['_id']): Promise<IUser['_id'][]> {
+	public async getChatAccess(uid: IUser['_id'], callId: VideoConference['_id']): Promise<VideoConferenceChatAccess> {
 		const call = await VideoConferenceModel.findOneById(callId, { projection: { rid: 1, discussionRid: 1, users: 1 } });
 		if (!call) {
 			throw new Error('invalid-video-conference');
 		}
 
-		const chatRid = call.discussionRid || call.rid;
-		const access = await Promise.all(call.users.map(async ({ _id }) => ({ _id, allowed: await canAccessRoomIdAsync(chatRid, _id) })));
+		const rid = call.discussionRid || call.rid;
+		const room = await Rooms.findOneById(rid);
+		if (!room) {
+			throw new Error('invalid-room');
+		}
 
-		return access.filter(({ allowed }) => !allowed).map(({ _id }) => _id);
+		const access = await Promise.all(call.users.map(async ({ _id }) => ({ _id, allowed: await canAccessRoomIdAsync(rid, _id) })));
+
+		return {
+			rid,
+			name: room.fname || room.name || '',
+			type: room.t,
+			membersWithoutAccess: access.filter(({ allowed }) => !allowed).map(({ _id }) => _id),
+			// Ask the room whether it can take new members rather than testing for a DM: the room type owns that
+			// rule, and it accounts for cases a `t === 'd'` check would miss, like a federated DM that *can* grow.
+			canInvite: await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.INVITE, uid),
+		};
 	}
 
 	/**
-	 * Gives every member who can't read the chat access to it, picking the only mechanism the room allows: a
-	 * DM can't take new members, so its chat moves to a discussion carrying everyone; any other room can
-	 * simply be joined. Returns the room the chat now lives in.
+	 * Gives every member who can't read the chat access to it, either by bringing them into the room — which
+	 * exposes its whole history — or by moving the chat to a discussion. Both are lossy in different ways, so
+	 * the caller chooses; without a choice, the room's own rules decide. Returns the room the chat now lives in.
 	 */
-	public async shareChatWithMembers(uid: IUser['_id'], callId: VideoConference['_id']): Promise<IRoom['_id']> {
-		const call = await VideoConferenceModel.findOneById(callId, { projection: { rid: 1, discussionRid: 1, users: 1 } });
+	public async shareChatWithMembers(
+		uid: IUser['_id'],
+		callId: VideoConference['_id'],
+		mode?: VideoConferenceChatAccessMode,
+	): Promise<IRoom['_id']> {
+		const { rid, membersWithoutAccess, canInvite } = await this.getChatAccess(uid, callId);
+		if (!membersWithoutAccess.length) {
+			return rid;
+		}
+
+		if (mode === 'invite' && !canInvite) {
+			throw new Error('error-not-allowed');
+		}
+
+		const call = await VideoConferenceModel.findOneById(callId, { projection: { users: 1 } });
 		if (!call) {
 			throw new Error('invalid-video-conference');
 		}
 
-		const chatRid = call.discussionRid || call.rid;
-		const withoutAccess = new Set(await this.listMembersWithoutChatAccess(callId));
-		if (!withoutAccess.size) {
-			return chatRid;
-		}
-
+		const withoutAccess = new Set(membersWithoutAccess);
 		const usernames = call.users
 			.filter(({ _id }) => withoutAccess.has(_id))
 			.map(({ username }) => username)
 			.filter((username): username is string => !!username);
 
-		const room = await Rooms.findOneById(chatRid);
-		if (!room) {
-			throw new Error('invalid-room');
-		}
-
-		// Ask the room whether it can take new members rather than testing for a DM: the room type owns that
-		// rule, and it accounts for cases a `t === 'd'` check would miss, like a federated DM that *can* grow.
-		const canInvite = await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.INVITE, uid);
-
-		return canInvite
+		return (mode ? mode === 'invite' : canInvite)
 			? this.addUsersToConferenceRoom(uid, callId, usernames)
 			: this.createConferenceDiscussionWithParticipants(uid, callId, usernames);
 	}

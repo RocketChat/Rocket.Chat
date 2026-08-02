@@ -377,7 +377,7 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		const { callId } = this.bodyParams;
+		const { callId, mode } = this.bodyParams;
 		const { userId } = this;
 
 		const call = await VideoConf.get(callId);
@@ -389,7 +389,7 @@ API.v1.post(
 			return API.v1.failure('invalid-params');
 		}
 
-		const rid = await VideoConf.shareChatWithMembers(userId, callId);
+		const rid = await VideoConf.shareChatWithMembers(userId, callId, mode);
 
 		return API.v1.success({ rid });
 	},
@@ -423,15 +423,15 @@ API.v1.get(
 		// Membership grants no room access, so some members may not be able to read the chat. The conference UI
 		// surfaces them and offers the remedy, which is why this ships with the conference rather than needing
 		// its own round trip.
-		const [capabilities, membersWithoutChatAccess] = await Promise.all([
+		const [capabilities, chatAccess] = await Promise.all([
 			VideoConf.listProviderCapabilities(call.providerName),
-			VideoConf.listMembersWithoutChatAccess(callId),
+			VideoConf.getChatAccess(userId, callId),
 		]);
 
 		return API.v1.success({
 			...(call as VideoConference),
 			capabilities,
-			membersWithoutChatAccess,
+			chatAccess,
 		});
 	},
 );

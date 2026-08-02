@@ -232,7 +232,8 @@ The provider's URL is embedded in an iframe, so it must permit framing (no restr
 |--------|----------|-------------|
 | POST | `/v1/video-conference.add-participants` | Add users to the conference's room, or to a new discussion (`keepHistory: false`) |
 | POST | `/v1/video-conference.join` | Join a conference — accepts `discussionRid` members |
-| GET | `/v1/video-conference.info` | Conference info — accepts `discussionRid` members |
+| POST | `/v1/video-conference.share-chat` | Give the members who can't read the chat access to it (`mode: 'invite' \| 'discussion'`) |
+| GET | `/v1/video-conference.info` | Conference info — accepts `discussionRid` members; carries `chatAccess` |
 | GET | `/v1/video-conference.list` | Paginated history, with discussion title / last message |
 
 ## Streams
@@ -323,9 +324,10 @@ Gives the "rejoin from a past call" entry point. Landed; see [Personal Call Hist
 
 ### Phase 5 — surface who can't see the chat
 
-- [x] Derived on `video-conference.info` as `membersWithoutChatAccess`. Access is asked per member with `canAccessRoomIdAsync` rather than derived from subscriptions, because reading a room doesn't always need one — a public channel is readable by anyone unless it belongs to a private team. Conferences are small, and getting that case wrong is worse than the extra reads.
+- [x] Derived on `video-conference.info` as `chatAccess`. Access is asked per member with `canAccessRoomIdAsync` rather than derived from subscriptions, because reading a room doesn't always need one — a public channel is readable by anyone unless it belongs to a private team. Conferences are small, and getting that case wrong is worse than the extra reads.
 - [x] `ChatAccessNotice` renders inside the chat panel, where the remedy is in context, and moves up to the conference page while the panel is closed — so it can't be missed, and is never shown twice.
 - [x] `POST /v1/video-conference.share-chat` applies the remedy, reusing `addUsersToConferenceRoom` / `createConferenceDiscussionWithParticipants`. It asks the room whether it can take new members — `allowMemberAction(room, RoomMemberActions.INVITE)` — rather than testing for a DM: the room type owns that rule, and it covers cases a `t === 'd'` check misses, such as a federated DM that *can* grow.
+- [x] The caller picks *how*, via `mode`. Both ways give something away, so neither is applied on the user's behalf — see [Resolving chat access is the user's call](#resolving-chat-access-is-the-users-call).
 - [x] Fixed `createConferenceDiscussionWithParticipants` to build from `discussionRid || rid`, closing the divergence documented above.
 
 ### Future work (not in scope)
@@ -366,6 +368,42 @@ was rung as a room member. Since membership authorizes joining, a member who dec
 afterwards — which is intended, but is a consequence of where the flag is stored rather than a separate
 decision.
 
+### Resolving chat access is the user's call
+
+Both ways out of "some members can't see the chat" give something away, in different directions: inviting
+exposes the room's whole history to an outsider, while moving the chat to a discussion leaves the earlier
+history behind for everyone already there. So `share-chat` takes a `mode` and `ChatAccessModal` spells out
+each consequence next to its button, naming the room in bold — that name is the context the decision turns on.
+
+Which action *leads* is a privacy judgement: opening a private room's history is the bigger step, so private
+rooms and DMs lead with the discussion, and public rooms — whose history is already open — lead with the
+invite. A DM can't take new members at all, so there the discussion is the only option offered. The server
+re-derives `canInvite` and rejects `mode: 'invite'` it can't honour, rather than trusting the client's read.
+
+The notice itself is `AnnouncementBanner` — the same banner rooms use for announcements — so it inherits
+readable contrast instead of hand-rolled colours. It is passed no `onClick`: the Review button is the only
+control, which keeps one interactive element rather than nesting a button inside a `role='button'` bar.
+
+### The incoming-call popup assumed the callee was in the room
+
+Ringing on add is the first case where a call rings someone who has no access to the room it belongs to, and
+the popup was built entirely around that room — it read it from the client store with `useUserRoom(rid)` and
+returned `null` when it wasn't there, while still calling `focusManager.focusFirst()`, which then looked for
+the parent of a node the focus scope never got (`Cannot read properties of undefined`).
+
+Incoming popups now render without a room, describing the call from the conference's own record instead
+(`VideoConfPopupCallerInfo`, fed by the `video-conference.info` the popup already fetches). The popups that act
+*on* a room — starting or placing a call — still require one.
+
+### Accepting a server ring joins; it doesn't negotiate
+
+1:1 accept is a handshake: the callee publishes `accepted` and waits for the caller's client to reply
+`confirmed` with the go-ahead, giving up after 5s. A server-originated ring has no caller waiting, so running
+that handshake left the added user staring at *"No response from remote user after notifying the call was
+accepted"*. Incoming calls now carry a `handshake` flag; without it, accepting joins the conference outright —
+membership is what authorizes joining — and declining records the decline without publishing `rejected` to
+whoever added them, which their client would read as their own call being turned down.
+
 ### Test coverage and where it lives
 
 The cheap runners were used deliberately: mocha under `apps/meteor/tests/unit/**` (~2s for the whole config)
@@ -376,6 +414,9 @@ and package-level jest.
 | `hasJoinedVideoConference` back-compat, ringing cap boundaries | `apps/meteor/tests/unit/lib/videoConference/membership.spec.ts` |
 | Per-member history semantics | `apps/meteor/tests/unit/lib/videoConference/callHistory.spec.ts` |
 | A decline can't tear down a conference; `ring` and `call` both register | `apps/meteor/client/lib/VideoConfManager.spec.ts` |
+| The share-chat `mode` contract | `apps/meteor/tests/unit/definition/rest/v1/video-conference/VideoConfShareChatProps.spec.ts` |
+| Which action leads, and that a DM only offers the discussion | `apps/meteor/client/views/conference/ChatAccessModal.spec.tsx` |
+| The incoming popup renders for a room the member can't see | `apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfPopups/VideoConfPopups.spec.tsx` |
 | The membership update *shapes* — the `$addToSet` trap | `packages/models/src/models/VideoConference.spec.ts` |
 
 `packages/models/src/models/VideoConference.spec.ts` stubs `BaseRaw`, which participates in a circular
@@ -388,8 +429,10 @@ import that leaves it uninitialized when the module is loaded directly by jest.
 - **No conference detail view in call history.** Clicking a conference row opens its room. Deep-linking to
   `/call-history/details/:historyId` for a conference falls through to the generic "call info could not be
   loaded" panel.
-- **`listMembersWithoutChatAccess` costs one access check per member**, on every `video-conference.info`. Fine
+- **`getChatAccess` costs one access check per member**, on every `video-conference.info`. Fine
   at conference scale; revisit if membership ever grows large.
+- **The chat panel shows "page not found" to a member who can't read the chat.** It reads as an error rather
+  than as the situation it is. Tracked as a follow-up.
 - **`video-conference.add-participants` is capped at 10 users per call**, which is what guarantees an add
   always rings. Adding more means several requests.
 
@@ -411,6 +454,8 @@ import that leaves it uninitialized when the module is loaded directly by jest.
 | Provider bridge | `apps/meteor/client/views/conference/hooks/useProviderCallBridge.ts` (+ `.spec.ts`) |
 | Confined navigation | `apps/meteor/client/views/conference/hooks/useConfinedNavigation.ts` (+ `.spec.ts`), `client/views/root/hooks/useExternalRouteNavigation.ts` |
 | Add participants | `apps/meteor/client/views/conference/AddParticipantsModal.tsx` |
+| Chat access | `apps/meteor/client/views/conference/ChatAccessNotice.tsx`, `ChatAccessModal.tsx`, `ChatAccessMember.tsx` |
+| Ringing popups | `apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfPopups/VideoConfPopup/` |
 | Join routing | `apps/meteor/client/providers/VideoConfProvider.tsx`, `client/views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall.tsx` |
 | Room opening | `apps/meteor/client/views/room/hooks/useOpenRoomById.tsx`, `client/lib/utils/mapRoomFromApi.ts` |
 | Ongoing banner | `apps/meteor/client/views/room/OngoingConferenceBanner/OngoingConferenceBanner.tsx` |

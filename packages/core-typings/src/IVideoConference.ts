@@ -138,6 +138,24 @@ export interface IVoIPVideoConference extends IVideoConference {
 	};
 }
 
+/**
+ * Where a conference's chat lives and who can't read it. Conference membership grants no room access, so a
+ * member added from outside the room takes part in the call without seeing its chat; resolving that is a
+ * deliberate choice with consequences, so the UI needs enough context to explain them before acting.
+ */
+export type VideoConferenceChatAccess = {
+	rid: IRoom['_id'];
+	/** Display name of the room the chat lives in — the history that would be exposed by inviting. */
+	name: string;
+	type: IRoom['t'];
+	membersWithoutAccess: IUser['_id'][];
+	/** Whether that room can take the missing members in: a DM can't, so its chat has to move instead. */
+	canInvite: boolean;
+};
+
+/** How to give the missing members access: bring them into the room, or move the chat to a discussion. */
+export type VideoConferenceChatAccessMode = 'invite' | 'discussion';
+
 export type ExternalVideoConference = IDirectVideoConference | IGroupVideoConference | ILivechatVideoConference;
 
 type InternalVideoConference = IVoIPVideoConference;
