@@ -12,6 +12,7 @@ import ConferenceUnauthorizedPage from './ConferenceUnauthorizedPage';
 import { CallBar, CallBarActions, CallBarAction, CallPanel } from './components';
 import { useConferenceEmbedded } from './hooks/useConferenceEmbedded';
 import { useConfinedNavigation } from './hooks/useConfinedNavigation';
+import { useLeaveConferenceOnClose } from './hooks/useLeaveConferenceOnClose';
 import { useProviderCallBridge } from './hooks/useProviderCallBridge';
 import PageLoading from '../root/PageLoading';
 
@@ -30,6 +31,10 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	// The chat panel is a full room UI, so a link/mention click would navigate this window away and tear
 	// down the call. Keep this window pinned to the conference — those go to the opener or a new tab.
 	useConfinedNavigation();
+
+	// Closing this window is the only end-of-call signal a provider that doesn't report one leaves us, and the
+	// call has to end for its history to be written.
+	useLeaveConferenceOnClose(callId);
 
 	// A provider rendering its own toolbar can hide our bar and drive the chat panel from its own controls.
 	const iframeRef = useRef<HTMLIFrameElement>(null);

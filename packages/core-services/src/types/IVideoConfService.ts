@@ -51,6 +51,7 @@ export interface IVideoConfService {
 	assignDiscussionToConference(callId: VideoConference['_id'], rid: IRoom['_id'] | undefined): Promise<void>;
 	addMembers(uid: IUser['_id'], callId: VideoConference['_id'], usernames: NonNullable<IUser['username']>[]): Promise<IUser['_id'][]>;
 	declineCall(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void>;
+	leaveCall(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void>;
 	getChatAccess(uid: IUser['_id'], callId: VideoConference['_id']): Promise<VideoConferenceChatAccess>;
 	shareChatWithMembers(uid: IUser['_id'], callId: VideoConference['_id'], mode?: VideoConferenceChatAccessMode): Promise<IRoom['_id']>;
 	createConferenceDiscussionWithParticipants(

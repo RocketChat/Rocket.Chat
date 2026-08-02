@@ -73,6 +73,8 @@ export interface IVideoConferenceUser extends Pick<Required<IUser>, '_id' | 'use
 	 */
 	declined?: boolean;
 	declinedAt?: Date;
+	/** When they left the call. Cleared if they rejoin, so it only ever describes the latest departure. */
+	leftAt?: Date;
 }
 
 /**
@@ -80,6 +82,13 @@ export interface IVideoConferenceUser extends Pick<Required<IUser>, '_id' | 'use
  * entries were only written on join — so absent reads as joined.
  */
 export const hasJoinedVideoConference = (user: Pick<IVideoConferenceUser, 'joined'>): boolean => user.joined !== false;
+
+/**
+ * Whether a member is in the call *right now*, as opposed to having joined it at some point. `joined` never goes
+ * back to false — it records that they were there — so presence is the pair of it and not having left since.
+ */
+export const isInVideoConference = (user: Pick<IVideoConferenceUser, 'joined' | 'leftAt'>): boolean =>
+	hasJoinedVideoConference(user) && !user.leftAt;
 
 export interface IVideoConference extends IRocketChatRecord {
 	type: VideoConferenceType;

@@ -45,7 +45,12 @@ import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
-import { buildConferenceCallHistoryItems, shouldWriteConferenceHistory } from '../../../lib/videoConference/callHistory';
+import type { LoggableVideoConference } from '../../../lib/videoConference/callHistory';
+import {
+	buildConferenceCallHistoryItems,
+	hasActiveParticipants,
+	shouldWriteConferenceHistory,
+} from '../../../lib/videoConference/callHistory';
 import { resolveChatAccessMode } from '../../../lib/videoConference/chatAccess';
 import { availabilityErrors, shouldRingVideoConference } from '../../../lib/videoConference/constants';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
@@ -524,10 +529,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 	}
 
-	// Writes one call-history item per conference member (see `buildConferenceCallHistoryItems`), so a group
-	// conference gets a "rejoin from a past call" entry point the same way media calls do. Direct and livechat
-	// conferences are out of scope: they have no `title` and aren't the many-participants case this covers.
-	private async saveConferenceToHistory(call: IGroupVideoConference): Promise<void> {
+	// Writes one call-history item per conference member (see `buildConferenceCallHistoryItems`), so a conference
+	// gets a "rejoin from a past call" entry point the same way media calls do. Which conferences qualify is
+	// `shouldWriteConferenceHistory`'s call — a direct conference is a 1:1 video call and belongs here too.
+	private async saveConferenceToHistory(call: LoggableVideoConference): Promise<void> {
 		if (!call.users.length) {
 			return;
 		}
@@ -1205,6 +1210,38 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		await VideoConferenceModel.setUserDeclinedById(callId, uid);
 		this.notifyVideoConfUpdate(call.rid, callId);
+	}
+
+	/**
+	 * Records that a member left the call, and ends the conference once nobody is left in it.
+	 *
+	 * This is what gives a conference an end at all for providers that never report one — closing the call
+	 * window is the only signal there is. Ending it is what writes everyone's call history, so without this a
+	 * call sits at `STARTED` until the expiry cron notices it a day later.
+	 *
+	 * Leaving is not declining and not un-joining: membership and `joined` both stand, so the member keeps their
+	 * history entry and can rejoin.
+	 */
+	public async leaveCall(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void> {
+		const call = await VideoConferenceModel.findOneById(callId, { projection: { rid: 1, users: 1, endedAt: 1 } });
+		if (!call || call.endedAt) {
+			return;
+		}
+
+		if (!call.users.some(({ _id }) => _id === uid)) {
+			return;
+		}
+
+		const leftAt = new Date();
+		await VideoConferenceModel.setUserLeftById(callId, uid, leftAt);
+		this.notifyVideoConfUpdate(call.rid, callId);
+
+		// Decide on the state we just wrote rather than the one we read, so the member who is leaving is counted
+		// as gone. Reading again would be a second round trip for the same answer.
+		const remaining = call.users.map((member) => (member._id === uid ? { ...member, leftAt } : member));
+		if (!hasActiveParticipants(remaining)) {
+			await this.endCall(callId);
+		}
 	}
 
 	/**
