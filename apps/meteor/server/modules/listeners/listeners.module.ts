@@ -189,6 +189,10 @@ export class ListenersModule {
 			notifications.notifyVideoConference(callId, 'chatAccessUpdated');
 		});
 
+		service.onEvent('video-conference.membersUpdated', ({ callId }) => {
+			notifications.notifyVideoConference(callId, 'membersUpdated');
+		});
+
 		service.onEvent('presence.status', ({ user }) => {
 			const { _id, username, name, status, statusText, statusSource, statusExpiresAt, roles } = user;
 			if (!status || !username) {

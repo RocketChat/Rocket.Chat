@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 
 import { useLeaveConferenceOnClose } from './useLeaveConferenceOnClose';
 import { APIClient } from '../../../../app/utils/client/lib/RestApiClient';
@@ -60,4 +60,19 @@ it('stops reporting once the page is no longer showing a conference', () => {
 	hide();
 
 	expect(fetchMock).not.toHaveBeenCalled();
+});
+
+describe('leaving on purpose', () => {
+	// The user who picks "leave" rather than closing the window should not have to close it themselves.
+	it('reports leaving and then closes the window', async () => {
+		const close = jest.spyOn(window, 'close').mockImplementation(() => undefined);
+
+		const { result } = renderHook(() => useLeaveConferenceOnClose('call-1'));
+
+		await act(() => result.current.leaveNow());
+
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+		expect(String((fetchMock.mock.calls[0] as unknown as [string])[0])).toContain('/api/v1/video-conference.leave');
+		expect(close).toHaveBeenCalled();
+	});
 });

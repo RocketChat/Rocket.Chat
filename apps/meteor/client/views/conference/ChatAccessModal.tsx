@@ -16,7 +16,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useId } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import ChatAccessMember from './ChatAccessMember';
+import ConferenceMemberRow from './ConferenceMemberRow';
 import type { ConferenceChatAccess } from './hooks/useConferenceEmbedded';
 import { chatAccessLeadsWithDiscussion } from '../../../lib/videoConference/chatAccess';
 import { videoConferenceQueryKeys } from '../../lib/queryKeys';
@@ -80,7 +80,7 @@ const ChatAccessModal = ({ callId, access, onClose }: ChatAccessModalProps) => {
 			<ModalContent fontScale='p2'>
 				<Box color='default'>{t('These_participants_cannot_see_the_chat')}</Box>
 				{access.members.map((member) => (
-					<ChatAccessMember key={member._id} member={member} />
+					<ConferenceMemberRow key={member._id} member={member} />
 				))}
 
 				{access.canInvite && (

@@ -476,6 +476,7 @@ export interface StreamerEvents {
 	'video-conference': [
 		{ key: `${string}/discussionUpdated`; args: [{ discussionRid: IRoom['_id'] | undefined }] },
 		{ key: `${string}/chatAccessUpdated`; args: [] },
+		{ key: `${string}/membersUpdated`; args: [] },
 	];
 
 	'local': [

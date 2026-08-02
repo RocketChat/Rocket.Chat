@@ -5,6 +5,7 @@ import {
 	isVideoConfStartProps,
 	isVideoConfJoinProps,
 	isVideoConfLeaveProps,
+	isVideoConfRingProps,
 	isVideoConfCancelProps,
 	isVideoConfInfoProps,
 	isVideoConfListProps,
@@ -98,6 +99,16 @@ const addParticipantsResponseSchema = ajv.compile<{ added: string[] }>({
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['added', 'success'],
+	additionalProperties: false,
+});
+
+const ringResponseSchema = ajv.compile<{ rang: string[] }>({
+	type: 'object',
+	properties: {
+		rang: { type: 'array', items: { type: 'string' }, description: 'Ids of the members who were rung.' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['rang', 'success'],
 	additionalProperties: false,
 });
 
@@ -363,6 +374,38 @@ API.v1.post(
 		await VideoConf.leaveCall(userId, callId);
 
 		return API.v1.success();
+	},
+);
+
+API.v1.post(
+	'video-conference.ring',
+	{
+		authRequired: true,
+		body: isVideoConfRingProps,
+		// Ringing again is a deliberate, repeatable act, but not one worth hammering someone with.
+		rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 60000 },
+		response: {
+			200: ringResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { callId } = this.bodyParams;
+		const { userId } = this;
+
+		const call = await VideoConf.get(callId);
+		if (!call) {
+			return API.v1.failure('invalid-params');
+		}
+
+		if (!(await canAccessConference(call, userId)) || !userId) {
+			return API.v1.failure('invalid-params');
+		}
+
+		const rang = await VideoConf.ringMembers(userId, callId);
+
+		return API.v1.success({ rang });
 	},
 );
 

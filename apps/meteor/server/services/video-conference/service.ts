@@ -31,6 +31,7 @@ import {
 	VideoConferenceStatus,
 	hasJoinedVideoConference,
 	isDirectVideoConference,
+	isInVideoConference,
 	isGroupVideoConference,
 	isLivechatVideoConference,
 } from '@rocket.chat/core-typings';
@@ -508,6 +509,14 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		void api.broadcast('room.video-conference', { rid, callId });
 	}
 
+	/**
+	 * Tells anyone watching the conference that its membership moved — someone joined, declined, left or was
+	 * added. The call window needs this to know whether it is still waiting on anyone.
+	 */
+	private notifyConferenceMembersUpdate(callId: VideoConference['_id']): void {
+		void api.broadcast('video-conference.membersUpdated', { callId });
+	}
+
 	private async endCall(callId: VideoConference['_id']): Promise<void> {
 		const call = await this.getUnfiltered(callId);
 		if (!call) {
@@ -789,6 +798,16 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		});
 
 		await this.runNewVideoConferenceEvent(callId);
+
+		// Being called makes you a member, exactly as being added to a group conference does. Without this the
+		// callee only appears once they answer, so nothing can tell "still ringing" from "nobody was called",
+		// and a call they missed leaves them no history entry.
+		const callee = await Users.findOneById<Required<Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'>>>(calleeId, {
+			projection: { username: 1, name: 1, avatarETag: 1 },
+		});
+		if (callee) {
+			await VideoConferenceModel.addMemberById(callId, { ...callee, joined: false });
+		}
 
 		await this.maybeCreateDiscussion(callId, user);
 
@@ -1113,9 +1132,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			await this.addUserToDiscussion(call.discussionRid, _id);
 		}
 
-		// Already in the call — nothing to record.
+		// Already in the call — nothing to record. This asks about presence, not about having joined at some
+		// point: a member who joined and left is joined-ever but absent, and returning here would leave their
+		// `leftAt` in place, reporting them as gone while they are back on the call.
 		const member = call.users.find((user) => user._id === _id);
-		if (member && hasJoinedVideoConference(member)) {
+		if (member && isInVideoConference(member)) {
 			return;
 		}
 
@@ -1124,6 +1145,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		// Running both also closes the race where two joins land between the read above and the write.
 		await VideoConferenceModel.addMemberById(call._id, { _id, username, name, avatarETag, ts, joined: true, joinedAt: ts });
 		await VideoConferenceModel.setUserJoinedById(call._id, _id, ts);
+		this.notifyConferenceMembersUpdate(call._id);
 
 		if (call.type === 'direct') {
 			return this.updateDirectCall(call, _id);
@@ -1167,6 +1189,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		if (added.length) {
 			this.notifyVideoConfUpdate(call.rid, callId);
+			this.notifyConferenceMembersUpdate(callId);
 		}
 
 		// The list being rung is just the people added, and the endpoint caps a single add at the ringing
@@ -1210,6 +1233,37 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		await VideoConferenceModel.setUserDeclinedById(callId, uid);
 		this.notifyVideoConfUpdate(call.rid, callId);
+		this.notifyConferenceMembersUpdate(callId);
+	}
+
+	/**
+	 * Rings every member who isn't in the call, again.
+	 *
+	 * A ring is one-shot, so the caller of a call nobody picked up needs a way to try again — and adding the
+	 * same person a second time won't do it, since they are already a member. Returns who was rung.
+	 *
+	 * Members who already left are rung too: they were there and are not now, which is exactly the case
+	 * "call them back" is for.
+	 */
+	public async ringMembers(uid: IUser['_id'], callId: VideoConference['_id']): Promise<IUser['_id'][]> {
+		const call = await VideoConferenceModel.findOneById(callId, { projection: { rid: 1, users: 1, endedAt: 1 } });
+		if (!call) {
+			throw new Error('invalid-video-conference');
+		}
+
+		if (call.endedAt) {
+			return [];
+		}
+
+		const absent = call.users.filter((member) => member._id !== uid && !isInVideoConference(member)).map(({ _id }) => _id);
+		if (!shouldRingVideoConference(absent.length)) {
+			return [];
+		}
+
+		absent.forEach((memberId) => this.notifyUser(memberId, 'ring', { callId, rid: call.rid, uid }));
+		await this.notifyUsersAddedToConference(uid, absent, callId, call.rid);
+
+		return absent;
 	}
 
 	/**
@@ -1235,6 +1289,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const leftAt = new Date();
 		await VideoConferenceModel.setUserLeftById(callId, uid, leftAt);
 		this.notifyVideoConfUpdate(call.rid, callId);
+		this.notifyConferenceMembersUpdate(callId);
 
 		// Decide on the state we just wrote rather than the one we read, so the member who is leaving is counted
 		// as gone. Reading again would be a second round trip for the same answer.

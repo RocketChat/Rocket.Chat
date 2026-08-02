@@ -2,10 +2,10 @@ import { Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 
-import type { ConferenceChatAccess } from './hooks/useConferenceEmbedded';
+import type { ConferenceMember } from './hooks/useCallOutcome';
 
 /** A conference member, named from the conference's own record — there may be no shared room to look them up in. */
-const ChatAccessMember = ({ member }: { member: ConferenceChatAccess['members'][number] }) => {
+const ConferenceMemberRow = ({ member }: { member: Pick<ConferenceMember, '_id' | 'username' | 'name'> }) => {
 	const displayName = useUserDisplayName(member);
 
 	return (
@@ -18,4 +18,4 @@ const ChatAccessMember = ({ member }: { member: ConferenceChatAccess['members'][
 	);
 };
 
-export default ChatAccessMember;
+export default ConferenceMemberRow;
