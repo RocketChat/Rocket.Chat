@@ -2,7 +2,7 @@ import crypto from 'crypto';
 
 import type { ISamlUsedAssertions, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ISamlUsedAssertionsModel } from '@rocket.chat/model-typings';
-import { isMongoError, MongoErrorCode } from '@rocket.chat/tools';
+import { isMongoServerError, MongoErrorCode } from '@rocket.chat/tools';
 import type { Collection, Db, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -27,7 +27,7 @@ export class SamlUsedAssertionsRaw extends BaseRaw<ISamlUsedAssertions> implemen
 			});
 			return true;
 		} catch (error: unknown) {
-			if (isMongoError(error) && error.code === MongoErrorCode.DuplicateKey) {
+			if (isMongoServerError(error) && error.code === MongoErrorCode.DuplicateKey) {
 				return false;
 			}
 			throw error;

@@ -6,11 +6,18 @@ export const MongoErrorCode = {
 	WriteConflict: 112,
 } as const;
 
-type MongoErrorLike = {
+type MongoServerErrorLike = {
 	code?: number;
 	codeName?: string;
-	writeErrors?: Array<{ code?: number; codeName?: string }>;
 };
 
-export const isMongoError = (error: unknown): error is MongoErrorLike =>
-	isRecord(error) && ('code' in error || 'codeName' in error || 'writeErrors' in error);
+type MongoBulkWriteErrorLike = {
+	code?: number;
+	writeErrors?: Array<{ code?: number; codeName?: string }>;
+	result?: { insertedCount?: number };
+};
+
+export const isMongoServerError = (error: unknown): error is MongoServerErrorLike =>
+	isRecord(error) && ('code' in error || 'codeName' in error);
+
+export const isMongoBulkWriteError = (error: unknown): error is MongoBulkWriteErrorLike => isRecord(error) && 'writeErrors' in error;

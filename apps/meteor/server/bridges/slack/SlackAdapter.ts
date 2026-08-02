@@ -28,6 +28,7 @@ import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
 import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 import { settings } from '../../../app/settings/server';
 import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
+import { isMongoServerError, MongoErrorCode } from '@rocket.chat/tools';
 
 export default class SlackAdapter {
 	constructor(slackBridge) {
@@ -1037,10 +1038,8 @@ export default class SlackAdapter {
 			}
 			try {
 				await this.rocket.createAndSaveMessage(rocketChannel, rocketUser, slackMessage, msgDataDefaults, isImporting, this);
-			} catch (e) {
-				// http://www.mongodb.org/about/contributors/error-codes/
-				// 11000 == duplicate key error
-				if (e.name === 'MongoError' && e.code === 11000) {
+			} catch (e: unknown) {
+				if (isMongoServerError(e) && e.code === MongoErrorCode.DuplicateKey) {
 					return;
 				}
 
