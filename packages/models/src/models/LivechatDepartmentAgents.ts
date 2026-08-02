@@ -47,38 +47,6 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		];
 	}
 
-	findUsersInQueue(usersList: string[]): FindCursor<ILivechatDepartmentAgents>;
-
-	findUsersInQueue(usersList: string[], options: FindOptions<ILivechatDepartmentAgents>): FindCursor<ILivechatDepartmentAgents>;
-
-	findUsersInQueue<P extends Document>(
-		usersList: string[],
-		options: FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
-	): FindCursor<P>;
-
-	findUsersInQueue<P extends Document>(
-		usersList: string[],
-		options?:
-			| undefined
-			| FindOptions<ILivechatDepartmentAgents>
-			| FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
-	): FindCursor<ILivechatDepartmentAgents> | FindCursor<P> {
-		const query: Filter<ILivechatDepartmentAgents> = {};
-
-		if (Array.isArray(usersList) && usersList.length) {
-			// TODO: Remove
-			query.username = {
-				$in: usersList,
-			};
-		}
-
-		if (options === undefined) {
-			return this.find(query);
-		}
-
-		return this.find(query, options);
-	}
-
 	findByAgentIds(agentIds: string[], options?: FindOptions<ILivechatDepartmentAgents>): FindCursor<ILivechatDepartmentAgents> {
 		return this.find({ agentId: { $in: agentIds } }, options);
 	}
@@ -114,10 +82,6 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 
 	findByDepartmentIds(departmentIds: string[], options = {}): FindCursor<ILivechatDepartmentAgents> {
 		return this.find({ departmentId: { $in: departmentIds } }, options);
-	}
-
-	async findAgentsByAgentIdAndBusinessHourId(_agentId: string, _businessHourId: string): Promise<ILivechatDepartmentAgents[]> {
-		return [];
 	}
 
 	setDepartmentEnabledByDepartmentId(departmentId: string, departmentEnabled: boolean): Promise<Document | UpdateResult> {
@@ -167,10 +131,6 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 
 	async removeByAgentId(agentId: string): Promise<DeleteResult> {
 		return this.deleteMany({ agentId });
-	}
-
-	async removeByDepartmentIdAndAgentId(departmentId: string, agentId: string): Promise<void> {
-		await this.deleteMany({ departmentId, agentId });
 	}
 
 	async getNextAgentForDepartment(
@@ -228,26 +188,6 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		};
 
 		return this.findOneAndUpdate(query, update, { sort, projection, returnDocument: 'after' });
-	}
-
-	async getBotsForDepartment(departmentId: string): Promise<undefined | FindCursor<ILivechatDepartmentAgents>> {
-		const agents = await this.findByDepartmentId(departmentId).toArray();
-
-		if (agents.length === 0) {
-			return;
-		}
-
-		const botUsers = await Users.findBotAgents(agents.map((a) => a.username)).toArray();
-		const botUsernames = botUsers.map((user) => user.username).filter(isStringValue);
-
-		const query = {
-			departmentId,
-			username: {
-				$in: botUsernames,
-			},
-		};
-
-		return this.find(query);
 	}
 
 	async countBotsForDepartment(departmentId: string): Promise<number> {

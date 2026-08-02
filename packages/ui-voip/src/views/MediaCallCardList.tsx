@@ -4,7 +4,7 @@ import { CardListContainer, CardListSection, PeerCard, StreamCard } from '../com
 import { useMediaCallView } from '../context';
 import { usePlayMediaStream } from '../providers/usePlayMediaStream';
 
-type MediaCallCardListProps = {
+export type MediaCallCardListProps = {
 	shouldWrapCards: boolean;
 	user: {
 		displayName: string;

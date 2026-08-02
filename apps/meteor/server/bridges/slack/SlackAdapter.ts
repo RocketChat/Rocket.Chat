@@ -10,25 +10,25 @@ import url from 'node:url';
 
 import { Message } from '@rocket.chat/core-services';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
+import { isMongoServerError, MongoErrorCode } from '@rocket.chat/tools';
 import { App as SlackApp } from '@slack/bolt';
 import { RTMClient } from '@slack/rtm-api';
 import { Meteor } from 'meteor/meteor';
 
 import { SlackAPI } from './SlackAPI';
 import { slackLogger } from './logger';
-import { saveRoomName, saveRoomTopic } from '../../../app/channel-settings/server';
-import { FileUpload } from '../../../app/file-upload/server';
-import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
-import { archiveRoom } from '../../../app/lib/server/functions/archiveRoom';
-import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
-import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
-import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
-import { unarchiveRoom } from '../../../app/lib/server/functions/unarchiveRoom';
-import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
-import { executeSetReaction } from '../../../app/reactions/server/setReaction';
-import { settings } from '../../../app/settings/server';
-import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
-import { isMongoServerError, MongoErrorCode } from '@rocket.chat/tools';
+import { FileUpload } from '../../lib/media/file-upload';
+import { deleteMessage } from '../../lib/messages/deleteMessage';
+import { sendMessage } from '../../lib/messages/sendMessage';
+import { updateMessage } from '../../lib/messages/updateMessage';
+import { executeSetReaction } from '../../lib/messaging/reactions/setReaction';
+import { addUserToRoom } from '../../lib/rooms/addUserToRoom';
+import { archiveRoom } from '../../lib/rooms/archiveRoom';
+import { removeUserFromRoom } from '../../lib/rooms/removeUserFromRoom';
+import { saveRoomName, saveRoomTopic } from '../../lib/rooms/settings';
+import { unarchiveRoom } from '../../lib/rooms/unarchiveRoom';
+import { getUserAvatarURL } from '../../lib/utils/getUserAvatarURL';
+import { settings } from '../../settings';
 
 export default class SlackAdapter {
 	constructor(slackBridge) {

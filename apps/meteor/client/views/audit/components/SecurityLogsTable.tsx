@@ -101,7 +101,7 @@ const SecurityLogsTable = () => {
 
 	return (
 		<>
-			<Box mb={16} display='flex' flexWrap='wrap' alignItems='flex-end'>
+			<Box marginBlock={16} display='flex' flexWrap='wrap' alignItems='flex-end'>
 				<Field width='unset' flexShrink={1} flexGrow={1}>
 					<Margins inline={6}>
 						<FieldLabel>{t('Date')}</FieldLabel>
@@ -182,7 +182,7 @@ const SecurityLogsTable = () => {
 									<GenericTableCell withTruncatedText>
 										<Box display='flex' alignItems='center'>
 											{item.actor.type === 'user' && (
-												<Box mie={4}>
+												<Box marginInlineEnd={4}>
 													<UserAvatar size='x24' userId={item.actor._id} />
 												</Box>
 											)}

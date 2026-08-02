@@ -4535,3 +4535,82 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 	});
 });
+
+(IS_EE ? describe : describe.skip)('[ABAC] Classification banners config schema validation on save', () => {
+	const validConfig = {
+		version: 1,
+		enabled: true,
+		banner: {
+			style: 'classic',
+			uppercase: true,
+			monospace: false,
+			delimiter: ' // ',
+			colorMode: 'highest',
+			fallbackText: 'NO CLASSIFICATION DATA',
+			fallbackColor: '#6C727A',
+		},
+		attributes: [
+			{
+				id: 'classification',
+				source: 'clearance.level',
+				label: 'Classification level',
+				showInBanner: true,
+				showLabel: false,
+				bannerLabel: '',
+				labelSeparator: '',
+				valueSeparator: '/',
+				sortAlpha: false,
+				groupThreshold: 0,
+				multipleLabel: '',
+				drivesColor: true,
+				values: [
+					{ source: 'TS', label: 'TOP SECRET', color: '#ff8c00' },
+					{ source: 'U', label: 'UNCLASSIFIED', color: '#007a33' },
+				],
+			},
+		],
+	};
+
+	const saveBannersConfig = (value: string) =>
+		request.post(api('settings/ABAC_Classification_Banners_Config')).set(credentials).send({ value });
+
+	before((done) => getCredentials(done));
+
+	after(() => updateSetting('ABAC_Classification_Banners_Config', ''));
+
+	it('should reject a value that is not valid JSON', async () => {
+		await saveBannersConfig('not json {')
+			.expect(400)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'ABAC_Classification_Banners_Config_Invalid');
+				expect(res.body).to.have.property('errorType', 'error-setting-validation-failed');
+			});
+	});
+
+	it('should reject a JSON document violating the schema', async () => {
+		await saveBannersConfig(JSON.stringify({ ...validConfig, banner: { ...validConfig.banner, fallbackColor: 'red' } }))
+			.expect(400)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'ABAC_Classification_Banners_Config_Invalid');
+				expect(res.body).to.have.property('errorType', 'error-setting-validation-failed');
+			});
+	});
+
+	it('should accept a document matching the schema', async () => {
+		await saveBannersConfig(JSON.stringify(validConfig))
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+			});
+	});
+
+	it('should accept an empty value, leaving the setting unconfigured', async () => {
+		await saveBannersConfig('')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+			});
+	});
+});

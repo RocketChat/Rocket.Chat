@@ -111,7 +111,15 @@ it('should handle reconnecting', async () => {
 		server,
 		jest.advanceTimersByTimeAsync(200),
 		new Promise((resolve) => connection.once('reconnecting', () => resolve(undefined))),
-		new Promise((resolve) => connection.once('connection', (data) => resolve(data))),
+		new Promise((resolve) => {
+			const handler = (status: string) => {
+				if (status === 'connected') {
+					connection.off('connection', handler);
+					resolve(status);
+				}
+			};
+			connection.on('connection', handler);
+		}),
 	);
 
 	expect(connection.status).toBe('connected');
@@ -268,7 +276,15 @@ it('should reset retryCount on a successful connection so subsequent drops can r
 		server,
 		jest.advanceTimersByTimeAsync(200),
 		new Promise((resolve) => connection.once('reconnecting', () => resolve(undefined))),
-		new Promise((resolve) => connection.once('connection', (data) => resolve(data))),
+		new Promise((resolve) => {
+			const handler = (status: string) => {
+				if (status === 'connected') {
+					connection.off('connection', handler);
+					resolve(status);
+				}
+			};
+			connection.on('connection', handler);
+		}),
 	);
 	jest.useRealTimers();
 	expect(connection.status).toBe('connected');
@@ -286,7 +302,15 @@ it('should reset retryCount on a successful connection so subsequent drops can r
 		server,
 		jest.advanceTimersByTimeAsync(200),
 		new Promise((resolve) => connection.once('reconnecting', () => resolve(undefined))),
-		new Promise((resolve) => connection.once('connection', (data) => resolve(data))),
+		new Promise((resolve) => {
+			const handler = (status: string) => {
+				if (status === 'connected') {
+					connection.off('connection', handler);
+					resolve(status);
+				}
+			};
+			connection.on('connection', handler);
+		}),
 	);
 	jest.useRealTimers();
 	expect(connection.status).toBe('connected');
@@ -316,7 +340,15 @@ it('should ignore a stale ws.onclose that fires after the socket has been replac
 		server,
 		jest.advanceTimersByTimeAsync(200),
 		new Promise((resolve) => connection.once('reconnecting', () => resolve(undefined))),
-		new Promise((resolve) => connection.once('connection', (data) => resolve(data))),
+		new Promise((resolve) => {
+			const handler = (status: string) => {
+				if (status === 'connected') {
+					connection.off('connection', handler);
+					resolve(status);
+				}
+			};
+			connection.on('connection', handler);
+		}),
 	);
 
 	expect(connection.status).toBe('connected');

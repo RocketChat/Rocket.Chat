@@ -3,8 +3,8 @@ import { Logger } from '@rocket.chat/logger';
 import { ReadReceipts, ReadReceiptsArchive, Messages } from '@rocket.chat/models';
 import { isMongoBulkWriteError, MongoErrorCode } from '@rocket.chat/tools';
 
-import { settings } from '../../../app/settings/server';
 import { sleep } from '../../../lib/utils/sleep';
+import { settings } from '../../../server/settings';
 
 const logger = new Logger('ReadReceiptsArchive');
 

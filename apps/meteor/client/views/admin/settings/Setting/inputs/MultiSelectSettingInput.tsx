@@ -6,7 +6,7 @@ import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
 export type valuesOption = { key: string; i18nLabel: TranslationKey };
-type MultiSelectSettingInputProps = SettingInputProps<[string, string], string[]> & {
+export type MultiSelectSettingInputProps = SettingInputProps<[string, string], string[]> & {
 	values: valuesOption[];
 };
 

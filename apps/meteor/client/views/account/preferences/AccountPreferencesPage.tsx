@@ -76,7 +76,7 @@ const AccountPreferencesPage = () => {
 			<PageHeader title={t('Preferences')} />
 			<PageScrollableContentWithShadow>
 				<FormProvider {...methods}>
-					<Box id={preferencesFormId} is='form' maxWidth='x600' w='full' alignSelf='center' onSubmit={handleSubmit(handleSaveData)}>
+					<Box id={preferencesFormId} is='form' maxWidth='x600' width='full' alignSelf='center' onSubmit={handleSubmit(handleSaveData)}>
 						<Accordion>
 							<PreferencesLocalizationSection />
 							<PreferencesGlobalSection />

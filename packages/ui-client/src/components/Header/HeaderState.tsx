@@ -2,7 +2,7 @@ import { Icon, IconButton } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { AllHTMLAttributes, ComponentPropsWithoutRef, MouseEventHandler } from 'react';
 
-type HeaderStateProps =
+export type HeaderStateProps =
 	| (Pick<ComponentPropsWithoutRef<typeof IconButton>, 'color' | 'title' | 'icon'> & {
 			onClick: MouseEventHandler;
 	  } & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is'>)
@@ -12,6 +12,6 @@ type HeaderStateProps =
 	  });
 
 const HeaderState = (props: HeaderStateProps) =>
-	props.onClick ? <IconButton tiny mie={4} {...props} /> : <Icon size='x16' mie={8} name={props.icon} {...props} />;
+	props.onClick ? <IconButton tiny marginInlineEnd={4} {...props} /> : <Icon size='x16' marginInlineEnd={8} name={props.icon} {...props} />;
 
 export default HeaderState;

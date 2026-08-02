@@ -14,7 +14,7 @@ const anon = {
 	avatarETag: undefined,
 } as const;
 
-type UserMenuButtonProps = ComponentPropsWithoutRef<typeof IconButton>;
+export type UserMenuButtonProps = ComponentPropsWithoutRef<typeof IconButton>;
 
 const UserMenuButton = forwardRef(function UserMenuButton(props: UserMenuButtonProps, ref: ForwardedRef<HTMLElement>) {
 	const user = useUser();
@@ -46,7 +46,7 @@ const UserMenuButton = forwardRef(function UserMenuButton(props: UserMenuButtonP
 				overflow='hidden'
 				size='x12'
 				borderWidth='default'
-				bg='surface-tint'
+				backgroundColor='surface-tint'
 				borderColor='extra-light'
 				borderRadius='full'
 			>

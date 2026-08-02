@@ -13,7 +13,7 @@ import { useUiKitView } from '../../uikit/hooks/useUiKitView';
 // TODO: move this to fuselage-ui-kit itself
 bannerParser.mrkdwn = ({ text }) => <MarkdownText variant='inline' content={text} />;
 
-type UiKitBannerProps = {
+export type UiKitBannerProps = {
 	key: UiKit.BannerView['viewId']; // force re-mount when viewId changes
 	initialView: UiKit.BannerView;
 };

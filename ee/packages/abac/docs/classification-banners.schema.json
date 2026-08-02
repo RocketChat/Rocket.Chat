@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rocket.chat/schemas/classification-banners/v1.json",
+  "title": "Rocket.Chat Classification Banners configuration",
+  "type": "object",
+  "required": ["version", "enabled", "banner", "attributes"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "const": 1 },
+    "enabled": { "type": "boolean" },
+    "banner": {
+      "type": "object",
+      "required": ["style", "uppercase", "monospace", "delimiter", "colorMode", "fallbackText", "fallbackColor"],
+      "additionalProperties": false,
+      "properties": {
+        "style": { "enum": ["classic"] },
+        "uppercase": { "type": "boolean" },
+        "monospace": { "type": "boolean" },
+        "delimiter": { "type": "string", "minLength": 1, "maxLength": 8 },
+        "colorMode": { "enum": ["highest", "attribute"] },
+        "fallbackText": { "type": "string", "minLength": 1 },
+        "fallbackColor": { "$ref": "#/$defs/hexColor" }
+      }
+    },
+    "attributes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "description": "Attribute ids must be unique across entries (uniqueness by id is not expressible in JSON Schema; validated by tooling)",
+      "items": { "$ref": "#/$defs/attribute" }
+    }
+  },
+  "$defs": {
+    "hexColor": {
+      "type": "string",
+      "pattern": "^#[0-9a-fA-F]{6}$"
+    },
+    "attribute": {
+      "type": "object",
+      "required": [
+        "id",
+        "source",
+        "label",
+        "showInBanner",
+        "showLabel",
+        "bannerLabel",
+        "labelSeparator",
+        "valueSeparator",
+        "sortAlpha",
+        "groupThreshold",
+        "multipleLabel",
+        "drivesColor",
+        "values"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z][a-z0-9_-]*$" },
+        "source": { "type": "string", "minLength": 1, "description": "Raw attribute key from the IdP (SAML/LDAP)" },
+        "label": { "type": "string", "minLength": 1, "description": "Friendly admin-facing name" },
+        "showInBanner": { "type": "boolean" },
+        "showLabel": { "type": "boolean" },
+        "bannerLabel": { "type": "string" },
+        "labelSeparator": { "enum": ["-", " ", ""] },
+        "valueSeparator": { "enum": ["/", ", ", " "] },
+        "sortAlpha": { "type": "boolean" },
+        "groupThreshold": {
+          "type": "integer",
+          "description": "0 = never collapse; otherwise collapse when value count >= threshold (2-20)",
+          "oneOf": [{ "const": 0 }, { "minimum": 2, "maximum": 20 }]
+        },
+        "multipleLabel": { "type": "string" },
+        "drivesColor": { "type": "boolean" },
+        "values": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "description": "Value sources must be unique within the attribute (uniqueness by source is not expressible in JSON Schema; validated by tooling)",
+          "items": {
+            "type": "object",
+            "required": ["source", "label", "color"],
+            "additionalProperties": false,
+            "properties": {
+              "source": { "type": "string", "minLength": 1 },
+              "label": { "type": "string", "minLength": 1 },
+              "color": { "$ref": "#/$defs/hexColor" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -80,20 +80,6 @@ export class ServerEventsRaw extends BaseRaw<IServerEvent> implements IServerEve
 		});
 	}
 
-	countFailedAttemptsByIp(ip: string): Promise<number> {
-		return this.countDocuments({
-			ip,
-			t: ServerEventType.FAILED_LOGIN_ATTEMPT,
-		});
-	}
-
-	countFailedAttemptsByUsername(username: string): Promise<number> {
-		return this.countDocuments({
-			'u.username': username,
-			't': ServerEventType.FAILED_LOGIN_ATTEMPT,
-		});
-	}
-
 	async createAuditServerEvent<K extends keyof IServerEvents, E extends IServerEvents[K]>(
 		key: K,
 		data: ExtractDataToParams<E>,

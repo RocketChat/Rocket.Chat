@@ -6,13 +6,13 @@ import type { PresenceSource, UserStatus } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
-import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
-import { deleteUser } from '../../../lib/server/functions/deleteUser';
-import { getUserCreatedByApp } from '../../../lib/server/functions/getUserCreatedByApp';
-import { setStatusText } from '../../../lib/server/functions/setStatusText';
-import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
-import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
-import { notifyOnUserChange, notifyOnUserChangeById } from '../../../lib/server/lib/notifyListener';
+import { notifyOnUserChange, notifyOnUserChangeById } from '../../../../server/lib/notifyListener';
+import { checkUsernameAvailability } from '../../../../server/lib/users/checkUsernameAvailability';
+import { deleteUser } from '../../../../server/lib/users/deleteUser';
+import { getUserCreatedByApp } from '../../../../server/lib/users/getUserCreatedByApp';
+import { setStatusText } from '../../../../server/lib/users/setStatusText';
+import { setUserActiveStatus } from '../../../../server/lib/users/setUserActiveStatus';
+import { setUserAvatar } from '../../../../server/lib/users/setUserAvatar';
 
 export class AppUserBridge extends UserBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {
@@ -181,7 +181,7 @@ export class AppUserBridge extends UserBridge {
 
 	protected async setActiveState(
 		userId: IUser['id'],
-		state: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt'>,
+		state: Pick<IUser, 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt' | 'statusId'>,
 		appId: string,
 	): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is setting active state for user ${userId}`);
@@ -191,13 +191,14 @@ export class AppUserBridge extends UserBridge {
 			statusText: state.statusText,
 			statusSource: state.statusSource as PresenceSource,
 			...(state.statusExpiresAt && { statusExpiresAt: state.statusExpiresAt }),
+			...(state.statusId && { statusId: state.statusId }),
 		});
 	}
 
-	protected async endActiveState(userId: IUser['id'], appId: string): Promise<void> {
+	protected async endActiveState(userId: IUser['id'], appId: string, statusId?: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is ending active state for user ${userId}`);
 
-		await Presence.endActiveState(userId);
+		await Presence.endActiveState(userId, statusId);
 	}
 
 	protected async getActiveUserCount(): Promise<number> {

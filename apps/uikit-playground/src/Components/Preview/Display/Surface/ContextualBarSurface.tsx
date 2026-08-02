@@ -3,24 +3,26 @@ import {
 	Box,
 	Button,
 	ButtonGroup,
-	Contextualbar,
-	ContextualbarAction,
-	ContextualbarFooter,
-	ContextualbarHeader,
-	ContextualbarTitle,
+	ContextualbarV2,
+	ContextualbarV2Action,
+	ContextualbarV2Footer,
+	ContextualbarV2Header,
+	ContextualbarV2Title,
 } from '@rocket.chat/fuselage';
 import { Scrollbars } from 'rc-scrollbars';
 import type { ReactNode } from 'react';
 
-const ContextualBarSurface = ({ children }: { children: ReactNode }) => (
-	<Contextualbar>
-		<ContextualbarHeader>
-			<Avatar url='data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==' />
-			<ContextualbarTitle>Contextual Bar</ContextualbarTitle>
-			<ContextualbarAction data-qa='ContextualbarActionClose' title='Close' name='cross' />
-		</ContextualbarHeader>
+export type ContextualBarSurfaceProps = { children: ReactNode };
 
-		<Box height='100%' p='12px'>
+const ContextualBarSurface = ({ children }: ContextualBarSurfaceProps) => (
+	<ContextualbarV2>
+		<ContextualbarV2Header>
+			<Avatar url='data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==' />
+			<ContextualbarV2Title>Contextual Bar</ContextualbarV2Title>
+			<ContextualbarV2Action data-qa='ContextualbarActionClose' title='Close' name='cross' />
+		</ContextualbarV2Header>
+
+		<Box height='100%' padding='12px'>
 			<Box height='100%' display='flex' flexShrink={1} flexDirection='column' flexGrow={1}>
 				<Scrollbars
 					autoHide
@@ -48,13 +50,13 @@ const ContextualBarSurface = ({ children }: { children: ReactNode }) => (
 			</Box>
 		</Box>
 
-		<ContextualbarFooter>
+		<ContextualbarV2Footer>
 			<ButtonGroup stretch>
 				<Button>Cancel</Button>
 				<Button primary>Submit</Button>
 			</ButtonGroup>
-		</ContextualbarFooter>
-	</Contextualbar>
+		</ContextualbarV2Footer>
+	</ContextualbarV2>
 );
 
 export default ContextualBarSurface;

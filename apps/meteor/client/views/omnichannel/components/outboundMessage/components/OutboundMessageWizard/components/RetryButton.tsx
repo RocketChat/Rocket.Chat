@@ -2,7 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-type RetryButtonProps = {
+export type RetryButtonProps = {
 	loading: boolean;
 	onClick(): void;
 };
@@ -28,7 +28,7 @@ const RetryButton = ({ loading, onClick }: RetryButtonProps) => {
 			rcx-button--loading={loading}
 			icon={loading ? 'loading' : 'reload'}
 			title={loading ? t('Loading...') : t('Retry')}
-			mis={4}
+			marginInlineStart={4}
 			onClick={() => onClick()}
 		/>
 	);

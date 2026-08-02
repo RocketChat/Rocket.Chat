@@ -16,7 +16,7 @@ export default {
 
 			return (
 				<FormProvider {...methods}>
-					<Box p={16}>{fn()}</Box>
+					<Box padding={16}>{fn()}</Box>
 				</FormProvider>
 			);
 		},

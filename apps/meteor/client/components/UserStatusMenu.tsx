@@ -8,8 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import { UserStatus } from './UserStatus';
 
-type UserStatusMenuProps = {
-	margin: ComponentProps<typeof Box>['margin'];
+export type UserStatusMenuProps = {
 	onChange: (type: UserStatusType) => void;
 	initialStatus?: UserStatusType;
 	optionWidth?: ComponentProps<typeof Box>['width'];
@@ -17,11 +16,10 @@ type UserStatusMenuProps = {
 };
 
 const UserStatusMenu = ({
-	margin,
 	onChange,
 	initialStatus = UserStatusType.OFFLINE,
 	optionWidth = undefined,
-	placement = 'bottom-end',
+	placement = 'bottom-start',
 }: UserStatusMenuProps) => {
 	const { t } = useTranslation();
 	const [status, setStatus] = useState(initialStatus);
@@ -82,14 +80,13 @@ const UserStatusMenu = ({
 		<>
 			<Button
 				ref={ref}
-				small
+				mini
 				square
 				secondary
 				onClick={onClick}
 				onBlur={hide}
 				onKeyUp={handleKeyUp}
 				onKeyDown={handleKeyDown}
-				margin={margin}
 				aria-label={t('User_status_menu')}
 			>
 				<UserStatus status={status} />

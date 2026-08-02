@@ -3,7 +3,9 @@ import { Fragment } from 'react';
 
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 
-const RoomLinkList = ({ rooms }: { rooms: { [key: string]: Serialized<IRoom> } }) => {
+export type RoomLinkListProps = { rooms: { [key: string]: Serialized<IRoom> } };
+
+const RoomLinkList = ({ rooms }: RoomLinkListProps) => {
 	const roomsArray = Object.values(rooms);
 
 	return (

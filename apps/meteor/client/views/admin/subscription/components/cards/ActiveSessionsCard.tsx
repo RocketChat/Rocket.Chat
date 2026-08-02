@@ -58,7 +58,7 @@ const ActiveSessionsCard = () => {
 		>
 			<FeatureUsageCardBody justifyContent='flex-start'>
 				<Box color='font-secondary-info' textAlign='center'>
-					<Box fontScale='h1' color={exceedLimit ? 'font-danger' : 'font-default'} mbe={12}>
+					<Box fontScale='h1' color={exceedLimit ? 'font-danger' : 'font-default'} marginBlockEnd={12}>
 						{used} / {total}
 					</Box>
 					{available} {t('ActiveSessions_available')}

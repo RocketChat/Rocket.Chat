@@ -21,9 +21,9 @@
 		"unified": "9.2.2"
 	},
 	"devDependencies": {
-		"@types/node": "~22.19.17",
+		"@types/node": "~22.19.21",
 		"esbuild": "~0.28.1",
-		"eslint": "~9.39.4",
+		"eslint": "~9.39.5",
 		"typescript": "~5.9.3"
 	},
 	"packageManager": "yarn@4.12.0",

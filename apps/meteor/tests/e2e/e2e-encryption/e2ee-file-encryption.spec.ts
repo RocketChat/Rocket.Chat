@@ -50,6 +50,18 @@ test.describe('E2EE File Encryption', () => {
 		await page.goto(`/group/${group.name}`);
 		await page.locator('#main-content').waitFor();
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+		await expect
+			.poll(
+				() =>
+					page.evaluate(async (rid) => {
+						// eslint-disable-next-line import-x/no-absolute-path
+						const { e2e } = require('/client/lib/e2ee/rocketchat.e2e.ts') as typeof import('../../../client/lib/e2ee/rocketchat.e2e');
+						const room = await e2e.getInstanceByRoomId(rid);
+						return room?.getState();
+					}, group._id),
+				{ message: 'expect room encryption key to be ready before sending messages' },
+			)
+			.toBe('READY');
 	});
 
 	test.afterEach(async ({ api }) => {
@@ -77,7 +89,7 @@ test.describe('E2EE File Encryption', () => {
 			await poHomeChannel.content.openLastMessageMenu();
 			await poHomeChannel.content.btnOptionEditMessage.click();
 
-			expect(await poHomeChannel.composer.inputMessage.inputValue()).toBe('any_description');
+			await expect(poHomeChannel.composer.inputMessage).toHaveValue('any_description');
 
 			await poHomeChannel.composer.inputMessage.fill('edited any_description');
 			await page.keyboard.press('Enter');

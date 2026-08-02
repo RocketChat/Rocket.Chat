@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import type { OnConfirm } from './TwoFactorModal';
 import { Method } from './TwoFactorModal';
 
-type TwoFactorTotpModalProps = {
+export type TwoFactorTotpModalProps = {
 	onConfirm: OnConfirm;
 	onClose: () => void;
 	onDismiss?: () => void;

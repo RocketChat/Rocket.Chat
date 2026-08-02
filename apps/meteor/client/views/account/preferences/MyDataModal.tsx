@@ -13,7 +13,7 @@ import {
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type MyDataModalProps = {
+export type MyDataModalProps = {
 	onCancel: () => void;
 	title: string;
 	text?: ReactNode;
@@ -31,7 +31,7 @@ const MyDataModal = ({ onCancel, title, text, ...props }: MyDataModalProps) => {
 			</ModalHeader>
 			{text && (
 				<ModalContent fontScale='p2'>
-					<Box mb={8}>{text}</Box>
+					<Box marginBlock={8}>{text}</Box>
 				</ModalContent>
 			)}
 			<ModalFooter>

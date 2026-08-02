@@ -571,14 +571,16 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		const hadVideoTrack = this.hasScreenVideoTrack();
-		if (hadVideoTrack && newVideoTrack !== this.screenVideoTrack) {
-			this.config.logger?.debug('ClientMediaCall.setScreenVideoTrack.stopOldTrack');
-			this.screenVideoTrack?.stop();
-		}
-
+		const oldVideoTrack = this.screenVideoTrack;
 		this.screenVideoTrack = newVideoTrack;
 		if (this.webrtcProcessor) {
 			await this.webrtcProcessor.setScreenVideoTrack(newVideoTrack);
+		}
+
+		// Only stop the track after we replaced it on the transceiver, as we don't want the transceiver to stop if there's another track
+		if (hadVideoTrack && newVideoTrack !== oldVideoTrack) {
+			this.config.logger?.debug('ClientMediaCall.setScreenVideoTrack.stopOldTrack');
+			oldVideoTrack?.stop();
 		}
 
 		if (newVideoTrack && !hadVideoTrack) {

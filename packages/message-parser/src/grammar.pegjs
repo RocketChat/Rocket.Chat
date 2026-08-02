@@ -31,6 +31,7 @@
     spoiler,
     spoilerBlock,
     strike,
+    table,
     task,
     tasks,
     unorderedList,
@@ -59,6 +60,7 @@ Blocks
   / BlockSpoiler
   / Code
   / HorizontalRule
+  / Table
   / Heading
   / Tasks
   / OrderedList
@@ -87,6 +89,37 @@ BlockquoteLine
  * ||
  */
 BlockSpoiler = "||" EndOfLine first:(&(! "||") @Paragraph) rest:(&(! "||") @Paragraph)* EndOfLine? "||" { return spoilerBlock([first, ...rest]); }
+
+/**
+ *
+ * Table (GFM)
+ * e.g:
+ * | Header 1 | Header 2 |
+ * | -------- | :------: |
+ * | Cell 1   | Cell 2   |
+ *
+ * v1 requires a leading and trailing pipe on every row. Alignment comes from
+ * the delimiter row: `:---` left, `:--:` center, `---:` right, `---` none.
+ * A literal pipe inside a cell must be escaped as `\|`.
+ */
+Table = header:TableRowLine aligns:TableDelimiterRow body:TableRowLine* { return table(header, aligns, body, [range().start, range().end]); }
+
+TableRowLine = "|" cells:(@TableCell "|")+ EndOfLine? { return cells; }
+
+TableCell = items:TableCellItem* { return reducePlainTexts(items); }
+
+TableCellItem
+  = "\\|" { return plain('|'); }
+  / !"|" !EndOfLine @(InlineItemPattern / Any)
+
+TableDelimiterRow = "|" aligns:(@TableDelimiterCell "|")+ EndOfLine? { return aligns; }
+
+TableDelimiterCell = [ \t]* left:":"? "-"+ right:":"? [ \t]* {
+    if (left && right) { return 'center'; }
+    if (right) { return 'right'; }
+    if (left) { return 'left'; }
+    return undefined;
+  }
 
 // <t:1630360800:?{format}>
 // <t:2025-07-22T10:00:00.000Z?:?{format}>
@@ -130,8 +163,9 @@ CodeLine
   / "\n" chunk:CodeChunk { return codeLine(chunk); }
   / "\n" !"```" { return codeLine(plain('')); }
 
-// Charclass avoids per-char lookahead; never consume start of "```"
-CodeChunkChar = [^\r\n`] / "`" [^`\r\n] / "`" "`" [^`\r\n]
+// Charclass avoids per-char lookahead; never consume start of "```".
+// Trailing 1-2 backticks before a line end (or EOF) are content, not a fence.
+CodeChunkChar = [^\r\n`] / "`" [^`\r\n] / "`" "`" [^`\r\n] / "`" "`" &("\r" / "\n" / !.) / "`" &("\r" / "\n" / !.)
 CodeChunk = text:$(CodeChunkChar)+ { return plain(text); }
 
 /**
@@ -760,23 +794,12 @@ EmoticonBackslash
 
 /* Unicode emojis */
 UnicodeEmoji
-  = UnicodeEmojiEmoticon
+  = UnicodeEmojiTagSequence
   / $(
-    UnicodeEmojiSupplementalSymbolsAndPictographs
-      (
-        UnicodeEmojiMiscellaneousSymbolsAndPictographs
-          ([\u200D] UnicodeEmojiMiscellaneousSymbolsAndPictographs)*
-      )?
+    (UnicodeEmojiZwjComponent [\u200D])*
+    UnicodeEmojiZwjComponent
   )
-  / $(
-    (
-        UnicodeEmojiMiscellaneousSymbolsAndPictographs
-          UnicodeEmojiMiscellaneousSymbolsAndPictographsFitzpatrickModifiers?
-          [\u200D]
-      )*
-      UnicodeEmojiMiscellaneousSymbolsAndPictographs
-      UnicodeEmojiMiscellaneousSymbolsAndPictographsFitzpatrickModifiers?
-  )
+  / UnicodeEmojiEmoticon
   / UnicodeEmojiTransportAndMapSymbols
   / UnicodeEmojiMiscellaneousTechnical
   / UnicodeEmojiMiscellaneousSymbols
@@ -785,7 +808,18 @@ UnicodeEmoji
 
 UnicodeEmojiEmoticon = $([\uD83D] [\uDE00-\uDE4F])
 
-UnicodeEmojiSupplementalSymbolsAndPictographs = $([\uD83E] [\uDD00-\uDDFF])
+UnicodeEmojiSupplementalSymbolsAndPictographs = $([\uD83E] [\uDD00-\uDFFF])
+
+UnicodeEmojiZwjComponent
+  = ( UnicodeEmojiSupplementalSymbolsAndPictographs
+    / UnicodeEmojiMiscellaneousSymbolsAndPictographs
+    / UnicodeEmojiEmoticon
+    / UnicodeEmojiDingbats
+    / UnicodeEmojiMiscellaneousSymbols
+    ) UnicodeEmojiMiscellaneousSymbolsAndPictographsFitzpatrickModifiers?
+
+/* Emoji tag sequence: Black Flag + tag characters (U+E0020-U+E007E) + Cancel Tag (U+E007F), e.g. England/Scotland/Wales flags */
+UnicodeEmojiTagSequence = $([\uD83C] [\uDFF4] ([\uDB40] [\uDC20-\uDC7E])+ [\uDB40] [\uDC7F])
 
 UnicodeEmojiMiscellaneousSymbolsAndPictographs = $([\uD83C] [\uDF00-\uDFFF] [\uFE00-\uFE0F]?) / $([\uD83D] [\uDC00-\uDDFF] [\uFE00-\uFE0F]?)
 

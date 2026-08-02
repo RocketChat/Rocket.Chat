@@ -7,6 +7,7 @@ import OrderedListBlock from './blocks/OrderedListBlock';
 import ParagraphBlock from './blocks/ParagraphBlock';
 import QuoteBlock from './blocks/QuoteBlock';
 import SpoilerBlock from './blocks/SpoilerBlock';
+import TableBlock from './blocks/TableBlock';
 import TaskList from './blocks/TaskListBlock';
 import UnorderedListBlock from './blocks/UnorderedListBlock';
 import BigEmojiBlock from './emoji/BigEmojiBlock';
@@ -15,7 +16,7 @@ import KatexErrorBoundary from './katex/KatexErrorBoundary';
 const CodeBlock = lazy(() => import('./code/CodeBlock'));
 const KatexBlock = lazy(() => import('./katex/KatexBlock'));
 
-type MarkupProps = {
+export type MarkupProps = {
 	tokens: MessageParser.Root;
 	/** Original message source, used to render the `fallback` of blocks without a dedicated renderer. */
 	source?: string;
@@ -62,6 +63,9 @@ const Markup = ({ tokens, source }: MarkupProps) => (
 							<KatexBlock code={block.value} />
 						</KatexErrorBoundary>
 					);
+
+				case 'TABLE':
+					return <TableBlock key={index} header={block.value.header} rows={block.value.rows} />;
 
 				case 'LINE_BREAK':
 					return <br key={index} />;

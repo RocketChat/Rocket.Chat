@@ -3,18 +3,19 @@ import { Box } from '@rocket.chat/fuselage';
 import DOMPurify from 'dompurify';
 import type { AllHTMLAttributes } from 'react';
 
-const EmojiPickerPreview = ({ emoji, name, ...props }: { emoji: string; name: string } & Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>) => {
+export type EmojiPickerPreviewProps = { emoji: string; name: string } & Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
+
+const EmojiPickerPreview = ({ emoji, name, ...props }: EmojiPickerPreviewProps) => {
 	const previewEmojiClass = css`
 		span {
-			width: 40px;
-			height: 40px;
+			font-size: 1.375rem;
 		}
 	`;
 
 	return (
 		<Box {...props} display='flex' alignItems='center'>
 			<Box className={previewEmojiClass} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(emoji) }}></Box>
-			<Box mis={4} display='flex' flexDirection='column' maxWidth='x160'>
+			<Box marginInlineStart={4} display='flex' flexDirection='column' maxWidth='x160'>
 				<Box fontScale='c2' withTruncatedText>
 					{name}
 				</Box>

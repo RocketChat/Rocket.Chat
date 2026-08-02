@@ -5,6 +5,7 @@ import type { IBaseModel, InsertionModel } from './IBaseModel';
 
 export interface IEmojiCustomModel extends IBaseModel<IEmojiCustom> {
 	findByNameOrAlias(emojiName: string, options?: FindOptions<IEmojiCustom>): FindCursor<IEmojiCustom>;
+	findOneByNamesOrAliases(names: string[], exceptId?: string, options?: FindOptions<IEmojiCustom>): Promise<IEmojiCustom | null>;
 	findByNameOrAliasExceptID(name: string, except: string, options?: FindOptions<IEmojiCustom>): FindCursor<IEmojiCustom>;
 	setName(_id: string, name: string): Promise<UpdateResult>;
 	setAliases(_id: string, aliases: string[]): Promise<UpdateResult>;

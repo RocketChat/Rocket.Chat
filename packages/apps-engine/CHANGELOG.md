@@ -1,5 +1,22 @@
 # @rocket.chat/apps-engine
 
+## 1.64.1-rc.0
+
+### Patch Changes
+
+- ([#41304](https://github.com/RocketChat/Rocket.Chat/pull/41304)) Fixes wrong FederationLookup type assigned to IUser in apps. The correct data is there, but the type does not represent it.
+## 1.64.1
+
+### Patch Changes
+
+- ([#41308](https://github.com/RocketChat/Rocket.Chat/pull/41308) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes wrong FederationLookup type assigned to IUser in apps. The correct data is there, but the type does not represent it.
+
+## 1.64.0
+
+### Minor Changes
+
+- ([#40791](https://github.com/RocketChat/Rocket.Chat/pull/40791)) Exposes the `isFederated` and `federation` fields for room and user objects in apps
+
 ## 1.64.0-rc.0
 
 ### Minor Changes

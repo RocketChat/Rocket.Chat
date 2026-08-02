@@ -164,4 +164,118 @@ describe('[Permissions]', () => {
 				});
 		});
 	});
+
+	describe('[/permissions.addRole]', () => {
+		const testPermission = 'add-oauth-service';
+		const testRole = 'moderator';
+		let testUser: TestUser<IUser>;
+		let testUserCredentials: Credentials;
+
+		before(async () => {
+			await updatePermission('access-permissions', ['admin']);
+			testUser = await createUser();
+			testUserCredentials = await login(testUser.username, password);
+		});
+
+		after(async () => {
+			await request.post(api('permissions.removeRole')).set(credentials).send({ permissionId: testPermission, role: testRole });
+			await deleteUser(testUser);
+			await updatePermission('access-permissions', ['admin']);
+		});
+
+		it('should fail when unauthenticated', () =>
+			request.post(api('permissions.addRole')).send({ permissionId: testPermission, role: testRole }).expect(401));
+
+		it('should fail with 400 when the permission does not exist', () =>
+			request
+				.post(api('permissions.addRole'))
+				.set(credentials)
+				.send({ permissionId: 'this-permission-does-not-exist', role: testRole })
+				.expect(400)
+				.expect((res) => expect(res.body).to.have.property('success', false)));
+
+		it('should fail with 400 when the role does not exist', () =>
+			request
+				.post(api('permissions.addRole'))
+				.set(credentials)
+				.send({ permissionId: testPermission, role: 'this-role-does-not-exist' })
+				.expect(400)
+				.expect((res) => expect(res.body).to.have.property('success', false)));
+
+		it('should fail with 403 when the user lacks the access-permissions permission', () =>
+			request
+				.post(api('permissions.addRole'))
+				.set(testUserCredentials)
+				.send({ permissionId: testPermission, role: testRole })
+				.expect(403)
+				.expect((res) => expect(res.body).to.have.property('success', false)));
+
+		it('should add the role to the permission', async () => {
+			await request
+				.post(api('permissions.addRole'))
+				.set(credentials)
+				.send({ permissionId: testPermission, role: testRole })
+				.expect(200)
+				.expect((res) => expect(res.body).to.have.property('success', true));
+
+			await request
+				.get(api('permissions.listAll'))
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					const permission = res.body.update.find((p: { _id: string; roles: string[] }) => p._id === testPermission);
+					expect(permission).to.be.an('object');
+					expect(permission.roles).to.include(testRole);
+				});
+		});
+	});
+
+	describe('[/permissions.removeRole]', () => {
+		const testPermission = 'add-oauth-service';
+		const testRole = 'moderator';
+		let testUser: TestUser<IUser>;
+		let testUserCredentials: Credentials;
+
+		before(async () => {
+			await updatePermission('access-permissions', ['admin']);
+			testUser = await createUser();
+			testUserCredentials = await login(testUser.username, password);
+			await request.post(api('permissions.addRole')).set(credentials).send({ permissionId: testPermission, role: testRole });
+		});
+
+		after(async () => {
+			await deleteUser(testUser);
+			await updatePermission('access-permissions', ['admin']);
+		});
+
+		it('should fail when unauthenticated', () =>
+			request.post(api('permissions.removeRole')).send({ permissionId: testPermission, role: testRole }).expect(401));
+
+		it('should fail with 403 when the user lacks the access-permissions permission', () =>
+			request
+				.post(api('permissions.removeRole'))
+				.set(testUserCredentials)
+				.send({ permissionId: testPermission, role: testRole })
+				.expect(403)
+				.expect((res) => expect(res.body).to.have.property('success', false)));
+
+		it('should remove the role from the permission', async () => {
+			await request
+				.post(api('permissions.removeRole'))
+				.set(credentials)
+				.send({ permissionId: testPermission, role: testRole })
+				.expect(200)
+				.expect((res) => expect(res.body).to.have.property('success', true));
+
+			await request
+				.get(api('permissions.listAll'))
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					const permission = res.body.update.find((p: { _id: string; roles: string[] }) => p._id === testPermission);
+					expect(permission).to.be.an('object');
+					expect(permission.roles).to.not.include(testRole);
+				});
+		});
+	});
 });

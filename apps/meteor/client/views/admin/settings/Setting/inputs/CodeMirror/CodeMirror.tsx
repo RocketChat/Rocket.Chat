@@ -24,7 +24,7 @@ const loadCodeMirror = (): Promise<CodeMirrorModule> => {
 	return codeMirrorPromise;
 };
 
-type CodeMirrorProps = {
+export type CodeMirrorProps = {
 	id: string;
 	placeholder?: string;
 	disabled?: boolean;

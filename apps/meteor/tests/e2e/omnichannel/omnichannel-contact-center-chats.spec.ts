@@ -21,7 +21,7 @@ test.skip(!IS_EE, 'OC - Contact Center Chats > Enterprise Only');
 test.use({ storageState: Users.admin.state });
 
 test.describe('OC - Contact Center Chats [Auto Selection]', async () => {
-	let poOmnichats: OmnichannelContactCenterChats;
+	let poContactCenterChats: OmnichannelContactCenterChats;
 	let poHomeOmnichannel: HomeOmnichannel;
 	let departments: Awaited<ReturnType<typeof createDepartment>>[];
 	let conversations: Awaited<ReturnType<typeof createConversation>>[];
@@ -113,11 +113,10 @@ test.describe('OC - Contact Center Chats [Auto Selection]', async () => {
 	});
 
 	test.beforeEach(async ({ page }: { page: Page }) => {
-		poOmnichats = new OmnichannelContactCenterChats(page);
+		poContactCenterChats = new OmnichannelContactCenterChats(page);
 		poHomeOmnichannel = new HomeOmnichannel(page);
 
-		await page.goto('/omnichannel');
-		await poOmnichats.sidebar.linkCurrentChats.click();
+		await poContactCenterChats.goTo();
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -151,7 +150,7 @@ test.describe('OC - Contact Center Chats [Auto Selection]', async () => {
 
 	test('OC - Contact Center Chats - Basic navigation', async ({ page }) => {
 		await test.step('expect to be return using return button', async () => {
-			await poOmnichats.openChat(visitorA);
+			await poContactCenterChats.openChat(visitorA);
 			await poHomeOmnichannel.content.btnReturn.click();
 			expect(page.url()).toContain(`/omnichannel/current`);
 		});
@@ -160,7 +159,7 @@ test.describe('OC - Contact Center Chats [Auto Selection]', async () => {
 	test('OC - Contact Center Chats - Access in progress conversation from another agent', async () => {
 		await test.step('expect to be able to join', async () => {
 			const { visitor: visitorB } = conversations[1].data;
-			await poOmnichats.openChat(visitorB.name);
+			await poContactCenterChats.openChat(visitorB.name);
 			await expect(poHomeOmnichannel.composer.btnJoinRoom).toBeVisible();
 			await poHomeOmnichannel.composer.btnJoinRoom.click();
 			await expect(poHomeOmnichannel.composer.btnJoinRoom).not.toBeVisible();
@@ -169,8 +168,8 @@ test.describe('OC - Contact Center Chats [Auto Selection]', async () => {
 
 	test('OC - Contact Center Chats - Remove conversations', async () => {
 		await test.step('expect to be able to remove conversation from table', async () => {
-			await poOmnichats.removeChatByName(visitorC);
-			await expect(poOmnichats.table.findRowByName(visitorC)).not.toBeVisible();
+			await poContactCenterChats.removeChatByName(visitorC);
+			await expect(poContactCenterChats.table.findRowByName(visitorC)).not.toBeVisible();
 		});
 
 		// TODO: await test.step('expect to be able to close all closes conversations', async () => {});
@@ -197,11 +196,10 @@ test.describe('OC - Contact Center [Manual Selection]', () => {
 	});
 
 	test.beforeEach(async ({ page }: { page: Page }) => {
-		poCurrentChats = new OmnichannelContactCenterChats(page);
 		poHomeOmnichannel = new HomeOmnichannel(page);
+		poCurrentChats = new OmnichannelContactCenterChats(page);
 
-		await page.goto('/omnichannel');
-		await poCurrentChats.sidebar.linkCurrentChats.click();
+		await poCurrentChats.goTo();
 	});
 
 	test('OC - Contact Center Chats - Access queued conversation', async ({ api }) => {

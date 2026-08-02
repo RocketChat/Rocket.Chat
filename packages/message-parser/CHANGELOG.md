@@ -1,5 +1,25 @@
 # Change Log
 
+## 0.32.0-rc.0
+
+### Minor Changes
+
+- ([#41113](https://github.com/RocketChat/Rocket.Chat/pull/41113)) Adds support for horizontal rules (thematic breaks) in the message parser. A line of 3 or more contiguous dashes (`---`, with nothing else on the line) is parsed into a new `HORIZONTAL_RULE` block node and rendered with Fuselage's `Divider`. The node carries an optional `fallback` — a `[start, end]` offset span into the original source — so renderers without horizontal-rule support can slice the source to show the raw markup instead of dropping it, without duplicating the text into the AST. Only `-` is accepted: CommonMark also allows `*` and `_`, but those collide with emphasis and with censored words (bad-words masks a term as a run of `*`), so a bare `***` / `_______` line stays text/emphasis instead of becoming a divider.
+
+- ([#41109](https://github.com/RocketChat/Rocket.Chat/pull/41109)) Adds GFM-style table support to the message parser and renders it in gazzodown.
+
+  Parser: tables require a leading and trailing pipe on every row, support column alignment via the delimiter row (`:---`, `:--:`, `---:`), and allow inline markup inside cells (a literal pipe must be escaped as `\|`). New `TABLE`, `TABLE_ROW`, and `TABLE_CELL` AST nodes are emitted. The `TABLE` node also carries an optional `fallback` — a `[start, end]` offset span into the original source — so renderers without table support can slice the source to show the raw markup instead of dropping it, without duplicating the text into the AST.
+
+  Rendering: gazzodown renders these tables using Fuselage's `Table` components with per-column alignment, and shows a compact single-row preview of the table header in message previews.
+
+- ([#41110](https://github.com/RocketChat/Rocket.Chat/pull/41110)) Normalizes the `Timestamp` node's `fallback` to the same `[start, end]` source-offset span used by other blocks, instead of a reconstructed plain-text node. The type still allows the previous `Plain` form so already-persisted data keeps type-checking and is safely ignored at render time.
+
+### Patch Changes
+
+- ([#41312](https://github.com/RocketChat/Rocket.Chat/pull/41312)) Fixes code fences failing to render when a line inside them ends with an inline-code backtick (e.g. `` - **Node**: `22.22.3` ``). A trailing backtick immediately before a line break could not be consumed as content, causing the whole ` ``` ` block to fall back to markdown parsing and split apart. Trailing 1-2 backticks before a line end (or EOF) are now treated as code content.
+
+- ([#41441](https://github.com/RocketChat/Rocket.Chat/pull/41441)) Fixes an issue in which some combined emojis like 😶‍🌫️, 😮‍💨 and 😵‍💫 were being displayed as two separate emojis, and the flags of some countries like England 🏴󠁧󠁢󠁥󠁮󠁧󠁿, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 and Wales 🏴󠁧󠁢󠁷󠁬󠁳󠁿 were being displayed as a plain black flag
+
 ## 0.31.36
 
 ### Patch Changes

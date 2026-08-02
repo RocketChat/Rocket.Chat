@@ -6,7 +6,7 @@ import PriorityEditForm from './PriorityEditForm';
 import { FormSkeleton } from '../../../components/Skeleton';
 import { usePriorityInfo } from '../directory/hooks/usePriorityInfo';
 
-type PriorityEditFormWithDataProps = Omit<PriorityEditFormProps, 'data'> & {
+export type PriorityEditFormWithDataProps = Omit<PriorityEditFormProps, 'data'> & {
 	priorityId: string;
 };
 
@@ -20,7 +20,7 @@ function PriorityEditFormWithData({ priorityId, ...props }: PriorityEditFormWith
 
 	if (isError || !data) {
 		return (
-			<Callout m={16} type='danger'>
+			<Callout margin={16} type='danger'>
 				{t('Not_Available')}
 			</Callout>
 		);

@@ -1,6 +1,6 @@
 import { memo } from 'react';
 
-type ColorElementProps = {
+export type ColorElementProps = {
 	r: number;
 	g: number;
 	b: number;

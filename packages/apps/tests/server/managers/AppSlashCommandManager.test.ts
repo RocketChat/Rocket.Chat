@@ -13,7 +13,7 @@ import type {
 	AppSchedulerManager,
 	AppVideoConfProviderManager,
 } from '../../../src/server/managers';
-import { AppAccessorManager, AppSlashCommandManager } from '../../../src/server/managers';
+import { AppSlashCommandManager } from '../../../src/server/managers';
 import { AppSlashCommand } from '../../../src/server/managers/AppSlashCommand';
 import type { UIActionButtonManager } from '../../../src/server/managers/UIActionButtonManager';
 import { Room } from '../../../src/server/rooms/Room';
@@ -25,7 +25,6 @@ import { TestData } from '../../test-data/utilities';
 describe('AppSlashCommandManager', () => {
 	let mockBridges: TestsAppBridges;
 	let mockApp: ProxiedApp;
-	let mockAccessors: AppAccessorManager;
 	let mockManager: AppManager;
 
 	function setupMocks() {
@@ -78,12 +77,6 @@ describe('AppSlashCommandManager', () => {
 				return {} as AppVideoConfProviderManager;
 			},
 		} as AppManager;
-
-		mockAccessors = new AppAccessorManager(mockManager);
-		const ac = mockAccessors;
-		mockManager.getAccessorManager = function _getAccessorManager(): AppAccessorManager {
-			return ac;
-		};
 	});
 
 	afterEach(() => {
@@ -98,7 +91,6 @@ describe('AppSlashCommandManager', () => {
 		const ascm = new AppSlashCommandManager(mockManager);
 		assert.strictEqual((ascm as any).manager, mockManager);
 		assert.strictEqual((ascm as any).bridge, mockBridges.getCommandBridge());
-		assert.strictEqual((ascm as any).accessors, mockManager.getAccessorManager());
 		assert.ok((ascm as any).providedCommands !== undefined);
 		assert.strictEqual((ascm as any).providedCommands.size, 0);
 		assert.ok((ascm as any).modifiedCommands !== undefined);

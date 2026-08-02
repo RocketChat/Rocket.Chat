@@ -4,9 +4,10 @@ import { createClassName } from '../../../helpers/createClassName';
 import { MessageBubble } from '../MessageBubble';
 import styles from './styles.scss';
 
-type ImageAttachmentProps = {
+export type ImageAttachmentProps = {
 	url: string;
 	className?: string;
+	quoted?: boolean;
 };
 
 export const ImageAttachment = memo(({ url, className, ...messageBubbleProps }: ImageAttachmentProps) => (
