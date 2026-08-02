@@ -8,6 +8,7 @@ import { after, before, describe, it } from 'mocha';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
+import { withSetting } from '../../data/settings.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
 import { adminEmail, adminUsername, adminPassword, password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
@@ -604,10 +605,14 @@ describe('miscellaneous', () => {
 
 	describe('[/instances.get]', () => {
 		let unauthorizedUserCredentials: Credentials;
+		let createdUser: TestUser<IUser>;
+
 		before(async () => {
-			const createdUser = await createUser();
+			createdUser = await createUser();
 			unauthorizedUserCredentials = await doLogin(createdUser.username, password);
 		});
+
+		after(() => deleteUser(createdUser));
 
 		it('should fail if user is logged in but is unauthorized', (done) => {
 			void request
@@ -683,9 +688,7 @@ describe('miscellaneous', () => {
 	});
 
 	describe('[/shield.svg]', () => {
-		before(() => updateSetting('API_Enable_Shields', false));
-
-		after(() => updateSetting('API_Enable_Shields', true));
+		withSetting('API_Enable_Shields', false);
 
 		it('should fail if API_Enable_Shields is disabled', (done) => {
 			void request
@@ -705,20 +708,18 @@ describe('miscellaneous', () => {
 				.end(done);
 		});
 
-		it('should succeed if API_Enable_Shields is enabled', (done) => {
-			void updateSetting('API_Enable_Shields', true).then(() => {
-				void request
-					.get(api('shield.svg'))
-					.query({
-						type: 'online',
-						icon: true,
-						channel: 'general',
-						name: 'Rocket.Chat',
-					})
-					.expect('Content-Type', 'image/svg+xml;charset=utf-8')
-					.expect(200)
-					.end(done);
-			});
+		it('should succeed if API_Enable_Shields is enabled', async () => {
+			await updateSetting('API_Enable_Shields', true);
+			await request
+				.get(api('shield.svg'))
+				.query({
+					type: 'online',
+					icon: true,
+					channel: 'general',
+					name: 'Rocket.Chat',
+				})
+				.expect('Content-Type', 'image/svg+xml;charset=utf-8')
+				.expect(200);
 		});
 	});
 
