@@ -1,4 +1,4 @@
-import type { CallHistoryItem, Serialized } from '@rocket.chat/core-typings';
+import type { IInternalMediaCallHistoryItem, IExternalMediaCallHistoryItem, Serialized } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useSort, usePagination, GenericTableLoadingRow } from '@rocket.chat/ui-client';
@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useCallHistoryPageFilters } from './CallHistoryPageFilters';
 import CallHistoryPageLayout from './CallHistoryPageLayout';
+import CallHistoryRowConference from './CallHistoryRowConference';
 import CallHistoryRowExternalUser from './CallHistoryRowExternalUser';
 import CallHistoryRowInternalUser from './CallHistoryRowInternalUser';
 import CallHistoryRowUnknownUser from './CallHistoryRowUnknownUser';
@@ -45,7 +46,7 @@ const getStateFilter = <T extends string[]>(states: T): T | [...T, 'error'] | un
 	return states;
 };
 
-const getContact = (item: Serialized<CallHistoryItem>): CallHistoryContact => {
+const getContact = (item: Serialized<IInternalMediaCallHistoryItem | IExternalMediaCallHistoryItem>): CallHistoryContact => {
 	if (item.external) {
 		return getExternalContact(item);
 	}
@@ -144,8 +145,22 @@ const CallHistoryPage = () => {
 
 	const tableData = useMemo(() => {
 		return data?.items.map((item) => {
+			if (item.type === 'video-conference') {
+				return {
+					_id: item._id,
+					kind: 'video-conference' as const,
+					rid: item.rid,
+					title: item.title,
+					usersCount: item.usersCount,
+					type: item.direction,
+					status: item.state,
+					timestamp: item.ts,
+				};
+			}
+
 			return {
 				_id: item._id,
+				kind: 'media-call' as const,
 				...('rid' in item && { rid: item.rid }),
 				contact: getContact(item),
 				...('messageId' in item && { messageId: item.messageId }),
@@ -205,6 +220,10 @@ const CallHistoryPage = () => {
 			{tableData && tableData.length > 0 && (
 				<MediaCallHistoryTable sort={sortProps}>
 					{tableData.map((item) => {
+						if (item.kind === 'video-conference') {
+							return <CallHistoryRowConference key={item._id} {...item} />;
+						}
+
 						if (isCallHistoryUnknownContact(item.contact)) {
 							return <CallHistoryRowUnknownUser key={item._id} {...item} contact={item.contact} onClick={() => onClickRow('', item._id)} />;
 						}

@@ -83,6 +83,10 @@ export class CallHistoryRaw extends BaseRaw<CallHistoryItem> implements ICallHis
 						external: true,
 						contactExtension: textSearch,
 					},
+					{
+						type: 'video-conference',
+						title: textSearch,
+					},
 				],
 			}),
 		};

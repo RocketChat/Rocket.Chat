@@ -195,6 +195,22 @@ Entries are named after the discussion, falling back to the name the discussion 
 
 Conference discussions don't carry the call's message block, so `OngoingConferenceBanner` surfaces a "Join ongoing call" banner in discussion rooms.
 
+### Personal Call History
+
+Separately from the room-scoped tab above, a group conference also leaves an entry in the personal, cross-room "Call history" page (`GET /v1/call-history.list`) alongside VoIP calls — the same "rejoin from a past call" entry point, for conferences.
+
+`CallHistoryItem` (`packages/core-typings/src/ICallHistoryItem.ts`) gains a `type: 'video-conference'` variant, `IVideoConferenceHistoryItem`, alongside the existing 1:1-contact-shaped media-call variants. It carries `rid` (the conference's room), `title` (if the conference had one), and `usersCount` (how many members actually joined — `hasJoinedVideoConference`, not raw membership count). `callId`, `uid`, `ts`, `direction` and `state` come from the shared `ICallHistoryItem` base.
+
+Items are written once, when a **group** conference ends (`VideoConfService.endCall`, for `type === 'videoconference'` only — direct and livechat conferences have no `title` and aren't the many-participants case this covers). `buildConferenceCallHistoryItems` (`apps/meteor/lib/videoConference/callHistory.ts`) builds one item per entry in the conference's `users[]` membership list — a room subscriber who was rung at start but never joined, was never added, and never declined has no membership entry, so gets no history item. Per member:
+- `direction` is `outbound` for the conference's creator, `inbound` for everyone else.
+- `state` is `ended` for a member who joined and `not-answered` for one who did not. Only members get an item, and a member either joined or was rung and didn't — so not joining *is* not answering, whether they declined explicitly or ignored it. Reporting an ignored ring as a normal ended call would hide a missed conference.
+
+`setStatus(ENDED)` is public and reachable more than once for the same call, so the write is guarded on the call not already having ended — otherwise every member would collect a duplicate entry.
+
+All call-history items — media calls and conferences alike — live in the same `call_history` collection, so the existing `direction`/`state` filters on `call-history.list` already apply to conference items with no change. The free-text `filter` search term gains one more `$or` branch matching the conference's `title` (`CallHistoryRaw.findAllByUserIdAndSearchFilters`).
+
+The call-history page's table dispatches a conference item to `CallHistoryRowConference` (`apps/meteor/client/views/mediaCallHistory/`) instead of the three contact-shaped rows (`CallHistoryRowInternalUser`/`…External`/`…UnknownUser`), showing the room/title and joined-participant count in place of a contact. It doesn't reuse `CallHistoryTableRow` from `@rocket.chat/ui-voip` — that component's `contact`/`duration` props are contact-call-shaped and don't apply. Clicking the row opens the conference's room directly (`useGoToRoom`), the same "Call chat" action used by the room-scoped tab above, rather than the contact-shaped call-info side panel the other rows open — so `MediaCallHistoryContextualbar`/`MediaCallHistoryExternal` were only adjusted to keep compiling against the widened `CallHistoryItem` union, not to render a conference-specific detail view. Deep-linking straight to a conference item's `/call-history/details/:historyId` (bypassing the row) still falls through to the generic "Call info could not be loaded" panel — building a dedicated detail view was left out as out of scope.
+
 ## Provider Requirements
 
 A provider must declare the **`persistentChat` capability** for `maybeCreateDiscussion` to create a discussion for its conferences.
@@ -227,7 +243,7 @@ The provider's URL is embedded in an iframe, so it must permit framing (no restr
 
 ## Roadmap: membership-based conferences
 
-> **Status: in progress.** Phases 1, 1b, 2 and 3 have landed; 4–5 are still planned. This section is the
+> **Status: in progress.** Phases 1, 1b, 2, 3 and 4 have landed; 5 is still planned. This section is the
 > agreed design and the progress tracker — update the checkboxes as work lands, and move prose up into the
 > sections above once a phase ships.
 
@@ -297,12 +313,13 @@ places rely on that. Miss one and added-but-absent people render as if they were
 
 ### Phase 4 — conference call history
 
-The largest remaining piece, and independently shippable. Gives the "rejoin from a past call" entry point.
+Gives the "rejoin from a past call" entry point. Landed; see [Personal Call History](#personal-call-history).
 
-- [ ] New `type: 'video-conference'` variant on the `CallHistoryItem` union. The union is the intended extension point (`ICallHistoryItem` is deliberately separate from `IMediaCallHistoryItem`), but today's payload is 1:1-contact-shaped (`contactId`, `contactExtension`, `duration`) and a conference item is room-and-many-participants shaped.
-- [ ] Write the item on conference end.
-- [ ] New row component — all three existing rows (`CallHistoryRowInternalUser`, `…External`, `…UnknownUser`) are contact-shaped.
-- [ ] Extend `call-history.list` filters and `CallHistoryService.search`.
+- [x] New `type: 'video-conference'` variant on the `CallHistoryItem` union. The union is the intended extension point (`ICallHistoryItem` is deliberately separate from `IMediaCallHistoryItem`), but today's payload is 1:1-contact-shaped (`contactId`, `contactExtension`, `duration`) and a conference item is room-and-many-participants shaped.
+- [x] Write the item on conference end.
+- [x] New row component — all three existing rows (`CallHistoryRowInternalUser`, `…External`, `…UnknownUser`) are contact-shaped.
+- [x] Extend `call-history.list` filters and `CallHistoryService.search`. (`direction`/`state` needed no change — every item type shares one collection; only the free-text search term gained a `title` branch.)
+- [x] Guard against writing twice, since `setStatus(ENDED)` can be reached repeatedly for one call.
 
 ### Phase 5 — surface who can't see the chat
 
@@ -344,7 +361,9 @@ The largest remaining piece, and independently shippable. Gives the "rejoin from
 | Join routing | `apps/meteor/client/providers/VideoConfProvider.tsx`, `client/views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall.tsx` |
 | Room opening | `apps/meteor/client/views/room/hooks/useOpenRoomById.tsx`, `client/lib/utils/mapRoomFromApi.ts` |
 | Ongoing banner | `apps/meteor/client/views/room/OngoingConferenceBanner/OngoingConferenceBanner.tsx` |
-| Call history | `apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfList/` |
+| Room-scoped call history | `apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfList/` |
+| Personal call history (type + write path) | `packages/core-typings/src/ICallHistoryItem.ts`, `apps/meteor/lib/videoConference/callHistory.ts`, `apps/meteor/server/services/video-conference/service.ts` |
+| Personal call history (search + row) | `packages/models/src/models/CallHistory.ts`, `apps/meteor/client/views/mediaCallHistory/CallHistoryRowConference.tsx`, `CallHistoryPage.tsx` |
 | Join guard | `apps/meteor/client/uikit/hooks/useMessageBlockContextValue.ts`, `packages/fuselage-ui-kit/src/blocks/VideoConferenceBlock/VideoConferenceBlock.tsx` |
 | Layout | `apps/meteor/client/views/root/MainLayout/MainLayout.tsx`, `TwoFactorAuthSetupCheck.tsx`, `client/lib/appLayout.tsx` |
 | Notifications | `apps/meteor/client/hooks/notification/useNotification.ts`, `packages/core-typings/src/INotification.ts` |
