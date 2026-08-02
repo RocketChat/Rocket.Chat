@@ -34,7 +34,7 @@ import {
 } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import type { InsertionModel } from '@rocket.chat/model-typings';
-import { Users, VideoConference as VideoConferenceModel, Rooms, Messages, Subscriptions } from '@rocket.chat/models';
+import { CallHistory, Users, VideoConference as VideoConferenceModel, Rooms, Messages, Subscriptions } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { wrapExceptions } from '@rocket.chat/tools';
@@ -42,6 +42,7 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 
+import { buildConferenceCallHistoryItems } from '../../../lib/videoConference/callHistory';
 import { availabilityErrors, shouldRingVideoConference } from '../../../lib/videoConference/constants';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
@@ -508,9 +509,29 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await this.runVideoConferenceChangedEvent(call._id);
 		this.notifyVideoConfUpdate(call.rid, call._id);
 
+		// `setStatus(ENDED)` is public and reachable more than once for the same call (an app provider can send
+		// it repeatedly), so only write history the first time — otherwise every member collects a duplicate
+		// entry. `call` was read before `endedAt` was set above, so it still shows the previous state.
+		if (isGroupVideoConference(call) && !call.endedAt) {
+			await this.saveConferenceToHistory(call);
+		}
+
 		if (call.type === 'direct') {
 			return this.endDirectCall(call);
 		}
+	}
+
+	// Writes one call-history item per conference member (see `buildConferenceCallHistoryItems`), so a group
+	// conference gets a "rejoin from a past call" entry point the same way media calls do. Direct and livechat
+	// conferences are out of scope: they have no `title` and aren't the many-participants case this covers.
+	private async saveConferenceToHistory(call: IGroupVideoConference): Promise<void> {
+		if (!call.users.length) {
+			return;
+		}
+
+		await CallHistory.insertMany(buildConferenceCallHistoryItems(call)).catch((err: unknown) =>
+			logger.error({ msg: 'Failed to insert items into Call History', err, callId: call._id }),
+		);
 	}
 
 	private async expireCall(callId: VideoConference['_id']): Promise<void> {
