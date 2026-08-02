@@ -895,14 +895,13 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 							}
 						} catch (e: any) {
 							result = ((e: any) => {
-								switch (e.error) {
+								const errorKey = typeof e === 'string' ? e : e.error || e.message;
+								switch (errorKey) {
 									case 'error-too-many-requests':
 										return api.tooManyRequests(typeof e === 'string' ? e : e.message);
 									case 'unauthorized':
 									case 'error-unauthorized':
-										if (applyBreakingChanges) {
-											return api.unauthorized(typeof e === 'string' ? e : e.message);
-										}
+									case 'error-not-authorized':
 										return api.forbidden(typeof e === 'string' ? e : e.message);
 									case 'forbidden':
 									case 'error-forbidden':
