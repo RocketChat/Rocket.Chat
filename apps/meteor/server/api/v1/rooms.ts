@@ -1136,6 +1136,7 @@ API.v1.get(
 			}),
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 			404: validateNotFoundErrorResponse,
 		},
 	},
@@ -1293,6 +1294,7 @@ API.v1.post(
 		response: {
 			200: successResponseSchema,
 			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 			403: validateForbiddenErrorResponse,
 		},
 	},
@@ -1696,6 +1698,7 @@ export const roomEndpoints = API.v1
 			query: isRoomsBannedUsersProps,
 			response: {
 				200: roomsBannedUsersResponseSchema,
+				401: validateUnauthorizedErrorResponse,
 				403: validateForbiddenErrorResponse,
 			},
 		},
