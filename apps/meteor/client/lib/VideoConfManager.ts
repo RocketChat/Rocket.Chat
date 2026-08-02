@@ -131,11 +131,13 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	}
 
 	public isCalling(): boolean {
-		if (this.currentCallHandler || (this.currentCallData && !this.currentCallData.joined)) {
-			return true;
+		// Once joined, the wait belongs to the call window — the room is not "calling" any more, even though the
+		// ringing interval is still running there on the callee's behalf.
+		if (this.currentCallData?.joined) {
+			return false;
 		}
 
-		return false;
+		return Boolean(this.currentCallHandler || this.currentCallData);
 	}
 
 	public getIncomingCalls(): DirectCallData[] {
@@ -170,7 +172,12 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 		switch (data.type) {
 			case 'direct':
-				return this.callUser({ uid: data.calleeId, rid: roomId, callId: data.callId });
+				// Ring the callee, then open the call window on the click that asked for it — the same moment
+				// every other call type opens. Waiting for the answer to open it left `window.open` with no user
+				// activation behind it, which browsers are entitled to refuse, and left the caller staring at a
+				// spinner in the room instead of the call they are about to be in.
+				this.callUser({ uid: data.calleeId, rid: roomId, callId: data.callId });
+				return this.joinCall(data.callId);
 			case 'videoconference':
 				return this.joinCall(data.callId);
 			case 'livechat':
@@ -391,6 +398,13 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		if (!url) {
 			this.emitError('error-videoconf-missing-url');
 			throw new Error('Failed to get video conference URL.');
+		}
+
+		// A caller who joins while still ringing is in the call, not waiting for it. Recording that is what stops
+		// the room from showing an outgoing popup for a call the user is already sitting in.
+		if (this.currentCallData?.callId === callId) {
+			this.currentCallData.joined = true;
+			this.emit('calling/changed');
 		}
 
 		this.debugLog(`[VideoConf] Opening ${url}.`);

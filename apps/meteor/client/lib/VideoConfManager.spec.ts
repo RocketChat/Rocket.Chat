@@ -11,7 +11,8 @@ jest.mock('../../app/utils/client/lib/SDKClient', () => ({
 
 const manager = VideoConfManager as unknown as {
 	onVideoConfNotification(data: { action: string; params: { callId: string; uid: string; rid: string } }): Promise<void>;
-	currentCallData: unknown;
+	currentCallData: { callId: string; uid?: string; rid?: string; joined?: boolean } | undefined;
+	currentCallHandler: ReturnType<typeof setInterval> | undefined;
 	userId: string | undefined;
 };
 
@@ -29,6 +30,10 @@ describe('VideoConfManager', () => {
 		jest.clearAllMocks();
 		// Not calling anyone: the state a user is in when they are simply a member of an ongoing conference.
 		manager.currentCallData = undefined;
+		if (manager.currentCallHandler) {
+			clearInterval(manager.currentCallHandler);
+			manager.currentCallHandler = undefined;
+		}
 		manager.userId = undefined;
 	});
 
@@ -133,5 +138,58 @@ describe('VideoConfManager', () => {
 			expect(sdk.rest.post).toHaveBeenCalledWith('/v1/video-conference.decline', { callId: 'call-handshake-decline' });
 			expect(publishedActions()).toContain('rejected');
 		});
+	});
+});
+
+describe('starting a call', () => {
+	beforeEach(() => {
+		manager.userId = 'my-user';
+		(sdk.rest.post as jest.Mock).mockImplementation((endpoint: string) => {
+			if (endpoint === '/v1/video-conference.start') {
+				return Promise.resolve({ data: { type: 'direct', callId: 'new-call', calleeId: 'callee-1' } });
+			}
+			if (endpoint === '/v1/video-conference.join') {
+				return Promise.resolve({ url: 'https://call.example', providerName: 'test' });
+			}
+			return Promise.resolve({});
+		});
+	});
+
+	afterEach(() => {
+		if (manager.currentCallHandler) {
+			clearInterval(manager.currentCallHandler);
+			manager.currentCallHandler = undefined;
+		}
+		manager.currentCallData = undefined;
+	});
+
+	// A direct call used to open its window only once the callee answered, from a stream event — too far from
+	// the click to count as user activation, which is what browsers refuse. Every other call type opens on the
+	// click, and now this one does too.
+	it('opens the call window for a direct call without waiting for the answer', async () => {
+		const joined = jest.fn();
+		VideoConfManager.on('call/join', joined);
+
+		await VideoConfManager.startCall('room-1');
+
+		expect(sdk.rest.post).toHaveBeenCalledWith('/v1/video-conference.join', expect.objectContaining({ callId: 'new-call' }));
+		expect(joined).toHaveBeenCalledWith(expect.objectContaining({ callId: 'new-call' }));
+
+		VideoConfManager.off('call/join', joined);
+	});
+
+	// Opening the window early must not stop the callee's phone ringing.
+	it('still rings the callee', async () => {
+		await VideoConfManager.startCall('room-1');
+
+		expect(publishedActions()).toContain('call');
+	});
+
+	// The wait now happens in the call window, so the room must stop showing an outgoing popup for a call the
+	// user is already sitting in — even though the ringing interval is still running on the callee's behalf.
+	it('stops reporting the room as calling once the caller is in the call', async () => {
+		await VideoConfManager.startCall('room-1');
+
+		expect(VideoConfManager.isCalling()).toBe(false);
 	});
 });

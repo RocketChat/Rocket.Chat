@@ -16,6 +16,22 @@ Gated by the EE setting `VideoConf_Enable_Persistent_Chat` (requires `Discussion
    - **Disabled** — opens the provider URL directly, the pre-existing behavior.
 3. `useVideoConfOpenCall` opens the call window. On desktop, `openInternalVideoChatWindow` takes over.
 
+### When the call window opens
+
+Every call type opens its window **on the click that asked for it**, inside the browser's user-activation
+window. That matters: `window.open` from anything later — a stream event, a timer — is something the browser is
+entitled to refuse, and `VideoConfBlockModal` then has to ask the user to click again for a window they already
+asked for.
+
+A direct call used to be the exception. It rang the callee and kept the caller waiting in the room, opening the
+window only once the answer arrived, which is exactly the refusable case. Now placing a direct call rings the
+callee **and** opens the window, so the caller sets up mic and camera in the call while the other side is still
+ringing, and initiation reads the same for every room type.
+
+The wait therefore moves into the call window, which is also where its outcome is reported — see
+[When nobody picks up](#when-nobody-picks-up). The room stops showing an outgoing popup for a call the user is
+already sitting in, even though the caller's client keeps ringing the callee from there.
+
 ### How the call window is opened
 
 A call opens as a **popout** — a dedicated window sized to 1280×800 (capped to the available screen) and centred — mirroring the desktop app's dedicated video window and keeping the call visible while the user works in the main app. If the popout is refused, it falls back to an ordinary **tab**; some browsers and extensions block popup-shaped windows while still allowing a plain one. Only if both are blocked does `VideoConfBlockModal` ask the user to allow it.
@@ -147,10 +163,49 @@ network, a killed tab.
 request needs `keepalive`, because the document is being torn down and an ordinary `fetch` dies with it;
 `sendBeacon` would be the usual tool but can't carry the auth headers the REST API needs.
 
-> Verified end to end against a running workspace: joining a conference and navigating away set `leftAt`, moved
-> the call to `ENDED`, and wrote one history item per member — `state: 'ended'` for the member who joined,
-> `not-answered` for one who never did. Leaving a call with another member still in it set `leftAt` and left the
-> call running, writing nothing.
+> Verified end to end against a running workspace. Placing a DM call and closing the call window ended the call
+> and wrote both history items — `ended`/`outbound` for the caller, `not-answered`/`inbound` for the callee who
+> never answered, which is the case that used to leave no trace at all. Leaving a call with another member still
+> in it set `leftAt` and left the call running, writing nothing.
+
+## When nobody picks up
+
+Because the caller lands in the call window immediately, that window is where they find out the call went
+nowhere. `useCallOutcome` watches the other members and reports one of two things:
+
+| Outcome | When |
+|---|---|
+| **declined** | every other member has `declined`. A decline is an answer, so this is reported at once |
+| **unanswered** | nobody else is present after the ring has had its chance — 40s, longer than both the caller's client republishing (30s) and the server's own direct-call ring timeout (40s), so it can't announce silence while a phone is still ringing |
+
+Nothing is reported while anyone else is present, or when there is nobody else to wait for — a conference
+started in a channel rings nobody in particular, and silence there isn't an outcome. A member who joined and
+left counts as unanswered rather than declined: they are absent, but they did answer, and saying they declined
+would be untrue.
+
+`CallOutcomeModal` then offers the three things the caller might reasonably want — **stay**, **ring again**, or
+**leave**. Closing the window for them would be presumptuous, and a call window that vanishes reads as a crash.
+Ringing again is offered only for a direct call, since that is the only case where a particular person was
+called.
+
+`POST /v1/video-conference.ring` rings every member who isn't in the call, which includes someone who joined and
+left — "call them back" is exactly that case. It exists because a ring is one-shot and adding an existing member
+again rings nobody, so there was previously no way to try a second time.
+
+Membership state reaches the window over the conference stream: `membersUpdated` fires whenever someone joins,
+declines, leaves or is added, and the window re-reads the conference.
+
+> Verified end to end: placing a DM call opened the call window at `/conference/:id` immediately, with the callee
+> registered as a member at `joined: false` while still ringing and the room showing no outgoing popup. After the
+> ring window the call window showed "Nobody answered", naming the callee, with **Leave call**, **Stay in the
+> call** and **Ring again**; ringing again succeeded and restarted the wait.
+
+### Being called makes you a member
+
+Starting a direct call registers the callee as a member with `joined: false`, exactly as being added to a group
+conference does. Without it the callee only appeared once they answered, so nothing could tell "still ringing"
+from "nobody was called" — and a call they missed left them no history entry at all. Now a missed 1:1 call shows
+up in their call history as `not-answered`, which is the whole point of a call log.
 
 ## Chat Access
 
@@ -275,6 +330,7 @@ The provider's URL is embedded in an iframe, so it must permit framing (no restr
 | POST | `/v1/video-conference.add-participants` | Register users as conference members and ring them; touches no room. Capped at 10 per call |
 | POST | `/v1/video-conference.decline` | Record that the caller dismissed the call, without ending it |
 | POST | `/v1/video-conference.leave` | Record that the caller left; ends the conference when nobody is left in it |
+| POST | `/v1/video-conference.ring` | Ring the members who aren't in the call again |
 | POST | `/v1/video-conference.join` | Join a conference — accepts `discussionRid` members |
 | POST | `/v1/video-conference.share-chat` | Give the members who can't read the chat access to it (`mode: 'invite' \| 'discussion'`) |
 | GET | `/v1/video-conference.info` | Conference info — accepts `discussionRid` members; carries `chatAccess` |
@@ -286,6 +342,7 @@ The provider's URL is embedded in an iframe, so it must permit framing (no restr
 |--------|-------|---------|----------------|
 | `video-conference` | `<callId>/discussionUpdated` | `{ discussionRid }` | conference members, or anyone who can read the chat's room |
 | `video-conference` | `<callId>/chatAccessUpdated` | — | same |
+| `video-conference` | `<callId>/membersUpdated` | — | same |
 
 ## Roadmap: membership-based conferences
 
@@ -473,7 +530,10 @@ and package-level jest.
 | The share-chat `mode` contract | `apps/meteor/tests/unit/definition/rest/v1/video-conference/VideoConfShareChatProps.spec.ts` |
 | Leaving ends an empty call and writes history; a direct call qualifies; no duplicates | `apps/meteor/tests/unit/server/services/video-conference/leaveCall.spec.ts` |
 | Who counts as still in the call, and which conferences get history | `apps/meteor/tests/unit/lib/videoConference/callHistory.spec.ts` |
-| Leaving is reported on `pagehide`, with `keepalive` | `apps/meteor/client/views/conference/hooks/useLeaveConferenceOnClose.spec.ts` |
+| Leaving is reported on `pagehide`, with `keepalive`, and on demand | `apps/meteor/client/views/conference/hooks/useLeaveConferenceOnClose.spec.ts` |
+| Declined vs unanswered vs still-ringing, and that ringing again restarts the wait | `apps/meteor/client/views/conference/hooks/useCallOutcome.spec.ts` |
+| A direct call opens its window on the click, still rings, and stops the room reporting "calling" | `apps/meteor/client/lib/VideoConfManager.spec.ts` |
+| Who gets rung again, and who doesn't | `apps/meteor/tests/unit/server/services/video-conference/ringMembers.spec.ts` |
 | Which mode wins, and that an impossible invite is refused rather than swapped | `apps/meteor/tests/unit/lib/videoConference/chatAccess.spec.ts` |
 | Which action leads, and that a DM only offers the discussion | `apps/meteor/client/views/conference/ChatAccessModal.spec.tsx` |
 | The incoming popup renders for a room the member can't see | `apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfPopups/VideoConfPopups.spec.tsx` |
@@ -576,6 +636,16 @@ one of them, the caller gets an error toast and no indication that the others ma
 notice will simply show fewer people next time it is read. Per-user results would make the partial outcome
 legible.
 
+### Reloading the call window ends the call
+
+Leaving is reported on `pagehide`, which fires on a reload as well as on a close, so a participant who refreshes
+the call window while nobody else is in the call ends it — and then rejoins a conference that has already ended.
+Refreshing is not leaving, and the two are indistinguishable from `pagehide` alone.
+
+The fix is to hold the call open briefly after the last departure rather than ending it on the spot: a grace
+period of a few seconds would absorb a reload, and the rejoin would cancel it. That also handles a flaky
+network dropping the window for a moment.
+
 ### The endpoints have no integration coverage
 
 `canAccessConference`, the Mongo writes, and the room-mutating paths (`addUsersToConferenceRoom`,
@@ -588,43 +658,6 @@ runs against a live server and is where those belong; the unit tests deliberatel
 The chat panel decides between the room and the not-shared explanation from `chatAccess`, which is only as
 fresh as the last read. A member removed from the room *during* a call still sees the room attempted, and gets
 `ConferenceRoomPreload`'s not-found fallback until the next refetch. Rare, and self-correcting.
-
-
-## Planned changes
-
-Deliberate changes to make later, as opposed to the audit findings above.
-
-### Move the "calling" state into the popout
-
-Today the two call types open the window at different moments, and only one of them is safe:
-
-| | When the popout opens |
-|---|---|
-| **Group** conference | On the click — `startCall` goes straight to `joinCall`, still inside the browser's user-activation window |
-| **Direct** call | After the callee answers — `onDirectCallAccepted` calls `joinCall` from a stream event, arbitrarily far from any click |
-
-Clicking the camera button opens the pre-call widget, and clicking Call keeps the caller in that widget in a
-"calling" state while the popout waits on the answer. So for a direct call `window.open` runs with no user
-activation behind it, which is the reason `VideoConfBlockModal` exists at all: the browser is entitled to refuse,
-and the user has to click again to get the window they already asked for.
-
-The change is to make the direct path behave like the group one — open the popout on the click and host the
-calling state *inside* it. That removes the blocked-popup case for the flow that actually suffers from it, and it
-gives the caller somewhere to set up mic and camera while the other side is still ringing, instead of a widget
-that only offers a spinner.
-
-Open questions:
-
-- **What the popout shows while ringing.** The caller can be in the provider's room already, as they are for a
-  group call, with the callee's state layered over it. Whether the 1:1 `accepted`/`confirmed` handshake still
-  earns its keep once the caller is joined before the answer is worth revisiting at the same time — see
-  [Accepting a server ring](#accepting-a-server-ring-joins-it-doesnt-negotiate).
-- **What happens when the call is turned down.** Auto-closing a window the user is sitting in is abrupt, and it
-  discards a call they may want to retry. The current thinking is to keep the window and show a modal — "everyone
-  else declined" — with a button that closes it, which also covers a group conference where the last other member
-  declines. A decline must not close the window for anyone still in the call.
-- **No answer versus declined.** A ring that simply times out should read differently from an explicit decline,
-  and today neither reaches the caller's window because there is no window yet.
 
 
 ## Key Files
@@ -644,7 +677,9 @@ Open questions:
 | Provider bridge | `apps/meteor/client/views/conference/hooks/useProviderCallBridge.ts` (+ `.spec.ts`) |
 | Confined navigation | `apps/meteor/client/views/conference/hooks/useConfinedNavigation.ts` (+ `.spec.ts`), `client/views/root/hooks/useExternalRouteNavigation.ts` |
 | Add participants | `apps/meteor/client/views/conference/AddParticipantsModal.tsx` |
-| Chat access | `apps/meteor/client/views/conference/ChatAccessNotice.tsx`, `ChatAccessModal.tsx`, `ChatAccessMember.tsx`, `ConferenceChatNotShared.tsx` |
+| Chat access | `apps/meteor/client/views/conference/ChatAccessNotice.tsx`, `ChatAccessModal.tsx`, `ConferenceChatNotShared.tsx` |
+| Call outcome | `apps/meteor/client/views/conference/CallOutcomeModal.tsx`, `hooks/useCallOutcome.ts`, `ConferenceMemberRow.tsx` |
+| Leaving | `apps/meteor/client/views/conference/hooks/useLeaveConferenceOnClose.ts` |
 | Ringing popups | `apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfPopups/VideoConfPopup/` |
 | Join routing | `apps/meteor/client/providers/VideoConfProvider.tsx`, `client/views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall.tsx` |
 | Room opening | `apps/meteor/client/views/room/hooks/useOpenRoomById.tsx`, `client/lib/utils/mapRoomFromApi.ts` |

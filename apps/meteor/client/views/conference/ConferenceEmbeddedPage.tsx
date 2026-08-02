@@ -4,12 +4,14 @@ import { useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import CallOutcomeModal from './CallOutcomeModal';
 import ChatAccessNotice from './ChatAccessNotice';
 import ConferenceChat from './ConferenceChat';
 import ConferenceIframe from './ConferenceIframe';
 import ConferencePageError from './ConferencePageError';
 import ConferenceUnauthorizedPage from './ConferenceUnauthorizedPage';
 import { CallBar, CallBarActions, CallBarAction, CallPanel } from './components';
+import { useCallOutcome } from './hooks/useCallOutcome';
 import { useConferenceEmbedded } from './hooks/useConferenceEmbedded';
 import { useConfinedNavigation } from './hooks/useConfinedNavigation';
 import { useLeaveConferenceOnClose } from './hooks/useLeaveConferenceOnClose';
@@ -25,7 +27,7 @@ type ConferenceEmbeddedPageProps = {
  * panel that opens beside the call — above the bar, so toggling it never reflows the controls.
  */
 const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
-	const { room, conference } = useConferenceEmbedded(callId);
+	const { room, conference, call } = useConferenceEmbedded(callId);
 	const { t } = useTranslation();
 
 	// The chat panel is a full room UI, so a link/mention click would navigate this window away and tear
@@ -34,7 +36,11 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 
 	// Closing this window is the only end-of-call signal a provider that doesn't report one leaves us, and the
 	// call has to end for its history to be written.
-	useLeaveConferenceOnClose(callId);
+	const { leaveNow } = useLeaveConferenceOnClose(callId);
+
+	// The caller now lands here while the other side is still ringing, so this window is where they find out it
+	// went nowhere.
+	const { outcome, others, onRang, onDismiss } = useCallOutcome(call.members);
 
 	// A provider rendering its own toolbar can hide our bar and drive the chat panel from its own controls.
 	const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -63,6 +69,18 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 
 	return (
 		<Box display='flex' flexDirection='column' flexGrow={1} minHeight={0}>
+			{outcome && (
+				<CallOutcomeModal
+					callId={callId}
+					outcome={outcome}
+					others={others}
+					canRing={call.canRing}
+					onRang={onRang}
+					onStay={onDismiss}
+					onLeave={leaveNow}
+				/>
+			)}
+
 			{/* With the chat open the notice belongs in the panel, next to the conversation it is about. With it
 			    closed there would be nowhere to see it, so it moves up here rather than being shown twice. */}
 			{!chatVisible && room.chatAccess && <ChatAccessNotice callId={callId} access={room.chatAccess} />}

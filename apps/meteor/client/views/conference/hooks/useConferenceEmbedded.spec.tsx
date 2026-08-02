@@ -5,7 +5,8 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { useConferenceEmbedded } from './useConferenceEmbedded';
 
 const callId = 'call-id';
-const outsider = { _id: 'outsider-id', username: 'outsider', name: 'Outsider' };
+// `ts` is required on a membership entry and arrives as a string over REST, so the fixture carries one.
+const outsider = { _id: 'outsider-id', username: 'outsider', name: 'Outsider', ts: '2026-08-01T10:00:00.000Z' };
 
 jest.mock('./useConferenceCallUrl', () => ({
 	useConferenceCallUrl: () => (url: string) => url,
@@ -52,7 +53,7 @@ it('resolves the chat room and the members who cannot read it', async () => {
 	const { result } = renderConference();
 
 	await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
-	await waitFor(() => expect(result.current.room.chatAccess?.members).toEqual([outsider]));
+	await waitFor(() => expect(result.current.room.chatAccess?.members).toEqual([{ ...outsider, ts: new Date(outsider.ts) }]));
 });
 
 it.each(['discussionUpdated', 'chatAccessUpdated'] as const)('reads the conference again on %s', async (event) => {
