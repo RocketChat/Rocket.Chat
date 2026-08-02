@@ -1,3 +1,4 @@
+import type { IEmoji } from '@rocket.chat/core-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
 export type EmojiPackage = {
@@ -14,33 +15,13 @@ export type EmojiPackage = {
 	_regexp?: RegExp | null;
 };
 
+/**
+ * Standardized emoji packages structure
+ * Uses IEmoji union type for type-safe emoji list entries
+ */
 export type EmojiPackages = {
 	packages: {
 		[key: string]: EmojiPackage;
 	};
-	list: {
-		[key: keyof NonNullable<EmojiPackages['packages']>]:
-			| {
-					category: string;
-					emojiPackage: string;
-					shortnames: string[];
-					uc_base: string;
-					uc_greedy: string;
-					uc_match: string;
-					uc_output: string;
-					aliases?: string[];
-					aliasOf?: undefined;
-					extension?: string;
-					etag?: string;
-					unicode?: string;
-			  }
-			| {
-					emojiPackage: string;
-					aliasOf: string;
-					extension?: undefined;
-					aliases?: undefined;
-					shortnames?: undefined;
-					etag?: string;
-			  };
-	};
+	list: Record<string, IEmoji>;
 };

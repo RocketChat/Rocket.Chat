@@ -1,8 +1,15 @@
-import type { IEmoji } from '@rocket.chat/core-typings';
+import type { ICustomEmojiListEntry, IEmojiAlias, IEmojiCustom } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { emoji, removeFromRecent, replaceEmojiInRecent } from '../../app/emoji/client';
 import { getURL } from '../../app/utils/client';
+
+/**
+ * Custom emoji data with optional previousName for updates
+ */
+type CustomEmojiUpdate = IEmojiCustom & {
+	previousName?: string;
+};
 
 const isSetNotNull = (fn: () => unknown) => {
 	let value;
@@ -14,21 +21,24 @@ const isSetNotNull = (fn: () => unknown) => {
 	return value !== null && value !== undefined;
 };
 
-export const updateEmojiCustom = (emojiData: IEmoji) => {
+export const updateEmojiCustom = (emojiData: CustomEmojiUpdate) => {
 	const previousExists = isSetNotNull(() => emojiData.previousName);
 	const currentAliases = isSetNotNull(() => emojiData.aliases);
 
-	if (previousExists && isSetNotNull(() => emoji.list[`:${emojiData.previousName}:`].aliases)) {
-		for (const alias of emoji.list[`:${emojiData.previousName}:`].aliases ?? []) {
-			delete emoji.list[`:${alias}:`];
-			const aliasIndex = emoji.packages.emojiCustom.list?.indexOf(`:${alias}:`) ?? -1;
-			if (aliasIndex !== -1) {
-				emoji.packages.emojiCustom.list?.splice(aliasIndex, 1);
+	if (previousExists && isSetNotNull(() => emoji.list[`:${emojiData.previousName}:`])) {
+		const previousEmoji = emoji.list[`:${emojiData.previousName}:`];
+		if ('aliases' in previousEmoji && previousEmoji.aliases) {
+			for (const alias of previousEmoji.aliases) {
+				delete emoji.list[`:${alias}:`];
+				const aliasIndex = emoji.packages.emojiCustom.list?.indexOf(`:${alias}:`) ?? -1;
+				if (aliasIndex !== -1) {
+					emoji.packages.emojiCustom.list?.splice(aliasIndex, 1);
+				}
 			}
 		}
 	}
 
-	if (previousExists && emojiData.name !== emojiData.previousName) {
+	if (previousExists && emojiData.previousName && emojiData.name !== emojiData.previousName) {
 		const arrayIndex = emoji.packages.emojiCustom.emojisByCategory.rocket.indexOf(emojiData.previousName);
 		if (arrayIndex !== -1) {
 			emoji.packages.emojiCustom.emojisByCategory.rocket.splice(arrayIndex, 1);
@@ -45,30 +55,36 @@ export const updateEmojiCustom = (emojiData: IEmoji) => {
 		emoji.packages.emojiCustom.emojisByCategory.rocket.push(`${emojiData.name}`);
 		emoji.packages.emojiCustom.list?.push(`:${emojiData.name}:`);
 	}
+
 	// Don't inherit fields from a native emoji being overridden (e.g. its unicode), or the pick would output the native emoji
-	// TODO: Fix the IEmoji type and standardize the emoji packs types
-	emoji.list[`:${emojiData.name}:`] = {
-		...emojiData,
+	const customEmojiEntry: ICustomEmojiListEntry = {
+		name: emojiData.name,
+		aliases: emojiData.aliases,
+		extension: emojiData.extension,
+		etag: emojiData.etag,
 		emojiPackage: 'emojiCustom',
-	} as unknown as (typeof emoji.list)[keyof typeof emoji.list];
+	};
+	emoji.list[`:${emojiData.name}:`] = customEmojiEntry;
+
 	if (currentAliases) {
 		for (const alias of emojiData.aliases) {
 			emoji.packages.emojiCustom.list?.push(`:${alias}:`);
-			emoji.list[`:${alias}:`] = {
+			const aliasEntry: IEmojiAlias = {
 				emojiPackage: 'emojiCustom',
 				aliasOf: emojiData.name,
 			};
+			emoji.list[`:${alias}:`] = aliasEntry;
 		}
 	}
 
-	if (previousExists) {
+	if (previousExists && emojiData.previousName) {
 		replaceEmojiInRecent({ oldEmoji: emojiData.previousName, newEmoji: emojiData.name });
 	}
 
 	emoji.dispatchUpdate();
 };
 
-export const deleteEmojiCustom = (emojiData: IEmoji) => {
+export const deleteEmojiCustom = (emojiData: CustomEmojiUpdate) => {
 	delete emoji.list[`:${emojiData.name}:`];
 	const arrayIndex = emoji.packages.emojiCustom.emojisByCategory.rocket.indexOf(emojiData.name);
 	if (arrayIndex !== -1) {
@@ -119,14 +135,26 @@ export const customRender = (html: string) => {
 		let emojiAlias = shortname.replace(/:/g, '');
 
 		let dataCheck = emoji.list[shortname];
-		if (dataCheck.aliasOf) {
+		if (!dataCheck) {
+			return shortname;
+		}
+
+		if ('aliasOf' in dataCheck && dataCheck.aliasOf) {
 			emojiAlias = dataCheck.aliasOf;
 			dataCheck = emoji.list[`:${emojiAlias}:`];
 		}
 
+		if (!dataCheck) {
+			return shortname;
+		}
+
+		if (!('extension' in dataCheck)) {
+			return shortname;
+		}
+
 		return `<span class="emoji emoji--custom" style="background-image:url(${getEmojiUrlFromName(
 			emojiAlias,
-			dataCheck.extension!,
+			dataCheck.extension,
 			dataCheck.etag,
 		)});" data-emoji="${emojiAlias}" title="${shortname}">${shortname}</span>`;
 	});
