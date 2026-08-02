@@ -193,3 +193,36 @@ describe('starting a call', () => {
 		expect(VideoConfManager.isCalling()).toBe(false);
 	});
 });
+
+describe('ringing again after a dismissal', () => {
+	// The manager is a singleton and earlier tests leave their own calls in its list, so ask about this call
+	// rather than about whether anything at all is ringing.
+	const incoming = (callId: string) => VideoConfManager.getIncomingCalls().find((call) => call.callId === callId);
+
+	beforeEach(() => {
+		manager.userId = 'my-user';
+	});
+
+	// Dismissal exists to stop the caller's client re-ringing us with the `call` it publishes on a loop, and it
+	// outlives the call. A deliberate second ring from the server must not be swallowed by it — that is what made
+	// "Ring again" arrive at the callee silently once they had declined.
+	it('rings again for a server ring after the call was declined', async () => {
+		await notify('ring', 'call-rering', 'rering-caller');
+		VideoConfManager.rejectIncomingCall('call-rering');
+		expect(incoming('call-rering')).toBeUndefined();
+
+		await notify('ring', 'call-rering', 'rering-caller');
+
+		expect(incoming('call-rering')?.dismissed).toBe(false);
+	});
+
+	// The caller's own repeats are exactly what dismissal is for, so those must still stay silent.
+	it('stays silent for a caller repeating `call` after we dismissed it', async () => {
+		await notify('call', 'call-repeat', 'repeat-caller');
+		VideoConfManager.dismissIncomingCall('call-repeat');
+
+		await notify('call', 'call-repeat', 'repeat-caller');
+
+		expect(incoming('call-repeat')?.dismissed).toBe(true);
+	});
+});

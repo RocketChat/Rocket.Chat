@@ -175,15 +175,30 @@ nowhere. `useCallOutcome` watches the other members and reports one of two thing
 
 | Outcome | When |
 |---|---|
-| **declined** | every other member has `declined`. A decline is an answer, so this is reported at once |
-| **unanswered** | nobody else is present after the ring has had its chance — 40s, longer than both the caller's client republishing (30s) and the server's own direct-call ring timeout (40s), so it can't announce silence while a phone is still ringing |
+| **declined** | every other member has declined *this* ring. A decline is an answer, so this is reported at once |
+| **unanswered** | nobody else is present once the ring has had its chance |
+
+How long "its chance" is depends on which ring it was. The first attempt gets 40s, longer than both things that
+ring it: the caller's client republishing (30s) and the server's own direct-call timeout (40s). A ring the user
+asked for gets 15s, because a server-originated ring is one-shot — the callee's client aborts it after 10s and
+nothing repeats it, so waiting the full window would leave the caller in front of a call that stopped ringing
+half a minute ago.
+
+"Declined *this* ring" matters because `declined` never goes back to false. Taken at face value, a member who
+declined once would keep the call reported as declined forever, and ringing again would put the modal straight
+back up instead of waiting to see what they do this time. So each ring records which decline each entry already
+showed — `declinedAt` is what changes when they decline again — and only a different one counts. Comparing the
+recorded values rather than "declined before now" keeps it honest across the gap between the server's clock and
+the browser's.
 
 Nothing is reported while anyone else is present, or when there is nobody else to wait for — a conference
 started in a channel rings nobody in particular, and silence there isn't an outcome. A member who joined and
 left counts as unanswered rather than declined: they are absent, but they did answer, and saying they declined
 would be untrue.
 
-`CallOutcomeModal` then offers the three things the caller might reasonably want — **stay**, **ring again**, or
+`CallOutcomeModal` goes through the app's modal region (`useSetModal`), which is what puts it in a portal over a
+backdrop with focus trapped. Rendered inline it sat in the page's flex column and pushed the call and the chat
+panel down the screen. It offers the three things the caller might reasonably want — **stay**, **ring again**, or
 **leave**. Closing the window for them would be presumptuous, and a call window that vanishes reads as a crash.
 Ringing again is offered only for a direct call, since that is the only case where a particular person was
 called.
@@ -191,6 +206,16 @@ called.
 `POST /v1/video-conference.ring` rings every member who isn't in the call, which includes someone who joined and
 left — "call them back" is exactly that case. It exists because a ring is one-shot and adding an existing member
 again rings nobody, so there was previously no way to try a second time.
+
+On the receiving side, a fresh ring has to survive a **dismissal**. Dismissal exists to stop the caller's client
+re-ringing someone with the `call` it publishes on a loop, and it deliberately outlives the call — so a callee
+who had declined or let the ring time out was refusing to ring again, and "Ring again" arrived silently. A
+server-originated `ring` now clears it, since it is the opposite thing: a deliberate new attempt. The caller's
+own repeats stay suppressed.
+
+The desktop notification that accompanies a ring is explicitly silent (`audioNotificationValue: 'none'`). The
+ringing popup plays the ringtone; left unset, the notification would also play the new-message sound, so a call
+announced itself as a message arriving.
 
 Membership state reaches the window over the conference stream: `membersUpdated` fires whenever someone joins,
 declines, leaves or is added, and the window re-reads the conference.

@@ -329,6 +329,24 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		return false;
 	}
 
+	/**
+	 * Lets a call ring again after it was dismissed.
+	 *
+	 * Dismissal exists to stop the *caller's client* re-ringing us with a `call` it publishes on a loop, and it
+	 * outlives the call by design. A server-originated `ring` is the opposite: a fresh, deliberate attempt to
+	 * reach us, so a stale dismissal must not swallow it — which is what made "ring again" arrive silently after
+	 * the callee had declined or let it time out.
+	 */
+	private allowRingingAgain(callId: string): void {
+		if (!this.dismissedCalls.delete(callId)) {
+			return;
+		}
+
+		this.debugLog(`[VideoConf] Call ${callId} may ring again.`);
+		this.emit('ringing/changed');
+		this.emit('incoming/changed');
+	}
+
 	public updateUser(userId: string | null, isLoggingIn: boolean, isConnected: boolean): void {
 		if (userId === this.userId && !isLoggingIn && !isConnected) {
 			return;
@@ -545,6 +563,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			// it, rather than a caller's client repeating `call` while it waits for an answer. Nothing refreshes
 			// the timeout, so it rings once and gives up — and accepting joins the call rather than negotiating.
 			case 'ring':
+				this.allowRingingAgain(params.callId);
 				return this.onDirectCall(params, false);
 			case 'canceled':
 				return this.onDirectCallCanceled(params);
