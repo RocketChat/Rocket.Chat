@@ -246,7 +246,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		user: Required<Pick<IUser, '_id' | 'name' | 'username' | 'avatarETag'>> & { ts?: Date; joined?: boolean; joinedAt?: Date },
 	): Promise<void> {
 		await this.updateOne(
-			{ _id: callId, 'users._id': { $ne: user._id } },
+			{ '_id': callId, 'users._id': { $ne: user._id } },
 			{
 				$push: {
 					users: {
@@ -267,9 +267,18 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 	public async setUserJoinedById(callId: string, uid: IUser['_id'], joinedAt = new Date()): Promise<void> {
 		await this.updateOne(
 			{ _id: callId },
-			{ $set: { 'users.$[user].joined': true, 'users.$[user].joinedAt': joinedAt } },
+			{
+				$set: { 'users.$[user].joined': true, 'users.$[user].joinedAt': joinedAt },
+				// Rejoining makes an earlier departure meaningless: leaving it behind would report the member as
+				// gone while they are on the call, and could end the call under them.
+				$unset: { 'users.$[user].leftAt': 1 },
+			},
 			{ arrayFilters: [{ 'user._id': uid }] },
 		);
+	}
+
+	public async setUserLeftById(callId: string, uid: IUser['_id'], leftAt = new Date()): Promise<void> {
+		await this.updateOne({ _id: callId }, { $set: { 'users.$[user].leftAt': leftAt } }, { arrayFilters: [{ 'user._id': uid }] });
 	}
 
 	/** Records that an existing member dismissed the call, mutating their entry in place. */

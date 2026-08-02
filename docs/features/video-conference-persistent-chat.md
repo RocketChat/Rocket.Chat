@@ -125,6 +125,33 @@ Nothing about the conference's rooms changes, so `discussionRid` is untouched an
 | Misses the ring | The conference is in their call history, joinable from there. The ring itself doesn't repeat. |
 | Opens the chat panel without room access | An explanation, not an error — see [A member who can't read the chat](#a-member-who-cant-read-the-chat-is-told-so-not-shown-an-error). |
 
+## Leaving a Call
+
+A conference has no natural end when the provider doesn't report one, so closing the call window is the signal.
+`useLeaveConferenceOnClose` posts `POST /v1/video-conference.leave` on `pagehide`, and `leaveCall` decides what
+it means:
+
+- The member's entry gets a `leftAt`. Leaving is neither declining nor un-joining — membership and `joined` both
+  stand, so they keep their history entry and can rejoin, which clears `leftAt`.
+- If nobody is left in the call, the conference **ends**, which is what writes everyone's call history.
+
+"Left in the call" is `isInVideoConference` — joined, and not left since. `joined` never goes back to false
+(it records that they were there), so presence has to be that pair. A member who was added and never joined
+doesn't hold a call open, so an unanswered ring can't keep one alive forever.
+
+Ending is a consequence of the call being empty, never of one participant asking for it — the same rule
+declining follows. The expiry cron remains the backstop for the cases a browser can't report: a crash, a lost
+network, a killed tab.
+
+`pagehide` rather than `beforeunload`: it fires for the bfcache case too and doesn't suppress the cache. The
+request needs `keepalive`, because the document is being torn down and an ordinary `fetch` dies with it;
+`sendBeacon` would be the usual tool but can't carry the auth headers the REST API needs.
+
+> Verified end to end against a running workspace: joining a conference and navigating away set `leftAt`, moved
+> the call to `ENDED`, and wrote one history item per member — `state: 'ended'` for the member who joined,
+> `not-answered` for one who never did. Leaving a call with another member still in it set `leftAt` and left the
+> call running, writing nothing.
+
 ## Chat Access
 
 `video-conference.info` carries a `chatAccess` descriptor: the room the chat lives in (`discussionRid || rid`), its display name and type, which members can't read it, and whether that room can take new members (`canInvite`).
@@ -247,6 +274,7 @@ The provider's URL is embedded in an iframe, so it must permit framing (no restr
 |--------|----------|-------------|
 | POST | `/v1/video-conference.add-participants` | Register users as conference members and ring them; touches no room. Capped at 10 per call |
 | POST | `/v1/video-conference.decline` | Record that the caller dismissed the call, without ending it |
+| POST | `/v1/video-conference.leave` | Record that the caller left; ends the conference when nobody is left in it |
 | POST | `/v1/video-conference.join` | Join a conference — accepts `discussionRid` members |
 | POST | `/v1/video-conference.share-chat` | Give the members who can't read the chat access to it (`mode: 'invite' \| 'discussion'`) |
 | GET | `/v1/video-conference.info` | Conference info — accepts `discussionRid` members; carries `chatAccess` |
@@ -443,6 +471,9 @@ and package-level jest.
 | Per-member history semantics | `apps/meteor/tests/unit/lib/videoConference/callHistory.spec.ts` |
 | A decline can't tear down a conference; `ring` and `call` both register; accepting a ring joins outright while accepting a call negotiates | `apps/meteor/client/lib/VideoConfManager.spec.ts` |
 | The share-chat `mode` contract | `apps/meteor/tests/unit/definition/rest/v1/video-conference/VideoConfShareChatProps.spec.ts` |
+| Leaving ends an empty call and writes history; a direct call qualifies; no duplicates | `apps/meteor/tests/unit/server/services/video-conference/leaveCall.spec.ts` |
+| Who counts as still in the call, and which conferences get history | `apps/meteor/tests/unit/lib/videoConference/callHistory.spec.ts` |
+| Leaving is reported on `pagehide`, with `keepalive` | `apps/meteor/client/views/conference/hooks/useLeaveConferenceOnClose.spec.ts` |
 | Which mode wins, and that an impossible invite is refused rather than swapped | `apps/meteor/tests/unit/lib/videoConference/chatAccess.spec.ts` |
 | Which action leads, and that a DM only offers the discussion | `apps/meteor/client/views/conference/ChatAccessModal.spec.tsx` |
 | The incoming popup renders for a room the member can't see | `apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfPopups/VideoConfPopups.spec.tsx` |
@@ -461,12 +492,12 @@ the modal's primary button**, so the rule is tested once and the two can't drift
 not unit-tested — proxyquiring it means stubbing some thirty modules, one of which opens a Mongo driver at
 import time — which is why the decisions worth pinning down were moved out of it.
 
-### Nothing "ends" a Jitsi conference
+### Nothing else "ends" a Jitsi conference
 
-Worth knowing before wondering why a call is missing from history: `endCall` runs when something tells
-Rocket.Chat the call is over — an app provider posting `ENDED`, or a direct call being hung up. Nothing in the
-Jitsi app does that, so its conferences sit at `STARTED` until `videoConferencesCron` expires them (on startup,
-then every three hours, for anything older than 24h). That is why history is written on both paths.
+`endCall` runs when something tells Rocket.Chat the call is over. For a third-party provider, nothing does:
+the Jitsi app never reports an end, so before closing the window became a signal, conferences sat at `STARTED`
+until `videoConferencesCron` expired them a day later — and the expire path wrote no history at all. Both gaps
+are closed: leaving ends the call when nobody is left, and expiry writes history as a backstop.
 
 Conferences expired *before* this landed have `endedAt` set already, so they are permanently invisible to
 history — the duplicate guard can't distinguish them from ones already written. Only conferences that stop from

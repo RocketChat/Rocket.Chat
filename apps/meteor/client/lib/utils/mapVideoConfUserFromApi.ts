@@ -6,9 +6,16 @@ import type { IVideoConferenceUser, Serialized } from '@rocket.chat/core-typings
  * `IVideoConferenceUser` without deserializing it here is otherwise only caught by a type error at the
  * consumer, far from the cause.
  */
-export const mapVideoConfUserFromApi = ({ ts, joinedAt, declinedAt, ...user }: Serialized<IVideoConferenceUser>): IVideoConferenceUser => ({
+export const mapVideoConfUserFromApi = ({
+	ts,
+	joinedAt,
+	declinedAt,
+	leftAt,
+	...user
+}: Serialized<IVideoConferenceUser>): IVideoConferenceUser => ({
 	...user,
 	ts: new Date(ts),
 	...(joinedAt && { joinedAt: new Date(joinedAt) }),
 	...(declinedAt && { declinedAt: new Date(declinedAt) }),
+	...(leftAt && { leftAt: new Date(leftAt) }),
 });

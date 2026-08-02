@@ -1,7 +1,11 @@
 import type { IGroupVideoConference, IVideoConferenceUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { buildConferenceCallHistoryItems, shouldWriteConferenceHistory } from '../../../../lib/videoConference/callHistory';
+import {
+	buildConferenceCallHistoryItems,
+	hasActiveParticipants,
+	shouldWriteConferenceHistory,
+} from '../../../../lib/videoConference/callHistory';
 
 const createdBy = { _id: 'creator', username: 'creator.user', name: 'Creator User' };
 
@@ -122,14 +126,49 @@ describe('shouldWriteConferenceHistory', () => {
 		expect(shouldWriteConferenceHistory(groupCall)).to.be.true;
 	});
 
+	// A 1:1 video call is the most call-shaped thing there is; leaving it out was what kept every DM call out
+	// of the call log.
+	it('writes for a direct call, which is what a DM conference is', () => {
+		expect(shouldWriteConferenceHistory({ type: 'direct' } as any)).to.be.true;
+	});
+
 	// Both stopping paths are reachable repeatedly for one call — an app can resend `ENDED`, and the expiry
 	// cron runs every three hours — so a call that already carries `endedAt` must not be written again.
 	it('refuses a conference that already stopped, so members collect no duplicates', () => {
 		expect(shouldWriteConferenceHistory({ ...groupCall, endedAt: new Date() })).to.be.false;
 	});
 
-	it('refuses conference types that are not the many-participants case', () => {
-		expect(shouldWriteConferenceHistory({ type: 'direct' } as any)).to.be.false;
+	// A livechat call is the visitor's, not a user's own log; a VoIP conference is already logged as a media
+	// call, so logging it here would show it twice.
+	it('refuses conference types that do not belong in a user call log', () => {
 		expect(shouldWriteConferenceHistory({ type: 'livechat' } as any)).to.be.false;
+		expect(shouldWriteConferenceHistory({ type: 'voip' } as any)).to.be.false;
+	});
+});
+
+describe('hasActiveParticipants', () => {
+	it('counts a member who joined and has not left', () => {
+		expect(hasActiveParticipants([{ joined: true }])).to.be.true;
+	});
+
+	// This is what decides a conference is over, so a member who joined and left must not hold it open.
+	it('does not count a member who left', () => {
+		expect(hasActiveParticipants([{ joined: true, leftAt: new Date() }])).to.be.false;
+	});
+
+	it('does not count a member who never joined, so an unanswered ring cannot hold a call open', () => {
+		expect(hasActiveParticipants([{ joined: false }])).to.be.false;
+	});
+
+	it('treats an entry predating the flag as still in the call', () => {
+		expect(hasActiveParticipants([{}])).to.be.true;
+	});
+
+	it('holds the call open while anyone at all remains', () => {
+		expect(hasActiveParticipants([{ joined: true, leftAt: new Date() }, { joined: true }])).to.be.true;
+	});
+
+	it('is false for a call nobody ever joined', () => {
+		expect(hasActiveParticipants([])).to.be.false;
 	});
 });

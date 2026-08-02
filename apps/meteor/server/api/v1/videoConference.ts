@@ -4,6 +4,7 @@ import {
 	ajv,
 	isVideoConfStartProps,
 	isVideoConfJoinProps,
+	isVideoConfLeaveProps,
 	isVideoConfCancelProps,
 	isVideoConfInfoProps,
 	isVideoConfListProps,
@@ -326,6 +327,40 @@ API.v1.post(
 		// Records the decline against the caller's own membership only. Declining is deliberately not a way to
 		// end someone else's conference, so this takes no target user and never touches the call's status.
 		await VideoConf.declineCall(userId, callId);
+
+		return API.v1.success();
+	},
+);
+
+API.v1.post(
+	'video-conference.leave',
+	{
+		authRequired: true,
+		body: isVideoConfLeaveProps,
+		// Sent when the call window closes, which a user can do repeatedly across rejoins.
+		rateLimiterOptions: { numRequestsAllowed: 20, intervalTimeInMS: 60000 },
+		response: {
+			200: cancelResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { callId } = this.bodyParams;
+		const { userId } = this;
+
+		const call = await VideoConf.get(callId);
+		if (!call) {
+			return API.v1.failure('invalid-params');
+		}
+
+		if (!(await canAccessConference(call, userId)) || !userId) {
+			return API.v1.failure('invalid-params');
+		}
+
+		// Only ever marks the caller as gone. The conference ends as a consequence of nobody being left in it,
+		// not because one participant asked for it — the same rule declining follows.
+		await VideoConf.leaveCall(userId, callId);
 
 		return API.v1.success();
 	},

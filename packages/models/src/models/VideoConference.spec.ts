@@ -83,8 +83,42 @@ describe('VideoConferenceRaw.setUserJoinedById', () => {
 
 		const [query, update, options] = updateOne.mock.calls[0];
 		expect(query).toEqual({ _id: 'call-1' });
-		expect(update).toEqual({ $set: { 'users.$[user].joined': true, 'users.$[user].joinedAt': joinedAt } });
+		expect(update.$set).toEqual({ 'users.$[user].joined': true, 'users.$[user].joinedAt': joinedAt });
 		expect(options).toEqual({ arrayFilters: [{ 'user._id': 'user-1' }] });
+	});
+
+	// An earlier departure left in place would report the member as gone while they're on the call, and could
+	// end the call under them once presence is what decides that.
+	it('should clear an earlier departure, since rejoining contradicts it', async () => {
+		const { model, updateOne } = setupModel();
+
+		await model.setUserJoinedById('call-1', 'user-1');
+
+		expect(updateOne.mock.calls[0][1].$unset).toEqual({ 'users.$[user].leftAt': 1 });
+	});
+});
+
+describe('VideoConferenceRaw.setUserLeftById', () => {
+	it('should mutate the matching entry in place via arrayFilters', async () => {
+		const { model, updateOne } = setupModel();
+		const leftAt = new Date('2026-08-01T10:00:00Z');
+
+		await model.setUserLeftById('call-1', 'user-1', leftAt);
+
+		const [query, update, options] = updateOne.mock.calls[0];
+		expect(query).toEqual({ _id: 'call-1' });
+		expect(update).toEqual({ $set: { 'users.$[user].leftAt': leftAt } });
+		expect(options).toEqual({ arrayFilters: [{ 'user._id': 'user-1' }] });
+	});
+
+	// Leaving is not un-joining: the member keeps their place in the call's history and can rejoin.
+	it('should leave joined and declined alone', async () => {
+		const { model, updateOne } = setupModel();
+
+		await model.setUserLeftById('call-1', 'user-1');
+
+		const keys = Object.keys(updateOne.mock.calls[0][1].$set);
+		expect(keys).toEqual(['users.$[user].leftAt']);
 	});
 });
 

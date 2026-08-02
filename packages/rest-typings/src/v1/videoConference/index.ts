@@ -11,6 +11,7 @@ import type { VideoConfCancelProps } from './VideoConfCancelProps';
 import type { VideoConfDeclineProps } from './VideoConfDeclineProps';
 import type { VideoConfInfoProps } from './VideoConfInfoProps';
 import type { VideoConfJoinProps } from './VideoConfJoinProps';
+import type { VideoConfLeaveProps } from './VideoConfLeaveProps';
 import type { VideoConfListProps } from './VideoConfListProps';
 import type { VideoConfShareChatProps } from './VideoConfShareChatProps';
 import type { VideoConfStartProps } from './VideoConfStartProps';
@@ -20,6 +21,7 @@ export * from './VideoConfInfoProps';
 export * from './VideoConfListProps';
 export * from './VideoConfStartProps';
 export * from './VideoConfJoinProps';
+export * from './VideoConfLeaveProps';
 export * from './VideoConfCancelProps';
 export * from './VideoConfAddParticipantsProps';
 export * from './VideoConfDeclineProps';
@@ -32,6 +34,11 @@ export type VideoConferenceEndpoints = {
 
 	'/v1/video-conference.join': {
 		POST: (params: VideoConfJoinProps) => { url: string; providerName: string };
+	};
+
+	/** Records that the caller left the call, ending the conference when nobody is left in it. */
+	'/v1/video-conference.leave': {
+		POST: (params: VideoConfLeaveProps) => void;
 	};
 
 	'/v1/video-conference.cancel': {
