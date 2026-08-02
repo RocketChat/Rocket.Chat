@@ -18,6 +18,7 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import ChatAccessMember from './ChatAccessMember';
 import type { ConferenceChatAccess } from './hooks/useConferenceEmbedded';
+import { chatAccessLeadsWithDiscussion } from '../../../lib/videoConference/chatAccess';
 import { videoConferenceQueryKeys } from '../../lib/queryKeys';
 
 type ChatAccessModalProps = {
@@ -31,9 +32,9 @@ type ChatAccessModalProps = {
  * conversation's place in it — so neither can be applied on the user's behalf. The consequences are spelled
  * out next to each action and the modal is dismissable, which is the whole point of asking here.
  *
- * Which one leads is a privacy call: opening a private room's history to an outsider is the bigger step, so
- * private rooms and DMs lead with the discussion, and public rooms — whose history is already open — lead
- * with the invite. A DM can't take new members at all, so there it is the only option.
+ * Which one leads is a privacy call, shared with the server so the two can't drift — see
+ * `chatAccessLeadsWithDiscussion`. A DM can't take new members at all, so there the discussion is the only
+ * option offered.
  */
 const ChatAccessModal = ({ callId, access, onClose }: ChatAccessModalProps) => {
 	const { t } = useTranslation();
@@ -54,7 +55,7 @@ const ChatAccessModal = ({ callId, access, onClose }: ChatAccessModalProps) => {
 	});
 
 	const roomName = access.name;
-	const discussionLeads = !access.canInvite || access.type === 'p' || access.type === 'd';
+	const discussionLeads = chatAccessLeadsWithDiscussion(access);
 
 	const inviteButton = access.canInvite && (
 		<Button primary={!discussionLeads} loading={isPending && variables === 'invite'} onClick={() => mutate('invite')}>
