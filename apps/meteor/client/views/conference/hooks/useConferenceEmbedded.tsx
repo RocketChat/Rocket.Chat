@@ -30,15 +30,21 @@ export const useConferenceEmbedded = (callId: string) => {
 		retry: false,
 	});
 
-	// When a participant changes the conference's room (e.g. adds people and creates a discussion), the
-	// server broadcasts `discussionUpdated`; refetch so every participant's chat follows along.
-	useEffect(
-		() =>
-			subscribeToVideoConference(`${callId}/discussionUpdated`, () => {
-				void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) });
-			}),
-		[callId, subscribeToVideoConference, queryClient],
-	);
+	// Two ways the chat can change under a participant: it moves to another room (`discussionUpdated`), or the
+	// same room becomes readable by members who couldn't read it (`chatAccessUpdated`). Both are answered by
+	// reading the conference again — it carries both the room and who can see it.
+	useEffect(() => {
+		const invalidate = () => {
+			void queryClient.invalidateQueries({ queryKey: videoConferenceQueryKeys.conference(callId) });
+		};
+
+		const unsubscribes = [
+			subscribeToVideoConference(`${callId}/discussionUpdated`, invalidate),
+			subscribeToVideoConference(`${callId}/chatAccessUpdated`, invalidate),
+		];
+
+		return () => unsubscribes.forEach((unsubscribe) => unsubscribe());
+	}, [callId, subscribeToVideoConference, queryClient]);
 
 	// Members who are in the call but can't read its chat — membership grants no room access.
 	const chatAccess = useMemo((): ConferenceChatAccess | undefined => {

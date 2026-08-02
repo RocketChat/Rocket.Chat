@@ -473,7 +473,10 @@ export interface StreamerEvents {
 		{ key: 'actions/changed'; args: [] },
 	];
 
-	'video-conference': [{ key: `${string}/discussionUpdated`; args: [{ discussionRid: IRoom['_id'] | undefined }] }];
+	'video-conference': [
+		{ key: `${string}/discussionUpdated`; args: [{ discussionRid: IRoom['_id'] | undefined }] },
+		{ key: `${string}/chatAccessUpdated`; args: [] },
+	];
 
 	'local': [
 		{
