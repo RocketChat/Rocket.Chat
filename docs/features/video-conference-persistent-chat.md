@@ -341,6 +341,59 @@ Gives the "rejoin from a past call" entry point. Landed; see [Personal Call Hist
 - **Docking the ringing widget.** Decision 5 keeps the current floating overlay for every case. Docking it
   over the room list, with a floating fallback when the list isn't visible, was considered and deferred.
 
+## Implementation notes
+
+Things worth knowing that aren't visible from the code alone.
+
+### Group ringing was dead code before this work
+
+The server had long set `ringing: true` on group conferences and broadcast an `action: 'ring'` to each room
+member, but **no client ever handled it** — the only match for `'ring'` in the client was a word in the E2EE
+wordlist. Real 1:1 ringing is driven entirely client-side, by the caller's own `VideoConfManager` republishing
+`'call'` on an interval while it waits.
+
+`VideoConfManager` now handles `'ring'`, which is what makes ringing-on-add work. The side effect is that
+group conferences which had been silently not ringing **will now ring** — the behaviour the EE code always
+intended, but a visible change beyond "ring on add".
+
+A server-originated ring is one-shot: nothing refreshes the 10s abort timeout that a 1:1 caller keeps alive,
+so it rings once and gives up. That suits an already-running conference, where there is no caller waiting.
+
+### Declining makes you a member
+
+There is nowhere to record a decline except on a `users[]` entry, so declining creates one for someone who
+was rung as a room member. Since membership authorizes joining, a member who declines can still join
+afterwards — which is intended, but is a consequence of where the flag is stored rather than a separate
+decision.
+
+### Test coverage and where it lives
+
+The cheap runners were used deliberately: mocha under `apps/meteor/tests/unit/**` (~2s for the whole config)
+and package-level jest.
+
+| What | Where |
+|---|---|
+| `hasJoinedVideoConference` back-compat, ringing cap boundaries | `apps/meteor/tests/unit/lib/videoConference/membership.spec.ts` |
+| Per-member history semantics | `apps/meteor/tests/unit/lib/videoConference/callHistory.spec.ts` |
+| A decline can't tear down a conference; `ring` and `call` both register | `apps/meteor/client/lib/VideoConfManager.spec.ts` |
+| The membership update *shapes* — the `$addToSet` trap | `packages/models/src/models/VideoConference.spec.ts` |
+
+`packages/models/src/models/VideoConference.spec.ts` stubs `BaseRaw`, which participates in a circular
+import that leaves it uninitialized when the module is loaded directly by jest.
+
+### Known gaps
+
+- **No members panel.** Declines and per-member state are stored but there is nowhere to see them. See
+  [Future work](#future-work-not-in-scope).
+- **No conference detail view in call history.** Clicking a conference row opens its room. Deep-linking to
+  `/call-history/details/:historyId` for a conference falls through to the generic "call info could not be
+  loaded" panel.
+- **`listMembersWithoutChatAccess` costs one access check per member**, on every `video-conference.info`. Fine
+  at conference scale; revisit if membership ever grows large.
+- **`video-conference.add-participants` is capped at 10 users per call**, which is what guarantees an add
+  always rings. Adding more means several requests.
+
+
 ## Key Files
 
 | Layer | File |
