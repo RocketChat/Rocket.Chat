@@ -188,7 +188,7 @@ export class MessageList extends MemoizedComponent {
 						avatarResolver={avatarResolver}
 						use='li'
 						me={isMe}
-						hideAvatar={(isMe && hideSenderAvatar) || (!isMe && hideReceiverAvatar)}
+						hideAvatar
 						compact={nextMessage && message.u && nextMessage.u && message.u._id === nextMessage.u._id && !nextMessage.t}
 						conversationFinishedMessage={conversationFinishedMessage}
 						type={message.t}

@@ -25,10 +25,12 @@ $message-time-color: colors.$color-text-grey;
 		position: relative;
 
 		& > .message-time {
-			bottom: -16px;
+			bottom: -22px;
+            right:-38px;
 
 			&--normal {
-				right: 0;
+				right: 12px;
+				bottom: -7px;
 			}
 
 			&--inverted {

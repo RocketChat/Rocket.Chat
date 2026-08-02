@@ -1,26 +1,41 @@
 @use '../../../styles/helpers';
+@use '../../../styles/colors';
+@use '../../../styles/variables.scss';
 
 $composer-action-margin: 0 6px;
+$composer-action-radius:4 * variables.$default-border-radius;
+$composer-action-padding:14px;
 
 .composer__action {
 	flex: 0 0 auto;
-
+    background-color: colors.$color-blue;
+    border-radius:$composer-action-radius ;
 	margin: $composer-action-margin;
-	padding: 0;
-
+    padding:$composer-action-padding;
 	cursor: pointer;
 
 	border: none;
-
-	background: none;
 
 	font-size: 0;
 
 	&:focus {
 		transform: scale(1.05);
-
 		outline: none;
 	}
-
+    &:hover {
+		background-color:colors.$bg-color-blue
+	}
+	&:disabled {
+		cursor: not-allowed !important;
+        background-color:colors.$color-text-grey-system;
+	}
 	@include helpers.pressable-button(1px);
+
+	  &--ghost {
+        background-color:transparent !important;
+		padding: 0 !important;
+	}
+	 @media (max-width: 767px) {
+		 padding:12px;
+	 }
 }

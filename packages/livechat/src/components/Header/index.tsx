@@ -14,12 +14,14 @@ type HeaderProps = {
 	large?: boolean;
 	style?: JSXInternal.CSSProperties;
 	ref?: Ref<HTMLElement>;
+
 	onClick?: JSXInternal.DOMAttributes<HTMLElement>['onClick'];
 };
 
 type HeaderComponentProps = {
 	children?: ComponentChildren;
 	className?: string;
+	primary?: boolean;
 };
 
 export const Header = ({
@@ -81,8 +83,8 @@ export const Actions = ({ children, className = undefined, ...props }: HeaderCom
 	</nav>
 );
 
-export const Action = ({ children, className = undefined, ...props }: HeaderComponentProps & { onClick?: () => void }) => (
-	<button className={createClassName(styles, 'header__action', {}, [className])} {...props}>
+export const Action = ({ children, primary, className = undefined, ...props }: HeaderComponentProps & { onClick?: () => void }) => (
+	<button className={createClassName(styles, 'header__action', { primary }, [className])} {...props}>
 		{children}
 	</button>
 );

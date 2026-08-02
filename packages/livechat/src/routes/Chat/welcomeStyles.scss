@@ -1,0 +1,87 @@
+@use '../../styles/colors';
+@use '../../styles/variables';
+
+.welcome-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px;
+  box-sizing: border-box;
+  width: 100%;
+
+  .avatar-wrap {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 4px;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .message-stack {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+  
+    .welcome-header {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+  }
+
+  .message-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .bubble {
+    background-color: #f2f2f4;
+    color: #1f1f1f;
+    border-radius: 18px;
+    font-size: 16px;
+    line-height: 1.9;
+    max-width: 100%;
+
+    strong {
+      font-weight: 700;
+    }
+  }
+
+  .timestamp {
+    font-size: 11px;
+    color: colors.$color-text-grey;
+    padding: 0 4px;
+  }
+
+  .chips-wrap {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 24px;
+    justify-content: flex-end;
+  }
+
+  .chip {
+    background-color:colors.$color-text-lighter ;
+    border: 1px solid colors.$color-border-grey;
+    border-radius: 300px;
+    padding: 8px 16px;
+    font-size: 12px;
+    color: colors.$color-text-dark;
+    font-weight: 400;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+    
+    &:hover {
+      background-color: #f5f5f7;
+      border-color: #c4c4c9;
+    }
+  }
+}

@@ -3,25 +3,23 @@ import { useRef } from 'preact/hooks';
 import { useTranslation, withTranslation } from 'react-i18next';
 
 import type { Agent } from '../../definitions/agents';
-import MinimizeIcon from '../../icons/arrowDown.svg';
-import RestoreIcon from '../../icons/arrowUp.svg';
-import NotificationsEnabledIcon from '../../icons/bell.svg';
-import NotificationsDisabledIcon from '../../icons/bellOff.svg';
-import OpenWindowIcon from '../../icons/newWindow.svg';
+import CloseIcon from '../../icons/close.svg';
+import UserIcon from '../../icons/user.svg';
+import LogoImage from '../../assets/images/logo.png'
 import Alert from '../Alert';
-import { Avatar } from '../Avatar';
 import Header from '../Header';
 import Tooltip from '../Tooltip';
 import type { ScreenContextValue } from './ScreenProvider';
 
 type ScreenHeaderProps = {
-	alerts: { id: string; children: ComponentChildren; [key: string]: unknown }[];
+	alerts: { id: string; children: ComponentChildren;[key: string]: unknown }[];
 	agent: Agent;
 	notificationsEnabled: boolean;
 	minimized: boolean;
 	expanded: boolean;
 	windowed: boolean;
 	onDismissAlert?: (id?: string) => void;
+	onSupportClick?: () => void;
 	onEnableNotifications: () => unknown;
 	onDisableNotifications: () => unknown;
 	onMinimize: () => unknown;
@@ -42,6 +40,7 @@ const ScreenHeader = ({
 	expanded,
 	windowed,
 	onDismissAlert,
+	onSupportClick,
 	onEnableNotifications,
 	onDisableNotifications,
 	onMinimize,
@@ -84,45 +83,25 @@ const ScreenHeader = ({
 			}
 			large={largeHeader()}
 		>
-			{agent?.avatar && (
-				<Header.Picture>
-					<Avatar src={agent.avatar.src} description={agent.avatar.description} status={agent.status} large={largeHeader()} />
-				</Header.Picture>
-			)}
 
-			<Header.Content>
-				<Header.Title>{headerTitle()}</Header.Title>
-				{agent?.email && <Header.SubTitle>{agent.email}</Header.SubTitle>}
-				{agent?.phone && <Header.CustomField>{agent.phone}</Header.CustomField>}
-			</Header.Content>
+			<Header.Picture>
+				<img src={LogoImage} />
+			</Header.Picture>
+
+
 			<Tooltip.Container>
 				<Header.Actions>
-					<Tooltip.Trigger content={notificationsEnabled ? t('sound_is_on') : t('sound_is_off')} placement='bottom-left'>
-						<Header.Action
-							aria-label={notificationsEnabled ? t('disable_notifications') : t('enable_notifications')}
-							onClick={notificationsEnabled ? onDisableNotifications : onEnableNotifications}
-						>
-							{notificationsEnabled ? (
-								<NotificationsEnabledIcon width={20} height={20} />
-							) : (
-								<NotificationsDisabledIcon width={20} height={20} />
-							)}
-						</Header.Action>
-					</Tooltip.Trigger>
+					<Header.Action aria-label={t('cantact_with_support')} primary onClick={onSupportClick}>
+						<UserIcon width={20} height={20} />
+						<Header.SubTitle>{t('cantact_with_support')}</Header.SubTitle>
+					</Header.Action>
+
 					{(expanded || !windowed) && (
-						<Tooltip.Trigger content={minimized ? t('restore_chat') : t('minimize_chat')}>
-							<Header.Action aria-label={minimized ? t('restore_chat') : t('minimize_chat')} onClick={minimized ? onRestore : onMinimize}>
-								{minimized ? <RestoreIcon width={20} height={20} /> : <MinimizeIcon width={20} height={20} />}
-							</Header.Action>
-						</Tooltip.Trigger>
+						<Header.Action ghost aria-label={minimized ? t('restore_chat') : t('minimize_chat')} onClick={minimized ? onRestore : onMinimize}>
+							<CloseIcon width={24} height={24} />
+						</Header.Action>
 					)}
-					{!hideExpandChat && !expanded && !windowed && (
-						<Tooltip.Trigger content={t('expand_chat')} placement='bottom-left'>
-							<Header.Action aria-label={t('expand_chat')} onClick={onOpenWindow}>
-								<OpenWindowIcon width={20} height={20} />
-							</Header.Action>
-						</Tooltip.Trigger>
-					)}
+
 				</Header.Actions>
 			</Tooltip.Container>
 		</Header>

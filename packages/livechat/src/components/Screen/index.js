@@ -22,7 +22,6 @@ export const ScreenFooter = ({ children, options, limit }) => {
 		<Footer>
 			{children && <FooterContent>{children}</FooterContent>}
 			<FooterContent>
-				{options}
 				{limit}
 				{!hideWatermark && <PoweredBy />}
 			</FooterContent>

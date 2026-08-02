@@ -12,7 +12,6 @@ $max-lines: 12;
 
 	width: 100%;
 	height: 100%;
-	padding: $screen-padding;
 	align-items: flex-end;
 	justify-content: flex-end;
 
@@ -25,6 +24,7 @@ $max-lines: 12;
 	.screen__chat-button {
 		background-size: cover !important;
 		box-shadow: $screen-box-shadow;
+		margin:$screen-padding ;
 	}
 
 	.screen__chat-close-button {
@@ -81,6 +81,13 @@ $max-lines: 12;
 			display: block;
 		}
 	}
+
+  @media (max-width: 767px) {
+    .screen__chat-button {
+      padding: 11px;
+    }
+
+  }
 }
 
 .screen__inner {
@@ -138,3 +145,5 @@ $max-lines: 12;
 .screen__agent-email {
 	margin: 5px;
 }
+
+

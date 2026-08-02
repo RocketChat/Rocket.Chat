@@ -1,6 +1,15 @@
+@use '../../../styles/colors';
+@use '../../../styles/variables';
+
 $image-attachment-media-max-height: 250px;
 
 .image-attachment {
+	background-color: colors.$color-dark-blue;
+	padding: 8px;
+	border-radius: 12px;
+	border-bottom-right-radius: 2px;
+	max-width: 100%;
+
 	&__inner {
 		max-width: 100%;
 		max-height: $image-attachment-media-max-height;

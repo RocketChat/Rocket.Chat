@@ -102,8 +102,10 @@ const Message = ({
 	t,
 	hideAvatar,
 	...message
-}) => (
-	<MessageContainer id={message._id} compact={compact} reverse={me} use={use} className={className} style={style} system={!!message.type}>
+}) => {
+	console.log({message})
+	return(
+	<MessageContainer id={message._id} reverse={!me} compact={compact} use={use} className={className} style={style} system={!!message.type}>
 		{!message.type && !hideAvatar && <MessageAvatars avatarResolver={avatarResolver} usernames={getMessageUsernames(compact, message)} />}
 		<MessageContent reverse={me}>
 			{renderContent({
@@ -118,8 +120,8 @@ const Message = ({
 			})}
 		</MessageContent>
 
-		{!compact && !message.type && <MessageTime normal={!me} inverse={me} ts={message.ts} />}
+		{!compact && !message.type && <MessageTime normal={!me} inverse={me} ts={message.ts} userName={message.u.username}  />}
 	</MessageContainer>
-);
+)};
 
 export default withTranslation()(memo(Message));

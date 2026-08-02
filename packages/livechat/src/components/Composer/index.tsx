@@ -279,7 +279,7 @@ export class Composer extends Component<ComposerProps, ComposerState> {
 
 	render = ({ pre, post, value, placeholder, onChange, onSubmit, onUpload, className, style }: ComposerProps) => (
 		<div className={createClassName(styles, 'composer', {}, [className])} style={style}>
-			{pre}
+			<div className={createClassName(styles, 'composer__inner', {}, [className])}>
 			<div
 				ref={this.handleRef}
 				contentEditable
@@ -300,6 +300,8 @@ export class Composer extends Component<ComposerProps, ComposerState> {
 				className={createClassName(styles, 'composer__input')}
 			>
 				{value}
+			</div>
+			{pre}
 			</div>
 			{post}
 		</div>

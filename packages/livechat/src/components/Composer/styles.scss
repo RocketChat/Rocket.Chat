@@ -20,16 +20,14 @@ $composer-input-placeholder-color: colors.$color-text-light;
 
 .composer {
 	display: flex;
-
+    align-items:flex-start;
 	width: 100%;
 	padding: $composer-padding;
 
 	transition: all variables.$default-time-animation;
 
-	border: $composer-border-width solid $composer-border-color;
-	border-radius: $composer-border-radius;
+	border-top: $composer-border-width solid $composer-border-color;
 	background-color: $composer-background-color;
-	align-items: flex-end;
 
 	&:focus-within {
 		border-color: $composer-focused-border-color;
@@ -78,4 +76,12 @@ $composer-input-placeholder-color: colors.$color-text-light;
 			cursor: default;
 		}
 	}
+}
+
+.composer__inner{
+	display: flex;
+	flex-direction: column;
+	gap:4px;
+	align-items: flex-start;
+	width:100%
 }

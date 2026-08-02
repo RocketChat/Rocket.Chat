@@ -3,12 +3,11 @@
 @use '../../styles/helpers';
 @use '../../styles/variables';
 
-$header-background-color: colors.$color-dark-blue;
-$header-color: colors.$color-text-lighter;
+$header-background-color: colors.$bg-color-white;
+$header-color: colors.$color-text-dark;
 $header-padding: variables.$default-padding;
 $header-height: 56px;
 $header-height-large: 77px;
-
 $header-action-active-displacement: 2px;
 
 .header {
@@ -22,8 +21,8 @@ $header-action-active-displacement: 2px;
 	padding: 0 math.div($header-padding, 2);
 
 	color: var(--font-color, $header-color);
-	background-color: var(--color, $header-background-color);
-	box-shadow: 0 0 16px colors.$bg-color-grey;
+	background-color: $header-background-color;
+	box-shadow: 0 0 10px colors.$box-shadow-color;
 
 	font-size: 16px;
 	align-items: center;
@@ -31,8 +30,6 @@ $header-action-active-displacement: 2px;
 
 	&__item {
 		flex: 0 0 auto;
-
-		margin: 0 math.div($header-padding, 2);
 	}
 
 	&__picture {
@@ -54,7 +51,7 @@ $header-action-active-displacement: 2px;
 			text-overflow: ellipsis;
 
 			font-size: 16px;
-			font-weight: 500;
+			font-weight: bold;
 			line-height: 1.5;
 		}
 
@@ -92,9 +89,10 @@ $header-action-active-displacement: 2px;
 		.header__action {
 			display: flex;
 			flex: 0 0 auto;
-
+			align-items: center;
+			gap: variables.$small-gap;
 			cursor: pointer;
-
+			font-family: variables.$font-family;
 			color: inherit;
 			border: none;
 			outline: none;
@@ -102,7 +100,18 @@ $header-action-active-displacement: 2px;
 			justify-content: center;
 
 			@include helpers.pressable-button($header-action-active-displacement, 0);
+           
+			&--primary {
+				 padding: 4px 8px;
+				&:hover {
+					background-color: #5467FF40;
+					color:#5467FF;
+					border-radius:6px ;
+					stroke:#5467FF !important;
+				}
+			}
 		}
+
 	}
 
 	&__post {
@@ -111,9 +120,10 @@ $header-action-active-displacement: 2px;
 		top: $header-height;
 		right: 0;
 		left: 0;
-
 		width: 100%;
 	}
+
+
 
 	&--large {
 		height: $header-height-large;

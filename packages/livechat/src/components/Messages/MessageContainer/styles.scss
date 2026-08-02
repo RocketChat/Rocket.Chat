@@ -1,7 +1,7 @@
 @use 'sass:math';
 @use '../../../styles/variables';
 
-$message-container-margin: 0 0 variables.$default-padding 0;
+$message-container-margin: 0 0 24px 0;
 $message-container-compact-margin: 0 0 math.div(variables.$default-padding, 4) 0;
 
 .message-container {

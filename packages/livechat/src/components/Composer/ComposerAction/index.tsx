@@ -11,16 +11,17 @@ type ComposerActionProps = {
 	style?: CSSProperties;
 	children?: ComponentChildren;
 	disabled?: boolean;
+	ghost?:boolean
 };
 
-export const ComposerAction = ({ text, onClick, className, style = {}, children, disabled }: ComposerActionProps) => {
+export const ComposerAction = ({ text, onClick, className, style = {}, children, disabled,ghost }: ComposerActionProps) => {
 
 	return (
 		<button
 			type='button'
 			aria-label={text}
 			onClick={onClick}
-			className={createClassName(styles, 'composer__action', {}, [className])}
+			className={createClassName(styles, 'composer__action', {disabled,ghost}, [className])}
 			style={style}
 			disabled={disabled}
 		>

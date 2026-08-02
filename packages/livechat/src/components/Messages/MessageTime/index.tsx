@@ -24,8 +24,9 @@ type MessageTimeProps = {
 	className?: string;
 	style?: CSSProperties;
 	t: TFunction;
+	userName: string
 };
-const MessageTime = ({ ts, normal, inverted, className, style = {}, t }: MessageTimeProps) => {
+const MessageTime = ({ ts, normal, inverted, className, userName, style = {}, t }: MessageTimeProps) => {
 	return (
 		<div className={createClassName(styles, 'message-time-wrapper')}>
 			<time
@@ -33,8 +34,11 @@ const MessageTime = ({ ts, normal, inverted, className, style = {}, t }: Message
 				className={createClassName(styles, 'message-time', { normal, inverted }, [className])}
 				style={style}
 			>
+				{normal && <span>{userName} - </span>}
 				{parseDate(ts, t)}
+
 			</time>
+
 		</div>
 	);
 };

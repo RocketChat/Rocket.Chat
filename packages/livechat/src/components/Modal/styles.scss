@@ -2,8 +2,8 @@
 @use '../../styles/variables';
 
 $modal-padding: variables.$default-padding;
-$modal-border-radius: 2 * variables.$default-border-radius;
-$modal-shadow: 0 7px 16px 0 rgba(0, 0, 0, 0.1);
+$modal-border-radius: 6 * variables.$default-border-radius;
+$modal-shadow: 0 7px 16px 0 colors.$box-shadow-color;
 $modal-background-color: colors.$bg-color-white;
 
 :global(.is-blurred) {
@@ -35,7 +35,7 @@ $modal-background-color: colors.$bg-color-white;
 	max-height: 80%;
 	padding: $modal-padding;
 
-	transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%); 
 
 	border-radius: $modal-border-radius;
 	background-color: $modal-background-color;

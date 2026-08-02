@@ -17,6 +17,7 @@ type ButtonProps = {
 	outline?: boolean;
 	nude?: boolean;
 	danger?: boolean;
+	primary?:boolean;
 	secondary?: boolean;
 	stack?: boolean;
 	small?: boolean;
@@ -37,6 +38,7 @@ export const Button = ({
 	disabled,
 	outline,
 	nude,
+	primary,
 	danger,
 	secondary,
 	stack,
@@ -68,6 +70,7 @@ export const Button = ({
 					disabled,
 					outline,
 					nude,
+					primary,
 					danger,
 					secondary,
 					stack,
