@@ -16,6 +16,9 @@ const render = (members: ConferenceMember[]) => renderHook(() => useCallOutcome(
 
 const waitOutTheRing = () => act(() => void jest.advanceTimersByTime(60_000));
 
+/** A ring the user asked for is one-shot, so its wait is much shorter than the first attempt's. */
+const waitOutARering = () => act(() => void jest.advanceTimersByTime(16_000));
+
 beforeEach(() => {
 	jest.useFakeTimers();
 });
@@ -94,4 +97,59 @@ it('reports again when a fresh ring also goes unanswered', () => {
 	waitOutTheRing();
 
 	expect(result.current.outcome).toBe('unanswered');
+});
+
+describe('ringing again', () => {
+	const declinedAt = new Date('2026-08-02T10:00:00.000Z');
+
+	it('takes the modal down straight away', () => {
+		const { result } = render([member({ _id: me, joined: true }), member({ _id: 'callee', joined: false, declined: true, declinedAt })]);
+
+		expect(result.current.outcome).toBe('declined');
+
+		act(() => result.current.onRang());
+
+		expect(result.current.outcome).toBeUndefined();
+	});
+
+	// `declined` never goes back to false, so treating it as current would put the modal back up the instant the
+	// user rang again — reporting a decline they haven't made yet.
+	it('does not report the previous decline again while waiting on the new ring', () => {
+		const { result } = render([member({ _id: me, joined: true }), member({ _id: 'callee', joined: false, declined: true, declinedAt })]);
+
+		act(() => result.current.onRang());
+		act(() => void jest.advanceTimersByTime(5_000));
+
+		expect(result.current.outcome).toBeUndefined();
+	});
+
+	it('reports a decline again once they decline the new ring', () => {
+		const callee = member({ _id: 'callee', joined: false, declined: true, declinedAt });
+		const { result, rerender } = renderHook((props: ConferenceMember[]) => useCallOutcome(props), {
+			initialProps: [member({ _id: me, joined: true }), callee],
+			wrapper: mockAppRoot().withJohnDoe().build(),
+		});
+
+		act(() => result.current.onRang());
+		expect(result.current.outcome).toBeUndefined();
+
+		rerender([member({ _id: me, joined: true }), { ...callee, declinedAt: new Date('2026-08-02T10:05:00.000Z') }]);
+
+		expect(result.current.outcome).toBe('declined');
+	});
+
+	// The re-ring stops on its own after a few seconds, so ignoring it has to surface as unanswered rather than
+	// leaving the caller with a call that quietly stopped ringing.
+	it('reports unanswered when the new ring is ignored', () => {
+		const { result } = render([member({ _id: me, joined: true }), member({ _id: 'callee', joined: false })]);
+
+		waitOutTheRing();
+		act(() => result.current.onRang());
+
+		expect(result.current.outcome).toBeUndefined();
+
+		waitOutARering();
+
+		expect(result.current.outcome).toBe('unanswered');
+	});
 });

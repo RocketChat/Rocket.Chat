@@ -1597,7 +1597,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 					sender: { _id: adder._id, username: adder.username as string, name: adder.name },
 					conferenceId: callId,
 					message: { msg: text },
-					audioNotificationValue: '',
+					// The ringing popup plays the ringtone. Left unset this would also play the new-message sound,
+					// so a call announced itself as a message arriving.
+					audioNotificationValue: 'none',
 				},
 			});
 		}

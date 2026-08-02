@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
-import { useUserSubscription } from '@rocket.chat/ui-contexts';
-import { useRef } from 'react';
+import { useSetModal, useUserSubscription } from '@rocket.chat/ui-contexts';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CallOutcomeModal from './CallOutcomeModal';
@@ -42,6 +42,33 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	// went nowhere.
 	const { outcome, others, onRang, onDismiss } = useCallOutcome(call.members);
 
+	// Through the app's modal region rather than rendered here: that is what puts it in a portal, over a
+	// backdrop, with focus trapped. Rendered inline it would sit in the page's flex column and push the call
+	// and the chat panel down the screen.
+	const setModal = useSetModal();
+
+	useEffect(() => {
+		if (!outcome) {
+			return;
+		}
+
+		setModal(
+			<CallOutcomeModal
+				callId={callId}
+				outcome={outcome}
+				others={others}
+				canRing={call.canRing}
+				onRang={onRang}
+				onStay={onDismiss}
+				onLeave={leaveNow}
+			/>,
+		);
+
+		// Anything that resolves the wait — someone answering, a fresh ring, the user choosing — clears `outcome`,
+		// and should take the modal down with it.
+		return () => setModal(null);
+	}, [outcome, others, call.canRing, callId, onRang, onDismiss, leaveNow, setModal]);
+
 	// A provider rendering its own toolbar can hide our bar and drive the chat panel from its own controls.
 	const iframeRef = useRef<HTMLIFrameElement>(null);
 	const { callBarVisible, chatVisible, toggleChat } = useProviderCallBridge(iframeRef);
@@ -69,18 +96,6 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 
 	return (
 		<Box display='flex' flexDirection='column' flexGrow={1} minHeight={0}>
-			{outcome && (
-				<CallOutcomeModal
-					callId={callId}
-					outcome={outcome}
-					others={others}
-					canRing={call.canRing}
-					onRang={onRang}
-					onStay={onDismiss}
-					onLeave={leaveNow}
-				/>
-			)}
-
 			{/* With the chat open the notice belongs in the panel, next to the conversation it is about. With it
 			    closed there would be nowhere to see it, so it moves up here rather than being shown twice. */}
 			{!chatVisible && room.chatAccess && <ChatAccessNotice callId={callId} access={room.chatAccess} />}
