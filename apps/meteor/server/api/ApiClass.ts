@@ -900,9 +900,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 										return api.tooManyRequests(typeof e === 'string' ? e : e.message);
 									case 'unauthorized':
 									case 'error-unauthorized':
-										if (applyBreakingChanges) {
-											return api.unauthorized(typeof e === 'string' ? e : e.message);
-										}
+									case 'error-not-authorized':
 										return api.forbidden(typeof e === 'string' ? e : e.message);
 									case 'forbidden':
 									case 'error-forbidden':
