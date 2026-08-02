@@ -35,13 +35,18 @@ const TimedVideoConfPopup = ({ id, rid, isReceiving = false, isCalling = false, 
 	const focusManager = useFocusManager();
 	const room = useUserRoom(rid);
 
-	useEffect(() => {
-		focusManager?.focusFirst();
-	}, [focusManager]);
+	// An incoming call can reach a conference member with no access to the room it belongs to, so only the
+	// popups that act *on* a room need one. Focusing before anything renders would look for the parent of a
+	// node the focus scope never got.
+	const hasPopup = isReceiving || Boolean(room);
 
-	if (!room) {
-		return null;
-	}
+	useEffect(() => {
+		if (!hasPopup) {
+			return;
+		}
+
+		focusManager?.focusFirst();
+	}, [focusManager, hasPopup]);
 
 	const handleConfirm = (): void => {
 		acceptCall(id);
@@ -67,6 +72,10 @@ const TimedVideoConfPopup = ({ id, rid, isReceiving = false, isCalling = false, 
 
 	if (isReceiving) {
 		return <IncomingPopup room={room} id={id} position={position} onClose={handleClose} onMute={handleMute} onConfirm={handleConfirm} />;
+	}
+
+	if (!room) {
+		return null;
 	}
 
 	if (isCalling) {
