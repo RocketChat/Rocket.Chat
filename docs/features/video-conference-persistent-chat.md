@@ -216,11 +216,11 @@ Separately from the room-scoped tab above, a group conference also leaves an ent
 
 `CallHistoryItem` (`packages/core-typings/src/ICallHistoryItem.ts`) gains a `type: 'video-conference'` variant, `IVideoConferenceHistoryItem`, alongside the existing 1:1-contact-shaped media-call variants. It carries `rid` (the conference's room), `title` (if the conference had one), and `usersCount` (how many members actually joined — `hasJoinedVideoConference`, not raw membership count). `callId`, `uid`, `ts`, `direction` and `state` come from the shared `ICallHistoryItem` base.
 
-Items are written once, when a **group** conference ends (`VideoConfService.endCall`, for `type === 'videoconference'` only — direct and livechat conferences have no `title` and aren't the many-participants case this covers). `buildConferenceCallHistoryItems` (`apps/meteor/lib/videoConference/callHistory.ts`) builds one item per entry in the conference's `users[]` membership list — a room subscriber who was rung at start but never joined, was never added, and never declined has no membership entry, so gets no history item. Per member:
+Items are written once, when a **group** conference stops — either because it was ended (`endCall`) or because the expiry cron ran past its 24h TTL (`expireCall`). Both matter: a provider that never reports the end back to Rocket.Chat, which includes the bundled Jitsi app, leaves *every* conference to be expired, so writing only on end writes almost never. Direct and livechat conferences are out of scope — they have no `title` and aren't the many-participants case this covers. `buildConferenceCallHistoryItems` (`apps/meteor/lib/videoConference/callHistory.ts`) builds one item per entry in the conference's `users[]` membership list — a room subscriber who was rung at start but never joined, was never added, and never declined has no membership entry, so gets no history item. Per member:
 - `direction` is `outbound` for the conference's creator, `inbound` for everyone else.
 - `state` is `ended` for a member who joined and `not-answered` for one who did not. Only members get an item, and a member either joined or was rung and didn't — so not joining *is* not answering, whether they declined explicitly or ignored it. Reporting an ignored ring as a normal ended call would hide a missed conference.
 
-`setStatus(ENDED)` is public and reachable more than once for the same call, so the write is guarded on the call not already having ended — otherwise every member would collect a duplicate entry.
+Both paths are reachable more than once for one call — an app can send `ENDED` repeatedly, and the cron runs every three hours — so `shouldWriteConferenceHistory` refuses a call that already carries `endedAt`, and must be given the call as read *before* `endedAt` is set. Otherwise every member collects a duplicate entry per attempt.
 
 All call-history items — media calls and conferences alike — live in the same `call_history` collection, so the existing `direction`/`state` filters on `call-history.list` already apply to conference items with no change. The free-text `filter` search term gains one more `$or` branch matching the conference's `title` (`CallHistoryRaw.findAllByUserIdAndSearchFilters`).
 
@@ -460,6 +460,17 @@ Where the seams are drawn matters: `resolveChatAccessMode` and `chatAccessLeadsW
 the modal's primary button**, so the rule is tested once and the two can't drift. `VideoConfService` itself is
 not unit-tested — proxyquiring it means stubbing some thirty modules, one of which opens a Mongo driver at
 import time — which is why the decisions worth pinning down were moved out of it.
+
+### Nothing "ends" a Jitsi conference
+
+Worth knowing before wondering why a call is missing from history: `endCall` runs when something tells
+Rocket.Chat the call is over — an app provider posting `ENDED`, or a direct call being hung up. Nothing in the
+Jitsi app does that, so its conferences sit at `STARTED` until `videoConferencesCron` expires them (on startup,
+then every three hours, for anything older than 24h). That is why history is written on both paths.
+
+Conferences expired *before* this landed have `endedAt` set already, so they are permanently invisible to
+history — the duplicate guard can't distinguish them from ones already written. Only conferences that stop from
+now on appear.
 
 ### Verified against live data
 

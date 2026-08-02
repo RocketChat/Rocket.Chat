@@ -45,7 +45,7 @@ import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
-import { buildConferenceCallHistoryItems } from '../../../lib/videoConference/callHistory';
+import { buildConferenceCallHistoryItems, shouldWriteConferenceHistory } from '../../../lib/videoConference/callHistory';
 import { resolveChatAccessMode } from '../../../lib/videoConference/chatAccess';
 import { availabilityErrors, shouldRingVideoConference } from '../../../lib/videoConference/constants';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
@@ -513,10 +513,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await this.runVideoConferenceChangedEvent(call._id);
 		this.notifyVideoConfUpdate(call.rid, call._id);
 
-		// `setStatus(ENDED)` is public and reachable more than once for the same call (an app provider can send
-		// it repeatedly), so only write history the first time — otherwise every member collects a duplicate
-		// entry. `call` was read before `endedAt` was set above, so it still shows the previous state.
-		if (isGroupVideoConference(call) && !call.endedAt) {
+		// `call` was read before `endedAt` was set above, so it still shows the previous state — which is what
+		// makes the repeat guard in `shouldWriteConferenceHistory` work.
+		if (shouldWriteConferenceHistory(call)) {
 			await this.saveConferenceToHistory(call);
 		}
 
@@ -539,12 +538,18 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private async expireCall(callId: VideoConference['_id']): Promise<void> {
-		const call = await VideoConferenceModel.findOneById<Pick<VideoConference, '_id' | 'messages'>>(callId, { projection: { messages: 1 } });
+		const call = await this.getUnfiltered(callId);
 		if (!call) {
 			return;
 		}
 
 		await VideoConferenceModel.setDataById(call._id, { endedAt: new Date(), status: VideoConferenceStatus.EXPIRED });
+
+		// An expired call is one nobody ever ended, which is how a conference normally finishes when the provider
+		// doesn't report the end back. It still happened, so it belongs in its members' history just the same.
+		if (shouldWriteConferenceHistory(call)) {
+			await this.saveConferenceToHistory(call);
+		}
 	}
 
 	private async endDirectCall(call: IDirectVideoConference): Promise<void> {
