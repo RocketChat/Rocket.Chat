@@ -9,6 +9,7 @@ import {
 	isVideoConfListProps,
 	isVideoConfAddParticipantsProps,
 	isVideoConfDeclineProps,
+	isVideoConfShareChatProps,
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
 	validateBadRequestErrorResponse,
@@ -96,6 +97,16 @@ const addParticipantsResponseSchema = ajv.compile<{ added: string[] }>({
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['added', 'success'],
+	additionalProperties: false,
+});
+
+const shareChatResponseSchema = ajv.compile<{ rid: string }>({
+	type: 'object',
+	properties: {
+		rid: { type: 'string', description: 'The room the conference chat now lives in.' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['rid', 'success'],
 	additionalProperties: false,
 });
 
@@ -353,6 +364,37 @@ API.v1.post(
 	},
 );
 
+API.v1.post(
+	'video-conference.share-chat',
+	{
+		authRequired: true,
+		body: isVideoConfShareChatProps,
+		rateLimiterOptions: { numRequestsAllowed: 5, intervalTimeInMS: 60000 },
+		response: {
+			200: shareChatResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { callId } = this.bodyParams;
+		const { userId } = this;
+
+		const call = await VideoConf.get(callId);
+		if (!call) {
+			return API.v1.failure('invalid-params');
+		}
+
+		if (!(await canAccessConference(call, userId)) || !userId) {
+			return API.v1.failure('invalid-params');
+		}
+
+		const rid = await VideoConf.shareChatWithMembers(userId, callId);
+
+		return API.v1.success({ rid });
+	},
+);
+
 API.v1.get(
 	'video-conference.info',
 	{
@@ -378,11 +420,18 @@ API.v1.get(
 			return API.v1.failure('invalid-params');
 		}
 
-		const capabilities = await VideoConf.listProviderCapabilities(call.providerName);
+		// Membership grants no room access, so some members may not be able to read the chat. The conference UI
+		// surfaces them and offers the remedy, which is why this ships with the conference rather than needing
+		// its own round trip.
+		const [capabilities, membersWithoutChatAccess] = await Promise.all([
+			VideoConf.listProviderCapabilities(call.providerName),
+			VideoConf.listMembersWithoutChatAccess(callId),
+		]);
 
 		return API.v1.success({
 			...(call as VideoConference),
 			capabilities,
+			membersWithoutChatAccess,
 		});
 	},
 );

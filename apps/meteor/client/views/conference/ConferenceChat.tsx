@@ -3,6 +3,7 @@ import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import AddParticipantsModal from './AddParticipantsModal';
+import ChatAccessNotice from './ChatAccessNotice';
 import ConferenceRoom from './ConferenceRoom';
 import ConferenceRoomPreload from './ConferenceRoomPreload';
 import NotFoundPage from '../notFound/NotFoundPage';
@@ -12,10 +13,11 @@ type ConferenceChatProps = {
 	callId: string;
 	rid?: string;
 	loading: boolean;
+	membersWithoutChatAccess: string[];
 	onClose?: () => void;
 };
 
-const ConferenceChat = ({ callId, rid, loading, onClose }: ConferenceChatProps) => {
+const ConferenceChat = ({ callId, rid, loading, membersWithoutChatAccess, onClose }: ConferenceChatProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 
@@ -56,6 +58,8 @@ const ConferenceChat = ({ callId, rid, loading, onClose }: ConferenceChatProps) 
 						{onClose && <IconButton marginInlineStart={8} small icon='cross' title={t('Close')} onClick={onClose} />}
 					</Box>
 				</Box>
+
+				<ChatAccessNotice callId={callId} memberIds={membersWithoutChatAccess} />
 
 				<ConferenceRoom rid={rid} />
 			</ConferenceRoomPreload>

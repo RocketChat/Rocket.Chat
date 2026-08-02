@@ -40,7 +40,13 @@ export const useConferenceEmbedded = (callId: string) => {
 	});
 
 	return {
-		room: { rid: info?.discussionRid || info?.rid, loading: isInfoPending, error: infoError } as const,
+		room: {
+			rid: info?.discussionRid || info?.rid,
+			loading: isInfoPending,
+			error: infoError,
+			// Members who are in the call but can't read its chat — membership grants no room access.
+			membersWithoutChatAccess: info?.membersWithoutChatAccess ?? [],
+		} as const,
 		conference: {
 			url: data?.url ? getConferenceCallUrl(data.url) : undefined,
 			providerName: data?.providerName,

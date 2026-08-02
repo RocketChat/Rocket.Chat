@@ -2610,6 +2610,7 @@
   "Generate_new_key": "Generate a new key",
   "Generating_key": "Generating key",
   "Get_all_apps": "Get all the apps your team needs",
+  "Give_access": "Give access",
   "Give_the_application_a_name_This_will_be_seen_by_your_users": "Give the application a name. This will be seen by your users.",
   "Global": "Global",
   "Global Policy": "Global Policy",
@@ -7394,6 +7395,10 @@
   "your_message_optional": "your message (optional)",
   "__agents__agents_and__count__conversations__period__": "{{agents}} agents and {{count}} conversations, {{period}}",
   "__count__conversations__period__": "{{count}} conversations, {{period}}",
+  "__count__participants_cannot_see_the_chat": {
+    "one": "{{count}} participant can't see the chat",
+    "other": "{{count}} participants can't see the chat"
+  },
   "__count__empty_rooms_will_be_removed_automatically": "{{count}} empty rooms will be removed automatically.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "<bold>{{count}}</bold> empty rooms will be removed automatically:<br/> {{rooms}}.",
   "__count__file_pruned": {
