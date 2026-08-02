@@ -18,6 +18,11 @@ const ACCEPT_TIMEOUT = 5000;
 type IncomingDirectCall = DirectCallParams & {
 	timeout: ReturnType<typeof setTimeout> | undefined;
 	acceptTimeout?: ReturnType<typeof setTimeout> | undefined;
+	/**
+	 * Whether accepting has to be negotiated with the caller's client, which is repeating the call and waiting
+	 * to confirm we may join. A server-originated ring has nobody waiting, so it is joined outright.
+	 */
+	handshake: boolean;
 };
 
 type CurrentCallParams = {
@@ -194,6 +199,13 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		// Mute this call Id so any lingering notifications don't trigger it again
 		this.dismissIncomingCall(callId);
 
+		// Nobody is waiting to hand us a link, so there is nothing to negotiate — the conference already exists
+		// and membership is what authorizes joining it.
+		if (!callData.handshake) {
+			void this.joinCall(callId);
+			return;
+		}
+
 		this.setIncomingCallAttribute(
 			callId,
 			'acceptTimeout',
@@ -229,7 +241,12 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		// about another user's call, so it can't be trusted as the record of what happened.
 		void sdk.rest.post('/v1/video-conference.decline', { callId });
 
-		this.userId && this.notifyUser(callData.uid, 'rejected', { callId, uid: this.userId, rid: callData.rid });
+		// Only a caller's own client is waiting to hear this; for a server-originated ring the record above is
+		// the whole story, and telling the user who added us that we "rejected" would read as ending their call.
+		if (callData.handshake) {
+			this.userId && this.notifyUser(callData.uid, 'rejected', { callId, uid: this.userId, rid: callData.rid });
+		}
+
 		this.loseIncomingCall(callId);
 	}
 
@@ -511,10 +528,10 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			case 'call':
 				return this.onDirectCall(params);
 			// A server-originated ring: the conference already exists and the server is telling us to ring for
-			// it, rather than a caller's client repeating `call` while it waits for an answer. Registering it is
-			// identical; the difference is that nothing refreshes the timeout, so it rings once and gives up.
+			// it, rather than a caller's client repeating `call` while it waits for an answer. Nothing refreshes
+			// the timeout, so it rings once and gives up — and accepting joins the call rather than negotiating.
 			case 'ring':
-				return this.onDirectCall(params);
+				return this.onDirectCall(params, false);
 			case 'canceled':
 				return this.onDirectCallCanceled(params);
 			case 'accepted':
@@ -593,7 +610,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		return setTimeout(() => this.abortIncomingCall(callId), CALL_TIMEOUT);
 	}
 
-	private startNewIncomingCall({ callId, uid, rid }: DirectCallParams): void {
+	private startNewIncomingCall({ callId, uid, rid }: DirectCallParams, handshake: boolean): void {
 		if (this.isCallDismissed(callId)) {
 			this.debugLog(`[VideoConf] Ignoring dismissed call.`);
 			return;
@@ -608,6 +625,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			uid,
 			rid,
 			timeout: this.createAbortTimeout(callId),
+			handshake,
 		});
 
 		this.emit('incoming/changed');
@@ -632,7 +650,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		}
 	}
 
-	private onDirectCall({ callId, uid, rid }: DirectCallParams): void {
+	private onDirectCall({ callId, uid, rid }: DirectCallParams, handshake = true): void {
 		// If we already accepted this call, then don't ring again
 		if (this.incomingCalls.get(callId)?.acceptTimeout) {
 			return;
@@ -642,7 +660,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 		if (this.incomingCalls.has(callId)) {
 			this.refreshExistingIncomingCall({ callId, uid, rid });
 		} else {
-			this.startNewIncomingCall({ callId, uid, rid });
+			this.startNewIncomingCall({ callId, uid, rid }, handshake);
 		}
 	}
 
