@@ -463,8 +463,10 @@ export class NotificationsModule {
 		});
 
 		this.streamVideoConference.allowWrite('none');
-		// Only people who are in the call may follow its updates — the conference's own participant list is
-		// the source of truth, since invited users may not have access to the room it originated in.
+		// Conference membership authorizes following the call — members may have no access to the room it
+		// originated in — and so does access to the room the chat lives in. That is the same pair
+		// `video-conference.info` accepts, and both halves are needed: membership alone refuses a room member
+		// who opens the conference before their join lands, and a refused subscription is never retried.
 		this.streamVideoConference.allowRead(async function (eventName) {
 			const user = await getCachedUserForPublication(this);
 			if (!user) {
@@ -472,12 +474,19 @@ export class NotificationsModule {
 			}
 
 			const [callId] = eventName.split('/');
-			const call = await VideoConference.findOneById(callId, { projection: { users: 1 } });
+			const call = await VideoConference.findOneById(callId, { projection: { users: 1, rid: 1, discussionRid: 1 } });
 			if (!call) {
 				return false;
 			}
 
-			return call.users.some(({ _id }) => _id === user._id);
+			if (call.users.some(({ _id }) => _id === user._id)) {
+				return true;
+			}
+
+			const chatRids = [call.rid, call.discussionRid].filter((rid): rid is string => !!rid);
+			const rooms = await Rooms.findByIds(chatRids).toArray();
+
+			return (await Promise.all(rooms.map((room) => Authorization.canReadRoom(room, user)))).some(Boolean);
 		});
 
 		this.streamLocal.serverOnly = true;
