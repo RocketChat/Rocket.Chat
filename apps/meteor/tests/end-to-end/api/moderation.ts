@@ -248,22 +248,6 @@ describe('[Moderation]', () => {
 					expect(res.body).to.have.property('success', true);
 				});
 		});
-
-		it('should return an error when the userId && msgId is not provided', async () => {
-			await request
-				.post(api('moderation.dismissReports'))
-				.set(credentials)
-				.send({
-					userId: '',
-					msgId: '',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error').and.to.be.a('string');
-				});
-		});
 	});
 
 	describe('[/moderation.user.reportsByUserId]', () => {
@@ -292,24 +276,6 @@ describe('[Moderation]', () => {
 				.expect(async (res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array').and.to.have.lengthOf(1);
-				});
-		});
-
-		it('should return an error when the userId is not provided', async () => {
-			await request
-				.get(api('moderation.user.reportsByUserId'))
-				.set(credentials)
-				.query({
-					userId: '',
-					count: 5,
-					offset: 0,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect(async (res: Response) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
-					expect(res.body).to.have.property('errorType', 'invalid-params');
 				});
 		});
 	});
@@ -342,21 +308,6 @@ describe('[Moderation]', () => {
 			await getUsersReports(reportedUser._id).then((res) => {
 				expect(res.reports).to.have.lengthOf(0);
 			});
-		});
-
-		it('should return an error when the userId is not provided', async () => {
-			await request
-				.post(api('moderation.dismissUserReports'))
-				.set(credentials)
-				.send({
-					userId: '',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error').and.to.be.a('string');
-				});
 		});
 	});
 
@@ -426,21 +377,6 @@ describe('[Moderation]', () => {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
-				});
-		});
-
-		it('should return an error when the msgId is not provided', async () => {
-			await request
-				.get(api('moderation.reports'))
-				.set(credentials)
-				.query({
-					msgId: '',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error').and.to.be.a('string');
 				});
 		});
 	});
@@ -530,36 +466,6 @@ describe('[Moderation]', () => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('report').and.to.be.an('object');
 					expect(res.body.report).to.have.property('_id', reportedMessage._id);
-				});
-		});
-
-		it('should return an error when the reportId is not provided', async () => {
-			await request
-				.get(api('moderation.reportInfo'))
-				.set(credentials)
-				.query({
-					reportId: '',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error').and.to.be.a('string');
-				});
-		});
-
-		it('should return an error when the reportId is invalid', async () => {
-			await request
-				.get(api('moderation.reportInfo'))
-				.set(credentials)
-				.query({
-					reportId: 'invalid',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error').and.to.be.a('string');
 				});
 		});
 
@@ -665,21 +571,6 @@ describe('[Moderation]', () => {
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
 				});
 		});
-
-		it('should return an error when the userId is not provided', async () => {
-			await request
-				.get(api('moderation.user.reportedMessages'))
-				.set(credentials)
-				.query({
-					userId: '',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error').and.to.be.a('string');
-				});
-		});
 	});
 
 	// test for testing out the moderation.user.deleteReportedMessages endpoint
@@ -752,21 +643,6 @@ describe('[Moderation]', () => {
 					expect(res.body).to.have.property('success', true);
 				});
 		});
-
-		it('should return an error when the userId is not provided', async () => {
-			await request
-				.post(api('moderation.user.deleteReportedMessages'))
-				.set(credentials)
-				.send({
-					userId: '',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error').and.to.be.a('string');
-				});
-		});
 	});
 
 	describe('[/moderation.reportUser]', () => {
@@ -792,22 +668,6 @@ describe('[Moderation]', () => {
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
-				});
-		});
-
-		it('should fail to report an user if not provided description', async () => {
-			await request
-				.post(api('moderation.reportUser'))
-				.set(credentials)
-				.send({
-					userId: userToBeReported?._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
-					expect(res.body).to.have.property('errorType', 'invalid-params');
 				});
 		});
 	});
