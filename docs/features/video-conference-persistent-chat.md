@@ -461,6 +461,22 @@ the modal's primary button**, so the rule is tested once and the two can't drift
 not unit-tested — proxyquiring it means stubbing some thirty modules, one of which opens a Mongo driver at
 import time — which is why the decisions worth pinning down were moved out of it.
 
+### Verified against live data
+
+The premise — membership without room access — was confirmed by reading a development workspace's Mongo
+directly, not only by test:
+
+- A conference on a **DM** between two users carried a third, `alice`, as a `users[]` entry with
+  `joined: false` and **no subscription to that DM**. She is authorized to join the call and cannot read its
+  chat, which is exactly the state the model exists to represent.
+- Entries mixed both shapes as designed: joined members carry `joined: true` and a `joinedAt`; added members
+  carry `joined: false` and no `joinedAt`. Every entry carries `ts`.
+
+Not yet observed live: a persisted **decline**. `POST /v1/video-conference.decline` is covered from the client
+side (`VideoConfManager.spec.ts`) and the model write is covered by shape
+(`packages/models/src/models/VideoConference.spec.ts`), but no `users[].declined` flag has been seen in real
+data, so the endpoint-to-model chain rests on those two tests meeting in the middle.
+
 ### Known gaps
 
 - **No members panel.** Declines and per-member state are stored but there is nowhere to see them. See
