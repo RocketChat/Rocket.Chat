@@ -78,6 +78,7 @@ import {
 	AbacAttributesRaw,
 	TwoFactorChallengesRaw,
 	SamlUsedAssertionsRaw,
+	OmnichannelSchedulerRaw,
 } from '@rocket.chat/models';
 import type { Collection } from 'mongodb';
 
@@ -167,3 +168,6 @@ registerModel('IWorkspaceCredentialsModel', new WorkspaceCredentialsRaw(db));
 registerModel('IAbacAttributesModel', new AbacAttributesRaw(db));
 registerModel('ITwoFactorChallengesModel', new TwoFactorChallengesRaw(db));
 registerModel('ISamlUsedAssertionsModel', new SamlUsedAssertionsRaw(db));
+registerModel('IOmnichannelAutoCloseSchedulerModel', new OmnichannelSchedulerRaw(db, 'omnichannel_auto_close_on_hold_scheduler'));
+registerModel('IOmnichannelAutoTransferSchedulerModel', new OmnichannelSchedulerRaw(db, 'omnichannel_scheduler'));
+registerModel('IOmnichannelQueueInactivitySchedulerModel', new OmnichannelSchedulerRaw(db, 'omnichannel_queue_inactivity_monitor'));
