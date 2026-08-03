@@ -2320,7 +2320,7 @@
   "Mail_Message_No_messages_selected_select_all": "Vous n'avez sélectionné aucun message",
   "Mail_Messages": "Messages électroniques",
   "Mail_Messages_Instructions": "Choisissez les messages que vous souhaitez envoyer par e-mail en cliquant dessus",
-  "Mail_Messages_Subject": "Voici une partie sélectionnée des {{roomName}} messages",
+  "Mail_Messages_Subject": "Voici une partie sélectionnée des messages de {{roomName}}",
   "Mailer": "Mailer",
   "Mailer_body_tags": "Vous <b>devez</b> utiliser [unsubscribe] pour le lien de désabonnement.<br/>Vous pouvez utiliser respectivement `[name]`, `[fname]`, `[lname]` pour le nom complet, le prénom et le nom de famille de l'utilisateur.<br/>Vous pouvez utiliser [email] pour l'adresse e-mail de l'utilisateur.",
   "Mailing": "Envoi d'e-mail",

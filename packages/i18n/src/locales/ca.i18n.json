@@ -3307,7 +3307,7 @@
   "Showing_archived_results": "<p>Mostrant <b>%s</b> resultats arxivats</p>",
   "Showing_online_users": "Mostrant-ne <b>{{total_showing}}</b>, En línia: {{online}}, Total: {{total}} usuaris",
   "Showing_results": "<p>Mostrant <b>%s</b> resultats</p>",
-  "Showing_results_of": "Mostrant resultats {{from}} -{{to}} de {{total}}",
+  "Showing_results_of": "Mostrant resultats {{from}} - {{to}} de {{total}}",
   "Sidebar": "Barra lateral",
   "Sidebar_list_mode": "Mode de llista de canals de la barra lateral",
   "Sign_in_to_start_talking": "Identifica't per començar a parlar",
