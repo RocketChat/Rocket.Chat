@@ -166,16 +166,23 @@ describe('UserPresence', () => {
 	});
 
 	it('should keep a desktop user away when the desktop app reported them idle while disconnected', async () => {
-		const setUserPresenceDetection = jest.fn<(options: { setUserOnline: (online: boolean) => void }) => void>();
-		Object.assign(window, { RocketChatDesktop: { setUserPresenceDetection } });
+		let setUserOnline: ((online: boolean) => void) | undefined;
+
+		Object.assign(window, {
+			RocketChatDesktop: {
+				setUserPresenceDetection: (options: { setUserOnline: (online: boolean) => void }) => {
+					setUserOnline = options.setUserOnline;
+				},
+			},
+		});
 
 		try {
 			const { rerender } = render();
-			const { setUserOnline } = setUserPresenceDetection.mock.calls[0][0];
+			expect(setUserOnline).toBeDefined();
 
 			dropConnection(rerender);
 
-			setUserOnline(false);
+			setUserOnline?.(false);
 			await jest.advanceTimersByTimeAsync(DEBOUNCE_WAIT);
 			expect(goAway).not.toHaveBeenCalled();
 
