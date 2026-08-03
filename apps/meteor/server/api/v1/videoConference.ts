@@ -391,7 +391,7 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		const { callId } = this.bodyParams;
+		const { callId, users } = this.bodyParams;
 		const { userId } = this;
 
 		const call = await VideoConf.get(callId);
@@ -403,7 +403,7 @@ API.v1.post(
 			return API.v1.failure('invalid-params');
 		}
 
-		const rang = await VideoConf.ringMembers(userId, callId);
+		const rang = await VideoConf.ringMembers(userId, callId, users);
 
 		return API.v1.success({ rang });
 	},

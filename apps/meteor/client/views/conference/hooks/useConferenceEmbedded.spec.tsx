@@ -32,21 +32,26 @@ const buildInfo = (membersWithoutAccess: string[]) =>
 
 const renderConference = () => {
 	const streamRef: StreamControllerRef<'video-conference'> = {};
-	let reads = 0;
+	// What the server would say right now. Set by the test, rather than derived from how many times the hook has
+	// read — the hook reads whenever it has reason to, which is not the test's business.
+	let membersWithoutAccess = [outsider._id];
 
 	const result = renderHook(() => useConferenceEmbedded(callId), {
 		wrapper: mockAppRoot()
 			.withJohnDoe()
 			.withStream('video-conference', streamRef)
-			.withEndpoint('GET', '/v1/video-conference.info', () => {
-				reads += 1;
-				return buildInfo(reads === 1 ? [outsider._id] : []);
-			})
+			.withEndpoint('GET', '/v1/video-conference.info', () => buildInfo(membersWithoutAccess))
 			.withEndpoint('POST', '/v1/video-conference.join', () => ({ url: 'https://call.example', providerName: 'test' }) as any)
 			.build(),
 	});
 
-	return { ...result, streamRef, reads: () => reads };
+	return {
+		...result,
+		streamRef,
+		resolveChatAccess: () => {
+			membersWithoutAccess = [];
+		},
+	};
 };
 
 it('resolves the chat room and the members who cannot read it', async () => {
@@ -56,14 +61,16 @@ it('resolves the chat room and the members who cannot read it', async () => {
 	await waitFor(() => expect(result.current.room.chatAccess?.members).toEqual([{ ...outsider, ts: new Date(outsider.ts) }]));
 });
 
-it.each(['discussionUpdated', 'chatAccessUpdated'] as const)('reads the conference again on %s', async (event) => {
-	const { result, streamRef } = renderConference();
+it.each(['discussionUpdated', 'chatAccessUpdated', 'membersUpdated'] as const)('reads the conference again on %s', async (event) => {
+	const { result, streamRef, resolveChatAccess } = renderConference();
 
 	await waitFor(() => expect(result.current.room.chatAccess?.members).toHaveLength(1));
 
-	// Both events mean "what you know about this conference is stale" — the chat moved, or the same room
-	// became readable. Missing either leaves a notice up until the page is reloaded.
-	// The two event keys carry different argument tuples, so the union needs widening to emit either.
+	resolveChatAccess();
+
+	// Each event means "what you know about this conference is stale" — the chat moved, the same room became
+	// readable, or the membership changed. Missing any of them leaves the UI wrong until the page is reloaded.
+	// The event keys carry different argument tuples, so the union needs widening to emit any of them.
 	(streamRef.controller?.emit as (event: string, args: unknown[]) => void)?.(`${callId}/${event}`, [{ discussionRid: undefined }]);
 
 	await waitFor(() => expect(result.current.room.chatAccess?.members).toHaveLength(0));

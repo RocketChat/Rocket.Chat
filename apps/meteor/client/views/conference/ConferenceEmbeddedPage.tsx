@@ -4,6 +4,7 @@ import { useSetModal, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import CallMembersPanel from './CallMembersPanel';
 import CallOutcomeModal from './CallOutcomeModal';
 import ChatAccessNotice from './ChatAccessNotice';
 import ConferenceChat from './ConferenceChat';
@@ -71,7 +72,8 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 
 	// A provider rendering its own toolbar can hide our bar and drive the chat panel from its own controls.
 	const iframeRef = useRef<HTMLIFrameElement>(null);
-	const { callBarVisible, chatVisible, toggleChat } = useProviderCallBridge(iframeRef);
+	const { callBarVisible, activePanel, togglePanel } = useProviderCallBridge(iframeRef);
+	const chatVisible = activePanel === 'chat';
 
 	// On narrow viewports the panel floats over the call instead of squeezing it.
 	const breakpoints = useBreakpoints();
@@ -105,15 +107,41 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 					<ConferenceIframe ref={iframeRef} url={conference.url} />
 				</Box>
 
-				<CallPanel visible={chatVisible} overlay={overlayPanel}>
-					<ConferenceChat callId={callId} rid={room.rid} loading={room.loading} chatAccess={room.chatAccess} onClose={toggleChat} />
+				{/* One panel at a time: they share the same space, and two side panels would leave the call a
+				    sliver. Which one is open is the single source of truth, so the bar can't disagree with it. */}
+				<CallPanel visible={!!activePanel} overlay={overlayPanel}>
+					{activePanel === 'members' && (
+						<CallMembersPanel
+							callId={callId}
+							rid={room.rid}
+							members={call.members}
+							membersWithoutChatAccess={room.chatAccess?.membersWithoutAccess ?? []}
+							onClose={() => togglePanel('members')}
+						/>
+					)}
+					{activePanel === 'chat' && (
+						<ConferenceChat
+							callId={callId}
+							rid={room.rid}
+							loading={room.loading}
+							chatAccess={room.chatAccess}
+							onClose={() => togglePanel('chat')}
+						/>
+					)}
 				</CallPanel>
 			</Box>
 
 			{callBarVisible && (
 				<CallBar>
 					<CallBarActions placement='end'>
-						<CallBarAction icon='balloon' label={t('Chat')} pressed={chatVisible} badgeCount={unreadCount} onClick={toggleChat} />
+						<CallBarAction icon='team' label={t('Members')} pressed={activePanel === 'members'} onClick={() => togglePanel('members')} />
+						<CallBarAction
+							icon='balloon'
+							label={t('Chat')}
+							pressed={chatVisible}
+							badgeCount={unreadCount}
+							onClick={() => togglePanel('chat')}
+						/>
 					</CallBarActions>
 				</CallBar>
 			)}

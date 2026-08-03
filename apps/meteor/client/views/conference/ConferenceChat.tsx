@@ -1,8 +1,7 @@
-import { Box, Button, IconButton } from '@rocket.chat/fuselage';
-import { useSetModal, useUserId } from '@rocket.chat/ui-contexts';
+import { Box, IconButton } from '@rocket.chat/fuselage';
+import { useUserId } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import AddParticipantsModal from './AddParticipantsModal';
 import ChatAccessNotice from './ChatAccessNotice';
 import ConferenceChatNotShared from './ConferenceChatNotShared';
 import ConferenceRoom from './ConferenceRoom';
@@ -21,7 +20,6 @@ type ConferenceChatProps = {
 
 const ConferenceChat = ({ callId, rid, loading, chatAccess, onClose }: ConferenceChatProps) => {
 	const { t } = useTranslation();
-	const setModal = useSetModal();
 	const uid = useUserId();
 
 	if (loading) {
@@ -51,18 +49,10 @@ const ConferenceChat = ({ callId, rid, loading, chatAccess, onClose }: Conferenc
 				<Box is='h5' fontScale='h5' color='default'>
 					{t('Chat')}
 				</Box>
-				{/* The panel is docked to the inline end of the call, so dismissal sits at the far end — the
-				    same place every other closable surface in the product puts it. */}
-				<Box display='flex' alignItems='center'>
-					<Button
-						small
-						icon='user-plus'
-						onClick={() => setModal(<AddParticipantsModal callId={callId} rid={rid} onClose={() => setModal(null)} />)}
-					>
-						{t('Add_people')}
-					</Button>
-					{onClose && <IconButton marginInlineStart={8} small icon='cross' title={t('Close')} onClick={onClose} />}
-				</Box>
+				{/* Adding people lives in the members panel, next to the list of who is already here. The panel is
+				    docked to the inline end of the call, so dismissal sits at the far end — the same place every
+				    other closable surface in the product puts it. */}
+				{onClose && <IconButton small icon='cross' title={t('Close')} onClick={onClose} />}
 			</Box>
 
 			{!shared && <ConferenceChatNotShared />}
