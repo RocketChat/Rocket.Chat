@@ -7,7 +7,6 @@ import { UserPresence } from './userPresence';
 const IDLE_TIME_LIMIT = 300;
 const IDLE_TIME_LIMIT_MS = IDLE_TIME_LIMIT * 1000;
 const DEBOUNCE_WAIT = 1000;
-const AWAY_RETRY_DELAY = 500;
 
 const state = {
 	connected: true,
@@ -97,28 +96,6 @@ describe('UserPresence', () => {
 		expect(goOnline).not.toHaveBeenCalled();
 	});
 
-	it('should retry the away assertion while the server has not registered the reconnected session', async () => {
-		const { rerender } = render();
-
-		await goIdle();
-		expect(goAway).toHaveBeenCalledTimes(1);
-
-		// the reconnected session is not in `usersSessions` yet, so the first assertion updates nothing
-		goAway.mockResolvedValueOnce(false);
-
-		dropConnection(rerender);
-		restoreConnection(rerender);
-		await jest.advanceTimersByTimeAsync(0);
-		expect(goAway).toHaveBeenCalledTimes(2);
-
-		await jest.advanceTimersByTimeAsync(AWAY_RETRY_DELAY);
-		expect(goAway).toHaveBeenCalledTimes(3);
-
-		// stops retrying once the server confirms the update
-		await jest.advanceTimersByTimeAsync(AWAY_RETRY_DELAY * 5);
-		expect(goAway).toHaveBeenCalledTimes(3);
-	});
-
 	it('should not re-assert presence before the reconnected session is logged in', async () => {
 		const { rerender } = render();
 
@@ -186,6 +163,29 @@ describe('UserPresence', () => {
 		await jest.advanceTimersByTimeAsync(0);
 
 		expect(goAway).toHaveBeenCalledTimes(1);
+	});
+
+	it('should keep a desktop user away when the desktop app reported them idle while disconnected', async () => {
+		const setUserPresenceDetection = jest.fn<(options: { setUserOnline: (online: boolean) => void }) => void>();
+		Object.assign(window, { RocketChatDesktop: { setUserPresenceDetection } });
+
+		try {
+			const { rerender } = render();
+			const { setUserOnline } = setUserPresenceDetection.mock.calls[0][0];
+
+			dropConnection(rerender);
+
+			setUserOnline(false);
+			await jest.advanceTimersByTimeAsync(DEBOUNCE_WAIT);
+			expect(goAway).not.toHaveBeenCalled();
+
+			restoreConnection(rerender);
+			await jest.advanceTimersByTimeAsync(0);
+
+			expect(goAway).toHaveBeenCalledTimes(1);
+		} finally {
+			delete (window as { RocketChatDesktop?: unknown }).RocketChatDesktop;
+		}
 	});
 
 	it('should not force the user away on reconnection when auto away is disabled', async () => {

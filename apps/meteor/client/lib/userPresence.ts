@@ -9,13 +9,6 @@ import { Users } from '../stores';
 
 // TODO: merge this with the current React-based implementation of idle detection
 
-// `UserPresence:away` only sticks after the server has registered the new DDP session
-// (`Presence.newConnection`, triggered by the login that follows a reconnection). The login method
-// may resolve on the client before that write lands, so the assertion is retried while the server
-// reports that no connection was updated.
-const AWAY_ASSERTION_ATTEMPTS = 3;
-const AWAY_ASSERTION_RETRY_DELAY = 500;
-
 export class UserPresence {
 	private user: IUser | undefined;
 
@@ -32,9 +25,6 @@ export class UserPresence {
 
 	/** Idle flag used when there is no local away timer (i.e. presence detection delegated to the desktop app). */
 	private idle = false;
-
-	/** Identifies the running away assertion, so a newer one supersedes the retries of the previous. */
-	private awayAssertionToken = 0;
 
 	private goOnline: () => Promise<boolean | undefined> = async () => undefined;
 
@@ -57,13 +47,19 @@ export class UserPresence {
 		clearTimeout(this.timer);
 	}
 
+	// both entry points record the idle state right away, even while disconnected: the status update
+	// itself is debounced and skipped when there is no connection, but going idle in the meantime is
+	// exactly what has to be remembered to be restated on the next reconnection
 	private readonly registerActivity = () => {
 		this.lastActivityAt = Date.now();
 		this.idle = false;
 		this.setStatus(UserStatus.ONLINE);
 	};
 
-	private readonly setAway = () => this.setStatus(UserStatus.AWAY);
+	private readonly setAway = () => {
+		this.idle = true;
+		this.setStatus(UserStatus.AWAY);
+	};
 
 	/** Whether the user is idle according to what this client observed, regardless of the connection state. */
 	private isIdle(): boolean {
@@ -88,44 +84,23 @@ export class UserPresence {
 			this.storeUser({ ...this.user, status: newStatus });
 		}
 
-		this.status = newStatus;
-
 		switch (newStatus) {
 			case UserStatus.ONLINE:
-				this.idle = false;
 				this.startTimer();
 				await this.goOnline();
 				this.startTimer();
 				break;
 
 			case UserStatus.AWAY:
-				this.idle = true;
 				this.stopTimer();
-				await this.assertAway();
+				await this.goAway();
 				break;
 		}
+
+		this.status = newStatus;
 	};
 
 	private readonly setStatus = withDebouncing({ wait: 1000 })(this.applyStatus);
-
-	private async assertAway(): Promise<void> {
-		const token = ++this.awayAssertionToken;
-
-		for (let attempt = 1; attempt <= AWAY_ASSERTION_ATTEMPTS; attempt++) {
-			// bail out if the user is back online, disconnected, or a newer assertion took over
-			if (!this.connected || this.status !== UserStatus.AWAY || token !== this.awayAssertionToken) {
-				return;
-			}
-
-			if (await this.goAway()) {
-				return;
-			}
-
-			if (attempt < AWAY_ASSERTION_ATTEMPTS) {
-				await new Promise((resolve) => setTimeout(resolve, AWAY_ASSERTION_RETRY_DELAY));
-			}
-		}
-	}
 
 	/**
 	 * Restates the presence this client knows about.
