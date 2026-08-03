@@ -58,6 +58,14 @@ The conference renders **standalone**, without the app's navigation chrome.
 
 The conference route is the only consumer of `AuthenticationCheck` outside `MainLayout`; every other route (including dynamic admin/account/room/audit groups) wraps in `MainLayout` and keeps the chrome.
 
+`AuthenticationCheck` also had to learn the difference between "not logged in" and "not logged in *yet*". It
+decided from `useUser()` alone, which is null while a stored session is still being resumed — so a window that
+opens with a session already in hand, a call popout above all, showed a login form for the few hundred
+milliseconds that took. It now waits instead, on either signal that a resume is under way: `isLoggingIn` once
+Meteor has started one, or a stored login token for the instant before that. A token that turns out to be stale
+is cleared when the resume fails, which lands as an ordinary logged-out visitor, and a forced login always goes
+straight to the form.
+
 The same applies to the chain's *loading placeholder*. `UsernameCheck` shows `HomeSkeleton` — a sidebar list, room and composer skeleton — while it resolves the user, which would flash a whole fake app shell in a conference window that never shows one. `AuthenticationCheck` and `UsernameCheck` therefore take an optional `loading` node; it still defaults to `HomeSkeleton` (so no existing route changes), and the conference route passes `PageLoading` instead. A plain spinner also matches what the conference itself shows while joining, making startup one continuous state rather than two.
 
 Because it has no `MainContent` ancestor to inherit height from, `ConferenceViewport` establishes the `100dvh`/`100%` box the conference fills. The route is also wrapped with `appLayout.wrap(..., { embedded: true })`, which drops the global banner and cloud-announcement regions.
@@ -562,6 +570,7 @@ and package-level jest.
 | Which action leads, and that a DM only offers the discussion | `apps/meteor/client/views/conference/ChatAccessModal.spec.tsx` |
 | The incoming popup renders for a room the member can't see | `apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfPopups/VideoConfPopups.spec.tsx` |
 | Which side of the chat-access split each participant sees | `apps/meteor/client/views/conference/ConferenceChat.spec.tsx` |
+| That a window resuming a session waits rather than flashing the login form | `apps/meteor/client/views/root/MainLayout/AuthenticationCheck.spec.tsx` |
 | Who the notice is shown to, that it ignores members who never joined, and that Review opens the modal | `apps/meteor/client/views/conference/ChatAccessNotice.spec.tsx` |
 | Both stream events refetch the conference; the chat follows a discussion | `apps/meteor/client/views/conference/hooks/useConferenceEmbedded.spec.tsx` |
 | The chat subscription is seeded and followed for the life of the page | `apps/meteor/client/views/conference/hooks/useConferenceSubscription.spec.ts` |
