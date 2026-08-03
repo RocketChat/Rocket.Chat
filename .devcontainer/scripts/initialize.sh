@@ -31,6 +31,11 @@ trap overrides_cleanup EXIT
 # nothing at all when it is not.
 bash "$here/init-worktree.sh"
 
+# Passes your host git author identity through to the container, where
+# on-create.sh writes it into the container's global git config. Nothing to
+# contribute when the host has no identity configured.
+bash "$here/init-git-identity.sh"
+
 # Brings up the shared Turborepo remote cache. The devcontainer attaches to its
 # network as external, so the network must exist before compose runs.
 bash "$here/ensure-turbo-cache.sh"

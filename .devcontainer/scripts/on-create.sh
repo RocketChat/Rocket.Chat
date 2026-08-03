@@ -48,6 +48,24 @@ sudo chown vscode:vscode \
 	/workspaces/rocket.chat/node_modules \
 	/workspaces/rocket.chat/apps/meteor/.meteor/local
 
+# Your git author identity, read off the host by scripts/init-git-identity.sh and
+# passed in as environment on the service. Written as real config rather than left
+# in the environment so `git config user.email` answers, and so a repo-local
+# identity set inside the container still wins — see that script for why.
+#
+# Safe to write unconditionally: the container's home is not a volume, so this
+# runs against a fresh ~/.gitconfig on every create. Under VS Code that file may
+# already be a copy of the host's (dev.containers.copyGitConfig), in which case
+# this sets the same two keys to the same values.
+if [ -n "${RC_GIT_USER_NAME:-}" ]; then
+	log "setting git user.name to $RC_GIT_USER_NAME"
+	git config --global user.name "$RC_GIT_USER_NAME"
+fi
+if [ -n "${RC_GIT_USER_EMAIL:-}" ]; then
+	log "setting git user.email to $RC_GIT_USER_EMAIL"
+	git config --global user.email "$RC_GIT_USER_EMAIL"
+fi
+
 # A safety belt for the worktree setup: the container can see the shared git
 # dir but not the *other* worktrees' host paths, so from in here they all look
 # like they "point to a non-existent location" and become prune candidates
