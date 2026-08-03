@@ -2959,7 +2959,7 @@
   "Prune": "Retirar",
   "Prune_Messages": "Retirar mensajes",
   "Prune_Modal": "¿Seguro que quieres retirar estos mensajes? Los mensajes retirados no se pueden recuperar.",
-  "Prune_Warning_after": "Esto eliminará todos los %s en %s después de %s.",
+  "Prune_Warning_after": "Esto eliminará todos los {{items}} en {{roomName}} después de {{fromDate}}.",
   "Prune_Warning_all": "Esto eliminará todos los {{items}} en {{roomName}}",
   "Prune_Warning_before": "Esto eliminará todos los %s en %s antes de %s.",
   "Prune_Warning_between": "Esto eliminará todos los %s en %s entre %s y %s.",

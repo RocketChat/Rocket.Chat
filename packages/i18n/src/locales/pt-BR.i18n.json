@@ -4315,7 +4315,7 @@
   "Prune": "Remoção",
   "Prune_Messages": "Remoção de mensagens",
   "Prune_Modal": "Tem certeza de que deseja remover estas mensagens? As mensagens removidas não poderão ser recuperadas.",
-  "Prune_Warning_after": "Isso excluirá todos os %s em %s depois de %s.",
+  "Prune_Warning_after": "Isso excluirá todos os {{items}} em {{roomName}} depois de {{fromDate}}.",
   "Prune_Warning_all": "Isso excluirá todos os {{items}} em {{roomName}}!",
   "Prune_Warning_before": "Isso excluirá todos os %s em %s antes de %s.",
   "Prune_Warning_between": "Isso excluirá todos os %s em %s entre %s e %s.",

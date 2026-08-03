@@ -139,12 +139,7 @@ const PruneMessagesWithData = () => {
 
 		if (newerDate) {
 			return (
-				t('Prune_Warning_after', {
-					postProcess: 'sprintf',
-					sprintf: [filesOrMessages, name, formatDate(fromDate, 'L LT')],
-				}) +
-				exceptPinned +
-				ifFrom
+				t('Prune_Warning_after', { items: filesOrMessages, roomName: name, fromDate: formatDate(fromDate, 'L LT') }) + exceptPinned + ifFrom
 			);
 		}
 

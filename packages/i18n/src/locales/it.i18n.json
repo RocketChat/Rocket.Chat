@@ -2101,7 +2101,7 @@
   "Prune": "Cancella",
   "Prune_Messages": "Cancella Messaggi",
   "Prune_Modal": "Sei sicuro di voler eliminare questi messaggi? I messaggi eliminati non possono essere recuperati.",
-  "Prune_Warning_after": "Questo cancellerà tutto %s in %s dopo %s.",
+  "Prune_Warning_after": "Questo cancellerà tutto {{items}} in {{roomName}} dopo {{fromDate}}.",
   "Prune_Warning_all": "Questo cancellerà tutto {{items}} in {{roomName}}!",
   "Prune_Warning_before": "Questo cancellerà tutto %s in %s prima di %s.",
   "Prune_Warning_between": "Questo cancellerà tutto %s in %s tra %se %s.",

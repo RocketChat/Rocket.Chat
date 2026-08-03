@@ -1681,7 +1681,7 @@
   "Prune": "Prună uscată",
   "Prune_Messages": "Preluați mesajele",
   "Prune_Modal": "Sunteți sigur că doriți să împrăștiați aceste mesaje? Mesajele tăiate nu pot fi recuperate.",
-  "Prune_Warning_after": "Aceasta va șterge toate %s în %s după %s.",
+  "Prune_Warning_after": "Aceasta va șterge toate {{items}} în {{roomName}} după {{fromDate}}.",
   "Prune_Warning_all": "Aceasta va șterge toate {{items}} în {{roomName}}!",
   "Prune_Warning_before": "Aceasta va șterge toate %s în %s înainte de %s.",
   "Prune_Warning_between": "Aceasta va șterge toate %s în %s între %s și %s.",

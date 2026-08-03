@@ -2008,7 +2008,7 @@
   "Prune": "Budama",
   "Prune_Messages": "İletileri Buda",
   "Prune_Modal": "Bu iletileri budamak istediğinize emin misin? Budanmış iletiler geri getirlemez.",
-  "Prune_Warning_after": "%s içeriklerine dair, %s kanalı için %s tarihinden sonraki tümünü silecek.",
+  "Prune_Warning_after": "{{items}} içeriklerine dair, {{roomName}} kanalı için {{fromDate}} tarihinden sonraki tümünü silecek.",
   "Prune_Warning_all": "{{items}} içeriklerine dair, {{roomName}} kanalı için tümünü silecek.",
   "Prune_Warning_before": "%s içeriklerine dair, %s kanalı için %s tarihinden öncekileri tümünü silecek.",
   "Prune_Warning_between": "%s içeriklerine dair, %s kanalı için %s ve %s tarihleri arasındakileri silecek.",

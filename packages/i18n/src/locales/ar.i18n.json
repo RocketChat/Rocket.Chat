@@ -2907,7 +2907,7 @@
   "Prune": "تنقيح",
   "Prune_Messages": "تنقيح الرسائل",
   "Prune_Modal": "هل تريد فعلاً تنقيح هذه الرسائل؟ لا يمكن استرداد الرسائل المنقحة.",
-  "Prune_Warning_after": "سيؤدي هذا إلى حذف جميع %s في %s بعد %s.",
+  "Prune_Warning_after": "سيؤدي هذا إلى حذف جميع {{items}} في {{roomName}} بعد {{fromDate}}.",
   "Prune_Warning_all": "سيؤدي هذا إلى حذف جميع {{items}} في {{roomName}}!",
   "Prune_Warning_before": "سيؤدي هذا إلى حذف جميع %s في %s قبل %s.",
   "Prune_Warning_between": "سيؤدي هذا إلى حذف جميع %s في %s بين %s و%s.",

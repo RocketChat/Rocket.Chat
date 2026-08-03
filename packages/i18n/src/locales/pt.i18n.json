@@ -1974,7 +1974,7 @@
   "Prune": "Remoção em massa",
   "Prune_Messages": "Remoção de Mensagens",
   "Prune_Modal": "Tem certeza de que deseja remover essas mensagens? As mensagens limpas não podem ser recuperadas.",
-  "Prune_Warning_after": "Isto irá apagar todos os %s em %s depois de %s.",
+  "Prune_Warning_after": "Isto irá apagar todos os {{items}} em {{roomName}} depois de {{fromDate}}.",
   "Prune_Warning_all": "Isto irá apagar todos os {{items}} em {{roomName}}!",
   "Prune_Warning_before": "Isto irá apagar todos os %s em %s antes de %s.",
   "Prune_Warning_between": "Isto irá apagar todos os %s em %s entre %s e %s.",

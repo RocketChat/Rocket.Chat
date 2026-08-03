@@ -3534,7 +3534,7 @@
   "Prune": "कांट - छांट",
   "Prune_Messages": "संदेशों की छँटाई करें",
   "Prune_Modal": "क्या आप वाकई इन संदेशों की काट-छाँट करना चाहते हैं? काटे गए संदेशों को पुनर्प्राप्त नहीं किया जा सकता.",
-  "Prune_Warning_after": "यह %s के बाद %s में सभी %s को हटा देगा।",
+  "Prune_Warning_after": "यह {{items}} के बाद {{roomName}} में सभी {{fromDate}} को हटा देगा।",
   "Prune_Warning_all": "यह {{items}} में सभी {{roomName}} को हटा देगा!",
   "Prune_Warning_before": "यह %s से पहले %s में सभी %s को हटा देगा।",
   "Prune_Warning_between": "यह %s में %s और %s के बीच के सभी %s को हटा देगा।",

@@ -1520,7 +1520,7 @@
   "Prune": "Обриши",
   "Prune_Messages": "Обриши поруке",
   "Prune_Modal": "Да ли сте сигурни да желите да обришете ове поруке? Обрезане поруке се не могу опоравити.",
-  "Prune_Warning_after": "Ово ће избрисати све %s за %s након %s.",
+  "Prune_Warning_after": "Ово ће избрисати све {{items}} за {{roomName}} након {{fromDate}}.",
   "Prune_Warning_all": "Ово ће избрисати све {{items}} у {{roomName}}!",
   "Prune_Warning_before": "Ово ће избрисати све %s у %s прије %s.",
   "Prune_Warning_between": "Ово ће избрисати све %s у %s између %s и %s.",

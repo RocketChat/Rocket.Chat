@@ -2292,7 +2292,7 @@
   "Prometheus_Garbage_Collector_Alert": "გამოსართავად გადატვირთვაა საჭირო",
   "Prometheus_Reset_Interval": "ინტერვალის გადატვირთვა (მილიწამი)",
   "Protocol": "პროტოკოლი",
-  "Prune_Warning_after": "ეს წაშლის ყველა %s -ს %s- ში %s-ის შემდეგ",
+  "Prune_Warning_after": "ეს წაშლის ყველა {{items}} -ს {{roomName}}- ში {{fromDate}}-ის შემდეგ",
   "Prune_Warning_all": "ეს წაშლის ყველა {{items}} -ს {{roomName}}- ში!",
   "Prune_Warning_before": "ეს წაშლის ყველა %s -ს %s- ში %s-მდე",
   "Prune_Warning_between": "ეს წაშლის ყველა %s -ს %s-სა და %s-ს შორის",

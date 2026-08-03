@@ -1680,7 +1680,7 @@
   "Prune": "Prwn",
   "Prune_Messages": "Negeseuon Gwag",
   "Prune_Modal": "Ydych chi'n siŵr eich bod yn dymuno rhwystro'r negeseuon hyn? Ni ellir adfer negeseuon pruned.",
-  "Prune_Warning_after": "Bydd hyn yn dileu pob %s yn %s ar ôl %s.",
+  "Prune_Warning_after": "Bydd hyn yn dileu pob {{items}} yn {{roomName}} ar ôl {{fromDate}}.",
   "Prune_Warning_all": "Bydd hyn yn dileu pob {{items}} yn {{roomName}}!",
   "Prune_Warning_before": "Bydd hyn yn dileu pob %s yn %s cyn %s.",
   "Prune_Warning_between": "Bydd hyn yn dileu pob %s yn %s rhwng %s a %s.",

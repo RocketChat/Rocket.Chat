@@ -4442,7 +4442,7 @@
   "Prune": "Prune",
   "Prune_Messages": "Prune Messages",
   "Prune_Modal": "Are you sure you wish to prune these messages? Pruned messages cannot be recovered.",
-  "Prune_Warning_after": "This will delete all %s in %s after %s.",
+  "Prune_Warning_after": "This will delete all {{items}} in {{roomName}} after {{fromDate}}.",
   "Prune_Warning_all": "This will delete all {{items}} in {{roomName}}!",
   "Prune_Warning_before": "This will delete all %s in %s before %s.",
   "Prune_Warning_between": "This will delete all %s in %s between %s and %s.",

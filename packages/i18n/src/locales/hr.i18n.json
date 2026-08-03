@@ -1798,7 +1798,7 @@
   "Prune": "Obrezati",
   "Prune_Messages": "Poravnajte poruke",
   "Prune_Modal": "Jeste li sigurni da želite izrezati te poruke? Obrezane poruke se ne mogu oporaviti.",
-  "Prune_Warning_after": "To će izbrisati sve %s u %s nakon %s.",
+  "Prune_Warning_after": "To će izbrisati sve {{items}} u {{roomName}} nakon {{fromDate}}.",
   "Prune_Warning_all": "To će izbrisati sve {{items}} u {{roomName}}!",
   "Prune_Warning_before": "To će izbrisati sve %s u %s prije %s.",
   "Prune_Warning_between": "To će izbrisati sve %s u %s između %s i %s.",

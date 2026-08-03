@@ -3032,7 +3032,7 @@
   "Prune": "Очистка",
   "Prune_Messages": "Удалить сообщения",
   "Prune_Modal": "Вы уверены, что хотите удалить эти сообщения? Удаленные сообщения не могут быть восстановлены.",
-  "Prune_Warning_after": "Это приведет к удалению всех %s в %s после %s.",
+  "Prune_Warning_after": "Это приведет к удалению всех {{items}} в {{roomName}} после {{fromDate}}.",
   "Prune_Warning_all": "Это удалит все {{items}} в {{roomName}}!",
   "Prune_Warning_before": "Это приведет к удалению всех %s в %s до %s.",
   "Prune_Warning_between": "Это приведет к удалению всех %s в %s между %s и %s.",

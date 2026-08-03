@@ -1679,7 +1679,7 @@
   "Prune": "Memangkas",
   "Prune_Messages": "Memangkas Pesan",
   "Prune_Modal": "Anda yakin ingin mem-pangkas pesan-pesan ini? Pesan yang dipangkas tidak dapat dipulihkan.",
-  "Prune_Warning_after": "Ini akan menghapus semua %s dalam %s setelah %s.",
+  "Prune_Warning_after": "Ini akan menghapus semua {{items}} dalam {{roomName}} setelah {{fromDate}}.",
   "Prune_Warning_all": "Ini akan menghapus semua {{items}} dalam {{roomName}}!",
   "Prune_Warning_before": "Ini akan menghapus semua %s dalam %s sebelum %s.",
   "Prune_Warning_between": "Ini akan menghapus semua %s di %s antara %s dan %s.",

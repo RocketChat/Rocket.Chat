@@ -3148,7 +3148,7 @@
   "Prune": "Przytnij",
   "Prune_Messages": "Przycinanie wiadomości",
   "Prune_Modal": "Czy na pewno chcesz przyciąć te wiadomości? Wiadomości przekierowane nie mogą zostać odzyskane.",
-  "Prune_Warning_after": "Spowoduje to usunięcie wszystkich %s w %s po %s.",
+  "Prune_Warning_after": "Spowoduje to usunięcie wszystkich {{items}} w {{roomName}} po {{fromDate}}.",
   "Prune_Warning_all": "Spowoduje to usunięcie wszystkich {{items}} w {{roomName}}!",
   "Prune_Warning_before": "Spowoduje to usunięcie wszystkich %s w %s przed %s.",
   "Prune_Warning_between": "Spowoduje to usunięcie wszystkich %s w %s między %s i %s.",

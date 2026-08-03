@@ -4206,7 +4206,7 @@
   "Prune": "Beskjær",
   "Prune_Messages": "Beskjære meldinger",
   "Prune_Modal": "Er du sikker på at du vil beskjære disse meldingene? Beskjærte meldinger kan ikke gjenopprettes.",
-  "Prune_Warning_after": "Dette vil slette alle %s i %s etter %s.",
+  "Prune_Warning_after": "Dette vil slette alle {{items}} i {{roomName}} etter {{fromDate}}.",
   "Prune_Warning_all": "Dette vil slette alle {{items}} i {{roomName}}!",
   "Prune_Warning_before": "Dette vil slette alle %s i %s før %s.",
   "Prune_Warning_between": "Dette vil slette alle %s i %s mellom %s og %s.",
