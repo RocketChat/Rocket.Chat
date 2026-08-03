@@ -1,4 +1,5 @@
 import type {
+	JoinableVideoConference,
 	VideoConferenceInstructions,
 	VideoConference,
 	VideoConferenceCapabilities,
@@ -70,6 +71,11 @@ export type VideoConferenceEndpoints = {
 			/** Where the chat lives, who among the members cannot read it, and how that can be resolved. */
 			chatAccess: VideoConferenceChatAccess;
 		};
+	};
+
+	/** The calls running now that the caller may join — how a call is reached without catching its ring. */
+	'/v1/video-conference.joinable': {
+		GET: () => { calls: JoinableVideoConference[] };
 	};
 
 	'/v1/video-conference.list': {

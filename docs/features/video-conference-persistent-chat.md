@@ -413,6 +413,7 @@ The provider's URL is embedded in an iframe, so it must permit framing (no restr
 | POST | `/v1/video-conference.decline` | Record that the caller dismissed the call, without ending it |
 | POST | `/v1/video-conference.leave` | Record that the caller left; ends the conference when nobody is left in it |
 | POST | `/v1/video-conference.ring` | Ring the members who aren't in the call again |
+| GET | `/v1/video-conference.joinable` | The running calls the caller may join — the sidebar and history lists |
 | POST | `/v1/video-conference.join` | Join a conference — accepts `discussionRid` members |
 | POST | `/v1/video-conference.share-chat` | Give the members who can't read the chat access to it (`mode: 'invite' \| 'discussion'`) |
 | GET | `/v1/video-conference.info` | Conference info — accepts `discussionRid` members; carries `chatAccess` |
@@ -567,6 +568,10 @@ and package-level jest.
 | One panel at a time, members open by default, and the provider's chat commands | `apps/meteor/client/views/conference/hooks/useProviderCallBridge.spec.ts` |
 | Who gets rung again, and who doesn't | `apps/meteor/tests/unit/server/services/video-conference/ringMembers.spec.ts` |
 | Which mode wins, and that an impossible invite is refused rather than swapped | `apps/meteor/tests/unit/lib/videoConference/chatAccess.spec.ts` |
+| Who is offered which running calls, and what each row says | `apps/meteor/tests/unit/server/services/video-conference/listJoinableCalls.spec.ts` |
+| Joining another call asks first, then leaves the one before it | `apps/meteor/client/views/conference/hooks/useJoinCall.spec.tsx` |
+| The sidebar list: several calls, join, decline-and-hide | `apps/meteor/client/sidebar/sections/OngoingCallsSection.spec.tsx` |
+| The history list keeps declined calls and offers them back | `apps/meteor/client/views/mediaCallHistory/OngoingCallsList.spec.tsx` |
 | Which action leads, and that a DM only offers the discussion | `apps/meteor/client/views/conference/ChatAccessModal.spec.tsx` |
 | The incoming popup renders for a room the member can't see | `apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfPopups/VideoConfPopups.spec.tsx` |
 | Which side of the chat-access split each participant sees | `apps/meteor/client/views/conference/ConferenceChat.spec.tsx` |
@@ -647,90 +652,55 @@ Not gaps — choices, recorded so they aren't mistaken for oversights.
 What remains genuinely unfinished is under [Improvement suggestions](#improvement-suggestions).
 
 
-## Planned: reaching a call without a ring
+## Reaching a call without a ring
 
-Ringing is the only way into a call you didn't start, and it is a poor one: it is one-shot, it lasts seconds, and
-a conference started in a room with more than ten subscribers rings **nobody at all**. So there are calls a user
-is entitled to join with no route to them, and a call they declined is unreachable even if they change their mind
-a moment later. Two pieces of work, tracked here before either starts.
+Ringing is a poor only-route into a call: it is one-shot, it lasts seconds, and a conference started in a room
+with more than ten subscribers rings **nobody at all**. So a call is also reachable from two lists.
 
-### 1. Ongoing calls in the sidebar
+**The sidebar** (`sections/OngoingCallsSection`) shows the calls running now that this user may join, with
+**join** and **decline** on each. **The call history page** shows the same calls above the record of past ones —
+and unlike the sidebar it keeps the ones the user declined, which is what makes it the way back to a call they
+turned down.
 
-- [ ] A section listing the calls that are running *and* that this user may join, with **join** and **decline**
-      on each. Both actions already exist — `joinCall`, and `POST /v1/video-conference.decline` — and neither is
-      tied to ringing, so this needs no new actions, only a place to put them.
-- [ ] Several calls at once. The list is plural by construction; see the open decision about the call window.
-- [ ] Declining from the list **hides** the call there — declining should quiet the sidebar, or it isn't a
-      decline. Membership survives it either way, which is what leaves item 2 a route back in.
-- [ ] Calls nobody is in are not listed. `hasActiveParticipants` already knows this, and a conference only stops
-      when someone ends it or the 24h cron reaches it, so without this an abandoned call would sit there all day.
+`GET /v1/video-conference.joinable` answers both, via `listJoinableCalls`. Nothing new is stored to support it:
+the conference records already hold membership (`users[]`), liveness (`endedAt`) and the room. The scan is over
+*running* conferences rather than over the user's rooms, so its cost follows how many calls are in progress —
+few — rather than how many rooms the user is in. A sparse index on `{endedAt, createdAt}` keeps that scan to the
+handful of calls that are live, since a conference carries `endedAt` only once it has stopped.
 
-### 2. Getting back a call you declined
+A call is offered when the user is a **member** of it, or is **in the room** it belongs to. Room membership
+rather than room *access*: a public channel is readable by anyone, and a call in a channel the user never joined
+has no business in their sidebar. That is narrower than `canAccessConference` on purpose — the endpoints still
+authorize with the broader rule, so nobody is refused a call they can reach.
 
-- [ ] The personal call history shows calls that are **still running** and that this user may join, including the
-      ones they declined — that is the only route back to a declined call, since the sidebar has hidden it.
+Calls nobody is in are left out. A conference only stops when someone ends it or the expiry cron reaches it, so
+without that filter an abandoned call would be advertised as joinable for a day.
 
-### Where "calls I can join" comes from
+The row's name comes from the conference's title, or — for a direct message, which has no name of its own — from
+the reader's **own subscription**, since a DM is named after the other person and that name is per-viewer. Both
+fall back to the room. One subscription query answers this and the room-membership question together.
 
-Worth settling first, because both items read the same list.
+### One call at a time
 
-**Call history can't answer it as it stands.** A history item is written when a conference *stops* — that was a
-deliberate fix, since nothing ends a Jitsi conference and the write had to hang off both stopping paths. An
-ongoing call therefore has no history row at all, and `CallHistoryItemState` has no value for one.
+Joining a call while in another leaves the first, and says so before it does. `useJoinCall` is the shared entry
+point for both lists: it asks for confirmation, naming the call being left, then **posts the leave explicitly**
+before joining.
 
-The concern behind the suggestion — *don't invent another persisted concept* — is better served by asking the
-**conference collection**, which already stores exactly this: `users[]` for membership, `endedAt` for whether it
-is still running, and `rid`/`discussionRid` for the room-access half of `canAccessConference`. Nothing new is
-stored; one new read.
+That explicit leave matters and is easy to miss. The call window is shared, so joining a second call already
+replaces the first one's page — but replacing a page is not leaving a call. Without the leave, the abandoned
+call keeps counting its participant, which keeps it listed as occupied and stops it ever emptying out. With it,
+the call empties, ends after the grace period, and drops out of both lists on its own.
 
-That leaves item 2 as a **presentation** question rather than a data one: the call-history page shows the ongoing
-list above the past one, instead of history rows being redefined to include calls that haven't finished. A
-history row keeps meaning "a call that happened", which is what the duplicate-write guard and the existing
-`direction`/`state` filters are built on.
+### Liveness is polled, and why
 
-### Tasks
+A call appearing does **not** reach these lists over a stream. Announcing a call to everyone who could join it
+means a broadcast to every subscriber of its room, which is the same fan-out that makes ringing a large room
+impossible in the first place — the problem this feature exists to work around. So `useJoinableCalls` polls,
+every 20 seconds, and anything the user does themselves invalidates the query at once.
 
-**Server**
-
-- [ ] `VideoConfService.listJoinableCalls(uid)` — conferences with no `endedAt` that the user may join, by the
-      same rule as `canAccessConference`: a `users[]` entry, or access to `rid`/`discussionRid`. Returns enough to
-      render a row: title or room name, who is in it, and this user's own membership state.
-- [ ] An index for it. Today's are `{rid, createdAt}`, `{type, status}` and `{discussionRid, createdAt}`; a
-      membership-and-liveness lookup wants something like `{'users._id': 1, endedAt: 1}`. Measure before adding.
-- [ ] `GET /v1/video-conference.joinable`, authenticated, no parameters.
-- [ ] Liveness. A call appearing or ending has to reach the sidebar without a poll. The per-conference
-      `video-conference` stream is keyed by callId, which is no use before you know the call exists — so this
-      needs a per-user signal, most likely alongside the existing `user.video-conference` broadcast that already
-      carries `ring`.
-
-**Client**
-
-- [ ] `useJoinableCalls()` — the query plus that signal, in the shape the sidebar and the history page both want.
-- [ ] A sidebar section, following `sections/BannerSection` and `sections/NowPlayingSection` (both built on
-      `SidebarCard`), rendering one row per call with join and decline.
-- [ ] The same list at the top of the call-history page.
-- [ ] Decline from either place: `video-conference.decline`, and the row stays, marked as declined.
-
-**Tests**
-
-- [ ] Who is joinable and who isn't: a member, a room member who was never rung, someone who declined, someone
-      already in the call, a call that has ended, a user with no claim to it at all.
-- [ ] The sidebar section: several calls at once, join, decline-and-stay, and disappearing when the call ends.
-- [ ] The history page showing an ongoing call above past ones, and not confusing the two.
-
-### Settled decisions
-
-| # | Decision | What it means for the build |
-|---|---|---|
-| 1 | **One call at a time.** Joining a call while in another leaves the first. | The shared named window already replaces the first call's page, but that is not the same as leaving it: `video-conference.leave` has to be posted for the call being abandoned, or its participant stays "in" it — which would keep it listed as occupied and stop it ever emptying. Joining becomes leave-then-join, and the user should be told which call they are leaving. |
-| 2 | **A call is shown to everyone in its room, plus anyone added later.** | The audience is exactly `canAccessConference` — membership *or* room access — so the existing rule carries over with nothing new to define. In a large channel that means every subscriber sees it, which decision 3 is what keeps bearable. |
-| 3 | **Calls nobody is in are hidden.** | Filter on `hasActiveParticipants`. This is what stops a conference that nobody ended from being advertised for up to 24 hours, and it is also what makes decision 1 tidy: the call someone leaves to join another disappears on its own once it empties. |
-| 4 | **Declining hides the call from the sidebar; the call history keeps it and offers a way back.** | The decline endpoint already records on the member's own entry without ending anything, so the sidebar filters on `declined` while the history list deliberately does not. Nothing about the decline needs to change — only who honours it. |
-
-Two consequences worth holding on to while building: a call emptied by decision 1 ends after the grace period and
-then leaves both lists by itself, so nothing needs to remove it; and the sidebar's filter is therefore
-"running, not empty, not declined by me", while the history's is "running, not empty" — the same query, read
-twice with different eyes.
+That is a deliberate trade. This list is not latency-critical: it exists precisely for the calls whose ring never
+arrived, where the alternative today is no route at all. A per-user signal remains the better answer if it can be
+made cheap — see [Improvement suggestions](#improvement-suggestions).
 
 ## Improvement suggestions
 
@@ -753,6 +723,12 @@ window would be the cheaper one.
 one of them, the caller gets an error toast; the others may or may not have gone through. It is not silent — the
 notice re-reads and shows whoever is still missing — but the toast says less than it could. Per-user results
 would make a partial outcome legible at the moment it happens.
+
+### Joinable calls are polled rather than pushed
+
+The sidebar's list refreshes on a 20-second timer, because announcing a new call to every subscriber of its room
+is the fan-out this feature exists to avoid. A cheaper push would be better: a signal per *room* that the client
+already subscribes to would reach exactly the people who need it, without the server enumerating them.
 
 ### The members panel has no search
 
@@ -796,6 +772,7 @@ could not be loaded" panel, because the detail panel is contact-call-shaped.
 | Add participants | `apps/meteor/client/views/conference/AddParticipantsModal.tsx` |
 | Chat access | `apps/meteor/client/views/conference/ChatAccessNotice.tsx`, `ChatAccessModal.tsx`, `ConferenceChatNotShared.tsx` |
 | Call outcome | `apps/meteor/client/views/conference/CallOutcomeModal.tsx`, `hooks/useCallOutcome.ts`, `ConferenceMemberRow.tsx` |
+| Reaching a call | `apps/meteor/client/sidebar/sections/OngoingCallsSection.tsx`, `OngoingCallRow.tsx`, `apps/meteor/client/views/mediaCallHistory/OngoingCallsList.tsx`, `apps/meteor/client/views/conference/hooks/useJoinableCalls.ts`, `hooks/useJoinCall.tsx` |
 | Leaving | `apps/meteor/client/views/conference/hooks/useLeaveConferenceOnClose.ts` |
 | Ringing popups | `apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfPopups/VideoConfPopup/` |
 | Join routing | `apps/meteor/client/providers/VideoConfProvider.tsx`, `client/views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall.tsx` |

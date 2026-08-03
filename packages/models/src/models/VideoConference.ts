@@ -36,6 +36,9 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			// `createdAt` is part of the key so the `$or: [{ rid }, { discussionRid }]` listing below can be
 			// served by an index-ordered merge instead of a blocking in-memory sort of the whole room history.
 			{ key: { discussionRid: 1, createdAt: 1 }, unique: false },
+			// Listing the calls that are running: a sparse index, because a conference carries `endedAt` only once
+			// it has stopped, so the index holds just the handful that are live.
+			{ key: { endedAt: 1, createdAt: -1 }, unique: false, sparse: true },
 		];
 	}
 

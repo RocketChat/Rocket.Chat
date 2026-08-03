@@ -4,6 +4,7 @@ import type {
 	IUser,
 	IVoIPVideoConference,
 	VideoConference,
+	JoinableVideoConference,
 	VideoConferenceCapabilities,
 	VideoConferenceChatAccess,
 	VideoConferenceChatAccessMode,
@@ -53,6 +54,7 @@ export interface IVideoConfService {
 	declineCall(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void>;
 	leaveCall(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void>;
 	ringMembers(uid: IUser['_id'], callId: VideoConference['_id'], userIds?: IUser['_id'][]): Promise<IUser['_id'][]>;
+	listJoinableCalls(uid: IUser['_id']): Promise<JoinableVideoConference[]>;
 	getChatAccess(uid: IUser['_id'], callId: VideoConference['_id']): Promise<VideoConferenceChatAccess>;
 	shareChatWithMembers(uid: IUser['_id'], callId: VideoConference['_id'], mode?: VideoConferenceChatAccessMode): Promise<IRoom['_id']>;
 	createConferenceDiscussionWithParticipants(
