@@ -49,6 +49,7 @@ import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import type { LoggableVideoConference } from '../../../lib/videoConference/callHistory';
 import {
 	buildConferenceCallHistoryItems,
+	EMPTY_CALL_GRACE_MS,
 	hasActiveParticipants,
 	shouldWriteConferenceHistory,
 } from '../../../lib/videoConference/callHistory';
@@ -1237,15 +1238,15 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	/**
-	 * Rings every member who isn't in the call, again.
+	 * Rings members who aren't in the call, again — all of them, or the ones asked for.
 	 *
 	 * A ring is one-shot, so the caller of a call nobody picked up needs a way to try again — and adding the
 	 * same person a second time won't do it, since they are already a member. Returns who was rung.
 	 *
 	 * Members who already left are rung too: they were there and are not now, which is exactly the case
-	 * "call them back" is for.
+	 * "call them back" is for. Anyone already in the call is never rung, whether or not they were asked for.
 	 */
-	public async ringMembers(uid: IUser['_id'], callId: VideoConference['_id']): Promise<IUser['_id'][]> {
+	public async ringMembers(uid: IUser['_id'], callId: VideoConference['_id'], userIds?: IUser['_id'][]): Promise<IUser['_id'][]> {
 		const call = await VideoConferenceModel.findOneById(callId, { projection: { rid: 1, users: 1, endedAt: 1 } });
 		if (!call) {
 			throw new Error('invalid-video-conference');
@@ -1255,7 +1256,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return [];
 		}
 
-		const absent = call.users.filter((member) => member._id !== uid && !isInVideoConference(member)).map(({ _id }) => _id);
+		const requested = userIds?.length ? new Set(userIds) : undefined;
+		const absent = call.users
+			.filter((member) => member._id !== uid && !isInVideoConference(member) && (!requested || requested.has(member._id)))
+			.map(({ _id }) => _id);
+
 		if (!shouldRingVideoConference(absent.length)) {
 			return [];
 		}
@@ -1275,6 +1280,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	 *
 	 * Leaving is not declining and not un-joining: membership and `joined` both stand, so the member keeps their
 	 * history entry and can rejoin.
+	 *
+	 * The call is not ended the moment it empties. `pagehide` fires on a reload just as it does on a close, and
+	 * the two are indistinguishable from it — so ending on the spot meant refreshing the call window killed the
+	 * call. Instead the emptiness is confirmed after a grace period, which a rejoin cancels by simply being back
+	 * in the call. That also absorbs a network blip taking the window down for a moment.
 	 */
 	public async leaveCall(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void> {
 		const call = await VideoConferenceModel.findOneById(callId, { projection: { rid: 1, users: 1, endedAt: 1 } });
@@ -1294,9 +1304,23 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		// Decide on the state we just wrote rather than the one we read, so the member who is leaving is counted
 		// as gone. Reading again would be a second round trip for the same answer.
 		const remaining = call.users.map((member) => (member._id === uid ? { ...member, leftAt } : member));
-		if (!hasActiveParticipants(remaining)) {
-			await this.endCall(callId);
+		if (hasActiveParticipants(remaining)) {
+			return;
 		}
+
+		setTimeout(() => {
+			void this.endCallIfEmpty(callId).catch((err) => logger.error({ msg: 'Failed to end an empty conference', callId, err }));
+		}, EMPTY_CALL_GRACE_MS);
+	}
+
+	/** Ends a conference only if it is still empty — a rejoin inside the grace period is what cancels it. */
+	private async endCallIfEmpty(callId: VideoConference['_id']): Promise<void> {
+		const call = await VideoConferenceModel.findOneById(callId, { projection: { users: 1, endedAt: 1 } });
+		if (!call || call.endedAt || hasActiveParticipants(call.users)) {
+			return;
+		}
+
+		await this.endCall(callId);
 	}
 
 	/**
@@ -1305,9 +1329,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	 * matters, rather than being forced on whoever adds a participant — so this also reports what that choice
 	 * is, since it depends on the room and on who is asking.
 	 *
-	 * Access is asked per member rather than derived from subscriptions, because reading a room doesn't always
-	 * require one — a public channel is readable by anyone, unless it belongs to a private team. Conferences
-	 * are small, and getting a public-channel-in-a-private-team case wrong is worse than the extra reads.
+	 * Access isn't always a subscription question — a plain public channel is readable by anyone, so
+	 * `getMembersWithoutRoomAccess` answers both that and the plain private-room case from one `Subscriptions`
+	 * read instead of one authorization call per member. A team-owned, discussion, or ABAC-attributed room can
+	 * grant access through paths a room+subscriptions read can't see (team membership, the parent room's own
+	 * rules, an ABAC decision), so those still ask per member — getting one of those wrong is worse than the
+	 * extra reads, and conferences are small.
 	 */
 	public async getChatAccess(uid: IUser['_id'], callId: VideoConference['_id']): Promise<VideoConferenceChatAccess> {
 		const call = await VideoConferenceModel.findOneById(callId, { projection: { rid: 1, discussionRid: 1, users: 1 } });
@@ -1321,17 +1348,55 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('invalid-room');
 		}
 
-		const access = await Promise.all(call.users.map(async ({ _id }) => ({ _id, allowed: await canAccessRoomIdAsync(rid, _id) })));
-
 		return {
 			rid,
 			name: room.fname || room.name || '',
 			type: room.t,
-			membersWithoutAccess: access.filter(({ allowed }) => !allowed).map(({ _id }) => _id),
+			membersWithoutAccess: await this.getMembersWithoutRoomAccess(
+				room,
+				call.users.map(({ _id }) => _id),
+			),
 			// Ask the room whether it can take new members rather than testing for a DM: the room type owns that
 			// rule, and it accounts for cases a `t === 'd'` check would miss, like a federated DM that *can* grow.
 			canInvite: await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.INVITE, uid),
 		};
+	}
+
+	/**
+	 * A team-owned public channel can be read by any team member without them ever having subscribed to it, a
+	 * discussion inherits its access from the parent room it was split off from, and a room carrying ABAC
+	 * attributes can bypass subscriptions entirely — none of that is visible from this room's own subscriptions,
+	 * so those keep asking `canAccessRoomIdAsync` once per member, exactly as before.
+	 *
+	 * Everything else reduces to one `Subscriptions` read for every member at once: a plain public channel (no
+	 * team) is readable by anyone unless banned from it specifically, and a plain private room (group or DM) is
+	 * readable only by whoever holds an actual, non-invited subscription to it.
+	 */
+	private async getMembersWithoutRoomAccess(
+		room: Pick<IRoom, '_id' | 't' | 'teamId' | 'prid' | 'abacAttributes'>,
+		memberIds: IUser['_id'][],
+	): Promise<IUser['_id'][]> {
+		if (!memberIds.length) {
+			return [];
+		}
+
+		if ((room.t === 'c' && room.teamId) || room.prid || room.abacAttributes?.length) {
+			const access = await Promise.all(memberIds.map(async (_id) => ({ _id, allowed: await canAccessRoomIdAsync(room._id, _id) })));
+			return access.filter(({ allowed }) => !allowed).map(({ _id }) => _id);
+		}
+
+		const subscriptions = await Subscriptions.findByRoomIdAndUserIds(room._id, memberIds, {
+			projection: { 'u._id': 1, 'status': 1 },
+		}).toArray();
+		const statusByMember = new Map(subscriptions.map(({ u, status }) => [u._id, status]));
+
+		if (room.t === 'c') {
+			return memberIds.filter((_id) => statusByMember.get(_id) === 'BANNED');
+		}
+
+		// A subscription with a `status` (invited, banned) doesn't count as one: only an existing, plain
+		// subscription does, the same as `canAccessRoomIdAsync` would find for a private room.
+		return memberIds.filter((_id) => !statusByMember.has(_id));
 	}
 
 	/**
