@@ -1,15 +1,16 @@
-import type { IVideoConferenceUser, VideoConferenceChatAccess } from '@rocket.chat/core-typings';
+import type { VideoConferenceChatAccess } from '@rocket.chat/core-typings';
 import { useEndpoint, useStream } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 
+import type { ConferenceMember } from './useCallOutcome';
 import { useConferenceCallUrl } from './useConferenceCallUrl';
 import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
 import { mapVideoConfUserFromApi } from '../../../lib/utils/mapVideoConfUserFromApi';
 
 /** Chat access with the members it concerns resolved, since the UI has to name the people it is about. */
 export type ConferenceChatAccess = VideoConferenceChatAccess & {
-	members: Pick<IVideoConferenceUser, '_id' | 'username' | 'name'>[];
+	members: ConferenceMember[];
 };
 
 export const useConferenceEmbedded = (callId: string) => {

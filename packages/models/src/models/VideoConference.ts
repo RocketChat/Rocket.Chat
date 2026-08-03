@@ -277,6 +277,19 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		);
 	}
 
+	/** Records that we just rang these members, so every client can tell a ringing phone from a silent one. */
+	public async setUsersRingingById(callId: string, uids: IUser['_id'][], ringingAt = new Date()): Promise<void> {
+		if (!uids.length) {
+			return;
+		}
+
+		await this.updateOne(
+			{ _id: callId },
+			{ $set: { 'users.$[user].ringingAt': ringingAt } },
+			{ arrayFilters: [{ 'user._id': { $in: uids } }] },
+		);
+	}
+
 	public async setUserLeftById(callId: string, uid: IUser['_id'], leftAt = new Date()): Promise<void> {
 		await this.updateOne({ _id: callId }, { $set: { 'users.$[user].leftAt': leftAt } }, { arrayFilters: [{ 'user._id': uid }] });
 	}

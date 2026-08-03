@@ -185,7 +185,7 @@ exports[`CallBar renders WithCallControls without crashing 1`] = `
                 pointer-events="none"
               >
                 <span
-                  class="rcx-box rcx-box--full rcx-badge rcx-badge--danger"
+                  class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary"
                 >
                   2
                 </span>
@@ -451,7 +451,7 @@ exports[`CallBar renders WithUnreadBadge without crashing 1`] = `
                 pointer-events="none"
               >
                 <span
-                  class="rcx-box rcx-box--full rcx-badge rcx-badge--danger"
+                  class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary"
                 >
                   2
                 </span>

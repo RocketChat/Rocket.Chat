@@ -24,7 +24,7 @@ const buildAccess = (membersWithoutAccess: string[]): ConferenceChatAccess => ({
 });
 
 const renderChat = (chatAccess: ConferenceChatAccess) =>
-	render(<ConferenceChat callId='call-id' rid='room-id' loading={false} chatAccess={chatAccess} />, {
+	render(<ConferenceChat rid='room-id' loading={false} chatAccess={chatAccess} />, {
 		wrapper: mockAppRoot().withJohnDoe().build(),
 	});
 
@@ -33,14 +33,19 @@ it('tells a member whose chat was never shared what the situation is', () => {
 
 	expect(screen.getByText('Chat_not_shared_with_you')).toBeInTheDocument();
 	expect(screen.queryByTestId('chat-room')).not.toBeInTheDocument();
-	// The notice offers to resolve it, which this member can't do for themselves.
-	expect(screen.queryByRole('button', { name: 'Review' })).not.toBeInTheDocument();
 });
 
-it('shows the chat, and who is missing from it, to a member who can read it', () => {
+it('shows the chat to a member who can read it', () => {
 	renderChat(buildAccess(['someone-else']));
 
 	expect(screen.getByTestId('chat-room')).toBeInTheDocument();
 	expect(screen.queryByText('Chat_not_shared_with_you')).not.toBeInTheDocument();
-	expect(screen.getByRole('button', { name: 'Review' })).toBeInTheDocument();
+});
+
+// The banner about members who can't see the chat lives above the call, not in this panel — it is about the
+// call rather than about whichever panel is open, and it must not move as panels change.
+it('does not carry the chat-access notice', () => {
+	renderChat(buildAccess(['someone-else']));
+
+	expect(screen.queryByRole('button', { name: 'Review' })).not.toBeInTheDocument();
 });

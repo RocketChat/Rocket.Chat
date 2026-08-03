@@ -808,6 +808,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		});
 		if (callee) {
 			await VideoConferenceModel.addMemberById(callId, { ...callee, joined: false });
+			// Their phone starts ringing now — the caller's client publishes `call` on a loop from here — so record
+			// it, or the members panel would offer to ring someone who is already being rung.
+			await VideoConferenceModel.setUsersRingingById(callId, [callee._id]);
 		}
 
 		await this.maybeCreateDiscussion(callId, user);
@@ -1196,11 +1199,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		// The list being rung is just the people added, and the endpoint caps a single add at the ringing
 		// limit — so unlike starting a call in a large room, an add always rings.
 		if (shouldRingVideoConference(added.length)) {
-			added.forEach((memberId) => this.notifyUser(memberId, 'ring', { callId, rid: call.rid, uid }));
-
-			// The ring only reaches a client that is on screen, and it is one-shot. A desktop notification is
-			// what reaches someone who isn't looking at the app.
-			await this.notifyUsersAddedToConference(uid, added, callId, call.rid);
+			await this.ringUsers(callId, call.rid, uid, added);
 		}
 
 		return added;
@@ -1265,10 +1264,24 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return [];
 		}
 
-		absent.forEach((memberId) => this.notifyUser(memberId, 'ring', { callId, rid: call.rid, uid }));
-		await this.notifyUsersAddedToConference(uid, absent, callId, call.rid);
+		await this.ringUsers(callId, call.rid, uid, absent);
 
 		return absent;
+	}
+
+	/**
+	 * Rings a set of members: the in-product ring, the desktop notification that reaches someone who isn't
+	 * looking at the app, and the record of when it happened — which is what lets every client tell a phone that
+	 * is ringing now from one that was rung and ignored.
+	 */
+	private async ringUsers(callId: VideoConference['_id'], rid: IRoom['_id'], uid: IUser['_id'], memberIds: IUser['_id'][]): Promise<void> {
+		memberIds.forEach((memberId) => this.notifyUser(memberId, 'ring', { callId, rid, uid }));
+		await VideoConferenceModel.setUsersRingingById(callId, memberIds);
+		this.notifyConferenceMembersUpdate(callId);
+
+		// The ring only reaches a client that is on screen, and it is one-shot. A desktop notification is what
+		// reaches someone who isn't looking at the app.
+		await this.notifyUsersAddedToConference(uid, memberIds, callId, rid);
 	}
 
 	/**

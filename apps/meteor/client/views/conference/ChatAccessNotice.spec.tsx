@@ -8,13 +8,13 @@ import type { ConferenceChatAccess } from './hooks/useConferenceEmbedded';
 // `withJohnDoe` fixes the logged-in id, so the member without access has to be that same user to test self-exclusion.
 const uid = 'john.doe';
 
-const buildAccess = (membersWithoutAccess: string[]): ConferenceChatAccess => ({
+const buildAccess = (membersWithoutAccess: string[], joined = true): ConferenceChatAccess => ({
 	rid: 'room-id',
 	name: 'general',
 	type: 'c',
 	membersWithoutAccess,
 	canInvite: true,
-	members: membersWithoutAccess.map((_id) => ({ _id, username: `user-${_id}`, name: `User ${_id}` })),
+	members: membersWithoutAccess.map((_id) => ({ _id, username: `user-${_id}`, name: `User ${_id}`, joined })),
 });
 
 const renderNotice = (access: ConferenceChatAccess) =>
@@ -48,4 +48,21 @@ it('opens the chat access modal when Review is clicked', async () => {
 
 	expect(await screen.findByRole('dialog')).toBeInTheDocument();
 	expect(screen.getByText('Chat_access')).toBeInTheDocument();
+});
+
+// Someone merely invited may never turn up. Telling everyone else about a person who isn't there is noise, and
+// it would have them resolving a situation that hasn't happened.
+it('says nothing about a member who was invited but has not joined', () => {
+	const { container } = renderNotice(buildAccess(['someone-else'], false));
+
+	expect(container).toBeEmptyDOMElement();
+});
+
+it('counts only the members who are actually in the call', () => {
+	const access = buildAccess(['present', 'absent']);
+	access.members = access.members.map((member) => (member._id === 'absent' ? { ...member, joined: false } : member));
+
+	renderNotice(access);
+
+	expect(screen.getByRole('button', { name: 'Review' })).toBeInTheDocument();
 });

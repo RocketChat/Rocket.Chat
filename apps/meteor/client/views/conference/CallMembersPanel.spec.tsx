@@ -32,23 +32,42 @@ const renderPanel = (members: ConferenceMember[], membersWithoutChatAccess: stri
 		},
 	);
 
-const rowFor = (username: string) => screen.getByText(username).closest('div[class]')?.parentElement as HTMLElement;
+const rowFor = (username: string) => screen.getByText(username).closest('[role="listitem"], li') as HTMLElement;
 
 beforeEach(() => {
 	ring.mockClear();
 });
 
-it('lists every member with a count', () => {
+it('lists every member', () => {
 	renderPanel([member({ _id: 'joiner', joined: true }), member({ _id: 'invitee', joined: false })]);
 
-	expect(screen.getByRole('heading')).toHaveTextContent('Members (2)');
 	expect(screen.getByText('joiner')).toBeInTheDocument();
 	expect(screen.getByText('invitee')).toBeInTheDocument();
 });
 
+// The two halves answer different questions — who is here, and who still isn't — so they are counted separately
+// rather than as one list the reader has to sort themselves.
+it('splits into who is in the call and who is not, with counts', () => {
+	renderPanel([
+		member({ _id: 'joiner', joined: true }),
+		member({ _id: 'invitee', joined: false }),
+		member({ _id: 'leaver', joined: true, leftAt: new Date() }),
+	]);
+
+	expect(screen.getByText('In_call').parentElement).toHaveTextContent('1');
+	expect(screen.getByText('Not_in_the_call').parentElement).toHaveTextContent('2');
+});
+
+it('leaves out a section nobody is in', () => {
+	renderPanel([member({ _id: 'joiner', joined: true })]);
+
+	expect(screen.getByText('In_call')).toBeInTheDocument();
+	expect(screen.queryByText('Not_in_the_call')).not.toBeInTheDocument();
+});
+
 describe('status', () => {
+	// Only for members who aren't in the call — for those, the section they are in already says it.
 	it.each([
-		['joiner', { joined: true }, 'In_call'],
 		['invitee', { joined: false }, 'Waiting_for_answer'],
 		['decliner', { joined: false, declined: true }, 'Declined'],
 		['leaver', { joined: true, leftAt: new Date() }, 'Left'],
@@ -56,6 +75,12 @@ describe('status', () => {
 		renderPanel([member({ _id: id, ...state })]);
 
 		expect(screen.getByText(label)).toBeInTheDocument();
+	});
+
+	it('says a member is ringing while their phone still is', () => {
+		renderPanel([member({ _id: 'ringing', joined: false, ringingAt: new Date() })]);
+
+		expect(screen.getByText('Ringing')).toBeInTheDocument();
 	});
 });
 
@@ -90,6 +115,19 @@ describe('ringing a single member', () => {
 		renderPanel([member({ _id: 'joiner', joined: true })]);
 
 		expect(screen.queryByRole('button', { name: 'Ring__name__' })).not.toBeInTheDocument();
+	});
+
+	// There is nothing to ask for while their phone is ringing; the offer returns once the ring has run out.
+	it('does not offer to ring a member who is being rung right now', () => {
+		renderPanel([member({ _id: 'ringing', joined: false, ringingAt: new Date() })]);
+
+		expect(screen.queryByRole('button', { name: 'Ring__name__' })).not.toBeInTheDocument();
+	});
+
+	it('offers to ring a member whose ring has run out', () => {
+		renderPanel([member({ _id: 'ignored', joined: false, ringingAt: new Date(Date.now() - 60_000) })]);
+
+		expect(screen.getByRole('button', { name: 'Ring__name__' })).toBeInTheDocument();
 	});
 });
 
