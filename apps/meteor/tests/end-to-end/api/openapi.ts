@@ -92,11 +92,16 @@ describe('[OpenAPI]', () => {
 		expect(invalid).to.be.empty;
 	});
 
-	it('should hide undocumented routes unless they are asked for', () => {
+	it('should hide the undocumented routes from the default document', () => {
 		const undocumented = (document: OpenAPIDocument) =>
-			operations(document).filter(({ operation }) => operation.tags?.includes('Missing Documentation'));
+			operations(document)
+				.filter(({ operation }) => operation.tags?.includes('Missing Documentation'))
+				.map(({ path, method }) => `${method} ${path}`);
 
+		const documented = operations(document).map(({ path, method }) => `${method} ${path}`);
+
+		// stated as a relation, not as a count: the untyped routes are meant to disappear over time
 		expect(undocumented(document)).to.be.empty;
-		expect(undocumented(documentWithUndocumented)).to.not.be.empty;
+		expect(undocumented(documentWithUndocumented).filter((route) => documented.includes(route))).to.be.empty;
 	});
 });

@@ -215,8 +215,12 @@ const toOpenAPI31 = <T>(schema: T): T => {
 		return { ...rest, type: [rest.type, 'null'] } as T;
 	}
 
-	// AJV refuses `nullable` without `type`, so there is always one to extend
-	return { ...rest, type: Array.isArray(rest.type) && rest.type.includes('null') ? rest.type : [...(rest.type as string[]), 'null'] } as T;
+	if (Array.isArray(rest.type)) {
+		return { ...rest, type: rest.type.includes('null') ? rest.type : [...rest.type, 'null'] } as T;
+	}
+
+	// nothing to extend - AJV refuses `nullable` without a `type`, so this is a schema it never saw
+	return rest as T;
 };
 
 const getSchema = (carrier: unknown): AnySchema => {
@@ -281,19 +285,19 @@ const collectProperties = (schema: unknown): CollectedProperties | undefined => 
  */
 export const toOpenAPIPath = (path: string): string => path.replace(/:([A-Za-z0-9_]+)\??/g, '{$1}').replace(/\/{2,}/g, '/');
 
-const extractPathParameterNames = (path: string): { name: string; required: boolean }[] =>
-	[...path.matchAll(/:([A-Za-z0-9_]+)(\?)?/g)].map(([, name, optional]) => ({ name, required: !optional }));
+/** Every path parameter is required: an optional express segment is a different path, not an optional one. */
+const extractPathParameterNames = (path: string): string[] => [...path.matchAll(/:([A-Za-z0-9_]+)\??/g)].map(([, name]) => name);
 
 const buildPathParameters = (path: string, options: OpenAPIDocsOptions): OpenAPIParameter[] => {
 	const documented = collectProperties(getSchema(options.params));
 
-	return extractPathParameterNames(path).map(({ name, required }) => {
+	return extractPathParameterNames(path).map((name) => {
 		const schema = documented?.properties[name];
 
 		return {
 			name,
 			in: 'path',
-			required,
+			required: true,
 			schema: (schema as AnySchema) ?? { type: 'string' },
 			...(typeof schema?.description === 'string' && { description: schema.description }),
 			...(options.examples?.params?.[name] !== undefined
@@ -340,9 +344,14 @@ const normalizePermissions = (method: string, permissionsRequired: PermissionsRe
 		return permissionsRequired;
 	}
 
-	const forMethod = [permissionsRequired[method.toUpperCase()], permissionsRequired['*']].filter(Boolean);
+	// the method's own entry wins over the wildcard, the way `checkPermissionsForInvocation` reads it
+	const entry = permissionsRequired[method.toUpperCase()] ?? permissionsRequired['*'];
 
-	return forMethod.flatMap((entry) => (Array.isArray(entry) ? entry : (entry?.permissions ?? [])));
+	if (!entry) {
+		return [];
+	}
+
+	return Array.isArray(entry) ? entry : entry.permissions;
 };
 
 const buildDescription = (method: string, options: OpenAPIDocsOptions): string | undefined => {
@@ -462,8 +471,9 @@ export const buildOperation = (method: string, path: string, options: OpenAPIDoc
 		};
 	}
 
-	// `responses` is required by the spec, and undocumented (legacy) routes declare none.
-	if (!Object.keys(responses).some((status) => Number(status) < 300)) {
+	// `responses` is required by the spec, and undocumented (legacy) routes declare none. A declared
+	// redirect counts as documented: the route answers it and never answers a 200.
+	if (!Object.keys(responses).some((status) => Number(status) < 400)) {
 		responses[200] = {
 			description: describeStatus(200, options),
 			content: { 'application/json': { schema: SUCCESS_RESPONSE_REF } },

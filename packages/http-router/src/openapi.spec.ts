@@ -310,6 +310,26 @@ describe('buildOperation', () => {
 		expect(properties.plain).toEqual({ type: 'string' });
 		expect(JSON.stringify(operation)).not.toContain('nullable');
 	});
+	it('should require every path parameter, even one the router declares optional', () => {
+		const operation = build('GET', '/api/v1/settings/:_id?');
+
+		expect(operation.parameters).toEqual([{ name: '_id', in: 'path', required: true, schema: { type: 'string' } }]);
+	});
+
+	it('should not invent a success response for a route that answers a redirect', () => {
+		const operation = buildOperation('GET', '/api/v1/shield.svg', { response: { 302: okSchema } });
+
+		expect(Object.keys(operation.responses)).not.toContain('200');
+		expect(operation.responses[302]).toBeDefined();
+	});
+
+	it('should read the permissions of the method over the wildcard ones', () => {
+		const operation = build('POST', '/api/v1/rooms.create', {
+			permissionsRequired: { 'POST': ['create-c'], '*': ['view-c-room'] },
+		});
+
+		expect(operation['x-permissions']).toEqual(['create-c']);
+	});
 });
 
 describe('withOperationIds', () => {
