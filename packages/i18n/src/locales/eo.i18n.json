@@ -395,7 +395,7 @@
   "Channel_Name_Placeholder": "Bonvolu enmeti kanalan nomon ...",
   "Channel_Unarchived": "Kanalo kun nomo '#%s` estis senatimigita sukcese",
   "Channel_already_Unarchived": "Kanalo kun nomo '#%s` jam estas en nearkifita stato",
-  "Channel_already_exist": "La kanalo `#%s` jam ekzistas.",
+  "Channel_already_exist": "La kanalo `#{{channelName}}` jam ekzistas.",
   "Channel_already_exist_static": "La kanalo jam ekzistas.",
   "Channel_created": "Kanalo `#%s` kreita.",
   "Channel_doesnt_exist": "La kanalo `#%s` ne ekzistas.",

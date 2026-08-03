@@ -395,7 +395,7 @@
   "Channel_Name_Placeholder": "Rhowch enw'r sianel ...",
   "Channel_Unarchived": "Sianel gyda'r enw `#%s` wedi ei anwybyddu yn llwyddiannus",
   "Channel_already_Unarchived": "Mae sianel gyda'r enw `#%s` eisoes mewn gwladwriaeth annisgwyl",
-  "Channel_already_exist": "Mae'r sianel `#%s` eisoes yn bodoli.",
+  "Channel_already_exist": "Mae'r sianel `#{{channelName}}` eisoes yn bodoli.",
   "Channel_already_exist_static": "Mae'r sianel eisoes yn bodoli.",
   "Channel_created": "Sianel `#%s` wedi'i greu.",
   "Channel_doesnt_exist": "Nid yw'r sianel `#%s` yn bodoli.",

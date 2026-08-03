@@ -715,7 +715,7 @@
   "Channel_Name_Placeholder": "Voer kanaalnaam in...",
   "Channel_Unarchived": "Kanaal met de naam `#%s` is succesvol uit het archief gehaald",
   "Channel_already_Unarchived": "Kanaal met de naam `#%s` is al in ongearchiveerde staat",
-  "Channel_already_exist": "Het kanaal `#%s` bestaat al.",
+  "Channel_already_exist": "Het kanaal `#{{channelName}}` bestaat al.",
   "Channel_already_exist_static": "Het kanaal bestaat al.",
   "Channel_created": "Kanaal `#%s` aangemaakt.",
   "Channel_doesnt_exist": "Het kanaal `#%s` bestaat niet.",

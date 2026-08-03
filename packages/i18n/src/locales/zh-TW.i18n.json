@@ -707,7 +707,7 @@
   "Channel_Name_Placeholder": "請輸入頻道名稱…",
   "Channel_Unarchived": "名為「`#%s`」的頻道已成功解除封存",
   "Channel_already_Unarchived": "已有名為「`#%s`」的頻道目前尚未被封存",
-  "Channel_already_exist": "頻道「`#%s`」已存在。",
+  "Channel_already_exist": "頻道「`#{{channelName}}`」已存在。",
   "Channel_already_exist_static": "該頻道已經存在。",
   "Channel_created": "頻道 `#%s` 已建立。",
   "Channel_doesnt_exist": "頻道「`#%s`」不存在",

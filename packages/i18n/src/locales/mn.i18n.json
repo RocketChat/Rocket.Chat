@@ -394,7 +394,7 @@
   "Channel_Name_Placeholder": "Сувгийн нэр оруулна уу ...",
   "Channel_Unarchived": "`#%s` нэртэй суваг амжилтгүй болсон байна",
   "Channel_already_Unarchived": "`#%s` нэртэй суваг нь Unarchived state дотор байна",
-  "Channel_already_exist": "`#%s` суваг байна.",
+  "Channel_already_exist": "`#{{channelName}}` суваг байна.",
   "Channel_already_exist_static": "Суваг аль хэдийн орсон байна.",
   "Channel_created": "`#%s` суваг үүссэн.",
   "Channel_doesnt_exist": "`#%s` суваг байхгүй байна.",

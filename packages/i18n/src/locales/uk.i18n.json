@@ -546,7 +546,7 @@
   "Channel_Name_Placeholder": "Будь ласка, введіть назву каналу ...",
   "Channel_Unarchived": "Канал з назвою`#%s` був успішно розархівований",
   "Channel_already_Unarchived": "Канал з назвою `#%s` вже знаходиться в стані Розархівований",
-  "Channel_already_exist": "Канал '#%s' вже існує.",
+  "Channel_already_exist": "Канал '#{{channelName}}' вже існує.",
   "Channel_already_exist_static": "Канал вже існує.",
   "Channel_created": "Створено канал `#%s`.",
   "Channel_doesnt_exist": "Канал `#%s` не існує.",

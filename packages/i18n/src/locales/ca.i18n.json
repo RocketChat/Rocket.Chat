@@ -711,7 +711,7 @@
   "Channel_Name_Placeholder": "Sisplau, introdueix el nom de canal...",
   "Channel_Unarchived": "El canal `#%s` s'ha desarxivat correctament.",
   "Channel_already_Unarchived": "El canal `#%s` ja es troba desarxivat.",
-  "Channel_already_exist": "El canal `#%s` ja existeix.",
+  "Channel_already_exist": "El canal `#{{channelName}}` ja existeix.",
   "Channel_already_exist_static": "El canal ja existeix.",
   "Channel_created": "Canal `#%s` creat.",
   "Channel_doesnt_exist": "El canal `#%s` no existeix",

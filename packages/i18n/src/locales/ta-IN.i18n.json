@@ -395,7 +395,7 @@
   "Channel_Name_Placeholder": "சேனல் பெயரை உள்ளிடுக ...",
   "Channel_Unarchived": "பெயர் `#%s` சேனல் வெற்றிகரமாக மீட்டெடுக்கப்பட்டது வருகிறது",
   "Channel_already_Unarchived": "பெயர் `#%s` சேனல் ஏற்கனவே பட்டியலில் தோன்றும் நிலையில் உள்ளது",
-  "Channel_already_exist": "சேனல் '#%s' என்ற ஏற்கனவே உள்ளது.",
+  "Channel_already_exist": "சேனல் '#{{channelName}}' என்ற ஏற்கனவே உள்ளது.",
   "Channel_already_exist_static": "சேனல் ஏற்கனவே உள்ளது.",
   "Channel_created": "சேனல் `#%s` உருவாக்கப்பட்டது.",
   "Channel_doesnt_exist": "சேனல் `#%s` இல்லை.",

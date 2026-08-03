@@ -395,7 +395,7 @@
   "Channel_Name_Placeholder": "Моля, въведете името на канала ...",
   "Channel_Unarchived": "Каналът с името \"#%s\" бе премахнат успешно",
   "Channel_already_Unarchived": "Канал с име \"#%s\" вече е в състояние \"Без архивиране\"",
-  "Channel_already_exist": "Каналът \"#%s\" вече съществува.",
+  "Channel_already_exist": "Каналът \"#{{channelName}}\" вече съществува.",
   "Channel_already_exist_static": "Каналът вече съществува.",
   "Channel_created": "Каналът \"#%s\" е създаден.",
   "Channel_doesnt_exist": "Каналът `#%s` не съществува.",

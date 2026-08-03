@@ -395,7 +395,7 @@
   "Channel_Name_Placeholder": "Voer asseblief die naam van die kanaal in ...",
   "Channel_Unarchived": "Kanaal met naam `#%s` is suksesvol gearchiveer",
   "Channel_already_Unarchived": "Kanaal met naam `#%s` is reeds in Ongeparkeerde state",
-  "Channel_already_exist": "Die kanaal `#%s` bestaan ​​reeds.",
+  "Channel_already_exist": "Die kanaal `#{{channelName}}` bestaan ​​reeds.",
   "Channel_already_exist_static": "Die kanaal bestaan ​​reeds.",
   "Channel_created": "Kanaal `#%s` geskep.",
   "Channel_doesnt_exist": "Die kanaal `#%s` bestaan ​​nie.",

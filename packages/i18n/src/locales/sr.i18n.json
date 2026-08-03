@@ -309,7 +309,7 @@
   "Channel_Name_Placeholder": "Унеси име канала...",
   "Channel_Unarchived": "Канал са именом `#% с` је Неархивиране успешно",
   "Channel_already_Unarchived": "Channel са именом `#%s` је већ у неархивираном стању",
-  "Channel_already_exist": "Канал '#%s ' већ постоји.",
+  "Channel_already_exist": "Канал '#{{channelName}} ' већ постоји.",
   "Channel_already_exist_static": "Канал већ постоји.",
   "Channel_created": "Channel `#%s` је креиран.",
   "Channel_doesnt_exist": "Канал `#%s` не постоји.",

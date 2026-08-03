@@ -404,7 +404,7 @@
   "Channel_Name_Placeholder": "Lūdzu, ievadiet kanāla nosaukumu ...",
   "Channel_Unarchived": "Kanāls ar nosaukumu \"#%s\" ir veiksmīgi izņemts no arhīva",
   "Channel_already_Unarchived": "Kanāls ar nosaukumu `#%s` jau atrodas stāvoklī Neapstrādāts",
-  "Channel_already_exist": "Kanāls \"#%s\" jau pastāv.",
+  "Channel_already_exist": "Kanāls \"#{{channelName}}\" jau pastāv.",
   "Channel_already_exist_static": "Kanāls jau pastāv.",
   "Channel_created": "Kanāls `#%s` izveidots.",
   "Channel_doesnt_exist": "Kanāls \"#%s\" neeksistē.",

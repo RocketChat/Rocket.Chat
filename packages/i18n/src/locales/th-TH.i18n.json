@@ -395,7 +395,7 @@
   "Channel_Name_Placeholder": "โปรดป้อนชื่อช่อง ...",
   "Channel_Unarchived": "แชแนลที่มีชื่อ `#%s` ถูกยกเลิกการเก็บถาวรเรียบร้อยแล้ว",
   "Channel_already_Unarchived": "ช่องที่มีชื่อ `#%s` อยู่ในสถานะ Unarchived แล้ว",
-  "Channel_already_exist": "ช่อง `#%s` มีอยู่แล้ว",
+  "Channel_already_exist": "ช่อง `#{{channelName}}` มีอยู่แล้ว",
   "Channel_already_exist_static": "ช่องมีอยู่แล้ว",
   "Channel_created": "สร้างช่อง `#%s` แล้ว",
   "Channel_doesnt_exist": "ไม่มีช่อง `#%s` อยู่",

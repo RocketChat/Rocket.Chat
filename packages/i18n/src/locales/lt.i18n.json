@@ -445,7 +445,7 @@
   "Channel_Name_Placeholder": "Prašau įvesti kanalo pavadinimą ...",
   "Channel_Unarchived": "Kanalas su pavadinimu \"#%s\" sėkmingai atšauktas",
   "Channel_already_Unarchived": "Kanalas su pavadinimu \"#%s\" jau yra nearchyvuotoje būsenoje",
-  "Channel_already_exist": "Kanalas \"#%s\" jau egzistuoja.",
+  "Channel_already_exist": "Kanalas \"#{{channelName}}\" jau egzistuoja.",
   "Channel_already_exist_static": "Kanalas jau egzistuoja.",
   "Channel_created": "Kanalas '#%s' sukurtas.",
   "Channel_doesnt_exist": "Kanalas \"#%s\" neegzistuoja.",

@@ -400,7 +400,7 @@
   "Channel_Name_Placeholder": "Παρακαλούμε εισάγετε όνομα καναλιού...",
   "Channel_Unarchived": "Το κανάλι με το όνομα `#%s` έχει γίνει Μη Αρχειοθετημένο με επιτυχία",
   "Channel_already_Unarchived": "Το κανάλι με το όνομα `#%s` είναι ήδη σε κατάσταση Μη Αρχειοθετημένο",
-  "Channel_already_exist": "Το κανάλι `#%s` υπάρχει ήδη.",
+  "Channel_already_exist": "Το κανάλι `#{{channelName}}` υπάρχει ήδη.",
   "Channel_already_exist_static": "Το κανάλι υπάρχει ήδη.",
   "Channel_created": "Το κανάλι `#%s` δημιουργήθηκε.",
   "Channel_doesnt_exist": "Το κανάλι `#%s` δεν υπάρχει.",

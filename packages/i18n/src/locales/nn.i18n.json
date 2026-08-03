@@ -927,7 +927,7 @@
   "Channel_Unarchived": "Kanal med navn `#%s` har blitt unarchived successfully",
   "Channel__roomName__": "Kanal {{roomName}}.",
   "Channel_already_Unarchived": "Kanal med navn `#%s` er allerede i Unarchived state",
-  "Channel_already_exist": "Kanalen `#%s` finnes allerede.",
+  "Channel_already_exist": "Kanalen `#{{channelName}}` finnes allerede.",
   "Channel_already_exist_static": "Kanalen finnes allerede.",
   "Channel_created": "Kanal `#%s` opprettet.",
   "Channel_doesnt_exist": "Kanalen `#%s` eksisterer ikke.",

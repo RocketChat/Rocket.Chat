@@ -395,7 +395,7 @@
   "Channel_Name_Placeholder": "Xahiş edirik kanal adını daxil edin ...",
   "Channel_Unarchived": "'#%s` adı olan kanal uğurla arxivlənməmişdir",
   "Channel_already_Unarchived": "'#%s' adı ilə olan kanal artıq Arxivsiz dövlətdədir",
-  "Channel_already_exist": "'#%s' kanalı artıq mövcuddur.",
+  "Channel_already_exist": "'#{{channelName}}' kanalı artıq mövcuddur.",
   "Channel_already_exist_static": "Kanal artıq mövcuddur.",
   "Channel_created": "Kanal `#%s` yaradıldı.",
   "Channel_doesnt_exist": "'#%s' kanalı yoxdur.",

@@ -1186,7 +1186,7 @@
   "Channel_Unarchived": "Channel with name `#%s` has been Unarchived successfully",
   "Channel__roomName__": "Channel {{roomName}}.",
   "Channel_already_Unarchived": "Channel with name `#%s` is already in Unarchived state",
-  "Channel_already_exist": "The channel `#%s` already exists.",
+  "Channel_already_exist": "The channel `#{{channelName}}` already exists.",
   "Channel_already_exist_static": "The channel already exists.",
   "Channel_created": "Channel `#%s` created.",
   "Channel_doesnt_exist": "The channel `#%s` does not exist.",

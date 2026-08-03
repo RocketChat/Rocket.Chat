@@ -99,7 +99,7 @@
   "CAS_enabled": "Activado",
   "Call": "Chamar",
   "Channel": "Channel",
-  "Channel_already_exist": "A canle `#%s` xa existe",
+  "Channel_already_exist": "A canle `#{{channelName}}` xa existe",
   "Channel_already_exist_static": "A canle xa existe",
   "Channel_doesnt_exist": "A canle `#%s` non existe",
   "Channel_what_is_this_channel_about": "De que vai esta canle?",

@@ -401,7 +401,7 @@
   "Channel_Name_Placeholder": "Zadajte názov kanála ...",
   "Channel_Unarchived": "Kanál s názvom \"#%s\" bol úspešne zmenený na Nearchivovaný",
   "Channel_already_Unarchived": "Kanál s názvom \"#%s\" už je v stave Nearchivovaný",
-  "Channel_already_exist": "Kanál `#%s` už existuje.",
+  "Channel_already_exist": "Kanál `#{{channelName}}` už existuje.",
   "Channel_already_exist_static": "Kanál už existuje.",
   "Channel_created": "Kanál `#%s` bol vytvorený.",
   "Channel_doesnt_exist": "Kanál `#%s` neexistuje.",

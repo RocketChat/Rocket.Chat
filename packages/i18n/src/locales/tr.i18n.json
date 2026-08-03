@@ -482,7 +482,7 @@
   "Channel_Name_Placeholder": "Lütfen kanal adını girin...",
   "Channel_Unarchived": "adı `#%s` ile Kanal başarıyla Arşivlenmedi olmuştur",
   "Channel_already_Unarchived": "adı `#%s` ile Kanal arşivlenmemiş durumda zaten",
-  "Channel_already_exist": "Kanal '#%s' zaten var.",
+  "Channel_already_exist": "Kanal '#{{channelName}}' zaten var.",
   "Channel_already_exist_static": "Kanal zaten var.",
   "Channel_created": "Kanal `#%s` oluşturuldu.",
   "Channel_doesnt_exist": "`#%s` adında bir kanal bulunmamaktadır.",

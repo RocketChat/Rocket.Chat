@@ -650,7 +650,7 @@
   "Channel_Name_Placeholder": "Indtast kanalnavn ...",
   "Channel_Unarchived": "Kanal med navn `#%s` er blevet arkiveret succesfuldt",
   "Channel_already_Unarchived": "Kanal med navn `#%s` er allerede i ikke-arkiveret state",
-  "Channel_already_exist": "Kanalen `#%s` eksisterer allerede.",
+  "Channel_already_exist": "Kanalen `#{{channelName}}` eksisterer allerede.",
   "Channel_already_exist_static": "Kanalen findes allerede.",
   "Channel_created": "Kanalen `#%s` blev oprettet.",
   "Channel_doesnt_exist": "Kanalen `#%s` eksisterer ikke.",

@@ -509,7 +509,7 @@
   "Channel_Name_Placeholder": "សូមបញ្ចូលឈ្មោះឆានែល ...",
   "Channel_Unarchived": "ឆានែលមួយដែលមានឈ្មោះ `#%s` ត្រូវបានគេទុកក្នុងប័ណ្ណសារដោយជោគជ័យ",
   "Channel_already_Unarchived": "ឆានែលមួយដែលមានឈ្មោះ `#%s` គឺមានរួចហើយនៅក្នុងរដ្ឋមិនទុកក្នុងប័ណ្ណសារ",
-  "Channel_already_exist": "ឆានែល '#%s' រួចហើយ។",
+  "Channel_already_exist": "ឆានែល '#{{channelName}}' រួចហើយ។",
   "Channel_already_exist_static": "ឆានែលមានរួចហើយ។",
   "Channel_created": "បានបង្កើតឆានែល `#%s` ។",
   "Channel_doesnt_exist": "ប៉ុស្តិ៍៖ `#%s` មិនមានទេ។",

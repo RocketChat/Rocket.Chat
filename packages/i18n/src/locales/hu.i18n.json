@@ -776,7 +776,7 @@
   "Channel_Name_Placeholder": "Adja meg a csatorna nevét…",
   "Channel_Unarchived": "A(z) „#%s” nevű csatorna archiválása sikeresen megszüntetve",
   "Channel_already_Unarchived": "A(z) „#%s” nevű csatorna már archiválatlan állapotban van",
-  "Channel_already_exist": "A(z) „#%s” csatorna már létezik.",
+  "Channel_already_exist": "A(z) „#{{channelName}}” csatorna már létezik.",
   "Channel_already_exist_static": "A csatorna már létezik.",
   "Channel_created": "A(z) „#%s” csatorna létrehozva.",
   "Channel_doesnt_exist": "A(z) „#%s” csatorna nem létezik.",

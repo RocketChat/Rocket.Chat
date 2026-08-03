@@ -254,7 +254,7 @@
   "Channel_Name_Placeholder": "הכנס את שם הערוץ",
   "Channel_Unarchived": "ערוץ עם השם `#%s` הוסר מארכיון בהצלחה",
   "Channel_already_Unarchived": "ערוץ עם השם `#%s` הוא כבר במצב הוצא מהארכיון",
-  "Channel_already_exist": "ערוץ '#%s' כבר קיים.",
+  "Channel_already_exist": "ערוץ '#{{channelName}}' כבר קיים.",
   "Channel_already_exist_static": "הערוץ כבר קיים.",
   "Channel_created": "הערוץ `#%s` נוצר.",
   "Channel_doesnt_exist": "הערוץ `#%s` לא קיים.",

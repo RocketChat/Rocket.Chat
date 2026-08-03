@@ -394,7 +394,7 @@
   "Channel_Name_Placeholder": "Ji kerema xwe navê navnîşê kanaletê binivîse",
   "Channel_Unarchived": "Channel bi navê `#%s` serkeftin Unarchived bû",
   "Channel_already_Unarchived": "Channel bi navê `#%s` e jixwe di dewletê Unarchived",
-  "Channel_already_exist": "Kanala '#%s' jixwe heye.",
+  "Channel_already_exist": "Kanala '#{{channelName}}' jixwe heye.",
   "Channel_already_exist_static": "Ev kanal heye.",
   "Channel_created": "Channel `#%s` hat afirandin.",
   "Channel_doesnt_exist": "Kanala `#%s` tune.",

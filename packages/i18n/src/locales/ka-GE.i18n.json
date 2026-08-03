@@ -543,7 +543,7 @@
   "Channel_Name_Placeholder": "გთხოვთ შეიყვანეთ არხის სახელი",
   "Channel_Unarchived": "არხი სახელით `#%s` წარმატებით ამოარქივდა",
   "Channel_already_Unarchived": "არხი სახელით`#%s` უკვე ამოარქივებულია",
-  "Channel_already_exist": "არხი `#%s` უკვე არსებობს",
+  "Channel_already_exist": "არხი `#{{channelName}}` უკვე არსებობს",
   "Channel_already_exist_static": "არხი უკვე არსებობს",
   "Channel_created": "არხი `#%s` შეიქმნა",
   "Channel_doesnt_exist": "არხი `#%s` არ არსებობს",

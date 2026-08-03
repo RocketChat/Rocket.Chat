@@ -1045,7 +1045,7 @@
   "Channel_Unarchived": "已成功取消频道 `#%s` 的归档",
   "Channel__roomName__": "频道 {{roomName}}。",
   "Channel_already_Unarchived": "频道 `#%s` 已经处于未封存状态",
-  "Channel_already_exist": "频道 `#%s` 已存在。",
+  "Channel_already_exist": "频道 `#{{channelName}}` 已存在。",
   "Channel_already_exist_static": "该频道已经存在。",
   "Channel_created": "频道 `#%s` 已创建。",
   "Channel_doesnt_exist": "不存在 `#%s` 频道。",

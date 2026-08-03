@@ -395,7 +395,7 @@
   "Channel_Name_Placeholder": "Unesite naziv kanala ...",
   "Channel_Unarchived": "Soba s nazivom `#%s` je dearhiviran uspješno",
   "Channel_already_Unarchived": "Soba s nazivom `#%s` je već u dearhiviran stanju",
-  "Channel_already_exist": "Soba \"#%s' već postoji.",
+  "Channel_already_exist": "Soba \"#{{channelName}}' već postoji.",
   "Channel_already_exist_static": "Kanal već postoji.",
   "Channel_created": "Izrađen je kanal `%s`.",
   "Channel_doesnt_exist": "Soba `#%s` ne postoji.",

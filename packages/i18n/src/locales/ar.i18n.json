@@ -716,7 +716,7 @@
   "Channel_Name_Placeholder": "يُرجى إدخال اسم القناة...",
   "Channel_Unarchived": "تم إلغاء أرشفة Channel التي اسمها `‎#%s` بنجاح",
   "Channel_already_Unarchived": "سبق وجود Channel التي اسمها `‎#%s` في حالة غير مؤرشفة",
-  "Channel_already_exist": "سبق وجود القناة `‎#%s`.",
+  "Channel_already_exist": "سبق وجود القناة `‎#{{channelName}}`.",
   "Channel_already_exist_static": "سبق وجود القناة.",
   "Channel_created": "تم إنشاء Channel `‎#%s`",
   "Channel_doesnt_exist": "القناة '‎#%s' غير موجودة.",

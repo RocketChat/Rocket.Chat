@@ -408,7 +408,7 @@
   "Channel_Name_Placeholder": "ກະລຸນາໃສ່ຊື່ຊ່ອງ ...",
   "Channel_Unarchived": "ຊ່ອງທາງທີ່ມີຊື່ `#%s` ໄດ້ຈໍານວນຫຼາຍສົບຜົນສໍາເລັດ",
   "Channel_already_Unarchived": "ຊ່ອງທາງທີ່ມີຊື່ `#%s` ແມ່ນຢູ່ໃນລັດຈໍານວນຫຼາຍ",
-  "Channel_already_exist": "ຊ່ອງທາງການ '#%s' ຢູ່ແລ້ວ.",
+  "Channel_already_exist": "ຊ່ອງທາງການ '#{{channelName}}' ຢູ່ແລ້ວ.",
   "Channel_already_exist_static": "ຊ່ອງທາງນີ້ມີຢູ່ແລ້ວ.",
   "Channel_created": "ຊ່ອງ `#%s` ຖືກສ້າງຂຶ້ນ.",
   "Channel_doesnt_exist": "ຊ່ອງທາງການ `#%s` ບໍ່ມີ.",

@@ -783,7 +783,7 @@
   "Channel_Unarchived": "Kanał o nazwie „#%s” został przywrócony z archiwum",
   "Channel__roomName__": "Kanał {{roomName}}.",
   "Channel_already_Unarchived": "Kanał o nazwie „#%s” jest już w stanie niezarchiwizowanym",
-  "Channel_already_exist": "Kanał „#%s” już istnieje.",
+  "Channel_already_exist": "Kanał „#{{channelName}}” już istnieje.",
   "Channel_already_exist_static": "Kanał już istnieje.",
   "Channel_created": "Kanał „#%s” został utworzony.",
   "Channel_doesnt_exist": "Kanał „#%s” nie istnieje.",

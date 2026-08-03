@@ -147,7 +147,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 
 		const { exists } = await channelNameExists({ roomName: name });
 		if (exists) {
-			return t('Channel_already_exist', name);
+			return t('Channel_already_exist', { channelName: name });
 		}
 	};
 

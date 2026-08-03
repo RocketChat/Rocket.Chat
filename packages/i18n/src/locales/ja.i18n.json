@@ -707,7 +707,7 @@
   "Channel_Name_Placeholder": "チャネル名を入力してください...",
   "Channel_Unarchived": "「#%s」という名前のChannelは正常にアーカイブ解除されました",
   "Channel_already_Unarchived": "「#%s」という名前のChannelはすでにアーカイブ解除済み状態です",
-  "Channel_already_exist": "チャネル「#%s」はすでに存在します。",
+  "Channel_already_exist": "チャネル「#{{channelName}}」はすでに存在します。",
   "Channel_already_exist_static": "チャネルはすでに存在します。",
   "Channel_created": "Channel「＃%s」が作成されました。",
   "Channel_doesnt_exist": "「#%s」というチャネルは登録されていません。",

@@ -719,7 +719,7 @@
   "Channel_Name_Placeholder": "Introduce el nombre del canal...",
   "Channel_Unarchived": "El Channel llamado \"#%s\" se ha pasado a estado Desarchivado correctamente",
   "Channel_already_Unarchived": "El Channel llamado \"#%s\" ya está en estado Desarchivado",
-  "Channel_already_exist": "El canal \"#%s\" ya existe.",
+  "Channel_already_exist": "El canal \"#{{channelName}}\" ya existe.",
   "Channel_already_exist_static": "El canal ya existe.",
   "Channel_created": "Channel \"#%s\" creado",
   "Channel_doesnt_exist": "El canal \"#%s\" no existe.",

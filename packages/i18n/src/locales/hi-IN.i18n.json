@@ -845,7 +845,7 @@
   "Channel_Name_Placeholder": "कृपया चैनल का नाम दर्ज करें...",
   "Channel_Unarchived": "`#%s` नाम वाला चैनल सफलतापूर्वक अनारक्षित कर दिया गया है",
   "Channel_already_Unarchived": "`#%s` नाम वाला चैनल पहले से ही अनारक्षित स्थिति में है",
-  "Channel_already_exist": "चैनल `#%s` पहले से मौजूद है।",
+  "Channel_already_exist": "चैनल `#{{channelName}}` पहले से मौजूद है।",
   "Channel_already_exist_static": "चैनल पहले से मौजूद है.",
   "Channel_created": "चैनल `#%s` बनाया गया.",
   "Channel_doesnt_exist": "चैनल `#%s` मौजूद नहीं है।",

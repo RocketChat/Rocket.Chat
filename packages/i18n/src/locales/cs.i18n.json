@@ -590,7 +590,7 @@
   "Channel_Name_Placeholder": "Zadejte název místnosti...",
   "Channel_Unarchived": "Místnost `#%s` byla úspěšně odarchivována",
   "Channel_already_Unarchived": "Místnost `#%s` je již v odarchivovaném stavu",
-  "Channel_already_exist": "Místnost '#%s' již existuje.",
+  "Channel_already_exist": "Místnost '#{{channelName}}' již existuje.",
   "Channel_already_exist_static": "Místnost již existuje",
   "Channel_created": "Místnost `#%s` byla vytvořena.",
   "Channel_doesnt_exist": "Místnost `#%s` neexistuje.",

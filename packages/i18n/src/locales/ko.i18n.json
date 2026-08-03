@@ -633,7 +633,7 @@
   "Channel_Name_Placeholder": "채널명을 입력하세요",
   "Channel_Unarchived": "`#%s` 채널 보관을 해제했습니다.",
   "Channel_already_Unarchived": "`#%s` 인 Channel은(는) 이미 보관해제 상태입니다.",
-  "Channel_already_exist": "채널 '#%s'이(가) 이미 있습니다.",
+  "Channel_already_exist": "채널 '#{{channelName}}'이(가) 이미 있습니다.",
   "Channel_already_exist_static": "채널이 이미 있습니다.",
   "Channel_created": "`#%s` 채널을 생성했습니다.",
   "Channel_doesnt_exist": "`#%s` 채널방이 없습니다.",

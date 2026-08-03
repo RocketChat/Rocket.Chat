@@ -415,7 +415,7 @@
   "Channel_Name_Placeholder": "请输入频道名称...",
   "Channel_Unarchived": "名称为“＃％s”的频道已成功解除存档",
   "Channel_already_Unarchived": "名称为“＃％s”的频道已处于未归档状态",
-  "Channel_already_exist": "频道“＃％s”已经存在。",
+  "Channel_already_exist": "频道“＃{{channelName}}”已经存在。",
   "Channel_already_exist_static": "该频道已经存在。",
   "Channel_created": "频道＃＃％s`创建。",
   "Channel_doesnt_exist": "频道“＃％s”不存在。",

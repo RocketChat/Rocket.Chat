@@ -395,7 +395,7 @@
   "Channel_Name_Placeholder": "Shkruani emrin e kanalit ...",
   "Channel_Unarchived": "Channel me emrin `#%s` ka qenë paarkivuar sukses",
   "Channel_already_Unarchived": "Channel me emrin `#%s` është tashmë në gjendje të paarkivuar",
-  "Channel_already_exist": "Kanali \"#%s 'ekziston.",
+  "Channel_already_exist": "Kanali \"#{{channelName}} 'ekziston.",
   "Channel_already_exist_static": "Kanali tashmë ekziston.",
   "Channel_created": "Kanali `%s` u krijua.",
   "Channel_doesnt_exist": "Kanali `#%s` nuk ekziston.",

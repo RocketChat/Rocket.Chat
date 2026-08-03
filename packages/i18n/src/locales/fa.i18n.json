@@ -521,7 +521,7 @@
   "Channel_Name_Placeholder": "لطفا نام کانال را وارد کنید...",
   "Channel_Unarchived": "کانال `#%s` با موفقیت از آرشیو خارج شد",
   "Channel_already_Unarchived": "کانال `#%s` در حال حاضر آرشیو نشده است",
-  "Channel_already_exist": "کانال `#%s` از قبل وجود دارد.",
+  "Channel_already_exist": "کانال `#{{channelName}}` از قبل وجود دارد.",
   "Channel_already_exist_static": "کانال در حال حاضر وجود دارد.",
   "Channel_created": "کانال #%s ایجاد شده است.",
   "Channel_doesnt_exist": "کانال `#%s` وجود ندارد.",

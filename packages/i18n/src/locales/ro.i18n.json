@@ -395,7 +395,7 @@
   "Channel_Name_Placeholder": "Introduceți numele canalului ...",
   "Channel_Unarchived": "Canal cu numele `#% a fost Dezarhivat s` cu succes",
   "Channel_already_Unarchived": "Canal cu numele `#% este deja în s` stat Dezarhivat",
-  "Channel_already_exist": "Canalul \"#%s\" există deja.",
+  "Channel_already_exist": "Canalul \"#{{channelName}}\" există deja.",
   "Channel_already_exist_static": "Canalul există deja.",
   "Channel_created": "Canalul \"#%s\" a fost creat.",
   "Channel_doesnt_exist": "Canalul `#%s` nu există.",

@@ -395,7 +395,7 @@
   "Channel_Name_Placeholder": "Bitte geben Sie den Kanalnamen ein ...",
   "Channel_Unarchived": "Raum mit dem Namen '#%s' ist nicht länger archiviert",
   "Channel_already_Unarchived": "Raum mit dem Namen '#%s' ist bereits im unarchivierten Zustand",
-  "Channel_already_exist": "Der Raum '#%s' ist bereits vorhanden.",
+  "Channel_already_exist": "Der Raum '#{{channelName}}' ist bereits vorhanden.",
   "Channel_already_exist_static": "Der Kanal existiert bereits.",
   "Channel_created": "Kanal `#%s` erstellt.",
   "Channel_doesnt_exist": "Der Raum `#%s` existiert nicht.",

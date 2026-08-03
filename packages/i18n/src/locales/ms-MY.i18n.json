@@ -395,7 +395,7 @@
   "Channel_Name_Placeholder": "Sila masukkan nama saluran ...",
   "Channel_Unarchived": "Channel dengan nama `#%s` telah berjaya Buka arkib",
   "Channel_already_Unarchived": "Channel dengan nama `#%s` sudah dalam keadaan Buka arkib",
-  "Channel_already_exist": "Saluran '#%s' telah wujud.",
+  "Channel_already_exist": "Saluran '#{{channelName}}' telah wujud.",
   "Channel_already_exist_static": "Saluran sudah ada.",
   "Channel_created": "Saluran `#%s` dibuat.",
   "Channel_doesnt_exist": "Saluran `#%s` tidak wujud.",

@@ -815,7 +815,7 @@
   "Channel_Name_Placeholder": "Anna kanavan nimi...",
   "Channel_Unarchived": "Kanava nimellä `#%s` on asetettu arkistoimattomaksi",
   "Channel_already_Unarchived": "Kanava nimellä `#%s` on jo Arkistoimaton-tilassa",
-  "Channel_already_exist": "Kanava '#%s' on jo olemassa.",
+  "Channel_already_exist": "Kanava '#{{channelName}}' on jo olemassa.",
   "Channel_already_exist_static": "Kanava on jo olemassa.",
   "Channel_created": "Kanava `%s` luotiin.",
   "Channel_doesnt_exist": "Kanavaa `#%s` ei ole olemassa.",

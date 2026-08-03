@@ -718,7 +718,7 @@
   "Channel_Name_Placeholder": "Entrez le nom du canal...",
   "Channel_Unarchived": "Le canal `#%s` a été désarchivé avec succès",
   "Channel_already_Unarchived": "Le canal `#%s` est déjà désarchivé",
-  "Channel_already_exist": "Le canal `#%s` existe déjà.",
+  "Channel_already_exist": "Le canal `#{{channelName}}` existe déjà.",
   "Channel_already_exist_static": "Le canal existe déjà.",
   "Channel_created": "Canal `#%s` créé",
   "Channel_doesnt_exist": "Le canal `#%s` n'existe pas.",

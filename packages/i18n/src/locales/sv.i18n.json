@@ -1106,7 +1106,7 @@
   "Channel_Unarchived": "Kanal med namnet `#%s` har avarkiverats",
   "Channel__roomName__": "Kanal {{roomName}}.",
   "Channel_already_Unarchived": "Kanal med namnet `#%s` är redan i oarkiverat tillstånd",
-  "Channel_already_exist": "Kanalen `#%s` finns redan.",
+  "Channel_already_exist": "Kanalen `#{{channelName}}` finns redan.",
   "Channel_already_exist_static": "Kanalen finns redan.",
   "Channel_created": "Kanalen `#%s` skapades.",
   "Channel_doesnt_exist": "Kanalen `#%s`existerar inte.",
