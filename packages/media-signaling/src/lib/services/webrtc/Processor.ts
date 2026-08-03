@@ -1,12 +1,12 @@
 import { Emitter } from '@rocket.chat/emitter';
 
+import { SDP } from './sdp';
 import type { IWebRTCProcessor, WebRTCInternalStateMap, WebRTCProcessorConfig, WebRTCProcessorEvents } from '../../../definition';
 import type { MediaStreamIdentification } from '../../../definition/media/MediaStreamIdentification';
 import type { ServiceStateValue } from '../../../definition/services/IServiceProcessor';
 import type { ServerMediaSignalRemoteSDP } from '../../../definition/signals';
 import { MediaStreamManager } from '../../media/MediaStreamManager';
 import { getExternalWaiter, type PromiseWaiterData } from '../../utils/getExternalWaiter';
-import { SDP } from './sdp';
 
 const DATA_CHANNEL_LABEL = 'rocket.chat';
 type P2PCommand = 'mute' | 'unmute' | 'end';
