@@ -36,9 +36,9 @@ const getDiscussionMessagesCount = async (room: DiscussionRoom): Promise<number>
  *  message which links to it on the parent room, and notifies the change to the clients.
  */
 export const notifyDiscussionMetadataUpdate = async (room: DiscussionRoom): Promise<void> => {
-	const dcount = await getDiscussionMessagesCount(room);
+	room.msgs = await getDiscussionMessagesCount(room);
 
-	const parentMessage = await Messages.refreshDiscussionMetadata(room, dcount);
+	const parentMessage = await Messages.refreshDiscussionMetadata(room);
 	if (!parentMessage) {
 		return;
 	}
