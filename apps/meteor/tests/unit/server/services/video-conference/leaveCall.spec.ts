@@ -4,6 +4,8 @@ import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
+import { EMPTY_CALL_GRACE_MS } from '../../../../../lib/videoConference/callHistory';
+
 // `VideoConference.findOneById` is hit more than once per `leaveCall` → `endCall` flow, with different
 // projections (`leaveCall` reads `{ rid, users, endedAt }`, `endCall`'s `getUnfiltered` reads everything). A
 // real DB would answer both from the same document, so `fixture` is the single canonical record and the
@@ -175,7 +177,16 @@ const buildDirectCall = (users: IVideoConferenceUser[], overrides: Partial<IDire
 describe('VideoConfService.leaveCall', () => {
 	let service: InstanceType<typeof VideoConfService>;
 
+	let clock: sinon.SinonFakeTimers;
+
+	/** The call empties, then the grace period passes with nobody having come back. */
+	const leaveAndSettle = async (uid: string) => {
+		await service.leaveCall(uid, 'call1');
+		await clock.tickAsync(EMPTY_CALL_GRACE_MS + 1);
+	};
+
 	beforeEach(() => {
+		clock = sinon.useFakeTimers({ shouldAdvanceTime: false });
 		service = new VideoConfService();
 		// These are standalone stubs, so they are not in sinon's default sandbox and `sinon.resetHistory()`
 		// would leave their call history intact — every assertion would then be reading the previous test's
@@ -192,6 +203,10 @@ describe('VideoConfService.leaveCall', () => {
 		SubscriptionsMock.findByRoomIdAndNotUserId.returns({ toArray: sinon.stub().resolves([]), forEach: sinon.stub().resolves() });
 	});
 
+	afterEach(() => {
+		clock.restore();
+	});
+
 	// The reported bug: leaving the last-standing spot in a call must end it and leave every member a
 	// history entry, not just silently mark the leaver as gone. `creator` already left earlier, so `other`
 	// is genuinely the last one still in the call — this is what makes it "the last participant leaves"
@@ -202,7 +217,7 @@ describe('VideoConfService.leaveCall', () => {
 			buildMember({ _id: 'other' }),
 		]);
 
-		await service.leaveCall('other', 'call1');
+		await leaveAndSettle('other');
 
 		expect(fixture.status).to.equal(VideoConferenceStatus.ENDED);
 		expect(fixture.endedAt).to.be.instanceOf(Date);
@@ -238,7 +253,7 @@ describe('VideoConfService.leaveCall', () => {
 			buildMember({ _id: 'other' }),
 		]);
 
-		await service.leaveCall('other', 'call1');
+		await leaveAndSettle('other');
 
 		expect(fixture.status).to.equal(VideoConferenceStatus.ENDED);
 		expect(CallHistoryMock.insertMany.calledOnce).to.be.true;
@@ -260,8 +275,8 @@ describe('VideoConfService.leaveCall', () => {
 		// The first call is the one that ends the conference; the second is either a duplicate client
 		// action or a provider resending the same "left" signal — `leaveCall`'s own `call.endedAt` guard
 		// must catch it before anything is written a second time.
-		await service.leaveCall('other', 'call1');
-		await service.leaveCall('other', 'call1');
+		await leaveAndSettle('other');
+		await leaveAndSettle('other');
 
 		expect(CallHistoryMock.insertMany.calledOnce).to.be.true;
 	});
@@ -285,7 +300,7 @@ describe('VideoConfService.leaveCall', () => {
 	it('ends the call when the leaver is the only joined member, even with an unjoined member still on the roster', async () => {
 		fixture = buildGroupCall([buildMember({ _id: 'creator' }), buildMember({ _id: 'neverJoined', joined: false, joinedAt: undefined })]);
 
-		await service.leaveCall('creator', 'call1');
+		await leaveAndSettle('creator');
 
 		expect(fixture.status).to.equal(VideoConferenceStatus.ENDED);
 		expect(CallHistoryMock.insertMany.calledOnce).to.be.true;
@@ -294,5 +309,34 @@ describe('VideoConfService.leaveCall', () => {
 		expect(items).to.have.length(2);
 		expect(items.find((item: { uid: string }) => item.uid === 'neverJoined')).to.include({ state: 'not-answered' });
 		expect(items.find((item: { uid: string }) => item.uid === 'creator')).to.include({ state: 'ended' });
+	});
+
+	// `pagehide` fires on a reload exactly as it does on a close, so ending the moment the call empties meant
+	// refreshing the call window killed the call. Coming back inside the grace period must cancel it.
+	it('does not end the call when the last participant comes back inside the grace period', async () => {
+		fixture = buildGroupCall([buildMember({ _id: 'creator' })]);
+
+		await service.leaveCall('creator', 'call1');
+
+		// The rejoin: what the client's own join does to the entry, which is all `hasActiveParticipants` reads.
+		const rejoiner = fixture.users.find((user) => user._id === 'creator');
+		delete rejoiner?.leftAt;
+
+		await clock.tickAsync(EMPTY_CALL_GRACE_MS + 1);
+
+		expect(fixture.status).to.equal(VideoConferenceStatus.STARTED);
+		expect(fixture.endedAt).to.be.undefined;
+		expect(CallHistoryMock.insertMany.called).to.be.false;
+	});
+
+	it('still ends the call when nobody comes back', async () => {
+		fixture = buildGroupCall([buildMember({ _id: 'creator' })]);
+
+		await service.leaveCall('creator', 'call1');
+		expect(fixture.endedAt, 'ended before the grace period elapsed').to.be.undefined;
+
+		await clock.tickAsync(EMPTY_CALL_GRACE_MS + 1);
+
+		expect(fixture.status).to.equal(VideoConferenceStatus.ENDED);
 	});
 });

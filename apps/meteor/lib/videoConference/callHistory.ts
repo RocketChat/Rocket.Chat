@@ -8,6 +8,15 @@ import type {
 import { hasJoinedVideoConference, isInVideoConference } from '@rocket.chat/core-typings';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 
+/**
+ * How long a conference is kept alive after the last participant leaves, before it is ended.
+ *
+ * Leaving is reported on `pagehide`, which fires on a reload exactly as it does on a close — so without a pause
+ * refreshing the call window ended the call. Long enough for a reload to land and cancel it, short enough that a
+ * call really over doesn't linger.
+ */
+export const EMPTY_CALL_GRACE_MS = 10_000;
+
 /** A conference that belongs in a call log: someone called someone, whether one-to-one or as a group. */
 export type LoggableVideoConference = IDirectVideoConference | IGroupVideoConference;
 
