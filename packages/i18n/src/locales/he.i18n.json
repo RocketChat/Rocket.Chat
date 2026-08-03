@@ -1159,7 +1159,7 @@
   "The_redirectUri_is_required": "RedirectUri נדרש",
   "The_server_will_restart_in_s_seconds": "השרת יפעיל את עצמו מחדש בעוד ",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "ה- <strong>S הגדרת%</strong> <strong>מוגדר %s</strong> ואתה ניגש <strong>מ %s!</strong>",
-  "The_user_will_be_removed_from_s": "המשתמש יוסר מ%s",
+  "The_user_will_be_removed_from_s": "המשתמש יוסר מ{{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "המשתמש לא יוכל להקליד {{roomName}}",
   "Theme": "ערכת עיצוב",
   "There_are_no_agents_added_to_this_department_yet": "אין סוכנים שנוספו למחלקה זו עדיין.",

@@ -2071,7 +2071,7 @@
   "The_redirectUri_is_required": "URI de redirectare este necesar",
   "The_server_will_restart_in_s_seconds": "Serverul va reporni în %s secunde",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Setarea <strong>%s</strong> e configurată să <strong>%s</strong> iar dumneavoastră accesați din <strong>%s</strong>!",
-  "The_user_will_be_removed_from_s": "Utilizatorul va fi eliminat din %s",
+  "The_user_will_be_removed_from_s": "Utilizatorul va fi eliminat din {{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "Utilizatorul nu va putea să introducă text în {{roomName}}",
   "Theme": "Temă",
   "There_are_no_agents_added_to_this_department_yet": "Încă există agenți adăugați la acest departament.",

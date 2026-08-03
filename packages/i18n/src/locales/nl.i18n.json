@@ -3619,7 +3619,7 @@
   "The_server_will_restart_in_s_seconds": "De server zal over %s seconden opnieuw opstarten",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "De instelling <strong>%s</strong> is geconfigureerd op  <strong>%s</strong> en u gebruikt <strong>%s</strong>!",
   "The_user_s_will_be_removed_from_role_s": "De gebruiker %s wordt verwijderd uit rol %s",
-  "The_user_will_be_removed_from_s": "De gebruiker wordt verwijderd uit %s",
+  "The_user_will_be_removed_from_s": "De gebruiker wordt verwijderd uit {{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "De gebruiker kan niet typen in {{roomName}}",
   "Theme": "Thema",
   "There_are_no_agents_added_to_this_department_yet": "Er zijn nog geen agenten toegevoegd aan deze afdeling.",

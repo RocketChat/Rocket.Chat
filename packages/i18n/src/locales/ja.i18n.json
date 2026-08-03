@@ -3584,7 +3584,7 @@
   "The_server_will_restart_in_s_seconds": "%s秒後にサーバーを再起動します",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "<strong>%s</strong>は <strong>%s</strong>に設定されており、<strong>%s</strong>からアクセスしています！",
   "The_user_s_will_be_removed_from_role_s": "ユーザー%sはロール%sから削除されます",
-  "The_user_will_be_removed_from_s": "ユーザーは%sから削除されます",
+  "The_user_will_be_removed_from_s": "ユーザーは{{roomName}}から削除されます",
   "The_user_wont_be_able_to_type_in_s": "ユーザーは{{roomName}}で入力できなくなります",
   "Theme": "テーマ",
   "There_are_no_agents_added_to_this_department_yet": "この部署にはまだエージェントがいません。",

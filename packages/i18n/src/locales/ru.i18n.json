@@ -3754,7 +3754,7 @@
   "The_server_will_restart_in_s_seconds": "Сервер перезапустится через %s секунд",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Параметр <strong>%s</strong> настраивается на <strong>%s</strong> и вы получаете доступ из <strong>%s</strong>!",
   "The_user_s_will_be_removed_from_role_s": "Пользователь %s будет удален из роли %s",
-  "The_user_will_be_removed_from_s": "Пользователь будет удален из %s",
+  "The_user_will_be_removed_from_s": "Пользователь будет удален из {{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "Пользователь не сможет отправлять сообщения в {{roomName}}",
   "Theme": "Тема",
   "Theme_Appearence": "Внешний вид",

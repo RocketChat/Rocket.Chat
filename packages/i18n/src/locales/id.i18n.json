@@ -2068,7 +2068,7 @@
   "The_redirectUri_is_required": "The redirectUri diperlukan",
   "The_server_will_restart_in_s_seconds": "server akan restart%s detik",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "<strong>Pengaturan%s</strong> dikonfigurasi <strong>untuk%s</strong> dan Anda mengakses <strong>dari%s!</strong>",
-  "The_user_will_be_removed_from_s": "pengguna akan dihapus dari%s",
+  "The_user_will_be_removed_from_s": "pengguna akan dihapus dari{{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "Pengguna tidak akan dapat mengetikkan{{roomName}}",
   "Theme": "Tema",
   "There_are_no_agents_added_to_this_department_yet": "Tidak ada agen ditambahkan ke departemen ini.",

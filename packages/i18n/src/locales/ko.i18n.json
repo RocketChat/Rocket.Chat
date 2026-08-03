@@ -3055,7 +3055,7 @@
   "The_server_will_restart_in_s_seconds": "서버가 %s 초 후 재시작합니다.",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "<strong>%s</strong>설정은 <strong>%s</strong>(으)로 구성되고, <strong>%s</strong>에서 접속중입니다.",
   "The_user_s_will_be_removed_from_role_s": "사용자 %s이 (가) 역할 %s에서 제거됩니다.",
-  "The_user_will_be_removed_from_s": "%s 대화방에서 사용자를 내보냅니다.",
+  "The_user_will_be_removed_from_s": "{{roomName}} 대화방에서 사용자를 내보냅니다.",
   "The_user_wont_be_able_to_type_in_s": "{{roomName}} 대화방에서 더이상 발언할 수 없습니다.",
   "Theme": "테마",
   "There_are_no_agents_added_to_this_department_yet": "아직이 부서에 추가된 에이전트가 없습니다.",

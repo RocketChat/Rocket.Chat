@@ -2786,7 +2786,7 @@
   "The_server_will_restart_in_s_seconds": "სერვერი გადაიტვირთება %s წამში",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "პარამეტრი <strong>%s</strong> კონფიგურებულია <strong>%s</strong> და თქვენ გაქვთ წვდომა <strong>%s</strong>-დან!",
   "The_user_s_will_be_removed_from_role_s": "მომხმარებლის %s ამოღებული იქნება %s როლიდან",
-  "The_user_will_be_removed_from_s": "მომხმარებელი წაიშლება %s- დან",
+  "The_user_will_be_removed_from_s": "მომხმარებელი წაიშლება {{roomName}}- დან",
   "The_user_wont_be_able_to_type_in_s": "მომხმარებელი ვერ შეძლებს {{roomName}}-ში დაწერას",
   "Theme": "თემა",
   "There_are_no_agents_added_to_this_department_yet": "ამ განყოფილებაში ჯერ არ დაუმატებიათ აგენტები.",

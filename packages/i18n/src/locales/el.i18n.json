@@ -2076,7 +2076,7 @@
   "The_redirectUri_is_required": "Η redirectUri απαιτείται",
   "The_server_will_restart_in_s_seconds": "Ο διακομιστής θα κάνει επανεκκίνηση στο %s δευτερόλεπτα",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Η <strong>ρύθμιση %s</strong> έχει ρυθμιστεί <strong>στο %s</strong> και έχετε πρόσβαση <strong>από %s!</strong>",
-  "The_user_will_be_removed_from_s": "Ο χρήστης θα πρέπει να αφαιρεθεί από %s",
+  "The_user_will_be_removed_from_s": "Ο χρήστης θα πρέπει να αφαιρεθεί από {{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "Ο χρήστης δεν θα είναι σε θέση να πληκτρολογήσετε {{roomName}}",
   "Theme": "Θέμα",
   "There_are_no_agents_added_to_this_department_yet": "Δεν υπάρχουν παράγοντες που προστίθενται σε αυτό το τμήμα ακόμα.",

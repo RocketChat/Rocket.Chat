@@ -2071,7 +2071,7 @@
   "The_redirectUri_is_required": "RedirectUri шаардлагатай",
   "The_server_will_restart_in_s_seconds": "Сервер%s секундын дараа дахин эхлүүлэх болно",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "<strong>%s</strong>тохиргоог <strong>%s</strong>тохируулсан бөгөөд та <strong>%s</strong>руу нэвтэрч байна!",
-  "The_user_will_be_removed_from_s": "Хэрэглэгч%s-с арилгах болно",
+  "The_user_will_be_removed_from_s": "Хэрэглэгч{{roomName}}-с арилгах болно",
   "The_user_wont_be_able_to_type_in_s": "Хэрэглэгч{{roomName}}-г бичиж чадахгүй байна",
   "Theme": "Сэдэв",
   "There_are_no_agents_added_to_this_department_yet": "Энэ хэлтэст ямар ч төлөөлөгч байхгүй байна.",

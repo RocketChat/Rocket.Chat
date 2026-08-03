@@ -4143,7 +4143,7 @@
   "The_server_will_restart_in_s_seconds": "Palvelin käynnistyy uudelleen %s sekunnin kuluttua",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Asetukseksi <strong>%s</strong> on määritetty <strong>%s</strong> ja käytät kohteesta <strong>%s</strong>!",
   "The_user_s_will_be_removed_from_role_s": "Käyttäjä %s poistetaan roolista %s",
-  "The_user_will_be_removed_from_s": "Käyttäjä poistetaan kohteesta %s",
+  "The_user_will_be_removed_from_s": "Käyttäjä poistetaan kohteesta {{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "Käyttäjä ei voi kirjoittaa kohteessa {{roomName}}",
   "Theme": "Teema",
   "Theme_Appearence": "Teeman ulkoasu",

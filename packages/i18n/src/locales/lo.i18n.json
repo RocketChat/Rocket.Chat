@@ -2098,7 +2098,7 @@
   "The_redirectUri_is_required": "The redirectUri ຈໍາເປັນຕ້ອງມີ",
   "The_server_will_restart_in_s_seconds": "ເຄື່ອງແມ່ຂ່າຍຂອງຈະເລີ່ມການເຮັດວຽກໃນ %s ວິນາທີ",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "<strong>ການຕັ້ງຄ່າ %s</strong> <strong>ຖືກຕັ້ງຄ່າການ %s</strong> <strong>ແລະທ່ານມີການເຂົ້າເຖິງຈາກ %s!</strong>",
-  "The_user_will_be_removed_from_s": "ຜູ້ໃຊ້ຈະໄດ້ຮັບການໂຍກຍ້າຍອອກຈາກ %s",
+  "The_user_will_be_removed_from_s": "ຜູ້ໃຊ້ຈະໄດ້ຮັບການໂຍກຍ້າຍອອກຈາກ {{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "ຜູ້ໃຊ້ຈະບໍ່ສາມາດຢູ່ໃນປະເພດ {{roomName}}",
   "Theme": "Theme",
   "There_are_no_agents_added_to_this_department_yet": "ມີຕົວແທນເພີ່ມບໍ່ມີການພະແນກນີ້ຍັງ.",

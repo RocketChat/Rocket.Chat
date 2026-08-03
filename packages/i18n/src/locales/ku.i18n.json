@@ -2065,7 +2065,7 @@
   "The_redirectUri_is_required": "The redirectUri pêwîst e",
   "The_server_will_restart_in_s_seconds": "ڕاژەکارەکە هەڵ ئەبێتەوە لە %s چرکەدا",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Mîhengên <strong>ji %s</strong> ji <strong>bo %s</strong> mîhengkirin û hûn bi <strong>ji %s</strong> negihîne!",
-  "The_user_will_be_removed_from_s": "The user dê ji %s rakirin",
+  "The_user_will_be_removed_from_s": "The user dê ji {{roomName}} rakirin",
   "The_user_wont_be_able_to_type_in_s": "The user bi wê bikaribin kes li {{roomName}}",
   "Theme": "Mijad",
   "There_are_no_agents_added_to_this_department_yet": "are no ajanên added ji bo vê beşê yet hene.",

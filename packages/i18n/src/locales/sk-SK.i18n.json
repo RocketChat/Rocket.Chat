@@ -2077,7 +2077,7 @@
   "The_redirectUri_is_required": "Vyžaduje sa presmerovanie",
   "The_server_will_restart_in_s_seconds": "Server sa reštartuje v%s",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Nastavenie <strong>%s</strong> je nakonfigurované na <strong>%s</strong> a máte prístup z <strong>%s</strong>!",
-  "The_user_will_be_removed_from_s": "Používateľ bude odstránený z%s",
+  "The_user_will_be_removed_from_s": "Používateľ bude odstránený z{{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "Používateľ nebude môcť zadať{{roomName}}",
   "Theme": "téma",
   "There_are_no_agents_added_to_this_department_yet": "Momentálne nie sú k tomuto oddeleniu pridaní žiadni agenti.",

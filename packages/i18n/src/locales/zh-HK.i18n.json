@@ -2098,7 +2098,7 @@
   "The_redirectUri_is_required": "redirectUri是必需的",
   "The_server_will_restart_in_s_seconds": "服务器将以％s秒为单位重新启动",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "已将<strong>％s</strong>的设置配置为<strong>％s</strong>，您正在通过<strong>％s</strong>进行访问！",
-  "The_user_will_be_removed_from_s": "用户将从％s中删除",
+  "The_user_will_be_removed_from_s": "用户将从{{roomName}}中删除",
   "The_user_wont_be_able_to_type_in_s": "用户将无法输入{{roomName}}",
   "Theme": "主题",
   "There_are_no_agents_added_to_this_department_yet": "目前还没有代理商加入这个部门。",

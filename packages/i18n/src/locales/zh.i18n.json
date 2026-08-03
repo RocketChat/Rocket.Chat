@@ -5198,7 +5198,7 @@
   "The_server_will_restart_in_s_seconds": "服务器将在 %s 秒后重启",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "<strong>%s</strong>已被设置为<strong>%s</strong>但你是从<strong>%s</strong>访问的！",
   "The_user_s_will_be_removed_from_role_s": "用户 %s 将被移除 %s 角色",
-  "The_user_will_be_removed_from_s": "将从 %s 中移除该用户",
+  "The_user_will_be_removed_from_s": "将从 {{roomName}} 中移除该用户",
   "The_user_wont_be_able_to_type_in_s": "该用户将被禁止在 {{roomName}} 房间中发言",
   "The_workspace_has_exceeded_the_monthly_limit_of_active_contacts": "工作区已超过月度活跃联系人上限。",
   "Theme": "主题",

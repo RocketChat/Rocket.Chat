@@ -2069,7 +2069,7 @@
   "The_redirectUri_is_required": "Preusmeritveni uri (redirectUri) je zahtevan",
   "The_server_will_restart_in_s_seconds": "Strežnik se bo znova zagnal v %s sekundah",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Nastavitev <strong>%s</strong> je konfigurirana na <strong>%s</strong>. Vi dostopate iz <strong>%s</strong>!",
-  "The_user_will_be_removed_from_s": "Uporabnik bo odstranjen iz %s",
+  "The_user_will_be_removed_from_s": "Uporabnik bo odstranjen iz {{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "Uporabnik ne bo mogel pisati v {{roomName}}",
   "Theme": "Tema",
   "There_are_no_agents_added_to_this_department_yet": "V tem oddelku še ni nobenih agentov.",

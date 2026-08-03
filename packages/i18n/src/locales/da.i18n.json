@@ -3084,7 +3084,7 @@
   "The_server_will_restart_in_s_seconds": "Serveren genstartes i%s sekunder",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Indstillingen <strong>%s</strong> er konfigureret til <strong>%s</strong>, og du får adgang fra <strong>%s</strong>!",
   "The_user_s_will_be_removed_from_role_s": "Brugeren %s fjernes fra rolle %s",
-  "The_user_will_be_removed_from_s": "Brugeren vil blive fjernet fra%s",
+  "The_user_will_be_removed_from_s": "Brugeren vil blive fjernet fra{{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "Brugeren kan ikke skrive i {{roomName}}",
   "Theme": "Tema",
   "There_are_no_agents_added_to_this_department_yet": "Der er endnu ingen agenter tilføjet til denne afdeling.",

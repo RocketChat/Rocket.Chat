@@ -2163,7 +2163,7 @@
   "The_redirectUri_is_required": "RedirectUri là bắt buộc",
   "The_server_will_restart_in_s_seconds": "Máy chủ sẽ khởi động lại trong%s giây",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Cài đặt <strong>%s</strong> được định cấu hình để <strong>%s</strong> và bạn đang truy cập từ <strong>%s</strong>!",
-  "The_user_will_be_removed_from_s": "Người dùng sẽ được gỡ bỏ khỏi%s",
+  "The_user_will_be_removed_from_s": "Người dùng sẽ được gỡ bỏ khỏi{{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "Người dùng sẽ không thể gõ{{roomName}}",
   "Theme": "Chủ đề",
   "There_are_no_agents_added_to_this_department_yet": "Chưa có agent nào được thêm vào bộ phận này.",

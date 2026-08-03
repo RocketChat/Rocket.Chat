@@ -2070,7 +2070,7 @@
   "The_redirectUri_is_required": "Необходимо е пренасочването",
   "The_server_will_restart_in_s_seconds": "Сървъра ще бъде рестартиран след %s секунди",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Настройката <strong>%s</strong>е конфигурирана на <strong>%s</strong>и имате достъп до <strong>%s</strong>!",
-  "The_user_will_be_removed_from_s": "Потребителят ще бъде премахнат от %s",
+  "The_user_will_be_removed_from_s": "Потребителят ще бъде премахнат от {{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "Потребителят няма да може да въведе в {{roomName}}",
   "Theme": "Тама",
   "There_are_no_agents_added_to_this_department_yet": "Все още няма агенти, добавени към този отдел.",

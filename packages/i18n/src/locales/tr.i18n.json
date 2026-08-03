@@ -2450,7 +2450,7 @@
   "The_server_will_restart_in_s_seconds": "Sunucu %s saniye içinde yeniden başlayacak",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "<strong>%s</strong> ayarı <strong>%s</strong> şeklinde yapılandırıldı ve <strong>%s</strong> üzerinden erişiyorsunuz!",
   "The_user_s_will_be_removed_from_role_s": "%s adlı kullanıcının %s rolü kaldırılacaktır",
-  "The_user_will_be_removed_from_s": "Kullanıcı %s arasından silinecek",
+  "The_user_will_be_removed_from_s": "Kullanıcı {{roomName}} arasından silinecek",
   "The_user_wont_be_able_to_type_in_s": "Kullanıcı {{roomName}} kanalında yazamayacak",
   "Theme": "Tema",
   "There_are_no_agents_added_to_this_department_yet": "Bu bölüme eklenen herhangi bir müşteri temsilcisi henüz yoktur.",

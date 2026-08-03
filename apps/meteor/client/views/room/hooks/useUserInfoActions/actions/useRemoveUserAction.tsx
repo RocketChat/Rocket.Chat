@@ -110,7 +110,7 @@ export const useRemoveUserAction = (
 				onCancel={closeModal}
 				onConfirm={(): Promise<void> => handleRemoveFromRoom(rid, uid)}
 			>
-				{t('The_user_will_be_removed_from_s', roomName)}
+				{t('The_user_will_be_removed_from_s', { roomName })}
 			</GenericModal>,
 		);
 	});
