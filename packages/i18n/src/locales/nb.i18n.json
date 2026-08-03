@@ -5648,7 +5648,7 @@
   "Users must use Two Factor Authentication": "Brukere må bruke tofaktorautentisering",
   "Users_Connected": "Brukere tilkoblet",
   "Users_TOTP_has_been_reset": "Brukerens TOTP har blitt tilbakestilt",
-  "Users_Table_Generic_No_users": "Ingen %s brukere",
+  "Users_Table_Generic_No_users": "Ingen {{status}} brukere",
   "Users_Table_no_active_users_description": "Aktive brukere vises her.",
   "Users_Table_no_all_users_description": "Ingen brukere funnet.",
   "Users_Table_no_deactivated_users_description": "Deaktiverte brukere vises her.",

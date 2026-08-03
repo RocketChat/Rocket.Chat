@@ -5957,7 +5957,7 @@
   "Users must use Two Factor Authentication": "Users must use Two Factor Authentication",
   "Users_Connected": "Users connected",
   "Users_TOTP_has_been_reset": "User's TOTP has been reset",
-  "Users_Table_Generic_No_users": "No %s users",
+  "Users_Table_Generic_No_users": "No {{status}} users",
   "Users_Table_no_active_users_description": "Active users appear here.",
   "Users_Table_no_all_users_description": "No Users found.",
   "Users_Table_no_deactivated_users_description": "Deactivated users appear here.",

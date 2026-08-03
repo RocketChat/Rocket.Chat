@@ -5770,7 +5770,7 @@
   "Users must use Two Factor Authentication": "Användare måste använda tvåfaktorsautentisering",
   "Users_Connected": "Anslutna användare",
   "Users_TOTP_has_been_reset": "Användarens tidsbaserade engångslösenord har återställts",
-  "Users_Table_Generic_No_users": "Inga %s användare",
+  "Users_Table_Generic_No_users": "Inga {{status}} användare",
   "Users_Table_no_active_users_description": "Aktiva användare visas här.",
   "Users_Table_no_all_users_description": "Inga användare hittades.",
   "Users_Table_no_deactivated_users_description": "Avaktiverade användare visas här.",

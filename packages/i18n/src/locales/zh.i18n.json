@@ -5639,7 +5639,7 @@
   "Users must use Two Factor Authentication": "用户必须使用两步验证",
   "Users_Connected": "已连接用户",
   "Users_TOTP_has_been_reset": "用户的 TOTP 已被重置",
-  "Users_Table_Generic_No_users": "没有 %s 用户",
+  "Users_Table_Generic_No_users": "没有 {{status}} 用户",
   "Users_Table_no_active_users_description": "活跃用户会显示在这里。",
   "Users_Table_no_all_users_description": "未找到任何用户。",
   "Users_Table_no_deactivated_users_description": "已停用用户会显示在这里。",

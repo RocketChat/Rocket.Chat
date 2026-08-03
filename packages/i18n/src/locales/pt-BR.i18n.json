@@ -5787,7 +5787,7 @@
   "Users must use Two Factor Authentication": "Os usuários devem usar autenticação de dois fatores",
   "Users_Connected": "Usuários conectados",
   "Users_TOTP_has_been_reset": "TOTP do usuário foi redefinido",
-  "Users_Table_Generic_No_users": "Nenhum usuário %s",
+  "Users_Table_Generic_No_users": "Nenhum usuário {{status}}",
   "Users_Table_no_active_users_description": "Os usuários ativos aparecem aqui.",
   "Users_Table_no_all_users_description": "Nenhum usuário encontrado.",
   "Users_Table_no_deactivated_users_description": "Os usuários desativados aparecem aqui.",
