@@ -76,3 +76,4 @@ export * from './models/Trash';
 export * from './models/CallHistory';
 export * from './models/TwoFactorChallenges';
 export * from './models/AppSchedulerModel';
+export * from './models/OmnichannelSchedulerModel';

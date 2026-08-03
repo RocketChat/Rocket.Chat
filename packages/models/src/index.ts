@@ -83,6 +83,7 @@ import type {
 	IAbacAttributesModel,
 	ITwoFactorChallengesModel,
 	ISamlUsedAssertionsModel,
+	IOmnichannelSchedulerModel,
 } from '@rocket.chat/model-typings';
 import type { Collection, Db } from 'mongodb';
 
@@ -113,6 +114,7 @@ import {
 	CronHistoryRaw,
 	CronJobsRaw,
 	AppSchedulerRaw,
+	OmnichannelSchedulerRaw,
 } from './modelClasses';
 import { proxify, registerModel } from './proxify';
 
@@ -217,6 +219,9 @@ export const WorkspaceCredentials = proxify<IWorkspaceCredentialsModel>('IWorksp
 export const AbacAttributes = proxify<IAbacAttributesModel>('IAbacAttributesModel');
 export const TwoFactorChallenges = proxify<ITwoFactorChallengesModel>('ITwoFactorChallengesModel');
 export const SamlUsedAssertions = proxify<ISamlUsedAssertionsModel>('ISamlUsedAssertionsModel');
+export const OmnichannelAutoCloseScheduler = proxify<IOmnichannelSchedulerModel>('IOmnichannelAutoCloseSchedulerModel');
+export const OmnichannelAutoTransferScheduler = proxify<IOmnichannelSchedulerModel>('IOmnichannelAutoTransferSchedulerModel');
+export const OmnichannelQueueInactivityScheduler = proxify<IOmnichannelSchedulerModel>('IOmnichannelQueueInactivitySchedulerModel');
 
 export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecordDeleted<any>>): void {
 	registerModel('IUsersSessionsModel', () => new UsersSessionsRaw(db));
@@ -255,4 +260,7 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('IServerEventsModel', () => new ServerEventsRaw(db));
 	registerModel('ISamlUsedAssertionsModel', () => new SamlUsedAssertionsRaw(db));
 	registerModel('ICronHistoryModel', () => new CronHistoryRaw(db));
+	registerModel('IOmnichannelAutoCloseSchedulerModel', () => new OmnichannelSchedulerRaw(db, 'omnichannel_auto_close_on_hold_scheduler'));
+	registerModel('IOmnichannelAutoTransferSchedulerModel', () => new OmnichannelSchedulerRaw(db, 'omnichannel_scheduler'));
+	registerModel('IOmnichannelQueueInactivitySchedulerModel', () => new OmnichannelSchedulerRaw(db, 'omnichannel_queue_inactivity_monitor'));
 }
