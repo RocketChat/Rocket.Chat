@@ -29,8 +29,11 @@ export const useJoinableCalls = () => {
 		queryFn: async () => {
 			const { calls } = await getJoinable();
 
-			// `createdAt` arrives as a string over REST, and callers order and label by it.
-			return calls.map((call): JoinableVideoConference => ({ ...call, createdAt: new Date(call.createdAt) }));
+			// `createdAt` arrives as a string over REST. Newest first, and sorted here rather than trusted from
+			// the server, since both readers present it as a most-recent-first list.
+			return calls
+				.map((call): JoinableVideoConference => ({ ...call, createdAt: new Date(call.createdAt) }))
+				.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 		},
 		refetchInterval: POLL_INTERVAL,
 	});

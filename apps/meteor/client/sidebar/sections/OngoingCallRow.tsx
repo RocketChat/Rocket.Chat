@@ -22,22 +22,16 @@ const OngoingCallRow = ({ call, onJoin, onDecline }: OngoingCallRowProps) => {
 					{t('__count__people_in_the_call', { count: call.usersCount })}
 				</Box>
 			</Box>
-			{/* Already in this call — offering to join it again would be a no-op, and there is nothing left to
-			    decline once joined, so the row marks presence instead of repeating both actions. */}
-			{call.joined ? (
-				<Box fontScale='c1' color='hint'>
-					{t('In_call')}
-				</Box>
-			) : (
-				<ButtonGroup>
-					<Button small onClick={() => onDecline(call.callId)}>
-						{t('Decline')}
-					</Button>
-					<Button small primary onClick={() => onJoin(call.callId)}>
-						{t('Join')}
-					</Button>
-				</ButtonGroup>
-			)}
+			{/* Every row is something to act on — the section leaves out the call the reader is already in, so
+			    there is no state here that offers nothing to do. */}
+			<ButtonGroup>
+				<Button small onClick={() => onDecline(call.callId)}>
+					{t('Decline')}
+				</Button>
+				<Button small primary onClick={() => onJoin(call.callId)}>
+					{t('Join')}
+				</Button>
+			</ButtonGroup>
 		</Box>
 	);
 };

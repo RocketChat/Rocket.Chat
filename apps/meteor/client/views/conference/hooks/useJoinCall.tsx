@@ -1,8 +1,9 @@
+import { Box } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useVideoConfJoinCall } from '@rocket.chat/ui-video-conf';
 import { useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import { useJoinableCalls } from './useJoinableCalls';
 
@@ -49,7 +50,13 @@ export const useJoinCall = () => {
 					onConfirm={leaveAndJoin}
 					onCancel={() => setModal(null)}
 				>
-					{t('Leave__name__to_join_this_call', { name: current.name })}
+					{/* The call being left is the whole point of asking, so its name is emphasised rather than buried in the
+					sentence — which needs `Trans`, since `t` would put the markup on screen as text. */}
+					<Trans
+						i18nKey='Leave__name__to_join_this_call'
+						values={{ name: current.name }}
+						components={{ b: <Box is='span' fontWeight={600} color='default' /> }}
+					/>
 				</GenericModal>,
 			);
 		},

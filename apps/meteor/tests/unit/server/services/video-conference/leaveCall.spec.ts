@@ -40,6 +40,9 @@ const VideoConferenceModelMock = {
 	setStatusById: sinon.stub().callsFake(async (_callId: string, status: VideoConference['status']) => {
 		fixture.status = status;
 	}),
+	find: sinon.stub().returns({ toArray: async () => [] }),
+	addMemberById: sinon.stub().resolves(),
+	setUserJoinedById: sinon.stub().resolves(),
 };
 
 const CallHistoryMock = {
@@ -338,5 +341,73 @@ describe('VideoConfService.leaveCall', () => {
 		await clock.tickAsync(EMPTY_CALL_GRACE_MS + 1);
 
 		expect(fixture.status).to.equal(VideoConferenceStatus.ENDED);
+	});
+});
+
+describe('VideoConfService one call at a time', () => {
+	let clock: sinon.SinonFakeTimers;
+	let service: InstanceType<typeof VideoConfService>;
+
+	/** The conferences the model answers about, by id — a join reads the one being joined and any other it finds. */
+	let calls: Record<string, VideoConference>;
+
+	beforeEach(() => {
+		clock = sinon.useFakeTimers({ shouldAdvanceTime: false });
+		service = new VideoConfService();
+		calls = {};
+		[
+			VideoConferenceModelMock.findOneById,
+			VideoConferenceModelMock.setUserLeftById,
+			VideoConferenceModelMock.find,
+			VideoConferenceModelMock.addMemberById,
+			VideoConferenceModelMock.setUserJoinedById,
+			UsersMock.findOneById,
+		].forEach((stub) => stub.resetHistory());
+		VideoConferenceModelMock.findOneById.callsFake(async (callId: string) => calls[callId]);
+		UsersMock.findOneById.resolves({ _id: 'joiner', username: 'joiner.user', name: 'Joiner', avatarETag: null });
+	});
+
+	afterEach(() => {
+		clock.restore();
+		VideoConferenceModelMock.findOneById.callsFake(async () => cloneFixture());
+		UsersMock.findOneById.resolves(null);
+	});
+
+	/** `other` is a call this user is in, alongside the `wanted` one they are about to join. */
+	const joinWhileIn = async (other: VideoConference) => {
+		calls = { wanted: buildGroupCall([buildMember({ _id: 'host' })], { _id: 'wanted' }), [other._id]: other };
+		VideoConferenceModelMock.find.returns({ toArray: async () => [other] });
+
+		await service.addUser('wanted', 'joiner');
+	};
+
+	// A window that dies without reporting its departure — a crash, a killed tab — leaves its user counted as
+	// present forever, which both misreports them and keeps a finished call listed as occupied. Joining anything
+	// is the moment that can be put right.
+	it('leaves the call a joining user is still counted as being in', async () => {
+		await joinWhileIn(buildGroupCall([buildMember({ _id: 'joiner' })], { _id: 'stale' }));
+
+		expect(VideoConferenceModelMock.setUserLeftById.calledWith('stale', 'joiner')).to.be.true;
+	});
+
+	it('joins the wanted call all the same', async () => {
+		await joinWhileIn(buildGroupCall([buildMember({ _id: 'joiner' })], { _id: 'stale' }));
+
+		expect(VideoConferenceModelMock.setUserJoinedById.calledWith('wanted', 'joiner')).to.be.true;
+	});
+
+	// Membership of a call already left is not presence in it, and leaving it again would write a later `leftAt`
+	// over the real one.
+	it('leaves alone a call the user had already left', async () => {
+		await joinWhileIn(buildGroupCall([buildMember({ _id: 'joiner', leftAt: new Date('2026-01-01T00:30:00.000Z') })], { _id: 'departed' }));
+
+		expect(VideoConferenceModelMock.setUserLeftById.called).to.be.false;
+	});
+
+	it('asks only about calls that are still running', async () => {
+		await joinWhileIn(buildGroupCall([buildMember({ _id: 'joiner' })], { _id: 'stale' }));
+
+		const [query] = VideoConferenceModelMock.find.firstCall.args;
+		expect(query).to.deep.equal({ '_id': { $ne: 'wanted' }, 'endedAt': { $exists: false }, 'users._id': 'joiner' });
 	});
 });
