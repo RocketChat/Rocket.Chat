@@ -3,8 +3,6 @@ import styled from '@rocket.chat/styled';
 
 type WidgetBaseProps = { inline?: boolean; borderless?: boolean };
 
-// TODO: Initial position from the draggable api instead of style props
-// TODO: A11Y
 const WidgetBase = styled('div', ({ borderless: _borderless, inline: _inline, ...props }: WidgetBaseProps) => props)`
 	padding: 0;
 	display: flex;
