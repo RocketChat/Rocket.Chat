@@ -20,16 +20,14 @@ export class UsersSessionsRaw extends BaseRaw<IUserSession> implements IUsersSes
 			'connections.id': connectionId,
 		};
 
-		// every entry matching the connection id is updated: a login happening twice over the same
-		// connection pushes duplicated entries, and leaving one of them behind would keep the user online
 		const update = {
 			$set: {
-				'connections.$[connection].status': status,
-				'connections.$[connection]._updatedAt': new Date(),
+				'connections.$.status': status,
+				'connections.$._updatedAt': new Date(),
 			},
 		};
 
-		return this.updateOne(query, update, { arrayFilters: [{ 'connection.id': connectionId }] });
+		return this.updateOne(query, update);
 	}
 
 	async removeConnectionsFromInstanceId(instanceId: string): ReturnType<BaseRaw<IUserSession>['updateMany']> {

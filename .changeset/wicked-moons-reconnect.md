@@ -1,5 +1,4 @@
 ---
-'@rocket.chat/models': patch
 '@rocket.chat/meteor': patch
 ---
 
