@@ -5310,7 +5310,7 @@
   "The_selected_user_is_not_an_agent": "Den valda användaren är inte en agent",
   "The_server_will_restart_in_s_seconds": "Servern startas om om %s sekunder",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Inställningen <strong>{{settingName}}</strong> är konfigurerad till <strong>{{configuredUrl}}</strong> och du har tillgång från <strong>{{currentUrl}}</strong>!",
-  "The_user_s_will_be_removed_from_role_s": "Användaren %s tas bort från rollen %s",
+  "The_user_s_will_be_removed_from_role_s": "Användaren {{username}} tas bort från rollen {{role}}",
   "The_user_will_be_banned_from__roomName__": "Användaren kommer att bannlysas från {{roomName}}",
   "The_user_will_be_unbanned_from__roomName__": "Användaren kommer inte längre att bannlysas från {{roomName}}",
   "The_user_will_be_removed_from_s": "Användaren tas bort från {{roomName}}",

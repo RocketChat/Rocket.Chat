@@ -2784,7 +2784,7 @@
   "The_selected_user_is_not_an_agent": "არჩეული მომხმარებელი არ არის აგენტი",
   "The_server_will_restart_in_s_seconds": "სერვერი გადაიტვირთება %s წამში",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "პარამეტრი <strong>{{settingName}}</strong> კონფიგურებულია <strong>{{configuredUrl}}</strong> და თქვენ გაქვთ წვდომა <strong>{{currentUrl}}</strong>-დან!",
-  "The_user_s_will_be_removed_from_role_s": "მომხმარებლის %s ამოღებული იქნება %s როლიდან",
+  "The_user_s_will_be_removed_from_role_s": "მომხმარებლის {{username}} ამოღებული იქნება {{role}} როლიდან",
   "The_user_will_be_removed_from_s": "მომხმარებელი წაიშლება {{roomName}}- დან",
   "The_user_wont_be_able_to_type_in_s": "მომხმარებელი ვერ შეძლებს {{roomName}}-ში დაწერას",
   "Theme": "თემა",

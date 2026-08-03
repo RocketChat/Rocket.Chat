@@ -3912,7 +3912,7 @@
   "The_selected_user_is_not_an_agent": "Wybrany użytkownik nie jest agentem",
   "The_server_will_restart_in_s_seconds": "Serwer zostanie ponownie uruchomiony za %s sekund",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Ustawienie <strong>{{settingName}}</strong> jest skonfigurowany jako <strong>{{configuredUrl}}</strong>, a próbujesz uzyskać dostęp z <strong>{{currentUrl}}</strong>!",
-  "The_user_s_will_be_removed_from_role_s": "Użytkownik %s zostanie usunięty z roli %s",
+  "The_user_s_will_be_removed_from_role_s": "Użytkownik {{username}} zostanie usunięty z roli {{role}}",
   "The_user_will_be_removed_from_s": "Użytkownik zostanie usunięty z {{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "Użytkownik nie będzie mógł wpisać w {{roomName}}",
   "Theme": "Motyw",

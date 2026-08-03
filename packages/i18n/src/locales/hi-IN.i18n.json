@@ -4411,7 +4411,7 @@
   "The_selected_user_is_not_an_agent": "चयनित उपयोगकर्ता कोई एजेंट नहीं है",
   "The_server_will_restart_in_s_seconds": "सर्वर %s सेकंड में पुनरारंभ हो जाएगा",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "सेटिंग <strong>{{settingName}} को</strong> <strong>{{configuredUrl}}</strong> पर कॉन्फ़िगर किया गया है और आप <strong>{{currentUrl}}</strong> से एक्सेस कर रहे हैं!",
-  "The_user_s_will_be_removed_from_role_s": "उपयोगकर्ता %s को भूमिका %s से हटा दिया जाएगा",
+  "The_user_s_will_be_removed_from_role_s": "उपयोगकर्ता {{username}} को भूमिका {{role}} से हटा दिया जाएगा",
   "The_user_will_be_removed_from_s": "उपयोगकर्ता को {{roomName}} से हटा दिया जाएगा",
   "The_user_wont_be_able_to_type_in_s": "उपयोगकर्ता {{roomName}} टाइप नहीं कर पाएगा",
   "The_workspace_has_exceeded_the_monthly_limit_of_active_contacts": "कार्यक्षेत्र सक्रिय संपर्कों की मासिक सीमा को पार कर गया है.",

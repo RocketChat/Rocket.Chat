@@ -3612,7 +3612,7 @@
   "The_selected_user_is_not_an_agent": "المستخدم المحدد ليس وكيلاً",
   "The_server_will_restart_in_s_seconds": "ستتم إعادة تشغيل الخادم في %s من الثواني",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "تم تكوين الإعداد <strong>{{settingName}}</strong> على <strong>{{configuredUrl}}</strong> وأنت تقوم بالوصول من <strong>{{currentUrl}}</strong>!",
-  "The_user_s_will_be_removed_from_role_s": "ستتم إزالة المستخدم %s من الدور %s",
+  "The_user_s_will_be_removed_from_role_s": "ستتم إزالة المستخدم {{username}} من الدور {{role}}",
   "The_user_will_be_removed_from_s": "ستتم إزالة المستخدم من {{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "لن يتمكن المستخدم من الكتابة في {{roomName}}",
   "Theme": "السمة",

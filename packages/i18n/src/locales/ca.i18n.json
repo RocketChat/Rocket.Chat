@@ -3539,7 +3539,7 @@
   "The_selected_user_is_not_an_agent": "L'usuari seleccionat no és un agent",
   "The_server_will_restart_in_s_seconds": "El servidor es reiniciarà d'aquí %s segons",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "L'opció <strong>{{settingName}}</strong> està configurada com <strong>{{configuredUrl}}</strong> i s'està accedint des de <strong>{{currentUrl}}</strong>!",
-  "The_user_s_will_be_removed_from_role_s": "L'usuari %s serà eliminat de el rol %s",
+  "The_user_s_will_be_removed_from_role_s": "L'usuari {{username}} serà eliminat de el rol {{role}}",
   "The_user_will_be_removed_from_s": "L'usuari s'eliminarà de {{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "L'usuari no podrà escriure a {{roomName}}",
   "Theme": "Tema",

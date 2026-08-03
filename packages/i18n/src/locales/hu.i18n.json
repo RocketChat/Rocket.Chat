@@ -3901,7 +3901,7 @@
   "The_selected_user_is_not_an_agent": "A kiválasztott felhasználó nem ügyintéző",
   "The_server_will_restart_in_s_seconds": "A kiszolgáló %s másodperc múlva újraindul",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "A <strong>{{settingName}}</strong> beállítás a(z) <strong>{{configuredUrl}}</strong> URL-hez van beállítva, és Ön a(z) <strong>{{currentUrl}}</strong> URL-ről éri el!",
-  "The_user_s_will_be_removed_from_role_s": "A(z) %s felhasználó el lesz távolítva a(z) %s szerepből",
+  "The_user_s_will_be_removed_from_role_s": "A(z) {{username}} felhasználó el lesz távolítva a(z) {{role}} szerepből",
   "The_user_will_be_removed_from_s": "A felhasználó el lesz távolítva a(z) {{roomName}} szobából",
   "The_user_wont_be_able_to_type_in_s": "A felhasználó nem lesz képes gépelni a(z) {{roomName}} szobában",
   "Theme": "Téma",
