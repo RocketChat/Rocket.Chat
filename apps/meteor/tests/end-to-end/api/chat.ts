@@ -58,8 +58,8 @@ describe('[Chat]', () => {
 	});
 
 	describe('/chat.postMessage', () => {
-		it('should throw an error when at least one of required parameters(channel, roomId) is not sent', (done) => {
-			void request
+		it('should throw an error when at least one of required parameters(channel, roomId) is not sent', async () => {
+			const res = await request
 				.post(api('chat.postMessage'))
 				.set(credentials)
 				.send({
@@ -69,15 +69,13 @@ describe('[Chat]', () => {
 					avatar: 'http://res.guggy.com/logo_128.png',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
 		});
 
-		it('should throw an error when it has some properties with the wrong type(attachments.title_link_download, attachments.fields, message_link)', (done) => {
-			void request
+		it('should throw an error when it has some properties with the wrong type(attachments.title_link_download, attachments.fields, message_link)', async () => {
+			const res = await request
 				.post(api('chat.postMessage'))
 				.set(credentials)
 				.send({
@@ -108,12 +106,10 @@ describe('[Chat]', () => {
 					],
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error');
 		});
 
 		describe('should throw an error when the sensitive properties contain malicious XSS values', () => {
@@ -440,8 +436,8 @@ describe('[Chat]', () => {
 					}));
 		});
 
-		it('should throw an error when the properties (attachments.fields.title, attachments.fields.value) are with the wrong type', (done) => {
-			void request
+		it('should throw an error when the properties (attachments.fields.title, attachments.fields.value) are with the wrong type', async () => {
+			const res = await request
 				.post(api('chat.postMessage'))
 				.set(credentials)
 				.send({
@@ -478,16 +474,14 @@ describe('[Chat]', () => {
 					],
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error');
 		});
 
-		it('should throw an error when the properties (attachments.fields.title) is missing', (done) => {
-			void request
+		it('should throw an error when the properties (attachments.fields.title) is missing', async () => {
+			const res = await request
 				.post(api('chat.postMessage'))
 				.set(credentials)
 				.send({
@@ -523,16 +517,14 @@ describe('[Chat]', () => {
 					],
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error');
 		});
 
-		it('should throw an error when the properties (attachments.fields.value) is missing', (done) => {
-			void request
+		it('should throw an error when the properties (attachments.fields.value) is missing', async () => {
+			const res = await request
 				.post(api('chat.postMessage'))
 				.set(credentials)
 				.send({
@@ -568,16 +560,14 @@ describe('[Chat]', () => {
 					],
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error');
 		});
 
-		it('attachment.fields should work fine when value and title are provided', (done) => {
-			void request
+		it('attachment.fields should work fine when value and title are provided', async () => {
+			const res = await request
 				.post(api('chat.postMessage'))
 				.set(credentials)
 				.send({
@@ -592,18 +582,16 @@ describe('[Chat]', () => {
 					],
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.not.have.property('error');
-					expect(res.body).to.have.nested.property('message.msg', 'Sample message');
-					expect(res.body).to.have.nested.property('message.attachments').to.be.an('array');
-					expect(res.body).to.have.nested.property('message.attachments[0].fields').to.be.an('array');
-					expect(res.body).to.have.nested.property('message.attachments[0].fields[0].short', true);
-					expect(res.body).to.have.nested.property('message.attachments[0].fields[0].value', 'This is value');
-					expect(res.body).to.have.nested.property('message.attachments[0].fields[0].title', 'This is title');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.not.have.property('error');
+			expect(res.body).to.have.nested.property('message.msg', 'Sample message');
+			expect(res.body).to.have.nested.property('message.attachments').to.be.an('array');
+			expect(res.body).to.have.nested.property('message.attachments[0].fields').to.be.an('array');
+			expect(res.body).to.have.nested.property('message.attachments[0].fields[0].short', true);
+			expect(res.body).to.have.nested.property('message.attachments[0].fields[0].value', 'This is value');
+			expect(res.body).to.have.nested.property('message.attachments[0].fields[0].title', 'This is title');
 		});
 
 		it('should allow forwarding a message into the same password protected room', async () => {
@@ -634,8 +622,8 @@ describe('[Chat]', () => {
 			expect(forwardResponse.body).to.have.nested.property('message.rid', protectedChannel._id);
 		});
 
-		it('should return statusCode 200 when postMessage successfully', (done) => {
-			void request
+		it('should return statusCode 200 when postMessage successfully', async () => {
+			const res = await request
 				.post(api('chat.postMessage'))
 				.set(credentials)
 				.send({
@@ -675,13 +663,11 @@ describe('[Chat]', () => {
 					],
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('message.msg', 'Sample message');
-					message = { _id: res.body.message._id };
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.nested.property('message.msg', 'Sample message');
+			message = { _id: res.body.message._id };
 		});
 
 		it('should not parse urls when parseUrls=false is provided', async () => {
@@ -747,8 +733,8 @@ describe('[Chat]', () => {
 				await updateSetting('Message_MaxAllowedSize', 5000);
 			});
 
-			it('should return an error if text parameter surpasses the maximum allowed size', (done) => {
-				void request
+			it('should return an error if text parameter surpasses the maximum allowed size', async () => {
+				const res = await request
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -759,16 +745,14 @@ describe('[Chat]', () => {
 						avatar: 'http://res.guggy.com/logo_128.png',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'error-message-size-exceeded');
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'error-message-size-exceeded');
 			});
 
-			it('should return an error if text parameter in the first attachment surpasses the maximum allowed size', (done) => {
-				void request
+			it('should return an error if text parameter in the first attachment surpasses the maximum allowed size', async () => {
+				const res = await request
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -797,16 +781,14 @@ describe('[Chat]', () => {
 						],
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'error-message-size-exceeded');
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'error-message-size-exceeded');
 			});
 
-			it('should return an error if text parameter in any of the attachments surpasses the maximum allowed size', (done) => {
-				void request
+			it('should return an error if text parameter in any of the attachments surpasses the maximum allowed size', async () => {
+				const res = await request
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -853,16 +835,14 @@ describe('[Chat]', () => {
 						],
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'error-message-size-exceeded');
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'error-message-size-exceeded');
 			});
 
-			it('should pass if any text parameter length does not surpasses the maximum allowed size', (done) => {
-				void request
+			it('should pass if any text parameter length does not surpasses the maximum allowed size', async () => {
+				const res = await request
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -902,12 +882,10 @@ describe('[Chat]', () => {
 						],
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.nested.property('message.msg', 'Sample');
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.nested.property('message.msg', 'Sample');
 			});
 		});
 
@@ -924,8 +902,8 @@ describe('[Chat]', () => {
 				await deleteRoom({ type: 'c', roomId: archivedChannel._id });
 			});
 
-			it('should fail to post a message to an archived room', (done) => {
-				void request
+			it('should fail to post a message to an archived room', async () => {
+				const res = await request
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -933,37 +911,33 @@ describe('[Chat]', () => {
 						text: 'This message should not be posted',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'room_is_archived');
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'room_is_archived');
 			});
 		});
 	});
 
 	describe('/chat.getMessage', () => {
-		it('should retrieve the message successfully', (done) => {
-			void request
+		it('should retrieve the message successfully', async () => {
+			const res = await request
 				.get(api('chat.getMessage'))
 				.set(credentials)
 				.query({
 					msgId: message._id,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('message._id', message._id);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.nested.property('message._id', message._id);
 		});
 	});
 
 	describe('/chat.sendMessage', () => {
-		it("should throw an error when the required param 'rid' is not sent", (done) => {
-			void request
+		it("should throw an error when the required param 'rid' is not sent", async () => {
+			const res = await request
 				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
@@ -975,12 +949,10 @@ describe('[Chat]', () => {
 					},
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', "The 'rid' property on the message object is missing.");
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', "The 'rid' property on the message object is missing.");
 		});
 
 		describe('should throw an error when the sensitive properties contain malicious XSS values', () => {
@@ -1100,8 +1072,8 @@ describe('[Chat]', () => {
 					}));
 		});
 
-		it('should throw an error when it has some properties with the wrong type(attachments.title_link_download, attachments.fields, message_link)', (done) => {
-			void request
+		it('should throw an error when it has some properties with the wrong type(attachments.title_link_download, attachments.fields, message_link)', async () => {
+			const res = await request
 				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
@@ -1134,12 +1106,10 @@ describe('[Chat]', () => {
 					},
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error');
 		});
 
 		it('should send a message successfully', (done) => {
@@ -1242,8 +1212,8 @@ describe('[Chat]', () => {
 				await deleteRoom({ type: 'c', roomId: archivedChannel._id });
 			});
 
-			it('should fail to send a message to an archived room', (done) => {
-				void request
+			it('should fail to send a message to an archived room', async () => {
+				const res = await request
 					.post(api('chat.sendMessage'))
 					.set(credentials)
 					.send({
@@ -1253,12 +1223,10 @@ describe('[Chat]', () => {
 						},
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'room_is_archived');
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'room_is_archived');
 			});
 		});
 
@@ -1655,8 +1623,8 @@ describe('[Chat]', () => {
 				]),
 			);
 
-			it('Creating a read-only channel', (done) => {
-				void request
+			it('Creating a read-only channel', async () => {
+				const res = await request
 					.post(api('channels.create'))
 					.set(credentials)
 					.send({
@@ -1664,15 +1632,13 @@ describe('[Chat]', () => {
 						readOnly: true,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						readOnlyChannel = res.body.channel;
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				readOnlyChannel = res.body.channel;
 			});
-			it('should send a message when the user is the owner of a readonly channel', (done) => {
-				void request
+			it('should send a message when the user is the owner of a readonly channel', async () => {
+				const res = await request
 					.post(api('chat.sendMessage'))
 					.set(credentials)
 					.send({
@@ -1682,12 +1648,10 @@ describe('[Chat]', () => {
 						},
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('message').and.to.be.an('object');
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('message').and.to.be.an('object');
 			});
 			it('Inviting regular user to read-only channel', (done) => {
 				void request
@@ -1707,8 +1671,8 @@ describe('[Chat]', () => {
 					});
 			});
 
-			it('should fail to send message when the user lacks permission', (done) => {
-				void request
+			it('should fail to send message when the user lacks permission', async () => {
+				const res = await request
 					.post(api('chat.sendMessage'))
 					.set(userCredentials)
 					.send({
@@ -1718,12 +1682,10 @@ describe('[Chat]', () => {
 						},
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error');
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error');
 			});
 
 			it('should send a message when the user has permission to send messages on readonly channels', async () => {
@@ -1747,8 +1709,8 @@ describe('[Chat]', () => {
 			});
 		});
 
-		it('should fail if user does not have the message-impersonate permission and tries to send message with alias param', (done) => {
-			void request
+		it('should fail if user does not have the message-impersonate permission and tries to send message with alias param', async () => {
+			const res = await request
 				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
@@ -1759,16 +1721,14 @@ describe('[Chat]', () => {
 					},
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Not enough permission');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'Not enough permission');
 		});
 
-		it('should fail if user does not have the message-impersonate permission and tries to send message with avatar param', (done) => {
-			void request
+		it('should fail if user does not have the message-impersonate permission and tries to send message with avatar param', async () => {
+			const res = await request
 				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
@@ -1779,12 +1739,10 @@ describe('[Chat]', () => {
 					},
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Not enough permission');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'Not enough permission');
 		});
 
 		it('should fail if message is a system message', () => {
@@ -2154,8 +2112,8 @@ describe('[Chat]', () => {
 				});
 		});
 
-		it('should fail updating a message with "content" if it is not encrypted', (done) => {
-			void request
+		it('should fail updating a message with "content" if it is not encrypted', async () => {
+			const res = await request
 				.post(api('chat.update'))
 				.set(credentials)
 				.send({
@@ -2167,16 +2125,14 @@ describe('[Chat]', () => {
 					},
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Only encrypted messages can have content updated.');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'Only encrypted messages can have content updated.');
 		});
 
-		it('should update a message successfully', (done) => {
-			void request
+		it('should update a message successfully', async () => {
+			const res = await request
 				.post(api('chat.update'))
 				.set(credentials)
 				.send({
@@ -2185,12 +2141,10 @@ describe('[Chat]', () => {
 					text: 'This message was edited via API',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('message.msg', 'This message was edited via API');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.nested.property('message.msg', 'This message was edited via API');
 		});
 
 		it('should add quote attachments to a message', async () => {
@@ -2450,8 +2404,8 @@ describe('[Chat]', () => {
 					expect(res.body).to.have.property('error', `No message found with the id of "invalid-id".`);
 				});
 		});
-		it('should delete a message successfully', (done) => {
-			void request
+		it('should delete a message successfully', async () => {
+			const res = await request
 				.post(api('chat.delete'))
 				.set(credentials)
 				.send({
@@ -2459,14 +2413,12 @@ describe('[Chat]', () => {
 					msgId,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
-		it('sending message as another user...', (done) => {
-			void request
+		it('sending message as another user...', async () => {
+			const res = await request
 				.post(api('chat.sendMessage'))
 				.set(userCredentials)
 				.send({
@@ -2476,15 +2428,13 @@ describe('[Chat]', () => {
 					},
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					msgId = res.body.message._id;
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			msgId = res.body.message._id;
 		});
-		it('should delete a message successfully when the user deletes a message send by another user', (done) => {
-			void request
+		it('should delete a message successfully when the user deletes a message send by another user', async () => {
+			const res = await request
 				.post(api('chat.delete'))
 				.set(credentials)
 				.send({
@@ -2493,11 +2443,9 @@ describe('[Chat]', () => {
 					asUser: true,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
 
 		describe('when deleting by fileId', () => {
@@ -2777,8 +2725,8 @@ describe('[Chat]', () => {
 			await sendMessage('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!');
 		});
 
-		it('should return a list of messages when execute successfully', (done) => {
-			void request
+		it('should return a list of messages when execute successfully', async () => {
+			const res = await request
 				.get(api('chat.search'))
 				.set(credentials)
 				.query({
@@ -2786,15 +2734,13 @@ describe('[Chat]', () => {
 					searchText: 'msg1',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('messages');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('messages');
 		});
-		it('should return a list of messages(length=1) when is provided "count" query parameter execute successfully', (done) => {
-			void request
+		it('should return a list of messages(length=1) when is provided "count" query parameter execute successfully', async () => {
+			const res = await request
 				.get(api('chat.search'))
 				.set(credentials)
 				.query({
@@ -2803,16 +2749,14 @@ describe('[Chat]', () => {
 					count: 1,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('messages');
-					expect(res.body.messages.length).to.equal(1);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('messages');
+			expect(res.body.messages.length).to.equal(1);
 		});
-		it('should return a list of messages(length=3) when is provided "count" and "offset" query parameters are executed successfully', (done) => {
-			void request
+		it('should return a list of messages(length=3) when is provided "count" and "offset" query parameters are executed successfully', async () => {
+			const res = await request
 				.get(api('chat.search'))
 				.set(credentials)
 				.query({
@@ -2822,17 +2766,15 @@ describe('[Chat]', () => {
 					count: 3,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('messages');
-					expect(res.body.messages.length).to.equal(3);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('messages');
+			expect(res.body.messages.length).to.equal(3);
 		});
 
-		it('should return a empty list of messages when is provided a huge offset value', (done) => {
-			void request
+		it('should return a empty list of messages when is provided a huge offset value', async () => {
+			const res = await request
 				.get(api('chat.search'))
 				.set(credentials)
 				.query({
@@ -2842,13 +2784,11 @@ describe('[Chat]', () => {
 					count: 3,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('messages');
-					expect(res.body.messages.length).to.equal(0);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('messages');
+			expect(res.body.messages.length).to.equal(0);
 		});
 
 		it('should return an empty array of messages with status 200 if the regexp starts with an invalid quantifier', async () => {
@@ -2917,8 +2857,8 @@ describe('[Chat]', () => {
 	});
 
 	describe('[/chat.react]', () => {
-		it("should return statusCode: 200 and success when try unreact a message that's no reacted yet", (done) => {
-			void request
+		it("should return statusCode: 200 and success when try unreact a message that's no reacted yet", async () => {
+			const res = await request
 				.post(api('chat.react'))
 				.set(credentials)
 				.send({
@@ -2927,14 +2867,12 @@ describe('[Chat]', () => {
 					shouldReact: false,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
-		it('should react a message successfully', (done) => {
-			void request
+		it('should react a message successfully', async () => {
+			const res = await request
 				.post(api('chat.react'))
 				.set(credentials)
 				.send({
@@ -2942,15 +2880,13 @@ describe('[Chat]', () => {
 					messageId: message._id,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
 
-		it('should return statusCode: 200 when the emoji is valid', (done) => {
-			void request
+		it('should return statusCode: 200 when the emoji is valid', async () => {
+			const res = await request
 				.post(api('chat.react'))
 				.set(credentials)
 				.send({
@@ -2958,14 +2894,12 @@ describe('[Chat]', () => {
 					messageId: message._id,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
-		it("should return statusCode: 200 and success when try react a message that's already reacted", (done) => {
-			void request
+		it("should return statusCode: 200 and success when try react a message that's already reacted", async () => {
+			const res = await request
 				.post(api('chat.react'))
 				.set(credentials)
 				.send({
@@ -2974,14 +2908,12 @@ describe('[Chat]', () => {
 					shouldReact: true,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
-		it('should return statusCode: 200 when unreact a message with flag, shouldReact: false', (done) => {
-			void request
+		it('should return statusCode: 200 when unreact a message with flag, shouldReact: false', async () => {
+			const res = await request
 				.post(api('chat.react'))
 				.set(credentials)
 				.send({
@@ -2990,14 +2922,12 @@ describe('[Chat]', () => {
 					shouldReact: false,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
-		it('should return statusCode: 200 when react a message with flag, shouldReact: true', (done) => {
-			void request
+		it('should return statusCode: 200 when react a message with flag, shouldReact: true', async () => {
+			const res = await request
 				.post(api('chat.react'))
 				.set(credentials)
 				.send({
@@ -3006,14 +2936,12 @@ describe('[Chat]', () => {
 					shouldReact: true,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
-		it('should return statusCode: 200 when the emoji is valid and has no colons', (done) => {
-			void request
+		it('should return statusCode: 200 when the emoji is valid and has no colons', async () => {
+			const res = await request
 				.post(api('chat.react'))
 				.set(credentials)
 				.send({
@@ -3021,14 +2949,12 @@ describe('[Chat]', () => {
 					messageId: message._id,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
-		it('should return statusCode: 200 for reaction property when the emoji is valid', (done) => {
-			void request
+		it('should return statusCode: 200 for reaction property when the emoji is valid', async () => {
+			const res = await request
 				.post(api('chat.react'))
 				.set(credentials)
 				.send({
@@ -3036,11 +2962,9 @@ describe('[Chat]', () => {
 					messageId: message._id,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
 	});
 
@@ -3113,8 +3037,8 @@ describe('[Chat]', () => {
 
 	describe('[/chat.reportMessage]', () => {
 		describe('when execute successfully', () => {
-			it('should return the statusCode 200', (done) => {
-				void request
+			it('should return the statusCode 200', async () => {
+				const res = await request
 					.post(api('chat.reportMessage'))
 					.set(credentials)
 					.send({
@@ -3122,29 +3046,25 @@ describe('[Chat]', () => {
 						description: 'test',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
 			});
 		});
 
 		describe('when an error occurs', () => {
-			it('should return statusCode 400 and an error', (done) => {
-				void request
+			it('should return statusCode 400 and an error', async () => {
+				const res = await request
 					.post(api('chat.reportMessage'))
 					.set(credentials)
 					.send({
 						messageId: message._id,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error');
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error');
 			});
 		});
 	});
@@ -3166,8 +3086,8 @@ describe('[Chat]', () => {
 		after(() => deleteRoom({ type: 'c', roomId }));
 
 		describe('when execute successfully', () => {
-			it('should return a list of deleted messages', (done) => {
-				void request
+			it('should return a list of deleted messages', async () => {
+				const res = await request
 					.get(api('chat.getDeletedMessages'))
 					.set(credentials)
 					.query({
@@ -3175,16 +3095,14 @@ describe('[Chat]', () => {
 						since: new Date('20 December 2018 17:51 UTC').toISOString(),
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('messages').and.to.be.an('array');
-						expect(res.body.messages.length).to.be.equal(1);
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('messages').and.to.be.an('array');
+				expect(res.body.messages.length).to.be.equal(1);
 			});
-			it('should return a list of deleted messages when the user sets count query parameter', (done) => {
-				void request
+			it('should return a list of deleted messages when the user sets count query parameter', async () => {
+				const res = await request
 					.get(api('chat.getDeletedMessages'))
 					.set(credentials)
 					.query({
@@ -3193,16 +3111,14 @@ describe('[Chat]', () => {
 						count: 1,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('messages').and.to.be.an('array');
-						expect(res.body.messages.length).to.be.equal(1);
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('messages').and.to.be.an('array');
+				expect(res.body.messages.length).to.be.equal(1);
 			});
-			it('should return a list of deleted messages when the user sets count and offset query parameters', (done) => {
-				void request
+			it('should return a list of deleted messages when the user sets count and offset query parameters', async () => {
+				const res = await request
 					.get(api('chat.getDeletedMessages'))
 					.set(credentials)
 					.query({
@@ -3212,19 +3128,17 @@ describe('[Chat]', () => {
 						offset: 0,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('messages').and.to.be.an('array');
-						expect(res.body.messages.length).to.be.equal(1);
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('messages').and.to.be.an('array');
+				expect(res.body.messages.length).to.be.equal(1);
 			});
 		});
 
 		describe('when an error occurs', () => {
-			it('should return statusCode 400', (done) => {
-				void request
+			it('should return statusCode 400', async () => {
+				const res = await request
 					.get(api('chat.getDeletedMessages'))
 					.set(credentials)
 					.query({
@@ -3233,14 +3147,12 @@ describe('[Chat]', () => {
 						offset: 0,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
 			});
-			it('should return statusCode 400 and an error when "since" is not provided', (done) => {
-				void request
+			it('should return statusCode 400 and an error when "since" is not provided', async () => {
+				const res = await request
 					.get(api('chat.getDeletedMessages'))
 					.set(credentials)
 					.query({
@@ -3249,14 +3161,12 @@ describe('[Chat]', () => {
 						offset: 0,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
 			});
-			it('should return statusCode 400 and an error when "since" is provided but it is invalid ISODate', (done) => {
-				void request
+			it('should return statusCode 400 and an error when "since" is provided but it is invalid ISODate', async () => {
+				const res = await request
 					.get(api('chat.getDeletedMessages'))
 					.set(credentials)
 					.query({
@@ -3266,11 +3176,9 @@ describe('[Chat]', () => {
 						offset: 0,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
 			});
 		});
 	});
@@ -3280,42 +3188,38 @@ describe('[Chat]', () => {
 			Promise.all([updateSetting('Message_AllowPinning', true), updatePermission('pin-message', ['owner', 'moderator', 'admin'])]),
 		);
 
-		it('should return an error when pinMessage is not allowed in this server', (done) => {
-			void updateSetting('Message_AllowPinning', false).then(() => {
-				void request
-					.post(api('chat.pinMessage'))
-					.set(credentials)
-					.send({
-						messageId: message._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error');
-					})
-					.end(done);
-			});
+		it('should return an error when pinMessage is not allowed in this server', async () => {
+			await updateSetting('Message_AllowPinning', false);
+
+			const res = await request
+				.post(api('chat.pinMessage'))
+				.set(credentials)
+				.send({
+					messageId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error');
 		});
 
-		it('should return an error when pinMessage is allowed in server but user dont have permission', (done) => {
-			void updateSetting('Message_AllowPinning', true).then(() => {
-				void updatePermission('pin-message', []).then(() => {
-					void request
-						.post(api('chat.pinMessage'))
-						.set(credentials)
-						.send({
-							messageId: message._id,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property('error');
-						})
-						.end(done);
-				});
-			});
+		it('should return an error when pinMessage is allowed in server but user dont have permission', async () => {
+			await updateSetting('Message_AllowPinning', true);
+
+			await updatePermission('pin-message', []);
+
+			const res = await request
+				.post(api('chat.pinMessage'))
+				.set(credentials)
+				.send({
+					messageId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error');
 		});
 
 		it('should return an error when messageId does not exist', async () => {
@@ -3333,22 +3237,20 @@ describe('[Chat]', () => {
 				});
 		});
 
-		it('should pin Message successfully', (done) => {
-			void updatePermission('pin-message', ['admin']).then(() => {
-				void request
-					.post(api('chat.pinMessage'))
-					.set(credentials)
-					.send({
-						messageId: message._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.not.have.property('error');
-					})
-					.end(done);
-			});
+		it('should pin Message successfully', async () => {
+			await updatePermission('pin-message', ['admin']);
+
+			const res = await request
+				.post(api('chat.pinMessage'))
+				.set(credentials)
+				.send({
+					messageId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.not.have.property('error');
 		});
 
 		it('should return message when its already pinned', async () => {
@@ -3372,140 +3274,126 @@ describe('[Chat]', () => {
 			Promise.all([updateSetting('Message_AllowPinning', true), updatePermission('pin-message', ['owner', 'moderator', 'admin'])]),
 		);
 
-		it('should return an error when pinMessage is not allowed in this server', (done) => {
-			void updateSetting('Message_AllowPinning', false).then(() => {
-				void request
-					.post(api('chat.unPinMessage'))
-					.set(credentials)
-					.send({
-						messageId: message._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error');
-					})
-					.end(done);
-			});
+		it('should return an error when pinMessage is not allowed in this server', async () => {
+			await updateSetting('Message_AllowPinning', false);
+
+			const res = await request
+				.post(api('chat.unPinMessage'))
+				.set(credentials)
+				.send({
+					messageId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error');
 		});
 
-		it('should return an error when pinMessage is allowed in server but users dont have permission', (done) => {
-			void updateSetting('Message_AllowPinning', true).then(() => {
-				void updatePermission('pin-message', []).then(() => {
-					void request
-						.post(api('chat.unPinMessage'))
-						.set(credentials)
-						.send({
-							messageId: message._id,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property('error');
-						})
-						.end(done);
-				});
-			});
+		it('should return an error when pinMessage is allowed in server but users dont have permission', async () => {
+			await updateSetting('Message_AllowPinning', true);
+
+			await updatePermission('pin-message', []);
+
+			const res = await request
+				.post(api('chat.unPinMessage'))
+				.set(credentials)
+				.send({
+					messageId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error');
 		});
 
-		it('should unpin Message successfully', (done) => {
-			void updatePermission('pin-message', ['admin']).then(() => {
-				void request
-					.post(api('chat.unPinMessage'))
-					.set(credentials)
-					.send({
-						messageId: message._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.not.have.property('error');
-					})
-					.end(done);
-			});
+		it('should unpin Message successfully', async () => {
+			await updatePermission('pin-message', ['admin']);
+
+			const res = await request
+				.post(api('chat.unPinMessage'))
+				.set(credentials)
+				.send({
+					messageId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.not.have.property('error');
 		});
 	});
 
 	describe('[/chat.unStarMessage]', () => {
 		after(() => updateSetting('Message_AllowStarring', true));
 
-		it('should return an error when starMessage is not allowed in this server', (done) => {
-			void updateSetting('Message_AllowStarring', false).then(() => {
-				void request
-					.post(api('chat.unStarMessage'))
-					.set(credentials)
-					.send({
-						messageId: message._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error');
-					})
-					.end(done);
-			});
+		it('should return an error when starMessage is not allowed in this server', async () => {
+			await updateSetting('Message_AllowStarring', false);
+
+			const res = await request
+				.post(api('chat.unStarMessage'))
+				.set(credentials)
+				.send({
+					messageId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error');
 		});
 
-		it('should unstar Message successfully', (done) => {
-			void updateSetting('Message_AllowStarring', true).then(() => {
-				void request
-					.post(api('chat.unStarMessage'))
-					.set(credentials)
-					.send({
-						messageId: message._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.not.have.property('error');
-					})
-					.end(done);
-			});
+		it('should unstar Message successfully', async () => {
+			await updateSetting('Message_AllowStarring', true);
+
+			const res = await request
+				.post(api('chat.unStarMessage'))
+				.set(credentials)
+				.send({
+					messageId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.not.have.property('error');
 		});
 	});
 
 	describe('[/chat.starMessage]', () => {
 		after(() => updateSetting('Message_AllowStarring', true));
 
-		it('should return an error when starMessage is not allowed in this server', (done) => {
-			void updateSetting('Message_AllowStarring', false).then(() => {
-				void request
-					.post(api('chat.starMessage'))
-					.set(credentials)
-					.send({
-						messageId: message._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error');
-					})
-					.end(done);
-			});
+		it('should return an error when starMessage is not allowed in this server', async () => {
+			await updateSetting('Message_AllowStarring', false);
+
+			const res = await request
+				.post(api('chat.starMessage'))
+				.set(credentials)
+				.send({
+					messageId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error');
 		});
 
-		it('should star Message successfully', (done) => {
-			void updateSetting('Message_AllowStarring', true).then(() => {
-				void request
-					.post(api('chat.starMessage'))
-					.set(credentials)
-					.send({
-						messageId: message._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.not.have.property('error');
-					})
-					.end(done);
-			});
+		it('should star Message successfully', async () => {
+			await updateSetting('Message_AllowStarring', true);
+
+			const res = await request
+				.post(api('chat.starMessage'))
+				.set(credentials)
+				.send({
+					messageId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.not.have.property('error');
 		});
 	});
 
@@ -3622,24 +3510,22 @@ describe('[Chat]', () => {
 		after(() => deleteRoom({ type: 'c', roomId }));
 
 		describe('when execute successfully', () => {
-			it('should return a list of pinned messages', (done) => {
-				void request
+			it('should return a list of pinned messages', async () => {
+				const res = await request
 					.get(api('chat.getPinnedMessages'))
 					.set(credentials)
 					.query({
 						roomId,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('messages').and.to.be.an('array');
-						expect(res.body.messages.length).to.be.equal(1);
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('messages').and.to.be.an('array');
+				expect(res.body.messages.length).to.be.equal(1);
 			});
-			it('should return a list of pinned messages when the user sets count query parameter', (done) => {
-				void request
+			it('should return a list of pinned messages when the user sets count query parameter', async () => {
+				const res = await request
 					.get(api('chat.getPinnedMessages'))
 					.set(credentials)
 					.query({
@@ -3647,16 +3533,14 @@ describe('[Chat]', () => {
 						count: 1,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('messages').and.to.be.an('array');
-						expect(res.body.messages.length).to.be.equal(1);
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('messages').and.to.be.an('array');
+				expect(res.body.messages.length).to.be.equal(1);
 			});
-			it('should return a list of pinned messages when the user sets count and offset query parameters', (done) => {
-				void request
+			it('should return a list of pinned messages when the user sets count and offset query parameters', async () => {
+				const res = await request
 					.get(api('chat.getPinnedMessages'))
 					.set(credentials)
 					.query({
@@ -3665,19 +3549,17 @@ describe('[Chat]', () => {
 						offset: 0,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('messages').and.to.be.an('array');
-						expect(res.body.messages.length).to.be.equal(1);
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('messages').and.to.be.an('array');
+				expect(res.body.messages.length).to.be.equal(1);
 			});
 		});
 
 		describe('when an error occurs', () => {
-			it('should return statusCode 400 and an error when "roomId" is not provided', (done) => {
-				void request
+			it('should return statusCode 400 and an error when "roomId" is not provided', async () => {
+				const res = await request
 					.get(api('chat.getPinnedMessages'))
 					.set(credentials)
 					.query({
@@ -3685,11 +3567,9 @@ describe('[Chat]', () => {
 						offset: 0,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
 			});
 		});
 	});
@@ -3708,48 +3588,42 @@ describe('[Chat]', () => {
 
 		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
 
-		it('should return an error when the required "roomId" parameter is not sent', (done) => {
-			void request
+		it('should return an error when the required "roomId" parameter is not sent', async () => {
+			const res = await request
 				.get(api('chat.getMentionedMessages'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-invalid-params');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.errorType).to.be.equal('error-invalid-params');
 		});
 
-		it('should return an error when the roomId is invalid', (done) => {
-			void request
+		it('should return an error when the roomId is invalid', async () => {
+			const res = await request
 				.get(api('chat.getMentionedMessages'))
 				.query({ roomId: 'invalid-room' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('error-not-allowed');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal('error-not-allowed');
 		});
 
-		it('should return the mentioned messages', (done) => {
-			void request
+		it('should return the mentioned messages', async () => {
+			const res = await request
 				.get(api('chat.getMentionedMessages'))
 				.query({ roomId: testChannel._id })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body.messages).to.be.an('array');
-					expect(res.body).to.have.property('offset');
-					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('count');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.messages).to.be.an('array');
+			expect(res.body).to.have.property('offset');
+			expect(res.body).to.have.property('total');
+			expect(res.body).to.have.property('count');
 		});
 	});
 
@@ -3767,48 +3641,38 @@ describe('[Chat]', () => {
 
 		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
 
-		it('should return an error when the required "roomId" parameter is not sent', (done) => {
-			void request
-				.get(api('chat.getStarredMessages'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-invalid-params');
-				})
-				.end(done);
+		it('should return an error when the required "roomId" parameter is not sent', async () => {
+			const res = await request.get(api('chat.getStarredMessages')).set(credentials).expect('Content-Type', 'application/json').expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.errorType).to.be.equal('error-invalid-params');
 		});
 
-		it('should return an error when the roomId is invalid', (done) => {
-			void request
+		it('should return an error when the roomId is invalid', async () => {
+			const res = await request
 				.get(api('chat.getStarredMessages'))
 				.query({ roomId: 'invalid-room' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('error-not-allowed');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal('error-not-allowed');
 		});
 
-		it('should return the starred messages', (done) => {
-			void request
+		it('should return the starred messages', async () => {
+			const res = await request
 				.get(api('chat.getStarredMessages'))
 				.query({ roomId: testChannel._id })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body.messages).to.be.an('array');
-					expect(res.body).to.have.property('offset');
-					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('count');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.messages).to.be.an('array');
+			expect(res.body).to.have.property('offset');
+			expect(res.body).to.have.property('total');
+			expect(res.body).to.have.property('count');
 		});
 	});
 
@@ -3843,50 +3707,40 @@ describe('[Chat]', () => {
 
 		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
 
-		it('should return an error when the required "roomId" parameter is not sent', (done) => {
-			void request
-				.get(api('chat.getDiscussions'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+		it('should return an error when the required "roomId" parameter is not sent', async () => {
+			const res = await request.get(api('chat.getDiscussions')).set(credentials).expect('Content-Type', 'application/json').expect(400);
+
+			expect(res.body).to.have.property('success', false);
 		});
 
-		it('should return an error when the roomId is invalid', (done) => {
-			void request
+		it('should return an error when the roomId is invalid', async () => {
+			const res = await request
 				.get(api('chat.getDiscussions'))
 				.query({ roomId: 'invalid-room' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('error-not-allowed');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal('error-not-allowed');
 		});
 
-		it('should return the discussions of a room', (done) => {
-			void request
+		it('should return the discussions of a room', async () => {
+			const res = await request
 				.get(api('chat.getDiscussions'))
 				.query({ roomId: testChannel._id })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body.messages).to.be.an('array');
-					expect(res.body).to.have.property('offset');
-					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('count');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.messages).to.be.an('array');
+			expect(res.body).to.have.property('offset');
+			expect(res.body).to.have.property('total');
+			expect(res.body).to.have.property('count');
 		});
-		it('should return the discussions of a room even requested with count and offset params', (done) => {
-			void request
+		it('should return the discussions of a room even requested with count and offset params', async () => {
+			const res = await request
 				.get(api('chat.getDiscussions'))
 				.set(credentials)
 				.query({
@@ -3895,20 +3749,18 @@ describe('[Chat]', () => {
 					offset: 0,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body.messages).to.be.an('array');
-					expect(res.body).to.have.property('offset');
-					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('count');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.messages).to.be.an('array');
+			expect(res.body).to.have.property('offset');
+			expect(res.body).to.have.property('total');
+			expect(res.body).to.have.property('count');
 		});
 
 		function filterDiscussionsByText(text: string) {
-			it(`should return the room's discussion list filtered by the text '${text}'`, (done) => {
-				void request
+			it(`should return the room's discussion list filtered by the text '${text}'`, async () => {
+				const res = await request
 					.get(api('chat.getDiscussions'))
 					.set(credentials)
 					.query({
@@ -3916,21 +3768,19 @@ describe('[Chat]', () => {
 						text,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('messages').and.to.be.an('array');
-						expect(res.body).to.have.property('total');
-						expect(res.body).to.have.property('offset');
-						expect(res.body).to.have.property('count');
-						expect(res.body.messages).to.have.lengthOf(1);
-						expect(res.body.messages[0].drid).to.be.equal(discussionRoom.rid);
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('messages').and.to.be.an('array');
+				expect(res.body).to.have.property('total');
+				expect(res.body).to.have.property('offset');
+				expect(res.body).to.have.property('count');
+				expect(res.body.messages).to.have.lengthOf(1);
+				expect(res.body.messages[0].drid).to.be.equal(discussionRoom.rid);
 			});
 
-			it(`should return the room's discussion list filtered by the text '${text}' even requested with count and offset params`, (done) => {
-				void request
+			it(`should return the room's discussion list filtered by the text '${text}' even requested with count and offset params`, async () => {
+				const res = await request
 					.get(api('chat.getDiscussions'))
 					.set(credentials)
 					.query({
@@ -3940,17 +3790,15 @@ describe('[Chat]', () => {
 						offset: 0,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('messages').and.to.be.an('array');
-						expect(res.body).to.have.property('total');
-						expect(res.body).to.have.property('offset');
-						expect(res.body).to.have.property('count');
-						expect(res.body.messages).to.have.lengthOf(1);
-						expect(res.body.messages[0].drid).to.be.equal(discussionRoom.rid);
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('messages').and.to.be.an('array');
+				expect(res.body).to.have.property('total');
+				expect(res.body).to.have.property('offset');
+				expect(res.body).to.have.property('count');
+				expect(res.body.messages).to.have.lengthOf(1);
+				expect(res.body.messages[0].drid).to.be.equal(discussionRoom.rid);
 			});
 		}
 
@@ -3968,78 +3816,64 @@ describe('[Chat]', () => {
 
 		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
 
-		it('should return an error when the required "roomId" parameter is not sent', (done) => {
-			void request
-				.get(api('chat.syncMessages'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-invalid-params');
-					expect(res.body.error).to.include(`must have required property 'roomId'`);
-				})
-				.end(done);
+		it('should return an error when the required "roomId" parameter is not sent', async () => {
+			const res = await request.get(api('chat.syncMessages')).set(credentials).expect('Content-Type', 'application/json').expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.errorType).to.be.equal('error-invalid-params');
+			expect(res.body.error).to.include(`must have required property 'roomId'`);
 		});
 
-		it('should return an error when the neither "lastUpdate" or "type" parameter is sent', (done) => {
-			void request
+		it('should return an error when the neither "lastUpdate" or "type" parameter is sent', async () => {
+			const res = await request
 				.get(api('chat.syncMessages'))
 				.set(credentials)
 				.query({ roomId: testChannel._id })
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-param-required');
-					expect(res.body.error).to.include('The "type" or "lastUpdate" parameters must be provided');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.errorType).to.be.equal('error-param-required');
+			expect(res.body.error).to.include('The "type" or "lastUpdate" parameters must be provided');
 		});
 
-		it('should return an error when the "lastUpdate" parameter is invalid', (done) => {
-			void request
+		it('should return an error when the "lastUpdate" parameter is invalid', async () => {
+			const res = await request
 				.get(api('chat.syncMessages'))
 				.set(credentials)
 				.query({ roomId: 'invalid-room', lastUpdate: 'invalid-date' })
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-lastUpdate-param-invalid');
-					expect(res.body.error).to.include('The "lastUpdate" query parameter must be a valid date');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.errorType).to.be.equal('error-lastUpdate-param-invalid');
+			expect(res.body.error).to.include('The "lastUpdate" query parameter must be a valid date');
 		});
 
-		it('should return an error when user provides an invalid roomId', (done) => {
-			void request
+		it('should return an error when user provides an invalid roomId', async () => {
+			const res = await request
 				.get(api('chat.syncMessages'))
 				.set(credentials)
 				.query({ roomId: 'invalid-room', lastUpdate: new Date().toISOString() })
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-not-allowed');
-					expect(res.body.error).to.include('Not allowed');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.errorType).to.be.equal('error-not-allowed');
+			expect(res.body.error).to.include('Not allowed');
 		});
 
-		it('should return an error when the "type" parameter is not supported', (done) => {
-			void request
+		it('should return an error when the "type" parameter is not supported', async () => {
+			const res = await request
 				.get(api('chat.syncMessages'))
 				.set(credentials)
 				.query({ roomId: testChannel._id, type: 'invalid-type', next: new Date().toISOString() })
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-invalid-params');
-					expect(res.body.error).to.include('must be equal to one of the allowed values');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.errorType).to.be.equal('error-invalid-params');
+			expect(res.body.error).to.include('must be equal to one of the allowed values');
 		});
 
 		it('should return an error when the "next" or "previous" parameter is sent without the "type" parameter', async () => {
@@ -4064,66 +3898,58 @@ describe('[Chat]', () => {
 			expect(previousResponse.body.error).to.include('The "type" or "lastUpdate" parameters must be provided');
 		});
 
-		it('should return an error when both "next" and "previous" are sent', (done) => {
-			void request
+		it('should return an error when both "next" and "previous" are sent', async () => {
+			const res = await request
 				.get(api('chat.syncMessages'))
 				.set(credentials)
 				.query({ roomId: testChannel._id, type: 'UPDATED', next: new Date().toISOString(), previous: new Date().toISOString() })
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-cursor-conflict');
-					expect(res.body.error).to.include('You cannot provide both "next" and "previous" parameters');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.errorType).to.be.equal('error-cursor-conflict');
+			expect(res.body.error).to.include('You cannot provide both "next" and "previous" parameters');
 		});
 
-		it('should return an error when both "next" or "previous" and "lastUpdate" are sent', (done) => {
-			void request
+		it('should return an error when both "next" or "previous" and "lastUpdate" are sent', async () => {
+			const res = await request
 				.get(api('chat.syncMessages'))
 				.set(credentials)
 				.query({ roomId: testChannel._id, type: 'UPDATED', next: new Date().toISOString(), lastUpdate: new Date().toISOString() })
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-cursor-and-lastUpdate-conflict');
-					expect(res.body.error).to.include('The attributes "next", "previous" and "lastUpdate" cannot be used together');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.errorType).to.be.equal('error-cursor-and-lastUpdate-conflict');
+			expect(res.body.error).to.include('The attributes "next", "previous" and "lastUpdate" cannot be used together');
 		});
 
-		it('should return an error when neither "type" or "lastUpdate" are sent', (done) => {
-			void request
+		it('should return an error when neither "type" or "lastUpdate" are sent', async () => {
+			const res = await request
 				.get(api('chat.syncMessages'))
 				.set(credentials)
 				.query({ roomId: testChannel._id })
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-param-required');
-					expect(res.body.error).to.include('The "type" or "lastUpdate" parameters must be provided');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.errorType).to.be.equal('error-param-required');
+			expect(res.body.error).to.include('The "type" or "lastUpdate" parameters must be provided');
 		});
 
-		it('should return an empty response when there are no messages to sync', (done) => {
-			void request
+		it('should return an empty response when there are no messages to sync', async () => {
+			const res = await request
 				.get(api('chat.syncMessages'))
 				.set(credentials)
 				.query({ roomId: testChannel._id, lastUpdate: new Date().toISOString() })
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body.result).to.have.property('updated').and.to.be.an('array');
-					expect(res.body.result).to.have.property('deleted').and.to.be.an('array');
-					expect(res.body.result.updated).to.have.lengthOf(0);
-					expect(res.body.result.deleted).to.have.lengthOf(0);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.result).to.have.property('updated').and.to.be.an('array');
+			expect(res.body.result).to.have.property('deleted').and.to.be.an('array');
+			expect(res.body.result.updated).to.have.lengthOf(0);
+			expect(res.body.result.deleted).to.have.lengthOf(0);
 		});
 
 		it('should return all updated and deleted messages since "lastUpdate" parameter date', async () => {
@@ -4333,23 +4159,21 @@ describe('Threads', () => {
 			]),
 		);
 
-		it('should return an error for chat.getThreadsList when threads are not allowed in this server', (done) => {
-			void updateSetting('Threads_enabled', false).then(() => {
-				void request
-					.get(api('chat.getThreadsList'))
-					.set(credentials)
-					.query({
-						rid: testChannel._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-not-allowed');
-						expect(res.body).to.have.property('error', 'Threads Disabled [error-not-allowed]');
-					})
-					.end(done);
-			});
+		it('should return an error for chat.getThreadsList when threads are not allowed in this server', async () => {
+			await updateSetting('Threads_enabled', false);
+
+			const res = await request
+				.get(api('chat.getThreadsList'))
+				.set(credentials)
+				.query({
+					rid: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			expect(res.body).to.have.property('error', 'Threads Disabled [error-not-allowed]');
 		});
 
 		it('should return an error when the user is not allowed access the room', (done) => {
@@ -4378,27 +4202,25 @@ describe('Threads', () => {
 			});
 		});
 
-		it("should return the room's thread list", (done) => {
-			void updatePermission('view-c-room', ['admin', 'user']).then(() => {
-				void request
-					.get(api('chat.getThreadsList'))
-					.set(credentials)
-					.query({
-						rid: testChannel._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('threads').and.to.be.an('array');
-						expect(res.body).to.have.property('total');
-						expect(res.body).to.have.property('offset');
-						expect(res.body).to.have.property('count');
-						expect(res.body.threads).to.have.lengthOf(1);
-						expect(res.body.threads[0]._id).to.be.equal(threadMessage.tmid);
-					})
-					.end(done);
-			});
+		it("should return the room's thread list", async () => {
+			await updatePermission('view-c-room', ['admin', 'user']);
+
+			const res = await request
+				.get(api('chat.getThreadsList'))
+				.set(credentials)
+				.query({
+					rid: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('threads').and.to.be.an('array');
+			expect(res.body).to.have.property('total');
+			expect(res.body).to.have.property('offset');
+			expect(res.body).to.have.property('count');
+			expect(res.body.threads).to.have.lengthOf(1);
+			expect(res.body.threads[0]._id).to.be.equal(threadMessage.tmid);
 		});
 
 		it("should fail returning a room's thread list if no roomId is provided", async () => {
@@ -4451,34 +4273,32 @@ describe('Threads', () => {
 				});
 		});
 
-		it("should return the room's thread list even requested with count and offset params", (done) => {
-			void updatePermission('view-c-room', ['admin', 'user']).then(() => {
-				void request
-					.get(api('chat.getThreadsList'))
-					.set(credentials)
-					.query({
-						rid: testChannel._id,
-						count: 5,
-						offset: 0,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('threads').and.to.be.an('array');
-						expect(res.body).to.have.property('total');
-						expect(res.body).to.have.property('offset');
-						expect(res.body).to.have.property('count');
-						expect(res.body.threads).to.have.lengthOf(1);
-						expect(res.body.threads[0]._id).to.be.equal(threadMessage.tmid);
-					})
-					.end(done);
-			});
+		it("should return the room's thread list even requested with count and offset params", async () => {
+			await updatePermission('view-c-room', ['admin', 'user']);
+
+			const res = await request
+				.get(api('chat.getThreadsList'))
+				.set(credentials)
+				.query({
+					rid: testChannel._id,
+					count: 5,
+					offset: 0,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('threads').and.to.be.an('array');
+			expect(res.body).to.have.property('total');
+			expect(res.body).to.have.property('offset');
+			expect(res.body).to.have.property('count');
+			expect(res.body.threads).to.have.lengthOf(1);
+			expect(res.body.threads[0]._id).to.be.equal(threadMessage.tmid);
 		});
 
 		function filterThreadsByText(text: string) {
-			it(`should return the room's thread list filtered by the text '${text}'`, (done) => {
-				void request
+			it(`should return the room's thread list filtered by the text '${text}'`, async () => {
+				const res = await request
 					.get(api('chat.getThreadsList'))
 					.set(credentials)
 					.query({
@@ -4486,20 +4306,18 @@ describe('Threads', () => {
 						text,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('threads').and.to.be.an('array');
-						expect(res.body).to.have.property('total');
-						expect(res.body).to.have.property('offset');
-						expect(res.body).to.have.property('count');
-						expect(res.body.threads).to.have.lengthOf(1);
-						expect(res.body.threads[0]._id).to.be.equal(threadMessage.tmid);
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('threads').and.to.be.an('array');
+				expect(res.body).to.have.property('total');
+				expect(res.body).to.have.property('offset');
+				expect(res.body).to.have.property('count');
+				expect(res.body.threads).to.have.lengthOf(1);
+				expect(res.body.threads[0]._id).to.be.equal(threadMessage.tmid);
 			});
-			it(`should return the room's thread list filtered by the text '${text}' even requested with count and offset params`, (done) => {
-				void request
+			it(`should return the room's thread list filtered by the text '${text}' even requested with count and offset params`, async () => {
+				const res = await request
 					.get(api('chat.getThreadsList'))
 					.set(credentials)
 					.query({
@@ -4509,17 +4327,15 @@ describe('Threads', () => {
 						offset: 0,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('threads').and.to.be.an('array');
-						expect(res.body).to.have.property('total');
-						expect(res.body).to.have.property('offset');
-						expect(res.body).to.have.property('count');
-						expect(res.body.threads).to.have.lengthOf(1);
-						expect(res.body.threads[0]._id).to.be.equal(threadMessage.tmid);
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('threads').and.to.be.an('array');
+				expect(res.body).to.have.property('total');
+				expect(res.body).to.have.property('offset');
+				expect(res.body).to.have.property('count');
+				expect(res.body.threads).to.have.lengthOf(1);
+				expect(res.body.threads[0]._id).to.be.equal(threadMessage.tmid);
 			});
 		}
 
@@ -4527,27 +4343,25 @@ describe('Threads', () => {
 			filterThreadsByText(text);
 		});
 
-		it('should return an empty thread list', (done) => {
-			void updatePermission('view-c-room', ['admin', 'user']).then(() => {
-				void request
-					.get(api('chat.getThreadsList'))
-					.set(credentials)
-					.query({
-						rid: testChannel._id,
-						text: 'missing',
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('threads').and.to.be.an('array');
-						expect(res.body).to.have.property('total');
-						expect(res.body).to.have.property('offset');
-						expect(res.body).to.have.property('count');
-						expect(res.body.threads).to.have.lengthOf(0);
-					})
-					.end(done);
-			});
+		it('should return an empty thread list', async () => {
+			await updatePermission('view-c-room', ['admin', 'user']);
+
+			const res = await request
+				.get(api('chat.getThreadsList'))
+				.set(credentials)
+				.query({
+					rid: testChannel._id,
+					text: 'missing',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('threads').and.to.be.an('array');
+			expect(res.body).to.have.property('total');
+			expect(res.body).to.have.property('offset');
+			expect(res.body).to.have.property('count');
+			expect(res.body.threads).to.have.lengthOf(0);
 		});
 	});
 
@@ -4581,76 +4395,68 @@ describe('Threads', () => {
 			]),
 		);
 
-		it('should return an error for chat.getThreadsList when threads are not allowed in this server', (done) => {
-			void updateSetting('Threads_enabled', false).then(() => {
-				void request
-					.get(api('chat.getThreadsList'))
-					.set(credentials)
-					.query({
-						rid: testChannel._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-not-allowed');
-						expect(res.body).to.have.property('error', 'Threads Disabled [error-not-allowed]');
-					})
-					.end(done);
-			});
+		it('should return an error for chat.getThreadsList when threads are not allowed in this server', async () => {
+			await updateSetting('Threads_enabled', false);
+
+			const res = await request
+				.get(api('chat.getThreadsList'))
+				.set(credentials)
+				.query({
+					rid: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			expect(res.body).to.have.property('error', 'Threads Disabled [error-not-allowed]');
 		});
 
-		it('should return an error when the required param "rid" is missing', (done) => {
-			void updateSetting('Threads_enabled', true).then(() => {
-				void request
-					.get(api('chat.syncThreadsList'))
-					.set(credentials)
-					.query({})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-invalid-params');
-					})
-					.end(done);
-			});
+		it('should return an error when the required param "rid" is missing', async () => {
+			await updateSetting('Threads_enabled', true);
+
+			const res = await request
+				.get(api('chat.syncThreadsList'))
+				.set(credentials)
+				.query({})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-invalid-params');
 		});
 
-		it('should return an error when the required param "updatedSince" is missing', (done) => {
-			void updateSetting('Threads_enabled', true).then(() => {
-				void request
-					.get(api('chat.syncThreadsList'))
-					.set(credentials)
-					.query({
-						rid: testChannel._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-invalid-params');
-					})
-					.end(done);
-			});
+		it('should return an error when the required param "updatedSince" is missing', async () => {
+			await updateSetting('Threads_enabled', true);
+
+			const res = await request
+				.get(api('chat.syncThreadsList'))
+				.set(credentials)
+				.query({
+					rid: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-invalid-params');
 		});
 
-		it('should return an error when the param "updatedSince" is an invalid date', (done) => {
-			void updateSetting('Threads_enabled', true).then(() => {
-				void request
-					.get(api('chat.syncThreadsList'))
-					.set(credentials)
-					.query({
-						rid: testChannel._id,
-						updatedSince: 'invalid-date',
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-invalid-params');
-					})
-					.end(done);
-			});
+		it('should return an error when the param "updatedSince" is an invalid date', async () => {
+			await updateSetting('Threads_enabled', true);
+
+			const res = await request
+				.get(api('chat.syncThreadsList'))
+				.set(credentials)
+				.query({
+					rid: testChannel._id,
+					updatedSince: 'invalid-date',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-invalid-params');
 		});
 
 		it('should return an error when the user is not allowed access the room', (done) => {
@@ -4678,28 +4484,26 @@ describe('Threads', () => {
 			});
 		});
 
-		it("should return the room's thread synced list", (done) => {
-			void updatePermission('view-c-room', ['admin', 'user']).then(() => {
-				void request
-					.get(api('chat.syncThreadsList'))
-					.set(credentials)
-					.query({
-						rid: testChannel._id,
-						updatedSince: new Date('2019-04-01').toISOString(),
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('threads').and.to.be.an('object');
-						expect(res.body.threads).to.have.property('update').and.to.be.an('array');
-						expect(res.body.threads).to.have.property('remove').and.to.be.an('array');
-						expect(res.body.threads.update).to.have.lengthOf(1);
-						expect(res.body.threads.remove).to.have.lengthOf(0);
-						expect(res.body.threads.update[0]._id).to.be.equal(threadMessage.tmid);
-					})
-					.end(done);
-			});
+		it("should return the room's thread synced list", async () => {
+			await updatePermission('view-c-room', ['admin', 'user']);
+
+			const res = await request
+				.get(api('chat.syncThreadsList'))
+				.set(credentials)
+				.query({
+					rid: testChannel._id,
+					updatedSince: new Date('2019-04-01').toISOString(),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('threads').and.to.be.an('object');
+			expect(res.body.threads).to.have.property('update').and.to.be.an('array');
+			expect(res.body.threads).to.have.property('remove').and.to.be.an('array');
+			expect(res.body.threads.update).to.have.lengthOf(1);
+			expect(res.body.threads.remove).to.have.lengthOf(0);
+			expect(res.body.threads.update[0]._id).to.be.equal(threadMessage.tmid);
 		});
 	});
 
@@ -4736,23 +4540,21 @@ describe('Threads', () => {
 			]),
 		);
 
-		it('should return an error for chat.getThreadMessages when threads are not allowed in this server', (done) => {
-			void updateSetting('Threads_enabled', false).then(() => {
-				void request
-					.get(api('chat.getThreadMessages'))
-					.set(credentials)
-					.query({
-						tmid: threadMessage.tmid,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-not-allowed');
-						expect(res.body).to.have.property('error', 'Threads Disabled [error-not-allowed]');
-					})
-					.end(done);
-			});
+		it('should return an error for chat.getThreadMessages when threads are not allowed in this server', async () => {
+			await updateSetting('Threads_enabled', false);
+
+			const res = await request
+				.get(api('chat.getThreadMessages'))
+				.set(credentials)
+				.query({
+					tmid: threadMessage.tmid,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			expect(res.body).to.have.property('error', 'Threads Disabled [error-not-allowed]');
 		});
 
 		it('should return an error when the user is not allowed access the room', (done) => {
@@ -4781,27 +4583,25 @@ describe('Threads', () => {
 			});
 		});
 
-		it("should return the thread's message list", (done) => {
-			void updatePermission('view-c-room', ['admin', 'user']).then(() => {
-				void request
-					.get(api('chat.getThreadMessages'))
-					.set(credentials)
-					.query({
-						tmid: threadMessage.tmid,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('messages').and.to.be.an('array');
-						expect(res.body).to.have.property('total').and.to.be.equal(1);
-						expect(res.body).to.have.property('offset');
-						expect(res.body).to.have.property('count');
-						expect(res.body.messages).to.have.lengthOf(1);
-						expect(res.body.messages[0].tmid).to.be.equal(createdThreadMessage._id);
-					})
-					.end(done);
-			});
+		it("should return the thread's message list", async () => {
+			await updatePermission('view-c-room', ['admin', 'user']);
+
+			const res = await request
+				.get(api('chat.getThreadMessages'))
+				.set(credentials)
+				.query({
+					tmid: threadMessage.tmid,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('messages').and.to.be.an('array');
+			expect(res.body).to.have.property('total').and.to.be.equal(1);
+			expect(res.body).to.have.property('offset');
+			expect(res.body).to.have.property('count');
+			expect(res.body.messages).to.have.lengthOf(1);
+			expect(res.body.messages[0].tmid).to.be.equal(createdThreadMessage._id);
 		});
 	});
 
@@ -4930,77 +4730,69 @@ describe('Threads', () => {
 			]),
 		);
 
-		it('should return an error for chat.syncThreadMessages when threads are not allowed in this server', (done) => {
-			void updateSetting('Threads_enabled', false).then(() => {
-				void request
-					.get(api('chat.syncThreadMessages'))
-					.set(credentials)
-					.query({
-						tmid: threadMessage.tmid,
-						updatedSince: new Date().toISOString(),
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-not-allowed');
-						expect(res.body).to.have.property('error', 'Threads Disabled [error-not-allowed]');
-					})
-					.end(done);
-			});
+		it('should return an error for chat.syncThreadMessages when threads are not allowed in this server', async () => {
+			await updateSetting('Threads_enabled', false);
+
+			const res = await request
+				.get(api('chat.syncThreadMessages'))
+				.set(credentials)
+				.query({
+					tmid: threadMessage.tmid,
+					updatedSince: new Date().toISOString(),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			expect(res.body).to.have.property('error', 'Threads Disabled [error-not-allowed]');
 		});
 
-		it('should return an error when the required param "tmid" is missing', (done) => {
-			void updateSetting('Threads_enabled', true).then(() => {
-				void request
-					.get(api('chat.syncThreadMessages'))
-					.set(credentials)
-					.query({})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-invalid-params');
-					})
-					.end(done);
-			});
+		it('should return an error when the required param "tmid" is missing', async () => {
+			await updateSetting('Threads_enabled', true);
+
+			const res = await request
+				.get(api('chat.syncThreadMessages'))
+				.set(credentials)
+				.query({})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-invalid-params');
 		});
 
-		it('should return an error when the required param "updatedSince" is missing', (done) => {
-			void updateSetting('Threads_enabled', true).then(() => {
-				void request
-					.get(api('chat.syncThreadMessages'))
-					.set(credentials)
-					.query({
-						tmid: threadMessage.tmid,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-invalid-params');
-					})
-					.end(done);
-			});
+		it('should return an error when the required param "updatedSince" is missing', async () => {
+			await updateSetting('Threads_enabled', true);
+
+			const res = await request
+				.get(api('chat.syncThreadMessages'))
+				.set(credentials)
+				.query({
+					tmid: threadMessage.tmid,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-invalid-params');
 		});
 
-		it('should return an error when the param "updatedSince" is an invalid date', (done) => {
-			void updateSetting('Threads_enabled', true).then(() => {
-				void request
-					.get(api('chat.syncThreadMessages'))
-					.set(credentials)
-					.query({
-						tmid: threadMessage.tmid,
-						updatedSince: 'invalid-date',
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-invalid-params');
-					})
-					.end(done);
-			});
+		it('should return an error when the param "updatedSince" is an invalid date', async () => {
+			await updateSetting('Threads_enabled', true);
+
+			const res = await request
+				.get(api('chat.syncThreadMessages'))
+				.set(credentials)
+				.query({
+					tmid: threadMessage.tmid,
+					updatedSince: 'invalid-date',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-invalid-params');
 		});
 
 		it('should return an error when the user is not allowed access the room', (done) => {
@@ -5028,28 +4820,26 @@ describe('Threads', () => {
 			});
 		});
 
-		it("should return the thread's message list", (done) => {
-			void updatePermission('view-c-room', ['admin', 'user']).then(() => {
-				void request
-					.get(api('chat.syncThreadMessages'))
-					.set(credentials)
-					.query({
-						tmid: threadMessage.tmid,
-						updatedSince: new Date('2019-04-01').toISOString(),
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('messages').and.to.be.an('object');
-						expect(res.body.messages).to.have.property('update').and.to.be.an('array');
-						expect(res.body.messages).to.have.property('remove').and.to.be.an('array');
-						expect(res.body.messages.update).to.have.lengthOf(1);
-						expect(res.body.messages.remove).to.have.lengthOf(0);
-						expect(res.body.messages.update[0].id).to.be.equal(createdThreadMessage.tmid);
-					})
-					.end(done);
-			});
+		it("should return the thread's message list", async () => {
+			await updatePermission('view-c-room', ['admin', 'user']);
+
+			const res = await request
+				.get(api('chat.syncThreadMessages'))
+				.set(credentials)
+				.query({
+					tmid: threadMessage.tmid,
+					updatedSince: new Date('2019-04-01').toISOString(),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('messages').and.to.be.an('object');
+			expect(res.body.messages).to.have.property('update').and.to.be.an('array');
+			expect(res.body.messages).to.have.property('remove').and.to.be.an('array');
+			expect(res.body.messages.update).to.have.lengthOf(1);
+			expect(res.body.messages.remove).to.have.lengthOf(0);
+			expect(res.body.messages.update[0].id).to.be.equal(createdThreadMessage.tmid);
 		});
 	});
 
@@ -5083,42 +4873,38 @@ describe('Threads', () => {
 			]),
 		);
 
-		it('should return an error for chat.followMessage when threads are not allowed in this server', (done) => {
-			void updateSetting('Threads_enabled', false).then(() => {
-				void request
-					.post(api('chat.followMessage'))
-					.set(credentials)
-					.send({
-						mid: threadMessage.tmid,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-not-allowed');
-						expect(res.body).to.have.property('error', 'not-allowed [error-not-allowed]');
-					})
-					.end(done);
-			});
+		it('should return an error for chat.followMessage when threads are not allowed in this server', async () => {
+			await updateSetting('Threads_enabled', false);
+
+			const res = await request
+				.post(api('chat.followMessage'))
+				.set(credentials)
+				.send({
+					mid: threadMessage.tmid,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			expect(res.body).to.have.property('error', 'not-allowed [error-not-allowed]');
 		});
 
-		it('should return an error when the message does not exist', (done) => {
-			void updateSetting('Threads_enabled', true).then(() => {
-				void request
-					.post(api('chat.followMessage'))
-					.set(credentials)
-					.send({
-						mid: 'invalid-message-id',
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-invalid-message');
-						expect(res.body).to.have.property('error', 'Invalid message [error-invalid-message]');
-					})
-					.end(done);
-			});
+		it('should return an error when the message does not exist', async () => {
+			await updateSetting('Threads_enabled', true);
+
+			const res = await request
+				.post(api('chat.followMessage'))
+				.set(credentials)
+				.send({
+					mid: 'invalid-message-id',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-invalid-message');
+			expect(res.body).to.have.property('error', 'Invalid message [error-invalid-message]');
 		});
 
 		it('should return an error when the user is not allowed access the room', (done) => {
@@ -5145,21 +4931,19 @@ describe('Threads', () => {
 			});
 		});
 
-		it('should return success: true when it execute successfully', (done) => {
-			void updatePermission('view-c-room', ['admin', 'user']).then(() => {
-				void request
-					.post(api('chat.followMessage'))
-					.set(credentials)
-					.send({
-						mid: threadMessage.tmid,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.end(done);
-			});
+		it('should return success: true when it execute successfully', async () => {
+			await updatePermission('view-c-room', ['admin', 'user']);
+
+			const res = await request
+				.post(api('chat.followMessage'))
+				.set(credentials)
+				.send({
+					mid: threadMessage.tmid,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
 	});
 
@@ -5192,42 +4976,38 @@ describe('Threads', () => {
 				deleteUser(user),
 			]),
 		);
-		it('should return an error for chat.unfollowMessage when threads are not allowed in this server', (done) => {
-			void updateSetting('Threads_enabled', false).then(() => {
-				void request
-					.post(api('chat.unfollowMessage'))
-					.set(credentials)
-					.send({
-						mid: threadMessage.tmid,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-not-allowed');
-						expect(res.body).to.have.property('error', 'not-allowed [error-not-allowed]');
-					})
-					.end(done);
-			});
+		it('should return an error for chat.unfollowMessage when threads are not allowed in this server', async () => {
+			await updateSetting('Threads_enabled', false);
+
+			const res = await request
+				.post(api('chat.unfollowMessage'))
+				.set(credentials)
+				.send({
+					mid: threadMessage.tmid,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			expect(res.body).to.have.property('error', 'not-allowed [error-not-allowed]');
 		});
 
-		it('should return an error when the message does not exist', (done) => {
-			void updateSetting('Threads_enabled', true).then(() => {
-				void request
-					.post(api('chat.unfollowMessage'))
-					.set(credentials)
-					.send({
-						mid: 'invalid-message-id',
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-invalid-message');
-						expect(res.body).to.have.property('error', 'Invalid message [error-invalid-message]');
-					})
-					.end(done);
-			});
+		it('should return an error when the message does not exist', async () => {
+			await updateSetting('Threads_enabled', true);
+
+			const res = await request
+				.post(api('chat.unfollowMessage'))
+				.set(credentials)
+				.send({
+					mid: 'invalid-message-id',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-invalid-message');
+			expect(res.body).to.have.property('error', 'Invalid message [error-invalid-message]');
 		});
 
 		it('should return an error when the user is not allowed access the room', (done) => {
@@ -5254,21 +5034,19 @@ describe('Threads', () => {
 			});
 		});
 
-		it('should return success: true when it execute successfully', (done) => {
-			void updatePermission('view-c-room', ['admin', 'user']).then(() => {
-				void request
-					.post(api('chat.unfollowMessage'))
-					.set(credentials)
-					.send({
-						mid: threadMessage.tmid,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.end(done);
-			});
+		it('should return success: true when it execute successfully', async () => {
+			await updatePermission('view-c-room', ['admin', 'user']);
+
+			const res = await request
+				.post(api('chat.unfollowMessage'))
+				.set(credentials)
+				.send({
+					mid: threadMessage.tmid,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
 	});
 

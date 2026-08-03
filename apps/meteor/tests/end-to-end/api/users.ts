@@ -307,8 +307,8 @@ describe('[Users]', () => {
 		});
 
 		function failCreateUser(name: string) {
-			it(`should not create a new user if username is the reserved word ${name}`, (done) => {
-				void request
+			it(`should not create a new user if username is the reserved word ${name}`, async () => {
+				const res = await request
 					.post(api('users.create'))
 					.set(credentials)
 					.send({
@@ -322,12 +322,10 @@ describe('[Users]', () => {
 						verified: true,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', `${name} is blocked and can't be used! [error-blocked-username]`);
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', `${name} is blocked and can't be used! [error-blocked-username]`);
 			});
 		}
 
@@ -857,8 +855,8 @@ describe('[Users]', () => {
 			await Promise.all(users.map((user) => deleteUser(user)));
 		});
 
-		it('should register new user', (done) => {
-			void request
+		it('should register new user', async () => {
+			const res = await request
 				.post(api('users.register'))
 				.send({
 					email,
@@ -867,19 +865,17 @@ describe('[Users]', () => {
 					pass: password,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('user.username', username);
-					expect(res.body).to.have.nested.property('user.active', true);
-					expect(res.body).to.have.nested.property('user.name', 'name');
-					users.push(res.body.user);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.nested.property('user.username', username);
+			expect(res.body).to.have.nested.property('user.active', true);
+			expect(res.body).to.have.nested.property('user.name', 'name');
+			users.push(res.body.user);
 		});
 
-		it('should return an error when trying register new user with an invalid username', (done) => {
-			void request
+		it('should return an error when trying register new user with an invalid username', async () => {
+			const res = await request
 				.post(api('users.register'))
 				.send({
 					email,
@@ -888,16 +884,14 @@ describe('[Users]', () => {
 					pass: password,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error').and.to.be.equal('The username provided is not valid');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error').and.to.be.equal('The username provided is not valid');
 		});
 
-		it('should return an error when trying register new user with an existing username', (done) => {
-			void request
+		it('should return an error when trying register new user with an existing username', async () => {
+			const res = await request
 				.post(api('users.register'))
 				.send({
 					email,
@@ -906,15 +900,13 @@ describe('[Users]', () => {
 					pass: password,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error').and.to.be.equal('Username is already in use');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error').and.to.be.equal('Username is already in use');
 		});
-		it("should return an error when registering a user's name with invalid characters: >, <, /, or \\", (done) => {
-			void request
+		it("should return an error when registering a user's name with invalid characters: >, <, /, or \\", async () => {
+			const res = await request
 				.post(api('users.register'))
 				.send({
 					email,
@@ -923,16 +915,14 @@ describe('[Users]', () => {
 					pass: password,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error').and.to.be.equal('Name contains invalid characters');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error').and.to.be.equal('Name contains invalid characters');
 		});
 
-		it('should return an error when logged in user tries to register', (done) => {
-			void request
+		it('should return an error when logged in user tries to register', async () => {
+			const res = await request
 				.post(api('users.register'))
 				.set(credentials)
 				.send({
@@ -942,12 +932,10 @@ describe('[Users]', () => {
 					pass: password,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error').and.to.be.equal('Logged in users can not register again.');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error').and.to.be.equal('Logged in users can not register again.');
 		});
 
 		describe('registration form setting', () => {
@@ -1329,43 +1317,39 @@ describe('[Users]', () => {
 			});
 		});
 
-		it('should return an error when the user does not exist', (done) => {
-			void request
+		it('should return an error when the user does not exist', async () => {
+			const res = await request
 				.get(api('users.info'))
 				.set(credentials)
 				.query({
 					username: 'invalid-username',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error');
 		});
 
-		it('should query information about a user by userId', (done) => {
-			void request
+		it('should query information about a user by userId', async () => {
+			const res = await request
 				.get(api('users.info'))
 				.set(credentials)
 				.query({
 					userId: targetUser._id,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('user.username', targetUser.username);
-					expect(res.body).to.have.nested.property('user.active', true);
-					expect(res.body).to.have.nested.property('user.name', targetUser.username);
-					expect(res.body).to.not.have.nested.property('user.e2e');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.nested.property('user.username', targetUser.username);
+			expect(res.body).to.have.nested.property('user.active', true);
+			expect(res.body).to.have.nested.property('user.name', targetUser.username);
+			expect(res.body).to.not.have.nested.property('user.e2e');
 		});
 
-		it('should return "rooms" property when user request it and the user has the necessary permission (admin, "view-other-user-channels")', (done) => {
-			void request
+		it('should return "rooms" property when user request it and the user has the necessary permission (admin, "view-other-user-channels")', async () => {
+			const res = await request
 				.get(api('users.info'))
 				.set(credentials)
 				.query({
@@ -1373,104 +1357,92 @@ describe('[Users]', () => {
 					includeUserRooms: true,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('user.rooms').and.to.be.an('array');
-					const createdRoom = (res.body.user.rooms as ISubscription[]).find((room) => room.rid === infoRoom._id);
-					expect(createdRoom).to.have.property('unread');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.nested.property('user.rooms').and.to.be.an('array');
+			const createdRoom = (res.body.user.rooms as ISubscription[]).find((room) => room.rid === infoRoom._id);
+			expect(createdRoom).to.have.property('unread');
 		});
 
-		it('should NOT return "rooms" property when user NOT request it but the user has the necessary permission (admin, "view-other-user-channels")', (done) => {
-			void request
+		it('should NOT return "rooms" property when user NOT request it but the user has the necessary permission (admin, "view-other-user-channels")', async () => {
+			const res = await request
 				.get(api('users.info'))
 				.set(credentials)
 				.query({
 					userId: targetUser._id,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.not.have.nested.property('user.rooms');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.not.have.nested.property('user.rooms');
 		});
 
-		it('should return the rooms when the user requests their own rooms but they do NOT have the necessary permission', (done) => {
-			void updatePermission('view-other-user-channels', []).then(() => {
-				void request
-					.get(api('users.info'))
-					.set(credentials)
-					.query({
-						userId: credentials['X-User-Id'],
-						includeUserRooms: true,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.nested.property('user.rooms');
-						expect(res.body.user.rooms).with.lengthOf.at.least(1);
-						expect(res.body.user.rooms[0]).to.have.property('unread');
-					})
-					.end(done);
-			});
+		it('should return the rooms when the user requests their own rooms but they do NOT have the necessary permission', async () => {
+			await updatePermission('view-other-user-channels', []);
+
+			const res = await request
+				.get(api('users.info'))
+				.set(credentials)
+				.query({
+					userId: credentials['X-User-Id'],
+					includeUserRooms: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.nested.property('user.rooms');
+			expect(res.body.user.rooms).with.lengthOf.at.least(1);
+			expect(res.body.user.rooms[0]).to.have.property('unread');
 		});
-		it("should NOT return the rooms when the user requests another user's rooms WITHOUT having the necessary permission", (done) => {
-			void updatePermission('view-other-user-channels', []).then(() => {
-				void request
-					.get(api('users.info'))
-					.set(credentials)
-					.query({
-						userId: targetUser._id,
-						fields: JSON.stringify({ userRooms: 1 }),
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.not.have.nested.property('user.rooms');
-					})
-					.end(done);
-			});
+		it("should NOT return the rooms when the user requests another user's rooms WITHOUT having the necessary permission", async () => {
+			await updatePermission('view-other-user-channels', []);
+
+			const res = await request
+				.get(api('users.info'))
+				.set(credentials)
+				.query({
+					userId: targetUser._id,
+					fields: JSON.stringify({ userRooms: 1 }),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.not.have.nested.property('user.rooms');
 		});
-		it("should NOT return any services fields when requesting another user's info, even if the user has the necessary permission", (done) => {
-			void updatePermission('view-full-other-user-info', ['admin']).then(() => {
-				void request
-					.get(api('users.info'))
-					.set(credentials)
-					.query({
-						userId: targetUser._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.not.have.nested.property('user.services.emailCode');
-						expect(res.body).to.not.have.nested.property('user.services');
-					})
-					.end(done);
-			});
+		it("should NOT return any services fields when requesting another user's info, even if the user has the necessary permission", async () => {
+			await updatePermission('view-full-other-user-info', ['admin']);
+
+			const res = await request
+				.get(api('users.info'))
+				.set(credentials)
+				.query({
+					userId: targetUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.not.have.nested.property('user.services.emailCode');
+			expect(res.body).to.not.have.nested.property('user.services');
 		});
-		it('should return all services fields when request for myself data even without privileged permission', (done) => {
-			void updatePermission('view-full-other-user-info', []).then(() => {
-				void request
-					.get(api('users.info'))
-					.set(credentials)
-					.query({
-						userId: credentials['X-User-Id'],
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.nested.property('user.services.password');
-					})
-					.end(done);
-			});
+		it('should return all services fields when request for myself data even without privileged permission', async () => {
+			await updatePermission('view-full-other-user-info', []);
+
+			const res = await request
+				.get(api('users.info'))
+				.set(credentials)
+				.query({
+					userId: credentials['X-User-Id'],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.nested.property('user.services.password');
 		});
 
 		it('should correctly route users that have `ufs` in their username', async () => {
@@ -1502,23 +1474,21 @@ describe('[Users]', () => {
 			await deleteUser(user);
 		});
 
-		it("should NOT return sensitive fields on services even though it's the same user requesting its info", (done) => {
-			void request
+		it("should NOT return sensitive fields on services even though it's the same user requesting its info", async () => {
+			const res = await request
 				.get(api('users.info'))
 				.set(credentials)
 				.query({
 					userId: credentials['X-User-Id'],
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('user.services.password').and.to.be.a('boolean');
-					expect(res.body).to.not.have.nested.property('user.services.email');
-					expect(res.body).to.not.have.nested.property('user.services.resume');
-					expect(res.body).to.not.have.nested.property('user.services.passwordHistory');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.nested.property('user.services.password').and.to.be.a('boolean');
+			expect(res.body).to.not.have.nested.property('user.services.email');
+			expect(res.body).to.not.have.nested.property('user.services.resume');
+			expect(res.body).to.not.have.nested.property('user.services.passwordHistory');
 		});
 
 		describe('querying by user email', () => {
@@ -1679,20 +1649,18 @@ describe('[Users]', () => {
 		});
 	});
 	describe('[/users.getPresence]', () => {
-		it("should query a user's presence by userId", (done) => {
-			void request
+		it("should query a user's presence by userId", async () => {
+			const res = await request
 				.get(api('users.getPresence'))
 				.set(credentials)
 				.query({
 					userId: targetUser._id,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('presence', 'offline');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.nested.property('presence', 'offline');
 		});
 
 		describe('Logging in with type: "resume"', () => {
@@ -1743,48 +1711,35 @@ describe('[Users]', () => {
 
 	describe('[/users.presence]', () => {
 		describe('Not logged in:', () => {
-			it('should return 401 unauthorized', (done) => {
-				void request
-					.get(api('users.presence'))
-					.expect('Content-Type', 'application/json')
-					.expect(401)
-					.expect((res) => {
-						expect(res.body).to.have.property('message');
-					})
-					.end(done);
+			it('should return 401 unauthorized', async () => {
+				const res = await request.get(api('users.presence')).expect('Content-Type', 'application/json').expect(401);
+
+				expect(res.body).to.have.property('message');
 			});
 		});
 		describe('Logged in:', () => {
-			it('should return online users full list', (done) => {
-				void request
-					.get(api('users.presence'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('full', true);
+			it('should return online users full list', async () => {
+				const res = await request.get(api('users.presence')).set(credentials).expect('Content-Type', 'application/json').expect(200);
 
-						const user = (res.body.users as IUser[]).find((user) => user.username === 'rocket.cat');
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('full', true);
 
-						expect(user).to.have.all.keys('_id', 'avatarETag', 'username', 'name', 'status', 'utcOffset');
-					})
-					.end(done);
+				const user = (res.body.users as IUser[]).find((user) => user.username === 'rocket.cat');
+
+				expect(user).to.have.all.keys('_id', 'avatarETag', 'username', 'name', 'status', 'utcOffset');
 			});
 
-			it('should return no online users updated after now', (done) => {
-				void request
+			it('should return no online users updated after now', async () => {
+				const res = await request
 					.get(api('users.presence'))
 					.query({ from: new Date().toISOString() })
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('full', false);
-						expect(res.body).to.have.property('users').that.is.an('array').that.has.lengthOf(0);
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('full', false);
+				expect(res.body).to.have.property('users').that.is.an('array').that.has.lengthOf(0);
 			});
 
 			it('should return presence for a single id', async () => {
@@ -1988,20 +1943,14 @@ describe('[Users]', () => {
 			]),
 		);
 
-		it('should query all users in the system', (done) => {
-			void request
-				.get(api('users.list'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count');
-					expect(res.body).to.have.property('total');
-					const myself = (res.body.users as IUser[]).find((user) => user.username === adminUsername);
-					expect(myself).to.not.have.property('e2e');
-				})
-				.end(done);
+		it('should query all users in the system', async () => {
+			const res = await request.get(api('users.list')).set(credentials).expect('Content-Type', 'application/json').expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('count');
+			expect(res.body).to.have.property('total');
+			const myself = (res.body.users as IUser[]).find((user) => user.username === adminUsername);
+			expect(myself).to.not.have.property('e2e');
 		});
 
 		it('should sort for user statuses and check if deactivated user is correctly sorted', (done) => {
@@ -2212,91 +2161,79 @@ describe('[Users]', () => {
 		);
 
 		describe('[/users.setAvatar]', () => {
-			it('should set the avatar of the logged user by a local image', (done) => {
-				void request
+			it('should set the avatar of the logged user by a local image', async () => {
+				const res = await request
 					.post(api('users.setAvatar'))
 					.set(userCredentials)
 					.attach('image', imgURL)
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
 			});
-			it('should reject non-renderable image types (e.g. TIFF)', (done) => {
-				void request
+			it('should reject non-renderable image types (e.g. TIFF)', async () => {
+				const res = await request
 					.post(api('users.setAvatar'))
 					.set(userCredentials)
 					.attach('image', tiffURL)
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-invalid-file-type');
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('errorType', 'error-invalid-file-type');
 			});
-			it('should update the avatar of another user by userId when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
-				void request
+			it('should update the avatar of another user by userId when the logged user has the necessary permission (edit-other-user-avatar)', async () => {
+				const res = await request
 					.post(api('users.setAvatar'))
 					.set(userCredentials)
 					.attach('image', imgURL)
 					.field({ userId: credentials['X-User-Id'] })
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
 			});
-			it('should set the avatar of another user by username and local image when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
-				void request
+			it('should set the avatar of another user by username and local image when the logged user has the necessary permission (edit-other-user-avatar)', async () => {
+				const res = await request
 					.post(api('users.setAvatar'))
 					.set(credentials)
 					.attach('image', imgURL)
 					.field({ username: adminUsername })
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
 			});
-			it("should prevent from updating someone else's avatar when the logged user doesn't have the necessary permission(edit-other-user-avatar)", (done) => {
-				void updatePermission('edit-other-user-avatar', []).then(() => {
-					void request
-						.post(api('users.setAvatar'))
-						.set(userCredentials)
-						.attach('image', imgURL)
-						.field({ userId: credentials['X-User-Id'] })
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-						})
-						.end(done);
-				});
+			it("should prevent from updating someone else's avatar when the logged user doesn't have the necessary permission(edit-other-user-avatar)", async () => {
+				await updatePermission('edit-other-user-avatar', []);
+
+				const res = await request
+					.post(api('users.setAvatar'))
+					.set(userCredentials)
+					.attach('image', imgURL)
+					.field({ userId: credentials['X-User-Id'] })
+					.expect('Content-Type', 'application/json')
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
 			});
-			it('should allow users with the edit-other-user-avatar permission to update avatars when the Accounts_AllowUserAvatarChange setting is off', (done) => {
-				void updateSetting('Accounts_AllowUserAvatarChange', false).then(() => {
-					void updatePermission('edit-other-user-avatar', ['admin']).then(() => {
-						void request
-							.post(api('users.setAvatar'))
-							.set(credentials)
-							.attach('image', imgURL)
-							.field({ userId: userCredentials['X-User-Id'] })
-							.expect('Content-Type', 'application/json')
-							.expect(200)
-							.expect((res) => {
-								expect(res.body).to.have.property('success', true);
-							})
-							.end(done);
-					});
-				});
+			it('should allow users with the edit-other-user-avatar permission to update avatars when the Accounts_AllowUserAvatarChange setting is off', async () => {
+				await updateSetting('Accounts_AllowUserAvatarChange', false);
+
+				await updatePermission('edit-other-user-avatar', ['admin']);
+
+				const res = await request
+					.post(api('users.setAvatar'))
+					.set(credentials)
+					.attach('image', imgURL)
+					.field({ userId: userCredentials['X-User-Id'] })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
 			});
-			it('should prevent users from passing server-side request forgery (SSRF) payloads as avatarUrl', (done) => {
-				void request
+			it('should prevent users from passing server-side request forgery (SSRF) payloads as avatarUrl', async () => {
+				const res = await request
 					.post(api('users.setAvatar'))
 					.set(credentials)
 					.send({
@@ -2304,11 +2241,9 @@ describe('[Users]', () => {
 						avatarUrl: 'http://169.254.169.254/',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
 			});
 
 			it('should return 401 when not authenticated', async () => {
@@ -2330,93 +2265,81 @@ describe('[Users]', () => {
 				]);
 			});
 
-			it('should set the avatar of the logged user by a local image', (done) => {
-				void request
+			it('should set the avatar of the logged user by a local image', async () => {
+				const res = await request
 					.post(api('users.setAvatar'))
 					.set(userCredentials)
 					.attach('image', imgURL)
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
 			});
-			it('should reset the avatar of the logged user', (done) => {
-				void request
+			it('should reset the avatar of the logged user', async () => {
+				const res = await request
 					.post(api('users.resetAvatar'))
 					.set(userCredentials)
 					.expect('Content-Type', 'application/json')
 					.send({
 						userId: userCredentials['X-User-Id'],
 					})
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
 			});
-			it('should reset the avatar of another user by userId when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
-				void request
+			it('should reset the avatar of another user by userId when the logged user has the necessary permission (edit-other-user-avatar)', async () => {
+				const res = await request
 					.post(api('users.resetAvatar'))
 					.set(userCredentials)
 					.send({
 						userId: credentials['X-User-Id'],
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
 			});
-			it('should reset the avatar of another user by username and local image when the logged user has the necessary permission (edit-other-user-avatar)', (done) => {
-				void request
+			it('should reset the avatar of another user by username and local image when the logged user has the necessary permission (edit-other-user-avatar)', async () => {
+				const res = await request
 					.post(api('users.resetAvatar'))
 					.set(credentials)
 					.send({
 						username: adminUsername,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+			});
+			it("should prevent from resetting someone else's avatar when the logged user doesn't have the necessary permission(edit-other-user-avatar)", async () => {
+				await updatePermission('edit-other-user-avatar', []);
+
+				const res = await request
+					.post(api('users.resetAvatar'))
+					.set(userCredentials)
+					.send({
+						userId: credentials['X-User-Id'],
 					})
-					.end(done);
+					.expect('Content-Type', 'application/json')
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
 			});
-			it("should prevent from resetting someone else's avatar when the logged user doesn't have the necessary permission(edit-other-user-avatar)", (done) => {
-				void updatePermission('edit-other-user-avatar', []).then(() => {
-					void request
-						.post(api('users.resetAvatar'))
-						.set(userCredentials)
-						.send({
-							userId: credentials['X-User-Id'],
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-						})
-						.end(done);
-				});
-			});
-			it('should allow users with the edit-other-user-avatar permission to reset avatars when the Accounts_AllowUserAvatarChange setting is off', (done) => {
-				void updateSetting('Accounts_AllowUserAvatarChange', false).then(() => {
-					void updatePermission('edit-other-user-avatar', ['admin']).then(() => {
-						void request
-							.post(api('users.resetAvatar'))
-							.set(credentials)
-							.send({
-								userId: userCredentials['X-User-Id'],
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(200)
-							.expect((res) => {
-								expect(res.body).to.have.property('success', true);
-							})
-							.end(done);
-					});
-				});
+			it('should allow users with the edit-other-user-avatar permission to reset avatars when the Accounts_AllowUserAvatarChange setting is off', async () => {
+				await updateSetting('Accounts_AllowUserAvatarChange', false);
+
+				await updatePermission('edit-other-user-avatar', ['admin']);
+
+				const res = await request
+					.post(api('users.resetAvatar'))
+					.set(credentials)
+					.send({
+						userId: userCredentials['X-User-Id'],
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
 			});
 
 			it('should return 401 when not authenticated', async () => {
@@ -2431,25 +2354,23 @@ describe('[Users]', () => {
 		});
 
 		describe('[/users.getAvatar]', () => {
-			it('should get the url of the avatar of the logged user via userId', (done) => {
-				void request
+			it('should get the url of the avatar of the logged user via userId', async () => {
+				await request
 					.get(api('users.getAvatar'))
 					.set(userCredentials)
 					.query({
 						userId: userCredentials['X-User-Id'],
 					})
-					.expect(307)
-					.end(done);
+					.expect(307);
 			});
-			it('should get the url of the avatar of the logged user via username', (done) => {
-				void request
+			it('should get the url of the avatar of the logged user via username', async () => {
+				await request
 					.get(api('users.getAvatar'))
 					.set(userCredentials)
 					.query({
 						username: user.username,
 					})
-					.expect(307)
-					.end(done);
+					.expect(307);
 			});
 		});
 
@@ -2458,19 +2379,17 @@ describe('[Users]', () => {
 				void request.get(api('users.getAvatarSuggestion')).expect('Content-Type', 'application/json').expect(401).end(done);
 			});
 
-			it('should get avatar suggestion of the logged user via userId', (done) => {
-				void request
+			it('should get avatar suggestion of the logged user via userId', async () => {
+				const res = await request
 					.get(api('users.getAvatarSuggestion'))
 					.set(userCredentials)
 					.query({
 						userId: userCredentials['X-User-Id'],
 					})
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('suggestions').and.to.be.an('object');
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('suggestions').and.to.be.an('object');
 			});
 		});
 	});
@@ -2499,8 +2418,8 @@ describe('[Users]', () => {
 			]),
 		);
 
-		it("should update a user's info by userId", (done) => {
-			void request
+		it("should update a user's info by userId", async () => {
+			const res = await request
 				.post(api('users.update'))
 				.set(credentials)
 				.send({
@@ -2515,20 +2434,18 @@ describe('[Users]', () => {
 					},
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('user.username', `edited${apiUsername}`);
-					expect(res.body).to.have.nested.property('user.emails[0].address', apiEmail);
-					expect(res.body).to.have.nested.property('user.active', true);
-					expect(res.body).to.have.nested.property('user.name', `edited${apiUsername}`);
-					expect(res.body).to.not.have.nested.property('user.e2e');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.nested.property('user.username', `edited${apiUsername}`);
+			expect(res.body).to.have.nested.property('user.emails[0].address', apiEmail);
+			expect(res.body).to.have.nested.property('user.active', true);
+			expect(res.body).to.have.nested.property('user.name', `edited${apiUsername}`);
+			expect(res.body).to.not.have.nested.property('user.e2e');
 		});
 
-		it("should update a user's email by userId", (done) => {
-			void request
+		it("should update a user's email by userId", async () => {
+			const res = await request
 				.post(api('users.update'))
 				.set(credentials)
 				.send({
@@ -2538,18 +2455,16 @@ describe('[Users]', () => {
 					},
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('user.emails[0].address', `edited${apiEmail}`);
-					expect(res.body).to.have.nested.property('user.emails[0].verified', false);
-					expect(res.body).to.not.have.nested.property('user.e2e');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.nested.property('user.emails[0].address', `edited${apiEmail}`);
+			expect(res.body).to.have.nested.property('user.emails[0].verified', false);
+			expect(res.body).to.not.have.nested.property('user.e2e');
 		});
 
-		it("should update a user's bio by userId", (done) => {
-			void request
+		it("should update a user's bio by userId", async () => {
+			const res = await request
 				.post(api('users.update'))
 				.set(credentials)
 				.send({
@@ -2559,17 +2474,15 @@ describe('[Users]', () => {
 					},
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('user.bio', 'edited-bio-test');
-					expect(res.body).to.not.have.nested.property('user.e2e');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.nested.property('user.bio', 'edited-bio-test');
+			expect(res.body).to.not.have.nested.property('user.e2e');
 		});
 
-		it("should update a user's nickname by userId", (done) => {
-			void request
+		it("should update a user's nickname by userId", async () => {
+			const res = await request
 				.post(api('users.update'))
 				.set(credentials)
 				.send({
@@ -2579,17 +2492,15 @@ describe('[Users]', () => {
 					},
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('user.nickname', 'edited-nickname-test');
-					expect(res.body).to.not.have.nested.property('user.e2e');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.nested.property('user.nickname', 'edited-nickname-test');
+			expect(res.body).to.not.have.nested.property('user.e2e');
 		});
 
-		it(`should return an error when trying to set a nickname longer than ${MAX_NICKNAME_LENGTH} characters`, (done) => {
-			void request
+		it(`should return an error when trying to set a nickname longer than ${MAX_NICKNAME_LENGTH} characters`, async () => {
+			const res = await request
 				.post(api('users.update'))
 				.set(credentials)
 				.send({
@@ -2599,19 +2510,14 @@ describe('[Users]', () => {
 					},
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property(
-						'error',
-						`Nickname size exceeds ${MAX_NICKNAME_LENGTH} characters [error-nickname-size-exceeded]`,
-					);
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', `Nickname size exceeds ${MAX_NICKNAME_LENGTH} characters [error-nickname-size-exceeded]`);
 		});
 
-		it(`should return an error when trying to set a bio longer than ${MAX_BIO_LENGTH} characters`, (done) => {
-			void request
+		it(`should return an error when trying to set a bio longer than ${MAX_BIO_LENGTH} characters`, async () => {
+			const res = await request
 				.post(api('users.update'))
 				.set(credentials)
 				.send({
@@ -2621,12 +2527,10 @@ describe('[Users]', () => {
 					},
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', `Bio size exceeds ${MAX_BIO_LENGTH} characters [error-bio-size-exceeded]`);
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', `Bio size exceeds ${MAX_BIO_LENGTH} characters [error-bio-size-exceeded]`);
 		});
 
 		it('should return an error when trying to upsert a user by sending an empty userId', () => {
@@ -2665,8 +2569,8 @@ describe('[Users]', () => {
 				});
 		});
 
-		it("should update a bot's email", (done) => {
-			void request
+		it("should update a bot's email", async () => {
+			const res = await request
 				.post(api('users.update'))
 				.set(credentials)
 				.send({
@@ -2674,15 +2578,13 @@ describe('[Users]', () => {
 					data: { email: 'nouser@rocket.cat' },
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
 
-		it("should verify user's email by userId", (done) => {
-			void request
+		it("should verify user's email by userId", async () => {
+			const res = await request
 				.post(api('users.update'))
 				.set(credentials)
 				.send({
@@ -2692,35 +2594,31 @@ describe('[Users]', () => {
 					},
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('user.emails[0].verified', true);
-					expect(res.body).to.not.have.nested.property('user.e2e');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.nested.property('user.emails[0].verified', true);
+			expect(res.body).to.not.have.nested.property('user.e2e');
 		});
 
-		it('should return an error when trying update username and it is not allowed', (done) => {
-			void updatePermission('edit-other-user-info', ['user']).then(() => {
-				void updateSetting('Accounts_AllowUsernameChange', false).then(() => {
-					void request
-						.post(api('users.update'))
-						.set(credentials)
-						.send({
-							userId: targetUser._id,
-							data: {
-								username: 'fake.name',
-							},
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-						})
-						.end(done);
-				});
-			});
+		it('should return an error when trying update username and it is not allowed', async () => {
+			await updatePermission('edit-other-user-info', ['user']);
+
+			await updateSetting('Accounts_AllowUsernameChange', false);
+
+			const res = await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						username: 'fake.name',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
 		});
 
 		it('should update the user name when the required permission is applied', async () => {
@@ -2742,224 +2640,204 @@ describe('[Users]', () => {
 				});
 		});
 
-		it('should return an error when trying update user real name and it is not allowed', (done) => {
-			void updatePermission('edit-other-user-info', ['user']).then(() => {
-				void updateSetting('Accounts_AllowRealNameChange', false).then(() => {
-					void request
-						.post(api('users.update'))
-						.set(credentials)
-						.send({
-							userId: targetUser._id,
-							data: {
-								name: 'Fake name',
-							},
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-						})
-						.end(done);
-				});
-			});
+		it('should return an error when trying update user real name and it is not allowed', async () => {
+			await updatePermission('edit-other-user-info', ['user']);
+
+			await updateSetting('Accounts_AllowRealNameChange', false);
+
+			const res = await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						name: 'Fake name',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
 		});
 
-		it('should update user real name when the required permission is applied', (done) => {
-			void updatePermission('edit-other-user-info', ['admin']).then(() => {
-				void updateSetting('Accounts_AllowRealNameChange', false).then(() => {
-					void request
-						.post(api('users.update'))
-						.set(credentials)
-						.send({
-							userId: targetUser._id,
-							data: {
-								name: 'Fake name',
-							},
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
-						.end(done);
-				});
-			});
+		it('should update user real name when the required permission is applied', async () => {
+			await updatePermission('edit-other-user-info', ['admin']);
+
+			await updateSetting('Accounts_AllowRealNameChange', false);
+
+			const res = await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						name: 'Fake name',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
 
-		it('should return an error when trying update user status message and it is not allowed', (done) => {
-			void updatePermission('edit-other-user-info', ['user']).then(() => {
-				void updateSetting('Accounts_AllowUserStatusMessageChange', false).then(() => {
-					void request
-						.post(api('users.update'))
-						.set(credentials)
-						.send({
-							userId: targetUser._id,
-							data: {
-								statusMessage: 'a new status',
-							},
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-						})
-						.end(done);
-				});
-			});
+		it('should return an error when trying update user status message and it is not allowed', async () => {
+			await updatePermission('edit-other-user-info', ['user']);
+
+			await updateSetting('Accounts_AllowUserStatusMessageChange', false);
+
+			const res = await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						statusMessage: 'a new status',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
 		});
 
-		it('should update user status message when the required permission is applied', (done) => {
-			void updatePermission('edit-other-user-info', ['admin']).then(() => {
-				void updateSetting('Accounts_AllowUserStatusMessageChange', false).then(() => {
-					void request
-						.post(api('users.update'))
-						.set(credentials)
-						.send({
-							userId: targetUser._id,
-							data: {
-								name: 'a new status',
-							},
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
-						.end(done);
-				});
-			});
+		it('should update user status message when the required permission is applied', async () => {
+			await updatePermission('edit-other-user-info', ['admin']);
+
+			await updateSetting('Accounts_AllowUserStatusMessageChange', false);
+
+			const res = await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						name: 'a new status',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
 
-		it('should return an error when trying update user email and it is not allowed', (done) => {
-			void updatePermission('edit-other-user-info', ['user']).then(() => {
-				void updateSetting('Accounts_AllowEmailChange', false).then(() => {
-					void request
-						.post(api('users.update'))
-						.set(credentials)
-						.send({
-							userId: targetUser._id,
-							data: {
-								email: 'itsnotworking@email.com',
-							},
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-						})
-						.end(done);
-				});
-			});
+		it('should return an error when trying update user email and it is not allowed', async () => {
+			await updatePermission('edit-other-user-info', ['user']);
+
+			await updateSetting('Accounts_AllowEmailChange', false);
+
+			const res = await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						email: 'itsnotworking@email.com',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
 		});
 
-		it('should update user email when the required permission is applied', (done) => {
-			void updatePermission('edit-other-user-info', ['admin']).then(() => {
-				void updateSetting('Accounts_AllowEmailChange', false).then(() => {
-					void request
-						.post(api('users.update'))
-						.set(credentials)
-						.send({
-							userId: targetUser._id,
-							data: {
-								email: apiEmail,
-							},
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
-						.end(done);
-				});
-			});
+		it('should update user email when the required permission is applied', async () => {
+			await updatePermission('edit-other-user-info', ['admin']);
+
+			await updateSetting('Accounts_AllowEmailChange', false);
+
+			const res = await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						email: apiEmail,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
 
-		it('should return an error when trying update user password and it is not allowed', (done) => {
-			void updatePermission('edit-other-user-password', ['user']).then(() => {
-				void updateSetting('Accounts_AllowPasswordChange', false).then(() => {
-					void request
-						.post(api('users.update'))
-						.set(credentials)
-						.send({
-							userId: targetUser._id,
-							data: {
-								password: '1tsn0tw0rkingP@ssw0rd1234.!',
-							},
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-						})
-						.end(done);
-				});
-			});
+		it('should return an error when trying update user password and it is not allowed', async () => {
+			await updatePermission('edit-other-user-password', ['user']);
+
+			await updateSetting('Accounts_AllowPasswordChange', false);
+
+			const res = await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						password: '1tsn0tw0rkingP@ssw0rd1234.!',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
 		});
 
-		it('should update user password when the required permission is applied', (done) => {
-			void updatePermission('edit-other-user-password', ['admin']).then(() => {
-				void updateSetting('Accounts_AllowPasswordChange', false).then(() => {
-					void request
-						.post(api('users.update'))
-						.set(credentials)
-						.send({
-							userId: targetUser._id,
-							data: {
-								password: '1tsn0tw0rkingP@ssw0rd1234.!',
-							},
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
-						.end(done);
-				});
-			});
+		it('should update user password when the required permission is applied', async () => {
+			await updatePermission('edit-other-user-password', ['admin']);
+
+			await updateSetting('Accounts_AllowPasswordChange', false);
+
+			const res = await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						password: '1tsn0tw0rkingP@ssw0rd1234.!',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
 
-		it('should return an error when trying update profile and it is not allowed', (done) => {
-			void updatePermission('edit-other-user-info', ['user']).then(() => {
-				void updateSetting('Accounts_AllowUserProfileChange', false).then(() => {
-					void request
-						.post(api('users.update'))
-						.set(credentials)
-						.send({
-							userId: targetUser._id,
-							data: {
-								verified: true,
-							},
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-						})
-						.end(done);
-				});
-			});
+		it('should return an error when trying update profile and it is not allowed', async () => {
+			await updatePermission('edit-other-user-info', ['user']);
+
+			await updateSetting('Accounts_AllowUserProfileChange', false);
+
+			const res = await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						verified: true,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
 		});
 
-		it('should update profile when the required permission is applied', (done) => {
-			void updatePermission('edit-other-user-info', ['admin']).then(() => {
-				void updateSetting('Accounts_AllowUserProfileChange', false).then(() => {
-					void request
-						.post(api('users.update'))
-						.set(credentials)
-						.send({
-							userId: targetUser._id,
-							data: {
-								verified: true,
-							},
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
-						.end(done);
-				});
-			});
+		it('should update profile when the required permission is applied', async () => {
+			await updatePermission('edit-other-user-info', ['admin']);
+
+			await updateSetting('Accounts_AllowUserProfileChange', false);
+
+			const res = await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						verified: true,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
 
 		it('should delete requirePasswordChangeReason when requirePasswordChange is set to false', async () => {
@@ -3025,8 +2903,8 @@ describe('[Users]', () => {
 					});
 			});
 
-			it("should update user's email verified even if email is not changed", (done) => {
-				void request
+			it("should update user's email verified even if email is not changed", async () => {
+				const res = await request
 					.post(api('users.update'))
 					.set(userCredentials)
 					.send({
@@ -3037,19 +2915,17 @@ describe('[Users]', () => {
 						},
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.nested.property('user.emails[0].verified', true);
-						expect(res.body).to.not.have.nested.property('user.e2e');
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.nested.property('user.emails[0].verified', true);
+				expect(res.body).to.not.have.nested.property('user.e2e');
 			});
 		});
 
 		function failUpdateUser(name: string) {
-			it(`should not update an user if the new username is the reserved word ${name}`, (done) => {
-				void request
+			it(`should not update an user if the new username is the reserved word ${name}`, async () => {
+				const res = await request
 					.post(api('users.update'))
 					.set(credentials)
 					.send({
@@ -3059,12 +2935,10 @@ describe('[Users]', () => {
 						},
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'Could not save user identity [error-could-not-save-identity]');
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'Could not save user identity [error-could-not-save-identity]');
 			});
 		}
 
@@ -3340,26 +3214,24 @@ describe('[Users]', () => {
 		const editedName = `basic-info-test-name${+new Date()}`;
 		const editedEmail = `test${+new Date()}@mail.com`;
 
-		it('enabling E2E in server and generating keys to user...', (done) => {
-			void updateSetting('E2E_Enable', true).then(() => {
-				void request
-					.post(api('e2e.setUserPublicAndPrivateKeys'))
-					.set(userCredentials)
-					.send({
-						private_key: 'test',
-						public_key: 'test',
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.end(done);
-			});
+		it('enabling E2E in server and generating keys to user...', async () => {
+			await updateSetting('E2E_Enable', true);
+
+			const res = await request
+				.post(api('e2e.setUserPublicAndPrivateKeys'))
+				.set(userCredentials)
+				.send({
+					private_key: 'test',
+					public_key: 'test',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
 
-		it('should update the user own basic information', (done) => {
-			void request
+		it('should update the user own basic information', async () => {
+			const res = await request
 				.post(api('users.updateOwnBasicInfo'))
 				.set(userCredentials)
 				.send({
@@ -3371,19 +3243,17 @@ describe('[Users]', () => {
 					},
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					const { user } = res.body;
-					expect(res.body).to.have.property('success', true);
-					expect(user.username).to.be.equal(editedUsername);
-					expect(user.name).to.be.equal(editedName);
-					expect(user).to.not.have.property('e2e');
-				})
-				.end(done);
+				.expect(200);
+
+			const { user } = res.body;
+			expect(res.body).to.have.property('success', true);
+			expect(user.username).to.be.equal(editedUsername);
+			expect(user.name).to.be.equal(editedName);
+			expect(user).to.not.have.property('e2e');
 		});
 
-		it('should update the user name only', (done) => {
-			void request
+		it('should update the user name only', async () => {
+			const res = await request
 				.post(api('users.updateOwnBasicInfo'))
 				.set(userCredentials)
 				.send({
@@ -3392,18 +3262,16 @@ describe('[Users]', () => {
 					},
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					const { user } = res.body;
-					expect(res.body).to.have.property('success', true);
-					expect(user.username).to.be.equal(editedUsername);
-					expect(user).to.not.have.property('e2e');
-				})
-				.end(done);
+				.expect(200);
+
+			const { user } = res.body;
+			expect(res.body).to.have.property('success', true);
+			expect(user.username).to.be.equal(editedUsername);
+			expect(user).to.not.have.property('e2e');
 		});
 
-		it('should throw an error when user try change email without the password', (done) => {
-			void request
+		it('should throw an error when user try change email without the password', async () => {
+			await request
 				.post(api('users.updateOwnBasicInfo'))
 				.set(userCredentials)
 				.send({
@@ -3412,12 +3280,11 @@ describe('[Users]', () => {
 					},
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.end(done);
+				.expect(400);
 		});
 
-		it('should throw an error when user try change password without the actual password', (done) => {
-			void request
+		it('should throw an error when user try change password without the actual password', async () => {
+			await request
 				.post(api('users.updateOwnBasicInfo'))
 				.set(credentials)
 				.send({
@@ -3426,12 +3293,11 @@ describe('[Users]', () => {
 					},
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.end(done);
+				.expect(400);
 		});
 
-		it('should throw an error when the name is only whitespaces', (done) => {
-			void request
+		it('should throw an error when the name is only whitespaces', async () => {
+			const res = await request
 				.post(api('users.updateOwnBasicInfo'))
 				.set(credentials)
 				.send({
@@ -3440,15 +3306,13 @@ describe('[Users]', () => {
 					},
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
 		});
 
-		it("should set new email as 'unverified'", (done) => {
-			void request
+		it("should set new email as 'unverified'", async () => {
+			const res = await request
 				.post(api('users.updateOwnBasicInfo'))
 				.set(userCredentials)
 				.send({
@@ -3458,19 +3322,17 @@ describe('[Users]', () => {
 					},
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					const { user } = res.body;
-					expect(res.body).to.have.property('success', true);
-					expect(user.emails[0].address).to.be.equal(editedEmail);
-					expect(user.emails[0].verified).to.be.false;
-					expect(user).to.not.have.property('e2e');
-				})
-				.end(done);
+				.expect(200);
+
+			const { user } = res.body;
+			expect(res.body).to.have.property('success', true);
+			expect(user.emails[0].address).to.be.equal(editedEmail);
+			expect(user.emails[0].verified).to.be.false;
+			expect(user).to.not.have.property('e2e');
 		});
 
-		it("should not include sensitive data on the 'services' object from the response", (done) => {
-			void request
+		it("should not include sensitive data on the 'services' object from the response", async () => {
+			const res = await request
 				.post(api('users.updateOwnBasicInfo'))
 				.set(userCredentials)
 				.send({
@@ -3479,20 +3341,18 @@ describe('[Users]', () => {
 					},
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					const { user } = res.body;
-					expect(res.body).to.have.property('success', true);
-					expect(user.services).to.not.have.property('passwordHistory');
-					expect(user.services).to.not.have.property('email');
-					expect(user.services.password).to.have.property('exists').that.is.a('boolean');
-				})
-				.end(done);
+				.expect(200);
+
+			const { user } = res.body;
+			expect(res.body).to.have.property('success', true);
+			expect(user.services).to.not.have.property('passwordHistory');
+			expect(user.services).to.not.have.property('email');
+			expect(user.services.password).to.have.property('exists').that.is.a('boolean');
 		});
 
 		function failUpdateUserOwnBasicInfo(name: string) {
-			it(`should not update an user's basic info if the new username is the reserved word ${name}`, (done) => {
-				void request
+			it(`should not update an user's basic info if the new username is the reserved word ${name}`, async () => {
+				const res = await request
 					.post(api('users.updateOwnBasicInfo'))
 					.set(credentials)
 					.send({
@@ -3501,12 +3361,10 @@ describe('[Users]', () => {
 						},
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'Could not save user identity [error-could-not-save-identity]');
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'Could not save user identity [error-could-not-save-identity]');
 			});
 		}
 
@@ -4063,65 +3921,53 @@ describe('[Users]', () => {
 	});
 
 	describe('[/users.forgotPassword]', () => {
-		it('should return an error when "Accounts_PasswordReset" is disabled', (done) => {
-			void updateSetting('Accounts_PasswordReset', false).then(() => {
-				void request
-					.post(api('users.forgotPassword'))
-					.send({
-						email: adminEmail,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'Password reset is not enabled');
-					})
-					.end(done);
-			});
+		it('should return an error when "Accounts_PasswordReset" is disabled', async () => {
+			await updateSetting('Accounts_PasswordReset', false);
+
+			const res = await request
+				.post(api('users.forgotPassword'))
+				.send({
+					email: adminEmail,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'Password reset is not enabled');
 		});
 
-		it('should send email to user (return success), when is a valid email', (done) => {
-			void updateSetting('Accounts_PasswordReset', true).then(() => {
-				void request
-					.post(api('users.forgotPassword'))
-					.send({
-						email: adminEmail,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-					})
-					.end(done);
-			});
+		it('should send email to user (return success), when is a valid email', async () => {
+			await updateSetting('Accounts_PasswordReset', true);
+
+			const res = await request
+				.post(api('users.forgotPassword'))
+				.send({
+					email: adminEmail,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
 
-		it('should not send email to user(return error), when is a invalid email', (done) => {
-			void request
+		it('should not send email to user(return error), when is a invalid email', async () => {
+			const res = await request
 				.post(api('users.forgotPassword'))
 				.send({
 					email: 'invalidEmail',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
 
-		it('should return an error when email is missing', (done) => {
-			void request
-				.post(api('users.forgotPassword'))
-				.send({})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
-					expect(res.body).to.have.property('error', "must have required property 'email'");
-				})
-				.end(done);
+		it('should return an error when email is missing', async () => {
+			const res = await request.post(api('users.forgotPassword')).send({}).expect('Content-Type', 'application/json').expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'invalid-params');
+			expect(res.body).to.have.property('error', "must have required property 'email'");
 		});
 	});
 
@@ -4178,29 +4024,22 @@ describe('[Users]', () => {
 
 		after(() => deleteUser(targetUser));
 
-		it('should return an username suggestion', (done) => {
-			void request
+		it('should return an username suggestion', async () => {
+			const res = await request
 				.get(api('users.getUsernameSuggestion'))
 				.set(userCredentials)
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.exist;
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.exist;
 		});
 
-		it('should return 401 when not authenticated', (done) => {
-			void request
-				.get(api('users.getUsernameSuggestion'))
-				.expect('Content-Type', 'application/json')
-				.expect(401)
-				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
-				})
-				.end(done);
+		it('should return 401 when not authenticated', async () => {
+			const res = await request.get(api('users.getUsernameSuggestion')).expect('Content-Type', 'application/json').expect(401);
+
+			expect(res.body).to.have.property('status', 'error');
+			expect(res.body).to.have.property('message');
 		});
 	});
 
@@ -4215,60 +4054,49 @@ describe('[Users]', () => {
 
 		after(() => deleteUser(targetUser));
 
-		it('should return 401 unauthorized when user is not logged in', (done) => {
-			void request
-				.get(api('users.checkUsernameAvailability'))
-				.expect('Content-Type', 'application/json')
-				.expect(401)
-				.expect((res) => {
-					expect(res.body).to.have.property('message');
-				})
-				.end(done);
+		it('should return 401 unauthorized when user is not logged in', async () => {
+			const res = await request.get(api('users.checkUsernameAvailability')).expect('Content-Type', 'application/json').expect(401);
+
+			expect(res.body).to.have.property('message');
 		});
 
-		it('should return true if the username is the same user username set', (done) => {
-			void request
+		it('should return true if the username is the same user username set', async () => {
+			const res = await request
 				.get(api('users.checkUsernameAvailability'))
 				.set(userCredentials)
 				.query({
 					username: targetUser.username,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body.result).to.be.equal(true);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.result).to.be.equal(true);
 		});
 
-		it('should return true if the username is available', (done) => {
-			void request
+		it('should return true if the username is available', async () => {
+			const res = await request
 				.get(api('users.checkUsernameAvailability'))
 				.set(userCredentials)
 				.query({
 					username: `${targetUser.username}-${+new Date()}`,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body.result).to.be.equal(true);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.result).to.be.equal(true);
 		});
 
-		it('should return an error when the username is invalid', (done) => {
-			void request
+		it('should return an error when the username is invalid', async () => {
+			const res = await request
 				.get(api('users.checkUsernameAvailability'))
 				.set(userCredentials)
 				.query({})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
 		});
 	});
 
@@ -4296,19 +4124,17 @@ describe('[Users]', () => {
 				.end(wait(done, 200));
 		});
 
-		it('should delete user own account', (done) => {
-			void request
+		it('should delete user own account', async () => {
+			const res = await request
 				.post(api('users.deleteOwnAccount'))
 				.set(userCredentials)
 				.send({
 					password: crypto.createHash('sha256').update(password, 'utf8').digest('hex'),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
 		});
 
 		it('should delete user own account when the SHA256 hash is in upper case', async () => {
@@ -4580,17 +4406,15 @@ describe('[Users]', () => {
 					.expect(200);
 			});
 			describe('[/users.getPersonalAccessTokens]', () => {
-				it('should return an array when the user does not have personal tokens configured', (done) => {
-					void request
+				it('should return an array when the user does not have personal tokens configured', async () => {
+					const res = await request
 						.get(api('users.getPersonalAccessTokens'))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body).to.have.property('tokens').and.to.be.an('array');
-						})
-						.end(done);
+						.expect(200);
+
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('tokens').and.to.be.an('array');
 				});
 
 				it('should return 401 when not authenticated', async () => {
@@ -4605,34 +4429,30 @@ describe('[Users]', () => {
 			});
 
 			describe('[/users.generatePersonalAccessToken]', () => {
-				it('should return a personal access token to user', (done) => {
-					void request
+				it('should return a personal access token to user', async () => {
+					const res = await request
 						.post(api('users.generatePersonalAccessToken'))
 						.set(credentials)
 						.send({
 							tokenName,
 						})
 						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body).to.have.property('token');
-						})
-						.end(done);
+						.expect(200);
+
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('token');
 				});
-				it('should throw an error when user tries generate a token with the same name', (done) => {
-					void request
+				it('should throw an error when user tries generate a token with the same name', async () => {
+					const res = await request
 						.post(api('users.generatePersonalAccessToken'))
 						.set(credentials)
 						.send({
 							tokenName,
 						})
 						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-						})
-						.end(done);
+						.expect(400);
+
+					expect(res.body).to.have.property('success', false);
 				});
 
 				it('should return 401 when not authenticated', async () => {
@@ -4658,34 +4478,30 @@ describe('[Users]', () => {
 				});
 			});
 			describe('[/users.regeneratePersonalAccessToken]', () => {
-				it('should return a personal access token to user when user regenerates the token', (done) => {
-					void request
+				it('should return a personal access token to user when user regenerates the token', async () => {
+					const res = await request
 						.post(api('users.regeneratePersonalAccessToken'))
 						.set(credentials)
 						.send({
 							tokenName,
 						})
 						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body).to.have.property('token');
-						})
-						.end(done);
+						.expect(200);
+
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('token');
 				});
-				it('should throw an error when user tries regenerate a token that does not exist', (done) => {
-					void request
+				it('should throw an error when user tries regenerate a token that does not exist', async () => {
+					const res = await request
 						.post(api('users.regeneratePersonalAccessToken'))
 						.set(credentials)
 						.send({
 							tokenName: 'tokenthatdoesnotexist',
 						})
 						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-						})
-						.end(done);
+						.expect(400);
+
+					expect(res.body).to.have.property('success', false);
 				});
 
 				it('should return 401 when not authenticated', async () => {
@@ -4711,47 +4527,41 @@ describe('[Users]', () => {
 				});
 			});
 			describe('[/users.getPersonalAccessTokens]', () => {
-				it('should return my personal access tokens', (done) => {
-					void request
+				it('should return my personal access tokens', async () => {
+					const res = await request
 						.get(api('users.getPersonalAccessTokens'))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body).to.have.property('tokens').and.to.be.an('array');
-						})
-						.end(done);
+						.expect(200);
+
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('tokens').and.to.be.an('array');
 				});
 			});
 			describe('[/users.removePersonalAccessToken]', () => {
-				it('should return success when user remove a personal access token', (done) => {
-					void request
+				it('should return success when user remove a personal access token', async () => {
+					const res = await request
 						.post(api('users.removePersonalAccessToken'))
 						.set(credentials)
 						.send({
 							tokenName,
 						})
 						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-						})
-						.end(done);
+						.expect(200);
+
+					expect(res.body).to.have.property('success', true);
 				});
-				it('should throw an error when user tries remove a token that does not exist', (done) => {
-					void request
+				it('should throw an error when user tries remove a token that does not exist', async () => {
+					const res = await request
 						.post(api('users.removePersonalAccessToken'))
 						.set(credentials)
 						.send({
 							tokenName: 'tokenthatdoesnotexist',
 						})
 						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-						})
-						.end(done);
+						.expect(400);
+
+					expect(res.body).to.have.property('success', false);
 				});
 
 				it('should return 401 when not authenticated', async () => {
@@ -4782,77 +4592,67 @@ describe('[Users]', () => {
 			after(() => updatePermission('create-personal-access-tokens', ['admin']));
 
 			describe('should return an error when the user dont have the necessary permission "create-personal-access-tokens"', () => {
-				it('/users.generatePersonalAccessToken', (done) => {
-					void request
+				it('/users.generatePersonalAccessToken', async () => {
+					const res = await request
 						.post(api('users.generatePersonalAccessToken'))
 						.set(credentials)
 						.send({
 							tokenName,
 						})
 						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body.errorType).to.be.equal('not-authorized');
-						})
-						.end(done);
+						.expect(400);
+
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('not-authorized');
 				});
-				it('/users.regeneratePersonalAccessToken', (done) => {
-					void request
+				it('/users.regeneratePersonalAccessToken', async () => {
+					const res = await request
 						.post(api('users.regeneratePersonalAccessToken'))
 						.set(credentials)
 						.send({
 							tokenName,
 						})
 						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body.errorType).to.be.equal('not-authorized');
-						})
-						.end(done);
+						.expect(400);
+
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('not-authorized');
 				});
-				it('/users.getPersonalAccessTokens', (done) => {
-					void request
+				it('/users.getPersonalAccessTokens', async () => {
+					const res = await request
 						.get(api('users.getPersonalAccessTokens'))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
-						.expect(403)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
-						})
-						.end(done);
+						.expect(403);
+
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
 				});
-				it('/users.removePersonalAccessToken', (done) => {
-					void request
+				it('/users.removePersonalAccessToken', async () => {
+					const res = await request
 						.post(api('users.removePersonalAccessToken'))
 						.set(credentials)
 						.send({
 							tokenName,
 						})
 						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body.errorType).to.be.equal('not-authorized');
-						})
-						.end(done);
+						.expect(400);
+
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('not-authorized');
 				});
-				it('should throw an error when user tries remove a token that does not exist', (done) => {
-					void request
+				it('should throw an error when user tries remove a token that does not exist', async () => {
+					const res = await request
 						.post(api('users.removePersonalAccessToken'))
 						.set(credentials)
 						.send({
 							tokenName: 'tokenthatdoesnotexist',
 						})
 						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body.errorType).to.be.equal('not-authorized');
-						})
-						.end(done);
+						.expect(400);
+
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.errorType).to.be.equal('not-authorized');
 				});
 			});
 		});
@@ -4895,8 +4695,8 @@ describe('[Users]', () => {
 
 		after(() => Promise.all([removeAgent(agent.user._id), deleteUser(agent.user)]));
 
-		it('should set other user active status to false when the logged user has the necessary permission(edit-other-user-active-status)', (done) => {
-			void request
+		it('should set other user active status to false when the logged user has the necessary permission(edit-other-user-active-status)', async () => {
+			const res = await request
 				.post(api('users.setActiveStatus'))
 				.set(userCredentials)
 				.send({
@@ -4904,15 +4704,13 @@ describe('[Users]', () => {
 					userId: targetUser._id,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('user.active', false);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.nested.property('user.active', false);
 		});
-		it('should set other user active status to true when the logged user has the necessary permission(edit-other-user-active-status)', (done) => {
-			void request
+		it('should set other user active status to true when the logged user has the necessary permission(edit-other-user-active-status)', async () => {
+			const res = await request
 				.post(api('users.setActiveStatus'))
 				.set(userCredentials)
 				.send({
@@ -4920,34 +4718,30 @@ describe('[Users]', () => {
 					userId: targetUser._id,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('user.active', true);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.nested.property('user.active', true);
 		});
 
-		it('should return an error when trying to set other user active status and has not the necessary permission(edit-other-user-active-status)', (done) => {
-			void updatePermission('edit-other-user-active-status', []).then(() => {
-				void request
-					.post(api('users.setActiveStatus'))
-					.set(userCredentials)
-					.send({
-						activeStatus: false,
-						userId: targetUser._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(403)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
-					})
-					.end(done);
-			});
+		it('should return an error when trying to set other user active status and has not the necessary permission(edit-other-user-active-status)', async () => {
+			await updatePermission('edit-other-user-active-status', []);
+
+			const res = await request
+				.post(api('users.setActiveStatus'))
+				.set(userCredentials)
+				.send({
+					activeStatus: false,
+					userId: targetUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(403);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 		});
-		it('should return an error when trying to set user own active status and has not the necessary permission(edit-other-user-active-status)', (done) => {
-			void request
+		it('should return an error when trying to set user own active status and has not the necessary permission(edit-other-user-active-status)', async () => {
+			const res = await request
 				.post(api('users.setActiveStatus'))
 				.set(userCredentials)
 				.send({
@@ -4955,30 +4749,26 @@ describe('[Users]', () => {
 					userId: user._id,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(403)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
-				})
-				.end(done);
+				.expect(403);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 		});
-		it('should set user own active status to false when the user has the necessary permission(edit-other-user-active-status)', (done) => {
-			void updatePermission('edit-other-user-active-status', ['admin']).then(() => {
-				void request
-					.post(api('users.setActiveStatus'))
-					.set(userCredentials)
-					.send({
-						activeStatus: false,
-						userId: user._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(403)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
-					})
-					.end(done);
-			});
+		it('should set user own active status to false when the user has the necessary permission(edit-other-user-active-status)', async () => {
+			await updatePermission('edit-other-user-active-status', ['admin']);
+
+			const res = await request
+				.post(api('users.setActiveStatus'))
+				.set(userCredentials)
+				.send({
+					activeStatus: false,
+					userId: user._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(403);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 		});
 		it('users should retain their roles when they are deactivated', async () => {
 			const testUser = await createUser({ roles: ['user', 'livechat-agent'] });
@@ -5190,75 +4980,67 @@ describe('[Users]', () => {
 
 		after(() => Promise.all([deleteUser(testUser), updatePermission('edit-other-user-active-status', ['admin'])]));
 
-		it('should fail to deactivate if user doesnt have edit-other-user-active-status permission', (done) => {
-			void updatePermission('edit-other-user-active-status', []).then(() => {
-				void request
-					.post(api('users.deactivateIdle'))
-					.set(credentials)
-					.send({
-						daysIdle: 0,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(403)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
-					})
-					.end(done);
-			});
+		it('should fail to deactivate if user doesnt have edit-other-user-active-status permission', async () => {
+			await updatePermission('edit-other-user-active-status', []);
+
+			const res = await request
+				.post(api('users.deactivateIdle'))
+				.set(credentials)
+				.send({
+					daysIdle: 0,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(403);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 		});
-		it('should deactivate no users when no users in time range', (done) => {
-			void updatePermission('edit-other-user-active-status', ['admin']).then(() => {
-				void request
-					.post(api('users.deactivateIdle'))
-					.set(credentials)
-					.send({
-						daysIdle: 999999,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('count', 0);
-					})
-					.end(done);
-			});
+		it('should deactivate no users when no users in time range', async () => {
+			await updatePermission('edit-other-user-active-status', ['admin']);
+
+			const res = await request
+				.post(api('users.deactivateIdle'))
+				.set(credentials)
+				.send({
+					daysIdle: 999999,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('count', 0);
 		});
-		it('should deactivate the test user when given its role and daysIdle = 0', (done) => {
-			void updatePermission('edit-other-user-active-status', ['admin']).then(() => {
-				void request
-					.post(api('users.deactivateIdle'))
-					.set(credentials)
-					.send({
-						daysIdle: 0,
-						role: testRoleId,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('count', 1);
-					})
-					.end(done);
-			});
+		it('should deactivate the test user when given its role and daysIdle = 0', async () => {
+			await updatePermission('edit-other-user-active-status', ['admin']);
+
+			const res = await request
+				.post(api('users.deactivateIdle'))
+				.set(credentials)
+				.send({
+					daysIdle: 0,
+					role: testRoleId,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('count', 1);
 		});
-		it('should not deactivate the test user again when given its role and daysIdle = 0', (done) => {
-			void updatePermission('edit-other-user-active-status', ['admin']).then(() => {
-				void request
-					.post(api('users.deactivateIdle'))
-					.set(credentials)
-					.send({
-						daysIdle: 0,
-						role: testRoleId,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('count', 0);
-					})
-					.end(done);
-			});
+		it('should not deactivate the test user again when given its role and daysIdle = 0', async () => {
+			await updatePermission('edit-other-user-active-status', ['admin']);
+
+			const res = await request
+				.post(api('users.deactivateIdle'))
+				.set(credentials)
+				.send({
+					daysIdle: 0,
+					role: testRoleId,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('count', 0);
 		});
 
 		it('should return 400 when body is empty', async () => {
@@ -5298,49 +5080,43 @@ describe('[Users]', () => {
 	});
 
 	describe('[/users.requestDataDownload]', () => {
-		it('should return the request data with fullExport false when no query parameter was send', (done) => {
-			void request
+		it('should return the request data with fullExport false when no query parameter was send', async () => {
+			const res = await request
 				.get(api('users.requestDataDownload'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('requested');
-					expect(res.body).to.have.property('exportOperation').and.to.be.an('object');
-					expect(res.body.exportOperation).to.have.property('fullExport', false);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('requested');
+			expect(res.body).to.have.property('exportOperation').and.to.be.an('object');
+			expect(res.body.exportOperation).to.have.property('fullExport', false);
 		});
-		it('should return the request data with fullExport false when the fullExport query parameter is false', (done) => {
-			void request
+		it('should return the request data with fullExport false when the fullExport query parameter is false', async () => {
+			const res = await request
 				.get(api('users.requestDataDownload'))
 				.query({ fullExport: 'false' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('requested');
-					expect(res.body).to.have.property('exportOperation').and.to.be.an('object');
-					expect(res.body.exportOperation).to.have.property('fullExport', false);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('requested');
+			expect(res.body).to.have.property('exportOperation').and.to.be.an('object');
+			expect(res.body.exportOperation).to.have.property('fullExport', false);
 		});
-		it('should return the request data with fullExport true when the fullExport query parameter is true', (done) => {
-			void request
+		it('should return the request data with fullExport true when the fullExport query parameter is true', async () => {
+			const res = await request
 				.get(api('users.requestDataDownload'))
 				.query({ fullExport: 'true' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('requested');
-					expect(res.body).to.have.property('exportOperation').and.to.be.an('object');
-					expect(res.body.exportOperation).to.have.property('fullExport', true);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('requested');
+			expect(res.body).to.have.property('exportOperation').and.to.be.an('object');
+			expect(res.body.exportOperation).to.have.property('fullExport', true);
 		});
 
 		it('should return 401 when not authenticated', async () => {
@@ -5511,18 +5287,16 @@ describe('[Users]', () => {
 				await Promise.all([deleteRoom({ type: 'c', roomId }), deleteUser(user), deleteUser(user2)]);
 			});
 
-			it('should return an empty list when the user does not have any subscription', (done) => {
-				void request
+			it('should return an empty list when the user does not have any subscription', async () => {
+				const res = await request
 					.get(api('users.autocomplete'))
 					.query({ selector: '{}' })
 					.set(userCredentials)
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('items').and.to.be.an('array').that.has.lengthOf(0);
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('items').and.to.be.an('array').that.has.lengthOf(0);
 			});
 
 			it('should return users that are subscribed to the same rooms as the requester', async () => {
@@ -5544,30 +5318,26 @@ describe('[Users]', () => {
 		describe('[with permission]', () => {
 			before(async () => updatePermission('view-outside-room', ['admin', 'user']));
 
-			it('should return an error when the required parameter "selector" is not provided', (done) => {
-				void request
+			it('should return an error when the required parameter "selector" is not provided', async () => {
+				const res = await request
 					.get(api('users.autocomplete'))
 					.query({})
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
 			});
-			it('should return the users to fill auto complete', (done) => {
-				void request
+			it('should return the users to fill auto complete', async () => {
+				const res = await request
 					.get(api('users.autocomplete'))
 					.query({ selector: '{}' })
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('items').and.to.be.an('array');
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('items').and.to.be.an('array');
 			});
 
 			(IS_EE ? it : it.skip)('should return users filtered by freeSwitchExtension and display it', async () => {
@@ -5587,8 +5357,8 @@ describe('[Users]', () => {
 				await deleteUser(user);
 			});
 
-			it('should filter results when using allowed operators', (done) => {
-				void request
+			it('should filter results when using allowed operators', async () => {
+				const res = await request
 					.get(api('users.autocomplete'))
 					.set(credentials)
 					.query({
@@ -5606,16 +5376,14 @@ describe('[Users]', () => {
 						}),
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('items').and.to.be.an('array').with.lengthOf(0);
-					})
-					.end(done);
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('items').and.to.be.an('array').with.lengthOf(0);
 			});
 
-			it('should return an error when using forbidden operators', (done) => {
-				void request
+			it('should return an error when using forbidden operators', async () => {
+				const res = await request
 					.get(api('users.autocomplete'))
 					.set(credentials)
 					.query({
@@ -5637,11 +5405,9 @@ describe('[Users]', () => {
 						}),
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-					})
-					.end(done);
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
 			});
 		});
 
@@ -5657,32 +5423,24 @@ describe('[Users]', () => {
 	});
 
 	describe('[/users.getStatus]', () => {
-		it('should return my own status', (done) => {
-			void request
-				.get(api('users.getStatus'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('_id', credentials['X-User-Id']);
-					expect(res.body).to.have.property('status');
-				})
-				.end(done);
+		it('should return my own status', async () => {
+			const res = await request.get(api('users.getStatus')).set(credentials).expect('Content-Type', 'application/json').expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('_id', credentials['X-User-Id']);
+			expect(res.body).to.have.property('status');
 		});
-		it('should return other user status', (done) => {
-			void request
+		it('should return other user status', async () => {
+			const res = await request
 				.get(api('users.getStatus'))
 				.query({ userId: 'rocket.cat' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('_id', 'rocket.cat');
-					expect(res.body).to.have.property('status');
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('_id', 'rocket.cat');
+			expect(res.body).to.have.property('status');
 		});
 
 		it('should return 401 when not authenticated', async () => {
@@ -5704,98 +5462,88 @@ describe('[Users]', () => {
 		});
 		after(() => Promise.all([deleteUser(user), updateSetting('Accounts_AllowUserStatusMessageChange', true)]));
 
-		it('should return an error when the setting "Accounts_AllowUserStatusMessageChange" is disabled', (done) => {
-			void updateSetting('Accounts_AllowUserStatusMessageChange', false).then(() => {
-				void request
-					.post(api('users.setStatus'))
-					.set(credentials)
-					.send({
-						status: 'busy',
-						message: 'test',
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.errorType).to.be.equal('error-not-allowed');
-						expect(res.body.error).to.be.equal('Change status is not allowed [error-not-allowed]');
-					})
-					.end(done);
+		it('should return an error when the setting "Accounts_AllowUserStatusMessageChange" is disabled', async () => {
+			await updateSetting('Accounts_AllowUserStatusMessageChange', false);
+
+			const res = await request
+				.post(api('users.setStatus'))
+				.set(credentials)
+				.send({
+					status: 'busy',
+					message: 'test',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.errorType).to.be.equal('error-not-allowed');
+			expect(res.body.error).to.be.equal('Change status is not allowed [error-not-allowed]');
+		});
+		it('should update my own status', async () => {
+			await updateSetting('Accounts_AllowUserStatusMessageChange', true);
+
+			const res = await request
+				.post(api('users.setStatus'))
+				.set(credentials)
+				.send({
+					status: 'busy',
+					message: 'test',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			void getUserStatus(credentials['X-User-Id']).then((status) => expect(status.status).to.be.equal('busy'));
+		});
+		it('should return an error when trying to update other user status without the required permission', async () => {
+			await updatePermission('edit-other-user-info', []);
+
+			const res = await request
+				.post(api('users.setStatus'))
+				.set(credentials)
+				.send({
+					status: 'busy',
+					message: 'test',
+					userId: user._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(403);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal('unauthorized');
+		});
+		it('should update another user status succesfully', async () => {
+			await updatePermission('edit-other-user-info', ['admin']);
+
+			const res = await request
+				.post(api('users.setStatus'))
+				.set(credentials)
+				.send({
+					status: 'busy',
+					message: 'test',
+					userId: user._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			void getUserStatus(credentials['X-User-Id']).then((status) => {
+				expect(status.status).to.be.equal('busy');
 			});
 		});
-		it('should update my own status', (done) => {
-			void updateSetting('Accounts_AllowUserStatusMessageChange', true).then(() => {
-				void request
-					.post(api('users.setStatus'))
-					.set(credentials)
-					.send({
-						status: 'busy',
-						message: 'test',
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						void getUserStatus(credentials['X-User-Id']).then((status) => expect(status.status).to.be.equal('busy'));
-					})
-					.end(done);
-			});
-		});
-		it('should return an error when trying to update other user status without the required permission', (done) => {
-			void updatePermission('edit-other-user-info', []).then(() => {
-				void request
-					.post(api('users.setStatus'))
-					.set(credentials)
-					.send({
-						status: 'busy',
-						message: 'test',
-						userId: user._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(403)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('unauthorized');
-					})
-					.end(done);
-			});
-		});
-		it('should update another user status succesfully', (done) => {
-			void updatePermission('edit-other-user-info', ['admin']).then(() => {
-				void request
-					.post(api('users.setStatus'))
-					.set(credentials)
-					.send({
-						status: 'busy',
-						message: 'test',
-						userId: user._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						void getUserStatus(credentials['X-User-Id']).then((status) => {
-							expect(status.status).to.be.equal('busy');
-						});
-					})
-					.end(done);
-			});
-		});
-		it('should return an error when the user try to update user status with an invalid status', (done) => {
-			void request
+		it('should return an error when the user try to update user status with an invalid status', async () => {
+			const res = await request
 				.post(api('users.setStatus'))
 				.set(credentials)
 				.send({
 					status: 'invalid',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('invalid-params');
-					expect(res.body.error).to.include('must be equal to one of the allowed values');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.errorType).to.be.equal('invalid-params');
+			expect(res.body.error).to.include('must be equal to one of the allowed values');
 		});
 		it('should return an error when user changes status to offline and "Accounts_AllowInvisibleStatusOption" is disabled', async () => {
 			await updateSetting('Accounts_AllowInvisibleStatusOption', false);
@@ -5833,18 +5581,16 @@ describe('[Users]', () => {
 
 			await updateSetting('Accounts_AllowInvisibleStatusOption', true);
 		});
-		it('should return an error when the payload is missing all supported fields', (done) => {
-			void request
+		it('should return an error when the payload is missing all supported fields', async () => {
+			const res = await request
 				.post(api('users.setStatus'))
 				.set(credentials)
 				.send({})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('Match error: Failed Match.OneOf, Match.Maybe or Match.Optional validation');
-				})
-				.end(done);
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal('Match error: Failed Match.OneOf, Match.Maybe or Match.Optional validation');
 		});
 
 		it('should return 401 when not authenticated', async () => {
@@ -6071,25 +5817,23 @@ describe('[Users]', () => {
 
 		after(() => Promise.all([...[teamName1, teamName2].map((team) => deleteTeam(credentials, team)), deleteUser(testUser)]));
 
-		it('should list both channels', (done) => {
-			void request
+		it('should list both channels', async () => {
+			const res = await request
 				.get(api('users.listTeams'))
 				.set(credentials)
 				.query({
 					userId: testUser._id,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('teams');
+				.expect(200);
 
-					const { teams } = res.body;
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('teams');
 
-					expect(teams).to.have.length(2);
-					expect(teams[0].isOwner).to.not.be.eql(teams[1].isOwner);
-				})
-				.end(done);
+			const { teams } = res.body;
+
+			expect(teams).to.have.length(2);
+			expect(teams[0].isOwner).to.not.be.eql(teams[1].isOwner);
 		});
 
 		it('should return 401 when not authenticated', async () => {
@@ -6127,28 +5871,26 @@ describe('[Users]', () => {
 
 		after(() => Promise.all([deleteUser(user), deleteUser(otherUser), updatePermission('logout-other-user', ['admin'])]));
 
-		it('should throw unauthorized error to user w/o "logout-other-user" permission', (done) => {
-			void updatePermission('logout-other-user', []).then(() => {
-				void request
-					.post(api('users.logout'))
-					.set(credentials)
-					.send({ userId: otherUser._id })
-					.expect('Content-Type', 'application/json')
-					.expect(403)
-					.end(done);
-			});
+		it('should throw unauthorized error to user w/o "logout-other-user" permission', async () => {
+			await updatePermission('logout-other-user', []);
+
+			await request
+				.post(api('users.logout'))
+				.set(credentials)
+				.send({ userId: otherUser._id })
+				.expect('Content-Type', 'application/json')
+				.expect(403);
 		});
 
-		it('should logout other user', (done) => {
-			void updatePermission('logout-other-user', ['admin']).then(() => {
-				void request
-					.post(api('users.logout'))
-					.set(credentials)
-					.send({ userId: otherUser._id })
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.end(done);
-			});
+		it('should logout other user', async () => {
+			await updatePermission('logout-other-user', ['admin']);
+
+			await request
+				.post(api('users.logout'))
+				.set(credentials)
+				.send({ userId: otherUser._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200);
 		});
 
 		it('should logout the requester', (done) => {

@@ -10,96 +10,77 @@ describe('[Settings]', () => {
 	before((done) => getCredentials(done));
 
 	describe('[/settings.public]', () => {
-		it('should return public settings', (done) => {
-			void request
-				.get(api('settings.public'))
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('settings');
-					expect(res.body).to.have.property('count');
-				})
-				.end(done);
+		it('should return public settings', async () => {
+			const res = await request.get(api('settings.public')).expect('Content-Type', 'application/json').expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('settings');
+			expect(res.body).to.have.property('count');
 		});
-		it('should return public settings even requested with count and offset params', (done) => {
-			void request
+		it('should return public settings even requested with count and offset params', async () => {
+			const res = await request
 				.get(api('settings.public'))
 				.query({
 					count: 5,
 					offset: 0,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success').and.to.be.true;
-					expect(res.body).to.have.property('settings').and.to.be.an('array').and.to.have.lengthOf(5);
-					expect(res.body).to.have.property('count').and.to.be.a('number').and.to.equal(5);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success').and.to.be.true;
+			expect(res.body).to.have.property('settings').and.to.be.an('array').and.to.have.lengthOf(5);
+			expect(res.body).to.have.property('count').and.to.be.a('number').and.to.equal(5);
 		});
-		it('should return public settings even requested with _id param', (done) => {
-			void request
+		it('should return public settings even requested with _id param', async () => {
+			const res = await request
 				.get(api('settings.public'))
 				.query({
 					_id: 'Site_Url',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success').and.to.be.true;
-					expect(res.body).to.have.property('settings').and.to.be.an('array').and.to.have.lengthOf(1);
-					expect(res.body).to.have.property('count').and.to.be.a('number').and.to.equal(1);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success').and.to.be.true;
+			expect(res.body).to.have.property('settings').and.to.be.an('array').and.to.have.lengthOf(1);
+			expect(res.body).to.have.property('count').and.to.be.a('number').and.to.equal(1);
 		});
-		it('should return public settings even requested with _id param as an array', (done) => {
-			void request
+		it('should return public settings even requested with _id param as an array', async () => {
+			const res = await request
 				.get(api('settings.public'))
 				.query({
 					_id: 'Site_Url,LDAP_Enable',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success').and.to.be.true;
-					expect(res.body).to.have.property('settings').and.to.be.an('array').and.to.have.lengthOf(2);
-					expect(res.body).to.have.property('count').and.to.be.a('number').and.to.equal(2);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success').and.to.be.true;
+			expect(res.body).to.have.property('settings').and.to.be.an('array').and.to.have.lengthOf(2);
+			expect(res.body).to.have.property('count').and.to.be.a('number').and.to.equal(2);
 		});
-		it('should return an empty response when requesting public settings with a broken _id param', (done) => {
-			void request
+		it('should return an empty response when requesting public settings with a broken _id param', async () => {
+			const res = await request
 				.get(api('settings.public'))
 				.query({
 					_id: 10,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success').and.to.be.true;
-					expect(res.body).to.have.property('settings').and.to.be.an('array').and.to.be.empty;
-					expect(res.body).to.have.property('count').and.to.be.a('number').and.to.equal(0);
-					expect(res.body).to.have.property('offset').and.to.be.a('number').and.to.equal(0);
-					expect(res.body).to.have.property('total').and.to.be.a('number').and.to.equal(0);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success').and.to.be.true;
+			expect(res.body).to.have.property('settings').and.to.be.an('array').and.to.be.empty;
+			expect(res.body).to.have.property('count').and.to.be.a('number').and.to.equal(0);
+			expect(res.body).to.have.property('offset').and.to.be.a('number').and.to.equal(0);
+			expect(res.body).to.have.property('total').and.to.be.a('number').and.to.equal(0);
 		});
 	});
 
 	describe('[/settings]', () => {
-		it('should return private settings', (done) => {
-			void request
-				.get(api('settings'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('settings');
-					expect(res.body).to.have.property('count');
-				})
-				.end(done);
+		it('should return private settings', async () => {
+			const res = await request.get(api('settings')).set(credentials).expect('Content-Type', 'application/json').expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('settings');
+			expect(res.body).to.have.property('count');
 		});
 		it('should return the default values of the settings when includeDefaults is true', async () => {
 			return request
@@ -327,17 +308,11 @@ describe('[Settings]', () => {
 	});
 
 	describe('[/service.configurations]', () => {
-		it('should return service configurations', (done) => {
-			void request
-				.get(api('service.configurations'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('configurations');
-				})
-				.end(done);
+		it('should return service configurations', async () => {
+			const res = await request.get(api('service.configurations')).set(credentials).expect('Content-Type', 'application/json').expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('configurations');
 		});
 
 		describe('With OAuth enabled', () => {
@@ -390,29 +365,18 @@ describe('[Settings]', () => {
 	});
 
 	describe('/settings.oauth', () => {
-		it('should have return list of available oauth services when user is not logged', (done) => {
-			void request
-				.get(api('settings.oauth'))
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('services').and.to.be.an('array');
-				})
-				.end(done);
+		it('should have return list of available oauth services when user is not logged', async () => {
+			const res = await request.get(api('settings.oauth')).expect('Content-Type', 'application/json').expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('services').and.to.be.an('array');
 		});
 
-		it('should have return list of available oauth services when user is logged', (done) => {
-			void request
-				.get(api('settings.oauth'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('services').and.to.be.an('array');
-				})
-				.end(done);
+		it('should have return list of available oauth services when user is logged', async () => {
+			const res = await request.get(api('settings.oauth')).set(credentials).expect('Content-Type', 'application/json').expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('services').and.to.be.an('array');
 		});
 	});
 
