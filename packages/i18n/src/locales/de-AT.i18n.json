@@ -798,7 +798,7 @@
   "Displays_action_text": "Zeigt Aktionstext",
   "Do_not_display_unread_counter": "Zeigen Sie keinen Zähler dieses Kanals an",
   "Do_you_want_to_accept": "Willst du akzeptieren?",
-  "Do_you_want_to_change_to_s_question": "Möchten Sie dies zu <strong>%s</strong> ändern?",
+  "Do_you_want_to_change_to_s_question": "Möchten Sie dies zu <strong>{{currentUrl}}</strong> ändern?",
   "Document_Domain": "Dokumentdomäne",
   "Domain": "Domain",
   "Domain_added": "Domäne hinzugefügt",

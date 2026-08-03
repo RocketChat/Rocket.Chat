@@ -889,7 +889,7 @@
   "Displays_action_text": "Hiển thị văn bản hành động",
   "Do_not_display_unread_counter": "Không hiển thị bất kỳ bộ đếm nào của kênh này",
   "Do_you_want_to_accept": "Bạn có muốn chấp nhận không?",
-  "Do_you_want_to_change_to_s_question": "Bạn có muốn thay đổi thành <strong>%s</strong>?",
+  "Do_you_want_to_change_to_s_question": "Bạn có muốn thay đổi thành <strong>{{currentUrl}}</strong>?",
   "Document_Domain": "Miền tài liệu",
   "Domain": "Tên miền",
   "Domain_added": "tên miền đã được thêm",

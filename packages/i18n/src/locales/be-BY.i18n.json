@@ -815,7 +815,7 @@
   "Displays_action_text": "тэкст Адлюстроўвае дзеянні",
   "Do_not_display_unread_counter": "Не адлюстроўваць любы лічыльнік гэтага канала",
   "Do_you_want_to_accept": "Ці вы хочаце прыняць?",
-  "Do_you_want_to_change_to_s_question": "Вы хочаце, каб змяніць <strong>%s</strong>?",
+  "Do_you_want_to_change_to_s_question": "Вы хочаце, каб змяніць <strong>{{currentUrl}}</strong>?",
   "Document_Domain": "дамен дакументаў",
   "Domain": "дамен",
   "Domain_added": "дамен Паведамленні",

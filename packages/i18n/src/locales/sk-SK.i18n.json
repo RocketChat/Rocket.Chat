@@ -800,7 +800,7 @@
   "Displays_action_text": "Zobraziť text akcie",
   "Do_not_display_unread_counter": "Nezobrazovať žiadne počítadlo tohto kanálu",
   "Do_you_want_to_accept": "Chcete prijať?",
-  "Do_you_want_to_change_to_s_question": "Chcete zmeniť na <strong>%s</strong>?",
+  "Do_you_want_to_change_to_s_question": "Chcete zmeniť na <strong>{{currentUrl}}</strong>?",
   "Document_Domain": "Doména dokumentu",
   "Domain": "Doména",
   "Domain_added": "Doména bola pridaná",

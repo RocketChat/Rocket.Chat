@@ -1975,7 +1975,7 @@
   "Do_not_provide_this_code_to_anyone": "Do not provide this code to anyone.",
   "Do_nothing": "Do nothing",
   "Do_you_want_to_accept": "Do you want to accept?",
-  "Do_you_want_to_change_to_s_question": "Do you want to change to <strong>%s</strong>?",
+  "Do_you_want_to_change_to_s_question": "Do you want to change to <strong>{{currentUrl}}</strong>?",
   "Document_Domain": "Document Domain",
   "Documentation": "Documentation",
   "Domain": "Domain",

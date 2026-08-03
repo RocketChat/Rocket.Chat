@@ -1317,7 +1317,7 @@
   "Do_not_display_unread_counter": "不要顯示此頻道的任何計數器",
   "Do_not_provide_this_code_to_anyone": "不要將此代碼提供給任何人。",
   "Do_you_want_to_accept": "你想接受嗎？",
-  "Do_you_want_to_change_to_s_question": "您想更改為<strong>%s</strong>嗎？",
+  "Do_you_want_to_change_to_s_question": "您想更改為<strong>{{currentUrl}}</strong>嗎？",
   "Document_Domain": "網址網站",
   "Domain": "網域",
   "Domain_added": "網域已增加",

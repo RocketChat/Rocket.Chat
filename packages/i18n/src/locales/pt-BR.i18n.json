@@ -1895,7 +1895,7 @@
   "Do_not_provide_this_code_to_anyone": "Não forneça este código para ninguém.",
   "Do_nothing": "Não fazer nada",
   "Do_you_want_to_accept": "Você quer aceitar?",
-  "Do_you_want_to_change_to_s_question": "Você quer mudar para <strong>%s</strong>?",
+  "Do_you_want_to_change_to_s_question": "Você quer mudar para <strong>{{currentUrl}}</strong>?",
   "Document_Domain": "Domínio do documento",
   "Documentation": "Documentação",
   "Domain": "Domínio",

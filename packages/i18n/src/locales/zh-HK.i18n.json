@@ -815,7 +815,7 @@
   "Displays_action_text": "显示动作文本",
   "Do_not_display_unread_counter": "不要显示此频道的任何计数器",
   "Do_you_want_to_accept": "你想接受吗？",
-  "Do_you_want_to_change_to_s_question": "是否要更改为<strong>％s</strong>？",
+  "Do_you_want_to_change_to_s_question": "是否要更改为<strong>{{currentUrl}}</strong>？",
   "Document_Domain": "文档域",
   "Domain": "域",
   "Domain_added": "域已添加",

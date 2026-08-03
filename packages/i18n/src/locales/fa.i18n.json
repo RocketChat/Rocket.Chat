@@ -1005,7 +1005,7 @@
   "Do_Nothing": "هیچ کاری نکنید",
   "Do_not_display_unread_counter": "هیچ شمارندهی این کانال را نمایش ندهید",
   "Do_you_want_to_accept": "میخواهید قبول کنید؟",
-  "Do_you_want_to_change_to_s_question": "آیا می‌خواهید به <strong>%s</strong> تغییر دهید؟",
+  "Do_you_want_to_change_to_s_question": "آیا می‌خواهید به <strong>{{currentUrl}}</strong> تغییر دهید؟",
   "Document_Domain": "دامنه سند",
   "Domain": "دامنه",
   "Domain_added": "دامنه اضافه شده است",

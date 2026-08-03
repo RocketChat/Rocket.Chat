@@ -1195,7 +1195,7 @@
   "Do_not_display_unread_counter": "Vis ikke nogen tæller for denne kanal",
   "Do_not_provide_this_code_to_anyone": "Giv ikke denne kode til nogen.",
   "Do_you_want_to_accept": "Vil du acceptere?",
-  "Do_you_want_to_change_to_s_question": "Vil du skifte til <strong>%s</strong>?",
+  "Do_you_want_to_change_to_s_question": "Vil du skifte til <strong>{{currentUrl}}</strong>?",
   "Document_Domain": "Dokument-domæne",
   "Domain": "Domæne",
   "Domain_added": "Domæne tilføjet",

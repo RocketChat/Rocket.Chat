@@ -795,7 +795,7 @@
   "Displays_action_text": "Үйл ажиллагааны текстийг харуулна",
   "Do_not_display_unread_counter": "Энэ сувгийн бүхээгийг харуулахгүй",
   "Do_you_want_to_accept": "Та хүлээн зөвшөөрөх үү?",
-  "Do_you_want_to_change_to_s_question": "Та <strong>%s руу</strong>өөрчлөхийг хүсч байна уу?",
+  "Do_you_want_to_change_to_s_question": "Та <strong>{{currentUrl}} руу</strong>өөрчлөхийг хүсч байна уу?",
   "Document_Domain": "Баримт Домэйн",
   "Domain": "Домэйн",
   "Domain_added": "Нэмсэн домэйн",

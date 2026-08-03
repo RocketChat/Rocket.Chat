@@ -794,7 +794,7 @@
   "Displays_action_text": "Montras agan tekston",
   "Do_not_display_unread_counter": "Ne montru neniun kontrakton de ĉi tiu kanalo",
   "Do_you_want_to_accept": "Ĉu vi volas akcepti?",
-  "Do_you_want_to_change_to_s_question": "Ĉu vi volas ŝanĝi al <strong>%s</strong>?",
+  "Do_you_want_to_change_to_s_question": "Ĉu vi volas ŝanĝi al <strong>{{currentUrl}}</strong>?",
   "Document_Domain": "Dokumenta Domajno",
   "Domain": "Domajno",
   "Domain_added": "domajno Aldonita",

@@ -1328,7 +1328,7 @@
   "Do_not_display_unread_counter": "لا تعرض أي عداد لهذه القناة",
   "Do_not_provide_this_code_to_anyone": "لا توفر هذا الرمز لأي أحد.",
   "Do_you_want_to_accept": "هل تريد أن تقبل؟",
-  "Do_you_want_to_change_to_s_question": "هل تريد التغيير إلى <strong>‎%s</strong>؟",
+  "Do_you_want_to_change_to_s_question": "هل تريد التغيير إلى <strong>‎{{currentUrl}}</strong>؟",
   "Document_Domain": "نطاق الوثيقة",
   "Domain": "نطاق",
   "Domain_added": "تمت إضافة النطاق",

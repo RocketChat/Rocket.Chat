@@ -291,7 +291,7 @@
   "Disabled": "چەكلەندى",
   "Display_offline_form": "تورسىز ھالەتتە جەدۋەلنى كۆرسىتىش",
   "Displays_action_text": "ھەرىكەتتىكى خەتلەرنى كۆرسىتىش",
-  "Do_you_want_to_change_to_s_question": "بۇنداق قىلىپ ئۆزگەرتكۈڭىز بارمۇ ؟<strong>%s</strong> سىزنىڭ",
+  "Do_you_want_to_change_to_s_question": "بۇنداق قىلىپ ئۆزگەرتكۈڭىز بارمۇ ؟<strong>{{currentUrl}}</strong> سىزنىڭ",
   "Domain": "دائىرە نامى",
   "Domains": "دائىرە نامى",
   "Drop_to_upload_file": "سۆرەپ يوللاش",

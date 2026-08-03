@@ -792,7 +792,7 @@
   "Displays_action_text": "Prikaže ukazno besedilo",
   "Do_not_display_unread_counter": "Ne prikaži nobenega števca tega kanala",
   "Do_you_want_to_accept": "Želite sprejeti?",
-  "Do_you_want_to_change_to_s_question": "Bi radi spremenili v <strong>%s</strong>?",
+  "Do_you_want_to_change_to_s_question": "Bi radi spremenili v <strong>{{currentUrl}}</strong>?",
   "Document_Domain": "Dokumentna domena",
   "Domain": "Domena",
   "Domain_added": "Domena dodana",

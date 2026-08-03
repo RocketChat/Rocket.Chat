@@ -1322,7 +1322,7 @@
   "Do_not_display_unread_counter": "No mostreu cap comptador d'aquest canal",
   "Do_not_provide_this_code_to_anyone": "No comparteixi aquest codi amb ningú.",
   "Do_you_want_to_accept": "Vols acceptar?",
-  "Do_you_want_to_change_to_s_question": "Canvia a <strong>%s</strong>?",
+  "Do_you_want_to_change_to_s_question": "Canvia a <strong>{{currentUrl}}</strong>?",
   "Document_Domain": "Domini del document",
   "Domain": "Domini",
   "Domain_added": "Domini afegit",

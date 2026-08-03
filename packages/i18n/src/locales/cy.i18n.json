@@ -795,7 +795,7 @@
   "Displays_action_text": "Arddangos testun gweithredu",
   "Do_not_display_unread_counter": "Peidiwch ag arddangos cownter y sianel hon",
   "Do_you_want_to_accept": "Ydych chi am dderbyn?",
-  "Do_you_want_to_change_to_s_question": "Ydych chi eisiau newid i <strong>%s</strong>?",
+  "Do_you_want_to_change_to_s_question": "Ydych chi eisiau newid i <strong>{{currentUrl}}</strong>?",
   "Document_Domain": "Parth Dogfen",
   "Domain": "Parth",
   "Domain_added": "parth Ychwanegwyd",

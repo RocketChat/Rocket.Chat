@@ -962,7 +962,7 @@
   "Displays_action_text": "Exibe texto da acção",
   "Do_not_display_unread_counter": "Não exiba nenhum contador desse canal",
   "Do_you_want_to_accept": "Quer aceitar?",
-  "Do_you_want_to_change_to_s_question": "Quer mudar para <strong>%s</strong>?",
+  "Do_you_want_to_change_to_s_question": "Quer mudar para <strong>{{currentUrl}}</strong>?",
   "Document_Domain": "Domínio do Documento",
   "Domain": "Domínio",
   "Domain_added": "Domínio Adicionado",

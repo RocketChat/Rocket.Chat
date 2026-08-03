@@ -968,7 +968,7 @@
   "Displays_action_text": "Görüntüler aksiyon metni",
   "Do_not_display_unread_counter": "Bu kanalın sayacını görüntüleme",
   "Do_you_want_to_accept": "Kabul etmek ister misin?",
-  "Do_you_want_to_change_to_s_question": "<strong>%s</strong> değiştirmek istiyor musunuz?",
+  "Do_you_want_to_change_to_s_question": "<strong>{{currentUrl}}</strong> değiştirmek istiyor musunuz?",
   "Document_Domain": "Belge Alan Adı",
   "Domain": "Alan Adı",
   "Domain_added": "alan adı eklendi",

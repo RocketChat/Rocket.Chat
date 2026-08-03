@@ -1428,7 +1428,7 @@
   "Do_not_display_unread_counter": "Скрыть показ непрочитанных сообщений",
   "Do_not_provide_this_code_to_anyone": "Не сообщайте этот код никому.",
   "Do_you_want_to_accept": "Вы хотите принять?",
-  "Do_you_want_to_change_to_s_question": "Хотите изменить на <strong>%s</strong>?",
+  "Do_you_want_to_change_to_s_question": "Хотите изменить на <strong>{{currentUrl}}</strong>?",
   "Document_Domain": "Домен документов",
   "Documentation": "Документация",
   "Domain": "Домен",

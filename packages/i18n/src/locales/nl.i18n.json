@@ -1332,7 +1332,7 @@
   "Do_not_display_unread_counter": "Geen teller van dit kanaal weergeven",
   "Do_not_provide_this_code_to_anyone": "Geef deze code aan niemand.",
   "Do_you_want_to_accept": "Wil je accepteren?",
-  "Do_you_want_to_change_to_s_question": "Wil je veranderen naar <strong>%s</strong>?",
+  "Do_you_want_to_change_to_s_question": "Wil je veranderen naar <strong>{{currentUrl}}</strong>?",
   "Document_Domain": "Document domein",
   "Documentation": "Documentatie",
   "Domain": "Domein",

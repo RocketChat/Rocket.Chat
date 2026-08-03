@@ -1178,7 +1178,7 @@
   "Do_not_display_unread_counter": "이 채널의 카운터를 표시하지 않음",
   "Do_not_provide_this_code_to_anyone": "이 코드를 다른 사람에게 제공하지 마십시오.",
   "Do_you_want_to_accept": "동의 하시겠습니까?",
-  "Do_you_want_to_change_to_s_question": "<strong>%s</strong>으로 변경할까요?",
+  "Do_you_want_to_change_to_s_question": "<strong>{{currentUrl}}</strong>으로 변경할까요?",
   "Document_Domain": "문서 도메인",
   "Domain": "도메인",
   "Domain_added": "도메인 추가됨",

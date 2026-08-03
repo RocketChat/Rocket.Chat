@@ -702,7 +702,7 @@
   "Displays_action_text": "Приказује текст акције",
   "Do_not_display_unread_counter": "Не приказуј било који бројач овог канала",
   "Do_you_want_to_accept": "Да ли желите да прихватите?",
-  "Do_you_want_to_change_to_s_question": "Да ли желите да промените на <strong>%s?</strong>",
+  "Do_you_want_to_change_to_s_question": "Да ли желите да промените на <strong>{{currentUrl}}?</strong>",
   "Document_Domain": "Доцумент Домаин",
   "Domain": "Домен",
   "Domain_added": "домаин аддед",

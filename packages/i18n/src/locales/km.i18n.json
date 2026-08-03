@@ -982,7 +982,7 @@
   "Displays_action_text": "អត្ថបទសកម្មភាពបង្ហាញ",
   "Do_not_display_unread_counter": "កុំបង្ហាញការរាប់នៃឆានែលនេះ",
   "Do_you_want_to_accept": "តើអ្នកចង់ទទួលយកដែរឬទេ?",
-  "Do_you_want_to_change_to_s_question": "<strong>តើអ្នកចង់ផ្លាស់ប្តូរទៅ %s?</strong>",
+  "Do_you_want_to_change_to_s_question": "<strong>តើអ្នកចង់ផ្លាស់ប្តូរទៅ {{currentUrl}}?</strong>",
   "Document_Domain": "ដែនឯកសារ",
   "Domain": "ដែន",
   "Domain_added": "ដែនបន្ថែម",

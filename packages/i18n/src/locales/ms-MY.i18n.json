@@ -798,7 +798,7 @@
   "Displays_action_text": "teks memaparkan tindakan",
   "Do_not_display_unread_counter": "Jangan memaparkan sebarang kaunter saluran ini",
   "Do_you_want_to_accept": "Adakah anda mahu menerima?",
-  "Do_you_want_to_change_to_s_question": "Adakah anda mahu menukar <strong>kepada %s?</strong>",
+  "Do_you_want_to_change_to_s_question": "Adakah anda mahu menukar <strong>kepada {{currentUrl}}?</strong>",
   "Document_Domain": "Domain Dokumen",
   "Domain": "domain",
   "Domain_added": "domain Ditambah",

@@ -386,7 +386,7 @@
   "Displays_action_text": "טקסט פעולה מציגה",
   "Do_not_display_unread_counter": "אל תציג את כמות ההודעות שלא נקראו בערוץ זה",
   "Do_you_want_to_accept": "האם אתה רוצה לאשר?",
-  "Do_you_want_to_change_to_s_question": "האם אתה רוצה לשנות <strong>את %s?</strong>",
+  "Do_you_want_to_change_to_s_question": "האם אתה רוצה לשנות <strong>את {{currentUrl}}?</strong>",
   "Domain": "תחום",
   "Domains": "תחומים",
   "Dont_ask_me_again": "אל תשאל אותי שוב",

@@ -1066,7 +1066,7 @@
   "Do_not_display_unread_counter": "არ მიჩვენო ამ არხის არც ერთი მთვლელი",
   "Do_not_provide_this_code_to_anyone": "არ მიაწოდოთ ეს კოდი არავის",
   "Do_you_want_to_accept": "გსურთ მიიღოთ?",
-  "Do_you_want_to_change_to_s_question": "გსურთ შეცვალოთ <strong>%s</strong>?",
+  "Do_you_want_to_change_to_s_question": "გსურთ შეცვალოთ <strong>{{currentUrl}}</strong>?",
   "Document_Domain": "დოკუმენტის დომენი",
   "Domain": "დომენი",
   "Domain_added": "დომენი დაემატა",

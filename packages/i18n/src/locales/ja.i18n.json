@@ -1318,7 +1318,7 @@
   "Do_not_display_unread_counter": "このチャネルのカウンターを表示しない",
   "Do_not_provide_this_code_to_anyone": "このコードを誰にも提供しないでください。",
   "Do_you_want_to_accept": "同意しますか？",
-  "Do_you_want_to_change_to_s_question": "<strong>%s</strong>に変更しますか？",
+  "Do_you_want_to_change_to_s_question": "<strong>{{currentUrl}}</strong>に変更しますか？",
   "Document_Domain": "ドキュメントドメイン",
   "Domain": "ドメイン",
   "Domain_added": "ドメインが追加されました",

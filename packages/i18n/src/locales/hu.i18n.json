@@ -1437,7 +1437,7 @@
   "Do_not_display_unread_counter": "Ne jelenítse meg a csatorna semmilyen számlálóját",
   "Do_not_provide_this_code_to_anyone": "Ne adja át ezt a kódot senkinek.",
   "Do_you_want_to_accept": "El szeretné fogadni?",
-  "Do_you_want_to_change_to_s_question": "Meg szeretné változtatni <strong>%s</strong> értékre?",
+  "Do_you_want_to_change_to_s_question": "Meg szeretné változtatni <strong>{{currentUrl}}</strong> értékre?",
   "Document_Domain": "Dokumentumtartomány",
   "Documentation": "Dokumentáció",
   "Domain": "Tartomány",

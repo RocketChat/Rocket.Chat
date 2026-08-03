@@ -1684,7 +1684,7 @@
   "Do_not_provide_this_code_to_anyone": "Ikke oppgi denne koden til noen.",
   "Do_nothing": "Gjør ingenting",
   "Do_you_want_to_accept": "Ønsker du å godta?",
-  "Do_you_want_to_change_to_s_question": "Vil du bytte til <strong>%s</strong>?",
+  "Do_you_want_to_change_to_s_question": "Vil du bytte til <strong>{{currentUrl}}</strong>?",
   "Document_Domain": "Dokumentdomenet",
   "Documentation": "Dokumentasjon",
   "Domain": "Domene",

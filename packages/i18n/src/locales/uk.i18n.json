@@ -1051,7 +1051,7 @@
   "Do_not_display_unread_counter": "Не відображати лічильник у цьому каналі",
   "Do_not_provide_this_code_to_anyone": "Не надавати цей код нікому.",
   "Do_you_want_to_accept": "Ви хочете прийняти?",
-  "Do_you_want_to_change_to_s_question": "Ви хочете змінити <strong>%s</strong>?",
+  "Do_you_want_to_change_to_s_question": "Ви хочете змінити <strong>{{currentUrl}}</strong>?",
   "Document_Domain": "Домен документу",
   "Domain": "Домен",
   "Domain_added": "Домен додано",

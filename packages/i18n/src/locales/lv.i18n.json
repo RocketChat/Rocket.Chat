@@ -802,7 +802,7 @@
   "Displays_action_text": "Parāda darbības tekstu",
   "Do_not_display_unread_counter": "Nerādīt nevienu skaitītāju šim kanālam",
   "Do_you_want_to_accept": "Vai jūs vēlaties pieņemt?",
-  "Do_you_want_to_change_to_s_question": "Vai vēlaties mainīt uz <strong>%s</strong>?",
+  "Do_you_want_to_change_to_s_question": "Vai vēlaties mainīt uz <strong>{{currentUrl}}</strong>?",
   "Document_Domain": "Dokumenta domēns",
   "Domain": "Domēns",
   "Domain_added": "domēns pievienots",

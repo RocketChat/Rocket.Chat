@@ -906,7 +906,7 @@
   "Displays_action_text": "Prikazuje tekst akcije",
   "Do_not_display_unread_counter": "Nemoj prikazivati ​​brojač ovog kanala",
   "Do_you_want_to_accept": "Želite li prihvatiti?",
-  "Do_you_want_to_change_to_s_question": "Želite li promijeniti na <strong> %s?</strong>",
+  "Do_you_want_to_change_to_s_question": "Želite li promijeniti na <strong> {{currentUrl}}?</strong>",
   "Document_Domain": "Domena dokumenta",
   "Domain": "Domena",
   "Domain_added": "Dodana domena",

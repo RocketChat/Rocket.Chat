@@ -800,7 +800,7 @@
   "Displays_action_text": "Προβολή κειμένου ενεργειών",
   "Do_not_display_unread_counter": "Να μην εμφανίζεται αρίθμηση σε αυτό το κανάλι",
   "Do_you_want_to_accept": "Θέλεις να δεχθείς;",
-  "Do_you_want_to_change_to_s_question": "Θέλετε να αλλάξετε σε <strong>%s</strong>;",
+  "Do_you_want_to_change_to_s_question": "Θέλετε να αλλάξετε σε <strong>{{currentUrl}}</strong>;",
   "Document_Domain": "Τομέας εγγράφου",
   "Domain": "Τομέας",
   "Domain_added": "Ο Τομέας Προστέθηκε",

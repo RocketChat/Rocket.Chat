@@ -796,7 +796,7 @@
   "Displays_action_text": "Wys aksie teks",
   "Do_not_display_unread_counter": "Moenie enige toonbank van hierdie kanaal vertoon nie",
   "Do_you_want_to_accept": "Wil jy aanvaar?",
-  "Do_you_want_to_change_to_s_question": "Wil jy verander na <strong>%s</strong>?",
+  "Do_you_want_to_change_to_s_question": "Wil jy verander na <strong>{{currentUrl}}</strong>?",
   "Document_Domain": "Dokument Domein",
   "Domain": "domein",
   "Domain_added": "domein bygevoeg",

@@ -796,7 +796,7 @@
   "Displays_action_text": "Показва текст на действието",
   "Do_not_display_unread_counter": "Не показвайте брояч на този канал",
   "Do_you_want_to_accept": "Искате ли да приемете?",
-  "Do_you_want_to_change_to_s_question": "Искате ли да промените на <strong>%s</strong>?",
+  "Do_you_want_to_change_to_s_question": "Искате ли да промените на <strong>{{currentUrl}}</strong>?",
   "Document_Domain": "Домейн на документа",
   "Domain": "Домейн",
   "Domain_added": "домейн Добавена",

@@ -795,7 +795,7 @@
   "Displays_action_text": "காட்சிகள் நடவடிக்கை உரை",
   "Do_not_display_unread_counter": "இந்த சேனலின் எந்தவொரு எதிர்ப்பையும் காட்ட வேண்டாம்",
   "Do_you_want_to_accept": "நீங்கள் ஏற்றுக்கொள்ள விரும்புகிறீர்களா?",
-  "Do_you_want_to_change_to_s_question": "<strong>நீங்கள் %s</strong> க்கு மாற்ற விரும்புகிறீர்களா?",
+  "Do_you_want_to_change_to_s_question": "<strong>நீங்கள் {{currentUrl}}</strong> க்கு மாற்ற விரும்புகிறீர்களா?",
   "Document_Domain": "ஆவண டொமைன்",
   "Domain": "டொமைன்",
   "Domain_added": "டொமைன் சேர்க்கப்பட்டது",

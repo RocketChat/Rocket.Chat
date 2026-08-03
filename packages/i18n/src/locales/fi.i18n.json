@@ -1497,7 +1497,7 @@
   "Do_not_display_unread_counter": "Älä näytä kanavalla laskuria",
   "Do_not_provide_this_code_to_anyone": "Älä anna tätä koodia kenellekään.",
   "Do_you_want_to_accept": "Haluatko hyväksyä?",
-  "Do_you_want_to_change_to_s_question": "Haluatko vaihtaa arvoon <strong>%s</strong>?",
+  "Do_you_want_to_change_to_s_question": "Haluatko vaihtaa arvoon <strong>{{currentUrl}}</strong>?",
   "Document_Domain": "Asiakirjan toimialue",
   "Documentation": "Oppaat",
   "Domain": "Toimialue",

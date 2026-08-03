@@ -29,12 +29,7 @@ const UrlChangeModal = ({ onConfirm, siteUrl, currentUrl, onClose }: UrlChangeMo
 			/>
 			<p
 				dangerouslySetInnerHTML={{
-					__html: DOMPurify.sanitize(
-						t('Do_you_want_to_change_to_s_question', {
-							postProcess: 'sprintf',
-							sprintf: [currentUrl],
-						}),
-					),
+					__html: DOMPurify.sanitize(t('Do_you_want_to_change_to_s_question', { currentUrl })),
 				}}
 			/>
 		</GenericModal>

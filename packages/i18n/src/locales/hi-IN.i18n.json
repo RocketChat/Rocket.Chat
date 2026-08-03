@@ -1563,7 +1563,7 @@
   "Do_not_display_unread_counter": "इस चैनल का कोई भी काउंटर प्रदर्शित न करें",
   "Do_not_provide_this_code_to_anyone": "यह कोड किसी को न दें.",
   "Do_you_want_to_accept": "क्या आप स्वीकार करना चाहते हैं?",
-  "Do_you_want_to_change_to_s_question": "क्या आप <strong>%s</strong> में बदलना चाहते हैं?",
+  "Do_you_want_to_change_to_s_question": "क्या आप <strong>{{currentUrl}}</strong> में बदलना चाहते हैं?",
   "Document_Domain": "दस्तावेज़ डोमेन",
   "Documentation": "प्रलेखन",
   "Domain": "कार्यक्षेत्र",

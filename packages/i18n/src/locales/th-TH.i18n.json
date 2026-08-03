@@ -794,7 +794,7 @@
   "Displays_action_text": "แสดงข้อความการทำงาน",
   "Do_not_display_unread_counter": "อย่าแสดงเคาน์เตอร์ของช่องนี้",
   "Do_you_want_to_accept": "คุณต้องการยอมรับหรือไม่?",
-  "Do_you_want_to_change_to_s_question": "คุณต้องการเปลี่ยนเป็น <strong>%s</strong>ไหม",
+  "Do_you_want_to_change_to_s_question": "คุณต้องการเปลี่ยนเป็น <strong>{{currentUrl}}</strong>ไหม",
   "Document_Domain": "โดเมนเอกสาร",
   "Domain": "โดเมน",
   "Domain_added": "เพิ่มโดเมนแล้ว",

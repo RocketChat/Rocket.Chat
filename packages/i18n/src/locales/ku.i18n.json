@@ -794,7 +794,7 @@
   "Displays_action_text": "text Displays action",
   "Do_not_display_unread_counter": "Ji vê kanaleyê re nakokî nakin",
   "Do_you_want_to_accept": "Ma hûn dixwazin qebûl bikin?",
-  "Do_you_want_to_change_to_s_question": "Ma tu dixwazî ​​ji bo guhertina ji <strong>bo %s?</strong>",
+  "Do_you_want_to_change_to_s_question": "Ma tu dixwazî ​​ji bo guhertina ji <strong>bo {{currentUrl}}?</strong>",
   "Document_Domain": "Domain Dokument",
   "Domain": "Domain",
   "Domain_added": "Domain Added",

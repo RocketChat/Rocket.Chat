@@ -1455,7 +1455,7 @@
   "Do_not_provide_this_code_to_anyone": "Nie udostępniaj nikomu tego kodu.",
   "Do_nothing": "Nic nie rób",
   "Do_you_want_to_accept": "Czy chcesz zaakceptować?",
-  "Do_you_want_to_change_to_s_question": "Czy chcesz zmienić na <strong>%s</strong>?",
+  "Do_you_want_to_change_to_s_question": "Czy chcesz zmienić na <strong>{{currentUrl}}</strong>?",
   "Document_Domain": "Domena dokumentu",
   "Documentation": "Dokumentacja",
   "Domain": "Domena",

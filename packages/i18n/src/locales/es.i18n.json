@@ -1358,7 +1358,7 @@
   "Do_not_display_unread_counter": "No mostrar ningún contador de este canal",
   "Do_not_provide_this_code_to_anyone": "No compartas este código con nadie.",
   "Do_you_want_to_accept": "¿Quieres aceptar?",
-  "Do_you_want_to_change_to_s_question": "¿Quieres cambiar a <strong>%s</strong>?",
+  "Do_you_want_to_change_to_s_question": "¿Quieres cambiar a <strong>{{currentUrl}}</strong>?",
   "Document_Domain": "Dominio del documento",
   "Documentation": "Documentación",
   "Domain": "Dominio",
