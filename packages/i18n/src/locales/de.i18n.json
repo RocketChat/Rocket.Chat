@@ -3225,7 +3225,7 @@
   "Prune_Messages": "Nachrichten bereinigen",
   "Prune_Modal": "Möchten Sie diese Nachrichten wirklich bereinigen? Bereinigte Nachrichten können nicht wiederhergestellt werden.",
   "Prune_Warning_after": "Dadurch werden alle %s in %s nach %s gelöscht.",
-  "Prune_Warning_all": "Dadurch werden alle %s in %s gelöscht!",
+  "Prune_Warning_all": "Dadurch werden alle {{items}} in {{roomName}} gelöscht!",
   "Prune_Warning_before": "Dadurch werden alle %s in %s vor %s gelöscht.",
   "Prune_Warning_between": "Dadurch werden alle %s in %s zwischen %s und %s gelöscht.",
   "Prune_finished": "Löschen beendet",

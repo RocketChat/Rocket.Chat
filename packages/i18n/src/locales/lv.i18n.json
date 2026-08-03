@@ -1698,7 +1698,7 @@
   "Prune_Messages": "Apgriezt ziņojumus",
   "Prune_Modal": "Vai tiešām vēlaties dzēst šos ziņojumus? Apgrieztos ziņojumus nevar atgūt.",
   "Prune_Warning_after": "Tas izdzēsīs visus %s no %s pēc %s.",
-  "Prune_Warning_all": "Tas izdzēsīs visus %s no %s!",
+  "Prune_Warning_all": "Tas izdzēsīs visus {{items}} no {{roomName}}!",
   "Prune_Warning_before": "Tas izdzēsīs visus %s no %s pirms %s.",
   "Prune_Warning_between": "Tas izdzēsīs visus %s no %s starp %s un %s.",
   "Prune_finished": "Apgriešana ir pabeigta",

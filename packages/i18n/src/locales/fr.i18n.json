@@ -2907,7 +2907,7 @@
   "Prune_Messages": "Élaguer les messages",
   "Prune_Modal": "Voulez-vous vraiment élaguer ces messages ? Les messages élagués ne peuvent pas être récupérés.",
   "Prune_Warning_after": "Cela supprimera tous les %s de %s après %s.",
-  "Prune_Warning_all": "Cela supprimera tous les %s de %s !",
+  "Prune_Warning_all": "Cela supprimera tous les {{items}} de {{roomName}} !",
   "Prune_Warning_before": "Cela supprimera tous les %s de %s avant %s.",
   "Prune_Warning_between": "Cela supprimera tous les %s de %s entre %s et %s.",
   "Prune_finished": "Élagage terminé",

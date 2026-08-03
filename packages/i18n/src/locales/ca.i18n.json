@@ -2867,7 +2867,7 @@
   "Prune_Messages": "Esborrar Missatges",
   "Prune_Modal": "Estàs segur que vols eliminar aquests missatges? Els missatges eliminats no es poden recuperar.",
   "Prune_Warning_after": "Això eliminarà tots els %s a %s després de %s.",
-  "Prune_Warning_all": "Això eliminarà tots %s a %s.",
+  "Prune_Warning_all": "Això eliminarà tots {{items}} a {{roomName}}.",
   "Prune_Warning_before": "Això eliminarà tots %s a %s abans de %s.",
   "Prune_Warning_between": "Això eliminarà tots %s a %s entre %s i %s.",
   "Prune_finished": "Esborrat finalitzat",

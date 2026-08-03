@@ -1682,7 +1682,7 @@
   "Prune_Messages": "Prune Mesazhet",
   "Prune_Modal": "Je i sigurt që dëshiron t'i ndash këto mesazhe? Mesazhet e shkurta nuk mund të mbulohen.",
   "Prune_Warning_after": "Kjo do të fshijë të gjitha %s në %s pas %s.",
-  "Prune_Warning_all": "Kjo do të fshijë të gjitha %s në %s!",
+  "Prune_Warning_all": "Kjo do të fshijë të gjitha {{items}} në {{roomName}}!",
   "Prune_Warning_before": "Kjo do të fshijë të gjitha %s në %s para %s.",
   "Prune_Warning_between": "Kjo do të fshijë të gjitha %s në %s midis %s dhe %s.",
   "Prune_finished": "Prune përfundoi",

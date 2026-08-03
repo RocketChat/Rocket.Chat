@@ -2495,7 +2495,7 @@
   "Prune_Messages": "메시지 정리",
   "Prune_Modal": "메시지를 정리하시겠습니까? 정리된 메시지는 복구할 수 없습니다.",
   "Prune_Warning_after": "`%s`을(를) `%s` 대화방에서 삭제합니다. (%s 이후)",
-  "Prune_Warning_all": "모든 `%s`을(를) `%s` 대화방에서 삭제합니다.",
+  "Prune_Warning_all": "모든 `{{items}}`을(를) `{{roomName}}` 대화방에서 삭제합니다.",
   "Prune_Warning_before": "`%s`을(를) `%s` 대화방에서 삭제합니다. (%s 이전)",
   "Prune_Warning_between": "`%s`을(를) `%s` 대화방에서 삭제합니다. (%s 와 %s 사이)",
   "Prune_finished": "정리를 완료했습니다.",

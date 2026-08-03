@@ -1685,7 +1685,7 @@
   "Prune_Messages": "Pesan Prun",
   "Prune_Modal": "Adakah anda pasti mahu memangkas mesej ini? Mesej dipancung tidak dapat dipulihkan.",
   "Prune_Warning_after": "Ini akan memadam semua %s dalam %s selepas %s.",
-  "Prune_Warning_all": "Ini akan memadamkan semua %s dalam %s!",
+  "Prune_Warning_all": "Ini akan memadamkan semua {{items}} dalam {{roomName}}!",
   "Prune_Warning_before": "Ini akan memadam semua %s dalam %s sebelum %s.",
   "Prune_Warning_between": "Ini akan memadamkan semua %s dalam %s antara %s dan %s.",
   "Prune_finished": "Prun selesai",

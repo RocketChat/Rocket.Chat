@@ -1704,7 +1704,7 @@
   "Prune_Messages": "выдаляць паведамленні",
   "Prune_Modal": "Вы ўпэўненыя, што хочаце абрэзаць гэтыя паведамленні? Абрэзка паведамленні не могуць быць адноўлены.",
   "Prune_Warning_after": "Гэта выдаліць усе %s у %s пасля %s.",
-  "Prune_Warning_all": "Гэта выдаліць усе %s у %s!",
+  "Prune_Warning_all": "Гэта выдаліць усе {{items}} у {{roomName}}!",
   "Prune_Warning_before": "Гэта выдаліць усе %s у %s да %s.",
   "Prune_Warning_between": "Гэта выдаліць усе %s у %s паміж% з і %s.",
   "Prune_finished": "чарнасліў скончаны",

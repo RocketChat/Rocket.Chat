@@ -1706,7 +1706,7 @@
   "Prune_Messages": "修剪消息",
   "Prune_Modal": "你确定要修剪这些消息吗？已修剪的邮件无法恢复。",
   "Prune_Warning_after": "这将删除％s后％s中的所有％s。",
-  "Prune_Warning_all": "这将删除％s中的所有％s！",
+  "Prune_Warning_all": "这将删除{{items}}中的所有{{roomName}}！",
   "Prune_Warning_before": "这将删除％s之前％s中的所有％s。",
   "Prune_Warning_between": "这将删除％s和％s之间％s中的所有％s。",
   "Prune_finished": "修剪完了",

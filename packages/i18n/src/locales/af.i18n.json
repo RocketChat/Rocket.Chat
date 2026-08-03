@@ -1684,7 +1684,7 @@
   "Prune_Messages": "Prune Messages",
   "Prune_Modal": "Is jy seker jy wil hierdie boodskappe snoei? Gesnoeide boodskappe kan nie herwin word nie.",
   "Prune_Warning_after": "Dit sal alle %s in %s verwyder na %s.",
-  "Prune_Warning_all": "Dit sal alle %s in %s uitvee!",
+  "Prune_Warning_all": "Dit sal alle {{items}} in {{roomName}} uitvee!",
   "Prune_Warning_before": "Dit sal alle %s in %s verwyder voor %s.",
   "Prune_Warning_between": "Dit sal alle %s in %s tussen %s en %s uitvee.",
   "Prune_finished": "Prune is klaar",

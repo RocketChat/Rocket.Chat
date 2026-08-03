@@ -159,14 +159,7 @@ const PruneMessagesWithData = () => {
 			);
 		}
 
-		return (
-			t('Prune_Warning_all', {
-				postProcess: 'sprintf',
-				sprintf: [filesOrMessages, name],
-			}) +
-			exceptPinned +
-			ifFrom
-		);
+		return t('Prune_Warning_all', { items: filesOrMessages, roomName: name }) + exceptPinned + ifFrom;
 	}, [attached, fromDate, newerDate, olderDate, pinned, room, t, toDate, users]);
 
 	const validateText = useMemo(() => {

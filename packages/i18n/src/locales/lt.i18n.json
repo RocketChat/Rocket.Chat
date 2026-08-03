@@ -1732,7 +1732,7 @@
   "Prune_Messages": "Prune Žinutės",
   "Prune_Modal": "Ar tikrai norite ištrinti šiuos pranešimus? Pruned pranešimai negali būti atkuriami.",
   "Prune_Warning_after": "Tai ištrins visus %s %s po %s.",
-  "Prune_Warning_all": "Tai pašalins visus %s %s!",
+  "Prune_Warning_all": "Tai pašalins visus {{items}} {{roomName}}!",
   "Prune_Warning_before": "Tai pašalins visus %s %s prieš %s.",
   "Prune_Warning_between": "Tai ištrins visus %s %s tarp %s ir %s.",
   "Prune_finished": "Prune baigtas",

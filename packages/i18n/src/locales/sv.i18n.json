@@ -4302,7 +4302,7 @@
   "Prune_Messages": "Gallra meddelanden",
   "Prune_Modal": "Är du säker på att du vill gallra dessa meddelanden? Skurna meddelanden kan inte återställas.",
   "Prune_Warning_after": "Detta kommer att radera alla %s i %s efter %s.",
-  "Prune_Warning_all": "Detta kommer att radera alla %s i %s!",
+  "Prune_Warning_all": "Detta kommer att radera alla {{items}} i {{roomName}}!",
   "Prune_Warning_before": "Detta tar bort alla %s i %s före %s.",
   "Prune_Warning_between": "Detta kommer att radera alla %s i %s mellan %s och %s.",
   "Prune_finished": "Gallring färdig",

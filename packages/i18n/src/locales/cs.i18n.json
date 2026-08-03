@@ -2435,7 +2435,7 @@
   "Prune_Messages": "Pročistit zprávy",
   "Prune_Modal": "Opravdu chcete tyto zprávy pročistit? Odstraněné zprávy nelze obnovit.",
   "Prune_Warning_after": "Tímto odstraníte všechny %s v %s po %s.",
-  "Prune_Warning_all": "Tímto odstraníte všechny %s v %s!",
+  "Prune_Warning_all": "Tímto odstraníte všechny {{items}} v {{roomName}}!",
   "Prune_Warning_before": "Tímto odstraníte všechny %s v %s před %s.",
   "Prune_Warning_between": "Tímto odstraníte všechny %s v %s mezi %s a %s.",
   "Prune_finished": "Pročištění dokončené",
