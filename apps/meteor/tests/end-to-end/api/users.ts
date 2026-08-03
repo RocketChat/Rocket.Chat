@@ -5502,6 +5502,7 @@ describe('[Users]', () => {
 
 			const sessionsBefore = await request.get(api('sessions/list')).set(credentials).expect(200);
 			expect(sessionsBefore.body.sessions).to.have.lengthOf(1);
+			const sessionIdBefore = sessionsBefore.body.sessions[0]._id;
 
 			await request.post(api('logout')).set(credentials).expect(200);
 
@@ -5512,6 +5513,7 @@ describe('[Users]', () => {
 
 			const sessionsAfter = await request.get(api('sessions/list')).set(newCredentials).expect(200);
 			expect(sessionsAfter.body.sessions).to.have.lengthOf(1);
+			expect(sessionsAfter.body.sessions[0]._id).to.not.equal(sessionIdBefore);
 		});
 
 		it('should return 401 when not authenticated', async () => {
