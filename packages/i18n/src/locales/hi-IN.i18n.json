@@ -2962,7 +2962,7 @@
   "Mic_on": "माइक ऑन",
   "Microphone": "माइक्रोफ़ोन",
   "Microphone_access_not_allowed": "माइक्रोफ़ोन एक्सेस की अनुमति नहीं थी, कृपया अपनी ब्राउज़र सेटिंग जांचें।",
-  "Min_length_is": "न्यूनतम लंबाई %s है",
+  "Min_length_is": "न्यूनतम लंबाई {{limit}} है",
   "Minimum": "न्यूनतम",
   "Minimum_balance": "न्यूनतम शेष",
   "Missing_configuration": "अनुपलब्ध कॉन्फ़िगरेशन",

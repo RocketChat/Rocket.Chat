@@ -2479,7 +2479,7 @@
   "Meta_robots": "Robots",
   "Method": "Mètode",
   "Mic_off": "Micròfon apagat",
-  "Min_length_is": "La llargada mínima és %s",
+  "Min_length_is": "La llargada mínima és {{limit}}",
   "Minimum": "Mínim",
   "Minimum_balance": "Balanç mínim",
   "Mobex_sms_gateway_address": "Adreça Mobex SMS Gateway",

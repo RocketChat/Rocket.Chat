@@ -1464,7 +1464,7 @@
   "Meta_language": "ภาษา",
   "Meta_msvalidate01": "MSValidate.01",
   "Meta_robots": "หุ่นยนต์",
-  "Min_length_is": "ความยาวต่ำสุดคือ%s",
+  "Min_length_is": "ความยาวต่ำสุดคือ{{limit}}",
   "Minimum_balance": "ยอดเงินขั้นต่ำ",
   "Mobex_sms_gateway_from_number": "จาก",
   "Mobex_sms_gateway_password": "รหัสผ่าน",

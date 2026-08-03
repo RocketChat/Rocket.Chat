@@ -2109,7 +2109,7 @@
   "Meta_msvalidate01": "MSValidate.01",
   "Meta_robots": "Roboti",
   "Method": "Metoda",
-  "Min_length_is": "Minimální délka je %s",
+  "Min_length_is": "Minimální délka je {{limit}}",
   "Minimum": "Minimum",
   "Minimum_balance": "Minimální stav účtu",
   "Mobex_sms_gateway_address": "Adresa Mobex SMS brány",

@@ -1682,7 +1682,7 @@
   "Meta_language": "Sprache",
   "Meta_msvalidate01": "MSValidate.01",
   "Meta_robots": "Roboter",
-  "Min_length_is": "Die minimale Länge beträgt %s",
+  "Min_length_is": "Die minimale Länge beträgt {{limit}}",
   "Minimum_balance": "minimaler Ausgleich",
   "Mobile": "Mobil",
   "Mobile_Push_Notifications_Default_Alert": "Push-Benachrichtigungen bei",

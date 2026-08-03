@@ -1560,7 +1560,7 @@
   "Meta_language": "Ngôn ngữ",
   "Meta_msvalidate01": "MSValidate.01",
   "Meta_robots": "Robot",
-  "Min_length_is": "Chiều dài tối thiểu là%s",
+  "Min_length_is": "Chiều dài tối thiểu là{{limit}}",
   "Minimum_balance": "Số dư tối thiểu",
   "Mobex_sms_gateway_from_number": "Từ",
   "Mobex_sms_gateway_password": "Mật khẩu",

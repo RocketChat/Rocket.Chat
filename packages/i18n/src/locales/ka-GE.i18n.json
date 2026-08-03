@@ -1996,7 +1996,7 @@
   "Meta_language": "ენა",
   "Meta_msvalidate01": "MSValidate.01",
   "Meta_robots": "რობოტები",
-  "Min_length_is": "მინიმალური სიგრძე არის %s",
+  "Min_length_is": "მინიმალური სიგრძე არის {{limit}}",
   "Minimum": "მინიმუმი",
   "Minimum_balance": "მინიმალური ბალანსი",
   "Mobex_sms_gateway_address": "Mobex SMS Gateway მისამართი",

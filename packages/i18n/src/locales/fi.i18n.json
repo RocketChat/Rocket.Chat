@@ -2838,7 +2838,7 @@
   "Mic_on": "Mikrofoni päällä",
   "Microphone": "Mikrofoni",
   "Microphone_access_not_allowed": "Mikrofonin käyttöä ei sallittu, tarkista selaimen asetukset.",
-  "Min_length_is": "Minimi pituus on %s",
+  "Min_length_is": "Minimi pituus on {{limit}}",
   "Minimum": "Vähintään",
   "Minimum_balance": "Vähimmäistasapaino",
   "Missing_configuration": "Puuttuva määritys",

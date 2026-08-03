@@ -1735,7 +1735,7 @@
   "Meta_language": "ភាសា",
   "Meta_msvalidate01": "កូដ MSValidate.01",
   "Meta_robots": "មនុស្ស​យន្ត",
-  "Min_length_is": "ប្រវែងអប្បបរមាគឺ%s",
+  "Min_length_is": "ប្រវែងអប្បបរមាគឺ{{limit}}",
   "Minimum_balance": "សមតុល្យអប្បបរមា",
   "Mobex_sms_gateway_from_number": "ចាប់​ពី",
   "Mobex_sms_gateway_password": "ពាក្យសម្ងាត់",

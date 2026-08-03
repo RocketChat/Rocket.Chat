@@ -1755,7 +1755,7 @@
   "Meta_language": "Dil",
   "Meta_msvalidate01": "MSValidate.01",
   "Meta_robots": "Robotlar",
-  "Min_length_is": "Minimum uzunluk%s",
+  "Min_length_is": "Minimum uzunluk{{limit}}",
   "Minimum": "Minimum",
   "Minimum_balance": "Minimum bakiye",
   "Mobex_sms_gateway_from_number": "İtibaren",

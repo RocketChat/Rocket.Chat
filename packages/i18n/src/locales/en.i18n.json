@@ -3746,7 +3746,7 @@
   "Mic_on": "Mic On",
   "Microphone": "Microphone",
   "Microphone_access_not_allowed": "Microphone access was not allowed, please check your browser settings.",
-  "Min_length_is": "Min length is %s",
+  "Min_length_is": "Min length is {{limit}}",
   "Minimum": "Minimum",
   "Minimum_balance": "Minimum balance",
   "Missing_configuration": "Missing configuration",

@@ -1467,7 +1467,7 @@
   "Meta_language": "Език",
   "Meta_msvalidate01": "MSValidate.01",
   "Meta_robots": "роботи",
-  "Min_length_is": "Минималната дължина е %s",
+  "Min_length_is": "Минималната дължина е {{limit}}",
   "Minimum_balance": "Минимален баланс",
   "Mobex_sms_gateway_from_number": "от",
   "Mobex_sms_gateway_password": "Парола",

@@ -1490,7 +1490,7 @@
   "Meta_language": "мова",
   "Meta_msvalidate01": "MSValidate.01",
   "Meta_robots": "робаты",
-  "Min_length_is": "Мінімальная даўжыня складае %s",
+  "Min_length_is": "Мінімальная даўжыня складае {{limit}}",
   "Minimum_balance": "мінімальны астатак",
   "Mobex_sms_gateway_from_number": "ад",
   "Mobex_sms_gateway_password": "пароль",

@@ -2771,7 +2771,7 @@
   "Mic_on": "Mikrofon an",
   "Microphone": "Mikrofon",
   "Microphone_access_not_allowed": "Der Mikrofonzugriff wurde nicht erlaubt. Bitte überprüfen Sie Ihre Browsereinstellungen.",
-  "Min_length_is": "Die minimale Länge beträgt %s",
+  "Min_length_is": "Die minimale Länge beträgt {{limit}}",
   "Minimum": "Minimum",
   "Minimum_balance": "minimaler Ausgleich",
   "Missing_configuration": "Fehlende Konfiguration",

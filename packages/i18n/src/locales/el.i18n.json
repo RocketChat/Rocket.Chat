@@ -1475,7 +1475,7 @@
   "Meta_language": "Γλώσσα",
   "Meta_msvalidate01": "MSValidate.01",
   "Meta_robots": "Ρομπότ",
-  "Min_length_is": "Το ελάχιστο μήκος είναι%s",
+  "Min_length_is": "Το ελάχιστο μήκος είναι{{limit}}",
   "Minimum_balance": "Ελάχιστη ισορροπία",
   "Mobex_sms_gateway_from_number": "Από",
   "Mobex_sms_gateway_password": "Κωδικός",

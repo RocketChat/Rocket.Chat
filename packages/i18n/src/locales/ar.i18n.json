@@ -2506,7 +2506,7 @@
   "Meta_robots": "الروبوتات",
   "Method": "الطريقة",
   "Mic_off": "إيقاف تشغيل الميكروفون",
-  "Min_length_is": "الحد الأدنى للطول هو  %s",
+  "Min_length_is": "الحد الأدنى للطول هو  {{limit}}",
   "Minimum": "الحد الأدنى",
   "Minimum_balance": "الحد الأدنى للرصيد",
   "Mobex_sms_gateway_address": "عنوان بوابة Mobex SMS",

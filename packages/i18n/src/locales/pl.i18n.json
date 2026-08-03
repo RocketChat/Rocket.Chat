@@ -2714,7 +2714,7 @@
   "Mic_off": "Mikrofon wyłączony",
   "Mic_on": "Mikrofon włączony",
   "Microphone": "Mikrofon",
-  "Min_length_is": "Minimalna długość to %s",
+  "Min_length_is": "Minimalna długość to {{limit}}",
   "Minimum": "Minimum",
   "Minimum_balance": "Minimalne saldo",
   "Mobex_sms_gateway_address": "Adres Mobex SMS Gateway",

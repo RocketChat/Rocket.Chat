@@ -781,7 +781,7 @@
   "Meta_language": "שפה",
   "Meta_msvalidate01": "MSValidate.01",
   "Meta_robots": "רובוטים",
-  "Min_length_is": "אורך מינימלי הוא %s",
+  "Min_length_is": "אורך מינימלי הוא {{limit}}",
   "Mobex_sms_gateway_from_number": "מ-",
   "Mobex_sms_gateway_password": "ססמה",
   "Mobex_sms_gateway_username": "שם משתמש",

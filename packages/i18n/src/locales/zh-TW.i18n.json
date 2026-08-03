@@ -2445,7 +2445,7 @@
   "Meta_robots": "機器人",
   "Method": "方法",
   "Mic_off": "麥克風關閉",
-  "Min_length_is": "最小長度是 %s",
+  "Min_length_is": "最小長度是 {{limit}}",
   "Minimum": "最小",
   "Minimum_balance": "最小餘額",
   "Mobex_sms_gateway_address": "Mobex 簡訊閘道位址",

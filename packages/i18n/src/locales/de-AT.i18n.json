@@ -1471,7 +1471,7 @@
   "Meta_language": "Sprache",
   "Meta_msvalidate01": "MSValidate.01",
   "Meta_robots": "Roboter",
-  "Min_length_is": "Min. Länge ist%s",
+  "Min_length_is": "Min. Länge ist{{limit}}",
   "Minimum_balance": "Mindestsaldo",
   "Mobex_sms_gateway_from_number": "Von",
   "Mobex_sms_gateway_password": "Passwort",

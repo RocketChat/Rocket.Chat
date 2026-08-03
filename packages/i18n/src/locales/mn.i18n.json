@@ -1468,7 +1468,7 @@
   "Meta_language": "Хэл",
   "Meta_msvalidate01": "MSValidate.01",
   "Meta_robots": "Робот",
-  "Min_length_is": "Min урт бол%s",
+  "Min_length_is": "Min урт бол{{limit}}",
   "Minimum_balance": "Хамгийн бага баланс",
   "Mobex_sms_gateway_from_number": "Эхлээд",
   "Mobex_sms_gateway_password": "Нууц үг",

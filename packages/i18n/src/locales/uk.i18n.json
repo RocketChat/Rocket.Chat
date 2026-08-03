@@ -1904,7 +1904,7 @@
   "Meta_language": "Мова",
   "Meta_msvalidate01": "MSValidate.01",
   "Meta_robots": "роботи",
-  "Min_length_is": "Мінімальна довжина %s",
+  "Min_length_is": "Мінімальна довжина {{limit}}",
   "Minimum_balance": "Мінімальний залишок",
   "Mobex_sms_gateway_address": "Адреса шлюзу Mobex SMS",
   "Mobex_sms_gateway_from_number": "Від",

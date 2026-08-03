@@ -2505,7 +2505,7 @@
   "Meta_robots": "Robots",
   "Method": "Methode",
   "Mic_off": "Microfoon uit",
-  "Min_length_is": "Min lengte is %s",
+  "Min_length_is": "Min lengte is {{limit}}",
   "Minimum": "Minimum",
   "Minimum_balance": "Minimum balans",
   "Mobex_sms_gateway_address": "Mobex SMS Gateway-adres",

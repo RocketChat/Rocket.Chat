@@ -1470,7 +1470,7 @@
   "Meta_language": "Limba",
   "Meta_msvalidate01": "MSValidate.01",
   "Meta_robots": "Roboți",
-  "Min_length_is": "Lungimea minimă este%s",
+  "Min_length_is": "Lungimea minimă este{{limit}}",
   "Minimum_balance": "Soldul minim",
   "Mobex_sms_gateway_from_number": "Din",
   "Mobex_sms_gateway_password": "Parolă",

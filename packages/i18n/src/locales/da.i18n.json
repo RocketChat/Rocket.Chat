@@ -2189,7 +2189,7 @@
   "Meta_msvalidate01": "MSValidate.01",
   "Meta_robots": "Robotter",
   "Method": "Metode",
-  "Min_length_is": "Min længde er%s",
+  "Min_length_is": "Min længde er{{limit}}",
   "Minimum": "Minimum",
   "Minimum_balance": "Mindste saldo",
   "Mobex_sms_gateway_address": "Mobex SMS Gateway-adresse",

@@ -1467,7 +1467,7 @@
   "Meta_language": "Iaith",
   "Meta_msvalidate01": "MSValidate.01",
   "Meta_robots": "Robotiaid",
-  "Min_length_is": "Hyd min yw %s",
+  "Min_length_is": "Hyd min yw {{limit}}",
   "Minimum_balance": "Isafswm cydbwysedd",
   "Mobex_sms_gateway_from_number": "O",
   "Mobex_sms_gateway_password": "Cyfrinair",

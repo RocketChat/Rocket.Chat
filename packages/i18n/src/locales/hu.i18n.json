@@ -2704,7 +2704,7 @@
   "Mic_off": "Mikrofon ki",
   "Mic_on": "Mikrofon be",
   "Microphone": "Mikrofon",
-  "Min_length_is": "A legkisebb hossz %s",
+  "Min_length_is": "A legkisebb hossz {{limit}}",
   "Minimum": "Legkisebb",
   "Minimum_balance": "Legkisebb egyenleg",
   "Missing_configuration": "Hiányzó beállítás",

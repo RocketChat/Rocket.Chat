@@ -3518,7 +3518,7 @@
   "Mic_on": "开启麦克风",
   "Microphone": "麦克风",
   "Microphone_access_not_allowed": "麦克风访问被拒绝，请检查浏览器设置。",
-  "Min_length_is": "最小长度是 ％s",
+  "Min_length_is": "最小长度是 {{limit}}",
   "Minimum": "最小值",
   "Minimum_balance": "最小余额",
   "Missing_configuration": "缺少配置",

@@ -1468,7 +1468,7 @@
   "Meta_language": "Bahasa",
   "Meta_msvalidate01": "MSValidate.01",
   "Meta_robots": "Robots",
-  "Min_length_is": "Panjang min adalah%s",
+  "Min_length_is": "Panjang min adalah{{limit}}",
   "Minimum_balance": "Saldo minimum",
   "Mobex_sms_gateway_from_number": "Dari",
   "Mobex_sms_gateway_password": "Kata sandi",

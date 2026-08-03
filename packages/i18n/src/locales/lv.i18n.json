@@ -1484,7 +1484,7 @@
   "Meta_language": "Valoda",
   "Meta_msvalidate01": "MSValidate.01",
   "Meta_robots": "Roboti",
-  "Min_length_is": "Minimālais garums ir %s",
+  "Min_length_is": "Minimālais garums ir {{limit}}",
   "Minimum_balance": "Minimālais atlikums",
   "Mobex_sms_gateway_from_number": "No",
   "Mobex_sms_gateway_password": "Parole",

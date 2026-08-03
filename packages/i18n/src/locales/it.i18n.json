@@ -1860,7 +1860,7 @@
   "Meta_language": "Lingua",
   "Meta_msvalidate01": "MSValidate.01",
   "Meta_robots": "Robots",
-  "Min_length_is": "La lunghezza minima è %s",
+  "Min_length_is": "La lunghezza minima è {{limit}}",
   "Minimum_balance": "Saldo minimo",
   "Mobex_sms_gateway_from_number": "Da",
   "Mobex_sms_gateway_password": "Password",

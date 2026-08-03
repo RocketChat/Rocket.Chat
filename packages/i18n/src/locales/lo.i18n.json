@@ -1498,7 +1498,7 @@
   "Meta_language": "ພາສາ",
   "Meta_msvalidate01": "MSValidate.01",
   "Meta_robots": "ຫຸ່ນຍົນ",
-  "Min_length_is": "ຄວາມຍາວນ້ອຍແມ່ນ%s",
+  "Min_length_is": "ຄວາມຍາວນ້ອຍແມ່ນ{{limit}}",
   "Minimum_balance": "ຍອດເງິນຕ່ໍາສຸດ",
   "Mobex_sms_gateway_from_number": "ຈາກ",
   "Mobex_sms_gateway_password": "ລະຫັດຜ່ານ",

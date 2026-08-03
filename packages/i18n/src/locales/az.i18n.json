@@ -1470,7 +1470,7 @@
   "Meta_language": "Dil",
   "Meta_msvalidate01": "MSValidate.01",
   "Meta_robots": "Robotlar",
-  "Min_length_is": "Minimum uzunluğu:%s",
+  "Min_length_is": "Minimum uzunluğu:{{limit}}",
   "Minimum_balance": "Minimum tarazlıq",
   "Mobex_sms_gateway_from_number": "From",
   "Mobex_sms_gateway_password": "Şifrə",

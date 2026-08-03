@@ -2501,7 +2501,7 @@
   "Meta_robots": "Robots",
   "Method": "Méthode",
   "Mic_off": "Micro désactivé",
-  "Min_length_is": "La longueur minimale est %s",
+  "Min_length_is": "La longueur minimale est {{limit}}",
   "Minimum": "Minimum",
   "Minimum_balance": "Solde minimal",
   "Mobex_sms_gateway_address": "Adresse de la passerelle SMS Mobex",

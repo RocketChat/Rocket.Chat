@@ -2614,7 +2614,7 @@
   "Meta_robots": "Боты",
   "Method": "Метод",
   "Mic_off": "Микрофон выключен",
-  "Min_length_is": "Минимальная длина составляет %s",
+  "Min_length_is": "Минимальная длина составляет {{limit}}",
   "Minimum": "Минимум",
   "Minimum_balance": "Минимальный баланс",
   "Mobex_sms_gateway_address": "Mobex SMS Gateway Адрес",

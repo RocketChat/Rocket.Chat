@@ -2481,7 +2481,7 @@
   "Meta_robots": "ロボット",
   "Method": "メソッド",
   "Mic_off": "マイクオフ",
-  "Min_length_is": "最小長さは%sです",
+  "Min_length_is": "最小長さは{{limit}}です",
   "Minimum": "最小",
   "Minimum_balance": "最小残高",
   "Mobex_sms_gateway_address": "Mobex SMSゲートウェイアドレス",

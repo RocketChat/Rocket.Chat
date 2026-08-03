@@ -3521,7 +3521,7 @@
   "Mic_on": "Mikrofon på",
   "Microphone": "Mikrofon",
   "Microphone_access_not_allowed": "Mikrofontilgang var ikke tillatt, sjekk nettleserinnstillingene.",
-  "Min_length_is": "Minste lengde er %s",
+  "Min_length_is": "Minste lengde er {{limit}}",
   "Minimum": "Minimum",
   "Minimum_balance": "Minimum balanse",
   "Missing_configuration": "Manglende konfigurasjon",

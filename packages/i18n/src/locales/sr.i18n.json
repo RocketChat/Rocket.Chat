@@ -1317,7 +1317,7 @@
   "Meta_language": "језик",
   "Meta_msvalidate01": "МСВалидате.01",
   "Meta_robots": "Роботи",
-  "Min_length_is": "Минимална дужина је %s",
+  "Min_length_is": "Минимална дужина је {{limit}}",
   "Minimum_balance": "Минимални баланс",
   "Mobex_sms_gateway_from_number": "Од",
   "Mobex_sms_gateway_password": "Лозинка",

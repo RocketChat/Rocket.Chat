@@ -1717,7 +1717,7 @@
   "Meta_language": "زبان",
   "Meta_msvalidate01": "MSValidate.01",
   "Meta_robots": "روبات",
-  "Min_length_is": "طول حداقل%s است",
+  "Min_length_is": "طول حداقل{{limit}} است",
   "Minimum_balance": "حداقل تعادل",
   "Mobex_sms_gateway_from_number": "از جانب",
   "Mobex_sms_gateway_password": "رمز عبور",

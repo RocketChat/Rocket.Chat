@@ -3614,7 +3614,7 @@
   "Mic_on": "Mikrofon på",
   "Microphone": "Mikrofon",
   "Microphone_access_not_allowed": "Tillgång till mikrofonen är inte tillåten, kontrollera inställningarna i din webbläsare.",
-  "Min_length_is": "Min längd är %s",
+  "Min_length_is": "Min längd är {{limit}}",
   "Minimum": "Minimum",
   "Minimum_balance": "Minsta balans",
   "Missing_configuration": "Konfiguration saknas",

@@ -1475,7 +1475,7 @@
   "Meta_language": "Jazyk",
   "Meta_msvalidate01": "MSValidate.01",
   "Meta_robots": "roboti",
-  "Min_length_is": "Minimálna dĺžka je%s",
+  "Min_length_is": "Minimálna dĺžka je{{limit}}",
   "Minimum_balance": "Minimálna vyváženosť",
   "Mobex_sms_gateway_from_number": "Od",
   "Mobex_sms_gateway_password": "Heslo",

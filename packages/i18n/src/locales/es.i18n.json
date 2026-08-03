@@ -2542,7 +2542,7 @@
   "Meta_robots": "Robots",
   "Method": "Método",
   "Mic_off": "Micrófono desconectado",
-  "Min_length_is": "La longitud mínima es %s",
+  "Min_length_is": "La longitud mínima es {{limit}}",
   "Minimum": "Mínimo",
   "Minimum_balance": "Saldo mínimo",
   "Mobex_sms_gateway_address": "Dirección de puerta de enlace de SMS de Mobex",

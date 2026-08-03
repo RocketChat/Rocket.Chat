@@ -1468,7 +1468,7 @@
   "Meta_language": "Lingvo",
   "Meta_msvalidate01": "MSValidato.01",
   "Meta_robots": "Robotoj",
-  "Min_length_is": "Mia longeco estas%s",
+  "Min_length_is": "Mia longeco estas{{limit}}",
   "Minimum_balance": "Minimuma ekvilibro",
   "Mobex_sms_gateway_from_number": "De",
   "Mobex_sms_gateway_password": "Pasvorto",

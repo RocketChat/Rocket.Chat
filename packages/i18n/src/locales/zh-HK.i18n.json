@@ -1490,7 +1490,7 @@
   "Meta_language": "语言",
   "Meta_msvalidate01": "MSValidate.01",
   "Meta_robots": "机器人",
-  "Min_length_is": "最小长度是％s",
+  "Min_length_is": "最小长度是{{limit}}",
   "Minimum_balance": "最小余额",
   "Mobex_sms_gateway_from_number": "从",
   "Mobex_sms_gateway_password": "密码",

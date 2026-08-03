@@ -2169,7 +2169,7 @@
   "Meta_msvalidate01": "MSValidate.01",
   "Meta_robots": "로봇",
   "Method": "방법",
-  "Min_length_is": "최소 길이는 %s입니다.",
+  "Min_length_is": "최소 길이는 {{limit}}입니다.",
   "Minimum": "최소",
   "Minimum_balance": "최소 잔고",
   "Mobex_sms_gateway_address": "Mobex SMS 게이트웨이 주소",

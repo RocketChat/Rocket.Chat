@@ -1518,7 +1518,7 @@
   "Meta_language": "Kalba",
   "Meta_msvalidate01": "MSValidate.01",
   "Meta_robots": "Robotai",
-  "Min_length_is": "Minimalus ilgis yra%s",
+  "Min_length_is": "Minimalus ilgis yra{{limit}}",
   "Minimum_balance": "Minimalus balansas",
   "Mobex_sms_gateway_from_number": "Nuo",
   "Mobex_sms_gateway_password": "Slaptažodis",

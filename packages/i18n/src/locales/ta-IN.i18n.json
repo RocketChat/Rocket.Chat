@@ -1470,7 +1470,7 @@
   "Meta_language": "மொழி",
   "Meta_msvalidate01": "MSValidate.01",
   "Meta_robots": "ரோபோக்கள்",
-  "Min_length_is": "குறைந்த நீளம்%s",
+  "Min_length_is": "குறைந்த நீளம்{{limit}}",
   "Minimum_balance": "குறைந்தபட்ச இருப்பு",
   "Mobex_sms_gateway_from_number": "இருந்து",
   "Mobex_sms_gateway_password": "கடவுச்சொல்",

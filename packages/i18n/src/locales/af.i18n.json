@@ -1470,7 +1470,7 @@
   "Meta_language": "Taal",
   "Meta_msvalidate01": "MSValidate.01",
   "Meta_robots": "robots",
-  "Min_length_is": "Min lengte is%s",
+  "Min_length_is": "Min lengte is{{limit}}",
   "Minimum_balance": "Minimum balans",
   "Mobex_sms_gateway_from_number": "Van",
   "Mobex_sms_gateway_password": "wagwoord",
