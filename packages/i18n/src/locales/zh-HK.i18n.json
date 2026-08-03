@@ -751,7 +751,7 @@
   "Custom_Translations": "定制翻译",
   "Custom_Translations_Description": "应该是有效的JSON，其中键是包含键和翻译字典的语言。例如：  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Custom_agent": "自定义代理",
-  "Custom_oauth_helper": "设置OAuth提供程序时，您必须通知回调URL。使用<pre>％s</pre>。",
+  "Custom_oauth_helper": "设置OAuth提供程序时，您必须通知回调URL。使用<pre>{{url}}</pre>。",
   "Customize": "定制",
   "DB_Migration": "数据库迁移",
   "DB_Migration_Date": "数据库迁移日期",

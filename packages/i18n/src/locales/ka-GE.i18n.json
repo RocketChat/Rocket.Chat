@@ -955,7 +955,7 @@
   "Custom_User_Status_Updated_Successfully": "მომხმარებლის პერსონალური სტატუსი განახლებულია",
   "Custom_agent": "მორგებული აგენტი",
   "Custom_dates": "პირადი თარიღები",
-  "Custom_oauth_helper": "OAuth– ის პროვაიდერის შექმნისას, თქვენ უნდა აცნობოთ უკუკავშირის მისამართს. გამოიყენეთ <pre>%s</pre>.",
+  "Custom_oauth_helper": "OAuth– ის პროვაიდერის შექმნისას, თქვენ უნდა აცნობოთ უკუკავშირის მისამართს. გამოიყენეთ <pre>{{url}}</pre>.",
   "Customize": "პერსონალიზება",
   "DAU_value": "DAU {{value}}",
   "DB_Migration": "მონაცემთა ბაზის მიგრაცია",

@@ -1290,7 +1290,7 @@
   "Custom_User_Status_Updated_Successfully": "Benutzerdefinierter Benutzerstatus erfolgreich aktualisiert",
   "Custom_agent": "Benutzerdefinierter Agent",
   "Custom_dates": "Eigenes Zeitfenster",
-  "Custom_oauth_helper": "Bei der Einrichtung Ihres OAuth-Providers muss eine Rückruf-URL angegeben werden. Benutzen Sie dafür folgende URL: <pre>%s</pre>",
+  "Custom_oauth_helper": "Bei der Einrichtung Ihres OAuth-Providers muss eine Rückruf-URL angegeben werden. Benutzen Sie dafür folgende URL: <pre>{{url}}</pre>",
   "Custom_roles": "Benutzerdefinierte Rollen",
   "Custom_roles_upsell_add_custom_roles_workspace": "Fügen Sie benutzerdefinierte Rollen hinzu, die zu Ihrem Arbeitsbereich passen",
   "Custom_roles_upsell_add_custom_roles_workspace_description": "Mit benutzerdefinierten Rollen können Sie Berechtigungen für die Personen in Ihrem Workspace festlegen. Legen Sie alle Rollen fest, die Sie benötigen, um sicherzustellen, dass die Mitarbeiter ein sicheres Arbeitsumfeld haben.",

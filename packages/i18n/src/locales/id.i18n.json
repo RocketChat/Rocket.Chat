@@ -731,7 +731,7 @@
   "Custom_Translations": "Terjemahan kustom",
   "Custom_Translations_Description": "Harus menjadi JSON yang valid dimana kunci adalah bahasa yang berisi kamus kunci dan terjemahan. Contoh:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Custom_agent": "Agen khusus",
-  "Custom_oauth_helper": "Anda harus menyediakan URL Callback ketika melakukan setup untuk OAuth Provider. Gunakan <pre>%s</pre> .",
+  "Custom_oauth_helper": "Anda harus menyediakan URL Callback ketika melakukan setup untuk OAuth Provider. Gunakan <pre>{{url}}</pre> .",
   "Customize": "Sesuaikan",
   "DB_Migration": "Migrasi database",
   "DB_Migration_Date": "Database Tanggal Migrasi",

@@ -730,7 +730,7 @@
   "Custom_Translations": "การแปลแบบกำหนดเอง",
   "Custom_Translations_Description": "ควรเป็น JSON ที่ถูกต้องซึ่งคีย์คือภาษาที่มีพจนานุกรมสำคัญและคำแปล ตัวอย่าง:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Custom_agent": "ตัวแทนที่กำหนดเอง",
-  "Custom_oauth_helper": "เมื่อตั้งค่าผู้ให้บริการ OAuth คุณจะต้องแจ้ง URL โทรกลับ ใช้ <pre>%s</pre>",
+  "Custom_oauth_helper": "เมื่อตั้งค่าผู้ให้บริการ OAuth คุณจะต้องแจ้ง URL โทรกลับ ใช้ <pre>{{url}}</pre>",
   "Customize": "ปรับแต่ง",
   "DB_Migration": "การโยกย้ายฐานข้อมูล",
   "DB_Migration_Date": "วันที่ย้ายข้อมูลฐานข้อมูล",

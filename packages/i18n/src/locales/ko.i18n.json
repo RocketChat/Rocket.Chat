@@ -1058,7 +1058,7 @@
   "Custom_User_Status_Updated_Successfully": "사용자 상태가 성공적으로 업데이트되었습니다",
   "Custom_agent": "상담사 사용자 정의",
   "Custom_dates": "사용자 정의 날짜",
-  "Custom_oauth_helper": "OAuth Provider를 설정할때, 콜백 URL을 알려줘야합니다. <pre>%s</pre>를 사용.",
+  "Custom_oauth_helper": "OAuth Provider를 설정할때, 콜백 URL을 알려줘야합니다. <pre>{{url}}</pre>를 사용.",
   "Customize": "사용자 정의",
   "DAU_value": "DAU {{value}}",
   "DB_Migration": "데이터베이스 마이그레이션",

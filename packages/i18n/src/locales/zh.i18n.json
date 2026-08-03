@@ -1625,7 +1625,7 @@
   "Custom_agent": "自定义代理",
   "Custom_content": "自定义内容",
   "Custom_dates": "自定义日期",
-  "Custom_oauth_helper": "设置完 OAuth 提供者之后，你还需要设置回调 URL。请使用 <pre>%s</pre>。",
+  "Custom_oauth_helper": "设置完 OAuth 提供者之后，你还需要设置回调 URL。请使用 <pre>{{url}}</pre>。",
   "Custom_roles": "自定义角色",
   "Custom_roles_upsell_add_custom_roles_workspace": "为工作区添加自定义角色",
   "Custom_roles_upsell_add_custom_roles_workspace_description": "自定义角色允许你为工作区内人员设置权限。设置所需角色，确保大家在安全环境中工作。",

@@ -729,7 +729,7 @@
   "Custom_Translations": "Гаалийн хэлүүд",
   "Custom_Translations_Description": "Хүчинтэй JSON байх ёстой түлхүүрүүд нь түлхүүр үг болон орчуулгын толь агуулсан хэлүүд байх ёстой. Жишээ нь:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Custom_agent": "Гаалийн агент",
-  "Custom_oauth_helper": "OAuth-ийн үйлчилгээ үзүүлэгчийг тохируулахдаа Callback URL руу орно. <pre>%s</pre>ашиглана уу.",
+  "Custom_oauth_helper": "OAuth-ийн үйлчилгээ үзүүлэгчийг тохируулахдаа Callback URL руу орно. <pre>{{url}}</pre>ашиглана уу.",
   "Customize": "Тохируулах",
   "DB_Migration": "Өгөгдлийн сангийн шилжүүлэлт",
   "DB_Migration_Date": "Өгөгдлийн сангийн шилжих огноо",

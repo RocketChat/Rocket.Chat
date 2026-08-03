@@ -1183,7 +1183,7 @@
   "Custom_User_Status_Updated_Successfully": "自訂使用者狀態已更新成功",
   "Custom_agent": "自訂代理",
   "Custom_dates": "自訂日期",
-  "Custom_oauth_helper": "設定 OAuth 提供者時，請提供一個 Callback URL。使用 <pre> %s </pre> 。",
+  "Custom_oauth_helper": "設定 OAuth 提供者時，請提供一個 Callback URL。使用 <pre> {{url}} </pre> 。",
   "Customer_without_registered_email": "客戶沒有註冊的電子郵件地址",
   "Customize": "自訂",
   "DAU_value": "DAU {{value}}",

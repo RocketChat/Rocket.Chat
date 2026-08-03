@@ -829,7 +829,7 @@
   "Custom_Translations_Description": "Ein gültiges JSON, in dem die Schlüssel Sprachkürzel sind, die wiederum Tupel von Schlüssel und Übersetzungen enthalten. Beispiel:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Custom_agent": "Kundenspezifischer Agent",
   "Custom_dates": "Eigenes Zeitfenster",
-  "Custom_oauth_helper": "Bei der Einrichtung Deines OAuth-Providers muss eine Rückruf-URL angegeben werden. Benutze dafür folgende URL: <pre>%s</pre>",
+  "Custom_oauth_helper": "Bei der Einrichtung Deines OAuth-Providers muss eine Rückruf-URL angegeben werden. Benutze dafür folgende URL: <pre>{{url}}</pre>",
   "Customize": "anpassen",
   "DB_Migration": "Datenbankmigration",
   "DB_Migration_Date": "Datenbankmigrationsdatum",

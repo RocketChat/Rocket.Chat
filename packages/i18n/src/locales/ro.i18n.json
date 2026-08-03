@@ -731,7 +731,7 @@
   "Custom_Translations": "Traduceri personalizate",
   "Custom_Translations_Description": "Ar trebui să fie un JSON valid în cazul în care cheile sunt limbi care conțin un dicționar de chei și traduceri. Exemplu:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Custom_agent": "Agent personalizat",
-  "Custom_oauth_helper": "La configurarea furnizorul de OAuth, va trebui să apelați un URL de apel invers. Utilizați <pre>%s</pre>.",
+  "Custom_oauth_helper": "La configurarea furnizorul de OAuth, va trebui să apelați un URL de apel invers. Utilizați <pre>{{url}}</pre>.",
   "Customize": "Personalizați",
   "DB_Migration": "Migrarea bazei de date",
   "DB_Migration_Date": "Migrația bazei de date Data",

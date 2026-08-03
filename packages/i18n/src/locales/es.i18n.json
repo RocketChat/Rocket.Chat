@@ -1215,7 +1215,7 @@
   "Custom_User_Status_Updated_Successfully": "Estado de usuario personalizado actualizado correctamente",
   "Custom_agent": "Agente personalizado",
   "Custom_dates": "Fechas personalizadas",
-  "Custom_oauth_helper": "Al configurar el proveedor de OAuth, tendrás que indicar una URL de devolución. Usa <pre>%s</pre>.",
+  "Custom_oauth_helper": "Al configurar el proveedor de OAuth, tendrás que indicar una URL de devolución. Usa <pre>{{url}}</pre>.",
   "Customer": "Cliente",
   "Customer_without_registered_email": "El cliente no tiene ninguna dirección de correo electrónico registrada",
   "Customize": "Personalizar",

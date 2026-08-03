@@ -1273,7 +1273,7 @@
   "Custom_User_Status_Updated_Successfully": "Az egyéni felhasználó-állapot sikeresen frissítve",
   "Custom_agent": "Egyéni ügyintéző",
   "Custom_dates": "Egyéni dátumok",
-  "Custom_oauth_helper": "Ha beállítja az OAuth-szolgáltatóját, akkor tájékoztatnia kell egy visszahívási URL-t. Használja ezt: <pre>%s</pre>.",
+  "Custom_oauth_helper": "Ha beállítja az OAuth-szolgáltatóját, akkor tájékoztatnia kell egy visszahívási URL-t. Használja ezt: <pre>{{url}}</pre>.",
   "Customer_without_registered_email": "Az ügyfél nem rendelkezik regisztrált e-mail-címmel",
   "Customize": "Személyre szabás",
   "DAU_value": "DAU {{value}}",

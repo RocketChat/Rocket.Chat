@@ -1184,7 +1184,7 @@
   "Custom_User_Status_Updated_Successfully": "カスタムユーザーステータスが正常に更新されました",
   "Custom_agent": "カスタムエージェント",
   "Custom_dates": "カスタム日付",
-  "Custom_oauth_helper": "OAuthプロバイダーを設定する場合は、コールバックURLを通知する必要があります。<pre>%s</pre>を使用してください。",
+  "Custom_oauth_helper": "OAuthプロバイダーを設定する場合は、コールバックURLを通知する必要があります。<pre>{{url}}</pre>を使用してください。",
   "Customer_without_registered_email": "お客様がメールアドレスを登録していません",
   "Customize": "カスタマイズ",
   "DAU_value": "DAU {{value}}",

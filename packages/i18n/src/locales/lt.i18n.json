@@ -780,7 +780,7 @@
   "Custom_Translations": "Tinkinti vertimai",
   "Custom_Translations_Description": "Turėtų būti galiojantis JSON, kur raktai yra kalbos, kuriose yra raktinių žodžių ir vertimų žodynas. Pavyzdys:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Custom_agent": "Muitinė agentas",
-  "Custom_oauth_helper": "Nustatydami OAuth teikėją turėsite pranešti atgalinio ryšio URL. Naudokite <pre>%s</pre>.",
+  "Custom_oauth_helper": "Nustatydami OAuth teikėją turėsite pranešti atgalinio ryšio URL. Naudokite <pre>{{url}}</pre>.",
   "Customize": "Pritaikyti",
   "DB_Migration": "Duomenų bazės migracija",
   "DB_Migration_Date": "Duomenų bazės migracijos data",

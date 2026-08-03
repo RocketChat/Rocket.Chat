@@ -730,7 +730,7 @@
   "Custom_Translations": "Aangepaste vertalings",
   "Custom_Translations_Description": "Moet 'n geldige JSON wees waar sleutels tale bevat wat 'n woordeboek van sleutel en vertalings bevat. Voorbeeld: `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Custom_agent": "Aangepaste agent",
-  "Custom_oauth_helper": "Wanneer u u OAuth-verskaffer opstel, moet u 'n terugbel-URL in kennis stel. Gebruik <pre>%s</pre>.",
+  "Custom_oauth_helper": "Wanneer u u OAuth-verskaffer opstel, moet u 'n terugbel-URL in kennis stel. Gebruik <pre>{{url}}</pre>.",
   "Customize": "pas",
   "DB_Migration": "Databasis Migrasie",
   "DB_Migration_Date": "Databasis Migrasiedatum",

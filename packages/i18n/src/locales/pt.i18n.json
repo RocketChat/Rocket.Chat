@@ -864,7 +864,7 @@
   "Custom_User_Status_Edit": "Editar Estado Personalizado do Utilizador",
   "Custom_agent": "Agente personalizado",
   "Custom_dates": "Datas personalizadas",
-  "Custom_oauth_helper": "Ao configurar o seu Provedor de OAuth, terá que informar uma URL de retorno de chamada. Use <pre>%s</pre>.",
+  "Custom_oauth_helper": "Ao configurar o seu Provedor de OAuth, terá que informar uma URL de retorno de chamada. Use <pre>{{url}}</pre>.",
   "Customize": "Personalizar",
   "DB_Migration": "Migração da base de dados",
   "DB_Migration_Date": "Data da migração da base de dados",

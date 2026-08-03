@@ -1012,7 +1012,7 @@
   "Custom_User_Status_Updated_Successfully": "Vlastní stav uživatele byl úspěšně aktualizován",
   "Custom_agent": "Vlastní operátor",
   "Custom_dates": "Vlastní data",
-  "Custom_oauth_helper": "Při nastavování OAuth poskytovatele, budete muset nastavit callback URL. Použijte <pre> %s </pre> ,",
+  "Custom_oauth_helper": "Při nastavování OAuth poskytovatele, budete muset nastavit callback URL. Použijte <pre> {{url}} </pre> ,",
   "Customize": "Přizpůsobit",
   "DAU_value": "DAU {{value}}",
   "DB_Migration": "Migrace databáze",

@@ -1291,7 +1291,7 @@
   "Custom_User_Status_Updated_Successfully": "Niestandardowy status użytkownika został zaktualizowany",
   "Custom_agent": "Agent niestandardowy",
   "Custom_dates": "Daty niestandardowe",
-  "Custom_oauth_helper": "Podczas konfigurowania dostawcy OAuth należy podać adres URL wywołania zwrotnego. Użyj adresu <pre>%s</pre>.",
+  "Custom_oauth_helper": "Podczas konfigurowania dostawcy OAuth należy podać adres URL wywołania zwrotnego. Użyj adresu <pre>{{url}}</pre>.",
   "Custom_roles": "Role niestandardowe",
   "Customer_without_registered_email": "Klient nie ma zarejestrowanego adresu e-mail",
   "Customize": "Dostosuj",

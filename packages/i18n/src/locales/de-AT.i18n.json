@@ -731,7 +731,7 @@
   "Custom_Translations": "Benutzerdefinierte Übersetzungen",
   "Custom_Translations_Description": "Sollte ein gültiger JSON sein, in dem die Schlüssel Sprachen sind, die ein Schlüsselwörterbuch und Übersetzungen enthalten. Beispiel:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Custom_agent": "Benutzerdefinierter Agent",
-  "Custom_oauth_helper": "Bei der Einrichtung muss eine Rückruf-URL angegeben werden. Benutze dafür folgende URL: <pre>%s</pre>",
+  "Custom_oauth_helper": "Bei der Einrichtung muss eine Rückruf-URL angegeben werden. Benutze dafür folgende URL: <pre>{{url}}</pre>",
   "Customize": "Anpassen",
   "DB_Migration": "Datenbankmigration",
   "DB_Migration_Date": "Datenbankmigrationsdatum",

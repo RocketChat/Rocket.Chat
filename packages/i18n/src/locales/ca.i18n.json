@@ -1188,7 +1188,7 @@
   "Custom_User_Status_Updated_Successfully": "Estat d'usuari personalitzat actualitzat amb èxit",
   "Custom_agent": "Agent personalitzat",
   "Custom_dates": "Dates personalitzades",
-  "Custom_oauth_helper": "Per configurar el proveïdor OAuth, heu d'establir un URL de retorn (callback). Useu <pre>%s</pre>.",
+  "Custom_oauth_helper": "Per configurar el proveïdor OAuth, heu d'establir un URL de retorn (callback). Useu <pre>{{url}}</pre>.",
   "Customer_without_registered_email": "El client no té una adreça de correu electrònic registrada",
   "Customize": "Customitza",
   "DAU_value": "DAU {{value}}",

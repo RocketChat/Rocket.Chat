@@ -920,7 +920,7 @@
   "Custom_User_Status_Updated_Successfully": "وضعیت کاربر با موفقیت به روز شد",
   "Custom_agent": "نمایندگی سفارشی",
   "Custom_dates": "تاریخ های سفارشی",
-  "Custom_oauth_helper": ".در حال تنظیم OAuth Provider شما، شما باید یک آدرس Callback بدهید. با <pre>%s</pre> ",
+  "Custom_oauth_helper": ".در حال تنظیم OAuth Provider شما، شما باید یک آدرس Callback بدهید. با <pre>{{url}}</pre> ",
   "Customize": "شخصی سازی",
   "DB_Migration": "انتقال پایگاه داده",
   "DB_Migration_Date": "تاریخ انتقال پایگاه داده",

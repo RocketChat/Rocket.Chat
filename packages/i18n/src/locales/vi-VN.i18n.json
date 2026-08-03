@@ -823,7 +823,7 @@
   "Custom_Translations": "Bản dịch tùy chỉnh",
   "Custom_Translations_Description": "Nên là một JSON hợp lệ, trong đó các phím là các ngôn ngữ chứa từ điển của khóa và bản dịch. Ví dụ:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Custom_agent": "Agent tùy chỉnh",
-  "Custom_oauth_helper": "Khi thiết lập nhà cung cấp OAuth của bạn, bạn sẽ phải thông báo cho một URL gọi lại. Sử dụng <pre>%s</pre>.",
+  "Custom_oauth_helper": "Khi thiết lập nhà cung cấp OAuth của bạn, bạn sẽ phải thông báo cho một URL gọi lại. Sử dụng <pre>{{url}}</pre>.",
   "Customize": "Tùy chỉnh",
   "DB_Migration": "Di chuyển cơ sở dữ liệu",
   "DB_Migration_Date": "Ngày di chuyển cơ sở dữ liệu",

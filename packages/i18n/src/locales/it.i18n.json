@@ -919,7 +919,7 @@
   "Custom_Translations": "Traduzioni personalizzate",
   "Custom_Translations_Description": "Dovrebbe essere un JSON valido dove le chiavi sono le lingue che contengono un dizionario delle traduzioni. Esempio:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Custom_agent": "Agente personalizzato",
-  "Custom_oauth_helper": "Quando si imposta l'OAuth Provider, è necessario impostare un URL Callback. Usa <pre>%s</pre> .",
+  "Custom_oauth_helper": "Quando si imposta l'OAuth Provider, è necessario impostare un URL Callback. Usa <pre>{{url}}</pre> .",
   "Custom_roles": "Ruoli personalizzati",
   "Customize": "Personalizza",
   "Customize_Content": "Personalizza contenuto",

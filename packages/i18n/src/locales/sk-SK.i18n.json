@@ -736,7 +736,7 @@
   "Custom_Translations": "Vlastné preklady",
   "Custom_Translations_Description": "Mala by to byť platná JSON, kde kľúče sú jazyky obsahujúce slovník kľúčov a prekladov. Príklad:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Custom_agent": "Vlastný agent",
-  "Custom_oauth_helper": "Pri nastavovaní poskytovateľa OAuth budete musieť informovať URL spätného volania. Použite <pre>%s</pre>.",
+  "Custom_oauth_helper": "Pri nastavovaní poskytovateľa OAuth budete musieť informovať URL spätného volania. Použite <pre>{{url}}</pre>.",
   "Customize": "Prispôsobiť",
   "DB_Migration": "Migrácia databázy",
   "DB_Migration_Date": "Dátum migrácie databázy",

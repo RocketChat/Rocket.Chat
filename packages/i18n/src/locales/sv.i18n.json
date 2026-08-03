@@ -1683,7 +1683,7 @@
   "Custom_agent": "Anpassad agent",
   "Custom_content": "Anpassat innehål",
   "Custom_dates": "Anpassade datum",
-  "Custom_oauth_helper": "När du ställer in din OAuth-provider, måste du ange en callback-webbadress. Använd <pre> %s </pre> .",
+  "Custom_oauth_helper": "När du ställer in din OAuth-provider, måste du ange en callback-webbadress. Använd <pre> {{url}} </pre> .",
   "Custom_roles": "Anpassade roller",
   "Custom_roles_upsell_add_custom_roles_workspace": "Lägg till anpassade roller för att passa din arbetsyta",
   "Custom_roles_upsell_add_custom_roles_workspace_description": "Med anpassade roller kan du ange behörigheter för personerna i din arbetsyta. Ställ in alla roller du behöver för att se till att personerna har en säker arbetsmiljö att arbeta i.",

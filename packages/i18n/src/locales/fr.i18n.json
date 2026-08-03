@@ -1197,7 +1197,7 @@
   "Custom_User_Status_Updated_Successfully": "Statut d'utilisateur personnalisé mis à jour avec succès",
   "Custom_agent": "Agent personnalisé",
   "Custom_dates": "Dates personnalisées",
-  "Custom_oauth_helper": "Lorsque vous configurez votre fournisseur OAuth, vous devez indiquer une URL de rappel. Utilisez <pre>%s</pre>",
+  "Custom_oauth_helper": "Lorsque vous configurez votre fournisseur OAuth, vous devez indiquer une URL de rappel. Utilisez <pre>{{url}}</pre>",
   "Customer_without_registered_email": "Le client n'a pas d'adresse e-mail enregistrée",
   "Customize": "Personnaliser",
   "DAU_value": "{{value}} DAU",

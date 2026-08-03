@@ -1194,7 +1194,7 @@
   "Custom_User_Status_Updated_Successfully": "Aangepaste gebruikersstatus succesvol bijgewerkt",
   "Custom_agent": "Aangepaste agent",
   "Custom_dates": "Aangepaste datums",
-  "Custom_oauth_helper": "Bij het instellen van uw OAuth Provider, moet u een Callback URL geven. Gebruik <pre>%s</pre> .",
+  "Custom_oauth_helper": "Bij het instellen van uw OAuth Provider, moet u een Callback URL geven. Gebruik <pre>{{url}}</pre> .",
   "Customer_without_registered_email": "De klant heeft geen geregistreerd e-mailadres",
   "Customize": "Aanpassen",
   "DAU_value": "DAU {{value}}",

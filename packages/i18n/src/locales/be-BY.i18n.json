@@ -749,7 +749,7 @@
   "Custom_Translations": "прыстасаваныя Пераклады",
   "Custom_Translations_Description": "Павінна быць сапраўдным JSON, дзе ключы з'яўляюцца мовамі, якія змяшчаюць слоўнік ключа і перакладаў. Прыклад: `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Custom_agent": "карыстацкі агент",
-  "Custom_oauth_helper": "Падчас усталявання OAuth пастаўшчыка, вы павінны будзеце паведаміць Callback URL. Выкарыстоўвайце <pre>%s</pre>.",
+  "Custom_oauth_helper": "Падчас усталявання OAuth пастаўшчыка, вы павінны будзеце паведаміць Callback URL. Выкарыстоўвайце <pre>{{url}}</pre>.",
   "Customize": "наладзіць",
   "DB_Migration": "Міграцыя базы дадзеных",
   "DB_Migration_Date": "База дадзеных Дата міграцыі",

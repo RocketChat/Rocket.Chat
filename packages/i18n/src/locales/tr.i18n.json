@@ -870,7 +870,7 @@
   "Custom_User_Status_Updated_Successfully": "Özel Kullanıcı Durumu Başarıyla Güncellendi",
   "Custom_agent": "Özel temsilci",
   "Custom_dates": "Özel Günler",
-  "Custom_oauth_helper": "OAuth sağlayıcısı kurarken, bir geri bildirim URL bildirmek gerekir.  <pre> %s </pre> kullan.",
+  "Custom_oauth_helper": "OAuth sağlayıcısı kurarken, bir geri bildirim URL bildirmek gerekir.  <pre> {{url}} </pre> kullan.",
   "Customize": "Özelleştir",
   "DB_Migration": "Veritabanı Geçişi",
   "DB_Migration_Date": "Veritabanı Geçiş Tarihi",

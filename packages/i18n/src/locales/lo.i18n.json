@@ -745,7 +745,7 @@
   "Custom_Translations": "Custom Translations",
   "Custom_Translations_Description": "ຄວນຈະເປັນ JSON ທີ່ຖືກຕ້ອງທີ່ຄີແມ່ນພາສາທີ່ມີພົດຈະນານຸກົມຂອງຄີແລະການແປ. ຕົວຢ່າງ:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Custom_agent": "ຕົວແທນລູກຄ້າ",
-  "Custom_oauth_helper": "ໃນເວລາທີ່ການສ້າງຕັ້ງໃຫ້ບໍລິການ OAuth ຂອງທ່ານ, ທ່ານຈະຕ້ອງໄດ້ແຈ້ງ URL ໂທໄດ້. ການນໍາໃຊ້ <pre> %s </pre> .",
+  "Custom_oauth_helper": "ໃນເວລາທີ່ການສ້າງຕັ້ງໃຫ້ບໍລິການ OAuth ຂອງທ່ານ, ທ່ານຈະຕ້ອງໄດ້ແຈ້ງ URL ໂທໄດ້. ການນໍາໃຊ້ <pre> {{url}} </pre> .",
   "Customize": "ປັບແຕ່ງ",
   "DB_Migration": "ການຍ້າຍຖິ່ນຖານຂໍ້ມູນ",
   "DB_Migration_Date": "ຖານຂໍ້ມູນທີ່ສະຫມັກ Migration",

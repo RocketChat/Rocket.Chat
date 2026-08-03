@@ -738,7 +738,7 @@
   "Custom_Translations": "Pielāgotie tulkojumi",
   "Custom_Translations_Description": "Jābūt derīgam JSON, kur taustiņi ir valodas, kurās ir taustiņu vārdnīca un tulkojumi.  Piemērs:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Custom_agent": "Pielāgots aģents",
-  "Custom_oauth_helper": " Uzstādot OAuth nodrošinātāju, jums būs jāinformē Callback URL. Izmantojiet <pre>%s</pre>.",
+  "Custom_oauth_helper": " Uzstādot OAuth nodrošinātāju, jums būs jāinformē Callback URL. Izmantojiet <pre>{{url}}</pre>.",
   "Customize": "Pielāgot",
   "DB_Migration": "Datubāzes versijas maiņa",
   "DB_Migration_Date": "Datubāzes versijas maiņas datums",

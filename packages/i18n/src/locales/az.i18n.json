@@ -730,7 +730,7 @@
   "Custom_Translations": "Xüsusi tərcümə",
   "Custom_Translations_Description": "Açar sözlər və tərcümələr olan dillərdə olan dillərdə olan düzgün JSON olmalıdır. Məsələn:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Custom_agent": "Xüsusi agent",
-  "Custom_oauth_helper": "OAuth Provayderinizi qurarkən, bir Geri Axtarış URL'sini bildirməlisiniz. <pre>%s</pre>istifadə edin.",
+  "Custom_oauth_helper": "OAuth Provayderinizi qurarkən, bir Geri Axtarış URL'sini bildirməlisiniz. <pre>{{url}}</pre>istifadə edin.",
   "Customize": "Özəlləşdirmək",
   "DB_Migration": "Verilənlər bazası miqrasiya",
   "DB_Migration_Date": "Verilənlər bazası miqrasiya tarixi",

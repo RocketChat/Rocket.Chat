@@ -1077,7 +1077,7 @@
   "Custom_User_Status_Updated_Successfully": "Brugerdefineret brugerstatus blev tilføjet med succes",
   "Custom_agent": "Brugerdefineret agent",
   "Custom_dates": "Brugerdefinerede datoer",
-  "Custom_oauth_helper": "Når du konfigurerer din OAuth-leverandør, skal du oplyse en tilbagekalds-url. Brug <pre>%s</pre>.",
+  "Custom_oauth_helper": "Når du konfigurerer din OAuth-leverandør, skal du oplyse en tilbagekalds-url. Brug <pre>{{url}}</pre>.",
   "Customize": "Tilpas",
   "DAU_value": "DAU {{value}}",
   "DB_Migration": "Databasemigration",

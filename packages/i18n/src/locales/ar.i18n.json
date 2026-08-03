@@ -1194,7 +1194,7 @@
   "Custom_User_Status_Updated_Successfully": "تم تحديث حالة المستخدم المخصصة بنجاح",
   "Custom_agent": "وكيل مخصص",
   "Custom_dates": "التواريخ المخصصة",
-  "Custom_oauth_helper": "عند إعداد موفر OAuth لديك، سيتعين عليك الإبلاغ عن عنوان URL الخاص بإعادة الاتصال. استخدم <pre>‎%s</pre> .",
+  "Custom_oauth_helper": "عند إعداد موفر OAuth لديك، سيتعين عليك الإبلاغ عن عنوان URL الخاص بإعادة الاتصال. استخدم <pre>‎{{url}}</pre> .",
   "Customer_without_registered_email": "ليس للعميل عنوان بريد إلكتروني مسجل",
   "Customize": "تخصيص",
   "DAU_value": "DAU {{value}}",

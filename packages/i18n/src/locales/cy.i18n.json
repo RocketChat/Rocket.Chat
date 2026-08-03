@@ -729,7 +729,7 @@
   "Custom_Translations": "Cyfieithiadau Custom",
   "Custom_Translations_Description": "Dylai fod yn JSON dilys lle mae allweddi yn ieithoedd sy'n cynnwys geiriadur allweddol a chyfieithiadau. Enghraifft: `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Custom_agent": "Asiant personol",
-  "Custom_oauth_helper": "Wrth sefydlu eich Darparwr OAuth, bydd yn rhaid i chi hysbysu URL Callback. Defnyddiwch <pre> %s</pre>.",
+  "Custom_oauth_helper": "Wrth sefydlu eich Darparwr OAuth, bydd yn rhaid i chi hysbysu URL Callback. Defnyddiwch <pre> {{url}}</pre>.",
   "Customize": "Addasu",
   "DB_Migration": "Mudo Cronfa Ddata",
   "DB_Migration_Date": "Dyddiad Mudo Cronfa Ddata",

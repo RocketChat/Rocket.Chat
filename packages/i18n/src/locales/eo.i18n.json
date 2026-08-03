@@ -730,7 +730,7 @@
   "Custom_Translations": "Propra Tradukoj",
   "Custom_Translations_Description": "Devus esti valida JSON kie klavoj estas lingvoj enhavantaj vortaron de ŝlosilo kaj tradukoj. Ekzemplo:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Custom_agent": "Propra agento",
-  "Custom_oauth_helper": "Kiam vi agordas vian OAuth Provider, vi devos informi Callback-URL. Uzu <pre>%s</pre>.",
+  "Custom_oauth_helper": "Kiam vi agordas vian OAuth Provider, vi devos informi Callback-URL. Uzu <pre>{{url}}</pre>.",
   "Customize": "Agordu",
   "DB_Migration": "Datuma migrado",
   "DB_Migration_Date": "Datuma Migrado Dato",

@@ -118,7 +118,7 @@ function OAuthGroupPage({ _id, onClickBack, ...group }: OAuthGroupPageProps) {
 							help={
 								<span
 									dangerouslySetInnerHTML={{
-										__html: DOMPurify.sanitize(t('Custom_oauth_helper', callbackURL(sectionName))),
+										__html: DOMPurify.sanitize(t('Custom_oauth_helper', { url: callbackURL(sectionName) })),
 									}}
 								/>
 							}

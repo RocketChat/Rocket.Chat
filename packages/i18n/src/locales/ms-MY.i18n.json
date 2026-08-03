@@ -732,7 +732,7 @@
   "Custom_Translations": "Terjemahan Tradisional",
   "Custom_Translations_Description": "Harus menjadi JSON yang sah di mana kekunci adalah bahasa yang mengandungi kamus kunci dan terjemahan. Contoh:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Custom_agent": "Ejen kastam",
-  "Custom_oauth_helper": "Apabila menyediakan Pembekal OAuth anda, anda akan mempunyai untuk memberitahu URL Callback. Penggunaan <pre> %s </pre> .",
+  "Custom_oauth_helper": "Apabila menyediakan Pembekal OAuth anda, anda akan mempunyai untuk memberitahu URL Callback. Penggunaan <pre> {{url}} </pre> .",
   "Customize": "Peribadikan",
   "DB_Migration": "Pangkalan Data Migration",
   "DB_Migration_Date": "Pangkalan Data Migration Tarikh",

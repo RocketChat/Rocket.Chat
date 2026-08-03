@@ -889,7 +889,7 @@
   "Custom_Translations_Description": "គួរតែជា JSON ត្រឹមត្រូវដែលគ្រាប់ចុចជាភាសាដែលមានវចនានុក្រមគន្លឹះនិងការបកប្រែ។ ឧទាហរណ៍:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Custom_agent": "ភ្នាក់ងារផ្ទាល់ខ្លួន",
   "Custom_dates": "កាលបរិច្ឆេទផ្ទាល់ខ្លួន",
-  "Custom_oauth_helper": "ពេលអ្នកកំពុងកំណត់ OAuth Provider នោះអ្នកនឹងទទួល URL បញ្ជាក់មួយត្រឡប់មកវិញ, ដែលប្រើ <pre>%s</pre>",
+  "Custom_oauth_helper": "ពេលអ្នកកំពុងកំណត់ OAuth Provider នោះអ្នកនឹងទទួល URL បញ្ជាក់មួយត្រឡប់មកវិញ, ដែលប្រើ <pre>{{url}}</pre>",
   "Customize": "ប្ដូរតាមបំណង",
   "DB_Migration": "ប្ដូរមូលដ្ឋានទិន្នន័យ",
   "DB_Migration_Date": "មូលដ្ឋានទិន្នន័យការធ្វើចំណាកស្រុកកាលបរិច្ឆេទ",

@@ -1274,7 +1274,7 @@
   "Custom_User_Status_Updated_Successfully": "Пользовательский статус успешно обновлен",
   "Custom_agent": "Пользовательский агент",
   "Custom_dates": "Пользовательская дата",
-  "Custom_oauth_helper": "Настраивая вашего поставщика OAuth, вам необходимо сообщить обратный URL-адрес. Используйте <pre>%s</pre> .",
+  "Custom_oauth_helper": "Настраивая вашего поставщика OAuth, вам необходимо сообщить обратный URL-адрес. Используйте <pre>{{url}}</pre> .",
   "Customer_without_registered_email": "У клиента нет зарегистрированного адреса электронной почты",
   "Customize": "Настроить",
   "Customize_Content": "Настроить содержимое",

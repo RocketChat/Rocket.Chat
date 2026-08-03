@@ -1624,7 +1624,7 @@
   "Custom_agent": "Tilpasset agent",
   "Custom_content": "Tilpasset innhold",
   "Custom_dates": "Egendefinerte datoer",
-  "Custom_oauth_helper": "Når du konfigurerer OAuth-leverandøren din, må du informere en tilbakekallingsadresse. Bruk <pre>%s</pre>.",
+  "Custom_oauth_helper": "Når du konfigurerer OAuth-leverandøren din, må du informere en tilbakekallingsadresse. Bruk <pre>{{url}}</pre>.",
   "Custom_roles": "Egendefinerte roller",
   "Custom_roles_upsell_add_custom_roles_workspace": "Legg til egendefinerte roller som passer til arbeidsområdet ditt",
   "Custom_roles_upsell_add_custom_roles_workspace_description": "Egendefinerte roller lar deg angi tillatelser for personene i arbeidsområdet ditt. Angi alle rollene du trenger for å sikre at folk har et trygt miljø å jobbe i.",

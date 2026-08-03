@@ -730,7 +730,7 @@
   "Custom_Translations": "Wergerên Custom",
   "Custom_Translations_Description": "Divê JSON ê ku derheq in ku zimanên ku bi zimanê key-ê û wergeran tê wergerandin divê derbasdar e. Nimûne:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Custom_agent": "Karmendek Custom",
-  "Custom_oauth_helper": "Dema ku avakirina Provider OAuth te, tu ê bi xwe agahdar bike a URL Callback. Bikaranîn <pre>%s</pre>.",
+  "Custom_oauth_helper": "Dema ku avakirina Provider OAuth te, tu ê bi xwe agahdar bike a URL Callback. Bikaranîn <pre>{{url}}</pre>.",
   "Customize": "Xweş bikin",
   "DB_Migration": "Koç da heye",
   "DB_Migration_Date": "Database Date Koçberî",

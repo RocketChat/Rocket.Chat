@@ -342,7 +342,7 @@
   "Custom_Fields": "שדות מותאמים אישית",
   "Custom_Script_Logged_In": "סקריפט המותאם אישית עבור משתמשים מחוברים",
   "Custom_Script_Logged_Out": "סקריפט המותאם אישית למשתמשים מתנתקים",
-  "Custom_oauth_helper": "כאשר אתה מגדיר ספק OAuth, תצטרך לספק כתובת Callback. השתמש ב-<pre>%s</pre>.",
+  "Custom_oauth_helper": "כאשר אתה מגדיר ספק OAuth, תצטרך לספק כתובת Callback. השתמש ב-<pre>{{url}}</pre>.",
   "Customize": "התאם אישית",
   "DB_Migration": "הגירת מסד נתונים",
   "DB_Migration_Date": "תאריך הגירת מסד",

@@ -813,7 +813,7 @@
   "Custom_Translations_Description": "Treba biti ispravan JSON gdje su ključevi jezici koji zadrže riječnik ključeva i prijevoda. Npr:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Custom_agent": "Prilagođeni agent",
   "Custom_dates": "Prilagođeni datumi",
-  "Custom_oauth_helper": "Prilikom postavljanja OAuth Provider, morate namjestiti URL povratnog poziva. Koristite <pre> %s </pre> ,",
+  "Custom_oauth_helper": "Prilikom postavljanja OAuth Provider, morate namjestiti URL povratnog poziva. Koristite <pre> {{url}} </pre> ,",
   "Customize": "Prilagođavanje",
   "DB_Migration": "Baza podataka migracija",
   "DB_Migration_Date": "Datum migracije baze",

@@ -1690,7 +1690,7 @@
   "Custom_agent": "Agente personalizado",
   "Custom_content": "Conteúdo personalizado",
   "Custom_dates": "Datas personalizadas",
-  "Custom_oauth_helper": "Ao configurar o seu provedor de OAuth, você terá que informar uma URL de Callback. Use <pre>%s</pre>.",
+  "Custom_oauth_helper": "Ao configurar o seu provedor de OAuth, você terá que informar uma URL de Callback. Use <pre>{{url}}</pre>.",
   "Custom_roles": "Funções personalizadas",
   "Custom_roles_upsell_add_custom_roles_workspace": "Adicione funções personalizadas para se adequar ao seu workspace",
   "Custom_roles_upsell_add_custom_roles_workspace_description": "As funções personalizadas permitem que você defina permissões para as pessoas em seu workspace. Defina todas as funções necessárias para garantir que as pessoas tenham um ambiente seguro para trabalhar.",

@@ -728,7 +728,7 @@
   "Custom_Translations": "Prevodi po meri",
   "Custom_Translations_Description": "Naj bo veljaven JSON, kjer so ključi jeziki, ki vsebujejo slovar ključa in prevodov. Primer:  \n `{\"en\": {\"Channels\": \"Rooms\"},\"pt\": {\"Channels\": \"Salas\"}}`",
   "Custom_agent": "Agent po meri",
-  "Custom_oauth_helper": "Pri nastavljanju ponudnika OAuth boste morali obvestiti URL povratnega klica. Uporabite <pre>%s</pre>.",
+  "Custom_oauth_helper": "Pri nastavljanju ponudnika OAuth boste morali obvestiti URL povratnega klica. Uporabite <pre>{{url}}</pre>.",
   "Customize": "Prilagodi",
   "DB_Migration": "Migracija zbirke podatkov ",
   "DB_Migration_Date": "Datum migracije zbirke podatkov",
