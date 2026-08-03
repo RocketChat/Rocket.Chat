@@ -3,6 +3,7 @@ import { ajv, validateBadRequestErrorResponse, validateUnauthorizedErrorResponse
 import type { JSONSchemaType } from 'ajv';
 import { Accounts } from 'meteor/accounts-base';
 
+import { loginCodeExamples } from './loginCode.examples';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 
@@ -33,6 +34,16 @@ const isLoginCodeRedeemParamsPOST = ajv.compile<LoginCodeRedeemParams>(LoginCode
 const loginCodeEndpoints = API.v1.post(
 	'loginCode.redeem',
 	{
+		summary: 'Redeem Login Code',
+		description: `Redeems a one-time OAuth login code and returns the \`loginToken\` and \`userId\`. Use these values as the \`X-Auth-Token\` and \`X-User-Id\` headers in authenticated requests.
+
+This endpoint does not require authentication. Each code is single-use, expires after 60 seconds, and is limited to 10 redemption requests per minute per caller.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 8.7.0   | Added       |`,
+		examples: loginCodeExamples['loginCode.redeem'],
 		authRequired: false,
 		body: isLoginCodeRedeemParamsPOST,
 		rateLimiterOptions: { intervalTimeInMS: 60000, numRequestsAllowed: 10 },

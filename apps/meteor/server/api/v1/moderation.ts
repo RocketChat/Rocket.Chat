@@ -15,6 +15,7 @@ import {
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
+import { moderationExamples } from './moderation.examples';
 import { deleteReportedMessages } from '../../lib/moderation/deleteReportedMessages';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
@@ -200,6 +201,14 @@ const reportInfoResponseSchema = ajv.compile<{ report: IModerationReport | null 
 API.v1.get(
 	'moderation.reportsByUsers',
 	{
+		summary: 'Get Reported Messages',
+		description: `Retrieves all the reported messages grouped by users.
+Permission required: \`view-moderation-console\`
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|6.2.0            | Added       |`,
+		examples: moderationExamples['moderation.reportsByUsers'],
 		authRequired: true,
 		permissionsRequired: ['view-moderation-console'],
 		query: isReportHistoryProps,
@@ -250,6 +259,9 @@ API.v1.get(
 API.v1.get(
 	'moderation.userReports',
 	{
+		summary: 'Get Reported Users',
+		description: `Get the list of reported users. Permission required: \`view-moderation-console\``,
+		examples: moderationExamples['moderation.userReports'],
 		authRequired: true,
 		permissionsRequired: ['view-moderation-console'],
 		query: isReportHistoryProps,
@@ -302,6 +314,14 @@ API.v1.get(
 API.v1.get(
 	'moderation.user.reportedMessages',
 	{
+		summary: "Get User's Reported Messages",
+		description: `Retrieve all reported messages of a user.
+Permission required: \`view-moderation-console\`
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|6.2.0            | Added       |`,
+		examples: moderationExamples['moderation.user.reportedMessages'],
 		authRequired: true,
 		permissionsRequired: ['view-moderation-console'],
 		query: isGetUserReportsParams,
@@ -356,6 +376,9 @@ API.v1.get(
 API.v1.get(
 	'moderation.user.reportsByUserId',
 	{
+		summary: 'Get User Reports by User ID',
+		description: `Get the details of a specific user's reports. Permission required: \`view-moderation-console\``,
+		examples: moderationExamples['moderation.user.reportsByUserId'],
 		authRequired: true,
 		permissionsRequired: ['view-moderation-console'],
 		query: isGetUserReportsParams,
@@ -418,6 +441,12 @@ API.v1.get(
 API.v1.post(
 	'moderation.user.deleteReportedMessages',
 	{
+		summary: 'Delete Reported Messages of a User',
+		description: `Delete all the reports of messages that belongs to user. Permission required: \`manage-moderation-actions\`
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|6.2.0            | Added       |`,
 		authRequired: true,
 		permissionsRequired: ['manage-moderation-actions'],
 		body: isModerationDeleteMsgHistoryParams,
@@ -463,6 +492,13 @@ API.v1.post(
 API.v1.post(
 	'moderation.dismissReports',
 	{
+		summary: 'Dismiss Reports',
+		description: `You can dismiss all the reports of a particular user by the \`userId\`. You can also dismiss the report of a message by the \`msgId\`.
+Permission required: \`manage-moderation-actions\`
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|6.2.0            | Added       |`,
 		authRequired: true,
 		permissionsRequired: ['manage-moderation-actions'],
 		body: isArchiveReportProps,
@@ -508,6 +544,9 @@ API.v1.post(
 API.v1.post(
 	'moderation.dismissUserReports',
 	{
+		summary: 'Dismiss User Reports',
+		description: `Dismiss a specific reported user from the list of reported users. Permission required: \`manage-moderation-actions\``,
+		examples: moderationExamples['moderation.dismissUserReports'],
 		authRequired: true,
 		permissionsRequired: ['manage-moderation-actions'],
 		body: isArchiveReportProps,
@@ -563,6 +602,14 @@ const reportsByMsgIdResponseSchema = ajv.compile<{
 API.v1.get(
 	'moderation.reports',
 	{
+		summary: 'Get Reports of a Message',
+		description: `Retrieve all the reports of a single message. A message can have many reports.
+Permission required: \`view-moderation-console\`
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|6.2.0            | Added       |`,
+		examples: moderationExamples['moderation.reports'],
 		authRequired: true,
 		permissionsRequired: ['view-moderation-console'],
 		query: isReportsByMsgIdParams,
@@ -598,6 +645,13 @@ API.v1.get(
 API.v1.get(
 	'moderation.reportInfo',
 	{
+		summary: 'Get Report Information',
+		description: `Get more details of a single report.
+Permission required: \`view-moderation-console\`
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|6.2.0            | Added       |`,
 		authRequired: true,
 		permissionsRequired: ['view-moderation-console'],
 		query: isReportInfoParams,
@@ -624,6 +678,14 @@ API.v1.get(
 API.v1.post(
 	'moderation.reportUser',
 	{
+		summary: 'Report User',
+		description: `Report a user for offensive messages in the workspace.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|6.4.0            | Added       |`,
+		examples: moderationExamples['moderation.reportUser'],
 		authRequired: true,
 		body: isModerationReportUserPost,
 		response: {

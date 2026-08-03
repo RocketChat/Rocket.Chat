@@ -14,6 +14,7 @@ import {
 import { Meteor } from 'meteor/meteor';
 
 import { API } from '../..';
+import { inquiriesExamples } from './inquiries.examples';
 import { findInquiries, findOneInquiryByRoomId } from './lib/inquiries';
 import { returnRoomAsInquiry } from '../../../lib/omnichannel/rooms';
 import { takeInquiry } from '../../../lib/omnichannel/takeInquiry';
@@ -120,6 +121,14 @@ API.v1.addRoute(
 const livechatInquiriesEndpoints = API.v1.post(
 	'livechat/inquiries.returnAsInquiry',
 	{
+		summary: 'Move Chat to Inquiry',
+		description: `This endpoint is used to move an open chat to the queue. Permission required: \`view-l-room\`
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|7.12.0            | Added       |`,
+		examples: inquiriesExamples['livechat/inquiries.returnAsInquiry'],
 		response: {
 			200: POSTLivechatInquiriesReturnAsInquirySuccessResponse,
 			400: validateBadRequestErrorResponse,

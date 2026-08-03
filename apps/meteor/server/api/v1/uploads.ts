@@ -9,6 +9,7 @@ import {
 	validateNotFoundErrorResponse,
 } from '@rocket.chat/rest-typings';
 
+import { uploadsExamples } from './uploads.examples';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 
@@ -39,6 +40,21 @@ export const isUploadsDeleteParams = ajv.compile<UploadsDeleteParams>(uploadsDel
 const uploadsDeleteEndpoint = API.v1.post(
 	'uploads.delete',
 	{
+		summary: 'Delete Uploaded File',
+		description: `Delete a specific file uploaded to a room. The response includes the list of files that were successfully removed. It may include additional files such as image thumbnails. 
+
+Users can delete messages only in the following cases:
+ * The **Allow Message Deleting** setting is enabled in the workspace's **<a href='https://docs.rocket.chat/docs/message' target='_blank'>Message</a>** settings.
+ * If the \`Block Message Deleting After (n) Minutes\` message setting has a non-zero value, the \`bypass-time-limit-edit-and-delete\` permission is required to delete messages after the defined time limit.
+ * In read-only rooms, the \`post-readonly\` permission is required to delete messages.
+ * The \`delete-own-message\` permission is required to delete users' own messages.
+ * The \`delete-message\` permission is required for users to delete messages from other users.
+ 
+ ### Changelog
+ | Version | Description |
+ | ------- | ----------- |
+ | 8.2.0   | Added       |`,
+		examples: uploadsExamples['uploads.delete'],
 		authRequired: true,
 		body: isUploadsDeleteParams,
 		response: {

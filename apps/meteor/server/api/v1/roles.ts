@@ -14,6 +14,7 @@ import {
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
+import { rolesExamples } from './roles.examples';
 import { getUsersInRolePaginated } from '../../lib/authorization/getUsersInRole';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { hasRoleAsync, hasAnyRoleAsync } from '../../lib/authorization/hasRole';
@@ -36,6 +37,14 @@ const rolesRoutes = API.v1
 	.get(
 		'roles.list',
 		{
+			summary: 'Get Roles',
+			description: `Gets all the roles in the workspace.
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|0.73.0            | Added \`mandatory2fa\` property       |
+|0.70.0            | Added       |`,
+			examples: rolesExamples['roles.list'],
 			authRequired: true,
 			response: {
 				200: ajv.compile<{ roles: Omit<IRole, '_updatedAt'>[] }>({
@@ -73,6 +82,14 @@ const rolesRoutes = API.v1
 	.get(
 		'roles.sync',
 		{
+			summary: 'Get Updated Roles',
+			description: `Gets all the roles in the workspace which are updated after a given date.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|3.1.0            | Added       |`,
+			examples: rolesExamples['roles.sync'],
 			authRequired: true,
 			query: rolesSyncQuerySchema,
 			response: {
@@ -114,6 +131,17 @@ const rolesRoutes = API.v1
 	.post(
 		'roles.addUserToRole',
 		{
+			summary: 'Assign Role to User',
+			description: `Assign a role to a user. Optionally, you can set this role to a user for a specific room. <br>
+**Permissions required**:
+- \`access-permissions\`: Required to modify permissions for various roles
+- \`assign-admin-role\`: Permission to assign the admin role to other users
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|0.70.0            | Added       |`,
+			examples: rolesExamples['roles.addUserToRole'],
 			authRequired: true,
 			body: isRoleAddUserToRoleProps,
 			response: {
@@ -154,6 +182,17 @@ const rolesRoutes = API.v1
 	.get(
 		'roles.getUsersInRole',
 		{
+			summary: 'Get Users of a Role',
+			description: `Gets the users that belong to a specific role.
+**Permissions required**: 
+- \`access-permissions\`: Required to modify permissions for various roles
+- \`view-other-user-channels\`: Permission to view channels owned by other users. Required if the request includes a \`roomId\`
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|1.3.0            | Added       |`,
+			examples: rolesExamples['roles.getUsersInRole'],
 			authRequired: true,
 			permissionsRequired: ['access-permissions'],
 			query: isRolesGetUsersInRoleProps,
@@ -215,6 +254,16 @@ const rolesRoutes = API.v1
 	.post(
 		'roles.delete',
 		{
+			summary: 'Delete Role',
+			description: `Permission required: \`access-permissions\`
+- Roles that have the protected value as true can't be deleted (such as: \`admin\`, \`moderator\`, \`user\` and so on).
+- You cannot delete roles that are assigned to users. To do that, you must first remove this role from all the users.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|3.17.0            | Added       |`,
+			examples: rolesExamples['roles.delete'],
 			authRequired: true,
 			permissionsRequired: ['access-permissions'],
 			body: isRoleDeleteProps,
@@ -257,6 +306,9 @@ const rolesRoutes = API.v1
 	.post(
 		'roles.removeUserFromRole',
 		{
+			summary: 'Remove Role from User',
+			description: `Remove a role from a user. Permission required: \`access-permissions\``,
+			examples: rolesExamples['roles.removeUserFromRole'],
 			authRequired: true,
 			permissionsRequired: ['access-permissions'],
 			body: isRoleRemoveUserFromRoleProps,
@@ -326,6 +378,14 @@ const rolesRoutes = API.v1
 	.get(
 		'roles.getUsersInPublicRoles',
 		{
+			summary: 'Get Users in Public Roles',
+			description: `Use this endpoint to get the list of roles other than \`user\`, such as admin, livechat, and custom roles.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|7.10.0            | Added       |`,
+			examples: rolesExamples['roles.getUsersInPublicRoles'],
 			authRequired: true,
 			response: {
 				200: ajv.compile<{

@@ -10,9 +10,10 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { API } from '../..';
+import { businessHoursExamples } from './businessHours.examples';
+import { findLivechatBusinessHour } from './lib/businessHours';
 import { businessHourManager } from '../../../lib/omnichannel/business-hour';
 import type { ExtractRoutesFromAPI } from '../../ApiClass';
-import { findLivechatBusinessHour } from './lib/businessHours';
 
 API.v1.addRoute(
 	'livechat/business-hour',
@@ -32,6 +33,9 @@ const livechatBusinessHoursEndpoints = API.v1
 	.post(
 		'livechat/business-hours.save',
 		{
+			summary: 'Create a Business Hour',
+			description: `Use this endpoint to create a new Omnichannel business hour.`,
+			examples: businessHoursExamples['livechat/business-hours.save'],
 			response: {
 				200: POSTLivechatBusinessHoursSaveSuccessResponse,
 				400: validateBadRequestErrorResponse,
@@ -52,6 +56,9 @@ const livechatBusinessHoursEndpoints = API.v1
 	.post(
 		'livechat/business-hours.remove',
 		{
+			summary: 'Remove Business Hour',
+			description: `Remove an Omnichannel business hour.`,
+			examples: businessHoursExamples['livechat/business-hours.remove'],
 			response: {
 				200: POSTLivechatBusinessHoursRemoveSuccessResponse,
 				400: validateBadRequestErrorResponse,

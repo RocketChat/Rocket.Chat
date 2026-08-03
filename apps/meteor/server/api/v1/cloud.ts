@@ -10,6 +10,7 @@ import {
 	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
 
+import { cloudExamples } from './cloud.examples';
 import { CloudWorkspaceRegistrationError } from '../../../lib/errors/CloudWorkspaceRegistrationError';
 import { connectWorkspace } from '../../lib/cloud/connectWorkspace';
 import { getCheckoutUrl } from '../../lib/cloud/getCheckoutUrl';
@@ -96,6 +97,10 @@ const checkoutUrlResponseSchema = ajv.compile<{ url: string }>({
 API.v1.post(
 	'cloud.manualRegister',
 	{
+		summary: 'Manual Cloud Register',
+		description: `Manually register a workspace on <a href="https://docs.rocket.chat/docs/rocketchat-cloud" target="_blank">Rocket.Chat Cloud</a>.
+Permission required: \`register-on-cloud\`.`,
+		examples: cloudExamples['cloud.manualRegister'],
 		authRequired: true,
 		permissionsRequired: ['register-on-cloud'],
 		body: isCloudManualRegisterProps,
@@ -192,6 +197,11 @@ API.v1.get(
 API.v1.get(
 	'cloud.registrationStatus',
 	{
+		summary: 'Get Workspace Registration Status',
+		description: `Returns the workspace's current Rocket.Chat Cloud registration status. 
+
+Permission required: \`manage-cloud\`.`,
+		examples: cloudExamples['cloud.registrationStatus'],
 		authRequired: true,
 		permissionsRequired: ['manage-cloud'],
 		response: {
@@ -289,6 +299,16 @@ declare module '@rocket.chat/rest-typings' {
 API.v1.post(
 	'cloud.connectWorkspace',
 	{
+		summary: 'Connect Workspace to Cloud',
+		description: `Connect the workspace to <a href="https://docs.rocket.chat/docs/rocketchat-cloud" target="_blank">Rocket.Chat Cloud</a> using a registration token. To get a registration token, refer to [Registration via Token](https://docs.rocket.chat/docs/register-your-workspace#how-to-get-a-token).
+
+Permission required: \`manage-cloud\`.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|8.7.0            | Added       |`,
+		examples: cloudExamples['cloud.connectWorkspace'],
 		authRequired: true,
 		permissionsRequired: ['manage-cloud'],
 		body: isCloudConnectWorkspaceProps,

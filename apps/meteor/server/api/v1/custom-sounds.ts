@@ -17,6 +17,7 @@ import {
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
+import { customSoundsExamples } from './custom-sounds.examples';
 import { getExtension, getMimeTypeFromFileName } from '../../../app/utils/lib/mimeTypes';
 import { MAX_CUSTOM_SOUND_SIZE_BYTES, CUSTOM_SOUND_ALLOWED_MIME_TYPES } from '../../../lib/constants';
 import { SystemLogger } from '../../lib/logger/system';
@@ -78,6 +79,15 @@ const customSoundsEndpoints = API.v1
 	.get(
 		'custom-sounds.list',
 		{
+			summary: 'List Custom Sounds',
+			description: `List all custom sounds. 
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+| 2.4.0            | Added       |
+| 2.4.0            | Added \`name\` query parameter for filtering.      |`,
+			examples: customSoundsExamples['custom-sounds.list'],
 			response: {
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
@@ -148,6 +158,17 @@ const customSoundsEndpoints = API.v1
 	.get(
 		'custom-sounds.getOne',
 		{
+			summary: 'Get Custom Sound',
+			description: `- Returns one custom sound record for the workspace. You must pass the sound’s \`_id\` as a query parameter.
+
+- Authentication is required. The response includes the sound’s metadata (\`name\`, \`extension\`, \`_updatedAt\`), not the binary file.
+
+### Changelog
+
+| Version | Description |
+| ------- | ----------- |
+| 8.3.0   | Added       |`,
+			examples: customSoundsExamples['custom-sounds.getOne'],
 			response: {
 				200: ajv.compile<{ sound: ICustomSound; success: boolean }>({
 					additionalProperties: false,
@@ -186,6 +207,22 @@ const customSoundsEndpoints = API.v1
 	.post(
 		'custom-sounds.create',
 		{
+			summary: 'Create Custom Sound',
+			description: `Upload a new custom sound to the workspace.
+
+- The request must be sent as \`multipart/form-data\` and contain the audio file in the \`sound\` field and the display name in the \`name\` field.
+
+- The file size must not exceed \`5 MB\` (5242880 bytes), and the file MIME type must be one of \`audio/mpeg\`, \`audio/mp3\`, \`audio/wav\`, or \`audio/x-wav\`.
+
+This endpoint replaces the deprecated DDP methods \`insertOrUpdateSound\` and \`uploadCustomSound\`, which will be removed in \`9.0.0\`.
+
+Permission required: \`manage-sounds\`
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 8.5.0   | Added       |`,
+			examples: customSoundsExamples['custom-sounds.create'],
 			response: {
 				200: createCustomSoundsResponse,
 				400: validateBadRequestErrorResponse,
@@ -232,6 +269,22 @@ const customSoundsEndpoints = API.v1
 	.post(
 		'custom-sounds.update',
 		{
+			summary: 'Update Custom Sound',
+			description: `Update an existing custom sound.
+
+- The request must be sent as \`multipart/form-data\`. The \`_id\` and \`name\` fields are required; the \`sound\` file field is optional and only required when replacing the audio file.
+
+- When a new file is provided, the file size must not exceed \`5 MB\` (5242880 bytes), and the file MIME type must be one of \`audio/mpeg\`, \`audio/mp3\`, \`audio/wav\`, or \`audio/x-wav\`.
+
+This endpoint replaces the deprecated DDP methods \`insertOrUpdateSound\` and \`uploadCustomSound\`, which will be removed in \`9.0.0\`.
+
+Permission required: \`manage-sounds\`
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 8.5.0   | Added       |`,
+			examples: customSoundsExamples['custom-sounds.update'],
 			response: {
 				200: updateCustomSoundsResponse,
 				400: validateBadRequestErrorResponse,
@@ -300,6 +353,16 @@ const customSoundsEndpoints = API.v1
 	.post(
 		'custom-sounds.delete',
 		{
+			summary: 'Delete Custom Sound',
+			description: `Delete a custom sound from the workspace by its \`_id\`. This also removes the associated audio file from storage. This endpoint replaces the deprecated DDP method \`deleteCustomSound\`, which now logs a deprecation warning and is scheduled for removal in \`9.0.0\`.
+
+Permission required: \`manage-sounds\`
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 8.6.0   | Added       |`,
+			examples: customSoundsExamples['custom-sounds.delete'],
 			response: {
 				200: deleteCustomSoundsResponse,
 				400: validateBadRequestErrorResponse,

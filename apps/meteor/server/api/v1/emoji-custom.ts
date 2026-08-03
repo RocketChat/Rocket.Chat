@@ -6,6 +6,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 import type { WithId } from 'mongodb';
 
+import { emojiCustomExamples } from './emoji-custom.examples';
 import type { EmojiData } from '../../lib/media/emoji-custom/lib/insertOrUpdateEmoji';
 import { insertOrUpdateEmoji } from '../../lib/media/emoji-custom/lib/insertOrUpdateEmoji';
 import { uploadEmojiCustomWithBuffer } from '../../lib/media/emoji-custom/lib/uploadEmojiCustom';
@@ -85,6 +86,15 @@ const emojiCustomCreateEndpoints = API.v1
 	.get(
 		'emoji-custom.list',
 		{
+			summary: 'Get Updated List of Custom Emojis',
+			description: `Get a list of updated and removed emojis.
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|7.0.0            | Added  \`_id\` and  \`_updatedAt\` query parameter     |
+|0.75.0            | Added       |`,
+			examples: emojiCustomExamples['emoji-custom.list'],
 			authRequired: true,
 			query: isEmojiCustomList,
 			response: {
@@ -134,6 +144,16 @@ const emojiCustomCreateEndpoints = API.v1
 	.get(
 		'emoji-custom.all',
 		{
+			summary: 'List All Custom Emojis',
+			description: `List all custom emojis.
+
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|7.11.0            | Added the \`name\` query parameter       |
+|0.63.0            | Added       |`,
+			examples: emojiCustomExamples['emoji-custom.all'],
 			authRequired: true,
 			response: {
 				200: emojiCustomAllResponseSchema,
@@ -167,6 +187,16 @@ const emojiCustomCreateEndpoints = API.v1
 	.post(
 		'emoji-custom.create',
 		{
+			summary: 'Create an Emoji',
+			description: `Upload a custom emoji to the workspace. Make sure that you have configured the storage system. For details, refer to the [Manage Custom Sounds and Emojis](https://docs.rocket.chat/docs/manage-custom-sounds-and-emojis) document.
+
+Permission required: \`manage-emoji\`
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|0.74.0            | Added       |`,
+			examples: emojiCustomExamples['emoji-custom.create'],
 			authRequired: true,
 			response: {
 				200: ajv.compile<void>({
@@ -221,6 +251,14 @@ const emojiCustomCreateEndpoints = API.v1
 	.post(
 		'emoji-custom.update',
 		{
+			summary: 'Update a Custom Emoji',
+			description: `Update a custom emoji. Permission required: \`manage-emoji\`
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|0.74.0            | Added       |`,
+			examples: emojiCustomExamples['emoji-custom.update'],
 			authRequired: true,
 			response: {
 				200: ajv.compile({
@@ -288,6 +326,14 @@ const emojiCustomCreateEndpoints = API.v1
 	.post(
 		'emoji-custom.delete',
 		{
+			summary: 'Delete a Custom Emoji',
+			description: `Delete a custom emoji. Permission required: \`manage-emoji\`
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|0.74.0            | Added       |`,
+			examples: emojiCustomExamples['emoji-custom.delete'],
 			authRequired: true,
 			body: emojiDeleteBodySchema,
 			response: {

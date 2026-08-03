@@ -28,6 +28,7 @@ import {
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
+import { teamsExamples } from './teams.examples';
 import { canAccessRoomAsync } from '../../lib/authorization';
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync, hasAllPermissionAsync } from '../../lib/authorization/hasPermission';
 import { eraseRoom } from '../../lib/eraseRoom';
@@ -62,6 +63,9 @@ const teamsEndpoints = API.v1
 	.get(
 		'teams.list',
 		{
+			summary: 'Get List of Teams',
+			description: `Lists the public and private teams the request sender is part of.`,
+			examples: teamsExamples['teams.list'],
 			authRequired: true,
 			response: {
 				200: paginatedTeamsResponseSchema,
@@ -86,6 +90,11 @@ const teamsEndpoints = API.v1
 	.get(
 		'teams.listAll',
 		{
+			summary: 'Get List of All Teams',
+			description: `Lists all the teams and their information.
+
+Permission required: \`view-all-teams\``,
+			examples: teamsExamples['teams.listAll'],
 			authRequired: true,
 			permissionsRequired: ['view-all-teams'],
 			response: {
@@ -110,6 +119,17 @@ const teamsEndpoints = API.v1
 	.post(
 		'teams.create',
 		{
+			summary: 'Create a New Team',
+			description: `Create a new public or private team in the workspace.
+
+Permission required: \`create-team\`. When you create a team from an existing room by passing \`room.id\`, you also need the \`edit-room\` permission for that room.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 8.7.0   | Enforced room permission checks when creating a team from an existing room. |
+| 3.13.0  | Added |`,
+			examples: teamsExamples['teams.create'],
 			authRequired: true,
 			permissionsRequired: ['create-team'],
 			body: isTeamsCreateProps,
@@ -164,6 +184,9 @@ const getTeamByIdOrName = async (params: { teamId: string } | { teamName: string
 API.v1.post(
 	'teams.convertToChannel',
 	{
+		summary: 'Convert Team to Channel',
+		description: `Convert a team to a channel. Permission required: \`convert-team\``,
+		examples: teamsExamples['teams.convertToChannel'],
 		authRequired: true,
 		body: isTeamsConvertToChannelProps,
 		response: {
@@ -225,6 +248,11 @@ const roomsResponseSchema = ajv.compile<{ rooms: object[] }>({
 API.v1.post(
 	'teams.addRooms',
 	{
+		summary: 'Add Rooms to a Team',
+		description: `Add existing rooms to a team.
+
+Permission required: \`move-room-to-team\``,
+		examples: teamsExamples['teams.addRooms'],
 		authRequired: true,
 		body: isTeamsAddRoomsProps,
 		response: {
@@ -255,6 +283,11 @@ API.v1.post(
 API.v1.post(
 	'teams.removeRoom',
 	{
+		summary: 'Remove Room from the Team',
+		description: `Removes a room from a team. 
+
+Permissions required: \`remove-team-channel\`, \`view-all-team-channels\``,
+		examples: teamsExamples['teams.removeRoom'],
 		authRequired: true,
 		body: isTeamsRemoveRoomProps,
 		response: {
@@ -287,6 +320,11 @@ API.v1.post(
 API.v1.post(
 	'teams.updateRoom',
 	{
+		summary: 'Update Room in a Team',
+		description: `Updates a room from a team. 
+
+Permissions required: \`edit-team-channel\`, \`view-all-team-channels\``,
+		examples: teamsExamples['teams.updateRoom'],
 		authRequired: true,
 		body: isTeamsUpdateRoomProps,
 		response: {
@@ -338,6 +376,9 @@ const paginatedRoomsResponseSchema = ajv.compile<{ rooms: object[]; total: numbe
 API.v1.get(
 	'teams.listRooms',
 	{
+		summary: 'List Rooms of a Team',
+		description: `List all rooms in a team. Permissions required: \`view-all-teams\`, \`view-all-team-channels\``,
+		examples: teamsExamples['teams.listRooms'],
 		authRequired: true,
 		query: isTeamsListRoomsProps,
 		response: {
@@ -383,6 +424,11 @@ API.v1.get(
 API.v1.get(
 	'teams.listRoomsOfUser',
 	{
+		summary: 'List User Rooms of a Team',
+		description: `Lists only the team's rooms that a particular user has joined.
+
+Permissions required: \`view-all-teams\`, \`view-all-team-channels\``,
+		examples: teamsExamples['teams.listRoomsOfUser'],
 		authRequired: true,
 		query: isTeamsListRoomsOfUserProps,
 		response: {
@@ -443,6 +489,10 @@ const getTeamByIdOrNameOrParentRoom = async (
 API.v1.get(
 	'teams.listChildren',
 	{
+		summary: 'List Rooms and Discussions of a Team',
+		description: `Lists a particular team's public rooms, discussions, and the rooms (public/private) a user is part of from the team's main room.
+Currently, this endpoint returns the discussions from the parent team rooms only; discussions from sub-channels are not returned.`,
+		examples: teamsExamples['teams.listChildren'],
 		authRequired: true,
 		query: isTeamsListChildrenProps,
 		response: {
@@ -482,6 +532,9 @@ API.v1.get(
 API.v1.get(
 	'teams.members',
 	{
+		summary: 'List Team Members',
+		description: `List all members of a team. Permission required: \`view-all-teams\``,
+		examples: teamsExamples['teams.members'],
 		authRequired: true,
 		query: isTeamsMembersProps,
 		response: {
@@ -538,6 +591,11 @@ API.v1.get(
 API.v1.post(
 	'teams.addMembers',
 	{
+		summary: 'Add Members to the Team',
+		description: `Add members to a team.
+
+Permissions required: \`add-team-member\` or \`edit-team-member\``,
+		examples: teamsExamples['teams.addMembers'],
 		authRequired: true,
 		body: isTeamsAddMembersProps,
 		response: {
@@ -569,6 +627,11 @@ API.v1.post(
 API.v1.post(
 	'teams.updateMember',
 	{
+		summary: 'Update Team Member Info',
+		description: `Updates a team member's roles. 
+
+Permission required: \`edit-team-member\``,
+		examples: teamsExamples['teams.updateMember'],
 		authRequired: true,
 		body: isTeamsUpdateMemberProps,
 		response: {
@@ -600,6 +663,11 @@ API.v1.post(
 API.v1.post(
 	'teams.removeMember',
 	{
+		summary: 'Remove Member from Team',
+		description: `Removes a member from a team. 
+
+Permission required: \`edit-team-member\``,
+		examples: teamsExamples['teams.removeMember'],
 		authRequired: true,
 		body: isTeamsRemoveMemberProps,
 		response: {
@@ -649,6 +717,9 @@ API.v1.post(
 API.v1.post(
 	'teams.leave',
 	{
+		summary: 'Leave a Team',
+		description: `Leave a team`,
+		examples: teamsExamples['teams.leave'],
 		authRequired: true,
 		body: isTeamsLeaveProps,
 		response: {
@@ -683,6 +754,9 @@ API.v1.post(
 API.v1.get(
 	'teams.info',
 	{
+		summary: 'Get Team Info',
+		description: `Gets a team's information. If the team is not public, the request sender must be a member of the team, or must have the \`view-all-teams\` permission.`,
+		examples: teamsExamples['teams.info'],
 		authRequired: true,
 		query: isTeamsInfoProps,
 		response: {
@@ -725,6 +799,11 @@ API.v1.get(
 API.v1.post(
 	'teams.delete',
 	{
+		summary: 'Delete a Team',
+		description: `Removes a team. 
+
+Permission required: \`delete-team\``,
+		examples: teamsExamples['teams.delete'],
 		authRequired: true,
 		body: isTeamsDeleteProps,
 		response: {
@@ -756,6 +835,9 @@ API.v1.post(
 API.v1.get(
 	'teams.autocomplete',
 	{
+		summary: 'Autocomplete Team',
+		description: `List the teams whose names match a given pattern.`,
+		examples: teamsExamples['teams.autocomplete'],
 		authRequired: true,
 		query: isTeamsAutocompleteProps,
 		response: {
@@ -784,6 +866,11 @@ API.v1.get(
 API.v1.post(
 	'teams.update',
 	{
+		summary: 'Update a Team',
+		description: `Updates an existing team (name and type). 
+
+Permission required: \`edit-team\``,
+		examples: teamsExamples['teams.update'],
 		authRequired: true,
 		body: isTeamsUpdateProps,
 		response: {

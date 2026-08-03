@@ -21,6 +21,7 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
 
+import { imExamples } from './im.examples';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { eraseRoom } from '../../lib/eraseRoom';
@@ -114,6 +115,14 @@ const isDmDeleteProps = ajv.compile<DmDeleteProps>({
 });
 
 const dmDeleteEndpointsProps = {
+	summary: 'Delete DM',
+	description: `Delete a DM. Permission required: \`view-room-administration\`.
+
+### Changelog
+| Version      | Description | 
+| ------------ | ------------|
+|3.18.0        | Added       |`,
+	examples: imExamples['im.delete'],
 	authRequired: true,
 	body: isDmDeleteProps,
 	response: {
@@ -147,6 +156,14 @@ const DmClosePropsSchema = {
 const isDmCloseProps = ajv.compile<DmCloseProps>(DmClosePropsSchema);
 
 const dmCloseEndpointsProps = {
+	summary: 'Close DM',
+	description: `Removes the direct message from the user's list of direct messages.
+
+### Changelog
+| Version      | Description | 
+| ------------ | ------------|
+| 0.48.0       | Added       |`,
+	examples: imExamples['dm.close'],
 	authRequired: true,
 	body: isDmCloseProps,
 	response: {
@@ -232,6 +249,14 @@ const isDmOpenProps = ajv.compile<{ roomId: string }>({
 });
 
 const dmOpenEndpointsProps = {
+	summary: 'Open DM',
+	description: `Adds a DM back to the user's list of direct messages.
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+| 0.48.0           | Added       |`,
+	examples: imExamples['dm.open'],
 	authRequired: true,
 	body: isDmOpenProps,
 	response: {
@@ -285,6 +310,14 @@ const dmSetTopicResponseSchema = ajv.compile<{ topic?: string }>({
 });
 
 const dmSetTopicEndpointsProps = {
+	summary: 'Set DM Topic',
+	description: `Set the topic of a DM.
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+| 0.48.0           | Added       |`,
+	examples: imExamples['dm.setTopic'],
 	authRequired: true,
 	body: isDmSetTopicProps,
 	response: {
@@ -360,6 +393,14 @@ const dmCountersResponseSchema = ajv.compile<{
 });
 
 const dmCountersEndpointsProps = {
+	summary: 'Get DM Counters',
+	description: `Gets counters and information of direct messages. Permission required: \`view-room-administration\`.
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+| 0.65.0           | Added       |`,
+	examples: imExamples['dm.counters'],
 	authRequired: true,
 	query: isDmCountersProps,
 	response: {
@@ -447,6 +488,15 @@ const dmFilesResponseSchema = ajv.compile<{ files: object[]; count: number; offs
 });
 
 const dmFilesEndpointsProps = {
+	summary: 'Get DM Files',
+	description: `Get all files in a DM. 
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|0.64.0            | Change \`userId\` to \`user\` object in response|
+|0.59.0            | Added       |`,
+	examples: imExamples['dm.files'],
 	authRequired: true,
 	query: isDmFileProps,
 	response: {
@@ -514,6 +564,14 @@ const dmMembersResponseSchema = ajv.compile<{ members: object[]; count: number; 
 });
 
 const dmMembersEndpointsProps = {
+	summary: 'List DM Members',
+	description: `List all the members of a DM. 
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|0.59.0             | Added       |`,
+	examples: imExamples['dm.members'],
 	authRequired: true,
 	query: isDmMemberProps,
 	response: {
@@ -619,6 +677,15 @@ const dmMessagesResponseSchema = ajv.compile<{ messages: IMessage[]; count: numb
 });
 
 const dmMessagesEndpointsProps = {
+	summary: 'List DM Messages',
+	description: `List all the messages in a DM. 
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+| 7.0.0  | Added \`mentionIds\`, \`starredIds\`, \`pinned\` query parameters.|         
+|0.59.0            | Added       |`,
+	examples: imExamples['dm.messages'],
 	authRequired: true,
 	query: isDmMessagesProps,
 	response: {
@@ -694,6 +761,14 @@ const dmHistoryResponseSchema = ajv.compile<Record<string, unknown>>({
 });
 
 const dmHistoryEndpointsProps = {
+	summary: 'DM History',
+	description: `Retrieves the message history from a direct message.
+### Change Log
+| Version | Description             |
+| ------- | ----------------------- |
+| 0.75.0  | Added \`offset\` property |
+| 0.48.0  | Added                   |`,
+	examples: imExamples['dm.history'],
 	authRequired: true,
 	query: isDmHistoryProps,
 	response: {
@@ -776,6 +851,15 @@ const paginatedImsResponseSchema = ajv.compile<{ ims: IRoom[]; offset: number; c
 });
 
 const dmMessagesOthersEndpointsProps = {
+	summary: 'Message Others',
+	description: `Retrieves the messages from any direct message in the server.  For this method to work, navigate to  **Manage > Workspace > Settings > General > REST API > Enable Direct Message History Endpoint** and enable it. 
+
+Permission required: \`view-room-administration\`.
+### Change Log
+| Version | Description             |
+| ------- | ----------------------- |
+| 0.50.0  | Added                   |`,
+	examples: imExamples['dm.messages.others'],
 	authRequired: true as const,
 	permissionsRequired: ['view-room-administration'],
 	response: {
@@ -830,6 +914,18 @@ const dmMessagesOthersAction = <Path extends string>(_name: Path): TypedAction<t
 	};
 
 const dmListEndpointsProps = {
+	summary: 'List DMs',
+	description: `List all the DMs of the authenticated user. 
+
+### Change Log
+
+| Version | Description                                  |
+| ------- | -------------------------------------------- |
+| 0.67.0  | Remove \`query\` parameter support.            |
+| 0.62.0  | Add \`query\` parameter support.               |
+| 0.49.0  | Count and offset query parameters supported. |
+| 0.48.0  | Added                                        |`,
+	examples: imExamples['dm.list'],
 	authRequired: true as const,
 	response: {
 		200: paginatedImsResponseSchema,
@@ -870,6 +966,16 @@ const dmListAction = <Path extends string>(_name: Path): TypedAction<typeof dmLi
 	};
 
 const dmListEveryoneEndpointsProps = {
+	summary: 'List All DMs',
+	description: `List all DMs in the workspace.  
+
+Permission required:\`view-room-administration\`.
+
+### Changelog
+| Version      | Description | 
+| ------------ | ------------|
+|0.49.0        | Added       |`,
+	examples: imExamples['dm.list.everyone'],
 	authRequired: true as const,
 	permissionsRequired: ['view-room-administration'],
 	response: {
@@ -906,6 +1012,16 @@ const dmListEveryoneAction = <Path extends string>(_name: Path): TypedAction<typ
 	};
 
 const dmCreateEndpointsProps = {
+	summary: 'Create DM',
+	description: `Create a direct message session with another user or more than one user.
+
+#### Change Log
+| Version | Description              |
+| ------- | ------------------------ |
+| 0.59.0  | Added                    |
+| 3.1.0   | Added usernames fields   |
+| 3.18.0  | Added excludeSelf option |`,
+	examples: imExamples['dm.create'],
 	authRequired: true,
 	body: isDmCreateProps,
 	response: {
@@ -959,6 +1075,14 @@ const dmLeaveAction = <Path extends string>(_path: Path): TypedAction<typeof dmL
 	};
 
 const dmBlockUserEndpointsProps = {
+	summary: 'Block User in DM',
+	description: `Blocks or unblocks the other user in a direct message room. This endpoint replaces the deprecated \`blockUser\` and \`unblockUser\` DDP methods.
+
+### Changelog
+| Version      | Description |
+| ------------ | ------------|
+| 8.6.0        | Added       |`,
+	examples: imExamples['im.blockUser'],
 	authRequired: true,
 	body: isDmBlockUserProps,
 	response: {

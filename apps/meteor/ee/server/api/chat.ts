@@ -8,6 +8,7 @@ import {
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
+import { chatExamples } from './chat.examples';
 import { API } from '../../../server/api/api';
 import { getReadReceiptsFunction } from '../meteor-methods/getReadReceipts';
 
@@ -39,6 +40,16 @@ const getMessageReadReceiptsResponseSchema = ajv.compile<{ receipts: IReadReceip
 API.v1.get(
 	'chat.getMessageReadReceipts',
 	{
+		summary: 'Get Message Read Receipts',
+		description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/premium.svg" alt="Premium tag" style="display: block; margin: auto;"></div>
+
+Get the <a href='https://docs.rocket.chat/docs/message-actions#read-receipts' target='_blank'>read receipts</a> of messages.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+| 0.63.0          | Added       |`,
+		examples: chatExamples['chat.getMessageReadReceipts'],
 		authRequired: true,
 		query: isChatGetMessageReadReceiptsProps,
 		response: {

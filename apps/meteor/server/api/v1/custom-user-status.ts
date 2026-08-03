@@ -11,6 +11,7 @@ import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typing
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
+import { customUserStatusExamples } from './custom-user-status.examples';
 import { deleteCustomUserStatus } from '../../meteor-methods/users/deleteCustomUserStatus';
 import { insertOrUpdateUserStatus } from '../../meteor-methods/users/insertOrUpdateUserStatus';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
@@ -56,6 +57,15 @@ const isCustomUserStatusListProps = ajvQuery.compile<CustomUserStatusListProps>(
 const customUserStatusEndpoints = API.v1.get(
 	'custom-user-status.list',
 	{
+		summary: 'List Custom User Status',
+		description: `Lists all available custom user's status.
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|7.0.0           | Added \`name\` and \`_id\` query parameters for filtering.      |
+|2.4.0            | Added       |`,
+		examples: customUserStatusExamples['custom-user-status.list'],
 		authRequired: true,
 		query: isCustomUserStatusListProps,
 		response: {
@@ -149,6 +159,14 @@ const customUserStatusCreateResponseSchema = ajv.compile<{ customUserStatus: ICu
 API.v1.post(
 	'custom-user-status.create',
 	{
+		summary: 'Create Custom Status',
+		description: `Create a custom user status. Permission required: \`manage-user-status\`
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|2.4.0            | Added       |`,
+		examples: customUserStatusExamples['custom-user-status.create'],
 		authRequired: true,
 		body: isCustomUserStatusCreateProps,
 		response: {
@@ -198,6 +216,14 @@ const customUserStatusDeleteResponseSchema = ajv.compile<void>({
 API.v1.post(
 	'custom-user-status.delete',
 	{
+		summary: 'Delete Custom User Status',
+		description: `Delete a custom user status. Permission required: \`manage-user-status\`
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|2.4.0            | Added       |`,
+		examples: customUserStatusExamples['custom-user-status.delete'],
 		authRequired: true,
 		body: isCustomUserStatusDeleteProps,
 		response: {
@@ -239,6 +265,14 @@ const customUserStatusUpdateResponseSchema = ajv.compile<{ customUserStatus: ICu
 API.v1.post(
 	'custom-user-status.update',
 	{
+		summary: 'Update Custom Status',
+		description: `Update a custom status. Permission required: \`manage-user-status\`
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|2.4.0            | Added       |`,
+		examples: customUserStatusExamples['custom-user-status.update'],
 		authRequired: true,
 		body: isCustomUserStatusUpdateProps,
 		response: {

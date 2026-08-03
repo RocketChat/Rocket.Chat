@@ -4,6 +4,7 @@ import { WebdavAccounts } from '@rocket.chat/models';
 import { ajv, validateUnauthorizedErrorResponse, validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
 import type { DeleteResult } from 'mongodb';
 
+import { webdavExamples } from './webdav.examples';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { findWebdavAccountsByUserId } from '../lib/webdav';
@@ -11,6 +12,14 @@ import { findWebdavAccountsByUserId } from '../lib/webdav';
 const webdavGetMyAccountsEndpoints = API.v1.get(
 	'webdav.getMyAccounts',
 	{
+		summary: 'Get WebDAV Accounts',
+		description: `Retrieves the user's <a href="https://docs.rocket.chat/docs/webdav-integration" target="_blank">WebDAV</a> accounts.
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|2.4.0            | Added       |`,
+		examples: webdavExamples['webdav.getMyAccounts'],
 		authRequired: true,
 		response: {
 			200: ajv.compile<{
@@ -78,6 +87,9 @@ const isPOSTRemoveWebdavAccount = ajv.compile<POSTRemoveWebdavAccount>(POSTRemov
 const webdavRemoveAccountEndpoints = API.v1.post(
 	'webdav.removeWebdavAccount',
 	{
+		summary: 'Remove WebDAV Account',
+		description: `Remove a specific WebDAV account.`,
+		examples: webdavExamples['webdav.removeWebdavAccount'],
 		authRequired: true,
 		validateParams: isPOSTRemoveWebdavAccount,
 		body: isPOSTRemoveWebdavAccount,

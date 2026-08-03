@@ -21,6 +21,7 @@ import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
+import { groupsExamples } from './groups.examples';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../lib/authorization';
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { eraseRoom } from '../../lib/eraseRoom';
@@ -190,6 +191,14 @@ const announcementResponseSchema = stringFieldResponseSchema<{ announcement: str
 API.v1.post(
 	'groups.addAll',
 	{
+		summary: 'Add All Users to Group',
+		description: `Add all workspace users to the private channel. You can do this if you are a member of the private channel or have admin permissions.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 0.55.0  | Added       |`,
+		examples: groupsExamples['groups.addAll'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string; activeUsersOnly?: boolean | string | number }>({
 			activeUsersOnly: { type: ['boolean', 'string', 'number'] },
@@ -224,6 +233,16 @@ API.v1.post(
 API.v1.post(
 	'groups.addModerator',
 	{
+		summary: 'Add Group Moderator',
+		description: `Assign the \`moderator\` role to a user in a private channel. Learn more about roles from the <a href='https://docs.rocket.chat/docs/roles-in-rocketchat' target='_blank'>Roles in Rocket.Chat</a> document.
+
+Permission required: \`set-moderator\`
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 0.49.4  | Added.      |`,
+		examples: groupsExamples['groups.addModerator'],
 		authRequired: true,
 		body: roomUserBody<{ roomId?: string; roomName?: string; userId?: string; username?: string; user?: string }>(),
 		response: {
@@ -249,6 +268,14 @@ API.v1.post(
 API.v1.post(
 	'groups.addOwner',
 	{
+		summary: 'Add Group Owner',
+		description: `Assign \`owner\` role for a user in the current private channel. Learn more about roles from the <a href='https://docs.rocket.chat/docs/roles-in-rocketchat' target='_blank'>Roles in Rocket.Chat</a> document.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 0.49.4  | Added.      |`,
+		examples: groupsExamples['groups.addOwner'],
 		authRequired: true,
 		body: roomUserBody<{ roomId?: string; roomName?: string; userId?: string; username?: string; user?: string }>(),
 		response: {
@@ -274,6 +301,16 @@ API.v1.post(
 API.v1.post(
 	'groups.addLeader',
 	{
+		summary: 'Add Group Leader',
+		description: `Assign the \`leader\` role to a user in a private channel. Learn more about roles from the <a href='https://docs.rocket.chat/docs/roles-in-rocketchat' target='_blank'>Roles in Rocket.Chat</a> document.
+
+Permission required:  \`set-leader\` 
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 0.58.0  | Added.      |`,
+		examples: groupsExamples['groups.addLeader'],
 		authRequired: true,
 		body: roomUserBody<{ roomId?: string; roomName?: string; userId?: string; username?: string; user?: string }>(),
 		response: {
@@ -299,6 +336,14 @@ API.v1.post(
 API.v1.post(
 	'groups.archive',
 	{
+		summary: 'Archive a Group',
+		description: `Archive a private channel. You need the \`archive-room\` permission.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 0.48.0  | Added       |`,
+		examples: groupsExamples['groups.archive'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string }>(),
 		response: {
@@ -322,6 +367,14 @@ API.v1.post(
 API.v1.post(
 	'groups.close',
 	{
+		summary: 'Close Group',
+		description: `Hides the private channel from the list of channels in the workspace sidebar, only if you're part of the group. It will reappear when someone sends a new message. You can search for hidden channels using the workspace **Directory**.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 0.48.0  | Added       |`,
+		examples: groupsExamples['groups.close'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string }>(),
 		response: {
@@ -723,6 +776,14 @@ API.v1.addRoute(
 API.v1.post(
 	'groups.kick',
 	{
+		summary: 'Remove User from Group',
+		description: `Remove a user from the private group/channel. Permission required: \`kick-user-from-any-p-room\`
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 0.48.0  | Added       |`,
+		examples: groupsExamples['groups.kick'],
 		authRequired: true,
 		body: roomUserBody<{ roomId?: string; roomName?: string; userId?: string; username?: string; user?: string }>(),
 		response: {
@@ -748,6 +809,14 @@ API.v1.post(
 API.v1.post(
 	'groups.leave',
 	{
+		summary: 'Leave Group',
+		description: `Leave a private channel. Leave a private channel. If a group owner is leaving, they must set another owner before leaving the group. Permission required: \`leave-p\`
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 0.48.0  | Added       |`,
+		examples: groupsExamples['groups.leave'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string }>(),
 		response: {
@@ -994,6 +1063,14 @@ API.v1.addRoute(
 API.v1.post(
 	'groups.open',
 	{
+		summary: 'Add Group to List',
+		description: `Use this endpoint to add the private group/channel back to the list of rooms in the workspace sidebar, if you have used the <a href='https://developer.rocket.chat/apidocs/close-group' target='_blank'>groups.close</a> endpoint to remove the channel from the sidebar.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 0.48.0  | Added       |`,
+		examples: groupsExamples['groups.open'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string }>(),
 		response: {
@@ -1022,6 +1099,17 @@ API.v1.post(
 API.v1.post(
 	'groups.removeModerator',
 	{
+		summary: 'Remove Group Moderator',
+		description: `Remove the \`moderator\` role from a user in a private channel. 
+
+Permission required: \`set-moderator\`
+
+### Changelog
+
+| Version | Description |
+| ------- | ----------- |
+| 0.49.4  | Added       |`,
+		examples: groupsExamples['groups.removeModerator'],
 		authRequired: true,
 		body: roomUserBody<{ roomId?: string; roomName?: string; userId?: string; username?: string; user?: string }>(),
 		response: {
@@ -1047,6 +1135,17 @@ API.v1.post(
 API.v1.post(
 	'groups.removeOwner',
 	{
+		summary: 'Remove Group Owner',
+		description: `Remove the \`owner\` role from a user in a private channel. 
+
+Permission required: \`set-owner\` 
+
+### Changelog
+
+| Version | Description |
+| ------- | ----------- |
+| 0.49.4  | Added       |`,
+		examples: groupsExamples['groups.removeOwner'],
 		authRequired: true,
 		body: roomUserBody<{ roomId?: string; roomName?: string; userId?: string; username?: string; user?: string }>(),
 		response: {
@@ -1072,6 +1171,18 @@ API.v1.post(
 API.v1.post(
 	'groups.removeLeader',
 	{
+		summary: 'Remove Group Leader',
+		description: `Remove the \`leader\` role from a user in a private channel. 
+
+Permission required: \`set-leader\`
+
+
+### Changelog
+
+| Version | Description |
+| ------- | ----------- |
+| 0.58.0  | Added       |`,
+		examples: groupsExamples['groups.removeLeader'],
 		authRequired: true,
 		body: roomUserBody<{ roomId?: string; roomName?: string; userId?: string; username?: string; user?: string }>(),
 		response: {
@@ -1097,6 +1208,14 @@ API.v1.post(
 API.v1.post(
 	'groups.rename',
 	{
+		summary: 'Rename Group',
+		description: `Rename a private channel. Permission required: \`edit-room\`
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 0.48.0  | Added       |`,
+		examples: groupsExamples['groups.rename'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string; name: string }>({ name: { type: 'string' } }, ['name']),
 		response: {
@@ -1132,6 +1251,15 @@ API.v1.post(
 API.v1.post(
 	'groups.setCustomFields',
 	{
+		summary: 'Set Group Custom Fields',
+		description: `Set custom fields for the private channel. These custom fields are not displayed on the workspace UI.
+Permission required: \`edit-room\`
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 0.62.0  | Added       |`,
+		examples: groupsExamples['groups.setCustomFields'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string; customFields: Record<string, unknown> }>(
 			{ customFields: { type: 'object' } },
@@ -1166,6 +1294,14 @@ API.v1.post(
 API.v1.post(
 	'groups.setDescription',
 	{
+		summary: 'Set Group Description',
+		description: `Set the description for the private channel. Permission required: \`edit-room\`
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 0.48.0  | Added       |`,
+		examples: groupsExamples['groups.setDescription'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string; description: string }>({ description: { type: 'string' } }, ['description']),
 		response: {
@@ -1191,6 +1327,14 @@ API.v1.post(
 API.v1.post(
 	'groups.setPurpose',
 	{
+		summary: 'Set Group Purpose',
+		description: `(Obsolete) Sets the description for the group/channel (the same as \`groups.setDescription\`).
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 0.48.0  | Added       |`,
+		examples: groupsExamples['groups.setPurpose'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string; purpose: string }>({ purpose: { type: 'string' } }, ['purpose']),
 		response: {
@@ -1216,6 +1360,14 @@ API.v1.post(
 API.v1.post(
 	'groups.setReadOnly',
 	{
+		summary: 'Set Group as Read Only',
+		description: `Set or unset a private channel as <a href='https://docs.rocket.chat/docs/channels#readonly-channels' target='_blank'>read-only</a>. Permission required: \`edit-room\`
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 0.49.0  | Added       |`,
+		examples: groupsExamples['groups.setReadOnly'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string; readOnly: boolean }>({ readOnly: { type: 'boolean' } }, ['readOnly']),
 		response: {
@@ -1251,6 +1403,14 @@ API.v1.post(
 API.v1.post(
 	'groups.setTopic',
 	{
+		summary: 'Set Group Topic',
+		description: `Sets the topic for the private channel. The topic is displayed next to the room name in the header. Permission required: \`edit-room\`
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 0.48.0  | Added       |`,
+		examples: groupsExamples['groups.setTopic'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string; topic: string }>({ topic: { type: 'string' } }, ['topic']),
 		response: {
@@ -1276,6 +1436,22 @@ API.v1.post(
 API.v1.post(
 	'groups.setType',
 	{
+		summary: 'Set Group Type',
+		description: `Set the room type. The group type can be either \`c\` (public) or \`p\` (private). Any of the following permissions are required:
+* \`create-c\`: This permission is required if you are changing a private channel to a public channel.
+* \`create-p\`: This permission is required if you are changing a public channel to a private room.
+* \`create-team-channel\`: This permission is required if you are changing a team's private channel to a public channel.
+* \`create-team-group\`: This permission is required if you are changing a team's public channel to a private room.
+
+For ABAC-managed private rooms, changing the type from \`p\` to \`c\` is rejected with \`error-action-not-allowed\`.
+When the type changes to \`c\` (public) and the group has ABAC attributes, all ABAC attributes on the group are cleared as part of the conversion.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 8.5.0   | Added ABAC behavior for \`p\` -> \`c\`: ABAC-managed private rooms are rejected, and successful conversions to public clear group ABAC attributes. |
+| 0.49.0  | Added       |`,
+		examples: groupsExamples['groups.setType'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string; type: string }>({ type: { type: 'string' } }, ['type']),
 		response: {
@@ -1315,6 +1491,15 @@ API.v1.post(
 API.v1.post(
 	'groups.setAnnouncement',
 	{
+		summary: 'Set Group Announcement',
+		description: `Set the private channel announcement. Announcements are displayed at the top of the rooms, under the header.
+Permission required: \`edit-room\`
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 0.70.0  | Added       |`,
+		examples: groupsExamples['groups.setAnnouncement'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string; announcement: string }>({ announcement: { type: 'string' } }, [
 			'announcement',
@@ -1342,6 +1527,14 @@ API.v1.post(
 API.v1.post(
 	'groups.unarchive',
 	{
+		summary: 'Unarchive Group',
+		description: `Unarchive a private channel. Permission required: \`unarchive-room\`
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 0.48.0  | Added       |`,
+		examples: groupsExamples['groups.unarchive'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string }>(),
 		response: {
@@ -1408,6 +1601,14 @@ API.v1.addRoute(
 API.v1.post(
 	'groups.setEncrypted',
 	{
+		summary: 'Set Group as Encrypted',
+		description: `Set a private channel as encrypted. Learn about <a href='https://docs.rocket.chat/v1/docs/end-to-end-encryption-user-guide' target='_blank'>end-to-end encryption here</a>. Permission required: \`edit-room\`
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 3.13.0  | Added       |`,
+		examples: groupsExamples['groups.setEncrypted'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string; encrypted: boolean }>({ encrypted: { type: 'boolean' } }, ['encrypted']),
 		response: {

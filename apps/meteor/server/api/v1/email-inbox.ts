@@ -11,6 +11,7 @@ import {
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 
+import { emailInboxExamples } from './email-inbox.examples';
 import { sendTestEmailToInbox } from '../../features/EmailInbox/EmailInbox_Outgoing';
 import { API } from '../api';
 import { findEmailInboxes, insertOneEmailInbox, removeEmailInbox, updateEmailInbox } from '../lib/emailInbox';
@@ -32,6 +33,16 @@ const paginatedEmailInboxesResponseSchema = ajv.compile<{ emailInboxes: IEmailIn
 API.v1.get(
 	'email-inbox.list',
 	{
+		summary: 'List Email Inbox',
+		description: `Gets Omnichannel email inbox list.
+
+Permissions required:- \`manage-email-inbox\`
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|3.11.0-rc.0         | Added       |`,
+		examples: emailInboxExamples['email-inbox.list'],
 		authRequired: true,
 		permissionsRequired: ['manage-email-inbox'],
 		query: isEmailInboxList,
@@ -54,6 +65,15 @@ API.v1.get(
 API.v1.post(
 	'email-inbox',
 	{
+		summary: 'Set Email Inbox',
+		description: `Configure the Omnichannel email inbox for your server.
+
+Permissions required:- \`manage-email-inbox\`
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|3.11.0-rc.0         | Added       |`,
+		examples: emailInboxExamples['email-inbox'],
 		authRequired: true,
 		permissionsRequired: ['manage-email-inbox'],
 		body: isEmailInbox,
@@ -115,6 +135,16 @@ API.v1.post(
 API.v1.get(
 	'email-inbox/:_id',
 	{
+		summary: 'Get Email Inbox by ID',
+		description: `Gets Omnichannel email inbox by ID.
+
+Permissions required: \`manage-email-inbox\`
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|5.3.0       | Not Found Error Added       |
+|3.11.0-rc.0         | Added       |`,
+		examples: emailInboxExamples['email-inbox/:_id'],
 		authRequired: true,
 		permissionsRequired: ['manage-email-inbox'],
 		response: {
@@ -158,6 +188,15 @@ API.v1.get(
 API.v1.delete(
 	'email-inbox/:_id',
 	{
+		summary: 'Delete Email Inbox by ID',
+		description: `Delete Omnichannel email inbox using ID.
+
+Permissions required: \`manage-email-inbox\`
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|3.11.0-rc.0         | Added       |`,
+		examples: emailInboxExamples['email-inbox/:_id'],
 		authRequired: true,
 		permissionsRequired: ['manage-email-inbox'],
 		response: {
@@ -191,6 +230,16 @@ API.v1.delete(
 API.v1.get(
 	'email-inbox.search',
 	{
+		summary: 'Search Email Inbox',
+		description: `Searches Omnichannel email inbox by email address.
+
+Permissions required: \`manage-email-inbox\`
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|3.11.0-rc.0         | Added       |`,
+		examples: emailInboxExamples['email-inbox.search'],
 		authRequired: true,
 		permissionsRequired: ['manage-email-inbox'],
 		query: isEmailInboxSearch,

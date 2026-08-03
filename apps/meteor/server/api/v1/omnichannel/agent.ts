@@ -12,6 +12,7 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { API } from '../..';
+import { agentExamples } from './agent.examples';
 import { findRoom, findGuest, findAgent, findOpenRoom } from './lib/livechat';
 import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
 import { hasRoleAsync } from '../../../lib/authorization/hasRole';
@@ -139,6 +140,14 @@ API.v1.addRoute(
 const livechatAgentsEndpoints = API.v1.post(
 	'livechat/agents.saveInfo',
 	{
+		summary: 'Update Agent Info',
+		description: `Update an Omnichannel agent's information. Permission required: \`manage-livechat-agents\`.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|7.11.0            | Added       |`,
+		examples: agentExamples['livechat/agents.saveInfo'],
 		response: {
 			200: POSTLivechatAgentSaveInfoSuccessResponse,
 			400: validateBadRequestErrorResponse,

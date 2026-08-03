@@ -18,6 +18,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
 import type { Filter } from 'mongodb';
 
+import { integrationsExamples } from './integrations.examples';
 import { clearIntegrationHistoryMethod, replayOutgoingIntegrationMethod } from '../../lib/integrations/functions/clearIntegrationHistory';
 import {
 	mountIntegrationHistoryQueryBasedOnPermissions,
@@ -46,6 +47,23 @@ const integrationSuccessSchema = ajv.compile<{ integration: IIntegration | null 
 API.v1.post(
 	'integrations.create',
 	{
+		summary: 'Create Integration',
+		description: `Use this endpoint to create an incoming or outgoing integration. For details, you can refer to the <a href='https://docs.rocket.chat/docs/integrations' target='_blank'>Integrations user guide</a>.
+
+Permissions required to create incoming integrations:
+* \`manage-incoming-integrations\`
+* \`manage-own-incoming-integrations\`
+
+Permissions required to create outgoing integrations:
+* \`manage-outgoing-integrations\`
+* \`manage-own-outgoing-integrations\`
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|8.4.0            | Added \`skipTranspile\` field to opt-out of Babel transpilation |
+|1.1.0            | Separate permissions in incoming and outgoing.       |
+|0.49.0            | Added       |`,
+		examples: integrationsExamples['integrations.create'],
 		authRequired: true,
 		body: isIntegrationsCreateProps,
 		response: {
@@ -73,6 +91,20 @@ API.v1.post(
 API.v1.get(
 	'integrations.history',
 	{
+		summary: 'Get Integration History',
+		description: `Any of the following permissions is required:
+ * \`manage-incoming-integrations\`
+ * \`manage-own-incoming-integrations\`
+ * \`manage-outgoing-integrations\`
+ * \`manage-own-outgoing-integrations\`
+ 
+ The endpoint returns the integration history based on the user permissions.
+ ### Changelog
+ |Version      | Description | 
+ | ---------------- | ------------|
+ |1.1.0            | Separate permissions in incoming and outgoing.       |
+ |0.53.0            | Added       |`,
+		examples: integrationsExamples['integrations.history'],
 		authRequired: true,
 		query: isIntegrationsHistoryProps,
 		permissionsRequired: {
@@ -131,6 +163,21 @@ API.v1.get(
 API.v1.get(
 	'integrations.list',
 	{
+		summary: 'Get List of Integrations',
+		description: `Any of the following permissions is required:
+* \`manage-incoming-integrations\`
+* \`manage-own-incoming-integrations\`
+* \`manage-outgoing-integrations\`
+* \`manage-own-outgoing-integrations\`
+
+The endpoint returns the integrations based on the user permissions.
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|7.0.0            | Added \`name\` and \`type\` query parameters for filtering.       |
+|1.1.0            | Separate permissions in incoming and outgoing.       |
+|0.49.0            | Added       |`,
+		examples: integrationsExamples['integrations.list'],
 		authRequired: true,
 		query: isIntegrationsListProps,
 		permissionsRequired: {
@@ -203,6 +250,20 @@ API.v1.get(
 API.v1.post(
 	'integrations.remove',
 	{
+		summary: 'Remove Integration',
+		description: `Remove an integration from the workspace.
+
+Any of the following permissions is required:
+* \`manage-incoming-integrations\`
+* \`manage-own-incoming-integrations\`
+* \`manage-outgoing-integrations\`
+* \`manage-own-outgoing-integrations\`
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|1.1.0            | Separate permissions in incoming and outgoing.       |
+|0.49.0            | Added       |`,
+		examples: integrationsExamples['integrations.remove'],
 		authRequired: true,
 		body: isIntegrationsRemoveProps,
 		permissionsRequired: {
@@ -279,6 +340,20 @@ API.v1.post(
 API.v1.get(
 	'integrations.get',
 	{
+		summary: 'Get Integration',
+		description: `Get the information of a specific incoming or outgoing integration.
+
+Permissions required:
+* \`manage-incoming-integrations\`
+* \`manage-own-incoming-integrations\`
+* \`manage-outgoing-integrations\`
+* \`manage-own-outgoing-integrations\`
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|2.4.0            | Added       |`,
+		examples: integrationsExamples['integrations.get'],
 		authRequired: true,
 		query: isIntegrationsGetProps,
 		response: {
@@ -316,6 +391,21 @@ API.v1.get(
 API.v1.put(
 	'integrations.update',
 	{
+		summary: 'Update Integration',
+		description: `Update an existing integration.
+
+Permissions required:
+* \`manage-incoming-integrations\`
+* \`manage-own-incoming-integrations\`
+* \`manage-outgoing-integrations\`
+* \`manage-own-outgoing-integrations\`
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|8.4.0   | Added \`skipTranspile\` field to opt-out of Babel transpilation |
+|3.4.0            | Added       |`,
+		examples: integrationsExamples['integrations.update'],
 		authRequired: true,
 		body: isIntegrationsUpdateProps,
 		response: {
@@ -377,6 +467,18 @@ const voidIntegrationsResponse = ajv.compile<void>({
 API.v1.post(
 	'integrations.clearHistory',
 	{
+		summary: 'Clear Integration History',
+		description: `Clear the history of an outgoing <a href='https://docs.rocket.chat/docs/integrations' target='_blank'>integration</a>. 
+
+Any of the following permissions is required:
+  * \`manage-outgoing-integrations\`
+  * \`manage-own-outgoing-integrations\` (clears history only for integrations created by the calling user)
+
+### Changelog
+|Version      | Description |
+| ---------------- | ------------|
+|8.7.0            | Added       |`,
+		examples: integrationsExamples['integrations.clearHistory'],
 		authRequired: true,
 		body: isIntegrationsClearHistoryProps,
 		response: {
@@ -395,6 +497,18 @@ API.v1.post(
 API.v1.post(
 	'integrations.replayOutgoing',
 	{
+		summary: 'Replay Outgoing Integration',
+		description: `Replay a history entry of an outgoing <a href='https://docs.rocket.chat/docs/integrations' target='_blank'>integration</a>, triggering the integration again with the recorded data. 
+
+Any of the following permissions is required:
+  * \`manage-outgoing-integrations\`
+  * \`manage-own-outgoing-integrations\` (replays only integrations created by the calling user)
+
+### Changelog
+|Version      | Description |
+| ---------------- | ------------|
+|8.7.0            | Added       |`,
+		examples: integrationsExamples['integrations.replayOutgoing'],
 		authRequired: true,
 		body: isIntegrationsReplayProps,
 		response: {

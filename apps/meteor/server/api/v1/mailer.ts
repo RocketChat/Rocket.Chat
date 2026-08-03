@@ -7,6 +7,7 @@ import {
 	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
 
+import { mailerExamples } from './mailer.examples';
 import { sendMail } from '../../lib/notifications/mail-messages/functions/sendMail';
 import { Mailer } from '../../lib/notifications/mail-messages/lib/Mailer';
 import { API } from '../api';
@@ -32,6 +33,13 @@ const mailerUnsubscribeResponseSchema = ajv.compile<void>({
 API.v1.post(
 	'mailer',
 	{
+		summary: 'Send Mailer Endpoint',
+		description: `Send emails to users from your workspace. Make sure that you have configured the <a href='https://docs.rocket.chat/docs/configure-email' target='_blank'>email settings</a> in the workspace.
+
+| Version      | Description |
+| ---------------- | ------------|
+|5.4.0      | Added      |`,
+		examples: mailerExamples.mailer,
 		authRequired: true,
 		body: isMailerProps,
 		permissionsRequired: ['send-mail'],
@@ -54,6 +62,14 @@ API.v1.post(
 API.v1.post(
 	'mailer.unsubscribe',
 	{
+		summary: 'Mailer Unsubscribe Endpoint',
+		description: `Send emails to users from your workspace.
+
+### Changelog
+| Version      | Description |
+| ------------ | ------------|
+|5.4.0         | Added      |`,
+		examples: mailerExamples['mailer.unsubscribe'],
 		authRequired: true,
 		body: isMailerUnsubscribeProps,
 		rateLimiterOptions: { intervalTimeInMS: 60000, numRequestsAllowed: 1 },

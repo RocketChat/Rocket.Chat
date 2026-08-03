@@ -7,6 +7,7 @@ import {
 } from '@rocket.chat/rest-typings';
 import { check, Match } from 'meteor/check';
 
+import { channelsExamples } from './channels.examples';
 import { API } from '../../../../server/api';
 import { getPaginationItems } from '../../../../server/api/lib/getPaginationItems';
 import { findChannelsWithNumberOfMessages } from '../../lib/engagementDashboard/channels';
@@ -96,6 +97,18 @@ const channelsListResponseSchema = ajv.compile<{
 API.v1.get(
 	'engagement-dashboard/channels/list',
 	{
+		summary: 'Get Channels Engagement',
+		description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/premium.svg" alt="Premium tag" style="display: block; margin: auto;"></div>
+
+Retrieve all active channels and the number of messages in each channel within a specific period.
+
+Permission required: \`view-engagement-dashboard\` 
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|3.1.0            | Added       |`,
+		examples: channelsExamples['engagement-dashboard/channels/list'],
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],

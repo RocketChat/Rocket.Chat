@@ -46,6 +46,7 @@ import {
 import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
+import { roomsExamples } from './rooms.examples';
 import { adminFields } from '../../../lib/rooms/adminFields';
 import { omit } from '../../../lib/utils/omit';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
@@ -136,6 +137,9 @@ export async function findRoomByIdOrName({
 API.v1.get(
 	'rooms.nameExists',
 	{
+		summary: 'Check if Room Name Exists',
+		description: `Check if the room name exists`,
+		examples: roomsExamples['rooms.nameExists'],
 		authRequired: true,
 		query: isGETRoomsNameExists,
 		response: {
@@ -164,6 +168,22 @@ API.v1.get(
 const roomDeleteEndpoint = API.v1.post(
 	'rooms.delete',
 	{
+		summary: 'Delete Room',
+		description: `Delete a room from the workspace. The following permissions are required:
+* \`delete-c\`: To delete a public room.
+* \`delete-d\`: To delete direct messages.
+* \`delete-p\`: To delete private rooms.
+* \`delete-team\`: To delete a team.
+* \`delete-team-channel\`: To delete a channel within a team, also requires the \`delete-c\` permission.
+* \`delete-team-group\`: To delete a private channel within a team, also requires the \`delete-p\` permission.
+
+> You can't use this endpoint to delete a team's main room. Use [Delete a Team endpoint](https://developer.rocket.chat/apidocs/delete-a-team) instead.
+
+### Changelog
+| Version | Description   |
+| ------- | --------------|
+| 5.4.0   | Added         |`,
+		examples: roomsExamples['rooms.delete'],
 		authRequired: true,
 		body: ajv.compile<{ roomId: string }>({
 			type: 'object',
@@ -219,6 +239,14 @@ const roomDeleteEndpoint = API.v1.post(
 API.v1.get(
 	'rooms.get',
 	{
+		summary: 'Get Rooms',
+		description: `Get all opened rooms (all joined public & private channels and all DMs) of the authenticated user.
+
+### Changelog
+| Version | Description   |
+| ------- | --------------|
+| 0.72.0  | Added         |`,
+		examples: roomsExamples['rooms.get'],
 		authRequired: true,
 		response: {
 			200: ajv.compile<{ update: IRoom[]; remove: IRoom[] }>({
@@ -399,6 +427,14 @@ const saveNotificationResponseSchema = ajv.compile({
 const roomsSaveNotificationEndpoint = API.v1.post(
 	'rooms.saveNotification',
 	{
+		summary: 'Set Room Notifications',
+		description: `Set the <a href='https://docs.rocket.chat/docs/room-actions#manage-room-notifications' target='_blank'>notification settings</a> of a specific room.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+|0.63.0  | Added        |`,
+		examples: roomsExamples['rooms.saveNotification'],
 		authRequired: true,
 		body: saveNotificationBodySchema,
 		response: {
@@ -472,6 +508,17 @@ const roomsSaveDraftEndpoint = API.v1.post(
 API.v1.post(
 	'rooms.cleanHistory',
 	{
+		summary: 'Clear Room History',
+		description: `Cleans up a room by removing messages from the provided time range. For details, see the <a href='https://docs.rocket.chat/docs/room-actions#prune-messages-from-a-room' target='_blank'>Prune messages from a room</a> section.
+
+Permission required: \`clean-channel-history\`
+
+### Changelog
+| Version | Description            |
+| ------- | ---------------------- |
+| 0.64.0  | Added                  |
+| 0.67.0  | Added fields \`limit\`, \`excludePinned\`, \`filesOnly\` and \`users\` |`,
+		examples: roomsExamples['rooms.cleanHistory'],
 		authRequired: true,
 		body: isRoomsCleanHistoryProps,
 		response: {
@@ -519,6 +566,14 @@ API.v1.post(
 API.v1.get(
 	'rooms.info',
 	{
+		summary: 'Get Room Information',
+		description: `Retrieves the information about the room.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+|0.72.0   | Added       |`,
+		examples: roomsExamples['rooms.info'],
 		authRequired: true,
 		response: {
 			200: ajv.compile<{ room: IRoom | null }>({
@@ -563,6 +618,14 @@ API.v1.get(
 API.v1.post(
 	'rooms.createDiscussion',
 	{
+		summary: 'Create Discussion',
+		description: `Creates a new discussion for the room. It requires at least one of the following permissions: \`start-discussion\` OR \`start-discussion-other-user\`, AND must be with the following setting enabled: \`Discussion_enabled\`.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 1.0.0   | Added       |`,
+		examples: roomsExamples['rooms.createDiscussion'],
 		authRequired: true,
 		body: isRoomsCreateDiscussionProps,
 		response: {
@@ -601,6 +664,14 @@ API.v1.post(
 API.v1.get(
 	'rooms.getDiscussions',
 	{
+		summary: 'Get Room Discussions',
+		description: `Get all <a href='https://docs.rocket.chat/docs/discussions' target='_blank'>discussions</a> of a room. 
+
+### Changelog
+| Version | Description   |
+| ------- | --------------|
+| 1.0.0   | Added         |`,
+		examples: roomsExamples['rooms.getDiscussions'],
 		authRequired: true,
 		response: {
 			200: ajv.compile<{ discussions: IRoom[]; count: number; offset: number; total: number }>({
@@ -651,6 +722,9 @@ API.v1.get(
 API.v1.get(
 	'rooms.images',
 	{
+		summary: 'Get Room Images',
+		description: `Retrieves the images of a room that you are a member of.`,
+		examples: roomsExamples['rooms.images'],
 		authRequired: true,
 		query: isRoomsImagesProps,
 		response: {
@@ -714,6 +788,17 @@ API.v1.get(
 API.v1.get(
 	'rooms.adminRooms',
 	{
+		summary: 'Get All Room Admins',
+		description: `Retrieves all rooms and admin information.
+
+Permission required: \`view-room-administration\`
+
+### Changelog
+| Version | Description  |
+| ------- |--------------|
+| 8.7.0  | Restored \`customFields\` in the response |
+| 2.4.0  | Added         |`,
+		examples: roomsExamples['rooms.adminRooms'],
 		authRequired: true,
 		query: isRoomsAdminRoomsProps,
 		response: {
@@ -761,6 +846,11 @@ API.v1.get(
 API.v1.get(
 	'rooms.autocomplete.adminRooms',
 	{
+		summary: 'Admin Autocomplete Room Name for Private and Public Rooms',
+		description: `List public and private rooms whose names match a given string, excluding <a href="https://docs.rocket.chat/docs/direct-messages" target="_blank">DMs</a>, and <a href="https://docs.rocket.chat/docs/omnichannel" target="_blank">omnichannel rooms</a>. This endpoint is valuable when performing search operations. Only workspace administrators can use it. Any one of the following permissions are required:
+* \`view-room-administration\`
+* \`can-audit\``,
+		examples: roomsExamples['rooms.autocomplete.adminRooms'],
 		authRequired: true,
 		query: isRoomsAutocompleteAdminRoomsPayload,
 		response: {
@@ -792,6 +882,17 @@ API.v1.get(
 API.v1.get(
 	'rooms.adminRooms.getRoom',
 	{
+		summary: 'Get Admin of Room',
+		description: `Retrieves the admin of a room.
+
+Permission required: \`view-room-administration\`
+
+### Changelog
+| Version | Description     |
+| ------- | --------------- |
+| 8.7.0   | Restored \`customFields\` in the response |
+| 2.4.0   | Added           |`,
+		examples: roomsExamples['rooms.adminRooms.getRoom'],
 		authRequired: true,
 		query: isRoomsAdminRoomsGetRoomProps,
 		response: {
@@ -829,6 +930,9 @@ API.v1.get(
 API.v1.get(
 	'rooms.autocomplete.channelAndPrivate',
 	{
+		summary: 'Autocomplete Room Name for Private and Public Rooms',
+		description: `List the public and private rooms whose names match a given string, excluding <a href="https://docs.rocket.chat/docs/discussions" target="_blank">discussions</a>, <a href="https://docs.rocket.chat/docs/direct-messages" target="_blank">DMs</a>, and <a href="https://docs.rocket.chat/docs/omnichannel" target="_blank">omnichannel rooms</a>. The endpoint is valuable when performing search operations. It returns only rooms that the user belongs to.`,
+		examples: roomsExamples['rooms.autocomplete.channelAndPrivate'],
 		authRequired: true,
 		query: isRoomsAutoCompleteChannelAndPrivateProps,
 		response: {
@@ -860,6 +964,9 @@ API.v1.get(
 API.v1.get(
 	'rooms.autocomplete.channelAndPrivate.withPagination',
 	{
+		summary: 'Autocomplete Room Name With Pagination',
+		description: `List the public and private rooms whose names match a given string, excluding discussions, DMs, and omnichannel rooms. The endpoint is valuable when performing search operations. It returns only rooms that the user belongs to. This endpoint includes pagination query parameters.`,
+		examples: roomsExamples['rooms.autocomplete.channelAndPrivate.withPagination'],
 		authRequired: true,
 		query: isRoomsAutocompleteChannelAndPrivateWithPaginationProps,
 		response: {
@@ -899,6 +1006,9 @@ API.v1.get(
 API.v1.get(
 	'rooms.autocomplete.availableForTeams',
 	{
+		summary: 'Autocomplete Room Name for Team',
+		description: `Autocompletes room name available for conversion to team.`,
+		examples: roomsExamples['rooms.autocomplete.availableForTeams'],
 		authRequired: true,
 		query: isRoomsAutocompleteAvailableForTeamsProps,
 		response: {
@@ -930,6 +1040,24 @@ API.v1.get(
 API.v1.post(
 	'rooms.saveRoomSettings',
 	{
+		summary: 'Save Room Settings',
+		description: `Updates the settings of an existing room.
+
+For ABAC-managed rooms, the following guardrails apply:
+
+- Changing \`roomAnnouncement\`, \`roomTopic\`, or \`roomDescription\` is rejected with \`error-action-not-allowed\`.
+- Setting \`default: true\` on an ABAC-managed room is rejected with \`error-action-not-allowed\`.
+- Changing \`roomType\` from \`p\` to \`c\` is rejected with \`error-action-not-allowed\`. The same guard applies to private rooms in ABAC-managed private teams.
+- When \`roomType\` changes to \`c\` (public) and conversion is allowed, existing room ABAC attributes are cleared as part of the conversion.
+
+Permission required: \`edit-room\`
+
+### Changelog
+| Version | Description |
+| ------- | ------------|
+| 8.5.0   | Added ABAC guardrails: announcement, topic, description, default flag, and conversion to public are blocked on ABAC-managed rooms. |
+| 3.13.0  | Added       |`,
+		examples: roomsExamples['rooms.saveRoomSettings'],
 		authRequired: true,
 		body: isRoomsSaveRoomSettingsProps,
 		response: {
@@ -965,6 +1093,16 @@ const successResponseSchema = ajv.compile<void>({
 API.v1.post(
 	'rooms.changeArchivationState',
 	{
+		summary: 'Change Room Archive State',
+		description: `Archive or unarchive a room. Permissions required:
+* \`archive-room\`: To archive a room.
+* \`unarchive-room\`: To unarchive a room.
+
+### Changelog
+| Version | Description      |
+| ------- | ---------------- |
+| 3.3.0  | Added             |`,
+		examples: roomsExamples['rooms.changeArchivationState'],
 		authRequired: true,
 		body: isRoomsChangeArchivationStateProps,
 		response: {
@@ -989,6 +1127,17 @@ API.v1.post(
 API.v1.post(
 	'rooms.export',
 	{
+		summary: 'Export Room',
+		description: `Export room messages to a file or email. When exporting to a file, the ZIP file is stored in the \`/tmp\` directory on the Rocket.Chat server, and its details are recorded in the \`rocketchat_user_data_files\` collection in MongoDB.
+
+Permission required: \`mail-messages\`
+
+### Changelog
+
+| Version | Description                          |
+| ------- | ------------------------------------ |
+| 3.8.0   | Added                                |`,
+		examples: roomsExamples['rooms.export'],
 		authRequired: true,
 		body: isRoomsExportProps,
 		response: {
@@ -1076,6 +1225,9 @@ API.v1.post(
 API.v1.get(
 	'rooms.isMember',
 	{
+		summary: 'Check Room Member',
+		description: `Use this endpoint to check whether or not a user is a member of a specific room. If the user is not a member of the room, an error response (\`error-user-not-found\`) is returned. You can only get the results for the rooms that you are a member of. Otherwise, you get a forbidden error response.`,
+		examples: roomsExamples['rooms.isMember'],
 		authRequired: true,
 		query: isRoomsIsMemberProps,
 		response: {
@@ -1119,6 +1271,16 @@ API.v1.get(
 API.v1.get(
 	'rooms.membersOrderedByRole',
 	{
+		summary: 'Get Room Members Ordered by Role',
+		description: `Get room members ordered by their roles. This endpoint sorts the members according to their role in the room in the order \`Owners\` > \`Moderators\` > all other members. This can be reversed using the query paramter \`sort={"rolePriority":-1}\`. You need not be a member of the room.
+
+If the room is a broadcast room, you need the \`view-broadcast-member-list\` permission to view the room members.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 7.3.0   | Added       |`,
+		examples: roomsExamples['rooms.membersOrderedByRole'],
 		authRequired: true,
 		query: isRoomsMembersOrderedByRoleProps,
 		response: {
@@ -1189,6 +1351,15 @@ API.v1.get(
 API.v1.post(
 	'rooms.muteUser',
 	{
+		summary: 'Mute User in Room',
+		description: `Mute a particular user in a room. Permission required: \`mute-user\`. The room becomes read-only for the muted user. They can still view messages but cannot send any until unmuted.
+
+### Changelog
+
+| Version | Description                          |
+| ------- | ------------------------------------ |
+| 6.8.0   | Added                                |`,
+		examples: roomsExamples['rooms.muteUser'],
 		authRequired: true,
 		body: isRoomsMuteUnmuteUserProps,
 		response: {
@@ -1213,6 +1384,15 @@ API.v1.post(
 API.v1.post(
 	'rooms.unmuteUser',
 	{
+		summary: 'Unmute User in Room',
+		description: `Unmute a particular user in a room. Permission required: \`mute-user\`
+
+### Changelog
+
+| Version | Description                          |
+| ------- | ------------------------------------ |
+| 6.8.0   | Added                                |`,
+		examples: roomsExamples['rooms.unmuteUser'],
 		authRequired: true,
 		body: isRoomsMuteUnmuteUserProps,
 		response: {
@@ -1257,6 +1437,14 @@ API.v1.post(
 API.v1.post(
 	'rooms.join',
 	{
+		summary: 'Join a Room',
+		description: `Join a room of any type, including public channels, private groups, and discussions. Unlike the <a href='https://developer.rocket.chat/apidocs/join-a-channel' target='_blank'>channels.join</a> endpoint, which only joins public channels, this endpoint applies to all kinds of rooms. 
+
+### Changelog
+| Version      | Description |
+| ------------ | ----------- |
+| 8.6.0   | Added       |`,
+		examples: roomsExamples['rooms.join'],
 		authRequired: true,
 		body: isRoomsJoinProps,
 		response: {
@@ -1288,6 +1476,15 @@ API.v1.post(
 API.v1.post(
 	'rooms.hide',
 	{
+		summary: 'Hide Room',
+		description: `Hide rooms without restrictions based on type. You can only hide a room if you have access to it.
+
+### Changelog
+
+| Version | Description                          |
+| ------- | ------------------------------------ |
+| 7.4.0   | Added                                |`,
+		examples: roomsExamples['rooms.hide'],
 		authRequired: true,
 		body: isRoomsHideProps,
 		response: {
@@ -1427,6 +1624,14 @@ export const roomEndpoints = API.v1
 	.get(
 		'rooms.roles',
 		{
+			summary: 'Get Room Roles',
+			description: `Get the list of roles in a specific room. This endpoint returns users with the \`Owner\`, \`Leader\`, and \`Moderator\` room roles. You can refer to the <a href='https://docs.rocket.chat/docs/roles-in-rocketchat' target='_blank'>Roles user guide</a> for more details on roles in Rocket.Chat.
+
+### Changelog
+| Version | Description                          |
+| ------- | ------------------------------------ |
+| 7.10.0   | Added                               |`,
+			examples: roomsExamples['rooms.roles'],
 			authRequired: true,
 			query: ajvQuery.compile<{
 				rid: string;
@@ -1572,6 +1777,14 @@ export const roomEndpoints = API.v1
 	.post(
 		'rooms.favorite',
 		{
+			summary: 'Favorite/Unfavourite a Room',
+			description: `Mark/Unmark a room as favourite.
+
+### Changelog
+| Version | Description   |
+| ------- | --------------|
+| 0.64.0   | Added        |`,
+			examples: roomsExamples['rooms.favorite'],
 			authRequired: true,
 			body: isRoomsFavoriteProps,
 			response: {
@@ -1604,6 +1817,15 @@ export const roomEndpoints = API.v1
 	.post(
 		'rooms.leave',
 		{
+			summary: 'Leave Room',
+			description: `Leave a room. The following permissions are required:
+* \`leave-c\`: To leave a public room.
+* \`leave-p\`: To leave private room.
+
+### Changelog
+| Version | Description   |
+| ------- | --------------|
+| 0.72.0  | Added         |`,
 			authRequired: true,
 			body: isRoomsLeaveProps,
 			response: {

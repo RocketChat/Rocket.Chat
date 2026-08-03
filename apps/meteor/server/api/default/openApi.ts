@@ -8,6 +8,7 @@ import swaggerUi from 'swagger-ui-express';
 
 import { settings } from '../../settings';
 import { API } from '../api';
+import { operationTags } from './operationTags';
 import type { SuccessResult } from '../definition';
 import { getTrimmedServerVersion } from '../lib/getTrimmedServerVersion';
 
@@ -60,6 +61,20 @@ const getTags = (paths: Record<string, Record<string, Route>>) => {
 	}));
 };
 
+/** Attaches the group each operation belongs to, which is described outside the route options. */
+const withTags = (paths: Record<string, Record<string, Route>>): Record<string, Record<string, Route>> =>
+	Object.fromEntries(
+		Object.entries(paths).map(([path, methods]) => [
+			path,
+			Object.fromEntries(
+				Object.entries(methods).map(([method, operation]) => [
+					method,
+					{ ...operation, tags: operationTags[`${method} ${path}`] ?? operation.tags },
+				]),
+			),
+		]),
+	);
+
 const siteUrl = () => settings.get<string>('Site_Url')?.replace(/\/$/, '');
 
 const makeOpenAPIResponse = (paths: Record<string, Record<string, Route>>) => ({
@@ -77,8 +92,8 @@ const makeOpenAPIResponse = (paths: Record<string, Record<string, Route>>) => ({
 	// trailing slash would make every path in the document resolve with a double one, and a Server
 	// Object without a url is invalid, so an unset `Site_Url` means no `servers` at all
 	...(siteUrl() && { servers: [{ url: siteUrl() }] }),
-	tags: getTags(paths),
-	paths: withOperationIds(paths),
+	tags: getTags(withTags(paths)),
+	paths: withOperationIds(withTags(paths)),
 	components: {
 		securitySchemes: {
 			userId: {

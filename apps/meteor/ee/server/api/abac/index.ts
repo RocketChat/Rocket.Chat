@@ -6,6 +6,7 @@ import { ServerEvents } from '@rocket.chat/models';
 import { validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
 
+import { abacExamples } from './index.examples';
 import {
 	GenericSuccessSchema,
 	PUTAbacAttributeUpdateBodySchema,
@@ -50,6 +51,19 @@ const abacEndpoints = API.v1
 	.post(
 		'abac/rooms/:rid/attributes',
 		{
+			summary: 'Replace room ABAC attributes',
+			description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/Defense.svg" alt="Defense" style="display: block; margin: auto"></div>
+
+- Replaces the full ABAC attribute set for a room.
+- Sets the complete set of ABAC attributes on the specified room by providing an attributes object that maps attribute keys to arrays of allowed values; any previously assigned attributes not included in the request are removed.
+- Requires the ABAC license, the \`abac-management\` and \`manage-abac-admin-rooms\` permissions, and the global setting \`ABAC_Enabled\` to be turned on.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 8.0.0   | Added |
+| 8.5.0   | Added the \`manage-abac-admin-rooms\` granular permission requirement. |`,
+			examples: abacExamples['abac/rooms/:rid/attributes'],
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-rooms'],
 			body: POSTRoomAbacAttributesBodySchema,
@@ -78,6 +92,19 @@ const abacEndpoints = API.v1
 	.delete(
 		'abac/rooms/:rid/attributes',
 		{
+			summary: 'Delete all ABAC attributes',
+			description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/Defense.svg" alt="Defense" style="display: block; margin: auto"></div>
+
+- Clears all ABAC attributes from a room.
+- Removes every ABAC attribute key and value currently assigned to the specified room, leaving it with no ABAC attributes configured.
+- Requires the \`abac-management\` and \`manage-abac-admin-rooms\` permissions. This call does not require the global setting \`ABAC_Enabled\` to be on, so attributes can be cleared after disabling ABAC.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 8.0.0   | Added |
+| 8.5.0   | Added the \`manage-abac-admin-rooms\` granular permission requirement. |`,
+			examples: abacExamples['abac/rooms/:rid/attributes'],
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-rooms'],
 			response: {
@@ -101,6 +128,19 @@ const abacEndpoints = API.v1
 	.post(
 		'abac/rooms/:rid/attributes/:key',
 		{
+			summary: 'Add ABAC attribute key to room',
+			description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/Defense.svg" alt="Defense" style="display: block; margin: auto"></div>
+
+- Adds a single ABAC attribute key to a room.
+- Creates a new ABAC attribute on the specified room for the given key, assigning it the provided values array; fails if the room already has this key or if the key/values are not allowed by the global attribute definition.
+- Requires the ABAC license, the \`abac-management\` and \`manage-abac-admin-rooms\` permissions, and the global setting \`ABAC_Enabled\` to be turned on.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 8.0.0   | Added |
+| 8.5.0   | Added the \`manage-abac-admin-rooms\` granular permission requirement. |`,
+			examples: abacExamples['abac/rooms/:rid/attributes/:key'],
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-rooms'],
 			license: ['abac'],
@@ -128,6 +168,19 @@ const abacEndpoints = API.v1
 	.put(
 		'abac/rooms/:rid/attributes/:key',
 		{
+			summary: 'Set room ABAC attribute values',
+			description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/Defense.svg" alt="Defense" style="display: block; margin: auto"></div>
+
+- Sets the values of a single ABAC attribute on a room.
+- Replaces the existing values for the given attribute key on the specified room with the provided values array (or creates the attribute if it does not yet exist), enforcing the global attribute definition and ABAC validation rules.
+- Requires the ABAC license, the \`abac-management\` and \`manage-abac-admin-rooms\` permissions, and the global setting \`ABAC_Enabled\` to be turned on.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 8.0.0   | Added |
+| 8.5.0   | Added the \`manage-abac-admin-rooms\` granular permission requirement. |`,
+			examples: abacExamples['abac/rooms/:rid/attributes/:key'],
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-rooms'],
 			body: PUTRoomAbacAttributeValuesBodySchema,
@@ -155,6 +208,19 @@ const abacEndpoints = API.v1
 	.delete(
 		'abac/rooms/:rid/attributes/:key',
 		{
+			summary: 'Delete room ABAC attribute key',
+			description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/Defense.svg" alt="Defense" style="display: block; margin: auto"></div>
+
+- Removes a single ABAC attribute key from a room.
+- Deletes the specified attribute key and all its values from the room's ABAC configuration, leaving other attributes unchanged.
+- Requires the \`abac-management\` and \`manage-abac-admin-rooms\` permissions.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 8.0.0   | Added |
+| 8.5.0   | Added the \`manage-abac-admin-rooms\` granular permission requirement. |`,
+			examples: abacExamples['abac/rooms/:rid/attributes/:key'],
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-rooms'],
 			response: {
@@ -176,6 +242,20 @@ const abacEndpoints = API.v1
 	.get(
 		'abac/attributes',
 		{
+			summary: 'List ABAC attribute definitions',
+			description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/Defense.svg" alt="Defense" style="display: block; margin: auto"></div>
+
+- Lists all ABAC attribute definitions.
+- Returns a paginated list of attribute definitions (key and allowed values).
+- Supports optional filtering by attribute key or value, and pagination via offset and count query parameters.
+- Requires the \`abac-management\` and \`manage-abac-admin-room-attributes\` permissions.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 8.0.0   | Added |
+| 8.5.0   | Added the \`manage-abac-admin-room-attributes\` granular permission requirement. |`,
+			examples: abacExamples['abac/attributes'],
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-room-attributes'],
 			query: GETAbacAttributesQuerySchema,
@@ -207,6 +287,20 @@ const abacEndpoints = API.v1
 	.post(
 		'abac/users/sync',
 		{
+			summary: 'Sync users ABAC attributes from LDAP',
+			description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/Defense.svg" alt="Defense" style="display: block; margin: auto"></div>
+
+- Syncs ABAC attributes for specified users from LDAP.
+- Refreshes user ABAC attributes by reading current data from LDAP and applying the configured LDAP → ABAC attribute mapping.
+- Users can be identified by usernames, ids, emails, or ldapIds.
+- Requires the LDAP Enterprise and ABAC licenses, the \`abac-management\` and \`manage-abac-admin-room-attributes\` permissions, and the global setting \`ABAC_Enabled\` to be turned on.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 8.0.0   | Added |
+| 8.5.0   | Added the \`manage-abac-admin-room-attributes\` granular permission requirement. |`,
+			examples: abacExamples['abac/users/sync'],
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-room-attributes'],
 			license: ['abac'],
@@ -233,6 +327,19 @@ const abacEndpoints = API.v1
 	.post(
 		'abac/attributes',
 		{
+			summary: 'Create ABAC attribute definition',
+			description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/Defense.svg" alt="Defense" style="display: block; margin: auto"></div>
+
+- Creates a new ABAC attribute definition.
+- Registers a global ABAC attribute by specifying its key and the list of allowed values, making it available for use on rooms and users.
+- Requires the ABAC license, the \`abac-management\` and \`manage-abac-admin-room-attributes\` permissions, and the global setting \`ABAC_Enabled\` to be turned on.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 8.0.0   | Added |
+| 8.5.0   | Added the \`manage-abac-admin-room-attributes\` granular permission requirement. |`,
+			examples: abacExamples['abac/attributes'],
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-room-attributes'],
 			license: ['abac'],
@@ -259,6 +366,19 @@ const abacEndpoints = API.v1
 	.put(
 		'abac/attributes/:_id',
 		{
+			summary: 'Update ABAC attribute definition',
+			description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/Defense.svg" alt="Defense" style="display: block; margin: auto"></div>
+
+- Updates an existing ABAC attribute definition.
+- Modifies the attribute identified by \`_id\`, allowing you to rename its key, change its list of allowed values, or both, subject to in-use and validation checks.
+- Requires the ABAC license, the \`abac-management\` and \`manage-abac-admin-room-attributes\` permissions, and the global setting \`ABAC_Enabled\` to be turned on.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 8.0.0   | Added |
+| 8.5.0   | Added the \`manage-abac-admin-room-attributes\` granular permission requirement. |`,
+			examples: abacExamples['abac/attributes/:_id'],
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-room-attributes'],
 			license: ['abac'],
@@ -286,6 +406,19 @@ const abacEndpoints = API.v1
 	.get(
 		'abac/attributes/:_id',
 		{
+			summary: 'Get ABAC attribute definition by ID',
+			description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/Defense.svg" alt="Defense" style="display: block; margin: auto"></div>
+
+- Retrieves a single ABAC attribute definition by ID.
+- Returns the attribute key and its allowed values for the definition identified by \`_id\`.
+- Requires the \`abac-management\` and \`manage-abac-admin-room-attributes\` permissions.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 8.0.0   | Added |
+| 8.5.0   | Added the \`manage-abac-admin-room-attributes\` granular permission requirement. |`,
+			examples: abacExamples['abac/attributes/:_id'],
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-room-attributes'],
 			response: {
@@ -308,6 +441,19 @@ const abacEndpoints = API.v1
 	.delete(
 		'abac/attributes/:_id',
 		{
+			summary: 'Delete ABAC attribute definition by ID',
+			description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/Defense.svg" alt="Defense" style="display: block; margin: auto"></div>
+
+- Deletes an ABAC attribute definition by ID.
+- Removes the attribute definition identified by \`_id\`. The delete fails if the attribute is currently in use, for example assigned to any room.
+- Requires the \`abac-management\` and \`manage-abac-admin-room-attributes\` permissions.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 8.0.0   | Added |
+| 8.5.0   | Added the \`manage-abac-admin-room-attributes\` granular permission requirement. |`,
+			examples: abacExamples['abac/attributes/:_id'],
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-room-attributes'],
 			response: {
@@ -330,6 +476,18 @@ const abacEndpoints = API.v1
 	.get(
 		'abac/attributes/:key/is-in-use',
 		{
+			summary: 'Check if ABAC attribute is in use',
+			description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/Defense.svg" alt="Defense" style="display: block; margin: auto"></div>
+
+- Checks whether an ABAC attribute definition is currently used by any room.
+- Requires the \`abac-management\` and \`manage-abac-admin-room-attributes\` permissions.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 8.0.0   | Added |
+| 8.5.0   | Added the \`manage-abac-admin-room-attributes\` granular permission requirement. |`,
+			examples: abacExamples['abac/attributes/:key/is-in-use'],
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-room-attributes'],
 			response: {
@@ -351,6 +509,19 @@ const abacEndpoints = API.v1
 	.get(
 		'abac/rooms',
 		{
+			summary: 'List rooms with ABAC attributes',
+			description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/Defense.svg" alt="Defense" style="display: block; margin: auto"></div>
+
+- Lists rooms with ABAC attributes.
+- Returns a paginated list of rooms that have ABAC attributes configured, with optional filtering by room name, attribute key, or attribute value using the \`filter\` and \`filterType\` query parameters.
+- Requires the \`abac-management\` and \`manage-abac-admin-rooms\` permissions.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 8.0.0   | Added |
+| 8.5.0   | Added the \`manage-abac-admin-rooms\` granular permission requirement. |`,
+			examples: abacExamples['abac/rooms'],
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-rooms'],
 			response: {
@@ -381,6 +552,24 @@ const abacEndpoints = API.v1
 	.get(
 		'abac/pdp/health',
 		{
+			summary: 'Get PDP Health Status',
+			description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/Defense.svg" alt="Defense" style="display: block; margin: auto"></div>
+
+Checks the health and availability of the configured Policy Decision Point (PDP)
+for Attribute-Based Access Control (ABAC).
+
+This endpoint is used by administrators to verify that the external PDP service
+is operational and properly configured. It includes rate limiting to prevent abuse.
+
+Permissions required: \`abac-management\` and \`manage-abac-admin-settings\`.
+
+### Changelog
+| Version | Change |
+|---------|--------|
+| 8.0.0   | Added |
+| 8.5.0   | Added the \`manage-abac-admin-settings\` granular permission requirement. |
+| 8.4.0   | Added endpoint to check external PDP health status |`,
+			examples: abacExamples['abac/pdp/health'],
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-settings'],
 			rateLimiterOptions: {
@@ -406,6 +595,19 @@ const abacEndpoints = API.v1
 	.get(
 		'abac/audit',
 		{
+			summary: 'List ABAC audit events',
+			description: `<div style="text-align: center; margin: 1rem 0 1rem 0;"><img src="https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/main/images/Defense.svg" alt="Defense" style="display: block; margin: auto"></div>
+
+- Lists ABAC audit events.
+- Returns a paginated audit log of ABAC-related actions (attribute changes, room attribute changes/removals, and ABAC actions), filterable by time range (\`start\`, \`end\`) and optional \`actor\`, with optional sorting.
+- Requires the ABAC and Auditing licenses, the \`abac-management\` and \`view-abac-admin-audit\` permissions.
+
+### Changelog
+| Version | Description |
+| ------- | ----------- |
+| 8.0.0   | Added |
+| 8.5.0   | Added the \`view-abac-admin-audit\` granular permission requirement. |`,
+			examples: abacExamples['abac/audit'],
 			response: {
 				200: GETAbacAuditEventsResponseSchema,
 				400: GenericErrorSchema,

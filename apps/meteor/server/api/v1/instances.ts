@@ -1,6 +1,7 @@
 import { InstanceStatus } from '@rocket.chat/models';
 import { ajv, validateUnauthorizedErrorResponse, validateForbiddenErrorResponse } from '@rocket.chat/rest-typings';
 
+import { instancesExamples } from './instances.examples';
 import { isRunningMs } from '../../lib/isRunningMs';
 import { API } from '../api';
 import { getInstanceList } from '../lib/getInstanceList';
@@ -16,6 +17,9 @@ const getConnections = (() => {
 API.v1.get(
 	'instances.get',
 	{
+		summary: 'Get Instances',
+		description: `Get the instances running for the workspace. Permission required: \`view-statistics\``,
+		examples: instancesExamples['instances.get'],
 		authRequired: true,
 		permissionsRequired: ['view-statistics'],
 		response: {

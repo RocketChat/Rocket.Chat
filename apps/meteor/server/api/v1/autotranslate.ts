@@ -9,6 +9,7 @@ import {
 	isAutotranslateGetSupportedLanguagesParamsGET,
 } from '@rocket.chat/rest-typings';
 
+import { autotranslateExamples } from './autotranslate.examples';
 import { canAccessRoomAsync } from '../../lib/authorization';
 import { getSupportedLanguages } from '../../lib/autotranslate/functions/getSupportedLanguages';
 import { saveAutoTranslateSettings } from '../../lib/autotranslate/functions/saveSettings';
@@ -45,6 +46,15 @@ const autotranslateEndpoints = API.v1
 	.get(
 		'autotranslate.getSupportedLanguages',
 		{
+			summary: 'Get Supported Languages',
+			description: `Get the list of languages supported by the translation service provider.
+Make sure that the auto-translate feature is configured in your workspace. For details, see the <a href="https://docs.rocket.chat/v1/docs/auto-translate-messages" target="_blank">Auto-Translate</a> user guide.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|1.3.0          | Added       |`,
+			examples: autotranslateExamples['autotranslate.getSupportedLanguages'],
 			authRequired: true,
 			query: isAutotranslateGetSupportedLanguagesParamsGET,
 			response: {
@@ -74,6 +84,13 @@ const autotranslateEndpoints = API.v1
 	.post(
 		'autotranslate.saveSettings',
 		{
+			summary: 'Save Auto-Translate  Settings',
+			description: `Saves autotranslate settings for a room.
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|1.3.0          | Added       |`,
+			examples: autotranslateExamples['autotranslate.saveSettings'],
 			authRequired: true,
 			body: isAutotranslateSaveSettingsParamsPOST,
 			response: {
@@ -112,6 +129,18 @@ const autotranslateEndpoints = API.v1
 	.post(
 		'autotranslate.translateMessage',
 		{
+			summary: 'Translate Message',
+			description: `Auto-translates the provided message.
+
+The caller must have access to the room that contains the message.
+If the caller is not a room member (or otherwise cannot access it), the endpoint returns \`403 Forbidden\` and no translation is performed.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|1.3.0          | Added       |
+|8.5.0          | Added room-access check. |`,
+			examples: autotranslateExamples['autotranslate.translateMessage'],
 			authRequired: true,
 			body: isAutotranslateTranslateMessageParamsPOST,
 			response: {

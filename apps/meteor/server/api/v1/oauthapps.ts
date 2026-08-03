@@ -8,6 +8,7 @@ import {
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 
+import { oauthappsExamples } from './oauthapps.examples';
 import { addOAuthApp } from '../../lib/auth/oauth2-server/addOAuthApp';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { deleteOAuthApp } from '../../meteor-methods/auth/deleteOAuthApp';
@@ -121,6 +122,13 @@ const oauthAppsEndpoints = API.v1
 	.get(
 		'oauth-apps.list',
 		{
+			summary: 'Get List of OAuth Apps',
+			description: `Use this endpoint to get the list of apps. Permission required: \`manage-oauth-apps\`
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|2.4.0            | Added       |`,
+			examples: oauthappsExamples['oauth-apps.list'],
 			authRequired: true,
 			query: ajvQuery.compile<{ uid?: string }>({
 				type: 'object',
@@ -165,6 +173,9 @@ const oauthAppsEndpoints = API.v1
 	.post(
 		'oauth-apps.delete',
 		{
+			summary: 'Delete OAuth App',
+			description: `Permission required: \`manage-oauth-apps\``,
+			examples: oauthappsExamples['oauth-apps.delete'],
 			authRequired: true,
 			body: isDeleteOAuthAppParams,
 			permissionsRequired: ['manage-oauth-apps'],
@@ -187,6 +198,9 @@ const oauthAppsEndpoints = API.v1
 	.post(
 		'oauth-apps.create',
 		{
+			summary: 'Create OAuth App',
+			description: `Create an app to log in to third-party applications. For details, you can refer to the <a href='https://docs.rocket.chat/docs/third-party-login' target='_blank'> Third-party login user guide</a>. Permission required: \`manage-oauth-apps\`'`,
+			examples: oauthappsExamples['oauth-apps.create'],
 			authRequired: true,
 			body: isOauthAppsAddParams,
 			permissionsRequired: ['manage-oauth-apps'],
@@ -218,6 +232,9 @@ const oauthAppsEndpoints = API.v1
 	.post(
 		'oauth-apps.update',
 		{
+			summary: 'Update OAuth App',
+			description: `Update an existing app. Permission required: \`manage-oauth-apps\``,
+			examples: oauthappsExamples['oauth-apps.update'],
 			authRequired: true,
 			body: isUpdateOAuthAppParams,
 			permissionsRequired: ['manage-oauth-apps'],
@@ -250,6 +267,16 @@ const oauthAppsEndpoints = API.v1
 	.get(
 		'oauth-apps.get',
 		{
+			summary: 'Get OAuth App',
+			description: `Retrieves an OAuth app by ID or client ID.
+
+Permission required: \`manage-oauth-apps\`. The endpoint can be accessed even without this permission, but sensitive information (such as client secrets) will be filtered out.
+
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|2.4.0            | Added       |`,
+			examples: oauthappsExamples['oauth-apps.get'],
 			authRequired: true,
 			query: isOauthAppsGetParams,
 			response: {

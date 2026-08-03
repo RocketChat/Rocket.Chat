@@ -14,6 +14,7 @@ import type { JSONSchemaType } from 'ajv';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
+import { pushExamples } from './push.examples';
 import { canAccessRoomAsync } from '../../lib/authorization/canAccessRoom';
 import PushNotification from '../../lib/notifications/push-config/lib/PushNotification';
 import { executePushTest } from '../../lib/pushConfig';
@@ -102,6 +103,12 @@ const pushTokenEndpoints = API.v1
 	.post(
 		'push.token',
 		{
+			summary: 'Create Push Token',
+			description: `### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|0.60.0            | Added       |`,
+			examples: pushExamples['push.token'],
 			response: {
 				200: ajv.compile<SuccessResult<{ result: PushTokenResult }>['body']>({
 					additionalProperties: false,
@@ -192,6 +199,13 @@ const pushTokenEndpoints = API.v1
 	.delete(
 		'push.token',
 		{
+			summary: 'Delete Push Token',
+			description: `Removes push token from the workspace.
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|0.60.0            | Added       |`,
+			examples: pushExamples['push.token'],
 			response: {
 				200: ajv.compile<void>({
 					additionalProperties: false,
@@ -290,6 +304,13 @@ const pushGetInfoEndpoints = API.v1
 	.get(
 		'push.get',
 		{
+			summary: 'Get Push Notification',
+			description: `Get push notification for a message.
+### Changelog
+| Version      | Description |
+| ---------------- | ------------|
+|3.5.0            | Added       |`,
+			examples: pushExamples['push.get'],
 			authRequired: true,
 			query: isPushGetProps,
 			response: {
@@ -328,6 +349,9 @@ const pushGetInfoEndpoints = API.v1
 	.get(
 		'push.info',
 		{
+			summary: 'Get Push Info',
+			description: `This endpoint returns the status of push gateway in your workspace.`,
+			examples: pushExamples['push.info'],
 			authRequired: true,
 			response: {
 				200: pushInfoResponseSchema,
@@ -347,6 +371,10 @@ const pushGetInfoEndpoints = API.v1
 const pushTestEndpoints = API.v1.post(
 	'push.test',
 	{
+		summary: 'Test Push Notifications',
+		description: `Use this endpoint to test the push notifications configuration. Permission required: \`test-push-notifications\`.
+By default, one request is allowed every 1000 milliseconds. To test successfully, make sure that you have logged into the workspace on the Rocket.Chat mobile app.`,
+		examples: pushExamples['push.test'],
 		authRequired: true,
 		rateLimiterOptions: {
 			numRequestsAllowed: 1,

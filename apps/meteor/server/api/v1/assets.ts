@@ -7,6 +7,7 @@ import {
 	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
 
+import { assetsExamples } from './assets.examples';
 import { RocketChatAssets, refreshClients } from '../../lib/media/assets';
 import { notifyOnSettingChangedById } from '../../lib/notifyListener';
 import { settings } from '../../settings';
@@ -24,6 +25,14 @@ const successResponseSchema = ajv.compile<void>({
 API.v1.post(
 	'assets.setAsset',
 	{
+		summary: 'Set Asset',
+		description: `Upload an <a href="https://docs.rocket.chat/docs/assets" target="_blank"> asset</a> by name. Permissions required: \`manage-assets\`. Make sure that the workspace's <a href='https://docs.rocket.chat/docs/file-upload' target='_blank'>file upload settings</a> are configured as required. The allowed file size and type depend on the file upload settings.
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|0.69.0           | Added       |`,
+		examples: assetsExamples['assets.setAsset'],
 		authRequired: true,
 		permissionsRequired: ['manage-assets'],
 		response: {
@@ -77,6 +86,14 @@ API.v1.post(
 API.v1.post(
 	'assets.unsetAsset',
 	{
+		summary: 'Unset Asset',
+		description: `Remove an asset by name. Permissions required: \`manage-assets\` .
+
+### Changelog
+| Version      | Description | 
+| ---------------- | ------------|
+|0.69.0           | Added       |`,
+		examples: assetsExamples['assets.unsetAsset'],
 		authRequired: true,
 		body: isAssetsUnsetAssetProps,
 		permissionsRequired: ['manage-assets'],
