@@ -140,6 +140,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		options?: FindOptions<IMessage>,
 		showThreadMessages?: boolean,
 	): FindCursor<IMessage>;
+	countVisibleByRoomIdNotContainingTypes(roomId: string, types: MessageTypesValues[], showThreadMessages?: boolean): Promise<number>;
 	findFilesByRoomIdPinnedTimestampAndUsers(
 		rid: string,
 		excludePinned: boolean,

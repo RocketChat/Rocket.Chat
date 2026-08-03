@@ -9,6 +9,7 @@ import { Meteor } from 'meteor/meteor';
 import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { isABACManagedRoom } from '../../lib/authorization/isABACManagedRoom';
+import { notifyDiscussionMetadataUpdate } from '../../lib/messaging/discussions/notifyDiscussionMetadataUpdate';
 import { notifyOnRoomChangedById } from '../../lib/notifyListener';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { setRoomAvatar } from '../../lib/rooms/setRoomAvatar';
@@ -334,6 +335,9 @@ const settingSavers: RoomSettingsSavers = {
 	async systemMessages({ value, room, rid }) {
 		if (JSON.stringify(value) !== JSON.stringify(room.sysMes)) {
 			await saveRoomSystemMessages(rid, value);
+			if (room.prid) {
+				await notifyDiscussionMetadataUpdate({ ...room, sysMes: value });
+			}
 		}
 	},
 	async joinCode({ value, rid }) {

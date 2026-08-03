@@ -1,20 +1,8 @@
-import type { IRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, VideoConference } from '@rocket.chat/models';
 
 import { callbacks } from '../../lib/callbacks';
-import { notifyOnMessageChange } from '../../lib/notifyListener';
+import { notifyDiscussionMetadataUpdate } from '../../lib/messaging/discussions/notifyDiscussionMetadataUpdate';
 import { deleteRoom } from '../../lib/rooms/deleteRoom';
-
-const updateAndNotifyParentRoomWithParentMessage = async (room: IRoom): Promise<void> => {
-	const parentMessage = await Messages.refreshDiscussionMetadata(room);
-	if (!parentMessage) {
-		return;
-	}
-	void notifyOnMessageChange({
-		id: parentMessage._id,
-		data: parentMessage,
-	});
-};
 
 /**
  * We need to propagate the writing of new message in a discussion to the linking
@@ -31,6 +19,7 @@ callbacks.add(
 			projection: {
 				msgs: 1,
 				lm: 1,
+				sysMes: 1,
 			},
 		});
 
@@ -38,7 +27,7 @@ callbacks.add(
 			return message;
 		}
 
-		await updateAndNotifyParentRoomWithParentMessage(room);
+		await notifyDiscussionMetadataUpdate(room);
 
 		return message;
 	},
@@ -58,7 +47,7 @@ callbacks.add(
 			});
 
 			if (room) {
-				await updateAndNotifyParentRoomWithParentMessage(room);
+				await notifyDiscussionMetadataUpdate(room);
 			}
 		}
 		if (message.drid) {
