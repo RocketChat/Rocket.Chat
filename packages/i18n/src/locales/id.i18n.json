@@ -1682,7 +1682,7 @@
   "Prune_Warning_after": "Ini akan menghapus semua {{items}} dalam {{roomName}} setelah {{fromDate}}.",
   "Prune_Warning_all": "Ini akan menghapus semua {{items}} dalam {{roomName}}!",
   "Prune_Warning_before": "Ini akan menghapus semua {{items}} dalam {{roomName}} sebelum {{toDate}}.",
-  "Prune_Warning_between": "Ini akan menghapus semua %s di %s antara %s dan %s.",
+  "Prune_Warning_between": "Ini akan menghapus semua {{items}} di {{roomName}} antara {{fromDate}} dan {{toDate}}.",
   "Prune_finished": "Pangkas selesai",
   "Pruning_files": "Memangkas file ...",
   "Pruning_messages": "Memangkas pesan ...",

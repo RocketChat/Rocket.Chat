@@ -1706,7 +1706,7 @@
   "Prune_Warning_after": "Гэта выдаліць усе {{items}} у {{roomName}} пасля {{fromDate}}.",
   "Prune_Warning_all": "Гэта выдаліць усе {{items}} у {{roomName}}!",
   "Prune_Warning_before": "Гэта выдаліць усе {{items}} у {{roomName}} да {{toDate}}.",
-  "Prune_Warning_between": "Гэта выдаліць усе %s у %s паміж% з і %s.",
+  "Prune_Warning_between": "Гэта выдаліць усе {{items}} у {{roomName}} паміж {{fromDate}} і {{toDate}}.",
   "Prune_finished": "чарнасліў скончаны",
   "Pruning_files": "Абрэзка файлаў ...",
   "Pruning_messages": "Абрэзка паведамленні ...",

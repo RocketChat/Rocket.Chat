@@ -2437,7 +2437,7 @@
   "Prune_Warning_after": "Tímto odstraníte všechny {{items}} v {{roomName}} po {{fromDate}}.",
   "Prune_Warning_all": "Tímto odstraníte všechny {{items}} v {{roomName}}!",
   "Prune_Warning_before": "Tímto odstraníte všechny {{items}} v {{roomName}} před {{toDate}}.",
-  "Prune_Warning_between": "Tímto odstraníte všechny %s v %s mezi %s a %s.",
+  "Prune_Warning_between": "Tímto odstraníte všechny {{items}} v {{roomName}} mezi {{fromDate}} a {{toDate}}.",
   "Prune_finished": "Pročištění dokončené",
   "Pruning_files": "Pročištění souborů...",
   "Pruning_messages": "Pročištění zpráv...",

@@ -1954,7 +1954,7 @@
   "Prune_Warning_after": "این همه{{items}} در{{roomName}} پس از{{fromDate}} حذف خواهد شد.",
   "Prune_Warning_all": "این همه{{items}} را در{{roomName}} حذف می کند!",
   "Prune_Warning_before": "این همه{{items}} را در{{roomName}} قبل از{{toDate}} حذف می کند.",
-  "Prune_Warning_between": "این همه%s در%s بین%s و%s حذف خواهد شد.",
+  "Prune_Warning_between": "این همه{{items}} در{{roomName}} بین{{fromDate}} و{{toDate}} حذف خواهد شد.",
   "Prune_finished": "سرخ شدن به پایان رسید",
   "Pruning_files": "فایل های هرس ...",
   "Pruning_messages": "پیام زدن ...",

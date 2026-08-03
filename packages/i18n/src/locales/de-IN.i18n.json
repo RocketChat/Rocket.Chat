@@ -1919,7 +1919,7 @@
   "Prune_Warning_after": "Dadurch werden alle {{items}} in {{roomName}} nach {{fromDate}} gelöscht.",
   "Prune_Warning_all": "Dadurch werden alle {{items}} in {{roomName}} gelöscht!",
   "Prune_Warning_before": "Dadurch werden alle {{items}} in {{roomName}} vor {{toDate}} gelöscht.",
-  "Prune_Warning_between": "Dadurch werden alle %s in %s zwischen %s und %s gelöscht.",
+  "Prune_Warning_between": "Dadurch werden alle {{items}} in {{roomName}} zwischen {{fromDate}} und {{toDate}} gelöscht.",
   "Prune_finished": "Löschen beendet",
   "Pruning_files": "Lösche Dateien ...",
   "Pruning_messages": "Lösche Nachrichten ...",

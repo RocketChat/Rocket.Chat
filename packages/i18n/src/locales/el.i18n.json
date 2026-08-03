@@ -1689,7 +1689,7 @@
   "Prune_Warning_after": "Αυτό θα διαγράψει όλα τα {{items}} στο {{roomName}} μετά το {{fromDate}}.",
   "Prune_Warning_all": "Αυτό θα διαγράψει όλα τα {{items}} στο {{roomName}}!",
   "Prune_Warning_before": "Αυτό θα διαγράψει όλα τα {{items}} στο {{roomName}} πριν από το {{toDate}}.",
-  "Prune_Warning_between": "Αυτό θα διαγράψει όλα τα %s στο %s μεταξύ %s και %s.",
+  "Prune_Warning_between": "Αυτό θα διαγράψει όλα τα {{items}} στο {{roomName}} μεταξύ {{fromDate}} και {{toDate}}.",
   "Prune_finished": "Ο κορμός τελείωσε",
   "Pruning_files": "Αρχειοθέτηση αρχείων ...",
   "Pruning_messages": "Κλάδεμα μηνυμάτων ...",

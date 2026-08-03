@@ -3311,7 +3311,7 @@
   "Prune_Warning_after": "Tämä poistaa kaikki kohteet {{items}} kohteesta {{roomName}} kohteen {{fromDate}} jälkeen.",
   "Prune_Warning_all": "Tämä poistaa kaikki {{items}} {{roomName}}:ssa!",
   "Prune_Warning_before": "Tämä poistaa kaikki kohteet {{items}} kohteessa {{roomName}} ennen kohdetta {{toDate}}.",
-  "Prune_Warning_between": "Tämä poistaa kaikki kohteet %s kohteessa %s kohteiden %s ja %s välillä.",
+  "Prune_Warning_between": "Tämä poistaa kaikki kohteet {{items}} kohteessa {{roomName}} kohteiden {{fromDate}} ja {{toDate}} välillä.",
   "Prune_finished": "Karsiminen valmis",
   "Pruning_files": "Tiedostojen karsiminen...",
   "Pruning_messages": "Viestien karsiminen...",

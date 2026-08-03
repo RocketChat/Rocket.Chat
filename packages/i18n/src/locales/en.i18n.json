@@ -4445,7 +4445,7 @@
   "Prune_Warning_after": "This will delete all {{items}} in {{roomName}} after {{fromDate}}.",
   "Prune_Warning_all": "This will delete all {{items}} in {{roomName}}!",
   "Prune_Warning_before": "This will delete all {{items}} in {{roomName}} before {{toDate}}.",
-  "Prune_Warning_between": "This will delete all %s in %s between %s and %s.",
+  "Prune_Warning_between": "This will delete all {{items}} in {{roomName}} between {{fromDate}} and {{toDate}}.",
   "Prune_finished": "Prune finished",
   "Pruning_files": "Pruning files...",
   "Pruning_messages": "Pruning messages...",

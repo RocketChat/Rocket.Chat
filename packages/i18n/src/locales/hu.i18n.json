@@ -3144,7 +3144,7 @@
   "Prune_Warning_after": "Ezzel az összes {{items}} törölve lesz a(z) {{roomName}} szobában {{fromDate}} után.",
   "Prune_Warning_all": "Ezzel az összes {{items}} törölve lesz a(z) {{roomName}} szobában!",
   "Prune_Warning_before": "Ezzel az összes {{items}} törölve lesz a(z) {{roomName}} szobában {{toDate}} előtt.",
-  "Prune_Warning_between": "Ezzel az összes %s törölve lesz a(z) %s szobában %s és %s között.",
+  "Prune_Warning_between": "Ezzel az összes {{items}} törölve lesz a(z) {{roomName}} szobában {{fromDate}} és {{toDate}} között.",
   "Prune_finished": "Törlés befejezve",
   "Pruning_files": "Fájlok törlése…",
   "Pruning_messages": "Üzenetek törlése…",

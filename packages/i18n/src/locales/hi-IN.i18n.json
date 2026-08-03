@@ -3537,7 +3537,7 @@
   "Prune_Warning_after": "यह {{items}} के बाद {{roomName}} में सभी {{fromDate}} को हटा देगा।",
   "Prune_Warning_all": "यह {{items}} में सभी {{roomName}} को हटा देगा!",
   "Prune_Warning_before": "यह {{items}} से पहले {{roomName}} में सभी {{toDate}} को हटा देगा।",
-  "Prune_Warning_between": "यह %s में %s और %s के बीच के सभी %s को हटा देगा।",
+  "Prune_Warning_between": "यह {{items}} में {{roomName}} और {{fromDate}} के बीच के सभी {{toDate}} को हटा देगा।",
   "Prune_finished": "प्रून ख़त्म",
   "Pruning_files": "फ़ाइलें काट-छाँट की जा रही हैं...",
   "Pruning_messages": "संदेशों में काट-छाँट की जा रही है...",

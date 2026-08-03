@@ -1687,7 +1687,7 @@
   "Prune_Warning_after": "Bu {{items}} {{roomName}} sonra {{fromDate}} silmək olacaq.",
   "Prune_Warning_all": "Bu, bütün {{items}} {{roomName}}-də silinəcəkdir!",
   "Prune_Warning_before": "Bu {{items}} {{roomName}} əvvəl {{toDate}}-də silinəcək.",
-  "Prune_Warning_between": "%s və %s arasında %s %s silmək.",
+  "Prune_Warning_between": "{{items}} və {{roomName}} arasında {{fromDate}} {{toDate}} silmək.",
   "Prune_finished": "Prune bitdi",
   "Pruning_files": "Budama faylları ...",
   "Pruning_messages": "Budama mesajları ...",

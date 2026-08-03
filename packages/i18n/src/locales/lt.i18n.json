@@ -1734,7 +1734,7 @@
   "Prune_Warning_after": "Tai ištrins visus {{items}} {{roomName}} po {{fromDate}}.",
   "Prune_Warning_all": "Tai pašalins visus {{items}} {{roomName}}!",
   "Prune_Warning_before": "Tai pašalins visus {{items}} {{roomName}} prieš {{toDate}}.",
-  "Prune_Warning_between": "Tai ištrins visus %s %s tarp %s ir %s.",
+  "Prune_Warning_between": "Tai ištrins visus {{items}} {{roomName}} tarp {{fromDate}} ir {{toDate}}.",
   "Prune_finished": "Prune baigtas",
   "Pruning_files": "Genėjimo failai ...",
   "Pruning_messages": "Genėjimo pranešimai ...",

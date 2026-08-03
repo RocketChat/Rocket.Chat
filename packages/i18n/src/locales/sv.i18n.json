@@ -4304,7 +4304,7 @@
   "Prune_Warning_after": "Detta kommer att radera alla {{items}} i {{roomName}} efter {{fromDate}}.",
   "Prune_Warning_all": "Detta kommer att radera alla {{items}} i {{roomName}}!",
   "Prune_Warning_before": "Detta tar bort alla {{items}} i {{roomName}} före {{toDate}}.",
-  "Prune_Warning_between": "Detta kommer att radera alla %s i %s mellan %s och %s.",
+  "Prune_Warning_between": "Detta kommer att radera alla {{items}} i {{roomName}} mellan {{fromDate}} och {{toDate}}.",
   "Prune_finished": "Gallring färdig",
   "Pruning_files": "Gallring av filer...",
   "Pruning_messages": "Gallring av meddelanden...",

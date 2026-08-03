@@ -1683,7 +1683,7 @@
   "Prune_Warning_after": "Bydd hyn yn dileu pob {{items}} yn {{roomName}} ar ôl {{fromDate}}.",
   "Prune_Warning_all": "Bydd hyn yn dileu pob {{items}} yn {{roomName}}!",
   "Prune_Warning_before": "Bydd hyn yn dileu pob {{items}} yn {{roomName}} cyn {{toDate}}.",
-  "Prune_Warning_between": "Bydd hyn yn dileu pob %s yn %s rhwng %s a %s.",
+  "Prune_Warning_between": "Bydd hyn yn dileu pob {{items}} yn {{roomName}} rhwng {{fromDate}} a {{toDate}}.",
   "Prune_finished": "Gweddillion wedi gorffen",
   "Pruning_files": "Rhoi ffeiliau ...",
   "Pruning_messages": "Tynnu negeseuon ...",

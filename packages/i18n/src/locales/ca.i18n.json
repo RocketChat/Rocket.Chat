@@ -2869,7 +2869,7 @@
   "Prune_Warning_after": "Això eliminarà tots els {{items}} a {{roomName}} després de {{fromDate}}.",
   "Prune_Warning_all": "Això eliminarà tots {{items}} a {{roomName}}.",
   "Prune_Warning_before": "Això eliminarà tots {{items}} a {{roomName}} abans de {{toDate}}.",
-  "Prune_Warning_between": "Això eliminarà tots %s a %s entre %s i %s.",
+  "Prune_Warning_between": "Això eliminarà tots {{items}} a {{roomName}} entre {{fromDate}} i {{toDate}}.",
   "Prune_finished": "Esborrat finalitzat",
   "Pruning_files": "Esborrant els arxius ...",
   "Pruning_messages": "Esborrant els missatges ...",

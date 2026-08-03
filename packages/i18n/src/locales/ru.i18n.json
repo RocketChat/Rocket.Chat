@@ -3035,7 +3035,7 @@
   "Prune_Warning_after": "Это приведет к удалению всех {{items}} в {{roomName}} после {{fromDate}}.",
   "Prune_Warning_all": "Это удалит все {{items}} в {{roomName}}!",
   "Prune_Warning_before": "Это приведет к удалению всех {{items}} в {{roomName}} до {{toDate}}.",
-  "Prune_Warning_between": "Это приведет к удалению всех %s в %s между %s и %s.",
+  "Prune_Warning_between": "Это приведет к удалению всех {{items}} в {{roomName}} между {{fromDate}} и {{toDate}}.",
   "Prune_finished": "Очистка завершена",
   "Pruning_files": "Обрезка файлов ...",
   "Pruning_messages": "Обрезка сообщений ...",

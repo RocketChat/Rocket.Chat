@@ -1680,7 +1680,7 @@
   "Prune_Warning_after": "การดำเนินการนี้จะลบ {{items}} ทั้งหมดใน {{roomName}} หลังจาก {{fromDate}}",
   "Prune_Warning_all": "การดำเนินการนี้จะลบ {{items}} ทั้งหมดใน {{roomName}}!",
   "Prune_Warning_before": "การดำเนินการนี้จะลบ {{items}} ทั้งหมดใน {{roomName}} ก่อน {{toDate}}",
-  "Prune_Warning_between": "การดำเนินการนี้จะลบ %s ทั้งหมดใน %s ระหว่าง %s และ %s",
+  "Prune_Warning_between": "การดำเนินการนี้จะลบ {{items}} ทั้งหมดใน {{roomName}} ระหว่าง {{fromDate}} และ {{toDate}}",
   "Prune_finished": "พรุนเสร็จแล้ว",
   "Pruning_files": "กำลังตัดแต่งไฟล์ ...",
   "Pruning_messages": "การตัดแต่งข้อความ ...",

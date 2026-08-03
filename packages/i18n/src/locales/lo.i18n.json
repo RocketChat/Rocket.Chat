@@ -1712,7 +1712,7 @@
   "Prune_Warning_after": "ນີ້ຈະລຶບ {{items}} ທັງຫມົດໃນ {{roomName}} ຫຼັງ {{fromDate}}.",
   "Prune_Warning_all": "ນີ້ຈະລຶບ {{items}} ທັງຫມົດໃນ {{roomName}}!",
   "Prune_Warning_before": "ນີ້ຈະລຶບ {{items}} ທັງຫມົດໃນ {{roomName}} ກ່ອນ {{toDate}}.",
-  "Prune_Warning_between": "ນີ້ຈະລຶບ %s ທັງຫມົດໃນ %s ລະຫວ່າງ %s ແລະ %s.",
+  "Prune_Warning_between": "ນີ້ຈະລຶບ {{items}} ທັງຫມົດໃນ {{roomName}} ລະຫວ່າງ {{fromDate}} ແລະ {{toDate}}.",
   "Prune_finished": "Prune ແລ້ວ",
   "Pruning_files": "ໄຟ Pruning ...",
   "Pruning_messages": "ຂໍ້ຄວາມລ້າສຸດ ...",

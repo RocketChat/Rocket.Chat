@@ -1977,7 +1977,7 @@
   "Prune_Warning_after": "Isto irá apagar todos os {{items}} em {{roomName}} depois de {{fromDate}}.",
   "Prune_Warning_all": "Isto irá apagar todos os {{items}} em {{roomName}}!",
   "Prune_Warning_before": "Isto irá apagar todos os {{items}} em {{roomName}} antes de {{toDate}}.",
-  "Prune_Warning_between": "Isto irá apagar todos os %s em %s entre %s e %s.",
+  "Prune_Warning_between": "Isto irá apagar todos os {{items}} em {{roomName}} entre {{fromDate}} e {{toDate}}.",
   "Prune_finished": "Remoção terminada",
   "Pruning_files": "A Remover Ficheiros ...",
   "Pruning_messages": "A Remover mensagens ...",

@@ -1700,7 +1700,7 @@
   "Prune_Warning_after": "Tas izdzēsīs visus {{items}} no {{roomName}} pēc {{fromDate}}.",
   "Prune_Warning_all": "Tas izdzēsīs visus {{items}} no {{roomName}}!",
   "Prune_Warning_before": "Tas izdzēsīs visus {{items}} no {{roomName}} pirms {{toDate}}.",
-  "Prune_Warning_between": "Tas izdzēsīs visus %s no %s starp %s un %s.",
+  "Prune_Warning_between": "Tas izdzēsīs visus {{items}} no {{roomName}} starp {{fromDate}} un {{toDate}}.",
   "Prune_finished": "Apgriešana ir pabeigta",
   "Pruning_files": "Apgriež failus ...",
   "Pruning_messages": "Apgriež ziņojumus ...",

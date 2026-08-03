@@ -1684,7 +1684,7 @@
   "Prune_Warning_after": "Kjo do të fshijë të gjitha {{items}} në {{roomName}} pas {{fromDate}}.",
   "Prune_Warning_all": "Kjo do të fshijë të gjitha {{items}} në {{roomName}}!",
   "Prune_Warning_before": "Kjo do të fshijë të gjitha {{items}} në {{roomName}} para {{toDate}}.",
-  "Prune_Warning_between": "Kjo do të fshijë të gjitha %s në %s midis %s dhe %s.",
+  "Prune_Warning_between": "Kjo do të fshijë të gjitha {{items}} në {{roomName}} midis {{fromDate}} dhe {{toDate}}.",
   "Prune_finished": "Prune përfundoi",
   "Pruning_files": "Fotografi të shkurtimit ...",
   "Pruning_messages": "Mesazhet e shkurtimit ...",

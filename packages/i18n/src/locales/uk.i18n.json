@@ -2144,7 +2144,7 @@
   "Prune_Warning_after": "Це призведе до видалення всіх {{items}} в {{roomName}} після {{fromDate}}.",
   "Prune_Warning_all": "Це дозволить видалити всі {{items}} в {{roomName}}!",
   "Prune_Warning_before": "Це дозволить видалити всі {{items}} в {{roomName}} до {{toDate}}.",
-  "Prune_Warning_between": "Це призведе до видалення всіх %s у %s між %s та %s.",
+  "Prune_Warning_between": "Це призведе до видалення всіх {{items}} у {{roomName}} між {{fromDate}} та {{toDate}}.",
   "Prune_finished": "Прін закінчився",
   "Pruning_files": "Обрізка файлів ...",
   "Pruning_messages": "Обрізка повідомлень ...",

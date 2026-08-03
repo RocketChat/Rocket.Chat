@@ -2962,7 +2962,7 @@
   "Prune_Warning_after": "Esto eliminará todos los {{items}} en {{roomName}} después de {{fromDate}}.",
   "Prune_Warning_all": "Esto eliminará todos los {{items}} en {{roomName}}",
   "Prune_Warning_before": "Esto eliminará todos los {{items}} en {{roomName}} antes de {{toDate}}.",
-  "Prune_Warning_between": "Esto eliminará todos los %s en %s entre %s y %s.",
+  "Prune_Warning_between": "Esto eliminará todos los {{items}} en {{roomName}} entre {{fromDate}} y {{toDate}}.",
   "Prune_finished": "Retirada finalizada",
   "Pruning_files": "Retirando archivos...",
   "Pruning_messages": "Retirando mensajes...",

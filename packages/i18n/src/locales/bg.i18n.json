@@ -1683,7 +1683,7 @@
   "Prune_Warning_after": "Това ще изтрие всички {{items}} в {{roomName}} след {{fromDate}}.",
   "Prune_Warning_all": "Това ще изтрие всички {{items}} в {{roomName}}!",
   "Prune_Warning_before": "Това ще изтрие всички {{items}} в {{roomName}} преди {{toDate}}.",
-  "Prune_Warning_between": "Това ще изтрие всички %s в %s между %s и %s.",
+  "Prune_Warning_between": "Това ще изтрие всички {{items}} в {{roomName}} между {{fromDate}} и {{toDate}}.",
   "Prune_finished": "Престилката завърши",
   "Pruning_files": "Подрязване на файлове ...",
   "Pruning_messages": "Подрязване на съобщенията ...",

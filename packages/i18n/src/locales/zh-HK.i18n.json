@@ -1708,7 +1708,7 @@
   "Prune_Warning_after": "这将删除{{items}}后{{roomName}}中的所有{{fromDate}}。",
   "Prune_Warning_all": "这将删除{{items}}中的所有{{roomName}}！",
   "Prune_Warning_before": "这将删除{{items}}之前{{roomName}}中的所有{{toDate}}。",
-  "Prune_Warning_between": "这将删除％s和％s之间％s中的所有％s。",
+  "Prune_Warning_between": "这将删除{{items}}和{{roomName}}之间{{fromDate}}中的所有{{toDate}}。",
   "Prune_finished": "修剪完了",
   "Pruning_files": "修剪文件......",
   "Pruning_messages": "修剪消息......",

@@ -3880,7 +3880,7 @@
   "Prune_Warning_after": "Dette vil slette alle {{items}} i {{roomName}} etter {{fromDate}}.",
   "Prune_Warning_all": "Dette vil slette alle {{items}} i {{roomName}}!",
   "Prune_Warning_before": "Dette vil slette alle {{items}} i {{roomName}} før {{toDate}}.",
-  "Prune_Warning_between": "Dette vil slette alle %s i %s mellom %s og %s.",
+  "Prune_Warning_between": "Dette vil slette alle {{items}} i {{roomName}} mellom {{fromDate}} og {{toDate}}.",
   "Prune_finished": "Prune ferdig",
   "Pruning_files": "Beskjæring av filer ...",
   "Pruning_messages": "Beskjæring av meldinger ...",

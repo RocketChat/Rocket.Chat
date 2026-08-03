@@ -1691,7 +1691,7 @@
   "Prune_Warning_after": "Tým sa odstráni všetky {{items}} v {{roomName}} po {{fromDate}}.",
   "Prune_Warning_all": "Tým sa odstránia všetky {{items}} v {{roomName}}!",
   "Prune_Warning_before": "Tým sa odstráni všetky {{items}} v {{roomName}} pred {{toDate}}.",
-  "Prune_Warning_between": "Tým sa odstránia všetky %s v %s medzi %s a %s.",
+  "Prune_Warning_between": "Tým sa odstránia všetky {{items}} v {{roomName}} medzi {{fromDate}} a {{toDate}}.",
   "Prune_finished": "Prerezávanie bolo dokončené",
   "Pruning_files": "Prerezávanie súborov ...",
   "Pruning_messages": "Prerezávanie správ ...",

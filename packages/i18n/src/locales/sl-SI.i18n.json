@@ -1681,7 +1681,7 @@
   "Prune_Warning_after": "To bo zbrisalo vse {{items}} v {{roomName}} po {{fromDate}}.",
   "Prune_Warning_all": "To bo vse {{items}} izbrisalo v {{roomName}}!",
   "Prune_Warning_before": "To bo vse {{items}} izbrisalo v {{roomName}} pred {{toDate}}.",
-  "Prune_Warning_between": "To bo izbrisalo vse %s v %s med %s in %s.",
+  "Prune_Warning_between": "To bo izbrisalo vse {{items}} v {{roomName}} med {{fromDate}} in {{toDate}}.",
   "Prune_finished": "Prune je končal",
   "Pruning_files": "Obrezovanje datotek ...",
   "Pruning_messages": "Obrezovanje sporočil ...",
