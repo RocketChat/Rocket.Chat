@@ -4375,7 +4375,7 @@
   "github_HEAD": "EN-TÊTE",
   "github_no_public_email": "Vous n'avez pas d'adresse e-mail publique associée à votre compte GitHub",
   "hours": "heures",
-  "if_they_are_from": "(s'ils proviennent de %s)",
+  "if_they_are_from": "(s'ils proviennent de {{users}})",
   "importer_status_done": "Terminé avec succès",
   "importer_status_downloading_file": "Téléchargement du fichier",
   "importer_status_file_loaded": "Fichier chargé",

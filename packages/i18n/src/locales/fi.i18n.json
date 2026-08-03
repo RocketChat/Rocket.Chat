@@ -5041,7 +5041,7 @@
   "github_HEAD": "HEAD",
   "github_no_public_email": "GitHub-tililläsi ei ole julkisia sähköpostiosoitteita",
   "hours": "tuntia",
-  "if_they_are_from": "(jos peräisin kohteesta %s)",
+  "if_they_are_from": "(jos peräisin kohteesta {{users}})",
   "importer_status_done": "Onnistui",
   "importer_status_downloading_file": "Ladataan tiedostoa",
   "importer_status_file_loaded": "Tiedosto ladattu",

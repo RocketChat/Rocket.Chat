@@ -2839,7 +2839,7 @@
   "force-delete-message_description": "مجاز به حذف یک پیام در دور زدن همه محدودیت ها",
   "github_no_public_email": "شما هیچ ایمیلی به عنوان ایمیل عمومی در اکانت گیت هابتان ندارید",
   "hours": "ساعت ها",
-  "if_they_are_from": "(اگر از%s هستند)",
+  "if_they_are_from": "(اگر از{{users}} هستند)",
   "importer_status_finishing": "تقریبا تمام شده",
   "importer_status_import_failed": "خطا",
   "initials_avatar": "تصویر با حروف ابتدای نام",

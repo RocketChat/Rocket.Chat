@@ -2527,7 +2527,7 @@
   "force-delete-message_description": "Permeso forigi mesaĝon preterpasante ĉiujn limigojn",
   "github_no_public_email": "Vi ne havas retpoŝton kiel publika retpoŝto en via konto de GitHub",
   "hours": "horoj",
-  "if_they_are_from": "(se ili estas de %s)",
+  "if_they_are_from": "(se ili estas de {{users}})",
   "importer_status_import_failed": "Eraro",
   "initials_avatar": "Komencaj Avatar",
   "inline_code": "kodo en linio",

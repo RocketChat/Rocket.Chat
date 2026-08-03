@@ -4367,7 +4367,7 @@
   "github_HEAD": "العنوان",
   "github_no_public_email": "ليس لديك أي بريد إلكتروني عام في حسابك على Github",
   "hours": "ساعات",
-  "if_they_are_from": "(إذا كانت من ‎%s)",
+  "if_they_are_from": "(إذا كانت من ‎{{users}})",
   "importer_status_done": "اكتمل بنجاح",
   "importer_status_downloading_file": "يتم تنزيل الملف",
   "importer_status_file_loaded": "تم رفع الملف",

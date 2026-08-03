@@ -2987,7 +2987,7 @@
   "force-delete-message_description": "Tüm kısıtlamaları atlayarak bir iletiyi silmek için izin",
   "github_no_public_email": "Sen GitHub hesabınızda kamu e-posta olarak herhangi bir e-posta yok",
   "hours": "saatler",
-  "if_they_are_from": "(%s'den geliyorsa)",
+  "if_they_are_from": "({{users}}'den geliyorsa)",
   "importer_status_finishing": "Neredeyse bitti",
   "importer_status_import_failed": "Hata",
   "importer_status_importing_channels": "Kanallar içe aktarılıyor",

@@ -2518,7 +2518,7 @@
   "force-delete-message_description": "Dovoljenje za brisanje sporočil, mimo vseh omejitev",
   "github_no_public_email": "V svojem računu GitHub nimate nobenega e-poštnega naslova kot javnega.",
   "hours": "ure",
-  "if_they_are_from": "(če so iz %s)",
+  "if_they_are_from": "(če so iz {{users}})",
   "importer_status_import_failed": "Napaka",
   "initials_avatar": "Začetni avatar",
   "inline_code": "koda v vrstici",

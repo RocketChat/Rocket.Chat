@@ -2530,7 +2530,7 @@
   "force-delete-message_description": "Atļauja izdzēst ziņu, apejot visus ierobežojumus",
   "github_no_public_email": "Jums nav neviena e-pasta kā publiska e-pasta jūsu GitHub kontā",
   "hours": "stundas",
-  "if_they_are_from": "(ja tie ir no %s)",
+  "if_they_are_from": "(ja tie ir no {{users}})",
   "importer_status_import_failed": "Kļūda",
   "initials_avatar": "Avatāra iniciāļi",
   "inline_code": "inline kods",

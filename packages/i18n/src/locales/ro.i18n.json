@@ -2524,7 +2524,7 @@
   "force-delete-message_description": "Permisiunea de a șterge un mesaj prin ignorarea tuturor restricțiilor",
   "github_no_public_email": "Nu aveți nici un e-mail setat ca e-mail public în contul dumneavoastră GitHub",
   "hours": "ore",
-  "if_they_are_from": "(dacă sunt din %s)",
+  "if_they_are_from": "(dacă sunt din {{users}})",
   "importer_status_import_failed": "Eroare",
   "initials_avatar": "Inițial Avatar",
   "inline_code": "inline_code",

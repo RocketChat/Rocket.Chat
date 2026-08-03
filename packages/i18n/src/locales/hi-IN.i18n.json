@@ -5392,7 +5392,7 @@
   "github_HEAD": "सिर",
   "github_no_public_email": "आपके GitHub खाते में सार्वजनिक ईमेल के रूप में कोई ईमेल नहीं है",
   "hours": "घंटे",
-  "if_they_are_from": "(यदि वे %s से हैं)",
+  "if_they_are_from": "(यदि वे {{users}} से हैं)",
   "importer_status_done": "सफलतापूर्वक पूरा",
   "importer_status_downloading_file": "फ़ाइल डाउनलोड हो रही है",
   "importer_status_file_loaded": "फ़ाइल लोड की गई",

@@ -4538,7 +4538,7 @@
   "github_HEAD": "HEAD",
   "github_no_public_email": "В вашей учетной записи GitHub отсутствует публично доступный адрес электронной почты",
   "hours": "часы",
-  "if_they_are_from": "(если они из %s)",
+  "if_they_are_from": "(если они из {{users}})",
   "importer_status_done": "Успешно завершено",
   "importer_status_downloading_file": "Скачивание файла",
   "importer_status_file_loaded": "Файл загружен",

@@ -2524,7 +2524,7 @@
   "force-delete-message_description": "Разрешение за изтриване на съобщение, заобикалящо всички ограничения",
   "github_no_public_email": "Нямате имейл като публичен имейл в профила си в GitHub",
   "hours": "часове",
-  "if_they_are_from": "(ако са от %s)",
+  "if_they_are_from": "(ако са от {{users}})",
   "importer_status_import_failed": "Грешка",
   "initials_avatar": "Инициалите аватар",
   "inline_code": "вграден код",

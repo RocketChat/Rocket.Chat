@@ -3081,7 +3081,7 @@
   "force-delete-message_description": "Дозвіл на видалення повідомлення, обминаючи всі обмеження",
   "github_no_public_email": "У Вашому обліковому записі GitHub, відсутній публічний e-mail",
   "hours": "години",
-  "if_they_are_from": "(якщо вони від %s)",
+  "if_they_are_from": "(якщо вони від {{users}})",
   "importer_status_done": "Завершено успішно",
   "importer_status_downloading_file": "Завантажується файл",
   "importer_status_finishing": "Майже зроблено",

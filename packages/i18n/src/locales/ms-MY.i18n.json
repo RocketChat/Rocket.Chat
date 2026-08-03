@@ -2528,7 +2528,7 @@
   "force-delete-message_description": "Kebenaran untuk memadamkan mesej melangkau semua sekatan",
   "github_no_public_email": "Anda tidak mempunyai sebarang e-mel umum pada akaun GitHub anda",
   "hours": "jam",
-  "if_they_are_from": "(jika mereka dari %s)",
+  "if_they_are_from": "(jika mereka dari {{users}})",
   "importer_status_import_failed": "ralat",
   "initials_avatar": "Inisial Avatar",
   "inline_code": "inline_code",

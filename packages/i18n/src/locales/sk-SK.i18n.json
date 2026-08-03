@@ -2534,7 +2534,7 @@
   "force-delete-message_description": "Povolenie na odstránenie správy obchádzajúce všetky obmedzenia",
   "github_no_public_email": "V účte GitHub nemáte žiadny e-mail ako verejnú e-mailovú správu",
   "hours": "hodiny",
-  "if_they_are_from": "(ak sú z %s)",
+  "if_they_are_from": "(ak sú z {{users}})",
   "importer_status_import_failed": "Chyba",
   "initials_avatar": "Inicializácia Avatar",
   "inline_code": "inline kód",

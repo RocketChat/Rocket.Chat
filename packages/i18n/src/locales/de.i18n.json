@@ -4863,7 +4863,7 @@
   "github_HEAD": "HEAD",
   "github_no_public_email": "Sie haben keine öffentliche E-Mail-Adresse in Ihrem GitHub-Account.",
   "hours": "Stunden",
-  "if_they_are_from": "(wenn sie von %s sind)",
+  "if_they_are_from": "(wenn sie von {{users}} sind)",
   "importer_status_done": "Erfolgreich abgeschlossen",
   "importer_status_downloading_file": "Datei herunterladen",
   "importer_status_file_loaded": "Datei geladen",

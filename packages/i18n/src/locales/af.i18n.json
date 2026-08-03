@@ -2529,7 +2529,7 @@
   "force-delete-message_description": "Toestemming om 'n boodskap te verwyder wat alle beperkings ignoreer",
   "github_no_public_email": "Jy het geen e-pos as publieke e-pos in jou GitHub-rekening nie",
   "hours": "ure",
-  "if_they_are_from": "(as hulle van %s is)",
+  "if_they_are_from": "(as hulle van {{users}} is)",
   "importer_status_import_failed": "fout",
   "initials_avatar": "Voorletters Avatar",
   "inline_code": "inlyn kode",

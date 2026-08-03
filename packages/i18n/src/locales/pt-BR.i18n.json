@@ -6536,7 +6536,7 @@
     "other": "{{count}} menções de grupo"
   },
   "hours": "horas",
-  "if_they_are_from": "(se forem de %s)",
+  "if_they_are_from": "(se forem de {{users}})",
   "importer_status_done": "Concluído com sucesso",
   "importer_status_downloading_file": "Baixando arquivo",
   "importer_status_file_loaded": "Arquivo carregado",

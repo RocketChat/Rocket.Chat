@@ -3122,7 +3122,7 @@
   "github_HEAD": "HEAD",
   "github_no_public_email": "Non hai un email publica sul tuo account GitHub",
   "hours": "ore",
-  "if_they_are_from": "(se sono da %s)",
+  "if_they_are_from": "(se sono da {{users}})",
   "importer_status_done": "Completato con successo",
   "importer_status_file_loaded": "File caricato",
   "importer_status_finishing": "Quasi fatto",

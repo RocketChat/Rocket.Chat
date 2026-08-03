@@ -2338,7 +2338,7 @@
   "force-delete-message_description": "Дозвола за брисање поруке заобилазе сва ограничења",
   "github_no_public_email": "Немате ниједну е-адресу као јавну е-адресу на вашем Гитхаб налогу",
   "hours": "сати",
-  "if_they_are_from": "(ако су из %s)",
+  "if_they_are_from": "(ако су из {{users}})",
   "importer_status_import_failed": "грешка",
   "initials_avatar": "Инитиалс Аватар",
   "inline_code": "инлине_цоде",

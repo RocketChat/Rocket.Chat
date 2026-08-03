@@ -2655,7 +2655,7 @@
   "force-delete-message_description": "Dozvola za brisanje poruke koja zaobilazi sva ograničenja",
   "github_no_public_email": "Nemaš nijedan javni email u svom GitHub računu",
   "hours": "sati",
-  "if_they_are_from": "(ako su iz %s)",
+  "if_they_are_from": "(ako su iz {{users}})",
   "importer_status_finishing": "Skoro gotovo",
   "importer_status_import_failed": "Pogreška",
   "initials_avatar": "Inicijali Avatar",

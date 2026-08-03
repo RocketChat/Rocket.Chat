@@ -2530,7 +2530,7 @@
   "force-delete-message_description": "Bütün məhdudiyyətləri atlayaraq bir mesajı silmək üçün icazə",
   "github_no_public_email": "GitHub hesabınızda ictimai e-poçt olaraq heç bir e-poçtunuz yoxdur",
   "hours": "saat",
-  "if_they_are_from": "(%s olduğundan)",
+  "if_they_are_from": "({{users}} olduğundan)",
   "importer_status_import_failed": "Səhv",
   "initials_avatar": "Başlanğıc Avatar",
   "inline_code": "inline kod",

@@ -2553,7 +2553,7 @@
   "force-delete-message_description": "Дазвол на выдаленне паведамленні ў абыход усіх абмежаванняў",
   "github_no_public_email": "У вас няма адрасы электроннай пошты ў якасці публічнай электроннай пошты ў вашым акаўнце GitHub",
   "hours": "гадзін",
-  "if_they_are_from": "(Калі яны ад %s)",
+  "if_they_are_from": "(Калі яны ад {{users}})",
   "importer_status_import_failed": "памылка",
   "initials_avatar": "ініцыялы Аватар",
   "inline_code": "убудаваны код",

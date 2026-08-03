@@ -6353,7 +6353,7 @@
     "other": "{{count}} group mentions"
   },
   "hours": "小时",
-  "if_they_are_from": "（如果他们来自 %s）",
+  "if_they_are_from": "（如果他们来自 {{users}}）",
   "importer_status_done": "成功完成",
   "importer_status_downloading_file": "下载文件",
   "importer_status_file_loaded": "文件已加载",

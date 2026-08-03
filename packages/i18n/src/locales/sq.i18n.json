@@ -2529,7 +2529,7 @@
   "force-delete-message_description": "Leja për të fshirë një mesazh duke anashkaluar të gjitha kufizimet",
   "github_no_public_email": "Ju nuk keni ndonjë email si email publik në llogarinë tuaj GitHub",
   "hours": "orë",
-  "if_they_are_from": "(nëse janë nga %s)",
+  "if_they_are_from": "(nëse janë nga {{users}})",
   "importer_status_import_failed": "gabim",
   "initials_avatar": "Inicialet Avatar",
   "inline_code": "inline_code",

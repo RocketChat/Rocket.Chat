@@ -5627,7 +5627,7 @@
     "other": "{{count}} gruppeomtaler"
   },
   "hours": "timer",
-  "if_they_are_from": "(hvis de er fra %s)",
+  "if_they_are_from": "(hvis de er fra {{users}})",
   "importer_status_done": "Fullført",
   "importer_status_downloading_file": "Laster ned fil",
   "importer_status_file_loaded": "Filen er lastet inn",

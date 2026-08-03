@@ -3370,7 +3370,7 @@
   "force-delete-message_description": "შეზღუდვების გვერდის ავლით შეტყობინებების წაშლის უფლება",
   "github_no_public_email": "თქვენ არ გაქვთ მითითებული საჯარო ელ.ფოსტა GitHub-თვის",
   "hours": "საათები",
-  "if_they_are_from": "(თუ ისინი%s- დან არიან)",
+  "if_they_are_from": "(თუ ისინი{{users}}- დან არიან)",
   "importer_status_done": "წარმატებით დასრულდა",
   "importer_status_downloading_file": "ფაილის ჩამოტვირთვა",
   "importer_status_file_loaded": "ფაილი ჩაიტვირთა",

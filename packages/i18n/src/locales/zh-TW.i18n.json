@@ -4128,7 +4128,7 @@
   "get-password-policy-mustContainAtLeastOneUppercase": "密碼應至少包含一個大寫字母",
   "github_no_public_email": "您沒有設置任何電子郵件作為公共電子郵件地址，在你的Github帳戶上",
   "hours": "小時",
-  "if_they_are_from": "（如果他們來自%s）",
+  "if_they_are_from": "（如果他們來自{{users}}）",
   "importer_status_done": "已完成成功",
   "importer_status_downloading_file": "下載檔案中",
   "importer_status_file_loaded": "檔案已讀取",

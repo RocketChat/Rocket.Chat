@@ -123,12 +123,7 @@ const PruneMessagesWithData = () => {
 	const callOutText = useMemo(() => {
 		const name = room && ((isDirectMessageRoom(room) && room.usernames?.join(' x ')) || room.fname || room.name);
 		const exceptPinned = pinned ? ` ${t('except_pinned')}` : '';
-		const ifFrom = users.length
-			? ` ${t('if_they_are_from', {
-					postProcess: 'sprintf',
-					sprintf: [users.map((element) => element).join(', ')],
-				})}`
-			: '';
+		const ifFrom = users.length ? ` ${t('if_they_are_from', { users: users.map((element) => element).join(', ') })}` : '';
 		const filesOrMessages = attached ? t('files') : t('messages');
 
 		if (newerDate && olderDate) {

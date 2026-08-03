@@ -1454,7 +1454,7 @@
   "force-delete-message": "כפה מחיקת הודעה",
   "github_no_public_email": "אין לך אף כתובת דוא״ל פומבית בחשבון ה־GitHub שלך",
   "hours": "שעות",
-  "if_they_are_from": "(אם הם מ%s)",
+  "if_they_are_from": "(אם הם מ{{users}})",
   "importer_status_import_failed": "שגיאה",
   "inline_code": "קוד",
   "invisible": "בלתי נראה",

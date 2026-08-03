@@ -2519,7 +2519,7 @@
   "force-delete-message_description": "Destûra ku ji bo hemî sînor veşartina peyamek jêbirin",
   "github_no_public_email": "لە هەژماری گیتهەبەکەت هیچ ئیمەیڵێکی کراوەی گشتیت نیە",
   "hours": "saetan",
-  "if_they_are_from": "(eger ew ji %s)",
+  "if_they_are_from": "(eger ew ji {{users}})",
   "importer_status_import_failed": "Şaşî",
   "initials_avatar": "Initials Avatar",
   "inline_code": "inline_code",

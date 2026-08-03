@@ -2578,7 +2578,7 @@
   "force-delete-message_description": "Leidimas ištrinti pranešimą apeinant visus apribojimus",
   "github_no_public_email": "GitHub paskyroje neturite el. Pašto kaip viešas el. Pašto adresas",
   "hours": "valandos",
-  "if_they_are_from": "(jei jie yra iš %s)",
+  "if_they_are_from": "(jei jie yra iš {{users}})",
   "importer_status_import_failed": "Klaida",
   "initials_avatar": "Inicialai Avataras",
   "inline_code": "inline kodas",

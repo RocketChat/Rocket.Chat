@@ -2523,7 +2523,7 @@
   "force-delete-message_description": "எல்லா கட்டுப்பாடுகளையும் தவிர்த்து ஒரு செய்தியை நீக்க அனுமதி",
   "github_no_public_email": "நீங்கள் உங்கள் மகிழ்ச்சியா கணக்கில் பொது மின்னஞ்சல் என எந்த மின்னஞ்சல் இல்லை",
   "hours": "மணி",
-  "if_they_are_from": "(அவர்கள் %s இலிருந்து இருந்தால்)",
+  "if_they_are_from": "(அவர்கள் {{users}} இலிருந்து இருந்தால்)",
   "importer_status_import_failed": "பிழை",
   "initials_avatar": "சின்னங்கள் Avatar",
   "inline_code": "inline_code",

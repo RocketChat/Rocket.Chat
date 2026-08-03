@@ -6518,7 +6518,7 @@
     "other": "{{count}} gruppomnämnanden"
   },
   "hours": "timmar",
-  "if_they_are_from": "(om de är från %s)",
+  "if_they_are_from": "(om de är från {{users}})",
   "importer_status_done": "Slutfört",
   "importer_status_downloading_file": "Laddar ned fil",
   "importer_status_file_loaded": "Filen har lästs in",

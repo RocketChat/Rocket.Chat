@@ -4523,7 +4523,7 @@
   "github_HEAD": "HEAD",
   "github_no_public_email": "No tienes ningún correo electrónico como correo público en tu cuenta de GitHub",
   "hours": "horas",
-  "if_they_are_from": "(si son de %s)",
+  "if_they_are_from": "(si son de {{users}})",
   "importer_status_done": "Completada correctamente",
   "importer_status_downloading_file": "Descargando archivo",
   "importer_status_file_loaded": "Archivo cargado",

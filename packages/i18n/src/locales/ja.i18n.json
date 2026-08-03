@@ -4329,7 +4329,7 @@
   "github_HEAD": "ヘッド",
   "github_no_public_email": "GitHubアカウントがパブリックメールとしてのメールアドレスを持っていません",
   "hours": "時間",
-  "if_they_are_from": "（%sからのものである場合）",
+  "if_they_are_from": "（{{users}}からのものである場合）",
   "importer_status_done": "正常に完了しました",
   "importer_status_downloading_file": "ファイルのダウンロード",
   "importer_status_file_loaded": "ファイルをロードしました",

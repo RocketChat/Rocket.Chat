@@ -2861,7 +2861,7 @@
   "force-delete-message_description": "សិទ្ធិក្នុងការលុបសារដោយឆ្លងកាត់ការរឹតបន្តឹងទាំងអស់",
   "github_no_public_email": "អ្នក​មិន​មាន​អ៊ីមែល​សាធារណៈ​ក្នុង​ GitHub នៅ​ឡើយ​ទេ",
   "hours": "ម៉ោង",
-  "if_they_are_from": "(ប្រសិនបើពួកគេមកពី %s)",
+  "if_they_are_from": "(ប្រសិនបើពួកគេមកពី {{users}})",
   "importer_status_finishing": "ជិត​រួចរាល់​ហើយ",
   "importer_status_import_failed": "កំហុសក្នុងការ",
   "importer_status_importing_channels": "ការនាំចូលឆានែល",

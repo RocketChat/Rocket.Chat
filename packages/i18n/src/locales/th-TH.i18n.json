@@ -2513,7 +2513,7 @@
   "force-delete-message_description": "อนุญาตให้ลบข้อความโดยเลี่ยงข้อ จำกัด ทั้งหมด",
   "github_no_public_email": "คุณไม่มีอีเมลเป็นอีเมลสาธารณะในบัญชี GitHub ของคุณ",
   "hours": "ชั่วโมง",
-  "if_they_are_from": "(ถ้าพวกเขามาจาก %s)",
+  "if_they_are_from": "(ถ้าพวกเขามาจาก {{users}})",
   "importer_status_import_failed": "ความผิดพลาด",
   "initials_avatar": "Avatar เริ่มต้น",
   "inline_code": "รหัสแบบอินไลน์",

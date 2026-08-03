@@ -2525,7 +2525,7 @@
   "force-delete-message_description": "Caniatâd i ddileu neges osgoi pob cyfyngiad",
   "github_no_public_email": "Nid oes gennych unrhyw e-bost fel e-bost cyhoeddus yn eich cyfrif GitHub",
   "hours": "oriau",
-  "if_they_are_from": "(os ydynt o %s)",
+  "if_they_are_from": "(os ydynt o {{users}})",
   "importer_status_import_failed": "Gwall",
   "initials_avatar": "Cychwynnol Avatar",
   "inline_code": "cod mewnol",

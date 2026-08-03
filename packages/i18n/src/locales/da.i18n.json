@@ -3741,7 +3741,7 @@
   "get-password-policy-mustContainAtLeastOneUppercase": "Adgangskoden skal indeholde mindst et stort bogstav",
   "github_no_public_email": "Du har ikke nogen e-mail som offentlig e-mail i din GitHub-konto",
   "hours": "timer",
-  "if_they_are_from": "(hvis de er fra %s)",
+  "if_they_are_from": "(hvis de er fra {{users}})",
   "importer_status_done": "Fuldført med succes",
   "importer_status_downloading_file": "Downloader fil",
   "importer_status_file_loaded": "Fil blev loadet",

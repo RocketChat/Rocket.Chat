@@ -3710,7 +3710,7 @@
   "get-password-policy-mustContainAtLeastOneUppercase": "비밀번호는 한 개 이상의 대문자를 포함해야합니다",
   "github_no_public_email": "Github 계정에 공개된 이메일이 없습니다.",
   "hours": "시간",
-  "if_they_are_from": "(그들이 %s 출신 인 경우)",
+  "if_they_are_from": "(그들이 {{users}} 출신 인 경우)",
   "importer_status_done": "성공적으로 완료",
   "importer_status_downloading_file": "파일 다운로드 중...",
   "importer_status_file_loaded": "파일이 로드되었습니다",

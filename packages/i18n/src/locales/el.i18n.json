@@ -2532,7 +2532,7 @@
   "force-delete-message_description": "Άδεια διαγραφής ενός μηνύματος παρακάμπτοντας όλους τους περιορισμούς",
   "github_no_public_email": "Δεν έχεις κανένα δημόσιο email στον GitHub λογαριασμό σου",
   "hours": "ώρες",
-  "if_they_are_from": "(αν είναι από %s)",
+  "if_they_are_from": "(αν είναι από {{users}})",
   "importer_status_import_failed": "Λάθος",
   "initials_avatar": "Αρχικά Avatar",
   "inline_code": "inline_code",

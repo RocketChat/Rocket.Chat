@@ -2620,7 +2620,7 @@
   "force-delete-message_description": "Cho phép xóa một tin nhắn bỏ qua tất cả các hạn chế",
   "github_no_public_email": "Bạn không có bất kỳ email nào dưới dạng email công khai trong tài khoản GitHub của mình",
   "hours": "giờ",
-  "if_they_are_from": "(nếu chúng đến từ %s)",
+  "if_they_are_from": "(nếu chúng đến từ {{users}})",
   "importer_status_import_failed": "lỗi",
   "initials_avatar": "Ký hiệu Avatar",
   "inline_code": "mã nội tuyến",

@@ -2524,7 +2524,7 @@
   "force-delete-message_description": "Izin untuk menghapus pesan yang melewati semua batasan",
   "github_no_public_email": "Anda tidak memiliki email publik di akun GitHub anda.",
   "hours": "jam",
-  "if_they_are_from": "(jika mereka dari %s)",
+  "if_they_are_from": "(jika mereka dari {{users}})",
   "importer_status_import_failed": "Kesalahan",
   "initials_avatar": "Inisial Avatar",
   "inline_code": "inline_code",

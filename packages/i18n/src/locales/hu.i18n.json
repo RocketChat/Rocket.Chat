@@ -4743,7 +4743,7 @@
   "github_HEAD": "FEJ",
   "github_no_public_email": "Nincs egyetlen e-mail-címe sem nyilvános e-mail-címként a GitHub-fiókjában",
   "hours": "óra",
-  "if_they_are_from": "(ha innen jönnek: %s)",
+  "if_they_are_from": "(ha innen jönnek: {{users}})",
   "importer_status_done": "Sikeresen befejeződött",
   "importer_status_downloading_file": "Fájl letöltése",
   "importer_status_file_loaded": "Fájl betöltve",

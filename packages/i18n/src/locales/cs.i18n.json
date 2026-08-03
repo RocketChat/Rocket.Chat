@@ -3634,7 +3634,7 @@
   "get-password-policy-mustContainAtLeastOneUppercase": "Heslo musí obsahovat alespoň jedno velké písmeno",
   "github_no_public_email": "Ve svém účtu GitHub nemáte žádný e-mail jako veřejný",
   "hours": "hodiny",
-  "if_they_are_from": "(pokud jsou z %s)",
+  "if_they_are_from": "(pokud jsou z {{users}})",
   "importer_status_done": "Úspěšně dokončeno",
   "importer_status_downloading_file": "Stahování souboru",
   "importer_status_file_loaded": "Soubor byl načten",

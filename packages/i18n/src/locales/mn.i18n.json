@@ -2521,7 +2521,7 @@
   "force-delete-message_description": "Бүх хязгаарлалтыг багтаасан мессежийг устгах зөвшөөрөл",
   "github_no_public_email": "Та өөрийн GitHub дансанд нийтийн имэйлээр ямар ч имэйл хүлээж авахгүй",
   "hours": "цаг",
-  "if_they_are_from": "(хэрэв тэдгээр нь %s бол)",
+  "if_they_are_from": "(хэрэв тэдгээр нь {{users}} бол)",
   "importer_status_import_failed": "Алдаа",
   "initials_avatar": "Анхны тоглолтууд",
   "inline_code": "шугамын код",

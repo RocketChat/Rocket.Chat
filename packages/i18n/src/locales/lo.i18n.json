@@ -2559,7 +2559,7 @@
   "force-delete-message_description": "ການອະນຸຍາດທີ່ຈະລຶບຂໍ້ຄວາມໂດຍບໍ່ມີຂໍ້ຈໍາກັດທັງຫມົດ",
   "github_no_public_email": "ທ່ານບໍ່ມີອີເມລອີເມລສາທາລະນະຢູ່ໃນບັນຊີ GitHub ຂອງທ່ານ",
   "hours": "ຊົ່ວໂມງ",
-  "if_they_are_from": "(ຖ້າພວກເຂົາມາຈາກ %s)",
+  "if_they_are_from": "(ຖ້າພວກເຂົາມາຈາກ {{users}})",
   "importer_status_import_failed": "Error",
   "initials_avatar": "Initials Avatar",
   "inline_code": "inline_code",

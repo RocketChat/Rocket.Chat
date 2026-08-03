@@ -6713,7 +6713,7 @@
     "other": "{{count}} group mentions"
   },
   "hours": "hours",
-  "if_they_are_from": "(if they are from %s)",
+  "if_they_are_from": "(if they are from {{users}})",
   "importer_status_done": "Completed successfully",
   "importer_status_downloading_file": "Downloading file",
   "importer_status_file_loaded": "File loaded",

@@ -2835,7 +2835,7 @@
   "force-delete-message_description": "Berechtigung, eine Nachricht ohne weitere Prüfungen zu löschen",
   "github_no_public_email": "Du hast keine öffentliche E-Mail-Adresse in Deinem GitHub-Account.",
   "hours": "Stunden",
-  "if_they_are_from": "(wenn sie von %s sind)",
+  "if_they_are_from": "(wenn sie von {{users}} sind)",
   "initials_avatar": "Avatar aus Initialien",
   "inline_code": "Code",
   "invisible": "unsichtbar",

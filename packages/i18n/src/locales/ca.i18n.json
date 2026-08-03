@@ -4278,7 +4278,7 @@
   "github_HEAD": "CAP",
   "github_no_public_email": "No tens cap adreça electrònica com a correu-e públic al teu compte de GitHub",
   "hours": "hores",
-  "if_they_are_from": "(si són de %s)",
+  "if_they_are_from": "(si són de {{users}})",
   "importer_status_done": "Completat amb èxit",
   "importer_status_downloading_file": "Descarregant arxiu",
   "importer_status_file_loaded": "Arxiu carregat",

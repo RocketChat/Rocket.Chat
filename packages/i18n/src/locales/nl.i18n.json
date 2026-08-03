@@ -4376,7 +4376,7 @@
   "github_HEAD": "HEAD",
   "github_no_public_email": "Je hebt geen e-mail als openbare e-mailadres in je GitHub-account",
   "hours": "uren",
-  "if_they_are_from": "(als ze van %s zijn)",
+  "if_they_are_from": "(als ze van {{users}} zijn)",
   "importer_status_done": "Succesvol voltooid",
   "importer_status_downloading_file": "Bestand downloaden",
   "importer_status_file_loaded": "Bestand geladen",

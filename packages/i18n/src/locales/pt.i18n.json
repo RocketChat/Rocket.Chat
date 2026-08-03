@@ -2922,7 +2922,7 @@
   "force-delete-message_description": "Permissão para apagar uma mensagem ignorando todas as restrições",
   "github_no_public_email": "Não possui um e-mail público na sua conta GitHub",
   "hours": "horas",
-  "if_they_are_from": "(se eles são de %s)",
+  "if_they_are_from": "(se eles são de {{users}})",
   "importer_status_finishing": "Quase feito",
   "importer_status_import_failed": "Erro",
   "importer_status_importing_channels": "Importando canais",
