@@ -2989,7 +2989,7 @@
   "The_selected_user_is_not_a_monitor": "Vybraný uživatel není vedoucí",
   "The_selected_user_is_not_an_agent": "Vybraný uživatel není operátor",
   "The_server_will_restart_in_s_seconds": "Server bude restartován za %s sekund",
-  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "<strong>Hodnota nastavení<strong>%s<strong> je <strong>%s</strong>. Přistupujete z <strong>%s</strong>!",
+  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "<strong>Hodnota nastavení<strong>{{settingName}}<strong> je <strong>{{configuredUrl}}</strong>. Přistupujete z <strong>{{currentUrl}}</strong>!",
   "The_user_s_will_be_removed_from_role_s": "Uživatel %s bude odstraněn z role %s",
   "The_user_will_be_removed_from_s": "Uživatel bude odstraněn z {{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "Uživatel nebude moci psát v {{roomName}}",

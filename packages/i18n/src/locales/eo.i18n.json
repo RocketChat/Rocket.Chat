@@ -2070,7 +2070,7 @@
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "La regrandigo de bildoj ne funkcios ĉar ni ne povas detekti ImageMagick aŭ GraphicsMagick instalitan sur via servilo.",
   "The_redirectUri_is_required": "La redirectUri estas postulita",
   "The_server_will_restart_in_s_seconds": "La servilo rekomencos en%s sekundoj",
-  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "La agordo <strong>%s</strong> estas agordita al <strong>%s</strong> kaj vi aliras de <strong>%s</strong>!",
+  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "La agordo <strong>{{settingName}}</strong> estas agordita al <strong>{{configuredUrl}}</strong> kaj vi aliras de <strong>{{currentUrl}}</strong>!",
   "The_user_will_be_removed_from_s": "La uzanto estos forigita de{{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "La uzanto ne povos tajpi{{roomName}}",
   "Theme": "Temo",

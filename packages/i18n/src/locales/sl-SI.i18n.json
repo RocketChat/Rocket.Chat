@@ -2068,7 +2068,7 @@
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Velikost slike ne bo delovala, ker ne moremo zaznati ImageMagick ali GraphicsMagick, nameščenega na vašem strežniku.",
   "The_redirectUri_is_required": "Preusmeritveni uri (redirectUri) je zahtevan",
   "The_server_will_restart_in_s_seconds": "Strežnik se bo znova zagnal v %s sekundah",
-  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Nastavitev <strong>%s</strong> je konfigurirana na <strong>%s</strong>. Vi dostopate iz <strong>%s</strong>!",
+  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Nastavitev <strong>{{settingName}}</strong> je konfigurirana na <strong>{{configuredUrl}}</strong>. Vi dostopate iz <strong>{{currentUrl}}</strong>!",
   "The_user_will_be_removed_from_s": "Uporabnik bo odstranjen iz {{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "Uporabnik ne bo mogel pisati v {{roomName}}",
   "Theme": "Tema",

@@ -2072,7 +2072,7 @@
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Imazhi resize nuk do të funksionojë, sepse ne nuk mund të zbulojë ImageMagick ose GraphicsMagick instaluar në serverin tuaj.",
   "The_redirectUri_is_required": "RedirectUri është e nevojshme",
   "The_server_will_restart_in_s_seconds": "Serveri do të rifillojë në %s sekonda",
-  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "<strong>Vendosjen %s</strong> është konfiguruar <strong>për %s</strong> dhe ju jeni të hyrë <strong>nga %s!</strong>",
+  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "<strong>Vendosjen {{settingName}}</strong> është konfiguruar <strong>për {{configuredUrl}}</strong> dhe ju jeni të hyrë <strong>nga {{currentUrl}}!</strong>",
   "The_user_will_be_removed_from_s": "Përdorues do të hiqet nga {{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "Ky përdorues nuk do të jetë në gjendje të shkruani në {{roomName}}",
   "Theme": "temë",

@@ -2070,7 +2070,7 @@
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Redimensionarea imaginii nu va funcționa, deoarece nu putem detecta ImageMagick sau GraphicsMagick instalat pe server.",
   "The_redirectUri_is_required": "URI de redirectare este necesar",
   "The_server_will_restart_in_s_seconds": "Serverul va reporni în %s secunde",
-  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Setarea <strong>%s</strong> e configurată să <strong>%s</strong> iar dumneavoastră accesați din <strong>%s</strong>!",
+  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Setarea <strong>{{settingName}}</strong> e configurată să <strong>{{configuredUrl}}</strong> iar dumneavoastră accesați din <strong>{{currentUrl}}</strong>!",
   "The_user_will_be_removed_from_s": "Utilizatorul va fi eliminat din {{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "Utilizatorul nu va putea să introducă text în {{roomName}}",
   "Theme": "Temă",

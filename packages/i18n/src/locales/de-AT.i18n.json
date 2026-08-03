@@ -2072,7 +2072,7 @@
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Die automatische Skalierung der Bilder funktioniert nicht, da ImageMagick oder GraphicsMagick nicht auf dem Server installiert sind.",
   "The_redirectUri_is_required": "Es muss eine Weiterleitung-URL angegeben werden.",
   "The_server_will_restart_in_s_seconds": "Der Server wird in %s Sekunden neu gestartet",
-  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Die Einstellung <strong>%s</strong> wurde zu <strong>%s</strong> konfiguriert und Sie greifen von <strong>%s</strong> zu!",
+  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Die Einstellung <strong>{{settingName}}</strong> wurde zu <strong>{{configuredUrl}}</strong> konfiguriert und Sie greifen von <strong>{{currentUrl}}</strong> zu!",
   "The_user_will_be_removed_from_s": "Der Benutzer wird von {{roomName}} entfernt.",
   "The_user_wont_be_able_to_type_in_s": "Der Benutzer kann nicht mehr in {{roomName}} schreiben.",
   "Theme": "Theme",

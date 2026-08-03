@@ -2401,7 +2401,7 @@
   "The_peer__peer__does_not_exist": "O par <em>{{peer}}</em> não existe.",
   "The_redirectUri_is_required": "O redirectUri é necessário",
   "The_server_will_restart_in_s_seconds": "O servidor será reiniciado em %s segundos",
-  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "A configuração <strong>%s</strong> está definida como <strong>%s</strong> e  está acessando a partir de <strong>%s</strong>!",
+  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "A configuração <strong>{{settingName}}</strong> está definida como <strong>{{configuredUrl}}</strong> e  está acessando a partir de <strong>{{currentUrl}}</strong>!",
   "The_user_will_be_removed_from_s": "O utilizador irá ser removido de {{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "O utilizador não irá ser capaz de escrever em {{roomName}}",
   "Theme": "Tema",

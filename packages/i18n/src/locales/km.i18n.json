@@ -2357,7 +2357,7 @@
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "ប្ដូរទំហំរូបភាពនឹងមិនធ្វើការដោយសារតែយើងមិនអាចរកឃើញ ImageMagick ឬ GraphicsMagick ដែលបានដំឡើងនៅលើម៉ាស៊ីនបម្រើរបស់អ្នក។",
   "The_redirectUri_is_required": "redirectUri នេះគឺត្រូវបានទាមទារ",
   "The_server_will_restart_in_s_seconds": "ម៉ាស៊ីនបម្រើនេះនឹងចាប់ផ្ដើមឡើងវិញនៅក្នុង %s វិនាទី",
-  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "<strong>ការកំណត់ %s</strong> <strong>ត្រូវបានកំណត់រចនាសម្ព័ន្ធដើម្បី %s</strong> <strong>និងអ្នកត្រូវបានចូលដំណើរការពី %s!</strong>",
+  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "<strong>ការកំណត់ {{settingName}}</strong> <strong>ត្រូវបានកំណត់រចនាសម្ព័ន្ធដើម្បី {{configuredUrl}}</strong> <strong>និងអ្នកត្រូវបានចូលដំណើរការពី {{currentUrl}}!</strong>",
   "The_user_will_be_removed_from_s": "អ្នកប្រើនឹងត្រូវបានយកចេញពី {{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "អ្នកប្រើនឹងមិនអាចវាយនៅក្នុង {{roomName}}",
   "Theme": "ស្បែក",

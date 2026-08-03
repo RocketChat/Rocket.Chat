@@ -2097,7 +2097,7 @@
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "图像大小调整不起作用，因为我们无法检测到服务器上安装的ImageMagick或GraphicsMagick。",
   "The_redirectUri_is_required": "redirectUri是必需的",
   "The_server_will_restart_in_s_seconds": "服务器将以％s秒为单位重新启动",
-  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "已将<strong>％s</strong>的设置配置为<strong>％s</strong>，您正在通过<strong>％s</strong>进行访问！",
+  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "已将<strong>{{settingName}}</strong>的设置配置为<strong>{{configuredUrl}}</strong>，您正在通过<strong>{{currentUrl}}</strong>进行访问！",
   "The_user_will_be_removed_from_s": "用户将从{{roomName}}中删除",
   "The_user_wont_be_able_to_type_in_s": "用户将无法输入{{roomName}}",
   "Theme": "主题",

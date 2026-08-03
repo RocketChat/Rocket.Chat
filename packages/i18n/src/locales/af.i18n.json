@@ -2072,7 +2072,7 @@
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Die grootte van die prentjie sal nie werk nie omdat ons ImageMagick of GraphicsMagick nie op u bediener geïnstalleer het nie.",
   "The_redirectUri_is_required": "Die redirectUri is nodig",
   "The_server_will_restart_in_s_seconds": "Die bediener sal herbegin in%s sekondes",
-  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Die instelling <strong>%s</strong> is ingestel op <strong>%s</strong> en jy kry toegang vanaf <strong>%s</strong>!",
+  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Die instelling <strong>{{settingName}}</strong> is ingestel op <strong>{{configuredUrl}}</strong> en jy kry toegang vanaf <strong>{{currentUrl}}</strong>!",
   "The_user_will_be_removed_from_s": "Die gebruiker sal van{{roomName}} verwyder word",
   "The_user_wont_be_able_to_type_in_s": "Die gebruiker sal nie in{{roomName}} kan tik nie",
   "Theme": "tema",

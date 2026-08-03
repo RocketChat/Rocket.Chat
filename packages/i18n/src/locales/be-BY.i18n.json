@@ -2095,7 +2095,7 @@
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Змяніць памер малюнка не будзе працаваць, таму што мы не можам выявіць ImageMagick або GraphicsMagick усталяваны на вашым серверы.",
   "The_redirectUri_is_required": "RedirectUri патрабуецца",
   "The_server_will_restart_in_s_seconds": "Сервер будзе перазагружаны у %s секунд",
-  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Параметр <strong>%s</strong>настроены на <strong>%s</strong>і вы атрымліваеце доступ з <strong>%s</strong>!",
+  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Параметр <strong>{{settingName}}</strong>настроены на <strong>{{configuredUrl}}</strong>і вы атрымліваеце доступ з <strong>{{currentUrl}}</strong>!",
   "The_user_will_be_removed_from_s": "Карыстальнік будзе выдалены з{{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "Карыстальнік не зможа ўвесці ў{{roomName}}",
   "Theme": "тэма",

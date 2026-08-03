@@ -3426,7 +3426,7 @@
   "The_selected_user_is_not_a_monitor": "已選擇的使用者不是監控者",
   "The_selected_user_is_not_an_agent": "已選擇的使用者不是代理",
   "The_server_will_restart_in_s_seconds": "伺服器將在 %s 秒後重新啟動",
-  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "設置<strong>%s</strong>被配置為<strong>%s</strong>和你是從<strong>%s的</strong>存取！",
+  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "設置<strong>{{settingName}}</strong>被配置為<strong>{{configuredUrl}}</strong>和你是從<strong>{{currentUrl}}的</strong>存取！",
   "The_user_s_will_be_removed_from_role_s": "此使用者 %s 將要從角色 %s 移除",
   "The_user_will_be_removed_from_s": "使用者將從 {{roomName}} 被刪除",
   "The_user_wont_be_able_to_type_in_s": "使用者將不能夠輸入在 {{roomName}}",

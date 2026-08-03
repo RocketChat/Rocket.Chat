@@ -2120,7 +2120,7 @@
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Vaizdo dydžio keitimas neveiks, nes negalime nustatyti serverio \"ImageMagick\" ar \"GraphicsMagick\".",
   "The_redirectUri_is_required": "Reikia redirectUri",
   "The_server_will_restart_in_s_seconds": "Serveris bus paleistas iš naujo po%s sekundžių",
-  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Nustatymas <strong>%s</strong> yra sukonfigūruotas į <strong>%s</strong> ir jūs pasiekiate iš <strong>%s</strong>!",
+  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Nustatymas <strong>{{settingName}}</strong> yra sukonfigūruotas į <strong>{{configuredUrl}}</strong> ir jūs pasiekiate iš <strong>{{currentUrl}}</strong>!",
   "The_user_will_be_removed_from_s": "Vartotojas bus pašalintas iš{{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "Vartotojas negalės įvesti{{roomName}}",
   "Theme": "Tema",

@@ -5486,7 +5486,7 @@
   "The_selected_user_is_not_a_monitor": "The selected user is not a monitor",
   "The_selected_user_is_not_an_agent": "The selected user is not an agent",
   "The_server_will_restart_in_s_seconds": "The server will restart in %s seconds",
-  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "The setting <strong>%s</strong> is configured to <strong>%s</strong> and you are accessing from <strong>%s</strong>!",
+  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "The setting <strong>{{settingName}}</strong> is configured to <strong>{{configuredUrl}}</strong> and you are accessing from <strong>{{currentUrl}}</strong>!",
   "The_user_s_will_be_removed_from_role_s": "The user %s will be removed from role %s",
   "The_user_will_be_banned_from__roomName__": "The user will be banned from {{roomName}}",
   "The_user_will_be_unbanned_from__roomName__": "The user will be unbanned from {{roomName}}",

@@ -2068,7 +2068,7 @@
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Promjena veličine slike neće raditi, jer ne možemo provjeriti da je ImageMagick ili GraphicsMagick instaliran na vašem poslužitelju.",
   "The_redirectUri_is_required": "RedirectUri je potrebno",
   "The_server_will_restart_in_s_seconds": "Poslužitelj će se ponovno pokrenuti u %s sekundi",
-  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Postavka <strong>%s</strong> je namještena na <strong>za %s</strong> i pristupate se<strong>%s</strong>!",
+  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Postavka <strong>{{settingName}}</strong> je namještena na <strong>za {{configuredUrl}}</strong> i pristupate se<strong>{{currentUrl}}</strong>!",
   "The_user_will_be_removed_from_s": "Korisnik će biti uklonjen iz {{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "Korisnik neće moći pisati u {{roomName}}",
   "Theme": "Tema",

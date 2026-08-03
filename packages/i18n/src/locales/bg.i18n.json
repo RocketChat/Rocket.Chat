@@ -2069,7 +2069,7 @@
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Размерът на изображението няма да работи, защото не можем да открием ImageMagick или GraphicsMagick, инсталирани на вашия сървър.",
   "The_redirectUri_is_required": "Необходимо е пренасочването",
   "The_server_will_restart_in_s_seconds": "Сървъра ще бъде рестартиран след %s секунди",
-  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Настройката <strong>%s</strong>е конфигурирана на <strong>%s</strong>и имате достъп до <strong>%s</strong>!",
+  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Настройката <strong>{{settingName}}</strong>е конфигурирана на <strong>{{configuredUrl}}</strong>и имате достъп до <strong>{{currentUrl}}</strong>!",
   "The_user_will_be_removed_from_s": "Потребителят ще бъде премахнат от {{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "Потребителят няма да може да въведе в {{roomName}}",
   "Theme": "Тама",

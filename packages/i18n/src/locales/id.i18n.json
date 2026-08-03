@@ -2067,7 +2067,7 @@
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Gambar resize tidak akan bekerja karena kita tidak dapat mendeteksi ImageMagick atau GraphicsMagick diinstal pada server Anda.",
   "The_redirectUri_is_required": "The redirectUri diperlukan",
   "The_server_will_restart_in_s_seconds": "server akan restart%s detik",
-  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "<strong>Pengaturan%s</strong> dikonfigurasi <strong>untuk%s</strong> dan Anda mengakses <strong>dari%s!</strong>",
+  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "<strong>Pengaturan{{settingName}}</strong> dikonfigurasi <strong>untuk{{configuredUrl}}</strong> dan Anda mengakses <strong>dari{{currentUrl}}!</strong>",
   "The_user_will_be_removed_from_s": "pengguna akan dihapus dari{{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "Pengguna tidak akan dapat mengetikkan{{roomName}}",
   "Theme": "Tema",

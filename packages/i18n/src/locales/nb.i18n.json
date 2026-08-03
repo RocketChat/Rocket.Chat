@@ -5205,7 +5205,7 @@
   "The_selected_user_is_not_a_monitor": "Den valgte brukeren er ikke en overvåkere",
   "The_selected_user_is_not_an_agent": "Den valgte brukeren er ikke en agent",
   "The_server_will_restart_in_s_seconds": "Serveren starter på nytt om %s sekunder",
-  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Innstillingen <strong>%s</strong> er konfigurert til <strong>%s</strong> og du får tilgang fra <strong>%s</strong>!",
+  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Innstillingen <strong>{{settingName}}</strong> er konfigurert til <strong>{{configuredUrl}}</strong> og du får tilgang fra <strong>{{currentUrl}}</strong>!",
   "The_user_s_will_be_removed_from_role_s": "Brukeren %s vil bli fjernet fra rollen %s",
   "The_user_will_be_removed_from_s": "Brukeren blir fjernet fra {{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "Brukeren vil ikke kunne skrive inn {{roomName}}",

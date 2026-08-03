@@ -2358,7 +2358,7 @@
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "تغییر اندازه تصویر به کار نخواهد کرد زیرا ما نمی توانیم تشخیص ImageMagick را یا GraphicsMagick بر روی سرور خود نصب شده است.",
   "The_redirectUri_is_required": "redirectUri مورد نیاز است",
   "The_server_will_restart_in_s_seconds": "سرور در %s ثانیه راه اندازی مجدد خواهد",
-  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "<strong>تنظیمات %s</strong> در <strong>به %s</strong> پیکربندی و شما <strong>از %s</strong> دسترسی!",
+  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "<strong>تنظیمات {{settingName}}</strong> در <strong>به {{configuredUrl}}</strong> پیکربندی و شما <strong>از {{currentUrl}}</strong> دسترسی!",
   "The_user_will_be_removed_from_s": "کاربر از {{roomName}} حذف خواهد شد",
   "The_user_wont_be_able_to_type_in_s": "کاربر قادر به نوشتن در {{roomName}} نخواهد بود",
   "Theme": "پوسته",

@@ -2074,7 +2074,7 @@
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "ImageMagick və ya GraphicsMagick-i serverinizdə yükləməyəcəyimiz üçün şəkil ölçüsünün işləməyəcəyi.",
   "The_redirectUri_is_required": "RedirectUri tələb olunur",
   "The_server_will_restart_in_s_seconds": "Server%s saniyə ərzində yenidən başlayacaq",
-  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "<strong>%s</strong> ayarı <strong>%s</strong>üçün konfiqurasiya edilmiş və <strong>%s</strong> səhifəsinə daxil olun!",
+  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "<strong>{{settingName}}</strong> ayarı <strong>{{configuredUrl}}</strong>üçün konfiqurasiya edilmiş və <strong>{{currentUrl}}</strong> səhifəsinə daxil olun!",
   "The_user_will_be_removed_from_s": "İstifadəçi{{roomName}}-dən silinəcəkdir",
   "The_user_wont_be_able_to_type_in_s": "İstifadəçi{{roomName}}-də yaza bilməyəcək",
   "Theme": "Mövzu",

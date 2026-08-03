@@ -2076,7 +2076,7 @@
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Zmena veľkosti obrázka nebude fungovať, pretože na vašom serveri nemôžeme nájsť aplikácie ImageMagick alebo GraphicsMagick.",
   "The_redirectUri_is_required": "Vyžaduje sa presmerovanie",
   "The_server_will_restart_in_s_seconds": "Server sa reštartuje v%s",
-  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Nastavenie <strong>%s</strong> je nakonfigurované na <strong>%s</strong> a máte prístup z <strong>%s</strong>!",
+  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Nastavenie <strong>{{settingName}}</strong> je nakonfigurované na <strong>{{configuredUrl}}</strong> a máte prístup z <strong>{{currentUrl}}</strong>!",
   "The_user_will_be_removed_from_s": "Používateľ bude odstránený z{{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "Používateľ nebude môcť zadať{{roomName}}",
   "Theme": "téma",

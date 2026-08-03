@@ -3582,7 +3582,7 @@
   "The_selected_user_is_not_a_monitor": "選択したユーザーはモニターではありません",
   "The_selected_user_is_not_an_agent": "選択したユーザーはエージェントではありません",
   "The_server_will_restart_in_s_seconds": "%s秒後にサーバーを再起動します",
-  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "<strong>%s</strong>は <strong>%s</strong>に設定されており、<strong>%s</strong>からアクセスしています！",
+  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "<strong>{{settingName}}</strong>は <strong>{{configuredUrl}}</strong>に設定されており、<strong>{{currentUrl}}</strong>からアクセスしています！",
   "The_user_s_will_be_removed_from_role_s": "ユーザー%sはロール%sから削除されます",
   "The_user_will_be_removed_from_s": "ユーザーは{{roomName}}から削除されます",
   "The_user_wont_be_able_to_type_in_s": "ユーザーは{{roomName}}で入力できなくなります",

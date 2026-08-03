@@ -2073,7 +2073,7 @@
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "The saiz semula imej tidak akan berfungsi kerana kita tidak dapat mengesan ImageMagick atau GraphicsMagick dipasang pada pelayan anda.",
   "The_redirectUri_is_required": "The redirectUri diperlukan",
   "The_server_will_restart_in_s_seconds": "Server akan memulakan semula dalam %s saat",
-  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "<strong>Penubuhan %s</strong> dikonfigurasi <strong>untuk %s</strong> dan anda mengakses <strong>dari %s!</strong>",
+  "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "<strong>Penubuhan {{settingName}}</strong> dikonfigurasi <strong>untuk {{configuredUrl}}</strong> dan anda mengakses <strong>dari {{currentUrl}}!</strong>",
   "The_user_will_be_removed_from_s": "Pengguna akan dikeluarkan daripada {{roomName}}",
   "The_user_wont_be_able_to_type_in_s": "Pengguna tidak akan dapat untuk menaip dalam {{roomName}}",
   "Theme": "tema",

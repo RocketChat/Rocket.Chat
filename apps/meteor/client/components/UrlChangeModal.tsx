@@ -20,8 +20,9 @@ const UrlChangeModal = ({ onConfirm, siteUrl, currentUrl, onClose }: UrlChangeMo
 				dangerouslySetInnerHTML={{
 					__html: DOMPurify.sanitize(
 						t('The_setting_s_is_configured_to_s_and_you_are_accessing_from_s', {
-							postProcess: 'sprintf',
-							sprintf: [t('Site_Url'), siteUrl, currentUrl],
+							settingName: t('Site_Url'),
+							configuredUrl: siteUrl,
+							currentUrl,
 						}),
 					),
 				}}
