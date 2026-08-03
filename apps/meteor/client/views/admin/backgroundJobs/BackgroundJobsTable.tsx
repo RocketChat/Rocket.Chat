@@ -17,7 +17,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { BackgroundJobsTab } from './BackgroundJobsPage';
+import type { BackgroundJobsTab, OmnichannelJobSource } from './BackgroundJobsPage';
 import { statusVariant, useTranslateInterval } from './helpers';
 import FilterByText from '../../../components/FilterByText';
 import GenericNoResults from '../../../components/GenericNoResults';
@@ -26,11 +26,12 @@ import { useTimeAgo } from '../../../hooks/useTimeAgo';
 
 type BackgroundJobsTableProps = {
 	tab: BackgroundJobsTab;
+	omnichannelSource: OmnichannelJobSource;
 };
 
 type CronJobStatus = 'running' | 'scheduled' | 'failed' | 'disabled';
 
-const BackgroundJobsTable = ({ tab }: BackgroundJobsTableProps) => {
+const BackgroundJobsTable = ({ tab, omnichannelSource }: BackgroundJobsTableProps) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const [text, setText] = useState('');
@@ -77,19 +78,23 @@ const BackgroundJobsTable = ({ tab }: BackgroundJobsTableProps) => {
 
 	useEffect(() => {
 		setCurrent(0);
-	}, [tab, setCurrent, text, status]);
+	}, [tab, omnichannelSource, setCurrent, text, status]);
 
 	const getCoreJobs = useEndpoint('GET', '/v1/cron.jobs');
 	const getAppJobs = useEndpoint('GET', '/v1/cron.appjobs');
+	const getOmnichannelJobs = useEndpoint('GET', '/v1/cron.omnichanneljobs');
 
 	const { data, isLoading, isSuccess, isError } = useQuery({
-		queryKey: ['cron-jobs', tab, query],
+		queryKey: ['cron-jobs', tab, omnichannelSource, query],
 		queryFn: async () => {
 			if (tab === 'apps') {
 				return getAppJobs(query);
 			}
 			if (tab === 'omnichannel') {
-				return { jobs: [], total: 0 };
+				return getOmnichannelJobs({
+					...query,
+					source: omnichannelSource,
+				});
 			}
 			return getCoreJobs(query);
 		},
