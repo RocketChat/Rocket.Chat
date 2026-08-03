@@ -1,3 +1,4 @@
+import { isInVideoConference } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useUserSubscription } from '@rocket.chat/ui-contexts';
@@ -17,11 +18,15 @@ import { useConferenceEmbedded } from './hooks/useConferenceEmbedded';
 import { useConfinedNavigation } from './hooks/useConfinedNavigation';
 import { useLeaveConferenceOnClose } from './hooks/useLeaveConferenceOnClose';
 import { useProviderCallBridge } from './hooks/useProviderCallBridge';
+import { useUnreadDisplay } from '../../sidebar/hooks/useUnreadDisplay';
 import PageLoading from '../root/PageLoading';
 
 type ConferenceEmbeddedPageProps = {
 	callId: string;
 };
+
+/** Stands in until the subscription loads, or for a member who has none because they can't read the chat. */
+const emptyUnreadData = { alert: false, userMentions: 0, unread: 0, groupMentions: 0 } as const;
 
 /**
  * Renders a conference as the call plus a bottom control bar, with the conference's persistent chat in a
@@ -79,8 +84,14 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	const breakpoints = useBreakpoints();
 	const overlayPanel = !breakpoints.includes('md');
 
+	// The same rules the sidebar's room item uses, so a mention reads as urgent in both places and a room the
+	// user muted stays quiet in both. Nothing to show while the chat is the panel they are looking at.
 	const subscription = useUserSubscription(room.rid ?? '');
-	const unreadCount = chatVisible ? 0 : (subscription?.unread ?? 0);
+	const { showUnread, unreadCount, unreadVariant, unreadTitle } = useUnreadDisplay(subscription ?? emptyUnreadData);
+	const unread = !chatVisible && showUnread ? unreadCount.total : 0;
+
+	// How many people are actually in the call, which is the number worth glancing at.
+	const presentCount = call.members.filter(isInVideoConference).length;
 
 	// No access to the conference's room — show the unauthorized screen for the whole page rather than a
 	// broken split with a "not found" chat panel.
@@ -98,9 +109,9 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 
 	return (
 		<Box display='flex' flexDirection='column' flexGrow={1} minHeight={0}>
-			{/* With the chat open the notice belongs in the panel, next to the conversation it is about. With it
-			    closed there would be nowhere to see it, so it moves up here rather than being shown twice. */}
-			{!chatVisible && room.chatAccess && <ChatAccessNotice callId={callId} access={room.chatAccess} />}
+			{/* Above the call and both panels: the situation is about the call, not about whichever panel happens
+			    to be open, and a banner that moved as panels changed would read as a different message each time. */}
+			{room.chatAccess && <ChatAccessNotice callId={callId} access={room.chatAccess} />}
 
 			<Box display='flex' flexGrow={1} minHeight={0} position='relative'>
 				<Box flexGrow={1} display='flex' flexDirection='column' position='relative'>
@@ -120,13 +131,7 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 						/>
 					)}
 					{activePanel === 'chat' && (
-						<ConferenceChat
-							callId={callId}
-							rid={room.rid}
-							loading={room.loading}
-							chatAccess={room.chatAccess}
-							onClose={() => togglePanel('chat')}
-						/>
+						<ConferenceChat rid={room.rid} loading={room.loading} chatAccess={room.chatAccess} onClose={() => togglePanel('chat')} />
 					)}
 				</CallPanel>
 			</Box>
@@ -134,12 +139,21 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 			{callBarVisible && (
 				<CallBar>
 					<CallBarActions placement='end'>
-						<CallBarAction icon='team' label={t('Members')} pressed={activePanel === 'members'} onClick={() => togglePanel('members')} />
+						<CallBarAction
+							icon='team'
+							label={t('Members')}
+							pressed={activePanel === 'members'}
+							badgeCount={presentCount}
+							badgeTitle={t('__count__people_in_the_call', { count: presentCount })}
+							onClick={() => togglePanel('members')}
+						/>
 						<CallBarAction
 							icon='balloon'
 							label={t('Chat')}
 							pressed={chatVisible}
-							badgeCount={unreadCount}
+							badgeCount={unread}
+							badgeVariant={unreadVariant}
+							badgeTitle={unreadTitle}
 							onClick={() => togglePanel('chat')}
 						/>
 					</CallBarActions>

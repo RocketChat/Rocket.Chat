@@ -17,6 +17,13 @@ const cloneFixture = (): VideoConference => ({
 
 const VideoConferenceModelMock = {
 	findOneById: sinon.stub().callsFake(async () => cloneFixture()),
+	setUsersRingingById: sinon.stub().callsFake(async (_callId: string, uids: string[], ringingAt: Date) => {
+		fixture.users.forEach((user) => {
+			if (uids.includes(user._id)) {
+				(user as IVideoConferenceUser).ringingAt = ringingAt;
+			}
+		});
+	}),
 };
 
 // `notifyUsersAddedToConference` reads the adder and the rung members straight off `Users` and broadcasts a

@@ -11,6 +11,7 @@ export const mapVideoConfUserFromApi = ({
 	joinedAt,
 	declinedAt,
 	leftAt,
+	ringingAt,
 	...user
 }: Serialized<IVideoConferenceUser>): IVideoConferenceUser => ({
 	...user,
@@ -18,4 +19,5 @@ export const mapVideoConfUserFromApi = ({
 	...(joinedAt && { joinedAt: new Date(joinedAt) }),
 	...(declinedAt && { declinedAt: new Date(declinedAt) }),
 	...(leftAt && { leftAt: new Date(leftAt) }),
+	...(ringingAt && { ringingAt: new Date(ringingAt) }),
 });

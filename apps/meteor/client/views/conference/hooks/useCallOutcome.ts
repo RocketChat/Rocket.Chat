@@ -3,7 +3,10 @@ import { isInVideoConference } from '@rocket.chat/core-typings';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-export type ConferenceMember = Pick<IVideoConferenceUser, '_id' | 'username' | 'name' | 'joined' | 'declined' | 'declinedAt' | 'leftAt'>;
+export type ConferenceMember = Pick<
+	IVideoConferenceUser,
+	'_id' | 'username' | 'name' | 'joined' | 'declined' | 'declinedAt' | 'leftAt' | 'ringingAt'
+>;
 
 export type CallOutcome = 'declined' | 'unanswered';
 

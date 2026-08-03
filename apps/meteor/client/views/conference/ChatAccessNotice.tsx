@@ -1,3 +1,4 @@
+import { hasJoinedVideoConference } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button } from '@rocket.chat/fuselage';
 import { AnnouncementBanner } from '@rocket.chat/ui-client';
@@ -31,15 +32,19 @@ const ChatAccessNotice = ({ callId, access }: ChatAccessNoticeProps) => {
 	const setModal = useSetModal();
 	const uid = useUserId();
 
+	// Someone merely invited may never turn up, and telling everyone else about a person who isn't there is
+	// noise. The situation only exists once they are in the call and can't read what is being said.
+	const present = access.members.filter(hasJoinedVideoConference);
+
 	// Only shown to participants who can act on it: a member who can't read the chat can't share it either.
-	if (!access.members.length || (uid && access.membersWithoutAccess.includes(uid))) {
+	if (!present.length || (uid && access.membersWithoutAccess.includes(uid))) {
 		return null;
 	}
 
 	return (
 		<AnnouncementBanner className={notInteractive}>
 			<Box display='flex' alignItems='center' justifyContent='space-between'>
-				<Box withTruncatedText>{t('__count__participants_cannot_see_the_chat', { count: access.members.length })}</Box>
+				<Box withTruncatedText>{t('__count__participants_cannot_see_the_chat', { count: present.length })}</Box>
 				<Button
 					small
 					flexShrink={0}

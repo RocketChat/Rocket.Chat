@@ -75,6 +75,11 @@ export interface IVideoConferenceUser extends Pick<Required<IUser>, '_id' | 'use
 	declinedAt?: Date;
 	/** When they left the call. Cleared if they rejoin, so it only ever describes the latest departure. */
 	leftAt?: Date;
+	/**
+	 * When we last rang them. A ring is one-shot and short-lived, so this is what tells "their phone is ringing
+	 * right now" from "they were rung and did nothing", which decides whether ringing again is offered.
+	 */
+	ringingAt?: Date;
 }
 
 /**
@@ -89,6 +94,30 @@ export const hasJoinedVideoConference = (user: Pick<IVideoConferenceUser, 'joine
  */
 export const isInVideoConference = (user: Pick<IVideoConferenceUser, 'joined' | 'leftAt'>): boolean =>
 	hasJoinedVideoConference(user) && !user.leftAt;
+
+/**
+ * How long a ring is assumed to still be ringing for. A server-originated ring is one-shot: the callee's client
+ * gives it 10s before it aborts, so a few seconds beyond that covers the round trip without leaving the caller
+ * waiting on a phone that has stopped.
+ */
+export const VIDEO_CONF_RINGING_WINDOW_MS = 15_000;
+
+/** Whether this member's phone is ringing right now — as opposed to having been rung and done nothing. */
+export const isRingingVideoConferenceMember = (
+	user: Pick<IVideoConferenceUser, 'ringingAt' | 'declined' | 'declinedAt'>,
+	now = Date.now(),
+): boolean => {
+	if (!user.ringingAt) {
+		return false;
+	}
+
+	// Answering by declining stops the ringing, even inside the window.
+	if (user.declined && user.declinedAt && user.declinedAt.getTime() >= user.ringingAt.getTime()) {
+		return false;
+	}
+
+	return now - user.ringingAt.getTime() < VIDEO_CONF_RINGING_WINDOW_MS;
+};
 
 export interface IVideoConference extends IRocketChatRecord {
 	type: VideoConferenceType;

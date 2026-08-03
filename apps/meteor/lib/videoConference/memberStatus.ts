@@ -1,10 +1,10 @@
 import type { IVideoConferenceUser } from '@rocket.chat/core-typings';
-import { isInVideoConference } from '@rocket.chat/core-typings';
+import { isInVideoConference, isRingingVideoConferenceMember } from '@rocket.chat/core-typings';
 
 /** Where a member stands with the call, as one thing the UI can label them with. */
 export type ConferenceMemberStatus = 'joined' | 'left' | 'declined' | 'invited';
 
-type MemberState = Pick<IVideoConferenceUser, 'joined' | 'declined' | 'leftAt'>;
+type MemberState = Pick<IVideoConferenceUser, 'joined' | 'declined' | 'declinedAt' | 'leftAt' | 'ringingAt'>;
 
 /**
  * Reduces a membership entry to the one thing worth showing.
@@ -27,7 +27,9 @@ export const getConferenceMemberStatus = (member: MemberState): ConferenceMember
 };
 
 /**
- * Whether it makes sense to ring this member. Anyone not currently in the call can be rung — including someone
- * who declined or left, which is exactly what "call them back" is for.
+ * Whether it makes sense to ring this member *now*. Not while their phone is already ringing — there is nothing
+ * to ask for — and not while they are in the call. Once they have declined, ignored it or left, ringing them
+ * back is exactly the point.
  */
-export const canRingConferenceMember = (member: MemberState): boolean => getConferenceMemberStatus(member) !== 'joined';
+export const canRingConferenceMember = (member: MemberState, now?: number): boolean =>
+	getConferenceMemberStatus(member) !== 'joined' && !isRingingVideoConferenceMember(member, now);

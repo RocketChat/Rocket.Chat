@@ -106,22 +106,38 @@ the useful question is who else is here, and for the caller of a call still ring
 answers it. A bar button switches between the two, and the provider bridge's chat commands act on the chat
 specifically rather than closing whatever happens to be open.
 
-Each member carries one status, from `getConferenceMemberStatus`:
+It is split in two — **In call** and **Not in the call** — because the halves answer different questions: who is
+here, and who still isn't. A section nobody is in isn't shown. Rows are shaped like the room's own members list
+(avatar, name, `@username`, presence) so the two read the same way, and members in the call need no label beyond
+the section they are in.
+
+For the rest, one status from `getConferenceMemberStatus`:
 
 | Status | Meaning |
 |---|---|
-| **In call** | joined and hasn't left |
-| **Left** | joined and left since |
+| **Ringing** | rung within the last 15s, and hasn't answered yet |
+| **Waiting for answer** | rung longer ago than that, and never answered |
 | **Declined** | dismissed the ring |
-| **Waiting for answer** | a member who hasn't answered yet |
+| **Left** | joined and left since |
 
 The entry accumulates rather than replaces — `joined` never goes back to false, and a decline stays recorded
 after the person changes their mind — so the fields are read in order of what happened *last*. Being in the call
 beats everything; having left beats an earlier decline, since they did answer.
 
 Members who can't read the chat are tagged as such, which is the one thing about a member the other participants
-can act on (from the notice in the chat panel). Anyone not currently in the call can be **rung individually**,
+can act on (from the notice above the call). Anyone not currently in the call can be **rung individually**,
 including someone who declined or left — "call them back" is exactly that case.
+
+The ring button is offered only when there is something to ask for: not while they are in the call, and not
+while their phone is *already* ringing. `ringingAt` on the entry is what makes that knowable to everyone rather
+than only to whoever pressed the button — every ring records itself, including the one that starts a direct
+call. A ring stops on its own with nothing to announce it, so each row wakes itself when its window is up and
+offers the button again.
+
+The bar carries two counts: how many people are in the call, and what is unread in the chat while it is closed.
+The unread one goes through `useUnreadDisplay`, the sidebar's own rules, so a mention reads as urgent in both
+places and a muted room stays quiet in both. The members count is deliberately `secondary` — a count of who is
+here is information, and a red badge would read as a problem.
 
 This panel is where the membership model becomes visible at all: before it, a decline was recorded and an
 outside member counted in aggregate, with nowhere to see either against a name.
@@ -266,7 +282,9 @@ up in their call history as `not-answered`, which is the whole point of a call l
 
 Access isn't always a subscription question — a plain public channel is readable by anyone — so a plain public channel and a plain private room (group or DM) are each answered from one `Subscriptions` query for all the member ids at once: a public channel is free for everyone except anyone explicitly banned from it, a private room needs an actual (non-invited) subscription. A room that belongs to a team, is a discussion, or carries ABAC attributes can grant access through paths a subscription read doesn't see (team membership, the parent room's own rules, an ABAC decision), so those still ask `canAccessRoomIdAsync` once per member, exactly as before.
 
-`ChatAccessNotice` surfaces the situation to participants who *can* read the chat, and hides itself from the members it is about — they can't resolve it for themselves. It sits inside the chat panel, where the remedy is in context, and moves up to the conference page while the panel is closed, so it can't be missed and is never shown twice.
+`ChatAccessNotice` surfaces the situation to participants who *can* read the chat, and hides itself from the members it is about — they can't resolve it for themselves. It counts only members who have **joined**: someone merely invited may never turn up, and a banner about a person who isn't there asks everyone else to fix a situation that hasn't happened.
+
+It sits above the call and both panels, not inside either. The situation is about the call rather than about whichever panel happens to be open, and a banner that moved as panels changed would read as a different message each time.
 
 `POST /v1/video-conference.share-chat` applies the remedy, taking a `mode`:
 
@@ -529,8 +547,8 @@ and package-level jest.
 | Leaving is reported on `pagehide`, with `keepalive`, and on demand | `apps/meteor/client/views/conference/hooks/useLeaveConferenceOnClose.spec.ts` |
 | Declined vs unanswered vs still-ringing, and that ringing again restarts the wait | `apps/meteor/client/views/conference/hooks/useCallOutcome.spec.ts` |
 | A direct call opens its window on the click, still rings, and stops the room reporting "calling"; a fresh ring survives a dismissal | `apps/meteor/client/lib/VideoConfManager.spec.ts` |
-| Member statuses, and who can be rung back | `apps/meteor/tests/unit/lib/videoConference/memberStatus.spec.ts` |
-| The members panel: statuses, the no-access tag, per-member ring, adding people | `apps/meteor/client/views/conference/CallMembersPanel.spec.tsx` |
+| Member statuses, and who can be rung back — including not while their phone is ringing | `apps/meteor/tests/unit/lib/videoConference/memberStatus.spec.ts` |
+| The members panel: sections and counts, statuses, the no-access tag, per-member ring, adding people | `apps/meteor/client/views/conference/CallMembersPanel.spec.tsx` |
 | What the outcome modal offers, and that a refused ring doesn't restart the wait | `apps/meteor/client/views/conference/CallOutcomeModal.spec.tsx` |
 | One panel at a time, members open by default, and the provider's chat commands | `apps/meteor/client/views/conference/hooks/useProviderCallBridge.spec.ts` |
 | Who gets rung again, and who doesn't | `apps/meteor/tests/unit/server/services/video-conference/ringMembers.spec.ts` |
@@ -538,7 +556,7 @@ and package-level jest.
 | Which action leads, and that a DM only offers the discussion | `apps/meteor/client/views/conference/ChatAccessModal.spec.tsx` |
 | The incoming popup renders for a room the member can't see | `apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfPopups/VideoConfPopups.spec.tsx` |
 | Which side of the chat-access split each participant sees | `apps/meteor/client/views/conference/ConferenceChat.spec.tsx` |
-| Who the notice is shown to, and that Review opens the modal | `apps/meteor/client/views/conference/ChatAccessNotice.spec.tsx` |
+| Who the notice is shown to, that it ignores members who never joined, and that Review opens the modal | `apps/meteor/client/views/conference/ChatAccessNotice.spec.tsx` |
 | Both stream events refetch the conference; the chat follows a discussion | `apps/meteor/client/views/conference/hooks/useConferenceEmbedded.spec.tsx` |
 | Adding works without the room, and posts the usernames | `apps/meteor/client/views/conference/AddParticipantsModal.spec.tsx` |
 | The membership update *shapes* — the `$addToSet` trap | `packages/models/src/models/VideoConference.spec.ts` |
@@ -634,6 +652,11 @@ window would be the cheaper one.
 one of them, the caller gets an error toast; the others may or may not have gone through. It is not silent — the
 notice re-reads and shows whoever is still missing — but the toast says less than it could. Per-user results
 would make a partial outcome legible at the moment it happens.
+
+### The members panel has no search
+
+Fine at conference scale, and the list is split into sections that keep it readable. A room's own members list has
+a search box and a role filter; if conferences ever carry dozens of members, that is the shape to copy.
 
 ### The autocomplete's exclusion list is capped
 

@@ -2,7 +2,6 @@ import { Box, IconButton } from '@rocket.chat/fuselage';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import ChatAccessNotice from './ChatAccessNotice';
 import ConferenceChatNotShared from './ConferenceChatNotShared';
 import ConferenceRoom from './ConferenceRoom';
 import ConferenceRoomPreload from './ConferenceRoomPreload';
@@ -11,14 +10,13 @@ import NotFoundPage from '../notFound/NotFoundPage';
 import PageLoading from '../root/PageLoading';
 
 type ConferenceChatProps = {
-	callId: string;
 	rid?: string;
 	loading: boolean;
 	chatAccess?: ConferenceChatAccess;
 	onClose?: () => void;
 };
 
-const ConferenceChat = ({ callId, rid, loading, chatAccess, onClose }: ConferenceChatProps) => {
+const ConferenceChat = ({ rid, loading, chatAccess, onClose }: ConferenceChatProps) => {
 	const { t } = useTranslation();
 	const uid = useUserId();
 
@@ -59,8 +57,6 @@ const ConferenceChat = ({ callId, rid, loading, chatAccess, onClose }: Conferenc
 
 			{shared && (
 				<ConferenceRoomPreload rid={rid}>
-					{chatAccess && <ChatAccessNotice callId={callId} access={chatAccess} />}
-
 					<ConferenceRoom rid={rid} />
 				</ConferenceRoomPreload>
 			)}
