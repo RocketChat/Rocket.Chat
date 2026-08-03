@@ -4,7 +4,7 @@ type StreamContent = { id: string; content: MediaContent };
 
 const lineDelimiter = '\r\n';
 
-class MediaDescription {
+export class MediaDescription {
 	private _lines: string[];
 
 	public readonly streamIds: string[];
