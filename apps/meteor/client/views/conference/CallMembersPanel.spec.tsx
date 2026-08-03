@@ -1,5 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import CallMembersPanel from './CallMembersPanel';
@@ -85,12 +85,14 @@ describe('status', () => {
 });
 
 // Membership grants no room access, so a member can be in the call and unable to read its chat. It is the one
-// thing about a member the other participants can act on, so it is worth showing against their name.
-it('flags a member who cannot read the chat', () => {
+// thing about a member the other participants can act on, so it is worth showing against their name — as an
+// icon, which is why this asserts on the label rather than on visible text.
+it('flags a member who cannot read the chat, and only that member', () => {
 	renderPanel([member({ _id: 'outsider', joined: true }), member({ _id: 'insider', joined: true })], ['outsider']);
 
-	expect(screen.getAllByText('No_chat_access')).toHaveLength(1);
-	expect(within(rowFor('outsider')).getByText('No_chat_access')).toBeInTheDocument();
+	const flags = screen.getAllByLabelText('No_chat_access');
+	expect(flags).toHaveLength(1);
+	expect(rowFor('outsider')).toContainElement(flags[0]);
 });
 
 describe('ringing a single member', () => {

@@ -15,6 +15,7 @@ import ConferenceUnauthorizedPage from './ConferenceUnauthorizedPage';
 import { CallBar, CallBarActions, CallBarAction, CallPanel } from './components';
 import { useCallOutcome } from './hooks/useCallOutcome';
 import { useConferenceEmbedded } from './hooks/useConferenceEmbedded';
+import { useConferenceSubscription } from './hooks/useConferenceSubscription';
 import { useConfinedNavigation } from './hooks/useConfinedNavigation';
 import { useLeaveConferenceOnClose } from './hooks/useLeaveConferenceOnClose';
 import { useProviderCallBridge } from './hooks/useProviderCallBridge';
@@ -83,6 +84,10 @@ const ConferenceEmbeddedPage = ({ callId }: ConferenceEmbeddedPageProps) => {
 	// On narrow viewports the panel floats over the call instead of squeezing it.
 	const breakpoints = useBreakpoints();
 	const overlayPanel = !breakpoints.includes('md');
+
+	// Owned by the page rather than the chat panel: the badge below needs it while that panel is closed, and the
+	// panel isn't mounted then.
+	useConferenceSubscription(room.rid);
 
 	// The same rules the sidebar's room item uses, so a mention reads as urgent in both places and a room the
 	// user muted stays quiet in both. Nothing to show while the chat is the panel they are looking at.

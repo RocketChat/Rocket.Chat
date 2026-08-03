@@ -1,11 +1,9 @@
-import type { ISubscription } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import { LayoutContext, useLayout, useStream, useUserId } from '@rocket.chat/ui-contexts';
+import { LayoutContext, useLayout } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { lazy, Suspense, useEffect, useMemo } from 'react';
+import { lazy, Suspense, useMemo } from 'react';
 
-import { SubscriptionsCachedStore } from '../../cachedStores';
 import { NotAuthorizedError } from '../../lib/errors/NotAuthorizedError';
 import RoomSkeleton from '../room/RoomSkeleton';
 import { useOpenRoomById } from '../room/hooks/useOpenRoomById';
@@ -55,27 +53,12 @@ const narrowRoomStyle = css`
 
 const ConferenceRoom = ({ rid }: ConferenceRoomProps): ReactElement => {
 	const { data, error, isSuccess, isError, isLoading } = useOpenRoomById(rid);
-	const uid = useUserId();
-	const subscribeToNotifyUser = useStream('notify-user');
 	const layoutContext = useLayout();
 	// The room renders inside a narrow panel next to the call, so force the embedded layout.
 	const layoutContextEmbedded = useMemo(() => ({ ...layoutContext, isEmbedded: true }), [layoutContext]);
 
-	// Without the sidebar's subscription watcher, nothing keeps this room's subscription fresh — follow the
-	// user's subscription changes so unread counts and notification settings stay accurate.
-	useEffect(() => {
-		if (!uid || !data?.rid) {
-			return;
-		}
-
-		return subscribeToNotifyUser(`${uid}/subscriptions-changed`, (event, sub) => {
-			if (sub.rid !== data.rid || event === 'removed') {
-				return;
-			}
-
-			SubscriptionsCachedStore.upsertSubscription(sub as ISubscription);
-		});
-	}, [data?.rid, subscribeToNotifyUser, uid]);
+	// Keeping this room's subscription fresh is the page's job, not this panel's — see
+	// `useConferenceSubscription`. It has to outlive the panel, because the closed chat's unread badge needs it.
 
 	return (
 		<LayoutContext.Provider value={layoutContextEmbedded}>
