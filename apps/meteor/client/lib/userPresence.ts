@@ -20,10 +20,8 @@ export class UserPresence {
 
 	private connected = true;
 
-	/** Last time the user interacted with the UI. Kept across connection drops. */
 	private lastActivityAt = Date.now();
 
-	/** Idle flag used when there is no local away timer (i.e. presence detection delegated to the desktop app). */
 	private idle = false;
 
 	private goOnline: () => Promise<boolean | undefined> = async () => undefined;
@@ -35,11 +33,7 @@ export class UserPresence {
 	startTimer() {
 		this.stopTimer();
 		if (!this.awayTime) return;
-
-		// Schedule for the *remaining* idle time so a reconnection doesn't restart the countdown from
-		// scratch, keeping an already idle user away instead of granting them another full idle period.
 		const remaining = Math.max(this.awayTime - (Date.now() - this.lastActivityAt), 0);
-
 		this.timer = setTimeout(this.setAway, remaining);
 	}
 
@@ -47,9 +41,6 @@ export class UserPresence {
 		clearTimeout(this.timer);
 	}
 
-	// both entry points record the idle state right away, even while disconnected: the status update
-	// itself is debounced and skipped when there is no connection, but going idle in the meantime is
-	// exactly what has to be remembered to be restated on the next reconnection
 	private readonly registerActivity = () => {
 		this.lastActivityAt = Date.now();
 		this.idle = false;
@@ -61,12 +52,10 @@ export class UserPresence {
 		this.setStatus(UserStatus.AWAY);
 	};
 
-	/** Whether the user is idle according to what this client observed, regardless of the connection state. */
 	private isIdle(): boolean {
 		if (this.awayTime) {
 			return Date.now() - this.lastActivityAt >= this.awayTime;
 		}
-
 		return this.idle;
 	}
 
@@ -88,7 +77,6 @@ export class UserPresence {
 			case UserStatus.ONLINE:
 				this.startTimer();
 				await this.goOnline();
-				this.startTimer();
 				break;
 
 			case UserStatus.AWAY:
@@ -103,18 +91,14 @@ export class UserPresence {
 	private readonly setStatus = withDebouncing({ wait: 1000 })(this.applyStatus);
 
 	/**
-	 * Restates the presence this client knows about.
-	 *
-	 * The server registers every new DDP session as online, so any reconnection (dropped socket,
-	 * network change, server restart, resumed login) brings the user back to online. The server has no
-	 * way to know whether the user interacted with the UI while the socket was down, so the client has
-	 * to state it again as soon as the session is authenticated.
+	 * When auto-away is enabled, after a dropped socket, reconnection, or network change,
+	 * the server sets the user as online. Since we may have marked the user away in the UI,
+	 * we need to re-send away to the server if still idle.
 	 */
 	private readonly reassertPresence = () => {
 		this.setStatus.cancel();
 
 		if (!this.isIdle()) {
-			// the reconnected session is already online on the server side
 			this.status = UserStatus.ONLINE;
 			this.startTimer();
 			return;
