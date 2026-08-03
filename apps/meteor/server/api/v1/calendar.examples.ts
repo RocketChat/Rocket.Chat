@@ -1,10 +1,19 @@
-import type { OpenAPIDocumentation } from '@rocket.chat/http-router';
-
 /**
  * Request and response examples for the calendar endpoints, imported from
  * RocketChat/Rocket.Chat-Open-API. Kept out of the route options so they stay readable.
  */
-export const calendarExamples = {
+/**
+ * Local on purpose: importing the framework type here would put the examples in the type graph of
+ * every endpoint that uses them, and this module only needs to describe their shape.
+ */
+type PayloadExamples = {
+	query?: Record<string, unknown>;
+	params?: Record<string, unknown>;
+	body?: unknown;
+	response?: Record<number, unknown>;
+};
+
+export const calendarExamples: Record<string, PayloadExamples> = {
 	'calendar-events.list': {
 		response: {
 			'200': {
@@ -174,4 +183,4 @@ export const calendarExamples = {
 			},
 		},
 	},
-} satisfies Record<string, NonNullable<OpenAPIDocumentation['examples']>>;
+};
