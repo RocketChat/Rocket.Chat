@@ -90,9 +90,12 @@ const generatedSchemas = typia.json.schemas<
  *   payload. Branches that only name a type collapse into a single `type` array, which says the same
  *   thing and leaves nothing to disambiguate.
  */
-const toDraft2020 = <T>(node: T): T => {
+/** Keys whose values are maps of names to schemas, where a name is not a keyword. */
+const SCHEMA_MAPS = ['properties', 'patternProperties', '$defs', 'definitions', 'dependentSchemas'];
+
+const toDraft2020 = <T>(node: T, insideSchemaMap = false): T => {
 	if (Array.isArray(node)) {
-		return node.map(toDraft2020) as T;
+		return node.map((entry) => toDraft2020(entry)) as T;
 	}
 
 	if (!node || typeof node !== 'object') {
@@ -100,8 +103,15 @@ const toDraft2020 = <T>(node: T): T => {
 	}
 
 	const schema = Object.fromEntries(
-		Object.entries(node).map(([key, value]) => [key === 'additionalItems' ? 'items' : key, toDraft2020(value)]),
+		Object.entries(node).map(([key, value]) => [
+			!insideSchemaMap && key === 'additionalItems' ? 'items' : key,
+			toDraft2020(value, SCHEMA_MAPS.includes(key)),
+		]),
 	) as Record<string, unknown>;
+
+	if (insideSchemaMap) {
+		return schema as T;
+	}
 
 	if (Array.isArray(schema.prefixItems) && schema.items === false && schema.minItems === undefined) {
 		schema.minItems = schema.prefixItems.length;

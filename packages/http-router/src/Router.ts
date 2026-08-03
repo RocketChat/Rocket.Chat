@@ -336,12 +336,13 @@ export class Router<
 
 	use(innerRouter: unknown): any {
 		if (innerRouter instanceof Router) {
-			this.typedRoutes = {
-				...this.typedRoutes,
-				...Object.fromEntries(
-					Object.entries(innerRouter.typedRoutes).map(([path, routes]) => [toOpenAPIPath(`${this.base}${path}`), routes]),
-				),
-			};
+			for (const [path, routes] of Object.entries(innerRouter.typedRoutes)) {
+				const documentedPath = toOpenAPIPath(`${this.base}${path}`);
+
+				// merged per path: normalizing the keys can bring two distinct paths onto the same one, and
+				// replacing the map would drop the methods the other router documented
+				this.typedRoutes[documentedPath] = { ...this.typedRoutes[documentedPath], ...routes };
+			}
 
 			this.innerRouter.route(innerRouter.base, innerRouter.innerRouter);
 		}
