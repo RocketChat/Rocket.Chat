@@ -68,7 +68,7 @@ networks:
     ipam:
       config:
         # Pinned because the devcontainer's egress firewall allowlists this
-        # exact CIDR (see ../init-firewall.sh). Chosen outside the range Docker
+        # exact CIDR (see ../scripts/claude-code/init-firewall.sh). Chosen outside the range Docker
         # has handed out so far (172.17–172.23) but inside its default pool, so
         # claiming it also keeps the auto-allocator off it.
         - subnet: 172.30.0.0/24

@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
 #
-# Runs on the HOST from initialize.sh (devcontainer.json's initializeCommand),
-# before the container is created.
+# Runs on the HOST from gh/initialize.sh, before the container is created.
 #
 # Creates the named volume that holds your GitHub authentication: the gh CLI's
 # config (hosts.yml carries the OAuth token) and the SSH key `gh auth login`
 # generates and uploads. Two subdirectories, each mounted at its *canonical*
-# path in the container by docker-compose.yml:
+# path in the container by the compose fragment in gh/initialize.sh:
 #
 #   gh/   -> /home/vscode/.config/gh
 #   ssh/  -> /home/vscode/.ssh
@@ -17,19 +16,12 @@
 # indirection would work for ssh but not for gh's keygen, which is hardcoded to
 # $HOME/.ssh with no flag or env var to move it.
 #
-# The volume is declared *external* in docker-compose.yml, which is the whole
-# point: every worktree gets its own compose project, so a normally-declared
-# volume is namespaced per worktree (`<worktree>_devcontainer_<name>`, see
-# `docker volume ls`) and each copy starts empty — one `gh auth login` per
-# worktree, forever. A fixed external name is one login for all of them. It also
-# means no `docker compose down -v` in any worktree can throw it away.
-#
 # Compose will not create a missing external volume — it refuses to create the
 # container at all — so this has to run on the host before create, not from a
 # container-side hook. The two subdirectories have the same constraint for a
 # second reason: a subpath mount fails if the path does not already exist in the
 # volume ("cannot access path ...: no such file or directory"), and Docker will
-# not create it.
+# not create it. See gh/initialize.sh for why the volume is external.
 #
 # No docker-availability guard, unlike ensure-turbo-cache.sh: without docker
 # there is no container either way, and `docker volume create`'s own error is
@@ -40,10 +32,12 @@
 set -euo pipefail
 
 volume="rc-gh-auth"
-# remoteUser vscode, matching the host user so bind-mounted files stay writable.
-# Compose has no chown, so a throwaway busybox does it — same trick as the
-# turbo-cache stack's init service.
-uid=1000
+# The container runs as remoteUser vscode, whose uid devcontainers matches to the
+# host user's so bind-mounted files stay writable — so seeding from the host uid
+# is what makes the volume land owned by the right user in there. Compose has no
+# chown, so a throwaway busybox does it — same trick as the turbo-cache stack's
+# init service.
+uid=$(id -u)
 
 log() { printf '\033[1;34m[gh-auth]\033[0m %s\n' "$1"; }
 warn() { printf '\033[1;33m[gh-auth] WARNING:\033[0m %s\n' "$1" >&2; }

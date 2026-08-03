@@ -3,44 +3,52 @@
 # Runs on the HOST from devcontainer.json's initializeCommand, before the
 # container is created.
 #
-# The first five steps are prerequisites of container create, not setup that
-# could be deferred to a later lifecycle hook — see each script's header for
-# what breaks without it. Ordered chain: if init-worktree.sh fails there is no
-# override file, and the shared cache/volumes would be pointless.
+# Everything here is a prerequisite of container *create*, not setup that could
+# be deferred to a later lifecycle hook — see each script's header for what
+# breaks without it. Two recurring reasons: compose refuses to create the
+# container when an external volume is missing, and it is the only hook that runs
+# on the host, so files it stages exist nowhere the container can reach until it
+# does.
 #
-# The last has to run here for a different reason: it is the only hook that
-# executes on the host, and the files it stages exist nowhere the container can
-# reach until it does.
+# It is also where docker-compose.overrides.yml is assembled. Contributors below
+# stage fragments (lib/overrides.sh) and the merge happens once at the end, so
+# the generated file is written in one shot rather than grown in place.
 set -euo pipefail
 
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Writes docker-compose.worktree.yml, the override that devcontainer.json
-# includes unconditionally — the git-dir bind mount when this checkout is a
-# linked worktree, an empty stub otherwise.
+source "$here/lib/features.sh"
+source "$here/lib/overrides.sh"
+
+# Fragments are staged in a temp directory, not in the repo: only the merged
+# result belongs in .devcontainer/. Cleared on any exit, including a failure
+# partway through — a half-collected staging directory must never be merged on
+# the next run.
+overrides_reset
+trap overrides_cleanup EXIT
+
+# Contributes the git-dir mounts when this checkout is a linked worktree, and
+# nothing at all when it is not.
 bash "$here/init-worktree.sh"
 
 # Brings up the shared Turborepo remote cache. The devcontainer attaches to its
 # network as external, so the network must exist before compose runs.
 bash "$here/ensure-turbo-cache.sh"
 
-# Creates the shared GitHub auth volume (gh config + the SSH key gh generates).
-# Same reason as above: the devcontainer mounts it as an external volume, and
-# through subpaths that must already exist inside it, so neither can wait for a
-# container-side hook.
-bash "$here/ensure-gh-auth.sh"
-
-# Creates the shared Claude Code config volume (~/.claude: auth, settings,
-# history). Same constraints as the line above — external volume, mounted
-# through a subpath that has to exist before the container starts.
-bash "$here/ensure-claude-config.sh"
-
 # Creates the shared Yarn cache volume (~/.yarn/berry: the package zips and
-# metadata index). Same constraints again — external volume, mounted through a
-# subpath that has to exist before the container starts — and it is needed early:
-# `updateContentCommand` (yarn install) is the first thing that reads it.
+# metadata index) — external volume, mounted through a subpath that has to exist
+# before the container starts — and it is needed early: `updateContentCommand`
+# (yarn install) is the first thing that reads it.
+#
+# Not feature-gated: the toolchain is the point of this container, not an opt-in.
 bash "$here/ensure-yarn-cache.sh"
 
-# Copies your user-level Claude Code skills into the workspace so the bind mount
-# carries them in; install-skills.sh puts them in place inside the container.
-bash "$here/stage-skills.sh"
+# Per-feature host-side setup: scripts/<name>/initialize.sh for every feature
+# devcontainer.json actually declares. Each contributes its own compose fragment,
+# so a feature that is commented out leaves no volume to create and no mount
+# pointing at one.
+run_feature_hooks initialize.sh
+
+# Everything staged above, merged into the single generated compose file that
+# devcontainer.json includes.
+overrides_write

@@ -36,10 +36,12 @@
 set -euo pipefail
 
 volume="rc-claude-config"
-# remoteUser vscode, matching the host user so bind-mounted files stay writable.
-# Compose has no chown, so a throwaway busybox does it — same trick as the
-# turbo-cache stack's init service.
-uid=1000
+# The container runs as remoteUser vscode, whose uid devcontainers matches to the
+# host user's so bind-mounted files stay writable — so seeding from the host uid
+# is what makes the volume land owned by the right user in there. Compose has no
+# chown, so a throwaway busybox does it — same trick as the turbo-cache stack's
+# init service.
+uid=$(id -u)
 
 log() { printf '\033[1;34m[claude-config]\033[0m %s\n' "$1"; }
 

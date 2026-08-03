@@ -18,7 +18,7 @@
 # needs a container restart.
 set -euo pipefail
 
-staged="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/.host-skills"
+staged="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)/.host-skills"
 config_dir="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
 dest="$config_dir/skills"
 # What the previous run installed. Used to prune skills that have since been
@@ -26,7 +26,7 @@ dest="$config_dir/skills"
 # container — those were never in here.
 manifest="$config_dir/.host-skills.manifest"
 
-log() { printf '\033[1;34m[skills]\033[0m %s\n' "$1"; }
+log() { printf '\033[1;34m[install-skills]\033[0m %s\n' "$1"; }
 
 if [ ! -d "$staged" ]; then
 	# initializeCommand always writes this (empty at worst) and this script

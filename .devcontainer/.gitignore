@@ -1,3 +1,3 @@
-docker-compose.worktree.yml
+docker-compose.overrides.yml
 .host-skills/
 .skip-skills

@@ -24,13 +24,13 @@
 # To opt out entirely, see the marker file / env var below.
 set -euo pipefail
 
-root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 src="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/skills"
 out="$root/.devcontainer/.host-skills"
 optout="$root/.devcontainer/.skip-skills"
 
-log() { printf '\033[1;34m[skills]\033[0m %s\n' "$1"; }
-warn() { printf '\033[1;33m[skills] WARNING:\033[0m %s\n' "$1" >&2; }
+log() { printf '\033[1;34m[stage-skills]\033[0m %s\n' "$1"; }
+warn() { printf '\033[1;33m[stage-skills] WARNING:\033[0m %s\n' "$1" >&2; }
 
 # An empty staging directory is not the same as no staging directory: the
 # container side reads staging as authoritative, so this is what tells it to

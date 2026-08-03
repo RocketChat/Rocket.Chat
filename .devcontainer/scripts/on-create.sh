@@ -7,31 +7,29 @@
 # *between* the two, and it needs the volumes below to already be writable.
 set -euo pipefail
 
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+source "$here/lib/features.sh"
+
 log() { printf '\033[1;34m[on-create]\033[0m %s\n' "$1"; }
 
-# The three shared volumes (docker-compose.yml) arrive already owned by uid 1000
-# — ensure-gh-auth.sh and ensure-claude-config.sh set that up on the host,
-# because the subpath directories have to exist before the container starts
-# anyway. This is the belt-and-braces pass for a volume seeded some other way
-# (restored, copied in by hand): all three hold secrets, and ssh outright
-# refuses a private key whose permissions are too open. Cheap — small files.
+# A note that applies to every claim below, and to the per-feature ones in
+# scripts/<name>/on-create.sh: named volumes mount as root:root, so whatever runs
+# as `vscode` and writes under them gets EACCES until they are claimed.
 #
-# Deliberately targeted rather than all of /home/vscode: a recursive chown there
-# would walk into the .config/nvim bind mount and rewrite ownership of the
-# host's files. Note that Docker creates any *missing parent* of a mount target
-# as root before the container runs, so if you nest a volume under a path that
-# is not in the base image (~/.local/share for the optional nvim volume), its
+# Keep them targeted rather than chowning all of /home/vscode: a recursive chown
+# there would walk into the .config/nvim bind mount and rewrite ownership of the
+# host's files. Note also that Docker creates any *missing parent* of a mount
+# target as root before the container runs, so if you nest a volume under a path
+# that is not in the base image (~/.local/share for the optional nvim volume), its
 # parents need claiming here too.
-log "claiming ~/.claude, ~/.config/gh and ~/.ssh"
-sudo chown -R vscode:vscode /home/vscode/.claude /home/vscode/.config/gh /home/vscode/.ssh
-sudo chmod 700 /home/vscode/.claude /home/vscode/.config/gh /home/vscode/.ssh
-
-# ~/.yarn is exactly the "missing parent" case in the note above: nothing in the
-# base image creates it, so Docker makes it as root before mounting the shared
-# yarn cache at ~/.yarn/berry. yarn writes install-state and its own files
-# alongside berry/, so the parent has to be ours too. Not recursive — the volume
-# itself arrives owned by uid 1000 (ensure-yarn-cache.sh) and holds a warm cache
-# of tens of thousands of files.
+#
+# ~/.yarn is exactly that missing-parent case: nothing in the base image creates
+# it, so Docker makes it as root before mounting the shared yarn cache at
+# ~/.yarn/berry. yarn writes install-state and its own files alongside berry/, so
+# the parent has to be ours too. Not recursive — the volume
+# itself arrives owned by the right uid (ensure-yarn-cache.sh) and holds a warm
+# cache of tens of thousands of files.
 log "claiming ~/.yarn"
 sudo chown vscode:vscode /home/vscode/.yarn /home/vscode/.yarn/berry
 
@@ -63,3 +61,8 @@ sudo chown vscode:vscode \
 # expiring everything and ignores the config. Don't run it in here.
 log "disabling worktree pruning during gc"
 git config --global gc.worktreePruneExpire never
+
+# Per-feature create-time setup: scripts/<name>/on-create.sh for every feature
+# devcontainer.json actually declares. Mostly claiming the mount points of the
+# volumes those features contributed on the host side.
+run_feature_hooks on-create.sh

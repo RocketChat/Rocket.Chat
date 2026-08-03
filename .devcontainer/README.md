@@ -17,7 +17,7 @@ runs. Three properties of this container bound the blast radius:
 | --- | --- |
 | Commands execute in the container, not on the host | `docker-compose.yml` (only this repo is bind-mounted) |
 | Runs as the non-root `vscode` user — the CLI **refuses** the flag as root | `devcontainer.json` → `remoteUser` |
-| Outbound traffic is default-deny, IPv4 allowlist only, IPv6 fully blocked | `init-firewall.sh`, applied via `postStartCommand` |
+| Outbound traffic is default-deny, IPv4 allowlist only, IPv6 fully blocked | `scripts/claude-code/init-firewall.sh`, applied via `postStartCommand` |
 
 What it does **not** protect: the workspace itself is a bind mount, so any file
 Claude writes lands directly in your host checkout. And anything reachable through
@@ -64,22 +64,64 @@ don't see that line, the container is not firewalled.
 
 ## Layout
 
+Three lifecycle hooks, one entry point each, and everything below them is either
+unconditional or owned by a devcontainer feature:
+
 | File | Purpose |
 | --- | --- |
-| `devcontainer.json` | User, mounts, features, post-create/post-start hooks |
-| `docker-compose.yml` | Service definition, volumes, `NET_ADMIN`/`NET_RAW` capabilities |
+| `devcontainer.json` | User, mounts, features, lifecycle hooks |
+| `docker-compose.yml` | Service definition and the volumes no feature owns |
+| `docker-compose.overrides.yml` | **Generated, gitignored**; the worktree git-dir mounts plus whatever the declared features contribute |
 | `Dockerfile` | Base image and toolchain, pinned from `package.json`, `.tool-versions`, `.meteor/release` |
-| `init-firewall.sh` | Default-deny egress firewall; run from the workspace by `postStartCommand` |
 | `turbo-cache/docker-compose.yml` | Standalone [Turborepo remote cache](https://ducktors.github.io/turborepo-remote-cache) shared by every worktree |
-| `scripts/initialize.sh` | Host-side; the `initializeCommand` entry point, runs the three below |
+| `scripts/initialize.sh` | Host-side; the `initializeCommand` entry point. Stages the compose fragments, merges them at the end |
+| `scripts/on-create.sh` | Container-side; the `onCreateCommand` entry point, fixes volume ownership and git gc |
+| `scripts/post-start.sh` | Container-side; the `postStartCommand` entry point |
+| `scripts/lib/features.sh` | Which `scripts/<feature>/` directories run, read off `devcontainer.json`'s `features` |
+| `scripts/lib/overrides.sh` | How `docker-compose.overrides.yml` gets built |
 | `scripts/init-worktree.sh` | Host-side; exposes the real git dir when the checkout is a linked worktree |
 | `scripts/ensure-turbo-cache.sh` | Host-side; brings the cache stack up before the container is created |
-| `scripts/ensure-gh-auth.sh` | Host-side; creates the `rc-gh-auth` volume holding the shared `gh` login and SSH key |
-| `scripts/ensure-claude-config.sh` | Host-side; creates the `rc-claude-config` volume holding the shared `~/.claude` (auth, settings, history) |
 | `scripts/ensure-yarn-cache.sh` | Host-side; creates the `rc-yarn-cache` volume holding the shared Yarn package cache (`~/.yarn/berry`) |
-| `scripts/stage-skills.sh` | Host-side; copies your user-level Claude Code skills into `.host-skills/`, unless opted out |
-| `scripts/on-create.sh` | Container-side; the `onCreateCommand` entry point, fixes volume ownership and git gc |
-| `scripts/install-skills.sh` | Container-side; installs the staged skills into the container's `~/.claude/skills`, then clears the staging dir |
+
+### Feature-owned scripts
+
+A directory under `scripts/` that ships a `feature.id` file belongs to the
+devcontainer feature named in it, and **nothing inside it runs unless
+`devcontainer.json` declares that feature**. Comment the feature out and its
+lifecycle steps, shared volume, mounts and capabilities all disappear with it —
+no other file needs editing. The hook names match the top-level ones
+(`initialize.sh`, `on-create.sh`, `post-start.sh`) and are called from them.
+
+| File | Purpose |
+| --- | --- |
+| `scripts/claude-code/` | Feature `ghcr.io/anthropics/devcontainer-features/claude-code` |
+| `scripts/claude-code/initialize.sh` | Host-side; contributes the `~/.claude` mount and `NET_ADMIN`/`NET_RAW`, then runs the two below |
+| `scripts/claude-code/ensure-claude-config.sh` | Host-side; creates the `rc-claude-config` volume holding the shared `~/.claude` (auth, settings, history) |
+| `scripts/claude-code/stage-skills.sh` | Host-side; copies your user-level Claude Code skills into `.host-skills/`, unless opted out |
+| `scripts/claude-code/on-create.sh` | Container-side; claims `~/.claude` |
+| `scripts/claude-code/post-start.sh` | Container-side; applies the firewall and installs the staged skills |
+| `scripts/claude-code/init-firewall.sh` | Default-deny egress firewall; run from the workspace on every start |
+| `scripts/claude-code/install-skills.sh` | Container-side; installs the staged skills into the container's `~/.claude/skills`, then clears the staging dir |
+| `scripts/gh/` | Feature `ghcr.io/devcontainers/features/github-cli` |
+| `scripts/gh/initialize.sh` | Host-side; contributes the `~/.config/gh` and `~/.ssh` mounts, then runs the one below |
+| `scripts/gh/ensure-gh-auth.sh` | Host-side; creates the `rc-gh-auth` volume holding the shared `gh` login and SSH key |
+| `scripts/gh/on-create.sh` | Container-side; claims `~/.config/gh` and `~/.ssh` |
+
+**Why the compose file is generated.** Compose is static and
+`devcontainer.json`'s `dockerComposeFile` list can't be computed, but a feature's
+volume is declared `external` — and compose refuses to create the container at
+all when an external volume doesn't exist. Leaving those mounts checked into
+`docker-compose.yml` would mean commenting a feature out breaks the container
+instead of shrinking it. So each feature contributes a fragment on the host, and
+`scripts/initialize.sh` merges them into one file. It is written in a single pass
+at the end of `initializeCommand`, and is a valid empty stub when nothing
+contributes.
+
+**Adding a feature with setup of its own.** Create `scripts/<name>/`, put the
+feature id in `scripts/<name>/feature.id`, and add whichever of the three hook
+scripts you need. Contribute compose bits with `overrides_add <name> <bucket>`
+(buckets: `service`, `service-volumes`, `volumes` — see `lib/overrides.sh`). Then
+declare the feature in `devcontainer.json`. Nothing else wires it up.
 
 ## Things worth knowing
 
@@ -88,7 +130,7 @@ separate `mongo` service on purpose — `meteor` starts its own mongod, and only
 does so while `MONGO_URL` is unset. Don't set it.
 
 **Adding an allowed domain.** Edit the `ALLOWED_DOMAINS` array in
-`init-firewall.sh`, then **restart the container** — the script runs from the
+`scripts/claude-code/init-firewall.sh`, then **restart the container** — the script runs from the
 bind-mounted `.devcontainer` folder, so no rebuild is needed, but the firewall is
 only re-applied by `postStartCommand`. Confirm the change with
 `sudo ipset list allowed-domains`. Anthropic's
@@ -134,8 +176,13 @@ gh auth login   # GitHub.com › SSH › generate a new key › browser
   ran this setup before the switch, those volumes are now unused
   (`docker volume ls | grep claude-code-config`) and you sign in once more to
   populate the shared one.
-- `scripts/ensure-gh-auth.sh` and `scripts/ensure-claude-config.sh` create them
-  from `initializeCommand`, with every subdirectory `0700` and owned by uid 1000.
+- Each belongs to the feature that needs it, so both the volume and its mount come
+  from `scripts/gh/` and `scripts/claude-code/` — drop the feature from
+  `devcontainer.json` and neither is created or mounted. See **Feature-owned
+  scripts** above.
+- `scripts/gh/ensure-gh-auth.sh` and `scripts/claude-code/ensure-claude-config.sh`
+  create them from `initializeCommand`, with every subdirectory `0700` and owned by
+  the host uid (which is the container user's, since devcontainers matches them).
   Both parts have to happen on the host before create: compose fails the create
   on a missing external volume, and a subpath mount fails if that path isn't
   already in the volume. The gh one also seeds `known_hosts` with github.com's
@@ -228,11 +275,11 @@ and it lands at the same path (same env var) inside the container.
   container, if you drive it from the CLI. Skills copied in by an earlier start
   are removed on the next one; skills you wrote *inside* the container are not.
 - Two scripts, because the container's `~/.claude` is a named volume that shares
-  nothing with the host: `scripts/stage-skills.sh` copies the skills into the
-  gitignored `.devcontainer/.host-skills/` on the host (via `initializeCommand`),
-  and `scripts/install-skills.sh` installs them from there (via
-  `postStartCommand`) and then deletes the staging directory, so nothing is left
-  sitting in your checkout.
+  nothing with the host: `scripts/claude-code/stage-skills.sh` copies the skills
+  into the gitignored `.devcontainer/.host-skills/` on the host (via
+  `initializeCommand`), and `scripts/claude-code/install-skills.sh` installs them
+  from there (via `postStartCommand`) and then deletes the staging directory, so
+  nothing is left sitting in your checkout.
 - Symlinked skills are **dereferenced on the host**, which is the reason for the
   staging step. If a skill points at another checkout (`~/.agents/skills/…`),
   that target isn't mounted into the container and the link would dangle.

@@ -1,14 +1,15 @@
 #!/bin/sh
 #
 # pre-push hook: only allow pushing to the `chore/devcontainers-claude` upstream branch,
-# and only when `.devcontainer/init-firewall.sh` is present. Both conditions must hold
-# for a push to be blocked — without the firewall script the hook stays out of the way.
+# and only when `.devcontainer/scripts/claude-code/init-firewall.sh` is present. Both
+# conditions must hold for a push to be blocked — without the firewall script the hook
+# stays out of the way.
 #
 # stdin receives one line per ref being pushed:
 #   <local ref> <local sha> <remote ref> <remote sha>
 
 ALLOWED_BRANCH="chore/devcontainers-claude"
-FIREWALL_SCRIPT="init-firewall.sh"
+FIREWALL_SCRIPT="scripts/claude-code/init-firewall.sh"
 
 toplevel=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0
 

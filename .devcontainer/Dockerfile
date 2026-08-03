@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y \
     jq \
     libssl-dev \
     unzip \
-    # Tooling for the default-deny egress firewall (init-firewall.sh)
+    # Tooling for the default-deny egress firewall (scripts/claude-code/init-firewall.sh)
     iptables \
     ipset \
     dnsutils \
@@ -72,7 +72,7 @@ RUN mkdir -p $VOLTA_HOME && \
     volta install yarn@$(jq -r '.volta.yarn' /tmp/package.json) && \
     printf 'export VOLTA_HOME="/usr/local/volta"\nexport PATH="$VOLTA_HOME/bin:$PATH"' >> /etc/profile.d/volta.sh
 
-# The egress firewall (.devcontainer/init-firewall.sh) is NOT copied into the
+# The egress firewall (.devcontainer/scripts/claude-code/init-firewall.sh) is NOT copied into the
 # image: .devcontainer is part of the bind-mounted workspace, so postStartCommand
 # runs it straight from there and edits take effect on a restart, no rebuild.
 # Its tooling is installed above (iptables, ipset, dnsutils, aggregate).
