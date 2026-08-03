@@ -79,9 +79,16 @@ const generatedSchemas = typia.json.schemas<
  * validation and the OpenAPI document get schemas in a single dialect. `minItems` comes along
  * because a closed tuple has a known length, and AJV asks for it.
  *
- * The `mapping` of a discriminator goes away for the same reason: AJV rejects it, and a validator
- * that chokes on `IMessage` leaves every schema referencing it unresolvable. What it described is
- * already in the `const` of each branch.
+ * Two more differences between what typia writes for 3.1 and what AJV reads:
+ *
+ * - the `mapping` of a discriminator, which AJV rejects outright. A validator that chokes on
+ *   `IMessage` leaves every schema referencing it unresolvable, so the mapping goes and the
+ *   `propertyName` stays;
+ * - a nullable field written as `oneOf: [{ type: 'null' }, { type: 'string' }]`, where 3.0 wrote
+ *   `nullable`. The API validates with `coerceTypes`, which coerces the value for each branch in
+ *   turn until more than one matches, and then `oneOf` - exactly one - fails on a perfectly valid
+ *   payload. Branches that only name a type collapse into a single `type` array, which says the same
+ *   thing and leaves nothing to disambiguate.
  */
 const toDraft2020 = <T>(node: T): T => {
 	if (Array.isArray(node)) {
@@ -92,13 +99,28 @@ const toDraft2020 = <T>(node: T): T => {
 		return node;
 	}
 
-	const entries = Object.entries(node)
-		.filter(([key]) => key !== 'mapping')
-		.map(([key, value]) => [key === 'additionalItems' ? 'items' : key, toDraft2020(value)]);
-	const schema = Object.fromEntries(entries) as Record<string, unknown>;
+	const schema = Object.fromEntries(
+		Object.entries(node).map(([key, value]) => [key === 'additionalItems' ? 'items' : key, toDraft2020(value)]),
+	) as Record<string, unknown>;
 
 	if (Array.isArray(schema.prefixItems) && schema.items === false && schema.minItems === undefined) {
 		schema.minItems = schema.prefixItems.length;
+	}
+
+	if (schema.discriminator && typeof schema.discriminator === 'object') {
+		const { mapping, ...discriminator } = schema.discriminator as Record<string, unknown>;
+		schema.discriminator = discriminator;
+	}
+
+	if (Array.isArray(schema.oneOf)) {
+		const branches = schema.oneOf as Record<string, unknown>[];
+		const namesATypeOnly = (branch: Record<string, unknown>) => Object.keys(branch).length === 1 && typeof branch.type === 'string';
+
+		if (branches.length > 1 && branches.every(namesATypeOnly)) {
+			const { oneOf, ...rest } = schema;
+
+			return { ...rest, type: branches.map((branch) => branch.type) } as T;
+		}
 	}
 
 	return schema as T;
