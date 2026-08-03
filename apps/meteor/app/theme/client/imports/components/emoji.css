@@ -66,13 +66,16 @@ Only exists on Windows, so other platforms skip it in the fallback list. */
 	}
 }
 
-/* Same approach as above, but for the message reactions */
 .rcx-message-reactions {
-	/* stylelint-disable-next-line selector-class-pattern */
-	&__emoji:not(.emoji--custom) {
-		width: auto;
-		height: auto;
-		font-size: 1rem;
-		line-height: 1.2;
+	&__emoji {
+		/* Can't be written as `&--custom` like the .rcx-message rule above: custom emojis here
+		carry the renderer's global `.emoji--custom` class, not a block modifier. */
+		/* stylelint-disable-next-line selector-class-pattern */
+		&:not(.emoji--custom) {
+			width: auto;
+			height: auto;
+			font-size: 1rem;
+			line-height: 1.2;
+		}
 	}
 }
