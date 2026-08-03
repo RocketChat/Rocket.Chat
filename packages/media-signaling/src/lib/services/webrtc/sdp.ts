@@ -29,26 +29,6 @@ class MediaDescription {
 		this._lines = [...lines];
 		this.streamIds = [];
 		this.parseLines();
-		this.loadStreamIds();
-	}
-
-	private loadStreamIds() {
-		for (const line of this.lines) {
-			if (!line.startsWith('a=msid:')) {
-				continue;
-			}
-
-			const streamId = line.slice('a=msid:'.length).split(' ')[0];
-			if (!streamId || streamId === '-') {
-				continue;
-			}
-
-			if (this.streamIds.includes(streamId)) {
-				continue;
-			}
-
-			this.streamIds.push(streamId);
-		}
 	}
 
 	private parseLines() {
