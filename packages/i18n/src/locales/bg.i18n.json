@@ -2210,7 +2210,7 @@
   "User_has_been_deleted": "Потребителят е изтрит",
   "User_has_been_ignored": "Потребителят бе пренебрегнат",
   "User_has_been_muted_in_s": "Потребителят е заглушен в %s",
-  "User_has_been_removed_from_s": "Потребителят е премахнат от %s",
+  "User_has_been_removed_from_s": "Потребителят е премахнат от {{roomName}}",
   "User_has_been_unignored": "Потребителят вече не се пренебрегва",
   "User_is_blocked": "Потребителят е блокиран",
   "User_is_no_longer_an_admin": "Потребителят вече не е администратор",

@@ -3206,7 +3206,7 @@
   "User_has_been_deleted": "Uživatel byl smazán",
   "User_has_been_ignored": "Uživatel byl ignorován",
   "User_has_been_muted_in_s": "Uživatel byl ztišen v %s",
-  "User_has_been_removed_from_s": "Uživatel byl odebrán z %s",
+  "User_has_been_removed_from_s": "Uživatel byl odebrán z {{roomName}}",
   "User_has_been_unignored": "Uživatel již není ignorován",
   "User_is_blocked": "Uživatel je blokován",
   "User_is_no_longer_an_admin": "Uživatel už není admin",

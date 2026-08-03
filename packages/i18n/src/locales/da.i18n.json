@@ -3300,7 +3300,7 @@
   "User_has_been_deleted": "Bruger er blevet slettet",
   "User_has_been_ignored": "Bruger er blevet ignoreret",
   "User_has_been_muted_in_s": "Brugeren er blevet slukket i %s",
-  "User_has_been_removed_from_s": "Bruger er blevet fjernet fra%s",
+  "User_has_been_removed_from_s": "Bruger er blevet fjernet fra{{roomName}}",
   "User_has_been_unignored": "Bruger ignoreres ikke længere",
   "User_is_blocked": "Brugeren er blokeret",
   "User_is_no_longer_an_admin": "Bruger er ikke længere en administrator",

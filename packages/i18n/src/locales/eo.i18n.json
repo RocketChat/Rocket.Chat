@@ -2211,7 +2211,7 @@
   "User_has_been_deleted": "Uzanto estis forigita",
   "User_has_been_ignored": "Uzanto ignoris",
   "User_has_been_muted_in_s": "Uzanto estas malŝaltita en%s",
-  "User_has_been_removed_from_s": "Uzanto estis forigita de%s",
+  "User_has_been_removed_from_s": "Uzanto estis forigita de{{roomName}}",
   "User_has_been_unignored": "Uzanto jam ne ignoris",
   "User_is_blocked": "Uzanto estas blokita",
   "User_is_no_longer_an_admin": "Uzanto jam ne estas administranto",

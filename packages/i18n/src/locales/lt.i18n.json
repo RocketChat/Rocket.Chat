@@ -2263,7 +2263,7 @@
   "User_has_been_deleted": "Vartotojas buvo ištrintas",
   "User_has_been_ignored": "Vartotojas buvo ignoruojamas",
   "User_has_been_muted_in_s": "Naudotojas buvo išjungtas%s",
-  "User_has_been_removed_from_s": "Vartotojas buvo pašalintas iš%s",
+  "User_has_been_removed_from_s": "Vartotojas buvo pašalintas iš{{roomName}}",
   "User_has_been_unignored": "Vartotojas nebeatsižensuoja",
   "User_is_blocked": "Vartotojas yra užblokuotas",
   "User_is_no_longer_an_admin": "Vartotojas nebėra administratorius",

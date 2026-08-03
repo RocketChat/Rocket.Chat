@@ -3652,7 +3652,7 @@
   "User_has_been_deleted": "使用者已被刪除",
   "User_has_been_ignored": "使用者已被忽略",
   "User_has_been_muted_in_s": "使用者已靜音在 %s",
-  "User_has_been_removed_from_s": "使用者已從%s的刪除",
+  "User_has_been_removed_from_s": "使用者已從{{roomName}}的刪除",
   "User_has_been_unignored": "使用者不再被忽略",
   "User_is_blocked": "使用者已封鎖",
   "User_is_no_longer_an_admin": "使用者不再是管理員",

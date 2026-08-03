@@ -2213,7 +2213,7 @@
   "User_has_been_deleted": "Përdoruesi është fshirë",
   "User_has_been_ignored": "Përdoruesi është injoruar",
   "User_has_been_muted_in_s": "User ka qenë i heshtur në %s",
-  "User_has_been_removed_from_s": "User është hequr nga %s",
+  "User_has_been_removed_from_s": "User është hequr nga {{roomName}}",
   "User_has_been_unignored": "Përdoruesi nuk është injoruar më",
   "User_is_blocked": "Përdoruesi është i bllokuar",
   "User_is_no_longer_an_admin": "Përdoruesi nuk është më një admin",

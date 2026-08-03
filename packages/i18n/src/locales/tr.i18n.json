@@ -2624,7 +2624,7 @@
   "User_has_been_deleted": "Kullanıcı silindi",
   "User_has_been_ignored": "Kullanıcı yoksayılanlara alındı",
   "User_has_been_muted_in_s": "Kullanıcı %s kanalı için susturuldu",
-  "User_has_been_removed_from_s": "Kullanıcı %s içerisinden kaldırıldı",
+  "User_has_been_removed_from_s": "Kullanıcı {{roomName}} içerisinden kaldırıldı",
   "User_has_been_unignored": "Kullanıcı artık yoksayılanlarda değil",
   "User_is_blocked": "Kullanıcı engellendi",
   "User_is_no_longer_an_admin": "Kullanıcı artık bir yönetici değil",

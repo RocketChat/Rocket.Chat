@@ -5704,7 +5704,7 @@
   "User_has_been_muted": "tystade {{user_muted}}",
   "User_has_been_muted_in_s": "Användaren har stängts av i %s",
   "User_has_been_removed": "tog bort {{user_removed}}",
-  "User_has_been_removed_from_s": "Användaren har tagits bort från %s",
+  "User_has_been_removed_from_s": "Användaren har tagits bort från {{roomName}}",
   "User_has_been_removed_from_team": "Användaren har tagits bort från teamet",
   "User_has_been_unbanned": "inte längre bannlyst {{user_unbanned}}",
   "User_has_been_unignored": "Användaren ignoreras inte längre",

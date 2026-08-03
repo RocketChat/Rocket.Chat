@@ -2210,7 +2210,7 @@
   "User_has_been_deleted": "Хэрэглэгч устгагдсан байна",
   "User_has_been_ignored": "Хэрэглэгч орхигдсон байна",
   "User_has_been_muted_in_s": "Хэрэглэгч%s-д дуугдсан байна",
-  "User_has_been_removed_from_s": "Хэрэглэгч%s-с арилгасан",
+  "User_has_been_removed_from_s": "Хэрэглэгч{{roomName}}-с арилгасан",
   "User_has_been_unignored": "Хэрэглэгчийг цаашид орхихгүй",
   "User_is_blocked": "Хэрэглэгч хаагдсан байна",
   "User_is_no_longer_an_admin": "Хэрэглэгч нь админ байхаа больсон",

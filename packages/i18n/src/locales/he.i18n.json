@@ -1249,7 +1249,7 @@
   "User_has_been_deactivated": "המשתמש נוטרל",
   "User_has_been_deleted": "המשתמש הוסר",
   "User_has_been_muted_in_s": "משתמש הושתק ב %s",
-  "User_has_been_removed_from_s": "משתמש הוסר %s",
+  "User_has_been_removed_from_s": "משתמש הוסר {{roomName}}",
   "User_is_no_longer_an_admin": "המשתמש אינו משמש יותר כמנהל",
   "User_is_now_an_admin": "המשתמש הפך עכשיו למנהל",
   "User_joined_channel": "הצטרף לקבוצה.",

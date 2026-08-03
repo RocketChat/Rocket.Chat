@@ -5574,7 +5574,7 @@
   "User_has_been_muted": "已禁言 {{user_muted}}",
   "User_has_been_muted_in_s": "该用户已在 %s 中被禁言",
   "User_has_been_removed": "已移除 {{user_removed}}",
-  "User_has_been_removed_from_s": "已从移除 %s 中用户",
+  "User_has_been_removed_from_s": "已从移除 {{roomName}} 中用户",
   "User_has_been_removed_from_team": "用户已从团队移除",
   "User_has_been_unignored": "用户不再被忽略",
   "User_has_been_unmuted": "已解除禁言 {{user_unmuted}}",

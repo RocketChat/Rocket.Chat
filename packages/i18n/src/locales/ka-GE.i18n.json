@@ -2984,7 +2984,7 @@
   "User_has_been_deleted": "მომხმარებელი წაიშალა",
   "User_has_been_ignored": "მომხმარებელი დაიგნორდა",
   "User_has_been_muted_in_s": "მომხმარებელი %s-ში გადაყვანილია უხმო რეჟიმზე",
-  "User_has_been_removed_from_s": "მომხმარებელი ამოღებულია %s- დან",
+  "User_has_been_removed_from_s": "მომხმარებელი ამოღებულია {{roomName}}- დან",
   "User_has_been_unignored": "მომხმარებელი აღარ არის უგულებელყოფილი",
   "User_is_blocked": "მომხმარებელი დაბლოკილია",
   "User_is_no_longer_an_admin": "მომხმარებელი აღარ არის ადმინისტრატორი",

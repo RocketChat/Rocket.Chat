@@ -2217,7 +2217,7 @@
   "User_has_been_deleted": "Používateľ bol odstránený",
   "User_has_been_ignored": "Používateľ bol ignorovaný",
   "User_has_been_muted_in_s": "Používateľ bol stlmený v%s",
-  "User_has_been_removed_from_s": "Používateľ bol odstránený z%s",
+  "User_has_been_removed_from_s": "Používateľ bol odstránený z{{roomName}}",
   "User_has_been_unignored": "Používateľ už nie je ignorovaný",
   "User_is_blocked": "Používateľ je zablokovaný",
   "User_is_no_longer_an_admin": "Používateľ už nie je administrátorom",

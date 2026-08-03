@@ -2514,7 +2514,7 @@
   "User_has_been_deleted": "អ្នក​ប្រើប្រាស់​ដែល​បាន​លប់",
   "User_has_been_ignored": "អ្នកប្រើត្រូវបានគេមិនអើពើ",
   "User_has_been_muted_in_s": "អ្នកប្រើត្រូវបានស្ងាត់នៅក្នុង %s",
-  "User_has_been_removed_from_s": "អ្នកប្រើត្រូវបានយកចេញពី %s",
+  "User_has_been_removed_from_s": "អ្នកប្រើត្រូវបានយកចេញពី {{roomName}}",
   "User_has_been_unignored": "អ្នកប្រើមិនត្រូវបានអើពើទៀតទេ",
   "User_is_blocked": "អ្នកប្រើត្រូវបានទប់ស្កាត់",
   "User_is_no_longer_an_admin": "អ្នក​ប្រើប្រាស់​​គឺ​មិន​មែន​ជា​អ្នក​គ្រប់គ្រង​ទៀត​ទេ",

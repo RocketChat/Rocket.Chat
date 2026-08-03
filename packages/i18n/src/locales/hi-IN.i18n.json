@@ -4743,7 +4743,7 @@
   "User_has_been_muted": "म्यूट किया गया {{user_muted}}",
   "User_has_been_muted_in_s": "उपयोगकर्ता को %s में म्यूट कर दिया गया है",
   "User_has_been_removed": "हटा दिया गया {{user_removed}}",
-  "User_has_been_removed_from_s": "उपयोगकर्ता को %s से हटा दिया गया है",
+  "User_has_been_removed_from_s": "उपयोगकर्ता को {{roomName}} से हटा दिया गया है",
   "User_has_been_removed_from_team": "उपयोगकर्ता को टीम से हटा दिया गया है",
   "User_has_been_unignored": "उपयोगकर्ता को अब अनदेखा नहीं किया जाएगा",
   "User_has_been_unmuted": "अनम्यूट किया गया {{user_unmuted}}",

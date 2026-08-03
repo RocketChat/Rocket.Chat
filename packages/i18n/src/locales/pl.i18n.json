@@ -4183,7 +4183,7 @@
   "User_has_been_muted": "wyciszył {{user_muted}}",
   "User_has_been_muted_in_s": "Użytkownik został wyciszony w %s",
   "User_has_been_removed": "usunął {{user_removed}}",
-  "User_has_been_removed_from_s": "Użytkownik został usunięty z %s",
+  "User_has_been_removed_from_s": "Użytkownik został usunięty z {{roomName}}",
   "User_has_been_removed_from_team": "Użytkownik został usunięty z zespołu",
   "User_has_been_unignored": "Użytkownik nie jest już ignorowany",
   "User_is_blocked": "Użytkownik jest zablokowany",

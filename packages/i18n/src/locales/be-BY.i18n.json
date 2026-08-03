@@ -2237,7 +2237,7 @@
   "User_has_been_deleted": "Карыстальнік выдалены",
   "User_has_been_ignored": "Карыстальнік ігнараваліся",
   "User_has_been_muted_in_s": "Карыстальнік быў адключаны ў% з",
-  "User_has_been_removed_from_s": "Карыстальнік быў выдалены з%s",
+  "User_has_been_removed_from_s": "Карыстальнік быў выдалены з{{roomName}}",
   "User_has_been_unignored": "Карыстальнік не больш не ігнаруецца",
   "User_is_blocked": "Карыстальнік заблякаваны",
   "User_is_no_longer_an_admin": "Карыстальнік не больш не адміны",

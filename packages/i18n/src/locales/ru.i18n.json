@@ -4011,7 +4011,7 @@
   "User_has_been_deleted": "Пользователь был удален",
   "User_has_been_ignored": "Пользователь игнорируется",
   "User_has_been_muted_in_s": "Пользователь был заглушен в %s",
-  "User_has_been_removed_from_s": "Пользователь был удален из %s",
+  "User_has_been_removed_from_s": "Пользователь был удален из {{roomName}}",
   "User_has_been_removed_from_team": "Пользователь был удален из команды",
   "User_has_been_unignored": "Пользователь больше не игнорируется",
   "User_is_blocked": "Пользователь заблокирован",

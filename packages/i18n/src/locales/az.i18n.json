@@ -2215,7 +2215,7 @@
   "User_has_been_deleted": "İstifadəçi silindi",
   "User_has_been_ignored": "İstifadəçi nəzərə alınmadı",
   "User_has_been_muted_in_s": "İstifadəçi%s-də susdurulub",
-  "User_has_been_removed_from_s": "İstifadəçi%sdən silindi",
+  "User_has_been_removed_from_s": "İstifadəçi{{roomName}}dən silindi",
   "User_has_been_unignored": "İstifadəçi artıq göz ardı edilir",
   "User_is_blocked": "İstifadəçi bloklandı",
   "User_is_no_longer_an_admin": "İstifadəçi artıq bir administrator deyil",

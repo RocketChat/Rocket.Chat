@@ -2211,7 +2211,7 @@
   "User_has_been_deleted": "பயனர் நீக்கப்பட்ட",
   "User_has_been_ignored": "பயனர் புறக்கணிக்கப்பட்டது",
   "User_has_been_muted_in_s": "பயனர் %s இல் ஒலிமுடக்கப்பட்டது",
-  "User_has_been_removed_from_s": "பயனர் %s நீக்கப்பட்டது",
+  "User_has_been_removed_from_s": "பயனர் {{roomName}} நீக்கப்பட்டது",
   "User_has_been_unignored": "பயனர் இனி புறக்கணிக்கப்படுவதில்லை",
   "User_is_blocked": "பயனர் தடுக்கப்பட்டுள்ளது",
   "User_is_no_longer_an_admin": "பயனர் இனி ஒரு நிர்வாகம் உள்ளது",

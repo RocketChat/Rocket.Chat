@@ -2205,7 +2205,7 @@
   "User_has_been_deleted": "ผู้ใช้ถูกลบแล้ว",
   "User_has_been_ignored": "ผู้ใช้ถูกละเลย",
   "User_has_been_muted_in_s": "ผู้ใช้ถูกปิดเสียงใน %s",
-  "User_has_been_removed_from_s": "นำผู้ใช้ออกจาก%s แล้ว",
+  "User_has_been_removed_from_s": "นำผู้ใช้ออกจาก{{roomName}} แล้ว",
   "User_has_been_unignored": "ผู้ใช้จะไม่ถูกละเลยอีกต่อไป",
   "User_is_blocked": "ผู้ใช้ถูกบล็อก",
   "User_is_no_longer_an_admin": "ผู้ใช้ไม่ได้เป็นผู้ดูแลอีกต่อไป",

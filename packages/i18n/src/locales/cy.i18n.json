@@ -2210,7 +2210,7 @@
   "User_has_been_deleted": "Defnyddiwyd y defnyddiwr",
   "User_has_been_ignored": "Mae'r defnyddiwr wedi cael ei anwybyddu",
   "User_has_been_muted_in_s": "Defnyddiwyd y defnyddiwr yn %s",
-  "User_has_been_removed_from_s": "Defnyddiwyd y defnyddiwr o %s",
+  "User_has_been_removed_from_s": "Defnyddiwyd y defnyddiwr o {{roomName}}",
   "User_has_been_unignored": "Ni chaiff y defnyddiwr ei anwybyddu mwyach",
   "User_is_blocked": "Mae'r defnyddiwr wedi'i rwystro",
   "User_is_no_longer_an_admin": "Nid yw'r defnyddiwr bellach yn weinyddwr",

@@ -2220,7 +2220,7 @@
   "User_has_been_deleted": "Lietotājs ir izdzēsts",
   "User_has_been_ignored": "Lietotājs tiek ignorēts",
   "User_has_been_muted_in_s": "Lietotājam ir liegts rakstīt %s",
-  "User_has_been_removed_from_s": "Lietotājs ir noņemts no %s",
+  "User_has_been_removed_from_s": "Lietotājs ir noņemts no {{roomName}}",
   "User_has_been_unignored": "Lietotājs vairs netiek ignorēts",
   "User_is_blocked": "Lietotājs ir bloķēts",
   "User_is_no_longer_an_admin": "Lietotājs vairs nav administrators",

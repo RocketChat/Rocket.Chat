@@ -71,7 +71,7 @@ export const useRemoveUserAction = (
 	const removeFromRoomEndpoint = room.t === 'p' ? '/v1/groups.kick' : '/v1/channels.kick';
 	const { mutateAsync: removeFromRoom } = useEndpointMutation('POST', removeFromRoomEndpoint, {
 		onSuccess: () => {
-			dispatchToastMessage({ type: 'success', message: t('User_has_been_removed_from_s', roomName) });
+			dispatchToastMessage({ type: 'success', message: t('User_has_been_removed_from_s', { roomName }) });
 			queryClient.invalidateQueries({ queryKey: roomsQueryKeys.members(room._id, room.t) });
 		},
 		onSettled: () => {

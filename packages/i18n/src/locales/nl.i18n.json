@@ -3870,7 +3870,7 @@
   "User_has_been_deleted": "Gebruiker is verwijderd",
   "User_has_been_ignored": "Gebruiker is genegeerd",
   "User_has_been_muted_in_s": "Gebruiker is genegeerd in %s",
-  "User_has_been_removed_from_s": "Gebruiker is verwijderd van %s",
+  "User_has_been_removed_from_s": "Gebruiker is verwijderd van {{roomName}}",
   "User_has_been_removed_from_team": "Gebruiker is uit team verwijderd",
   "User_has_been_unignored": "Gebruiker wordt niet langer genegeerd",
   "User_is_blocked": "Gebruiker is geblokkeerd",

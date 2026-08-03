@@ -2215,7 +2215,7 @@
   "User_has_been_deleted": "Pengguna telah dipadam",
   "User_has_been_ignored": "Pengguna telah diabaikan",
   "User_has_been_muted_in_s": "Pengguna telah disenyapkan dalam %s",
-  "User_has_been_removed_from_s": "Pengguna telah dikeluarkan daripada %s",
+  "User_has_been_removed_from_s": "Pengguna telah dikeluarkan daripada {{roomName}}",
   "User_has_been_unignored": "Pengguna tidak lagi diabaikan",
   "User_is_blocked": "Pengguna disekat",
   "User_is_no_longer_an_admin": "Pengguna tidak lagi seorang pentadbir",

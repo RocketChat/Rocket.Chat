@@ -4974,7 +4974,7 @@
   "User_has_been_muted": "dempet {{user_muted}}",
   "User_has_been_muted_in_s": "Brukeren har blitt dempet i%s",
   "User_has_been_removed": "fjernet {{user_removed}}",
-  "User_has_been_removed_from_s": "Brukeren er fjernet fra%s",
+  "User_has_been_removed_from_s": "Brukeren er fjernet fra{{roomName}}",
   "User_has_been_removed_from_team": "Brukeren er fjernet fra teamet",
   "User_has_been_unignored": "Brukeren ignoreres ikke lenger",
   "User_has_been_unmuted": "dempet {{user_unmuted}}",

@@ -4439,7 +4439,7 @@
   "User_has_been_muted": "mykistetty {{user_muted}}",
   "User_has_been_muted_in_s": "Käyttäjä on mykistetty kohteessa %s",
   "User_has_been_removed": "poistettu {{user_removed}}",
-  "User_has_been_removed_from_s": "Käyttäjä on poistettu kohteesta %s",
+  "User_has_been_removed_from_s": "Käyttäjä on poistettu kohteesta {{roomName}}",
   "User_has_been_removed_from_team": "Käyttäjä on poistettu tiimistä",
   "User_has_been_unignored": "Käyttäjää ei enää ohiteta",
   "User_has_been_unmuted": "unmuted {{user_unmuted}}",

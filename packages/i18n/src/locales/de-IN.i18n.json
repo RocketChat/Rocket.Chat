@@ -2490,7 +2490,7 @@
   "User_has_been_deleted": "Benutzer wurde gelöscht",
   "User_has_been_ignored": "Benutzer wurde ignoriert",
   "User_has_been_muted_in_s": "Dem Nutzer wurde das Schreiben in %s verboten",
-  "User_has_been_removed_from_s": "Der Benutzer wurde aus %s entfernt",
+  "User_has_been_removed_from_s": "Der Benutzer wurde aus {{roomName}} entfernt",
   "User_has_been_unignored": "Benutzer wird nicht mehr ignoriert",
   "User_is_blocked": "Benutzer ist geblockt",
   "User_is_no_longer_an_admin": "Der Benutzer ist kein Administrator mehr",

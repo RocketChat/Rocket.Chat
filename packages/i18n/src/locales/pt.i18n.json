@@ -2566,7 +2566,7 @@
   "User_has_been_deleted": "O utilizador foi removido",
   "User_has_been_ignored": "O utilizador foi ignorado",
   "User_has_been_muted_in_s": "O utilizador foi silenciado em %s",
-  "User_has_been_removed_from_s": "O utilizador foi removido de %s",
+  "User_has_been_removed_from_s": "O utilizador foi removido de {{roomName}}",
   "User_has_been_unignored": "O utilizador não continuará ignorado",
   "User_is_blocked": "O utilizador está bloqueado",
   "User_is_no_longer_an_admin": "O utilizador já não é um administrador",

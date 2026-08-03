@@ -5721,7 +5721,7 @@
   "User_has_been_muted": "{{user_muted}} silenciado",
   "User_has_been_muted_in_s": "Usuário foi silenciado em %s",
   "User_has_been_removed": "{{user_removed}} removido",
-  "User_has_been_removed_from_s": "Usuário foi removido de %s",
+  "User_has_been_removed_from_s": "Usuário foi removido de {{roomName}}",
   "User_has_been_removed_from_team": "Usuário removido da equipe",
   "User_has_been_unbanned": "{{user_unbanned}} não banido",
   "User_has_been_unignored": "O usuário não é mais ignorado",

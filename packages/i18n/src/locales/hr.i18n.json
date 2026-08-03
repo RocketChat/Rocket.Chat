@@ -2331,7 +2331,7 @@
   "User_has_been_deleted": "Korisnik je obrisan",
   "User_has_been_ignored": "Korisnik je zanemaren",
   "User_has_been_muted_in_s": "Korisnik je utišan u %s",
-  "User_has_been_removed_from_s": "Korisnik je uklonjen iz %s",
+  "User_has_been_removed_from_s": "Korisnik je uklonjen iz {{roomName}}",
   "User_has_been_unignored": "Korisnik više nije zanemaren",
   "User_is_blocked": "Korisnik je blokiran",
   "User_is_no_longer_an_admin": "Korisnik više nije admin",

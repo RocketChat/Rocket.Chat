@@ -3990,7 +3990,7 @@
   "User_has_been_deleted": "El usuario se ha eliminado",
   "User_has_been_ignored": "El usuario se ha ignorado",
   "User_has_been_muted_in_s": "El usuario se ha silenciado en %s",
-  "User_has_been_removed_from_s": "El usuario se ha eliminado de %s",
+  "User_has_been_removed_from_s": "El usuario se ha eliminado de {{roomName}}",
   "User_has_been_removed_from_team": "El usuario se ha eliminado del equipo",
   "User_has_been_unignored": "El usuario ya no se ignora",
   "User_is_blocked": "El usuario está bloqueado",

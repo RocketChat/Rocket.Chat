@@ -2216,7 +2216,7 @@
   "User_has_been_deleted": "Ο χρήστης έχει διαγραφεί",
   "User_has_been_ignored": "Ο χρήστης αγνοήθηκε",
   "User_has_been_muted_in_s": "Ο χρήστης έχει σίγαση σε %s",
-  "User_has_been_removed_from_s": "Ο χρήστης έχει αφαιρεθεί από %s",
+  "User_has_been_removed_from_s": "Ο χρήστης έχει αφαιρεθεί από {{roomName}}",
   "User_has_been_unignored": "Ο χρήστης δεν αγνοείται πλέον",
   "User_is_blocked": "Ο χρήστης είναι αποκλεισμένος",
   "User_is_no_longer_an_admin": "Ο χρήστης δεν είναι πλέον διαχειριστής",

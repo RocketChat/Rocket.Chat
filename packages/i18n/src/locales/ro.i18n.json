@@ -2212,7 +2212,7 @@
   "User_has_been_deleted": "Utilizatorul a fost șters",
   "User_has_been_ignored": "Utilizatorul a fost ignorat",
   "User_has_been_muted_in_s": "Utilizator a fost oprit în %s",
-  "User_has_been_removed_from_s": "Utilizator a fost eliminat din %s",
+  "User_has_been_removed_from_s": "Utilizator a fost eliminat din {{roomName}}",
   "User_has_been_unignored": "Utilizatorul nu mai este ignorat",
   "User_is_blocked": "Utilizatorul este blocat",
   "User_is_no_longer_an_admin": "Utilizatorul nu mai este Admin",

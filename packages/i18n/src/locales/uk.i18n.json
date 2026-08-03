@@ -2710,7 +2710,7 @@
   "User_has_been_deleted": "Користувач вилучений",
   "User_has_been_ignored": "Користувача було проігноровано",
   "User_has_been_muted_in_s": "Користувач був приглушений в %s",
-  "User_has_been_removed_from_s": "Користувач був видалений з %s",
+  "User_has_been_removed_from_s": "Користувач був видалений з {{roomName}}",
   "User_has_been_unignored": "Користувач більше не ігнорується",
   "User_is_blocked": "Користувач заблоковано",
   "User_is_no_longer_an_admin": "Нема більше не адмін",

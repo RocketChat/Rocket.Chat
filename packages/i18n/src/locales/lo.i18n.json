@@ -2238,7 +2238,7 @@
   "User_has_been_deleted": "ຜູ້ໃຊ້ນີ້ໄດ້ຖືກລຶບອອກແລ້ວ",
   "User_has_been_ignored": "ຜູ້ໃຊ້ໄດ້ຖືກຍົກເລີກ",
   "User_has_been_muted_in_s": "ຜູ້ໃຊ້ໄດ້ຮັບການ muted ໃນ %s",
-  "User_has_been_removed_from_s": "ຜູ້ໃຊ້ໄດ້ຮັບການໂຍກຍ້າຍອອກຈາກ %s",
+  "User_has_been_removed_from_s": "ຜູ້ໃຊ້ໄດ້ຮັບການໂຍກຍ້າຍອອກຈາກ {{roomName}}",
   "User_has_been_unignored": "ຜູ້ໃຊ້ບໍ່ໄດ້ຖືກລະເລີຍ",
   "User_is_blocked": "ຜູ້ໃຊ້ຖືກບລັອກ",
   "User_is_no_longer_an_admin": "ຜູ້ໃຊ້ທີ່ບໍ່ມີຕໍ່ໄປອ​​ີກແລ້ວການ admin",

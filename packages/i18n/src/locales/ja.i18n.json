@@ -3828,7 +3828,7 @@
   "User_has_been_deleted": "ユーザーは削除されました",
   "User_has_been_ignored": "ユーザーは無視されました",
   "User_has_been_muted_in_s": "ユーザーが%sでミュートにされました",
-  "User_has_been_removed_from_s": "ユーザーが%sから削除されました",
+  "User_has_been_removed_from_s": "ユーザーが{{roomName}}から削除されました",
   "User_has_been_removed_from_team": "ユーザーがチームから削除されました",
   "User_has_been_unignored": "ユーザーは無視されなくなりました",
   "User_is_blocked": "ユーザーはブロックされています",

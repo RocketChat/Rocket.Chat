@@ -2214,7 +2214,7 @@
   "User_has_been_deleted": "Gebruiker is verwyder",
   "User_has_been_ignored": "Gebruiker is geïgnoreer",
   "User_has_been_muted_in_s": "Gebruiker is gedemp in%s",
-  "User_has_been_removed_from_s": "Gebruiker is verwyder van%s",
+  "User_has_been_removed_from_s": "Gebruiker is verwyder van{{roomName}}",
   "User_has_been_unignored": "Gebruiker word nie meer geïgnoreer nie",
   "User_is_blocked": "Gebruiker is geblokkeer",
   "User_is_no_longer_an_admin": "Gebruiker is nie meer 'n admin nie",

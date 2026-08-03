@@ -2205,7 +2205,7 @@
   "User_has_been_deleted": "Bikarhêner hatiye jêbirin",
   "User_has_been_ignored": "Bikarhêner nayê dîtin",
   "User_has_been_muted_in_s": "Bikarhêner hatiye dîtin li %s devgirtî",
-  "User_has_been_removed_from_s": "Bikarhêner hatiye ji %s rakirin",
+  "User_has_been_removed_from_s": "Bikarhêner hatiye ji {{roomName}} rakirin",
   "User_has_been_unignored": "Bikarhêner nayê asteng kirin",
   "User_is_blocked": "Bikarhêner asteng kirin",
   "User_is_no_longer_an_admin": "Bikarhêner e êdî ji admin",

@@ -2209,7 +2209,7 @@
   "User_has_been_deleted": "Uporabnik je bil izbrisan",
   "User_has_been_ignored": "Uporabnik je bil prezrt",
   "User_has_been_muted_in_s": "Uporabnik je bil utišan v %s",
-  "User_has_been_removed_from_s": "Uporabnik je bil odstranjen iz %s",
+  "User_has_been_removed_from_s": "Uporabnik je bil odstranjen iz {{roomName}}",
   "User_has_been_unignored": "Uporabnik ni več zanemarjen",
   "User_is_blocked": "Uporabnik je blokiran",
   "User_is_no_longer_an_admin": "Uporabnik več ni administrator",

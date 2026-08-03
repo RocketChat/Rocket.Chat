@@ -2498,7 +2498,7 @@
   "User_has_been_deleted": "کاربر حذف شده است",
   "User_has_been_ignored": "کاربر نادیده گرفته شده است",
   "User_has_been_muted_in_s": "کاربر در %s صامت شده است",
-  "User_has_been_removed_from_s": "کاربر از %s حذف شده است",
+  "User_has_been_removed_from_s": "کاربر از {{roomName}} حذف شده است",
   "User_has_been_unignored": "کاربر دیگر نادیده گرفته می شود",
   "User_is_blocked": "کاربر مسدود شده است",
   "User_is_no_longer_an_admin": "کاربر دیگر مدیر نیست",

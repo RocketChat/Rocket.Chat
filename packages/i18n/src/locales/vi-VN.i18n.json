@@ -2306,7 +2306,7 @@
   "User_has_been_deleted": "Người dùng đã bị xóa",
   "User_has_been_ignored": "Người dùng đã bị bỏ qua",
   "User_has_been_muted_in_s": "Người dùng đã bị tắt tiếng trong%s",
-  "User_has_been_removed_from_s": "Người dùng đã bị xóa khỏi%s",
+  "User_has_been_removed_from_s": "Người dùng đã bị xóa khỏi{{roomName}}",
   "User_has_been_unignored": "Người dùng không còn bị bỏ qua",
   "User_is_blocked": "Người dùng bị chặn",
   "User_is_no_longer_an_admin": "Người dùng không còn là quản trị viên nữa",

@@ -4174,7 +4174,7 @@
   "User_has_been_muted": "{{user_muted}} némítva",
   "User_has_been_muted_in_s": "A felhasználói némítva lett a(z) %s szobában",
   "User_has_been_removed": "{{user_removed}} eltávolítva",
-  "User_has_been_removed_from_s": "A felhasználó el lett távolítva a(z) %s szobából",
+  "User_has_been_removed_from_s": "A felhasználó el lett távolítva a(z) {{roomName}} szobából",
   "User_has_been_removed_from_team": "A felhasználó el lett távolítva a csapatból",
   "User_has_been_unignored": "A felhasználó többé már nincs mellőzve",
   "User_has_been_unmuted": "{{user_unmuted}} némítása megszüntetve",

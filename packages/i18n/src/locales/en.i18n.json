@@ -5890,7 +5890,7 @@
   "User_has_been_muted": "muted {{user_muted}}",
   "User_has_been_muted_in_s": "User has been muted in %s",
   "User_has_been_removed": "removed {{user_removed}}",
-  "User_has_been_removed_from_s": "User has been removed from %s",
+  "User_has_been_removed_from_s": "User has been removed from {{roomName}}",
   "User_has_been_removed_from_team": "User has been removed from team",
   "User_has_been_unbanned": "unbanned {{user_unbanned}}",
   "User_has_been_unignored": "User is no longer ignored",

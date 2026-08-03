@@ -2043,7 +2043,7 @@
   "User_has_been_deleted": "Корисник је избрисан",
   "User_has_been_ignored": "Корисник је игнорисан",
   "User_has_been_muted_in_s": "Корисник је искључен у %s",
-  "User_has_been_removed_from_s": "Корисник је уклоњен из %s",
+  "User_has_been_removed_from_s": "Корисник је уклоњен из {{roomName}}",
   "User_has_been_unignored": "Корисник више није занемарен",
   "User_is_blocked": "Корисник је блокиран",
   "User_is_no_longer_an_admin": "Корисник више није админ",
