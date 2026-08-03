@@ -45,7 +45,7 @@ YAML
 overrides_add claude-code volumes <<-'YAML'
 	claude-config:
 	  external: true
-	  name: rc-claude-config
+	  name: rc-devcontainer-claude-config
 YAML
 
 bash "$here/ensure-claude-config.sh"

@@ -63,17 +63,18 @@ services:
 volumes:
   rc-node-modules:
   rc-meteor-local:
-  # The feature-owned volumes (rc-gh-auth, rc-claude-config) are declared in the
-  # generated docker-compose.overrides.yml, beside the mounts that use them — see
-  # the note in the service's `volumes` above.
+  # The feature-owned volumes (rc-devcontainer-gh-auth,
+  # rc-devcontainer-claude-config) are declared in the generated
+  # docker-compose.overrides.yml, beside the mounts that use them — see the note
+  # in the service's `volumes` above.
   #
   # Yarn's ~/.yarn/berry: the package cache (~650MB once warm) and metadata
   # index. External with a fixed name, which is what makes it shared: each
   # worktree runs its own compose project, so an ordinary volume gets namespaced
   # per worktree and would re-download every package for every checkout. What it
   # saves is bandwidth and disk rather than a login — nothing in here is secret,
-  # and it is pure cache: `docker volume rm rc-yarn-cache` costs one slow install,
-  # nothing more. Being external also keeps it out of reach of
+  # and it is pure cache: `docker volume rm rc-devcontainer-yarn-cache` costs one
+  # slow install, nothing more. Being external also keeps it out of reach of
   # `docker compose down -v`.
   #
   # Created on the host by scripts/ensure-yarn-cache.sh (initializeCommand),
@@ -81,7 +82,7 @@ volumes:
   # external volumes, it errors out on create.
   yarn-cache:
     external: true
-    name: rc-yarn-cache
+    name: rc-devcontainer-yarn-cache
 
 networks:
   # Created by the standalone turbo-cache project, not by this one — it has to

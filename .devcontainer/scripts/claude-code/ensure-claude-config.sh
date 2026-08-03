@@ -35,7 +35,7 @@
 # the first return at the check below.
 set -euo pipefail
 
-volume="rc-claude-config"
+volume="rc-devcontainer-claude-config"
 # The container runs as remoteUser vscode, whose uid devcontainers matches to the
 # host user's so bind-mounted files stay writable — so seeding from the host uid
 # is what makes the volume land owned by the right user in there. Compose has no

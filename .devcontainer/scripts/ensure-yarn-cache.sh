@@ -31,7 +31,7 @@
 # the first return at the check below.
 set -euo pipefail
 
-volume="rc-yarn-cache"
+volume="rc-devcontainer-yarn-cache"
 # remoteUser vscode, matching the host user so bind-mounted files stay writable.
 # Compose has no chown, so a throwaway busybox does it — same trick as the
 # turbo-cache stack's init service. It also creates the subpath directory, which

@@ -50,7 +50,7 @@ YAML
 overrides_add gh volumes <<-'YAML'
 	gh-auth:
 	  external: true
-	  name: rc-gh-auth
+	  name: rc-devcontainer-gh-auth
 YAML
 
 bash "$here/ensure-gh-auth.sh"
