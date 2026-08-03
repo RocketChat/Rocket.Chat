@@ -1,9 +1,8 @@
 import type { AudioAttachmentProps } from '@rocket.chat/core-typings';
 import { AudioPlayerControls, Box } from '@rocket.chat/fuselage';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
-import { useMediaDuration } from './hooks/useMediaDuration';
 import { useMediaPlayer } from '../../../../../providers/MediaPlayerProvider';
 import type { PersistentAudioTrack } from '../../../../../providers/MediaPlayerProvider';
 import MarkdownText from '../../../../MarkdownText';
@@ -55,7 +54,7 @@ const AudioAttachment = ({
 	);
 
 	const active = isActive(track.id);
-	const resolvedDuration = useMediaDuration(src);
+	const [previewDuration, setPreviewDuration] = useState(0);
 
 	return (
 		<>
@@ -76,12 +75,21 @@ const AudioAttachment = ({
 					<AudioPlayerControls
 						isPlaying={active && playing}
 						currentTime={active ? currentTime : 0}
-						durationTime={active && duration ? duration : resolvedDuration}
+						durationTime={active && duration ? duration : previewDuration}
 						playbackSpeed={playbackRate}
 						onTogglePlay={() => (active ? toggle() : play(track))}
 						onSeek={(time) => (active ? seek(time) : play(track))}
 						onChangePlaybackSpeed={cyclePlaybackRate}
 					/>
+					{/* Loads only metadata so the controls show the length before this track becomes the shared player's active one. */}
+					<audio
+						hidden
+						preload='metadata'
+						src={src}
+						onLoadedMetadata={(e) => setPreviewDuration(Number.isFinite(e.currentTarget.duration) ? e.currentTarget.duration : 0)}
+					>
+						<track kind='captions' />
+					</audio>
 				</Box>
 			</MessageCollapsible>
 		</>
