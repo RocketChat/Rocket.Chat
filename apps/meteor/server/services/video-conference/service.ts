@@ -19,6 +19,7 @@ import type {
 	IStats,
 	VideoConference,
 	VideoConferenceCapabilities,
+	JoinableVideoConference,
 	VideoConferenceChatAccess,
 	VideoConferenceChatAccessMode,
 	VideoConferenceCreateData,
@@ -1267,6 +1268,72 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await this.ringUsers(callId, call.rid, uid, absent);
 
 		return absent;
+	}
+
+	/**
+	 * The calls that are running right now and that this user may join.
+	 *
+	 * This is how a call is reached without having caught its ring — which matters because a ring is one-shot and
+	 * a conference started in a room with more than ten subscribers rings nobody at all.
+	 *
+	 * Nothing new is stored to answer it: the conference records already hold membership, liveness and the room.
+	 * The scan is over *running* conferences rather than over this user's rooms, so its cost follows how many
+	 * calls are in progress — few — rather than how many rooms the user is in.
+	 *
+	 * A call is offered when the user is a member of it, or is in the room it belongs to. Room *membership* rather
+	 * than room *access*: a public channel is readable by anyone, and a call in a channel the user never joined
+	 * has no business in their sidebar.
+	 *
+	 * Calls nobody is in are left out. A conference only stops when someone ends it or the expiry cron reaches it,
+	 * so without this an abandoned one would be advertised as joinable for a day.
+	 */
+	public async listJoinableCalls(uid: IUser['_id']): Promise<JoinableVideoConference[]> {
+		const running = await VideoConferenceModel.find(
+			{ endedAt: { $exists: false } },
+			{ projection: { rid: 1, discussionRid: 1, users: 1, title: 1, type: 1, createdAt: 1 }, sort: { createdAt: -1 } },
+		).toArray();
+
+		const occupied = running.filter(({ users }) => hasActiveParticipants(users));
+
+		// One query for every room in play. It decides both halves of the answer: whether the user is in the room,
+		// and — for a direct message, which has no name of its own — what to call it, since a DM is named after the
+		// other person and that name lives on each side's own subscription.
+		const rids = [...new Set(occupied.flatMap(({ rid, discussionRid }) => [rid, discussionRid].filter((id): id is string => !!id)))];
+		const subscriptions = new Map(
+			rids.length
+				? (await Subscriptions.findByUserIdAndRoomIds(uid, rids, { projection: { rid: 1, name: 1, fname: 1 } }).toArray()).map((sub) => [
+						sub.rid,
+						sub,
+					])
+				: [],
+		);
+
+		const joinable = occupied.filter((call) => {
+			if (call.users.some(({ _id }) => _id === uid)) {
+				return true;
+			}
+
+			return subscriptions.has(call.rid) || (!!call.discussionRid && subscriptions.has(call.discussionRid));
+		});
+
+		return Promise.all(
+			joinable.map(async (call) => {
+				const member = call.users.find(({ _id }) => _id === uid);
+				const subscription = subscriptions.get(call.discussionRid || call.rid) ?? subscriptions.get(call.rid);
+
+				return {
+					callId: call._id,
+					rid: call.rid,
+					name:
+						(isGroupVideoConference(call) && call.title) || subscription?.fname || subscription?.name || (await this.getRoomName(call.rid)),
+					type: call.type,
+					createdAt: call.createdAt,
+					usersCount: call.users.filter(isInVideoConference).length,
+					joined: !!member && isInVideoConference(member),
+					declined: !!member?.declined,
+				};
+			}),
+		);
 	}
 
 	/**

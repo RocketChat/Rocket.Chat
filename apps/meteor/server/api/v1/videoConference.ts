@@ -102,6 +102,16 @@ const addParticipantsResponseSchema = ajv.compile<{ added: string[] }>({
 	additionalProperties: false,
 });
 
+const joinableResponseSchema = ajv.compile<{ calls: unknown[] }>({
+	type: 'object',
+	properties: {
+		calls: { type: 'array', items: { type: 'object' }, description: 'Calls running now that the caller may join.' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['calls', 'success'],
+	additionalProperties: false,
+});
+
 const ringResponseSchema = ajv.compile<{ rang: string[] }>({
 	type: 'object',
 	properties: {
@@ -511,6 +521,28 @@ API.v1.get(
 			capabilities,
 			chatAccess,
 		});
+	},
+);
+
+API.v1.get(
+	'video-conference.joinable',
+	{
+		authRequired: true,
+		// Polled by the sidebar, so it has to tolerate a steady trickle.
+		rateLimiterOptions: { numRequestsAllowed: 30, intervalTimeInMS: 60000 },
+		response: {
+			200: joinableResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { userId } = this;
+		if (!userId) {
+			return API.v1.failure('invalid-params');
+		}
+
+		return API.v1.success({ calls: await VideoConf.listJoinableCalls(userId) });
 	},
 );
 

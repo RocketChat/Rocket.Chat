@@ -191,6 +191,25 @@ export type VideoConferenceChatAccess = {
 	canInvite: boolean;
 };
 
+/**
+ * A call that is running now and that the reader may join — what the sidebar and the call-history page list so a
+ * call can be reached without having caught its ring.
+ */
+export type JoinableVideoConference = {
+	callId: IVideoConference['_id'];
+	rid: IRoom['_id'];
+	/** What to call it: the conference's own title, or the room's name. */
+	name: string;
+	type: VideoConferenceType;
+	createdAt: Date;
+	/** How many people are in it right now. Never zero — an empty call isn't offered. */
+	usersCount: number;
+	/** Whether the reader is one of them, which is what makes joining another call a matter of leaving this one. */
+	joined: boolean;
+	/** Whether the reader already turned this call down. The sidebar hides those; the call history keeps them. */
+	declined: boolean;
+};
+
 /** How to give the missing members access: bring them into the room, or move the chat to a discussion. */
 export type VideoConferenceChatAccessMode = 'invite' | 'discussion';
 
