@@ -303,7 +303,7 @@ describe('buildOperation', () => {
 		});
 
 		const operation = build('GET', '/api/v1/rooms.info', { response: { 200: schema } });
-		const properties = (operation.responses[200].content?.['application/json'].schema as any).properties;
+		const { properties } = operation.responses[200].content?.['application/json'].schema as { properties: Record<string, unknown> };
 
 		expect(properties.name).toEqual({ type: ['string', 'null'] });
 		expect(properties.count).toEqual({ type: ['number', 'null'] });

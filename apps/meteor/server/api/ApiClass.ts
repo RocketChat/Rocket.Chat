@@ -1,5 +1,5 @@
 import type { IMethodConnection, IUser } from '@rocket.chat/core-typings';
-import type { Router } from '@rocket.chat/http-router';
+import type { OpenAPIDocumentation, Router } from '@rocket.chat/http-router';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
@@ -60,6 +60,13 @@ const logger = new Logger('API');
 // To avoid conflicts or missing something during the period we are adopting a 'feature flag approach'
 // TODO: MAJOR check if this is still needed
 export const applyBreakingChanges = shouldBreakInVersion('9.0.0');
+/**
+ * What an endpoint exposes to its callers. The documentation a route carries - summary, description,
+ * examples, tags - describes it for readers and has no place in the type its callers see; keeping it
+ * out also keeps the `Endpoints` augmentation from growing a type graph big enough to collapse.
+ */
+type CallableOptions<TOptions> = Omit<TOptions, 'response' | 'tags' | keyof OpenAPIDocumentation>;
+
 type MinimalRoute = {
 	method: 'GET' | 'POST' | 'PUT' | 'DELETE';
 	path: string;
@@ -557,7 +564,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				{
 					method: Method;
 					path: TPathPattern;
-				} & Omit<TOptions, 'response'>
+				} & CallableOptions<TOptions>
 		  >
 	> {
 		this.addRoute([subpath], { tags: [], ...options, typed: true }, { [method.toLowerCase()]: { action } } as any);
@@ -591,7 +598,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		| ({
 				method: 'POST';
 				path: TPathPattern;
-		  } & Omit<TOptions, 'response'>)
+		  } & CallableOptions<TOptions>)
 		| Prettify<
 				{
 					method: 'POST';
@@ -612,7 +619,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		| ({
 				method: 'PUT';
 				path: TPathPattern;
-		  } & Omit<TOptions, 'response'>)
+		  } & CallableOptions<TOptions>)
 		| Prettify<
 				{
 					method: 'PUT';
@@ -633,7 +640,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		| ({
 				method: 'DELETE';
 				path: TPathPattern;
-		  } & Omit<TOptions, 'response'>)
+		  } & CallableOptions<TOptions>)
 		| Prettify<
 				{
 					method: 'DELETE';
