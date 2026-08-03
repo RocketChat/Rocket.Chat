@@ -1953,7 +1953,7 @@
   "Prune_Modal": "آیا مطمئن هستید که میخواهید این پیام ها را قطع کنید؟ پیام های پاره شده قابل بازیابی نیست",
   "Prune_Warning_after": "این همه{{items}} در{{roomName}} پس از{{fromDate}} حذف خواهد شد.",
   "Prune_Warning_all": "این همه{{items}} را در{{roomName}} حذف می کند!",
-  "Prune_Warning_before": "این همه%s را در%s قبل از%s حذف می کند.",
+  "Prune_Warning_before": "این همه{{items}} را در{{roomName}} قبل از{{toDate}} حذف می کند.",
   "Prune_Warning_between": "این همه%s در%s بین%s و%s حذف خواهد شد.",
   "Prune_finished": "سرخ شدن به پایان رسید",
   "Pruning_files": "فایل های هرس ...",

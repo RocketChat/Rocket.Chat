@@ -2868,7 +2868,7 @@
   "Prune_Modal": "Estàs segur que vols eliminar aquests missatges? Els missatges eliminats no es poden recuperar.",
   "Prune_Warning_after": "Això eliminarà tots els {{items}} a {{roomName}} després de {{fromDate}}.",
   "Prune_Warning_all": "Això eliminarà tots {{items}} a {{roomName}}.",
-  "Prune_Warning_before": "Això eliminarà tots %s a %s abans de %s.",
+  "Prune_Warning_before": "Això eliminarà tots {{items}} a {{roomName}} abans de {{toDate}}.",
   "Prune_Warning_between": "Això eliminarà tots %s a %s entre %s i %s.",
   "Prune_finished": "Esborrat finalitzat",
   "Pruning_files": "Esborrant els arxius ...",

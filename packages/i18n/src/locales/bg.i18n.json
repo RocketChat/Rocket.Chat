@@ -1682,7 +1682,7 @@
   "Prune_Modal": "Наистина ли искате да режете тези съобщения? Прерязаните съобщения не могат да бъдат възстановени.",
   "Prune_Warning_after": "Това ще изтрие всички {{items}} в {{roomName}} след {{fromDate}}.",
   "Prune_Warning_all": "Това ще изтрие всички {{items}} в {{roomName}}!",
-  "Prune_Warning_before": "Това ще изтрие всички %s в %s преди %s.",
+  "Prune_Warning_before": "Това ще изтрие всички {{items}} в {{roomName}} преди {{toDate}}.",
   "Prune_Warning_between": "Това ще изтрие всички %s в %s между %s и %s.",
   "Prune_finished": "Престилката завърши",
   "Pruning_files": "Подрязване на файлове ...",

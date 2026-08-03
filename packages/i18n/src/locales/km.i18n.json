@@ -1960,7 +1960,7 @@
   "Prune_Modal": "តើអ្នកប្រាកដជាចង់កាត់ចេញសារទាំងនេះមែនទេ? មិនអាចសង្គ្រោះសារដែលបានកាត់ចេញបានទេ។",
   "Prune_Warning_after": "វានឹងលុប {{items}} ទាំងអស់ក្នុង {{roomName}} បន្ទាប់ពី {{fromDate}} ។",
   "Prune_Warning_all": "វានឹងលុប {{items}} ទាំងអស់ជា {{roomName}}!",
-  "Prune_Warning_before": "វានឹងលុប %s ក្នុង %s មុន %s ។",
+  "Prune_Warning_before": "វានឹងលុប {{items}} ក្នុង {{roomName}} មុន {{toDate}} ។",
   "Prune_Warning_between": "វានឹងលុប %s ក្នុង %s រវាង %s និង %s ។",
   "Prune_finished": "ការលុបចោលបានបញ្ចប់",
   "Pruning_files": "កំពុងលុបឯកសារ ...",

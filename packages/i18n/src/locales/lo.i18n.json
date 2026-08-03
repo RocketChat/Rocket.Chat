@@ -1711,7 +1711,7 @@
   "Prune_Modal": "ທ່ານແນ່ໃຈວ່າທ່ານຕ້ອງການທີ່ຈະຖອນຂໍ້ຄວາມເຫລົ່ານີ້? ບໍ່ສາມາດກູ້ຂໍ້ຄວາມທີ່ຖືກຕັດສິນໄດ້.",
   "Prune_Warning_after": "ນີ້ຈະລຶບ {{items}} ທັງຫມົດໃນ {{roomName}} ຫຼັງ {{fromDate}}.",
   "Prune_Warning_all": "ນີ້ຈະລຶບ {{items}} ທັງຫມົດໃນ {{roomName}}!",
-  "Prune_Warning_before": "ນີ້ຈະລຶບ %s ທັງຫມົດໃນ %s ກ່ອນ %s.",
+  "Prune_Warning_before": "ນີ້ຈະລຶບ {{items}} ທັງຫມົດໃນ {{roomName}} ກ່ອນ {{toDate}}.",
   "Prune_Warning_between": "ນີ້ຈະລຶບ %s ທັງຫມົດໃນ %s ລະຫວ່າງ %s ແລະ %s.",
   "Prune_finished": "Prune ແລ້ວ",
   "Pruning_files": "ໄຟ Pruning ...",

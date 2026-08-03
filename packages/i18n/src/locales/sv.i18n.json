@@ -4303,7 +4303,7 @@
   "Prune_Modal": "Är du säker på att du vill gallra dessa meddelanden? Skurna meddelanden kan inte återställas.",
   "Prune_Warning_after": "Detta kommer att radera alla {{items}} i {{roomName}} efter {{fromDate}}.",
   "Prune_Warning_all": "Detta kommer att radera alla {{items}} i {{roomName}}!",
-  "Prune_Warning_before": "Detta tar bort alla %s i %s före %s.",
+  "Prune_Warning_before": "Detta tar bort alla {{items}} i {{roomName}} före {{toDate}}.",
   "Prune_Warning_between": "Detta kommer att radera alla %s i %s mellan %s och %s.",
   "Prune_finished": "Gallring färdig",
   "Pruning_files": "Gallring av filer...",

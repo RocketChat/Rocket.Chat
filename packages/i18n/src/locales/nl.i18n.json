@@ -2912,7 +2912,7 @@
   "Prune_Modal": "Weet je zeker dat je deze berichten wilt snoeien? Gesnapte berichten kunnen niet worden hersteld.",
   "Prune_Warning_after": "Hiermee worden alle {{items}} in {{roomName}} na {{fromDate}} verwijderd.",
   "Prune_Warning_all": "Hiermee worden alle {{items}} in {{roomName}} verwijderd!",
-  "Prune_Warning_before": "Hiermee worden alle %s in %s vóór %s verwijderd.",
+  "Prune_Warning_before": "Hiermee worden alle {{items}} in {{roomName}} vóór {{toDate}} verwijderd.",
   "Prune_Warning_between": "Hiermee worden alle %s in %s tussen %s en %s verwijderd.",
   "Prune_finished": "Snoeien is gedaan",
   "Pruning_files": "Bestanden snoeien...",

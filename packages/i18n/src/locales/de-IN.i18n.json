@@ -1918,7 +1918,7 @@
   "Prune_Modal": "Möchtest Du diese Nachrichten wirklich löschen? Bereinigte Nachrichten können nicht wiederhergestellt werden.",
   "Prune_Warning_after": "Dadurch werden alle {{items}} in {{roomName}} nach {{fromDate}} gelöscht.",
   "Prune_Warning_all": "Dadurch werden alle {{items}} in {{roomName}} gelöscht!",
-  "Prune_Warning_before": "Dadurch werden alle %s in %s vor %s gelöscht.",
+  "Prune_Warning_before": "Dadurch werden alle {{items}} in {{roomName}} vor {{toDate}} gelöscht.",
   "Prune_Warning_between": "Dadurch werden alle %s in %s zwischen %s und %s gelöscht.",
   "Prune_finished": "Löschen beendet",
   "Pruning_files": "Lösche Dateien ...",

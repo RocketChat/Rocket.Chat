@@ -1686,7 +1686,7 @@
   "Prune_Modal": "Bu mesajları bağlamaq istərdinizmi? Büzülmüş mesajlar bərpa edilə bilməz.",
   "Prune_Warning_after": "Bu {{items}} {{roomName}} sonra {{fromDate}} silmək olacaq.",
   "Prune_Warning_all": "Bu, bütün {{items}} {{roomName}}-də silinəcəkdir!",
-  "Prune_Warning_before": "Bu %s %s əvvəl %s-də silinəcək.",
+  "Prune_Warning_before": "Bu {{items}} {{roomName}} əvvəl {{toDate}}-də silinəcək.",
   "Prune_Warning_between": "%s və %s arasında %s %s silmək.",
   "Prune_finished": "Prune bitdi",
   "Pruning_files": "Budama faylları ...",

@@ -1775,7 +1775,7 @@
   "Prune_Modal": "Bạn có chắc chắn muốn cắt bớt các tin nhắn này không? Không thể khôi phục các thư đã cắt xén.",
   "Prune_Warning_after": "Thao tác này sẽ xóa tất cả {{items}} trong {{roomName}} sau {{fromDate}}.",
   "Prune_Warning_all": "Thao tác này sẽ xóa tất cả {{items}} trong {{roomName}}!",
-  "Prune_Warning_before": "Thao tác này sẽ xóa tất cả %s trong %s trước %s.",
+  "Prune_Warning_before": "Thao tác này sẽ xóa tất cả {{items}} trong {{roomName}} trước {{toDate}}.",
   "Prune_Warning_between": "Thao tác này sẽ xóa tất cả %s trong %s giữa %s và %s.",
   "Prune_finished": "Prune hoàn thành",
   "Pruning_files": "Đang cắt bớt tệp ...",

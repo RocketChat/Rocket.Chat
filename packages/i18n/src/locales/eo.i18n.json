@@ -1683,7 +1683,7 @@
   "Prune_Modal": "Ĉu vi certas, ke vi volas prunti ĉi tiujn mesaĝojn? Mesaĝoj ne povas rekuperi.",
   "Prune_Warning_after": "Ĉi tio forigos ĉiujn {{items}} en {{roomName}} post {{fromDate}}.",
   "Prune_Warning_all": "Ĉi tio forigos ĉiujn {{items}} en {{roomName}}!",
-  "Prune_Warning_before": "Ĉi tio forigos ĉiujn %s en %s antaŭ %s.",
+  "Prune_Warning_before": "Ĉi tio forigos ĉiujn {{items}} en {{roomName}} antaŭ {{toDate}}.",
   "Prune_Warning_between": "Ĉi tio forigos ĉiujn %s en %s inter %s kaj %s.",
   "Prune_finished": "Prune finita",
   "Pruning_files": "Donaci dosierojn ...",

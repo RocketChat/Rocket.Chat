@@ -3143,7 +3143,7 @@
   "Prune_Modal": "Biztosan törölni szeretné ezeket az üzeneteket? A törölt üzeneteket nem lehet helyreállítani.",
   "Prune_Warning_after": "Ezzel az összes {{items}} törölve lesz a(z) {{roomName}} szobában {{fromDate}} után.",
   "Prune_Warning_all": "Ezzel az összes {{items}} törölve lesz a(z) {{roomName}} szobában!",
-  "Prune_Warning_before": "Ezzel az összes %s törölve lesz a(z) %s szobában %s előtt.",
+  "Prune_Warning_before": "Ezzel az összes {{items}} törölve lesz a(z) {{roomName}} szobában {{toDate}} előtt.",
   "Prune_Warning_between": "Ezzel az összes %s törölve lesz a(z) %s szobában %s és %s között.",
   "Prune_finished": "Törlés befejezve",
   "Pruning_files": "Fájlok törlése…",

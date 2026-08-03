@@ -2519,7 +2519,7 @@
   "Prune_Modal": "Er du sikker på, at du vil beskære disse meddelelser? Beskårne beskeder kan ikke genoprettes.",
   "Prune_Warning_after": "Dette vil slette alle {{items}} i {{roomName}} efter {{fromDate}}.",
   "Prune_Warning_all": "Dette vil slette alle {{items}} i {{roomName}}!",
-  "Prune_Warning_before": "Dette vil slette alle %s i %s før %s.",
+  "Prune_Warning_before": "Dette vil slette alle {{items}} i {{roomName}} før {{toDate}}.",
   "Prune_Warning_between": "Dette vil slette alle %s i %s mellem %s og %s.",
   "Prune_finished": "Prune færdig",
   "Pruning_files": "Beskæring af filer ...",

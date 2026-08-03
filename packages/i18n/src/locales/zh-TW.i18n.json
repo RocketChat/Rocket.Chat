@@ -2823,7 +2823,7 @@
   "Prune_Modal": "你確定要修剪這些訊息嗎？已修剪的郵件無法恢復。",
   "Prune_Warning_after": "這將刪除 {{items}} 後 {{roomName}} 中的所有 {{fromDate}}。",
   "Prune_Warning_all": "這將刪除 {{items}} 中的所有 {{roomName}}！",
-  "Prune_Warning_before": "這將刪除 %s 之前 %s 中的所有 %s。",
+  "Prune_Warning_before": "這將刪除 {{items}} 之前 {{roomName}} 中的所有 {{toDate}}。",
   "Prune_Warning_between": "這將刪除 %s 和 %s 之間 %s 中的所有 %s。",
   "Prune_finished": "修剪完了",
   "Pruning_files": "修剪檔案...",

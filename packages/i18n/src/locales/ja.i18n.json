@@ -2882,7 +2882,7 @@
   "Prune_Modal": "これらのメッセージを整理してもよろしいですか？整理されたメッセージは復元できません。",
   "Prune_Warning_after": "{{items}}の{{roomName}}以降の{{fromDate}}が削除されます。",
   "Prune_Warning_all": "{{items}}のすべての{{roomName}}が削除されます！",
-  "Prune_Warning_before": "%sの%s以前の%sが削除されます。",
+  "Prune_Warning_before": "{{items}}の{{roomName}}以前の{{toDate}}が削除されます。",
   "Prune_Warning_between": "%s～%sのすべての%sが削除されます。",
   "Prune_finished": "整理完了",
   "Pruning_files": "ファイルを整理中...",
