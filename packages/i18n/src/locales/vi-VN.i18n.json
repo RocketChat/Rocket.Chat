@@ -1443,7 +1443,7 @@
   "Logistics": "Vận chuyển",
   "Logout": "Đăng xuất",
   "Logout_Others": "Logout Từ Khác Đăng nhập Địa điểm",
-  "Mail_Message_Invalid_emails": "Bạn đã cung cấp một hoặc nhiều email không hợp lệ:%s",
+  "Mail_Message_Invalid_emails": "Bạn đã cung cấp một hoặc nhiều email không hợp lệ:{{emails}}",
   "Mail_Message_Missing_to": "Bạn phải chọn một hoặc nhiều người dùng hoặc cung cấp một hoặc nhiều địa chỉ email, được phân cách bằng dấu phẩy.",
   "Mail_Message_No_messages_selected_select_all": "Bạn chưa chọn bất kỳ tin nhắn nào",
   "Mail_Messages": "Mail tin nhắn",

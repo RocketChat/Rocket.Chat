@@ -1597,7 +1597,7 @@
   "Logistics": "تدارکات",
   "Logout": "خروج",
   "Logout_Others": "خروج از نشست های دیگر",
-  "Mail_Message_Invalid_emails": "یک یا چند ایمیل نامعتبر ارائه کرده اید: %s",
+  "Mail_Message_Invalid_emails": "یک یا چند ایمیل نامعتبر ارائه کرده اید: {{emails}}",
   "Mail_Message_Missing_to": "باید یک یا چند کاربر را انتخاب و یا یک یا چند ایمیل وارد کنید (جدا شده با کاما).",
   "Mail_Message_No_messages_selected_select_all": "هیچ پیامی انتخاب نشده است",
   "Mail_Messages": "پیام های پست الکترونیکی",

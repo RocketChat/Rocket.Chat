@@ -3262,7 +3262,7 @@
   "MAC_Available": "{{macLeft, number}} 个 MAC 可用",
   "MAC_InfoText": "（MAC）计费月内参与互动的唯一 Omnichannel 联系人数量。",
   "MAU_value": "MAU(月活跃用户) {{value}}",
-  "Mail_Message_Invalid_emails": "你提供了一个或多个无效电子邮件地址：%s",
+  "Mail_Message_Invalid_emails": "你提供了一个或多个无效电子邮件地址：{{emails}}",
   "Mail_Message_Missing_subject": "您必须提供邮件主题",
   "Mail_Message_Missing_to": "您必须选则一个或多个用户，或者提供一个或多个电子邮箱地址（多个电子邮箱地址之间使用逗号分隔）。",
   "Mail_Message_No_messages_selected_select_all": "您还没有选中任何消息。",

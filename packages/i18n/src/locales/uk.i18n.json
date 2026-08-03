@@ -1769,7 +1769,7 @@
   "Longest_chat_duration": "Тривалість найдовшого чату",
   "Longest_reaction_time": "Найбільший час реакції",
   "Longest_response_time": "Найдовший час відповіді",
-  "Mail_Message_Invalid_emails": "Ви надали один або кілька неприпустимих листів: %s",
+  "Mail_Message_Invalid_emails": "Ви надали один або кілька неприпустимих листів: {{emails}}",
   "Mail_Message_Missing_to": "Ви повинні вибрати одного або декількох користувачів або надати один або кілька адрес електронної пошти, розділених комами.",
   "Mail_Message_No_messages_selected_select_all": "Ви не обрали жодного повідомлення.",
   "Mail_Messages": "поштові повідомлення",

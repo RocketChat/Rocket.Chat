@@ -2561,7 +2561,7 @@
   "Longest_response_time": "Längste Antwortzeit",
   "Looked_for": "Gesucht nach",
   "MAU_value": "MAU {{value}}",
-  "Mail_Message_Invalid_emails": "Sie haben eine oder mehrere ungültige E-Mail-Adressen angegeben: %s",
+  "Mail_Message_Invalid_emails": "Sie haben eine oder mehrere ungültige E-Mail-Adressen angegeben: {{emails}}",
   "Mail_Message_Missing_subject": "Sie müssen einen E-Mail-Betreff angeben.",
   "Mail_Message_Missing_to": "Sie müssen einen/mehrere Benutzer auswählen oder eine/mehrere E-Mail-Adressen durch Kommata getrennt angeben.",
   "Mail_Message_No_messages_selected_select_all": "Sie haben keine Nachrichten ausgewählt. ",

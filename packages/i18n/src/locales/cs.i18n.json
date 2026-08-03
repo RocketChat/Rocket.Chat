@@ -1952,7 +1952,7 @@
   "Longest_reaction_time": "Nejdelší reakční doba",
   "Longest_response_time": "Nejdelší doba odezvy",
   "MAU_value": "MAU {{value}}",
-  "Mail_Message_Invalid_emails": "Vložili jste jeden nebo více neplatných e-mailů: %s",
+  "Mail_Message_Invalid_emails": "Vložili jste jeden nebo více neplatných e-mailů: {{emails}}",
   "Mail_Message_Missing_subject": "Musíte uvést předmět emailu.",
   "Mail_Message_Missing_to": "Musíte vybrat jednoho nebo více uživatelů nebo vložit jednu nebo více e-mailových adres oddělených čárkami.",
   "Mail_Message_No_messages_selected_select_all": "Nejsou vybrány žádné zprávy. Chcete <a href=\"#\" class=\"select-all\">vybrat všechny</a> viditelné zprávy?",

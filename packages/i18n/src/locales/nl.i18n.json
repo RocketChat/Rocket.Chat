@@ -2317,7 +2317,7 @@
   "Longest_response_time": "Langste reactietijd",
   "Looked_for": "Gezocht naar",
   "MAU_value": "MAU {{value}}",
-  "Mail_Message_Invalid_emails": "Je hebt één of meer ongeldige e-mails opgegeven: %s",
+  "Mail_Message_Invalid_emails": "Je hebt één of meer ongeldige e-mails opgegeven: {{emails}}",
   "Mail_Message_Missing_subject": "U moet een e-mailonderwerp geven.",
   "Mail_Message_Missing_to": "U moet een of meer gebruikers selecteren of één of meer e-mailadressen opgeven, gescheiden door komma's.",
   "Mail_Message_No_messages_selected_select_all": "Je hebt geen berichten geselecteerd",

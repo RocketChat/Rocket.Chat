@@ -2261,7 +2261,7 @@
   "Longest_response_time": "最長的回應時間",
   "Looked_for": "找了",
   "MAU_value": "MAU {{value}}",
-  "Mail_Message_Invalid_emails": "您提供一個或多個無效的電子郵件：%s",
+  "Mail_Message_Invalid_emails": "您提供一個或多個無效的電子郵件：{{emails}}",
   "Mail_Message_Missing_subject": "您必須提供一個電子郵件主旨。",
   "Mail_Message_Missing_to": "您必須選擇一個或多個使用者或提供一個或多個電子郵件地址，以逗號分隔。",
   "Mail_Message_No_messages_selected_select_all": "您還沒有選擇任何消息",

@@ -1350,7 +1350,7 @@
   "Logistics": "Logisteg",
   "Logout": "Allgofnodi",
   "Logout_Others": "Logout O Lleoliadau Mewnol Eraill",
-  "Mail_Message_Invalid_emails": "Rydych wedi darparu un neu fwy o negeseuon e-bost annilys: %s",
+  "Mail_Message_Invalid_emails": "Rydych wedi darparu un neu fwy o negeseuon e-bost annilys: {{emails}}",
   "Mail_Message_Missing_to": "Rhaid i chi ddewis un neu fwy o ddefnyddwyr neu ddarparu un neu ragor o gyfeiriadau e-bost, wedi'u gwahanu gan gomiau.",
   "Mail_Message_No_messages_selected_select_all": "Nid ydych chi wedi dewis unrhyw negeseuon",
   "Mail_Messages": "Negeseuon Post",

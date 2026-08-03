@@ -2502,7 +2502,7 @@
   "Longest_response_time": "Leghosszabb válaszidő",
   "Looked_for": "Erre keresve:",
   "MAU_value": "MAU {{value}}",
-  "Mail_Message_Invalid_emails": "Egy vagy több érvénytelen e-mail-címet adott meg: %s",
+  "Mail_Message_Invalid_emails": "Egy vagy több érvénytelen e-mail-címet adott meg: {{emails}}",
   "Mail_Message_Missing_subject": "Meg kell adnia az e-mail tárgyát.",
   "Mail_Message_Missing_to": "Ki kell választania egy vagy több felhasználót, vagy meg kell adnia egy vagy több e-mail-címet, vesszővel elválasztva.",
   "Mail_Message_No_messages_selected_select_all": "Nem választott ki egyetlen üzenetet sem",

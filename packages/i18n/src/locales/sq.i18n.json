@@ -1352,7 +1352,7 @@
   "Logistics": "logjistikë",
   "Logout": "Largohu",
   "Logout_Others": "Logout Nga Identifikuar tjera në vende të",
-  "Mail_Message_Invalid_emails": "Ju keni dhënë email një ose më shumë të pavlefshme: %s",
+  "Mail_Message_Invalid_emails": "Ju keni dhënë email një ose më shumë të pavlefshme: {{emails}}",
   "Mail_Message_Missing_to": "Ju duhet të zgjidhni një ose më shumë përdorues, ose të sigurojë një ose më shumë adresa email, të ndara me presje.",
   "Mail_Message_No_messages_selected_select_all": "Ju nuk keni zgjedhur ndonjë porosi",
   "Mail_Messages": "Mesazhet Mail",

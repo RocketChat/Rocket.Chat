@@ -1373,7 +1373,7 @@
   "Logistics": "лагістыка",
   "Logout": "выхад",
   "Logout_Others": "Выхад з іншых Запісаны У Locations",
-  "Mail_Message_Invalid_emails": "Вы падалі адзін або некалькі недапушчальных ліста:%s",
+  "Mail_Message_Invalid_emails": "Вы падалі адзін або некалькі недапушчальных ліста:{{emails}}",
   "Mail_Message_Missing_to": "Вы павінны выбраць аднаго або некалькіх карыстальнікаў ці даць адзін або некалькі адрасоў электроннай пошты, падзеленых коскамі.",
   "Mail_Message_No_messages_selected_select_all": "Вы не абралі ні аднаго паведамлення",
   "Mail_Messages": "паштовыя паведамленні",

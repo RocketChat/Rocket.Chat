@@ -1352,7 +1352,7 @@
   "Logistics": "Logistică",
   "Logout": "Ieșire",
   "Logout_Others": "Delogare din celelalte locații",
-  "Mail_Message_Invalid_emails": "Ați furnizat unul sau mai multe e-mailuri invalide: %s",
+  "Mail_Message_Invalid_emails": "Ați furnizat unul sau mai multe e-mailuri invalide: {{emails}}",
   "Mail_Message_Missing_to": "Trebuie să furnizați una sau mai multe adrese de e-mail pentru 'Către', separate prin virgulă.",
   "Mail_Message_No_messages_selected_select_all": "Nu ați selectat niciun mesaj",
   "Mail_Messages": "Mesaje Email",

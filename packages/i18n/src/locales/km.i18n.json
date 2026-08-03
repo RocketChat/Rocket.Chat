@@ -1607,7 +1607,7 @@
   "Longest_chat_duration": "រយៈពេលជជែកវែងបំផុត",
   "Longest_reaction_time": "ពេលវេលាឆ្លើយតបដ៏វែងបំផុត",
   "Longest_response_time": "ពេលវេលាឆ្លើយតបដ៏វែងបំផុត",
-  "Mail_Message_Invalid_emails": "អ្នកបានផ្តល់អ៊ីម៉ែលមួយឬច្រើនជាងនេះមិនត្រឹមត្រូវ: %s បាន",
+  "Mail_Message_Invalid_emails": "អ្នកបានផ្តល់អ៊ីម៉ែលមួយឬច្រើនជាងនេះមិនត្រឹមត្រូវ: {{emails}} បាន",
   "Mail_Message_Missing_to": "អ្នកត្រូវតែជ្រើសអ្នកប្រើមួយឬច្រើនឬផ្ដល់នូវអាសយដ្ឋានអ៊ីម៉ែលមួយឬច្រើនដែលបំបែកដោយសញ្ញាក្បៀស។",
   "Mail_Message_No_messages_selected_select_all": "អ្នកមិនបានជ្រើសសារណាមួយឡើយ។",
   "Mail_Messages": "សារសំបុត្រ",

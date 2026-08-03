@@ -3265,7 +3265,7 @@
   "MAC_Available": "{{macLeft, number}} MAC-er tilgjengelig",
   "MAC_InfoText": "(MAC) antall unike omnikanal-kontakter involvert i løpet av faktureringsmåneden.",
   "MAU_value": "MAU {{value}}",
-  "Mail_Message_Invalid_emails": "Du har oppgitt en eller flere ugyldige e-poster: %s",
+  "Mail_Message_Invalid_emails": "Du har oppgitt en eller flere ugyldige e-poster: {{emails}}",
   "Mail_Message_Missing_subject": "Du må oppgi et e-postemne.",
   "Mail_Message_Missing_to": "Du må velge én eller flere brukere eller oppgi én eller flere e-postadresser, atskilt med komma.",
   "Mail_Message_No_messages_selected_select_all": "Du har ikke valgt noen meldinger",

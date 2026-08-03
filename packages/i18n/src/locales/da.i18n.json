@@ -2031,7 +2031,7 @@
   "Longest_response_time": "Længste svartid",
   "Looked_for": "Kiggede efter",
   "MAU_value": "MAU {{value}}",
-  "Mail_Message_Invalid_emails": "Du har angivet en eller flere ugyldige e-mails:%s",
+  "Mail_Message_Invalid_emails": "Du har angivet en eller flere ugyldige e-mails:{{emails}}",
   "Mail_Message_Missing_subject": "Du skal angive et e-mail-emne",
   "Mail_Message_Missing_to": "Du skal vælge en eller flere brugere eller give en eller flere e-mailadresser, adskilt af kommaer.",
   "Mail_Message_No_messages_selected_select_all": "Du har ikke valgt nogen meddelelser",

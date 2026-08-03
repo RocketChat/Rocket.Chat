@@ -1354,7 +1354,7 @@
   "Logistics": "Logistik",
   "Logout": "Log keluar",
   "Logout_Others": "Log keluar Dari Logged Lain Di Lokasi",
-  "Mail_Message_Invalid_emails": "Anda telah menyediakan e-mel satu atau lebih tidak sah: %s",
+  "Mail_Message_Invalid_emails": "Anda telah menyediakan e-mel satu atau lebih tidak sah: {{emails}}",
   "Mail_Message_Missing_to": "Anda mesti memilih satu atau lebih pengguna atau menyediakan satu atau lebih alamat e-mel, dipisahkan dengan tanda koma.",
   "Mail_Message_No_messages_selected_select_all": "Anda belum memilih sebarang mesej",
   "Mail_Messages": "Mesej mail",

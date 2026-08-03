@@ -3474,7 +3474,7 @@
   "MAC_Available": "{{macLeft, number}} MAC's Available",
   "MAC_InfoText": "(MAC) the number of unique omnichannel contacts engaged with during the billing month.",
   "MAU_value": "MAU {{value}}",
-  "Mail_Message_Invalid_emails": "You have provided one or more invalid emails: %s",
+  "Mail_Message_Invalid_emails": "You have provided one or more invalid emails: {{emails}}",
   "Mail_Message_Missing_subject": "You must provide an email subject.",
   "Mail_Message_Missing_to": "You must select one or more users or provide one or more email addresses, separated by commas.",
   "Mail_Message_No_messages_selected_select_all": "You haven't selected any messages",

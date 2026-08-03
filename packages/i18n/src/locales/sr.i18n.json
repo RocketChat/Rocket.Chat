@@ -1203,7 +1203,7 @@
   "Logistics": "Логистика",
   "Logout": "Одјави се",
   "Logout_Others": "Одјави ме из других пријављених локација",
-  "Mail_Message_Invalid_emails": "Које сте дали један или више неважећих е-поште:% с",
+  "Mail_Message_Invalid_emails": "Које сте дали један или више неважећих е-поште: {{emails}}",
   "Mail_Message_No_messages_selected_select_all": "Нисте изабрали ниједну поруку.",
   "Mail_Messages": "Поруке е-поште",
   "Mail_Messages_Instructions": "Изабрати које поруке желите да пошаљете путем е-маила тако што ћете кликнути поруке",

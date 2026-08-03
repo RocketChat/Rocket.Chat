@@ -1353,7 +1353,7 @@
   "Logistics": "Logistics",
   "Logout": "Teken uit",
   "Logout_Others": "Logout Uit Ander Logged In Locations",
-  "Mail_Message_Invalid_emails": "Jy het een of meer ongeldige e-posse verskaf:%s",
+  "Mail_Message_Invalid_emails": "Jy het een of meer ongeldige e-posse verskaf:{{emails}}",
   "Mail_Message_Missing_to": "U moet een of meer gebruikers kies of een of meer e-posadresse verskaf, geskei deur kommas.",
   "Mail_Message_No_messages_selected_select_all": "Jy het geen boodskappe gekies nie",
   "Mail_Messages": "Pos boodskappe",

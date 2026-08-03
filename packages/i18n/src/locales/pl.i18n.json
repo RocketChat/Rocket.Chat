@@ -2515,7 +2515,7 @@
   "Longest_response_time": "Najdłuższy czas odpowiedzi",
   "Looked_for": "Szukany",
   "MAU_value": "MAU {{value}}",
-  "Mail_Message_Invalid_emails": "Podałeś jeden lub więcej nieprawidłowych maili: %s",
+  "Mail_Message_Invalid_emails": "Podałeś jeden lub więcej nieprawidłowych maili: {{emails}}",
   "Mail_Message_Missing_subject": "Musisz podać temat e-maila.",
   "Mail_Message_Missing_to": "Musisz wybrać jednego lub więcej użytkowników lub wpisać jeden lub więcej adresów e-mail, rozdzielając je przecinkami.",
   "Mail_Message_No_messages_selected_select_all": "Nie wybrałeś żadnych wiadomości.",

@@ -2737,7 +2737,7 @@
   "Lowest": "निम्नतम",
   "MAC_InfoText": "(मैक) बिलिंग माह के दौरान जुड़े अद्वितीय सर्वचैनल संपर्कों की संख्या।",
   "MAU_value": "हमेशा {{value}}",
-  "Mail_Message_Invalid_emails": "आपने एक या अधिक अमान्य ईमेल प्रदान किए हैं: %s",
+  "Mail_Message_Invalid_emails": "आपने एक या अधिक अमान्य ईमेल प्रदान किए हैं: {{emails}}",
   "Mail_Message_Missing_subject": "आपको एक ईमेल विषय प्रदान करना होगा.",
   "Mail_Message_Missing_to": "आपको एक या अधिक उपयोगकर्ताओं का चयन करना होगा या अल्पविराम से अलग करके एक या अधिक ईमेल पते प्रदान करने होंगे।",
   "Mail_Message_No_messages_selected_select_all": "आपने कोई संदेश नहीं चुना है",

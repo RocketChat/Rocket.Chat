@@ -1738,7 +1738,7 @@
   "Logistics": "la logistica",
   "Logout": "Disconnetti",
   "Logout_Others": "Disconnetti Da Altre chat",
-  "Mail_Message_Invalid_emails": "Hai fornito una o più email non valide: %s",
+  "Mail_Message_Invalid_emails": "Hai fornito una o più email non valide: {{emails}}",
   "Mail_Message_Missing_to": "Devi selezionare uno o più utenti o fornire uno o più indirizzi email, separati da virgole.",
   "Mail_Message_No_messages_selected_select_all": "Non hai selezionato nessun messaggio.",
   "Mail_Messages": "Messaggi di posta",

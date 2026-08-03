@@ -704,7 +704,7 @@
   "Login_with": "כניסה עם %s",
   "Logout": "יציאה",
   "Logout_Others": "התנתקות מ נרשם אחר במקומות",
-  "Mail_Message_Invalid_emails": "אתה ספקת מיילים חוקיים אחד או יותר: %s",
+  "Mail_Message_Invalid_emails": "אתה ספקת מיילים חוקיים אחד או יותר: {{emails}}",
   "Mail_Message_Missing_to": "עליך לבחור משתמש אחד או יותר או לספק אחד או יותר כתובות דואר אלקטרוני, מופרדות בפסיקים.",
   "Mail_Message_No_messages_selected_select_all": "לא בחרת שום הודעות.",
   "Mail_Messages": "הודעות דואר אלקטרוניות",

@@ -2292,7 +2292,7 @@
   "Longest_response_time": "Temps de resposta més llarg",
   "Looked_for": "Buscat",
   "MAU_value": "MAU {{value}}",
-  "Mail_Message_Invalid_emails": "S'ha proporcionat almenys una adreça de correu-e invàlida: %s",
+  "Mail_Message_Invalid_emails": "S'ha proporcionat almenys una adreça de correu-e invàlida: {{emails}}",
   "Mail_Message_Missing_subject": "Heu de proporcionar un assumpte de correu electrònic.",
   "Mail_Message_Missing_to": "Ha de seleccionar almenys un usuari o proporcionar almenys una adreça de correu electrònic, separades per comes.",
   "Mail_Message_No_messages_selected_select_all": "No s'ha seleccionat cap missatge",

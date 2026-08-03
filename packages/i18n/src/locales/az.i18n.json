@@ -1353,7 +1353,7 @@
   "Logistics": "Logistika",
   "Logout": "Çıxış",
   "Logout_Others": "Digər Daxil olan yerlərdən çıxın",
-  "Mail_Message_Invalid_emails": "Bir və ya daha çox etibarsız e-poçt göndərdiniz:%s",
+  "Mail_Message_Invalid_emails": "Bir və ya daha çox etibarsız e-poçt göndərdiniz:{{emails}}",
   "Mail_Message_Missing_to": "Bir və ya daha çox istifadəçi seçməlisiniz və ya virgülle ayrılmış bir və ya daha çox e-poçt ünvanını təqdim etməlisiniz.",
   "Mail_Message_No_messages_selected_select_all": "Siz heç bir mesaj seçmədiniz",
   "Mail_Messages": "Mail Mesajları",

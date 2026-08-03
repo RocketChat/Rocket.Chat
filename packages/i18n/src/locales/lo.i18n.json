@@ -1381,7 +1381,7 @@
   "Logistics": "Logistics",
   "Logout": "ອອກ​ຈາກ​ລະ​ບົບ",
   "Logout_Others": "ອອກຈາກລະບົບຈາກ Logged ອື່ນ ໆ ໃນສະຖານທີ່",
-  "Mail_Message_Invalid_emails": "ທ່ານໄດ້ສະຫນອງອີຫນຶ່ງຫລືບໍ່ຖືກຕ້ອງຫຼາຍ: %s",
+  "Mail_Message_Invalid_emails": "ທ່ານໄດ້ສະຫນອງອີຫນຶ່ງຫລືບໍ່ຖືກຕ້ອງຫຼາຍ: {{emails}}",
   "Mail_Message_Missing_to": "ທ່ານຕ້ອງໄດ້ເລືອກເອົາຫນຶ່ງຫຼືຫຼາຍກວ່າຜູ້ໃຊ້ຫຼືສະຫນອງການຫນຶ່ງຫຼືຫຼາຍກວ່າທີ່ຢູ່ອີເມວ, ຂັ້ນດ້ວຍຈໍ້າຈຸດ.",
   "Mail_Message_No_messages_selected_select_all": "ທ່ານຍັງບໍ່ໄດ້ເລືອກຂໍ້ຄວາມ",
   "Mail_Messages": "ຂໍ້ຄວາມອີເມວ",

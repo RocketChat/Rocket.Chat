@@ -1595,7 +1595,7 @@
   "Longest_chat_duration": "Maior duração do chat",
   "Longest_reaction_time": "Maior tempo de reação",
   "Longest_response_time": "Maior tempo de resposta",
-  "Mail_Message_Invalid_emails": "Forneceu um ou mais e-mails inválidos: %s",
+  "Mail_Message_Invalid_emails": "Forneceu um ou mais e-mails inválidos: {{emails}}",
   "Mail_Message_Missing_to": "Deve seleccionar um ou mais utilizadores ou fornecer um ou mais endereços de e-mail, separados por vírgulas.",
   "Mail_Message_No_messages_selected_select_all": "Não selecionou nenhuma mensagem",
   "Mail_Messages": "Mensagens de E-mail",

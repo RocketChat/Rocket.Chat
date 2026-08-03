@@ -1354,7 +1354,7 @@
   "Logistics": "Logistik",
   "Logout": "Abmelden",
   "Logout_Others": "Von anderen Geräten abmelden",
-  "Mail_Message_Invalid_emails": "Sie haben eine oder mehrere ungültige E-Mail-Adressen angegeben: %s",
+  "Mail_Message_Invalid_emails": "Sie haben eine oder mehrere ungültige E-Mail-Adressen angegeben: {{emails}}",
   "Mail_Message_Missing_to": "Sie müssen einen/mehrere Benutzer auswählen oder einen/mehrere E-Mail-Adressen durch Kommata getrennt angeben.",
   "Mail_Message_No_messages_selected_select_all": "Sie haben keine Nachrichten ausgewählt.",
   "Mail_Messages": "Nachrichten per E-Mail senden",

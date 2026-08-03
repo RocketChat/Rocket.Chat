@@ -1367,7 +1367,7 @@
   "Logistics": "Loģistika",
   "Logout": "Izrakstīties",
   "Logout_Others": "Izrakstīties no citām atrašanās vietām ",
-  "Mail_Message_Invalid_emails": "Jūs esat norādījis vienu vai vairākus nederīgus e-pastus: %s",
+  "Mail_Message_Invalid_emails": "Jūs esat norādījis vienu vai vairākus nederīgus e-pastus: {{emails}}",
   "Mail_Message_Missing_to": "Jums ir jāizvēlas viens vai vairāki lietotāji vai jānorāda viena vai vairākas e-pasta adreses, atdalītas ar komatu.",
   "Mail_Message_No_messages_selected_select_all": "Jūs neesat izvēlējies nevienu ziņojumu",
   "Mail_Messages": "Pasta ziņojumi",

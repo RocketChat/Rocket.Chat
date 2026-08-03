@@ -320,7 +320,7 @@ const ExportMessages = () => {
 															return undefined;
 														}
 
-														return t('Mail_Message_Invalid_emails', { postProcess: 'sprintf', sprintf: [additionalEmails] });
+														return t('Mail_Message_Invalid_emails', { emails: additionalEmails });
 													},
 													validateRecipient: (additionalEmails) => {
 														if (additionalEmails !== '' || toUsers?.length > 0) {

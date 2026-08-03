@@ -2294,7 +2294,7 @@
   "Longest_response_time": "最長応答時間",
   "Looked_for": "検索済み",
   "MAU_value": "MAU {{value}}",
-  "Mail_Message_Invalid_emails": "無効なメールアドレスを指定しました：%s",
+  "Mail_Message_Invalid_emails": "無効なメールアドレスを指定しました：{{emails}}",
   "Mail_Message_Missing_subject": "メールの件名を入力する必要があります。",
   "Mail_Message_Missing_to": "ユーザーを選択するか、メールアドレスをコンマ区切りで入力してください。",
   "Mail_Message_No_messages_selected_select_all": "メッセージを選択していません",

@@ -1346,7 +1346,7 @@
   "Logistics": "Pispor",
   "Logout": "Derkeve",
   "Logout_Others": "Guftugoyê From din têketî Locations",
-  "Mail_Message_Invalid_emails": "Tu emails yek an invalid zêdetir hatine: %s",
+  "Mail_Message_Invalid_emails": "Tu emails yek an invalid zêdetir hatine: {{emails}}",
   "Mail_Message_Missing_to": "Divê tu yek an jî zêdetir bikarhênerên hilbijêre yan ne yek an jî zêdetir navnîşanên email, ji hev biqetîne.",
   "Mail_Message_No_messages_selected_select_all": "Tu peyam hatine hilbijartin ne.",
   "Mail_Messages": "Messages mail",

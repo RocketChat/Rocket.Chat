@@ -1847,7 +1847,7 @@
   "Longest_reaction_time": "რეაქციის ყველაზე დიდი დრო",
   "Longest_response_time": "რეაგირების ყველაზე დიდი დრო",
   "MAU_value": "MAU {{value}}",
-  "Mail_Message_Invalid_emails": "თქვენ წარმოადგინეთ ერთი ან მეტი არასწორი ელ.ფოსტა: %s",
+  "Mail_Message_Invalid_emails": "თქვენ წარმოადგინეთ ერთი ან მეტი არასწორი ელ.ფოსტა: {{emails}}",
   "Mail_Message_Missing_to": "თქვენ უნდა აირჩიოთ ერთი ან მეტი მომხმარებელი ან წარმოადგინოთ ერთი ან მეტი ელექტრონული ფოსტის მისამართი, ერთმანეთისაგან ძიმით გამოყოფილი.",
   "Mail_Message_No_messages_selected_select_all": "თქვენ არ აგირჩევიათ შეტყობინებები",
   "Mail_Messages": "ფოსტის შეტყობინებები",

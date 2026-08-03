@@ -1351,7 +1351,7 @@
   "Logistics": "Logistik",
   "Logout": "Logout",
   "Logout_Others": "Logout Dari Tercatat Lain Dalam Lokasi",
-  "Mail_Message_Invalid_emails": "Anda telah disediakan email satu atau lebih valid:%s",
+  "Mail_Message_Invalid_emails": "Anda telah disediakan email satu atau lebih valid:{{emails}}",
   "Mail_Message_Missing_to": "Anda harus memilih satu atau lebih pengguna atau memberikan satu atau lebih alamat email, dipisahkan dengan koma.",
   "Mail_Message_No_messages_selected_select_all": "Anda belum memilih pesan",
   "Mail_Messages": "Mail Pesan",

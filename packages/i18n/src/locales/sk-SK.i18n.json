@@ -1358,7 +1358,7 @@
   "Logistics": "logistika",
   "Logout": "Odhlásiť sa",
   "Logout_Others": "Odhlásenie z ostatných prihlásených miest",
-  "Mail_Message_Invalid_emails": "Poslali ste jeden alebo viac neplatných e-mailov:%s",
+  "Mail_Message_Invalid_emails": "Poslali ste jeden alebo viac neplatných e-mailov:{{emails}}",
   "Mail_Message_Missing_to": "Musíte vybrať jedného alebo viacerých používateľov alebo jednu alebo viac e-mailových adries oddelených čiarkami.",
   "Mail_Message_No_messages_selected_select_all": "Nevybrali ste žiadne správy",
   "Mail_Messages": "Poštové správy",

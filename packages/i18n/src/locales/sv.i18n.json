@@ -3347,7 +3347,7 @@
   "MAC_Available": "{{macLeft, number}} MAC's Tillgängliga",
   "MAC_InfoText": "(MAC) antalet unika omnikanalskontakter som kunden har haft under faktureringsmånaden.",
   "MAU_value": "MAU {{value}}",
-  "Mail_Message_Invalid_emails": "Du har angett ett eller flera ogiltiga e-postmeddelanden: %s",
+  "Mail_Message_Invalid_emails": "Du har angett ett eller flera ogiltiga e-postmeddelanden: {{emails}}",
   "Mail_Message_Missing_subject": "Du måste ange ett ämne för meddelandet.",
   "Mail_Message_Missing_to": "Du måste välja en eller flera användare eller tillhandahålla en eller flera e-postadresser, separerade med kommatecken.",
   "Mail_Message_No_messages_selected_select_all": "Du har inte valt några meddelanden",

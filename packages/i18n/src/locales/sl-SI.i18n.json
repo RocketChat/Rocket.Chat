@@ -1348,7 +1348,7 @@
   "Logistics": "Logistika",
   "Logout": "Odjava",
   "Logout_Others": "Odjava iz ostalih prijavljenih lokacij",
-  "Mail_Message_Invalid_emails": "Predložili ste eno ali več neveljavnih e-poštnih naslovov: %s",
+  "Mail_Message_Invalid_emails": "Predložili ste eno ali več neveljavnih e-poštnih naslovov: {{emails}}",
   "Mail_Message_Missing_to": "Izbrati morate enega ali več uporabnikov, ali zagotoviti enega ali več e-poštnih naslovov, ločenih z vejicami.",
   "Mail_Message_No_messages_selected_select_all": "Niste izbrali nobenih sporočil",
   "Mail_Messages": "Poštna sporočila",

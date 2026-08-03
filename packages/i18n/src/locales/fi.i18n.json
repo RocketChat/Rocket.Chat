@@ -2628,7 +2628,7 @@
   "Low": "Matala",
   "Lowest": "Matalin",
   "MAU_value": "MAU {{value}}",
-  "Mail_Message_Invalid_emails": "Olet antanut virheellisiä sähköpostiosoitteita: %s",
+  "Mail_Message_Invalid_emails": "Olet antanut virheellisiä sähköpostiosoitteita: {{emails}}",
   "Mail_Message_Missing_subject": "Määritä sähköpostin aihe.",
   "Mail_Message_Missing_to": "Valitse vähintään yksi käyttäjä tai anna vähintään yksi sähköpostiosoite erotettuna pilkulla.",
   "Mail_Message_No_messages_selected_select_all": "Et ole valinnut yhtään viestiä",

@@ -1560,7 +1560,7 @@
   "Longest_chat_duration": "Längste Chatdauer",
   "Longest_reaction_time": "Längste Reaktionszeit",
   "Longest_response_time": "Längste Antwortzeit",
-  "Mail_Message_Invalid_emails": "Du hast eine oder mehrere ungültige E-Mail-Adressen angegeben: %s",
+  "Mail_Message_Invalid_emails": "Du hast eine oder mehrere ungültige E-Mail-Adressen angegeben: {{emails}}",
   "Mail_Message_Missing_to": "Du musst einen oder/mehrere Benutzer auswählen oder eine/mehrere E-Mail-Adressen durch Kommata getrennt angeben.",
   "Mail_Message_No_messages_selected_select_all": "Du hast keine Nachrichten ausgewählt. ",
   "Mail_Messages": "Nachrichten per E-Mail senden",

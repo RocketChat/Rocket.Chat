@@ -2314,7 +2314,7 @@
   "Longest_response_time": "Temps de réponse le plus long",
   "Looked_for": "Recherché",
   "MAU_value": "MAU {{value}}",
-  "Mail_Message_Invalid_emails": "Vous avez fourni une ou plusieurs adresses e-mail non valides : %s",
+  "Mail_Message_Invalid_emails": "Vous avez fourni une ou plusieurs adresses e-mail non valides : {{emails}}",
   "Mail_Message_Missing_subject": "Vous devez fournir un objet d'e-mail.",
   "Mail_Message_Missing_to": "Vous devez sélectionner un ou plusieurs utilisateurs ou fournir une ou plusieurs adresses e-mail, séparées par des virgules.",
   "Mail_Message_No_messages_selected_select_all": "Vous n'avez sélectionné aucun message",

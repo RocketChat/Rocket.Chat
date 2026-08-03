@@ -1468,7 +1468,7 @@
   "Logistics": "Logistika",
   "Logout": "Odjava",
   "Logout_Others": "Odjava s drugim lokacija je uspjela",
-  "Mail_Message_Invalid_emails": "Predali ste jednu ili više neispravnih emailova: %s",
+  "Mail_Message_Invalid_emails": "Predali ste jednu ili više neispravnih emailova: {{emails}}",
   "Mail_Message_Missing_to": "Morate odabrati jednog ili više korisnika ili upisati jednu ili više adresa e-pošte, odvojene zarezima.",
   "Mail_Message_No_messages_selected_select_all": "Niste odabrali nikakve poruke.",
   "Mail_Messages": "Email Poruke",
