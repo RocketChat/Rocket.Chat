@@ -124,8 +124,9 @@ The entry accumulates rather than replaces — `joined` never goes back to false
 after the person changes their mind — so the fields are read in order of what happened *last*. Being in the call
 beats everything; having left beats an earlier decline, since they did answer.
 
-Members who can't read the chat are tagged as such, which is the one thing about a member the other participants
-can act on (from the notice above the call). Anyone not currently in the call can be **rung individually**,
+Members who can't read the chat carry an icon beside their name — beside, because it qualifies who that person
+is in the call, and a second line pushed every row apart for something most members never have. It is the one
+thing about a member the other participants can act on (from the notice above the call). Anyone not currently in the call can be **rung individually**,
 including someone who declined or left — "call them back" is exactly that case.
 
 The ring button is offered only when there is something to ask for: not while they are in the call, and not
@@ -138,6 +139,11 @@ The bar carries two counts: how many people are in the call, and what is unread 
 The unread one goes through `useUnreadDisplay`, the sidebar's own rules, so a mention reads as urgent in both
 places and a muted room stays quiet in both. The members count is deliberately `secondary` — a count of who is
 here is information, and a red badge would read as a problem.
+
+Knowing what is unread needs the room's subscription, and that is the **page's** business rather than the chat
+panel's: the badge exists precisely when that panel is closed, and a panel that isn't mounted can't keep
+anything fresh. `useConferenceSubscription` seeds it and follows `subscriptions-changed` for the life of the
+page. Nothing else would: the conference renders outside the main app, so the sidebar's own watcher never starts.
 
 This panel is where the membership model becomes visible at all: before it, a decline was recorded and an
 outside member counted in aggregate, with nowhere to see either against a name.
@@ -558,6 +564,7 @@ and package-level jest.
 | Which side of the chat-access split each participant sees | `apps/meteor/client/views/conference/ConferenceChat.spec.tsx` |
 | Who the notice is shown to, that it ignores members who never joined, and that Review opens the modal | `apps/meteor/client/views/conference/ChatAccessNotice.spec.tsx` |
 | Both stream events refetch the conference; the chat follows a discussion | `apps/meteor/client/views/conference/hooks/useConferenceEmbedded.spec.tsx` |
+| The chat subscription is seeded and followed for the life of the page | `apps/meteor/client/views/conference/hooks/useConferenceSubscription.spec.ts` |
 | Adding works without the room, and posts the usernames | `apps/meteor/client/views/conference/AddParticipantsModal.spec.tsx` |
 | The membership update *shapes* — the `$addToSet` trap | `packages/models/src/models/VideoConference.spec.ts` |
 

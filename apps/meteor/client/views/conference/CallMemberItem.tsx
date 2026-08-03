@@ -1,5 +1,5 @@
 import { isRingingVideoConferenceMember, VIDEO_CONF_RINGING_WINDOW_MS } from '@rocket.chat/core-typings';
-import { Box, IconButton, Option, OptionAvatar, OptionColumn, OptionContent, Tag } from '@rocket.chat/fuselage';
+import { Box, Icon, IconButton, Option, OptionAvatar, OptionColumn, OptionContent } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect, useState } from 'react';
@@ -65,17 +65,19 @@ const CallMemberItem = ({ member, hasChatAccess, onRing }: CallMemberItemProps) 
 							{displayUsername}
 						</Box>
 					)}
-				</Box>
-				<Box display='flex' alignItems='center' fontScale='c1' color='hint'>
-					{status !== 'joined' && <Box>{t(ringing ? 'Ringing' : statusLabel[status])}</Box>}
-					{/* Worth its own tag rather than a footnote: it is the one thing about a member that the other
-					    participants can do something about, from the notice above the call. */}
+					{/* Beside the name rather than beneath it: it qualifies who this person is in the call, and a
+					    second line pushed the rows apart for something most members never carry. */}
 					{!hasChatAccess && (
-						<Box marginInlineStart={status === 'joined' ? 0 : 4}>
-							<Tag>{t('No_chat_access')}</Tag>
+						<Box marginInlineStart={4} display='flex' color='hint' title={t('No_chat_access')}>
+							<Icon name='balloon-off' size='x16' aria-label={t('No_chat_access')} />
 						</Box>
 					)}
 				</Box>
+				{status !== 'joined' && (
+					<Box fontScale='c1' color='hint'>
+						{t(ringing ? 'Ringing' : statusLabel[status])}
+					</Box>
+				)}
 			</OptionContent>
 			{canRingConferenceMember(member) && (
 				<OptionColumn>
