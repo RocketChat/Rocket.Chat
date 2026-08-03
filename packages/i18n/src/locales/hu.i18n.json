@@ -3903,7 +3903,7 @@
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "A <strong>%s</strong> beállítás a(z) <strong>%s</strong> URL-hez van beállítva, és Ön a(z) <strong>%s</strong> URL-ről éri el!",
   "The_user_s_will_be_removed_from_role_s": "A(z) %s felhasználó el lesz távolítva a(z) %s szerepből",
   "The_user_will_be_removed_from_s": "A felhasználó el lesz távolítva a(z) %s szobából",
-  "The_user_wont_be_able_to_type_in_s": "A felhasználó nem lesz képes gépelni a(z) %s szobában",
+  "The_user_wont_be_able_to_type_in_s": "A felhasználó nem lesz képes gépelni a(z) {{roomName}} szobában",
   "Theme": "Téma",
   "Theme_dark": "Sötét",
   "Theme_light": "Világos",

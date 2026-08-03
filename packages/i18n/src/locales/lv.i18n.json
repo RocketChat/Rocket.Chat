@@ -2086,7 +2086,7 @@
   "The_server_will_restart_in_s_seconds": "Serveris restartēsies pēc %s sekundēm",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Iestatījums <strong>%s</strong> ir konfigurēts uz <strong>%s</strong>, un jūs piekļūstat no <strong>%s</strong>!",
   "The_user_will_be_removed_from_s": "Lietotājs tiks noņemts no %s",
-  "The_user_wont_be_able_to_type_in_s": "Lietotājs nevarēs ierakstīt %s",
+  "The_user_wont_be_able_to_type_in_s": "Lietotājs nevarēs ierakstīt {{roomName}}",
   "Theme": "Tēma",
   "There_are_no_agents_added_to_this_department_yet": "Vēl nav aģenti, kas pievienoti šim departamentam.",
   "There_are_no_applications": "Vēl netika pievienoti oAuth lietotnes.",

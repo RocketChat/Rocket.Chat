@@ -3614,7 +3614,7 @@
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "تم تكوين الإعداد <strong>%s</strong> على <strong>%s</strong> وأنت تقوم بالوصول من <strong>%s</strong>!",
   "The_user_s_will_be_removed_from_role_s": "ستتم إزالة المستخدم %s من الدور %s",
   "The_user_will_be_removed_from_s": "ستتم إزالة المستخدم من %s",
-  "The_user_wont_be_able_to_type_in_s": "لن يتمكن المستخدم من الكتابة في %s",
+  "The_user_wont_be_able_to_type_in_s": "لن يتمكن المستخدم من الكتابة في {{roomName}}",
   "Theme": "السمة",
   "There_are_no_agents_added_to_this_department_yet": "لا يوجد وكلاء مضافون إلى هذا القسم حتى الآن.",
   "There_are_no_applications": "لم تتم إضافة أي تطبيقات oAuth حتى الآن.",

@@ -2360,7 +2360,7 @@
   "The_server_will_restart_in_s_seconds": "سرور در %s ثانیه راه اندازی مجدد خواهد",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "<strong>تنظیمات %s</strong> در <strong>به %s</strong> پیکربندی و شما <strong>از %s</strong> دسترسی!",
   "The_user_will_be_removed_from_s": "کاربر از %s حذف خواهد شد",
-  "The_user_wont_be_able_to_type_in_s": "کاربر قادر به نوشتن در %s نخواهد بود",
+  "The_user_wont_be_able_to_type_in_s": "کاربر قادر به نوشتن در {{roomName}} نخواهد بود",
   "Theme": "پوسته",
   "There_are_no_agents_added_to_this_department_yet": "هیچ عوامل اضافه شده به این بخش وجود ندارد.",
   "There_are_no_applications": "هیچ نرم افزار oAuth هنوز اضافه نشده است.",

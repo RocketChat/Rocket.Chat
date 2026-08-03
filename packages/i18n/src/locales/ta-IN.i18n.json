@@ -2073,7 +2073,7 @@
   "The_server_will_restart_in_s_seconds": "சர்வர் %s வினாடிகள் மீண்டும் தொடங்கும்",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "<strong>அமைப்பை% <strong>s%</strong></strong> <strong>s</strong> கட்டமைக்க மற்றும் <strong>நீங்கள் %s</strong> அணுகும்!",
   "The_user_will_be_removed_from_s": "பயனர் %s இலிருந்து நீக்கப்படும்",
-  "The_user_wont_be_able_to_type_in_s": "பயனர் தட்டச்சு %s முடியாது",
+  "The_user_wont_be_able_to_type_in_s": "பயனர் தட்டச்சு {{roomName}} முடியாது",
   "Theme": "தீம்",
   "There_are_no_agents_added_to_this_department_yet": "இன்னும் இந்த துறை சேர்க்கப்பட்டது எந்த முகவர் உள்ளன.",
   "There_are_no_applications": "இல்லை OAuth பயன்பாடுகள் இன்னும் சேர்க்கப்படவில்லை.",

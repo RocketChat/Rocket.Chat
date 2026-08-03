@@ -3429,7 +3429,7 @@
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "設置<strong>%s</strong>被配置為<strong>%s</strong>和你是從<strong>%s的</strong>存取！",
   "The_user_s_will_be_removed_from_role_s": "此使用者 %s 將要從角色 %s 移除",
   "The_user_will_be_removed_from_s": "使用者將從 %s 被刪除",
-  "The_user_wont_be_able_to_type_in_s": "使用者將不能夠輸入在 %s",
+  "The_user_wont_be_able_to_type_in_s": "使用者將不能夠輸入在 {{roomName}}",
   "Theme": "佈景主題",
   "There_are_no_agents_added_to_this_department_yet": "沒有加入到這個部門還沒有代理商。",
   "There_are_no_applications": "尚未增加 oAuth 應用程式。",

@@ -2075,7 +2075,7 @@
   "The_server_will_restart_in_s_seconds": "Server akan memulakan semula dalam %s saat",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "<strong>Penubuhan %s</strong> dikonfigurasi <strong>untuk %s</strong> dan anda mengakses <strong>dari %s!</strong>",
   "The_user_will_be_removed_from_s": "Pengguna akan dikeluarkan daripada %s",
-  "The_user_wont_be_able_to_type_in_s": "Pengguna tidak akan dapat untuk menaip dalam %s",
+  "The_user_wont_be_able_to_type_in_s": "Pengguna tidak akan dapat untuk menaip dalam {{roomName}}",
   "Theme": "tema",
   "There_are_no_agents_added_to_this_department_yet": "Tiada ejen ditambah kepada jabatan ini.",
   "There_are_no_applications": "Tiada aplikasi oAuth telah ditambah lagi.",

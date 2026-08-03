@@ -2547,7 +2547,7 @@
   "The_server_will_restart_in_s_seconds": "Сервер буде перезавантажений через %s секунд",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "<strong>Параметр %s</strong> налаштований <strong>на %s</strong> , і ви звертаєтеся <strong>з %s!</strong>",
   "The_user_will_be_removed_from_s": "Користувач буде видалений з %s",
-  "The_user_wont_be_able_to_type_in_s": "Користувач не зможе писати в %s",
+  "The_user_wont_be_able_to_type_in_s": "Користувач не зможе писати в {{roomName}}",
   "Theme": "тема",
   "There_are_no_agents_added_to_this_department_yet": "Там немає доданих в цей відділ поки агенти.",
   "There_are_no_applications": "Програми oAuth ще не додані.",

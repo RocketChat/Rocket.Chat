@@ -2074,7 +2074,7 @@
   "The_server_will_restart_in_s_seconds": "Die bediener sal herbegin in%s sekondes",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Die instelling <strong>%s</strong> is ingestel op <strong>%s</strong> en jy kry toegang vanaf <strong>%s</strong>!",
   "The_user_will_be_removed_from_s": "Die gebruiker sal van%s verwyder word",
-  "The_user_wont_be_able_to_type_in_s": "Die gebruiker sal nie in%s kan tik nie",
+  "The_user_wont_be_able_to_type_in_s": "Die gebruiker sal nie in{{roomName}} kan tik nie",
   "Theme": "tema",
   "There_are_no_agents_added_to_this_department_yet": "Daar is nog geen agente by hierdie departement gevoeg nie.",
   "There_are_no_applications": "Geen oAuth-aansoeke is nog bygevoeg nie.",

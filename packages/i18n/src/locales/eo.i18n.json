@@ -2072,7 +2072,7 @@
   "The_server_will_restart_in_s_seconds": "La servilo rekomencos en%s sekundoj",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "La agordo <strong>%s</strong> estas agordita al <strong>%s</strong> kaj vi aliras de <strong>%s</strong>!",
   "The_user_will_be_removed_from_s": "La uzanto estos forigita de%s",
-  "The_user_wont_be_able_to_type_in_s": "La uzanto ne povos tajpi%s",
+  "The_user_wont_be_able_to_type_in_s": "La uzanto ne povos tajpi{{roomName}}",
   "Theme": "Temo",
   "There_are_no_agents_added_to_this_department_yet": "Ne ekzistas agentoj aldonitaj al ĉi tiu fako.",
   "There_are_no_applications": "Neniu oAuth-aplikaĵoj ankoraŭ aldoniĝis.",

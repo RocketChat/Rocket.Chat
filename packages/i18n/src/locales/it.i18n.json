@@ -2564,7 +2564,7 @@
   "The_server_will_restart_in_s_seconds": "Il server si riavvierà in %s secondi",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "L'impostazione<strong>%s</strong> è configurata su <strong>%s</strong> e stai accedendo da<strong>%s</strong>!",
   "The_user_will_be_removed_from_s": "L'utente sarà rimosso da %s",
-  "The_user_wont_be_able_to_type_in_s": "L'utente non potrà più scrivere sul canale %s",
+  "The_user_wont_be_able_to_type_in_s": "L'utente non potrà più scrivere sul canale {{roomName}}",
   "Theme": "Tema",
   "There_are_no_agents_added_to_this_department_yet": "Non ci sono ancora operatori in questo dipartimento.",
   "There_are_no_applications": "Nessuna applicazione oAuth è stata ancora aggiunta.",

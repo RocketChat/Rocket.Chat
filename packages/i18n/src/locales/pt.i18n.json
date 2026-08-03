@@ -2403,7 +2403,7 @@
   "The_server_will_restart_in_s_seconds": "O servidor será reiniciado em %s segundos",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "A configuração <strong>%s</strong> está definida como <strong>%s</strong> e  está acessando a partir de <strong>%s</strong>!",
   "The_user_will_be_removed_from_s": "O utilizador irá ser removido de %s",
-  "The_user_wont_be_able_to_type_in_s": "O utilizador não irá ser capaz de escrever em %s",
+  "The_user_wont_be_able_to_type_in_s": "O utilizador não irá ser capaz de escrever em {{roomName}}",
   "Theme": "Tema",
   "There_are_no_agents_added_to_this_department_yet": "Não há agentes adicionados a este departamento ainda.",
   "There_are_no_applications": "Ainda não foram adicionados aplicações oAuth.",

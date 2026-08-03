@@ -2071,7 +2071,7 @@
   "The_server_will_restart_in_s_seconds": "Bydd y gweinydd yn ailgychwyn yn %s eiliad",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Mae'r lleoliad <strong>%s</strong> wedi ei ffurfweddu i <strong>%s</strong> ac rydych chi'n dod o <strong>%s</strong>!",
   "The_user_will_be_removed_from_s": "Bydd y defnyddiwr yn cael ei ddileu o %s",
-  "The_user_wont_be_able_to_type_in_s": "Ni fydd y defnyddiwr yn gallu deipio %s",
+  "The_user_wont_be_able_to_type_in_s": "Ni fydd y defnyddiwr yn gallu deipio {{roomName}}",
   "Theme": "Thema",
   "There_are_no_agents_added_to_this_department_yet": "Nid oes unrhyw asiantau wedi'u hychwanegu at yr adran hon eto.",
   "There_are_no_applications": "Nid oes unrhyw OAuth Ceisiadau wedi'u hychwanegu eto.",

@@ -3541,7 +3541,7 @@
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "L'opció <strong>%s</strong> està configurada com <strong>%s</strong> i s'està accedint des de <strong>%s</strong>!",
   "The_user_s_will_be_removed_from_role_s": "L'usuari %s serà eliminat de el rol %s",
   "The_user_will_be_removed_from_s": "L'usuari s'eliminarà de %s",
-  "The_user_wont_be_able_to_type_in_s": "L'usuari no podrà escriure a %s",
+  "The_user_wont_be_able_to_type_in_s": "L'usuari no podrà escriure a {{roomName}}",
   "Theme": "Tema",
   "There_are_no_agents_added_to_this_department_yet": "Encara no hi ha cap agent afegit a aquest departament.",
   "There_are_no_applications": "Encara no s'han afegit aplicacions d'oAuth.",

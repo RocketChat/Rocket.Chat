@@ -5314,7 +5314,7 @@
   "The_user_will_be_banned_from__roomName__": "Användaren kommer att bannlysas från {{roomName}}",
   "The_user_will_be_unbanned_from__roomName__": "Användaren kommer inte längre att bannlysas från {{roomName}}",
   "The_user_will_be_removed_from_s": "Användaren tas bort från %s",
-  "The_user_wont_be_able_to_type_in_s": "Användaren kommer inte att kunna skriva i %s",
+  "The_user_wont_be_able_to_type_in_s": "Användaren kommer inte att kunna skriva i {{roomName}}",
   "The_workspace_has_exceeded_the_monthly_limit_of_active_contacts": "Arbetsytan har överskridit den månatliga gränsen för aktiva kontakter.",
   "Theme": "Tema",
   "Theme_Appearence": "Utseende för tema",

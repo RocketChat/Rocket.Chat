@@ -2097,7 +2097,7 @@
   "The_server_will_restart_in_s_seconds": "Сервер будзе перазагружаны у %s секунд",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Параметр <strong>%s</strong>настроены на <strong>%s</strong>і вы атрымліваеце доступ з <strong>%s</strong>!",
   "The_user_will_be_removed_from_s": "Карыстальнік будзе выдалены з%s",
-  "The_user_wont_be_able_to_type_in_s": "Карыстальнік не зможа ўвесці ў%s",
+  "The_user_wont_be_able_to_type_in_s": "Карыстальнік не зможа ўвесці ў{{roomName}}",
   "Theme": "тэма",
   "There_are_no_agents_added_to_this_department_yet": "Там няма дададзена ў гэты аддзел пакуль агентаў.",
   "There_are_no_applications": "Няма OAuth Прыкладанні пакуль не дададзеныя.",

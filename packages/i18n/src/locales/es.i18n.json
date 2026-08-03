@@ -3720,7 +3720,7 @@
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "El ajuste <strong>%s</strong> está definido como <strong>%s</strong> y estás accediendo desde  <strong>%s</strong>",
   "The_user_s_will_be_removed_from_role_s": "El usuario %s se eliminará del rol %s",
   "The_user_will_be_removed_from_s": "El usuario %s se eliminará de %s",
-  "The_user_wont_be_able_to_type_in_s": "El usuario no podrá escribir en %s",
+  "The_user_wont_be_able_to_type_in_s": "El usuario no podrá escribir en {{roomName}}",
   "Theme": "Tema",
   "Theme_dark": "Oscuro",
   "Theme_dark_description": "Reduzca la fatiga ocular en condiciones de poca luz minimizando la cantidad de luz emitida por la pantalla.",

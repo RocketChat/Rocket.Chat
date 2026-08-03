@@ -3620,7 +3620,7 @@
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Le paramètre <strong>%s</strong> est configuré pour <strong>%s</strong> et votre accès s'effectue à partir de <strong>%s</strong> !",
   "The_user_s_will_be_removed_from_role_s": "L'utilisateur %s sera supprimé du rôle %s",
   "The_user_will_be_removed_from_s": "L'utilisateur sera supprimé de %s",
-  "The_user_wont_be_able_to_type_in_s": "L'utilisateur ne pourra pas écrire dans %s",
+  "The_user_wont_be_able_to_type_in_s": "L'utilisateur ne pourra pas écrire dans {{roomName}}",
   "Theme": "Thème",
   "There_are_no_agents_added_to_this_department_yet": "Aucun agent n'a été ajouté à ce département pour l'instant.",
   "There_are_no_applications": "Aucune application oAuth n'a été ajoutée pour l'instant.",

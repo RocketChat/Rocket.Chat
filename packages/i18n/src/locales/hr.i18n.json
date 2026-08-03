@@ -2192,7 +2192,7 @@
   "The_server_will_restart_in_s_seconds": "Poslužitelj će se ponovno pokrenuti u %s sekundi",
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "Postavka <strong>%s</strong> je namještena na <strong>za %s</strong> i pristupate se<strong>%s</strong>!",
   "The_user_will_be_removed_from_s": "Korisnik će biti uklonjen iz %s",
-  "The_user_wont_be_able_to_type_in_s": "Korisnik neće moći pisati u %s",
+  "The_user_wont_be_able_to_type_in_s": "Korisnik neće moći pisati u {{roomName}}",
   "Theme": "Tema",
   "There_are_no_agents_added_to_this_department_yet": "Nema dodanih agenata u ovaj odjel",
   "There_are_no_applications": "Još nisu dodane aplikacije oAuth.",
