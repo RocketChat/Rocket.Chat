@@ -1137,6 +1137,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			await this.addUserToDiscussion(call.discussionRid, _id);
 		}
 
+		// A user is in one call at a time, and this is where that becomes true rather than hoped for. A window that
+		// dies without reporting its departure — a crash, a killed tab — otherwise leaves its user counted as
+		// present forever, which both misreports them and keeps a finished call listed as occupied.
+		await this.leaveOtherCalls(call._id, _id);
+
 		// Already in the call — nothing to record. This asks about presence, not about having joined at some
 		// point: a member who joined and left is joined-ever but absent, and returning here would leave their
 		// `leftAt` in place, reporting them as gone while they are back on the call.
@@ -1268,6 +1273,19 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await this.ringUsers(callId, call.rid, uid, absent);
 
 		return absent;
+	}
+
+	/** Leaves every other call this user is still counted as being in. See `addUserToCall`. */
+	private async leaveOtherCalls(callId: VideoConference['_id'], uid: IUser['_id']): Promise<void> {
+		const others = await VideoConferenceModel.find(
+			{ '_id': { $ne: callId }, 'endedAt': { $exists: false }, 'users._id': uid },
+			{ projection: { users: 1 } },
+		).toArray();
+
+		const stillIn = others.filter(({ users }) => users.some((user) => user._id === uid && isInVideoConference(user)));
+
+		// One at a time in practice, so the cost is a read that usually finds nothing.
+		await Promise.all(stillIn.map(({ _id }) => this.leaveCall(uid, _id)));
 	}
 
 	/**

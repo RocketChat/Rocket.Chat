@@ -570,7 +570,8 @@ and package-level jest.
 | Which mode wins, and that an impossible invite is refused rather than swapped | `apps/meteor/tests/unit/lib/videoConference/chatAccess.spec.ts` |
 | Who is offered which running calls, and what each row says | `apps/meteor/tests/unit/server/services/video-conference/listJoinableCalls.spec.ts` |
 | Joining another call asks first, then leaves the one before it | `apps/meteor/client/views/conference/hooks/useJoinCall.spec.tsx` |
-| The sidebar list: several calls, join, decline-and-hide | `apps/meteor/client/sidebar/sections/OngoingCallsSection.spec.tsx` |
+| The sidebar list: what it lists, what it leaves out, and the three-row cap | `apps/meteor/client/sidebar/sections/OngoingCallsSection.spec.tsx` |
+| That joining reconciles the calls a user is still counted as being in | `apps/meteor/tests/unit/server/services/video-conference/leaveCall.spec.ts` |
 | The history list keeps declined calls and offers them back | `apps/meteor/client/views/mediaCallHistory/OngoingCallsList.spec.tsx` |
 | Which action leads, and that a DM only offers the discussion | `apps/meteor/client/views/conference/ChatAccessModal.spec.tsx` |
 | The incoming popup renders for a room the member can't see | `apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfPopups/VideoConfPopups.spec.tsx` |
@@ -662,6 +663,12 @@ with more than ten subscribers rings **nobody at all**. So a call is also reacha
 and unlike the sidebar it keeps the ones the user declined, which is what makes it the way back to a call they
 turned down.
 
+Every sidebar row is something to act on — join it, or turn it down so it stops asking. The call the reader is
+*already in* is therefore left out entirely: they are in it, there is nothing to reach, and a row that only read
+"in call" left them with something they could do nothing about. Rows are newest first, and only the three most
+recent are shown, with a **Show all** toggle for the rest: the sidebar is a route to a call, not a place to read a
+list.
+
 `GET /v1/video-conference.joinable` answers both, via `listJoinableCalls`. Nothing new is stored to support it:
 the conference records already hold membership (`users[]`), liveness (`endedAt`) and the room. The scan is over
 *running* conferences rather than over the user's rooms, so its cost follows how many calls are in progress —
@@ -690,6 +697,12 @@ That explicit leave matters and is easy to miss. The call window is shared, so j
 replaces the first one's page — but replacing a page is not leaving a call. Without the leave, the abandoned
 call keeps counting its participant, which keeps it listed as occupied and stops it ever emptying out. With it,
 the call empties, ends after the grace period, and drops out of both lists on its own.
+
+The server enforces the same rule rather than trusting the client to have asked: `addUserToCall` first runs
+`leaveOtherCalls`, leaving every *other* running call this user is still counted as being in. A window that dies
+without reporting its departure — a crash, a killed tab, a client that never sent the leave — otherwise leaves its
+user counted as present forever, which both misreports them and keeps a finished call listed as occupied. Joining
+anything is the moment that can be put right, and it costs one indexed read that usually finds nothing.
 
 ### Liveness is polled, and why
 

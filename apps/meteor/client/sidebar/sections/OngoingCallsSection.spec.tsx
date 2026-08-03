@@ -79,9 +79,53 @@ it('declines the right call', async () => {
 });
 
 // Offering to join a call the user is already in would be a no-op, so the row marks presence instead.
-it('does not offer to join a call the user is already in', async () => {
-	renderSection([call({ callId: 'here', joined: true })]);
+// Every row here is something to act on. The call the reader is in offers nothing to reach — a row that only
+// said "in call" left them with something they could not do anything about.
+it('leaves out the call the user is already in', async () => {
+	const { container } = renderSection([call({ callId: 'here', joined: true })]);
 
-	expect(await screen.findByText('Call here')).toBeInTheDocument();
-	expect(screen.queryByRole('button', { name: 'Join' })).not.toBeInTheDocument();
+	await waitFor(() => expect(container).toBeEmptyDOMElement());
+});
+
+it('gives every row it does show both actions', async () => {
+	renderSection([call({ callId: 'one' }), call({ callId: 'two' })]);
+
+	expect(await screen.findAllByRole('button', { name: 'Join' })).toHaveLength(2);
+	expect(screen.getAllByRole('button', { name: 'Decline' })).toHaveLength(2);
+});
+
+describe('when there are more than a few', () => {
+	const many = [
+		call({ callId: 'oldest', createdAt: new Date('2026-08-03T10:00:00.000Z') }),
+		call({ callId: 'middle', createdAt: new Date('2026-08-03T11:00:00.000Z') }),
+		call({ callId: 'newer', createdAt: new Date('2026-08-03T12:00:00.000Z') }),
+		call({ callId: 'newest', createdAt: new Date('2026-08-03T13:00:00.000Z') }),
+	];
+
+	// The sidebar is a route to a call, not a place to read a list, so it shows the most recent few and asks.
+	it('shows the three most recent, newest first', async () => {
+		renderSection(many);
+
+		expect(await screen.findByText('Call newest')).toBeInTheDocument();
+		expect(screen.getByText('Call newer')).toBeInTheDocument();
+		expect(screen.getByText('Call middle')).toBeInTheDocument();
+		expect(screen.queryByText('Call oldest')).not.toBeInTheDocument();
+	});
+
+	it('shows the rest when asked, and folds them away again', async () => {
+		renderSection(many);
+
+		await userEvent.click(await screen.findByRole('button', { name: 'Show_all' }));
+		expect(screen.getByText('Call oldest')).toBeInTheDocument();
+
+		await userEvent.click(screen.getByRole('button', { name: 'Show_fewer' }));
+		expect(screen.queryByText('Call oldest')).not.toBeInTheDocument();
+	});
+
+	it('does not ask when everything already fits', async () => {
+		renderSection(many.slice(-3));
+
+		expect(await screen.findByText('Call newest')).toBeInTheDocument();
+		expect(screen.queryByRole('button', { name: 'Show_all' })).not.toBeInTheDocument();
+	});
 });
