@@ -14,7 +14,6 @@ const WidgetBase = styled('div', ({ borderless: _borderless, inline: _inline, ..
 	border-radius: 4px;
 	background-color: ${Palette.surface['surface-tint'].toString()};
 	color: ${Palette.text['font-default'].toString()};
-	z-index: 100;
 	overflow: hidden;
 
 	${({ borderless }) =>
