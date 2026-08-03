@@ -68,6 +68,7 @@ Only exists on Windows, so other platforms skip it in the fallback list. */
 
 /* Same approach as above, but for the message reactions */
 .rcx-message-reactions {
+	/* stylelint-disable-next-line selector-class-pattern */
 	&__emoji:not(.emoji--custom) {
 		width: auto;
 		height: auto;
