@@ -55,7 +55,6 @@ Users can delete messages only in the following cases:
  | ------- | ----------- |
  | 8.2.0   | Added       |`,
 		examples: uploadsExamples['uploads.delete'],
-		tags: ['Rooms'],
 		authRequired: true,
 		body: isUploadsDeleteParams,
 		response: {

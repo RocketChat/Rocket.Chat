@@ -45,7 +45,6 @@ const rolesRoutes = API.v1
 |0.73.0            | Added \`mandatory2fa\` property       |
 |0.70.0            | Added       |`,
 			examples: rolesExamples['roles.list'],
-			tags: ['Roles'],
 			authRequired: true,
 			response: {
 				200: ajv.compile<{ roles: Omit<IRole, '_updatedAt'>[] }>({
@@ -91,7 +90,6 @@ const rolesRoutes = API.v1
 | ---------------- | ------------|
 |3.1.0            | Added       |`,
 			examples: rolesExamples['roles.sync'],
-			tags: ['Roles'],
 			authRequired: true,
 			query: rolesSyncQuerySchema,
 			response: {
@@ -144,7 +142,6 @@ const rolesRoutes = API.v1
 | ---------------- | ------------|
 |0.70.0            | Added       |`,
 			examples: rolesExamples['roles.addUserToRole'],
-			tags: ['Roles'],
 			authRequired: true,
 			body: isRoleAddUserToRoleProps,
 			response: {
@@ -196,7 +193,6 @@ const rolesRoutes = API.v1
 | ---------------- | ------------|
 |1.3.0            | Added       |`,
 			examples: rolesExamples['roles.getUsersInRole'],
-			tags: ['Roles'],
 			authRequired: true,
 			permissionsRequired: ['access-permissions'],
 			query: isRolesGetUsersInRoleProps,
@@ -268,7 +264,6 @@ const rolesRoutes = API.v1
 | ---------------- | ------------|
 |3.17.0            | Added       |`,
 			examples: rolesExamples['roles.delete'],
-			tags: ['Roles'],
 			authRequired: true,
 			permissionsRequired: ['access-permissions'],
 			body: isRoleDeleteProps,
@@ -314,7 +309,6 @@ const rolesRoutes = API.v1
 			summary: 'Remove Role from User',
 			description: `Remove a role from a user. Permission required: \`access-permissions\``,
 			examples: rolesExamples['roles.removeUserFromRole'],
-			tags: ['Roles'],
 			authRequired: true,
 			permissionsRequired: ['access-permissions'],
 			body: isRoleRemoveUserFromRoleProps,
@@ -392,7 +386,6 @@ const rolesRoutes = API.v1
 | ---------------- | ------------|
 |7.10.0            | Added       |`,
 			examples: rolesExamples['roles.getUsersInPublicRoles'],
-			tags: ['Roles'],
 			authRequired: true,
 			response: {
 				200: ajv.compile<{

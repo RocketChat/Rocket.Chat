@@ -196,7 +196,6 @@ const chatEndpoints = API.v1
 | ------------ | ------------|
 | 0.59.0       | Added       |`,
 			examples: chatExamples['chat.pinMessage'],
-			tags: ['Chat'],
 			authRequired: true,
 			body: isChatPinMessageProps,
 			response: {
@@ -243,7 +242,6 @@ const chatEndpoints = API.v1
 | -------------| ------------|
 | 0.59.0       | Added       |`,
 			examples: chatExamples['chat.unPinMessage'],
-			tags: ['Chat'],
 			authRequired: true,
 			body: isChatUnpinMessageProps,
 			response: {
@@ -340,7 +338,6 @@ const chatEndpoints = API.v1
 | 6.4.0            | Add previewUrls param       |        
 | 0.49.0           | Added       |`,
 			examples: chatExamples['chat.update'],
-			tags: ['Chat'],
 			authRequired: true,
 			body: isChatUpdateProps,
 			response: {
@@ -420,7 +417,6 @@ const chatEndpoints = API.v1
 | ------------ | ------------|
 | 0.59.0       | Added       |`,
 			examples: chatExamples['chat.starMessage'],
-			tags: ['Chat'],
 			authRequired: true,
 			body: isChatStarMessageLocalProps,
 			response: {
@@ -466,7 +462,6 @@ const chatEndpoints = API.v1
 | ---------------- | ------------|
 | 0.59.0           | Added       |`,
 			examples: chatExamples['chat.unStarMessage'],
-			tags: ['Chat'],
 			authRequired: true,
 			body: isChatUnstarMessageLocalProps,
 			response: {
@@ -512,7 +507,6 @@ const chatEndpoints = API.v1
 | ---------------- | ------------|
 | 1.0.0            | Added       |`,
 			examples: chatExamples['chat.followMessage'],
-			tags: ['Chat'],
 			authRequired: true,
 			body: isChatFollowMessageLocalProps,
 			response: {
@@ -554,7 +548,6 @@ const chatEndpoints = API.v1
 | ---------------- | ------------|
 | 1.0.0            | Added       |`,
 			examples: chatExamples['chat.unfollowMessage'],
-			tags: ['Chat'],
 			authRequired: true,
 			body: isChatUnfollowMessageLocalProps,
 			response: {
@@ -598,7 +591,6 @@ const chatEndpoints = API.v1
 |0.63.0            | Emoji has to exist                                               |
 |0.62.2            |Added                                                             |`,
 			examples: chatExamples['chat.react'],
-			tags: ['Chat'],
 			authRequired: true,
 			body: isChatReactProps,
 			response: {
@@ -646,7 +638,6 @@ const chatEndpoints = API.v1
 | ---------------- | ------------|
 | 0.64.0           | Added       |`,
 			examples: chatExamples['chat.reportMessage'],
-			tags: ['Chat'],
 			authRequired: true,
 			body: isChatReportMessageProps,
 			response: {
@@ -692,7 +683,6 @@ You can delete a message by its \`roomId\` and \`msgId\`, or delete a message by
 | 8.6.0            | Added \`fileId\` to delete a message by the file it contains. |
 | 0.48.0           | Added       |`,
 			examples: chatExamples['chat.delete'],
-			tags: ['Chat'],
 			authRequired: true,
 			body: isChatDeleteProps,
 			response: {
@@ -770,7 +760,6 @@ You can delete a message by its \`roomId\` and \`msgId\`, or delete a message by
 | ------------ | ------------|
 | 1.0.0        | Added       |`,
 			examples: chatExamples['chat.syncMessages'],
-			tags: ['Chat'],
 			authRequired: true,
 			query: isChatSyncMessagesProps,
 			response: {
@@ -875,7 +864,6 @@ You can delete a message by its \`roomId\` and \`msgId\`, or delete a message by
 | ------------ | ------------|
 | 0.47.0       | Added       |`,
 			examples: chatExamples['chat.getMessage'],
-			tags: ['Chat'],
 			authRequired: true,
 			query: isChatGetMessageProps,
 			response: {
@@ -930,7 +918,6 @@ You can delete a message by its \`roomId\` and \`msgId\`, or delete a message by
 | 0.14.0  | Internally using \`processWebhookMessage\` which enabled more features.        |
 | 0.13.0  | Added                                                                        |`,
 			examples: chatExamples['chat.postMessage'],
-			tags: ['Chat'],
 			authRequired: true,
 			body: isChatPostMessageProps,
 			response: {
@@ -992,7 +979,6 @@ You can delete a message by its \`roomId\` and \`msgId\`, or delete a message by
 | 0.67.0       | Changed limit query parameter to count|
 | 0.60.0       | Added       |`,
 			examples: chatExamples['chat.search'],
-			tags: ['Chat'],
 			authRequired: true,
 			query: isChatSearchProps,
 			response: {
@@ -1054,7 +1040,6 @@ You can delete a message by its \`roomId\` and \`msgId\`, or delete a message by
 | 2.4.0   | Added validation on user's identity |
 | 0.60.0  | Added                               |`,
 			examples: chatExamples['chat.sendMessage'],
-			tags: ['Chat'],
 			authRequired: true,
 			body: isChatSendMessageProps,
 			response: {
@@ -1098,7 +1083,6 @@ You can delete a message by its \`roomId\` and \`msgId\`, or delete a message by
 | ------------ | ------------|
 | 0.64.0       | Added       |`,
 			examples: chatExamples['chat.ignoreUser'],
-			tags: ['Chat'],
 			authRequired: true,
 			query: isChatIgnoreUserProps,
 			response: {
@@ -1144,7 +1128,6 @@ You can delete a message by its \`roomId\` and \`msgId\`, or delete a message by
 | ---------------- | ------------|
 | 0.73.0           | Added       |`,
 			examples: chatExamples['chat.getDeletedMessages'],
-			tags: ['Chat'],
 			authRequired: true,
 			query: isChatGetDeletedMessagesProps,
 			response: {
@@ -1199,7 +1182,6 @@ You can delete a message by its \`roomId\` and \`msgId\`, or delete a message by
 | ---------------- | ------------|
 | 2.0.0           | Added       |`,
 			examples: chatExamples['chat.getPinnedMessages'],
-			tags: ['Chat'],
 			authRequired: true,
 			query: isChatGetPinnedMessagesProps,
 			response: {
@@ -1253,7 +1235,6 @@ You can delete a message by its \`roomId\` and \`msgId\`, or delete a message by
 | ---------------- | ------------|
 |1.0.0             | Added       |`,
 			examples: chatExamples['chat.getThreadsList'],
-			tags: ['Chat'],
 			authRequired: true,
 			query: isChatGetThreadsListProps,
 			response: {
@@ -1325,7 +1306,6 @@ You can delete a message by its \`roomId\` and \`msgId\`, or delete a message by
 | ------------ | ------------|
 | 1.0.0        | Added       |`,
 			examples: chatExamples['chat.syncThreadsList'],
-			tags: ['Chat'],
 			authRequired: true,
 			query: isChatSyncThreadsListProps,
 			response: {
@@ -1402,7 +1382,6 @@ You can delete a message by its \`roomId\` and \`msgId\`, or delete a message by
 | 1.1.0        | Update example results - original message in thread is not returned |
 | 1.0.0        | Added       |`,
 			examples: chatExamples['chat.getThreadMessages'],
-			tags: ['Chat'],
 			authRequired: true,
 			query: isChatGetThreadMessagesProps,
 			response: {
@@ -1489,7 +1468,6 @@ You can delete a message by its \`roomId\` and \`msgId\`, or delete a message by
 | ------------ | ------------|
 | 1.0.0        | Added       |`,
 			examples: chatExamples['chat.syncThreadMessages'],
-			tags: ['Chat'],
 			authRequired: true,
 			query: isChatSyncThreadMessagesProps,
 			response: {
@@ -1558,7 +1536,6 @@ You can delete a message by its \`roomId\` and \`msgId\`, or delete a message by
 | ------------ | ------------|
 | 2.2.0        | Added       |`,
 			examples: chatExamples['chat.getMentionedMessages'],
-			tags: ['Chat'],
 			authRequired: true,
 			query: isChatGetMentionedMessagesProps,
 			response: {
@@ -1607,7 +1584,6 @@ You can delete a message by its \`roomId\` and \`msgId\`, or delete a message by
 | ------------ | ------------|
 | 2.2.0        | Added       |`,
 			examples: chatExamples['chat.getStarredMessages'],
-			tags: ['Chat'],
 			authRequired: true,
 			query: isChatGetStarredMessagesProps,
 			response: {
@@ -1658,7 +1634,6 @@ You can delete a message by its \`roomId\` and \`msgId\`, or delete a message by
 | ---------------- | ------------|
 | 2.4.0            | Added       |`,
 			examples: chatExamples['chat.getDiscussions'],
-			tags: ['Chat'],
 			authRequired: true,
 			query: isChatGetDiscussionsProps,
 			response: {
@@ -1700,7 +1675,6 @@ You can delete a message by its \`roomId\` and \`msgId\`, or delete a message by
 			summary: 'Get URL Preview',
 			description: `Use this endpoint to get a URL preview that can be used in the send and update message endpoints.`,
 			examples: chatExamples['chat.getURLPreview'],
-			tags: ['Chat'],
 			authRequired: true,
 			query: isChatGetURLPreviewProps,
 			response: {

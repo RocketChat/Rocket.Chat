@@ -181,7 +181,6 @@ const e2eEndpoints = API.v1
 		{
 			summary: 'Set Room E2E Key',
 			examples: e2eExamples['e2e.setRoomKeyID'],
-			tags: ['E2E'],
 			authRequired: true,
 			body: isE2eSetRoomKeyIdProps,
 			response: {
@@ -211,7 +210,6 @@ const e2eEndpoints = API.v1
 | Version | Description |
 | ------- | ------------|
 | 8.6.0   | Added       |`,
-			tags: ['E2E'],
 			authRequired: true,
 			response: {
 				401: validateUnauthorizedErrorResponse,
@@ -233,7 +231,6 @@ const e2eEndpoints = API.v1
 			summary: 'Get E2E Keys',
 			description: `Retrieves E2E keys of logged in user.`,
 			examples: e2eExamples['e2e.fetchMyKeys'],
-			tags: ['E2E'],
 			authRequired: true,
 			query: undefined,
 			response: {
@@ -260,7 +257,6 @@ const e2eEndpoints = API.v1
 			summary: 'Get Users of Room Without E2E key',
 			description: `Retrieves user IDs Of room without E2E key.`,
 			examples: e2eExamples['e2e.getUsersOfRoomWithoutKey'],
-			tags: ['E2E'],
 			authRequired: true,
 			query: ise2eGetUsersOfRoomWithoutKeyParamsGET,
 			response: {
@@ -400,7 +396,6 @@ const e2eEndpoints = API.v1
 		{
 			summary: 'Update User E2E Key in Room',
 			examples: e2eExamples['e2e.updateGroupKey'],
-			tags: ['E2E'],
 			authRequired: true,
 			body: ise2eUpdateGroupKeyParamsPOST,
 			response: {
@@ -490,7 +485,6 @@ const e2eEndpoints = API.v1
 		{
 			summary: 'Set User Key',
 			examples: e2eExamples['e2e.setUserPublicAndPrivateKeys'],
-			tags: ['E2E'],
 			authRequired: true,
 			body: ise2eSetUserPublicAndPrivateKeysParamsPOST,
 			response: {

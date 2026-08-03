@@ -233,7 +233,6 @@ Permission required: \`view-engagement-dashboard\`
 | ---------------- | ------------|
 |3.1.0            | Added       |`,
 		examples: usersExamples['engagement-dashboard/users/new-users'],
-		tags: ['Users Engagement'],
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],
@@ -275,7 +274,6 @@ Permission required: \`view-engagement-dashboard\`
 | ---------------- | ------------|
 |3.1.0            | Added       |`,
 		examples: usersExamples['engagement-dashboard/users/active-users'],
-		tags: ['Users Engagement'],
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],
@@ -317,7 +315,6 @@ Permission required: \`view-engagement-dashboard\`
 | ---------------- | ------------|
 |3.1.0            | Added       |`,
 		examples: usersExamples['engagement-dashboard/users/chat-busier/hourly-data'],
-		tags: ['Users Engagement'],
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],
@@ -358,7 +355,6 @@ Permission required: \`view-engagement-dashboard\`
 | ---------------- | ------------|
 |3.1.0            | Added       |`,
 		examples: usersExamples['engagement-dashboard/users/chat-busier/weekly-data'],
-		tags: ['Users Engagement'],
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],
@@ -399,7 +395,6 @@ Permission required: \`view-engagement-dashboard\`
 | ---------------- | ------------|
 |3.1.0            | Added       |`,
 		examples: usersExamples['engagement-dashboard/users/users-by-time-of-the-day-in-a-week'],
-		tags: ['Users Engagement'],
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],

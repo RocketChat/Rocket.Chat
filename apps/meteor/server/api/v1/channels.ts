@@ -234,7 +234,6 @@ The maximum number of users you can add at once depends on your workspace's REST
 |0.55.0   | Added \`activeUsersOnly\` param |
 |0.48.0   | Renamed to \`channels.addAll\` from \`channel.addAll\`|`,
 		examples: channelsExamples['channels.addAll'],
-		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsAddAllProps,
 		response: {
@@ -265,7 +264,6 @@ API.v1.post(
 | ------- | ------------------------- |
 | 0.48.0  | Added                    |`,
 		examples: channelsExamples['channels.archive'],
-		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsArchiveProps,
 		response: {
@@ -293,7 +291,6 @@ API.v1.post(
 | Version | Description |
 | ------- | ----------- |
 |0.48.0   | Added       |`,
-		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsUnarchiveProps,
 		response: {
@@ -342,7 +339,6 @@ API.v1.get(
 | 0.75.0 | Added offset property      |
 | 0.47.0  | Added                     |`,
 		examples: channelsExamples['channels.history'],
-		tags: ['Channels'],
 		authRequired: true,
 		query: isChannelsHistoryProps,
 		response: {
@@ -423,7 +419,6 @@ API.v1.get(
 | ------- | ----------- |
 |0.65.0  | Added        |`,
 		examples: channelsExamples['channels.roles'],
-		tags: ['Channels'],
 		authRequired: true,
 		query: isChannelsRolesProps,
 		response: {
@@ -454,7 +449,6 @@ API.v1.post(
 | ------- | ------------------------- |
 | 0.49.0  | Added                  |`,
 		examples: channelsExamples['channels.join'],
-		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsJoinProps,
 		response: {
@@ -490,7 +484,6 @@ Permissions required:
 | ------- | ------------------------- |
 | 0.48.0  | Added                     |`,
 		examples: channelsExamples['channels.kick'],
-		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsKickProps,
 		response: {
@@ -526,7 +519,6 @@ API.v1.post(
 | ------- | ------------------------- |
 | 0.48.0  | Added                  |`,
 		examples: channelsExamples['channels.leave'],
-		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsLeaveProps,
 		response: {
@@ -577,7 +569,6 @@ API.v1.get(
 | 7.0.0  | Added \`mentionIds\`, \`starredIds\`, \`pinned\` query parameters.|        
 | 0.59.0  | Added                                        |`,
 		examples: channelsExamples['channels.messages'],
-		tags: ['Channels'],
 		authRequired: true,
 		query: isChannelsMessagesProps,
 		permissionsRequired: ['view-c-room'],
@@ -651,7 +642,6 @@ API.v1.post(
 | ------- | ----------- |
 |0.48.0   | Added       |`,
 		examples: channelsExamples['channels.open'],
-		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsOpenProps,
 		response: {
@@ -695,7 +685,6 @@ API.v1.post(
 | ------- | ----------- |
 |0.49.0  | Added        |`,
 		examples: channelsExamples['channels.setReadOnly'],
-		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsSetReadOnlyProps,
 		response: {
@@ -740,7 +729,6 @@ API.v1.post(
 | ------- | ----------- |
 |0.63.0  | Added        |`,
 		examples: channelsExamples['channels.setAnnouncement'],
-		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsSetAnnouncementProps,
 		response: {
@@ -786,7 +774,6 @@ API.v1.get(
 | ------- | -----------|
 |0.63.0  | Added       |`,
 		examples: channelsExamples['channels.getAllUserMentionsByChannel'],
-		tags: ['Channels'],
 		authRequired: true,
 		query: isChannelsGetAllUserMentionsByChannelProps,
 		response: {
@@ -847,7 +834,6 @@ List all the moderators in a channel.
 | ------- | ----------- |
 | 0.70.0 | Added        |`,
 		examples: channelsExamples['channels.moderators'],
-		tags: ['Channels'],
 		authRequired: true,
 		query: isChannelsModeratorsProps,
 		response: {
@@ -892,7 +878,6 @@ API.v1.post(
 | ------- | ------------------------- |
 | 0.71.0  | Removed \`channel\` property|
 | 0.49.0  | Added                     |`,
-		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsDeleteProps,
 		response: {
@@ -937,7 +922,6 @@ Permissions required: \`create-team\`, \`edit-room\`. Both permissions are check
 | 8.7.0   | Enforced room permission checks regardless of whether the channel is identified by ID or name. |
 | 3.13.0  | Added |`,
 		examples: channelsExamples['channels.convertToTeam'],
-		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsConvertToTeamProps,
 		permissionsRequired: ['create-team'],
@@ -1005,7 +989,6 @@ Permission required: \`set-moderator\`
 | ------- | ------------------------- |
 | 0.49.4  | Added                     |`,
 		examples: channelsExamples['channels.addModerator'],
-		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsModeratorsProps,
 		response: {
@@ -1037,7 +1020,6 @@ Permission required:  \`set-owner\`
 | ------- | ------------------------- |
 | 0.49.4   | Added                    |`,
 		examples: channelsExamples['channels.addOwner'],
-		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsModeratorsProps,
 		response: {
@@ -1067,7 +1049,6 @@ API.v1.post(
 | ------- | ------------------------- |
 | 0.48.0  | Added                     |`,
 		examples: channelsExamples['channels.close'],
-		tags: ['Channels'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string }>(),
 		response: {
@@ -1134,7 +1115,6 @@ Permission required: \`view-room-administration\`
 | ------- | ------------------------- |
 | 0.65.0  | Added                     |`,
 		examples: channelsExamples['channels.counters'],
-		tags: ['Channels'],
 		authRequired: true,
 		query: ajvQuery.compile<{ roomId?: string; roomName?: string; userId?: string }>({
 			type: 'object',
@@ -1285,7 +1265,6 @@ Channel naming has restraints following the regex filter \`[0-9a-zA-Z-_.]+\` by 
 | 6.4.1   | Added \`excludeSelf\` param |
 | 0.13.0  | Added                     |`,
 		examples: channelsExamples['channels.create'],
-		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsCreateProps,
 		response: {
@@ -1393,7 +1372,6 @@ API.v1.get(
 | 0.64.0 | Change userId to user object in response                    |
 | 0.59.0  | Added                  |`,
 		examples: channelsExamples['channels.files'],
-		tags: ['Channels'],
 		authRequired: true,
 		query: isChannelsFilesListProps,
 		response: {
@@ -1514,7 +1492,6 @@ It will return the integrations based on the user's permission.
 | 1.1.0   | Separate permissions in \`incoming\` and \`outgoing\`. |
 | 0.49.0  | Added                                              |`,
 		examples: channelsExamples['channels.getIntegrations'],
-		tags: ['Channels'],
 		authRequired: true,
 		query: channelsGetIntegrationsQuery,
 		permissionsRequired: {
@@ -1597,7 +1574,6 @@ API.v1.get(
 | ------- | ------------------------- |
 | 0.48.0  | Added                  |`,
 		examples: channelsExamples['channels.info'],
-		tags: ['Channels'],
 		authRequired: true,
 		query: roomTargetQuery,
 		response: {
@@ -1656,7 +1632,6 @@ For a user to invite other users, they must match at least one of the following 
 | ------- | ------------------------- |
 | 0.48.0  | Added                  |`,
 		examples: channelsExamples['channels.invite'],
-		tags: ['Channels'],
 		authRequired: true,
 		body: channelsInviteBody,
 		response: {
@@ -1708,7 +1683,6 @@ API.v1.get(
 | 0.49.0  | Count and offset query parameters supported. |
 | 0.48.0  | Added                                        |`,
 		examples: channelsExamples['channels.list'],
-		tags: ['Channels'],
 		authRequired: true,
 		permissionsRequired: {
 			GET: { permissions: ['view-c-room', 'view-joined-room'], operation: 'hasAny' },
@@ -1819,7 +1793,6 @@ API.v1.get(
 | 0.49.0  | Count and offset query parameters supported. |
 | 0.48.0  | Added                                        |`,
 		examples: channelsExamples['channels.list.joined'],
-		tags: ['Channels'],
 		authRequired: true,
 		query: channelsListJoinedQuery,
 		response: {
@@ -1930,7 +1903,6 @@ If the channel is a broadcast channel, you need the \`view-broadcast-member-list
 | ------- | -------------------------------------------- |
 | 0.59.0  | Added                                        |`,
 		examples: channelsExamples['channels.members'],
-		tags: ['Channels'],
 		authRequired: true,
 		query: channelsMembersQuery,
 		response: {
@@ -2008,7 +1980,6 @@ API.v1.get(
 |0.52.0   | Added       |
 |7.0.0   | Replaced \`query\` parameter with \`_id\` parameter       |`,
 		examples: channelsExamples['channels.online'],
-		tags: ['Channels'],
 		authRequired: true,
 		query: isChannelsOnlineProps,
 		response: {
@@ -2078,7 +2049,6 @@ Permission required: \`set-moderator\`.
 | ------- | ----------- |
 |0.49.4  | Added       |`,
 		examples: channelsExamples['channels.removeModerator'],
-		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsModeratorsProps,
 		response: {
@@ -2112,7 +2082,6 @@ Permission required:\`set-owner\`.
 | ------- | ----------- |
 |0.49.4  | Added       |`,
 		examples: channelsExamples['channels.removeOwner'],
-		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsModeratorsProps,
 		response: {
@@ -2143,7 +2112,6 @@ API.v1.post(
 | ------- | ----------- |
 |0.48.0  | Added        |`,
 		examples: channelsExamples['channels.rename'],
-		tags: ['Channels'],
 		authRequired: true,
 		body: roomSettingBody<{ roomId?: string; roomName?: string; name: string }>('name', { type: 'string' }),
 		response: {
@@ -2187,7 +2155,6 @@ See the <a href='https://docs.rocket.chat/docs/custom-fields' target='_blank'>Co
 | ------- | ----------- |
 |0.62.0  | Added        |`,
 		examples: channelsExamples['channels.setCustomFields'],
-		tags: ['Channels'],
 		authRequired: true,
 		body: roomSettingBody<{ roomId?: string; roomName?: string; customFields: Record<string, unknown> }>('customFields', {
 			type: 'object',
@@ -2224,7 +2191,6 @@ API.v1.post(
 | ------- | ----------- |
 |0.66.0  | Added        |`,
 		examples: channelsExamples['channels.setDefault'],
-		tags: ['Channels'],
 		authRequired: true,
 		body: roomSettingBody<{ roomId?: string; roomName?: string; default: boolean | string }>('default', { type: ['boolean', 'string'] }),
 		response: {
@@ -2271,7 +2237,6 @@ API.v1.post(
 | ------- | ----------- |
 |0.48.4  | Added        |`,
 		examples: channelsExamples['channels.setDescription'],
-		tags: ['Channels'],
 		authRequired: true,
 		body: roomSettingBody<{ roomId?: string; roomName?: string; description: string }>('description', { type: 'string' }),
 		response: {
@@ -2307,7 +2272,6 @@ It is the same as Set Channel Description. Permission required: \`edit-room\`
 | ------- | ----------- |
 |0.48.0  | Added        |`,
 		examples: channelsExamples['channels.setPurpose'],
-		tags: ['Channels'],
 		authRequired: true,
 		body: roomSettingBody<{ roomId?: string; roomName?: string; purpose: string }>('purpose', { type: 'string' }),
 		response: {
@@ -2342,7 +2306,6 @@ API.v1.post(
 | ------- | ----------- |
 |0.13.0  | Added        |`,
 		examples: channelsExamples['channels.setTopic'],
-		tags: ['Channels'],
 		authRequired: true,
 		body: roomSettingBody<{ roomId?: string; roomName?: string; topic: string }>('topic', { type: 'string' }),
 		response: {
@@ -2383,7 +2346,6 @@ When the type changes to \`c\` (public) and the room has ABAC attributes, all AB
 | 8.5.0   | Added ABAC behavior for \`p\` -> \`c\`: ABAC-managed private rooms are rejected, and successful conversions to public clear room ABAC attributes. |
 | 0.49.0  | Added       |`,
 		examples: channelsExamples['channels.setType'],
-		tags: ['Channels'],
 		authRequired: true,
 		body: roomSettingBody<{ roomId?: string; roomName?: string; type: string }>('type', { type: 'string' }),
 		response: {
@@ -2429,7 +2391,6 @@ Permission required: \`set-leader\`
 | ------- | ------------------------- |
 | 0.75.0   | Added                    |`,
 		examples: channelsExamples['channels.addLeader'],
-		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsModeratorsProps,
 		response: {
@@ -2463,7 +2424,6 @@ Permission required: \`set-leader\` .
 | ------- | ----------- |
 |0.75.0  | Added       |`,
 		examples: channelsExamples['channels.removeLeader'],
-		tags: ['Channels'],
 		authRequired: true,
 		body: isChannelsModeratorsProps,
 		response: {
@@ -2494,7 +2454,6 @@ API.v1.post(
 | ------- | ----------- |
 |0.49.0  | Added        |`,
 		examples: channelsExamples['channels.setJoinCode'],
-		tags: ['Channels'],
 		authRequired: true,
 		body: roomSettingBody<{ roomId?: string; roomName?: string; joinCode: string }>('joinCode', { type: 'string' }),
 		response: {
@@ -2552,7 +2511,6 @@ API.v1.get(
 | ------- | ------------------------- |
 | 1.2.0   | Added                     |`,
 		examples: channelsExamples['channels.anonymousread'],
-		tags: ['Channels'],
 		authOrAnonRequired: true,
 		query: channelsAnonymousReadQuery,
 		response: {

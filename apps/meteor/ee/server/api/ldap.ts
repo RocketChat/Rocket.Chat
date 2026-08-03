@@ -34,7 +34,6 @@ Permission required: \`sync-auth-services-users\`.
 |5.2.0            | Include \`syncAvatars\`       |
 |4.0.0            | Added       |`,
 		examples: ldapExamples['ldap.syncNow'],
-		tags: ['LDAP'],
 		authRequired: true,
 		forceTwoFactorAuthenticationForNonEnterprise: true,
 		twoFactorRequired: true,

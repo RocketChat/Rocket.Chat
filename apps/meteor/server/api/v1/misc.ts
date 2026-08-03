@@ -188,7 +188,6 @@ API.v1.get(
  |0.68.0            | Added \`customFields\` property.      |
  |0.48.0            | Added      |`,
 		examples: miscExamples.me,
-		tags: ['Authentication'],
 		authRequired: true,
 		userWithoutUsername: true,
 		response: {
@@ -483,7 +482,6 @@ API.v1.get(
 | 0.65.0  | Added Pagination fields: count, total, offset |
 | 0.64.0  | Added |`,
 		examples: miscExamples.directory,
-		tags: ['Directory'],
 		authRequired: true,
 		query: isDirectoryProps,
 		response: {
@@ -550,7 +548,6 @@ API.v1.get(
 		description: `Get the current [password policy](https://docs.rocket.chat/v1/docs/accounts#password-policy) for users in your workspace.
 The \`pw.getPolicyReset\` endpoint has been removed from 7.0. Use this endpoint instead.`,
 		examples: miscExamples['pw.getPolicy'],
-		tags: ['Password policy'],
 		authRequired: false,
 		response: {
 			200: pwGetPolicyResponseSchema,

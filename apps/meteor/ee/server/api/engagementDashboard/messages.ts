@@ -162,7 +162,6 @@ Permission required: \`view-engagement-dashboard\`
 | ---------------- | ------------|
 |3.1.0            | Added       |`,
 		examples: messagesExamples['engagement-dashboard/messages/messages-sent'],
-		tags: ['Messages Engagement'],
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],
@@ -204,7 +203,6 @@ Permission required: \`view-engagement-dashboard\`
 | ---------------- | ------------|
 |3.1.0            | Added       |`,
 		examples: messagesExamples['engagement-dashboard/messages/origin'],
-		tags: ['Messages Engagement'],
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],
@@ -246,7 +244,6 @@ Permission required: \`view-engagement-dashboard\`
 | ---------------- | ------------|
 |3.1.0            | Added       |`,
 		examples: messagesExamples['engagement-dashboard/messages/top-five-popular-channels'],
-		tags: ['Messages Engagement'],
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],

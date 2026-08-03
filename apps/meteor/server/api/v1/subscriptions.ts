@@ -53,7 +53,6 @@ API.v1.get(
 | ---------------- | ------------|
 |0.60.0            | Added       |`,
 		examples: subscriptionsExamples['subscriptions.get'],
-		tags: ['Subscriptions'],
 		authRequired: true,
 		query: isSubscriptionsGetProps,
 		response: {
@@ -106,7 +105,6 @@ API.v1.get(
 | ---------------- | ------------|
 |0.63.0            | Added       |`,
 		examples: subscriptionsExamples['subscriptions.getOne'],
-		tags: ['Subscriptions'],
 		authRequired: true,
 		query: isSubscriptionsGetOneProps,
 		response: {
@@ -156,7 +154,6 @@ API.v1.post(
 |3.11.0            | \`roomId\` can be used as argument instead of \`rid\`.       |
 |0.61.0            | Added       |`,
 		examples: subscriptionsExamples['subscriptions.read'],
-		tags: ['Subscriptions'],
 		authRequired: true,
 		body: isSubscriptionsReadProps,
 		response: {
@@ -190,7 +187,6 @@ API.v1.post(
 | ---------------- | ------------|
 |0.65.0            | Added       |`,
 		examples: subscriptionsExamples['subscriptions.unread'],
-		tags: ['Subscriptions'],
 		authRequired: true,
 		body: isSubscriptionsUnreadProps,
 		response: {

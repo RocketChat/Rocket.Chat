@@ -55,7 +55,6 @@ Make sure that the auto-translate feature is configured in your workspace. For d
 | ---------------- | ------------|
 |1.3.0          | Added       |`,
 			examples: autotranslateExamples['autotranslate.getSupportedLanguages'],
-			tags: ['Auto-Translate'],
 			authRequired: true,
 			query: isAutotranslateGetSupportedLanguagesParamsGET,
 			response: {
@@ -92,7 +91,6 @@ Make sure that the auto-translate feature is configured in your workspace. For d
 | ---------------- | ------------|
 |1.3.0          | Added       |`,
 			examples: autotranslateExamples['autotranslate.saveSettings'],
-			tags: ['Auto-Translate'],
 			authRequired: true,
 			body: isAutotranslateSaveSettingsParamsPOST,
 			response: {
@@ -143,7 +141,6 @@ If the caller is not a room member (or otherwise cannot access it), the endpoint
 |1.3.0          | Added       |
 |8.5.0          | Added room-access check. |`,
 			examples: autotranslateExamples['autotranslate.translateMessage'],
-			tags: ['Auto-Translate'],
 			authRequired: true,
 			body: isAutotranslateTranslateMessageParamsPOST,
 			response: {

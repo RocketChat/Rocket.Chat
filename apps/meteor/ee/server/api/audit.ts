@@ -178,7 +178,6 @@ Permission required: \`view-members-list-all-rooms\`
 | ------- | ----------- |
 | 6.12.0   | Added       |`,
 		examples: auditExamples['audit/rooms.members'],
-		tags: ['Rooms'],
 		authRequired: true,
 		permissionsRequired: ['view-members-list-all-rooms'],
 		query: isAuditRoomMembersProps,

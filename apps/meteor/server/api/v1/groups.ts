@@ -199,7 +199,6 @@ API.v1.post(
 | ------- | ----------- |
 | 0.55.0  | Added       |`,
 		examples: groupsExamples['groups.addAll'],
-		tags: ['Groups'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string; activeUsersOnly?: boolean | string | number }>({
 			activeUsersOnly: { type: ['boolean', 'string', 'number'] },
@@ -244,7 +243,6 @@ Permission required: \`set-moderator\`
 | ------- | ----------- |
 | 0.49.4  | Added.      |`,
 		examples: groupsExamples['groups.addModerator'],
-		tags: ['Groups'],
 		authRequired: true,
 		body: roomUserBody<{ roomId?: string; roomName?: string; userId?: string; username?: string; user?: string }>(),
 		response: {
@@ -278,7 +276,6 @@ API.v1.post(
 | ------- | ----------- |
 | 0.49.4  | Added.      |`,
 		examples: groupsExamples['groups.addOwner'],
-		tags: ['Groups'],
 		authRequired: true,
 		body: roomUserBody<{ roomId?: string; roomName?: string; userId?: string; username?: string; user?: string }>(),
 		response: {
@@ -314,7 +311,6 @@ Permission required:  \`set-leader\`
 | ------- | ----------- |
 | 0.58.0  | Added.      |`,
 		examples: groupsExamples['groups.addLeader'],
-		tags: ['Groups'],
 		authRequired: true,
 		body: roomUserBody<{ roomId?: string; roomName?: string; userId?: string; username?: string; user?: string }>(),
 		response: {
@@ -348,7 +344,6 @@ API.v1.post(
 | ------- | ----------- |
 | 0.48.0  | Added       |`,
 		examples: groupsExamples['groups.archive'],
-		tags: ['Groups'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string }>(),
 		response: {
@@ -380,7 +375,6 @@ API.v1.post(
 | ------- | ----------- |
 | 0.48.0  | Added       |`,
 		examples: groupsExamples['groups.close'],
-		tags: ['Groups'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string }>(),
 		response: {
@@ -790,7 +784,6 @@ API.v1.post(
 | ------- | ----------- |
 | 0.48.0  | Added       |`,
 		examples: groupsExamples['groups.kick'],
-		tags: ['Groups'],
 		authRequired: true,
 		body: roomUserBody<{ roomId?: string; roomName?: string; userId?: string; username?: string; user?: string }>(),
 		response: {
@@ -824,7 +817,6 @@ API.v1.post(
 | ------- | ----------- |
 | 0.48.0  | Added       |`,
 		examples: groupsExamples['groups.leave'],
-		tags: ['Groups'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string }>(),
 		response: {
@@ -1079,7 +1071,6 @@ API.v1.post(
 | ------- | ----------- |
 | 0.48.0  | Added       |`,
 		examples: groupsExamples['groups.open'],
-		tags: ['Groups'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string }>(),
 		response: {
@@ -1119,7 +1110,6 @@ Permission required: \`set-moderator\`
 | ------- | ----------- |
 | 0.49.4  | Added       |`,
 		examples: groupsExamples['groups.removeModerator'],
-		tags: ['Groups'],
 		authRequired: true,
 		body: roomUserBody<{ roomId?: string; roomName?: string; userId?: string; username?: string; user?: string }>(),
 		response: {
@@ -1156,7 +1146,6 @@ Permission required: \`set-owner\`
 | ------- | ----------- |
 | 0.49.4  | Added       |`,
 		examples: groupsExamples['groups.removeOwner'],
-		tags: ['Groups'],
 		authRequired: true,
 		body: roomUserBody<{ roomId?: string; roomName?: string; userId?: string; username?: string; user?: string }>(),
 		response: {
@@ -1194,7 +1183,6 @@ Permission required: \`set-leader\`
 | ------- | ----------- |
 | 0.58.0  | Added       |`,
 		examples: groupsExamples['groups.removeLeader'],
-		tags: ['Groups'],
 		authRequired: true,
 		body: roomUserBody<{ roomId?: string; roomName?: string; userId?: string; username?: string; user?: string }>(),
 		response: {
@@ -1228,7 +1216,6 @@ API.v1.post(
 | ------- | ----------- |
 | 0.48.0  | Added       |`,
 		examples: groupsExamples['groups.rename'],
-		tags: ['Groups'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string; name: string }>({ name: { type: 'string' } }, ['name']),
 		response: {
@@ -1273,7 +1260,6 @@ Permission required: \`edit-room\`
 | ------- | ----------- |
 | 0.62.0  | Added       |`,
 		examples: groupsExamples['groups.setCustomFields'],
-		tags: ['Groups'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string; customFields: Record<string, unknown> }>(
 			{ customFields: { type: 'object' } },
@@ -1316,7 +1302,6 @@ API.v1.post(
 | ------- | ----------- |
 | 0.48.0  | Added       |`,
 		examples: groupsExamples['groups.setDescription'],
-		tags: ['Groups'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string; description: string }>({ description: { type: 'string' } }, ['description']),
 		response: {
@@ -1350,7 +1335,6 @@ API.v1.post(
 | ------- | ----------- |
 | 0.48.0  | Added       |`,
 		examples: groupsExamples['groups.setPurpose'],
-		tags: ['Groups'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string; purpose: string }>({ purpose: { type: 'string' } }, ['purpose']),
 		response: {
@@ -1384,7 +1368,6 @@ API.v1.post(
 | ------- | ----------- |
 | 0.49.0  | Added       |`,
 		examples: groupsExamples['groups.setReadOnly'],
-		tags: ['Groups'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string; readOnly: boolean }>({ readOnly: { type: 'boolean' } }, ['readOnly']),
 		response: {
@@ -1428,7 +1411,6 @@ API.v1.post(
 | ------- | ----------- |
 | 0.48.0  | Added       |`,
 		examples: groupsExamples['groups.setTopic'],
-		tags: ['Groups'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string; topic: string }>({ topic: { type: 'string' } }, ['topic']),
 		response: {
@@ -1470,7 +1452,6 @@ When the type changes to \`c\` (public) and the group has ABAC attributes, all A
 | 8.5.0   | Added ABAC behavior for \`p\` -> \`c\`: ABAC-managed private rooms are rejected, and successful conversions to public clear group ABAC attributes. |
 | 0.49.0  | Added       |`,
 		examples: groupsExamples['groups.setType'],
-		tags: ['Groups'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string; type: string }>({ type: { type: 'string' } }, ['type']),
 		response: {
@@ -1519,7 +1500,6 @@ Permission required: \`edit-room\`
 | ------- | ----------- |
 | 0.70.0  | Added       |`,
 		examples: groupsExamples['groups.setAnnouncement'],
-		tags: ['Groups'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string; announcement: string }>({ announcement: { type: 'string' } }, [
 			'announcement',
@@ -1555,7 +1535,6 @@ API.v1.post(
 | ------- | ----------- |
 | 0.48.0  | Added       |`,
 		examples: groupsExamples['groups.unarchive'],
-		tags: ['Groups'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string }>(),
 		response: {
@@ -1630,7 +1609,6 @@ API.v1.post(
 | ------- | ----------- |
 | 3.13.0  | Added       |`,
 		examples: groupsExamples['groups.setEncrypted'],
-		tags: ['Groups'],
 		authRequired: true,
 		body: roomTargetBody<{ roomId?: string; roomName?: string; encrypted: boolean }>({ encrypted: { type: 'boolean' } }, ['encrypted']),
 		response: {

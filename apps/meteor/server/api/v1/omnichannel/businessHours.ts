@@ -36,7 +36,6 @@ const livechatBusinessHoursEndpoints = API.v1
 			summary: 'Create a Business Hour',
 			description: `Use this endpoint to create a new Omnichannel business hour.`,
 			examples: businessHoursExamples['livechat/business-hours.save'],
-			tags: ['Omnichannel Business Hours'],
 			response: {
 				200: POSTLivechatBusinessHoursSaveSuccessResponse,
 				400: validateBadRequestErrorResponse,
@@ -60,7 +59,6 @@ const livechatBusinessHoursEndpoints = API.v1
 			summary: 'Remove Business Hour',
 			description: `Remove an Omnichannel business hour.`,
 			examples: businessHoursExamples['livechat/business-hours.remove'],
-			tags: ['Omnichannel Business Hours'],
 			response: {
 				200: POSTLivechatBusinessHoursRemoveSuccessResponse,
 				400: validateBadRequestErrorResponse,

@@ -40,7 +40,6 @@ API.v1.post(
 | ---------------- | ------------|
 |5.4.0      | Added      |`,
 		examples: mailerExamples.mailer,
-		tags: ['Mailer'],
 		authRequired: true,
 		body: isMailerProps,
 		permissionsRequired: ['send-mail'],
@@ -71,7 +70,6 @@ API.v1.post(
 | ------------ | ------------|
 |5.4.0         | Added      |`,
 		examples: mailerExamples['mailer.unsubscribe'],
-		tags: ['Mailer'],
 		authRequired: true,
 		body: isMailerUnsubscribeProps,
 		rateLimiterOptions: { intervalTimeInMS: 60000, numRequestsAllowed: 1 },

@@ -58,7 +58,6 @@ API.v1.get(
 		summary: 'Get List of Calendar Events',
 		description: `Use this endpoint to view the list of your calendar events for a specific date.`,
 		examples: calendarExamples['calendar-events.list'],
-		tags: ['Calendar Events'],
 		authRequired: true,
 		query: isCalendarEventListProps,
 		rateLimiterOptions: { numRequestsAllowed: 3, intervalTimeInMS: 1000 },
@@ -84,7 +83,6 @@ API.v1.get(
 		summary: 'Get Calendar Event Info',
 		description: `Use this endpoint to get information about a specific calendar event.`,
 		examples: calendarExamples['calendar-events.info'],
-		tags: ['Calendar Events'],
 		authRequired: true,
 		query: isCalendarEventInfoProps,
 		rateLimiterOptions: { numRequestsAllowed: 3, intervalTimeInMS: 1000 },
@@ -114,7 +112,6 @@ API.v1.post(
 		summary: 'Create Calendar Event',
 		description: `Create a new calendar event.`,
 		examples: calendarExamples['calendar-events.create'],
-		tags: ['Calendar Events'],
 		authRequired: true,
 		body: isCalendarEventCreateProps,
 		response: {
@@ -149,7 +146,6 @@ API.v1.post(
 		summary: 'Import Calendar Event',
 		description: `Use this endpoint to import an exteral calendar event.`,
 		examples: calendarExamples['calendar-events.import'],
-		tags: ['Calendar Events'],
 		authRequired: true,
 		body: isCalendarEventImportProps,
 		response: {
@@ -184,7 +180,6 @@ API.v1.post(
 		summary: 'Update Calendar Event',
 		description: `Update an existing calendar event.`,
 		examples: calendarExamples['calendar-events.update'],
-		tags: ['Calendar Events'],
 		authRequired: true,
 		body: isCalendarEventUpdateProps,
 		response: {
@@ -223,7 +218,6 @@ API.v1.post(
 		summary: 'Delete Calendar Event',
 		description: `Delete a specific calendar event.`,
 		examples: calendarExamples['calendar-events.delete'],
-		tags: ['Calendar Events'],
 		authRequired: true,
 		body: isCalendarEventDeleteProps,
 		response: {

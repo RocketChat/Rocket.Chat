@@ -148,7 +148,6 @@ const livechatAgentsEndpoints = API.v1.post(
 | ---------------- | ------------|
 |7.11.0            | Added       |`,
 		examples: agentExamples['livechat/agents.saveInfo'],
-		tags: ['Omnichannel Agents'],
 		response: {
 			200: POSTLivechatAgentSaveInfoSuccessResponse,
 			400: validateBadRequestErrorResponse,

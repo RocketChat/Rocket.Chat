@@ -73,7 +73,6 @@ const livechatMonitorsEndpoints = API.v1
 
 Add a user as monitor. Permission required: \`manage-livechat-monitors\``,
 			examples: monitorsExamples['livechat/monitors.create'],
-			tags: ['Omnichannel Monitors'],
 			response: {
 				200: POSTLivechatMonitorsCreateSuccessResponse,
 				400: validateBadRequestErrorResponse,
@@ -101,7 +100,6 @@ Add a user as monitor. Permission required: \`manage-livechat-monitors\``,
 
 Delete an Omnichannel monitor. Permission required: \`manage-livechat-monitors\``,
 			examples: monitorsExamples['livechat/monitors.delete'],
-			tags: ['Omnichannel Monitors'],
 			response: {
 				200: POSTLivechatMonitorsDeleteSuccessResponse,
 				400: validateBadRequestErrorResponse,

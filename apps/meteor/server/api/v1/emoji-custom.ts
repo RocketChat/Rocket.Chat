@@ -95,7 +95,6 @@ const emojiCustomCreateEndpoints = API.v1
 |7.0.0            | Added  \`_id\` and  \`_updatedAt\` query parameter     |
 |0.75.0            | Added       |`,
 			examples: emojiCustomExamples['emoji-custom.list'],
-			tags: ['Custom Emoji'],
 			authRequired: true,
 			query: isEmojiCustomList,
 			response: {
@@ -155,7 +154,6 @@ const emojiCustomCreateEndpoints = API.v1
 |7.11.0            | Added the \`name\` query parameter       |
 |0.63.0            | Added       |`,
 			examples: emojiCustomExamples['emoji-custom.all'],
-			tags: ['Custom Emoji'],
 			authRequired: true,
 			response: {
 				200: emojiCustomAllResponseSchema,
@@ -199,7 +197,6 @@ Permission required: \`manage-emoji\`
 | ---------------- | ------------|
 |0.74.0            | Added       |`,
 			examples: emojiCustomExamples['emoji-custom.create'],
-			tags: ['Custom Emoji'],
 			authRequired: true,
 			response: {
 				200: ajv.compile<void>({
@@ -262,7 +259,6 @@ Permission required: \`manage-emoji\`
 | ---------------- | ------------|
 |0.74.0            | Added       |`,
 			examples: emojiCustomExamples['emoji-custom.update'],
-			tags: ['Custom Emoji'],
 			authRequired: true,
 			response: {
 				200: ajv.compile({
@@ -338,7 +334,6 @@ Permission required: \`manage-emoji\`
 | ---------------- | ------------|
 |0.74.0            | Added       |`,
 			examples: emojiCustomExamples['emoji-custom.delete'],
-			tags: ['Custom Emoji'],
 			authRequired: true,
 			body: emojiDeleteBodySchema,
 			response: {

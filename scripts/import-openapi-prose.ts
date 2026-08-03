@@ -168,6 +168,7 @@ const withExamplesImport = (source: string, name: string, path: string): string 
 };
 
 const operations = loadOperations();
+const operationTags: Record<string, string[]> = {};
 // `.get('x', ...)` rather than `API.v1.get('x', ...)`: registrations are often chained, and the
 // options are sometimes a shared object - the `dm.*` and `im.*` twins declare theirs once
 const callSite = /\.(get|post|put|delete)\(\s*'([^']+)',\s*\n?\s*(\{|[A-Za-z_$][\w$]*)/g;
@@ -207,7 +208,7 @@ for (const target of targets) {
 		const closeBrace = findClosingBrace(source, openBrace);
 		const options = source.slice(openBrace, closeBrace + 1);
 
-		if (!isRouteOptions(options) || /^\s*summary:/m.test(options)) {
+		if (!isRouteOptions(options)) {
 			continue;
 		}
 
@@ -216,6 +217,18 @@ for (const target of targets) {
 		// describes only one of the two
 		const twin = path.includes('/dm.') ? path.replace('/dm.', '/im.') : path.replace('/im.', '/dm.');
 		const operation = operations.get(`${method} ${path}`) ?? operations.get(`${method} ${twin}`);
+
+		// The tags are the grouping of the published documentation, but they stay out of the route
+		// options: anything declared there ends up in the type every caller of the endpoint sees, and
+		// that type graph collapses under the weight (`Endpoints recursively references itself`). They
+		// are collected even for routes whose prose is already imported.
+		if (operation?.tags?.length) {
+			operationTags[`${method.toLowerCase()} ${path}`] = operation.tags;
+		}
+
+		if (/^\s*summary:/m.test(options)) {
+			continue;
+		}
 
 		if (!operation?.summary && !operation?.description) {
 			skipped++;
@@ -237,21 +250,7 @@ for (const target of targets) {
 			lines.push(`${bodyIndent}examples: ${propertyAccess(exampleName, subpath)},`);
 		}
 
-		// the tags are the grouping of the published documentation, so they win over ours
-		const tags = operation.tags?.length ? `[${operation.tags.map(quoted).join(', ')}]` : undefined;
-		const existingTags = /^(\s*)tags:\s*\[[^\]]*\],$/m.exec(options);
-
-		if (tags && !existingTags) {
-			lines.push(`${bodyIndent}tags: ${tags},`);
-		}
-
-		let patchedOptions = `{\n${lines.join('\n')}${options.slice(1)}`;
-
-		if (tags && existingTags) {
-			patchedOptions = patchedOptions.replace(existingTags[0], `${existingTags[1]}tags: ${tags},`);
-		}
-
-		edits.push({ start: openBrace, end: closeBrace + 1, text: patchedOptions });
+		edits.push({ start: openBrace, end: closeBrace + 1, text: `{\n${lines.join('\n')}${options.slice(1)}` });
 		documented.add(openBrace);
 		imported++;
 	}
@@ -303,4 +302,27 @@ for (const target of targets) {
 
 	writeFileSync(target, patched);
 	console.log(`${target}: imported ${imported}, no match for ${skipped}`);
+}
+
+if (!dryRun && Object.keys(operationTags).length) {
+	const path = 'apps/meteor/server/api/default/operationTags.ts';
+
+	writeFileSync(
+		path,
+		[
+			`/**`,
+			` * Which group each operation belongs to in the published documentation, imported from`,
+			` * RocketChat/Rocket.Chat-Open-API. Kept here rather than in the route options: options are part`,
+			` * of the type every caller of the endpoint sees, and this many tags collapse it.`,
+			` */`,
+			`export const operationTags: Record<string, string[]> = ${JSON.stringify(
+				Object.fromEntries(Object.entries(operationTags).sort(([first], [second]) => first.localeCompare(second))),
+				null,
+				'\t',
+			)};`,
+			'',
+		].join('\n'),
+	);
+
+	console.log(`${path}: ${Object.keys(operationTags).length} operations grouped`);
 }

@@ -66,7 +66,6 @@ const customUserStatusEndpoints = API.v1.get(
 |7.0.0           | Added \`name\` and \`_id\` query parameters for filtering.      |
 |2.4.0            | Added       |`,
 		examples: customUserStatusExamples['custom-user-status.list'],
-		tags: ['Custom User Status'],
 		authRequired: true,
 		query: isCustomUserStatusListProps,
 		response: {
@@ -168,7 +167,6 @@ API.v1.post(
 | ---------------- | ------------|
 |2.4.0            | Added       |`,
 		examples: customUserStatusExamples['custom-user-status.create'],
-		tags: ['Custom User Status'],
 		authRequired: true,
 		body: isCustomUserStatusCreateProps,
 		response: {
@@ -226,7 +224,6 @@ API.v1.post(
 | ---------------- | ------------|
 |2.4.0            | Added       |`,
 		examples: customUserStatusExamples['custom-user-status.delete'],
-		tags: ['Custom User Status'],
 		authRequired: true,
 		body: isCustomUserStatusDeleteProps,
 		response: {
@@ -276,7 +273,6 @@ API.v1.post(
 | ---------------- | ------------|
 |2.4.0            | Added       |`,
 		examples: customUserStatusExamples['custom-user-status.update'],
-		tags: ['Custom User Status'],
 		authRequired: true,
 		body: isCustomUserStatusUpdateProps,
 		response: {

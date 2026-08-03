@@ -79,7 +79,6 @@ const livechatTagsEndpoints = API.v1
 
 Use this endpoint to create an Omnichannel tag. Permission required: \`manage-livechat-tags\``,
 			examples: tagsExamples['livechat/tags.save'],
-			tags: ['Omnichannel Tags'],
 			response: {
 				200: POSTLivechatTagsSaveSuccessResponse,
 				400: validateBadRequestErrorResponse,
@@ -112,7 +111,6 @@ This endpoint is used to delete an Omnichannel tag from the workspace. Permissio
 | ------------ | ------------|
 |7.12.0         | Added       |`,
 			examples: tagsExamples['livechat/tags.delete'],
-			tags: ['Omnichannel Tags'],
 			response: {
 				200: POSTLivechatTagsDeleteSuccessResponse,
 				400: validateBadRequestErrorResponse,

@@ -109,7 +109,6 @@ const pushTokenEndpoints = API.v1
 | ---------------- | ------------|
 |0.60.0            | Added       |`,
 			examples: pushExamples['push.token'],
-			tags: ['Push Notifications'],
 			response: {
 				200: ajv.compile<SuccessResult<{ result: PushTokenResult }>['body']>({
 					additionalProperties: false,
@@ -207,7 +206,6 @@ const pushTokenEndpoints = API.v1
 | ---------------- | ------------|
 |0.60.0            | Added       |`,
 			examples: pushExamples['push.token'],
-			tags: ['Push Notifications'],
 			response: {
 				200: ajv.compile<void>({
 					additionalProperties: false,
@@ -313,7 +311,6 @@ const pushGetInfoEndpoints = API.v1
 | ---------------- | ------------|
 |3.5.0            | Added       |`,
 			examples: pushExamples['push.get'],
-			tags: ['Push Notifications'],
 			authRequired: true,
 			query: isPushGetProps,
 			response: {
@@ -355,7 +352,6 @@ const pushGetInfoEndpoints = API.v1
 			summary: 'Get Push Info',
 			description: `This endpoint returns the status of push gateway in your workspace.`,
 			examples: pushExamples['push.info'],
-			tags: ['Push Notifications'],
 			authRequired: true,
 			response: {
 				200: pushInfoResponseSchema,
@@ -379,7 +375,6 @@ const pushTestEndpoints = API.v1.post(
 		description: `Use this endpoint to test the push notifications configuration. Permission required: \`test-push-notifications\`.
 By default, one request is allowed every 1000 milliseconds. To test successfully, make sure that you have logged into the workspace on the Rocket.Chat mobile app.`,
 		examples: pushExamples['push.test'],
-		tags: ['Push Notifications'],
 		authRequired: true,
 		rateLimiterOptions: {
 			numRequestsAllowed: 1,

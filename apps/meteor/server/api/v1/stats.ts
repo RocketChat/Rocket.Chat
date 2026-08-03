@@ -57,7 +57,6 @@ Permission required: \`view-statistics\`
 | ---------------- | ------------|
 |0.51.0            | Added       |`,
 		examples: statsExamples.statistics,
-		tags: ['Statistics'],
 		authRequired: true,
 		response: {
 			200: statisticsResponseSchema,
@@ -91,7 +90,6 @@ Permission required: \`view-statistics\`
 | ---------------- | ------------|
 |0.51.0            | Added       |`,
 		examples: statsExamples['statistics.list'],
-		tags: ['Statistics'],
 		authRequired: true,
 		response: {
 			200: statisticsListResponseSchema,

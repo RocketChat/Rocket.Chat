@@ -123,7 +123,6 @@ const dmDeleteEndpointsProps = {
 | ------------ | ------------|
 |3.18.0        | Added       |`,
 	examples: imExamples['im.delete'],
-	tags: ['Direct Messages'],
 	authRequired: true,
 	body: isDmDeleteProps,
 	response: {
@@ -165,7 +164,6 @@ const dmCloseEndpointsProps = {
 | ------------ | ------------|
 | 0.48.0       | Added       |`,
 	examples: imExamples['dm.close'],
-	tags: ['Direct Messages'],
 	authRequired: true,
 	body: isDmCloseProps,
 	response: {
@@ -259,7 +257,6 @@ const dmOpenEndpointsProps = {
 | ---------------- | ------------|
 | 0.48.0           | Added       |`,
 	examples: imExamples['dm.open'],
-	tags: ['Direct Messages'],
 	authRequired: true,
 	body: isDmOpenProps,
 	response: {
@@ -321,7 +318,6 @@ const dmSetTopicEndpointsProps = {
 | ---------------- | ------------|
 | 0.48.0           | Added       |`,
 	examples: imExamples['dm.setTopic'],
-	tags: ['Direct Messages'],
 	authRequired: true,
 	body: isDmSetTopicProps,
 	response: {
@@ -405,7 +401,6 @@ const dmCountersEndpointsProps = {
 | ---------------- | ------------|
 | 0.65.0           | Added       |`,
 	examples: imExamples['dm.counters'],
-	tags: ['Direct Messages'],
 	authRequired: true,
 	query: isDmCountersProps,
 	response: {
@@ -502,7 +497,6 @@ const dmFilesEndpointsProps = {
 |0.64.0            | Change \`userId\` to \`user\` object in response|
 |0.59.0            | Added       |`,
 	examples: imExamples['dm.files'],
-	tags: ['Direct Messages'],
 	authRequired: true,
 	query: isDmFileProps,
 	response: {
@@ -578,7 +572,6 @@ const dmMembersEndpointsProps = {
 | ---------------- | ------------|
 |0.59.0             | Added       |`,
 	examples: imExamples['dm.members'],
-	tags: ['Direct Messages'],
 	authRequired: true,
 	query: isDmMemberProps,
 	response: {
@@ -693,7 +686,6 @@ const dmMessagesEndpointsProps = {
 | 7.0.0  | Added \`mentionIds\`, \`starredIds\`, \`pinned\` query parameters.|         
 |0.59.0            | Added       |`,
 	examples: imExamples['dm.messages'],
-	tags: ['Direct Messages'],
 	authRequired: true,
 	query: isDmMessagesProps,
 	response: {
@@ -777,7 +769,6 @@ const dmHistoryEndpointsProps = {
 | 0.75.0  | Added \`offset\` property |
 | 0.48.0  | Added                   |`,
 	examples: imExamples['dm.history'],
-	tags: ['Direct Messages'],
 	authRequired: true,
 	query: isDmHistoryProps,
 	response: {
@@ -869,7 +860,6 @@ Permission required: \`view-room-administration\`.
 | ------- | ----------------------- |
 | 0.50.0  | Added                   |`,
 	examples: imExamples['dm.messages.others'],
-	tags: ['Direct Messages'],
 	authRequired: true as const,
 	permissionsRequired: ['view-room-administration'],
 	response: {
@@ -936,7 +926,6 @@ const dmListEndpointsProps = {
 | 0.49.0  | Count and offset query parameters supported. |
 | 0.48.0  | Added                                        |`,
 	examples: imExamples['dm.list'],
-	tags: ['Direct Messages'],
 	authRequired: true as const,
 	response: {
 		200: paginatedImsResponseSchema,
@@ -987,7 +976,6 @@ Permission required:\`view-room-administration\`.
 | ------------ | ------------|
 |0.49.0        | Added       |`,
 	examples: imExamples['dm.list.everyone'],
-	tags: ['Direct Messages'],
 	authRequired: true as const,
 	permissionsRequired: ['view-room-administration'],
 	response: {
@@ -1034,7 +1022,6 @@ const dmCreateEndpointsProps = {
 | 3.1.0   | Added usernames fields   |
 | 3.18.0  | Added excludeSelf option |`,
 	examples: imExamples['dm.create'],
-	tags: ['Direct Messages'],
 	authRequired: true,
 	body: isDmCreateProps,
 	response: {
@@ -1096,7 +1083,6 @@ const dmBlockUserEndpointsProps = {
 | ------------ | ------------|
 | 8.6.0        | Added       |`,
 	examples: imExamples['im.blockUser'],
-	tags: ['Direct Messages'],
 	authRequired: true,
 	body: isDmBlockUserProps,
 	response: {

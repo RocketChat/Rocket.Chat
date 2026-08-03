@@ -129,7 +129,6 @@ const livechatInquiriesEndpoints = API.v1.post(
 | ---------------- | ------------|
 |7.12.0            | Added       |`,
 		examples: inquiriesExamples['livechat/inquiries.returnAsInquiry'],
-		tags: ['Omnichannel Inquiries'],
 		response: {
 			200: POSTLivechatInquiriesReturnAsInquirySuccessResponse,
 			400: validateBadRequestErrorResponse,

@@ -87,7 +87,6 @@ const commandsEndpoints = API.v1
 | ---------------- | ------------|
 |0.60.2       | Added       |`,
 			examples: commandsExamples['commands.get'],
-			tags: ['Commands'],
 			authRequired: true,
 			query: isCommandsGetParams,
 			response: {
@@ -152,7 +151,6 @@ const commandsEndpoints = API.v1
 | ---------------- | ------------|
 |0.60.2      | Added       |`,
 			examples: commandsExamples['commands.list'],
-			tags: ['Commands'],
 			authRequired: true,
 			query: isCommandsListParams,
 			response: {
@@ -404,7 +402,6 @@ API.v1.post(
 |2.0.0      | Added \`tmid\` property      |
 |0.60.2      | Added        |`,
 		examples: commandsExamples['commands.run'],
-		tags: ['Commands'],
 		authRequired: true,
 		body: isCommandsRunProps,
 		response: {
@@ -456,7 +453,6 @@ API.v1.get(
 		summary: "Get Command's Preview Data",
 		description: `Fetches the command's preview data or executes the preview item`,
 		examples: commandsExamples['commands.preview'],
-		tags: ['Commands'],
 		authRequired: true,
 		query: isCommandsPreviewGetProps,
 		response: {
@@ -502,7 +498,6 @@ API.v1.post(
 |3.0.0      | Added \`tmid\` and \`triggerId\` fields       |
 |0.65.0      | Added|`,
 		examples: commandsExamples['commands.preview'],
-		tags: ['Commands'],
 		authRequired: true,
 		body: isCommandsPreviewPostProps,
 		response: {

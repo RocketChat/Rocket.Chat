@@ -88,7 +88,6 @@ const customSoundsEndpoints = API.v1
 | 2.4.0            | Added       |
 | 2.4.0            | Added \`name\` query parameter for filtering.      |`,
 			examples: customSoundsExamples['custom-sounds.list'],
-			tags: ['Custom Sounds'],
 			response: {
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
@@ -170,7 +169,6 @@ const customSoundsEndpoints = API.v1
 | ------- | ----------- |
 | 8.3.0   | Added       |`,
 			examples: customSoundsExamples['custom-sounds.getOne'],
-			tags: ['Custom Sounds'],
 			response: {
 				200: ajv.compile<{ sound: ICustomSound; success: boolean }>({
 					additionalProperties: false,
@@ -225,7 +223,6 @@ Permission required: \`manage-sounds\`
 | ------- | ----------- |
 | 8.5.0   | Added       |`,
 			examples: customSoundsExamples['custom-sounds.create'],
-			tags: ['Custom Sounds'],
 			response: {
 				200: createCustomSoundsResponse,
 				400: validateBadRequestErrorResponse,
@@ -288,7 +285,6 @@ Permission required: \`manage-sounds\`
 | ------- | ----------- |
 | 8.5.0   | Added       |`,
 			examples: customSoundsExamples['custom-sounds.update'],
-			tags: ['Custom Sounds'],
 			response: {
 				200: updateCustomSoundsResponse,
 				400: validateBadRequestErrorResponse,
@@ -367,7 +363,6 @@ Permission required: \`manage-sounds\`
 | ------- | ----------- |
 | 8.6.0   | Added       |`,
 			examples: customSoundsExamples['custom-sounds.delete'],
-			tags: ['Custom Sounds'],
 			response: {
 				200: deleteCustomSoundsResponse,
 				400: validateBadRequestErrorResponse,

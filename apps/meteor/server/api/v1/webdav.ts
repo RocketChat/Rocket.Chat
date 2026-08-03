@@ -20,7 +20,6 @@ const webdavGetMyAccountsEndpoints = API.v1.get(
 | ---------------- | ------------|
 |2.4.0            | Added       |`,
 		examples: webdavExamples['webdav.getMyAccounts'],
-		tags: ['WebDAV'],
 		authRequired: true,
 		response: {
 			200: ajv.compile<{
@@ -91,7 +90,6 @@ const webdavRemoveAccountEndpoints = API.v1.post(
 		summary: 'Remove WebDAV Account',
 		description: `Remove a specific WebDAV account.`,
 		examples: webdavExamples['webdav.removeWebdavAccount'],
-		tags: ['WebDAV'],
 		authRequired: true,
 		validateParams: isPOSTRemoveWebdavAccount,
 		body: isPOSTRemoveWebdavAccount,

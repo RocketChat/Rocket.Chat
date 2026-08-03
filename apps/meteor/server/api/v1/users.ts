@@ -145,7 +145,6 @@ API.v1.post(
 |0.48.0            | Renamed to \`users.update\`       |
 |0.35.0            | Added       |`,
 		examples: usersExamples['users.update'],
-		tags: ['Users'],
 		authRequired: true,
 		twoFactorRequired: true,
 		body: isUsersUpdateParamsPOST,
@@ -205,7 +204,6 @@ API.v1
 |6.4.0            | Add \`bio\` and \`statusType\` parameters.       |
 |0.62.2            | Added       |`,
 			examples: usersExamples['users.updateOwnBasicInfo'],
-			tags: ['Users'],
 			authRequired: true,
 			userWithoutUsername: true,
 			body: isUsersUpdateOwnBasicInfoParamsPOST,
@@ -262,7 +260,6 @@ API.v1
 |8.6.0            | Added \`utcOffset\` property.       |
 |2.3.0            | Added \`desktopNotificationRequireInteraction\` property.       |`,
 			examples: usersExamples['users.setPreferences'],
-			tags: ['Users'],
 			authRequired: true,
 			body: isUsersSetPreferencesParamsPOST,
 			response: {
@@ -323,7 +320,6 @@ API.v1
 |0.48.0            | Set other users avatars if the callee has permission.       |
 |0.46.0            | Added       |`,
 			examples: usersExamples['users.setAvatar'],
-			tags: ['Users'],
 			authRequired: true,
 			body: isUsersSetAvatarProps,
 			response: {
@@ -423,7 +419,6 @@ API.v1
 |0.45.0            | Users created via this now join the default channels.       |
 |0.40.0            | Added       |`,
 			examples: usersExamples['users.create'],
-			tags: ['Users'],
 			authRequired: true,
 			body: isUserCreateParamsPOST,
 			response: {
@@ -484,7 +479,6 @@ API.v1.post(
 |3.7.0            | Added \`confirmRelinquish\` to the payload.       |
 |0.35.0            | Added       |`,
 		examples: usersExamples['users.delete'],
-		tags: ['Users'],
 		authRequired: true,
 		permissionsRequired: ['delete-user'],
 		body: ajv.compile<{ userId?: string; username?: string; user?: string; confirmRelinquish?: boolean }>({
@@ -534,7 +528,6 @@ API.v1.post(
 |3.7.0            | Added \`confirmRelinquish\` to the payload.       |
 |0.67.0            | Added       |`,
 		examples: usersExamples['users.deleteOwnAccount'],
-		tags: ['Users'],
 		authRequired: true,
 		body: ajv.compile<{ password: string; confirmRelinquish?: boolean }>({
 			type: 'object',
@@ -590,7 +583,6 @@ When a user is deactivated (\`activeStatus=false\`), Rocket.Chat revokes all of 
 |3.7.0            | Added \`confirmRelinquish\` to the payload.       |
 |0.75.0            | Added       |`,
 		examples: usersExamples['users.setActiveStatus'],
-		tags: ['Users'],
 		authRequired: true,
 		body: isUserSetActiveStatusParamsPOST,
 		permissionsRequired: {
@@ -648,7 +640,6 @@ Permission required: \`edit-other-user-active-status\`
 |8.5.0            | Added login and OAuth token revocation for users deactivated by this endpoint. |
 |3.1.0            | Added       |`,
 		examples: usersExamples['users.deactivateIdle'],
-		tags: ['Users'],
 		authRequired: true,
 		body: isUserDeactivateIdleParamsPOST,
 		permissionsRequired: ['edit-other-user-active-status'],
@@ -718,7 +709,6 @@ API.v1.get(
 |0.48.0            | Renamed to \`users.info\`       |
 |0.35.0            | Added       |`,
 		examples: usersExamples['users.info'],
-		tags: ['Users'],
 		authRequired: true,
 		query: isUsersInfoParamsGetProps,
 		response: {
@@ -920,7 +910,6 @@ API.v1.get(
 | ---------------- | ------------|
 |6.8.0            | Added       |`,
 		examples: usersExamples['users.listByStatus'],
-		tags: ['Users'],
 		authRequired: true,
 		query: isUsersListStatusProps,
 		permissionsRequired: ['view-d-room'],
@@ -985,7 +974,6 @@ Permission required: \`send-mail\`
 | ------------ | ------------|
 |6.8.0         | Added       |`,
 		examples: usersExamples['users.sendWelcomeEmail'],
-		tags: ['Users'],
 		authRequired: true,
 		body: isUsersSendWelcomeEmailProps,
 		permissionsRequired: ['send-mail'],
@@ -1037,7 +1025,6 @@ API.v1.post(
 | ---------------- | ------------|
 |0.50.0            | Added       |`,
 		examples: usersExamples['users.register'],
-		tags: ['Users'],
 		authRequired: false,
 		rateLimiterOptions: {
 			numRequestsAllowed: settings.get('Rate_Limiter_Limit_RegisterUser') ?? 1,
@@ -1119,7 +1106,6 @@ Permissions required, if the setting \`AllowUserAvatarChange\` is enabled:
   | ---------------- | ------------|
   |0.55.0            | Added       |`,
 		examples: usersExamples['users.resetAvatar'],
-		tags: ['Users'],
 		authRequired: true,
 		body: ajv.compile<{ userId?: string; username?: string; user?: string }>({
 			type: 'object',
@@ -1175,7 +1161,6 @@ const usersEndpoints = API.v1
   |2.1.0            | Added ENV VAR to be able to use this endpoint (process.env.CREATE_TOKENS_FOR_USERS).       |
   |0.56.0            | Added       |`,
 			examples: usersExamples['users.createToken'],
-			tags: ['Users'],
 			authRequired: true,
 			body: ajv.compile<{ userId: string; secret: string }>({
 				type: 'object',
@@ -1245,7 +1230,6 @@ const usersEndpoints = API.v1
 			summary: 'Get Avatar Suggestion',
 			description: `Use this endpoint to get suggestions for your workspace avatar image. The endpoint may return an empty string if no images associated with your email ID are found.`,
 			examples: usersExamples['users.getAvatarSuggestion'],
-			tags: ['Users'],
 			authRequired: true,
 			response: {
 				400: validateBadRequestErrorResponse,
@@ -1309,7 +1293,6 @@ API.v1.get(
 		summary: "Get User's Preferences",
 		description: `Gets all the preferences of the authenticated user in the workspace.`,
 		examples: usersExamples['users.getPreferences'],
-		tags: ['Users'],
 		authRequired: true,
 		response: {
 			200: ajv.compile<{ preferences: Record<string, unknown> }>({
@@ -1353,7 +1336,6 @@ To use this endpoint, the \`PasswordReset\` setting must be enabled in **Setting
 | ---------------- | ------------|
 |0.64.0            | Added       |`,
 			examples: usersExamples['users.forgotPassword'],
-			tags: ['Users'],
 			authRequired: false,
 			body: ajv.compile<{ email: string }>({
 				type: 'object',
@@ -1397,7 +1379,6 @@ To use this endpoint, the \`PasswordReset\` setting must be enabled in **Setting
 | ---------------- | ------------|
 |0.65.0            | Added       |`,
 			examples: usersExamples['users.getUsernameSuggestion'],
-			tags: ['Users'],
 			authRequired: true,
 			userWithoutUsername: true,
 			response: {
@@ -1452,7 +1433,6 @@ API.v1
 			summary: 'Check Username Availability',
 			description: `Check if the username is available or used by another user`,
 			examples: usersExamples['users.checkUsernameAvailability'],
-			tags: ['Users'],
 			authRequired: true,
 			query: isUsersCheckUsernameAvailabilityParamsGET,
 			response: {
@@ -1495,7 +1475,6 @@ Visit the <a href="https://docs.rocket.chat/docs/manage-personal-access-tokens" 
 |3.1.0            | Added \`bypassTwoFactor\` param       |
 |0.69.0            | Added       |`,
 			examples: usersExamples['users.generatePersonalAccessToken'],
-			tags: ['Users'],
 			authRequired: true,
 			twoFactorRequired: true,
 			body: tokenNameBodySchema,
@@ -1524,7 +1503,6 @@ This endpoint requires 2FA.
 | ---------------- | ------------|
 |0.69.0            | Added       |`,
 			examples: usersExamples['users.regeneratePersonalAccessToken'],
-			tags: ['Users'],
 			authRequired: true,
 			twoFactorRequired: true,
 			body: ajv.compile<{ tokenName: string }>({
@@ -1559,7 +1537,6 @@ This endpoint requires 2FA.
 | ---------------- | ------------|
 |0.69.0            | Added       |`,
 			examples: usersExamples['users.getPersonalAccessTokens'],
-			tags: ['Users'],
 			authRequired: true,
 			permissionsRequired: ['create-personal-access-tokens'],
 			response: {
@@ -1616,7 +1593,6 @@ This endpoint requires 2FA.
 | ---------------- | ------------|
 |0.69.0            | Added       |`,
 			examples: usersExamples['users.removePersonalAccessToken'],
-			tags: ['Users'],
 			authRequired: true,
 			twoFactorRequired: true,
 			body: ajv.compile<{ tokenName: string }>({
@@ -1646,7 +1622,6 @@ API.v1
 		{
 			summary: 'Enable 2FA via Email',
 			description: `Enable email two-factor authentication for your account. This endpoint only works if the user has at least one verified email.`,
-			tags: ['Two-Factor Authentication'],
 			authRequired: true,
 			response: {
 				200: voidSuccessResponse,
@@ -1698,7 +1673,6 @@ API.v1
 			summary: 'Disable 2FA via Email',
 			description: `Disable two-factor authentication via email. The 2FA code is required.`,
 			examples: usersExamples['users.2fa.disableEmail'],
-			tags: ['Two-Factor Authentication'],
 			authRequired: true,
 			twoFactorRequired: true,
 			twoFactorOptions: { disableRememberMe: true },
@@ -1732,7 +1706,6 @@ API.v1
 		{
 			summary: 'Send 2FA Email Code',
 			examples: usersExamples['users.2fa.sendEmailCode'],
-			tags: ['Two-Factor Authentication'],
 			body: ajv.compile<{ emailOrUsername: string }>({
 				type: 'object',
 				properties: {
@@ -1779,7 +1752,6 @@ API.v1.post(
  | ---------- | -------------------------------------- |
  | 8.6.0 | Authentication is no longer required.  |`,
 		examples: usersExamples['users.sendConfirmationEmail'],
-		tags: ['Users'],
 		authRequired: false,
 		body: isUsersSendConfirmationEmailParamsPOST,
 		rateLimiterOptions: {
@@ -1811,7 +1783,6 @@ If the \`Presence_broadcast_disabled\` setting is true, the endpoint returns an 
 |8.5.0            | Restored comma-separated \`ids\` query parameter support.       |
 |1.1.0            | Added       |`,
 		examples: usersExamples['users.presence'],
-		tags: ['Users'],
 		authRequired: true,
 		query: isUsersPresenceParamsGET,
 		response: {
@@ -1891,7 +1862,6 @@ API.v1
 | ---------------- | ------------|
 |1.2.0            | Added as \`users.requestDataDownload\`       |`,
 			examples: usersExamples['users.requestDataDownload'],
-			tags: ['Users'],
 			authRequired: true,
 			query: isUsersRequestDataDownloadParamsGET,
 			response: {
@@ -1934,7 +1904,6 @@ API.v1
 			summary: 'Logout Other Clients',
 			description: `Logs out of user sessions in other clients while keeping the current session active. The response the current token and its expiration date. Requires the \`LoginExpiration\` settings enabled in **Accounts** > **Login Expiration in Days** which defines how long a login token remains valid before expiration.`,
 			examples: usersExamples['users.logoutOtherClients'],
-			tags: ['Users'],
 			authRequired: true,
 			response: {
 				200: ajv.compile<{ token: string; tokenExpires: string }>({
@@ -1989,7 +1958,6 @@ API.v1.get(
 		summary: 'Autocomplete User',
 		description: `List the users whose names match a given pattern.`,
 		examples: usersExamples['users.autocomplete'],
-		tags: ['Users'],
 		authRequired: true,
 		query: isUsersAutocompleteProps,
 		response: {
@@ -2045,7 +2013,6 @@ API.v1
 | Version      | Description |
 | ---------------- | ------------|
 |3.1.0            | Added       |`,
-			tags: ['Users'],
 			authRequired: true,
 			response: {
 				200: voidSuccessResponse,
@@ -2070,7 +2037,6 @@ API.v1
 | ---------------- | ------------|
 |3.6.0            | Added       |`,
 			examples: usersExamples['users.resetE2EKey'],
-			tags: ['Users'],
 			authRequired: true,
 			twoFactorRequired: true,
 			twoFactorOptions: { disableRememberMe: true },
@@ -2123,7 +2089,6 @@ API.v1
 | ---------------- | ------------|
 |3.6.0            | Added       |`,
 			examples: usersExamples['users.resetTOTP'],
-			tags: ['Users'],
 			authRequired: true,
 			twoFactorRequired: true,
 			twoFactorOptions: { disableRememberMe: true },
@@ -2173,7 +2138,6 @@ API.v1
 			summary: "List User's Teams",
 			description: `Get the list of teams that a specific user is a member of. The teams returned by the endpoint depend on your permissions. To view all teams, you need the \`view-all-teams\` permission.`,
 			examples: usersExamples['users.listTeams'],
-			tags: ['Users'],
 			authRequired: true,
 			query: isUsersListTeamsProps,
 			response: {
@@ -2216,7 +2180,6 @@ API.v1
 			summary: 'Logout User',
 			description: `Log out of your account. You can also log out of another user's session. You will need the \`logout-other-user\` permission.`,
 			examples: usersExamples['users.logout'],
-			tags: ['Users'],
 			authRequired: true,
 			body: isUserLogoutParamsPOST,
 			response: {
@@ -2278,7 +2241,6 @@ API.v1
 |0.48.0            | Renamed to \`users.getPresence\`       |
 |0.35.0            | Added       |`,
 			examples: usersExamples['users.getPresence'],
-			tags: ['Users'],
 			authRequired: true,
 			query: isUsersGetPresenceParamsGET,
 			response: {
@@ -2328,7 +2290,6 @@ API.v1
   |8.6.0            | Added \`expiresAt\` request parameter for timed status expiration. |
   |1.2.0            | Added       |`,
 			examples: usersExamples['users.setStatus'],
-			tags: ['Users'],
 			authRequired: true,
 			rateLimiterOptions: {
 				numRequestsAllowed: 5,
@@ -2436,7 +2397,6 @@ API.v1
 |8.6.0            | Added \`statusSource\` and \`statusExpiresAt\` response fields. |
 |1.2.0            | Added       |`,
 			examples: usersExamples['users.getStatus'],
-			tags: ['Users'],
 			authRequired: true,
 			query: isUsersGetStatusParamsGET,
 			response: {
@@ -2490,7 +2450,6 @@ API.v1.post(
 | ---------------- | ------------|
 |8.7.0            | Added       |`,
 		examples: usersExamples['users.verifyEmail'],
-		tags: ['Users'],
 		authRequired: false,
 		body: ajv.compile<{ token: string }>({
 			type: 'object',

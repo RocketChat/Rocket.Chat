@@ -95,7 +95,6 @@ const permissionsEndpoints = API.v1
 | ---------------- | ------------|
 |0.73.0            | Added       |`,
 			examples: permissionsExamples['permissions.listAll'],
-			tags: ['Permissions'],
 			authRequired: true,
 			query: isPermissionsListAll,
 			response: {
@@ -163,7 +162,6 @@ Permission required: \`access-permissions\`
 | ---------------- | ------------|
 |0.66.0            | Added       |`,
 			examples: permissionsExamples['permissions.update'],
-			tags: ['Permissions'],
 			authRequired: true,
 			permissionsRequired: ['access-permissions'],
 			body: isBodyParamsValidPermissionUpdate,
@@ -240,7 +238,6 @@ To modify a setting-level permission, the \`access-setting-permissions\` permiss
 | ---------------- | ------------|
 |8.7.0            | Added       |`,
 			examples: permissionsExamples['permissions.addRole'],
-			tags: ['Permissions'],
 			authRequired: true,
 			permissionsRequired: ['access-permissions'],
 			body: isPermissionRolePayload,
@@ -272,7 +269,6 @@ To modify a setting-level permission, the \`access-setting-permissions\` permiss
 | ---------------- | ------------|
 |8.7.0            | Added       |`,
 			examples: permissionsExamples['permissions.removeRole'],
-			tags: ['Permissions'],
 			authRequired: true,
 			permissionsRequired: ['access-permissions'],
 			body: isPermissionRolePayload,

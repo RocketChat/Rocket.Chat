@@ -28,7 +28,6 @@ Make sure LDAP is enabled in **Settings** > **LDAP** > **Enable** before using t
 
 Permission required: \`test-admin-options\``,
 		examples: ldapExamples['ldap.testConnection'],
-		tags: ['LDAP'],
 		authRequired: true,
 		permissionsRequired: ['test-admin-options'],
 		response: {
@@ -68,7 +67,6 @@ Make sure LDAP is enabled in **Settings** > **LDAP** > **Enable** before using t
 
 Permission required: \`test-admin-options\``,
 		examples: ldapExamples['ldap.testSearch'],
-		tags: ['LDAP'],
 		authRequired: true,
 		permissionsRequired: ['test-admin-options'],
 		body: isLdapTestSearch,

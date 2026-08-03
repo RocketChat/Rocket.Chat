@@ -153,7 +153,6 @@ API.v1.get(
 |7.0.0            | Added the \`_id\` query parameter for filtering.|
 |7.0.0            | Removed the \`query\` parameter.      |`,
 		examples: settingsExamples['settings.public'],
-		tags: ['Settings'],
 		authRequired: false,
 		query: isSettingsPublicWithPaginationProps,
 		response: {
@@ -196,7 +195,6 @@ API.v1.get(
 |0.64.0            | Renamed field \`appId\` to \`clientId\` and added flag \`custom\` to indicate whether the OAuth service is customized and fix \`id\` inconsistence (set all cases to \`_id\`)       |
 |0.63.0            | Added       |`,
 		examples: settingsExamples['settings.oauth'],
-		tags: ['Settings'],
 		authRequired: false,
 		response: {
 			200: settingsOAuthResponseSchema,
@@ -249,7 +247,6 @@ API.v1.post(
 		summary: 'Add Custom OAuth',
 		description: `Add a <a href=" https://docs.rocket.chat/docs/oauth#add-custom-oauth" target="_blank">custom OAuth integration</a> to your workspace.`,
 		examples: settingsExamples['settings.addCustomOAuth'],
-		tags: ['Settings'],
 		authRequired: true,
 		twoFactorRequired: true,
 		permissionsRequired: {
@@ -345,7 +342,6 @@ API.v1.get(
 		summary: 'Get Private Settings',
 		description: `List all private settings. Learn how this can be used in configuring your server in this <a href="https://docs.rocket.chat/docs/deployment-environment-variables" target="_blank">guide</a>.`,
 		examples: settingsExamples.settings,
-		tags: ['Settings'],
 		authRequired: true,
 		query: isSettingsGetParams,
 		response: {
@@ -394,7 +390,6 @@ Permission required: \`view-privileged-setting\`
 | ---------------- | ------------|
 |0.42.0            | Added       |`,
 		examples: settingsExamples['settings/:_id'],
-		tags: ['Settings'],
 		authRequired: true,
 		permissionsRequired: {
 			GET: { permissions: ['view-privileged-setting'], operation: 'hasAll' },
@@ -452,7 +447,6 @@ For example, the following code in \`settings.js\` file:
   | ---------------- | ------------|
   |0.65.0            | Added option to set a color and trigger an action       |
   |0.42.0            | Added       |`,
-		tags: ['Settings'],
 		authRequired: true,
 		permissionsRequired: {
 			POST: { permissions: ['edit-privileged-setting'], operation: 'hasAll' },
@@ -563,7 +557,6 @@ Permission required: \`edit-privileged-setting\`
 | ---------------- | ------------|
 |8.6.0            | Added       |`,
 		examples: settingsExamples.settings,
-		tags: ['Settings'],
 		authRequired: true,
 		twoFactorRequired: true,
 		twoFactorOptions: { disableRememberMe: true },
@@ -599,7 +592,6 @@ API.v1.get(
 		summary: 'Get OAuth Service Configuration',
 		description: `List out all the active OAuth services configured with details.`,
 		examples: settingsExamples['service.configurations'],
-		tags: ['Settings'],
 		authRequired: false,
 		response: {
 			200: serviceConfigurationsResponseSchema,

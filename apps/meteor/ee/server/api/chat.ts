@@ -50,7 +50,6 @@ Get the <a href='https://docs.rocket.chat/docs/message-actions#read-receipts' ta
 | ---------------- | ------------|
 | 0.63.0          | Added       |`,
 		examples: chatExamples['chat.getMessageReadReceipts'],
-		tags: ['Chat'],
 		authRequired: true,
 		query: isChatGetMessageReadReceiptsProps,
 		response: {

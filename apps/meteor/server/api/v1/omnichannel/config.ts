@@ -56,7 +56,6 @@ const livechatConfigEndpoints = API.v1.get(
 | ---------------- | ------------|
 |7.11.0            | Added       |`,
 		examples: configExamples['livechat/config/routing'],
-		tags: ['Livechat'],
 		response: {
 			200: GETLivechatConfigRouting,
 		},

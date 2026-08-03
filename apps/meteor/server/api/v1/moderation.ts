@@ -209,7 +209,6 @@ Permission required: \`view-moderation-console\`
 | ---------------- | ------------|
 |6.2.0            | Added       |`,
 		examples: moderationExamples['moderation.reportsByUsers'],
-		tags: ['Moderation'],
 		authRequired: true,
 		permissionsRequired: ['view-moderation-console'],
 		query: isReportHistoryProps,
@@ -263,7 +262,6 @@ API.v1.get(
 		summary: 'Get Reported Users',
 		description: `Get the list of reported users. Permission required: \`view-moderation-console\``,
 		examples: moderationExamples['moderation.userReports'],
-		tags: ['Moderation'],
 		authRequired: true,
 		permissionsRequired: ['view-moderation-console'],
 		query: isReportHistoryProps,
@@ -324,7 +322,6 @@ Permission required: \`view-moderation-console\`
 | ---------------- | ------------|
 |6.2.0            | Added       |`,
 		examples: moderationExamples['moderation.user.reportedMessages'],
-		tags: ['Moderation'],
 		authRequired: true,
 		permissionsRequired: ['view-moderation-console'],
 		query: isGetUserReportsParams,
@@ -382,7 +379,6 @@ API.v1.get(
 		summary: 'Get User Reports by User ID',
 		description: `Get the details of a specific user's reports. Permission required: \`view-moderation-console\``,
 		examples: moderationExamples['moderation.user.reportsByUserId'],
-		tags: ['Moderation'],
 		authRequired: true,
 		permissionsRequired: ['view-moderation-console'],
 		query: isGetUserReportsParams,
@@ -451,7 +447,6 @@ API.v1.post(
 | Version      | Description |
 | ---------------- | ------------|
 |6.2.0            | Added       |`,
-		tags: ['Moderation'],
 		authRequired: true,
 		permissionsRequired: ['manage-moderation-actions'],
 		body: isModerationDeleteMsgHistoryParams,
@@ -504,7 +499,6 @@ Permission required: \`manage-moderation-actions\`
 | Version      | Description |
 | ---------------- | ------------|
 |6.2.0            | Added       |`,
-		tags: ['Moderation'],
 		authRequired: true,
 		permissionsRequired: ['manage-moderation-actions'],
 		body: isArchiveReportProps,
@@ -553,7 +547,6 @@ API.v1.post(
 		summary: 'Dismiss User Reports',
 		description: `Dismiss a specific reported user from the list of reported users. Permission required: \`manage-moderation-actions\``,
 		examples: moderationExamples['moderation.dismissUserReports'],
-		tags: ['Moderation'],
 		authRequired: true,
 		permissionsRequired: ['manage-moderation-actions'],
 		body: isArchiveReportProps,
@@ -617,7 +610,6 @@ Permission required: \`view-moderation-console\`
 | ---------------- | ------------|
 |6.2.0            | Added       |`,
 		examples: moderationExamples['moderation.reports'],
-		tags: ['Moderation'],
 		authRequired: true,
 		permissionsRequired: ['view-moderation-console'],
 		query: isReportsByMsgIdParams,
@@ -660,7 +652,6 @@ Permission required: \`view-moderation-console\`
 | Version      | Description |
 | ---------------- | ------------|
 |6.2.0            | Added       |`,
-		tags: ['Moderation'],
 		authRequired: true,
 		permissionsRequired: ['view-moderation-console'],
 		query: isReportInfoParams,
@@ -695,7 +686,6 @@ API.v1.post(
 | ---------------- | ------------|
 |6.4.0            | Added       |`,
 		examples: moderationExamples['moderation.reportUser'],
-		tags: ['Users'],
 		authRequired: true,
 		body: isModerationReportUserPost,
 		response: {

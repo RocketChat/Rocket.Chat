@@ -338,7 +338,6 @@ const livechatVisitorDepartmentTransfer = API.v1.post(
 		summary: 'Visitor Transfer Room',
 		description: `This endpoint can be used by visitors to transfer an ongoing chat to another department.`,
 		examples: roomExamples['livechat/visitor/department.transfer'],
-		tags: ['Omnichannel Rooms'],
 		response: {
 			200: ajv.compile<void>({
 				type: 'object',
@@ -494,7 +493,6 @@ const livechatRoomsEndpoints = API.v1
 | ---------------- | ------------|
 |7.12.0            | Added       |`,
 			examples: roomExamples['livechat/rooms.delete'],
-			tags: ['Omnichannel Rooms'],
 			response: {
 				200: POSTLivechatRemoveRoomSuccess,
 				400: validateBadRequestErrorResponse,
@@ -533,7 +531,6 @@ Permission required: \`remove-closed-livechat-rooms\`. (On the workspace UI, go 
 | ---------------- | ------------|
 |7.11.0            | Added       |`,
 			examples: roomExamples['livechat/rooms.removeAllClosedRooms'],
-			tags: ['Omnichannel Rooms'],
 			response: {
 				200: isPOSTLivechatRoomsCloseAllSuccessResponse,
 			},

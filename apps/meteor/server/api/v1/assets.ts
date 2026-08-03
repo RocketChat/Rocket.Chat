@@ -33,7 +33,6 @@ API.v1.post(
 | ---------------- | ------------|
 |0.69.0           | Added       |`,
 		examples: assetsExamples['assets.setAsset'],
-		tags: ['Assets'],
 		authRequired: true,
 		permissionsRequired: ['manage-assets'],
 		response: {
@@ -95,7 +94,6 @@ API.v1.post(
 | ---------------- | ------------|
 |0.69.0           | Added       |`,
 		examples: assetsExamples['assets.unsetAsset'],
-		tags: ['Assets'],
 		authRequired: true,
 		body: isAssetsUnsetAssetProps,
 		permissionsRequired: ['manage-assets'],

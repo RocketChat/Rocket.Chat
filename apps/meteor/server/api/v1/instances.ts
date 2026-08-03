@@ -20,7 +20,6 @@ API.v1.get(
 		summary: 'Get Instances',
 		description: `Get the instances running for the workspace. Permission required: \`view-statistics\``,
 		examples: instancesExamples['instances.get'],
-		tags: ['Instances'],
 		authRequired: true,
 		permissionsRequired: ['view-statistics'],
 		response: {

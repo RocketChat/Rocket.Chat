@@ -80,7 +80,6 @@ API.v1.post(
 | ---------------- | ------------|
 |3.0.0            | Added       |`,
 		examples: importExamples.uploadImportFile,
-		tags: ['Import'],
 		authRequired: true,
 		permissionsRequired: ['run-import'],
 		body: isUploadImportFileParamsPOST,
@@ -112,7 +111,6 @@ Permission required: \`run-import\`
 | ---------------- | ------------|
 |3.0.0            | Added       |`,
 		examples: importExamples.downloadPublicImportFile,
-		tags: ['Import'],
 		authRequired: true,
 		permissionsRequired: ['run-import'],
 		body: isDownloadPublicImportFileParamsPOST,
@@ -144,7 +142,6 @@ Permission required: \`run-import\`
 |7.0.0            | Remove required extra data from \`users\` and \`channels\` parameters. Use only record ID of the users or channels.   |
 |3.0.0            | Added       |`,
 		examples: importExamples.startImport,
-		tags: ['Import'],
 		authRequired: true,
 		permissionsRequired: ['run-import'],
 		body: isStartImportParamsPOST,
@@ -175,7 +172,6 @@ Permission required: \`run-import\`
 | ---------------- | ------------|
 |3.0.0            | Added       |`,
 		examples: importExamples.getImportFileData,
-		tags: ['Import'],
 		authRequired: true,
 		permissionsRequired: ['run-import'],
 		query: isGetImportFileDataParamsGET,
@@ -204,7 +200,6 @@ Permission required: \`run-import\`
 | ---------------- | ------------|
 |3.0.0            | Added       |`,
 		examples: importExamples.getImportProgress,
-		tags: ['Import'],
 		authRequired: true,
 		permissionsRequired: ['run-import'],
 		query: isGetImportProgressParamsGET,
@@ -233,7 +228,6 @@ Permission required: \`view-import-operations\`
 | ---------------- | ------------|
 |3.0.0            | Added       |`,
 		examples: importExamples.getLatestImportOperations,
-		tags: ['Import'],
 		authRequired: true,
 		permissionsRequired: ['view-import-operations'],
 		query: isGetLatestImportOperationsParamsGET,
@@ -267,7 +261,6 @@ Permission required: \`run-import\`
 | ---------------- | ------------|
 |3.0.0            | Added       |`,
 		examples: importExamples.downloadPendingFiles,
-		tags: ['Import'],
 		authRequired: true,
 		permissionsRequired: ['run-import'],
 		body: isDownloadPendingFilesParamsPOST,
@@ -305,7 +298,6 @@ Permission required: \`run-import\`
 | ---------------- | ------------|
 |3.0.0            | Added       |`,
 		examples: importExamples.downloadPendingAvatars,
-		tags: ['Import'],
 		authRequired: true,
 		permissionsRequired: ['run-import'],
 		body: isDownloadPendingAvatarsParamsPOST,
@@ -343,7 +335,6 @@ Permission required: \`run-import\`
 | ---------------- | ------------|
 |3.0.0            | Added       |`,
 		examples: importExamples.getCurrentImportOperation,
-		tags: ['Import'],
 		authRequired: true,
 		permissionsRequired: ['run-import'],
 		query: isGetCurrentImportOperationParamsGET,
@@ -369,7 +360,6 @@ API.v1.get(
 		summary: 'Get List of Imports',
 		description: `Use this endpoint to view the list of imports in the workspace. Permission required: \`run-import\``,
 		examples: importExamples['importers.list'],
-		tags: ['Import'],
 		authRequired: true,
 		permissionsRequired: ['run-import'],
 		query: isImportersListParamsGET,
@@ -397,7 +387,6 @@ Permission required: \`run-import\`
 | Version      | Description |
 | ---------------- | ------------|
 |6.3.0            | Added       |`,
-		tags: ['Bulk User Import'],
 		authRequired: true,
 		permissionsRequired: ['run-import'],
 		response: {
@@ -424,7 +413,6 @@ Permission required: \`run-import\`
 | ---------------- | ------------|
 |6.3.0            | Added       |`,
 		examples: importExamples['import.new'],
-		tags: ['Bulk User Import'],
 		authRequired: true,
 		permissionsRequired: ['run-import'],
 		response: {
@@ -450,7 +438,6 @@ API.v1.get(
 | ---------------- | ------------|
 |6.3.0            | Added       |`,
 		examples: importExamples['import.status'],
-		tags: ['Bulk User Import'],
 		authRequired: true,
 		permissionsRequired: ['run-import'],
 		response: {
@@ -477,7 +464,6 @@ Permission required: \`run-import\`
 | ---------------- | ------------|
 |6.3.0            | Added       |`,
 		examples: importExamples['import.addUsers'],
-		tags: ['Bulk User Import'],
 		authRequired: true,
 		permissionsRequired: ['run-import'],
 		body: isImportAddUsersParamsPOST,
@@ -512,7 +498,6 @@ Permission required: \`run-import\`
 | Version      | Description |
 | ---------------- | ------------|
 |6.3.0            | Added       |`,
-		tags: ['Bulk User Import'],
 		authRequired: true,
 		permissionsRequired: ['run-import'],
 		response: {

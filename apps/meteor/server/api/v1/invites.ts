@@ -73,7 +73,6 @@ const invites = API.v1
 
 <a href="https://docs.rocket.chat/docs/permissions" target="_blank">Permission</a> required: \`create-invite-links\``,
 			examples: invitesExamples.listInvites,
-			tags: ['Room Invites'],
 			authRequired: true,
 			response: {
 				200: ajv.compile<IInvite[]>({
@@ -120,7 +119,6 @@ const invites = API.v1
 
 <a href="https://docs.rocket.chat/docs/permissions" target="_blank">Permission</a> required: \`create-invite-links\``,
 			examples: invitesExamples.findOrCreateInvite,
-			tags: ['Room Invites'],
 			authRequired: true,
 			body: isFindOrCreateInviteParams,
 			response: {
@@ -238,7 +236,6 @@ const invites = API.v1
 
 <a href='https://docs.rocket.chat/docs/permissions' target='_blank'>Permission</a> required: \`create-invite-links\``,
 			examples: invitesExamples['removeInvite/:_id'],
-			tags: ['Room Invites'],
 			authRequired: true,
 			response: {
 				200: removeInviteResponseSchema,
@@ -271,7 +268,6 @@ before they can join via an invite token.
 |---------|--------|
 | 8.4.0   | Added ban check — banned users can no longer join via invite token |`,
 			examples: invitesExamples.useInviteToken,
-			tags: ['Room Invites'],
 			authRequired: true,
 			body: isUseInviteTokenProps,
 			response: {
@@ -310,7 +306,6 @@ before they can join via an invite token.
 			summary: 'Send Invitation Email',
 			description: `Send workspace invitation emails using this endpoint.`,
 			examples: invitesExamples.sendInvitationEmail,
-			tags: ['Users'],
 			authRequired: true,
 			body: isSendInvitationEmailParams,
 			response: {

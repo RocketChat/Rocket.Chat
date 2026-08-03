@@ -129,7 +129,6 @@ const oauthAppsEndpoints = API.v1
 | ---------------- | ------------|
 |2.4.0            | Added       |`,
 			examples: oauthappsExamples['oauth-apps.list'],
-			tags: ['OAuth Apps'],
 			authRequired: true,
 			query: ajvQuery.compile<{ uid?: string }>({
 				type: 'object',
@@ -177,7 +176,6 @@ const oauthAppsEndpoints = API.v1
 			summary: 'Delete OAuth App',
 			description: `Permission required: \`manage-oauth-apps\``,
 			examples: oauthappsExamples['oauth-apps.delete'],
-			tags: ['OAuth Apps'],
 			authRequired: true,
 			body: isDeleteOAuthAppParams,
 			permissionsRequired: ['manage-oauth-apps'],
@@ -203,7 +201,6 @@ const oauthAppsEndpoints = API.v1
 			summary: 'Create OAuth App',
 			description: `Create an app to log in to third-party applications. For details, you can refer to the <a href='https://docs.rocket.chat/docs/third-party-login' target='_blank'> Third-party login user guide</a>. Permission required: \`manage-oauth-apps\`'`,
 			examples: oauthappsExamples['oauth-apps.create'],
-			tags: ['OAuth Apps'],
 			authRequired: true,
 			body: isOauthAppsAddParams,
 			permissionsRequired: ['manage-oauth-apps'],
@@ -238,7 +235,6 @@ const oauthAppsEndpoints = API.v1
 			summary: 'Update OAuth App',
 			description: `Update an existing app. Permission required: \`manage-oauth-apps\``,
 			examples: oauthappsExamples['oauth-apps.update'],
-			tags: ['OAuth Apps'],
 			authRequired: true,
 			body: isUpdateOAuthAppParams,
 			permissionsRequired: ['manage-oauth-apps'],
@@ -281,7 +277,6 @@ Permission required: \`manage-oauth-apps\`. The endpoint can be accessed even wi
 | ---------------- | ------------|
 |2.4.0            | Added       |`,
 			examples: oauthappsExamples['oauth-apps.get'],
-			tags: ['OAuth Apps'],
 			authRequired: true,
 			query: isOauthAppsGetParams,
 			response: {

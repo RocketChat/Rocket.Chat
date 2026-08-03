@@ -101,7 +101,6 @@ API.v1.post(
 		description: `Manually register a workspace on <a href="https://docs.rocket.chat/docs/rocketchat-cloud" target="_blank">Rocket.Chat Cloud</a>.
 Permission required: \`register-on-cloud\`.`,
 		examples: cloudExamples['cloud.manualRegister'],
-		tags: ['Cloud'],
 		authRequired: true,
 		permissionsRequired: ['register-on-cloud'],
 		body: isCloudManualRegisterProps,
@@ -203,7 +202,6 @@ API.v1.get(
 
 Permission required: \`manage-cloud\`.`,
 		examples: cloudExamples['cloud.registrationStatus'],
-		tags: ['Cloud'],
 		authRequired: true,
 		permissionsRequired: ['manage-cloud'],
 		response: {
@@ -311,7 +309,6 @@ Permission required: \`manage-cloud\`.
 | ---------------- | ------------|
 |8.7.0            | Added       |`,
 		examples: cloudExamples['cloud.connectWorkspace'],
-		tags: ['Cloud'],
 		authRequired: true,
 		permissionsRequired: ['manage-cloud'],
 		body: isCloudConnectWorkspaceProps,

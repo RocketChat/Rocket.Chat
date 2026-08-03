@@ -64,7 +64,6 @@ Permissions required to create outgoing integrations:
 |1.1.0            | Separate permissions in incoming and outgoing.       |
 |0.49.0            | Added       |`,
 		examples: integrationsExamples['integrations.create'],
-		tags: ['Integration'],
 		authRequired: true,
 		body: isIntegrationsCreateProps,
 		response: {
@@ -106,7 +105,6 @@ API.v1.get(
  |1.1.0            | Separate permissions in incoming and outgoing.       |
  |0.53.0            | Added       |`,
 		examples: integrationsExamples['integrations.history'],
-		tags: ['Integration'],
 		authRequired: true,
 		query: isIntegrationsHistoryProps,
 		permissionsRequired: {
@@ -180,7 +178,6 @@ The endpoint returns the integrations based on the user permissions.
 |1.1.0            | Separate permissions in incoming and outgoing.       |
 |0.49.0            | Added       |`,
 		examples: integrationsExamples['integrations.list'],
-		tags: ['Integration'],
 		authRequired: true,
 		query: isIntegrationsListProps,
 		permissionsRequired: {
@@ -267,7 +264,6 @@ Any of the following permissions is required:
 |1.1.0            | Separate permissions in incoming and outgoing.       |
 |0.49.0            | Added       |`,
 		examples: integrationsExamples['integrations.remove'],
-		tags: ['Integration'],
 		authRequired: true,
 		body: isIntegrationsRemoveProps,
 		permissionsRequired: {
@@ -358,7 +354,6 @@ Permissions required:
 | ---------------- | ------------|
 |2.4.0            | Added       |`,
 		examples: integrationsExamples['integrations.get'],
-		tags: ['Integration'],
 		authRequired: true,
 		query: isIntegrationsGetProps,
 		response: {
@@ -411,7 +406,6 @@ Permissions required:
 |8.4.0   | Added \`skipTranspile\` field to opt-out of Babel transpilation |
 |3.4.0            | Added       |`,
 		examples: integrationsExamples['integrations.update'],
-		tags: ['Integration'],
 		authRequired: true,
 		body: isIntegrationsUpdateProps,
 		response: {
@@ -485,7 +479,6 @@ Any of the following permissions is required:
 | ---------------- | ------------|
 |8.7.0            | Added       |`,
 		examples: integrationsExamples['integrations.clearHistory'],
-		tags: ['Integration'],
 		authRequired: true,
 		body: isIntegrationsClearHistoryProps,
 		response: {
@@ -516,7 +509,6 @@ Any of the following permissions is required:
 | ---------------- | ------------|
 |8.7.0            | Added       |`,
 		examples: integrationsExamples['integrations.replayOutgoing'],
-		tags: ['Integration'],
 		authRequired: true,
 		body: isIntegrationsReplayProps,
 		response: {

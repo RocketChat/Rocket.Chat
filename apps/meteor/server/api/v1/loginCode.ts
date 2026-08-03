@@ -44,7 +44,6 @@ This endpoint does not require authentication. Each code is single-use, expires 
 | ------- | ----------- |
 | 8.7.0   | Added       |`,
 		examples: loginCodeExamples['loginCode.redeem'],
-		tags: ['Authentication'],
 		authRequired: false,
 		body: isLoginCodeRedeemParamsPOST,
 		rateLimiterOptions: { intervalTimeInMS: 60000, numRequestsAllowed: 10 },

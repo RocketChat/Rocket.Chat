@@ -109,7 +109,6 @@ Permission required: \`view-livechat-manager\`
 | ---------------- | ------------|
 |7.11.0            | Added       |`,
 			examples: customFieldExamples['livechat/custom-fields.save'],
-			tags: ['Omnichannel Custom Fields'],
 			response: {
 				200: POSTLivechatSaveCustomFieldSuccess,
 				400: validateBadRequestErrorResponse,
@@ -156,7 +155,6 @@ Permission required: \`view-livechat-manager\`
 | ---------------- | ------------|
 |7.11.0            | Added       |`,
 			examples: customFieldExamples['livechat/custom-fields.delete'],
-			tags: ['Omnichannel Custom Fields'],
 			response: {
 				200: POSTLivechatRemoveCustomFieldSuccess,
 				400: validateBadRequestErrorResponse,

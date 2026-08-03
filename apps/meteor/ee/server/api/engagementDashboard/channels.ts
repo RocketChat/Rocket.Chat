@@ -109,7 +109,6 @@ Permission required: \`view-engagement-dashboard\`
 | ---------------- | ------------|
 |3.1.0            | Added       |`,
 		examples: channelsExamples['engagement-dashboard/channels/list'],
-		tags: ['Channels Engagement'],
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],

@@ -64,7 +64,6 @@ const abacEndpoints = API.v1
 | 8.0.0   | Added |
 | 8.5.0   | Added the \`manage-abac-admin-rooms\` granular permission requirement. |`,
 			examples: abacExamples['abac/rooms/:rid/attributes'],
-			tags: ['ABAC'],
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-rooms'],
 			body: POSTRoomAbacAttributesBodySchema,
@@ -106,7 +105,6 @@ const abacEndpoints = API.v1
 | 8.0.0   | Added |
 | 8.5.0   | Added the \`manage-abac-admin-rooms\` granular permission requirement. |`,
 			examples: abacExamples['abac/rooms/:rid/attributes'],
-			tags: ['ABAC'],
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-rooms'],
 			response: {
@@ -143,7 +141,6 @@ const abacEndpoints = API.v1
 | 8.0.0   | Added |
 | 8.5.0   | Added the \`manage-abac-admin-rooms\` granular permission requirement. |`,
 			examples: abacExamples['abac/rooms/:rid/attributes/:key'],
-			tags: ['ABAC'],
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-rooms'],
 			license: ['abac'],
@@ -184,7 +181,6 @@ const abacEndpoints = API.v1
 | 8.0.0   | Added |
 | 8.5.0   | Added the \`manage-abac-admin-rooms\` granular permission requirement. |`,
 			examples: abacExamples['abac/rooms/:rid/attributes/:key'],
-			tags: ['ABAC'],
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-rooms'],
 			body: PUTRoomAbacAttributeValuesBodySchema,
@@ -225,7 +221,6 @@ const abacEndpoints = API.v1
 | 8.0.0   | Added |
 | 8.5.0   | Added the \`manage-abac-admin-rooms\` granular permission requirement. |`,
 			examples: abacExamples['abac/rooms/:rid/attributes/:key'],
-			tags: ['ABAC'],
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-rooms'],
 			response: {
@@ -261,7 +256,6 @@ const abacEndpoints = API.v1
 | 8.0.0   | Added |
 | 8.5.0   | Added the \`manage-abac-admin-room-attributes\` granular permission requirement. |`,
 			examples: abacExamples['abac/attributes'],
-			tags: ['ABAC'],
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-room-attributes'],
 			query: GETAbacAttributesQuerySchema,
@@ -307,7 +301,6 @@ const abacEndpoints = API.v1
 | 8.0.0   | Added |
 | 8.5.0   | Added the \`manage-abac-admin-room-attributes\` granular permission requirement. |`,
 			examples: abacExamples['abac/users/sync'],
-			tags: ['ABAC'],
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-room-attributes'],
 			license: ['abac'],
@@ -347,7 +340,6 @@ const abacEndpoints = API.v1
 | 8.0.0   | Added |
 | 8.5.0   | Added the \`manage-abac-admin-room-attributes\` granular permission requirement. |`,
 			examples: abacExamples['abac/attributes'],
-			tags: ['ABAC'],
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-room-attributes'],
 			license: ['abac'],
@@ -387,7 +379,6 @@ const abacEndpoints = API.v1
 | 8.0.0   | Added |
 | 8.5.0   | Added the \`manage-abac-admin-room-attributes\` granular permission requirement. |`,
 			examples: abacExamples['abac/attributes/:_id'],
-			tags: ['ABAC'],
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-room-attributes'],
 			license: ['abac'],
@@ -428,7 +419,6 @@ const abacEndpoints = API.v1
 | 8.0.0   | Added |
 | 8.5.0   | Added the \`manage-abac-admin-room-attributes\` granular permission requirement. |`,
 			examples: abacExamples['abac/attributes/:_id'],
-			tags: ['ABAC'],
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-room-attributes'],
 			response: {
@@ -464,7 +454,6 @@ const abacEndpoints = API.v1
 | 8.0.0   | Added |
 | 8.5.0   | Added the \`manage-abac-admin-room-attributes\` granular permission requirement. |`,
 			examples: abacExamples['abac/attributes/:_id'],
-			tags: ['ABAC'],
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-room-attributes'],
 			response: {
@@ -499,7 +488,6 @@ const abacEndpoints = API.v1
 | 8.0.0   | Added |
 | 8.5.0   | Added the \`manage-abac-admin-room-attributes\` granular permission requirement. |`,
 			examples: abacExamples['abac/attributes/:key/is-in-use'],
-			tags: ['ABAC'],
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-room-attributes'],
 			response: {
@@ -534,7 +522,6 @@ const abacEndpoints = API.v1
 | 8.0.0   | Added |
 | 8.5.0   | Added the \`manage-abac-admin-rooms\` granular permission requirement. |`,
 			examples: abacExamples['abac/rooms'],
-			tags: ['ABAC'],
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-rooms'],
 			response: {
@@ -583,7 +570,6 @@ Permissions required: \`abac-management\` and \`manage-abac-admin-settings\`.
 | 8.5.0   | Added the \`manage-abac-admin-settings\` granular permission requirement. |
 | 8.4.0   | Added endpoint to check external PDP health status |`,
 			examples: abacExamples['abac/pdp/health'],
-			tags: ['ABAC'],
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-settings'],
 			rateLimiterOptions: {
@@ -622,7 +608,6 @@ Permissions required: \`abac-management\` and \`manage-abac-admin-settings\`.
 | 8.0.0   | Added |
 | 8.5.0   | Added the \`view-abac-admin-audit\` granular permission requirement. |`,
 			examples: abacExamples['abac/audit'],
-			tags: ['ABAC'],
 			response: {
 				200: GETAbacAuditEventsResponseSchema,
 				400: GenericErrorSchema,

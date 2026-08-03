@@ -43,7 +43,6 @@ Permissions required:- \`manage-email-inbox\`
 | ---------------- | ------------|
 |3.11.0-rc.0         | Added       |`,
 		examples: emailInboxExamples['email-inbox.list'],
-		tags: ['Email Inbox'],
 		authRequired: true,
 		permissionsRequired: ['manage-email-inbox'],
 		query: isEmailInboxList,
@@ -75,7 +74,6 @@ Permissions required:- \`manage-email-inbox\`
 | ---------------- | ------------|
 |3.11.0-rc.0         | Added       |`,
 		examples: emailInboxExamples['email-inbox'],
-		tags: ['Email Inbox'],
 		authRequired: true,
 		permissionsRequired: ['manage-email-inbox'],
 		body: isEmailInbox,
@@ -147,7 +145,6 @@ Permissions required: \`manage-email-inbox\`
 |5.3.0       | Not Found Error Added       |
 |3.11.0-rc.0         | Added       |`,
 		examples: emailInboxExamples['email-inbox/:_id'],
-		tags: ['Email Inbox'],
 		authRequired: true,
 		permissionsRequired: ['manage-email-inbox'],
 		response: {
@@ -200,7 +197,6 @@ Permissions required: \`manage-email-inbox\`
 | ---------------- | ------------|
 |3.11.0-rc.0         | Added       |`,
 		examples: emailInboxExamples['email-inbox/:_id'],
-		tags: ['Email Inbox'],
 		authRequired: true,
 		permissionsRequired: ['manage-email-inbox'],
 		response: {
@@ -244,7 +240,6 @@ Permissions required: \`manage-email-inbox\`
 | ---------------- | ------------|
 |3.11.0-rc.0         | Added       |`,
 		examples: emailInboxExamples['email-inbox.search'],
-		tags: ['Email Inbox'],
 		authRequired: true,
 		permissionsRequired: ['manage-email-inbox'],
 		query: isEmailInboxSearch,

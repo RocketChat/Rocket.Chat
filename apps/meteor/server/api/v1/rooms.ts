@@ -140,7 +140,6 @@ API.v1.get(
 		summary: 'Check if Room Name Exists',
 		description: `Check if the room name exists`,
 		examples: roomsExamples['rooms.nameExists'],
-		tags: ['Rooms'],
 		authRequired: true,
 		query: isGETRoomsNameExists,
 		response: {
@@ -185,7 +184,6 @@ const roomDeleteEndpoint = API.v1.post(
 | ------- | --------------|
 | 5.4.0   | Added         |`,
 		examples: roomsExamples['rooms.delete'],
-		tags: ['Rooms'],
 		authRequired: true,
 		body: ajv.compile<{ roomId: string }>({
 			type: 'object',
@@ -249,7 +247,6 @@ API.v1.get(
 | ------- | --------------|
 | 0.72.0  | Added         |`,
 		examples: roomsExamples['rooms.get'],
-		tags: ['Rooms'],
 		authRequired: true,
 		response: {
 			200: ajv.compile<{ update: IRoom[]; remove: IRoom[] }>({
@@ -438,7 +435,6 @@ const roomsSaveNotificationEndpoint = API.v1.post(
 | ------- | ----------- |
 |0.63.0  | Added        |`,
 		examples: roomsExamples['rooms.saveNotification'],
-		tags: ['Rooms'],
 		authRequired: true,
 		body: saveNotificationBodySchema,
 		response: {
@@ -523,7 +519,6 @@ Permission required: \`clean-channel-history\`
 | 0.64.0  | Added                  |
 | 0.67.0  | Added fields \`limit\`, \`excludePinned\`, \`filesOnly\` and \`users\` |`,
 		examples: roomsExamples['rooms.cleanHistory'],
-		tags: ['Rooms'],
 		authRequired: true,
 		body: isRoomsCleanHistoryProps,
 		response: {
@@ -579,7 +574,6 @@ API.v1.get(
 | ------- | ----------- |
 |0.72.0   | Added       |`,
 		examples: roomsExamples['rooms.info'],
-		tags: ['Rooms'],
 		authRequired: true,
 		response: {
 			200: ajv.compile<{ room: IRoom | null }>({
@@ -632,7 +626,6 @@ API.v1.post(
 | ------- | ----------- |
 | 1.0.0   | Added       |`,
 		examples: roomsExamples['rooms.createDiscussion'],
-		tags: ['Rooms'],
 		authRequired: true,
 		body: isRoomsCreateDiscussionProps,
 		response: {
@@ -679,7 +672,6 @@ API.v1.get(
 | ------- | --------------|
 | 1.0.0   | Added         |`,
 		examples: roomsExamples['rooms.getDiscussions'],
-		tags: ['Rooms'],
 		authRequired: true,
 		response: {
 			200: ajv.compile<{ discussions: IRoom[]; count: number; offset: number; total: number }>({
@@ -733,7 +725,6 @@ API.v1.get(
 		summary: 'Get Room Images',
 		description: `Retrieves the images of a room that you are a member of.`,
 		examples: roomsExamples['rooms.images'],
-		tags: ['Rooms'],
 		authRequired: true,
 		query: isRoomsImagesProps,
 		response: {
@@ -808,7 +799,6 @@ Permission required: \`view-room-administration\`
 | 8.7.0  | Restored \`customFields\` in the response |
 | 2.4.0  | Added         |`,
 		examples: roomsExamples['rooms.adminRooms'],
-		tags: ['Rooms'],
 		authRequired: true,
 		query: isRoomsAdminRoomsProps,
 		response: {
@@ -861,7 +851,6 @@ API.v1.get(
 * \`view-room-administration\`
 * \`can-audit\``,
 		examples: roomsExamples['rooms.autocomplete.adminRooms'],
-		tags: ['Rooms'],
 		authRequired: true,
 		query: isRoomsAutocompleteAdminRoomsPayload,
 		response: {
@@ -904,7 +893,6 @@ Permission required: \`view-room-administration\`
 | 8.7.0   | Restored \`customFields\` in the response |
 | 2.4.0   | Added           |`,
 		examples: roomsExamples['rooms.adminRooms.getRoom'],
-		tags: ['Rooms'],
 		authRequired: true,
 		query: isRoomsAdminRoomsGetRoomProps,
 		response: {
@@ -945,7 +933,6 @@ API.v1.get(
 		summary: 'Autocomplete Room Name for Private and Public Rooms',
 		description: `List the public and private rooms whose names match a given string, excluding <a href="https://docs.rocket.chat/docs/discussions" target="_blank">discussions</a>, <a href="https://docs.rocket.chat/docs/direct-messages" target="_blank">DMs</a>, and <a href="https://docs.rocket.chat/docs/omnichannel" target="_blank">omnichannel rooms</a>. The endpoint is valuable when performing search operations. It returns only rooms that the user belongs to.`,
 		examples: roomsExamples['rooms.autocomplete.channelAndPrivate'],
-		tags: ['Rooms'],
 		authRequired: true,
 		query: isRoomsAutoCompleteChannelAndPrivateProps,
 		response: {
@@ -980,7 +967,6 @@ API.v1.get(
 		summary: 'Autocomplete Room Name With Pagination',
 		description: `List the public and private rooms whose names match a given string, excluding discussions, DMs, and omnichannel rooms. The endpoint is valuable when performing search operations. It returns only rooms that the user belongs to. This endpoint includes pagination query parameters.`,
 		examples: roomsExamples['rooms.autocomplete.channelAndPrivate.withPagination'],
-		tags: ['Rooms'],
 		authRequired: true,
 		query: isRoomsAutocompleteChannelAndPrivateWithPaginationProps,
 		response: {
@@ -1023,7 +1009,6 @@ API.v1.get(
 		summary: 'Autocomplete Room Name for Team',
 		description: `Autocompletes room name available for conversion to team.`,
 		examples: roomsExamples['rooms.autocomplete.availableForTeams'],
-		tags: ['Rooms'],
 		authRequired: true,
 		query: isRoomsAutocompleteAvailableForTeamsProps,
 		response: {
@@ -1073,7 +1058,6 @@ Permission required: \`edit-room\`
 | 8.5.0   | Added ABAC guardrails: announcement, topic, description, default flag, and conversion to public are blocked on ABAC-managed rooms. |
 | 3.13.0  | Added       |`,
 		examples: roomsExamples['rooms.saveRoomSettings'],
-		tags: ['Rooms'],
 		authRequired: true,
 		body: isRoomsSaveRoomSettingsProps,
 		response: {
@@ -1119,7 +1103,6 @@ API.v1.post(
 | ------- | ---------------- |
 | 3.3.0  | Added             |`,
 		examples: roomsExamples['rooms.changeArchivationState'],
-		tags: ['Rooms'],
 		authRequired: true,
 		body: isRoomsChangeArchivationStateProps,
 		response: {
@@ -1155,7 +1138,6 @@ Permission required: \`mail-messages\`
 | ------- | ------------------------------------ |
 | 3.8.0   | Added                                |`,
 		examples: roomsExamples['rooms.export'],
-		tags: ['Rooms'],
 		authRequired: true,
 		body: isRoomsExportProps,
 		response: {
@@ -1246,7 +1228,6 @@ API.v1.get(
 		summary: 'Check Room Member',
 		description: `Use this endpoint to check whether or not a user is a member of a specific room. If the user is not a member of the room, an error response (\`error-user-not-found\`) is returned. You can only get the results for the rooms that you are a member of. Otherwise, you get a forbidden error response.`,
 		examples: roomsExamples['rooms.isMember'],
-		tags: ['Rooms'],
 		authRequired: true,
 		query: isRoomsIsMemberProps,
 		response: {
@@ -1300,7 +1281,6 @@ If the room is a broadcast room, you need the \`view-broadcast-member-list\` per
 | ------- | ----------- |
 | 7.3.0   | Added       |`,
 		examples: roomsExamples['rooms.membersOrderedByRole'],
-		tags: ['Rooms'],
 		authRequired: true,
 		query: isRoomsMembersOrderedByRoleProps,
 		response: {
@@ -1380,7 +1360,6 @@ API.v1.post(
 | ------- | ------------------------------------ |
 | 6.8.0   | Added                                |`,
 		examples: roomsExamples['rooms.muteUser'],
-		tags: ['Rooms'],
 		authRequired: true,
 		body: isRoomsMuteUnmuteUserProps,
 		response: {
@@ -1414,7 +1393,6 @@ API.v1.post(
 | ------- | ------------------------------------ |
 | 6.8.0   | Added                                |`,
 		examples: roomsExamples['rooms.unmuteUser'],
-		tags: ['Rooms'],
 		authRequired: true,
 		body: isRoomsMuteUnmuteUserProps,
 		response: {
@@ -1467,7 +1445,6 @@ API.v1.post(
 | ------------ | ----------- |
 | 8.6.0   | Added       |`,
 		examples: roomsExamples['rooms.join'],
-		tags: ['Rooms'],
 		authRequired: true,
 		body: isRoomsJoinProps,
 		response: {
@@ -1508,7 +1485,6 @@ API.v1.post(
 | ------- | ------------------------------------ |
 | 7.4.0   | Added                                |`,
 		examples: roomsExamples['rooms.hide'],
-		tags: ['Rooms'],
 		authRequired: true,
 		body: isRoomsHideProps,
 		response: {
@@ -1656,7 +1632,6 @@ export const roomEndpoints = API.v1
 | ------- | ------------------------------------ |
 | 7.10.0   | Added                               |`,
 			examples: roomsExamples['rooms.roles'],
-			tags: ['Rooms'],
 			authRequired: true,
 			query: ajvQuery.compile<{
 				rid: string;
@@ -1810,7 +1785,6 @@ export const roomEndpoints = API.v1
 | ------- | --------------|
 | 0.64.0   | Added        |`,
 			examples: roomsExamples['rooms.favorite'],
-			tags: ['Rooms'],
 			authRequired: true,
 			body: isRoomsFavoriteProps,
 			response: {
@@ -1852,7 +1826,6 @@ export const roomEndpoints = API.v1
 | Version | Description   |
 | ------- | --------------|
 | 0.72.0  | Added         |`,
-			tags: ['Rooms'],
 			authRequired: true,
 			body: isRoomsLeaveProps,
 			response: {
