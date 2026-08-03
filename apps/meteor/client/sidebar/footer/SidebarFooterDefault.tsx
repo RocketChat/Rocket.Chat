@@ -3,12 +3,15 @@ import { Box, SidebarV2Divider, Palette, SidebarV2Footer as Footer } from '@rock
 import { useThemeMode } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
+import { useMemo } from 'react';
 
 import { SidebarFooterWatermark } from './SidebarFooterWatermark';
 
 const SidebarFooterDefault = () => {
 	const theme = useThemeMode();
 	const logo = useSetting(theme === 'dark' ? 'Layout_Sidenav_Footer_Dark' : 'Layout_Sidenav_Footer', '').trim();
+
+	const dangerousLogo = useMemo(() => ({ __html: DOMPurify.sanitize(logo) }), [logo]);
 
 	const sidebarFooterStyle = css`
 		& img {
@@ -29,9 +32,7 @@ const SidebarFooterDefault = () => {
 				height='x48'
 				width='auto'
 				className={sidebarFooterStyle}
-				dangerouslySetInnerHTML={{
-					__html: DOMPurify.sanitize(logo),
-				}}
+				dangerouslySetInnerHTML={dangerousLogo}
 			/>
 			<SidebarFooterWatermark />
 		</Footer>
